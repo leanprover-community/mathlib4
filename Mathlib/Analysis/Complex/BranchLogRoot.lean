@@ -44,13 +44,13 @@ theorem exists_continuousOn_eqOn_exp_comp (hUc : IsSimplyConnected U) (hUo : IsO
   have hx₀ : g x₀ ≠ 0 := ne_of_mem_of_not_mem (mem_image_of_mem g hx₀U) hU₀
   lift x₀ to U using hx₀U
   rcases isCoveringMapOn_exp.existsUnique_continuousMap_lifts
-    ⟨U.restrict g, continuousOn_iff_continuous_restrict.mp hgc⟩ (exp_log hx₀)
+    ⟨U.domRestrict g, continuousOn_iff_continuous_domRestrict.mp hgc⟩ (exp_log hx₀)
     (fun x ↦ ne_of_mem_of_not_mem (mem_image_of_mem g x.2) hU₀) with ⟨f, ⟨-, hf⟩, -⟩
   obtain ⟨g, hg⟩ : ∃ g : X → ℂ, ∀ z : U, g z = f z :=
     ⟨fun z ↦ if hz : z ∈ U then f ⟨z, hz⟩ else 0, by simp⟩
   refine ⟨g, ?hg_cont, ?hg_inv⟩
   case hg_cont =>
-    rw [continuousOn_iff_continuous_restrict]
+    rw [continuousOn_iff_continuous_domRestrict]
     convert! map_continuous f
     ext z
     exact hg z
@@ -70,8 +70,8 @@ theorem exists_continuousOn_pow_eq (hUc : IsSimplyConnected U) (hUo : IsOpen U)
   classical
   rcases exists_continuousOn_eqOn_exp_comp hUc hUo hgc hU₀ with ⟨f, hfc, hf⟩
   refine ⟨U.piecewise (exp <| f · / n) (g · ^ (1 / n : ℂ)), ?_, fun z ↦ ?_⟩
-  · rw [continuousOn_iff_continuous_restrict, restrict_piecewise,
-      ← continuousOn_iff_continuous_restrict]
+  · rw [continuousOn_iff_continuous_domRestrict, domRestrict_piecewise,
+      ← continuousOn_iff_continuous_domRestrict]
     fun_prop
   · by_cases hz : z ∈ U
     · simp [hz, ← exp_nat_mul, mul_div_cancel₀ (b := ↑n) (f z) (mod_cast hn), ← hf hz,

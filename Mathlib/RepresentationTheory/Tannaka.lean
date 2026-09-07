@@ -62,6 +62,7 @@ def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
     ext x
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (k G) in
 /-- The group homomorphism `G →* Aut (forget k G)` shown to be an isomorphism. -/
 @[simps]

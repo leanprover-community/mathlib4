@@ -84,6 +84,7 @@ lemma freeHomEquiv_apply {M : SheafOfModules.{u} R} {I : Type u}
     freeHomEquiv M f i = sectionsMap f (freeSection i) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma unitHomEquiv_symm_freeHomEquiv_apply
     {I : Type u} {M : SheafOfModules.{u} R} (f : free I ⟶ M) (i : I) :
     M.unitHomEquiv.symm (M.freeHomEquiv f i) = ιFree i ≫ f := by

@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
+public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
 
 /-!
 # The category of open sets in a topological space.
@@ -36,7 +37,7 @@ Beyond that, there's a collection of simp lemmas for working with these construc
 
 open CategoryTheory TopologicalSpace Opposite Topology
 
-universe u
+universe u w w'
 
 namespace TopologicalSpace.Opens
 
@@ -116,7 +117,7 @@ theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
 realising each open set as a topological space itself.
 -/
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
-  obj U := TopCat.of U
+  obj U := ↧U
   map i := TopCat.ofHom ⟨fun x ↦ ⟨x.1, i.le x.2⟩,
     IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
 
@@ -146,11 +147,22 @@ def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
   inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
+/-- The FrameHom sending an open in `Y` to its preimage in `X`. -/
+@[simps]
+def _root_.TopCat.Hom.frameHom (f : X ⟶ Y) : FrameHom (Opens Y) (Opens X) where
+  toFun U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
+  map_inf' _ _ := rfl
+  map_top' := rfl
+  map_sSup' _ := by ext; simp
+
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
 given by taking preimages under f. -/
-def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
-  obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
-  map i := ⟨⟨fun _ h => i.le h⟩⟩
+def map (f : X ⟶ Y) : Opens Y ⥤ Opens X :=
+  (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+lemma map_def (f : X ⟶ Y) : map f =
+  { obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
+    map i := ⟨⟨fun _ h => i.le h⟩⟩ } := rfl
 
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
@@ -298,6 +310,27 @@ lemma mapMapIso_counitIso {X Y : TopCat.{u}} (H : X ≅ Y) :
     (mapMapIso H).counitIso = NatIso.ofComponents (fun U ↦ eqToIso (by cat_disch))
     (by cat_disch) := rfl
 
+instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] (K : J ⥤ (Opens Y)) :
+    Limits.PreservesLimit K (map f) :=
+  inferInstanceAs <| Limits.PreservesLimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] :
+    Limits.PreservesLimitsOfShape J (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesFiniteLimits (map f) where
+  preservesFiniteLimits _ _ _ := inferInstance
+
+instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] (K : J ⥤ (Opens Y)) :
+    Limits.PreservesColimit K (map f) :=
+  inferInstanceAs <| Limits.PreservesColimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] :
+    Limits.PreservesColimitsOfShape J (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesColimitsOfSize.{w', w} (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesColimits (map f) where
+
 end TopologicalSpace.Opens
 
 /-- If `f : X ⟶ Y` is a map of topological spaces and `U ⊆ V` are open subsets of `X` whose
@@ -375,6 +408,7 @@ lemma mem_functorObj_iff {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f) (U
   conv_rhs => rw [← hf.map_functorObj U]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma le_functorObj_iff {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f) {U : Opens X}
     {V : Opens Y} : V ≤ hf.functorObj U ↔ (Opens.map f).obj V ≤ U := by
   obtain ⟨U, hU⟩ := U

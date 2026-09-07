@@ -200,7 +200,7 @@ private lemma SurjectiveOnStalks.tensorProductMap_id
     {S' : Type*} [CommRing S'] [Algebra R S] [Algebra R T] [Algebra R S']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).SurjectiveOnStalks := by
-  letI := f.toRingHom.toAlgebra
+  let := f.toRingHom.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).SurjectiveOnStalks
   convert_to ((Algebra.TensorProduct.cancelBaseChange R S S S' T).toAlgHom.comp

@@ -80,6 +80,7 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
     ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
     (Pi.basis s).repr (Pi.single j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by
@@ -136,7 +137,9 @@ theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :
 variable {η}
 
 /-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
-def spanSubset (s : Set η) : Submodule R (η → R) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def spanSubset (s : Set η) : Submodule R (η → R) :=
   .span R (Pi.basisFun R η '' s)
 
 variable {R} {s : Set η}
@@ -176,8 +179,8 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
 
 namespace Module
 
-variable (ι R M N : Type*) [Finite ι] [CommSemiring R]
-  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable (ι R M : Type*) [Finite ι] [CommSemiring R]
+  [AddCommMonoid M] [Module R M]
 
 /-- The natural linear equivalence: `Mⁱ ≃ Hom(Rⁱ, M)` for an `R`-module `M`. -/
 noncomputable def piEquiv : (ι → M) ≃ₗ[R] ((ι → R) →ₗ[R] M) := Basis.constr (Pi.basisFun R ι) R

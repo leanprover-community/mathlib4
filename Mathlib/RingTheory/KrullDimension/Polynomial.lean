@@ -65,7 +65,8 @@ private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] 
     rw [mk_ker, LiesOver.over (P := P) (p := p)]
     exact map_comap_le
   have : P'.IsMaximal := map_isMaximal_of_equiv e
-  have : P'.height = 1 := IsPrincipalIdealRing.height_eq_one_of_isMaximal P' polynomial_not_isField
+  have : P'.height = 1 :=
+    IsPrincipalIdealRing.height_eq_one_of_isMaximal P' (Polynomial.not_isField (R ⧸ p))
   rwa [← e.height_map <| P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))]
 
 /-- Let `p` be a maximal ideal of `R`. Then the height of `p[X]` equals the height of `p`. -/
@@ -91,7 +92,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
   have eq := under_map_of_isPrime_disjoint _ Rₚ[X] ‹P.IsMaximal›.isPrime disj
   have : (P'.under R[X]).IsMaximal := eq.symm ▸ ‹P.IsMaximal›
-  have : P'.IsMaximal := .of_isLocalization_of_disjoint (p.primeCompl.map C)
+  have : P'.IsMaximal := IsLocalization.isMaximal_of_isMaximal_under (p.primeCompl.map C) Rₚ[X] P'
   have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
   have eq1 : p.height = p'.height := by
     rw [height_map_of_disjoint p.primeCompl]

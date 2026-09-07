@@ -74,7 +74,7 @@ def log (b n : ℕ) : ℕ :=
       if q < b then (q, 2 * e) else (q / b, 2 * e + 1)
 
 theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 := by
-  rw [log, if_pos hb]
+  rw [log, ite_eq_left hb]
 
 theorem log_of_lt {b n : ℕ} (hb : n < b) : log b n = 0 := by
   fun_cases log with
@@ -99,7 +99,7 @@ lemma log.go_spec {b n fuel : ℕ} (hb : 1 < b) (hn : n ≠ 0) (hfuel : n < b ^ 
     | inr hnb =>
       rcases ih (Nat.one_mul 1 ▸ Nat.mul_lt_mul_of_lt_of_lt hb hb) (go_aux hb hfuel hnb)
         with ⟨ih₁, ih₂, ih₃⟩
-      simp_all only [go, if_neg (Nat.not_lt_of_le hnb), ← Nat.pow_two, ← Nat.pow_mul,
+      simp_all only [go, ite_eq_right (Nat.not_lt_of_le hnb), ← Nat.pow_two, ← Nat.pow_mul,
         Nat.div_lt_iff_lt_mul, Nat.pow_pos (Nat.zero_lt_of_lt hb), Nat.div_div_eq_div_mul,
         ← Nat.pow_add_one, ← Nat.pow_add_one', Nat.mul_add_one]
       split <;> simp_all
@@ -107,7 +107,7 @@ lemma log.go_spec {b n fuel : ℕ} (hb : 1 < b) (hn : n ≠ 0) (hfuel : n < b ^ 
 theorem log_lt_iff_lt_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     log b y < x ↔ y < b ^ x := by
   rcases log.go_spec hb hy (Nat.lt_pow_self hb) with ⟨-, H₁, H₂⟩
-  rw [log, if_neg (Nat.not_le_of_lt hb)]
+  rw [log, ite_eq_right (Nat.not_le_of_lt hb)]
   cases Nat.lt_or_ge (log.go y b y).snd x with
   | inl h =>
     exact iff_of_true h <| Nat.lt_of_lt_of_le H₂ <| Nat.pow_le_pow_right (Nat.zero_lt_of_lt hb) h
@@ -375,7 +375,7 @@ theorem clog.go_spec {n b fuel} (hn : 1 < n) (hb : 1 < b) (hfuel : n < b ^ fuel)
     | inl hbn =>
       rcases ih (Nat.one_mul 1 ▸ Nat.mul_lt_mul_of_lt_of_lt hb hb)
         (log.go_aux hb hfuel (Nat.le_of_lt hbn)) with ⟨ih₁, ih₂, ih₃⟩
-      simp_all only [go, if_neg (Nat.not_le_of_gt hbn), ← Nat.pow_two, ← Nat.pow_mul,
+      simp_all only [go, ite_eq_right (Nat.not_le_of_gt hbn), ← Nat.pow_two, ← Nat.pow_mul,
         Nat.div_lt_iff_lt_mul (Nat.zero_lt_of_lt hbn), Nat.div_div_eq_div_mul,
         Nat.mul_comm n b, Nat.mul_add_one, @Nat.pow_add_one' _ (2 * _ + 1),
         Nat.mul_lt_mul_left, Nat.mul_div_mul_left, Nat.zero_lt_of_lt hb]
@@ -398,7 +398,7 @@ theorem clog_le_iff_le_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} : clog b x ≤ y �
   | case2 h => grind [Nat.one_le_pow]
 
 theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 1 < n) : 0 < clog b n := by
-  rw [clog, if_pos]
+  rw [clog, ite_eq_left]
   exacts [Nat.succ_pos _, ⟨hb, hn⟩]
 
 theorem clog_of_one_lt {b n : ℕ} (hb : 1 < b) (hn : 1 < n) :

@@ -163,6 +163,29 @@ instance : SetLike (AffineSubspace k P) P where
 
 instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
 
+instance : Singleton P (AffineSubspace k P) where
+  singleton x := {
+    carrier := {x}
+    smul_vsub_vadd_mem' _ _ _ _ := by simp +contextual }
+
+@[simp] theorem coe_singleton (x : P) : ({x} : AffineSubspace k P) = ({x} : Set P) := rfl
+
+@[simp, grind =, push]
+theorem mem_singleton_iff (x y : P) : x ∈ ({y} : AffineSubspace k P) ↔ x = y := by
+  simp [← SetLike.mem_coe]
+
+theorem notMem_singleton_iff (x y : P) : x ∉ ({y} : AffineSubspace k P) ↔ x ≠ y := by
+  simp [← SetLike.mem_coe]
+
+theorem mem_singleton (x : P) : x ∈ ({x} : AffineSubspace k P) := by simp [← SetLike.mem_coe]
+
+theorem eq_of_mem_singleton {x y : P} (h : x ∈ ({y} : AffineSubspace k P)) : x = y := by
+  simpa [← SetLike.mem_coe] using h
+
+@[simp]
+theorem singleton_eq_singleton_iff (x y : P) : {x} = ({y} : AffineSubspace k P) ↔ x = y := by
+  simp [← SetLike.coe_set_eq]
+
 @[simp] lemma carrier_eq_coe (s : AffineSubspace k P) : s.carrier = s := rfl
 
 lemma smul_vsub_vadd_mem (s : AffineSubspace k P) (c : k) {p₁ p₂ p₃ : P} :
@@ -239,6 +262,15 @@ def direction (s : AffineSubspace k P) : Submodule k V :=
 /-- The direction equals the `vectorSpan`. -/
 theorem direction_eq_vectorSpan (s : AffineSubspace k P) : s.direction = vectorSpan k (s : Set P) :=
   rfl
+
+@[simp]
+theorem direction_singleton (x : P) : ({x} : AffineSubspace k P).direction = ⊥ := by
+  simp [direction]
+
+@[simp]
+theorem direction_eq_bot_iff {s : AffineSubspace k P} :
+    s.direction = ⊥ ↔ (s : Set P).Subsingleton := by
+  simp [direction]
 
 /-- Alternative definition of the direction when the affine subspace is nonempty. This is defined so
 that the order on submodules (as used in the definition of `Submodule.span`) can be used in the
@@ -470,7 +502,6 @@ def affineSpan (s : Set P) : AffineSubspace k P where
         (vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints k hp₁ hp₂))
 
 /-- The affine span, converted to a set, is `spanPoints`. -/
-@[simp]
 theorem coe_affineSpan (s : Set P) : (affineSpan k s : Set P) = spanPoints k s :=
   rfl
 
@@ -501,7 +532,7 @@ theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s
 @[simp]
 lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
   ext
-  simp [mem_add, spanPoints]
+  simp [mem_add, coe_affineSpan, spanPoints]
   grind
 
 variable {k}
@@ -784,7 +815,7 @@ theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set 
 /-- The inf of two affine subspaces, coerced to a set, is the intersection of the two sets of
 points. -/
 @[simp]
-theorem coe_inf (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
+theorem coe_inf (s₁ s₂ : AffineSubspace k P) : ↑(s₁ ⊓ s₂) = (s₁ : Set P) ∩ s₂ :=
   rfl
 
 /-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
@@ -950,8 +981,6 @@ section AffineSpace'
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-variable {ι : Type*}
-
 open AffineSubspace
 
 section
@@ -967,6 +996,10 @@ alias ⟨_, _root_.Set.Nonempty.affineSpan⟩ := affineSpan_nonempty
 /-- The affine span of a nonempty set is nonempty. -/
 instance [Nonempty s] : Nonempty (affineSpan k s) :=
   ((nonempty_coe_sort.1 ‹_›).affineSpan _).to_subtype
+
+/-- The affine span of a singleton is nonempty. -/
+instance (x : P) : Nonempty ({x} : AffineSubspace k P) :=
+  ⟨x, SetLike.mem_coe.mp rfl⟩
 
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]

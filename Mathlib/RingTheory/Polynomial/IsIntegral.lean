@@ -9,6 +9,7 @@ public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 
@@ -155,11 +156,6 @@ protected lemma IsIntegral.coeff
   · simpa [show i ≠ m by lia] using this
   · simp [coeff_eq_zero_of_natDegree_lt hi, isIntegral_zero]
 
-@[deprecated (since := "2026-01-01")]
-alias IsIntegral.coeff_of_exists_smul_mem_lifts := IsIntegral.coeff
-
-@[deprecated (since := "2026-01-01")] alias IsIntegral.coeff_of_isFractionRing := IsIntegral.coeff
-
 theorem Polynomial.isIntegral_iff_isIntegral_coeff {f : S[X]} :
     IsIntegral R[X] f ↔ ∀ n, IsIntegral R (f.coeff n) := by
   refine ⟨IsIntegral.coeff, fun H ↦ ?_⟩
@@ -192,7 +188,6 @@ attribute [local instance] MvPolynomial.algebraMvPolynomial in
 attribute [-simp] AlgEquiv.symm_toRingEquiv in
 theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPolynomial σ S} :
     IsIntegral (MvPolynomial σ R) f ↔ ∀ n, IsIntegral R (f.coeff n) := by
-  classical
   refine ⟨fun H n ↦ ?mp, fun H ↦ ?mpr⟩
   case mpr =>
     rw [← f.support_sum_monomial_coeff]
@@ -232,7 +227,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
       (isEmptyAlgEquiv _ PEmpty).symm.injective
       (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
     convert! H
-    · ext r m <;> simp [Subsingleton.elim m 0, C, X, monomial, coeff, map]
+    · ext r m <;> simp [Subsingleton.elim m 0, C, X, monomial, map]
     · obtain rfl := Subsingleton.elim n 0
       have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
       simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using!

@@ -64,6 +64,7 @@ theorem ker_coeMulHom (f : F) : ker (f : MulHom M N) = ker f := rfl
 theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
+/-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
 @[to_additive (attr := simp) /-- The kernel of the quotient map induced by an additive congruence
 relation `c` equals `c`. -/]
 theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
@@ -181,6 +182,7 @@ theorem comap_eq {f : N →* M} : comap f f.map_mul c = ker (c.mk'.comp f) :=
 
 variable (c) (f : M →* P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homomorphism on the quotient of a monoid by a congruence relation `c` induced by a
 homomorphism constant on `c`'s equivalence classes. -/
 @[to_additive /-- The homomorphism on the quotient of an `AddMonoid` by an additive congruence

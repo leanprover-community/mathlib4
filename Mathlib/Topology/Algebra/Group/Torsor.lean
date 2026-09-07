@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Group.Defs
 
+import Mathlib.Topology.Algebra.Group.Pointwise
+
 /-!
 # Topological torsors of groups
 
@@ -18,7 +20,7 @@ This file defines topological torsors of additive and multiplicative groups, tha
 
 @[expose] public section
 
-open Topology
+open scoped Topology
 
 section Torsor
 
@@ -28,7 +30,7 @@ class IsTopologicalAddTorsor {V : Type*} [AddGroup V] [TopologicalSpace V]
     (P : Type*) [AddTorsor V P] [TopologicalSpace P] extends ContinuousVAdd V P where
   continuous_vsub : Continuous (fun x : P × P => x.1 -ᵥ x.2)
 
-/-- A topological torsor over a topological group is a torsor where `+ᵥ` and `-ᵥ` are continuous. -/
+/-- A topological torsor over a topological group is a torsor where `•` and `/ₛ` are continuous. -/
 @[to_additive]
 class IsTopologicalTorsor {V : Type*} [Group V] [TopologicalSpace V]
     (P : Type*) [Torsor V P] [TopologicalSpace P] extends ContinuousSMul V P where
@@ -106,6 +108,17 @@ def Homeomorph.constSDiv (p : P) : P ≃ₜ V where
   continuous_invFun := by
     have := IsTopologicalTorsor.to_isTopologicalGroup V P
     fun_prop
+
+@[to_additive]
+instance (priority := 100) IsTopologicalTorsor.t0Space [T0Space V] : T0Space P :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  (Homeomorph.smulConst p).t0Space
+
+@[to_additive]
+instance (priority := 100) IsTopologicalTorsor.regularSpace : RegularSpace P :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  have := IsTopologicalTorsor.to_isTopologicalGroup V P
+  (Homeomorph.smulConst p).symm.isInducing.regularSpace
 
 /-- `Equiv.pointReflection` as a homeomorphism -/
 def Homeomorph.pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]

@@ -30,7 +30,7 @@ star graph
 
 namespace SimpleGraph
 
-variable {V V' : Type*} (G : SimpleGraph V) (G' : SimpleGraph V')
+variable {V : Type*}
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
@@ -39,7 +39,7 @@ def starGraph (r : V) : SimpleGraph V :=
 instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj :=
   inferInstanceAs (DecidableRel fun x y ↦ x ≠ y ∧ (x = r ∨ y = r))
 
-@[simp]
+@[simp, grind =]
 lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
   simp [starGraph, fromRel]
 
@@ -82,7 +82,7 @@ lemma isTree_starGraph (r : V) : (starGraph r).IsTree :=
 /-- Every non-center vertex of a starGraph has degree one. -/
 lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
     (starGraph r).degree v = 1 :=
-  degree_eq_one_iff_existsUnique_adj.mpr ⟨r, by simp [h], by grind [starGraph_adj]⟩
+  degree_eq_one_iff_existsUnique_adj.mpr ⟨r, by simp [h], by grind⟩
 
 /-- The center vertex of a starGraph has degree (card V) - 1. -/
 lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
@@ -106,5 +106,11 @@ theorem IsUniversal.isAcyclic_iff_cliqueFree_three {v : V} (hv : G.IsUniversal v
     G.IsAcyclic ↔ G.CliqueFree 3 where
   mp := IsAcyclic.cliqueFree_three
   mpr h3 := eq_starGraph_of_isUniversal_of_cliqueFree_three hv h3 ▸ isAcyclic_starGraph v
+
+theorem starGraph_inl_unitMk : starGraph (.inl ()) = completeBipartiteGraph Unit V := by
+  grind
+
+theorem starGraph_inr_unitMk : starGraph (.inr ()) = completeBipartiteGraph V Unit := by
+  grind
 
 end SimpleGraph

@@ -3,11 +3,13 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.GCongr
 
 /-!
 # IMO 2019 Q4
@@ -25,6 +27,7 @@ Now for `n ≥ 6` we have `RHS < 2 ^ (n ^ 2) < (n(n-1)/2)! < k!`. We then treat 
 individually.
 -/
 
+public section
 
 open Nat Finset
 
@@ -75,7 +78,6 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
 
 end Imo2019Q4
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
     (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
@@ -91,7 +93,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
   -- n = 2
   · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rwa [← factorial_inj']
     norm_num
-  all_goals exfalso; simp [prod_range_succ] at h; norm_cast at h
+  all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
   · refine monotone_factorial.ne_of_lt_of_lt_nat 5 ?_ ?_ _ h <;> decide
   -- n = 4

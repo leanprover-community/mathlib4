@@ -42,7 +42,7 @@ theorem fin_nat_prod {n : ℕ} {E : Fin n → Type*}
       rw [← this.integrable_comp_emb (MeasurableEquiv.measurableEmbedding _)]
       simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply, Fin.insertNthEquiv,
         Fin.prod_univ_succ, Fin.insertNth_zero]
-      simp only [Fin.zero_succAbove, cast_eq, Function.comp_def]
+      simp only [Fin.zero_succAbove, Function.comp_def]
       have : Integrable (fun (x : (j : Fin n) → E (Fin.succ j)) ↦ ∏ j, f (Fin.succ j) (x j))
           (Measure.pi (fun i ↦ μ i.succ)) :=
         n_ih (fun i ↦ hf _)

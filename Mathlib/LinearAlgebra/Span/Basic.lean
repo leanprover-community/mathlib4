@@ -561,6 +561,16 @@ theorem comap_map_sup_of_comap_le {f : M →ₛₗ[τ₁₂] M₂} {p : Submodul
   rw [add_comm, ← eq_sub_iff_add_eq, ← map_sub] at eq; subst eq
   simpa using p.add_mem (le hz) hy
 
+lemma disjoint_map_of_ker_le_right {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
+    (hpq : Disjoint p q) (hker : f.ker ≤ q) : Disjoint (p.map f) (q.map f) := by
+  rw [disjoint_iff, map_inf_eq_map_inf_comap, comap_map_eq, eq_bot_iff, map_le_iff_le_comap,
+    comap_bot, sup_eq_left.mpr hker, hpq.eq_bot]
+  exact bot_le
+
+lemma disjoint_map_of_ker_le_left {f : M →ₛₗ[τ₁₂] M₂} {p q : Submodule R M}
+    (hpq : Disjoint p q) (hker : f.ker ≤ p) : Disjoint (p.map f) (q.map f) :=
+  disjoint_map_of_ker_le_right hpq.symm hker |>.symm
+
 theorem isCoatom_comap_or_eq_top (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R₂ M₂} (hp : IsCoatom p) :
     IsCoatom (comap f p) ∨ comap f p = ⊤ :=
   or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
@@ -738,8 +748,6 @@ lemma smulRight_id : id.smulRight = toSpanSingleton R M := rfl
 theorem toSpanSingleton_apply_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 
-@[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
-
 theorem toSpanSingleton_injective : Function.Injective (toSpanSingleton R M) :=
   fun _ _ eq ↦ by simpa using congr($eq 1)
 
@@ -774,9 +782,6 @@ theorem isIdempotentElem_map_one_iff {f : Module.End R R} :
     LinearMap.ext_iff]
   simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
-
-@[deprecated (since := "2025-12-05")] alias isIdempotentElem_apply_one_iff :=
-  isIdempotentElem_map_one_iff
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem range_toSpanSingleton (x : M) :

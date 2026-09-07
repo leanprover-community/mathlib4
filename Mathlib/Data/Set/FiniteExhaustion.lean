@@ -5,8 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Lattice.Order
 
 /-!
 # Finite Exhaustions
@@ -38,7 +39,7 @@ instance {α : Type*} {s : Set α} : FunLike (FiniteExhaustion s) ℕ (Set α) w
   coe := toFun
   coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
-instance {α : Type*} {s : Set α} : RelHomClass (FiniteExhaustion s) LE.le HasSubset.Subset where
+instance {α : Type*} {s : Set α} : OrderHomClass (FiniteExhaustion s) Nat (Set α) where
   map_rel K _ _ h := monotone_nat_of_le_succ (fun n ↦ K.subset_succ' n) h
 
 instance {α : Type*} {s : Set α} {K : FiniteExhaustion s} {n : ℕ} : Finite (K n) :=
