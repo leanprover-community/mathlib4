@@ -317,8 +317,8 @@ lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
   rfl
 
 @[simp]
-lemma mapGL_coe_matrix_ext (P : Matrix n n R) (h : P.det = 1) (i j : n) :
-    mapGL S ⟨P, h⟩ i j = (algebraMap R S) (P i j) := rfl
+lemma mapGL_coe_matrix_ext (g : SpecialLinearGroup n R) (i j : n) :
+    mapGL S g i j = (algebraMap R S) (g i j) := rfl
 
 @[simp]
 lemma map_mapGL {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
