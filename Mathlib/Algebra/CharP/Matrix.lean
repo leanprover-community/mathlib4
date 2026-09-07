@@ -23,18 +23,12 @@ theorem instCharZero [Nonempty m] [DecidableEq m] [AddMonoidWithOne R] [CharZero
     CharZero (Matrix m m R) where
   cast_injective _ _ h := by
     inhabit m
-    have := congrFun₂ h default default
-    simp_rw [Matrix.natCast_apply, ite_true] at this
-    exact Nat.cast_injective this
+    simpa [natCast_apply] using congr($h default default)
 
 theorem instCharP {p} [Nonempty m] [DecidableEq m] [AddMonoidWithOne R] [CharP R p] :
     CharP (Matrix m m R) p where
   cast_eq_zero_iff n := by
     inhabit m
-    simp_rw [← Matrix.ext_iff, Matrix.natCast_apply, ← CharP.cast_eq_zero_iff (R := R)]
-    constructor
-    · intro h
-      simpa using h default default
-    · simp
+    simp [← ext_iff, natCast_apply, ← CharP.cast_eq_zero_iff (R := R)]
 
 end Matrix
