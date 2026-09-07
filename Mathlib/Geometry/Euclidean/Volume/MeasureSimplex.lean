@@ -71,7 +71,7 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
       (affineSpan ℝ (Set.range s.points)).direction := by
     apply vsub_mem_vectorSpan _ (s.altitudeFoot_mem_affineSpan _)
     exact mem_affineSpan _ (by simp)
-  rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral' (s.points i) haltitude0
+  rw [EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral_of_subset (s.points i) haltitude0
     s.measurableSet_closedInterior haltitudeMem closedInterior_subset_affineSpan, ← ofReal_norm,
     ← dist_eq_norm_vsub', ← height, Nat.sub_eq_of_eq_add hn]
   simp_rw [← AffineMap.lineMap_apply, ← vectorSpan_pair, ← direction_affineSpan,
