@@ -63,9 +63,12 @@ open Batteries.Tactic.Lint in
   noErrorsFound := "no definitions with a bundled morphism argument found."
   errorsFound := "FOUND definitions with a bundled morphism argument."
   test declName := do
-    -- We still lint in the presence of sorries: completing a sorry should not influence this check.
+    -- Don't check auto-generated declarations.
+    if (← getEnv).isAutoDecl declName then return none
     -- We skip linting instances: an instance from one morphism class to another is totally fine.
     if ← isInstance declName then return none
+    -- We still lint in the presence of sorries: completing a sorry should not influence this check.
+
     let constantInfo := ((← getEnv).find? declName).get!
     if !constantInfo.isDefinition then
       return none
