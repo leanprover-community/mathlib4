@@ -12,13 +12,12 @@ public import Mathlib.Algebra.Ring.Pi
 # Characteristic of semirings of functions
 -/
 
-@[expose] public section
-
+public section
 
 universe u v
 
 section
-variable {ι} {α : ι → Type*}
+variable {ι : Type*} {α : ι → Type*}
 
 theorem CharZero.pi (i : ι) [∀ i, AddMonoidWithOne (α i)] [CharZero (α i)] :
     CharZero (Π i, α i) where
