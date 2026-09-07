@@ -498,76 +498,121 @@ variable {z : Sym2 α} {f : α → β}
 /-- A type `α` is naturally included in the diagonal of `α × α`, and this function gives the image
 of this diagonal in `Sym2 α`.
 -/
-def diag (x : α) : Sym2 α := s(x, x)
+def diagonal (x : α) : Sym2 α := s(x, x)
 
-theorem diag_injective : Function.Injective (Sym2.diag : α → Sym2 α) := fun x y h => by
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
+
+theorem diagonal_injective : Function.Injective (Sym2.diagonal : α → Sym2 α) := fun x y h => by
   cases Sym2.exact h <;> rfl
+
+@[deprecated (since := "2026-09-06")] alias diag_injective := diagonal_injective
 
 /-- A predicate for testing whether an element of `Sym2 α` is on the diagonal.
 -/
-def IsDiag : Sym2 α → Prop :=
+def IsDiagonal : Sym2 α → Prop :=
   lift ⟨Eq, fun _ _ => propext eq_comm⟩
 
+@[deprecated (since := "2026-09-06")] alias IsDiag := IsDiagonal
+
 @[simp]
-theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
+theorem mk_isDiagonal_iff {x y : α} : IsDiagonal s(x, y) ↔ x = y :=
   Iff.rfl
 
-protected lemma IsDiag.map : z.IsDiag → (z.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) z
+@[deprecated (since := "2026-09-06")] alias mk_isDiag_iff := mk_isDiagonal_iff
 
-lemma isDiag_map (hf : Injective f) : (z.map f).IsDiag ↔ z.IsDiag :=
+protected lemma IsDiagonal.map : z.IsDiagonal → (z.map f).IsDiagonal :=
+  Sym2.ind (fun _ _ ↦ congr_arg f) z
+
+@[deprecated (since := "2026-09-06")] alias IsDiag.map := IsDiagonal.map
+
+lemma isDiagonal_map (hf : Injective f) : (z.map f).IsDiagonal ↔ z.IsDiagonal :=
   Sym2.ind (fun _ _ ↦ hf.eq_iff) z
 
+@[deprecated (since := "2026-09-06")] alias isDiag_map := isDiagonal_map
+
 @[simp]
-theorem diag_isDiag (a : α) : IsDiag (diag a) :=
+theorem diagonal_isDiagonal (a : α) : IsDiagonal (diagonal a) :=
   Eq.refl a
 
+@[deprecated (since := "2026-09-06")] alias diag_isDiag := diagonal_isDiagonal
+
 @[simp, nontriviality]
-lemma isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag := z.ind Subsingleton.elim
+lemma isDiagonal_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiagonal :=
+  z.ind Subsingleton.elim
+
+@[deprecated (since := "2026-09-06")] alias isDiag_of_subsingleton := isDiagonal_of_subsingleton
 
 variable (z) in
 /-- Computably extract the element when known to be diagonal. -/
-def diagElem : z.IsDiag → α :=
+def diagonalElem : z.IsDiagonal → α :=
   z.rec (fun a b _ => a) fun a b a' b' h => funext fun hx : a' = b' => by
     cases hx
     cases h <;> rfl
 
-@[simp]
-theorem diagElem_mk {a b : α} (h : IsDiag s(a, b)) : s(a, b).diagElem h = a := rfl
+@[deprecated (since := "2026-09-06")] alias diagElem := diagonalElem
 
 @[simp]
-theorem diag_diagElem (h : z.IsDiag) : diag (z.diagElem h) = z := by
+theorem diagonalElem_mk {a b : α} (h : IsDiagonal s(a, b)) : s(a, b).diagonalElem h = a := rfl
+
+@[deprecated (since := "2026-09-06")] alias diagElem_mk := diagonalElem_mk
+
+@[simp]
+theorem diagonal_diagonalElem (h : z.IsDiagonal) : diagonal (z.diagonalElem h) = z := by
   cases z; cases h; rfl
 
-/-- `Sym2.diagElem` and `Sym2.diag` as an equivalence. -/
+@[deprecated (since := "2026-09-06")] alias diag_diagElem := diagonal_diagonalElem
+
+/-- `Sym2.diagonalElem` and `Sym2.diagonal` as an equivalence. -/
 @[simps]
-def diagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
-  toFun x := x.1.diagElem x.2
-  invFun a := ⟨diag a, rfl⟩
+def diagonalElemEquiv : { a : Sym2 α // a.IsDiagonal } ≃ α where
+  toFun x := x.1.diagonalElem x.2
+  invFun a := ⟨diagonal a, rfl⟩
   left_inv x := by ext; simp
-  right_inv a := by simp [diag]
+  right_inv a := by simp [diagonal]
+
+@[deprecated (since := "2026-09-06")] alias diagElemEquiv := diagonalElemEquiv
 
 /-- The set of all `Sym2 α` elements on the diagonal. -/
-def diagSet : Set (Sym2 α) := {z | z.IsDiag}
+def diagonalSet : Set (Sym2 α) := {z | z.IsDiagonal}
 
-@[simp] lemma mem_diagSet : z ∈ diagSet ↔ z.IsDiag := .rfl
+@[deprecated (since := "2026-09-06")] alias diagSet := diagonalSet
 
-@[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
-  ext ⟨a, b⟩; simp [diag, eq_comm]
+@[simp] lemma mem_diagonalSet : z ∈ diagonalSet ↔ z.IsDiagonal := .rfl
 
-theorem diagSet_eq_setOfPred_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
+@[deprecated (since := "2026-09-06")] alias mem_diagSet := mem_diagonalSet
+
+@[simp] lemma range_diagonal : .range (diagonal : α → Sym2 α) = diagonalSet := by
+  ext ⟨a, b⟩; simp [diagonal, eq_comm]
+
+@[deprecated (since := "2026-09-06")] alias range_diag := range_diagonal
+
+theorem diagonalSet_eq_setOfPred_isDiagonal : diagonalSet = {z : Sym2 α | z.IsDiagonal} := rfl
+
+@[deprecated (since := "2026-09-06")]
+alias diagSet_eq_setOfPred_isDiag := diagonalSet_eq_setOfPred_isDiagonal
 
 @[deprecated (since := "2026-07-09")]
-alias diagSet_eq_setOf_isDiag := diagSet_eq_setOfPred_isDiag
+alias diagSet_eq_setOf_isDiag := diagonalSet_eq_setOfPred_isDiagonal
 
-theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ := by ext; simp
+theorem diagonalSet_eq_univ_of_subsingleton [Subsingleton α] : @diagonalSet α = Set.univ := by
+  ext; simp
 
-instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
-  fun z => z.recOnSubsingleton fun _ _ => decidable_of_iff' _ mk_isDiag_iff
+@[deprecated (since := "2026-09-06")]
+alias diagSet_eq_univ_of_subsingleton := diagonalSet_eq_univ_of_subsingleton
 
-instance decidablePred_mem_diagSet (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagSet α) :=
-  IsDiag.decidablePred _
+instance IsDiagonal.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiagonal α) :=
+  fun z => z.recOnSubsingleton fun _ _ => decidable_of_iff' _ mk_isDiagonal_iff
 
-theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
+@[deprecated (since := "2026-09-06")] alias IsDiag.decidablePred := IsDiagonal.decidablePred
+
+instance decidablePred_mem_diagonalSet (α : Type u) [DecidableEq α] :
+    DecidablePred (· ∈ @diagonalSet α) :=
+  IsDiagonal.decidablePred _
+
+@[deprecated (since := "2026-09-06")]
+alias decidablePred_mem_diagSet := decidablePred_mem_diagonalSet
+
+theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiagonal z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose hd
   have h' := Sym2.other_spec h
   rw [hd] at h'
@@ -621,26 +666,41 @@ theorem fromRel_top_iff {sym : Std.Symm r} : fromRel sym = .univ ↔ r = ⊤ := 
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
-theorem fromRel_ne : fromRel (α := α) (r := Ne) inferInstance = {z | ¬IsDiag z} := by
+theorem fromRel_ne : fromRel (α := α) (r := Ne) inferInstance = {z | ¬IsDiagonal z} := by
   ext z; exact z.ind (by simp)
 
-lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.stdSymm := by
+lemma diagonalSet_eq_fromRel_eq : diagonalSet = fromRel (α := α) eq_equivalence.stdSymm := by
   ext ⟨a, b⟩; simp
 
-lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) inferInstance := by
+@[deprecated (since := "2026-09-06")] alias diagSet_eq_fromRel_eq := diagonalSet_eq_fromRel_eq
+
+lemma diagonalSet_compl_eq_fromRel_ne :
+    diagonalSetᶜ = fromRel (α := α) (r := Ne) inferInstance := by
   ext ⟨a, b⟩; simp
 
-@[simp] lemma diagSet_subset_fromRel (hr : Std.Symm r) : diagSet ⊆ fromRel hr ↔ Std.Refl r := by
+@[deprecated (since := "2026-09-06")]
+alias diagSet_compl_eq_fromRel_ne := diagonalSet_compl_eq_fromRel_ne
+
+@[simp] lemma diagonalSet_subset_fromRel (hr : Std.Symm r) :
+    diagonalSet ⊆ fromRel hr ↔ Std.Refl r := by
   simp [Set.subset_def, Sym2.forall, refl_def]
 
-@[simp] lemma disjoint_diagSet_fromRel (hr : Std.Symm r) :
-    Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
+@[deprecated (since := "2026-09-06")] alias diagSet_subset_fromRel := diagonalSet_subset_fromRel
+
+@[simp] lemma disjoint_diagonalSet_fromRel (hr : Std.Symm r) :
+    Disjoint diagonalSet (fromRel hr) ↔ Std.Irrefl r := by
   simp [Set.disjoint_left, Sym2.forall, irrefl_def]
 
-@[simp] lemma fromRel_subset_compl_diagSet (hr : Std.Symm r) :
-    fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
+@[deprecated (since := "2026-09-06")] alias disjoint_diagSet_fromRel := disjoint_diagonalSet_fromRel
 
-theorem fromRel_irrefl {sym : Std.Symm r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
+@[simp] lemma fromRel_subset_compl_diagonalSet (hr : Std.Symm r) :
+    fromRel hr ⊆ diagonalSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
+
+@[deprecated (since := "2026-09-06")]
+alias fromRel_subset_compl_diagSet := fromRel_subset_compl_diagonalSet
+
+theorem fromRel_irrefl {sym : Std.Symm r} :
+    Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiagonal z where
   mp := by intro ⟨h⟩; apply Sym2.ind; aesop
   mpr h := ⟨fun _ hr ↦ h (fromRel_prop.mpr hr) rfl⟩
 
@@ -803,23 +863,30 @@ lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
   ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
 
 /-- Mapping an unordered pair on the diagonal to a finite set produces a finset of size `1`. -/
-theorem card_toFinset_of_isDiag (z : Sym2 α) (h : z.IsDiag) : #(z : Sym2 α).toFinset = 1 := by
+theorem card_toFinset_of_isDiagonal (z : Sym2 α) (h : z.IsDiagonal) :
+    #(z : Sym2 α).toFinset = 1 := by
   induction z
-  rw [Sym2.mk_isDiag_iff] at h
+  rw [Sym2.mk_isDiagonal_iff] at h
   simp [Sym2.toFinset_mk_eq, h]
 
+@[deprecated (since := "2026-09-06")] alias card_toFinset_of_isDiag := card_toFinset_of_isDiagonal
+
 /-- Mapping an unordered pair off the diagonal to a finite set produces a finset of size `2`. -/
-theorem card_toFinset_of_not_isDiag (z : Sym2 α) (h : ¬z.IsDiag) : #(z : Sym2 α).toFinset = 2 := by
+theorem card_toFinset_of_not_isDiagonal (z : Sym2 α) (h : ¬z.IsDiagonal) :
+    #(z : Sym2 α).toFinset = 2 := by
   induction z
-  rw [Sym2.mk_isDiag_iff] at h
+  rw [Sym2.mk_isDiagonal_iff] at h
   simp [Sym2.toFinset_mk_eq, h]
+
+@[deprecated (since := "2026-09-06")]
+alias card_toFinset_of_not_isDiag := card_toFinset_of_not_isDiagonal
 
 /-- Mapping an unordered pair to a finite set produces a finset of size `1` if the pair is on the
 diagonal, else of size `2` if the pair is off the diagonal. -/
-theorem card_toFinset (z : Sym2 α) : #(z : Sym2 α).toFinset = if z.IsDiag then 1 else 2 := by
-  by_cases h : z.IsDiag
-  · simp [card_toFinset_of_isDiag z h, h]
-  · simp [card_toFinset_of_not_isDiag z h, h]
+theorem card_toFinset (z : Sym2 α) : #(z : Sym2 α).toFinset = if z.IsDiagonal then 1 else 2 := by
+  by_cases h : z.IsDiagonal
+  · simp [card_toFinset_of_isDiagonal z h, h]
+  · simp [card_toFinset_of_not_isDiagonal z h, h]
 
 end ToFinset
 
@@ -959,11 +1026,18 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     convert! other_invol' ha hb using 2
     apply other_eq_other'
 
-theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
-    {x ∈ (s ×ˢ s).image Sym2.mk.uncurry | x.IsDiag} = s.diag.image Sym2.mk.uncurry := by aesop
+theorem filter_image_mk_isDiagonal [DecidableEq α] (s : Finset α) :
+    {x ∈ (s ×ˢ s).image Sym2.mk.uncurry | x.IsDiagonal} =
+      s.diagonal.image Sym2.mk.uncurry := by aesop
 
-theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
-    {x ∈ (s ×ˢ s).image Sym2.mk.uncurry | ¬x.IsDiag} = s.offDiag.image Sym2.mk.uncurry := by aesop
+@[deprecated (since := "2026-09-06")] alias filter_image_mk_isDiag := filter_image_mk_isDiagonal
+
+theorem filter_image_mk_not_isDiagonal [DecidableEq α] (s : Finset α) :
+    {x ∈ (s ×ˢ s).image Sym2.mk.uncurry | ¬x.IsDiagonal} =
+      s.offDiagonal.image Sym2.mk.uncurry := by aesop
+
+@[deprecated (since := "2026-09-06")]
+alias filter_image_mk_not_isDiag := filter_image_mk_not_isDiagonal
 
 end Decidable
 
@@ -977,7 +1051,7 @@ instance [IsEmpty α] : IsEmpty (Sym2 α) :=
   (equivSym α).isEmpty
 
 instance [Nontrivial α] : Nontrivial (Sym2 α) :=
-  diag_injective.nontrivial
+  diagonal_injective.nontrivial
 
 -- TODO: use a sort order if available, https://github.com/leanprover-community/mathlib/issues/18166
 unsafe instance [Repr α] : Repr (Sym2 α) where

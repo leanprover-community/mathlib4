@@ -61,7 +61,7 @@ instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
 theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
     (G.deleteEdges s).deleteEdges s' = G.deleteEdges (s ∪ s') := by simp [deleteEdges, sdiff_sdiff]
 
--- This is not marked `simp` since `deleteEdges_of_subset_diagSet` already proves it
+-- This is not marked `simp` since `deleteEdges_of_subset_diagonalSet` already proves it
 lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
 @[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
 
@@ -86,8 +86,11 @@ theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
   ext
   simp +contextual [imp_false]
 
-@[simp] lemma deleteEdges_of_subset_diagSet (G : SimpleGraph V) (hs : s ⊆ Sym2.diagSet) :
+@[simp] lemma deleteEdges_of_subset_diagonalSet (G : SimpleGraph V) (hs : s ⊆ Sym2.diagonalSet) :
     G.deleteEdges s = G := by ext u v; simpa using (·.ne <| hs ·)
+
+@[deprecated (since := "2026-09-06")]
+alias deleteEdges_of_subset_diagSet := deleteEdges_of_subset_diagonalSet
 
 theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
@@ -130,7 +133,7 @@ lemma deleteIncidenceSet_le (G : SimpleGraph V) (x : V) : G.deleteIncidenceSet x
 lemma edgeSet_fromEdgeSet_incidenceSet (G : SimpleGraph V) (x : V) :
     (fromEdgeSet (G.incidenceSet x)).edgeSet = G.incidenceSet x := by
   rw [edgeSet_fromEdgeSet, sdiff_eq_left, ← Set.subset_compl_iff_disjoint_right]
-  exact (incidenceSet_subset G x).trans G.edgeSet_subset_compl_diagSet
+  exact (incidenceSet_subset G x).trans G.edgeSet_subset_compl_diagonalSet
 
 /-- The edge set of `G.deleteIncidenceSet x` is the edge set of `G` set difference the incidence
 set of the vertex `x`. -/

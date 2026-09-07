@@ -55,12 +55,13 @@ variable [DecidableEq ι]
 /-- The quadratic version of `_root_.map_finsupp_sum`. -/
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) = f.sum (fun i r ↦ Q (g i r)) +
-      ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, polarSym2 Q (p.map fun i ↦ g i (f i)) := Q.map_sum _ _
+      ∑ p ∈ f.support.sym2 with ¬ p.IsDiagonal, polarSym2 Q (p.map fun i ↦ g i (f i)) :=
+        Q.map_sum _ _
 
 /-- The quadratic version of `Finsupp.apply_linearCombination`. -/
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
-      ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, (p.map l).mul • polarSym2 Q (p.map g) := by
+      ∑ p ∈ l.support.sym2 with ¬ p.IsDiagonal, (p.map l).mul • polarSym2 Q (p.map g) := by
   simp_rw [linearCombination_apply, map_finsuppSum, Q.map_smul, mul_smul]
   rw [(l * l).sum_of_support_subset support_mul_subset_left _ <| by simp]
   simp [Finsupp.sum, ← polarSym2_map_smul, mul_smul]
@@ -68,7 +69,7 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
 /-- The quadratic version of `LinearMap.sum_repr_mul_repr_mul`. -/
 theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
     linearCombination R (Q ∘ bm) (bm.repr x * bm.repr x) +
-      ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
+      ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiagonal,
         Sym2.mul (p.map (bm.repr x)) • polarSym2 Q (p.map bm) = Q x := by
   rw [← apply_linearCombination, Basis.linearCombination_repr]
 
@@ -97,15 +98,15 @@ theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
   rw [← bm.linearCombination_repr x, LinearMap.BilinMap.toQuadraticMap_apply,
       Finsupp.linearCombination_apply, Finsupp.sum]
   simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, map_smul, toBilin_apply,
-    smul_ite, smul_zero, ← Finset.sum_product', ← Finset.diag_union_offDiag,
-    Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, ite_true]
+    smul_ite, smul_zero, ← Finset.sum_product', ← Finset.diagonal_union_offDiagonal,
+    Finset.sum_union (Finset.disjoint_diagonal_offDiagonal _), Finset.sum_diagonal, ite_true]
   rw [Finset.sum_ite_of_false, QuadraticMap.map_sum, ← Finset.sum_filter]
   · simp_rw [← polar_smul_right _ (bm.repr x <| Prod.snd _),
       ← polar_smul_left _ (bm.repr x <| Prod.fst _)]
-    simp_rw [QuadraticMap.map_smul, mul_smul, Finset.sum_sym2_filter_not_isDiag]
+    simp_rw [QuadraticMap.map_smul, mul_smul, Finset.sum_sym2_filter_not_isDiagonal]
     rfl
   · intro x hx
-    rw [Finset.mem_offDiag] at hx
+    rw [Finset.mem_offDiagonal] at hx
     simpa using hx.2.2
 
 /-- From a free module, every quadratic map can be built from a bilinear form.

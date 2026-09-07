@@ -262,6 +262,7 @@
  ["defsWithUnderscore", "Submodule.submodule_torsionBy_orderIso"],
  ["defsWithUnderscore", "Sylow.unique_of_normal"],
  ["defsWithUnderscore", "Sym2.decidablePred_mem_diagSet"],
+ ["defsWithUnderscore", "Sym2.decidablePred_mem_diagonalSet"],
  ["defsWithUnderscore", "Topology.Continuous_of"],
  ["defsWithUnderscore", "Topology.IsClosed_of"],
  ["defsWithUnderscore", "Topology.IsOpen_of"],

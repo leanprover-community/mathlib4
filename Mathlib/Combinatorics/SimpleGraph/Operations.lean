@@ -146,7 +146,7 @@ lemma adj_edge {v w : V} : (edge s t).Adj v w ↔ s(s, t) = s(v, w) ∧ v ≠ w 
 lemma edge_comm : edge s t = edge t s := by
   rw [edge, edge, Sym2.eq_swap]
 
-@[simp] lemma edge_le : edge s t ≤ G ↔ {s(s, t)} \ Sym2.diagSet ⊆ G.edgeSet := by simp [edge]
+@[simp] lemma edge_le : edge s t ≤ G ↔ {s(s, t)} \ Sym2.diagonalSet ⊆ G.edgeSet := by simp [edge]
 
 variable [DecidableEq V] in
 instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
@@ -168,7 +168,7 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
     grind [adj_symm]
 
 @[simp]
-lemma edgeSet_edge (v w : V) : (edge v w).edgeSet = {s(v, w)} \ Sym2.diagSet := by simp [edge]
+lemma edgeSet_edge (v w : V) : (edge v w).edgeSet = {s(v, w)} \ Sym2.diagonalSet := by simp [edge]
 
 lemma edgeSet_edge_subset {v w : V} : (edge v w).edgeSet ⊆ {s(v, w)} := by simp [edge]
 
@@ -195,7 +195,7 @@ lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
 theorem biSup_fromEdgeSet_singleton_eq : ⨆ e ∈ G.edgeSet, fromEdgeSet {e} = G := by
   simp_rw [← edgeSet_inj, ← iSup_subtype'', edgeSet_iSup, edgeSet_fromEdgeSet, ← Set.iUnion_sdiff,
     Set.iUnion_coe_set, Set.biUnion_of_singleton]
-  exact Set.disjoint_left.mpr G.edgeSet_subset_compl_diagSet |>.sdiff_eq_left
+  exact Set.disjoint_left.mpr G.edgeSet_subset_compl_diagonalSet |>.sdiff_eq_left
 
 theorem sSup_edge_eq : sSup { edge u v | (u : V) (v : V) (_ : G.Adj u v) } = G := by
   refine .trans ?_ G.biSup_fromEdgeSet_singleton_eq

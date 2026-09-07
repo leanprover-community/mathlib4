@@ -44,7 +44,7 @@ variable (V p) in
 /-- The binomial distribution with parameter `p` on simple graphs with vertices `V`. -/
 @[expose]
 noncomputable def binomialRandom : Measure (SimpleGraph V) :=
-  setBer(Sym2.diagSetᶜ, p).comap edgeSet
+  setBer(Sym2.diagonalSetᶜ, p).comap edgeSet
 
 @[inherit_doc] scoped notation "G(" V ", " p ")" => binomialRandom V p
 
@@ -52,7 +52,7 @@ section Countable
 variable [Countable V]
 
 variable (V p) in
-lemma binomialRandom_eq_map : G(V, p) = map fromEdgeSet setBer(Sym2.diagSetᶜ, p) := by
+lemma binomialRandom_eq_map : G(V, p) = map fromEdgeSet setBer(Sym2.diagonalSetᶜ, p) := by
   refine (map_eq_comap measurable_fromEdgeSet measurableEmbedding_edgeSet ?_
     fromEdgeSet_edgeSet).symm
   filter_upwards [setBernoulli_ae_subset] with S hS
@@ -60,12 +60,12 @@ lemma binomialRandom_eq_map : G(V, p) = map fromEdgeSet setBer(Sym2.diagSetᶜ, 
 
 variable (p) in
 lemma binomialRandom_apply' (S : Set (SimpleGraph V)) :
-    G(V, p) S = setBer(Sym2.diagSetᶜ, p) (edgeSet '' S) := by
+    G(V, p) S = setBer(Sym2.diagonalSetᶜ, p) (edgeSet '' S) := by
   rw [binomialRandom, measurableEmbedding_edgeSet.comap_apply]
 
 variable (p) in
 lemma binomialRandom_apply (S : Set (SimpleGraph V)) :
-    G(V, p) S = infinitePi (fun e : Sym2 V ↦ Ber(¬ e.IsDiag, False, p))
+    G(V, p) S = infinitePi (fun e : Sym2 V ↦ Ber(¬ e.IsDiagonal, False, p))
       ((fun G e ↦ e ∈ G.edgeSet) '' S) := by
   simp [binomialRandom_apply', setBernoulli_apply, ← Set.image_comp]
 
@@ -90,10 +90,10 @@ variable (p) in
   classical
   cases nonempty_fintype V
   simp only [binomialRandom, measurableEmbedding_edgeSet.comap_apply, Set.image_singleton,
-    edgeSet_subset_compl_diagSet, setBernoulli_singleton, Set.toFinite]
+    edgeSet_subset_compl_diagonalSet, setBernoulli_singleton, Set.toFinite]
   rw [Set.ncard_sdiff (by simp)]
   congr!
-  rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
+  rw [Nat.card_eq_fintype_card, ← Sym2.card_diagonalSet_compl, Fintype.card_eq_nat_card,
     ← Nat.card_coe_set_eq]
 
 end SimpleGraph

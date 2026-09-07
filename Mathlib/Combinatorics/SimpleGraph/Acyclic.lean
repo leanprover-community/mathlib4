@@ -379,7 +379,7 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
     (G ⊔ edge u v).IsAcyclic ↔
       G.IsAcyclic ∧ (G.Reachable u v → u = v ∨ G.Adj u v) := by
   by_cases huv : u = v
-  · grind [sup_eq_left, edge_le, Sym2.mem_diagSet, Sym2.mk_isDiag_iff]
+  · grind [sup_eq_left, edge_le, Sym2.mem_diagonalSet, Sym2.mk_isDiagonal_iff]
   by_cases hadj : G.Adj u v
   · grind [sup_eq_left, edge_le, mem_edgeSet]
   refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.sup_edge_of_not_reachable <| by grind⟩
@@ -413,7 +413,7 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (
   have ⟨H, hFH, hHG, hH⟩ := exists_gt_of_not_maximal ⟨hle, hF⟩ this
   have ⟨e, heH, heF⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono hFH
   have h_bridge : (F ⊔ fromEdgeSet {e}).IsBridge e := by
-    refine isAcyclic_iff_forall_isBridge.mp ?_ <| by simp [H.not_isDiag_of_mem_edgeSet heH]
+    refine isAcyclic_iff_forall_isBridge.mp ?_ <| by simp [H.not_isDiagonal_of_mem_edgeSet heH]
     exact hH.anti <| sup_le_iff.mpr ⟨hFH.le, H.fromEdgeSet_le.mpr <| by grind⟩
   have : (F ⊔ fromEdgeSet {e}).deleteEdges {e} = F := by simpa using heF
   cases e

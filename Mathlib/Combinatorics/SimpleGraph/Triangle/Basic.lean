@@ -89,7 +89,8 @@ lemma LocallyLinear.map (f : α ↪ β) (hG : G.LocallyLinear) : (G.map f).Local
 
 lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     G.EdgeDisjointTriangles ↔
-      ∀ ⦃e : Sym2 α⦄, ¬ e.IsDiag → {s ∈ G.cliqueSet 3 | e ∈ (s : Finset α).sym2}.Subsingleton := by
+      ∀ ⦃e : Sym2 α⦄, ¬ e.IsDiagonal →
+        {s ∈ G.cliqueSet 3 | e ∈ (s : Finset α).sym2}.Subsingleton := by
   classical
   have (a b) (hab : a ≠ b) : {s ∈ (G.cliqueSet 3 : Set (Finset α)) | s(a, b) ∈ (s : Finset α).sym2}
     = {s | G.Adj a b ∧ ∃ c, G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c}} := by
@@ -119,8 +120,8 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
   constructor
   · rw [Sym2.forall]
     rintro hG a b hab
-    simp only [Sym2.mk_isDiag_iff] at hab
-    rw [this _ _ (Sym2.mk_isDiag_iff.not.2 hab)]
+    simp only [Sym2.mk_isDiagonal_iff] at hab
+    rw [this _ _ (Sym2.mk_isDiagonal_iff.not.2 hab)]
     rintro _ ⟨hab, c, hac, hbc, rfl⟩ _ ⟨-, d, had, hbd, rfl⟩
     refine hG.eq ?_ ?_ (Set.Nontrivial.not_subsingleton ⟨a, ?_, b, ?_, hab.ne⟩) <;>
       simp [is3Clique_triple_iff, *]
@@ -128,7 +129,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
       forall_exists_index, and_imp, ← Set.not_nontrivial_iff (s := _ ∩ _), not_imp_not,
       Set.Nontrivial, Set.mem_inter_iff, mem_coe]
     rintro hG _ a b c hab hac hbc rfl _ d e f hde hdf hef rfl g hg₁ hg₂ h hh₁ hh₂ hgh
-    refine hG (Sym2.mk_isDiag_iff.not.2 hgh) ⟨⟨a, b, c, ?_⟩, by simpa using And.intro hg₁ hh₁⟩
+    refine hG (Sym2.mk_isDiagonal_iff.not.2 hgh) ⟨⟨a, b, c, ?_⟩, by simpa using And.intro hg₁ hh₁⟩
       ⟨⟨d, e, f, ?_⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [*]
 
 alias ⟨EdgeDisjointTriangles.mem_sym2_subsingleton, _⟩ :=
@@ -156,7 +157,7 @@ lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
     simp [insert_subset, *]
   · simpa only [card_le_one, mem_bipartiteBelow, and_imp, Set.Subsingleton, Set.mem_ofPred_eq,
       mem_cliqueFinset_iff, mem_cliqueSet_iff]
-      using hG.mem_sym2_subsingleton (G.not_isDiag_of_mem_edgeSet <| mem_edgeFinset.1 he)
+      using hG.mem_sym2_subsingleton (G.not_isDiagonal_of_mem_edgeSet <| mem_edgeFinset.1 he)
 
 lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
     #G.edgeFinset = 3 * #(G.cliqueFinset 3) := by

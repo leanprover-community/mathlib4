@@ -121,7 +121,7 @@ theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
 protected alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
 
 @[simp]
-theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := rfl
+theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diagonal a} := rfl
 
 /-- Finset **stars and bars** for the case `n = 2`. -/
 theorem card_sym2 (s : Finset α) : s.sym2.card = Nat.choose (s.card + 1) 2 := by
@@ -134,24 +134,38 @@ variable {s t : Finset α} {a b : α}
 theorem sym2_eq_image [DecidableEq α] : s.sym2 = (s ×ˢ s).image Sym2.mk.uncurry := by
   ext ⟨a, b⟩; simp; grind
 
-theorem isDiag_mk_of_mem_diag {a b : α} (h : (a, b) ∈ s.diag) : s(a, b).IsDiag := by
+theorem isDiagonal_mk_of_mem_diagonal {a b : α} (h : (a, b) ∈ s.diagonal) : s(a, b).IsDiagonal := by
   simp at *; grind
 
-theorem not_isDiag_mk_of_mem_offDiag {a b : α} (h : (a, b) ∈ s.offDiag) : ¬ s(a, b).IsDiag := by
+@[deprecated (since := "2026-09-06")] alias isDiag_mk_of_mem_diag := isDiagonal_mk_of_mem_diagonal
+
+theorem not_isDiagonal_mk_of_mem_offDiagonal {a b : α} (h : (a, b) ∈ s.offDiagonal) :
+    ¬ s(a, b).IsDiagonal := by
   simp at *; grind
+
+@[deprecated (since := "2026-09-06")]
+alias not_isDiag_mk_of_mem_offDiag := not_isDiagonal_mk_of_mem_offDiagonal
 
 section Sym2
 
 @[simp]
-theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
+theorem diagonal_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diagonal a → b ∈ s) ↔ a ∈ s := by
   rw [← mem_sym2_iff]
   exact mk_mem_sym2_iff.trans <| and_self_iff
 
-theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
+@[deprecated (since := "2026-09-06")] alias diag_mem_sym2_mem_iff := diagonal_mem_sym2_mem_iff
 
-theorem image_diag_union_image_offDiag [DecidableEq α] :
-    s.diag.image Sym2.mk.uncurry ∪ s.offDiag.image Sym2.mk.uncurry = s.sym2 := by
-  rw [← image_union, diag_union_offDiag, sym2_eq_image]
+theorem diagonal_mem_sym2_iff : Sym2.diagonal a ∈ s.sym2 ↔ a ∈ s := by
+  simp [diagonal_mem_sym2_mem_iff]
+
+@[deprecated (since := "2026-09-06")] alias diag_mem_sym2_iff := diagonal_mem_sym2_iff
+
+theorem image_diagonal_union_image_offDiagonal [DecidableEq α] :
+    s.diagonal.image Sym2.mk.uncurry ∪ s.offDiagonal.image Sym2.mk.uncurry = s.sym2 := by
+  rw [← image_union, diagonal_union_offDiagonal, sym2_eq_image]
+
+@[deprecated (since := "2026-09-06")]
+alias image_diag_union_image_offDiag := image_diagonal_union_image_offDiagonal
 
 end Sym2
 
