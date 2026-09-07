@@ -189,37 +189,37 @@ theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
 theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
   rw [isClosed_iff_dirSupClosedOn isLowerSet_univ, dirSupClosedOn_univ]
 
-theorem IsOpen.Iio (a : α) : IsOpen (Iio a) :=
+protected theorem IsOpen.Iio (a : α) : IsOpen (Iio a) :=
   isOpen_iff_dirSupInacc.mpr <| .Iio a
 
-theorem IsOpen.Iic (a : α) : IsOpen (Iic a) :=
+protected theorem IsOpen.Iic (a : α) : IsOpen (Iic a) :=
   isOpen_iff_dirSupInacc.mpr <| .Iic a
 
-theorem IsOpen.Ioi {α : Type*} [LinearOrder α] [TopologicalSpace α] [IsScottHausdorff α univ]
-    (a : α) : IsOpen (Ioi a) :=
+protected theorem IsOpen.Ioi {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    [IsScottHausdorff α univ] (a : α) : IsOpen (Ioi a) :=
   isOpen_iff_dirSupInacc.mpr <| .Ioi a
 
-theorem IsOpen.Ioo {α : Type*} [LinearOrder α] [TopologicalSpace α] [IsScottHausdorff α univ]
-    (a b : α) : IsOpen (Ioo a b) :=
+protected theorem IsOpen.Ioo {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    [IsScottHausdorff α univ] (a b : α) : IsOpen (Ioo a b) :=
   isOpen_iff_dirSupInacc.mpr <| .Ioo a b
 
-theorem IsOpen.Ioc {α : Type*} [LinearOrder α] [TopologicalSpace α] [IsScottHausdorff α univ]
-    (a b : α) : IsOpen (Ioc a b) :=
+protected theorem IsOpen.Ioc {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    [IsScottHausdorff α univ] (a b : α) : IsOpen (Ioc a b) :=
   isOpen_iff_dirSupInacc.mpr <| .Ioc a b
 
-theorem IsClosed.Iic (a : α) : IsClosed (Iic a) :=
+protected theorem IsClosed.Iic (a : α) : IsClosed (Iic a) :=
   isClosed_iff_dirSupClosed.mpr <| .Iic a
 
-theorem IsClosed.Ici (a : α) : IsClosed (Ici a) :=
+protected theorem IsClosed.Ici (a : α) : IsClosed (Ici a) :=
   isClosed_iff_dirSupClosed.mpr <| .Ici a
 
-theorem IsClosed.Ioi (a : α) : IsClosed (Ioi a) :=
+protected theorem IsClosed.Ioi (a : α) : IsClosed (Ioi a) :=
   isClosed_iff_dirSupClosed.mpr <| .Ioi a
 
-theorem IsClosed.Ioc (a b : α) : IsClosed (Ioc a b) :=
+protected theorem IsClosed.Ioc (a b : α) : IsClosed (Ioc a b) :=
   isClosed_iff_dirSupClosed.mpr <| .Ioc a b
 
-theorem IsClosed.Icc (a b : α) : IsClosed (Icc a b) :=
+protected theorem IsClosed.Icc (a b : α) : IsClosed (Icc a b) :=
   isClosed_iff_dirSupClosed.mpr <| .Icc a b
 
 instance : ClosedIicTopology α where

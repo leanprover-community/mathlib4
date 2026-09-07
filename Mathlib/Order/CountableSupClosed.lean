@@ -148,23 +148,23 @@ section Preorder
 variable [Preorder α]
 
 @[to_dual]
-theorem CountableSupClosed.Ioi (a : α) : CountableSupClosed (Ioi a) :=
+protected theorem CountableSupClosed.Ioi (a : α) : CountableSupClosed (Ioi a) :=
   isUpperSet_Ioi a |>.countableSupClosed
 
 @[to_dual]
-theorem CountableSupClosed.Ici (a : α) : CountableSupClosed (Ici a) :=
+protected theorem CountableSupClosed.Ici (a : α) : CountableSupClosed (Ici a) :=
   isUpperSet_Ici a |>.countableSupClosed
 
 @[to_dual]
-theorem CountableSupClosed.Iic (a : α) : CountableSupClosed (Iic a) where
+protected theorem CountableSupClosed.Iic (a : α) : CountableSupClosed (Iic a) where
   isLUB_mem := fun _ hsubset _ _ _ hlub ↦ hlub.right hsubset
 
 @[to_dual]
-theorem CountableSupClosed.Ioc (a b : α) : CountableSupClosed (Ioc a b) :=
+protected theorem CountableSupClosed.Ioc (a b : α) : CountableSupClosed (Ioc a b) :=
   .inter (.Ioi a) (.Iic b)
 
 @[to_dual]
-theorem CountableSupClosed.Icc (a b : α) : CountableSupClosed (Icc a b) :=
+protected theorem CountableSupClosed.Icc (a b : α) : CountableSupClosed (Icc a b) :=
   .inter (.Ici a) (.Iic b)
 
 end Preorder
