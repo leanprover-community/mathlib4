@@ -138,6 +138,45 @@ theorem isOpen_of_isLowerSet (hDL : IsLowerSet D) (h : IsLowerSet s) : IsOpen s 
 theorem isClosed_of_isUpperSet (hDL : IsLowerSet D) (h : IsUpperSet s) : IsClosed s :=
   (isClosed_iff_dirSupClosedOn hDL).2 h.dirSupClosedOn
 
+theorem IsOpen.Iio_of_isLowerSet (h : IsLowerSet D) (a : α) : IsOpen (Iio a) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Iio a
+
+theorem IsOpen.Iic_of_isLowerSet (h : IsLowerSet D) (a : α) : IsOpen (Iic a) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Iic a
+
+theorem IsOpen.Ioi_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α] {D : Set (Set α)}
+    [IsScottHausdorff α D] (h : IsLowerSet D) (a : α) : IsOpen (Ioi a) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Ioi a
+
+theorem IsOpen.Ioo_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α] {D : Set (Set α)}
+    [IsScottHausdorff α D] (h : IsLowerSet D) (a b : α) : IsOpen (Ioo a b) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Ioo a b
+
+theorem IsOpen.Ioc_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α] {D : Set (Set α)}
+    [IsScottHausdorff α D] (h : IsLowerSet D) (a b : α) : IsOpen (Ioc a b) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Ioc a b
+
+theorem IsClosed.Iic_of_isLowerSet (h : IsLowerSet D) (a : α) : IsClosed (Iic a) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Iic a
+
+theorem IsClosed.Ici_of_isLowerSet (h : IsLowerSet D) (a : α) : IsClosed (Ici a) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Ici a
+
+theorem IsClosed.Ioi_of_isLowerSet (h : IsLowerSet D) (a : α) : IsClosed (Ioi a) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Ioi a
+
+theorem IsClosed.Ioc_of_isLowerSet (h : IsLowerSet D) (a b : α) : IsClosed (Ioc a b) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Ioc a b
+
+theorem IsClosed.Icc_of_isLowerSet (h : IsLowerSet D) (a b : α) : IsClosed (Icc a b) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Icc a b
+
+theorem ClosedIicTopology.of_isLowerSet (h : IsLowerSet D) : ClosedIicTopology α where
+  isClosed_Iic := IsClosed.Iic_of_isLowerSet h
+
+theorem ClosedIciTopology.of_isLowerSet (h : IsLowerSet D) : ClosedIciTopology α where
+  isClosed_Ici := IsClosed.Ici_of_isLowerSet h
+
 end General
 
 section univ
@@ -149,6 +188,45 @@ theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
 
 theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
   rw [isClosed_iff_dirSupClosedOn isLowerSet_univ, dirSupClosedOn_univ]
+
+theorem IsOpen.Iio (a : α) : IsOpen (Iio a) :=
+  isOpen_iff_dirSupInacc.mpr <| .Iio a
+
+theorem IsOpen.Iic (a : α) : IsOpen (Iic a) :=
+  isOpen_iff_dirSupInacc.mpr <| .Iic a
+
+theorem IsOpen.Ioi {α : Type*} [LinearOrder α] [TopologicalSpace α] [IsScottHausdorff α univ]
+    (a : α) : IsOpen (Ioi a) :=
+  isOpen_iff_dirSupInacc.mpr <| .Ioi a
+
+theorem IsOpen.Ioo {α : Type*} [LinearOrder α] [TopologicalSpace α] [IsScottHausdorff α univ]
+    (a b : α) : IsOpen (Ioo a b) :=
+  isOpen_iff_dirSupInacc.mpr <| .Ioo a b
+
+theorem IsOpen.Ioc {α : Type*} [LinearOrder α] [TopologicalSpace α] [IsScottHausdorff α univ]
+    (a b : α) : IsOpen (Ioc a b) :=
+  isOpen_iff_dirSupInacc.mpr <| .Ioc a b
+
+theorem IsClosed.Iic (a : α) : IsClosed (Iic a) :=
+  isClosed_iff_dirSupClosed.mpr <| .Iic a
+
+theorem IsClosed.Ici (a : α) : IsClosed (Ici a) :=
+  isClosed_iff_dirSupClosed.mpr <| .Ici a
+
+theorem IsClosed.Ioi (a : α) : IsClosed (Ioi a) :=
+  isClosed_iff_dirSupClosed.mpr <| .Ioi a
+
+theorem IsClosed.Ioc (a b : α) : IsClosed (Ioc a b) :=
+  isClosed_iff_dirSupClosed.mpr <| .Ioc a b
+
+theorem IsClosed.Icc (a b : α) : IsClosed (Icc a b) :=
+  isClosed_iff_dirSupClosed.mpr <| .Icc a b
+
+instance : ClosedIicTopology α where
+  isClosed_Iic := IsClosed.Iic
+
+instance : ClosedIciTopology α where
+  isClosed_Ici := IsClosed.Ici
 
 end univ
 end IsScottHausdorff
@@ -222,7 +300,7 @@ lemma lowerClosure_subset_closure [IsScott α univ] : ↑(lowerClosure s) ⊆ cl
 
 instance [IsScott α univ] : ClosedIicTopology α where
   isClosed_Iic _ :=
-    isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
+    isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, .Iic _⟩
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval

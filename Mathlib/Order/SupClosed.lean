@@ -10,6 +10,7 @@ public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Closure
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Sets closed under join/meet
@@ -118,6 +119,26 @@ lemma SupClosed.insert_lowerBounds {s : Set α} {a : α} (h : SupClosed s) (ha :
   rw [SupClosed]
   have ha' : ∀ b ∈ s, a ≤ b := fun _ a ↦ ha a
   aesop
+
+@[to_dual]
+theorem SupClosed.Ioi (a : α) : SupClosed (Ioi a) :=
+  isUpperSet_Ioi a |>.supClosed
+
+@[to_dual]
+theorem SupClosed.Ici (a : α) : SupClosed (Ici a) :=
+  isUpperSet_Ici a |>.supClosed
+
+@[to_dual]
+theorem SupClosed.Iic (a : α) : SupClosed (Iic a) :=
+  DirectedOn.supClosed_of_isLowerSet (isLowerSet_Iic a) (.le_Iic a)
+
+@[to_dual]
+theorem SupClosed.Ioc (a b : α) : SupClosed (Ioc a b) :=
+  .inter (.Ioi a) (.Iic b)
+
+@[to_dual]
+theorem SupClosed.Icc (a b : α) : SupClosed (Icc a b) :=
+  .inter (.Ici a) (.Iic b)
 
 end Set
 

@@ -249,17 +249,55 @@ theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s := by
   simpa [not_iff_not] using hs.compl.mem_iff_of_antisymmRel h
 
-lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
+lemma DirSupClosed.Iic (a : α) : DirSupClosed (Iic a) :=
   fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
-lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
-  (dirSupClosed_Iic a).dirSupClosedOn
+@[deprecated (since := "2026-09-07")] alias dirSupClosed_Iic := DirSupClosed.Iic
 
-lemma dirSupInacc_Iic (a : α) : DirSupInacc (Iic a) :=
+lemma DirSupClosedOn.Iic (a : α) : DirSupClosedOn D (Iic a) :=
+  (DirSupClosed.Iic a).dirSupClosedOn
+
+@[deprecated (since := "2026-09-07")] alias dirSupClosedOn_Iic := DirSupClosedOn.Iic
+
+theorem DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) :=
+  isUpperSet_Ici a |>.dirSupClosed
+
+theorem DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
+  DirSupClosed.Ici a |>.dirSupClosedOn
+
+theorem DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) :=
+  isUpperSet_Ioi a |>.dirSupClosed
+
+theorem DirSupClosedOn.Ioi (a : α) : DirSupClosedOn D (Ioi a) :=
+  DirSupClosed.Ioi a |>.dirSupClosedOn
+
+theorem DirSupClosed.Ioc (a b : α) : DirSupClosed (Ioc a b) :=
+  .inter (.Ioi a) (.Iic b)
+
+theorem DirSupClosedOn.Ioc (a b : α) : DirSupClosedOn D (Ioc a b) :=
+  DirSupClosed.Ioc a b |>.dirSupClosedOn
+
+theorem DirSupClosed.Icc (a b : α) : DirSupClosed (Icc a b) :=
+  .inter (.Ici a) (.Iic b)
+
+theorem DirSupClosedOn.Icc (a b : α) : DirSupClosedOn D (Icc a b) :=
+  DirSupClosed.Icc a b |>.dirSupClosedOn
+
+theorem DirSupInacc.Iio (a : α) : DirSupInacc (Iio a) :=
+  fun _ ⟨b, hb⟩ _ _ hlub hlt ↦ ⟨b, hb, hlub.left hb |>.trans_lt hlt⟩
+
+theorem DirSupInaccOn.Iio (a : α) : DirSupInaccOn D (Iio a) :=
+  DirSupInacc.Iio a |>.dirSupInaccOn
+
+lemma DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
   (isLowerSet_Iic a).dirSupInacc
 
-lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
+@[deprecated (since := "2026-09-07")] alias dirSupInacc_Iic := DirSupInacc.Iic
+
+lemma DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
   (isLowerSet_Iic a).dirSupInaccOn
+
+@[deprecated (since := "2026-09-07")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
 
 end Preorder
 
@@ -296,6 +334,24 @@ theorem dirSupInaccOn_iff_of_linearOrder :
 theorem dirSupInacc_iff_of_linearOrder :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInacc]
+
+theorem DirSupInacc.Ioi (a : α) : DirSupInacc (Ioi a) := by
+  simpa using DirSupClosed.Iic a |>.compl
+
+theorem DirSupInaccOn.Ioi (a : α) : DirSupInaccOn D (Ioi a) :=
+  DirSupInacc.Ioi a |>.dirSupInaccOn
+
+theorem DirSupInacc.Ioo (a b : α) : DirSupInacc (Ioo a b) :=
+  .inter (.Ioi a) (.Iio b)
+
+theorem DirSupInaccOn.Ioo (a b : α) : DirSupInaccOn D (Ioo a b) :=
+  DirSupInacc.Ioo a b |>.dirSupInaccOn
+
+theorem DirSupInacc.Ioc (a b : α) : DirSupInacc (Ioc a b) :=
+  .inter (.Ioi a) (.Iic b)
+
+theorem DirSupInaccOn.Ioc (a b : α) : DirSupInaccOn D (Ioc a b) :=
+  DirSupInacc.Ioc a b |>.dirSupInaccOn
 
 end LinearOrder
 

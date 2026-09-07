@@ -139,6 +139,36 @@ protected lemma CountableSupClosed.prod [Preorder α] [Preorder β]
     exact ⟨hs.isLUB_mem (Prod.fst '' A) (by grind) (by simpa) (hAc.image Prod.fst) _ hxy.1,
       ht.isLUB_mem (Prod.snd '' A) (by grind) (by simpa) (hAc.image Prod.snd) _ hxy.2⟩
 
+@[to_dual]
+theorem IsUpperSet.countableSupClosed [LE α] (h : IsUpperSet s) : CountableSupClosed s where
+  isLUB_mem := fun _ hsubset ⟨_, hmem⟩ _ _ hlub ↦ h (hlub.left hmem) (hsubset hmem)
+
+section Preorder
+
+variable [Preorder α]
+
+@[to_dual]
+theorem CountableSupClosed.Ioi (a : α) : CountableSupClosed (Ioi a) :=
+  isUpperSet_Ioi a |>.countableSupClosed
+
+@[to_dual]
+theorem CountableSupClosed.Ici (a : α) : CountableSupClosed (Ici a) :=
+  isUpperSet_Ici a |>.countableSupClosed
+
+@[to_dual]
+theorem CountableSupClosed.Iic (a : α) : CountableSupClosed (Iic a) where
+  isLUB_mem := fun _ hsubset _ _ _ hlub ↦ hlub.right hsubset
+
+@[to_dual]
+theorem CountableSupClosed.Ioc (a b : α) : CountableSupClosed (Ioc a b) :=
+  .inter (.Ioi a) (.Iic b)
+
+@[to_dual]
+theorem CountableSupClosed.Icc (a b : α) : CountableSupClosed (Icc a b) :=
+  .inter (.Ici a) (.Iic b)
+
+end Preorder
+
 end Set
 
 section Finset
