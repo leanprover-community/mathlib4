@@ -71,7 +71,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonAssocRing R]
 variable [NonAssocRing S] [NonAssocRing T]
 
 namespace Subring
-variable {s t : Subring R}
+variable {s : Subring R}
 
 @[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
@@ -378,6 +378,19 @@ theorem mem_center_iff {R : Type*} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, 
 instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
+theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    map f (center R) = center S :=
+  SetLike.coe_injective (Set.image_center_eq f)
+
 @[simp]
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
@@ -584,7 +597,7 @@ lemma closure_le_centralizer_centralizer {R} [Ring R] (s : Set R) :
 
 /-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
 theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
-    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    (hcomm : s.Pairwise Commute) :
     IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -593,14 +606,14 @@ theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
 @[deprecated isMulCommutative_closure (since := "2026-03-11")]
-abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : s.Pairwise Commute) :
     CommRing (closure s) :=
   have := isMulCommutative_closure hcomm
   inferInstance
 
 instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S R] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R)) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 theorem exists_list_of_mem_closure {R} [Ring R] {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
@@ -936,7 +949,7 @@ variable {s t : Subring R}
 /-- Makes the identity isomorphism from a proof two subrings of a multiplicative
 monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| congr_arg _ h with
+  { Set.equivOfEq <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 

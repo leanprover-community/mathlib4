@@ -121,7 +121,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
   · change IsAffineOpen _
     simp only [← basicOpen_eq_of_affine]
     exact (isAffineOpen_top (Scheme.Spec.obj (op _))).basicOpen _
-  · rw [PrimeSpectrum.iSup_basicOpen_eq_top_iff, Subtype.range_coe_subtype, Set.setOf_mem_eq, hs]
+  · rw [PrimeSpectrum.iSup_basicOpen_eq_top_iff, Subtype.range_coe_subtype, Set.ofPred_mem_eq, hs]
   · rw [Scheme.toSpecΓ_preimage_basicOpen]
     exact hs₂ _ i.2
   · simp only [Opens.map_top, morphismRestrict_app]
@@ -164,7 +164,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       simpa [Scheme.preimage_basicOpen] using! this
   eq_targetAffineLocally' := by
     ext X Y f
-    simp only [targetAffineLocally, Scheme.affineOpens, Set.coe_setOf, Set.mem_setOf_eq,
+    simp only [targetAffineLocally, Scheme.affineOpens, Set.coe_ofPred, Set.mem_ofPred_eq,
       Subtype.forall, isAffineHom_iff]
     rfl
 
@@ -324,7 +324,7 @@ theorem isAffineHom_diagonal_iff {f : X ⟶ Y} :
     (.diagonal @IsAffineHom)) f).to_iff.trans ?_
   simp only [targetAffineLocally, diagonal_isAffine_iff_forall_isAffineOpen_inf,
     (IsOpenImmersion.opensEquiv (f ⁻¹ᵁ _).ι).forall_congr_left, Scheme.affineOpens,
-    Subtype.forall, Set.mem_setOf_eq, Scheme.Opens.opensRange_ι, ← Scheme.Hom.preimage_inf,
+    Subtype.forall, Set.mem_ofPred_eq, Scheme.Opens.opensRange_ι, ← Scheme.Hom.preimage_inf,
     IsOpenImmersion.opensEquiv_symm_apply, Scheme.Hom.image_preimage_eq_opensRange_inf,
     ← Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion (Scheme.Opens.ι _)]
   congr! with U hU V₁ hV₁ V₂ hV₂
@@ -339,11 +339,11 @@ lemma IsAffineOpen.inf [IsAffineHom (pullback.diagonal (terminal.from X))]
 lemma IsAffineOpen.iInf [IsAffineHom (pullback.diagonal (terminal.from X))]
     {ι : Sort*} [Finite ι] [Nonempty ι] {U : ι → X.Opens} (hU : ∀ i, IsAffineOpen (U i)) :
       IsAffineOpen (⨅ i, U i) :=
-  InfClosed.iInf_mem_of_nonempty (s := setOf IsAffineOpen) (fun _ h _ h' ↦ h.inf h') hU
+  InfClosed.iInf_mem_of_nonempty (s := Set.ofPred IsAffineOpen) (fun _ h _ h' ↦ h.inf h') hU
 
 lemma IsAffineOpen.biInf [IsAffineHom (pullback.diagonal (terminal.from X))]
     {ι : Type*} (s : Set ι) (hs : s.Finite) (hs' : s.Nonempty) {U : ι → X.Opens}
     (hU : ∀ i ∈ s, IsAffineOpen (U i)) : IsAffineOpen (⨅ i ∈ s, U i) :=
-  InfClosed.biInf_mem_of_nonempty (s := setOf IsAffineOpen) (fun _ h _ h' ↦ h.inf h') hs hs' hU
+  InfClosed.biInf_mem_of_nonempty (s := Set.ofPred IsAffineOpen) (fun _ h _ h' ↦ h.inf h') hs hs' hU
 
 end AlgebraicGeometry

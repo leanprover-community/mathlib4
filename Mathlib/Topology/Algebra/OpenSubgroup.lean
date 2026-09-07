@@ -36,7 +36,9 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 @[expose] public section
 
 
-open TopologicalSpace Topology Function
+open TopologicalSpace Function
+
+open scoped Topology
 
 /-- The type of open subgroups of a topological additive group. -/
 structure OpenAddSubgroup (G : Type*) [AddGroup G] [TopologicalSpace G] extends AddSubgroup G where
@@ -236,6 +238,29 @@ theorem comap_comap {P : Type*} [Group P] [TopologicalSpace P] (K : OpenSubgroup
     (K.comap f₂ hf₂).comap f₁ hf₁ = K.comap (f₂.comp f₁) (hf₂.comp hf₁) :=
   rfl
 
+section
+
+variable {ι : Type*} [Finite ι] (U : ι → OpenSubgroup G)
+
+/-- The intersection of a finite family of open subgroups. -/
+@[to_additive]
+abbrev iInfOfFinite : OpenSubgroup G :=
+  ⟨⨅ i, U i, by
+    convert isOpen_iInter_of_finite (fun i ↦ (U i).isOpen)
+    aesop⟩
+
+attribute [inherit_doc iInfOfFinite] OpenAddSubgroup.iInfOfFinite
+
+@[to_additive]
+lemma iInfOfFinite_le (i : ι) :
+    iInfOfFinite U ≤ U i := by
+  intro x hx
+  rw [← mem_toSubgroup] at hx
+  simp at hx
+  tauto
+
+end
+
 end OpenSubgroup
 namespace Subgroup
 
@@ -328,8 +353,6 @@ instance : Lattice (OpenSubgroup G) where
 end OpenSubgroup
 
 namespace Submodule
-
-open OpenAddSubgroup
 
 variable {R : Type*} {M : Type*} [CommRing R]
 variable [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [Module R M]
@@ -450,6 +473,8 @@ open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G]
 
+/-- For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
+`T + W ⊆ W`. -/
 structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
   nhds : T ∈ 𝓝 0
   neg : -T = T
@@ -458,9 +483,7 @@ structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Pr
 
 /-- For a set `W`, `T` is a neighborhood of `1` which is open, stable under inverse and satisfies
 `T * W ⊆ W`. -/
-@[to_additive
-/-- For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
-`T + W ⊆ W`. -/]
+@[to_additive]
 structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhds : T ∈ 𝓝 1
   inv : T⁻¹ = T

@@ -214,7 +214,7 @@ consists of finite sums of elements `m * n` for `m ∈ M` and `n ∈ N`. -/
 instance mul : Mul (Submodule R A) where
   mul := (· • ·)
 
-variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
+variable {M N P : Submodule R A} {m n : A}
 
 theorem mul_mem_mul (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
   smul_mem_smul hm hn

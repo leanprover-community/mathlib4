@@ -25,7 +25,6 @@ pointwise subtraction
 
 assert_not_exists IsOrderedMonoid Ring
 
-open Function
 open scoped Pointwise
 
 variable {α β : Type*}

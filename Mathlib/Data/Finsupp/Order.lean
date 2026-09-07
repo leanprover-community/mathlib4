@@ -70,7 +70,7 @@ theorem sum_pos' (h : ∀ i ∈ f.support, 0 ≤ g i (f i)) (hf : ∃ i ∈ f.su
 end IsOrderedCancelAddMonoid
 
 section Preorder
-variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
+variable [Preorder α] {i : ι} {a b : α}
 
 @[simp, gcongr] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single

@@ -315,7 +315,7 @@ theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   rw [← Algebra.adjoin_range_eq_range_aeval]
   congr
   rw [← Function.comp_def, Set.range_comp]
-  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOf_mem]
+  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 variable (S)
 

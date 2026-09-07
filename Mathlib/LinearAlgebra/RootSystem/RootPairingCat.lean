@@ -30,7 +30,7 @@ This is mostly copied from `ModuleCat`.
 
 public section
 
-open Set Function CategoryTheory
+open CategoryTheory
 
 noncomputable section
 
