@@ -1241,7 +1241,7 @@ lemma toLinearEquiv_inv (f : V ≃L[R] V) :
 
 @[simp]
 lemma toLinearEquiv_mul (f g : V ≃L[R] V) :
-    (f * g).toLinearEquiv = f.toLinearEquiv * g := rfl
+    (f * g).toLinearEquiv = f.toLinearEquiv * g.toLinearEquiv := rfl
 
 /-- `ContinuousLinearEquiv.toLinearEquiv` as a multiplicative monoid homomorphism `MonoidHom`. -/
 @[simps]
