@@ -458,7 +458,7 @@ open ZeroObject
 
 /-- The zero morphism has a `MonoFactorisation` through the zero object.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
   I := 0
   m := 0
@@ -481,8 +481,6 @@ def imageZero {X Y : C} : image (0 : X ⟶ Y) ≅ 0 :=
 def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 :=
   image.eqToIso h ≪≫ imageZero
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem image.ι_zero {X Y : C} [HasImage (0 : X ⟶ Y)] : image.ι (0 : X ⟶ Y) = 0 := by
   rw [← image.lift_fac (monoFactorisationZero X Y)]
@@ -510,13 +508,11 @@ instance isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
     [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) := by
   classical exact IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inl [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inl : X ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc (𝟙 X) 0 }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inr [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inr : Y ⟶ X ⨿ Y) :=
@@ -686,22 +682,18 @@ its second component `Y`. -/
 def coprod.snd : X ⨿ Y ⟶ Y :=
   coprod.desc 0 (𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inl_fst : coprod.inl ≫ coprod.fst X Y = 𝟙 X := by
   simp [coprod.fst]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inr_fst : coprod.inr ≫ coprod.fst X Y = 0 := by
   simp [coprod.fst]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inl_snd : coprod.inl ≫ coprod.snd X Y = 0 := by
   simp [coprod.snd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inr_snd : coprod.inr ≫ coprod.snd X Y = 𝟙 Y := by
   simp [coprod.snd]
