@@ -64,13 +64,10 @@ def Integrable {α} {_ : MeasurableSpace α} (f : α → ε)
 scoped notation "Integrable[" mα "]" => @Integrable _ _ _ _ mα
 
 theorem memLp_one_iff_integrable {f : α → ε} : MemLp f 1 μ ↔ Integrable f μ := by
-  constructor
-  · intro hf
-    refine ⟨hf.aestronglyMeasurable, ?_⟩
-    rw [hasFiniteIntegral_iff_enorm, ← eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable]
+  refine ⟨fun hf ↦ ⟨hf.aestronglyMeasurable, ?_⟩, fun ⟨hfm, hfi⟩ ↦ ?_⟩
+  · rw [hasFiniteIntegral_iff_enorm, ← eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable]
     exact hf
-  · rintro ⟨hfm, hfi⟩
-    rw [MemLp, eLpNorm_one_eq_lintegral_enorm hfm, ← hasFiniteIntegral_iff_enorm]
+  · rw [MemLp, eLpNorm_one_eq_lintegral_enorm hfm, ← hasFiniteIntegral_iff_enorm]
     exact hfi
 
 @[fun_prop]
@@ -923,8 +920,7 @@ theorem mem_L1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasu
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : MemLp (fun x ↦ (f x).toReal) 1 μ := by
   have hfm' : AEStronglyMeasurable (fun x ↦ (f x).toReal) μ :=
     (AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable
-  rw [memLp_iff]
-  rw [eLpNorm_one_eq_lintegral_enorm hfm']
+  rw [memLp_iff, eLpNorm_one_eq_lintegral_enorm hfm']
   exact hasFiniteIntegral_toReal_of_lintegral_ne_top hfi
 
 theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
