@@ -8,27 +8,29 @@ module
 
 public import Mathlib.Analysis.Polynomial.Sturm.Defs
 public import Mathlib.Analysis.Polynomial.Order
-public import Mathlib.FieldTheory.Perfect
 
 /-!
-Sturm's theorem over `Polynomial ℝ`, proved as a five-step chain. Everything
-here is a slice over `Polynomial ℝ` with no `HexRealRoots`
-dependence.
+# Sturm's theorem
 
-The three local lemmas (`sturmVar_const_of_no_zero`, `sturmVar_interior_cross`,
-`sturmVar_root_cross`) describe the behaviour of `Sturm.sturmVar` across the
-finitely many zeros of the chain elements. The two global results
-(`sturm_half_open`, `sturm_line`) are the telescoping consequences: the number
-of real roots of `p` in a half-open interval `(a, b]` is the drop in
-`sturmVar` from `a` to `b`, and the total number of real roots is the drop
-from `−∞` to `+∞`.
+For a real polynomial with no repeated real roots admitting a Sturm chain, the number of roots
+in `(a, b]` is the decrease in sign variations from `a` to `b`. Evaluating the
+signs at infinity gives the total number of real roots.
 
-The half-open form telescopes the three local lemmas over the finitely many
-chain zeros in `(a, b]` (helpers `chainZeros`, `exists_left_gap`/`exists_right_gap`,
-`sturmVar_eq_right`, `card_filter_Ioc_split`). The line form evaluates the chain
-just beyond every root at `±M` and reads the `±∞` variation counts
-`Sturm.sturmVarNegInf` / `Sturm.sturmVarPosInf` off the leading coefficients and
-degree parities (helpers `eval_sign_pos_inf` / `eval_sign_neg_inf`).
+## Main results
+
+* `Sturm.IsSturmChain.sturm_Ioc`: the root count on a half-open interval.
+* `Sturm.IsSturmChain.sturm`: the root count on the real line.
+
+The proof first establishes local constancy away from chain zeros. Crossing an
+interior entry's zero preserves the variation count; crossing a root of the
+first entry decreases it by one. The value at a root equals the value just to
+its right, accounting for the half-open interval convention. Induction over the
+finite set of chain zeros then gives the interval theorem.
+
+## References
+
+* Basu, Pollack and Roy, *Algorithms in Real Algebraic Geometry*, second edition,
+  [§2.2.2](https://doi.org/10.1007/3-540-33099-2).
 -/
 
 public section
@@ -37,25 +39,58 @@ open Filter Topology
 
 namespace Sturm
 
-/-- Sign variations of the chain at `+∞`: the sign of each element there is the
-sign of its leading coefficient, so this is the zero-skipping variation count
-of the leading coefficients. The zero polynomial contributes leading
-coefficient `0`, which the zero-skipping convention drops. -/
-@[expose]
-noncomputable def sturmVarPosInf (chain : List (Polynomial ℝ)) : ℕ :=
-  signVariations (chain.map Polynomial.leadingCoeff)
+/-- A local sign-pattern relation between two real lists: they agree entry by
+entry except that a nonzero entry flanked by two opposite-sign neighbours may
+collapse to `0`. Such a collapse is variation-neutral, so `signVariations` and
+the leading sign are preserved (`SignRelation.signVariations_eq`). -/
+private inductive SignRelation : List ℝ → List ℝ → Prop
+  | nil : SignRelation [] []
+  | same {x y : ℝ} {l m : List ℝ} (hx : x ≠ 0) (hy : y ≠ 0)
+      (hs : SignType.sign x = SignType.sign y) (h : SignRelation l m) :
+      SignRelation (x :: l) (y :: m)
+  | collapse {x X x' : ℝ} {l m : List ℝ} {y y' : ℝ}
+      (hx : x ≠ 0) (hX : X ≠ 0) (hy' : y' ≠ 0)
+      (hsx : SignType.sign x = SignType.sign x')
+      (hsy : SignType.sign y = SignType.sign y')
+      (hopp : SignType.sign x * SignType.sign y = -1)
+      (h : SignRelation (y :: l) (y' :: m)) :
+      SignRelation (x :: X :: y :: l) (x' :: 0 :: y' :: m)
 
-/-- Sign variations of the chain at `−∞`: the sign of an element there is the
-sign of its leading coefficient times `(-1) ^ degree`, so this is the
-zero-skipping variation count of `leadingCoeff · (-1) ^ natDegree`. -/
-@[expose]
-noncomputable def sturmVarNegInf (chain : List (Polynomial ℝ)) : ℕ :=
-  signVariations (chain.map (fun q => q.leadingCoeff * (-1) ^ q.natDegree))
+private theorem sign_changes_of_opposite (u v w : SignType) (huw : u * w = -1) (hv : v ≠ 0) :
+    (if u * v = -1 then (1 : ℕ) else 0) + (if v * w = -1 then 1 else 0) = 1 := by
+  revert huw hv; revert u v w; decide
 
-/-- **Sign persistence.** A polynomial with no zero on `[a, b]` keeps a constant
-sign there: its evaluation signs at the two endpoints agree. If they differed,
-the two endpoint values would straddle `0` and the intermediate value theorem
-would supply an interior zero. -/
+/-- Lists related by `SignRelation` have equal sign variations and equal leading signs. -/
+private theorem SignRelation.signVariations_eq {L M : List ℝ} (h : SignRelation L M) :
+    signVariations L = signVariations M ∧ firstSign L = firstSign M := by
+  induction h with
+  | nil => exact ⟨rfl, rfl⟩
+  | @same x y l m hx hy hs h ih =>
+    refine ⟨?_, ?_⟩
+    · rw [signVariations_cons l hx, signVariations_cons m hy, ih.1, ih.2, hs]
+    · rw [firstSign_cons_ne l hx, firstSign_cons_ne m hy, hs]
+  | @collapse x X x' l m y y' hx hX hy' hsx hsy hopp h ih =>
+    have hy : y ≠ 0 := by
+      intro hy0; rw [hy0, sign_zero, mul_zero] at hopp; exact absurd hopp (by decide)
+    have hx' : x' ≠ 0 := by
+      intro hx0; rw [hx0, sign_zero] at hsx; exact hx (sign_eq_zero_iff.mp hsx)
+    refine ⟨?_, ?_⟩
+    · -- signVariations L
+      rw [signVariations_cons (X :: y :: l) hx,
+        firstSign_cons_ne (y :: l) hX, signVariations_cons (y :: l) hX,
+        firstSign_cons_ne l hy]
+      rw [signVariations_cons (0 :: y' :: m) hx',
+        firstSign_cons_zero (y' :: m) rfl, firstSign_cons_ne m hy',
+        signVariations_cons_zero]
+      simp only [Option.elim_some]
+      rw [← add_assoc, ih.1]
+      congr 1
+      rw [← hsx, ← hsy, ite_eq_left hopp]
+      exact sign_changes_of_opposite _ _ _ hopp (fun h => hX (sign_eq_zero_iff.mp h))
+    · rw [firstSign_cons_ne (X :: y :: l) hx, firstSign_cons_ne (0 :: y' :: m) hx', hsx]
+
+
+/-- A real polynomial with no roots on an interval has equal signs at its endpoints. -/
 theorem eval_sign_eq_of_no_zero {q : Polynomial ℝ} {a b : ℝ} (hab : a ≤ b)
     (hz : ∀ x ∈ Set.Icc a b, q.eval x ≠ 0) :
     SignType.sign (q.eval a) = SignType.sign (q.eval b) := by
@@ -78,7 +113,7 @@ theorem eval_sign_eq_of_no_zero {q : Polynomial ℝ} {a b : ℝ} (hab : a ≤ b)
   · rw [sign_pos h1, sign_pos h2]
   · rw [sign_neg h1, sign_neg h2]
 
-/-- Build the sign-pattern relation `SVRel` between the evaluations of a
+/-- Build the sign-pattern relation `SignRelation` between the evaluations of a
 polynomial list at a "generic" point `a` (where every element is nonzero) and a
 "special" point `r` (where some interior elements may vanish). The hypotheses
 are exactly what an `IsSturmChain` supplies restricted to the relevant interval:
@@ -86,7 +121,7 @@ every element is nonzero at `a`; the head and last elements are nonzero at `r`;
 whenever an interior element vanishes at `r` its neighbours are nonzero there
 with opposite signs; and every element nonzero at `r` has the same sign at `a`
 and `r`. -/
-private theorem buildSVRel (a r : ℝ) :
+private theorem signRelation_eval (a r : ℝ) :
     ∀ (cs : List (Polynomial ℝ)),
       (∀ q ∈ cs, q.eval a ≠ 0) →
       (∀ q, cs.head? = some q → q.eval r ≠ 0) →
@@ -95,11 +130,11 @@ private theorem buildSVRel (a r : ℝ) :
         cs[i + 2]? = some q2 → q1.eval r = 0 →
         q0.eval r ≠ 0 ∧ q2.eval r ≠ 0 ∧ q0.eval r * q2.eval r < 0) →
       (∀ q ∈ cs, q.eval r ≠ 0 → SignType.sign (q.eval a) = SignType.sign (q.eval r)) →
-      SVRel (cs.map (Polynomial.eval a)) (cs.map (Polynomial.eval r))
-  | [], _, _, _, _, _ => SVRel.nil
+      SignRelation (cs.map (Polynomial.eval a)) (cs.map (Polynomial.eval r))
+  | [], _, _, _, _, _ => SignRelation.nil
   | [q0], hne0, hfront, _, _, hsame => by
       have hr : q0.eval r ≠ 0 := hfront q0 rfl
-      exact SVRel.same (hne0 q0 (by simp)) hr (hsame q0 (by simp) hr) SVRel.nil
+      exact SignRelation.same (hne0 q0 (by simp)) hr (hsame q0 (by simp) hr) SignRelation.nil
   | q0 :: q1 :: rest, hne0, hfront, hlast, halt, hsame => by
       have hr0 : q0.eval r ≠ 0 := hfront q0 rfl
       have ha0 : q0.eval a ≠ 0 := hne0 q0 (by simp)
@@ -132,10 +167,10 @@ private theorem buildSVRel (a r : ℝ) :
             have hsame' : ∀ q ∈ q2 :: rest', q.eval r ≠ 0 →
                 SignType.sign (q.eval a) = SignType.sign (q.eval r) := fun q hq =>
               hsame q (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hq))
-            have IH := buildSVRel a r (q2 :: rest') hne0' hfront' hlast' halt' hsame'
+            have IH := signRelation_eval a r (q2 :: rest') hne0' hfront' hlast' halt' hsame'
             simp only [List.map_cons] at IH ⊢
             rw [hq1]
-            exact SVRel.collapse ha0 (hne0 q1 (by simp)) hn2 hsx hsy hoppA IH
+            exact SignRelation.collapse ha0 (hne0 q1 (by simp)) hn2 hsx hsy hoppA IH
       · have hne0' : ∀ q ∈ q1 :: rest, q.eval a ≠ 0 := fun q hq =>
           hne0 q (List.mem_cons_of_mem _ hq)
         have hfront' : ∀ q, (q1 :: rest).head? = some q → q.eval r ≠ 0 := by
@@ -154,21 +189,14 @@ private theorem buildSVRel (a r : ℝ) :
         have hsame' : ∀ q ∈ q1 :: rest, q.eval r ≠ 0 →
             SignType.sign (q.eval a) = SignType.sign (q.eval r) := fun q hq =>
           hsame q (List.mem_cons_of_mem _ hq)
-        have IH := buildSVRel a r (q1 :: rest) hne0' hfront' hlast' halt' hsame'
+        have IH := signRelation_eval a r (q1 :: rest) hne0' hfront' hlast' halt' hsame'
         simp only [List.map_cons] at IH ⊢
-        exact SVRel.same ha0 hr0 (hsame q0 (by simp) hr0) IH
+        exact SignRelation.same ha0 hr0 (hsame q0 (by simp) hr0) IH
 
 variable {p : Polynomial ℝ} {chain : List (Polynomial ℝ)}
 
-/-- **Local constancy.** On a closed interval `[a, b]` containing no zero of
-any chain element, `sturmVar` takes the same value at the two endpoints.
-
-Proof sketch: each element keeps a constant nonzero sign across
-`[a, b]` by continuity of polynomial evaluation (`Polynomial.continuous_aeval`)
-and the intermediate value theorem (`intermediate_value_Icc`): a sign change
-would force a zero. The list of evaluation signs is therefore the same at `a`
-and `b`, so `signVariations` — which depends only on those signs — agrees. -/
-theorem sturmVar_const_of_no_zero (_hchain : IsSturmChain p chain)
+/-- Sign variations are constant on an interval containing no zero of any chain entry. -/
+theorem sturmVar_const_of_no_zero
     (a b : ℝ) (hab : a ≤ b)
     (hz : ∀ q ∈ chain, ∀ x ∈ Set.Icc a b, q.eval x ≠ 0) :
     sturmVar chain a = sturmVar chain b := by
@@ -179,19 +207,7 @@ theorem sturmVar_const_of_no_zero (_hchain : IsSturmChain p chain)
   intro q hq
   exact eval_sign_eq_of_no_zero hab (fun x hx => hz q hq x hx)
 
-/-- **Interior-element crossing preserves `sturmVar`.** If `r` is not a root of
-`p` and the only chain zeros in `[a, b]` occur at `r` (necessarily zeros of
-interior elements), then `sturmVar` is unchanged from `a` to `b`.
-
-Proof sketch: away from `r` local constancy applies on `[a, r]`
-and `[r, b]`. At `r` the vanishing interior elements sit between neighbours of
-opposite sign (`IsSturmChain.interior_alternates`), so each contributes exactly
-one variation both immediately before and immediately after `r` regardless of
-the sign it passes through, and the head pair (involving `p`, nonzero near `r`)
-is unaffected. Hence the count at `a`, at `r`, and at `b` coincide. The value
-at `r` itself is part of the statement because the global theorem places no
-restriction on its endpoints, so a telescoping step may need the count exactly
-at an interior-element zero. -/
+/-- Crossing a zero of an interior entry preserves the variation count. -/
 theorem sturmVar_interior_cross (hchain : IsSturmChain p chain) (r : ℝ)
     (hpr : ¬ p.IsRoot r) (a b : ℝ) (har : a < r) (hrb : r < b)
     (hz : ∀ q ∈ chain, ∀ x ∈ Set.Icc a b, x ≠ r → q.eval x ≠ 0) :
@@ -210,7 +226,7 @@ theorem sturmVar_interior_cross (hchain : IsSturmChain p chain) (r : ℝ)
   constructor
   · change signVariations (chain.map (Polynomial.eval a))
       = signVariations (chain.map (Polynomial.eval r))
-    refine (buildSVRel a r chain (fun q hq => hz q hq a ⟨le_refl a, hab⟩ (ne_of_lt har))
+    refine (signRelation_eval a r chain (fun q hq => hz q hq a ⟨le_refl a, hab⟩ (ne_of_lt har))
       hfront hlast halt (fun q hq hqr => ?_)).signVariations_eq.1
     exact eval_sign_eq_of_no_zero har.le (fun x hx => by
       by_cases hxr : x = r
@@ -218,7 +234,7 @@ theorem sturmVar_interior_cross (hchain : IsSturmChain p chain) (r : ℝ)
       · exact hz q hq x ⟨hx.1, hx.2.trans hrb.le⟩ hxr)
   · change signVariations (chain.map (Polynomial.eval r))
       = signVariations (chain.map (Polynomial.eval b))
-    refine ((buildSVRel b r chain
+    refine ((signRelation_eval b r chain
       (fun q hq => hz q hq b ⟨hab, le_refl b⟩ (ne_of_lt hrb).symm)
       hfront hlast halt (fun q hq hqr => ?_)).signVariations_eq.1).symm
     exact (eval_sign_eq_of_no_zero hrb.le (fun x hx => by
@@ -226,26 +242,14 @@ theorem sturmVar_interior_cross (hchain : IsSturmChain p chain) (r : ℝ)
       · rw [hxr]; exact hqr
       · exact hz q hq x ⟨har.le.trans hx.1, hx.2⟩ hxr)).symm
 
-/-- **Simple-zero crossing of `p` drops `sturmVar` by one, registering at `r`.**
-If `r` is a (simple, by squarefreeness) root of `p` and the only chain zeros in
-`[a, b]` occur at `r`, then `sturmVar` at `a` exceeds the value at `b` by
-exactly one, and the drop has already registered at `r`: the value at `r`
-equals the value at `b`.
-
-Proof sketch: the head pair `(p, q)` with `q = chain[1]` has
-`p * q < 0` just left of `r` and `p * q > 0` just right (`root_flank`), so this
-pair contributes one variation for `x < r` and none for `x ≥ r`; with the
-zero-skipping convention the zero of `p` at `r` is dropped, so the change
-registers at `r` itself. All interior crossings at `r` are variation-neutral by
-step 2, and away from `r` `sturmVar` is locally constant by step 1. The
-half-open registration is the one design-sensitive point: it is what makes the
-executable half-open counts match with no endpoint hypotheses. -/
-theorem sturmVar_root_cross (_hp : p ≠ 0) (_hsf : Squarefree p)
-    (hchain : IsSturmChain p chain) (r : ℝ) (hr : p.IsRoot r)
+/-- Crossing a root of the first entry decreases the variation count by one.
+The count at the root equals the count just to its right. -/
+theorem sturmVar_root_cross (hchain : IsSturmChain p chain) (r : ℝ) (hr : p.IsRoot r)
     (a b : ℝ) (har : a < r) (hrb : r < b)
-    (hz : ∀ q ∈ chain, ∀ x ∈ Set.Icc a b, x ≠ r → q.eval x ≠ 0)
-    (hpz : ∀ x ∈ Set.Icc a b, x ≠ r → ¬ p.IsRoot x) :
+    (hz : ∀ q ∈ chain, ∀ x ∈ Set.Icc a b, x ≠ r → q.eval x ≠ 0) :
     sturmVar chain a = sturmVar chain b + 1 ∧ sturmVar chain r = sturmVar chain b := by
+  have hpz : ∀ x ∈ Set.Icc a b, x ≠ r → ¬ p.IsRoot x :=
+    fun x hx hxr => hz p hchain.head_mem x hx hxr
   have hab : a ≤ b := (har.trans hrb).le
   obtain ⟨q, hq1, hqr, hflL, hflR⟩ := hchain.root_flank r hr
   -- Split the chain into its head `p` and second element `q`.
@@ -319,24 +323,24 @@ theorem sturmVar_root_cross (_hp : p ≠ 0) (_hsf : Squarefree p)
       · exact hz s (List.mem_cons_of_mem _ hs) x ⟨har.le.trans hx.1, hx.2⟩ hxr)).symm
   -- The tail's `sturmVar` is the same at `a`, `r`, `b` (interior-crossing).
   have hEqA : sturmVar (q :: tail) a = sturmVar (q :: tail) r :=
-    (buildSVRel a r (q :: tail)
+    (signRelation_eval a r (q :: tail)
       (fun s hs => hz s (List.mem_cons_of_mem _ hs) a ⟨le_refl a, hab⟩ (ne_of_lt har))
       hfront_rest hlast_rest halt_rest hsame_a).signVariations_eq.1
   have hEqB : sturmVar (q :: tail) b = sturmVar (q :: tail) r :=
-    (buildSVRel b r (q :: tail)
+    (signRelation_eval b r (q :: tail)
       (fun s hs => hz s (List.mem_cons_of_mem _ hs) b ⟨hab, le_refl b⟩ (ne_of_lt hrb).symm)
       hfront_rest hlast_rest halt_rest hsame_b).signVariations_eq.1
   -- Head-pair bookkeeping at each point.
   have hSVa : sturmVar (p :: q :: tail) a = 1 + sturmVar (q :: tail) a := by
     change signVariations (p.eval a :: (q :: tail).map (Polynomial.eval a))
       = 1 + signVariations ((q :: tail).map (Polynomial.eval a))
-    rw [signVariations_cons_pos _ hpa]
+    rw [signVariations_cons _ hpa]
     simp only [List.map_cons]
     rw [firstSign_cons_ne _ hqa, Option.elim_some, ite_eq_left hsignA]
   have hSVb : sturmVar (p :: q :: tail) b = sturmVar (q :: tail) b := by
     change signVariations (p.eval b :: (q :: tail).map (Polynomial.eval b))
       = signVariations ((q :: tail).map (Polynomial.eval b))
-    rw [signVariations_cons_pos _ hpb]
+    rw [signVariations_cons _ hpb]
     simp only [List.map_cons]
     rw [firstSign_cons_ne _ hqb, Option.elim_some, ite_eq_right hsignB, zero_add]
   have hSVr : sturmVar (p :: q :: tail) r = sturmVar (q :: tail) r := by
@@ -347,9 +351,7 @@ theorem sturmVar_root_cross (_hp : p ≠ 0) (_hsf : Squarefree p)
   · rw [hSVa, hSVb, hEqA, hEqB]; omega
   · rw [hSVr, hSVb]; exact hEqB.symm
 
-/-- The finite set of real points at which some element of `chain` vanishes.
-Every chain element is nonzero (`IsSturmChain.nonzero_mem`), so each contributes
-finitely many zeros; their union is the telescope's set of break points. -/
+/-- The union of the real root sets of the chain entries. -/
 noncomputable def chainZeros (cs : List (Polynomial ℝ)) : Finset ℝ :=
   cs.toFinset.biUnion (fun q => q.roots.toFinset)
 
@@ -357,76 +359,36 @@ noncomputable def chainZeros (cs : List (Polynomial ℝ)) : Finset ℝ :=
 element vanishes there (using that every chain element is nonzero). -/
 theorem mem_chainZeros {cs : List (Polynomial ℝ)} (hne : ∀ q ∈ cs, q ≠ 0) {x : ℝ} :
     x ∈ chainZeros cs ↔ ∃ q ∈ cs, q.eval x = 0 := by
-  unfold chainZeros
-  simp only [Finset.mem_biUnion, List.mem_toFinset, Multiset.mem_toFinset]
-  constructor
-  · rintro ⟨q, hq, hx⟩
-    exact ⟨q, hq, (Polynomial.mem_roots (hne q hq)).mp hx⟩
-  · rintro ⟨q, hq, hx⟩
-    exact ⟨q, hq, (Polynomial.mem_roots (hne q hq)).mpr hx⟩
+  simp only [chainZeros, Finset.mem_biUnion, List.mem_toFinset, Multiset.mem_toFinset]
+  exact exists_congr fun q => and_congr_right fun hq => Polynomial.mem_roots (hne q hq)
 
-/-- A gap point just below `z` and above `lo`, lying above every element of the
-finite set `S` that is below `z`. Used to manufacture the artificial left
-neighbour a crossing lemma needs at a break point. -/
-theorem exists_left_gap (S : Finset ℝ) (z lo : ℝ) (hlo : lo < z) :
-    ∃ a₀, lo < a₀ ∧ a₀ < z ∧ ∀ x ∈ S, x < z → x < a₀ := by
-  classical
-  set U : Finset ℝ := insert lo (S.filter (fun x => x < z)) with hU
-  have hUne : U.Nonempty := ⟨lo, Finset.mem_insert_self _ _⟩
-  have hmax_lt : U.max' hUne < z := by
-    rw [Finset.max'_lt_iff]
-    intro u hu
-    rw [hU, Finset.mem_insert] at hu
-    rcases hu with h | h
-    · rw [h]; exact hlo
-    · exact (Finset.mem_filter.mp h).2
-  refine ⟨(U.max' hUne + z) / 2, ?_, ?_, ?_⟩
-  · have : lo ≤ U.max' hUne := Finset.le_max' U lo (Finset.mem_insert_self _ _)
-    linarith
-  · linarith
-  · intro x hx hxz
-    have : x ≤ U.max' hUne :=
-      Finset.le_max' U x (Finset.mem_insert.mpr (Or.inr (Finset.mem_filter.mpr ⟨hx, hxz⟩)))
-    linarith
+/-- Choose a point between `lo` and `z` above every element of `S` below `z`. -/
+private theorem exists_left_gap (S : Finset ℝ) (z lo : ℝ) (hlo : lo < z) :
+    ∃ a, lo < a ∧ a < z ∧ ∀ x ∈ S, x < z → x < a := by
+  have h : ∀ᶠ a in 𝓝[<] z, ∀ x ∈ S, x < z → x < a := by
+    rw [S.eventually_all]
+    intro x _
+    by_cases hx : x < z
+    · exact ((eventually_gt_nhds hx).filter_mono nhdsWithin_le_nhds).mono fun _ ha _ => ha
+    · simp [hx]
+  obtain ⟨a, ha, hla, haz⟩ := (h.and (Ioo_mem_nhdsLT hlo)).exists
+  exact ⟨a, hla, haz, ha⟩
 
-/-- A gap point just above `z` and below `hi`, lying below every element of the
-finite set `S` that is above `z`. Used to manufacture the artificial right
-neighbour a crossing lemma needs at a break point. -/
-theorem exists_right_gap (S : Finset ℝ) (z hi : ℝ) (hhi : z < hi) :
-    ∃ b₀, z < b₀ ∧ b₀ < hi ∧ ∀ x ∈ S, z < x → b₀ < x := by
-  classical
-  set U : Finset ℝ := insert hi (S.filter (fun x => z < x)) with hU
-  have hUne : U.Nonempty := ⟨hi, Finset.mem_insert_self _ _⟩
-  have hlt_min : z < U.min' hUne := by
-    rw [Finset.lt_min'_iff]
-    intro u hu
-    rw [hU, Finset.mem_insert] at hu
-    rcases hu with h | h
-    · rw [h]; exact hhi
-    · exact (Finset.mem_filter.mp h).2
-  refine ⟨(z + U.min' hUne) / 2, ?_, ?_, ?_⟩
-  · linarith
-  · have : U.min' hUne ≤ hi := Finset.min'_le U hi (Finset.mem_insert_self _ _)
-    linarith
-  · intro x hx hxz
-    have : U.min' hUne ≤ x :=
-      Finset.min'_le U x (Finset.mem_insert.mpr (Or.inr (Finset.mem_filter.mpr ⟨hx, hxz⟩)))
-    linarith
+/-- Choose a point between `z` and `hi` below every element of `S` above `z`. -/
+private theorem exists_right_gap (S : Finset ℝ) (z hi : ℝ) (hhi : z < hi) :
+    ∃ b, z < b ∧ b < hi ∧ ∀ x ∈ S, z < x → b < x := by
+  have h : ∀ᶠ b in 𝓝[>] z, ∀ x ∈ S, z < x → b < x := by
+    rw [S.eventually_all]
+    intro x _
+    by_cases hx : z < x
+    · exact ((eventually_lt_nhds hx).filter_mono nhdsWithin_le_nhds).mono fun _ hb _ => hb
+    · simp [hx]
+  obtain ⟨b, hb, hzb, hbh⟩ := (h.and (Ioo_mem_nhdsGT hhi)).exists
+  exact ⟨b, hzb, hbh, hb⟩
 
-/-- The head `p` of a Sturm chain is a member of the chain. -/
-theorem chain_head_mem (hchain : IsSturmChain p chain) : p ∈ chain := by
-  cases chain with
-  | nil => exact absurd hchain.head (by simp)
-  | cons hd tl =>
-    have hhd : hd = p := by simpa using hchain.head
-    rw [← hhd]; exact List.mem_cons_self
-
-/-- **Right registration.** If no chain element vanishes anywhere in the
-half-open interval `(z, c]` (with `z ≤ c`), then `sturmVar` agrees at `z` and
-`c`, even if `z` itself is a chain zero: the value at a break point equals the
-value immediately to its right. -/
-theorem sturmVar_eq_right (hp : p ≠ 0) (hsf : Squarefree p)
-    (hchain : IsSturmChain p chain) {z c : ℝ} (hzc : z ≤ c)
+/-- The variation count agrees with its value immediately to the right,
+including at zeros of chain entries. -/
+theorem sturmVar_eq_right (hchain : IsSturmChain p chain) {z c : ℝ} (hzc : z ≤ c)
     (hclear : ∀ x, z < x → x ≤ c → x ∉ chainZeros chain) :
     sturmVar chain z = sturmVar chain c := by
   rcases eq_or_lt_of_le hzc with rfl | hlt
@@ -442,15 +404,7 @@ theorem sturmVar_eq_right (hp : p ≠ 0) (hsf : Squarefree p)
       · exact hxz heq
       · exact hclear x hgt' hx.2 hxZ
     by_cases hroot : p.IsRoot z
-    · have hpz : ∀ x ∈ Set.Icc a₀ c, x ≠ z → ¬ p.IsRoot x := by
-        intro x hx hxz hpr
-        have hxZ : x ∈ chainZeros chain :=
-          (mem_chainZeros hne).mpr ⟨p, chain_head_mem hchain, hpr⟩
-        rcases lt_trichotomy x z with hlt' | heq | hgt'
-        · exact absurd (ha₀gap x hxZ hlt') (not_lt.mpr hx.1)
-        · exact hxz heq
-        · exact hclear x hgt' hx.2 hxZ
-      exact (sturmVar_root_cross hp hsf hchain z hroot a₀ c ha₀z hlt hz_ex hpz).2
+    · exact (sturmVar_root_cross hchain z hroot a₀ c ha₀z hlt hz_ex).2
     · exact (sturmVar_interior_cross hchain z hroot a₀ c ha₀z hlt hz_ex).2
   · have hz_all : ∀ q ∈ chain, ∀ x ∈ Set.Icc z c, q.eval x ≠ 0 := by
       intro q hq x hx hqx
@@ -458,7 +412,7 @@ theorem sturmVar_eq_right (hp : p ≠ 0) (hsf : Squarefree p)
       rcases eq_or_lt_of_le hx.1 with heq | hgt
       · exact hzZ (by rw [heq]; exact hxZ)
       · exact hclear x hgt hx.2 hxZ
-    exact sturmVar_const_of_no_zero hchain z c hzc hz_all
+    exact sturmVar_const_of_no_zero z c hzc hz_all
 
 /-- Splitting a half-open interval count: for `a ≤ a' ≤ b`, the number of
 multiset entries in `(a, b]` is the sum of those in `(a, a']` and `(a', b]`. -/
@@ -486,30 +440,21 @@ private theorem card_filter_Ioc_split (s : Multiset ℝ) {a a' b : ℝ} (h1 : a 
       · exact Or.inr ⟨hx, h'⟩
   rw [← Multiset.card_add, Multiset.filter_add_filter, hand, Multiset.add_zero, hor]
 
-/-- **Sturm's theorem, half-open form.** For `p ≠ 0` squarefree with a
-generalised Sturm chain, the drop in `sturmVar` from `a` to `b` equals the
-number of real roots of `p` in the half-open interval `(a, b]`, counted as the
-cardinality of the corresponding filtered submultiset of `p.roots`.
+/-- **Sturm's theorem** on a half-open interval.
 
-Proof sketch: telescope the preceding lemmas over the finitely many zeros of
-the chain elements in `(a, b]`. Zeros of interior elements are variation-neutral
-(step 2); each root of `p` drops the count by exactly one and registers at the
-root under the half-open convention (step 3); between consecutive chain zeros
-`sturmVar` is constant (step 1). The signed total is therefore the number of
-roots of `p` in `(a, b]`. -/
-theorem sturm_half_open (hp : p ≠ 0) (hsf : Squarefree p)
-    (hchain : IsSturmChain p chain) {a b : ℝ} (hab : a < b) :
-    (sturmVar chain a : ℤ) - sturmVar chain b =
-      (p.roots.filter (fun r => a < r ∧ r ≤ b)).card := by
+The decrease in sign variations from `a` to `b` counts the roots in `(a, b]`.
+The hypothesis on `p.roots` ensures each real root has multiplicity one. -/
+theorem IsSturmChain.sturm_Ioc (hchain : IsSturmChain p chain) (hnod : p.roots.Nodup)
+    {a b : ℝ} (hab : a ≤ b) :
+    sturmVar chain b + (p.roots.filter (fun r => r ∈ Set.Ioc a b)).card =
+      sturmVar chain a := by
   classical
   have hne := hchain.nonzero_mem
-  have hnod : p.roots.Nodup :=
-    Polynomial.nodup_roots (PerfectField.separable_iff_squarefree.mpr hsf)
   suffices H : ∀ n : ℕ, ∀ a b : ℝ, a ≤ b →
       ((chainZeros chain).filter (fun x => a < x ∧ x ≤ b)).card = n →
-      (sturmVar chain a : ℤ) - sturmVar chain b =
-        (p.roots.filter (fun r => a < r ∧ r ≤ b)).card by
-    exact H _ a b hab.le rfl
+      sturmVar chain b + (p.roots.filter (fun r => a < r ∧ r ≤ b)).card =
+        sturmVar chain a by
+    simpa only [Set.mem_Ioc] using H _ a b hab rfl
   intro n
   induction n using Nat.strong_induction_on with
   | _ n ih =>
@@ -522,13 +467,13 @@ theorem sturm_half_open (hp : p ≠ 0) (hsf : Squarefree p)
         have hxF : x ∈ F := by rw [hF, Finset.mem_filter]; exact ⟨hxZ, hx1, hx2⟩
         rw [hemp] at hxF; exact absurd hxF (Finset.notMem_empty x)
       have heqv : sturmVar chain a = sturmVar chain b :=
-        sturmVar_eq_right hp hsf hchain hab hclear
+        sturmVar_eq_right hchain hab hclear
       have hroots0 : p.roots.filter (fun r => a < r ∧ r ≤ b) = 0 := by
         rw [Multiset.filter_eq_nil]
         rintro x hx ⟨h1, h2⟩
         exact hclear x h1 h2
           ((mem_chainZeros hne).mpr
-                  ⟨p, chain_head_mem hchain, (Polynomial.mem_roots hp).mp hx⟩)
+                  ⟨p, hchain.head_mem, (Polynomial.mem_roots hchain.ne_zero).mp hx⟩)
       rw [heqv, hroots0]; simp
     · -- Peel off the largest break point `z` in `(a, b]`.
       have hFne : F.Nonempty := Finset.nonempty_iff_ne_empty.mpr hemp
@@ -555,11 +500,9 @@ theorem sturm_half_open (hp : p ≠ 0) (hsf : Squarefree p)
         · exact absurd (ha'gap x hxZ hlt') (not_lt.mpr hx.1)
         · exact hxz heq
         · exact absurd (hb'gap x hxZ hgt') (not_lt.mpr hx.2)
-      have hpz : ∀ x ∈ Set.Icc a' b', x ≠ z → ¬ p.IsRoot x := fun x hx hxz hpr =>
-        hz_ex p (chain_head_mem hchain) x hx hxz hpr
       -- Right registration: `sturmVar z = sturmVar b`.
       have hzeqb : sturmVar chain z = sturmVar chain b := by
-        apply sturmVar_eq_right hp hsf hchain hzb
+        apply sturmVar_eq_right hchain hzb
         intro x hx1 hx2 hxZ
         have hxF : x ∈ F := by rw [hF, Finset.mem_filter]; exact ⟨hxZ, lt_trans haz hx1, hx2⟩
         exact absurd (hzmax x hxF) (not_le.mpr hx1)
@@ -573,19 +516,14 @@ theorem sturm_half_open (hp : p ≠ 0) (hsf : Squarefree p)
         rw [← hcard]
         exact Finset.card_lt_card ((Finset.ssubset_iff_of_subset hsub).mpr ⟨z, hzmem, hznotin⟩)
       have IHres := ih _ hlt_card a a' ha_a'.le rfl
-      have hsplitZ : ((p.roots.filter (fun r => a < r ∧ r ≤ b)).card : ℤ)
-          = ((p.roots.filter (fun r => a < r ∧ r ≤ a')).card : ℤ)
-            + ((p.roots.filter (fun r => a' < r ∧ r ≤ b)).card : ℤ) := by
-        exact_mod_cast card_filter_Ioc_split p.roots ha_a'.le (le_trans ha'z.le hzb)
+      have hsplit := card_filter_Ioc_split p.roots ha_a'.le (ha'z.le.trans hzb)
       by_cases hzroot : p.IsRoot z
       · obtain ⟨hcrossL, hcrossR⟩ :=
-          sturmVar_root_cross hp hsf hchain z hzroot a' b' ha'z hzb' hz_ex hpz
-        have ha'bZ : (sturmVar chain a' : ℤ) = sturmVar chain b + 1 := by
-          have : sturmVar chain a' = sturmVar chain b + 1 := by
-            rw [hcrossL, ← hcrossR, hzeqb]
-          exact_mod_cast this
-        have hRZ : ((p.roots.filter (fun r => a' < r ∧ r ≤ b)).card : ℤ) = 1 := by
-          have hzrootmem : z ∈ p.roots := (Polynomial.mem_roots hp).mpr hzroot
+          sturmVar_root_cross hchain z hzroot a' b' ha'z hzb' hz_ex
+        have ha'b : sturmVar chain a' = sturmVar chain b + 1 := by
+          rw [hcrossL, ← hcrossR, hzeqb]
+        have hRZ : (p.roots.filter (fun r => a' < r ∧ r ≤ b)).card = 1 := by
+          have hzrootmem : z ∈ p.roots := (Polynomial.mem_roots hchain.ne_zero).mpr hzroot
           have hfeq : p.roots.filter (fun r => a' < r ∧ r ≤ b)
               = p.roots.filter (fun r => r = z) := by
             apply Multiset.filter_congr
@@ -594,28 +532,26 @@ theorem sturm_half_open (hp : p ≠ 0) (hsf : Squarefree p)
             · rintro ⟨h1, h2⟩
               exact honly x h1 h2
                 ((mem_chainZeros hne).mpr
-                  ⟨p, chain_head_mem hchain, (Polynomial.mem_roots hp).mp hx⟩)
+                  ⟨p, hchain.head_mem, (Polynomial.mem_roots hchain.ne_zero).mp hx⟩)
             · rintro rfl; exact ⟨ha'z, hzb⟩
           rw [hfeq, Multiset.filter_eq', Multiset.card_replicate,
             Multiset.count_eq_one_of_mem hnod hzrootmem]
-          rfl
-        linarith [hsplitZ, hRZ, ha'bZ, IHres]
+        omega
       · obtain ⟨hcrossL, _⟩ :=
           sturmVar_interior_cross hchain z hzroot a' b' ha'z hzb' hz_ex
-        have ha'bZ : (sturmVar chain a' : ℤ) = sturmVar chain b := by
-          have : sturmVar chain a' = sturmVar chain b := by rw [hcrossL, hzeqb]
-          exact_mod_cast this
-        have hRZ : ((p.roots.filter (fun r => a' < r ∧ r ≤ b)).card : ℤ) = 0 := by
+        have ha'b : sturmVar chain a' = sturmVar chain b := by
+          rw [hcrossL, hzeqb]
+        have hRZ : (p.roots.filter (fun r => a' < r ∧ r ≤ b)).card = 0 := by
           have hfeq : p.roots.filter (fun r => a' < r ∧ r ≤ b) = 0 := by
             rw [Multiset.filter_eq_nil]
             rintro x hx ⟨h1, h2⟩
             have hxz : x = z := honly x h1 h2
               ((mem_chainZeros hne).mpr
-                  ⟨p, chain_head_mem hchain, (Polynomial.mem_roots hp).mp hx⟩)
+                  ⟨p, hchain.head_mem, (Polynomial.mem_roots hchain.ne_zero).mp hx⟩)
             rw [hxz] at hx
-            exact hzroot ((Polynomial.mem_roots hp).mp hx)
+            exact hzroot ((Polynomial.mem_roots hchain.ne_zero).mp hx)
           rw [hfeq]; rfl
-        linarith [hsplitZ, hRZ, ha'bZ, IHres]
+        omega
 
 /-- **Sign at `+∞`.** Past all its real roots, a nonzero real polynomial has the
 sign of its leading coefficient. -/
@@ -652,32 +588,18 @@ theorem eval_sign_neg_inf {q : Polynomial ℝ} (hq : q ≠ 0) {x : ℝ}
   rw [heval, hlcr] at hsign
   exact hsign
 
-/-- **Sturm's theorem, line form.** For `p ≠ 0` squarefree with a generalised
-Sturm chain, the total number of real roots of `p` equals the drop in `sturmVar`
-from `−∞` to `+∞`.
-
-Proof sketch: take `a` below and `b` above every real root
-(e.g. beyond a Cauchy bound). Then `sturmVar chain a = sturmVarNegInf chain` and
-`sturmVar chain b = sturmVarPosInf chain`, because each chain element has
-constant sign past its largest real zero equal to its sign at the corresponding
-infinity, and `(a, b]` contains every real root. Apply `sturm_half_open`; the
-filtered multiset is all of `p.roots`. -/
-theorem sturm_line (hp : p ≠ 0) (hsf : Squarefree p)
-    (hchain : IsSturmChain p chain) :
-    (sturmVarNegInf chain : ℤ) - sturmVarPosInf chain = p.roots.card := by
+/-- **Sturm's theorem** on the real line: the decrease in sign variations from
+`-∞` to `+∞` counts all real roots. -/
+theorem IsSturmChain.sturm (hchain : IsSturmChain p chain) (hnod : p.roots.Nodup) :
+    sturmVarPosInf chain + p.roots.card = sturmVarNegInf chain := by
   classical
   have hne := hchain.nonzero_mem
   -- A bound `M > 0` strictly beyond every chain zero (hence every root of every element).
   obtain ⟨M, hMpos, hM⟩ : ∃ M : ℝ, 0 < M ∧ ∀ x ∈ chainZeros chain, |x| < M := by
-    set B := insert (0 : ℝ) ((chainZeros chain).image (fun x => |x|)) with hB
-    have hBne : B.Nonempty := ⟨0, Finset.mem_insert_self _ _⟩
-    refine ⟨B.max' hBne + 1, ?_, ?_⟩
-    · have : (0 : ℝ) ≤ B.max' hBne := Finset.le_max' B 0 (Finset.mem_insert_self _ _)
-      linarith
-    · intro x hx
-      have : |x| ≤ B.max' hBne :=
-        Finset.le_max' B |x| (Finset.mem_insert.mpr (Or.inr (Finset.mem_image.mpr ⟨x, hx, rfl⟩)))
-      linarith
+    have h : ∀ᶠ M : ℝ in atTop, ∀ x ∈ chainZeros chain, |x| < M := by
+      rw [Finset.eventually_all]
+      exact fun x _ => eventually_gt_atTop |x|
+    exact ((eventually_gt_atTop 0).and h).exists
   -- Sign of each element at `±M` is its sign at the corresponding infinity.
   have hpos : ∀ q ∈ chain, SignType.sign (q.eval M) = SignType.sign q.leadingCoeff := by
     intro q hq
@@ -706,14 +628,14 @@ theorem sturm_line (hp : p ≠ 0) (hsf : Squarefree p)
     rw [List.forall₂_map_left_iff, List.forall₂_map_right_iff, List.forall₂_same]
     exact hneg
   -- Apply the half-open form on `(-M, M]`, which catches every root.
-  have hkey := sturm_half_open hp hsf hchain (a := -M) (b := M) (by linarith)
-  have hfilter : p.roots.filter (fun r => -M < r ∧ r ≤ M) = p.roots := by
+  have hkey := hchain.sturm_Ioc hnod (a := -M) (b := M) (by linarith)
+  have hfilter : p.roots.filter (fun r => r ∈ Set.Ioc (-M) M) = p.roots := by
     rw [Multiset.filter_eq_self]
     intro r hr
-    have hroot : p.eval r = 0 := (Polynomial.mem_roots hp).mp hr
-    have hrz : r ∈ chainZeros chain := (mem_chainZeros hne).mpr ⟨p, chain_head_mem hchain, hroot⟩
+    have hroot : p.eval r = 0 := (Polynomial.mem_roots hchain.ne_zero).mp hr
+    have hrz : r ∈ chainZeros chain := (mem_chainZeros hne).mpr ⟨p, hchain.head_mem, hroot⟩
     have hra := hM r hrz; rw [abs_lt] at hra
     exact ⟨hra.1, hra.2.le⟩
-  rw [← hMnegEq, ← hMposEq, hkey, hfilter]
+  simpa only [hMnegEq, hMposEq, hfilter] using hkey
 
 end Sturm

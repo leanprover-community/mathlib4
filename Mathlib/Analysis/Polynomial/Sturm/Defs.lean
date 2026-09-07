@@ -7,20 +7,27 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Basic.Sign.Basic
-public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
-Definitions supporting Sturm's theorem over `Polynomial ℝ`.
+# Sturm chains and sign variations
 
-This module defines the zero-skipping sign-variation count `Sturm.sturmVar`
-of a chain of real polynomials at a point, and the predicate
-`Sturm.IsSturmChain` capturing the sign axioms that the root-counting
-argument uses. Nothing here refers to any `HexRealRoots` executable type; the
-definitions are stated directly over `Polynomial ℝ`.
+The number of sign variations in a list is the number of adjacent opposite signs
+remaining after zero entries are removed. For example, `[1, 0, -1]` has one
+sign variation.
 
-The zero-skipping convention: the variation count of a sign pattern such as
-`(+, 0, −)` is `1`. Concretely we drop the zero evaluations and count the
-adjacent pairs of opposite sign among what remains.
+`Sturm.sturmVar` applies this count to the evaluations of a list of real
+polynomials. `Sturm.IsSturmChain` records the local sign conditions used in
+Sturm's theorem. The chain need not be produced by Euclidean division.
+
+## Main definitions
+
+* `Sturm.signVariations`: sign variations with zero entries removed.
+* `Sturm.sturmVar`: sign variations of polynomial evaluations at a real point.
+* `Sturm.sturmVarPosInf` and `Sturm.sturmVarNegInf`: sign variations at infinity.
+* `Sturm.IsSturmChain`: the local sign conditions for a generalized Sturm chain.
 -/
 
 public section
@@ -57,14 +64,11 @@ noncomputable def signVariations (l : List ℝ) : ℕ :=
 @[simp] theorem signVariations_nil : signVariations [] = 0 := rfl
 
 /-- Prepending a zero entry does not change the sign variations. -/
-theorem signVariations_cons_zero (l : List ℝ) :
+@[simp] theorem signVariations_cons_zero (l : List ℝ) :
     signVariations (0 :: l) = signVariations l := by
   simp [signVariations]
 
-/-- Prepending a nonzero entry `a` to a list whose first surviving entry has
-the same sign as `a` (or which becomes empty after dropping zeros) is
-governed by `countSignChanges`; this unfolding lemma exposes the recursion to
-downstream local-sign arguments. -/
+/-- A nonzero first entry survives removal of zero entries. -/
 theorem signVariations_cons_ne (a : ℝ) (l : List ℝ) (ha : a ≠ 0) :
     signVariations (a :: l) =
       countSignChanges (a :: l.filter (fun v => decide (v ≠ 0))) := by
@@ -99,13 +103,11 @@ theorem countSignChanges_congr {l₁ l₂ : List ℝ}
       rw [countSignChanges_cons_cons, countSignChanges_cons_cons]
       have hiff : (a * c < 0) ↔ (b * d < 0) := by
         rw [← sign_eq_neg_one_iff, ← sign_eq_neg_one_iff, sign_mul, sign_mul, hab, hcd]
-      by_cases hc : a * c < 0
-      · rw [ite_eq_left hc, ite_eq_left (hiff.mp hc), ih]
-      · rw [ite_eq_right hc, ite_eq_right (fun h => hc (hiff.mpr h)), ih]
+      simp only [hiff, ih]
 
 /-- Dropping the zero entries commutes with a pointwise sign-equal
 correspondence: the filtered lists remain pointwise sign-equal. -/
-theorem filter_ne_zero_congr {l₁ l₂ : List ℝ}
+private theorem filter_ne_zero_congr {l₁ l₂ : List ℝ}
     (h : List.Forall₂ (fun u v => SignType.sign u = SignType.sign v) l₁ l₂) :
     List.Forall₂ (fun u v => SignType.sign u = SignType.sign v)
       (l₁.filter (fun v => decide (v ≠ 0))) (l₂.filter (fun v => decide (v ≠ 0))) := by
@@ -115,18 +117,9 @@ theorem filter_ne_zero_congr {l₁ l₂ : List ℝ}
     have hzero : (a = 0) ↔ (b = 0) := by
       rw [← sign_eq_zero_iff (a := a), ← sign_eq_zero_iff (a := b), hab]
     by_cases ha : a = 0
-    · have hb : b = 0 := hzero.mp ha
-      have e1 : (a :: l₁').filter (fun v => decide (v ≠ 0))
-          = l₁'.filter (fun v => decide (v ≠ 0)) := by rw [List.filter_cons]; simp [ha]
-      have e2 : (b :: l₂').filter (fun v => decide (v ≠ 0))
-          = l₂'.filter (fun v => decide (v ≠ 0)) := by rw [List.filter_cons]; simp [hb]
-      rw [e1, e2]; exact ih
-    · have hb : b ≠ 0 := fun h => ha (hzero.mpr h)
-      have e1 : (a :: l₁').filter (fun v => decide (v ≠ 0))
-          = a :: l₁'.filter (fun v => decide (v ≠ 0)) := by rw [List.filter_cons]; simp [ha]
-      have e2 : (b :: l₂').filter (fun v => decide (v ≠ 0))
-          = b :: l₂'.filter (fun v => decide (v ≠ 0)) := by rw [List.filter_cons]; simp [hb]
-      rw [e1, e2]; exact List.Forall₂.cons hab ih
+    · simpa [ha, hzero.mp ha] using ih
+    · simpa [ha, mt hzero.mpr ha] using
+        List.Forall₂.cons (R := fun u v : ℝ => SignType.sign u = SignType.sign v) hab ih
 
 /-- `signVariations` reads only the signs of the entries: two real lists whose
 entries are pointwise sign-equal have equal sign variations. -/
@@ -159,7 +152,7 @@ private theorem sign_mul_eq_neg_one {a b : ℝ} :
 
 /-- Prepending a nonzero entry `a` adds one variation exactly when its sign is
 opposite the sign of the next surviving entry. -/
-theorem signVariations_cons_pos {a : ℝ} (l : List ℝ) (ha : a ≠ 0) :
+theorem signVariations_cons {a : ℝ} (l : List ℝ) (ha : a ≠ 0) :
     signVariations (a :: l) =
       (firstSign l).elim 0
         (fun t => if SignType.sign a * t = -1 then 1 else 0) + signVariations l := by
@@ -177,86 +170,32 @@ theorem signVariations_cons_pos {a : ℝ} (l : List ℝ) (ha : a ≠ 0) :
         ← signVariations_cons_ne b l' hb]
       simp only [Option.elim_some]
       congr 1
-      by_cases hlt : a * b < 0
-      · rw [ite_eq_left hlt, ite_eq_left (sign_mul_eq_neg_one.mpr hlt)]
-      · rw [ite_eq_right hlt, ite_eq_right (fun h => hlt (sign_mul_eq_neg_one.mp h))]
+      simp only [sign_mul_eq_neg_one]
 
-/-- A local sign-pattern relation between two real lists: they agree entry by
-entry except that a nonzero entry flanked by two opposite-sign neighbours may
-collapse to `0`. Such a collapse is variation-neutral, so `signVariations` and
-the leading sign are preserved (`SVRel.signVariations_eq`). -/
-inductive SVRel : List ℝ → List ℝ → Prop
-  | nil : SVRel [] []
-  | same {x y : ℝ} {l m : List ℝ} (hx : x ≠ 0) (hy : y ≠ 0)
-      (hs : SignType.sign x = SignType.sign y) (h : SVRel l m) :
-      SVRel (x :: l) (y :: m)
-  | collapse {x X x' : ℝ} {l m : List ℝ} {y y' : ℝ}
-      (hx : x ≠ 0) (hX : X ≠ 0) (hy' : y' ≠ 0)
-      (hsx : SignType.sign x = SignType.sign x')
-      (hsy : SignType.sign y = SignType.sign y')
-      (hopp : SignType.sign x * SignType.sign y = -1)
-      (h : SVRel (y :: l) (y' :: m)) :
-      SVRel (x :: X :: y :: l) (x' :: 0 :: y' :: m)
+/-- Sign variations of the chain at `+∞`: the sign of each element there is the
+sign of its leading coefficient, so this is the zero-skipping variation count
+of the leading coefficients. The zero polynomial contributes leading
+coefficient `0`, which the zero-skipping convention drops. -/
+@[expose]
+noncomputable def sturmVarPosInf (chain : List (Polynomial ℝ)) : ℕ :=
+  signVariations (chain.map Polynomial.leadingCoeff)
 
-private theorem svrel_flank_arith (u v w : SignType) (huw : u * w = -1) (hv : v ≠ 0) :
-    (if u * v = -1 then (1 : ℕ) else 0) + (if v * w = -1 then 1 else 0) = 1 := by
-  revert huw hv; revert u v w; decide
+/-- Sign variations of the chain at `−∞`: the sign of an element there is the
+sign of its leading coefficient times `(-1) ^ degree`, so this is the
+zero-skipping variation count of `leadingCoeff · (-1) ^ natDegree`. -/
+@[expose]
+noncomputable def sturmVarNegInf (chain : List (Polynomial ℝ)) : ℕ :=
+  signVariations (chain.map (fun q => q.leadingCoeff * (-1) ^ q.natDegree))
 
-/-- The core combinatorial fact: an `SVRel`-related pair of lists has equal
-sign variations and equal leading sign. -/
-theorem SVRel.signVariations_eq {L M : List ℝ} (h : SVRel L M) :
-    signVariations L = signVariations M ∧ firstSign L = firstSign M := by
-  induction h with
-  | nil => exact ⟨rfl, rfl⟩
-  | @same x y l m hx hy hs h ih =>
-    refine ⟨?_, ?_⟩
-    · rw [signVariations_cons_pos l hx, signVariations_cons_pos m hy, ih.1, ih.2, hs]
-    · rw [firstSign_cons_ne l hx, firstSign_cons_ne m hy, hs]
-  | @collapse x X x' l m y y' hx hX hy' hsx hsy hopp h ih =>
-    have hy : y ≠ 0 := by
-      intro hy0; rw [hy0, sign_zero, mul_zero] at hopp; exact absurd hopp (by decide)
-    have hx' : x' ≠ 0 := by
-      intro hx0; rw [hx0, sign_zero] at hsx; exact hx (sign_eq_zero_iff.mp hsx)
-    refine ⟨?_, ?_⟩
-    · -- signVariations L
-      rw [signVariations_cons_pos (X :: y :: l) hx,
-        firstSign_cons_ne (y :: l) hX, signVariations_cons_pos (y :: l) hX,
-        firstSign_cons_ne l hy]
-      rw [signVariations_cons_pos (0 :: y' :: m) hx',
-        firstSign_cons_zero (y' :: m) rfl, firstSign_cons_ne m hy',
-        signVariations_cons_zero]
-      simp only [Option.elim_some]
-      rw [← add_assoc, ih.1]
-      congr 1
-      rw [← hsx, ← hsy, ite_eq_left hopp]
-      exact svrel_flank_arith _ _ _ hopp (fun h => hX (sign_eq_zero_iff.mp h))
-    · rw [firstSign_cons_ne (X :: y :: l) hx, firstSign_cons_ne (0 :: y' :: m) hx', hsx]
+/-- A generalized Sturm chain for a real polynomial.
 
-/-- A generalised Sturm chain for `p`: the sign axioms that the counting
-argument actually uses, packaged as explicit fields. The chain is stored as
-a plain `List (Polynomial ℝ)` and elements are addressed by index through
-`getElem?`, so no length lower bound is baked in (a nonzero constant `p` has
-the one-element chain `[p]`).
+At a root of the first polynomial, the product of the first two entries changes
+from negative to positive. At a root of an interior entry, its neighbors have
+opposite signs. The last entry has no real roots, and every entry is nonzero.
 
-The fields are:
-
-* `nonempty` / `head` — the chain is nonempty and its head is `p`;
-* `root_flank` — at every real root `r` of `p` there is a second element
-  `q` (`chain[1] = q`), nonzero at `r`, with `p * q` negative on a punctured
-  left neighbourhood of `r` and positive on a punctured right neighbourhood.
-  Phrasing the second element existentially forbids the degenerate witness in
-  which `p` has a root but the chain has no derivative-like second entry;
-* `nonzero_mem` — no chain element is the zero polynomial, so each element
-  has finitely many zeros and the counting theorem's telescope over the
-  chain's zeros is finite;
-* `consec_coprime` — consecutive elements never vanish at a common point;
-* `interior_alternates` — when an interior element (one with both neighbours
-  present) vanishes at a point, both neighbours are nonzero there and have
-  opposite signs, so the local pattern is `(±, 0, ∓)`;
-* `last_no_root` — the last element has no real zero. -/
+These conditions allow the one-element chain of a nonzero constant polynomial.
+-/
 structure IsSturmChain (p : Polynomial ℝ) (chain : List (Polynomial ℝ)) : Prop where
-  /-- The chain is nonempty. -/
-  nonempty : chain ≠ []
   /-- The head of the chain is `p`. -/
   head : chain.head? = some p
   /-- At every real root `r` of `p`, the chain has a second element `q`,
@@ -268,9 +207,6 @@ structure IsSturmChain (p : Polynomial ℝ) (chain : List (Polynomial ℝ)) : Pr
     (∀ᶠ x in 𝓝[>] r, 0 < (p * q).eval x)
   /-- No chain element is the zero polynomial. -/
   nonzero_mem : ∀ q ∈ chain, q ≠ 0
-  /-- Consecutive elements have no common real zero. -/
-  consec_coprime : ∀ (i : ℕ) (x : ℝ) (a b : Polynomial ℝ),
-    chain[i]? = some a → chain[i + 1]? = some b → a.eval x = 0 → b.eval x ≠ 0
   /-- Whenever the interior element `b = chain[i+1]` vanishes at `x`, its two
   neighbours `a = chain[i]` and `c = chain[i+2]` are nonzero there and have
   opposite signs. -/
@@ -279,5 +215,24 @@ structure IsSturmChain (p : Polynomial ℝ) (chain : List (Polynomial ℝ)) : Pr
     b.eval x = 0 → a.eval x ≠ 0 ∧ c.eval x ≠ 0 ∧ a.eval x * c.eval x < 0
   /-- The last element of the chain has no real zero. -/
   last_no_root : ∀ q : Polynomial ℝ, chain.getLast? = some q → ∀ x : ℝ, q.eval x ≠ 0
+
+namespace IsSturmChain
+
+variable {p : Polynomial ℝ} {chain : List (Polynomial ℝ)}
+
+/-- A Sturm chain is nonempty. -/
+theorem nonempty (h : IsSturmChain p chain) : chain ≠ [] := by
+  rintro rfl
+  simpa using h.head
+
+/-- The polynomial counted by a Sturm chain is its first entry. -/
+theorem head_mem (h : IsSturmChain p chain) : p ∈ chain :=
+  List.mem_of_head? h.head
+
+/-- A polynomial admitting a Sturm chain is nonzero. -/
+theorem ne_zero (h : IsSturmChain p chain) : p ≠ 0 :=
+  h.nonzero_mem p h.head_mem
+
+end IsSturmChain
 
 end Sturm
