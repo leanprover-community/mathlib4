@@ -276,7 +276,8 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
       rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
     exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
-  simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
+  simpa [nnnorm_inr] using
+    h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (ofClass φ : A →⋆ₙₐ[ℂ] B))) a
 
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
