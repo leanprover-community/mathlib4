@@ -696,7 +696,7 @@ theorem sortedLE_append {l₁ l₂ : List α} :
 
 @[grind =]
 theorem sortedGE_append {l₁ l₂ : List α} :
-    SortedGE (l₁ ++ l₂) ↔ SortedGE l₁ ∧ SortedGE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a ≥ b := by
+    SortedGE (l₁ ++ l₂) ↔ SortedGE l₁ ∧ SortedGE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b ≤ a := by
   rw [sortedGE_iff_pairwise, sortedGE_iff_pairwise, sortedGE_iff_pairwise, pairwise_append]
 
 @[grind =]
@@ -706,7 +706,7 @@ theorem sortedLT_append {l₁ l₂ : List α} :
 
 @[grind =]
 theorem sortedGT_append {l₁ l₂ : List α} :
-    SortedGT (l₁ ++ l₂) ↔ SortedGT l₁ ∧ SortedGT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a > b := by
+    SortedGT (l₁ ++ l₂) ↔ SortedGT l₁ ∧ SortedGT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b < a := by
   rw [sortedGT_iff_pairwise, sortedGT_iff_pairwise, sortedGT_iff_pairwise, pairwise_append]
 
 section
@@ -732,7 +732,7 @@ theorem sortedGT_cons : SortedGT (a :: l) ↔ (∀ b ∈ l, b < a) ∧ SortedGT 
 theorem sortedLE_concat : SortedLE (l.concat a) ↔ (∀ b ∈ l, b ≤ a) ∧ SortedLE l := by
   grind
 
-theorem sortedGE_concat : SortedLE (l.concat a) ↔ (∀ b ∈ l, b ≤ a) ∧ SortedLE l := by
+theorem sortedGE_concat : SortedGE (l.concat a) ↔ (∀ b ∈ l, a ≤ b) ∧ SortedGE l := by
   grind
 
 theorem sortedLT_concat : SortedLT (l.concat a) ↔ (∀ b ∈ l, b < a) ∧ SortedLT l := by
