@@ -211,7 +211,7 @@ protected lemma IsCompactElement.iSup [Finite ι] (h : ∀ i, IsCompactElement (
     IsCompactElement (⨆ i, f i) := by
   rw [← iSup_plift_down]
   cases nonempty_fintype (PLift ι)
-  simpa [Finset.sup_eq_iSup]  using isCompactElement_finsetSup .univ fun i _ ↦ h i.down
+  simpa [Finset.sup_eq_iSup] using isCompactElement_finsetSup .univ fun i _ ↦ h i.down
 
 protected lemma IsCompactElement.sSup (hs : s.Finite) (h : ∀ a ∈ s, IsCompactElement a) :
     IsCompactElement (sSup s) := by
