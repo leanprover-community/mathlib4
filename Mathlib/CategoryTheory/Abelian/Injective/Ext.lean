@@ -292,7 +292,7 @@ lemma extClass_comp_extMk
   dsimp
   simp only [Cocycle.comp_coe, Cocycle.fromSingleMk_coe]
   ext p q hpq
-  by_cases hp : p = 0 ∨ p = - 1
+  by_cases hp : p = 0 ∨ p = -1
   · obtain rfl | rfl := hp
     · obtain rfl : q = m := by lia
       simp [mappingCone.ext_from_iff _ _ _ (zero_add 1),
