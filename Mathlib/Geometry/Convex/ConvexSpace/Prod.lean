@@ -119,3 +119,60 @@ lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ι →₀ X) (i : ι) :
   isAffineMap_eval.map_convexCombPair ..
 
 end Finsupp
+
+namespace Convexity
+variable {ι X Y : Type*} [ConvexSpace R X] [ConvexSpace R Y]
+
+section Prod
+variable {Z : Type*} [ConvexSpace R Z]
+
+@[fun_prop]
+lemma IsAffineMap.prodMk {f : X → Y} {g : X → Z} (hf : IsAffineMap R f) (hg : IsAffineMap R g) :
+    IsAffineMap R fun x ↦ (f x, g x) where
+  map_sConvexComb w := by ext <;> simp [hf.map_sConvexComb, hg.map_sConvexComb, sConvexComb_map]
+
+@[fun_prop]
+protected lemma IsAffineMap.fst {f : X → Y × Z} (hf : IsAffineMap R f) :
+    IsAffineMap R fun x ↦ (f x).1 := Prod.isAffineMap_fst.comp hf
+
+@[fun_prop]
+protected lemma IsAffineMap.snd {f : X → Y × Z} (hf : IsAffineMap R f) :
+    IsAffineMap R fun x ↦ (f x).2 := Prod.isAffineMap_snd.comp hf
+
+@[simp]
+lemma isAffineMap_prodMk_iff {f : X → Y} {g : X → Z} :
+    (IsAffineMap R fun x ↦ (f x, g x)) ↔ IsAffineMap R f ∧ IsAffineMap R g :=
+  ⟨fun hf ↦ ⟨hf.fst, hf.snd⟩, fun hf ↦ hf.1.prodMk hf.2⟩
+
+end Prod
+
+section Pi
+variable {Y : ι → Type*} [∀ i, ConvexSpace R (Y i)] {f : X → ∀ i, Y i}
+
+@[fun_prop]
+lemma IsAffineMap.pi (hf : ∀ i, IsAffineMap R (f · i)) : IsAffineMap R f where
+  map_sConvexComb w := by ext; simp [(hf _).map_sConvexComb, sConvexComb_map]
+
+lemma IsAffineMap.eval (hf : IsAffineMap R f) (i : ι) : IsAffineMap R (f · i) :=
+  Pi.isAffineMap_eval.comp hf
+
+lemma isAffineMap_pi_iff : IsAffineMap R f ↔ ∀ i, IsAffineMap R (f · i) :=
+  ⟨fun hf ↦ hf.eval, .pi⟩
+
+end Pi
+
+section Finsupp
+variable [Zero Y] {f : X → ι →₀ Y}
+
+@[fun_prop]
+lemma IsAffineMap.finsupp (hf : ∀ i, IsAffineMap R (f · i)) : IsAffineMap R f where
+  map_sConvexComb w := by ext; simp [(hf _).map_sConvexComb, sConvexComb_map]
+
+lemma IsAffineMap.finsuppEval (hf : IsAffineMap R f) (i : ι) : IsAffineMap R (f · i) :=
+  Finsupp.isAffineMap_eval.comp hf
+
+lemma isAffineMap_finsupp_iff : IsAffineMap R f ↔ ∀ i, IsAffineMap R (f · i) :=
+  ⟨fun hf ↦ hf.finsuppEval, .finsupp⟩
+
+end Finsupp
+end Convexity
