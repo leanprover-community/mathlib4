@@ -44,6 +44,8 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
   in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
+- `AlgEquiv.restrictNormalHom_continuous`: restriction to a normal intermediate field is continuous.
+
 ## Notation
 
 - In docstrings, we will write `Gal(L/E)` to denote the fixing subgroup of an intermediate field
@@ -180,6 +182,29 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
     (E : IntermediateField K L) [FiniteDimensional K E] :
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) :=
   OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
+
+/-- Restriction of automorphisms to a normal intermediate field is continuous for the Krull
+topology. -/
+theorem AlgEquiv.restrictNormalHom_continuous {k K : Type*} [Field k] [Field K] [Algebra k K]
+    (L : IntermediateField k K) [Normal k L] :
+    Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
+  apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
+  intro N hN
+  rw [map_one, krullTopology_mem_nhds_one_iff] at hN
+  obtain ⟨L', _, hO⟩ := hN
+  have := Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
+  apply mem_nhds_iff.mpr
+  use (IntermediateField.lift L').fixingSubgroup
+  constructor
+  · intro x hx
+    apply hO
+    simp only [SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff] at hx ⊢
+    intro y hy
+    have := AlgEquiv.restrictNormal_commutes x L y
+    dsimp at this
+    rw [hx y.1 ((IntermediateField.mem_lift y).mpr hy)] at this
+    exact SetLike.coe_eq_coe.mp this
+  · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L'), congrFun rfl⟩
 
 /-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]

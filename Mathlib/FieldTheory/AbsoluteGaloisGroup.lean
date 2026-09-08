@@ -5,8 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
 /-!
@@ -22,6 +22,8 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
   topological closure of its commutator subgroup.
 
 ## Main results
+- `Field.absoluteGaloisGroup.restrictAlgebraicClosure` : restriction from the algebraic closure to
+  the separable closure is an isomorphism of topological groups.
 - `Field.absoluteGaloisGroup.commutator_closure_isNormal` : the topological closure of the
   commutator of `absoluteGaloisGroup` is a normal subgroup.
 
@@ -47,6 +49,62 @@ deriving Group, TopologicalSpace, IsTopologicalGroup
 add_decl_doc instTopologicalSpaceAbsoluteGaloisGroup
 
 local notation "G_K" => absoluteGaloisGroup
+
+open IntermediateField in
+/-- Restriction from the algebraic closure to the separable closure induces an isomorphism of
+topological groups from the automorphism group of the algebraic closure to the absolute Galois
+group. -/
+noncomputable def absoluteGaloisGroup.restrictAlgebraicClosure :
+    Gal(AlgebraicClosure K/K) ≃ₜ* G_K K := by
+  change Gal(AlgebraicClosure K/K) ≃ₜ* Gal(SeparableClosure K/K)
+  let e : Gal(AlgebraicClosure K/K) ≃* Gal(SeparableClosure K/K) :=
+    MulEquiv.ofBijective (AlgEquiv.restrictNormalHom (SeparableClosure K)) (by
+      refine ⟨?_, AlgEquiv.restrictNormalHom_surjective (AlgebraicClosure K)⟩
+      intro σ τ h
+      apply AlgEquiv.coe_toAlgHom_injective
+      apply IsPurelyInseparable.injective_restrictDomain
+        (SeparableClosure K) (AlgebraicClosure K) K (AlgebraicClosure K)
+      ext x
+      change σ x.val = τ x.val
+      simpa only [AlgEquiv.restrictNormalHom_apply] using
+        congrArg Subtype.val (DFunLike.congr_fun h x))
+  refine { e with
+    continuous_toFun :=
+      AlgEquiv.restrictNormalHom_continuous (separableClosure K (AlgebraicClosure K))
+    continuous_invFun := ?_ }
+  classical
+  apply continuous_of_continuousAt_one e.symm
+  rw [ContinuousAt, map_one]
+  refine ((galGroupBasis K (SeparableClosure K)).nhds_one_hasBasis.tendsto_iff
+    (galGroupBasis K (AlgebraicClosure K)).nhds_one_hasBasis).mpr ?_
+  rintro _ ⟨_, ⟨F, hF : FiniteDimensional K _, rfl⟩, rfl⟩
+  have : Algebra.EssFiniteType K F := inferInstance
+  obtain ⟨s, rfl⟩ := essFiniteType_iff.mp this
+  let q := ringExpChar (SeparableClosure K)
+  have : ExpChar (AlgebraicClosure K) q :=
+    expChar_of_injective_ringHom (algebraMap (SeparableClosure K) (AlgebraicClosure K)).injective q
+  choose n y hy using fun x : AlgebraicClosure K ↦
+    IsPurelyInseparable.pow_mem (SeparableClosure K) q x
+  refine ⟨_, ⟨_, ⟨adjoin K (y '' (s : Set (AlgebraicClosure K))), ?_, rfl⟩, rfl⟩, ?_⟩
+  · exact finiteDimensional_adjoin fun x _ ↦ Algebra.IsIntegral.isIntegral x
+  · intro σ hσ
+    change e.symm σ ∈ (adjoin K (s : Set (AlgebraicClosure K))).fixingSubgroup
+    rw [IntermediateField.mem_fixingSubgroup_iff]
+    change ∀ x ∈ adjoin K (s : Set (AlgebraicClosure K)), e.symm σ • x = x
+    rw [forall_mem_adjoin_smul_eq_self_iff]
+    intro x hx
+    apply iterateFrobenius_inj (AlgebraicClosure K) q (n x)
+    change (e.symm σ x) ^ q ^ n x = x ^ q ^ n x
+    rw [← map_pow, ← hy x]
+    rw [← AlgEquiv.restrictNormal_commutes]
+    change algebraMap (SeparableClosure K) (AlgebraicClosure K) (e (e.symm σ) (y x)) = _
+    rw [e.apply_symm_apply]
+    congr 1
+    exact hσ ⟨y x, subset_adjoin K _ ⟨x, hx, rfl⟩⟩
+
+@[simp]
+theorem absoluteGaloisGroup.restrictAlgebraicClosure_apply (σ : Gal(AlgebraicClosure K/K)) :
+    restrictAlgebraicClosure K σ = σ.restrictNormal (SeparableClosure K) := rfl
 
 section
 
