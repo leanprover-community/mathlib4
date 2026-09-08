@@ -95,7 +95,7 @@ lemma koszulComplex.d_comp_d (n : ℕ) :
   simpa [koszulComplex.d, ← exteriorPower.alternatingMapLinearEquiv_comp]
 
 /-- The Koszul complex, with objects exterior powers and differential `koszulComplex.d`. -/
-@[stacks 0622 "only recording chain complex"]
+@[implicit_reducible, stacks 0622 "only recording chain complex"]
 noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
   ChainComplex.of (fun n ↦ of R (⋀[R]^n M))
     (fun n ↦ ofHom (koszulComplex.d φ n))
@@ -138,7 +138,7 @@ with `φ' ∘ₗ f = φ`. -/
 noncomputable def map (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) :
     koszulComplex φ ⟶ koszulComplex φ' :=
   ChainComplex.ofHom (fun i ↦ ofHom (exteriorPower.map i f))
-    (fun i ↦ by simpa [d_def] using! map_d_comm φ f φ' h i)
+    (fun i ↦ by simpa [d_def] using map_d_comm φ f φ' h i)
 
 lemma map_f (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) (i : ℕ) :
     (map φ f φ' h).f i = ofHom (exteriorPower.map i f) := rfl
@@ -156,7 +156,7 @@ lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ
     koszulComplex.map φ f φ' h ≫ koszulComplex.map φ' g φ'' h' =
       koszulComplex.map φ (g ∘ₗ f) φ'' h'' := by
   ext i x
-  simp [map_f, X_def, exteriorPower.map_comp]
+  simp [map_f, exteriorPower.map_comp]
 
 /-- The isomorphism between two Koszul complexes induced by an isomorphism between modules which
 commutes with the two defining linear maps. -/
@@ -167,10 +167,10 @@ noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' 
   inv := koszulComplex.map φ' f.symm φ ((f.comp_toLinearMap_symm_eq φ' φ).mpr h.symm)
   hom_inv_id := by
     ext i x
-    simp [map_f, X_def, ← exteriorPower.map_comp]
+    simp [-LinearMap.coe_comp, map_f, ← exteriorPower.map_comp _]
   inv_hom_id := by
     ext i x
-    simp [map_f, X_def, ← exteriorPower.map_comp]
+    simp [-LinearMap.coe_comp, map_f, ← exteriorPower.map_comp _]
 
 end functoriality
 
