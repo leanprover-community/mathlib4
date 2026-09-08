@@ -81,7 +81,7 @@ instance equiv (e : α ≃ β) : TendstoCofinite e := ⟨e.injective.tendsto_cof
 open Finset in
 /-- Noncomputably constructs `HasMulAntidiagonal` data from the assumption that
 the multiplication map has finite fibers. -/
-@[to_additive /-- Noncomputably constructs `HasMulAntidiagonal` data from the assumption that
+@[to_additive /-- Noncomputably constructs `HasAntidiagonal` data from the assumption that
 the addition map has finite fibers. -/]
 noncomputable abbrev hasMulAntidiagonal {N : Type*} [Monoid N]
     [TendstoCofinite fun (p : N × N) ↦ p.1 * p.2] : HasMulAntidiagonal N where
