@@ -152,7 +152,7 @@ theorem gc_map_comap : GaloisConnection (Ideal.map f) (Ideal.comap f) := fun _ _
 theorem comap_id : I.comap (RingHom.id R) = I :=
   Ideal.ext fun _ => Iff.rfl
 
-@[simp]
+-- simp can prove this now
 lemma comap_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
     Ideal.comap (AlgHom.id R S) I = I :=
   I.comap_id
@@ -161,7 +161,7 @@ lemma comap_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I :
 theorem map_id : I.map (RingHom.id R) = I :=
   (gc_map_comap (RingHom.id R)).l_unique GaloisConnection.id comap_id
 
-@[simp]
+-- simp can prove this now
 lemma map_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
     Ideal.map (AlgHom.id R S) I = I :=
   I.map_id
@@ -482,6 +482,7 @@ theorem comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
     (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
   rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
     RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
+-- TODO: these two simp lemmas are not in simpNF any more!
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
 theorem map_comap_of_equiv {I : Ideal R} (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
