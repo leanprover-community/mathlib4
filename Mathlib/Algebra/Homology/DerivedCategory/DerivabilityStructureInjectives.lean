@@ -265,7 +265,6 @@ private instance : (L C).IsInduced where
   inverseImage_eq := by ext; apply isIso_quotient_map_iff
 
 variable (C) in
-set_option backward.isDefEq.respectTransparency false in
 /-- The right localizer morphism in the Guitart exact square `iso`. -/
 private abbrev R : LocalizerMorphism (CochainComplex.Plus.quasiIso C) (quasiIso C) where
   functor := HomotopyCategory.Plus.quotient C
