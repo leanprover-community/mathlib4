@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
+public import Mathlib.Algebra.Homology.Embedding.ExtendLimits
 public import Mathlib.CategoryTheory.Abelian.Injective.Ext
 
 /-!
@@ -90,10 +91,8 @@ noncomputable def shortComplexExtend : ShortComplex (CochainComplex C ℤ) where
     rfl
 
 lemma shortExact_shortComplexExtend :
-    h.shortComplexExtend.ShortExact := by
-  have : PreservesFiniteLimits (ComplexShape.embeddingUpNat.extendFunctor C) := sorry
-  have : PreservesFiniteColimits (ComplexShape.embeddingUpNat.extendFunctor C):= sorry
-  exact h.shortExact_shortComplex.map_of_exact (ComplexShape.embeddingUpNat.extendFunctor C)
+    h.shortComplexExtend.ShortExact :=
+  h.shortExact_shortComplex.map_of_exact (ComplexShape.embeddingUpNat.extendFunctor C)
 
 /- TODO, relate these three triangles:
 

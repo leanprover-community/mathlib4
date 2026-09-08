@@ -367,6 +367,11 @@ noncomputable def extendFunctorCompEvalIso
   NatIso.ofComponents (fun K ↦ K.extendXIso e h)
     (by simp [HomologicalComplex.extendMap_f _ _ h])
 
+lemma isZero_extendFunctor_comp_eval
+    [HasZeroMorphisms C] (i' : ι') (h : ∀ i, e.f i ≠ i') :
+    IsZero (e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i') :=
+  Functor.isZero _ (fun _ ↦ HomologicalComplex.isZero_extend_X _ _ _ h)
+
 instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
 
 instance [Preadditive C] : (e.extendFunctor C).Additive where
