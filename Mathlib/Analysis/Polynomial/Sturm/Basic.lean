@@ -91,27 +91,15 @@ private theorem SignRelation.signVariations_eq {L M : List ℝ} (h : SignRelatio
 
 
 /-- A real polynomial with no roots on an interval has equal signs at its endpoints. -/
-theorem eval_sign_eq_of_no_zero {q : Polynomial ℝ} {a b : ℝ} (hab : a ≤ b)
+private theorem eval_sign_eq_of_no_zero {q : Polynomial ℝ} {a b : ℝ} (hab : a ≤ b)
     (hz : ∀ x ∈ Set.Icc a b, q.eval x ≠ 0) :
     SignType.sign (q.eval a) = SignType.sign (q.eval b) := by
-  have hna : q.eval a ≠ 0 := hz a ⟨le_refl a, hab⟩
-  have hnb : q.eval b ≠ 0 := hz b ⟨hab, le_refl b⟩
-  have hpos : 0 < q.eval a * q.eval b := by
-    rcases lt_or_gt_of_ne (mul_ne_zero hna hnb) with hlt | hgt
-    · exfalso
-      have hmem : (0 : ℝ) ∈ Set.uIcc (q.eval a) (q.eval b) := by
-        rcases mul_neg_iff.mp hlt with ⟨hx, hy⟩ | ⟨hx, hy⟩
-        · exact Set.mem_uIcc.mpr (Or.inr ⟨hy.le, hx.le⟩)
-        · exact Set.mem_uIcc.mpr (Or.inl ⟨hx.le, hy.le⟩)
-      have hsub := intermediate_value_uIcc (a := a) (b := b)
-        (f := fun x => q.eval x) q.continuousOn
-      obtain ⟨c, hc, hc0⟩ := hsub hmem
-      rw [Set.uIcc_of_le hab] at hc
-      exact hz c hc hc0
-    · exact hgt
-  rcases mul_pos_iff.mp hpos with ⟨h1, h2⟩ | ⟨h1, h2⟩
-  · rw [sign_pos h1, sign_pos h2]
-  · rw [sign_neg h1, sign_neg h2]
+  apply isPreconnected_Icc.constant (f := fun x => SignType.sign (q.eval x))
+    (x := a) (y := b) _ ⟨le_refl a, hab⟩ ⟨hab, le_refl b⟩
+  refine (continuousOn_of_forall_continuousAt fun y hy => ?_).comp q.continuousOn
+    (Set.mapsTo_image _ _)
+  obtain ⟨x, hx, rfl⟩ := hy
+  exact continuousAt_sign_of_ne_zero (hz x hx)
 
 /-- Build the sign-pattern relation `SignRelation` between the evaluations of a
 polynomial list at a "generic" point `a` (where every element is nonzero) and a
