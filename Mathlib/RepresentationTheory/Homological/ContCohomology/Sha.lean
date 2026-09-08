@@ -19,6 +19,8 @@ which induces maps between absolute Galois groups and hence maps between cohomol
 
 When `V` is the set of places of a global field `K`, `A` is the set of rational points of an abelian
 variety over K, and `n = 1`, this recovers the classical definition of the Tate-Shafarevich group.
+
+Reference: https://en.wikipedia.org/wiki/Tate%E2%80%93Shafarevich_group
 -/
 
 @[expose] public section
@@ -39,8 +41,8 @@ noncomputable def tateSha : AddSubgroup (continuousCohomology n A) :=
     (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker
 
 lemma tateSha_eq_iInf :
-    tateSha f A n = iInf (fun v : V ↦ (ContinuousCohomology.map
-      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker) := rfl
+    tateSha f A n = ⨅ v : V, (ContinuousCohomology.map
+      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker := rfl
 
 lemma tateSha_eq_ker_pi :
     tateSha f A n = (AddMonoidHom.pi fun v : V ↦ (ContinuousCohomology.map
