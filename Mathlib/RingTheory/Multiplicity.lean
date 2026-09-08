@@ -106,6 +106,9 @@ theorem multiplicity_eq_zero_of_not_finiteMultiplicity (h : ¬FiniteMultiplicity
   rw [multiplicity, emultiplicity_eq_top.mpr h]
   decide
 
+@[deprecated (since := "2026-09-08")] alias multiplicity_eq_one_of_not_finiteMultiplicity :=
+  multiplicity_eq_zero_of_not_finiteMultiplicity
+
 @[simp]
 theorem multiplicity_le_emultiplicity :
     multiplicity a b ≤ emultiplicity a b := by
