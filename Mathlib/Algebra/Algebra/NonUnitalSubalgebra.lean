@@ -523,9 +523,8 @@ theorem mem_equalizer (φ ψ : A →ₙₐ[R] B) (x : A) :
 /-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
-instance fintypeRange {F : Type*} [FunLike F A B] [NonUnitalAlgHomClass F R A B]
-    [Fintype A] [DecidableEq B] (φ : F) :
-    Fintype (NonUnitalAlgHomClass.toNonUnitalAlgHom φ).range :=
+instance fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₙₐ[R] B) :
+    Fintype φ.range :=
   Set.fintypeRange φ
 
 end NonUnitalAlgHom

@@ -467,11 +467,10 @@ theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) 
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of a non-unital star algebra homomorphism. -/
-def codRestrict {F : Type*} [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
-    (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →⋆ₙₐ[R] S where
+def codRestrict (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
+    A →⋆ₙₐ[R] S where
   toNonUnitalAlgHom := NonUnitalAlgHom.codRestrict f S.toNonUnitalSubalgebra hf
-  map_star' := fun a => Subtype.ext <| by
-    apply map_star f a
+  map_star' := fun a => Subtype.ext <| by exact map_star f a
 
 @[simp]
 theorem subtype_comp_codRestrict
@@ -500,11 +499,17 @@ abbrev rangeRestrict (f : A →⋆ₙₐ[R] B) :
 
 /-- The equalizer of two non-unital star `R`-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →⋆ₙₐ[R] B) : NonUnitalStarSubalgebra R A where
-  toNonUnitalSubalgebra := NonUnitalAlgHom.equalizer ϕ ψ
+  toNonUnitalSubalgebra := NonUnitalAlgHom.equalizer ϕ ψ.toNonUnitalAlgHom
   star_mem' := by
-    --intro x (hx : ϕ x = ψ x)
-    --simp [map_star, hx]
-    all_goals sorry
+    intro x hx
+    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+      NonUnitalSubsemiring.mem_toAddSubmonoid, NonUnitalSubalgebra.mem_toNonUnitalSubsemiring,
+      NonUnitalAlgHom.mem_equalizer, coe_toNonUnitalAlgHom] at hx
+    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+      NonUnitalSubsemiring.mem_toAddSubmonoid, NonUnitalSubalgebra.mem_toNonUnitalSubsemiring,
+      NonUnitalAlgHom.mem_equalizer, coe_toNonUnitalAlgHom, map_star, ← hx]
+    change ϕ (star x) = star (ϕ x)
+    exact map_star ..
 
 @[simp]
 theorem mem_equalizer (φ ψ : A →⋆ₙₐ[R] B) (x : A) :
