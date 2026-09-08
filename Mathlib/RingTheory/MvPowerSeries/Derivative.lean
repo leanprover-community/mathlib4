@@ -162,14 +162,14 @@ theorem pderiv_pow {i : σ} (g : MvPowerSeries σ R) (n : ℕ) :
   rw [Derivation.leibniz_pow, smul_eq_mul, nsmul_eq_mul, mul_assoc]
 
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPowerSeries σ R} {i : σ} :
-    pderiv S i (map φ f) = map φ (pderiv R i f) := by
+    pderiv i (map φ f) = map φ (pderiv i f) := by
   ext n
   simp [coeff_pderiv]
 
 /-- Renaming the variables along an injective map commutes with partial differentiation. -/
 lemma pderiv_rename {f : σ → τ} (hf : Function.Injective f) [Filter.TendstoCofinite f]
     (x : σ) (p : MvPowerSeries σ R) :
-    pderiv R (f x) (rename f p) = rename f (pderiv R x p) := by
+    pderiv (f x) (rename f p) = rename f (pderiv x p) := by
   classical
   ext n
   rw [coeff_pderiv, coeff_rename, coeff_rename, Finset.sum_mul]
