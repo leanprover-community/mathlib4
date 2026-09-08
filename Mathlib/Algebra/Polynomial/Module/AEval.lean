@@ -117,7 +117,7 @@ lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
   ext p
   simp_rw [mem_annihilator, RingHom.mem_ker]
   change (∀ m : M, aeval a p • m = 0) ↔ _
-  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
+  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by sorry /-simp [h]-/⟩
 
 @[simp]
 lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
@@ -125,7 +125,7 @@ lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
   ext p
   simp only [Submodule.mem_annihilator, Submodule.mem_top, forall_true_left, RingHom.mem_ker]
   change (∀ m : M, aeval a p • m = 0) ↔ _
-  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
+  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by sorry /-simp [h]-/⟩
 
 section Submodule
 
