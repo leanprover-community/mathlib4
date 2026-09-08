@@ -30,7 +30,7 @@ blowup in the future.
 
 universe u v
 
-variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable {R : Type u} [CommRing R] (I : Ideal R)
 
 open Polynomial
 
