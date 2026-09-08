@@ -91,10 +91,11 @@ instance instIsReducedOfIsReduced : IsReduced R[X] := by
       rw [← mul_one p, this, mul_zero]
     | 1, hn => simpa using hn
     | (n + 2), hn =>
-      refine IH (n + 1) (by omega) (key _ ?_)
+      refine IH (n + 1) (by lia) (key _ ?_)
       have hx : p ^ (n + 1) * p ^ (n + 1) = p ^ (n + 2) * p ^ n := by
-        rw [← pow_add, ← pow_add]; ring_nf
-      rw [hx, hn, zero_mul]
+        rw [← pow_add, ← pow_add]
+        lia
+      lia
 
 end Polynomial
 
