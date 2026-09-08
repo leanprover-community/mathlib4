@@ -317,6 +317,11 @@ def toNonUnitalStarRingHom {A B : Type*}
 instance {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] :
     CoeOut (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.toNonUnitalStarRingHom
 
+@[simp]
+lemma coe_toNonUnitalStarRingHom {A B : Type*}
+    [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] (f : A ≃⋆+* B) :
+    (f.toNonUnitalRingHom : A → B) = f := rfl
+
 instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
 
 @[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
