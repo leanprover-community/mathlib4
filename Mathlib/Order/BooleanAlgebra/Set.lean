@@ -63,21 +63,25 @@ theorem sdiff_union_sdiff_cancel' (hi : s ∩ u ⊆ t) (hu : t ⊆ s ∪ u) : (s
 
 @[deprecated (since := "2026-06-03")] alias diff_union_diff_cancel' := sdiff_union_sdiff_cancel'
 
+@[push]
 theorem sdiff_sdiff_eq_sdiff_union (h : u ⊆ s) : s \ (t \ u) = s \ t ∪ u :=
   sdiff_sdiff_eq_sdiff_sup h
 
 @[deprecated (since := "2026-06-03")] alias diff_diff_eq_sdiff_union := sdiff_sdiff_eq_sdiff_union
 
+@[push]
 theorem inter_sdiff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
   inf_sdiff_distrib_left _ _ _
 
 @[deprecated (since := "2026-06-03")] alias inter_diff_distrib_left := inter_sdiff_distrib_left
 
+@[push]
 theorem inter_sdiff_distrib_right (s t u : Set α) : (s \ t) ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
 
 @[deprecated (since := "2026-06-03")] alias inter_diff_distrib_right := inter_sdiff_distrib_right
 
+@[push]
 theorem sdiff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) :=
   inf_sdiff
 
@@ -114,10 +118,11 @@ theorem compl_inter_self (s : Set α) : sᶜ ∩ s = ∅ :=
 theorem compl_empty : (∅ : Set α)ᶜ = univ :=
   compl_bot
 
-@[simp]
+@[push, simp]
 theorem compl_union (s t : Set α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ :=
   compl_sup
 
+@[push]
 theorem compl_inter (s t : Set α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
   compl_inf
 
@@ -143,9 +148,11 @@ lemma inl_compl_union_inr_compl {s : Set α} {t : Set β} :
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_notMem s).symm
 
+@[push]
 theorem union_eq_compl_compl_inter_compl (s t : Set α) : s ∪ t = (sᶜ ∩ tᶜ)ᶜ :=
   ext fun _ => or_iff_not_and_not
 
+@[push]
 theorem inter_eq_compl_compl_union_compl (s t : Set α) : s ∩ t = (sᶜ ∪ tᶜ)ᶜ :=
   ext fun _ => and_iff_not_or_not
 
@@ -197,7 +204,7 @@ lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
 
 lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
 
-@[simp]
+@[push, simp]
 lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
 
 @[simp]
@@ -391,31 +398,37 @@ theorem sdiff_subset_comm {s t u : Set α} : s \ t ⊆ u ↔ s \ u ⊆ t :=
 
 @[deprecated (since := "2026-06-03")] alias diff_subset_comm := sdiff_subset_comm
 
+@[push]
 theorem sdiff_inter {s t u : Set α} : s \ (t ∩ u) = s \ t ∪ s \ u :=
   sdiff_inf
 
 @[deprecated (since := "2026-06-03")] alias diff_inter := sdiff_inter
 
+@[push ←]
 theorem sdiff_inter_sdiff : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
   sdiff_sup.symm
 
 @[deprecated (since := "2026-06-03")] alias diff_inter_diff := sdiff_inter_sdiff
 
+@[push]
 theorem sdiff_compl : s \ tᶜ = s ∩ t :=
   _root_.sdiff_compl
 
 @[deprecated (since := "2026-06-03")] alias diff_compl := sdiff_compl
 
+@[push]
 theorem compl_sdiff : (t \ s)ᶜ = s ∪ tᶜ :=
   Eq.trans _root_.compl_sdiff himp_eq
 
 @[deprecated (since := "2026-06-03")] alias compl_diff := compl_sdiff
 
+@[push]
 theorem sdiff_sdiff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
 
 @[deprecated (since := "2026-06-03")] alias diff_diff_right := sdiff_sdiff_right
 
+@[push]
 theorem inter_sdiff_right_comm : (s ∩ t) \ u = s \ u ∩ t := by
   rw [sdiff_eq, sdiff_eq, inter_right_comm]
 
@@ -439,28 +452,31 @@ theorem sdiff_inter_self {a b : Set α} : b \ a ∩ a = ∅ :=
 
 @[deprecated (since := "2026-06-03")] alias diff_inter_self := sdiff_inter_self
 
-@[simp]
+@[push, simp]
 theorem sdiff_inter_self_eq_sdiff {s t : Set α} : s \ (t ∩ s) = s \ t :=
   sdiff_inf_self_right _ _
 
 @[deprecated (since := "2026-06-03")] alias diff_inter_self_eq_diff := sdiff_inter_self_eq_sdiff
 
-@[simp]
+@[push, simp]
 theorem sdiff_self_inter {s t : Set α} : s \ (s ∩ t) = s \ t :=
   sdiff_inf_self_left _ _
 
 @[deprecated (since := "2026-06-03")] alias diff_self_inter := sdiff_self_inter
 
+@[simp]
 theorem sdiff_self {s : Set α} : s \ s = ∅ :=
   _root_.sdiff_self
 
 @[deprecated (since := "2026-06-03")] alias diff_self := sdiff_self
 
+@[push]
 theorem sdiff_sdiff_right_self (s t : Set α) : s \ (s \ t) = s ∩ t :=
   _root_.sdiff_sdiff_right_self
 
 @[deprecated (since := "2026-06-03")] alias diff_diff_right_self := sdiff_sdiff_right_self
 
+@[push]
 theorem sdiff_sdiff_cancel_left {s t : Set α} (h : s ⊆ t) : t \ (t \ s) = s :=
   sdiff_sdiff_eq_self h
 
