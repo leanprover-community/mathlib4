@@ -6,10 +6,8 @@ Authors: metakunt
 module
 
 public import Mathlib.Algebra.GroupWithZero.Basic
-public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 # Instance `IsReduced R[X]`
@@ -18,10 +16,9 @@ If `R` is reduced, so is `R[X].
 
 open Polynomial
 
-public section
-
 variable {R : Type*} [Semiring R] [IsReduced R]
 
+-- TODO: Private section for now. Find a new home for those theorems if necessary.
 section
 
 namespace IsReduced
@@ -47,6 +44,8 @@ theorem mul_eq_zero_of_mul_sq_eq_zero {a b : R} (h : a * b * b = 0) : a * b = 0 
   rw [h3, h2]; simp
 
 end IsReduced
+
+end
 
 public section
 
@@ -99,3 +98,5 @@ instance instIsReducedOfIsReduced : IsReduced R[X] := by
       rw [hx, hn, zero_mul]
 
 end Polynomial
+
+end
