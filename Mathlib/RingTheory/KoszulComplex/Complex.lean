@@ -122,18 +122,9 @@ lemma map_dAlternating_apply (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' 
     (i : ℕ) (v : Fin (i + 1) → M) :
     ((koszulComplex.dAlternating φ' i) (f ∘ v) : ⋀[R]^i N) =
       exteriorPower.map i f ((koszulComplex.dAlternating φ i) v) := by
-  calc
-    _ = ∑ x : Fin (i + 1), (-1) ^ (x : ℕ) • φ' (f (v x)) •
-          exteriorPower.ιMulti R i (x.removeNth (f ∘ v)) := by
-      simp [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply]
-    _ = ∑ x : Fin (i + 1), (-1) ^ (x : ℕ) • φ (v x) •
-          exteriorPower.ιMulti R i (f ∘ x.removeNth v) := by
-      refine Finset.sum_congr rfl (fun x hx ↦ ?_)
-      simp only [← h, LinearMap.coe_comp, Function.comp_apply]
-      rfl
-    _ = exteriorPower.map i f ((koszulComplex.dAlternating φ i) v) := by
-      rw [koszulComplex.dAlternating, AlternatingMap.alternatizeUncurryFin_apply]
-      simp [map_sum, map_smul, exteriorPower.map_apply_ιMulti]
+  subst h
+  simp [dAlternating_apply, exteriorPower.map_apply_ιMulti]
+  rfl
 
 lemma map_d_comm (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) (i : ℕ) :
     ModuleCat.ofHom (exteriorPower.map (i + 1) f) ≫ ModuleCat.ofHom (koszulComplex.d φ' i) =
@@ -158,7 +149,7 @@ variable {L : Type v} [AddCommGroup L] [Module R L]
 @[reassoc]
 lemma map_id : map φ LinearMap.id φ (LinearMap.comp_id φ) = 𝟙 _ := by
   ext i x
-  simp [map, X_def, exteriorPower.map_id]
+  simp [map_f, X_def, exteriorPower.map_id]
 
 @[reassoc]
 lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ'' : L →ₗ[R] R)
@@ -166,7 +157,7 @@ lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ
     koszulComplex.map φ f φ' h ≫ koszulComplex.map φ' g φ'' h' =
       koszulComplex.map φ (g ∘ₗ f) φ'' h'' := by
   ext i x
-  simp [map, X_def, exteriorPower.map_comp]
+  simp [map_f, X_def, exteriorPower.map_comp]
 
 /-- The map between two Koszul complex when give an linear equiv between module that commute with
 two defining linear maps. -/
@@ -177,10 +168,10 @@ noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' 
   inv := koszulComplex.map φ' f.symm φ ((f.comp_toLinearMap_symm_eq φ' φ).mpr h.symm)
   hom_inv_id := by
     ext i x
-    simp [map, X_def, ← exteriorPower.map_comp]
+    simp [map_f, X_def, ← exteriorPower.map_comp]
   inv_hom_id := by
     ext i x
-    simp [map, X_def, ← exteriorPower.map_comp]
+    simp [map_f, X_def, ← exteriorPower.map_comp]
 
 end functoriality
 
