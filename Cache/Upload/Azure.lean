@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
+import Cache.Upload.Dest
+
 /-!
 # The Azure Blob Storage backend
 
-The Azure-specific upload logic: the headers a blob PUT requires and the
+The Azure-specific upload logic: the destination resolution
+(`azureUploadDestFrom`), and the headers a blob PUT requires with the
 bearer-token authentication, rendered as curl arguments
 (`azureBearerCurlArgs`). rclone signs only S3 requests, so Azure uploads use
 the curl tool alone and this backend renders curl arguments alone.
@@ -17,6 +20,22 @@ because the read side uses them too.
 -/
 
 namespace Cache.Requests
+
+/--
+The upload destination for the azure backend: the chosen container on the
+`lakecache` Azure storage account, or the `legacy` container when no
+container is chosen (the IO wrapper warns). The account is fixed:
+`MATHLIB_CACHE_PUT_BASE_URL` (`putBase?`) configures the s3 backend's
+endpoint, so a set value here is a misconfiguration and errors.
+-/
+def azureUploadDestFrom (putBase? : Option String) (container? : Option Container)
+    (repo : String) (scope? : Option String) : Except String StagedUploadDest :=
+  if putBase?.isSome then
+    .error "MATHLIB_CACHE_PUT_BASE_URL is set, which names the s3 backend's bucket \
+      endpoint; the azure backend writes to the Azure storage account. Pass \
+      --backend=s3, or unset the variable."
+  else
+    .ok (containerUploadDest azureAccountURL (container?.getD .legacy) repo scope?)
 
 /-- The api-version header that every bearer-authenticated Azure request
 sends. Bearer authentication requires an api-version that supports OAuth. -/

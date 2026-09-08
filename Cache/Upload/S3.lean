@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
+import Cache.Upload.Dest
+
 /-!
 # The S3 backend
 
@@ -11,12 +13,32 @@ The upload logic specific to an S3-compatible backend; the production S3
 backend is Cloudflare R2. This module holds:
 
 * the credential set (`S3Credentials`);
+* the destination resolution (`s3UploadDestFrom`);
 * the SigV4 curl arguments (`s3CurlArgs`);
 * the backend configuration for the rclone tool (`rcloneEnv`);
 * the endpoint and bucket addressing rclone needs (`s3EndpointSplit`).
 -/
 
 namespace Cache.Requests
+
+/--
+The upload destination for the s3 backend: the container write rebased under
+the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
+`MATHLIB_CACHE_BASE_URL` rebases reads. The backend has no default endpoint —
+a bucket URL is account-specific — so an unset base errors; a base without
+`--container` errors, since a base rebases a container write.
+-/
+def s3UploadDestFrom (putBase? : Option String) (container? : Option Container)
+    (repo : String) (scope? : Option String) : Except String StagedUploadDest :=
+  match putBase?, container? with
+  | some base, some c => .ok (containerUploadDest base c repo scope?)
+  | some _, none => .error
+      "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
+      pass --container=NAME to name the container."
+  | none, _ => .error
+      "the s3 backend uploads to the bucket endpoint MATHLIB_CACHE_PUT_BASE_URL \
+      names (https://host/bucket): set it, or set MATHLIB_CACHE_PUT_URL for a \
+      flat upload"
 
 /-- S3-compatible credentials for a direct bucket write. `sessionToken?`
 carries the session token of a temporary credential and is absent for a

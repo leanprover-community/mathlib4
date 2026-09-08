@@ -13,12 +13,14 @@ import Cache.Upload.S3
 
 The backend-neutral layer every upload tool consumes:
 
-* the upload credentials (`UploadAuth`) and their resolution from the
-  environment. The resolution arbitrates between the storage backends; the
-  backend mechanics live in `Cache/Upload/Azure.lean` and
-  `Cache/Upload/S3.lean`;
+* the backend selection (`UploadBackend`) and the upload credentials
+  (`UploadAuth`) with their resolution from the environment. The resolution
+  arbitrates between the storage backends; the backend mechanics live in
+  `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`;
 * the one destination resolution every upload addresses
-  (`StagedUploadDest`, `stagedUploadDest`).
+  (`stagedUploadDest`): the flat `MATHLIB_CACHE_PUT_URL` override, or the
+  selected backend's own destination. The destination contract itself
+  (`StagedUploadDest`) lives in `Cache/Upload/Dest.lean`.
 
 The tools live in `Cache/Upload/Curl.lean` and `Cache/Upload/Rclone.lean`;
 `Cache/Upload.lean` selects one and dispatches. The marker path contract and
@@ -126,51 +128,19 @@ def getUploadAuth (backend : UploadBackend) : IO UploadAuth := do
     (← getEnvNonEmpty "MATHLIB_CACHE_SAS")
 
 /--
-The resolved destination of a staged (`put`) upload. `base` is the configured
-upload base; the prefixes are relative to it and carry no trailing slash.
-Every staged file goes under `filesPrefix` and keeps its base name; the
-per-SHA marker goes under `markerPrefix` with the SHA as its name (`fileURL`,
-`markerURL`). `label` names the destination in progress and warning messages:
-the container name, or a note that an endpoint override applies.
+Pure core of `stagedUploadDest`: resolve where a staged set uploads.
+
+`MATHLIB_CACHE_PUT_URL` (`putUrl?`) wins on every backend: a flat endpoint
+with the container policy off; the selected backend still signs the requests.
+Any set value counts here, an empty one included: a misconfigured endpoint
+fails the upload and does not divert it to the backend's destination. The
+read variables take the opposite rule, where an empty value means unset.
+
+Without it, the backend resolves its own destination — `azureUploadDestFrom`
+(the Azure account) or `s3UploadDestFrom` (the bucket endpoint
+`MATHLIB_CACHE_PUT_BASE_URL` names; `putBase?`, empty means unset).
 -/
-structure StagedUploadDest where
-  base : String
-  label : String
-  filesPrefix : String
-  markerPrefix : String
-  deriving Repr, BEq
-
-/-- Upload URL of a staged file: `{base}/{filesPrefix}/{fileName}`. Every
-tool addresses this URL (rclone through its `:s3:` remote syntax). -/
-def StagedUploadDest.fileURL (dest : StagedUploadDest) (fileName : String) : String :=
-  s!"{dest.base}/{dest.filesPrefix}/{fileName}"
-
-/-- Upload URL of the per-SHA marker: `{base}/{markerPrefix}/{sha}`. Every
-tool addresses this URL (rclone through its `:s3:` remote syntax). -/
-def StagedUploadDest.markerURL (dest : StagedUploadDest) (sha : String) : String :=
-  s!"{dest.base}/{dest.markerPrefix}/{sha}"
-
-/--
-Pure core of `stagedUploadDest`: resolve the upload base and the shared
-relative prefixes for a staged set. The precedence:
-
-1. `MATHLIB_CACHE_PUT_URL` (`putUrl?`): a flat endpoint with the container
-   policy off. Any set value counts here, an empty one included: a
-   misconfigured endpoint fails the upload and does not divert it to the
-   fallback below. The read variables take the opposite rule, where an empty
-   value means unset.
-2. `MATHLIB_CACHE_PUT_BASE_URL` (`putBase?`, empty means unset): rebases the
-   chosen container's write under the given host, as `MATHLIB_CACHE_BASE_URL`
-   rebases reads. CI uses it to select the upload storage. It requires
-   `--container`, since a base rebases a container write.
-3. The Azure account, for the chosen container.
-4. With none of them, the `legacy` container on the Azure account; the IO
-   wrapper warns.
-
-The prefixes build on `fileDirPath` and `markerDirPath`, the same policies
-the reads use, so every upload path follows the read-side path contract.
--/
-def stagedUploadDestFrom (putUrl? putBase? : Option String)
+def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
     Except String StagedUploadDest :=
   if let some url := putUrl? then
@@ -180,32 +150,28 @@ def stagedUploadDestFrom (putUrl? putBase? : Option String)
           filesPrefix := fileDirPath none repo scope?,
           markerPrefix := markerDirPath repo }
   else
-    let containerDest (base : String) (c : Container) : StagedUploadDest :=
-      { base, label := c.name,
-        filesPrefix := s!"{c.pathSegment}/{fileDirPath (some c) repo scope?}",
-        markerPrefix := s!"{c.pathSegment}/{markerDirPath repo}" }
-    match normalizeBaseURL putBase?, container? with
-    | some base, some c => .ok (containerDest base c)
-    | some _, none => .error
-        "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
-        pass --container=NAME to name the container."
-    | none, some c => .ok (containerDest azureAccountURL c)
-    | none, none => .ok (containerDest azureAccountURL .legacy)
+    let putBase? := normalizeBaseURL putBase?
+    match backend with
+    | .azure => azureUploadDestFrom putBase? container? repo scope?
+    | .s3 => s3UploadDestFrom putBase? container? repo scope?
 
 /--
 `stagedUploadDestFrom`, resolved from the environment. The one destination
 resolution every upload consumes: the artifact puts and the marker put, on
-every tool, address `{base}/{prefix}/{name}`.
+every tool, address `{base}/{prefix}/{name}`. The warning covers the azure
+backend's `legacy` fallback; the s3 backend never falls back — without a
+destination it errors.
 -/
-def stagedUploadDest (container? : Option Container) (repo : String) :
-    IO StagedUploadDest := do
+def stagedUploadDest (backend : UploadBackend) (container? : Option Container)
+    (repo : String) : IO StagedUploadDest := do
   let putUrl? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
   let putBase? ← IO.getEnv "MATHLIB_CACHE_PUT_BASE_URL"
-  if putUrl?.isNone && (normalizeBaseURL putBase?).isNone && container?.isNone then
+  if backend == .azure && putUrl?.isNone && (normalizeBaseURL putBase?).isNone
+      && container?.isNone then
     IO.eprintln <|
       "Warning: cache upload without --container=NAME; defaulting to the\n" ++
       "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
       "         explicitly to choose a trust-level container."
-  IO.ofExcept <| stagedUploadDestFrom putUrl? putBase? container? repo (← getRepoScope)
+  IO.ofExcept <| stagedUploadDestFrom backend putUrl? putBase? container? repo (← getRepoScope)
 
 end Cache.Requests

@@ -83,14 +83,16 @@ Options:
                      exclusive with --scope; always prints a security notice.
   --unsafe-window=N  Number of cached fork commits --unsafe will try (default
                      1). Implies --unsafe.
-  --backend=NAME     For 'put', 'put!' and 'put-staged': the storage backend
-                     the upload signs for, 'azure' (the default) or 's3'.
-                     Each backend reads its own credential variables (see
-                     below) and picks its transfer tool: azure uploads with
-                     curl; s3 uploads with a system rclone when one works on
-                     PATH, and with curl otherwise. Set
-                     MATHLIB_CACHE_PUT_FORCE_CURL=1 to upload with curl on
-                     s3 too. See Cache/README.md.
+  --backend=NAME     For 'put', 'put!' and 'put-staged': the storage backend,
+                     'azure' (the default) or 's3'. The backend selects the
+                     destination, the credentials, and the transfer tool.
+                     azure writes to the Azure storage account, signs with
+                     the bearer token, and uploads with curl. s3 writes to
+                     the bucket MATHLIB_CACHE_PUT_BASE_URL names, signs with
+                     the S3 credential pair, and uploads with a system
+                     rclone when one works on PATH, with curl otherwise (set
+                     MATHLIB_CACHE_PUT_FORCE_CURL=1 to force curl). See
+                     Cache/README.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' don't skip any files: use them manually when a
@@ -145,14 +147,19 @@ Upload overrides for 'put':
                           --backend=s3, which otherwise prefers rclone. The
                           azure backend always uploads with curl.
 
-Upload destination overrides for 'put':
+Upload destination for 'put':
 
 * MATHLIB_CACHE_PUT_BASE_URL
-                          Rebases the --container write under this base
-                          ({base}/{container}/{key}), keeping the container
-                          path policy. CI uses it to select the upload storage.
-* MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace. Any
-                          set value counts, an empty one included.
+                          The s3 backend's bucket endpoint
+                          (https://host/bucket). The --container write is
+                          rebased under it ({base}/{container}/{key}),
+                          keeping the container path policy. Required for
+                          --backend=s3 unless MATHLIB_CACHE_PUT_URL is set.
+                          The azure backend writes to the Azure storage
+                          account and rejects a set value.
+* MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace, on
+                          any backend. Any set value counts, an empty one
+                          included.
 
 An empty value means unset for the URL, container-list, credential, and flag
 variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.

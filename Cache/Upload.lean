@@ -87,7 +87,7 @@ probe.
 def runPut [Monad m] [MonadLiftT IO m] (container? : Option Container)
     (repo? : Option String) (backend : UploadBackend) (srcDir : FilePath)
     (getFileNames : m (Array String)) (overwrite : Bool) : m Unit := do
-  let dest ← stagedUploadDest container? (repo?.getD MATHLIBREPO)
+  let dest ← stagedUploadDest backend container? (repo?.getD MATHLIBREPO)
   let auth ← getUploadAuth backend
   let tool ← resolveUploadTool auth
   let markerSha? ← if container?.isSome then getRepoScope else pure (none : Option String)

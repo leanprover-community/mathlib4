@@ -58,20 +58,25 @@ credential in the environment; see the environment variables in
 
 #### Backends and transfer tools
 
-`--backend` selects the storage backend an upload signs for: `azure` (the
-default) or `s3`. Each backend reads its own credential variables (see
-`lake exe cache --help`) and picks its transfer tool:
+`--backend` selects the storage backend: `azure` (the default) or `s3`. The
+backend selects the destination, the credential variables it reads (see
+`lake exe cache --help`), and the transfer tool:
 
-- `azure` uploads with curl: parallel PUTs, each signed per request with the
-  OIDC bearer token; an upload never replaces an existing object
-  (`If-None-Match: *`).
-- `s3` uploads with a system [rclone](https://rclone.org) when one works on
-  PATH, and with curl (SigV4 per request) otherwise. rclone receives the S3
-  credentials through its environment (`RCLONE_S3_*`), and both tools
-  restrict the transfer to the command's file list, so `put`'s build-scoped
-  guarantee holds either way. rclone schedules transfers for large staged
-  sets and verifies each object's checksum after upload; `--ignore-existing`
-  replaces `If-None-Match` on a non-overwrite put.
+- `azure` writes to the Azure storage account and uploads with curl:
+  parallel PUTs, each signed per request with the OIDC bearer token; an
+  upload never replaces an existing object (`If-None-Match: *`).
+- `s3` writes to the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names
+  (`https://host/bucket`) and uploads with a system
+  [rclone](https://rclone.org) when one works on PATH, with curl (SigV4 per
+  request) otherwise. rclone receives the S3 credentials through its
+  environment (`RCLONE_S3_*`), and both tools restrict the transfer to the
+  command's file list, so `put`'s build-scoped guarantee holds either way.
+  rclone schedules transfers for large staged sets and verifies each
+  object's checksum after upload; `--ignore-existing` replaces
+  `If-None-Match` on a non-overwrite put.
+
+`MATHLIB_CACHE_PUT_URL` overrides the destination on either backend: one flat
+endpoint, with the container policy off.
 
 `MATHLIB_CACHE_PUT_FORCE_CURL=1` makes the `s3` backend upload with curl even
 when rclone is available.

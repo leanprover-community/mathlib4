@@ -196,8 +196,8 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads, marker writes, and the blob-listing
-query authenticate against Azure and use `Container.azureURL` directly.
+Only reads follow this base. Uploads and marker writes resolve their own
+destination per the selected backend (`stagedUploadDest`).
 -/
 def getBaseURLFrom (envValue? : Option String) (useLegacy : Bool) : String :=
   (normalizeBaseURL envValue?).getD (defaultGetBaseURL useLegacy)
