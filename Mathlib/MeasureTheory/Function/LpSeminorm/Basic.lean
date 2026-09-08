@@ -711,8 +711,8 @@ theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_ne_zero :
     eLpNorm f p (c • μ) = c ^ (1 / p).toReal • eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top (hf.smul_measure c),
-      eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top hf]
-    rw [eLpNorm'_smul_measure ENNReal.toReal_nonneg]
+      eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top hf,
+      eLpNorm'_smul_measure ENNReal.toReal_nonneg]
     congr
     simp_rw [one_div]
     rw [ENNReal.toReal_inv]
@@ -1025,16 +1025,13 @@ end MapMeasure
 
 section Liminf
 
-variable [MeasurableSpace E] [OpensMeasurableSpace E] {R : ℝ≥0}
-
-#check Measurable.liminf
+variable {R : ℝ≥0}
 
 theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α → E}
     (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) :
-    ∀ᵐ x ∂μ, liminf (fun n => ((‖f n x‖ₑ) ^ p.toReal : ℝ≥0∞)) atTop < ∞ := by
-  have hfae n : AEStronglyMeasurable (f n) μ := by
-    apply aestronglyMeasurable_of_eLpNorm_ne_top (p := p)
-    exact ((hbdd n).trans_lt (by simp)).ne
+    ∀ᵐ x ∂μ, liminf (fun n => ‖f n x‖ₑ ^ p.toReal) atTop < ∞ := by
+  have hfae n : AEStronglyMeasurable (f n) μ :=
+    aestronglyMeasurable_of_eLpNorm_ne_top ((hbdd n).trans_lt (by simp)).ne
   by_cases hp0 : p.toReal = 0
   · simp only [hp0, ENNReal.rpow_zero]
     filter_upwards with _
@@ -1043,9 +1040,10 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
   have hp : p ≠ 0 := fun h => by simp [h] at hp0
   have hp' : p ≠ ∞ := fun h => by simp [h] at hp0
   refine
-    ae_lt_top' (.liminf fun n => (hfae n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
+    ae_lt_top' (.liminf fun n => (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const p.toReal)
       (lt_of_le_of_lt
-          (lintegral_liminf_le fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
+          (lintegral_liminf_le' fun n => (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const
+            p.toReal)
           (lt_of_le_of_lt ?_ (by finiteness : (R : ℝ≥0∞) ^ p.toReal < ∞))).ne
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp'
     (hfae _), one_div] at hbdd
@@ -1055,12 +1053,10 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
       (ha a le_rfl).trans ((ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp')).1 (hbdd _))
 
 theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : ℕ → α → E}
-    --(hfmeas : ∀ n, Measurable (f n)) (hfae : ∀ n, AEStronglyMeasurable (f n) μ)
     (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) :
-    ∀ᵐ x ∂μ, liminf (fun n => (‖f n x‖ₑ)) atTop < ∞ := by
-  have hfae n : AEStronglyMeasurable (f n) μ := by
-    apply aestronglyMeasurable_of_eLpNorm_ne_top (p := p)
-    exact ((hbdd n).trans_lt (by simp)).ne
+    ∀ᵐ x ∂μ, liminf (fun n => ‖f n x‖ₑ) atTop < ∞ := by
+  have hfae n : AEStronglyMeasurable (f n) μ :=
+    aestronglyMeasurable_of_eLpNorm_ne_top ((hbdd n).trans_lt (by simp)).ne
   by_cases hp' : p = ∞
   · subst hp'
     simp_rw [eLpNorm_exponent_top (hfae _)] at hbdd
@@ -1071,7 +1067,7 @@ theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : 
     filter_upwards [this] with x hx using lt_of_le_of_lt
         (liminf_le_of_frequently_le' <| Frequently.of_forall fun n => (hx n).le)
         (ENNReal.add_lt_top.2 ⟨ENNReal.coe_lt_top, ENNReal.one_lt_top⟩)
-  filter_upwards [ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd hfmeas hfae hbdd] with x hx
+  filter_upwards [ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd hbdd] with x hx
   have hppos : 0 < p.toReal := ENNReal.toReal_pos hp hp'
   have :
     liminf (fun n => (‖f n x‖ₑ) ^ p.toReal) atTop =
@@ -1092,8 +1088,7 @@ end Liminf
 See `Continuous.memLp_of_hasCompactSupport` for a version for `L^p`. -/
 theorem _root_.Continuous.memLp_top_of_hasCompactSupport
     {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
-    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) (μ : Measure X) : MemLp f ⊤ μ := by
-  borelize E
+    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) (μ : Measure X) : MemLp f ∞ μ := by
   rcases hf.bounded_above_of_compact_support h'f with ⟨C, hC⟩
   apply memLp_top_of_bound ?_ C (Filter.Eventually.of_forall hC)
   exact (hf.stronglyMeasurable_of_hasCompactSupport h'f).aestronglyMeasurable
