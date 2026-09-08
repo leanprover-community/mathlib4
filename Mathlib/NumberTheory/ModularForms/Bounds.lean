@@ -246,61 +246,49 @@ lemma UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn {f : ℍ → ℂ
   simp [mul_left_comm]
 
 /-- The negative-index Fourier coefficients of the restriction of `f` to a horizontal line vanish:
-this is Cauchy's theorem for `z ^ n * cuspFunction h f z` on the circle
-`‖z‖ = exp (-2 * π * y / h)` in the `q`-disc. -/
-lemma fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
+up to a constant, the `-(n + 1)`-th coefficient is the constant term of the `q`-expansion of
+`𝕢 ^ (n + 1) * f`, which vanishes at the cusp. -/
+lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (n : ℕ) :
     fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩)
       (-(n + 1 : ℕ) : ℤ) = 0 := by
-  -- We use the circle of radius `R = exp (-2 * π * y / h)` in the `q`-disc.
-  let R := Real.exp (-2 * π * y / h)
-  have hR0 : 0 < R := Real.exp_pos _
-  have hR1 : R < 1 := Real.exp_lt_one_iff.2 <| by simpa [neg_div] using div_pos (by positivity) hh
-  -- Cauchy's theorem for the holomorphic function `z ^ n * cuspFunction h f z`.
-  have hcirc : ∮ z in C(0, R), z ^ n * cuspFunction h f z = 0 := by
-    refine Complex.circleIntegral_eq_zero_of_differentiable_on_off_countable hR0.le
-      Set.countable_empty ((continuous_pow n).continuousOn.mul
-        (((differentiableOn_cuspFunction_ball hh hfper hfhol hfbdd).mono
-          (Metric.closedBall_subset_ball hR1)).continuousOn)) fun z hz ↦ ?_
-    exact (differentiableAt_pow n).mul (differentiableAt_cuspFunction hh hfper hfhol hfbdd
-      ((mem_ball_zero_iff.mp hz.1).trans hR1))
-  -- Rescale the circle integral from `0 .. 2 * π` to `0 .. h`.
-  rw [circleIntegral, show 2 * π = h * (2 * π / h) by field_simp] at hcirc
-  conv at hcirc => enter [1, 2]; rw [show (0 : ℝ) = 0 * (2 * π / h) by simp]
-  rw [← intervalIntegral.smul_integral_comp_mul_right, Complex.real_smul] at hcirc
-  -- Compare the integrands.
-  have key (u : ℝ) : deriv (circleMap 0 R) (u * (2 * π / h)) •
-      (circleMap 0 R (u * (2 * π / h)) ^ n * cuspFunction h f (circleMap 0 R (u * (2 * π / h)))) =
-      (Complex.I * R ^ (n + 1)) * (fourier (-(-(n + 1 : ℕ) : ℤ)) (u : AddCircle h) •
-        f ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩) := by
-    have h1 : circleMap 0 R (u * (2 * π / h)) =
-        𝕢 h (⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ : ℍ) := by
-      simp only [circleMap, Complex.ofReal_exp, ← Complex.exp_add, zero_add, R,
-        Function.Periodic.qParam, UpperHalfPlane.coe_I]
-      congr 1
-      push_cast
-      have := Complex.I_sq
-      grind
-    have h2 : cuspFunction h f (circleMap 0 R (u * (2 * π / h))) =
-        f ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ := by
-      rw [h1]
-      exact eq_cuspFunction _ hh.ne' hfper
-    have h3 : fourier (-(-(n + 1 : ℕ) : ℤ)) (u : AddCircle h) =
-        Complex.exp (u * (2 * π / h) * Complex.I) ^ (n + 1) := by
-      rw [neg_neg, fourier_coe_apply, ← Complex.exp_nat_mul]
-      congr 1
-      push_cast
-      field_simp
-    rw [deriv_circleMap, h2, h3]
-    simp only [circleMap, zero_add, smul_eq_mul]
+  -- Up to a constant, this is the constant term of the `q`-expansion of `g = 𝕢 ^ (n + 1) * f`,
+  -- which vanishes since `g` tends to `0` at `I∞`.
+  set g : ℍ → ℂ := fun τ ↦ 𝕢 h τ ^ (n + 1) * f τ with hg
+  have hgper : Function.Periodic (g ∘ ofComplex) h := fun z ↦ by
+    rcases le_or_gt z.im 0 with hz | hz
+    · simp [g, ofComplex_apply_of_im_nonpos hz,
+        ofComplex_apply_of_im_nonpos (by simpa using hz : (z + h).im ≤ 0)]
+    · have := hfper z
+      simp only [Function.comp_apply, ofComplex_apply_of_im_pos hz,
+        ofComplex_apply_of_im_pos (by simpa using hz : 0 < (z + h).im), g, coe_mk] at this ⊢
+      rw [this, Function.Periodic.qParam, Function.Periodic.qParam, mul_add, add_div,
+        mul_div_cancel_right₀ _ (Complex.ofReal_ne_zero.mpr hh.ne'), Complex.exp_add,
+        Complex.exp_two_pi_mul_I, mul_one]
+  have hghol : MDiff g :=
+    ((Function.Periodic.differentiable_qParam.mdifferentiable.comp mdifferentiable_coe).pow _).mul
+      hfhol
+  have hgzero : IsZeroAtImInfty g :=
+    (by simpa using (qParam_tendsto_atImInfty hh).pow (n + 1) :
+      Tendsto (fun τ : ℍ ↦ 𝕢 h τ ^ (n + 1)) atImInfty (𝓝 0)).zero_mul_isBoundedUnder_le
+      hfbdd.isBoundedUnder_le
+  have h0 : (qExpansion h g).coeff 0 = 0 := by
+    rw [qExpansion_coeff_zero hh (analyticAt_cuspFunction_zero hh hgper hghol
+      hgzero.isBoundedAtImInfty) hgper, hgzero.valueAtInfty_eq_zero]
+  have hint := qExpansion_coeff_eq_intervalIntegral hh hgper hghol hgzero.isBoundedAtImInfty 0 hy
+  simp only [h0, pow_zero, div_one, one_mul] at hint
+  have key (u : ℝ) : fourier (-(-(n + 1 : ℕ) : ℤ)) (u : AddCircle h) •
+      f ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ =
+        Real.exp (2 * π * (n + 1) * y / h) * g ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ := by
+    simp only [g, neg_neg, fourier_coe_apply, smul_eq_mul, Function.Periodic.qParam,
+      ← Complex.exp_nat_mul, Complex.ofReal_exp, ← mul_assoc, ← Complex.exp_add]
+    congr 2
     push_cast
-    ring
-  simp_rw [key, intervalIntegral.integral_const_mul] at hcirc
-  rw [← mul_assoc] at hcirc
-  have hc : ((2 * π / h : ℝ) : ℂ) * (Complex.I * R ^ (n + 1)) ≠ 0 := by
-    simp [Complex.I_ne_zero, hR0.ne', hh.ne', Real.pi_ne_zero]
-  rw [fourierCoeffOn_eq_integral, sub_zero, (mul_eq_zero.mp hcirc).resolve_left hc, smul_zero]
+    grind [Complex.I_sq]
+  rw [fourierCoeffOn_eq_integral, sub_zero]
+  simp_rw [key, intervalIntegral.integral_const_mul]
+  rw [(mul_eq_zero.mp hint.symm).resolve_left (by simp [hh.ne']), mul_zero, smul_zero]
 
 /-- **Parseval's identity** for the `q`-expansion: the sum of the squared norms of the
 `q`-expansion coefficients, weighted by `exp (-4 * π * n * y / h)`, is the mean square of `f`
@@ -311,7 +299,7 @@ lemma hasSum_norm_sq_qExpansion_coeff_mul_exp {f : ℍ → ℂ} {h : ℝ} (hh : 
     HasSum (fun n : ℕ ↦ ‖(qExpansion h f).coeff n‖ ^ 2 * Real.exp (-(4 * π * n * y / h)))
       (h⁻¹ * ∫ x in 0..h, ‖f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩‖ ^ 2) := by
   let g : ℝ → ℂ := fun x ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩
-  have hg : Continuous g := hfhol.continuous.comp (by fun_prop)
+  have hg : Continuous g := by fun_prop
   -- Parseval over `ℤ`, regrouped as a sum over `ℕ` of the terms `n` and `-(n + 1)`.
   have hP := (hasSum_sq_fourierCoeffOn hh <|
     (MeasureTheory.memLp_two_iff_integrable_sq_norm hg.aestronglyMeasurable).2
