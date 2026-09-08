@@ -79,19 +79,13 @@ theorem Polynomial.coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q 
           (coeff p x.1 * coeff q x.2) * coeff q j = 0 := by
         rw [← Finset.sum_mul, hc, zero_mul]
       have hsingle : ∑ x ∈ Finset.antidiagonal (i + j),
-          (coeff p x.1 * coeff q x.2) * coeff q j
-          = (coeff p i * coeff q j) * coeff q j := by
-        refine Finset.sum_eq_single (i, j) ?_ ?_
+          (coeff p x.1 * coeff q x.2) * coeff q j = (coeff p i * coeff q j) * coeff q j := by
+        apply Finset.sum_eq_single (i, j)
         · rintro ⟨s, t⟩ hst hne
-          have hst' : s + t = i + j := Finset.mem_antidiagonal.mp hst
-          rcases lt_trichotomy t j with ht | ht | ht
-          · rw [IHj t ht s, zero_mul]
-          · exact absurd (by subst ht; congr 1; omega) hne
-          · exact IsReduced.mul_mid_eq_zero (IHi s (by omega)) _
+          grind [Finset.mem_antidiagonal.mp hst, IsReduced.mul_mid_eq_zero]
         · intro hmem
-          exact absurd (Finset.mem_antidiagonal.mpr (by rfl : (i, j).1 + (i, j).2 = i + j)) hmem
-      rw [hsingle] at hmul
-      exact IsReduced.mul_eq_zero_of_mul_sq_eq_zero hmul
+          grind [Finset.mem_antidiagonal]
+      grind [IsReduced.mul_eq_zero_of_mul_sq_eq_zero]
 
 /--
 How the Proof Works (Step-by-Step)
