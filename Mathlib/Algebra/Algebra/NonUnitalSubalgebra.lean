@@ -446,66 +446,66 @@ end Submodule
 
 namespace NonUnitalAlgHom
 
-variable {F : Type v'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-variable [CommSemiring R]
-variable [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
-variable [NonUnitalNonAssocSemiring C] [Module R C] [FunLike F A B] [NonUnitalAlgHomClass F R A B]
+variable {R : Type u} {A : Type v} {B : Type w} {C : Type w'} [CommSemiring R]
+  [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
+  [NonUnitalNonAssocSemiring C] [Module R C]
 
 /-- Range of an `NonUnitalAlgHom` as a non-unital subalgebra. -/
-protected def range (φ : F) : NonUnitalSubalgebra R B where
+protected def range (φ : A →ₙₐ[R] B) : NonUnitalSubalgebra R B where
   toNonUnitalSubsemiring := NonUnitalRingHom.srange (φ : A →ₙ+* B)
   smul_mem' := fun r a => by rintro ⟨a, rfl⟩; exact ⟨r • a, map_smul φ r a⟩
 
 @[simp]
-theorem mem_range (φ : F) {y : B} :
-    y ∈ (NonUnitalAlgHom.range φ : NonUnitalSubalgebra R B) ↔ ∃ x : A, φ x = y :=
+theorem mem_range (φ : A →ₙₐ[R] B) {y : B} : y ∈ φ.range ↔ ∃ x : A, φ x = y :=
   NonUnitalRingHom.mem_srange
 
-theorem mem_range_self (φ : F) (x : A) :
-    φ x ∈ (NonUnitalAlgHom.range φ : NonUnitalSubalgebra R B) :=
+theorem mem_range_self (φ : A →ₙₐ[R] B) (x : A) : φ x ∈ (φ.range) :=
   (NonUnitalAlgHom.mem_range φ).2 ⟨x, rfl⟩
 
 @[simp]
-theorem coe_range (φ : F) :
-    ((NonUnitalAlgHom.range φ : NonUnitalSubalgebra R B) : Set B) = Set.range (φ : A → B) := by
+theorem coe_range (φ : A →ₙₐ[R] B) :
+    (φ.range : Set B) = Set.range (φ : A → B) := by
   ext
   rw [SetLike.mem_coe, mem_range, Set.mem_range]
 
 theorem range_comp (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
-    NonUnitalAlgHom.range (g.comp f) = (NonUnitalAlgHom.range f).map g :=
+    (g.comp f).range = f.range.map g :=
   SetLike.coe_injective (Set.range_comp g f)
 
 theorem range_comp_le_range (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
-    NonUnitalAlgHom.range (g.comp f) ≤ NonUnitalAlgHom.range g :=
+    (g.comp f).range ≤ g.range :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of a non-unital algebra homomorphism. -/
-def codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₙₐ[R] S :=
+def codRestrict (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₙₐ[R] S :=
   { NonUnitalRingHom.codRestrict (f : A →ₙ+* B) S.toNonUnitalSubsemiring hf with
     map_smul' := fun r a => Subtype.ext <| map_smul f r a }
 
 @[simp]
-theorem subtype_comp_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+theorem subtype_comp_codRestrict
+    (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     (NonUnitalSubalgebraClass.subtype S).comp (NonUnitalAlgHom.codRestrict f S hf) = f :=
   rfl
 
 @[simp]
-theorem coe_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
+theorem coe_codRestrict (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
     ↑(NonUnitalAlgHom.codRestrict f S hf x) = f x :=
   rfl
 
-theorem injective_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+theorem injective_codRestrict
+    (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (NonUnitalAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-abbrev rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
+abbrev rangeRestrict (f : A →ₙₐ[R] B) :
+    A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/
-def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A where
+def equalizer (ϕ ψ : A →ₙₐ[R] B) : NonUnitalSubalgebra R A where
   carrier := {a | (ϕ a : B) = ψ a}
   zero_mem' := by rw [Set.mem_ofPred_eq, map_zero, map_zero]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
@@ -515,15 +515,16 @@ def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A where
   smul_mem' r x (hx : ϕ x = ψ x) := by rw [Set.mem_ofPred_eq, map_smul, map_smul, hx]
 
 @[simp]
-theorem mem_equalizer (φ ψ : F) (x : A) :
+theorem mem_equalizer (φ ψ : A →ₙₐ[R] B) (x : A) :
     x ∈ NonUnitalAlgHom.equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
 /-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
-instance fintypeRange [Fintype A] [DecidableEq B] (φ : F) :
-    Fintype (NonUnitalAlgHom.range φ) :=
+instance fintypeRange {F : Type*} [FunLike F A B] [NonUnitalAlgHomClass F R A B]
+    [Fintype A] [DecidableEq B] (φ : F) :
+    Fintype (NonUnitalAlgHomClass.toNonUnitalAlgHom φ).range :=
   Set.fintypeRange φ
 
 end NonUnitalAlgHom
