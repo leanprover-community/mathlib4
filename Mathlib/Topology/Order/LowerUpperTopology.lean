@@ -488,7 +488,7 @@ theorem preorderTopology_le_lower_of_linearOrder : Preorder.topology α ≤ Topo
 theorem preorderTopology_le_upper_of_linearOrder : Preorder.topology α ≤ Topology.upper α :=
   TopologicalSpace.generateFrom_anti fun s ⟨a, h⟩ ↦ ⟨a, by simp [← h]⟩
 
-theorem lower_inf_upper_of_linearOrder :
+theorem lower_inf_upper_eq_preorderTopology :
     Topology.lower α ⊓ Topology.upper α = Preorder.topology α := by
   unfold Topology.lower Topology.upper Preorder.topology
   simp [generateFrom_union, Set.ofPred_or, exists_or, eq_comm, or_comm]
