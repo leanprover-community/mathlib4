@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -379,23 +378,6 @@ theorem exists_self_dvd_radical_pow (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n 
 end UniqueFactorizationMonoid
 
 open UniqueFactorizationMonoid
-
-lemma Ideal.radical_span_singleton_eq_span_radical {S : Type*} [CommSemiring S]
-    [UniqueFactorizationMonoid S] [NormalizationMonoid S] {s : S} (h : s ≠ 0) :
-    (span {s}).radical = span {UniqueFactorizationMonoid.radical s} := by
-  refine le_antisymm (fun t ht ↦ ?_) ?_
-  · by_cases t_eq : t = 0; · simp [t_eq]
-    rcases ht with ⟨n, hn⟩
-    rw [mem_span_singleton] at hn ⊢
-    by_cases n_eq : n = 0
-    · rw [n_eq, pow_zero, ← isUnit_iff_dvd_one] at hn
-      simp [radical_of_isUnit hn]
-    trans UniqueFactorizationMonoid.radical (t ^ n)
-    · exact radical_dvd_radical hn (pow_ne_zero _ t_eq)
-    · rw [UniqueFactorizationMonoid.radical_pow _ n_eq]
-      exact radical_dvd_self
-  · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
-    exact exists_self_dvd_radical_pow h
 
 /-! Theorems for UFDs -/
 namespace UniqueFactorizationDomain
