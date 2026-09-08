@@ -60,9 +60,9 @@ theorem coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) :
     intro i
     induction i using Nat.strong_induction_on with
     | _ i IHi =>
-      have hm : ∑ x ∈ Finset.antidiagonal (i + j), (coeff p x.1 * coeff q x.2) * coeff q j = 0 := by
+      have : ∑ x ∈ Finset.antidiagonal (i + j), (coeff p x.1 * coeff q x.2) * coeff q j = 0 := by
         rw [← Finset.sum_mul, ← coeff_mul, h, coeff_zero, zero_mul]
-      have hsingle : ∑ x ∈ Finset.antidiagonal (i + j),
+      have : ∑ x ∈ Finset.antidiagonal (i + j),
           (coeff p x.1 * coeff q x.2) * coeff q j = (coeff p i * coeff q j) * coeff q j := by
         apply Finset.sum_eq_single (i, j)
         · rintro ⟨s, t⟩ hst hne
