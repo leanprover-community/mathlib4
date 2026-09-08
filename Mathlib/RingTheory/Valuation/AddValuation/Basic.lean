@@ -38,7 +38,7 @@ lands in `WithTop M`.
   of `Valuation.addVal`, namely `v.addVal x = ∞ ↔ v x = 0` and
   `v.addVal x = m ↔ v x = WithZero.exp (-m)`.
 * `Valuation.addVal_map`: `Valuation.addVal` is natural in `M`, in the sense that pushing `v`
-  forward along `WithZero.mapAddHom f` pushes `v.addVal` forward along `f`.
+  forward along `WithZero.mapAddHom' f` pushes `v.addVal` forward along `f`.
 -/
 
 @[expose] public section
@@ -70,12 +70,12 @@ lemma addVal_eq_coe {v : Valuation R Mᵐ⁰} {x : R} {m : M} :
     v.addVal x = (m : WithTop M) ↔ v x = exp (-m) :=
   negLog_eq_coe
 
-/-- `Valuation.addVal` is natural in `M`: pushing a valuation forward along `WithZero.mapAddHom f`
+/-- `Valuation.addVal` is natural in `M`: pushing a valuation forward along `WithZero.mapAddHom' f`
 pushes its additive valuation forward along `f`. -/
 lemma addVal_map (v : Valuation R Mᵐ⁰) {f : M →+ N} (hf : StrictMono f) (x : R) :
-    (v.map (mapAddHom f) (mapAddHom_strictMono hf).monotone).addVal x =
+    (v.map (mapAddHom' f) (mapAddHom'_strictMono hf).monotone).addVal x =
     WithTop.map f (v.addVal x) :=
-  negLog_mapAddHom f (v x)
+  negLog_mapAddHom' f (v x)
 
 /-! ### The additive valuation with values in the value group -/
 
