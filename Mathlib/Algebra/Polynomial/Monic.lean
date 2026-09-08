@@ -441,7 +441,7 @@ theorem monic_X_pow_sub_C {R : Type*} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
 /-- `X ^ n - 1` is monic. -/
 theorem monic_X_pow_sub_one {R : Type*} [Ring R] {n : ℕ} (h : n ≠ 0) :
     (X ^ n - 1 : R[X]).Monic := by
-  grind [monic_X_pow_sub_C (1 : R)]
+  simpa using (monic_X_pow_sub_C (1 : R) h)
 
 theorem not_isUnit_X_pow_sub_one (R : Type*) [Ring R] [Nontrivial R] (n : ℕ) :
     ¬IsUnit (X ^ n - 1 : R[X]) := by
