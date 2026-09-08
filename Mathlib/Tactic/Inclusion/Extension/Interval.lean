@@ -111,7 +111,7 @@ theorem Interval.mem_Ici_of_le [Preorder α] {x y : α} {I : Interval α}
 theorem Interval.mem_Icc_of_le [Preorder α] {a b x : α} {I J : Interval α}
     (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) :
     x ∈ Interval.Icc I.lb J.ub := by
-  grind [Icc, WithBot.coe_le_coe.mpr hax, WithTop.coe_le_coe.mpr hxb]
+  grind [Interval.Icc, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Iic_of_lt [Preorder α] {x y : α} {I : Interval α}
     (hxy : x < y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub :=
@@ -274,15 +274,8 @@ theorem Interval.map_mulBound_le [Mul α] [Zero α] [DecidableEq α] [LE β]
     (hmul : ∀ x y, a = some x → b = some y → f (x * y) ≤ z)
     (hzero : (a = none ∧ b = some 0 ∨ a = some 0 ∧ b = none) → f 0 ≤ z) :
     WithBot.map f (Interval.mulBound a b : WithBot α) ≤ z := by
-  rcases a with _ | a <;> rcases b with _ | b
-  · exact bot_le
-  · by_cases hb : b = 0
-    · simpa [Interval.mulBound, hb, WithBot.some_eq_coe] using hzero (by simp [hb])
-    · simp [Interval.mulBound, hb, WithBot.none_eq_bot]
-  · by_cases ha : a = 0
-    · simpa [Interval.mulBound, ha, WithBot.some_eq_coe] using hzero (by simp [ha])
-    · simp [Interval.mulBound, ha, WithBot.none_eq_bot]
-  · exact WithBot.coe_le_coe.mpr (hmul a b rfl rfl)
+  cases a <;> cases b <;>
+    grind [Interval.mulBound, WithBot.map_eq_some_iff, WithBot.le_coe_iff]
 
 /-- Multiply two intervals. -/
 def Interval.mul [Mul α] [Zero α] [LinearOrder α] (I J : Interval α) : Interval α :=
