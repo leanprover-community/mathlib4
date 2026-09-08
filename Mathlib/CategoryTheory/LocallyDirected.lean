@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
-## Locally directed gluing
+# Locally directed gluing
 
 We say that a diagram of sets is "locally directed" if for any `V, W ⊆ U` in the diagram,
 `V ∩ W` is a union of elements in the diagram. Equivalently, for every `x ∈ U` in the diagram,
@@ -55,7 +55,6 @@ instance (F : Discrete J ⥤ Type*) : F.IsLocallyDirected := by
   rintro ⟨i⟩ ⟨j⟩ ⟨k⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩
   simpa using fun x ↦ ⟨i, 𝟙 _, 𝟙 _, x, by simp⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (F : WidePushoutShape J ⥤ Type*) [∀ i, Mono (F.map (.init i))] :
     F.IsLocallyDirected := by
   constructor

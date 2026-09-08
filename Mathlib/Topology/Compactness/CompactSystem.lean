@@ -28,7 +28,7 @@ This file defines compact systems of sets.
 
 @[expose] public section
 
-open Set Finset Nat
+open Set Nat
 
 variable {α : Type*} {S : Set (Set α)} {C : ℕ → Set α}
 

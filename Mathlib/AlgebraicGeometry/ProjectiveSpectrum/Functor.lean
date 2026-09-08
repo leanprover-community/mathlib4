@@ -22,11 +22,10 @@ namespace AlgebraicGeometry
 
 section universe_polymorphic
 
-variable {A B C σ τ ψ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable {A B C σ τ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
   [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
-  [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
-  {𝒜 : ℕ → σ} {ℬ : ℕ → τ} {𝒞 : ℕ → ψ} [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
-  (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (hf : ℬ₊ ≤ 𝒜₊.map f) (hg : 𝒞₊ ≤ ℬ₊.map g)
+  [CommRing C] {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜] [GradedRing ℬ]
+  (f : 𝒜 →+*ᵍ ℬ) (hf : ℬ₊ ≤ 𝒜₊.map f)
 
 namespace ProjectiveSpectrum
 
@@ -103,7 +102,6 @@ set_option backward.isDefEq.respectTransparency.types false in
     { base := TopCat.ofHom <| comap f hf
       c := { app U := CommRingCat.ofHom <| comapStructureSheaf f hf _ _ Set.Subset.rfl } }
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
     (c : NumDenSameDeg 𝒜 (p.comap f hf).1.toIdeal.primeCompl) :
     (toSheafedSpace ℬ).presheaf.germ
@@ -164,7 +162,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
     (map f hf).resLE _ _ le_rfl ≫ (basicOpen 𝒜 s).ι := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc] lemma awayToSection_comp_appLE {i : ℕ} {s : A} (hs : s ∈ 𝒜 i) :
     awayToSection 𝒜 s ≫
       Scheme.Hom.appLE (map f hf) (basicOpen 𝒜 s) (basicOpen ℬ (f s)) (by rfl) =

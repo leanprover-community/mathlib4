@@ -270,7 +270,7 @@ of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
 -/
 theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] {x : R} (h : x ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R x =
-  (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dif_pos h
+  (ENat.recTopCoe 0 (WithZero.coe <| Multiplicative.ofAdd ·) (Ring.ord R x)) := dite_eq_left h
 
 lemma ordMonoidWithZeroHom_eq_coe
     [Nontrivial R] {x : R} (hx : x ∈ nonZeroDivisors R) {n : ℕ} (hn : Ring.ord R x = n) :
@@ -283,7 +283,7 @@ If `x` is not a non zero divisor, `ordMonoidWithZeroHom` is equal to `0`.
 -/
 @[simp]
 theorem ordMonoidWithZeroHom_eq_zero [Nontrivial R] {x : R} (h : x ∉ nonZeroDivisors R) :
-    ordMonoidWithZeroHom R x = 0 := dif_neg h
+    ordMonoidWithZeroHom R x = 0 := dite_eq_right h
 
 /--
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal

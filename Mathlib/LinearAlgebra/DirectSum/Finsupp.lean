@@ -40,7 +40,7 @@ noncomputable section
 
 open DirectSum TensorProduct
 
-open Set LinearMap Submodule
+open LinearMap
 
 section TensorProduct
 
@@ -76,7 +76,6 @@ lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
 theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
     finsuppLeft R S M N ι t i = rTensor N (Finsupp.lapply i) t := by
   induction t with
-  | zero => simp
   | tmul f n => simp only [finsuppLeft_apply_tmul_apply, rTensor_tmul, Finsupp.lapply_apply]
   | add x y hx hy => simp [map_add, hx, hy]
 
@@ -109,7 +108,6 @@ lemma finsuppRight_apply_tmul_apply (m : M) (p : ι →₀ N) (i : ι) :
 theorem finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
     finsuppRight R S M N ι t i = lTensor M (Finsupp.lapply i) t := by
   induction t with
-  | zero => simp
   | tmul m f => simp [finsuppRight_apply_tmul_apply]
   | add x y hx hy => simp [map_add, hx, hy]
 
@@ -124,16 +122,9 @@ lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
       m ⊗ₜ[R] Finsupp.single i n := by
   simp [LinearEquiv.symm_apply_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
     finsuppLeft R S M N ι (s • t) = s • finsuppLeft R S M N ι t := by
   simp
-
-@[deprecated (since := "2026-01-01")] alias finsuppLeft' := finsuppLeft
-
-@[nolint synTaut, deprecated "is syntactic rfl now" (since := "2026-01-01")]
-lemma finsuppLeft'_apply (x : (ι →₀ M) ⊗[R] N) :
-    finsuppLeft R S M N ι x = finsuppLeft R S M N ι x := rfl
 
 variable (R M N ι) in
 /-- The tensor product of `ι →₀ R` and `N` is linearly equivalent to `ι →₀ N` -/
@@ -190,17 +181,9 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
       m ⊗ₜ[R] (Finsupp.single i 1) := by
   simp [finsuppScalarRight, finsuppRight_symm_apply_single]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finsuppScalarRight_smul (s : S) (t) :
     finsuppScalarRight R S M ι (s • t) = s • finsuppScalarRight R S M ι t := by
   simp
-
-@[deprecated (since := "2026-01-01")] alias finsuppScalarRight' := finsuppScalarRight
-
-@[nolint synTaut, deprecated "is syntactic rfl now" (since := "2026-01-01")]
-theorem coe_finsuppScalarRight' :
-    ⇑(finsuppScalarRight R S M ι) = finsuppScalarRight R S M ι :=
-  rfl
 
 end TensorProduct
 

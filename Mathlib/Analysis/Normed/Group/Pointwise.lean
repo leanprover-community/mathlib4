@@ -39,7 +39,8 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
 @[to_additive]
 theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
   symm
-  exact AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_left x).antilipschitz)
+  exact AntilipschitzWith.isBounded_of_image2_left _
+    (fun x => (isometry_mul_left x).antilipschitzWith)
     (by rwa [image2_swap])
 
 @[to_additive]
@@ -65,28 +66,15 @@ open EMetric
 theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist x s := by
   rw [← image_inv_eq_inv, infEDist_image isometry_inv]
 
-@[deprecated (since := "2026-01-08")]
-alias infEdist_neg_neg := infEDist_neg_neg
-
-@[to_additive existing, deprecated (since := "2026-01-08")]
-alias infEdist_inv_inv := infEDist_inv_inv
-
-
 @[to_additive]
 theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
   rw [← infEDist_inv_inv, inv_inv]
 
-@[deprecated (since := "2026-01-08")]
-alias infEdist_neg := infEDist_neg
-
-@[to_additive existing, deprecated (since := "2026-01-08")]
-alias infEdist_inv := infEDist_inv
-
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
-        (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ =>
-        (isometry_mul_left _).lipschitz.lipschitzOnWith).trans_eq <|
+        (fun _ _ => (isometry_mul_right _).lipschitzWith.lipschitzOnWith) fun _ _ =>
+        (isometry_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 
 end EMetric

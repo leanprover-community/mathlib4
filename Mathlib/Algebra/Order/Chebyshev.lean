@@ -11,6 +11,8 @@ public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
 
+import Mathlib.Data.Multiset.Fintype
+
 /-!
 # Chebyshev's sum inequality
 
@@ -97,7 +99,7 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 section Mul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
-  {s : Finset ι} {σ : Perm ι} {f g : ι → α}
+  {s : Finset ι} {f g : ι → α}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
@@ -136,6 +138,14 @@ of the sum is less than the size of the set times the sum of the squares. -/
 theorem sq_sum_le_card_mul_sum_sq : (∑ i ∈ s, f i) ^ 2 ≤ #s * ∑ i ∈ s, f i ^ 2 := by
   simp_rw [sq]
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
+
+/-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality** for a
+multiset: the square of the sum is at most the cardinality times the sum of the squares. -/
+theorem Multiset.sq_sum_le_card_mul_sum_sq (m : Multiset α) :
+    m.sum ^ 2 ≤ m.card * (m.map (· ^ 2)).sum := by
+  have := m.sum_map_eq_sum_toEnumFinset id
+  have := _root_.sq_sum_le_card_mul_sum_sq (s := toEnumFinset m) (f := Prod.fst)
+  simp_all [m.sum_map_eq_sum_toEnumFinset (· ^ 2)]
 
 variable [Fintype ι]
 

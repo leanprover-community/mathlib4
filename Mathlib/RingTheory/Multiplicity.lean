@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
@@ -217,7 +217,7 @@ theorem not_pow_dvd_of_emultiplicity_lt {m : ℕ} (hm : emultiplicity a b < m) :
     ¬a ^ m ∣ b := fun nh => by
   unfold emultiplicity at hm
   split at hm
-  · simp only [cast_lt, find_lt_iff] at hm
+  · simp only [ENat.natCast_lt_natCast, find_lt_iff] at hm
     obtain ⟨n, hn1, hn2⟩ := hm
     exact hn2 ((pow_dvd_pow _ hn1).trans nh)
   · simp at hm
@@ -354,7 +354,7 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       obtain ⟨w, h_1⟩ := h_1
       split
       next h_2 =>
-        simp_all only [cast_le, le_find_iff, lt_find_iff, Decidable.not_not, le_refl,
+        simp_all only [ENat.natCast_le_natCast, le_find_iff, lt_find_iff, Decidable.not_not, le_rfl,
           not_true_eq_false, not_false_eq_true, implies_true]
       next h_2 => simp_all only [not_exists, Decidable.not_not, le_top]
     next h_1 =>

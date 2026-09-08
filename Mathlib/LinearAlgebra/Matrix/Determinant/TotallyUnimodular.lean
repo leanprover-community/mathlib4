@@ -5,9 +5,9 @@ Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Totally unimodular matrices
@@ -102,7 +102,6 @@ lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃
   ⟨fun hA => by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
    fun hA => hA.reindex _ _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` has no rows, then it is totally unimodular. -/
 @[simp]
 lemma emptyRows_isTotallyUnimodular [IsEmpty m] (A : Matrix m n R) :
@@ -118,7 +117,6 @@ lemma emptyCols_isTotallyUnimodular [IsEmpty n] (A : Matrix m n R) :
     A.IsTotallyUnimodular :=
   A.transpose.emptyRows_isTotallyUnimodular.transpose
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1` or
 a single `-1` then `fromRows A B` is totally unimodular. -/
 lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}

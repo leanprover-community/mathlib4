@@ -50,7 +50,7 @@ a theorem in `isOpen_isPathConnected_basis`.
 
 noncomputable section
 
-open Topology Filter unitInterval Set Function
+open Topology Filter Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*} {F : Set X}
 
@@ -177,6 +177,9 @@ theorem Topology.IsOpenEmbedding.locallyPathConnectedSpace {e : Y → X} (he : I
 @[deprecated (since := "2026-06-21")]
 alias Topology.IsOpenEmbedding.locPathConnectedSpace :=
   Topology.IsOpenEmbedding.locallyPathConnectedSpace
+
+theorem Homeomorph.locallyPathConnectedSpace (h : X ≃ₜ Y) : LocallyPathConnectedSpace Y :=
+  h.symm.isOpenEmbedding.locallyPathConnectedSpace
 
 theorem IsOpen.locallyPathConnectedSpace {U : Set X} (h : IsOpen U) : LocallyPathConnectedSpace U :=
   h.isOpenEmbedding_subtypeVal.locallyPathConnectedSpace

@@ -12,6 +12,8 @@ public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Metrizable.Basic
 
 /-!
+# Multiples of a real number form a discrete subgroup of `ℝ`
+
 The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite.
 -/
@@ -21,12 +23,12 @@ public section
 
 noncomputable section
 
-open Filter Int Metric Set TopologicalSpace Bornology
+open Filter Int Metric Set TopologicalSpace
 open scoped Topology Uniformity Interval
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 namespace Int
 

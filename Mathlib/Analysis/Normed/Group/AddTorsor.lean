@@ -24,7 +24,7 @@ spaces.
 
 noncomputable section
 
-open NNReal Topology
+open NNReal
 
 open Filter
 
