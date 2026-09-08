@@ -141,6 +141,7 @@ theorem exists_isUniversal_of_regular (hd : G.IsRegularOfDegree d) :
 
 end IsFriendship
 
+/-- **Friendship theorem** (Wiedijk #83). Every finite friendship graph has a universal vertex. -/
 theorem friendship_theorem [Finite V] [Nonempty V] : ∃ v, G.IsUniversal v := by
   have := Fintype.ofFinite V
   by_contra con
