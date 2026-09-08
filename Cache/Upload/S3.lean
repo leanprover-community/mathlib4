@@ -7,11 +7,13 @@ Authors: Marcelo Lynch
 /-!
 # The S3 backend
 
-Everything specific to uploading against an S3-compatible backend —
-Cloudflare R2 in production: the credential set (`S3Credentials`), per-request
-SigV4 signing on the curl engine (`s3CurlArgs`), the backend configuration the
-rclone engine receives through its environment (`rcloneEnv`), and the
-endpoint/bucket addressing rclone needs (`s3EndpointSplit`).
+The upload logic specific to an S3-compatible backend; the production S3
+backend is Cloudflare R2. This module holds:
+
+* the credential set (`S3Credentials`);
+* the SigV4 curl arguments (`s3CurlArgs`);
+* the backend configuration for the rclone engine (`rcloneEnv`);
+* the endpoint and bucket addressing rclone needs (`s3EndpointSplit`).
 -/
 
 namespace Cache.Requests
@@ -26,13 +28,13 @@ structure S3Credentials where
   deriving DecidableEq, Repr, BEq
 
 /--
-The curl arguments for an upload signed with S3 credentials: SigV4 per request
-(`--aws-sigv4`; region `auto` fits R2). The explicit
-`x-amz-content-sha256: UNSIGNED-PAYLOAD` header is what lets curl sign a `-T`
-file upload (supported from curl 7.87); this path runs in CI, whose runners
+The curl arguments for an upload signed with S3 credentials. curl signs each
+request with SigV4 (`--aws-sigv4`); region `auto` fits R2. The
+`x-amz-content-sha256: UNSIGNED-PAYLOAD` header lets curl sign a `-T` file
+upload; curl supports this from 7.87, and this path runs in CI, whose runners
 ship newer curls. A temporary credential also sends its session token, which
-SigV4 covers as an `x-amz-*` header. The secrets are passed in the argument
-list; callers therefore print curl failures without their argument lists.
+SigV4 covers as an `x-amz-*` header. The argument list carries the secrets,
+so callers print curl failures without the argument list.
 -/
 def s3CurlArgs (creds : S3Credentials) : Array String :=
   let sessionArgs : Array String := match creds.sessionToken? with
@@ -61,7 +63,7 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
   | _ => .error s!"the upload base '{base}' is not a URL"
 
 /--
-The rclone S3 backend configuration, passed through the child environment so
+The rclone S3 backend configuration. It travels in the child environment, so
 no credential reaches a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
 temporary credential and cleared otherwise, so a stale token in the caller's
 environment is not inherited. Region `auto` matches the curl engine's SigV4

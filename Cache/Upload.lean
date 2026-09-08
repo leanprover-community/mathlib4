@@ -24,9 +24,9 @@ open System (FilePath)
 
 /--
 The transfer engine `put` uses, resolved together with the credentials it
-signs with: the built-in curl engine works with every credential mechanism,
-while rclone signs S3 requests only, so its constructor carries the S3
-credentials — an rclone engine holding a non-S3 credential is unrepresentable.
+signs with. The built-in curl engine works with every credential mechanism.
+rclone signs only S3 requests, so its constructor carries the S3 credentials;
+an rclone engine with a non-S3 credential is unrepresentable.
 -/
 inductive UploadEngine where
   | curl
@@ -37,9 +37,9 @@ inductive UploadEngine where
 Resolve the transfer engine from the `--uploader=` option (`uploader?`):
 
 * unset or `curl`: the built-in curl engine.
-* `rclone`: a system rclone, required — a missing binary or non-S3
-  credentials error rather than silently changing engines. rclone signs S3
-  requests only, so the Azure mechanisms always take the curl engine.
+* `rclone`: a system rclone, required: a missing binary or a non-S3
+  credential errors instead of selecting curl. rclone signs only S3
+  requests, so the Azure mechanism always takes the curl engine.
 
 Pure so the policy is testable; `resolveUploadEngine` wires the availability
 probe in.
@@ -89,10 +89,10 @@ def putStaged (dest : StagedUploadDest) (auth : UploadAuth) (engine : UploadEngi
 The complete `put` operation, from the command inputs: resolve the
 destination, credentials, and engine, then upload the `.ltar` files
 `getFileNames` produces under `srcDir` (`putStaged`). The resolutions run
-before `getFileNames`, so a misconfiguration fails fast — before `put`'s
-expensive packing pass. The per-SHA marker is written when the upload names a
-container and a scope: it lets `cache query` discover cached commits with a
-cheap HEAD probe.
+before `getFileNames`, so a misconfiguration fails before `put`'s expensive
+packing pass. The per-SHA marker is written when the upload names a container
+and a scope: it lets `cache query` discover cached commits with a cheap HEAD
+probe.
 -/
 def runPut [Monad m] [MonadLiftT IO m] (container? : Option Container)
     (repo? uploader? : Option String) (srcDir : FilePath)

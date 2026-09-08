@@ -250,7 +250,7 @@ def main (args : List String) : IO Unit := do
   | "query" :: _ =>
     IO.eprintln "Usage: cache query [REF]"
     Process.exit 1
-  -- `put-staged` uploads the staging directory: it doesn't need the hash
+  -- `put-staged` uploads the staging directory: it does not need the hash
   -- memo, so it dispatches here, with `query`, before the expensive build
   -- below.
   | ["put-staged"] =>

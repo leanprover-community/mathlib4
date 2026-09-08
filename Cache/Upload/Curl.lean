@@ -12,7 +12,7 @@ import Cache.Upload.Defs
 The built-in transfer engine: parallel curl PUTs against the resolved
 destination (`StagedUploadDest`), authenticated per request from the
 `UploadAuth` mechanism (`uploadAuthArgs`). The engine holds only transfer
-mechanics; how each request is signed belongs to the backend modules
+mechanics; the request signing lives in the backend modules
 (`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`). `putStagedViaCurl` is
 the engine's entry point; `Cache/Upload.lean` dispatches to it.
 -/
@@ -22,15 +22,15 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-The authentication and header curl arguments for an upload with `auth`, shared
-by the artifact and marker PUT paths: the backend's signing arguments
-(`azureBearerCurlArgs`, `s3CurlArgs`) plus the shared non-overwrite guard.
-A non-overwrite put adds `If-None-Match: *`, which Azure and S3-compatible
+The authentication and header curl arguments for an upload with `auth`; the
+artifact and marker PUT paths share them. They combine the backend's signing
+arguments (`azureBearerCurlArgs`, `s3CurlArgs`) with the non-overwrite guard:
+a non-overwrite put adds `If-None-Match: *`, which Azure and S3-compatible
 backends answer with 409/412 for a blob that already exists (`classifyUpload`
 excuses those).
 
-Every backend passes its secrets in the argument list; callers therefore
-print curl failures without their argument lists (`showArgsOnError := false`).
+Every backend passes its secrets in the argument list, so callers print curl
+failures without the argument list (`showArgsOnError := false`).
 -/
 def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) := do
   let signArgs ← match auth with
@@ -39,11 +39,10 @@ def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) :=
   let ifNoneMatch : Array String := if overwrite then #[] else #["-H", "If-None-Match: *"]
   return signArgs ++ ifNoneMatch
 
-/-- Formats the config file for `curl`, containing the list of files to be
-uploaded: each staged file is uploaded to its `StagedUploadDest.fileURL`, with
-the destination resolved once by `stagedUploadDest`. The response body goes
-to the null device: stdout must carry only the per-transfer JSON reports that
-`monitorCurl` parses. -/
+/-- Formats the curl config file that lists the files to upload: each staged
+file goes to its `StagedUploadDest.fileURL`, and `stagedUploadDest` resolves
+the destination once. The response body goes to the null device: stdout must
+carry only the per-transfer JSON reports that `monitorCurl` parses. -/
 def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
     s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
@@ -62,9 +61,9 @@ def putFilesViaCurl
     IO.println
       s!"Attempting to upload {size} file(s) under {dest.filesPrefix} (container: {dest.label})"
     let args ← uploadAuthArgs auth overwrite
-    -- A retry after a PUT that landed is safe: a non-overwrite put answers
-    -- it with 409/412, which `classifyUpload` excuses, and an overwrite
-    -- put re-sends the same bytes.
+    -- A retry after a PUT that landed is safe: the server answers a
+    -- non-overwrite retry with 409/412, which `classifyUpload` excuses, and
+    -- an overwrite retry re-sends the same bytes.
     let args := args ++ #["-X", "PUT", "--parallel"] ++
       curlRetryArgs (supportLegacyCurl := false) ++
       -- `%{json}` prints a JSON report for each finished transfer. The
@@ -74,9 +73,9 @@ def putFilesViaCurl
     let (s, _) ← monitorCurl args size "Uploaded" "speed_upload"
       (classifyUpload · · !overwrite) (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile tempConfigFilePath
-    -- Surface genuine upload failures. Already-present blobs (409/412 on a
-    -- non-overwrite put) are excused in `monitorCurl`, so this won't trip on a
-    -- re-upload of files the server already has.
+    -- Surface genuine upload failures. `monitorCurl` excuses already-present
+    -- blobs (409/412 on a non-overwrite put), so a re-upload of files the
+    -- server already has does not trip this.
     if s.failed > 0 then
       IO.eprintln s!"Uploading {s.failed} file(s) failed"
       IO.Process.exit 1

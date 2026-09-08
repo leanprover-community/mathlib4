@@ -14,10 +14,11 @@ import Cache.Upload.S3
 The backend-neutral layer every upload engine consumes:
 
 * the upload credentials (`UploadAuth`) and their resolution from the
-  environment — the arbitration between the storage backends, whose
-  mechanics live in `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`;
+  environment. The resolution arbitrates between the storage backends; the
+  backend mechanics live in `Cache/Upload/Azure.lean` and
+  `Cache/Upload/S3.lean`;
 * the one destination resolution every upload addresses
-  (`StagedUploadDest`, `stagedUploadDest`);
+  (`StagedUploadDest`, `stagedUploadDest`).
 
 The engines live in `Cache/Upload/Curl.lean` and `Cache/Upload/Rclone.lean`;
 `Cache/Upload.lean` selects one and dispatches. The marker path contract and
@@ -31,9 +32,9 @@ namespace Cache.Requests
 
 open System (FilePath)
 
-/-- Authentication method used for cache upload operations, one constructor
-per storage backend. Each backend's signing mechanics live in its own module;
-this type is the dispatch point between them. -/
+/-- The authentication mechanism for cache uploads, one constructor per
+storage backend. This type is the dispatch point between the backend
+modules. -/
 inductive UploadAuth where
   /-- An Azure OAuth bearer token (`Cache/Upload/Azure.lean`). -/
   | azureBearer (token : String)
@@ -48,14 +49,13 @@ mechanism first:
 1. S3 credentials (`MATHLIB_CACHE_S3_ACCESS_KEY_ID` /
    `MATHLIB_CACHE_S3_SECRET_ACCESS_KEY`, plus the optional
    `MATHLIB_CACHE_S3_SESSION_TOKEN`). One of the pair without the other is a
-   misconfiguration and errors rather than falling through: a fall-through
-   would send the upload to a different storage backend than the one the
-   half-set credentials name.
+   misconfiguration and errors; it does not fall through to the bearer token,
+   because the credentials name the storage backend the upload must reach.
 2. `MATHLIB_CACHE_AZURE_BEARER_TOKEN`.
 
-`MATHLIB_CACHE_SAS` (`sas?`) is not an accepted credential: an environment
-where it is the only value set gets an error that names the accepted
-mechanisms, rather than a missing-credential error.
+`MATHLIB_CACHE_SAS` (`sas?`) is not an accepted credential: when it is the
+only value set, the error names the accepted mechanisms instead of reporting
+a missing credential.
 
 Pure so the precedence is testable; `getUploadAuth` wires the environment in.
 -/
@@ -87,14 +87,12 @@ def getUploadAuth : IO UploadAuth := do
     (← getEnvNonEmpty "MATHLIB_CACHE_SAS")
 
 /--
-The resolved destination of a staged (`put`) upload: `base` is the upload base
-the operator configured, and the prefixes are relative to it, with no trailing
-slash. Every staged file is uploaded under `filesPrefix` with its base name
-kept; the per-SHA marker is uploaded under `markerPrefix` with the SHA as its
-name
-(`fileURL`, `markerURL`). `label` names the destination in progress and
-warning messages: the container name, or a note that an endpoint override
-applies.
+The resolved destination of a staged (`put`) upload. `base` is the configured
+upload base; the prefixes are relative to it and carry no trailing slash.
+Every staged file goes under `filesPrefix` and keeps its base name; the
+per-SHA marker goes under `markerPrefix` with the SHA as its name (`fileURL`,
+`markerURL`). `label` names the destination in progress and warning messages:
+the container name, or a note that an endpoint override applies.
 -/
 structure StagedUploadDest where
   base : String
@@ -119,7 +117,7 @@ relative prefixes for a staged set. The precedence:
 
 1. `MATHLIB_CACHE_PUT_URL` (`putUrl?`): a flat endpoint with the container
    policy off. Any set value counts here, an empty one included: a
-   misconfigured endpoint fails the upload rather than divert it to the
+   misconfigured endpoint fails the upload and does not divert it to the
    fallback below. The read variables take the opposite rule, where an empty
    value means unset.
 2. `MATHLIB_CACHE_PUT_BASE_URL` (`putBase?`, empty means unset): rebases the

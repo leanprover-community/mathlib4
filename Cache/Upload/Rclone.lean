@@ -12,9 +12,8 @@ import Cache.Upload.Defs
 An opt-in transfer engine: a system [rclone](https://rclone.org) against the
 resolved destination (`StagedUploadDest`), with the S3 credentials passed
 through its environment. The engine holds only transfer mechanics; the S3
-backend material it builds on — the credential set, the environment
-configuration, and the endpoint/bucket addressing — lives in
-`Cache/Upload/S3.lean`. rclone signs S3 requests only, so this engine has no
+credential set, environment configuration, and endpoint addressing live in
+`Cache/Upload/S3.lean`. rclone signs only S3 requests, so this engine has no
 Azure path. `putStagedViaRclone` is the engine's entry point;
 `Cache/Upload.lean` dispatches to it.
 -/
@@ -39,8 +38,8 @@ def rcloneCommonFlags : Array String := #["--s3-no-check-bucket", "--retries", "
 The rclone invocation for the `.ltar` files: a copy from `srcDir` into the
 files prefix, restricted to the `--files-from` list, so only the files the
 caller names leave the machine. A non-overwrite put passes
-`--ignore-existing`, which skips objects the destination already holds,
-matching the curl engine's `If-None-Match: *`; artifact names are content
+`--ignore-existing`, which skips objects the destination already holds; this
+matches the curl engine's `If-None-Match: *`. Artifact names are content
 hashes, so a skipped re-put loses nothing.
 -/
 def rcloneFilesArgs (bucketPath : String) (dest : StagedUploadDest)
@@ -51,8 +50,9 @@ def rcloneFilesArgs (bucketPath : String) (dest : StagedUploadDest)
 
 /--
 The rclone invocation for the per-SHA marker: a single-file copy to the
-marker path. A marker overwrites freely (its content is its own name), like
-the curl engine's marker put, so the copy omits `--ignore-existing`.
+marker path. A marker's content is the SHA that names it, so an overwrite is
+safe and the copy omits `--ignore-existing`, like the curl engine's marker
+put.
 -/
 def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
     (markerFile : FilePath) (sha : String) : Array String :=
@@ -63,11 +63,11 @@ def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
 The staged put on a system rclone: the tool resolves the destination and hands
 rclone the S3 credentials through its environment (`rcloneEnv`). `srcDir`
 holds the files and `fileNames` lists the ones to upload; the list is passed
-as a `--files-from` file, so only the named files leave the machine. Files
-first; then the per-SHA marker, mirroring the curl engine. A files failure
-exits 1; a marker failure only warns (see `uploadMarkerWith`). The `rclone`
-parameter names the binary and exists for the tests; production callers use
-the default.
+as a `--files-from` file, so only the named files leave the machine. The
+files upload first, then the per-SHA marker, in the same order as the curl
+engine. A files failure exits 1; a marker failure only warns (see
+`uploadMarkerWith`). The `rclone` parameter names the binary and exists for
+the tests; production callers use the default.
 -/
 def putStagedViaRclone (dest : StagedUploadDest) (creds : S3Credentials)
     (markerSha? : Option String)
