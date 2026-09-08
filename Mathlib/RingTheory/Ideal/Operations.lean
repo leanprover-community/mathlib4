@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.Tactic.Order
 
 /-!
@@ -975,6 +976,24 @@ theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] 
 theorem radical_bot_of_isReduced {R : Type u} [CommSemiring R] [IsReduced R] :
     radical (⊥ : Ideal R) = ⊥ :=
   eq_bot_iff.2 isRadical_bot
+
+open UniqueFactorizationMonoid in
+lemma radical_span_singleton_eq_span_radical [UniqueFactorizationMonoid R]
+    [NormalizationMonoid R] {r : R} (h : r ≠ 0) :
+    (span {r}).radical = span {UniqueFactorizationMonoid.radical r} := by
+  refine le_antisymm (fun t ht ↦ ?_) ?_
+  · by_cases t_eq : t = 0; · simp [t_eq]
+    rcases ht with ⟨n, hn⟩
+    rw [mem_span_singleton] at hn ⊢
+    by_cases n_eq : n = 0
+    · rw [n_eq, pow_zero, ← isUnit_iff_dvd_one] at hn
+      simp [radical_of_isUnit hn]
+    trans UniqueFactorizationMonoid.radical (t ^ n)
+    · exact radical_dvd_radical hn (pow_ne_zero _ t_eq)
+    · rw [UniqueFactorizationMonoid.radical_pow _ n_eq]
+      exact radical_dvd_self
+  · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
+    exact exists_self_dvd_radical_pow h
 
 @[deprecated (since := "2026-08-03")]
 alias radical_bot_of_noZeroDivisors := radical_bot_of_isReduced
