@@ -34,7 +34,7 @@ namespace StarSubalgebra
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
-variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
+variable {R A B C : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
 variable [Semiring B] [StarRing B] [Algebra R B] [StarModule R B]
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
@@ -282,7 +282,7 @@ theorem comap_injective {f : A →⋆ₐ[R] B} (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun _S₁ _S₂ h =>
   ext fun b =>
     let ⟨x, hx⟩ := hf b
-    let this := SetLike.ext_iff.1 h x
+    let := SetLike.ext_iff.1 h x
     hx ▸ this
 
 @[simp]
@@ -342,9 +342,8 @@ namespace Subalgebra
 
 open scoped Pointwise
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 /-- The pointwise `star` of a subalgebra is a subalgebra. -/
 instance involutiveStar : InvolutiveStar (Subalgebra R A) where
@@ -381,7 +380,7 @@ theorem star_mono : Monotone (star : Subalgebra R A → Subalgebra R A) := fun _
 variable (R) in
 /-- The star operation on `Subalgebra` commutes with `Algebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
-  have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
+  have : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
     Algebra.adjoin_le fun _ hx => Algebra.subset_adjoin hx
   le_antisymm (by simpa only [star_star] using Subalgebra.star_mono (this (star s))) (this s)
 
@@ -424,9 +423,8 @@ namespace StarAlgebra
 
 open StarSubalgebra
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 variable (R)
 
 /-- The minimal star subalgebra that contains `s`. -/
@@ -659,7 +657,7 @@ end StarAlgebra
 
 namespace StarSubalgebra
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 

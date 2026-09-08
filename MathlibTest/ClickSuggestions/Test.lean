@@ -184,3 +184,10 @@ example (a b c : Nat) : a + b + c = a + b := by
   click_test "/1" => "nth_rw 2 [Nat.add_comm a b]"
   click_test "/0/1/0/1" => "nth_rw 1 [Nat.add_comm a b]"
   exact test_sorry
+
+-- This example used to panic
+example : True := by
+  by_cases h : False
+  · click_test h "" => "rw [← true_eq_false_of_false h] at h"
+    trivial
+  · trivial

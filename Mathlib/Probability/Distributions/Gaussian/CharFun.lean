@@ -9,6 +9,7 @@ public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Moments.CovarianceBilin
 
 import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Analysis.CStarAlgebra.Classes
 
 /-!
 # Facts about Gaussian characteristic function
@@ -40,7 +41,7 @@ Gaussian measure, characteristic function
 public section
 
 
-open Complex MeasureTheory WithLp ContinuousLinearMap
+open Complex MeasureTheory ContinuousLinearMap
 
 open scoped Matrix NNReal Real RealInnerProductSpace ProbabilityTheory
 

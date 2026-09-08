@@ -58,7 +58,7 @@ instance [Semiring R] [AddCommMonoid H] [Module R H]
 
 theorem rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
     [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
+  Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
 
 theorem finrank [DivisionRing R] [AddCommGroup H] [Module R H] :
     Module.finrank R Hᵐᵒᵖ = Module.finrank R H := by

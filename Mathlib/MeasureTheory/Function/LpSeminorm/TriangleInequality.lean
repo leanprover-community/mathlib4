@@ -69,7 +69,7 @@ theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
   · simp only [eLpNorm_eq_eLpNorm' hp (h'p.trans ENNReal.one_lt_top).ne]
     convert! eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
-      simp only [LpAddConst, if_pos this]
+      simp only [LpAddConst, ite_eq_left this]
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
   · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le hf hg h'p
 
@@ -144,7 +144,7 @@ theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : Mem
 theorem memLp_finsetSum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
-  haveI : DecidableEq ι := Classical.decEq _
+  have : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
   · simp

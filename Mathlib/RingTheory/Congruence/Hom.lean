@@ -340,6 +340,7 @@ noncomputable def comapQuotientEquivOfSurj
     (c.comapQuotientEquivOfSurj f hf hcd).symm (f x) = x := by
   rw [← c.comapQuotientEquivOfSurj_mk hf hcd x, RingEquiv.symm_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This version infers the surjectivity of the function from a RingEquiv function -/
 @[simp] lemma comapQuotientEquivOfSurj_symm_mk' (c : RingCon M) (f : N ≃+* M)
     {d : RingCon N} (hcd : d = c.comap f) (x : N) :
@@ -452,6 +453,7 @@ variable {R : Type*} [CommSemiring R]
 
 variable {c d : RingCon M} {f : M →ₐ[R] P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- An isomorphism of algebras `e : M ≃ₐ[R] N` generates an isomorphism between quotient spaces,
 if it is compatible with the relations. -/

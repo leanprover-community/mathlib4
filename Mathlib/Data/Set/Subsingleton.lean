@@ -22,8 +22,6 @@ elements.
 
 assert_not_exists HeytingAlgebra RelIso
 
-open Function
-
 universe u v
 
 namespace Set
@@ -138,6 +136,10 @@ lemma Subsingleton.denselyOrdered {s : Set α} [LT α] (hs : s.Subsingleton) :
     DenselyOrdered s :=
   have := (subsingleton_coe _).mpr hs
   ⟨fun _ _ h ↦ ⟨_, h.trans_eq (Subsingleton.elim _ _), h⟩⟩
+
+theorem _root_.ExistsUnique.setSubsingleton {α : Type*} {p : α → Prop} (h : ExistsUnique p) :
+    {x | p x}.Subsingleton :=
+  fun _ hx _ hy => h.unique hx hy
 
 end Subsingleton
 

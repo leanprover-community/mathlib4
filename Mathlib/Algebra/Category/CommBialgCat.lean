@@ -27,10 +27,9 @@ universe v u
 variable {R : Type u} [CommRing R]
 
 variable (R) in
-set_option backward.privateInPublic true in
 /-- The category of commutative `R`-bialgebras and their morphisms. -/
 structure CommBialgCat where
-  private mk ::
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
   [commRing : CommRing carrier]
@@ -49,36 +48,34 @@ instance : CoeSort (CommBialgCat R) (Type v) := ⟨carrier⟩
 attribute [coe] CommBialgCat.carrier
 
 variable (R) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Turn an unbundled `R`-bialgebra into the corresponding object in the category of `R`-bialgebras.
 
 This is the preferred way to construct a term of `CommBialgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CommBialgCat.of R X` as `↧X`. -/
+@[app_delab CommBialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommBialgCat R`. -/
 @[ext]
 structure Hom (A B : CommBialgCat.{v} R) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying bialgebra map. -/
   hom' : A →ₐc[R] B
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (CommBialgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommBialgCat` back into a `BialgHom`. -/
 abbrev Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f

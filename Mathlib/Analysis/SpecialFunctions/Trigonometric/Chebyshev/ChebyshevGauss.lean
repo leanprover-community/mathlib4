@@ -10,7 +10,6 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
 public import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Algebra.Polynomial.Sequence
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss

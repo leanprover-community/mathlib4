@@ -5,11 +5,9 @@ Authors: Bhavik Mehta, Edward Ayers
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sieves
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 public import Mathlib.Order.Copy
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Grothendieck topologies
@@ -57,8 +55,6 @@ between Grothendieck topoi and left exact reflective subcategories of presheaf t
 universe v₁ u₁ v u
 
 namespace CategoryTheory
-
-open Category
 
 variable (C : Type u) [Category.{v} C]
 
@@ -486,6 +482,7 @@ corresponding to `g ≫ I.f`. -/
 def Arrow.precomp {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) : S.Arrow :=
   ⟨Z, g ≫ I.f, S.1.downward_closed I.hf g⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `I : S.Arrow` and a morphism `g : Z ⟶ I.Y`, this is the obvious relation
 from `I.precomp g` to `I`. -/
 @[simps]
@@ -630,6 +627,7 @@ def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D
   fst I := P.map I.r.g₁.op
   snd I := P.map I.r.g₂.op
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural multifork associated to `S : J.Cover X` for a presheaf `P`.
 Saying that this multifork is a limit is essentially equivalent to the sheaf condition at the

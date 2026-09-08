@@ -186,7 +186,7 @@ def IsQuasiregular (x : R) : Prop :=
   ∃ u : (PreQuasiregular R)ˣ, equiv.symm u.val = x
 
 @[simp]
-lemma isQuasiregular_zero : IsQuasiregular 0 := ⟨1, rfl⟩
+lemma isQuasiregular_zero : IsQuasiregular (0 : R) := ⟨1, rfl⟩
 
 lemma isQuasiregular_iff {x : R} :
     IsQuasiregular x ↔ ∃ y, y + x + x * y = 0 ∧ x + y + y * x = 0 := by
@@ -266,7 +266,21 @@ theorem quasispectrum.nonempty [Nontrivial R] (a : A) : (quasispectrum R a).None
 instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a) where
   zero := ⟨0, quasispectrum.zero_mem R a⟩
 
+lemma quasispectrum.zero_eq_nonunits :
+    quasispectrum R (0 : A) = nonunits R := by
+  simp [quasispectrum, nonunits]
+
 variable {R}
+@[simp]
+lemma quasispectrum.zero_eq {R A : Type*} [Semifield R] [NonUnitalRing A] [Module R A] :
+    quasispectrum R (0 : A) = {0} := by
+  simp [quasispectrum]
+
+@[simp]
+theorem quasispectrum.of_subsingleton {R A : Type*} [Semifield R] [NonUnitalRing A]
+    [Module R A] [Subsingleton A] (a : A) :
+    quasispectrum R a = {0} := by
+  rw [Subsingleton.elim a 0, zero_eq]
 
 /-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
 where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
@@ -278,7 +292,7 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
     [FunLike F A B] [NonUnitalAlgHomClass F S A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a := by
   refine Set.compl_subset_compl.mp fun x ↦ ?_
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not,
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not,
     forall_exists_index]
   refine fun hx this ↦ ⟨hx, ?_⟩
   rw [Units.smul_def, ← smul_one_smul S] at this ⊢
@@ -287,10 +301,25 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
 /-- If `φ` is non-unital algebra homomorphism over a scalar ring `R`, then
 `quasispectrum R (φ a) ⊆ quasispectrum R a`. -/
 lemma NonUnitalAlgHom.quasispectrum_apply_subset {F R A B : Type*}
-    [CommRing R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
+    [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a :=
   NonUnitalAlgHom.quasispectrum_apply_subset' R φ a
+
+@[simp]
+lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRing A]
+    [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
+    (f : F) (a : A) : quasispectrum R (f a) = quasispectrum R a := by
+  /- the `Star` material is here because `AlgEquiv` only exists for unital algebras,
+  and we have no `NonUnitalAlgEquiv` type, so we use `StarAlgEquiv` instead because that allows
+  for non-unital algebras -/
+  let : Star A := ⟨id⟩
+  let : Star B := ⟨id⟩
+  have : StarHomClass F A B := ⟨fun _ _ ↦ rfl⟩
+  let e := StarAlgEquivClass.toStarAlgEquiv f
+  apply subset_antisymm
+  · exact NonUnitalAlgHom.quasispectrum_apply_subset' R e a
+  · simpa using! NonUnitalAlgHom.quasispectrum_apply_subset' R e.symm (e a)
 
 @[simp]
 lemma quasispectrum.coe_zero [Nontrivial R] (a : A) : (0 : quasispectrum R a) = (0 : R) := rfl
@@ -303,7 +332,7 @@ lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
     [Ring A] [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {r : R | ¬ IsUnit r} := by
   ext r
   rw [quasispectrum]
-  simp only [Set.mem_setOf_eq, Set.mem_union, ← imp_iff_or_not, spectrum.mem_iff]
+  simp only [Set.mem_ofPred_eq, Set.mem_union, ← imp_iff_or_not, spectrum.mem_iff]
   congr! 1 with hr
   rw [not_iff_not, isQuasiregular_iff_isUnit, ← sub_eq_add_neg, Algebra.algebraMap_eq_smul_one]
   exact (IsUnit.smul_sub_iff_sub_inv_smul hr.unit a).symm
@@ -381,7 +410,7 @@ lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Modul
     ← Set.inter_union_compl (quasispectrum R (b * a)) {r | IsUnit r}]
   congr! 1
   · simpa [Set.inter_comm _ {r | IsUnit r}, Unitization.quasispectrum_eq_spectrum_inr,
-      Unitization.inr_mul] using spectrum.setOf_isUnit_inter_mul_comm _ _
+      Unitization.inr_mul] using spectrum.setOfPred_isUnit_inter_mul_comm _ _
   · rw [Set.inter_eq_right.mpr, Set.inter_eq_right.mpr]
     all_goals exact fun _ ↦ quasispectrum.not_isUnit_mem _
 

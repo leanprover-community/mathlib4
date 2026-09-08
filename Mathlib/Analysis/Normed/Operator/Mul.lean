@@ -19,7 +19,6 @@ of multiplication and scalar-multiplication operations in normed algebras and no
 
 suppress_compilation
 
-open Metric
 open scoped NNReal Topology Uniformity
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
@@ -221,6 +220,10 @@ theorem opNNNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖�
   rw [← NNReal.coe_le_coe]
   simpa using opNorm_lsmul_le
 
+theorem opENorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ₑ ≤ 1 := by
+  rw [enorm_eq_nnnorm]
+  simpa using opNNNorm_lsmul_le
+
 end SMulLinear
 
 end ContinuousLinearMap
@@ -247,6 +250,10 @@ theorem opNorm_mul : ‖mul 𝕜 R‖ = 1 :=
 theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
   Subtype.ext <| opNorm_mul 𝕜 R
 
+@[simp]
+theorem opENorm_mul : ‖mul 𝕜 R‖ₑ = 1 := by
+  simp [enorm_eq_nnnorm]
+
 end
 
 /-- The norm of `lsmul` equals 1 in any nontrivial normed group.
@@ -268,6 +275,11 @@ theorem opNNNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E
   rw [← NNReal.coe_inj]
   simp
 
+@[simp]
+theorem opENorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
+    [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ₑ = 1 := by
+  simp [enorm_eq_nnnorm]
+
 /-- The norm of `lsmul x` equals `‖x‖` in any nontrivial normed group.
 
 This is `ContinuousLinearMap.opNorm_lsmul_apply_le` as an equality. -/
@@ -287,6 +299,12 @@ theorem opNNNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Modu
     ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖₊ = ‖a‖₊ := by
   rw [← NNReal.coe_inj]
   simp
+
+@[simp]
+theorem opENorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E]
+    [NormSMulClass R E] [IsScalarTower 𝕜 R E] [Nontrivial E] {a : R} :
+    ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖ₑ = ‖a‖ₑ := by
+  simp [enorm_eq_nnnorm]
 
 end ContinuousLinearMap
 

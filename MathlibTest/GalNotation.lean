@@ -61,8 +61,8 @@ set_option pp.explicit true in
 /--
 info:
 @AlgEquiv K (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²)) L L
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹)))
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
+  (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))
+  (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
 -/
 #guard_msgs in
 #check Gal(L/K)
