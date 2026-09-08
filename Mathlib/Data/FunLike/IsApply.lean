@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 
@@ -200,7 +200,7 @@ end Def
 
 namespace FunLike
 
-variable {M M' F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
+variable {M F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
 
 section Coercion
 

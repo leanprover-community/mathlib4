@@ -29,7 +29,7 @@ The support is internally represented (in the primed `DFinsupp.support'`) as a `
 represents a superset of the true support of the function, quotiented by the always-true relation so
 that this does not impact equality. This approach has computational benefits over storing a
 `Finset`; it allows us to add together two finitely-supported functions without
-having to evaluate the resulting function to recompute its support (which would required
+having to evaluate the resulting function to recompute its support (which would require
 decidability of `b = 0` for `b : β i`).
 
 The true support of the function can still be recovered with `DFinsupp.support`; but these
@@ -51,7 +51,7 @@ assert_not_exists Finset.prod Submonoid
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
 
 variable (β) in
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.

@@ -37,7 +37,7 @@ affine space, affine equivalence
 
 open Function Set
 
-open Affine
+open scoped Affine
 
 /-- An affine equivalence, denoted `P₁ ≃ᵃ[k] P₂`, is an equivalence between affine spaces
 such that both forward and inverse maps are affine.
