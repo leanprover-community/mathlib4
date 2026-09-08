@@ -56,31 +56,10 @@ lemma isRestricted_C (c : σ → ℝ) (a : R) : IsRestricted c (C a) := by
 lemma isRestricted_X (c : σ → ℝ) (s : σ) : IsRestricted c (X s : MvPowerSeries σ R) := by
   simpa [X_def] using isRestricted_monomial c (Finsupp.single s 1) 1
 
-lemma isRestricted.add (c : σ → ℝ) {f g : MvPowerSeries σ R} (hf : IsRestricted c f)
-    (hg : IsRestricted c g) : IsRestricted c (f + g) := by
-  rw [← isRestricted_abs_iff, IsRestricted] at *
-  refine tendsto_const_nhds.squeeze (add_zero (0 : ℝ) ▸ hf.add hg) (fun n ↦ ?_) fun n ↦ ?_
-  · dsimp [Finsupp.prod]; positivity -- TODO: add positivity extension for Finsupp.prod
-  rw [← add_mul]
-  exact mul_le_mul_of_nonneg_right (norm_add_le ..) (by dsimp [Finsupp.prod]; positivity)
-
-lemma isRestricted.neg (c : σ → ℝ) {f : MvPowerSeries σ R} (hf : IsRestricted c f) :
-    IsRestricted c (-f) := by
-  rw [← isRestricted_abs_iff, IsRestricted] at *
-  simpa [IsRestricted] using hf
-
 lemma isRestricted_of_finite_support (c : σ → ℝ) {f : MvPowerSeries σ R}
     (hf : (Function.support fun t ↦ coeff t f).Finite) : IsRestricted c f :=
   tendsto_nhds_of_eventually_eq <| eventually_cofinite.mpr <| hf.subset fun t ht ↦
     Function.mem_support.mpr fun h0 ↦ ht (by simp [h0])
-
-lemma isRestricted.smul (c : σ → ℝ) (r : R) {f : MvPowerSeries σ R} (hf : IsRestricted c f) :
-    IsRestricted c (r • f) := by
-  rw [← isRestricted_abs_iff, IsRestricted] at *
-  refine tendsto_const_nhds.squeeze (mul_zero ‖r‖ ▸ hf.const_mul ‖r‖) (fun t ↦ ?_) fun t ↦ ?_
-  · dsimp [Finsupp.prod]; positivity
-  · rw [coeff_smul, ← mul_assoc]
-    exact mul_le_mul_of_nonneg_right (norm_mul_le ..) (by dsimp [Finsupp.prod]; positivity)
 
 open IsUltrametricDist
 
@@ -102,13 +81,7 @@ lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M
   refine Finset.sup'_mono_fun fun x hx ↦ ?_
   grw [mul_mul_mul_comm, ← hC, Finset.mem_antidiagonal.mp hx, ← norm_mul_le]
 
-lemma isRestricted.mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeries σ R}
-    (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) := by
-  classical
-  rw [← isRestricted_abs_iff, IsRestricted] at *
-  exact tendsto_antidiagonal (by simp [Finsupp.prod_add_index', pow_add]) hf hg
-
-lemma isRestricted_map {S : Type*} [NormedRing S] (c : σ → ℝ) (π : R → S) (C : ℝ)
+lemma isRestricted_map {S : Type*} [NormedRing S] (c : σ → ℝ) (π : R → S) {C : ℝ}
     (hCπ : ∀ x, ‖π x‖ ≤ C * ‖x‖) {f : MvPowerSeries σ R} (hf : IsRestricted c f) :
     IsRestricted c (fun t ↦ π (coeff t f) : MvPowerSeries σ S) := by
   rw [← isRestricted_abs_iff, IsRestricted] at hf
@@ -120,12 +93,54 @@ lemma isRestricted_map {S : Type*} [NormedRing S] (c : σ → ℝ) (π : R → S
 
 namespace IsRestricted
 
+lemma add {c : σ → ℝ} {f g : MvPowerSeries σ R} (hf : IsRestricted c f)
+    (hg : IsRestricted c g) : IsRestricted c (f + g) := by
+  rw [← isRestricted_abs_iff, IsRestricted] at *
+  refine tendsto_const_nhds.squeeze (add_zero (0 : ℝ) ▸ hf.add hg) (fun n ↦ ?_) fun n ↦ ?_
+  · dsimp [Finsupp.prod]; positivity -- TODO: add positivity extension for Finsupp.prod
+  rw [← add_mul]
+  exact mul_le_mul_of_nonneg_right (norm_add_le ..) (by dsimp [Finsupp.prod]; positivity)
+
+lemma neg {c : σ → ℝ} {f : MvPowerSeries σ R} (hf : IsRestricted c f) :
+    IsRestricted c (-f) := by
+  rw [← isRestricted_abs_iff, IsRestricted] at *
+  simpa [IsRestricted] using hf
+
+lemma smul (c : σ → ℝ) (r : R) {f : MvPowerSeries σ R} (hf : IsRestricted c f) :
+    IsRestricted c (r • f) := by
+  rw [← isRestricted_abs_iff, IsRestricted] at *
+  refine tendsto_const_nhds.squeeze (mul_zero ‖r‖ ▸ hf.const_mul ‖r‖) (fun t ↦ ?_) fun t ↦ ?_
+  · dsimp [Finsupp.prod]; positivity
+  · rw [coeff_smul, ← mul_assoc]
+    exact mul_le_mul_of_nonneg_right (norm_mul_le ..) (by dsimp [Finsupp.prod]; positivity)
+
+lemma mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeries σ R}
+    (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) := by
+  classical
+  rw [← isRestricted_abs_iff, IsRestricted] at *
+  exact tendsto_antidiagonal (by simp [Finsupp.prod_add_index', pow_add]) hf hg
+
 /-- Restricted power series as an additive subgroup of `MvPowerSeries σ R`. -/
 protected def addSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
   carrier := {f | IsRestricted c f}
   zero_mem' := isRestricted_zero c
-  add_mem' := isRestricted.add c
-  neg_mem' := isRestricted.neg c
+  add_mem' a b := a.add b
+  neg_mem' := neg
+
+lemma sub_iff {c : σ → ℝ} (f g : MvPowerSeries σ R) :
+    f - g ∈ IsRestricted.addSubgroup c ↔ IsRestricted c (f - g) := by
+  rfl
+
+lemma sub {c : σ → ℝ} {f g : MvPowerSeries σ R} (hf : IsRestricted c f)
+    (hg : IsRestricted c g) : IsRestricted c (f - g) := by
+  simpa [← (sub_iff f g)] using sub_mem hf hg
+
+lemma sum_iff {c : σ → ℝ} {ι : Type*} {s : Finset ι} {f : ι → MvPowerSeries σ R} :
+    (∑ i ∈ s, f i) ∈ IsRestricted.addSubgroup c ↔ IsRestricted c (∑ i ∈ s, f i) := by rfl
+
+lemma sum (c : σ → ℝ) {ι : Type*} {s : Finset ι} {f : ι → MvPowerSeries σ R}
+    (hf : ∀ i ∈ s, IsRestricted c (f i)) : IsRestricted c (∑ i ∈ s, f i) := by
+  simpa [← sum_iff] using sum_mem hf
 
 variable [IsUltrametricDist R]
 
@@ -133,22 +148,17 @@ variable [IsUltrametricDist R]
 protected def subring (c : σ → ℝ) : Subring (MvPowerSeries σ R) where
   __ := IsRestricted.addSubgroup c
   one_mem' := isRestricted_one c
-  mul_mem' := isRestricted.mul c
+  mul_mem' a b := a.mul c b
+
+lemma pow_iff {c : σ → ℝ} {f : MvPowerSeries σ R} (n : ℕ) :
+    f ^ n ∈ IsRestricted.subring c ↔ IsRestricted c (f ^ n) := by
+  rfl
+
+lemma pow {c : σ → ℝ} {f : MvPowerSeries σ R}
+    (hf : IsRestricted c f) (n : ℕ) : IsRestricted c (f ^ n) := by
+  simpa [← pow_iff] using pow_mem hf n
 
 end IsRestricted
-
-lemma isRestricted.sub (c : σ → ℝ) {f g : MvPowerSeries σ R} (hf : IsRestricted c f)
-    (hg : IsRestricted c g) : IsRestricted c (f - g) :=
-  show f - g ∈ IsRestricted.addSubgroup c from sub_mem hf hg
-
-lemma isRestricted.sum (c : σ → ℝ) {ι : Type*} {s : Finset ι} {f : ι → MvPowerSeries σ R}
-    (hf : ∀ i ∈ s, IsRestricted c (f i)) : IsRestricted c (∑ i ∈ s, f i) :=
-  show ∑ i ∈ s, f i ∈ IsRestricted.addSubgroup c from sum_mem hf
-
-lemma isRestricted.pow [IsUltrametricDist R] (c : σ → ℝ) {f : MvPowerSeries σ R}
-    (hf : IsRestricted c f) (n : ℕ) : IsRestricted c (f ^ n) :=
-  show f ^ n ∈ IsRestricted.subring c from pow_mem hf n
-
 
 variable [IsUltrametricDist R]
 
@@ -234,7 +244,7 @@ noncomputable
 def map {φ : R →+* S} (C : ℝ) (hφ : ∀ x, ‖φ x‖ ≤ C * ‖x‖) :
     Restricted R c →+* Restricted S c :=
   RingHom.codRestrict ((MvPowerSeries.map φ).comp (IsRestricted.subring c).subtype)
-    (IsRestricted.subring c) fun f ↦ isRestricted_map c _ C hφ f.2
+    (IsRestricted.subring c) fun f ↦ isRestricted_map c _ hφ f.2
 
 @[simp]
 lemma val_map {φ : R →+* S} (C : ℝ) (hφ : ∀ x, ‖φ x‖ ≤ C * ‖x‖) (f : Restricted R c) :
@@ -246,17 +256,17 @@ lemma map_injective {φ : R →+* S} (C : ℝ) (hφ : ∀ x, ‖φ x‖ ≤ C * 
     simpa only [val_map, MvPowerSeries.coeff_map] using
       congrArg (fun r : Restricted S c ↦ MvPowerSeries.coeff t r.1) h
 
-/-- A version of `MvPowerSeries.Restricted.map` where we take `π` only being additve (not
+/-- A version of `MvPowerSeries.Restricted.map` where we take `π` only being additive (not
 neccesarily multiplicative), this gives an additive map between restricted power series. -/
-noncomputable def mapRetraction (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖ ≤ C * ‖x‖) :
+noncomputable def map_additive (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖ ≤ C * ‖x‖) :
     Restricted S c →+ Restricted R c where
-  toFun A := ⟨fun t ↦ π (coeff t A.1), isRestricted_map c π C hC A.2⟩
+  toFun A := ⟨fun t ↦ π (coeff t A.1), isRestricted_map c π hC A.2⟩
   map_zero' := Restricted.ext (MvPowerSeries.ext fun t ↦ by aesop)
   map_add' A B := Restricted.ext (MvPowerSeries.ext fun t ↦ by aesop)
 
 @[simp]
-lemma val_mapRetraction (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖ ≤ C * ‖x‖)
-    (A : Restricted S c) : (mapRetraction c π hC A).1 = fun t ↦ π (coeff t A.1) := rfl
+lemma coeff_val_map_additive (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖ ≤ C * ‖x‖)
+    (A : Restricted S c) : (map_additive c π hC A).1 = fun t ↦ π (coeff t A.1) := rfl
 
 end Restricted
 
