@@ -675,6 +675,18 @@ theorem exists_lt_of_prod_lt [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈
 
 @[deprecated (since := "2026-09-01")] alias exists_lt_of_prod_lt' := exists_lt_of_prod_lt
 
+@[to_additive exists_pos_of_sum_zero_of_exists_nonzero]
+theorem exists_one_lt_of_prod_one_of_exists_ne_one [MulLeftMono M] (f : ι → M)
+    (h₁ : ∏ i ∈ s, f i = 1) (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, 1 < f i := by
+  by_contra! h
+  have : ¬ ∃ x ∈ s, f x < 1 := by simp [← prod_lt_one_iff_of_le_one h, h₁]
+  grind
+
+@[to_additive exists_neg_of_sum_zero_of_exists_nonzero]
+theorem exists_lt_one_of_prod_one_of_exists_ne_one [MulLeftMono M] (f : ι → M)
+    (h₁ : ∏ i ∈ s, f i = 1) (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, f i < 1 :=
+  exists_one_lt_of_prod_one_of_exists_ne_one (M := Mᵒᵈ) f h₁ h₂
+
 variable [IsOrderedCancelMonoid M]
 
 @[to_additive]
@@ -684,16 +696,6 @@ theorem exists_le_of_prod_le (hs : s.Nonempty) (Hle : ∏ i ∈ s, f i ≤ ∏ i
   exact prod_lt_prod_of_nonempty hs Hlt
 
 @[deprecated (since := "2026-09-01")] alias exists_le_of_prod_le' := exists_le_of_prod_le
-
-@[to_additive exists_pos_of_sum_zero_of_exists_nonzero]
-theorem exists_one_lt_of_prod_one_of_exists_ne_one (f : ι → M) (h₁ : ∏ i ∈ s, f i = 1)
-    (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, 1 < f i := by
-  contrapose! h₁
-  obtain ⟨i, m, i_ne⟩ : ∃ i ∈ s, f i ≠ 1 := h₂
-  apply ne_of_lt
-  calc
-    ∏ j ∈ s, f j < ∏ j ∈ s, 1 := prod_lt_prod h₁ ⟨i, m, (h₁ i m).lt_of_ne i_ne⟩
-    _ = 1 := prod_const_one
 
 @[deprecated (since := "2026-09-01")]
 alias exists_one_lt_of_prod_one_of_exists_ne_one' := exists_one_lt_of_prod_one_of_exists_ne_one
