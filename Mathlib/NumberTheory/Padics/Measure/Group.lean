@@ -17,8 +17,7 @@ We show that if `G` is a monoid, then `D(G, R)` inherits a convolution product f
 
 public noncomputable section
 
-variable {G R : Type*} [TopologicalSpace G]
-  [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+variable {G R : Type*} [TopologicalSpace G] [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
 
 attribute [local ext] DFunLike.ext -- why is this not set by default?
 
