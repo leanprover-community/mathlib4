@@ -79,7 +79,7 @@ instance instIsReducedOfIsReduced : IsReduced R[X] := by
   have key : ∀ q : R[X], q * q = 0 → q = 0 := by
     intro q hq
     ext i
-    have h := Polynomial.coeff_mul_coeff_eq_zero_of_isReduced q q hq i i
+    have h := q.coeff_mul_coeff_eq_zero_of_isReduced q hq i i
     simpa using IsReduced.eq_zero _ ⟨2, by rw [pow_two]; exact h⟩
   constructor
   rintro p ⟨n, hn⟩
