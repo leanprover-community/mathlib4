@@ -103,6 +103,7 @@ end DoubleCoset
 
 namespace DoubleCoset₀
 
+/-- The finite support version of `structureConst`. -/
 noncomputable def structureConst (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃) :
     DoubleCoset₀ H₁ H₃ →₀ ℕ :=
   Finsupp.ofSupportFinite (fun z => x.val.structureConst y.val z.val) <| by
@@ -117,7 +118,6 @@ noncomputable def structureConst (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset
       simpa using hrel
     · simpa [relPosition_one_eq_iff, mem_leftDecomposition_mk] using out_eq' z.val
 
-@[simp]
 lemma structureConst_coe (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃)
     (z : DoubleCoset₀ H₁ H₃) :
     x.structureConst y z = x.val.structureConst y.val z.val := rfl
