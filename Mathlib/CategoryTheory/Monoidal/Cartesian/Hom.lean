@@ -27,17 +27,21 @@ it is ring.
 @[expose] public section
 
 section RingStructure
+
+
 open CategoryTheory MonoidalCategory Mon MonObj CartesianMonoidalCategory
 
-variable {C : Type*} [Category* C] [CartesianMonoidalCategory C] [BraidedCategory C]
-variable {G G₁ H : C} [MonObj G] [MonObj G₁] [MonObj H] [IsCommMonObj H]
+variable {C : Type*} [Category* C] [CartesianMonoidalCategory C]
+variable {G G₁ H : C} [MonObj G] [MonObj G₁] [MonObj H]
 
 namespace IsMonHom
 
-abbrev add (f g : G ⟶ H) [IsMonHom f] [IsMonHom g] : G ⟶ H := (lift f g) ≫ μ[H]
+
+/-- Given two morphisms `f g : X ⟶ G`, for a monoid object `G`, `add f g` defines the
+sum of these two -/
+abbrev add {X : C} (f g : X ⟶ G) : X ⟶ G := (lift f g) ≫ μ[G]
 
 -- I am not sure what is the right name for this
-set_option linter.unusedSectionVars false
 lemma one_comp_lift (f g : G ⟶ G₁) [IsMonHom f] [IsMonHom g]
     : (η[G] ≫ (lift f g)) = (lift η[G₁] η[G₁]) := by
   ext
@@ -48,7 +52,7 @@ lemma leftUnitor_inv_comp_one : (λ_ (𝟙_ C)).inv ≫ (η[H] ⊗ₘ η[H]) = l
     := by
   ext <;> simp only [mon_tauto] <;> simp
 
-instance add_IsMonHom {f g : G ⟶ H} [IsMonHom f] [IsMonHom g]
+instance add_IsMonHom [BraidedCategory C] [IsCommMonObj H] {f g : G ⟶ H} [IsMonHom f] [IsMonHom g]
     : IsMonHom (IsMonHom.add f g) where
   one_hom := by
     rw [reassoc_of% one_comp_lift f g]
@@ -111,7 +115,7 @@ We use the additive notation here for two reasons:
 
 I will submit the rest of the ring structure separately.
 -/
-instance {G₀ H₀ : Mon C} [IsCommMonObj H₀.X] : Add (Hom G₀ H₀) where
+instance [BraidedCategory C] {G₀ H₀ : Mon C} [IsCommMonObj H₀.X] : Add (Hom G₀ H₀) where
   add f g := {
     hom := IsMonHom.add f.hom g.hom
     isMonHom_hom := by infer_instance
