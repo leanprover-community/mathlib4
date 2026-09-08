@@ -5,14 +5,14 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Hom
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Real.Star
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Basic.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
@@ -44,7 +44,7 @@ local postfix:max "⋆" => star
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
-variable {𝕜 E α : Type*}
+variable {𝕜 E : Type*}
 
 section NormedStarGroup
 

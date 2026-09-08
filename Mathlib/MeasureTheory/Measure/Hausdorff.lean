@@ -644,10 +644,9 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
     simp only [ENNReal.rpow_zero, le_iInf_iff]
     intro t hst _
     rcases mem_iUnion.1 (hst (mem_singleton x)) with ⟨m, hm⟩
+    grw [← ENNReal.le_tsum m]
     have A : (t m).Nonempty := ⟨x, hm⟩
-    calc
-      (1 : ℝ≥0∞) = ⨆ h : (t m).Nonempty, 1 := by simp only [A, ciSup_pos]
-      _ ≤ ∑' n, ⨆ h : (t n).Nonempty, 1 := ENNReal.le_tsum _
+    simp [A]
 
 theorem one_le_hausdorffMeasure_zero_of_nonempty {s : Set X} (h : s.Nonempty) : 1 ≤ μH[0] s := by
   rcases h with ⟨x, hx⟩
@@ -984,7 +983,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
     set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
     suffices μH[finrank ℝ E] (e '' K) < ⊤ by
       rw [← e.symm_image_image K]
-      apply lt_of_le_of_lt <| e.symm.lipschitz.hausdorffMeasure_image_le (by simp) (e '' K)
+      apply lt_of_le_of_lt <| e.symm.lipschitzWith.hausdorffMeasure_image_le (by simp) (e '' K)
       rw [ENNReal.rpow_natCast]
       exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top) this
     conv_lhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
@@ -994,7 +993,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
     set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
     suffices 0 < μH[finrank ℝ E] (e '' U) from
       (ENNReal.mul_pos_iff.mp (lt_of_lt_of_le this <|
-        e.lipschitz.hausdorffMeasure_image_le (by simp) _)).2.ne'
+        e.lipschitzWith.hausdorffMeasure_image_le (by simp) _)).2.ne'
     conv_rhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
     rw [hausdorffMeasure_pi_real]
     apply (e.isOpenMap U hU).measure_pos (μ := volume)

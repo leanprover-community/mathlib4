@@ -317,34 +317,6 @@ lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective 
   rw [← card_ulift α, ← card_ulift β]
   exact Cardinal.gciENat.gc.monotone_u <| Cardinal.lift_mk_le_lift_mk_of_injective hf
 
-@[deprecated natCast_le_toENat (since := "2026-02-17")]
-theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
-    ↑n ≤ toENat c ↔ ↑n ≤ c := by
-  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 natCast_le_aleph0]
-
-@[deprecated toENat_le_natCast (since := "2026-02-17")]
-theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
-    toENat c ≤ n ↔ c ≤ n := by simp
-
-@[deprecated natCast_eq_toENat (since := "2026-02-17")]
-theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
-    ↑n = toENat c ↔ ↑n = c := by
-  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast, Cardinal.natCast_le_toENat]
-
-@[deprecated toENat_eq_natCast (since := "2026-02-17")]
-theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
-    Cardinal.toENat c = n ↔ c = n := by simp
-
-@[deprecated natCast_lt_toENat (since := "2026-02-17")]
-theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
-    ↑n < toENat c ↔ ↑n < c := by
-  simp only [← not_le, Cardinal.toENat_le_natCast]
-
-@[deprecated toENat_lt_natCast (since := "2026-02-17")]
-theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
-    toENat c < ↑n ↔ c < ↑n := by
-  simp only [← not_le, Cardinal.natCast_le_toENat]
-
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   simp [card]

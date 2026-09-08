@@ -43,7 +43,7 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 open Nat Finset List Finsupp
 
 namespace Nat
-variable {a b m n p : ℕ}
+variable {a b n p : ℕ}
 
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
 mapping each prime factor of `n` to its multiplicity in `n`. -/
@@ -57,6 +57,9 @@ def factorization (n : ℕ) : ℕ →₀ ℕ where
 
 theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p = padicValNat p n := by
   simpa [factorization] using absurd pp
+
+theorem factorization_le_padicValNat {n p : ℕ} : n.factorization p ≤ padicValNat p n := by
+  grind [Nat.factorization]
 
 /-- We can write both `n.factorization p` and `n.factors.count p` to represent the power
 of `p` in the factorization of `n`: we declare the former to be the simp-normal form. -/

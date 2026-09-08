@@ -50,7 +50,9 @@ multiples of `1 / s` and `1 / (1 - s)`.
 @[expose] public section
 noncomputable section
 
-open Complex Filter Topology Asymptotics Real Set MeasureTheory
+open Complex Filter Asymptotics Real Set MeasureTheory
+
+open scoped Topology
 
 namespace HurwitzZeta
 
