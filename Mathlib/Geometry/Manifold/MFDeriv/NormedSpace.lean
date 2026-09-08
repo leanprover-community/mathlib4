@@ -612,7 +612,7 @@ variable {f : E → E'} {s : Set E} {x : E}
 /-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide -/
 @[simp]
 theorem mvfderivWithin_eq_fderivWithin :
-    d[s] f x = fderivWithin 𝕜 f s x := by
+    d[s] f x = (fderivWithin 𝕜 f s x) ∘L (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
   by_cases h : MDiffAt[s] f x
   · simp [mvfderivWithin, mfderivWithin, h, chartAt_self_eq]
     rfl
@@ -622,7 +622,8 @@ theorem mvfderivWithin_eq_fderivWithin :
 
 /-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide -/
 @[simp]
-theorem mvfderiv_eq_fderiv : d% f x = fderiv 𝕜 f x := by
+theorem mvfderiv_eq_fderiv :
+    d% f x = (fderiv 𝕜 f x) ∘L (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
   rw [← mvfderivWithin_univ, ← fderivWithin_univ, mvfderivWithin_eq_fderivWithin]
 
 /-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
