@@ -719,6 +719,7 @@ theorem toStarRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = 
 
 @[deprecated (since := "2026-09-08")] alias toStarRingEquiv_eq_coe := toStarRingEquiv_eq_ofClass
 
+-- TODO: change the RHS to `RingEquiv.ofClass`
 theorem toRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = StarRingEquiv.ofClass e :=
   rfl
 

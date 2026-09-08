@@ -269,7 +269,7 @@ instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A
     NonUnitalStarRingHomClass F A B where
 
 /-- Turn an element of a type `F` satisfying `StarRingEquivClass F A B` into an actual
-`StarRingEquiv`. This is declared as the default coercion from `F` to `A ≃⋆+* B`. -/
+`StarRingEquiv`. -/
 def _root_.StarRingEquiv.ofClass {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
@@ -315,7 +315,7 @@ def toNonUnitalStarRingHom {A B : Type*}
   map_star' := f.map_star'
 
 instance {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] :
-    CoeHead (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.toNonUnitalStarRingHom
+    CoeOut (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.toNonUnitalStarRingHom
 
 instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
 
