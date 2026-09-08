@@ -823,9 +823,10 @@ end Ring
 
 section RingRing
 
-variable {F : Type*} [Ring R] [Ring S] [FunLike F R S] [rc : RingHomClass F R S] (f : F)
+variable [Ring R] [Ring S]
 
-theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker, map_sub, sub_eq_zero]
+theorem sub_mem_ker_iff (f : R →+* S) {x y} : x - y ∈ ker f ↔ f x = f y := by
+  rw [mem_ker, map_sub, sub_eq_zero]
 
 @[simp]
 theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
@@ -834,15 +835,13 @@ theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
 end RingRing
 
 /-- The kernel of a homomorphism to a domain is a prime ideal. -/
-theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
-    [FunLike F R S] [RingHomClass F R S] (f : F) :
+theorem ker_isPrime [Semiring R] [Semiring S] [IsDomain S] (f : R →+* S) :
     (ker f).IsPrime :=
   inferInstanceAs (Ideal.comap f ⊥).IsPrime
 
 /-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
-theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
-    [FunLike F R K] [RingHomClass F R K] (f : F)
-    (hf : Function.Surjective f) : (ker f).IsMaximal :=
+theorem ker_isMaximal_of_surjective {R K : Type*} [Ring R] [DivisionRing K]
+    (f : R →+* K) (hf : Function.Surjective f) : (ker f).IsMaximal :=
   have := Ideal.bot_isMaximal (K := K)
   Ideal.comap_isMaximal_of_surjective _ hf
 
@@ -1040,16 +1039,16 @@ end annihilator
 
 namespace Ideal
 
-variable {R : Type*} {S : Type*} {F : Type*}
+variable {R : Type*} {S : Type*}
 
 section Semiring
 
-variable [Semiring R] [Semiring S] [FunLike F R S] [rc : RingHomClass F R S]
+variable [Semiring R] [Semiring S]
 
-theorem map_eq_bot_iff_le_ker {I : Ideal R} (f : F) : I.map f = ⊥ ↔ I ≤ RingHom.ker f := by
+theorem map_eq_bot_iff_le_ker {I : Ideal R} (f : R →+* S) : I.map f = ⊥ ↔ I ≤ RingHom.ker f := by
   rw [RingHom.ker, eq_bot_iff, map_le_iff_le_comap]
 
-theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun _ hx =>
+theorem ker_le_comap {K : Ideal S} (f : R →+* S) : RingHom.ker f ≤ comap f K := fun _ hx =>
   mem_comap.2 (RingHom.mem_ker.1 hx ▸ K.zero_mem)
 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
@@ -1059,7 +1058,7 @@ instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F'
   rw [h, map_comap_of_equiv (RingEquivClass.toRingEquiv f : R ≃+* S)]
   exact Ideal.IsPrime.comap (RingEquivClass.toRingEquiv f : R ≃+* S).symm
 
-theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
+theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : R →+* S} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by
   simp [map, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
 
