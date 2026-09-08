@@ -11,8 +11,10 @@ public import Mathlib.Tactic.Matrix.ListMatrix
 /-!
 # Matrices from lists of rows
 
-`ofLists` reads a list of rows as a `Matrix`, and the transpose and the product of such matrices
-are computed on their lists of rows.
+`ofLists` reads a list of rows as a `Matrix`, and the results here transport the list
+operations to the matrix ones. A tactic states and certifies a fact on the lists, where the
+kernel reduces by traversal, and bridges it to the `Matrix` statement by one of these lemmas,
+so that the matrix is never evaluated as a function.
 
 ## Main definitions
 * `FinVec.ofList`
@@ -25,7 +27,11 @@ are computed on their lists of rows.
 ## Implementation notes
 
 The definitions recurse on the dimensions, so on literals they reduce in the kernel to the
-`vecCons` form of the `!![…]` notation.
+`vecCons` form of the `!![…]` notation, and a literal in that notation is definitionally an
+`ofLists` term.
+
+When the elaboration of `!![…]` notation changes eventually, `FinVec.ofList` and `ofLists` will
+become unnecessary.
 -/
 
 public section
