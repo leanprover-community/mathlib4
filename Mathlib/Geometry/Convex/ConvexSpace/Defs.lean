@@ -54,7 +54,7 @@ Note in particular that, in the common case where `X := M` is a `R`-module, `Std
 the standard simplex in `M`. Indeed, the notion of a standard simplex depends on a choice of basis,
 and `M` isn't given one. -/
 structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) extends
-  weights : X →₀ R where
+    weights : X →₀ R where
   /-- All weights are non-negative. -/
   nonneg : 0 ≤ weights
   /-- The weights sum to 1. -/
