@@ -739,6 +739,6 @@ lemma IsAtom.isCompactElement_of_frame {x : α} (h : IsAtom x) : IsCompactElemen
 instance [IsAtomistic α] : IsCompactlyGenerated α where
   exists_sSup_eq x := by
     obtain ⟨s, hx, hs⟩ := isLUB_atoms x
-    refine ⟨s, fun a ha => (hs a ha).isCompactElement_of_frame, hx.sSup_eq⟩
+    exact ⟨s, (hs · · |>.isCompactElement_of_frame), hx.sSup_eq⟩
 
 end Frame
