@@ -31,10 +31,7 @@ open Category
 
 variable {C : Type*} [Category* C] {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
 
--- `to_dual` cannot validate the auto-generated translations of the class' field and
--- constructor, because the reordering of `A B X Y` and `i p` has to be applied to them by
--- hand; the linter asks for exactly that, and the two `attribute [to_dual …]` commands below
--- supply the manual translations it wants. The suppression covers only those two.
+-- the class' field and constructor need the manual translations supplied below
 set_option linter.translate.warnInvalid false in
 /-- `i` has the at most one lift against `p` if every
 commutative square from `i` to `p` has at most one filler, i.e. its type of lifts is a
@@ -289,6 +286,7 @@ lemma RetractArrow.rightUniqueLiftingProperty
 
 /-- The unique lifting property of `i` against `p` is equivalent to: every commutative square
 from `i` to `p` has a unique filler. -/
+@[to_dual (reorder := A Y, B X, i p) hasUniqueLiftingProperty_iff']
 theorem hasUniqueLiftingProperty_iff (i : A ⟶ B) (p : X ⟶ Y) :
     HasUniqueLiftingProperty i p ↔
     ∀ (t : A ⟶ X) (b : B ⟶ Y), CommSq t i p b → ∃! l : B ⟶ X, i ≫ l = t ∧ l ≫ p = b := by
