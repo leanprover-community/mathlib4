@@ -879,9 +879,9 @@ lemma submonoidComap_surjective_of_surjective (f : M →* N) (N' : Submonoid N) 
   simp [hx]
 
 @[to_additive]
-lemma submonoidComap_injective_of_injective (f : M →* N) (N' : Submonoid N)
-    (hf : Function.Injective f) : Function.Injective (f.submonoidComap N') :=
-  fun _ _ h => Subtype.ext (hf (congrArg Subtype.val h))
+lemma submonoidComap_injective_of_injective (f : M →* N) (N' : Submonoid N) (hf : Injective f) :
+    Injective (f.submonoidComap N') :=
+  fun _ _ h ↦ Subtype.ext (hf (congrArg Subtype.val h))
 
 /-- The `MonoidHom` from a `Submonoid` to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
