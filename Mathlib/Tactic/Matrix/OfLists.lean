@@ -19,6 +19,7 @@ operations to the matrix ones.
 * `ofLists`
 
 ## Main results
+* `Matrix.mul_apply_row_col`
 * `ofLists_transpose`
 * `ofLists_mul`
 
@@ -37,6 +38,10 @@ unnecessary.
 -- opened outside the namespace, where `Matrix` resolves to the type's namespace rather than to
 -- `Mathlib.Tactic.Matrix`
 open Matrix
+
+theorem Matrix.mul_apply_row_col {l m n α : Type*} [Fintype m] [Mul α] [AddCommMonoid α]
+    (M : Matrix l m α) (N : Matrix m n α) (i : l) (k : n) : (M * N) i k = M.row i ⬝ᵥ N.col k :=
+  rfl
 
 namespace Mathlib.Tactic.Matrix
 
@@ -88,15 +93,11 @@ theorem ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :
 theorem ofLists_mul [Mul α] [AddCommMonoid α] (l m n : ℕ) (A B : List (List α)) :
     ofLists l n (ListMatrix.mul l m n A B) = ofLists l m A * ofLists m n B := by
   ext i j
-  rw [mul_apply', ofLists_apply, ofLists_apply, FinVec.ofList_apply]
-  have hcol :
-      (fun k ↦ ofLists m n B k j) = FinVec.ofList m ((ListMatrix.transpose n B).getD j []) := by
-    funext k
-    rw [ofLists_apply, FinVec.ofList_apply, FinVec.ofList_apply,
-      ListMatrix.getD_transpose B k j.isLt]
-  rw [hcol, ← ListMatrix.dotProduct_eq, ListMatrix.mul, ← List.getElem_eq_getD (i := i) (h := ?_),
-    List.getElem_map, List.getElem_eq_getD [], List.getD_rightpad,
-    ← List.getElem_eq_getD (i := j) (h := ?_), List.getElem_map, List.getElem_eq_getD []]
+  rw [Matrix.mul_apply_row_col, row_apply', ← row_transpose, ← ofLists_transpose, row_apply',
+    ofLists_apply, ofLists_apply, ofLists_apply, FinVec.ofList_apply, ← ListMatrix.dotProduct_eq]
+  rw [ListMatrix.mul, ← List.getElem_eq_getD (i := i) (h := ?_), List.getElem_map,
+    List.getElem_eq_getD [], List.getD_rightpad, ← List.getElem_eq_getD (i := j) (h := ?_),
+    List.getElem_map, List.getElem_eq_getD []]
   · simp
   · grind [List.rightpad]
 
