@@ -10,12 +10,10 @@ import Cache.Upload.Dest
 # The rclone upload tool
 
 An opt-in transfer tool: a system [rclone](https://rclone.org) against the
-resolved destination (`StagedUploadDest`). The tool holds only transfer
-mechanics and addresses the destination through rclone's `:s3:` remote
-syntax, so only the s3 backend calls it. `Cache/Upload/S3.lean` assembles
-the child environment that carries the credentials and endpoint, splits the
-bucket path out of the destination base, and calls the tool's entry point,
-`putStagedViaRclone`.
+resolved destination (`StagedUploadDest`), addressed through rclone's `:s3:`
+remote syntax. `Cache/Upload/S3.lean` assembles the child environment that
+carries the credentials and endpoint, splits the bucket path out of the
+destination base, and calls the tool's entry point, `putStagedViaRclone`.
 -/
 
 namespace Cache.Requests
