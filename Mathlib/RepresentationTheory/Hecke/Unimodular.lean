@@ -6,7 +6,7 @@ Authors: Jiaxi Mo
 module
 
 public import Mathlib.RepresentationTheory.Hecke.LeftFiniteDoubleCoset
-public import Mathlib.RepresentationTheory.Hecke.Multiplicity
+public import Mathlib.RepresentationTheory.Hecke.StructureConst
 
 /-!
 # Unimodular condition for subgroups
