@@ -87,9 +87,8 @@ instance instIsReducedOfIsReduced : IsReduced R[X] := by
   | _ n IH =>
     match n, hn with
     | 0, hn =>
-      have h1 : (1 : R[X]) = 0 := by simpa using hn
-      calc p = p * 1 := by rw [mul_one]
-        _ = 0 := by rw [h1, mul_zero]
+      have : (1 : R[X]) = 0 := by simpa using hn
+      rw [← mul_one p, this, mul_zero]
     | 1, hn => simpa using hn
     | (n + 2), hn =>
       refine IH (n + 1) (by omega) (key _ ?_)
