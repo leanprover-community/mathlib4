@@ -110,6 +110,12 @@ instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
 theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
+/-- A nontrivial free `ℤ`-module is infinite. This is not a global instance since it would apply
+to every `Infinite` goal. -/
+theorem infinite_int (M : Type*) [AddCommGroup M] [Module ℤ M] [Module.Free ℤ M] [Nontrivial M] :
+    Infinite M :=
+  infinite ℤ M
+
 instance [Nontrivial M] : FaithfulSMul R M :=
   .of_injective _ (chooseBasis R M).repr.symm.injective
 
