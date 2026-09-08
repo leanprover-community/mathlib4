@@ -94,7 +94,7 @@ variable (R) in
 /-- The inverse relation : `R.inv x y ↔ R y x`. Note that this is *not* a groupoid inverse. -/
 def inv (R : SetRel α β) : SetRel β α := Prod.swap ⁻¹' R
 
-@[simp] lemma mem_inv : b ~[R.inv] a ↔ a ~[R] b := .rfl
+@[simp, grind =] lemma mem_inv : b ~[R.inv] a ↔ a ~[R] b := .rfl
 
 @[simp] lemma inv_inv : R.inv.inv = R := rfl
 
@@ -111,14 +111,14 @@ variable (R) in
 /-- Codomain of a relation, aka range. -/
 def cod : Set β := {b | ∃ a, a ~[R] b}
 
-@[simp] lemma mem_dom : a ∈ R.dom ↔ ∃ b, a ~[R] b := .rfl
-@[simp] lemma mem_cod : b ∈ R.cod ↔ ∃ a, a ~[R] b := .rfl
+@[simp, grind =] lemma mem_dom : a ∈ R.dom ↔ ∃ b, a ~[R] b := .rfl
+@[simp, grind =] lemma mem_cod : b ∈ R.cod ↔ ∃ a, a ~[R] b := .rfl
 
 @[gcongr] lemma dom_mono (h : R₁ ≤ R₂) : R₁.dom ⊆ R₂.dom := fun _a ⟨b, hab⟩ ↦ ⟨b, h hab⟩
 @[gcongr] lemma cod_mono (h : R₁ ≤ R₂) : R₁.cod ⊆ R₂.cod := fun _b ⟨a, hab⟩ ↦ ⟨a, h hab⟩
 
-@[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by grind [mem_dom]
-@[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by grind [mem_cod]
+@[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by grind
+@[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by grind
 
 @[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = (∅ : SetRel α β) := by
   simp [Set.eq_empty_iff_forall_notMem]
@@ -136,10 +136,10 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 /-- The identity relation. -/
 protected def id : SetRel α α := {(a₁, a₂) | a₁ = a₂}
 
-@[simp] lemma mem_id : a₁ ~[SetRel.id] a₂ ↔ a₁ = a₂ := .rfl
+@[simp, grind =] lemma mem_id : a₁ ~[SetRel.id] a₂ ↔ a₁ = a₂ := .rfl
 
 -- Not simp because `SetRel.inv_eq_self` already proves it
-lemma inv_id : (.id : SetRel α α).inv = .id := by grind [mem_inv, mem_id]
+lemma inv_id : (.id : SetRel α α).inv = .id := by grind
 
 /-- Composition of relation.
 
@@ -148,38 +148,38 @@ def comp (R : SetRel α β) (S : SetRel β γ) : SetRel α γ := {(a, c) | ∃ b
 
 @[inherit_doc] scoped infixl:62 " ○ " => comp
 
-@[simp] lemma mem_comp : a ~[R ○ S] c ↔ ∃ b, a ~[R] b ∧ b ~[S] c := .rfl
+@[simp, grind =] lemma mem_comp : a ~[R ○ S] c ↔ ∃ b, a ~[R] b ∧ b ~[S] c := .rfl
 
 lemma prodMk_mem_comp (hab : a ~[R] b) (hbc : b ~[S] c) : a ~[R ○ S] c := ⟨b, hab, hbc⟩
 
 lemma comp_assoc (R : SetRel α β) (S : SetRel β γ) (t : SetRel γ δ) :
-    (R ○ S) ○ t = R ○ (S ○ t) := by grind [mem_comp]
+    (R ○ S) ○ t = R ○ (S ○ t) := by grind
 
-@[simp] lemma comp_id (R : SetRel α β) : R ○ .id = R := by grind [mem_comp, mem_id]
-@[simp] lemma id_comp (R : SetRel α β) : .id ○ R = R := by grind [mem_comp, mem_id]
+@[simp] lemma comp_id (R : SetRel α β) : R ○ .id = R := by grind
+@[simp] lemma id_comp (R : SetRel α β) : .id ○ R = R := by grind
 
 @[simp] lemma inv_comp (R : SetRel α β) (S : SetRel β γ) : (R ○ S).inv = S.inv ○ R.inv := by aesop
 
-@[simp] lemma comp_empty (R : SetRel α β) : R ○ (∅ : SetRel β γ) = ∅ := by grind [mem_comp]
-@[simp] lemma empty_comp (S : SetRel β γ) : (∅ : SetRel α β) ○ S = ∅ := by grind [mem_comp]
+@[simp] lemma comp_empty (R : SetRel α β) : R ○ (∅ : SetRel β γ) = ∅ := by grind
+@[simp] lemma empty_comp (S : SetRel β γ) : (∅ : SetRel α β) ○ S = ∅ := by grind
 
 @[simp] lemma comp_univ (R : SetRel α β) :
-    R ○ (.univ : SetRel β γ) = {(a, _c) : α × γ | a ∈ R.dom} := by grind [mem_comp, mem_dom]
+    R ○ (.univ : SetRel β γ) = {(a, _c) : α × γ | a ∈ R.dom} := by grind
 
 @[simp] lemma univ_comp (S : SetRel β γ) :
-    (.univ : SetRel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by grind [mem_comp, mem_cod]
+    (.univ : SetRel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by grind
 
 lemma comp_iUnion (R : SetRel α β) (S : ι → SetRel β γ) : R ○ ⋃ i, S i = ⋃ i, R ○ S i := by
-  grind [mem_comp, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 lemma iUnion_comp (R : ι → SetRel α β) (S : SetRel β γ) : (⋃ i, R i) ○ S = ⋃ i, R i ○ S := by
-  grind [mem_comp, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 lemma comp_sUnion (R : SetRel α β) (𝒮 : Set (SetRel β γ)) : R ○ ⋃₀ 𝒮 = ⋃ S ∈ 𝒮, R ○ S := by
-  grind [mem_comp, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 lemma sUnion_comp (ℛ : Set (SetRel α β)) (S : SetRel β γ) : ⋃₀ ℛ ○ S = ⋃ R ∈ ℛ, R ○ S := by
-  grind [mem_comp, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 @[gcongr]
 lemma comp_subset_comp {S₁ S₂ : SetRel β γ} (hR : R₁ ⊆ R₂) (hS : S₁ ⊆ S₂) : R₁ ○ S₁ ⊆ R₂ ○ S₂ :=
@@ -218,8 +218,8 @@ variable (R t) in
 /-- Preimage of a set `t` under a relation `R`. Same as the image of `t` under `R.inv`. -/
 def preimage : Set α := {a | ∃ b ∈ t, a ~[R] b}
 
-@[simp] lemma mem_image : b ∈ image R s ↔ ∃ a ∈ s, a ~[R] b := .rfl
-@[simp] lemma mem_preimage : a ∈ preimage R t ↔ ∃ b ∈ t, a ~[R] b := .rfl
+@[simp, grind =] lemma mem_image : b ∈ image R s ↔ ∃ a ∈ s, a ~[R] b := .rfl
+@[simp, grind =] lemma mem_preimage : a ∈ preimage R t ↔ ∃ b ∈ t, a ~[R] b := .rfl
 
 @[gcongr] lemma image_subset_image (hs : s₁ ⊆ s₂) : image R s₁ ⊆ image R s₂ :=
   fun _ ⟨a, ha, hab⟩ ↦ ⟨a, hs ha, hab⟩
@@ -242,11 +242,11 @@ variable (R s) in
 lemma image_mono : Monotone R.image := fun _ _ ↦ image_subset_image
 lemma preimage_mono : Monotone R.preimage := fun _ _ ↦ preimage_subset_preimage
 
-@[simp] lemma image_empty_right : image R ∅ = ∅ := by grind [mem_image]
-@[simp] lemma preimage_empty_right : preimage R ∅ = ∅ := by grind [mem_preimage]
+@[simp] lemma image_empty_right : image R ∅ = ∅ := by grind
+@[simp] lemma preimage_empty_right : preimage R ∅ = ∅ := by grind
 
-@[simp] lemma image_univ_right : image R .univ = R.cod := by grind [mem_image, mem_cod]
-@[simp] lemma preimage_univ_right : preimage R .univ = R.dom := by grind [mem_preimage, mem_dom]
+@[simp] lemma image_univ_right : image R .univ = R.cod := by grind
+@[simp] lemma preimage_univ_right : preimage R .univ = R.dom := by grind
 
 variable (R) in
 lemma image_inter_subset : image R (s₁ ∩ s₂) ⊆ image R s₁ ∩ image R s₂ := image_mono.map_inf_le ..
@@ -256,81 +256,78 @@ lemma preimage_inter_subset : preimage R (t₁ ∩ t₂) ⊆ preimage R t₁ ∩
   preimage_mono.map_inf_le ..
 
 variable (R s₁ s₂) in
-lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by grind [mem_image]
+lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by grind
 
 variable (R) in
 lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by
-  grind [mem_image, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 variable (R) in
 lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image R s := by
-  grind [mem_image, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 variable (R t₁ t₂) in
 lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by
-  grind [mem_preimage]
+  grind
 
 variable (R) in
 lemma preimage_iUnion (t : ι → Set β) : preimage R (⋃ i, t i) = ⋃ i, preimage R (t i) := by
-  grind [mem_preimage, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 variable (R) in
 lemma preimage_sUnion (T : Set (Set β)) : preimage R (⋃₀ T) = ⋃ t ∈ T, preimage R t := by
-  grind [mem_preimage, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 variable (s) in
-@[simp] lemma image_id : image .id s = s := by grind [mem_image, mem_id]
+@[simp] lemma image_id : image .id s = s := by grind
 
 variable (s) in
-@[simp] lemma preimage_id : preimage .id s = s := by grind [mem_preimage, mem_id]
+@[simp] lemma preimage_id : preimage .id s = s := by grind
 
 variable (R S s) in
-lemma image_comp : image (R ○ S) s = image S (image R s) := by grind [mem_image, mem_comp]
+lemma image_comp : image (R ○ S) s = image S (image R s) := by grind
 
 variable (R S u) in
 lemma preimage_comp : preimage (R ○ S) u = preimage R (preimage S u) := by
-  grind [mem_preimage, mem_comp]
+  grind
 
 variable (s) in
-@[simp] lemma image_empty_left : image (∅ : SetRel α β) s = ∅ := by grind [mem_image]
+@[simp] lemma image_empty_left : image (∅ : SetRel α β) s = ∅ := by grind
 
 variable (t) in
-@[simp] lemma preimage_empty_left : preimage (∅ : SetRel α β) t = ∅ := by grind [mem_preimage]
+@[simp] lemma preimage_empty_left : preimage (∅ : SetRel α β) t = ∅ := by grind
 
 @[simp] lemma image_univ_left (hs : s.Nonempty) : image (.univ : SetRel α β) s = .univ := by aesop
 @[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : SetRel α β) t = .univ := by
   aesop
 
 lemma image_eq_cod_of_dom_subset (h : R.dom ⊆ s) : R.image s = R.cod := by
-  grind [mem_image, mem_cod, mem_dom]
+  grind
 
 lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by
-  grind [mem_preimage, mem_dom, mem_cod]
+  grind
 
 variable (R s) in
-@[simp] lemma image_inter_dom : image R (s ∩ R.dom) = image R s := by grind [mem_image, mem_dom]
+@[simp] lemma image_inter_dom : image R (s ∩ R.dom) = image R s := by grind
 
 variable (R t) in
-@[simp] lemma preimage_inter_cod : preimage R (t ∩ R.cod) = preimage R t := by
-  grind [mem_preimage, mem_cod]
+@[simp] lemma preimage_inter_cod : preimage R (t ∩ R.cod) = preimage R t := by grind
 
-lemma inter_dom_subset_preimage_image : s ∩ R.dom ⊆ R.preimage (image R s) := by
-  grind [mem_image, mem_preimage, mem_dom]
+lemma inter_dom_subset_preimage_image : s ∩ R.dom ⊆ R.preimage (image R s) := by grind
 
-lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) := by
-  grind [mem_image, mem_preimage, mem_cod]
+lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) := by grind
 
-lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by grind [mem_image, Set.mem_iUnion]
+lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by grind [Set.mem_iUnion]
 
 lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by
-  grind [mem_preimage, Set.mem_iUnion]
+  grind [Set.mem_iUnion]
 
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
 to elements of `S`. Other generalization of `Function.preimage`. -/
 def core : Set α := {a | ∀ ⦃b⦄, a ~[R] b → b ∈ t}
 
-@[simp] lemma mem_core : a ∈ R.core t ↔ ∀ ⦃b⦄, a ~[R] b → b ∈ t := .rfl
+@[simp, grind =] lemma mem_core : a ∈ R.core t ↔ ∀ ⦃b⦄, a ~[R] b → b ∈ t := .rfl
 
 @[gcongr]
 lemma core_subset_core (ht : t₁ ⊆ t₂) : R.core t₁ ⊆ R.core t₂ := fun _a ha _b hab ↦ ht <| ha hab
@@ -338,19 +335,19 @@ lemma core_subset_core (ht : t₁ ⊆ t₂) : R.core t₁ ⊆ R.core t₂ := fun
 lemma core_mono : Monotone R.core := fun _ _ ↦ core_subset_core
 
 variable (R t₁ t₂) in
-lemma core_inter : R.core (t₁ ∩ t₂) = R.core t₁ ∩ R.core t₂ := by grind [mem_core]
+lemma core_inter : R.core (t₁ ∩ t₂) = R.core t₁ ∩ R.core t₂ := by grind
 
 lemma core_union_subset : R.core t₁ ∪ R.core t₂ ⊆ R.core (t₁ ∪ t₂) := core_mono.le_map_sup ..
 
-@[simp] lemma core_univ : R.core Set.univ = Set.univ := by grind [mem_core]
+@[simp] lemma core_univ : R.core Set.univ = Set.univ := by grind
 
 variable (t) in
-@[simp] lemma core_id : core .id t = t := by grind [mem_core, mem_id]
+@[simp] lemma core_id : core .id t = t := by grind
 
 variable (R S u) in
-lemma core_comp : core (R ○ S) u = core R (core S u) := by grind [mem_core, mem_comp]
+lemma core_comp : core (R ○ S) u = core R (core S u) := by grind
 
-lemma image_subset_iff : image R s ⊆ t ↔ s ⊆ core R t := by grind [mem_image, mem_core]
+lemma image_subset_iff : image R s ⊆ t ↔ s ⊆ core R t := by grind
 
 lemma image_core_gc : GaloisConnection R.image R.core := fun _ _ ↦ image_subset_iff
 
@@ -572,7 +569,7 @@ variable {f : α → β} {a : α} {b : β}
 /-- The graph of a function as a relation. -/
 def graph (f : α → β) : SetRel α β := {(a, b) | f a = b}
 
-@[simp] lemma mem_graph : a ~[f.graph] b ↔ f a = b := .rfl
+@[simp, grind =] lemma mem_graph : a ~[f.graph] b ↔ f a = b := .rfl
 
 theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
   aesop (add simp [Injective, Set.ext_iff])
@@ -590,7 +587,7 @@ def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
 end Function
 
 theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = SetRel.inv (f : α → β).graph := by
-  grind [Function.mem_graph, SetRel.mem_inv, Equiv.symm_apply_eq]
+  grind [Equiv.symm_apply_eq]
 
 lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
     (∃! f, Function.graph f = R) ↔ ∀ a, ∃! b, a ~[R] b := by
@@ -599,10 +596,10 @@ lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
     simp
   intro h
   choose f hf using fun x ↦ (h x).exists
-  refine ⟨f, ?_, by grind [Function.mem_graph]⟩
+  refine ⟨f, ?_, by grind⟩
   ext ⟨a, b⟩
   constructor
-  · grind [Function.mem_graph]
+  · grind
   · exact (h _).unique (hf _)
 
 namespace Set
