@@ -29,12 +29,8 @@ That lemma is our version of Gibbs' inequality ("the Kullback-Leibler divergence
 
 * `klDiv_eq_zero_iff` : the Kullback-Leibler divergence between two finite measures is zero if and
   only if the two measures are equal.
-* `klDiv_eq_sum`, `toReal_klDiv_eq_sum`: finite-sum formulas on a finite space.
-* `klDiv_eq_sum_of_measure_eq`, `toReal_klDiv_eq_sum_of_measure_eq`: sum formulas for equal-mass
-  measures.
-* `klDiv_eq_sum_of_isProbabilityMeasure`, `toReal_klDiv_eq_sum_of_isProbabilityMeasure`:
-  sum formulas for probability measures.
-* `klDiv_sum_smul_dirac`, `toReal_klDiv_sum_smul_dirac`: formulas for weighted Dirac measures.
+* `klDiv_eq_sum`: finite-sum formula on a finite space.
+* `klDiv_sum_smul_dirac`: formula for weighted Dirac measures.
 
 ## Implementation details
 
