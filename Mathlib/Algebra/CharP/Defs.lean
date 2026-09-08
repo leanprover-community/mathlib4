@@ -325,12 +325,20 @@ section AddMonoidWithOne
 variable [AddMonoidWithOne R]
 
 /-- The definition of the exponential characteristic of a semiring. -/
+@[mk_iff]
 class inductive ExpChar : ℕ → Prop
   | zero [CharZero R] : ExpChar 1
   | prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar q
 
 instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
 instance expChar_one [CharZero R] : ExpChar R 1 := ExpChar.zero
+
+@[simp]
+lemma expChar_one_iff : ExpChar R 1 ↔ CharZero R := by simp [expChar_iff, Nat.not_prime_one]
+
+@[simp]
+lemma expChar_prime_iff {p} (hp : p.Prime) : ExpChar R p ↔ CharP R p :=
+  by simp [expChar_iff, hp.ne_one, hp]
 
 lemma expChar_ne_zero (p : ℕ) [hR : ExpChar R p] : p ≠ 0 := by
   cases hR
