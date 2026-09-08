@@ -58,7 +58,8 @@ option inherits from the environment.
 | `MATHLIB_CACHE_PUT_BASE_URL` | The s3 backend's bucket endpoint (`https://host/bucket`). The `--container` write is rebased under it (`{base}/{container}/{key}`) and keeps the container path policy. Required for `--backend=s3` unless `MATHLIB_CACHE_PUT_URL` is set. The azure backend writes to the Azure storage account and rejects a set value. |
 | `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend: the container policy is off, and the selected backend signs the requests. |
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |
-| `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace for `put` (see `--scope`, which takes precedence). |
+| `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace, for reads and `put` (see `--scope`, which takes precedence). |
+| `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. CI sets it to widen reads per job. |
 
 An empty value means unset for every variable above except
 `MATHLIB_CACHE_PUT_URL`, where any set value counts: a misconfigured endpoint

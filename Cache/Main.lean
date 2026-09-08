@@ -58,8 +58,7 @@ Options:
                      checked-out HEAD. Use the SHA reported by `cache query`.
                      Reading another commit's scope means trusting the
                      artifacts produced at that commit; `cache get` prints a
-                     security notice when the scope differs from HEAD. Takes
-                     precedence over the MATHLIB_CACHE_REPO_SCOPE env var.
+                     security notice when the scope differs from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
                      this branch's history and try the most recent cached fork
                      commits as scopes, in order, until the cache is satisfied.
@@ -98,16 +97,10 @@ Valid arguments are:
                           For troubleshooting only.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
-* MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
-                          --cache-from. Used by mathlib CI to widen reads per job;
-                          --cache-from takes precedence when both are set.
-* MATHLIB_CACHE_REPO_SCOPE
-                          Per-commit namespace for reads (see --scope).
+                          An empty value means unset.
 
-The upload commands read more options and variables (credentials,
-destination, transfer tool); Cache/CI.md documents them.
-
-An empty value means unset for the URL and container-list variables above.
+The variables mathlib CI sets (reads and uploads) are documented in
+Cache/CI.md.
 
 See Cache/README.md for more details.
 "
