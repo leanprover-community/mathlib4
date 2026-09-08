@@ -5,8 +5,8 @@ Authors: Johan Commelin, Eric Rodriguez
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Basic.Finite.Defs
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
