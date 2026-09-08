@@ -501,6 +501,7 @@ def baseChange :
     QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
   lift ⟨omega, by ext <;> simp [Algebra.algebraMap_eq_smul_one]⟩
 
+@[simp]
 theorem baseChange_omega :
     baseChange S a b ω = ω := by
   ext <;> simp
@@ -518,10 +519,12 @@ section CommRing
 
 variable [CommRing R] [CommRing S] [Algebra R S] (a b : R)
 
+@[simp]
 theorem norm_baseChange (x : QuadraticAlgebra R a b) :
     norm (baseChange S a b x) = algebraMap R S (norm x) := by
   simp [norm_def, Algebra.smul_def]
 
+@[simp]
 theorem trace_baseChange (x : QuadraticAlgebra R a b) :
     trace (baseChange S a b x) = algebraMap R S (trace x) := by
   simp [trace_def, Algebra.smul_def, map_ofNat]
