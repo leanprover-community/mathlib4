@@ -327,6 +327,13 @@ theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton
     Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) :=
   ⟨isMaximal_of_irreducible, Ideal.irreducible_of_isMaximal_span_singleton hp⟩
 
+theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton_of_not_isField
+    [CommSemiring R] [IsPrincipalIdealRing R] [IsDomain R] (h : ¬IsField R) {p : R} :
+    Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) := by
+  by_cases hp : p = 0
+  · simp [hp, ← Ring.isField_iff_maximal_bot, h]
+  · exact Ideal.irreducible_iff_isMaximal_span_singleton hp
+
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section

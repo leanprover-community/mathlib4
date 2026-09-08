@@ -45,9 +45,9 @@ open ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
 open scoped Topology
 
-variable {α β γ δ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
+variable {α β γ δ ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
-  [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε'] [ENorm ε'']
+  [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
 
 namespace MeasureTheory
 
@@ -1125,6 +1125,10 @@ theorem Integrable.im (hf : Integrable f μ) : Integrable (fun x => RCLike.im (f
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.im
 
+lemma Integrable.iff_ofReal {f : α → ℝ} :
+    Integrable f μ ↔ Integrable (fun x ↦ (f x : 𝕜)) μ :=
+  ⟨fun hf ↦ hf.ofReal, fun hf ↦ by simpa using hf.re⟩
+
 end RCLike
 
 section Trim
@@ -1148,8 +1152,7 @@ end Trim
 
 section SigmaFinite
 
-variable {E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
-  {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+variable {m0 : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε} (hf_meas : AEStronglyMeasurable f μ)

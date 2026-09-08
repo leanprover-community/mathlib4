@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.OfScalars
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Ordinary hypergeometric function in a Banach algebra
