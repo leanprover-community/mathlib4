@@ -87,13 +87,6 @@ theorem discr_eq_im_sq_mul_discr (hf : Function.Injective f) :
     discr a b = (f ω).im ^ 2 * discr a' b' := by
   grind [im_sq_mul_discr, trace_algHom_omega, norm_algHom_omega, discr]
 
-/-- `discr_eq_im_sq_mul_discr` for an `R`-algebra isomorphism `e`, for which `(e ω).im` is
-automatically a unit (`isUnit_im_omega_of_algEquiv`). -/
-theorem discr_eq_im_sq_mul_discr' (e : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b') :
-    discr a b = (e ω).im ^ 2 * discr a' b' := by
-  rw [discr_eq_im_sq_mul_discr e.toAlgHom, AlgEquiv.toAlgHom_apply]
-  exact e.injective
-
 /-- If `2` is a unit, `QuadraticAlgebra R a b` is isomorphic to the standard form
 `QuadraticAlgebra R (discr a b) 0`. -/
 def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :
@@ -124,12 +117,12 @@ theorem im_algEquivDiscrZero_symm_apply [Invertible (2 : R)]
   simp [algEquivDiscrZero, mul_comm]
 
 @[simp]
-theorem algEquivDiscrZero_apply_add_smul [Invertible (2 : R)] (x y : R) :
+theorem algEquivDiscrZero_add_smul [Invertible (2 : R)] (x y : R) :
     algEquivDiscrZero a b (x • 1 + y • ω) = (x + ⅟2 * b * y) • 1 + (⅟2 * y) • ω := by
   ext <;> simp [mul_comm]
 
 @[simp]
-theorem algEquivDiscrZero_symm_apply_add_smul [Invertible (2 : R)] (x y : R) :
+theorem algEquivDiscrZero_symm_add_smul [Invertible (2 : R)] (x y : R) :
     (algEquivDiscrZero a b).symm (x • 1 + y • ω) = (x - b * y) • 1 + (2 * y) • ω := by
   ext <;> simp [mul_comm, sub_eq_add_neg]
 
@@ -140,7 +133,8 @@ theorem nonempty_algEquiv_iff (h : IsRegular (2 : R)) :
       ∃ u : Rˣ, discr a b = (u : R) ^ 2 * discr a' b' ∧ 2 ∣ (b - u * b') := by
   refine ⟨fun ⟨e⟩ ↦ ?_, fun ⟨u, hu, ⟨k, hk⟩⟩ ↦ ⟨changeGeneratorEquiv a' b' u k ?_ (by grind)⟩⟩
   · refine ⟨(isUnit_im_omega_of_algEquiv e).unit,
-      by rw [discr_eq_im_sq_mul_discr' e, IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
+      by rw [discr_eq_im_sq_mul_discr e.toAlgHom e.injective, AlgEquiv.toAlgHom_apply,
+        IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
     rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_def, eq_comm]
     exact trace_algHom_omega e.toAlgHom e.injective
   · rw [← h.left.eq_iff, ← h.left.eq_iff]
