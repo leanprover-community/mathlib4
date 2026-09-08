@@ -76,7 +76,7 @@ variable [Preorder α] (a : α)
 theorem IsBot.IsCompactElement (h : IsBot a) : IsCompactElement a :=
   fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, h x⟩
 
-theorem IsCompactElement.bot [OrderBot α] : IsCompactElement (⊥ : α) :=
+protected theorem IsCompactElement.bot [OrderBot α] : IsCompactElement (⊥ : α) :=
   isBot_bot.IsCompactElement
 
 theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement a := by
@@ -87,7 +87,7 @@ theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement 
 
 end Preorder
 
-theorem IsCompactElement.sup [SemilatticeSup α] {a b : α} (ha : IsCompactElement a)
+protected theorem IsCompactElement.sup [SemilatticeSup α] {a b : α} (ha : IsCompactElement a)
     (hb : IsCompactElement b) : IsCompactElement (a ⊔ b) := by
   intro s u hne hd hsu hle
   have ⟨a', ha's, haa'⟩ := ha s u hne hd hsu <| le_sup_left.trans hle
