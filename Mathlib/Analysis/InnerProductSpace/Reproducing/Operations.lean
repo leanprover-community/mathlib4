@@ -116,7 +116,7 @@ def projection : H + H' →ₗᵢ[𝕜] WithLp 2 (H × H') :=
     (generator H H').ker.quotientEquivOrthogonal.toLinearIsometry
 
 @[simp low]
-lemma coe_orthogonalProjection :
+lemma coe_projection :
     ⇑(projection H H') = ((generator H H').kerᗮ).subtype
       ∘ (generator H H').ker.quotientEquivOrthogonal := by
   rfl
