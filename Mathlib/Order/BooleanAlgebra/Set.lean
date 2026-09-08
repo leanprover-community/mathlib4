@@ -148,11 +148,11 @@ lemma inl_compl_union_inr_compl {s : Set α} {t : Set β} :
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_notMem s).symm
 
-@[push]
+@[push ←]
 theorem union_eq_compl_compl_inter_compl (s t : Set α) : s ∪ t = (sᶜ ∩ tᶜ)ᶜ :=
   ext fun _ => or_iff_not_and_not
 
-@[push]
+@[push ←]
 theorem inter_eq_compl_compl_union_compl (s t : Set α) : s ∩ t = (sᶜ ∪ tᶜ)ᶜ :=
   ext fun _ => and_iff_not_or_not
 
