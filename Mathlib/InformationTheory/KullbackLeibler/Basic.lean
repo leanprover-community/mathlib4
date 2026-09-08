@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Lorenzo Luccioli
+Authors: Rémy Degenne, Lorenzo Luccioli, Elazar Gershuni
 -/
 module
 
@@ -29,6 +29,12 @@ That lemma is our version of Gibbs' inequality ("the Kullback-Leibler divergence
 
 * `klDiv_eq_zero_iff` : the Kullback-Leibler divergence between two finite measures is zero if and
   only if the two measures are equal.
+* `klDiv_eq_sum`, `toReal_klDiv_eq_sum`: finite-sum formulas on a finite space.
+* `klDiv_eq_sum_of_measure_eq`, `toReal_klDiv_eq_sum_of_measure_eq`: sum formulas for equal-mass
+  measures.
+* `klDiv_eq_sum_of_isProbabilityMeasure`, `toReal_klDiv_eq_sum_of_isProbabilityMeasure`:
+  sum formulas for probability measures.
+* `klDiv_sum_smul_dirac`, `toReal_klDiv_sum_smul_dirac`: formulas for weighted Dirac measures.
 
 ## Implementation details
 
@@ -385,5 +391,59 @@ lemma klDiv_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero] at hx
   have hx' : klFun (μ.rnDeriv ν x).toReal = 0 := le_antisymm hx (klFun_nonneg ENNReal.toReal_nonneg)
   rwa [klFun_eq_zero_iff ENNReal.toReal_nonneg, ENNReal.toReal_eq_one_iff] at hx'
+
+section FiniteSpace
+
+variable [Fintype α] [MeasurableSingletonClass α]
+
+lemma klDiv_eq_sum [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+    klDiv μ ν = ENNReal.ofReal
+      ((∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})) + ν.real univ - μ.real univ) := by
+  rw [klDiv_of_ac_of_integrable hμν Integrable.of_finite, integral_llr_fintype hμν]
+
+lemma toReal_klDiv_eq_sum [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+    (klDiv μ ν).toReal =
+      (∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})) + ν.real univ - μ.real univ := by
+  rw [toReal_klDiv hμν Integrable.of_finite, integral_llr_fintype hμν]
+
+lemma klDiv_eq_sum_of_measure_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) (h_eq : μ univ = ν univ) :
+    klDiv μ ν = ENNReal.ofReal (∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})) := by
+  simp [klDiv_eq_sum hμν, measureReal_def, h_eq]
+
+lemma toReal_klDiv_eq_sum_of_measure_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) (h_eq : μ univ = ν univ) :
+    (klDiv μ ν).toReal = ∑ x, μ.real {x} * log (μ.real {x} / ν.real {x}) := by
+  rw [toReal_klDiv_of_measure_eq hμν h_eq, integral_llr_fintype hμν]
+
+lemma klDiv_eq_sum_of_isProbabilityMeasure [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) :
+    klDiv μ ν = ENNReal.ofReal (∑ x, μ.real {x} * log (μ.real {x} / ν.real {x})) :=
+  klDiv_eq_sum_of_measure_eq hμν (by simp)
+
+lemma toReal_klDiv_eq_sum_of_isProbabilityMeasure
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (hμν : μ ≪ ν) :
+    (klDiv μ ν).toReal = ∑ x, μ.real {x} * log (μ.real {x} / ν.real {x}) :=
+  toReal_klDiv_eq_sum_of_measure_eq hμν (by simp)
+
+lemma klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x = 0) :
+    klDiv (Measure.sum fun x ↦ p x • Measure.dirac x)
+      (Measure.sum fun x ↦ q x • Measure.dirac x) =
+      ENNReal.ofReal ((∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ)) := by
+  rw [klDiv_eq_sum]
+  · simp only [Measure.sum_smul_dirac_real_singleton, Measure.sum_smul_dirac_real_univ]
+  · simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
+      ENNReal.coe_eq_zero] using hpq
+
+lemma toReal_klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x = 0) :
+    (klDiv (Measure.sum fun x ↦ p x • Measure.dirac x)
+      (Measure.sum fun x ↦ q x • Measure.dirac x)).toReal =
+      (∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ) := by
+  rw [toReal_klDiv_eq_sum]
+  · simp only [Measure.sum_smul_dirac_real_singleton, Measure.sum_smul_dirac_real_univ]
+  · simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
+      ENNReal.coe_eq_zero] using hpq
+
+end FiniteSpace
 
 end InformationTheory

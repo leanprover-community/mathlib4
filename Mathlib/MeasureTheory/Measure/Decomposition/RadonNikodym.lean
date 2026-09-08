@@ -339,8 +339,9 @@ lemma lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∫⁻ x, μ.rnDeriv ν x ∂ν = μ Set.univ := by
   rw [← setLIntegral_univ, setLIntegral_rnDeriv' hμν MeasurableSet.univ]
 
-/-- At a point of positive mass, the Radon-Nikodym derivative is the ratio of singleton masses. -/
-lemma rnDeriv_singleton [MeasurableSingletonClass α] [HaveLebesgueDecomposition μ ν]
+/-- At a point of positive `ν`-mass, the Radon-Nikodym derivative is the ratio of the
+singleton masses. -/
+lemma rnDeriv_eq_div_measure_singleton [MeasurableSingletonClass α] [HaveLebesgueDecomposition μ ν]
     [SigmaFinite ν] (hμν : μ ≪ ν) {x : α} (hx : ν {x} ≠ 0) :
     μ.rnDeriv ν x = μ {x} / ν {x} := by
   apply (ENNReal.eq_div_iff hx measure_singleton_lt_top.ne).mpr
