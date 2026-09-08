@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
-public import Mathlib.RingTheory.MvPowerSeries.Rename
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
 
 /-!
 # Formal partial derivatives of multivariate power series
@@ -116,7 +116,6 @@ private theorem pderivFun_smul {i : σ} (r : R) (f : MvPowerSeries σ R) :
     pderivFun i (r • f) = r • pderivFun i f := by
   rw [smul_eq_C_mul, smul_eq_C_mul, pderivFun_mul, pderivFun_C, smul_zero, add_zero, smul_eq_mul]
 
-variable (R) in
 /-- The formal partial derivative of a multivariate formal power series with respect to
 variable `i`, as an `R`-derivation on `MvPowerSeries σ R`. -/
 @[no_expose]
@@ -127,55 +126,55 @@ noncomputable def pderiv (i : σ) : Derivation R (MvPowerSeries σ R) (MvPowerSe
   map_one_eq_zero' := pderivFun_one
   leibniz' := pderivFun_mul
 
-@[simp] theorem pderiv_C {i : σ} {r : R} : pderiv R i (C r) = 0 := pderivFun_C r
+@[simp] theorem pderiv_C {i : σ} {r : R} : pderiv i (C r) = 0 := pderivFun_C r
 
-theorem pderiv_one {i : σ} : pderiv R i 1 = 0 := pderiv_C
+theorem pderiv_one {i : σ} : pderiv i (1 : MvPowerSeries σ R) = 0 := pderiv_C
 
 theorem coeff_pderiv {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
-    coeff n (pderiv R i f) = coeff (n + single i 1) f * (n i + 1) :=
+    coeff n (pderiv i f) = coeff (n + single i 1) f * (n i + 1) :=
   coeff_pderivFun f n
 
 theorem pderiv_coe {i : σ} (f : MvPolynomial σ R) :
-    pderiv R i f = MvPolynomial.pderiv i f := pderivFun_coe f
+    pderiv i (f : MvPowerSeries σ R) = MvPolynomial.pderiv i f := pderivFun_coe f
 
 @[simp]
-theorem pderiv_X_self {i : σ} : pderiv R i (X i) = 1 := by
+theorem pderiv_X_self {i : σ} : pderiv i (X i) = (1 : MvPowerSeries σ R) := by
   classical
   ext n
   simp only [coeff_pderiv, coeff_X, boole_mul, add_eq_right, coeff_one]
   split_ifs <;> simp_all
 
 @[simp]
-theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv R i (X j) = 0 := by
+theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j) = (0 : MvPowerSeries σ R) := by
   classical
   ext n
   simpa only [coeff_pderiv, coeff_X, boole_mul, coeff_zero] using
     ite_eq_right (ne_iff.mpr ⟨i, by grind [Finsupp.add_apply]⟩)
 
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
-    pderiv R i (X j) = Pi.single (M := fun _ => MvPowerSeries σ R) i 1 j := by
+    pderiv i (X j) = Pi.single (M := fun _ => MvPowerSeries σ R) i 1 j := by
   by_cases h : i = j
   · subst h; simp only [pderiv_X_self, Pi.single_eq_same]
   · grind [pderiv_X_of_ne]
 
 theorem trunc_pderiv [DecidableEq σ] {i : σ} (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
-    trunc R n (pderiv R i f) = MvPolynomial.pderiv i (trunc R (n + single i 1) f) :=
+    trunc R n (pderiv i f) = MvPolynomial.pderiv i (trunc R (n + single i 1) f) :=
   trunc_pderivFun ..
 
 /-- The partial derivative of `g^n` equals `n * g^(n-1) * g'`. -/
 theorem pderiv_pow {i : σ} (g : MvPowerSeries σ R) (n : ℕ) :
-    pderiv R i (g ^ n) = n * g ^ (n - 1) * pderiv R i g := by
+    pderiv i (g ^ n) = n * g ^ (n - 1) * pderiv i g := by
   rw [Derivation.leibniz_pow, smul_eq_mul, nsmul_eq_mul, mul_assoc]
 
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPowerSeries σ R} {i : σ} :
-    pderiv S i (map φ f) = map φ (pderiv R i f) := by
+    pderiv i (map φ f) = map φ (pderiv i f) := by
   ext n
   simp [coeff_pderiv]
 
 /-- Renaming the variables along an injective map commutes with partial differentiation. -/
 lemma pderiv_rename {f : σ → τ} (hf : Function.Injective f) [Filter.TendstoCofinite f]
     (x : σ) (p : MvPowerSeries σ R) :
-    pderiv R (f x) (rename f p) = rename f (pderiv R x p) := by
+    pderiv (f x) (rename f p) = rename f (pderiv x p) := by
   classical
   ext n
   rw [coeff_pderiv, coeff_rename, coeff_rename, Finset.sum_mul]
@@ -201,7 +200,7 @@ end CommSemiring
 The `CommRing` assumption is needed because the proof uses `smul_right_inj`, which requires
 cancellation of addition in `R`; `IsAddTorsionFree` alone does not suffice. -/
 theorem pderiv.ext [CommRing R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
-    (hD : ∀ i, pderiv R i f = pderiv R i g) (hc : constantCoeff f = constantCoeff g) : f = g := by
+    (hD : ∀ i, pderiv i f = pderiv i g) (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n
   by_cases h : n = 0
   · rw [h, coeff_zero_eq_constantCoeff, hc]
@@ -215,13 +214,13 @@ theorem pderiv.ext [CommRing R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
 
 @[simp]
 theorem pderiv_inv {i : σ} [CommRing R] (f : (MvPowerSeries σ R)ˣ) :
-    pderiv R i ↑f⁻¹ = -(↑f⁻¹ : MvPowerSeries σ R) ^ 2 * pderiv R i f :=
-  (pderiv R i).leibniz_of_mul_eq_one f.inv_mul
+    pderiv i ↑f⁻¹ = -(↑f⁻¹ : MvPowerSeries σ R) ^ 2 * pderiv i f :=
+  (pderiv i).leibniz_of_mul_eq_one f.inv_mul
 
 @[simp]
 theorem pderiv_invOf {i : σ} [CommRing R] (f : MvPowerSeries σ R) [Invertible f] :
-    pderiv R i ⅟f = -⅟f ^ 2 * pderiv R i f :=
-  (pderiv R i).leibniz_invOf f
+    pderiv i ⅟f = -⅟f ^ 2 * pderiv i f :=
+  (pderiv i).leibniz_invOf f
 
 /-
 The following theorem is stated only in the case that `R` is a field. This is because
@@ -230,7 +229,7 @@ there is currently no instance of `Inv (MvPowerSeries σ R)` for more general ba
 
 @[simp]
 theorem pderiv_inv' {i : σ} [Field R] (f : MvPowerSeries σ R) :
-    pderiv R i f⁻¹ = -f⁻¹ ^ 2 * pderiv R i f := by
+    pderiv i f⁻¹ = -f⁻¹ ^ 2 * pderiv i f := by
   by_cases h : constantCoeff f = 0
   · suffices f⁻¹ = 0 by
       rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
