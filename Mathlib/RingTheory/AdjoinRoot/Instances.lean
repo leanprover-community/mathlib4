@@ -60,7 +60,7 @@ lemma _root_.Polynomial.Monic.dvd_of_forall_prime_map_dvd (hf : f.Monic) (h : �
 lemma X_pow_sub_one_of_isUnit (r : ℕ) (hru : IsUnit (r : R)) :
     _root_.IsRadical ((X : R[X]) ^ r - 1) := by
   rcases eq_or_ne r 0 with rfl | hr0
-  · simp [zero_of_reduced]
+  · simp [isRadical_zero]
   · intro k y hy
     apply (monic_X_pow_sub_one hr0).dvd_of_forall_prime_map_dvd
     intro ⟨p, hp⟩
@@ -79,7 +79,7 @@ lemma span_X_pow_sub_one_of_regular (h : IsRegular (r : R)) :
     (span {(X : R[X]) ^ r - 1}).IsRadical := by
   rw [← isRadical_iff_span_singleton]
   rcases eq_or_ne r 0 with rfl | hr0
-  · simp [zero_of_reduced]
+  · simp [isRadical_zero]
   · set S := (Localization.Away (r : R))
     intro k y hy
     refine (map_dvd_map (algebraMap R S) ?_ ?_).mp ?_
