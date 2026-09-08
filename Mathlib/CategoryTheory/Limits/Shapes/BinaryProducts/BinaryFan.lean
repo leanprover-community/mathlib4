@@ -31,37 +31,46 @@ open WalkingPair
 variable {C : Type u} [Category.{v} C]
 
 /-- A binary fan is just a cone on a diagram indexing a product. -/
+@[to_dual /-- A binary cofan is just a cocone on a diagram indexing a coproduct. -/]
 abbrev BinaryFan (X Y : C) :=
   Cone (pair X Y)
 
 /-- The first projection of a binary fan. -/
-abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) :=
+@[to_dual inl /-- The first inclusion of a binary cofan. -/]
+abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ (pair X Y).obj ⟨left⟩ :=
   s.π.app ⟨WalkingPair.left⟩
 
 /-- The second projection of a binary fan. -/
-abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) :=
+@[to_dual inr /-- The second inclusion of a binary cofan. -/]
+abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) : s.pt ⟶ (pair X Y).obj ⟨right⟩ :=
   s.π.app ⟨WalkingPair.right⟩
 
 -- Marking this `@[simp]` causes loops since `s.fst` is reducibly defeq to the LHS.
+@[to_dual ι_app_left]
 theorem BinaryFan.π_app_left {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.left⟩ = s.fst :=
   rfl
 
 -- Marking this `@[simp]` causes loops since `s.snd` is reducibly defeq to the LHS.
+@[to_dual ι_app_right]
 theorem BinaryFan.π_app_right {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.right⟩ = s.snd :=
   rfl
 
 /-- Constructs an isomorphism of `BinaryFan`s out of an isomorphism of the tips that commutes with
 the projections. -/
+@[to_dual
+/-- Constructs an isomorphism of `BinaryCofan`s out of an isomorphism of the tips that commutes with
+the injections. -/]
 def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
   Cone.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
-@[simp]
+@[to_dual (attr := simp)]
 lemma BinaryFan.ext_hom_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) :
     (ext e h₁ h₂).hom.hom = e.hom := rfl
 
 /-- A convenient way to show that a binary fan is a limit. -/
+@[to_dual IsColimit.mk]
 def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
     (lift : ∀ {T : C} (_ : T ⟶ X) (_ : T ⟶ Y), T ⟶ s.pt)
     (hl₁ : ∀ {T : C} (f : T ⟶ X) (g : T ⟶ Y), lift f g ≫ s.fst = f)
@@ -77,57 +86,11 @@ def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
       · exact hl₂ _ _)
     fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
 
+@[to_dual IsColimit.hom_ext]
 theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s) {f g : W ⟶ s.pt}
     (h₁ : f ≫ s.fst = g ≫ s.fst) (h₂ : f ≫ s.snd = g ≫ s.snd) : f = g :=
   h.hom_ext fun j => Discrete.recOn j fun j => WalkingPair.casesOn j h₁ h₂
 
-/-- A binary cofan is just a cocone on a diagram indexing a coproduct. -/
-abbrev BinaryCofan (X Y : C) := Cocone (pair X Y)
-
-/-- The first inclusion of a binary cofan. -/
-abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.left⟩
-
-/-- The second inclusion of a binary cofan. -/
-abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.right⟩
-
-/-- Constructs an isomorphism of `BinaryCofan`s out of an isomorphism of the tips that commutes with
-the injections. -/
-def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
-    (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
-  Cocone.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
-
-@[simp]
-lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
-    (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) :
-    (ext e h₁ h₂).hom.hom = e.hom := rfl
-
--- This cannot be `@[simp]` because `s.inl` is reducibly defeq to the LHS.
-theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
-    s.ι.app ⟨WalkingPair.left⟩ = s.inl := rfl
-
--- This cannot be `@[simp]` because `s.inr` is reducibly defeq to the LHS.
-theorem BinaryCofan.ι_app_right {X Y : C} (s : BinaryCofan X Y) :
-    s.ι.app ⟨WalkingPair.right⟩ = s.inr := rfl
-
-/-- A convenient way to show that a binary cofan is a colimit. -/
-def BinaryCofan.IsColimit.mk {X Y : C} (s : BinaryCofan X Y)
-    (desc : ∀ {T : C} (_ : X ⟶ T) (_ : Y ⟶ T), s.pt ⟶ T)
-    (hd₁ : ∀ {T : C} (f : X ⟶ T) (g : Y ⟶ T), s.inl ≫ desc f g = f)
-    (hd₂ : ∀ {T : C} (f : X ⟶ T) (g : Y ⟶ T), s.inr ≫ desc f g = g)
-    (uniq :
-      ∀ {T : C} (f : X ⟶ T) (g : Y ⟶ T) (m : s.pt ⟶ T) (_ : s.inl ≫ m = f) (_ : s.inr ≫ m = g),
-        m = desc f g) :
-    IsColimit s :=
-  Limits.IsColimit.mk (fun t => desc (BinaryCofan.inl t) (BinaryCofan.inr t))
-    (by
-      rintro t (rfl | rfl)
-      · exact hd₁ _ _
-      · exact hd₂ _ _)
-    fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
-
-theorem BinaryCofan.IsColimit.hom_ext {W X Y : C} {s : BinaryCofan X Y} (h : IsColimit s)
-    {f g : s.pt ⟶ W} (h₁ : s.inl ≫ f = s.inl ≫ g) (h₂ : s.inr ≫ f = s.inr ≫ g) : f = g :=
-  h.hom_ext fun j => Discrete.recOn j fun j => WalkingPair.casesOn j h₁ h₂
 
 variable {X Y Z P : C}
 
@@ -139,47 +102,34 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
-@[simps pt, implicit_reducible]
+@[to_dual (attr := simps pt, implicit_reducible)
+/-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and`ι₂ : Y ⟶ P`. -/]
 def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y where
   pt := P
   π := { app := fun | { as := j } => match j with | left => π₁ | right => π₂ }
 
-/-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and `ι₂ : Y ⟶ P`. -/
-@[simps pt]
-def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
-  pt := P
-  ι := { app := fun | { as := j } => match j with | left => ι₁ | right => ι₂ }
-
 end
 
-@[simp]
+@[to_dual (attr := simp) mk_inl]
 theorem BinaryFan.mk_fst {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : (BinaryFan.mk π₁ π₂).fst = π₁ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp) mk_inr]
 theorem BinaryFan.mk_snd {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : (BinaryFan.mk π₁ π₂).snd = π₂ :=
   rfl
 
-@[simp]
-theorem BinaryCofan.mk_inl {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (BinaryCofan.mk ι₁ ι₂).inl = ι₁ :=
-  rfl
-
-@[simp]
-theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (BinaryCofan.mk ι₁ ι₂).inr = ι₂ :=
-  rfl
-
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
+@[to_dual /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/]
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
-    Cone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
-
-set_option backward.defeqAttrib.useBackward true in
-/-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
-def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
-    Cocone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
+    Cone.ext (Iso.refl _) fun ⟨l⟩ => by cases l <;> simp
 
 /-- This is a more convenient formulation to show that a `BinaryFan` constructed using
 `BinaryFan.mk` is a limit cone.
 -/
+@[to_dual
+/-- This is a more convenient formulation to show that a `BinaryCofan` constructed using
+`BinaryCofan.mk` is a colimit cocone.
+-/]
 def BinaryFan.isLimitMk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (lift : ∀ s : BinaryFan X Y, s.pt ⟶ W)
     (fac_left : ∀ s : BinaryFan X Y, lift s ≫ fst = s.fst)
     (fac_right : ∀ s : BinaryFan X Y, lift s ≫ snd = s.snd)
@@ -188,23 +138,6 @@ def BinaryFan.isLimitMk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (lift : ∀ s : 
         m = lift s) :
     IsLimit (BinaryFan.mk fst snd) :=
   { lift := lift
-    fac := fun s j => by
-      rcases j with ⟨⟨⟩⟩
-      exacts [fac_left s, fac_right s]
-    uniq := fun s m w => uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
-
-/-- This is a more convenient formulation to show that a `BinaryCofan` constructed using
-`BinaryCofan.mk` is a colimit cocone.
--/
-def BinaryCofan.isColimitMk {W : C} {inl : X ⟶ W} {inr : Y ⟶ W}
-    (desc : ∀ s : BinaryCofan X Y, W ⟶ s.pt)
-    (fac_left : ∀ s : BinaryCofan X Y, inl ≫ desc s = s.inl)
-    (fac_right : ∀ s : BinaryCofan X Y, inr ≫ desc s = s.inr)
-    (uniq :
-      ∀ (s : BinaryCofan X Y) (m : W ⟶ s.pt) (_ : inl ≫ m = s.inl) (_ : inr ≫ m = s.inr),
-        m = desc s) :
-    IsColimit (BinaryCofan.mk inl inr) :=
-  { desc := desc
     fac := fun s j => by
       rcases j with ⟨⟨⟩⟩
       exacts [fac_left s, fac_right s]
