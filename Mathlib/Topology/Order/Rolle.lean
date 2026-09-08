@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Order.ExtendFrom
 public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.Order.T5
 
 /-!
@@ -27,7 +26,9 @@ local minimum, local maximum, extremum, Rolle's Theorem
 
 public section
 
-open Filter Set Topology
+open Filter Set
+
+open scoped Topology
 
 variable {X Y : Type*}
   [ConditionallyCompleteLinearOrder X] [DenselyOrdered X] [TopologicalSpace X] [OrderTopology X]

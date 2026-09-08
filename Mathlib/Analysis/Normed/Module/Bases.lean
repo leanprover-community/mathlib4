@@ -81,7 +81,9 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 
 noncomputable section
 
-open Filter Topology LinearMap Set ENNReal NNReal
+open Filter LinearMap Set ENNReal NNReal
+
+open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]

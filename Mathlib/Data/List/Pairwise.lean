@@ -20,8 +20,8 @@ This file provides basic results about `List.Pairwise` and `List.pwFilter` (defi
 `Pairwise (≠) l` means that all elements of `l` are distinct, and `Pairwise (<) l` means that `l`
 is strictly increasing.
 `pwFilter R l` is the list obtained by iteratively adding each element of `l` that doesn't break
-the pairwiseness of the list we have so far. It thus yields `l'` a maximal sublist of `l` such that
-`Pairwise R l'`.
+the pairwise property of the list we have so far. It thus yields `l'` as a maximal sublist of `l`
+such that `Pairwise R l'`.
 
 ## Tags
 
@@ -35,7 +35,7 @@ open Nat
 
 namespace List
 
-variable {α β : Type*} {R : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
+variable {α : Type*} {R : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
