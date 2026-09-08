@@ -346,6 +346,12 @@ theorem Splits.of_splits_map_of_injective {S : Type*} [CommRing S] [IsDomain S] 
   conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
 
+omit [IsDomain R] in
+theorem Splits.of_splits_algebraMap [FaithfulSMul R A] (hf : Splits (f.map (algebraMap R A)))
+    (h : ∀ a ∈ f.rootSet A, a ∈ (algebraMap R A).range) : Splits f := by
+  apply hf.of_splits_map_of_injective (FaithfulSMul.algebraMap_injective R A) fun a ha ↦ h a ?_
+  rwa [mem_rootSet', ← eval_map_algebraMap, ← IsRoot.def, ← mem_roots']
+
 theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
     {S : Type*} [Ring S] (i : S →+* R) (hr : ∀ a ∈ f.roots, a ∈ i.range) :
     f ∈ Polynomial.lifts i := by
@@ -669,14 +675,9 @@ noncomputable section
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
-
 section Splits
 
 section CommRing
-
-variable [CommRing K] [Field L] [Field F]
-variable (i : K →+* L)
 
 variable {i}
 
@@ -684,8 +685,7 @@ variable (i)
 
 end CommRing
 
-variable [CommRing R] [Field K] [Field L] [Field F]
-variable (i : K →+* L)
+variable [CommRing R]
 
 section UFD
 
@@ -694,8 +694,6 @@ attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
 local infixl:50 " ~ᵤ " => Associated
 
 end UFD
-
-variable [Algebra R K] [Algebra R L]
 
 end Splits
 

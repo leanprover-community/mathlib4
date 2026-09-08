@@ -642,7 +642,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
   · convert!
     h.excenter_notMem_affineSpan_face (fs := { i, j }) (m := 1) (by simp_all)
       Nat.AtLeastTwo.ne_one.symm
-    simp [Set.image_insert_eq]
+    simp
 
 lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
     s.incenter ∉ line[ℝ, s.points i, s.points j] :=
@@ -1328,7 +1328,7 @@ lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : F
       (t.exsphere signs).orthRadius (t.touchpoint signs i₁) := by
   convert! (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
   have hc : {i₁}ᶜ = ({i₂, i₃} : Set (Fin 3)) := by grind
-  simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
+  simp [Simplex.range_faceOpposite_points, hc]
 
 lemma affineSpan_pair_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = 2)]
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :

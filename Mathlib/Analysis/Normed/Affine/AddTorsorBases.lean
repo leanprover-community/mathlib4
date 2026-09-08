@@ -137,7 +137,7 @@ theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional �
   suffices (interior (convexHull ℝ (range b))).Nonempty by
     rw [hb, Subtype.range_coe_subtype, ofPred_mem_eq] at this
     refine this.mono (by gcongr)
-  lift t to Finset V using b.finite_set
+  lift t to Finset V using b.setFinite
   exact ⟨_, b.centroid_mem_interior_convexHull⟩
 
 theorem Convex.interior_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V}

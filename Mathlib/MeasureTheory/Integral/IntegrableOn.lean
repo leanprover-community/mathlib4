@@ -29,12 +29,12 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε ε' E F : Type*} {mα : MeasurableSpace α}
+variable {α β ε ε' E : Type*} {mα : MeasurableSpace α}
 
 section
 
 variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε]
-  {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
+  {l l' : Filter α} {f : α → β} {μ : Measure α}
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/
@@ -654,7 +654,7 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
     IntegrableAtFilter f (l ⊓ ae μ) μ ↔ IntegrableAtFilter f l μ := by
   refine ⟨?_, fun h ↦ h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hf⟩
-  refine ⟨t, ht, hf.congr_set_ae <| eventuallyEq_set.2 ?_⟩
+  refine ⟨t, ht, hf.congr_set_ae <| eventuallyEqSet_iff.2 ?_⟩
   filter_upwards [hu] with x hx using (and_iff_left hx).symm
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff

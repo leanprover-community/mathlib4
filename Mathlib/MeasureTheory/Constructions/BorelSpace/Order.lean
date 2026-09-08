@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
+public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
@@ -159,7 +160,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a b : α}
+variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a : α}
 
 theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
   OrderClosedTopology.isClosed_le'.measurableSet
@@ -183,7 +184,7 @@ section LinearOrder
 variable [LinearOrder α] {a b x : α} {μ : Measure α}
 
 -- we open this scope only here to avoid issues with list being treated as intervals above
-open Interval
+open scoped Interval
 
 @[simp, measurability]
 theorem measurableSet_Iio [ClosedIciTopology α] : MeasurableSet (Iio a) :=

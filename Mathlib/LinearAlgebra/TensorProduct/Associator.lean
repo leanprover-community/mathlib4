@@ -17,13 +17,11 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
-variable {R'' : Type*} [Semiring R'']
 variable {A M N P Q S T : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
-variable [Module R'' M]
 variable (M N)
 
 namespace TensorProduct
@@ -213,10 +211,6 @@ lemma lid_tensor :
   LinearEquiv.toLinearMap_inj.mp <| ext_threefold' fun _ _ => congrFun rfl
 
 section
-
-variable {P' Q' : Type*}
-variable [AddCommMonoid P'] [Module R P']
-variable [AddCommMonoid Q'] [Module R Q']
 
 variable (R M N P Q)
 

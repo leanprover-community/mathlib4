@@ -28,7 +28,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {G M N A α : Type*}
+variable {G M A α : Type*}
 
 /-! ### Tautological actions -/
 

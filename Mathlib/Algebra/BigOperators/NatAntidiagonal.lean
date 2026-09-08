@@ -16,7 +16,7 @@ This file contains theorems relevant to big operators over `Finset.NatAntidiagon
 
 public section
 
-variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
+variable {M : Type*} [CommMonoid M]
 
 namespace Finset
 
