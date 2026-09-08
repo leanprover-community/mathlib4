@@ -1004,7 +1004,6 @@ def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
   isoMk₁ (Iso.refl _) (Iso.refl _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
 `.mk₂ (G.map f) (G.map g)`. -/
 @[implicit_reducible, simps!]
