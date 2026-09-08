@@ -31,12 +31,11 @@ namespace Theorems100
 
 open Finset SimpleGraph Matrix
 
-variable {V : Type*} [Fintype V]
+variable {V : Type*}
 
-open scoped Classical in
 /-- A friendship graph has exactly one common neighbor for every distinct pair of vertices. -/
 def IsFriendship (G : SimpleGraph V) : Prop :=
-  ∀ ⦃v w⦄, v ≠ w → Fintype.card (G.commonNeighbors v w) = 1
+  ∀ ⦃v w⦄, v ≠ w → (G.commonNeighbors v w).ncard = 1
 
 variable {G : SimpleGraph V} {R : Type*} [Semiring R] {d : ℕ} (hG : IsFriendship G)
 
@@ -44,10 +43,13 @@ include hG
 
 namespace IsFriendship
 
+variable [Fintype V]
+
 open scoped Classical in
 lemma adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) : (G.adjMatrix R ^ 2) v w = 1 := by
   rw [sq, ← Nat.cast_one, ← hG hvw, mul_adjMatrix_apply, neighborFinset_eq_filter]
-  simp_rw [adjMatrix_apply, sum_boole, filter_filter, and_comm, Fintype.card_ofFinset]
+  simp_rw [adjMatrix_apply, sum_boole, filter_filter, and_comm, ← Set.fintypeCard_eq_ncard,
+    Fintype.card_ofFinset]
   congr
 
 open scoped Classical in
@@ -90,10 +92,10 @@ lemma isRegular_of_not_exists_isUniversal (nu : ¬∃ v, G.IsUniversal v) :
   obtain ⟨y, n₂, a₂⟩ := nu w
   by_cases! a₃ : ¬G.Adj v y; · rw [hG.degree_eq_of_not_adj a₂, hG.degree_eq_of_not_adj a₃]
   by_cases! a₄ : ¬G.Adj x w; · rw [hG.degree_eq_of_not_adj a₁, hG.degree_eq_of_not_adj a₄]
-  obtain ⟨⟨z, mz⟩, key⟩ := Fintype.card_eq_one_iff.mp (hG n₁)
-  simp_rw [Subtype.forall, mem_commonNeighbors, Subtype.mk.injEq, and_imp] at key
+  obtain ⟨z, key⟩ := Set.ncard_eq_one.mp (hG n₁)
+  rw [Set.eq_singleton_iff_unique_mem] at key
   rw [hG.degree_eq_of_not_adj a₁, hG.degree_eq_of_not_adj a₂]
-  exact hG.degree_eq_of_not_adj fun a₅ ↦ by grind [key _ a₀ a₄, key _ a₃ a₅.symm]
+  exact hG.degree_eq_of_not_adj fun a₅ ↦ by grind [key.2 _ ⟨a₀, a₄⟩, key.2 _ ⟨a₃, a₅.symm⟩]
 
 open scoped Classical in
 /-- The all-ones vector is an eigenvector of `A ^ 2`. We can compute the eigenvalue to be
@@ -139,7 +141,8 @@ theorem exists_isUniversal_of_regular (hd : G.IsRegularOfDegree d) :
 
 end IsFriendship
 
-theorem friendship_theorem [Nonempty V] : ∃ v, G.IsUniversal v := by
+theorem friendship_theorem [Finite V] [Nonempty V] : ∃ v, G.IsUniversal v := by
+  have := Fintype.ofFinite V
   by_contra con
   obtain ⟨d, hd⟩ := hG.isRegular_of_not_exists_isUniversal con
   exact con.elim (hG.exists_isUniversal_of_regular hd)
