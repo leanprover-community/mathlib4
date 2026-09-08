@@ -48,9 +48,8 @@ variable [Fintype V]
 open scoped Classical in
 lemma adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) : (G.adjMatrix R ^ 2) v w = 1 := by
   rw [sq, ← Nat.cast_one, ← hG hvw, mul_adjMatrix_apply, neighborFinset_eq_filter]
-  simp_rw [adjMatrix_apply, sum_boole, filter_filter, and_comm, ← Set.fintypeCard_eq_ncard,
-    Fintype.card_ofFinset]
-  congr
+  simp_rw [adjMatrix_apply, sum_boole, filter_filter, and_comm, ← G.mem_commonNeighbors,
+    Set.filter_mem_univ_eq_toFinset, Set.ncard_eq_toFinset_card']
 
 open scoped Classical in
 lemma adjMatrix_pow_three_of_not_adj {v w : V} (na : ¬G.Adj v w) :
