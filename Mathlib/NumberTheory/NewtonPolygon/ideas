@@ -9,10 +9,10 @@ I want this folder to look like the following:
     -- right now this is a predicate for a newton polygon... but I think I really want a way to attach the newton polygon to a series such that it is the newtonPolygonOf
 
     Something like?
-    lemma test (v : ℕ → WithTop Γ) : ∃ a, IsNewtonPolygonOf v a := by 
+    lemma test (v : ℕ → WithTop Γ) : ∃ a, IsNewtonPolygonOf v a := by
       -- this probably requires some condition on v e.g. admissable
       sorry
-    
+
     we can then have Classical.choose test? to be the newton polygon of... perhaps I want this to be a unique Classical.choose
 
     -- the idea is that I then show this is the construction
@@ -25,12 +25,12 @@ I want this folder to look like the following:
     -- and a one line proof using a private lemma about the constructions
 
     -- I think this will be better than having to carry a newtonpolygon and the proof it is THE newtonPolygonOf
-  
+
   OfSeqConstruction -- this is where we have the statement that the
-    construction gives the unique newton polygon that is 
+    construction gives the unique newton polygon that is
 
 
--- things to do: 
+-- things to do:
   work on Convexity and Heights; need to decide what is needed and what should exist where
 
   the statements in the PhD repo uses HasFirstBreak ... which says where the first break is... this should be bundled in terms of the x function of the newtonPolygonOf as the actual statement
