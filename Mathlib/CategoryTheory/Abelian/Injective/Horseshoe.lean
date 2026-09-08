@@ -20,7 +20,7 @@ universe w
 
 namespace CategoryTheory
 
-open CochainComplex
+open Limits CochainComplex
 
 variable {C : Type*} [Category* C] [Abelian C]
 
@@ -76,6 +76,34 @@ lemma extMk_comp_extClass'_aux
   have : x₁ ≫ R₁.cocomplex.d m m' = 0 := by
     simp [← cancel_mono (h.f.hom.f m'), ← HomologicalComplex.Hom.comm, reassoc_of% hx₁]
   simpa [x₁, x₂] using this
+
+@[implicit_reducible, simps]
+noncomputable def shortComplexExtend : ShortComplex (CochainComplex C ℤ) where
+  X₁ := R₁.cochainComplex
+  X₂ := R₂.cochainComplex
+  X₃ := R₃.cochainComplex
+  f := HomologicalComplex.extendMap h.f.hom _
+  g := HomologicalComplex.extendMap h.g.hom _
+  zero := by
+    dsimp [cochainComplex]
+    rw [← HomologicalComplex.extendMap_comp, w, HomologicalComplex.extendMap_zero]
+    rfl
+
+lemma shortExact_shortComplexExtend :
+    h.shortComplexExtend.ShortExact := by
+  have : PreservesFiniteLimits (ComplexShape.embeddingUpNat.extendFunctor C) := sorry
+  have : PreservesFiniteColimits (ComplexShape.embeddingUpNat.extendFunctor C):= sorry
+  exact h.shortExact_shortComplex.map_of_exact (ComplexShape.embeddingUpNat.extendFunctor C)
+
+/- TODO, relate these three triangles:
+
+variable [HasDerivedCategory C]
+have T₁ := DerivedCategory.triangleOfSES h.shortExact_shortComplexExtend
+have T₂ := DerivedCategory.Q.mapTriangle.obj
+  (triangleOfDegreewiseSplit h.shortComplexExtend sorry)
+have T₃ := ShortComplex.ShortExact.singleTriangle hS
+
+-/
 
 lemma extMk_comp_extClass'
     [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
