@@ -99,7 +99,9 @@ noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} 
 
 namespace koszulCocomplex
 
-theorem d_eq_aux (x : M) (i : ℕ) :
+lemma X_def (x : M) (i : ℕ) : (koszulCocomplex R x).X i = ModuleCat.of R (⋀[R]^i M) := rfl
+
+theorem d_def (x : M) (i : ℕ) :
     (koszulCocomplex R x).d i (i + 1) = ModuleCat.ofHom (koszulCocomplex.d R M x i) := by
   simp [koszulCocomplex]
 
@@ -126,28 +128,31 @@ noncomputable def map (f : M →ₗ[R] N) {x : M} {y : N} (h : f x = y) :
       (by simp [koszulCocomplex, ModuleCat.exteriorPower.map,
         koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, h]))
 
-lemma map_hom (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
+lemma map_f (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
     (map R f h).f i = (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f) := rfl
 
+@[reassoc]
 lemma map_id_refl (x : M) : koszulCocomplex.map R (M := M) .id (Eq.refl x) = 𝟙 _ := by
   ext i x
-  simp only [map_hom, ModuleCat.ofHom_id, ModuleCat.exteriorPower.functor_map,
+  simp only [map_f, ModuleCat.ofHom_id, ModuleCat.exteriorPower.functor_map,
     ModuleCat.exteriorPower.map, ModuleCat.hom_id, exteriorPower.map_id, HomologicalComplex.id_f,
     LinearMap.id_coe, id_eq]
   rfl
 
+@[reassoc]
 lemma map_id (x y : M) (h : x = y) : koszulCocomplex.map R (M := M) .id h =
   eqToHom (congrArg _ h) := by
   subst h
   exact map_id_refl R x
 
 set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
 lemma map_comp {P : Type v} [AddCommGroup P] [Module R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) {x : M} {y : N} {z : P} (hxy : f x = y) (hyz : g y = z) :
     koszulCocomplex.map R f hxy ≫ koszulCocomplex.map R g hyz =
     koszulCocomplex.map R (g ∘ₗ f) (hxy ▸ hyz : g (f x) = z) := by
   refine HomologicalComplex.hom_ext _ _ fun i ↦ ?_
-  simp only [HomologicalComplex.comp_f, map_hom, ModuleCat.ofHom_comp, Functor.map_comp]
+  simp only [HomologicalComplex.comp_f, map_f, ModuleCat.ofHom_comp, Functor.map_comp]
 
 /-- The map between two Koszul complex when give an linear equiv between module that maps
 the two defining elements. -/
