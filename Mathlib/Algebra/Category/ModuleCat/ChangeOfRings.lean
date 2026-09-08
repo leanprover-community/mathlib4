@@ -387,8 +387,7 @@ theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ := by
 theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (l₂₃ : M₂ ⟶ M₃) :
     map' f (l₁₂ ≫ l₂₃) = map' f l₁₂ ≫ map' f l₂₃ := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero => rfl
+  induction x using TensorProduct.inductionOn with
   | tmul => rfl
   | add _ _ ihx ihy => erw [LinearMap.map_add, LinearMap.map_add]; grind
 
@@ -750,8 +749,7 @@ def HomEquiv.fromExtendScalars {X : ModuleCat R} {Y : ModuleCat S}
   · simp
   · intro s z
     change lift _ (s • z) = s • lift _ z
-    induction z using TensorProduct.induction_on with
-    | zero => rw [smul_zero, map_zero, smul_zero]
+    induction z using TensorProduct.inductionOn with
     | tmul s' x => simp [mul_smul]
     | add _ _ ih1 ih2 => rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 
@@ -769,8 +767,7 @@ def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
     let m1 : Module R S := Module.compHom S f; let m2 : Module R Y := Module.compHom Y f
     apply hom_ext
     apply LinearMap.ext; intro z
-    induction z using TensorProduct.induction_on with
-    | zero => rw [map_zero, map_zero]
+    induction z using TensorProduct.inductionOn with
     | tmul x s =>
       erw [TensorProduct.lift.tmul]
       simp only [LinearMap.coe_mk]
@@ -841,8 +838,7 @@ def Counit.map {Y : ModuleCat S} : (restrictScalars f ⋙ extendScalars f).obj Y
     map_smul' := fun s z => by
       let m1 : Module R S := Module.compHom S f
       let m2 : Module R Y := Module.compHom Y f
-      induction z using TensorProduct.induction_on with
-      | zero => rw [smul_zero, map_zero, smul_zero]
+      induction z using TensorProduct.inductionOn with
       | tmul s' y => simp [mul_smul]
       | add _ _ ih1 ih2 => rw [smul_add, map_add, map_add, ih1, ih2, smul_add] }
 
@@ -865,8 +861,7 @@ def counit : restrictScalars.{max v u₂, u₁, u₂} f ⋙ extendScalars f ⟶ 
     let m2 : Module R Y := Module.compHom Y f
     let m2 : Module R Y' := Module.compHom Y' f
     ext z
-    induction z using TensorProduct.induction_on with
-    | zero => rw [map_zero, map_zero]
+    induction z using TensorProduct.inductionOn with
     | tmul s' y =>
       dsimp
       -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
@@ -892,8 +887,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
       dsimp
       rfl
     homEquiv_counit := fun {X Y g} ↦ hom_ext <| LinearMap.ext fun x => by
-        induction x using TensorProduct.induction_on with
-        | zero => rw [map_zero, map_zero]
+        induction x using TensorProduct.inductionOn with
         | tmul =>
           rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]
           dsimp
