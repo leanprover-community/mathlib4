@@ -478,7 +478,7 @@ def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : �
       have : algebraMap R₁ (A ⧸ I) r = Ideal.Quotient.mk I (algebraMap R₁ A r) := rfl
       rw [this, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk,
         AlgHom.coe_toRingHom, Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one,
-        map_smul, map_one] }
+        map_smul, map_one, RingHom.id_apply] }
 
 @[simp]
 theorem Quotient.liftₐ_apply (I : Ideal A) [I.IsTwoSided]
@@ -699,7 +699,8 @@ set_option backward.isDefEq.respectTransparency false in
 def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
   { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp only [RingHom.toFun_eq_coe,
-    quotientMap_algebraMap, AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap] }
+    quotientMap_algebraMap, AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap,
+    RingHom.id_apply]  }
 
 @[simp]
 theorem quotient_map_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} :

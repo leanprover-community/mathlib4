@@ -42,12 +42,12 @@ meta def delabGal : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPP
   -- TODO: remove this once the behavior changes.
   -- See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Bug.3F.20Local.20instances.20not.20populated.20during.20delaboration/with/544850819).
   Meta.withLocalInstances (← getLCtx).decls.toList.reduceOption do
-  guard <| (← getExpr).isAppOfArity ``AlgEquiv 8
-  let [u, v, _] := (← getExpr).getAppFn'.constLevels! | failure
-  let #[R, A, B, _, _, _, _, _] := (← getExpr).getAppArgs | failure
+  guard <| (← getExpr).isAppOfArity ``AlgEquiv 14
+  let [u, _, w, _] := (← getExpr).getAppFn'.constLevels! | failure
+  let #[R, _, _, _, _, _, _, _, A, B, _, _, _, _] := (← getExpr).getAppArgs | failure
   guard (A == B) -- We require that A = B syntactically, not merely defeq.
   let some _ ← Meta.synthInstance? (.app (.const ``Field [u]) R) | failure
-  let some _ ← Meta.synthInstance? (.app (.const ``Field [v]) A) | failure
-  `(Gal($(← withNaryArg 1 <| delab)/$(← withNaryArg 0 <| delab)))
+  let some _ ← Meta.synthInstance? (.app (.const ``Field [w]) A) | failure
+  `(Gal($(← withNaryArg 8 <| delab)/$(← withNaryArg 0 <| delab)))
 
 end Notation
