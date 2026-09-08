@@ -232,6 +232,10 @@ theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) (h : FiniteMultiplicity a b) :
   contrapose! hdiv
   simpa using h.not_pow_dvd_of_multiplicity_lt (m := 1) (by simpa using hdiv)
 
+theorem emultiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < emultiplicity a b := by
+  contrapose! hdiv
+  simpa using not_pow_dvd_of_emultiplicity_lt (m := 1) (by simpa using hdiv)
+
 theorem emultiplicity_eq_of_dvd_of_not_dvd {k : ℕ} (hk : a ^ k ∣ b) (hsucc : ¬a ^ (k + 1) ∣ b) :
     emultiplicity a b = k := by classical
   have : FiniteMultiplicity a b := ⟨k, hsucc⟩
