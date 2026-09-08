@@ -139,7 +139,7 @@ instance colimitModule : Module R (M F) :=
 
 /-- The bundled `R`-module giving the filtered colimit of a diagram. -/
 def colimit : ModuleCat.{max v u, u} R :=
-  ModuleCat.of R (M F)
+  ↧(M F)
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
@@ -159,7 +159,6 @@ def colimitCocone : Cocone F where
         simpa using! (Types.TypeMax.colimitCocone
           (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
 We already know that this is a morphism between additive groups. The only thing left to see is that
 it is a linear map, i.e. preserves scalar multiplication.

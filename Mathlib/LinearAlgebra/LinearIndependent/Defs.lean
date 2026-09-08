@@ -253,9 +253,9 @@ theorem linearIndependent_iff''ₛ :
       fun H s f g eq i hi ↦ by
       convert!
         H s (fun j ↦ if j ∈ s then f j else 0) (fun j ↦ if j ∈ s then g j else 0)
-          (fun j hj ↦ (if_neg hj).trans (if_neg hj).symm)
+          (fun j hj ↦ (ite_eq_right hj).trans (ite_eq_right hj).symm)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, eq]) i <;>
-      exact (if_pos hi).symm⟩
+      exact (ite_eq_left hi).symm⟩
 
 theorem not_linearIndependent_iffₛ :
     ¬LinearIndependent R v ↔ ∃ s : Finset ι,
@@ -364,8 +364,6 @@ theorem linearIndepOn_equiv (e : ι ≃ ι') {f : ι' → M} {s : Set ι} :
 @[simp]
 theorem linearIndepOn_univ_iff : LinearIndepOn R v univ ↔ LinearIndependent R v :=
   linearIndependent_equiv' (Equiv.Set.univ ι) rfl
-
-@[deprecated (since := "2026-02-24")] alias linearIndepOn_univ := linearIndepOn_univ_iff
 
 alias ⟨_, LinearIndependent.linearIndepOn_univ⟩ := linearIndepOn_univ_iff
 
@@ -746,9 +744,9 @@ theorem linearIndependent_iff'' :
   exact linearIndependent_iff'.trans
     ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
       convert!
-        H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
+        H s (fun j => if j ∈ s then g j else 0) (fun j hj => ite_eq_right hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
-      exact (if_pos hi).symm⟩
+      exact (ite_eq_left hi).symm⟩
 
 theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) :
     LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
@@ -908,7 +906,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-variable {v : ι → V} {s t : Set ι} {x y : V}
+variable {v : ι → V} {s : Set ι}
 
 open Submodule
 

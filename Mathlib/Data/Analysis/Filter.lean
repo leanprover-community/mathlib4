@@ -91,7 +91,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 end CFilter
 
 -- TODO write doc strings
-/-- A realizer for filter `f` is a cfilter which generates `f`. -/
+/-- A realizer for filter `f` is a `CFilter` which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
   F : CFilter (Set α) σ
@@ -214,7 +214,6 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       exact ⟨fun ⟨s, h⟩ ↦ ⟨_, ⟨s, Subset.refl _⟩, h⟩,
         fun ⟨_, ⟨s, h⟩, h₂⟩ ↦ ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a realizer for the sup of two filters -/
 protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g).Realizer :=
   ⟨F.σ × G.σ,

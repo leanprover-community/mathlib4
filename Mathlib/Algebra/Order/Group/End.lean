@@ -6,9 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.FunLike.IsApply
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.RelIso.Basic
-public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Relation isomorphisms form a group
@@ -23,7 +23,7 @@ is an abbreviation for `RelIso`, there is no need for an additional instance.
 + Use the `IsMulApplyEqComp` and `IsOneApplyEqSelf` classes for `RelHom` and `RelIso`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction MonoidWithZero
 

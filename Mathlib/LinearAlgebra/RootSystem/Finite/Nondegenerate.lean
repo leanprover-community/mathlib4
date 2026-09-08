@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.RootSystem.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.Tactic.ModuleNF
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
@@ -124,15 +125,13 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsi
     rw [h₂, h₃] at h₁
     replace h₁ := congr_arg (fun n ↦ P.pairing j i • n) h₁
     simp only [add_smul, smul_add, ← mul_smul, smul_eq_mul] at h₁
-    convert! h₁ using 1
-    · module
-    · ring_nf
+    module_nf at h₁ ⊢
+    exact h₁
   simp only [h₄] at h₁
   apply smul_right_injective _ (r := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
   simp only
-  convert! h₁ using 1
-  · module
-  · module
+  module_nf at h₁ ⊢
+  exact h₁
 
 section DomainAlg
 
