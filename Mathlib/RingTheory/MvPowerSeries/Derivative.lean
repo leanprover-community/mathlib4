@@ -244,7 +244,7 @@ open Filter WithPiTopology Finset
 /-- The formal partial derivative is continuous for the product topology. -/
 @[fun_prop]
 theorem continuous_pderiv [CommSemiring R] [TopologicalSpace R] [ContinuousMul R] (i : σ) :
-    Continuous (pderiv R i : MvPowerSeries σ R → MvPowerSeries σ R) := by
+    Continuous (pderiv i : MvPowerSeries σ R → MvPowerSeries σ R) := by
   refine continuous_pi_iff.mpr fun d ↦ ?_
   simp only [← coeff_apply, coeff_pderiv]
   fun_prop
@@ -254,7 +254,7 @@ variable {τ S : Type*} [CommRing R] [CommRing S] [Algebra R S] {a : σ → MvPo
 /-- Only finitely many members of a substitutable family `a` contribute to a given coefficient
 of a product `u * pderiv S i (a j)`. -/
 theorem eventually_coeff_mul_pderiv_eq_zero (ha : HasSubst a) (i : τ) (e : τ →₀ ℕ) :
-    ∀ᶠ j in cofinite, ∀ u, coeff e (u * pderiv S i (a j)) = 0 := by
+    ∀ᶠ j in cofinite, ∀ u, coeff e (u * pderiv i (a j)) = 0 := by
   classical
   have h : ∀ᶠ j in cofinite, ∀ x ∈ Finset.antidiagonal e, coeff (x.2 + single i 1) (a j) = 0 := by
     rw [eventually_all_finset]
@@ -265,7 +265,7 @@ theorem eventually_coeff_mul_pderiv_eq_zero (ha : HasSubst a) (i : τ) (e : τ �
 /-- For a fixed family `u`, only finitely many `j` contribute to the coefficient `e` of
 `u j * pderiv S i (a j)`. -/
 theorem coeff_mul_pderiv_finite (ha : HasSubst a) (u : σ → MvPowerSeries τ S) (i : τ)
-    (e : τ →₀ ℕ) : (fun j ↦ coeff e (u j * pderiv S i (a j))).HasFiniteSupport :=
+    (e : τ →₀ ℕ) : (fun j ↦ coeff e (u j * pderiv i (a j))).HasFiniteSupport :=
   (eventually_cofinite.mp (eventually_coeff_mul_pderiv_eq_zero ha i e)).subset
     fun j hj h ↦ hj (h (u j))
 
@@ -274,12 +274,12 @@ section Subst
 variable [UniformSpace S]
 
 theorem summable_mul_pderiv (ha : HasSubst a) (u : σ → MvPowerSeries τ S) (i : τ) :
-    Summable fun j ↦ u j * pderiv S i (a j) :=
+    Summable fun j ↦ u j * pderiv i (a j) :=
   summable_iff_summable_coeff.mpr fun e ↦
     summable_of_hasFiniteSupport (coeff_mul_pderiv_finite ha u i e)
 
 theorem summable_aeval_pderiv (a : σ → MvPowerSeries τ S) (i : τ) (p : MvPolynomial σ R) :
-    Summable fun j ↦ MvPolynomial.aeval a (MvPolynomial.pderiv j p) * pderiv S i (a j) :=
+    Summable fun j ↦ MvPolynomial.aeval a (MvPolynomial.pderiv j p) * pderiv i (a j) :=
   summable_of_ne_finset_zero fun j hj ↦ by
     rw [MvPolynomial.pderiv_eq_zero_of_notMem_vars hj, map_zero, zero_mul]
 
@@ -288,13 +288,13 @@ variable [DiscreteUniformity S]
 /-- A coefficient of `∑' j, u j * pderiv S i (a j)` is computed by any finite set of indices
 outside of which that coefficient already vanishes. -/
 theorem coeff_tsum_mul_pderiv (ha : HasSubst a) (u : σ → MvPowerSeries τ S) (i : τ) (e : τ →₀ ℕ)
-    {s : Finset σ} (hs : ∀ j ∉ s, coeff e (u j * pderiv S i (a j)) = 0) :
-    coeff e (∑' j, u j * pderiv S i (a j)) = ∑ j ∈ s, coeff e (u j * pderiv S i (a j)) := by
+    {s : Finset σ} (hs : ∀ j ∉ s, coeff e (u j * pderiv i (a j)) = 0) :
+    coeff e (∑' j, u j * pderiv i (a j)) = ∑ j ∈ s, coeff e (u j * pderiv i (a j)) := by
   rw [← (hasSum_iff_hasSum_coeff.mp (summable_mul_pderiv ha u i).hasSum e).tsum_eq, tsum_eq_sum hs]
 
 /-- The chain rule for the evaluation of a polynomial at a family of power series. -/
 theorem pderiv_aeval_tsum (a : σ → MvPowerSeries τ S) (i : τ) (p : MvPolynomial σ R) :
-    pderiv S i (p.aeval a) = ∑' j : σ, (p.pderiv j).aeval a * pderiv S i (a j) := by
+    pderiv i (p.aeval a) = ∑' j : σ, (p.pderiv j).aeval a * pderiv i (a j) := by
   classical
   induction p using MvPolynomial.induction_on with
   | C r => simp [algebraMap_apply]
@@ -308,8 +308,8 @@ theorem pderiv_aeval_tsum (a : σ → MvPowerSeries τ S) (i : τ) (p : MvPolyno
       obtain h | h := eq_or_ne k j
       · simp [h]
       · simp [MvPolynomial.pderiv_X_of_ne h.symm, h]
-    trans (∑' k, (if k = j then p.aeval a else 0) * pderiv S i (a k)) +
-      ∑' k, a j * ((p.pderiv k).aeval a * pderiv S i (a k))
+    trans (∑' k, (if k = j then p.aeval a else 0) * pderiv i (a k)) +
+      ∑' k, a j * ((p.pderiv k).aeval a * pderiv i (a k))
     · simp [tsum_ite_eq, (summable_aeval_pderiv a i p).tsum_mul_left, ← hp, Derivation.leibniz]
     · rw [← Summable.tsum_add _ ((summable_aeval_pderiv a i p).mul_left _)]
       · simp_rw [key, add_mul, mul_assoc]
@@ -323,13 +323,13 @@ variable [UniformSpace R] [DiscreteUniformity R]
 This form makes no finiteness assumption on the type `σ` of variables; see
 `MvPowerSeries.pderiv_subst` for the version with a `Finset.sum`. -/
 theorem pderiv_subst_tsum (ha : HasSubst a) (f : MvPowerSeries σ R) (i : τ) :
-    pderiv S i (f.subst a) = ∑' j, (pderiv R j f).subst a * pderiv S i (a j) := by
+    pderiv i (f.subst a) = ∑' j, (pderiv j f).subst a * pderiv i (a j) := by
   revert f
   rw [← funext_iff]
   refine DenseRange.equalizer denseRange_toMvPowerSeries (by fun_prop) ?_ ?_
   · refine continuous_pi_iff.mpr fun e ↦ ?_
     -- the finite set of contributing indices does not depend on `f`
-    obtain ⟨s, hs⟩ : ∃ s, ∀ j ∉ s, ∀ w, coeff e (w * pderiv S i (a j)) = 0 :=
+    obtain ⟨s, hs⟩ : ∃ s, ∀ j ∉ s, ∀ w, coeff e (w * pderiv i (a j)) = 0 :=
       ⟨(eventually_cofinite.mp (eventually_coeff_mul_pderiv_eq_zero ha i e)).toFinset,
         fun _ hj ↦ by simpa using hj⟩
     simp only [← coeff_apply, coeff_tsum_mul_pderiv ha _ i e fun j hj ↦ hs j hj _]
@@ -343,7 +343,7 @@ end Subst
 
 See `MvPowerSeries.pderiv_subst_tsum` for a version valid for an arbitrary type of variables. -/
 theorem pderiv_subst [Fintype σ] (ha : HasSubst a) (f : MvPowerSeries σ R) (i : τ) :
-    pderiv S i (subst a f) = ∑ j, subst a (pderiv R j f) * pderiv S i (a j) := by
+    pderiv i (subst a f) = ∑ j, subst a (pderiv j f) * pderiv i (a j) := by
   let : UniformSpace R := ⊥
   let : UniformSpace S := ⊥
   rw [pderiv_subst_tsum ha, tsum_fintype]
@@ -351,8 +351,8 @@ theorem pderiv_subst [Fintype σ] (ha : HasSubst a) (f : MvPowerSeries σ R) (i 
 /-- The chain rule for the evaluation of a polynomial at a family of power series indexed by a
 finite type. -/
 theorem pderiv_aeval [Fintype σ] (a : σ → MvPowerSeries τ S) (i : τ) (p : MvPolynomial σ R) :
-    pderiv S i (MvPolynomial.aeval a p) =
-      ∑ j : σ, MvPolynomial.aeval a (MvPolynomial.pderiv j p) * pderiv S i (a j) := by
+    pderiv i (MvPolynomial.aeval a p) =
+      ∑ j : σ, MvPolynomial.aeval a (MvPolynomial.pderiv j p) * pderiv i (a j) := by
   let : UniformSpace S := ⊥
   rw [pderiv_aeval_tsum, tsum_fintype]
 
