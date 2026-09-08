@@ -342,7 +342,8 @@ def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
     (Equiv.piCongrRight (fun X ↦
       (IsLimit.whiskerEquivalenceEquiv walkingSpanOpEquiv.symm).trans
         ((IsLimit.postcomposeHomEquiv
-          (isoWhiskerRight (cospanOp f g).symm (yoneda.obj X)) _).symm.trans
+          ((Functor.associator _ _ _).symm ≪≫
+            isoWhiskerRight (cospanOp f g).symm (yoneda.obj X)) _).symm.trans
             (Equiv.trans (IsLimit.equivIsoLimit
               (by exact Cone.ext (Iso.refl _) (by rintro (_ | _ | _) <;> cat_disch)))
                 (c.op.isLimitMapConeEquiv (yoneda.obj X))))))

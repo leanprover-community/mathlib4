@@ -95,6 +95,41 @@ def curriedTensorPreFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D where
 abbrev curriedTensorPostFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D :=
   Functor.postcompose₂.flip.obj (curriedTensor C)
 
+section
+
+variable {E : Type*} [Category* E] [MonoidalCategory E] (F : C ⥤ D) (G : D ⥤ E)
+
+/-- `(F ⋙ G) (A ⊗ B) ≅ G (F (A ⊗ B))`, naturally in `A` and `B`. -/
+@[simps!]
+def curriedTensorPostCompIso :
+    curriedTensorPost (F ⋙ G) ≅ curriedTensorPost F ⋙ (Functor.whiskeringRight C D E).obj G :=
+  Functor.isoWhiskerLeft (curriedTensor C) (Functor.whiskeringRightObjCompIso F G).symm ≪≫
+    (Functor.associator _ _ _).symm
+
+/-- `G` applied to the bifunctor `F - ⊗ F -` is the bifunctor `G (- ⊗ -)` evaluated at
+`(F A, F B)`: both are `G (F A ⊗ F B)`, naturally in `A` and `B`. -/
+@[simps!]
+def curriedTensorPreCompPostIso :
+    curriedTensorPre F ⋙ (Functor.whiskeringRight C D E).obj G ≅
+      F ⋙ curriedTensorPost G ⋙ (Functor.whiskeringLeft C D E).obj F :=
+  Functor.associator _ _ _ ≪≫
+    Functor.isoWhiskerLeft F (Functor.associator _ _ _ ≪≫
+      Functor.isoWhiskerLeft (curriedTensor D)
+        (Functor.whiskeringLeftObjCompWhiskeringRightObjIso F G) ≪≫
+      (Functor.associator _ _ _).symm)
+
+/-- `G (F A) ⊗ G (F B) ≅ (F ⋙ G) A ⊗ (F ⋙ G) B`, naturally in `A` and `B`. -/
+@[simps!]
+def curriedTensorPreCompIso :
+    F ⋙ curriedTensorPre G ⋙ (Functor.whiskeringLeft C D E).obj F ≅ curriedTensorPre (F ⋙ G) :=
+  Functor.isoWhiskerLeft F (Functor.associator _ _ _ ≪≫
+      Functor.isoWhiskerLeft G (Functor.associator _ _ _ ≪≫
+        Functor.isoWhiskerLeft (curriedTensor E)
+          (Functor.whiskeringLeftObjCompIso F G).symm)) ≪≫
+    (Functor.associator _ _ _).symm
+
+end
+
 end MonoidalCategory
 
 open MonoidalCategory

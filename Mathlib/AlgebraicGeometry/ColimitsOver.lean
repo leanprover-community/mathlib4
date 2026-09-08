@@ -76,7 +76,7 @@ noncomputable
 def transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) :
     (Over.map ⊤ (d.prop_trans hij)).obj (d.cocone i).pt ⟶ (d.cocone j).pt :=
   (isColimitOfPreserves (Over.map ⊤ (d.prop_trans hij)) (d.isColimit i)).desc
-    (d.transitionCocone hij)
+    ((Cocone.precompose (Functor.associator _ _ _).hom).obj (d.transitionCocone hij))
 
 @[reassoc]
 lemma cocone_ι_transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) (a : J) :
