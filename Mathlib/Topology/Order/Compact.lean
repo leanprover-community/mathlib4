@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.IsLUB
 public import Mathlib.Topology.Order.LocalExtr
 
 /-!
@@ -151,10 +150,10 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
     ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
   by_contra H
-  rw [not_nonempty_iff_eq_empty] at H
+  rw [not_nonempty_iff_eq_empty, ← disjoint_iff_inter_eq_empty] at H
   rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
       (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
-  exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
+  exact disjoint_left.mp hx x.2 le_rfl
 
 theorem IsCompact.exists_isGreatest [ClosedIciTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsGreatest s x :=

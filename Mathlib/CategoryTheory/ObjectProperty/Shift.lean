@@ -206,11 +206,11 @@ section
 
 variable (F : E ⥤ C) (hF : ∀ (X : E), P (F.obj X))
 
-noncomputable instance [F.CommShift A] :
+noncomputable instance commShiftLift [F.CommShift A] :
     (P.lift F hF).CommShift A :=
   Functor.CommShift.ofComp (P.liftCompιIso F hF) A
 
-noncomputable instance [F.CommShift A] :
+noncomputable instance commShift_liftCompιIso_hom [F.CommShift A] :
     NatTrans.CommShift (P.liftCompιIso F hF).hom A :=
   Functor.CommShift.ofComp_compatibility _ _
 

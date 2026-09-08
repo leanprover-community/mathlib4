@@ -6,6 +6,7 @@ Authors: Markus Himmel, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
@@ -315,7 +316,7 @@ variable (M) in
 @[to_additive (attr := simps)
 /-- If `M` is an additive monoid object, then `Hom(-, M)` is a presheaf of additive monoids. -/]
 def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
-  obj X := MonCat.of (unop X ⟶ M)
+  obj X := ↧(unop X ⟶ M)
   map {X Y₂} φ := MonCat.ofHom
     { toFun := (φ.unop ≫ ·)
       map_one' := by
