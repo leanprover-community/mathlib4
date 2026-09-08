@@ -204,10 +204,17 @@ variable (X) in
 /-- The pushforward of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
 def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
-  SheafOfModules.pushforwardId _
+  SheafOfModules.pushforwardCongr₂ _ (Opens.mapId X).symm
+      (by
+        ext U : 3
+        exact (Category.id_comp _).trans (X.ringCatSheaf.obj.map_id _)) ≪≫
+    SheafOfModules.pushforwardId _
 
-@[simp] lemma pushforwardId_hom_app_app : ((pushforwardId X).hom.app M).app U = 𝟙 _ := rfl
-@[simp] lemma pushforwardId_inv_app_app : ((pushforwardId X).inv.app M).app U = 𝟙 _ := rfl
+@[simp] lemma pushforwardId_hom_app_app : ((pushforwardId X).hom.app M).app U = 𝟙 _ :=
+  M.presheaf.map_id (.op U)
+
+@[simp] lemma pushforwardId_inv_app_app : ((pushforwardId X).inv.app M).app U = 𝟙 _ :=
+  M.presheaf.map_id (.op U)
 
 variable (X) in
 /-- The pullback of sheaves of modules by the identity morphism identifies
@@ -225,10 +232,20 @@ lemma conjugateEquiv_pullbackId_hom :
 identify to the pushforward for the composition. -/
 def pushforwardComp :
     pushforward f ⋙ pushforward g ≅ pushforward (f ≫ g) :=
-  SheafOfModules.pushforwardComp _ _
+  SheafOfModules.pushforwardComp _ _ ≪≫
+    SheafOfModules.pushforwardCongr₂ _ (Opens.mapComp f.base g.base)
+      (by
+        ext U : 3
+        obtain ⟨U⟩ := U
+        exact (whisker_eq _ (X.ringCatSheaf.obj.map_id _)).trans
+          ((Category.comp_id _).trans
+            ((forget₂ CommRingCat RingCat).map_comp (g.app U) (f.app (g ⁻¹ᵁ U))).symm))
 
-@[simp] lemma pushforwardComp_hom_app_app (U) : ((pushforwardComp f g).hom.app M).app U = 𝟙 _ := rfl
-@[simp] lemma pushforwardComp_inv_app_app (U) : ((pushforwardComp f g).inv.app M).app U = 𝟙 _ := rfl
+@[simp] lemma pushforwardComp_hom_app_app (U) : ((pushforwardComp f g).hom.app M).app U = 𝟙 _ :=
+  M.presheaf.map_id (.op _)
+
+@[simp] lemma pushforwardComp_inv_app_app (U) : ((pushforwardComp f g).inv.app M).app U = 𝟙 _ :=
+  M.presheaf.map_id (.op _)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The composition of two pullback functors for sheaves of modules on schemes
@@ -391,10 +408,15 @@ def pseudofunctor :
   LocallyDiscrete.mkPseudofunctor
     (fun X ↦ Adj.mk ↧X.unop.Modules)
     (fun f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
+    -- `cat_disch` exceeds the heartbeat budget on reflexivity checks at default transparency.
+    -- Extensionality exposes the natural transformation equalities that `simp` can prove.
     (fun _ ↦ Adj.iso₂Mk (Cat.Hom.isoMk (pullbackId _))
-        (Cat.Hom.isoMk (pushforwardId _).symm))
+        (Cat.Hom.isoMk (pushforwardId _).symm) (Cat.Hom₂.ext (by simp)))
     (fun _ _ ↦ Adj.iso₂Mk (Cat.Hom.isoMk (pullbackComp _ _).symm)
-        (Cat.Hom.isoMk (pushforwardComp _ _)))
+        (Cat.Hom.isoMk (pushforwardComp _ _)) (Cat.Hom₂.ext (by simp)))
+    (map₂_associator := fun _ _ _ ↦ Adj.hom₂_ext (Cat.Hom₂.ext (by simp)))
+    (map₂_left_unitor := fun _ ↦ Adj.hom₂_ext (Cat.Hom₂.ext (by simp)))
+    (map₂_right_unitor := fun _ ↦ Adj.hom₂_ext (Cat.Hom₂.ext (by simp)))
 
 end Functorial
 

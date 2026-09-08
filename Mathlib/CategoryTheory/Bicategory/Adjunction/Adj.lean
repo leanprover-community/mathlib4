@@ -113,6 +113,12 @@ lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hl : x.τl = y.τl) : x = 
 
 instance : Category (a ⟶ b) where
 
+@[simp]
+lemma eqToHom_τl {α β : a ⟶ b} (h : α = β) :
+    (eqToHom h).τl = eqToHom (congrArg Adj.Hom.l h) := by
+  subst h
+  rfl
+
 /-- Constructor for isomorphisms between 1-morphisms in the bicategory `Adj B`. -/
 @[simps]
 def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
