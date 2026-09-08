@@ -1,12 +1,12 @@
-# Mathlib cache: the CI upload path
+# Mathlib cache: CI uploads
 
-The upload half of `lake exe cache` is internal to mathlib CI: the commands,
+The upload logic in `lake exe cache` is internal to mathlib CI: the commands,
 the backends, and their credential and destination variables follow the CI
-storage layout and can change with it. An external cache should not build on
-them; see
-[Operating an external cache](./README.md#operating-an-external-cache) in the
-README. The trust model behind the containers and the write credentials is in
-[`SECURITY.md`](./SECURITY.md).
+storage layout and can change with it.
+
+External consumers should not depend on the below options as their existence and behavior might change without notice.
+
+The trust model behind the containers and the write credentials is in [`SECURITY.md`](./SECURITY.md).
 
 ## Upload commands
 
@@ -16,24 +16,20 @@ README. The trust model behind the containers and the write credentials is in
 | `put!`      | Same as `put`, overwriting files the server already holds             |
 | `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--backend` selects the storage backend. |
 
-The upload commands write with the same URL construction `get` reads, so
-uploads and reads follow one path contract. Uploading needs a writer
-credential in the environment; see the environment variables in
-`lake exe cache --help`.
-
 ## Upload options
 
 | Option              | Description                                          |
 |---------------------|------------------------------------------------------|
-| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`. An upload targets exactly one container. |
+| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`. An upload targets exactly one container. Without it (and without `MATHLIB_CACHE_PUT_URL`), the azure backend falls back to `legacy` and warns. |
 | `--backend=NAME`    | The storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
 | `--staging-dir=DIR` | For `put-staged`: the staging directory to upload.   |
+| `--scope=REF`       | The per-commit namespace to upload under, followed by its completeness marker. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. The read-side use of `--scope` is documented in the README. |
 
 ## Backends and transfer tools
 
 `--backend` selects the storage backend: `azure` (the default) or `s3`. The
 backend selects the destination, the credential variables it reads (see
-`lake exe cache --help`), and the transfer tool:
+[Environment variables](#environment-variables)), and the transfer tool:
 
 - `azure` writes to the Azure storage account and uploads with curl:
   parallel PUTs, each signed per request with the OIDC bearer token; an
@@ -48,13 +44,22 @@ backend selects the destination, the credential variables it reads (see
   object's checksum after upload; `--ignore-existing` replaces
   `If-None-Match` on a non-overwrite put.
 
-`MATHLIB_CACHE_PUT_URL` overrides the destination on either backend: one flat
-endpoint, with the container policy off.
-
-`MATHLIB_CACHE_PUT_FORCE_CURL=1` makes the `s3` backend upload with curl even
-when rclone is available.
-
 The cache binary sets the rclone credentials, endpoint, provider (`Other`
 unless the environment names one), and region; every other `RCLONE_S3_*`
-option inherits from the environment, so an operator can set
-`RCLONE_S3_PROVIDER=Cloudflare` without a code change.
+option inherits from the environment.
+
+## Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure OIDC bearer token (`--backend=azure`, the default). |
+| `MATHLIB_CACHE_S3_ACCESS_KEY_ID`, `MATHLIB_CACHE_S3_SECRET_ACCESS_KEY` | S3 credentials (SigV4), for `--backend=s3`. The pair must be set together. |
+| `MATHLIB_CACHE_S3_SESSION_TOKEN` | Session token of a temporary S3 credential; optional. |
+| `MATHLIB_CACHE_PUT_BASE_URL` | The s3 backend's bucket endpoint (`https://host/bucket`). The `--container` write is rebased under it (`{base}/{container}/{key}`) and keeps the container path policy. Required for `--backend=s3` unless `MATHLIB_CACHE_PUT_URL` is set. The azure backend writes to the Azure storage account and rejects a set value. |
+| `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend: the container policy is off, and the selected backend signs the requests. |
+| `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |
+| `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace for `put` (see `--scope`, which takes precedence). |
+
+An empty value means unset for every variable above except
+`MATHLIB_CACHE_PUT_URL`, where any set value counts: a misconfigured endpoint
+fails the upload and does not divert it to the backend's destination.

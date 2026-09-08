@@ -39,7 +39,12 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
 | `query`         | Find the most recent commit with cached entries on the current branch |
 
-### Staging
+
+#### Operating an external cache
+
+The upload commands (`put`, `put!`, `put-staged`) are internal to mathlib CI: the commands are documented in [`CI.md`](./CI.md), but public consumers of this tool shouldn't rely on their details: see [Operating an external cache](#operating-an-external-cache).
+
+A custom cache can rely on the staging commands:
 
 | Command     | Description                                                          |
 |-------------|----------------------------------------------------------------------|
@@ -48,21 +53,13 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 
-The upload commands (`put`, `put!`, `put-staged`) are internal to mathlib CI
-and are documented in [`CI.md`](./CI.md). An external cache should not build
-on them; see [Operating an external cache](#operating-an-external-cache).
 
-#### Operating an external cache
-
-An external cache should build on three stable parts: `stage` produces the
-artifact set, any storage client pushes it, and readers point
-`MATHLIB_CACHE_GET_URL` at one flat location. The upload commands and their
-variables are not part of this interface.
-
-The path contract for a `MATHLIB_CACHE_GET_URL` endpoint: readers request
-`{endpoint}/f/{hash}.ltar` — the flat `f/` namespace — so the staged files
-must be stored under an `f/` prefix on your storage. (`stage` writes the `.ltar`
+- `stage`, to produce the artifact set to upload
+- The `MATHLIB_CACHE_GET_URL` environment variable can be set for `cache get` to download from a custom endpoint
+- Because `get` requests `{endpoint}/f/{hash}.ltar`, the staged files must be uploaded under an `f/` prefix. (`stage` writes the `.ltar`
 files flat into the staging directory; the `f/` segment is added at upload.)
+
+Example:
 
 ```bash
 # Produce the artifact set for your endpoint:
@@ -97,13 +94,10 @@ When arguments are provided, only the specified files and their transitive impor
 
 Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
-The upload options (`--container`, `--backend`) are internal to mathlib CI;
-see [`CI.md`](./CI.md).
-
 ## Trust-ordered containers
 
-The cache is split across multiple containers — logical namespaces in the URL
-contract `/{container}/{key}`, whatever storage serves them. Container names
+The cache is split across multiple containers, logical namespaces in the URL
+contract `/{container}/{key}`. Container names
 accepted by `--cache-from=LIST`:
 `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
@@ -115,6 +109,7 @@ order, depending on the repo:
 | `leanprover-community/mathlib4`                 | `master`, `legacy`          |
 | `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
 | any fork (PRs)                                  | `master`, `forks`, `legacy` |
+| downstream with mathlib as a dependency         | `master`, `legacy`          |
 
 Override the read chain with `--cache-from=LIST`:
 
@@ -125,8 +120,6 @@ lake exe cache get --cache-from=master
 # Read master first, then forks
 lake exe cache get --cache-from=master,forks
 ```
-
-CI uploads target a single container per run; see [`CI.md`](./CI.md).
 
 ## Public cache endpoint
 
@@ -156,8 +149,8 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 
-Run `lake exe cache --help` for the full list of environment variables. The
-upload credentials and destination variables are internal to mathlib CI; see
+Run `lake exe cache --help` for the full list of read-side environment
+variables. The upload variables are internal to mathlib CI; see
 [`CI.md`](./CI.md).
 
 ## How It Works

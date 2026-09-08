@@ -33,37 +33,22 @@ Commands:
   query [REF]    Without REF: find most recent cached commit on this branch.
                  With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
 
-  # Staging and upload (CI, and external cache operators)
+  # Staging
   stage        Move files not already 'pack'ed to an output directory
   stage!       Move all linked cache files to an output directory
   unstage      Copy *.ltar files from the staging directory to the local cache
   unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
-  put          Run 'pack', then upload the files this build links from the
-               local cache. The build graph scopes the upload: nothing else
-               in the shared cache directory leaves the machine. Uploads to
-               the selected --container; a scope adds the per-commit
-               namespace and its marker. Needs an upload credential; see below.
-  put!         Same as 'put', overwriting files the server already holds.
-  put-staged   Upload the *.ltar files in the staging directory to the
-               selected --container. CI uploads with this command;
-               --backend selects the storage backend.
 
-The upload commands are internal to mathlib CI: they need a writer
-credential, which normally only CI holds, and their backends and variables
-follow the CI storage layout. To operate an external cache, 'stage' the
-artifacts, upload the staging directory under your endpoint's `f/` path with
-any storage client, and serve it to readers via MATHLIB_CACHE_GET_URL (see
-Cache/README.md).
+The upload commands (put, put!, put-staged) and their options and variables
+are internal to mathlib CI; Cache/CI.md documents them. To operate an
+external cache, 'stage' the artifacts, upload the staging directory under
+your endpoint's `f/` path with any storage client, and serve it to readers
+via MATHLIB_CACHE_GET_URL (see Cache/README.md).
 
 Options:
-  --repo=OWNER/REPO  Override the repository to fetch (or upload) cache for
-  --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage',
-                     'unstage!' and 'put-staged': staging directory.
-  --container=NAME   For 'put', 'put!' and 'put-staged': target container.
-                     Known containers:
-                     " ++ knownContainersLine ++ ". Pass this
-                     explicitly; with neither it nor MATHLIB_CACHE_PUT_URL
-                     set, the upload falls back to `legacy` and warns.
+  --repo=OWNER/REPO  Override the repository to fetch cache for
+  --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage'
+                     and 'unstage!': staging directory.
   --cache-from=LIST  Comma-separated, trust-ordered list of containers to read from
                      (e.g. `--cache-from=master,forks`). Overrides the per-repo default.
                      Known containers: " ++ knownContainersLine ++ ".
@@ -73,10 +58,8 @@ Options:
                      checked-out HEAD. Use the SHA reported by `cache query`.
                      Reading another commit's scope means trusting the
                      artifacts produced at that commit; `cache get` prints a
-                     security notice when the scope differs from HEAD. For
-                     'put': the namespace to upload under, followed by its
-                     completeness marker. Takes precedence over the
-                     MATHLIB_CACHE_REPO_SCOPE env var.
+                     security notice when the scope differs from HEAD. Takes
+                     precedence over the MATHLIB_CACHE_REPO_SCOPE env var.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
                      this branch's history and try the most recent cached fork
                      commits as scopes, in order, until the cache is satisfied.
@@ -84,16 +67,6 @@ Options:
                      exclusive with --scope; always prints a security notice.
   --unsafe-window=N  Number of cached fork commits --unsafe will try (default
                      1). Implies --unsafe.
-  --backend=NAME     For 'put', 'put!' and 'put-staged': the storage backend,
-                     'azure' (the default) or 's3'. The backend selects the
-                     destination, the credentials, and the transfer tool.
-                     azure writes to the Azure storage account, signs with
-                     the bearer token, and uploads with curl. s3 writes to
-                     the bucket MATHLIB_CACHE_PUT_BASE_URL names, signs with
-                     the S3 credential pair, and uploads with a system
-                     rclone when one works on PATH, with curl otherwise (set
-                     MATHLIB_CACHE_PUT_FORCE_CURL=1 to force curl). See
-                     Cache/CI.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands that end with '!' do not skip files: use them manually when a
@@ -129,41 +102,12 @@ Valid arguments are:
                           --cache-from. Used by mathlib CI to widen reads per job;
                           --cache-from takes precedence when both are set.
 * MATHLIB_CACHE_REPO_SCOPE
-                          Per-commit namespace for reads and 'put' (see --scope).
+                          Per-commit namespace for reads (see --scope).
 
-Upload credentials for 'put', read per --backend:
+The upload commands read more options and variables (credentials,
+destination, transfer tool); Cache/CI.md documents them.
 
-* MATHLIB_CACHE_AZURE_BEARER_TOKEN
-                          Azure OIDC bearer token (--backend=azure, the
-                          default).
-* MATHLIB_CACHE_S3_ACCESS_KEY_ID, MATHLIB_CACHE_S3_SECRET_ACCESS_KEY,
-  MATHLIB_CACHE_S3_SESSION_TOKEN
-                          S3 credentials (SigV4), for --backend=s3. The pair
-                          must be set together; the session token is optional.
-
-Upload overrides for 'put':
-
-* MATHLIB_CACHE_PUT_FORCE_CURL
-                          Set to 1 or true to upload with curl on
-                          --backend=s3, which otherwise prefers rclone. The
-                          azure backend always uploads with curl.
-
-Upload destination for 'put':
-
-* MATHLIB_CACHE_PUT_BASE_URL
-                          The s3 backend's bucket endpoint
-                          (https://host/bucket). The --container write is
-                          rebased under it ({base}/{container}/{key}) and
-                          keeps the container path policy. Required for
-                          --backend=s3 unless MATHLIB_CACHE_PUT_URL is set.
-                          The azure backend writes to the Azure storage
-                          account and rejects a set value.
-* MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace, on
-                          any backend. Any set value counts, an empty one
-                          included.
-
-An empty value means unset for the URL, container-list, credential, and flag
-variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.
+An empty value means unset for the URL and container-list variables above.
 
 See Cache/README.md for more details.
 "
