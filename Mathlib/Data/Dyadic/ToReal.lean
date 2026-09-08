@@ -18,7 +18,7 @@ core.
 
 namespace Dyadic
 
-section Real
+@[expose] public section Real
 
 /-- Interpret a dyadic rational as a real number. -/
 def toReal (d : Dyadic) : ℝ := d.toRat
