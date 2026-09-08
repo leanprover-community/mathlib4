@@ -179,6 +179,6 @@ lemma isZero_X_of_span_eq_top {ι : Type*} [Finite ι] (g : ι → M)
 lemma isZero_X_ofList_of_length_lt (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) := isZero_X_of_span_eq_top _
   (Pi.basisFun R (Fin l.length)) (Pi.basisFun R (Fin l.length)).span_eq i
-  (by simpa [Nat.card_eq_fintype_card] using hi)
+  (by grind [Nat.card_eq_fintype_card, Fintype.card_fin])
 
 end koszulComplex
