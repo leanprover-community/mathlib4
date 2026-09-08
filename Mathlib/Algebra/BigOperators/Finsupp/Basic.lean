@@ -629,12 +629,12 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
 
 section
 
-variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+variable [Zero M] [NonUnitalNonAssocSemiring S]
 
-theorem Finsupp.sum_mul (b : S) (s : α →₀ R) {f : α → R → S} :
+theorem Finsupp.sum_mul (b : S) (s : α →₀ M) {f : α → M → S} :
     s.sum f * b = s.sum fun a c => f a c * b := by simp only [Finsupp.sum, Finset.sum_mul]
 
-theorem Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
+theorem Finsupp.mul_sum (b : S) (s : α →₀ M) {f : α → M → S} :
     b * s.sum f = s.sum fun a c => b * f a c := by simp only [Finsupp.sum, Finset.mul_sum]
 
 end
