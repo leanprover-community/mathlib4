@@ -58,7 +58,7 @@ The Koszul complex of a sequence `f₁, …, fᵣ` of elements of `R` is the spe
 
 universe u v
 
-open CategoryTheory Category Limits Module ExteriorAlgebra
+open CategoryTheory Category Limits Module ExteriorAlgebra ModuleCat
 
 variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (φ : M →ₗ[R] R)
 
@@ -97,15 +97,14 @@ lemma koszulComplex.d_comp_d (n : ℕ) :
 /-- The Koszul complex, with objects exterior powers and differential `koszulComplex.d`. -/
 @[stacks 0622 "only recording chain complex"]
 noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
-  ChainComplex.of (fun n ↦ ModuleCat.of R (⋀[R]^n M))
-    (fun n ↦ ModuleCat.ofHom (koszulComplex.d φ n))
-    (fun n ↦ by rw [← ModuleCat.ofHom_comp, koszulComplex.d_comp_d, ModuleCat.ofHom_zero])
+  ChainComplex.of (fun n ↦ of R (⋀[R]^n M))
+    (fun n ↦ ofHom (koszulComplex.d φ n))
+    (fun n ↦ by rw [← ofHom_comp, koszulComplex.d_comp_d, ofHom_zero])
 
-lemma koszulComplex.X_def (i : ℕ) :
-    (koszulComplex φ).X i = ModuleCat.of R (⋀[R]^i M) := rfl
+lemma koszulComplex.X_def (i : ℕ) : (koszulComplex φ).X i = of R (⋀[R]^i M) := rfl
 
 lemma koszulComplex.d_def (i : ℕ) :
-    (koszulComplex φ).d (i + 1) i = ModuleCat.ofHom (koszulComplex.d φ i) := by
+    (koszulComplex φ).d (i + 1) i = ofHom (koszulComplex.d φ i) := by
   simp [koszulComplex]
 
 namespace koszulComplex
@@ -128,8 +127,8 @@ lemma map_dAlternating_apply (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' 
   rfl
 
 lemma map_d_comm (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) (i : ℕ) :
-    ModuleCat.ofHom (exteriorPower.map (i + 1) f) ≫ ModuleCat.ofHom (koszulComplex.d φ' i) =
-      ModuleCat.ofHom (koszulComplex.d φ i) ≫ ModuleCat.ofHom (exteriorPower.map i f) := by
+    ofHom (exteriorPower.map (i + 1) f) ≫ ofHom (koszulComplex.d φ' i) =
+      ofHom (koszulComplex.d φ i) ≫ ofHom (exteriorPower.map i f) := by
   ext v
   simp [koszulComplex.d, map_dAlternating_apply (φ := φ) (f := f) (φ' := φ') h]
 
@@ -138,12 +137,11 @@ with `φ' ∘ₗ f = φ`. -/
 @[stacks 0624 "only recording chain complex map"]
 noncomputable def map (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) :
     koszulComplex φ ⟶ koszulComplex φ' :=
-  ChainComplex.ofHom
-    (fun i ↦ ModuleCat.ofHom (exteriorPower.map i f))
+  ChainComplex.ofHom (fun i ↦ ofHom (exteriorPower.map i f))
     (fun i ↦ by simpa [d_def] using! map_d_comm φ f φ' h i)
 
 lemma map_f (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) (i : ℕ) :
-    (map φ f φ' h).f i = ModuleCat.ofHom (exteriorPower.map i f) := rfl
+    (map φ f φ' h).f i = ofHom (exteriorPower.map i f) := rfl
 
 variable {L : Type v} [AddCommGroup L] [Module R L]
 
@@ -179,8 +177,7 @@ end functoriality
 lemma isZero_X_of_span_eq_top {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulComplex φ).X i) :=
-  ModuleCat.isZero_of_iff_subsingleton.mpr
-    (exteriorPower.subsingleton_of_span_eq_top_of_card_lt g hg i hi)
+  isZero_of_iff_subsingleton.mpr (exteriorPower.subsingleton_of_span_eq_top_of_card_lt g hg i hi)
 
 lemma isZero_X_ofList_of_length_lt (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) := isZero_X_of_span_eq_top _
