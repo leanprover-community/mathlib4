@@ -76,7 +76,7 @@ lemma koszulComplex.dAlternating_apply (n : ℕ) (x : Fin (n + 1) → M) :
   intro i _
   simp [← Int.cast_smul_eq_zsmul R, smul_smul]
 
-/-- The differential for Koszul complex. -/
+/-- The differential for the Koszul complex. -/
 noncomputable def koszulComplex.d (n : ℕ) : ⋀[R]^(n + 1) M →ₗ[R] ⋀[R]^n M :=
   exteriorPower.alternatingMapLinearEquiv (koszulComplex.dAlternating φ n)
 
@@ -133,8 +133,8 @@ lemma map_d_comm (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = �
   ext v
   simp [koszulComplex.d, map_dAlternating_apply (φ := φ) (f := f) (φ' := φ') h]
 
-/-- The map between two Koszul complex when give a linear map between module that commute with
-two defining linear maps. -/
+/-- The chain map `koszulComplex φ ⟶ koszulComplex φ'` induced by a linear map `f : M →ₗ[R] N`
+with `φ' ∘ₗ f = φ`. -/
 @[stacks 0624 "only recording chain complex map"]
 noncomputable def map (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) :
     koszulComplex φ ⟶ koszulComplex φ' :=
@@ -160,9 +160,9 @@ lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ
   ext i x
   simp [map_f, X_def, exteriorPower.map_comp]
 
-/-- The map between two Koszul complex when give an linear equiv between module that commute with
-two defining linear maps. -/
-@[stacks 0625]
+/-- The isomorphism between two Koszul complexes induced by an isomorphism between modules which
+commutes with the two defining linear maps. -/
+@[stacks 0625 "general version for linear equivalences"]
 noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) :
     koszulComplex φ ≅ koszulComplex φ' where
   hom := koszulComplex.map φ f φ' h
