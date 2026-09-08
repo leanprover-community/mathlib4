@@ -26,8 +26,8 @@ so that the reversed order on `Mᵐ⁰` becomes the usual order on `WithTop M`.
   isomorphism underlying it. `(Additive Mᵐ⁰)ᵒᵈ` is the additive-with-`⊤` rendering of `Mᵐ⁰`
   provided by `Mathlib/Algebra/Order/GroupWithZero/Canonical.lean`; this isomorphism turns it
   into the familiar `WithTop M = M ∪ {∞}`.
-* `WithZero.mapAddHom : (M →+ N) → (Mᵐ⁰ →*₀ Nᵐ⁰)`, the functoriality of `Mᵐ⁰` in `M`, along
-  which `negLog` is natural (`WithZero.negLog_mapAddHom`).
+* `WithZero.mapAddHom' : (M →+ N) → (Mᵐ⁰ →*₀ Nᵐ⁰)`, the functoriality of `Mᵐ⁰` in `M`, along
+  which `negLog` is natural (`WithZero.negLog_mapAddHom'`).
 -/
 
 @[expose] public section
@@ -120,21 +120,21 @@ variable {M N : Type*} [AddCommGroup M] [AddCommGroup N]
 /-- The monoid-with-zero hom `Mᵐ⁰ →*₀ Nᵐ⁰` induced by an additive hom `f : M →+ N`.
 
 This is `WithZero.map'` for the multiplicative reading of `f`. -/
-def mapAddHom (f : M →+ N) : Mᵐ⁰ →*₀ Nᵐ⁰ := map' (AddMonoidHom.toMultiplicative f)
+def mapAddHom' (f : M →+ N) : Mᵐ⁰ →*₀ Nᵐ⁰ := map' (AddMonoidHom.toMultiplicative f)
 
 @[simp]
-lemma mapAddHom_exp (f : M →+ N) (m : M) : mapAddHom f (exp m) = exp (f m) := rfl
+lemma mapAddHom'_exp (f : M →+ N) (m : M) : mapAddHom' f (exp m) = exp (f m) := rfl
 
-lemma mapAddHom_strictMono [Preorder M] [Preorder N] {f : M →+ N} (hf : StrictMono f) :
-    StrictMono (mapAddHom f) :=
+lemma mapAddHom'_strictMono [Preorder M] [Preorder N] {f : M →+ N} (hf : StrictMono f) :
+    StrictMono (mapAddHom' f) :=
   map'_strictMono fun _ _ h ↦ hf h
 
 /-- `negLog` is natural in `M`. -/
-lemma negLog_mapAddHom (f : M →+ N) (x : Mᵐ⁰) :
-    negLog (mapAddHom f x) = WithTop.map f (negLog x) := by
+lemma negLog_mapAddHom' (f : M →+ N) (x : Mᵐ⁰) :
+    negLog (mapAddHom' f x) = WithTop.map f (negLog x) := by
   induction x using expRecOn with
   | zero => rfl
-  | exp a => rw [mapAddHom_exp, negLog_exp, negLog_exp, WithTop.map_coe, map_neg]
+  | exp a => rw [mapAddHom'_exp, negLog_exp, negLog_exp, WithTop.map_coe, map_neg]
 
 end MapAddHom
 
