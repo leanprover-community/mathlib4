@@ -1074,13 +1074,15 @@ lemma map_pointwise_smul {R S : Type*} [CommSemiring R] [CommSemiring S]
 
 section Ring
 
-variable [Ring R] [Ring S] [FunLike F R S] [rc : RingHomClass F R S]
+variable [Ring R] [Ring S]
 
-lemma comap_map_of_surjective' (f : F) (hf : Function.Surjective f) (I : Ideal R) :
+lemma comap_map_of_surjective' (f : R →+* S) (hf : Function.Surjective f) (I : Ideal R) :
     (I.map f).comap f = I ⊔ RingHom.ker f :=
   comap_map_of_surjective f hf I
 
-theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
+variable {f : R →+* S}
+
+theorem map_sInf {A : Set (Ideal R)} (hf : Function.Surjective f) :
     (∀ J ∈ A, RingHom.ker f ≤ J) → map f (sInf A) = sInf (map f '' A) := by
   refine fun h => le_antisymm (le_sInf ?_) ?_
   · intro j hj y hy
@@ -1100,7 +1102,7 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
       rw [RingHom.mem_ker, map_sub, hx, sub_self]
     simpa only [sub_add_cancel] using J.add_mem this hx'
 
-theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
+theorem map_isPrime_of_surjective (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
     (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
   refine ⟨fun h => H.ne_top (eq_top_iff.2 ?_), fun {x y} => ?_⟩
   · replace h := congr_arg (comap f) h
@@ -1116,7 +1118,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
 
-lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
+lemma IsMaximal.map_of_surjective_of_ker_le (hf : Function.Surjective f) {m : Ideal R}
     [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
   refine m.map_eq_top_or_isMaximal_of_surjective f hf ‹_› |>.resolve_left fun h => ?_
   apply congr_arg (comap f) at h
