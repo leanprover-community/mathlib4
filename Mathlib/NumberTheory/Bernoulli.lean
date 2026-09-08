@@ -511,21 +511,10 @@ private lemma pIntegral_pow_div {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
 /- Main valuation estimate behind the contradiction step for even-index summands. -/
 private lemma factorization_succ_le_sub_one {p d : ℕ} [Fact p.Prime] (hd : d ≥ 2) :
     (d + 1).factorization p ≤ d - 1 := by
-  by_cases hcase : p = 2 ∧ d = 2
-  · obtain ⟨rfl, rfl⟩ := hcase
-    simp [Nat.factorization_eq_zero_of_not_dvd (by decide : ¬(2 ∣ 3))]
-  · apply Nat.factorization_le_of_le_pow
-    have hp2 := (Fact.out : p.Prime).two_le
-    suffices ∀ n : ℕ, n ≥ 2 → ¬(p = 2 ∧ n = 2) → n + 1 ≤ p ^ (n - 1) from this d hd hcase
-    intro n hn hne'
-    induction hn with
-    | refl => norm_num at hne' ⊢; lia
-    | @step m hm IH =>
-      by_cases hm2 : p = 2 ∧ m = 2
-      · obtain ⟨rfl, rfl⟩ := hm2; norm_num
-      · calc m + 1 + 1 ≤ p ^ (m - 1) + 1 := by linarith [IH hm2]
-          _ ≤ p ^ (m - 1) * p := by nlinarith [Nat.one_le_pow (m - 1) p (by lia)]
-          _ = p ^ m := by rw [show m = m - 1 + 1 by lia]; exact pow_succ ..
+  have hp2 := (Fact.out : p.Prime).two_le
+  have h1 := Nat.mul_factorization_le (n := d + 1) (p := p)
+  have h2 : 2 * (d + 1).factorization p ≤ p * (d + 1).factorization p := by gcongr
+  lia
 
 /- Multiplicative variant of the binomial coefficient denominator rewrite
 as in Rado's summand. -/
@@ -783,29 +772,6 @@ private theorem cast_mul_pIntegral {p : ℕ} [Fact p.Prime] {a b : ℚ}
     (((a * b : ℚ)) : ZMod p) = (a : ZMod p) * (b : ZMod p) :=
   Rat.cast_mul_of_ne_zero (den_ne ha) (den_ne hb)
 
-/- `w + 4 ≤ 5 ^ (w + 1)`. -/
-private theorem five_pow_ge (w : ℕ) : w + 4 ≤ 5 ^ (w + 1) := by
-  induction w with
-  | zero => norm_num
-  | succ n ih =>
-    have hps : (5 : ℕ) ^ (n + 1 + 1) = 5 ^ (n + 1) * 5 := pow_succ 5 (n + 1)
-    nlinarith [ih, hps]
-
-/- For `q ≥ 5` and `j ≥ 3`, the `q`-adic valuation of `j` undershoots `j` by at least `3`. -/
-private theorem factorization_add_three_le {q : ℕ} (hq5 : 5 ≤ q) {j : ℕ} (hj : 3 ≤ j) :
-    j.factorization q + 3 ≤ j := by
-  have hj0 : j ≠ 0 := by omega
-  have hqv : q ^ j.factorization q ≤ j := Nat.ordProj_le q hj0
-  have key : ∀ v : ℕ, q ^ v ≤ j → v + 3 ≤ j := by
-    intro v hqvj
-    rcases Nat.eq_zero_or_pos v with h0 | hpos
-    · omega
-    · obtain ⟨w, rfl⟩ : ∃ w, v = w + 1 := ⟨v - 1, by omega⟩
-      have hgrow := five_pow_ge w
-      have hmono : (5 : ℕ) ^ (w + 1) ≤ q ^ (w + 1) := Nat.pow_le_pow_left hq5 (w + 1)
-      omega
-  exact key _ hqv
-
 /-- **Faulhaber mod `p²`.** For even `k ≥ 2` with `(p - 1) ∤ k`, the power sum `∑_{a<p} aᵏ`
 equals `p·Bₖ` up to a `p²`-multiple of a `p`-integral rational: there is `W` with
 `p ∤ W.den` and `∑_{a<p} aᵏ − p·Bₖ = p²·W`. -/
@@ -846,7 +812,8 @@ theorem faulhaber_mod_sq {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : Even k) (hk1 :
       refine mul_mem (pIntegral_mul_bernoulli) (mul_mem (natCast_mem _ _) ?_)
       refine pIntegral_pow_div (by omega) ?_
       have h3 : 3 ≤ k + 1 - i := by omega
-      have hb := factorization_add_three_le hp5 h3
+      have hml := Nat.mul_factorization_le (n := k + 1 - i) (p := p)
+      have h5 : 5 * (k + 1 - i).factorization p ≤ p * (k + 1 - i).factorization p := by gcongr
       omega
     · obtain rfl : i = k - 1 := by omega
       have hz : k - 1 - (k - 1) = 0 := by omega
