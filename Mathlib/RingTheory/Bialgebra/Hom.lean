@@ -77,7 +77,7 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
 @[coe]
 def toBialgHom (f : F) : A →ₐc[R] B :=
-  { CoalgHomClass.toCoalgHom f, AlgHom.ofClass f with
+  { CoAlgHom.ofClass f, AlgHom.ofClass f with
     toFun := f }
 
 instance instCoeToBialgHom :

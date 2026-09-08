@@ -73,7 +73,7 @@ def _root_.CoAlgHom.ofClass (f : F) : A →ₗc[R] B :=
     toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
-@[deprecated (since := "2026-09-08")] alias CoAlgHomClass.toCoAlgHom := CoAlgHom.ofClass
+@[deprecated (since := "2026-09-08")] alias toCoAlgHom := CoAlgHom.ofClass
 
 instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
   ⟨CoAlgHom.ofClass⟩
