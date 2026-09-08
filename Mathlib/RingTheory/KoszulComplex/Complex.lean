@@ -150,8 +150,17 @@ noncomputable def map (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ 
     (fun i ↦ ModuleCat.ofHom (exteriorPower.map i f))
     (fun i ↦ by simpa [d_def] using! map_d_comm φ f φ' h i)
 
+lemma map_f (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) (i : ℕ) :
+    (map φ f φ' h).f i = ModuleCat.ofHom (exteriorPower.map i f) := rfl
+
 variable {L : Type v} [AddCommGroup L] [Module R L]
 
+@[reassoc]
+lemma map_id : map φ LinearMap.id φ (LinearMap.comp_id φ) = 𝟙 _ := by
+  ext i x
+  simp [map, X_def, exteriorPower.map_id]
+
+@[reassoc]
 lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ'' : L →ₗ[R] R)
     (h : φ' ∘ₗ f = φ) (h' : φ'' ∘ₗ g = φ') (h'' : φ'' ∘ₗ g ∘ₗ f = φ) :
     koszulComplex.map φ f φ' h ≫ koszulComplex.map φ' g φ'' h' =
