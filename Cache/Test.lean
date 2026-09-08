@@ -1272,17 +1272,11 @@ def test_uploadBackendParse : IO Unit := do
   assertTrue "an unknown name is rejected" ((UploadBackend.parse? "gcs").isNone)
 
 /-- `azureAuthFrom` resolves the azure backend's credential: the bearer
-token. A lone MATHLIB_CACHE_SAS errors as retired, and a missing bearer
-errors naming the fix. -/
+token. A missing bearer errors naming the fix. -/
 def test_azureAuthFrom : IO Unit := do
   IO.println "azureAuthFrom:"
-  assertTrue "bearer token"
-    (azureAuthFrom (some "bear") (some "sas") matches .ok "bear")
-  assertTrue "SAS alone errors as retired"
-    (match azureAuthFrom none (some "sas") with
-      | .error e => e.startsWith "MATHLIB_CACHE_SAS is retired"
-      | .ok _ => false)
-  assertTrue "no bearer errors" (azureAuthFrom none none matches .error _)
+  assertTrue "bearer token" (azureAuthFrom (some "bear") matches .ok "bear")
+  assertTrue "no bearer errors" (azureAuthFrom none matches .error _)
 
 /-- `s3AuthFrom` resolves the s3 backend's credentials: the pair with its
 optional session token. A half-set pair errors instead of resolving. -/

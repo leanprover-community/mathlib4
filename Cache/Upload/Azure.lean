@@ -65,22 +65,15 @@ def azureBearerCurlArgs (token : String) : IO (Array String) := do
     "--oauth2-bearer", token]
 
 /--
-The azure upload credential, from the raw environment values: the OAuth
+The azure upload credential, from the raw environment value: the OAuth
 bearer token `MATHLIB_CACHE_AZURE_BEARER_TOKEN` (`bearer?`).
-`MATHLIB_CACHE_SAS` (`sas?`) is not an accepted credential: when it is set
-and the bearer token is not, the error names the accepted mechanism instead
-of reporting a missing credential.
 
 Pure so the policy is testable; `getAzureAuth` wires the environment in.
 -/
-def azureAuthFrom (bearer? sas? : Option String) : Except String String :=
-  match bearer?, sas? with
-  | some token, _ => .ok token
-  | none, some _ => .error
-      "MATHLIB_CACHE_SAS is retired: set an Azure OIDC bearer token \
-      (MATHLIB_CACHE_AZURE_BEARER_TOKEN), or pass --backend=s3 to upload \
-      with the S3 credential pair"
-  | none, none => .error
+def azureAuthFrom (bearer? : Option String) : Except String String :=
+  match bearer? with
+  | some token => .ok token
+  | none => .error
       "the azure backend (the default) uploads with an Azure OIDC bearer token: \
       set MATHLIB_CACHE_AZURE_BEARER_TOKEN, or pass --backend=s3 to upload \
       with the S3 credential pair"
@@ -88,9 +81,7 @@ def azureAuthFrom (bearer? sas? : Option String) : Except String String :=
 /-- Retrieves the azure upload credential from the environment via
 `azureAuthFrom`. -/
 def getAzureAuth : IO String := do
-  IO.ofExcept <| azureAuthFrom
-    (← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN")
-    (← getEnvNonEmpty "MATHLIB_CACHE_SAS")
+  IO.ofExcept <| azureAuthFrom (← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN")
 
 /--
 The staged put on the azure backend: the curl tool against `dest`, each
