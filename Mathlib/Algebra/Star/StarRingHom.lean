@@ -469,4 +469,3 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
 end Bijective
 
 end StarRingEquiv
-#lint
