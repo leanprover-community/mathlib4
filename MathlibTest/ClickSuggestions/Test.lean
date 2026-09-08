@@ -9,7 +9,6 @@ import MathlibTest.ClickSuggestions.TestImpl
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Set.Insert
-import MathlibTest.ClickSuggestions.TestImpl
 import Mathlib.Data.Finset.Max
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.Algebra.Lie.OfAssociative
