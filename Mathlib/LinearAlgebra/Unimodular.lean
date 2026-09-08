@@ -86,7 +86,7 @@ section Algebra
 variable {R : Type*} [CommRing R] {A ι : Type*} [Ring A] [Nontrivial A] [Algebra R A]
 
 /-- In a nonzero algebra that is free as a module, the coordinates of `1` in any basis generate
-the unit ideal. -/
+the unit ideal. Equivalently, `1` is unimodular: see `Module.Free.isUnimodular_one`. -/
 theorem span_repr_one_eq_top (e : Basis ι R A) :
     Ideal.span (Set.range (e.repr 1)) = ⊤ := by
   nontriviality R
@@ -98,17 +98,17 @@ theorem span_repr_one_eq_top (e : Basis ι R A) :
   exact Submodule.sum_mem _ fun i _ ↦ by
     simpa using Submodule.smul_mem_smul (hle (Ideal.subset_span ⟨i, rfl⟩)) Submodule.mem_top
 
+/-- In a nonzero algebra that is free as a module, `1` is *unimodular*. -/
+theorem _root_.Module.Free.isUnimodular_one [Module.Free R A] : IsUnimodular R (1 : A) :=
+  span_repr_eq_top_iff.mp (Module.Free.chooseBasis R A).span_repr_one_eq_top
+
 end Algebra
 
 end Module.Basis
 
 namespace Module.Free
 
-variable {R : Type*} [CommRing R]
-
-section FinrankTwo
-
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Free R M]
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Free R M]
 
 /-- A unimodular vector of a rank-two module can be completed to a basis: it is the first
 vector of a basis. -/
@@ -126,12 +126,5 @@ theorem exists_basis_zero_eq (hM : Module.finrank R M = 2) {v : M} (hv : IsUnimo
     rw [map_sum, Fin.sum_univ_two, map_smul, map_smul, smul_eq_mul, smul_eq_mul]
   refine ⟨b.map (Matrix.toLinearEquiv b N (hdet ▸ isUnit_one)), ?_⟩
   simpa [N] using (Fin.sum_univ_two fun i ↦ b.repr v i • b i).symm.trans (b.sum_repr v)
-
-end FinrankTwo
-
-/-- In a nonzero algebra that is free as a module, `1` is *unimodular*. -/
-theorem isUnimodular_one {A : Type*} [Ring A] [Nontrivial A] [Algebra R A]
-    [Module.Free R A] : IsUnimodular R (1 : A) :=
-  Basis.span_repr_eq_top_iff.mp (chooseBasis R A).span_repr_one_eq_top
 
 end Module.Free
