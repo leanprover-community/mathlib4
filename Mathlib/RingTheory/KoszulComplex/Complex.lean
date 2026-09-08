@@ -184,7 +184,7 @@ noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' 
 
 end functoriality
 
-lemma isZero_X_of_card_generators_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+lemma isZero_X_of_card_generators_lt {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulComplex φ).X i) :=
   ModuleCat.isZero_of_iff_subsingleton.mpr
