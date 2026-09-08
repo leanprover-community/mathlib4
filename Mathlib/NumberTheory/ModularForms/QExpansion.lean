@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
@@ -342,25 +341,6 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
   field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
   push_cast
   ring
-
-/-- The `n`-th `q`-expansion coefficient is an exponentially rescaled Fourier coefficient of the
-restriction of the function to a horizontal line. -/
-lemma qExpansion_coeff_eq_exp_mul_fourierCoeffOn {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
-    (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
-    (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (n : ℕ) :
-    (qExpansion h f).coeff n = Real.exp (2 * Real.pi * n * y / h) *
-      fourierCoeffOn hh (fun x : ℝ ↦ f ⟨x + y * I, by simpa using hy⟩) n := by
-  have hq (u : ℝ) : (1 / 𝕢 h (u + y * I) ^ n : ℂ) =
-      ↑(Real.exp (2 * Real.pi * n * y / h)) * fourier (-(n : ℤ)) (u : AddCircle h) := by
-    rw [fourier_coe_apply, Periodic.qParam, coe_I, one_div, ← exp_nat_mul, ← exp_neg, ofReal_exp,
-      ← exp_add]
-    push_cast
-    grind [I_sq]
-  rw [qExpansion_coeff_eq_intervalIntegral hh hfper hfhol hfbdd n hy,
-    fourierCoeffOn_eq_integral, sub_zero]
-  simp_rw [smul_eq_mul, hq, mul_assoc, intervalIntegral.integral_const_mul, real_smul]
-  norm_cast
-  grind
 
 theorem exp_decay_sub_atImInfty {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
