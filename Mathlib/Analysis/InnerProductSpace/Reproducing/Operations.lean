@@ -97,7 +97,7 @@ section OfKernel
 variable (K K' : Matrix X X (V →L[𝕜] V))
 variable [Fact K.PosSemidef] [Fact K'.PosSemidef]
 
-instance : Fact (K + K').PosSemidef :=
+scoped instance : Fact (K + K').PosSemidef :=
   ⟨Matrix.PosSemidef.add (Fact.out : K.PosSemidef) (Fact.out : K'.PosSemidef)⟩
 
 /-- The RKHSs constructed from the sum of two kernels is linearly isometrically isomorphic to the
