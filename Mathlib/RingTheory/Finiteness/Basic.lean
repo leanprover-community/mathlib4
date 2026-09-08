@@ -197,10 +197,10 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
   constructor
   · rintro ⟨t, rfl⟩
     rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← t.sup_eq_iSup sp]
-    apply CompleteLattice.isCompactElement_finsetSup
+    apply isCompactElement_finsetSup
     exact fun n _ => singleton_span_isCompactElement n
   · intro h
-    rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
+    rw [isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
     -- s is the Sup of the spans of its elements.
     have sSup' : s = sSup (sp '' ↑s) := by
       rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
