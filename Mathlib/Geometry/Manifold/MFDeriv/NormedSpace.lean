@@ -609,7 +609,7 @@ section
 
 variable {f : E → E'} {s : Set E} {x : E}
 
-/-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide -/
+/-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide. -/
 @[simp]
 theorem mvfderivWithin_eq_fderivWithin :
     d[s] f x = fderivWithin 𝕜 f s x := by
@@ -620,16 +620,16 @@ theorem mvfderivWithin_eq_fderivWithin :
     rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
     exact (fderivWithin_zero_of_not_differentiableWithinAt h).symm
 
-/-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide -/
+/-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide. -/
 @[simp]
 theorem mvfderiv_eq_fderiv : d% f x = fderiv 𝕜 f x := by
   rw [← mvfderivWithin_univ, ← fderivWithin_univ, mvfderivWithin_eq_fderivWithin]
 
-/-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
+/-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide. -/
 theorem mfderivWithin_eq_fderivWithin : mfderiv[s] f x = fderivWithin 𝕜 f s x := by
   convert! mvfderivWithin_eq_fderivWithin
 
-/-- For maps between vector spaces, `mfderiv` and `fderiv` coincide -/
+/-- For maps between vector spaces, `mfderiv` and `fderiv` coincide. -/
 theorem mfderiv_eq_fderiv : mfderiv% f x = fderiv 𝕜 f x := by
   convert! mvfderiv_eq_fderiv
 
