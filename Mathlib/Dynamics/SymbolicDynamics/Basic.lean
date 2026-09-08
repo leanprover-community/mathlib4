@@ -654,8 +654,8 @@ forced to `default` by `Pattern.condition`.) -/
 theorem ext {p q : Pattern A G}
     (hsup : p.support = q.support)
     (hcfg : ∀ g ∈ p.support, p.config g = q.config g) : p = q := by
-  obtain ⟨pc, ps, pcond⟩ := p
-  obtain ⟨qc, qs, qcond⟩ := q
+  rcases p with ⟨pc, ps, pcond⟩
+  rcases q with ⟨qc, qs, qcond⟩
   cases hsup
   have hc : pc = qc := by
     funext g
@@ -669,7 +669,7 @@ theorem ext {p q : Pattern A G}
     (Pattern.fromConfig x U).support = U := rfl
 
 /-- The value of `Pattern.fromConfig x U` on a point g of the support is `x g`. -/
-@[simp] lemma fromConfig_config_of_mem
+@[simp] lemma config_fromConfig_of_mem
     (x : G → A) {U : Finset G} {g : G} (hg : g ∈ U) : (Pattern.fromConfig x U).config g = x g := by
   classical
   change (if g ∈ U then x g else default) = x g
@@ -692,16 +692,16 @@ open scoped Classical in
 Restricting `x` to a finite shape `U` and then shifting the resulting pattern by `g` agrees
 with restricting the shifted configuration `mulShift g' x` to the translated shape
 `U.image (g * ·)`, where `g'` is a left inverse of `g`. -/
-lemma fromConfig_mulShift
+lemma mulShift_fromConfig
     (x : G → A) (U : Finset G) (g g' : G) (hg'g : g' * g = 1) :
     (Pattern.fromConfig x U).mulShift g = Pattern.fromConfig (mulShift g' x) (U.image (g * ·)) := by
   refine Pattern.ext rfl ?_
   intro h hh
   change h ∈ U.image (g * ·) at hh
-  obtain ⟨u, hu, rfl⟩ := Finset.mem_image.mp hh
+  rcases Finset.mem_image.mp hh with ⟨u, hu, rfl⟩
   rw [Pattern.config_mulShift_apply_mul_left_of_mem _ g u hu,
-      Pattern.fromConfig_config_of_mem _ hu,
-      Pattern.fromConfig_config_of_mem _ (Finset.mem_image_of_mem (g * ·) hu),
+      Pattern.config_fromConfig_of_mem _ hu,
+      Pattern.config_fromConfig_of_mem _ (Finset.mem_image_of_mem (g * ·) hu),
       mulShift_apply, ← mul_assoc, hg'g, one_mul]
 
 end Pattern
@@ -714,7 +714,7 @@ and `g' * g = 1`, the language on a translated shape `U.image (g * ·)` is exact
 the image of `Y.languageOn U` under the pattern-shift map `p ↦ p.mulShift g`. In
 particular `Y.languageOn U` and `Y.languageOn (U.image (g * ·))` are in natural
 bijection (with inverse given by `p ↦ p.mulShift g'`). -/
-theorem MulSubshift.mulShift_languageOn [TopologicalSpace A]
+theorem MulSubshift.languageOn_mulShift [TopologicalSpace A]
     (Y : MulSubshift A G) (U : Finset G) (g g' : G)
     (hgg' : g * g' = 1) (hg'g : g' * g = 1) :
     (fun p : Pattern A G => p.mulShift g) '' Y.languageOn U = Y.languageOn (U.image (g * ·)) := by
@@ -722,13 +722,13 @@ theorem MulSubshift.mulShift_languageOn [TopologicalSpace A]
   refine ⟨?_, ?_⟩
   · rintro ⟨_, ⟨x, hx, rfl⟩, rfl⟩
     exact ⟨mulShift g' x, Y.mapsTo g' hx,
-           (Pattern.fromConfig_mulShift x U g g' hg'g).symm⟩
+           (Pattern.mulShift_fromConfig x U g g' hg'g).symm⟩
   · rintro ⟨y, hy, rfl⟩
     refine ⟨Pattern.fromConfig (mulShift g y) U,
             ⟨mulShift g y, Y.mapsTo g hy, rfl⟩, ?_⟩
     change (Pattern.fromConfig (mulShift g y) U).mulShift g
          = Pattern.fromConfig y (U.image (g * ·))
-    rw [Pattern.fromConfig_mulShift (g' := g') (hg'g := hg'g), ← mulShift_mul,
+    rw [Pattern.mulShift_fromConfig (g' := g') (hg'g := hg'g), ← mulShift_mul,
         hgg', mulShift_one]
 
 end LanguageMulShift
