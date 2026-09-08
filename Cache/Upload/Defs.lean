@@ -11,23 +11,21 @@ import Cache.Upload.S3
 /-!
 # The upload contract
 
-The backend-neutral layer every upload tool consumes:
+The backend-neutral layer over the backend modules:
 
-* the backend selection (`UploadBackend`) and the upload credentials
-  (`UploadAuth`) with their resolution from the environment. The resolution
-  arbitrates between the storage backends; the backend mechanics live in
+* the backend selection (`UploadBackend`). The backends implement the upload
+  — credentials, destination, transfer tool, and the transfer itself — in
   `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`;
 * the one destination resolution every upload addresses
   (`stagedUploadDest`): the flat `MATHLIB_CACHE_PUT_URL` override, or the
   selected backend's own destination. The destination contract itself
   (`StagedUploadDest`) lives in `Cache/Upload/Dest.lean`.
 
-The tools live in `Cache/Upload/Curl.lean` and `Cache/Upload/Rclone.lean`;
-`Cache/Upload.lean` selects one and dispatches. The marker path contract and
-write mechanics live in `Cache/Marker.lean`. The read side
-(`Cache/Requests.lean`) shares the path contract through `fileDirPath` and
-`markerDirPath` (`Cache/Infra.lean`), so every upload tool addresses the
-URLs the readers probe.
+`Cache/Upload.lean` runs the complete `put`, dispatching to the selected
+backend. The marker path contract and write mechanics live in
+`Cache/Marker.lean`. The read side (`Cache/Requests.lean`) shares the path
+contract through `fileDirPath` and `markerDirPath` (`Cache/Infra.lean`), so
+every upload addresses the URLs the readers probe.
 -/
 
 namespace Cache.Requests
@@ -35,8 +33,9 @@ namespace Cache.Requests
 open System (FilePath)
 
 /-- The storage backend an upload targets, selected with `--backend=NAME`.
-The backend decides which credentials sign the upload (`uploadAuthFrom`) and
-which transfer tool moves the bytes (`resolveUploadTool`). -/
+Each backend implements the complete upload — credential resolution,
+destination, transfer tool, and the transfer itself — in its own module;
+`runPut` dispatches on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`); the default. -/
   | azure
@@ -64,68 +63,6 @@ def parse? (s : String) : Option UploadBackend :=
   | _       => none
 
 end UploadBackend
-
-/-- The authentication mechanism for cache uploads, one constructor per
-storage backend. This type carries the resolved credentials the backend
-modules sign with. -/
-inductive UploadAuth where
-  /-- An Azure OAuth bearer token (`Cache/Upload/Azure.lean`). -/
-  | azureBearer (token : String)
-  /-- S3-compatible credentials for a direct bucket write
-  (`Cache/Upload/S3.lean`). -/
-  | s3 (creds : S3Credentials)
-
-/--
-Resolve the upload credentials for the selected `backend` from the raw
-environment values. Each backend reads only its own variables:
-
-* `azure`: `MATHLIB_CACHE_AZURE_BEARER_TOKEN` (`bearer?`).
-* `s3`: `MATHLIB_CACHE_S3_ACCESS_KEY_ID` and
-  `MATHLIB_CACHE_S3_SECRET_ACCESS_KEY` (`s3KeyId?`, `s3Secret?`), plus the
-  optional `MATHLIB_CACHE_S3_SESSION_TOKEN` (`s3Session?`). One of the pair
-  without the other is a misconfiguration and errors.
-
-`MATHLIB_CACHE_SAS` (`sas?`) is not an accepted credential: on the `azure`
-backend, when it is set and the bearer token is not, the error names the
-accepted mechanism instead of reporting a missing credential.
-
-Pure so the policy is testable; `getUploadAuth` wires the environment in.
--/
-def uploadAuthFrom (backend : UploadBackend)
-    (s3KeyId? s3Secret? s3Session? bearer? sas? : Option String) :
-    Except String UploadAuth :=
-  match backend with
-  | .s3 =>
-    match s3KeyId?, s3Secret? with
-    | some keyId, some secret => .ok (.s3 ⟨keyId, secret, s3Session?⟩)
-    | some _, none => .error
-        "MATHLIB_CACHE_S3_ACCESS_KEY_ID is set but MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is not"
-    | none, some _ => .error
-        "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is set but MATHLIB_CACHE_S3_ACCESS_KEY_ID is not"
-    | none, none => .error
-        "--backend=s3 uploads with the S3 credential pair: set \
-        MATHLIB_CACHE_S3_ACCESS_KEY_ID and MATHLIB_CACHE_S3_SECRET_ACCESS_KEY"
-  | .azure =>
-    match bearer?, sas? with
-    | some token, _ => .ok (.azureBearer token)
-    | none, some _ => .error
-        "MATHLIB_CACHE_SAS is retired: set an Azure OIDC bearer token \
-        (MATHLIB_CACHE_AZURE_BEARER_TOKEN), or pass --backend=s3 to upload \
-        with the S3 credential pair"
-    | none, none => .error
-        "the azure backend (the default) uploads with an Azure OIDC bearer token: \
-        set MATHLIB_CACHE_AZURE_BEARER_TOKEN, or pass --backend=s3 to upload \
-        with the S3 credential pair"
-
-/-- Retrieves the upload credentials for `backend` from the environment via
-`uploadAuthFrom`. -/
-def getUploadAuth (backend : UploadBackend) : IO UploadAuth := do
-  IO.ofExcept <| uploadAuthFrom backend
-    (← getEnvNonEmpty "MATHLIB_CACHE_S3_ACCESS_KEY_ID")
-    (← getEnvNonEmpty "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY")
-    (← getEnvNonEmpty "MATHLIB_CACHE_S3_SESSION_TOKEN")
-    (← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN")
-    (← getEnvNonEmpty "MATHLIB_CACHE_SAS")
 
 /--
 Pure core of `stagedUploadDest`: resolve where a staged set uploads.

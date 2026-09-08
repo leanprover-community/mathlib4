@@ -167,8 +167,8 @@ variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.
 See Cache/README.md for more details.
 "
 
-/-- Commands which download with `curl`. Uploads validate curl at dispatch,
-when the curl tool is selected (`putStaged`). -/
+/-- Commands which download with `curl`. Uploads validate curl inside the
+curl tool (`putStagedViaCurl`), when a backend selects it. -/
 def curlArgs : List String :=
   ["get", "get!", "get-"]
 

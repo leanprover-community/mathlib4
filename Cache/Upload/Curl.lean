@@ -4,17 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Upload.Defs
+import Cache.Upload.Dest
 
 /-!
 # The curl upload tool
 
 The built-in transfer tool: parallel curl PUTs against the resolved
-destination (`StagedUploadDest`), authenticated per request from the
-`UploadAuth` mechanism (`uploadAuthArgs`). The tool holds only transfer
-mechanics; the request signing lives in the backend modules
-(`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`). `putStagedViaCurl` is
-the tool's entry point; `Cache/Upload.lean` dispatches to it.
+destination (`StagedUploadDest`). The tool holds only transfer mechanics and
+knows no backend: the caller supplies the per-request signing arguments, and
+the backend modules (`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`) call
+the tool's entry point, `putStagedViaCurl`, with their own.
 -/
 
 namespace Cache.Requests
@@ -22,22 +21,16 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-The authentication and header curl arguments for an upload with `auth`; the
-artifact and marker PUT paths share them. They combine the backend's signing
-arguments (`azureBearerCurlArgs`, `s3CurlArgs`) with the non-overwrite guard:
-a non-overwrite put adds `If-None-Match: *`, which Azure and S3-compatible
-backends answer with 409/412 for a blob that already exists (`classifyUpload`
-excuses those).
+The per-request curl arguments for one upload PUT: the backend's signing
+arguments plus the non-overwrite guard. A non-overwrite put adds
+`If-None-Match: *`, which Azure and S3-compatible backends answer with
+409/412 for a blob that already exists (`classifyUpload` excuses those).
 
 Every backend passes its secrets in the argument list, so callers print curl
 failures without the argument list (`showArgsOnError := false`).
 -/
-def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) := do
-  let signArgs ← match auth with
-    | .azureBearer token => azureBearerCurlArgs token
-    | .s3 creds => pure (s3CurlArgs creds)
-  let ifNoneMatch : Array String := if overwrite then #[] else #["-H", "If-None-Match: *"]
-  return signArgs ++ ifNoneMatch
+def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
+  if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
 /-- Formats the curl config file that lists the files to upload: each staged
 file goes to its `StagedUploadDest.fileURL`, and `stagedUploadDest` resolves
@@ -50,21 +43,21 @@ def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : Stri
   "\n".intercalate l
 
 /-- Calls `curl` to send a set of files to the already-resolved destination
-(see `stagedUploadDest`). Exits with code 1 when any file fails to upload. -/
+(see `stagedUploadDest`), signed per request with `signArgs`. Exits with
+code 1 when any file fails to upload. -/
 def putFilesViaCurl
     (dest : StagedUploadDest) (files : Array FilePath) (tempConfigFilePath : FilePath)
-    (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
+    (overwrite : Bool) (signArgs : Array String) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let size := files.size
   if size > 0 then
     IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
     IO.println
       s!"Attempting to upload {size} file(s) under {dest.filesPrefix} (container: {dest.label})"
-    let args ← uploadAuthArgs auth overwrite
     -- A retry after a PUT that landed is safe: the server answers a
     -- non-overwrite retry with 409/412, which `classifyUpload` excuses, and
     -- an overwrite retry re-sends the same bytes.
-    let args := args ++ #["-X", "PUT", "--parallel"] ++
+    let args := uploadPutArgs signArgs overwrite ++ #["-X", "PUT", "--parallel"] ++
       curlRetryArgs (supportLegacyCurl := false) ++
       -- `%{json}` prints a JSON report for each finished transfer. The
       -- leading newline keeps each report on its own line even if something
@@ -82,19 +75,24 @@ def putFilesViaCurl
   else IO.println "No files to upload"
 
 /--
-The staged put on the curl tool: the `.ltar` files named by `fileNames`
-under `srcDir`, then the per-SHA marker when `markerSha?` names one. The curl
-config file is written to `srcDir` for the duration of the transfer. A files
-failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
+The staged put on the curl tool: validate the system curl, then send the
+`.ltar` files named by `fileNames` under `srcDir`, then the per-SHA marker
+when `markerSha?` names one. `getSignArgs` produces the backend's signing
+arguments and runs once per transfer, so a time-sensitive header (the Azure
+date) is fresh for each. The curl config file is written to `srcDir` for the
+duration of the transfer. A files failure exits 1; a marker failure only
+warns (see `uploadMarkerWith`).
 -/
-def putStagedViaCurl (dest : StagedUploadDest) (srcDir : FilePath)
-    (fileNames : Array String) (overwrite : Bool) (auth : UploadAuth)
+def putStagedViaCurl (dest : StagedUploadDest) (getSignArgs : IO (Array String))
+    (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
     (markerSha? : Option String) : IO Unit := do
+  discard IO.validateCurl
   let files := fileNames.map fun (f : String) => srcDir / f
-  putFilesViaCurl dest files (srcDir / "curl.config") overwrite auth
+  putFilesViaCurl dest files (srcDir / "curl.config") overwrite (← getSignArgs)
   if let some sha := markerSha? then
     uploadMarkerWith (dest.markerURL sha) sha fun file => do
-      let args := (← uploadAuthArgs auth (overwrite := true)) ++
+      -- A marker overwrites freely, so its PUT carries no non-overwrite guard.
+      let args := uploadPutArgs (← getSignArgs) (overwrite := true) ++
         #["-X", "PUT", "-T", file.toString, dest.markerURL sha]
       -- The argument list carries the credential; keep it out of the failure message.
       discard <| IO.runCurl args (showArgsOnError := false)

@@ -5,21 +5,24 @@ Authors: Marcelo Lynch
 -/
 
 import Cache.Upload.Dest
+import Cache.Upload.Curl
 
 /-!
 # The Azure Blob Storage backend
 
-The Azure-specific upload logic: the destination resolution
-(`azureUploadDestFrom`), and the headers a blob PUT requires with the
-bearer-token authentication, rendered as curl arguments
-(`azureBearerCurlArgs`). rclone signs only S3 requests, so Azure uploads use
-the curl tool alone and this backend renders curl arguments alone.
+The complete azure upload path: the destination resolution
+(`azureUploadDestFrom`), the credential resolution (`azureAuthFrom`), the
+request signing (`azureBearerCurlArgs`), and the transfer entry point
+(`azurePutStaged`). rclone signs only S3 requests, so the backend always
+transfers with the curl tool.
 
 The storage account URL and the container model live in `Cache/Infra.lean`,
 because the read side uses them too.
 -/
 
 namespace Cache.Requests
+
+open System (FilePath)
 
 /--
 The upload destination for the azure backend: the chosen container on the
@@ -60,5 +63,42 @@ def azureBearerCurlArgs (token : String) : IO (Array String) := do
   return #["-H", "x-ms-blob-type: BlockBlob",
     "-H", azureBearerApiVersionHeader, "-H", ← getAzureDateHeader,
     "--oauth2-bearer", token]
+
+/--
+The azure upload credential, from the raw environment values: the OAuth
+bearer token `MATHLIB_CACHE_AZURE_BEARER_TOKEN` (`bearer?`).
+`MATHLIB_CACHE_SAS` (`sas?`) is not an accepted credential: when it is set
+and the bearer token is not, the error names the accepted mechanism instead
+of reporting a missing credential.
+
+Pure so the policy is testable; `getAzureAuth` wires the environment in.
+-/
+def azureAuthFrom (bearer? sas? : Option String) : Except String String :=
+  match bearer?, sas? with
+  | some token, _ => .ok token
+  | none, some _ => .error
+      "MATHLIB_CACHE_SAS is retired: set an Azure OIDC bearer token \
+      (MATHLIB_CACHE_AZURE_BEARER_TOKEN), or pass --backend=s3 to upload \
+      with the S3 credential pair"
+  | none, none => .error
+      "the azure backend (the default) uploads with an Azure OIDC bearer token: \
+      set MATHLIB_CACHE_AZURE_BEARER_TOKEN, or pass --backend=s3 to upload \
+      with the S3 credential pair"
+
+/-- Retrieves the azure upload credential from the environment via
+`azureAuthFrom`. -/
+def getAzureAuth : IO String := do
+  IO.ofExcept <| azureAuthFrom
+    (← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN")
+    (← getEnvNonEmpty "MATHLIB_CACHE_SAS")
+
+/--
+The staged put on the azure backend: the curl tool against `dest`, each
+request signed with the bearer token (`azureBearerCurlArgs`).
+-/
+def azurePutStaged (dest : StagedUploadDest) (token : String) (srcDir : FilePath)
+    (fileNames : Array String) (overwrite : Bool) (markerSha? : Option String) :
+    IO Unit :=
+  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite markerSha?
 
 end Cache.Requests

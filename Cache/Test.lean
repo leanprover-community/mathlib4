@@ -1271,42 +1271,34 @@ def test_uploadBackendParse : IO Unit := do
   assertTrue "s3 parses, case-insensitively" (UploadBackend.parse? "S3" == some .s3)
   assertTrue "an unknown name is rejected" ((UploadBackend.parse? "gcs").isNone)
 
-/-- `uploadAuthFrom` resolves the selected backend's credentials and ignores
-the other backend's variables: azure (the default) reads the bearer token, s3
-reads the credential pair with its optional session token. A half-set S3 pair
-errors, and a lone MATHLIB_CACHE_SAS errors as retired on the azure
-backend. -/
-def test_uploadAuthFrom : IO Unit := do
-  IO.println "uploadAuthFrom:"
-  assertTrue "s3: pair with a session token"
-    (uploadAuthFrom .s3 (some "AK") (some "SK") (some "ST") none none
-      matches .ok (.s3 ⟨"AK", "SK", some "ST"⟩))
-  assertTrue "s3: pair without a session token"
-    (uploadAuthFrom .s3 (some "AK") (some "SK") none none none
-      matches .ok (.s3 ⟨"AK", "SK", none⟩))
-  assertTrue "s3: a set bearer token is ignored"
-    (uploadAuthFrom .s3 (some "AK") (some "SK") none (some "bear") (some "sas")
-      matches .ok (.s3 ..))
-  assertTrue "s3: key id without a secret errors"
-    (uploadAuthFrom .s3 (some "AK") none none (some "bear") none matches .error _)
-  assertTrue "s3: secret without a key id errors"
-    (uploadAuthFrom .s3 none (some "SK") none (some "bear") none matches .error _)
-  assertTrue "s3: no pair errors, whatever else is set"
-    (uploadAuthFrom .s3 none none (some "ST") (some "bear") (some "sas")
-      matches .error _)
-  assertTrue "azure: bearer token"
-    (uploadAuthFrom .azure none none none (some "bear") (some "sas")
-      matches .ok (.azureBearer "bear"))
-  assertTrue "azure: a set S3 pair is ignored"
-    (uploadAuthFrom .azure (some "AK") (some "SK") (some "ST") (some "bear") none
-      matches .ok (.azureBearer "bear"))
-  assertTrue "azure: SAS alone errors as retired"
-    (match uploadAuthFrom .azure none none none none (some "sas") with
+/-- `azureAuthFrom` resolves the azure backend's credential: the bearer
+token. A lone MATHLIB_CACHE_SAS errors as retired, and a missing bearer
+errors naming the fix. -/
+def test_azureAuthFrom : IO Unit := do
+  IO.println "azureAuthFrom:"
+  assertTrue "bearer token"
+    (azureAuthFrom (some "bear") (some "sas") matches .ok "bear")
+  assertTrue "SAS alone errors as retired"
+    (match azureAuthFrom none (some "sas") with
       | .error e => e.startsWith "MATHLIB_CACHE_SAS is retired"
       | .ok _ => false)
-  assertTrue "azure: no bearer errors, whatever S3 variables are set"
-    (uploadAuthFrom .azure (some "AK") (some "SK") (some "ST") none none
-      matches .error _)
+  assertTrue "no bearer errors" (azureAuthFrom none none matches .error _)
+
+/-- `s3AuthFrom` resolves the s3 backend's credentials: the pair with its
+optional session token. A half-set pair errors instead of resolving. -/
+def test_s3AuthFrom : IO Unit := do
+  IO.println "s3AuthFrom:"
+  assertTrue "pair with a session token"
+    (s3AuthFrom (some "AK") (some "SK") (some "ST")
+      matches .ok ⟨"AK", "SK", some "ST"⟩)
+  assertTrue "pair without a session token"
+    (s3AuthFrom (some "AK") (some "SK") none matches .ok ⟨"AK", "SK", none⟩)
+  assertTrue "key id without a secret errors"
+    (s3AuthFrom (some "AK") none none matches .error _)
+  assertTrue "secret without a key id errors"
+    (s3AuthFrom none (some "SK") none matches .error _)
+  assertTrue "a stray session token alone errors"
+    (s3AuthFrom none none (some "ST") matches .error _)
 
 /-- `isValidScope` gates every scope before it reaches a URL path or a file
 name (the fork namespace, the marker path, and the marker's local temp file):
@@ -1473,14 +1465,15 @@ def test_stagedUploadDestFrom : IO Unit := do
   else
     assertTrue "legacy-fallback destination resolves" false
 
-/-- The auth arguments an upload passes to curl, per mechanism. Pins the S3
-shape — SigV4 with region `auto`, the `UNSIGNED-PAYLOAD` hash that lets curl
-sign a `-T` upload, and the session-token header for temporary credentials —
-and the `If-None-Match: *` guard that a non-overwrite put adds on every
-mechanism. The bearer branch spawns `date`, so this covers S3 only. -/
-def test_uploadAuthArgs : IO Unit := do
-  IO.println "uploadAuthArgs:"
-  let s3 ← uploadAuthArgs (.s3 ⟨"AK", "SK", some "ST"⟩) (overwrite := false)
+/-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
+and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
+every backend (`uploadPutArgs`). Pins the S3 shape: SigV4 with region `auto`,
+the `UNSIGNED-PAYLOAD` hash that lets curl sign a `-T` upload, and the
+session-token header for temporary credentials. The azure arguments spawn
+`date`, so this covers S3 only. -/
+def test_s3CurlArgs : IO Unit := do
+  IO.println "s3CurlArgs:"
+  let s3 := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", some "ST"⟩) (overwrite := false)
   assertTrue "S3 signs with SigV4, region auto"
     ((s3.toList.zip s3.toList.tail).contains ("--aws-sigv4", "aws:amz:auto:s3"))
   assertTrue "S3 carries the keypair as --user"
@@ -1491,26 +1484,23 @@ def test_uploadAuthArgs : IO Unit := do
   assertTrue "non-overwrite adds If-None-Match" (s3.contains "If-None-Match: *")
   assertTrue "S3 sends no Azure blob-type header"
     (!s3.contains "x-ms-blob-type: BlockBlob")
-  let s3Static ← uploadAuthArgs (.s3 ⟨"AK", "SK", none⟩) (overwrite := true)
+  let s3Static := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", none⟩) (overwrite := true)
   assertTrue "a static keypair sends no session token"
     (s3Static.all (!·.startsWith "x-amz-security-token"))
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
 
-/-- The transfer-tool policy for the s3 backend: rclone when available and
-carrying the credentials it signs with, curl otherwise, and
-MATHLIB_CACHE_PUT_FORCE_CURL selects curl whether rclone is available or
-not. The azure backend has no policy to test: `resolveUploadTool` always
-returns curl for it. -/
+/-- The transfer-tool policy for the s3 backend: rclone when available, curl
+otherwise, and MATHLIB_CACHE_PUT_FORCE_CURL selects curl whether rclone is
+available or not. The azure backend has no policy to test: it always
+transfers with curl (`azurePutStaged`). -/
 def test_s3UploadToolFrom : IO Unit := do
   IO.println "s3UploadToolFrom:"
-  let creds : S3Credentials := ⟨"AK", "SK", some "ST"⟩
-  assertTrue "rclone when available, carrying the credentials"
-    (s3UploadToolFrom creds (forceCurl := false) (rcloneAvailable := true) ==
-      .rclone ⟨"AK", "SK", some "ST"⟩)
+  assertTrue "rclone when available"
+    (s3UploadToolFrom (forceCurl := false) (rcloneAvailable := true) == .rclone)
   assertTrue "curl without rclone"
-    (s3UploadToolFrom creds (forceCurl := false) (rcloneAvailable := false) == .curl)
+    (s3UploadToolFrom (forceCurl := false) (rcloneAvailable := false) == .curl)
   assertTrue "the flag forces curl past an available rclone"
-    (s3UploadToolFrom creds (forceCurl := true) (rcloneAvailable := true) == .curl)
+    (s3UploadToolFrom (forceCurl := true) (rcloneAvailable := true) == .curl)
 
 /-- The endpoint/bucket split the rclone tool builds its remote from. -/
 def test_s3EndpointSplit : IO Unit := do
@@ -1582,9 +1572,9 @@ def test_rcloneEnv : IO Unit := do
     (noSession.contains ("RCLONE_S3_SESSION_TOKEN", none))
 
 /-- `putStagedViaRclone` end to end against a recording fake binary: the
-files copy runs first with the credential environment, the marker copy
-follows with the SHA-named temp file, and a marker failure warns without
-failing the put. -/
+files copy runs first with the child environment the caller assembled
+(`rcloneEnv`), the marker copy follows with the SHA-named temp file, and a
+marker failure warns without failing the put. -/
 def test_putStagedViaRclone : IO Unit := do
   IO.println "putStagedViaRclone (fake binary):"
   if System.Platform.isWindows then
@@ -1613,7 +1603,8 @@ def test_putStagedViaRclone : IO Unit := do
     let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
-    putStagedViaRclone dest ⟨"AK", "SK", some "tok"⟩ (some "abc1") staging
+    putStagedViaRclone dest (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other")
+      "devbucket" (some "abc1") staging
       #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
     let copyArgs ← IO.FS.readFile (dir / "args-copy")
     assertTrue "files copy targets the staging dir"
@@ -1812,11 +1803,12 @@ def runAll : IO Unit := do
   test_classifyUpload
   test_mkPutConfigContent
   test_uploadBackendParse
-  test_uploadAuthFrom
+  test_azureAuthFrom
+  test_s3AuthFrom
   test_isValidScope
   test_fileDirPath
   test_stagedUploadDestFrom
-  test_uploadAuthArgs
+  test_s3CurlArgs
   test_s3UploadToolFrom
   test_s3EndpointSplit
   test_rcloneArgs

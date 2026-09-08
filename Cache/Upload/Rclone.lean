@@ -4,18 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Upload.Defs
+import Cache.Upload.Dest
 
 /-!
 # The rclone upload tool
 
 An opt-in transfer tool: a system [rclone](https://rclone.org) against the
-resolved destination (`StagedUploadDest`), with the S3 credentials passed
-through its environment. The tool holds only transfer mechanics; the S3
-credential set, environment configuration, and endpoint addressing live in
-`Cache/Upload/S3.lean`. rclone signs only S3 requests, so this tool has no
-Azure path. `putStagedViaRclone` is the tool's entry point;
-`Cache/Upload.lean` dispatches to it.
+resolved destination (`StagedUploadDest`). The tool holds only transfer
+mechanics and addresses the destination through rclone's `:s3:` remote
+syntax, so only the s3 backend can call it: `Cache/Upload/S3.lean` supplies
+the child environment that carries the credentials and endpoint, the bucket
+path, and the call into the tool's entry point, `putStagedViaRclone`.
 -/
 
 namespace Cache.Requests
@@ -60,22 +59,20 @@ def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
     rcloneCommonFlags
 
 /--
-The staged put on a system rclone: the cache binary resolves the destination
-and hands rclone the S3 credentials through its environment (`rcloneEnv`). `srcDir`
-holds the files and `fileNames` lists the ones to upload; the list is passed
-as a `--files-from` file, so only the named files leave the machine. The
-files upload first, then the per-SHA marker, in the same order as the curl
-tool. A files failure exits 1; a marker failure only warns (see
-`uploadMarkerWith`). The `rclone` parameter names the binary and exists for
-the tests; production callers use the default.
+The staged put on a system rclone. `env` is the child environment the caller
+assembled (`rcloneEnv`), so no credential reaches a command line, and
+`bucketPath` is the bucket the `:s3:` remotes address. `srcDir` holds the
+files and `fileNames` lists the ones to upload; the list is passed as a
+`--files-from` file, so only the named files leave the machine. The files
+upload first, then the per-SHA marker, in the same order as the curl tool. A
+files failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
+The `rclone` parameter names the binary and exists for the tests; production
+callers use the default.
 -/
-def putStagedViaRclone (dest : StagedUploadDest) (creds : S3Credentials)
-    (markerSha? : Option String)
+def putStagedViaRclone (dest : StagedUploadDest) (env : Array (String × Option String))
+    (bucketPath : String) (markerSha? : Option String)
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
     (rclone : String := "rclone") : IO Unit := do
-  let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.base)
-  let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
-  let env := rcloneEnv creds endpoint provider
   let run (args : Array String) : IO UInt32 := do
     let child ← IO.Process.spawn { cmd := rclone, args, env }
     child.wait

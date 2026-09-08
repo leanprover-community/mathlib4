@@ -159,9 +159,9 @@ The trust model does not attempt to defend against:
 |------------------------------------------------|------------------------------------------------------------------|
 | Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
 | Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`)      |
-| Upload destination and credentials             | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`stagedUploadDest`, `uploadAuthFrom`) |
-| Backend request signing (Azure, S3/R2)         | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
-| Transfer tools and dispatch                  | [`Cache/Upload.lean`](Upload.lean), [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean) |
+| Backend selection, destination arbitration     | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`, `stagedUploadDest`), [`Cache/Upload.lean`](Upload.lean) (`runPut`) |
+| Upload backends: credentials, destination, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
+| Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean), [`Cache/Upload/Dest.lean`](Upload/Dest.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
