@@ -48,7 +48,7 @@ deriving DecidableEq
 
 namespace Triple
 
-variable {k : ℕ} [hk : Fact (4 * k + 1).Prime] (T : Triple k)
+variable {k : ℕ} (T : Triple k)
 
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
 def swap : Triple k where
@@ -57,20 +57,24 @@ def swap : Triple k where
   z := T.y
   eqn := by grind [T.eqn]
 
-omit hk in
 lemma involutive_swap : (@swap k).Involutive := fun _ ↦ rfl
 
-omit hk in
 /-- Fixed points of `swap` yield decompositions of `4 * k + 1` into two squares. -/
 lemma sq_add_sq_of_swap_eq_self (sT : T.swap = T) : ∃ a b, a ^ 2 + b ^ 2 = 4 * k + 1 :=
   ⟨T.x, 2 * T.y, by grind [swap]⟩
 
-omit hk in
 lemma x_ne_zero : T.x ≠ 0 := by
   obtain ⟨x, y, z, h⟩ := T
   rintro rfl
   apply_fun (· % 4) at h
   simp [mul_assoc] at h
+
+lemma x_bound : T.x ∈ Icc 1 (k + 1) := by
+  have nx := T.x_ne_zero
+  obtain ⟨x, y, z, h⟩ := T
+  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
+
+variable [hk : Fact (4 * k + 1).Prime]
 
 lemma y_ne_zero : T.y ≠ 0 := by
   obtain ⟨x, y, z, h⟩ := T
@@ -79,12 +83,6 @@ lemma y_ne_zero : T.y ≠ 0 := by
   exact sq.not_prime.elim hk.out.prime
 
 lemma z_ne_zero : T.z ≠ 0 := T.swap.y_ne_zero
-
-omit hk in
-lemma x_bound : T.x ∈ Icc 1 (k + 1) := by
-  have nx := T.x_ne_zero
-  obtain ⟨x, y, z, h⟩ := T
-  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
 
 lemma y_bound : T.y ∈ Icc 1 k := by
   have ny := T.y_ne_zero
