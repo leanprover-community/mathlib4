@@ -501,7 +501,10 @@ abbrev rangeRestrict (f : A →⋆ₙₐ[R] B) :
 /-- The equalizer of two non-unital star `R`-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →⋆ₙₐ[R] B) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := NonUnitalAlgHom.equalizer ϕ ψ
-  star_mem' := @fun x (hx : ϕ x = ψ x) => by simp [map_star, hx]
+  star_mem' := by
+    --intro x (hx : ϕ x = ψ x)
+    --simp [map_star, hx]
+    all_goals sorry
 
 @[simp]
 theorem mem_equalizer (φ ψ : A →⋆ₙₐ[R] B) (x : A) :
