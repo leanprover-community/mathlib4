@@ -5,9 +5,9 @@ Authors: Kirill Kondrashov, Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 # Hodge star on exterior powers
@@ -29,11 +29,8 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensiona
 noncomputable def hodgeStar (B : LinearMap.BilinForm K V) (hB : Bijective B)
     (vol : Dual K (⋀[K]^(finrank K V) V)) (hvol : Bijective vol) (k l : ℕ)
     (hkl : k + l = finrank K V) :
-    ⋀[K]^k V ≃ₗ[K] ⋀[K]^l V := by
-  let Bk := B.exteriorPower k
-  have hBkbij : Bijective Bk := B.bijective_exteriorPower k hB
-  exact (LinearEquiv.ofBijective Bk.flip
-      ((LinearMap.flip_bijective_iff₁ (B := Bk)).mpr hBkbij)).trans
+    ⋀[K]^k V ≃ₗ[K] ⋀[K]^l V :=
+  (LinearEquiv.ofBijective (B.exteriorPower k) (B.bijective_exteriorPower k hB)).flip.trans
     (wedgePairingEquiv vol hvol k l hkl).symm
 
 end exteriorPower
