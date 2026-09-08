@@ -464,7 +464,6 @@ theorem sdiff_self_inter {s t : Set α} : s \ (s ∩ t) = s \ t :=
 
 @[deprecated (since := "2026-06-03")] alias diff_self_inter := sdiff_self_inter
 
-@[simp]
 theorem sdiff_self {s : Set α} : s \ s = ∅ :=
   _root_.sdiff_self
 
