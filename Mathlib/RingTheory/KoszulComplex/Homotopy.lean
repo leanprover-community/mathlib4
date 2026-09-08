@@ -92,7 +92,7 @@ lemma koszulCocomplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
   -- In degree `0`, only the `δ_φ d_x` term survives.
   rw [Homotopy.dNext_cochainComplex, Homotopy.prevD_zero_cochainComplex]
   simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, Nat.reduceAdd,
-    koszulCocomplex.d_eq_aux, zero_add, add_zero]
+    koszulCocomplex.d_def, zero_add, add_zero]
   exact congrArg ModuleCat.ofHom (contraction_wedge_zero_degree x φ).symm
 
 lemma koszulComplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
@@ -103,7 +103,7 @@ lemma koszulComplex.scalar_homotopy_comm_zero (x : M) (φ : M →ₗ[R] R) :
             if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplex.d R M x i) else 0) := by
   -- In degree `0`, only the `d_x δ_φ` term survives.
   rw [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex]
-  simp only [↓reduceDIte, koszulComplex.d_eq_d, zero_add, HomologicalComplex.smul_f_apply,
+  simp only [↓reduceDIte, koszulComplex.d_def, zero_add, HomologicalComplex.smul_f_apply,
     HomologicalComplex.id_f, Nat.reduceAdd]
   exact congrArg ModuleCat.ofHom (contraction_wedge_zero_degree x φ).symm
 
@@ -115,7 +115,7 @@ lemma koszulCocomplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ
             if h : j + 1 = i then h ▸ ModuleCat.ofHom (koszulComplex.d φ j) else 0) := by
   -- In positive degrees, the homotopy relation is exactly the Cartan formula.
   rw [Homotopy.dNext_cochainComplex, Homotopy.prevD_succ_cochainComplex]
-  simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, d_eq_aux]
+  simp only [↓reduceDIte, HomologicalComplex.smul_f_apply, HomologicalComplex.id_f, d_def]
   let A := (koszulCocomplex.d R M x i).comp (koszulComplex.d φ i)
   let B := (koszulComplex.d φ (i + 1)).comp (koszulCocomplex.d R M x (i + 1))
   have hcartan : (φ x) • LinearMap.id = B + A := by
@@ -130,7 +130,7 @@ lemma koszulComplex.scalar_homotopy_comm (x : M) (φ : M →ₗ[R] R) (i : ℕ) 
             if h : i + 1 = j then h ▸ ModuleCat.ofHom (koszulCocomplex.d R M x i) else 0) := by
   -- In positive degrees, the homotopy relation is exactly the Cartan formula.
   rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex]
-  simp only [↓reduceDIte, koszulComplex.d_eq_d, HomologicalComplex.smul_f_apply,
+  simp only [↓reduceDIte, koszulComplex.d_def, HomologicalComplex.smul_f_apply,
     HomologicalComplex.id_f]
   exact congrArg ModuleCat.ofHom (contraction_wedge_cartan_formula x φ i).symm
 
