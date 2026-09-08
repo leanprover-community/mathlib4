@@ -135,8 +135,7 @@ theorem exists_isUniversal_of_regular (hd : G.IsRegularOfDegree d) :
   all_goals refine ⟨v, fun w nw ↦ ?_⟩
   iterate 2 exact nw.elim (Fintype.card_le_one_iff.mp (by lia) ..)
   suffices G.neighborFinset v = univ.erase v by simp [← mem_neighborFinset, this, nw.symm]
-  apply eq_of_subset_of_card_le (by grind [mem_neighborFinset])
-  grind [card_neighborFinset_eq_degree, hd v]
+  apply eq_of_subset_of_card_le <;> grind [mem_neighborFinset, card_neighborFinset_eq_degree, hd v]
 
 end IsFriendship
 
