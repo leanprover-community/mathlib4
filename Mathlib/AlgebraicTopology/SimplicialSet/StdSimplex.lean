@@ -848,7 +848,6 @@ def toOfSimplex : Δ[n] ⟶ ofSimplex x :=
 lemma toOfSimplex_ι :
     toOfSimplex x ≫ (ofSimplex x).ι = yonedaEquiv.symm x := rfl
 
-@[simp]
 lemma yonedaEquiv_toOfSimplex :
     dsimp% yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ := by
   obtain ⟨x, rfl⟩ := yonedaEquiv.surjective x
