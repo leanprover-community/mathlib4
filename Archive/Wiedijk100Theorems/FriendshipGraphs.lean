@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
 # The friendship theorem
 
 Every finite friendship graph, where every distinct pair of vertices has exactly one
-common neighbor, has a universal vertex adjacent to every other vertex. [erdosrenyisos]
+common neighbor, has a universal vertex adjacent to every other vertex [erdosrenyisos].
 The proof [huneke2002] revolves around the theory of adjacency matrices,
 although some steps could equivalently be phrased in terms of counting walks.
 
