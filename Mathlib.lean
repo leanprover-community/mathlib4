@@ -5030,6 +5030,7 @@ public import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
+public import Mathlib.Instances.IsReduced.Polynomial
 public import Mathlib.Lean.ContextInfo
 public import Mathlib.Lean.CoreM
 public import Mathlib.Lean.Elab.InfoTree
