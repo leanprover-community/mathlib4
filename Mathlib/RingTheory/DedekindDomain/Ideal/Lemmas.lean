@@ -465,8 +465,11 @@ theorem eq_prime_pow_mul_coprime {I : Ideal T} (hI : I ≠ ⊥)
 theorem map_prime_of_equiv {R : Type*} [CommRing R] [IsDedekindDomain R]
     (f : T ≃+* R) {I : Ideal T} (hI : Prime I) (h : I ≠ ⊥) : Prime (I.map f) := by
   rw [prime_iff_isPrime h] at hI
-  exact (prime_iff_isPrime <| (I.map_eq_bot_iff_of_injective f.injective).not.2 h).2
-    (map_isPrime_of_equiv _)
+  refine (prime_iff_isPrime ?_).2 (map_isPrime_of_equiv _)
+  -- TODO: simplify this once Ideal.map takes a concrete ring homomorphism
+  suffices map f.toRingHom I ≠ ⊥ from this
+  have aux := I.map_eq_bot_iff_of_injective (f := f.toRingHom) f.injective
+  simp_all
 
 @[deprecated (since := "2026-04-16")] alias _root_.map_prime_of_equiv := map_prime_of_equiv
 
