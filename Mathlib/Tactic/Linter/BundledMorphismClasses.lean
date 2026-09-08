@@ -73,28 +73,46 @@ open Batteries.Tactic.Lint in
     -- We still lint in the presence of sorries: completing a sorry should not influence this check.
 
     let constantInfo := ((← getEnv).find? declName).get!
-    if !constantInfo.isDefinition then
+    if constantInfo.isDefinition then
+      -- Check if any of the constants we care about appears in the type.
+      let morphismClassesAppearing :=
+        constantInfo.type.getUsedConstantsAsSet.filter (morphismClassesToLint.contains ·)
+      if morphismClassesToLint.isEmpty then return none
+      else if #[`ofClass, `casesOn, `recOn].contains (declName.components.getLastD `dummy) then
+        -- Heuristic: if a definition is named literally `ofClass`, don't warn.
+        -- We also exclude auto-generated declarations `recOn` and `casesOn`.
+        return none
+      else if Lean.Linter.isDeprecated (← getEnv) declName then
+        -- We don't warn about deprecated declarations either: those will be removed soon anyway.
+        return none
+      else if falseProjectionNames.contains declName then
+        -- If the declaration in question is named like a morphism class to morphism coercion,
+        -- we also don't error. (If anything, this should raise a different error.)
+        return none
+      if !morphismClassesAppearing.isEmpty then
+        let morName := morphismClassesAppearing.toArray[0]! |>.toString.dropEnd 5
+        return m!"The definition `{.ofConstName declName true}` takes a `{morName}Class` argument.\n\
+        Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad \
+        idea:\nplease change the definition to take in a `{morName}` argument instead."
+        -- Note that this linter has false positives if a `{clsName}Class` is just coerced to a function."
+    else if constantInfo.isTheorem then
+      -- Check if the theorem statement references any constant which takes in a morphism class.
+      let constants := constantInfo.type.getUsedConstants
+      let env := ← getEnv
+      -- For each declaration used in this theorem's statement, collect all morphism classes
+      -- involved in it.
+      let morphismClassesInvolved := constants.map fun c ↦
+        ((env.find? c).get!).type.getUsedConstants.filter (morphismClassesToLint.contains ·)
+      if !(morphismClassesInvolved.filter (fun s ↦ !s.isEmpty)).isEmpty then
+        -- The theorem involves a definition taking in a morphism class.
+        -- Verify that the theorem is stated for concrete morphisms, not a morphism class.
+        let morphismClassesInStatement := constants.filter (morphismClassesToLint.contains ·)
+        if !morphismClassesInStatement.isEmpty then
+          let morName := morphismClassesInStatement[0]! |>.toString.dropEnd 5
+          return m!"The theorem `{.ofConstName declName true}` involves a definition on a bundled morphism\n\
+          (namely `TODO`), but takes in the morphism class `{morName}Class` as argument:\n\
+          Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad \
+          idea:\nplease change the theorem to reference a concrete `{morName}` instead."
+      -- future: check conversely about theorems using just the FunLike coercion
       return none
-    -- Check if any of the constants we care about appears in the type.
-    let morphismClassesAppearing :=
-      constantInfo.type.getUsedConstantsAsSet.filter (morphismClassesToLint.contains ·)
-    if morphismClassesToLint.isEmpty then return none
-    else if #[`ofClass, `casesOn, `recOn].contains (declName.components.getLastD `dummy) then
-      -- Heuristic: if a definition is named literally `ofClass`, don't warn.
-      -- We also exclude auto-generated declarations `recOn` and `casesOn`.
-      return none
-    else if Lean.Linter.isDeprecated (← getEnv) declName then
-      -- We don't warn about deprecated declarations either: those will be removed soon anyway.
-      return none
-    else if falseProjectionNames.contains declName then
-      -- If the declaration in question is named like a morphism class to morphism coercion,
-      -- we also don't error. (If anything, this should raise a different error.)
-      return none
-
-    if !morphismClassesAppearing.isEmpty then
-      let clsName := morphismClassesAppearing.toArray[0]! |>.toString.dropEnd 5
-      return m!"The definition `{.ofConstName declName true}` takes a `{clsName}Class` argument.\n\
-      Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad \
-      idea:\nplease change the definition to take in a `{clsName}` argument instead."
-      -- Note that this linter has false positives if a `{clsName}Class` is just coerced to a function."
     return none
