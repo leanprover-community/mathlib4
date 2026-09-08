@@ -40,8 +40,7 @@ theorem mul_mid_eq_zero {a b : R} (h : a * b = 0) (r : R) : a * r * b = 0 := by
 theorem mul_eq_zero_of_mul_sq_eq_zero {a b : R} (h : a * b * b = 0) : a * b = 0 := by
   have h2 : b * (a * b) = 0 := IsReduced.mul_eq_zero_comm (a := a * b) (b := b) h
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
-  have h3 : (a * b) ^ 2 = a * (b * (a * b)) := by simp [pow_two, mul_assoc]
-  simp [h3, h2]
+  simp [pow_two, mul_assoc, h2]
 
 end IsReduced
 
