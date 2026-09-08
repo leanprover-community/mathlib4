@@ -267,8 +267,7 @@ lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image 
   grind [Set.mem_iUnion]
 
 variable (R t₁ t₂) in
-lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by
-  grind
+lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by grind
 
 variable (R) in
 lemma preimage_iUnion (t : ι → Set β) : preimage R (⋃ i, t i) = ⋃ i, preimage R (t i) := by
@@ -288,8 +287,7 @@ variable (R S s) in
 lemma image_comp : image (R ○ S) s = image S (image R s) := by grind
 
 variable (R S u) in
-lemma preimage_comp : preimage (R ○ S) u = preimage R (preimage S u) := by
-  grind
+lemma preimage_comp : preimage (R ○ S) u = preimage R (preimage S u) := by grind
 
 variable (s) in
 @[simp] lemma image_empty_left : image (∅ : SetRel α β) s = ∅ := by grind
@@ -301,11 +299,8 @@ variable (t) in
 @[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : SetRel α β) t = .univ := by
   aesop
 
-lemma image_eq_cod_of_dom_subset (h : R.dom ⊆ s) : R.image s = R.cod := by
-  grind
-
-lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by
-  grind
+lemma image_eq_cod_of_dom_subset (h : R.dom ⊆ s) : R.image s = R.cod := by grind
+lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by grind
 
 variable (R s) in
 @[simp] lemma image_inter_dom : image R (s ∩ R.dom) = image R s := by grind
@@ -319,8 +314,7 @@ lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) :
 
 lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by grind [Set.mem_iUnion]
 
-lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by
-  grind [Set.mem_iUnion]
+lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by grind [Set.mem_iUnion]
 
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
