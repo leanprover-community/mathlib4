@@ -502,9 +502,9 @@ lemma subgroupComap_surjective_of_surjective (f : G →* G') (H' : Subgroup G') 
   f.submonoidComap_surjective_of_surjective H'.toSubmonoid hf
 
 @[to_additive]
-lemma subgroupComap_injective (f : G →* G') (H' : Subgroup G')
+lemma subgroupComap_injective_of_injective (f : G →* G') (H' : Subgroup G')
     (hf : Function.Injective f) : Function.Injective (f.subgroupComap H') :=
-  fun _ _ h => Subtype.ext (hf (congrArg Subtype.val h))
+  f.submonoidComap_injective_of_injective H'.toSubmonoid hf
 
 /-- The `MonoidHom` from a subgroup to its image. -/
 @[to_additive (attr := simps!) /-- the `AddMonoidHom` from an additive subgroup to its image -/]

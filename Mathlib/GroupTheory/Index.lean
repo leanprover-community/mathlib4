@@ -785,15 +785,15 @@ instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
   ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relIndex_eq_zero h⟩
 
 @[to_additive]
-instance FiniteIndex.comap {G' : Type*} [Group G'] (H : Subgroup G') [H.FiniteIndex]
-    (f : G →* G') : (H.comap f).FiniteIndex where
+instance FiniteIndex.comap (H' : Subgroup G') [H'.FiniteIndex] :
+    (H'.comap f).FiniteIndex where
   index_ne_zero := by
     rw [index_comap]
-    exact (instFiniteIndex_subgroupOf H f.range).index_ne_zero
+    exact (instFiniteIndex_subgroupOf H' f.range).index_ne_zero
 
 @[to_additive]
-theorem FiniteIndex.map_of_surjective {G' : Type*} [Group G'] (hfi : H.FiniteIndex)
-    {f : G →* G'} (hf : Function.Surjective f) : (H.map f).FiniteIndex where
+theorem FiniteIndex.map_of_surjective (hfi : H.FiniteIndex)
+    (hf : Function.Surjective f) : (H.map f).FiniteIndex where
   index_ne_zero h0 := hfi.index_ne_zero (by
     have hd := H.index_map_dvd hf
     rwa [h0, zero_dvd_iff] at hd)
