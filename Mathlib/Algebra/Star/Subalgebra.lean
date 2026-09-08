@@ -794,9 +794,8 @@ theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
           Subtype.ext <| Set.mem_singleton_iff.mp hx).symm ▸
       h
 
-variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
+variable (f g : A →⋆ₐ[R] B)
 
--- TODO: change this definition to take a concrete morphism instead
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
   toSubalgebra := AlgHom.equalizer (StarAlgHom.ofClass f : A →ₐ[R] B) (StarAlgHom.ofClass g)
@@ -809,9 +808,11 @@ theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=
 theorem adjoin_le_equalizer {s : Set A} (h : s.EqOn f g) : adjoin R s ≤ StarAlgHom.equalizer f g :=
   adjoin_le h
 
-theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) : f = g :=
-  DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
-
+theorem ext_of_adjoin_eq_top [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B]
+    {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) :
+    f = g :=
+  DFunLike.ext f g fun _x ↦
+    StarAlgHom.adjoin_le_equalizer (ofClass f) (ofClass g) hs <| h.symm ▸ trivial
 
 variable [StarModule R B]
 
