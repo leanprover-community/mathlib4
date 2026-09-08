@@ -81,9 +81,8 @@ private theorem SignRelation.signVariations_eq {L M : List ℝ} (h : SignRelatio
         firstSign_cons_ne (y :: l) hX, signVariations_cons (y :: l) hX,
         firstSign_cons_ne l hy]
       rw [signVariations_cons (0 :: y' :: m) hx',
-        firstSign_cons_zero (y' :: m) rfl, firstSign_cons_ne m hy',
+        firstSign_cons_zero (y' :: m), firstSign_cons_ne m hy',
         signVariations_cons_zero]
-      simp only [Option.elim_some]
       rw [← add_assoc, ih.1]
       congr 1
       rw [← hsx, ← hsy, ite_eq_left hopp]
@@ -321,13 +320,13 @@ theorem sturmVar_root_cross (hchain : IsSturmChain p chain) (r : ℝ) (hr : p.Is
       = 1 + signVariations ((q :: tail).map (Polynomial.eval a))
     rw [signVariations_cons _ hpa]
     simp only [List.map_cons]
-    rw [firstSign_cons_ne _ hqa, Option.elim_some, ite_eq_left hsignA]
+    rw [firstSign_cons_ne _ hqa, ite_eq_left hsignA]
   have hSVb : sturmVar (p :: q :: tail) b = sturmVar (q :: tail) b := by
     change signVariations (p.eval b :: (q :: tail).map (Polynomial.eval b))
       = signVariations ((q :: tail).map (Polynomial.eval b))
     rw [signVariations_cons _ hpb]
     simp only [List.map_cons]
-    rw [firstSign_cons_ne _ hqb, Option.elim_some, ite_eq_right hsignB, zero_add]
+    rw [firstSign_cons_ne _ hqb, ite_eq_right hsignB, zero_add]
   have hSVr : sturmVar (p :: q :: tail) r = sturmVar (q :: tail) r := by
     change signVariations (p.eval r :: (q :: tail).map (Polynomial.eval r))
       = signVariations ((q :: tail).map (Polynomial.eval r))

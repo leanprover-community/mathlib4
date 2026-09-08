@@ -131,23 +131,19 @@ theorem signVariations_congr {l₁ l₂ : List ℝ}
     signVariations l₁ = signVariations l₂ :=
   countSignChanges_congr (filter_ne_zero_congr h)
 
-/-- The sign of the first surviving (nonzero) entry of a real list, as an
-`Option SignType`: `none` when every entry is zero. This is the piece of local
-state that governs how prepending a nonzero entry changes `signVariations`. -/
+/-- The sign of the first nonzero entry of a real list, or `0` if every entry is zero. -/
 @[expose]
-noncomputable def firstSign (l : List ℝ) : Option SignType :=
-  (l.filter (fun v => decide (v ≠ 0))).head?.map (fun a => SignType.sign a)
+noncomputable def firstSign (l : List ℝ) : SignType :=
+  ((l.filter (fun v => decide (v ≠ 0))).head?.map SignType.sign).getD 0
 
-@[simp] theorem firstSign_nil : firstSign [] = none := rfl
+@[simp] theorem firstSign_nil : firstSign [] = 0 := rfl
 
-theorem firstSign_cons_zero {a : ℝ} (l : List ℝ) (ha : a = 0) :
-    firstSign (a :: l) = firstSign l := by
-  unfold firstSign; rw [List.filter_cons_of_neg (by simp [ha])]
+@[simp] theorem firstSign_cons_zero (l : List ℝ) : firstSign (0 :: l) = firstSign l := by
+  simp [firstSign]
 
-theorem firstSign_cons_ne {a : ℝ} (l : List ℝ) (ha : a ≠ 0) :
-    firstSign (a :: l) = some (SignType.sign a) := by
-  unfold firstSign
-  rw [List.filter_cons_of_pos (by simp [ha]), List.head?_cons, Option.map_some]
+@[simp] theorem firstSign_cons_ne {a : ℝ} (l : List ℝ) (ha : a ≠ 0) :
+    firstSign (a :: l) = SignType.sign a := by
+  simp [firstSign, ha]
 
 private theorem sign_mul_eq_neg_one {a b : ℝ} :
     (SignType.sign a * SignType.sign b = -1) ↔ a * b < 0 := by
@@ -157,21 +153,19 @@ private theorem sign_mul_eq_neg_one {a b : ℝ} :
 opposite the sign of the next surviving entry. -/
 theorem signVariations_cons {a : ℝ} (l : List ℝ) (ha : a ≠ 0) :
     signVariations (a :: l) =
-      (firstSign l).elim 0
-        (fun t => if SignType.sign a * t = -1 then 1 else 0) + signVariations l := by
+      (if SignType.sign a * firstSign l = -1 then 1 else 0) + signVariations l := by
   induction l with
   | nil => rw [signVariations_cons_ne a [] ha]; simp [firstSign]
   | cons b l' ih =>
     by_cases hb : b = 0
     · subst hb
-      rw [firstSign_cons_zero l' rfl, signVariations_cons_zero l',
+      rw [firstSign_cons_zero l', signVariations_cons_zero l',
         signVariations_cons_ne a (0 :: l') ha, List.filter_cons_of_neg (by simp),
         ← signVariations_cons_ne a l' ha]
       exact ih
     · rw [firstSign_cons_ne l' hb, signVariations_cons_ne a (b :: l') ha,
         List.filter_cons_of_pos (by simp [hb]), countSignChanges_cons_cons,
         ← signVariations_cons_ne b l' hb]
-      simp only [Option.elim_some]
       congr 1
       simp only [sign_mul_eq_neg_one]
 
