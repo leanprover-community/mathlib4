@@ -35,13 +35,24 @@ efficient as it gives an `O(n^2)` transposition without any random access.
 
 @[expose] public section
 
+@[simp]
+theorem List.getD_rightpad {α : Type*} (n i : Nat) (a : α) (l : List α) :
+    (l.rightpad n a).getD i a = l.getD i a := by
+  grind [List.rightpad]
+
 namespace Mathlib.Tactic.Matrix.ListMatrix
 
 variable {α : Type*}
 
-/-- The dot product of the first `n` entries of two lists. -/
-def dotProduct [Zero α] [Add α] [Mul α] (n : Nat) (l₁ l₂ : List α) : α :=
-  ((List.zipWith (· * ·) l₁ l₂).take n).sum
+/-- The dot product of the first `n` entries of two lists, missing entries read as `0`. -/
+def dotProduct [Zero α] [Add α] [Mul α] : Nat → List α → List α → α
+  | 0, _, _ => 0
+  | n + 1, a :: l₁, b :: l₂ => a * b + dotProduct n l₁ l₂
+  -- the padding arms multiply by `0` instead of returning `0`, so that they compute the same
+  -- terms as the dot product of the `0`-padded vectors and the bridge needs no `zero_mul`
+  | n + 1, a :: l₁, [] => a * 0 + dotProduct n l₁ []
+  | n + 1, [], b :: l₂ => 0 * b + dotProduct n [] l₂
+  | n + 1, [], [] => 0 * 0 + dotProduct n [] []
 
 /-! Controlled unfolding helpers of `dotProduct` instead of asking the kernel to unfold,
 which might unwantedly open `+`. -/
@@ -79,10 +90,10 @@ theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (
         exact ih i
     · simpa using hj
 
-/-- The product of two lists of rows, with `A` interpreted as having `m` columns and `B` as an
-`m × n` matrix. -/
-def mul [Zero α] [Add α] [Mul α] (m n : Nat) (A B : List (List α)) : List (List α) :=
+/-- The product of two lists of rows as `l` rows of `n` entries, each entry a dot product of
+`m` terms, with `A` read as an `l × m` matrix and `B` as an `m × n` matrix. -/
+def mul [Zero α] [Add α] [Mul α] (l m n : Nat) (A B : List (List α)) : List (List α) :=
   let Bt := transpose n B
-  A.map fun rowA ↦ Bt.map (dotProduct m rowA)
+  (A.rightpad l []).map fun rowA ↦ Bt.map (dotProduct m rowA)
 
 end Mathlib.Tactic.Matrix.ListMatrix

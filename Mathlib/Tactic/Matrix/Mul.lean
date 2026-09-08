@@ -76,12 +76,10 @@ def mkListCongr (α : Expr) (hs : Array Expr) : MetaM Expr := do
 `certifier`. -/
 def proveMul {u : Level} (certifier : EntryCertifier) (e : Expr) (l m n : ℕ) (α : Q(Type u))
     (rowsA rowsB : Array (Array Expr)) : MetaM Simp.Result := do
-  let _inst ← synthInstanceQ q(NonUnitalNonAssocSemiring $α)
-  -- derived from the semiring rather than synthesised afresh, so that the cells carry the
-  -- instance paths `ofLists_mul` instantiates `ListMatrix.mul` with
-  have zα : Q(Zero $α) := q(MulZeroClass.toZero)
-  have aα : Q(Add $α) := q(Distrib.toAdd)
-  have mα : Q(Mul $α) := q(Distrib.toMul)
+  let zα ← synthInstanceQ q(Zero $α)
+  let aα ← synthInstanceQ q(Add $α)
+  let mα ← synthInstanceQ q(Mul $α)
+  let _acm ← synthInstanceQ q(AddCommMonoid $α)
   have mQ : Q(ℕ) := q($m)
   let cols : Array (Array Expr) :=
     Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (rowsB[i]!)[j]!
