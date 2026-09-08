@@ -95,23 +95,23 @@ def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :
     (by grind [discr_def, val_unitOfInvertible]) (by grind [val_unitOfInvertible])).symm
 
 @[simp]
-theorem re_algEquivDiscrZero_apply [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
+theorem algEquivDiscrZero_re [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
     (algEquivDiscrZero a b z).re = z.re + ⅟2 * b * z.im := by
   simp [algEquivDiscrZero, mul_comm]
 
 @[simp]
-theorem im_algEquivDiscrZero_apply [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
+theorem algEquivDiscrZero_im [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
     (algEquivDiscrZero a b z).im = ⅟2 * z.im := by
   simp [algEquivDiscrZero, mul_comm]
 
 @[simp]
-theorem re_algEquivDiscrZero_symm_apply [Invertible (2 : R)]
+theorem algEquivDiscrZero_symm_re [Invertible (2 : R)]
     (z : QuadraticAlgebra R (discr a b) 0) :
     ((algEquivDiscrZero a b).symm z).re = z.re - b * z.im := by
   simp [algEquivDiscrZero, mul_comm, sub_eq_add_neg]
 
 @[simp]
-theorem im_algEquivDiscrZero_symm_apply [Invertible (2 : R)]
+theorem algEquivDiscrZero_symm_im [Invertible (2 : R)]
     (z : QuadraticAlgebra R (discr a b) 0) :
     ((algEquivDiscrZero a b).symm z).im = 2 * z.im := by
   simp [algEquivDiscrZero, mul_comm]
