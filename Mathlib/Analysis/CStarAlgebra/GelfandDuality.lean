@@ -372,7 +372,7 @@ B  --- η B ---> C(characterSpace ℂ B, ℂ)
 -/
 theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
     (φ : A →⋆ₐ[ℂ] B) :
-    ((gelfandStarTransform B).toStarAlgHom).comp φ =
+    (gelfandStarTransform B).toStarAlgHom.comp φ =
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A).toStarAlgHom := by
   rfl
 
