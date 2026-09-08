@@ -182,17 +182,8 @@ theorem isEdgeConnected_top_iff_forall_finite :
 
 theorem isEdgeReachable_top_iff_forall_nat :
     G.IsEdgeReachable ⊤ u v ↔ ∀ n : ℕ, G.IsEdgeReachable n u v := by
-  refine ⟨fun h _ ↦ h.anti le_top, fun h s h' ↦ ?_⟩
-  have : s.Finite := Set.encard_lt_top_iff.mp h'
-  have this2 := this
-  have ⟨n, ⟨a⟩⟩ := this.exists_equiv_fin
-  -- necessary else Fintype.card doesn't synthesize
-  have : Fintype s := this2.fintype
-  apply @h (n + 1) s
-  -- possibly extracted into a lemma
-  -- ↑s ≃ Fin n → s.ncard = n
-  simp [← s.coe_ncard_eq_encard, ← s.fintypeCard_eq_ncard, Fintype.card_congr a,
-  ENat.natCast_lt_succ]
+  refine ⟨fun h _ ↦ h.anti le_top, fun h s hlt ↦ h (s.ncard + 1) ?_⟩
+  simp [← Set.encard_lt_top_iff.mp hlt |>.cast_ncard_eq, -Nat.cast_add]
 
 theorem isEdgeConnected_top_iff_forall_nat :
     G.IsEdgeConnected ⊤ ↔ ∀ n : ℕ, G.IsEdgeConnected n := by
