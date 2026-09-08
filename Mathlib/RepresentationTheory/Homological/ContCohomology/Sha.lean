@@ -26,8 +26,7 @@ variety over K, and `n = 1`, this recovers the classical definition of the Tate-
 universe u v
 
 variable {K : Type u} {V : Type v} [Field K] (f : V → Type u) [h : ∀ v : V, Field (f v)]
-  [h' : ∀ v : V, Algebra K (f v)] (A : TopRep ℤ (Field.absoluteGaloisGroup K))
-  (n : ℕ)
+  [h' : ∀ v : V, Algebra K (f v)] (A : TopRep ℤ (Field.absoluteGaloisGroup K)) (n : ℕ)
 
 open CategoryTheory
 
