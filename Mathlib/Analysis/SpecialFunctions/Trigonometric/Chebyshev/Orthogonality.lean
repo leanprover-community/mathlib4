@@ -237,11 +237,9 @@ private theorem integral_sin_mul_sin (n m : ℕ) :
     intervalIntegral.integral_sub (Continuous.intervalIntegrable (by fun_prop) _ _)
       (Continuous.intervalIntegrable (by fun_prop) _ _),
     integral_cos_intCast_mul, integral_cos_intCast_mul]
-  have h₂ : ((n : ℤ) + (m : ℤ) + 2) ≠ 0 := by omega
-  rcases eq_or_ne n m with rfl | hnm
-  · simp [h₂]; ring
-  · have h₁ : ((n : ℤ) - (m : ℤ)) ≠ 0 := by omega
-    simp [h₁, h₂, hnm]
+  have h₂ : ¬((n : ℤ) + (m : ℤ) + 2 = 0) := by omega
+  simp only [sub_eq_zero, Nat.cast_inj, h₂, ite_false, sub_zero]
+  split_ifs <;> ring
 
 theorem integral_eval_U_real_mul_eval_U_real_measureU (n m : ℕ) :
     ∫ x, (U ℝ n).eval x * (U ℝ m).eval x ∂measureU = if n = m then π / 2 else 0 := by
