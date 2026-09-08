@@ -50,52 +50,6 @@ namespace Triple
 
 variable {k : ℕ} [hk : Fact (4 * k + 1).Prime] (T : Triple k)
 
-omit hk in
-lemma x_ne_zero : T.x ≠ 0 := by
-  obtain ⟨x, y, z, h⟩ := T
-  rintro rfl
-  apply_fun (· % 4) at h
-  simp [mul_assoc] at h
-
-lemma y_ne_zero : T.y ≠ 0 := by
-  obtain ⟨x, y, z, h⟩ := T
-  rintro rfl
-  have sq : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
-  exact sq.not_prime.elim hk.out.prime
-
-lemma z_ne_zero : T.z ≠ 0 := by
-  obtain ⟨x, y, z, h⟩ := T
-  rintro rfl
-  have sq : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
-  exact sq.not_prime.elim hk.out.prime
-
-omit hk in
-lemma x_bound : T.x ∈ Icc 1 (k + 1) := by
-  have nx := T.x_ne_zero
-  obtain ⟨x, y, z, h⟩ := T
-  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
-
-lemma y_bound : T.y ∈ Icc 1 k := by
-  have ny := T.y_ne_zero
-  have nz : 0 < T.z := by grind [T.z_ne_zero]
-  obtain ⟨x, y, z, h⟩ := T
-  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
-
-lemma z_bound : T.z ∈ Icc 1 k := by
-  have ny : 0 < T.y := by grind [T.y_ne_zero]
-  have nz := T.z_ne_zero
-  obtain ⟨x, y, z, h⟩ := T
-  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
-
-instance : Fintype (Triple k) where
-  elems := (univ : Finset {t : Icc 1 (k + 1) ×ˢ Icc 1 k ×ˢ Icc 1 k //
-    t.1.1 * t.1.1 + 4 * t.1.2.1 * t.1.2.2 = 4 * k + 1}).image fun s ↦ ⟨_, _, _, s.2⟩
-  complete T := by
-    simp_rw [mem_image, mem_univ, true_and]
-    refine ⟨⟨⟨(T.x, T.y, T.z), ?_⟩, T.eqn⟩, by ext <;> rfl⟩
-    simp only [mem_product]
-    exact ⟨T.x_bound, T.y_bound, T.z_bound⟩
-
 /-- The obvious involution `(x, y, z) ↦ (x, z, y)`. -/
 def swap : Triple k where
   x := T.x
@@ -110,6 +64,44 @@ omit hk in
 /-- Fixed points of `swap` yield decompositions of `4 * k + 1` into two squares. -/
 lemma sq_add_sq_of_swap_eq_self (sT : T.swap = T) : ∃ a b, a ^ 2 + b ^ 2 = 4 * k + 1 :=
   ⟨T.x, 2 * T.y, by grind [swap]⟩
+
+omit hk in
+lemma x_ne_zero : T.x ≠ 0 := by
+  obtain ⟨x, y, z, h⟩ := T
+  rintro rfl
+  apply_fun (· % 4) at h
+  simp [mul_assoc] at h
+
+lemma y_ne_zero : T.y ≠ 0 := by
+  obtain ⟨x, y, z, h⟩ := T
+  rintro rfl
+  have sq : IsSquare (4 * k + 1) := ⟨_, by simpa using h.symm⟩
+  exact sq.not_prime.elim hk.out.prime
+
+lemma z_ne_zero : T.z ≠ 0 := T.swap.y_ne_zero
+
+omit hk in
+lemma x_bound : T.x ∈ Icc 1 (k + 1) := by
+  have nx := T.x_ne_zero
+  obtain ⟨x, y, z, h⟩ := T
+  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
+
+lemma y_bound : T.y ∈ Icc 1 k := by
+  have ny := T.y_ne_zero
+  have nz : 0 < T.z := by grind [T.z_ne_zero]
+  obtain ⟨x, y, z, h⟩ := T
+  exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
+
+lemma z_bound : T.z ∈ Icc 1 k := T.swap.y_bound
+
+instance : Fintype (Triple k) where
+  elems := (univ : Finset {t : Icc 1 (k + 1) ×ˢ Icc 1 k ×ˢ Icc 1 k //
+    t.1.1 * t.1.1 + 4 * t.1.2.1 * t.1.2.2 = 4 * k + 1}).image fun s ↦ ⟨_, _, _, s.2⟩
+  complete T := by
+    simp_rw [mem_image, mem_univ, true_and]
+    refine ⟨⟨⟨(T.x, T.y, T.z), ?_⟩, T.eqn⟩, by ext <;> rfl⟩
+    simp only [mem_product]
+    exact ⟨T.x_bound, T.y_bound, T.z_bound⟩
 
 /-- The complicated involution, defined piecewise according to how `x` compares with
 `y - z` and `2 * y`. -/
