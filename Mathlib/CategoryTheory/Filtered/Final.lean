@@ -26,7 +26,7 @@ final can be restated. We show:
 * If `D` is a filtered category and `F : C ⥤ D` is fully faithful and satisfies the additional
   condition that for every `d : D` there is an object `c : D` and a morphism `d ⟶ F.obj c`, then
   `C` is filtered and `F` is final.
-* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection functors
+* Finality and initiality of diagonal functors `diagonal : C ⥤ C × C` and of projection functors
   of (co)structured arrow categories.
 * Finality of `StructuredArrow.post`, given the finality of its arguments.
 
@@ -314,19 +314,22 @@ theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty 
 
 /-- If `C` is filtered, then the structured arrow category on the diagonal functor `C ⥤ C × C`
 is filtered as well. -/
-instance [IsFilteredOrEmpty C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) := by
+instance [IsFilteredOrEmpty C] (X : C × C) : IsFiltered (StructuredArrow X (diagonal C)) := by
   have : ∀ Y, IsFiltered (StructuredArrow Y (Under.forget X.1)) := by
     rw [← final_iff_isFiltered_structuredArrow (Under.forget X.1)]
     infer_instance
-  apply IsFiltered.of_equivalence (StructuredArrow.ofDiagEquivalence X).symm
+  apply IsFiltered.of_equivalence (StructuredArrow.ofDiagonalEquivalence X).symm
 
 /-- The diagonal functor on any filtered category is final. -/
-instance Functor.final_diag_of_isFiltered [IsFilteredOrEmpty C] : Final (Functor.diag C) :=
+instance Functor.final_diagonal_of_isFiltered [IsFilteredOrEmpty C] : Final (Functor.diagonal C) :=
   final_of_isFiltered_structuredArrow _
+
+@[deprecated (since := "2026-09-06")]
+alias Functor.final_diag_of_isFiltered := Functor.final_diagonal_of_isFiltered
 
 -- Adding this instance causes performance problems elsewhere, even with low priority
 theorem IsFilteredOrEmpty.isSiftedOrEmpty [IsFilteredOrEmpty C] : IsSiftedOrEmpty C :=
-  Functor.final_diag_of_isFiltered
+  Functor.final_diagonal_of_isFiltered
 
 -- Adding this instance causes performance problems elsewhere, even with low priority
 attribute [local instance] IsFiltered.nonempty in
@@ -334,15 +337,19 @@ theorem IsFiltered.isSifted [IsFiltered C] : IsSifted C where
 
 /-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
 is cofiltered as well. -/
-instance [IsCofilteredOrEmpty C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C) X) := by
+instance [IsCofilteredOrEmpty C] (X : C × C) : IsCofiltered (CostructuredArrow (diagonal C) X) := by
   have : ∀ Y, IsCofiltered (CostructuredArrow (Over.forget X.1) Y) := by
     rw [← initial_iff_isCofiltered_costructuredArrow (Over.forget X.1)]
     infer_instance
-  apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagEquivalence X).symm
+  apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagonalEquivalence X).symm
 
 /-- The diagonal functor on any cofiltered category is initial. -/
-instance Functor.initial_diag_of_isFiltered [IsCofilteredOrEmpty C] : Initial (Functor.diag C) :=
+instance Functor.initial_diagonal_of_isFiltered [IsCofilteredOrEmpty C] :
+    Initial (Functor.diagonal C) :=
   initial_of_isCofiltered_costructuredArrow _
+
+@[deprecated (since := "2026-09-06")]
+alias Functor.initial_diag_of_isFiltered := Functor.initial_diagonal_of_isFiltered
 
 /-- If `C` is filtered, then every functor `F : C ⥤ Discrete PUnit` is final. -/
 theorem Functor.final_of_isFiltered_of_pUnit [IsFiltered C] (F : C ⥤ Discrete PUnit) :

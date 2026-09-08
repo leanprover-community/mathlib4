@@ -92,8 +92,10 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
   Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 
-instance fintypeOffDiag (s : Set α) [Fintype s] : Fintype s.offDiag :=
-  Fintype.ofFinset s.toFinset.offDiag <| by simp
+instance fintypeOffDiagonal (s : Set α) [Fintype s] : Fintype s.offDiagonal :=
+  Fintype.ofFinset s.toFinset.offDiagonal <| by simp
+
+@[deprecated (since := "2026-09-06")] alias fintypeOffDiag := fintypeOffDiagonal
 
 /-- `image2 f s t` is `Fintype` if `s` and `t` are. -/
 instance fintypeImage2 [DecidableEq γ] (f : α → β → γ) (s : Set α) (t : Set β) [hs : Fintype s]
@@ -178,8 +180,10 @@ protected theorem infinite_prod :
 theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite ∨ s = ∅) := by
   contrapose! +distrib; exact Set.infinite_prod
 
-protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite :=
-  (hs.prod hs).subset s.offDiag_subset_prod
+protected theorem Finite.offDiagonal {s : Set α} (hs : s.Finite) : s.offDiagonal.Finite :=
+  (hs.prod hs).subset s.offDiagonal_subset_prod
+
+@[deprecated (since := "2026-09-06")] alias Finite.offDiag := Finite.offDiagonal
 
 protected theorem Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
     (image2 f s t).Finite := by
@@ -197,9 +201,11 @@ theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.F
     hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 
-theorem Finite.toFinset_offDiag {s : Set α} (hs : s.Finite) :
-    hs.offDiag.toFinset = hs.toFinset.offDiag :=
+theorem Finite.toFinset_offDiagonal {s : Set α} (hs : s.Finite) :
+    hs.offDiagonal.toFinset = hs.toFinset.offDiagonal :=
   Finset.ext <| by simp
+
+@[deprecated (since := "2026-09-06")] alias Finite.toFinset_offDiag := Finite.toFinset_offDiagonal
 
 theorem finite_image_fst_and_snd_iff {s : Set (α × β)} :
     (Prod.fst '' s).Finite ∧ (Prod.snd '' s).Finite ↔ s.Finite :=

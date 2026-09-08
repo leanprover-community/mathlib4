@@ -148,7 +148,7 @@ protected theorem inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t
   simpa [hs, ht] using IsClub.sInter_of_countable (s := {s, t}) hα
 
 /-- Club sets are closed under diagonal intersections. -/
-protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : cof α ≠ ℵ₀)
+protected theorem diagonal [IsRegularCardinalOrder α] {f : α → Set α} (hα : cof α ≠ ℵ₀)
     (hf : ∀ a, IsClub (f a)) : IsClub {a | ∀ b < a, a ∈ f b} where
   dirSupClosed t ht ht₀ _ a ha b hb := by
     obtain ⟨c, hc, hbc, -⟩ := ha.exists_between hb
@@ -190,6 +190,8 @@ protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : co
         exact (hg _).1 _ (hb.trans_le <| hgm.monotone hm)
     · use g^[n + 1] a
       simp [- Function.iterate_succ]
+
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
 
 theorem _root_.Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
@@ -342,7 +344,7 @@ theorem exists_isStationary_preimage_singleton [IsRegularCardinalOrder α] {f : 
   by_contra!
   choose g hg using this
   simp_rw [Set.eq_empty_iff_forall_notMem] at hg
-  obtain ⟨a, hs, ha⟩ := hs <| .diag hα fun a ↦ (hg a).1
+  obtain ⟨a, hs, ha⟩ := hs <| .diagonal hα fun a ↦ (hg a).1
   apply (hg (f a)).2 a
   grind
 

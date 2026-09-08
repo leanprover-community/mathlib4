@@ -131,8 +131,10 @@ lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
     mkOfLe j j (by lia) = ⦋1⦌.const ⦋n⦌ j := Hom.ext_one_left _ _
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge -/
-def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
+def diagonal (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
   mkOfLe 0 (Fin.last n) (Fin.zero_le _)
+
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`. -/
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
@@ -199,11 +201,13 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
-    diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
-  unfold subinterval intervalEdge diag mkOfLe
+lemma diagonal_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
+    diagonal l ≫ subinterval j l hjl = intervalEdge j l hjl := by
+  unfold subinterval intervalEdge diagonal mkOfLe
   ext (i : Fin 2)
   match i with | 0 | 1 => simp <;> lia
+
+@[deprecated (since := "2026-09-06")] alias diag_subinterval_eq := diagonal_subinterval_eq
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)

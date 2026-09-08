@@ -16,15 +16,15 @@ This file defines the finset of finitely functions summing to a specific value o
 finsets should be thought of as the "antidiagonals" in the space of finitely supported functions.
 
 Precisely, for a commutative monoid `μ` with antidiagonals (see `Finset.HasAntidiagonal`),
-`Finset.finsuppAntidiag s n` is the finset of all finitely supported functions `f : ι →₀ μ` with
+`Finset.finsuppAntidiagonal s n` is the finset of all finitely supported functions `f : ι →₀ μ` with
 support contained in `s` and such that the sum of its values equals `n : μ`.
 
-We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `ι → μ`.
+We define it using `Finset.piAntidiagonal s n`, the corresponding antidiagonal in `ι → μ`.
 
 ## Main declarations
 
-* `Finset.finsuppAntidiag s n`: Finset of all finitely supported functions `f : ι →₀ μ` with support
-  contained in `s` and such that the sum of its values equals `n : μ`.
+* `Finset.finsuppAntidiagonal s n`: Finset of all finitely supported functions `f : ι →₀ μ`
+  with support contained in `s` and such that the sum of its values equals `n : μ`.
 
 -/
 
@@ -42,35 +42,52 @@ variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq �
   {n : μ} {f : ι →₀ μ}
 
 /-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
-def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
-  (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
-    simpa using (mem_piAntidiag.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
+def finsuppAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
+  (piAntidiagonal s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
+    simpa using (mem_piAntidiagonal.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
-@[simp] lemma mem_finsuppAntidiag : f ∈ finsuppAntidiag s n ↔ s.sum f = n ∧ f.support ⊆ s := by
-  simp [finsuppAntidiag, ← DFunLike.coe_fn_eq, subset_iff]
+@[deprecated (since := "2026-09-06")] alias finsuppAntidiag := finsuppAntidiagonal
 
-lemma mem_finsuppAntidiag' :
-    f ∈ finsuppAntidiag s n ↔ f.sum (fun _ x ↦ x) = n ∧ f.support ⊆ s := by
-  simp only [mem_finsuppAntidiag, and_congr_left_iff]
+@[simp] lemma mem_finsuppAntidiagonal :
+    f ∈ finsuppAntidiagonal s n ↔ s.sum f = n ∧ f.support ⊆ s := by
+  simp [finsuppAntidiagonal, ← DFunLike.coe_fn_eq, subset_iff]
+
+@[deprecated (since := "2026-09-06")] alias mem_finsuppAntidiag := mem_finsuppAntidiagonal
+
+lemma mem_finsuppAntidiagonal' :
+    f ∈ finsuppAntidiagonal s n ↔ f.sum (fun _ x ↦ x) = n ∧ f.support ⊆ s := by
+  simp only [mem_finsuppAntidiagonal, and_congr_left_iff]
   rintro hf
   rw [sum_of_support_subset (N := μ) f hf (fun _ x ↦ x) fun _ _ ↦ rfl]
 
-@[simp] lemma finsuppAntidiag_empty_zero : finsuppAntidiag (∅ : Finset ι) (0 : μ) = {0} := by
+@[deprecated (since := "2026-09-06")] alias mem_finsuppAntidiag' := mem_finsuppAntidiagonal'
+
+@[simp] lemma finsuppAntidiagonal_empty_zero :
+    finsuppAntidiagonal (∅ : Finset ι) (0 : μ) = {0} := by
   ext f; simp
 
-@[simp] lemma finsuppAntidiag_empty_of_ne_zero (hn : n ≠ 0) :
-    finsuppAntidiag (∅ : Finset ι) n = ∅ :=
+@[deprecated (since := "2026-09-06")]
+alias finsuppAntidiag_empty_zero := finsuppAntidiagonal_empty_zero
+
+@[simp] lemma finsuppAntidiagonal_empty_of_ne_zero (hn : n ≠ 0) :
+    finsuppAntidiagonal (∅ : Finset ι) n = ∅ :=
   eq_empty_of_forall_notMem (by simp [hn.symm])
 
-lemma finsuppAntidiag_empty (n : μ) :
-    finsuppAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by split_ifs with hn <;> simp [*]
+@[deprecated (since := "2026-09-06")]
+alias finsuppAntidiag_empty_of_ne_zero := finsuppAntidiagonal_empty_of_ne_zero
 
-theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
+lemma finsuppAntidiagonal_empty (n : μ) :
+    finsuppAntidiagonal (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
+  split_ifs with hn <;> simp [*]
+
+@[deprecated (since := "2026-09-06")] alias finsuppAntidiag_empty := finsuppAntidiagonal_empty
+
+theorem mem_finsuppAntidiagonal_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) {f : ι →₀ μ} :
-    f ∈ finsuppAntidiag (insert a s) n ↔
+    f ∈ finsuppAntidiagonal (insert a s) n ↔
       ∃ m ∈ antidiagonal n, ∃ (g : ι →₀ μ),
-        f = Finsupp.update g a m.1 ∧ g ∈ finsuppAntidiag s m.2 := by
-  simp only [mem_finsuppAntidiag, mem_antidiagonal, Prod.exists, sum_insert h]
+        f = Finsupp.update g a m.1 ∧ g ∈ finsuppAntidiagonal s m.2 := by
+  simp only [mem_finsuppAntidiagonal, mem_antidiagonal, Prod.exists, sum_insert h]
   constructor
   · rintro ⟨rfl, hsupp⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
@@ -88,15 +105,18 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
       intro x hx
       rw [update_of_ne (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
+@[deprecated (since := "2026-09-06")]
+alias mem_finsuppAntidiag_insert := mem_finsuppAntidiagonal_insert
+
 set_option backward.isDefEq.respectTransparency false in
-theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
+theorem finsuppAntidiagonal_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
-    finsuppAntidiag (insert a s) n = (antidiagonal n).biUnion
+    finsuppAntidiagonal (insert a s) n = (antidiagonal n).biUnion
       (fun p : μ × μ =>
-        (finsuppAntidiag s p.snd).attach.map
+        (finsuppAntidiagonal s p.snd).attach.map
         ⟨fun f => Finsupp.update f.val a p.fst,
         (fun ⟨f, hf⟩ ⟨g, hg⟩ hfg => Subtype.ext <| by
-          simp only [mem_finsuppAntidiag] at hf hg
+          simp only [mem_finsuppAntidiagonal] at hf hg
           simp only [DFunLike.ext_iff] at hfg ⊢
           intro x
           obtain rfl | hx := eq_or_ne x a
@@ -105,26 +125,31 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
             rw [notMem_support_iff.mp hf, notMem_support_iff.mp hg]
           · simpa only [coe_update, Function.update, dite_eq_right hx] using hfg x)⟩) := by
   ext f
-  rw [mem_finsuppAntidiag_insert h, mem_biUnion]
+  rw [mem_finsuppAntidiagonal_insert h, mem_biUnion]
   simp_rw [mem_map, mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk, exists_prop, and_comm,
     eq_comm]
 
+@[deprecated (since := "2026-09-06")] alias finsuppAntidiag_insert := finsuppAntidiagonal_insert
+
 @[gcongr]
-theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
-    finsuppAntidiag s n ⊆ finsuppAntidiag t n := by
+theorem finsuppAntidiagonal_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
+    finsuppAntidiagonal s n ⊆ finsuppAntidiagonal t n := by
   intro a
-  simp_rw [mem_finsuppAntidiag']
+  simp_rw [mem_finsuppAntidiagonal']
   rintro ⟨hsum, hmem⟩
   exact ⟨hsum, hmem.trans h⟩
+
+@[deprecated (since := "2026-09-06")] alias finsuppAntidiag_mono := finsuppAntidiagonal_mono
 
 variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
 set_option backward.isDefEq.respectTransparency false in
 -- This should work under the assumption that e is an embedding and an AddHom
-lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
-    (finsuppAntidiag s n).map (mapRange.addEquiv e).toEmbedding ⊆ finsuppAntidiag s (e n) := by
+lemma mapRange_finsuppAntidiagonal_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
+    (finsuppAntidiagonal s n).map (mapRange.addEquiv e).toEmbedding ⊆
+      finsuppAntidiagonal s (e n) := by
   intro f
-  simp only [mem_map, mem_finsuppAntidiag']
+  simp only [mem_map, mem_finsuppAntidiagonal']
   rintro ⟨g, ⟨hsum, hsupp⟩, rfl⟩
   simp only [AddEquiv.toEquiv_eq_coe, mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding,
     mapRange.equiv_apply, EquivLike.coe_coe]
@@ -132,21 +157,28 @@ lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ}
   · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsuppSum]
   · exact subset_trans (support_mapRange) hsupp
 
-lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
-    (finsuppAntidiag s n).map (mapRange.addEquiv e).toEmbedding = finsuppAntidiag s (e n) := by
+@[deprecated (since := "2026-09-06")]
+alias mapRange_finsuppAntidiag_subset := mapRange_finsuppAntidiagonal_subset
+
+lemma mapRange_finsuppAntidiagonal_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
+    (finsuppAntidiagonal s n).map (mapRange.addEquiv e).toEmbedding =
+      finsuppAntidiagonal s (e n) := by
   ext f
   constructor
-  · apply mapRange_finsuppAntidiag_subset
+  · apply mapRange_finsuppAntidiagonal_subset
   · set h := (mapRange.addEquiv e).toEquiv with hh
     intro hf
     have : n = e.symm (e n) := (AddEquiv.eq_symm_apply e).mpr rfl
     rw [mem_map_equiv, this]
-    apply mapRange_finsuppAntidiag_subset
+    apply mapRange_finsuppAntidiagonal_subset
     rw [← mem_map_equiv]
     convert! hf
     rw [map_map, hh]
     convert! map_refl
     apply Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
+
+@[deprecated (since := "2026-09-06")]
+alias mapRange_finsuppAntidiag_eq := mapRange_finsuppAntidiagonal_eq
 
 end AddCommMonoid
 
@@ -154,8 +186,10 @@ section CanonicallyOrderedAddCommMonoid
 variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
-@[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by
-  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), eq_comm]
+@[simp] lemma finsuppAntidiagonal_zero (s : Finset ι) : finsuppAntidiagonal s (0 : μ) = {0} := by
+  ext f; simp [finsuppAntidiagonal, ← DFunLike.coe_fn_eq (g := f), eq_comm]
+
+@[deprecated (since := "2026-09-06")] alias finsuppAntidiag_zero := finsuppAntidiagonal_zero
 
 end CanonicallyOrderedAddCommMonoid
 end Finset

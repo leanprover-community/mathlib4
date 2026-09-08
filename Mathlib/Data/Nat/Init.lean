@@ -351,7 +351,7 @@ def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 
 `P (a + 1) (a + 1)` is true for all `a`, `P 0 (b + 1)` is true for all `b` and for all
 `a < b`, `P (a + 1) b` is true and `P a (b + 1)` is true implies `P (a + 1) (b + 1)` is true. -/
 @[elab_as_elim]
-theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)) (hb : ∀ b, P 0 (b + 1))
+theorem diagonal_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)) (hb : ∀ b, P 0 (b + 1))
     (hd : ∀ a b, a < b → P (a + 1) b → P a (b + 1) → P (a + 1) (b + 1)) : ∀ a b, a < b → P a b
   | 0, _ + 1, _ => hb _
   | a + 1, b + 1, h => by
@@ -359,9 +359,11 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
     · have : a + 1 = b ∨ a + 1 < b := by lia
       rcases this with (rfl | h)
       · exact ha _
-      apply diag_induction P ha hb hd (a + 1) b h
-    apply diag_induction P ha hb hd a (b + 1)
+      apply diagonal_induction P ha hb hd (a + 1) b h
+    apply diagonal_induction P ha hb hd a (b + 1)
     apply Nat.lt_of_le_of_lt (Nat.le_succ _) h
+
+@[deprecated (since := "2026-09-06")] alias diag_induction := diagonal_induction
 
 /-! ### `mod`, `dvd` -/
 

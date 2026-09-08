@@ -86,7 +86,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   -- Porting note: TC search was insufficient to find this instance, even though all required
   -- instances exist. See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WittVector.20saga/near/370073526]
   have : IsPoly p fun {R} [CommRing R] x ↦ select P x + select (fun i ↦ ¬P i) x :=
-    IsPoly₂.diag (hf := IsPoly₂.comp)
+    IsPoly₂.diagonal (hf := IsPoly₂.comp)
   ghost_calc x
   intro n
   simp only [map_add]

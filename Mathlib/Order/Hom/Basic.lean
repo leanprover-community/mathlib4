@@ -41,8 +41,8 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.prod`: combine `α →o β` and `α →o γ` into `α →o β × γ`;
 * `OrderHom.prodₘ`: a more bundled version of `OrderHom.prod`;
 * `OrderHom.prodIso`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
-* `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
-* `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
+* `OrderHom.diagonal`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
+* `OrderHom.onDiagonal`: restrict a monotone map `α →o α →o β` to the diagonal;
 * `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
 * `OrderHom.snd`: projection `Prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `Prod.map f g` as a bundled monotone map;
@@ -401,13 +401,17 @@ def prodₘ : (α →o β) →o (α →o γ) →o α →o β × γ :=
 
 /-- Diagonal embedding of `α` into `α × α` as an `OrderHom`. -/
 @[simps!]
-def diag : α →o α × α :=
+def diagonal : α →o α × α :=
   id.prod id
+
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
 
 /-- Restriction of `f : α →o α →o β` to the diagonal. -/
 @[simps! +simpRhs]
-def onDiag (f : α →o α →o β) : α →o β :=
-  (curry.symm f).comp diag
+def onDiagonal (f : α →o α →o β) : α →o β :=
+  (curry.symm f).comp diagonal
+
+@[deprecated (since := "2026-09-06")] alias onDiag := onDiagonal
 
 /-- `Prod.fst` as an `OrderHom`. -/
 @[simps]

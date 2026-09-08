@@ -128,18 +128,21 @@ def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
   left_inv := by intro x; simp
   right_inv := by intro x; simp
 
-/-- Convert a `Partition n` to a member of `(Finset.Icc 1 n).finsuppAntidiag n`
-(see `Nat.Partition.toFinsuppAntidiag_mem_finsuppAntidiag` for the proof).
-`p.toFinsuppAntidiag i` is defined as `i` times the number of occurrence of `i` in `p`. -/
-def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
+/-- Convert a `Partition n` to a member of `(Finset.Icc 1 n).finsuppAntidiagonal n`
+(see `Nat.Partition.toFinsuppAntidiagonal_mem_finsuppAntidiagonal` for the proof).
+`p.toFinsuppAntidiagonal i` is defined as `i` times the number of occurrence of `i` in `p`. -/
+def toFinsuppAntidiagonal {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
   toFun m := p.parts.count m * m
   support := p.parts.toFinset
   mem_support_toFun m := by
     suffices m ∈ p.parts → m ≠ 0 by simpa
     grind
 
-theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAntidiag (n := n)) := by
-  unfold toFinsuppAntidiag
+@[deprecated (since := "2026-09-06")] alias toFinsuppAntidiag := toFinsuppAntidiagonal
+
+theorem toFinsuppAntidiagonal_injective (n : ℕ) :
+    Function.Injective (toFinsuppAntidiagonal (n := n)) := by
+  unfold toFinsuppAntidiagonal
   intro p q h
   rw [Finsupp.mk.injEq] at h
   obtain ⟨hfinset, hcount⟩ := h
@@ -149,16 +152,23 @@ theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAnt
   · grind [Multiset.count_eq_zero]
   · exact Nat.eq_of_mul_eq_mul_right h0 <| funext_iff.mp hcount m
 
-theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
-    p.toFinsuppAntidiag ∈ (Finset.Icc 1 n).finsuppAntidiag n := by
+@[deprecated (since := "2026-09-06")]
+alias toFinsuppAntidiag_injective := toFinsuppAntidiagonal_injective
+
+theorem toFinsuppAntidiagonal_mem_finsuppAntidiagonal {n : ℕ} (p : Partition n) :
+    p.toFinsuppAntidiagonal ∈ (Finset.Icc 1 n).finsuppAntidiagonal n := by
   have hp : p.parts.toFinset ⊆ Finset.Icc 1 n := by
     grind
-  suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
+  suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by
+    simpa [toFinsuppAntidiagonal, hp]
   convert! ← p.parts_sum
   rw [Finset.sum_multiset_count]
   apply Finset.sum_subset hp
   suffices ∀ (x : ℕ), 1 ≤ x → x ≤ n → x ∉ p.parts → x ∉ p.parts ∨ x = 0 by simpa
   grind
+
+@[deprecated (since := "2026-09-06")]
+alias toFinsuppAntidiag_mem_finsuppAntidiag := toFinsuppAntidiagonal_mem_finsuppAntidiagonal
 
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl

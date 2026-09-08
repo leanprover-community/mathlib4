@@ -486,13 +486,22 @@ abbrev edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
 theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=
   Iff.rfl
 
-theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
+theorem not_isDiagonal_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiagonal :=
   Sym2.ind (fun _ _ => Adj.ne) e
 
-@[simp] lemma not_mem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
-  imp_not_comm.1 G.not_isDiag_of_mem_edgeSet
+@[deprecated (since := "2026-09-06")]
+alias not_isDiag_of_mem_edgeSet := not_isDiagonal_of_mem_edgeSet
 
-alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
+@[simp] lemma not_mem_edgeSet_of_isDiagonal : e.IsDiagonal → e ∉ edgeSet G :=
+  imp_not_comm.1 G.not_isDiagonal_of_mem_edgeSet
+
+@[deprecated (since := "2026-09-06")]
+alias not_mem_edgeSet_of_isDiag := not_mem_edgeSet_of_isDiagonal
+
+alias _root_.Sym2.IsDiagonal.not_mem_edgeSet := not_mem_edgeSet_of_isDiagonal
+
+@[deprecated (since := "2026-09-06")]
+alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiagonal
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
@@ -516,12 +525,15 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
   Sym2.fromRel_bot
 
 @[simp]
-theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
-  Sym2.diagSet_compl_eq_fromRel_ne.symm
+theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagonalSetᶜ :=
+  Sym2.diagonalSet_compl_eq_fromRel_ne.symm
 
 @[simp]
-theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
+theorem edgeSet_subset_compl_diagonalSet : G.edgeSet ⊆ Sym2.diagonalSetᶜ := by
   simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
+
+@[deprecated (since := "2026-09-06")]
+alias edgeSet_subset_compl_diagSet := edgeSet_subset_compl_diagonalSet
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -577,9 +589,12 @@ theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoi
 /-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
 allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
 @[simp]
-theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
-    G.edgeSet \ (s \ Sym2.diagSet) = G.edgeSet \ s := by
-  grind [Sym2.mem_diagSet, not_isDiag_of_mem_edgeSet]
+theorem edgeSet_sdiff_sdiff_isDiagonal (G : SimpleGraph V) (s : Set (Sym2 V)) :
+    G.edgeSet \ (s \ Sym2.diagonalSet) = G.edgeSet \ s := by
+  grind [Sym2.mem_diagonalSet, not_isDiagonal_of_mem_edgeSet]
+
+@[deprecated (since := "2026-09-06")]
+alias edgeSet_sdiff_sdiff_isDiag := edgeSet_sdiff_sdiff_isDiagonal
 
 /-- Two vertices are adjacent iff there is an edge between them. The
 condition `v ≠ w` ensures they are different endpoints of the edge,
@@ -658,7 +673,7 @@ theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w 
 -- Note: we need to make sure `fromEdgeSet_adj` and this lemma are confluent.
 -- In particular, both yield `s(u, v) ∈ (fromEdgeSet s).edgeSet` ==> `s(v, w) ∈ s ∧ v ≠ w`.
 @[simp]
-theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ Sym2.diagSet := by
+theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ Sym2.diagonalSet := by
   ext e
   exact Sym2.ind (by simp) e
 
@@ -668,12 +683,12 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
 
 @[simp] lemma le_fromEdgeSet_iff : G ≤ fromEdgeSet s ↔ G.edgeSet ⊆ s := by
-  simp [← edgeSet_subset_edgeSet, Set.subset_def]; grind [not_isDiag_of_mem_edgeSet]
+  simp [← edgeSet_subset_edgeSet, Set.subset_def]; grind [not_isDiagonal_of_mem_edgeSet]
 
 @[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
-    fromEdgeSet s ≤ G ↔ s \ Sym2.diagSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
+    fromEdgeSet s ≤ G ↔ s \ Sym2.diagonalSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
-lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s Sym2.diagSet where
+lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s Sym2.diagonalSet where
   mp := by rintro rfl; simp +contextual [Set.disjoint_right]
   mpr := by rintro ⟨rfl, hs⟩; simp [hs]
 
@@ -682,7 +697,9 @@ theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
 
-@[simp] lemma fromEdgeSet_not_isDiag : @fromEdgeSet V Sym2.diagSetᶜ = ⊤ := by ext; simp
+@[simp] lemma fromEdgeSet_not_isDiagonal : @fromEdgeSet V Sym2.diagonalSetᶜ = ⊤ := by ext; simp
+
+@[deprecated (since := "2026-09-06")] alias fromEdgeSet_not_isDiag := fromEdgeSet_not_isDiagonal
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
@@ -734,9 +751,9 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
   simp only [le_fromEdgeSet_iff, edgeSet_fromEdgeSet]; grw [h]; exact sdiff_le
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
-  conv_rhs => rw [← Set.sdiff_union_inter s Sym2.diagSet]
+  conv_rhs => rw [← Set.sdiff_union_inter s Sym2.diagonalSet]
   rw [← disjoint_edgeSet, edgeSet_fromEdgeSet]
-  grind [edgeSet_subset_compl_diagSet]
+  grind [edgeSet_subset_compl_diagonalSet]
 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]

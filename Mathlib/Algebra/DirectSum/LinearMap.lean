@@ -47,7 +47,7 @@ lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} 
   · simp [h₂.collectedBasis_repr_of_mem _ (hf _ (Subtype.mem _)), restrict_apply]
   · simp [hij, h₂.collectedBasis_repr_of_mem_ne _ hij.symm (hf _ (Subtype.mem _))]
 
-lemma diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne
+lemma diagonal_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne
     {κ : ι → Type*} [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
     {s : Finset ι} (h : IsInternal fun i : s ↦ N i)
     (b : (i : s) → Basis (κ i) R (N i)) (σ : ι → ι) (hσ : ∀ i, σ i ≠ i)
@@ -61,6 +61,10 @@ lemma diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne
     exact h.collectedBasis_repr_of_mem_ne b hσ <| hf _ <| Subtype.mem (b i k)
   · suffices f (b i k) = 0 by simp [this]
     simpa [hN _ hi] using hf i <| Subtype.mem (b i k)
+
+@[deprecated (since := "2026-09-06")]
+alias diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne :=
+  diagonal_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne
 
 variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
 
@@ -95,7 +99,7 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
   replace h : IsInternal fun i : s ↦ N i := by
     convert! DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
   simp_rw [trace_eq_matrix_trace R (h.collectedBasis b), Matrix.trace,
-    diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
+    diagonal_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
     Pi.zero_apply, Finset.sum_const_zero]
 
 /-- If `f` and `g` are commuting endomorphisms of a finite, free `R`-module `M`, such that `f`

@@ -212,18 +212,18 @@ section
 
 /-- The composite `A ⟶ A ⨯ A ⟶ cokernel (Δ A)`, where the first map is `(𝟙 A, 0)` and the second map
 is the canonical projection into the cokernel. -/
-abbrev r (A : C) : A ⟶ cokernel (diag A) :=
-  prod.lift (𝟙 A) 0 ≫ cokernel.π (diag A)
+abbrev r (A : C) : A ⟶ cokernel (prod.diagonal A) :=
+  prod.lift (𝟙 A) 0 ≫ cokernel.π (prod.diagonal A)
 
-instance mono_Δ {A : C} : Mono (diag A) :=
+instance mono_Δ {A : C} : Mono (prod.diagonal A) :=
   mono_of_mono_fac <| prod.lift_fst _ _
 
 instance mono_r {A : C} : Mono (r A) := by
-  let hl : IsLimit (KernelFork.ofι (diag A) (cokernel.condition (diag A))) :=
+  let hl : IsLimit (KernelFork.ofι (prod.diagonal A) (cokernel.condition (prod.diagonal A))) :=
     monoIsKernelOfCokernel _ (colimit.isColimit _)
   apply NormalEpiCategory.mono_of_cancel_zero
   intro Z x hx
-  have hxx : (x ≫ prod.lift (𝟙 A) (0 : A ⟶ A)) ≫ cokernel.π (diag A) = 0 := by
+  have hxx : (x ≫ prod.lift (𝟙 A) (0 : A ⟶ A)) ≫ cokernel.π (prod.diagonal A) = 0 := by
     rw [Category.assoc, hx]
   obtain ⟨y, hy⟩ := KernelFork.IsLimit.lift' hl _ hxx
   rw [KernelFork.ι_ofι] at hy
@@ -250,7 +250,8 @@ instance epi_r {A : C} : Epi (r A) := by
     epiIsCokernelOfKernel _ hp1
   apply NormalMonoCategory.epi_of_zero_cancel
   intro Z z hz
-  have h : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ cokernel.π (diag A) ≫ z = 0 := by rw [← Category.assoc, hz]
+  have h : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ cokernel.π (prod.diagonal A) ≫ z = 0 := by
+    rw [← Category.assoc, hz]
   obtain ⟨t, ht⟩ := CokernelCofork.IsColimit.desc' hp2 _ h
   rw [CokernelCofork.π_ofπ] at ht
   have htt : t = 0 := by
@@ -258,22 +259,24 @@ instance epi_r {A : C} : Epi (r A) := by
     change 𝟙 A ≫ t = 0
     rw [← Limits.prod.lift_snd (𝟙 A) (𝟙 A), Category.assoc, ht, ← Category.assoc,
       cokernel.condition, zero_comp]
-  apply (cancel_epi (cokernel.π (diag A))).1
+  apply (cancel_epi (cokernel.π (prod.diagonal A))).1
   rw [← ht, htt, comp_zero, comp_zero]
 
 instance isIso_r {A : C} : IsIso (r A) :=
   isIso_of_mono_of_epi _
 
-/-- The composite `A ⨯ A ⟶ cokernel (diag A) ⟶ A` given by the natural projection into the cokernel
-followed by the inverse of `r`. In the category of modules, using the normal kernels and
+/-- The composite `A ⨯ A ⟶ cokernel (prod.diagonal A) ⟶ A` given by the natural projection into the
+cokernel followed by the inverse of `r`. In the category of modules, using the normal kernels and
 cokernels, this map is equal to the map `(a, b) ↦ a - b`, hence the name `σ` for "subtraction". -/
 abbrev σ {A : C} : A ⨯ A ⟶ A :=
-  cokernel.π (diag A) ≫ inv (r A)
+  cokernel.π (prod.diagonal A) ≫ inv (r A)
 
 end
 
 @[reassoc]
-theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
+theorem diagonal_σ {X : C} : prod.diagonal X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
+
+@[deprecated (since := "2026-09-06")] alias diag_σ := diagonal_σ
 
 @[reassoc (attr := simp)]
 theorem lift_σ {X : C} : prod.lift (𝟙 X) 0 ≫ σ = 𝟙 X := by rw [← Category.assoc, IsIso.hom_inv_id]
@@ -283,14 +286,14 @@ theorem lift_map {X Y : C} (f : X ⟶ Y) :
     prod.lift (𝟙 X) 0 ≫ Limits.prod.map f f = f ≫ prod.lift (𝟙 Y) 0 := by simp
 
 /-- σ is a cokernel of Δ X. -/
-def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶ X) diag_σ) :=
+def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶ X) diagonal_σ) :=
   cokernel.cokernelIso _ σ (asIso (r X)).symm (by rw [Iso.symm_hom, asIso_inv])
 
 /-- This is the key identity satisfied by `σ`. -/
 theorem σ_comp {X Y : C} (f : X ⟶ Y) : σ ≫ f = Limits.prod.map f f ≫ σ := by
   obtain ⟨g, hg⟩ :=
     CokernelCofork.IsColimit.desc' isColimitσ (Limits.prod.map f f ≫ σ) (by
-      rw [prod.diag_map_assoc, diag_σ, comp_zero])
+      rw [prod.diagonal_map_assoc, diagonal_σ, comp_zero])
   suffices hfg : f = g by rw [← hg, Cofork.π_ofπ, hfg]
   calc
     f = f ≫ prod.lift (𝟙 Y) 0 ≫ σ := by rw [lift_σ, Category.comp_id]
@@ -338,7 +341,7 @@ theorem sub_zero {X Y : C} (a : X ⟶ Y) : a - 0 = a := by
   rw [← prod.comp_lift, Category.assoc, lift_σ, Category.comp_id]
 
 theorem sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
-  rw [sub_def, ← Category.comp_id a, ← prod.comp_lift, Category.assoc, diag_σ, comp_zero]
+  rw [sub_def, ← Category.comp_id a, ← prod.comp_lift, Category.assoc, diagonal_σ, comp_zero]
 
 theorem lift_sub_lift {X Y : C} (a b c d : X ⟶ Y) :
     prod.lift a b - prod.lift c d = prod.lift (a - c) (b - d) := by

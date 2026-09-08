@@ -172,10 +172,13 @@ namespace Finset
 variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
 
 lemma piFinset_filter_const [DecidableEq ι] [Fintype ι] :
-    {f ∈ Fintype.piFinset fun _ : ι ↦ s | ∃ a ∈ s, const ι a = f} = s.piDiag ι := by aesop
+    {f ∈ Fintype.piFinset fun _ : ι ↦ s | ∃ a ∈ s, const ι a = f} = s.piDiagonal ι := by aesop
 
-lemma piDiag_subset_piFinset [DecidableEq ι] [Fintype ι] :
-    s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]
+lemma piDiagonal_subset_piFinset [DecidableEq ι] [Fintype ι] :
+    s.piDiagonal ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]
+
+@[deprecated (since := "2026-09-06")]
+alias piDiag_subset_piFinset := piDiagonal_subset_piFinset
 
 end Finset
 

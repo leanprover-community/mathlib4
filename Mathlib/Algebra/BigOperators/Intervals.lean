@@ -184,7 +184,7 @@ theorem sum_range_id (n : ℕ) : ∑ i ∈ range n, i = n * (n - 1) / 2 := by
 end GaussSum
 
 @[to_additive]
-lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
+lemma prod_range_diagonal_flip (n : ℕ) (f : ℕ → ℕ → M) :
     (∏ m ∈ range n, ∏ k ∈ range (m + 1), f k (m - k)) =
       ∏ m ∈ range n, ∏ k ∈ range (n - m), f m k := by
   rw [prod_sigma', prod_sigma']
@@ -193,6 +193,9 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
       Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, implies_true,
       Sigma.forall, add_tsub_cancel_of_le, add_tsub_cancel_left]
   exact fun a b han hba ↦ lt_of_le_of_lt hba han
+
+@[to_additive (attr := deprecated (since := "2026-09-06"))]
+alias prod_range_diag_flip := prod_range_diagonal_flip
 
 end Generic
 

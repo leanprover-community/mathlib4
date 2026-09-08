@@ -122,41 +122,55 @@ namespace Sym2
 
 variable [DecidableEq α]
 
-/-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s`. -/
-theorem card_image_diag (s : Finset α) : #(s.diag.image Sym2.mk.uncurry) = #s := by
+/-- The `diagonal` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s`. -/
+theorem card_image_diagonal (s : Finset α) : #(s.diagonal.image Sym2.mk.uncurry) = #s := by
   simp [card_image_of_injOn]
 
-lemma two_mul_card_image_offDiag (s : Finset α) :
-    2 * #(s.offDiag.image Sym2.mk.uncurry) = #s.offDiag := by
+@[deprecated (since := "2026-09-06")] alias card_image_diag := card_image_diagonal
+
+lemma two_mul_card_image_offDiagonal (s : Finset α) :
+    2 * #(s.offDiagonal.image Sym2.mk.uncurry) = #s.offDiagonal := by
   rw [card_eq_sum_card_image (Sym2.mk.uncurry : α × α → _), sum_const_nat (Sym2.ind _), mul_comm]
   -- FIXME: Would be cool for the final `aesop` call not to require this `a ≠ b ∨ b ≠ a` trick.
   have (a b : α) (ha : a ∈ s) (hb : b ∈ s) (hab : a ≠ b ∨ b ≠ a) :
-      {z ∈ s.offDiag | Sym2.mk.uncurry z = s(a, b)} = .cons (a, b) {(b, a)}
+      {z ∈ s.offDiagonal | Sym2.mk.uncurry z = s(a, b)} = .cons (a, b) {(b, a)}
         (by simpa [eq_comm] using hab) := by aesop
   aesop
 
-/-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s.offDiag / 2`.
+@[deprecated (since := "2026-09-06")]
+alias two_mul_card_image_offDiag := two_mul_card_image_offDiagonal
+
+/-- The `offDiagonal` of `s : Finset α` is sent on a finset of `Sym2 α` of
+card `#s.offDiagonal / 2`.
 This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes from exactly two
 pairs: `(x, y)` and `(y, x)`. -/
-theorem card_image_offDiag (s : Finset α) :
-    #(s.offDiag.image Sym2.mk.uncurry) = (#s).choose 2 := by
-  rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
-    Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
+theorem card_image_offDiagonal (s : Finset α) :
+    #(s.offDiagonal.image Sym2.mk.uncurry) = (#s).choose 2 := by
+  rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiagonal_card,
+    Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiagonal s).symm]
 
-theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α :=
-  card_congr diagElemEquiv
+@[deprecated (since := "2026-09-06")] alias card_image_offDiag := card_image_offDiagonal
 
-theorem card_subtype_not_diag [Fintype α] :
-    card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
-  convert! card_image_offDiag (univ : Finset α)
-  rw [← filter_image_mk_not_isDiag, Fintype.card_of_subtype]
+theorem card_subtype_diagonal [Fintype α] : card { a : Sym2 α // a.IsDiagonal } = card α :=
+  card_congr diagonalElemEquiv
+
+@[deprecated (since := "2026-09-06")] alias card_subtype_diag := card_subtype_diagonal
+
+theorem card_subtype_not_diagonal [Fintype α] :
+    card { a : Sym2 α // ¬a.IsDiagonal } = (card α).choose 2 := by
+  convert! card_image_offDiagonal (univ : Finset α)
+  rw [← filter_image_mk_not_isDiagonal, Fintype.card_of_subtype]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 
-lemma card_diagSet_compl [Fintype α] : card (diagSetᶜ : Set (Sym2 α)) = (card α).choose 2 :=
-  card_subtype_not_diag
+@[deprecated (since := "2026-09-06")] alias card_subtype_not_diag := card_subtype_not_diagonal
+
+lemma card_diagonalSet_compl [Fintype α] : card (diagonalSetᶜ : Set (Sym2 α)) = (card α).choose 2 :=
+  card_subtype_not_diagonal
+
+@[deprecated (since := "2026-09-06")] alias card_diagSet_compl := card_diagonalSet_compl
 
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem card {α} [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=

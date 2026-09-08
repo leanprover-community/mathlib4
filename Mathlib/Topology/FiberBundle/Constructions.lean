@@ -111,10 +111,13 @@ instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ 
 
 /-- The diagonal map from the total space of the fiberwise product of two fiber bundles
 `E₁`, `E₂` into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂` is an inducing map. -/
-theorem FiberBundle.Prod.isInducing_diag :
+theorem FiberBundle.Prod.isInducing_diagonal :
     IsInducing (fun p ↦ (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
       TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂) :=
   ⟨rfl⟩
+
+@[deprecated (since := "2026-09-06")]
+alias FiberBundle.Prod.isInducing_diag := FiberBundle.Prod.isInducing_diagonal
 
 end Defs
 
@@ -143,7 +146,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
     fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂))
   let f₂ : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ → (B × F₁) × B × F₂ := fun p ↦ ⟨e₁ p.1, e₂ p.2⟩
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
-  have hf₁ : Continuous f₁ := (Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
+  have hf₁ : Continuous f₁ := (Prod.isInducing_diagonal F₁ E₁ F₂ E₂).continuous
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
     e₁.toOpenPartialHomeomorph.continuousOn.prodMap e₂.toOpenPartialHomeomorph.continuousOn
   have hf₃ : Continuous f₃ := by fun_prop
@@ -182,7 +185,7 @@ theorem Prod.right_inv {x : B × F₁ × F₂}
 
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
-  rw [(Prod.isInducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
+  rw [(Prod.isInducing_diagonal F₁ E₁ F₂ E₂).continuousOn_iff]
   have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) := by fun_prop
   refine (e₁.continuousOn_symm.prodMap e₂.continuousOn_symm).comp H₁.continuousOn ?_
   exact fun x h ↦ ⟨⟨h.1.1, mem_univ _⟩, ⟨h.1.2, mem_univ _⟩⟩
@@ -205,7 +208,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   open_source := by
     convert!
       (e₁.open_source.prod e₂.open_source).preimage
-        (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
+        (FiberBundle.Prod.isInducing_diagonal F₁ E₁ F₂ E₂).continuous
     ext x
     simp only [Trivialization.source_eq, mfld_simps]
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
@@ -230,7 +233,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
 /-- The product of two fiber bundles is a fiber bundle. -/
 @[simps] noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
   totalSpaceMk_isInducing' b := by
-    rw [← (Prod.isInducing_diag F₁ E₁ F₂ E₂).of_comp_iff]
+    rw [← (Prod.isInducing_diagonal F₁ E₁ F₂ E₂).of_comp_iff]
     exact (totalSpaceMk_isInducing F₁ E₁ b).prodMap (totalSpaceMk_isInducing F₂ E₂ b)
   trivializationAtlas' := { e |
     ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))

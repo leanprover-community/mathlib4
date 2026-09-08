@@ -191,7 +191,7 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
   simpa [← algebraMap_pairingIn P ℤ i j] using
     congr_fun₂ (cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j
 
-lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem] :
+lemma exists_cartanMatrix_mul_diagonal_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (b.cartanMatrix * diagonal d).PosDef := by
   have _i : Fintype ι := Fintype.ofFinite ι
   set d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i) with hd
@@ -205,9 +205,9 @@ lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem]
     rw [← LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix _ _ aux]
     simpa using P.posRootForm_rootFormIn_posDef ℤ
 
-lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
+lemma exists_cartanMatrix_diagonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * b.cartanMatrix).PosDef := by
-  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagaonal_posDef
+  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagonal_posDef
   refine ⟨d, hd, ?_⟩
   rw [← PosDef.transpose_iff] at hd'
   aesop
@@ -219,7 +219,7 @@ lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
     have aux : (4 - b.cartanMatrix).toLin' = - (b.cartanMatrix.toLin' - (4 : ℤ) • 1) := by ext; simp
     rwa [ne_eq, ← det_toLin', det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
       ← hasEigenvalue_iff]
-  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagaonal_mul_posDef
+  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
   have aux (i j : b.support) : b.cartanMatrix i j ≤ if i = j then 2 else 0 := by
     rcases eq_or_ne i j with rfl | hij
     · simp
@@ -412,9 +412,9 @@ lemma cartanMatrix_isIndecomposable [P.IsReduced] [P.IsIrreducible] :
 lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
     b.cartanMatrix.IsFiniteCartan where
   diag i := b.cartanMatrix_apply_same i
-  offDiag_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
+  offDiagonal_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
   zero_comm _ _ := b.cartanMatrix_apply_eq_zero_iff_symm
-  exists_posDef := b.exists_cartanMatrix_diagaonal_mul_posDef
+  exists_posDef := b.exists_cartanMatrix_diagonal_mul_posDef
 
 end IsCrystallographic
 

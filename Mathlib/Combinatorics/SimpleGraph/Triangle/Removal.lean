@@ -110,7 +110,7 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
     2 * (#G.edgeFinset - #(G.regularityReduced P (ε / 8) (ε / 4)).edgeFinset : ℝ)
       < 2 * ε * (card α ^ 2 : ℕ) := by
   let A := (P.nonUniforms G (ε / 8)).biUnion fun (U, V) ↦ U ×ˢ V
-  let B := P.parts.biUnion offDiag
+  let B := P.parts.biUnion offDiagonal
   let C := (P.sparsePairs G (ε / 4)).biUnion fun (U, V) ↦ G.interedges U V
   calc
     _ = (#((univ ×ˢ univ).filter fun (x, y) ↦
@@ -127,7 +127,7 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
       gcongr; exact hP.sum_nonUniforms_lt univ_nonempty (by positivity) hPε
     _ ≤ _ + ε / 2 * card α ^ 2 + 4 * (ε / 4) * card α ^ 2 := by
       gcongr
-      · exact hP.card_biUnion_offDiag_le hε hP'
+      · exact hP.card_biUnion_offDiagonal_le hε hP'
       · exact hP.card_interedges_sparsePairs_le (G := G) (ε := ε / 4) (by positivity)
     _ = 2 * ε * (card α ^ 2 : ℕ) := by norm_cast; ring
 

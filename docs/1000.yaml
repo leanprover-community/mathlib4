@@ -627,7 +627,7 @@ Q617417:
 
 Q619985:
   title: Multinomial theorem
-  decl: Finset.sum_pow_eq_sum_piAntidiag_of_commute
+  decl: Finset.sum_pow_eq_sum_piAntidiagonal_of_commute
   # TODO: is Finset.sum_pow_of_commute better?
 
 Q620602:

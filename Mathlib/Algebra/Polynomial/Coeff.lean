@@ -112,7 +112,7 @@ theorem coeff_mul (p q : R[X]) (n : ℕ) :
     coeff (p * q) n = ∑ x ∈ antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp_rw [← ofFinsupp_mul, coeff]
-  exact AddMonoidAlgebra.coeff_mul_antidiag p q n _ Finset.mem_antidiagonal
+  exact AddMonoidAlgebra.coeff_mul_antidiagonal p q n _ Finset.mem_antidiagonal
 
 @[simp]
 theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]

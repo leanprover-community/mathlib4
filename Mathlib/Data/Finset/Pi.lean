@@ -145,12 +145,19 @@ variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
 
 /-- The diagonal of a finset `s : Finset α` as a finset of functions `ι → α`, namely the set of
 constant functions valued in `s`. -/
-def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι → α) := s.image (const ι)
+def piDiagonal (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι → α) :=
+  s.image (const ι)
 
-@[simp] lemma mem_piDiag : f ∈ s.piDiag ι ↔ ∃ a ∈ s, const ι a = f := mem_image
+@[deprecated (since := "2026-09-06")] alias piDiag := piDiagonal
 
-@[simp] lemma card_piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
-    (s.piDiag ι).card = s.card := by rw [piDiag, card_image_of_injective _ const_injective]
+@[simp] lemma mem_piDiagonal : f ∈ s.piDiagonal ι ↔ ∃ a ∈ s, const ι a = f := mem_image
+
+@[deprecated (since := "2026-09-06")] alias mem_piDiag := mem_piDiagonal
+
+@[simp] lemma card_piDiagonal (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
+    (s.piDiagonal ι).card = s.card := by rw [piDiagonal, card_image_of_injective _ const_injective]
+
+@[deprecated (since := "2026-09-06")] alias card_piDiag := card_piDiagonal
 
 /-! ### Restriction -/
 

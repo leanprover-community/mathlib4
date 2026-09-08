@@ -47,31 +47,39 @@ end Sym
 namespace Sym2
 
 instance [Infinite α] : Infinite (Sym2 α) :=
-  .of_injective Sym2.diag <| Sym2.diag_injective
+  .of_injective Sym2.diagonal <| Sym2.diagonal_injective
 
-instance [Infinite α] : Infinite {a : Sym2 α // a.IsDiag} :=
-  .of_injective (fun a : α => ⟨.diag a, rfl⟩) fun _ _ h => Sym2.diag_injective congr($h)
+instance [Infinite α] : Infinite {a : Sym2 α // a.IsDiagonal} :=
+  .of_injective (fun a : α => ⟨.diagonal a, rfl⟩) fun _ _ h => Sym2.diagonal_injective congr($h)
 
-instance [Infinite α] : Infinite {a : Sym2 α // ¬a.IsDiag} :=
+instance [Infinite α] : Infinite {a : Sym2 α // ¬a.IsDiagonal} :=
   let e := Infinite.natEmbedding α
   .of_injective (fun n => ⟨s(e 0, e (n + 1)), by simp⟩) fun _ _ => by simp
 
-theorem natCard_subtype_diag : Nat.card { a : Sym2 α // a.IsDiag } = Nat.card α :=
-  Nat.card_congr diagElemEquiv
+theorem natCard_subtype_diagonal : Nat.card { a : Sym2 α // a.IsDiagonal } = Nat.card α :=
+  Nat.card_congr diagonalElemEquiv
 
-theorem natCard_subtype_not_diag :
-    Nat.card { a : Sym2 α // ¬a.IsDiag } = (Nat.card α).choose 2 := by
+@[deprecated (since := "2026-09-06")] alias natCard_subtype_diag := natCard_subtype_diagonal
+
+theorem natCard_subtype_not_diagonal :
+    Nat.card { a : Sym2 α // ¬a.IsDiagonal } = (Nat.card α).choose 2 := by
   cases finite_or_infinite α
   · obtain ⟨_⟩ := nonempty_fintype α; let := Classical.decEq α
     simp_rw [Nat.card_eq_fintype_card]
-    exact card_subtype_not_diag
+    exact card_subtype_not_diagonal
   · simp
 
-lemma ncard_diagSet : (diagSet : Set (Sym2 α)).ncard = Nat.card α :=
-  natCard_subtype_diag _
+@[deprecated (since := "2026-09-06")] alias natCard_subtype_not_diag := natCard_subtype_not_diagonal
 
-lemma ncard_diagSet_compl : (diagSetᶜ : Set (Sym2 α)).ncard = (Nat.card α).choose 2 :=
-  natCard_subtype_not_diag _
+lemma ncard_diagonalSet : (diagonalSet : Set (Sym2 α)).ncard = Nat.card α :=
+  natCard_subtype_diagonal _
+
+@[deprecated (since := "2026-09-06")] alias ncard_diagSet := ncard_diagonalSet
+
+lemma ncard_diagonalSet_compl : (diagonalSetᶜ : Set (Sym2 α)).ncard = (Nat.card α).choose 2 :=
+  natCard_subtype_not_diagonal _
+
+@[deprecated (since := "2026-09-06")] alias ncard_diagSet_compl := ncard_diagonalSet_compl
 
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem natCard : Nat.card (Sym2 α) = Nat.choose (Nat.card α + 1) 2 := by

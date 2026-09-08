@@ -83,27 +83,36 @@ theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fu
   subsingleton
 
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
-The converse of `isSubterminal_of_isIso_diag`.
+The converse of `isSubterminal_of_isIso_diagonal`.
 -/
-theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] : IsIso (diag A) :=
+theorem IsSubterminal.isIso_diagonal (hA : IsSubterminal A) [HasBinaryProduct A A] :
+    IsIso (prod.diagonal A) :=
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
         rw [IsSubterminal.def] at hA
         cat_disch⟩⟩⟩
 
+@[deprecated (since := "2026-09-06")] alias IsSubterminal.isIso_diag := IsSubterminal.isIso_diagonal
+
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
-The converse of `isSubterminal.isIso_diag`.
+The converse of `isSubterminal.isIso_diagonal`.
 -/
-theorem isSubterminal_of_isIso_diag [HasBinaryProduct A A] [IsIso (diag A)] : IsSubterminal A :=
+theorem isSubterminal_of_isIso_diagonal [HasBinaryProduct A A] [IsIso (prod.diagonal A)] :
+    IsSubterminal A :=
   fun Z f g => by
-  have : (Limits.prod.fst : A ⨯ A ⟶ _) = Limits.prod.snd := by simp [← cancel_epi (diag A)]
+  have : (Limits.prod.fst : A ⨯ A ⟶ _) = Limits.prod.snd := by simp [← cancel_epi (prod.diagonal A)]
   rw [← prod.lift_fst f g, this, prod.lift_snd]
+
+@[deprecated (since := "2026-09-06")]
+alias isSubterminal_of_isIso_diag := isSubterminal_of_isIso_diagonal
 
 /-- If `A` is subterminal, it is isomorphic to `A ⨯ A`. -/
 @[simps!]
-def IsSubterminal.isoDiag (hA : IsSubterminal A) [HasBinaryProduct A A] : A ⨯ A ≅ A := by
-  letI := IsSubterminal.isIso_diag hA
-  apply (asIso (diag A)).symm
+def IsSubterminal.isoDiagonal (hA : IsSubterminal A) [HasBinaryProduct A A] : A ⨯ A ≅ A := by
+  letI := IsSubterminal.isIso_diagonal hA
+  apply (asIso (prod.diagonal A)).symm
+
+@[deprecated (since := "2026-09-06")] alias IsSubterminal.isoDiag := IsSubterminal.isoDiagonal
 
 variable (C)
 

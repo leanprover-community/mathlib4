@@ -100,7 +100,7 @@ def σ {n} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
 lemma σ_def {n} (i : Fin (n + 1)) : X.σ i = X.map (SimplexCategory.σ i).op := rfl
 
 /-- The diagonal of a simplex is the long edge of the simplex. -/
-def diagonal {n : ℕ} : X _⦋n⦌ ⟶ X _⦋1⦌ := X.map ((SimplexCategory.diag n).op)
+def diagonal {n : ℕ} : X _⦋n⦌ ⟶ X _⦋1⦌ := X.map ((SimplexCategory.diagonal n).op)
 
 /-- Isomorphisms from identities in ℕ. -/
 def eqToIso {n m : ℕ} (h : n = m) : X _⦋n⦌ ≅ X _⦋m⦌ :=

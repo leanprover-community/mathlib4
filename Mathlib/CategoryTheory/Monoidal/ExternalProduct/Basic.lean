@@ -60,15 +60,19 @@ set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When both diagrams have the same source category, composing the external product with
 the diagonal gives the pointwise functor tensor product.
-Note that `(externalProductCompDiagIso _ _).app (F₁, F₂) : Functor.diag J₁ ⋙ F₁ ⊠ F₂ ≅ F₁ ⊗ F₂`
+Note that
+`(externalProductCompDiagonalIso _ _).app (F₁, F₂) : Functor.diagonal J₁ ⋙ F₁ ⊠ F₂ ≅ F₁ ⊗ F₂`
 type checks. -/
 @[simps!]
-def externalProductCompDiagIso :
-    externalProductBifunctor J₁ J₁ C ⋙ (whiskeringLeft _ _ _ |>.obj <| Functor.diag J₁) ≅
+def externalProductCompDiagonalIso :
+    externalProductBifunctor J₁ J₁ C ⋙ (whiskeringLeft _ _ _ |>.obj <| Functor.diagonal J₁) ≅
     tensor (J₁ ⥤ C) :=
   NatIso.ofComponents
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [tensorHom_def]))
     (fun _ ↦ by ext; simp [tensorHom_def])
+
+@[deprecated (since := "2026-09-06")]
+alias externalProductCompDiagIso := externalProductCompDiagonalIso
 
 set_option backward.defeqAttrib.useBackward true in
 /-- When `C` is braided, there is an isomorphism `Prod.swap _ _ ⋙ F₁ ⊠ F₂ ≅ F₂ ⊠ F₁`, natural
