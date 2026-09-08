@@ -470,7 +470,7 @@ theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) 
 def codRestrict (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
     A →⋆ₙₐ[R] S where
   toNonUnitalAlgHom := NonUnitalAlgHom.codRestrict f.toNonUnitalAlgHom S.toNonUnitalSubalgebra hf
-  map_star' := fun a => Subtype.ext <| by exact map_star f a
+  map_star' := fun a => Subtype.ext <| map_star f a
 
 @[simp]
 theorem subtype_comp_codRestrict
