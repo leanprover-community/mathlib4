@@ -28,7 +28,7 @@ namespace Subgroup
 
 @[to_additive]
 instance (S : Subgroup G) : IsTopologicalGroup S :=
-  IsInducing.subtypeVal.topologicalGroup S.subtype
+  IsInducing.subtypeVal.isTopologicalGroup S.subtype
 
 end Subgroup
 
