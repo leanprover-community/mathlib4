@@ -76,7 +76,7 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
 @[simp] lemma toIdeal_map : (I.map f).toIdeal = I.toIdeal.map f := rfl
 
 instance isPrime_comap [J.toIdeal.IsPrime] : (J.comap f).toIdeal.IsPrime :=
-  inferInstanceAs (J.toIdeal.comap f).IsPrime -- this shows that the simpNF already has the instance
+  inferInstanceAs (J.toIdeal.comap f.toRingHom).IsPrime -- this shows that the simpNF already has the instance
 
 @[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I := ext <| Ideal.map_id _
 
