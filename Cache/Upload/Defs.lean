@@ -14,8 +14,8 @@ import Cache.Upload.S3
 The backend-neutral layer over the backend modules:
 
 * the backend selection (`UploadBackend`). The backends implement the upload
-  — credentials, destination, transfer tool, and the transfer itself — in
-  `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`;
+  in `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`: credentials,
+  destination, transfer tool, and the transfer;
 * the one destination resolution every upload addresses
   (`stagedUploadDest`): the flat `MATHLIB_CACHE_PUT_URL` override, or the
   selected backend's own destination. The destination contract itself
@@ -33,9 +33,9 @@ namespace Cache.Requests
 open System (FilePath)
 
 /-- The storage backend an upload targets, selected with `--backend=NAME`.
-Each backend implements the complete upload — credential resolution,
-destination, transfer tool, and the transfer itself — in its own module;
-`runPut` dispatches on this type. -/
+Each backend implements the complete upload in its own module: credential
+resolution, destination, transfer tool, and the transfer. `runPut` dispatches
+on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`); the default. -/
   | azure
@@ -68,12 +68,12 @@ end UploadBackend
 Pure core of `stagedUploadDest`: resolve where a staged set uploads.
 
 `MATHLIB_CACHE_PUT_URL` (`putUrl?`) wins on every backend: a flat endpoint
-with the container policy off; the selected backend still signs the requests.
+with the container policy off, while the selected backend signs the requests.
 Any set value counts here, an empty one included: a misconfigured endpoint
 fails the upload and does not divert it to the backend's destination. The
 read variables take the opposite rule, where an empty value means unset.
 
-Without it, the backend resolves its own destination — `azureUploadDestFrom`
+Without it, the backend resolves its own destination: `azureUploadDestFrom`
 (the Azure account) or `s3UploadDestFrom` (the bucket endpoint
 `MATHLIB_CACHE_PUT_BASE_URL` names; `putBase?`, empty means unset).
 -/
@@ -96,8 +96,8 @@ def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option St
 `stagedUploadDestFrom`, resolved from the environment. The one destination
 resolution every upload consumes: the artifact puts and the marker put, on
 every tool, address `{base}/{prefix}/{name}`. The warning covers the azure
-backend's `legacy` fallback; the s3 backend never falls back — without a
-destination it errors.
+backend's `legacy` fallback; the s3 backend has no fallback and errors
+without a destination.
 -/
 def stagedUploadDest (backend : UploadBackend) (container? : Option Container)
     (repo : String) : IO StagedUploadDest := do

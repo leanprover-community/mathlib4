@@ -11,9 +11,9 @@ import Cache.Upload.Dest
 
 The built-in transfer tool: parallel curl PUTs against the resolved
 destination (`StagedUploadDest`). The tool holds only transfer mechanics and
-knows no backend: the caller supplies the per-request signing arguments, and
-the backend modules (`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`) call
-the tool's entry point, `putStagedViaCurl`, with their own.
+knows no backend: each backend module (`Cache/Upload/Azure.lean`,
+`Cache/Upload/S3.lean`) calls the tool's entry point, `putStagedViaCurl`,
+with its own per-request signing arguments.
 -/
 
 namespace Cache.Requests

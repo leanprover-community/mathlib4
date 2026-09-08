@@ -30,8 +30,8 @@ open System (FilePath)
 /--
 The upload destination for the s3 backend: the container write rebased under
 the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
-`MATHLIB_CACHE_BASE_URL` rebases reads. The backend has no default endpoint —
-a bucket URL is account-specific — so an unset base errors; a base without
+`MATHLIB_CACHE_BASE_URL` rebases reads. A bucket URL is account-specific, so
+the backend has no default endpoint and an unset base errors. A base without
 `--container` errors, since a base rebases a container write.
 -/
 def s3UploadDestFrom (putBase? : Option String) (container? : Option Container)

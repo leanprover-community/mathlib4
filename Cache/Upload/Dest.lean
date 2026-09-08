@@ -21,8 +21,8 @@ the reads use, so every upload path follows the read-side path contract.
 namespace Cache.Requests
 
 /--
-The resolved destination of a staged (`put`) upload. `base` is the resolved
-upload base; the prefixes are relative to it and carry no trailing slash.
+The resolved destination of a staged (`put`) upload. `base` is the upload
+base; the prefixes are relative to it and carry no trailing slash.
 Every staged file goes under `filesPrefix` and keeps its base name; the
 per-SHA marker goes under `markerPrefix` with the SHA as its name (`fileURL`,
 `markerURL`). `label` names the destination in progress and warning messages:

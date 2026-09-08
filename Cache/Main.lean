@@ -96,8 +96,8 @@ Options:
                      Cache/README.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
-* Commands ending with '!' don't skip any files: use them manually when a
-  hot-fix needs to force re-downloading, re-packing, or overwriting
+* Commands that end with '!' do not skip files: use them manually when a
+  hot-fix must force a re-download, a re-pack, or an overwrite
 
 # The arguments for 'get', 'get!', 'get-' and 'lookup'
 
@@ -153,8 +153,8 @@ Upload destination for 'put':
 * MATHLIB_CACHE_PUT_BASE_URL
                           The s3 backend's bucket endpoint
                           (https://host/bucket). The --container write is
-                          rebased under it ({base}/{container}/{key}),
-                          keeping the container path policy. Required for
+                          rebased under it ({base}/{container}/{key}) and
+                          keeps the container path policy. Required for
                           --backend=s3 unless MATHLIB_CACHE_PUT_URL is set.
                           The azure backend writes to the Azure storage
                           account and rejects a set value.

@@ -7,9 +7,9 @@ Authors: Marcelo Lynch
 /-!
 # Cache CLI option parsing
 
-Pure helpers for the cache binary's option parsing. They live here rather than
-in `Cache.Main` so the test binary can import them directly — `Cache.Main`'s
-top-level `main` would otherwise collide with the test entrypoint.
+Pure helpers for the cache binary's option parsing. They live apart from
+`Cache.Main` so the test binary can import them directly: `Cache.Main` holds
+a top-level `main`, which collides with the test entrypoint.
 
 The cache binary partitions its arguments into named options (`--name=value`),
 boolean flags (`--name`), and positional arguments before dispatch. These
@@ -40,8 +40,8 @@ def parseFlagOpt (opt : String) (args : List String) : Bool :=
   args.elem s!"--{opt}"
 
 /-- Check whether `opt` (e.g. `"--repo=foo"` or `"--help"`) is a recognized
-option. Used to error out on unknown `--`-prefixed tokens so typos like
-`--scoop=` don't get silently ignored. -/
+option. The caller rejects unknown `--`-prefixed tokens with an error, so a
+typo like `--scoop=` does not pass silently. -/
 def isKnownOpt (opt : String) : Bool :=
   knownNamedOpts.any (opt.startsWith s!"--{·}=") ||
   knownFlagOpts.any (opt == s!"--{·}")

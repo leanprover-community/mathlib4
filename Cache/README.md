@@ -58,8 +58,8 @@ credential in the environment; see the environment variables in
 
 The upload commands (`put`, `put!`, `put-staged`), their backends, and their
 credential and destination variables are internal to mathlib CI: they follow
-the CI storage layout and can change with it. An external cache does not
-build on them — see
+the CI storage layout and can change with it. An external cache should not
+build on them; see
 [Operating an external cache](#operating-an-external-cache).
 
 #### Backends and transfer tools
@@ -94,11 +94,10 @@ option inherits from the environment, so an operator can set
 
 #### Operating an external cache
 
-An external cache builds on three stable parts: `stage` produces the
+An external cache should build on three stable parts: `stage` produces the
 artifact set, any storage client pushes it, and readers point
 `MATHLIB_CACHE_GET_URL` at one flat location. The upload commands and their
-backends, credentials, and destination variables are internal to mathlib CI
-and are not part of this interface.
+variables are not part of this interface.
 
 The path contract for a `MATHLIB_CACHE_GET_URL` endpoint: readers request
 `{endpoint}/f/{hash}.ltar` — the flat `f/` namespace — so the staged files

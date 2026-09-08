@@ -15,10 +15,10 @@ is the backend: the shared arbitration resolves the destination
 transfer tool and runs the transfer (`azurePutStaged` in
 `Cache/Upload/Azure.lean`, `s3PutStaged` in `Cache/Upload/S3.lean`).
 
-The whole upload path — the commands, the backends, and their credential and
-destination variables — is internal to mathlib CI and follows the CI storage
-layout. An external cache does not build on it: its operator publishes a
-`stage`d artifact set with any storage client and serves readers through
+The whole upload path is internal to mathlib CI: the commands, the backends,
+and their credential and destination variables follow the CI storage layout.
+An external cache should not build on it: its operator publishes a staged
+artifact set (`stage`) with any storage client and serves readers through
 `MATHLIB_CACHE_GET_URL`, one flat location (see `Cache/README.md`).
 -/
 
