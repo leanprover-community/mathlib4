@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.Separable
+import Mathlib.Instances.IsReduced.Polynomial
 public import Mathlib.RingTheory.AdjoinRoot.Basic
 import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -22,12 +23,6 @@ open _root_.Polynomial Ideal
 variable {r n : ℕ} {R : Type*}
 
 namespace IsRadical
-
-lemma X_pow_zero_sub_one_of_zero_eq_one [Ring R] (h : (0 : R) = 1) :
-    _root_.IsRadical ((X : R[X]) ^ 0 - 1) := by
-  have := subsingleton_of_zero_eq_one h
-  intro _ y _
-  exact ⟨0, Subsingleton.elim _ _⟩
 
 /-- Over a field, `X ^ r - 1` is a radical element as soon as `(r : K)` is a unit.
     TODO: Find space and correct generalization. -/
@@ -65,7 +60,7 @@ lemma _root_.Polynomial.Monic.dvd_of_forall_prime_map_dvd (hf : f.Monic) (h : �
 lemma X_pow_sub_one_of_isUnit (r : ℕ) (hru : IsUnit (r : R)) :
     _root_.IsRadical ((X : R[X]) ^ r - 1) := by
   rcases eq_or_ne r 0 with rfl | hr0
-  · exact X_pow_zero_sub_one_of_zero_eq_one (isUnit_zero_iff.mp (by simpa using hru))
+  · simp [zero_of_reduced]
   · intro k y hy
     apply (monic_X_pow_sub_one hr0).dvd_of_forall_prime_map_dvd
     intro ⟨p, hp⟩
@@ -84,7 +79,7 @@ lemma span_X_pow_sub_one_of_regular (h : IsRegular (r : R)) :
     (span {(X : R[X]) ^ r - 1}).IsRadical := by
   rw [← isRadical_iff_span_singleton]
   rcases eq_or_ne r 0 with rfl | hr0
-  · exact X_pow_zero_sub_one_of_zero_eq_one (h.left (by simp)).symm
+  · simp [zero_of_reduced]
   · set S := (Localization.Away (r : R))
     intro k y hy
     refine (map_dvd_map (algebraMap R S) ?_ ?_).mp ?_
