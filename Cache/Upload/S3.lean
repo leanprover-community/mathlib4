@@ -12,7 +12,7 @@ backend is Cloudflare R2. This module holds:
 
 * the credential set (`S3Credentials`);
 * the SigV4 curl arguments (`s3CurlArgs`);
-* the backend configuration for the rclone engine (`rcloneEnv`);
+* the backend configuration for the rclone tool (`rcloneEnv`);
 * the endpoint and bucket addressing rclone needs (`s3EndpointSplit`).
 -/
 
@@ -47,7 +47,7 @@ def s3CurlArgs (creds : S3Credentials) : Array String :=
 Split an S3 upload base into the endpoint origin and the bucket path:
 `https://host/bucket[/prefix]` becomes `(https://host, bucket[/prefix])`.
 rclone addresses a destination as `:s3:{bucket}/{key}` against an endpoint,
-so a base without a bucket path cannot take the rclone engine.
+so a base without a bucket path cannot take the rclone tool.
 -/
 def s3EndpointSplit (base : String) : Except String (String × String) :=
   match base.splitOn "://" with
@@ -56,7 +56,7 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
     | host :: parts =>
       if host.isEmpty || parts.isEmpty || parts.any (·.isEmpty) then
         .error s!"the upload base '{base}' does not name a bucket \
-          (the rclone engine needs https://endpoint/bucket)"
+          (the rclone tool needs https://endpoint/bucket)"
       else
         .ok (s!"{scheme}://{host}", "/".intercalate parts)
     | [] => .error s!"the upload base '{base}' is not a URL"
@@ -66,11 +66,11 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
 The rclone S3 backend configuration. It travels in the child environment, so
 no credential reaches a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
 temporary credential and cleared otherwise, so a stale token in the caller's
-environment is not inherited. Region `auto` matches the curl engine's SigV4
+environment is not inherited. Region `auto` matches the curl tool's SigV4
 region. rclone refuses to run without a provider, so `provider` must carry
 one; `putStagedViaRclone` keeps the caller's `RCLONE_S3_PROVIDER` and
 defaults to the generic `Other`. Every other `RCLONE_S3_*` option inherits
-from the caller, so an operator can tune transfers without a tool change.
+from the caller, so an operator can tune transfers without a code change.
 -/
 def rcloneEnv (creds : S3Credentials) (endpoint provider : String) :
     Array (String × Option String) :=

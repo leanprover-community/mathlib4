@@ -953,7 +953,7 @@ def test_isKnownOpt : IO Unit := do
   assertTrue "--container=master is known"   (isKnownOpt "--container=master")
   assertTrue "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
   assertTrue "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
-  assertTrue "--uploader=rclone is known"    (isKnownOpt "--uploader=rclone")
+  assertTrue "--backend=s3 is known"         (isKnownOpt "--backend=s3")
 
   -- Empty value passes recognition (parseNamedOpt returns the empty string
   -- for these — callers decide whether to treat that as an error).
@@ -1263,35 +1263,49 @@ end TransferClassification
 
 section UploadDestination
 
-/-- `uploadAuthFrom` picks the upload credential mechanism: the S3 pair (with
-its optional session token) first, then the Azure bearer token. A half-set S3
-pair errors instead of falling through, so a misconfigured job cannot
-silently upload to a different backend than the one its credentials name; a
-lone MATHLIB_CACHE_SAS errors with the accepted mechanisms named. -/
+/-- `UploadBackend.parse?` accepts the known backend names, case-insensitively. -/
+def test_uploadBackendParse : IO Unit := do
+  IO.println "UploadBackend.parse?:"
+  assertTrue "azure parses" (UploadBackend.parse? "azure" == some .azure)
+  assertTrue "s3 parses, case-insensitively" (UploadBackend.parse? "S3" == some .s3)
+  assertTrue "an unknown name is rejected" ((UploadBackend.parse? "gcs").isNone)
+
+/-- `uploadAuthFrom` resolves the selected backend's credentials and ignores
+the other backend's variables: azure (the default) reads the bearer token, s3
+reads the credential pair with its optional session token. A half-set S3 pair
+errors, and a lone MATHLIB_CACHE_SAS errors as retired on the azure
+backend. -/
 def test_uploadAuthFrom : IO Unit := do
   IO.println "uploadAuthFrom:"
-  assertTrue "S3 pair with a session token"
-    (uploadAuthFrom (some "AK") (some "SK") (some "ST") none none
+  assertTrue "s3: pair with a session token"
+    (uploadAuthFrom .s3 (some "AK") (some "SK") (some "ST") none none
       matches .ok (.s3 ⟨"AK", "SK", some "ST"⟩))
-  assertTrue "S3 pair without a session token"
-    (uploadAuthFrom (some "AK") (some "SK") none none none
+  assertTrue "s3: pair without a session token"
+    (uploadAuthFrom .s3 (some "AK") (some "SK") none none none
       matches .ok (.s3 ⟨"AK", "SK", none⟩))
-  assertTrue "S3 wins over the bearer token"
-    (uploadAuthFrom (some "AK") (some "SK") none (some "bear") (some "sas")
+  assertTrue "s3: a set bearer token is ignored"
+    (uploadAuthFrom .s3 (some "AK") (some "SK") none (some "bear") (some "sas")
       matches .ok (.s3 ..))
-  assertTrue "key id without a secret errors"
-    (uploadAuthFrom (some "AK") none none (some "bear") none matches .error _)
-  assertTrue "secret without a key id errors"
-    (uploadAuthFrom none (some "SK") none (some "bear") none matches .error _)
-  assertTrue "bearer wins over a lingering SAS token"
-    (uploadAuthFrom none none none (some "bear") (some "sas")
+  assertTrue "s3: key id without a secret errors"
+    (uploadAuthFrom .s3 (some "AK") none none (some "bear") none matches .error _)
+  assertTrue "s3: secret without a key id errors"
+    (uploadAuthFrom .s3 none (some "SK") none (some "bear") none matches .error _)
+  assertTrue "s3: no pair errors, whatever else is set"
+    (uploadAuthFrom .s3 none none (some "ST") (some "bear") (some "sas")
+      matches .error _)
+  assertTrue "azure: bearer token"
+    (uploadAuthFrom .azure none none none (some "bear") (some "sas")
       matches .ok (.azureBearer "bear"))
-  assertTrue "SAS alone errors as retired"
-    (match uploadAuthFrom none none none none (some "sas") with
+  assertTrue "azure: a set S3 pair is ignored"
+    (uploadAuthFrom .azure (some "AK") (some "SK") (some "ST") (some "bear") none
+      matches .ok (.azureBearer "bear"))
+  assertTrue "azure: SAS alone errors as retired"
+    (match uploadAuthFrom .azure none none none none (some "sas") with
       | .error e => e.startsWith "MATHLIB_CACHE_SAS is retired"
       | .ok _ => false)
-  assertTrue "a stray session token alone selects nothing"
-    (uploadAuthFrom none none (some "ST") none none matches .error _)
+  assertTrue "azure: no bearer errors, whatever S3 variables are set"
+    (uploadAuthFrom .azure (some "AK") (some "SK") (some "ST") none none
+      matches .error _)
 
 /-- `isValidScope` gates every scope before it reaches a URL path or a file
 name (the fork namespace, the marker path, and the marker's local temp file):
@@ -1324,7 +1338,7 @@ def test_isValidScope : IO Unit := do
     scopeOverride.set saved
 
 /-- `fileDirPath` is the one path policy behind `mkFileURL` and every
-upload engine: bare `f` for a flat container, repo-namespaced otherwise, with
+upload tool: bare `f` for a flat container, repo-namespaced otherwise, with
 the per-SHA scope appended when given, and the repo lowercased. -/
 def test_fileDirPath : IO Unit := do
   IO.println "fileDirPath:"
@@ -1463,29 +1477,23 @@ def test_uploadAuthArgs : IO Unit := do
     (s3Static.all (!·.startsWith "x-amz-security-token"))
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
 
-/-- The transfer-engine policy (`--uploader`): curl by default, rclone
-required when named. rclone signs S3 requests only, so non-S3 credentials
-never select it, and a selected rclone engine carries the credentials it
-signs with. -/
-def test_uploadEngineFrom : IO Unit := do
-  IO.println "uploadEngineFrom:"
-  let s3 : UploadAuth := .s3 ⟨"AK", "SK", some "ST"⟩
-  let bearer : UploadAuth := .azureBearer "tok"
-  assertTrue "unset selects curl"
-    ((uploadEngineFrom none s3 true).toOption == some .curl)
-  assertTrue "curl selects curl"
-    ((uploadEngineFrom (some "curl") s3 true).toOption == some .curl)
-  assertTrue "rclone selects rclone when available and S3, carrying the credentials"
-    ((uploadEngineFrom (some "rclone") s3 true).toOption ==
-      some (.rclone ⟨"AK", "SK", some "ST"⟩))
-  assertTrue "rclone without the binary errors"
-    (uploadEngineFrom (some "rclone") s3 false matches .error _)
-  assertTrue "rclone without S3 credentials errors"
-    (uploadEngineFrom (some "rclone") bearer true matches .error _)
-  assertTrue "an unknown value errors"
-    (uploadEngineFrom (some "wget") s3 true matches .error _)
+/-- The transfer-tool policy for the s3 backend: rclone when available and
+carrying the credentials it signs with, curl otherwise, and
+MATHLIB_CACHE_PUT_FORCE_CURL selects curl whether rclone is available or
+not. The azure backend has no policy to test: `resolveUploadTool` always
+returns curl for it. -/
+def test_s3UploadToolFrom : IO Unit := do
+  IO.println "s3UploadToolFrom:"
+  let creds : S3Credentials := ⟨"AK", "SK", some "ST"⟩
+  assertTrue "rclone when available, carrying the credentials"
+    (s3UploadToolFrom creds (forceCurl := false) (rcloneAvailable := true) ==
+      .rclone ⟨"AK", "SK", some "ST"⟩)
+  assertTrue "curl without rclone"
+    (s3UploadToolFrom creds (forceCurl := false) (rcloneAvailable := false) == .curl)
+  assertTrue "the flag forces curl past an available rclone"
+    (s3UploadToolFrom creds (forceCurl := true) (rcloneAvailable := true) == .curl)
 
-/-- The endpoint/bucket split the rclone engine builds its remote from. -/
+/-- The endpoint/bucket split the rclone tool builds its remote from. -/
 def test_s3EndpointSplit : IO Unit := do
   IO.println "s3EndpointSplit:"
   assertTrue "endpoint and bucket split"
@@ -1502,9 +1510,9 @@ def test_s3EndpointSplit : IO Unit := do
     (s3EndpointSplit "host.example/bucket" matches .error _)
 
 /-- The rclone invocations, pinned: the files copy filters to `*.ltar` and
-skips existing objects (the curl engine's `If-None-Match: *`); the marker
+skips existing objects (the curl tool's `If-None-Match: *`); the marker
 copy overwrites freely, like the curl marker put; and both remotes are the
-same `{prefix}/{name}` shape every other engine addresses. -/
+same `{prefix}/{name}` shape every other tool addresses. -/
 def test_rcloneArgs : IO Unit := do
   IO.println "rcloneArgs:"
   if let .ok dest := stagedUploadDestFrom none (some "https://acct.example/devbucket")
@@ -1533,7 +1541,7 @@ def test_rcloneArgs : IO Unit := do
   else
     assertTrue "rclone destination resolves" false
 
-/-- The child environment the rclone engine runs under: credentials and
+/-- The child environment the rclone tool runs under: credentials and
 endpoint set, a stale session token cleared when the credential has none,
 and nothing else touched. -/
 def test_rcloneEnv : IO Unit := do
@@ -1546,7 +1554,7 @@ def test_rcloneEnv : IO Unit := do
      env.contains ("RCLONE_S3_SESSION_TOKEN", some "tok"))
   assertTrue "config comes from the tool, not ambient credentials"
     (env.contains ("RCLONE_S3_ENV_AUTH", some "false"))
-  assertTrue "the region matches the curl engine's SigV4 region"
+  assertTrue "the region matches the curl tool's SigV4 region"
     (env.contains ("RCLONE_S3_REGION", some "auto"))
   assertTrue "the provider is set (rclone refuses to run without one)"
     (env.contains ("RCLONE_S3_PROVIDER", some "Other"))
@@ -1784,12 +1792,13 @@ def runAll : IO Unit := do
   test_classifyDownload
   test_classifyUpload
   test_mkPutConfigContent
+  test_uploadBackendParse
   test_uploadAuthFrom
   test_isValidScope
   test_fileDirPath
   test_stagedUploadDestFrom
   test_uploadAuthArgs
-  test_uploadEngineFrom
+  test_s3UploadToolFrom
   test_s3EndpointSplit
   test_rcloneArgs
   test_rcloneEnv

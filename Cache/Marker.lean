@@ -17,7 +17,7 @@ cheap HEAD request instead of a blob listing.
 This module holds everything about the marker except the transfer itself: the
 path contract (`markerDirPath`, `markerPath`), the read-side URL
 (`markerReadURL`), and the write mechanics and failure policy the upload
-engines share (`uploadMarkerWith`).
+tools share (`uploadMarkerWith`).
 -/
 
 namespace Cache.Requests
@@ -47,7 +47,7 @@ def markerReadURL (container : Container) (repo sha : String) : IO String := do
 
 /--
 Write the marker file for `sha` and hand it to `transfer`, which moves it to
-`markerURL`; every upload engine shares these marker mechanics. The blob
+`markerURL`; every upload tool shares these marker mechanics. The blob
 content is the SHA itself, as a debugging aid; existence is the signal. A
 marker overwrites freely, so a re-upload of an already-marked commit does not
 fail here.

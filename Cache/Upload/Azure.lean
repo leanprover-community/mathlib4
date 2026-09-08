@@ -10,7 +10,7 @@ Authors: Marcelo Lynch
 The Azure-specific upload logic: the headers a blob PUT requires and the
 bearer-token authentication, rendered as curl arguments
 (`azureBearerCurlArgs`). rclone signs only S3 requests, so Azure uploads use
-the curl engine alone and this backend renders curl arguments alone.
+the curl tool alone and this backend renders curl arguments alone.
 
 The storage account URL and the container model live in `Cache/Infra.lean`,
 because the read side uses them too.

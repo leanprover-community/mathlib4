@@ -49,33 +49,37 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 | `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
 | `put!`      | Same as `put`, overwriting files the server already holds             |
-| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--uploader` selects its transfer engine. |
+| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--backend` selects the storage backend. |
 
 The upload commands write with the same URL construction `get` reads, so
 uploads and reads follow one path contract. Uploading needs a writer
 credential in the environment; see the environment variables in
 `lake exe cache --help`.
 
-#### The rclone engine
+#### Backends and transfer tools
 
-The upload commands use curl by default. `--uploader` selects
-the transfer engine:
+`--backend` selects the storage backend an upload signs for: `azure` (the
+default) or `s3`. Each backend reads its own credential variables (see
+`lake exe cache --help`) and picks its transfer tool:
 
-- `curl` (the default): the built-in engine. Parallel PUTs, each signed per
-  request; an upload never replaces an existing object (`If-None-Match: *`).
-- `rclone`: a system [rclone](https://rclone.org). The tool resolves the
-  same destination the curl engine addresses and hands rclone the S3
-  credentials through its environment (`RCLONE_S3_*`); this engine requires
-  the S3 credential pair. The tool restricts the transfer to the command's
-  file list (`--files-from`), so `put`'s build-scoped guarantee holds on
-  this engine. rclone schedules transfers for large staged sets and verifies
-  each object's checksum after upload. `--ignore-existing` replaces
-  `If-None-Match` on a non-overwrite put.
+- `azure` uploads with curl: parallel PUTs, each signed per request with the
+  OIDC bearer token; an upload never replaces an existing object
+  (`If-None-Match: *`).
+- `s3` uploads with a system [rclone](https://rclone.org) when one works on
+  PATH, and with curl (SigV4 per request) otherwise. rclone receives the S3
+  credentials through its environment (`RCLONE_S3_*`), and both tools
+  restrict the transfer to the command's file list, so `put`'s build-scoped
+  guarantee holds either way. rclone schedules transfers for large staged
+  sets and verifies each object's checksum after upload; `--ignore-existing`
+  replaces `If-None-Match` on a non-overwrite put.
 
-The tool sets the rclone credentials, endpoint, provider (`Other` unless the
-environment names one), and region; every other `RCLONE_S3_*` option
-inherits from the environment, so an operator can set
-`RCLONE_S3_PROVIDER=Cloudflare` without a tool change.
+`MATHLIB_CACHE_PUT_FORCE_CURL=1` makes the `s3` backend upload with curl even
+when rclone is available.
+
+The cache binary sets the rclone credentials, endpoint, provider (`Other`
+unless the environment names one), and region; every other `RCLONE_S3_*`
+option inherits from the environment, so an operator can set
+`RCLONE_S3_PROVIDER=Cloudflare` without a code change.
 
 Anyone operating their own cache does not need the upload commands.
 The path contract for a `MATHLIB_CACHE_GET_URL` endpoint: readers request
@@ -114,7 +118,7 @@ When arguments are provided, only the specified files and their transitive impor
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`/`put-staged`: the staging directory. |
 | `--container=NAME`  | For `put`/`put!`/`put-staged`: the target container. |
-| `--uploader=NAME`   | For `put`/`put!`/`put-staged`: the transfer engine, `curl` (the default) or `rclone` (see [The rclone engine](#the-rclone-engine)). |
+| `--backend=NAME`    | For `put`/`put!`/`put-staged`: the storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
 
 Container names (for `--cache-from` and `--container`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 

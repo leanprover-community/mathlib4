@@ -46,7 +46,7 @@ Commands:
   put!         Same as 'put', overwriting files the server already holds.
   put-staged   Upload the *.ltar files in the staging directory to the
                selected --container. CI uploads with this command;
-               --uploader selects its transfer engine.
+               --backend selects the storage backend.
 
 Uploading needs a writer credential, which normally only CI holds. Anyone
 operating their own cache endpoint does not need 'put': 'stage' the
@@ -83,11 +83,14 @@ Options:
                      exclusive with --scope; always prints a security notice.
   --unsafe-window=N  Number of cached fork commits --unsafe will try (default
                      1). Implies --unsafe.
-  --uploader=NAME    For 'put', 'put!' and 'put-staged': the transfer engine,
-                     'curl' (the default) or 'rclone' (a system rclone,
-                     required). Both engines upload only the command's file
-                     list. The tool passes rclone the S3 credentials through
-                     its environment. See Cache/README.md.
+  --backend=NAME     For 'put', 'put!' and 'put-staged': the storage backend
+                     the upload signs for, 'azure' (the default) or 's3'.
+                     Each backend reads its own credential variables (see
+                     below) and picks its transfer tool: azure uploads with
+                     curl; s3 uploads with a system rclone when one works on
+                     PATH, and with curl otherwise. Set
+                     MATHLIB_CACHE_PUT_FORCE_CURL=1 to upload with curl on
+                     s3 too. See Cache/README.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' don't skip any files: use them manually when a
@@ -125,15 +128,22 @@ Valid arguments are:
 * MATHLIB_CACHE_REPO_SCOPE
                           Per-commit namespace for reads and 'put' (see --scope).
 
-Upload credentials for 'put' (the S3 pair takes precedence and must be set
-together):
+Upload credentials for 'put', read per --backend:
 
+* MATHLIB_CACHE_AZURE_BEARER_TOKEN
+                          Azure OIDC bearer token (--backend=azure, the
+                          default).
 * MATHLIB_CACHE_S3_ACCESS_KEY_ID, MATHLIB_CACHE_S3_SECRET_ACCESS_KEY,
   MATHLIB_CACHE_S3_SESSION_TOKEN
-                          S3 credentials (SigV4). The session token is
-                          optional.
-* MATHLIB_CACHE_AZURE_BEARER_TOKEN
-                          Azure OIDC bearer token.
+                          S3 credentials (SigV4), for --backend=s3. The pair
+                          must be set together; the session token is optional.
+
+Upload overrides for 'put':
+
+* MATHLIB_CACHE_PUT_FORCE_CURL
+                          Set to 1 or true to upload with curl on
+                          --backend=s3, which otherwise prefers rclone. The
+                          azure backend always uploads with curl.
 
 Upload destination overrides for 'put':
 
@@ -144,14 +154,14 @@ Upload destination overrides for 'put':
 * MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace. Any
                           set value counts, an empty one included.
 
-An empty value means unset for the URL, container-list, and credential
+An empty value means unset for the URL, container-list, credential, and flag
 variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.
 
 See Cache/README.md for more details.
 "
 
 /-- Commands which download with `curl`. Uploads validate curl at dispatch,
-when the curl engine is selected (`putStaged`). -/
+when the curl tool is selected (`putStaged`). -/
 def curlArgs : List String :=
   ["get", "get!", "get-"]
 
@@ -182,7 +192,17 @@ def main (args : List String) : IO Unit := do
   let scopeStr? ← parseNamedOpt "scope" options
   let unsafeFlag := parseFlagOpt "unsafe" options
   let unsafeWindowStr? ← parseNamedOpt "unsafe-window" options
-  let uploaderStr? ← parseNamedOpt "uploader" options
+  let backendStr? ← parseNamedOpt "backend" options
+
+  -- Parse `--backend=NAME`; `azure` is the default.
+  let backend ← match backendStr? with
+    | none => pure UploadBackend.azure
+    | some s => match UploadBackend.parse? s with
+      | some b => pure b
+      | none =>
+        IO.eprintln s!"Unknown backend name in --backend={s}.\n\
+          Known backends: {", ".intercalate (UploadBackend.all.map UploadBackend.name)}."
+        Process.exit 1
 
   -- Resolve `--unsafe` / `--unsafe-window=N` into an optional SHA window.
   -- `some n` means unsafe mode is on with window `n`; `none` means off. Passing
@@ -263,13 +283,13 @@ def main (args : List String) : IO Unit := do
     if !(← stagingDir.isDir) then
       IO.eprintln "--staging-dir must be a directory"
       Process.exit 1
-    runPut container? repo? uploaderStr? stagingDir (overwrite := false)
+    runPut container? repo? backend stagingDir (overwrite := false)
       (getFileNames := do
         return (← getFilesWithExtension stagingDir "ltar").map (·.fileName.get!))
     return
   | "put-staged" :: _ =>
     IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
-      [--repo=OWNER/REPO] [--scope=REF] [--uploader=NAME]"
+      [--repo=OWNER/REPO] [--scope=REF] [--backend=NAME]"
     Process.exit 1
   | _ => pure ()
 
@@ -316,7 +336,7 @@ def main (args : List String) : IO Unit := do
   -- checkout's build links, so nothing else in the shared per-user cache
   -- directory leaves the machine.
   let put (overwrite := false) :=
-    runPut container? repo? uploaderStr? IO.CACHEDIR
+    runPut container? repo? backend IO.CACHEDIR
       (getFileNames := pack overwrite (verbose := true)) overwrite
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))

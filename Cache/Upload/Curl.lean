@@ -7,14 +7,14 @@ Authors: Marcelo Lynch
 import Cache.Upload.Defs
 
 /-!
-# The curl upload engine
+# The curl upload tool
 
-The built-in transfer engine: parallel curl PUTs against the resolved
+The built-in transfer tool: parallel curl PUTs against the resolved
 destination (`StagedUploadDest`), authenticated per request from the
-`UploadAuth` mechanism (`uploadAuthArgs`). The engine holds only transfer
+`UploadAuth` mechanism (`uploadAuthArgs`). The tool holds only transfer
 mechanics; the request signing lives in the backend modules
 (`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`). `putStagedViaCurl` is
-the engine's entry point; `Cache/Upload.lean` dispatches to it.
+the tool's entry point; `Cache/Upload.lean` dispatches to it.
 -/
 
 namespace Cache.Requests
@@ -82,7 +82,7 @@ def putFilesViaCurl
   else IO.println "No files to upload"
 
 /--
-The staged put on the curl engine: the `.ltar` files named by `fileNames`
+The staged put on the curl tool: the `.ltar` files named by `fileNames`
 under `srcDir`, then the per-SHA marker when `markerSha?` names one. The curl
 config file is written to `srcDir` for the duration of the transfer. A files
 failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
