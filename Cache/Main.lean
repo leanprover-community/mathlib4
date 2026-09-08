@@ -40,10 +40,9 @@ Commands:
   unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
 
 The upload commands (put, put!, put-staged) and their options and variables
-are internal to mathlib CI; Cache/CI.md documents them. To operate an
-external cache, 'stage' the artifacts, upload the staging directory under
-your endpoint's `f/` path with any storage client, and serve it to readers
-via MATHLIB_CACHE_GET_URL (see Cache/README.md).
+are internal to mathlib CI. To operate an external cache, 'stage' the
+artifacts, upload the staging directory under your endpoint's `f/` path with
+any storage client, and serve it to readers via MATHLIB_CACHE_GET_URL.
 
 Options:
   --repo=OWNER/REPO  Override the repository to fetch cache for
@@ -98,11 +97,6 @@ Valid arguments are:
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
-
-The variables mathlib CI sets (reads and uploads) are documented in
-Cache/CI.md.
-
-See Cache/README.md for more details.
 "
 
 /-- Commands which download with `curl`. Uploads validate curl inside the
