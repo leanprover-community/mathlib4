@@ -35,8 +35,8 @@ namespace ContinuousCohomology
 /-- The Tate-Shafarevich group of a continuous representation. -/
 @[simps!]
 noncomputable def tateSha : AddSubgroup (continuousCohomology n A) :=
-  iInf (fun v : V ↦ (ContinuousCohomology.map (k := ℤ) (X := A)
-    (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker)
+  ⨅ (v : V), (ContinuousCohomology.map (k := ℤ) (X := A)
+    (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker
 
 lemma tateSha_eq_iInf :
     tateSha f A n = iInf (fun v : V ↦ (ContinuousCohomology.map
