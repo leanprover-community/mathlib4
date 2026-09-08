@@ -121,7 +121,7 @@ theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced 
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
   exact forall_comm
 
-lemma IsRadical.zero_of_reduced [MonoidWithZero R] [IsReduced R] : _root_.IsRadical (0 : R) := by
+lemma isRadical_zero [MonoidWithZero R] [IsReduced R] : _root_.IsRadical (0 : R) := by
   simpa [zero_isRadical_iff]
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
