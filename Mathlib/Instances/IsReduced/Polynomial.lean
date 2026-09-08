@@ -27,21 +27,21 @@ namespace IsReduced
 theorem mul_eq_zero_comm {a b : R} (h : a * b = 0) : b * a = 0 := by
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
   have h2 : (b * a) ^ 2 = b * (a * b) * a := by simp [pow_two, mul_assoc]
-  rw [h2, h]; simp
+  simp [h2, h]
 
 /-- A reduced semiring is semicommutative: `a * b = 0` implies `a * r * b = 0` for all `r`. -/
 theorem mul_mid_eq_zero {a b : R} (h : a * b = 0) (r : R) : a * r * b = 0 := by
   have hba : b * a = 0 := IsReduced.mul_eq_zero_comm h
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
   have h2 : (a * r * b) ^ 2 = a * r * (b * a) * (r * b) := by simp [pow_two, mul_assoc]
-  rw [h2, hba]; simp
+  simp [h2, hba]
 
 /-- In a reduced semiring, `a * b * b = 0` implies `a * b = 0`. -/
 theorem mul_eq_zero_of_mul_sq_eq_zero {a b : R} (h : a * b * b = 0) : a * b = 0 := by
   have h2 : b * (a * b) = 0 := IsReduced.mul_eq_zero_comm (a := a * b) (b := b) h
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
   have h3 : (a * b) ^ 2 = a * (b * (a * b)) := by simp [pow_two, mul_assoc]
-  rw [h3, h2]; simp
+  simp [h3, h2]
 
 end IsReduced
 
