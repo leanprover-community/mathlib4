@@ -39,7 +39,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
 | `query`         | Find the most recent commit with cached entries on the current branch |
 
-### Staging and upload (CI, and external cache operators)
+### Staging
 
 | Command     | Description                                                          |
 |-------------|----------------------------------------------------------------------|
@@ -47,50 +47,10 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `stage!`    | Copy all linked cache files to `--staging-dir`                       |
 | `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
-| `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
-| `put!`      | Same as `put`, overwriting files the server already holds             |
-| `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--backend` selects the storage backend. |
 
-The upload commands write with the same URL construction `get` reads, so
-uploads and reads follow one path contract. Uploading needs a writer
-credential in the environment; see the environment variables in
-`lake exe cache --help`.
-
-The upload commands (`put`, `put!`, `put-staged`), their backends, and their
-credential and destination variables are internal to mathlib CI: they follow
-the CI storage layout and can change with it. An external cache should not
-build on them; see
-[Operating an external cache](#operating-an-external-cache).
-
-#### Backends and transfer tools
-
-`--backend` selects the storage backend: `azure` (the default) or `s3`. The
-backend selects the destination, the credential variables it reads (see
-`lake exe cache --help`), and the transfer tool:
-
-- `azure` writes to the Azure storage account and uploads with curl:
-  parallel PUTs, each signed per request with the OIDC bearer token; an
-  upload never replaces an existing object (`If-None-Match: *`).
-- `s3` writes to the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names
-  (`https://host/bucket`) and uploads with a system
-  [rclone](https://rclone.org) when one works on PATH, with curl (SigV4 per
-  request) otherwise. rclone receives the S3 credentials through its
-  environment (`RCLONE_S3_*`), and both tools restrict the transfer to the
-  command's file list, so `put`'s build-scoped guarantee holds either way.
-  rclone schedules transfers for large staged sets and verifies each
-  object's checksum after upload; `--ignore-existing` replaces
-  `If-None-Match` on a non-overwrite put.
-
-`MATHLIB_CACHE_PUT_URL` overrides the destination on either backend: one flat
-endpoint, with the container policy off.
-
-`MATHLIB_CACHE_PUT_FORCE_CURL=1` makes the `s3` backend upload with curl even
-when rclone is available.
-
-The cache binary sets the rclone credentials, endpoint, provider (`Other`
-unless the environment names one), and region; every other `RCLONE_S3_*`
-option inherits from the environment, so an operator can set
-`RCLONE_S3_PROVIDER=Cloudflare` without a code change.
+The upload commands (`put`, `put!`, `put-staged`) are internal to mathlib CI
+and are documented in [`CI.md`](./CI.md). An external cache should not build
+on them; see [Operating an external cache](#operating-an-external-cache).
 
 #### Operating an external cache
 
@@ -133,17 +93,18 @@ When arguments are provided, only the specified files and their transitive impor
 | `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
 | `--unsafe`          | For `get`/`get!`/`get-`: instead of pinning one `--scope`, automatically walk this branch's history and read the `forks` container at the most recent cached fork commit (newest first if `--unsafe-window` allows more than one), until the cache is satisfied (see [Unsafe automatic scope walk](#unsafe-automatic-scope-walk)). Mutually exclusive with `--scope`; always triggers the security notice. |
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
-| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`/`put-staged`: the staging directory. |
-| `--container=NAME`  | For `put`/`put!`/`put-staged`: the target container. |
-| `--backend=NAME`    | For `put`/`put!`/`put-staged`: the storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
+| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
-Container names (for `--cache-from` and `--container`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+
+The upload options (`--container`, `--backend`) are internal to mathlib CI;
+see [`CI.md`](./CI.md).
 
 ## Trust-ordered containers
 
 The cache is split across multiple containers — logical namespaces in the URL
-contract `/{container}/{key}`, whatever backend serves them. Container names
-accepted by `--cache-from=LIST` and `--container=NAME`:
+contract `/{container}/{key}`, whatever storage serves them. Container names
+accepted by `--cache-from=LIST`:
 `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
 `cache get` resolves a file by trying a default chain of containers in
@@ -165,7 +126,7 @@ lake exe cache get --cache-from=master
 lake exe cache get --cache-from=master,forks
 ```
 
-Uploads (`put`, `put!`, `put-staged`) target a single container via `--container=NAME`.
+CI uploads target a single container per run; see [`CI.md`](./CI.md).
 
 ## Public cache endpoint
 
@@ -195,8 +156,9 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 
-Run `lake exe cache --help` for the full list of environment variables,
-including the upload credentials and destination overrides.
+Run `lake exe cache --help` for the full list of environment variables. The
+upload credentials and destination variables are internal to mathlib CI; see
+[`CI.md`](./CI.md).
 
 ## How It Works
 

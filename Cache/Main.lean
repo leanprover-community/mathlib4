@@ -93,7 +93,7 @@ Options:
                      the S3 credential pair, and uploads with a system
                      rclone when one works on PATH, with curl otherwise (set
                      MATHLIB_CACHE_PUT_FORCE_CURL=1 to force curl). See
-                     Cache/README.md.
+                     Cache/CI.md.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands that end with '!' do not skip files: use them manually when a
