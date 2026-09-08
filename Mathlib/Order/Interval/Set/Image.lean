@@ -251,13 +251,11 @@ theorem image_subtype_val_Ioo_subset (a b : {x // p x}) :
   image_subset_iff.mpr fun _ m => m
 
 @[to_dual]
-theorem image_subtype_val_Iic_subset (a : {x // p x}) :
-    Subtype.val '' Iic a ⊆ Iic a.val :=
+theorem image_subtype_val_Iic_subset (a : {x // p x}) : Subtype.val '' Iic a ⊆ Iic a.val :=
   image_subset_iff.mpr fun _ m => m
 
 @[to_dual]
-theorem image_subtype_val_Iio_subset (a : {x // p x}) :
-    Subtype.val '' Iio a ⊆ Iio a.val :=
+theorem image_subtype_val_Iio_subset (a : {x // p x}) : Subtype.val '' Iio a ⊆ Iio a.val :=
   image_subset_iff.mpr fun _ m => m
 
 @[to_dual (attr := simp)]
@@ -317,12 +315,12 @@ lemma image_subtype_val_Ioc_Iic {a b : α} (c : Ioc a b) : Subtype.val '' Iic c 
   image_subtype_val_Ixx_Iix c (le_trans · c.2.2)
 
 @[simp]
-lemma image_subtype_val_Ico_Iic {a b : α} (c : Ico a b) : Subtype.val '' Iic c = Icc a c :=
-  image_subtype_val_Ixx_Iix c (lt_of_le_of_lt · c.2.2)
-
-@[to_dual existing (attr := simp)]
 lemma image_subtype_val_Ioc_Ici {a b : α} (c : Ioc a b) : Subtype.val '' Ici c = Icc c.1 b :=
   image_subtype_val_Ixx_Ixi c c.2.1.trans_le
+
+@[to_dual existing (attr := simp)]
+lemma image_subtype_val_Ico_Iic {a b : α} (c : Ico a b) : Subtype.val '' Iic c = Icc a c :=
+  image_subtype_val_Ixx_Iix c (lt_of_le_of_lt · c.2.2)
 
 @[simp]
 lemma image_subtype_val_Ico_Ioi {a b : α} (c : Ico a b) : Subtype.val '' Ioi c = Ioo c.1 b :=
@@ -333,12 +331,12 @@ lemma image_subtype_val_Ioc_Iio {a b : α} (c : Ioc a b) : Subtype.val '' Iio c 
   image_subtype_val_Ixx_Iix c fun h ↦ (le_of_lt h).trans c.2.2
 
 @[simp]
-lemma image_subtype_val_Ico_Iio {a b : α} (c : Ico a b) : Subtype.val '' Iio c = Ico a c :=
-  image_subtype_val_Ixx_Iix c (lt_trans · c.2.2)
-
-@[to_dual existing (attr := simp)]
 lemma image_subtype_val_Ioc_Ioi {a b : α} (c : Ioc a b) : Subtype.val '' Ioi c = Ioc c.1 b :=
   image_subtype_val_Ixx_Ixi c c.2.1.trans
+
+@[to_dual existing (attr := simp)]
+lemma image_subtype_val_Ico_Iio {a b : α} (c : Ico a b) : Subtype.val '' Iio c = Ico a c :=
+  image_subtype_val_Ixx_Iix c (lt_trans · c.2.2)
 
 @[simp]
 lemma image_subtype_val_Ioo_Ici {a b : α} (c : Ioo a b) : Subtype.val '' Ici c = Ico c.1 b :=
