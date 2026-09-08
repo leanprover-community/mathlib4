@@ -154,6 +154,12 @@ theorem id_comp (f : r →r s) : (RelHom.id s).comp f = f := rfl
 protected def swap (f : r →r s) : swap r →r swap s :=
   ⟨f, f.map_rel⟩
 
+/-- `RelHom.swap` as an `Equiv`. -/
+@[simps]
+protected def swapEquiv : (r →r s) ≃ (swap r →r swap s) where
+  toFun := RelHom.swap
+  invFun := RelHom.swap
+
 /-- A function is a relation homomorphism from the preimage relation of `s` to `s`. -/
 @[simps]
 def preimage (f : α → β) (s : β → β → Prop) : f ⁻¹'o s →r s :=
@@ -294,6 +300,12 @@ theorem refl_trans (f : r ↪r s) : .trans (.refl r) f = f := rfl
 /-- A relation embedding is also a relation embedding between dual relations. -/
 protected def swap (f : r ↪r s) : swap r ↪r swap s :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
+
+/-- `RelEmbedding.swap` as an `Equiv` -/
+@[simps]
+def swapEquiv : (r ↪r s) ≃ (swap r ↪r swap s) where
+  toFun := RelEmbedding.swap
+  invFun := RelEmbedding.swap
 
 @[simp]
 theorem swap_apply (f : r ↪r s) (a : α) : f.swap a = f a := rfl
@@ -689,13 +701,26 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
   ext fun x => by subst h₁; rfl
 
 /-- A relation isomorphism is also a relation isomorphism between dual relations. -/
+@[simps!]
 protected def swap (f : r ≃r s) : swap r ≃r swap s :=
   ⟨f, f.map_rel_iff⟩
+
+/-- `RelIso.swap` as an `Equiv`. -/
+@[simps]
+def swapEquiv : (r ≃r s) ≃ (swap r ≃r swap s) where
+  toFun := RelIso.swap
+  invFun := RelIso.swap
 
 /-- A relation isomorphism is also a relation isomorphism between complemented relations. -/
 @[simps!]
 protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
   ⟨f, f.map_rel_iff.not⟩
+
+/-- `RelIso.compl` as an `Equiv`. -/
+@[simps!]
+def complEquiv : (r ≃r s) ≃ (rᶜ ≃r sᶜ) where
+  toFun := RelIso.compl
+  invFun f := ⟨f, not_iff_not.mp f.map_rel_iff⟩
 
 @[simp]
 theorem coe_fn_symm_mk (f o) : ((@RelIso.mk _ _ r s f @o).symm : β → α) = f.symm :=

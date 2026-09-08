@@ -5,10 +5,10 @@ Authors: Joseph Myers
 -/
 module
 
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Sign.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!

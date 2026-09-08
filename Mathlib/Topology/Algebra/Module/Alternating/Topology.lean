@@ -139,7 +139,7 @@ lemma isEmbedding_toContinuousMultilinearMap :
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
-  isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
+  isEmbedding_toContinuousMultilinearMap.isTopologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
 @[continuity, fun_prop]

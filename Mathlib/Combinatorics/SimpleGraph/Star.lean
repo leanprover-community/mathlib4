@@ -39,7 +39,7 @@ def starGraph (r : V) : SimpleGraph V :=
 instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj :=
   inferInstanceAs (DecidableRel fun x y ↦ x ≠ y ∧ (x = r ∨ y = r))
 
-@[simp]
+@[simp, grind =]
 lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
   simp [starGraph, fromRel]
 
@@ -77,11 +77,17 @@ lemma isTree_starGraph (r : V) : (starGraph r).IsTree :=
 /-- Every non-center vertex of a starGraph has degree one. -/
 lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
     (starGraph r).degree v = 1 :=
-  degree_eq_one_iff_existsUnique_adj.mpr ⟨r, by simp [h], by grind [starGraph_adj]⟩
+  degree_eq_one_iff_existsUnique_adj.mpr ⟨r, by simp [h], by grind⟩
 
 /-- The center vertex of a starGraph has degree (card V) - 1. -/
 lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
   simp
+
+theorem starGraph_inl_unitMk : starGraph (.inl ()) = completeBipartiteGraph Unit V := by
+  grind
+
+theorem starGraph_inr_unitMk : starGraph (.inr ()) = completeBipartiteGraph V Unit := by
+  grind
 
 end SimpleGraph

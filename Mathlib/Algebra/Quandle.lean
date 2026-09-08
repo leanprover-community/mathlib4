@@ -144,7 +144,7 @@ scoped[Quandles] infixr:65 " ◃⁻¹ " => Rack.invAct
 /-- Shelf Homomorphism -/
 scoped[Quandles] infixr:25 " →◃ " => ShelfHom
 
-open Quandles
+open scoped Quandles
 
 namespace UnitalShelf
 open Shelf

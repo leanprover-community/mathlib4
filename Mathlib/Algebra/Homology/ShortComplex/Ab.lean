@@ -55,8 +55,8 @@ set_option backward.defeqAttrib.useBackward true in
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 @[simps]
 def abLeftHomologyData : S.LeftHomologyData where
-  K := AddCommGrpCat.of (AddMonoidHom.ker S.g.hom)
-  H := AddCommGrpCat.of ((AddMonoidHom.ker S.g.hom) ⧸ AddMonoidHom.range S.abToCycles)
+  K := ↧S.g.hom.ker
+  H := ↧(S.g.hom.ker ⧸ S.abToCycles.range)
   i := AddCommGrpCat.ofHom <| (AddMonoidHom.ker S.g.hom).subtype
   π := AddCommGrpCat.ofHom <| QuotientAddGroup.mk' _
   wi := by
@@ -76,7 +76,7 @@ lemma abLeftHomologyData_f' : S.abLeftHomologyData.f' = AddCommGrpCat.ofHom S.ab
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as
 `AddMonoidHom.ker S.g`. -/
-noncomputable def abCyclesIso : S.cycles ≅ AddCommGrpCat.of (AddMonoidHom.ker S.g.hom) :=
+noncomputable def abCyclesIso : S.cycles ≅ ↧(AddMonoidHom.ker S.g.hom) :=
   S.abLeftHomologyData.cyclesIso
 
 set_option backward.isDefEq.respectTransparency false in
@@ -96,7 +96,7 @@ the abstract `S.homology` of the homology API and the more explicit
 quotient of `AddMonoidHom.ker S.g` by the image of
 `S.abToCycles : S.X₁ →+ AddMonoidHom.ker S.g`. -/
 noncomputable def abHomologyIso : S.homology ≅
-    AddCommGrpCat.of ((AddMonoidHom.ker S.g.hom) ⧸ AddMonoidHom.range S.abToCycles) :=
+    ↧((AddMonoidHom.ker S.g.hom) ⧸ AddMonoidHom.range S.abToCycles) :=
   S.abLeftHomologyData.homologyIso
 
 set_option backward.isDefEq.respectTransparency.types false in

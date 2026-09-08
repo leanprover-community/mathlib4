@@ -5,11 +5,9 @@ Authors: Bhavik Mehta, Edward Ayers
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sieves
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 public import Mathlib.Order.Copy
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Grothendieck topologies

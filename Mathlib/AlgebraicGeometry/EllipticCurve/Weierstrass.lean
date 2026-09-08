@@ -305,6 +305,10 @@ splitting field of `R` are precisely the `X`-coordinates of the non-zero 2-torsi
 def twoTorsionPolynomial : Cubic R :=
   ⟨4, W.b₂, 2 * W.b₄, W.b₆⟩
 
+lemma eval_toPoly_twoTorsionPolynomial (x : R) :
+    W.twoTorsionPolynomial.toPoly.eval x = 4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆ := by
+  simp [twoTorsionPolynomial, Cubic.toPoly]
+
 lemma twoTorsionPolynomial_discr : W.twoTorsionPolynomial.discr = 16 * W.Δ := by
   simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.discr]
   ring1

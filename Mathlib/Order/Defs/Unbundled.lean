@@ -186,22 +186,6 @@ def Reflexive := ∀ x, x ≺ x
 @[deprecated Std.Symm (since := "2026-06-10")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
-/-- `IsTrans` as a definition, suitable for use in proofs. -/
-@[deprecated IsTrans (since := "2026-02-20")]
-def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
-
-/-- `Std.Irrefl` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Irrefl (since := "2026-02-12")]
-def Irreflexive := ∀ x, ¬x ≺ x
-
-/-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Antisymm (since := "2026-02-09")]
-def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
-
-/-- `Std.Total` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Total (since := "2026-02-10")]
-def Total := ∀ x y, x ≺ y ∨ y ≺ x
-
 theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
   refl := h.refl
 
@@ -215,8 +199,6 @@ theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
 theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
   ⟨fun _ _ _ ↦ h.trans⟩
 
-@[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
-
 theorem Equivalence.isEquiv (h : Equivalence r) : IsEquiv α r :=
   have := h.stdRefl
   have := h.stdSymm
@@ -228,12 +210,8 @@ variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 instance InvImage.isTrans [IsTrans β r] : IsTrans α (InvImage r f) :=
   ⟨fun _ _ _ ↦ trans_of r⟩
 
-@[deprecated (since := "2026-02-20")] alias InvImage.trans := InvImage.isTrans
-
 instance InvImage.irrefl [Std.Irrefl r] : Std.Irrefl (InvImage r f) :=
   ⟨fun (a : α) (h₁ : InvImage r f a a) ↦ irrefl_of r (f a) h₁⟩
-
-@[deprecated (since := "2026-02-12")] alias InvImage.irreflexive := InvImage.irrefl
 
 end
 
@@ -421,9 +399,6 @@ theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α
   · exact _root_.trans h₁ h₃
   · exact h₁
   · exact absurd h₃ h₂
-
-@[deprecated IsTrans.trans (since := "2026-02-20")]
-theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
 theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [Std.Trichotomous r] [Std.Irrefl r]

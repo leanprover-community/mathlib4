@@ -184,12 +184,21 @@ theorem IsStrongLimit.univ : IsStrongLimit univ.{u, v} :=
   ⟨univ_ne_zero, fun c h ↦ let ⟨w, h⟩ := lt_univ'.1 h; lt_univ'.2 ⟨2 ^ w, by simp [h]⟩⟩
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
-    Small.{v} α ↔ Cardinal.lift.{v + 1, _} #α < univ.{v, max u (v + 1)} := by
+    Small.{v} α ↔ lift.{v + 1, u} #α < univ.{v, max u (v + 1)} := by
   rw [lt_univ']
   constructor
   · rintro ⟨β, e⟩
     exact ⟨#β, lift_mk_eq.{u, _, v + 1}.2 e⟩
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
+
+theorem small_of_lift_mk_le_lift {α : Type u} {c : Cardinal.{v}}
+    (hα : lift.{v} #α ≤ lift.{u} c) : Small.{v} α := by
+  induction c using inductionOn with | mk α
+  exact small_of_injective (lift_mk_le'.1 hα).some.injective
+
+theorem small_iff_exists_lift_mk_le_lift {α : Type u} :
+    Small.{v} α ↔ ∃ c : Cardinal.{v}, lift.{v} #α ≤ lift.{u} c :=
+  ⟨fun ⟨c, ⟨e⟩⟩ => ⟨#c, lift_mk_le'.2 ⟨e⟩⟩, fun ⟨_, hc⟩ => small_of_lift_mk_le_lift hc⟩
 
 end Cardinal

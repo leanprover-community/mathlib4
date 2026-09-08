@@ -27,6 +27,8 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 - `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
   map `P.map` from `σ` to `ι`. This map is used to define the differential of a
   presubmersive presentation.
+- `PreSubmersivePresentation.mvPolynomial`: The canonical presentation of `MvPolynomial ι R`,
+  viewed as a presubmersive presentation via the (empty) map from its relations to its generators.
 
 For a presubmersive presentation `P` of `S` over `R` we make the following definitions:
 
@@ -219,6 +221,20 @@ lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     ext (i j : PEmpty)
     contradiction
   rw [jacobian_eq_jacobiMatrix_det, RingHom.map_det, this, Matrix.det_one]
+
+variable (R ι) in
+/-- The canonical pre-submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+@[simps -fullyApplied map]
+noncomputable def mvPolynomial :
+    PreSubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  map := PEmpty.elim
+  map_inj := PEmpty.elim.injective_of_subsingleton
+  __ := Presentation.mvPolynomial R ι
+
+@[simp]
+lemma jacobian_mvPolynomial : (mvPolynomial R ι).jacobian = 1 := by
+  rw [jacobian_eq_jacobiMatrix_det, Matrix.det_isEmpty, map_one]
 
 section Localization
 
@@ -523,6 +539,12 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 /-- The canonical submersive `R`-presentation of `R` with no generators and no relations. -/
 noncomputable def id : SubmersivePresentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
   ofBijectiveAlgebraMap Function.bijective_id
+
+/-- The canonical submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+noncomputable def mvPolynomial : SubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  __ := PreSubmersivePresentation.mvPolynomial R ι
+  jacobian_isUnit := by simp
 
 section Composition
 variable {R S ι σ}

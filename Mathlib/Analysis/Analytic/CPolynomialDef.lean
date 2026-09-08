@@ -201,13 +201,18 @@ theorem ContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall (g : F →L[𝕜] G
     rw [compFormalMultilinearSeries_apply, h.finite m hm]
     ext; exact map_zero g⟩
 
+/-- If a function `f` is continuously polynomial at a point `x` and `g` is a continuous linear map,
+then `g ∘ f` is continuously polynomial at `x`. -/
+theorem ContinuousLinearMap.comp_cpolynomialAt (g : F →L[𝕜] G)
+    (h : CPolynomialAt 𝕜 f x) : CPolynomialAt 𝕜 (g ∘ f) x := by
+  rcases h with ⟨p, n, r, hp⟩
+  exact ⟨g.compFormalMultilinearSeries p, n, r, g.comp_hasFiniteFPowerSeriesOnBall hp⟩
+
 /-- If a function `f` is continuously polynomial on a set `s` and `g` is a continuous linear map,
 then `g ∘ f` is continuously polynomial on `s`. -/
 theorem ContinuousLinearMap.comp_cpolynomialOn {s : Set E} (g : F →L[𝕜] G)
-    (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (g ∘ f) s := by
-  rintro x hx
-  rcases h x hx with ⟨p, n, r, hp⟩
-  exact ⟨g.compFormalMultilinearSeries p, n, r, g.comp_hasFiniteFPowerSeriesOnBall hp⟩
+    (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (g ∘ f) s :=
+  fun x hx ↦ g.comp_cpolynomialAt (h x hx)
 
 /-- If a function admits a finite power series expansion bounded by `n`, then it is equal to
 the `m`th partial sums of this power series at every point of the disk for `n ≤ m`. -/

@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.IsEmpty.Basic
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MkIffOfInductiveProp
@@ -618,19 +618,9 @@ instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 theorem isTrans_le [Preorder α] : IsTrans α LE.le :=
   inferInstance
 
-@[deprecated (since := "2026-02-21")]
-alias transitive_ge := isTrans_ge
-@[to_dual existing transitive_ge, deprecated (since := "2026-02-21")]
-alias transitive_le := isTrans_le
-
 @[to_dual isTrans_gt]
 theorem isTrans_lt [Preorder α] : IsTrans α LT.lt :=
   inferInstance
-
-@[deprecated (since := "2026-02-21")]
-alias transitive_gt := isTrans_gt
-@[to_dual existing transitive_gt, deprecated (since := "2026-02-21")]
-alias transitive_lt := isTrans_lt
 
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=

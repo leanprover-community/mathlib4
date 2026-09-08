@@ -49,7 +49,9 @@ public section
 
 open scoped Topology
 
-open Function Manifold Set
+open Function Set
+
+open scoped Manifold
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

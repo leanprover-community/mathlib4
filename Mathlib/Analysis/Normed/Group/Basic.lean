@@ -6,7 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Defs
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
 
@@ -26,7 +26,9 @@ normed group
 variable {𝓕 α ι E F G : Type*}
 
 open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open ENNReal Filter NNReal Pointwise
+
+open scoped Uniformity Topology
 
 section SeminormedGroup
 
@@ -332,12 +334,6 @@ theorem NormedGroup.tendsto_nhds_one {f : α → E} {l : Filter α} :
     Tendsto f l (𝓝 1) ↔ ∀ ε > 0, ∀ᶠ x in l, ‖f x‖ < ε :=
   Metric.tendsto_nhds.trans <| by simp only [dist_one_right]
 
-@[deprecated (since := "2026-02-17")]
-alias NormedCommGroup.tendsto_nhds_one := NormedGroup.tendsto_nhds_one
-
-@[deprecated (since := "2026-02-17")]
-alias NormedAddCommGroup.tendsto_nhds_zero := NormedAddGroup.tendsto_nhds_zero
-
 @[to_additive]
 theorem NormedGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
     Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x'⁻¹ * x‖ < δ → ‖(f x')⁻¹ * y‖ < ε := by
@@ -354,12 +350,6 @@ theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
   convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
-
-@[deprecated (since := "2026-02-17")]
-alias NormedCommGroup.nhds_one_basis_norm_lt := NormedGroup.nhds_one_basis_norm_lt
-
-@[deprecated (since := "2026-02-17")]
-alias NormedAddCommGroup.nhds_zero_basis_norm_lt := NormedAddGroup.nhds_zero_basis_norm_lt
 
 @[to_additive]
 theorem NormedGroup.uniformity_basis_dist :
@@ -627,10 +617,6 @@ lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 @[to_additive]
 theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
-
-@[deprecated (since := "2026-02-11")] alias edist_one_eq_enorm := edist_one_right
-
-@[deprecated (since := "2026-02-11")] alias edist_zero_eq_enorm := edist_zero_right
 
 @[to_additive]
 lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by

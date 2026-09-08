@@ -820,18 +820,42 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
 
 end computing
 
+/-! ### Properties of `sdiff` -/
+section sdiff
+variable {α : Type*} {s t : Set α}
+
+@[simp]
+lemma mk_sdiff_eq_left' (hs : s.Infinite) (hst : #(s ∩ t : Set α) < #s) :
+    #(s \ t : Set α) = #s := by
+  refine (mk_le_mk_of_subset Set.sdiff_subset).eq_of_not_lt
+    fun h ↦ (add_lt_of_lt (by simpa) hst h).not_ge ?_
+  grw [← mk_union_le .., Set.inter_union_sdiff]
+
+@[simp]
+lemma mk_sdiff_eq_left (hs : s.Infinite) (hts : #t < #s) : #(s \ t : Set α) = #s :=
+  mk_sdiff_eq_left' hs <| hts.trans_le' <| mk_subtype_mono Set.inter_subset_right
+
+@[simp]
+lemma mk_sdiff_eq_left_of_finite' (hs : s.Infinite) (hst : (s ∩ t : Set α).Finite) :
+    #(s \ t : Set α) = #s :=
+  mk_sdiff_eq_left' hs <| (aleph0_le_mk_set.2 hs).trans_lt' <| by simpa
+
+@[simp]
+lemma mk_sdiff_eq_left_of_finite (hs : s.Infinite) (ht : t.Finite) : #(s \ t : Set α) = #s :=
+  mk_sdiff_eq_left hs <| (aleph0_le_mk_set.2 hs).trans_lt' <| by simpa
+
+end sdiff
+
 /-! ### Properties of `compl` -/
 section compl
 
 theorem mk_compl_of_infinite {α : Type*} [Infinite α] (s : Set α) (h2 : #s < #α) :
     #(sᶜ : Set α) = #α := by
-  refine eq_of_add_eq_of_aleph0_le ?_ h2 (aleph0_le_mk α)
-  exact mk_sum_compl s
+  rw [compl_eq_univ_sdiff, mk_sdiff_eq_left Set.infinite_univ (by rwa [mk_univ]), mk_univ]
 
 theorem mk_compl_finset_of_infinite {α : Type*} [Infinite α] (s : Finset α) :
     #((↑s)ᶜ : Set α) = #α := by
-  apply mk_compl_of_infinite
-  exact (finset_card_lt_aleph0 s).trans_le (aleph0_le_mk α)
+  rw [compl_eq_univ_sdiff, mk_sdiff_eq_left_of_finite Set.infinite_univ s.finite_toSet, mk_univ]
 
 theorem mk_compl_eq_mk_compl_infinite {α : Type*} [Infinite α] {s t : Set α} (hs : #s < #α)
     (ht : #t < #α) : #(sᶜ : Set α) = #(tᶜ : Set α) := by

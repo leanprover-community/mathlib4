@@ -117,7 +117,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
   calc ‖ψ (star a * a)‖ = (spectralRadius ℝ (ψ (star a * a))).toReal :=
       ha.map ψ |>.toReal_spectralRadius_eq_norm.symm
     _ = (spectralRadius ℝ (star a * a)).toReal := by
-      simp only [spectralRadius, ha.map_spectrum_real ψ hψ]
+      simp only [spectralRadius_eq_of_unital, ha.map_spectrum_real ψ hψ]
     _ = ‖star a * a‖ := ha.toReal_spectralRadius_eq_norm
 
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/

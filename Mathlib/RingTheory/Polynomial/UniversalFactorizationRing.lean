@@ -164,7 +164,7 @@ lemma universalFactorizationMap_comp_map :
   · dsimp [universalFactorizationMap, mapEquivMonic]
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
-    congr 2 <;> ext <;> simp
+    congr 3 <;> ext <;> simp
 
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
 monic polynomials with fixed degrees. -/
@@ -364,7 +364,6 @@ lemma finite_universalFactorizationMap :
     simpa [← Polynomial.eval₂_map, F] using! hp'
   intro x
   induction x with
-  | zero => exact RingHom.isIntegralElem_zero _
   | add x y _ _ => exact RingHom.IsIntegralElem.add _ ‹_› ‹_›
   | tmul x y =>
     suffices (universalFactorizationMap R n m k hn).IsIntegralElem (x ⊗ₜ 1 * 1 ⊗ₜ y) by simpa

@@ -325,7 +325,7 @@ canonical T-algebra homomorphism from `A ⊗[S] B` to `A ⊗[R] B`,
 where `T` is any other ring acting on `A` and whose action commutes with the `R` and `S`-actions. -/
 def mapOfCompatibleSMul : A ⊗[S] B →ₐ[T] A ⊗[R] B :=
   .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul R S T A B) rfl fun x ↦
-    x.induction_on (by simp) (fun _ _ y ↦ y.induction_on (by simp) (by simp)
+    x.inductionOn (fun _ _ y ↦ y.inductionOn (by simp)
       fun _ _ h h' ↦ by simp only [mul_add, map_add, h, h'])
       fun _ _ h h' _ ↦ by simp only [add_mul, map_add, h, h']
 
@@ -336,9 +336,6 @@ theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMu
   _root_.TensorProduct.mapOfCompatibleSMul_surjective R S T A B
 
 attribute [local instance] SMulCommClass.symm
-
-@[deprecated (since := "2026-02-21")]
-alias mapOfCompatibleSMul' := mapOfCompatibleSMul
 
 /-- If the R- and S-actions on A and B satisfy `CompatibleSMul` both ways,
 then `A ⊗[S] B` is canonically isomorphic to `A ⊗[R] B`. -/
@@ -755,7 +752,7 @@ variable (R)
 def lmul'' : S ⊗[R] S →ₐ[S] S :=
   algHomOfLinearMapTensorProduct
     { __ := LinearMap.mul' R S
-      map_smul' := fun s x ↦ x.induction_on (by simp)
+      map_smul' := fun s x ↦ x.inductionOn
         (fun _ _ ↦ by simp [TensorProduct.smul_tmul', mul_assoc])
         fun x y hx hy ↦ by simp_all [mul_add] }
     (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
@@ -791,8 +788,8 @@ variable (R S) in
 /-- If multiplication by elements of S can switch between the two factors of `S ⊗[R] S`,
 then `lmul''` is an isomorphism. -/
 def lmulEquiv [CompatibleSMul R S S S] : S ⊗[R] S ≃ₐ[S] S :=
-  .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
-    (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
+  .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.inductionOn
+    (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
       rw [mul_comm, ← smul_eq_mul, smul_tmul, smul_eq_mul, mul_one])
     fun _ _ hx hy ↦ by simp_all [add_tmul]
 

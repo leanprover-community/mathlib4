@@ -175,9 +175,6 @@ lemma Scheme.Hom.finite_preimage_singleton [LocallyQuasiFinite f] [QuasiCompact 
     (f ⁻¹' {y}).Finite := by
   simpa [Scheme.Hom.range_fiberι] using Set.finite_univ.image (f.fiberι y)
 
-@[deprecated (since := "2026-02-05")]
-alias IsFinite.finite_preimage_singleton := Scheme.Hom.finite_preimage_singleton
-
 lemma Scheme.Hom.finite_preimage [LocallyQuasiFinite f] [QuasiCompact f]
     {s : Set Y} (hs : s.Finite) : (f ⁻¹' s).Finite :=
   hs.preimage' fun _ _ ↦ f.finite_preimage_singleton _
@@ -257,10 +254,6 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     · simp [← Spec.map_comp, fromSpecResidueField, Spec.fromSpecStalk_eq]
   · exact asIso (Spec.map (Spec.residueFieldIso _ x).inv)
   · simp [Hom.fiberToSpecResidueField]
-
-@[deprecated (since := "2026-02-15")]
-alias LocallyQuasiFinite.of_isFinite_fiberToSpecResidueField :=
-  LocallyQuasiFinite.of_fiberToSpecResidueField
 
 lemma locallyQuasiFinite_iff_isFinite_fiber {f : X ⟶ Y} [QuasiCompact f] :
     LocallyQuasiFinite f ↔ ∀ x, IsFinite (f.fiberToSpecResidueField x) :=

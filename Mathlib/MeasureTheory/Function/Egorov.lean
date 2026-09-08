@@ -27,7 +27,9 @@ convergence in measure.
 
 noncomputable section
 
-open ENNReal Filter Set Topology
+open ENNReal Filter Set
+
+open scoped Topology
 
 namespace MeasureTheory
 

@@ -32,7 +32,7 @@ continuous.
 
 When `E` is a normed space, this gets us the equivalence of norms in finite dimension.
 
-## Main results :
+## Main results
 
 * `LinearMap.continuous_iff_isClosed_ker` : a linear form is continuous if and only if its kernel
   is closed.
@@ -181,7 +181,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- is injective. Since `φ.symm` is linear, it is also a vector space topology.
     -- Hence, we know that it is equal to the topology induced by the norm.
     have : induced φ.toEquiv.symm inferInstance = hnorm.toUniformSpace.toTopologicalSpace := by
-      refine unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
+      refine unique_topology_of_t2 (isTopologicalAddGroup_induced φ.symm.toLinearMap)
         (continuousSMul_induced φ.symm.toMulActionHom) ?_
       rw [t2Space_iff]
       exact fun x y hxy =>

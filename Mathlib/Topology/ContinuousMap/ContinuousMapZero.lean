@@ -128,8 +128,6 @@ lemma continuous_precomp (f : C(X, Y)₀) : Continuous fun g : C(Y, R)₀ ↦ g.
   change Continuous fun g : C(Y, R)₀ ↦ (g : C(Y, R)).comp (f : C(X, Y))
   fun_prop
 
-@[deprecated (since := "2026-02-20")] alias continuous_comp_left := continuous_precomp
-
 theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
     Injective (g.comp : C(X, Y)₀ → C(X, R)₀) :=
   fun _ _ h ↦ ext fun x ↦ hg congr($h x)

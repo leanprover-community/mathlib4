@@ -877,7 +877,6 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
 
 end
 
-set_option linter.flexible false in -- simp used on two different goals
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
   rcases e₁ : split o₁ with ⟨a, m⟩
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁
@@ -907,7 +906,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     simp only [opow_def, e₁, r₁, split_eq_scale_split' e₂, opowAux2, repr]
     rcases k with - | k
     · simp [r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
-    · simp [r₂, opow_add, opow_mul, mul_assoc, add_assoc, repr_one]
+    · simp_rw [r₂, mulNat_eq_mul, repr_add, repr_scale, repr_add, repr_mul, repr_scale, repr_one,
+        Nat.cast_one, opow_one, opow_add, repr_ofNat, repr, Nat.cast_add_one, opow_add_one,
+        add_assoc, opow_mul, opow_natCast, mul_assoc]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
       simp only [repr_mul, repr_scale, repr_one,
         Nat.cast_one, opow_one, opow_mul]

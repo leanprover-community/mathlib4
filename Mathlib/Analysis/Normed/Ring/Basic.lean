@@ -434,6 +434,19 @@ theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a�
 theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
   eventually_atTop.mpr ⟨1, fun _b h => norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
 
+@[simp]
+theorem norm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ = ‖a ^ n‖ := by
+  rw [neg_pow, neg_one_pow_eq_ite]
+  split_ifs <;> simp
+
+@[simp]
+theorem nnnorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖₊ = ‖a ^ n‖₊ := by
+  simp [nnnorm]
+
+@[simp]
+theorem enorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ₑ = ‖a ^ n‖ₑ := by
+  simp [enorm]
+
 instance ULift.seminormedRing : SeminormedRing (ULift α) :=
   { ULift.nonUnitalSeminormedRing, ULift.ring with }
 
@@ -978,7 +991,7 @@ lemma iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : 
     obtain ⟨a, ha⟩ := isEmpty_pi.mp h
     exact ⟨a, by simp⟩
   refine le_antisymm ?_ ?_
-  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp [hf₀])
+  · exact ciSup_le fun i ↦ Finset.prod_le_prod₀ (by simp [hf₀])
       fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
   · rw [Classical.nonempty_pi] at h
     have H a : ∃ i : ι a, f a i = ⨆ i, f a i := exists_eq_ciSup_of_finite

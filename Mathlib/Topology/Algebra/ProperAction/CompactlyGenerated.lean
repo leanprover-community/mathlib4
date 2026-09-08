@@ -6,24 +6,23 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Topology.Algebra.ProperAction.Basic
-public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # When a proper action is properly discontinuous
 
 This file proves that if a discrete group acts on a T2 space `X` such that `X × X` is compactly
-generated, and if the action is continuous in the second variable, then the action is properly
+coherent, and if the action is continuous in the second variable, then the action is properly
 discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
 weakly locally compact.
 
 ## Main statements
 
 * `properlyDiscontinuousSMul_iff_properSMul`: If a discrete group acts on a T2 space `X` such that
-  `X × X` is compactly generated, and if the action is continuous in the second variable,
+  `X × X` is compactly coherent, and if the action is continuous in the second variable,
   then the action is properly discontinuous if and only if it is proper.
 * `MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty`: if `G` is a topological group
-  acting continuously on a T2 space `X` such that `X × X` is compactly generated, then the action is
+  acting continuously on a T2 space `X` such that `X × X` is compactly coherent, then the action is
   proper iff, for each pair of compacts `U, V ⊆ X`, the set of `g : G` such that `g • U` intersects
   `V` is compact.
 
@@ -39,32 +38,26 @@ open Prod Set
 public section
 
 variable {G X : Type*} [TopologicalSpace X] [Group G]
-  [TopologicalSpace G] [MulAction G X] [CompactlyGeneratedSpace (X × X)] [T2Space X]
+  [TopologicalSpace G] [MulAction G X] [CompactlyCoherentSpace (X × X)] [T2Space X]
 
 /-- The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
 the set of `g` such that `U` intersects `g • V` is compact.
 
-See `ProperSMul.isCompact_setOfPred_inter_nonempty`
-for a one-way implication with fewer conditions.
+See `ProperSMul.isCompact_setOfPred_inter_nonempty` for a one-way implication with fewer conditions.
 
-**Note**: We assume `CompactlyCoherentSpace (X × X)`
-as this is the minimal assumption needed to make the proof work;
-but this follows from various more familiar conditions,
-such as `FirstCountableTopology X`.
-Importing `Mathlib.Topology.Sequences` makes this implication available.
+**Note**: We assume `CompactlyCoherentSpace (X × X)` as this is the minimal assumption needed to
+make the proof work; but this follows from various more familiar conditions, such as
+`FirstCountableTopology X`. Importing `Mathlib.Topology.Sequences` makes this implication available.
 -/
 @[to_additive /--
 The `G`-action on `X` is proper iff, for each pair of compacts `U, V` in `X`,
 the set of `g` such that `U` intersects `g +ᵥ V` is compact.
 
-See `ProperVAdd.isCompact_setOfPred_inter_nonempty`
-for a one-way implication with fewer conditions.
+See `ProperVAdd.isCompact_setOfPred_inter_nonempty` for a one-way implication with fewer conditions.
 
-**Note**: We assume `CompactlyCoherentSpace (X × X)`
-as this is the minimal assumption needed to make the proof work;
-but this follows from various more familiar conditions,
-such as `FirstCountableTopology X`.
-Importing `Mathlib.Topology.Sequences` makes this implication available.
+**Note**: We assume `CompactlyCoherentSpace (X × X)` as this is the minimal assumption needed to
+make the proof work; but this follows from various more familiar conditions, such as
+`FirstCountableTopology X`. Importing `Mathlib.Topology.Sequences` makes this implication available.
 -/]
 lemma MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty [ContinuousSMul G X] :
     ProperSMul G X ↔
@@ -92,7 +85,7 @@ alias AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty :=
   AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty
 
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly
-generated, and if the action is continuous in the second variable, then the action is properly
+coherent, and if the action is continuous in the second variable, then the action is properly
 discontinuous if and only if it is proper. This is in particular true if `X` is first-countable or
 weakly locally compact. -/
 @[to_additive]

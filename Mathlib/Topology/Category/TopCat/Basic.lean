@@ -40,10 +40,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `TopCat.of X` being printed as `{ carrier := X, str := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `TopCat.of X` as `↧X`, and in particular prevents it being printed as
+`{ carrier := X, str := ... }` by `delabStructureInstance`. -/
 @[app_delab TopCat.of]
-meta def TopCat.delabOf : Delab := delabApp
+meta def TopCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -67,19 +67,15 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category TopCat where
   Hom X Y := Hom X Y
   id X := ⟨ContinuousMap.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -169,7 +165,7 @@ equal function coercion for a continuous map `C(X, Y)`.
 theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     {f : C(X, Y)} {x} :
     @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj ↧Y) ConcreteCategory.instFunLike
       (ofHom f) x =
     @DFunLike.coe C(X, Y) X
       (fun _ ↦ Y) _
@@ -177,7 +173,7 @@ theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
   rfl
 
 instance inhabited : Inhabited TopCat :=
-  ⟨TopCat.of Empty⟩
+  ⟨↧Empty⟩
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where

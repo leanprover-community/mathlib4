@@ -90,7 +90,7 @@ theorem mul_nonneg_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R]
 theorem mul_le_mul_of_nonneg_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hbd : b ≤ d) (hc : 0 ≤ c) (hb : b ≤ 0) : a * b ≤ c * d :=
-  (mul_le_mul_of_nonpos_right hca hb).trans <| by gcongr; assumption
+  (mul_le_mul_of_nonpos_right hca hb).trans <| by gcongr
 
 theorem mul_le_mul_of_nonneg_of_nonpos' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -106,6 +106,11 @@ theorem mul_le_mul_of_nonpos_of_nonneg' [ExistsAddOfLE R] [PosMulMono R] [MulPos
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hbd : b ≤ d) (ha : 0 ≤ a) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonneg_left hbd ha).trans <| mul_le_mul_of_nonpos_right hca hd
+
+theorem mul_le_mul_of_nonpos_of_nonneg'' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
+    [AddRightMono R] [AddRightReflectLE R]
+    (hac : a ≤ c) (hdb : d ≤ b) (ha : a ≤ 0) (hd : 0 ≤ d) : a * b ≤ c * d :=
+  (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonneg_right hac hd
 
 theorem mul_le_mul_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -297,7 +302,6 @@ lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE R] [MulPosMono R]
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr
-  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE R] [MulPosMono R]
@@ -314,7 +318,6 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr
-  exact hd
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE R] [MulPosStrictMono R]
@@ -632,17 +635,24 @@ instance (priority := 100) [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
     ZeroLEOneClass R where
   zero_le_one := by simpa only [one_mul] using mul_self_nonneg (1 : R)
 
-/-- The sum of two squares is zero iff both elements are zero. -/
-lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
-    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
+section SumOfSquares
+
+variable [NoZeroDivisors R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
+/-- The sum of two terms of the form x * x is zero iff both elements are zero. -/
+lemma mul_self_add_mul_self_eq_zero :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := R), mul_self_eq_zero (M₀ := R)] <;>
     apply mul_self_nonneg
 
-lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
-    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
+/-- The sum of two squares is zero iff both elements are zero -/
+lemma sq_add_sq_eq_zero : a ^ 2 + b ^ 2 = 0 ↔ a = 0 ∧ b = 0 := by
+  simpa [pow_two] using mul_self_add_mul_self_eq_zero
+
+lemma eq_zero_of_mul_self_add_mul_self_eq_zero
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
+
+end SumOfSquares
 
 theorem pos_of_right_mul_lt_le [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -669,8 +679,8 @@ variable [CommSemiring R] [LinearOrder R] {a d : R}
 lemma max_mul_mul_le_max_mul_max [PosMulMono R] [MulPosMono R] (b c : R) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=
   have ba : b * a ≤ max d b * max c a := by
-    gcongr
-    exacts [ha, hd.trans <| le_max_left d b, le_max_right d b, le_max_right c a]
+    grw [← le_max_right c a, ← le_max_right]
+    exact hd.trans <| le_max_left d b
   have cd : c * d ≤ max a c * max b d :=
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)

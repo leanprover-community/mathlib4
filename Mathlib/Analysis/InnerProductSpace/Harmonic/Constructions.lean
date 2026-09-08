@@ -20,7 +20,9 @@ part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f�
 
 public section
 
-open Complex ComplexConjugate InnerProductSpace Topology
+open Complex InnerProductSpace
+
+open scoped ComplexConjugate Topology
 
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]

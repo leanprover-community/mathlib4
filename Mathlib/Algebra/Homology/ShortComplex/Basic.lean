@@ -164,7 +164,7 @@ lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ 
 
 /-- The short complex in `D` obtained by applying a functor `F : C ⥤ D` to a
 short complex in `C`, assuming that `F` preserves zero morphisms. -/
-@[simps]
+@[implicit_reducible, simps]
 def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
   ShortComplex.mk (F.map S.f) (F.map S.g) (by rw [← F.map_comp, S.zero, F.map_zero])
 
@@ -174,7 +174,6 @@ def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
     (F : C ⥤ D) [F.PreservesZeroMorphisms] (G : D ⥤ E) [G.PreservesZeroMorphisms] :
     S.map (F ⋙ G) = (S.map F).map G := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
 @[simps]
@@ -184,7 +183,6 @@ def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorph
   τ₂ := τ.app _
   τ₃ := τ.app _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of short complexes `S.map F ≅ S.map G` induced by
 a natural isomorphism `F ≅ G`. -/
 @[simps]
@@ -193,10 +191,9 @@ def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphis
   hom := S.mapNatTrans τ.hom
   inv := S.mapNatTrans τ.inv
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `ShortComplex C ⥤ ShortComplex D` induced by a functor `C ⥤ D` which
 preserves zero morphisms. -/
-@[simps]
+@[implicit_reducible, simps]
 def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZeroMorphisms] :
     ShortComplex C ⥤ ShortComplex D where
   obj S := S.map F

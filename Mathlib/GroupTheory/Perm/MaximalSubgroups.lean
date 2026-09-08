@@ -214,7 +214,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     apply not_lt_of_ge
     --  `G ≤ stabilizer (Equiv.Perm α) s`
     have : G = Subgroup.map G.subtype ⊤ := by
-      rw [← MonoidHom.range_eq_map, Subgroup.range_subtype]
+      rw [Subgroup.map_top, Subgroup.range_subtype]
     rw [this, Subgroup.map_le_iff_le_comap]
     rw [show Subgroup.comap G.subtype (stabilizer M s) = stabilizer G s from rfl, hG]
 

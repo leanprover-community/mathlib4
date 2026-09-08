@@ -328,8 +328,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖ₑ) ^ p := by
         -- apply the grid-lines lemma
-        apply lintegral_prod_lintegral_pow_le _ hp
-        fun_prop
+        grw [volume_pi, ← lintegral_prod_lintegral_pow_le _ hp (by fun_prop)]
   -- we estimate |u x| using the fundamental theorem of calculus.
   gcongr with x i
   calc ‖u x‖ₑ

@@ -9,10 +9,11 @@ public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 public import Mathlib.RingTheory.RootsOfUnity.Basic
+public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Covering.Quotient
-public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Covering maps involving the complex plane

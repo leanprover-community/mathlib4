@@ -32,7 +32,9 @@ variable {α β R n m : Type*}
 
 open Function
 
-open Matrix Kronecker
+open Matrix
+
+open scoped Kronecker
 
 /-- `A.IsDiag` means square matrix `A` is a diagonal matrix. -/
 def IsDiag [Zero α] (A : Matrix n n α) : Prop :=

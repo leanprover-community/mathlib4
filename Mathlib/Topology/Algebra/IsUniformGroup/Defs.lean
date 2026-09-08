@@ -5,8 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Topology.Algebra.Group.Neighborhood
 public import Mathlib.Topology.UniformSpace.Basic
-public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Uniform structure on topological groups
@@ -50,7 +50,9 @@ assert_not_exists Cauchy
 
 noncomputable section
 
-open Uniformity Topology Filter
+open Topology Filter
+
+open scoped Uniformity
 
 section LeftRight
 
@@ -340,9 +342,12 @@ theorem uniformContinuous_zpow_const (n : ℤ) : UniformContinuous fun x : α =>
   uniformContinuous_id.zpow_const n
 
 @[to_additive]
-instance (priority := 10) IsUniformGroup.to_topologicalGroup : IsTopologicalGroup α where
+instance (priority := 10) IsUniformGroup.isTopologicalGroup : IsTopologicalGroup α where
   continuous_mul := uniformContinuous_mul.continuous
   continuous_inv := uniformContinuous_inv.continuous
+
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias IsUniformGroup.to_topologicalGroup := IsUniformGroup.isTopologicalGroup
 
 @[to_additive]
 theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
@@ -699,6 +704,7 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   nth_rewrite 3 [show (1 : G) = 1 * 1⁻¹ by simp]
   apply Continuous.tendsto (by fun_prop)
 
+@[deprecated (since := "2026-08-21")]
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
 
 end

@@ -68,36 +68,46 @@ abbrev of (M : Type u) [Mul M] : MagmaCat := ⟨M⟩
 
 end MagmaCat
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddMagmaCat.of X` as `↧X`. -/
+@[app_delab AddMagmaCat.of]
+meta def AddMagmaCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `MagmaCat.of X` as `↧X`. -/
+@[app_delab MagmaCat.of]
+meta def MagmaCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 /-- The type of morphisms in `AddMagmaCat R`. -/
 @[ext]
 structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
 
 namespace MagmaCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category MagmaCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory MagmaCat (· →ₙ* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MagmaCat` back into a `MulHom`. -/
 @[to_additive /-- Turn a morphism in `AddMagmaCat` back into an `AddHom`. -/]
@@ -126,8 +136,6 @@ lemma coe_id {X : MagmaCat} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -193,7 +201,7 @@ lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
 
 @[to_additive]
 instance : Inhabited MagmaCat :=
-  ⟨MagmaCat.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 end MagmaCat
 
@@ -229,36 +237,46 @@ abbrev of (M : Type u) [Semigroup M] : Semigrp := ⟨M⟩
 
 end Semigrp
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddSemigrp.of X` as `↧X`. -/
+@[app_delab AddSemigrp.of]
+meta def AddSemigrp.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `Semigrp.of X` as `↧X`. -/
+@[app_delab Semigrp.of]
+meta def Semigrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 /-- The type of morphisms in `AddSemigrp R`. -/
 @[ext]
 structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
 
 namespace Semigrp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category Semigrp.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory Semigrp (· →ₙ* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Semigrp` back into a `MulHom`. -/
 @[to_additive /-- Turn a morphism in `AddSemigrp` back into an `AddHom`. -/]
@@ -287,8 +305,6 @@ lemma coe_id {X : Semigrp} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : Semigrp} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -355,12 +371,12 @@ lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) 
 
 @[to_additive]
 instance : Inhabited Semigrp :=
-  ⟨Semigrp.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 @[to_additive]
 instance hasForgetToMagmaCat : HasForget₂ Semigrp MagmaCat where
   forget₂ :=
-    { obj R := MagmaCat.of R
+    { obj R := ↧R
       map f := MagmaCat.ofHom f.hom }
 
 end Semigrp

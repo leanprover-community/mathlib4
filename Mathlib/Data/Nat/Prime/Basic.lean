@@ -106,6 +106,17 @@ theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :
 theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1) :=
   let ⟨n, hn⟩ := hp.odd_of_ne_two h2; ⟨n, by rw [hn, Nat.add_sub_cancel, two_mul]⟩
 
+/-- A property holds for every prime iff it holds for `2` and for every odd prime. -/
+theorem forall_prime_iff_two_and_odd {P : ℕ → Prop} :
+    (∀ p, p.Prime → P p) ↔ P 2 ∧ ∀ p, p.Prime → Odd p → P p := by
+  refine ⟨fun h ↦ ⟨h 2 prime_two, fun p hp _ ↦ h p hp⟩, fun h p hp ↦ ?_⟩
+  obtain rfl | hne := eq_or_ne p 2
+  · exact h.1
+  · exact h.2 p hp (hp.odd_of_ne_two hne)
+
+/-- To prove a property of all primes, it is enough to prove it for `2` and for the odd primes. -/
+alias ⟨_, forall_prime_of_two_of_odd⟩ := forall_prime_iff_two_and_odd
+
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} (hp : p.Prime) : p % 2 = 1 ↔ p ≠ 2 := by
   refine ⟨fun h hf => ?_, hp.eq_two_or_odd.resolve_left⟩

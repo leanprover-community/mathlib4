@@ -373,7 +373,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
   ext
-  simp [latticeClosure, (Equiv.Set.congr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
+  simp [latticeClosure, (Equiv.setCongr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
 
 @[to_dual self (reorder := map_sup map_inf)]
 lemma image_latticeClosure' (s : Set α) (f : α → β)

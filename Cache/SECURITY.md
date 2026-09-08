@@ -131,8 +131,10 @@ The trust model does not attempt to defend against:
   branch builds the cache binary itself.
 - **Compromised storage tenant** — admin-level compromise defeats the access
   grants.
-- **Substituted read endpoint** — a host named by `MATHLIB_CACHE_GET_URL`
-  chooses the bytes it serves, and it carries the storage tenant's trust.
+- **Substituted read endpoint** — the cache does not verify downloaded bytes, so
+  whichever host answers a read carries the storage tenant's trust. That is the
+  default read host `https://cache.mathlib.org`, or a host named by
+  `MATHLIB_CACHE_GET_URL`.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
 - **Maintainer trust on the trusted branches** — write access to a branch the
   cache binary is built from can land a bad tool, workflow, or toolchain.

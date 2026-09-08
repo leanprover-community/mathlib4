@@ -120,7 +120,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       intro x
       specialize this x.2
       simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] at this
-      peel this with n hn
+      gconvert this with n hn
       ext
       simp only [ZeroMemClass.coe_zero, ← hn]; clear hn
       induction n <;> simp_all [pow_succ']

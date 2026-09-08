@@ -57,10 +57,10 @@ def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
 variable {k G A}
 
 theorem lift_apply' (F : G →* A) (f : SkewMonoidAlgebra k G) :
-    lift k G A F f = f.sum fun a b ↦ algebraMap k A b * F a := rfl
+    lift k G A F f = f.coeff.sum fun a b ↦ algebraMap k A b * F a := rfl
 
 theorem lift_apply (F : G →* A) (f : SkewMonoidAlgebra k G) :
-    lift k G A F f = f.sum fun a b ↦ b • F a := by simp [lift_apply', Algebra.smul_def]
+    lift k G A F f = f.coeff.sum fun a b ↦ b • F a := by simp [lift_apply', Algebra.smul_def]
 
 theorem lift_def (F : G →* A) : (lift k G A F : SkewMonoidAlgebra k G → A) =
     liftNC ((algebraMap k A : k →+* A) : k →+ A) F := rfl
@@ -83,7 +83,7 @@ theorem lift_unique' (F : AlgHom k (SkewMonoidAlgebra k G) A) :
 /-- Decomposition of a `k`-algebra homomorphism from `SkewMonoidAlgebra k G` by
   its values on `F (single a 1)`. -/
 theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
-    (f : SkewMonoidAlgebra k G) : F f = f.sum fun a b ↦ b • F (single a 1) := by
+    (f : SkewMonoidAlgebra k G) : F f = f.coeff.sum fun a b ↦ b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
@@ -98,6 +98,9 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H
     SkewMonoidAlgebra A G →ₐ[k] SkewMonoidAlgebra A H where
   __ := mapDomainRingHom hf
   commutes' := by simp [mapDomainRingHom]
+
+@[deprecated (since := "2026-07-06")]
+alias mapDomainAlgHom_apply := coeff_mapDomainAlgHom_apply
 
 end lift
 
@@ -115,11 +118,7 @@ def equivMapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) : SkewMonoidAlgebra
 @[deprecated (since := "2026-07-06")] alias toFinsupp_equivMapDomain := coeff_equivMapDomain
 
 theorem equivMapDomain_eq_mapDomain (f : G ≃ H) (l : SkewMonoidAlgebra k G) :
-    equivMapDomain f l = mapDomain f l := by
-  apply coeff_injective
-  ext x
-  simp_rw [coeff_equivMapDomain, Finsupp.equivMapDomain_apply, coeff_mapDomain,
-    Finsupp.mapDomain_equiv_apply]
+    equivMapDomain f l = mapDomain f l := by ext; simp
 
 theorem equivMapDomain_trans {G' G'' : Type*} (f : G ≃ G') (g : G' ≃ G'')
     (l : SkewMonoidAlgebra k G) :
@@ -224,7 +223,7 @@ def submoduleOfSmulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W →
   add_mem'  := W.add_mem'
   smul_mem' := by
     intro f v hv
-    rw [← sum_single f, sum_def, Finsupp.sum, Finset.sum_smul]
+    rw [← sum_coeff_single f, Finsupp.sum, Finset.sum_smul]
     simp_rw [← smul_of, smul_assoc]
     exact Submodule.sum_smul_mem W _ fun g _ ↦ h g v hv
 

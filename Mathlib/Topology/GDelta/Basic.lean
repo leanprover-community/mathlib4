@@ -209,6 +209,30 @@ lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
 lemma IsNowhereDense.mono {s t : Set X} (ht : t ⊆ s) (hs : IsNowhereDense s) : IsNowhereDense t :=
   Set.eq_empty_of_subset_empty <| by grw [ht]; rw [hs]
 
+/-- The union of two nowhere dense sets is nowhere dense. -/
+protected lemma IsNowhereDense.union {s t : Set X} (hs : IsNowhereDense s)
+    (ht : IsNowhereDense t) : IsNowhereDense (s ∪ t) := by
+  simp only [IsNowhereDense, closure_union] at hs ht ⊢
+  have h1 : interior (closure s ∪ closure t) ⊆ closure s := by
+    simpa [ht] using isClosed_closure.interior_union_left (s := closure s) (t := closure t)
+  exact Set.eq_empty_of_subset_empty (hs ▸ interior_maximal h1 isOpen_interior)
+
+/-- A union over a `Finset` of nowhere dense sets is nowhere dense. -/
+protected lemma IsNowhereDense.biUnion {u : Finset ι} {f : ι → Set X}
+    (hf : ∀ i ∈ u, IsNowhereDense (f i)) : IsNowhereDense (⋃ i ∈ u, f i) := by
+  induction u using Finset.cons_induction with
+  | empty => simp
+  | cons a u ha ih =>
+      rw [← Finset.set_biUnion_coe, Finset.coe_cons, Set.biUnion_insert, Finset.set_biUnion_coe]
+      exact (hf a (Finset.mem_cons_self a u)).union
+        (ih fun i hi => hf i (Finset.mem_cons_of_mem hi))
+
+/-- A finite union of nowhere dense sets is nowhere dense. -/
+protected lemma IsNowhereDense.iUnion [Finite ι] {f : ι → Set X}
+    (hf : ∀ i, IsNowhereDense (f i)) : IsNowhereDense (⋃ i, f i) := by
+  cases nonempty_fintype ι
+  simpa using IsNowhereDense.biUnion (u := (Finset.univ : Finset ι)) fun i _ => hf i
+
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
     IsNowhereDense s ↔ interior s = ∅ := by

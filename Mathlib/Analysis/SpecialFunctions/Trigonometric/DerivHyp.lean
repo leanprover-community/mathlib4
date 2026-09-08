@@ -77,7 +77,7 @@ theorem analyticOnNhd_sinh {s : Set ℂ} : AnalyticOnNhd ℂ sinh s :=
 lemma analyticOn_sinh {s : Set ℂ} : AnalyticOn ℂ sinh s :=
   contDiff_sinh.contDiffOn.analyticOn
 
-@[simp]
+@[simp, dlmf 4.34.E1]
 theorem deriv_sinh : deriv sinh = cosh :=
   funext fun x => (hasDerivAt_sinh x).deriv
 
@@ -123,7 +123,7 @@ theorem analyticOnNhd_cosh {s : Set ℂ} : AnalyticOnNhd ℂ cosh s :=
 lemma analyticOn_cosh {s : Set ℂ} : AnalyticOn ℂ cosh s :=
   contDiff_cosh.contDiffOn.analyticOn
 
-@[simp]
+@[simp, dlmf 4.34.E2]
 theorem deriv_cosh : deriv cosh = sinh :=
   funext fun x => (hasDerivAt_cosh x).deriv
 

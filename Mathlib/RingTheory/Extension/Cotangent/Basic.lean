@@ -177,15 +177,12 @@ lemma map_comp (f : Hom P P') (g : Hom P' P'') :
     CotangentSpace.map (g.comp f) =
       (CotangentSpace.map g).restrictScalars S ∘ₗ CotangentSpace.map f := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero =>
-    simp only [map_zero]
+  induction x using TensorProduct.inductionOn with
   | add =>
     simp only [map_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, *]
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul => simp only [Derivation.tensorProductTo_tmul, tmul_smul, smul_tmul', map_tmul,
@@ -291,15 +288,12 @@ lemma CotangentSpace.map_sub_map (f g : Hom P P') :
     CotangentSpace.map f - CotangentSpace.map g =
       P'.cotangentComplex.restrictScalars S ∘ₗ (f.sub g) := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero =>
-    simp only [map_zero]
+  induction x using TensorProduct.inductionOn with
   | add =>
     simp only [map_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, *]
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul =>
@@ -521,14 +515,13 @@ end Generators
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 -- TODO: generalize to essentially of finite presentation algebras
 open KaehlerDifferential in
 attribute [local instance] Module.finitePresentation_of_projective in
 instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S Ω[S⁄R] := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
+  have : Algebra.FiniteType R P.toExtension.Ring := by
+    simp only [Generators.toExtension_Ring]; infer_instance
   refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
   exact (Extension.Cotangent.finite P.fg_ker).1.map P.toExtension.cotangentComplex
@@ -588,13 +581,12 @@ abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 attribute [local instance] Module.finitePresentation_of_projective in
 instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
     Module.Finite S (H1Cotangent R S) := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
+  have : Algebra.FiniteType R P.toExtension.Ring := by
+    simp only [Generators.toExtension_Ring]; infer_instance
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]

@@ -70,9 +70,6 @@ protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
 protected theorem rfl : a ≡ a [ZMOD n] :=
   ModEq.refl _
 
-instance : Std.Refl (ModEq n) :=
-  ⟨ModEq.refl⟩
-
 @[symm]
 protected theorem symm : a ≡ b [ZMOD n] → b ≡ a [ZMOD n] :=
   Eq.symm
@@ -81,8 +78,10 @@ protected theorem symm : a ≡ b [ZMOD n] → b ≡ a [ZMOD n] :=
 protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMOD n] :=
   Eq.trans
 
-instance : IsTrans ℤ (ModEq n) where
-  trans := @Int.ModEq.trans n
+instance : IsEquiv ℤ (ModEq n) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id
 

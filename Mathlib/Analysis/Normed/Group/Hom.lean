@@ -696,7 +696,7 @@ theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
 
 @[simp]
 theorem range_comp_incl_top : (f.comp (incl (⊤ : AddSubgroup V₁))).range = f.range := by
-  simp [comp_range, incl_range, ← AddMonoidHom.range_eq_map]; rfl
+  simp [comp_range, incl_range, AddSubgroup.map_top]; rfl
 
 end Range
 

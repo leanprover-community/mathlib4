@@ -43,8 +43,7 @@ lemma Algebra.TensorProduct.includeLeft_map_center_le :
   simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
   obtain ⟨b, hb0, rfl⟩ := hx
   intro bc
-  induction bc using TensorProduct.induction_on with
-  | zero => simp
+  induction bc using TensorProduct.inductionOn with
   | tmul b' c => simp [hb0]
   | add _ _ _ _ => simp_all [add_mul, mul_add]
 
@@ -53,8 +52,7 @@ lemma Algebra.TensorProduct.includeRight_map_center_le :
   simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
   obtain ⟨c, hc0, rfl⟩ := hx
   intro bc
-  induction bc using TensorProduct.induction_on with
-  | zero => simp
+  induction bc using TensorProduct.inductionOn with
   | tmul b c' => simp [hc0]
   | add _ _ _ _ => simp_all [add_mul, mul_add]
 

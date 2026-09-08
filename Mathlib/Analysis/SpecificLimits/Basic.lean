@@ -28,7 +28,9 @@ assert_not_exists Module.Basis NormedSpace
 
 noncomputable section
 
-open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
+open Set Function Filter Finset Metric Nat uniformity NNReal ENNReal
+
+open scoped Topology
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -686,7 +688,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
         Finset.prod_range_succ']
       simp only [one_mul, Nat.cast_add, zero_add, Nat.cast_one]
       refine
-            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one ?_ ?_) <;>
+            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one₀ ?_ ?_) <;>
           intro x hx <;>
         rw [Finset.mem_range] at hx
       · positivity

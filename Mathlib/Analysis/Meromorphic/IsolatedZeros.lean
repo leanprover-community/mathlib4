@@ -26,7 +26,9 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜} {x : 𝕜} {f g : 𝕜 → E}
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace MeromorphicAt
 

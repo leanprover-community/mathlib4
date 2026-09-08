@@ -423,7 +423,9 @@ end Matrix
 
 namespace IsCoprime
 
-open Matrix MatrixGroups SpecialLinearGroup
+open Matrix SpecialLinearGroup
+
+open scoped MatrixGroups
 
 variable {R : Type*} [CommRing R]
 
@@ -583,7 +585,7 @@ section SL2
 
 variable {F : Type*} [Field F]
 
-open MatrixGroups
+open scoped MatrixGroups
 
 namespace SpecialLinearGroup
 
@@ -810,7 +812,7 @@ end Matrix
 
 namespace ModularGroup
 
-open MatrixGroups
+open scoped MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 

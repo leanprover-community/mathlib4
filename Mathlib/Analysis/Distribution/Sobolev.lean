@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Fourier.LpSpace
 
-/-! # Sobolev spaces (Bessel potential spaces)
+/-! # Sobolev tempered distributions
 
 In this file we define Sobolev spaces on normed vector spaces via the Fourier transform.
 These spaces are also known as Bessel potential spaces. The Bessel potential operator
@@ -21,11 +21,13 @@ Note that the Bessel potential is the operator `(1 - (2 * π) ^ (-2) • Δ) ^ (
 `(1 - Δ) ^ (s / 2)` due to the convention of the Fourier transform. This obviously does not impact
 the definition of the Sobolev spaces.
 
+The bundled variant of `TemperedDistribution.MemSobolev` is called `BesselPotentialSpace`.
+
 ## Main definitions
 
 * `TemperedDistribution.besselPotential`: The Bessel potential operator is the Fourier multiplier
   with the function `(1 + ‖x‖ ^ 2) ^ (s / 2)`.
-* `TemperedDistribution.memSobolev`: A tempered distribution lies in the Sobolev space of order `s`
+* `TemperedDistribution.MemSobolev`: A tempered distribution lies in the Sobolev space of order `s`
   and `p` if `besselPotential E F s u ∈ Lp`.
 
 ## Main statements
@@ -145,7 +147,9 @@ section normed
 variable [NormedSpace ℂ F] [CompleteSpace F]
 
 /-- A tempered distribution `f` is a Sobolev function of order `s` if there exists an `Lp` function
-`f'` such that `𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f = f'`. -/
+`f'` such that `𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f = f'`.
+
+The bundled variant of these variant of Sobolev functions is called `BesselPotentialSpace`. -/
 def MemSobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (f : 𝓢'(E, F)) : Prop :=
   ∃ (f' : Lp F p (volume : Measure E)),
     besselPotential E F s f = f'

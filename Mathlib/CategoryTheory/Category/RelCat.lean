@@ -5,8 +5,8 @@ Authors: Kim Morrison, Uni Marx
 -/
 module
 
+public import Mathlib.Basic.Rel
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Data.Rel
 
 /-!
 # Basics on the category of relations

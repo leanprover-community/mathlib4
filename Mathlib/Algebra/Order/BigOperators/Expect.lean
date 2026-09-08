@@ -154,13 +154,11 @@ end LinearOrderedAddCommMonoid
 
 section LinearOrderedCancelAddMonoid
 variable [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
-  [PosSMulStrictMono ℚ≥0 α] {a : α} {s : Finset ι} {f g : ι → α}
+  {a : α} {s : Finset ι} {f g : ι → α}
 
 lemma exists_le_of_expect_le_expect (hs : s.Nonempty) (h : 𝔼 i ∈ s, g i ≤ 𝔼 i ∈ s, f i) :
-    ∃ x ∈ s, g x ≤ f x := by
-  obtain ⟨_, hx⟩ := hs
-  contrapose! h
-  exact expect_lt_expect (fun _ hx ↦ le_of_lt (h _ hx)) ⟨_, ⟨hx, h _ hx⟩⟩
+    ∃ x ∈ s, g x ≤ f x :=
+  exists_le_of_sum_le hs <| by rw [← card_smul_expect, ← card_smul_expect]; gcongr
 
 lemma exists_le_of_le_expect (hs : s.Nonempty) (h : a ≤ 𝔼 i ∈ s, f i) : ∃ x ∈ s, a ≤ f x :=
   exists_le_of_expect_le_expect hs (by rwa [expect_const hs _])

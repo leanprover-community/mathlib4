@@ -144,7 +144,7 @@ variable [IsScalarTower R B B] [SMulCommClass R B B]
 open NonUnitalContinuousFunctionalCalculus in
 /-- Transfer a continuous functional calculus instance to a type synonym with
 a weaker topology. -/
-theorem NonUnitalContinuousFunctionCalculus.transfer (e : A ≃⋆ₐ[R] B)
+theorem NonUnitalContinuousFunctionalCalculus.transfer (e : A ≃⋆ₐ[R] B)
     (he : Continuous e) (hpq : ∀ x, p x ↔ q (e x)) :
     NonUnitalContinuousFunctionalCalculus R B q where
   predicate_zero := map_zero e ▸ (hpq 0 |>.mp instCFC.predicate_zero)
@@ -159,6 +159,9 @@ theorem NonUnitalContinuousFunctionCalculus.transfer (e : A ≃⋆ₐ[R] B)
       cfcₙHomTransfer_id e hpq b hb,
       fun f ↦ by simp [cfcₙHom_map_quasispectrum ha, ContinuousMapZero.starAlgEquivPrecomp],
       fun f ↦ by simp [← hpq, cfcₙHom_predicate ha]⟩
+
+@[deprecated (since := "2026-09-02")] alias NonUnitalContinuousFunctionCalculus.transfer :=
+  NonUnitalContinuousFunctionalCalculus.transfer
 
 lemma cfcₙHom_eq_cfcₙHomTransfer [NonUnitalContinuousFunctionalCalculus R B q]
     [ContinuousMapZero.UniqueHom R B] (e : A ≃⋆ₐ[R] B) (he : Continuous e)

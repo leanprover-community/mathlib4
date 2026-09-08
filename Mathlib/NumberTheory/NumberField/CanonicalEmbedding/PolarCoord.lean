@@ -99,8 +99,7 @@ def polarCoordReal : OpenPartialHomeomorph (realMixedSpace K) (realMixedSpace K)
 theorem measurable_polarCoordReal_symm :
     Measurable (polarCoordReal K).symm := by
   refine measurable_fst.prodMk <| Measurable.comp ?_ measurable_snd
-  exact measurable_pi_lambda _
-    fun _ ↦ continuous_polarCoord_symm.measurable.comp (measurable_pi_apply _)
+  exact .of_eval fun _ ↦ continuous_polarCoord_symm.measurable.comp (measurable_pi_apply _)
 
 theorem polarCoordReal_source :
     (polarCoordReal K).source = Set.univ ×ˢ (Set.univ.pi fun _ ↦ polarCoord.source) := rfl

@@ -477,7 +477,7 @@ theorem edgeSet_completeBipartiteGraph :
     .range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
   refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
   · cases u <;> cases v <;> simp_all
-  · grind [completeBipartiteGraph_adj, mem_edgeSet]
+  · grind [mem_edgeSet]
 
 theorem encard_edgeSet_completeBipartiteGraph :
     (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by

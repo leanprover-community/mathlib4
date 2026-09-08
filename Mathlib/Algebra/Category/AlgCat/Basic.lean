@@ -28,7 +28,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of R-algebras and their morphisms. -/
 structure AlgCat where
-  private mk ::
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
   [isRing : Ring carrier]
@@ -45,12 +45,15 @@ instance : CoeSort (AlgCat R) (Type v) :=
 
 attribute [coe] AlgCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `AlgCat R`. -/
 abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgCat.{v} R :=
   ⟨X⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `AlgCat.of R X` as `↧X`. -/
+@[app_delab AlgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
@@ -59,22 +62,18 @@ variable {R} in
 /-- The type of morphisms in `AlgCat R`. -/
 @[ext]
 structure Hom (A B : AlgCat.{v} R) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying algebra map. -/
   hom' : A →ₐ[R] B
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (AlgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (AlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {R} in
 /-- Turn a morphism in `AlgCat` back into an `AlgHom`. -/
@@ -161,12 +160,12 @@ instance {S : AlgCat.{v} R} : Algebra R ((forget (AlgCat R)).obj S) :=
 
 instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
   forget₂ :=
-    { obj := fun A => RingCat.of A
+    { obj := fun A => ↧A
       map := fun f => RingCat.ofHom f.hom.toRingHom }
 
 @[simp]
 lemma forget₂_ringCat_obj (X : AlgCat.{v} R) :
-    (forget₂ (AlgCat.{v} R) RingCat.{v}).obj X = RingCat.of X :=
+    (forget₂ (AlgCat.{v} R) RingCat.{v}).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -179,12 +178,12 @@ instance (A : AlgCat.{v} R) : Algebra R ((forget₂ (AlgCat.{v} R) RingCat).obj 
 
 instance hasForgetToModule : HasForget₂ (AlgCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
-    { obj := fun M => ModuleCat.of R M
+    { obj := fun M => ↧M
       map := fun f => ModuleCat.ofHom f.hom.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgCat.{v} R) :
-    (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).obj X = ModuleCat.of R X :=
+    (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -259,7 +258,7 @@ def restrictScalars {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
     AlgCat.{v} S ⥤ AlgCat.{v} R where
   obj A :=
     letI : Algebra R A := Algebra.compHom _ f
-    AlgCat.of R A
+    ↧A
   map {A B} g :=
     letI : Algebra R A := Algebra.compHom _ f
     letI : Algebra R B := Algebra.compHom _ f
@@ -318,7 +317,7 @@ instance {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
 @[simps! (dsimpLhs := true) functor inverse_obj inverse_map_hom unitIso_hom_app_hom_apply counitIso]
 def intEquivalence : AlgCat.{u} ℤ ≌ RingCat.{u} where
   functor := forget₂ _ _
-  inverse.obj A := AlgCat.of ℤ A
+  inverse.obj A := ↧A
   inverse.map f := AlgCat.ofHom f.hom.toIntAlgHom
   unitIso := NatIso.ofComponents
     fun A ↦ AlgEquiv.toAlgebraIso (@.ofRingEquiv (f := RingEquiv.refl _)

@@ -34,7 +34,9 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 variable {X : Type*}
 
-open Filter Set Uniformity UniformSpace SetRel
+open Filter Set UniformSpace SetRel
+
+open scoped Uniformity
 
 section UniformSpace
 variable [UniformSpace X]

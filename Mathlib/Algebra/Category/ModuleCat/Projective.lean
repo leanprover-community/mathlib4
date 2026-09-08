@@ -58,7 +58,7 @@ theorem projective_of_free {ι : Type w} (b : Basis ι R M) : Projective M :=
 instance enoughProjectives [Small.{v} R] : EnoughProjectives (ModuleCat.{v} R) where
   presentation M :=
     let e : Basis M R (M →₀ Shrink.{v} R) := ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)⟩
-    ⟨{p := ModuleCat.of R (M →₀ Shrink.{v} R)
+    ⟨{p := ↧(M →₀ Shrink.{v} R)
       projective := projective_of_free e
       f := ofHom <| e.constr ℕ _root_.id
       epi := by

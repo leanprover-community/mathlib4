@@ -16,7 +16,7 @@ public import Mathlib.Data.Nat.Digits.Defs
 /-!
 # Digits of a natural number
 
-This provides lemma about the digits of natural numbers.
+This provides lemmas about the digits of natural numbers.
 -/
 
 public section

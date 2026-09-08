@@ -12,7 +12,7 @@ public import Mathlib.Logic.Embedding.Basic
 # Embeddings of `Fin n`
 
 `Fin n` is the type whose elements are natural numbers smaller than `n`.
-This file defines embeddings between `Fin n` and other types,
+This file defines embeddings between `Fin n` and other types.
 
 ## Main definitions
 

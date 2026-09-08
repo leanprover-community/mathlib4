@@ -77,7 +77,7 @@ def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
   map_add' _ _ := by simp [sum_add_distrib]
   map_smul' _ _ := by
     ext
-    simp [MvPolynomial.coeff, single, MvPolynomial.monomial]
+    simp [single, MvPolynomial.monomial]
 
 theorem truncFinset_apply (p : MvPowerSeries σ R) :
     truncFinset R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := by rfl
@@ -86,17 +86,17 @@ theorem truncFinset_apply (p : MvPowerSeries σ R) :
 theorem coeff_truncFinset_of_mem {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
     (truncFinset R s p).coeff x = p.coeff x := by
   classical
-  simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
+  simp [truncFinset_apply, h]
 
 @[grind =]
 theorem coeff_truncFinset_eq_zero {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∉ s) :
     (truncFinset R s p).coeff x = 0 := by
   classical
-  simp [truncFinset_apply, MvPolynomial.coeff_sum, h]
+  simp [truncFinset_apply, h]
 
 lemma coeff_truncFinset [DecidableEq σ] {x : σ →₀ ℕ} (p : MvPowerSeries σ R) :
     (truncFinset R s p).coeff x = if x ∈ s then p.coeff x else 0 := by
-  simp [truncFinset_apply, MvPolynomial.coeff_sum]
+  simp [truncFinset_apply]
 
 theorem truncFinset_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
     truncFinset R s (monomial x r) = MvPolynomial.monomial x r := by
@@ -107,7 +107,7 @@ theorem truncFinset_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
 theorem truncFinset_monomial_eq_zero {x : σ →₀ ℕ} (r : R) (h : x ∉ s) :
     truncFinset R s (monomial x r) = 0 := by
   classical
-  ext; simp [truncFinset, MvPolynomial.coeff_sum, coeff_monomial]
+  ext; simp [truncFinset, coeff_monomial]
   grind
 
 theorem truncFinset_C (h : 0 ∈ s) (r : R) : truncFinset R s (C r) = MvPolynomial.C r :=
@@ -270,11 +270,6 @@ theorem coeff_trunc'_mul_trunc'_eq_coeff_mul (n : σ →₀ ℕ)
     (trunc' R n f * trunc' R n g).coeff m = coeff m (f * g) :=
   coeff_trunc'_mul_trunc'_eq_coeff_mul₂ n n f g h h
 
-@[deprecated coeff_trunc'_mul_trunc'_eq_coeff_mul (since := "2026-02-20")]
-theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ) (f g : MvPowerSeries σ R) {m : σ →₀ ℕ}
-    (h : m ≤ n) : coeff m (f * g) = (trunc' R n f * trunc' R n g).coeff m :=
-  (coeff_trunc'_mul_trunc'_eq_coeff_mul n f g h).symm
-
 theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
     trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) :=
   truncFinset_truncFinset_pow (by intro; grind) hk φ
@@ -349,7 +344,7 @@ lemma truncTotal_one (h : n ≠ 0) : truncTotal n (1 : MvPowerSeries σ R) = 1 :
   truncFinset_one (by revert h; contrapose; simp)
 
 lemma coeff_truncTotal_mul_truncTotal_eq_coeff_mul (hx : degree x < n) :
-    MvPolynomial.coeff x (p.truncTotal n * q.truncTotal n) =
+    (p.truncTotal n * q.truncTotal n).coeff x =
       (coeff x) (p * q) := coeff_truncFinset_mul_truncFinset_eq_coeff_mul
   (fun _ _ h ↦ by simp; grind [degree_mono h]) p q (by simpa)
 

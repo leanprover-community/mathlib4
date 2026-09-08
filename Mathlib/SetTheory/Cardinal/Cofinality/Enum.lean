@@ -131,7 +131,7 @@ theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMo
     use (Subtype.strictMono_coe _).comp (enum s hs).strictMono
     simp
   · rintro ⟨hf, rfl⟩
-    rw [← StrictMono.range_inj H hf]
+    rw [← StrictMono.range_inj_of_wellFoundedLT H hf]
     simp
     rfl
 

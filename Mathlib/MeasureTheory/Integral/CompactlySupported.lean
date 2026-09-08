@@ -18,8 +18,9 @@ functions.
 
 @[expose] public section
 
-open scoped ENNReal NNReal
-open CompactlySupported MeasureTheory
+open MeasureTheory
+
+open scoped ENNReal NNReal CompactlySupported
 
 variable {X : Type*}
 

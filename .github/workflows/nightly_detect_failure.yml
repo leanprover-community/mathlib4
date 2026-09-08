@@ -107,6 +107,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      # `pull-requests: read` is needed by the `open_bump_prs` step below, which lists open
+      # adaptation PRs. Listing PRs on a public repo may happen to work unauthenticated, but
+      # this job passes a `GITHUB_TOKEN` restricted by this block, so ask for the scope.
+      pull-requests: read
       id-token: write
 
     steps:
@@ -289,8 +293,55 @@ jobs:
           const latestBranch = bumpBranches[0];
           return latestBranch;
 
-    - name: Fetch lean-toolchain from latest bump branch
+    # Don't stack up adaptation PRs. If an earlier `bump/nightly-YYYY-MM-DD` PR into the
+    # current bump branch is still open, creating another one just buries it: the new branch
+    # is cut from a `bump/v4.X.0` that is missing the earlier adaptations, so the merge
+    # conflicts and the humans get a daily "creation failed" notice that says nothing about
+    # the real blocker. Instead we don't attempt at all, and say so (see
+    # `Report skipped bump-branch attempt to Zulip` below).
+    - name: Check for an open bump/nightly-YYYY-MM-DD PR into the current bump branch
       if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      id: open_bump_prs
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      with:
+        script: |
+          const repo = 'mathlib4-nightly-testing';
+          const base = '${{ steps.latest_bump_branch.outputs.result }}';
+
+          const prs = await github.paginate(github.rest.pulls.list, {
+            owner: 'leanprover-community',
+            repo,
+            state: 'open',
+            base
+          });
+
+          // Only branches in the nightly-testing repo itself count: a branch named
+          // `bump/nightly-*` in someone's fork must not be able to stall the automation.
+          // Drafts do count; a draft adaptation PR still needs to land before the next one.
+          const blocking = prs
+            .filter(pr => pr.head.repo && pr.head.repo.full_name === `leanprover-community/${repo}`)
+            .filter(pr => /^bump\/nightly-\d{4}-\d{2}-\d{2}(-rev\d+)?$/.test(pr.head.ref))
+            .sort((a, b) => a.number - b.number);
+
+          for (const pr of blocking) {
+            console.log(`Blocking: #${pr.number} ${pr.head.ref}`);
+          }
+          if (!blocking.length) {
+            console.log(`No open bump/nightly-* PR into ${base}.`);
+          }
+
+          core.setOutput('found', blocking.length ? 'true' : 'false');
+          core.setOutput('count', String(blocking.length));
+          // Render the list here so the reporting step below needs no JSON parsing.
+          core.setOutput('list_md', blocking
+            .map(pr => `* [nightly#${pr.number}](${pr.html_url}) ${pr.title}`)
+            .join('\n'));
+          core.setOutput('first_md', blocking.length
+            ? `[nightly#${blocking[0].number}](${blocking[0].html_url})`
+            : '');
+
+    - name: Fetch lean-toolchain from latest bump branch
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       id: bump_version
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
@@ -379,7 +430,9 @@ jobs:
 
           This needs to be fixed for the nightly testing process to work correctly.
 
-    - name: Setup for automatic PR creation
+    # Deliberately not conditioned on `open_bump_prs`: both the creation path and the
+    # `Report skipped bump-branch attempt to Zulip` step below need the Zulip client.
+    - name: Setup Zulip client and git identity
       if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
@@ -401,14 +454,103 @@ jobs:
         chmod 600 ~/.zuliprc
         echo "Setup complete"
 
+    - name: Report skipped bump-branch attempt to Zulip
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'true'
+      env:
+        BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        BLOCKING_COUNT: ${{ steps.open_bump_prs.outputs.count }}
+        BLOCKING_LIST: ${{ steps.open_bump_prs.outputs.list_md }}
+        BLOCKING_FIRST: ${{ steps.open_bump_prs.outputs.first_md }}
+      shell: python
+      run: |
+        import os
+        import zulip
+        client = zulip.Client(config_file="~/.zuliprc")
+        current_version = os.getenv('NIGHTLY')
+        bump_branch = os.getenv('BUMP_BRANCH')
+        count = int(os.getenv('BLOCKING_COUNT'))
+        blocking_list = os.getenv('BLOCKING_LIST')
+        blocking_first = os.getenv('BLOCKING_FIRST')
+
+        # This marker is the dedup key, and is what distinguishes this message from the
+        # `Automatic PR creation failed` reminder that shares this topic. Don't reword it
+        # without updating the `should_post` test below.
+        marker = 'Bump branch creation skipped'
+        preamble = (
+            f"⏸️ **{marker}.** We did not attempt to create a bump branch merging "
+            f"`nightly-testing` with the `nightly-{current_version}` toolchain into "
+            f"`{bump_branch}`, because "
+        )
+        if count == 1:
+            payload = (
+                preamble
+                + f"the last such PR at {blocking_first} has not yet been merged. "
+                "Please review and/or merge this first; we'll then attempt to create a new "
+                "bump branch for the next nightly."
+            )
+        else:
+            payload = (
+                preamble
+                + "these earlier bump PRs have not yet been merged:\n\n"
+                + blocking_list
+                + "\n\nPlease review and/or merge these first, oldest first; we'll then "
+                "attempt to create a new bump branch for the next nightly."
+            )
+
+        # Post at most once per nightly date and bump branch: this job runs on every green CI
+        # of `nightly-testing`, several times a day. We narrow by sender to ignore human
+        # replies, and look back over several messages rather than just the newest, so that an
+        # intervening `Automatic PR creation failed` notice cannot hide our own last one.
+        bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
+        response = client.get_messages({
+          'anchor': 'newest',
+          'num_before': 20,
+          'num_after': 0,
+          'narrow': [
+            {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
+            {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'},
+            {'operator': 'sender', 'operand': bot_email}
+          ],
+          'apply_markdown': False    # Otherwise the content test below fails.
+        })
+        # Newest first, and only messages of our own kind.
+        previous = [m for m in reversed(response['messages']) if marker in m['content']]
+        last_skip_message = previous[0] if previous else None
+
+        should_post = True
+        if last_skip_message:
+            last_content = last_skip_message['content']
+            if (f'`nightly-{current_version}`' in last_content
+                    and f'`{bump_branch}`' in last_content):
+                should_post = False
+                print(f'Already posted for nightly {current_version} and {bump_branch}')
+        if should_post:
+            if last_skip_message:
+                print("###### Last message of this kind:")
+                print(last_skip_message['content'])
+            print("###### Current message:")
+            print(payload)
+            result = client.send_message({
+                'type': 'stream',
+                'to': 'nightly-testing-mathlib',
+                'topic': 'Mathlib bump branch reminders',
+                'content': payload
+            })
+            print(result)
+            # The Zulip client reports API-level failures in the return value rather than by
+            # raising, so a rejected message would otherwise be lost with the job still green.
+            if result.get('result') != 'success':
+                raise RuntimeError(
+                    f"Zulip send failed: {result.get('code')}: {result.get('msg')}")
+
     - name: Clean workspace and checkout Mathlib4
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       run: |
         sudo rm -rf -- *
     # Regenerate the app token just before use.
     # GitHub App tokens expire after 1 hour, and the preceding steps can take longer than that.
     - name: Regenerate app token for Mathlib4 checkout
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       id: app-token-2
       uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
@@ -419,14 +561,14 @@ jobs:
         azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
     - name: Checkout Mathlib4 repository
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
         fetch-depth: 0 # checkout all branches
         token: ${{ steps.app-token-2.outputs.token }}
 
     - name: Checkout local actions
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         ref: ${{ github.workflow_sha }}
@@ -435,12 +577,12 @@ jobs:
         path: workflow-actions
     - name: Get mathlib-ci
       id: get_mathlib_ci
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Attempt automatic PR creation
       id: auto_pr
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       continue-on-error: true
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
@@ -461,7 +603,7 @@ jobs:
         "${CI_SCRIPTS_DIR}/nightly/create-adaptation-pr.sh" --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
 
     - name: Fallback to manual instructions
-      if: steps.tag.outputs.is_nightly == 'true' && steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false'
+      if: steps.tag.outputs.is_nightly == 'true' && steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false' && steps.open_bump_prs.outputs.found == 'false'
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
@@ -509,13 +651,20 @@ jobs:
             # Check if we already posted a message for this nightly date and bump branch.
             # We extract these fields from the last bot message rather than comparing substrings,
             # since the message also contains a run ID that differs between workflow runs.
+            # This topic also carries `Bump branch creation skipped` messages, posted by the
+            # step of that name above, and those quote the titles of the blocking PRs. Require
+            # this message's own marker before trusting the field regexes below, so that a PR
+            # title cannot make a skip notice look like an already-reported failure.
             should_post = True
             if last_bot_message:
                 last_content = last_bot_message['content']
                 # Extract nightly date and bump branch from last bot message
                 date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)', last_content)
-                branch_match = re.search(r'PR that to (bump/v[\d.]+)', last_content)
-                if date_match and branch_match:
+                # `[\d.]+` used to swallow the sentence-ending period here, so `branch_match`
+                # never equalled the bare branch name and this dedup never fired: several
+                # nightly dates in this topic have two identical reminders as a result.
+                branch_match = re.search(r'PR that to (bump/v\d+\.\d+\.\d+)', last_content)
+                if 'Automatic PR creation' in last_content and date_match and branch_match:
                     last_date = date_match.group(1)
                     last_branch = branch_match.group(1)
                     if last_date == current_version and last_branch == bump_branch:

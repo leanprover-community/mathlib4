@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.MeasureTheory.Measure.Dirac.Def
 public import Mathlib.MeasureTheory.Measure.Filter
 
 /-!
@@ -84,13 +85,25 @@ theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (
   simpa only [mapₗ, hf, hg, hs, dite_eq_left, liftLinear_apply, OuterMeasure.map_apply]
     using! measure_congr (h.preimage s)
 
+private lemma nonempty_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable f μ) :
+    Nonempty β := by
+  contrapose! hf
+  exact (measurable_of_empty_codomain f).aemeasurable
+
 open scoped Classical in
-/-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
-measurable function. -/
+/-- The pushforward of a measure. If `f` is not an almost everywhere measurable function,
+we define it to be `0` if `μ = 0`, and to be an arbitrary Dirac mass otherwise. That way
+we always have `map f 0 = 0`, and the push-forward of a probability measure is always a
+probability measure. -/
 noncomputable
 irreducible_def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
     Measure β :=
-  if hf : AEMeasurable f μ then mapₗ (hf.mk f) μ else 0
+  if hf : AEMeasurable f μ
+    then mapₗ (hf.mk f) μ
+    else if μ = 0 then 0
+    else
+      haveI : Nonempty β := by exact nonempty_of_not_aemeasurable hf
+      dirac Classical.ofNonempty
 
 theorem mapₗ_mk_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) :
     mapₗ (hf.mk f) μ = map f μ := by simp [map, hf]
@@ -109,11 +122,10 @@ protected theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 
 @[simp]
-theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
-    μ.map f = 0 := by simp [map, hf]
-
-theorem _root_.AEMeasurable.of_map_ne_zero {f : α → β} {μ : Measure α} (hf : μ.map f ≠ 0) :
-    AEMeasurable f μ := not_imp_comm.1 map_of_not_aemeasurable hf
+theorem map_of_not_aemeasurable_of_ne_zero {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ)
+    (hμ : μ ≠ 0) :
+    haveI : Nonempty β := by exact nonempty_of_not_aemeasurable hf
+    μ.map f = dirac Classical.ofNonempty := by simp [map, hf, hμ]
 
 theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Measure.map g μ := by
   by_cases hf : AEMeasurable f μ
@@ -122,26 +134,23 @@ theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Meas
     exact
       mapₗ_congr hf.measurable_mk hg.measurable_mk (hf.ae_eq_mk.symm.trans (h.trans hg.ae_eq_mk))
   · have hg : ¬AEMeasurable g μ := by simpa [← aemeasurable_congr h] using hf
-    simp [map_of_not_aemeasurable, hf, hg]
+    obtain rfl | hμ := eq_or_ne μ 0
+    · simp
+    simp [map_of_not_aemeasurable_of_ne_zero, hf, hg, hμ]
 
 @[simp]
 protected theorem map_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    (c : R) (μ : Measure α) (f : α → β) : (c • μ).map f = c • μ.map f := by
+    (c : R) {μ : Measure α} {f : α → β} (hf : AEMeasurable f μ) : (c • μ).map f = c • μ.map f := by
   suffices ∀ c : ℝ≥0∞, (c • μ).map f = c • μ.map f by simpa using this (c • 1)
   clear c; intro c
   rcases eq_or_ne c 0 with (rfl | hc); · simp
-  by_cases hf : AEMeasurable f μ
-  · have hfc : AEMeasurable f (c • μ) :=
-      ⟨hf.mk f, hf.measurable_mk, (ae_ennreal_smul_measure_iff hc).2 hf.ae_eq_mk⟩
-    simp only [← mapₗ_mk_apply_of_aemeasurable hf, ← mapₗ_mk_apply_of_aemeasurable hfc, map_smulₛₗ,
-      RingHom.id_apply]
-    congr 1
-    apply mapₗ_congr hfc.measurable_mk hf.measurable_mk
-    exact .trans ((ae_ennreal_smul_measure_iff hc).1 hfc.ae_eq_mk.symm) hf.ae_eq_mk
-  · have hfc : ¬AEMeasurable f (c • μ) := by
-      intro hfc
-      exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_ennreal_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
-    simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
+  have hfc : AEMeasurable f (c • μ) :=
+    ⟨hf.mk f, hf.measurable_mk, (ae_ennreal_smul_measure_iff hc).2 hf.ae_eq_mk⟩
+  simp only [← mapₗ_mk_apply_of_aemeasurable hf, ← mapₗ_mk_apply_of_aemeasurable hfc, map_smulₛₗ,
+    RingHom.id_apply]
+  congr 1
+  apply mapₗ_congr hfc.measurable_mk hf.measurable_mk
+  exact .trans ((ae_ennreal_smul_measure_iff hc).1 hfc.ae_eq_mk.symm) hf.ae_eq_mk
 
 variable {f : α → β}
 
@@ -177,14 +186,10 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
 /-- If `map f μ = μ`, then the measure of the preimage of any null measurable set `s`
 is equal to the measure of `s`.
 Note that this lemma does not assume (a.e.) measurability of `f`. -/
-lemma measure_preimage_of_map_eq_self {f : α → α} (hf : map f μ = μ)
+lemma measure_preimage_of_map_eq_self {f : α → α} (hf : map f μ = μ) (hfm : AEMeasurable f μ)
     {s : Set α} (hs : NullMeasurableSet s μ) : μ (f ⁻¹' s) = μ s := by
-  if hfm : AEMeasurable f μ then
-    rw [← map_apply₀ hfm, hf]
-    rwa [hf]
-  else
-    rw [map_of_not_aemeasurable hfm] at hf
-    simp [← hf]
+  rw [← map_apply₀ hfm, hf]
+  rwa [hf]
 
 lemma map_ne_zero_iff (hf : AEMeasurable f μ) : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff hf).not
 lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
@@ -249,13 +254,11 @@ theorem ae_of_ae_map {f : α → β} (hf : AEMeasurable f μ) {p : β → Prop} 
     ∀ᵐ x ∂μ, p (f x) :=
   mem_ae_of_mem_ae_map hf h
 
-theorem ae_map_mem_range {m0 : MeasurableSpace α} (f : α → β) (hf : MeasurableSet (range f))
-    (μ : Measure α) : ∀ᵐ x ∂μ.map f, x ∈ range f := by
-  by_cases h : AEMeasurable f μ
-  · change range f ∈ ae (μ.map f)
-    rw [mem_ae_map_iff h hf]
-    filter_upwards using mem_range_self
-  · simp [map_of_not_aemeasurable h]
+theorem ae_map_mem_range {m0 : MeasurableSpace α} {f : α → β} (hf : MeasurableSet (range f))
+    {μ : Measure α} (h : AEMeasurable f μ) : ∀ᵐ x ∂μ.map f, x ∈ range f := by
+  change range f ∈ ae (μ.map f)
+  rw [mem_ae_map_iff h hf]
+  filter_upwards using mem_range_self
 
 end MeasureTheory
 

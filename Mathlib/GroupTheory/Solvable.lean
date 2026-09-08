@@ -225,7 +225,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     induction n with
     | zero =>
       rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
-        ← MonoidHom.range_eq_map, ← MonoidHom.range_eq_map, range_subtype, range_subtype]
+        Subgroup.map_top, Subgroup.map_top, range_subtype, range_subtype]
     | succ n ih => rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
 
 @[deprecated (since := "2026-07-16")]

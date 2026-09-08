@@ -102,13 +102,6 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
   simp only [Function.comp_def, map_mul]
   fun_prop
 
-@[deprecated (since := "2026-02-20")] alias continuous_add_left := continuous_const_add
-@[deprecated (since := "2026-02-20")] alias continuous_add_right := continuous_add_const
-@[to_additive existing, deprecated (since := "2026-02-20")]
-alias continuous_mul_left := continuous_const_mul
-@[to_additive existing, deprecated (since := "2026-02-20")]
-alias continuous_mul_right := continuous_mul_const
-
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
   continuous_iff_continuousAt.mp ContinuousMul.continuous_mul (a, b)

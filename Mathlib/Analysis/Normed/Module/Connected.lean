@@ -140,15 +140,9 @@ theorem contractibleSpace_ball {x : E} {r : ℝ} (hr : 0 < r) :
     ContractibleSpace (ball x r) :=
   (convex_ball _ _).contractibleSpace (by simpa)
 
-@[deprecated (since := "2026-02-02")]
-alias ball_contractible := contractibleSpace_ball
-
 theorem contractibleSpace_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
     ContractibleSpace (eball x r) :=
   (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
-
-@[deprecated (since := "2026-02-02")]
-alias eball_contractible := contractibleSpace_eball
 
 theorem contractibleSpace_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
     ContractibleSpace (closedBall x r) :=

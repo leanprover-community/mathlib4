@@ -33,7 +33,9 @@ open Filter ENNReal
 
 open Function (support)
 
-open Topology NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory
+
+open scoped Topology
 
 namespace MeasureTheory
 

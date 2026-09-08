@@ -474,7 +474,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     IsTopologicalBasis <|
       (fun u => {K : Compacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
       {u | u.Finite ∧ u ⊆ B} := by
-  refine hB.vietoris.isInducing isEmbedding_coe.isInducing
+  refine isEmbedding_coe.isInducing.isTopologicalBasis hB.vietoris
     |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
   · intro u ⟨hu, huB⟩
     simp_rw [ofPred_and, ofPred_forall]
@@ -532,6 +532,14 @@ instance : ContinuousSup (Compacts α) := by
   constructor
   simp_rw [isEmbedding_coe.continuous_iff, Function.comp_def, coe_sup]
   fun_prop
+
+theorem isOpen_biUnion_coe_of_isOpen {S : Set (Compacts α)} (hS : IsOpen S) :
+    IsOpen (⋃ K ∈ S, (K : Set α)) := by
+  simp_rw [isOpen_iff_eventually, forall_mem_biUnion]
+  intro K hK x hx
+  have : Continuous ({·} ⊔ K) := by fun_prop
+  filter_upwards [(this.tendsto' x K (by ext1; simpa)).eventually (hS.eventually_mem hK)] with y hy
+  exact mem_iUnion₂_of_mem hy <| by simp
 
 @[fun_prop]
 theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 ×ˢ p.2 := by
@@ -885,6 +893,11 @@ theorem dense_setOfPred_finite : Dense {K : NonemptyCompacts α | (K : Set α).F
 @[deprecated (since := "2026-07-09")]
 alias dense_setOf_finite := dense_setOfPred_finite
 
+theorem isOpen_biUnion_coe_of_isOpen {S : Set (NonemptyCompacts α)} (hS : IsOpen S) :
+    IsOpen (⋃ K ∈ S, (K : Set α)) := by
+  rw [isOpenEmbedding_toCompacts.isOpen_iff_image_isOpen] at hS
+  simpa using Compacts.isOpen_biUnion_coe_of_isOpen hS
+
 /-- Given a basis `B` on a topological space `α`, the topology of `NonemptyCompacts α` has a basis
 consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
 `U₁, …, Uₙ ∈ B` and `n > 0`. -/
@@ -893,7 +906,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.nonemptyCompacts
     IsTopologicalBasis <|
       (fun u => {K : NonemptyCompacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
       {u | u.Finite ∧ u.Nonempty ∧ u ⊆ B} := by
-  refine hB.compacts.isInducing isEmbedding_toCompacts.isInducing
+  refine isEmbedding_toCompacts.isInducing.isTopologicalBasis hB.compacts
     |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
   · rintro u ⟨hu, -, huB⟩
     simp_rw [ofPred_and, ofPred_forall]
