@@ -74,8 +74,9 @@ theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
 
-instance (r : β → β → Prop) (f : α → β) [H : WellFounded r] : WellFounded (r.onFun f) :=
-  WellFounded.onFun H
+instance (r : β → β → Prop) (f : α → β) [IsWellFounded β r] :
+    IsWellFounded α (r.onFun f) where
+  wf := IsWellFounded.wf.onFun
 
 theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
@@ -158,7 +159,7 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
 @[to_dual]
 theorem wellFoundedLT_iff_exists_minimal [Preorder α] :
     WellFoundedLT α ↔ ∀ s : Set α, s.Nonempty → ∃ m, Minimal (· ∈ s) m := by
-  simp only [wellFounded_iff_has_min, not_lt_iff_le_imp_ge, Minimal]
+  simp only [isWellFounded_iff, wellFounded_iff_has_min, not_lt_iff_le_imp_ge, Minimal]
 
 @[to_dual]
 alias ⟨_root_.WellFoundedLT.exists_minimal, _⟩ := wellFoundedLT_iff_exists_minimal
@@ -172,8 +173,8 @@ theorem isWellOrder_iff_exists_not_lt_and_eq_or_gt :
     IsWellOrder α r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m ∧ (m = x ∨ r m x) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ { wf := ?_, trichotomous a b := ?_ }⟩
   · grind [h.wf.has_min, trichotomous_of r]
-  · grind [h {a, b} <| by simp]
   · grind [wellFounded_iff_has_min]
+  · grind [h {a, b} <| by simp]
 
 /-- The minimum of `f '' s` is `f` applied to the minimum of `s`. -/
 theorem min_image {r : β → β → Prop} [Std.Trichotomous r] (wf : WellFounded r) (f : α → β)
@@ -183,9 +184,9 @@ theorem min_image {r : β → β → Prop} [Std.Trichotomous r] (wf : WellFounde
   rintro _ ⟨a, has, rfl⟩
   exact wf.onFun.not_lt_min s has
 
-theorem not_rel_apply_succ [h : WellFounded r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
+theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
-  exact (wellFounded_iff_isEmpty_descending_chain.1 h).elim ⟨f, hf⟩
+  exact (wellFounded_iff_isEmpty_descending_chain.1 h.wf).elim ⟨f, hf⟩
 
 open Set
 
@@ -212,7 +213,7 @@ theorem WellFoundedLT.min_le [WellFoundedLT β] {x : β} {s : Set β} (hx : x �
 @[deprecated WellFoundedLT.min_le (since := "2026-08-16")]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β}
     (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
-  WellFoundedLT.min_lerem swap_le_swap_iff [LE α] [LE β]rem swap_le_swap_iff [LE α] [LE β] hx
+  (show WellFoundedLT β from ⟨h⟩).min_le hx
 
 @[to_dual]
 theorem Set.range_injOn_strictMono_of_wellFoundedLT [WellFoundedLT β] :
@@ -416,5 +417,5 @@ noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [
   bot_le a := h.min_le (Set.mem_univ a)
 
 @[to_dual]
-instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) :=
-  InvImage.wf ULift.down h
+instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
+  wf := InvImage.wf ULift.down h.wf
