@@ -141,7 +141,7 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
   by_cases hp0 : p = 0
   · rwa [hp0, memLp_zero_iff_aestronglyMeasurable]
   rw [← Ne] at hp0
-  rw [memLp_iff]
+  rw  [memLp_iff]
   by_cases hp_top : p = ∞
   · have hq_top : q = ∞ := by rwa [hp_top, top_le_iff] at hpq
     rw [hp_top]
