@@ -272,7 +272,9 @@ omit [ZeroLEOneClass 𝕜] in
 closure of an absolutely convex neighborhood of `0` is again absolutely convex. -/
 theorem nhds_hasBasis_absConvex_closed :
     (𝓝 (0 : E)).HasBasis (fun s ↦ s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ AbsConvex 𝕜 s) id :=
-  ((nhds_hasBasis_absConvex 𝕜 E).and_isClosed (c := closureOperator E) (closed_nhds_basis 0)
+  ((nhds_hasBasis_absConvex 𝕜 E).and_isClosed
+    (c := Topology.closureOperator E)
+    (closed_nhds_basis 0)
     fun _ _ ht ↦ ht.closure).to_hasBasis
       (fun s hs ↦ ⟨s, ⟨hs.1, hs.2.2, hs.2.1⟩, Subset.rfl⟩)
       (fun s hs ↦ ⟨s, ⟨hs.1, hs.2.2, hs.2.1⟩, Subset.rfl⟩)

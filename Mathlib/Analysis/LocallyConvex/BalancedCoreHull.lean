@@ -148,7 +148,7 @@ theorem balancedHull_eq_iUnion [NormOneClass 𝕜] (s : Set E) :
     simp_rw [smul_set_iUnion₂, subset_def, mem_iUnion₂]
     rintro x ⟨r, hr, hx⟩
     rw [← smul_assoc] at hx
-    exact ⟨a • r, (norm_mul_le _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
+    exact ⟨a • r, (norm_mul_le _ _).trans ((mul_le_of_le_one_left (norm_nonneg r) ha).trans hr), hx⟩
   · exact fun x hx ↦ mem_iUnion₂.2 ⟨1, norm_one.le, x, hx, one_smul _ _⟩
   · exact iUnion₂_subset fun r hr ↦
       (smul_set_mono (subset_balancedHull 𝕜)).trans (balancedHull.balanced s r hr)
@@ -287,7 +287,7 @@ theorem nhds_basis_open_balanced :
 a balanced neighborhood of `0` is again balanced. -/
 theorem nhds_basis_closed_balanced [RegularSpace E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ Balanced 𝕜 s) id :=
-  ((nhds_basis_balanced 𝕜 E).and_isClosed (c := closureOperator E) (closed_nhds_basis 0)
+  ((nhds_basis_balanced 𝕜 E).and_isClosed (c := Topology.closureOperator E) (closed_nhds_basis 0)
     fun _ _ ht ↦ ht.closure).to_hasBasis
       (fun s hs ↦ ⟨s, ⟨hs.1, hs.2.2, hs.2.1⟩, Subset.rfl⟩)
       (fun s hs ↦ ⟨s, ⟨hs.1, hs.2.2, hs.2.1⟩, Subset.rfl⟩)
