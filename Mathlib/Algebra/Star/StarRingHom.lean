@@ -321,9 +321,10 @@ instance : CoeOut (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.to
 lemma toNonUnitalRingHom_toNonUnitalStarRingHom (f : A ≃⋆+* B) :
     f.toNonUnitalStarRingHom.toNonUnitalRingHom = f.toNonUnitalRingHom := rfl
 
+@[simp]
 lemma coe_toNonUnitalStarRingHom {A B : Type*}
     [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] (f : A ≃⋆+* B) :
-    (f.toNonUnitalRingHom : A → B) = f := rfl
+    (f.toNonUnitalStarRingHom : A → B) = f := rfl
 
 end
 
