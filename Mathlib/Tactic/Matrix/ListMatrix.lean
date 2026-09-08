@@ -94,4 +94,13 @@ def mul [Zero α] [Add α] [Mul α] (l m n : Nat) (A B : List (List α)) : List 
   let Bt := transpose n B
   (A.rightpad l []).map fun rowA ↦ Bt.map (dotProduct m rowA)
 
+theorem getD_mul [Zero α] [Add α] [Mul α] {l m n i j : Nat} (A B : List (List α)) (hi : i < l)
+    (hj : j < n) :
+    ((mul l m n A B).getD i []).getD j 0 =
+      dotProduct m (A.getD i []) ((transpose n B).getD j []) := by
+  rw [mul, ← List.getElem_eq_getD (i := i), List.getElem_map, List.getElem_eq_getD,
+    List.getD_rightpad, ← List.getElem_eq_getD, List.getElem_map, List.getElem_eq_getD]
+  · simp [hj]
+  · grind [List.rightpad]
+
 end Mathlib.Tactic.Matrix.ListMatrix
