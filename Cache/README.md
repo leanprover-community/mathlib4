@@ -145,13 +145,16 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 
 ## Environment Variables
 
-| Variable            | Description                        | Default                                         |
-|---------------------|------------------------------------|-------------------------------------------------|
-| `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+| Variable                         | Description                        | Default                                         |
+|----------------------------------|------------------------------------|-------------------------------------------------|
+| `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+| `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
+| `MATHLIB_CACHE_FROM`             | Container list for reads, same shape as `--cache-from`, which takes precedence | unset |
+| `MATHLIB_CACHE_REPO_SCOPE`       | Per-commit namespace for reads (see `--scope`, which takes precedence) | unset |
+| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
 
-Run `lake exe cache --help` for the full list of read-side environment
-variables. The upload variables are internal to mathlib CI; see
-[`CI.md`](./CI.md).
+An empty value means unset. The upload variables are internal to mathlib CI;
+see [`CI.md`](./CI.md).
 
 ## How It Works
 
