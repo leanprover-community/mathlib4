@@ -253,7 +253,7 @@ theorem nhds_hasBasis_absConvex :
       ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
   refine ⟨convexHull 𝕜 (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
   refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull 𝕜 _), ?_⟩
-  refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
+  refine ⟨(balancedCore.balanced s).convexHull, ?_⟩
   exact convex_convexHull 𝕜 (balancedCore 𝕜 s)
 
 variable [IsTopologicalAddGroup E] [ZeroLEOneClass 𝕜]

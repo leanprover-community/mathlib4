@@ -78,8 +78,11 @@ variable {𝕜}
 theorem balancedCore_subset (s : Set E) : balancedCore 𝕜 s ⊆ s :=
   sUnion_subset fun _ ht ↦ ht.2
 
-theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) :=
+theorem balancedCore.balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) :=
   .sUnion fun _ ht ↦ ht.1
+
+@[deprecated (since := "2026-09-08")]
+alias balancedCore_balanced := balancedCore.balanced
 
 /-- The balanced core of `t` is maximal in the sense that it contains any balanced subset
 `s` of `t`. -/
@@ -89,7 +92,7 @@ theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆
 
 @[mono, gcongr]
 theorem balancedCore_mono (hst : s ⊆ t) : balancedCore 𝕜 s ⊆ balancedCore 𝕜 t :=
-  (balancedCore_balanced s).subset_balancedCore_of_subset ((balancedCore_subset s).trans hst)
+  (balancedCore.balanced s).subset_balancedCore_of_subset ((balancedCore_subset s).trans hst)
 
 theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
   eq_empty_of_subset_empty (balancedCore_subset _)
@@ -99,7 +102,7 @@ theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced �
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
     a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s :=
-  balancedCore_balanced s a ha
+  balancedCore.balanced s a ha
 
 lemma Balanced.balancedCore_eq (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
   le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset subset_rfl)
@@ -132,7 +135,7 @@ theorem balancedCore_zero_mem (hs : (0 : E) ∈ s) : (0 : E) ∈ balancedCore �
 
 theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) ∈ s :=
   ⟨fun h => zero_subset.1 <| (zero_smul_set h).superset.trans <|
-    (balancedCore_balanced s (0 : 𝕜) <| norm_zero.trans_le zero_le_one).trans <|
+    (balancedCore.balanced s (0 : 𝕜) <| norm_zero.trans_le zero_le_one).trans <|
       balancedCore_subset _,
     fun h => ⟨0, balancedCore_zero_mem h⟩⟩
 
@@ -201,7 +204,7 @@ theorem balanced_iInter_smul (hs : (0 : E) ∈ s) :
 
 theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
     balancedCore 𝕜 s = ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s :=
-  ((balancedCore_balanced s).subset_iInter_smul (balancedCore_subset s)).antisymm
+  ((balancedCore.balanced s).subset_iInter_smul (balancedCore_subset s)).antisymm
     ((balanced_iInter_smul hs).subset_balancedCore_of_subset (iInter_smul_subset s))
 
 theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ ≤ 1 → a • s ⊆ t) :
@@ -273,7 +276,7 @@ variable (𝕜 E)
 theorem nhds_basis_balanced :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s) id :=
   Filter.hasBasis_self.mpr fun s hs =>
-    ⟨balancedCore 𝕜 s, balancedCore_mem_nhds_zero hs, balancedCore_balanced s,
+    ⟨balancedCore 𝕜 s, balancedCore_mem_nhds_zero hs, balancedCore.balanced s,
       balancedCore_subset s⟩
 
 /-- The open balanced sets form a basis of the neighborhood filter of the origin: the balanced hull
