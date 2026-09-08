@@ -525,10 +525,9 @@ variable [IsAtomistic α] {a : α}
 
 lemma IsCompactElement.exists_finite_isAtom (ha : IsCompactElement a) :
     ∃ s : Set α, s.Finite ∧ (∀ b ∈ s, IsAtom b) ∧ sSup s = a := by
-  obtain ⟨t, hts, hat⟩ := (isCompactElement_iff_exists_le_sSup_of_le_sSup a).1 ha
-    {b | IsAtom b ∧ b ≤ a} (sSup_atoms_le_eq a).ge
-  refine ⟨t, t.finite_toSet, fun b hb ↦ (hts hb).1, (sSup_le fun b hb ↦ (hts hb).2).antisymm ?_⟩
-  rwa [← Finset.sup_id_eq_sSup]
+  obtain ⟨t, hts, hat⟩ := exists_finset_sup_eq_of_isCompactElement_sSup (sSup_atoms_le_eq a ▸ ha)
+  use t, t.finite_toSet, fun b hb ↦ (hts hb).1
+  rw [← t.sup_id_eq_sSup, hat, sSup_atoms_le_eq a]
 
 lemma isCompactElement_iff_exists_finite_isAtom [IsCompactlyGenerated α] :
     IsCompactElement a ↔ ∃ s : Set α, s.Finite ∧ (∀ b ∈ s, IsAtom b) ∧ sSup s = a where
