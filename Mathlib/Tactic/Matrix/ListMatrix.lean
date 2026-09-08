@@ -11,9 +11,9 @@ public import Mathlib.Init
 # Matrices as lists of rows
 
 Computational definitions on matrices represented as lists of rows, `List (List α)`, for
-tactics that certify facts about matrix literals. The definitions recurse on the lists, so on
-literals the kernel reduces them by iota, visiting each entry once; they are not a theory of
-matrices. `ListMatrix` is a namespace, not a type, and the file imports only `Mathlib.Init`.
+tactics that certify facts about matrix literals.
+
+`ListMatrix` namespace is used to avoid accidental collision with other downstream definitions.
 
 ## Main definitions
 * `ListMatrix.dotProduct`
@@ -23,11 +23,14 @@ matrices. `ListMatrix` is a namespace, not a type, and the file imports only `Ma
 ## Implementation notes
 
 Lean's `Array` is essentially a `List` within the kernel, so random access is slow; the `List`
-carrier is chosen for easier inductive operations. Reading an entry by position costs the
-kernel a walk of that length, so the definitions consume their inputs by traversal:
+carrier is chosen for easier inductive operations.
+
+Reading an entry by position costs the kernel a walk of that length. Therefore, operations on
+this representation needs to be mindful of traversing the structure in an efficient order.
+
 `ListMatrix.transpose` is defined by recursion on the rows with explicit padding rather than
 through `List.transpose` from Batteries, so that it reduces in the kernel. This is also more
-efficient as it gives a genuine `O(n^2)` transpose.
+efficient as it gives a genuine `O(n^2)` transposition without any random access.
 -/
 
 public section
