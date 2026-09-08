@@ -6,7 +6,6 @@ Authors: Michael Lee
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs

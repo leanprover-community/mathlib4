@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.Support
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 
 /-!
 # Trailing degree of univariate polynomials
@@ -26,7 +26,7 @@ end of a polynomial
 
 noncomputable section
 
-open Function Polynomial Finsupp Finset
+open Function Polynomial Finset
 
 open scoped Polynomial
 
@@ -283,8 +283,8 @@ theorem natTrailingDegree_mul_X_pow {p : R[X]} (hp : p ≠ 0) (n : ℕ) :
     intro y hy
     have key : n ≤ y := by
       rw [mem_support_iff, coeff_mul_X_pow'] at hy
-      exact by_contra fun h => hy (if_neg h)
-    rw [mem_support_iff, coeff_mul_X_pow', if_pos key] at hy
+      exact by_contra fun h => hy (ite_eq_right h)
+    rw [mem_support_iff, coeff_mul_X_pow', ite_eq_left key] at hy
     exact (le_tsub_iff_right key).mp (natTrailingDegree_le_of_ne_zero hy)
 
 theorem le_trailingDegree_mul : p.trailingDegree + q.trailingDegree ≤ (p * q).trailingDegree := by
@@ -410,7 +410,7 @@ theorem nextCoeffUp_of_constantCoeff_eq_zero (p : R[X]) (hp : coeff p 0 = 0) :
     nextCoeffUp p = p.coeff (p.natTrailingDegree + 1) := by
   obtain rfl | hp₀ := eq_or_ne p 0
   · simp
-  · rw [nextCoeffUp, if_neg (natTrailingDegree_ne_zero.2 ⟨hp₀, hp⟩)]
+  · rw [nextCoeffUp, ite_eq_right (natTrailingDegree_ne_zero.2 ⟨hp₀, hp⟩)]
 
 end Semiring
 
@@ -439,9 +439,9 @@ lemma eq_X_pow_iff_natDegree_le_natTrailingDegree (h₁ : p.Monic) :
   · ext n
     rw [coeff_X_pow]
     obtain hn | rfl | hn := lt_trichotomy n p.natDegree
-    · rw [if_neg hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (hn.trans_le h)]
-    · simpa only [if_pos rfl] using! h₁.leadingCoeff
-    · rw [if_neg hn.ne', coeff_eq_zero_of_natDegree_lt hn]
+    · rw [ite_eq_right hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (hn.trans_le h)]
+    · simpa only [ite_eq_left rfl] using! h₁.leadingCoeff
+    · rw [ite_eq_right hn.ne', coeff_eq_zero_of_natDegree_lt hn]
 
 lemma eq_X_pow_iff_natTrailingDegree_eq_natDegree (h₁ : p.Monic) :
     p = X ^ p.natDegree ↔ p.natTrailingDegree = p.natDegree :=

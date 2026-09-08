@@ -53,7 +53,7 @@ instance : Linear R (ShortComplex C) where
 
 section LeftHomology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
 
 namespace LeftHomologyMapData
 
@@ -107,7 +107,7 @@ end LeftHomology
 
 section RightHomology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
 
 namespace RightHomologyMapData
 
@@ -161,11 +161,11 @@ end RightHomology
 
 section Homology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
 
 namespace HomologyMapData
 
-variable (γ : HomologyMapData φ h₁ h₂) (γ' : HomologyMapData φ' h₁ h₂)
+variable (γ : HomologyMapData φ h₁ h₂)
 
 /-- Given a homology map data for a morphism `φ`, this is the induced homology
 map data for `a • φ`. -/

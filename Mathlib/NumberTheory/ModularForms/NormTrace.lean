@@ -86,7 +86,7 @@ protected def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k 
     rintro rfl
     rw [SlashInvariantForm.trace, IsBoundedAtImInfty, Filter.BoundedAtFilter,
       SlashAction.sum_slash, Finset.sum_fn]
-    refine .sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f _).bdd_at_cusps' ?_ γ rfl)
+    refine .fun_sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f _).bdd_at_cusps' ?_ γ rfl)
     simpa using h.of_isFiniteRelIndex_conj hr
 
 /-- The trace of a cusp form, as a cusp form. -/
