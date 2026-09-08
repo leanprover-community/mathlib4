@@ -34,7 +34,6 @@ variable {ι : Type*} {R : Type*} [Nonempty ι] [AddMonoidWithOne R]
 
 instance Pi.instCharP (p : ℕ) [CharP R p] : CharP (ι → R) p where
   cast_eq_zero_iff x := by
-    inhabit ι
     simp [← CharP.cast_eq_zero_iff R p x, funext_iff]
 
 instance Pi.instExpChar : ∀ {p} [ExpChar R p], ExpChar (ι → R) p
