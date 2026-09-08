@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Analysis.Polynomial.Sturm.Defs
 public import Mathlib.Analysis.Polynomial.Order
+public import Mathlib.Topology.Instances.Sign.Connected
 
 /-!
 # Sturm's theorem
@@ -93,13 +94,9 @@ private theorem SignRelation.signVariations_eq {L M : List ℝ} (h : SignRelatio
 /-- A real polynomial with no roots on an interval has equal signs at its endpoints. -/
 private theorem eval_sign_eq_of_no_zero {q : Polynomial ℝ} {a b : ℝ} (hab : a ≤ b)
     (hz : ∀ x ∈ Set.Icc a b, q.eval x ≠ 0) :
-    SignType.sign (q.eval a) = SignType.sign (q.eval b) := by
-  apply isPreconnected_Icc.constant (f := fun x => SignType.sign (q.eval x))
-    (x := a) (y := b) _ ⟨le_refl a, hab⟩ ⟨hab, le_refl b⟩
-  refine (continuousOn_of_forall_continuousAt fun y hy => ?_).comp q.continuousOn
-    (Set.mapsTo_image _ _)
-  obtain ⟨x, hx, rfl⟩ := hy
-  exact continuousAt_sign_of_ne_zero (hz x hx)
+    SignType.sign (q.eval a) = SignType.sign (q.eval b) :=
+  isPreconnected_Icc.sign_eq_of_continuousOn q.continuousOn hz
+    ⟨le_refl a, hab⟩ ⟨hab, le_refl b⟩
 
 /-- Build the sign-pattern relation `SignRelation` between the evaluations of a
 polynomial list at a "generic" point `a` (where every element is nonzero) and a

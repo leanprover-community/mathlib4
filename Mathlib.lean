@@ -8215,6 +8215,7 @@ public import Mathlib.Topology.Instances.Real.Lemmas
 public import Mathlib.Topology.Instances.RealVectorSpace
 public import Mathlib.Topology.Instances.Shrink
 public import Mathlib.Topology.Instances.Sign
+public import Mathlib.Topology.Instances.Sign.Connected
 public import Mathlib.Topology.Instances.TrivSqZeroExt
 public import Mathlib.Topology.Instances.ZMod
 public import Mathlib.Topology.Instances.ZMultiples
