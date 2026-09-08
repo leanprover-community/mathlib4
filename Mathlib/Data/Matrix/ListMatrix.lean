@@ -11,10 +11,10 @@ public import Mathlib.Init
 # Matrices as lists of rows
 
 Operations on matrices represented as lists of rows, `List (List α)`, importing only
-`Mathlib.Init`.
+`Mathlib.Init`. `ListMatrix` is a namespace, not a type.
 
 ## Main definitions
-* `List.dotProduct`
+* `ListMatrix.dotProduct`
 * `ListMatrix.transpose`
 * `ListMatrix.mul`
 
@@ -28,35 +28,35 @@ reduces in the kernel.
 
 public section
 
+namespace ListMatrix
+
 variable {α : Type*}
 
 /-- The dot product of the first `n` entries of two lists. -/
-@[expose] def List.dotProduct [Zero α] [Add α] [Mul α] (n : Nat) (l₁ l₂ : List α) : α :=
+@[expose] def dotProduct [Zero α] [Add α] [Mul α] (n : Nat) (l₁ l₂ : List α) : α :=
   ((List.zipWith (· * ·) l₁ l₂).take n).sum
 
-theorem List.dotProduct_zero [Zero α] [Add α] [Mul α] (l₁ l₂ : List α) :
-    l₁.dotProduct 0 l₂ = 0 :=
+theorem dotProduct_zero [Zero α] [Add α] [Mul α] (l₁ l₂ : List α) : dotProduct 0 l₁ l₂ = 0 :=
   rfl
 
-theorem List.dotProduct_succ_cons_cons [Zero α] [Add α] [Mul α] (n : Nat) (a b : α)
-    (l₁ l₂ : List α) : (a :: l₁).dotProduct (n + 1) (b :: l₂) = a * b + l₁.dotProduct n l₂ :=
+theorem dotProduct_succ_cons_cons [Zero α] [Add α] [Mul α] (n : Nat) (a b : α) (l₁ l₂ : List α) :
+    dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + dotProduct n l₁ l₂ :=
   rfl
 
 /-- The transpose of a list of rows as `n` rows, where row `j` collects the `j`-th entries of
 the input rows padded with `0`. -/
-@[expose] def ListMatrix.transpose [Zero α] (n : Nat) (rows : List (List α)) :
-    List (List α) :=
+@[expose] def transpose [Zero α] (n : Nat) (rows : List (List α)) : List (List α) :=
   match rows with
   | [] => List.replicate n []
   | row :: rows => List.zipWith (· :: ·) ((row.rightpad n 0).take n) (transpose n rows)
 
 @[simp]
-theorem ListMatrix.length_transpose [Zero α] (n : Nat) (rows : List (List α)) :
+theorem length_transpose [Zero α] (n : Nat) (rows : List (List α)) :
     (transpose n rows).length = n := by
   induction rows <;> grind [transpose]
 
-theorem ListMatrix.getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat)
-    (hj : j < n) : ((transpose n rows).getD j []).getD i 0 = (rows.getD i []).getD j 0 := by
+theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (hj : j < n) :
+    ((transpose n rows).getD j []).getD i 0 = (rows.getD i []).getD j 0 := by
   induction rows generalizing i with
   | nil => simp [transpose, hj]
   | cons row rows ih =>
@@ -77,7 +77,9 @@ theorem ListMatrix.getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) 
 
 /-- The product of two lists of rows, with `A` interpreted as having `m` columns and `B` as an
 `m × n` matrix. -/
-@[expose] def ListMatrix.mul [Zero α] [Add α] [Mul α] (m n : Nat) (A B : List (List α)) :
+@[expose] def mul [Zero α] [Add α] [Mul α] (m n : Nat) (A B : List (List α)) :
     List (List α) :=
   let BT := transpose n B
-  A.map fun rowA ↦ BT.map (rowA.dotProduct m)
+  A.map fun rowA ↦ BT.map (dotProduct m rowA)
+
+end ListMatrix
