@@ -9,8 +9,8 @@ module
 public import Mathlib.Analysis.Polynomial.Sturm.Certificate
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.NormNum
-public import Mathlib.Tactic.RealRootCount.Parse
-public meta import Mathlib.Tactic.RealRootCount.Parse
+public import Mathlib.Tactic.HexPolyZ.Parse
+public meta import Mathlib.Tactic.HexPolyZ.Parse
 public meta import HexRealRoots.Chain
 public meta import HexPoly.Euclid.DivGcd
 
@@ -147,7 +147,7 @@ elab "real_root_count " pStx:term : term <= expectedType? => withRef pStx do
   if e.hasFVar || e.hasExprMVar then
     throwError "real_root_count: expected a closed polynomial"
   let names ← IO.mkRef (#[] : Array Name)
-  let p ← Mathlib.Tactic.RealRootCount.Parse.parsePoly "real_root_count" true 16 e
+  let p ← Mathlib.Tactic.HexPolyZ.Parse.parsePoly "real_root_count" true 16 e
     (fun n => names.modify (fun ns => if ns.contains n then ns else ns.push n))
   let unfolds ← (← names.get).mapM fun n => `(Parser.Tactic.simpLemma| $(mkIdent n):term)
   elabTermEnsuringType (← emit (← exprToSyntax e) p unfolds) expectedType?

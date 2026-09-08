@@ -26,7 +26,7 @@ guard. Every entry point takes the calling tactic's name for error messages.
 
 public section
 
-namespace Mathlib.Tactic.RealRootCount.Parse
+namespace Mathlib.Tactic.HexPolyZ.Parse
 
 open Lean Meta
 
@@ -47,33 +47,27 @@ meta def evalRat (tactic : String) (e : Expr) : MetaM Rat := do
 
 /-- Extract a `Nat` literal from an `Expr` (numerals and raw literals). -/
 meta def getNat (tactic : String) (e : Expr) : MetaM Nat := do
-  match ← getNatValue? e with
-  | some n => return n
-  | none =>
-    match (← whnfR e).getAppFnArgs with
-    | (``OfNat.ofNat, #[_, n, _]) =>
-      match ← getNatValue? n with
-      | some k => return k
-      | none => throwError "{tactic}: not a Nat literal{indentExpr e}"
-    | _ => throwError "{tactic}: not a Nat literal{indentExpr e}"
+  let some n ← getNatValue? e
+    | throwError "{tactic}: not a Nat literal{indentExpr e}"
+  return n
 
 /-- Interpret an integer scalar-coefficient leaf (`OfNat`, `Neg`, `+`, `-`, `*`,
 `Int.ofNat`, `Nat.cast`, `Int.cast`, raw literals). Throws the dedicated
 non-integer-coefficient error on anything else (e.g. a genuine `ℚ`/`ℝ`
 non-integer). -/
-meta partial def evalIntLit (tactic : String) (e : Expr) : MetaM Int := do
+meta partial def evalIntCoeff (tactic : String) (e : Expr) : MetaM Int := do
   match (← whnfR e).getAppFnArgs with
   | (``OfNat.ofNat, #[_, n, _]) => return Int.ofNat (← getNat tactic n)
-  | (``Neg.neg, #[_, _, a]) => return - (← evalIntLit tactic a)
+  | (``Neg.neg, #[_, _, a]) => return - (← evalIntCoeff tactic a)
   | (``HMul.hMul, #[_, _, _, _, a, b]) =>
-      return (← evalIntLit tactic a) * (← evalIntLit tactic b)
+      return (← evalIntCoeff tactic a) * (← evalIntCoeff tactic b)
   | (``HAdd.hAdd, #[_, _, _, _, a, b]) =>
-      return (← evalIntLit tactic a) + (← evalIntLit tactic b)
+      return (← evalIntCoeff tactic a) + (← evalIntCoeff tactic b)
   | (``HSub.hSub, #[_, _, _, _, a, b]) =>
-      return (← evalIntLit tactic a) - (← evalIntLit tactic b)
+      return (← evalIntCoeff tactic a) - (← evalIntCoeff tactic b)
   | (``Int.ofNat, #[n]) => return Int.ofNat (← getNat tactic n)
   | (``Nat.cast, #[_, _, n]) => return Int.ofNat (← getNat tactic n)
-  | (``Int.cast, #[_, _, z]) => evalIntLit tactic z
+  | (``Int.cast, #[_, _, z]) => evalIntCoeff tactic z
   | _ =>
     match ← getIntValue? e with
     | some z => return z
@@ -85,7 +79,7 @@ denominator is `1`; otherwise the dedicated non-integer-coefficient error fires.
 For `ℝ` (not evaluable to `Rat`), only structurally integer leaves are accepted. -/
 meta def evalCoeff (tactic : String) (isRat : Bool) (e : Expr) : MetaM Int := do
   try
-    evalIntLit tactic e
+    evalIntCoeff tactic e
   catch _ =>
     if isRat then
       let q ← evalRat tactic e
@@ -151,4 +145,4 @@ meta partial def parsePoly (tactic : String) (isRat : Bool) (fuel : Nat)
           parsePoly tactic isRat (fuel - 1) e' onUnfold
       | none => throwError "{tactic}: unsupported polynomial syntax{indentExpr e}"
 
-end Mathlib.Tactic.RealRootCount.Parse
+end Mathlib.Tactic.HexPolyZ.Parse
