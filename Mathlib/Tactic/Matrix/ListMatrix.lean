@@ -26,8 +26,8 @@ Lean's `Array` is essentially a `List` within the kernel, so random access is sl
 carrier is chosen for easier inductive operations. Reading an entry by position costs the
 kernel a walk of that length, so the definitions consume their inputs by traversal:
 `ListMatrix.transpose` is defined by recursion on the rows with explicit padding rather than
-through `List.transpose`, so that it reduces in the kernel, and `ListMatrix.mul` walks the rows
-against the transposed columns in lockstep.
+through `List.transpose` from Batteries, so that it reduces in the kernel. This is also more
+efficient as it gives a genuine `O(n^2)` transpose.
 -/
 
 public section
