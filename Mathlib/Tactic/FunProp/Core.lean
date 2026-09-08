@@ -406,7 +406,10 @@ def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let .comp f g ← fData.decomposition then
       applyCompRule funPropDecl e f g funProp
     else
-      applyApplyRule funPropDecl e funProp
+      if let some r ← applyApplyRule funPropDecl e funProp then
+        return r
+      else
+        applyTransitionRules e funProp
 
 /--
 Get candidate theorems from the environment for function property `funPropDecl` and
