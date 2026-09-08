@@ -832,6 +832,18 @@ theorem type_lt_sum_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
   rfl
 
 @[simp]
+theorem type_lt_withTop {α : Type u} [LinearOrder α] [WellFoundedLT α] :
+    typeLT (WithTop α) = typeLT α + 1 := by
+  rw [type_eq.2 ⟨WithTop.orderIsoSumLexPUnit.toRelIsoLT⟩, type_lt_sum_lex,
+    type_eq_one_of_unique (fun a b : PUnit => a < b)]
+
+@[simp]
+theorem type_lt_withBot {α : Type u} [LinearOrder α] [WellFoundedLT α] :
+    typeLT (WithBot α) = 1 + typeLT α := by
+  rw [type_eq.2 ⟨WithBot.orderIsoPUnitSumLex.toRelIsoLT⟩, type_lt_sum_lex,
+    type_eq_one_of_unique (fun a b : PUnit => a < b)]
+
+@[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 
