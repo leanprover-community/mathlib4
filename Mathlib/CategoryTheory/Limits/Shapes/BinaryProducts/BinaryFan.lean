@@ -64,10 +64,15 @@ def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
   Cone.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) ext_inv_hom]
 lemma BinaryFan.ext_hom_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) :
     (ext e h₁ h₂).hom.hom = e.hom := rfl
+
+@[to_dual (attr := simp) ext_hom_hom]
+lemma BinaryFan.ext_inv_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) :
+    (ext e h₁ h₂).inv.hom = e.inv := rfl
 
 /-- A convenient way to show that a binary fan is a limit. -/
 @[to_dual IsColimit.mk]
