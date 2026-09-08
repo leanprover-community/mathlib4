@@ -14,11 +14,11 @@ public import Mathlib.Topology.Algebra.Affine
 
 This file defines a type of bundled continuous affine maps.
 
-## Main definitions:
+## Main definitions
 
 * `ContinuousAffineMap`
 
-## Notation:
+## Notation
 
 We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not to be confused with the
 notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`
@@ -129,7 +129,7 @@ def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
 @[simp, norm_cast]
 theorem coe_id : ⇑(id R P) = _root_.id := rfl
 
-variable {R P} {W₂ Q₂ W₃ Q₃ : Type*}
+variable {R P} {W₂ Q₂ : Type*}
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of continuous affine maps as a continuous affine map -/

@@ -21,6 +21,9 @@ on:
         default: false
         type: boolean
 
+env:
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+
 jobs:
   build:
     name: Remove outdated deprecated declarations

@@ -25,7 +25,9 @@ functions are circle integrable over every circle in the complex plane.
 
 public section
 
-open Filter Interval MeasureTheory MeromorphicOn Metric Real
+open Filter MeasureTheory MeromorphicOn Metric Real
+
+open scoped Interval
 
 /-!
 ## Interval Integrability for Logarithms of Real Meromorphic Functions

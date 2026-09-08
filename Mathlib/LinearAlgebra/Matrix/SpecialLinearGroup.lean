@@ -423,7 +423,9 @@ end Matrix
 
 namespace IsCoprime
 
-open Matrix MatrixGroups SpecialLinearGroup
+open Matrix SpecialLinearGroup
+
+open scoped MatrixGroups
 
 variable {R : Type*} [CommRing R]
 
@@ -558,8 +560,6 @@ end SpecialLinearGroup
 
 namespace TransvectionStruct
 
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
-
 /-- Any transvection structure can be converted to a special linear matrix. -/
 def toSpecialLinearGroup (t : TransvectionStruct ι F) :
     SpecialLinearGroup ι F :=
@@ -585,7 +585,7 @@ section SL2
 
 variable {F : Type*} [Field F]
 
-open MatrixGroups
+open scoped MatrixGroups
 
 namespace SpecialLinearGroup
 
@@ -812,7 +812,7 @@ end Matrix
 
 namespace ModularGroup
 
-open MatrixGroups
+open scoped MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
