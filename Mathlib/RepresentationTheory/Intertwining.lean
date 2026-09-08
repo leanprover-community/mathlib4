@@ -101,7 +101,7 @@ instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
 instance : Add (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
-    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2,]⟩⟩
+    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2]⟩⟩
 
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
@@ -382,8 +382,6 @@ def refl : Equiv ρ ρ where
 
 @[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
-lemma coe_invFun : φ.invFun = φ.symm := rfl
-
 theorem toLinearEquiv_toLinearMap :
   φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
 
@@ -410,6 +408,8 @@ lemma mk_symm {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e
     (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
 
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
+
+lemma coe_invFun : φ.invFun = φ.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 

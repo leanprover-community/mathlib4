@@ -58,7 +58,6 @@ lemma characteristic_sub_characteristic_inv (h : Meromorphic f) :
   _ = circleAverage (log ‖f ·‖) 0 - (divisor f Set.univ).logCounting := by
     rw [← ValueDistribution.log_counting_zero_sub_logCounting_top]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 Helper lemma for the first part of the First Main Theorem: Away from zero, the difference between
 the characteristic functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
@@ -75,7 +74,7 @@ lemma characteristic_sub_characteristic_inv_of_ne_zero
     unfold Function.locallyFinsuppWithin.logCounting
     have : (divisor f (closedBall 0 |R|)) = (divisor f Set.univ).toClosedBall R :=
       (divisor_restrict hf.meromorphicOn (by tauto)).symm
-    simp [this, toClosedBall, restrictMonoidHom, restrict_apply]
+    simp [this, toClosedBall_apply, restrict_apply]
 
 /--
 Helper lemma for the first part of the First Main Theorem: At 0, the difference between the

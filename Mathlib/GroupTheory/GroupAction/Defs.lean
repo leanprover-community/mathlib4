@@ -260,6 +260,15 @@ lemma mem_orbit_symm {a₁ a₂ : α} : a₁ ∈ orbit G a₂ ↔ a₂ ∈ orbit
   simp_rw [← orbit_eq_iff, eq_comm]
 
 @[to_additive]
+lemma mem_orbit_trans {a b c : α} (hab : a ∈ orbit G b) (hbc : b ∈ orbit G c) :
+    a ∈ orbit G c := by
+  obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hab
+  obtain ⟨g', rfl⟩ := mem_orbit_iff.mp hbc
+  rw [mem_orbit_iff]
+  use g * g'
+  rw [mul_smul]
+
+@[to_additive]
 lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -481,7 +490,7 @@ group action. -/]
 noncomputable def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
-      Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+      Set.equivOfEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/

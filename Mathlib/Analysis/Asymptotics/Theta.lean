@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
