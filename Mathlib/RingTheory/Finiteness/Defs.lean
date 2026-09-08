@@ -50,12 +50,12 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
 
 theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG := by
   simp_rw [fg_def, ← toAddSubmonoid_inj, span_nat_eq_addSubmonoidClosure,
-    AddSubmonoid.isAddFG_iff_finite, and_comm]
+    AddSubmonoid.isAddFG_iff_finite]
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG := by
   simp_rw [fg_def, ← toAddSubgroup_inj, span_int_eq_addSubgroupClosure,
-    AddSubgroup.isAddFG_iff_finite, and_comm]
+    AddSubgroup.isAddFG_iff_finite]
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by
