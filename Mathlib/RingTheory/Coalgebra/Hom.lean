@@ -68,14 +68,15 @@ variable {R A B F : Type*} [CommSemiring R]
 /-- Turn an element of a type `F` satisfying `CoalgHomClass F R A B` into an actual
 `CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
 @[coe]
-def toCoalgHom (f : F) : A →ₗc[R] B :=
+def _root_.CoAlgHom.ofClass (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
     toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
+@[deprecated (since := "2026-09-08")] alias CoAlgHomClass.toCoAlgHom := CoAlgHom.ofClass
 
 instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
-  ⟨CoalgHomClass.toCoalgHom⟩
+  ⟨CoAlgHom.ofClass⟩
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
@@ -120,9 +121,10 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₗc[R] B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
+    ⇑(CoAlgHom.ofClass f) = f :=
   rfl
+@[deprecated (since := "2026-09-08")] alias coe_coe := CoalgHom.coe_ofClass
 
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
@@ -136,10 +138,12 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h
 theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A →ₗ[R] B) = f :=
   rfl
 
+-- TODO: rename to toLinearMap_eq_ofClass once the semilinear rename is merged!
 @[simp]
 theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
   rfl
 
+-- TODO: also rename/revisit name
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
@@ -154,6 +158,7 @@ theorem coe_fn_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) 
 theorem coe_fn_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
+-- TODO: call `linearMapOfClass` or similarly, after the rename
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
