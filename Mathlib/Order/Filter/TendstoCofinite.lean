@@ -127,3 +127,15 @@ instance Finsupp.mapDomain_tendstoCofinite [TendstoCofinite f] :
   · suffices y.support ⊆ s by simpa [e]
     simpa [← hy, mapDomain, sum, Finset.subset_iff, single_apply, s] using
       fun i hi ↦ ⟨i, by simp [hi]⟩
+
+/-- When a magma satisfies the `HasMulAntidiagonal` property, its multiplication map has
+finite fibers.
+
+For the reverse implication, see `Filter.TendstoCofinite.hasMulAntidiagonal`. -/
+@[to_additive /-- When an additive type satisfies the `HasAntidiagonal` property,
+its addition map has finite fibers.
+
+For the reverse implication, see `Filter.TendstoCofinite.hasAntidiagonal`-/]
+instance Finset.HasMulAntidiagonal.tendstoCofinite_mul {N : Type*} [Mul N] [HasMulAntidiagonal N] :
+    TendstoCofinite fun (p : N × N) ↦ p.1 * p.2 := by
+  simp [tendstoCofinite_iff_finite_preimage_singleton, ← coe_mulAntidiagonal_eq_preimage_singleton]
