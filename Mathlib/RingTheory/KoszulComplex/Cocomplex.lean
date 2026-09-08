@@ -123,20 +123,18 @@ the two defining elements. -/
 noncomputable def map (f : M →ₗ[R] N) {x : M} {y : N} (h : f x = y) :
     koszulCocomplex R x ⟶ koszulCocomplex R y :=
   CochainComplex.ofHom
-    (fun i ↦ (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f))
+    (fun i ↦ ModuleCat.ofHom (exteriorPower.map i f))
     (fun i ↦ ModuleCat.hom_ext <| LinearMap.ext fun z ↦ Subtype.ext
-      (by simp [koszulCocomplex, ModuleCat.exteriorPower.map,
-        koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, h]))
+      (by simp [koszulCocomplex, koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, h]))
 
 lemma map_f (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
-    (map R f h).f i = (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f) := rfl
+    (map R f h).f i = ModuleCat.ofHom (exteriorPower.map i f) := rfl
 
 @[reassoc]
 lemma map_id_refl (x : M) : koszulCocomplex.map R (M := M) .id (Eq.refl x) = 𝟙 _ := by
   ext i x
-  simp only [map_f, ModuleCat.ofHom_id, ModuleCat.exteriorPower.functor_map,
-    ModuleCat.exteriorPower.map, ModuleCat.hom_id, exteriorPower.map_id, HomologicalComplex.id_f,
-    LinearMap.id_coe, id_eq]
+  simp only [map_f, ModuleCat.ofHom_id, ModuleCat.hom_id, exteriorPower.map_id,
+    HomologicalComplex.id_f, LinearMap.id_coe, id_eq]
   rfl
 
 @[reassoc]
@@ -152,7 +150,7 @@ lemma map_comp {P : Type v} [AddCommGroup P] [Module R P]
     koszulCocomplex.map R f hxy ≫ koszulCocomplex.map R g hyz =
     koszulCocomplex.map R (g ∘ₗ f) (hxy ▸ hyz : g (f x) = z) := by
   refine HomologicalComplex.hom_ext _ _ fun i ↦ ?_
-  simp only [HomologicalComplex.comp_f, map_f, ModuleCat.ofHom_comp, Functor.map_comp]
+  simp only [HomologicalComplex.comp_f, map_f, exteriorPower.map_comp, ModuleCat.ofHom_comp]
 
 /-- The map between two Koszul complex when give an linear equiv between module that maps
 the two defining elements. -/
