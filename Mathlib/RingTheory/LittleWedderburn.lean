@@ -5,9 +5,11 @@ Authors: Johan Commelin, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Center
-public import Mathlib.GroupTheory.ClassEquation
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+import Mathlib.Algebra.GroupWithZero.Action.Center
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Basic.Finite.Defs
+import Mathlib.GroupTheory.ClassEquation
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Wedderburn's Little Theorem
