@@ -95,13 +95,11 @@ lemma koszulComplex.d_comp_d (n : ℕ) :
   simpa [koszulComplex.d, ← exteriorPower.alternatingMapLinearEquiv_comp]
 
 /-- The Koszul complex, with objects exterior powers and differential `koszulComplex.d`. -/
-@[implicit_reducible, stacks 0622 "only recording chain complex"]
-noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
+@[stacks 0622 "only recording chain complex"]
+noncomputable abbrev koszulComplex : ChainComplex (ModuleCat R) ℕ :=
   ChainComplex.of (fun n ↦ of R (⋀[R]^n M))
     (fun n ↦ ofHom (koszulComplex.d φ n))
     (fun n ↦ by rw [← ofHom_comp, koszulComplex.d_comp_d, ofHom_zero])
-
-lemma koszulComplex.X_def (i : ℕ) : (koszulComplex φ).X i = of R (⋀[R]^i M) := rfl
 
 lemma koszulComplex.d_def (i : ℕ) :
     (koszulComplex φ).d (i + 1) i = ofHom (koszulComplex.d φ i) := by
@@ -147,7 +145,7 @@ variable {L : Type v} [AddCommGroup L] [Module R L]
 @[reassoc]
 lemma map_id : map φ LinearMap.id φ (LinearMap.comp_id φ) = 𝟙 _ := by
   ext i x
-  simp [map_f, X_def, exteriorPower.map_id]
+  simp [map_f, exteriorPower.map_id]
 
 @[reassoc]
 lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ'' : L →ₗ[R] R)
@@ -181,6 +179,6 @@ lemma isZero_X_of_span_eq_top {ι : Type*} [Finite ι] (g : ι → M)
 lemma isZero_X_ofList_of_length_lt (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) := isZero_X_of_span_eq_top _
   (Pi.basisFun R (Fin l.length)) (Pi.basisFun R (Fin l.length)).span_eq i
-  (by simpa [Nat.card_eq_fintype_card] using hi)
+  (by grind [Nat.card_eq_fintype_card, Fintype.card_fin])
 
 end koszulComplex
