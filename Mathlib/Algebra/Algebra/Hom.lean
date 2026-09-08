@@ -99,11 +99,13 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_one f := f.map_one'
   commutes f := f.commutes'
 
+-- TODO: re-check naming after the semilinearmap rename!
 @[simp] lemma _root_.AlgHomClass.toLinearMap_ofClass {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
     (f : F) : (ofClass f : A →ₗ[R] B) = f := rfl
 
-@[deprecated (since := "2026-09-07")] alias toLinearMap_toAlgHom := AlgHomClass.toLinearMap_ofClass
+@[deprecated (since := "2026-09-08")] alias
+_root_.AlgHomClass.toLinearMap_toAlgHom := AlgHomClass.toLinearMap_ofClass
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
@@ -116,7 +118,7 @@ protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] 
     ⇑(ofClass f) = f :=
   rfl
 
-@[deprecated (since := "2026-09-07")] alias coe_coe := AlgHom.coe_ofClass
+@[deprecated (since := "2026-09-08")] alias coe_coe := AlgHom.coe_ofClass
 
 @[simp]
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
@@ -408,10 +410,13 @@ alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
 
 namespace AlgHomClass
 
+-- TODO: rename again when RingHomClass.toRingHom gets renamed
 @[simp]
-lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+lemma toRingHom_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
     [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
+
+@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := toRingHom_ofClass
 
 end AlgHomClass
 
