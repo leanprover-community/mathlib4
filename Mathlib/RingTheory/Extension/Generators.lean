@@ -262,8 +262,7 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     Generators T (T ⊗[R] S) ι := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
-  induction x using TensorProduct.induction_on with
-  | zero => exact ⟨0, map_zero _⟩
+  induction x using TensorProduct.inductionOn with
   | tmul a b =>
     let X := P.σ b
     use a • MvPolynomial.map (algebraMap R T) X
