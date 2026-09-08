@@ -297,7 +297,7 @@ lemma finite_setOf_mem_weylGroup_apply_sRoot :
   obtain ⟨d, hd, hS⟩ := rl.isCartan.transpose.exists_posDef
   set S := rl.matrix * diagonal d with S_def
   replace hS : S.PosDef := by rw [S_def, ← PosDef.transpose_iff]; simpa using hS
-  refine ((hS.finite_setOf_dotProduct_mulVec_le S.trace).image
+  refine ((hS.finite_setOfPred_dotProduct_mulVec_le S.trace).image
     fun c ↦ ∑ j, c j • rl.sRoot j).subset ?_
   rintro - ⟨w, hw, i, rfl⟩
   obtain ⟨c, hc, hQ⟩ := rl.exists_zsum_eq_of_mem_weylGroup hS.isHermitian.isSymm hw (Pi.single i 1)
