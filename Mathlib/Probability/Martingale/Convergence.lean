@@ -193,8 +193,7 @@ theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartin
 theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   filter_upwards [hf.upcrossings_ae_lt_top hbdd, ae_bdd_liminf_atTop_of_eLpNorm_bdd one_ne_zero
-    (fun n => (hf.stronglyMeasurable n).measurable.mono (ℱ.le n) le_rfl)
-    (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd] with ω h₁ h₂
+    hbdd] with ω h₁ h₂
   exact tendsto_of_uncrossing_lt_top h₂ h₁
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
