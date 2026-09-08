@@ -337,8 +337,8 @@ instance expChar_one [CharZero R] : ExpChar R 1 := ExpChar.zero
 lemma expChar_one_iff : ExpChar R 1 ↔ CharZero R := by simp [expChar_iff, Nat.not_prime_one]
 
 @[simp]
-lemma expChar_prime_iff {p} (hp : p.Prime) : ExpChar R p ↔ CharP R p :=
-  by simp [expChar_iff, hp.ne_one, hp]
+lemma expChar_prime_iff {p} (hp : p.Prime) : ExpChar R p ↔ CharP R p := by
+  simp [expChar_iff, hp.ne_one, hp]
 
 lemma expChar_ne_zero (p : ℕ) [hR : ExpChar R p] : p ≠ 0 := by
   cases hR
