@@ -11,15 +11,21 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 /-!
 # Matrices from lists of rows
 
-`Matrix.ofLists` reads a list of rows as a `Matrix`. The definitions recurse on the dimensions,
-so on literals they reduce in the kernel to the `vecCons` form of the `!![…]` notation, and
-the results compute the transpose and the product of such matrices on their lists of rows.
+`Matrix.ofLists` reads a list of rows as a `Matrix`, and the transpose and the product of such
+matrices are computed on their lists of rows.
 
 ## Main definitions
-* `List.toVec`, `Matrix.ofLists`.
+* `List.toVec`
+* `Matrix.ofLists`
 
 ## Main results
-* `Matrix.ofLists_transpose`, `Matrix.ofLists_mul`.
+* `Matrix.ofLists_transpose`
+* `Matrix.ofLists_mul`
+
+## Implementation notes
+
+The definitions recurse on the dimensions, so on literals they reduce in the kernel to the
+`vecCons` form of the `!![…]` notation.
 -/
 
 public section

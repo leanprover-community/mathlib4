@@ -5,14 +5,18 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.Init
+
 /-!
 # Matrices as lists of rows
 
-Operations on matrices represented as lists of rows, `List (List α)`, importing nothing
-beyond core Lean.
+Operations on matrices represented as lists of rows, `List (List α)`, importing only
+`Mathlib.Init`.
 
 ## Main definitions
-* `List.dotProduct`, `ListMatrix.transpose`, `ListMatrix.mul`.
+* `List.dotProduct`
+* `ListMatrix.transpose`
+* `ListMatrix.mul`
 
 ## Implementation notes
 
@@ -24,20 +28,16 @@ reduces in the kernel.
 
 public section
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- The dot product of the first `n` entries of two lists. -/
 @[expose] def List.dotProduct [Zero α] [Add α] [Mul α] (n : Nat) (l₁ l₂ : List α) : α :=
   ((List.zipWith (· * ·) l₁ l₂).take n).sum
 
-@[simp]
 theorem List.dotProduct_zero [Zero α] [Add α] [Mul α] (l₁ l₂ : List α) :
     l₁.dotProduct 0 l₂ = 0 :=
   rfl
 
-@[simp]
 theorem List.dotProduct_succ_cons_cons [Zero α] [Add α] [Mul α] (n : Nat) (a b : α)
     (l₁ l₂ : List α) : (a :: l₁).dotProduct (n + 1) (b :: l₂) = a * b + l₁.dotProduct n l₂ :=
   rfl

@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Matrix.OfLists
+public import Mathlib.Data.Matrix.OfLists  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.NormNum.Core
 
@@ -15,13 +15,19 @@ public import Mathlib.Tactic.NormNum.Core
 This module defines the `norm_matmul` simproc, which rewrites a product of matrix literals to
 the literal of the product through `Matrix.ofLists_mul`, with the entries computed by
 `norm_num`.
+
+## Implementation notes
+
+The simproc simplifies the factors before matching them, so that a product of products is
+evaluated inside-out. It is meant to run as a pre-procedure, `simp [↓ norm_matmul]`, where it
+takes precedence over the simp lemmas unfolding products of `vecCons` rows.
 -/
 
 public meta section
 
 open Lean Meta Qq
 
-initialize registerTraceClass `Tactic.normMatMul
+initialize registerTraceClass `Tactic.norm_matmul
 
 namespace Mathlib.Tactic.Matrix
 
@@ -73,15 +79,18 @@ def proveMul {u : Level} (finish : Finisher) (e : Expr) (l m n : ℕ) (α : Q(Ty
   let _inst ← synthInstanceQ q(NonUnitalNonAssocSemiring $α)
   -- derived from the semiring rather than synthesised afresh, so that the cells carry the
   -- instance paths `Matrix.ofLists_mul` instantiates `ListMatrix.mul` with
-  let zα : Q(Zero $α) := q(MulZeroClass.toZero)
-  let aα : Q(Add $α) := q(Distrib.toAdd)
-  let mα : Q(Mul $α) := q(Distrib.toMul)
-  have mQ : Q(ℕ) := mkRawNatLit m
+  have zα : Q(Zero $α) := q(MulZeroClass.toZero)
+  have aα : Q(Add $α) := q(Distrib.toAdd)
+  have mα : Q(Mul $α) := q(Distrib.toMul)
+  have mQ : Q(ℕ) := q($m)
   let cols : Array (Array Expr) :=
     Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (rowsB[i]!)[j]!
   let results ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j => do
     let ⟨_, l₁, l₂, fold, h⟩ := mkDotProductChain zα aα mα rowsA[i]!.toList cols[j]!.toList
-    -- the cell of `ListMatrix.mul`, with the length as the literal `m`
+    -- the cell's proof is stated on `List.dotProduct`, the cell of `ListMatrix.mul`, so that
+    -- the kernel compares the product's unfolding to it head to head; stated on the fold, the
+    -- kernel would unfold `+` first and then only evaluating the arithmetic could close the
+    -- comparison. The hint restates the chain's length `(… + 1) + 1` as the literal `m`.
     have dot : Q($α) := q(List.dotProduct $mQ $l₁ $l₂)
     have hDot : Q($dot = $fold) := ← mkExpectedTypeHint h q($dot = $fold)
     let r ← finish fold
@@ -89,40 +98,36 @@ def proveMul {u : Level} (finish : Finisher) (e : Expr) (l m n : ℕ) (α : Q(Ty
     have hFold : Q($fold = $v) := ← r.getProof
     return (v, q(($hDot).trans $hFold))
   let entries := results.map (·.map (·.1))
-  -- a cell's proof is stated on `List.dotProduct`, so the product's unfolding is compared to
-  -- it by the kernel head to head; stated on the fold, the kernel would unfold `+` first and
-  -- then only evaluation of the arithmetic could close the comparison
   let hAll ← mkListCongr q(List $α) (← results.mapM fun row => mkListCongr α (row.map (·.2)))
   let mkLists (rows : Array (Array Expr)) : MetaM Q(List (List $α)) := do
     mkListLit q(List $α) (← rows.toList.mapM (mkListLit α ·.toList))
   have A : Q(List (List $α)) := ← mkLists rowsA
   have B : Q(List (List $α)) := ← mkLists rowsB
-  let C : Q(Matrix (Fin $l) (Fin $n) $α) :=
+  have C : Q(Matrix (Fin $l) (Fin $n) $α) :=
     Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (entries[i]!)[j]!)
-  let hmul := q((Matrix.ofLists_mul $l $m $n $A $B).symm)
+  let hMul := q((Matrix.ofLists_mul $l $m $n $A $B).symm)
   let hC ← mkCongrArg q(Matrix.ofLists (α := $α) $l $n) hAll
-  let pf ← mkEqTrans hmul hC
+  let pf ← mkEqTrans hMul hC
   -- `pf` is stated on `Matrix.ofLists` forms; the hint to `e = C` holds because `ofLists` on
   -- a row-list literal unfolds to exactly the `Matrix.of`/`vecCons` term of the `!![…]`
   -- literal, so the kernel settles it by reduction
   return { expr := C, proof? := some (← mkExpectedTypeHint pf (← mkEq e C)) }
 
-/-- Core of the `norm_matmul` simproc with the given finisher. The factors are simplified first,
-so that a product of products is evaluated inside-out before the simp lemmas on `vecCons`
-products apply. -/
+/-- Core of the `norm_matmul` simproc with the given finisher; the factors are simplified
+first. -/
 def normMatMulCore (finish : Finisher) : Simp.Simproc := fun e => do
   let_expr HMul.hMul _ _ _ _ A B := e | return .continue
   let rA ← Simp.simp A
   let rB ← Simp.simp B
   let some (l, m, R, rowsA) ← matchMatrixLit? rA.expr
-    | trace[Tactic.normMatMul] "not a closed matrix literal{indentExpr rA.expr}"
+    | trace[Tactic.norm_matmul] "not a closed matrix literal{indentExpr rA.expr}"
       return .continue
   let some (_, n, _, rowsB) ← matchMatrixLit? rB.expr
-    | trace[Tactic.normMatMul] "not a closed matrix literal{indentExpr rB.expr}"
+    | trace[Tactic.norm_matmul] "not a closed matrix literal{indentExpr rB.expr}"
       return .continue
   let rAB ← Simp.mkCongr (← Simp.mkCongr { expr := e.appFn!.appFn! } rA) rB
   let u ← getDecLevel R
-  return .visit (← rAB.mkEqTrans (← proveMul (u := u) finish rAB.expr l m n R rowsA rowsB))
+  return .done (← rAB.mkEqTrans (← proveMul (u := u) finish rAB.expr l m n R rowsA rowsB))
 
 end Mathlib.Tactic.Matrix
 
@@ -130,12 +135,10 @@ open Mathlib.Tactic.Matrix
 
 /-- The `norm_matmul` simproc rewrites a product of matrix literals with non-symbolic entries
 to the literal of the product, with the entries computed by `norm_num`. Use it as
-`simp [↓ norm_matmul]`: as a pre-procedure it takes precedence over the simp lemmas unfolding
-products of `vecCons` rows, and `norm_num` ignores simprocs given as arguments. Terms that it
-cannot evaluate are skipped, and can be viewed by using `set_option trace.Tactic.normMatMul true`.
--/
+`simp [↓ norm_matmul]`; `norm_num` ignores simprocs given as arguments. Terms that it cannot
+evaluate are skipped, and can be viewed by using `set_option trace.Tactic.norm_matmul true`. -/
 simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := fun e => do
   try normMatMulCore (Mathlib.Meta.NormNum.eval ·) e
   catch ex =>
-    trace[Tactic.normMatMul] "{ex.toMessageData}"
+    trace[Tactic.norm_matmul] "{ex.toMessageData}"
     return .continue
