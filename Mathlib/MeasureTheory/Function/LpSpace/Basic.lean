@@ -516,8 +516,7 @@ theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
     rw [ENNReal.div_zero p_zero]
     simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using
       (memLp_top_const_enorm (by simp)).eLpNorm_lt_top
-  rw [eLpNorm_enorm_rpow _ hf.aestronglyMeasurable hfrpow
-    (ENNReal.toReal_pos q_zero q_top)]
+  rw [eLpNorm_enorm_rpow _ hf.aestronglyMeasurable (ENNReal.toReal_pos q_zero q_top)]
   apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
   rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
     mul_one]
@@ -541,8 +540,7 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
         ENNReal.zero_lt_top]
     rw [ENNReal.div_zero p_zero]
     exact (memLp_top_const (1 : ℝ)).eLpNorm_lt_top
-  rw [eLpNorm_norm_rpow _ hf.aestronglyMeasurable hfrpow
-    (ENNReal.toReal_pos q_zero q_top)]
+  rw [eLpNorm_norm_rpow _ hf.aestronglyMeasurable (ENNReal.toReal_pos q_zero q_top)]
   apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
   rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
     mul_one]
