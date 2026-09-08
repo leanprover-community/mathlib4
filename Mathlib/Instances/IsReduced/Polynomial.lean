@@ -13,10 +13,7 @@ import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 # Instance `IsReduced R[X]`
-A polynomial `p : R[X]` over a reduced semiring `R` is reduced if `R` is reduced.
-
-The original statement below was for commutative rings; it is generalized here to arbitrary
-semirings via Armendariz's theorem (every reduced semiring is Armendariz).
+If `R` is reduced, so is `R[X].
 -/
 
 open Polynomial
