@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public meta import Mathlib.LinearAlgebra.Matrix.Notation
+public meta import Mathlib.LinearAlgebra.Matrix.Notation -- shake: keep (!![] elaboration)
 
 /-!
 # Parsing matrix literals
