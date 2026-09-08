@@ -7159,6 +7159,7 @@ public import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.Unramified.LocalStructure
 public import Mathlib.RingTheory.Unramified.Locus
 public import Mathlib.RingTheory.Unramified.Pi
+public import Mathlib.RingTheory.Valuation.AddValuation.Basic
 public import Mathlib.RingTheory.Valuation.AlgebraInstances
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.RingTheory.Valuation.Basic
