@@ -10,11 +10,12 @@ public import Mathlib.Analysis.InnerProductSpace.Reproducing
 
 /-!
 # Operations on RKHS
+
 This file implements the maps that show how RKHSs created from kernels formed by applying operations
 to a set of kernels relate to the RKHSs of the constituant kernels.
 
 ## main definitions
- - `generator`: the operator `(f,g) ↦ ↑f + ↑f` inducing the RKHS `H + H'`.
+ - `generator`: the operator `(f, g) ↦ ⇑f + ⇑g` inducing the RKHS `H + H'`.
  - `OfKernelAddEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
     quotient space over `OfKernel K × OfKernel K'`.
  - `projection`: isometry yielding the elements of `H × H'` achieving the norm of `H + H'`.
@@ -35,7 +36,7 @@ variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [Complete
 variable (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
 variable [RKHS 𝕜 H X V] [RKHS 𝕜 H' X V]
 
-/-- The operator `(f,g) ↦ ↑f + ↑f`, where addition is in `X → V`. -/
+/-- The operator `(f, g) ↦ ⇑f + ⇑g`, where addition is in `X → V`. -/
 def generator : WithLp 2 (H × H') →L[𝕜] (X → V) :=
   ((coeCLM (H:=H) 𝕜).coprod (coeCLM (H:=H') 𝕜)) ∘L
     (WithLp.prodContinuousLinearEquiv 2 𝕜 H H').toContinuousLinearMap
@@ -96,7 +97,7 @@ variable [Fact K.PosSemidef] [Fact K'.PosSemidef]
 instance : Fact (K + K').PosSemidef :=
   ⟨Matrix.PosSemidef.add (Fact.out : K.PosSemidef) (Fact.out : K'.PosSemidef)⟩
 
-/-- The RKHSS constructed from the sum of two kernels is linearly isometrically isomorphic to the
+/-- The RKHSs constructed from the sum of two kernels is linearly isometrically isomorphic to the
 sum of the RKHSs created by the consituant kernels. -/
 def OfKernelAddEquiv : OfKernel (K + K') ≃ₗᵢ[𝕜] OfKernel K + OfKernel K' := equiv
   (by simp [OfKernel.kernel_ofKernel, kernel_sum_eq_sum_of_kernel])
