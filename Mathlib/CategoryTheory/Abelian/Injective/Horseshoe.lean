@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.Embedding.ExtendLimits
+public import Mathlib.Algebra.Homology.Embedding.Splitting
 public import Mathlib.CategoryTheory.Abelian.Injective.Ext
 
 /-!
@@ -21,7 +22,7 @@ universe w
 
 namespace CategoryTheory
 
-open Limits CochainComplex
+open Abelian Limits CochainComplex Pretriangulated
 
 variable {C : Type*} [Category* C] [Abelian C]
 
@@ -102,8 +103,24 @@ have T₂ := DerivedCategory.Q.mapTriangle.obj
   (triangleOfDegreewiseSplit h.shortComplexExtend sorry)
 have T₃ := ShortComplex.ShortExact.singleTriangle hS
 
+-- `singleTriangleIso` below relates T₂ and T₃
 -/
 
+noncomputable def splittingExtend (n : ℤ) :
+    (h.shortComplexExtend.map (HomologicalComplex.eval C (ComplexShape.up ℤ) n)).Splitting :=
+  ComplexShape.embeddingUpNat.splittingExtend (S := h.shortComplex) h.splitting n
+
+noncomputable abbrev triangle : Triangle (CochainComplex C ℤ) :=
+    triangleOfDegreewiseSplit h.shortComplexExtend h.splittingExtend
+
+noncomputable def singleTriangleIso [HasDerivedCategory C] :
+    ShortComplex.ShortExact.singleTriangle hS ≅
+    DerivedCategory.Q.mapTriangle.obj h.triangle :=
+  Triangle.isoMk _ _ (asIso (DerivedCategory.Q.map R₁.ι'))
+    (asIso (DerivedCategory.Q.map R₂.ι')) (asIso (DerivedCategory.Q.map R₃.ι'))
+    sorry sorry sorry
+
+attribute [local instance] HasDerivedCategory.standard in
 lemma extMk_comp_extClass'
     [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0) (m' : ℕ) (hm' : m + 1 = m') :
@@ -111,6 +128,9 @@ lemma extMk_comp_extClass'
     (R₃.extMk x₃ m hm hx₃).comp hS.extClass hm =
     R₁.extMk (x₃ ≫ (h.splitting n).s ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r) m' hm'
       (h.extMk_comp_extClass'_aux x₃ hx₃ m') := by
+  ext
+  simp only [Ext.comp_hom, extMk_hom, Functor.comp_obj,
+    ShortComplex.ShortExact.extClass_hom, Category.assoc]
   sorry
 
 lemma extMk_comp_extClass
