@@ -321,7 +321,6 @@ instance : CoeOut (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.to
 lemma toNonUnitalRingHom_toNonUnitalStarRingHom (f : A ≃⋆+* B) :
     f.toNonUnitalStarRingHom.toNonUnitalRingHom = f.toNonUnitalRingHom := rfl
 
-@[simp]
 lemma coe_toNonUnitalStarRingHom {A B : Type*}
     [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] (f : A ≃⋆+* B) :
     (f.toNonUnitalRingHom : A → B) = f := rfl
@@ -470,3 +469,4 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
 end Bijective
 
 end StarRingEquiv
+#lint
