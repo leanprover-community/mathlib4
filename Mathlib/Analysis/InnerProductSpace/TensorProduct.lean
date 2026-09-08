@@ -36,6 +36,7 @@ inner product spaces.
 * `TensorProduct.assocIsometry`: the linear isometry version of `TensorProduct.assoc`.
 * `TensorProduct.mapL`: the continuous version of `TensorProduct.map f g` when
   `f` and `g` are continuous linear maps.
+* `TensorProduct.congrL f g`: the continuous version of `TensorProduct.congr f g`.
 * `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
   bases.
 
@@ -713,6 +714,70 @@ open LinearMap
 @[simp] theorem _root_.LinearMap.adjoint_lTensor [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
     [FiniteDimensional 𝕜 G] (f : E →ₗ[𝕜] F) :
     (f.lTensor G).adjoint = f.adjoint.lTensor G := by simp [lTensor]
+
+/-- If `E` and `F` are continuously and linearly equivalent and `G` and `H` are continuously and
+linearly equivalent, then `E ⊗ G` and `F ⊗ H` are continuously and linearly equivalent. -/
+noncomputable def congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) : E ⊗[𝕜] G ≃L[𝕜] F ⊗[𝕜] H :=
+  ContinuousLinearEquiv.equivOfInverse' (mapL f g) (mapL f.symm g.symm)
+    (by ext; simp [← mapL_comp])
+    (by ext; simp [← mapL_comp])
+
+@[simp]
+theorem congrL_tmul (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) (x : E) (y : G) :
+    congrL f g (x ⊗ₜ y) = f x ⊗ₜ g y :=
+  rfl
+
+theorem symm_congrL_tmul (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) (x : F) (y : H) :
+    (congrL f g).symm (x ⊗ₜ y) = f.symm x ⊗ₜ g.symm y :=
+  rfl
+
+@[simp]
+theorem symm_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
+    (congrL f g).symm = congrL f.symm g.symm :=
+  rfl
+
+@[simp]
+lemma toContinuousLinearMap_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
+    (congrL f g).toContinuousLinearMap = mapL f g :=
+  rfl
+
+@[simp]
+lemma toLinearEquiv_congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) :
+    (congrL f g).toLinearEquiv = congr f.toLinearEquiv g.toLinearEquiv := by
+  ext; simp [congrL, congr]
+
+@[simp]
+theorem congrL_refl_refl : congrL (.refl 𝕜 E) (.refl 𝕜 G) = .refl 𝕜 _ := by
+  ext; simp [congrL]
+
+section congr_congr
+variable {F₂ H₂ : Type*} [NormedAddCommGroup F₂] [InnerProductSpace 𝕜 F₂] [NormedAddCommGroup H₂]
+  [InnerProductSpace 𝕜 H₂] (f₂ : F ≃L[𝕜] F₂) (g₂ : H ≃L[𝕜] H₂) (f₁ : E ≃L[𝕜] F) (g₁ : G ≃L[𝕜] H)
+
+theorem congrL_trans_trans :
+    congrL (f₁.trans f₂) (g₁.trans g₂) = (congrL f₁ g₁).trans (congrL f₂ g₂) := by
+  ext; simp [congrL, map_map]
+
+theorem congrL_congrL (x : E ⊗[𝕜] G) :
+    congrL f₂ g₂ (congrL f₁ g₁ x) = congrL (f₁.trans f₂) (g₁.trans g₂) x :=
+  DFunLike.congr_fun (congrL_trans_trans ..).symm x
+
+end congr_congr
+
+theorem congrL_mul_mul (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (f' : E ≃L[𝕜] E) (g' : G ≃L[𝕜] G) :
+    congrL (f * f') (g * g') = congrL f g * congrL f' g' := congrL_trans_trans ..
+
+@[simp]
+theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
+    congrL f g ^ n = congrL (f ^ n) (g ^ n) := by
+  apply ContinuousLinearEquiv.toLinearEquiv_injective
+  simp [ContinuousLinearEquiv.toLinearEquiv_pow]
+
+@[simp]
+theorem congrL_zpow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℤ) :
+    congrL f g ^ n = congrL (f ^ n) (g ^ n) := by
+  apply ContinuousLinearEquiv.toLinearEquiv_injective
+  simp [ContinuousLinearEquiv.toLinearEquiv_zpow]
 
 /-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
 `a, b, c`.
