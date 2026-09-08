@@ -450,7 +450,13 @@ open CategoryTheory.prod
 the individual limits on objects. -/
 @[simps!]
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
-  NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
+  NatIso.ofComponents (fun k =>
+    limitObjIsoLimitCompEvaluation F k ≪≫ HasLimit.isoOfNatIso (compEvaluation F k)) (by
+      -- explicit so that this does not rely on unfolding `Functor.comp`
+      intro X Y f
+      apply limit.hom_ext
+      intro j
+      simp [compEvaluation, Iso.trans])
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
@@ -494,7 +500,13 @@ def limitIsoSwapCompLim [HasLimitsOfShape J C] (G : J ⥤ K ⥤ C) :
 the individual colimits on objects. -/
 @[simps!]
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
-  NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
+  NatIso.ofComponents (fun k =>
+    colimitObjIsoColimitCompEvaluation F k ≪≫ HasColimit.isoOfNatIso (compEvaluation F k)) (by
+      -- explicit so that this does not rely on unfolding `Functor.comp`
+      intro X Y f
+      apply colimit_obj_ext
+      intro j
+      simp [compEvaluation, Iso.trans])
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
