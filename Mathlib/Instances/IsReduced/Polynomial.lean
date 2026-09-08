@@ -88,7 +88,7 @@ instance : IsReduced R[X] := by
     | 1, hn => simpa using hn
     | (n + 2), hn =>
       refine IH (n + 1) (by lia) (key _ ?_)
-      have hx : p ^ (n + 1) * p ^ (n + 1) = p ^ (n + 2) * p ^ n := by
+      have : p ^ (n + 1) * p ^ (n + 1) = p ^ (n + 2) * p ^ n := by
         rw [← pow_add, ← pow_add]
         lia
       lia
