@@ -32,8 +32,7 @@ section
 
 -- implementation details of `HasImage` for ModuleCat; use the API, not these
 /-- The image of a morphism in `ModuleCat R` is just the bundling of `LinearMap.range f` -/
-def image : ModuleCat R :=
-  ModuleCat.of R (LinearMap.range f.hom)
+def image : ModuleCat R := ↧f.hom.range
 
 /-- The inclusion of `image f` into the target -/
 def image.ι : image f ⟶ H :=
@@ -95,7 +94,7 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
 
 /-- The categorical image of a morphism in `ModuleCat R` agrees with the linear algebraic range. -/
 noncomputable def imageIsoRange {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    Limits.image f ≅ ModuleCat.of R (LinearMap.range f.hom) :=
+    Limits.image f ≅ ↧f.hom.range :=
   IsImage.isoExt (Image.isImage f) (isImage f)
 
 @[simp, reassoc, elementwise]

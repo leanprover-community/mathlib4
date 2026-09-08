@@ -510,6 +510,13 @@ theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
     (equivAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
   rfl
 
+theorem equivAddCircle_eq [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimedean 𝕜]
+    [hp : Fact (0 < p)] (hq : q ≠ 0) :
+    ⇑(equivAddCircle p q hp.out.ne' hq)
+      = fun x ↦ ((equivIco p 0 x : 𝕜) * (p⁻¹ * q) : AddCircle q) := by
+  ext x
+  grind [coe_equivIco, equivAddCircle_apply_mk]
+
 section
 variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
@@ -528,6 +535,12 @@ theorem homeomorphAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
 theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
     (homeomorphAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
   rfl
+
+@[continuity, fun_prop]
+theorem continuous_equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) :
+    Continuous ⇑(equivAddCircle p q hp hq) :=
+  (homeomorphAddCircle ..).continuous
+
 end
 
 lemma natCast_div_mul_eq_nsmul (r : 𝕜) (m : ℕ) :
