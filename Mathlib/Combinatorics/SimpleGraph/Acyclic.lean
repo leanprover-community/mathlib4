@@ -650,6 +650,12 @@ lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber �
 lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
 
+protected theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n :=
+  cliqueFree_of_chromaticNumber_lt <| h.chromaticNumber_le_two.trans_lt <| by norm_cast
+
+theorem IsAcyclic.cliqueFree_three (h : G.IsAcyclic) : G.CliqueFree 3 :=
+  h.cliqueFree le_rfl
+
 lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ} (hn : 2 ≤ n)
     (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical
@@ -672,9 +678,5 @@ theorem isAcyclic_iff_free_cycleGraph : G.IsAcyclic ↔ ∀ n ≥ 3, (cycleGraph
   · have ⟨v, p, hcyc, hlen⟩ := cycleGraph_isContained_iff hn |>.mp hle
     exact h p hcyc
   · exact cycleGraph_isContained_iff hcyc.three_le_length |>.mpr ⟨v, p, hcyc, rfl⟩
-
-theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n := by
-  refine not_cliqueFree_iff_top_isContained n |>.not_right.mpr fun hle ↦ ?_
-  exact isAcyclic_iff_free_cycleGraph.mp h n hn <| hle.trans' <| .of_le le_top
 
 end SimpleGraph
