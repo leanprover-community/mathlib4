@@ -307,20 +307,26 @@ instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
 
+section
+
+variable {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B]
+
 /-- A ⋆-ring equivalence is a ⋆-ring homomorphism. -/
-def toNonUnitalStarRingHom {A B : Type*}
-    [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] (f : A ≃⋆+* B) :
-    A →⋆ₙ+* B where
+def toNonUnitalStarRingHom (f : A ≃⋆+* B) : A →⋆ₙ+* B where
   toNonUnitalRingHom := f
   map_star' := f.map_star'
 
-instance {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] :
-    CoeOut (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.toNonUnitalStarRingHom
+instance : CoeOut (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.toNonUnitalStarRingHom
+
+lemma toNonUnitalRingHom_toNonUnitalStarRingHom (f : A ≃⋆+* B) :
+    f.toNonUnitalStarRingHom.toNonUnitalRingHom = f.toNonUnitalRingHom := rfl
 
 @[simp]
 lemma coe_toNonUnitalStarRingHom {A B : Type*}
     [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] (f : A ≃⋆+* B) :
     (f.toNonUnitalRingHom : A → B) = f := rfl
+
+end
 
 instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
 
