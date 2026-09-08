@@ -86,6 +86,13 @@ def assertEq (name expected actual : String) : IO Unit := do
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
 
+/-- Run `body` with the `--scope=` override (`scopeOverride`) restored on
+completion, including on exception, so a test that sets it leaves the tests
+after it unaffected. -/
+private def withSavedScopeOverride (body : IO Unit) : IO Unit := do
+  let saved ← scopeOverride.get
+  try body finally scopeOverride.set saved
+
 /-- Run `action` with both stdout and stderr redirected to the platform null
 device. Restores both on completion, including on exception. Apply this to every
 production code call in tests so diagnostic prints never mix with test output,
@@ -672,9 +679,7 @@ needs process state, so it is exercised by the CI integration tests rather than
 here. -/
 def test_getRepoScope : IO Unit := do
   IO.println "getRepoScope:"
-  -- Guard the IORef so a leak doesn't pollute subsequent tests.
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
     assertTrue "no scope set returns none" ((← withSuppressedOutput getRepoScope) == none)
 
@@ -688,8 +693,6 @@ def test_getRepoScope : IO Unit := do
 
     scopeOverride.set none
     assertTrue "clearing the flag returns none" ((← withSuppressedOutput getRepoScope) == none)
-  finally
-    scopeOverride.set saved
 
 end ScopeResolution
 
@@ -712,9 +715,7 @@ never warns, even on a fork checkout whose remote isn't the canonical repo.
 deterministic without needing a real checkout. -/
 def test_shouldWarnNonDefaultScope : IO Unit := do
   IO.println "shouldWarnNonDefaultScope:"
-  -- Sandbox the IORef for the duration of this test.
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
 
     assertTrue "plain get with no flags does not warn"
@@ -770,8 +771,6 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     assertTrue "no --unsafe (none window) does not warn on its own"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := none))))
-  finally
-    scopeOverride.set saved
 
 /-- `getNonDefaultScopeReason` produces the `Reason:` line in the warning, naming
 the specific input that triggered it so the user can match it to their command
@@ -779,8 +778,7 @@ line. When several inputs apply at once it reports the most specific first —
 scope, then `--cache-from`, then `--repo` — and that order is pinned here. -/
 def test_getNonDefaultScopeReason : IO Unit := do
   IO.println "getNonDefaultScopeReason:"
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
 
     -- A placeholder rather than a crash if nothing matches.
@@ -833,8 +831,6 @@ def test_getNonDefaultScopeReason : IO Unit := do
     assertTrue "unsafe reason names the window and outranks scope/cache-from/repo"
       (reason == "--unsafe (automatic walk over up to 7 fork commit(s); trusting whoever built them)")
     scopeOverride.set none
-  finally
-    scopeOverride.set saved
 
 /-- `findMostRecentSHAWithCache` returns the first candidate SHA whose per-SHA
 marker exists in the `forks` container, used by `cache query` to find the most
@@ -1312,8 +1308,7 @@ def test_isValidScope : IO Unit := do
   assertTrue "a branch name is rejected" (!isValidScope "nightly-testing")
   assertTrue "an overlong value is rejected" (!isValidScope (String.ofList (List.replicate 65 'a')))
   -- The IO accessor enforces the guard for both scope sources.
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set (some "/tmp/pwned")
     let threw ← try discard <| withSuppressedOutput getRepoScope; pure false
       catch _ => pure true
@@ -1321,8 +1316,6 @@ def test_isValidScope : IO Unit := do
     scopeOverride.set (some "deadbeef")
     assertTrue "getRepoScope passes a hex scope through"
       ((← withSuppressedOutput getRepoScope) == some "deadbeef")
-  finally
-    scopeOverride.set saved
 
 /-- `fileDirPath` is the one path policy behind `mkFileURL` and every
 upload tool: bare `f` for a flat container, repo-namespaced otherwise, with

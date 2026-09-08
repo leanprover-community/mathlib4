@@ -95,14 +95,16 @@ def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option St
     | .s3 => s3UploadDestFrom putBase? container? repo scope?
 
 /--
-`stagedUploadDestFrom`, resolved from the environment. The one destination
-resolution every upload consumes: the artifact puts and the marker put, on
-every tool, address `{base}/{prefix}/{name}`.
+`stagedUploadDestFrom` on the endpoint variables in the environment. `scope?`
+is the caller's resolved scope (`getRepoScope`), which `runPut` also carries to
+the marker write, so one resolution serves the whole upload. The one
+destination resolution every upload consumes: the artifact puts and the marker
+put, on every tool, address `{base}/{prefix}/{name}`.
 -/
 def stagedUploadDest (backend : UploadBackend) (container? : Option Container)
-    (repo : String) : IO StagedUploadDest := do
+    (repo : String) (scope? : Option String) : IO StagedUploadDest := do
   let putUrl? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
   let putBase? ← IO.getEnv "MATHLIB_CACHE_PUT_BASE_URL"
-  IO.ofExcept <| stagedUploadDestFrom backend putUrl? putBase? container? repo (← getRepoScope)
+  IO.ofExcept <| stagedUploadDestFrom backend putUrl? putBase? container? repo scope?
 
 end Cache.Requests

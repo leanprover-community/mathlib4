@@ -38,8 +38,9 @@ commits with a cheap HEAD probe.
 def runPut [Monad m] [MonadLiftT IO m] (container? : Option Container)
     (repo? : Option String) (backend : UploadBackend) (srcDir : FilePath)
     (getFileNames : m (Array String)) (overwrite : Bool) : m Unit := do
-  let dest ← stagedUploadDest backend container? (repo?.getD MATHLIBREPO)
-  let markerSha? ← if container?.isSome then getRepoScope else pure (none : Option String)
+  let scope? ← getRepoScope
+  let dest ← stagedUploadDest backend container? (repo?.getD MATHLIBREPO) scope?
+  let markerSha? := if container?.isSome then scope? else none
   match backend with
   | .azure =>
     let token ← getAzureAuth
