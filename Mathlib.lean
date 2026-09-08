@@ -6561,7 +6561,7 @@ public import Mathlib.RepresentationTheory.FiniteIndex
 public import Mathlib.RepresentationTheory.Hecke.Basic
 public import Mathlib.RepresentationTheory.Hecke.Bimodule
 public import Mathlib.RepresentationTheory.Hecke.LeftFiniteDoubleCoset
-public import Mathlib.RepresentationTheory.Hecke.Multiplicity
+public import Mathlib.RepresentationTheory.Hecke.StructureConst
 public import Mathlib.RepresentationTheory.Hecke.Unimodular
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality

@@ -19,9 +19,10 @@ with the space of `H`-invariants.
 
 namespace Representation
 
-variable {k : Type*} [CommRing k] {G : Type*} [Group G] (H : Subgroup G)
-variable {V : Type*} [AddCommGroup V] [Module k V] (ρ : Representation k G V)
+variable {k : Type*} [CommRing k] {G : Type*} [Group G] {H : Subgroup G}
+variable {V : Type*} [AddCommGroup V] [Module k V] {ρ : Representation k G V}
 
+variable (H ρ) in
 /-- The intertwining space `Hom_G(k[G ⧸ H], ρ)`, which can be viewed as a module over the standard
 Hecke algebra `End_G(k[G ⧸ H])ᵒᵖ`. -/
 abbrev HeckeModule := (ofMulAction k G (G ⧸ H)).IntertwiningMap ρ
@@ -30,7 +31,7 @@ section heckeModule
 
 open MonoidAlgebra
 
-variable (k) {H} in
+variable (k) in
 /-- The basis vector in `k[G ⧸ H]` of a left coset. -/
 noncomputable def cosetVector (x : G ⧸ H) : k[G ⧸ H] := single x 1
 
@@ -77,8 +78,8 @@ noncomputable def HeckeModule.invariantsEquiv :
     right_inv _ := by ext; exact invariantsMk_apply _}
 
 @[simp]
-lemma HeckeModule.invariantsEquiv_apply (g : G) (v : invariants (ρ.comp H.subtype)) :
-    invariantsEquiv H ρ v (cosetVector k g) = ρ g v := by
+lemma HeckeModule.invariantsEquiv_apply_apply (g : G) (v : invariants (ρ.comp H.subtype)) :
+    invariantsEquiv v (cosetVector k g) = ρ g v := by
   simp [invariantsEquiv]
 
 end heckeModule

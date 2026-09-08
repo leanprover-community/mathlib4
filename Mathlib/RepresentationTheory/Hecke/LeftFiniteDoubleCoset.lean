@@ -47,6 +47,9 @@ lemma mem_leftDecomposition_mk {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : 
     (g : G ⧸ H₂) ∈ x.leftDecomposition ↔ DoubleCoset.mk H₁ H₂ g = x := by
   simp [Quotient.leftDecomposition]
 
+instance (x : Quotient (H₁ : Set G) (H₂ : Set G)) : Nonempty x.leftDecomposition :=
+  nonempty_subtype.mpr ⟨_, mem_leftDecomposition_mk.mpr (out_eq' x)⟩
+
 instance (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
     MulAction H₁ x.leftDecomposition where
   smul h q := ⟨h • (q : G ⧸ H₂), by
@@ -61,6 +64,14 @@ lemma coe_smul_leftDecomposition {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ 
     (y : x.leftDecomposition) :
     ((h • y : x.leftDecomposition) : G ⧸ H₂) = (h : G) • (y : G ⧸ H₂) :=
   rfl
+
+lemma mem_leftDecomposition_eq_smul {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)}
+    {c d : G ⧸ H₂} (hc : c ∈ x.leftDecomposition) (hd : d ∈ x.leftDecomposition) :
+    ∃ (h₁ : G), h₁ ∈ H₁ ∧ c = h₁ • d := by
+  have {y : G ⧸ H₂} (hy : y ∈ x.leftDecomposition) : DoubleCoset.mk H₁ H₂ y.out = x := by
+    simp [← mem_leftDecomposition_mk, hy]
+  obtain ⟨_, hh₁, _, hh₂, h⟩ := eq.mp ((this hd).trans (this hc).symm)
+  exact ⟨_, hh₁, by rw [← QuotientGroup.out_eq' c, h]; simp [hh₂, ← MulAction.Quotient.mk_smul_out]⟩
 
 lemma stabilizer_leftCoset :
     MulAction.stabilizer H₁ (g : G ⧸ H₂) = (ConjAct.toConjAct g • H₂).subgroupOf H₁ := by
@@ -78,7 +89,7 @@ abbrev leftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
 
 namespace leftDecompQuotient
 
-lemma nat_card_eq_relIndex :
+lemma natCard_eq_relIndex :
     Nat.card (leftDecompQuotient H₁ H₂ g) = (ConjAct.toConjAct g • H₂).relIndex H₁ := by
   rw [leftDecompQuotient, Subgroup.relIndex, Subgroup.index, stabilizer_leftCoset]
 
@@ -107,7 +118,7 @@ lemma mem_range_toLeftCoset_iff :
     exact ⟨QuotientGroup.mk ⟨h₁, hh₁⟩, by simp [hh₂]⟩
 
 /-- The equivalence between `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` and `{xH₂ | H₁xH₂ = H₁gH₂}`. -/
-@[simps! apply]
+@[simps!]
 noncomputable def toLeftDecompositionEquiv :
     leftDecompQuotient H₁ H₂ g ≃ (mk H₁ H₂ g).leftDecomposition :=
   (Equiv.ofInjective toLeftCoset toLeftCoset_injective).trans (Set.equivOfEq (by
@@ -145,18 +156,29 @@ decomposition into left cosets. -/
 
 lemma isLeftFinite_iff_relIndexNeZero :
     IsLeftFinite H₁ H₂ g ↔ (ConjAct.toConjAct g • H₂).relIndex H₁ ≠ 0 := by
-  rw [isLeftFinite_iff, mk_degree, leftDecompQuotient.nat_card_eq_relIndex]
+  rw [isLeftFinite_iff, mk_degree, leftDecompQuotient.natCard_eq_relIndex]
 
-instance [IsLeftFinite H₁ H₂ g] : Finite (mk H₁ H₂ g).leftDecomposition := by
-  apply Nat.finite_of_card_ne_zero
-  simpa [degree_def] using IsLeftFinite.degreeNeZero
+noncomputable instance [IsLeftFinite H₁ H₂ g] : Fintype (mk H₁ H₂ g).leftDecomposition := by
+  have : Finite (mk H₁ H₂ g).leftDecomposition :=
+    Nat.finite_of_card_ne_zero (by simpa [degree_def] using IsLeftFinite.degreeNeZero)
+  exact Fintype.ofFinite _
 
 noncomputable instance [IsLeftFinite H₁ H₂ g] : Fintype (leftDecompQuotient H₁ H₂ g) :=
   Subgroup.fintypeOfIndexNeZero <| by simpa [stabilizer_leftCoset, Subgroup.relIndex] using
     (isLeftFinite_iff_relIndexNeZero.mp (inferInstance))
 
+lemma isLeftFinite_iff_finite_leftDecomposition :
+    IsLeftFinite H₁ H₂ g ↔ Finite (mk H₁ H₂ g).leftDecomposition := by
+  rw [isLeftFinite_iff, degree_def, Nat.card_ne_zero]
+  simpa using fun h => ⟨_, mem_leftDecomposition_mk.mpr (out_eq' (mk H₁ H₂ g))⟩
+
+lemma isLeftFinite_iff_finite_leftDecompQuotient :
+    IsLeftFinite H₁ H₂ g ↔ Finite (leftDecompQuotient H₁ H₂ g) := by
+  rw [isLeftFinite_iff, mk_degree, Nat.card_ne_zero]
+  simpa using fun h => by infer_instance
+
 instance (H : Subgroup G) : IsLeftFinite H H 1 := by
-  simp [isLeftFinite_iff, mk_degree, leftDecompQuotient.nat_card_eq_relIndex]
+  simp [isLeftFinite_iff, mk_degree, leftDecompQuotient.natCard_eq_relIndex]
 
 instance [IsLeftFinite H₁ H₂ g] (h₁ : H₁) :
     IsLeftFinite H₁ H₂ (h₁ * g) := by
@@ -212,10 +234,6 @@ abbrev leftDecomposition (x : DoubleCoset₀ H₁ H₂) : Set (G ⧸ H₂) := x.
 lemma degree_ne_zero (x : DoubleCoset₀ H₁ H₂) :
     x.degree ≠ 0 := x.prop
 
-instance (x : DoubleCoset₀ H₁ H₂) : Finite x.leftDecomposition := by
-  apply Nat.finite_of_card_ne_zero
-  simpa [degree_def] using x.2
-
 instance (x : DoubleCoset₀ H₁ H₂) : IsLeftFinite H₁ H₂ x.rep := by
   simp [isLeftFinite_iff, rep, DoubleCoset.out_eq']
 
@@ -237,28 +255,32 @@ lemma mk_degree [IsLeftFinite H₁ H₂ g] :
     (mk H₁ H₂ g).degree = Nat.card (leftDecompQuotient H₁ H₂ g) := by
   simpa using DoubleCoset.mk_degree g (H₁ := H₁) (H₂ := H₂)
 
-lemma mk_eq_iff {g g' : G} [IsLeftFinite H₁ H₂ g] [IsLeftFinite H₁ H₂ g'] :
+lemma mk_eq {g g' : G} [IsLeftFinite H₁ H₂ g] [IsLeftFinite H₁ H₂ g'] :
     mk H₁ H₂ g = mk H₁ H₂ g' ↔ ∃ h₁ ∈ H₁, ∃ h₂ ∈ H₂, g' = h₁ * g * h₂ := by
   rw [Subtype.ext_iff, DoubleCoset.eq]
 
 @[simp]
-lemma mk_mul_mem [IsLeftFinite H₁ H₂ g] (h₁ : H₁) :
+lemma mk_mem_mul [IsLeftFinite H₁ H₂ g] (h₁ : H₁) :
     mk H₁ H₂ (h₁ * g) = mk H₁ H₂ g := by
   simp [mk]
 
 @[simp]
-lemma mk_mem_mul [IsLeftFinite H₁ H₂ g] (h₂ : H₂) :
+lemma mk_mul_mem [IsLeftFinite H₁ H₂ g] (h₂ : H₂) :
     mk H₁ H₂ (g * h₂) = mk H₁ H₂ g := by
   simp [mk]
 
 @[simp]
 lemma diag_mk_one_rep_mem (H : Subgroup G) : (mk H H 1).rep ∈ H := by
-  obtain ⟨_, h₁, _, h₂, heq⟩ := mk_eq_iff.mp (show mk H H 1 = mk H H (mk H H 1).rep from by simp)
+  obtain ⟨_, h₁, _, h₂, heq⟩ := mk_eq.mp (show mk H H 1 = mk H H (mk H H 1).rep from by simp)
   simp [heq, H.mul_mem h₁ h₂]
 
 @[simp]
 lemma diag_mk_one_degree_eq_one (H : Subgroup G) : (mk H H 1).degree = 1 := by
-  rw [mk_degree, leftDecompQuotient.nat_card_eq_relIndex, ConjAct.toConjAct_one, one_smul,
+  rw [mk_degree, leftDecompQuotient.natCard_eq_relIndex, ConjAct.toConjAct_one, one_smul,
     Subgroup.relIndex_self]
+
+noncomputable instance (x : DoubleCoset₀ H₁ H₂) : Fintype x.leftDecomposition := by
+  rw [leftDecomposition, ← mk_rep_eq_val x]
+  infer_instance
 
 end DoubleCoset₀

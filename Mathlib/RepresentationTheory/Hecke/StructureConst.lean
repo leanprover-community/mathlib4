@@ -5,16 +5,15 @@ Authors: Jiaxi Mo
 -/
 module
 
-public import Mathlib.RepresentationTheory.Hecke.LeftFiniteDoubleCoset
 public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.RepresentationTheory.Hecke.LeftFiniteDoubleCoset
 
 /-!
-# Multiplicity of the convolution product
+# Structure constants of the convolution product
 
-This file defines the multiplicity for a triple of double cosets: the coefficient with which the
+This file defines the structureConst for a triple of double cosets: the coefficient with which the
 third occurs in the convolution product of the first two. We also provide a flexible computation
-lemma `multiplicity_mk_mk_mk` that allows arbitrary representatives to be chosen.
-
+lemma `structureConst_mk_mk_mk` that allows arbitrary representatives to be chosen.
 -/
 
 @[expose] public section
@@ -48,8 +47,8 @@ lemma relPosition_one_eq_iff {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Se
   simp
 
 /-- The number of left cosets `aH₂ ⊆ x` such that `H₂a⁻¹bH₃ = y` for any fixed left coset `bH₃ ⊆ z`,
-or `0` if there are infinitely many. See `multiplicity_mk_mk_mk` for a computation lemma. -/
-noncomputable def Quotient.multiplicity (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
+or `0` if there are infinitely many. See `structureConst_mk_mk_mk` for a computation lemma. -/
+noncomputable def Quotient.structureConst (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
     (y : DoubleCoset.Quotient (H₂ : Set G) (H₃ : Set G))
     (z : DoubleCoset.Quotient (H₁ : Set G) (H₃ : Set G)) :
     ℕ :=
@@ -59,29 +58,28 @@ noncomputable def Quotient.multiplicity (x : DoubleCoset.Quotient (H₁ : Set G)
       exact Nat.card_congr <| Equiv.subtypeEquiv (MulAction.toPerm h₁) fun c =>
         QuotientGroup.induction_on c (by simp [hh₃, mk_mem_mul ⟨_, hh₁⟩])
 
-lemma multiplicity_mk (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
+lemma structureConst_mk (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
     (y : DoubleCoset.Quotient (H₂ : Set G) (H₃ : Set G)) (g : G) :
-    x.multiplicity y (mk H₁ H₃ g) =  Nat.card {d ∈ x.leftDecomposition | relPosition d g = y} :=
+    x.structureConst y (mk H₁ H₃ g) =  Nat.card {d ∈ x.leftDecomposition | relPosition d g = y} :=
   rfl
 
-lemma multiplicity_of_mem (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
+lemma structureConst_of_mem (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
     (y : DoubleCoset.Quotient (H₂ : Set G) (H₃ : Set G))
     (z : DoubleCoset.Quotient (H₁ : Set G) (H₃ : Set G))
     {c : G ⧸ H₃} (hc : c ∈ z.leftDecomposition) :
-    x.multiplicity y z = Nat.card {d ∈ x.leftDecomposition | relPosition d c = y} := by
+    x.structureConst y z = Nat.card {d ∈ x.leftDecomposition | relPosition d c = y} := by
   rw [← QuotientGroup.out_eq' c] at hc ⊢
-  have : mk H₁ H₃ c.out = z := mem_leftDecomposition_mk.mp hc
-  rw [← this, multiplicity_mk]
+  rw [← mem_leftDecomposition_mk.mp hc, structureConst_mk]
 
 open leftDecompQuotient in
-/-- The computation formula for multiplicity with given representatives of doublecosets and
+/-- The computation formula for structureConst with given representatives of doublecosets and
 left-coset decompositions. -/
-lemma multiplicity_mk_mk_mk (u v w : G) {ι κ : Type*}
+lemma structureConst_mk_mk_mk (u v w : G) {ι κ : Type*}
     {σ : ι → H₁} (hσ : Function.Bijective fun i => (σ i : leftDecompQuotient H₁ H₂ u))
     {τ : κ → H₂} (hτ : Function.Bijective fun j => (τ j : leftDecompQuotient H₂ H₃ v)) :
-    (mk H₁ H₂ u).multiplicity (mk H₂ H₃ v) (mk H₁ H₃ w) =
+    (mk H₁ H₂ u).structureConst (mk H₂ H₃ v) (mk H₁ H₃ w) =
       Nat.card {p : ι × κ | (σ p.1 * u * (τ p.2 * v) : G ⧸ H₃) = (w : G ⧸ H₃)} := by
-  rw [multiplicity_mk, eq_comm]
+  rw [structureConst_mk, eq_comm]
   refine Nat.card_eq_of_bijective ⟨?_, ?_⟩
     (f := fun ⟨p, hp⟩ => ⟨(σ p.1).val * u, ⟨by simp, by simp [← Set.mem_ofPred.mp hp, mul_assoc]⟩⟩)
   · intro ⟨⟨x1, x2⟩, hx⟩ ⟨⟨y1, y2⟩, hy⟩ heq
@@ -95,7 +93,7 @@ lemma multiplicity_mk_mk_mk (u v w : G) {ι κ : Type*}
     -- We construct inverse `⟨i, j⟩` s.t. `(σ i * u)H₂ = d` `(τ j * v)H₃ = (σ i * u)⁻¹wH₃`
     simp only [Set.mem_ofPred_eq, Subtype.mk.injEq, Subtype.exists, exists_prop, Prod.exists]
     obtain ⟨i, hi⟩ := toLeftDecompositionEquiv.surjective.comp hσ.surjective ⟨d, hd⟩
-    simp only [Function.comp_apply, toLeftDecompositionEquiv_apply, toLeftCoset_mk,
+    simp only [Function.comp_apply, toLeftDecompositionEquiv_apply_coe, toLeftCoset_mk,
       Subtype.ext_iff] at hi
     obtain ⟨j, hj⟩ := toLeftDecompositionEquiv.surjective.comp hτ.surjective
       ⟨((σ i * u)⁻¹ * w : G ⧸ H₃), by rw [mem_leftDecomposition_mk, ← relPosition_mk_mk, hi, hrel]⟩
@@ -105,23 +103,23 @@ end DoubleCoset
 
 namespace DoubleCoset₀
 
-noncomputable def multiplicity (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃) :
+noncomputable def structureConst (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃) :
     DoubleCoset₀ H₁ H₃ →₀ ℕ :=
-  Finsupp.ofSupportFinite (fun z => x.val.multiplicity y.val z.val) <| by
+  Finsupp.ofSupportFinite (fun z => x.val.structureConst y.val z.val) <| by
     apply Set.Finite.of_finite_image (f := Subtype.val) _ fun _ _ _ _ h => Subtype.ext h
     refine (Set.finite_range fun p : x.leftDecomposition × y.leftDecomposition =>
       relPosition (p.1.val.out⁻¹ : G) p.2.val).subset ?_
     rintro _ ⟨z, hz, rfl⟩
-    rw [Function.mem_support, ← DoubleCoset.out_eq' z.val, multiplicity_mk, Nat.card_ne_zero] at hz
+    rw [Function.mem_support, ← out_eq' z.val, structureConst_mk, Nat.card_ne_zero] at hz
     obtain ⟨⟨⟨d, hd, hrel⟩⟩, -⟩ := hz
     refine ⟨(⟨d, hd⟩, ⟨(d.out : G)⁻¹ • ((z.val.out : G) : G ⧸ H₃), ?_⟩), ?_⟩
     · rw [← relPosition_one_eq_iff, ← relPosition_smul]
       simpa using hrel
-    · simpa [relPosition_one_eq_iff, mem_leftDecomposition_mk] using DoubleCoset.out_eq' z.val
+    · simpa [relPosition_one_eq_iff, mem_leftDecomposition_mk] using out_eq' z.val
 
 @[simp]
-lemma multiplicity_coe (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃)
+lemma structureConst_coe (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃)
     (z : DoubleCoset₀ H₁ H₃) :
-    x.multiplicity y z = x.val.multiplicity y.val z.val := rfl
+    x.structureConst y z = x.val.structureConst y.val z.val := rfl
 
 end DoubleCoset₀
