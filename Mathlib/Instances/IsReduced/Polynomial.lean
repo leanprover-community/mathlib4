@@ -21,18 +21,6 @@ semirings via Armendariz's theorem (every reduced semiring is Armendariz).
 
 open Polynomial
 
-/-
-The original commutative-ring version.  It is subsumed by the semiring instance proved below,
-so it is commented out to avoid two overlapping instances for the same class.
-
-public instance {R : Type*} [CommRing R] [IsReduced R] : IsReduced R[X] := by
-  rw [isReduced_iff]
-  intro p hp
-  ext i
-  rw [Polynomial.isNilpotent_iff] at hp
-  simpa using hp i
--/
-
 public section
 
 variable {R : Type*} [Semiring R] [IsReduced R]
@@ -58,13 +46,7 @@ theorem IsReduced.mul_eq_zero_of_mul_sq_eq_zero {a b : R} (h : a * b * b = 0) : 
   rw [h3, h2]; simp
 
 /-- Armendariz's theorem for reduced semirings: if `p * q = 0` in `R[X]` with `R` reduced, then
-every coefficient of `p` annihilates every coefficient of `q`.
-
-The proof is a double induction: an outer strong induction on the index `j` of the coefficient
-of `q`, and an inner strong induction on the index `i` of the coefficient of `p`.  Multiplying
-the vanishing `(i + j)`-th coefficient of `p * q` on the right by `q.coeff j` kills every term
-of the convolution except `p.coeff i * q.coeff j * q.coeff j`, using semicommutativity of the
-reduced semiring `R`. -/
+every coefficient of `p` annihilates every coefficient of `q`. -/
 theorem Polynomial.coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) :
     ∀ j i, (coeff p i) * (coeff q j) = 0 := by
   intro j
@@ -87,17 +69,6 @@ theorem Polynomial.coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q 
           grind [Finset.mem_antidiagonal]
       grind [IsReduced.mul_eq_zero_of_mul_sq_eq_zero]
 
-/--
-How the Proof Works (Step-by-Step)
-
-If a polynomial `p : R[X]` satisfies `p * p = 0`, then Armendariz's theorem for reduced
-semirings gives `p.coeff i * p.coeff i = 0` for every `i`, hence `p.coeff i = 0` since `R` has
-no nonzero nilpotents, hence `p = 0`.  A general nilpotent `p` (say `p ^ (n + 1) = 0`) is then
-handled by descending induction: `p ^ (n + 1) * p ^ (n + 1) = p ^ (n + 2) * p ^ n = 0`
-whenever `n + 2 ≤ 2 * (n + 1)`, so nilpotency of order `n + 2` implies nilpotency of order
-`n + 1`, and one descends to `p = 0`.  Note that no commutativity and no subtraction is used,
-so the result holds for semirings.
--/
 public instance Polynomial.instIsReducedOfIsReduced : IsReduced R[X] := by
   have key : ∀ q : R[X], q * q = 0 → q = 0 := by
     intro q hq
