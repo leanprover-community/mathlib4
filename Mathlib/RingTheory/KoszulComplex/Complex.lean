@@ -175,14 +175,14 @@ noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' 
 
 end functoriality
 
-lemma isZero_X_of_card_generators_lt {ι : Type*} [Finite ι] (g : ι → M)
+lemma isZero_X_of_span_eq_top {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulComplex φ).X i) :=
   ModuleCat.isZero_of_iff_subsingleton.mpr
     (exteriorPower.subsingleton_of_span_eq_top_of_card_lt g hg i hi)
 
 lemma isZero_X_ofList_of_length_lt (l : List R) (i : ℕ) (hi : l.length < i) :
-    IsZero ((ofList l).X i) := isZero_X_of_card_generators_lt _
+    IsZero ((ofList l).X i) := isZero_X_of_span_eq_top _
   (Pi.basisFun R (Fin l.length)) (Pi.basisFun R (Fin l.length)).span_eq i
   (by simpa [Nat.card_eq_fintype_card] using hi)
 
