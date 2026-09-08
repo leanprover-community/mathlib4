@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Jeremy Parker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Parker
+Authors: Jeremy Parker, Lua Viana Reis
 -/
 module
 
@@ -67,7 +67,7 @@ variable (f : X → X) (x : X) (n : ℕ)
   [MeasurableSingletonClass X]
 
 lemma integral_empiricalMeasure_eq_birkhoffaverage (n : ℕ) :
-    ∫ y, g y ∂(empiricalMeasure f x n : Measure X) = birkhoffAverage NNReal f g (n + 1) x := by
+    ∫ y, g y ∂(empiricalMeasure f x n) = birkhoffAverage NNReal f g (n + 1) x := by
   simp [empiricalMeasure,
     integral_birkhoffAverage_measure f g x .dirac (by fun_prop (disch := simp))]
 
@@ -105,8 +105,10 @@ public theorem exists_measurePreserving_probabilityMeasure
     [CompactSpace X] [Nonempty X] {f : X → X} (hf : Continuous f) :
     ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ := by
   obtain ⟨x⟩ := ‹Nonempty X›
+  -- starting from any point, the empirical measures must accumulate at some measure μ
   obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
     (u := fun n ↦ (empiricalMeasure f x n).toProbabilityMeasure) (f := atTop) (by simp)
+  -- μ gives us a regular measure ν, and the rest is showing ν satisfies the other properties
   obtain ⟨ν, hνreg, hνfin, hμν⟩ := (μ : Measure X).exists_regular_eq_of_compactSpace
   have hprob : ν Set.univ = 1 := by
     rw [← ENNReal.toReal_eq_one_iff]
@@ -141,22 +143,18 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
       ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧ Measure.support μ ⊆ K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
   have : Nonempty K := hnonempty.to_subtype
-  let f' : K → K := Set.MapsTo.restrict f K K hfinv
   let ι : K → X := Subtype.val
   obtain ⟨μm, hμ, hμmreg, hμprob⟩ :=
     exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
   let μ : ProbabilityMeasure K := ⟨μm, hμprob⟩
-  have hμreg : (μ : Measure K).Regular := hμmreg
-  have : IsFiniteMeasure (μm : Measure K) := inferInstance
+  have : (μ : Measure K).Regular := hμmreg
   have hιmeas : Measurable ι :=  measurable_subtype_coe
   let ν := μ.map ι
   use ν
-  have : IsFiniteMeasure (ν : Measure X) := by
-    simpa [ν] using (Measure.isFiniteMeasure_map (μ : Measure K) Subtype.val)
   have : (ν : Measure X).InnerRegular :=
     Measure.InnerRegular.map_of_continuous continuous_subtype_val
   have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
-  have hsemi : Function.Semiconj ι f' f := by
+  have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
     intro
     rfl
   refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
