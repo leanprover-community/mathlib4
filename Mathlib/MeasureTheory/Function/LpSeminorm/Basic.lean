@@ -434,6 +434,15 @@ theorem eLpNorm_congr_enorm_ae [TopologicalSpace ε']
   le_antisymm (eLpNorm_mono_enorm_ae hf <| EventuallyEq.le hfg)
     (eLpNorm_mono_enorm_ae hg <| (EventuallyEq.symm hfg).le)
 
+/-- See also `eLpNorm_zero_of_ae_enorm_zero` dropping the measurability assumption
+but assuming that the space is an enormed monoid. -/
+theorem eLpNorm_zero_of_ae_enorm_zero'
+    {f : α → ε} (hf : AEStronglyMeasurable f μ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ = 0) :
+    eLpNorm f p μ = 0 := by
+  have := eLpNorm_congr_enorm_ae hf (g := fun _ ↦ (0 : ℝ)) (p := p) aestronglyMeasurable_const
+  simp only [enorm_zero, eLpNorm_fun_zero] at this
+  exact this hfC
+
 theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm f p μ = eLpNorm g p μ :=
