@@ -311,7 +311,7 @@ section
 
 variable {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B]
 
-/-- A ⋆-ring equivalence is a ⋆-ring homomorphism. -/
+/-- A ⋆-ring equivalence is a non-unital ⋆-ring homomorphism. -/
 def toNonUnitalStarRingHom (f : A ≃⋆+* B) : A →⋆ₙ+* B where
   toNonUnitalRingHom := f
   map_star' := f.map_star'
