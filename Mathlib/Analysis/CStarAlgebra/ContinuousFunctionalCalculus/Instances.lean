@@ -56,9 +56,6 @@ variable [ClosedEmbeddingContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) 
 
 open scoped ContinuousMapZero
 
-
---set_option pp.rawOnError true
-
 open Unitization in
 /--
 This is an auxiliary definition used for constructing an instance of the non-unital continuous
@@ -150,7 +147,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
       have h₁ : Function.Injective ⇑(codRestrict (cfcₙAux hp₁ a ha) _
           (cfcₙAux_mem_range_inr hp₁ a ha)) :=
         (Set.injective_codRestrict _).mpr (cfcₙAux_injective hp₁ a ha)
-      sorry -- simpa [ψ] using (inrRangeEquiv 𝕜 A).symm.injective.comp h₁
+      simpa only [ψ] using! (inrRangeEquiv 𝕜 A).symm.injective.comp h₁
     case map_id => exact inr_injective (R := 𝕜) <| coe_ψ _ ▸ cfcₙAux_id hp₁ a ha
     case map_spec =>
       exact quasispectrum_eq_spectrum_inr' 𝕜 𝕜 (ψ f) ▸ coe_ψ _ ▸ spec_cfcₙAux hp₁ a ha f
