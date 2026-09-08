@@ -22,6 +22,7 @@ In this file, given `X : TopCat`, we define a bijection
 
 universe u
 
+open Convexity
 open scoped Simplicial
 
 namespace TopCat
@@ -44,14 +45,14 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toSSetObj₁Equiv_apply_zero (s : toSSet.obj X _⦋1⦌) :
     X.toSSetObj₁Equiv s 0 = toSSetObj₀Equiv ((toSSet.obj X).δ 1 s) := by
   simp [toSSetObj₀Equiv, toSSetObj₁Equiv, -ContinuousMap.coe_mk,
-    Subsingleton.elim (default : stdSimplex ℝ (Fin 1)) (stdSimplex.vertex 0)]
+    Subsingleton.elim (default : StdSimplex ℝ (Fin 1)) (.single 0)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toSSetObj₁Equiv_apply_one (s : toSSet.obj X _⦋1⦌) :
     X.toSSetObj₁Equiv s 1 = toSSetObj₀Equiv ((toSSet.obj X).δ 0 s) := by
   simp [toSSetObj₀Equiv, toSSetObj₁Equiv, -ContinuousMap.coe_mk,
-    Subsingleton.elim (default : stdSimplex ℝ (Fin 1)) (stdSimplex.vertex 0)]
+    Subsingleton.elim (default : StdSimplex ℝ (Fin 1)) (.single 0)]
 
 @[simp]
 lemma δ_one_toSSetObj₁Equiv.symm (f : I ⟶ X) :

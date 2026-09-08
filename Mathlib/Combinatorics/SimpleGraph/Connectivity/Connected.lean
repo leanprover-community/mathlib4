@@ -752,7 +752,7 @@ lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
 /-! ### Bridge edges -/
 
 section BridgeEdges
-variable {u v : V}
+variable {u v : V} {e : Sym2 V}
 
 /-- An edge of a graph is a *bridge* if without it, its incident vertices
 are not reachable from one another. -/
@@ -862,22 +862,25 @@ lemma IsBridge.notMem_edges_of_isCycle {e : Sym2 V} {u : V} {p : G.Walk u u}
 @[deprecated (since := "2026-06-04")]
 alias isBridge_iff_mem_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
 
+/-- Deleting a non-bridge edge preserves reachability. -/
+theorem Reachable.reachable_deleteEdges_of_not_isBridge (he : ¬G.IsBridge e) (h : G.Reachable u v) :
+    (G.deleteEdges {e}).Reachable u v := by
+  have ⟨p⟩ := h
+  induction p with | nil => simp | @cons u v w hadj p ih
+  refine .trans ?_ <| ih ⟨p⟩
+  rcases eq_or_ne s(u, v) e with rfl | hne
+  · exact isBridge_iff.not_left.mp he
+  · exact deleteEdges_adj.mpr ⟨hadj, hne⟩ |>.reachable
+
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
-lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
-    (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
-  classical
-  simp only [isBridge_iff, not_not] at h
-  obtain hxy | hxy := em' <| G.Adj x y
-  · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
-  refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
-  obtain ⟨P, hP⟩ := hG.exists_isPath w x
-  obtain heP | heP := em' <| s(x, y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x, y)} (by grind)).reverse⟩
-  have hyP := P.snd_mem_support_of_mem_edges heP
-  let P₁ := P.takeUntil y hyP
-  have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
-  have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact h.trans (.symm ⟨P₁.toDeleteEdges {s(x, y)} (by grind)⟩)
+theorem Preconnected.connected_deleteEdges_of_not_isBridge (hG : G.Preconnected)
+    (he : ¬G.IsBridge e) : (G.deleteEdges {e}).Connected where
+  preconnected := (hG · · |>.reachable_deleteEdges_of_not_isBridge he)
+  nonempty := e.ind fun v _ ↦ ⟨v⟩
+
+@[deprecated (since := "2026-08-22")]
+alias Connected.connected_delete_edge_of_not_isBridge :=
+  Preconnected.connected_deleteEdges_of_not_isBridge
 
 theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.IsBridge e) :
     G.IsBridge e := by obtain ⟨a, b⟩ := e; rw [isBridge_iff] at ⊢ h; grw [hG]; assumption

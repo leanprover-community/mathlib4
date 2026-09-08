@@ -249,7 +249,7 @@ gives a cocone for this functor which is a colimit and has point `P`.
 @[simps! obj map]
 def functorToRepresentables (P : Cᵒᵖ ⥤ Type max w v₁) :
     P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type max w v₁ :=
-  (CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}
+  (Functor.Elements.π P).leftOp ⋙ uliftYoneda.{w}
 
 set_option backward.defeqAttrib.useBackward true in
 /-- This is a cocone with point `P` for the functor `functorToRepresentables P`. It is shown in
@@ -274,7 +274,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem coconeOfRepresentable_naturality
     {P₁ P₂ : Cᵒᵖ ⥤ Type max w v₁} (α : P₁ ⟶ P₂) (j : P₁.Elementsᵒᵖ) :
     (coconeOfRepresentable P₁).ι.app j ≫ α =
-      (coconeOfRepresentable P₂).ι.app ((CategoryOfElements.map α).op.obj j) := by
+      (coconeOfRepresentable P₂).ι.app (α.mapElements.op.obj j) := by
   ext T f
   simp [uliftYonedaEquiv]
 
@@ -292,8 +292,8 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
         (s.ι.app (Opposite.op (Functor.elementsMk P X x)))
       naturality X Y f := by
         ext x
-        have := s.w (Quiver.Hom.op (CategoryOfElements.homMk (P.elementsMk X x)
-          (P.elementsMk Y (P.map f x)) f rfl))
+        have := s.w (Quiver.Hom.op (Functor.Elements.homMk (x := P.elementsMk X x)
+          (y := P.elementsMk Y (P.map f x)) f rfl))
         dsimp at this x ⊢
         rw [← this, uliftYonedaEquiv_comp]
         dsimp
@@ -303,7 +303,7 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
   fac s j := by
     ext X x
     let φ : j.unop ⟶ (Functor.elementsMk P _
-      ((uliftYonedaEquiv.symm (unop j).snd).app X x)) := ⟨x.down.op, rfl⟩
+      ((uliftYonedaEquiv.symm (unop j).val).app X x)) := ⟨x.down.op, rfl⟩
     have := s.w φ.op
     dsimp [φ] at this x ⊢
     rw [← this, uliftYonedaEquiv_apply]
@@ -311,7 +311,7 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
   uniq s m hm := by
     ext X x
     simp only [functorToRepresentables_obj, coconeOfRepresentable_pt, Functor.const_obj_obj,
-      coconeOfRepresentable_ι_app, Functor.leftOp_obj, CategoryOfElements.π_obj, op_unop,
+      coconeOfRepresentable_ι_app, Functor.leftOp_obj, Functor.Elements.π_obj, op_unop,
       TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.coe_mk] at hm ⊢
     rw [← hm, uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
 
@@ -345,8 +345,8 @@ lemma isLeftKanExtension_along_uliftYoneda_iff :
     intro P
     dsimp [Functor.LeftExtension.IsPointwiseLeftKanExtensionAt]
     apply IsColimit.ofWhiskerEquivalence
-      (CategoryOfElements.costructuredArrowULiftYonedaEquivalence _)
-    let e : (CategoryOfElements.costructuredArrowULiftYonedaEquivalence P).functor ⋙
+      (Functor.Elements.costructuredArrowULiftYonedaEquivalence _)
+    let e : (Functor.Elements.costructuredArrowULiftYonedaEquivalence P).functor ⋙
       CostructuredArrow.proj uliftYoneda.{max w v₂} P ⋙ A ≅
         functorToRepresentables.{max w v₂} P ⋙ L :=
       Functor.isoWhiskerLeft _ (Functor.isoWhiskerLeft _ (asIso α)) ≪≫
@@ -663,7 +663,7 @@ def tautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
 def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (tautologicalCocone'.{w} P) :=
   (IsColimit.whiskerEquivalenceEquiv
-    (CategoryOfElements.costructuredArrowULiftYonedaEquivalence.{w} P)).2
+    (Functor.Elements.costructuredArrowULiftYonedaEquivalence.{w} P)).2
       (colimitOfRepresentable.{w} P)
 
 
@@ -685,11 +685,11 @@ def tautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
 def isColimitTautologicalCocone (P : Cᵒᵖ ⥤ Type v₁) :
     IsColimit (tautologicalCocone P) :=
   let e : functorToRepresentables.{v₁} P ≅
-    ((CategoryOfElements.costructuredArrowYonedaEquivalence P).functor ⋙
+    ((Functor.Elements.costructuredArrowYonedaEquivalence P).functor ⋙
       CostructuredArrow.proj yoneda P ⋙ yoneda) :=
     NatIso.ofComponents (fun e ↦ NatIso.ofComponents (fun X ↦ Equiv.ulift.toIso))
   (IsColimit.whiskerEquivalenceEquiv
-    (CategoryOfElements.costructuredArrowYonedaEquivalence P)).2
+    (Functor.Elements.costructuredArrowYonedaEquivalence P)).2
       ((IsColimit.precomposeHomEquiv e _).1 (colimitOfRepresentable.{v₁} P))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
@@ -731,9 +731,9 @@ this is the colimit cocone which identifies `F.obj X` to the colimit of
 `(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
 @[simps]
 noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
-    Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X) where
+    Cocone ((Functor.Elements.π F).op ⋙ shrinkYoneda.{w}.obj X) where
   pt := F.obj X
-  ι.app u := ↾fun t ↦ F.map (shrinkYonedaObjObjEquiv t) u.unop.snd
+  ι.app u := ↾fun t ↦ F.map (shrinkYonedaObjObjEquiv t) u.unop.val
   ι.naturality u₁ u₂ g := by
     ext f
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
@@ -748,7 +748,7 @@ noncomputable def isColimitCoconeπOpCompShrinkYonedaObj (X : C) :
     IsColimit (coconeπOpCompShrinkYonedaObj F X) := by
   refine Nonempty.some ((Types.isColimit_iff_coconeTypesIsColimit _).2
     ⟨?_, fun x ↦ ?_⟩)
-  · let G := (CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X
+  · let G := (Functor.Elements.π F).op ⋙ shrinkYoneda.{w}.obj X
     let c := G.coconeTypesEquiv.symm (coconeπOpCompShrinkYonedaObj F X)
     have (u : G.ColimitType) (x : F.obj X) (h : G.descColimitType c u = x) :
         G.ιColimitType (op (elementsMk _ _ x))
@@ -770,7 +770,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
     {X₁ X₂ : C} (f : X₁ ⟶ X₂) (u : F.Elements) :
-    dsimp% (shrinkYoneda.{w}.map f).app (op u.fst) ≫
+    dsimp% (shrinkYoneda.{w}.map f).app (op u.obj) ≫
       (coconeπOpCompShrinkYonedaObj F X₂).ι.app (op u) =
     (coconeπOpCompShrinkYonedaObj F X₁).ι.app (op u) ≫ F.map f := by
   ext g
@@ -781,7 +781,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is a locally `w`-small category, this is a (colimit) cocone
 expressing `F : C ⥤ Type w` as a colimit of corepresentable functors. -/
 noncomputable def coconeπOpCompShrinkYonedaFlip :
-    Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.flip) where
+    Cocone ((Functor.Elements.π F).op ⋙ shrinkYoneda.{w}.flip) where
   pt := F
   ι.app u :=
     { app X := (coconeπOpCompShrinkYonedaObj F X).ι.app u
@@ -807,7 +807,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
     [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] :
     shrinkYoneda.{w} ⋙
-      (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim ≅ F :=
+      (Functor.whiskeringLeft _ _ _).obj (Functor.Elements.π F).op ⋙ colim ≅ F :=
   NatIso.ofComponents (fun X ↦
     IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
       (isColimitCoconeπOpCompShrinkYonedaObj F X)) (fun {X₁ X₂} f ↦ colimit.hom_ext (by
@@ -816,13 +816,13 @@ noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
 set_option backward.defeqAttrib.useBackward true in
 lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
     [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] (u : F.Elements) :
-      (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app _ u.snd =
-      (colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u)
+      (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app _ u.val =
+      (colimit.ι ((Functor.Elements.π F).op ⋙ shrinkYoneda.{w}.obj u.obj) (op u)
         (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by
   have :
-      (coconeπOpCompShrinkYonedaObj F u.fst).ι.app (op u) ≫
-        (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app u.fst =
-      colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u) :=
+      (coconeπOpCompShrinkYonedaObj F u.obj).ι.app (op u) ≫
+        (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app u.obj =
+      colimit.ι ((Functor.Elements.π F).op ⋙ shrinkYoneda.{w}.obj u.obj) (op u) :=
     IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
   simpa using ConcreteCategory.congr_hom this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
 
