@@ -335,21 +335,19 @@ we define it as a `LinearEquiv` to avoid type equalities. -/
 def toSubmoduleEquiv (S : NonUnitalSubalgebra R A) : S.toSubmodule ≃ₗ[R] S :=
   LinearEquiv.ofEq _ _ rfl
 
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
-
 /-- Transport a non-unital subalgebra via an algebra homomorphism. -/
-def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
+def map (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
   { S.toNonUnitalSubsemiring.map (f : A →ₙ+* B) with
     smul_mem' := fun r b hb => by
       rcases hb with ⟨a, ha, rfl⟩
       exact map_smulₛₗ f r a ▸ Set.mem_image_of_mem f (S.smul_mem' r ha) }
 
 @[gcongr]
-theorem map_mono {S₁ S₂ : NonUnitalSubalgebra R A} {f : F} :
+theorem map_mono {S₁ S₂ : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalSubalgebra R B) ≤ map f S₂ :=
   Set.image_mono
 
-theorem map_injective {f : F} (hf : Function.Injective f) :
+theorem map_injective {f : A →ₙₐ[R] B} (hf : Function.Injective f) :
     Function.Injective (map f : NonUnitalSubalgebra R A → NonUnitalSubalgebra R B) :=
   fun _S₁ _S₂ ih =>
   ext <| Set.ext_iff.1 <| Set.image_injective.2 hf <| Set.ext <| SetLike.ext_iff.mp ih
@@ -363,42 +361,45 @@ theorem map_map (S : NonUnitalSubalgebra R A) (g : B →ₙₐ[R] C) (f : A →�
   SetLike.coe_injective <| Set.image_image _ _ _
 
 @[simp]
-theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
+theorem mem_map {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} {y : B} :
+    y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   NonUnitalSubsemiring.mem_map
 
-theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
+theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} :
     -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
     (map f S).toSubmodule = Submodule.map (LinearMap.ofClass f) S.toSubmodule :=
   SetLike.coe_injective rfl
 
-theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
+theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} :
     (map f S).toNonUnitalSubsemiring = S.toNonUnitalSubsemiring.map (f : A →ₙ+* B) :=
   SetLike.coe_injective rfl
 
 @[simp]
-theorem coe_map (S : NonUnitalSubalgebra R A) (f : F) : (map f S : Set B) = f '' S :=
+theorem coe_map (S : NonUnitalSubalgebra R A) (f : A →ₙₐ[R] B) : (map f S : Set B) = f '' S :=
   rfl
 
 /-- Preimage of a non-unital subalgebra under an algebra homomorphism. -/
-def comap (f : F) (S : NonUnitalSubalgebra R B) : NonUnitalSubalgebra R A :=
+def comap (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) : NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.comap (f : A →ₙ+* B) with
     smul_mem' := fun r a (ha : f a ∈ S) =>
       show f (r • a) ∈ S from (map_smulₛₗ f r a).symm ▸ SMulMemClass.smul_mem r ha }
 
-theorem map_le {S : NonUnitalSubalgebra R A} {f : F} {U : NonUnitalSubalgebra R B} :
+theorem map_le {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} {U : NonUnitalSubalgebra R B} :
     map f S ≤ U ↔ S ≤ comap f U :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f : F) :
+theorem gc_map_comap (f : A →ₙₐ[R] B) :
     GaloisConnection (map f : NonUnitalSubalgebra R A → NonUnitalSubalgebra R B) (comap f) :=
   fun _ _ => map_le
 
 @[simp]
-theorem mem_comap (S : NonUnitalSubalgebra R B) (f : F) (x : A) : x ∈ comap f S ↔ f x ∈ S :=
+theorem mem_comap (S : NonUnitalSubalgebra R B) (f : A →ₙₐ[R] B) (x : A) :
+    x ∈ comap f S ↔ f x ∈ S :=
   Iff.rfl
 
 @[simp, norm_cast]
-theorem coe_comap (S : NonUnitalSubalgebra R B) (f : F) : (comap f S : Set A) = f ⁻¹' (S : Set B) :=
+theorem coe_comap (S : NonUnitalSubalgebra R B) (f : A →ₙₐ[R] B) :
+    (comap f S : Set A) = f ⁻¹' (S : Set B) :=
   rfl
 
 instance noZeroDivisors {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
