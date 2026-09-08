@@ -87,6 +87,7 @@ lean_lib Cache where
 lean_lib MathlibTest where
   globs := #[`MathlibTest.+]
   leanOptions := mathlibTestOptions
+  allowNonModules := true
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
