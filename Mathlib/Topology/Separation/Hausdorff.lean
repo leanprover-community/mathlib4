@@ -502,8 +502,7 @@ theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Cont
   isOpen_compl_iff.mpr <| isClosed_eq hf hg
 
 /-- The graph of a continuous function into a Hausdorff space is closed. -/
-theorem Continuous.isClosed_graph [T2Space X] {f : Y → X} (hf : Continuous f) :
-    IsClosed f.graph :=
+theorem Continuous.isClosed_graph [T2Space X] {f : Y → X} (hf : Continuous f) : IsClosed f.graph :=
   isClosed_eq (hf.comp continuous_fst) continuous_snd
 
 /-- If two continuous maps are equal on `s`, then they are equal on the closure of `s`. See also

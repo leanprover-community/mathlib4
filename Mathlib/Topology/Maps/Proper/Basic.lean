@@ -30,8 +30,6 @@ other variations.
 * `IsProperMap.pi_map`: any product of proper maps is proper.
 * `isProperMap_iff_isClosedMap_and_compact_fibers`: a map is proper if and only if it is
   continuous, closed, and has compact fibers
-* `continuous_iff_isClosed_graph`: a function into a compact Hausdorff space is continuous if and
-  only if its graph is closed
 
 ## Implementation notes
 
@@ -356,7 +354,7 @@ theorem continuous_of_isClosed_graph [CompactSpace Y] (hf : IsClosed f.graph) : 
   intro C hC
   have h : f ⁻¹' C = Prod.fst '' (f.graph ∩ univ ×ˢ C) := by
     ext x
-    simp [Function.graph]
+    simp [graph]
   exact h ▸ isClosedMap_fst_of_compactSpace _ (hf.inter (isClosed_univ.prod hC))
 
 /-- A function into a compact Hausdorff space is continuous if and only if its graph is closed.
