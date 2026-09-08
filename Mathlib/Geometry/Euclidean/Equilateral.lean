@@ -22,12 +22,16 @@ particularly that the centroid, circumcenter, and Monge point coincide.
 
 @[expose] public section
 
-namespace Affine.Simplex
-
-open AffineSubspace EuclideanGeometry
+namespace Affine
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] {n : ℕ} {i j k : Fin (n + 1)} {s : Simplex ℝ P n}
+  [NormedAddTorsor V P]
+
+namespace Simplex
+
+variable {n : ℕ} {i j k : Fin (n + 1)} {s : Simplex ℝ P n}
+
+open AffineSubspace EuclideanGeometry
 
 /-- The circumcenter lies on the perpendicular bisector of any two points. -/
 lemma circumcenter_mem_perpBisector :
@@ -85,4 +89,20 @@ end Center
 
 end Equilateral
 
-end Affine.Simplex
+end Simplex
+
+namespace Triangle
+
+variable {i j k : Fin 3} {t : Triangle ℝ P}
+
+/-- The centroid is the orthocenter. -/
+lemma centroid_eq_orthocenter (h : t.Equilateral) : t.centroid = t.orthocenter :=
+  h.centroid_eq_mongePoint
+
+/-- The circumcenter is the orthocenter. -/
+lemma circumcenter_eq_orthocenter (h : t.Equilateral) : t.circumcenter = t.orthocenter :=
+  h.circumcenter_eq_mongePoint
+
+end Triangle
+
+end Affine
