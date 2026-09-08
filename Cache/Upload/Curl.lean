@@ -11,53 +11,33 @@ import Cache.Upload.Defs
 
 The built-in transfer engine: parallel curl PUTs against the resolved
 destination (`StagedUploadDest`), authenticated per request from the
-`UploadAuth` mechanism (`uploadAuthArgs`). `putStagedViaCurl` is the engine's
-entry point; `Cache/Upload.lean` dispatches to it.
+`UploadAuth` mechanism (`uploadAuthArgs`). The engine holds only transfer
+mechanics; how each request is signed belongs to the backend modules
+(`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`). `putStagedViaCurl` is
+the engine's entry point; `Cache/Upload.lean` dispatches to it.
 -/
 
 namespace Cache.Requests
 
 open System (FilePath)
 
-def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
-
-def getAzureDateHeader : IO String := do
-  let out ← IO.Process.output
-    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
-  unless out.exitCode == 0 do
-    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
-  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
-
 /--
 The authentication and header curl arguments for an upload with `auth`, shared
-by the artifact and marker PUT paths. A non-overwrite put adds
-`If-None-Match: *`, which Azure and S3-compatible backends answer with 409/412
-for a blob that already exists (`classifyUpload` excuses those).
+by the artifact and marker PUT paths: the backend's signing arguments
+(`azureBearerCurlArgs`, `s3CurlArgs`) plus the shared non-overwrite guard.
+A non-overwrite put adds `If-None-Match: *`, which Azure and S3-compatible
+backends answer with 409/412 for a blob that already exists (`classifyUpload`
+excuses those).
 
-* Azure needs the `x-ms-blob-type` header, the api-version and date headers,
-  and the OAuth token.
-* S3 signs each request with SigV4 (`--aws-sigv4`; region `auto` fits R2). The
-  explicit `x-amz-content-sha256: UNSIGNED-PAYLOAD` header is what lets curl
-  sign a `-T` file upload (supported from curl 7.87); this path runs in CI,
-  whose runners ship newer curls. A temporary credential also sends its session
-  token, which SigV4 covers as an `x-amz-*` header.
-
-Every mechanism's secrets are passed in the argument list; callers therefore
+Every backend passes its secrets in the argument list; callers therefore
 print curl failures without their argument lists (`showArgsOnError := false`).
 -/
 def uploadAuthArgs (auth : UploadAuth) (overwrite : Bool) : IO (Array String) := do
+  let signArgs ← match auth with
+    | .azureBearer token => azureBearerCurlArgs token
+    | .s3 creds => pure (s3CurlArgs creds)
   let ifNoneMatch : Array String := if overwrite then #[] else #["-H", "If-None-Match: *"]
-  match auth with
-  | .azureBearer token =>
-    return #["-H", "x-ms-blob-type: BlockBlob"] ++ ifNoneMatch ++
-      #["-H", azureBearerApiVersionHeader, "-H", ← getAzureDateHeader,
-        "--oauth2-bearer", token]
-  | .s3 keyId secret sessionToken? =>
-    let sessionArgs : Array String := match sessionToken? with
-      | some token => #["-H", s!"x-amz-security-token: {token}"]
-      | none => #[]
-    return #["--aws-sigv4", "aws:amz:auto:s3", "--user", s!"{keyId}:{secret}",
-      "-H", "x-amz-content-sha256: UNSIGNED-PAYLOAD"] ++ sessionArgs ++ ifNoneMatch
+  return signArgs ++ ifNoneMatch
 
 /-- Formats the config file for `curl`, containing the list of files to be
 uploaded: each staged file is uploaded to its `StagedUploadDest.fileURL`, with

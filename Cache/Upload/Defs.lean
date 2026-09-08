@@ -5,14 +5,17 @@ Authors: Marcelo Lynch
 -/
 
 import Cache.Marker
+import Cache.Upload.Azure
+import Cache.Upload.S3
 
 /-!
 # The upload contract
 
-What every upload engine consumes:
+The backend-neutral layer every upload engine consumes:
 
 * the upload credentials (`UploadAuth`) and their resolution from the
-  environment;
+  environment — the arbitration between the storage backends, whose
+  mechanics live in `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`;
 * the one destination resolution every upload addresses
   (`StagedUploadDest`, `stagedUploadDest`);
 
@@ -28,13 +31,15 @@ namespace Cache.Requests
 
 open System (FilePath)
 
-/-- Authentication method used for cache upload operations. -/
+/-- Authentication method used for cache upload operations, one constructor
+per storage backend. Each backend's signing mechanics live in its own module;
+this type is the dispatch point between them. -/
 inductive UploadAuth where
+  /-- An Azure OAuth bearer token (`Cache/Upload/Azure.lean`). -/
   | azureBearer (token : String)
-  /-- S3-compatible credentials for a direct bucket write, signed per request
-  with SigV4 by curl. `sessionToken?` carries the session token of a temporary
-  credential and is absent for a static keypair. -/
-  | s3 (keyId secret : String) (sessionToken? : Option String)
+  /-- S3-compatible credentials for a direct bucket write
+  (`Cache/Upload/S3.lean`). -/
+  | s3 (creds : S3Credentials)
 
 /--
 Resolve the upload credentials from the raw environment values, most specific
@@ -57,7 +62,7 @@ Pure so the precedence is testable; `getUploadAuth` wires the environment in.
 def uploadAuthFrom (s3KeyId? s3Secret? s3Session? bearer? sas? : Option String) :
     Except String UploadAuth :=
   match s3KeyId?, s3Secret? with
-  | some keyId, some secret => .ok (.s3 keyId secret s3Session?)
+  | some keyId, some secret => .ok (.s3 ⟨keyId, secret, s3Session?⟩)
   | some _, none => .error
       "MATHLIB_CACHE_S3_ACCESS_KEY_ID is set but MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is not"
   | none, some _ => .error

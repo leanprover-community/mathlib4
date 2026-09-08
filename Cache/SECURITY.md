@@ -160,6 +160,7 @@ The trust model does not attempt to defend against:
 | Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
 | Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`)      |
 | Upload destination and credentials             | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`stagedUploadDest`, `uploadAuthFrom`) |
+| Backend request signing (Azure, S3/R2)         | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
 | Transfer engines and dispatch                  | [`Cache/Upload.lean`](Upload.lean), [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |

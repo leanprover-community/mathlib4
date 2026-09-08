@@ -1272,10 +1272,10 @@ def test_uploadAuthFrom : IO Unit := do
   IO.println "uploadAuthFrom:"
   assertTrue "S3 pair with a session token"
     (uploadAuthFrom (some "AK") (some "SK") (some "ST") none none
-      matches .ok (.s3 "AK" "SK" (some "ST")))
+      matches .ok (.s3 ⟨"AK", "SK", some "ST"⟩))
   assertTrue "S3 pair without a session token"
     (uploadAuthFrom (some "AK") (some "SK") none none none
-      matches .ok (.s3 "AK" "SK" none))
+      matches .ok (.s3 ⟨"AK", "SK", none⟩))
   assertTrue "S3 wins over the bearer token"
     (uploadAuthFrom (some "AK") (some "SK") none (some "bear") (some "sas")
       matches .ok (.s3 ..))
@@ -1447,7 +1447,7 @@ and the `If-None-Match: *` guard that a non-overwrite put adds on every
 mechanism. The bearer branch spawns `date`, so this covers S3 only. -/
 def test_uploadAuthArgs : IO Unit := do
   IO.println "uploadAuthArgs:"
-  let s3 ← uploadAuthArgs (.s3 "AK" "SK" (some "ST")) (overwrite := false)
+  let s3 ← uploadAuthArgs (.s3 ⟨"AK", "SK", some "ST"⟩) (overwrite := false)
   assertTrue "S3 signs with SigV4, region auto"
     ((s3.toList.zip s3.toList.tail).contains ("--aws-sigv4", "aws:amz:auto:s3"))
   assertTrue "S3 carries the keypair as --user"
@@ -1458,7 +1458,7 @@ def test_uploadAuthArgs : IO Unit := do
   assertTrue "non-overwrite adds If-None-Match" (s3.contains "If-None-Match: *")
   assertTrue "S3 sends no Azure blob-type header"
     (!s3.contains "x-ms-blob-type: BlockBlob")
-  let s3Static ← uploadAuthArgs (.s3 "AK" "SK" none) (overwrite := true)
+  let s3Static ← uploadAuthArgs (.s3 ⟨"AK", "SK", none⟩) (overwrite := true)
   assertTrue "a static keypair sends no session token"
     (s3Static.all (!·.startsWith "x-amz-security-token"))
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
@@ -1469,7 +1469,7 @@ never select it, and a selected rclone engine carries the credentials it
 signs with. -/
 def test_uploadEngineFrom : IO Unit := do
   IO.println "uploadEngineFrom:"
-  let s3 : UploadAuth := .s3 "AK" "SK" (some "ST")
+  let s3 : UploadAuth := .s3 ⟨"AK", "SK", some "ST"⟩
   let bearer : UploadAuth := .azureBearer "tok"
   assertTrue "unset selects curl"
     ((uploadEngineFrom none s3 true).toOption == some .curl)
@@ -1477,7 +1477,7 @@ def test_uploadEngineFrom : IO Unit := do
     ((uploadEngineFrom (some "curl") s3 true).toOption == some .curl)
   assertTrue "rclone selects rclone when available and S3, carrying the credentials"
     ((uploadEngineFrom (some "rclone") s3 true).toOption ==
-      some (.rclone "AK" "SK" (some "ST")))
+      some (.rclone ⟨"AK", "SK", some "ST"⟩))
   assertTrue "rclone without the binary errors"
     (uploadEngineFrom (some "rclone") s3 false matches .error _)
   assertTrue "rclone without S3 credentials errors"
@@ -1538,7 +1538,7 @@ endpoint set, a stale session token cleared when the credential has none,
 and nothing else touched. -/
 def test_rcloneEnv : IO Unit := do
   IO.println "rcloneEnv:"
-  let env := rcloneEnv "AK" "SK" (some "tok") "https://host.example" "Other"
+  let env := rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://host.example" "Other"
   assertTrue "credentials and endpoint are set"
     (env.contains ("RCLONE_S3_ACCESS_KEY_ID", some "AK") &&
      env.contains ("RCLONE_S3_SECRET_ACCESS_KEY", some "SK") &&
@@ -1550,7 +1550,7 @@ def test_rcloneEnv : IO Unit := do
     (env.contains ("RCLONE_S3_REGION", some "auto"))
   assertTrue "the provider is set (rclone refuses to run without one)"
     (env.contains ("RCLONE_S3_PROVIDER", some "Other"))
-  let noSession := rcloneEnv "AK" "SK" none "https://host.example" "Other"
+  let noSession := rcloneEnv ⟨"AK", "SK", none⟩ "https://host.example" "Other"
   assertTrue "a static keypair clears any ambient session token"
     (noSession.contains ("RCLONE_S3_SESSION_TOKEN", none))
 
@@ -1586,7 +1586,7 @@ def test_putStagedViaRclone : IO Unit := do
     let .ok dest := stagedUploadDestFrom none (some "https://acct.example/devbucket")
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
-    putStagedViaRclone dest "AK" "SK" (some "tok") (some "abc1") staging
+    putStagedViaRclone dest ⟨"AK", "SK", some "tok"⟩ (some "abc1") staging
       #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
     let copyArgs ← IO.FS.readFile (dir / "args-copy")
     assertTrue "files copy targets the staging dir"

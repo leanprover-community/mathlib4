@@ -11,7 +11,11 @@ import Cache.Upload.Defs
 
 An opt-in transfer engine: a system [rclone](https://rclone.org) against the
 resolved destination (`StagedUploadDest`), with the S3 credentials passed
-through its environment. `putStagedViaRclone` is the engine's entry point;
+through its environment. The engine holds only transfer mechanics; the S3
+backend material it builds on — the credential set, the environment
+configuration, and the endpoint/bucket addressing — lives in
+`Cache/Upload/S3.lean`. rclone signs S3 requests only, so this engine has no
+Azure path. `putStagedViaRclone` is the engine's entry point;
 `Cache/Upload.lean` dispatches to it.
 -/
 
@@ -26,25 +30,6 @@ def rcloneAvailable : IO Bool := do
     return out.exitCode == 0
   catch _ =>
     return false
-
-/--
-Split an S3 upload base into the endpoint origin and the bucket path:
-`https://host/bucket[/prefix]` becomes `(https://host, bucket[/prefix])`.
-rclone addresses a destination as `:s3:{bucket}/{key}` against an endpoint,
-so a base without a bucket path cannot take the rclone engine.
--/
-def s3EndpointSplit (base : String) : Except String (String × String) :=
-  match base.splitOn "://" with
-  | [scheme, rest] =>
-    match rest.splitOn "/" with
-    | host :: parts =>
-      if host.isEmpty || parts.isEmpty || parts.any (·.isEmpty) then
-        .error s!"the upload base '{base}' does not name a bucket \
-          (the rclone engine needs https://endpoint/bucket)"
-      else
-        .ok (s!"{scheme}://{host}", "/".intercalate parts)
-    | [] => .error s!"the upload base '{base}' is not a URL"
-  | _ => .error s!"the upload base '{base}' is not a URL"
 
 /-- The rclone flags every `put` transfer carries. `--s3-no-check-bucket`
 skips the bucket-creation probe a scoped credential cannot pass. -/
@@ -75,41 +60,22 @@ def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
     rcloneCommonFlags
 
 /--
-The rclone S3 backend configuration, passed through the child environment so
-no credential reaches a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
-temporary credential and cleared otherwise, so a stale token in the caller's
-environment is not inherited. Region `auto` matches the curl engine's SigV4
-region. rclone refuses to run without a provider, so `provider` must carry
-one; `putStagedViaRclone` keeps the caller's `RCLONE_S3_PROVIDER` and
-defaults to the generic `Other`. Every other `RCLONE_S3_*` option inherits
-from the caller, so an operator can tune transfers without a tool change.
--/
-def rcloneEnv (keyId secret : String) (sessionToken? : Option String)
-    (endpoint provider : String) : Array (String × Option String) :=
-  #[("RCLONE_S3_ENV_AUTH", some "false"),
-    ("RCLONE_S3_ACCESS_KEY_ID", some keyId),
-    ("RCLONE_S3_SECRET_ACCESS_KEY", some secret),
-    ("RCLONE_S3_SESSION_TOKEN", sessionToken?),
-    ("RCLONE_S3_ENDPOINT", some endpoint),
-    ("RCLONE_S3_PROVIDER", some provider),
-    ("RCLONE_S3_REGION", some "auto")]
-
-/--
 The staged put on a system rclone: the tool resolves the destination and hands
-rclone the S3 credentials through its environment. `srcDir` holds the files
-and `fileNames` lists the ones to upload; the list is passed as a
-`--files-from` file, so only the named files leave the machine. Files first;
-then the per-SHA marker, mirroring the curl engine. A files failure exits 1; a
-marker failure only warns (see `uploadMarkerWith`). The `rclone` parameter
-names the binary and exists for the tests; production callers use the default.
+rclone the S3 credentials through its environment (`rcloneEnv`). `srcDir`
+holds the files and `fileNames` lists the ones to upload; the list is passed
+as a `--files-from` file, so only the named files leave the machine. Files
+first; then the per-SHA marker, mirroring the curl engine. A files failure
+exits 1; a marker failure only warns (see `uploadMarkerWith`). The `rclone`
+parameter names the binary and exists for the tests; production callers use
+the default.
 -/
-def putStagedViaRclone (dest : StagedUploadDest) (keyId secret : String)
-    (sessionToken? : Option String) (markerSha? : Option String)
+def putStagedViaRclone (dest : StagedUploadDest) (creds : S3Credentials)
+    (markerSha? : Option String)
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
     (rclone : String := "rclone") : IO Unit := do
   let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.base)
   let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
-  let env := rcloneEnv keyId secret sessionToken? endpoint provider
+  let env := rcloneEnv creds endpoint provider
   let run (args : Array String) : IO UInt32 := do
     let child ← IO.Process.spawn { cmd := rclone, args, env }
     child.wait

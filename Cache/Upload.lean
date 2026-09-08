@@ -12,9 +12,10 @@ import Cache.Upload.Rclone
 
 The transfer engines implement the same operation — a staged set of `.ltar`
 files, then its per-SHA marker, to a resolved destination — one engine per
-module (`Cache/Upload/Curl.lean`, `Cache/Upload/Rclone.lean`). This module
-resolves which engine a `put` uses (`UploadEngine`, `resolveUploadEngine`)
-and dispatches to it (`putStaged`).
+module (`Cache/Upload/Curl.lean`, `Cache/Upload/Rclone.lean`), signing each
+request per the storage backend (`Cache/Upload/Azure.lean`,
+`Cache/Upload/S3.lean`). This module resolves which engine a `put` uses
+(`UploadEngine`, `resolveUploadEngine`) and dispatches to it (`putStaged`).
 -/
 
 namespace Cache.Requests
@@ -29,7 +30,7 @@ credentials — an rclone engine holding a non-S3 credential is unrepresentable.
 -/
 inductive UploadEngine where
   | curl
-  | rclone (keyId secret : String) (sessionToken? : Option String)
+  | rclone (creds : S3Credentials)
   deriving DecidableEq, Repr, BEq
 
 /--
@@ -46,7 +47,7 @@ probe in.
 def uploadEngineFrom (uploader? : Option String) (auth : UploadAuth)
     (rcloneAvailable : Bool) : Except String UploadEngine :=
   let rclone? : Option UploadEngine := match auth with
-    | .s3 keyId secret sessionToken? => some (.rclone keyId secret sessionToken?)
+    | .s3 creds => some (.rclone creds)
     | .azureBearer _ => none
   match uploader? with
   | none | some "curl" => .ok .curl
@@ -81,8 +82,8 @@ def putStaged (dest : StagedUploadDest) (auth : UploadAuth) (engine : UploadEngi
   | .curl =>
     discard IO.validateCurl
     putStagedViaCurl dest srcDir fileNames overwrite auth markerSha?
-  | .rclone keyId secret sessionToken? =>
-    putStagedViaRclone dest keyId secret sessionToken? markerSha? srcDir fileNames overwrite
+  | .rclone creds =>
+    putStagedViaRclone dest creds markerSha? srcDir fileNames overwrite
 
 /--
 The complete `put` operation, from the command inputs: resolve the
