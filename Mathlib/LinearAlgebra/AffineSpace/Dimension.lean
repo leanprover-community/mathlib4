@@ -93,6 +93,15 @@ theorem finDim_eq_finrank (h : s ≠ ⊥) : finDim s = Module.finrank R s.direct
   norm_cast
 
 @[simp]
+theorem dim_toAffineSubspace (s : Submodule R V) : s.toAffineSubspace.dim = Module.rank R s := by
+  rw [dim_eq_rank (toAffineSubspace_ne_bot _), Submodule.toAffineSubspace_direction]
+
+@[simp]
+theorem finDim_toAffineSubspace (s : Submodule R V) :
+    s.toAffineSubspace.finDim = Module.finrank R s := by
+  rw [finDim_eq_finrank (toAffineSubspace_ne_bot _), Submodule.toAffineSubspace_direction]
+
+@[simp]
 theorem finDim_eq_finrank_of_not_finite [Module.Free R s.direction] [StrongRankCondition R]
     (h : ¬Module.Finite R s.direction) : finDim s = 0 := by
   by_cases hs : s = ⊥
