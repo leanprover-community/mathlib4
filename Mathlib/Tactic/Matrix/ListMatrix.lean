@@ -44,15 +44,10 @@ namespace Mathlib.Tactic.Matrix.ListMatrix
 
 variable {α : Type*}
 
-/-- The dot product of the first `n` entries of two lists, missing entries read as `0`. -/
+/-- The sum of `n` pointwise products of `l₁` and `l₂` padded by 0 without breaking early. -/
 def dotProduct [Zero α] [Add α] [Mul α] : Nat → List α → List α → α
   | 0, _, _ => 0
-  | n + 1, a :: l₁, b :: l₂ => a * b + dotProduct n l₁ l₂
-  -- the padding arms multiply by `0` instead of returning `0`, so that they compute the same
-  -- terms as the dot product of the `0`-padded vectors and the bridge needs no `zero_mul`
-  | n + 1, a :: l₁, [] => a * 0 + dotProduct n l₁ []
-  | n + 1, [], b :: l₂ => 0 * b + dotProduct n [] l₂
-  | n + 1, [], [] => 0 * 0 + dotProduct n [] []
+  | n + 1, l₁, l₂ => l₁.headD 0 * l₂.headD 0 + dotProduct n l₁.tail l₂.tail
 
 /-! Controlled unfolding helpers of `dotProduct` instead of asking the kernel to unfold,
 which might unwantedly open `+`. -/
