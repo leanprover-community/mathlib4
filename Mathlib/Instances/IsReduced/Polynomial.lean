@@ -22,29 +22,39 @@ public section
 
 variable {R : Type*} [Semiring R] [IsReduced R]
 
+section
+
+namespace IsReduced
+
 /-- In a reduced semiring, annihilation is symmetric. -/
-theorem IsReduced.mul_eq_zero_comm {a b : R} (h : a * b = 0) : b * a = 0 := by
+theorem mul_eq_zero_comm {a b : R} (h : a * b = 0) : b * a = 0 := by
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
   have h2 : (b * a) ^ 2 = b * (a * b) * a := by simp [pow_two, mul_assoc]
   rw [h2, h]; simp
 
 /-- A reduced semiring is semicommutative: `a * b = 0` implies `a * r * b = 0` for all `r`. -/
-theorem IsReduced.mul_mid_eq_zero {a b : R} (h : a * b = 0) (r : R) : a * r * b = 0 := by
+theorem mul_mid_eq_zero {a b : R} (h : a * b = 0) (r : R) : a * r * b = 0 := by
   have hba : b * a = 0 := IsReduced.mul_eq_zero_comm h
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
   have h2 : (a * r * b) ^ 2 = a * r * (b * a) * (r * b) := by simp [pow_two, mul_assoc]
   rw [h2, hba]; simp
 
 /-- In a reduced semiring, `a * b * b = 0` implies `a * b = 0`. -/
-theorem IsReduced.mul_eq_zero_of_mul_sq_eq_zero {a b : R} (h : a * b * b = 0) : a * b = 0 := by
+theorem mul_eq_zero_of_mul_sq_eq_zero {a b : R} (h : a * b * b = 0) : a * b = 0 := by
   have h2 : b * (a * b) = 0 := IsReduced.mul_eq_zero_comm (a := a * b) (b := b) h
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
   have h3 : (a * b) ^ 2 = a * (b * (a * b)) := by simp [pow_two, mul_assoc]
   rw [h3, h2]; simp
 
+end IsReduced
+
+public section
+
+namespace Polynomial
+
 /-- Armendariz's theorem for reduced semirings: if `p * q = 0` in `R[X]` with `R` reduced, then
 every coefficient of `p` annihilates every coefficient of `q`. -/
-theorem Polynomial.coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) :
+theorem coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) :
     ∀ j i, (coeff p i) * (coeff q j) = 0 := by
   intro j
   induction j using Nat.strong_induction_on with
@@ -66,7 +76,7 @@ theorem Polynomial.coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q 
           grind [Finset.mem_antidiagonal]
       grind [IsReduced.mul_eq_zero_of_mul_sq_eq_zero]
 
-public instance Polynomial.instIsReducedOfIsReduced : IsReduced R[X] := by
+instance instIsReducedOfIsReduced : IsReduced R[X] := by
   have key : ∀ q : R[X], q * q = 0 → q = 0 := by
     intro q hq
     ext i
@@ -88,4 +98,4 @@ public instance Polynomial.instIsReducedOfIsReduced : IsReduced R[X] := by
         rw [← pow_add, ← pow_add]; ring_nf
       rw [hx, hn, zero_mul]
 
-end
+end Polynomial
