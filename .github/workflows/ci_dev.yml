@@ -1,52 +1,565 @@
-name: ci dev
+name: ci dev (cache put e2e)
+
+# End-to-end test for PR #43378 (staged put with native Azure and S3 backends).
+#
+# Exercises the new upload surface of the cache tool against the live R2
+# shadow bucket, authenticated through the cache broker (no durable secret):
+#
+#   1. `lake exe cache-test` (the PR's own unit suite) on a live runner.
+#   2. Fail-fast error paths: credential resolution, destination resolution,
+#      engine resolution, scope validation — all must error before any bytes
+#      move.
+#   3. Live uploads of a real staged set (the Mathlib.Data.Nat.Basic closure,
+#      fetched from the production cache) through every new path:
+#        - s3 backend, curl tool (MATHLIB_CACHE_PUT_FORCE_CURL=1), the
+#          PUT_BASE_URL + --container CI shape
+#        - s3 backend's curl fallback when no working rclone is on PATH
+#        - s3 backend, rclone tool (auto-selected once rclone is installed,
+#          + RCLONE_S3_PROVIDER passthrough)
+#        - `cache put` (pack-and-upload) on the same destination shape
+#        - MATHLIB_CACHE_PUT_URL flat override, on both transfer tools
+#      Every phase asserts which transfer tool ran (from its log signature),
+#      verifies each uploaded object with authenticated HEADs, compares ETags
+#      across tools (path + byte identity), byte-compares samples, and checks
+#      the per-SHA marker (present where specced, absent where not).
+#   4. Non-overwrite re-puts on both tools (If-None-Match / --ignore-existing
+#      against real R2).
+#   5. Read-back through the real reader: `cache get-` with
+#      MATHLIB_CACHE_BASE_URL pointed at the run's uploads (public worker),
+#      and the `cache query` marker probe, positive and negative.
+#
+# Auth: the job runs in the `lake-cache-shadow` environment and mints
+# short-lived, prefix-scoped R2 credentials from the OIDC broker per phase
+# (the grant's TTL is 900s). Uploads land under the run-unique prefix
+# cache/ci-dev-43378/run-<run_id>/ in the shadow bucket; a best-effort
+# cleanup deletes them at the end.
 
 on:
+  push:
+    branches:
+      - 'ci-dev/cache-staged-put-e2e'
   workflow_dispatch:
-    inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
-  id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
+
+concurrency:
+  group: ci-dev-cache-put-e2e
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+env:
+  # Mixed-case on purpose: the upload path must lowercase it (normalizeRepo),
+  # and the read-back must find the files at the lowercased path.
+  TEST_REPO: MarceloLynch/mathlib4
+  REPO_PATH: marcelolynch/mathlib4
+  TEST_MODULE: Mathlib.Data.Nat.Basic
+  BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+  LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+  LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
-      cache_environment: cache-upload-forks
-      runs_on: pr
-    secrets: inherit
+  e2e:
+    name: cache put e2e (PR 43378)
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    environment: lake-cache-shadow
+    permissions:
+      contents: read
+      id-token: write # exchanged at the cache broker for short-lived R2 credentials
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Depth 2: the negative `cache query` probe uses HEAD^.
+          fetch-depth: 2
+
+      - name: Derive run-scoped destinations
+        run: |
+          SHA="$GITHUB_SHA"
+          PREFIX_ROOT="${LAKE_CACHE_ARTIFACT_ENDPOINT%/artifacts}"        # .../<bucket>/cache
+          PUBLIC_ROOT="${LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC%/artifacts}" # public worker /cache
+          RUN_S3="$PREFIX_ROOT/ci-dev-43378/run-$GITHUB_RUN_ID"
+          RUN_PUBLIC="$PUBLIC_ROOT/ci-dev-43378/run-$GITHUB_RUN_ID"
+          {
+            echo "SHA=$SHA"
+            echo "RUN_S3=$RUN_S3"
+            echo "RUN_PUBLIC=$RUN_PUBLIC"
+            echo "MATHLIB_CACHE_DIR=$RUNNER_TEMP/mlcache"
+            echo "STAGING=$RUNNER_TEMP/staging"
+            echo "WORK=$RUNNER_TEMP/e2e"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/e2e"
+          echo "::notice::run prefix: $RUN_S3 (sha $SHA)"
+
+      - name: Write shared helpers
+        run: |
+          cat > "$WORK/helpers.sh" <<'HELPERS'
+          # Mint short-lived R2 credentials from the OIDC broker into the
+          # MATHLIB_CACHE_S3_* variables the cache tool reads. Called at the
+          # start of every live phase: the grant's TTL is 900s.
+          mint_creds() {
+            local jwt creds
+            jwt="$(curl -sSf -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+              "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mathlib-cache-broker" | jq -er .value)"
+            creds="$(curl -sSf -X POST -H "Authorization: Bearer ${jwt}" "${BROKER_URL}")"
+            MATHLIB_CACHE_S3_ACCESS_KEY_ID="$(jq -er .accessKeyId <<<"$creds")"
+            MATHLIB_CACHE_S3_SECRET_ACCESS_KEY="$(jq -er .secretAccessKey <<<"$creds")"
+            MATHLIB_CACHE_S3_SESSION_TOKEN="$(jq -er .sessionToken <<<"$creds")"
+            echo "::add-mask::$MATHLIB_CACHE_S3_ACCESS_KEY_ID"
+            echo "::add-mask::$MATHLIB_CACHE_S3_SECRET_ACCESS_KEY"
+            echo "::add-mask::$MATHLIB_CACHE_S3_SESSION_TOKEN"
+            export MATHLIB_CACHE_S3_ACCESS_KEY_ID MATHLIB_CACHE_S3_SECRET_ACCESS_KEY \
+              MATHLIB_CACHE_S3_SESSION_TOKEN
+            echo "minted grant $(jq -r .grant <<<"$creds") (ttl $(jq -r .ttlSeconds <<<"$creds")s)"
+          }
+
+          # Authenticated curl against the R2 S3 endpoint with the minted
+          # temporary credential (SigV4 + session token).
+          s3curl() {
+            curl -sS --aws-sigv4 aws:amz:auto:s3 \
+              --user "${MATHLIB_CACHE_S3_ACCESS_KEY_ID}:${MATHLIB_CACHE_S3_SECRET_ACCESS_KEY}" \
+              -H "x-amz-security-token: ${MATHLIB_CACHE_S3_SESSION_TOKEN}" "$@"
+          }
+
+          # head_all BASE NAMES_FILE OUT_TSV
+          # Authenticated HEAD of BASE/<name> for every name; fails if any
+          # response is not 200; writes sorted "name<TAB>etag" rows to OUT_TSV.
+          head_all() {
+            local base="$1" names="$2" out="$3" cfg raw bad
+            cfg="$(mktemp)"; raw="$(mktemp)"
+            while IFS= read -r n; do
+              printf 'url = "%s/%s"\noutput = "/dev/null"\n' "$base" "$n"
+            done < "$names" > "$cfg"
+            s3curl --head --parallel --parallel-max 16 --config "$cfg" \
+              --write-out '%{http_code} %header{etag} %{url}\n' > "$raw"
+            rm -f "$cfg"
+            bad="$(awk '$1 != 200' "$raw" || true)"
+            if [ -n "$bad" ]; then
+              echo "non-200 responses under $base:"
+              echo "$bad" | head -20
+              rm -f "$raw"
+              return 1
+            fi
+            awk -v base="$base/" '{print substr($3, length(base) + 1) "\t" $2}' "$raw" \
+              | sort > "$out"
+            rm -f "$raw"
+            echo "verified $(wc -l < "$out") object(s) under $base"
+          }
+
+          # sample_cmp BASE SRC_DIR NAMES_FILE: download the first, middle, and
+          # last object and byte-compare each against its local source file.
+          sample_cmp() {
+            local base="$1" src="$2" names="$3" n tmp total mid
+            total="$(wc -l < "$names")"
+            mid="$(( (total + 1) / 2 ))"
+            tmp="$(mktemp)"
+            for n in $(sed -n "1p;${mid}p;\$p" "$names" | sort -u); do
+              s3curl -f -o "$tmp" "$base/$n"
+              cmp "$tmp" "$src/$n"
+              echo "byte-identical: $n"
+            done
+            rm -f "$tmp"
+          }
+
+          # check_marker URL SHA: the marker must exist and hold "SHA\n".
+          check_marker() {
+            local url="$1" sha="$2" tmp
+            tmp="$(mktemp)"
+            s3curl -f -o "$tmp" "$url"
+            printf '%s\n' "$sha" | cmp "$tmp" -
+            rm -f "$tmp"
+            echo "marker ok: $url"
+          }
+
+          # assert_tool LOG curl|rclone: pin which transfer tool the upload
+          # ran on, from each tool's log signature.
+          assert_tool() {
+            local log="$1" tool="$2"
+            case "$tool" in
+              curl)
+                grep -q "Attempting to upload" "$log"
+                ! grep -q "via rclone" "$log"
+                ;;
+              rclone)
+                grep -q "via rclone" "$log"
+                ;;
+            esac
+            echo "transfer tool confirmed: $tool"
+          }
+
+          # expect_fail PATTERN -- CMD...: CMD must exit nonzero and its
+          # combined output must contain PATTERN.
+          expect_fail() {
+            local pat="$1"; shift
+            if [ "$1" = "--" ]; then shift; fi
+            local out rc=0
+            out="$("$@" 2>&1)" || rc=$?
+            if [ "$rc" -eq 0 ]; then
+              echo "FAIL (exited 0, expected failure): $*"
+              echo "$out" | tail -8
+              return 1
+            fi
+            if ! grep -qF "$pat" <<<"$out"; then
+              echo "FAIL (exit $rc but missing '$pat'): $*"
+              echo "$out" | tail -12
+              return 1
+            fi
+            echo "ok (exit $rc, matched '$pat'): $*"
+          }
+          HELPERS
+          echo "helpers written to $WORK/helpers.sh"
+
+      - name: Install elan
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Build cache tool
+        run: |
+          lake build cache
+          lake exe cache > /dev/null
+          echo "cache tool built"
+
+      - name: Run the PR's unit suite (lake exe cache-test)
+        run: |
+          lake exe cache-test
+
+      # Every misconfiguration must error out before any bytes move: no
+      # credentials are minted yet, so a test that slipped past its guard and
+      # tried to upload could only fail — but each assertion pins the
+      # specific message, so we know the right guard fired.
+      - name: 'Fail-fast suite: credential / destination / engine / scope errors'
+        run: |
+          source "$WORK/helpers.sh"
+          EMPTY="$WORK/empty-staging"; mkdir -p "$EMPTY"
+          FAUX="$WORK/faux-staging"; mkdir -p "$FAUX"
+          printf 'not a real ltar\n' > "$FAUX/0000000000000000.ltar"
+          DUMMY_S3=(MATHLIB_CACHE_S3_ACCESS_KEY_ID=dummy MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=dummy)
+          DUMMY_BASE=(MATHLIB_CACHE_PUT_BASE_URL=https://example.invalid/bucket)
+
+          # put-staged argument validation (behavior change: exit 1, not a
+          # message + exit 0).
+          expect_fail "requires --staging-dir" -- \
+            lake exe cache put-staged
+          expect_fail "must be a directory" -- \
+            lake exe cache put-staged --staging-dir="$WORK/does-not-exist"
+
+          # azure backend (the default) credential resolution (azureAuthFrom).
+          expect_fail "uploads with an Azure OIDC bearer token" -- \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks
+          expect_fail "MATHLIB_CACHE_SAS is retired" -- \
+            env MATHLIB_CACHE_SAS=dummy \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks
+
+          # s3 backend credential resolution (s3AuthFrom); the destination
+          # resolves first, so these carry a valid base + container.
+          expect_fail "uploads with the S3 credential pair" -- \
+            env "${DUMMY_BASE[@]}" \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks --backend=s3
+          expect_fail "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is not" -- \
+            env "${DUMMY_BASE[@]}" MATHLIB_CACHE_S3_ACCESS_KEY_ID=dummy \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks --backend=s3
+          expect_fail "MATHLIB_CACHE_S3_ACCESS_KEY_ID is not" -- \
+            env "${DUMMY_BASE[@]}" MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=dummy \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks --backend=s3
+
+          # Destination resolution, per backend (azureUploadDestFrom /
+          # s3UploadDestFrom): s3 has no default endpoint; a base rebases a
+          # container write; azure rejects a bucket base.
+          expect_fail "uploads to the bucket endpoint" -- \
+            env "${DUMMY_S3[@]}" \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks --backend=s3
+          expect_fail "pass --container=NAME" -- \
+            env "${DUMMY_S3[@]}" "${DUMMY_BASE[@]}" \
+            lake exe cache put-staged --staging-dir="$EMPTY" --backend=s3
+          expect_fail "the azure backend writes to the Azure storage account" -- \
+            env "${DUMMY_BASE[@]}" \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks
+          expect_fail "Unknown backend name" -- \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks --backend=bogus
+          expect_fail "Unknown container name" -- \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=bogus
+
+          # Scope validation (isValidScope): a path-shaped scope must fail
+          # loudly, before it can reach a URL path or a file name.
+          expect_fail "invalid cache scope" -- \
+            env "${DUMMY_S3[@]}" "${DUMMY_BASE[@]}" MATHLIB_CACHE_REPO_SCOPE="../../evil" \
+            lake exe cache put-staged --staging-dir="$EMPTY" --container=forks --backend=s3
+
+          # Credential fail-fast on `put`: the error must come from credential
+          # resolution, which runs before the expensive packing pass.
+          expect_fail "uploads with the S3 credential pair" -- \
+            env "${DUMMY_BASE[@]}" \
+            lake exe cache put "$TEST_MODULE" --container=forks --backend=s3
+
+          # No container and no override on the azure backend: warns, falls
+          # back to `legacy`, and with nothing staged uploads nothing and
+          # exits 0. (The s3 backend never falls back — covered above.)
+          out="$(env MATHLIB_CACHE_AZURE_BEARER_TOKEN=dummy \
+            lake exe cache put-staged --staging-dir="$EMPTY" 2>&1)"
+          grep -q "defaulting to the" <<<"$out"
+          grep -q "No files to upload" <<<"$out"
+          echo "ok: azure legacy fallback warns and uploads nothing on an empty staging dir"
+
+          # MATHLIB_CACHE_PUT_URL: any set value counts, an empty one included —
+          # the upload must fail, not divert to the backend's destination.
+          out=""; rc=0
+          out="$(env "${DUMMY_S3[@]}" MATHLIB_CACHE_PUT_URL= MATHLIB_CACHE_PUT_FORCE_CURL=1 \
+            lake exe cache put-staged --staging-dir="$FAUX" --backend=s3 2>&1)" || rc=$?
+          [ "$rc" -ne 0 ]
+          if grep -q "defaulting to the" <<<"$out"; then
+            echo "FAIL: empty MATHLIB_CACHE_PUT_URL fell through to the backend destination"
+            exit 1
+          fi
+          echo "ok: empty MATHLIB_CACHE_PUT_URL counts as set and fails the upload (exit $rc)"
+
+          echo "fail-fast suite passed"
+
+      # A real staged set: fetch the closure of TEST_MODULE from the
+      # production cache (also confirms the read path is untouched), then copy
+      # the .ltar files into a staging directory, exactly the shape
+      # `cache stage` hands to `put-staged` in CI.
+      - name: Prepare staged set from the production cache
+        run: |
+          lake exe cache get "$TEST_MODULE" 2>&1 | tail -5
+          mkdir -p "$STAGING"
+          cp "$MATHLIB_CACHE_DIR"/*.ltar "$STAGING/"
+          (cd "$STAGING" && ls -- *.ltar | sort) > "$WORK/names.txt"
+          COUNT=$(wc -l < "$WORK/names.txt")
+          BYTES=$(du -sb "$STAGING" | cut -f1)
+          echo "staged $COUNT file(s), $(du -sh "$STAGING" | cut -f1)"
+          if [ "$COUNT" -lt 50 ]; then
+            echo "::error::staged set unexpectedly small ($COUNT files) — pick a bigger module"
+            exit 1
+          fi
+          if [ "$BYTES" -gt $((1000 * 1000 * 1000)) ]; then
+            echo "::error::staged set over 1 GB — bailing to protect the shadow bucket budget"
+            exit 1
+          fi
+          # A small subset for the flat-override phases and the bad-credential
+          # probe, to keep their upload volume trivial.
+          SUBSET="$RUNNER_TEMP/staging-subset"; mkdir -p "$SUBSET"
+          head -12 "$WORK/names.txt" > "$WORK/subset-names.txt"
+          while IFS= read -r n; do cp "$STAGING/$n" "$SUBSET/"; done < "$WORK/subset-names.txt"
+          echo "SUBSET=$SUBSET" >> "$GITHUB_ENV"
+          echo "STAGED_COUNT=$COUNT" >> "$GITHUB_ENV"
+
+      # Garbage credentials against the real endpoint: the upload must fail
+      # and say so (the old put-staged reported success on misconfiguration).
+      - name: 'Live negative: bad credentials are a loud failure'
+        run: |
+          source "$WORK/helpers.sh"
+          expect_fail "file(s) failed" -- \
+            env MATHLIB_CACHE_S3_ACCESS_KEY_ID=dummy MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=dummy \
+              MATHLIB_CACHE_PUT_BASE_URL="$RUN_S3/badcreds" MATHLIB_CACHE_PUT_FORCE_CURL=1 \
+            lake exe cache put-staged --staging-dir="$SUBSET" --container=forks \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3
+
+      - name: 'Phase 1: s3 backend, curl tool (FORCE_CURL) — PUT_BASE_URL + --container'
+        run: |
+          source "$WORK/helpers.sh"
+          mint_creds
+          # Trailing slash on purpose: normalizeBaseURL must strip it.
+          MATHLIB_CACHE_PUT_BASE_URL="$RUN_S3/curl/" MATHLIB_CACHE_PUT_FORCE_CURL=1 \
+            lake exe cache put-staged --staging-dir="$STAGING" --container=forks \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 \
+              | tee "$WORK/put-curl.log" | tail -5
+          assert_tool "$WORK/put-curl.log" curl
+          BASE="$RUN_S3/curl/mathlib4-forks/f/$REPO_PATH/$SHA"
+          head_all "$BASE" "$WORK/names.txt" "$WORK/etags-curl.tsv"
+          sample_cmp "$BASE" "$STAGING" "$WORK/names.txt"
+          check_marker "$RUN_S3/curl/mathlib4-forks/m/$REPO_PATH/$SHA" "$SHA"
+          echo "- ✅ s3+curl (forced): $STAGED_COUNT objects verified (HEAD+ETag), 3 byte-compared, marker ok" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 'Phase 2: s3 backend, curl tool — non-overwrite re-put against existing objects'
+        run: |
+          source "$WORK/helpers.sh"
+          mint_creds
+          MATHLIB_CACHE_PUT_BASE_URL="$RUN_S3/curl" MATHLIB_CACHE_PUT_FORCE_CURL=1 \
+            lake exe cache put-staged --staging-dir="$STAGING" --container=forks \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 \
+              | tee "$WORK/reput-curl.log" | tail -5
+          # Same bytes either way; the point is exit 0 with every object already
+          # present (R2 answers If-None-Match: * with 412, which the tool skips).
+          head_all "$RUN_S3/curl/mathlib4-forks/f/$REPO_PATH/$SHA" \
+            "$WORK/names.txt" "$WORK/etags-curl-reput.tsv"
+          diff "$WORK/etags-curl.tsv" "$WORK/etags-curl-reput.tsv"
+          echo "- ✅ s3+curl: non-overwrite re-put exits 0, objects unchanged" >> "$GITHUB_STEP_SUMMARY"
+
+      # Tool policy: with no working rclone on PATH and no force flag, the s3
+      # backend falls back to curl silently. A broken shim makes the probe
+      # fail deterministically, whatever the runner image ships.
+      - name: 'Phase 2b: s3 backend — curl fallback when rclone is unusable'
+        run: |
+          source "$WORK/helpers.sh"
+          mint_creds
+          BROKEN="$WORK/broken-rclone"; mkdir -p "$BROKEN"
+          printf '#!/bin/sh\nexit 1\n' > "$BROKEN/rclone"; chmod +x "$BROKEN/rclone"
+          PATH="$BROKEN:$PATH" MATHLIB_CACHE_PUT_BASE_URL="$RUN_S3/fallback" \
+            lake exe cache put-staged --staging-dir="$SUBSET" --container=forks \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 \
+              | tee "$WORK/put-fallback.log" | tail -3
+          assert_tool "$WORK/put-fallback.log" curl
+          head_all "$RUN_S3/fallback/mathlib4-forks/f/$REPO_PATH/$SHA" \
+            "$WORK/subset-names.txt" "$WORK/etags-fallback.tsv"
+          echo "- ✅ s3 tool policy: unusable rclone falls back to curl, subset verified" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install rclone
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          rclone version | head -3
+
+      - name: 'Phase 3: s3 backend, rclone tool (auto-selected) — same destination shape'
+        run: |
+          source "$WORK/helpers.sh"
+          mint_creds
+          # No force flag: with a working rclone on PATH the s3 backend must
+          # pick it. Provider passthrough: the tool must keep the caller's
+          # RCLONE_S3_PROVIDER (Cloudflare is the production-realistic value).
+          RCLONE_S3_PROVIDER=Cloudflare MATHLIB_CACHE_PUT_BASE_URL="$RUN_S3/rclone" \
+            lake exe cache put-staged --staging-dir="$STAGING" --container=forks \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 \
+              | tee "$WORK/put-rclone.log" | tail -5
+          assert_tool "$WORK/put-rclone.log" rclone
+          BASE="$RUN_S3/rclone/mathlib4-forks/f/$REPO_PATH/$SHA"
+          head_all "$BASE" "$WORK/names.txt" "$WORK/etags-rclone.tsv"
+          sample_cmp "$BASE" "$STAGING" "$WORK/names.txt"
+          check_marker "$RUN_S3/rclone/mathlib4-forks/m/$REPO_PATH/$SHA" "$SHA"
+          # Tool parity: identical key set and identical content (single-part
+          # R2 ETags are content MD5s, so equal maps mean equal bytes).
+          diff "$WORK/etags-curl.tsv" "$WORK/etags-rclone.tsv"
+          echo "- ✅ s3+rclone (auto): $STAGED_COUNT objects verified; paths and ETags identical to the curl tool" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 'Phase 4: s3 backend, rclone tool — non-overwrite re-put (--ignore-existing)'
+        run: |
+          source "$WORK/helpers.sh"
+          mint_creds
+          RCLONE_S3_PROVIDER=Cloudflare MATHLIB_CACHE_PUT_BASE_URL="$RUN_S3/rclone" \
+            lake exe cache put-staged --staging-dir="$STAGING" --container=forks \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 | tail -5
+          head_all "$RUN_S3/rclone/mathlib4-forks/f/$REPO_PATH/$SHA" \
+            "$WORK/names.txt" "$WORK/etags-rclone-reput.tsv"
+          diff "$WORK/etags-rclone.tsv" "$WORK/etags-rclone-reput.tsv"
+          echo "- ✅ s3+rclone: non-overwrite re-put exits 0, objects unchanged" >> "$GITHUB_STEP_SUMMARY"
+
+      # `cache put` = pack-and-upload: the build graph (already hydrated by the
+      # staged-set step) scopes the file list, and the same destination and
+      # engine resolution applies. The result must be byte-identical to the
+      # put-staged uploads.
+      - name: 'Phase 5: cache put (pack-and-upload) — s3 backend, rclone auto-selected'
+        run: |
+          source "$WORK/helpers.sh"
+          mint_creds
+          MATHLIB_CACHE_PUT_BASE_URL="$RUN_S3/put" RCLONE_S3_PROVIDER=Cloudflare \
+            lake exe cache put "$TEST_MODULE" --container=forks \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 \
+              | tee "$WORK/put-put.log" | tail -5
+          assert_tool "$WORK/put-put.log" rclone
+          BASE="$RUN_S3/put/mathlib4-forks/f/$REPO_PATH/$SHA"
+          head_all "$BASE" "$WORK/names.txt" "$WORK/etags-put.tsv"
+          diff "$WORK/etags-curl.tsv" "$WORK/etags-put.tsv"
+          check_marker "$RUN_S3/put/mathlib4-forks/m/$REPO_PATH/$SHA" "$SHA"
+          echo "- ✅ cache put: staged names identical to put-staged (paths + ETags), marker ok" >> "$GITHUB_STEP_SUMMARY"
+
+      # MATHLIB_CACHE_PUT_URL: a flat endpoint, no container policy, and no
+      # marker (markers need a container). Both transfer tools must address
+      # the same flat layout ({url}/f/{repo}/{scope}/{name}).
+      - name: 'Phase 6: MATHLIB_CACHE_PUT_URL flat override — both transfer tools'
+        run: |
+          source "$WORK/helpers.sh"
+          mint_creds
+          MATHLIB_CACHE_PUT_URL="$RUN_S3/puturl-curl" MATHLIB_CACHE_PUT_FORCE_CURL=1 \
+            lake exe cache put-staged --staging-dir="$SUBSET" \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 \
+              | tee "$WORK/put-puturl-curl.log" | tail -3
+          assert_tool "$WORK/put-puturl-curl.log" curl
+          # Default provider (Other) on this rclone run: the tool's fallback.
+          MATHLIB_CACHE_PUT_URL="$RUN_S3/puturl-rclone" \
+            lake exe cache put-staged --staging-dir="$SUBSET" \
+              --repo="$TEST_REPO" --scope="$SHA" --backend=s3 2>&1 \
+              | tee "$WORK/put-puturl-rclone.log" | tail -3
+          assert_tool "$WORK/put-puturl-rclone.log" rclone
+          head_all "$RUN_S3/puturl-curl/f/$REPO_PATH/$SHA" \
+            "$WORK/subset-names.txt" "$WORK/etags-puturl-curl.tsv"
+          head_all "$RUN_S3/puturl-rclone/f/$REPO_PATH/$SHA" \
+            "$WORK/subset-names.txt" "$WORK/etags-puturl-rclone.tsv"
+          diff "$WORK/etags-puturl-curl.tsv" "$WORK/etags-puturl-rclone.tsv"
+          # No marker on the flat override, on either tool.
+          for tool in curl rclone; do
+            code="$(s3curl -o /dev/null -w '%{http_code}' -I \
+              "$RUN_S3/puturl-$tool/m/$REPO_PATH/$SHA")"
+            if [ "$code" != "404" ]; then
+              echo "FAIL: expected no marker under puturl-$tool, got HTTP $code"
+              exit 1
+            fi
+          done
+          echo "- ✅ PUT_URL flat override: both tools, identical layout and ETags, no marker (as specced)" >> "$GITHUB_STEP_SUMMARY"
+
+      # The real reader against this run's uploads: rebase the container reads
+      # under the public worker at the run prefix and re-download the whole set
+      # into a fresh cache dir. The reader probes master (miss), then finds
+      # everything in forks at the lowercased repo path — write path and read
+      # path meeting at the same URLs, live.
+      - name: 'Phase 7: read-back via cache get- and the query marker probe'
+        run: |
+          READBACK="$RUNNER_TEMP/mlcache-readback"
+          MATHLIB_CACHE_DIR="$READBACK" MATHLIB_CACHE_BASE_URL="$RUN_PUBLIC/curl" \
+            lake exe cache get- "$TEST_MODULE" --repo="$TEST_REPO" --scope="$SHA" 2>&1 | tail -6
+          (cd "$READBACK" && ls -- *.ltar | sort) > "$WORK/readback-names.txt"
+          diff "$WORK/names.txt" "$WORK/readback-names.txt"
+          # Content spot check against the staged originals.
+          for n in $(head -3 "$WORK/names.txt"); do
+            cmp "$READBACK/$n" "$STAGING/$n"
+          done
+          echo "read-back: $(wc -l < "$WORK/readback-names.txt") file(s), set identical to the upload"
+
+          # Marker probe, positive and negative (HEAD^ is resolvable but unmarked).
+          MATHLIB_CACHE_BASE_URL="$RUN_PUBLIC/curl" \
+            lake exe cache query "$SHA" --repo="$TEST_REPO"
+          PREV="$(git rev-parse HEAD^)"
+          if MATHLIB_CACHE_BASE_URL="$RUN_PUBLIC/curl" \
+            lake exe cache query "$PREV" --repo="$TEST_REPO"; then
+            echo "FAIL: query reported an unmarked commit as cached"
+            exit 1
+          fi
+          echo "- ✅ read-back: full set re-downloaded through the real reader; query marker probe: positive and negative ok" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup run prefix (best effort)
+        if: always()
+        run: |
+          source "$WORK/helpers.sh" || exit 0
+          [ -f "$WORK/names.txt" ] || { echo "nothing uploaded; skipping"; exit 0; }
+          mint_creds || { echo "::warning::mint failed; leaving objects to the bucket lifecycle"; exit 0; }
+          urls="$(mktemp)"
+          # `fallback` holds only the subset, so most of its DELETEs 404 —
+          # harmless for a best-effort sweep.
+          for b in curl rclone put fallback; do
+            sed "s|^|url = \"$RUN_S3/$b/mathlib4-forks/f/$REPO_PATH/$SHA/|;s|\$|\"|" "$WORK/names.txt"
+            echo "url = \"$RUN_S3/$b/mathlib4-forks/m/$REPO_PATH/$SHA\""
+          done > "$urls"
+          if [ -f "$WORK/subset-names.txt" ]; then
+            for b in puturl-curl puturl-rclone; do
+              sed "s|^|url = \"$RUN_S3/$b/f/$REPO_PATH/$SHA/|;s|\$|\"|" "$WORK/subset-names.txt"
+            done >> "$urls"
+          fi
+          if s3curl -X DELETE --parallel --parallel-max 16 --config "$urls" \
+              -o /dev/null --write-out '%{http_code}\n' | sort | uniq -c; then
+            echo "cleanup issued for $(wc -l < "$urls") object URL(s)"
+          else
+            echo "::warning::cleanup failed; objects remain under $RUN_S3 (run-unique prefix)"
+          fi
+
+      - name: Job summary header
+        if: always()
+        run: |
+          {
+            echo ""
+            echo "**PR #43378 e2e** — staged set: ${STAGED_COUNT:-n/a} files, run prefix \`ci-dev-43378/run-$GITHUB_RUN_ID\`, sha \`${SHA:0:12}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
