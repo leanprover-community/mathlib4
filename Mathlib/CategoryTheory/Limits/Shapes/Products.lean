@@ -168,9 +168,14 @@ lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ᶜ
   limit.hom_ext (fun ⟨j⟩ => h j)
 
 /-- The fan constructed of the projections from the product is limiting. -/
-@[to_dual /-- The cofan constructed of the inclusions from the coproduct is colimiting. -/]
 def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
   IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cone.ext (Iso.refl _))
+
+/-- The cofan constructed of the inclusions from the coproduct is colimiting. -/
+-- We use `existing` because `to_dual` translates `Cone.ext` to `Cocone.ext_inv`, not `Cocone.ext`.
+@[to_dual existing]
+def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
+  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocone.ext (Iso.refl _))
 
 -- TODO?: simp can prove this using `eqToHom_naturality`
 -- but `eqToHom_naturality` applies less easily than this lemma
