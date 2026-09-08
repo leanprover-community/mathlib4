@@ -255,7 +255,7 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
       (-(n + 1 : ℕ) : ℤ) = 0 := by
   -- Up to a constant, this is the constant term of the `q`-expansion of `g = 𝕢 ^ (n + 1) * f`,
   -- which vanishes since `g` tends to `0` at `I∞`.
-  set g : ℍ → ℂ := fun τ ↦ 𝕢 h τ ^ (n + 1) * f τ with hg
+  let g (τ : ℍ) := 𝕢 h τ ^ (n + 1) * f τ
   have hgper : Function.Periodic (g ∘ ofComplex) h := fun z ↦ by
     rcases le_or_gt z.im 0 with hz | hz
     · simp [g, ofComplex_apply_of_im_nonpos hz,
@@ -266,9 +266,8 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
       rw [this, Function.Periodic.qParam, Function.Periodic.qParam, mul_add, add_div,
         mul_div_cancel_right₀ _ (Complex.ofReal_ne_zero.mpr hh.ne'), Complex.exp_add,
         Complex.exp_two_pi_mul_I, mul_one]
-  have hghol : MDiff g :=
-    ((Function.Periodic.differentiable_qParam.mdifferentiable.comp mdifferentiable_coe).pow _).mul
-      hfhol
+  have hghol : MDiff g := ((Function.Periodic.differentiable_qParam.mdifferentiable.comp
+    mdifferentiable_coe).pow _).mul hfhol
   have hgzero : IsZeroAtImInfty g :=
     (by simpa using (qParam_tendsto_atImInfty hh).pow (n + 1) :
       Tendsto (fun τ : ℍ ↦ 𝕢 h τ ^ (n + 1)) atImInfty (𝓝 0)).zero_mul_isBoundedUnder_le
@@ -276,8 +275,10 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
   have h0 : (qExpansion h g).coeff 0 = 0 := by
     rw [qExpansion_coeff_zero hh (analyticAt_cuspFunction_zero hh hgper hghol
       hgzero.isBoundedAtImInfty) hgper, hgzero.valueAtInfty_eq_zero]
-  have hint := qExpansion_coeff_eq_intervalIntegral hh hgper hghol hgzero.isBoundedAtImInfty 0 hy
-  simp only [h0, pow_zero, div_one, one_mul] at hint
+  have hint : ∫ u in 0..h, g (⟨u + y * I, by simpa using hy⟩) = 0 := by
+    have := qExpansion_coeff_eq_intervalIntegral hh hgper hghol hgzero.isBoundedAtImInfty 0 hy
+    simp only [h0, pow_zero, div_one, one_mul] at this
+    rwa [eq_comm, mul_eq_zero_iff_left (by simpa using hh.ne')] at this
   have key (u : ℝ) : fourier (-(-(n + 1 : ℕ) : ℤ)) (u : AddCircle h) •
       f ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ =
         Real.exp (2 * π * (n + 1) * y / h) * g ⟨u + y * UpperHalfPlane.I, by simpa using hy⟩ := by
@@ -287,13 +288,12 @@ lemma UpperHalfPlane.fourierCoeffOn_neg_eq_zero {f : ℍ → ℂ} {h : ℝ} (hh 
     push_cast
     grind [Complex.I_sq]
   rw [fourierCoeffOn_eq_integral, sub_zero]
-  simp_rw [key, intervalIntegral.integral_const_mul]
-  rw [(mul_eq_zero.mp hint.symm).resolve_left (by simp [hh.ne']), mul_zero, smul_zero]
+  simp only [key, intervalIntegral.integral_const_mul, hint, mul_zero, smul_zero]
 
 /-- **Parseval's identity** for the `q`-expansion: the sum of the squared norms of the
 `q`-expansion coefficients, weighted by `exp (-4 * π * n * y / h)`, is the mean square of `f`
 along the horizontal line `im τ = y`. -/
-lemma hasSum_norm_sq_qExpansion_coeff_mul_exp {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
+lemma UpperHalfPlane.hasSum_norm_sq_qExpansion_coeff_mul_exp {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) :
     HasSum (fun n : ℕ ↦ ‖(qExpansion h f).coeff n‖ ^ 2 * Real.exp (-(4 * π * n * y / h)))
@@ -324,7 +324,7 @@ line.
 (This is Bessel's inequality for the Fourier series of the periodic function `f (· + I * y)`; see
 `hasSum_norm_sq_qExpansion_coeff_mul_exp` for the corresponding equality.)
 -/
-lemma sum_range_norm_sq_qExpansion_coeff_mul_exp_le {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
+lemma UpperHalfPlane.sum_range_norm_sq_qExpansion_coeff_mul_exp_le {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (M : ℕ) :
     ∑ n ∈ Finset.range M,
@@ -338,7 +338,7 @@ lemma sum_range_norm_sq_qExpansion_coeff_mul_exp_le {f : ℍ → ℂ} {h : ℝ} 
 Bound for the unweighted sum of the squared norms of the first `M` `q`-expansion coefficients, in
 terms of the integral of `‖f‖ ^ 2` along a horizontal line.
 -/
-lemma sum_range_norm_sq_qExpansion_coeff_le {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
+lemma UpperHalfPlane.sum_range_norm_sq_qExpansion_coeff_le {f : ℍ → ℂ} {h : ℝ} (hh : 0 < h)
     (hfper : Function.Periodic (f ∘ ofComplex) h) (hfhol : MDiff f)
     (hfbdd : IsBoundedAtImInfty f) {y : ℝ} (hy : 0 < y) (M : ℕ) :
     ∑ n ∈ Finset.range M, ‖(qExpansion h f).coeff n‖ ^ 2 ≤
