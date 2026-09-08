@@ -10,8 +10,9 @@ public import Mathlib.Init
 /-!
 # Matrices as lists of rows
 
-Operations on matrices represented as lists of rows, `List (List α)`, importing only
-`Mathlib.Init`. `ListMatrix` is a namespace, not a type.
+Operations on matrices represented as lists of rows, `List (List α)`, for tactics computing
+on matrix literals; the file imports only `Mathlib.Init`. `ListMatrix` is a namespace, not a
+type.
 
 ## Main definitions
 * `ListMatrix.dotProduct`
@@ -28,7 +29,7 @@ reduces in the kernel.
 
 public section
 
-namespace ListMatrix
+namespace Mathlib.Tactic.Matrix.ListMatrix
 
 variable {α : Type*}
 
@@ -82,4 +83,4 @@ theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (
   let BT := transpose n B
   A.map fun rowA ↦ BT.map (dotProduct m rowA)
 
-end ListMatrix
+end Mathlib.Tactic.Matrix.ListMatrix

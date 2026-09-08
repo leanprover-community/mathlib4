@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Matrix.OfLists  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.NormNum.Core
 
@@ -13,8 +13,7 @@ public import Mathlib.Tactic.NormNum.Core
 # `norm_matmul`: products of matrix literals
 
 This module defines the `norm_matmul` simproc, which rewrites a product of matrix literals to
-the literal of the product through `Matrix.ofLists_mul`, with the entries computed by
-`norm_num`.
+the literal of the product through `ofLists_mul`, with the entries computed by `norm_num`.
 
 ## Implementation notes
 
@@ -79,7 +78,7 @@ def proveMul {u : Level} (certifier : EntryCertifier) (e : Expr) (l m n : ℕ) (
     (rowsA rowsB : Array (Array Expr)) : MetaM Simp.Result := do
   let _inst ← synthInstanceQ q(NonUnitalNonAssocSemiring $α)
   -- derived from the semiring rather than synthesised afresh, so that the cells carry the
-  -- instance paths `Matrix.ofLists_mul` instantiates `ListMatrix.mul` with
+  -- instance paths `ofLists_mul` instantiates `ListMatrix.mul` with
   have zα : Q(Zero $α) := q(MulZeroClass.toZero)
   have aα : Q(Add $α) := q(Distrib.toAdd)
   have mα : Q(Mul $α) := q(Distrib.toMul)
@@ -106,10 +105,10 @@ def proveMul {u : Level} (certifier : EntryCertifier) (e : Expr) (l m n : ℕ) (
   have B : Q(List (List $α)) := ← mkLists rowsB
   have C : Q(Matrix (Fin $l) (Fin $n) $α) :=
     Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (entries[i]!)[j]!)
-  let hMul := q((Matrix.ofLists_mul $l $m $n $A $B).symm)
-  let hC ← mkCongrArg q(Matrix.ofLists (α := $α) $l $n) hAll
+  let hMul := q((ofLists_mul $l $m $n $A $B).symm)
+  let hC ← mkCongrArg q(ofLists (α := $α) $l $n) hAll
   let pf ← mkEqTrans hMul hC
-  -- `pf` is stated on `Matrix.ofLists` forms; the hint to `e = C` holds because `ofLists` on
+  -- `pf` is stated on `ofLists` forms; the hint to `e = C` holds because `ofLists` on
   -- a row-list literal unfolds to exactly the `Matrix.of`/`vecCons` term of the `!![…]`
   -- literal, so the kernel settles it by reduction
   return { expr := C, proof? := some (← mkExpectedTypeHint pf (← mkEq e C)) }

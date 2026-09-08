@@ -5,22 +5,22 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Matrix.ListMatrix
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.Tactic.Matrix.ListMatrix
 
 /-!
 # Matrices from lists of rows
 
-`Matrix.ofLists` reads a list of rows as a `Matrix`, and the transpose and the product of such
-matrices are computed on their lists of rows.
+`ofLists` reads a list of rows as a `Matrix`, and the transpose and the product of such matrices
+are computed on their lists of rows.
 
 ## Main definitions
 * `FinVec.ofList`
-* `Matrix.ofLists`
+* `ofLists`
 
 ## Main results
-* `Matrix.ofLists_transpose`
-* `Matrix.ofLists_mul`
+* `ofLists_transpose`
+* `ofLists_mul`
 
 ## Implementation notes
 
@@ -30,9 +30,13 @@ The definitions recurse on the dimensions, so on literals they reduce in the ker
 
 public section
 
-variable {α : Type*}
-
+-- opened outside the namespace, where `Matrix` resolves to the type's namespace rather than to
+-- `Mathlib.Tactic.Matrix`
 open Matrix
+
+namespace Mathlib.Tactic.Matrix
+
+variable {α : Type*}
 
 /-- Construct a vector from the first `n` elements of a list, padded with `0`. -/
 @[expose] def FinVec.ofList [Zero α] (n : ℕ) (l : List α) : Fin n → α :=
@@ -50,15 +54,14 @@ theorem FinVec.ofList_apply [Zero α] (n : ℕ) (l : List α) (i : Fin n) :
 
 /-- Construct a matrix from the first `n` elements of the first `m` lists,
 padded with `0`. -/
-@[expose] def Matrix.ofLists [Zero α] (m n : ℕ) (rows : List (List α)) :
-    Matrix (Fin m) (Fin n) α :=
+@[expose] def ofLists [Zero α] (m n : ℕ) (rows : List (List α)) : Matrix (Fin m) (Fin n) α :=
   match m, rows with
   | 0, _ => of ![]
-  | m' + 1, [] => of (vecCons (FinVec.ofList n []) (Matrix.ofLists m' n []))
-  | m' + 1, row :: rows' => of (vecCons (FinVec.ofList n row) (Matrix.ofLists m' n rows'))
+  | m' + 1, [] => of (vecCons (FinVec.ofList n []) (ofLists m' n []))
+  | m' + 1, row :: rows' => of (vecCons (FinVec.ofList n row) (ofLists m' n rows'))
 
 @[simp]
-theorem Matrix.ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : Fin m) :
+theorem ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : Fin m) :
     ofLists m n rows i = FinVec.ofList n (rows.getD i []) := by
   induction m generalizing rows with
   | zero => exact i.elim0
@@ -72,13 +75,13 @@ theorem ListMatrix.dotProduct_eq [NonUnitalNonAssocSemiring α] (n : ℕ) (l₁ 
   | succ n ih => cases l₁ <;> cases l₂ <;> simp [FinVec.ofList, ListMatrix.dotProduct, ← ih]
 
 @[simp]
-theorem Matrix.ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :
+theorem ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :
     ofLists n m (ListMatrix.transpose n rows) = (ofLists m n rows)ᵀ := by
   ext j i
   simpa using ListMatrix.getD_transpose rows i j.isLt
 
 @[simp]
-theorem Matrix.ofLists_mul [NonUnitalNonAssocSemiring α] (l m n : ℕ) (A B : List (List α)) :
+theorem ofLists_mul [NonUnitalNonAssocSemiring α] (l m n : ℕ) (A B : List (List α)) :
     ofLists l n (ListMatrix.mul m n A B) = ofLists l m A * ofLists m n B := by
   ext i j
   rw [mul_apply', ofLists_apply, ofLists_apply, FinVec.ofList_apply]
@@ -90,3 +93,5 @@ theorem Matrix.ofLists_mul [NonUnitalNonAssocSemiring α] (l m n : ℕ) (A B : L
   rw [hcol, ← ListMatrix.dotProduct_eq, ListMatrix.mul]
   simp only [List.getD_eq_getElem?_getD, List.getElem?_map]
   cases A[i]? <;> simp [ListMatrix.dotProduct]
+
+end Mathlib.Tactic.Matrix
