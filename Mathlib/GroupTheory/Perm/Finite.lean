@@ -169,13 +169,13 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
   have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
   have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
   refine isConj_of_support_equiv ?_ ?_
-  · refine ((Equiv.Set.congr hd1').trans (Equiv.Set.union hd1'')).trans <|
+  · refine ((Set.equivOfEq hd1').trans (Equiv.Set.union hd1'')).trans <|
       (Equiv.sumCongr (subtypeEquiv f fun a => ?_) <| subtypeEquiv g fun a => ?_).trans
-        ((Equiv.Set.congr hd2').trans (Equiv.Set.union hd2'')).symm <;>
+        ((Set.equivOfEq hd2').trans (Equiv.Set.union hd2'')).symm <;>
       simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
         apply_eq_iff_eq]
   intro x hx
-  simp only [trans_apply, symm_trans_apply, Equiv.Set.congr_apply, Equiv.Set.congr_symm_apply,
+  simp only [trans_apply, symm_trans_apply, Set.equivOfEq_apply, Set.equivOfEq_symm_apply,
     Equiv.sumCongr_apply]
   rw [hd1', Set.mem_union] at hx
   rcases hx with hxσ | hxτ

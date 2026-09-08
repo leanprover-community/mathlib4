@@ -150,17 +150,9 @@ theorem IsChain.image [FunLike F α β] [RelHomClass F r r'] (hs : IsChain r s) 
     IsChain r' (φ '' s) :=
   hs.image_of_map_rel _ _ _ (fun _ _ h ↦ map_rel φ h)
 
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_relEmbedding (hs : IsChain r s) (φ : r ↪r r') : IsChain r' (φ '' s) :=
-  hs.image _
-
 theorem IsChain.preimage_relEmbedding {t : Set β} (ht : IsChain r' t) (φ : r ↪r r') :
     IsChain r (φ ⁻¹' t) :=
   ht.preimage _ _ _ φ.injective (fun _ _ h ↦ φ.map_rel_iff.mp h)
-
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_relIso (hs : IsChain r s) (φ : r ≃r r') : IsChain r' (φ '' s) :=
-  hs.image φ.toRelEmbedding
 
 theorem IsChain.preimage_relIso {t : Set β} (hs : IsChain r' t) (φ : r ≃r r') :
     IsChain r (φ ⁻¹' t) :=
@@ -172,11 +164,6 @@ theorem IsChain.image_relEmbedding_iff {φ : r ↪r r'} : IsChain r' (φ '' s) �
 theorem IsChain.image_relIso_iff {φ : r ≃r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
   @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
 
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_embedding [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ↪o β) :
-    IsChain (· ≤ ·) (φ '' s) :=
-  image hs _
-
 theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ↪o β) :
     IsChain (· ≤ ·) (φ ⁻¹' t) :=
   preimage_relEmbedding ht _
@@ -184,11 +171,6 @@ theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (�
 theorem IsChain.image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
     IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
   image_relEmbedding_iff
-
-@[deprecated IsChain.image (since := "2026-02-26")]
-theorem IsChain.image_iso [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ≃o β) :
-    IsChain (· ≤ ·) (φ '' s) :=
-  image hs _
 
 theorem IsChain.image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
     IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
@@ -231,13 +213,15 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
-/-- A chain in a partial order is a linear order. -/
+/-- A chain in a preorder is a linear order. -/
 @[implicit_reducible]
-def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : IsChain (· ≤ ·) s) :
+def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChain (· < ·) s) :
     LinearOrder s where
-  le_total := by
-    rintro ⟨a, ha⟩ ⟨b, hb⟩
-    exact hs.total ha hb
+  le_antisymm :=
+    fun ⟨a, ha⟩ ⟨b, hb⟩ hab hba ↦
+      Subtype.ext <| not_not.mp (hs ha hb · |>.elim hba.not_gt hab.not_gt)
+  le_total :=
+    fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ eq_or_ne a b |>.elim (by simp [·]) (hs ha hb · |>.imp (·.le) (·.le))
   toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)

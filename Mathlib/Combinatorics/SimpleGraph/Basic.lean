@@ -100,6 +100,8 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
+attribute [grind ext] SimpleGraph.ext
+
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -154,6 +156,8 @@ Any bipartite graph may be regarded as a subgraph of one of these. -/
 def completeBipartiteGraph (V W : Type*) : SimpleGraph (V ⊕ W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
 
+attribute [grind =] completeBipartiteGraph_adj
+
 namespace SimpleGraph
 
 variable {ι : Sort*} {V : Type u} (G H : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
@@ -176,6 +180,7 @@ theorem ne_of_adj (h : G.Adj a b) : a ≠ b := by
   rintro rfl
   exact G.irrefl h
 
+@[grind .]
 protected theorem Adj.ne {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : a ≠ b :=
   G.ne_of_adj h
 
@@ -333,7 +338,7 @@ abbrev emptyGraph (V : Type u) : SimpleGraph V := ⊥
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem bot_adj (v w : V) : (⊥ : SimpleGraph V).Adj v w ↔ False :=
   Iff.rfl
 
@@ -905,7 +910,7 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
 
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
-  grind [mem_neighborSet, bot_adj]
+  grind [mem_neighborSet]
 
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=

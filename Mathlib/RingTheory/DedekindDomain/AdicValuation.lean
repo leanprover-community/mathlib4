@@ -668,7 +668,7 @@ back along `equiv`, and that of the completion. -/
 def valueGroupEquiv :
     valueGroup (.ofClass (valuation K v)) ≃*
       valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
-  __ := Equiv.Set.congr (by rw [valueGroup_eq K v])
+  __ := Set.equivOfEq (by rw [valueGroup_eq K v])
   map_mul' _ _ := rfl
 
 @[simp] theorem coe_valueGroupEquiv (a : valueGroup (.ofClass (valuation K v))) :
