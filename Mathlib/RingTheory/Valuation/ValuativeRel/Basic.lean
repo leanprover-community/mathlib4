@@ -945,9 +945,40 @@ lemma isNontrivial_iff_nontrivial_units :
     · exact ⟨s.val, by simp, by simpa using h.symm⟩
     · exact ⟨r.val, by simp, by simpa using hr⟩
 
+/-- `O` acts on `R` by *integers*, i.e. by elements of valuation at most one: scaling never
+increases the valuation. -/
+class IsIntegerSMul (O R : Type*) [Semiring R] [ValuativeRel R] [SMul O R] : Prop where
+  smul_vle (o : O) (x : R) : o • x ≤ᵥ x
+
+lemma smul_vle {O : Type*} [SMul O R] [IsIntegerSMul O R] (o : O) (x : R) : o • x ≤ᵥ x :=
+  IsIntegerSMul.smul_vle o x
+
+/-- A ring with a valuative relation is its own ring of integers, i.e. all of its elements have
+valuation at most one. This holds for the ring of integers of a valued field, and for `ℤ_[p]`
+with its `p`-adic valuative relation. -/
+abbrev IsIntegerRing (R : Type*) [Semiring R] [ValuativeRel R] : Prop := IsIntegerSMul R R
+
+variable (R) in
+lemma vle_one_of_isIntegerRing [IsIntegerRing R] (x : R) : x ≤ᵥ 1 := by
+  simpa using smul_vle x (1 : R)
+
+/-- To check that a ring acts by integers it suffices to check it on `1`. -/
+lemma IsIntegerSMul.of_forall_smul_one_vle_one {O : Type*} [SMul O R] [IsScalarTower O R R]
+    (h : ∀ o : O, o • (1 : R) ≤ᵥ 1) : IsIntegerSMul O R where
+  smul_vle o x := by
+    rw [show o • x = (o • (1 : R)) * x by rw [smul_mul_assoc, one_mul]]
+    simpa using mul_vle_mul_left (h o) x
+
 section Valuation
 
 variable {R : Type*} [Ring R] [ValuativeRel R]
+
+lemma valuation_smul_le {O : Type*} [SMul O R] [IsIntegerSMul O R] (o : O) (x : R) :
+    valuation R (o • x) ≤ valuation R x :=
+  (Valuation.vle_iff_le _).mp (smul_vle o x)
+
+lemma valuation_le_one [IsIntegerRing R] (x : R) : valuation R x ≤ 1 :=
+  (Valuation.vle_one_iff _).mp (vle_one_of_isIntegerRing R x)
 
 lemma isNontrivial_iff_isNontrivial
     {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible] :
@@ -1259,6 +1290,11 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
     by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, vlt_iff_vlt] using ha⟩
   map_one' := by simp
   map_mul' := by simp
+
+instance [ValuativeRel.IsIntegerRing A] : IsIntegerSMul A B :=
+  .of_forall_smul_one_vle_one fun a ↦ by
+    simpa [Algebra.smul_def] using
+      (vle_iff_vle (B := B) a 1).mpr (vle_one_of_isIntegerRing A a)
 
 end Semiring
 
