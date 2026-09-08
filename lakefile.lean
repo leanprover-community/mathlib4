@@ -18,7 +18,7 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
-require HexRealRoots from git "https://github.com/leanprover/hex-real-roots.git" @ "v0.2.0"
+require HexRealRoots from git "https://github.com/leanprover/hex-real-roots.git" @ "v0.3.0"
 
 
 /-!
