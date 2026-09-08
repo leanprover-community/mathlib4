@@ -56,6 +56,7 @@ lemma w : h.f.hom ≫ h.g.hom = 0 := by cat_disch
 
 /-- The short exact sequence of cochain complexes
 `0 ⟶ R₁.cocomplex ⟶ R₂.cocomplex ⟶ R₃.cocomplex ⟶ 0` of a horseshoe diagram. -/
+@[implicit_reducible]
 def shortComplex : ShortComplex (CochainComplex C ℕ) := .mk _ _ h.w
 
 lemma shortExact_shortComplex : h.shortComplex.ShortExact :=
@@ -120,6 +121,14 @@ noncomputable def singleTriangleIso [HasDerivedCategory C] :
     (asIso (DerivedCategory.Q.map R₂.ι')) (asIso (DerivedCategory.Q.map R₃.ι'))
     sorry sorry sorry
 
+lemma shiftedHomMk₀_inv_Q_ι'_comp_singleδ [HasDerivedCategory C] :
+    (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₃.ι'))).comp
+        hS.singleδ (add_zero 1) =
+      (ShiftedHom.map (homOfDegreewiseSplit h.shortComplexExtend h.splittingExtend)
+        DerivedCategory.Q).comp (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₁.ι')))
+        (zero_add 1) := by
+  sorry
+
 attribute [local instance] HasDerivedCategory.standard in
 lemma extMk_comp_extClass'
     [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
@@ -129,8 +138,16 @@ lemma extMk_comp_extClass'
     R₁.extMk (x₃ ≫ (h.splitting n).s ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r) m' hm'
       (h.extMk_comp_extClass'_aux x₃ hx₃ m') := by
   ext
-  simp only [Ext.comp_hom, extMk_hom, Functor.comp_obj,
-    ShortComplex.ShortExact.extClass_hom, Category.assoc]
+  simp [Ext.comp_hom, extMk_hom, Functor.comp_obj,
+    ShortComplex.ShortExact.extClass_hom, Category.assoc,
+    DerivedCategory.singleFunctorIsoCompQ_hom_app,
+    DerivedCategory.singleFunctorIsoCompQ_inv_app, ← DerivedCategory.Q_obj_single_obj,
+    ShiftedHom.comp_assoc (a := (m : ℤ)) _ _ _ (zero_add (n : ℤ)) (add_zero 1) (by lia),
+    h.shiftedHomMk₀_inv_Q_ι'_comp_singleδ,
+    ← ShiftedHom.comp_assoc (a₂ := 1) (a₁ := (n : ℤ)) (a₁₂ := (m : ℤ)) (a := (m : ℤ)) _ _ _
+      (by lia) (zero_add 1) (by lia), ← ShiftedHom.map_comp]
+  congr 2
+  --dsimp [homOfDegreewiseSplit, cocycleOfDegreewiseSplit]
   sorry
 
 lemma extMk_comp_extClass
