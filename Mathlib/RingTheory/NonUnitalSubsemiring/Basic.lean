@@ -56,8 +56,7 @@ end NonUnitalSubsemiring
 namespace NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
-variable {G : Type*} [FunLike G S T] [NonUnitalRingHomClass G S T]
-  (s : NonUnitalSubsemiring R)
+variable (s : NonUnitalSubsemiring R)
 
 /-- The ring equiv between the top element of `NonUnitalSubsemiring R` and `R`. -/
 @[simps!]
@@ -78,10 +77,8 @@ theorem coe_comap (s : NonUnitalSubsemiring S) (f : R →ₙ+* S) : (s.comap f :
 theorem mem_comap {s : NonUnitalSubsemiring S} {f : R →ₙ+* S} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 
--- this has some nasty coercions, how to deal with it?
-theorem comap_comap (s : NonUnitalSubsemiring T) (g : G) (f : R →ₙ+* S) :
-    ((s.comap g : NonUnitalSubsemiring S).comap f : NonUnitalSubsemiring R) =
-      s.comap ((g : S →ₙ+* T).comp (f : R →ₙ+* S)) :=
+theorem comap_comap (s : NonUnitalSubsemiring T) (g : S →ₙ+* T) (f : R →ₙ+* S) :
+    (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
 /-- The image of a non-unital subsemiring along a ring homomorphism is a non-unital subsemiring. -/
@@ -101,9 +98,8 @@ theorem mem_map {f : R →ₙ+* S} {s : NonUnitalSubsemiring R} {y : S} :
 theorem map_id : s.map (NonUnitalRingHom.id R) = s :=
   SetLike.coe_injective <| Set.image_id _
 
--- unavoidable coercions?
-theorem map_map (g : G) (f : R →ₙ+* S) :
-    (s.map f).map (g : S →ₙ+* T) = s.map ((g : S →ₙ+* T).comp f) :=
+theorem map_map (g : S →ₙ+* T) (f : R →ₙ+* S) :
+    (s.map f).map g = s.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
 theorem map_le_iff_le_comap {f : R →ₙ+* S}
