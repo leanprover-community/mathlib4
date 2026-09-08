@@ -45,7 +45,7 @@ The Koszul complex of a sequence `f₁, …, fᵣ` of elements of `R` is the spe
 
 universe u v w w'
 
-open CategoryTheory Category MonoidalCategory Limits Module
+open CategoryTheory Category MonoidalCategory Limits Module ModuleCat
 
 section GradedAlgebra
 
@@ -86,10 +86,10 @@ lemma koszulCocomplex.d_apply_ιMulti (x : M) (i : ℕ) (m : Fin i → M) :
 variable {M} in
 /-- The Koszul cocomplex with objects exterior powers and differential `koszulCocomplex.d`. -/
 noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} R) ℕ :=
-  CochainComplex.of (fun n ↦ ModuleCat.of R (⋀[R]^n M))
-    (fun n ↦ ModuleCat.ofHom (koszulCocomplex.d R M x n))
+  CochainComplex.of (fun n ↦ of R (⋀[R]^n M))
+    (fun n ↦ ofHom (koszulCocomplex.d R M x n))
     (fun n ↦ by
-      simp only [← ModuleCat.ofHom_comp]
+      simp only [← ofHom_comp]
       congr
       refine LinearMap.ext fun x ↦ Subtype.ext ?_
       simp [exteriorPower.oneEquiv_symm_apply, LinearMap.coe_comp, Function.comp_apply,
@@ -99,8 +99,10 @@ noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} 
 
 namespace koszulCocomplex
 
-theorem d_eq_aux (x : M) (i : ℕ) :
-    (koszulCocomplex R x).d i (i + 1) = ModuleCat.ofHom (koszulCocomplex.d R M x i) := by
+lemma X_def (x : M) (i : ℕ) : (koszulCocomplex R x).X i = of R (⋀[R]^i M) := rfl
+
+theorem d_def (x : M) (i : ℕ) :
+    (koszulCocomplex R x).d i (i + 1) = ofHom (koszulCocomplex.d R M x i) := by
   simp [koszulCocomplex]
 
 variable {R} in
@@ -120,34 +122,34 @@ set_option backward.isDefEq.respectTransparency false in
 the two defining elements. -/
 noncomputable def map (f : M →ₗ[R] N) {x : M} {y : N} (h : f x = y) :
     koszulCocomplex R x ⟶ koszulCocomplex R y :=
-  CochainComplex.ofHom
-    (fun i ↦ (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f))
-    (fun i ↦ ModuleCat.hom_ext <| LinearMap.ext fun z ↦ Subtype.ext
-      (by simp [koszulCocomplex, ModuleCat.exteriorPower.map,
-        koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, h]))
+  CochainComplex.ofHom (fun i ↦ ofHom (exteriorPower.map i f))
+    (fun i ↦ hom_ext <| LinearMap.ext fun z ↦ Subtype.ext
+      (by simp [koszulCocomplex, koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, h]))
 
-lemma map_hom (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
-    (map R f h).f i = (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f) := rfl
+lemma map_f (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
+    (map R f h).f i = ofHom (exteriorPower.map i f) := rfl
 
+@[reassoc]
 lemma map_id_refl (x : M) : koszulCocomplex.map R (M := M) .id (Eq.refl x) = 𝟙 _ := by
   ext i x
-  simp only [map_hom, ModuleCat.ofHom_id, ModuleCat.exteriorPower.functor_map,
-    ModuleCat.exteriorPower.map, ModuleCat.hom_id, exteriorPower.map_id, HomologicalComplex.id_f,
+  simp only [map_f, ofHom_id, ModuleCat.hom_id, exteriorPower.map_id, HomologicalComplex.id_f,
     LinearMap.id_coe, id_eq]
   rfl
 
+@[reassoc]
 lemma map_id (x y : M) (h : x = y) : koszulCocomplex.map R (M := M) .id h =
   eqToHom (congrArg _ h) := by
   subst h
   exact map_id_refl R x
 
 set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
 lemma map_comp {P : Type v} [AddCommGroup P] [Module R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) {x : M} {y : N} {z : P} (hxy : f x = y) (hyz : g y = z) :
     koszulCocomplex.map R f hxy ≫ koszulCocomplex.map R g hyz =
     koszulCocomplex.map R (g ∘ₗ f) (hxy ▸ hyz : g (f x) = z) := by
   refine HomologicalComplex.hom_ext _ _ fun i ↦ ?_
-  simp only [HomologicalComplex.comp_f, map_hom, ModuleCat.ofHom_comp, Functor.map_comp]
+  simp only [HomologicalComplex.comp_f, map_f, exteriorPower.map_comp, ofHom_comp]
 
 /-- The map between two Koszul complex when give an linear equiv between module that maps
 the two defining elements. -/
@@ -160,15 +162,14 @@ noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) {x : M} {y : N} (h : f x = y) :
 
 end functoriality
 
-lemma isZero_X_of_card_generators_le (x : M) {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+lemma isZero_X_of_span_eq_top (x : M) {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     IsZero ((koszulCocomplex R x).X i) :=
-  ModuleCat.isZero_of_iff_subsingleton.mpr
-    (exteriorPower.subsingleton_of_span_eq_top_of_card_lt g hg i hi)
+  isZero_of_iff_subsingleton.mpr (exteriorPower.subsingleton_of_span_eq_top_of_card_lt g hg i hi)
 
 lemma isZero_X_ofList_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) :=
-  isZero_X_of_card_generators_le R l.get
+  isZero_X_of_span_eq_top R l.get
   (Pi.basisFun R (Fin l.length)) (Pi.basisFun R (Fin l.length)).span_eq i
   (by simpa [Nat.card_eq_fintype_card] using hi)
 
