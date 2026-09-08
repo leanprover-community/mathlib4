@@ -96,11 +96,11 @@ variable {F 𝕜}
 
 theorem mem_lpMeasSubgroup_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeasSubgroup F m p μ ↔ AEStronglyMeasurable[m] f μ := by
-  rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_setOf_eq]
+  rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_ofPred_eq]
 
 theorem mem_lpMeas_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeas F 𝕜 m p μ ↔ AEStronglyMeasurable[m] f μ := by
-  rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_ofPred_eq]
 
 theorem lpMeas.aestronglyMeasurable {m _ : MeasurableSpace α} {μ : Measure α}
     (f : lpMeas F 𝕜 m p μ) : AEStronglyMeasurable[m] (f : α → F) μ :=
@@ -301,7 +301,7 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
 theorem isComplete_aestronglyMeasurable [hp : Fact (1 ≤ p)] [CompleteSpace F] (hm : m ≤ m0) :
     IsComplete {f : Lp F p μ | AEStronglyMeasurable[m] f μ} := by
   rw [← completeSpace_coe_iff_isComplete]
-  haveI : Fact (m ≤ m0) := ⟨hm⟩
+  have : Fact (m ≤ m0) := ⟨hm⟩
   change CompleteSpace (lpMeasSubgroup F m p μ)
   infer_instance
 
@@ -393,7 +393,6 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   · change IsClosed ((lpMeasToLpTrimLie F ℝ p μ hm).symm ⁻¹' {g : lpMeas F ℝ m p μ | P ↑g})
     exact IsClosed.preimage (LinearIsometryEquiv.continuous _) h_closed
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To prove something for an `Lp` function a.e. strongly measurable with respect to a
 sub-σ-algebra `m` in a normed space, it suffices to show that
 * the property holds for (multiples of) characteristic functions which are measurable w.r.t. `m`;
@@ -423,7 +422,7 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   let s_g : Set α := Function.support (hgm.mk g)
   have hs_g : MeasurableSet[m] s_g := hgm.stronglyMeasurable_mk.measurableSet_support
   have hs_g_eq : s_g =ᵐ[μ] Function.support g := hgm.ae_eq_mk.symm.support
-  have h_inter_empty : (s_f ∩ s_g : Set α) =ᵐ[μ] (∅ : Set α) := by
+  have h_inter_empty : s_f ∩ s_g =ᵐ[μ] ∅ := by
     refine (hs_f_eq.inter hs_g_eq).trans ?_
     suffices Function.support f ∩ Function.support g = ∅ by rw [this]
     exact Set.disjoint_iff_inter_eq_empty.mp h_disj
@@ -431,7 +430,7 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   have hff' : f =ᵐ[μ] f' := by
     have : s_f \ s_g =ᵐ[μ] s_f := by
       rw [← Set.sdiff_inter_self_eq_sdiff, Set.inter_comm]
-      refine ((ae_eq_refl s_f).diff h_inter_empty).trans ?_
+      refine (EventuallyEqSet.rfl.diff h_inter_empty).trans ?_
       rw [Set.sdiff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]
@@ -442,7 +441,7 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   have hgg' : g =ᵐ[μ] g' := by
     have : s_g \ s_f =ᵐ[μ] s_g := by
       rw [← Set.sdiff_inter_self_eq_sdiff]
-      refine ((ae_eq_refl s_g).diff h_inter_empty).trans ?_
+      refine (EventuallyEqSet.rfl.diff h_inter_empty).trans ?_
       rw [Set.sdiff_empty]
     refine ((indicator_ae_eq_of_ae_eq_set this).trans ?_).symm
     rw [Set.indicator_support]

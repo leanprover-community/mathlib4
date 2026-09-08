@@ -36,7 +36,7 @@ variable (X : Type v₂)
 /-- If `C` has products indexed by `X`, then `Cᵒᵖ` has coproducts indexed by `X`.
 -/
 instance hasCoproductsOfShape_opposite [HasProductsOfShape X C] : HasCoproductsOfShape X Cᵒᵖ := by
-  haveI : HasLimitsOfShape (Discrete X)ᵒᵖ C :=
+  have : HasLimitsOfShape (Discrete X)ᵒᵖ C :=
     hasLimitsOfShape_of_equivalence (Discrete.opposite X).symm
   infer_instance
 
@@ -99,9 +99,10 @@ instance : HasProduct (op <| Z ·) := hasLimit_of_iso
     Discrete.functor (op <| Z ·))
 
 /-- A `Cofan` gives a `Fan` in the opposite category. -/
-@[simp]
+@[simp, implicit_reducible]
 def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If a `Cofan` is colimit, then its opposite is limit. -/
 -- noncomputability is just for performance (compilation takes a while)
@@ -132,7 +133,6 @@ def opCoproductIsoProduct :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opCoproductIsoProduct'_hom_comp_proj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (i : α) :
@@ -149,7 +149,6 @@ theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
   IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem opCoproductIsoProduct'_comp_self {c c' : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hc' : IsColimit c') (hf : IsLimit f) :
     (opCoproductIsoProduct' hc hf).hom ≫ (opCoproductIsoProduct' hc' hf).inv =
@@ -172,7 +171,6 @@ theorem opCoproductIsoProduct_inv_comp_ι [HasCoproduct Z] (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
   opCoproductIsoProduct'_inv_comp_inj _ _ b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (c' : Cofan Z) :
     (hc.desc c').op ≫ (opCoproductIsoProduct' hc hf).hom = hf.lift c'.op := by
@@ -189,7 +187,7 @@ theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a
     desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z) (productIsProduct (op <| Z ·))
       (Cofan.mk _ π)
   · simp [Sigma.desc, coproductIsCoproduct]
-  · simp [Pi.lift, productIsProduct]
+  · simp [productIsProduct]
 
 end OppositeCoproducts
 
@@ -214,6 +212,7 @@ instance : HasCoproduct (op <| Z ·) := hasColimit_of_iso
 @[simp]
 def Fan.op (f : Fan Z) : Cofan (op <| Z ·) := Cofan.mk _ (fun a ↦ (f.proj a).op)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If a `Fan` is limit, then its opposite is colimit. -/
 -- noncomputability is just for performance (compilation takes a while)
@@ -249,7 +248,6 @@ theorem proj_comp_opProductIsoCoproduct'_hom {f : Fan Z} {c : Cofan (op <| Z ·)
     (f.proj b).op ≫ (opProductIsoCoproduct' hf hc).hom = c.inj b :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (Fan.IsLimit.op hf) hc ⟨b⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem opProductIsoCoproduct'_comp_self {f f' : Fan Z} {c : Cofan (op <| Z ·)}
     (hf : IsLimit f) (hf' : IsLimit f') (hc : IsColimit c) :
     (opProductIsoCoproduct' hf hc).hom ≫ (opProductIsoCoproduct' hf' hc).inv =
@@ -271,7 +269,6 @@ theorem π_comp_opProductIsoCoproduct_hom [HasProduct Z] (b : α) :
     (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom = Sigma.ι (op <| Z ·) b :=
   proj_comp_opProductIsoCoproduct'_hom _ _ b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)}
     (hf : IsLimit f) (hc : IsColimit c) (f' : Fan Z) :
     (opProductIsoCoproduct' hf hc).inv ≫ (hf.lift f').op = hc.desc f'.op := by
@@ -281,6 +278,7 @@ theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)
   erw [← Category.assoc, proj_comp_opProductIsoCoproduct'_hom, IsColimit.fac]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α) → X ⟶ Z a) :
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a ↦ (π a).op) := by
@@ -288,7 +286,7 @@ theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α
     opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z) (coproductIsCoproduct (op <| Z ·))
       (Fan.mk _ π)
   · simp [Pi.lift, productIsProduct]
-  · simp [Sigma.desc, coproductIsCoproduct]
+  · simp [coproductIsCoproduct]
 
 end OppositeProducts
 
@@ -323,12 +321,10 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
       apply Quiver.Hom.unop_inj
       simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fst_opProdIsoCoprod_hom : prod.fst.op ≫ (opProdIsoCoprod A B).hom = coprod.inl := by
   rw [opProdIsoCoprod, ← op_comp, prod.lift_fst, Quiver.Hom.op_unop]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma snd_opProdIsoCoprod_hom : prod.snd.op ≫ (opProdIsoCoprod A B).hom = coprod.inr := by
   rw [opProdIsoCoprod, ← op_comp, prod.lift_snd, Quiver.Hom.op_unop]
@@ -341,12 +337,10 @@ lemma inl_opProdIsoCoprod_inv : coprod.inl ≫ (opProdIsoCoprod A B).inv = prod.
 lemma inr_opProdIsoCoprod_inv : coprod.inr ≫ (opProdIsoCoprod A B).inv = prod.snd.op := by
   rw [Iso.comp_inv_eq, snd_opProdIsoCoprod_hom]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opProdIsoCoprod_hom_fst : (opProdIsoCoprod A B).hom.unop ≫ prod.fst = coprod.inl.unop := by
   simp [opProdIsoCoprod]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opProdIsoCoprod_hom_snd : (opProdIsoCoprod A B).hom.unop ≫ prod.snd = coprod.inr.unop := by
   simp [opProdIsoCoprod]

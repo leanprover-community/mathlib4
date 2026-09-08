@@ -20,8 +20,6 @@ In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.I
 
 variable {α : Type*}
 
-open OrderDual
-
 namespace UpperSet
 
 section SemilatticeSup

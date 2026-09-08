@@ -52,11 +52,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
 
 namespace ContinuousLinearMap
 
@@ -158,7 +153,6 @@ theorem mfderivWithin_id (hxs : UniqueMDiffAt[s] x) :
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_id hxs]
   exact mfderiv_id
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem tangentMap_id : tangentMap% (@id M) = id := by ext1 ⟨x, v⟩; simp [tangentMap]
 
@@ -178,7 +172,6 @@ section Const
 
 variable {c : M'}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_const (c : M') (x : M) :
     HasMFDerivAt% (fun _ : M ↦ c) x (0 : TangentSpace% x →L[𝕜] TangentSpace% c) :=
   ⟨by fun_prop, by simp [Function.comp_def, hasFDerivWithinAt_const]⟩
@@ -406,6 +399,13 @@ theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
     MDiffAt[s] f x ↔ MDiffAt[s] (Prod.fst ∘ f) x ∧ MDiffAt[s] (Prod.snd ∘ f) x :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
 
+section prod_module
+
+-- `F₁` and `F₂` are normed spaces.
+variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  {s : Set M} {x : M}
+
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
       MDiffAt[s] (Prod.fst ∘ f) x ∧ MDiffAt[s] (Prod.snd ∘ f) x := by
@@ -441,6 +441,8 @@ theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔ MDiff (Prod.fst ∘ f) ∧ MDiff (Prod.snd ∘ f) := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact mdifferentiable_prod_iff f
+
+end prod_module
 
 
 section prodMap
@@ -479,7 +481,6 @@ theorem MDifferentiableOn.prodMap (hf : MDiff[s] f) (hg : MDiff[r] g) :
 theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace% p.1 →L[𝕜] TangentSpace% (f p.1)}
     (hf : HasMFDerivAt[Prod.fst '' s] f p.1 df)
@@ -548,7 +549,6 @@ theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod 
 -- Kept as an alias for discoverability.
 alias MDifferentiableAt.mfderiv_prod := mfderiv_prodMk
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv% (fun (x : M) ↦ (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace% x₀) (TangentSpace% y₀) := by
@@ -558,10 +558,9 @@ theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
 -- TODO: better error when the type of x is left open
 theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
     tangentMap% (fun (x : M) ↦ (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
-  simp only [tangentMap, mfderiv_prod_left, TotalSpace.mk_inj]
+  simp only [tangentMap, mfderiv_prod_left]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv% (fun (y : M') ↦ (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace% x₀) (TangentSpace% y₀) := by
@@ -570,7 +569,7 @@ theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
 
 theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
     tangentMap% (fun (y : M') ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
-  simp only [tangentMap, mfderiv_prod_right, TotalSpace.mk_inj]
+  simp only [tangentMap, mfderiv_prod_right]
   rfl
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
@@ -604,13 +603,13 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'} (hf : MDiff
   congr
   · have : (fun z : M × M' ↦ f (z.1, p.2)) = (fun z : M ↦ f (z, p.2)) ∘ Prod.fst := rfl
     rw [this, mfderiv_comp (I' := I)]
-    · simp only [mfderiv_fst, id_eq]
+    · simp only [mfderiv_fst]
       rfl
     · exact hf.comp _ (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
     · exact mdifferentiableAt_fst
   · have : (fun z : M × M' ↦ f (p.1, z.2)) = (fun z : M' ↦ f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
-    · simp only [mfderiv_snd, id_eq]
+    · simp only [mfderiv_snd]
       rfl
     · exact hf.comp _ (mdifferentiableAt_const.prodMk mdifferentiableAt_id)
     · exact mdifferentiableAt_snd
@@ -680,7 +679,7 @@ theorem mfderiv_sumSwap :
     mfderiv% (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace% p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
 
-variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
+variable {f : M → N} {q : M} {q' : M'}
 
 lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
     (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q q)] id := by
@@ -715,6 +714,7 @@ theorem hasMFDerivWithinAt_inl :
   exact (hasFDerivWithinAt_id (extChartAt I q q) _).congr_of_eventuallyEq this
     (by simp [writtenInExtChartAt, extChartAt])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_inl :
     HasMFDerivAt% (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
   simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inl (s := Set.univ)
@@ -728,6 +728,7 @@ theorem hasMFDerivWithinAt_inr {t : Set M'} :
   exact (hasFDerivWithinAt_id (extChartAt I q' q') _).congr_of_eventuallyEq this
     (by simp [writtenInExtChartAt, extChartAt])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_inr :
     HasMFDerivAt% (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
   simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inr (t := Set.univ)
@@ -809,6 +810,7 @@ lemma HasMFDerivWithinAt.sum (hf : ∀ i ∈ t, HasMFDerivAt[s] (f i) z (f' i)) 
   | empty => simpa using! hasMFDerivWithinAt_const ..
   | insert i s hi IH => grind [HasMFDerivWithinAt.add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivAt.sum (hf : ∀ i ∈ t, HasMFDerivAt% (f i) z (f' i)) :
     HasMFDerivAt% (∑ i ∈ t, f i) z (∑ i ∈ t, f' i) := by
   simp_all only [← hasMFDerivWithinAt_univ]
@@ -860,6 +862,7 @@ theorem HasMFDerivWithinAt.neg {s : Set M} (hf : HasMFDerivAt[s] f z f') :
 theorem HasMFDerivAt.neg (hf : HasMFDerivAt% f z f') : HasMFDerivAt% (-f) z (-f') :=
   ⟨hf.1.neg, hf.2.neg⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_neg : HasMFDerivAt% (-f) z (-f') ↔ HasMFDerivAt% f z f' :=
   ⟨fun hf ↦ by convert! hf.neg <;> rw [neg_neg], fun hf ↦ hf.neg⟩
 
@@ -886,7 +889,7 @@ theorem mfderivWithin_neg (hs : UniqueMDiffAt[s] x) :
   simp_rw [mfderivWithin]
   by_cases hf : MDiffAt[s] f x
   · exact hf.hasMFDerivWithinAt.neg.mfderivWithin hs
-  · rw [if_neg hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [if_neg hf, neg_zero]
+  · rw [ite_eq_right hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [ite_eq_right hf, neg_zero]
 
 theorem mfderiv_neg : mfderiv% (-f) x = -mfderiv% f x := by
   rw [← mfderivWithin_univ, mfderivWithin_neg (uniqueMDiffWithinAt_univ I), mfderivWithin_univ]
@@ -1001,7 +1004,6 @@ lemma HasMFDerivWithinAt.prod [DecidableEq ι]
     (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, F') (f i) s z (f' i)) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) s z
       (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
-  classical
   induction t using Finset.induction_on with
   | empty => simpa using! hasMFDerivWithinAt_const ..
   | insert i t hi IH =>
@@ -1013,6 +1015,7 @@ lemma HasMFDerivWithinAt.prod [DecidableEq ι]
       rw [t.erase_insert_of_ne (by grind), Finset.prod_insert (by grind)]
     · simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivAt.prod [DecidableEq ι]
     (hf : ∀ i ∈ t, HasMFDerivAt I 𝓘(𝕜, F') (f i) z (f' i)) :
     HasMFDerivAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) z (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
@@ -1047,7 +1050,7 @@ section DivisionRing
 open scoped RightActions
 
 variable {z : M} {F' : Type*} [NormedDivisionRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
-  {p' q' : TangentSpace% z →L[𝕜] F'}
+  {p' : TangentSpace% z →L[𝕜] F'}
 
 lemma HasMFDerivWithinAt.inv' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-((p z)⁻¹ •> p' <• (p z)⁻¹) : E →L[𝕜] F') :=
@@ -1100,6 +1103,7 @@ section Field
 variable {z : M} {F' : Type*} [NormedField F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace% z →L[𝕜] F'}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma HasMFDerivWithinAt.inv (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-(p z ^ 2)⁻¹ • p' : E →L[𝕜] F') := by
   convert! hp.inv' hp_ne
@@ -1111,6 +1115,7 @@ lemma HasMFDerivAt.inv (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p') (hp_ne : p z 
     HasMFDerivAt I 𝓘(𝕜, F') (p⁻¹) z (-(p z ^ 2)⁻¹ • p' : E →L[𝕜] F') :=
   hasMFDerivWithinAt_univ.mp <| hp.hasMFDerivWithinAt.inv hp_ne
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma HasMFDerivWithinAt.div (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
     (hq : HasMFDerivWithinAt I 𝓘(𝕜, F') q s z q') (hq_ne : q z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p / q) s z

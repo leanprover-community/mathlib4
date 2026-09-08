@@ -91,7 +91,7 @@ namespace Finset
 
 section Sized
 
-variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
+variable [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 
 theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
   forall_congr' fun A => by rw [mem_powersetCard_univ, mem_coe]
@@ -148,7 +148,7 @@ theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.s
 
 @[simp]
 theorem sum_card_slice : ∑ r ∈ Iic (Fintype.card α), #(𝒜 # r) = #𝒜 := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)
 

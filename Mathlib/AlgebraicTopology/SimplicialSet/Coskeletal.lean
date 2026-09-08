@@ -29,8 +29,10 @@ As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of 
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory Truncated
+open CategoryTheory SimplexCategory Truncated
 open Opposite Category Functor Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -84,6 +86,7 @@ noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact ConcreteCategory.congr_hom (s.w φ) x }
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma fac_aux₁ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i : ℕ) (hi : i < n) :
@@ -178,6 +181,7 @@ end isPointwiseRightKanExtensionAt
 
 open Truncated
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/

@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Tactic.Induction
 public meta import Batteries.Data.List.Basic
 public meta import Batteries.Lean.Expr
-import all Lean.Elab.Tactic.Induction
+import all Lean.Elab.Tactic.Induction -- for `getElimNameInfo`
 public import Mathlib.Init
 
 /-!

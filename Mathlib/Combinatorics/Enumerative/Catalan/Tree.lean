@@ -10,9 +10,7 @@ public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Choose.Central
 
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Tactic.Field
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 
 /-!
@@ -45,7 +43,6 @@ def treesOfNumNodesEq : ℕ → Finset (BinaryTree Unit)
     · simp_wf; have := fst_le ijh.2; lia
     · simp_wf; have := snd_le ijh.2; lia
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.treesOfNumNodesEq`. -/
 @[deprecated BinaryTree.treesOfNumNodesEq (since := "2026-06-07")]
 abbrev _root_.Tree.treesOfNumNodesEq : ℕ → Finset (Tree Unit) :=
@@ -62,6 +59,7 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem mem_treesOfNumNodesEq {x : BinaryTree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by

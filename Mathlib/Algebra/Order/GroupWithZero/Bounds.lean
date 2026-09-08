@@ -17,8 +17,8 @@ public section
 
 open Set
 
-/-- A variant of `BddAbove.range_comp` that assumes that `f` is nonnegative and `g` is monotone on
-  nonnegative values. -/
+/-- A variant of `BddAbove.range_comp_left` that assumes that `f` is nonnegative and `g` is monotone
+on nonnegative values. -/
 lemma BddAbove.range_comp_of_nonneg {α β γ : Type*} [Nonempty α] [Preorder β] [Zero β] [Preorder γ]
     {f : α → β} {g : β → γ} (hf : BddAbove (range f)) (hf0 : 0 ≤ f)
     (hg : MonotoneOn g {x : β | 0 ≤ x}) : BddAbove (range (fun x => g (f x))) := by

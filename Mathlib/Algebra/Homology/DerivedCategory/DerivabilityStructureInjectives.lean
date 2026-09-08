@@ -49,7 +49,6 @@ instance (X : HomotopyCategory.Plus (InjectiveObject C)) (n : ℤ) :
     Injective (((InjectiveObject.ι C).mapHomotopyCategoryPlus.obj X).obj.as.X n) :=
   inferInstanceAs (Injective ((InjectiveObject.ι C).obj (X.obj.as.X n)))
 
-set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex.Plus (InjectiveObject C)) :
     CochainComplex.IsKInjective
       (((InjectiveObject.ι C).mapHomologicalComplex (.up ℤ)).obj K.obj) := by
@@ -126,6 +125,7 @@ instance (K : FibrantObject (Plus C)) (n : ℤ) :
   rw [fibrantObjects, modelCategoryQuillen.isFibrant_iff] at hK
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `CochainComplex.Plus (InjectiveObject C)`
@@ -228,7 +228,6 @@ instance :
   rw [inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 instance (L : Plus C ⥤ H) [L.IsLocalization (quasiIso C)] :
     (quotient C ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso C) := by
@@ -284,7 +283,6 @@ private instance : (L C).IsInduced where
   inverseImage_eq := by ext; apply isIso_quotient_map_iff
 
 variable (C) in
-set_option backward.isDefEq.respectTransparency false in
 /-- The right localizer morphism in the Guitart exact square `iso`. -/
 private abbrev R : LocalizerMorphism (CochainComplex.Plus.quasiIso C) (quasiIso C) where
   functor := HomotopyCategory.Plus.quotient C
@@ -313,6 +311,7 @@ private def iso :
     (CochainComplex.Plus.localizerMorphism C).functor ⋙ (R C).functor ≅
     (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex CochainComplex in
 private instance : TwoSquare.GuitartExact (iso C).hom :=
