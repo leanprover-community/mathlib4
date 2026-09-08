@@ -140,7 +140,7 @@ protected theorem coe_ofClass {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass
     ⇑(ofClass f) = f :=
   rfl
 
-@[deprecated (since := "2026-09-08")] alias coe_coe := AlgEquiv.coe_ofClass
+@[deprecated (since := "2026-09-08")] protected alias coe_coe := AlgEquiv.coe_ofClass
 
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
