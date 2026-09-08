@@ -38,7 +38,7 @@ polynomials are orthogonal with respect to `√(1 - x ^ 2)`.
 ## Implementation notes
 
 The second-kind results are reduced to the first-kind ones rather than reproved: the two weights
-differ by the polynomial factor `1 - x ^ 2` (`sqrt_eq_mul_sqrt_inv`), so absorbing that
+differ by the polynomial factor `1 - x ^ 2` (`Real.div_sqrt`), so absorbing that
 factor into the integrand lets `integral_measureT_eq_integral_cos` supply the substitution
 `x = cos θ` for free. The identity `U_n (cos θ) * sin θ = sin ((n + 1) * θ)` then pairs each `U`
 with one of the two factors of `sin θ` produced by `1 - cos θ ^ 2`.
@@ -173,24 +173,11 @@ theorem integral_measureU (f : ℝ → ℝ) :
   congr! 2 with x hx
   simp [NNReal.smul_def, mul_comm]
 
-/-- `√x = x * √x⁻¹`, with no side condition: for `x < 0` both sides vanish because `Real.sqrt` is
-zero on nonpositive arguments, and for `x = 0` because `0⁻¹ = 0`.
-
-This is what relates the two Chebyshev weights: the second-kind weight `√(1 - x ^ 2)` is the
-first-kind weight `√(1 - x ^ 2)⁻¹` scaled by the polynomial `1 - x ^ 2`. -/
-private theorem sqrt_eq_mul_sqrt_inv (x : ℝ) : √x = x * √x⁻¹ := by
-  rw [sqrt_inv]
-  rcases eq_or_ne (√x) 0 with h | h
-  · rw [h, inv_zero, mul_zero]
-  · have hx : 0 ≤ x := not_lt.mp fun hlt ↦ h (sqrt_eq_zero'.mpr hlt.le)
-    rw [← div_eq_mul_inv, eq_div_iff h, mul_self_sqrt hx]
-
 theorem integral_measureU_eq_integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureU = ∫ x, (1 - x ^ 2) * f x ∂measureT := by
   rw [integral_measureU, integral_measureT]
   refine integral_congr fun x _ ↦ ?_
-  conv_lhs => rw [sqrt_eq_mul_sqrt_inv (1 - x ^ 2)]
-  ring
+  rw [sqrt_inv, mul_comm (1 - x ^ 2) (f x), mul_assoc, ← div_eq_mul_inv, div_sqrt]
 
 /-- Integration against the second-kind weight becomes `∫ θ in 0..π, f (cos θ) * sin θ ^ 2`.
 
