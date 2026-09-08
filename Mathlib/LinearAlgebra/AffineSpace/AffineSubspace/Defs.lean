@@ -1168,7 +1168,7 @@ lemma affineSpan_insert_zero (s : Set V) :
   exact subset_sub_left <| mem_insert ..
 
 theorem affineSpan_eq_span_iff_zero_mem {s : Set V} :
-    affineSpan k s = (Submodule.span k s).toAffineSubspace ↔ 0 ∈ affineSpan k s := by
+    affineSpan k s = Submodule.span k s ↔ 0 ∈ affineSpan k s := by
   refine ⟨by simp +contextual, fun h ↦ ?_⟩
   rw [← affineSpan_insert_eq_affineSpan _ h, affineSpan_insert_zero]
 
