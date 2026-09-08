@@ -107,4 +107,11 @@ instance : IsStrictOrderedRing Dyadic where
 
 end Instances
 
+/-- One unit on the dyadic grid with precision `prec`. -/
+@[expose]
+def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)
+
+theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
+  simp [step, ofIntWithPrec, Int.trailingZeros_eq_zero_of_mod_eq (show 1 % 2 = 1 by decide)]
+
 end Dyadic

@@ -419,7 +419,7 @@ noncomputable
 def tildeFinsupp (ι : Type u) : tilde (ModuleCat.of R (ι →₀ R)) ≅ SheafOfModules.free.{u} ι :=
   letI H : IsColimit <| (tilde.functor R).mapCocone (ModuleCat.finsuppCocone R R ι) :=
     isColimitOfPreserves (tilde.functor R) (ModuleCat.finsuppCoconeIsColimit R R ι)
-  letI iso : (Discrete.functor fun (_ : ι) ↦ ModuleCat.of R R) ⋙ tilde.functor R ≅
+  letI iso : (Discrete.functor fun (_ : ι) ↦ ↧R) ⋙ tilde.functor R ≅
          Discrete.functor fun _ ↦ SheafOfModules.unit.{u} _ :=
       Discrete.natIso (fun _ ↦ tildeSelf)
   IsColimit.coconePointUniqueUpToIso
@@ -798,10 +798,10 @@ private lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
     (h : Aux (M.restrict <|
         Spec.map <| CommRingCat.ofHom <| algebraMap R <| Localization.Away g) ⊤) :
       Aux M (basicOpen g) := by
-  let a : R ⟶ CommRingCat.of (Localization.Away g) :=
+  let a : R ⟶ ↧(Localization.Away g) :=
     CommRingCat.ofHom <| algebraMap R _
-  set ψ : Spec (.of <| Localization.Away g) ⟶ Spec (.of R) := Spec.map a
-  set M' : (Spec (.of <| Localization.Away g)).Modules := M.restrict ψ
+  set ψ : Spec ↧(Localization.Away g) ⟶ Spec ↧R := Spec.map a
+  set M' : (Spec ↧(Localization.Away g)).Modules := M.restrict ψ
   have heq (f : R) (hf : basicOpen f ≤ basicOpen g) :
       basicOpen f = ψ ''ᵁ basicOpen (a f) := by
     rw [← SpecMap_preimage_basicOpen, Scheme.Hom.image_preimage_eq_opensRange_inf]
@@ -905,12 +905,3 @@ def tildeEquiv :
 end IsQuasicoherent
 
 end AlgebraicGeometry
-
-namespace ModuleCat
-
-@[deprecated (since := "2026-02-11")] noncomputable alias tilde := AlgebraicGeometry.tilde
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toOpen := tilde.toOpen
-@[deprecated (since := "2026-02-11")] alias Tilde.toOpen_res := tilde.toOpen_res
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toStalk := tilde.toStalk
-
-end ModuleCat

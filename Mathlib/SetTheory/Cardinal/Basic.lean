@@ -1005,8 +1005,6 @@ theorem exists_ne_ne_of_three_le {α : Type*} (h : 3 ≤ #α) (x y : α) : ∃ z
   have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
 
-@[deprecated (since := "2026-02-17")] alias three_le := exists_ne_ne_of_three_le
-
 /-! ### `powerlt` operation -/
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/

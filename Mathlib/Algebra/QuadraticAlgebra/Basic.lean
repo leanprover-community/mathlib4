@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
@@ -531,6 +532,12 @@ instance {a : K} [Fact (¬ IsSquare a)] : Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) 
 
 -- The `b = 0` bridge makes the `Field` instance inferable from `¬ IsSquare a` alone.
 example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := inferInstance
+
+-- Over `ℚ`, the algebra structure of `QuadraticAlgebra.instAlgebra` and the one coming from the
+-- `Field` structure through `DivisionRing.toRatAlgebra` are the same instance.
+example {a b : ℚ} [Fact (∀ r : ℚ, r ^ 2 ≠ a + b * r)] :
+    (DivisionRing.toRatAlgebra : Algebra ℚ (QuadraticAlgebra ℚ a b)) = instAlgebra := by
+  with_implicit rfl
 
 end field
 
