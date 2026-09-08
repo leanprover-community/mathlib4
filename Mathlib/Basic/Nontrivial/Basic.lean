@@ -61,6 +61,29 @@ instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α ×
 instance nontrivial_prod_left [Nontrivial α] [Nonempty β] : Nontrivial (α × β) :=
   Prod.fst_surjective.nontrivial
 
+instance [Nontrivial α] : Nontrivial (α ⊕ β) :=
+  have ⟨a, b, h⟩ := ‹Nontrivial α›.exists_pair_ne
+  ⟨.inl a, .inl b, by simpa⟩
+
+instance [Nontrivial β] : Nontrivial (α ⊕ β) :=
+  have ⟨a, b, h⟩ := ‹Nontrivial β›.exists_pair_ne
+  ⟨.inr a, .inr b, by simpa⟩
+
+instance [Nonempty α] [Nonempty β] : Nontrivial (α ⊕ β) :=
+  ⟨.inl <| Classical.arbitrary α, .inr <| Classical.arbitrary β, by simp⟩
+
+instance [Subsingleton α] [IsEmpty β] : Subsingleton (α ⊕ β) where
+  allEq
+  | .inr a, _ => ‹IsEmpty β›.elim a
+  | _, .inr b => ‹IsEmpty β›.elim b
+  | .inl a, .inl b => congrArg _ <| Subsingleton.elim a b
+
+instance [IsEmpty α] [Subsingleton β] : Subsingleton (α ⊕ β) where
+  allEq
+  | .inl a, _ => ‹IsEmpty α›.elim a
+  | _, .inl b => ‹IsEmpty α›.elim b
+  | .inr a, .inr b => congrArg _ <| Subsingleton.elim a b
+
 namespace Pi
 
 variable {I : Type*} {f : I → Type*}
