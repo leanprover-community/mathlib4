@@ -31,12 +31,10 @@ establish that the compactly supported Schwartz functions are dense in `𝓢(E, 
 
 -/
 
-@[expose] public section
+public noncomputable section
 
 open scoped Topology ContDiff
 open Filter Metric ContinuousLinearMap Real Finset Function
-
-noncomputable section
 
 namespace SchwartzMap
 
