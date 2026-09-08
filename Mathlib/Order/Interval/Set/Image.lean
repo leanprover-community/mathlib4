@@ -219,8 +219,6 @@ lemma preimage_subtype_val_Ico (a b : {x // p x}) : (↑) ⁻¹' (Ico a.1 b) = I
 @[simp]
 lemma preimage_subtype_val_Ioo (a b : {x // p x}) : (↑) ⁻¹' (Ioo a.1 b) = Ioo a b := rfl
 
-example (a : {x // p x}) : (↑) ⁻¹' (Iic a.1) = Iic a := by dsimp
-
 theorem image_subtype_val_Icc_subset (a b : {x // p x}) :
     Subtype.val '' Icc a b ⊆ Icc a.val b.val :=
   image_subset_iff.mpr fun _ m => m
