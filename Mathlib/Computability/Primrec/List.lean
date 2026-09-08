@@ -105,7 +105,6 @@ open Primrec
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 instance list : Primcodable (List α) :=
   ⟨letI H := Primcodable.prim (List ℕ)
     have : Primrec₂ fun (a : α) (o : Option (List ℕ)) => o.map (List.cons (encode a)) :=
@@ -120,7 +119,8 @@ instance list : Primcodable (List α) :=
       (encode_iff.2 this).of_eq fun n => by
         rw [List.foldl_reverse]
         apply Nat.case_strong_induction_on n; · simp
-        intro n IH; simp
+        intro n IH
+        simp only [list_ofNat_succ, ofNat_nat, List.foldr_cons, decode_list_succ, Option.map_eq_map]
         rcases @decode α _ n.unpair.1 with - | a; · rfl
         simp only [Option.bind_some, Option.map_some]
         suffices ∀ (o : Option (List ℕ)) (p), encode o = encode p →
@@ -290,7 +290,6 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
       | zero => rfl
       | succ n IH => simp [IH, H, List.range_succ]
 
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α × β) → Option β) :=
   (to₂ <| list_rec snd (const none) <|
     to₂ <|
@@ -298,10 +297,12 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
         (option_some.comp <| snd.comp <| fst.comp snd)
         (snd.comp <| snd.comp snd)).of_eq
   fun a ps => by
-  induction ps with simp [List.lookup, *]
-  | cons p ps ih => cases ha : a == p.1 <;> simp_all [Bool.cond_eq_ite, beq_iff_eq]
+  induction ps with
+  | nil => simp
+  | cons p ps ih =>
+    unfold List.lookup
+    cases ha : a == p.1 <;> simp_all [Bool.cond_eq_ite, beq_iff_eq]
 
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
     (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b)
@@ -334,18 +335,19 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
         graph b i = (bindList b (m b + 1 - i)).map fun x ↦ (x, f x) := by
       have bindList_eq_nil : bindList b (m b + 1) = [] :=
         have bindList_m_lt (k : ℕ) : ∀ b' ∈ bindList b k, m b' < m b + 1 - k := by
-          induction k with simp [bindList]
-          | succ k ih =>
-            grind
+          induction k with
+          | zero => simp [bindList]
+          | succ k ih => grind
         List.eq_nil_iff_forall_not_mem.mpr
           (by intro b' ha'; by_contra; simpa using bindList_m_lt (m b + 1) b' ha')
       have mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
           mapGraph (bs.map <| fun x => (x, f x)) bs' = bs'.map f := by
-        induction bs' with simp [mapGraph]
+        induction bs' with
+        | nil => simp [mapGraph]
         | cons b bs' ih =>
           have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
           rcases this with ⟨ha, has'⟩
-          simpa [List.lookup_graph f ha] using ih has'
+          simpa [mapGraph, List.lookup_graph f ha] using ih has'
       have graph_succ : ∀ i, graph b (i + 1) =
         (bindList b (m b - i)).filterMap fun b' =>
           (g b' <| mapGraph (graph b i) (l b')).map (b', ·) := fun _ => rfl
@@ -356,7 +358,8 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
         simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.le_of_lt_succ hi),
           Nat.succ_eq_add_one, bindList_succ, Nat.reduceSubDiff]
         apply List.filterMap_eq_map_iff_forall_eq_some.mpr
-        intro b' ha'; simp; rw [mapGraph_graph]
+        intro b' ha'; simp only [Option.map_eq_some_iff, Prod.mk.injEq, true_and, exists_eq_right]
+        rw [mapGraph_graph]
         · exact H b'
         · exact (List.infix_flatMap_of_mem ha' l).subset
     simp [graph_eq_map_bindList (m b + 1) (Nat.le_refl _), bindList]
@@ -679,10 +682,12 @@ theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
     simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
   (prec (const 0) (tail (add.comp₂ _ (tail head) head))).of_eq fun v => by
-    simp; induction v.head <;> simp [*, Nat.succ_mul]; rw [add_comm]
+    simp only [succ_eq_add_one, reduceAdd, tail_cons, head_cons]
+    induction v.head with
+    | zero => simp
+    | succ => simp only [succ_mul, *]; rw [add_comm]
 
 theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primrec' n f)
     (hg : @Primrec' n g) : @Primrec' n fun v => if a v < b v then f v else g v :=

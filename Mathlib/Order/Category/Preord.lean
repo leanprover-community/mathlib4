@@ -38,6 +38,11 @@ initialize_simps_projections Preord (carrier → coe, -str)
 
 namespace Preord
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Preord.of X` as `↧X`. -/
+@[app_delab Preord.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Preord (Type u) :=
   ⟨Preord.carrier⟩
 
@@ -46,22 +51,18 @@ attribute [coe] Preord.carrier
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category Preord.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Preord (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Preord` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : Preord.{u}} (f : Hom X Y) :=
@@ -85,8 +86,6 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 lemma coe_id {X : Preord} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -167,7 +166,7 @@ end Preord
 -/
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
-  obj X := .of X.1
+  obj X := ↧X.1
   map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where
