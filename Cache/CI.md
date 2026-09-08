@@ -20,7 +20,7 @@ The trust model behind the containers and the write credentials is in [`SECURITY
 
 | Option              | Description                                          |
 |---------------------|------------------------------------------------------|
-| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`. An upload targets exactly one container. Without it (and without `MATHLIB_CACHE_PUT_URL`), the azure backend falls back to `legacy` and warns. |
+| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`. An upload targets exactly one container; required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `--backend=NAME`    | The storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
 | `--staging-dir=DIR` | For `put-staged`: the staging directory to upload.   |
 | `--scope=REF`       | The per-commit namespace to upload under, followed by its completeness marker. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. The read-side use of `--scope` is documented in the README. |

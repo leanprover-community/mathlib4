@@ -1386,18 +1386,21 @@ def test_stagedUploadDestFrom : IO Unit := do
   assertTrue "azure: the Azure account for the container"
     ((stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
         (some "sha1")).toOption == some expectAzureForks)
-  -- The label says where the bytes go: the fallback lands in `legacy`, so its
-  -- progress message must name that container, not an override.
-  let expectLegacyFallback : StagedUploadDest :=
+  -- The label says where the bytes go: a `legacy` write must name that
+  -- container in the progress message, not an override.
+  let expectLegacy : StagedUploadDest :=
     { base := azureAccountURL
       label := "legacy"
       filesPrefix := "mathlib4/f/alice/mathlib4"
       markerPrefix := "mathlib4/m/alice/mathlib4" }
-  assertTrue "azure: no container -> the legacy fallback"
-    ((stagedUploadDestFrom .azure none none none "alice/mathlib4" none).toOption ==
-      some expectLegacyFallback)
+  assertTrue "azure: an explicit legacy container"
+    ((stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none).toOption ==
+      some expectLegacy)
   -- Each backend rejects a destination that contradicts it, instead of
   -- resolving one the operator did not select.
+  assertTrue "azure: no container errors"
+    (stagedUploadDestFrom .azure none none none "alice/mathlib4" none
+      matches .error _)
   assertTrue "s3: a put base without a container errors"
     (stagedUploadDestFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
       matches .error _)
@@ -1443,7 +1446,7 @@ def test_stagedUploadDestFrom : IO Unit := do
       (d.fileURL "x.ltar")
   else
     assertTrue "flat-URL destination resolves" false
-  -- And for the Azure account and the legacy fallback rows, so all four
+  -- And for the Azure account and the legacy container rows, so all four
   -- resolution rows are pinned against `mkFileURL`'s shape.
   if let .ok d := stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
       (some "abc1") then
@@ -1452,12 +1455,12 @@ def test_stagedUploadDestFrom : IO Unit := do
       (d.fileURL "x.ltar")
   else
     assertTrue "Azure-account destination resolves" false
-  if let .ok d := stagedUploadDestFrom .azure none none none "alice/mathlib4" none then
-    assertEq "legacy-fallback prefix matches the curl URL shape"
+  if let .ok d := stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none then
+    assertEq "legacy-container prefix matches the curl URL shape"
       (mkFileURL (some .legacy) "alice/mathlib4" Container.legacy.azureURL "x.ltar" none)
       (d.fileURL "x.ltar")
   else
-    assertTrue "legacy-fallback destination resolves" false
+    assertTrue "legacy-container destination resolves" false
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on

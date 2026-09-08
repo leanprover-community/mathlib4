@@ -25,9 +25,9 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-The upload destination for the azure backend: the chosen container on the
-`lakecache` Azure storage account, or the `legacy` container when no
-container is chosen (the IO wrapper warns). The account is fixed:
+The upload destination for the azure backend: the chosen `--container` on the
+`lakecache` Azure storage account. A missing container errors: an upload
+targets exactly one container. The account is fixed:
 `MATHLIB_CACHE_PUT_BASE_URL` (`putBase?`) configures the s3 backend's
 endpoint, so a set value here is a misconfiguration and errors.
 -/
@@ -37,8 +37,12 @@ def azureUploadDestFrom (putBase? : Option String) (container? : Option Containe
     .error "MATHLIB_CACHE_PUT_BASE_URL is set, which names the s3 backend's bucket \
       endpoint; the azure backend writes to the Azure storage account. Pass \
       --backend=s3, or unset the variable."
-  else
-    .ok (containerUploadDest azureAccountURL (container?.getD .legacy) repo scope?)
+  else match container? with
+    | some c => .ok (containerUploadDest azureAccountURL c repo scope?)
+    | none => .error
+        s!"an upload targets one container: pass --container=NAME (known: \
+        {", ".intercalate (Container.all.map Container.name)}), or set \
+        MATHLIB_CACHE_PUT_URL for a flat upload"
 
 /-- The api-version header that every bearer-authenticated Azure request
 sends. Bearer authentication requires an api-version that supports OAuth. -/

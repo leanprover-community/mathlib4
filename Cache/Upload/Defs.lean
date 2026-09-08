@@ -95,20 +95,12 @@ def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option St
 /--
 `stagedUploadDestFrom`, resolved from the environment. The one destination
 resolution every upload consumes: the artifact puts and the marker put, on
-every tool, address `{base}/{prefix}/{name}`. The warning covers the azure
-backend's `legacy` fallback; the s3 backend has no fallback and errors
-without a destination.
+every tool, address `{base}/{prefix}/{name}`.
 -/
 def stagedUploadDest (backend : UploadBackend) (container? : Option Container)
     (repo : String) : IO StagedUploadDest := do
   let putUrl? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
   let putBase? ← IO.getEnv "MATHLIB_CACHE_PUT_BASE_URL"
-  if backend == .azure && putUrl?.isNone && (normalizeBaseURL putBase?).isNone
-      && container?.isNone then
-    IO.eprintln <|
-      "Warning: cache upload without --container=NAME; defaulting to the\n" ++
-      "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
-      "         explicitly to choose a trust-level container."
   IO.ofExcept <| stagedUploadDestFrom backend putUrl? putBase? container? repo (← getRepoScope)
 
 end Cache.Requests
