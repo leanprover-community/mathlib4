@@ -191,7 +191,20 @@ theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
 
+@[to_additive (attr := simp)]
+theorem smul_mem_smul_finset_iff (a : α) {b : β} : a • b ∈ a • s ↔ b ∈ s :=
+  Function.Injective.mem_finset_image fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+
 end IsLeftCancelSMul
+
+section Mul
+variable [Mul α] [IsLeftCancelMul α] [DecidableEq α]
+
+@[to_additive (attr := simp)]
+lemma mul_mem_smul_finset_iff (a : α) {b : α} {s : Finset α} :
+    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
+
+end Mul
 
 @[to_additive]
 theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]
@@ -201,14 +214,6 @@ theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [
 section Group
 
 variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α} {b : β}
-
-@[to_additive (attr := simp)]
-theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
-  (MulAction.injective _).mem_finset_image
-
-@[to_additive (attr := simp)]
-lemma mul_mem_smul_finset_iff [DecidableEq α] (a : α) {b : α} {s : Finset α} :
-    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
 
 @[to_additive]
 theorem inv_smul_mem_iff : a⁻¹ • b ∈ s ↔ b ∈ a • s := by
