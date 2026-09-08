@@ -75,6 +75,9 @@ jobs:
       id: build
       continue-on-error: true
       run: |
+        # The default step shell is `bash -e` without `pipefail`, so the status of
+        # `lake build | tee` would be tee's. Make the pipeline report lake's instead.
+        set -o pipefail
         # Use a temporary file to ensure we don't overflow max variable size.
         lean_outfile=$(mktemp)
         # Show the stdout in the GitHub build logs, while we process it from the file.
