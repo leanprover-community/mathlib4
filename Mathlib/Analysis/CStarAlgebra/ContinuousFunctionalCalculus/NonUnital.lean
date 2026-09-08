@@ -810,7 +810,7 @@ noncomputable def cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : 
   let f : C(spectrum R a, quasispectrum R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
   let ψ := ContinuousMap.compStarAlgHom' R R f
-  ((cfcHom ha (R := R)).toNonUnitalStarAlgHom).comp <| (ψ.toNonUnitalStarAlgHom).comp e
+  (cfcHom ha (R := R)).toNonUnitalStarAlgHom.comp <| ψ.toNonUnitalStarAlgHom.comp e
 
 lemma continuous_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : A} (ha : p a) :
     Continuous (cfcₙHom_of_cfcHom R ha) :=

@@ -73,7 +73,7 @@ and so we may restrict it to `A` to get the necessary homomorphism for the non-u
 functional calculus.
 -/
 noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
-  ((cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom) |>.comp
+  (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
     |>.comp ContinuousMapZero.toContinuousMapHom
