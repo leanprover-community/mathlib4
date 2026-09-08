@@ -26,8 +26,7 @@ namespace IsReduced
 /-- In a reduced semiring, annihilation is symmetric. -/
 theorem mul_eq_zero_comm {a b : R} (h : a * b = 0) : b * a = 0 := by
   refine IsReduced.eq_zero _ ⟨2, ?_⟩
-  have h2 : (b * a) ^ 2 = b * (a * b) * a := by simp [pow_two, mul_assoc]
-  simp [h2, h]
+  grind => have : (b * a) ^ 2 = b * (a * b) * a
 
 /-- A reduced semiring is semicommutative: `a * b = 0` implies `a * r * b = 0` for all `r`. -/
 theorem mul_mid_eq_zero {a b : R} (h : a * b = 0) (r : R) : a * r * b = 0 := by
