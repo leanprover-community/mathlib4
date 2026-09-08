@@ -48,9 +48,10 @@ Commands:
                selected --container. CI uploads with this command;
                --backend selects the storage backend.
 
-Uploading needs a writer credential, which normally only CI holds. Anyone
-operating their own cache endpoint does not need 'put': 'stage' the
-artifacts, upload the staging directory under the endpoint's `f/` path with
+The upload commands are internal to mathlib CI: they need a writer
+credential, which normally only CI holds, and their backends and variables
+follow the CI storage layout. To operate an external cache, 'stage' the
+artifacts, upload the staging directory under your endpoint's `f/` path with
 any storage client, and serve it to readers via MATHLIB_CACHE_GET_URL (see
 Cache/README.md).
 
