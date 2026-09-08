@@ -49,7 +49,7 @@ operations on relations. For example:
 * composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
   `Relation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
-  `Relation.Map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
+  `Relation.Map R f g := fun c d ↦ ∃ a b, R a b ∧ f a = c ∧ g b = d`.
 
 The latter approach is embodied by `SetRel α β`, with the dedicated notation `○` for composition.
 (Note that `○` is _not_ the same as function composition `∘`.)
