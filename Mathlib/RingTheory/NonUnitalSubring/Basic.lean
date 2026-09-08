@@ -141,8 +141,8 @@ variable {F : Type w} {R : Type u} {S : Type v} {T : Type*}
 
 
 /-- The preimage of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
-def comap {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-    [FunLike F R S] [NonUnitalRingHomClass F R S] (f : F) (s : NonUnitalSubring S) :
+def comap {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    (f : R →ₙ+* S) (s : NonUnitalSubring S) :
     NonUnitalSubring R :=
   { s.toSubsemigroup.comap (f : R →ₙ* S), s.toAddSubgroup.comap (f : R →+ S) with
     carrier := f ⁻¹' s.carrier }
@@ -162,8 +162,8 @@ theorem comap_comap (s : NonUnitalSubring T) (g : S →ₙ+* T) (f : R →ₙ+* 
 /-! ## map -/
 
 /-- The image of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
-def map {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-    [FunLike F R S] [NonUnitalRingHomClass F R S] (f : F) (s : NonUnitalSubring R) :
+def map {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    (f : R →ₙ+* S) (s : NonUnitalSubring R) :
     NonUnitalSubring S :=
   { s.toSubsemigroup.map (f : R →ₙ* S), s.toAddSubgroup.map (f : R →+ S) with
     carrier := f '' s.carrier }

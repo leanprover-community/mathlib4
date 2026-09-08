@@ -56,8 +56,7 @@ end NonUnitalSubsemiring
 namespace NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
-variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-  [FunLike G S T] [NonUnitalRingHomClass G S T]
+variable {G : Type*} [FunLike G S T] [NonUnitalRingHomClass G S T]
   (s : NonUnitalSubsemiring R)
 
 /-- The ring equiv between the top element of `NonUnitalSubsemiring R` and `R`. -/
@@ -67,34 +66,35 @@ def topEquiv : (⊤ : NonUnitalSubsemiring R) ≃+* R :=
 
 /-- The preimage of a non-unital subsemiring along a non-unital ring homomorphism is a
 non-unital subsemiring. -/
-def comap (f : F) (s : NonUnitalSubsemiring S) : NonUnitalSubsemiring R :=
+def comap (f : R →ₙ+* S) (s : NonUnitalSubsemiring S) : NonUnitalSubsemiring R :=
   { s.toSubsemigroup.comap (f : MulHom R S), s.toAddSubmonoid.comap (f : R →+ S) with
     carrier := f ⁻¹' s }
 
 @[simp]
-theorem coe_comap (s : NonUnitalSubsemiring S) (f : F) : (s.comap f : Set R) = f ⁻¹' s :=
+theorem coe_comap (s : NonUnitalSubsemiring S) (f : R →ₙ+* S) : (s.comap f : Set R) = f ⁻¹' s :=
   rfl
 
 @[simp]
-theorem mem_comap {s : NonUnitalSubsemiring S} {f : F} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
+theorem mem_comap {s : NonUnitalSubsemiring S} {f : R →ₙ+* S} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 
 -- this has some nasty coercions, how to deal with it?
-theorem comap_comap (s : NonUnitalSubsemiring T) (g : G) (f : F) :
+theorem comap_comap (s : NonUnitalSubsemiring T) (g : G) (f : R →ₙ+* S) :
     ((s.comap g : NonUnitalSubsemiring S).comap f : NonUnitalSubsemiring R) =
       s.comap ((g : S →ₙ+* T).comp (f : R →ₙ+* S)) :=
   rfl
 
 /-- The image of a non-unital subsemiring along a ring homomorphism is a non-unital subsemiring. -/
-def map (f : F) (s : NonUnitalSubsemiring R) : NonUnitalSubsemiring S :=
+def map (f : R →ₙ+* S) (s : NonUnitalSubsemiring R) : NonUnitalSubsemiring S :=
   { s.toSubsemigroup.map (f : R →ₙ* S), s.toAddSubmonoid.map (f : R →+ S) with carrier := f '' s }
 
 @[simp]
-theorem coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' s :=
+theorem coe_map (f : R →ₙ+* S) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' s :=
   rfl
 
 @[simp]
-theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
+theorem mem_map {f : R →ₙ+* S} {s : NonUnitalSubsemiring R} {y : S} :
+    y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 
 @[simp]
@@ -102,27 +102,28 @@ theorem map_id : s.map (NonUnitalRingHom.id R) = s :=
   SetLike.coe_injective <| Set.image_id _
 
 -- unavoidable coercions?
-theorem map_map (g : G) (f : F) :
-    (s.map (f : R →ₙ+* S)).map (g : S →ₙ+* T) = s.map ((g : S →ₙ+* T).comp (f : R →ₙ+* S)) :=
+theorem map_map (g : G) (f : R →ₙ+* S) :
+    (s.map f).map (g : S →ₙ+* T) = s.map ((g : S →ₙ+* T).comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
-theorem map_le_iff_le_comap {f : F} {s : NonUnitalSubsemiring R} {t : NonUnitalSubsemiring S} :
+theorem map_le_iff_le_comap {f : R →ₙ+* S}
+    {s : NonUnitalSubsemiring R} {t : NonUnitalSubsemiring S} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f : F) :
+theorem gc_map_comap (f : R →ₙ+* S) :
     @GaloisConnection (NonUnitalSubsemiring R) (NonUnitalSubsemiring S) _ _ (map f) (comap f) :=
   fun _ _ => map_le_iff_le_comap
 
 /-- A non-unital subsemiring is isomorphic to its image under an injective function -/
-noncomputable def equivMapOfInjective (f : F) (hf : Function.Injective (f : R → S)) :
+noncomputable def equivMapOfInjective (f : R →ₙ+* S) (hf : Function.Injective (f : R → S)) :
     s ≃+* s.map f :=
   { Equiv.Set.image f s hf with
     map_mul' := fun _ _ => Subtype.ext (map_mul f _ _)
     map_add' := fun _ _ => Subtype.ext (map_add f _ _) }
 
 @[simp]
-theorem coe_equivMapOfInjective_apply (f : F) (hf : Function.Injective f) (x : s) :
+theorem coe_equivMapOfInjective_apply (f : R →ₙ+* S) (hf : Function.Injective f) (x : s) :
     (equivMapOfInjective s f hf x : S) = f x :=
   rfl
 
@@ -134,7 +135,7 @@ open NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : F) (g : G)
+variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : R →ₙ+* S) (g : G)
 
 /-- The range of a non-unital ring homomorphism is a non-unital subsemiring.
 See note [range copy pattern]. -/
@@ -146,21 +147,21 @@ theorem coe_srange : (srange f : Set S) = Set.range f :=
   rfl
 
 @[simp]
-theorem mem_srange {f : F} {y : S} : y ∈ srange f ↔ ∃ x, f x = y :=
+theorem mem_srange {f : R →ₙ+* S} {y : S} : y ∈ srange f ↔ ∃ x, f x = y :=
   Iff.rfl
 
 theorem srange_eq_map : srange f = (⊤ : NonUnitalSubsemiring R).map f := by
   ext
   simp
 
-theorem mem_srange_self (f : F) (x : R) : f x ∈ srange f :=
+theorem mem_srange_self (f : R →ₙ+* S) (x : R) : f x ∈ srange f :=
   mem_srange.mpr ⟨x, rfl⟩
 
 theorem map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = srange (g.comp f) := by
   simpa only [srange_eq_map] using! (⊤ : NonUnitalSubsemiring R).map_map g f
 
 /-- The range of a morphism of non-unital semirings is finite if the domain is finite. -/
-instance finite_srange [Finite R] (f : F) : Finite (srange f : NonUnitalSubsemiring S) :=
+instance finite_srange [Finite R] (f : R →ₙ+* S) : Finite (srange f) :=
   (Set.finite_range f).to_subtype
 
 end NonUnitalRingHom
@@ -691,14 +692,14 @@ open NonUnitalSubsemiringClass NonUnitalSubsemiring
 non-unital subsemiring.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-def srangeRestrict (f : F) : R →ₙ+* (srange f : NonUnitalSubsemiring S) :=
+def srangeRestrict (f : R →ₙ+* S) : R →ₙ+* srange f :=
   codRestrict f (srange f) (mem_srange_self f)
 
 @[simp]
-theorem coe_srangeRestrict (f : F) (x : R) : (srangeRestrict f x : S) = f x :=
+theorem coe_srangeRestrict (f : R →ₙ+* S) (x : R) : (srangeRestrict f x : S) = f x :=
   rfl
 
-theorem srangeRestrict_surjective (f : F) :
+theorem srangeRestrict_surjective (f : R →ₙ+* S) :
     Function.Surjective (srangeRestrict f : R → (srange f : NonUnitalSubsemiring S)) :=
   fun ⟨_, hy⟩ =>
   let ⟨x, hx⟩ := mem_srange.mp hy
@@ -761,7 +762,7 @@ namespace RingEquiv
 open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
-variable [NonUnitalNonAssocSemiring S] {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable [NonUnitalNonAssocSemiring S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/
@@ -772,7 +773,7 @@ def nonUnitalSubsemiringCongr (h : s = t) : s ≃+* t :=
 
 /-- Restrict a non-unital ring homomorphism with a left inverse to a ring isomorphism to its
 `NonUnitalRingHom.srange`. -/
-def sofLeftInverse' {g : S → R} {f : F} (h : Function.LeftInverse g f) : R ≃+* srange f :=
+def sofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) : R ≃+* srange f :=
   { srangeRestrict f with
     toFun := srangeRestrict f
     invFun := fun x => g (subtype (srange f) x)
@@ -783,12 +784,12 @@ def sofLeftInverse' {g : S → R} {f : F} (h : Function.LeftInverse g f) : R ≃
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]
-theorem sofLeftInverse'_apply {g : S → R} {f : F} (h : Function.LeftInverse g f) (x : R) :
+theorem sofLeftInverse'_apply {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) (x : R) :
     ↑(sofLeftInverse' h x) = f x :=
   rfl
 
 @[simp]
-theorem sofLeftInverse'_symm_apply {g : S → R} {f : F} (h : Function.LeftInverse g f)
+theorem sofLeftInverse'_symm_apply {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f)
     (x : srange f) : (sofLeftInverse' h).symm x = g x :=
   rfl
 
