@@ -22,9 +22,7 @@ several basic results on it.
 * `emultiplicity a b`: for two elements `a` and `b` of a commutative monoid returns the largest
   number `n` such that `a ^ n ∣ b` or infinity, written `⊤`, if `a ^ n ∣ b` for all natural numbers
   `n`.
-* `multiplicity a b`: a `ℕ`-valued version of `multiplicity`, defaulting for `1` instead of `⊤`.
-  The reason for using `1` as a default value instead of `0` is to have `multiplicity_eq_zero_iff`.
-* `FiniteMultiplicity a b`: a predicate denoting that the multiplicity of `a` in `b` is finite.
+* `multiplicity a b`: a `ℕ`-valued version of `multiplicity`, defaulting for `0` instead of `⊤`.
 -/
 
 @[expose] public section
@@ -45,7 +43,7 @@ open scoped Classical in
 noncomputable def emultiplicity [Monoid α] (a b : α) : ℕ∞ :=
   if h : FiniteMultiplicity a b then Nat.find h else ⊤
 
-/-- A `ℕ`-valued version of `emultiplicity`, returning `1` instead of `⊤`. -/
+/-- A `ℕ`-valued version of `emultiplicity`, returning `0` instead of `⊤`. -/
 noncomputable def multiplicity [Monoid α] (a b : α) : ℕ :=
   (emultiplicity a b).toNat
 
@@ -322,6 +320,9 @@ theorem emultiplicity_eq_zero_of_irreducible_ne {R : Type*} [CommMonoidWithZero 
 theorem multiplicity_eq_zero (h : FiniteMultiplicity a b) :
     multiplicity a b = 0 ↔ ¬a ∣ b := by
   rw [← emultiplicity_eq_zero_iff_multiplicity_eq_zero h, emultiplicity_eq_zero]
+
+theorem multiplicity_eq_zero_of_not_dvd (h : ¬ a ∣ b) : multiplicity a b = 0 :=
+  multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_eq_zero.mpr h)
 
 theorem emultiplicity_ne_zero :
     emultiplicity a b ≠ 0 ↔ a ∣ b := by
