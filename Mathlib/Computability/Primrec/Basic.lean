@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Basic.Denumerable
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Logic.Denumerable
 
 /-!
 # The primitive recursive functions
@@ -140,7 +140,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
   ⟨Nat.Primrec.succ.of_eq <| by simp⟩
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
   { __ := Encodable.ofEquiv α e
     prim := (Primcodable.prim α).of_eq fun n => by
@@ -573,10 +573,6 @@ theorem option_getD : Primrec₂ (@Option.getD α) :=
 theorem option_getD_default [Inhabited α] : Primrec (fun o : Option α => o.getD default) :=
   option_getD.comp .id (const default)
 
-@[deprecated option_getD_default (since := "2026-01-05")]
-theorem option_iget [Inhabited α] : Primrec (@Option.iget α _) :=
-  option_getD_default
-
 theorem option_isSome : Primrec (@Option.isSome α) :=
   (option_casesOn .id (const false) (const true).to₂).of_eq fun o => by cases o <;> rfl
 
@@ -696,7 +692,7 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [DecidableRe
   (nat_rec' (h := fun x nih => if p x (nih.1 + 1) then nih.1 + 1 else nih.2)
     hf (const 0) (ite (hp.comp fst (snd |> fst.comp |> succ.comp))
       (snd |> fst.comp |> succ.comp) (snd.comp snd))).of_eq fun x => by
-        induction f x <;> simp [Nat.findGreatest, *]
+        induction f x <;> simp [Nat.findGreatest_succ, *]
 
 /-- To show a function `f : α → ℕ` is primitive recursive, it is enough to show that the function
   is bounded by a primitive recursive function and that its graph is primitive recursive -/
@@ -793,9 +789,9 @@ end Primrec
 
 namespace PrimrecRel
 
-open Primrec List PrimrecPred
+open PrimrecPred
 
-variable {α β : Type*} {R : α → β → Prop} {L : List α} {b : β}
+variable {α β : Type*} {R : α → β → Prop} {b : β}
 
 variable [Primcodable α] [Primcodable β]
 
@@ -810,7 +806,7 @@ variable {α : Type*} [Primcodable α]
 open Primrec
 
 /-- A subtype of a primitive recursive predicate is `Primcodable`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodable (Subtype p) :=
   ⟨have : Primrec fun n => (@decode α _ n).bind fun a => Option.guard p a :=
     option_bind .decode (option_guard (hp.comp snd).primrecRel snd)
@@ -851,8 +847,8 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable σ]
+variable {α : Type*} {β : Type*}
+variable [Primcodable α] [Primcodable β]
 
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp

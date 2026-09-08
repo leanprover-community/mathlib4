@@ -33,7 +33,7 @@ namespace Subfunctor
 `A.toFunctor ⟶ F₂` with `A : Subfunctor F₁`, as a subcomplex of `F₁`. -/
 @[simps -isSimp]
 protected def equalizer : Subfunctor F₁ where
-  obj U := setOf (fun x ↦ ∃ (hx : x ∈ A.obj _), f.app _ ⟨x, hx⟩ = g.app _ ⟨x, hx⟩)
+  obj U := Set.ofPred (fun x ↦ ∃ (hx : x ∈ A.obj _), f.app _ ⟨x, hx⟩ = g.app _ ⟨x, hx⟩)
   map φ x := by
     rintro ⟨hx, h⟩
     exact ⟨A.map _ hx,
@@ -116,6 +116,7 @@ def equalizer.fork : Limits.Fork f g :=
 lemma equalizer.fork_ι :
     (equalizer.fork f g).ι = equalizer.ι f g := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `(Subfunctor.equalizer f g).toFunctor` is the equalizer of `f` and `g`. -/
 def equalizer.forkIsLimit : Limits.IsLimit (equalizer.fork f g) :=

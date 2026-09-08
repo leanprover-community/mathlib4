@@ -246,6 +246,7 @@ lemma germ_stalkPullbackHom
         ((pullback C f).obj F).germ ((Opens.map f).obj U) x hU := by
   simp [stalkPullbackHom, germ, stalkFunctor, stalkPushforward]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
@@ -256,6 +257,7 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (
         { app := fun V => F.germ _ (f x) (V.hom.unop.le hx)
           naturality := fun _ _ i => by simp } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 @[ext]
@@ -348,6 +350,7 @@ section stalkSpecializes
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
@@ -397,6 +400,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
 def stalkCongr (F : X.Presheaf C) {x y : X}
@@ -454,6 +458,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
   obtain ⟨W, iU, iV, e⟩ := (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)).eq_iff.mp h
   exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor C x).map f) := fun s t hst => by
@@ -473,12 +478,14 @@ variable {B : Set (Opens X)} (hB : Opens.IsBasis B)
 
 include hB
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_mem_germ_eq_of_isBasis (F : X.Presheaf C) (x : X) (t : ToType (F.stalk x)) :
     ∃ (U : Opens X) (m : x ∈ U) (_ : U ∈ B) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
   obtain ⟨U, hxU, s, rfl⟩ := F.exists_germ_eq t
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.2
   exact ⟨V, hxV, hV, F.map (homOfLE hVU).op s, by rw [← ConcreteCategory.comp_apply, F.germ_res']⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     {s : ToType (F.obj (op U))} {t : ToType (F.obj (op V))}
     (h : F.germ U x mU s = F.germ V x mV t) :
@@ -527,6 +534,7 @@ Note that the analogous statement for surjectivity is false: Surjectivity on sta
 imply surjectivity of the components of a sheaf morphism. However it does imply that the morphism
 is an epi, but this fact is not yet formalized.
 -/
+set_option backward.isDefEq.respectTransparency.types false in
 theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.1 ⟶ G)
     (U : Opens X) (h : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>

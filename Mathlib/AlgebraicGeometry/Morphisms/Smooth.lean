@@ -66,8 +66,6 @@ class Smooth (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.smooth_appLE := Smooth.smooth_appLE
 
-@[deprecated (since := "2026-02-09")] alias IsSmooth := Smooth
-
 /-- The property of scheme morphisms `Smooth` is associated with the ring
 homomorphism property `Smooth`. -/
 instance : HasRingHomProperty @Smooth RingHom.Smooth where
@@ -122,9 +120,6 @@ instance : MorphismProperty.Respects @Smooth @IsOpenImmersion :=
     (RingHom.Smooth.stableUnderComposition.stableUnderCompositionWithLocalizationAway
       RingHom.Smooth.holdsForLocalizationAway).1
 
-@[deprecated (since := "2026-02-09")]
-alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
-
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
@@ -137,17 +132,12 @@ class SmoothOfRelativeDimension : Prop where
     (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V) (e : V ≤ f ⁻¹ᵁ U),
     IsStandardSmoothOfRelativeDimension n (f.appLE U V e).hom
 
-@[deprecated (since := "2026-02-09")] alias IsSmoothOfRelativeDimension := SmoothOfRelativeDimension
-
 /-- If `f` is smooth of any relative dimension, it is smooth. -/
 lemma SmoothOfRelativeDimension.smooth [SmoothOfRelativeDimension n f] : Smooth f := by
   rw [Smooth.iff_forall_exists_isStandardSmooth]
   intro x
   obtain ⟨U, hU, V, hV, hx, e, hf⟩ := exists_isStandardSmoothOfRelativeDimension (n := n) (f := f) x
   exact ⟨U, hU, V, hV, hx, e, hf.isStandardSmooth⟩
-
-@[deprecated (since := "2026-02-09")]
-alias IsSmoothOfRelativeDimension.isSmooth := SmoothOfRelativeDimension.smooth
 
 /-- The property of scheme morphisms `SmoothOfRelativeDimension n` is associated with the ring
 homomorphism property `Locally (IsStandardSmoothOfRelativeDimension n)`. -/
@@ -169,10 +159,6 @@ lemma smoothOfRelativeDimension_isStableUnderBaseChange :
     isStandardSmoothOfRelativeDimension_respectsIso
     (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
-@[deprecated (since := "2026-02-09")]
-alias isSmoothOfRelativeDimension_isStableUnderBaseChange :=
-  smoothOfRelativeDimension_isStableUnderBaseChange
-
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
@@ -183,14 +169,17 @@ instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :
 instance (priority := 900) [IsOpenImmersion f] : Smooth f :=
   SmoothOfRelativeDimension.smooth 0 f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth g] :
     Smooth (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth f] :
     Smooth (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [Smooth f] : Smooth (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -318,6 +307,7 @@ lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
   rw [Scheme.Hom.mem_smoothLocus, formallySmooth_stalkMap_iff U hU V hV hVU hxV]
   exact inferInstanceAs (Algebra.IsSmoothAt _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.smoothLocus_eq_top_iff {f : X ⟶ Y} [LocallyOfFinitePresentation f] :
     f.smoothLocus = ⊤ ↔ Smooth f := by
   refine ⟨fun H ↦ ?_, fun _ ↦ f.smoothLocus_eq_top⟩
@@ -358,6 +348,7 @@ lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField
       (L := (Spec.structureSheaf K).presheaf.stalk (f (genericPoint X)))
   exact Algebra.FormallySmooth.of_perfectField
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.dense_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsReduced X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f] : Dense (f.smoothLocus : Set X) := by

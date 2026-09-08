@@ -41,7 +41,7 @@ is a convenience class and no instance should be registered for it.
 
 @[expose] public section
 
-open Filter Function Set Topology
+open Filter Set Topology
 
 variable {X Y : Type*}
 
@@ -74,7 +74,7 @@ instance (priority := 100) IsCompletelyPseudoMetrizableSpace.of_completeSpace_ps
 
 /-- Construct on a completely pseudometrizable space a pseudometric (compatible with the topology)
 which is complete. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def completelyPseudoMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyPseudoMetrizableSpace X] : PseudoMetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -87,7 +87,7 @@ theorem complete_completelyPseudoMetrizableMetric (X : Type*) [ht : TopologicalS
 
 /-- This definition endows a completely pseudometrizable space with a complete pseudometric.
 Use it as: `letI := upgradeIsCompletelyPseudoMetrizable X`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable
 def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] :
@@ -100,7 +100,7 @@ namespace IsCompletelyPseudoMetrizableSpace
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `PseudoEMetricSpace.pseudoMetrizableSpace`. This prevents unnecessary attempts to infer
 completeness. -/
-instance (priority := 90) PseudoMetrizableSpace [TopologicalSpace X]
+instance (priority := 90) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] : PseudoMetrizableSpace X := by
   let := upgradeIsCompletelyPseudoMetrizable X
   infer_instance
@@ -187,7 +187,7 @@ instance (priority := 100) IsCompletelyMetrizableSpace.of_completeSpace_metrizab
 
 /-- Construct on a completely metrizable space a metric (compatible with the topology)
 which is complete. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def completelyMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyMetrizableSpace X] : MetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -200,7 +200,7 @@ theorem complete_completelyMetrizableMetric (X : Type*) [ht : TopologicalSpace X
 
 /-- This definition endows a completely metrizable space with a complete metric. Use it as:
 `letI := upgradeIsCompletelyMetrizable X`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable
 def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     UpgradedIsCompletelyMetrizableSpace X :=
@@ -211,7 +211,7 @@ namespace IsCompletelyMetrizableSpace
 
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `EMetricSpace.metrizableSpace`. This prevents unnecessary attempts to infer completeness. -/
-instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+instance (priority := 90) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     MetrizableSpace X := by
   let := upgradeIsCompletelyMetrizable X
   infer_instance

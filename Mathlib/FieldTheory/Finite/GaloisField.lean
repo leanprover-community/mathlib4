@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!

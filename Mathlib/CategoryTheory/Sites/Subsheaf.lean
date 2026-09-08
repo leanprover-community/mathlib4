@@ -43,7 +43,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subfunctor F)
+variable {F F' : Cᵒᵖ ⥤ Type w} (G G' : Subfunctor F)
 
 /-- Every subpresheaf of a separated presheaf is itself separated. -/
 theorem Subfunctor.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSeparated J F) :
@@ -150,7 +150,6 @@ noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve
     refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
       ((G.family_of_elements_compatible s.1).map f) (j ≫ i.unop) ?_).symm
     · simp [Presieve.FamilyOfElements.map, Subfunctor.familyOfElementsOfSection]
-      rfl
     · dsimp [Presieve.FamilyOfElements.map] at hj ⊢
       rwa [Functor.map_comp, comp_apply]
 
@@ -231,6 +230,7 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (Sheaf.imageι f) :=
       dsimp
       infer_instance)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   refine ⟨@fun G' g₁ g₂ e => ?_⟩
   ext U ⟨s, hx⟩

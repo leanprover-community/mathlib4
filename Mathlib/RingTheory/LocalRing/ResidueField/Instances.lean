@@ -23,10 +23,11 @@ variable (p : Ideal A) (q : Ideal B) [q.LiesOver p]
 section maximal
 
 variable [p.IsMaximal] [q.IsMaximal] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-  [Localization.AtPrime.IsLiesOverAlgebra p q]
+  [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime q)]
 
 attribute [local instance] Ideal.Quotient.field
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
     Algebra.IsSeparable p.ResidueField q.ResidueField := by
   refine Algebra.IsSeparable.of_equiv_equiv
@@ -35,6 +36,7 @@ instance [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
   ext x
   simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Algebra.IsSeparable p.ResidueField q.ResidueField] :
     Algebra.IsSeparable (A ⧸ p) (B ⧸ q) := by
   refine Algebra.IsSeparable.of_equiv_equiv
@@ -59,11 +61,12 @@ end maximal
 section prime
 
 variable [p.IsPrime] [q.IsPrime] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-  [Localization.AtPrime.IsLiesOverAlgebra p q]
+  [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime q)]
 
 instance : Algebra.IsAlgebraic (A ⧸ p) p.ResidueField :=
   IsLocalization.isAlgebraic _ (nonZeroDivisors (A ⧸ p))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Algebra.IsIntegral A B] :
     Algebra.IsAlgebraic p.ResidueField q.ResidueField := by
   have : Algebra.IsIntegral (A ⧸ p) (B ⧸ q) :=

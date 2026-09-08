@@ -53,9 +53,7 @@ public section
 
 namespace CategoryTheory
 
-open Limits Functor
-
-attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
+open Limits CategoryTheory.Functor
 
 universe w w' w₂ w₂' v v' v'' u u' u''
 
@@ -517,7 +515,6 @@ lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProd
 
 section EpiMono
 
-open Functor
 
 section
 

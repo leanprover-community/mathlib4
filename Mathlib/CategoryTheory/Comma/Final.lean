@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 namespace Comma
 
-open Limits Functor CostructuredArrow
+open CategoryTheory.Functor
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
@@ -71,7 +71,6 @@ lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilte
       exact ⟨⟨i₀, IsCofiltered.eq u.right v.right, L.map (β ≫ va₁) ≫ Q.hom⟩,
         ⟨β ≫ va₂, IsCofiltered.eqHom u.right v.right, by cat_disch⟩, by cat_disch⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (fst L R).Initial := by
   have := isCofiltered_of_isCofiltered_costructuredArrow L R

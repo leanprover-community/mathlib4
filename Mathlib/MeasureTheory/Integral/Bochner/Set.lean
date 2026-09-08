@@ -423,7 +423,6 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
     _ = ∫ x in s \ k, f x ∂μ := by
       apply setIntegral_congr_set
       filter_upwards [h't] with x hx
-      change (x ∈ t \ k) = (x ∈ s \ k)
       simp only [eq_iff_iff, and_congr_left_iff, Set.mem_sdiff]
       intro h'x
       by_cases xs : x ∈ s
@@ -494,7 +493,7 @@ theorem setIntegral_neg_eq_setIntegral_nonpos [PartialOrder E] {f : X → E}
     (hf : AEStronglyMeasurable f μ) :
     ∫ x in {x | f x < 0}, f x ∂μ = ∫ x in {x | f x ≤ 0}, f x ∂μ := by
   have h_union : {x | f x ≤ 0} = {x | f x < 0} ∪ {x | f x = 0} := by
-    simp_rw [le_iff_lt_or_eq, setOf_or]
+    simp_rw [le_iff_lt_or_eq, ofPred_or]
   rw [h_union]
   have B : NullMeasurableSet {x | f x = 0} μ :=
     hf.nullMeasurableSet_eq_fun aestronglyMeasurable_zero
@@ -519,10 +518,10 @@ theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
       rw [← integral_neg]
       refine setIntegral_congr_fun₀ h_meas.compl fun x hx => ?_
       rw [Real.norm_eq_abs, abs_eq_neg_self.mpr _]
-      rw [Set.mem_compl_iff, Set.notMem_setOf_iff] at hx
+      rw [Set.mem_compl_iff, Set.notMem_ofPred_iff] at hx
       linarith
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ - ∫ x in {x | f x ≤ 0}, f x ∂μ := by
-      rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_setOf]; simp only [not_le]
+      rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_ofPred]; simp only [not_le]
 
 theorem setIntegral_const [CompleteSpace E] (c : E) : ∫ _ in s, c ∂μ = μ.real s • c := by
   rw [integral_const, measureReal_restrict_apply_univ]

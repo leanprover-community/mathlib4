@@ -85,6 +85,7 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
 @[simps]
 def limitConeX (F : J ⥤ Cat.{v, v}) : Cat.{v, v} where α := limit (F ⋙ Cat.objects)
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [-simp] homDiagram_obj in
 /-- Auxiliary definition: the cone over the limit category. -/
 @[simps]
@@ -125,6 +126,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
         rw [Functor.congr_hom this f]
         simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =

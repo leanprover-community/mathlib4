@@ -31,7 +31,9 @@ set_option backward.defeqAttrib.useBackward true
 
 universe v u
 
-open CategoryTheory HomotopicalAlgebra Simplicial Limits Opposite
+open CategoryTheory HomotopicalAlgebra Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet.Subcomplex.Pairing.RankFunction
 
@@ -379,7 +381,7 @@ noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
 variable {f} in
 @[reassoc (attr := simp)]
 lemma Cell.ι_t {j : ι} (c : f.Cell j) : c.ιSigmaHorn ≫ f.t j = c.mapHorn := by
-  simp [t, Sigma.ι_desc]
+  simp [t]
 
 variable {f} in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -426,7 +428,6 @@ noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m 
     obtain ⟨rfl, rfl⟩ := hy
     simpa using (objEquiv_symm_δ_mem_horn_iff _ _).mp hy'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_or_of_range_m_N {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     ∃ (c : f.Cell j), s = c.type₁ ∨ s = c.type₂ := by
   obtain ⟨d, s, hs, hs', rfl⟩ := s.mk_surjective
@@ -457,7 +458,7 @@ noncomputable def b (j : ι) : f.sigmaStdSimplex j ⟶ f.filtration (Order.succ 
 variable {f} in
 @[reassoc (attr := simp)]
 lemma Cell.ι_b {j : ι} (c : f.Cell j) : c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by
-  simp [b, Sigma.ι_desc]
+  simp [b]
 
 variable {f} in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -471,7 +472,6 @@ lemma w (j : ι) :
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback (j : ι) :
     IsPullback (f.t j) (f.m j) (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
@@ -521,6 +521,7 @@ corresponding to an element in `(Subcomplex.range (f.m j)).N`. -/
 noncomputable def mapN {j : ι} (x : (Subcomplex.range (f.m j)).N) : X.S :=
   S.mk ((f.b j).app _ x.simplex).val
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mapN_type₁ {j : ι} (c : f.Cell j) : f.mapN c.type₁ = S.mk (P.p c.s).val.simplex := by
   dsimp only [Cell.type₁, mapN]
@@ -560,7 +561,6 @@ private lemma isPushout_aux₃ {j : ι} :
     Function.Injective fun (x : (Subcomplex.range (f.m j)).N) ↦ S.mk ((f.b j).app _ x.simplex) :=
   fun _ _ h ↦ f.isPushout_aux₂ (congr_arg (S.map (Subcomplex.ι _)) h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (j : ι) :
     IsPushout (f.t j) (f.m j) (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j

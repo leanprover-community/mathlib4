@@ -164,10 +164,17 @@ instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotie
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
-/-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
+/-- A subspace of a normed space is also a normed space (with respect to the restricted norm). -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
     (s : Submodule R E) : NormedSpace 𝕜 s where
+  norm_smul_le c x := norm_smul_le c (x : E)
+
+/-- A closed subspace of a normed space is also a normed space (with respect to the restricted
+norm). -/
+instance ClosedSubmodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
+    (s : ClosedSubmodule R E) : NormedSpace 𝕜 s where
   norm_smul_le c x := norm_smul_le c (x : E)
 
 variable {S 𝕜 R E : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] [SeminormedAddCommGroup E]
@@ -284,6 +291,9 @@ theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * �
 theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
 
+theorem enorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
+  simp only [enorm_eq_nnnorm, nnnorm_algebraMap, ENNReal.coe_mul]
+
 theorem dist_algebraMap (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
   simp only [dist_eq_norm, ← map_sub, norm_algebraMap]
@@ -301,6 +311,11 @@ theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x •
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
+
+/-- This is a simpler version of `enorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
+@[simp]
+theorem enorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖(algebraMap 𝕜 𝕜') x‖ₑ = ‖x‖ₑ := by
+  rw [enorm_eq_iff_norm_eq, norm_algebraMap']
 
 /-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
@@ -469,7 +484,7 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   { Module.restrictScalars 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
@@ -491,7 +506,7 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 /-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -513,7 +528,7 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   { NormedSpace.restrictScalars 𝕜 𝕜' E, Algebra.restrictScalars 𝕜 𝕜' E with }
 
@@ -527,7 +542,7 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 /-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -781,3 +796,14 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 
     _ = (n : ℝ)⁻¹ * C := by simp
     _ < (C / ε : ℝ)⁻¹ * C := by gcongr
     _ = ε := by simp [hC₀.ne']
+
+attribute [local instance] IsUnital.toSeminormedRing in
+/-- A unital non-unital normed algebra is a normed algebra.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜]
+    [NonUnitalSeminormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+    [IsUnital A] : NormedAlgebra 𝕜 A where
+  __ := toAlgebra
+  __ := ‹NormedSpace 𝕜 A›

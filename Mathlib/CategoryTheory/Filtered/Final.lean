@@ -212,6 +212,7 @@ instance IsCofiltered.over [IsCofilteredOrEmpty C] (c : C) : IsCofiltered (Over 
   isCofiltered_costructuredArrow_of_isCofiltered_of_exists _ c ⟨c, ⟨𝟙 _⟩⟩
     (fun s s' => IsCofilteredOrEmpty.cone_maps s s')
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor of the under category on any filtered or empty category is final. -/
 instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget c) :=
@@ -239,7 +240,6 @@ section LocallySmall
 variable {C : Type v₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Implementation; use `Functor.Final.exists_coeq instead`. -/
 theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
     (s s' : d ⟶ F.obj c) : ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t := by
@@ -254,6 +254,7 @@ theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final 
 
 end LocallySmall
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is filtered, then we can give an explicit condition for a functor `F : C ⥤ D` to
 be final. -/
@@ -377,7 +378,6 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
   rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
   exact (initial_comp (Over.forget X) T).out _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
 induces via `StructuredArrow.map₂` is final, if `T` and `S` are final and the domain of `T` is
 filtered. -/
@@ -389,7 +389,6 @@ instance StructuredArrow.final_map₂_id [IsFiltered C] {E : Type u₃} [Categor
     (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj d e u α).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `StructuredArrow.map` is final if the functor `T` is final and its domain is filtered. -/
 instance StructuredArrow.final_map [IsFiltered C] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
     Final (map (T := T) f) := by

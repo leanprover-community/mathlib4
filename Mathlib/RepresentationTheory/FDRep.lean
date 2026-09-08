@@ -120,8 +120,8 @@ theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
 @[simps ρ]
 abbrev of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     (ρ : Representation R G V) : FDRep R G :=
-  ⟨FGModuleCat.of R V, (MulEquiv.toMonoidHom (MulEquiv.symm InducedCategory.endEquiv)).comp
-    ((ModuleCat.endRingEquiv (ModuleCat.of R V)).symm.toMonoidHom.comp ρ)⟩
+  ⟨↧V, (MulEquiv.toMonoidHom (MulEquiv.symm InducedCategory.endEquiv)).comp
+    ((ModuleCat.endRingEquiv ↧V).symm.toMonoidHom.comp ρ)⟩
 
 /-- This lemma is about `FDRep.ρ`, instead of `Action.ρ` for `of_ρ`. -/
 @[simp]
@@ -166,8 +166,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
   toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom <| f.hom.toLinearMap), fun g ↦ by
     ext1
-    simp only [FGModuleCat.obj_carrier, ObjectProperty.FullSubcategory.comp_hom,
-      InducedCategory.homMk_hom, ModuleCat.hom_comp, hom_hom_action_ρ]
+    simp only [FGModuleCat.obj_carrier]
     exact f.hom.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

@@ -77,6 +77,7 @@ protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   le_ord_cof := by simp
   isCofinal_range := .of_isEmpty
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
     @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, lt_add_one o⟩ where
@@ -113,7 +114,7 @@ theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, 
   subst ha
   obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq o.ToType
   rw [cof_toType] at hs'
-  let g := (OrderIso.setCongr _ _ (congrArg _ hs'.symm)).trans <|
+  let g := (Set.orderIsoOfEq _ _ (congrArg _ hs'.symm)).trans <|
     .ofRelIsoLT (enum (α := s) (· < ·))
   refine ⟨fun i ↦ g i, le_rfl, fun _ ↦ by simp, ?_⟩
   rw [range_comp', OrderIso.map_isCofinal_iff, range_comp', g.range_eq]

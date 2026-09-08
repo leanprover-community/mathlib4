@@ -10,8 +10,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## Pushouts of Monoids and Groups
+# Pushouts of Monoids and Groups
 
 This file defines wide pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
@@ -109,7 +108,6 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -118,7 +116,6 @@ theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe,
     lift_apply_inl, CoprodI.lift_of]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
@@ -330,6 +327,7 @@ theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
 then the element of the base group we multiplied by was one. -/
@@ -453,6 +451,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift

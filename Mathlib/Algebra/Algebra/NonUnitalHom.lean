@@ -317,6 +317,7 @@ theorem coe_inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A) (h₁ : Function.
     (h₂ : Function.RightInverse g f) : (inverse f g h₁ h₂ : B₁ → A) = g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
     (k : Function.RightInverse φ' φ)

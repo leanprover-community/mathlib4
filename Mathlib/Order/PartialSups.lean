@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
@@ -131,6 +130,7 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
     partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]

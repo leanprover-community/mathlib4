@@ -28,7 +28,7 @@ deriving Inhabited
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 section
 
@@ -147,6 +147,7 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
     comp r (Quot.mk _ f) (Quot.mk _ g) = Quot.mk _ (f ≫ g) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
@@ -177,6 +178,7 @@ theorem inv_mk {X Y : Quotient r} (f : X.as ⟶ Y.as) :
     Quotient.inv r (Quot.mk _ f) = Quot.mk _ (Groupoid.inv f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient of a groupoid is a groupoid. -/
 instance groupoid : Groupoid (Quotient r) where
   inv f := Quotient.inv r f
@@ -186,10 +188,12 @@ instance groupoid : Groupoid (Quotient r) where
 end
 
 /-- The functor from a category to its quotient. -/
+@[implicit_reducible]
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
   map f := Quot.mk _ f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_functor : (functor r).Full where
   map_surjective f := ⟨Quot.out f, by simp [functor]⟩
 
@@ -223,6 +227,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
     (functor r).homRel f g ↔ Relation.EqvGen (@HomRel.CompClosure C _ r X Y) f g :=
   Quot.eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@HomRel.CompClosure C _ r X Y) := by
   convert! (inferInstance : Congruence (functor r).homRel)
@@ -232,6 +237,7 @@ theorem compClosure.congruence :
 variable {D : Type _} [Category* D] (F : C ⥤ D)
 
 /-- The induced functor on the quotient category. -/
+@[implicit_reducible]
 def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂) : Quotient r ⥤ D where
   obj a := F.obj a.as
   map hf :=
@@ -249,7 +255,6 @@ variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
   tauto
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
   fapply Functor.hext
@@ -271,7 +276,6 @@ lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = func
   apply lift_unique
   rw [h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
   NatIso.ofComponents fun _ ↦ Iso.refl _

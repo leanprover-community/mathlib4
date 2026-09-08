@@ -354,6 +354,9 @@ theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x
 theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := fun h =>
   map_comap_of_surjective f hf K ▸ map_mono h
 
+theorem map_eq_image_of_surjective : map f I = ⇑f '' ↑I := by
+  grind [Ideal.mem_map_iff_of_surjective f hf, SetLike.mem_coe]
+
 end
 
 theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
@@ -418,6 +421,9 @@ theorem map_evalRingHom_pi {I : Π i, Ideal (R i)} (i : ι) :
   rintro ⟨r, hr, rfl⟩
   exact hr i
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Ideals in a finite direct product semiring `Πᵢ Rᵢ` are identified with tuples of ideals
 in the individual semirings, in an order-preserving way.
 
@@ -1123,8 +1129,8 @@ section CommRing
 
 variable [CommRing R] [CommRing S]
 
-theorem map_ne_bot_of_ne_bot [IsDomain R] {S : Type*} [Ring S] [Nontrivial S] [Algebra R S]
-    [Module.IsTorsionFree R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
+theorem map_ne_bot_of_ne_bot {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [FaithfulSMul R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
   (map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)).mp.mt h
 
 theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)

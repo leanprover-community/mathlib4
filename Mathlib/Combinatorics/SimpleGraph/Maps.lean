@@ -62,15 +62,15 @@ instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
     [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) :=
   inferInstanceAs <| Decidable (_ ∧ _)
 
-@[simp]
-theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
-    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v := by
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
-
+@[grind =]
 theorem map_adj' (f : V → W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ u ≠ v ∧ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
+
+@[simp]
+theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
+    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v := by
+  grind
 
 theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).edgeSet = f.sym2Map '' G.edgeSet := by
@@ -108,13 +108,11 @@ theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
 
 @[simp] lemma map_id : G.map id = G := by
   ext
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
+  grind
 
 @[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
   ext
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
+  grind
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
@@ -146,7 +144,7 @@ instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G
 
 lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
     G.comap e.symm.toEmbedding = G.map e.toEmbedding := by
-  ext; simp only [Equiv.apply_eq_iff_eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
+  ext; simp only [← Equiv.eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
     exists_eq_right_right, exists_eq_right]
 
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
@@ -176,11 +174,14 @@ theorem map_injective (f : V ↪ W) : Function.Injective (SimpleGraph.map f) :=
 theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap f) :=
   (leftInverse_comap_map f).surjective
 
-theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
-    G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, by
-    rintro h _ _ ⟨-, u, v, ha, rfl, rfl⟩
-    exact h ha⟩
+variable {G G'} in
+theorem map_le_of_le_comap {f : V → W} (h : G ≤ G'.comap f) : G.map f ≤ G' := by
+  rintro _ _ ⟨_, u, v, ha, rfl, rfl⟩
+  exact h ha
+
+variable {G G'} in
+theorem map_le_iff_le_comap {f : V ↪ W} : G.map f ≤ G' ↔ G ≤ G'.comap f :=
+  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, map_le_of_le_comap⟩
 
 theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
   rw [map_le_iff_le_comap]
@@ -377,6 +378,7 @@ theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2
   rfl
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
+@[implicit_reducible]
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
@@ -413,6 +415,10 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
 
 theorem le_comap (f : H →g G) : H ≤ G.comap f :=
   fun _ _ ↦ f.map_adj
+
+@[grind .]
+theorem map_le (f : H →g G) : H.map f ≤ G :=
+  map_le_of_le_comap f.le_comap
 
 theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ G.comap f :=
   ⟨fun ⟨f⟩ ↦ ⟨f, f.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨f, (h ·)⟩⟩
@@ -608,6 +614,7 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
     (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
   ext; simp

@@ -296,7 +296,6 @@ theorem opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
           (D.V (j, k)).presheaf.map (eqToHom (opensImagePreimageMap_app' D i j k U).choose) :=
   (opensImagePreimageMap_app' D i j k U).choose_spec
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is proved separately since `reassoc` somehow timeouts.
 theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier) {X' : C}
     (f' : _ ⟶ X') :
@@ -462,6 +461,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
       infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `ιInvApp` is the inverse of `D.ι i` on `U`. -/
 theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U = 𝟙 _ := by
@@ -478,6 +478,7 @@ theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     rw [Category.id_comp]
     apply π_ιInvApp_π
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance componentwise_diagram_π_isIso (i : D.J) (U : Opens (D.U i).carrier) :
     IsIso (D.diagramOverOpenπ U i) := by
   use D.ιInvAppπEqMap U ≫ D.ιInvApp U

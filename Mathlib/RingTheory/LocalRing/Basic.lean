@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Ideal.Nonunits
 
+import Mathlib.Algebra.Group.Units.Opposite
+
 /-!
 
 # Local rings
@@ -57,6 +59,10 @@ theorem exists_of_isUnit_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (h : IsUnit (∑ i ∈ s, f i)) : ∃ i ∈ s, IsUnit (f i) := by
   contrapose! h; exact (nonunitsAddSubmonoid R).sum_mem h
 
+instance : IsLocalRing Rᵐᵒᵖ where
+  isUnit_or_isUnit_of_add_one h := by
+    simpa using isUnit_or_isUnit_of_add_one <| (MulOpposite.op_eq_one_iff _).mp h
+
 end Semiring
 
 section CommSemiring
@@ -97,11 +103,7 @@ theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a
     IsLocalRing R :=
   ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 
-end Ring
-
-section CommRing
-
-variable [CommRing R] [IsLocalRing R]
+variable [IsLocalRing R]
 
 theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
   isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
@@ -121,7 +123,7 @@ theorem of_surjective' [Ring S] [Nontrivial S] (f : R →+* S) (hf : Function.Su
     rw [← f.map_one, ← f.map_sub]
     apply f.isUnit_map)
 
-end CommRing
+end Ring
 
 end IsLocalRing
 

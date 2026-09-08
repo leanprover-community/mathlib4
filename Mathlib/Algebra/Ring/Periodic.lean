@@ -33,8 +33,6 @@ assert_not_exists Field
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
-open Set
-
 namespace Function
 
 /-! ### Periodicity -/

@@ -69,7 +69,7 @@ def unit (X : TopCat) : SheafedSpace (Discrete Unit) :=
   { @PresheafedSpace.const (Discrete Unit) _ X ⟨⟨⟩⟩ with IsSheaf := Presheaf.isSheaf_unit _ }
 
 instance : Inhabited (SheafedSpace (Discrete Unit)) :=
-  ⟨unit (TopCat.of PEmpty)⟩
+  ⟨unit ↧PEmpty⟩
 
 instance : Category (SheafedSpace C) :=
   inferInstanceAs <| Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace)
@@ -237,6 +237,7 @@ variable [PreservesLimits (CategoryTheory.forget C)]
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.hom.base = g.hom.base)

@@ -5,9 +5,10 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -83,7 +84,7 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
 theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
-  rw [← Set.finite_coe_iff, Set.coe_setOf]
+  rw [← Set.finite_coe_iff, Set.coe_ofPred]
   have h_fin := fintypeSubtypeDvd I hI
   refine
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
@@ -206,12 +207,14 @@ theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
   apply Ideal.finprod_count
     ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ideal `I` equals the inf `⨅_v v^(val_v(I))`. -/
 theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
     ⨅ i : HeightOneSpectrum R, i.maxPowDividing I = I := by
   nth_rw 2 [← Ideal.finprod_heightOneSpectrum_factorization h0]
   classical
-  rw [finprod_def, dif_pos (Ideal.hasFiniteMulSupport h0), Ideal.prod_eq_iInf_of_pairwise_isCoprime]
+  rw [finprod_def, dite_eq_left (Ideal.hasFiniteMulSupport h0),
+    Ideal.prod_eq_iInf_of_pairwise_isCoprime]
   · ext x
     constructor
     · aesop
@@ -312,7 +315,7 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
 
 /-- `val_v(0) = 0`. -/
-lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dif_pos]
+lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dite_eq_left]
 
 open Classical in
 lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
@@ -320,7 +323,7 @@ lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
       (choose (choose_spec (exists_eq_spanSingleton_mul I)))).factors -
       (Associates.mk v.asIdeal).count
         (Associates.mk (Ideal.span {choose (exists_eq_spanSingleton_mul I)})).factors : ℤ) := by
-  simp only [count, dif_neg hI]
+  simp only [count, dite_eq_right hI]
 
 open Classical in
 /-- `val_v(I)` does not depend on the choice of `a` and `J` used to represent `I`. -/
@@ -349,7 +352,7 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     exact Associates.irreducible_mk.mpr v.irreducible
   rw [h_a₁J₁, ← div_spanSingleton, ← div_spanSingleton, div_eq_div_iff h_a₁' h_a',
     ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, ← coeIdeal_mul, ← coeIdeal_mul] at h_aJ
-  rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← natCast_add, ← natCast_add, natCast_inj,
+  rw [count, dite_eq_right hI, sub_eq_sub_iff_add_eq_add, ← natCast_add, ← natCast_add, natCast_inj,
     ← Associates.count_mul _ _ hv, ← Associates.count_mul _ _ hv, Associates.mk_mul_mk,
     Associates.mk_mul_mk, coeIdeal_injective h_aJ]
   · rw [ne_eq, Associates.mk_eq_zero]; exact h_J_ne_zero
@@ -419,8 +422,8 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
     classical rw [pow_succ, count_mul']
     by_cases hI : I = 0
     · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by order
-      rw [if_neg h_neg, hI, count_zero, mul_zero]
-    · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
+      rw [ite_eq_right h_neg, hI, count_zero, mul_zero]
+    · rw [ite_eq_left (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
         Nat.cast_one]
       ring
 
@@ -503,8 +506,8 @@ theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
   · intro I I' hI hI'
     classical
     by_cases h : I ≠ 0 ∧ I' ≠ 0
-    · rw [count_mul' K v, if_pos h, hI, hI', add_zero]
-    · rw [count_mul' K v, if_neg h]
+    · rw [count_mul' K v, ite_eq_left h, hI, hI', add_zero]
+    · rw [count_mul' K v, ite_eq_right h]
   · intro w hw
     rw [count_zpow, count_maximal_coprime K v hw, mul_zero]
 
@@ -515,6 +518,7 @@ theorem count_finsuppProd (exps : HeightOneSpectrum R →₀ ℤ) :
       exps.mem_support_iff, ne_eq, ite_not, ite_eq_right_iff, @eq_comm ℤ 0, imp_self]
   · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `exps` is finitely supported, then `val_v(∏_w w^{exps w}) = exps v`. -/
 theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
@@ -579,11 +583,11 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     intro v hv
     have hv_irred : Irreducible v.asIdeal := v.irreducible
     by_contra h_notMem
-    rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_notMem
+    rw [mem_union, mem_ofPred_eq, mem_ofPred_eq] at h_notMem
     push Not at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
       ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
-    rw [mem_setOf_eq, h_notMem.1, h_notMem.2, sub_self] at hv
+    rw [mem_ofPred_eq, h_notMem.1, h_notMem.2, sub_self] at hv
     exact hv (Eq.refl 0)
   exact Finite.subset (Finite.union (Ideal.finite_factors (ideal_factor_ne_zero hI haJ))
     (Ideal.finite_factors (constant_factor_ne_zero hI haJ))) h_subset
@@ -593,7 +597,7 @@ open Classical in
 theorem finite_factors (I : FractionalIdeal R⁰ K) :
     ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, count K v I = 0 := by
   by_cases hI : I = 0
-  · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, setOf_false,
+  · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, ofPred_false,
       finite_empty]
   · convert! finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
     rw [count_ne_zero K _ hI]
@@ -628,7 +632,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   choose! a ha ha' using fun p hps ↦ SetLike.exists_of_lt (this p hps)
   obtain ⟨K, hK⟩ : J ∣ Ideal.span {∑ p ∈ s, a p} := by
     rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
-    exact sum_mem fun p hp ↦ Ideal.mul_le_right (ha p hp)
+    exact sum_mem fun p hp ↦ Ideal.mul_le_left (ha p hp)
   refine ⟨_, _, hK.symm, ?_⟩
   by_contra H
   obtain ⟨p, hp, h⟩ := Ideal.exists_le_maximal _ H
@@ -707,7 +711,7 @@ def divMod (c b a : FractionalIdeal R⁰ K) : K :=
 lemma divMod_spec
     {a b c : FractionalIdeal R⁰ K} (hac : a ≤ c) (ha : a ≠ 0) (hb : b ≠ 0) :
     a + spanSingleton R⁰ (c.divMod b a) * b = c := by
-  rw [divMod, dif_pos ⟨hac, ha, hb⟩]
+  rw [divMod, dite_eq_left ⟨hac, ha, hb⟩]
   exact (IsDedekindDomain.exists_add_spanSingleton_mul_eq hac ha hb).choose_spec
 
 @[simp]
@@ -797,7 +801,7 @@ section primesOver
 variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [IsDomain S]
   [Module.IsTorsionFree S R]
 
-open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
+open IsDedekindDomain Ideal.IsDedekindDomain
 
 /--
 If `p` is a maximal ideal, then the lift of `p` in an extension is the product of the primes

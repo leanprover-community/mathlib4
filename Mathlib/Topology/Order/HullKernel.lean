@@ -113,7 +113,7 @@ lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), (hull T a)ᶜ = S } := by
   convert! isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
   ext R
-  simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
+  simp only [preimage_compl, mem_ofPred_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
   constructor <;> intro ha
   · obtain ⟨a, ha'⟩ := ha
     use {a}
@@ -181,6 +181,7 @@ def OrderGenerates := ∀ (a : α), ∃ (S : Set T), a = kernel S
 
 variable {T}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `T` is order generating, the `kernel` and the `hull` form a Galois insertion
 -/

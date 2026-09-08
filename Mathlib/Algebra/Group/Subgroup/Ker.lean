@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
-import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Kernel and range of group homomorphisms
@@ -53,7 +52,7 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 namespace MonoidHom
@@ -82,6 +81,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
+/-- The image of `⊤` under a group homomorphism equals its range. -/
+@[to_additive]
+theorem _root_.Subgroup.map_top (f : G →* N) : (⊤ : Subgroup G).map f = f.range :=
+  (range_eq_map f).symm
+
 @[to_additive (attr := simp)]
 theorem comap_range_self (f : G →* N) : f.range.comap f = ⊤ := by
   ext
@@ -94,9 +98,13 @@ instance _root_.Subgroup.range_isMulCommutative {G : Type*} [Group G] [IsMulComm
   range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
 
 @[to_additive (attr := simp)]
-theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
-  simp_rw [SetLike.ext_iff, mem_range, mem_map, restrict_apply, SetLike.exists,
+theorem domRestrict_range (f : G →* N) : (f.domRestrict K).range = K.map f := by
+  simp_rw [SetLike.ext_iff, mem_range, mem_map, domRestrict_apply, SetLike.exists,
     exists_prop, forall_const]
+
+@[deprecated (since := "2026-07-19")] alias restrict_range := domRestrict_range
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrict_range := _root_.AddMonoidHom.domRestrict_range
 
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
 homomorphism `G →* N`. -/
@@ -280,8 +288,12 @@ theorem ker_le_comap (f : G →* N) (H : Subgroup N) : f.ker ≤ H.comap f :=
   comap_mono bot_le
 
 @[to_additive (attr := simp)]
-theorem ker_restrict (f : G →* M) : (f.restrict K).ker = f.ker.subgroupOf K :=
+theorem ker_domRestrict (f : G →* M) : (f.domRestrict K).ker = f.ker.subgroupOf K :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias ker_restrict := ker_domRestrict
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.ker_restrict := _root_.AddMonoidHom.ker_domRestrict
 
 @[to_additive (attr := simp)]
 theorem ker_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : G →* N) (s : S)
@@ -300,6 +312,7 @@ theorem ker_one : (1 : G →* M).ker = ⊤ :=
 theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
   simp [ker, ← top_le_iff, SetLike.le_def, f.ext_iff]
 
@@ -517,6 +530,7 @@ theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
   map_le_map_iff_of_injective G'.subtype_injective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Subgroups of the subgroup `H` are considered as subgroups that are less than or equal to
 `H`. -/
 @[to_additive (attr := simps apply_coe) /-- Additive subgroups of the subgroup `H` are considered as
@@ -624,6 +638,6 @@ open MonoidHom in
 lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
     (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
   have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext : 1; simp
-  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
+  rw [map_range, H, range_comp, e.range_eq_top, Subgroup.map_top]
 
 end MulEquiv

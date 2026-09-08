@@ -80,6 +80,9 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
 
+-- TODO: `to_dual` should deal with this automatically:
+attribute [to_dual self] preimage.congr_simp
+
 @[simp, to_dual self]
 theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
     F.map (preimage F f) = f :=
@@ -94,12 +97,12 @@ variable [Full F] [F.Faithful]
 theorem preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
   F.map_injective (by simp)
 
-@[simp]
+@[simp, to_dual self]
 theorem preimage_comp (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
     F.preimage (f ≫ g) = F.preimage f ≫ F.preimage g :=
   F.map_injective (by simp)
 
-@[simp]
+@[simp, to_dual self]
 theorem preimage_map (f : X ⟶ Y) : F.preimage (F.map f) = f :=
   F.map_injective (by simp)
 

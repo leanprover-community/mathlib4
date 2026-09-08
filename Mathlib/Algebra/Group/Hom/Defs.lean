@@ -731,21 +731,21 @@ instance {M N : Type*} [Monoid M] [CancelMonoid N] : MonoidHomClass (M →ₙ* N
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
-@[to_additive (attr := simps, implicit_reducible)
+@[to_additive (attr := simps, instance_reducible)
 /-- The identity map from a type with zero to itself. -/]
 def OneHom.id (M : Type*) [One M] : OneHom M M where
   toFun x := x
   map_one' := rfl
 
 /-- The identity map from a type with multiplication to itself. -/
-@[to_additive (attr := simps, implicit_reducible)
+@[to_additive (attr := simps, instance_reducible)
 /-- The identity map from a type with addition to itself. -/]
 def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
   toFun x := x
   map_mul' _ _ := rfl
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive (attr := simps, implicit_reducible)
+@[to_additive (attr := simps, instance_reducible)
 /-- The identity map from an additive monoid to itself. -/]
 def MonoidHom.id (M : Type*) [MulOne M] : M →* M where
   toFun x := x
@@ -762,19 +762,19 @@ lemma MulHom.coe_id {M : Type*} [Mul M] : (MulHom.id M : M → M) = _root_.id :=
 lemma MonoidHom.coe_id {M : Type*} [MulOne M] : (MonoidHom.id M : M → M) = _root_.id := rfl
 
 /-- Composition of `OneHom`s as a `OneHom`. -/
-@[to_additive (attr := implicit_reducible) /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
+@[to_additive (attr := instance_reducible) /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where
   toFun x := hnp (hmn x)
   map_one' := by simp
 
 /-- Composition of `MulHom`s as a `MulHom`. -/
-@[to_additive (attr := implicit_reducible) /-- Composition of `AddHom`s as an `AddHom`. -/]
+@[to_additive (attr := instance_reducible) /-- Composition of `AddHom`s as an `AddHom`. -/]
 def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) : M →ₙ* P where
   toFun x := hnp (hmn x)
   map_mul' x y := by simp
 
 /-- Composition of monoid morphisms as a monoid morphism. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
 def MonoidHom.comp [MulOne M] [MulOne N] [MulOne P] (hnp : N →* P) (hmn : M →* N) :
     M →* P where
@@ -923,17 +923,23 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
       _ = g (f (g x * g y)) := by rw [f.map_mul]
       _ = g x * g y := h₁ _
 
-/-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
+/-- If `M` and `N` have multiplications, `f` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
 @[to_additive
-/-- If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
+/-- If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
-theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N} (is_surj : Function.Surjective f)
-    (is_comm : IsMulCommutative M) : IsMulCommutative N where
+theorem Function.Surjective.isMulCommutative [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
+    {f : F} (is_surj : Function.Surjective f) (is_comm : IsMulCommutative M) :
+    IsMulCommutative N where
   is_comm.comm a b := by
     have ⟨a', ha'⟩ := is_surj a
     have ⟨b', hb'⟩ := is_surj b
     simp [← ha', ← hb', ← map_mul, mul_comm']
+
+@[deprecated (since := "2026-08-11")]
+alias Function.Surjective.add_comm := Function.Surjective.isAddCommutative
+@[to_additive existing, deprecated (since := "2026-08-11")]
+alias Function.Surjective.mul_comm := Function.Surjective.isMulCommutative
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)

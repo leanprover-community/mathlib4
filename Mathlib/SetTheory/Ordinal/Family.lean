@@ -65,6 +65,7 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
     bfamilyOfFamily f (typein _ i) (typein_lt_type _ i) = f i :=
   bfamilyOfFamily'_typein _ f i
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated "familyOfBFamily is deprecated" (since := "2026-04-06")]
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
@@ -460,7 +461,7 @@ theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Or
 
 @[deprecated "bsup is deprecated" (since := "2026-04-05")]
 theorem iSup_Iio_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2 = bsup o f := by
-  simp_rw [Iio, bsup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_setOf]
+  simp_rw [Iio, bsup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_ofPred]
 
 end bsup
 

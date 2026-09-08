@@ -157,7 +157,7 @@ and `B : ObjectProperty C`, this is the inclusion functor
 `A.ι : A.FullSubcategory ⥤ C`, considered as a localizer morphism,
 where `C` is equipped with the property of morphisms `B.trW`
 and `A.FullSubcategory` with the property of morphisms `(B.inverseImage A.ι).trW`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def triangulatedLocalizerMorphism [A.IsTriangulated] :
     LocalizerMorphism (B.inverseImage A.ι).trW B.trW where
   functor := A.ι
@@ -190,6 +190,7 @@ lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : 
     · cat_disch
     · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]
     [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :

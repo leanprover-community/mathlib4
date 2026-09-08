@@ -135,7 +135,6 @@ def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
     S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
-  let x := (J.Cover X)ᵒᵖ
   let F' := F ⋙ J.diagramFunctor D X
   let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
   let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
@@ -176,7 +175,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type s} [SmallCategory K] [FinCategory K]
   rw [Category.assoc, Category.assoc, ← Iso.eq_inv_comp, Iso.inv_comp_eq, Iso.inv_comp_eq]
   refine colimit.hom_ext (fun j => ?_)
   dsimp [plusMap]
-  simp only [HasColimit.isoOfNatIso_ι_hom_assoc, ι_colimMap]
+  simp only [HasColimit.ι_isoOfNatIso_hom_assoc, ι_colimMap]
   dsimp [IsLimit.conePointUniqueUpToIso, HasLimit.isoOfNatIso, IsLimit.map]
   rw [limit.lift_π]
   dsimp

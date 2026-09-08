@@ -172,7 +172,7 @@ end ModObj
 
 open scoped ModObj MonoidalLeftAction
 
-variable {M' N' O' : D}
+variable {M' N' : D}
 
 open AddMonObj in
 /-- A morphism in `D` is a morphism of `A`-additive module objects if it commutes with
@@ -356,7 +356,7 @@ open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f ⊵ₗ M ≫ γ[B, M]`. -/
-@[to_additive (attr := simps!, implicit_reducible)
+@[to_additive (attr := simps!, instance_reducible)
   /-- When `M` is a `B`-additive module in `D` and `f : A ⟶ B` is a morphism of internal
   additive monoid objects, `M` inherits an `A`-additive module structure via
   "restriction of scalars", i.e `δ[A, M] = f ⊵ₗ M ≫ δ[B, M]`. -/]

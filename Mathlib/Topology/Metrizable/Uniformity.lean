@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Metrizable.Basic
@@ -58,7 +58,7 @@ namespace PseudoMetricSpace
 
 /-- The maximal pseudometric space structure on `X` such that `dist x y ≤ d x y` for all `x y`,
 where `d : X → X → ℝ≥0` is a function such that `d x x = 0` and `d x y = d y x` for all `x`, `y`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) : PseudoMetricSpace X where
   dist x y := ↑(⨅ l : List X, ((x::l).zipWith d (l ++ [y])).sum : ℝ≥0)
@@ -136,7 +136,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro m hm
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
       intro hLm
-      rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+      rw [mem_ofPred_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
           ← isChain_cons_append_singleton_iff_forall₂]
           at hm <;>
@@ -222,13 +222,13 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
-    · refine (dif_pos H).trans_le ?_
+    · refine (dite_eq_left H).trans_le ?_
       rw [← div_le_iff₀' zero_lt_two, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
       refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
-    · exact (dif_neg H).trans_le zero_le
+    · exact (dite_eq_right H).trans_le zero_le
   -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
   -- `Subtype.val` applications instead of `NNReal.toReal`.
   rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr
@@ -236,7 +236,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   · refine fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt ?_⟩
     rwa [← NNReal.coe_pow, NNReal.coe_lt_coe, ← not_le, hle_d, Classical.not_not]
   · refine fun n _ => ⟨n + 1, trivial, fun x hx => ?_⟩
-    rw [mem_setOf_eq] at hx
+    rw [mem_ofPred_eq] at hx
     contrapose! hx
     refine le_trans ?_ ((div_le_iff₀' zero_lt_two).2 (hd_le x.1 x.2))
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,

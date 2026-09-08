@@ -356,7 +356,7 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) :
     RingHom.LocalizationAwayPreserves P := by
   intro R S _ _ f r R' S' _ _ _ _ _ _ hf
-  have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
+  have : IsLocalization ((Submonoid.powers r).map f) S' := by rwa [Submonoid.map_powers]
   exact H f (Submonoid.powers r) R' S' hf
 
 lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P)
@@ -423,6 +423,7 @@ lemma RingHom.OfLocalizationSpan.ofIsLocalization'
   exact ⟨Rᵣ, Sᵣ, inferInstance, inferInstance, inferInstance, inferInstance,
     inferInstance, inferInstance, IsLocalization.Away.map Rᵣ Sᵣ f r, IsLocalization.map_comp _, hf⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
     {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)

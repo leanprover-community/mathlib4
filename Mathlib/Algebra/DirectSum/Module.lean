@@ -140,7 +140,7 @@ theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
 /-- The inclusion of a subset of the direct summands
 into a larger subset of the direct summands, as a linear map. -/
 def lsetToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, M i) →ₗ[R] ⨁ i : T, M i :=
-  toModule R _ _ fun i ↦ lof R T (fun i : Subtype T ↦ M i) ⟨i, H i.prop⟩
+  toModule R _ _ fun i ↦ lof R T (fun i : T ↦ M i) ⟨i, H i.prop⟩
 
 variable (ι M)
 
@@ -297,7 +297,7 @@ lemma range_lmap :
 end AddCommMonoid
 
 section AddCommGroup
-variable {R : Type u} {ι : Type v} {M : ι → Type w} {N : ι → Type*}
+variable {ι : Type v} {M : ι → Type w} {N : ι → Type*}
 
 lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
     (map f).ker =
@@ -424,12 +424,14 @@ variable {A}
 theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
   (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
     {i : ι} (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = x := by
   rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :

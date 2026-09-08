@@ -76,7 +76,7 @@ abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
   right_inv := DFunLike.congr_fun h_right_inv
 
 /-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
     DirectSum.Decomposition ℳ where
   decompose' := (Equiv.ofBijective _ h).symm
@@ -146,11 +146,19 @@ theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈
     i = j := by
   contrapose! hx; rw [← decompose_of_mem_same ℳ hxj, decompose_of_mem_ne ℳ hxi hx]
 
+#adaptation_note
+/--
+`simps!` won't apply `AddEquiv.symm_mk` without the `id <|` in `map_add'`.
+`decompose` and `Equiv.symm` are not implicit-reducible, so the type of the proof doesn't match the
+expected type up to implicit reducibility. If we remove `id`, we don't get an immediate error,
+but some downstream declarations will break.
+-/
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
 @[simps!]
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
-  AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
+  AddEquiv.symm { (decompose ℳ).symm with
+    map_add' := id <| map_add (DirectSum.coeAddMonoidHom ℳ) }
 
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=

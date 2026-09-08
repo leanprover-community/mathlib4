@@ -26,7 +26,7 @@ is the natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E
 
 @[expose] public section
 
-open ENNReal MeasureTheory Lp
+open ENNReal MeasureTheory
 open scoped NNReal
 
 noncomputable section

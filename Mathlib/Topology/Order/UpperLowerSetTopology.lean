@@ -5,7 +5,7 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Logic.Lemmas
+public import Mathlib.Basic.Logic.Lemmas
 public import Mathlib.Topology.AlexandrovDiscrete
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Order.LowerUpperTopology
@@ -59,7 +59,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
-@[implicit_reducible]
+@[instance_reducible]
 def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
@@ -69,7 +69,7 @@ def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
-@[implicit_reducible]
+@[instance_reducible]
 def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
