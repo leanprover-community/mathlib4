@@ -20,13 +20,16 @@ tactics that certify facts about matrix literals.
 
 ## Implementation notes
 
+The definitions in this file are intended for defining reflection certificates and should
+not be used for theory interface.
+
 `ListMatrix` namespace is used to avoid accidental collision with other downstream definitions.
 
 Lean's `Array` is essentially a `List` within the kernel, so random access is slow; the `List`
 carrier is chosen for easier inductive operations.
 
 Reading an entry by position costs the kernel a walk of that length. Therefore, operations on
-this representation needs to be mindful of traversing the structure in an efficient order.
+this representation need to be mindful of traversing the structure in an efficient order.
 
 `ListMatrix.transpose` is defined by recursion on the rows with explicit padding rather than
 through `List.transpose`, so that it reduces in the kernel. This is also more
