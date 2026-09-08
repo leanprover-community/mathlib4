@@ -43,9 +43,9 @@ namespace WithZeroMulInt
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤᵐ⁰ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(WithZero.unzero hx).toAdd` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
 def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤᵐ⁰ →*₀ ℝ≥0 where
-  toFun := fun x ↦ if hx : x = 0 then 0 else e ^ (WithZero.unzero hx).toAdd
+  toFun := fun x ↦ if hx : x = 0 then 0 else e ^ log x
   map_zero' := rfl
-  map_one' := by rw [dite_eq_right one_ne_zero, unzero_coe (x := 1), toAdd_one, zpow_zero]
+  map_one' := by rw [dite_eq_right one_ne_zero, log_one, zpow_zero]
   map_mul' x y := by
     by_cases hxy : x * y = 0
     · rcases mul_eq_zero.mp hxy with hx | hy
@@ -55,9 +55,7 @@ def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤᵐ⁰ →*₀ ℝ≥0 where
     · obtain ⟨hx, hy⟩ := mul_ne_zero_iff.mp hxy
       -- x ≠ 0 and y ≠ 0
       rw [dite_eq_right hxy, dite_eq_right hx, dite_eq_right hy, ← zpow_add' (Or.inl he),
-        ← toAdd_mul]
-      congr
-      rw [← WithZero.coe_inj, WithZero.coe_mul, coe_unzero hx, coe_unzero hy, coe_unzero hxy]
+        ← log_mul hx hy]
 
 theorem toNNReal_pos_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤᵐ⁰} (hx : x = 0) :
     toNNReal he x = 0 := by
@@ -65,7 +63,7 @@ theorem toNNReal_pos_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤᵐ⁰} (hx : x 
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_neg_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤᵐ⁰} (hx : x ≠ 0) :
-    toNNReal he x = e ^ (WithZero.unzero hx).toAdd := by
+    toNNReal he x = e ^ log x := by
   simp [toNNReal, hx]
 
 /-- `toNNReal` sends nonzero elements to nonzero elements. -/
@@ -92,7 +90,8 @@ theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤᵐ⁰) (he0 : e ≠ 0) (he1 :
   by_cases hm : m = 0
   · simp only [hm, map_zero, zero_ne_one]
   · refine ⟨fun h1 ↦ ?_, fun h1 ↦ h1 ▸ map_one _⟩
-    rw [toNNReal_neg_apply he0 hm, zpow_eq_one_iff_right₀ _root_.zero_le he1, toAdd_eq_zero] at h1
+    rw [toNNReal_neg_apply he0 hm, zpow_eq_one_iff_right₀ _root_.zero_le he1,
+      ← toAdd_unzero_eq_log hm, toAdd_eq_zero] at h1
     rw [← WithZero.coe_unzero hm, h1, coe_one]
 
 theorem toNNReal_lt_one_iff {e : ℝ≥0} {m : ℤᵐ⁰} (he : 1 < e) :

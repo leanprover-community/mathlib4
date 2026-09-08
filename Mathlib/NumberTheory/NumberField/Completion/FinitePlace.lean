@@ -311,8 +311,8 @@ lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < �
   apply (two_le_absNorm_nnreal v).trans
   conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
   apply zpow_le_zpow_right₀ (one_lt_absNorm_nnreal v).le
-  simpa [← Int.sub_one_lt_iff, sub_self, ← toAdd_one, Multiplicative.toAdd_lt,
-    WithZero.lt_unzero_iff] using Valued.toNormedField.one_lt_norm_iff.1 h
+  simpa [← Int.sub_one_lt_iff, ← log_one] using
+    lt_log_of_exp_lt (Valued.toNormedField.one_lt_norm_iff.1 h)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
