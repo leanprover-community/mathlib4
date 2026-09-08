@@ -102,7 +102,7 @@ theorem isPrime_of_prime {P : Ideal A} (h : Prime P) : IsPrime P := by
   refine ⟨?_, fun hxy => ?_⟩
   · rintro rfl
     rw [← one_eq_top] at h
-    exact h.not_unit isUnit_one
+    exact h.not_isUnit isUnit_one
   · simp only [← dvd_span_singleton, ← span_singleton_mul_span_singleton] at hxy ⊢
     exact h.dvd_or_dvd hxy
 
@@ -267,7 +267,7 @@ lemma mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
   by_cases hI : I = 0
   · simp [hI]
   refine (le_iInf fun i ↦ mul_mono_right (iInf_le _ _)).antisymm ?_
-  have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans mul_le_right
+  have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans mul_le_left
   obtain ⟨K, hK⟩ := dvd_iff_le.mpr H
   grw [hK, le_iInf (a := K) fun i ↦ ?_]
   rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]
@@ -696,7 +696,6 @@ theorem idealFactorsEquivOfQuotEquiv_symm :
 @[deprecated (since := "2026-04-16")]
 alias _root_.idealFactorsEquivOfQuotEquiv_symm := idealFactorsEquivOfQuotEquiv_symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem idealFactorsEquivOfQuotEquiv_is_dvd_iso {L M : Ideal R} (hL : L ∣ I) (hM : M ∣ I) :
     (idealFactorsEquivOfQuotEquiv f ⟨L, hL⟩ : Ideal A) ∣ idealFactorsEquivOfQuotEquiv f ⟨M, hM⟩ ↔
       L ∣ M := by
@@ -729,7 +728,6 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
 alias _root_.idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors :=
   idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
 isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
@@ -757,7 +755,6 @@ theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
 @[deprecated (since := "2026-04-16")]
 alias _root_.normalizedFactorsEquivOfQuotEquiv_symm := normalizedFactorsEquivOfQuotEquiv_symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
 theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
     (L : Ideal R) (hL : L ∈ normalizedFactors I) :
@@ -986,6 +983,27 @@ end DedekindDomain
 
 end ChineseRemainder
 
+namespace Ideal
+
+variable {R} in
+theorem emultiplicity_span_eq_emultiplicity {a b : R} :
+    emultiplicity (span {a}) (span ({b} : Set R)) = emultiplicity a b := by
+  rw [emultiplicity_eq_emultiplicity_iff]
+  simp [span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
+
+@[deprecated (since := "2026-09-04")]
+alias emultiplicity_eq_emultiplicity_span := emultiplicity_span_eq_emultiplicity
+
+@[deprecated (since := "2026-04-16")]
+alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_span_eq_emultiplicity
+
+variable {R} in
+theorem multiplicity_span_eq_multiplicity {a b : R} :
+    multiplicity (span {a}) (span ({b} : Set R)) = multiplicity a b :=
+  multiplicity_eq_of_emultiplicity_eq emultiplicity_span_eq_emultiplicity
+
+end Ideal
+
 section PID
 
 open UniqueFactorizationMonoid Ideal
@@ -995,14 +1013,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 
 namespace Ideal
 
-theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
-    span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
-  ⟨fun h => mem_span_singleton.mp (dvd_iff_le.mp h (mem_span_singleton.mpr (dvd_refl b))), fun h =>
-    dvd_iff_le.mpr fun _d hd => mem_span_singleton.mpr (dvd_trans h (mem_span_singleton.mp hd))⟩
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
-
+omit [IsDomain R] in
 @[simp]
 theorem squarefree_span_singleton {a : R} :
     Squarefree (span {a}) ↔ Squarefree a := by
@@ -1036,28 +1047,9 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
 alias _root_.singleton_span_mem_normalizedFactors_of_mem_normalizedFactors :=
   singleton_span_mem_normalizedFactors_of_mem_normalizedFactors
 
-theorem emultiplicity_eq_emultiplicity_span {a b : R} :
-    emultiplicity (span {a}) (span ({b} : Set R)) = emultiplicity a b := by
-  by_cases h : FiniteMultiplicity a b
-  · rw [h.emultiplicity_eq_multiplicity]
-    apply emultiplicity_eq_of_dvd_of_not_dvd <;>
-      rw [span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-    · exact pow_multiplicity_dvd a b
-    · apply h.not_pow_dvd_of_multiplicity_lt
-      apply lt_add_one
-  · suffices ¬FiniteMultiplicity (span ({a} : Set R)) (span ({b} : Set R)) by
-      rw [emultiplicity_eq_top.2 h, emultiplicity_eq_top.2 this]
-    exact FiniteMultiplicity.not_iff_forall.mpr fun n => by
-      rw [span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-      exact FiniteMultiplicity.not_iff_forall.mp h n
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.emultiplicity_eq_emultiplicity_span := emultiplicity_eq_emultiplicity_span
-
 section NormalizationMonoid
 variable [NormalizationMonoid R]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The bijection between the (normalized) prime factors of `r` and the (normalized) prime factors
 of `span {r}` -/
 noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r ≠ 0) :
@@ -1097,7 +1089,7 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplici
     emultiplicity d r =
       emultiplicity (normalizedFactorsEquivSpanNormalizedFactors hr ⟨d, hd⟩ : Ideal R)
         (span {r}) := by
-  simp only [normalizedFactorsEquivSpanNormalizedFactors, emultiplicity_eq_emultiplicity_span,
+  simp only [normalizedFactorsEquivSpanNormalizedFactors, emultiplicity_span_eq_emultiplicity,
     Subtype.coe_mk, Equiv.ofBijective_apply]
 
 @[deprecated (since := "2026-04-16")]
@@ -1128,7 +1120,7 @@ variable [DecidableEq R]
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
     Multiset.count (span {X} : Ideal R) (normalizedFactors (span {r})) =
         Multiset.count (normalize X) (normalizedFactors r) := by
-  have := emultiplicity_eq_emultiplicity_span (R := R) (a := X) (b := r)
+  have := emultiplicity_span_eq_emultiplicity (R := R) (a := X) (b := r)
   rw [emultiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
     emultiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
     normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
@@ -1222,7 +1214,7 @@ def under {B : Type*} [CommRing B] [IsDomain B] [Algebra A B] [Algebra.IsIntegra
     (w : HeightOneSpectrum B) : HeightOneSpectrum A where
   asIdeal := w.asIdeal.under A
   isPrime := .under A w.asIdeal
-  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
+  ne_bot := mt Ideal.eq_bot_of_under_eq_bot w.ne_bot
 
 end IsDedekindDomain.HeightOneSpectrum
 

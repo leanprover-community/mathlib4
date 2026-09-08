@@ -6,7 +6,8 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.Bornology.Absorbs
 /-!
 # Local convexity
@@ -44,6 +45,8 @@ absorbent, balanced, locally convex, LCTVS
 -/
 
 @[expose] public section
+
+assert_not_exists NormedSpace
 
 open Set
 open scoped Pointwise Topology
@@ -230,8 +233,7 @@ variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Every neighbourhood of the origin is absorbent. -/
 theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A :=
-  absorbent_iff_inv_smul.2 fun x ↦ Filter.tendsto_inv₀_cobounded.smul tendsto_const_nhds <| by
-    rwa [zero_smul]
+  absorbent_iff_inv_smul.2 fun _ ↦ Filter.tendsto_inv₀_cobounded.zero_smul_const _ hA
 
 /-- The union of `{0}` with the interior of a balanced set is balanced. -/
 theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :

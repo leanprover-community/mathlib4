@@ -17,7 +17,7 @@ public import Mathlib.Order.Interval.Finset.Defs
 
 public section
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β γ : Type*}
 
 open Set
 

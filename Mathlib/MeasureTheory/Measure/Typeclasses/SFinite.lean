@@ -104,7 +104,9 @@ theorem SigmaFinite.out (h : SigmaFinite μ) : Nonempty (μ.FiniteSpanningSetsIn
   h.1
 
 /-- If `μ` is σ-finite it has finite spanning sets in the collection of all measurable sets. -/
-def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
     μ.FiniteSpanningSetsIn { s | MeasurableSet s } where
   set n := toMeasurable μ (h.out.some.set n)
   set_mem _ := measurableSet_toMeasurable _ _
@@ -116,7 +118,9 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
 /-- A noncomputable way to get a monotone collection of sets that span `univ` and have finite
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
   properties in `SigmaFinite`. -/
-def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
   accumulate μ.toFiniteSpanningSetsIn.set i
 
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
@@ -338,7 +342,7 @@ private lemma exists_ae_subset_biUnion_countable_of_isFiniteMeasure [IsFiniteMea
     exact measure_mono (fun x hx ↦ by simp at hx ⊢; grind)
   refine ⟨D, by grind, by grind, fun s hs ↦ union_ae_eq_right_iff_ae_subset.mp ?_⟩
   symm
-  apply ae_eq_of_ae_subset_of_measure_ge subset_union_right.eventuallyLE
+  apply ae_eq_of_ae_subset_of_measure_ge subset_union_right.eventuallySubset
   · rw [hD, show s ∪ ⋃₀ D = ⋃₀ (D ∪ {s}) by simp]
     apply le_biSup (f := fun D ↦ μ (⋃₀ D))
     simp [D_mem.2, insert_subset_iff, hs, D_mem.1]
@@ -360,7 +364,7 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   refine ⟨⋃ n, D n, by simp [DC], by simp [D_count], fun s hs ↦ ?_⟩
   rw [← sum_sfiniteSeq μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
-  exact LE.le.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
+  exact LE.le.eventuallySubset (fun x hx ↦ by simp at hx ⊢; grind)
 
 set_option backward.defeqAttrib.useBackward false in
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for

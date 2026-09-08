@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Separation.Regular
 
@@ -38,7 +37,7 @@ Prove corresponding stronger results for `StrictMono` and `StrictAnti` functions
 
 open Set Filter
 
-open Topology
+open scoped Topology
 
 section
 
@@ -68,7 +67,7 @@ theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology 
     leftLim f a = y := by
   have h'' : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y) := ⟨y, h'⟩
   rw [h'α.topology_eq_generate_intervals] at h h' h''
-  simp only [leftLim, neBot_iff.mp h, h'', not_true, or_self_iff, if_false]
+  simp only [leftLim, neBot_iff.mp h, h'', not_true, or_self_iff, ite_false]
   exact lim_eq h'
 
 theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]

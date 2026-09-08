@@ -84,10 +84,10 @@ public def generator : K⟮X⟯ :=
   if h : E = ⊥ then 0 else (φ E).coeff (generatorIndex h)
 
 public lemma generator_eq_zero (h : E = ⊥) : generator E = 0 :=
-  dif_pos h
+  dite_eq_left h
 
 lemma generator_eq_coeff (h : E ≠ ⊥) : generator E = (φ E).coeff (generatorIndex h) :=
-  dif_neg h
+  dite_eq_right h
 
 public lemma generator_mem : generator E ∈ E := by
   by_cases h : E = ⊥

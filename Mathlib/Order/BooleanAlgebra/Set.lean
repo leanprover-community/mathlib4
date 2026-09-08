@@ -29,8 +29,6 @@ set, sets, subset, subsets, complement
 
 assert_not_exists RelIso
 
-open Function
-
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 

@@ -143,7 +143,7 @@ theorem ofScalarsSum_zero : ofScalarsSum c (0 : E) = c 0 • 1 := by
 
 @[simp]
 theorem ofScalarsSum_of_subsingleton [Subsingleton E] {x : E} : ofScalarsSum c x = 0 := by
-  simp [Subsingleton.eq_zero x, Subsingleton.eq_zero (1 : E)]
+  simp [Subsingleton.eq_zero (α := E)]
 
 @[simp]
 theorem ofScalarsSum_op [T2Space E] (x : E) :
@@ -159,7 +159,6 @@ end Field
 
 section Seminormed
 
-open Filter ENNReal
 open scoped Topology NNReal
 
 variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]

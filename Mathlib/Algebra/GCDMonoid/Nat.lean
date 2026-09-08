@@ -58,13 +58,13 @@ section NormalizationMonoid
 
 instance strongNormalizationMonoid : StrongNormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
-  normUnit_zero := if_pos le_rfl
+  normUnit_zero := ite_eq_left le_rfl
   normUnit_mul {a b} hna hnb := by
     rcases hna.lt_or_gt with ha | ha <;> rcases hnb.lt_or_gt with hb | hb <;>
       simp [Int.mul_nonneg_iff, ha.le, ha.not_ge, hb.le, hb.not_ge]
   normUnit_coe_units u :=
-    (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
-      eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
+    (units_eq_one_or u).elim (fun eq => eq.symm ▸ ite_eq_left Int.one_nonneg) fun eq =>
+      eq.symm ▸ ite_eq_right (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
 
 @[deprecated (since := "2026-07-08")]
 alias normalizationMonoid := strongNormalizationMonoid
@@ -72,12 +72,12 @@ alias normalizationMonoid := strongNormalizationMonoid
 theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 
 theorem normalize_of_nonneg {z : ℤ} (h : 0 ≤ z) : normalize z = z := by
-  rw [normalize_apply, normUnit_eq, if_pos h, Units.val_one, mul_one]
+  rw [normalize_apply, normUnit_eq, ite_eq_left h, Units.val_one, mul_one]
 
 theorem normalize_of_nonpos {z : ℤ} (h : z ≤ 0) : normalize z = -z := by
   obtain rfl | h := h.eq_or_lt
   · simp
-  · rw [normalize_apply, normUnit_eq, if_neg (not_le_of_gt h), Units.val_neg, Units.val_one,
+  · rw [normalize_apply, normUnit_eq, ite_eq_right (not_le_of_gt h), Units.val_neg, Units.val_one,
       mul_neg_one]
 
 theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=

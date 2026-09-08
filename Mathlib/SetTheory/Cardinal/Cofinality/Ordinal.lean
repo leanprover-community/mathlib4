@@ -55,17 +55,9 @@ theorem cof_type (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     (typeLT α).cof = Order.cof α :=
   liftOnWellOrder_type ..
 
-@[deprecated (since := "2026-02-18")] alias cof_type_lt := cof_type
-
 @[simp]
 theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
   conv_rhs => rw [← type_toType o, cof_type]
-
-@[deprecated (since := "2026-02-18")] alias cof_eq_cof_toType := cof_toType
-@[deprecated (since := "2026-02-18")] alias le_cof_type := le_cof_iff
-@[deprecated (since := "2026-02-18")] alias cof_type_le := cof_le
-@[deprecated (since := "2026-02-18")] alias lt_cof_type := cof_le
-@[deprecated (since := "2026-02-18")] alias cof_eq := Order.cof_eq
 
 @[simp]
 theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.lift.{v} o) := by
@@ -93,10 +85,6 @@ theorem ord_cof_le (o : Ordinal) : o.cof.ord ≤ o :=
 @[simp]
 theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 := by
   rw [← cof_toType, cof_eq_zero_iff, isEmpty_toType_iff]
-
-@[deprecated cof_eq_zero (since := "2026-02-18")]
-theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
-  cof_eq_zero.not
 
 @[simp]
 theorem cof_pos {o} : 0 < cof o ↔ 0 < o := by
@@ -148,8 +136,6 @@ theorem cof_eq_aleph0_of_isSuccLimit {o : Ordinal} (ho : IsSuccLimit o) (ho' : o
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=
   cof_eq_aleph0_of_isSuccLimit isSuccLimit_omega0 omega0_lt_omega_one
-
-@[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
 variable (α) in
 /-- Every well-order has a cofinal subset of order type `(cof α).ord`. -/
@@ -600,11 +586,6 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : IsStrongPrelimit #α) :
       exact isSuccLimit_ord h'.aleph0_le
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
-
-@[deprecated (since := "2026-02-25")]
-alias unbounded_of_unbounded_sUnion := isCofinal_of_isCofinal_sUnion
-@[deprecated (since := "2026-02-25")]
-alias unbounded_of_unbounded_iUnion := isCofinal_of_isCofinal_iUnion
 
 /-! ### Consequences of König's lemma -/
 
