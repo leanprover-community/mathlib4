@@ -1342,12 +1342,12 @@ def test_fileDirPath : IO Unit := do
   assertEq "the repo is lowercased"
     "f/alice/mathlib4" (fileDirPath (some .forks) "Alice/Mathlib4" none)
 
-/-- `stagedUploadDestFrom` resolves the destination contract per backend: the
-azure backend writes to the Azure account, the s3 backend to the bucket
-endpoint MATHLIB_CACHE_PUT_BASE_URL names, and MATHLIB_CACHE_PUT_URL
-overrides both with one flat endpoint. The prefixes carry no trailing
-slashes and build on the same `fileDirPath` policy as every other upload
-path. -/
+/-- `stagedUploadDestFrom` resolves the destination contract per backend:
+each backend writes the container layout under the base
+MATHLIB_CACHE_PUT_BASE_URL names. The azure backend defaults to the Azure
+account; the s3 backend has no default. MATHLIB_CACHE_PUT_URL overrides both
+with one flat endpoint. The prefixes carry no trailing slashes and build on
+the same `fileDirPath` policy as every other upload path. -/
 def test_stagedUploadDestFrom : IO Unit := do
   IO.println "stagedUploadDestFrom:"
   let putBase := "https://s3.example.org/bucket-prefix"
@@ -1407,9 +1407,9 @@ def test_stagedUploadDestFrom : IO Unit := do
   assertTrue "s3: no put base errors"
     (stagedUploadDestFrom .s3 none none (some .forks) "alice/mathlib4" none
       matches .error _)
-  assertTrue "azure: a set put base errors"
-    (stagedUploadDestFrom .azure none (some putBase) (some .forks) "alice/mathlib4" none
-      matches .error _)
+  assertTrue "azure: a put base rebases the container write"
+    ((stagedUploadDestFrom .azure none (some putBase) (some .forks)
+        "Alice/Mathlib4" (some "sha1")).toOption == some expectForksScoped)
   -- PUT_URL keeps the opposite empty rule from every read variable: any set
   -- value counts, an empty one included, so a misconfigured endpoint fails
   -- the upload rather than divert it to the backend's destination.

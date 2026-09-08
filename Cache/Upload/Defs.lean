@@ -73,9 +73,11 @@ Any set value counts here, an empty one included: a misconfigured endpoint
 fails the upload and does not divert it to the backend's destination. The
 read variables take the opposite rule, where an empty value means unset.
 
-Without it, the backend resolves its own destination: `azureUploadDestFrom`
-(the Azure account) or `s3UploadDestFrom` (the bucket endpoint
-`MATHLIB_CACHE_PUT_BASE_URL` names; `putBase?`, empty means unset).
+Without it, the backend resolves its own destination (`azureUploadDestFrom`,
+`s3UploadDestFrom`): the container write, rebased under the base
+`MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`, empty means unset). The azure
+backend defaults to the Azure account when the base is unset; the s3 backend
+has no default, because a bucket endpoint is account-specific.
 -/
 def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :

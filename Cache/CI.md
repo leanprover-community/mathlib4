@@ -31,7 +31,8 @@ The trust model behind the containers and the write credentials is in [`SECURITY
 backend selects the destination, the credential variables it reads (see
 [Environment variables](#environment-variables)), and the transfer tool:
 
-- `azure` writes to the Azure storage account and uploads with curl:
+- `azure` writes to the Azure storage account (or the base
+  `MATHLIB_CACHE_PUT_BASE_URL` names) and uploads with curl:
   parallel PUTs, each signed per request with the OIDC bearer token; an
   upload never replaces an existing object (`If-None-Match: *`).
 - `s3` writes to the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names
@@ -55,7 +56,7 @@ option inherits from the environment.
 | `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure OIDC bearer token (`--backend=azure`, the default). |
 | `MATHLIB_CACHE_S3_ACCESS_KEY_ID`, `MATHLIB_CACHE_S3_SECRET_ACCESS_KEY` | S3 credentials (SigV4), for `--backend=s3`. The pair must be set together. |
 | `MATHLIB_CACHE_S3_SESSION_TOKEN` | Session token of a temporary S3 credential; optional. |
-| `MATHLIB_CACHE_PUT_BASE_URL` | The s3 backend's bucket endpoint (`https://host/bucket`). The `--container` write is rebased under it (`{base}/{container}/{key}`) and keeps the container path policy. Required for `--backend=s3` unless `MATHLIB_CACHE_PUT_URL` is set. The azure backend writes to the Azure storage account and rejects a set value. |
+| `MATHLIB_CACHE_PUT_BASE_URL` | The upload base: the `--container` write is rebased under it (`{base}/{container}/{key}`) and keeps the container path policy. The azure backend defaults to the Azure storage account. For `--backend=s3` it names the bucket endpoint (`https://host/bucket`) and is required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend: the container policy is off, and the selected backend signs the requests. |
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace, for reads and `put` (see `--scope`, which takes precedence). |
