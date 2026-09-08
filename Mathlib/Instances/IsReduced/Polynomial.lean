@@ -74,7 +74,7 @@ theorem coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) :
           grind [Finset.mem_antidiagonal]
       grind [IsReduced.mul_eq_zero_of_mul_sq_eq_zero]
 
-instance instIsReducedOfIsReduced : IsReduced R[X] := by
+instance : IsReduced R[X] := by
   have key : ∀ q : R[X], q * q = 0 → q = 0 := by
     intro q hq
     ext i
