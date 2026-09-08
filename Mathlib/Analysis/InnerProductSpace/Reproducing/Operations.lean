@@ -90,8 +90,7 @@ lemma kerFun_apply_eq_mk (x : X) (v : V) :
 
 theorem kernel_sum_eq_sum_of_kernel : kernel (H + H') = kernel H + kernel H' := by
   ext
-  simp [← kerFun_apply, kerFun_apply_eq_mk H H' _ _]
-  rfl
+  simp [← kerFun_apply, kerFun_apply_eq_mk H H' _ _, mk_eq]
 
 section OfKernel
 
