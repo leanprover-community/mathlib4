@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!
 
@@ -138,6 +138,27 @@ theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
 theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
     w ∈ p.support ↔ ¬G.IsIsolated w :=
   ⟨fun hwp hw ↦ hnil <| p.nil_of_isIsolated_of_mem_support hw hwp, hp.mem_support_of_not_isIsolated⟩
+
+theorem isEulerian_rotate {p : G.Walk u u} (hv : v ∈ p.support) :
+    (p.rotate v hv).IsEulerian ↔ p.IsEulerian := by
+  simp_rw [IsEulerian, p.rotate_edges v hv |>.perm.count_eq]
+
+alias ⟨_, IsEulerian.rotate⟩ := isEulerian_rotate
+
+/-- In an Eulerian graph there exists an Eulerian circuit from any non-isolated vertex. -/
+theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support
+    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) {v : V} (hv : ¬G.IsIsolated v) :
+    ∃ p : G.Walk v v, p.IsEulerian :=
+  have ⟨_, _, hp⟩ := hp
+  ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
+
+/-- In a preconnected Eulerian graph there exists an Eulerian circuit from any vertex. -/
+theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected)
+    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) :
+    ∃ p : G.Walk v v, p.IsEulerian := by
+  cases subsingleton_or_nontrivial V
+  · exact ⟨nil, Sym2.ind fun a b hadj ↦ absurd (Subsingleton.elim a b) hadj.ne⟩
+  exact exists_isEulerian_of_mem_support hp <| h.not_isIsolated v
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
