@@ -123,8 +123,7 @@ lemma map_dAlternating_apply (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' 
     ((koszulComplex.dAlternating φ' i) (f ∘ v) : ⋀[R]^i N) =
       exteriorPower.map i f ((koszulComplex.dAlternating φ i) v) := by
   subst h
-  simp [dAlternating_apply, exteriorPower.map_apply_ιMulti]
-  rfl
+  simp [dAlternating_apply, exteriorPower.map_apply_ιMulti, Fin.removeNth_comp]
 
 lemma map_d_comm (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) (i : ℕ) :
     ofHom (exteriorPower.map (i + 1) f) ≫ ofHom (koszulComplex.d φ' i) =
