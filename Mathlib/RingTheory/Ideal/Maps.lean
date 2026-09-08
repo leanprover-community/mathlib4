@@ -1264,13 +1264,13 @@ def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R 
   left_inv I := by exact I.map_comap_of_surjective e.toRingHom e.surjective
   right_inv I := by exact I.comap_map_of_bijective _ e.bijective
   map_rel_iff' := by
-    have : Function.Surjective e.toRingHom := e.surjective
     simp [← Ideal.map_le_iff_le_comap]--, Ideal.map_comap_of_surjective e.toRingHom this]
+    -- TODO: why does simp not fire here?
     intro a
-    rw [← Ideal.map_comap_of_surjective e.toRingHom this a]
+    rw [← Ideal.map_comap_of_surjective e.toRingHom e.surjective a]
     simp
-#lint
-#exit
+--#lint
+--#exit
 @[simp]
 lemma RingEquiv.idealComapOrderIso_symm_apply
     {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) (I : Ideal R) :
@@ -1282,13 +1282,14 @@ namespace AlgHom
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
-lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+-- now a syntactic tautology
+--lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
 
 lemma comap_ker {C : Type*} [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
-    (RingHom.ker f).comap g = RingHom.ker (f.comp g) :=
+    (f.toRingHom.ker).comap g.toRingHom = RingHom.ker (f.comp g).toRingHom :=
   RingHom.comap_ker f.toRingHom g.toRingHom
 
 end AlgHom
