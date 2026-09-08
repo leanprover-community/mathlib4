@@ -715,11 +715,15 @@ instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
 
-@[simp]
-theorem toStarRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = e := rfl
+theorem toStarRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = .ofClass e := rfl
 
-theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
+@[deprecated (since := "2026-09-08")] alias toStarRingEquiv_eq_coe := toStarRingEquiv_eq_ofClass
+
+-- TODO: change the RHS to `RingEquiv.ofClass`
+theorem toRingEquiv_eq_ofClass (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = StarRingEquiv.ofClass e :=
   rfl
+
+@[deprecated (since := "2026-09-08")] alias toRingEquiv_eq_coe := toRingEquiv_eq_ofClass
 
 @[ext]
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
@@ -790,10 +794,11 @@ theorem refl_symm : (StarAlgEquiv.refl R A).symm = .refl R A :=
   rfl
 
 @[simp]
-theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃⋆+* A) = (e : A ≃⋆+* B).symm := rfl
+theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : e.symm.toStarRingEquiv = e.toStarRingEquiv.symm :=
+  rfl
 
 @[simp]
-theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e : A ≃⋆+* B).symm = (e : A ≃+* B).symm := rfl
+theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv.symm = e.toRingEquiv.symm := rfl
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
