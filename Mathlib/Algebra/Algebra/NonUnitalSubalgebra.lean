@@ -540,7 +540,6 @@ lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
   simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
 
 variable [NonUnitalNonAssocSemiring B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
 section IsScalarTower
 
@@ -691,14 +690,14 @@ theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
 
 open NonUnitalSubalgebra in
 lemma _root_.NonUnitalAlgHom.map_adjoin [IsScalarTower R B B] [SMulCommClass R B B]
-    (f : F) (s : Set A) : map f (adjoin R s) = adjoin R (f '' s) :=
+    (f : A →ₙₐ[R] B) (s : Set A) : map f (adjoin R s) = adjoin R (f '' s) :=
   Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalAlgebra.gi.gc
     NonUnitalAlgebra.gi.gc fun _t => rfl
 
 open NonUnitalSubalgebra in
 @[simp]
 lemma _root_.NonUnitalAlgHom.map_adjoin_singleton [IsScalarTower R B B] [SMulCommClass R B B]
-    (f : F) (x : A) : map f (adjoin R {x}) = adjoin R {f x} := by
+    (f : A →ₙₐ[R] B) (x : A) : map f (adjoin R {x}) = adjoin R {f x} := by
   simp [NonUnitalAlgHom.map_adjoin]
 
 variable {R A}
@@ -749,12 +748,12 @@ theorem mul_mem_sup {S T : NonUnitalSubalgebra R A} {x y : A} (hx : x ∈ S) (hy
   mul_mem (mem_sup_left hx) (mem_sup_right hy)
 
 theorem map_sup [IsScalarTower R B B] [SMulCommClass R B B]
-    (f : F) (S T : NonUnitalSubalgebra R A) :
+    (f : A →ₙₐ[R] B) (S T : NonUnitalSubalgebra R A) :
     ((S ⊔ T).map f : NonUnitalSubalgebra R B) = S.map f ⊔ T.map f :=
   (NonUnitalSubalgebra.gc_map_comap f).l_sup
 
 theorem map_inf [IsScalarTower R B B] [SMulCommClass R B B]
-    (f : F) (hf : Function.Injective f) (S T : NonUnitalSubalgebra R A) :
+    (f : A →ₙₐ[R] B) (hf : Function.Injective f) (S T : NonUnitalSubalgebra R A) :
     ((S ⊓ T).map f : NonUnitalSubalgebra R B) = S.map f ⊓ T.map f :=
   SetLike.coe_injective (Set.image_inter hf)
 
@@ -803,7 +802,7 @@ theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} {x : A} :
     x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι]
-    [IsScalarTower R B B] [SMulCommClass R B B] (f : F)
+    [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B)
     (hf : Function.Injective f) (S : ι → NonUnitalSubalgebra R A) :
     ((⨅ i, S i).map f : NonUnitalSubalgebra R B) = ⨅ i, (S i).map f := by
   apply SetLike.coe_injective
@@ -1130,14 +1129,14 @@ variable {R A}
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
-theorem map_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B]
-    [SMulCommClass R B B] [FunLike F A B] [NonUnitalAlgHomClass F R A B] {f : F}
+theorem map_center_le_center {B} [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B]
+    [SMulCommClass R B B] {f : A →ₙₐ[R] B}
     (hf : Function.Surjective f) : map f (center R A) ≤ center R B :=
   Set.image_center_subset hf
 
-theorem comap_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B]
-    [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B] [NonUnitalAlgHomClass F R A B]
-    {f : F} (hf : Function.Injective f) : comap f (center R B) ≤ center R A :=
+theorem comap_center_le_center {B} [NonUnitalNonAssocSemiring B] [Module R B]
+    [IsScalarTower R B B] [SMulCommClass R B B]
+    {f : A →ₙₐ[R] B} (hf : Function.Injective f) : comap f (center R B) ≤ center R A :=
   Set.preimage_center_subset hf
 
 @[simp]
