@@ -827,6 +827,11 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
   rfl
 
 @[simp]
+theorem type_lt_sum_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] : typeLT (α ⊕ₗ β) = typeLT α + typeLT β :=
+  rfl
+
+@[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 
