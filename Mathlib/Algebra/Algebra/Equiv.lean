@@ -70,7 +70,8 @@ def _root_.AlgEquiv.ofClass {F R A B : Type*} [CommSemiring R]
     (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with commutes' := commutes f }
 
-@[deprecated (since := "2026-09-07")] alias toAlgEquiv := AlgEquiv.ofClass
+@[deprecated (since := "2026-09-08")] alias toAlgEquiv := AlgEquiv.ofClass
+
 end AlgEquivClass
 
 namespace AlgEquiv
@@ -138,7 +139,8 @@ theorem toEquiv_eq_coe : e.toEquiv = e :=
 protected theorem coe_ofClass {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
     ⇑(ofClass f) = f :=
   rfl
-@[deprecated (since := "2026-09-07")] alias coe_coe := AlgEquiv.coe_ofClass
+
+@[deprecated (since := "2026-09-08")] alias coe_coe := AlgEquiv.coe_ofClass
 
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
@@ -259,21 +261,21 @@ theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
 
 @[simp]
-theorem coe_apply_ofClass_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
+theorem apply_ofClass_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₂) :
     f ((ofClass f).symm x) = x :=
   EquivLike.right_inv f x
 
 @[simp]
-theorem ofClass_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
+theorem ofClass_symm_apply_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₁) :
     (ofClass f).symm (f x) = x :=
   EquivLike.left_inv f x
 
-@[deprecated (since := "2026-09-07")]
-alias coe_apply_coe_coe_symm_apply := coe_apply_ofClass_symm_apply
-@[deprecated (since := "2026-09-07")]
-alias coe_coe_symm_apply_coe_apply := ofClass_symm_apply_coe_apply
+@[deprecated (since := "2026-09-08")]
+alias coe_apply_coe_coe_symm_apply := apply_ofClass_symm_apply
+@[deprecated (since := "2026-09-08")]
+alias coe_coe_symm_apply_coe_apply := ofClass_symm_apply_apply
 
 /-- `simp` normal form of `invFun_eq_symm` -/
 @[simp]
