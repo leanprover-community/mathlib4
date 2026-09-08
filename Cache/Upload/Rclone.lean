@@ -37,7 +37,7 @@ def rcloneCommonFlags : Array String := #["--s3-no-check-bucket", "--retries", "
 /--
 The rclone invocation for the `.ltar` files: a copy from `srcDir` into the
 files prefix, restricted to the `--files-from` list, so only the files the
-caller names leave the machine. A non-overwrite put passes
+caller names are uploaded. A non-overwrite put passes
 `--ignore-existing`, which skips objects the destination already holds; this
 matches the curl tool's `If-None-Match: *`. Artifact names are content
 hashes, so a skipped re-put loses nothing.
@@ -61,11 +61,11 @@ def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
 
 /--
 The staged put on a system rclone. `env` is the child environment the caller
-assembled (`rcloneEnv`), so no credential reaches a command line, and
+assembled (`rcloneEnv`), so no credential appears on a command line, and
 `bucketPath` is the bucket the `:s3:` remotes address. `srcDir` holds the
 files and `fileNames` lists the ones to upload; the list is passed as a
-`--files-from` file, so only the named files leave the machine. The files
-upload first, then the per-SHA marker, in the same order as the curl tool. A
+`--files-from` file, so only the named files are uploaded. The files are
+uploaded first, then the per-SHA marker, in the same order as the curl tool. A
 files failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
 The `rclone` parameter names the binary and exists for the tests; production
 callers use the default.

@@ -49,8 +49,8 @@ def markerReadURL (container : Container) (repo sha : String) : IO String := do
 Write the marker file for `sha` and hand it to `transfer`, which moves it to
 `markerURL`; every upload tool shares these marker mechanics. The blob
 content is the SHA itself, as a debugging aid; existence is the signal. A
-marker overwrites freely, so a re-upload of an already-marked commit does not
-fail here.
+marker may be overwritten freely, so a re-upload of an already-marked commit
+does not fail here.
 
 Runs after the `.ltar` artifact uploads complete. A `transfer` failure warns
 instead of throwing: the artifacts are already uploaded, and the only loss is

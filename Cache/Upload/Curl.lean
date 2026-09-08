@@ -91,7 +91,8 @@ def putStagedViaCurl (dest : StagedUploadDest) (getSignArgs : IO (Array String))
   putFilesViaCurl dest files (srcDir / "curl.config") overwrite (← getSignArgs)
   if let some sha := markerSha? then
     uploadMarkerWith (dest.markerURL sha) sha fun file => do
-      -- A marker overwrites freely, so its PUT carries no non-overwrite guard.
+      -- A marker may be overwritten freely, so its PUT carries no
+      -- non-overwrite guard.
       let args := uploadPutArgs (← getSignArgs) (overwrite := true) ++
         #["-X", "PUT", "-T", file.toString, dest.markerURL sha]
       -- The argument list carries the credential; keep it out of the failure message.

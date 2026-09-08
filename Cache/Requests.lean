@@ -735,8 +735,9 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg}: {errMsg}"
               return msg
             let msg? := result.getObjValAs? String "errormsg"
-            -- A download is named by its part file, an upload by its URL —
-            -- query-stripped, so a credential in the query string never prints.
+            -- A download is named by its part file, an upload by its URL.
+            -- The URL is query-stripped, so a credential in the query string
+            -- is not printed.
             let src? : Except String String := match dir with
               | .download => fn?
               | .upload =>

@@ -120,8 +120,8 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
   | _ => .error s!"the upload base '{base}' is not a URL"
 
 /--
-The rclone S3 backend configuration. It travels in the child environment, so
-no credential reaches a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
+The rclone S3 backend configuration. It is passed in the child environment,
+so no credential appears on a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
 temporary credential and cleared otherwise, so a stale token in the caller's
 environment is not inherited. Region `auto` matches the curl tool's SigV4
 region. rclone refuses to run without a provider, so `provider` must carry

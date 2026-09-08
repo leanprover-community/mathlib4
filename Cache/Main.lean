@@ -279,7 +279,7 @@ def main (args : List String) : IO Unit := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   -- `pack`-and-upload: the hash memo scopes the file list to what this
   -- checkout's build links, so nothing else in the shared per-user cache
-  -- directory leaves the machine.
+  -- directory is uploaded.
   let put (overwrite := false) :=
     runPut container? repo? backend IO.CACHEDIR
       (getFileNames := pack overwrite (verbose := true)) overwrite

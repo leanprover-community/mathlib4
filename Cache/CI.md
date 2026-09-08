@@ -12,7 +12,7 @@ The trust model behind the containers and the write credentials is in [`SECURITY
 
 | Command     | Description                                                          |
 |-------------|----------------------------------------------------------------------|
-| `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory leaves the machine. A `--scope` adds the per-commit namespace and its completeness marker. |
+| `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory is uploaded. A `--scope` adds the per-commit namespace and its completeness marker. |
 | `put!`      | Same as `put`, overwriting files the server already holds             |
 | `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--backend` selects the storage backend. |
 
