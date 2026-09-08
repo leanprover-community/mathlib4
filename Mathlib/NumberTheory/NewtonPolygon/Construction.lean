@@ -9,6 +9,8 @@ public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Data.Stream.Defs
 public import Mathlib.Order.WithBotTop
 public import Mathlib.Data.Seq.Basic
+public import Mathlib.NumberTheory.NewtonPolygon.Basic
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Constructing a Newton Polygon
@@ -23,10 +25,10 @@ P-adic Numbers: An Introduction - Fernando Q. Gouvêa
 
 -/
 
-namespace NewtonPolygon₀.Construction
-
-
 @[expose] public section
+
+namespace NewtonPolygon₀.construction
+
 
 variable {Γ : Type*} [CommSemiring Γ] [Algebra Γ ℝ]
 
@@ -643,25 +645,29 @@ lemma stream'_lengths_nonFinal {n : ℕ} (h : (n : WithTop ℕ) + 1 < stream'_nu
   exact ⟨l, by grind [nextVertex_l_eq v hp, nextVertex_lt v hp], by rw [stream'_lengths, hm]; rfl⟩
 
 lemma stream'_slopes_final {n : ℕ} (h1 : (n : WithTop ℕ) + 1 = stream'_numSegments v)
-    (h2 : stream'_slopes v n = ⊤ ∨ stream'_slopes v n = ⊥) : stream'_numSegments v = 1 := by
+    (h2 : stream'_slopes v n = ⊤ ∨ stream'_slopes v n = ⊥) : stream'_numSegments v = 1
+    ∧ stream'_lengths v n = 0 := by
   classical
-  rw [← h1]
-  suffices n = 0 by simp [this]
-  rw [stream'_numSegments] at h1
+  suffices hn0 : n = 0 ∧ stream' v n = some .unboundedBelow by
+    obtain ⟨rfl, ht⟩ := hn0
+    exact ⟨by rw [← h1]; simp, by simp [stream'_lengths, ht]⟩
+  unfold stream'_numSegments at h1
   split_ifs at h1 with ht hn
-  · have := by exact_mod_cast h1
-    obtain ⟨_, _, _, _, hm⟩ := stream'_nextVertex_of_lt v
-      (show n < Nat.find ht by grind) (by simp [Nat.find_spec ht])
+  · have hfn : n + 1 = Nat.find ht := by exact_mod_cast h1
+    obtain ⟨i₀, i₁, l, m, hm⟩ := stream'_nextVertex_of_lt v
+      (show n < Nat.find ht by omega) (by simp [Nat.find_spec ht])
     simp [stream'_slopes, hm, slopes', slopes] at h2
-  · have := by exact_mod_cast h1
+  · have hfn : n + 1 = Nat.find hn := by exact_mod_cast h1
+    have hne : stream' v n ≠ none :=
+      Nat.find_min hn (show n < Nat.find hn by omega)
     cases t : stream' v n with
-    | none => exact absurd t (Nat.find_min hn (show n < Nat.find hn by omega))
+    | none => exact absurd t hne
     | some S =>
       cases S with
       | tail => exact absurd ⟨n, t⟩ ht
       | unboundedBelow =>
         cases n with
-        | zero => rfl
+        | zero => exact ⟨rfl, rfl⟩
         | succ a => exact absurd t (nextStep_unboundedBelow' v a)
       | limitingRay m => simp [stream'_slopes, t, slopes', slopes] at h2
       | infiniteRay m => simp [stream'_slopes, t, slopes', slopes] at h2
@@ -705,6 +711,26 @@ lemma stream'_lengths_final {n : ℕ} (h1 : (n : WithTop ℕ) + 1 = stream'_numS
         grind [nextVertex_l_eq v hp, nextVertex_lt v hp]
   · simp at h1
 
+lemma stream'_slopes_of_lengths_eq_zero {n : ℕ} (h : stream'_lengths v n = 0) :
+    stream'_slopes v n = ⊤ ∨ stream'_slopes v n = ⊥ := by
+  unfold stream'_lengths at h
+  cases t : stream' v n with
+  | none => exact Or.inl (by simp [stream'_slopes, t, slopes'])
+  | some S =>
+    rw [t] at h
+    cases S with
+    | tail => exact Or.inl (by simp [stream'_slopes, t, slopes', slopes])
+    | unboundedBelow => exact Or.inr (by simp [stream'_slopes, t, slopes', slopes])
+    | limitingRay m => simp at h
+    | infiniteRay m => simp at h
+    | nextVertex j₀ j₁ l m =>
+      obtain ⟨i₀, i₁, hp⟩ := nextStep_nextVertex v t
+      have hl := nextVertex_l_eq v hp
+      have hlt := nextVertex_lt v hp
+      have h' : (l : WithTop ℕ) = 0 := h
+      have hl0 : l = 0 := by exact_mod_cast h'
+      omega
+
 end stream'API
 
 theorem IsSeq : Stream'.IsSeq (stream' v) :=
@@ -745,6 +771,72 @@ noncomputable
 def list (h : IsFinite v) : List (Step Γ) :=
     Stream'.Seq.toList (seq v) h
 
-end
+/-- The one-sided Newton polygon (`NewtonPolygon₀`) attached to a coefficient-valuation sequence
+`v : ℕ → WithTop Γ` by the algorithm in `Construction.lean`: `stream'_numSegments v` many
+segments carrying the constructed slopes and lengths, anchored at the first coefficient of finite
+valuation (with the junk anchor `(0, 0)` if there is none). All structure obligations are
+discharged by the `numSegments` API from `Construction.lean`. -/
+noncomputable
+def _root_.NewtonPolygon₀.construction (v : ℕ → WithTop Γ) : NewtonPolygon₀ (Γ := Γ) where
+  support := stream'_numSegments v
+  slopes := stream'_slopes v
+  slopes_junk := fun _ h => stream'_slopes_junk v h
+  slopes_nonFinal := fun _ h => stream'_slopes_nonFinal v h
+  slopes_final := fun _ h => stream'_slopes_final v h.1 h.2
+  slopes_increasing := stream'_slopes_mono v
+  lengths := stream'_lengths v
+  lengths_junk := fun _ h => stream'_lengths_junk v h
+  lengths_nonFinal := fun _ h => stream'_lengths_nonFinal v h
+  lengths_final := fun _ h =>
+    ⟨stream'_lengths_final v h.1 h.2, stream'_slopes_of_lengths_eq_zero v h.2⟩
+  starting_point :=
+    match findFirstFinite v 0 with
+    | some (i, c) => ((i : ℤ), c)
+    | none => (0, 0)
 
-end NewtonPolygon₀.Construction
+lemma isFinite {v : ℕ → WithTop Γ}
+    (h : NewtonPolygon₀.construction.IsFinite v) : (NewtonPolygon₀.construction v).IsFinite := by
+  classical
+  obtain ⟨n, hn⟩ := h
+  simp only [NewtonPolygon₀.IsFinite, construction, stream'_numSegments]
+  split_ifs with h₁ h₂
+  · exact WithTop.natCast_ne_top _
+  · exact WithTop.natCast_ne_top _
+  · exact absurd ⟨n, hn⟩ h₂
+
+end NewtonPolygon₀.construction
+
+namespace NewtonPolygon₀.ofPowerSeries
+
+variable {Γ : Type*} {R : Type*} [Semiring R]
+
+/-- The coefficient-valuation sequence of a power series `f`. -/
+noncomputable
+def coeffSeq (val : R → WithTop Γ) (f : PowerSeries R) : ℕ → WithTop Γ :=
+  fun i => val (PowerSeries.coeff i f)
+
+@[simp]
+lemma coeffSeq_apply (val : R → WithTop Γ) (f : PowerSeries R) (i : ℕ) :
+    coeffSeq val f i = val (PowerSeries.coeff i f) := rfl
+
+variable [CommSemiring Γ] [Algebra Γ ℝ]
+
+/-- The one-sided Newton polygon of a power series `f`: the polygon of its coefficient-valuation
+sequence `coeffSeq val f`. -/
+noncomputable
+def _root_.NewtonPolygon₀.ofPowerSeries (val : R → WithTop Γ) (f : PowerSeries R) :
+    NewtonPolygon₀ (Γ := Γ) :=
+  construction (coeffSeq val f)
+
+lemma isFinite {val : R → WithTop Γ} {f : PowerSeries R}
+    (h : construction.IsFinite (coeffSeq val f)) : (ofPowerSeries val f).IsFinite :=
+  construction.isFinite h
+
+/-- The (doubly-infinite) Newton polygon of a power series: its one-sided polygon embedded via
+`NewtonPolygon₀.toNewtonPolygon`. -/
+noncomputable
+def _root_.NewtonPolygon.ofPowerSeries (val : R → WithTop Γ) (f : PowerSeries R) :
+    NewtonPolygon (Γ := Γ) :=
+  (NewtonPolygon₀.ofPowerSeries val f).toNewtonPolygon
+
+end NewtonPolygon₀.ofPowerSeries

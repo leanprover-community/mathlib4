@@ -70,7 +70,8 @@ structure NewtonPolygon where
   /-- Support indexing how many segments we have; `support.1` gives number of segments to the right
     and `support.2` indicates if there are 0 or infinitely many segments to the left. -/
   support : WithTop ℕ × ({0, ⊥} : Set (WithBotTop ℤ))
-  /-- A function indexing the slopes of the segment. -/
+  /-- A function indexing the slopes of the segments;
+    we care about the indices inside the support. -/
   slopes : ℤ → WithBotTop ℝ
   /-- Past the right end the slopes are junk, fixed to `⊤`. -/
   slopes_junkRight : ∀ n : ℤ, ofRight support.1 ≤ n → slopes n = ⊤
@@ -79,9 +80,6 @@ structure NewtonPolygon where
   /-- Any non final slope is finite -/
   slopes_nonFinal : ∀ n : ℤ, (support.2 : WithBotTop ℤ) ≤ n ∧ n + 1 < ofRight support.1 →
     ∃ a : ℝ, slopes n = some (some a)
-  /-- Final slopes are only ⊤/⊥ if the support is (1,0). -/
-  slopes_final : ∀ n : ℕ, n + 1 = support.1 ∧ (slopes n = ⊤ ∨ slopes n = ⊥) → support.1 = 1 ∧
-    (support.2 : WithBotTop ℤ) = 0
   /-- Slopes are increasing. -/
   slopes_increasing : ∀ n, slopes n ≤ slopes (n + 1)
   /-- A function indexing the lengths of the segments. -/
@@ -93,13 +91,18 @@ structure NewtonPolygon where
   /-- Any non final length is finite and non-zero. -/
   lengths_nonFinal : ∀ n : ℤ, (support.2 : WithBotTop ℤ) ≤ n ∧ n + 1 < ofRight support.1 →
     ∃ a : ℕ, a ≠ 0 ∧ lengths n = some a
-  /-- Final lengths are only 0 if the support is (1,0). -/
+  /-- Final slopes are only ⊤/⊥ if the support is (1,0), and then the length is 0: a junk
+  slope only ever decorates a zero-width segment. -/
+  slopes_final : ∀ n : ℕ, n + 1 = support.1 ∧ (slopes n = ⊤ ∨ slopes n = ⊥) → support.1 = 1 ∧
+    (support.2 : WithBotTop ℤ) = 0 ∧ lengths n = 0
+  /-- Final lengths are only 0 if the support is (1,0), and then the slope is junk (`⊤`/`⊥`):
+  a zero-width segment never carries an honest real slope. -/
   lengths_final : ∀ n : ℕ, n + 1 = support.1 ∧ lengths n = 0 → support.1 = 1 ∧
-    (support.2 : WithBotTop ℤ) = 0
+    (support.2 : WithBotTop ℤ) = 0 ∧ (slopes n = ⊤ ∨ slopes n = ⊥)
   /-- Starting point of the Newton polygon. -/
   starting_point : ℤ × Γ
 
-/-- A one-sided Newton Polygon. -/
+/-- A one-sided `NewtonPolygon`. -/
 structure NewtonPolygon₀ where
   /-- Number of segments we have. -/
   support : WithTop ℕ
@@ -109,8 +112,6 @@ structure NewtonPolygon₀ where
   slopes_junk : ∀ n : ℕ, support ≤ n → slopes n = ⊤
   /-- Any non final slope is finite -/
   slopes_nonFinal : ∀ n : ℕ, n + 1 < support → ∃ a : ℝ, slopes n = some (some a)
-  /-- Final slopes are only ⊤/⊥ if the support is 1 -/
-  slopes_final : ∀ n : ℕ, n + 1 = support ∧ (slopes n = ⊤ ∨ slopes n = ⊥) → support = 1
   /-- Slopes are increasing. -/
   slopes_increasing : ∀ n : ℕ, slopes n ≤ slopes (n + 1)
   /-- A function indexing the lengths of the segments. -/
@@ -119,8 +120,14 @@ structure NewtonPolygon₀ where
   lengths_junk : ∀ n : ℕ, support ≤ n → lengths n = 0
   /-- Any non final length is finite and non-zero. -/
   lengths_nonFinal : ∀ n : ℕ, n + 1 < support → ∃ a : ℕ, a ≠ 0 ∧ lengths n = some a
-  /-- Final lengths are only 0 if the support is 1. -/
-  lengths_final : ∀ n : ℕ, n + 1 = support ∧ lengths n = 0 → support = 1
+  /-- Final slopes are only ⊤/⊥ if the support is 1, and then the length is 0: a junk slope
+  only ever decorates a zero-width segment. -/
+  slopes_final : ∀ n : ℕ, n + 1 = support ∧ (slopes n = ⊤ ∨ slopes n = ⊥) →
+    support = 1 ∧ lengths n = 0
+  /-- Final lengths are only 0 if the support is 1, and then the slope is junk (`⊤`/`⊥`):
+  a zero-width segment never carries an honest real slope. -/
+  lengths_final : ∀ n : ℕ, n + 1 = support ∧ lengths n = 0 →
+    support = 1 ∧ (slopes n = ⊤ ∨ slopes n = ⊥)
   /-- Starting point of the Newton polygon. -/
   starting_point : ℤ × Γ
 
@@ -141,21 +148,25 @@ def IsOneSided (NP : NewtonPolygon (Γ := Γ)) : Prop := (NP.support.2 : WithBot
 def isOneSided_toNewtonPolygon₀ {NP : NewtonPolygon (Γ := Γ)} (h : NP.IsOneSided) :
     NewtonPolygon₀ (Γ := Γ) where
   support := NP.support.1
-  slopes n := NP.slopes n
-  slopes_junk n hn := NP.slopes_junkRight n (ofRight_le_natCast hn)
-  slopes_nonFinal n hn := by
+  slopes := fun n => NP.slopes n
+  slopes_junk := fun n hn => NP.slopes_junkRight n (ofRight_le_natCast hn)
+  slopes_nonFinal := by
+    intro n hn
+    have h0 : (NP.support.2 : WithBotTop ℤ) = 0 := h
     refine NP.slopes_nonFinal n ⟨?_, natCast_add_one_lt_ofRight hn⟩
-    rw [h]
+    rw [h0]
     exact WithBotTop.coe_le_coe.mpr (Int.natCast_nonneg n)
-  slopes_final n hn := (NP.slopes_final n hn).1
-  slopes_increasing n:= NP.slopes_increasing n
-  lengths n := NP.lengths n
-  lengths_junk n hn := NP.lengths_junkRight n (ofRight_le_natCast hn)
-  lengths_nonFinal n hn := by
+  slopes_final := fun n hn => ⟨(NP.slopes_final n hn).1, (NP.slopes_final n hn).2.2⟩
+  slopes_increasing := fun n => NP.slopes_increasing n
+  lengths := fun n => NP.lengths n
+  lengths_junk := fun n hn => NP.lengths_junkRight n (ofRight_le_natCast hn)
+  lengths_nonFinal := by
+    intro n hn
+    have h0 : (NP.support.2 : WithBotTop ℤ) = 0 := h
     refine NP.lengths_nonFinal n ⟨?_, natCast_add_one_lt_ofRight hn⟩
-    rw [h]
+    rw [h0]
     exact WithBotTop.coe_le_coe.mpr (Int.natCast_nonneg n)
-  lengths_final n hn := (NP.lengths_final n hn).1
+  lengths_final := fun n hn => ⟨(NP.lengths_final n hn).1, (NP.lengths_final n hn).2.2⟩
   starting_point := NP.starting_point
 
 lemma isOneSided_slopes_of_neg {NP : NewtonPolygon (Γ := Γ)} (h : NP.IsOneSided) {x : ℤ}
@@ -191,38 +202,50 @@ variable (P : NewtonPolygon₀ (Γ := Γ))
 /-- A `NewtonPolygon₀` extends to a `NewtonPolygon`. -/
 def toNewtonPolygon : NewtonPolygon (Γ := Γ) where
   support := (P.support, ⟨0, Set.mem_insert 0 {⊥}⟩)
-  slopes n := if n < 0 then ⊥ else P.slopes n.toNat
-  slopes_junkRight n hn := by
+  slopes := fun n => if n < 0 then ⊥ else P.slopes n.toNat
+  slopes_junkRight := by
+    intro n hn
     obtain ⟨h0, hs⟩ := ofRight_le_coe hn
-    simpa [if_neg (not_lt.2 h0)] using P.slopes_junk _ hs
-  slopes_junkLeft n hn := if_pos (WithBotTop.coe_lt_coe.mp hn)
+    rw [if_neg (not_lt.2 h0)]
+    exact P.slopes_junk _ hs
+  slopes_junkLeft := fun n hn => if_pos (WithBotTop.coe_lt_coe.mp hn)
   slopes_nonFinal := by
     rintro n ⟨h1, h2⟩
-    simpa [if_neg (not_lt.2 (WithBotTop.coe_le_coe.mp h1))] using P.slopes_nonFinal _
-      (coe_add_one_lt_ofRight (WithBotTop.coe_le_coe.mp h1) h2)
+    have h0 : (0 : ℤ) ≤ n := WithBotTop.coe_le_coe.mp h1
+    rw [if_neg (not_lt.2 h0)]
+    exact P.slopes_nonFinal _ (coe_add_one_lt_ofRight h0 h2)
   slopes_final := by
     rintro n ⟨h1, h2⟩
     rw [if_neg (not_lt.2 (Int.natCast_nonneg n)), Int.toNat_natCast] at h2
-    exact ⟨P.slopes_final n ⟨h1, h2⟩, rfl⟩
-  slopes_increasing n := by
+    obtain ⟨hs, hl⟩ := P.slopes_final n ⟨h1, h2⟩
+    refine ⟨hs, rfl, ?_⟩
+    rwa [if_neg (not_lt.2 (Int.natCast_nonneg n)), Int.toNat_natCast]
+  slopes_increasing := by
+    intro n
     by_cases hn : n < 0
-    · simp [if_pos hn]
-    · simp only [if_neg hn]
-      convert P.slopes_increasing n.toNat
-      grind
-  lengths n := if n < 0 then 0 else P.lengths n.toNat
-  lengths_junkRight n hn := by
+    · rw [if_pos hn]
+      exact bot_le
+    · rw [if_neg hn, if_neg (show ¬ n + 1 < 0 by omega),
+        show (n + 1).toNat = n.toNat + 1 by omega]
+      exact P.slopes_increasing n.toNat
+  lengths := fun n => if n < 0 then 0 else P.lengths n.toNat
+  lengths_junkRight := by
+    intro n hn
     obtain ⟨h0, hs⟩ := ofRight_le_coe hn
-    simpa [if_neg (not_lt.2 h0)] using P.lengths_junk _ hs
-  lengths_junkLeft n hn := if_pos (WithBotTop.coe_lt_coe.mp hn)
+    rw [if_neg (not_lt.2 h0)]
+    exact P.lengths_junk _ hs
+  lengths_junkLeft := fun n hn => if_pos (WithBotTop.coe_lt_coe.mp hn)
   lengths_nonFinal := by
     rintro n ⟨h1, h2⟩
-    simpa [if_neg (not_lt.2 (WithBotTop.coe_le_coe.mp h1))] using P.lengths_nonFinal _
-      (coe_add_one_lt_ofRight (WithBotTop.coe_le_coe.mp h1) h2)
+    have h0 : (0 : ℤ) ≤ n := WithBotTop.coe_le_coe.mp h1
+    rw [if_neg (not_lt.2 h0)]
+    exact P.lengths_nonFinal _ (coe_add_one_lt_ofRight h0 h2)
   lengths_final := by
     rintro n ⟨h1, h2⟩
     rw [if_neg (not_lt.2 (Int.natCast_nonneg n)), Int.toNat_natCast] at h2
-    exact ⟨P.lengths_final n ⟨h1, h2⟩, rfl⟩
+    obtain ⟨hs, hj⟩ := P.lengths_final n ⟨h1, h2⟩
+    refine ⟨hs, rfl, ?_⟩
+    rwa [if_neg (not_lt.2 (Int.natCast_nonneg n)), Int.toNat_natCast]
   starting_point := P.starting_point
 
 @[simp]
