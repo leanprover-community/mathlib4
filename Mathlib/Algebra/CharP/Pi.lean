@@ -22,7 +22,7 @@ theorem CharZero.pi (i : ι) [Π i, AddMonoidWithOne (α i)] [CharZero (α i)] :
   cast_injective _ _ h := Nat.cast_injective <| congrFun h i
 
 /-- Strictly this only needs any one component to be char-zero, but this is awkward to express. -/
-instance Pi.instCharZero [Nonempty ι] [Π i, AddMonoidWithOne (α i)] [Π i, CharZero (α i)] :
+instance Pi.instCharZero [Nonempty ι] [Π i, AddMonoidWithOne (α i)] [∀ i, CharZero (α i)] :
     CharZero (Π i, α i) := by
   inhabit ι
   exact CharZero.pi default
