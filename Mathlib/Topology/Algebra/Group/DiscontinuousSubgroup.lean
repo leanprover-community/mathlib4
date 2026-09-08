@@ -26,7 +26,7 @@ protected lemma Subgroup.properlyDiscontinuousSMul_iff
       IsCompact K → IsCompact L →  {g : Γ | g ∈ S ∧ (g • K ∩ L).Nonempty}.Finite := by
   rw [properlyDiscontinuousSMul_iff]
   congr! with K L hK hL
-  convert injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
+  convert! injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
   ext g
   simp [Set.subtype_smul_set, and_comm]
 
@@ -81,8 +81,8 @@ lemma Subgroup.Commensurable.properlyDiscontinuousSMul_iff
     [MulAction Γ α] [ContinuousConstSMul Γ α]
     {G H : Subgroup Γ} (h : G.Commensurable H) :
     ProperlyDiscontinuousSMul G α ↔ ProperlyDiscontinuousSMul H α := by
-  have : IsFiniteRelIndex (G ⊓ H) H := ⟨Subgroup.inf_relIndex_right G H ▸ h.1⟩
-  have : IsFiniteRelIndex (G ⊓ H) G := ⟨Subgroup.inf_relIndex_left G H ▸ h.2⟩
+  have : IsFiniteRelIndex (G ⊓ H) H := ⟨Subgroup.inf_relIndex_right G H ▸ h.1.relIndex_ne_zero⟩
+  have : IsFiniteRelIndex (G ⊓ H) G := ⟨Subgroup.inf_relIndex_left G H ▸ h.2.relIndex_ne_zero⟩
   calc ProperlyDiscontinuousSMul G α ↔ ProperlyDiscontinuousSMul ↑(G ⊓ H) α :=
     (properlyDiscontinuousSMul_iff_of_isFiniteRelIndex inf_le_left).symm
   _ ↔ ProperlyDiscontinuousSMul H α :=

@@ -8,7 +8,6 @@ module
 public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
-import Mathlib.Probability.Process.FiniteDimensionalLaws
 
 /-!
 # Gaussian processes
@@ -49,17 +48,14 @@ lemma isProbabilityMeasure (hX : IsGaussianProcess X P) :
   hX.hasGaussianLaw Classical.ofNonempty |>.isProbabilityMeasure
 
 lemma aemeasurable (hX : IsGaussianProcess X P) (t : T) : AEMeasurable (X t) P :=
-  AEMeasurable.of_map_ne_zero
-    (hX.hasGaussianLaw {t}).isGaussian_map.toIsProbabilityMeasure.ne_zero |>.eval ⟨t, by simp⟩
+  (hX.hasGaussianLaw {t}).aemeasurable.eval ⟨t, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A modification of a Gaussian process is a Gaussian process. -/
 lemma congr (hX : IsGaussianProcess X P) (hXY : ∀ t, X t =ᵐ[P] Y t) :
     IsGaussianProcess Y P where
   hasGaussianLaw I := by
-    constructor
-    rw [map_restrict_eq_of_forall_ae_eq fun t ↦ (hXY t).symm]
-    exact (hX.hasGaussianLaw I).isGaussian_map
+    refine (hX.hasGaussianLaw I).congr ?_
+    filter_upwards [ae_all_iff.2 fun i : I ↦ hXY i] with ω h using funext h
 
 end Basic
 
@@ -96,12 +92,12 @@ lemma hasGaussianLaw_fun_sub (hX : IsGaussianProcess X P) {s t : T} :
 
 lemma hasGaussianLaw_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (∑ i ∈ I, X i) P := by
-  convert (hX.hasGaussianLaw I).sum
+  convert! (hX.hasGaussianLaw I).sum
   simp [I.sum_attach X]
 
 lemma hasGaussianLaw_fun_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (fun ω ↦ ∑ i ∈ I, X i ω) P := by
-  convert hX.hasGaussianLaw_sum (I := I)
+  convert! hX.hasGaussianLaw_sum (I := I)
   simp
 
 /-- The increments of a Gaussian process are Gaussian. -/
@@ -111,8 +107,7 @@ lemma hasGaussianLaw_increments (hX : IsGaussianProcess X P) {n : ℕ} {t : Fin 
   let L : ((univ.image t) → E) →L[ℝ] Fin n → E :=
     { toFun x i := x ⟨t i.succ, by simp⟩ - x ⟨t i.castSucc, by simp⟩
       map_add' x y := by ext; simp; abel
-      map_smul' m x := by ext; simp; module
-      cont := by fun_prop }
+      map_smul' m x := by ext; simp; module }
   exact (hX.hasGaussianLaw _).map L
 
 end Maps
@@ -136,8 +131,7 @@ lemma of_isGaussianProcess (hX : IsGaussianProcess X P)
     let K : (I.biUnion J → E) →L[ℝ] I → F :=
       { toFun x s := L s (fun t ↦ x ⟨t.1, mem_biUnion.2 ⟨s.1, s.2, t.2⟩⟩)
         map_add' x y := by ext; simp [← Pi.add_def]
-        map_smul' c x := by ext; simp [← Pi.smul_def]
-        cont := by fun_prop }
+        map_smul' c x := by ext; simp [← Pi.smul_def] }
     have : (fun ω ↦ I.restrict (Y · ω)) = K ∘ (fun ω ↦ (I.biUnion J).restrict (X · ω)) := by
       ext; simp [K, hL, Finset.restrict_def]
     rw [this]

@@ -176,7 +176,7 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
       Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b) :
     C q :=
-  finHRecOn q f (eqRec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
+  finHRecOn q f (eqRec_heq_iff.mp <| heq_of_eq <| h · · ·)
 
 @[simp]
 lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
@@ -240,6 +240,7 @@ def finRecOn {C : (∀ i, Trunc (α i)) → Sort*}
     C q :=
   Quotient.finRecOn q (f ·) (fun _ _ _ ↦ h _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finRecOn_mk {C : (∀ i, Trunc (α i)) → Sort*}
     (a : ∀ i, α i) :

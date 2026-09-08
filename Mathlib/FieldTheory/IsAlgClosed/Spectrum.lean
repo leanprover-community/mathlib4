@@ -88,7 +88,7 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ 
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
-  simpa only [aeval_X, aeval_C, map_sub] using hk
+  simpa only [aeval_X, aeval_C, map_sub] using! hk
 
 /-- The *spectral mapping theorem* for polynomials.  Note: the assumption `degree p > 0`
 is necessary in case `σ a = ∅`, for then the left-hand side is `∅` and the right-hand side,

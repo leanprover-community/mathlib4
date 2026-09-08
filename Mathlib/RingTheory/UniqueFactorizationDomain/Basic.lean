@@ -6,8 +6,10 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.BigOperators.Associated
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Tactic.Bound.Init
 
 /-!
 # Basic results on unique factorization monoids
@@ -39,7 +41,7 @@ namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
 
-open Associates Nat
+open Associates
 
 theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoid α :=
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).2 wellFounded_dvdNotUnit⟩
@@ -57,10 +59,7 @@ end WfDvdMonoid
 theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCancelMulZero α]
     (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates
-    ⟨by
-      convert h.wf
-      ext
-      exact Associates.dvdNotUnit_iff_lt⟩
+    ⟨by convert h.wf; exact Associates.dvdNotUnit_iff_lt⟩
 
 theorem WfDvdMonoid.iff_wellFounded_associates [CommMonoidWithZero α] [IsCancelMulZero α] :
     WfDvdMonoid α ↔ WellFoundedLT (Associates α) :=
@@ -76,7 +75,6 @@ instance Associates.ufm [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
 theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     ∀ {f g : Multiset α},
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
-  classical
   intro f
   induction f using Multiset.induction_on with
   | empty =>
@@ -84,14 +82,14 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     exact Multiset.rel_zero_left.2 <|
       Multiset.eq_zero_of_forall_notMem fun x hx =>
         have : IsUnit g.prod := by simpa [associated_one_iff_isUnit] using h.symm
-        (hg x hx).not_unit <|
+        (hg x hx).not_isUnit <|
           isUnit_iff_dvd_one.2 <| (Multiset.dvd_prod hx).trans (isUnit_iff_dvd_one.1 this)
   | cons p f ih =>
     intro g hf hg hfg
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
-    haveI := Classical.decEq α
+    have := Classical.decEq α
     rw [← Multiset.cons_erase hbg]
     exact
       Multiset.Rel.cons hb
@@ -125,7 +123,7 @@ end UniqueFactorizationMonoid
   then it is an associate of one of its prime factors. -/
 theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   refine @Multiset.induction_on _
     (fun g => (g.prod ~ᵤ a) → (∀ b ∈ g, Prime b) → ∃ p, a ~ᵤ p ∧ g = {p}) f ?_ ?_ pfa.2 pfa.1
   · intro h; exact (ha.not_isUnit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
@@ -224,9 +222,9 @@ theorem factors_eq_singleton_of_irreducible {a : α} (ha : Irreducible a) :
   exact ⟨b, hab, .symm <| Multiset.eq_of_le_of_card_le (Multiset.singleton_le.mpr hbmem)
     (by rw [card_factors_of_irreducible ha, Multiset.card_singleton])⟩
 
-open Classical in
 theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Rel Associated (factors (x * y)) (factors x + factors y) := by
+  classical
   refine
     factors_unique irreducible_of_factor
       (fun a ha =>
@@ -320,41 +318,40 @@ include pf
 
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
   ⟨by
-    classical
-      refine RelHomClass.wellFounded
-        (RelHom.mk ?_ ?_ : (DvdNotUnit : α → α → Prop) →r ((· < ·) : ℕ∞ → ℕ∞ → Prop)) wellFounded_lt
-      · intro a
-        by_cases h : a = 0
-        · exact ⊤
-        exact ↑(Multiset.card (Classical.choose (pf a h)))
-      rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
-      rw [dif_neg ane0]
-      by_cases h : b = 0
-      · simp [h, lt_top_iff_ne_top]
-      · rw [dif_neg h, Nat.cast_lt]
-        have cne0 : c ≠ 0 := by
-          refine mt (fun con => ?_) h
-          rw [b_eq, con, mul_zero]
-        calc
-          Multiset.card (Classical.choose (pf a ane0)) <
-              _ + Multiset.card (Classical.choose (pf c cne0)) :=
-            lt_add_of_pos_right _
-              (Multiset.card_pos.mpr fun con => hc (associated_one_iff_isUnit.mp ?_))
-          _ = Multiset.card (Classical.choose (pf a ane0) + Classical.choose (pf c cne0)) :=
-            (Multiset.card_add _ _).symm
-          _ = Multiset.card (Classical.choose (pf b h)) :=
-            Multiset.card_eq_card_of_rel
-            (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
-        · convert (Classical.choose_spec (pf c cne0)).2.symm
-          rw [con, Multiset.prod_zero]
-        · intro x hadd
-          rw [Multiset.mem_add] at hadd
-          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
-        · rw [Multiset.prod_add]
-          trans a * c
-          · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
-          · rw [← b_eq]
-            apply (Classical.choose_spec (pf _ _)).2.symm; assumption⟩
+    refine RelHomClass.wellFounded
+      (RelHom.mk ?_ ?_ : (DvdNotUnit : α → α → Prop) →r ((· < ·) : ℕ∞ → ℕ∞ → Prop)) wellFounded_lt
+    · intro a
+      by_cases h : a = 0
+      · exact ⊤
+      exact ↑(Multiset.card (Classical.choose (pf a h)))
+    rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
+    rw [dite_eq_right ane0]
+    by_cases h : b = 0
+    · simp [h, lt_top_iff_ne_top]
+    · rw [dite_eq_right h, ENat.natCast_lt_natCast]
+      have cne0 : c ≠ 0 := by
+        refine mt (fun con => ?_) h
+        rw [b_eq, con, mul_zero]
+      calc
+        Multiset.card (Classical.choose (pf a ane0)) <
+            _ + Multiset.card (Classical.choose (pf c cne0)) :=
+          lt_add_of_pos_right _
+            (Multiset.card_pos.mpr fun con => hc (associated_one_iff_isUnit.mp ?_))
+        _ = Multiset.card (Classical.choose (pf a ane0) + Classical.choose (pf c cne0)) :=
+          (Multiset.card_add _ _).symm
+        _ = Multiset.card (Classical.choose (pf b h)) :=
+          Multiset.card_eq_card_of_rel
+          (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
+      · convert! (Classical.choose_spec (pf c cne0)).2.symm
+        rw [con, Multiset.prod_zero]
+      · intro x hadd
+        rw [Multiset.mem_add] at hadd
+        rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+      · rw [Multiset.prod_add]
+        trans a * c
+        · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
+        · rw [← b_eq]
+          apply (Classical.choose_spec (pf _ _)).2.symm; assumption⟩
 
 theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
   by_cases hp0 : p = 0
@@ -390,7 +387,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
   obtain ⟨w, hp, u, h⟩ :=
     hα (e.symm a) fun h =>
       ha <| by
-        convert ← map_zero e
+        convert! ← map_zero e
         simp [← h]
   exact
     ⟨w.map e, fun b hb =>
@@ -418,15 +415,16 @@ theorem of_existsUnique_irreducible_factors [CommMonoidWithZero α] [IsCancelMul
     UniqueFactorizationMonoid α :=
   UniqueFactorizationMonoid.of_exists_prime_factors
     (by
-      convert eif using 7
+      convert! eif using 7
       simp_rw [irreducible_iff_prime_of_existsUnique_irreducible_factors eif uif])
 
 variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 theorem isRelPrime_iff_no_prime_factors {a b : R} (ha : a ≠ 0) :
     IsRelPrime a b ↔ ∀ ⦃d⦄, d ∣ a → d ∣ b → ¬Prime d :=
-  ⟨fun h _ ha hb ↦ (·.not_unit <| h ha hb), fun h ↦ WfDvdMonoid.isRelPrime_of_no_irreducible_factors
-    (ha ·.1) fun _ irr ha hb ↦ h ha hb (UniqueFactorizationMonoid.irreducible_iff_prime.mp irr)⟩
+  ⟨fun h _ ha hb ↦ (·.not_isUnit <| h ha hb),
+    fun h ↦ WfDvdMonoid.isRelPrime_of_no_irreducible_factors
+      (ha ·.1) fun _ irr ha hb ↦ h ha hb (UniqueFactorizationMonoid.irreducible_iff_prime.mp irr)⟩
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `c` have no common prime factors, `a ∣ b`.
 Compare `IsCoprime.dvd_of_dvd_mul_left`. -/

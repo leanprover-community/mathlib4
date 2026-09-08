@@ -28,7 +28,7 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 
 noncomputable section
 
-open Metric Function AffineMap Set AffineSubspace
+open Metric Function AffineMap Set
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
@@ -192,7 +192,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
   rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
-  convert H using 1 <;> simp [field, dist_comm a]; ring
+  convert! H using 1 <;> simp [field, dist_comm a]; ring
 
 end EuclideanGeometry
 
@@ -229,3 +229,23 @@ protected theorem Continuous.inversion (hc : Continuous c) (hR : Continuous R) (
     (hne : ∀ a, x a ≠ c a) : Continuous (fun a ↦ inversion (c a) (R a) (x a)) :=
   continuous_iff_continuousAt.2 fun _ ↦
     hc.continuousAt.inversion hR.continuousAt hx.continuousAt (hne _)
+
+namespace EuclideanGeometry
+
+open Filter in
+/-- The inversion of a point tends to infinity  as it approaches the center of an inversion. -/
+theorem tendsto_inversion_nhdsNE_center_cobounded {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Tendsto (inversion c R) (𝓝[≠] c) (Bornology.cobounded P) := by
+  rw [← tendsto_dist_left_atTop_iff c]
+  have hdist : Tendsto (dist c) (𝓝[≠] c) (𝓝[>] (0 : ℝ)) := by
+    rw [tendsto_nhdsWithin_iff]
+    refine ⟨tendsto_nhdsWithin_of_tendsto_nhds ?_, eventually_nhdsWithin_of_forall ?_⟩
+    · rw [← dist_self c]
+      exact ContinuousAt.tendsto <| by fun_prop
+    · aesop
+  have hratio : Tendsto (fun x : P ↦ dist c (inversion c R x)) (𝓝[≠] c) atTop := by
+    simp_rw [dist_center_inversion, div_eq_mul_inv]
+    exact hdist.inv_tendsto_nhdsGT_zero.const_mul_atTop <| by rwa [sq_pos_iff]
+  simpa using hratio
+
+end EuclideanGeometry

@@ -22,7 +22,7 @@ namespace Mathlib.Meta.NormNum
 
 variable {u : Level}
 
-/-- Helper function to synthesize typed `Semiring α` `PartialOrder α` `IsOrderedSemiring α`
+/-- Helper function to synthesize typed `Semiring α` `PartialOrder α` `IsOrderedRing α`
 expressions. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM <|
     (_ : Q(Semiring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=
@@ -33,7 +33,7 @@ def inferOrderedSemiring (α : Q(Type u)) : MetaM <|
     return ⟨semiring, partialOrder, isOrderedRing⟩
   go <|> throwError "not an ordered semiring"
 
-/-- Helper function to synthesize typed `Ring α` `PartialOrder α` `IsOrderedSemiring α`
+/-- Helper function to synthesize typed `Ring α` `PartialOrder α` `IsOrderedRing α`
 expressions. -/
 def inferOrderedRing (α : Q(Type u)) : MetaM <|
     (_ : Q(Ring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=
@@ -89,7 +89,7 @@ theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     simp only [Nat.mul_eq, Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
-theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
+theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℕ} → {da db : ℕ} →
     IsNNRat a na da → IsNNRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
@@ -101,7 +101,7 @@ theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     simp? at h says simp only [Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
-theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} {na nb : ℕ} {da db : ℕ}
     (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
   not_le_of_gt (isNNRat_lt_true hb ha h)
@@ -125,7 +125,7 @@ theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
       mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
-theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
+theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
@@ -137,7 +137,7 @@ theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontr
     simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
-theorem isRat_le_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+theorem isRat_le_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
   not_le_of_gt (isRat_lt_true hb ha h)
@@ -179,21 +179,9 @@ theorem isInt_lt_false [Ring α] [PartialOrder α] [IsOrderedRing α] {a b : α}
   not_lt_of_ge (isInt_le_true hb ha h)
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
-such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
-  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
-  let .app (.app f a) b ← whnfR e | failure
-  let ⟨u, α, a⟩ ← inferTypeQ' a
-  have b : Q($α) := b
-  let ra ← derive a; let rb ← derive b
-  let lα ← synthInstanceQ q(LE $α)
-  guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
-  core lα ra rb
-where
-  /-- Identify (as `true` or `false`) expressions of the form `a ≤ b`, where `a` and `b` are numeric
-  expressions whose evaluations to `NormNum.Result` have already been computed. -/
-  core {u : Level} {α : Q(Type u)} (lα : Q(LE $α)) {a b : Q($α)}
+/-- Identify (as `true` or `false`) expressions of the form `a ≤ b`, where `a` and `b` are numeric
+expressions whose evaluations to `NormNum.Result` have already been computed. -/
+def evalLE.core {u : Level} {α : Q(Type u)} (lα : Q(LE $α)) {a b : Q($α)}
     (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a ≤ $b)) := do
   let e := q($a ≤ $b)
   let rec intArm : MetaM (Result e) := do
@@ -240,25 +228,25 @@ where
     else if let .some _i ← trySynthInstanceQ q(CharZero $α) then
       let r : Q(Nat.ble $na $nb = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isNat_le_false $pa $pb $r)
-    else -- Nats can appear in an `OrderedRing` without `CharZero`.
+    else -- Nats can appear in an ordered ring without `CharZero`.
       intArm
 
-attribute [local instance] monadLiftOptionMetaM in
-/-- The `norm_num` extension which identifies expressions of the form `a < b`,
+/-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do
+@[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
-  let lα ← synthInstanceQ q(LT $α)
-  guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
-  core lα ra rb
-where
-  /-- Identify (as `true` or `false`) expressions of the form `a < b`, where `a` and `b` are numeric
-  expressions whose evaluations to `NormNum.Result` have already been computed. -/
-  core {u : Level} {α : Q(Type u)} (lα : Q(LT $α)) {a b : Q($α)}
+  let lα ← synthInstanceQ q(LE $α)
+  guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
+  evalLE.core lα ra rb
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- Identify (as `true` or `false`) expressions of the form `a < b`, where `a` and `b` are numeric
+expressions whose evaluations to `NormNum.Result` have already been computed. -/
+def evalLT.core {u : Level} {α : Q(Type u)} (lα : Q(LT $α)) {a b : Q($α)}
     (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a < $b)) := do
   let e := q($a < $b)
   let rec intArm : MetaM (Result e) := do
@@ -277,11 +265,6 @@ where
       let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isInt_lt_false $pa $pb $r)
   let rec nnratArm : MetaM (Result e) := do
-    -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
-    /-
-       NOTE: after the ordered algebra refactor, this is not true anymore,
-       so there may be a better typeclass
-    -/
     let ⟨_, _, _⟩ ← inferLinearOrderedSemifield α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
@@ -294,11 +277,6 @@ where
       let r : Q(decide ($nb * $da ≤ $na * $db) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isNNRat_lt_false $pa $pb $r)
   let rec ratArm : MetaM (Result e) := do
-    -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
-    /-
-       NOTE: after the ordered algebra refactor, this is not true anymore,
-       so there may be a better typeclass
-    -/
     let ⟨_, _, _i⟩ ← inferLinearOrderedField α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
@@ -327,10 +305,22 @@ where
       if let .some _i ← trySynthInstanceQ q(CharZero $α) then
         let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)
         return .isTrue q(isNat_lt_true $pa $pb $r)
-      else -- Nats can appear in an `OrderedRing` without `CharZero`.
+      else -- Nats can appear in an ordered ring without `CharZero`.
         intArm
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isNat_lt_false $pa $pb $r)
+
+/-- The `norm_num` extension which identifies expressions of the form `a < b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
+  let .app (.app f a) b ← whnfR e | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
+  have b : Q($α) := b
+  let ra ← derive a; let rb ← derive b
+  let lα ← synthInstanceQ q(LT $α)
+  guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
+  evalLT.core lα ra rb
 
 end Mathlib.Meta.NormNum

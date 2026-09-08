@@ -33,8 +33,8 @@ universe v u
 namespace CategoryTheory
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Category of groupoids -/
-@[nolint checkUnivs]
 def Grpd :=
   Bundled Groupoid.{v, u}
 
@@ -53,6 +53,11 @@ instance : CoeSort Grpd Type* :=
 /-- Construct a bundled `Grpd` from the underlying type and the typeclass `Groupoid`. -/
 def of (C : Type u) [Groupoid.{v} C] : Grpd.{v, u} :=
   Bundled.of C
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CategoryTheory.Grpd.of X` as `↧X`. -/
+@[app_delab CategoryTheory.Grpd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 theorem coe_of (C : Type u) [Groupoid C] : (of C : Type u) = C :=
@@ -75,7 +80,7 @@ def objects : Grpd.{v, u} ⥤ Type u where
 
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
-  obj C := Cat.of C
+  obj C := ↧C
   map := Functor.toCatHom
 
 instance (X : Grpd) : Groupoid (Grpd.forgetToCat.obj X) := inferInstanceAs (Groupoid X)
@@ -100,10 +105,11 @@ section Products
 def piLimitFan ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.Fan F :=
   Limits.Fan.mk (@of (∀ j : J, F j) _) fun j => CategoryTheory.Pi.eval _ j
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The product fan over an indexed family of groupoids, is a limit cone. -/
 def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit (piLimitFan F) :=
-  Limits.mkFanLimit (piLimitFan F) (fun s => Functor.pi' fun j => s.proj j)
+  Limits.Fan.IsLimit.mk (piLimitFan F) (fun s => Functor.pi' fun j => s.proj j)
     (by
       intros
       dsimp only [piLimitFan]

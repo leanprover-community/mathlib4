@@ -107,10 +107,10 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   simp only [hasseDeriv_coeff, coeff_monomial]
   by_cases hnik : n = i + k
   · grind
-  · rw [if_neg hnik, mul_zero]
+  · rw [ite_eq_right hnik, mul_zero]
     by_cases! hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
-      rw [if_neg hnik]
+      rw [ite_eq_right hnik]
     · rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, zero_mul, ite_self]
 
 theorem hasseDeriv_C (r : R) (hk : 0 < k) : hasseDeriv k (C r) = 0 := by
@@ -123,6 +123,12 @@ theorem hasseDeriv_apply_one (hk : 0 < k) : hasseDeriv k (1 : R[X]) = 0 := by
 theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     zero_mul, monomial_zero_right]
+
+@[simp]
+theorem hasseDeriv_map {S : Type*} [Semiring S] (f : R →+* S) (k : ℕ) (p : R[X]) :
+    hasseDeriv k (p.map f) = (hasseDeriv k p).map f := by
+  ext
+  simp [hasseDeriv_coeff]
 
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction k with
@@ -177,7 +183,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     refine (natDegree_sum_le _ _).trans ?_
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
-    · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and, and_imp,
+    · simp only [ite_self, max_eq_right, zero_le, Finset.fold_max_le, true_and, and_imp,
         tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx

@@ -71,7 +71,7 @@ lemma eq_of_not_disjoint {H K : Subgroup G} {a b : G}
   apply doubleCoset_eq_of_mem ha
 
 /-- The setoid defined by the `doubleCoset` relation -/
-@[implicit_reducible]
+@[instance_reducible]
 def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doubleCoset x H K
 
@@ -106,7 +106,9 @@ lemma rel_bot_eq_right_group_rel (H : Subgroup G) :
     exact ⟨b * a⁻¹, h, 1, rfl, by rw [mul_one, inv_mul_cancel_right]⟩
 
 /-- Create a double coset out of an element of `H \ G / K` -/
-def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
   doubleCoset q.out H K
 
 /-- Map from `G` to `H \ G / K` -/
@@ -116,35 +118,44 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
-lemma eq'' {a b : G} (H K : Subgroup G) : mk H K a = mk H K b ↔ setoid H K a b :=
+lemma eq'' {a b : G} {H K : Subgroup G} : mk H K a = mk H K b ↔ setoid H K a b :=
   Quotient.eq
 
-lemma eq (H K : Subgroup G) (a b : G) :
+lemma eq {H K : Subgroup G} {a b : G} :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [eq'']
   exact rel_iff
 
-lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out = q :=
+lemma out_eq' {H K : Subgroup G} (q : Quotient ↑H ↑K) : mk H K q.out = q :=
   Quotient.out_eq' q
 
 lemma mk_out_eq_mul (H K : Subgroup G) (g : G) :
-    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out = h * g * k := by
-  have := eq H K (mk H K g : Quotient ↑H ↑K).out g
-  rw [out_eq'] at this
-  obtain ⟨h, h_h, k, hk, T⟩ := this.1 rfl
-  refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
-  rw [← mul_assoc, ← T]
+    ∃ h ∈ H, ∃ k ∈ K, (mk H K g : Quotient ↑H ↑K).out = h * g * k :=
+  eq.mp (out_eq' (mk H K g)).symm
 
 lemma mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
     (h : doubleCoset a H K = doubleCoset b H K) : mk H K a = mk H K b := by
   rw [eq]
   exact mem_doubleCoset.mp (h.symm ▸ mem_doubleCoset_self H K b)
 
+@[simp]
+lemma mk_mem_mul {H K : Subgroup G} (a : H) (g : G) :
+    mk H K (a * g) = mk H K g := by
+  rw [eq]
+  exact ⟨_, H.inv_mem a.prop, 1, K.one_mem, by simp⟩
+
+@[simp]
+lemma mk_mul_mem {H K : Subgroup G} (b : K) (g : G) :
+    mk H K (g * b) = mk H K g := by
+  rw [eq]
+  exact ⟨1, H.one_mem, _, K.inv_mem b.prop, by simp⟩
+
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
     a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
   refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩
-  rw [← out_eq' _ _ i] at hg
-  exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
+  rw [← out_eq' i] at hg
+  exact mem_doubleCoset.mpr (eq.mp hg.symm)
 
 lemma disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
@@ -156,10 +167,7 @@ lemma iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K
   ext x
   simp only [Set.mem_iUnion, quotToDoubleCoset, mem_doubleCoset, SetLike.mem_coe, Set.mem_univ,
     iff_true]
-  use mk H K x
-  obtain ⟨h, k, h3, h4, h5⟩ := mk_out_eq_mul H K x
-  refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
-  simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
+  exact ⟨mk H K x, eq.mp (out_eq' (mk H K x))⟩
 
 @[deprecated (since := "2026-04-03")]
 alias union_quotToDoubleCoset := iUnion_quotToDoubleCoset
@@ -211,14 +219,14 @@ lemma finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
   constructor
   · intro _
     cases nonempty_fintype (Quotient (H : Set G) K)
-    exact ⟨Finset.univ, by simpa using iUnion_quotToDoubleCoset _ _⟩
+    exact ⟨Finset.univ, by simpa using! iUnion_quotToDoubleCoset _ _⟩
   · rintro ⟨I, hI⟩
     suffices (I : Set (Quotient (H : Set G) K)) = Set.univ by
       simp_rw [← Set.finite_univ_iff, ← this, I.finite_toSet]
     rw [Set.eq_univ_iff_forall] at hI ⊢
     rintro ⟨g⟩
     obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
-    simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using hi
+    simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using! hi
 
 lemma iUnion_image_mk_leftRel {H K : Subgroup G} :
     ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ := by
@@ -228,7 +236,7 @@ lemma iUnion_image_mk_leftRel {H K : Subgroup G} :
   obtain ⟨y, hy⟩ := exists_rep x
   have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
-    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
+    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using! cover⟩
   exact ⟨i, y, hi, hy⟩
 
 lemma iUnion_image_mk_rightRel {H K : Subgroup G} :
@@ -239,7 +247,7 @@ lemma iUnion_image_mk_rightRel {H K : Subgroup G} :
   obtain ⟨y, hy⟩ := exists_rep x
   have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
-    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
+    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using! cover⟩
   exact ⟨i, y, hi, hy⟩
 
 lemma iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Quotient H K)}

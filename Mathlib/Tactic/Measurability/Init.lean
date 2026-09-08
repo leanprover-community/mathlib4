@@ -16,6 +16,4 @@ This module defines the `Measurable` Aesop rule set which is used by the
 they're declared is imported, so we must put this declaration into its own file.
 -/
 
-public meta section
-
 declare_aesop_rule_sets [Measurable]

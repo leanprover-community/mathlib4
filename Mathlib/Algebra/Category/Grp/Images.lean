@@ -33,8 +33,7 @@ section
 
 -- implementation details of `IsImage` for `AddCommGrpCat`; use the API, not these
 /-- the image of a morphism in `AddCommGrpCat` is just the bundling of `AddMonoidHom.range f` -/
-def image : AddCommGrpCat :=
-  AddCommGrpCat.of (AddMonoidHom.range f.hom)
+def image : AddCommGrpCat := ↧f.hom.range
 
 /-- the inclusion of `image f` into the target -/
 def image.ι : image f ⟶ H :=
@@ -55,19 +54,20 @@ attribute [local simp] image.fac
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- the universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom
   { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
     map_zero' := by
-      haveI := F'.m_mono
+      have := F'.m_mono
       apply injective_of_mono F'.m
       change (F'.e ≫ F'.m) _ = _
       rw [F'.fac, map_zero]
       exact (Classical.indefiniteDescription (fun y => f y = 0) _).2
     map_add' := by
       intro x y
-      haveI := F'.m_mono
+      have := F'.m_mono
       apply injective_of_mono F'.m
       rw [map_add]
       change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
@@ -101,7 +101,7 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
 agrees with the usual group-theoretical range.
 -/
 noncomputable def imageIsoRange {G H : AddCommGrpCat.{0}} (f : G ⟶ H) :
-    Limits.image f ≅ AddCommGrpCat.of f.hom.range :=
+    Limits.image f ≅ ↧f.hom.range :=
   IsImage.isoExt (Image.isImage f) (isImage f)
 
 end AddCommGrpCat

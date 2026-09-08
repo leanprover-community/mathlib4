@@ -29,7 +29,7 @@ public section
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists IsOrderedRing
 
-variable {M A B : Type*}
+variable {M B : Type*}
 
 section SubmonoidClass
 variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {x : M} {S : B}
@@ -166,7 +166,6 @@ lemma mem_closure_iff_exists_finset_subset {s : Set M} :
     induction hx using closure_induction with
     | one => exact ⟨0, ∅, by simp⟩
     | mem x hx =>
-      simp only at hx
       exact ⟨Pi.single x 1, {x}, by simp [hx, Pi.single_apply]⟩
     | mul x y _ _ hx hy =>
     obtain ⟨f, t, hts, hf, rfl⟩ := hx

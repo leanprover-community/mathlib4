@@ -146,7 +146,7 @@ theorem isProperMap_eval [ProperSpace R] (p : R[X]) (h : 0 < degree p) : IsPrope
 
 theorem isClosedMap_eval [ProperSpace R] (p : R[X]) : IsClosedMap p.eval := by
   obtain h | h := le_or_gt p.degree 0
-  · rw [degree_le_zero_iff.mp h]; simpa using isClosedMap_const
+  · rw [degree_le_zero_iff.mp h]; simpa using! isClosedMap_const
   · exact (p.isProperMap_eval h).isClosedMap
 
 variable (R) in
@@ -158,6 +158,12 @@ section Roots
 open Polynomial NNReal
 
 variable {F K : Type*} [CommRing F] [NormedField K]
+
+/-- Nonzero polynomials are nonzero away from a codiscrete set. -/
+lemma eventually_eval_ne_zero_codiscrete [IsDomain F] [TopologicalSpace F] [T1Space F]
+    {g : F[X]} (hg : g ≠ 0) :
+    ∀ᶠ z in codiscrete F, g.eval z ≠ 0 :=
+  (eventually_eval_ne_zero_cofinite hg).filter_mono codiscrete_le_cofinite
 
 open Multiset
 

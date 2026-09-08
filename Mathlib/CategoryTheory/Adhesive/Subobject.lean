@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 

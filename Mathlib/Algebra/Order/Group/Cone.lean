@@ -12,9 +12,8 @@ public import Mathlib.Algebra.Order.Monoid.Submonoid
 /-!
 # Construct ordered groups from groups with a specified positive cone.
 
-In this file we provide the structure `GroupCone` and the predicate `IsMaxCone`
-that encode axioms of `OrderedCommGroup` and `LinearOrderedCommGroup`
-in terms of the subset of non-negative elements.
+In this file we provide the structure `GroupCone` and the predicate `IsMaxCone` that encode
+the axioms of ordered groups in terms of the subset of non-negative elements.
 
 We also provide constructors that convert between
 cones in groups and the corresponding ordered groups.
@@ -54,7 +53,7 @@ structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
 @[to_additive]
 instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
   coe C := C.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 @[to_additive]
 instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G) G

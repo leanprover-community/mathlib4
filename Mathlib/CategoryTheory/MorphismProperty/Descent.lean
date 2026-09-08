@@ -137,7 +137,7 @@ lemma faithful_overPullback_of_isomorphisms_descendAlong
   refine ⟨fun {X} Y a b hab ↦ ?_⟩
   ext
   apply P.eq_of_isomorphisms_descendsAlong (Over.w a) (Over.w b) f hf
-  convert congr($(hab).left) <;> ext <;> simp
+  convert! congr($(hab).left) <;> ext <;> simp
 
 end DescendsAlong
 

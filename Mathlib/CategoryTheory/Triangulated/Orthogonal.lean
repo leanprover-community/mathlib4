@@ -71,7 +71,6 @@ example [P.IsTriangulated] : P.rightOrthogonal.IsTriangulated := inferInstance
 
 example [P.IsTriangulated] : P.leftOrthogonal.IsTriangulated := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_trW [P.IsTriangulated] :
     P.trW.isLocal = P.rightOrthogonal := by
   ext Y
@@ -86,7 +85,6 @@ lemma isLocal_trW [P.IsTriangulated] :
       α (hY _ (P.le_shift _ _ hX₃))
     exact ⟨β, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isColocal_trW [P.IsTriangulated] :
     P.trW.isColocal = P.leftOrthogonal := by
   ext X
@@ -115,7 +113,6 @@ lemma rightOrthogonal.map_bijective_of_isTriangulated
     obtain ⟨Z, s, hs, eq⟩ := hf
     exact (hY _ hs).1 eq
   · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.trW g
-    have := Localization.inverts L P.trW φ.s φ.hs
     obtain ⟨α, hα⟩ := (hY _ φ.hs).2 φ.f
     refine ⟨α, ?_⟩
     rw [hφ, ← cancel_epi (L.map φ.s), MorphismProperty.RightFraction.map_s_comp_map,
@@ -132,7 +129,6 @@ lemma leftOrthogonal.map_bijective_of_isTriangulated
     obtain ⟨Z, s, hs, eq⟩ := hf
     exact (hX _ hs).1 eq
   · obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.trW g
-    have := Localization.inverts L P.trW φ.s φ.hs
     obtain ⟨α, hα⟩ := (hX _ φ.hs).2 φ.f
     refine ⟨α, ?_⟩
     rw [hφ, ← cancel_mono (L.map φ.s), MorphismProperty.LeftFraction.map_comp_map_s,

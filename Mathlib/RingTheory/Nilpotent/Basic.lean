@@ -11,7 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -43,6 +43,14 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [neg_pow, hn, mul_zero]
+
+theorem not_isNilpotent_neg_one [Ring R] [Nontrivial R] : ¬ IsNilpotent (-1 : R) := by
+  intro h
+  simpa [not_isNilpotent_one] using h.neg
+
+theorem neg_one_pow_ne_zero [Ring R] [Nontrivial R] (n : ℕ) : (-1 : R) ^ n ≠ 0 := by
+  intro h
+  exact not_isNilpotent_neg_one ⟨n, h⟩
 
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
@@ -173,9 +181,9 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
     IsNilpotent (finsum f) := by
   classical
   by_cases h : HasFiniteSupport f
-  · rw [finsum_def, dif_pos h]
+  · rw [finsum_def, dite_eq_left h]
     exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
-  · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
+  · simp only [finsum_def, dite_eq_right h, IsNilpotent.zero]
 
 protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
@@ -210,7 +218,7 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R] {x y : R}
+variable [CommSemiring R]
 
 lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
@@ -223,9 +231,3 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
   Commute.isNilpotent_finsum hf fun _ _ ↦ Commute.all _ _
 
 end CommSemiring
-
-@[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
-and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
-lemma NoZeroSMulDivisors.isReduced (R : Type*) [MonoidWithZero R] [NoZeroDivisors R] :
-    IsReduced R := by
-  infer_instance

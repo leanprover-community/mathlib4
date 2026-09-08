@@ -26,8 +26,8 @@ The scope `Matrix` gives the following notation:
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {l m n o : Type*}
+variable {R : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
@@ -149,6 +149,10 @@ theorem conjTranspose_transpose [Star α] (M : Matrix m n α) :
 
 theorem transpose_conjTranspose [Star α] (M : Matrix m n α) :
     Mᵀᴴ = M.map star :=
+  rfl
+
+theorem conjTranspose_transpose_eq_transpose_conjTranspose [Star α] (M : Matrix m n α) :
+    Mᵀᴴ = Mᴴᵀ :=
   rfl
 
 theorem conjTranspose_injective [InvolutiveStar α] :

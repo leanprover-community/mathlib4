@@ -50,7 +50,7 @@ Instances for `AddOpposite`, `MulOpposite`, `ULift`, `Subsemiring`, `Subring`, `
 kleene algebra, idempotent semiring
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -72,7 +72,7 @@ class KStar (α : Type*) where
 
 @[inherit_doc] scoped[Computability] postfix:1024 "∗" => KStar.kstar
 
-open Computability
+open scoped Computability
 
 /-- A Kleene algebra is an idempotent semiring with an additional unary operator `kstar`
 (for Kleene star) that satisfies the following properties:
@@ -197,7 +197,7 @@ theorem kstar_le_of_mul_le_right (hb : 1 ≤ b) : a * b ≤ b → a∗ ≤ b := 
 theorem le_kstar : a ≤ a∗ :=
   le_trans (le_mul_of_one_le_left' one_le_kstar) kstar_mul_le_kstar
 
-@[mono]
+@[gcongr, mono]
 theorem kstar_mono : Monotone (KStar.kstar : α → α) :=
   fun _ _ h ↦
     kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) <| mul_kstar_le_kstar

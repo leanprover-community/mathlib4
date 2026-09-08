@@ -9,6 +9,7 @@ public import Mathlib.Init
 
 /-!
 # Bracket Notation
+
 This file provides notation which can be used for the Lie bracket, for the commutator of two
 subgroups, and for other similar operations.
 
@@ -33,7 +34,8 @@ public section
     of a Lie algebra on an element `m` in one of its modules (analogous to `SMul` in the
     associative setting).
   3. for binary operations on substructures, like the commutator `⁅H, K⁆` of two subgroups `H` and
-     `K` of a group. -/
+     `K` of a group.
+-/
 class Bracket (L M : Type*) where
   /-- `⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.
   It is supported by the `Bracket` typeclass. -/

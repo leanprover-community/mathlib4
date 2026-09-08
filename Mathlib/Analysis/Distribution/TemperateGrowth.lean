@@ -5,10 +5,17 @@ Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Bounds
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.MoveAdd
+
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.InnerProductSpace.Calculus
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-! # Functions and measures of temperate growth -/
 
@@ -87,10 +94,6 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
   simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
     pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ_iff] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
-
-@[deprecated (since := "2025-10-30")]
-alias HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux :=
-  HasTemperateGrowth.norm_iteratedFDeriv_le_uniform
 
 lemma HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
@@ -205,7 +208,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
 @[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
-  convert hf.add hg.neg using 1
+  convert hf.add hg.neg
   grind
 
 @[fun_prop]
@@ -215,8 +218,8 @@ theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
   induction s using Finset.induction_on with
   | empty => simp
   | insert a s has ih =>
-    obtain ⟨hf, h⟩ := by simpa using hf
-    simpa [has] using hf.add (ih h)
+    obtain ⟨hf, h⟩ := by simpa using! hf
+    simpa [has] using! hf.add (ih h)
 
 end Addition
 
@@ -245,7 +248,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
       ‖B‖ * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
         ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n - i) g x‖ :=
     (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x (mod_cast le_top)
-  refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.sum fun i hi ↦ ?_) _)
+  refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.fun_sum fun i hi ↦ ?_) _)
   simp_rw [mul_assoc, pow_add]
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n - i) ?_).norm_left) _ <;>
   grind
@@ -253,7 +256,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
 lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
   apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
   · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
-    exact fderiv_id'
+    exact fderiv_fun_id
   · apply differentiable_id
   · simp
 
@@ -281,7 +284,7 @@ theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
-  | zero => simpa only [pow_zero] using HasTemperateGrowth.const 1
+  | zero => simpa only [pow_zero] using! HasTemperateGrowth.const 1
   | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
@@ -299,15 +302,6 @@ lemma _root_.ContinuousLinearEquiv.hasTemperateGrowth (f : E ≃L[ℝ] F) :
     Function.HasTemperateGrowth f :=
   f.toContinuousLinearMap.hasTemperateGrowth
 
-@[fun_prop]
-theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
-  (Complex.ofRealCLM).hasTemperateGrowth
-
-variable (𝕜) in
-@[fun_prop]
-theorem RCLike.hasTemperateGrowth_ofReal [RCLike 𝕜] : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
-  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
-
 variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
 
 @[fun_prop]
@@ -323,7 +317,7 @@ variable (H) in
 theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
-    convert (2 • innerSL ℝ).hasTemperateGrowth
+    convert! (2 • innerSL ℝ).hasTemperateGrowth
   · exact .norm_sq ℝ differentiable_id
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]
@@ -340,7 +334,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   set t := {y : ℝ | 1 / 2 < y}
   have ht : Set.range (fun (x : H) ↦ (1 + ‖x‖ ^ 2)) ⊆ t := by
     rintro - ⟨y, rfl⟩
-    simp only [Set.mem_setOf_eq, t]
+    simp only [Set.mem_ofPred_eq, t]
     exact lt_add_of_lt_add_left (c := 0) (by norm_num) (by positivity)
   have hdiff : ContDiffOn ℝ ∞ (fun x ↦ x ^ r) t :=
     contDiffOn_fun_id.rpow_const_of_ne fun x hx ↦ (lt_trans (by norm_num) hx).ne'
@@ -389,7 +383,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
       congr
       simpa using hx''.le
     _ ≤ (2 : ℝ) ^ (n - r) := by
-      simp only [one_div, Set.mem_setOf_eq, t] at hx
+      simp only [one_div, Set.mem_ofPred_eq, t] at hx
       rw [Real.rpow_neg_eq_inv_rpow]
       gcongr
       exact ((inv_lt_comm₀ hx'' (by norm_num)).mpr hx).le
@@ -409,6 +403,72 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
 
 end Function
 
+section Real
+
+@[fun_prop]
+theorem Real.hasTemperateGrowth_sin :
+    Real.sin.HasTemperateGrowth := by
+  refine ⟨Real.contDiff_sin, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_sin_le_one n x
+
+@[fun_prop]
+theorem Real.hasTemperateGrowth_cos :
+    Real.cos.HasTemperateGrowth := by
+  refine ⟨Real.contDiff_cos, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_cos_le_one n x
+
+end Real
+
+section Complex
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
+  Complex.ofRealCLM.hasTemperateGrowth
+
+@[deprecated (since := "2026-08-18")] alias Function.Complex.hasTemperateGrowth_ofReal :=
+  Complex.hasTemperateGrowth_ofReal
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_re : Complex.re.HasTemperateGrowth :=
+  Complex.reCLM.hasTemperateGrowth
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_im : Complex.im.HasTemperateGrowth :=
+  Complex.imCLM.hasTemperateGrowth
+
+/-- The function `x ↦ exp (x * I)` has temperate growth. -/
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_exp_mul_I :
+    (fun x : ℝ ↦ Complex.exp (x * Complex.I)).HasTemperateGrowth := by
+  simp only [Complex.exp_ofReal_mul_I]
+  fun_prop
+
+end Complex
+
+section RCLike
+
+variable [RCLike 𝕜]
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_ofReal : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
+  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
+
+@[deprecated (since := "2026-08-18")] alias Function.RCLike.hasTemperateGrowth_ofReal :=
+  RCLike.hasTemperateGrowth_ofReal
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_re : (RCLike.re : 𝕜 → ℝ).HasTemperateGrowth :=
+  (RCLike.reCLM (K := 𝕜)).hasTemperateGrowth
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_im : (RCLike.im : 𝕜 → ℝ).HasTemperateGrowth :=
+  (RCLike.imCLM (K := 𝕜)).hasTemperateGrowth
+
+end RCLike
+
 namespace MeasureTheory.Measure
 
 variable [NormedAddCommGroup E] [MeasurableSpace E]
@@ -421,7 +481,7 @@ open scoped ENNReal
 class HasTemperateGrowth (μ : Measure E) : Prop where
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
-open Classical in
+open scoped Classical in
 /-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
 temperate growth. -/
 def integrablePower (μ : Measure E) : ℕ :=

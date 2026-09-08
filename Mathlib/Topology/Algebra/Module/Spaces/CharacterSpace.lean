@@ -5,10 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -58,7 +57,7 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [Conti
 
 noncomputable instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
-  coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
+  coe_injective φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
 
 /-- Elements of the character space are continuous linear maps. -/
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
@@ -103,6 +102,7 @@ noncomputable def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[�
 theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
   ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
@@ -121,7 +121,7 @@ theorem union_zero :
 /-- The `characterSpace 𝕜 A` along with `0` is always a closed set in `WeakDual 𝕜 A`. -/
 theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A ∪ {0}) := by
-  simp only [union_zero, Set.setOf_forall]
+  simp only [union_zero, Set.ofPred_forall]
   exact
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
@@ -140,7 +140,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
     have h₁ : φ 1 * (1 - φ 1) = 0 := by rw [mul_sub, sub_eq_zero, mul_one, ← map_mul φ, one_mul]
     rcases mul_eq_zero.mp h₁ with (h₂ | h₂)
     · have : ∀ a, φ (a * 1) = 0 := fun a => by simp only [map_mul φ, h₂, mul_zero]
-      exact False.elim (φ.prop.1 <| ContinuousLinearMap.ext <| by simpa only [mul_one] using this)
+      exact False.elim (φ.prop.1 <| ContinuousLinearMap.ext <| by simpa only [mul_one] using! this)
     · exact (sub_eq_zero.mp h₂).symm
   { CharacterSpace.instNonUnitalAlgHomClass with
     map_one := map_one'
@@ -171,7 +171,7 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
 `WeakDual 𝕜 A`. -/
 protected theorem isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A) := by
-  rw [eq_set_map_one_map_mul, Set.setOf_and]
+  rw [eq_set_map_one_map_mul, Set.ofPred_and]
   refine IsClosed.inter (isClosed_eq (eval_continuous _) continuous_const) ?_
   simpa only [(union_zero 𝕜 A).symm] using union_zero_isClosed _ _
 
@@ -188,7 +188,7 @@ theorem apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A
 theorem ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ker ψ) : φ = ψ := by
   ext x
   have : x - algebraMap 𝕜 A (ψ x) ∈ RingHom.ker φ := by
-    simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using sub_self (ψ x)
+    simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using! sub_self (ψ x)
   rwa [RingHom.mem_ker, map_sub, AlgHomClass.commutes, sub_eq_zero] at this
 
 end Ring

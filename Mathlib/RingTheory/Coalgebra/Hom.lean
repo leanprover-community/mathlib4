@@ -100,7 +100,7 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Modu
 
 instance funLike : FunLike (A →ₗc[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     rcases g with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     congr
@@ -242,7 +242,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -264,7 +264,7 @@ end CoalgHom
 
 namespace Coalgebra
 
-variable (R : Type u) (A : Type v) (B : Type w)
+variable (R : Type u) (A : Type v) (B : Type w) {ι : Type*}
 
 variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
 variable [Coalgebra R A] [Coalgebra R B]
@@ -302,9 +302,9 @@ variable {A B}
 If `φ : A → B` is a coalgebra map and `a = ∑ xᵢ ⊗ yᵢ`, then `φ a = ∑ φ xᵢ ⊗ φ yᵢ`
 -/
 @[simps]
-def Repr.induced {a : A} (repr : Repr R a)
+def Repr.induced {a : A} (repr : Repr R a ι)
     {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
-    (φ : F) : Repr R (φ a) where
+    (φ : F) : Repr R (φ a) ι where
   index := repr.index
   left := φ ∘ repr.left
   right := φ ∘ repr.right

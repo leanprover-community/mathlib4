@@ -60,7 +60,7 @@ variable {X Y : Type*}
   the induced topology on `X` is the collection of sets
   that are preimages of some open set in `Y`.
   This is the coarsest topology that makes `f` continuous. -/
-@[implicit_reducible]
+@[instance_reducible]
 def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
   IsOpen s := ∃ t, IsOpen t ∧ f ⁻¹' t = s
   isOpen_univ := ⟨univ, isOpen_univ, preimage_univ⟩
@@ -81,7 +81,7 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
   This is the finest topology that makes `f` continuous. -/
-@[implicit_reducible]
+@[instance_reducible]
 def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   IsOpen s := IsOpen (f ⁻¹' s)
   isOpen_univ := t.isOpen_univ
@@ -89,6 +89,26 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
 
 end TopologicalSpace
+
+namespace WithTopology
+
+instance instTopologicalSpace (X : Type*) (t : TopologicalSpace X) :
+    TopologicalSpace (WithTopology X t) :=
+  .coinduced (WithTopology.toTopology t) t
+
+lemma topology_eq_coinduced (X : Type*) (t : TopologicalSpace X) :
+    instTopologicalSpace X t = .coinduced (.toTopology t) t :=
+  rfl
+
+/-- `WithTopology.ofTopology` and `WithTopology.toTopology` as an equivalence. -/
+@[simps]
+protected def equiv (X : Type*) (t : TopologicalSpace X) : WithTopology X t ≃ X where
+  toFun := WithTopology.ofTopology
+  invFun := WithTopology.toTopology t
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+end WithTopology
 
 namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]

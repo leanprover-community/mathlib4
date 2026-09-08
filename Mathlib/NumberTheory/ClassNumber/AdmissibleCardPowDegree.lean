@@ -92,7 +92,7 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
       rwa [tsub_lt_iff_tsub_lt hd hbj] at this
   have : j = b.natDegree - (natDegree b - j.succ).succ := by
     rw [← Nat.succ_sub hbj, Nat.succ_sub_succ, tsub_tsub_cancel_of_le hbj.le]
-  convert congr_fun i_eq.symm ⟨natDegree b - j.succ, hj⟩
+  convert! congr_fun i_eq.symm ⟨natDegree b - j.succ, hj⟩
 
 variable [Field Fq]
 
@@ -136,7 +136,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
   apply lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
   swap
-  · convert deg_lt
+  · convert! deg_lt
     rw [degree_eq_natDegree h']; rfl
   rw [← sub_neg_eq_add, ← neg_div, Nat.cast_sub le_b.le]
   grw [← Nat.le_ceil]
@@ -160,7 +160,7 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   refine Or.imp (pow_le_pow_right₀ this) (pow_le_pow_right₀ this) ?_
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
-  convert degree_add_le (x - y) (y - z) using 2
+  convert! degree_add_le (x - y) (y - z) using 2
   exact (sub_add_sub_cancel _ _ _).symm
 
 /-- A slightly stronger version of `exists_partition` on which we perform induction on `n`:

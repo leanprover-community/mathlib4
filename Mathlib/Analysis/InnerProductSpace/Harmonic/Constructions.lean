@@ -20,7 +20,9 @@ part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f�
 
 public section
 
-open Complex ComplexConjugate InnerProductSpace Topology
+open Complex InnerProductSpace
+
+open scoped ComplexConjugate Topology
 
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
@@ -30,7 +32,6 @@ variable
 ## Harmonicity of Analytic Functions on the Complex Plane
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Continuously complex-differentiable functions on ℂ are harmonic.
 -/
@@ -43,19 +44,16 @@ theorem ContDiffAt.harmonicAt (h : ContDiffAt ℂ 2 f x) : HarmonicAt f x := by
   simp_all [laplacian_eq_iteratedFDeriv_complexPlane f, ← ha,
     ContinuousMultilinearMap.coe_restrictScalars]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Analytic functions on ℂ are harmonic. -/
 theorem AnalyticAt.harmonicAt [CompleteSpace F] (h : AnalyticAt ℂ f x) : HarmonicAt f x :=
   h.contDiffAt.harmonicAt
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its real part is harmonic.
 -/
 theorem AnalyticAt.harmonicAt_re {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
     HarmonicAt (fun z ↦ (f z).re) x := h.harmonicAt.comp_CLM reCLM
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its imaginary part is harmonic.
 -/
@@ -63,7 +61,6 @@ theorem AnalyticAt.harmonicAt_im {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
     HarmonicAt (fun z ↦ (f z).im) x :=
   h.harmonicAt.comp_CLM imCLM
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its complex conjugate is harmonic.
 -/
@@ -74,7 +71,6 @@ theorem AnalyticAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) : 
 ## Harmonicity of `log ‖analytic‖`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /- Helper lemma for AnalyticAt.harmonicAt_log_norm -/
 private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁g : AnalyticAt ℂ g z)
     (h₂g : g z ≠ 0) (h₃g : g z ∈ slitPlane) :
@@ -107,7 +103,6 @@ private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁
       rw [← Complex.log_conj]
       simp [Complex.slitPlane_arg_ne_pi hx.1]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℂ` is complex-analytic without zero, then `log ‖f‖` is harmonic.
 -/

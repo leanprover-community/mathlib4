@@ -5,8 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
+public meta import Lean.Meta.Tactic.NormCast
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Tactic.Ring
 public import Mathlib.Util.AtomM
 public meta import Mathlib.Algebra.Algebra.Defs
@@ -19,6 +19,9 @@ the goal as linear combinations of `M`-atoms over some semiring `R`, and reduces
 the respective equalities of the `R`-coefficients of each atom.  The `module` tactic does this and
 then runs the `ring` tactic on each of these coefficient-wise equalities, failing if this does not
 resolve them.
+
+This file also contains the scalar-normalization engine (`normalizeScalar`, `qNF.rebuild` and
+`eval`) which backs the `module_nf` tactic defined in `Mathlib.Tactic.ModuleNF`.
 
 The scalar type `R` is not pre-determined: instead it starts as `ℕ` (when each atom is initially
 given a scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are
@@ -56,10 +59,16 @@ variable {S : Type*} {R : Type*} {M : Type*}
 
 /-- Augment a `Module.NF R M` object `l`, i.e. a list of pairs in `R × M`, by prepending another
 pair `p : R × M`. -/
-@[match_pattern]
 def cons (p : R × M) (l : NF R M) : NF R M := p :: l
 
 @[inherit_doc cons] infixl:100 " ::ᵣ " => cons
+
+/-- An induction principle for `NF` which mirrors induction on lists, with cases
+for `[]` and `NF.cons` -/
+@[elab_as_elim, induction_eliminator]
+protected theorem inductionOn {motive : NF R M → Prop} (l : NF R M) (nil : motive [])
+    (cons : ∀ (p : R × M) (l : NF R M), motive l → motive (p ::ᵣ l)) : motive l :=
+  List.rec nil cons l
 
 /-- Evaluate a `Module.NF R M` object `l`, i.e. a list of pairs in `R × M`, to an element of `M`, by
 forming the "linear combination" it specifies: scalar-multiply each `R` term to the corresponding
@@ -69,6 +78,15 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
 @[simp] theorem eval_cons [AddMonoid M] [SMul R M] (p : R × M) (l : NF R M) :
     (p ::ᵣ l).eval = p.1 • p.2 + l.eval := by
   rfl
+
+theorem eval_nil [Add M] [Zero M] [SMul R M] : NF.eval ([] : NF R M) = 0 := by
+  simp [eval]
+
+theorem eval_cons_eq [AddCommMonoid M] [Semiring R] [Module R M] {r r' : R} (x : M)
+    {l : NF R M} {e : M} (hr : r = r') (h : l.eval = e) :
+    ((r, x) ::ᵣ l).eval = r' • x + e := by
+  subst hr h
+  exact NF.eval_cons (r, x) l
 
 theorem atom_eq_eval [AddMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
@@ -138,11 +156,12 @@ theorem sub_eq_eval {R₁ R₂ S₁ S₂ : Type*} [AddCommGroup M] [Ring R] [Mod
 instance [Neg R] : Neg (NF R M) where
   neg l := l.map fun (a, x) ↦ (-a, x)
 
+theorem neg_cons [Neg R] (p : R × M) (l : NF R M) : -(p ::ᵣ l) = (-p.1, p.2) ::ᵣ (-l) := rfl
+
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
-  simp +instances only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
-  congr
-  ext p
-  simp
+  induction l with
+  | nil => exact neg_zero.symm
+  | cons p l ih => simp only [eval_cons, neg_add, neg_cons, ih, neg_smul]
 
 theorem zero_sub_eq_eval [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) :
     0 - l.eval = (-l).eval := by
@@ -159,13 +178,15 @@ instance [Mul R] : SMul R (NF R M) where
 @[simp] theorem smul_apply [Mul R] (r : R) (l : NF R M) : r • l = l.map fun (a, x) ↦ (r * a, x) :=
   rfl
 
+theorem smul_cons [Mul R] (r : R) (p : R × M) (l : NF R M) :
+    r • (p ::ᵣ l) = (r * p.1, p.2) ::ᵣ (r • l) := rfl
+
 theorem eval_smul [AddCommMonoid M] [Semiring R] [Module R M] {l : NF R M} {x : M} (h : x = l.eval)
     (r : R) : (r • l).eval = r • x := by
-  unfold NF.eval at h ⊢
-  simp only [h, smul_sum, map_map, NF.smul_apply]
-  congr
-  ext p
-  simp [mul_smul]
+  subst h
+  induction l with
+  | nil => exact (smul_zero r).symm
+  | cons p l ih => simp only [smul_cons, eval_cons, ih, smul_add, mul_smul]
 
 theorem smul_eq_eval {R₀ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₀]
     [Module R₀ M] [Semiring S] [Module S M] {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
@@ -204,13 +225,15 @@ commutative semiring, by applying to each `S`-component the algebra-map from `S`
 def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
   l.map (fun ⟨s, x⟩ ↦ (Algebra.algebraMap S R s, x))
 
+theorem algebraMap_cons [CommSemiring S] [Semiring R] [Algebra S R] (p : S × M) (l : NF S M) :
+    (p ::ᵣ l).algebraMap R = (Algebra.algebraMap S R p.1, p.2) ::ᵣ (l.algebraMap R) := rfl
+
 theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
     [MulAction R M] [IsScalarTower S R M] (l : NF S M) :
     (l.algebraMap R).eval = l.eval := by
-  simp only [NF.eval, algebraMap, map_map]
-  congr
-  ext
-  simp [IsScalarTower.algebraMap_smul]
+  induction l with
+  | nil => rfl
+  | cons p l ih => simp only [algebraMap_cons, eval_cons, ih, IsScalarTower.algebraMap_smul]
 
 end NF
 end
@@ -269,13 +292,13 @@ appear in `l₁`, `l₂` respectively with the same `ℕ`-component `k`, then co
 meta def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l
   | l, [] => l
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      ((a₁, x₁), k₁) ::ᵣ add iR t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      ((a₁, x₁), k₁) :: add iR t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((q($a₁ + $a₂), x₁), k₁) ::ᵣ add iR t₁ t₂
+      ((q($a₁ + $a₂), x₁), k₁) :: add iR t₁ t₂
     else
-      ((a₂, x₂), k₂) ::ᵣ add iR (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      ((a₂, x₂), k₂) :: add iR (((a₁, x₁), k₁) :: t₁) t₂
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
@@ -287,15 +310,15 @@ meta def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Mo
   match l₁, l₂ with
   | [], l => (q(zero_add (NF.eval $(l.toNF))):)
   | l, [] => (q(add_zero (NF.eval $(l.toNF))):)
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      let pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      let pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.add_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkAddProof iRM t₁ t₂
       (q(NF.add_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkAddProof iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      let pf := mkAddProof iRM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.add_eq_eval₃ ($a₂, $x₂) $pf):)
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -314,13 +337,13 @@ that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respect
 def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l.onScalar q(Neg.neg)
   | l, [] => l
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      ((a₁, x₁), k₁) ::ᵣ sub iR t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      ((a₁, x₁), k₁) :: sub iR t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((q($a₁ - $a₂), x₁), k₁) ::ᵣ sub iR t₁ t₂
+      ((q($a₁ - $a₂), x₁), k₁) :: sub iR t₁ t₂
     else
-      ((q(-$a₂), x₂), k₂) ::ᵣ sub iR (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      ((q(-$a₂), x₂), k₂) :: sub iR (((a₁, x₁), k₁) :: t₁) t₂
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the difference
@@ -332,15 +355,15 @@ def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M
   match l₁, l₂ with
   | [], l => (q(NF.zero_sub_eq_eval $(l.toNF)):)
   | l, [] => (q(sub_zero (NF.eval $(l.toNF))):)
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.sub_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkSubProof iR iM iRM t₁ t₂
       (q(NF.sub_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.sub_eq_eval₃ ($a₂, $x₂) $pf):)
 
 variable {iM : Q(AddCommMonoid $M)}
@@ -466,11 +489,15 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
   /- parse a `(0:M)` -/
   | ~q(0) =>
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [], q(NF.zero_eq_eval $M)⟩
-  /- anything else should be treated as an atom -/
+  /- anything else should be treated as an atom, normalize it with `evalAtom` before interning -/
   | _ =>
-    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
+    let r ← (← read).evalAtom x
+    have e' : Q($M) := r.expr
+    let pf' ← r.getProof
+    have pf' : Q($x = $e') := pf'
+    let (k, ⟨x', _⟩) ← AtomM.addAtomQ e'
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), x'), k)],
-      q(NF.atom_eq_eval $x')⟩
+      (q(($pf').trans (NF.atom_eq_eval $x')) :)⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and
 given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -489,18 +516,18 @@ partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddCommMonoid $M)} {_ :
   /- if one of the lists is empty and the other one is not, recurse down the nonempty one,
     forming goals that each of the listed coefficients is equal to
     zero -/
-  | [], ((a, x), _) ::ᵣ L =>
+  | [], ((a, x), _) :: L =>
     let mvar : Q((0:$R) = $a) ← mkFreshExprMVar q((0:$R) = $a)
     let (mvars, pf) ← reduceCoefficientwise iRM [] L
     pure (mvar.mvarId! :: mvars, (q(NF.eq_const_cons $x $mvar $pf):))
-  | ((a, x), _) ::ᵣ L, [] =>
+  | ((a, x), _) :: L, [] =>
     let mvar : Q($a = (0:$R)) ← mkFreshExprMVar q($a = (0:$R))
     let (mvars, pf) ← reduceCoefficientwise iRM L []
     pure (mvar.mvarId! :: mvars, (q(NF.eq_cons_const $x $mvar $pf):))
   /- if both lists are nonempty, then deal with the numerically-smallest term in either list,
     forming a goal that it is equal to zero (if it appears in only one list) or that its
     coefficients in the two lists are the same (if it appears in both lists); then recurse -/
-  | ((a₁, x₁), k₁) ::ᵣ L₁, ((a₂, x₂), k₂) ::ᵣ L₂ =>
+  | ((a₁, x₁), k₁) :: L₁, ((a₂, x₂), k₂) :: L₂ =>
     if k₁ < k₂ then
       let mvar : Q($a₁ = (0:$R)) ← mkFreshExprMVar q($a₁ = (0:$R))
       let (mvars, pf) ← reduceCoefficientwise iRM L₁ l₂
@@ -564,21 +591,27 @@ the `algebraMap` operations which (which proliferate in the constructed scalar g
 familiar forms: `ℕ`, `ℤ` and `ℚ` casts. -/
 def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
 
-/-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
-These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
-get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
-most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
-(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
-def postprocess (mvarId : MVarId) : MetaM MVarId := do
+/-- A `Simp.Context` containing `push_cast` and `algebraMapThms` lemmas. -/
+def postprocessCtx : MetaM Simp.Context := do
   -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   -- augment this list with the `algebraMapThms` lemmas, which handle `algebraMap` operations
   for thm in algebraMapThms do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
-  -- now run `simp` with these lemmas, and (importantly) *no* simprocs
-  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
-  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
+  -- clear the `* 1` tags that the parser marks as atoms
+  thms ← [``mul_one, ``one_mul].foldlM (·.addConst ·) thms
+  Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
+
+/-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
+These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
+get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
+most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
+(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas.
+The `* 1` tags which the parser marks atoms are also cleared. -/
+def postprocess (mvarId : MVarId) : MetaM MVarId := do
+  -- run `simp` with these lemmas, and (importantly) *no* simprocs
+  let (some r, _) ← simpTarget mvarId (← postprocessCtx) (simprocs := #[]) |
     throwError "internal error in match_scalars tactic: postprocessing should not close goals"
   return r
 
@@ -588,6 +621,76 @@ the respective equalities of the `R`-coefficients of each atom. -/
 def matchScalars (g : MVarId) : MetaM (List MVarId) := do
   let mvars ← AtomM.run .instances (matchScalarsAux g)
   mvars.mapM postprocess
+
+/-- Normalize a scalar produced by `Mathlib.Tactic.Module.parse`. This performs
+the same processing as `Mathlib.Tactic.Module.postprocess` and then normalizes
+with `ring_nf` if it's applicable. -/
+def normalizeScalar (postCtx : Simp.Context) (e : Expr) : AtomM Simp.Result := do
+  let (r, _) ← Simp.main e postCtx (methods := Simp.mkDefaultMethodsCore {})
+  let some r' ← RingNF.evalExpr? r.expr
+    | -- The scalar is an atom for `ring_nf` but it may contain expressions that can be normalized
+      -- by `module_nf`. So run the `module`'s `evalAtom` over it.
+      r.mkEqTrans (← (← read).evalAtom r.expr)
+  r.mkEqTrans (← RingNF.cleanup {} r')
+
+/-- Rebuild the reified list `l` as an expression `c₁' • x₁ + (c₂' • x₂ + ... + 0)`
+with normalized scalars and a proof that it equals `NF.eval l`. -/
+def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
+    (iR : Q(Semiring $R)) (iRM : Q(Module $R $M)) (postCtx : Simp.Context) (l : qNF R M) :
+    AtomM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) :=
+  match l with
+  | [] => pure ⟨q(0), q(NF.eval_nil (R := $R) (M := $M))⟩
+  | ((r, x), _) :: t => do
+    let res ← normalizeScalar postCtx r
+    have r' : Q($R) := res.expr
+    let hr : Q($r = $r') ← res.getProof
+    let ⟨e, pfT⟩ ← qNF.rebuild iM iR iRM postCtx t
+    pure ⟨q($r' • $x + $e), (q(NF.eval_cons_eq $x $hr $pfT) :)⟩
+
+/-- Attempt to lift the scalars of `l` into the ring `base`.
+
+`base` must be a semiring acting on `M`, and `qNF.matchRings` must be able to relate the parsed ring
+`R` to it (it throws when the two rings are not comparable; this is caught here and returned as
+`none`).  On success, the lifted list is returned together with a proof that its evaluation agrees
+with that of `l`. -/
+def qNF.liftToBase? {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
+    (iR : Q(Semiring $R)) (iRM : Q(Module $R $M)) (base : Σ w : Level, Q(Type w))
+    (l : qNF R M) :
+    MetaM (Option (Σ w : Level, Σ B : Q(Type w), Σ iB : Q(Semiring $B),
+      Σ _ : Q(@Module $B $M $iB $iM), Σ l' : qNF B M,
+      Q(NF.eval $(l'.toNF) = NF.eval $(l.toNF)))) := do
+  let ⟨w, B⟩ := base
+  let some iB ← synthInstanceQ? q(Semiring.{w} $B) | return none
+  let some iBM ← synthInstanceQ? q(Module $B $M) | return none
+  try
+    let ⟨w', B', iB', iBM', ⟨l', pfL⟩, _, _⟩ ← qNF.matchRings iRM iB iBM l [] q(0) q(0)
+    return some ⟨w', B', iB', iBM', l', pfL⟩
+  catch _ => return none
+
+/-- Normalize an expression in an `AddCommMonoid` into the form `c₁ • x₁ + (c₂ • x₂ + ... + 0)`
+with normalized scalars by chaining `parse` and `qNF.rebuild`.
+
+When `base?` is provided, `eval` will also attempt to lift the coefficients into `base?`. If `base?`
+is not a semiring acting on `M` or when `qNF.matchRings` cannot relate the parsed ring to `base?`
+then the result falls back to the parsed ring. -/
+def eval {M : Q(Type v)} (iM : Q(AddCommMonoid $M)) (base? : Option (Σ u : Level, Q(Type u)))
+    (postCtx : Simp.Context) (e : Q($M)) : AtomM Simp.Result := do
+  let ⟨_, _, iR, iRM, l, pf⟩ ← parse iM e
+  if let [((_, x), _)] := l then
+    -- a single atom with unit coefficient is already in normal form
+    if ← withTransparency (← read).red <| isDefEq x e then
+      return { expr := e }
+  let lifted? ← match base? with
+    | some base => qNF.liftToBase? iM iR iRM base l
+    | none => pure none
+  let (e', pf') ← match lifted? with
+    | some ⟨_, _, iB, iBM, l', pfL⟩ => do
+      let ⟨e', pf'⟩ ← qNF.rebuild iM iB iBM postCtx l'
+      pure ((e' : Expr), ← mkEqTrans (← mkEqSymm pfL) pf')
+    | none => do
+      let ⟨e', pf'⟩ ← qNF.rebuild iM iR iRM postCtx l
+      pure ((e' : Expr), (pf' : Expr))
+  return { expr := e', proof? := some (← mkEqTrans pf pf') }
 
 /-- Given a goal parseable as a linear combination `⊢ a • x + ... + b • y = c • x + ... + d • y`,
 `match_scalars` splits up the goal into equalities of the scalars for each respective atom. This
@@ -613,19 +716,19 @@ Examples:
 example [AddCommMonoid M] [Semiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
   match_scalars
-  -- one goal: `⊢ a * 1 + b * 1 = (b + a) * 1`
+  -- one goal: `⊢ a + b = b + a`
 
 example [AddCommGroup M] [Ring R] [Module R M] (a b : R) (x : M) :
     a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   match_scalars
   -- two goals:
-  -- `⊢ a * (a * 1) + b * (b * 1) = 1` (from the `x` atom)
-  -- `⊢ a * -(b * 1) + b * (a * 1) = 0` (from the `y` atom)
+  -- `⊢ a * a + b * b = 1` (from the `x` atom)
+  -- `⊢ a * -b + b * a = 0` (from the `y` atom)
 
 example [AddCommGroup M] [Ring R] [Module R M] (a : R) (x : M) :
     -(2:R) • a • x = a • (-2:ℤ) • x := by
   match_scalars
-  -- one goal: `⊢ -2 * (a * 1) = a * (-2 * 1)`
+  -- one goal: `⊢ -2 * a = a * -2`
 ```
 -/
 elab "match_scalars" : tactic => Tactic.liftMetaTactic matchScalars
