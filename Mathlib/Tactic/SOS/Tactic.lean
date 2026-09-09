@@ -546,8 +546,13 @@ syntax (name := pureSosTactic) "pure_sos" Lean.Parser.Tactic.optConfig : tactic
 For a strict-positivity goal, supply its positive rational margin as `with ε := eps`. -/
 syntax (name := sosWitnessTactic)
   "sos_witness " term ("with" "ε" ":=" term)? : tactic
-/-- `sos_witness cert with exponent := n` checks a closed refutation certificate
-whose strict-product exponent is `n`. -/
+/--
+* `sos_witness cert with exponent := n` checks a closed refutation certificate
+  whose strict-product exponent is `n`.
+-/
+tactic_extension sosWitnessTactic
+
+@[tactic_alt sosWitnessTactic]
 syntax (name := sosWitnessExpTactic)
   "sos_witness " term "with" "exponent" ":=" num : tactic
 
