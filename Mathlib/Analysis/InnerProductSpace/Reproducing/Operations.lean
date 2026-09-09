@@ -10,17 +10,24 @@ public import Mathlib.Analysis.InnerProductSpace.Reproducing
 
 /-!
 # Operations on RKHS
+
 This file implements the maps that show how RKHSs created from kernels formed by applying operations
 to a set of kernels relate to the RKHSs of the constituant kernels.
 
 ## main definitions
+
 The definitions are sorted by operation.
 
 #### SMul
  - `generator`: the operator `f ↦ c • ↑f` inducing the RKHS `c • H`.
+ - `equiv`: for `c ≠ 0` the space `c • H` is continuously linearly equivalent to `H`
 
-## Implementation notes
+#### Add
 
+ - `generator`: the operator `(f, g) ↦ ⇑f + ⇑g` inducing the RKHS `H + H'`.
+ - `OfKernelAddEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
+    quotient space over `OfKernel K × OfKernel K'`.
+ - `projection`: isometry yielding the elements of `H × H'` achieving the norm of `H + H'`.
 
 -/
 
@@ -28,34 +35,176 @@ public noncomputable section
 
 namespace RKHS
 
-namespace SMul
-
-open Submodule InnerProductSpace
+open InnerProductSpace Submodule
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*}
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
-variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 variable [RKHS 𝕜 H X V]
+
+namespace Add'
+
+variable (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [RKHS 𝕜 H' X V]
+
+/-- The operator `(f, g) ↦ ⇑f + ⇑g`, where addition is in `X → V`. -/
+def generator : WithLp 2 (H × H') →L[𝕜] (X → V) :=
+  ((coeCLM (H:=H) 𝕜).coprod (coeCLM (H:=H') 𝕜)) ∘L
+    (WithLp.prodContinuousLinearEquiv 2 𝕜 H H').toContinuousLinearMap
+
+variable {H H'} in
+@[simp]
+lemma generator_apply (f : H) (g : H') (x : X) :
+    generator H H' (WithLp.toLp 2 (f,g)) x = f x + g x := by
+  rfl
+
+instance : IsClosed ((generator H H').ker : Set (WithLp 2 (H × H'))) :=
+  (generator H H').isClosed_ker
+
+/-- The sum of two RKHS embedding in the same space of functions `X → V`. -/
+abbrev sumSpace := WithLp 2 (H × H') ⧸ (generator H H').ker
+
+/-- `H + H'` is shorthand for the RKHS `sumSpace H H'`, which is the sum of the two RKHS. -/
+scoped infix:50 " + " => sumSpace
+
+variable [CompleteSpace H] [CompleteSpace H']
+
+instance : RKHS 𝕜 (H + H') X V where
+  coeCLM := (generator H H').ker.liftQL (generator H H') (le_refl _)
+  coeCLM_injective := fun f g hfg => by
+    refine (Function.Injective.eq_iff ?_).mp hfg
+    simp [← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
+
+lemma mk_eq (f : WithLp 2 (H × H')) :
+    Submodule.Quotient.mk (p:=(generator H H').ker) f = generator H H' f := rfl
+
+section CompleteSpaceV
+
+variable [CompleteSpace V]
+
+lemma kerFun_mem_orthogonal (x : X) (v : V) :
+    (WithLp.toLp 2 (kerFun H x v, kerFun H' x v)) ∈ (generator H H').kerᗮ := by
+  intro p hp
+  rw [LinearMap.mem_ker, funext_iff] at hp
+  simp_all [generator, ← inner_add_left]
+
+lemma kerFun_apply_eq_mk (x : X) (v : V) :
+    kerFun (H + H') x v = Submodule.Quotient.mk (WithLp.toLp 2 (kerFun H x v, kerFun H' x v)) := by
+  rw [← quotientEquivOrthogonal_symm_eq_mk (generator H H').ker _
+    (kerFun_mem_orthogonal H H' x v), (generator H H').ker.quotientEquivOrthogonal.eq_symm_apply,
+    ext_iff_inner_right (𝕜 := 𝕜)]
+  intro f
+  rw [(generator H H').ker.quotientEquivOrthogonal.inner_map_eq_flip,
+    (generator H H').ker.quotientEquivOrthogonal_symm_eq_mk, kerFun_inner]
+  simp [coe_inner, WithLp.prod_inner_apply, WithLp.ofLp_fst, kerFun_inner, WithLp.ofLp_snd, mk_eq]
+  simp [generator, inner_add_right]
+
+theorem kernel_sum_eq_sum_of_kernel : kernel (H + H') = kernel H + kernel H' := by
+  ext
+  simp [← kerFun_apply, kerFun_apply_eq_mk H H' _ _, mk_eq]
+
+section OfKernel
+
+variable (K K' : Matrix X X (V →L[𝕜] V))
+variable [Fact K.PosSemidef] [Fact K'.PosSemidef]
+
+scoped instance : Fact (K + K').PosSemidef :=
+  ⟨Matrix.PosSemidef.add (Fact.out : K.PosSemidef) (Fact.out : K'.PosSemidef)⟩
+
+/-- The RKHSs constructed from the sum of two kernels is linearly isometrically isomorphic to the
+sum of the RKHSs created by the consituant kernels. -/
+def OfKernelAddEquiv : OfKernel (K + K') ≃ₗᵢ[𝕜] OfKernel K + OfKernel K' := equiv
+  (by simp [OfKernel.kernel_ofKernel, kernel_sum_eq_sum_of_kernel])
+
+end OfKernel
+
+end CompleteSpaceV
+
+/-- Projection that takes a function `f : H + H'` to the unique pair in `H × H'` that achieves
+its norm. -/
+def projection : H + H' →ₗᵢ[𝕜] WithLp 2 (H × H') :=
+  ((generator H H').kerᗮ).subtypeₗᵢ.comp
+    (generator H H').ker.quotientEquivOrthogonal.toLinearIsometry
+
+@[simp low]
+lemma projection_apply (f : H + H') :
+    projection H H' f =
+      (((generator H H').kerᗮ).subtype ∘ (generator H H').ker.quotientEquivOrthogonal) f := by
+  rfl
+
+theorem range_projection : (projection H H').range = (generator H H').kerᗮ := by
+  apply SetLike.coe_injective
+  change Set.range (projection H H') = _
+  simp [projection, Set.range_comp]
+
+variable {H H'} in
+lemma mk_projection (f : H + H') :
+    Submodule.Quotient.mk (projection H H' f : WithLp 2 (H × H')) = f := by
+  rw [← quotientEquivOrthogonal_symm_eq_mk _ _ _, LinearIsometryEquiv.symm_apply_eq]
+  · simp
+  rw [← range_projection H H']
+  exact LinearMap.mem_range_self _ f
+
+variable [CompleteSpace V] in
+theorem projection_kerFun (x : X) (v : V) :
+    projection H H' (kerFun (H + H') x v) = .toLp 2 ⟨kerFun H x v, kerFun H' x v⟩ := by
+  simp [projection, kerFun_apply_eq_mk, kerFun_mem_orthogonal]
+
+variable [CompleteSpace V] in
+theorem norm_sq_kerFun_add (x : X) (v : V) :
+    ‖kerFun (H + H') x v‖ ^ 2 = ‖kerFun H x v‖ ^ 2 + ‖kerFun H' x v‖ ^ 2 := by
+  simp [← (projection H H').norm_map, projection_kerFun, WithLp.prod_norm_sq_eq_of_L2]
+
+theorem exists_eq_add_and_norm_sq_eq_add (f : H + H') :
+    ∃ (f₁ : H) (f₂ : H'), (⇑f = f₁ + f₂) ∧ ‖f‖ ^ 2 = ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := by
+  let p := projection H H' f
+  have hp : projection H H' f = p := rfl
+  use p.ofLp.1, p.ofLp.2
+  constructor
+  · rw [← mk_projection f, hp]
+    ext
+    simp only [WithLp.ofLp_fst, WithLp.ofLp_snd, Pi.add_apply, mk_eq]
+    exact generator_apply p.fst p.snd _
+  · simp [← (projection H H').norm_map, hp, WithLp.prod_norm_sq_eq_of_L2]
+
+theorem norm_sq_le (f : H + H') (f₁ : H) (f₂ : H') (h : ⇑f = f₁ + f₂) :
+    ‖f‖ ^ 2 ≤ ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := by
+  calc
+    ‖f‖ ^ 2 = ‖Submodule.Quotient.mk (p := (generator H H').ker) (WithLp.toLp 2 (f₁, f₂))‖ ^ 2 := by
+      congr
+      ext
+      simp [h, mk_eq]
+    _ ≤ ‖WithLp.toLp 2 (f₁, f₂)‖ ^ 2 := by
+      gcongr
+      exact Submodule.Quotient.norm_mk_le _ _
+    _ = ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := WithLp.prod_norm_sq_eq_of_L2 _
+
+end Add'
+
+namespace SMul
+
 variable (c : 𝕜)
 
 /-- The operator `f ↦ c • ↑f`, where scalar multiplication is in `X → V`. -/
 def generator : H →L[𝕜] (X → V) := c • coeCLM 𝕜
 
 variable {H} in
-omit [CompleteSpace H] [CompleteSpace V] in
 @[simp]
 lemma generator_apply (f : H) (x : X) : generator H c f x = c • f x := by rfl
 
 instance : IsClosed ((generator H c).ker : Set H) := (generator H c).isClosed_ker
 
-lemma kerFun_mem_orthogonal (x : X) (v : V) (hc : c ≠ 0) : kerFun H x v ∈ (generator H c).kerᗮ := by
-  intro p hp
-  rw [LinearMap.mem_ker, funext_iff] at hp
-  simp_all
+lemma generator_injective {c} (h : c ≠ 0) : Function.Injective (generator H c) := by
+  intro a b
+  simp [generator, h]
+
+lemma ker_eq_bot {c} (h : c ≠ 0) : (generator H c).ker = ⊥ := by
+  simp [LinearMap.ker_eq_bot, generator_injective H h]
 
 /-- The RKHS `H` multiplied by the scalar `c`, defined as quotient of the original `H`. -/
 abbrev smulSpace := H ⧸ (generator H c).ker
+
+variable [CompleteSpace H]
 
 instance : RKHS 𝕜 (smulSpace H c) X V where
   coeCLM := (generator H c).ker.liftQL (generator H c) (le_refl _)
@@ -65,6 +214,18 @@ instance : RKHS 𝕜 (smulSpace H c) X V where
 
 instance : Subsingleton (smulSpace H 0) where
   allEq := by simp [smulSpace, Submodule.Quotient.subsingleton_iff, generator]
+
+lemma mk_eq (f : H) :
+    Submodule.Quotient.mk (p:=(generator H c).ker) f = generator H c f := rfl
+
+section CompleteSpaceV
+
+variable [CompleteSpace V]
+
+lemma kerFun_mem_orthogonal (x : X) (v : V) (hc : c ≠ 0) : kerFun H x v ∈ (generator H c).kerᗮ := by
+  intro p hp
+  rw [LinearMap.mem_ker, funext_iff] at hp
+  simp_all
 
 lemma kerFun_apply_eq_mk {c} (hc : c ≠ 0) (x : X) (v : V) :
     kerFun (smulSpace H c) x v = Submodule.Quotient.mk (starRingEnd 𝕜 c • kerFun H x v) := by
@@ -93,14 +254,7 @@ theorem kernel_smul_eq_norm_sq_smul_kernel : kernel (smulSpace H c) = (‖c‖ :
     change starRingEnd 𝕜 c • generator H c (kerFun H _ _ ) _ = _
     simp [generator_apply, smul_smul, RCLike.conj_mul]
 
-omit [CompleteSpace V] [CompleteSpace H] in
-lemma generator_injective {c} (h : c ≠ 0) : Function.Injective (generator H c) := by
-  intro a b
-  simp [generator, h]
-
-omit [CompleteSpace V] [CompleteSpace H] in
-lemma ker_eq_bot {c} (h : c ≠ 0) : (generator H c).ker = ⊥ := by
-  simp [LinearMap.ker_eq_bot, generator_injective H h]
+end CompleteSpaceV
 
 /-- If `smulSpace H c` is not a `Subsingleton`, then it is continuously linearly equivalent to `H`.
 -/

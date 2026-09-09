@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.Normed.Operator.Extend
-public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
 # Reproducing Kernel Hilbert Spaces
@@ -115,6 +114,7 @@ lemma kerFun_def (x : X) : kerFun H x = (.proj x ∘L coeCLM 𝕜).adjoint := by
 kernel functions. -/
 def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
 
+@[simp]
 lemma kerFun_apply (y : X) (v : V) (x : X) : kerFun H y v x = kernel H x y v := by
   simp [kernel, kerFun]
 
@@ -142,7 +142,7 @@ lemma inner_kerFun (x : X) (v : V) (f : H) : ⟪f, kerFun H x v⟫_𝕜 = ⟪f x
 /-- The "reproducing" property of the kernel. -/
 lemma kernel_inner (x y : X) (v w : V) :
     ⟪kernel H x y v, w⟫_𝕜 = ⟪kerFun H y v, kerFun H x w⟫_𝕜 := by
-  simp [← adjoint_inner_left, kernel]
+  simp [← adjoint_inner_left]
 
 lemma norm_kernel_eq_norm_kerFun_sq (x) : ‖kernel H x x‖ = ‖kerFun H x‖ ^ 2 := by
   rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
@@ -228,8 +228,7 @@ private lemma isSelfAdjoint_finsuppSum (h : K.IsHermitian) (f : X →₀ V →L[
 theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X × V →₀ 𝕜),
     0 ≤ RCLike.re (f.sum fun xv z ↦ f.sum fun xv' w ↦ conj z * w * ⟪K xv'.1 xv.1 xv.2, xv'.2⟫_𝕜),
     K.IsHermitian ∧ ∀ (vv : X →₀ V),
-    0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜),
-    ] := by
+    0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜)] := by
   have {h p1 p2 p3 : Prop} (htfae : h → List.TFAE [p1, p2, p3]) :
       List.TFAE [h ∧ p1, h ∧ p2, h ∧ p3] := by
     tfae_have 1 → 2 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 1 2).mp t⟩
@@ -465,6 +464,10 @@ lemma kernel_submodule (x y : X) :
   refine ext_inner_right 𝕜 ?_
   simp [kernel_apply, kerFun_submodule, Submodule.adjoint_orthogonalProjectionOnto]
 
+lemma kernel_orthogonal : kernel H₀ᗮ = kernel H - kernel H₀ := by
+  ext
+  simp [kernel_submodule]
+
 end RKHSSubmodule
 
 section outerKernel
@@ -511,6 +514,21 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
 
 instance (f : X → V) : Fact (outerKernel 𝕜 f).PosSemidef := by
   simp [fact_iff, posSemidef_outerKernel 𝕜 f]
+
+lemma kernel_span_singleton (f : H) :
+    kernel (𝕜 ∙ f) = (‖f‖⁻¹ : 𝕜) ^ 2 • outerKernel 𝕜 f := by
+  ext
+  simp [kernel_submodule, starProjection_singleton, division_def, smul_smul, mul_comm]
+
+open ComplexOrder in
+theorem posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
+    ((‖f‖ : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef := by
+  by_cases hf : f = 0
+  · simp [hf, Matrix.PosSemidef.zero]
+  have hp : (‖f‖ ^ 2 : 𝕜) ≠ 0 := by simpa
+  rw [← smul_inv_smul₀ hp (outerKernel 𝕜 f), ← smul_sub]
+  refine Matrix.PosSemidef.smul ?_ (by simp)
+  simpa [kernel_span_singleton, kernel_orthogonal] using posSemidef_kernel (𝕜 ∙ f)ᗮ
 
 end outerKernel
 

@@ -136,6 +136,11 @@ theorem isSymm_smul_iff [Monoid R] [MulAction R α] {A : Matrix n n α} (k : R) 
   rw [← invOf_smul_smul k A]
   exact h.smul ⅟k
 
+lemma IsSymm.dotProduct_mulVec_comm [Fintype n] [NonUnitalCommSemiring α]
+    {A : Matrix n n α} (hA : A.IsSymm) {x y : n → α} :
+    x ⬝ᵥ A *ᵥ y = y ⬝ᵥ A *ᵥ x := by
+  rw [dotProduct_mulVec, ← mulVec_transpose, hA.eq, dotProduct_comm]
+
 @[simp]
 theorem IsSymm.submatrix {A : Matrix n n α} (h : A.IsSymm) (f : m → n) : (A.submatrix f f).IsSymm :=
   (transpose_submatrix _ _ _).trans (h.symm ▸ rfl)
