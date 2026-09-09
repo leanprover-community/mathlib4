@@ -267,7 +267,7 @@ section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne R]
 
 instance : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
-  natCast n := ⟨n, 0⟩
+  natCast n := .C n
   natCast_zero := by ext <;> simp
   natCast_succ n := by ext <;> simp
 
@@ -296,7 +296,7 @@ section AddCommGroupWithOne
 variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
-  intCast n := ⟨n, 0⟩
+  intCast n := .C n
   intCast_ofNat n := by norm_cast
   intCast_negSucc n := by ext <;> simp [Int.negSucc_eq]
 
@@ -407,7 +407,7 @@ instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
   mul_comm _ _ := by ext <;> simp <;> ring
 
 instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
-  algebraMap.toFun s := ⟨algebraMap S R s, 0⟩
+  algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp
   algebraMap.map_zero' := by ext <;> simp
