@@ -121,6 +121,10 @@ def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
     (-- the coercion here picks a representative of the subobject
       objD X) (d_squared X)
 
+lemma obj_d' (X : SimplicialObject C) (i j : ℕ) :
+    (obj X).d i j =
+      (ChainComplex.of (fun n ↦ underlying.obj (objX X n)) (objD X) (d_squared X)).d i j  := rfl
+
 variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 
 set_option backward.isDefEq.respectTransparency.types false in

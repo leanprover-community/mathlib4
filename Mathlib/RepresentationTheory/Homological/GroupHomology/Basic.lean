@@ -145,8 +145,9 @@ theorem d_eq [DecidableEq G] :
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  simp [d_single (k := k), TensorProduct.tmul_add, TensorProduct.tmul_sum,
-    barComplex.d_single (k := k)]
+  --tru remove `ChainComplex.of_X`
+  simp [d_single (k := k), ChainComplex.of_X, barComplex.d_single (k := k), TensorProduct.tmul_add,
+    TensorProduct.tmul_sum]
 
 end inhomogeneousChains
 
@@ -175,10 +176,9 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
-  simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
+  simp [← (inhomogeneousChains A).d_comp_d (n + 1 + 1) (n + 1) n]
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/

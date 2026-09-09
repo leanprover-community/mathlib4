@@ -105,8 +105,9 @@ theorem d_eq :
       (freeLiftLEquiv k G (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftLEquiv k G (Fin (n + 1) → G) A).toModuleIso.hom := by
-  ext
-  simp [d_hom_apply, map_add, barComplex.d_single (k := k), homEquiv]
+  ext x y
+  -- try remove `ChainComplex.of_X`
+  simp [d_hom_apply, homEquiv, Linear.leftComp, ChainComplex.of_X, barComplex.d_single (k := k) n y]
 
 end inhomogeneousCochains
 
