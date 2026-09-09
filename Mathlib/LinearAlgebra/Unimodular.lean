@@ -24,9 +24,9 @@ ideal (for `M = ℤⁿ`: the gcd of the coordinates is `1`, i.e. `v` is a *primi
 
 * `Module.Basis.span_repr_eq_range_applyₗ`: the coordinates of `v` in a basis generate the
   ideal of values taken at `v` by the linear functionals;
-* `Module.Basis.span_repr_eq_top_iff`: the coordinate characterisation of unimodularity in
-  the free case;
-* `Module.Free.exists_basis_zero_eq`: a unimodular vector of a rank-two module can be
+* `Module.Basis.isUnimodular_iff_span_repr_eq_top`: the coordinate characterisation of
+  unimodularity in the free case;
+* `Module.IsUnimodular.exists_basis_zero_eq`: a unimodular vector of a rank-two module can be
   completed to a basis;
 * `Module.Basis.span_repr_one_eq_top` and `Module.Free.isUnimodular_one`:
   in a nonzero algebra that is free as a module, `1` is unimodular.
@@ -75,8 +75,8 @@ theorem span_repr_eq_range_applyₗ {ι : Type*} (b : Basis ι R M) (v : M) :
 
 /-- Coordinate characterisation of unimodularity in the free case: given a basis `b`, the
 coordinates of `v` generate the unit ideal iff `v` is unimodular. -/
-theorem span_repr_eq_top_iff {ι : Type*} {b : Basis ι R M} {v : M} :
-    Ideal.span (Set.range (b.repr v)) = ⊤ ↔ IsUnimodular R v := by
+theorem isUnimodular_iff_span_repr_eq_top {ι : Type*} {b : Basis ι R M} {v : M} :
+    IsUnimodular R v ↔ Ideal.span (Set.range (b.repr v)) = ⊤ := by
   simp [Ideal.eq_top_iff_one, span_repr_eq_range_applyₗ, isUnimodular_iff]
 
 end CommSemiring
@@ -100,13 +100,13 @@ theorem span_repr_one_eq_top (e : Basis ι R A) :
 
 /-- In a nonzero algebra that is free as a module, `1` is *unimodular*. -/
 theorem _root_.Module.Free.isUnimodular_one [Module.Free R A] : IsUnimodular R (1 : A) :=
-  span_repr_eq_top_iff.mp (Module.Free.chooseBasis R A).span_repr_one_eq_top
+  isUnimodular_iff_span_repr_eq_top.mpr (Module.Free.chooseBasis R A).span_repr_one_eq_top
 
 end Algebra
 
 end Module.Basis
 
-namespace Module.Free
+namespace Module.IsUnimodular
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Free R M]
 
@@ -117,7 +117,7 @@ theorem exists_basis_zero_eq (hM : Module.finrank R M = 2) {v : M} (hv : IsUnimo
   have : Nontrivial R := not_subsingleton_iff_nontrivial.mp fun _ ↦ by simp at hM
   have : Module.Finite R M := Module.finite_of_finrank_eq_succ hM
   obtain ⟨f, hf⟩ := isUnimodular_iff.mp hv
-  let b := (chooseBasis R M).reindex
+  let b := (Module.Free.chooseBasis R M).reindex
     (Fintype.equivFinOfCardEq ((Module.finrank_eq_card_chooseBasisIndex R M).symm.trans hM))
   let N : Matrix (Fin 2) (Fin 2) R := !![b.repr v 0, -(f (b 1)); b.repr v 1, f (b 0)]
   have hdet : N.det = 1 := by
@@ -127,4 +127,4 @@ theorem exists_basis_zero_eq (hM : Module.finrank R M = 2) {v : M} (hv : IsUnimo
   refine ⟨b.map (Matrix.toLinearEquiv b N (hdet ▸ isUnit_one)), ?_⟩
   simpa [N] using (Fin.sum_univ_two fun i ↦ b.repr v i • b i).symm.trans (b.sum_repr v)
 
-end Module.Free
+end Module.IsUnimodular
