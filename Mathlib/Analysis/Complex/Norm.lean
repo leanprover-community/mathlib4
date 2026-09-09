@@ -389,8 +389,4 @@ lemma normSq_ofReal_sub_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
   rw [← normSq_neg, neg_sub', sub_neg_eq_add]
   simpa using normSq_ofReal_add_I_mul_sqrt_one_sub (x := -x) (by simpa)
 
-lemma mul_star_div_norm_eq_norm : z * (star z / (‖z‖ : ℂ)) = (‖z‖ : ℂ) := by
-  rw [← mul_div_assoc, star_def, mul_conj, normSq_eq_norm_sq, ofReal_pow, pow_two,
-    mul_self_div_self]
-
 end Complex

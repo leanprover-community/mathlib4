@@ -38,12 +38,14 @@ namespace Complex
 
 open Finset
 
+open scoped Function
+
 variable {ι : Type*} {s : Finset ι} {i : ι} {v : ι → ℂ}
 
-lemma normalize_eq_of_pairwise_sameRay (hp : ∀ i ∈ s, ∀ j ∈ s, SameRay ℝ (v i) (v j)) (hi : i ∈ s)
+lemma normalize_eq_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ on v)) (hi : i ∈ s)
     (hvi : v i ≠ 0) :
     NormedSpace.normalize (v i) = NormedSpace.normalize (∑ j ∈ s, v j) :=
-  (sameRay_sum fun j hj ↦ hp i hi j hj).normalize_eq hvi
+  (sameRay_sum fun _ hj ↦ hp.forall₂ hi hj).normalize_eq hvi
     (sum_ne_zero_of_pairwise_sameRay hp hi hvi)
 
 /-- **Triangle equality** for nonzero summands: the norm of the sum equals the sum of the norms
@@ -51,9 +53,10 @@ exactly when all the summands share a phase. -/
 theorem norm_sum_eq_iff_pairwise_normalize_eq (hv : ∀ i ∈ s, v i ≠ 0) :
     ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔
       ∀ i ∈ s, ∀ j ∈ s, NormedSpace.normalize (v i) = NormedSpace.normalize (v j) := by
-  rw [norm_sum_eq_iff_pairwise_sameRay]
-  exact forall_congr' fun i ↦ forall_congr' fun hi ↦ forall_congr' fun j ↦ forall_congr' fun hj ↦
-    NormedSpace.sameRay_iff_normalize_eq (hv i hi) (hv j hj)
+    rw [norm_sum_eq_iff_pairwise_sameRay]
+    exact ⟨fun h i hi j hj ↦ (NormedSpace.sameRay_iff_normalize_eq (hv i hi) (hv j hj)).1
+      (h.forall₂ hi hj),
+    fun h i hi j hj _ ↦ (NormedSpace.sameRay_iff_normalize_eq (hv i hi) (hv j hj)).2 (h i hi j hj)⟩
 
 /-- **Triangle equality** over `ℂ`: the norm of a finite sum equals the sum of the norms exactly
 when every summand is a nonnegative real multiple of a single complex number. -/
@@ -66,9 +69,9 @@ theorem norm_sum_eq_iff_exists_mul :
         ← real_smul, NormedSpace.norm_smul_normalize]
   · rintro ⟨c, hvc⟩
     rw [norm_sum_eq_iff_pairwise_sameRay]
-    intro i hi j hj
+    intro i hi j hj _
+    change SameRay ℝ (v i) (v j)
     rw [hvc i hi, hvc j hj, ← real_smul, ← real_smul]
     exact (SameRay.sameRay_nonneg_smul_left c (norm_nonneg _)).nonneg_smul_right (norm_nonneg _)
-
 
 end Complex
