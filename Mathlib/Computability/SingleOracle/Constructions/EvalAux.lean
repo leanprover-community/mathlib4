@@ -9,7 +9,7 @@ public import Mathlib.Computability.SingleOracle.Constructions.Option
 import Mathlib.Data.Nat.PSub
 
 /-!
-# Eval_Aux.lean
+# EvalAux.lean
 
 Auxiliary constructs for use in `Oracle.Single.Constructions.Eval`.
 
@@ -102,7 +102,7 @@ set_option backward.isDefEq.respectTransparency false in
     simp only [Part.coe_some, Part.map_eq_map, Part.map_some, b'2n, Part.bind_eq_bind,
       Part.map_bind, PFun.coe_val, n2b', ite_eq_left_iff, Bool.not_eq_true,
       Option.isSome_eq_false_iff, Option.isNone_iff_eq_none, one_ne_zero, imp_false, ite_not,
-      Bool.if_true_right, Bool.or_false]
+      Bool.ite_true_right, Bool.or_false]
   have :
       (fun x_1 ↦ (eval O c (Nat.pair x x_1)).bind
         fun y ↦ Part.some !decide (n2o y = Option.none)) =

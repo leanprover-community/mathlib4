@@ -3860,7 +3860,7 @@ public import Mathlib.Computability.SingleOracle.Constructions.Basic
 public import Mathlib.Computability.SingleOracle.Constructions.CovRec
 public import Mathlib.Computability.SingleOracle.Constructions.Dovetail
 public import Mathlib.Computability.SingleOracle.Constructions.Eval
-public import Mathlib.Computability.SingleOracle.Constructions.Eval_Aux
+public import Mathlib.Computability.SingleOracle.Constructions.EvalAux
 public import Mathlib.Computability.SingleOracle.Constructions.List
 public import Mathlib.Computability.SingleOracle.Constructions.Meta
 public import Mathlib.Computability.SingleOracle.Constructions.Option
