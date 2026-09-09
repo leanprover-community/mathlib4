@@ -131,7 +131,8 @@ instance : IsCyclic (ValueGroupWithZero K)ˣ :=
   (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
 
 instance : ValuativeRel.IsDiscrete K :=
-  (ValuativeRel.nonempty_orderIso_withZeroMulInt_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
+  (ValuativeRel.ValueGroupWithZero.nonempty_orderMonoidIso_withZeroMulInt_iff.mp
+    ⟨valueGroupWithZeroIsoInt K⟩).1
 
 instance : ValuativeRel.IsRankLeOne K :=
   ValuativeRel.isRankLeOne_iff_mulArchimedean.mpr
