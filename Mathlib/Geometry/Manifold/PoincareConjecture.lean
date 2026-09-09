@@ -34,6 +34,7 @@ local macro:max "𝕊" noWs n:superscript(term) : term =>
 variable (M : Type*) [TopologicalSpace M]
 
 open ContinuousMap
+
 /-- The smooth Poincaré conjecture; true for n = 1, 2, 3, 5, 6, 12, 56, and 61,
 open for n = 4, and it is conjectured that there are no other n > 4 for which it is true
 (Conjecture 1.17, https://annals.math.princeton.edu/2017/186-2/p03). -/
