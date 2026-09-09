@@ -448,7 +448,7 @@
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Rat.NatSqrt.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"],
-  "Mathlib.Logic.PEquiv": ["Batteries.Tactic.Congr"],
+  "Mathlib.Basic.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Option.NAry":
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],

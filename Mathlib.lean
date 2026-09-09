@@ -2518,6 +2518,7 @@ public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Basic.Opposite
+public import Mathlib.Basic.PEquiv
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Basic.Real.ConjExponents
 public import Mathlib.Basic.Real.ENatENNReal
@@ -5466,7 +5467,6 @@ public import Mathlib.Logic.Function.ULift
 public import Mathlib.Logic.Godel.GodelBetaFunction
 public import Mathlib.Logic.Hydra
 public import Mathlib.Logic.OpClass
-public import Mathlib.Logic.PEquiv
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
 public import Mathlib.Logic.Relator
