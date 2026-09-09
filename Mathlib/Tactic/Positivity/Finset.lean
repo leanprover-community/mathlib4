@@ -65,7 +65,7 @@ meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e :=
 private meta def isMemFinset? {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) (p : Q(Prop)) :
     MetaM <| Option <| (a : Q($α)) ×' $p =Q ($a ∈ $s) := withNewMCtxDepth do
   let m ← mkFreshExprMVarQ q($α)
-  let .defEq _ ← isDefEqQ q($p) q($m ∈ $s) | return none
+  let .defEq _ ← withReducible <| isDefEqQ q($p) q($m ∈ $s) | return none
   let ⟨m, _⟩ ← instantiateMVarsQ' q($m)
   return some ⟨q($m), ⟨⟩⟩
 
