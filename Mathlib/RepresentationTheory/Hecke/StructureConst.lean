@@ -41,10 +41,11 @@ lemma relPosition_smul (g : G) (c : G ⧸ H₁) (d : G ⧸ H₂) :
     MulAction.Quotient.smul_mk, relPosition_mk_mk, relPosition_mk_mk]
   simp [mul_assoc]
 
-lemma relPosition_one_eq_iff {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)} {c : G ⧸ H₂} :
-    relPosition ((1 : G) : G ⧸ H₁) c = x ↔ c ∈ x.leftDecomposition := by
-  rw [← QuotientGroup.out_eq' c, relPosition_mk_mk, mem_leftDecomposition_mk]
-  simp
+lemma relPosition_mk_eq_iff {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)} {c : G ⧸ H₂}
+    {g : G} :
+    relPosition g c = x ↔ g⁻¹ • c ∈ x.leftDecomposition := by
+  rw [← QuotientGroup.out_eq' c, relPosition_mk_mk, ← mem_leftDecomposition_mk,
+    MulAction.Quotient.smul_mk, smul_eq_mul]
 
 /-- The number of left cosets `aH₂ ⊆ x` such that `H₂a⁻¹bH₃ = y` for any fixed left coset `bH₃ ⊆ z`,
 or `0` if there are infinitely many. See `structureConst_mk_mk_mk` for a computation lemma. -/
@@ -52,22 +53,22 @@ noncomputable def Quotient.structureConst (x : DoubleCoset.Quotient (H₁ : Set 
     (y : DoubleCoset.Quotient (H₂ : Set G) (H₃ : Set G))
     (z : DoubleCoset.Quotient (H₁ : Set G) (H₃ : Set G)) :
     ℕ :=
-  Quotient.liftOn z (fun g => Nat.card {d ∈ x.leftDecomposition | relPosition d g = y})
+  Quotient.liftOn z (fun g => Nat.card {d : x.leftDecomposition | relPosition d g = y})
     fun g g' h => by
       obtain ⟨h₁ ,hh₁, h₃, hh₃, rfl⟩ := rel_iff.mp h
-      exact Nat.card_congr <| Equiv.subtypeEquiv (MulAction.toPerm h₁) fun c =>
-        QuotientGroup.induction_on c (by simp [hh₃, mk_mem_mul ⟨_, hh₁⟩])
+      exact Nat.card_congr <| Equiv.subtypeEquiv (MulAction.toPerm (⟨h₁, hh₁⟩ : H₁)) fun c =>
+        QuotientGroup.induction_on c.val (by simp [hh₃])
 
 lemma structureConst_mk (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
     (y : DoubleCoset.Quotient (H₂ : Set G) (H₃ : Set G)) (g : G) :
-    x.structureConst y (mk H₁ H₃ g) =  Nat.card {d ∈ x.leftDecomposition | relPosition d g = y} :=
+    x.structureConst y (mk H₁ H₃ g) =  Nat.card {d : x.leftDecomposition | relPosition d g = y} :=
   rfl
 
 lemma structureConst_of_mem (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
     (y : DoubleCoset.Quotient (H₂ : Set G) (H₃ : Set G))
     (z : DoubleCoset.Quotient (H₁ : Set G) (H₃ : Set G))
     {c : G ⧸ H₃} (hc : c ∈ z.leftDecomposition) :
-    x.structureConst y z = Nat.card {d ∈ x.leftDecomposition | relPosition d c = y} := by
+    x.structureConst y z = Nat.card {d : x.leftDecomposition | relPosition d c = y} := by
   rw [← QuotientGroup.out_eq' c] at hc ⊢
   rw [← mem_leftDecomposition_mk.mp hc, structureConst_mk]
 
@@ -81,7 +82,7 @@ lemma structureConst_mk_mk_mk (u v w : G) {ι κ : Type*}
       Nat.card {p : ι × κ | (σ p.1 * u * (τ p.2 * v) : G ⧸ H₃) = (w : G ⧸ H₃)} := by
   rw [structureConst_mk, eq_comm]
   refine Nat.card_eq_of_bijective ⟨?_, ?_⟩
-    (f := fun ⟨p, hp⟩ => ⟨(σ p.1).val * u, ⟨by simp, by simp [← Set.mem_ofPred.mp hp, mul_assoc]⟩⟩)
+    (f := fun ⟨p, hp⟩ => ⟨⟨(σ p.1).val * u, by simp⟩, by simp [← Set.mem_ofPred.mp hp, mul_assoc]⟩)
   · intro ⟨⟨x1, x2⟩, hx⟩ ⟨⟨y1, y2⟩, hy⟩ heq
     simp only [Subtype.mk.injEq] at heq ⊢
     -- We obtain injectivity from  `H₁/(gH₂g⁻¹ ∩ H₁) ↪ G ⧸ H₂` and `axH₃ = ayH₃ ↔ xH₃ = yH₃`
@@ -89,7 +90,7 @@ lemma structureConst_mk_mk_mk (u v w : G) {ι κ : Type*}
     obtain rfl : x2 = y2 := hτ.injective <| toLeftCoset_injective (by
       simpa [mul_assoc] using congrArg ((σ x1 * u)⁻¹ • ·) (hx.trans hy.symm))
     rfl
-  · intro ⟨d, hd, hrel⟩
+  · intro ⟨⟨d, hd⟩, hrel⟩
     -- We construct inverse `⟨i, j⟩` s.t. `(σ i * u)H₂ = d` `(τ j * v)H₃ = (σ i * u)⁻¹wH₃`
     simp only [Set.mem_ofPred_eq, Subtype.mk.injEq, Subtype.exists, exists_prop, Prod.exists]
     obtain ⟨i, hi⟩ := toLeftDecompositionEquiv.surjective.comp hσ.surjective ⟨d, hd⟩
@@ -112,11 +113,10 @@ noncomputable def structureConst (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset
       relPosition (p.1.val.out⁻¹ : G) p.2.val).subset ?_
     rintro _ ⟨z, hz, rfl⟩
     rw [Function.mem_support, ← out_eq' z.val, structureConst_mk, Nat.card_ne_zero] at hz
-    obtain ⟨⟨⟨d, hd, hrel⟩⟩, -⟩ := hz
+    obtain ⟨⟨⟨d, hd⟩, hrel⟩, -⟩ := hz
     refine ⟨(⟨d, hd⟩, ⟨(d.out : G)⁻¹ • ((z.val.out : G) : G ⧸ H₃), ?_⟩), ?_⟩
-    · rw [← relPosition_one_eq_iff, ← relPosition_smul]
-      simpa using hrel
-    · simpa [relPosition_one_eq_iff, mem_leftDecomposition_mk] using out_eq' z.val
+    · rw [← relPosition_mk_eq_iff, QuotientGroup.out_eq', hrel]
+    · simp [out_eq']
 
 lemma structureConst_coe (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃)
     (z : DoubleCoset₀ H₁ H₃) :
