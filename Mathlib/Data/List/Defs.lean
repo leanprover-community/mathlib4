@@ -11,7 +11,6 @@ public import Batteries.Tactic.Lint.Basic
 public import Mathlib.Basic.SProd
 public import Mathlib.Control.Functor
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Util.CompileInductive
 
 /-!
 ## Definitions on lists

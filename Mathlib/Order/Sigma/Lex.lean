@@ -24,7 +24,7 @@ related by the summand's relation.
 Related files are:
 * `Combinatorics.CoLex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Order.Sigma.Order`: Lexicographic order on `Σ i, α i` per say.
+* `Order.Sigma.Order`: Lexicographic order on `Σ i, α i` per se.
 * `Order.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
 * `Order.Prod.Lex.Basic`: Lexicographic order on `α × β`. Can be thought of as the special case of
   `Sigma.Lex` where all summands are the same

@@ -5,10 +5,11 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Group.DivInvMonoid
+public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Data.Int.Notation
 
 /-! # Typeclasses for `FunLike` and algebraic operations
 In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`

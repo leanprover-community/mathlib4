@@ -6,7 +6,7 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Hom.ContinuousEval
+public import Mathlib.Topology.Hom.ContinuousEvalConst
 
 import Mathlib.Algebra.Group.FunLike
 
