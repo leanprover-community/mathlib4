@@ -263,6 +263,12 @@ theorem swap_le_swap_iff [LE α] [LE β] {a b : α ⊕ β} : a.swap ≤ b.swap �
 theorem swap_lt_swap_iff [LT α] [LT β] {a b : α ⊕ β} : a.swap < b.swap ↔ a < b :=
   liftRel_swap_iff
 
+theorem swap_monotone [Preorder α] [Preorder β] : Monotone (α := α ⊕ β) Sum.swap :=
+  fun _ _ ↦ swap_le_swap_iff.2
+
+theorem swap_strictMono [Preorder α] [Preorder β] : StrictMono (α := α ⊕ β) Sum.swap :=
+  fun _ _ ↦ swap_lt_swap_iff.2
+
 end Disjoint
 
 /-! ### Linear sum of two orders -/

@@ -150,7 +150,7 @@ open CStarMatrix CFC in
 /-- Non-unital star algebra homomorphisms are completely positive. -/
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
   map_cstarMatrix_nonneg' φ k M hM := by
-    change 0 ≤ (mapₙₐ (φ : A₁ →⋆ₙₐ[ℂ] A₂)) M
+    change 0 ≤ mapₙₐ (.ofClass φ) M
     exact map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass

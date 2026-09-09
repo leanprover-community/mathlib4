@@ -174,12 +174,13 @@ theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
 variable {a}
 
 @[to_additive (attr := simp)]
-lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
-  simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
-    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, OneMemClass.coe_nonempty, true_and]
+lemma finite_zpowers : Finite (zpowers a) ↔ IsOfFinOrder a := by
+  simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, Nat.card_pos_iff]
+  exact (and_iff_right ⟨⟨1, one_mem _⟩⟩).symm
 
 @[to_additive (attr := simp)]
-lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not
+lemma infinite_zpowers : Infinite (zpowers a) ↔ ¬IsOfFinOrder a := by
+  rw [← not_finite_iff_infinite, finite_zpowers]
 
 @[to_additive]
 protected alias ⟨_, IsOfFinOrder.finite_zpowers⟩ := finite_zpowers

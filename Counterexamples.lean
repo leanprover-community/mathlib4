@@ -19,6 +19,7 @@ public import Counterexamples.MapFloor
 public import Counterexamples.MonicNonRegular
 public import Counterexamples.Motzkin
 public import Counterexamples.NowhereDifferentiable
+public import Counterexamples.Omega1Space
 public import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 public import Counterexamples.PeanoCurve
 public import Counterexamples.Phillips

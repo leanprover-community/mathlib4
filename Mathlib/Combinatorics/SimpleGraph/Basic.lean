@@ -1017,6 +1017,10 @@ theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween
 
 alias ⟨IsCompleteBetween.symm, _⟩ := isCompleteBetween_comm
 
+theorem IsCompleteBetween.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsCompleteBetween (.range .inl) (.range .inr) := by
+  grind [IsCompleteBetween]
+
 end IsCompleteBetween
 
 section Subsingleton
