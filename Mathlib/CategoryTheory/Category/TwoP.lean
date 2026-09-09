@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.TwoPointing
 public import Mathlib.CategoryTheory.Category.Bipointed
-public import Mathlib.Data.TwoPointing
 
 /-!
 # The category of two-pointed types
