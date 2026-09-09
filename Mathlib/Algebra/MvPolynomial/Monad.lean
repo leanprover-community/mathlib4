@@ -262,7 +262,11 @@ theorem hom_bind₁ (f : MvPolynomial τ R →+* S) (g : σ → MvPolynomial τ 
     f (bind₁ g φ) = eval₂Hom (f.comp C) (fun i => f (g i)) φ := by
   rw [bind₁, map_aeval, algebraMap_eq]
 
-@[deprecated map_aeval_eq_aeval_map (since := "2026-09-02")]
+theorem map_aeval_eq_aeval_map_map (f : R →+* S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
+    map f (aeval g φ) = aeval (fun i : σ => (map f) (g i)) (map f φ) :=
+  map_aeval_eq_aeval_map f (map f) (by ext; simp) φ g
+
+@[deprecated map_aeval_eq_aeval_map_map (since := "2026-09-02")]
 theorem map_bind₁ (f : R →+* S) (g : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     map f (bind₁ g φ) = bind₁ (fun i : σ => (map f) (g i)) (map f φ) := by
   rw [hom_bind₁, map_comp_C, ← eval₂Hom_map_hom]
