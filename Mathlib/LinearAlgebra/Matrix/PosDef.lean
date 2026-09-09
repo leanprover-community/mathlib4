@@ -593,7 +593,7 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
 @[grind =]
 theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] [StarOrderedRing K]
     {A : Matrix n n K} (hA : A.PosSemidef) : A.PosDef ↔ IsUnit A := by
-  simp [hA.posDef_iff_mulVec_injective, mulVec_injective_iff_isUnit]
+  rw [hA.posDef_iff_mulVec_injective, mulVec_injective_iff_isUnit]
 
 lemma _root_.Matrix.PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] [StarOrderedRing K]
     {A : Matrix n n K} (hA : A.PosSemidef) : A.PosDef ↔ A.det ≠ 0 := by
