@@ -58,7 +58,7 @@ lemma w : h.f.hom ≫ h.g.hom = 0 := by cat_disch
 lemma w' : h.f.hom' ≫ h.g.hom' = 0 := by
   simp [Hom.hom', ← HomologicalComplex.extendMap_comp, w]
 
-/-- The short exact sequence of cochain complexes
+/-- The short exact sequence of cochain complexes (indexed by `ℕ`)
 `0 ⟶ R₁.cocomplex ⟶ R₂.cocomplex ⟶ R₃.cocomplex ⟶ 0` of a horseshoe diagram. -/
 @[implicit_reducible]
 def shortComplex : ShortComplex (CochainComplex C ℕ) := .mk _ _ h.w
@@ -84,6 +84,8 @@ lemma extMk_comp_extClass'_aux
     simp [← cancel_mono (h.f.hom.f m'), ← HomologicalComplex.Hom.comm, reassoc_of% hx₁]
   simpa [x₁, x₂] using this
 
+/-- The short exact sequence of cochain complexes (indexed by `ℤ`)
+`0 ⟶ R₁.cochainComplex ⟶ R₂.cochainComplex ⟶ R₃.cochainComplex ⟶ 0` of a horseshoe diagram. -/
 @[implicit_reducible, simps]
 noncomputable def shortComplexExtend : ShortComplex (CochainComplex C ℤ) where
   X₁ := R₁.cochainComplex
@@ -96,6 +98,9 @@ lemma shortExact_shortComplexExtend :
     h.shortComplexExtend.ShortExact :=
   h.shortExact_shortComplex.map_of_exact (ComplexShape.embeddingUpNat.extendFunctor C)
 
+/-- The degreewise splitting of the short exact sequence `h.shortComplexExtend`
+of cochain complexes (indexed by `ℤ`) of a horseshoe diagram. In nonnegative degrees,
+it is induced by the given splittings `h.splitting`. -/
 noncomputable def splittingExtend (n : ℤ) :
     (h.shortComplexExtend.map (HomologicalComplex.eval C (ComplexShape.up ℤ) n)).Splitting :=
   ComplexShape.embeddingUpNat.splittingExtend (S := h.shortComplex) h.splitting n
@@ -118,17 +123,31 @@ lemma splittingExtend_r (n : ℤ) (m : ℕ) (hm : m = n) :
   rw [ComplexShape.embeddingUpNat.splittingExtend_apply _ hm]
   rfl
 
+
+/-- The triangle of cochain complexes corresponding to the degreewise split
+short exact sequence `h.shortComplexExtend` that is part of a horseshoe diagram.
+The image of this triangle in the derived category is a distinguished triangle. -/
 noncomputable abbrev triangle : Triangle (CochainComplex C ℤ) :=
     triangleOfDegreewiseSplit h.shortComplexExtend h.splittingExtend
 
+/-- The morphism which relates the short exact sequence `0 ⟶ S.X₁ ⟶ S.X₂ ⟶ S.X₃ ⟶ 0`
+and the short exact sequence
+`0 ⟶ R₁.cochainComplex ⟶ R₂.cochainComplex ⟶ R₃.cochainComplex ⟶ 0` when
+we have a horseshoe diagram. -/
 @[simps, implicit_reducible]
-noncomputable def ε :
+noncomputable def η :
     ShortComplex.mk ((singleFunctor C 0).map S.f) ((singleFunctor C 0).map S.g)
       (by simp [← Functor.map_comp]) ⟶ h.shortComplexExtend where
   τ₁ := R₁.ι'
   τ₂ := R₂.ι'
   τ₃ := R₃.ι'
 
+/-- Given a horseshoe diagram `h : Horseshoe hS R₁ R₂ R₃` for a short exact sequence
+`0 ⟶ S.X₁ ⟶ S.X₂ ⟶ S.X₃ ⟶ 0` in an abelian category, this is the isomorphism between
+the distinguished triangle in the derived category attached to `S` and the
+distinguished triangle attached to the degreewise split short exact sequence
+of cochain complexes
+`0 ⟶ R₁.cochainComplex ⟶ R₂.cochainComplex ⟶ R₃.cochainComplex ⟶ 0`. -/
 @[simps!]
 noncomputable def singleTriangleIso [HasDerivedCategory C] :
     ShortComplex.ShortExact.singleTriangle hS ≅
@@ -140,7 +159,7 @@ noncomputable def singleTriangleIso [HasDerivedCategory C] :
       simp [ShortComplex.ShortExact.singleδ,
         DerivedCategory.triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp h.splittingExtend,
         dsimp% (DerivedCategory.triangleOfSES.map
-        (hS.map_of_exact ((singleFunctor C 0))) h.shortExact_shortComplexExtend h.ε).comm₃])
+        (hS.map_of_exact ((singleFunctor C 0))) h.shortExact_shortComplexExtend h.η).comm₃])
 
 lemma shiftedHomMk₀_inv_Q_ι'_comp_singleδ [HasDerivedCategory C] :
     (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₃.ι'))).comp

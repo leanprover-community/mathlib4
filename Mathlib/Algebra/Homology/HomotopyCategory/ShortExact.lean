@@ -66,12 +66,17 @@ lemma inl_v_descShortComplex_f (i j : ℤ) (h : i + (-1) = j) :
   simp [descShortComplex]
 
 open HomComplex in
+/-- Let `S` be a degreewise split short exact sequence of cochain complexes
+(here, for any `n : ℤ`, `σ n` is a splitting of the short exact sequence
+`0 ⟶ S.X₁.X n ⟶ S.X₂.X n ⟶ S.X₃.X n ⟶ 0`). This is a homotopy
+between `descShortComplex S ≫ homOfDegreewiseSplit S σ` and the
+connecting homomorphism `(triangle S.f).mor₃ : mappingCone S.f ⟶ S.X₁⟦1⟧`. -/
 noncomputable def descShortComplexCompHomOfDegreewiseSplitHomotopy
     (σ : ∀ (n : ℤ), (S.map (HomologicalComplex.eval C (up ℤ) n)).Splitting) :
     Homotopy (mappingCone.descShortComplex S ≫ homOfDegreewiseSplit S σ)
       (mappingCone.triangle S.f).mor₃ :=
-  (Cochain.equivHomotopy _ _).symm ⟨
-    Cochain.rightShift ((mappingCone.snd S.f).comp
+  (Cochain.equivHomotopy _ _).symm
+    ⟨Cochain.rightShift ((mappingCone.snd S.f).comp
         (Cochain.ofHoms (fun n ↦ (σ n).r)) (zero_add 0)) 1 (-1) (neg_add_cancel 1), by
       ext n
       simp [ext_from_iff _ (n + 1) n rfl,

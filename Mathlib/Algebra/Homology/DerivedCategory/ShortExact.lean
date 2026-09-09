@@ -138,6 +138,14 @@ lemma triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp :
     descShortComplex_triangleOfSESδ, ← Functor.map_comp_assoc,
     Q_map_eq_of_homotopy _ (mappingCone.descShortComplexCompHomOfDegreewiseSplitHomotopy S σ)]
 
+/-- If `S` is a short exact sequence of cochain complexes that is degreewise split.
+We have two ways to define a distinguished
+triangle `Q.obj S.X₁ ⟶ Q.obj S.X₂ ⟶ Q.obj S.X₃ ⟶ ...` in the derived category:
+the first triangle corresponds to the image of the distinguished triangle in
+the homotopy category corresponding to the degreewise split short exact sequence,
+and the second triangle follows from the construction which is available for any
+short exact sequence of cochain complexes. This is the canonical isomorphism
+between these two triangles. -/
 @[simps!]
 noncomputable def mapTriangleOfDegreewiseSplitIsotriangleOfSES :
     DerivedCategory.Q.mapTriangle.obj (triangleOfDegreewiseSplit S σ) ≅
