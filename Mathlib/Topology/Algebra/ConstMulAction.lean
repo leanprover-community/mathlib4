@@ -207,6 +207,30 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
 
 end Monoid
 
+section Homeomorph
+
+variable {X : Type*} [TopologicalSpace X]
+
+/-- The tautological action by `X ≃ₜ X` on `X`.
+
+This generalizes `Equiv.Perm.applyMulAction`. -/
+instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
+  smul f x := f x
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp]
+protected theorem Homeomorph.smul_def (f : X ≃ₜ X) (x : X) : f • x = f x := rfl
+
+/-- `Homeomorph.applyMulAction` is faithful. -/
+instance Homeomorph.applyFaithfulSMul : FaithfulSMul (X ≃ₜ X) X := ⟨Homeomorph.ext⟩
+
+/-- `Homeomorph.applyMulAction` is continuous in the second variable. -/
+instance Homeomorph.continuousConstSMul : ContinuousConstSMul (X ≃ₜ X) X :=
+  ⟨fun h ↦ h.continuous⟩
+
+end Homeomorph
+
 section Group
 
 variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [ContinuousConstSMul G α]
@@ -242,6 +266,10 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
 @[to_additive (attr := simps!)]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
+
+@[to_additive]
+lemma Homeomorph.smul_symm {g : G} : (Homeomorph.smul (α := α) g).symm = Homeomorph.smul g⁻¹ :=
+  Homeomorph.ext_iff.mpr <| smul_symm_apply g
 
 /-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/

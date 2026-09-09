@@ -72,10 +72,10 @@ theorem isClopen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClop
 
 theorem iff_exists_open (f : X → Y) :
     IsLocallyConstant f ↔ ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
-  (IsLocallyConstant.tfae f).out 0 4
+  (IsLocallyConstant.tfae f).out 1 5
 
 theorem iff_eventually_eq (f : X → Y) : IsLocallyConstant f ↔ ∀ x, ∀ᶠ y in 𝓝 x, f y = f x :=
-  (IsLocallyConstant.tfae f).out 0 1
+  (IsLocallyConstant.tfae f).out 1 2
 
 theorem exists_open {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
@@ -86,10 +86,10 @@ protected theorem eventually_eq {f : X → Y} (hf : IsLocallyConstant f) (x : X)
   (iff_eventually_eq f).1 hf x
 
 theorem iff_isOpen_fiber_apply {f : X → Y} : IsLocallyConstant f ↔ ∀ x, IsOpen (f ⁻¹' {f x}) :=
-  (IsLocallyConstant.tfae f).out 0 2
+  (IsLocallyConstant.tfae f).out 1 3
 
 theorem iff_isOpen_fiber {f : X → Y} : IsLocallyConstant f ↔ ∀ y, IsOpen (f ⁻¹' {y}) :=
-  (IsLocallyConstant.tfae f).out 0 3
+  (IsLocallyConstant.tfae f).out 1 4
 
 protected theorem continuous [TopologicalSpace Y] {f : X → Y} (hf : IsLocallyConstant f) :
     Continuous f :=
@@ -536,9 +536,9 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     · cases i <;> rw [continuousOn_iff_continuous_domRestrict]
       · convert! hg
         ext x
-        simp only [cond_false, domRestrict_apply, Subtype.coe_eta, dite_eq_right_iff]
+        simp only [Bool.cond_false, domRestrict_apply, Subtype.coe_eta, dite_eq_right_iff]
         exact fun hx ↦ hfg x ⟨hx, x.prop⟩
-      · simp only [cond_true, domRestrict_dite, Subtype.coe_eta]
+      · simp only [Bool.cond_true, domRestrict_dite, Subtype.coe_eta]
         exact hf
 
 @[simp]
@@ -549,7 +549,7 @@ lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : Is
     piecewise h₁ h₂ h f g hfg x = f ⟨x, hx⟩ := by
   simp only [piecewise,
     coe_mk]
-  rw [dif_pos hx]
+  rw [dite_eq_left hx]
 
 @[simp]
 lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)

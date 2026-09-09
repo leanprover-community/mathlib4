@@ -16,7 +16,7 @@ It's probably possible, by adjusting the `OfScientific` instances,
 to make this more general, but it's not needed at present.
 -/
 
-@[expose] public section
+public section
 
 set_option backward.isDefEq.respectTransparency false in
 open Lean.Grind in

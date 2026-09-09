@@ -18,7 +18,7 @@ and `UniqueDiffOn`.
 
 public section
 
-open Filter Set Metric
+open Filter Set
 open scoped Topology Pointwise
 
 variable {𝕜 E : Type*}
@@ -153,9 +153,6 @@ theorem zero_mem_tangentConeAt (hx : x ∈ closure s) :
   · simp only [Pi.one_apply, one_smul]
     exact Continuous.tendsto' (by fun_prop) _ _ (by simp)
 
-@[deprecated (since := "2026-01-21")]
-alias zero_mem_tangentCone := zero_mem_tangentConeAt
-
 @[simp]
 theorem zero_mem_tangentConeAt_iff : 0 ∈ tangentConeAt 𝕜 s x ↔ x ∈ closure s :=
   ⟨fun h ↦ mem_closure_of_nonempty_tangentConeAt ⟨_, h⟩, zero_mem_tangentConeAt⟩
@@ -272,7 +269,7 @@ section DivisionSemiring
 
 variable [DivisionSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [TopologicalSpace 𝕜] [(𝓝[≠] (0 : 𝕜)).NeBot] [ContinuousSMul 𝕜 E]
-  {x y : E} {s t : Set E}
+  {x : E} {s : Set E}
 
 @[simp]
 theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
