@@ -545,7 +545,7 @@ lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q
 omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
 convolution of `f` and `g` exists everywhere. -/
-theorem ConvolutionExists.of_memLp_memLp [SFinite μ] [IsAddRightInvariant μ] {p q : ENNReal}
+theorem ConvolutionExists.of_memLp_memLp {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
     ConvolutionExists f g L μ := by
   intro x
