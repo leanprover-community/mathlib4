@@ -9,7 +9,6 @@ public meta import Lean.Meta.CoeAttr
 
 public import Mathlib.Basic.Unique
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Util.CompileInductive
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 
