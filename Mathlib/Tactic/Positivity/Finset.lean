@@ -60,6 +60,8 @@ meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e :=
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
   | _, _, _ => throwError "not Finset.dens"
 
+/-- Return whether `p` is a proposition of the form `?a ∈ s`. If so, return `a` and a Qq-proof that
+`p` is `a ∈ s`. -/
 private meta def isMemFinset? {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) (p : Q(Prop)) :
     MetaM <| Option <| (a : Q($α)) ×' $p =Q ($a ∈ $s) := withNewMCtxDepth do
   let m ← mkFreshExprMVarQ q($α)
