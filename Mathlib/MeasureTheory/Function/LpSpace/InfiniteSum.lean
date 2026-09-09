@@ -73,7 +73,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     apply lt_of_le_of_lt ?_ this
     gcongr with i
     rw [← eLpNorm_one_eq_lintegral_enorm (hf i).restrict]
-    exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ hp zero_lt_one
+    exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos hp zero_lt_one
   /- We wish now to reduce to finite measure sets to apply the above. The function `f n` in `L^p`
   has a sigma-finite support, that we denote by `s n`. -/
   have B n : ∃ s, MeasurableSet s ∧ (f n =ᵐ[μ.restrict sᶜ] 0) ∧ SigmaFinite (μ.restrict s) := by
