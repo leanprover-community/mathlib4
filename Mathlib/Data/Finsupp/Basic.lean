@@ -10,7 +10,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Data.Rat.BigOperators
 
-
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
 
