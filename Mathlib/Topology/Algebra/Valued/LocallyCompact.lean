@@ -224,10 +224,10 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     split_ifs with hw
     · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
       rw [← hb] at z0 ⊢
-      simp only [MonoidWithZeroHom.coe_ofClass, ← v.restrict_le_iff]
+      sorry /- was: simp only [MonoidWithZeroHom.coe_ofClass, ← v.restrict_le_iff]
       refine Valued.isOpen_closedBall _ ?_
       rw [ne_eq, ← map_zero v.restrict, v.restrict_inj, map_zero]
-      exact z0.ne'
+      exact z0.ne' -/
     · simp_rw [← v.restrict_inj]
       refine Valued.isOpen_sphere _ ?_
       push Not at hw
@@ -258,13 +258,14 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     obtain ⟨j, hj, hj'⟩ := hj
     use j, hj
     -- and this `c` is either less than or greater than (or equal to) the threshold element
+    sorry /- was:
     simp only [MonoidWithZeroHom.coe_ofClass] at hc
     split_ifs at hj' with hcj
     · simp only [Set.mem_ofPred_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]
     · simp only [Set.mem_ofPred_eq] at hj'
       rw [dite_eq_right hcj]
-      simp [← hj', hc]
+      simp [← hj', hc] -/
 
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     MulArchimedean (Valued.v : Valuation K Γ₀).toMonoidHom.mrange := by

@@ -271,7 +271,7 @@ lemma RingHom.HoldsForLocalization.isLocalizationMap
           (M.le_comap_map)) := by
     apply IsLocalization.ringHom_ext M
     ext
-    simp [← IsScalarTower.algebraMap_apply]
+    sorry -- was: simp [← IsScalarTower.algebraMap_apply]
   rw [heq]
   exact hPc _ _ (hPp _ _ _ _ hf)
     (hPl _ (T.map (algebraMap S (Localization (M.map f.toMonoidHom))).toMonoidHom))

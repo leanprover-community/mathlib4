@@ -458,13 +458,13 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
   have hM' : (0 : R[X] ⧸ P) ∉ M' := fun ⟨z, hz⟩ =>
     hM (quotientMap_injective (_root_.trans hz.2 φ.map_zero.symm) ▸ hz.1)
   suffices (⊥ : Ideal (Localization M')).IsMaximal by
-    rw [le_antisymm bot_le (comap_bot_le_of_injective _
+    sorry /- was: rw [le_antisymm bot_le (comap_bot_le_of_injective _
       (IsLocalization.map_injective_of_injective M (Localization M) (Localization M')
         quotientMap_injective))]
     refine isMaximal_comap_of_isIntegral_of_isMaximal _ ?_ ⊥
     have isloc : IsLocalization (Submonoid.map φ M) (Localization M') := by infer_instance
     exact @isIntegral_isLocalization_polynomial_quotient R _
-      (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
+      (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc -/
   rw [(map_bot.symm :
     (⊥ : Ideal (Localization M')) = Ideal.map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
   let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP

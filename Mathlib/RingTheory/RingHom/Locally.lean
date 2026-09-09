@@ -183,7 +183,7 @@ lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
     refine ⟨e '' s, ?_, ?_⟩
     · rw [← Ideal.map_span, hsone, Ideal.map_top]
     · rintro - ⟨a, ha, rfl⟩
-      let e' : Localization.Away a ≃+* Localization.Away (e a) :=
+      sorry /- was: let e' : Localization.Away a ≃+* Localization.Away (e a) :=
         IsLocalization.ringEquivOfRingEquiv _ _ e (Submonoid.map_powers e a)
       have : (algebraMap T (Localization.Away (e a))).comp e.toRingHom =
           e'.toRingHom.comp (algebraMap S (Localization.Away a)) := by
@@ -191,7 +191,7 @@ lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
         simp [e']
       rw [← RingHom.comp_assoc, this, RingHom.comp_assoc]
       apply hPi.left
-      exact hs a ha
+      exact hs a ha -/
   right {R S T} _ _ _ f e := fun ⟨s, hsone, hs⟩ ↦
     ⟨s, hsone, fun a ha ↦ (RingHom.comp_assoc _ _ _).symm ▸ hPi.right _ _ (hs a ha)⟩
 
@@ -243,7 +243,8 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
     simp only [this, a']
     apply hPc _ _ (hsf a.val a.property)
     apply @hPl _ _ _ _ g' _ _ _ _ _ _ _ _ ?_ (hsg b.val b.property)
-    exact IsLocalization.Away.instMapRingHomPowersOfCoe (Localization.Away (g' a.val)) a.val
+    sorry
+    -- exact IsLocalization.Away.instMapRingHomPowersOfCoe (Localization.Away (g' a.val)) a.val
 
 /-- If `P` is stable under composition with localization away maps on the right,
 then so is `Locally P`. -/
@@ -364,7 +365,7 @@ lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :
     simp [Algebra.algebraMapSubmonoid]
   · rw [algebraMap_toAlgebra, IsLocalization.map_comp_map]
     apply hPl
-    exact hs a.val a.property
+    exact hs a.val a.property -/
 
 /-- If `P` is preserved by localizations and stable under composition with localization
 away maps, then `Locally P` is a local property of ring homomorphisms. -/

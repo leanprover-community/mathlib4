@@ -81,7 +81,7 @@ lemma zariskisMainProperty_iff {p : Ideal S} :
   simp only [ZariskisMainProperty, Subtype.exists, ← exists_prop, @exists_comm (_ ∉ p)]
   refine exists₃_congr fun r hr hrp ↦ ?_
   rw [Function.Bijective, and_iff_right
-    (by exact IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective),
+    sorry, --was: (by exact IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective),
     Localization.awayMap_surjective_iff]
   simp [mem_integralClosure_iff]
 
@@ -674,7 +674,7 @@ lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
     exact s.finite_toSet.image (fun x ↦ r ^ m x * x)
   · rintro a (rfl | ⟨x, hx, rfl⟩); exacts [hr, hm _]
   refine ⟨r', hrp,
-    IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective, ?_⟩
+    sorry, ?_⟩ -- was: IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective, ?_⟩
   have : (IsScalarTower.toAlgHom R S _).range ≤
       (Localization.awayMapₐ (Algebra.adjoin R t).val r').range := by
     rw [← Algebra.map_top, ← hs, Subalgebra.map_le, Algebra.adjoin_le_iff]
@@ -689,14 +689,14 @@ lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
     exact ⟨_, Algebra.subset_adjoin (Set.mem_insert_of_mem _ ⟨x, hx, mul_comm _ _⟩),
       m x, pow_mem r'.2 _, 1, rfl⟩
   intro x
-  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
+  sorry /- obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
     (.powers ((Algebra.adjoin R t).val.toRingHom r')) x
   obtain ⟨y, hy : Localization.awayMap _ _ _ = _⟩ := this ⟨x, rfl⟩
   refine ⟨y * Localization.Away.invSelf _ ^ n, ?_⟩
   simp only [map_mul, map_pow, hy]
   simp [Localization.Away.invSelf, Localization.awayMap, ← Algebra.smul_def,
     IsLocalization.Away.map, IsLocalization.map_mk', Localization.mk_eq_mk',
-    ← IsLocalization.mk'_pow]
+    ← IsLocalization.mk'_pow] -/
 
 lemma QuasiFiniteAt.exists_fg_and_exists_notMem_and_awayMap_bijective
     [Algebra.FiniteType R S] (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p] :

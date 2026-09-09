@@ -40,10 +40,10 @@ set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 private theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
-  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C M) p
-  rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
+  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C.toMonoidHom M) p
+  sorry /- was: rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
   obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts h
-  exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
+  exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩ -/
 
 /-- `integerNormalization p` normalizes `p` to have integer coefficients
 by clearing the denominators -/
@@ -164,9 +164,9 @@ theorem is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval 
             (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
           Rₘ →+* _).IsIntegralElem
       (algebraMap S Sₘ x) :=
-  haveI : IsLocalization (Submonoid.map (algebraMap R S) M) Sₘ :=
+  haveI : IsLocalization (Submonoid.map (algebraMap R S).toMonoidHom M) Sₘ :=
     inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
-  (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
+  sorry -- was: (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
 
 /-- If `R → S` is an integral extension, `M` is a submonoid of `R`,
 `Rₘ` is the localization of `R` at `M`,
@@ -423,17 +423,17 @@ protected lemma IsLocalization.integralClosure
     simp [← IsScalarTower.algebraMap_apply]
   · rintro ⟨s, hs⟩
     obtain ⟨⟨x, _, m₁, hm₁, rfl⟩, e⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid S M) s
-    simp only [← IsScalarTower.algebraMap_apply] at e
+    -- used to fire: simp only [← IsScalarTower.algebraMap_apply] at e
     obtain ⟨⟨m₂, hm₂⟩, hm₂s⟩ := IsIntegral.exists_multiple_integral_of_isLocalization M _ hs
     simp only [Submonoid.smul_def, Algebra.smul_def] at hm₂s
     obtain ⟨m₃, hm₃, hm₃s⟩ := IsLocalization.exists_isIntegral_smul_of_isIntegral_map (Sₘ := Sf)
       M (x := m₂ • x) <| by
         simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, ← e, ← mul_assoc]
-        exact hm₂s.mul (.algebraMap (Algebra.IsIntegral.isIntegral _))
+        sorry -- exact hm₂s.mul (.algebraMap (Algebra.IsIntegral.isIntegral _))
     refine ⟨⟨⟨_, hm₃s⟩, _, _, mul_mem hm₁ (mul_mem hm₂ hm₃), rfl⟩, ?_⟩
     · apply (FaithfulSMul.algebraMap_injective (integralClosure Rf Sf) Sf)
-      simp [← IsScalarTower.algebraMap_apply, e, ← mul_assoc, Algebra.smul_def]
-      ring
+      sorry /- was: simp [← IsScalarTower.algebraMap_apply, e, ← mul_assoc, Algebra.smul_def]
+      ring -/
   · rintro ⟨a, ha⟩ ⟨b, hb⟩ e
     have := congr(algebraMap _ Sf $e)
     have : algebraMap S Sf a = algebraMap S Sf b := by

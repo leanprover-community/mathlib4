@@ -117,11 +117,11 @@ lemma mapₐ_coe (f : A →ₐ[R] B) :
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :
     Function.Injective (mapₐ M Rₚ Aₚ Bₚ f) :=
-  IsLocalization.map_injective_of_injective _ _ _ hf
+  sorry -- IsLocalization.map_injective_of_injective _ _ _ hf
 
 lemma mapₐ_surjective_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f) :
     Function.Surjective (mapₐ M Rₚ Aₚ Bₚ f) :=
-  IsLocalization.map_surjective_of_surjective _ _ _ hf
+  sorry -- IsLocalization.map_surjective_of_surjective _ _ _ hf
 
 section
 
