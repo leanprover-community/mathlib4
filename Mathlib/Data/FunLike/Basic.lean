@@ -32,6 +32,7 @@ namespace MyHom
 
 variable (A B : Type*) [MyClass A] [MyClass B]
 
+@[macro_inline]
 instance : FunLike (MyHom A B) A B where
   coe := MyHom.toFun
   coe_injective := fun f g h => by cases f; cases g; congr

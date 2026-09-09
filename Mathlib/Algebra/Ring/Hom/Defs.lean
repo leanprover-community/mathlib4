@@ -358,6 +358,7 @@ See note [implicit instance arguments].
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
+@[macro_inline]
 instance instFunLike : FunLike (α →+* β) α β where
   coe f := f.toFun
   coe_injective f g h := by

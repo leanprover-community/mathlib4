@@ -196,6 +196,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
+@[macro_inline]
 instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
   coe f := f.toFun
   coe_injective f g h := by
