@@ -8,11 +8,8 @@ module
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Rat.BigOperators
-public import Mathlib.Order.Preorder.Finsupp
 
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
