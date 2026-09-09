@@ -214,6 +214,13 @@ lemma toSingleMk_precomp
       (Cochain.ofHom g).comp (toSingleMk f h) (zero_add n) :=
   (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor])
 
+lemma comp_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} {r : ℤ} (α : Cochain L K r) {m : ℤ} (hm : r + n = m)
+    (s : ℤ) (hs : s + r = p) :
+    α.comp (toSingleMk f h) hm = toSingleMk (α.v s p hs ≫ f) (by lia) := by
+  apply (toSingleEquiv (show s + m = q by lia)).injective
+  simp [toSingleEquiv, Cochain.comp_v _ _ _ _ _ _ hs h]
+
 end Cochain
 
 namespace Cocycle
