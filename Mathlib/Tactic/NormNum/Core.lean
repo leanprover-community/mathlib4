@@ -223,15 +223,18 @@ The extension remains the source of truth. It still normalises its own operands 
 `derive` recursively, so direct `NormNum.derive` consumers such as `ring` and `positivity` see
 exactly the behaviour they see today; the simproc is a lossy view of it through
 `Result.toSimpResult`. Going the other way round does not work: a bare simproc only rewrites the
-expression it is handed, and `derive` performs no traversal of its own. -/
+expression it is handed, and `derive` performs no traversal of its own.
+
+The `observing?` matches what `derive` does for the extensions it runs: it restores the state
+after every extension that throws, so extensions are written on the assumption that a failed
+`eval` is backtracked for them, and this is the one call site that does not go through `derive`. -/
 def NormNumExt.toSimproc (ext : NormNumExt) : Simp.Simproc := fun e => do
-  let saved ← Lean.Meta.saveState
-  try
+  let eval : MetaM (Option Simp.Result) := observing? do
     let ⟨_, _, e⟩ ← inferTypeQ' e
-    return .done (← withReducibleAndInstances <| (← ext.eval e).toSimpResult)
-  catch _ =>
-    Lean.Meta.SavedState.restore saved
-    return .continue
+    let r ← withReducibleAndInstances <| ext.eval e
+    r.toSimpResult
+  let some r ← eval | return .continue
+  return .done r
 
 /-- Declare a `norm_num` extension and register it as a simproc in the given simproc sets:
 ```
