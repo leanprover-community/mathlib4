@@ -132,7 +132,7 @@ def isAtom (e : Expr) : MetaM Bool := do
 /-- Collect the atoms of `e` -/
 partial def collectAtoms (e : Expr) : AtomM Unit := do
   -- we traverse subexpressions under binders too, and check there's no loose bound variables
-  if !e.hasLooseBVars then
+  if !e.hasLooseBVars && !e.isRawNatLit then
     if ← isAtom e then
       discard <| AtomM.addAtom e
       return
