@@ -869,7 +869,7 @@ lemma toOfSimplex_ι :
 
 @[simp]
 lemma toOfSimplex_app_objEquiv_symm :
-    ((toOfSimplex x).app _ (stdSimplex.objEquiv.symm (𝟙 ⦋n⦌))).val = x := by
+    dsimp% ((toOfSimplex x).app _ (stdSimplex.objEquiv.symm (𝟙 ⦋n⦌))).val = x := by
   simp [toOfSimplex]
 
 @[simp]
