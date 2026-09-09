@@ -91,11 +91,10 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
     let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none
-      let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
+      let .some _pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      pure <| some q(@sum_pos $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
-        (fun i _ ↦ $pr i) $ps)
+      pure <| some q(sum_pos (fun i _ ↦ $pr i) $ps)
     -- Try to show that the sum is positive because all summands are
     if let some p_pos := p_pos then
       return .positive p_pos
@@ -105,7 +104,7 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
     -- among the assumptions of the form `a ∈ s`, since we have no other way of getting hold of an
     -- element of `s` at which `f` might be positive.
     let p_pos' : Option Q(0 < $e) ← (do
-      let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
+      let .some _pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       for ldecl in ← getLCtx do
         if ldecl.isImplementationDetail then continue
         unless ← Meta.isProp ldecl.type do continue
@@ -116,16 +115,14 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
         let : $fa =Q $f $a := ⟨⟩
         let .positive pa ← catchNone (core zα pα fa) | continue
         assertInstancesCommute
-        return some q(@sum_pos' $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
-          (fun i _ ↦ $pr i) ⟨$a, $ha, $pa⟩)
+        return some q(sum_pos' (fun i _ ↦ $pr i) ⟨$a, $ha, $pa⟩)
       return none)
     if let some p_pos' := p_pos' then
       return .positive p_pos'
     -- Fall back to showing that the sum is nonnegative
-    let pα' ← synthInstanceQ q(AddLeftMono $α)
+    let _pα' ← synthInstanceQ q(AddLeftMono $α)
     assertInstancesCommute
-    return .nonnegative q(@sum_nonneg $ι $α $instα (@PartialOrder.toPreorder _ $pα) $f $s $pα'
-      fun i _ ↦ $pr i)
+    return .nonnegative q(sum_nonneg fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 variable {α : Type*} {s : Finset α}
