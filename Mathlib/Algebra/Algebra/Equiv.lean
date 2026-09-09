@@ -62,8 +62,10 @@ instance (priority := 100) toLinearEquivClass : LinearEquivClass F R A B where
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
-def toAlgEquiv (f : F) : A ≃ₐ[R] B :=
+def _root_.AlgEquiv.ofClass (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with commutes' := commutes f }
+
+@[deprecated (since := "2026-09-08")] alias toAlgEquiv := AlgEquiv.ofClass
 
 end AlgEquivClass
 
@@ -123,9 +125,11 @@ theorem toEquiv_eq_coe : e.toEquiv = e :=
   rfl
 
 @[simp]
-protected theorem coe_coe {F : Type*} [EquivLike F A B] [AlgEquivClass F R A B] (f : F) :
-    ⇑(AlgEquivClass.toAlgEquiv f) = f :=
+protected theorem coe_ofClass {F : Type*} [EquivLike F A B] [AlgEquivClass F R A B] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-08")] protected alias coe_coe := AlgEquiv.coe_ofClass
 
 theorem coe_fun_injective : @Function.Injective (A ≃ₐ[R] B) (A → B) fun e => (e : A → B) :=
   DFunLike.coe_injective
@@ -240,16 +244,21 @@ theorem invFun_eq_symm {e : A ≃ₐ[R] B} : e.invFun = e.symm :=
   rfl
 
 @[simp]
-theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A B] [AlgEquivClass F R A B]
+theorem apply_ofClass_symm_apply {F : Type*} [EquivLike F A B] [AlgEquivClass F R A B]
     (f : F) (x : B) :
-    f ((AlgEquivClass.toAlgEquiv f).symm x) = x :=
+    f ((ofClass f).symm x) = x :=
   EquivLike.right_inv f x
 
 @[simp]
-theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A B] [AlgEquivClass F R A B]
+theorem ofClass_symm_apply_apply {F : Type*} [EquivLike F A B] [AlgEquivClass F R A B]
     (f : F) (x : A) :
-    (AlgEquivClass.toAlgEquiv f).symm (f x) = x :=
+    (ofClass f).symm (f x) = x :=
   EquivLike.left_inv f x
+
+@[deprecated (since := "2026-09-08")]
+alias coe_apply_coe_coe_symm_apply := apply_ofClass_symm_apply
+@[deprecated (since := "2026-09-08")]
+alias coe_coe_symm_apply_coe_apply := ofClass_symm_apply_apply
 
 /-- `simp` normal form of `invFun_eq_symm` -/
 @[simp]

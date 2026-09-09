@@ -82,17 +82,24 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
+def _root_.AlgHom.ofClass [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
   __ := (f : A →+* B)
   toFun := f
   commutes' := AlgHomClass.commutes f
 
-@[simp]
-lemma toRingHom_toAlgHom [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+@[deprecated (since := "2026-09-07")] alias toAlgHom := AlgHom.ofClass
 
-@[simp] lemma toLinearMap_toAlgHom [AlgHomClass F R A B] (f : F) :
-    (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
+-- TODO: rename again when RingHomClass.toRingHom gets renamed
+@[simp]
+lemma toRingHom_ofClass [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
+
+@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := toRingHom_ofClass
+
+@[simp] lemma linearMapOfClass_ofClass [AlgHomClass F R A B] (f : F) :
+    (AlgHom.ofClass f : A →ₗ[R] B) = f := rfl
+
+@[deprecated (since := "2026-09-08")] alias toLinearMap_toAlgHom := linearMapOfClass_ofClass
 
 end AlgHomClass
 
@@ -110,9 +117,11 @@ def Simps.apply (f : A →ₐ[R] B) : A → B := f
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    ⇑(AlgHomClass.toAlgHom f : A →ₐ[R] B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-08")] alias coe_coe := AlgHom.coe_ofClass
 
 @[simp]
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
