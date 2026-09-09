@@ -195,8 +195,7 @@ theorem trace_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     trace ((M : Matrix _ _ _) * N * (↑M⁻¹ : Matrix _ _ _)) = trace N := by
   rw [trace_mul_cycle, Units.inv_mul, one_mul]
 
-/-- The trace is invariant under conjugation by a unit, variant of `Matrix.trace_units_conj`
-with the inverse on the left. -/
+set_option linter.docPrime false in
 -- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so that the ascription isn't needed
 theorem trace_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     trace ((↑M⁻¹ : Matrix _ _ _) * N * (↑M : Matrix _ _ _)) = trace N :=
