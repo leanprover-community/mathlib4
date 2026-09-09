@@ -423,6 +423,67 @@ lemma isRegularAtInfty_iff [DiscreteTopology 𝒢.periods] :
 lemma widthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.widthInfty := by
   apply strictWidthInfty_pos
 
+open scoped Pointwise
+
+/-- Translation parameters under an upper triangular change of cusp coordinate. -/
+lemma mem_strictPeriods_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
+    {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) {x : ℝ} :
+    x ∈ (ConjAct.toConjAct g⁻¹ • G).strictPeriods ↔ (g 0 0 / g 1 1) * x ∈ G.strictPeriods := by
+  rw [mem_strictPeriods_iff, mem_pointwise_smul_iff_inv_smul_mem, mem_strictPeriods_iff]
+  simp only [ConjAct.smul_def, ConjAct.ofConjAct_inv, ConjAct.ofConjAct_toConjAct, inv_inv]
+  rw [upperRightHom_conj_of_upperTriangular g hg]
+
+/-- Strict cusp widths scale inversely under an upper triangular change of coordinate. -/
+lemma strictWidthInfty_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
+    [DiscreteTopology G] (hw : 0 < G.strictWidthInfty)
+    {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) (ha : 0 < g 0 0 / g 1 1) :
+    (ConjAct.toConjAct g⁻¹ • G).strictWidthInfty = G.strictWidthInfty / (g 0 0 / g 1 1) := by
+  have hperiods : (ConjAct.toConjAct g⁻¹ • G).strictPeriods =
+      AddSubgroup.zmultiples (G.strictWidthInfty / (g 0 0 / g 1 1)) := by
+    ext
+    rw [mem_strictPeriods_conj_of_upperTriangular hg, strictPeriods_eq_zmultiples_strictWidthInfty]
+    grind [AddSubgroup.mem_zmultiples_iff]
+  have hp : 0 < G.strictWidthInfty / (g 0 0 / g 1 1) := div_pos hw ha
+  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
+    AddSubgroup.zmultiples_eq_zmultiples_iff (not_isOfFinAddOrder_of_isAddTorsionFree hp.ne')]
+      at hperiods
+  have hn : 0 ≤ (ConjAct.toConjAct g⁻¹ • G).strictWidthInfty := strictWidthInfty_nonneg _
+  grind
+
+/-- Adjoining `-1` commutes with conjugation. -/
+lemma adjoinNegOne_conj (G : Subgroup (GL (Fin 2) ℝ)) (g : ConjAct (GL (Fin 2) ℝ)) :
+    (g • G).adjoinNegOne = g • G.adjoinNegOne := by
+  ext x
+  simp only [mem_adjoinNegOne_iff, mem_pointwise_smul_iff_inv_smul_mem,
+    ConjAct.smul_def, mul_neg, neg_mul]
+
+/-- Cusp widths scale inversely under an upper triangular change of coordinate. -/
+lemma widthInfty_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
+    [DiscreteTopology G] (hw : 0 < G.widthInfty)
+    {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) (ha : 0 < g 0 0 / g 1 1) :
+    (ConjAct.toConjAct g⁻¹ • G).widthInfty = G.widthInfty / (g 0 0 / g 1 1) := by
+  simpa [widthInfty, adjoinNegOne_conj] using
+    strictWidthInfty_conj_of_upperTriangular hw hg ha
+
+/-- In a discrete determinant-one group with a cusp at infinity, every element fixing
+infinity is a signed translation. -/
+lemma eq_upperRightHom_or_neg_of_upperTriangular
+    {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G] [G.HasDetOne]
+    (hw : 0 < G.widthInfty) {g : GL (Fin 2) ℝ} (hgG : g ∈ G) (hg : g 1 0 = 0) :
+    g = upperRightHom (g 0 1) ∨ g = -upperRightHom (-g 0 1) := by
+  have hdet : g 0 0 * g 1 1 = 1 := by
+    simpa [Matrix.det_fin_two, hg] using congrArg Units.val (HasDetOne.det_eq hgG)
+  have hd : g 1 1 ≠ 0 := by grind
+  have ha : 0 < g 0 0 / g 1 1 := div_pos_iff.mpr <| mul_pos_iff.mp <| by grind
+  have hwidth : G.widthInfty = G.widthInfty / (g 0 0 / g 1 1) := by
+    simpa only [G.conjAct_pointwise_smul_eq_self (G.le_normalizer (G.inv_mem hgG))] using
+      widthInfty_conj_of_upperTriangular hw hg ha
+  have heq : g 0 0 = g 1 1 := by grind
+  rcases (show g 1 1 = 1 ∨ g 1 1 = -1 by grind) with h | h <;> [left; right] <;>
+  · apply Units.ext
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp [hg, heq, h]
+
 end Real
 
 end Subgroup

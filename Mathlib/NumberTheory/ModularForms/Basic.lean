@@ -723,3 +723,26 @@ lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k] :
   exact ⟨g, by simp [mapGL]⟩
 
 end SL2Z
+
+namespace ModularForm
+
+variable {G H : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
+
+/-- Regard a modular form as a form for a subgroup of its level. -/
+def restrict (hGH : G ≤ H) (f : ModularForm H k) : ModularForm G k where
+  toFun := f
+  slash_action_eq' g hg := f.slash_action_eq' g (hGH hg)
+  holo' := f.holo'
+  bdd_at_cusps' hc := f.bdd_at_cusps' (hc.mono hGH)
+
+@[simp] lemma coe_restrict (hGH : G ≤ H) (f : ModularForm H k) :
+    ⇑(restrict hGH f) = f := rfl
+
+lemma restrict_injective (hGH : G ≤ H) : Function.Injective (restrict (k := k) hGH) :=
+  fun _ _ hfg ↦ ext fun τ ↦ congr($hfg τ)
+
+@[simp] lemma restrict_eq_zero_iff (hGH : G ≤ H) (f : ModularForm H k) :
+    restrict hGH f = 0 ↔ f = 0 := by
+  rw [← (restrict_injective hGH).eq_iff, show restrict hGH 0 = 0 by rfl]
+
+end ModularForm
