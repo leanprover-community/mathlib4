@@ -7,14 +7,17 @@ module
 
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.CoassocSimps
+public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Congruence.Hom
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebra structure on quotients by a ring congruence
 
 If the counit and comultiplication of an `R`-bialgebra `A` descend along a ring congruence `c`,
-then `c.Quotient` is again an `R`-bialgebra.
+then `c.Quotient` is again an `R`-bialgebra. A two-sided ideal `I` of a ring `A` whose underlying
+`R`-submodule is a coideal induces such a congruence, so `A ⧸ I` is an `R`-bialgebra.
 
 ## Main definitions
 
@@ -26,11 +29,20 @@ then `c.Quotient` is again an `R`-bialgebra.
 ## Main results
 
 * `Bialgebra R c.Quotient` instance when `[c.IsBialgebraCon R]`.
+* `Bialgebra R (A ⧸ I)` instance when `[I.IsTwoSided]` and `[(I.restrictScalars R).IsCoideal]`.
+
+## Implementation notes
+
+The bialgebra structure on `A ⧸ I` is that of `(Ideal.Quotient.ringCon I).Quotient`, except that
+its algebra structure is `Ideal.Quotient.algebra`: the two algebra structures are definitionally
+equal but not reducibly so, and transporting the whole instance would create a diamond.
 -/
 
 @[expose] public section
 
 open Coalgebra TensorProduct
+
+section RingCon
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
@@ -71,7 +83,7 @@ lemma comul_comp_mkₐ : (comulAlgHom c).toLinearMap ∘ₗ (c.mkₐ R).toLinear
     map (c.mkₐ R).toLinearMap (c.mkₐ R).toLinearMap ∘ₗ comul := rfl
 
 /-- The bialgebra structure on `c.Quotient` when `c` is a bialgebra congruence. -/
-noncomputable instance : Bialgebra R c.Quotient :=
+instance : Bialgebra R c.Quotient :=
   .ofAlgHom (comulAlgHom c) (counitAlgHom c)
     (RingCon.Quotient.hom_extₐ <| AlgHom.toLinearMap_injective <| by
       simp [coassoc_simps, comul_comp_mkₐ])
@@ -83,8 +95,45 @@ noncomputable instance : Bialgebra R c.Quotient :=
       rw [CoassocSimps.map_counit_comp_comul_right]; rfl)
 
 /-- `c.mkₐ` as a bialgebra homomorphism. -/
-noncomputable def mkBialgHom : A →ₐc[R] c.Quotient := .ofAlgHom (c.mkₐ R) rfl rfl
+def mkBialgHom : A →ₐc[R] c.Quotient := .ofAlgHom (c.mkₐ R) rfl rfl
 
 @[simp] lemma mkBialgHom_apply (a : A) : mkBialgHom (R := R) c a = c.mkₐ R a := rfl
 
 end Bialgebra.Quotient
+
+end RingCon
+
+section Ideal
+
+variable {R A : Type*} [CommRing R] [Ring A] [Bialgebra R A] (I : Ideal A) [I.IsTwoSided]
+  [(I.restrictScalars R).IsCoideal]
+
+/-- The ring congruence of a two-sided ideal whose underlying submodule is a coideal is a
+bialgebra congruence. -/
+instance : (Ideal.Quotient.ringCon I).IsBialgebraCon R where
+  counit_eq := fun ⦃_ _⦄ h ↦ sub_eq_zero.mp <| by
+    rw [← map_sub]
+    exact Submodule.IsCoideal.counit_eq_zero (I := I.restrictScalars R)
+      (Ideal.Quotient.eq.mp (Quotient.sound h))
+  comul_eq := fun ⦃_ _⦄ h ↦ sub_eq_zero.mp <| by
+    rw [← map_sub, ← map_sub]
+    exact Submodule.IsCoideal.map_mkQ_comul_eq_zero (I := I.restrictScalars R)
+      (Ideal.Quotient.eq.mp (Quotient.sound h))
+
+namespace Bialgebra.Quotient
+
+/-- The bialgebra structure on `A ⧸ I` when `I` is a biideal. -/
+instance : Bialgebra R (A ⧸ I) :=
+  { Ideal.Quotient.algebra R,
+    (inferInstance : Bialgebra R (Ideal.Quotient.ringCon I).Quotient) with }
+
+@[simp] lemma counit_mk (a : A) : counit (R := R) (Ideal.Quotient.mk I a) = counit a := rfl
+
+@[simp] lemma comul_mk (a : A) :
+    comul (R := R) (Ideal.Quotient.mk I a) =
+      map (Ideal.Quotient.mkₐ R I).toLinearMap (Ideal.Quotient.mkₐ R I).toLinearMap (comul a) :=
+  rfl
+
+end Bialgebra.Quotient
+
+end Ideal
