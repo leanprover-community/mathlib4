@@ -560,9 +560,3 @@ lemma div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   · rw [sq, mul_assoc, mul_div_cancel_left₀ _ ha]
 
 end CommGroupWithZero
-
-section IsReduced
-
-
-
-end IsReduced
