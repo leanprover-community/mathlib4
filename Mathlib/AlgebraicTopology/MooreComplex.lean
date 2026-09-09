@@ -164,6 +164,6 @@ set_option backward.defeqAttrib.useBackward true in
 -- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n := by
-  simp [-objD, -obj_X]
+  simp [normalizedMooreComplex, obj]
 
 end AlgebraicTopology
