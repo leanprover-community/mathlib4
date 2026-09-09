@@ -154,7 +154,7 @@ open Mathlib.Tactic.Matrix
 to the literal of the product, with the entries computed by `norm_num`. Terms that it cannot
 evaluate are skipped, and can be viewed by using `set_option trace.Tactic.norm_matmul true`. -/
 simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := fun e => do
-  try normMatMulCore (Mathlib.Meta.NormNum.eval ·) e
+  try normMatMulCore Mathlib.Meta.NormNum.eval e
   catch ex =>
     trace[Tactic.norm_matmul] "{ex.toMessageData}"
     return .continue
