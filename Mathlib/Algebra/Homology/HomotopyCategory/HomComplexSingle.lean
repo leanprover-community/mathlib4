@@ -121,6 +121,13 @@ lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n =
       (fromSingleMk f h).comp (.ofHom g) (add_zero n) :=
   (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor])
 
+lemma fromSingleMk_comp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} {r : ℤ} (α : Cochain K L r) {m : ℤ} (hm : n + r = m)
+    (s : ℤ) (hs : q + r = s) :
+    (fromSingleMk f h).comp α hm = fromSingleMk (f ≫ α.v q s hs) (by lia) := by
+  apply (fromSingleEquiv (show p + m = s by lia)).injective
+  simp [fromSingleEquiv, Cochain.comp_v _ _ _ _ _ _ h hs]
+
 /-- Constructor for cochains to a single complex. -/
 @[nolint unusedArguments]
 noncomputable def toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (_ : p + n = q) :

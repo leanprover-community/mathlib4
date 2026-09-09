@@ -361,6 +361,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Given an embedding `e : c.Embedding c'` of complex shapes, this is the isomorphism
 `e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i`
 when `e.f i = i'. -/
+@[simps!]
 noncomputable def extendFunctorCompEvalIso
     [HasZeroMorphisms C] {i : ι} {i' : ι'} (h : e.f i = i') :
     e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i :=

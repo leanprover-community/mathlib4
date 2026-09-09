@@ -111,6 +111,24 @@ noncomputable def splittingExtend (n : ℤ) :
     (h.shortComplexExtend.map (HomologicalComplex.eval C (ComplexShape.up ℤ) n)).Splitting :=
   ComplexShape.embeddingUpNat.splittingExtend (S := h.shortComplex) h.splitting n
 
+@[reassoc]
+lemma splittingExtend_s (n : ℤ) (m : ℕ) (hm : m = n) :
+    (h.splittingExtend n).s =
+        (R₃.cochainComplexXIso n m hm).hom ≫ (h.splitting m).s ≫
+          (R₂.cochainComplexXIso n m hm).inv := by
+  dsimp [splittingExtend]
+  rw [ComplexShape.embeddingUpNat.splittingExtend_apply _ hm]
+  rfl
+
+@[reassoc]
+lemma splittingExtend_r (n : ℤ) (m : ℕ) (hm : m = n) :
+    (h.splittingExtend n).r =
+        (R₂.cochainComplexXIso n m hm).hom ≫ (h.splitting m).r ≫
+          (R₁.cochainComplexXIso n m hm).inv := by
+  dsimp [splittingExtend]
+  rw [ComplexShape.embeddingUpNat.splittingExtend_apply _ hm]
+  rfl
+
 noncomputable abbrev triangle : Triangle (CochainComplex C ℤ) :=
     triangleOfDegreewiseSplit h.shortComplexExtend h.splittingExtend
 
@@ -130,25 +148,35 @@ lemma shiftedHomMk₀_inv_Q_ι'_comp_singleδ [HasDerivedCategory C] :
   sorry
 
 attribute [local instance] HasDerivedCategory.standard in
+open HomComplex in
 lemma extMk_comp_extClass'
     [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0) (m' : ℕ) (hm' : m + 1 = m') :
-    -- hopefully, there will be no sign here
     (R₃.extMk x₃ m hm hx₃).comp hS.extClass hm =
     R₁.extMk (x₃ ≫ (h.splitting n).s ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r) m' hm'
       (h.extMk_comp_extClass'_aux x₃ hx₃ m') := by
   ext
-  simp [Ext.comp_hom, extMk_hom, Functor.comp_obj,
+  simp only [Ext.comp_hom, extMk_hom, Functor.comp_obj,
+    Category.comp_id, ShiftedHom.mk₀_id_comp,
     ShortComplex.ShortExact.extClass_hom, Category.assoc,
     DerivedCategory.singleFunctorIsoCompQ_hom_app,
     DerivedCategory.singleFunctorIsoCompQ_inv_app, ← DerivedCategory.Q_obj_single_obj,
     ShiftedHom.comp_assoc (a := (m : ℤ)) _ _ _ (zero_add (n : ℤ)) (add_zero 1) (by lia),
     h.shiftedHomMk₀_inv_Q_ι'_comp_singleδ,
     ← ShiftedHom.comp_assoc (a₂ := 1) (a₁ := (n : ℤ)) (a₁₂ := (m : ℤ)) (a := (m : ℤ)) _ _ _
-      (by lia) (zero_add 1) (by lia), ← ShiftedHom.map_comp]
-  congr 2
-  --dsimp [homOfDegreewiseSplit, cocycleOfDegreewiseSplit]
-  sorry
+      (by lia) (zero_add 1) (by lia), ← ShiftedHom.map_comp,
+      HomComplex.Cocycle.equivHomShift_symm_shiftedHomComp]
+  congr 3
+  ext : 1
+  simp only [HomComplex.Cocycle.comp_coe, HomComplex.Cocycle.fromSingleMk_coe,
+    HomComplex.Cochain.fromSingleMk_comp (r := 1) (m := m) _ (zero_add (n : ℤ)) _
+      (by lia) m (by lia)]
+  congr 1
+  subst hm
+  simp [Cocycle.equivHomShift_apply, cocycleOfDegreewiseSplit_coe,
+    Cochain.rightUnshift_v _ _ _ _ _ _ _ (add_zero (n : ℤ)),
+    h.splittingExtend_s n n rfl, h.splittingExtend_r (n + 1) (n + 1) (by lia),
+    R₂.cochainComplex_d n (n + 1) n (n + 1) (by lia) (by lia)]
 
 lemma extMk_comp_extClass
     [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n)
