@@ -12,9 +12,8 @@ public import Mathlib.Topology.Algebra.ValuativeRel.LinearTopology
 /-!
 # The topologies on `ℚ_[p]` and `ℤ_[p]` are `ℤ_[p]`-linear
 
-The topology on `ℚ_[p]` comes from its valuative relation (see
-`Mathlib/NumberTheory/Padics/ValuativeRel.lean`), and `ℤ_[p]` is its ring of integers, so the
-balls `{x | v x < γ}` are `ℤ_[p]`-submodules forming a basis of neighborhoods of zero. The same
+The topology on `ℚ_[p]` comes from its valuative relation, and `ℤ_[p]` is its ring of integers.
+The balls `{x | v x < γ}` are `ℤ_[p]`-submodules forming a basis of neighborhoods of zero. The same
 balls, intersected with `ℤ_[p]`, are ideals of `ℤ_[p]` forming a basis of neighborhoods of zero
 of `ℤ_[p]`, which carries the topology induced from `ℚ_[p]`.
 
