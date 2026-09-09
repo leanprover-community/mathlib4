@@ -21,7 +21,7 @@ which induces maps between absolute Galois groups and hence maps between cohomol
 When `V` is the set of places of a global field `K`, `A` is the set of rational points of an abelian
 variety over K, and `n = 1`, this recovers the classical definition of the Tate-Shafarevich group.
 
-## Reference
+## References
 
 * [Wikipedia, *Tate–Shafarevich group*](https://en.wikipedia.org/wiki/Tate%E2%80%93Shafarevich_group)
 
