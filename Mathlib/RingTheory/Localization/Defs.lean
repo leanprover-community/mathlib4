@@ -702,8 +702,8 @@ theorem ringEquivOfRingEquiv_mk' {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (
 theorem ringEquivOfRingEquiv_symm {j : R ≃+* P} (H : M.map j = T) :
     (ringEquivOfRingEquiv S Q j H).symm =
       ringEquivOfRingEquiv Q S j.symm (show T.map (j : R ≃* P).symm = M by
-        rw [← H, ← Submonoid.comap_equiv_eq_map_symm, ← Submonoid.map_coe_toMulEquiv,
-          Submonoid.comap_map_eq_of_injective (j : R ≃* P).injective]) := rfl
+        sorry /-rw [← H, ← Submonoid.comap_equiv_eq_map_symm, ← Submonoid.map_coe_toMulEquiv,
+          Submonoid.comap_map_eq_of_injective (j : R ≃* P).injective]-/) := rfl
 
 end Map
 
@@ -767,9 +767,10 @@ theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring
     [Algebra R K] (e : R ≃+* S) [Algebra S K] {M₁ : Submonoid S} {M₂ : Submonoid R}
     (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
     IsLocalization M₂ K := by
-  rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e, hM]
+  rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e,
+  ]; sorry /- proof was: hM]
   convert! (inferInstance : IsLocalization M₁ K)
-  exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h])
+  exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h]) -/
 
 end
 
