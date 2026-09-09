@@ -6,9 +6,9 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Probability.Decision.Risk.Defs
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Kernel.Composition.MapComap
 
 /-!
 # Risk increase (or statistical information)

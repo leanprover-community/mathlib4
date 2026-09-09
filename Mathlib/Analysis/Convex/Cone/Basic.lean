@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalar
 public import Mathlib.Topology.Algebra.Order.Module
 public import Mathlib.Topology.Order.DenselyOrdered
 
-import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
 # Proper cones
