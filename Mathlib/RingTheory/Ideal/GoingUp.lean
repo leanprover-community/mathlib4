@@ -238,7 +238,7 @@ variable {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
 theorem IsIntegral.under_lt_under {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
     I.comap (algebraMap R A) < J.comap (algebraMap R A) :=
   let ⟨I_le_J, x, hxJ, hxI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp I_lt_J
-  comap_lt_comap_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩ (Algebra.IsIntegral.isIntegral x)
+  under_lt_under_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩ (Algebra.IsIntegral.isIntegral x)
 
 @[deprecated (since := "2026-09-03")] alias IsIntegral.comap_lt_comap := IsIntegral.under_lt_under
 

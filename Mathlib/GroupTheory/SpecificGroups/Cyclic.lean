@@ -281,7 +281,7 @@ theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Sub
   rw [isCyclic_iff_exists_zpowers_eq_top]
   obtain hbot | ⟨M, hM, -⟩ := eq_top_or_exists_le_coatom (⊥ : Subgroup G)
   · exact ⟨1, eq_top_of_bot_eq_top hbot _⟩
-  · refine SetLike.exists_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
+  · refine IsConcreteLE.exists_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
     by_contra hne
     obtain ⟨M', hM', hle⟩ := (eq_top_or_exists_le_coatom (zpowers g)).resolve_left hne
     exact hg (h M' M hM' hM ▸ hle (mem_zpowers g))
