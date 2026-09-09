@@ -5,7 +5,7 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Basic.Sign.Defs
 
 /-!
