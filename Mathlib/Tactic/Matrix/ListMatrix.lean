@@ -58,9 +58,9 @@ would open `+`. -/
 theorem dotProduct_zero [Mul α] [Add α] [Zero α] (l₁ l₂ : List α) : dotProduct 0 l₁ l₂ = 0 :=
   rfl
 
-theorem dotProduct_succ_cons_cons [Mul α] [Add α] [Zero α] (n : ℕ) (a b : α) (l₁ l₂ : List α) :
-    dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + dotProduct n l₁ l₂ :=
-  rfl
+theorem dotProduct_succ_cons_cons [Mul α] [Add α] [Zero α] {n : ℕ} (a b : α) {l₁ l₂ : List α}
+    {c : α} (h : dotProduct n l₁ l₂ = c) : dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + c :=
+  congrArg (a * b + ·) h
 
 /-- The transpose of a list of rows as `n` rows, where row `j` collects the `j`-th entries of
 the input rows padded with `0`. -/

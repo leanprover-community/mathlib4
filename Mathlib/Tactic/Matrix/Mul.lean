@@ -73,8 +73,7 @@ def mkDotProductChain : List Q($α) → List Q($α) → DotProductEq zα aα mα
   | a :: as, b :: bs =>
     let ⟨n, l₁, l₂, fold, h⟩ := mkDotProductChain as bs
     ⟨q($n + 1), q($a :: $l₁), q($b :: $l₂), q($a * $b + $fold),
-      q((ListMatrix.dotProduct_succ_cons_cons $n $a $b $l₁ $l₂).trans
-        (congrArg (fun x => $a * $b + x) $h))⟩
+      q(ListMatrix.dotProduct_succ_cons_cons $a $b $h)⟩
   | _, _ => ⟨q(0), q([]), q([]), q(0), q(ListMatrix.dotProduct_zero [] [])⟩
 
 /-- Prove `ListMatrix.dotProduct m l₁ l₂ = v` for the `m` entries `as` and `bs`, with `v` their
