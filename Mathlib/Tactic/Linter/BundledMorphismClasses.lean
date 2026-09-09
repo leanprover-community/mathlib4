@@ -72,6 +72,10 @@ open Batteries.Tactic.Lint in
     if ← isInstance declName then return none
     -- We still lint in the presence of sorries: completing a sorry should not influence this check.
 
+    -- We don't warn about deprecated declarations: those will be removed soon anyway.
+    if Lean.Linter.isDeprecated (← getEnv) declName then
+        return none
+
     let constantInfo := ((← getEnv).find? declName).get!
     if constantInfo.isDefinition then
       -- Check if any of the constants we care about appears in the type.
@@ -81,9 +85,6 @@ open Batteries.Tactic.Lint in
       else if #[`ofClass, `casesOn, `recOn].contains (declName.components.getLastD `dummy) then
         -- Heuristic: if a definition is named literally `ofClass`, don't warn.
         -- We also exclude auto-generated declarations `recOn` and `casesOn`.
-        return none
-      else if Lean.Linter.isDeprecated (← getEnv) declName then
-        -- We don't warn about deprecated declarations either: those will be removed soon anyway.
         return none
       else if falseProjectionNames.contains declName then
         -- If the declaration in question is named like a morphism class to morphism coercion,
