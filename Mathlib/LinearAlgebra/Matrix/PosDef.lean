@@ -31,6 +31,8 @@ order on matrices on `ℝ` or `ℂ`.
 
 ## Main results
 
+* `Matrix.PosSemidef.dotProduct_mulVec_zero_iff`: for a positive semi-definite matrix `A`,
+  we have `x⋆ A x = 0` iff `A x = 0`.
 * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
   positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
   positive semidefinite.

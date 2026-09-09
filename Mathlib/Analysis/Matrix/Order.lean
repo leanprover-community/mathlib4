@@ -23,8 +23,6 @@ This allows us to use more general results from C⋆-algebras, like `CFC.sqrt`.
 ## Main results
 
 * `Matrix.instPartialOrder`: the partial order on matrices given by `x ≤ y := (y - x).PosSemidef`.
-* `Matrix.PosSemidef.dotProduct_mulVec_zero_iff`: for a positive semi-definite matrix `A`,
-  we have `x⋆ A x = 0` iff `A x = 0`.
 * `Matrix.toMatrixInnerProductSpace`: the inner product on matrices induced by a
   positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
 
