@@ -29,7 +29,9 @@ universe u v w
 
 variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w} [TopologicalSpace α]
 
-open BoundedContinuousFunction Topology Bornology
+open BoundedContinuousFunction Bornology
+
+open scoped Topology
 
 open Filter Metric
 
@@ -51,7 +53,7 @@ scoped[ZeroAtInfty] notation (priority := 2000) "C₀(" α ", " β ")" => ZeroAt
 @[inherit_doc]
 scoped[ZeroAtInfty] notation α " →C₀ " β => ZeroAtInftyContinuousMap α β
 
-open ZeroAtInfty
+open scoped ZeroAtInfty
 
 section
 
