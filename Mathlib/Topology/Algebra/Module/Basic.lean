@@ -55,10 +55,10 @@ end
 
 section Submodule
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-  [ContinuousConstSMul R M]
+variable {S R M : Type*} [SetLike S M] [TopologicalSpace M] [SMul R M] [SMulMemClass S R M]
+    [ContinuousConstSMul R M]
 
-instance Submodule.continuousConstSMul (S : Submodule R M) : ContinuousConstSMul R S :=
+instance (s : S) : ContinuousConstSMul R s :=
   IsInducing.subtypeVal.continuousConstSMul id fun {_} {_} => rfl
 
 end Submodule
