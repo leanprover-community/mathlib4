@@ -572,7 +572,7 @@ section Field
 variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
 
 theorem isUnit [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : IsUnit M :=
-  mulVec_injective_iff_isUnit.mp (mulVec_injective hM)
+  mulVec_injective_iff_isUnit.mp hM.mulVec_injective
 
 protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻¹.PosDef := by
   have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
