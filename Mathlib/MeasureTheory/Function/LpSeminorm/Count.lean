@@ -7,6 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+
 /-!
 # `L^p`-seminorms on `count` and `dirac`
 -/
@@ -20,36 +22,31 @@ variable {α ε : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
 namespace MeasureTheory
 
 @[simp]
-lemma eLpNorm_dirac (f : α → ε) (i : α) (hp : p ≠ 0)
-    (hf : AEStronglyMeasurable f (dirac i)) :
+lemma eLpNorm_dirac (f : α → ε) (i : α) (hp : p ≠ 0) :
     eLpNorm f p (dirac i) = ‖f i‖ₑ := by
+  have hf : AEStronglyMeasurable f (dirac i) := aestronglyMeasurable_dirac
   simp_rw [eLpNorm, hf, ite_true, ite_eq_right hp]
   split_ifs
   · simp [eLpNormEssSup, essSup, limsup, limsSup, Set.Ici_def]
   · simp [eLpNorm', ENNReal.toReal_eq_zero_iff, *]
 
-lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0)
-    (hf : AEStronglyMeasurable f count) :
+lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
     ‖f i‖ₑ ≤ eLpNorm f p count := by
-  have hfi : AEStronglyMeasurable f (count.restrict {i}) := hf.restrict
-  have hfd : AEStronglyMeasurable f (dirac i) := by simpa using hfi
-  calc
-    ‖f i‖ₑ = eLpNorm f p (dirac i) := by
-      rw [eLpNorm_dirac f i hp hfd]
-    _ = eLpNorm f p (count.restrict {i}) := by simp
-    _ ≤ eLpNorm f p count := eLpNorm_restrict_le f p count {i}
+  rw [← eLpNorm_dirac _ _ hp]
+  apply eLpNorm_mono_measure
+  exact le_sum dirac i
 
-omit [MeasurableSingletonClass α] in
-lemma eLpNorm_count_lt_top_of_lt [Finite α] (hf : AEStronglyMeasurable f .count)
+lemma eLpNorm_count_lt_top_of_lt [Finite α]
     (h : ∀ i, ‖f i‖ₑ < ∞) : eLpNorm f p .count < ∞ := by
   have := Fintype.ofFinite α
-  refine (eLpNorm_mono_enorm hf (g := fun _ ↦ Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
+  refine (eLpNorm_mono_enorm (by fun_prop)
+    (g := fun _ ↦ Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
   · exact fun x ↦ Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ x)
   · exact (memLp_const_enorm <| by simp [h, LT.lt.ne]).eLpNorm_lt_top
 
-lemma eLpNorm_count_lt_top [Finite α] (hp : p ≠ 0) (hf : AEStronglyMeasurable f .count) :
+lemma eLpNorm_count_lt_top [Finite α] (hp : p ≠ 0) :
     eLpNorm f p .count < ∞ ↔ ∀ i, ‖f i‖ₑ < ∞ :=
-  ⟨fun h i ↦ (enorm_le_eLpNorm_count f i hp hf).trans_lt h,
-    eLpNorm_count_lt_top_of_lt hf⟩
+  ⟨fun h i ↦ (enorm_le_eLpNorm_count f i hp).trans_lt h,
+    eLpNorm_count_lt_top_of_lt⟩
 
 end MeasureTheory

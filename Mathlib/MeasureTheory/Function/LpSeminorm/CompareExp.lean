@@ -62,8 +62,8 @@ theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < 
   gcongr
   rwa [lintegral_const] at h_le
 
-theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_aestronglyMeasurable
-    {p q : ℝ≥0∞} (hpq : p ≤ q) (hf : AEStronglyMeasurable f μ) :
+theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
+    (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ ≤ eLpNorm f q μ * μ Set.univ ^ (1 / p.toReal - 1 / q.toReal) := by
   obtain rfl | hp0 := eq_or_ne p 0
   · simp [hf]
@@ -85,11 +85,11 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_aestronglyMeasurable
   have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   exact eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp_pos hpq_real hf
 
-theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ
+theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos
     {p q : ℝ≥0∞} (hpq : p ≤ q) (hp : 0 < p) :
     eLpNorm f p μ ≤ eLpNorm f q μ * μ Set.univ ^ (1 / p.toReal - 1 / q.toReal) := by
   by_cases hf : AEStronglyMeasurable f μ
-  · apply eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_aestronglyMeasurable hpq hf
+  · apply eLpNorm_le_eLpNorm_mul_rpow_measure_univ hpq hf
   simp only [hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable, one_div, top_le_iff]
   apply ENNReal.top_mul
   have A : μ ≠ 0 := by contrapose! hf; simp [hf]
@@ -115,7 +115,7 @@ theorem eLpNorm'_le_eLpNormEssSup {q : ℝ} (hq_pos : 0 < q) [IsProbabilityMeasu
 theorem eLpNorm_le_eLpNorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProbabilityMeasure μ] :
     eLpNorm f p μ ≤ eLpNorm f q μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · exact (eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_aestronglyMeasurable hpq hf).trans
+  · exact (eLpNorm_le_eLpNorm_mul_rpow_measure_univ hpq hf).trans
       (le_of_eq (by simp [measure_univ]))
   · rw [eLpNorm_of_not_aestronglyMeasurable hf, eLpNorm_of_not_aestronglyMeasurable hf]
 
