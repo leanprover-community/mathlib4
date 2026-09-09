@@ -244,13 +244,12 @@ theorem mem_map_iff_mem (hf : Function.Injective f) {S : Submonoid M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
 
-variable {T : Submonoid N} {f : F}
-
 @[to_additive]
-theorem map_le_iff_le_comap :
+theorem map_le_iff_le_comap {f : M →* N} {S : Submonoid M} {T : Submonoid N} :
     S.map f ≤ T ↔ S ≤ T.comap f :=
   image_subset_iff
 
+variable (f) in
 @[to_additive]
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
 
@@ -315,7 +314,7 @@ theorem comap_iInf {ι : Sort*} (f : M →* N) (s : ι → Submonoid N) :
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_iInf
 
 @[to_additive (attr := simp)]
-theorem map_bot (f : F) : (⊥ : Submonoid M).map f = ⊥ :=
+theorem map_bot (f : M →* N) : (⊥ : Submonoid M).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
 @[to_additive]
@@ -324,7 +323,7 @@ lemma disjoint_map (hf : Function.Injective f) {H K : Submonoid M} (h : Disjoint
   rw [disjoint_iff, ← map_inf _ _ f hf, disjoint_iff.mp h, map_bot]
 
 @[to_additive (attr := simp)]
-theorem comap_top (f : F) : (⊤ : Submonoid N).comap f = ⊤ :=
+theorem comap_top (f : M →* N) : (⊤ : Submonoid N).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
 @[to_additive (attr := simp)]
@@ -333,7 +332,7 @@ theorem map_id (S : Submonoid M) : S.map (MonoidHom.id M) = S :=
 
 section GaloisCoinsertion
 
-variable {ι : Type*} {f : F}
+variable {ι : Type*} {f : M →* N}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/]
@@ -383,7 +382,7 @@ end GaloisCoinsertion
 
 section GaloisInsertion
 
-variable {ι : Type*} {f : F}
+variable {ι : Type*} {f : M →* N}
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 @[to_additive /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/]
@@ -542,16 +541,17 @@ theorem mem_map_equiv {f : M ≃* N} {K : Submonoid M} {x : N} :
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
-    K.map f = K.comap f.symm :=
+    K.map f = K.comap f.symm.toMonoidHom :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
-    K.comap f = K.map f.symm :=
+    K.comap f = K.map f.symm.toMonoidHom :=
   (map_equiv_eq_comap_symm f.symm K).symm
 
+-- TODO: should this lemma be fixed to generalise to any surjective monoid homomorphism instead?
 @[to_additive (attr := simp)]
-theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f = ⊤ :=
+theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f.toMonoidHom = ⊤ :=
   SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 
 @[to_additive le_prod_iff]
