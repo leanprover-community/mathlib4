@@ -24,11 +24,9 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 @[expose] public section
 
-universe uR uS uA uB
-
 /-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
 is an equivalence of rings commuting with the actions of scalars. -/
-structure AlgEquiv (R : Type uR) [CommSemiring R] (A : Type uA) (B : Type uB) [Semiring A]
+structure AlgEquiv (R : Type*) [CommSemiring R] (A B : Type*) [Semiring A]
   [Semiring B] [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   protected commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -73,8 +71,8 @@ namespace AlgEquiv
 
 section Semiring
 
-variable {R : Type uR} [CommSemiring R]
-variable {A : Type uA} {B : Type uB} [Semiring A] [Semiring B]
+variable {R : Type*} [CommSemiring R]
+variable {A B : Type*} [Semiring A] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable (e : A ≃ₐ[R] B)
 
@@ -348,8 +346,6 @@ initialize_simps_projections AlgEquiv (toFun → apply, invFun → symm_apply)
 
 end simps
 
-section cast
-
 /-- `Equiv.cast (congrArg _ h)` as an algebra equiv.
 
 Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
@@ -360,8 +356,6 @@ protected def cast
     A i ≃ₐ[R] A j where
   __ := RingEquiv.cast h
   commutes' _ := by cases h; rfl
-
-end cast
 
 section OfAlgHom
 
@@ -539,8 +533,7 @@ end OfBijective
 
 section trans
 
-universe u₁ u₂ u₃
-variable {A₁ : Type u₁} {A₂ : Type u₂} {A₃ : Type u₃}
+variable {A₁ A₂ A₃ : Type*}
 variable [Semiring A₁] [Semiring A₂] [Semiring A₃]
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable (e₁₂ : A₁ ≃ₐ[R] A₂) (e₂₃ : A₂ ≃ₐ[R] A₃)
@@ -585,11 +578,10 @@ end trans
 
 section congr
 
-universe u₁ u₂ u₃ v₁ v₂ v₃ w₁ w₂
-variable {A₁ : Type u₁} {B₁ : Type v₁} {A₂ : Type u₂} {B₂ : Type v₂} {A₃ : Type u₃} {B₃ : Type v₃}
+variable {A₁ B₁ A₂ B₂ A₃ B₃ : Type*}
 variable [Semiring A₁] [Semiring B₁] [Semiring A₂] [Semiring B₂] [Semiring A₃] [Semiring B₃]
 variable [Algebra R A₁] [Algebra R B₁] [Algebra R A₂] [Algebra R B₂] [Algebra R A₃] [Algebra R B₃]
-variable {C₁ : Type w₁} {C₂ : Type w₂} [Semiring C₁] [Semiring C₂] [Algebra R C₁] [Algebra R C₂]
+variable {C₁ C₂ : Type*} [Semiring C₁] [Semiring C₂] [Algebra R C₁] [Algebra R C₂]
 
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'`, then the type of maps
 `A₁ →ₐ[R] A₂` is equivalent to the type of maps `A₁' →ₐ[R] A₂'`. -/
@@ -922,7 +914,7 @@ universe w
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
 @[simps! apply, simps! -isSimp symm_apply, pp_with_univ]
-def ULift.algEquiv {R : Type uR} {A : Type uA} [CommSemiring R] [Semiring A] [Algebra R A] :
+def ULift.algEquiv {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
