@@ -5725,6 +5725,7 @@ public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 public import Mathlib.MeasureTheory.Measure.FiniteMeasurePi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
+public import Mathlib.MeasureTheory.Measure.FrostmanMassBound
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
@@ -5738,7 +5739,6 @@ public import Mathlib.MeasureTheory.Measure.Haar.Quotient
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
-public import Mathlib.MeasureTheory.Measure.FrostmanMassBound
 import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.MeasureTheory.Measure.IntegralCharFun
 public import Mathlib.MeasureTheory.Measure.Interval
