@@ -560,6 +560,12 @@ theorem epsilon_le_veblen_of_ne_zero (ha : a ≠ 0) : ε_ b ≤ veblen a b :=
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
   rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
 
+/-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
+theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :
+    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
+  rw [isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq]
+  simp [epsilon, mem_range_veblen one_ne_zero]
+
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
   rw [epsilon_zero_eq_nfp, lt_nfp_iff]
