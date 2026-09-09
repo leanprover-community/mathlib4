@@ -77,4 +77,6 @@ theorem sameRay_iff_normalize_eq {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     SameRay ℝ x y ↔ normalize x = normalize y :=
   sameRay_iff_inv_norm_smul_eq_of_ne hx hy
 
+alias ⟨_root_.SameRay.normalize_eq, _⟩ := sameRay_iff_normalize_eq
+
 end NormedSpace
