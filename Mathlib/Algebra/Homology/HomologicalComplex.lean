@@ -657,6 +657,11 @@ theorem of_X : (of X d sq).X = X :=
 theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   simp [of]
 
+@[simp]
+theorem of_d' (j i : α) (h : i = j + 1 := by omega) : (of X d sq).d i j =
+    eqToHom (by rw [h, of_X]) ≫ d j := by
+  simp [of, h]
+
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
   simp [of, dite_eq_right h]
 

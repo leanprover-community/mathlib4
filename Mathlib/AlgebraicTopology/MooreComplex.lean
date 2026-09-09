@@ -142,7 +142,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc]
         rw [← SimplicialObject.δ_def, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
-    fun n => by cases n <;> dsimp [objD, objX, ChainComplex.of.d] <;> cat_disch
+    fun n => by cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 
