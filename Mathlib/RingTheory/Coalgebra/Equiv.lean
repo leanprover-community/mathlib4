@@ -147,12 +147,11 @@ theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
--- TODO: is this the right way to name this lemma?
 @[simp]
-theorem coe_coAlgHomOfClass : ⇑(CoAlgHom.ofClass e) = e :=
+theorem coe_coalgHomOfClass : ⇑(ofClass e) = e :=
   rfl
 
-@[deprecated (since := "2026-09-08")] alias coe_toCoalgHom := coe_coAlgHomOfClass
+@[deprecated (since := "2026-09-08")] alias coe_toCoalgHom := coe_coalgHomOfClass
 
 theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
   rfl

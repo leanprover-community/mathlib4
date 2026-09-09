@@ -68,16 +68,15 @@ variable {R A B F : Type*} [CommSemiring R]
 /-- Turn an element of a type `F` satisfying `CoalgHomClass F R A B` into an actual
 `CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
 @[coe]
-def _root_.CoAlgHom.ofClass (f : F) : A →ₗc[R] B :=
+def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
     toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
-@[deprecated (since := "2026-09-09")] alias toCoAlgHom := CoAlgHom.ofClass
+@[deprecated (since := "2026-09-09")] alias toCoalgHom := CoalgHom.ofClass
 
-instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
-  ⟨CoAlgHom.ofClass⟩
+instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) := ⟨.ofClass⟩
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
@@ -123,7 +122,7 @@ initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_ofClass {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
-    ⇑(CoAlgHom.ofClass f) = f :=
+    ⇑(ofClass f) = f :=
   rfl
 
 @[deprecated (since := "2026-09-09")] alias coe_coe := CoalgHom.coe_ofClass
