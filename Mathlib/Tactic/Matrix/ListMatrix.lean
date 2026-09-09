@@ -61,7 +61,7 @@ through Batteries' `List.transpose`, so that it reduces in the kernel. This is a
 efficient as it gives an `O(nm)` transposition without any random access. -/
 def transpose [Zero α] (n : ℕ) : List (List α) → List (List α)
   | [] => List.replicate n []
-  | row :: rows => List.zipWith (· :: ·) ((row.rightpad n 0).take n) (transpose n rows)
+  | row :: rows => List.zipWith List.cons ((row.rightpad n 0).take n) (transpose n rows)
 
 @[simp]
 theorem length_transpose [Zero α] (n : ℕ) (rows : List (List α)) :

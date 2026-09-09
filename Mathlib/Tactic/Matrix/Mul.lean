@@ -106,8 +106,8 @@ def proveMul {u : Level} (normalizer : EntryNormalizer) (l m n : ℕ) (α : Q(Ty
   let _acm ← synthInstanceQ q(AddCommMonoid $α)
   let Bt : Array (Array Q($α)) :=
     Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (B[i]!)[j]!
-  let rowsA := A.map (·.toList)
-  let colsB := Bt.map (·.toList)
+  let rowsA := A.map Array.toList
+  let colsB := Bt.map Array.toList
   -- assemble the dotproduct matrix from A and Bᵗ
   let mulEntryEqs ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j =>
     proveDotProduct zα aα mα normalizer m rowsA[i]! colsB[j]!
