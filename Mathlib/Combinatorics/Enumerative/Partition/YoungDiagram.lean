@@ -46,12 +46,8 @@ theorem rowLens_ofPartition_eq_sort_parts {n : ℕ} (p : Nat.Partition n) :
 @[simp]
 theorem card_ofPartition {n : ℕ} (p : Nat.Partition n) :
     (ofPartition p).card = n := by
-  rw [← sum_rowLens_eq_card, rowLens_ofPartition_eq_sort_parts]
-  calc
-    (p.parts.sort (· ≥ ·)).sum
-      = (↑(p.parts.sort (· ≥ ·)) : Multiset ℕ).sum := Multiset.sum_coe _
-    _ = p.parts.sum := by rw [Multiset.sort_eq]
-    _ = n := p.parts_sum
+  rw [← sum_rowLens_eq_card, rowLens_ofPartition_eq_sort_parts, ← Multiset.sum_coe,
+    Multiset.sort_eq, p.parts_sum]
 
 @[simp]
 theorem ofPartition_toPartition {n : ℕ} {μ : YoungDiagram} (h : μ.card = n) :
