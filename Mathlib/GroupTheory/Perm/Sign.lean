@@ -325,19 +325,19 @@ def signAux3 [Finite α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → 
 
 theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
-      Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
+      Pairwise' fun x y => signAux3 (swap x y) hs = -1 := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
   induction s using Quotient.inductionOn with | _ l => ?_
   change
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
-    Pairwise fun x y => signAux2 l (swap x y) = -1
+    Pairwise' fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
     Equiv.ext fun h => by simp [mul_apply]
   constructor
   · rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, ←
       signAux_eq_signAux2 _ _ e fun _ _ => hs _, ← signAux_eq_signAux2 _ _ e fun _ _ => hs _,
       hfg, signAux_mul]
-  · intro x y hxy
+  · intro x _ y _ hxy
     rw [← e.injective.ne_iff] at hxy
     rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hxy]
 
@@ -385,8 +385,9 @@ theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
 theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
   sign_inv e
 
-theorem sign_swap {x y : α} (h : x ≠ y) : sign (swap x y) = -1 :=
-  (signAux3_mul_and_swap 1 1 _ mem_univ).2 h
+theorem sign_swap {x y : α} (h : x ≠ y) : sign (swap x y) = -1 := by
+  obtain ⟨-, hg⟩ :=  signAux3_mul_and_swap 1 1 _ (mem_univ (α := α))
+  exact pairwise'_apply hg h
 
 @[simp]
 theorem sign_swap' {x y : α} : sign (swap x y) = if x = y then 1 else -1 :=

@@ -323,8 +323,8 @@ lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s)
   simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
 
 @[to_additive] lemma pairwise_disjoint_smul_iff :
-    Pairwise (Disjoint on fun a : α ↦ a • s) ↔ ∀ a : α, (a • s ∩ s).Nonempty → a = 1 := by
-  simp_rw [Pairwise, disjoint_smul_set_right, ← mul_smul,
+    Pairwise' (Disjoint on fun a : α ↦ a • s) ↔ ∀ a : α, (a • s ∩ s).Nonempty → a = 1 := by
+  simp_rw [pairwise'_iff, disjoint_smul_set_right, ← mul_smul,
     ← not_imp_not (b := _ ≠ _), not_ne_iff, not_disjoint_iff_nonempty_inter]
   exact ⟨fun h a ↦ by simpa using @h a 1,
     fun h i j ne ↦ by simpa [inv_mul_eq_one, eq_comm] using h _ ne⟩
