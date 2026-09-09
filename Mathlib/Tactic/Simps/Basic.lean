@@ -12,6 +12,9 @@ public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes
+public import Batteries.Util.LibraryNote
+public import Lean.Elab.ConfigEval
+public import Lean.Elab.Tactic.Simp
 
 /-!
 # Simps attribute
@@ -1095,7 +1098,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
       let firstTodo := todoNext.head!.1
       throwError "Invalid simp lemma {nm.update (dropLast firstTodo) false |>.toName}.\n\
-        Projection {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
+        Projection {(splitOnNotNumber firstTodo "_")[0]!} doesn't exist, \
         because target {str} is not a structure."
     if cfg.fullyApplied then
       addProjection stxProj univs nm.toName tgt lhsAp rhsAp newArgs cfg

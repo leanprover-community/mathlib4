@@ -91,7 +91,7 @@ section Pullback
 
 open ContinuousLinearMap
 
-variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
+variable {V V₁ : Π (x : M'), TangentSpace I' x}
 variable {c : 𝕜} {m n : ℕ∞ω} {t : Set M'} {y₀ : M'}
 
 variable (I I') in

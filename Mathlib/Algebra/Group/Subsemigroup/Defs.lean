@@ -332,8 +332,12 @@ theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=
 
 end MulMemClass
 
+section IsMulCommutative
+
+variable {S : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
+
 @[to_additive]
-lemma isMulCommutative_iff_of_setLike {S M : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
+lemma isMulCommutative_iff_of_setLike
     {s : S} : IsMulCommutative s ↔ ∀ a ∈ s, ∀ b ∈ s, a * b = b * a := by
   simp [isMulCommutative_iff]
 
@@ -342,7 +346,21 @@ alias ⟨_, IsMulCommutative.of_setLike_mul_comm⟩ := isMulCommutative_iff_of_s
 
 /-- Commutativity of multiplication in commutative subobjects. -/
 @[to_additive /-- Commutativity of addition in commutative subobjects. -/ ]
-lemma setLike_mul_comm {S M : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
-    {s : S} [IsMulCommutative s] ⦃a b : M⦄ (ha : a ∈ s) (hb : b ∈ s) :
+lemma setLike_mul_comm {s : S} [IsMulCommutative s] ⦃a b : M⦄ (ha : a ∈ s) (hb : b ∈ s) :
     a * b = b * a :=
   isMulCommutative_iff_of_setLike.mp ‹_› a ha b hb
+
+/-- Commutativity of multiplication passes to smaller subobjects. -/
+@[to_additive /-- Commutativity of addition passes to smaller subobjects. -/ ]
+lemma isMulCommutative_anti [LE S] [IsConcreteLE S M] {s t : S} (h : s ≤ t) [IsMulCommutative t] :
+    IsMulCommutative s :=
+  .of_setLike_mul_comm fun _ ha _ hb ↦
+    setLike_mul_comm (mem_of_le_of_mem h ha) (mem_of_le_of_mem h hb)
+
+instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative t] :
+    IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_right
+
+instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative s] :
+    IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_left
+
+end IsMulCommutative

@@ -6,12 +6,11 @@ Authors: Simon Hudon, Ira Fesefeldt
 module
 
 public import Mathlib.Control.Monad.Basic
-public import Mathlib.Dynamics.FixedPoints.Basic
-public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.Iterate
 public import Mathlib.Order.Part
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.ScottContinuity
+public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Omega Complete Partial Orders
@@ -97,7 +96,7 @@ instance [Inhabited α] : Inhabited (Chain α) :=
 instance : Membership α (Chain α) where
   mem c a := ∃ i, a = c i
 
-variable (c c' : Chain α)
+variable (c : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 

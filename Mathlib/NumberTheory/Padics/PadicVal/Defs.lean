@@ -99,4 +99,12 @@ theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : �
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
       |>.emultiplicity_eq_multiplicity, ← padicValNat_def' ha.ne_one hb,
-    Nat.cast_le]
+    ENat.natCast_le_natCast]
+
+/-- A weak upper bound on `padicValNat p n`. -/
+theorem mul_padicValNat_le {p n : ℕ} : p * padicValNat p n ≤ n := by
+  obtain rfl | hp := eq_or_ne p 1
+  · simp
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  grw [Nat.mul_le_pow hp, Nat.le_of_dvd hn.bot_lt pow_padicValNat_dvd]

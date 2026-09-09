@@ -6,8 +6,12 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.GroupWithZero.Torsion
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.Tactic.Continuity
 
 /-!
 # Ramification index
@@ -179,7 +183,7 @@ lemma ramificationIdx'_map_eq {E : Type*} [EquivLike E S S₁] [AlgEquivClass E 
     (P : Ideal S) (e : E) :
     ramificationIdx' p (P.map e) = ramificationIdx' p P := by
   rw [show P.map e = _ from P.map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
-  exact p.ramificationIdx'_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
+  exact p.ramificationIdx'_comap_eq (AlgEquiv.ofClass e).symm P
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_map_eq := ramificationIdx'_map_eq
 

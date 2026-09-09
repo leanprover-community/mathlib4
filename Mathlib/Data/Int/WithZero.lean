@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Basic.NNReal.Defs
 
 /-!
 # WithZero

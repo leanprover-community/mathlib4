@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
@@ -132,7 +133,7 @@ theorem coe_refl (α : Sort*) : ⇑(Embedding.refl α) = id := rfl
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
 
 @[simp]

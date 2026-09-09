@@ -10,8 +10,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## Pushouts of Monoids and Groups
+# Pushouts of Monoids and Groups
 
 This file defines wide pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
