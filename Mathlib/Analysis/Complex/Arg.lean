@@ -83,4 +83,8 @@ lemma normalize_ofReal_mul (hc : 0 < c) (w : ℂ) :
     NormedSpace.normalize ((c : ℂ) * w) = NormedSpace.normalize w := by
   rw [← real_smul, NormedSpace.normalize_smul_of_pos hc]
 
+lemma normalize_mul_star (z : ℂ) : NormedSpace.normalize z * star z = ‖z‖ := by
+  rw [NormedSpace.normalize, real_smul, ofReal_inv, mul_assoc, ← div_eq_inv_mul, star_def,
+    mul_conj, normSq_eq_norm_sq, ofReal_pow, pow_two, mul_self_div_self]
+
 end Complex
