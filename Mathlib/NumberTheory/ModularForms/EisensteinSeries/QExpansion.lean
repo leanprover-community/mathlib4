@@ -93,8 +93,9 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
     have h1 : cexp (2 * π * I * (x / p)) = cexp (2 * π * I * x / p) := by
       ring_nf
     simpa using h1 ▸ norm_exp_two_pi_I_lt_one ⟨((x : ℂ) / p), by aesop⟩
-  refine ⟨_, by simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
-    (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), fun n z hz ↦ ?_⟩
+  refine ⟨fun n ↦ ‖f n‖ * (2 * π * n / |p|) ^ k * |r| ^ n, by
+    simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
+      (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), fun n z hz ↦ ?_⟩
   have h0 := pow_le_pow_left₀ (norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
   simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ← exp_nsmul', Pi.smul_apply,
     iteratedDerivWithin_cexp_aux k n p isOpen_upperHalfPlaneSet (hK hz), smul_eq_mul,
