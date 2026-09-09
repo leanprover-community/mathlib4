@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
 public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
-public import Mathlib.Data.Finite.Sum
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -57,7 +57,6 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :

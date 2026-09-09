@@ -34,9 +34,9 @@ universe u v
 
 open Function Set Cardinal Module Submodule LinearMap
 
-variable {R} {M M₁ M₂ M₃ : Type u} {M' : Type v} [Ring R]
-variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M']
-variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M']
+variable {R} {M M₁ : Type u} {M' : Type v} [Ring R]
+variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M']
+variable [Module R M] [Module R M₁] [Module R M']
 
 /--
 `HasRankNullity.{u}` is a class of rings satisfying
@@ -187,7 +187,6 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [IsDomain R] [StrongRankCon
   rw [this] at hy
   exact ⟨y, hy⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     (h : Module.rank R N < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by

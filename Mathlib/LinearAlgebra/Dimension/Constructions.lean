@@ -39,7 +39,7 @@ noncomputable section
 universe u u' v v' u₁' w w'
 
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
-variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
+variable {ι : Type w} {η : Type u₁'} {φ : η → Type*}
 
 open Cardinal DirectSum Function Module Set Submodule
 
@@ -48,7 +48,6 @@ section Quotient
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.sumElim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
@@ -602,7 +601,6 @@ theorem sumQuot_repr_left (i : m) :
     (sumQuot bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
   rw [← Module.Basis.apply_eq_iff, sumQuot_inl]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sumQuot_repr_inl (w : W) (i : m) :
     (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
   classical

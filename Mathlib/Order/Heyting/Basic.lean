@@ -113,7 +113,6 @@ class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot
   /-- `aᶜ` is defined as `a ⇨ ⊥` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
-set_option linter.translate.warnInvalid false in
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `(· \ a)` is left adjoint to `(· ⊔ a)`. -/
 @[to_dual]
@@ -745,7 +744,7 @@ end HeytingAlgebra
 
 section CoheytingAlgebra
 
-variable [CoheytingAlgebra α] {a b : α}
+variable [CoheytingAlgebra α] {a : α}
 
 @[to_dual existing]
 instance Prod.instCoheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × β) where

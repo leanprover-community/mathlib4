@@ -178,6 +178,9 @@ theorem Topology.IsOpenEmbedding.locallyPathConnectedSpace {e : Y → X} (he : I
 alias Topology.IsOpenEmbedding.locPathConnectedSpace :=
   Topology.IsOpenEmbedding.locallyPathConnectedSpace
 
+theorem Homeomorph.locallyPathConnectedSpace (h : X ≃ₜ Y) : LocallyPathConnectedSpace Y :=
+  h.symm.isOpenEmbedding.locallyPathConnectedSpace
+
 theorem IsOpen.locallyPathConnectedSpace {U : Set X} (h : IsOpen U) : LocallyPathConnectedSpace U :=
   h.isOpenEmbedding_subtypeVal.locallyPathConnectedSpace
 

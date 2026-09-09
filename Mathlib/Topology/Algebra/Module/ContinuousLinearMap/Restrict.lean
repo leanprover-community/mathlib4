@@ -195,7 +195,7 @@ end Restrict
 
 section
 
-variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
+variable {R₁ R₂ : Type*} [Ring R₁] [Ring R₂]
   {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
   {M₁ M₂ : Type*}
   [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]

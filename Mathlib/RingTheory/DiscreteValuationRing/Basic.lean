@@ -364,8 +364,7 @@ See `idealOrderIsoENat` for a precise classification of ideals in a DVR. -/
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
   have gen_ne_zero : generator s ≠ 0 := by
-    rw [Ne, ← eq_bot_iff_generator_eq_zero]
-    assumption
+    rwa [Ne, ← eq_bot_iff_generator_eq_zero]
   rcases associated_pow_irreducible gen_ne_zero hirr with ⟨n, u, hnu⟩
   use n
   have : span _ = _ := Ideal.span_singleton_generator s
@@ -508,7 +507,6 @@ lemma addVal_eq_iff_associated (x y : R) :
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The ideals of a discrete valuation ring are exactly the powers of the maximal ideal. -/
 @[simps apply]
 noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
@@ -547,7 +545,6 @@ theorem idealOrderIsoENat_symm_apply_coe_of_irreducible (n : ℕ) {ϖ : R} (hϖ 
     (idealOrderIsoENat R).symm n = Ideal.span {ϖ ^ n} := by
   rw [idealOrderIsoENat_symm_apply_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n) = n := by
   simpa only [Order.coheight_toDual, Order.height_enat] using!
     Order.coheight_orderIso (idealOrderIsoENat R).symm (.toDual n)
@@ -618,7 +615,7 @@ variable (R) in
 /-- A noncomputable Euclidean domain structure on a discrete valuation ring, where the GCD algorithm
 only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
 step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
-See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
+See `EuclideanDomain.instIsPrincipalIdealRing` for EuclideanDomain ⇒ PID. -/
 @[instance_reducible]
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient

@@ -120,7 +120,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       intro x
       specialize this x.2
       simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] at this
-      peel this with n hn
+      gconvert this with n hn
       ext
       simp only [ZeroMemClass.coe_zero, ← hn]; clear hn
       induction n <;> simp_all [pow_succ']
@@ -232,7 +232,6 @@ decreasing_by
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
 

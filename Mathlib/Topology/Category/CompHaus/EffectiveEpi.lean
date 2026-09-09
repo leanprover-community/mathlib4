@@ -53,7 +53,6 @@ instance : Preregular CompHaus :=
 
 example : Precoherent CompHaus.{u} := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae

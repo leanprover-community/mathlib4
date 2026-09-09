@@ -368,7 +368,7 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S �
 
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
     -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
-    (map f S).toSubmodule = Submodule.map (LinearMapClass.linearMap f) S.toSubmodule :=
+    (map f S).toSubmodule = Submodule.map (LinearMap.ofClass f) S.toSubmodule :=
   SetLike.coe_injective rfl
 
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
@@ -446,7 +446,7 @@ end Submodule
 
 namespace NonUnitalAlgHom
 
-variable {F : Type v'} {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
+variable {F : Type v'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [FunLike F A B] [NonUnitalAlgHomClass F R A B]
@@ -1031,7 +1031,6 @@ variable [Nonempty ι] {K : ι → NonUnitalSubalgebra R A} {dir : Directed (· 
   {f : ∀ i, K i →ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalSubalgebra R A} {hT : T = iSup K}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
@@ -1046,7 +1045,6 @@ theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
   ext
   simp only [NonUnitalAlgHom.comp_apply, iSupLift_inclusion]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
@@ -1054,7 +1052,6 @@ theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
   dsimp [iSupLift]
   apply Set.iUnionLift_mk
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   subst hT
@@ -1132,6 +1129,24 @@ variable {R A}
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
+theorem map_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B]
+    [SMulCommClass R B B] [FunLike F A B] [NonUnitalAlgHomClass F R A B] {f : F}
+    (hf : Function.Surjective f) : map f (center R A) ≤ center R B :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B]
+    [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B] [NonUnitalAlgHomClass F R A B]
+    {f : F} (hf : Function.Injective f) : comap f (center R B) ≤ center R A :=
+  Set.preimage_center_subset hf
+
+@[simp]
+-- TODO: change hypothesis to `AlgEquivClass` when `AlgEquiv` becomes non-unital.
+theorem map_center_eq {B F} [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B]
+    [SMulCommClass R B B] [EquivLike F A B] [NonUnitalAlgHomClass F R A B] (f : F) :
+    map f (center R A) = center R B :=
+  let : MulEquivClass F A B := { map_mul := MulHomClass.map_mul }
+  SetLike.coe_injective (Set.image_center_eq f)
+
 end Center
 
 section Centralizer
@@ -1198,7 +1213,7 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
 
 variable (R) in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is commutative. -/
-theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+theorem isMulCommutative_adjoin {s : Set A} (hcomm : s.Pairwise Commute) :
     IsMulCommutative (adjoin R s) :=
   have := adjoin_le_centralizer_centralizer R s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -1216,14 +1231,14 @@ semiring.
 
 See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     NonUnitalCommSemiring (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
   inferInstance
 
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
-  isMulCommutative_adjoin R fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_adjoin R fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
@@ -1233,7 +1248,7 @@ See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
-    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (adjoin R s) :=
+    (hcomm : s.Pairwise Commute) : NonUnitalCommRing (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
   inferInstance
 

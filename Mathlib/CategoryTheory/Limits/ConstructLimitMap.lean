@@ -72,7 +72,6 @@ variable [IsCofiltered I']
 end ConstructLimitMap
 
 open ConstructLimitMap in
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism `f` between cofiltered limits, where every object of the target diagram is
 presentable relative to the source diagram, is initially induced by a natural transformation of
 diagrams. -/
@@ -96,7 +95,6 @@ lemma Limits.exists_eq_isLimitMap_of_preservesColimit_yoneda
   exact (Under.w A.hom).symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism `f` between filtered colimits, where every object of the source diagram is
 presentable relative to the target diagram, is finally induced by a natural transformation of
 diagrams.is induced by a natural transformation of diagrams. -/
