@@ -5739,7 +5739,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Quotient
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
-import Mathlib.MeasureTheory.Measure.Hausdorff
+public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.MeasureTheory.Measure.IntegralCharFun
 public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
