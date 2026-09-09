@@ -512,7 +512,6 @@ theorem sSupIndep.disjoint_sSup_sSup [IsModularLattice α] {s t u : Set α} (hs 
   rw [← biSup_preimage (hsub hts), ← biSup_preimage (hsub hus)]
   exact (sSupIndep_iff s |>.mp hs).disjoint_biSup_biSup (hdisj.preimage _)
 
-end
 lemma IsAtom.isCompactElement (ha : IsAtom a) : IsCompactElement a := by
   by_contra h
   refine ha.1 ?_
