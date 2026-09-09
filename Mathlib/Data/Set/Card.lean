@@ -164,9 +164,6 @@ theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
 theorem finite_of_encard_le_coe {k : ℕ} (h : s.encard ≤ k) : s.Finite := by
   rw [← encard_lt_top_iff]; exact h.trans_lt (WithTop.coe_lt_top _)
 
-theorem finite_of_encard_lt_coe {k : ℕ} (h : s.encard < k) : s.Finite :=
-  finite_of_encard_le_coe h.le
-
 theorem finite_of_encard_eq_coe {k : ℕ} (h : s.encard = k) : s.Finite :=
   finite_of_encard_le_coe h.le
 
