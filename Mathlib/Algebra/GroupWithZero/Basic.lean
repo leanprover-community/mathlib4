@@ -540,3 +540,31 @@ lemma div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   · rw [sq, mul_assoc, mul_div_cancel_left₀ _ ha]
 
 end CommGroupWithZero
+
+section IsReduced
+
+variable {R : Type*} [MonoidWithZero R] [IsReduced R]
+
+variable {a b : R}
+
+/-- In a reduced monoid, annihilation is symmetric. -/
+theorem mul_eq_zero_comm_of_reduced (h : a * b = 0) : b * a = 0 := by
+  refine IsReduced.eq_zero _ ⟨2, ?_⟩
+  have h2 : (b * a) ^ 2 = b * (a * b) * a := by simp [pow_two, mul_assoc]
+  rw [h2, h]
+  simp
+
+/-- A reduced monoid is semicommutative: `a * b = 0` implies `a * r * b = 0` for all `r`. -/
+theorem mul_mid_eq_zero_of_reduced (h : a * b = 0) (r : R) : a * r * b = 0 := by
+  have hba : b * a = 0 := mul_eq_zero_comm_of_reduced h
+  refine IsReduced.eq_zero _ ⟨2, ?_⟩
+  have h2 : (a * r * b) ^ 2 = a * r * (b * a) * (r * b) := by simp [pow_two, mul_assoc]
+  simp [h2, hba]
+
+/-- In a reduced monoid, `a * b * b = 0` implies `a * b = 0`. -/
+theorem mul_eq_zero_of_mul_sq_eq_zero_of_reduced (h : a * b * b = 0) : a * b = 0 := by
+  have h2 : b * (a * b) = 0 := mul_eq_zero_comm_of_reduced (a := a * b) (b := b) h
+  refine IsReduced.eq_zero _ ⟨2, ?_⟩
+  simp [pow_two, mul_assoc, h2]
+
+end IsReduced

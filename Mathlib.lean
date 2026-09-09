@@ -6910,7 +6910,6 @@ public import Mathlib.RingTheory.IsAdjoinRoot
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Defs
 public import Mathlib.RingTheory.IsPrimary
-public import Mathlib.RingTheory.IsReduced
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.Jacobson.Ideal
