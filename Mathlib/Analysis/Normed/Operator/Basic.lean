@@ -66,7 +66,7 @@ theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 
 theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
     (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_coe]
+  rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_ofClass]
   simp_rw [← LinearMap.coe_range, Set.subset_def, SetLike.mem_coe] at h ⊢
   intro _ _
   rw [← Submodule.add_mem_iff_left (f : E →ₛₗ[σ₁₂] F).range (h _ <| mem_ball_self hr)]
