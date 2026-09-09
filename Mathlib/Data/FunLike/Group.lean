@@ -93,14 +93,14 @@ variable [Mul F]
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` is a semigroup if `β` is a semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is an additive semigroup
 if `β` is an additive semigroup. -/]
-protected abbrev semigroup [Semigroup β] [IsMulApply F α β] : Semigroup F :=
+protected instance semigroup [Semigroup β] [IsMulApply F α β] : Semigroup F :=
   DFunLike.coe_injective.semigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` is a commutative semigroup if `β` is a
 commutative semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a commatative additive
 semigroup if `β` is a commatative additive semigroup. -/]
-protected abbrev commSemigroup [CommSemigroup β] [IsMulApply F α β] :
+protected instance commSemigroup [CommSemigroup β] [IsMulApply F α β] :
     CommSemigroup F :=
   DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
@@ -108,7 +108,7 @@ protected abbrev commSemigroup [CommSemigroup β] [IsMulApply F α β] :
 `β` has left cancellative multiplication. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` has left cancellative
 addition if `β` has left cancellative addition. -/]
-protected theorem isLeftCancelMul [Mul β] [IsLeftCancelMul β] [IsMulApply F α β] :
+protected instance isLeftCancelMul [Mul β] [IsLeftCancelMul β] [IsMulApply F α β] :
     IsLeftCancelMul F :=
   DFunLike.coe_injective.isLeftCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
@@ -116,7 +116,7 @@ protected theorem isLeftCancelMul [Mul β] [IsLeftCancelMul β] [IsMulApply F α
 `β` has right cancellative multiplication. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` has right cancellative
 addition if `β` has right cancellative addition. -/]
-protected theorem isRightCancelMul [Mul β] [IsRightCancelMul β] [IsMulApply F α β] :
+protected instance isRightCancelMul [Mul β] [IsRightCancelMul β] [IsMulApply F α β] :
     IsRightCancelMul F :=
   DFunLike.coe_injective.isRightCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
@@ -124,7 +124,7 @@ protected theorem isRightCancelMul [Mul β] [IsRightCancelMul β] [IsMulApply F 
 `β` has right multiplication. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` has right
 addition if `β` has cancellative addition. -/]
-protected theorem isCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
+protected instance isCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
     IsCancelMul F :=
   DFunLike.coe_injective.isCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
@@ -132,7 +132,7 @@ protected theorem isCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
 left cancel semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a left cancel additive
 semigroup if `β` is a left cancel additive semigroup. -/]
-protected abbrev leftCancelSemigroup [LeftCancelSemigroup β] [IsMulApply F α β] :
+protected instance leftCancelSemigroup [LeftCancelSemigroup β] [IsMulApply F α β] :
     LeftCancelSemigroup F :=
   DFunLike.coe_injective.leftCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
@@ -140,7 +140,7 @@ protected abbrev leftCancelSemigroup [LeftCancelSemigroup β] [IsMulApply F α �
 right cancel semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a right cancel additive
 semigroup if `β` is a right cancel additive semigroup. -/]
-protected abbrev rightCancelSemigroup [RightCancelSemigroup β] [IsMulApply F α β] :
+protected instance rightCancelSemigroup [RightCancelSemigroup β] [IsMulApply F α β] :
     RightCancelSemigroup F :=
   DFunLike.coe_injective.rightCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
@@ -149,7 +149,7 @@ variable [One F]
 /-- A `FunLike` type with `1` and `*` is `MulOneClass` if `β` is a `MulOneClass`. -/
 @[to_additive /-- A `FunLike` type with `0` and `+` is `AddZeroClass` if `β` is a
 `AddZeroClass`. -/]
-protected abbrev mulOneClass [MulOneClass β] [IsOneApply F α β] [IsMulApply F α β] :
+protected instance mulOneClass [MulOneClass β] [IsOneApply F α β] [IsMulApply F α β] :
     MulOneClass F :=
   DFunLike.coe_injective.mulOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
 
@@ -159,7 +159,7 @@ variable [Pow F ℕ]
 is a monoid if `β` is a monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is an additive monoid if `β` is an additive monoid. -/]
-protected abbrev monoid [Monoid β] [IsOneApply F α β] [IsMulApply F α β] [IsPowApply ℕ F α β] :
+protected instance monoid [Monoid β] [IsOneApply F α β] [IsMulApply F α β] [IsPowApply ℕ F α β] :
     Monoid F :=
   DFunLike.coe_injective.monoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
@@ -167,7 +167,7 @@ protected abbrev monoid [Monoid β] [IsOneApply F α β] [IsMulApply F α β] [I
 is a left cancel monoid if `β` is a left cancel monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a left cancel additive monoid if `β` is a left cancel additive monoid. -/]
-protected abbrev leftCancelMonoid [LeftCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance leftCancelMonoid [LeftCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsPowApply ℕ F α β] : LeftCancelMonoid F :=
   DFunLike.coe_injective.leftCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
@@ -176,7 +176,7 @@ is a right cancel monoid if `β` is a right cancel monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a right cancel additive monoid if `β` is a right cancel
 additive monoid. -/]
-protected abbrev rightCancelMonoid [RightCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance rightCancelMonoid [RightCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsPowApply ℕ F α β] : RightCancelMonoid F :=
   DFunLike.coe_injective.rightCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
@@ -184,7 +184,7 @@ protected abbrev rightCancelMonoid [RightCancelMonoid β] [IsOneApply F α β] [
 is a cancel monoid if `β` is a cancel monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a cancel additive monoid if `β` is a cancel additive monoid. -/]
-protected abbrev cancelMonoid [CancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance cancelMonoid [CancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsPowApply ℕ F α β] : CancelMonoid F :=
   DFunLike.coe_injective.cancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
@@ -192,7 +192,7 @@ protected abbrev cancelMonoid [CancelMonoid β] [IsOneApply F α β] [IsMulApply
 is a commutative monoid if `β` is a commutative monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a commutative additive monoid if `β` is a commutative additive monoid. -/]
-protected abbrev commMonoid [CommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance commMonoid [CommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsPowApply ℕ F α β] : CommMonoid F :=
   DFunLike.coe_injective.commMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
@@ -201,7 +201,7 @@ is a cancel commutative monoid if `β` is a cancel commutative monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a cancel commutative additive monoid if `β` is a cancel commutative
 additive monoid. -/]
-protected abbrev cancelCommMonoid [CancelCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance cancelCommMonoid [CancelCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsPowApply ℕ F α β] : CancelCommMonoid F :=
   DFunLike.coe_injective.cancelCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
@@ -211,13 +211,13 @@ variable [Inv F]
 if `β` is an involutive inversion. -/
 @[to_additive /-- A `FunLike` type with negation that satisfies `(- f) x = - (f x)` is an involutive
 negation if `β` is an involutive negation. -/]
-protected abbrev involutiveInv [InvolutiveInv β] [IsInvApply F α β] : InvolutiveInv F :=
+protected instance involutiveInv [InvolutiveInv β] [IsInvApply F α β] : InvolutiveInv F :=
   DFunLike.coe_injective.involutiveInv (fun (f : F) ↦ (f : α → β)) coe_inv
 
 /-- A `FunLike` type with `1` and inverse is an `InvOneClass` if `β` is an `InvOneClass`. -/
 @[to_additive /-- A `FunLike` type with `0` and negation is a `NegZeroClass` if `β` is a
 `NegZeroClass`. -/]
-protected abbrev invOneClass [InvOneClass β] [IsOneApply F α β] [IsInvApply F α β] :
+protected instance invOneClass [InvOneClass β] [IsOneApply F α β] [IsInvApply F α β] :
     InvOneClass F :=
   DFunLike.coe_injective.invOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_inv
 
@@ -225,7 +225,7 @@ variable [Div F] [Pow F ℤ]
 
 /-- A `FunLike` type is a `DivInvMonoid` if `β` is a `DivInvMonoid`. -/
 @[to_additive subNegMonoid /-- A `FunLike` type is a `SubNegMonoid` if `β` is a `SubNegMonoid`. -/]
-protected abbrev divInvMonoid [DivInvMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance divInvMonoid [DivInvMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     DivInvMonoid F :=
   DFunLike.coe_injective.divInvMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
@@ -234,7 +234,7 @@ protected abbrev divInvMonoid [DivInvMonoid β] [IsOneApply F α β] [IsMulApply
 /-- A `FunLike` type is a `DivInvOneMonoid` if `β` is a `DivInvOneMonoid`. -/
 @[to_additive
 /-- A `FunLike` type is a `SubNegOneMonoid` if `β` is a `SubNegOneMonoid`. -/]
-protected abbrev divInvOneMonoid [DivInvOneMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance divInvOneMonoid [DivInvOneMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     DivInvOneMonoid F :=
   DFunLike.coe_injective.divInvOneMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
@@ -242,7 +242,7 @@ protected abbrev divInvOneMonoid [DivInvOneMonoid β] [IsOneApply F α β] [IsMu
 
 /-- A `FunLike` type is a division monoid if `β` is a division monoid. -/
 @[to_additive /-- A `FunLike` type is a subtraction monoid if `β` is a subtraction monoid. -/]
-protected abbrev divisionMonoid [DivisionMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance divisionMonoid [DivisionMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     DivisionMonoid F :=
   DFunLike.coe_injective.divisionMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
@@ -251,7 +251,7 @@ protected abbrev divisionMonoid [DivisionMonoid β] [IsOneApply F α β] [IsMulA
 /-- A `FunLike` type is a division commutative monoid if `β` is a division commutative monoid. -/
 @[to_additive subtractionCommMonoid /-- A `FunLike` type is a subtraction commutative monoid if `β`
 is a subtraction commutative monoid. -/]
-protected abbrev divisionCommMonoid [DivisionCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected instance divisionCommMonoid [DivisionCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     DivisionCommMonoid F :=
   DFunLike.coe_injective.divisionCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv
@@ -259,7 +259,7 @@ protected abbrev divisionCommMonoid [DivisionCommMonoid β] [IsOneApply F α β]
 
 /-- A `FunLike` type is a group if `β` is a group. -/
 @[to_additive /-- A `FunLike` type is an additive group if `β` is an additive group. -/]
-protected abbrev group [Group β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
+protected instance group [Group β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
     [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     Group F :=
   DFunLike.coe_injective.group (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div coe_pow
@@ -268,7 +268,7 @@ protected abbrev group [Group β] [IsOneApply F α β] [IsMulApply F α β] [IsI
 /-- A `FunLike` type is a commutative group if `β` is a commutative group. -/
 @[to_additive /-- A `FunLike` type is an additive commutative group if `β` is an additive
 commutative group. -/]
-protected abbrev commGroup [CommGroup β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
+protected instance commGroup [CommGroup β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
     [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     CommGroup F :=
   DFunLike.coe_injective.commGroup (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
@@ -281,7 +281,7 @@ section TorsionFree
 /-- A type `F` that satisfies `FunLike F α β` is torsion-free if `β` is torsion-free. -/
 @[to_additive /-- A type `F` that satisfies `FunLike F α β` is torsion-free if `β` is
 torsion-free. -/]
-protected theorem isMulTorsionFree [Monoid β] [Monoid F] [IsOneApply F α β] [IsMulApply F α β]
+protected instance isMulTorsionFree [Monoid β] [Monoid F] [IsOneApply F α β] [IsMulApply F α β]
     [IsMulTorsionFree β] : IsMulTorsionFree F :=
   DFunLike.coe_injective.isMulTorsionFree (coeMonoidHom F α β)
 
