@@ -811,7 +811,12 @@ instance Prop.instCompleteLattice : CompleteLattice Prop where
   sInf s := ∀ a ∈ s, a
   isGLB_sInf _ := ⟨fun a h p ↦ p a h, fun _ h p _ hb ↦ h hb p⟩
 
-noncomputable instance Prop.instCompleteLinearOrder : CompleteLinearOrder Prop where
+/-- The order on `Prop` is a `CompleteLinearOrder`.
+
+This is not an instance since `CompleteLinearOrder` includes decidability instances, which we want
+to avoid for `Prop`. -/
+@[expose, instance_reducible]
+noncomputable def Prop.completeLinearOrder : CompleteLinearOrder Prop where
   __ := Prop.instCompleteLattice
   __ := Prop.linearOrder
   __ := BooleanAlgebra.toBiheytingAlgebra

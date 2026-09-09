@@ -59,32 +59,11 @@ variable {α : Type*}
 section PartialOrder
 variable [PartialOrder α]
 
-namespace UpperSet
-variable {s : UpperSet α}
-
-@[simp] lemma infIrred_Ici (a : α) : InfIrred (Ici a) := by
-  refine ⟨fun h ↦ Ici_ne_top h.eq_top, fun s t hst ↦ ?_⟩
-  have := mem_Ici_iff.2 (le_refl a)
-  rw [← hst] at this
-  exact this.imp (fun ha ↦ le_antisymm (le_Ici.2 ha) <| hst.ge.trans inf_le_left) fun ha ↦
-      le_antisymm (le_Ici.2 ha) <| hst.ge.trans inf_le_right
-
-variable [Finite α]
-
-@[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
-  refine ⟨fun hs ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal (coe_nonempty.2 hs.ne_top)
-    exact ⟨a, (hs.2 <| erase_inf_Ici ha fun b hb ↦ le_imp_eq_iff_le_imp_ge.2 <| has hb).resolve_left
-      (lt_erase.2 ha).ne'⟩
-  · rintro ⟨a, rfl⟩
-    exact infIrred_Ici _
-
-end UpperSet
-
 namespace LowerSet
 variable {s : LowerSet α}
 
-@[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
+@[to_dual (attr := simp)]
+lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
   refine ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ ?_⟩
   have := mem_Iic_iff.2 (le_refl a)
   rw [← hst] at this
@@ -93,7 +72,8 @@ variable {s : LowerSet α}
 
 variable [Finite α]
 
-@[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
+@[to_dual (attr := simp)]
+lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
   refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 <| erase_sup_Iic ha fun b hb ↦
@@ -105,31 +85,23 @@ end LowerSet
 
 namespace OrderEmbedding
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Birkhoff Embedding** of a finite partial order as sup-irreducible elements in its
 lattice of lower sets. -/
+@[to_dual
+/-- The **Birkhoff Embedding** of a finite partial order as inf-irreducible elements in its
+lattice of lower sets. -/]
 def supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} where
   toFun a := ⟨Iic a, supIrred_Iic _⟩
-  inj' _ := by simp
+  inj' := by simp [Injective]
   map_rel_iff' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
-/-- The **Birkhoff Embedding** of a finite partial order as inf-irreducible elements in its
-lattice of lower sets. -/
-def infIrredUpperSet : α ↪o {s : UpperSet α // InfIrred s} where
-  toFun a := ⟨Ici a, infIrred_Ici _⟩
-  inj' _ := by simp
-  map_rel_iff' := by simp
-
-@[simp] lemma supIrredLowerSet_apply (a : α) : supIrredLowerSet a = ⟨Iic a, supIrred_Iic _⟩ := rfl
-@[simp] lemma infIrredUpperSet_apply (a : α) : infIrredUpperSet a = ⟨Ici a, infIrred_Ici _⟩ := rfl
+@[to_dual (attr := simp)]
+lemma supIrredLowerSet_apply (a : α) : supIrredLowerSet a = ⟨Iic a, supIrred_Iic _⟩ := rfl
 
 variable [Finite α]
 
+@[to_dual]
 lemma supIrredLowerSet_surjective : Surjective (supIrredLowerSet (α := α)) := by
-  aesop (add simp Surjective)
-
-lemma infIrredUpperSet_surjective : Surjective (infIrredUpperSet (α := α)) := by
   aesop (add simp Surjective)
 
 end OrderEmbedding
@@ -139,16 +111,14 @@ variable [Finite α]
 
 /-- **Birkhoff Representation for partial orders.** Any partial order is isomorphic
 to the partial order of sup-irreducible elements in its lattice of lower sets. -/
+@[to_dual
+/-- **Birkhoff Representation for partial orders.** Any partial order is isomorphic
+to the partial order of inf-irreducible elements in its lattice of upper sets. -/]
 noncomputable def supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
   RelIso.ofSurjective _ OrderEmbedding.supIrredLowerSet_surjective
 
-/-- **Birkhoff Representation for partial orders.** Any partial order is isomorphic
-to the partial order of inf-irreducible elements in its lattice of upper sets. -/
-noncomputable def infIrredUpperSet : α ≃o {s : UpperSet α // InfIrred s} :=
-  RelIso.ofSurjective _ OrderEmbedding.infIrredUpperSet_surjective
-
-@[simp] lemma supIrredLowerSet_apply (a : α) : supIrredLowerSet a = ⟨Iic a, supIrred_Iic _⟩ := rfl
-@[simp] lemma infIrredUpperSet_apply (a : α) : infIrredUpperSet a = ⟨Ici a, infIrred_Ici _⟩ := rfl
+@[to_dual (attr := simp)]
+lemma supIrredLowerSet_apply (a : α) : supIrredLowerSet a = ⟨Iic a, supIrred_Iic _⟩ := rfl
 
 end OrderIso
 end PartialOrder
@@ -157,8 +127,8 @@ namespace OrderIso
 section SemilatticeSup
 variable [SemilatticeSup α] [OrderBot α] [Finite α]
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma supIrredLowerSet_symm_apply (s : {s : LowerSet α // SupIrred s}) [Fintype s] :
+@[to_dual (attr := simp)]
+lemma supIrredLowerSet_symm_apply (s : {s : LowerSet α // SupIrred s}) [Fintype s] :
     supIrredLowerSet.symm s = (s.1 : Set α).toFinset.sup id := by
   classical
   obtain ⟨s, hs⟩ := s
@@ -168,21 +138,6 @@ set_option backward.isDefEq.respectTransparency false in
   simp [symm_apply_eq]
 
 end SemilatticeSup
-
-section SemilatticeInf
-variable [SemilatticeInf α] [OrderTop α] [Finite α]
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma infIrredUpperSet_symm_apply (s : {s : UpperSet α // InfIrred s}) [Fintype s] :
-    infIrredUpperSet.symm s = (s.1 : Set α).toFinset.inf id := by
-  classical
-  obtain ⟨s, hs⟩ := s
-  obtain ⟨a, rfl⟩ := infIrred_iff_of_finite.1 hs
-  cases nonempty_fintype α
-  have : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
-  simp [symm_apply_eq]
-
-end SemilatticeInf
 end OrderIso
 
 section DistribLattice

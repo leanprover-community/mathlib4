@@ -112,7 +112,7 @@ lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) 
   ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, (⟨·.toWalk, by simp⟩)⟩
 
 theorem eq_of_length_le_one {p q : G.Walk u v} (hp : p.length ≤ 1) (hq : q.length ≤ 1) : p = q := by
-  grind [cases Walk, length_cons, Adj.ne]
+  grind [cases Walk, length_cons]
 
 /-- The `support` of a walk is the list of vertices it visits in order. -/
 def support {u v : V} : G.Walk u v → List V
@@ -431,6 +431,9 @@ lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
   match p with
   | nil => Nil.nil
   | cons h w => Unique.eq_default G ▸ h |>.elim
+
+theorem nil_of_bot (p : Walk ⊥ u v) : p.Nil := by
+  cases p <;> [simp; simpa]
 
 @[simp]
 theorem exists_nil_iff {u v : V} : (∃ p : G.Walk u v, p.Nil) ↔ u = v :=
