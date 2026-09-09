@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.RingTheory.Nilpotent.Defs
 
+import Mathlib.Algebra.Polynomial.Degree.Defs
+import Mathlib.Algebra.Polynomial.Degree.Operations
+
 /-!
 # Instance `IsReduced R[X]`
 If `R` is reduced, so is `R[X].
@@ -71,26 +74,11 @@ theorem coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) :
       grind [IsReduced.mul_eq_zero_of_mul_sq_eq_zero]
 
 instance : IsReduced R[X] := by
-  have key : ∀ q : R[X], q * q = 0 → q = 0 := by
-    intro q hq
-    ext i
-    have h := q.coeff_mul_coeff_eq_zero_of_isReduced q hq i i
-    simpa using IsReduced.eq_zero _ ⟨2, by rw [pow_two]; exact h⟩
   constructor
   rintro p ⟨n, hn⟩
-  induction n using Nat.strong_induction_on with
-  | _ n IH =>
-    match n, hn with
-    | 0, hn =>
-      have : (1 : R[X]) = 0 := by simpa using hn
-      rw [← mul_one p, this, mul_zero]
-    | 1, hn => simpa using hn
-    | (n + 2), hn =>
-      refine IH (n + 1) (by lia) (key _ ?_)
-      have : p ^ (n + 1) * p ^ (n + 1) = p ^ (n + 2) * p ^ n := by
-        rw [← pow_add, ← pow_add]
-        lia
-      lia
+  contrapose! hn
+  rw [← Polynomial.leadingCoeff_ne_zero] at *
+  grind [eq_zero_of_pow_eq_zero, leadingCoeff_pow']
 
 end Polynomial
 
