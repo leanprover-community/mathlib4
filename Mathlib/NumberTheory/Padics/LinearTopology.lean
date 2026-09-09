@@ -35,11 +35,12 @@ open ValuativeRel
 
 variable {p : ℕ} [Fact p.Prime]
 
-instance : IsIntegerSMul ℤ_[p] ℚ_[p] := sorry
+instance : IsIntegerRing ℤ_[p] :=
+  .of_forall_smul_one_vle_one fun x ↦ by
+    rw [smul_eq_mul, mul_one,
+      Valuation.vle_one_iff (Padic.mulValuation.comap (algebraMap ℤ_[p] ℚ_[p]))]
+    exact Padic.mulValuation_le_one_iff_norm_le_one.mpr x.2
 
--- instance : IsIntegerSMul ℤ_[p] ℤ_[p] := sorry
+instance : IsLinearTopology ℤ_[p] ℤ_[p] := inferInstance
 
-
-instance : IsLinearTopology ℤ_[p] ℤ_[p] := sorry
-
-instance : IsLinearTopology ℤ_[p] ℚ_[p] := sorry
+instance : IsLinearTopology ℤ_[p] ℚ_[p] := inferInstance
