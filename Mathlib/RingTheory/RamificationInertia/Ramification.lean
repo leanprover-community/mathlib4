@@ -6,11 +6,11 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.LocalRing.Length
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.LocalRing.ResidueField.Separable
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Ramification index
@@ -99,7 +99,7 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
 
 variable {q R} in
 theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
-    [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
+    [Algebra.HasSeparableResidueFieldsAt R S (q.under R)] :
     q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx_eq_one q R⟩
   rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
@@ -112,7 +112,7 @@ theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
   suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
   rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
-  exact ⟨Algebra.IsAlgebraic.isSeparable_of_perfectField, h⟩
+  exact ⟨inferInstance, h⟩
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one_iff :=
   ramificationIdx_eq_one_iff
@@ -277,3 +277,5 @@ theorem ramificationIdx_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMul
 end
 
 end Ideal
+
+#min_imports
