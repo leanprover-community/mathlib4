@@ -65,6 +65,13 @@ lemma inl_v_descShortComplex_f (i j : ℤ) (h : i + (-1) = j) :
     (inl S.f).v i j h ≫ (descShortComplex S).f j = 0 := by
   simp [descShortComplex]
 
+@[reassoc]
+lemma descShortComplex_comp_homOfDegreewiseSplit
+    (σ : ∀ (n : ℤ), (S.map (HomologicalComplex.eval C (up ℤ) n)).Splitting) :
+    mappingCone.descShortComplex S ≫ homOfDegreewiseSplit S σ =
+    (mappingCone.triangle S.f).mor₃ := by
+  sorry
+
 section
 
 variable (S₁ S₂ : ShortComplex (CochainComplex C ℤ)) (f : S₁ ⟶ S₂)
