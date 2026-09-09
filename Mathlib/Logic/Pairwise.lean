@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Set.Operations
 public import Mathlib.Data.Nat.Notation
 
 /-!
@@ -28,54 +28,69 @@ variable {α β ι : Type*} {r p : α → α → Prop}
 
 section Pairwise
 
+def Pairwise [Membership α β] (s : β) (r : α → α → Prop) :=
+  ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → r x y
+
 variable {f : ι → α} {s : Set α} {a b : α}
 
 /-- A relation `r` holds pairwise if `r i j` for all `i ≠ j`. -/
-def Pairwise (r : α → α → Prop) :=
-  ∀ ⦃i j⦄, i ≠ j → r i j
+def Pairwise' (r : α → α → Prop) :=
+  Pairwise (s := (Set.univ (α := α))) r
 
-theorem Pairwise.mono (hr : Pairwise r) (h : ∀ ⦃i j⦄, r i j → p i j) : Pairwise p :=
-  fun _i _j hij => h <| hr hij
+theorem pairwise'_iff : Pairwise' r ↔ ∀ ⦃i j⦄, i ≠ j → r i j := by
+  simp only [Pairwise', Pairwise]
+  grind
 
-protected theorem Pairwise.eq (h : Pairwise r) : ¬r a b → a = b :=
-  not_imp_comm.1 <| @h _ _
+theorem Pairwise.mono (hr : Pairwise s r) (h : ∀ ⦃i j⦄, r i j → p i j) : Pairwise s p := by
+  grind [Pairwise]
+
+theorem Pairwise'.mono (hr : Pairwise' r) (h : ∀ ⦃i j⦄, r i j → p i j) : Pairwise' p := by
+  simp only [Pairwise'] at *
+  exact hr.mono h
+
+protected theorem Pairwise'.eq (h : Pairwise' r) : ¬r a b → a = b := by
+  simp only [pairwise'_iff] at *
+  exact not_imp_comm.1 <| @h _ _
 
 @[simp]
-protected lemma Subsingleton.pairwise [Subsingleton α] : Pairwise r :=
-  fun _ _ h ↦ False.elim <| h.elim <| Subsingleton.elim _ _
+protected lemma Subsingleton.pairwise' [Subsingleton α] : Pairwise' r := by
+  simp only [pairwise'_iff] at *
+  exact fun _ _ h ↦ False.elim <| h.elim <| Subsingleton.elim _ _
 
-theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ ·) on f) :=
-  forall₂_congr fun _i _j => not_imp_not.symm
+theorem Function.injective_iff_pairwise'_ne : Injective f ↔ Pairwise' ((· ≠ ·) on f) := by
+  simp only [pairwise'_iff] at *
+  exact forall₂_congr fun _i _j => not_imp_not.symm
 
-alias ⟨Function.Injective.pairwise_ne, _⟩ := Function.injective_iff_pairwise_ne
+alias ⟨Function.Injective.pairwise_ne, _⟩ := Function.injective_iff_pairwise'_ne
 
-lemma Pairwise.comp_of_injective (hr : Pairwise r) {f : β → α} (hf : Injective f) :
-    Pairwise (r on f) :=
-  fun _ _ h ↦ hr <| hf.ne h
+lemma Pairwise'.comp_of_injective (hr : Pairwise' r) {f : β → α} (hf : Injective f) :
+    Pairwise' (r on f) := by
+  simp only [pairwise'_iff] at *
+  exact fun _ _ h ↦ hr <| hf.ne h
 
-lemma Pairwise.of_comp_of_surjective {f : β → α} (hr : Pairwise (r on f)) (hf : Surjective f) :
-    Pairwise r := hf.forall₂.2 fun _ _ h ↦ hr <| ne_of_apply_ne f h
+lemma Pairwise'.of_comp_of_surjective {f : β → α} (hr : Pairwise' (r on f)) (hf : Surjective f) :
+    Pairwise' r := by
+  simp only [pairwise'_iff] at *
+  exact hf.forall₂.2 fun _ _ h ↦ hr <| ne_of_apply_ne f h
 
 lemma Function.Bijective.pairwise_comp_iff {f : β → α} (hf : Bijective f) :
-    Pairwise (r on f) ↔ Pairwise r :=
+    Pairwise' (r on f) ↔ Pairwise' r :=
   ⟨fun hr ↦ hr.of_comp_of_surjective hf.surjective, fun hr ↦ hr.comp_of_injective hf.injective⟩
 
-theorem pairwise_fin_succ_iff {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} :
-    Pairwise R ↔
+theorem pairwise'_fin_succ_iff {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} :
+    Pairwise' R ↔
       (∀ i, R (Fin.succ i) 0) ∧ (∀ j, R 0 (Fin.succ j)) ∧
-      Pairwise fun i j => R (Fin.succ i) (Fin.succ j) where
-  mp h := ⟨
-    fun _ => h (Fin.succ_ne_zero _), fun _ => h (Fin.succ_ne_zero _).symm,
-    fun _i _j hij => h <| Fin.succ_inj.not.2 hij⟩
-  mpr
-  | ⟨hi, hj, h⟩ =>
-    Fin.cases
-      (Fin.cases nofun fun j _ => hj j)
+      Pairwise' fun i j => R (Fin.succ i) (Fin.succ j) := by
+  simp only [pairwise'_iff] at *
+  constructor
+  · grind
+  · intro ⟨hi, hj, h⟩
+    exact Fin.cases (Fin.cases nofun fun j _ => hj j)
       (fun i => Fin.cases (fun _ => hi i) fun _j hij => h (ne_of_apply_ne _ hij))
 
-theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [Std.Symm R] :
-    Pairwise R ↔ (∀ j, R 0 (Fin.succ j)) ∧ Pairwise fun i j => R (Fin.succ i) (Fin.succ j) := by
-  simp only [pairwise_fin_succ_iff, comm (b := 0) (r := R), and_self_left]
+theorem pairwise'_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [Std.Symm R] :
+    Pairwise' R ↔ (∀ j, R 0 (Fin.succ j)) ∧ Pairwise' fun i j => R (Fin.succ i) (Fin.succ j) := by
+  simp only [pairwise'_fin_succ_iff, comm (b := 0) (r := R), and_self_left]
 
 namespace Set
 
@@ -114,10 +129,14 @@ alias _root_.Std.Refl.set_pairwise_iff := pairwise_iff_of_refl
 alias _root_.Reflexive.set_pairwise_iff := pairwise_iff_of_refl
 
 theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
-    Pairwise (r on f) := fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)
+    Pairwise' (r on f) := by
+  simp only [pairwise'_iff]
+  exact fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)
 
 end Set
 
-theorem Pairwise.set_pairwise (h : Pairwise r) (s : Set α) : s.Pairwise r := fun _ _ _ _ w => h w
+theorem Pairwise'.set_pairwise (h : Pairwise' r) (s : Set α) : s.Pairwise r := by
+  simp only [Pairwise', Set.Pairwise] at *
+  grind [Pairwise]
 
 end Pairwise
