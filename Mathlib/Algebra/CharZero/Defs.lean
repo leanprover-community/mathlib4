@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Data.Int.Cast.Defs
-public import Mathlib.Logic.Basic
 
 /-!
 
@@ -27,7 +27,7 @@ from the natural numbers into it is injective.
 * Unify with `CharP` (possibly using an out-parameter)
 -/
 
-@[expose] public section
+public section
 
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)

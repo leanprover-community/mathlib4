@@ -89,7 +89,7 @@ theorem exists_nonempty_limit_obj_of_isColimit [IsFiltered K] {c : Cocone H} (hc
 
 end Interchange
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
     IsFiltered (CostructuredArrow yoneda (colimit F)) := by
   -- It suffices to show that for any functor `G : J ⥤ CostructuredArrow yoneda (colimit F)` with
@@ -137,7 +137,6 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
 
 end IndizationClosedUnderFilteredColimitsAux
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
     (F : I ⥤ Cᵒᵖ ⥤ Type v) (hF : ∀ i, IsIndObject (F.obj i)) : IsIndObject (colimit F) := by
   have : IsFiltered (CostructuredArrow yoneda (colimit F)) :=

@@ -58,14 +58,14 @@ lemma gammaSet_one_const (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a = gammaSet 1
 /-- For level `N = 1`, the gamma sets simplify to only a `gcd` condition. -/
 lemma gammaSet_one_eq (a : Fin 2 → ZMod 1) :
     gammaSet 1 r a = {v : Fin 2 → ℤ | (v 0).gcd (v 1) = r} := by
-  simp [gammaSet, Subsingleton.eq_zero]
+  simp [gammaSet, Subsingleton.eq_zero (α := Fin 2 → ZMod 1)]
 
 lemma gammaSet_one_mem_iff (v : Fin 2 → ℤ) : v ∈ gammaSet 1 r 0 ↔ (v 0).gcd (v 1) = r := by
-  simp [gammaSet, Subsingleton.eq_zero]
+  simp [gammaSet, Subsingleton.eq_zero (α := Fin 2 → ZMod 1)]
 
 /-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
 def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a ≃ gammaSet 1 r a' :=
-  Equiv.setCongr (gammaSet_one_const r a a')
+  Set.equivOfEq (gammaSet_one_const r a a')
 
 /-- The map from `Fin 2 → ℤ` sending `![a,b]` to `a.gcd b`. -/
 abbrev finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
@@ -191,7 +191,7 @@ theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z
   simp only [eisSummand, vecMul, vec2_dotProduct, denom, UpperHalfPlane.specialLinearGroup_apply]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : (u * ((a * z + b) / (c * z + d)) + v) ^ (-k) =
       (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
-    replace hc : z * c + d ≠ 0 := by convert hc using 1; ring
+    replace hc : z * c + d ≠ 0 := by convert! hc using 1; ring
     field_simp
     simp [div_zpow]
     ring_nf
@@ -221,12 +221,7 @@ def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
     simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
-@[deprecated (since := "2026-02-10")]
-noncomputable alias eisensteinSeries_SIF := eisensteinSeriesSIF
-
 lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
-
-@[deprecated (since := "2026-02-10")] alias eisensteinSeries_SIF_apply := eisensteinSeriesSIF_apply
 
 end EisensteinSeries

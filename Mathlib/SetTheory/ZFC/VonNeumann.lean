@@ -120,7 +120,7 @@ theorem vonNeumann_zero : V_ 0 = ∅ :=
 theorem vonNeumann_add_one (o : Ordinal) : V_ (o + 1) = powerset (V_ o) :=
   ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_add_one_iff]
 
--- TODO: deprecate
+@[deprecated vonNeumann_add_one (since := "2026-05-25")]
 theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
   vonNeumann_add_one o
 
@@ -140,10 +140,8 @@ lemma _root_.Ordinal.card_le_card_vonNeumann (o : Ordinal) : o.card ≤ card (V_
 open Cardinal in
 theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
   induction o using Ordinal.limitRecOn with
-  | zero =>
-    rw [vonNeumann_zero, card_empty, preBeth_zero]
-  | succ o ih =>
-    rw [vonNeumann_succ, card_powerset, ih, preBeth_succ]
+  | zero => simp
+  | add_one o ih => simp [ih]
   | limit o ho ih =>
     simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.2,
       vonNeumann_of_isSuccPrelimit ho.isSuccPrelimit]
@@ -157,7 +155,7 @@ theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
       by_contra! h
       refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
         (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_
-      rw [← card_powerset, ← vonNeumann_succ]
+      rw [← card_powerset, ← vonNeumann_add_one]
       refine le_ciSup bddAbove_of_small (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
       exact (ord_card_le _).trans_lt' (ord_strictMono h)
 

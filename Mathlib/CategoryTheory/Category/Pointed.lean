@@ -87,7 +87,7 @@ instance largeCategory : LargeCategory Pointed where
 
 instance (X Y : Pointed) : FunLike { f : X → Y // f X.point = Y.point } X Y where
   coe f := f
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 instance hasForget : ConcreteCategory Pointed fun X Y => { f : X → Y // f X.point = Y.point } where
   hom f := ⟨f.1, f.2⟩
@@ -116,7 +116,7 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun X Y =>
-        { toFun := fun f => TypeCat.ofHom (f.toFun ∘ Option.some)
+        { toFun := fun f => ↾(f.toFun ∘ Option.some)
           invFun := fun f => ⟨fun o => o.elim Y.point f, rfl⟩
           left_inv := fun f => by
             apply Pointed.Hom.ext

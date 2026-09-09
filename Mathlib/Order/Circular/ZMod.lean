@@ -15,7 +15,7 @@ public import Mathlib.Data.ZMod.Defs
 This file defines the circular order on `ZMod n`.
 -/
 
-@[expose] public section
+public section
 
 instance : CircularOrder ℤ := LinearOrder.toCircularOrder _
 

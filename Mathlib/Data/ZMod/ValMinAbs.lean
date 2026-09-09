@@ -59,7 +59,7 @@ lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val 
   · simp
   by_cases h : a.val ≤ n.succ / 2
   · dsimp [valMinAbs]
-    rw [if_pos h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm, Int.natCast_add,
+    rw [ite_eq_left h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm, Int.natCast_add,
       Nat.cast_one]
   apply iff_of_false _ (mt _ h)
   · intro he
@@ -70,8 +70,7 @@ lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val 
 
 lemma valMinAbs_mem_Ioc [NeZero n] (x : ZMod n) : x.valMinAbs * 2 ∈ Set.Ioc (-n : ℤ) n := by
   simp_rw [valMinAbs_def_pos, Nat.le_div_two_iff_mul_two_le]; split_ifs with h
-  · refine ⟨(neg_lt_zero.2 <| mod_cast NeZero.pos n).trans_le (mul_nonneg ?_ ?_), h⟩
-    exacts [Nat.cast_nonneg _, zero_le_two]
+  · exact ⟨(neg_lt_zero.2 <| mod_cast NeZero.pos n).trans_le (by positivity), h⟩
   · refine ⟨?_, le_trans (mul_nonpos_of_nonpos_of_nonneg ?_ zero_le_two) <| Nat.cast_nonneg _⟩
     · linarith only [h]
     · grind
@@ -104,7 +103,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma valMinAbs_zero : ∀ n, (0 : ZMod n).valMinAbs = 0
   | 0 => by simp only [valMinAbs_def_zero]
-  | n + 1 => by simp only [valMinAbs_def_pos, if_true, Int.ofNat_zero, zero_le, val_zero]
+  | n + 1 => by simp only [valMinAbs_def_pos, ite_true, Int.ofNat_zero, zero_le, val_zero]
 
 @[simp]
 lemma valMinAbs_eq_zero (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 :=

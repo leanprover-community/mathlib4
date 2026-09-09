@@ -65,6 +65,7 @@ theorem free_map_coe {α β : Type u} {f : α ⟶ β} (x : FreeAbelianGroup α) 
     (free.map f) x = f <$> x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for abelian groups.
 -/
@@ -104,7 +105,7 @@ instance : (free.{u}).PreservesMonomorphisms where
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
     · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
-      have : IsSplitMono f := IsSplitMono.mk' { retraction := TypeCat.ofHom g }
+      have : IsSplitMono f := IsSplitMono.mk' { retraction := ↾g }
       infer_instance
 
 end AddCommGrpCat
@@ -140,17 +141,17 @@ section Abelianization
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
 -/
 def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
-  obj G := CommGrpCat.of (Abelianization G)
+  obj G := ↧(Abelianization G)
   map f := CommGrpCat.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
   map_id := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
   map_comp := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
 
 /-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
@@ -176,7 +177,7 @@ end GrpCat
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def MonCat.units : MonCat.{u} ⥤ GrpCat.{u} where
-  obj R := GrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := GrpCat.ofHom <| Units.map f.hom
   map_id _ := GrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := GrpCat.ext fun _ => Units.ext rfl
@@ -199,7 +200,7 @@ instance : MonCat.units.{u}.IsRightAdjoint :=
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
-  obj R := CommGrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := CommGrpCat.ofHom <| Units.map f.hom
   map_id _ := CommGrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := CommGrpCat.ext fun _ => Units.ext rfl

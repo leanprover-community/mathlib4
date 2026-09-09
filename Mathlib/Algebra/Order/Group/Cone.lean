@@ -101,7 +101,7 @@ set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
 instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
   coe C := C.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]

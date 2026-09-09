@@ -25,28 +25,11 @@ This file develops the API for positive linear maps over C⋆-algebras.
   https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
 variable {A₁ A₂ B₁ B₂ : Type*}
-
-section CFC
-
-variable [NonUnitalRing A₁] [Module ℂ A₁] [SMulCommClass ℝ A₁ A₁] [IsScalarTower ℝ A₁ A₁]
-  [StarRing A₁] [TopologicalSpace A₁] [NonUnitalContinuousFunctionalCalculus ℝ A₁ IsSelfAdjoint]
-  [PartialOrder A₁] [StarOrderedRing A₁]
-
-variable [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂] [PartialOrder A₂] [StarOrderedRing A₂]
-
-@[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma map_isSelfAdjoint (f : A₁ →ₚ[ℂ] A₂) (a : A₁) (ha : IsSelfAdjoint a) :
-    IsSelfAdjoint (f a) := by
-  rw [← CFC.posPart_sub_negPart a ha]
-  cfc_tac
-
-end CFC
-
 
 section CStarAlgebra
 
@@ -60,20 +43,19 @@ variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder
 lemma apply_le_of_isSelfAdjoint (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :
     f x ≤ f (algebraMap ℝ B₁ ‖x‖) := by
   gcongr
-  exact IsSelfAdjoint.le_algebraMap_norm_self hx
+  exact IsSelfAdjoint.le_algebraMap_norm_self _
 
 lemma norm_apply_le_of_nonneg [StarOrderedRing B₂] (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
     ‖f x‖ ≤ ‖f 1‖ * ‖x‖ := by
   have h : ‖‖x‖‖ = ‖x‖ := by simp
   rw [mul_comm, ← h, ← norm_smul ‖x‖ (f 1)]
   clear h
-  refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg hx) ?_
+  refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_
   rw [← Complex.coe_smul, ← LinearMapClass.map_smul f]
   gcongr
   rw [← Algebra.algebraMap_eq_smul_one]
-  exact IsSelfAdjoint.le_algebraMap_norm_self <| .of_nonneg hx
+  exact IsSelfAdjoint.le_algebraMap_norm_self _
 
-set_option backward.isDefEq.respectTransparency false in
 open Complex Filter in
 /--
 If `f` is a positive map, then it is bounded (and therefore continuous).
@@ -91,7 +73,6 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
     apply hmain _ (hy_nonneg i) |>.trans
-    simp only
     gcongr
     exact hy_norm i
   -- Let's proceed by contradiction
@@ -124,7 +105,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     rw [pow_mul', sq] at this
     simpa [norm_smul] using (le_inv_mul_iff₀ (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
   · have (m : ℕ) : 0 ≤ ((2 : ℝ) ^ (-(m : ℤ)) • x m) := smul_nonneg (by positivity) (hx_nonneg m)
-    refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (this n)) ?_
+    refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_ (f.map_nonneg (this n))
     gcongr
     exact x_summable.le_tsum n fun m _ ↦ this m
 
@@ -132,19 +113,9 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
     ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
-      obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂)
+      obtain ⟨C, h⟩ := exists_norm_apply_le (.ofClass f)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
-
-instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
-    StarHomClass F A₁ A₂ where
-  map_star f a := by
-    obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a
-    have hy' : ∀ x : Fin 4, star (y x) = y x := fun x => by
-      rw [IsSelfAdjoint.star_eq (hy_nonneg x).isSelfAdjoint]
-    have hy'' : ∀ x : Fin 4, star (f (y x)) = f (y x) := fun x => by
-      rw [IsSelfAdjoint.star_eq (map_nonneg f (hy_nonneg x)).isSelfAdjoint]
-    simp [hy, hy', hy'']
 
 end PositiveLinearMap
 

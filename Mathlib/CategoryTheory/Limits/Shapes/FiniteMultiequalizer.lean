@@ -14,7 +14,7 @@ public import Mathlib.Tactic.ProxyType
 # Finiteness instances on multi-spans
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

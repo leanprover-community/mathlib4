@@ -27,13 +27,13 @@ Where possible, try to keep them in sync.
 
 open Set
 
-variable {M R : Type*}
+variable {M N R : Type*}
 
 namespace Ideal
 
 section Monoid
 
-variable [Monoid M] [Semiring R] [MulSemiringAction M R]
+variable [Monoid M] [Monoid N] [Semiring R] [MulSemiringAction M R] [MulSemiringAction N R]
 
 /-- The action on an ideal corresponding to applying the action to every element.
 
@@ -50,7 +50,7 @@ protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
 
 scoped[Pointwise] attribute [instance] Ideal.pointwiseDistribMulAction
 
-open Pointwise
+open scoped Pointwise
 
 /-- The action on an ideal corresponding to applying the action to every element.
 
@@ -66,6 +66,13 @@ scoped[Pointwise] attribute [instance] Ideal.pointwiseMulSemiringAction
 theorem pointwise_smul_def {a : M} (S : Ideal R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
+
+instance [SMul M N] [IsScalarTower M N R] : IsScalarTower M N (Ideal R) where
+  smul_assoc x y z := by
+    simp_rw [pointwise_smul_def, map_map]
+    congr
+    ext
+    simp
 
 -- note: unlike with `Subring`, `pointwise_smul_toAddSubgroup` wouldn't be true
 
@@ -111,7 +118,7 @@ section Group
 
 variable [Group M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
     a • S = S.comap (MulSemiringAction.toRingAut _ _ a).symm := by
@@ -149,6 +156,14 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
+theorem inertia_smul {R : Type*} [Ring R] [MulSemiringAction M R]
+    (g : M) (I : Ideal R) : (g • I).inertia M = (I.inertia M).map (MulAut.conj g) := by
+  ext x
+  simp_rw [Subgroup.map_equiv_eq_comap_symm, Subgroup.mem_comap, MonoidHom.coe_coe,
+    MulAut.conj_symm_apply, mem_inertia, mem_pointwise_smul_iff_inv_smul_mem]
+  rw [← (MulAction.toPerm g).forall_congr_right]
+  simp [mul_smul, smul_sub]
+
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
     inertia M P ≤ MulAction.stabilizer M P := by
   refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
@@ -156,11 +171,9 @@ theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAct
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
 
 instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-  ((inertia M P).subgroupOf (MulAction.stabilizer M P)).Normal := by
-  refine (Subgroup.normal_subgroupOf_iff (inertia_le_stabilizer P)).mpr fun g s hg hs x ↦ ?_
-  rw [Submodule.mem_toAddSubgroup, ← Ideal.smul_mem_pointwise_smul_iff (a := s⁻¹), smul_sub,
-    smul_smul, ← mul_assoc, inv_mul_cancel_left, mul_smul, Subgroup.inv_mem _ hs]
-  exact hg (s⁻¹ • x)
+    (P.inertia (MulAction.stabilizer M P)).Normal := by
+  simp_rw [Subgroup.normal_iff_map_conj_eq, ← inertia_smul]
+  exact fun g ↦ congrArg (inertia _) g.2
 
 variable {N : Type*} [Group N] [MulSemiringAction N R]
 

@@ -43,6 +43,9 @@ def productEquiv {J K : Type*} : Discrete (J × K) ≌ Discrete J × Discrete K 
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discrete category on a sum is equivalent to the sum of the
 discrete categories. -/
 @[simps!]
@@ -73,7 +76,7 @@ instance prod : IsDiscrete (C × D) where
   subsingleton x y := inferInstanceAs (Subsingleton ((x.1 ⟶ y.1) × (x.2 ⟶ y.2)))
   eq_of_hom f := Prod.ext (IsDiscrete.eq_of_hom f.1) (IsDiscrete.eq_of_hom f.2)
 
-/-- A product of discrete categories is discrete. -/
+/-- A sum of discrete categories is discrete. -/
 instance sum : IsDiscrete (C ⊕ C') where
   subsingleton x y :=
     { allEq f g := by

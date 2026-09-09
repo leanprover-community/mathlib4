@@ -20,7 +20,7 @@ for any limit element `j : J`. It follows that if
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' v'' u' u u''
 

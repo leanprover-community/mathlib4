@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Common
 # Lemmas about the divisibility relation in product (semi)groups
 -/
 
-@[expose] public section
+public section
 
 variable {ι G₁ G₂ : Type*} {G : ι → Type*} [Semigroup G₁] [Semigroup G₂] [∀ i, Semigroup (G i)]
 

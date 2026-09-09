@@ -57,7 +57,7 @@ set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-28")]
 instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
   coe C := C.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-28")]

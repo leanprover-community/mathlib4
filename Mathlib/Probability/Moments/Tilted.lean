@@ -29,11 +29,11 @@ of `X`.
 public section
 
 
-open MeasureTheory Real Set Finset
+open MeasureTheory Real Set
 
 open scoped NNReal ENNReal ProbabilityTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ ν : Measure Ω} {X : Ω → ℝ} {t u : ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {t : ℝ}
 
 namespace ProbabilityTheory
 
@@ -147,7 +147,7 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
   rotate_left
   · simp [hp]
   · simp
-  simp_rw [ENNReal.coe_toReal, ← ofReal_norm_eq_enorm, norm_eq_abs,
+  simp_rw [ENNReal.coe_toReal, ← ofReal_norm, norm_eq_abs,
     ENNReal.ofReal_rpow_of_nonneg (x := |X _|) (p := p) (abs_nonneg (X _)) p.2]
   refine Integrable.lintegral_lt_top ?_
   simp_rw [integrable_tilted_iff (interior_subset (s := integrableExpSet X μ) ht),

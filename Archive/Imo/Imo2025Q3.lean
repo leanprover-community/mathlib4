@@ -3,9 +3,11 @@ Copyright (c) 2025 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
-import Mathlib.NumberTheory.LSeries.PrimesInAP
-import Mathlib.NumberTheory.Multiplicity
-import Mathlib.Tactic.Simproc.Factors
+module
+
+public import Mathlib.NumberTheory.LSeries.PrimesInAP
+public import Mathlib.NumberTheory.Multiplicity
+public import Mathlib.Tactic.Simproc.Factors
 
 /-!
 # IMO 2025 Q3
@@ -29,6 +31,8 @@ Finally, evaluating `a = n, b = 3` gives `f n ∣ 3 ^ n - 1`, and according to t
 A matching construction is `f n = 1` for `Odd n`, `f 4 = 16`, and `f n = 2` for other `Even n`,
 which attains the bound, showing the optimal answer is `c = 4`.
 -/
+
+@[expose] public section
 
 open Nat Int
 
@@ -154,10 +158,10 @@ lemma isBonza : IsBonza fExample := by
     · simp [fExample, ch1]
     by_cases ch2 : a = 2
     · simp only [fExample, ch2, dvd_refl, not_true_eq_false, ↓reduceIte, Nat.cast_ofNat,
-        Nat.two_dvd_ne_zero, Nat.cast_ite, Nat.cast_one, Nat.cast_pow, ite_pow, one_pow,
-        Int.reducePow]
+        Nat.two_dvd_ne_zero]
+      push_cast
       split_ifs with hb1 hb2
-      · grind [sq_mod_four_eq_one_of_odd]
+      · grind [sq_emod_four_eq_one_of_odd]
       · simp [hb2]
       · refine dvd_sub ?_ ?_
         · have : 2 ∣ (b : ℤ) := by grind

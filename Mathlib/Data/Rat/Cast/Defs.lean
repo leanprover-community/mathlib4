@@ -26,11 +26,11 @@ casting lemmas showing the well-behavedness of this injection.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction IsOrderedMonoid
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace NNRat
 variable [DivisionSemiring α] {q r : ℚ≥0}
@@ -50,6 +50,7 @@ lemma commute_cast (a : α) (q : ℚ≥0) : Commute a q := (cast_commute ..).sym
 
 lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma cast_divNat_of_ne_zero (a : ℕ) {b : ℕ} (hb : (b : α) ≠ 0) :
     divNat a b = (a / b : α) := by
   rcases e : divNat a b with ⟨⟨n, d, h, c⟩, hn⟩
@@ -237,16 +238,16 @@ lemma ext_nnrat' (h : ∀ n : ℕ, f n = g n) : f = g :=
 
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
-lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀}
-    (h : f.comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0) = g.comp (Nat.castRingHom ℚ≥0)) : f = g :=
+lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀} (h : f.comp (.ofClass (Nat.castRingHom ℚ≥0)) =
+    g.comp (.ofClass (Nat.castRingHom ℚ≥0))) : f = g :=
   ext_nnrat' <| DFunLike.congr_fun h
 
 /-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the positive naturals then they are
 equal. -/
 lemma ext_nnrat_on_pnat (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_nnrat' <| DFunLike.congr_fun <| ext_nat''
-    ((f : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0))
-    ((g : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0)) (by simpa)
+    ((.ofClass f : ℚ≥0 →*₀ M₀).comp (.ofClass (Nat.castRingHom ℚ≥0)))
+    ((.ofClass g : ℚ≥0 →*₀ M₀).comp (.ofClass (Nat.castRingHom ℚ≥0))) (by simpa)
 
 end NNRat
 
@@ -265,7 +266,7 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
 theorem ext_rat {f g : ℚ →*₀ M₀}
-    (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=
+    (h : f.comp (.ofClass (Int.castRingHom ℚ)) = g.comp (.ofClass (Int.castRingHom ℚ))) : f = g :=
   ext_rat' <| DFunLike.congr_fun h
 
 /-- If monoid with zero homs `f` and `g` from `ℚ` agree on the positive naturals and `-1` then
@@ -275,8 +276,8 @@ theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
   ext_rat' <|
     DFunLike.congr_fun <|
       show
-        (f : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) =
-          (g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)
+        (.ofClass f : ℚ →*₀ M₀).comp (.ofClass (Int.castRingHom ℚ)) =
+          (.ofClass g : ℚ →*₀ M₀).comp (.ofClass (Int.castRingHom ℚ))
         from ext_int' (by simpa) (by simpa)
 
 end Rat
