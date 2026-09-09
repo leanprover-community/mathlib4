@@ -95,14 +95,14 @@ lemma contDiff_bumpR (hR : 0 < R) : ContDiff ℝ ∞ (bumpR R (E := E)) := by
   rw [bumpR_eq hR]; exact (bumpCDB hR).contDiff
 
 lemma support_bumpR (hR : 0 < R) : support (bumpR R (E := E)) ⊆ closedBall (0 : E) (2 * R) := by
-  rw [bumpR_eq hR, (bumpCDB hR).support_eq]
-  exact ball_subset_closedBall
+  rw [bumpR_eq hR, (bumpCDB hR).support_eq]; exact ball_subset_closedBall
 
 lemma hasCompactSupport_bumpR (hR : 0 < R) : HasCompactSupport (bumpR R (E := E)) := by
   rw [bumpR_eq hR]; exact (bumpCDB hR).hasCompactSupport
 
 lemma hasTemperateGrowth_bumpR (hR : 0 < R) : HasTemperateGrowth (bumpR R (E := E)) :=
   (hasCompactSupport_bumpR hR).hasTemperateGrowth (contDiff_bumpR hR)
+
 /-- The derivatives of `bumpR R` vanish on the ball of radius `R` for `n ≥ 1`. -/
 lemma iteratedFDeriv_bumpR_eq_zero (hR : 0 < R) {n : ℕ} (hn : 1 ≤ n) {x : E} (hx : ‖x‖ < R) :
     iteratedFDeriv ℝ n (bumpR R) x = 0 := by
@@ -116,10 +116,8 @@ lemma iteratedFDeriv_bumpR_eq_zero (hR : 0 < R) {n : ℕ} (hn : 1 ≤ n) {x : E}
 dilation lemma `ContDiffBump.iteratedFDeriv_eq_smul` (both bumps have ratio `2`). -/
 lemma iteratedFDeriv_bumpR (hR : 0 < R) (n) (x : E) :
     iteratedFDeriv ℝ n (bumpR R) x = R⁻¹ ^ n • iteratedFDeriv ℝ n (bumpR 1) (R⁻¹ • x) := by
-  rw [bumpR_eq hR, bumpR_eq one_pos,
-    ContDiffBump.iteratedFDeriv_eq_smul (f := bumpCDB (E := E) hR) (g := bumpCDB (E := E) one_pos)
-      (by have : R ≠ 0 := hR.ne'; simp only [bumpCDB]; field_simp) n x]
-  simp [bumpCDB, one_div]
+  rw [bumpR_eq hR, bumpR_eq one_pos, ContDiffBump.iteratedFDeriv_eq_smul (g := bumpCDB one_pos)]
+  <;> grind [bumpCDB]
 
 /-- Each derivative of `bumpR R` gains a factor `R⁻ⁿ`. -/
 lemma norm_iteratedFDeriv_bumpR_le (hR : 0 < R) (n) (x : E) :
