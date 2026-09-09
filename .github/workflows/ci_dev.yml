@@ -17,7 +17,7 @@ on:
         type: string
         default: 'pr'
       mode:
-        description: bench (micro only) | build (clean build only) | full (everything, one job)
+        description: bench | build | full | parallel (lint+test core usage and concurrency)
         required: false
         type: string
         default: 'full'
@@ -51,6 +51,11 @@ on:
         required: false
         type: string
         default: ''
+      cache_get_url:
+        description: anonymous mathlib cache read endpoint
+        required: false
+        type: string
+        default: 'https://cache.mathlib.org/mathlib4'
       skip_build:
         description: full mode — set true to skip the clean build
         required: false
@@ -298,3 +303,114 @@ jobs:
           TIMEFORMAT='TIMED lakebuild real=%3R user=%3U sys=%3S'
           time lake build Mathlib
           echo "oleans: $(find .lake/build/lib -name '*.olean' 2>/dev/null | wc -l)"
+
+  # ------------------------------------------------------------- parallel ---
+  # Do `lake test` and `lake lint` leave cores idle, and can they run at the
+  # same time in one workspace? Together they are 67% of a median pull
+  # request, so this decides whether overlapping them is worth anything.
+  parallel:
+    name: ci (dev branch) lint+test parallelism
+    if: ${{ inputs.mode == 'parallel' && github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 180
+    env:
+      LAKE_NO_CACHE: true
+      MATHLIB_CACHE_GET_URL: ${{ inputs.cache_get_url }}
+    steps:
+      - name: checkout the benchmark scripts only
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: .github
+
+      - name: machine facts
+        continue-on-error: true
+        shell: bash
+        run: bash .github/ci-dev/fullbench.sh
+
+      - name: checkout mathlib at the commit under test
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.build_ref }}
+          fetch-depth: 1
+          path: pr-branch
+
+      - name: install the toolchain
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd pr-branch
+          if ! command -v elan >/dev/null; then
+            curl -sSfL https://elan.lean-lang.org/elan-init.sh | sh -s -- -y --default-toolchain none
+          fi
+          export PATH="$HOME/.elan/bin:$PATH"
+          elan toolchain install "$(cat lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      # A cache miss here would build Mathlib from source and blow the budget,
+      # so it is capped and reported rather than left to run.
+      - name: get the mathlib cache
+        id: cache
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd pr-branch
+          bash ../.github/ci-dev/measure.sh cacheget 1200 lake exe cache get
+          echo "oleans=$(find .lake/build/lib -name '*.olean' 2>/dev/null | wc -l)"
+
+      # Both drivers BUILD a target first (testDriver MathlibTest, lintDriver
+      # batteries/runLinter). Build those once up front so the measured arms
+      # all start from the same warm state and compare like with like.
+      - name: warm up both drivers
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd pr-branch
+          bash ../.github/ci-dev/measure.sh warm_test 2400 lake --iofail test
+          bash ../.github/ci-dev/measure.sh warm_lint 2400 env LEAN_ABORT_ON_PANIC=1 lake lint -- --trace
+
+      - name: arm A — test alone
+        continue-on-error: true
+        shell: bash
+        run: |
+          cd pr-branch
+          bash ../.github/ci-dev/measure.sh test_alone 2400 lake --iofail test
+
+      - name: arm B — lint alone
+        continue-on-error: true
+        shell: bash
+        run: |
+          cd pr-branch
+          bash ../.github/ci-dev/measure.sh lint_alone 2400 env LEAN_ABORT_ON_PANIC=1 lake lint -- --trace
+
+      # The pair is wrapped in ONE measurement: two overlapping measurements
+      # would each attribute the whole machine's CPU to themselves. Individual
+      # spans are recorded separately, so a Lake workspace lock shows up as
+      # two non-overlapping intervals.
+      - name: arm C — both at the same time
+        continue-on-error: true
+        shell: bash
+        run: |
+          cd pr-branch
+          cat > /tmp/pair.sh <<'INNER'
+          set -uo pipefail
+          ( s=$(date +%s); lake --iofail test > /tmp/c_test.log 2>&1;             echo "SPAN c_test $s $(date +%s) rc=$?" > /tmp/c_test.span ) &
+          a=$!
+          ( s=$(date +%s); env LEAN_ABORT_ON_PANIC=1 lake lint -- --trace > /tmp/c_lint.log 2>&1;             echo "SPAN c_lint $s $(date +%s) rc=$?" > /tmp/c_lint.span ) &
+          b=$!
+          wait $a; wait $b
+          INNER
+          bash ../.github/ci-dev/measure.sh concurrent 3600 bash /tmp/pair.sh
+          echo "--- individual spans ---"; cat /tmp/c_test.span /tmp/c_lint.span 2>/dev/null
+          echo "--- lake complaints, if any ---"
+          grep -aiE "lock|another process|waiting|in use|busy" /tmp/c_test.log /tmp/c_lint.log 2>/dev/null | head -8 || echo "(none)"
+
+      - name: verdict
+        if: always()
+        shell: bash
+        run: |
+          echo "eff_cores per arm answers: do lint and test leave cores idle?"
+          echo "Overlap of the two SPAN intervals in arm C answers: does Lake"
+          echo "serialise two invocations in one workspace?"
+          echo "concurrent wall vs (test_alone + lint_alone) is the payoff."
