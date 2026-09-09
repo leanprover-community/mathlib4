@@ -354,7 +354,6 @@ lemma trace_nonneg [AddLeftMono R] {A : Matrix n n R} (hA : A.PosSemidef) : 0 �
 theorem dotProduct_mulVec_zero_iff [StarOrderedRing R'] [NoZeroDivisors R']
     {A : Matrix n n R'} (hA : A.PosSemidef) {x : n → R'} :
     star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
-  classical
   refine ⟨fun hx ↦ ?_, fun hx ↦ by simp [hx]⟩
   suffices h : ∀ y, star x ⬝ᵥ A *ᵥ y = 0 by
     refine dotProduct_star_self_eq_zero.mp ?_
