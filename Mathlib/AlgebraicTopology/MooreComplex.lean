@@ -63,6 +63,7 @@ variable (X : SimplicialObject C)
 
 /-- The normalized Moore complex in degree `n`, as a subobject of `X n`.
 -/
+@[implicit_reducible]
 def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
@@ -114,7 +115,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 
 /-- The normalized Moore complex functor, on objects.
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
   ChainComplex.of (fun n => (objX X n : C))
     (-- the coercion here picks a representative of the subobject
