@@ -3,8 +3,10 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Linear
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Derivatives of continuous linear maps from the base field
@@ -19,19 +21,20 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, linear map
 -/
 
+public section
+
 
 universe u v w
 
-open Topology Filter
+open Filter
 
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {x : 𝕜}
 variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {L : Filter (𝕜 × 𝕜)}
 
 section ContinuousLinearMap
 
@@ -39,11 +42,11 @@ section ContinuousLinearMap
 
 variable (e : 𝕜 →L[𝕜] F)
 
-protected theorem ContinuousLinearMap.hasDerivAtFilter : HasDerivAtFilter e (e 1) x L :=
+protected theorem ContinuousLinearMap.hasDerivAtFilter : HasDerivAtFilter e (e 1) L :=
   e.hasFDerivAtFilter.hasDerivAtFilter
 
 protected theorem ContinuousLinearMap.hasStrictDerivAt : HasStrictDerivAt e (e 1) x :=
-  e.hasStrictFDerivAt.hasStrictDerivAt
+  e.hasDerivAtFilter
 
 protected theorem ContinuousLinearMap.hasDerivAt : HasDerivAt e (e 1) x :=
   e.hasDerivAtFilter
@@ -67,11 +70,11 @@ section LinearMap
 
 variable (e : 𝕜 →ₗ[𝕜] F)
 
-protected theorem LinearMap.hasDerivAtFilter : HasDerivAtFilter e (e 1) x L :=
+protected theorem LinearMap.hasDerivAtFilter : HasDerivAtFilter e (e 1) L :=
   e.toContinuousLinearMap₁.hasDerivAtFilter
 
 protected theorem LinearMap.hasStrictDerivAt : HasStrictDerivAt e (e 1) x :=
-  e.toContinuousLinearMap₁.hasStrictDerivAt
+  e.hasDerivAtFilter
 
 protected theorem LinearMap.hasDerivAt : HasDerivAt e (e 1) x :=
   e.hasDerivAtFilter

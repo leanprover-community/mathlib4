@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Chenyi Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chenyi Li, Ziyu Wang, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Analysis.InnerProductSpace.Basic
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Uniformly and strongly convex functions
@@ -22,6 +24,8 @@ If `E` is an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖
 
 Prove derivative properties of strongly convex functions.
 -/
+
+@[expose] public section
 
 open Real
 
@@ -72,16 +76,14 @@ lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r,
   refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt <|
     sub_lt_self _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
-  have := hφ _ hxy.ne'
-  positivity
+  positivity [hφ _ hxy.ne']
 
 lemma UniformConcaveOn.strictConcaveOn (hf : UniformConcaveOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConcaveOn ℝ s f := by
   refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' <|
     lt_add_of_pos_right _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
-  have := hφ _ hxy.ne'
-  positivity
+  positivity [hφ _ hxy.ne']
 
 lemma UniformConvexOn.add (hf : UniformConvexOn s φ f) (hg : UniformConvexOn s ψ g) :
     UniformConvexOn s (φ + ψ) (f + g) := by
@@ -104,10 +106,10 @@ lemma UniformConcaveOn.neg (hf : UniformConcaveOn s φ f) : UniformConvexOn s φ
     using hf.2 hx hy ha hb hab
 
 lemma UniformConvexOn.sub (hf : UniformConvexOn s φ f) (hg : UniformConcaveOn s ψ g) :
-    UniformConvexOn s (φ + ψ) (f - g) := by simpa using hf.add hg.neg
+    UniformConvexOn s (φ + ψ) (f - g) := by simpa using! hf.add hg.neg
 
 lemma UniformConcaveOn.sub (hf : UniformConcaveOn s φ f) (hg : UniformConvexOn s ψ g) :
-    UniformConcaveOn s (φ + ψ) (f - g) := by simpa using hf.add hg.neg
+    UniformConcaveOn s (φ + ψ) (f - g) := by simpa using! hf.add hg.neg
 
 /-- A function `f` from a real normed space is `m`-strongly convex if it is uniformly convex with
 modulus `φ(r) = m / 2 * r ^ 2`.
@@ -161,7 +163,7 @@ private lemma aux_add (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
     a * (f x + m / (2 : ℝ) * ‖x‖ ^ 2) + b * (f y + m / (2 : ℝ) * ‖y‖ ^ 2) -
       m / (2 : ℝ) * ‖a • x + b • y‖ ^ 2
       = a * f x + b * f y + m / (2 : ℝ) * a * b * ‖x - y‖ ^ 2 := by
-  simpa [neg_div] using aux_sub (E := E) (m := -m) ha hb hab
+  simpa [neg_div] using! aux_sub (E := E) (m := -m) ha hb hab
 
 lemma strongConvexOn_iff_convex :
     StrongConvexOn s m f ↔ ConvexOn ℝ s fun x ↦ f x - m / (2 : ℝ) * ‖x‖ ^ 2 := by

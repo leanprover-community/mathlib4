@@ -3,15 +3,19 @@ Copyright (c) 2023 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Upper and lower sets in a locally finite order
 
 In this file we characterise the interaction of `UpperSet`/`LowerSet` and `LocallyFiniteOrder`.
 -/
+
+public section
 
 
 namespace Set

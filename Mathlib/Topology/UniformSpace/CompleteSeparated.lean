@@ -3,13 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Theory of complete separated uniform spaces.
 
 This file is for elementary lemmas that depend on both Cauchy filters and separation.
 -/
+
+public section
 
 
 open Filter
@@ -31,9 +35,6 @@ theorem IsUniformEmbedding.isClosedEmbedding [UniformSpace α] [UniformSpace β]
     [T0Space β] {f : α → β} (hf : IsUniformEmbedding f) :
     IsClosedEmbedding f :=
   ⟨hf.isEmbedding, hf.isUniformInducing.isComplete_range.isClosed⟩
-
-@[deprecated (since := "2024-10-30")]
-alias IsUniformEmbedding.toIsClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
 
 namespace IsDenseInducing
 

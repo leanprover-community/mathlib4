@@ -3,8 +3,14 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Expr
-import Mathlib.Data.Matrix.Reflection
+module
+
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Util.CompileInductive
 
 /-! # Automatically generated lemmas for working with concrete matrices
 
@@ -23,3 +29,5 @@ TODO: These magic lemmas have been skipped for now, though the plumbing lemmas i
 `Mathlib/Data/Matrix/Reflection.lean` are still available.
 They should probably be implemented as simprocs.
 -/
+
+public section

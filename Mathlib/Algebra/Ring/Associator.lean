@@ -3,8 +3,11 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bernhard Reinke
 -/
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Tactic.Abel
 
 /-!
 # Associator in a ring
@@ -18,6 +21,8 @@ We prove variants of this statement also for the `AddMonoidHom` bundled version 
 as well as the bundled version of `mulLeft₃` and `mulRight₃`, the multiplications `(x * y) * z` and
 `x * (y * z)`.
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 
@@ -39,6 +44,12 @@ theorem associator_cocycle (a b c d : R) :
     + (associator a b c) * d = 0 := by
   simp only [associator, mul_sub, sub_mul]
   abel1
+
+open MulOpposite in
+@[simp]
+lemma associator_op (x y z : Rᵐᵒᵖ) :
+    associator x y z = -op (associator (unop z) (unop y) (unop x)) := by
+  simp only [associator_apply, ← unop_mul, ← unop_sub, op_unop, neg_sub]
 
 end NonUnitalNonAssocRing
 

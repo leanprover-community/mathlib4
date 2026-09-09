@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.MeasureTheory.Measure.Dirac.Def
+public import Mathlib.MeasureTheory.Measure.Filter
 
 /-!
 # Pushforward of a measure
@@ -24,6 +27,8 @@ If `f` is not a.e. measurable, then we define `map f μ` to be zero.
 
 -/
 
+@[expose] public section
+
 variable {α β γ : Type*}
 
 open Set Function ENNReal NNReal
@@ -37,7 +42,7 @@ variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : Measurable
 namespace Measure
 
 /-- Lift a linear map between `OuterMeasure` spaces such that for each measure `μ` every measurable
-set is caratheodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
+set is Carathéodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
 noncomputable
 def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β)
     (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
@@ -45,11 +50,10 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
   map_add' μ₁ μ₂ := ext fun s hs => by
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
-      OuterMeasure.coe_add, hs]
+      FunLike.coe_add, hs]
   map_smul' c μ := ext fun s hs => by
-    simp only [LinearMap.map_smulₛₗ, coe_smul, Pi.smul_apply,
-      toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞), OuterMeasure.coe_smul (R := ℝ≥0∞),
-      smul_apply, hs]
+    simp only [map_smulₛₗ, Pi.smul_apply, toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞),
+      FunLike.coe_smul, smul_apply, hs]
 
 lemma liftLinear_apply₀ {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
     (hs : NullMeasurableSet s (liftLinear f hf μ)) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
@@ -64,7 +68,7 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
     f μ.toOuterMeasure s ≤ liftLinear f hf μ s :=
   le_toMeasure_apply _ (hf μ) s
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a measure as a linear map. It is defined to be `0` if `f` is not
 a measurable function. -/
 noncomputable
@@ -74,19 +78,32 @@ def mapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure �
       le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
   else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
     mapₗ f μ = mapₗ g μ := by
   ext1 s hs
-  simpa only [mapₗ, hf, hg, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply]
-    using measure_congr (h.preimage s)
+  simpa only [mapₗ, hf, hg, hs, dite_eq_left, liftLinear_apply, OuterMeasure.map_apply]
+    using! measure_congr (h.preimage s)
 
-open Classical in
-/-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
-measurable function. -/
+private lemma nonempty_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable f μ) :
+    Nonempty β := by
+  contrapose! hf
+  exact (measurable_of_empty_codomain f).aemeasurable
+
+open scoped Classical in
+/-- The pushforward of a measure. If `f` is not an almost everywhere measurable function,
+we define it to be `0` if `μ = 0`, and to be an arbitrary Dirac mass otherwise. That way
+we always have `map f 0 = 0`, and the push-forward of a probability measure is always a
+probability measure. -/
 noncomputable
 irreducible_def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
     Measure β :=
-  if hf : AEMeasurable f μ then mapₗ (hf.mk f) μ else 0
+  if hf : AEMeasurable f μ
+    then mapₗ (hf.mk f) μ
+    else if μ = 0 then 0
+    else
+      haveI : Nonempty β := by exact nonempty_of_not_aemeasurable hf
+      dirac Classical.ofNonempty
 
 theorem mapₗ_mk_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) :
     mapₗ (hf.mk f) μ = map f μ := by simp [map, hf]
@@ -105,11 +122,10 @@ protected theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 
 @[simp]
-theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
-    μ.map f = 0 := by simp [map, hf]
-
-theorem _root_.AEMeasurable.of_map_ne_zero {f : α → β} {μ : Measure α} (hf : μ.map f ≠ 0) :
-    AEMeasurable f μ := not_imp_comm.1 map_of_not_aemeasurable hf
+theorem map_of_not_aemeasurable_of_ne_zero {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ)
+    (hμ : μ ≠ 0) :
+    haveI : Nonempty β := by exact nonempty_of_not_aemeasurable hf
+    μ.map f = dirac Classical.ofNonempty := by simp [map, hf, hμ]
 
 theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Measure.map g μ := by
   by_cases hf : AEMeasurable f μ
@@ -118,38 +134,29 @@ theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Meas
     exact
       mapₗ_congr hf.measurable_mk hg.measurable_mk (hf.ae_eq_mk.symm.trans (h.trans hg.ae_eq_mk))
   · have hg : ¬AEMeasurable g μ := by simpa [← aemeasurable_congr h] using hf
-    simp [map_of_not_aemeasurable, hf, hg]
+    obtain rfl | hμ := eq_or_ne μ 0
+    · simp
+    simp [map_of_not_aemeasurable_of_ne_zero, hf, hg, hμ]
 
 @[simp]
 protected theorem map_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    (c : R) (μ : Measure α) (f : α → β) : (c • μ).map f = c • μ.map f := by
+    (c : R) {μ : Measure α} {f : α → β} (hf : AEMeasurable f μ) : (c • μ).map f = c • μ.map f := by
   suffices ∀ c : ℝ≥0∞, (c • μ).map f = c • μ.map f by simpa using this (c • 1)
   clear c; intro c
   rcases eq_or_ne c 0 with (rfl | hc); · simp
-  by_cases hf : AEMeasurable f μ
-  · have hfc : AEMeasurable f (c • μ) :=
-      ⟨hf.mk f, hf.measurable_mk, (ae_smul_measure_iff hc).2 hf.ae_eq_mk⟩
-    simp only [← mapₗ_mk_apply_of_aemeasurable hf, ← mapₗ_mk_apply_of_aemeasurable hfc,
-      LinearMap.map_smulₛₗ, RingHom.id_apply]
-    congr 1
-    apply mapₗ_congr hfc.measurable_mk hf.measurable_mk
-    exact EventuallyEq.trans ((ae_smul_measure_iff hc).1 hfc.ae_eq_mk.symm) hf.ae_eq_mk
-  · have hfc : ¬AEMeasurable f (c • μ) := by
-      intro hfc
-      exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
-    simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
-
-
-@[deprecated Measure.map_smul (since := "2024-11-13")]
-protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β) :
-    (c • μ).map f = c • μ.map f :=
-  μ.map_smul c f
+  have hfc : AEMeasurable f (c • μ) :=
+    ⟨hf.mk f, hf.measurable_mk, (ae_ennreal_smul_measure_iff hc).2 hf.ae_eq_mk⟩
+  simp only [← mapₗ_mk_apply_of_aemeasurable hf, ← mapₗ_mk_apply_of_aemeasurable hfc, map_smulₛₗ,
+    RingHom.id_apply]
+  congr 1
+  apply mapₗ_congr hfc.measurable_mk hf.measurable_mk
+  exact .trans ((ae_ennreal_smul_measure_iff hc).1 hfc.ae_eq_mk.symm) hf.ae_eq_mk
 
 variable {f : α → β}
 
 lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
     (hs : NullMeasurableSet s (map f μ)) : μ.map f s = μ (f ⁻¹' s) := by
-  rw [map, dif_pos hf, mapₗ, dif_pos hf.measurable_mk] at hs ⊢
+  rw [map, dite_eq_left hf, mapₗ, dite_eq_left hf.measurable_mk] at hs ⊢
   rw [liftLinear_apply₀ _ hs, measure_congr (hf.ae_eq_mk.preimage s)]
   rfl
 
@@ -179,14 +186,10 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
 /-- If `map f μ = μ`, then the measure of the preimage of any null measurable set `s`
 is equal to the measure of `s`.
 Note that this lemma does not assume (a.e.) measurability of `f`. -/
-lemma measure_preimage_of_map_eq_self {f : α → α} (hf : map f μ = μ)
+lemma measure_preimage_of_map_eq_self {f : α → α} (hf : map f μ = μ) (hfm : AEMeasurable f μ)
     {s : Set α} (hs : NullMeasurableSet s μ) : μ (f ⁻¹' s) = μ s := by
-  if hfm : AEMeasurable f μ then
-    rw [← map_apply₀ hfm, hf]
-    rwa [hf]
-  else
-    rw [map_of_not_aemeasurable hfm] at hf
-    simp [← hf]
+  rw [← map_apply₀ hfm, hf]
+  rwa [hf]
 
 lemma map_ne_zero_iff (hf : AEMeasurable f μ) : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff hf).not
 lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
@@ -206,7 +209,7 @@ theorem map_map {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measur
     (μ.map f).map g = μ.map (g ∘ f) :=
   ext fun s hs => by simp [hf, hg, hs, hg hs, hg.comp hf, ← preimage_comp]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f ≤ ν.map f :=
   le_iff.2 fun s hs ↦ by simp [hf.aemeasurable, hs, h _]
 
@@ -251,13 +254,11 @@ theorem ae_of_ae_map {f : α → β} (hf : AEMeasurable f μ) {p : β → Prop} 
     ∀ᵐ x ∂μ, p (f x) :=
   mem_ae_of_mem_ae_map hf h
 
-theorem ae_map_mem_range {m0 : MeasurableSpace α} (f : α → β) (hf : MeasurableSet (range f))
-    (μ : Measure α) : ∀ᵐ x ∂μ.map f, x ∈ range f := by
-  by_cases h : AEMeasurable f μ
-  · change range f ∈ ae (μ.map f)
-    rw [mem_ae_map_iff h hf]
-    filter_upwards using mem_range_self
-  · simp [map_of_not_aemeasurable h]
+theorem ae_map_mem_range {m0 : MeasurableSpace α} {f : α → β} (hf : MeasurableSet (range f))
+    {μ : Measure α} (h : AEMeasurable f μ) : ∀ᵐ x ∂μ.map f, x ∈ range f := by
+  change range f ∈ ae (μ.map f)
+  rw [mem_ae_map_iff h hf]
+  filter_upwards using mem_range_self
 
 end MeasureTheory
 
@@ -276,13 +277,19 @@ nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set
       hf.measurableSet_range.compl
   have hst : s ⊆ t := by
     rw [subset_union_compl_iff_inter_subset, ← image_preimage_eq_inter_range]
-    exact image_subset _ (subset_toMeasurable _ _)
+    exact image_mono (subset_toMeasurable _ _)
   have hft : f ⁻¹' t = toMeasurable μ (f ⁻¹' s) := by
     rw [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       hf.injective.preimage_image]
   calc
     μ.map f s ≤ μ.map f t := by gcongr
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
+
+theorem map_injective (hf : MeasurableEmbedding f) : Function.Injective (Measure.map f) := by
+  intro μ ν h
+  ext s hs
+  rw [← Set.preimage_image_eq s hf.injective, ← hf.map_apply, ← hf.map_apply]
+  congr
 
 end MeasurableEmbedding
 

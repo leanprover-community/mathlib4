@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Flatness is stable under composition and base change
@@ -16,7 +18,7 @@ We show that flatness is stable under composition and base change.
 
 ## Main theorems
 
-* `Module.Flat.comp`: if `S` is a flat `R`-algebra and `M` is a flat `S`-module,
+* `Module.Flat.trans`: if `S` is a flat `R`-algebra and `M` is a flat `S`-module,
                       then `M` is a flat `R`-module
 * `Module.Flat.baseChange`: if `M` is a flat `R`-module and `S` is any `R`-algebra,
                             then `S ⊗[R] M` is `S`-flat.
@@ -25,7 +27,9 @@ We show that flatness is stable under composition and base change.
                                           for the localization of `R` at `S`.
 -/
 
-universe u v w t
+public section
+
+universe u v w t t'
 
 open Function (Injective Surjective)
 
@@ -64,7 +68,18 @@ theorem trans [Flat R S] [Flat S M] : Flat R M := by
   iterate 2 apply Flat.lTensor_preserves_injective_linearMap
   exact Subtype.val_injective
 
-@[deprecated (since := "2024-11-03")] alias comp := trans
+variable {R M} in
+@[simp]
+lemma ulift_left_iff : Flat (ULift.{t} R) M ↔ Flat R M := by
+  refine ⟨fun h ↦ .trans _ (ULift R) _, fun h ↦ ?_⟩
+  have : Module.Flat (ULift.{t} R) R := .of_ulift
+  let _ := ULift.algebra'
+  exact .trans _ R _
+
+variable {R M} in
+@[simp]
+lemma ulift_right_iff : Flat R (ULift.{t} M) ↔ Flat R M :=
+  Flat.equiv_iff ULift.moduleEquiv
 
 end Composition
 
@@ -109,6 +124,10 @@ theorem of_isLocalizedModule [Flat R M] (S : Submonoid R) [IsLocalization S Rp]
     (f : M →ₗ[R] Mp) [h : IsLocalizedModule S f] : Flat Rp Mp := by
   fapply Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
   exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
+
+instance {A : Type*} [CommSemiring A] [Algebra R A] [Flat R A] (S : Submonoid R) :
+    Flat (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
+  of_isLocalizedModule _ S (IsScalarTower.toAlgHom R A _).toLinearMap
 
 end Localization
 

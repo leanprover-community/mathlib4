@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Prod
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # The derivative of bounded bilinear maps
@@ -15,8 +17,12 @@ This file contains the usual formulas (and existence assertions) for the derivat
 bounded bilinear maps.
 -/
 
+public section
 
-open Asymptotics Topology
+
+open Asymptotics
+
+open scoped Topology
 
 noncomputable section
 
@@ -103,22 +109,20 @@ theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) 
 
 variable (B : E →L[𝕜] F →L[𝕜] G)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G' → F}
     {f' : G' →L[𝕜] E} {g' : G' →L[𝕜] F} {x : G'} {s : Set G'} (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun y => B (f y) (g y))
       (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x := by
+  -- need `by exact` to deal with tricky unification
   exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prodMk hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivAt_of_bilinear {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x := by
+  -- need `by exact` to deal with tricky unification
   exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prodMk hg)
 
 @[fun_prop]

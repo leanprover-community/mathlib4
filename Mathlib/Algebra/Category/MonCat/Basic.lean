@@ -3,14 +3,16 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Algebra.Group.ULift
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Group.TypeTags.Hom
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
-# Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.
+# Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMonoid`.
 
 We introduce the bundled categories:
 * `MonCat`
@@ -21,19 +23,21 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 universe u v
 
 open CategoryTheory
 
-/-- The category of additive groups and group morphisms. -/
+/-- The category of additive monoids and monoid morphisms. -/
 structure AddMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
   [str : AddMonoid carrier]
 
-/-- The category of groups and group morphisms. -/
+/-- The category of monoids and monoid morphisms. -/
 @[to_additive AddMonCat]
 structure MonCat : Type (u + 1) where
   /-- The underlying type. -/
@@ -41,7 +45,6 @@ structure MonCat : Type (u + 1) where
   [str : Monoid carrier]
 
 attribute [instance] AddMonCat.str MonCat.str
-attribute [to_additive existing] MonCat.carrier MonCat.str
 
 initialize_simps_projections AddMonCat (carrier → coe, -str)
 initialize_simps_projections MonCat (carrier → coe, -str)
@@ -55,26 +58,38 @@ instance : CoeSort MonCat (Type u) :=
 attribute [coe] AddMonCat.carrier MonCat.carrier
 
 /-- Construct a bundled `MonCat` from the underlying type and typeclass. -/
-@[to_additive "Construct a bundled `AddMonCat` from the underlying type and typeclass."]
+@[to_additive /-- Construct a bundled `AddMonCat` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [Monoid M] : MonCat := ⟨M⟩
 
 end MonCat
 
-/-- The type of morphisms in `AddMonCat R`. -/
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddMonCat.of X` as `↧X`. -/
+@[app_delab AddMonCat.of]
+meta def AddMonCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `MonCat.of X` as `↧X`. -/
+@[app_delab MonCat.of]
+meta def MonCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
+/-- The type of morphisms in `AddMonCat`. -/
 @[ext]
 structure AddMonCat.Hom (A B : AddMonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-/-- The type of morphisms in `MonCat R`. -/
+/-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
-
-attribute [to_additive existing AddMonCat.Hom.mk] MonCat.Hom.mk
 
 namespace MonCat
 
@@ -87,20 +102,20 @@ instance : Category MonCat.{u} where
 @[to_additive]
 instance : ConcreteCategory MonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MonCat` back into a `MonoidHom`. -/
-@[to_additive "Turn a morphism in `AddMonCat` back into an `AddMonoidHom`."]
+@[to_additive /-- Turn a morphism in `AddMonCat` back into an `AddMonoidHom`. -/]
 abbrev Hom.hom {X Y : MonCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := MonCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `MonCat`. -/
-@[to_additive "Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. "]
+@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/]
 abbrev ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := MonCat) f
 
-variable {R} in
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
 def Hom.Simps.hom (X Y : MonCat.{u}) (f : Hom X Y) :=
   f.hom
 
@@ -119,7 +134,7 @@ lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
-    (forget MonCat).map f = f := rfl
+    (forget MonCat).map f = (f : _ → _) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -151,8 +166,7 @@ lemma hom_ext {M N : MonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : MonCat} (f : M ⟶ N) :
@@ -203,9 +217,9 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
 
 /-- Universe lift functor for monoids. -/
 @[to_additive (attr := simps)
-  "Universe lift functor for additive monoids."]
+  /-- Universe lift functor for additive monoids. -/]
 def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
-  obj X := MonCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := MonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -213,13 +227,13 @@ def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
 
 end MonCat
 
-/-- The category of additive groups and group morphisms. -/
+/-- The category of additive commutative monoids and monoid morphisms. -/
 structure AddCommMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
   [str : AddCommMonoid carrier]
 
-/-- The category of groups and group morphisms. -/
+/-- The category of commutative monoids and monoid morphisms. -/
 @[to_additive AddCommMonCat]
 structure CommMonCat : Type (u + 1) where
   /-- The underlying type. -/
@@ -227,7 +241,6 @@ structure CommMonCat : Type (u + 1) where
   [str : CommMonoid carrier]
 
 attribute [instance] AddCommMonCat.str CommMonCat.str
-attribute [to_additive existing] CommMonCat.carrier CommMonCat.str
 
 initialize_simps_projections AddCommMonCat (carrier → coe, -str)
 initialize_simps_projections CommMonCat (carrier → coe, -str)
@@ -241,26 +254,38 @@ instance : CoeSort CommMonCat (Type u) :=
 attribute [coe] AddCommMonCat.carrier CommMonCat.carrier
 
 /-- Construct a bundled `CommMonCat` from the underlying type and typeclass. -/
-@[to_additive "Construct a bundled `AddCommMonCat` from the underlying type and typeclass."]
+@[to_additive /-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [CommMonoid M] : CommMonCat := ⟨M⟩
 
 end CommMonCat
 
-/-- The type of morphisms in `AddCommMonCat R`. -/
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddCommMonCat.of X` as `↧X`. -/
+@[app_delab AddCommMonCat.of]
+meta def AddCommMonCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `CommMonCat.of X` as `↧X`. -/
+@[app_delab CommMonCat.of]
+meta def CommMonCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
+/-- The type of morphisms in `AddCommMonCat`. -/
 @[ext]
 structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-/-- The type of morphisms in `CommMonCat R`. -/
+/-- The type of morphisms in `CommMonCat`. -/
 @[to_additive, ext]
 structure CommMonCat.Hom (A B : CommMonCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
-
-attribute [to_additive existing AddCommMonCat.Hom.mk] CommMonCat.Hom.mk
 
 namespace CommMonCat
 
@@ -273,20 +298,20 @@ instance : Category CommMonCat.{u} where
 @[to_additive]
 instance : ConcreteCategory CommMonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommMonCat` back into a `MonoidHom`. -/
-@[to_additive "Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`."]
+@[to_additive /-- Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`. -/]
 abbrev Hom.hom {X Y : CommMonCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := CommMonCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
-@[to_additive "Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. "]
+@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/]
 abbrev ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommMonCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-@[to_additive "Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas."]
+@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
 def Hom.Simps.hom (X Y : CommMonCat.{u}) (f : Hom X Y) :=
   f.hom
 
@@ -302,11 +327,6 @@ lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
-    (forget CommMonCat).map f = (f : X → Y) :=
-  rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -334,8 +354,7 @@ lemma hom_ext {M N : CommMonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : CommMonCat} (f : M ⟶ N) :
@@ -374,7 +393,7 @@ theorem coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
 @[to_additive hasForgetToAddMonCat]
 instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
   forget₂ :=
-    { obj R := MonCat.of R
+    { obj R := ↧R
       map f := MonCat.ofHom f.hom }
 
 @[to_additive (attr := simp)] lemma coe_forget₂_obj (X : CommMonCat) :
@@ -388,14 +407,24 @@ instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
     (f : X →* Y) :
     (forget₂ CommMonCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
 
+/-- The forgetful functor from `CommMonCat` to `MonCat` is fully faithful. -/
+@[to_additive fullyFaithfulForgetToAddMonCat
+  /-- The forgetful functor from `AddCommMonCat` to `AddMonCat` is fully faithful. -/]
+def fullyFaithfulForgetToMonCat : (forget₂ CommMonCat.{u} MonCat.{u}).FullyFaithful where
+  preimage f := ofHom f.hom
+
+@[to_additive]
+instance : (forget₂ CommMonCat.{u} MonCat.{u}).Full :=
+  fullyFaithfulForgetToMonCat.full
+
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
 
 /-- Universe lift functor for commutative monoids. -/
 @[to_additive (attr := simps)
-  "Universe lift functor for additive commutative monoids."]
+  /-- Universe lift functor for additive commutative monoids. -/]
 def uliftFunctor : CommMonCat.{v} ⥤ CommMonCat.{max v u} where
-  obj X := CommMonCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := CommMonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -411,7 +440,8 @@ variable [Monoid X] [Monoid Y]
 
 /-- Build an isomorphism in the category `MonCat` from a `MulEquiv` between `Monoid`s. -/
 @[to_additive (attr := simps) AddEquiv.toAddMonCatIso
-      "Build an isomorphism in the category `AddMonCat` from\nan `AddEquiv` between `AddMonoid`s."]
+      /-- Build an isomorphism in the category `AddMonCat` from
+an `AddEquiv` between `AddMonoid`s. -/]
 def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
   hom := MonCat.ofHom e.toMonoidHom
   inv := MonCat.ofHom e.symm.toMonoidHom
@@ -438,12 +468,14 @@ namespace CategoryTheory.Iso
 
 /-- Build a `MulEquiv` from an isomorphism in the category `MonCat`. -/
 @[to_additive addMonCatIsoToAddEquiv
-      "Build an `AddEquiv` from an isomorphism in the category\n`AddMonCat`."]
+      /-- Build an `AddEquiv` from an isomorphism in the category
+`AddMonCat`. -/]
 def monCatIsoToMulEquiv {X Y : MonCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `MulEquiv` from an isomorphism in the category `CommMonCat`. -/
-@[to_additive "Build an `AddEquiv` from an isomorphism in the category\n`AddCommMonCat`."]
+@[to_additive /-- Build an `AddEquiv` from an isomorphism in the category
+`AddCommMonCat`. -/]
 def commMonCatIsoToMulEquiv {X Y : CommMonCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
@@ -453,9 +485,9 @@ end CategoryTheory.Iso
 in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
-    X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
-  hom e := e.toMonCatIso
-  inv i := i.monCatIsoToMulEquiv
+    (X ≃* Y) ≅ (MonCat.of X ≅ MonCat.of Y) where
+  hom := ↾fun e ↦ e.toMonCatIso
+  inv := ↾fun i ↦ i.monCatIsoToMulEquiv
 
 /-- additive equivalences between `AddMonoid`s are the same
 as (isomorphic to) isomorphisms in `AddMonCat` -/
@@ -465,9 +497,9 @@ add_decl_doc addEquivIsoAddMonCatIso
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
-    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y where
-  hom e := e.toCommMonCatIso
-  inv i := i.commMonCatIsoToMulEquiv
+    (X ≃* Y) ≅ (CommMonCat.of X ≅ CommMonCat.of Y) where
+  hom := ↾fun e ↦ e.toCommMonCatIso
+  inv := ↾fun i ↦ i.commMonCatIsoToMulEquiv
 
 /-- additive equivalences between `AddCommMonoid`s are
 the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/
@@ -487,10 +519,9 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
     let e : X ≃* Y := { f.hom, i.toEquiv with }
     exact e.toCommMonCatIso.isIso_hom
 
-/-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms.
-We could have used `CategoryTheory.HasForget.ReflectsIso` alternatively.
--/
-@[to_additive]
+/-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
+@[to_additive
+  /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects isomorphisms. -/]
 instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 
@@ -500,42 +531,18 @@ example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
 `@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
 -/
 
-@[to_additive (attr := deprecated
-  "Proven by `simp only [MonCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_monCat {G : MonCat.{u}} {H : Type u} [Monoid H] (f : G →* H) :
-    f.comp (MonCat.Hom.hom (𝟙 G)) = f := by simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [MonCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_monCat_comp {G : Type u} [Monoid G] {H : MonCat.{u}} (f : G →* H) :
-    MonoidHom.comp (MonCat.Hom.hom (𝟙 H)) f = f := by simp
-
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommMonCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_commMonCat {G : CommMonCat.{u}} {H : Type u} [CommMonoid H] (f : G →* H) :
-    f.comp (CommMonCat.Hom.hom (𝟙 G)) = f := by
-  simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommMonCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_commMonCat_comp {G : Type u} [CommMonoid G] {H : CommMonCat.{u}} (f : G →* H) :
-    MonoidHom.comp (CommMonCat.Hom.hom (𝟙 H)) f = f := by
-  simp
-
 /-- The equivalence between `AddMonCat` and `MonCat`. -/
 @[simps]
 def AddMonCat.equivalence : AddMonCat ≌ MonCat where
-  functor := { obj X := .of (Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
-  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  functor := { obj X := ↧(Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := ↧(Additive X), map f := ofHom f.hom.toAdditive }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
 /-- The equivalence between `AddCommMonCat` and `CommMonCat`. -/
 @[simps]
 def AddCommMonCat.equivalence : AddCommMonCat ≌ CommMonCat where
-  functor := { obj X := .of (Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
-  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  functor := { obj X := ↧(Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := ↧(Additive X), map f := ofHom f.hom.toAdditive }
   unitIso := Iso.refl _
   counitIso := Iso.refl _

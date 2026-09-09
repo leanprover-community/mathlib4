@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Frm
-import Mathlib.Topology.Category.CompHaus.Frm
+module
+
+public import Mathlib.Order.Category.Frm
+public import Mathlib.Topology.Category.CompHaus.Frm
 
 /-!
 # The category of locales
 
 This file defines `Locale`, the category of locales. This is the opposite of the category of frames.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -32,7 +36,12 @@ instance (X : Locale) : Frame X :=
 
 /-- Construct a bundled `Locale` from a `Frame`. -/
 def of (α : Type*) [Frame α] : Locale :=
-  op <| Frm.of α
+  op ↧α
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Locale.of X` as `↧X`. -/
+@[app_delab Locale.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=

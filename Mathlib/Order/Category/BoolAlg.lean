@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.HeytAlg
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.Category.HeytAlg
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# The category of boolean algebras
+# The category of Boolean algebras
 
-This defines `BoolAlg`, the category of boolean algebras.
+This defines `BoolAlg`, the category of Boolean algebras.
 -/
+
+@[expose] public section
 
 
 open OrderDual Opposite Set
@@ -19,9 +23,11 @@ universe u
 
 open CategoryTheory
 
-/-- The category of boolean algebras. -/
+/-- The category of Boolean algebras. -/
 structure BoolAlg where
-  /-- The underlying boolean algebra. -/
+  /-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying Boolean algebra. -/
   carrier : Type*
   [str : BooleanAlgebra carrier]
 
@@ -31,18 +37,20 @@ initialize_simps_projections BoolAlg (carrier → coe, -str)
 
 namespace BoolAlg
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BoolAlg.of X` as `↧X`. -/
+@[app_delab BoolAlg.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort BoolAlg (Type _) :=
   ⟨BoolAlg.carrier⟩
 
 attribute [coe] BoolAlg.carrier
 
-/-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [BooleanAlgebra X] : BoolAlg := ⟨X⟩
-
 /-- The type of morphisms in `BoolAlg R`. -/
 @[ext]
 structure Hom (X Y : BoolAlg.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
@@ -53,7 +61,7 @@ instance : Category BoolAlg.{u} where
 
 instance : ConcreteCategory BoolAlg (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BoolAlg` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : BoolAlg.{u}} (f : Hom X Y) :=
@@ -83,7 +91,7 @@ lemma coe_comp {X Y Z : BoolAlg} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : BoolAlg} (f : X ⟶ Y) :
-    (forget BoolAlg).map f = f := rfl
+    (forget BoolAlg).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BoolAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -113,7 +121,8 @@ lemma hom_ext {X Y : BoolAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BoolAlg} (f : X ⟶ Y) :
@@ -143,14 +152,14 @@ instance : Inhabited BoolAlg :=
 
 /-- Turn a `BoolAlg` into a `BddDistLat` by forgetting its complement operation. -/
 def toBddDistLat (X : BoolAlg) : BddDistLat :=
-  .of X
+  ↧X
 
 @[simp]
 theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
   rfl
 
 instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 section
@@ -159,7 +168,7 @@ attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 
 @[simps]
 instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map {X Y} f := HeytAlg.ofHom f.hom
 
 end
@@ -194,5 +203,5 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
 /-- The powerset functor. `Set` as a contravariant functor. -/
 @[simps]
 def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
-  obj X := op <| .of (Set X)
+  obj X := op ↧(Set X)
   map {X Y} f := Quiver.Hom.op (BoolAlg.ofHom (CompleteLatticeHom.setPreimage f))

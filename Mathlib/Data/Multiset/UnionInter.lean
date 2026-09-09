@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Data.Multiset.Filter
-import Mathlib.Order.MinMax
-import Mathlib.Logic.Pairwise
+module
+
+public import Mathlib.Data.List.Perm.Lattice
+public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Order.MinMax
+public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -20,12 +22,14 @@ operators:
   occurrences of `a` in `s` and `t`.
 -/
 
+@[expose] public section
+
 -- No algebra should be required
 assert_not_exists Monoid
 
 universe v
 
-open List Subtype Nat Function
+open List Nat Function
 
 variable {α : Type*} {β : Type v} {γ : Type*}
 
@@ -95,14 +99,14 @@ instance : Inter (Multiset α) := ⟨inter⟩
 
 @[simp]
 lemma cons_inter_of_pos (s : Multiset α) : a ∈ t → (a ::ₘ s) ∩ t = a ::ₘ s ∩ t.erase a :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_pos _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_mem _ h
 
 @[simp]
 lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s ∩ t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_neg _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_not_mem _ h
 
 lemma inter_le_left : s ∩ t ≤ s :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
   induction s using Multiset.induction_on generalizing t with
@@ -113,7 +117,7 @@ lemma inter_le_right : s ∩ t ≤ t := by
     · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
-  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
+  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intro s u h₁ h₂
   · simpa only [zero_inter] using h₁
   by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
@@ -223,8 +227,8 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
   ext y
   rw [count_inter, count_replicate, count_replicate]
   by_cases h : x = y
-  · simp only [h, if_true]
-  · simp only [h, if_false, Nat.zero_min]
+  · simp only [h, ite_true]
+  · simp only [h, ite_false, Nat.zero_min]
 
 @[simp]
 theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
@@ -239,16 +243,10 @@ theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h 
   rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
   have h0 : M.count x + N.count x = P.count x + Q.count x := by
     rw [Multiset.ext] at h
-    simp_all only [Multiset.mem_add, Multiset.count_add]
+    simp_all only [Multiset.count_add]
   omega
 
 /-! ### Disjoint multisets -/
-
-
-/-- `Disjoint s t` means that `s` and `t` have no elements in common. -/
-@[deprecated _root_.Disjoint (since := "2024-11-01")]
-protected def Disjoint (s t : Multiset α) : Prop :=
-  ∀ ⦃a⦄, a ∈ s → a ∈ t → False
 
 theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s → a ∉ t := by
   refine ⟨fun h a hs ht ↦ ?_, fun h u hs ht ↦ ?_⟩
@@ -258,23 +256,14 @@ theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s �
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left_multiset, _⟩ := disjoint_left
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_left_multiset := Disjoint.notMem_of_mem_left_multiset
-
 @[simp, norm_cast]
 theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ ↔ l₁.Disjoint l₂ :=
   disjoint_left
-
-@[deprecated (since := "2024-11-01")] protected alias Disjoint.symm := _root_.Disjoint.symm
-@[deprecated (since := "2024-11-01")] protected alias disjoint_comm := _root_.disjoint_comm
 
 theorem disjoint_right {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ t → a ∉ s :=
   disjoint_comm.trans disjoint_left
 
 alias ⟨_root_.Disjoint.notMem_of_mem_right_multiset, _⟩ := disjoint_right
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_right_multiset := Disjoint.notMem_of_mem_right_multiset
 
 theorem disjoint_iff_ne {s t : Multiset α} : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp [disjoint_left, imp_not_comm]
@@ -286,9 +275,6 @@ theorem disjoint_of_subset_left {s t u : Multiset α} (h : s ⊆ u) (d : Disjoin
 theorem disjoint_of_subset_right {s t u : Multiset α} (h : t ⊆ u) (d : Disjoint s u) :
     Disjoint s t :=
   (disjoint_of_subset_left h d.symm).symm
-
-@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_left := Disjoint.mono_left
-@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_right := Disjoint.mono_right
 
 @[simp]
 theorem zero_disjoint (l : Multiset α) : Disjoint 0 l := disjoint_bot_left
@@ -325,7 +311,7 @@ theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} :
 
 @[simp]
 theorem disjoint_union_left [DecidableEq α] {s t u : Multiset α} :
-    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=  disjoint_sup_left
+    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := disjoint_sup_left
 
 @[simp]
 theorem disjoint_union_right [DecidableEq α] {s t u : Multiset α} :
@@ -366,7 +352,7 @@ section Nodup
 variable {s t : Multiset α} {a : α}
 
 theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
-  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append]
+  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append, disjoint_iff_ne]
 
 theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
   (nodup_add.1 d).2.2

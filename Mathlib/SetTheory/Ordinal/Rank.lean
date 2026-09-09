@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Rank in a well-founded relation
@@ -11,6 +13,8 @@ import Mathlib.SetTheory.Ordinal.Family
 For `r` a well-founded relation, `IsWellFounded.rank r a` is recursively defined as the least
 ordinal greater than the ranks of all elements below `a`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -90,7 +94,7 @@ theorem WellFoundedGT.rank_strictAnti [Preorder α] [WellFoundedGT α] :
 @[simp]
 theorem IsWellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.typein r := by
   classical
-  letI := linearOrderOfSTO r
+  let := linearOrderOfSTO r
   ext a
   exact InitialSeg.eq (⟨(OrderEmbedding.ofStrictMono _ WellFoundedLT.rank_strictMono).ltEmbedding,
     fun a b h ↦ mem_range_rank_of_le h.le⟩) (Ordinal.typein r) a

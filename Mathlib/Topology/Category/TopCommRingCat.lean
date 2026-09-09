@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Category of topological commutative rings
@@ -13,6 +15,8 @@ import Mathlib.Topology.Algebra.Ring.Basic
 We introduce the category `TopCommRingCat` of topological commutative rings together with the
 relevant forgetful functors to topological spaces and commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -22,11 +26,25 @@ open CategoryTheory
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
+  /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
+  -/
+  of ::
   /-- carrier of a topological commutative ring. -/
   α : Type u
   [isCommRing : CommRing α]
   [isTopologicalSpace : TopologicalSpace α]
   [isTopologicalRing : IsTopologicalRing α]
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `TopCommRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ α := R, ... }` by `delabStructureInstance`. -/
+@[app_delab TopCommRingCat.of]
+meta def TopCommRingCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
 
 namespace TopCommRingCat
 
@@ -40,32 +58,28 @@ attribute [instance] isCommRing isTopologicalSpace isTopologicalRing
 
 instance : Category TopCommRingCat.{u} where
   Hom R S := { f : R →+* S // Continuous f }
-  id R := ⟨RingHom.id R, by rw [RingHom.id]; continuity⟩
+  id R := ⟨RingHom.id R, by rw [RingHom.id]; dsimp; fun_prop⟩
   comp f g :=
     ⟨g.val.comp f.val, by
       -- TODO automate
       cases f
       cases g
-      continuity⟩
+      dsimp
+      fun_prop⟩
 
 instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } R S where
   coe f := f.val
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Continuous f } where
   hom f := f
   ofHom f := f
 
-/-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
--/
-abbrev of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] : TopCommRingCat :=
-  ⟨X⟩
-
 theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] :
     (of X : Type u) = X := rfl
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
-  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl)
+  HasForget₂.mk' (fun R => ↧R) (fun _ => rfl)
     (fun f => CommRingCat.ofHom f.val) HEq.rfl
 
 instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
@@ -74,7 +88,7 @@ instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
 
 /-- The forgetful functor to `TopCat`. -/
 instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat :=
-  HasForget₂.mk' (fun R => TopCat.of R) (fun _ => rfl) (fun f => TopCat.ofHom ⟨⇑f.1, f.2⟩) HEq.rfl
+  HasForget₂.mk' (fun R => ↧R) (fun _ => rfl) (fun f => TopCat.ofHom ⟨⇑f.1, f.2⟩) HEq.rfl
 
 instance forgetToTopCatCommRing (R : TopCommRingCat) :
     CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=

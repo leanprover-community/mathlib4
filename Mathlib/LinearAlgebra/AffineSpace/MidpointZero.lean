@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 
 /-!
 # Midpoint of a segment for characteristic zero
@@ -15,6 +17,8 @@ We collect lemmas that require that the underlying ring has characteristic zero.
 
 midpoint
 -/
+
+public section
 
 
 open AffineMap AffineEquiv
@@ -29,7 +33,7 @@ theorem lineMap_one_half {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R]
 
 theorem homothety_invOf_two {R : Type*} {V P : Type*} [CommRing R] [Invertible (2 : R)]
     [AddCommGroup V] [Module R V] [AddTorsor V P] (a b : P) :
-    homothety a (⅟ 2 : R) b = midpoint R a b :=
+    homothety a (⅟2 : R) b = midpoint R a b :=
   rfl
 
 theorem homothety_inv_two {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddCommGroup V]

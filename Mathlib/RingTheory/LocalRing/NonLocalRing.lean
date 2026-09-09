@@ -3,10 +3,12 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
+module
+
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 
@@ -29,6 +31,8 @@ This file gathers some results about non-local rings.
   a non-local commutative ring onto a product of two fields.
 
 -/
+
+public section
 
 namespace IsLocalRing
 
@@ -59,9 +63,9 @@ theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁
   not_isLocalRing_def ha hb (by simp)
 
 /-- The following conditions are equivalent for a commutative (semi)ring `R`:
-    * `R` is not local,
-    * the maximal spectrum of `R` is nontrivial,
-    * `R` has two distinct maximal ideals.
+* `R` is not local,
+* the maximal spectrum of `R` is nontrivial,
+* `R` has two distinct maximal ideals.
 -/
 theorem not_isLocalRing_tfae {R : Type*} [CommSemiring R] [Nontrivial R] :
     List.TFAE [
@@ -83,7 +87,7 @@ theorem exists_surjective_of_not_isLocalRing.{u} {R : Type u} [CommRing R] [Nont
     ∃ (K₁ K₂ : Type u) (_ : Field K₁) (_ : Field K₂) (f : R →+* K₁ × K₂),
       Function.Surjective f := by
   /- get two different maximal ideals and project on the product of quotients -/
-  obtain ⟨m₁, m₂, _, _, hm₁m₂⟩ := (not_isLocalRing_tfae.out 0 2).mp h
+  obtain ⟨m₁, m₂, _, _, hm₁m₂⟩ := (not_isLocalRing_tfae.out 1 3).mp h
   let e := Ideal.quotientInfEquivQuotientProd m₁ m₂ <| Ideal.isCoprime_of_isMaximal hm₁m₂
   let f := e.toRingHom.comp <| Ideal.Quotient.mk (m₁ ⊓ m₂)
   use R ⧸ m₁, R ⧸ m₂, Ideal.Quotient.field m₁, Ideal.Quotient.field m₂, f

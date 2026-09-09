@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.Order.Category.BddOrd
-import Mathlib.Order.Category.Lat
-import Mathlib.Order.Category.Semilat
-import Mathlib.Order.Hom.WithTopBot
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.Order.Category.BddOrd
+public import Mathlib.Order.Category.Lat
+public import Mathlib.Order.Category.Semilat
+public import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The category of bounded lattices
@@ -17,6 +19,8 @@ This file defines `BddLat`, the category of bounded lattices.
 In literature, this is sometimes called `Lat`, the category of lattices, because being a lattice is
 understood to entail having a bottom and a top element.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -41,13 +45,18 @@ attribute [instance] BddLat.isBoundedOrder
 abbrev of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddLat.of X` as `↧X`. -/
+@[app_delab BddLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
 /-- The type of morphisms in `BddLat`. -/
 @[ext]
 structure Hom (X Y : BddLat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
@@ -61,7 +70,7 @@ instance : LargeCategory.{u} BddLat where
 
 instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : BddLat.{u}} (f : Hom X Y) :=
@@ -103,19 +112,19 @@ lemma hom_ext {X Y : BddLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddOrd.ofHom f.hom.toBoundedOrderHom
 
 instance hasForgetToLat : HasForget₂ BddLat Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom f.hom.toLatticeHom
 
 instance hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := f.hom.toSupBotHom
 
 instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := f.hom.toInfTopHom
 
 @[simp]
@@ -197,7 +206,7 @@ theorem bddLat_dual_comp_forget_to_semilatInfCat :
 
 /-- The functor that adds a bottom and a top element to a lattice. This is the free functor. -/
 def latToBddLat : Lat.{u} ⥤ BddLat where
-  obj X := .of <| WithTop <| WithBot X
+  obj X := ↧(WithTop <| WithBot X)
   map f := BddLat.ofHom <| LatticeHom.withTopWithBot f.hom
 
 /-- `latToBddLat` is left adjoint to the forgetful functor, meaning it is the free

@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces
@@ -16,13 +18,15 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 ## TODO
 
 * `CompactlyGenerated` is a reflective subcategory of `TopCat`.
-* `CompactlyGenerated` is cartesian closed.
+* `CompactlyGenerated` is Cartesian closed.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
 
+@[expose] public section
+
 universe u w
 
-open CategoryTheory Topology TopologicalSpace
+open CategoryTheory TopologicalSpace
 
 /-- `CompactlyGenerated.{u, w}` is the type of `u`-compactly generated `w`-small topological spaces.
 This should always be used with explicit universe parameters. -/
@@ -35,25 +39,30 @@ structure CompactlyGenerated where
 namespace CompactlyGenerated
 
 instance : Inhabited CompactlyGenerated.{u, w} :=
-  ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
+  ⟨{ toTop := ↧(ULift (Fin 37)) }⟩
 
 instance : CoeSort CompactlyGenerated Type* :=
   ⟨fun X => X.toTop⟩
 
 attribute [instance] is_compactly_generated
 
-instance : Category.{w, w+1} CompactlyGenerated.{u, w} :=
-  InducedCategory.category toTop
+instance : Category.{w, w + 1} CompactlyGenerated.{u, w} :=
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 variable (X : Type w) [TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X]
 
 /-- Constructor for objects of the category `CompactlyGenerated`. -/
 abbrev of : CompactlyGenerated.{u, w} where
-  toTop := TopCat.of X
+  toTop := ↧X
   is_compactly_generated := ‹_›
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CompactlyGenerated.of X` as `↧X`. -/
+@[app_delab CompactlyGenerated.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 section
 
@@ -96,8 +105,8 @@ def homeoOfIso {X Y : CompactlyGenerated.{u, w}} (f : X ≅ Y) : X ≃ₜ Y wher
   invFun := f.inv
   left_inv := f.hom_inv_id_apply
   right_inv := f.inv_hom_id_apply
-  continuous_toFun := f.hom.hom.continuous
-  continuous_invFun := f.inv.hom.continuous
+  continuous_toFun := f.hom.hom.hom.continuous
+  continuous_invFun := f.inv.hom.hom.continuous
 
 /-- The equivalence between isomorphisms in `CompactlyGenerated` and homeomorphisms
 of topological spaces. -/

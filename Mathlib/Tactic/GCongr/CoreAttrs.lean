@@ -1,9 +1,11 @@
 /-
 Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Jovan Gerbscheid
 -/
-import Mathlib.Tactic.GCongr.Core
+module
+
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # gcongr attributes for lemmas up in the import chain
@@ -12,21 +14,22 @@ In this file we add `gcongr` attribute to lemmas in `Lean.Init`.
 We may add lemmas from other files imported by `Mathlib/Tactic/GCongr/Core` later.
 -/
 
-variable {a b c : Prop}
+public meta section
 
-lemma GCongr.imp_trans (h : a → b) : (b → c) → a → c := fun g ha => g (h ha)
+namespace Mathlib.Tactic.GCongr
 
-lemma GCongr.imp_right_mono (h : a → b → c) : (a → b) → a → c :=
-  fun h' ha => h ha (h' ha)
+variable {a b c d : Prop}
 
-lemma GCongr.and_right_mono (h : a → b → c) : (a ∧ b) → a ∧ c :=
-  fun ⟨ha, hb⟩ => ⟨ha, h ha hb⟩
+lemma imp_mono (h₁ : c → a) (h₂ : c → b → d) : (a → b) → c → d :=
+  fun h₃ hc => h₂ hc (h₃ (h₁ hc))
 
-attribute [gcongr] mt
-  Or.imp Or.imp_left Or.imp_right
-  And.imp And.imp_left GCongr.and_right_mono
-  imp_imp_imp GCongr.imp_trans GCongr.imp_right_mono
-  forall_imp Exists.imp
-  List.Sublist.append List.Sublist.append_left List.Sublist.append_right
-  List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
-  List.Perm.append_left List.Perm.append_right List.Perm.append List.Perm.map
+lemma and_mono (h₁ : a → c) (h₂ : a → b → d) : (a ∧ b) → c ∧ d :=
+  fun ⟨ha, hb⟩ => ⟨h₁ ha, h₂ ha hb⟩
+
+attribute [gcongr] mt Or.imp and_mono imp_mono forall_imp Exists.imp
+  List.Sublist.append List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
+  List.Perm.cons List.Perm.append List.Perm.map
+  List.cons_subset_cons
+  Nat.sub_le_sub_left Nat.sub_le_sub_right Nat.sub_lt_sub_left Nat.sub_lt_sub_right
+
+end Mathlib.Tactic.GCongr

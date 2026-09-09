@@ -3,15 +3,24 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
-import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Core
-import Mathlib.Lean.Elab.Tactic.Basic
-import Mathlib.Logic.Basic
-import Qq
+module
+
+public meta import Lean.Elab.Tactic.Classical
+public meta import Mathlib.Lean.Meta
+public meta import Qq
+
+public import Mathlib.Basic.Logic.Basic  -- shake: keep (dependency of tactic output)
+public import Mathlib.Tactic.CasesM
+public import Mathlib.Tactic.Core
+public import Lean.Elab.ConfigEval
+public meta import Lean.Elab.ConfigEval
+public import Qq
 
 /-!
 The `tauto` tactic.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Tauto
 
@@ -196,22 +205,25 @@ def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
   | _ => pure false
 
 /-- Implementation of the `tauto` tactic. -/
-def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
+def tautology : TacticM Unit := focus do
   classical do
+    let g ← getMainGoal
     tautoCore
     allGoals (iterateUntilFailure
       (evalTactic (← `(tactic| rfl)) <|>
       evalTactic (← `(tactic| solve_by_elim)) <|>
       liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
+    unless (← getUnsolvedGoals).isEmpty do
+      throwTacticEx `tauto g
 
 /--
-`tauto` breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`
+`tauto` proves tautologies in classical propositional logic.
+It breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`
 and splits a goal of the form `_ ∧ _`, `_ ↔ _` or `∃ _, _` until it can be discharged
-using `reflexivity` or `solve_by_elim`.
+using `rfl`, `contradiction` or `solve_by_elim`.
 This is a finishing tactic: it either closes the goal or raises an error.
 
-The Lean 3 version of this tactic by default attempted to avoid classical reasoning
-where possible. This Lean 4 version makes no such attempt. The `itauto` tactic
+This tactic makes no attempt to avoid classical reasoning. The `itauto` tactic
 is designed for that purpose.
 -/
 syntax (name := tauto) "tauto" optConfig : tactic
@@ -221,3 +233,23 @@ elab_rules : tactic | `(tactic| tauto $cfg:optConfig) => do
   tautology
 
 end Mathlib.Tactic.Tauto
+
+open Mathlib.TacticAnalysis
+
+/-- Report places where `tauto` can be replaced by `grind`. -/
+register_option linter.tacticAnalysis.tautoToGrind : Bool := {
+  defValue := false
+}
+@[tacticAnalysis linter.tacticAnalysis.tautoToGrind,
+  inherit_doc linter.tacticAnalysis.tautoToGrind]
+def tautoToGrind :=
+  terminalReplacement "tauto" "grind" ``Mathlib.Tactic.Tauto.tauto (fun _ _ _ => `(tactic| grind))
+    (reportSuccess := true) (reportFailure := false)
+
+/-- Debug `grind` by identifying places where it does not yet supersede `tauto`. -/
+register_option linter.tacticAnalysis.regressions.tautoToGrind : Bool := {
+  defValue := false
+}
+@[tacticAnalysis linter.tacticAnalysis.regressions.tautoToGrind,
+  inherit_doc linter.tacticAnalysis.regressions.tautoToGrind]
+def tautoToGrindRegressions := grindReplacementWith "tauto" `Mathlib.Tactic.Tauto.tauto

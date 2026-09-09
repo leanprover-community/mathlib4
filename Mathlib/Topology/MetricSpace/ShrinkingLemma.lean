@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
-import Mathlib.Topology.ShrinkingLemma
+module
+
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+public import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Shrinking lemma in a proper metric space
@@ -19,12 +21,14 @@ In this file we prove a few versions of the shrinking lemma for coverings by bal
 shrinking lemma, metric space
 -/
 
+public section
+
 
 universe u v
 
 open Set Metric
 
-open Topology
+open scoped Topology
 
 variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι → α}
 variable {s : Set α}

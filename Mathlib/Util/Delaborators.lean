@@ -3,9 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Mathlib.Util.PPOptions
-import Lean.PrettyPrinter.Delaborator.Builtins
+module
+
+public import Mathlib.Init
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public import Mathlib.Util.PPOptions
 
 /-! # Pi type notation
 
@@ -16,6 +18,8 @@ then do `open scoped PiNotation`.
 The notation also accepts extended binders, like `Π x ∈ s, β x` for `Π x, x ∈ s → β x`.
 This can be disabled with the `pp.mathlib.binderPredicates` option.
 -/
+
+public meta section
 
 namespace PiNotation
 open Lean hiding binderIdent
@@ -167,7 +171,7 @@ end existential
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for `∉`. -/
-@[app_delab Not] def delab_not_in := whenPPOption Lean.getPPNotation do
+@[app_delab Not] def delabNotIn := whenPPOption Lean.getPPNotation do
   let #[f] := (← SubExpr.getExpr).getAppArgs | failure
   guard <| f.isAppOfArity ``Membership.mem 5
   let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab

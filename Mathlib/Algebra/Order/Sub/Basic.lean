@@ -3,14 +3,18 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Even
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Even
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/
+
+public section
 
 variable {α : Type*}
 
@@ -42,7 +46,7 @@ theorem tsub_le_self : a - b ≤ a :=
 
 @[simp]
 theorem zero_tsub (a : α) : 0 - a = 0 :=
-  tsub_eq_zero_of_le <| zero_le a
+  tsub_eq_zero_of_le zero_le
 
 theorem tsub_self_add (a b : α) : a - (a + b) = 0 :=
   tsub_eq_zero_of_le <| self_le_add_right _ _
@@ -136,8 +140,7 @@ protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 
   exact h₂.not_ge (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
-  refine
-    ⟨fun h => ⟨(zero_le _).trans_lt h, (zero_le b).lt_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
+  refine ⟨fun h => ⟨h.pos, pos_of_ne_zero ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
   rintro rfl
   rw [tsub_zero] at h
   exact h.false
@@ -182,16 +185,13 @@ theorem tsub_add_eq_max : a - b + b = max a b := by
 
 theorem add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, tsub_add_eq_max]
 
-theorem tsub_min : a - min a b = a - b := by
-  rcases le_total a b with h | h
-  · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
-  · rw [min_eq_right h]
+theorem tsub_min : a - min a b = a - b := (tsub_eq_tsub_min a b).symm
 
 theorem tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 
--- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+-- TODO: Should we introduce `Odd.tsub`? It will probably only be used by `ℕ`.
 lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
@@ -202,3 +202,32 @@ lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
   · exact (tsub_add_tsub_comm h h).symm
 
 end CanonicallyLinearOrderedAddCommMonoid
+
+/-! ### `Sub` structure in linearly canonically ordered monoid using choice. -/
+
+namespace CanonicallyOrderedAdd
+
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
+
+-- See note [reducible non-instances]
+/-- `Sub` structure in linearly canonically ordered monoid using choice. -/
+noncomputable abbrev toSub : Sub α where
+  sub x y := if h : y ≤ x then (exists_add_of_le h).choose else 0
+
+attribute [local instance] toSub
+
+/-- The `Sub` structure using choice satisfies `OrderedSub`. -/
+theorem toOrderedSub [AddRightReflectLE α] : OrderedSub α where
+  tsub_le_iff_right a b c := by
+    change dite _ _ _ ≤ c ↔ _
+    split_ifs with h
+    · have := (exists_add_of_le h).choose_spec
+      rw [this] at h
+      conv_rhs => rw [this, add_comm]
+      rw [add_le_add_iff_right]
+    · rw [not_le] at h
+      constructor <;> intro h'
+      · simpa using add_le_add h' h.le
+      · exact zero_le
+
+end CanonicallyOrderedAdd

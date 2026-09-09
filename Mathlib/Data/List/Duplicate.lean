@@ -3,7 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Chris Hughes
 -/
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.Nodup
 
 /-!
 # List duplicates
@@ -17,6 +19,8 @@ import Mathlib.Data.List.Nodup
 In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
 
 -/
+
+public section
 
 
 variable {α : Type*}
@@ -90,7 +94,7 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
   induction h with
   | slnil => exact hx
   | cons y _ IH => exact (IH hx).duplicate_cons _
-  | cons₂ y h IH =>
+  | cons_cons y h IH =>
     rw [duplicate_cons_iff] at hx ⊢
     rcases hx with (⟨rfl, hx⟩ | hx)
     · simp [h.subset hx]
@@ -98,9 +102,10 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
 
 /-- The contrapositive of `List.nodup_iff_sublist`. -/
 theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
-  induction' l with y l IH
-  · simp
-  · by_cases hx : x = y
+  induction l with
+  | nil => simp
+  | cons y l IH =>
+    by_cases hx : x = y
     · simp [hx, cons_sublist_cons, singleton_sublist]
     · rw [duplicate_cons_iff_of_ne hx, IH]
       refine ⟨sublist_cons_of_sublist y, fun h => ?_⟩

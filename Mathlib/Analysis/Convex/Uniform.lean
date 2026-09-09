@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.StrictConvexSpace
+module
+
+public import Mathlib.Analysis.Convex.StrictConvexSpace
 
 /-!
 # Uniformly convex spaces
@@ -29,10 +31,7 @@ the same ray).
 convex, uniformly convex
 -/
 
-
-open Set Metric
-
-open Convex Pointwise
+public section
 
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above

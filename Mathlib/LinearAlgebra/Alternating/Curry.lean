@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.Multilinear.Curry
+module
+
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Currying alternating forms
@@ -13,6 +15,8 @@ In this file we define `AlternatingMap.curryLeft`
 which interprets an alternating map in `n + 1` variables
 as a linear map in the 0th variable taking values in the alternating maps in `n` variables.
 -/
+
+@[expose] public section
 
 variable {R : Type*} {M M₂ N N₂ : Type*} [CommSemiring R] [AddCommMonoid M]
   [AddCommMonoid M₂] [AddCommMonoid N] [AddCommMonoid N₂] [Module R M] [Module R M₂]

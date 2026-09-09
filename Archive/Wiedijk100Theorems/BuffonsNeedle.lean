@@ -3,12 +3,13 @@ Copyright (c) 2024 Enrico Z. Borba. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Probability.Density
-import Mathlib.Probability.Distributions.Uniform
-import Mathlib.Probability.Notation
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.Probability.Notation
 
 /-!
 
@@ -69,6 +70,8 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 
 -/
 
+@[expose] public section
+
 open MeasureTheory (MeasureSpace IsProbabilityMeasure Measure pdf.IsUniform)
 open ProbabilityTheory Real
 
@@ -96,7 +99,7 @@ Projection of a needle onto the x-axis. The needle's center is at x-coordinate `
 `l` and angle `θ`. Note, `θ` is measured relative to the y-axis, that is, a vertical needle has
 `θ = 0`.
 -/
-def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
+noncomputable def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
 
 /--
 The indicator function of whether a needle at position `⟨x, θ⟩ : ℝ × ℝ` crosses the line `x = 0`.
@@ -120,7 +123,7 @@ noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 /--
 The possible x-positions and angle relative to the y-axis of a needle.
 -/
-abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
+noncomputable abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
 include hd in
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
@@ -130,21 +133,17 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
-  all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
-  case' l => refine isClosed_le continuous_fst ?_
-  case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
-  all_goals
-    refine Continuous.mul (Continuous.mul ?_ continuous_const) continuous_const
-    simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
-      Continuous.comp Real.continuous_sin continuous_snd]
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?_ ?_)) <;>
+    simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
+  · exact isClosed_le continuous_fst (by fun_prop)
+  · exact isClosed_le continuous_fst.neg (by fun_prop)
 
 lemma stronglyMeasurable_needleCrossesIndicator :
     MeasureTheory.StronglyMeasurable (needleCrossesIndicator l) := by
   refine stronglyMeasurable_iff_measurable_separable.mpr
     ⟨measurable_needleCrossesIndicator l, {0, 1}, ?separable⟩
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
-    simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
+    simp only [Set.finite_singleton, Set.Finite.insert]
   refine ⟨range_finite.countable, ?subset_closure⟩
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
   intro x ⟨p, hxp⟩
@@ -195,14 +194,14 @@ The domain of the inner integral is simpler in the short case, where the interse
 equal to `Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)` by `short_needle_inter_eq`.
 -/
 lemma buffon_integral :
-    𝔼[N l B] = (d * π) ⁻¹ *
+    𝔼[N l B] = (d * π)⁻¹ *
       ∫ (θ : ℝ) in Set.Icc 0 π,
       ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
   rw [
     ← MeasureTheory.integral_map hBₘ.aemeasurable
       (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable,
-    hB, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
+    hB.map_eq, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
     ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
     ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
   ]
@@ -215,7 +214,7 @@ lemma buffon_integral :
     MeasureTheory.integral_integral_swap ?integrable]
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta,
     integrable_needleCrossesIndicator d l hd]
-  simp only [needleCrossesIndicator, needleProjX, Set.mem_Icc]
+  simp only [needleCrossesIndicator, needleProjX]
   have indicator_eq (x θ : ℝ) :
       Set.indicator (Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)) 1 0 =
       Set.indicator (Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)) (1 : ℝ → ℝ) x := by
@@ -225,8 +224,8 @@ lemma buffon_integral :
         -(Real.sin θ * l) / 2 ≤ x ∧ x ≤ Real.sin θ * l / 2 := by
       rw [neg_div, and_comm, ← tsub_le_iff_right, zero_sub]
     by_cases h : x ≤ Real.sin θ * l / 2 ∧ 0 ≤ x + Real.sin θ * l / 2
-    · rw [if_pos h, if_pos (this.mp h)]
-    · rw [if_neg h, if_neg (this.not.mp h)]
+    · rw [ite_eq_left h, ite_eq_left (this.mp h)]
+    · rw [ite_eq_right h, ite_eq_right (this.not.mp h)]
   simp_rw [indicator_eq, MeasureTheory.setIntegral_indicator measurableSet_Icc, Pi.one_apply]
 
 include hl in
@@ -274,16 +273,15 @@ the integral lemmas below.
 -/
 lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
     IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
-  apply Continuous.intervalIntegrable
-  exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
+  apply Continuous.intervalIntegrable (by fun_prop)
 
 /--
 This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).
-Then, `∫ θ in (0)..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
+Then, `∫ θ in 0..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
 point where `d = θ.sin * l`, which is `θ = (d / l).arcsin`.
 -/
 lemma integral_min_eq_two_mul :
-    ∫ θ in (0)..π, min d (θ.sin * l) = 2 * ∫ θ in (0)..π / 2, min d (θ.sin * l) := by
+    ∫ θ in 0..π, min d (θ.sin * l) = 2 * ∫ θ in 0..π / 2, min d (θ.sin * l) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
   conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
   · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
@@ -293,11 +291,11 @@ lemma integral_min_eq_two_mul :
 
 include hd hl in
 /--
-The first of two adjacent integrals in the long case. In the range `(0)..(d / l).arcsin`, we
-have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).arcsin, θ.sin * l`.
+The first of two adjacent integrals in the long case. In the range `0..(d / l).arcsin`, we
+have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in 0..(d / l).arcsin, θ.sin * l`.
 -/
 lemma integral_zero_to_arcsin_min :
-    ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
+    ∫ θ in 0..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
@@ -328,10 +326,11 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     simp_rw [min_eq_left ((div_le_iff₀ hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
+set_option linter.style.whitespace false in
 include hd hBₘ hB hl in
 /-- Buffon's Needle, the long case (`d ≤ l`) -/
 theorem buffon_long (h : d ≤ l) :
-    ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * (√(l^2 - d^2) + d * (d / l).arcsin) + 1 := by
+    ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * (√(l ^ 2 - d ^ 2) + d * (d / l).arcsin) + 1 := by
   simp only [
     buffon_integral d l hd B hBₘ hB, MeasureTheory.integral_const, smul_eq_mul, mul_one,
     MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, Set.Icc_inter_Icc, Real.volume_Icc,
@@ -342,9 +341,9 @@ theorem buffon_long (h : d ≤ l) :
   have : ∀ᵐ θ, θ ∈ Set.Icc 0 π →
       ENNReal.toReal (ENNReal.ofReal (min d (θ.sin * l))) = min d (θ.sin * l) := by
     have (θ : ℝ) (hθ : θ ∈ Set.Icc 0 π) : 0 ≤ min d (θ.sin * l) := by
-      by_cases h : d ≤ θ.sin * l
+      by_cases! h : d ≤ θ.sin * l
       · rw [min_eq_left h]; exact hd.le
-      · rw [min_eq_right (not_le.mp h).le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
+      · rw [min_eq_right h.le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
     simp_rw [ENNReal.toReal_ofReal_eq_iff, MeasureTheory.ae_of_all _ this]
   rw [MeasureTheory.setIntegral_congr_ae measurableSet_Icc this,
     MeasureTheory.integral_Icc_eq_integral_Ioc,
@@ -353,6 +352,7 @@ theorem buffon_long (h : d ≤ l) :
       (intervalIntegrable_min_const_sin_mul d l _ _) (intervalIntegrable_min_const_sin_mul d l _ _),
     integral_zero_to_arcsin_min d l hd hl, integral_arcsin_to_pi_div_two_min d l hl h]
   field_simp
-  ring_nf
+  simp (disch := positivity)
+  field
 
 end BuffonsNeedle

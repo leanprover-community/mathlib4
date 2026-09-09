@@ -3,7 +3,9 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Orthogonal
@@ -21,6 +23,8 @@ This file contains definitions and properties concerning orthogonality of rows a
 
 orthogonal
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

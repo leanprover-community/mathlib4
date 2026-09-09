@@ -3,13 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Multiset.ZeroCons
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Multiset.ZeroCons
 
 /-!
 # Counting multiplicity in a multiset
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -169,8 +173,6 @@ theorem one_le_count_iff_mem {a : α} {s : Multiset α} : 1 ≤ count a s ↔ a 
 theorem count_eq_zero_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
   by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
 
-@[deprecated (since := "2025-05-23")] alias count_eq_zero_of_not_mem := count_eq_zero_of_notMem
-
 lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 
 @[simp] lemma count_eq_zero {a : α} : count a s = 0 ↔ a ∉ s := count_ne_zero.not_right
@@ -180,7 +182,7 @@ theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x :
 
 theorem ext {s t : Multiset α} : s = t ↔ ∀ a, count a s = count a t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => Quotient.eq.trans <| by
-    simp only [quot_mk_to_coe, mem_coe, coe_count, decide_eq_true_eq]
+    simp only [quot_mk_to_coe, coe_count]
     apply perm_iff_count
 
 @[ext]
@@ -201,14 +203,14 @@ section Rel
 
 variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
-theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
+theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [Std.Symm r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
   induction s using Multiset.induction_on generalizing t with
   | empty => rw [rel_zero_left.mp h]
   | cons y s ih =>
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
-    simp only [decide_eq_true_eq, Nat.add_right_inj]
+    simp only [Nat.add_right_inj]
     exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 
 end Rel
@@ -219,7 +221,7 @@ variable {s : Multiset α} {a : α}
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
   Quot.induction_on s fun _l => by
-    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    simp only [quot_mk_to_coe'', coe_nodup, coe_count]
     exact List.nodup_iff_count_le_one
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=

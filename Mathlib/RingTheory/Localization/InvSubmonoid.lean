@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.Submonoid.Inverses
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.GroupTheory.Submonoid.Inverses
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Submonoid of inverses
@@ -23,6 +25,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
@@ -66,19 +70,21 @@ theorem mul_toInvSubmonoid (m : M) : algebraMap R S m * (toInvSubmonoid M S m : 
 
 @[simp]
 theorem smul_toInvSubmonoid (m : M) : m • (toInvSubmonoid M S m : S) = 1 := by
-  convert mul_toInvSubmonoid M S m
+  convert! mul_toInvSubmonoid M S m
   ext
   rw [← Algebra.smul_def]
   rfl
 
 variable {S}
 
--- Porting note: `surj'` was taken, so use `surj''` instead
-theorem surj'' (z : S) : ∃ (r : R) (m : M), z = r • (toInvSubmonoid M S m : S) := by
+theorem surj' (z : S) : ∃ (r : R) (m : M), z = r • (toInvSubmonoid M S m : S) := by
   rcases IsLocalization.surj M z with ⟨⟨r, m⟩, e : z * _ = algebraMap R S r⟩
   refine ⟨r, m, ?_⟩
   rw [Algebra.smul_def, ← e, mul_assoc]
   simp
+
+@[deprecated surj' (since := "2026-08-20")]
+alias surj'' := surj'
 
 theorem toInvSubmonoid_eq_mk' (x : M) : (toInvSubmonoid M S x : S) = mk' S 1 x := by
   rw [← (IsLocalization.map_units S x).mul_left_inj]
@@ -95,7 +101,7 @@ variable (S)
 theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
-  rcases IsLocalization.surj'' M x with ⟨r, m, rfl⟩
+  rcases IsLocalization.surj' M x with ⟨r, m, rfl⟩
   exact Submodule.smul_mem _ _ (Submodule.subset_span (toInvSubmonoid M S m).prop)
 
 theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
@@ -108,6 +114,10 @@ theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   change x ∈ (Subalgebra.toSubmodule (Algebra.adjoin R _ : Subalgebra R S) : Set S)
   rw [Algebra.adjoin_eq_span, hs, span_invSubmonoid]
   trivial
+
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    (M : Submonoid S) [Monoid.FG M] : Algebra.FiniteType R (Localization M) :=
+  .trans ‹_› (IsLocalization.finiteType_of_monoid_fg M _)
 
 end InvSubmonoid
 

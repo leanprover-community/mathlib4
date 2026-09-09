@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # Limits and colimits indexed by `Fin`
@@ -16,6 +18,8 @@ limits and colimits indexed by `Fin (n + 1)`, see
 in the file `Limits.Shapes.IsTerminal`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u' w
 

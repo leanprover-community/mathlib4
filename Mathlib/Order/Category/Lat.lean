@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # The category of lattices
@@ -19,6 +21,8 @@ corresponds to `BddLat`.
 
 The free functor from `Lat` to `BddLat` is `X → WithTop (WithBot X)`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -44,10 +48,15 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Lat.of X` as `↧X`. -/
+@[app_delab Lat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `LatticeHom`. -/
   hom' : LatticeHom X Y
 
@@ -58,7 +67,7 @@ instance : Category Lat.{u} where
 
 instance : ConcreteCategory Lat (LatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Lat` back into a `LatticeHom`. -/
 abbrev Hom.hom {X Y : Lat.{u}} (f : Hom X Y) :=
@@ -87,7 +96,7 @@ lemma coe_comp {X Y Z : Lat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Lat} (f : X ⟶ Y) :
-    (forget Lat).map f = f := rfl
+    (forget Lat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Lat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -116,8 +125,8 @@ lemma hom_ext {X Y : Lat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : Lat} (f : X ⟶ Y) :
@@ -142,7 +151,7 @@ lemma hom_inv_apply {X Y : Lat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := b
   simp
 
 instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom f.hom
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/

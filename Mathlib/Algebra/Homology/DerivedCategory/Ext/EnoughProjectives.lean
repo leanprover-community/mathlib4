@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
 /-!
 # Smallness of Ext-groups from the existence of enough projectives
@@ -21,6 +23,8 @@ So we must be very selective regarding `HasExt` instances.
 
 -/
 
+public section
+
 universe w v u
 
 open CategoryTheory Category
@@ -31,6 +35,8 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_to_singleFunctor_obj_of_projective
     {P : C} [Projective P] {K : CochainComplex C ℤ} {i : ℤ}
     (π : K ⟶ (CochainComplex.singleFunctor C i).obj P) [K.IsStrictlyLE i] [QuasiIsoAt π i] :
@@ -53,8 +59,7 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
     id := by
       apply HomologicalComplex.from_single_hom_ext
       rw [comp_f, mkHomFromSingle_f, assoc, id_f, this, Projective.factorThru_comp_assoc,
-        id_comp, Iso.hom_inv_id]
-      rfl }⟩⟩
+        id_comp, Iso.hom_inv_id] }⟩⟩
 
 end CochainComplex
 
@@ -67,7 +72,7 @@ lemma from_singleFunctor_obj_eq_zero_of_projective {P : C} [Projective P]
     (φ : Q.obj ((CochainComplex.singleFunctor C i).obj P) ⟶ Q.obj L)
     (n : ℤ) (hn : n < i) [L.IsStrictlyLE n] :
     φ = 0 := by
-  obtain ⟨K, _, π, h, g, rfl⟩:= right_fac_of_isStrictlyLE φ i
+  obtain ⟨K, _, π, h, g, rfl⟩ := right_fac_of_isStrictlyLE φ i
   have hπ : IsSplitEpi π := by
     rw [isIso_Q_map_iff_quasiIso] at h
     exact CochainComplex.isSplitEpi_to_singleFunctor_obj_of_projective π
@@ -92,12 +97,30 @@ open DerivedCategory
 
 lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
     (e : Ext P Y (n + 1)) : e = 0 := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   apply homEquiv.injective
-  simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (- (n + 1)) 0
-    (by omega)).hom.app _), zero_hom, Limits.zero_comp]
+  simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
+    (by lia)).hom.app _), zero_hom, Limits.zero_comp]
   apply from_singleFunctor_obj_eq_zero_of_projective
-    (L := (CochainComplex.singleFunctor C (-(n + 1))).obj Y) (n := - (n + 1)) _ (by omega)
+    (L := (CochainComplex.singleFunctor C (-(n + 1))).obj Y) (n := -(n + 1)) _ (by lia)
+
+lemma subsingleton_of_projective [HasExt.{w} C]
+    (P Y : C) [Projective P] (n : ℕ) : Subsingleton (Ext.{w} P Y (n + 1)) :=
+  subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
+
+attribute [local instance] Ext.subsingleton_of_projective in
+/-- For a short exact complex whose middle object is projective, the vanishing of
+`Ext S.X₃ M 1` is equivalent to surjectivity of precomposition along `S.f` on `Ext⁰`. -/
+lemma one_subsingleton_iff_of_projective [HasExt.{w} C] (X : C)
+    (S : ShortComplex C) (S_exact : S.ShortExact) (proj : Projective S.X₂) :
+    Subsingleton (Ext S.X₃ X 1) ↔
+      Function.Surjective ((Ext.mk₀ S.f).precomp X (add_zero 0)) := by
+  refine ⟨fun h x₁ ↦ Ext.contravariant_sequence_exact₁ S_exact _ x₁ (add_zero _)
+    (by subsingleton), fun h ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_)⟩
+  obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ S_exact _ x₃
+    (by subsingleton) (add_zero 1)
+  obtain ⟨x₂, rfl⟩ := h x₁
+  simp
 
 end Abelian.Ext
 
@@ -112,23 +135,22 @@ the universe `w`, and if we have two `HasExt.{w₁} C` and `HasExt.{w₂} C`
 instances, we would have to specify the universe explicitly almost
 everywhere, which would be an inconvenience. Then, we must be
 very selective regarding `HasExt` instances. -/
-lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] :
-  HasExt.{w} C := by
-    letI := HasDerivedCategory.standard C
-    have := hasExt_of_hasDerivedCategory C
-    rw [hasExt_iff_small_ext.{w}]
-    intro X Y n
-    induction n generalizing X Y with
-    | zero =>
-      rw [small_congr Ext.homEquiv₀]
-      infer_instance
-    | succ n hn =>
-      let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X))
-      have hS : S.ShortExact :=
-        { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
-      have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
-        Ext.contravariant_sequence_exact₃ hS Y x₃
-          (Ext.eq_zero_of_projective _) (by omega)
-      exact small_of_surjective.{w} this
+lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] : HasExt.{w} C := by
+  let := HasDerivedCategory.standard C
+  have := hasExt_of_hasDerivedCategory C
+  rw [hasExt_iff_small_ext.{w}]
+  intro X Y n
+  induction n generalizing X Y with
+  | zero =>
+    rw [small_congr Ext.homEquiv₀]
+    infer_instance
+  | succ n hn =>
+    let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X))
+    have hS : S.ShortExact :=
+      { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
+    have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
+      Ext.contravariant_sequence_exact₃ hS Y x₃
+        (Ext.eq_zero_of_projective _) (by lia)
+    exact small_of_surjective.{w} this
 
 end CategoryTheory

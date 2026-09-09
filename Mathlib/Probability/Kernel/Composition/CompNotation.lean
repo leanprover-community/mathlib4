@@ -3,10 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.Probability.Kernel.Basic
 
 /-!
-# Notation for the compostition of a measure and a kernel
+# Notation for the composition of a measure and a kernel
 
 This operation, for which we introduce the notation `∘ₘ`, takes `μ : Measure α` and
 `κ : Kernel α β` and creates `κ ∘ₘ μ : Measure β`. The integral of a function against `κ ∘ₘ μ` is
@@ -15,10 +17,12 @@ This operation, for which we introduce the notation `∘ₘ`, takes `μ : Measur
 This file does not define composition but only introduces notation for
 `MeasureTheory.Measure.bind μ κ`.
 
-## Notations
+## Notation
 
 * `κ ∘ₘ μ = MeasureTheory.Measure.bind μ κ`, for `κ` a kernel.
 -/
+
+public section
 
 /- This file is only for lemmas that are direct specializations of `Measure.bind` to kernels,
 anything more involved should go elsewhere (for example the `MeasureComp` file). -/

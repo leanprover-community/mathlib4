@@ -3,7 +3,9 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Combinatorics.Young.YoungDiagram
+module
+
+public import Mathlib.Combinatorics.Young.YoungDiagram
 
 /-!
 # Semistandard Young tableaux
@@ -42,6 +44,8 @@ Semistandard Young tableau
 
 -/
 
+@[expose] public section
+
 
 /-- A semistandard Young tableau is a filling of the cells of a Young diagram by natural
 numbers, such that the entries in each row are weakly increasing (left to right), and the entries
@@ -63,7 +67,7 @@ namespace SemistandardYoungTableau
 
 instance instFunLike {μ : YoungDiagram} : FunLike (SemistandardYoungTableau μ) ℕ (ℕ → ℕ) where
   coe := SemistandardYoungTableau.entry
-  coe_injective' T T' h := by
+  coe_injective T T' h := by
     cases T
     cases T'
     congr
@@ -126,10 +130,10 @@ theorem col_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j 
 def highestWeight (μ : YoungDiagram) : SemistandardYoungTableau μ where
   entry i j := if (i, j) ∈ μ then i else 0
   row_weak' hj hcell := by
-    rw [if_pos hcell, if_pos (μ.up_left_mem (by rfl) (le_of_lt hj) hcell)]
+    rw [ite_eq_left hcell, ite_eq_left (μ.up_left_mem (by rfl) (le_of_lt hj) hcell)]
   col_strict' hi hcell := by
-    rwa [if_pos hcell, if_pos (μ.up_left_mem (le_of_lt hi) (by rfl) hcell)]
-  zeros' not_cell := if_neg not_cell
+    rwa [ite_eq_left hcell, ite_eq_left (μ.up_left_mem (le_of_lt hi) (by rfl) hcell)]
+  zeros' not_cell := ite_eq_right not_cell
 
 @[simp]
 theorem highestWeight_apply {μ : YoungDiagram} {i j : ℕ} :

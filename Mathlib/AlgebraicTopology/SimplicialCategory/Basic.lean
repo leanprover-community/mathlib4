@@ -3,8 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Simplicial categories
@@ -31,9 +34,13 @@ category of simplicial sets in such a way that morphisms in
 
 -/
 
+@[expose] public section
+
 universe v u
 
-open CategoryTheory Category Simplicial MonoidalCategory
+open CategoryTheory Category MonoidalCategory
+
+open scoped Simplicial
 
 namespace CategoryTheory
 

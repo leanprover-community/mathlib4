@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.RingTheory.Coalgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # The category of coalgebras over a commutative ring
@@ -15,6 +17,8 @@ along with the forgetful functor to `ModuleCat`.
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -38,7 +42,7 @@ instance : CoeSort (CoalgCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
 @[simp] theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
-    ModuleCat.of R X.toModuleCat = X.toModuleCat :=
+    ↧X.toModuleCat = X.toModuleCat :=
   rfl
 
 variable (R) in
@@ -47,6 +51,11 @@ abbrev of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
     CoalgCat R :=
   { ModuleCat.of R X with
     instCoalgebra := (inferInstance : Coalgebra R X) }
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CoalgCat.of R X` as `↧X`. -/
+@[app_delab CoalgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
@@ -101,12 +110,12 @@ lemma hom_ext {M N : CoalgCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoa
 
 instance hasForgetToModule : HasForget₂ (CoalgCat R) (ModuleCat R) where
   forget₂ :=
-    { obj := fun M => ModuleCat.of R M
+    { obj := fun M => ↧M
       map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgCat R) :
-    (forget₂ (CoalgCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
+    (forget₂ (CoalgCat R) (ModuleCat R)).obj X = ↧X :=
   rfl
 
 @[simp]

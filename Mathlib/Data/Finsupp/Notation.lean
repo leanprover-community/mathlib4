@@ -3,7 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Finsupp.Single
+module
+
+public import Mathlib.Data.Finsupp.Single
 
 /-!
 # Notation for `Finsupp`
@@ -13,13 +15,15 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 `singleton`.
 -/
 
+public section
+
 namespace Finsupp
 
 open Lean Parser Term
 
 -- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
 @[nolint docBlame] -- we do not want any doc hover on this notation.
-def fun₀.matchAlts : Parser :=
+meta def fun₀.matchAlts : Parser :=
   leading_parser withPosition <| ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
 
 /-- `fun₀ | i => a` is notation for `Finsupp.single i a`, and with multiple match arms,
@@ -27,23 +31,26 @@ def fun₀.matchAlts : Parser :=
 
 As a result, if multiple match arms coincide, the last one takes precedence. -/
 @[term_parser]
-def fun₀ := leading_parser:maxPrec
-  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
+meta def fun₀ := leading_parser:maxPrec
+  -- Prefer `fun₀` over `λ₀` when pretty printing.
+  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" (preserveForPP := true) >> fun₀.matchAlts
+
+namespace Internal
 
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
+scoped syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
+scoped syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
 
 /-- `Finsupp` elaborator for `single₀`. -/
 @[term_elab stxSingle₀]
-def elabSingle₀ : Elab.Term.TermElab
+meta def elabSingle₀ : Elab.Term.TermElab
   | `(term| single₀ $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.single $i $x)) ty
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
 /-- `Finsupp` elaborator for `update₀`. -/
 @[term_elab stxUpdate₀]
-def elabUpdate₀ : Elab.Term.TermElab
+meta def elabUpdate₀ : Elab.Term.TermElab
   | `(term| update₀ $f $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.update $f $i $x)) ty
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
@@ -52,7 +59,7 @@ macro_rules
     let mut stx : Term ← `(0)
     let mut fst : Bool := true
     for xi in x do
-      for xii in (← Elab.Term.expandMatchAlt xi) do
+      for xii in Elab.Term.expandMatchAlt xi do
         match xii with
         | `(matchAltExpr| | $pat => $val) =>
           if fst then
@@ -63,15 +70,17 @@ macro_rules
         | _ => Macro.throwUnsupported
     pure stx
 
+end Internal
+
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander Finsupp.single]
-def singleUnexpander : Lean.PrettyPrinter.Unexpander
+meta def singleUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $pat $val) => `(fun₀ | $pat => $val)
   | _ => throw ()
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander Finsupp.update]
-def updateUnexpander : Lean.PrettyPrinter.Unexpander
+meta def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $f $pat $val) => match f with
     | `(fun₀ $xs:matchAlt*) => `(fun₀ $xs:matchAlt* | $pat => $val)
     | _ => throw ()

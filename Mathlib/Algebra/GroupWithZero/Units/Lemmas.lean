@@ -3,16 +3,22 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Hom
+module
+
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Hom
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists DenselyOrdered MulAction Ring
+
+open scoped Ring
 
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
@@ -32,7 +38,7 @@ lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ 
       exact (h.mul_right_cancel this).symm
     · exact ⟨⟨a, a⁻¹, mul_inv_cancel₀ h, inv_mul_cancel₀ h⟩, rfl⟩
 
-instance [GroupWithZero G₀] [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
+instance [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
     (f : F) : IsLocalHom f :=
   isLocalHom_of_exists_map_ne_one ⟨0, by simp⟩
 
@@ -129,7 +135,7 @@ theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
 
 @[simp]
 theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
-    MonoidWithZero.inverse a = Ring.inverse a :=
+    MonoidWithZero.inverse a = a⁻¹ʳ :=
   rfl
 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/

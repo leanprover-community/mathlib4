@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.Grade
-import Mathlib.Order.Nat
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Grade
+public import Mathlib.Order.Nat
 
 /-!
 # Finsets and multisets form a graded order
@@ -19,6 +21,8 @@ proves that they form a `ℕ`-graded order.
 * `Multiset.instGradeMinOrder_nat`: Multisets are `ℕ`-graded
 * `Finset.instGradeMinOrder_nat`: Finsets are `ℕ`-graded
 -/
+
+public section
 
 open Order
 
@@ -102,13 +106,17 @@ variable [DecidableEq α]
 lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovBy_insert _ _).covBy_of_lt <| ssubset_insert ha
 
+omit [DecidableEq α] in
+@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Finset α) := by
+  classical exact insert_empty_eq (β := Finset α) a ▸ covBy_insert <| notMem_empty a
+
 @[simp] lemma erase_covBy (ha : a ∈ s) : s.erase a ⋖ s := ⟨erase_ssubset ha, (erase_wcovBy _ _).2⟩
 
 lemma _root_.CovBy.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t := by
   simpa using h.exists_finset_cons
 
 lemma _root_.CovBy.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, t.erase a = s := by
-  simpa only [← coe_inj, coe_erase] using h.finset_coe.exists_set_sdiff_singleton
+  simpa only [← coe_inj, coe_erase] using! h.finset_coe.exists_set_sdiff_singleton
 
 lemma covBy_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t := by
   simp only [← coe_covBy_coe, Set.covBy_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]

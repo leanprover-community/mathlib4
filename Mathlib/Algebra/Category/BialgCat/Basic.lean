@@ -3,9 +3,11 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.RingTheory.Bialgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
 # The category of bialgebras over a commutative ring
@@ -16,6 +18,8 @@ along with the forgetful functors to `CoalgCat` and `AlgCat`.
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -30,6 +34,7 @@ structure BialgCat where
   [instRing : Ring carrier]
   [instBialgebra : Bialgebra R carrier]
 
+initialize_simps_projections BialgCat (-instRing, -instBialgebra)
 attribute [instance] BialgCat.instBialgebra BialgCat.instRing
 
 variable {R}
@@ -48,10 +53,17 @@ def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgCat R where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BialgCat.of R X` as `↧X`. -/
+@[app_delab BialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_counit {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
@@ -100,21 +112,14 @@ lemma hom_ext {X Y : BialgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBia
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance hasForget : HasForget.{v} (BialgCat.{v} R) where
-  forget :=
-    { obj := fun M => M
-      map := fun f => f.toBialgHom }
-  forget_faithful :=
-    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
-
 instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=
-    { obj := fun X => AlgCat.of R X
+    { obj := fun X => ↧X
       map := fun {X Y} f => AlgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgCat R) :
-    (forget₂ (BialgCat R) (AlgCat R)).obj X = AlgCat.of R X :=
+    (forget₂ (BialgCat R) (AlgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -124,12 +129,12 @@ theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
 
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where
   forget₂ :=
-    { obj := fun X => CoalgCat.of R X
+    { obj := fun X => ↧X
       map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgCat R) :
-    (forget₂ (BialgCat R) (CoalgCat R)).obj X = CoalgCat.of R X :=
+    (forget₂ (BialgCat R) (CoalgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]

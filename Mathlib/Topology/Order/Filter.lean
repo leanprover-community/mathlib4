@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Filter
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Topology.Filter
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on filters of a space with order topology
@@ -13,8 +15,10 @@ In this file we prove that `𝓝 (f x)` tends to `𝓝 Filter.atTop` provided th
 `Filter.atTop`, and similarly for `Filter.atBot`.
 -/
 
+public section
 
-open Topology
+
+open scoped Topology
 
 namespace Filter
 

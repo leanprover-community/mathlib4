@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.InnerProductSpace.Continuous
 
 /-!
 # Completion of an inner product space
@@ -13,9 +15,11 @@ We show that the separation quotient and the completion of an inner product spac
 product spaces.
 -/
 
+public section
+
 noncomputable section
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -96,7 +100,7 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   smul_left x y c :=
     Completion.induction_on₂ x y
       (isClosed_eq (Continuous.inner (continuous_fst.const_smul c) continuous_snd)
-        ((continuous_mul_left _).comp (by fun_prop)))
+        ((continuous_const_mul _).comp (by fun_prop)))
       fun a b => by simp only [← coe_smul c a, inner_coe, inner_smul_left]
 
 end UniformSpace.Completion

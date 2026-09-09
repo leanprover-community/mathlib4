@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Coherence
-import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # A `coherence` tactic for bicategories
@@ -18,6 +20,8 @@ This file mainly deals with the type class setup for the coherence tactic. The a
 tactic is given in `Mathlib/Tactic/CategoryTheory/Coherence.lean` at the same time as the coherence
 tactic for monoidal categories.
 -/
+
+public section
 
 noncomputable section
 
@@ -88,11 +92,11 @@ instance liftHom₂WhiskerRight {f g : a ⟶ b} (η : f ⟶ g) [LiftHom f] [Lift
 open Lean Elab Tactic Meta
 
 /-- Helper function for throwing exceptions. -/
-def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
+meta def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
   throwTacticEx `bicategorical_coherence g msg
 
 /-- Helper function for throwing exceptions with respect to the main goal. -/
-def exception' (msg : MessageData) : TacticM Unit := do
+meta def exception' (msg : MessageData) : TacticM Unit := do
   try
     liftMetaTactic (exception (msg := msg))
   catch _ =>
@@ -103,13 +107,13 @@ set_option quotPrecheck false in
 /-- Auxiliary definition for `bicategorical_coherence`. -/
 -- We could construct this expression directly without using `elabTerm`,
 -- but it would require preparing many implicit arguments by hand.
-def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
+meta def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
   Term.elabTerm
     (← ``((FreeBicategory.lift (Prefunctor.id _)).map₂ (LiftHom₂.lift $(← Term.exprToSyntax e))))
     none
 
 /-- Coherence tactic for bicategories. -/
-def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+meta def bicategoryCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   let thms := [``BicategoricalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
@@ -127,9 +131,7 @@ def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
-/-- Coherence tactic for bicategories.
-Use `pure_coherence` instead, which is a frontend to this one. -/
-elab "bicategory_coherence" : tactic => do bicategory_coherence (← getMainGoal)
+@[deprecated (since := "2026-05-27")] alias bicategory_coherence := bicategoryCoherence
 
 open Lean.Parser.Tactic
 

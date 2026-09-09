@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Violeta Hernández Palacios. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
 -/
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # Graded orders
@@ -53,6 +55,8 @@ Instead, we define graded orders by their grade function, without talking about 
 * [Konrad Engel, *Sperner Theory*][engel1997]
 * [Richard Stanley, *Enumerative Combinatorics*][stanley2012]
 -/
+
+@[expose] public section
 
 open Nat OrderDual
 
@@ -308,7 +312,7 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
   (GradeMinOrder.liftLeft (_ : Fin n → ℕ) Fin.val_strictMono fun _ _ => CovBy.coe_fin) fun a h => by
     cases n
     · exact a.elim0
-    rw [h.eq_bot, Fin.bot_eq_zero]
+    rw [h.eq_bot, bot_eq_zero]
     exact isMin_bot
 
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=

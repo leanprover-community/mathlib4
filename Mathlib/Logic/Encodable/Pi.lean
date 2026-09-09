@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Equiv.Finset
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Equiv.Finset
 
 /-!
 # Encodability of Pi types
@@ -17,6 +19,8 @@ This file provides instances of `Encodable` for types of vectors and (dependent)
   finite domain and countable codomain are encodable
 -/
 
+@[expose] public section
+
 open List (Vector)
 open Nat List
 
@@ -26,11 +30,11 @@ variable {α : Type*}
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
 instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
-  Subtype.encodable
+  inferInstanceAs <| Encodable (Subtype _)
 
 /-- If `α` is countable, then so is `Vector α n`. -/
 instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
-  Subtype.countable
+  inferInstanceAs <| Countable (Subtype _)
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/
 instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=
@@ -52,7 +56,7 @@ encoding is not unique, we wrap it in `Trunc` to preserve computability. -/
 def fintypePi (α : Type*) (π : α → Type*) [DecidableEq α] [Fintype α] [∀ a, Encodable (π a)] :
     Trunc (Encodable (∀ a, π a)) :=
   (Fintype.truncEncodable α).bind fun a =>
-    (@fintypeArrow α (Σa, π a) _ _ (@Sigma.encodable _ _ a _)).bind fun f =>
+    (@fintypeArrow α (Σ a, π a) _ _ (@Sigma.encodable _ _ a _)).bind fun f =>
       Trunc.mk <|
         @Encodable.ofEquiv _ _ (@Subtype.encodable _ _ f _)
           (Equiv.piEquivSubtypeSigma α π)

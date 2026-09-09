@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon, Kim Morrison
 -/
-import Mathlib.Control.Bifunctor
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Control.Bifunctor
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Functor and bifunctors can be applied to `Equiv`s.
@@ -20,6 +22,8 @@ def Bifunctor.mapEquiv (F : Type u → Type v → Type w) [Bifunctor F] [LawfulB
     α ≃ β → α' ≃ β' → F α α' ≃ F β β'
 ```
 -/
+
+@[expose] public section
 
 
 universe u v w
