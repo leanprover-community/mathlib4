@@ -34,7 +34,7 @@ this representation need to be mindful of traversing the structure in an efficie
 
 `ListMatrix.transpose` is defined by recursion on the rows with explicit padding rather than
 through Batteries' `List.transpose`, so that it reduces in the kernel. This is also more
-efficient as it gives an `O(n^2)` transposition without any random access.
+efficient as it gives an `O(nm)` transposition without any random access.
 -/
 
 @[expose] public section
@@ -59,7 +59,7 @@ theorem dotProduct_zero [Mul α] [Add α] [Zero α] (l₁ l₂ : List α) : dotP
   rfl
 
 /- This is shaped to take the proof for the smaller dot product as an argument to produce a
-smaller proof term for the kernel check, as this avoids requiring Eq.trans and congrArg glue
+smaller proof term for the kernel check, as this avoids requiring `Eq.trans` and `congrArg` glue
 at each step. -/
 theorem dotProduct_succ_cons_cons [Mul α] [Add α] [Zero α] {n : ℕ} (a b : α) {l₁ l₂ : List α}
     {c : α} (h : dotProduct n l₁ l₂ = c) : dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + c :=

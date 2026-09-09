@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.Parsing
-public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.NormNum.Basic  -- shake: keep (`+`/`*` extensions run by `norm_matmul`)
 
 /-!
 # Products of matrix literals
@@ -30,7 +30,7 @@ The simproc simplifies the factors before matching them, so that a product of pr
 evaluated inside-out.
 
 Note that the simp lemmas unfolding `vecCons` compete with this simproc due to how `!![]` is
-currently elaborated, so this tactic should be used by `simp only` or with `↓` to run as a
+currently elaborated, so the simproc be used by `simp only` or with `↓` to run as a
 pre-procedure.
 -/
 
@@ -86,7 +86,6 @@ def proveDotProduct (normalizer : EntryNormalizer) (m : ℕ) (as bs : List Q($α
   -- kernel does by literal arithmetic
   have hDot : Q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold) :=
     mkExpectedPropHint h q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold)
-  -- normalize the rhs
   let r ← normalizer fold
   have v : Q($α) := r.expr
   have hFold : Q($fold = $v) := ← r.getProof
@@ -95,7 +94,7 @@ def proveDotProduct (normalizer : EntryNormalizer) (m : ℕ) (as bs : List Q($α
 end
 
 /-- Construct a proof term that `[a₀, …] = [b₀, …]` in `List α` from proofs of `aᵢ = bᵢ`.
-`MVarId.congrN` also works, but takes around 40x heartbeats to elaborate. -/
+`MVarId.congrN` also works, but is much slower to elaborate. -/
 def mkListCongr {u : Level} {α : Q(Type u)} :
     List ((a : Q($α)) × (b : Q($α)) × Q($a = $b)) →
       (l₁ : Q(List $α)) × (l₂ : Q(List $α)) × Q($l₁ = $l₂)

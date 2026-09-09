@@ -3,7 +3,6 @@ module
 import Mathlib.Tactic.Matrix.Mul
 
 import Mathlib.Basic.Complex.Basic
-import Mathlib.Basic.Real.Basic
 
 /-! # Tests for the `norm_matmul` simproc -/
 
