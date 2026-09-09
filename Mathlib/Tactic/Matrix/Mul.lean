@@ -13,7 +13,7 @@ public import Mathlib.Tactic.NormNum.Core
 # Products of matrix literals
 
 `proveMul` proves `A * B = C` for matrix literals `A` and `B`, with the entries of `C` normalized
-by a given `EntryNormalizer`, and returns it as a `Simp.Result` that other tactics consume in
+by a given `EntryNormalizer`, and returns `C` with the proof for other tactics to consume in
 `MetaM`; `norm_matmul` is the simproc wrapping it, currently using `norm_num` as the normalizer.
 
 ## Main definitions
@@ -94,7 +94,7 @@ def proveDotProduct (normalizer : EntryNormalizer) (m : ℕ) (as bs : List Q($α
 
 end
 
-/-- Prove `[a₀, …] = [b₀, …]` in `List α` from proofs of `aᵢ = bᵢ` by manually applying `congr`.
+/-- Construct a proof term that `[a₀, …] = [b₀, …]` in `List α` from proofs of `aᵢ = bᵢ`.
 `MVarId.congrN` also works, but takes around 40x heartbeats to elaborate. -/
 def mkListCongr {u : Level} {α : Q(Type u)} :
     List ((a : Q($α)) × (b : Q($α)) × Q($a = $b)) →
@@ -102,38 +102,38 @@ def mkListCongr {u : Level} {α : Q(Type u)} :
   | [] => ⟨q([]), q([]), q(rfl)⟩
   | ⟨a, b, h⟩ :: es =>
     let ⟨l₁, l₂, hl⟩ := mkListCongr es
-    ⟨q($a :: $l₁), q($b :: $l₂), q(congr (congrArg List.cons $h) $hl)⟩
+    ⟨q($a :: $l₁), q($b :: $l₂), q(congrArg₂ List.cons $h $hl)⟩
 
-/-- Prove `e = C`, where `e` is the product of the matrix literals with rows `rowsA` and
-`rowsB` over `α`, and `C` is the literal of the product with entries normalized by
-`normalizer`. -/
-def proveMul {u : Level} (normalizer : EntryNormalizer) (e : Expr) (l m n : ℕ) (α : Q(Type u))
-    (rowsA rowsB : Array (Array Expr)) : MetaM Simp.Result := do
+/-- Prove `e = C`, where `e` is the product of the matrix literals with rows `A` and `B` over
+`α`, and `C` is the literal of the product with entries normalized by `normalizer`. -/
+def proveMul {u : Level} (normalizer : EntryNormalizer) (l m n : ℕ) (α : Q(Type u))
+    (e : Q(Matrix (Fin $l) (Fin $n) $α)) (A B : Array (Array Q($α))) :
+    MetaM ((C : Q(Matrix (Fin $l) (Fin $n) $α)) × Q($e = $C)) := do
   let zα ← synthInstanceQ q(Zero $α)
   let aα ← synthInstanceQ q(Add $α)
   let mα ← synthInstanceQ q(Mul $α)
   let _acm ← synthInstanceQ q(AddCommMonoid $α)
-  let cols : Array (Array Expr) :=
-    Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (rowsB[i]!)[j]!
-  let cells ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j =>
-    proveDotProduct zα aα mα normalizer m rowsA[i]!.toList cols[j]!.toList
-  let entries := cells.map (·.map (·.result))
-  let ⟨_, _, hAll⟩ := mkListCongr (α := q(List $α)) <| cells.toList.map fun row =>
+  let Bt : Array (Array Q($α)) :=
+    Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (B[i]!)[j]!
+  -- assemble the dotproduct matrix from A and Bᵗ
+  let mulEntryEqs ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j =>
+    proveDotProduct zα aα mα normalizer m A[i]!.toList Bt[j]!.toList
+  let mulEntries := mulEntryEqs.map (·.map (·.result))
+  let ⟨_, _, hMulEntries⟩ := mkListCongr (α := q(List $α)) <| mulEntryEqs.toList.map fun row =>
     mkListCongr <| row.toList.map fun d =>
       ⟨q(ListMatrix.dotProduct $(d.n) $(d.l₁) $(d.l₂)), d.result, d.proof⟩
-  let mkLists (rows : Array (Array Expr)) : MetaM Q(List (List $α)) := do
-    mkListLit q(List $α) (← rows.toList.mapM (mkListLit α ·.toList))
-  have A : Q(List (List $α)) := ← mkLists rowsA
-  have B : Q(List (List $α)) := ← mkLists rowsB
+  have listA : Q(List (List $α)) := ← mkListLit q(List $α) (← A.toList.mapM (mkListLit α ·.toList))
+  have listB : Q(List (List $α)) := ← mkListLit q(List $α) (← B.toList.mapM (mkListLit α ·.toList))
   have C : Q(Matrix (Fin $l) (Fin $n) $α) :=
-    Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (entries[i]!)[j]!)
-  let hMul := q((ofLists_mul $l $m $n $A $B).symm)
-  let hC := q(congrArg (ofLists (α := $α) $l $n) $hAll)
+    Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (mulEntries[i]!)[j]!)
+  let hMul := q((ofLists_mul $l $m $n $listA $listB).symm)
+  let hC := q(congrArg (ofLists (α := $α) $l $n) $hMulEntries)
   let pf ← mkEqTrans hMul hC
   -- `pf` is stated on `ofLists` forms; the hint to `e = C` holds because `ofLists` on
   -- a row-list literal unfolds to exactly the `Matrix.of`/`vecCons` term of the `!![…]`
   -- literal, so the kernel settles it by reduction
-  return { expr := C, proof? := some (← mkExpectedTypeHint pf (← mkEq e C)) }
+  have h : Q($e = $C) := ← mkExpectedTypeHint pf q($e = $C)
+  return ⟨C, h⟩
 
 /-- Core of the `norm_matmul` simproc with the given entry normalizer; the factors are
 simplified first. -/
@@ -149,7 +149,10 @@ def normMatMulCore (normalizer : EntryNormalizer) : Simp.Simproc := fun e => do
       return .continue
   let rAB ← Simp.mkCongr (← Simp.mkCongr { expr := e.appFn!.appFn! } rA) rB
   let u ← getDecLevel R
-  return .done (← rAB.mkEqTrans (← proveMul (u := u) normalizer rAB.expr l m n R rowsA rowsB))
+  have α : Q(Type u) := R
+  have AB : Q(Matrix (Fin $l) (Fin $n) $α) := rAB.expr
+  let ⟨C, h⟩ ← proveMul normalizer l m n α AB rowsA rowsB
+  return .done (← rAB.mkEqTrans { expr := C, proof? := some h })
 
 end Mathlib.Tactic.Matrix
 
