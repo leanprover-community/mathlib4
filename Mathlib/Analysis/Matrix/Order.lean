@@ -175,18 +175,6 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
     intro i
     simpa [h1.spectrum_eq_image_range] using @h2 (h1.eigenvalues i)
 
-/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
-@[grind =]
-theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
-    (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
-  refine ⟨fun h => h.isUnit, fun h => .of_dotProduct_mulVec_pos hx.1 fun v hv => ?_⟩
-  obtain ⟨y, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
-  simp_rw [dotProduct_mulVec, ← vecMul_vecMul, star_eq_conjTranspose, ← star_mulVec,
-    ← dotProduct_mulVec, dotProduct_star_self_pos_iff]
-  contrapose hv
-  rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
-    mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
-
 theorem isStrictlyPositive_iff_posDef [DecidableEq n] {x : Matrix n n 𝕜} :
     IsStrictlyPositive x ↔ x.PosDef :=
   ⟨fun h => h.nonneg.posSemidef.posDef_iff_isUnit.mpr h.isUnit,
@@ -196,9 +184,6 @@ alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPo
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
 
-lemma PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
-    A.PosDef ↔ A.det ≠ 0 := by
-  simp [hA.posDef_iff_isUnit, isUnit_iff_isUnit_det]
 
 section kronecker
 
