@@ -8,9 +8,9 @@ module
 public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
-public meta import Lean.Meta.Tactic.Rfl
 
 public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.Relation.Rfl
 public import Lean.Elab.ConfigEval
 public import Mathlib.Basic.Logic.Basic
 
@@ -669,7 +669,7 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   let s ← saveState
   /- We do `liftReflToEq` here rather than in `preCongr!` since we don't want to commit to it
      if there are no relevant congr lemmas. -/
-  let mvarId ← mvarId.liftReflToEq
+  let mvarId ← Mathlib.Tactic.liftReflToEq mvarId
   for (passName, pass) in congrPasses! do
     try
       if let some mvarIds ← pass config mvarId then
