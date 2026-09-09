@@ -236,16 +236,10 @@ theorem self_le_arctan (h : x ≤ 0) : x ≤ arctan x := by
   simpa using arctan_le_self <| neg_nonneg.2 h
 
 theorem abs_arctan_lt_abs (h : x ≠ 0) : |arctan x| < |x| := by
-  rcases h.lt_or_gt with h | h
-  · rw [abs_of_neg h, abs_of_neg (arctan_lt_zero.2 h)]
-    exact neg_lt_neg (self_lt_arctan h)
-  · rw [abs_of_pos h, abs_of_pos (arctan_pos.2 h)]
-    exact arctan_lt_self h
+  grind [arctan_lt_self, self_lt_arctan, arctan_pos, arctan_lt_zero]
 
 theorem abs_arctan_le_abs : |arctan x| ≤ |x| := by
-  rcases eq_or_ne x 0 with rfl | h
-  · simp
-  · exact (abs_arctan_lt_abs h).le
+  grind [abs_arctan_lt_abs, arctan_zero]
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
     (hx3 : x ≠ 0) : cos x < (1 / √(x ^ 2 + 1) : ℝ) := by
