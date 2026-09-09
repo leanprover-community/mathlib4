@@ -85,7 +85,7 @@ def proveDotProduct (normalizer : EntryNormalizer) (m : ℕ) (as bs : List Q($α
   -- restate the chain's successor tower as the numeral `m`: Qq cannot check the two equal, the
   -- kernel does by literal arithmetic
   have hDot : Q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold) :=
-    ← mkExpectedTypeHint h q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold)
+    mkExpectedPropHint h q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold)
   -- normalize the rhs
   let r ← normalizer fold
   have v : Q($α) := r.expr
@@ -115,24 +115,25 @@ def proveMul {u : Level} (normalizer : EntryNormalizer) (l m n : ℕ) (α : Q(Ty
   let _acm ← synthInstanceQ q(AddCommMonoid $α)
   let Bt : Array (Array Q($α)) :=
     Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (B[i]!)[j]!
+  let rowsA := A.map (·.toList)
+  let colsB := Bt.map (·.toList)
   -- assemble the dotproduct matrix from A and Bᵗ
   let mulEntryEqs ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j =>
-    proveDotProduct zα aα mα normalizer m A[i]!.toList Bt[j]!.toList
+    proveDotProduct zα aα mα normalizer m rowsA[i]! colsB[j]!
   let mulEntries := mulEntryEqs.map (·.map (·.result))
   let ⟨_, _, hMulEntries⟩ := mkListCongr (α := q(List $α)) <| mulEntryEqs.toList.map fun row =>
     mkListCongr <| row.toList.map fun d =>
       ⟨q(ListMatrix.dotProduct $(d.n) $(d.l₁) $(d.l₂)), d.result, d.proof⟩
   have listA : Q(List (List $α)) := ← mkListLit q(List $α) (← A.toList.mapM (mkListLit α ·.toList))
   have listB : Q(List (List $α)) := ← mkListLit q(List $α) (← B.toList.mapM (mkListLit α ·.toList))
-  have C : Q(Matrix (Fin $l) (Fin $n) $α) :=
-    Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (mulEntries[i]!)[j]!)
+  let C := Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (mulEntries[i]!)[j]!)
   let hMul := q((ofLists_mul $l $m $n $listA $listB).symm)
   let hC := q(congrArg (ofLists (α := $α) $l $n) $hMulEntries)
   let pf ← mkEqTrans hMul hC
   -- `pf` is stated on `ofLists` forms; the hint to `e = C` holds because `ofLists` on
   -- a row-list literal unfolds to exactly the `Matrix.of`/`vecCons` term of the `!![…]`
   -- literal, so the kernel settles it by reduction
-  have h : Q($e = $C) := ← mkExpectedTypeHint pf q($e = $C)
+  have h : Q($e = $C) := mkExpectedPropHint pf q($e = $C)
   return ⟨C, h⟩
 
 /-- Core of the `norm_matmul` simproc with the given entry normalizer; the factors are

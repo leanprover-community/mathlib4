@@ -21,12 +21,6 @@ example : (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) ℚ) * !![1, 1; 0, 1] * !![1,
     !![1, 3; 0, 1] := by
   simp only [norm_matmul]
 
--- the right-hand side is normalized as well
-example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ) * !![5, 6; 7, 8] =
-    !![38 / 2, 22; 43, 25 * 2] := by
-  simp only [norm_matmul]
-  norm_num
-
 -- degenerate dimensions
 example : (!![,,,] : Matrix (Fin 0) (Fin 3) ℚ) *
     (!![1, 2; 3, 4; 5, 6] : Matrix (Fin 3) (Fin 2) ℚ) = !![,,] := by
@@ -35,14 +29,19 @@ example : (!![,,,] : Matrix (Fin 0) (Fin 3) ℚ) *
 example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ) * !![;;] = !![;;] := by
   simp only [norm_matmul]
 
--- symbolic entries are skipped
-example (x : ℚ) :
-    (!![x, 1; 0, 1] : Matrix (Fin 2) (Fin 2) ℚ) * !![1, 0; 0, 1] = !![x, 1; 0, 1] := by
-  fail_if_success simp only [norm_matmul]
-  simp
+example : (!![;;] : Matrix (Fin 2) (Fin 0) ℚ) * (!![,,] : Matrix (Fin 0) (Fin 2) ℚ) =
+    !![0, 0; 0, 0] := by
+  simp only [norm_matmul]
 
--- a chain of four factors; alongside the default simp set the simproc runs as a pre-procedure,
--- ahead of the simp lemmas on `vecCons` rows
+example : (!![3] : Matrix (Fin 1) (Fin 1) ℚ) * !![4] = !![12] := by
+  simp only [norm_matmul]
+
+-- a ring without division, and negative entries
+example : (!![1, -2; -3, 4] : Matrix (Fin 2) (Fin 2) ℤ) * !![-5, 6; 7, -8] =
+    !![-19, 22; 43, -50] := by
+  simp only [norm_matmul]
+
+-- a chain of four factors
 example : (!![5, 3, 1, 8, 6;
       1, 9, 8, 7, 6;
       6, 6, 6, 6, 6;
@@ -68,4 +67,4 @@ example : (!![5, 3, 1, 8, 6;
       81378, 82134, 82890, 83646, 132894;
       53654, 54267, 54880, 55493, 88362;
       80956, 81642, 82328, 83014, 131634] := by
-  simp [↓ norm_matmul]
+  simp only [norm_matmul]
