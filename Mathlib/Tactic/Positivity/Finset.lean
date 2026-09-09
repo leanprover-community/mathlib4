@@ -97,11 +97,9 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
     -- Else try to show that the sum is positive because one summand is. We look for the witness
     -- among the assumptions of the form `a ∈ s`, since we have no other way of getting hold of an
     -- element of `s` at which `f` might be positive.
-    let p_pos' : Option Q(0 < $e) ← do
+    let p_pos' : Option Q(0 < $e) ← (do
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
-      let mut res : Option Q(0 < $e) := none
       for ldecl in ← getLCtx do
-        if res.isSome then break
         if ldecl.isImplementationDetail then continue
         let_expr Membership.mem _ _ _ s' a := ldecl.type | continue
         unless ← withNewMCtxDepth (isDefEq s' s) do continue
@@ -109,11 +107,10 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
         have hmem : Q($a ∈ $s) := ldecl.toExpr
         have fa : Q($α) := .betaRev f #[a]
         let .positive pa ← catchNone (core zα pα fa) | continue
-        have pa : Q(0 < $f $a) := pa
         assertInstancesCommute
-        res := some q(@sum_pos' $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
+        return some q(@sum_pos' $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
           (fun i _ ↦ $pr i) ⟨$a, $hmem, $pa⟩)
-      pure res
+      return none)
     if let some p_pos' := p_pos' then
       return .positive p_pos'
     -- Fall back to showing that the sum is nonnegative
