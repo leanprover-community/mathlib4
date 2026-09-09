@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Basic.Sign.Defs
+public import Mathlib.Analysis.Normed.Module.Ray
 
 /-!
 # Normalized vector
@@ -71,5 +72,9 @@ theorem normalize_smul (r : ℝ) (x : V) :
   · simp [normalize_smul_of_pos, h_pos]
   · simp
   · simp [normalize_smul_of_neg, h_neg]
+
+theorem sameRay_iff_normalize_eq {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+    SameRay ℝ x y ↔ normalize x = normalize y :=
+  sameRay_iff_inv_norm_smul_eq_of_ne hx hy
 
 end NormedSpace
