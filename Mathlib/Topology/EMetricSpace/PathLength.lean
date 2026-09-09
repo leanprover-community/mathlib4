@@ -44,33 +44,26 @@ def length (γ : Path a b) : ℝ≥0∞ :=
   arcLength γ 0 1
 
 /-- The length of a path agrees with the variation of its underlying map on `Set.univ`. -/
-theorem length_eq_eVariationOn (γ : Path a b) :
-    γ.length = eVariationOn γ univ := by
+theorem length_eq_eVariationOn (γ : Path a b) : γ.length = eVariationOn γ univ := by
   rw [length, arcLength, ← univ_eq_Icc]
 
 /-- The endpoint distance of a path is bounded above by its length. -/
-theorem edist_le_length (γ : Path a b) :
-    edist a b ≤ γ.length := by
+theorem edist_le_length (γ : Path a b) : edist a b ≤ γ.length := by
     simp_rw [length, ← γ.source, ← γ.target]
     exact edist_le_arcLength _ zero_le_one
 
 /-- The constant path has zero length. -/
 @[simp]
-theorem length_refl (x : E) :
-    (refl x).length = 0 :=
+theorem length_refl (x : E) : (refl x).length = 0 :=
   arcLength_eq_zero_of_constantOn (refl x) (a := 0) (b := 1) (by simp)
 
 /-- Reversing a path does not change its length. -/
 @[simp]
-theorem length_symm (γ : Path a b) :
-    γ.symm.length = γ.length := by
+theorem length_symm (γ : Path a b) : γ.symm.length = γ.length := by
   rw [length, length, symm_eq_comp γ,
     arcLength_comp_eq_of_antitoneOn _ _
       (strictAnti_symm.antitone.antitoneOn (Icc (0 : I) 1))
-      (by
-        rw [ContinuousOn.image_Icc_of_antitoneOn nonneg'
-          (unitInterval.continuous_symm.continuousOn : ContinuousOn σ (Icc (0 : I) 1))
-          (strictAnti_symm.antitone.antitoneOn (Icc (0 : I) 1))]),
+      (symm_image_Icc 0 1 nonneg'),
     symm_one, symm_zero]
 
 /-! ## Auxiliary lemmas for concatenation -/
@@ -78,7 +71,7 @@ theorem length_symm (γ : Path a b) :
 /-- The length of a path is the variation of its extension on `[0,1]`. -/
 lemma length_eq_eVariationOn_extend (γ : Path a b) :
     γ.length = eVariationOn γ.extend (Icc (0 : ℝ) 1) := by
-  rw [length_eq_eVariationOn, ← restrict_extend γ, eVariationOn.comp_eq_of_monotoneOn _ _
+  rw [length_eq_eVariationOn, ← extend_comp_subtype_val γ, eVariationOn.comp_eq_of_monotoneOn _ _
     ((Subtype.mono_coe _).monotoneOn univ), Subtype.coe_image_univ I]
 
 /-- Auxiliary lemma: the affine map `t ↦ 2t` sends the left half
@@ -86,28 +79,21 @@ of the unit interval onto `[0,1]`. -/
 private lemma image_double_Icc_half :
     (fun t : I ↦ (2 : ℝ) * t) '' Icc (0 : I) ((⟨(1 / 2 : ℝ), by norm_num⟩ : I))
         = Icc (0 : ℝ) 1 := by
-  rw [ContinuousOn.image_Icc_of_monotoneOn nonneg' (by fun_prop)
+  simp [ContinuousOn.image_Icc_of_monotoneOn nonneg' (by fun_prop)
     (Subtype.mono_coe _ |>.const_mul zero_le_two |>.monotoneOn _)]
-  simp
 
 /-- Auxiliary lemma: the arc length of the left half of `γ.symm`
 is the arc length of the right half of `γ`. -/
 private lemma arcLength_symm_left_half (γ : Path a b) :
     arcLength γ.symm 0 ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) =
       arcLength γ ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) 1 := by
-  rw [arcLength, symm_eq_comp γ]
-  calc
-    _ = eVariationOn γ (σ '' Icc (0 : I) ((⟨(1 / 2 : ℝ), by norm_num⟩ : I))) :=
-        eVariationOn.comp_eq_of_antitoneOn γ σ fun _ _ _ _ hxy => symm_le_symm.mpr hxy
-    _ = eVariationOn γ (Icc ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) 1) := by
-        rw [ContinuousOn.image_Icc_of_antitoneOn nonneg'
-          ((unitInterval.continuous_symm.continuousOn :
-            ContinuousOn σ (Icc 0 ((⟨(1 / 2 : ℝ), by norm_num⟩ : I))))
-          )
-          (strictAnti_symm.antitone.antitoneOn _), symm_half, symm_zero]
-    _ = arcLength γ ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) 1 := by rw [arcLength]
+  rw [arcLength, symm_eq_comp γ,
+    eVariationOn.comp_eq_of_antitoneOn γ σ fun _ _ _ _ hxy => symm_le_symm.mpr hxy,
+    symm_image_Icc 0 ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) nonneg', symm_half,
+    symm_zero, arcLength]
 
 /-! ## Length of concatenations -/
+
 /-- Auxiliary lemma: the arc length of a concatenation on its left half
 is the length of the first path. -/
 private lemma arcLength_trans_left (γ : Path a b) (η : Path b c) :
