@@ -8,7 +8,6 @@ module
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Sober
-public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.Prespectral
 public import Mathlib.Topology.WithTopology
 
@@ -74,6 +73,26 @@ lemma IsCompact.isOpen_constructibleTopology_of_isClosed {s : Set X}
     (hs : IsCompact sᶜ) (ho : IsClosed s) : IsOpen[constructibleTopology X] s := by
   apply TopologicalSpace.isOpen_generateFrom_of_mem
   simp [constructibleTopologySubbasis, ho, hs]
+
+lemma IsCompact.isClosed_constructibleTopology_of_isOpen {s : Set X}
+    (hs : IsCompact s) (ho : IsOpen s) : IsClosed[constructibleTopology X] s := by
+  rw [← @isOpen_compl_iff]
+  apply TopologicalSpace.isOpen_generateFrom_of_mem
+  simp [constructibleTopologySubbasis, ho, hs]
+
+lemma IsCompact.isClosed_constructibleTopology_of_isClosed {s : Set X}
+    (hs : IsCompact sᶜ) (ho : IsClosed s) : IsClosed[constructibleTopology X] s := by
+  rw [← @isOpen_compl_iff]
+  apply TopologicalSpace.isOpen_generateFrom_of_mem
+  simp [constructibleTopologySubbasis, ho, hs]
+
+lemma IsCompact.isClopen_constructibleTopology_of_isOpen {s : Set X}
+    (hs : IsCompact s) (ho : IsOpen s) : IsClopen[constructibleTopology X] s :=
+  ⟨isClosed_constructibleTopology_of_isOpen hs ho, isOpen_constructibleTopology_of_isOpen hs ho⟩
+
+lemma IsCompact.isClopen_constructibleTopology_of_isClosed {s : Set X}
+    (hs : IsCompact sᶜ) (ho : IsClosed s) : IsClopen[constructibleTopology X] s :=
+  ⟨isClosed_constructibleTopology_of_isClosed hs ho, isOpen_constructibleTopology_of_isClosed hs ho⟩
 
 @[simp]
 lemma compl_mem_constructibleTopologySubbasis_iff {s : Set X} :
