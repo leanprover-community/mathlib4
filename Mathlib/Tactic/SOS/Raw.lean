@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import SOS.Core
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 
 /-!
 # Real semantics for the SOS expression language

@@ -7,7 +7,7 @@ module
 public import Mathlib.Tactic.SOS.Certificate
 public import Mathlib.Tactic.SOS.Raw
 public import Mathlib.Tactic.SOS.Polynomial
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.List.GetD
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Tactic.Linarith

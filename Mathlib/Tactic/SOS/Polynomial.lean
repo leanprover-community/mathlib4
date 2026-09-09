@@ -9,7 +9,7 @@ public import SOS.Core
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 
 /-!
 # Interpreting Hex polynomials in Mathlib
@@ -94,7 +94,7 @@ def toMvPolynomial (p : CMvPolynomial n Rat) : MvPolynomial (Fin n) Rat :=
 
 private theorem coeff_toMvPolynomial (m : Mono n)
     (p : CMvPolynomial n Rat) :
-    MvPolynomial.coeff (monoEquiv m) (toMvPolynomial p) =
+    (toMvPolynomial p).coeff (monoEquiv m) =
       Hex.MvPoly.coeff m p := by
   rw [toMvPolynomial, MvPolynomial.coeff_sum]
   by_cases hm : m ∈ p.monomials
