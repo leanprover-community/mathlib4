@@ -165,6 +165,28 @@ theorem iConvexComb_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
     s.weights.sum fun x r ↦ r • (f x -ᵥ p) by simpa
   simp [Finsupp.sum_mapDomain_index, add_smul]
 
+section Module
+variable [ConvexSpace R V] [IsModuleConvexSpace R V]
+
+/-- Subtracting a fixed base point is an affine map from an affine space to its model module. -/
+@[fun_prop]
+lemma isAffineMap_vsub_const (p : P) : IsAffineMap R ((· -ᵥ p) : P → V) where
+  map_sConvexComb s := by
+    have := Finset.map_affineCombination s.weights.support id s.weights s.total
+      (AffineEquiv.vaddConst R p).symm.toAffineMap
+    rw [Finset.affineCombination_eq_linear_combination _ _ _ s.total] at this
+    rw [sConvexComb_map, iConvexComb_eq_sum, sConvexComb_eq_affineCombination]
+    simpa [Finsupp.sum] using this
+
+end Module
+
+attribute [local instance] Convexity.ConvexSpace.ofModule in
+/-- Subtracting a base point from a convex combination in an affine space gives the corresponding
+linear combination in the model module. -/
+lemma sConvexComb_vsub (s : StdSimplex R P) (p : P) :
+    s.sConvexComb -ᵥ p = s.weights.sum fun x r ↦ r • (x -ᵥ p) := by
+  rw [(isAffineMap_vsub_const (V := V) p).map_sConvexComb, sConvexComb_map, iConvexComb_eq_sum]
+
 /-- `convexCombPair` in an affine space is the affine line map. -/
 theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
     (h : s + t = 1) (x y : P) :
@@ -196,18 +218,17 @@ end AddTorsor
 
 namespace Convexity
 
+section IsCancelConvexSpace
+variable {R V P : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup V]
+  [Module R V] [AddTorsor V P] [ConvexSpace R P] [IsAffineConvexSpace R V P]
+
+attribute [local instance] ConvexSpace.ofModule in
 /-- An affine space modelled on a torsion-free module over linearly ordered scalars is a
 cancellative convex space. -/
-instance IsCancelConvexSpace.of_addTorsor {R V P : Type*} [Ring R] [LinearOrder R]
-    [IsStrictOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-    [Module.IsTorsionFree R V] [ConvexSpace R P] [IsAffineConvexSpace R V P] :
-    IsCancelConvexSpace R P where
-  convexCombPair_left_injective a b ha hb hab y x₁ x₂ hx := by
-    simp only [AddTorsor.convexCombPair_eq_lineMap, AffineMap.lineMap_apply] at hx
-    have ha' : IsRegular a :=
-      ⟨(strictMono_mul_left_of_pos ha).injective, (strictMono_mul_right_of_pos ha).injective⟩
-    have : x₁ -ᵥ y = x₂ -ᵥ y :=
-      Module.IsTorsionFree.isSMulRegular (M := V) ha' (vadd_right_cancel _ hx)
-    simpa using congr($this +ᵥ y)
+instance IsCancelConvexSpace.of_addTorsor [Module.IsTorsionFree R V] : IsCancelConvexSpace R P :=
+  .of_injective (AddTorsor.isAffineMap_vsub_const (V := V) (Classical.arbitrary P))
+    fun _ _ ↦ vsub_left_cancel
+
+end IsCancelConvexSpace
 
 end Convexity
