@@ -54,9 +54,9 @@ namespace Polynomial
 
 /-- Armendariz's theorem for reduced semirings: if `p * q = 0` in `R[X]` with `R` reduced, then
 every coefficient of `p` annihilates every coefficient of `q`. -/
-theorem coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) :
-    ∀ j i, (coeff p i) * (coeff q j) = 0 := by
-  intro j
+theorem coeff_mul_coeff_eq_zero_of_isReduced (p q : R[X]) (h : p * q = 0) (j i : ℕ) :
+    coeff p i * coeff q j = 0 := by
+  revert i -- Revert so iHj quantifies over Nat instead of bounded Nat.
   induction j using Nat.strong_induction_on with
   | _ j IHj =>
     intro i
