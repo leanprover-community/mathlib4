@@ -38,7 +38,7 @@ open CategoryTheory
 
 namespace ContinuousCohomology
 
-/-- The Tate-Shafarevich group of a continuous representation. -/
+/-- The Tate-Shafarevich group of an abelian additive group with a galois action. -/
 @[simps!]
 noncomputable def tateSha : AddSubgroup (continuousCohomology n A) :=
   ⨅ v, (map (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker
