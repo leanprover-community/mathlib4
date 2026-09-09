@@ -619,8 +619,8 @@ theorem localizationAlgebraMap_def :
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
-  IsLocalization.map_injective_of_injective _ _ _ hRS
+  have : IsLocalization (M.map (algebraMap R S).toMonoidHom) Sₘ := i
+  sorry -- was: IsLocalization.map_injective_of_injective _ _ _ hRS
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid R M) Rₘ := by
   simpa

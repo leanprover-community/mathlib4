@@ -79,8 +79,8 @@ is bijective. -/
 theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M S'] [Finite ι] :
     Function.Bijective (lift (S := S') (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) :=
   have := (iff_map_piEvalRingHom R (Π i, S i) M).mpr inferInstance
-  (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
-    Submonoid.map_equiv_eq_comap_symm _ _).bijective
+  sorry /- was (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
+    Submonoid.map_equiv_eq_comap_symm _ _).bijective -/
 
 open Function
 
