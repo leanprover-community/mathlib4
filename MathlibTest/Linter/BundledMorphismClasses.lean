@@ -116,11 +116,11 @@ please change the definition to take in a `LinearMap` argument instead. -/
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the definition to take in a `SemilinearMap` argument instead. -/
 #check @foolem /- The theorem `foolem` involves a definition on a bundled morphism
-(namely `TODO`), but takes in the morphism class `LinearMapClass` as argument:
+(namely `_private.MathlibTest.Linter.BundledMorphismClasses.0.LinearMap.baz`), but takes in the morphism class `LinearMapClass` as argument:
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the theorem to reference a concrete `LinearMap` instead. -/
 #check @withProjection /- The theorem `withProjection` involves a definition on a bundled morphism
-(namely `TODO`), but takes in the morphism class `LinearMapClass` as argument:
+(namely `_private.MathlibTest.Linter.BundledMorphismClasses.0.LinearMap.baz`), but takes in the morphism class `LinearMapClass` as argument:
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the theorem to reference a concrete `LinearMap` instead. -/
 -/

@@ -80,7 +80,7 @@ open Batteries.Tactic.Lint in
 
     -- We don't warn about deprecated declarations: those will be removed soon anyway.
     if Lean.Linter.isDeprecated (← getEnv) declName then
-        return none
+      return none
 
     let constantInfo := ((← getEnv).find? declName).get!
     if constantInfo.isDefinition then
@@ -90,7 +90,6 @@ open Batteries.Tactic.Lint in
       if morphismClassesToLint.isEmpty then return none
       else if #[`ofClass, `casesOn, `recOn].contains (declName.components.getLastD `dummy) then
         -- Heuristic: if a definition is named literally `ofClass`, don't warn.
-        -- We also exclude auto-generated declarations `recOn` and `casesOn`.
         return none
       else if falseProjectionNames.contains declName then
         -- If the declaration in question is named like a morphism class to morphism coercion,
@@ -109,17 +108,18 @@ open Batteries.Tactic.Lint in
       let constants := constantInfo.type.getUsedConstants.filter (!classProjections.contains ·)
       let env := ← getEnv
       -- For each declaration used in this theorem's statement, collect all morphism classes
-      -- involved in it.
+      -- involved in it. Save the pairs `(declaration, used classes)`.
       let morphismClassesInvolved := constants.map fun c ↦
-        ((env.find? c).get!).type.getUsedConstants.filter (morphismClassesToLint.contains ·)
-      if !(morphismClassesInvolved.filter (fun s ↦ !s.isEmpty)).isEmpty then
+        (c, ((env.find? c).get!).type.getUsedConstants.filter (morphismClassesToLint.contains ·))
+      let interesting := morphismClassesInvolved.filter (fun (_c, s) ↦ !s.isEmpty)
+      if !interesting.isEmpty then
         -- The theorem involves a definition taking in a morphism class.
         -- Verify that the theorem is stated for concrete morphisms, not a morphism class.
         let morphismClassesInStatement := constants.filter (morphismClassesToLint.contains ·)
         if !morphismClassesInStatement.isEmpty then
           let morName := morphismClassesInStatement[0]! |>.toString.dropEnd 5
           return m!"The theorem `{.ofConstName declName true}` involves a definition on a bundled morphism\n\
-          (namely `TODO`), but takes in the morphism class `{morName}Class` as argument:\n\
+          (namely `{interesting[0]!.1}`), but takes in the morphism class `{morName}Class` as argument:\n\
           Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad \
           idea:\nplease change the theorem to reference a concrete `{morName}` instead."
       -- future: check conversely about theorems using just the FunLike coercion
