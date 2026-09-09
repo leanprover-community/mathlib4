@@ -275,9 +275,9 @@ def inclusionOfMooreComplexMap (X : SimplicialObject A) :
   · intro j
     simp_rw [NormalizedMooreComplex.objX_add_one]
     rw [comp_zsmul,
-      ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ _ (Finset.mem_univ j))]
-    rw [Category.assoc, kernelSubobject_arrow_comp, comp_zero, smul_zero]
-  -- -- finally, we study the remaining term which is induced by X.δ 0
+      ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ _ (Finset.mem_univ j)),
+      Category.assoc, kernelSubobject_arrow_comp, comp_zero, smul_zero]
+  -- finally, we study the remaining term which is induced by X.δ 0
   rw [add_zero, Fin.val_zero, pow_zero, one_zsmul]
   dsimp [NormalizedMooreComplex.objD, NormalizedMooreComplex.objX]
   cases i <;> simp
