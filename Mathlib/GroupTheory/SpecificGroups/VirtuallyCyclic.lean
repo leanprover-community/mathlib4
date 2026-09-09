@@ -36,20 +36,18 @@ Besson–Courtois–Gallot–Sambusetti.
 
 namespace Group
 
-variable (G : Type*) [Group G] {G' : Type*} [Group G']
+variable {G G' : Type*} [Group G] [Group G']
 
 /-- An additive group is **virtually cyclic** if it has a cyclic additive
 subgroup of finite index. -/
 @[mk_iff]
 class _root_.AddGroup.IsVirtuallyAddCyclic (G : Type*) [AddGroup G] : Prop where
-  exists_isAddCyclic_and_finiteIndex : ∃ H : AddSubgroup G, IsAddCyclic H ∧ H.FiniteIndex
+  exists_isAddCyclic_and_finiteIndex (G) : ∃ H : AddSubgroup G, IsAddCyclic H ∧ H.FiniteIndex
 
 /-- A group is **virtually cyclic** if it has a cyclic subgroup of finite index. -/
 @[mk_iff, to_additive existing]
-class IsVirtuallyCyclic : Prop where
-  exists_isCyclic_and_finiteIndex : ∃ H : Subgroup G, IsCyclic H ∧ H.FiniteIndex
-
-variable {G}
+class IsVirtuallyCyclic (G : Type*) [Group G] : Prop where
+  exists_isCyclic_and_finiteIndex (G) : ∃ H : Subgroup G, IsCyclic H ∧ H.FiniteIndex
 
 /-- A cyclic group is virtually cyclic. -/
 @[to_additive]
@@ -89,7 +87,7 @@ theorem IsVirtuallyCyclic.of_surjective (f : G →* G') (hf : Function.Surjectiv
     [IsVirtuallyCyclic G] : IsVirtuallyCyclic G' := by
   obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
   exact ⟨H.map f, isCyclic_of_surjective _ (f.subgroupMap_surjective H),
-    hfi.map_of_surjective hf⟩
+    Subgroup.FiniteIndex.map_of_surjective H hf⟩
 
 /-- A group embedding into a virtually cyclic group is virtually cyclic: the
 preimage of the cyclic finite-index subgroup witnesses it. -/
@@ -98,7 +96,7 @@ theorem IsVirtuallyCyclic.of_injective (f : G →* G') (hf : Function.Injective 
     [IsVirtuallyCyclic G'] : IsVirtuallyCyclic G := by
   obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G'›.exists_isCyclic_and_finiteIndex
   exact ⟨H.comap f,
-    isCyclic_of_injective (f.subgroupComap H) (f.subgroupComap_injective_of_injective H hf),
+    isCyclic_of_injective (f.subgroupComap H) (f.subgroupComap_injective H hf),
     inferInstance⟩
 
 /-- Every subgroup of a virtually cyclic group is virtually cyclic. -/
