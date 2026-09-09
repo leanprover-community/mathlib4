@@ -391,14 +391,14 @@ instance smoothOfRelativeDimension [Finite n] :
     RingHom.isStandardSmoothOfRelativeDimension_algebraMap]
   exact Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial _ _
 
+lemma smoothOfRelativeDimension_of_card_eq [Finite n] {m : ℕ} (h : Nat.card n = m) :
+    SmoothOfRelativeDimension m (𝔸(n; S) ↘ S) := h ▸ smoothOfRelativeDimension n S
+
 /-- The affine `n`-space (indexed by `ULift (Fin n)`) over `S` is smooth of relative
 dimension `n`. -/
 instance smoothOfRelativeDimension_fin {S : Scheme.{u}} (n : ℕ) :
-    SmoothOfRelativeDimension n (𝔸(ULift.{u} (Fin n); S) ↘ S) := by
-  simpa using smoothOfRelativeDimension (ULift.{u} (Fin n)) S
-
-lemma smoothOfRelativeDimension_of_card_eq [Finite n] {m : ℕ} (h : Nat.card n = m) :
-    SmoothOfRelativeDimension m (𝔸(n; S) ↘ S) := h ▸ smoothOfRelativeDimension n S
+    SmoothOfRelativeDimension n (𝔸(ULift.{u} (Fin n); S) ↘ S) :=
+  smoothOfRelativeDimension_of_card_eq S (by simp)
 
 instance [Finite n] : Smooth (𝔸(n; S) ↘ S) := (smoothOfRelativeDimension n S).smooth
 
