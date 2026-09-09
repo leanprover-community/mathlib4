@@ -45,7 +45,7 @@ universe u v
 
 /-- The category of `C^n` manifolds over `𝕜`. -/
 structure MfldCat (𝕜 : Type v) [NontriviallyNormedField 𝕜] (n : ℕ∞ω) where
-  private mk ::
+  _mkInternal ::
   /-- The model normed space. -/
   E : Type u
   /-- The model space. -/
@@ -80,8 +80,6 @@ instance : CoeSort (MfldCat 𝕜 n) (Type u) := ⟨carrier⟩
 
 attribute [coe] MfldCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object of `MfldCat 𝕜 n` associated to a `C^n` manifold `X` modeled on `I`.
 
 This is the preferred way to construct a term of `MfldCat 𝕜 n`. -/
@@ -96,22 +94,18 @@ lemma coe_of : (of (n := n) X I : Type u) = X := rfl
 /-- The type of morphisms in `MfldCat 𝕜 n`. -/
 @[ext]
 structure Hom (M N : MfldCat.{u, v} 𝕜 n) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `C^n` map. -/
   hom' : ContMDiffMap M.I N.I M N n
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (MfldCat 𝕜 n) where
   Hom M N := Hom M N
   id M := ⟨.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (MfldCat 𝕜 n) (fun M N => ContMDiffMap M.I N.I M N n) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MfldCat` back into a `ContMDiffMap`. -/
 abbrev Hom.hom (f : Hom M N) := ConcreteCategory.hom (C := MfldCat 𝕜 n) f
@@ -160,11 +154,11 @@ abbrev ofNormedSpace (n : ℕ∞ω) (E : Type u) [NormedAddCommGroup E] [NormedS
   of E (modelWithCornersSelf 𝕜 E)
 
 instance hasForgetToTopCat : HasForget₂ (MfldCat 𝕜 n) TopCat.{u} where
-  forget₂.obj M := .of M
+  forget₂.obj M := ↧M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
 
 @[simp] lemma forget₂_topCat_obj (M : MfldCat 𝕜 n) :
-    (forget₂ (MfldCat 𝕜 n) TopCat).obj M = .of M := rfl
+    (forget₂ (MfldCat 𝕜 n) TopCat).obj M = ↧M := rfl
 
 @[simp] lemma forget₂_topCat_map (f : M ⟶ N) :
     (forget₂ (MfldCat 𝕜 n) TopCat).map f = TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩ := rfl
