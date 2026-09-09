@@ -179,10 +179,9 @@ lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : M
     rw [eLpNorm_exponent_top hfg, eLpNorm_exponent_top hf,
       eLpNorm_exponent_top hg]
     exact eLpNormEssSup_piecewise f g hs
-  ·
-
-
-#exit
+  · have h := hfg
+    simp only [AEStronglyMeasurable.piecewise_iff hs] at h
+    grind [eLpNorm_of_not_aestronglyMeasurable]
 
 protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
     (hf : MemLp f p (μ.restrict s)) (hg : MemLp g p (μ.restrict sᶜ)) :
@@ -192,7 +191,7 @@ protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (
     exact AEStronglyMeasurable.piecewise hs hf.aestronglyMeasurable hg.aestronglyMeasurable
   rw [memLp_iff]
   obtain rfl | hp_top := eq_or_ne p ∞
-  · rw [eLpNorm_top_piecewise f g hs hf.aestronglyMeasurable hg.aestronglyMeasurable]
+  · rw [eLpNorm_top_piecewise f g hs]
     exact max_lt hf hg
   rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_zero hp_top
     (AEStronglyMeasurable.piecewise hs hf.aestronglyMeasurable hg.aestronglyMeasurable),
