@@ -14,6 +14,7 @@ This file defines Turing reducibility between total functions as oracles.
 
 @[expose] public section
 
+namespace Oracle.Single
 open Oracle.Single
 
 @[simp] abbrev TuringReducible (f g : ℕ → ℕ) : Prop := RecursiveIn g f
@@ -81,3 +82,5 @@ private instance : Preorder (ℕ → ℕ) where
   le_refl := .refl
   le_trans _ _ _ := TuringReducible.trans
   lt := TuringReducibleStrict
+
+end Oracle.Single
