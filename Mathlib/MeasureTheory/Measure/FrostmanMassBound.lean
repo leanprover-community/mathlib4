@@ -38,6 +38,8 @@ Hausdorff dimension, Frostman, mass distribution principle, fractal
 
 open scoped MeasureTheory ENNReal NNReal
 
+variable {X : Type*} [EMetricSpace X] [MeasurableSpace X] [BorelSpace X]
+
 namespace MeasureTheory
 
 /-- **Frostman's mass distribution principle.** If `ν s ≤ ediam s ^ d` for all
@@ -51,7 +53,7 @@ theorem massBound_le_dimH
   -- Mass distribution: `ν ≤ μH[d]`.
   have hle : ν ≤ μH[(d : ℝ)] := le_hausdorffMeasure (d : ℝ) ν ε hε hbound
   -- In particular `ν A ≤ μH[d] A`, so `μH[d] A ≠ 0`.
-  have hνle : ν A ≤ μH[(d : ℝ)] A := le_iff'.mp hle A
+  have hνle : ν A ≤ μH[(d : ℝ)] A := hle A
   have hAne : μH[(d : ℝ)] A ≠ 0 := by
     intro h0
     exact hνA (le_antisymm (h0 ▸ hνle) zero_le)
