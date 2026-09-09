@@ -172,6 +172,10 @@ theorem charpoly_reindex (e : n ≃ m)
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]
 
+theorem charpoly_submatrix_equiv_self (e : n ≃ m)
+    (M : Matrix m m R) : (M.submatrix e e).charpoly = M.charpoly :=
+  charpoly_reindex e.symm M
+
 lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
     (M.map f).charpoly = M.charpoly.map f := by
   rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det,
