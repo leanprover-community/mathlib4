@@ -6,6 +6,7 @@ Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
 module
 
 public import Mathlib.Tactic.NormNum.Pow
+public import Mathlib.Algebra.Group.Nat.Even
 
 import Mathlib.Algebra.Order.Ring.Nat
 
