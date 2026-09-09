@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
+public meta import Mathlib.Util.Qq
+
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Data.Multiset.Find
 
@@ -499,3 +501,31 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → O} {hf : f 0 0 = 0
 end ZipWith
 
 end Finsupp
+
+namespace Qq
+open Lean Meta
+
+/-- Match a type `α : Type u` against `X →₀ R`, returning `X` and `R` along with proofs that
+`u = max uX uR` and `α = (X →₀ R)`.
+
+Qq cannot match `α` against `~q($X →₀ $R)` directly, since that needs solving the universe
+constraint `u =?= max ?uX ?uR`, so we introduce the level metavariables by hand. -/
+meta def matchFinsupp {u : Level} (α : Q(Type u)) : MetaM <| Option <|
+    (uX uR : Level) × (X : Q(Type uX)) × (R : Q(Type uR)) × (instZero : Q(Zero $R)) ×'
+      (_ : u =QL max uX uR) ×' ($α =Q @Finsupp $X $R $instZero) :=
+  withNewMCtxDepth do
+    let uX ← mkFreshLevelMVar
+    let uR ← mkFreshLevelMVar
+    let X ← mkFreshExprMVarQ q(Type uX)
+    let R ← mkFreshExprMVarQ q(Type uR)
+    let instZero ← mkFreshExprMVarQ q(Zero $R)
+    let .defEq _ ← isLevelDefEqQ ql(u) ql(max uX uR) | pure none
+    let .defEq _ ← isDefEqQ q($α) q(@Finsupp $X $R $instZero) | pure none
+    let ⟨uX, _⟩ ← instantiateLevelMVarsQ uX
+    let ⟨uR, _⟩ ← instantiateLevelMVarsQ uR
+    let ⟨X, _⟩ ← instantiateMVarsQ' X
+    let ⟨R, _⟩ ← instantiateMVarsQ' R
+    let ⟨instZero, _⟩ ← instantiateMVarsQ' instZero
+    return some ⟨uX, uR, X, R, instZero, ⟨⟩, ⟨⟩⟩
+
+end Qq
