@@ -179,6 +179,12 @@ run_cmd do
       ``linter.tacticAnalysis.dummy] do
     throwError "wrong kinds: {kinds}"
 
+end tagging
+
+section rerunMessages
+
+open Lean Elab Mathlib.TacticAnalysis
+
 open Tactic in
 /-- Closes the goal with `trivial`, logging a message along the way. -/
 elab "loggingTrivial" : tactic => do
@@ -192,7 +198,7 @@ macro "probe" : tactic => `(tactic| trivial)
 def leaky := terminalReplacement "probe" "loggingTrivial" ``tacticProbe
   (fun _ _ _ => `(tactic| loggingTrivial)) (reportSuccess := true)
 
--- What a re-run tactic logs is not a finding of the pass and is not attributed to it.
+-- What a re-run tactic logs is not a finding of the pass and is not reported.
 /--
 warning: `loggingTrivial` can replace `probe`
 
@@ -203,7 +209,7 @@ set_option linter.tacticAnalysis.dummy true in
 example : True := by
   probe
 
-end tagging
+end rerunMessages
 
 section rwMerge
 

@@ -302,7 +302,7 @@ lemma face_empty (n : ℕ) :
 lemma face_univ (n : ℕ) :
     face.{u} (.univ : Finset (Fin (n + 1))) = ⊤ := by
   ext
-  simp only [Subfunctor.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+  simp only [Subfunctor.top_obj, Set.mem_univ, iff_true]
   apply Finset.subset_univ
 
 end stdSimplex
@@ -848,7 +848,6 @@ def toOfSimplex : Δ[n] ⟶ ofSimplex x :=
 lemma toOfSimplex_ι :
     toOfSimplex x ≫ (ofSimplex x).ι = yonedaEquiv.symm x := rfl
 
-@[simp]
 lemma yonedaEquiv_toOfSimplex :
     dsimp% yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ := by
   obtain ⟨x, rfl⟩ := yonedaEquiv.surjective x
@@ -860,7 +859,7 @@ instance : Epi (toOfSimplex x) := by
   ext m ⟨_, u, rfl⟩
   simp only [range_eq_ofSimplex, Subfunctor.toFunctor_obj,
     yonedaEquiv_toOfSimplex, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true]
+    Set.mem_univ, iff_true]
   exact ⟨u, by dsimp⟩
 
 lemma isIso_toOfSimplex_iff :
