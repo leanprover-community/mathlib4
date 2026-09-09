@@ -386,6 +386,25 @@ lemma expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
 lemma expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
   Nat.pow_pos (expChar_pos R q)
 
+-- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
+/-- The characteristic is zero if the exponential characteristic is one. -/
+lemma charZero_of_expChar_one' [ExpChar R 1] : CharZero R :=
+  (expChar_one_iff _).mp ‹_›
+
+/-- The exponential characteristic is one if the characteristic is zero. -/
+lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
+  cases hq
+  · exact CharP.eq R hp (.ofCharZero R)
+  · exact False.elim (Nat.not_prime_one ‹_›)
+
+/-- The exponential characteristic is one iff the characteristic is zero. -/
+lemma expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 := by
+  constructor
+  · rintro rfl
+    exact char_zero_of_expChar_one R p
+  · rintro rfl
+    exact expChar_one_of_char_zero R q
+
 end AddMonoidWithOne
 
 section NonAssocSemiring
@@ -404,31 +423,6 @@ lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
 @[simp] lemma ringExpChar.eq_one [CharZero R] : ringExpChar R = 1 := by
   rw [ringExpChar, ringChar.eq_zero, max_eq_right (Nat.zero_le _)]
 
-section Nontrivial
-variable [Nontrivial R]
-
-/-- The exponential characteristic is one if the characteristic is zero. -/
-lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
-  cases hq
-  · exact CharP.eq R hp (.ofCharZero R)
-  · exact False.elim (CharP.char_ne_one R 1 rfl)
-
--- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
-/-- The characteristic is zero if the exponential characteristic is one. -/
-lemma charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
-  cases hq
-  · assumption
-  · exact False.elim (CharP.char_ne_one R 1 rfl)
-
-/-- The exponential characteristic is one iff the characteristic is zero. -/
-lemma expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 := by
-  constructor
-  · rintro rfl
-    exact char_zero_of_expChar_one R p
-  · rintro rfl
-    exact expChar_one_of_char_zero R q
-
-end Nontrivial
 end NonAssocSemiring
 
 lemma ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by

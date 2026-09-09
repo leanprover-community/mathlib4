@@ -19,7 +19,7 @@ variable {ι : Type*} {α : ι → Type*}
 
 theorem CharZero.pi (i : ι) [Π i, AddMonoidWithOne (α i)] [CharZero (α i)] :
     CharZero (Π i, α i) where
-  cast_injective _ _ h := Nat.cast_injective <| congrFun h i
+  cast_injective _ _ h := Nat.cast_injective congr($h i)
 
 variable [Nonempty ι]
 
