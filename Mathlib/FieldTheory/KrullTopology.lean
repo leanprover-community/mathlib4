@@ -5,7 +5,7 @@ Authors: Sebastian Monnet
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
@@ -44,7 +44,10 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
   in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
-- `AlgEquiv.restrictNormalHom_continuous`: restriction to a normal intermediate field is continuous.
+- `AlgEquiv.restrictNormalHom_continuous`: restriction to a normal subextension is continuous.
+
+- `AlgEquiv.restrictNormalEquivOfIsPurelyInseparable`: restriction across a purely inseparable
+  extension induces a topological group isomorphism when both fields are normal over the base.
 
 ## Notation
 
@@ -183,29 +186,6 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) :=
   OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
 
-/-- Restriction of automorphisms to a normal intermediate field is continuous for the Krull
-topology. -/
-theorem AlgEquiv.restrictNormalHom_continuous {k K : Type*} [Field k] [Field K] [Algebra k K]
-    (L : IntermediateField k K) [Normal k L] :
-    Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
-  apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
-  intro N hN
-  rw [map_one, krullTopology_mem_nhds_one_iff] at hN
-  obtain ⟨L', _, hO⟩ := hN
-  have := Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
-  apply mem_nhds_iff.mpr
-  use (IntermediateField.lift L').fixingSubgroup
-  constructor
-  · intro x hx
-    apply hO
-    simp only [SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff] at hx ⊢
-    intro y hy
-    have := AlgEquiv.restrictNormal_commutes x L y
-    dsimp at this
-    rw [hx y.1 ((IntermediateField.mem_lift y).mpr hy)] at this
-    exact SetLike.coe_eq_coe.mp this
-  · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L'), congrFun rfl⟩
-
 /-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : T2Space Gal(L/K) :=
@@ -242,6 +222,77 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
       exact hφx (h_in_H hxE) }
 
 end KrullT2
+
+section Restriction
+
+open IntermediateField in
+/-- Restriction of automorphisms to a normal subextension is continuous for the Krull
+topology. -/
+theorem AlgEquiv.restrictNormalHom_continuous {k K : Type*} [Field k] [Field K] [Algebra k K]
+    (L : Type*) [Field L] [Algebra k L] [Algebra L K] [IsScalarTower k L K] [Normal k L] :
+    Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
+  classical
+  apply continuous_of_continuousAt_one _
+  rw [ContinuousAt, map_one]
+  refine ((galGroupBasis k K).nhds_one_hasBasis.tendsto_iff
+    (galGroupBasis k L).nhds_one_hasBasis).mpr ?_
+  rintro _ ⟨_, ⟨F, hF : FiniteDimensional k _, rfl⟩, rfl⟩
+  let f := IsScalarTower.toAlgHom k L K
+  refine ⟨_, ⟨_, ⟨F.map f, Module.Finite.equiv (F.equivMap f).toLinearEquiv, rfl⟩, rfl⟩, ?_⟩
+  intro σ hσ x
+  apply f.injective
+  exact (σ.restrictNormal_commutes L x).trans (hσ ⟨f x, ⟨x, x.2, rfl⟩⟩)
+
+open IntermediateField in
+/-- For a tower `L'/L/K` with `L'/L` purely inseparable and both `L/K` and `L'/K` normal,
+restriction induces an isomorphism of topological groups for the Krull topology. -/
+noncomputable def AlgEquiv.restrictNormalEquivOfIsPurelyInseparable
+    (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+    [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [Normal K L']
+    [IsPurelyInseparable L L'] : Gal(L'/K) ≃ₜ* Gal(L/K) := by
+  let e : Gal(L'/K) ≃* Gal(L/K) :=
+    MulEquiv.ofBijective (AlgEquiv.restrictNormalHom L)
+      ⟨AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable K L L',
+        AlgEquiv.restrictNormalHom_surjective L'⟩
+  refine { e with
+    continuous_toFun := AlgEquiv.restrictNormalHom_continuous L
+    continuous_invFun := ?_ }
+  classical
+  apply continuous_of_continuousAt_one e.symm
+  rw [ContinuousAt, map_one]
+  refine ((galGroupBasis K L).nhds_one_hasBasis.tendsto_iff
+    (galGroupBasis K L').nhds_one_hasBasis).mpr ?_
+  rintro _ ⟨_, ⟨F, hF : FiniteDimensional K _, rfl⟩, rfl⟩
+  have : Algebra.EssFiniteType K F := inferInstance
+  obtain ⟨s, rfl⟩ := essFiniteType_iff.mp this
+  let q := ringExpChar L
+  have : ExpChar L' q := expChar_of_injective_ringHom (algebraMap L L').injective q
+  choose n y hy using fun x : L' ↦ IsPurelyInseparable.pow_mem L q x
+  refine ⟨_, ⟨_, ⟨adjoin K (y '' (s : Set L')), ?_, rfl⟩, rfl⟩, ?_⟩
+  · exact finiteDimensional_adjoin fun x _ ↦ Algebra.IsIntegral.isIntegral x
+  · intro σ hσ
+    change e.symm σ ∈ (adjoin K (s : Set L')).fixingSubgroup
+    rw [IntermediateField.mem_fixingSubgroup_iff]
+    change ∀ x ∈ adjoin K (s : Set L'), e.symm σ • x = x
+    rw [forall_mem_adjoin_smul_eq_self_iff]
+    intro x hx
+    apply iterateFrobenius_inj L' q (n x)
+    change (e.symm σ x) ^ q ^ n x = x ^ q ^ n x
+    rw [← map_pow, ← hy x]
+    rw [← AlgEquiv.restrictNormal_commutes]
+    change algebraMap L L' (e (e.symm σ) (y x)) = _
+    rw [e.apply_symm_apply]
+    congr 1
+    exact hσ ⟨y x, subset_adjoin K _ ⟨x, hx, rfl⟩⟩
+
+@[simp]
+theorem AlgEquiv.restrictNormalEquivOfIsPurelyInseparable_apply
+    (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+    [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [Normal K L']
+    [IsPurelyInseparable L L'] (σ : Gal(L'/K)) :
+    restrictNormalEquivOfIsPurelyInseparable K L L' σ = σ.restrictNormal L := rfl
+
+end Restriction
 
 section TotallySeparated
 

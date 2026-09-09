@@ -402,6 +402,20 @@ theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsSca
 
 end IsPurelyInseparable
 
+/-- For a tower `K/E/F` with `K/E` purely inseparable and `E/F` normal, restriction of
+automorphisms from `K` to `E` is injective. -/
+theorem AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable
+    [Algebra E K] [IsScalarTower F E K] [Normal F E] [IsPurelyInseparable E K] :
+    Function.Injective (AlgEquiv.restrictNormalHom E : Gal(K/F) →* Gal(E/F)) := by
+  intro σ τ h
+  apply AlgEquiv.coe_toAlgHom_injective
+  apply IsPurelyInseparable.injective_restrictDomain E K F K
+  ext x
+  change σ (algebraMap E K x) = τ (algebraMap E K x)
+  exact (σ.restrictNormal_commutes E x).symm.trans <|
+    (congrArg (algebraMap E K) (DFunLike.congr_fun h x)).trans
+      (τ.restrictNormal_commutes E x)
+
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
 instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
