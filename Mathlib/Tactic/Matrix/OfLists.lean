@@ -14,11 +14,6 @@ public import Mathlib.Tactic.Matrix.ListMatrix
 `ofLists` reads a list of rows as a `Matrix`, and the results here transport the list
 operations to the matrix ones.
 
-## Main definitions
-
-* `ofList`
-* `ofLists`
-
 ## Main results
 
 * `ofLists_transpose`

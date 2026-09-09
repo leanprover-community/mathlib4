@@ -16,14 +16,6 @@ public import Mathlib.Tactic.NormNum.Basic  -- shake: keep (`+`/`*` extensions r
 by a given `EntryNormalizer`, and returns `C` with the proof for other tactics to consume in
 `MetaM`; `norm_matmul` is the simproc wrapping it, currently using `norm_num` as the normalizer.
 
-## Main definitions
-
-* `EntryNormalizer`
-* `proveDotProduct`
-* `proveMul`
-* `normMatMulCore`
-* `norm_matmul`
-
 ## Implementation notes
 
 The simproc simplifies the factors before matching them, so that a product of products is

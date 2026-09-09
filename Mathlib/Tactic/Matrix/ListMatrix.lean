@@ -8,16 +8,10 @@ module
 public import Mathlib.Data.Nat.Notation
 
 /-!
-# Matrices as lists of rows
+# List-based matrix representation and computation
 
-Computational definitions on matrices represented as lists of rows, `List (List α)`, for
-tactics that certify facts about matrix literals.
-
-## Main definitions
-
-* `ListMatrix.dotProduct`
-* `ListMatrix.transpose`
-* `ListMatrix.mul`
+An implementation of a list-based matrix representation and computation for tactics that certify
+facts about matrix literals.
 
 ## Implementation notes
 
@@ -31,10 +25,6 @@ carrier is chosen for easier inductive operations.
 
 Reading an entry by position costs the kernel a walk of that length. Therefore, operations on
 this representation need to be mindful of traversing the structure in an efficient order.
-
-`ListMatrix.transpose` is defined by recursion on the rows with explicit padding rather than
-through Batteries' `List.transpose`, so that it reduces in the kernel. This is also more
-efficient as it gives an `O(nm)` transposition without any random access.
 -/
 
 @[expose] public section
@@ -47,13 +37,13 @@ namespace Mathlib.Tactic.Matrix.ListMatrix
 
 variable {α : Type*}
 
-/-- The sum of exactly `n` pointwise products of `l₁` and `l₂`, missing entries read as `0`. -/
+/-- A term for the sum of exactly `n` pointwise products of `l₁` and `l₂` padded with 0. This allows
+its bridge lemma to be provable without `zero_mul`, which minimises the instance strength. -/
 def dotProduct [Mul α] [Add α] [Zero α] : ℕ → List α → List α → α
   | 0, _, _ => 0
   | n + 1, l₁, l₂ => l₁.headD 0 * l₂.headD 0 + dotProduct n l₁.tail l₂.tail
 
-/-! Controlled unfolding helpers of `dotProduct`, to avoid asking the kernel to unfold it, which
-would open `+`. -/
+/-! Controlled unfolding helpers of `dotProduct` -/
 
 theorem dotProduct_zero [Mul α] [Add α] [Zero α] (l₁ l₂ : List α) : dotProduct 0 l₁ l₂ = 0 :=
   rfl
@@ -66,7 +56,9 @@ theorem dotProduct_succ_cons_cons [Mul α] [Add α] [Zero α] {n : ℕ} (a b : �
   congrArg (a * b + ·) h
 
 /-- The transpose of a list of rows as `n` rows, where row `j` collects the `j`-th entries of
-the input rows padded with `0`. -/
+the input rows padded with `0`. Defined by recursion on the rows with explicit padding rather than
+through Batteries' `List.transpose`, so that it reduces in the kernel. This is also more
+efficient as it gives an `O(nm)` transposition without any random access. -/
 def transpose [Zero α] (n : ℕ) : List (List α) → List (List α)
   | [] => List.replicate n []
   | row :: rows => List.zipWith (· :: ·) ((row.rightpad n 0).take n) (transpose n rows)
