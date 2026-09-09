@@ -323,8 +323,9 @@ lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Multiset α) 
   aesop (add simp [disjoint_left])
 
 theorem pairwise_disjoint_powersetCard (s : Multiset α) :
-    _root_.Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
-  fun _ _ hij => disjoint_powersetCard_of_ne hij s s
+    _root_.Pairwise' fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) := by
+  rw [pairwise'_iff]
+  exact fun _ _ hij => disjoint_powersetCard_of_ne hij s s
 
 theorem bind_powerset_len {α : Type*} (S : Multiset α) :
     (bind (Multiset.range (card S + 1)) fun k => S.powersetCard k) = S.powerset := by
