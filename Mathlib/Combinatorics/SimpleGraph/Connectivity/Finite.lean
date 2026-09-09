@@ -39,121 +39,162 @@ theorem ConnectedComponent.card_le_card_of_le [Finite V] {G G' : SimpleGraph V} 
 This section provides efficient decidability instances for reachability and (pre)connectedness of
 finite graphs through a breadth-first search (BFS) algorithm.
 
-The algorithm is as follows: we maintain a finset of visited vertices which we grow with all its
-neighbors at each round of breadth-first search at, stopping as soon as a round adds no new vertex:
-a search costs `O((diam G + 1) * (card V) ^ 2)` adjacency tests.
+The algorithm is as follows: we maintain the list of vertices visited so far along with the list of
+vertices remaining to be visited, and we repeatedly move to the former the vertices of the latter
+that are adjacent to the *frontier*, namely the vertices visited during the previous round. We stop
+as soon as a round visits no new vertex. Since a vertex enters the frontier at most once, a search
+costs `O(|V| ^ 2)` adjacency tests.
 
-Vertices `u` and `v` are then reachable if `v` lies in the BFS-constructed finset of vertices
-reachable from `u`, and a graph is (pre)connected iff it's non-empty and (/empty or) every vertex is
-lies in the reachability finset of an arbitrarily-chosen vertex.
+Vertices `u` and `v` are then reachable if `v` lies in the BFS-constructed list of vertices
+reachable from `u`, and a graph is (pre)connected iff it's non-empty and (/empty or) every vertex
+lies in the reachability list of an arbitrarily-chosen vertex.
 -/
 
 section BFS
-variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj] {m n : ℕ} {s t : Finset V} {u v w : V}
+variable [DecidableRel G.Adj] {l s acc : List V} {n : ℕ} {u v w : V}
 
-variable (G s) in
-/-- One round of breadth-first search: `G.bfsStep s` consists of the vertices of `s` together with
-their neighbours. -/
-def bfsStep : Finset V := {w | w ∈ s ∨ ∃ v ∈ s, G.Adj v w}
+omit [DecidableRel G.Adj] in
+/-- A list of vertices closed under adjacency is closed under reachability. -/
+private lemma Reachable.mem_of_forall_adj_mem (huv : G.Reachable u v)
+    (hs : ∀ x ∈ s, ∀ y, G.Adj x y → y ∈ s) : u ∈ s → v ∈ s := by
+  obtain ⟨p⟩ := huv
+  induction p with
+  | nil => exact id
+  | cons hxy _ ih => exact fun hu ↦ ih (hs _ hu _ hxy)
+
+/-- One round of breadth-first search: `G.bfsStep s l acc` prepends to `acc` the vertices of the
+list `l` of vertices remaining to be visited that are adjacent to some vertex of the frontier `s`,
+namely the vertices getting visited during this round. -/
+def bfsStep (G : SimpleGraph V) [DecidableRel G.Adj] (s : List V) : List V → List V → List V
+  | [], acc => acc
+  | w :: l, acc => G.bfsStep s l (if s.any (G.Adj · w) then w :: acc else acc)
 
 @[simp, grind =]
-lemma mem_bfsStep : w ∈ G.bfsStep s ↔ w ∈ s ∨ ∃ v ∈ s, G.Adj v w := by simp [bfsStep]
+lemma mem_bfsStep : ∀ {l acc}, w ∈ G.bfsStep s l acc ↔ (w ∈ l ∧ ∃ v ∈ s, G.Adj v w) ∨ w ∈ acc
+  | [], acc => by simp [bfsStep]
+  | x :: l, acc => by rw [bfsStep, mem_bfsStep]; grind
 
-lemma subset_bfsStep : s ⊆ G.bfsStep s := fun _ hw ↦ G.mem_bfsStep.2 <| .inl hw
+/-- Iterate breadth-first search at most `n` times, stopping as soon as a round visits no new
+vertex.
 
-@[gcongr] lemma bfsStep_mono (hst : s ⊆ t) : G.bfsStep s ⊆ G.bfsStep t := by grind
+`G.bfsIterate n s l acc` is the list of visited vertices, where `s` is the current frontier, `l` the
+list of vertices remaining to be visited and `acc` the list of already visited vertices. -/
+def bfsIterate (G : SimpleGraph V) [DecidableRel G.Adj] :
+    ℕ → List V → List V → List V → List V
+  | 0, _, _, acc => acc
+  | n + 1, s, l, acc =>
+    let s' := G.bfsStep s l []
+    if s'.isEmpty then acc
+    else G.bfsIterate n s' (l.filter fun w ↦ !s.any (G.Adj · w)) (s' ++ acc)
 
-@[gcongr]
-lemma iterate_bfsStep_mono (hst : s ⊆ t) : G.bfsStep^[n] s ⊆ G.bfsStep^[n] t := by
-  induction n generalizing s t with
-  | zero => exact hst
-  | succ n ih => simpa only [Function.iterate_succ_apply] using ih (G.bfsStep_mono hst)
+/-- Breadth-first search only visits vertices reachable from `u`, assuming the frontier is made of
+visited vertices and that all visited vertices are reachable from `u`. -/
+lemma reachable_of_mem_bfsIterate (hs : ∀ x ∈ s, x ∈ acc) (hacc : ∀ x ∈ acc, G.Reachable u x)
+    (hv : v ∈ G.bfsIterate n s l acc) : G.Reachable u v := by
+  induction n generalizing s l acc with
+  | zero => exact hacc _ hv
+  | succ n ih =>
+  simp only [bfsIterate] at hv
+  split_ifs at hv with h
+  · exact hacc _ hv
+  refine ih (fun x hx ↦ List.mem_append_left _ hx) (fun x hx ↦ ?_) hv
+  rw [List.mem_append] at hx
+  obtain hx | hx := hx
+  · obtain ⟨-, y, hy, hyx⟩ | hx := mem_bfsStep.1 hx
+    · exact (hacc _ (hs _ hy)).trans hyx.reachable
+    · simp at hx
+  · exact hacc _ hx
 
-lemma subset_iterate_bfsStep : s ⊆ G.bfsStep^[n] s := by
-  induction n with
-  | zero => exact subset_rfl
-  | succ n ih => grw [Function.iterate_succ_apply', ih, ← G.subset_bfsStep]
-
-lemma iterate_bfsStep_subset_of_le (hmn : m ≤ n) : G.bfsStep^[m] s ⊆ G.bfsStep^[n] s := by
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
-  rw [Function.iterate_add_apply]
-  exact G.iterate_bfsStep_mono G.subset_iterate_bfsStep
-
-lemma mem_iterate_bfsStep_of_walk (p : G.Walk u v) : v ∈ G.bfsStep^[p.length] {u} := by
-  induction p with
-  | nil => simp
-  | cons h p ih =>
-    rw [Walk.length_cons, Function.iterate_succ_apply]
-    exact G.iterate_bfsStep_mono (by simp [h]) ih
-
-lemma reachable_of_mem_iterate_bfsStep (hv : v ∈ G.bfsStep^[n] {u}) : G.Reachable u v := by
-  induction n generalizing v with
+/-- Breadth-first search visits all vertices reachable from `u`, assuming it is run for at least as
+many rounds as there are vertices remaining to be visited, that every vertex is either visited or
+remaining, that `u` is visited and that all neighbours of a visited vertex outside of the frontier
+are themselves visited. -/
+lemma mem_bfsIterate_of_reachable (hn : l.length ≤ n) (hu : u ∈ acc) (hl : ∀ x, x ∈ l ∨ x ∈ acc)
+    (hacc : ∀ x ∈ acc, x ∉ s → ∀ y, G.Adj x y → y ∈ acc) (hv : G.Reachable u v) :
+    v ∈ G.bfsIterate n s l acc := by
+  induction n generalizing s l acc with
   | zero =>
-    rw [Function.iterate_zero_apply, Finset.mem_singleton] at hv
-    exact hv ▸ Reachable.refl _
+    rw [Nat.le_zero, List.length_eq_zero_iff] at hn
+    subst hn
+    simpa only [bfsIterate] using (hl v).resolve_left (by simp)
   | succ n ih =>
-    rw [Function.iterate_succ_apply', mem_bfsStep] at hv
-    obtain hv | ⟨w, hw, hwv⟩ := hv
-    · exact ih hv
-    · exact (ih hw).trans hwv.reachable
+  simp only [bfsIterate]
+  split_ifs with h
+  · -- No new vertex got visited, hence the visited vertices are closed under adjacency.
+    rw [List.isEmpty_iff, List.eq_nil_iff_forall_not_mem] at h
+    refine hv.mem_of_forall_adj_mem (fun x hx y hxy ↦ ?_) hu
+    by_cases hxs : x ∈ s
+    · exact (hl y).resolve_left fun hy ↦ h y <| mem_bfsStep.2 <| .inl ⟨hy, x, hxs, hxy⟩
+    · exact hacc _ hx hxs _ hxy
+  -- Some new vertex got visited, hence there is one less vertex remaining to be visited.
+  rw [List.isEmpty_iff] at h
+  obtain ⟨w, hw⟩ := List.exists_mem_of_ne_nil _ h
+  obtain ⟨hwl, hws⟩ : w ∈ l ∧ ∃ z ∈ s, G.Adj z w := by simpa using hw
+  refine ih ?_ (List.mem_append_right _ hu) (fun x ↦ ?_) (fun x hx hxs y hxy ↦ ?_)
+  · have : (l.filter fun w ↦ !s.any (G.Adj · w)).length < l.length :=
+      List.length_filter_lt_length_iff_exists.2 ⟨w, hwl, by simpa using hws⟩
+    lia
+  · obtain hx | hx := hl x
+    · by_cases hxs : ∃ z ∈ s, G.Adj z x
+      · exact .inr <| List.mem_append_left _ <| mem_bfsStep.2 <| .inl ⟨hx, hxs⟩
+      · exact .inl <| List.mem_filter.2 ⟨hx, by simpa using hxs⟩
+    · exact .inr <| List.mem_append_right _ hx
+  · simp only [List.mem_append, hxs, false_or, mem_bfsStep, List.not_mem_nil, or_false] at hx ⊢
+    by_cases hxs' : x ∈ s
+    · obtain hy | hy := hl y
+      · exact .inl ⟨hy, x, hxs', hxy⟩
+      · exact .inr hy
+    · exact .inr <| hacc _ hx hxs' _ hxy
 
-/-- Iterate `G.bfsStep` at most `n` times, stopping as soon as no new vertex shows up. -/
-def bfsIterate : ℕ → Finset V → Finset V
-  | 0, s => s
-  | n + 1, s => if (G.bfsStep s).card ≤ s.card then s else bfsIterate n (G.bfsStep s)
+variable [DecidableEq V]
 
-lemma bfsIterate_eq_iterate_bfsStep (n : ℕ) (s : Finset V) :
-    G.bfsIterate n s = G.bfsStep^[n] s := by
-  induction n generalizing s with
-  | zero => rfl
-  | succ n ih =>
-    rw [bfsIterate]
-    split_ifs with h
-    · have hs : G.bfsStep s = s := (Finset.eq_of_subset_of_card_le G.subset_bfsStep h).symm
-      exact (Function.iterate_fixed hs _).symm
-    · rw [ih, ← Function.iterate_succ_apply]
+variable (G) in
+/-- The list of vertices reachable from `u`, computed by breadth-first search through the list `l`
+of all vertices. -/
+def bfsList (u : V) (l : List V) : List V := G.bfsIterate (l.length - 1) [u] (l.erase u) [u]
 
-/-- The finset of vertices reachable from `u`, computed by breadth-first search. -/
-def reachableFinset (u : V) : Finset V := G.bfsIterate (Fintype.card V) {u}
+lemma mem_bfsList (hl : ∀ w, w ∈ l) : v ∈ G.bfsList u l ↔ G.Reachable u v := by
+  refine ⟨reachable_of_mem_bfsIterate (fun x hx ↦ hx) (fun x hx ↦ ?_), fun hv ↦ ?_⟩
+  · rw [List.mem_singleton] at hx
+    exact hx ▸ .refl _
+  · refine mem_bfsIterate_of_reachable (by simp [hl]) (by simp) (fun x ↦ ?_) (by simp) hv
+    obtain rfl | hxu := eq_or_ne x u
+    · exact .inr (by simp)
+    · exact .inl <| (List.mem_erase_of_ne hxu).2 <| hl x
 
-@[simp]
-lemma mem_reachableFinset : v ∈ G.reachableFinset u ↔ G.Reachable u v := by
-  rw [reachableFinset, bfsIterate_eq_iterate_bfsStep]
-  refine ⟨G.reachable_of_mem_iterate_bfsStep, fun h ↦ h.elim_path fun p ↦ ?_⟩
-  exact G.iterate_bfsStep_subset_of_le p.2.length_lt.le (G.mem_iterate_bfsStep_of_walk p.1)
+lemma preconnected_iff_forall_mem_bfsList (hl : ∀ w, w ∈ l) (u : V) :
+    G.Preconnected ↔ ∀ v, v ∈ G.bfsList u l := by
+  simp only [mem_bfsList hl]
+  exact ⟨fun h v ↦ h u v, fun h x y ↦ (h x).symm.trans (h y)⟩
+
+lemma connected_iff_forall_mem_bfsList (hl : ∀ w, w ∈ l) (u : V) :
+    G.Connected ↔ ∀ v, v ∈ G.bfsList u l := by
+  rw [connected_iff, preconnected_iff_forall_mem_bfsList hl u, and_iff_left ⟨u⟩]
+
+variable [Fintype V]
 
 /-- Decides reachability of vertices `u` and `v` by performing a breadth-first search from `u`. -/
-instance decidableReachable : DecidableRel G.Reachable :=
-  fun _ _ ↦ decidable_of_iff _ G.mem_reachableFinset
-
-lemma preconnected_iff_forall_mem_reachableFinset (u : V) :
-    G.Preconnected ↔ ∀ v, v ∈ G.reachableFinset u := by
-  simp only [mem_reachableFinset]
-  exact ⟨fun h v ↦ h u v, fun h x y ↦ (h x).symm.trans (h y)⟩
+instance decidableReachable : DecidableRel G.Reachable := fun _u _v ↦
+  (Fintype.truncList V).lift (fun l ↦ decidable_of_iff _ (mem_bfsList l.2))
+    fun _ _ ↦ Subsingleton.elim ..
 
 /-- Decides preconnectedness of `G` by checking whether the vertex set is empty and, if not,
 by performing a breadth-first search from an arbitrarily chosen vertex. -/
 instance decidablePreconnected : Decidable G.Preconnected :=
-  if h : Fintype.card V = 0 then
-    isTrue (by rw [Fintype.card_eq_zero_iff] at h; exact .of_subsingleton)
-  else
-    (truncOfCardPos <| by lia).lift
-      (fun u ↦ decidable_of_iff _ (G.preconnected_iff_forall_mem_reachableFinset u).symm)
-      fun _ _ ↦ Subsingleton.elim _ _
+  (Fintype.truncList V).lift
+    (fun ⟨l, hl⟩ ↦ match l, hl with
+      | [], hl => isTrue fun x _ ↦ absurd (hl x) (by simp)
+      | u :: l, hl => decidable_of_iff _ (preconnected_iff_forall_mem_bfsList hl u).symm)
+    fun _ _ ↦ Subsingleton.elim ..
 
-lemma connected_iff_forall_mem_reachableFinset (u : V) :
-    G.Connected ↔ ∀ v, v ∈ G.reachableFinset u := by
-  rw [connected_iff, G.preconnected_iff_forall_mem_reachableFinset u, and_iff_left ⟨u⟩]
-
-/-- Decides preconnectedness of `G` by checking whether the vertex set is empty and, if not,
+/-- Decides connectedness of `G` by checking whether the vertex set is empty and, if not,
 by performing a breadth-first search from an arbitrarily chosen vertex. -/
 instance decidableConnected : Decidable G.Connected :=
-  if h : Fintype.card V = 0 then
-    isFalse fun hG ↦ (Fintype.card_eq_zero_iff.1 h).false hG.nonempty.some
-  else
-    (truncOfCardPos <| by lia).lift
-      (fun u ↦ decidable_of_iff _ (G.connected_iff_forall_mem_reachableFinset u).symm)
-      fun _ _ ↦ Subsingleton.elim ..
+  (Fintype.truncList V).lift
+    (fun ⟨l, hl⟩ ↦ match l, hl with
+      | [], hl => isFalse fun hG ↦ absurd (hl hG.nonempty.some) (by simp)
+      | u :: l, hl => decidable_of_iff _ (connected_iff_forall_mem_bfsList hl u).symm)
+    fun _ _ ↦ Subsingleton.elim ..
 
 instance : Fintype G.ConnectedComponent :=
   fast_instance% @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
