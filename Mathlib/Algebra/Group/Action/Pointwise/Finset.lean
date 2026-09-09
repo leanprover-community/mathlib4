@@ -144,26 +144,39 @@ end Semigroup
 section SMul
 variable [SMul α β] [DecidableEq β] {s t : Finset β} {a : α}
 
-theorem smul_finset_subset_smul_finset_iff_of_isSMulRegular (h : IsSMulRegular β a) :
+omit [DecidableEq β] in
+/-- If `a` is regular on `β`, it is regular on `Set β`. -/
+theorem IsSMulRegular.set (h : IsSMulRegular β a) : IsSMulRegular (Set β) a :=
+  Set.image_injective.mpr h
+
+/-- If `a` is regular on `β`, it is regular on `Finset β`. -/
+theorem IsSMulRegular.finset (h : IsSMulRegular β a) : IsSMulRegular (Finset β) a :=
+  Finset.image_injective h
+
+theorem IsSMulRegular.smul_finset_subset_smul_finset_iff (h : IsSMulRegular β a) :
     a • s ⊆ a • t ↔ s ⊆ t := image_subset_image_iff h
 
-theorem smul_finset_inter_of_isSMulRegular (h : IsSMulRegular β a) :
+theorem IsSMulRegular.smul_finset_inter (h : IsSMulRegular β a) :
     a • (s ∩ t) = a • s ∩ a • t := image_inter _ _ h
 
-theorem smul_finset_sdiff_of_isSMulRegular (h : IsSMulRegular β a) :
+theorem IsSMulRegular.smul_finset_sdiff (h : IsSMulRegular β a) :
     a • (s \ t) = a • s \ a • t := image_sdiff _ _ h
 
 open scoped symmDiff in
-theorem smul_finset_symmDiff_of_isSMulRegular (h : IsSMulRegular β a) :
+theorem IsSMulRegular.smul_finset_symmDiff (h : IsSMulRegular β a) :
     a • s ∆ t = (a • s) ∆ (a • t) := image_symmDiff _ _ h
 
-theorem card_smul_finset_of_isSMulRegular (h : IsSMulRegular β a) (s : Finset β) :
+theorem IsSMulRegular.card_smul_finset (h : IsSMulRegular β a) (s : Finset β) :
     (a • s).card = s.card := card_image_of_injective _ h
 
 end SMul
 
 section IsLeftCancelSMul
 variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β] {s t : Finset β} {a : α}
+
+@[to_additive]
+instance : IsLeftCancelSMul α (Finset β) where
+  left_cancel' a := Finset.image_injective fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :

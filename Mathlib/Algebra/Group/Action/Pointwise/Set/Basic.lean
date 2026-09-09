@@ -208,6 +208,10 @@ open scoped symmDiff in
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _) _ _
 
+@[to_additive]
+instance : IsLeftCancelSMul α (Set β) where
+  left_cancel' a s t := by simp [le_antisymm_iff]
+
 end IsLeftCancelSMul
 
 section Group
