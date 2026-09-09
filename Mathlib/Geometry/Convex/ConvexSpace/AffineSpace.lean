@@ -204,11 +204,7 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
       simp only [Finsupp.coe_add, Pi.add_apply]
     · rw [Finsupp.sum_add_index (by simp) (by simp), Finsupp.sum_single_index (by simp),
         Finsupp.sum_single_index (by simp), h]
-  -- Now simplify the weighted subtraction
-  congr 1
-  rw [Finset.weightedVSubOfPoint_apply]
-  simp only [id]
-  -- Convert to Finsupp.sum
+  simpa using (IsRegular.of_pos ha).isSMulRegular (vadd_right_cancel _ hx)
   change (Finsupp.single x s + Finsupp.single y t).sum (fun p w => w • (p -ᵥ y)) = _
   rw [Finsupp.sum_add_index (by simp) (fun _ a b => by simp [add_smul]),
     Finsupp.sum_single_index (by simp), Finsupp.sum_single_index (by simp)]
@@ -217,8 +213,6 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
 end AddTorsor
 
 namespace Convexity
-
-section IsCancelConvexSpace
 variable {R V P : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup V]
   [Module R V] [AddTorsor V P] [ConvexSpace R P] [IsAffineConvexSpace R V P]
 
@@ -228,7 +222,5 @@ cancellative convex space. -/
 instance IsCancelConvexSpace.of_addTorsor [Module.IsTorsionFree R V] : IsCancelConvexSpace R P :=
   .of_injective (AddTorsor.isAffineMap_vsub_const (V := V) (Classical.arbitrary P))
     fun _ _ ↦ vsub_left_cancel
-
-end IsCancelConvexSpace
 
 end Convexity
