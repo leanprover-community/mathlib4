@@ -74,17 +74,12 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` and `StarHomClass F A B`
-into an actual `NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to
-`A →⋆ₙₐ[R] B`. -/
-@[coe]
+into an actual `NonUnitalStarAlgHom`. -/
 def _root_.NonUnitalStarAlgHom.ofClass [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
   { (f : A →ₙₐ[R] B) with
     map_star' := map_star f }
 
 @[deprecated (since := "2026-09-02")] alias toNonUnitalStarAlgHom := NonUnitalStarAlgHom.ofClass
-
-instance [StarHomClass F A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
-  ⟨.ofClass⟩
 
 instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
   NonUnitalStarRingHomClass.mk
@@ -118,9 +113,11 @@ initialize_simps_projections NonUnitalStarAlgHom
   (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [NonUnitalAlgHomClass F R A B]
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalAlgHomClass F R A B]
     [StarHomClass F A B] (f : F) :
-    ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
+    ⇑(ofClass f) = f := rfl
+
+@[deprecated (since := "2026-09-07")] alias coe_coe := NonUnitalStarAlgHom.coe_ofClass
 
 @[simp]
 theorem coe_toNonUnitalAlgHom {f : A →⋆ₙₐ[R] B} : (f.toNonUnitalAlgHom : A → B) = f :=
@@ -307,16 +304,12 @@ variable [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A 
 variable [StarHomClass F A B]
 
 /-- Turn an element of a type `F` satisfying `AlgHomClass F R A B` and `StarHomClass F A B` into an
-actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
-@[coe]
+actual `StarAlgHom`. -/
 def _root_.StarAlgHom.ofClass (f : F) : A →⋆ₐ[R] B :=
-  { (AlgHomClass.toAlgHom f) with
+  { (AlgHom.ofClass f) with
     map_star' := map_star f }
 
 @[deprecated (since := "2026-09-02")] alias toStarAlgHom := StarAlgHom.ofClass
-
-instance : CoeTC F (A →⋆ₐ[R] B) :=
-  ⟨.ofClass⟩
 
 end StarAlgHomClass
 
@@ -340,10 +333,11 @@ instance : StarHomClass (A →⋆ₐ[R] B) A B where
   map_star f := f.map_star'
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
-    [StarHomClass F A B] (f : F) :
-    ⇑(f : A →⋆ₐ[R] B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B]
+    (f : F) : ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-07")] alias coe_coe := StarAlgHom.coe_ofClass
 
 initialize_simps_projections StarAlgHom (toFun → apply)
 
@@ -666,8 +660,7 @@ instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
-an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
-@[coe]
+an actual `StarAlgEquiv`. -/
 def StarAlgEquiv.ofClass {F R A B : Type*}
     [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
     [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
@@ -676,14 +669,6 @@ def StarAlgEquiv.ofClass {F R A B : Type*}
     map_smul' := map_smul f }
 
 @[deprecated (since := "2026-09-02")] alias StarAlgEquivClass.toStarAlgEquiv := StarAlgEquiv.ofClass
-
-/-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
-`StarAlgEquivClass.toStarAlgEquiv`. -/
-instance StarAlgEquivClass.instCoeHead {F R A B : Type*}
-    [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
-    CoeHead F (A ≃⋆ₐ[R] B) :=
-  ⟨.ofClass⟩
 
 namespace StarAlgEquiv
 
