@@ -241,6 +241,8 @@ theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
 
+variable {T : Submonoid N} {f : F}
+
 @[to_additive]
 theorem map_le_iff_le_comap {f : F} {S : Submonoid M} {T : Submonoid N} :
     S.map f ≤ T ↔ S ≤ T.comap f :=
@@ -250,15 +252,15 @@ theorem map_le_iff_le_comap {f : F} {S : Submonoid M} {T : Submonoid N} :
 theorem gc_map_comap (f : F) : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
 
 @[to_additive]
-theorem map_le_of_le_comap {T : Submonoid N} {f : F} : S ≤ T.comap f → S.map f ≤ T :=
+theorem map_le_of_le_comap : S ≤ T.comap f → S.map f ≤ T :=
   (gc_map_comap f).l_le
 
 @[to_additive]
-theorem le_comap_of_map_le {T : Submonoid N} {f : F} : S.map f ≤ T → S ≤ T.comap f :=
+theorem le_comap_of_map_le : S.map f ≤ T → S ≤ T.comap f :=
   (gc_map_comap f).le_u
 
 @[to_additive]
-theorem le_comap_map {f : F} : S ≤ (S.map f).comap f :=
+theorem le_comap_map : S ≤ (S.map f).comap f :=
   (gc_map_comap f).le_u_l _
 
 @[to_additive]
@@ -266,15 +268,15 @@ theorem map_comap_le {S : Submonoid N} {f : F} : (S.comap f).map f ≤ S :=
   (gc_map_comap f).l_u_le _
 
 @[to_additive (attr := gcongr)]
-theorem monotone_map {f : F} : Monotone (map f) :=
+theorem monotone_map : Monotone (map f) :=
   (gc_map_comap f).monotone_l
 
 @[to_additive (attr := gcongr)]
-theorem monotone_comap {f : F} : Monotone (comap f) :=
+theorem monotone_comap : Monotone (comap f) :=
   (gc_map_comap f).monotone_u
 
 @[to_additive (attr := simp)]
-theorem map_comap_map {f : F} : ((S.map f).comap f).map f = S.map f :=
+theorem map_comap_map : ((S.map f).comap f).map f = S.map f :=
   (gc_map_comap f).l_u_l_eq_l _
 
 @[to_additive (attr := simp)]
@@ -313,7 +315,7 @@ theorem map_bot (f : F) : (⊥ : Submonoid M).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
 @[to_additive]
-lemma disjoint_map {f : F} (hf : Function.Injective f) {H K : Submonoid M} (h : Disjoint H K) :
+lemma disjoint_map (hf : Function.Injective f) {H K : Submonoid M} (h : Disjoint H K) :
     Disjoint (H.map f) (K.map f) := by
   rw [disjoint_iff, ← map_inf _ _ f hf, disjoint_iff.mp h, map_bot]
 
