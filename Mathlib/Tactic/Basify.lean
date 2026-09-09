@@ -20,9 +20,8 @@ arithmetic partial or truncated. The two commonest are
 * *subtypes* cut out by an inequality, such as `ℝ≥0 = {r : ℝ // 0 ≤ r}`.
 
 Goals about them are painful, because the decision procedures one would like to use (`grind`,
-`linarith`, `norm_num`) only understand the underlying type. `basify`
-peels the construction off, turning the goal into an equivalent one about that type:
-
+`linarith`, `norm_num`) only understand the underlying type. `basify` ("base" + "ify")
+peels the construction off, turning the goal into an equivalent one about the base type:
 ```
 example (a b : ℝ≥0∞) (h : a + b = 0) : a = 0 := by
   basify
