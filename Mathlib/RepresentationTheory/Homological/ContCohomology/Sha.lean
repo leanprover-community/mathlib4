@@ -5,6 +5,7 @@ Authors: Edison Xie, David Kurniadi Angdinata
 -/
 module
 
+public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.FieldTheory.AbsoluteGaloisGroup
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
 
@@ -37,6 +38,7 @@ open CategoryTheory
 
 namespace ContinuousCohomology
 
+#check
 /-- The Tate-Shafarevich group of a continuous representation. -/
 @[simps!]
 noncomputable def tateSha : AddSubgroup (continuousCohomology n A) :=
@@ -53,8 +55,8 @@ lemma tateSha_eq_ker_pi :
 
 @[simp]
 lemma mem_tateSha (x : continuousCohomology n A) : x ∈ tateSha f A n ↔
-    ∀ v : V, x ∈ (ContinuousCohomology.map
-      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.ker := by
+    ∀ v : V, (ContinuousCohomology.map
+      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom x = 0 := by
   simp [tateSha_eq_iInf]
 
 end ContinuousCohomology
