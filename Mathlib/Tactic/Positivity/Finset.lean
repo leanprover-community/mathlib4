@@ -107,6 +107,7 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
         have hmem : Q($a ∈ $s) := ldecl.toExpr
         have fa : Q($α) := .betaRev f #[a]
         let .positive pa ← catchNone (core zα pα fa) | continue
+        have pa : Q(0 < $f $a) := pa
         assertInstancesCommute
         return some q(@sum_pos' $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
           (fun i _ ↦ $pr i) ⟨$a, $hmem, $pa⟩)
