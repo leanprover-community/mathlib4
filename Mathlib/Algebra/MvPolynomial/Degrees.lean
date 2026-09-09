@@ -634,7 +634,8 @@ lemma degreesLE_add : degreesLE R σ (s + t) = degreesLE R σ s * degreesLE R σ
   replace hi : i.toMultiset ≤ s + t := (Finset.le_sup hi).trans hx
   let a := (i.toMultiset - t).toFinsupp
   let b := (i.toMultiset ⊓ t).toFinsupp
-  have : a + b = i := Multiset.toFinsupp.symm.injective (by simp [a, b, Multiset.sub_add_inter])
+  have : a + b = i := Multiset.toFinsuppAddEquiv.symm.injective
+    (by simp [a, b, Multiset.sub_add_inter])
   have ha : a.toMultiset ≤ s := by simpa [a, add_comm (a := t)] using hi
   have hb : b.toMultiset ≤ t := by simp [b, Multiset.inter_le_right]
   rw [show monomial i (x.coeff i) = monomial a (x.coeff i) * monomial b 1 by simp [this]]
