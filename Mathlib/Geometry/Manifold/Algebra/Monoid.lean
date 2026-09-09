@@ -291,7 +291,6 @@ instance : One (ContMDiffMonoidMorphism I I' n G G') :=
 instance : Inhabited (ContMDiffMonoidMorphism I I' n G G') :=
   ⟨1⟩
 
-@[to_additive]
 @[to_additive (attr := macro_inline)]
 instance : FunLike (ContMDiffMonoidMorphism I I' n G G') G G' where
   coe a := a.toFun

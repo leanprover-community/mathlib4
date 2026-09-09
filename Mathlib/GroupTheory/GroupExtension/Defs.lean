@@ -164,7 +164,6 @@ namespace Equiv
 variable {S}
 variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
 
-@[to_additive]
 @[to_additive (attr := macro_inline)]
 instance : EquivLike (S.Equiv S') E E' where
   coe equiv := equiv.toMulEquiv
@@ -247,7 +246,6 @@ structure Section where
 
 namespace Section
 
-@[to_additive]
 @[to_additive (attr := macro_inline)]
 instance : FunLike S.Section G E where
   coe := toFun
@@ -277,7 +275,6 @@ add_decl_doc Splitting.toSection
 
 namespace Splitting
 
-@[to_additive]
 @[to_additive (attr := macro_inline)]
 instance : FunLike S.Splitting G E where
   coe s := s.toFun

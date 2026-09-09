@@ -177,7 +177,6 @@ section Group
 
 variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 
-@[to_additive]
 @[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
@@ -730,7 +729,6 @@ section Group
 
 variable [Group E] {p q : GroupNorm E}
 
-@[to_additive]
 @[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun

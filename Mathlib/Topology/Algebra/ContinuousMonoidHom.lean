@@ -329,7 +329,6 @@ variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Mul M] [Mul N]
 
 section coe
 
-@[to_additive]
 @[to_additive (attr := macro_inline)]
 instance : EquivLike (M ≃ₜ* N) M N where
   coe f := f.toFun
