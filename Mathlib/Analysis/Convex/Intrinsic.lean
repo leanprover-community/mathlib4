@@ -5,8 +5,6 @@ Authors: Paul Reichert, Yaël Dillies
 -/
 module
 
-import Mathlib.Analysis.Convex.Topology
-
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
@@ -457,7 +455,7 @@ theorem Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicIn
   rcases mem_intrinsicClosure.1 hy with ⟨yA, hyA, rfl⟩
   let : Nonempty (affineSpan 𝕜 C) := ⟨xA⟩
   let A := (affineSpan 𝕜 C).subtype.comp (AffineEquiv.vaddConst 𝕜 xA).toAffineMap
-  rw [intrinsicInterior, ← (vaddConst xA).image_interior_preimage_comp]
+  rw [intrinsicInterior, ← image_interior_preimage_comp (vaddConst xA) (vaddConst xA).isHomeomorph]
   intro _ hz
   simpa [A] using! Convex.openSegment_image_interior_closure_preimage_subset (A := A) hC
     (by simpa [A] using! ((vaddConst xA).mem_interior_preimage_comp _ 0).2 (by simpa))

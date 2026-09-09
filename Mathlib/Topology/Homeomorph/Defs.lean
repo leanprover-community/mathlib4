@@ -318,11 +318,6 @@ theorem mem_interior_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) {s : Set Z} (x
 theorem image_interior (h : X ≃ₜ Y) (s : Set X) : h '' interior s = interior (h '' s) := by
   rw [← preimage_symm, preimage_interior]
 
-omit [TopologicalSpace Z] in
-theorem image_interior_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) (s : Set Z) :
-    (f ∘ e) '' interior ((f ∘ e) ⁻¹' s) = f '' interior (f ⁻¹' s) := by
-  simp only [preimage_comp, image_comp, e.image_interior, image_preimage]
-
 theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = frontier (h ⁻¹' s) :=
   h.isOpenMap.preimage_frontier_eq_frontier_preimage h.continuous _
 
