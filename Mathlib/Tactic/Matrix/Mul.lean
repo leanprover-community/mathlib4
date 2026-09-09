@@ -13,12 +13,13 @@ public import Mathlib.Tactic.NormNum.Core
 # Products of matrix literals
 
 `proveMul` proves `A * B = C` for matrix literals `A` and `B`, with the entries of `C` normalized
-by a given `EntryCertifier`, and returns it as a `Simp.Result` that other tactics consume in
-`MetaM`; `norm_matmul` is the simproc wrapping it, currently using `norm_num` as the certifier.
+by a given `EntryNormalizer`, and returns it as a `Simp.Result` that other tactics consume in
+`MetaM`; `norm_matmul` is the simproc wrapping it, currently using `norm_num` as the normalizer.
 
 ## Main definitions
 
-* `EntryCertifier`
+* `EntryNormalizer`
+* `proveDotProduct`
 * `proveMul`
 * `normMatMulCore`
 * `norm_matmul`
@@ -41,9 +42,8 @@ initialize registerTraceClass `Tactic.norm_matmul
 
 namespace Mathlib.Tactic.Matrix
 
-/-- An entry certifier rewrites an expression about a single entry to a normal form: a scalar
-to its value, or a proposition to `True` or `False`. -/
-abbrev EntryCertifier := Expr → MetaM Simp.Result
+/-- An entry normalizer rewrites an expression about a single entry to a normal form. -/
+abbrev EntryNormalizer := Expr → MetaM Simp.Result
 
 section
 
@@ -51,28 +51,47 @@ section
 -- caller synthesised, rather than rebuilding a projection path in every cell
 variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
 
-/-- The unfolding of a dot product of literals `l₁ = [a₀, …]`, `l₂ = [b₀, …]` to the fold
-`a₀ * b₀ + (a₁ * b₁ + (… + 0))`, proved by the equations of `ListMatrix.dotProduct`. -/
-structure DotProductChain where
-  /-- The length, as the equations leave it: `(… + 1) + 1`. -/
+/-- A dot product of two lists of entries, `ListMatrix.dotProduct n l₁ l₂ = result`, with its
+proof. -/
+structure DotProductEq where
+  /-- The number of terms. -/
   n : Q(ℕ)
   /-- The first list. -/
   l₁ : Q(List $α)
   /-- The second list. -/
   l₂ : Q(List $α)
-  /-- The fold. -/
-  fold : Q($α)
-  /-- The unfolding. -/
-  proof : Q(ListMatrix.dotProduct $n $l₁ $l₂ = $fold)
+  /-- The right-hand side. -/
+  result : Q($α)
+  /-- The proof. -/
+  proof : Q(ListMatrix.dotProduct $n $l₁ $l₂ = $result)
 
-/-- Build the `DotProductChain` of the entries `as` and `bs`. -/
-def mkDotProductChain : List Q($α) → List Q($α) → DotProductChain zα aα mα
+/-- The unfolding of the dot product of the entries `as` and `bs` to the fold
+`a₀ * b₀ + (a₁ * b₁ + (… + 0))`, by the equations of `ListMatrix.dotProduct`; its `n` is the
+successor tower `((0 + 1) + 1) + ⋯` the equations build, one `+ 1` per term rather than a
+numeral. -/
+def mkDotProductChain : List Q($α) → List Q($α) → DotProductEq zα aα mα
   | a :: as, b :: bs =>
     let ⟨n, l₁, l₂, fold, h⟩ := mkDotProductChain as bs
     ⟨q($n + 1), q($a :: $l₁), q($b :: $l₂), q($a * $b + $fold),
       q((ListMatrix.dotProduct_succ_cons_cons $n $a $b $l₁ $l₂).trans
         (congrArg (fun x => $a * $b + x) $h))⟩
   | _, _ => ⟨q(0), q([]), q([]), q(0), q(ListMatrix.dotProduct_zero [] [])⟩
+
+/-- Prove `ListMatrix.dotProduct m l₁ l₂ = v` for the `m` entries `as` and `bs`, with `v` their
+dot product normalized by `normalizer`. -/
+def proveDotProduct (normalizer : EntryNormalizer) (m : ℕ) (as bs : List Q($α)) :
+    MetaM (DotProductEq zα aα mα) := do
+  let ⟨_, l₁, l₂, fold, h⟩ := mkDotProductChain zα aα mα as bs
+  have mQ : Q(ℕ) := q($m)
+  -- restate the chain's successor tower as the numeral `m`: Qq cannot check the two equal, the
+  -- kernel does by literal arithmetic
+  have hDot : Q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold) :=
+    ← mkExpectedTypeHint h q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold)
+  -- normalize the rhs
+  let r ← normalizer fold
+  have v : Q($α) := r.expr
+  have hFold : Q($fold = $v) := ← r.getProof
+  return ⟨mQ, l₁, l₂, v, q(($hDot).trans $hFold)⟩
 
 end
 
@@ -84,30 +103,19 @@ def mkListCongr (α : Expr) (hs : Array Expr) : MetaM Expr := do
 
 /-- Prove `e = C`, where `e` is the product of the matrix literals with rows `rowsA` and
 `rowsB` over `α`, and `C` is the literal of the product with entries normalized by
-`certifier`. -/
-def proveMul {u : Level} (certifier : EntryCertifier) (e : Expr) (l m n : ℕ) (α : Q(Type u))
+`normalizer`. -/
+def proveMul {u : Level} (normalizer : EntryNormalizer) (e : Expr) (l m n : ℕ) (α : Q(Type u))
     (rowsA rowsB : Array (Array Expr)) : MetaM Simp.Result := do
   let zα ← synthInstanceQ q(Zero $α)
   let aα ← synthInstanceQ q(Add $α)
   let mα ← synthInstanceQ q(Mul $α)
   let _acm ← synthInstanceQ q(AddCommMonoid $α)
-  have mQ : Q(ℕ) := q($m)
   let cols : Array (Array Expr) :=
     Array.ofFn (n := n) fun j => Array.ofFn (n := m) fun i => (rowsB[i]!)[j]!
-  let results ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j => do
-    let ⟨_, l₁, l₂, fold, h⟩ := mkDotProductChain zα aα mα rowsA[i]!.toList cols[j]!.toList
-    -- the cell's proof is stated on `ListMatrix.dotProduct`, the cell of `ListMatrix.mul`, so that
-    -- the kernel compares the product's unfolding to it head to head; stated on the fold, the
-    -- kernel would unfold `+` first and then only evaluating the arithmetic could close the
-    -- comparison. The hint restates the chain's length `(… + 1) + 1` as the literal `m`.
-    have dot : Q($α) := q(ListMatrix.dotProduct $mQ $l₁ $l₂)
-    have hDot : Q($dot = $fold) := ← mkExpectedTypeHint h q($dot = $fold)
-    let r ← certifier fold
-    have v : Q($α) := r.expr
-    have hFold : Q($fold = $v) := ← r.getProof
-    return (v, q(($hDot).trans $hFold))
-  let entries := results.map (·.map (·.1))
-  let hAll ← mkListCongr q(List $α) (← results.mapM fun row => mkListCongr α (row.map (·.2)))
+  let cells ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j =>
+    proveDotProduct zα aα mα normalizer m rowsA[i]!.toList cols[j]!.toList
+  let entries := cells.map (·.map (·.result))
+  let hAll ← mkListCongr q(List $α) (← cells.mapM fun row => mkListCongr α (row.map (·.proof)))
   let mkLists (rows : Array (Array Expr)) : MetaM Q(List (List $α)) := do
     mkListLit q(List $α) (← rows.toList.mapM (mkListLit α ·.toList))
   have A : Q(List (List $α)) := ← mkLists rowsA
@@ -122,9 +130,9 @@ def proveMul {u : Level} (certifier : EntryCertifier) (e : Expr) (l m n : ℕ) (
   -- literal, so the kernel settles it by reduction
   return { expr := C, proof? := some (← mkExpectedTypeHint pf (← mkEq e C)) }
 
-/-- Core of the `norm_matmul` simproc with the given entry certifier; the factors are
+/-- Core of the `norm_matmul` simproc with the given entry normalizer; the factors are
 simplified first. -/
-def normMatMulCore (certifier : EntryCertifier) : Simp.Simproc := fun e => do
+def normMatMulCore (normalizer : EntryNormalizer) : Simp.Simproc := fun e => do
   let_expr HMul.hMul _ _ _ _ A B := e | return .continue
   let rA ← Simp.simp A
   let rB ← Simp.simp B
@@ -136,7 +144,7 @@ def normMatMulCore (certifier : EntryCertifier) : Simp.Simproc := fun e => do
       return .continue
   let rAB ← Simp.mkCongr (← Simp.mkCongr { expr := e.appFn!.appFn! } rA) rB
   let u ← getDecLevel R
-  return .done (← rAB.mkEqTrans (← proveMul (u := u) certifier rAB.expr l m n R rowsA rowsB))
+  return .done (← rAB.mkEqTrans (← proveMul (u := u) normalizer rAB.expr l m n R rowsA rowsB))
 
 end Mathlib.Tactic.Matrix
 
