@@ -322,7 +322,7 @@ private lemma bound_sum_log_range (hx : 1 ≤ x) n :
           by_cases hi : i = 0
           · simp [hi]
           · grw [← sq_nonneg, ← (mod_cast by omega : 1 ≤ (i : ℝ))]; simp [field]
-        intro i j _; by_cases i = 0 <;> by_cases j = 0 <;> simp only [↓reduceIte, le_refl, *]
+        intro i _ j _ _; by_cases i = 0 <;> by_cases j = 0 <;> simp only [↓reduceIte, le_refl, *]
         · omega
         · gcongr; apply w_antitone _ _ (by gcongr) <;> rw [mem_Ioi] <;> positivity
     _ ≤ _ := by
