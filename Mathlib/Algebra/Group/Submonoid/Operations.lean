@@ -248,8 +248,9 @@ theorem map_le_iff_le_comap {f : F} {S : Submonoid M} {T : Submonoid N} :
     S.map f ≤ T ↔ S ≤ T.comap f :=
   image_subset_iff
 
+variable (f) in
 @[to_additive]
-theorem gc_map_comap (f : F) : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
+theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
 
 @[to_additive]
 theorem map_le_of_le_comap : S ≤ T.comap f → S.map f ≤ T :=
@@ -264,7 +265,7 @@ theorem le_comap_map : S ≤ (S.map f).comap f :=
   (gc_map_comap f).le_u_l _
 
 @[to_additive]
-theorem map_comap_le {S : Submonoid N} {f : F} : (S.comap f).map f ≤ S :=
+theorem map_comap_le : (T.comap f).map f ≤ T :=
   (gc_map_comap f).l_u_le _
 
 @[to_additive (attr := gcongr)]
@@ -280,7 +281,7 @@ theorem map_comap_map : ((S.map f).comap f).map f = S.map f :=
   (gc_map_comap f).l_u_l_eq_l _
 
 @[to_additive (attr := simp)]
-theorem comap_map_comap {S : Submonoid N} {f : F} : ((S.comap f).map f).comap f = S.comap f :=
+theorem comap_map_comap : ((T.comap f).map f).comap f = T.comap f :=
   (gc_map_comap f).u_l_u_eq_u _
 
 @[to_additive]
