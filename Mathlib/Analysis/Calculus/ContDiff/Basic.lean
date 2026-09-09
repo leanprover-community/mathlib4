@@ -656,10 +656,10 @@ theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n <| (Equiv.prodA
 /-- The iterated derivatives up to order `m` of a smooth compactly supported function are
 uniformly bounded. -/
 lemma HasCompactSupport.exists_bound_iteratedFDeriv {E F : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
-    (hf : HasCompactSupport f) (hf' : ContDiff ℝ ∞ f) (m : ℕ) :
-    ∃ C, 0 ≤ C ∧ ∀ i ≤ m, ∀ y, ‖_root_.iteratedFDeriv ℝ i f y‖ ≤ C := by
-  have key i : ∃ C, ∀ y, ‖_root_.iteratedFDeriv ℝ i f y‖ ≤ C :=
+    [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+    (hf : HasCompactSupport f) (hf' : ContDiff 𝕜 ∞ f) (m : ℕ) :
+    ∃ C, 0 ≤ C ∧ ∀ i ≤ m, ∀ y, ‖_root_.iteratedFDeriv 𝕜 i f y‖ ≤ C := by
+  have key i : ∃ C, ∀ y, ‖_root_.iteratedFDeriv 𝕜 i f y‖ ≤ C :=
     (hf'.continuous_iteratedFDeriv (mod_cast le_top)).bounded_above_of_compact_support
       (hf.iteratedFDeriv i)
   choose A hA using key
