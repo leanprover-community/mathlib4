@@ -35,12 +35,11 @@ instance Pi.instCharP [Π i, AddMonoidWithOne (α i)] (p : ℕ) [∀ i, CharP (�
 
 instance Pi.instExpChar [Π i, AddMonoidWithOne (α i)] (p : ℕ) [∀ i, ExpChar (α i) p] :
     ExpChar (Π i, α i) p := by
-  rename_i inst
   inhabit ι
   obtain hp | rfl := expChar_is_prime_or_one (α default) p
-  · simp only [expChar_prime_iff, hp] at inst
-    exact .prime hp
-  · simp only [expChar_one_iff] at inst
-    exact .zero
+  · simp only [expChar_prime_iff, hp] at *
+    infer_instance
+  · simp only [expChar_one_iff] at *
+    infer_instance
 
 end
