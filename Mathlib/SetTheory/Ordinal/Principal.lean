@@ -508,18 +508,15 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : IsPrincipal (· * ·) b) (hb�
 
 theorem isPrincipal_opow_two : IsPrincipal (· ^ ·) 2 := by
   intro a b ha _
-  obtain rfl | rfl := le_one_iff.1 (lt_two_iff.1 ha)
-  · exact (zero_opow_le b).trans_lt one_lt_two
-  · simp
+  simpa [lt_two_iff] using opow_le_opow_left b (lt_two_iff.1 ha)
 
 theorem isSuccLimit_of_isPrincipal_opow (ho₂ : 2 < o) (ho : IsPrincipal (· ^ ·) o) :
     IsSuccLimit o := by
   rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   refine ⟨ho₂.ne_bot, fun a ha ↦ ?_⟩
-  rcases lt_or_ge a 2 with ha₂ | ha₂
-  · exact (succ_le_of_lt ha₂).trans_lt ho₂
-  · refine (succ_le_of_lt ?_).trans_lt (ho ha ho₂)
-    exact left_lt_opow (one_lt_two.trans_le ha₂) one_lt_two
+  rcases le_or_gt a 1 with ha₁ | ha₁
+  · exact (succ_le_of_lt (lt_two_iff.2 ha₁)).trans_lt ho₂
+  · exact (succ_le_of_lt (left_lt_opow ha₁ one_lt_two)).trans_lt (ho ha ho₂)
 
 /-- Above `ω`, closure under exponentiation is equivalent to being a fixed point of `ω ^ ·`. -/
 theorem isPrincipal_opow_iff_omega0_opow_eq (hoω : ω < o) :
@@ -527,10 +524,9 @@ theorem isPrincipal_opow_iff_omega0_opow_eq (hoω : ω < o) :
   refine ⟨fun ho ↦ ?_, fun ho ↦ ?_⟩
   · exact op_eq_self_of_isPrincipal hoω (isNormal_opow one_lt_omega0) ho
       (isSuccLimit_of_isPrincipal_opow ((natCast_lt_omega0 2).trans hoω) ho)
-  · have hol : IsSuccLimit o := by
-      simpa [ho] using isSuccLimit_opow_left isSuccLimit_omega0 hoω.ne_bot
-    have hom : IsPrincipal (· * ·) o := by
+  · have hom : IsPrincipal (· * ·) o := by
       simpa [ho] using isPrincipal_mul_omega0_opow_opow o
+    have hol := isSuccLimit_of_isPrincipal_mul ((natCast_lt_omega0 2).trans hoω) hom
     intro a b ha hb
     rw [← ho] at ha
     obtain ⟨c, hc, hac⟩ := (lt_opow_of_isSuccLimit omega0_ne_zero hol).1 ha
@@ -550,7 +546,7 @@ The ordinal `1` is excluded because `0 ^ 0 = 1`. -/
 theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq :
     IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ ω ^ o = o := by
   refine ⟨fun ho ↦ ?_, ?_⟩
-  · rw [or_iff_not_imp_left, or_iff_not_imp_left, or_iff_not_imp_left]
+  · simp only [or_iff_not_imp_left]
     refine fun ho₀ ho₂ (hoω : o ≠ ω) ↦ ?_
     rcases lt_or_ge 2 o with h₂ | h₂
     · have hoω' := omega0_le_of_isSuccLimit (isSuccLimit_of_isPrincipal_opow h₂ ho)
