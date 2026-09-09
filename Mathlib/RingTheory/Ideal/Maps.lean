@@ -514,14 +514,15 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
 
-lemma map_primeCompl_comap_of_surjective (hf : Function.Surjective f) (p : Ideal S) [p.IsPrime] :
-    Submonoid.map f (p.comap f).primeCompl = p.primeCompl := by
+lemma map_primeCompl_comap_of_surjective (f : R →+* S) (hf : Function.Surjective f)
+    (p : Ideal S) [p.IsPrime] :
+    Submonoid.map f.toMonoidHom (p.comap f).primeCompl = p.primeCompl := by
   rw [SetLike.ext_iff, hf.forall]
   grind [Submonoid.mem_map, mem_primeCompl_iff, mem_comap]
 
 lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
     (p.comap e).primeCompl.map e = p.primeCompl :=
-  p.map_primeCompl_comap_of_surjective e e.surjective
+  p.map_primeCompl_comap_of_surjective e.toRingHom e.surjective
 
 section Bijective
 
@@ -702,7 +703,7 @@ theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
 
 lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
     {p : Ideal R} {I : Ideal S} [p.IsPrime] :
-    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p :=
+    Disjoint (I : Set S) (p.primeCompl.map f.toMonoidHom) ↔ I.comap f ≤ p :=
   (@Set.disjoint_image_right _ _ f p.primeCompl I).trans disjoint_compl_right_iff
 
 /-- For a prime ideal `p` of `R`, `p` extended to `S` and

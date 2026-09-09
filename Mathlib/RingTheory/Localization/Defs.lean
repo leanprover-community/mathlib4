@@ -712,12 +712,12 @@ section
 variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
 
 /-- Injectivity of a map descends to the map induced on localizations. -/
-theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g) Q] :
+theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g.toMonoidHom) Q] :
     Function.Injective (map Q g M.le_comap_map : S → Q) :=
   (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
 
 /-- Surjectivity of a map descends to the map induced on localizations. -/
-theorem map_surjective_of_surjective (h : Function.Surjective g) [IsLocalization (M.map g) Q] :
+theorem map_surjective_of_surjective (h : Function.Surjective g) [IsLocalization (M.map g.toMonoidHom) Q] :
     Function.Surjective (map Q g M.le_comap_map : S → Q) :=
   (toLocalizationMap M S).map_surjective_of_surjective h (toLocalizationMap (M.map g) Q)
 
@@ -731,7 +731,7 @@ variable (M)
 
 theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
     haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
-    IsLocalization (M.map h) S := by
+    IsLocalization (M.map h.toMonoidHom) S := by
   let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor; constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
@@ -751,14 +751,12 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
 theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsLocalization M S ↔
       haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
-      IsLocalization (M.map h) S := by
+      IsLocalization (M.map h.toMonoidHom) S := by
   let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   refine ⟨fun _ => isLocalization_of_base_ringEquiv M S h, ?_⟩
-  intro (H : IsLocalization (Submonoid.map (h : R ≃* P) M) S)
-  convert! isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm
-  · rw [← Submonoid.map_coe_toMulEquiv, RingEquiv.coe_toMulEquiv_symm, ←
-      Submonoid.comap_equiv_eq_map_symm, Submonoid.comap_map_eq_of_injective]
-    exact h.toEquiv.injective
+  intro (H : IsLocalization (M.map h.toMonoidHom) S)
+  convert! isLocalization_of_base_ringEquiv (M.map h.toMonoidHom) S h.symm
+  · convert Submonoid.map_id M <;> ext <;> simp
   rw [RingHom.algebraMap_toAlgebra, RingHom.comp_assoc]
   simp only [RingHom.comp_id, RingEquiv.symm_symm, RingEquiv.symm_toRingHom_comp_toRingHom]
   apply Algebra.algebra_ext

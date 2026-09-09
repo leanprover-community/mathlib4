@@ -751,7 +751,8 @@ theorem span_singleton_eq_one_iff {x : A} : span R {x} = 1 ↔ ∃ r : Rˣ, x = 
   mpr := by rintro ⟨r, rfl⟩; exact span_singleton_algebraMap_of_isUnit r.isUnit
 
 theorem mker_spanSingleton :
-    MonoidHom.mker (Submodule.spanSingleton R) = (IsUnit.submonoid R).map (algebraMap R A) := by
+    (Submodule.spanSingleton R).toMonoidHom.mker =
+      (IsUnit.submonoid R).map (algebraMap R A).toMonoidHom := by
   ext; simp_rw [Submonoid.mem_map, IsUnit.mem_submonoid_iff, IsUnit, existsAndEq, true_and, eq_comm]
   exact span_singleton_eq_one_iff
 
