@@ -361,7 +361,7 @@ nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
 
 @[simp]
 theorem toRingEquiv_symm (e : A ≃⋆+* B) :
-  e.symm.toRingEquiv = e.toRingEquiv.symm := rfl
+    e.symm.toRingEquiv = e.toRingEquiv.symm := rfl
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : A ≃⋆+* B) : A → B := e
