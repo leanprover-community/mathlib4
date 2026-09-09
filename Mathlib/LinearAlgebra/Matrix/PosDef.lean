@@ -458,13 +458,6 @@ theorem posDef_iff_dotProduct_mulVec {M : Matrix n n R} :
   simp [PosDef, ← Finsupp.equivFunOnFinite.forall_congr_right, dotProduct, mulVec,
     Finsupp.sum_fintype, Finset.mul_sum, mul_assoc, this]
 
-lemma posDef_iff_posSemidef_of_injective_mulVec [StarOrderedRing R'] [NoZeroDivisors R']
-    {A : Matrix n n R'} (h : Function.Injective A.mulVec) : PosDef A ↔ A.PosSemidef := by
-  refine ⟨fun hA ↦ hA.posSemidef, fun hA ↦ ?_⟩
-  refine posDef_iff_dotProduct_mulVec.mpr ⟨hA.isHermitian, fun x hx ↦ lt_of_le_of_ne' ?_ ?_⟩
-  · exact hA.dotProduct_mulVec_nonneg x
-  simpa [hA.dotProduct_mulVec_zero_iff, hx] using h.eq_iff (a := x) (b := 0)
-
 namespace PosDef
 
 /-- A matrix `M : Matrix n n R` is positive definite if it is Hermitian
