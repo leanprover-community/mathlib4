@@ -144,7 +144,9 @@ theorem biUnion_sdiff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ 
 noncomputable def biUnionEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h : s.PairwiseDisjoint f) :
     (⋃ i ∈ s, f i) ≃ Σ i : s, f i :=
   (Set.equivOfEq (biUnion_eq_iUnion _ _)).trans <|
-    unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => h hi hj fun eq => ne <| Subtype.ext eq
+    unionEqSigmaOfDisjoint (pairwise'_mk (fun ⟨i, hi⟩ ⟨j, hj⟩ ne => fun eqr hx hy => by
+      simp only [ne_eq, Subtype.mk.injEq] at hx hy ne
+      grind [h hi hj ne]))
 
 @[simp]
 lemma coe_biUnionEqSigmaOfDisjoint_symm_apply {α ι : Type*} {s : Set ι}
@@ -185,11 +187,11 @@ theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).
   rwa [h₀.eq (subset_union_left hi) (subset_union_right hj)
       (not_disjoint_iff.2 ⟨a, hai, haj⟩)]
 
-theorem Pairwise.subset_of_biUnion_subset_biUnion (h₀ : Pairwise (Disjoint on f))
+theorem Pairwise'.subset_of_biUnion_subset_biUnion (h₀ : Pairwise' (Disjoint on f))
     (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t :=
   Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀.set_pairwise _) h₁ h
 
-theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
+theorem Pairwise.biUnion_injective (h₀ : Pairwise' (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
     Injective fun s : Set ι => ⋃ i ∈ s, f i := fun _s _t h =>
   ((h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.subset).antisymm <|
     (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.superset
