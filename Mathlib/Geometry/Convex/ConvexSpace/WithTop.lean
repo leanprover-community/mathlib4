@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+
 /-!
 # Adjoining a top or bottom element to a convex space
 
@@ -26,16 +29,22 @@ variable {R X : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 namespace StdSimplex
 
-/-- Turn a distribution on `WithTop X` putting no weight on `⊤` into a distribution on `X`. -/
+/-- Turn a distribution on `WithTop X` putting no weight on `⊤` into a distribution on `X`.
+
+If `R` were a field, one could relax `w.weights ⊤ = 0` to `w.weights ⊤ ≠ 1`. We do not provide this
+version of the operation at this time. -/
 @[expose, to_dual (dont_translate := R) (attr := simps)
-/-- Turn a distribution on `WithBot X` putting no weight on `⊥` into a distribution on `X`. -/]
+/-- Turn a distribution on `WithBot X` putting no weight on `⊥` into a distribution on `X`.
+
+If `R` were a field, one could relax `w.weights ⊥ = 0` to `w.weights ⊥ ≠ 1`. We do not provide this
+version of the operation at this time. -/]
 def untop (w : StdSimplex R (WithTop X)) (hw : w.weights ⊤ = 0) : StdSimplex R X where
   weights := w.weights.withTopSome
   nonneg x := w.weights_nonneg (x : WithTop X)
-  total := by rw [Finsupp.sum_withTopSome hw (g := fun _ r ↦ r)]; exact w.total
+  total := by rw [← w.total, ← Finsupp.sum_withTopSome_add rfl, hw, add_zero]
 
 @[to_dual (attr := simp) (dont_translate := R)]
-lemma map_untop_some (w : StdSimplex R (WithTop X)) (hw : w.weights ⊤ = 0) :
+lemma map_untop_some (w : StdSimplex R (WithTop X)) (hw) :
     (w.untop hw).map WithTop.some = w := by
   ext b
   induction b with
@@ -70,11 +79,10 @@ a convex combination putting positive weight on `⊤` is equal to `⊤`. -/
 a convex combination putting positive weight on `⊥` is equal to `⊥`. -/]
 instance : ConvexSpace R (WithTop X) :=
   let c (w : StdSimplex R (WithTop X)) : WithTop X :=
-    open scoped Classical in if hw : w.weights ⊤ = 0 then ↑(w.untop hw).sConvexComb else ⊤
-  have hcoe (w : StdSimplex R X) : c (w.map WithTop.some) = ↑w.sConvexComb := by
-    simp [c, dite_eq_left <| mem_range_map_withTopSome.1 ⟨w, rfl⟩]
-  have htop (w : StdSimplex R (WithTop X)) : c w = ⊤ ↔ w.weights ⊤ ≠ 0 := by
-    classical exact Ne.dite_eq_right_iff <| by simp
+    open scoped Classical in if hw : w.weights ⊤ = 0 then (w.untop hw).sConvexComb else ⊤
+  have hcoe (w : StdSimplex R X) : c (w.map WithTop.some) = w.sConvexComb := by
+    simp [c, Finsupp.mapDomain_apply]
+  have htop (w : StdSimplex R (WithTop X)) : c w = ⊤ ↔ w.weights ⊤ ≠ 0 := by simp [c]
   .mk
     (sConvexComb := c)
     (single := fun x ↦ by
@@ -85,23 +93,16 @@ instance : ConvexSpace R (WithTop X) :=
       classical
       by_cases hF : ∀ v ∈ F.weights.support, v.weights (⊤ : WithTop X) = 0
       · obtain ⟨G, rfl⟩ : F ∈ Set.range (map (map WithTop.some)) := by
-          refine mem_range_map_iff .. |>.2 fun w hw ↦ ?_
-          by_contra hw0
-          exact hw ⟨w.untop (hF w (Finsupp.mem_support_iff.2 hw0)), map_untop_some ..⟩
+          grind [mem_range_map_iff, mem_range_map_withTopSome]
         simp only [map_map, hcoe]
         rw [← map_map, hcoe, ← map_sConvexComb, hcoe, sConvexComb_sConvexComb]
-      · have hc : ∃ v ∈ F.weights.support, v.weights (⊤ : WithTop X) ≠ 0 := by
-          by_contra hc
-          exact hF fun v hv ↦ not_not.1 fun h ↦ hc ⟨v, hv, h⟩
-        have h₁ : c (F.map c) = ⊤ := by simpa [htop, ← Finsupp.mem_support_iff] using hc
+      · obtain ⟨v₀, hv₀, hv₀'⟩ : ∃ v, F.weights v ≠ 0 ∧ v.weights ⊤ ≠ 0 := by simpa using hF
+        have : v₀ ∈ F.weights.support := by simpa using hv₀
         have h₂ : c F.sConvexComb = ⊤ := by
           simp only [htop, weights_sConvexComb, Finsupp.sum, Finsupp.coe_finsetSum,
             Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, ne_eq]
-          obtain ⟨v₀, hv₀, hv₀'⟩ := hc
-          exact (Finset.sum_pos' (fun d _ ↦ mul_nonneg (F.weights_nonneg d) (d.weights_nonneg ⊤))
-            ⟨v₀, hv₀, mul_pos ((F.weights_nonneg v₀).lt_of_ne' (Finsupp.mem_support_iff.1 hv₀))
-              ((v₀.weights_nonneg ⊤).lt_of_ne' hv₀')⟩).ne'
-        rw [h₁, h₂])
+          positivity
+        simpa [h₂, htop, ← Finsupp.mem_support_iff] using hF)
 
 @[to_dual (dont_translate := R)]
 lemma sConvexComb_withTop_eq_some (hw : w.weights ⊤ = 0) :
@@ -109,9 +110,7 @@ lemma sConvexComb_withTop_eq_some (hw : w.weights ⊤ = 0) :
 
 @[to_dual (attr := simp) (dont_translate := R)]
 lemma sConvexComb_withTop_eq_top : sConvexComb w = ⊤ ↔ w.weights ⊤ ≠ 0 := by
-  by_cases hw : w.weights ⊤ = 0
-  · simp [sConvexComb_withTop_eq_some hw, hw]
-  · simp [show sConvexComb w = ⊤ from dite_eq_right hw, hw]
+  classical exact dite_eq_right_iff.trans (by simp)
 
 @[to_dual (attr := simp) (dont_translate := R)]
 lemma sConvexComb_map_withTopSome (v : StdSimplex R X) :
