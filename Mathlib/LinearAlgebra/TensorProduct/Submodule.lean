@@ -119,7 +119,6 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
   rintro _ ⟨x, rfl⟩
   induction x with
-  | zero => rw [map_zero]; exact zero_mem _
   | tmul a b => exact mul_mem_mul a.2 b.2
   | add a b ha hb => rw [map_add]; exact add_mem ha hb
 
