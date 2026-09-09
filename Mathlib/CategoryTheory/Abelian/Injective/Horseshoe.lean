@@ -54,6 +54,10 @@ attribute [reassoc (attr := simp)] w_f
 @[reassoc (attr := simp)]
 lemma w : h.f.hom ≫ h.g.hom = 0 := by cat_disch
 
+@[reassoc (attr := simp)]
+lemma w' : h.f.hom' ≫ h.g.hom' = 0 := by
+  simp [Hom.hom', ← HomologicalComplex.extendMap_comp, w]
+
 /-- The short exact sequence of cochain complexes
 `0 ⟶ R₁.cocomplex ⟶ R₂.cocomplex ⟶ R₃.cocomplex ⟶ 0` of a horseshoe diagram. -/
 @[implicit_reducible]
@@ -85,18 +89,17 @@ noncomputable def shortComplexExtend : ShortComplex (CochainComplex C ℤ) where
   X₁ := R₁.cochainComplex
   X₂ := R₂.cochainComplex
   X₃ := R₃.cochainComplex
-  f := HomologicalComplex.extendMap h.f.hom _
-  g := HomologicalComplex.extendMap h.g.hom _
-  zero := by
-    dsimp [cochainComplex]
-    rw [← HomologicalComplex.extendMap_comp, w, HomologicalComplex.extendMap_zero]
-    rfl
+  f := h.f.hom'
+  g := h.g.hom'
 
 lemma shortExact_shortComplexExtend :
     h.shortComplexExtend.ShortExact :=
   h.shortExact_shortComplex.map_of_exact (ComplexShape.embeddingUpNat.extendFunctor C)
 
 /- TODO, relate these three triangles:
+The difficulty is the compatibility with `mor₃`, but it must work as
+these triangles identify to short exact sequences in the heart of
+the canonical t-structure: in that case, the connecting homomorphism is unique.
 
 variable [HasDerivedCategory C]
 have T₁ := DerivedCategory.triangleOfSES h.shortExact_shortComplexExtend
@@ -137,15 +140,16 @@ noncomputable def singleTriangleIso [HasDerivedCategory C] :
     DerivedCategory.Q.mapTriangle.obj h.triangle :=
   Triangle.isoMk _ _ (asIso (DerivedCategory.Q.map R₁.ι'))
     (asIso (DerivedCategory.Q.map R₂.ι')) (asIso (DerivedCategory.Q.map R₃.ι'))
-    sorry sorry sorry
+    (by simp [← DerivedCategory.Q_map_single_map, ← Functor.map_comp])
+    (by simp [← DerivedCategory.Q_map_single_map, ← Functor.map_comp]) sorry
 
 lemma shiftedHomMk₀_inv_Q_ι'_comp_singleδ [HasDerivedCategory C] :
     (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₃.ι'))).comp
         hS.singleδ (add_zero 1) =
-      (ShiftedHom.map (homOfDegreewiseSplit h.shortComplexExtend h.splittingExtend)
-        DerivedCategory.Q).comp (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₁.ι')))
+    (ShiftedHom.map (homOfDegreewiseSplit h.shortComplexExtend h.splittingExtend)
+      DerivedCategory.Q).comp (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₁.ι')))
         (zero_add 1) := by
-  sorry
+  simpa [ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀] using! h.singleTriangleIso.hom.comm₃
 
 attribute [local instance] HasDerivedCategory.standard in
 open HomComplex in

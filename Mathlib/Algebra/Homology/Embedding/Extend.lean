@@ -351,7 +351,7 @@ variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C]
 the functor `HomologicalComplex C c ⥤ HomologicalComplex C c'` which
 extend complexes along `e`: the extended complexes are zero
 in the degrees that are not in the image of `e.f`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def extendFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c ⥤ HomologicalComplex C c' where
   obj K := K.extend e
