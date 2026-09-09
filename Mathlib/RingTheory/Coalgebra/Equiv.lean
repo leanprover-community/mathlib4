@@ -128,6 +128,9 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 variable (e e' : A ≃ₗc[R] B)
 
 @[simp, norm_cast]
+theorem coe_ofClass : ⇑(ofClass e) = e := rfl
+
+@[simp, norm_cast]
 theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
   rfl
 
