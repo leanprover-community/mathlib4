@@ -257,8 +257,12 @@ variable [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup M] [Module R M] [
 
 /-- A torsion-free module over linearly ordered scalars is a cancellative convex space. -/
 instance IsCancelConvexSpace.of_module : IsCancelConvexSpace R M where
-  convexCombPair_left_injective a b ha hb hab y x₁ x₂ hx :=
-    (IsRegular.of_pos ha).isSMulRegular <| by simpa using hx
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    rw [sConvexComb_eq_sum, sConvexComb_eq_sum, hw₁, hw₂,
+      Finsupp.sum_add_index' (by simp) fun _ _ _ ↦ add_smul .., Finsupp.sum_single_index (by simp),
+      Finsupp.sum_add_index' (by simp) fun _ _ _ ↦ add_smul .., Finsupp.sum_single_index (by simp)]
+      at h
+    exact (IsRegular.of_pos ha).isSMulRegular (add_right_cancel h)
 
 end LinearOrder
 end Convexity
