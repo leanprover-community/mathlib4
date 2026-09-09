@@ -642,7 +642,8 @@ def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i �
 
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
-abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
+@[implicit_reducible]
+def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     ChainComplex V α :=
   { X := X
     d := of.d X d
@@ -658,9 +659,8 @@ theorem of_X : (of X d sq).X = X :=
   rfl
 
 @[simp]
-theorem of_d (j : α) : of.d X d (j + 1) j = d j := by
-  dsimp [of.d]
-  rw [ite_eq_left rfl, Category.id_comp]
+theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
+  simp [of, of.d]
 
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : of.d X d i j = 0 := by
   simp [of.d, dite_eq_right h]
@@ -747,7 +747,8 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
     mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   rw [show n + 2 = n + 1 + 1 from rfl]
-  simp [mk, mkAux]
+  simp only [mk, mkAux, of_d]
+  rfl
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
