@@ -23,7 +23,7 @@ variable {a b c d : Prop}
 @[gcongr] lemma imp_mono (h₁ : c → a) (h₂ : c → b → d) : (a → b) → c → d :=
   fun h₃ hc => h₂ hc (h₃ (h₁ hc))
 
-/-- Monotonicity of conjunction, with an extra hypothesis `a` in the `b → d` hypothesis. -/
+/-- A version of `And.imp` with an extra hypothesis `a` in the `b → d` hypothesis. -/
 @[gcongr] lemma and_mono (h₁ : a → c) (h₂ : a → b → d) : (a ∧ b) → c ∧ d :=
   fun ⟨ha, hb⟩ => ⟨h₁ ha, h₂ ha hb⟩
 
