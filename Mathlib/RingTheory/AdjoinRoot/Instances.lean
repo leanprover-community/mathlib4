@@ -6,11 +6,12 @@ Authors: metakunt
 module
 
 public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.RingTheory.AdjoinRoot.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
+
 import Mathlib.FieldTheory.Separable
 import Mathlib.Instances.IsReduced.Polynomial
-public import Mathlib.RingTheory.AdjoinRoot.Basic
 import Mathlib.RingTheory.LocalProperties.Reduced
-public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Instances related to `AdjoinRoot`
