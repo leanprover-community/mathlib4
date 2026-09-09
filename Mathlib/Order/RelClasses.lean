@@ -141,15 +141,56 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
 
 /-! ### Inverse Image -/
 
-theorem InvImage.trichotomous [Std.Trichotomous r] {f : β → α} (h : Function.Injective f) :
+namespace InvImage
+
+variable {α β : Sort*} {r : α → α → Prop} (f : β → α)
+
+instance refl [Std.Refl r] : Std.Refl (InvImage r f) :=
+  inferInstanceAs <| Std.Refl (r on f)
+
+instance symm [Std.Symm r] : Std.Symm (InvImage r f) :=
+  inferInstanceAs <| Std.Symm (r on f)
+
+instance asymm [Std.Asymm r] : Std.Asymm (InvImage r f) :=
+  inferInstanceAs <| Std.Asymm (r on f)
+
+instance total [Std.Total r] : Std.Total (InvImage r f) :=
+  inferInstanceAs <| Std.Total (r on f)
+
+instance isPreorder [IsPreorder α r] : IsPreorder β (InvImage r f) :=
+  inferInstanceAs <| IsPreorder β (r on f)
+
+instance isEquiv [IsEquiv α r] : IsEquiv β (InvImage r f) :=
+  inferInstanceAs <| IsEquiv β (r on f)
+
+instance isStrictOrder [IsStrictOrder α r] : IsStrictOrder β (InvImage r f) :=
+  inferInstanceAs <| IsStrictOrder β (r on f)
+
+instance isStrictWeakOrder [IsStrictWeakOrder α r] : IsStrictWeakOrder β (InvImage r f) :=
+  inferInstanceAs <| IsStrictWeakOrder β (r on f)
+
+variable {f}
+
+theorem antisymm [Std.Antisymm r] (hf : Function.Injective f) : Std.Antisymm (InvImage r f) :=
+  hf.antisymm_onFun r
+
+theorem trichotomous [Std.Trichotomous r] (hf : Function.Injective f) :
     Std.Trichotomous (InvImage r f) :=
-  ⟨fun {a b} hab hba ↦ h <| Std.Trichotomous.trichotomous (f a) (f b) hab hba⟩
+  hf.trichotomous_onFun r
 
-instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f) where
-  asymm a b h h2 := Std.Asymm.asymm (f a) (f b) h h2
+theorem isPartialOrder [IsPartialOrder α r] (hf : Function.Injective f) :
+    IsPartialOrder β (InvImage r f) :=
+  hf.isPartialOrder_onFun r
 
-instance InvImage.total [Std.Total r] (f : β → α) : Std.Total (InvImage r f) where
-  total x y := Std.Total.total (f x) (f y)
+theorem isLinearOrder [IsLinearOrder α r] (hf : Function.Injective f) :
+    IsLinearOrder β (InvImage r f) :=
+  hf.isLinearOrder_onFun r
+
+theorem isStrictTotalOrder [IsStrictTotalOrder α r] (hf : Function.Injective f) :
+    IsStrictTotalOrder β (InvImage r f) :=
+  hf.isStrictTotalOrder_onFun r
+
+end InvImage
 
 /-! ### Well-order -/
 
@@ -429,6 +470,22 @@ instance instTotal [Std.Total r] {f : β → α} : Std.Total (f ⁻¹'o r) :=
 
 theorem antisymm [Std.Antisymm r] {f : β → α} (hf : f.Injective) : Std.Antisymm (f ⁻¹'o r) :=
   ⟨fun _ _ h₁ h₂ ↦ hf <| antisymm_of r h₁ h₂⟩
+
+theorem trichotomous [Std.Trichotomous r] {f : β → α} (hf : f.Injective) :
+    Std.Trichotomous (f ⁻¹'o r) :=
+  hf.trichotomous_onFun r
+
+theorem isPartialOrder [IsPartialOrder α r] {f : β → α} (hf : f.Injective) :
+    IsPartialOrder β (f ⁻¹'o r) :=
+  hf.isPartialOrder_onFun r
+
+theorem isLinearOrder [IsLinearOrder α r] {f : β → α} (hf : f.Injective) :
+    IsLinearOrder β (f ⁻¹'o r) :=
+  hf.isLinearOrder_onFun r
+
+theorem isStrictTotalOrder [IsStrictTotalOrder α r] {f : β → α} (hf : f.Injective) :
+    IsStrictTotalOrder β (f ⁻¹'o r) :=
+  hf.isStrictTotalOrder_onFun r
 
 end Order.Preimage
 
