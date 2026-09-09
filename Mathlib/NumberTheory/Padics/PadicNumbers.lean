@@ -1218,6 +1218,11 @@ lemma norm_lt_norm_iff_mulValuation_lt {x y : ℚ_[p]} :
   rw [norm_eq_zpow_log_mulValuation hy, norm_lt_zpow_iff_mulValuation_lt_exp,
     exp_log (mulValuation.ne_zero_iff.mpr hy)]
 
+lemma mulValuation_le_one_iff_norm_le_one {x : ℚ_[p]} :
+    mulValuation x ≤ 1 ↔ ‖x‖ ≤ 1 := by
+  rw [← not_lt, ← not_lt, not_iff_not]
+  simpa using (norm_lt_norm_iff_mulValuation_lt (x := 1) (y := x)).symm
+
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
   AddValuation.of addValuationDef AddValuation.map_zero AddValuation.map_one AddValuation.map_add
