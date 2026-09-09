@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 
-import Mathlib.RingTheory.IsReduced
+import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Theory of univariate polynomials
