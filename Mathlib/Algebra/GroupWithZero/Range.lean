@@ -56,12 +56,10 @@ section mrange
 
 variable {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H] (f : G →*₀ H)
 
-lemma mrange_nontrivial :
-    Nontrivial (MonoidHom.mrange f) :=
+lemma mrange_nontrivial : Nontrivial f.toMonoidHom.mrange :=
   ⟨1, 0, by simp [Subtype.ext_iff]⟩
 
-lemma range_nontrivial :
-    (Set.range f).Nontrivial :=
+lemma range_nontrivial : (Set.range f).Nontrivial :=
   Set.nontrivial_coe_sort.mp f.mrange_nontrivial
 
 end mrange
