@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Basic.Complex.Basic
 
 /-!
 # Inner product spaces
