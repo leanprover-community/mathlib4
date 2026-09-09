@@ -469,7 +469,7 @@ instance instTotal [Std.Total r] {f : β → α} : Std.Total (f ⁻¹'o r) :=
   ⟨fun _ _ => total_of r _ _⟩
 
 theorem antisymm [Std.Antisymm r] {f : β → α} (hf : f.Injective) : Std.Antisymm (f ⁻¹'o r) :=
-  ⟨fun _ _ h₁ h₂ ↦ hf <| antisymm_of r h₁ h₂⟩
+  hf.antisymm_onFun r
 
 theorem trichotomous [Std.Trichotomous r] {f : β → α} (hf : f.Injective) :
     Std.Trichotomous (f ⁻¹'o r) :=
