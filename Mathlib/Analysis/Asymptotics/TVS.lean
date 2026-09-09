@@ -159,7 +159,7 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =o[𝕜; l] g₁ ↔ f₂ =o[𝕜; l] g₂ := by
   simp only [isLittleOTVS_iff_tendsto_div]
-  peel with U hU V hV
+  congr! 5 with U hU V hV
   exact tendsto_congr' (hf.comp₂ (egauge _ _ · / egauge _ _ ·) hg)
 
 /-- A stronger version of `IsLittleOTVS.congr` that requires the functions only agree along the
@@ -181,7 +181,7 @@ theorem IsLittleOTVS.congr_right (h : f =o[𝕜; l] g₁) (hg : ∀ x, g₁ x = 
 theorem isBigOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =O[𝕜; l] g₁ ↔ f₂ =O[𝕜; l] g₂ := by
   simp only [isBigOTVS_iff]
-  peel with U hU V hV
+  congr! 5 with U hU V hV
   exact eventuallyLE_congr (hf.fun_comp (egauge 𝕜 U)) (hg.fun_comp (egauge 𝕜 V))
 
 /-- A stronger version of `IsBigOTVS.congr` that requires the functions only agree along the
@@ -663,9 +663,8 @@ theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜; l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜; l] (fun x ↦ c x • g x) := by
-  simp only [isLittleOTVS_iff] at *
-  peel h with U hU V hV ε hε x hx
-  simp only at *
+  simp only [isLittleOTVS_iff, EventuallyLE] at *
+  gconvert h using 7 with U hU V hV ε hε x hx
   rw [egauge_smul_right, egauge_smul_right, mul_left_comm]
   · gcongr
   all_goals exact fun _ ↦ Filter.nonempty_of_mem ‹_›
