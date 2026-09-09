@@ -58,7 +58,7 @@ lemma relPosition_mem_one_eq_iff {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ 
 
 end DoubleCoset
 
-/-- A subgroup `H` is called Hecke unimodular if `Nat.card HgH = Nat.card Hg⁻¹H` for any `g`. -/
+/-- A subgroup `H` is called Hecke unimodular if `#(HgH)/H = #(Hg⁻¹H)/H` for any `g`. -/
 class Subgroup.IsHeckeUnimodular (H : Subgroup G) : Prop where
   degree_eq_inv_degree : ∀ (x : DoubleCoset.Quotient (H : Set G) (H : Set G)),
     x.degree = (x.inv).degree

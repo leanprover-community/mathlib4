@@ -85,8 +85,8 @@ lemma coeff_mk_apply (y : DoubleCoset₀ H₂ H₃) (d : G ⧸ H₂) (c : G ⧸ 
     [Decidable (relPosition d c = y)] :
     ((mk y) (cosetVector k d)).coeff c = if relPosition d c = y then (1 : k) else 0 := by classical
   nth_rw 1 [← QuotientGroup.out_eq' d, ← mul_one d.out, ← smul_eq_mul, ← MulAction.Quotient.smul_mk,
-    ← ofMulAction_apply_cosetVector, IntertwiningMap.isIntertwining, mk_apply]
-  simp [← relPosition_mk_eq_iff]
+    ← ofMulAction_apply_cosetVector, IntertwiningMap.isIntertwining, mk_apply, coeff_ofMulAction]
+  simp only [coeff_doubleCosetVector, ← relPosition_mk_eq_iff, Quotient.out_eq, ne_eq]
 
 lemma coeff_apply (f : HeckeBimodule k H₁ H₂) (x : DoubleCoset₀ H₁ H₂) :
     f.coeff x = (ev₁ f).coeff x.rep := rfl
@@ -161,7 +161,7 @@ lemma inductionOn (f : HeckeBimodule k H₁ H₂) {p : HeckeBimodule k H₁ H₂
 section Action
 
 /-- The action of `f ∈ Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])` is given by precomposition
-``. -/
+`· ∘ f : HeckeModule H₂ ρ → HeckeModule H₁ ρ`. -/
 noncomputable def action : HeckeBimodule k H₁ H₂ →ₗ[k] HeckeModule H₂ ρ →ₗ[k] HeckeModule H₁ ρ :=
   (IntertwiningMap.llcomp (ofMulAction k G (G ⧸ H₁)) (ofMulAction k G (G ⧸ H₂)) ρ).flip
 
@@ -181,10 +181,10 @@ lemma action_mk_apply (x : DoubleCoset₀ H₁ H₂) (v : HeckeModule H₂ ρ) :
 theorem action_mk_mk (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃) :
     (mk x).action (mk y) (k := k) = (x.structureConst y).sum fun w n => n • (mk w) := by classical
   refine ext_coeff fun z => calc
-    _ = (x.structureConst y z : k) := by
-      rw [← DoubleCoset₀.mk_rep z, DoubleCoset₀.structureConst_coe, structureConst_mk]
-      simp [coeff_apply, action_mk_apply]
-    _ = _ := by simpa [map_finsuppSum, Finsupp.single_apply] using fun h => by simp [h]
+  _ = (x.structureConst y z : k) := by
+    rw [← DoubleCoset₀.mk_rep z, DoubleCoset₀.structureConst_coe, structureConst_mk, coeff_apply]
+    simp [action_mk_apply]
+  _ = _ := by simpa [map_finsuppSum, Finsupp.single_apply] using fun h => by simp [h]
 
 end Action
 

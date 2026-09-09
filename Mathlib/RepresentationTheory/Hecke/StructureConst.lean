@@ -76,8 +76,8 @@ open leftDecompQuotient in
 /-- The computation formula for structureConst with given representatives of doublecosets and
 left-coset decompositions. -/
 lemma structureConst_mk_mk_mk (u v w : G) {ι κ : Type*}
-    {σ : ι → H₁} (hσ : Function.Bijective fun i => (σ i : leftDecompQuotient H₁ H₂ u))
-    {τ : κ → H₂} (hτ : Function.Bijective fun j => (τ j : leftDecompQuotient H₂ H₃ v)) :
+    {σ : ι → H₁} (hσ : Function.Bijective fun i ↦ (σ i : leftDecompQuotient H₁ H₂ u))
+    {τ : κ → H₂} (hτ : Function.Bijective fun j ↦ (τ j : leftDecompQuotient H₂ H₃ v)) :
     (mk H₁ H₂ u).structureConst (mk H₂ H₃ v) (mk H₁ H₃ w) =
       Nat.card {p : ι × κ | (σ p.1 * u * (τ p.2 * v) : G ⧸ H₃) = (w : G ⧸ H₃)} := by
   rw [structureConst_mk, eq_comm]
