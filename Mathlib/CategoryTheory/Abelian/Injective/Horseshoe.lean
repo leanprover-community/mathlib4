@@ -135,13 +135,26 @@ lemma splittingExtend_r (n : ℤ) (m : ℕ) (hm : m = n) :
 noncomputable abbrev triangle : Triangle (CochainComplex C ℤ) :=
     triangleOfDegreewiseSplit h.shortComplexExtend h.splittingExtend
 
+@[simps, implicit_reducible]
+noncomputable def ε :
+    ShortComplex.mk ((singleFunctor C 0).map S.f) ((singleFunctor C 0).map S.g)
+      (by simp [← Functor.map_comp]) ⟶ h.shortComplexExtend where
+  τ₁ := R₁.ι'
+  τ₂ := R₂.ι'
+  τ₃ := R₃.ι'
+
+@[simps!]
 noncomputable def singleTriangleIso [HasDerivedCategory C] :
     ShortComplex.ShortExact.singleTriangle hS ≅
     DerivedCategory.Q.mapTriangle.obj h.triangle :=
   Triangle.isoMk _ _ (asIso (DerivedCategory.Q.map R₁.ι'))
     (asIso (DerivedCategory.Q.map R₂.ι')) (asIso (DerivedCategory.Q.map R₃.ι'))
     (by simp [← DerivedCategory.Q_map_single_map, ← Functor.map_comp])
-    (by simp [← DerivedCategory.Q_map_single_map, ← Functor.map_comp]) sorry
+    (by simp [← DerivedCategory.Q_map_single_map, ← Functor.map_comp]) (by
+      simp [ShortComplex.ShortExact.singleδ,
+        DerivedCategory.triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp h.splittingExtend,
+        dsimp% (DerivedCategory.triangleOfSES.map
+        (hS.map_of_exact ((singleFunctor C 0))) h.shortExact_shortComplexExtend h.ε).comm₃])
 
 lemma shiftedHomMk₀_inv_Q_ι'_comp_singleδ [HasDerivedCategory C] :
     (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₃.ι'))).comp
