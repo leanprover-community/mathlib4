@@ -760,6 +760,13 @@ theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     rw [Set.mem_compl_iff] at hx_mem
     simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_notMem, hx hx_mem]
 
+theorem piecewise_iff {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+    AEStronglyMeasurable (s.piecewise f g) μ ↔
+      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable g (μ.restrict sᶜ) := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.piecewise hs hg⟩
+  · exact h.restrict.congr (piecewise_ae_eq_restrict hs)
+  · exact h.restrict.congr (piecewise_ae_eq_restrict_compl hs)
+
 @[fun_prop]
 theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι → Measure α}
     (h : ∀ i, AEStronglyMeasurable f (μ i)) : AEStronglyMeasurable f (Measure.sum μ) := by

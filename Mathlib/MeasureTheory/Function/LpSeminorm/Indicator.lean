@@ -120,13 +120,13 @@ lemma eLpNorm_indicator_const (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_t
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
   eLpNorm_indicator_const₀ hs hp hp_top
 
-lemma eLpNorm_indicator_const' (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
+lemma eLpNorm_indicator_const' (hs : NullMeasurableSet s μ) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   have hsc : AEStronglyMeasurable (s.indicator fun _ : α ↦ c) μ :=
-    AEStronglyMeasurable.indicator₀ (by fun_prop) hs.nullMeasurableSet
+    AEStronglyMeasurable.indicator₀ (by fun_prop) hs
   by_cases hp_top : p = ∞
   · simp [hp_top, hsc, eLpNormEssSup_indicator_const_eq s c hμs]
-  · exact eLpNorm_indicator_const hs.nullMeasurableSet hp hp_top
+  · exact eLpNorm_indicator_const hs hp hp_top
 
 variable (c) in
 lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) (hs : NullMeasurableSet s μ) :
@@ -171,13 +171,18 @@ lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs :
   congr with x
   by_cases hx : x ∈ s <;> simp [hx]
 
-lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s)
-    (hf : AEStronglyMeasurable f (μ.restrict s)) (hg : AEStronglyMeasurable g (μ.restrict sᶜ)) :
+lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNorm (Set.piecewise s f g) ∞ μ
       = max (eLpNorm f ∞ (μ.restrict s)) (eLpNorm g ∞ (μ.restrict sᶜ)) := by
-  rw [eLpNorm_exponent_top (AEStronglyMeasurable.piecewise hs hf hg), eLpNorm_exponent_top hf,
-    eLpNorm_exponent_top hg]
-  exact eLpNormEssSup_piecewise f g hs
+  by_cases hfg : AEStronglyMeasurable (Set.piecewise s f g) μ
+  · obtain ⟨hf, hg⟩ := (AEStronglyMeasurable.piecewise_iff hs).1 hfg
+    rw [eLpNorm_exponent_top hfg, eLpNorm_exponent_top hf,
+      eLpNorm_exponent_top hg]
+    exact eLpNormEssSup_piecewise f g hs
+  ·
+
+
+#exit
 
 protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
     (hf : MemLp f p (μ.restrict s)) (hg : MemLp g p (μ.restrict sᶜ)) :
