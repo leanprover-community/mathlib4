@@ -319,7 +319,6 @@ theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r 
   simp only [monomial_eq, map_mul, bind₂_C_right, Finsupp.prod, map_prod,
     map_pow, bind₂_X_right, C_1, one_mul]
 
-@[simp]
 theorem eval₂_X_monomial_one (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) :
     eval₂ f X (monomial d 1) = monomial d 1 := by
   rw [eval₂_monomial, map_one, monomial_eq, map_one]

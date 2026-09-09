@@ -283,7 +283,6 @@ we model them as constant unary functions. -/
 instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
 
-@[simp]
 theorem aeval_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     aeval (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
   simp
