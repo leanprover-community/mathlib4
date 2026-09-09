@@ -112,7 +112,7 @@ theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
   suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
   rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
-  exact ⟨inferInstance, h⟩
+  exact ⟨Algebra.HasSeparableResidueFieldsAt.isSeparable q, h⟩
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one_iff :=
   ramificationIdx_eq_one_iff
@@ -277,5 +277,3 @@ theorem ramificationIdx_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMul
 end
 
 end Ideal
-
-#min_imports
