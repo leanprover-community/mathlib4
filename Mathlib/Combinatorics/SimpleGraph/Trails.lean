@@ -134,6 +134,10 @@ theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.I
 theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
   simp [← edgeSet_eq_empty, hp.edgeSet_eq]
 
+theorem isEulerian_of_bot (p : Walk ⊥ u v) : p.IsEulerian := by
+  intro e h
+  simp at h
+
 /-- The support of a non-nil Eulerian trail equals the support of the graph. -/
 theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
     w ∈ p.support ↔ ¬G.IsIsolated w :=
