@@ -42,6 +42,20 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
 
+/-- Instantiate the level metavariables in `u`, remembering that the result is defeq to `u`.
+
+This is a `Qq` version of `Lean.instantiateLevelMVars`. -/
+-- The `u'` binder is used in the return type, but the linter cannot see through `=QL`
+def instantiateLevelMVarsQ (u : Level) : MetaM ((_u' : Level) ×' (u =QL _u')) :=
+  return ⟨← instantiateLevelMVars u, ⟨⟩⟩
+
+/-- Instantiate the metavariables in `e`, remembering that the result is defeq to `e`.
+
+This is a variant of `Qq.instantiateMVarsQ` which returns the defeq proof. -/
+def instantiateMVarsQ' {u : Level} {α : Q(Sort u)} (e : Q($α)) :
+    MetaM ((e' : Q($α)) ×' $e =Q $e') :=
+  return ⟨← instantiateMVarsQ e, ⟨⟩⟩
+
 /-- Return a local declaration whose type is definitionally equal to `sort`.
 
 This is a Qq version of `Lean.Meta.findLocalDeclWithType?` -/
