@@ -54,7 +54,7 @@ lemma mem_perpBisector (h : s.Equilateral) (hij : i ≠ j) (hik : i ≠ k) :
 section Center
 
 /-- The distance between any point and the centroid is constant. -/
-lemma dist_centroid (h : s.Equilateral) :
+lemma dist_centroid_eq (h : s.Equilateral) :
     dist (s.points i) s.centroid = dist (s.points j) s.centroid := by
   obtain ⟨r, hr⟩ := h
   have mul_sq_norm_eq i : (n + 1) * ‖s.points i -ᵥ s.centroid‖ ^ 2 =
@@ -75,7 +75,7 @@ lemma dist_centroid (h : s.Equilateral) :
 /-- The centroid is the circumcenter. -/
 lemma centroid_eq_circumcenter (h : s.Equilateral) : s.centroid = s.circumcenter :=
     s.eq_circumcenter_of_dist_eq s.centroid_mem_affineSpan (r := dist (s.points 0) s.centroid)
-      fun _ ↦ h.dist_centroid
+      fun _ ↦ h.dist_centroid_eq
 
 /-- The centroid is the Monge point. -/
 lemma centroid_eq_mongePoint (h : s.Equilateral) : s.centroid = s.mongePoint := by
