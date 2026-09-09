@@ -234,19 +234,15 @@ topology. -/
 theorem AlgEquiv.restrictNormalHom_continuous {k K : Type*} [Field k] [Field K] [Algebra k K]
     (L : Type*) [Field L] [Algebra k L] [Algebra L K] [IsScalarTower k L K] [Normal k L] :
     Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
-  classical
   apply continuous_of_continuousAt_one _
   rw [ContinuousAt, map_one]
   refine ((galGroupBasis k K).nhds_one_hasBasis.tendsto_iff
     (galGroupBasis k L).nhds_one_hasBasis).mpr ?_
   rintro _ ⟨_, ⟨F, hF : FiniteDimensional k _, rfl⟩, rfl⟩
   let f := IsScalarTower.toAlgHom k L K
-  refine ⟨_, ⟨_, ⟨F.map f, Module.Finite.equiv (F.equivMap f).toLinearEquiv, rfl⟩, rfl⟩, ?_⟩
-  intro σ hσ x
-  apply f.injective
-  exact (σ.restrictNormal_commutes L x).trans (hσ ⟨f x, ⟨x, x.2, rfl⟩⟩)
+  refine ⟨_, ⟨_, ⟨F.map f, IntermediateField.finiteDimensional_map f, rfl⟩, rfl⟩, ?_⟩
+  exact (F.map_fixingSubgroup K).le
 
-open scoped Topology in
 /-- In a tower `L'/L/K` with `L'/L` purely inseparable and `L/K` normal, restriction of
 automorphisms is a topological embedding for the Krull topology.
 No normality of `L'/K` is needed. -/
@@ -273,7 +269,7 @@ noncomputable def AlgEquiv.restrictNormalEquivOfIsPurelyInseparable
     (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
     [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [Normal K L']
     [IsPurelyInseparable L L'] : Gal(L'/K) ≃ₜ* Gal(L/K) := by
-  let h := AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable K L L'
+  have h := AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable K L L'
   let e : Gal(L'/K) ≃* Gal(L/K) :=
     MulEquiv.ofBijective (AlgEquiv.restrictNormalHom L)
       ⟨h.injective, AlgEquiv.restrictNormalHom_surjective L'⟩

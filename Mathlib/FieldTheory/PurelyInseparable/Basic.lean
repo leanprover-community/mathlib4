@@ -412,9 +412,8 @@ theorem AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable
   apply IsPurelyInseparable.injective_restrictDomain E K F K
   ext x
   change σ (algebraMap E K x) = τ (algebraMap E K x)
-  exact (σ.restrictNormal_commutes E x).symm.trans <|
-    (congrArg (algebraMap E K) (DFunLike.congr_fun h x)).trans
-      (τ.restrictNormal_commutes E x)
+  rw [← σ.restrictNormal_commutes E x, ← τ.restrictNormal_commutes E x]
+  exact congr(algebraMap E K ($h x))
 
 /-- In a tower `K/E/F` with `K/E` purely inseparable and `E/F` normal, fixing an intermediate
 field `L` of `K/F` is equivalent to fixing its preimage in `E` after restricting automorphisms. -/
@@ -423,26 +422,23 @@ theorem IntermediateField.comap_fixingSubgroup_of_isPurelyInseparable
     (L : IntermediateField F K) :
     (L.comap (IsScalarTower.toAlgHom F E K)).fixingSubgroup.comap
       (AlgEquiv.restrictNormalHom E) = L.fixingSubgroup := by
-  ext σ
-  simp only [Subgroup.mem_comap, IntermediateField.mem_fixingSubgroup_iff]
-  constructor
-  · intro h x hx
-    let q := ringExpChar E
-    have : ExpChar K q := expChar_of_injective_ringHom (algebraMap E K).injective q
-    obtain ⟨n, y, hy⟩ := IsPurelyInseparable.pow_mem E q x
-    apply iterateFrobenius_inj K q n
-    change (σ x) ^ q ^ n = x ^ q ^ n
-    rw [← map_pow, ← hy, ← AlgEquiv.restrictNormal_commutes]
-    apply congrArg (algebraMap E K)
-    apply h
-    change algebraMap E K y ∈ L
-    rw [hy]
-    exact _root_.pow_mem hx (q ^ n)
-  · intro h y hy
-    change σ.restrictNormal E y = y
-    apply (algebraMap E K).injective
-    rw [AlgEquiv.restrictNormal_commutes]
-    exact h _ hy
+  rw [← IntermediateField.map_fixingSubgroup]
+  refine le_antisymm ?_ (IntermediateField.fixingSubgroup_le
+    (IntermediateField.map_le_iff_le_comap.mpr le_rfl))
+  intro σ hσ
+  rw [IntermediateField.mem_fixingSubgroup_iff] at hσ ⊢
+  intro x hx
+  let q := ringExpChar E
+  have : ExpChar K q := expChar_of_injective_ringHom (algebraMap E K).injective q
+  obtain ⟨n, y, hy⟩ := IsPurelyInseparable.pow_mem E q x
+  apply iterateFrobenius_inj K q n
+  change (σ x) ^ q ^ n = x ^ q ^ n
+  rw [← map_pow]
+  apply hσ
+  refine ⟨y, ?_, hy⟩
+  change algebraMap E K y ∈ L
+  rw [hy]
+  exact _root_.pow_mem hx _
 
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/

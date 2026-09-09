@@ -40,7 +40,10 @@ variable (K L : Type*) [Field K] [Field L]
 /-! ### The absolute Galois group -/
 
 /-- The absolute Galois group of `K`, defined as the Galois group of the field extension `K^sep/K`,
-  where `K^sep` is a separable closure of `K`. -/
+where `K^sep` is a separable closure of `K`.
+
+It is canonically isomorphic to `Gal(AlgebraicClosure K/K)` as a topological group via
+`Field.absoluteGaloisGroup.restrictAlgebraicClosure`. -/
 def absoluteGaloisGroup := SeparableClosure K ≃ₐ[K] SeparableClosure K
 deriving Group, TopologicalSpace, IsTopologicalGroup
 
