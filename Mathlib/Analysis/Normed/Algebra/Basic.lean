@@ -28,7 +28,7 @@ normed algebra, character space, continuous functional calculus
 
 -/
 
-@[expose] public section
+public section
 
 namespace IntermediateField
 

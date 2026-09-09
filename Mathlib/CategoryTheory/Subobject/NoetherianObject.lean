@@ -84,6 +84,7 @@ lemma not_strictMono_of_isNoetherianObject
     ¬ StrictMono f :=
   (isNoetherianObject_iff_not_strictMono X).1 inferInstance f
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isNoetherianObject_iff_isEventuallyConstant :
     IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
       IsFiltered.IsEventuallyConstant F := by

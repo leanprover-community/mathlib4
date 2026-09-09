@@ -37,9 +37,7 @@ equivalence relation, and defines Turing degrees as the quotient under this rela
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
 
-@[expose] public section
-
-open Primrec
+public section
 
 variable {f g h : ℕ →. ℕ}
 

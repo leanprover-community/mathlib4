@@ -26,7 +26,7 @@ namespace Mathlib.Tactic
 open Lean Meta Qq
 
 namespace RingNF
-open Ring
+open Mathlib.Tactic.Ring
 
 /-- The normalization style for `ring_nf`. -/
 inductive RingMode where
@@ -38,8 +38,8 @@ inductive RingMode where
 
 /-- Configuration for `ring_nf`. -/
 structure Config extends AtomM.Recurse.Config where
-  /-- if true, then fail if no progress is made -/
-  failIfUnchanged := true
+  /-- How to behave if no progress is made: warn, error or keep silent. Default to error -/
+  ifUnchanged := BehaviorIfUnchanged.error
   /-- The normalization style. -/
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
@@ -51,6 +51,28 @@ attribute [nolint unusedArguments] Mathlib.Tactic.RingNF.instReprConfig.repr
 declare_config_elab elabConfig Config
 
 /--
+Evaluates an expression `e` into a normalized representation as a polynomial, returning `none` when
+the type of `e` is not a commutative semiring, or when `e` is an atom for the `ring` tactic.
+
+This is a variant of `Mathlib.Tactic.Ring.eval`, the main driver of the `ring` tactic, operating on
+`Expr` (input) and `Simp.Result` (output) rather than typed `Qq` versions of these.
+-/
+def evalExpr? (e : Expr) : AtomM (Option Simp.Result) := do
+  let e ← withReducible <| whnf e
+  unless e.isApp do return none -- all interesting ring expressions are applications
+  let ⟨u, α, e⟩ ← inferTypeQ' e
+  let .some sαe ← trySynthInstance q(CommSemiring $α) | return none
+  have sα : Q(CommSemiring $α) := sαe
+  let c ← Common.mkCache sα
+  let ⟨a, _, pa⟩ ← match
+    (← Common.isAtomOrDerivable (ringCompute c) c q($e)) with
+  | none => Common.eval rcℕ (ringCompute c) c e
+    -- `none` indicates that `eval` will find something algebraic.
+  | some none => return none -- No point rewriting atoms
+  | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
+  return some { expr := a, proof? := pa }
+
+/--
 Evaluates an expression `e` into a normalized representation as a polynomial.
 
 This is a variant of `Mathlib.Tactic.Ring.eval`, the main driver of the `ring` tactic.
@@ -59,18 +81,8 @@ It differs in
 * throwing an error if the expression `e` is an atom for the `ring` tactic.
 -/
 def evalExpr (e : Expr) : AtomM Simp.Result := do
-  let e ← withReducible <| whnf e
-  guard e.isApp -- all interesting ring expressions are applications
-  let ⟨u, α, e⟩ ← inferTypeQ' e
-  let sα ← synthInstanceQ q(CommSemiring $α)
-  let c ← Common.mkCache sα
-  let ⟨a, _, pa⟩ ← match
-    (← Common.isAtomOrDerivable (ringCompute c) c q($e)) with
-  | none => Common.eval rcℕ (ringCompute c) c e
-    -- `none` indicates that `eval` will find something algebraic.
-  | some none => failure -- No point rewriting atoms
-  | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
-  pure { expr := a, proof? := pa }
+  let some r ← evalExpr? e | failure
+  pure r
 
 variable {R : Type*} [CommSemiring R] {n d : ℕ}
 
@@ -138,7 +150,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
+  transformAtLocation (m ·) "ring_nf" loc cfg.ifUnchanged false
 
 @[tactic_alt ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)

@@ -61,7 +61,7 @@ section Four
 
 variable {R₁ R₂ : ComposableArrows C 3} (φ : R₁ ⟶ R₂)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
     (hR₁' : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
     (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact)
@@ -92,7 +92,7 @@ theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (by simpa only [R₁.map'_comp 0 1 2] using hR₁.toIsComplex.zero 0)
     (hR₁.exact 1).exact_toComposableArrows (hR₂.exact 0).exact_toComposableArrows h₀ h₁ h₃
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 theorem epi_of_epi_of_epi_of_mono'
     (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
     (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact) (hR₂' : R₂.map' 1 3 = 0)
@@ -134,10 +134,11 @@ section Five
 variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
 include hR₁ hR₂
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
-    (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
-  dsimp at h₀ h₁ h₂ h₃
+    (h₃ : IsIso (app' φ 3)) (h₄ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
+  dsimp at h₀ h₁ h₃ h₄
   have : Mono (app' φ 2) := by
     apply mono_of_epi_of_mono_of_mono (δlastFunctor.map φ) (R₁.exact_iff_δlast.1 hR₁).1
       (R₂.exact_iff_δlast.1 hR₂).1 <;> dsimp <;> infer_instance
@@ -145,6 +146,61 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : 
     apply epi_of_epi_of_epi_of_mono (δ₀Functor.map φ) (R₁.exact_iff_δ₀.1 hR₁).2
       (R₂.exact_iff_δ₀.1 hR₂).2 <;> dsimp <;> infer_instance
   apply isIso_of_mono_of_epi
+
+end Five
+
+section Four
+
+variable {n k : ℕ} (h : k + 3 ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+
+include hR₁ hR₂ in
+/-- Variant of the first 4-lemma for complexes of any size -/
+theorem mono_of_epi_of_mono_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
+    (h₀ : Epi (app' φ k₀)) (h₁ : Mono (app' φ k₁))
+    (h₃ : Mono (app' φ k₃)) : Mono (app' φ k₂) := by
+  subst_vars
+  change Epi (app' φ (k₀ + 0)) at h₀
+  rw [← natAddLEFunctor_app' h] at h₀ h₁ h₃ ⊢
+  exact mono_of_epi_of_mono_of_mono _ (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) h₀ h₁ h₃
+
+include hR₁ hR₂ in
+/-- Variant of the second 4-lemma for complexes of any size -/
+theorem epi_of_epi_of_epi_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
+    (h₀ : Epi (app' φ k₀)) (h₂ : Epi (app' φ k₂))
+    (h₃ : Mono (app' φ k₃)) : Epi (app' φ k₁) := by
+  subst_vars
+  change Epi (app' φ (k₀ + 0)) at h₀
+  rw [← natAddLEFunctor_app' h] at h₀ h₂ h₃ ⊢
+  exact epi_of_epi_of_epi_of_mono _ (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) h₀ h₂ h₃
+
+end Four
+
+section Five
+
+variable {n k : ℕ} (h : k + 4 ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+
+include hR₁ hR₂ in
+/-- Variant of the 5-lemma for complexes of any size -/
+theorem isIso_of_epi_of_isIso_of_isIso_of_mono' (k₀ k₁ k₂ k₃ k₄ : ℕ)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
+    (hk₄ : k₄ = k + 4) (h₀ : Epi (app' φ k₀))
+    (h₁ : IsIso (app' φ k₁)) (h₃ : IsIso (app' φ k₃))
+    (h₄ : Mono (app' φ k₄)) :
+    IsIso (app' φ k₂) := by
+  subst_vars
+  change Epi (app' φ (k₀ + 0)) at h₀
+  rw [← natAddLEFunctor_app' h] at h₀ h₁ h₃ h₄ ⊢
+  exact isIso_of_epi_of_isIso_of_isIso_of_mono (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) _ h₀ h₁ h₃ h₄
 
 end Five
 
@@ -158,7 +214,7 @@ variable {R₁ R₂ : ComposableArrows C 2} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] Precomp.map
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁.map' 1 2))
     (hR₂ : R₂.Exact) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
     Mono (app' φ 2) := by
@@ -179,7 +235,7 @@ theorem mono_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
   mono_of_epi_of_epi_mono' φ (by simpa only [map'_comp R₁ 0 1 2] using hR₁.toIsComplex.zero 0)
     hR₁' hR₂ h₀ h₁
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 = 0)
     (hR₂' : Mono (R₂.map' 0 1)) (h₀ : Epi (app' φ 1)) (h₁ : Mono (app' φ 2)) :
     Epi (app' φ 0) := by
@@ -200,7 +256,6 @@ theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
   epi_of_mono_of_epi_of_mono' φ hR₁
     (by simpa only [map'_comp R₂ 0 1 2] using hR₂.toIsComplex.zero 0) hR₂' h₀ h₁
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
     (hR₂' : Mono (R₂.map' 0 1))
     (h₀ : Mono (app' φ 0))
@@ -215,7 +270,6 @@ theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
   rw [ShortComplex.exact_iff_mono _ (by simp)]
   exact hR₂'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1 2))
     (h₀ : Epi (app' φ 0)) (h₁ : Epi (app' φ 2)) :
     Epi (app' φ 1) := by

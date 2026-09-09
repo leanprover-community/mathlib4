@@ -16,7 +16,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 - `AlgebraicGeometry.GeometricallyReduced`:
   We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is reduced.
-  We also provide the fact that this is stable under base change (by infer_instance)
+  We also provide the fact that this is stable under base change (by `infer_instance`)
 - `GeometricallyReduced.iff_geometricallyReduced_fiber`:
   A scheme is geometrically reduced over `S` iff the fibers of all
   `s : S` are geometrically reduced.
@@ -24,13 +24,13 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
   If `X` is geometrically reduced and flat over a reduced and locally noetherian scheme,
   then `X` is also reduced.
   In particular, the base change of a geometrically reduced and flat scheme to an
-  reduced and locally noetherian scheme is reduced (by infer_instance).
+  reduced and locally noetherian scheme is reduced (by `infer_instance`).
 
 ## TODO
 Get rid of the noetherian assumption.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 
@@ -51,15 +51,18 @@ lemma GeometricallyReduced.eq_geometrically :
 instance : IsStableUnderBaseChange @GeometricallyReduced :=
   GeometricallyReduced.eq_geometrically ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyReduced g] : GeometricallyReduced (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyReduced f] : GeometricallyReduced (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
 instance (V : S.Opens) [GeometricallyReduced f] : GeometricallyReduced (f ∣_ V) :=
   MorphismProperty.of_isPullback (isPullback_morphismRestrict ..).flip ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (s : S) [GeometricallyReduced f] :
     GeometricallyReduced (f.fiberToSpecResidueField s) :=
   MorphismProperty.pullback_snd _ _ inferInstance

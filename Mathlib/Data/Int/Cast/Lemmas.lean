@@ -29,7 +29,7 @@ assert_not_exists RelIso IsOrderedMonoid Field
 
 open Additive Function Multiplicative Nat
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace Int
 
@@ -81,6 +81,7 @@ variable [NonAssocRing α]
 
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
+@[instance_reducible]
 def castRingHom : ℤ →+* α where
   toFun := Int.cast
   map_zero' := cast_zero
@@ -259,7 +260,7 @@ theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass 
   (DFunLike.ext _ _) fun n =>
     haveI :=
       DFunLike.congr_fun
-        (@MonoidWithZeroHom.ext_int _ _ (f : ℤ →*₀ α) (g : ℤ →*₀ α) h_neg_one <|
+        (@MonoidWithZeroHom.ext_int _ _ (.ofClass f) (.ofClass g) h_neg_one <|
           MonoidWithZeroHom.ext_nat (h_pos _))
         n
     this

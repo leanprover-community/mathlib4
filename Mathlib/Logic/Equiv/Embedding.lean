@@ -86,11 +86,7 @@ def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
     (α ↪ β) ≃ β where
   toFun f := f default
   invFun x := ⟨fun _ => x, fun _ _ _ => Subsingleton.elim _ _⟩
-  left_inv _ := by
-    ext x
-    simp_rw [Function.Embedding.coeFn_mk]
-    congr 1
-    exact Subsingleton.elim _ x
-  right_inv _ := by simp
+  left_inv f := DFunLike.ext _ _ fun x => congrArg f (Subsingleton.elim default x)
+  right_inv _ := rfl
 
 end Equiv

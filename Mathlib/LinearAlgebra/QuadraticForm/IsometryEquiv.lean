@@ -102,6 +102,14 @@ def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
 @[simp] lemma symm_apply_apply (f : Q₁.IsometryEquiv Q₂) (x : M₁) : f.symm (f x) = x :=
   f.toEquiv.symm_apply_apply x
 
+theorem symm_apply_eq (f : Q₁.IsometryEquiv Q₂) {x y} :
+    f.symm x = y ↔ x = f y :=
+  f.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (f : Q₁.IsometryEquiv Q₂) {x y} :
+    y = f.symm x ↔ f y = x :=
+  f.toEquiv.eq_symm_apply
+
 @[simp] lemma coe_symm_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : f.toLinearEquiv.symm = f.symm :=
   rfl
 
@@ -154,7 +162,7 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine ⟨iso, fun m => ?_⟩
-  convert iso.map_app m
+  convert! iso.map_app m
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
 
 variable [FiniteDimensional K V]
@@ -171,7 +179,7 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
     ∃ w : Fin (Module.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_separatingLeft hQ
-  simp_rw [LinearMap.IsOrtho, associated_eq_self_apply] at hv₂
+  simp_rw [associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 
 variable {ι S R : Type*}

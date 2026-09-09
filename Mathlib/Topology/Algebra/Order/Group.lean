@@ -17,7 +17,7 @@ is a topological group.
 We also prove continuity of `abs : G → G` and provide convenience lemmas like `ContinuousAt.abs`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function

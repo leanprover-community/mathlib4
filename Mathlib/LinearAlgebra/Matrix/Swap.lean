@@ -128,7 +128,7 @@ namespace GeneralLinearGroup
 variable (R : Type*) {n : Type*} [CommRing R] [DecidableEq n] [Fintype n]
 
 /-- `Matrix.swap` as an element of `GL n R`. -/
-@[simps]
+@[simps val]
 def swap (i j : n) : GL n R where
   val := Matrix.swap R i j
   inv := Matrix.swap R i j

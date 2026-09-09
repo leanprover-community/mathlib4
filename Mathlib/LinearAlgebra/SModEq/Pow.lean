@@ -6,13 +6,13 @@ Authors: Kenny Lau
 
 module
 
-public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.Algebra.Ring.GeomSum
 
 /-! # Lemmas about SModEq related to powers -/
 
-@[expose] public section
+public section
 
 namespace SModEq
 variable {R : Type*} [CommRing R] {I J : Ideal R} {p : ℕ} (hpI : (p : R) ∈ I)

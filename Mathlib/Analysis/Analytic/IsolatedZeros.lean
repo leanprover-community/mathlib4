@@ -40,19 +40,19 @@ in this setup.
 
 public section
 
-open Filter Function Module Nat FormalMultilinearSeries EMetric Set
+open Filter Function Module Nat FormalMultilinearSeries Set
 
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
+  [NormedSpace 𝕜 E] {s : E} {p : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 
 namespace HasSum
 
 variable {a : ℕ → E}
 
 theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
-  convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
+  convert! hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
     (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by
@@ -66,7 +66,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
       simpa [h1] using (hasSum_nat_add_iff' n).mpr hs
-    convert h2.const_smul (z⁻¹ ^ n) using 2 with x
+    convert! h2.const_smul (z⁻¹ ^ n) using 2 with x
     · match_scalars
       simp [field, pow_add]
     · simp only [inv_pow]
@@ -82,7 +82,7 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
   simp only [hasFPowerSeriesAt_iff, coeff_fslope] at hp ⊢
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
-  · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
+  · convert! hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
   · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, _root_.pow_succ]
     suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this
@@ -99,23 +99,18 @@ theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p �
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 
-theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
-    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
-  have hq := hasFPowerSeriesAt_iff'.mp (has_fpower_series_iterate_dslope_fslope p.order hp)
-  filter_upwards [hq, hasFPowerSeriesAt_iff'.mp hp] with x hx1 hx2
-  have : ∀ k < p.order, p.coeff k = 0 := fun k hk => by
-    simpa [coeff_eq_zero] using apply_eq_zero_of_lt_order hk
-  obtain ⟨s, hs1, hs2⟩ := HasSum.exists_hasSum_smul_of_apply_eq_zero hx2 this
-  convert hs1.symm
-  simp only [coeff_iterate_fslope] at hx1
-  exact hx1.unique hs2
+theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) (z : 𝕜) :
+    f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
+  refine (pow_sub_smul_iterate_dslope_of_zero _ (fun k hk ↦ ?_) z).symm
+  rw [← (has_fpower_series_iterate_dslope_fslope k hp).coeff_zero 1, ← coeff, coeff_iterate_fslope,
+    zero_add, coeff, p.apply_eq_zero_of_lt_order hk, _root_.zero_apply]
 
 theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rw [eventually_nhdsWithin_iff]
   have h2 := (has_fpower_series_iterate_dslope_fslope p.order hp).continuousAt
   have h3 := h2.eventually_ne (iterate_dslope_fslope_ne_zero hp h)
-  filter_upwards [eq_pow_order_mul_iterate_dslope hp, h3] with z e1 e2 e3
-  simpa [e1, e2, e3] using pow_ne_zero p.order (sub_ne_zero.mpr e3)
+  filter_upwards [h3] with z e1 e2
+  simpa [eq_pow_order_mul_iterate_dslope hp, e1, e2] using pow_ne_zero p.order (sub_ne_zero.mpr e2)
 
 theorem locally_zero_iff (hp : HasFPowerSeriesAt f p z₀) : (∀ᶠ z in 𝓝 z₀, f z = 0) ↔ p = 0 :=
   ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (𝕜 := 𝕜) (by rwa [h] at hp)⟩
@@ -192,7 +187,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
   constructor
   · rintro ⟨n, g, hg_an, hg_ne, hg_eq⟩
-    contrapose! hg_ne
+    contrapose hg_ne
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
     refine (eventually_nhdsWithin_iff.mpr ?_).frequently
@@ -203,7 +198,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     rcases hf with ⟨p, hp⟩
     exact ⟨p.order, _, ⟨_, hp.has_fpower_series_iterate_dslope_fslope p.order⟩,
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
-      hp.eq_pow_order_mul_iterate_dslope⟩
+      .of_forall hp.eq_pow_order_mul_iterate_dslope⟩
 
 end AnalyticAt
 
@@ -244,7 +239,7 @@ theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg 
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
     hfg.mono fun z h => by rw [Pi.sub_apply, h, sub_self]
-  simpa [sub_eq_zero] using fun z hz =>
+  simpa [sub_eq_zero] using! fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀ hfg' hz
 
 theorem eqOn_or_eventually_ne_of_preconnected (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
@@ -324,7 +319,7 @@ theorem AnalyticAt.preimage_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (h
   have : ∀ᶠ (z : 𝕜) in 𝓝 x, f z ∈ insert (f x) s := by
     filter_upwards [hfx.continuousAt.preimage_mem_nhds (insert_mem_nhds_iff.2 hs)]
     tauto
-  contrapose! h₂f with h
+  contrapose h₂f with h
   rw [eventuallyConst_iff_exists_eventuallyEq]
   use f x
   rw [EventuallyEq, ← hfx.frequently_eq_iff_eventually_eq analyticAt_const]
@@ -346,27 +341,22 @@ Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and n
 then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
 
 See `AnalyticOnNhd.preimage_zero_mem_codiscreteWithin` for the special case that `s` is the
-complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin_mono`.
 -/
 theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
     (hs : s ∈ codiscreteWithin (f '' U)) :
     f ⁻¹' s ∈ codiscreteWithin U := by
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff] at *
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff] at *
   intro x hx
   apply mem_of_superset ((hfU x hx).preimage_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
-  rw [preimage_union, preimage_compl]
-  apply union_subset_union_right (f ⁻¹' s)
-  intro x hx
-  push _ ∈ _ at hx ⊢
-  push Not at hx
-  tauto
+  grind
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and
 not locally constant, then the push-forward of the filter of sets codiscrete within `U` is less
 than or equal to the filter of sets codiscrete within `f '' U`.
 
-Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+Applications might want to use the theorem `Filter.codiscreteWithin_mono`.
 -/
 theorem AnalyticOnNhd.map_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x)) :

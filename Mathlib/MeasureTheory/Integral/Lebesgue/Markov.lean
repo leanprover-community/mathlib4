@@ -23,7 +23,9 @@ public section
 
 namespace MeasureTheory
 
-open Set Filter ENNReal Topology
+open Set Filter ENNReal
+
+open scoped Topology
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α}
 
@@ -50,7 +52,7 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
 theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ := by
   simpa only [lintegral_zero, zero_add] using
-    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x => zero_le (f x)) hf ε
+    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x => zero_le) hf ε
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
 `AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/
@@ -89,7 +91,7 @@ theorem setLIntegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} {s
     (hf : AEMeasurable f (μ.restrict s)) (hμf : μ ({x ∈ s | f x = ∞}) ≠ 0) :
     ∫⁻ x in s, f x ∂μ = ∞ :=
   lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
-    mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
+    mt (eq_bot_mono <| by rw [← ofPred_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 
 theorem measure_eq_top_of_lintegral_ne_top {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) : μ {x | f x = ∞} = 0 :=
@@ -121,6 +123,10 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
     ge_of_tendsto' this fun i => (hlt i).le
   simpa only [inv_top, add_zero] using
     tendsto_const_nhds.add (tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
+
+theorem lintegral_eq_iff_ae_eq_of_ae_le {f g : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞)
+    (hg : AEMeasurable g μ) (h : f ≤ᵐ[μ] g) : ∫⁻ x, f x ∂μ = ∫⁻ x, g x ∂μ ↔ f =ᵐ[μ] g :=
+  ⟨fun heq ↦ ae_eq_of_ae_le_of_lintegral_le h hf hg heq.ge, lintegral_congr_ae⟩
 
 theorem lintegral_strict_mono_of_ae_le_of_frequently_ae_lt {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h_le : f ≤ᵐ[μ] g) (h : ∃ᵐ x ∂μ, f x ≠ g x) :

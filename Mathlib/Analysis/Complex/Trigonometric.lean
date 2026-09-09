@@ -6,7 +6,6 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 public import Mathlib.Analysis.Complex.Exponential
-import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 # Trigonometric and hyperbolic trigonometric functions
@@ -18,7 +17,7 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 
 @[expose] public section
 
-open CauSeq Finset IsAbsoluteValue
+open Finset
 open scoped ComplexConjugate
 
 namespace Complex
@@ -45,12 +44,12 @@ def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E1]
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E2]
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 
@@ -237,7 +236,7 @@ theorem cosh_sub_sinh : cosh x - sinh x = exp (-x) := by
 @[simp]
 theorem sinh_sub_cosh : sinh x - cosh x = -exp (-x) := by rw [← neg_sub, cosh_sub_sinh]
 
-@[simp]
+@[simp, dlmf 4.35.E11]
 theorem cosh_sq_sub_sinh_sq : cosh x ^ 2 - sinh x ^ 2 = 1 := by
   rw [sq_sub_sq, cosh_add_sinh, cosh_sub_sinh, ← exp_add, add_neg_cancel, exp_zero]
 
@@ -249,8 +248,10 @@ theorem sinh_sq : sinh x ^ 2 = cosh x ^ 2 - 1 := by
   rw [← cosh_sq_sub_sinh_sq x]
   ring
 
+@[dlmf 4.35.E27]
 theorem cosh_two_mul : cosh (2 * x) = cosh x ^ 2 + sinh x ^ 2 := by rw [two_mul, cosh_add, sq, sq]
 
+@[dlmf 4.35.E26]
 theorem sinh_two_mul : sinh (2 * x) = 2 * sinh x * cosh x := by
   rw [two_mul, sinh_add]
   ring
@@ -331,13 +332,13 @@ theorem sin_add_mul_I (x y : ℂ) : sin (x + y * I) = sin x * cosh y + cos x * s
   rw [sin_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem sin_eq (z : ℂ) : sin z = sin z.re * cosh z.im + cos z.re * sinh z.im * I := by
-  convert sin_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert! sin_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem cos_add_mul_I (x y : ℂ) : cos (x + y * I) = cos x * cosh y - sin x * sinh y * I := by
   rw [cos_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im * I := by
-  convert cos_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert! cos_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
@@ -356,7 +357,7 @@ theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2)
   ring
 
 theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) := by
-  simpa using sin_sub_sin x (-y)
+  simpa using! sin_sub_sin x (-y)
 
 theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := by
   calc
@@ -501,19 +502,11 @@ theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
   simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
-  have h1 : x + 2 * x = 3 * x := by ring
-  rw [← h1, cos_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, mul_sub, mul_one, sq]
-  have h2 : 4 * cos x ^ 3 = 2 * cos x * cos x * cos x + 2 * cos x * cos x ^ 2 := by ring
-  rw [h2, cos_sq']
-  ring
+  rw [← cosh_mul_I, mul_assoc, cosh_three_mul, cosh_mul_I]
 
 theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
-  have h1 : x + 2 * x = 3 * x := by ring
-  rw [← h1, sin_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, cos_sq']
-  have h2 : cos x * (2 * sin x * cos x) = 2 * sin x * cos x ^ 2 := by ring
-  rw [h2, cos_sq']
+  rw [← two_add_one_eq_three, add_one_mul, sin_add (2 * x) x]
+  simp only [cos_two_mul, sin_two_mul, cos_sq', mul_assoc, ← sq]
   ring
 
 theorem exp_mul_I : exp (x * I) = cos x + sin x * I :=
@@ -566,21 +559,21 @@ theorem cos_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖cos x - (1 - x ^ 2 / 2)‖
       grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
     _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
 
-theorem sin_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖sin x - (x - x ^ 3 / 6)‖ ≤ ‖x‖ ^ 4 * (5 / 96) :=
+theorem sin_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖sin x - (x - x ^ 3 / 6)‖ ≤ ‖x‖ ^ 5 / 100 :=
   calc
     ‖sin x - (x - x ^ 3 / 6)‖ =
-        ‖(exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2 -
-         (exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I / 2‖ := by
+        ‖(exp (-x * I) - ∑ m ∈ range 5, (-x * I) ^ m / m.factorial) * I / 2 -
+         (exp (x * I) - ∑ m ∈ range 5, (x * I) ^ m / m.factorial) * I / 2‖ := by
       simp [sin, field, Finset.sum_range_succ, Nat.factorial]
       grind [I_sq, two_ne_zero]
-    _ ≤ ‖exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 +
-        ‖exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 := by
+    _ ≤ ‖exp (-x * I) - ∑ m ∈ range 5, (-x * I) ^ m / m.factorial‖ / 2 +
+        ‖exp (x * I) - ∑ m ∈ range 5, (x * I) ^ m / m.factorial‖ / 2 := by
       grw [norm_sub_le]
       simp
-    _ ≤ ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
-        ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+    _ ≤ ‖-x * I‖ ^ 5 * (Nat.succ 5 * (Nat.factorial 5 * (5 : ℕ) : ℝ)⁻¹) / 2 +
+        ‖x * I‖ ^ 5 * (Nat.succ 5 * (Nat.factorial 5 * (5 : ℕ) : ℝ)⁻¹) / 2 := by
       grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
-    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
+    _ = ‖x‖ ^ 5 / 100 := by norm_num [mul_one_div]
 
 end Complex
 
@@ -847,7 +840,7 @@ nonrec theorem cosh_three_mul : cosh (3 * x) = 4 * cosh x ^ 3 - 3 * cosh x := by
 nonrec theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
   rw [← ofReal_inj]; simp [sinh_three_mul]
 
-open IsAbsoluteValue Nat
+open Nat
 
 /-- `Real.cosh` is always positive -/
 theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
@@ -881,7 +874,7 @@ open Complex
 theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) := by
   simpa [← ofReal_cos, ← norm_eq_abs, ← norm_real] using Complex.cos_bound (x := x) (by simpa)
 
-theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) := by
+theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 5 / 100 := by
   simpa [← ofReal_sin, ← norm_eq_abs, ← norm_real] using Complex.sin_bound (x := x) (by simpa)
 
 theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
@@ -892,26 +885,12 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
             |x| ^ 4 * (5 / 96) + x ^ 2 / 2 ≤ 1 * (5 / 96) + 1 / 2 := by
                   gcongr
                   · exact pow_le_one₀ (abs_nonneg _) hx
-                  · rw [sq, ← abs_mul_self, abs_mul]
-                    exact mul_le_one₀ hx (abs_nonneg _) hx
+                  · exact (sq_le_one_iff_abs_le_one x).mpr hx
             _ < 1 := by norm_num)
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
 
-theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < sin x :=
-  calc 0 < x - x ^ 3 / 6 - |x| ^ 4 * (5 / 96) :=
-      sub_pos.2 <| lt_sub_iff_add_lt.2
-          (calc
-            |x| ^ 4 * (5 / 96) + x ^ 3 / 6 ≤ x * (5 / 96) + x / 6 := by
-                gcongr
-                · calc
-                    |x| ^ 4 ≤ |x| ^ 1 :=
-                      pow_le_pow_of_le_one (abs_nonneg _)
-                        (by rwa [abs_of_nonneg (le_of_lt hx0)]) (by decide)
-                    _ = x := by simp [abs_of_nonneg (le_of_lt hx0)]
-                · calc
-                    x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
-                    _ = x := pow_one _
-            _ < x := by linarith)
+theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < sin x := by
+  calc 0 < x - x ^ 3 / 6 - |x| ^ 5 / 100 := by grind [pow_le_of_le_one]
     _ ≤ sin x :=
       sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg (le_of_lt hx0)]))).2
 
@@ -948,7 +927,8 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
 @[positivity Real.cosh _]
-meta def evalCosh : PositivityExt where eval {u α} _ _ e := do
+meta def evalCosh : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cosh $a) =>
     assertInstancesCommute

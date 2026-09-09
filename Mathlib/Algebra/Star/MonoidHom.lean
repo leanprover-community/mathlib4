@@ -51,7 +51,7 @@ variable [Monoid A] [Star A] [Monoid B] [Star B]
 
 instance : FunLike (A →⋆* B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; simp_all
+  coe_injective f g h := by cases f; cases g; simp_all
 
 instance : MonoidHomClass (A →⋆* B) A B where
   map_mul f := f.map_mul'
@@ -220,7 +220,7 @@ theorem coe_refl : ⇑(.refl A : A ≃⋆* A) = id :=
 nonrec def symm (e : A ≃⋆* B) : B ≃⋆* A :=
   { e.symm with
     map_star' := fun b => by
-      simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using
+      simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using!
         congr_arg (EquivLike.inv e) (map_star e (EquivLike.inv e b)).symm }
 
 /-- See Note [custom simps projection] -/

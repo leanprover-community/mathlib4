@@ -6,14 +6,14 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Data.Finite.Defs
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Fintype.Card
 
 /-!
 # `Finite`, `Infinite` and `Fintype` are preserved by `Additive` and `Multiplicative`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MulAction
 

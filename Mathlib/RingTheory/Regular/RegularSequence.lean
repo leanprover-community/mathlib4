@@ -154,6 +154,7 @@ variable {S M} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module S M₂]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open DistribMulAction AddSubgroup in
 private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
     {f : M →+ M₂} {as : List R} {bs : List S} (hf : Function.Surjective f)
@@ -162,7 +163,7 @@ private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
       (Ideal.ofList bs • ⊤ : Submodule S M₂).toAddSubgroup := by
   induction h with
   | nil =>
-    convert AddSubgroup.map_bot f using 1 <;>
+    convert! AddSubgroup.map_bot f using 1 <;>
       rw [Ideal.ofList_nil, bot_smul, bot_toAddSubgroup]
   | @cons r s _ _ h _ ih =>
     conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,
@@ -234,7 +235,6 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧
@@ -250,7 +250,6 @@ lemma isRegular_cons_iff (r : R) (rs : List R) :
   rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
     ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
     IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)
@@ -572,6 +571,7 @@ lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
 
 section Perm
 
+set_option backward.isDefEq.respectTransparency.types false in
 open _root_.LinearMap in
 private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
     (h2 : torsionBy R M b = a • torsionBy R M b → torsionBy R M b = ⊥) :

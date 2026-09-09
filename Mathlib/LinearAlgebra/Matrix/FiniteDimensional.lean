@@ -27,7 +27,7 @@ matrix, finite dimensional, findim, finrank
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

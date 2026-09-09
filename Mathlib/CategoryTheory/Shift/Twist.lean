@@ -51,6 +51,7 @@ lemma z_zero_left (b : A) : t.z 0 b = 1 := by simpa using t.assoc 0 0 b
 
 attribute [instance] commShift
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma shift_z_app (a b c : A) (X : C) :
     ((t.z a b).val.app X)⟦c⟧' = (t.z a b).val.app (X⟦c⟧) := by
@@ -64,6 +65,7 @@ protected def Category (_ : TwistShiftData C A) : Type u := C
 
 instance : Category t.Category := inferInstanceAs (Category C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `t : TwistShiftData C A`, the shift on the category `TwistShift t` has
 the same shift functors as `C`, the same isomorphism `shiftFunctorZero` isomorphism,
@@ -92,6 +94,7 @@ identify to the shift functors on `C`. -/
 noncomputable def shiftIso (m : A) : shiftFunctor t.Category m ≅ shiftFunctor C m :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctor_map {X Y : t.Category} (f : X ⟶ Y) (m : A) :
     (shiftFunctor t.Category m).map f =
       (t.shiftIso m).hom.app X ≫ (shiftFunctor C m).map f ≫ (t.shiftIso m).inv.app Y := by

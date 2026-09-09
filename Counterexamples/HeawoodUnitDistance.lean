@@ -3,8 +3,10 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 
 /-!
 # A simple planar unit-distance embedding of the Heawood graph
@@ -25,6 +27,8 @@ and Jeremy Tan [in August 2025](https://github.com/Parcly-Taxel/Shibuya/commit/b
 Its coordinates are polynomials in the unique real root of `2c^3 + 3c + 1`.
 -/
 
+@[expose] public section
+
 namespace SimpleGraph
 
 open Finset
@@ -34,7 +38,6 @@ typical [Hamiltonian cycle-and-arcs drawing](https://commons.wikimedia.org/wiki/
 def heawoodGraph : SimpleGraph (Fin 14) where
   Adj i j := (i - j).1 = 1            ∨ (j - i).1 = 1 ∨
              (i - j).1 = 5 ∧ Even j.1 ∨ (j - i).1 = 5 ∧ Even i.1
-  symm i j := by grind
 
 instance : DecidableRel heawoodGraph.Adj :=
   inferInstanceAs <| DecidableRel fun (i j : Fin 14) ↦

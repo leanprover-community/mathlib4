@@ -12,7 +12,7 @@ public import Mathlib.Topology.Separation.Regular
 # Linear upper or lower sets topologies are completely normal
 -/
 
-@[expose] public section
+public section
 
 open Set Topology.IsUpperSet
 
@@ -35,4 +35,5 @@ instance (priority := low) {α : Type*}
   inferInstanceAs (CompletelyNormalSpace αᵒᵈ)
 
 instance : CompletelyNormalSpace Prop :=
+  let := Prop.linearOrder
   inferInstance

@@ -33,7 +33,7 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     · refine ⟨it.from _, fun U hU hs => IsTerminal.hom_ext ?_ _ _⟩
       rwa [le_bot_iff.1 hU.le]
     · apply it.hom_ext
-  · convert Presieve.isSheafFor_top (F ⋙ coyoneda.obj (@op C c))
+  · convert! Presieve.isSheafFor_top (F ⋙ coyoneda.obj (@op C c))
     rw [Sieve.arrows_eq_top_iff, ← Sieve.id_mem_iff_eq_top]
     have := U.eq_bot_or_top.resolve_left hne
     subst this
@@ -42,18 +42,18 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     obtain ⟨U, f, hf, hm⟩ := hs x _root_.trivial
     obtain rfl | rfl := U.eq_bot_or_top
     · cases hm
-    · convert hf
+    · convert! hf
 
 theorem isSheaf_iff_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤)
     (F : Presheaf C X) : F.IsSheaf ↔ Nonempty (IsTerminal <| F.obj <| op ⊥) :=
   ⟨fun h => ⟨Sheaf.isTerminalOfEmpty ⟨F, h⟩⟩, fun ⟨it⟩ =>
     isSheaf_of_isTerminal_of_indiscrete hind F it⟩
 
-theorem isSheaf_on_punit_of_isTerminal (F : Presheaf C (TopCat.of PUnit))
+theorem isSheaf_on_punit_of_isTerminal (F : Presheaf C ↧PUnit)
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf :=
   isSheaf_of_isTerminal_of_indiscrete (@Subsingleton.elim (TopologicalSpace PUnit) _ _ _) F it
 
-theorem isSheaf_on_punit_iff_isTerminal (F : Presheaf C (TopCat.of PUnit)) :
+theorem isSheaf_on_punit_iff_isTerminal (F : Presheaf C ↧PUnit) :
     F.IsSheaf ↔ Nonempty (IsTerminal <| F.obj <| op ⊥) :=
   ⟨fun h => ⟨Sheaf.isTerminalOfEmpty ⟨F, h⟩⟩, fun ⟨it⟩ => isSheaf_on_punit_of_isTerminal F it⟩
 

@@ -65,12 +65,14 @@ noncomputable def singleObjHomologySelfIso :
     ((single C c j).obj A).homology j ≅ A :=
   (((single C c j).obj A).isoHomologyπ _ j rfl rfl).symm ≪≫ singleObjCyclesSelfIso c j A
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma singleObjCyclesSelfIso_inv_iCycles :
     (singleObjCyclesSelfIso _ _ _).inv ≫ ((single C c j).obj A).iCycles j =
       (singleObjXSelf c j A).inv := by
   simp [singleObjCyclesSelfIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma homologyπ_singleObjHomologySelfIso_hom :
     ((single C c j).obj A).homologyπ j ≫ (singleObjHomologySelfIso _ _ _).hom =
@@ -84,12 +86,14 @@ lemma singleObjHomologySelfIso_hom_singleObjHomologySelfIso_inv :
   simp only [← cancel_mono (singleObjHomologySelfIso _ _ _).hom, assoc,
     Iso.inv_hom_id, comp_id, homologyπ_singleObjHomologySelfIso_hom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma singleObjCyclesSelfIso_hom_singleObjOpcyclesSelfIso_hom :
     (singleObjCyclesSelfIso c j A).hom ≫ (singleObjOpcyclesSelfIso c j A).hom =
       ((single C c j).obj A).iCycles j ≫ ((single C c j).obj A).pOpcycles j := by
   simp [singleObjCyclesSelfIso, singleObjOpcyclesSelfIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma singleObjCyclesSelfIso_inv_homologyπ :
     (singleObjCyclesSelfIso _ _ _).inv ≫ ((single C c j).obj A).homologyπ j =
@@ -130,6 +134,7 @@ lemma pOpcycles_singleObjOpcyclesSelfIso_inv :
 variable {A}
 variable {B : C} (f : A ⟶ B)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma singleObjCyclesSelfIso_hom_naturality :
     cyclesMap ((single C c j).map f) j ≫ (singleObjCyclesSelfIso c j B).hom =
