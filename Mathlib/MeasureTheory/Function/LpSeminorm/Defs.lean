@@ -131,6 +131,12 @@ theorem eLpNorm_one_eq_lintegral_enorm [TopologicalSpace ε] {f : α → ε}
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal one_ne_zero ENNReal.coe_ne_top hf,
     ENNReal.toReal_one, one_div_one, ENNReal.rpow_one]
 
+theorem lintegral_enorm_le_eLpNorm_one [TopologicalSpace ε] {f : α → ε} :
+    ∫⁻ x, ‖f x‖ₑ ∂μ ≤ eLpNorm f 1 μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · simp [eLpNorm_one_eq_lintegral_enorm hf]
+  · simp [eLpNorm_of_not_aestronglyMeasurable, hf]
+
 @[simp]
 theorem eLpNorm_exponent_top [TopologicalSpace ε] {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm f ∞ μ = eLpNormEssSup f μ := by simp [eLpNorm, hf]

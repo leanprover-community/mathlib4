@@ -549,9 +549,8 @@ theorem ConvolutionExists.of_memLp_memLp [SFinite μ] [IsAddRightInvariant μ] {
     [hpq : p.HolderConjugate q] (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
     ConvolutionExists f g L μ := by
   intro x
-  refine memLp_one_iff_integrable.mp ⟨?_, ?_⟩
-  · exact hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x
-  · exact (eLpNorm_convolution_integrand_le L hfp.aestronglyMeasurable
+  apply memLp_one_iff_integrable.mp
+  exact (eLpNorm_convolution_integrand_le L hfp.aestronglyMeasurable
       hgq.aestronglyMeasurable x).trans_lt (by finiteness)
 
 /-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
@@ -560,7 +559,7 @@ theorem enorm_convolution_le {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
   calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := enorm_integral_le_lintegral_enorm _
-    _ = eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := eLpNorm_one_eq_lintegral_enorm.symm
+    _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_enorm_le_eLpNorm_one
     _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := eLpNorm_convolution_integrand_le L hf hg x₀
 
 end IsAddLeftInvariant
