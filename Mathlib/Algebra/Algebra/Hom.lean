@@ -508,13 +508,10 @@ lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
   ext x
   constructor
   · rintro ⟨a, ⟨r, hr, rfl⟩, rfl⟩
-    simp only [AlgHom.commutes]
-    use r
+    exact ⟨r, hr, by simp⟩
   · rintro ⟨r, hr, rfl⟩
     simp only [Submonoid.mem_map]
-    use (algebraMap R A r)
-    simp only [AlgHom.commutes, and_true]
-    use r
+    exact ⟨(algebraMap R A r), ⟨r, hr, by simp⟩, by simp⟩
 
 lemma algebraMapSubmonoid_le_comap (f : A →ₐ[R] B) :
     algebraMapSubmonoid A M ≤ (algebraMapSubmonoid B M).comap f.toRingHom := by
