@@ -82,7 +82,7 @@ lemma exists_mvPolynomial_aeval_eq_of_mem_adjoin {R A σ : Type*}
   rw [Algebra.adjoin_range_eq_range_aeval] at ha
   simp_all
 
-lemma adjoin_eq_exists_aeval' {R A σ : Type*}
+lemma exists_mvPolynomial_eq_of_adjoin {R A σ : Type*}
     [CommSemiring R] [CommSemiring A] [Algebra R A]
     {S : Set A} {f : σ → A} (hS : S ⊆ Set.range f)
     (a : adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a :=
