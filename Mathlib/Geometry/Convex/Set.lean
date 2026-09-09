@@ -166,7 +166,7 @@ lemma subtypeVal_convexCombPair (s : Set X) (hs : IsConvexSet R s) (a b : R) (ha
 lemma IsCancelConvexSpace.subtype [IsCancelConvexSpace R X] (s : Set X) (hs : IsConvexSet R s) :
     letI : ConvexSpace R s := .subtype s hs
     IsCancelConvexSpace R s :=
-  letI : ConvexSpace R s := .subtype s hs
+  let : ConvexSpace R s := .subtype s hs
   .of_injective (isAffineMap_subtypeVal s hs) Subtype.val_injective
 
 protected lemma IsConvexSet.prod {Y : Type*} [ConvexSpace R Y] {t : Set Y}

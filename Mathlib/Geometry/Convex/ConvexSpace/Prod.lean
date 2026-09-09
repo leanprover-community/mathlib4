@@ -71,7 +71,10 @@ instance [ConvexSpace S X] [ConvexSpace S Y] [IsConvexCombComm R S X]
     · simpa using iConvexComb_comm f g fun e k ↦ (e k).snd
 
 instance [IsCancelConvexSpace R X] [IsCancelConvexSpace R Y] : IsCancelConvexSpace R (X × Y) where
-  convexCombPair_left_injective a b ha hb hab y x₁ x₂ := by simp [Prod.ext_iff, *]
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    ext
+    · exact isAffineMap_fst.eq_of_sConvexComb ha hw₁ hw₂ h
+    · exact isAffineMap_snd.eq_of_sConvexComb ha hw₁ hw₂ h
 
 end Prod
 
@@ -105,7 +108,8 @@ instance [∀ i, ConvexSpace S (X i)] [∀ i, IsConvexCombComm R S (X i)] :
   iConvexComb_comm' f g := by ext i; simpa using iConvexComb_comm f g fun e k ↦ e k i
 
 instance [∀ i, IsCancelConvexSpace R (X i)] : IsCancelConvexSpace R (∀ i, X i) where
-  convexCombPair_left_injective a b ha hb hab g f₁ f₂ := by simp [funext_iff, *]
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    ext i; exact isAffineMap_eval.eq_of_sConvexComb ha hw₁ hw₂ h
 
 end Pi
 
@@ -143,7 +147,7 @@ instance [ConvexSpace S X] [IsConvexCombComm R S X] : IsConvexCombComm R S (ι �
   iConvexComb_comm' f g := by ext i; simpa using iConvexComb_comm f g fun e k ↦ e k i
 
 instance [IsCancelConvexSpace R X] : IsCancelConvexSpace R (ι →₀ X) where
-  convexCombPair_left_injective a b ha hb hab g f₁ f₂ := by simp [Finsupp.ext_iff, *]
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by ext i; exact isAffineMap_eval.eq_of_sConvexComb ha hw₁ hw₂ h
 
 end Finsupp
 
