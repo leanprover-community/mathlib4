@@ -37,6 +37,7 @@ Cauchy transform, given by the formulas:
 
 * `hasDerivAt_resolventTransform`: For any `a` not in the support of `μ`,
   the `resolventTransform` has derivative `∫ x, resolvent a x ^ 2 ∂u` at `a`.
+* `resolventTransform_eq_sum_add`: A finite expansion in moments with an exact integral remainder.
 * `analyticOn_resolventTransform`: In the case `A = ℂ`, the `resolventTransform`
   is holomorphic on the complement of `μ.support`.
 
@@ -185,5 +186,56 @@ theorem analyticOn_resolventTransform [NormedAlgebra 𝕜 ℂ] {μ : Measure �
   exact (algebraMap_isometry 𝕜 ℂ).isClosedEmbedding
 
 end Deriv
+
+section Moments
+
+variable [RCLike A]
+
+private lemma inv_sub_eq_sum_add {x z : A} (hz : z ≠ 0) (hx : x ≠ z) (n : ℕ) :
+    (x - z)⁻¹ = (∑ k ∈ Finset.range n, -(z⁻¹ ^ (k + 1)) * x ^ k) +
+      z⁻¹ ^ n * (x ^ n * (x - z)⁻¹) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Finset.sum_range_succ]
+    calc
+      (x - z)⁻¹ = _ := ih
+      _ = _ := by
+        have hsub : x - z ≠ 0 := sub_ne_zero.mpr hx
+        simp only [pow_succ]
+        field_simp
+        ring
+
+variable [NontriviallyNormedField 𝕜] [HereditarilyLindelofSpace 𝕜]
+  [CompleteSpace 𝕜] [MeasurableSpace 𝕜] [BorelSpace 𝕜] [NormedAlgebra 𝕜 A]
+
+/-- The finite moment expansion of a resolvent transform, with an exact integral remainder.
+The evaluation point is nonzero and outside the image of the measure's support; moments
+through order `n` are assumed integrable. No convergence of an infinite series is required. -/
+theorem resolventTransform_eq_sum_add (μ : Measure 𝕜) {z : A}
+    (hz : z ≠ 0) (hs : z ∉ algebraMap 𝕜 A '' μ.support) (n : ℕ)
+    (hm : ∀ k ≤ n, Integrable (fun x : 𝕜 => (algebraMap 𝕜 A x) ^ k) μ) :
+    resolventTransform μ z =
+      (∑ k ∈ Finset.range n, -(z⁻¹ ^ (k + 1)) * ∫ x, (algebraMap 𝕜 A x) ^ k ∂μ) +
+      z⁻¹ ^ n * ∫ x, (algebraMap 𝕜 A x) ^ n * resolvent z x ∂μ := by
+  have hr : Integrable (fun x : 𝕜 => (algebraMap 𝕜 A x) ^ n * resolvent z x) μ := by
+    apply (hm n le_rfl).mul_bdd (c := (infDist z (algebraMap 𝕜 A '' μ.support))⁻¹)
+      (by fun_prop)
+    filter_upwards [Measure.support_mem_ae] with x hx
+    exact norm_resolvent_le_inv_infDist_support hs hx
+  rw [resolventTransform_apply]
+  rw [integral_congr_ae (show (fun x : 𝕜 => resolvent z x) =ᵐ[μ]
+      (fun x => (∑ k ∈ Finset.range n, -(z⁻¹ ^ (k + 1)) * (algebraMap 𝕜 A x) ^ k) +
+        z⁻¹ ^ n * ((algebraMap 𝕜 A x) ^ n * resolvent z x)) from ?_)]
+  · rw [integral_add (integrable_finsetSum _ (fun k hk =>
+      (hm k (Nat.le_of_lt (Finset.mem_range.mp hk))).const_mul _)) (hr.const_mul _),
+      integral_finsetSum _ (fun k hk =>
+        (hm k (Nat.le_of_lt (Finset.mem_range.mp hk))).const_mul _)]
+    simp_rw [integral_const_mul]
+  · filter_upwards [Measure.support_mem_ae] with x hx
+    have hxz : algebraMap 𝕜 A x ≠ z := fun h => hs ⟨x, hx, h⟩
+    simpa [resolvent, Ring.inverse_eq_inv'] using inv_sub_eq_sum_add hz hxz n
+
+end Moments
 
 end MeasureTheory
