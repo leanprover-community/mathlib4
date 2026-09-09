@@ -67,7 +67,7 @@ structure DotProductEq where
 
 /-- The unfolding of the dot product of the entries `as` and `bs` to the fold
 `a₀ * b₀ + (a₁ * b₁ + (… + 0))`, by the equations of `ListMatrix.dotProduct`; its `n` is the
-successor tower `((0 + 1) + 1) + ⋯` the equations build, one `+ 1` per term rather than a
+successor tower `((0 + 1) + 1) + …` the equations build, one `+ 1` per term rather than a
 numeral. -/
 def mkDotProductChain : List Q($α) → List Q($α) → DotProductEq zα aα mα
   | a :: as, b :: bs =>
