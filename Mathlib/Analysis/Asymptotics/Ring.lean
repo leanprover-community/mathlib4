@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Arith
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Ring and field operations on asymptotic relations
