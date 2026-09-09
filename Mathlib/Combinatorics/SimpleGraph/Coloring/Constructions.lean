@@ -60,7 +60,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Even p.length ↔ (c u ↔ c v) := by
-  induction p <;> grind [c.valid, length_cons, Nat.even_add_one]
+  induction p <;> grind [c.valid, Walk.length_cons]
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
