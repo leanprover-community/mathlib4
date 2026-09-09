@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.Algebra.Module.Basic
@@ -26,11 +27,11 @@ We prove the following facts:
 
 @[expose] public section
 
-assert_not_exists Cardinal Norm
+assert_not_exists Norm
 
 open Metric Bornology Set Pointwise Convex
 
-variable {ι 𝕜 E : Type*}
+variable {𝕜 E : Type*}
 
 namespace Real
 variable {s : Set ℝ} {r ε : ℝ}
@@ -202,6 +203,14 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
+lemma convexHull_interior_subset [ZeroLEOneClass 𝕜] (s : Set E) :
+    convexHull 𝕜 (interior s) ⊆ interior (convexHull 𝕜 s) :=
+  convexHull_min (interior_mono <| subset_convexHull 𝕜 s) (convex_convexHull 𝕜 s).interior
+
+protected theorem IsOpen.convexHull [ZeroLEOneClass 𝕜] {s : Set E} (hs : IsOpen s) :
+    IsOpen (convexHull 𝕜 s) := by
+  simpa [← subset_interior_iff_isOpen, hs.interior_eq] using convexHull_interior_subset s
+
 end ContinuousConstSMul
 
 section ContinuousConstSMul
@@ -331,16 +340,18 @@ end ContinuousConstSMul
 
 section Compact
 variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
-  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
+open Convexity in
+attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.of_module in
 /-- Convex hull of a finite set is compact. -/
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
-  rw [hs.convexHull_eq_image]
-  let := hs.fintype
-  exact (isCompact_stdSimplex 𝕜 s).image (LinearMap.continuous_on_pi _)
+  have := hs.to_subtype
+  rw [Set.convexHull_eq_range_iConvexComb]
+  exact isCompact_range (by fun_prop)
 
 /-- Convex hull of a finite set is closed. -/
 theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :
@@ -501,11 +512,12 @@ namespace Affine.Simplex
 
 variable {𝕜 V P : Type*}
   [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
-  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
   [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
   [TopologicalSpace P] [IsTopologicalAddTorsor P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The closed interior of a simplex is compact. -/
 theorem isCompact_closedInterior {n : ℕ} (s : Simplex 𝕜 P n) : IsCompact s.closedInterior := by
   suffices IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap ''

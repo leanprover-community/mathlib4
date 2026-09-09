@@ -47,7 +47,12 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 instance Prop.le_total : @Std.Total Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 
-noncomputable instance Prop.linearOrder : LinearOrder Prop := by
+/-- The order on `Prop` is a `LinearOrder`.
+
+This is not an instance since `LinearOrder` includes decidability instances, which we want to avoid
+for `Prop`. -/
+@[expose, instance_reducible]
+noncomputable def Prop.linearOrder : LinearOrder Prop := by
   classical
   exact Lattice.toLinearOrder Prop
 
@@ -80,6 +85,12 @@ theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
   simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
+
+instance (α : Type*) : Std.Symm (α := α) ⊤ where
+  symm _ _ := id
+
+instance (α : Type*) : Std.Symm (α := α) ⊥ where
+  symm _ _ := id
 
 @[nontriviality]
 theorem eq_top_iff_refl_of_subsingleton [Subsingleton α] {r : α → α → Prop} : r = ⊤ ↔ Std.Refl r :=

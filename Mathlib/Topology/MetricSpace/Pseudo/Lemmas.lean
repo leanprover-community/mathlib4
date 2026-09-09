@@ -15,7 +15,7 @@ public import Mathlib.Topology.UniformSpace.Compact
 
 public section
 
-open Bornology Filter Metric Set
+open Filter Metric Set
 open scoped NNReal Topology
 
 variable {ι α : Type*} [PseudoMetricSpace α]
@@ -56,7 +56,7 @@ lemma eventually_ball_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) : ∀ᶠ 
   (eventually_closedBall_subset hu).mono fun _r hr ↦ ball_subset_closedBall.trans hr
 
 namespace Metric
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+variable {x : α} {ε : ℝ} {s : Set α}
 
 lemma isClosed_closedBall : IsClosed (closedBall x ε) := isClosed_le (by fun_prop) continuous_const
 
@@ -119,7 +119,7 @@ end Metric
 
 theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, dist_comm]
+  simpa only [ball, UniformSpace.ball, preimage_ofPred_eq, dist_comm]
     using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)

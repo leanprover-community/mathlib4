@@ -135,7 +135,7 @@ end Karoubi
 
 /-- The obvious fully faithful functor `toKaroubi` sends an object `X : C` to the obvious
 formal direct factor of `X` given by `𝟙 X`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toKaroubi : C ⥤ Karoubi C where
   obj X := ⟨X, 𝟙 X, by rw [comp_id]⟩
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
@@ -292,14 +292,12 @@ def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
 
 end Karoubi
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesEpimorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext
     rw [← cancel_epi f]
     simpa using eq⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesMonomorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext

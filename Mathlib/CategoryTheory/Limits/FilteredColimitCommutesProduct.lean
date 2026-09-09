@@ -61,6 +61,7 @@ maps `k : ∀ i, I i` to `∏ᶜ fun (s : α) => (F s).obj (k s)`. -/
 noncomputable abbrev pointwiseProduct : (∀ i, I i) ⥤ C :=
   Functor.pi F ⋙ Pi.functor α
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.pi in
 /-- `pointwiseProduct` is invariant under re-indexing. -/
@@ -82,6 +83,7 @@ noncomputable def coconePointwiseProduct (c : ∀ i, Cocone (F i)) :
   pt := ∏ᶜ fun i ↦ (c i).pt
   ι := Functor.whiskerRight (NatTrans.pi fun i ↦ (c i).ι) _ ≫ (Pi.constCompPiIsoConst _).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `coconePointwiseProduct` is invariant under isomorphisms of cocones. -/
 noncomputable def coconePointwiseProductIso {c c' : ∀ i, Cocone (F i)} (e : ∀ i, c i ≅ c' i) :
@@ -129,6 +131,7 @@ noncomputable def pointwiseProductCompEvaluation (d : D) :
   NatIso.ofComponents (fun k => piObjIso _ _)
     (fun f => Pi.hom_ext _ _ (by simp [Functor.pi, ← NatTrans.comp_app]))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In a functor category, `coconePointwiseProduct` commutes with evaluation. -/
 noncomputable def evaluationCoconePointwiseProductIso (X : D) (c : ∀ i, Cocone (F i)) :
@@ -203,6 +206,7 @@ lemma IsIPCOfShape.of_isIso
   obtain ⟨_, h⟩ := H J F
   rwa [IsColimit.nonempty_isColimit_iff_isIso_desc (colimit.isColimit _)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.pi in
 lemma IsIPCOfShape.of_equiv {ι' : Type*} [HasProductsOfShape ι' C] [IsIPCOfShape.{w} ι C]

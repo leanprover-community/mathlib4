@@ -27,6 +27,7 @@ variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W]
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
 which is stable under the `G`-action.
 -/
+@[ext]
 structure Subrepresentation where
   /-- A subrepresentation is a submodule. -/
   toSubmodule : Submodule A W
@@ -153,7 +154,7 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
   toSubmodule := { N with
     smul_mem' a w hw := by simpa using! (N.smul_mem (algebraMap A A[G] a) hw) }
   apply_mem_toSubmodule g w hw := by
-    letI _ : Module A[G] W := ρ.instModuleMonoidAlgebraAsModule
+    let _ : Module A[G] W := ρ.instModuleMonoidAlgebraAsModule
     have h : (MonoidAlgebra.single g (1 : A)) • w ∈ N :=
       Submodule.smul_of_tower_mem N _ hw
     rw [Representation.single_smul, one_smul] at h

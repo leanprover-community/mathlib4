@@ -501,7 +501,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     obtain ⟨_, h₁, h₂⟩ := h
     rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
-      rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
+      rw [convergent_zero, Rat.intCast_inj, eq_comm, floor_eq_iff]
       convert! And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
     · replace h₁ := lt_sub_iff_add_lt'.mp (h₁ rfl)
       have hξ₁ : ⌊ξ⌋ = u - 1 := by

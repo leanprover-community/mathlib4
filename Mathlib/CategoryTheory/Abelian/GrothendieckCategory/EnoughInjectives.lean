@@ -151,7 +151,7 @@ lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
 
 variable {X : C}
 
-open Classical in
+open scoped Classical in
 /-- Assuming `G : C` is a generator, `X : C`, and `A : Subobject X`,
 this is a subobject of `X` which is `⊤` if `A = ⊤`, and otherwise
 it is a larger subobject given by the lemma `exists_larger_subobject`.
@@ -163,12 +163,12 @@ noncomputable def largerSubobject (A : Subobject X) : Subobject X :=
 
 variable (X) in
 @[simp]
-lemma largerSubobject_top : largerSubobject hG (⊤ : Subobject X) = ⊤ := dif_pos rfl
+lemma largerSubobject_top : largerSubobject hG (⊤ : Subobject X) = ⊤ := dite_eq_left rfl
 
 lemma lt_largerSubobject (A : Subobject X) (hA : A ≠ ⊤) :
     A < largerSubobject hG A := by
   dsimp only [largerSubobject]
-  rw [dif_neg hA]
+  rw [dite_eq_right hA]
   exact (exists_larger_subobject hG A hA).choose_spec.choose
 
 lemma le_largerSubobject (A : Subobject X) :
@@ -193,7 +193,7 @@ lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
   · refine (MorphismProperty.arrow_mk_iso_iff _ ?_).1
       (exists_larger_subobject hG A hA).choose_spec.choose_spec
     exact Arrow.isoMk (Iso.refl _)
-      (Subobject.isoOfEq _ _ ((by simp [largerSubobject, dif_neg hA])))
+      (Subobject.isoOfEq _ _ ((by simp [largerSubobject, dite_eq_right hA])))
 
 variable [IsGrothendieckAbelian.{w} C]
 
@@ -242,6 +242,7 @@ instance : (functor hG A₀ J).IsWellOrderContinuous where
     simp only [Subobject.mk_arrow]
     exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {J} in
 /-- For any `j`, the map `(functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)`

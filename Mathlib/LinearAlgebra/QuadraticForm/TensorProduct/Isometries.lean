@@ -47,7 +47,7 @@ theorem tmul_comp_tensorMap
   have h₃ : Q₃ = Q₄.comp g.toLinearMap := QuadraticMap.ext fun x => (g.map_app x).symm
   refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₃ m₁' m₃'
-  simp [-associated_apply, h₁, h₃, associated_tmul]
+  simp [h₁, h₃, associated_tmul]
 
 @[simp]
 theorem tmul_tensorMap_apply
@@ -156,8 +156,7 @@ theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
     Q₁.comp (TensorProduct.rid R M₁) = Q₁.tmul (sq (R := R)) := by
   refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₁'
-  simp only [associated_tmul, QuadraticMap.associated_comp]
-  simp [-associated_apply, one_mul]
+  simp [associated_tmul, QuadraticMap.associated_comp, one_mul]
 
 @[simp]
 theorem tmul_tensorRId_apply

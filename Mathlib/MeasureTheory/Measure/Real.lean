@@ -54,8 +54,6 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp] theorem measureReal_empty : μ.real ∅ = 0 := by simp [Measure.real]
 
-@[deprecated (since := "2025-11-22")] alias measureReal_univ_eq_one := probReal_univ
-
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
   ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (by finiteness)
@@ -493,7 +491,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: applications of `μ.real` are nonnegative. -/
 @[positivity MeasureTheory.Measure.real _ _]
-meta def evalMeasureReal : PositivityExt where eval {_ _} _zα _pα e := do
+meta def evalMeasureReal : PositivityExt where eval {_ _} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
   let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
   pure (.nonnegative p)

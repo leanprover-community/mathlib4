@@ -119,7 +119,7 @@ theorem coe_int_mul_inv_eq_one {n : ℕ} {x : ℤ} (h : IsCoprime x n) :
   by_cases hn : n = 0
   · simp only [hn, Nat.cast_zero, isCoprime_zero_right] at h
     rcases Int.isUnit_eq_one_or h with h | h <;> simp [h]
-  haveI : NeZero n := ⟨hn⟩
+  have : NeZero n := ⟨hn⟩
   rw [← natCast_zmod_val x]
   apply coe_mul_inv_eq_one
   rwa [Int.isCoprime_iff_gcd_eq_one, ← Int.gcd_emod, ← val_intCast] at h
@@ -165,5 +165,10 @@ theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
     rw [hu, Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast,
       val_intCast, Int.gcd_emod] at h_coprime
     rwa [isCoprime_comm, Int.isCoprime_iff_gcd_eq_one]
+
+/-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
+instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
+  | 0 => Finite.of_fintype ℤˣ
+  | _ + 1 => inferInstance
 
 end ZMod

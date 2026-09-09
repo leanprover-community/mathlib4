@@ -25,7 +25,7 @@ They are defined here separately so that this file can be added as an exception 
 and can thus be imported without a linting false positive when only the notation is desired.
 -/
 
-@[expose] public section
+public section
 
 namespace Set.Notation
 /--

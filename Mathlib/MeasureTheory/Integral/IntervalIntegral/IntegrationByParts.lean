@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Integration by parts and by substitution
@@ -268,7 +269,7 @@ theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
       exact hf.surjOn_uIcc left_mem_uIcc (Ioo_subset_Icc_self hx)
     have h3g : StronglyMeasurableAtFilter g (𝓝[J] f x) :=
       hg_cont.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc (f x)
-    haveI : Fact (f x ∈ J) := ⟨h2x⟩
+    have : Fact (f x ∈ J) := ⟨h2x⟩
     have : HasDerivWithinAt (fun u ↦ ∫ x in f a..u, g x) (g (f x)) J (f x) :=
       intervalIntegral.integral_hasDerivWithinAt_right h2g h3g (hg_cont (f x) h2x)
     refine (this.scomp x ((hff' x hx).Ioo_of_Ioi hd.1) ?_).Ioi_of_Ioo hd.1
@@ -526,6 +527,7 @@ theorem integral_comp_mul_deriv' {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`.
 -/
+@[wikidata Q1071270]
 theorem integral_comp_mul_deriv {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : Continuous g) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ x in f a..f b, g x :=

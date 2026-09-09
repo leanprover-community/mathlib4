@@ -40,7 +40,6 @@ instance moduleObj (j) :
     Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
   inferInstanceAs <| Module R (F.obj j)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
@@ -97,7 +96,7 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 def limitCone : Cone F where
-  pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
+  pt := ↧(Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
     { app j := ofHom (limitπLinearMap F j)
       naturality _ _ f := by
@@ -211,7 +210,7 @@ variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j 
 /-- The diagram (in the sense of `CategoryTheory`) of an unbundled `directLimit` of modules. -/
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
-  obj i := ModuleCat.of R (G i)
+  obj i := ↧(G i)
   map hij := ofHom (f _ _ hij.le)
   map_id i := by
     ext

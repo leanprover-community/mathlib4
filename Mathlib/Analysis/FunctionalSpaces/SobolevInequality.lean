@@ -267,8 +267,6 @@ theorem lintegral_mul_prod_lintegral_pow_le
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
   simpa [lmarginal_univ] using GridLines.T_lmarginal_antitone μ hp₀ hp hf H default
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 /-- Special case of the grid-lines lemma `lintegral_mul_prod_lintegral_pow_le`, taking the extremal
 exponent `p = (#ι - 1)⁻¹`. -/
 theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
@@ -282,9 +280,9 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
   have h1 : (0 : ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
   have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp; rfl
-  have h4 : p = 1 + 1 / (↑#ι - 1) := by simp [field]; rw [mul_comm, hp.sub_one_mul_conj]
+  have h4 : p = 1 + 1 / (↑#ι - 1) := by simp [field, mul_comm p, hp.sub_one_mul_conj]
   rw [h4]
-  convert! lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
+  convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf
   field_simp
   simp
 
@@ -330,8 +328,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖ₑ) ^ p := by
         -- apply the grid-lines lemma
-        apply lintegral_prod_lintegral_pow_le _ hp
-        fun_prop
+        grw [volume_pi, ← lintegral_prod_lintegral_pow_le _ hp (by fun_prop)]
   -- we estimate |u x| using the fundamental theorem of calculus.
   gcongr with x i
   calc ‖u x‖ₑ
@@ -460,7 +457,7 @@ variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
-with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
+with Haar measure, let `1 ≤ p`, `0 < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
@@ -591,7 +588,7 @@ irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) 
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
-with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
+with Haar measure, let `1 ≤ p`, `0 < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 

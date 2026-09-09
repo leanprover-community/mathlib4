@@ -37,7 +37,7 @@ affine space, affine equivalence
 
 open Function Set
 
-open Affine
+open scoped Affine
 
 /-- An affine equivalence, denoted `P₁ ≃ᵃ[k] P₂`, is an equivalence between affine spaces
 such that both forward and inverse maps are affine.
@@ -163,7 +163,7 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁ where
   toEquiv := e.toEquiv.symm
   linear := e.linear.symm
   map_vadd' p v :=
-    e.toEquiv.symm.apply_eq_iff_eq_symm_apply.2 <| by
+    e.toEquiv.symm.eq_symm_apply.1 <| by
       rw [Equiv.symm_symm, e.map_vadd' ((Equiv.symm e.toEquiv) p) ((LinearEquiv.symm e.linear) v),
         LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply]
 
@@ -220,8 +220,15 @@ theorem apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₂) : e (e.symm p) = p
 theorem symm_apply_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₁) : e.symm (e p) = p :=
   e.toEquiv.symm_apply_apply p
 
+theorem symm_apply_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e.symm p₁ = p₂ ↔ p₁ = e p₂ :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : p₂ = e.symm p₁ ↔ e p₂ = p₁ :=
+  e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
+  e.eq_symm_apply.symm
 
 theorem apply_eq_iff_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ := by simp
 
@@ -427,6 +434,7 @@ def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
   map_vadd' _ _ := add_vadd _ _ _
 
 /-- `p' ↦ p -ᵥ p'` as an equivalence. -/
+@[simps! linear apply symm_apply]
 def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁ where
   toEquiv := Equiv.constVSub p
   linear := LinearEquiv.neg k
@@ -509,13 +517,17 @@ variable {P₁}
 
 open Function
 
-/-- Point reflection in `x` as a permutation. -/
+/-- The affine equivalence given by reflection about the point `x`.
+This is `Equiv.pointReflection` as an `AffineEquiv`. -/
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 
-@[simp] lemma pointReflection_apply_eq_equivPointReflection_apply (x y : P₁) :
-    pointReflection k x y = Equiv.pointReflection x y :=
+@[simp]
+lemma coe_pointReflection (x y : P₁) : pointReflection k x y = Equiv.pointReflection x y :=
   rfl
+
+@[deprecated (since := "2026-06-22")]
+alias pointReflection_apply_eq_equivPointReflection_apply := coe_pointReflection
 
 theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
   rfl

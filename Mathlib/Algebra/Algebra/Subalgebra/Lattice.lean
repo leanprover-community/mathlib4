@@ -296,6 +296,9 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     AlgEquiv.ofBijective (Algebra.ofId R _)
       ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
 noncomputable def botEquiv (F R : Type*) [Field F] [Semiring R] [Nontrivial R] [Algebra F R] :
@@ -751,7 +754,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
   adjoin_le Set.subset_centralizer_centralizer
 
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is commutative. -/
-theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+theorem isMulCommutative_adjoin {s : Set A} (hcomm : s.Pairwise Commute) :
     IsMulCommutative (adjoin R s) :=
   have := adjoin_le_centralizer_centralizer R s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -767,14 +770,14 @@ semiring.
 
 See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     CommSemiring (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
   inferInstance
 
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
-  isMulCommutative_adjoin R fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_adjoin R fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 variable {R}
 
@@ -821,7 +824,7 @@ end CommSemiring
 section Ring
 
 variable [CommRing R] [Ring A]
-variable [Algebra R A] {s t : Set A}
+variable [Algebra R A] {s : Set A}
 
 @[simp]
 theorem adjoin_singleton_intCast (n : ℤ) : R[n : A] = ⊥ := by
@@ -847,7 +850,7 @@ open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+abbrev adjoinCommRingOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     CommRing (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
   inferInstance
@@ -882,7 +885,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
 theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
-  simp only [← this, Set.le_eq_subset, SetLike.coe_subset_coe, adjoin_le_iff]
+  simp only [← this, SetLike.coe_subset_coe, adjoin_le_iff]
 
 theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=

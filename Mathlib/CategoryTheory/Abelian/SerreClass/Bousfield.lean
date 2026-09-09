@@ -53,10 +53,6 @@ lemma isoModSerre_kernel_eq_isLocal_of_rightAdjoint
   rw [ObjectProperty.isLocal_eq_inverseImage_isomorphisms adj,
     isoModSerre_kernel_eq_inverseImage_isomorphisms]
 
-@[deprecated (since := "2025-11-20")]
-alias isoModSerre_kernel_eq_leftBousfield_W_of_rightAdjoint :=
-  isoModSerre_kernel_eq_isLocal_of_rightAdjoint
-
 lemma isLocalization_isoModSerre_kernel_of_leftAdjoint
     {F : C ⥤ D} (adj : G ⊣ F) [F.Full] [F.Faithful] :
     G.IsLocalization G.kernel.isoModSerre := by

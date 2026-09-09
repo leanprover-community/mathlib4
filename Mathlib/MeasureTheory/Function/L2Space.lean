@@ -6,8 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
-public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
@@ -27,7 +25,7 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
 * `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

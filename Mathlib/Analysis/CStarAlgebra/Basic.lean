@@ -5,14 +5,14 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Hom
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Real.Star
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Basic.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
@@ -38,15 +38,13 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
-open Topology
-
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
-variable {𝕜 E α : Type*}
+variable {𝕜 E : Type*}
 
 section NormedStarGroup
 
@@ -77,6 +75,26 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
     NormedSpace 𝕜 (selfAdjoint E) where
   norm_smul_le _ _ := norm_smul_le _ (_ : E)
 
+variable (x : E) (r : ℝ)
+
+@[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
+  simpa using star_isometry.preimage_ball (star x) r
+
+@[simp] lemma Metric.star_closedBall : star (closedBall x r) = closedBall (star x) r := by
+  simpa using star_isometry.preimage_closedBall (star x) r
+
+@[simp] lemma Metric.star_sphere : star (sphere x r) = sphere (star x) r := by
+  simpa using star_isometry.preimage_sphere (star x) r
+
+@[simp] lemma dist_star_star (x y : E) : dist (star x) (star y) = dist x y :=
+  star_isometry.dist_eq x y
+
+@[simp] lemma edist_star_star (x y : E) : edist (star x) (star y) = edist x y :=
+  star_isometry.edist_eq x y
+
+@[simp] lemma nndist_star_star (x y : E) : nndist (star x) (star y) = nndist x y :=
+  star_isometry.nndist_eq x y
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
@@ -90,8 +108,7 @@ class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
 instance : CStarRing ℝ where
-  norm_mul_self_le x := by
-    simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
+  norm_mul_self_le x := by simp
 
 namespace CStarRing
 

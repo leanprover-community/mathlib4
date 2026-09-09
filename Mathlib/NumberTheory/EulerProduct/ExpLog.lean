@@ -35,6 +35,7 @@ lemma Summable.clog_one_sub {α : Type*} {f : α → ℂ} (hsum : Summable f) :
 
 namespace EulerProduct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of the Euler Product formula in terms of the exponential of a sum of logarithms. -/
 theorem exp_tsum_primes_log_eq_tsum {f : ℕ →*₀ ℂ} (hsum : Summable (‖f ·‖)) :
     exp (∑' p : Nat.Primes, -log (1 - f p)) = ∑' n : ℕ, f n := by

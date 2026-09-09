@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
+
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions
@@ -146,7 +147,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       -- At most one line through two points of `s`
       refine Finset.card_le_one_iff.mpr @fun p₁ p₂ hp₁ hp₂ => ?_
       simp_rw [t, Finset.mem_compl, Finset.mem_biUnion, not_exists, not_and,
-        Set.mem_toFinset, Set.mem_setOf_eq, Classical.not_not] at hp₁ hp₂
+        Set.mem_toFinset, Set.mem_ofPred_eq, Classical.not_not] at hp₁ hp₂
       obtain ⟨l₁, l₂, hl₁, hl₂, hl₃⟩ :=
         Finset.one_lt_card_iff.mp (Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨hs₀, hs₁⟩)
       exact (eq_or_eq (hp₁ l₁ hl₁) (hp₂ l₁ hl₁) (hp₁ l₂ hl₂) (hp₂ l₂ hl₂)).resolve_right hl₃
@@ -193,7 +194,7 @@ theorem HasLines.pointCount_le_lineCount [HasLines P L] {p : P} {l : L} (h : p �
     [Finite { l : L // p ∈ l }] : pointCount P l ≤ lineCount L p := by
   by_cases hf : Infinite { p : P // p ∈ l }
   · simp [pointCount]
-  haveI := fintypeOfNotInfinite hf
+  have := fintypeOfNotInfinite hf
   cases nonempty_fintype { l : L // p ∈ l }
   rw [lineCount, pointCount, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   have : ∀ p' : { p // p ∈ l }, p ≠ p' := fun p' hp' => h ((congr_arg (· ∈ l) hp').mpr p'.2)
@@ -229,7 +230,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
         · rw [lineCount, Nat.card_eq_fintype_card, Fintype.card_pos_iff]
           obtain ⟨l, _⟩ := @exists_line P L _ _ p
           exact
-            let this := not_exists.mp hp l
+            let := not_exists.mp hp l
             ⟨⟨mkLine this, (mkLine_ax this).2⟩⟩
   exact lt_irrefl _ this
 
@@ -243,11 +244,10 @@ variable {P L}
 theorem HasLines.exists_bijective_of_card_eq [HasLines P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) :
     ∃ f : L → P, Function.Bijective f ∧ ∀ l, pointCount P l = lineCount L (f l) := by
-  classical
-    obtain ⟨f, hf1, hf2⟩ := Nondegenerate.exists_injective_of_card_le (ge_of_eq h)
-    have hf3 := (Fintype.bijective_iff_injective_and_card f).mpr ⟨hf1, h.symm⟩
-    exact ⟨f, hf3, fun l ↦ (sum_eq_sum_iff_of_le fun l _ ↦ pointCount_le_lineCount (hf2 l)).1
-          ((hf3.sum_comp _).trans (sum_lineCount_eq_sum_pointCount P L)).symm _ <| mem_univ _⟩
+  obtain ⟨f, hf1, hf2⟩ := Nondegenerate.exists_injective_of_card_le (ge_of_eq h)
+  have hf3 := (Fintype.bijective_iff_injective_and_card f).mpr ⟨hf1, h.symm⟩
+  exact ⟨f, hf3, fun l ↦ (sum_eq_sum_iff_of_le fun l _ ↦ pointCount_le_lineCount (hf2 l)).1
+        ((hf3.sum_comp _).trans (sum_lineCount_eq_sum_pointCount P L)).symm _ <| mem_univ _⟩
 
 theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
     (hPL : Fintype.card P = Fintype.card L) {p : P} {l : L} (hpl : p ∉ l) :
@@ -282,14 +282,14 @@ theorem HasPoints.lineCount_eq_pointCount [HasPoints P L] [Fintype P] [Fintype L
 
 /-- If a nondegenerate configuration has a unique line through any two points, and if `|P| = |L|`,
   then there is a unique point on any two lines. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasPoints P L :=
-  let this : ∀ l₁ l₂ : L, l₁ ≠ l₂ → ∃ p : P, p ∈ l₁ ∧ p ∈ l₂ := fun l₁ l₂ hl => by
+  let : ∀ l₁ l₂ : L, l₁ ≠ l₂ → ∃ p : P, p ∈ l₁ ∧ p ∈ l₂ := fun l₁ l₂ hl => by
     classical
       obtain ⟨f, _, hf2⟩ := HasLines.exists_bijective_of_card_eq h
-      haveI : Nontrivial L := ⟨⟨l₁, l₂, hl⟩⟩
-      haveI := Fintype.one_lt_card_iff_nontrivial.mp ((congr_arg _ h).mpr Fintype.one_lt_card)
+      have : Nontrivial L := ⟨⟨l₁, l₂, hl⟩⟩
+      have := Fintype.one_lt_card_iff_nontrivial.mp ((congr_arg _ h).mpr Fintype.one_lt_card)
       have h₁ : ∀ p : P, 0 < lineCount L p := fun p =>
         Exists.elim (exists_ne p) fun q hq =>
           (congr_arg _ Nat.card_eq_fintype_card).mpr
@@ -317,10 +317,10 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
 
 /-- If a nondegenerate configuration has a unique point on any two lines, and if `|P| = |L|`,
   then there is a unique line through any two points. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def HasPoints.hasLines [HasPoints P L] [Fintype P] [Fintype L]
     (h : Fintype.card P = Fintype.card L) : HasLines P L :=
-  let this := @HasLines.hasPoints (Dual L) (Dual P) _ _ _ _ h.symm
+  let := @HasLines.hasPoints (Dual L) (Dual P) _ _ _ _ h.symm
   { ‹HasPoints P L› with
     mkLine := @fun _ _ => this.mkPoint
     mkLine_ax := @fun _ _ => this.mkPoint_ax }
@@ -398,12 +398,11 @@ theorem Dual.order [Finite P] [Finite L] : order (Dual L) (Dual P) = order P L :
 variable {P}
 
 theorem lineCount_eq [Finite P] [Finite L] (p : P) : lineCount L p = order P L + 1 := by
-  classical
-    obtain ⟨q, -, -, l, -, -, -, -, h, -⟩ := Classical.choose_spec (@exists_config P L _ _)
-    cases nonempty_fintype { l : L // q ∈ l }
-    rw [order, lineCount_eq_lineCount L p q, lineCount_eq_lineCount L (Classical.choose _) q,
-      lineCount, Nat.card_eq_fintype_card, Nat.sub_add_cancel]
-    exact Fintype.card_pos_iff.mpr ⟨⟨l, h⟩⟩
+  obtain ⟨q, -, -, l, -, -, -, -, h, -⟩ := Classical.choose_spec (@exists_config P L _ _)
+  cases nonempty_fintype { l : L // q ∈ l }
+  rw [order, lineCount_eq_lineCount L p q, lineCount_eq_lineCount L (Classical.choose _) q,
+    lineCount, Nat.card_eq_fintype_card, Nat.sub_add_cancel]
+  exact Fintype.card_pos_iff.mpr ⟨⟨l, h⟩⟩
 
 variable (P) {L}
 

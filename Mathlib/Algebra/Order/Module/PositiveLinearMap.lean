@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Data.FunLike.Group
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Positive linear maps
@@ -38,7 +39,7 @@ add_decl_doc PositiveLinearMap.toOrderHom
 /-- Notation for a `PositiveLinearMap`. -/
 notation:25 E " →ₚ[" R:25 "] " F:0 => PositiveLinearMap R E F
 
-namespace PositiveLinearMapClass
+section PositiveLinearMapClass
 
 variable {F R E₁ E₂ : Type*} [Semiring R]
   [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
@@ -46,16 +47,15 @@ variable {F R E₁ E₂ : Type*} [Semiring R]
   [OrderHomClass F E₁ E₂]
 
 /-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
-def toPositiveLinearMap (f : F) : E₁ →ₚ[R] E₂ :=
+def PositiveLinearMap.ofClass (f : F) : E₁ →ₚ[R] E₂ :=
   { (f : E₁ →ₗ[R] E₂), (f : E₁ →o E₂) with }
 
-/-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
-instance instCoeToLinearMap : CoeHead F (E₁ →ₚ[R] E₂) where
-  coe f := toPositiveLinearMap f
+@[deprecated (since := "2026-06-10")]
+alias PositiveLinearMapClass.toPositiveLinearMap := PositiveLinearMap.ofClass
 
-/-- An additive group homomorphism that maps nonnegative elements to nonnegative elements
-is an order homomorphism. -/
-lemma _root_.OrderHomClass.of_addMonoidHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
+/-- A type of additive group homomorphisms that map nonnegative elements to nonnegative elements
+is also a type of order homomorphisms. -/
+lemma OrderHomClass.of_addMonoidHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
     [LE E₁'] [AddRightMono E₁'] [AddGroup E₂'] [LE E₂'] [AddRightMono E₂']
     [AddMonoidHomClass F' E₁' E₂']
     (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : OrderHomClass F' E₁' E₂' where
@@ -67,9 +67,12 @@ namespace PositiveLinearMap
 
 section general
 
-variable {R E₁ E₂ : Type*} [Semiring R]
-  [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
-  [Module R E₁] [Module R E₂]
+variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
+    [AddCommMonoid E₁] [PartialOrder E₁]
+    [AddCommMonoid E₂] [PartialOrder E₂]
+    [AddCommMonoid E₃] [PartialOrder E₃]
+    [AddCommMonoid E₄] [PartialOrder E₄]
+    [Module R E₁] [Module R E₂] [Module R E₃] [Module R E₄]
 
 instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
   coe f := f.toFun
@@ -80,9 +83,36 @@ instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
     apply DFunLike.coe_injective
     exact h
 
+initialize_simps_projections PositiveLinearMap (toFun → apply, as_prefix toLinearMap)
+
 @[ext]
 lemma ext {f g : E₁ →ₚ[R] E₂} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
+
+variable (R E₁) in
+/-- The identity as a positive linear map. -/
+@[simps! apply toLinearMap] protected def id : E₁ →ₚ[R] E₁ where
+  __ := LinearMap.id
+  __ := OrderHom.id
+
+@[simp] lemma toOrderHom_id : (PositiveLinearMap.id R E₁).toOrderHom = .id := rfl
+
+/-- The composition of positive linear maps is again a positive linear map. -/
+@[simps! apply toLinearMap]
+def comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) : E₁ →ₚ[R] E₃ where
+  toLinearMap := g.toLinearMap.comp f.toLinearMap
+  monotone' := g.monotone'.comp f.monotone'
+
+@[simp] lemma toOrderHom_comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
+    (g.comp f).toOrderHom = g.toOrderHom.comp f.toOrderHom :=
+  rfl
+
+lemma comp_assoc (h : E₃ →ₚ[R] E₄) (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
+    h.comp (g.comp f) = (h.comp g).comp f :=
+  rfl
+
+@[simp] lemma comp_id (f : E₁ →ₚ[R] E₂) : f.comp (.id R E₁) = f := rfl
+@[simp] lemma id_comp (f : E₁ →ₚ[R] E₂) : (PositiveLinearMap.id R E₂).comp f = f := rfl
 
 instance : LinearMapClass (E₁ →ₚ[R] E₂) R E₁ E₂ where
   map_add f := map_add f.toLinearMap
@@ -119,9 +149,14 @@ instance : Zero (E₁ →ₚ[R] E₂) where
 lemma toLinearMap_zero : (0 : E₁ →ₚ[R] E₂).toLinearMap = 0 :=
   rfl
 
-@[simp]
-lemma zero_apply (x : E₁) : (0 : E₁ →ₚ[R] E₂) x = 0 :=
-  rfl
+instance : IsZeroApply (E₁ →ₚ[R] E₂) E₁ E₂ where
+  zero_apply _ := rfl
+
+@[deprecated zero_apply (since := "2026-07-29")]
+protected lemma zero_apply (x : E₁) : (0 : E₁ →ₚ[R] E₂) x = 0 := rfl
+
+@[simp] lemma zero_comp (f : E₁ →ₚ[R] E₂) : (0 : E₂ →ₚ[R] E₃).comp f = 0 := rfl
+@[simp] lemma comp_zero (f : E₂ →ₚ[R] E₃) : f.comp (0 : E₁ →ₚ[R] E₂) = 0 := by ext; simp
 
 variable [IsOrderedAddMonoid E₂]
 
@@ -134,10 +169,11 @@ lemma toLinearMap_add (f g : E₁ →ₚ[R] E₂) :
     (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := by
   rfl
 
-@[simp]
-lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) :
-    (f + g) x = f x + g x := by
-  rfl
+instance : IsAddApply (E₁ →ₚ[R] E₂) E₁ E₂ where
+  add_apply _ _ _ := rfl
+
+@[deprecated add_apply (since := "2026-07-29")]
+protected lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) : (f + g) x = f x + g x := rfl
 
 instance : SMul ℕ (E₁ →ₚ[R] E₂) where
   smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by
@@ -150,14 +186,13 @@ lemma toLinearMap_nsmul (f : E₁ →ₚ[R] E₂) (n : ℕ) :
     (n • f).toLinearMap = n • f.toLinearMap :=
   rfl
 
-@[simp]
-lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) :
-    (n • f) x = n • (f x) :=
-  rfl
+instance : IsSMulApply ℕ (E₁ →ₚ[R] E₂) E₁ E₂ where
+  smul_apply _ _ _ := rfl
 
-instance : AddCommMonoid (E₁ →ₚ[R] E₂) :=
-  toLinearMap_injective.addCommMonoid _ toLinearMap_zero toLinearMap_add
-    toLinearMap_nsmul
+@[deprecated smul_apply (since := "2026-07-29")]
+protected lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) : (n • f) x = n • f x := rfl
+
+instance : AddCommMonoid (E₁ →ₚ[R] E₂) := fast_instance% FunLike.addCommMonoid
 
 end general
 

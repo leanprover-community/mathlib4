@@ -26,7 +26,7 @@ This file defines oriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open Module Complex
+open Module
 
 open scoped Affine EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
@@ -351,6 +351,20 @@ oriented angle. -/
 theorem angle_eq_abs_oangle_toReal {p p₁ p₂ : P} (hp₁ : p₁ ≠ p) (hp₂ : p₂ ≠ p) :
     ∠ p₁ p p₂ = |(∡ p₁ p p₂).toReal| :=
   o.angle_eq_abs_oangle_toReal (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₂)
+
+/-- If the unoriented angle at `p₂` between `p₁` and `p₃` is at most `π / 2`, twice that angle is
+the absolute value of twice the oriented angle. -/
+theorem two_mul_angle_eq_abs_two_zsmul_oangle_toReal {p₁ p₂ p₃ : P} (hp₁ : p₁ ≠ p₂) (hp₃ : p₃ ≠ p₂)
+    (h : ∠ p₁ p₂ p₃ ≤ π / 2) : 2 * ∠ p₁ p₂ p₃ = |((2 : ℤ) • ∡ p₁ p₂ p₃).toReal| :=
+  o.two_mul_angle_eq_abs_two_zsmul_oangle_toReal (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃) h
+
+/-- If the unoriented angle at `p₂` between `p₁` and `p₃` is at least `π / 2`, twice that angle is
+`2 * π` minus the absolute value of twice the oriented angle. -/
+theorem two_mul_angle_eq_two_pi_sub_abs_two_zsmul_oangle_toReal {p₁ p₂ p₃ : P} (hp₁ : p₁ ≠ p₂)
+    (hp₃ : p₃ ≠ p₂) (h : π / 2 ≤ ∠ p₁ p₂ p₃) :
+    2 * ∠ p₁ p₂ p₃ = 2 * π - |((2 : ℤ) • ∡ p₁ p₂ p₃).toReal| :=
+  o.two_mul_angle_eq_two_pi_sub_abs_two_zsmul_oangle_toReal (vsub_ne_zero.2 hp₁)
+    (vsub_ne_zero.2 hp₃) h
 
 /-- If the sign of the oriented angle at `p` between two points is zero, either one of the points
 equals `p` or the unoriented angle is 0 or π. -/
@@ -696,7 +710,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         Set.univ ×ˢ {v | SameRay ℝ (p₂ -ᵥ p₁) v ∧ v ≠ 0}
     have hco : IsConnected s :=
       haveI : ConnectedSpace line[ℝ, p₁, p₂] := AddTorsor.connectedSpace _ _
-      (isConnected_univ.prod (isConnected_setOf_sameRay_and_ne_zero
+      (isConnected_univ.prod (isConnected_setOfPred_sameRay_and_ne_zero
         (vsub_ne_zero.2 hp₁p₂.symm))).image _ (by fun_prop)
     have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
       refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
@@ -705,7 +719,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         obtain ⟨q₁, q₅, q₂⟩ := p
         dsimp only at hp ⊢
         obtain ⟨⟨⟨q, hq⟩, v⟩, hv, rfl, rfl, rfl⟩ := hp
-        dsimp only [Subtype.coe_mk, Set.mem_setOf] at hv ⊢
+        dsimp only [Subtype.coe_mk, Set.mem_ofPred] at hv ⊢
         obtain ⟨hvr, -⟩ := hv
         rintro rfl
         refine hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan ?_).2 (collinear_pair _ _ _))
@@ -717,12 +731,12 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
     have hsp : ∀ p : P × P × P, p ∈ s → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π := by
       intro p hp
-      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and,
+      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_ofPred, Set.mem_univ, true_and,
         Prod.ext_iff] at hp
       obtain ⟨q₁, q₅, q₂⟩ := p
       dsimp only at hp ⊢
       obtain ⟨⟨⟨q, hq⟩, v⟩, hv, rfl, rfl, rfl⟩ := hp
-      dsimp only [Subtype.coe_mk, Set.mem_setOf] at hv ⊢
+      dsimp only [Subtype.coe_mk, Set.mem_ofPred] at hv ⊢
       obtain ⟨hvr, hv0⟩ := hv
       rw [← exists_nonneg_left_iff_sameRay (vsub_ne_zero.2 hp₁p₂.symm)] at hvr
       obtain ⟨r, -, rfl⟩ := hvr
@@ -735,13 +749,13 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         rw [direction_affineSpan]
         exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
     have hp₁p₂s : (p₁, p₅, p₂) ∈ s := by
-      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and,
+      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_ofPred, Set.mem_univ, true_and,
         Prod.ext_iff]
       refine ⟨⟨⟨p₁, left_mem_affineSpan_pair ℝ _ _⟩, p₂ -ᵥ p₁⟩,
         ⟨SameRay.rfl, vsub_ne_zero.2 hp₁p₂.symm⟩, ?_⟩
       simp
     have hp₃p₄s : (p₃, p₅, p₄) ∈ s := by
-      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and,
+      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_ofPred, Set.mem_univ, true_and,
         Prod.ext_iff]
       refine ⟨⟨⟨p₃, hc.mem_affineSpan_of_mem_of_ne (Set.mem_insert _ _)
         (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
@@ -811,11 +825,11 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
   by_cases h : p₁ = p₂; · simp [h]
   let sp : Set (P × P × P) := (fun p : P => (p₁, p, p₂)) '' {p | s.SSameSide p₃ p}
   have hc : IsConnected sp :=
-    (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _ (by fun_prop)
+    (isConnected_setOfPred_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _ (by fun_prop)
   have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
     refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
     all_goals
-      simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp
+      simp_rw [sp, Set.mem_image, Set.mem_ofPred] at hp
       obtain ⟨p', hp', rfl⟩ := hp
       dsimp only
       rintro rfl
@@ -823,7 +837,7 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
     · exact hp'.2.2 hp₂
   have hsp : ∀ p : P × P × P, p ∈ sp → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π := by
     intro p hp
-    simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp
+    simp_rw [sp, Set.mem_image, Set.mem_ofPred] at hp
     obtain ⟨p', hp', rfl⟩ := hp
     dsimp only
     rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent]

@@ -278,7 +278,7 @@ See also the stronger version `Submodule.smithNormalForm`.
 -/
 theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R M)
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
-  haveI := Classical.decEq M
+  have := Classical.decEq M
   cases nonempty_fintype ι
   induction N using inductionOnRank b with | ih N ih =>
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
