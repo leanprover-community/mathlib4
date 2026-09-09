@@ -142,6 +142,7 @@ theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A �
 @[simp]
 theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = f :=
   rfl
+
 @[deprecated (since := "2026-09-09")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
 
 @[simp, norm_cast]
