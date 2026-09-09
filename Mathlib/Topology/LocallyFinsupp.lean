@@ -649,7 +649,7 @@ Present a function with with finite support as a finsum of singleton indicator f
   ext z
   by_cases hz : z ∉ U
   · aesop
-  simp [restrict_apply]
+  simp
   by_cases hz : z ∈ F.support
   · aesop
   · aesop
