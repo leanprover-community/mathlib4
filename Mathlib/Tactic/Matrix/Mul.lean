@@ -160,11 +160,8 @@ end Mathlib.Tactic.Matrix
 open Mathlib.Tactic.Matrix
 
 /-- The `norm_matmul` simproc rewrites a product of matrix literals with non-symbolic entries
-to the literal of the product, with the entries computed by `norm_num`. Use it as
-`simp only [norm_matmul]`; alongside the default simp set it must run as a pre-procedure,
-`simp [↓ norm_matmul]`, ahead of the simp lemmas on `vecCons` rows. `norm_num` ignores simprocs
-given as arguments. Terms that it cannot evaluate are skipped, and can be viewed by using
-`set_option trace.Tactic.norm_matmul true`. -/
+to the literal of the product, with the entries computed by `norm_num`. Terms that it cannot
+evaluate are skipped, and can be viewed by using `set_option trace.Tactic.norm_matmul true`. -/
 simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := fun e => do
   try normMatMulCore (Mathlib.Meta.NormNum.eval ·) e
   catch ex =>
