@@ -419,6 +419,27 @@ end Field
 
 end TopologicalSpace
 
+section Integers
+
+variable {R O : Type*} [CommRing R] [ValuativeRel R] [CommRing O] [Algebra O R] {v : Valuation R Γ₀}
+
+/-- A ring of integers for a compatible valuation is a ring of integers for the canonical
+valuation of the valuative relation. -/
+theorem Integers.of_compatible [v.Compatible] (hO : v.Integers O) :
+    (valuation R).Integers O where
+  hom_inj := hO.hom_inj
+  map_le_one x := (valuation R).vle_one_iff.mp <| v.vle_one_iff.mpr <| hO.map_le_one x
+  exists_of_le_one _ h :=
+    hO.exists_of_le_one <| v.vle_one_iff.mp <| (valuation R).vle_one_iff.mpr h
+
+/-- A ring of integers for the valuative relation on `A`, in the sense of `Valuation.Integers`,
+acts on `A` by integers. -/
+theorem Integers.isIntegerSMul (hO : (valuation R).Integers O) :
+    IsIntegerSMul O R where
+  smul_vle _ _ := (valuation R).vle_iff_le.mpr hO.smul_le
+
+end Integers
+
 end Valuation
 
 namespace IsValuativeTopology
