@@ -152,7 +152,7 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   intro x hx
   rw [map_zero]
   apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
-  sorry -- rw [← map_mul, e, map_zero]
+  simp [← map_mul, e]
 
 end SubmonoidPresheaf
 

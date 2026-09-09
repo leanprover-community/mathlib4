@@ -183,15 +183,17 @@ lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
     refine ⟨e '' s, ?_, ?_⟩
     · rw [← Ideal.map_span, hsone, Ideal.map_top]
     · rintro - ⟨a, ha, rfl⟩
-      sorry /- was: let e' : Localization.Away a ≃+* Localization.Away (e a) :=
-        IsLocalization.ringEquivOfRingEquiv _ _ e (Submonoid.map_powers e a)
+      have : IsLocalization (Submonoid.powers (e.toMonoidHom a)) (Localization.Away (e a)) :=
+        sorry -- synthesis works on `master`, TODO!
+      let e' : Localization.Away a ≃+* Localization.Away (e a) :=
+        IsLocalization.ringEquivOfRingEquiv _ _ e (Submonoid.map_powers e.toMonoidHom a)
       have : (algebraMap T (Localization.Away (e a))).comp e.toRingHom =
           e'.toRingHom.comp (algebraMap S (Localization.Away a)) := by
         ext x
         simp [e']
       rw [← RingHom.comp_assoc, this, RingHom.comp_assoc]
       apply hPi.left
-      exact hs a ha -/
+      exact hs a ha
   right {R S T} _ _ _ f e := fun ⟨s, hsone, hs⟩ ↦
     ⟨s, hsone, fun a ha ↦ (RingHom.comp_assoc _ _ _).symm ▸ hPi.right _ _ (hs a ha)⟩
 
@@ -243,8 +245,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
     simp only [this, a']
     apply hPc _ _ (hsf a.val a.property)
     apply @hPl _ _ _ _ g' _ _ _ _ _ _ _ _ ?_ (hsg b.val b.property)
-    sorry
-    -- exact IsLocalization.Away.instMapRingHomPowersOfCoe (Localization.Away (g' a.val)) a.val
+    exact IsLocalization.Away.instMapPowersOfCoeRingHom (Localization.Away (g' a.val)) a.val
 
 /-- If `P` is stable under composition with localization away maps on the right,
 then so is `Locally P`. -/
@@ -339,8 +340,9 @@ lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :
   let Mₐ (a : s) : Submonoid (Localization.Away a.val) :=
     (M.map f).map (algebraMap S (Localization.Away a.val)).toMonoidHom
   let Sₐ (a : s) := Localization (Mₐ a)
-  have hM (a : s) : M.map ((algebraMap S (Localization.Away a.val)).comp f) = Mₐ a :=
-    sorry -- was: (M.map_map _ _).symm
+  have hM (a : s) : M.map ((algebraMap S (Localization.Away a.val)).comp f) = Mₐ a := by
+    symm
+    exact M.map_map _ _
   have (a : s) : IsLocalization
       (M.map ((algebraMap S (Localization.Away a.val)).comp f).toMonoidHom) (Sₐ a) := by
     simp only [toMonoidHom_eq_coe, hM]
