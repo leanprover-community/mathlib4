@@ -350,6 +350,34 @@ protected lemma zpow [StarOrderedRing R'] [DecidableEq n]
 lemma trace_nonneg [AddLeftMono R] {A : Matrix n n R} (hA : A.PosSemidef) : 0 ≤ A.trace :=
   Fintype.sum_nonneg fun _ ↦ hA.diag_nonneg
 
+/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
+theorem dotProduct_mulVec_zero_iff [StarOrderedRing R'] [NoZeroDivisors R']
+    {A : Matrix n n R'} (hA : A.PosSemidef) {x : n → R'} :
+    star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
+  classical
+  refine ⟨fun hx ↦ ?_, fun hx ↦ by simp [hx]⟩
+  suffices h : ∀ y, star x ⬝ᵥ A *ᵥ y = 0 by
+    refine dotProduct_star_self_eq_zero.mp ?_
+    simpa [dotProduct_mulVec, star_mulVec, hA.isHermitian.eq] using h (A *ᵥ x)
+  intro y
+  set z := star x ⬝ᵥ A *ᵥ y with hz
+  suffices h : star z * z ≤ 0 by simpa using le_antisymm h (by simp)
+  calc star z * z ≤ 2 • (star z * z) + star z * z * (star y ⬝ᵥ A *ᵥ y) := by
+        rw [two_smul, add_assoc]
+        apply le_add_of_nonneg_right (add_nonneg (by simp) _)
+        exact mul_nonneg (by simp) (hA.dotProduct_mulVec_nonneg y)
+    _ ≤ 0 := neg_nonneg.mp <| le_of_le_of_eq
+        (hA.dotProduct_mulVec_nonneg (-(1 + star y ⬝ᵥ A *ᵥ y) • x + star z • y)) <| by
+      simp [mulVec_add, mulVec_smul, hx, ← hz, ← hA.isHermitian.star_dotProduct_mulVec_comm x y,
+        hA.isHermitian.star_dotProduct_mulVec_comm y y]
+      ring
+
+/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
+theorem toLinearMap₂'_zero_iff [StarOrderedRing R'] [NoZeroDivisors R'] [DecidableEq n]
+    {A : Matrix n n R'} (hA : PosSemidef A) {x : n → R'} :
+    Matrix.toLinearMap₂' R' A (star x) x = 0 ↔ A *ᵥ x = 0 := by
+  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff
+
 end PosSemidef
 
 omit [Fintype n] in variable [Finite n] in
@@ -496,7 +524,6 @@ theorem _root_.LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix
   · rw [B.toQuadraticMap_apply, ← b.linearCombination_repr (x := v)]
     simpa [Finsupp.linearCombination_apply, map_finsuppSum, Finsupp.mul_sum, aux]
       using h.2 (b.repr.map_ne_zero_iff.mpr hv)
-
 
 lemma trace_pos [Nontrivial R] [IsOrderedCancelAddMonoid R] [Nonempty n] {A : Matrix n n R}
     (hA : A.PosDef) : 0 < A.trace :=
