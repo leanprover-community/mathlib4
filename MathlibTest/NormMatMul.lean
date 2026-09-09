@@ -2,46 +2,47 @@ module
 
 import Mathlib.Tactic.Matrix.Mul
 
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Basic
+import Mathlib.Basic.Complex.Basic
+import Mathlib.Basic.Real.Basic
 
 /-! # Tests for the `norm_matmul` simproc -/
 
 open Matrix
 
 example : (!![1 / 2, 1; 0, 3] : Matrix (Fin 2) (Fin 2) ℝ) * !![2, 0; 1, 1] = !![2, 1; 3, 3] := by
-  simp [↓ norm_matmul]
+  simp only [norm_matmul]
 
 example : (!![1, 2, 3; 4, 5, 6] : Matrix (Fin 2) (Fin 3) ℂ) *
     (!![1, 0; 0, 1; 1, 1] : Matrix (Fin 3) (Fin 2) ℂ) = !![4, 5; 10, 11] := by
-  simp [↓ norm_matmul]
+  simp only [norm_matmul]
 
 -- chains normalize inside-out
 example : (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) ℚ) * !![1, 1; 0, 1] * !![1, 1; 0, 1] =
     !![1, 3; 0, 1] := by
-  simp [↓ norm_matmul]
+  simp only [norm_matmul]
 
 -- the right-hand side is normalized as well
 example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ) * !![5, 6; 7, 8] =
     !![38 / 2, 22; 43, 25 * 2] := by
-  simp only [↓ norm_matmul]
+  simp only [norm_matmul]
   norm_num
 
 -- degenerate dimensions
 example : (!![,,,] : Matrix (Fin 0) (Fin 3) ℚ) *
     (!![1, 2; 3, 4; 5, 6] : Matrix (Fin 3) (Fin 2) ℚ) = !![,,] := by
-  simp only [↓ norm_matmul]
+  simp only [norm_matmul]
 
 example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ) * !![;;] = !![;;] := by
-  simp only [↓ norm_matmul]
+  simp only [norm_matmul]
 
 -- symbolic entries are skipped
 example (x : ℚ) :
     (!![x, 1; 0, 1] : Matrix (Fin 2) (Fin 2) ℚ) * !![1, 0; 0, 1] = !![x, 1; 0, 1] := by
-  fail_if_success simp only [↓ norm_matmul]
+  fail_if_success simp only [norm_matmul]
   simp
 
--- a chain of four factors
+-- a chain of four factors; alongside the default simp set the simproc runs as a pre-procedure,
+-- ahead of the simp lemmas on `vecCons` rows
 example : (!![5, 3, 1, 8, 6;
       1, 9, 8, 7, 6;
       6, 6, 6, 6, 6;
