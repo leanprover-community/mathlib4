@@ -20,4 +20,3 @@ public instance {R : Type*} [Semiring R] [IsReduced R] : IsReduced R[X] := by
   contrapose! hn
   rw [← Polynomial.leadingCoeff_ne_zero] at *
   grind [eq_zero_of_pow_eq_zero, leadingCoeff_pow']
-
