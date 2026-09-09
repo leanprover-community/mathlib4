@@ -22,10 +22,6 @@ and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular
 - `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
 - `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. for a subgroup `Γ` of
   `SL(2, ℤ)` it maps a weight `k` level `Γ` modular form to a weight `k + 2` level `Γ` modular form.
-
-TODO:
-- Use the above to prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
-  for `sorry`-free proofs.
 -/
 
 open UpperHalfPlane hiding I
@@ -141,25 +137,25 @@ lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
 /-!
 Basic properties of Serre derivative.
 -/
-theorem serreDerivative_add (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+theorem serreDerivative_add (k : ℂ) {F G : ℍ → ℂ} (hF : MDiff F) (hG : MDiff G) :
     serreDerivative k (F + G) = serreDerivative k F + serreDerivative k G := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_add F G hF hG]
   ring_nf
 
-theorem serreDerivative_sub (k : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+theorem serreDerivative_sub (k : ℂ) {F G : ℍ → ℂ} (hF : MDiff F) (hG : MDiff G) :
     serreDerivative k (F - G) = serreDerivative k F - serreDerivative k G := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_sub F G hF hG]
   ring_nf
 
-theorem serreDerivative_smul (k : ℂ) (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F) :
+theorem serreDerivative_smul (k c : ℂ) {F : ℍ → ℂ} (hF : MDiff F) :
     serreDerivative k (c • F) = c • (serreDerivative k F) := by
   ext z
   simp [serreDerivative, normalizedDerivOfComplex_smul c F hF, smul_eq_mul]
   ring_nf
 
-theorem serreDerivative_mul (k₁ k₂ : ℂ) (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+theorem serreDerivative_mul (k₁ k₂ : ℂ) {F G : ℍ → ℂ} (hF : MDiff F) (hG : MDiff G) :
     serreDerivative (k₁ + k₂) (F * G) =
       (serreDerivative k₁ F) * G + F * (serreDerivative k₂ G) := by
   ext z
@@ -276,19 +272,26 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
     _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
     _ = M / (π * z.im) := by ring
 
-/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
-again bounded at infinity. This is a Cauchy estimate: differentiating loses at most a factor
-of `1 / z.im`. -/
-theorem isBoundedAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
-    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) := by
-  rw [isBoundedAtImInfty_iff] at hb ⊢
+/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity
+tends to `0` at infinity. Uses Cauchy estimate. -/
+theorem isZeroAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsZeroAtImInfty (D F) := by
+  rw [isBoundedAtImInfty_iff] at hb
   obtain ⟨M, A, hMA⟩ := hb
-  refine ⟨M / π, max (2 * A) 1, fun z hz => ?_⟩
-  obtain ⟨hzA, hz1⟩ := max_le_iff.mp hz
-  have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith))
-  calc ‖D F z‖ ≤ M / (π * z.im) :=
-        norm_normalizedDerivOfComplex_le hF fun w hw => hMA w (by linarith)
-    _ ≤ M / π := by gcongr; exact le_mul_of_one_le_right Real.pi_pos.le hz1
+  rw [isZeroAtImInfty_iff]
+  intro ε hε
+  refine ⟨max (2 * A) (M / (π * ε)), fun z hz ↦ ?_⟩
+  obtain ⟨hzA, hzε⟩ := max_le_iff.mp hz
+  have hM : 0 ≤ M := (norm_nonneg _).trans (hMA z (by linarith [z.im_pos]))
+  refine (norm_normalizedDerivOfComplex_le hF fun w hw ↦ hMA w (by linarith)).trans ?_
+  rw [div_le_iff₀ (by positivity)]
+  nlinarith [(div_le_iff₀ (show (0 : ℝ) < π * ε by positivity)).mp hzε]
+
+/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
+again bounded at infinity. -/
+theorem isBoundedAtImInfty_normalizedDerivOfComplex {F : ℍ → ℂ} (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) :=
+  (isZeroAtImInfty_normalizedDerivOfComplex hF hb).isBoundedAtImInfty
 
 /-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
 infinity. -/

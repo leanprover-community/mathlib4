@@ -81,7 +81,7 @@ compact and totally disconnected topological additive group.
 `{0}` is a closed set, thus implying Hausdorff in a topological additive group.) -/]
 abbrev ProfiniteGrp.of (G : Type u) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp.{u} where
-  toProfinite := .of G
+  toProfinite := ↧G
   group := ‹_›
   isTopologicalGroup := ‹_›
 
@@ -93,27 +93,23 @@ lemma ProfiniteGrp.coe_of (G : Type u) [Group G] [TopologicalSpace G] [IsTopolog
 /-- The type of morphisms in `ProfiniteAddGrp`. -/
 @[ext]
 structure ProfiniteAddGrp.Hom (A B : ProfiniteAddGrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `ContinuousAddMonoidHom`. -/
   hom' : A →ₜ+ B
 
 /-- The type of morphisms in `ProfiniteGrp`. -/
 @[to_additive existing (attr := ext)]
 structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `ContinuousMonoidHom`. -/
   hom' : A →ₜ* B
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ProfiniteGrp.Hom A B
   id A := ⟨ContinuousMonoidHom.id A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory ProfiniteGrp (fun X Y => X →ₜ* Y) where
   hom f := f.hom'
@@ -241,7 +237,7 @@ instance : HasForget₂ FiniteGrp ProfiniteGrp where
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp GrpCat where
-  forget₂.obj P := GrpCat.of P
+  forget₂.obj P := ↧P
   forget₂.map f := GrpCat.ofHom f.hom.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
@@ -257,7 +253,7 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
     [Group H] [IsTopologicalGroup H] (e : G ≃ₜ* H) : ProfiniteGrp.{v} :=
   let _ : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
   let _ : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
-  .of H
+  ↧H
 
 /-- Build an isomorphism in the category `ProfiniteGrp` from
 a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
@@ -329,8 +325,6 @@ instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGr
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The explicit limit cone in `ProfiniteGrp`. -/
 @[to_additive /-- The explicit limit cone in `ProfiniteAddGrp`. -/]
 abbrev limitCone : Limits.Cone F where
@@ -382,7 +376,7 @@ instance : CompactSpace (limitConePtAux F) :=
 
 /-- The abbreviation for the limit of `ProfiniteGrp`s. -/
 @[to_additive /-- The abbreviation for the limit of `ProfiniteAddGrp`s. -/]
-abbrev limit : ProfiniteGrp := ProfiniteGrp.of (ProfiniteGrp.limitConePtAux F)
+abbrev limit : ProfiniteGrp := ↧(ProfiniteGrp.limitConePtAux F)
 
 @[to_additive (attr := ext)]
 lemma limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
@@ -399,3 +393,23 @@ lemma limit_mul_val (x y : limit F) (j : J) : (x * y).val j = x.val j * y.val j 
 end ProfiniteGrp
 
 end Limits
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `ProfiniteGrp.of X` as `↧X`. -/
+@[app_delab ProfiniteGrp.of]
+meta def ProfiniteGrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `ProfiniteAddGrp.of X` as `↧X`. -/
+@[app_delab ProfiniteAddGrp.of]
+meta def ProfiniteAddGrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
