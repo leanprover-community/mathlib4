@@ -91,7 +91,6 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
   fac := Category.id_comp _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a transfinite composition of shape `J`, then it is
 also a transfinite composition of shape `J'` if `J' ≃o J`. -/
 @[simps]
@@ -103,7 +102,6 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
   incl := Functor.whiskerLeft e.equivalence.functor c.incl
   isColimit := IsColimit.whiskerEquivalence (c.isColimit) e.equivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a transfinite composition of shape `J`, then `F.map f` also is
 provided `F` preserves suitable colimits. -/
 @[simps]

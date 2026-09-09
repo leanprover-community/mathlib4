@@ -30,9 +30,6 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 ## TODO
 
-* Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures
-  agree then the antipodes must also agree).
-
 * If `A` is commutative then `antipode` is an algebra homomorphism.
 
 * If `A` is commutative then `antipode` is necessarily a bijection and its square is
@@ -120,7 +117,6 @@ lemma sum_mul_antipode_eq_smul (repr : Repr R a ι) :
       counit (R := R) a • 1 := by
   rw [sum_mul_antipode_eq_algebraMap_counit, Algebra.smul_def, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma counit_antipode (a : A) : counit (R := R) (antipode R a) = counit a := by
   calc
         counit (antipode R a)

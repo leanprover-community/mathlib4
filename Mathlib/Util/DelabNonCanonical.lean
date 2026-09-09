@@ -8,7 +8,8 @@ module
 public import Mathlib.Init
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
-/-! Delab checking canonicity.
+/-!
+# Delaborating non-canonical instances
 
 Provides a series of monadic functions in `DelabM` for delaborating expressions differently
 if their given instances differ (by definitional equality) with what is synthesized.

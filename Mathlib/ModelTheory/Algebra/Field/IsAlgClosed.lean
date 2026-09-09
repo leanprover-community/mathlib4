@@ -61,7 +61,6 @@ for `X`. -/
 noncomputable def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
@@ -187,7 +186,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
   have f : ∀ ψ ∈ Theory.ACF 0,
       { s : Finset Nat.Primes // ∀ q : Nat.Primes, q ∉ s → Theory.ACF q ⊨ᵇ ψ } := by
     intro ψ hψ
-    rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm, Set.mem_union, if_pos rfl,
+    rw [Theory.ACF, Theory.fieldOfChar, Set.union_right_comm, Set.mem_union, ite_eq_left rfl,
       Set.mem_image] at hψ
     apply Classical.choice
     rcases hψ with h | ⟨p, hp, rfl⟩

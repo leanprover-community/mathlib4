@@ -27,7 +27,7 @@ public section
 variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 
 open scoped Nat NNReal ContDiff
-open MeasureTheory Pointwise ENNReal
+open MeasureTheory ENNReal
 
 namespace HasCompactSupport
 

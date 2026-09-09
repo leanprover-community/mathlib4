@@ -62,7 +62,6 @@ instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
@@ -124,7 +123,6 @@ theorem norm_def {x : L} : v.norm x = hv.hom _ (v.restrict x) := rfl
 
 theorem norm_nonneg (x : L) : 0 ≤ v.norm x := by simp only [norm, NNReal.zero_le_coe]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem norm_add_le (x y : L) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
   simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
   exact le_max_iff.mp (Valuation.map_add_le_max' v.restrict _ _)
@@ -257,6 +255,10 @@ theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
 theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   rw [← map_one val.v, ← v.restrict_lt_iff]
   simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
+
+theorem norm_eq_one_iff : ‖x‖ = 1 ↔ val.v x = 1 := by
+  simp only [norm_def, NNReal.coe_eq_one, ← v.restrict_eq_one_iff]
+  exact map_one (RankOne.hom val.v) ▸ (Valuation.RankOne.strictMono val.v).injective.eq_iff
 
 lemma setOfPred_mem_integer_eq_closedBall :
     { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by

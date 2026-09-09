@@ -44,7 +44,7 @@ a `Fintype` instance must be supplied for true NFAs.
 
 open Set
 
-open Computability
+open scoped Computability
 
 universe u v
 
