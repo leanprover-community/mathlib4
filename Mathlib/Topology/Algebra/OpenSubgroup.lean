@@ -319,7 +319,7 @@ open Topology in
 lemma isClosed_of_isLocallyClosed (U : Subgroup G)
     (h : IsLocallyClosed (U : Set G)) :
     IsClosed (U : Set G) := by
-  -- Since `U` is locally closed, it is open, hence closed, in the closed subgroup
+  -- Since `U` is locally closed, it is open, hence closed in the closed subgroup
   -- `U.topologicalClosure`. Hence it is closed in `G`.
   set V : Subgroup U.topologicalClosure := U.subgroupOf U.topologicalClosure with V_def
   have V_closed : IsClosed (V : Set U.topologicalClosure) :=
@@ -364,7 +364,7 @@ open Filter in
 @[to_additive]
 lemma tendsto_coe_cofinite_of_isDiscrete [T1Space G] (H : Subgroup G)
     (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  IsClosed.tendsto_coe_cofinite_of_isDiscrete (H.isClosed_of_isDiscrete hH) hH
+  (H.isClosed_of_isDiscrete hH).tendsto_coe_cofinite_of_isDiscrete hH
 
 @[to_additive (attr := deprecated (since := "2026-09-01"))]
 alias tendsto_coe_cofinite_of_discrete := tendsto_coe_cofinite_of_isDiscrete
