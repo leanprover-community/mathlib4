@@ -310,7 +310,7 @@ variable [StarHomClass F A B]
 actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
 def _root_.StarAlgHom.ofClass (f : F) : A →⋆ₐ[R] B :=
-  { (AlgHomClass.toAlgHom f) with
+  { (AlgHom.ofClass f) with
     map_star' := map_star f }
 
 @[deprecated (since := "2026-09-02")] alias toStarAlgHom := StarAlgHom.ofClass
