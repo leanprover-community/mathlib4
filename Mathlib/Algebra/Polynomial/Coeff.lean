@@ -330,10 +330,10 @@ theorem coeff_mul_coeff_eq_zero_of_isReduced [IsReduced R] (p q : R[X]) (h : p *
           (coeff p x.1 * coeff q x.2) * coeff q j = (coeff p i * coeff q j) * coeff q j := by
         apply Finset.sum_eq_single (i, j)
         · rintro ⟨s, t⟩ hst hne
-          grind [Finset.mem_antidiagonal.mp hst, IsReduced.mul_mid_eq_zero]
+          grind [Finset.mem_antidiagonal.mp hst, mul_mid_eq_zero_of_reduced]
         · intro hmem
           grind [Finset.mem_antidiagonal]
-      grind [IsReduced.mul_eq_zero_of_mul_sq_eq_zero]
+      grind [mul_eq_zero_of_mul_sq_eq_zero_of_reduced]
 
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
