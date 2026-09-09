@@ -411,9 +411,8 @@ theorem AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable
   apply AlgEquiv.coe_toAlgHom_injective
   apply IsPurelyInseparable.injective_restrictDomain E K F K
   ext x
-  change σ (algebraMap E K x) = τ (algebraMap E K x)
-  rw [← σ.restrictNormal_commutes E x, ← τ.restrictNormal_commutes E x]
-  exact congr(algebraMap E K ($h x))
+  exact (σ.restrictNormal_commutes E x).symm.trans <|
+    congr(algebraMap E K ($h x)).trans (τ.restrictNormal_commutes E x)
 
 /-- In a tower `K/E/F` with `K/E` purely inseparable and `E/F` normal, fixing an intermediate
 field `L` of `K/F` is equivalent to fixing its preimage in `E` after restricting automorphisms. -/
@@ -431,14 +430,10 @@ theorem IntermediateField.comap_fixingSubgroup_of_isPurelyInseparable
   let q := ringExpChar E
   have : ExpChar K q := expChar_of_injective_ringHom (algebraMap E K).injective q
   obtain ⟨n, y, hy⟩ := IsPurelyInseparable.pow_mem E q x
+  have hyL := L.toSubalgebra.pow_mem hx (q ^ n)
+  rw [← hy] at hyL
   apply iterateFrobenius_inj K q n
-  change (σ x) ^ q ^ n = x ^ q ^ n
-  rw [← map_pow]
-  apply hσ
-  refine ⟨y, ?_, hy⟩
-  change algebraMap E K y ∈ L
-  rw [hy]
-  exact _root_.pow_mem hx _
+  simpa only [iterateFrobenius_def, ← map_pow] using hσ _ ⟨y, hyL, hy⟩
 
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
