@@ -299,8 +299,8 @@ theorem iInf_iSup_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) :=
   CompletelyDistribLattice.MinimalAxioms.of.iInf_iSup_eq' _
 
-theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ : Type*}
-    [hκ : Nonempty κ] {f : ι → α} (h : Pairwise (Disjoint on f)) (s : κ → Set ι) :
+theorem biSup_iInter_of_pairwise'_disjoint [CompletelyDistribLattice α] {ι κ : Type*}
+    [hκ : Nonempty κ] {f : ι → α} (h : Pairwise' (Disjoint on f)) (s : κ → Set ι) :
     (⨆ i ∈ (⋂ j, s j), f i) = ⨅ j, (⨆ i ∈ s j, f i) := by
   rcases hκ with ⟨j⟩
   simp_rw [iInf_iSup_eq, mem_iInter]
@@ -312,7 +312,7 @@ theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ :
   · rcases H with ⟨k, hk⟩
     calc ⨅ l, f (I l)
     _ ≤ f (I k) ⊓ f (I j) := le_inf (iInf_le _ _) (iInf_le _ _)
-    _ = ⊥ := (h hk).eq_bot
+    _ = ⊥ := (h (Set.mem_univ k) (Set.mem_univ j) hk).eq_bot
     _ ≤ _ := bot_le
 
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
@@ -404,8 +404,8 @@ theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1
   simp only [sSup_eq_iSup, biSup_inf_biSup]
 
 @[to_dual]
-theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
-    (h : Pairwise (Disjoint on f)) (s t : Set ι) :
+theorem biSup_inter_of_pairwise'_disjoint {ι : Type*} {f : ι → α}
+    (h : Pairwise' (Disjoint on f)) (s t : Set ι) :
     (⨆ i ∈ (s ∩ t), f i) = (⨆ i ∈ s, f i) ⊓ (⨆ i ∈ t, f i) := by
   rw [biSup_inf_biSup]
   refine le_antisymm
@@ -413,7 +413,7 @@ theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
     (iSup₂_le fun ⟨i, j⟩ ⟨his, hjs⟩ ↦ ?_)
   by_cases hij : i = j
   · exact le_iSup₂_of_le i ⟨his, hij ▸ hjs⟩ inf_le_left
-  · simp [h hij |>.eq_bot]
+  · simp [h (Set.mem_univ i) (Set.mem_univ j) hij |>.eq_bot]
 
 @[to_dual]
 theorem iSup_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
