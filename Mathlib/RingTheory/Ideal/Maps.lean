@@ -518,7 +518,8 @@ lemma map_primeCompl_comap_of_surjective (f : R →+* S) (hf : Function.Surjecti
     (p : Ideal S) [p.IsPrime] :
     Submonoid.map f.toMonoidHom (p.comap f).primeCompl = p.primeCompl := by
   rw [SetLike.ext_iff, hf.forall]
-  sorry -- was: grind [Submonoid.mem_map, mem_primeCompl_iff, mem_comap]
+  simp
+  grind
 
 lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
     (p.comap e).primeCompl.map e = p.primeCompl :=

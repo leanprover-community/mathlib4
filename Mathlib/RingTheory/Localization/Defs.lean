@@ -702,8 +702,7 @@ theorem ringEquivOfRingEquiv_mk' {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (
 theorem ringEquivOfRingEquiv_symm {j : R ≃+* P} (H : M.map j = T) :
     (ringEquivOfRingEquiv S Q j H).symm =
       ringEquivOfRingEquiv Q S j.symm (show T.map (j : R ≃* P).symm = M by
-        sorry /-rw [← H, ← Submonoid.comap_equiv_eq_map_symm, ← Submonoid.map_coe_toMulEquiv,
-          Submonoid.comap_map_eq_of_injective (j : R ≃* P).injective]-/) := rfl
+        rw [← H]; convert Submonoid.map_id M; ext; simp) := rfl
 
 end Map
 
@@ -711,15 +710,17 @@ section
 
 variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
 
--- /-- Injectivity of a map descends to the map induced on localizations. -/
--- theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g.toMonoidHom) Q] :
---     Function.Injective ((map Q g.toMonoidHom M.le_comap_map) : S → Q) :=
---   (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
+/-- Injectivity of a map descends to the map induced on localizations. -/
+theorem map_injective_of_injective
+    (h : Function.Injective g) [IsLocalization (M.map g.toMonoidHom) Q] :
+    Function.Injective ((map Q g (M := M) (M.le_comap_map (f := g.toMonoidHom))) : S → Q) :=
+  (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g.toMonoidHom) Q)
 
--- /-- Surjectivity of a map descends to the map induced on localizations. -/
--- theorem map_surjective_of_surjective (h : Function.Surjective g) [IsLocalization (M.map g.toMonoidHom) Q] :
---     Function.Surjective (map Q g M.le_comap_map : S → Q) :=
---   (toLocalizationMap M S).map_surjective_of_surjective h (toLocalizationMap (M.map g) Q)
+/-- Surjectivity of a map descends to the map induced on localizations. -/
+theorem map_surjective_of_surjective
+    (h : Function.Surjective g) [IsLocalization (M.map g.toMonoidHom) Q] :
+    Function.Surjective (map Q g (M.le_comap_map (f := g.toMonoidHom)) : S → Q) :=
+  (toLocalizationMap M S).map_surjective_of_surjective h (toLocalizationMap (M.map g.toMonoidHom) Q)
 
 end
 
@@ -765,12 +766,12 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
 
 theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring K]
     [Algebra R K] (e : R ≃+* S) [Algebra S K] {M₁ : Submonoid S} {M₂ : Submonoid R}
-    (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
+    (hM : M₂.map e.toMonoidHom = M₁)
+    (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
     IsLocalization M₂ K := by
-  rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e,
-  ]; sorry /- proof was: hM]
+  rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e, hM]
   convert! (inferInstance : IsLocalization M₁ K)
-  exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h]) -/
+  exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h])
 
 end
 
