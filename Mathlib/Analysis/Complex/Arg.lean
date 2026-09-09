@@ -22,8 +22,6 @@ the usual way this is considered.
   have the same argument.
 * `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
-* `Complex.div_ofReal_eq_inv_smul`: division by a real scalar agrees with inverse scalar
-  multiplication.
 * `Complex.exists_nonneg_mul_of_sameRay`: the `*` form of `SameRay.exists_nonneg_right`.
 * `Complex.sameRay_ofReal_mul`, `Complex.normalize_ofReal_mul`: nonnegative real scaling
   preserves `SameRay`, and positive real scaling preserves the phase.
@@ -68,10 +66,6 @@ theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ 
   (sameRay_of_arg_eq h).norm_sub
 
 variable {z w : ℂ} {c : ℝ}
-
-/-- Division by a real scalar agrees with inverse real scalar multiplication. -/
-lemma div_ofReal_eq_inv_smul (r : ℝ) (z : ℂ) : z / (r : ℂ) = r⁻¹ • z := by
-  simp [div_eq_inv_mul, ofReal_inv, real_smul, mul_comm]
 
 /-- A nonnegative real multiple of `w` lies on the same closed ray as `w`. -/
 lemma sameRay_ofReal_mul (hc : 0 ≤ c) : SameRay ℝ ((c : ℂ) * w) w := by
