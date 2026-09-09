@@ -166,7 +166,7 @@ instance : IsEquiv V G.Reachable where
   symm _ _ := .symm
   trans _ _ _ := .trans
 
-@[deprecated instIsEquivReachable (since := "2026-08-25")]
+@[deprecated Equivalence.of_isEquiv (since := "2026-09-09")]
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
   .of_isEquiv G.Reachable
 
