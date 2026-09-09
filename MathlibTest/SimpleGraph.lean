@@ -30,6 +30,10 @@ instance : DecidableRel testCycle.Adj := fun _ _ ↦ inferInstanceAs (Decidable 
 -- The vertices visited by the breadth-first search from `0`, most recently visited first.
 #guard testPath.bfsList 0 (List.finRange 6) = [4, 3, 2, 1, 0]
 
+-- The isolated vertex `5` is not visited, so the search visits fewer vertices than there are.
+#guard (testPath.bfsList 0 (List.finRange 6)).length = 5
+#guard (testCycle.bfsList 0 (List.finRange 60)).length = 60
+
 example : testPath.Reachable 0 4 := by decide
 example : ¬ testPath.Reachable 0 5 := by decide
 example : ¬ testPath.Preconnected := by decide
@@ -43,11 +47,26 @@ example : (⊥ : SimpleGraph (Fin 1)).Connected := by decide
 example : (⊥ : SimpleGraph (Fin 0)).Preconnected := by decide
 example : ¬ (⊥ : SimpleGraph (Fin 0)).Connected := by decide
 
--- These two take about 8000 and 12000 heartbeats respectively.
+-- These two take about 8000 heartbeats each.
 set_option maxHeartbeats 50000 in
 example : testCycle.Reachable 0 30 := by decide
 
 set_option maxHeartbeats 50000 in
 example : testCycle.Connected := by decide
+
+/-!
+`SimpleGraph.decidablePreconnected` and `SimpleGraph.decidableConnected` check that the breadth-
+first search visited every vertex by comparing the *length* of the list of visited vertices to the
+number of vertices, rather than by checking that each vertex belongs to that list, which would cost
+a further `O(card V ^ 2)` equality tests.
+
+On a complete graph the search stops after a single round, so it only costs `O(card V)` adjacency
+tests and the difference is asymptotic: the example below takes about 1650 heartbeats, against
+about 42000 for the membership check. The `maxHeartbeats` bound guards against a regression to the
+latter.
+-/
+set_option maxRecDepth 4000 in
+set_option maxHeartbeats 5000 in
+example : (⊤ : SimpleGraph (Fin 200)).Connected := by decide
 
 end SimpleGraph

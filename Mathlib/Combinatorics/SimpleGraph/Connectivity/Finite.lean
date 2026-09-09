@@ -47,7 +47,9 @@ costs `O(|V| ^ 2)` adjacency tests.
 
 Vertices `u` and `v` are then reachable if `v` lies in the BFS-constructed list of vertices
 reachable from `u`, and a graph is (pre)connected iff it's non-empty and (/empty or) every vertex
-lies in the reachability list of an arbitrarily-chosen vertex.
+lies in the reachability list of an arbitrarily-chosen vertex. Since the search visits each vertex
+at most once, the latter is checked by comparing the length of the reachability list to the number
+of vertices, which is cheaper than testing membership of every vertex.
 -/
 
 section BFS
@@ -73,6 +75,19 @@ def bfsStep (G : SimpleGraph V) [DecidableRel G.Adj] (s : List V) : List V → L
 lemma mem_bfsStep : ∀ {l acc}, w ∈ G.bfsStep s l acc ↔ (w ∈ l ∧ ∃ v ∈ s, G.Adj v w) ∨ w ∈ acc
   | [], acc => by simp [bfsStep]
   | x :: l, acc => by rw [bfsStep, mem_bfsStep]; grind
+
+lemma bfsStep_eq_reverse_filter_append :
+    ∀ {l acc}, G.bfsStep s l acc = (l.filter fun w ↦ s.any (G.Adj · w)).reverse ++ acc
+  | [], acc => by simp [bfsStep]
+  | x :: l, acc => by
+    rw [bfsStep, bfsStep_eq_reverse_filter_append, List.filter_cons]
+    split <;> simp
+
+lemma nodup_bfsStep_append (hl : l.Nodup) (hacc : acc.Nodup) (h : ∀ x ∈ l, x ∉ acc) :
+    (G.bfsStep s l [] ++ acc).Nodup := by
+  rw [bfsStep_eq_reverse_filter_append, List.append_nil]
+  exact List.Nodup.append (List.nodup_reverse.2 (hl.filter _)) hacc fun x hx hx' ↦
+    h x (List.mem_of_mem_filter (List.mem_reverse.1 hx)) hx'
 
 /-- Iterate breadth-first search at most `n` times, stopping as soon as a round visits no new
 vertex.
@@ -146,12 +161,53 @@ lemma mem_bfsIterate_of_reachable (hn : l.length ≤ n) (hu : u ∈ acc) (hl : �
       · exact .inr hy
     · exact .inr <| hacc _ hx hxs' _ hxy
 
+/-- Breadth-first search only visits vertices that were remaining to be visited or already
+visited. -/
+lemma mem_or_mem_of_mem_bfsIterate (hv : v ∈ G.bfsIterate n s l acc) : v ∈ l ∨ v ∈ acc := by
+  induction n generalizing s l acc with
+  | zero => exact .inr hv
+  | succ n ih =>
+    simp only [bfsIterate] at hv
+    split_ifs at hv with h
+    · exact .inr hv
+    obtain hv | hv := ih hv
+    · exact .inl <| List.mem_of_mem_filter hv
+    · rw [List.mem_append] at hv
+      exact hv.imp (fun hv ↦ (mem_bfsStep.1 hv).elim And.left (by simp)) id
+
+/-- Breadth-first search visits no vertex twice, assuming the lists of remaining and of visited
+vertices are themselves duplicate-free and disjoint. -/
+lemma nodup_bfsIterate (hl : l.Nodup) (hacc : acc.Nodup) (h : ∀ x ∈ l, x ∉ acc) :
+    (G.bfsIterate n s l acc).Nodup := by
+  induction n generalizing s l acc with
+  | zero => exact hacc
+  | succ n ih =>
+    simp only [bfsIterate]
+    split_ifs with h'
+    · exact hacc
+    refine ih (hl.filter _) (nodup_bfsStep_append hl hacc h) fun x hx hx' ↦ ?_
+    rw [List.mem_filter] at hx
+    obtain hx' | hx' := List.mem_append.1 hx'
+    · simp only [mem_bfsStep, List.not_mem_nil, or_false] at hx'
+      simp only [Bool.not_eq_eq_eq_not, Bool.not_true, List.any_eq_false] at hx
+      exact absurd hx'.2 (by simpa using hx.2)
+    · exact h _ hx.1 hx'
+
 variable [DecidableEq V]
 
 variable (G) in
-/-- The list of vertices reachable from `u`, computed by breadth-first search through the list `l`
-of all vertices. -/
+/-- The list of vertices in `l` reachable from `u` via vertices of `l`, computed by breadth-first
+search through the list `l` of all vertices. -/
 def bfsList (u : V) (l : List V) : List V := G.bfsIterate (l.length - 1) [u] (l.erase u) [u]
+
+lemma mem_of_mem_bfsList (hu : u ∈ l) (hv : v ∈ G.bfsList u l) : v ∈ l := by
+  obtain hv | hv := mem_or_mem_of_mem_bfsIterate hv
+  · exact List.erase_subset hv
+  · rwa [List.mem_singleton.1 hv]
+
+lemma nodup_bfsList (hl : l.Nodup) : (G.bfsList u l).Nodup :=
+  nodup_bfsIterate (hl.erase _) (List.nodup_singleton _) fun x hx ↦ by
+    simp [(hl.mem_erase_iff.1 hx).1]
 
 lemma mem_bfsList (hl : ∀ w, w ∈ l) : v ∈ G.bfsList u l ↔ G.Reachable u v := by
   refine ⟨reachable_of_mem_bfsIterate (fun x hx ↦ hx) (fun x hx ↦ ?_), fun hv ↦ ?_⟩
@@ -171,11 +227,31 @@ lemma connected_iff_forall_mem_bfsList (hl : ∀ w, w ∈ l) (u : V) :
     G.Connected ↔ ∀ v, v ∈ G.bfsList u l := by
   rw [connected_iff, preconnected_iff_forall_mem_bfsList hl u, and_iff_left ⟨u⟩]
 
+/-- Breadth-first search from `u` visits every vertex iff it visits as many vertices as there are,
+since it visits each vertex at most once.
+
+Comparing lengths is faster than checking membership of every vertex, so this is the criterion used
+by the `SimpleGraph.decidablePreconnected` and `SimpleGraph.decidableConnected` instances. -/
+lemma length_bfsList_eq_iff (hl : l.Nodup) (hl' : ∀ w, w ∈ l) (u : V) :
+    (G.bfsList u l).length = l.length ↔ ∀ v, v ∈ G.bfsList u l := by
+  have hsub : List.Subperm (G.bfsList u l) l :=
+    (nodup_bfsList hl).subperm fun _ hv ↦ mem_of_mem_bfsList (hl' u) hv
+  exact ⟨fun h v ↦ (hsub.perm_of_length_le h.ge).mem_iff.2 (hl' v), fun h ↦
+    le_antisymm hsub.length_le (hl.subperm fun v _ ↦ h v).length_le⟩
+
+lemma preconnected_iff_length_bfsList (hl : l.Nodup) (hl' : ∀ w, w ∈ l) (u : V) :
+    G.Preconnected ↔ (G.bfsList u l).length = l.length := by
+  rw [preconnected_iff_forall_mem_bfsList hl' u, length_bfsList_eq_iff hl hl']
+
+lemma connected_iff_length_bfsList (hl : l.Nodup) (hl' : ∀ w, w ∈ l) (u : V) :
+    G.Connected ↔ (G.bfsList u l).length = l.length := by
+  rw [connected_iff_forall_mem_bfsList hl' u, length_bfsList_eq_iff hl hl']
+
 variable [Fintype V]
 
 /-- Decides reachability of vertices `u` and `v` by performing a breadth-first search from `u`. -/
 instance decidableReachable : DecidableRel G.Reachable := fun _u _v ↦
-  (Fintype.truncList V).lift (fun l ↦ decidable_of_iff _ (mem_bfsList l.2))
+  (Fintype.truncList V).lift (fun l ↦ decidable_of_iff _ (mem_bfsList l.2.2))
     fun _ _ ↦ Subsingleton.elim ..
 
 /-- Decides preconnectedness of `G` by checking whether the vertex set is empty and, if not,
@@ -183,8 +259,8 @@ by performing a breadth-first search from an arbitrarily chosen vertex. -/
 instance decidablePreconnected : Decidable G.Preconnected :=
   (Fintype.truncList V).lift
     (fun ⟨l, hl⟩ ↦ match l, hl with
-      | [], hl => isTrue fun x _ ↦ absurd (hl x) (by simp)
-      | u :: l, hl => decidable_of_iff _ (preconnected_iff_forall_mem_bfsList hl u).symm)
+      | [], hl => isTrue fun x _ ↦ absurd (hl.2 x) (by simp)
+      | u :: l, hl => decidable_of_iff _ (preconnected_iff_length_bfsList_eq hl.1 hl.2 u).symm)
     fun _ _ ↦ Subsingleton.elim ..
 
 /-- Decides connectedness of `G` by checking whether the vertex set is empty and, if not,
@@ -192,8 +268,8 @@ by performing a breadth-first search from an arbitrarily chosen vertex. -/
 instance decidableConnected : Decidable G.Connected :=
   (Fintype.truncList V).lift
     (fun ⟨l, hl⟩ ↦ match l, hl with
-      | [], hl => isFalse fun hG ↦ absurd (hl hG.nonempty.some) (by simp)
-      | u :: l, hl => decidable_of_iff _ (connected_iff_forall_mem_bfsList hl u).symm)
+      | [], hl => isFalse fun hG ↦ absurd (hl.2 hG.nonempty.some) (by simp)
+      | u :: l, hl => decidable_of_iff _ (connected_iff_length_bfsList_eq hl.1 hl.2 u).symm)
     fun _ _ ↦ Subsingleton.elim ..
 
 instance : Fintype G.ConnectedComponent :=
