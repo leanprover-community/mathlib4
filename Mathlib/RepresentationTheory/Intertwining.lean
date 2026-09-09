@@ -62,6 +62,7 @@ lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.t
   ext x
   exact congrFun h x
 
+@[macro_inline]
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
   coe_injective := toFun_injective ρ σ
@@ -344,6 +345,7 @@ lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ
 lemma toLinearEquiv_inj (φ ψ : σ.Equiv ρ) : φ.toLinearEquiv = ψ.toLinearEquiv ↔ φ = ψ :=
   toLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (Equiv ρ σ) V W where
   coe φ := φ.toLinearEquiv
   inv φ := φ.invFun

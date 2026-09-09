@@ -343,6 +343,7 @@ attribute [coe] LieHom.toLinearMap
 instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
   ⟨LieHom.toLinearMap⟩
 
+@[macro_inline]
 instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
   coe f := f.toFun
   coe_injective x y h := by
@@ -529,6 +530,7 @@ instance hasCoeToLieHom : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ →ₗ⁅R⁆ L₂
 instance hasCoeToLinearEquiv : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ ≃ₗ[R] L₂) :=
   ⟨toLinearEquiv⟩
 
+@[macro_inline]
 instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -690,6 +692,7 @@ attribute [coe] LieModuleHom.toLinearMap
 instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
+@[macro_inline]
 instance : FunLike (M →ₗ⁅R,L⁆ N) M N where
   coe f := f.toFun
   coe_injective x y h := by cases x; cases y; simp at h; simp [h]
@@ -904,6 +907,7 @@ instance hasCoeToLieModuleHom : Coe (M ≃ₗ⁅R,L⁆ N) (M →ₗ⁅R,L⁆ N) 
 instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
   ⟨toLinearEquiv⟩
 
+@[macro_inline]
 instance : EquivLike (M ≃ₗ⁅R,L⁆ N) M N where
   coe f := f.toFun
   inv f := f.invFun

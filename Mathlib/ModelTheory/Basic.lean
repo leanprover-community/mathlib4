@@ -276,6 +276,7 @@ attribute [inherit_doc FirstOrder.Language.Hom.map_rel'] FirstOrder.Language.Emb
 
 namespace Hom
 
+@[macro_inline]
 instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
   coe_injective f g h := by cases f; cases g; cases h; rfl
@@ -360,6 +361,7 @@ end Hom
 
 namespace Embedding
 
+@[macro_inline]
 instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
   coe_injective f g h := by
@@ -510,6 +512,7 @@ end Embedding
 
 namespace Equiv
 
+@[macro_inline]
 instance : EquivLike (M ≃[L] N) M N where
   coe f := f.toFun
   inv f := f.invFun

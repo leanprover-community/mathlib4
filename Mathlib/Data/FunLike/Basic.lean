@@ -100,6 +100,7 @@ class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass
 
 variable {A B : Type*} [CoolClass A] [CoolClass B]
 
+@[macro_inline]
 instance : FunLike (CoolerHom A B) A B where
   coe f := f.toFun
   coe_injective := fun f g h ↦ by cases f; cases g; congr; apply DFunLike.coe_injective; congr

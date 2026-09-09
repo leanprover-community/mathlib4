@@ -88,6 +88,7 @@ variable (e : A₁ ≃ₐ[R] A₂)
 
 section coe
 
+@[macro_inline]
 instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -99,6 +100,7 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
     congr
 
 /-- Helper instance since the coercion is not always found. -/
+@[macro_inline]
 instance : FunLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe := DFunLike.coe
   coe_injective := DFunLike.coe_injective

@@ -102,6 +102,7 @@ section coe
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
+@[macro_inline]
 instance : FunLike (α →ₙ+* β) α β where
   coe f := f.toFun
   coe_injective f g h := by
