@@ -240,24 +240,30 @@ variable [Zero M]
 
 /-- Restrict a finitely supported function on `WithTop α` to a finitely supported function on `α`.
 
-This is `Finsupp.some` stated for `WithTop`, so that it dualises to `Finsupp.withBotSome`. -/
+This is the analogue of `Finsupp.some` for `WithTop`. -/
 @[to_dual
 /-- Restrict a finitely supported function on `WithBot α` to a finitely supported function on `α`.
 
-This is `Finsupp.some` stated for `WithBot`, so that it dualises to `Finsupp.withTopSome`. -/]
+This is the analogue of `Finsupp.some` for `WithBot`. -/]
 def withTopSome (f : WithTop α →₀ M) : α →₀ M := f.comapDomain (↑) WithTop.coe_injective.injOn
 
 @[to_dual (attr := simp)]
 lemma withTopSome_apply (f : WithTop α →₀ M) (a : α) : f.withTopSome a = f a := rfl
 
 @[to_additive (attr := to_dual)]
-lemma prod_withTopSome [CommMonoid N] {f : WithTop α →₀ M} (hf : f ⊤ = 0)
-    (g : WithTop α → M → N) : (f.withTopSome.prod fun a ↦ g (a : WithTop α)) = f.prod g := by
-  refine prod_comapDomain ((↑) : α → WithTop α) f g
-    ⟨fun a ha ↦ ha, WithTop.coe_injective.injOn, fun b hb ↦ ?_⟩
-  induction b with
-  | top => exact absurd (Finsupp.mem_support_iff.1 hb) (not_not.2 hf)
-  | coe a => exact ⟨a, hb, rfl⟩
+lemma prod_withTopSome_mul [CommMonoid N] {g : WithTop α → M → N} (hg : g ⊤ 0 = 1)
+    (f : WithTop α →₀ M) : f.withTopSome.prod (fun a ↦ g a) * g ⊤ (f ⊤) = f.prod g := by
+  classical
+  have hsupp : f.support.preimage ((↑) : α → WithTop α) WithTop.coe_injective.injOn
+      = (f.support.erase ⊤).preimage ((↑) : α → WithTop α) WithTop.coe_injective.injOn := by
+    ext a; simp
+  rw [Finsupp.prod, Finsupp.prod, withTopSome, comapDomain_support, hsupp,
+    ← Finset.prod_insert_of_eq_one_if_notMem (a := ⊤) (s := f.support)
+      fun h ↦ by rw [notMem_support_iff.1 h, hg],
+    ← Finset.prod_erase_mul _ _ (Finset.mem_insert_self ⊤ f.support), Finset.erase_insert_eq_erase]
+  congr 1
+  exact Finset.prod_preimage _ _ _ (fun b ↦ g b (f b)) fun b hb hb' ↦
+    absurd (WithTop.ne_top_iff_exists.1 (Finset.ne_of_mem_erase hb)) (by simpa using hb')
 
 end WithTop
 
