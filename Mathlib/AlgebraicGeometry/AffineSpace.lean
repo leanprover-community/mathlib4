@@ -397,6 +397,9 @@ instance smoothOfRelativeDimension_fin {S : Scheme.{u}} (n : ℕ) :
     SmoothOfRelativeDimension n (𝔸(ULift.{u} (Fin n); S) ↘ S) := by
   simpa using smoothOfRelativeDimension (ULift.{u} (Fin n)) S
 
+lemma smoothOfRelativeDimension_of_card_eq [Finite n] {m : ℕ} (h : Nat.card n = m) :
+    SmoothOfRelativeDimension m (𝔸(n; S) ↘ S) := h ▸ smoothOfRelativeDimension n S
+
 instance [Finite n] : Smooth (𝔸(n; S) ↘ S) := (smoothOfRelativeDimension n S).smooth
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
