@@ -128,10 +128,10 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 variable (e e' : A ≃ₗc[R] B)
 
 @[simp, norm_cast]
-theorem coe_ofClass : ⇑(ofClass e) = e :=
+theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
   rfl
 
-@[deprecated (since := "2026-09-08")] alias coe_coe := coe_ofClass
+@[deprecated (since := "2026-09-09")] alias coe_coe := coe_coalgHomOfClass
 
 @[nolint synTaut, deprecated "Now a syntactic tautology" (since := "2026-04-12")]
 theorem toLinearEquiv_eq_coe (f : A ≃ₗc[R] B) : f.toLinearEquiv = f :=
@@ -141,17 +141,13 @@ theorem toLinearEquiv_eq_coe (f : A ≃ₗc[R] B) : f.toLinearEquiv = f :=
 theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
   rfl
 
-@[deprecated (since := "2026-09-08")] alias toCoalgHom_eq_coe := toCoalgHom_eq_ofClass
+@[deprecated (since := "2026-09-09")] alias toCoalgHom_eq_coe := toCoalgHom_eq_ofClass
 
 @[simp]
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
-@[simp]
-theorem coe_coalgHomOfClass : ⇑(ofClass e) = e :=
-  rfl
-
-@[deprecated (since := "2026-09-08")] alias coe_toCoalgHom := coe_coalgHomOfClass
+@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
 
 theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
   rfl
