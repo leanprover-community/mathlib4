@@ -401,6 +401,16 @@ theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLow
 
 @[deprecated (since := "2026-07-30")] alias det_of_lowerTriangular := det_of_isLowerTriangular
 
+theorem IsUpperTriangular.det_ne_zero [LinearOrder m] [Nontrivial R] [NoZeroDivisors R]
+    (hM : M.IsUpperTriangular) (hd : ∀ i, M.diag i ≠ 0) : M.det ≠ 0 := by
+  rw [det_of_isUpperTriangular hM]
+  exact prod_ne_zero_iff.mpr fun i _ ↦ hd i
+
+theorem IsLowerTriangular.det_ne_zero [LinearOrder m] [Nontrivial R] [NoZeroDivisors R]
+    (hM : M.IsLowerTriangular) (hd : ∀ i, M.diag i ≠ 0) : M.det ≠ 0 := by
+  rw [det_of_isLowerTriangular M hM]
+  exact prod_ne_zero_iff.mpr fun i _ ↦ hd i
+
 open Polynomial
 
 theorem matrixOfPolynomials_isUpperTriangular {R} [Semiring R] {n : ℕ} (p : Fin n → R[X])
