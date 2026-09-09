@@ -60,7 +60,7 @@ theorem factorization_pow {x : α} {n : ℕ} : factorization (x ^ n) = n • fac
 
 theorem associated_of_factorization_eq (a b : α) (ha : a ≠ 0) (hb : b ≠ 0)
     (h : factorization a = factorization b) : Associated a b := by
-  simp_rw [factorization, AddEquiv.apply_eq_iff_eq] at h
+  simp_rw [factorization, Multiset.toFinsupp_inj] at h
   rwa [associated_iff_normalizedFactors_eq_normalizedFactors ha hb]
 
 end Finsupp

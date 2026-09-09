@@ -156,8 +156,10 @@ theorem toFinsupp_support (s : Multiset α) : s.toFinsupp.support = s.toFinset :
 @[simp]
 theorem toFinsupp_apply (s : Multiset α) (a : α) : toFinsupp s a = s.count a := rfl
 
+@[simp]
 theorem toFinsupp_zero : toFinsupp (0 : Multiset α) = 0 := _root_.map_zero toFinsuppAddEquiv
 
+@[simp]
 theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + toFinsupp t :=
   _root_.map_add toFinsuppAddEquiv s t
 
@@ -172,6 +174,14 @@ theorem toFinsupp_toMultiset (s : Multiset α) : Finsupp.toMultiset (toFinsupp s
 theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
     toFinsupp s = f ↔ s = Finsupp.toMultiset f :=
   toFinsuppAddEquiv.eq_symm_apply.symm
+
+@[simp]
+theorem toFinsupp_inj {s t : Multiset α} : s.toFinsupp = t.toFinsupp ↔ s = t := by
+  simp [toFinsupp_eq_iff]
+
+@[simp]
+theorem toFinsupp_eq_zero_iff {s : Multiset α} : s.toFinsupp = 0 ↔ s = 0 := by
+  simp [toFinsupp_eq_iff]
 
 theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext
