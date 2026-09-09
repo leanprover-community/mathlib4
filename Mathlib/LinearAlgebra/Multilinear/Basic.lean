@@ -1026,8 +1026,8 @@ section
 
 variable [Semiring R₁] [Semiring R₂] [CommSemiring R₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₃]
-variable [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)] [Module R₃ N₃]
+variable [∀ i, AddCommMonoid (M₁ i)] [Π i, AddCommMonoid (M₂ i)] [AddCommMonoid N₃]
+variable [∀ i, Module R₁ (M₁ i)] [Π i, Module R₂ (M₂ i)] [Module R₃ N₃]
 
 /-- Given a predicate `P`, one may associate to a multilinear map `f` a multilinear map
 from the elements satisfying `P` to the multilinear maps on elements not satisfying `P`.
