@@ -760,3 +760,19 @@ theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
   set_option exponentiation.threshold 20 in
     norm_num1 -- TODO: this should warn, but the warning is discarded
   simp only [add_sub_cancel_left]
+
+/-!
+### Arithmetic provided by simp's default simprocs
+
+`norm_num` runs simp's default simprocs, so it can do arithmetic in types whose arithmetic
+is implemented by simprocs rather than by `norm_num` extensions or simp lemmas.
+-/
+
+example : (2 : Fin 7) + 6 = 1 := by norm_num
+example : (3 : Fin 7) * 5 = 1 := by norm_num
+example : (2 : Fin 7) < 5 := by norm_num
+example : (⟨3, by omega⟩ : Fin 7) = 3 := by norm_num
+example : (5 : UInt8) + 3 = 8 := by norm_num
+example : (200 : UInt8) + 100 = 44 := by norm_num
+example : (5 : Int8) * 3 = 15 := by norm_num
+example : (0xff : BitVec 8) &&& 0x0f = 0x0f := by norm_num
