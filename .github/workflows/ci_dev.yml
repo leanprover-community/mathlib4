@@ -395,9 +395,9 @@ jobs:
           cd pr-branch
           cat > /tmp/pair.sh <<'INNER'
           set -uo pipefail
-          ( s=$(date +%s); lake --iofail test > /tmp/c_test.log 2>&1;             echo "SPAN c_test $s $(date +%s) rc=$?" > /tmp/c_test.span ) &
+          ( s=$(date +%s); lake --iofail test > /tmp/c_test.log 2>&1; rc=$?; e=$(date +%s); echo "SPAN c_test $s $e rc=$rc" > /tmp/c_test.span ) &
           a=$!
-          ( s=$(date +%s); env LEAN_ABORT_ON_PANIC=1 lake lint -- --trace > /tmp/c_lint.log 2>&1;             echo "SPAN c_lint $s $(date +%s) rc=$?" > /tmp/c_lint.span ) &
+          ( s=$(date +%s); env LEAN_ABORT_ON_PANIC=1 lake lint -- --trace > /tmp/c_lint.log 2>&1; rc=$?; e=$(date +%s); echo "SPAN c_lint $s $e rc=$rc" > /tmp/c_lint.span ) &
           b=$!
           wait $a; wait $b
           INNER
