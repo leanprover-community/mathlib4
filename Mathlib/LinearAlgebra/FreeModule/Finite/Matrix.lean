@@ -21,7 +21,7 @@ We provide some instances for finite and free modules involving matrices.
   is finite.
 -/
 
-@[expose] public section
+public section
 
 
 universe u u' v w

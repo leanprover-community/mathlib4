@@ -96,6 +96,9 @@ namespace OplaxFunctor
 
 attribute [to_app (attr := reassoc (attr := simp))]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [simp, to_app (attr := reassoc)] map₂_leftUnitor map₂_rightUnitor
 
 section

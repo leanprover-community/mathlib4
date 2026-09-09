@@ -5,10 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -103,6 +102,7 @@ noncomputable def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[�
 theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
   ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
@@ -121,7 +121,7 @@ theorem union_zero :
 /-- The `characterSpace 𝕜 A` along with `0` is always a closed set in `WeakDual 𝕜 A`. -/
 theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A ∪ {0}) := by
-  simp only [union_zero, Set.setOf_forall]
+  simp only [union_zero, Set.ofPred_forall]
   exact
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
@@ -171,7 +171,7 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
 `WeakDual 𝕜 A`. -/
 protected theorem isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A) := by
-  rw [eq_set_map_one_map_mul, Set.setOf_and]
+  rw [eq_set_map_one_map_mul, Set.ofPred_and]
   refine IsClosed.inter (isClosed_eq (eval_continuous _) continuous_const) ?_
   simpa only [(union_zero 𝕜 A).symm] using union_zero_isClosed _ _
 

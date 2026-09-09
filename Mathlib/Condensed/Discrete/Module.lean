@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.Condensed.Discrete.LocallyConstant
 public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Module
@@ -41,7 +40,7 @@ constant maps.
 @[simps]
 def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat R) where
   obj X := {
-    obj := fun ⟨S⟩ ↦ ModuleCat.of R (LocallyConstant S X)
+    obj := fun ⟨S⟩ ↦ ↧(LocallyConstant S X)
     map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom.hom) }
   map f := { app := fun S ↦ ModuleCat.ofHom (mapₗ R f.hom) }
 
@@ -73,18 +72,18 @@ abbrev functorToPresheaves : ModuleCat.{u + 1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ Mod
 /-- `functorToPresheaves` as a functor to condensed modules. -/
 abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u + 1, u} R
-    (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+    (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u + 1} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) where
+    M ≅ ↧(LocallyConstant (CompHaus.of PUnit.{u + 1}) M) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) :=
+      ↧(LocallyConstant (CompHaus.of PUnit.{u + 1}) M) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -154,13 +153,13 @@ instance : (functor R).Full := (fullyFaithfulFunctor R).full
 instance : (discrete (ModuleCat R)).Faithful :=
   Functor.Faithful.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Faithful :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Faithful :=
   inferInstanceAs (discrete (ModuleCat R)).Faithful
 
 instance : (discrete (ModuleCat R)).Full :=
   Functor.Full.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Full :=
+instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat.{u + 1} R)).Full :=
   inferInstanceAs (discrete (ModuleCat R)).Full
 
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
@@ -188,14 +187,14 @@ abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) where
+    M ≅ ↧(LocallyConstant (LightProfinite.of PUnit.{u + 1}) M) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) :=
+      ↧(LocallyConstant (LightProfinite.of PUnit.{u + 1}) M) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 -- Not stating this explicitly causes timeouts below.

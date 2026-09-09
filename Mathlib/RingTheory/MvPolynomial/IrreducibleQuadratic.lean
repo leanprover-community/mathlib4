@@ -116,7 +116,7 @@ lemma irreducible_of_disjoint_support [IsDomain R]
     obtain ⟨m, b, hm, hb, rfl⟩ := (dvd_monomial_iff_exists hfd).mp hpφ
     obtain ⟨d₂, hd₂, H⟩ := nontrivial.exists_ne d
     obtain rfl : m = 0 := by
-      have aux : coeff d₂ ψ ≠ 0 := by simpa [hdψ, H.symm] using hd₂
+      have aux : ψ.coeff d₂ ≠ 0 := by simpa [hdψ, H.symm] using hd₂
       simp only [hq, coeff_monomial_mul', ne_eq, ite_eq_right_iff, Classical.not_imp] at aux
       simpa using disjoint hd₂ hd H (Finsupp.support_mono aux.1)
         ((Finsupp.support_mono hm).trans (d.support.erase_subset i))
@@ -128,8 +128,6 @@ end
 
 section
 /-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
-
-open Polynomial
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
@@ -168,7 +166,7 @@ theorem coeff_sumSMulX (i : n) :
   rw [Finset.sum_eq_single i _ (by simp)]
   · simp
   intro j hj hji
-  rw [coeff_smul, coeff_X, if_neg]
+  rw [coeff_smul, coeff_X, ite_eq_right]
   · simp
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 
@@ -202,6 +200,7 @@ noncomputable def sumSMulXSMulY :
 
 variable (c : n →₀ R)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_sumSMulXSMulY [IsDomain R]
     (hc : c.support.Nontrivial)
     (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
@@ -210,16 +209,15 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   let ι : n ↪ ((n ⊕ n) →₀ ℕ) :=
     ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
      fun i j ↦ by simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
-  -- unfortunate defeq abuse... we should have an `.embDomain`-like constructor for MvPolys
-  have aux : sumSMulXSMulY c = c.embDomain ι := by
+  have aux : sumSMulXSMulY c = .ofCoeff (c.embDomain ι) := by
     rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]
-    simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul,
+    simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul_monomial,
       Finsupp.linearCombination_apply, smul_monomial, ι]
     rfl
-  have hcoeff (i : n) : coeff (ι i) (sumSMulXSMulY c) = c i := by
-    simp [aux, coeff, Finsupp.embDomain_apply]
+  have hcoeff (i : n) : (sumSMulXSMulY c).coeff (ι i) = c i := by
+    simp [aux, Finsupp.embDomain_apply]
   have hsupp : (sumSMulXSMulY c).support = c.support.map ι := by
-    rw [aux, support, Finsupp.support_embDomain]
+    simp [aux, support, Finsupp.support_embDomain]
   obtain ⟨a, ha⟩ := hc.nonempty
   apply irreducible_of_disjoint_support (d := ι a) (i := .inl a)
   · rwa [hsupp, Finset.map_nontrivial]

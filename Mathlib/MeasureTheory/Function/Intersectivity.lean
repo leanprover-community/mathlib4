@@ -56,7 +56,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [pos_iff_ne_zero]
     rintro ⟨x, hx⟩ hu
     refine hx.2 (mem_iUnion.2 ⟨u, ?_⟩)
-    rw [mem_setOf, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
+    rw [mem_ofPred, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
     · simp
     · rwa [indicator_ae_eq_zero, Function.support_one, inter_univ]
   -- Define `f n` to be the average of the first `n + 1` indicators of the `s k`.

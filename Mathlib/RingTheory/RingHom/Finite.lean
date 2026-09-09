@@ -63,10 +63,10 @@ variable [Algebra R R'] [Algebra S S']
 /-- If `S` is a finite `R`-algebra, then `S' = M⁻¹S` is a finite `R' = M⁻¹R`-algebra. -/
 theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @RingHom.Finite := by
   introv R hf
-  letI := f.toAlgebra
-  letI := ((algebraMap S S').comp f).toAlgebra
+  let := f.toAlgebra
+  let := ((algebraMap S S').comp f).toAlgebra
   let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
-  letI := f'.toAlgebra
+  let := f'.toAlgebra
   have : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq'
     (IsLocalization.map_comp M.le_comap_map).symm
   have : IsScalarTower R S S' := IsScalarTower.of_algebraMap_eq' rfl
@@ -88,12 +88,12 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   rw [RingHom.ofLocalizationSpan_iff_finite]
   introv R hs H
   -- We first setup the instances
-  letI := f.toAlgebra
-  letI := fun r : s => (Localization.awayMap f r).toAlgebra
+  let := f.toAlgebra
+  let := fun r : s => (Localization.awayMap f r).toAlgebra
   have (r : s) : IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S))
       (Localization.Away (f r)) := by
     rw [Submonoid.map_powers]; exact Localization.isLocalization
-  haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
+  have : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
     fun r => IsScalarTower.of_algebraMap_eq'
       (IsLocalization.map_comp (Submonoid.powers (r : R)).le_comap_map).symm
   -- By the hypothesis, we may find a finite generating set for each `Sᵣ`. This set can then be

@@ -95,8 +95,8 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
   · intro f' g _ h_measMg_f' _ h_ind_f' h_ind_g'
     have h_measM_f' : Measurable f' := h_measMg_f'.mono hMg le_rfl
     simp_rw [Pi.add_apply, left_distrib]
-    rw [lintegral_add_left h_measM_f', lintegral_add_left (h_measM_f.mul h_measM_f'), left_distrib,
-      h_ind_f', h_ind_g']
+    rw [lintegral_add_left h_measM_f',
+      lintegral_add_left (h_measM_f.fun_mul h_measM_f'), left_distrib, h_ind_f', h_ind_g']
   · intro f' h_meas_f' h_mono_f' h_ind_f'
     have h_measM_f' : ∀ n, Measurable (f' n) := fun n => (h_meas_f' n).mono hMg le_rfl
     simp_rw [mul_iSup]
@@ -482,5 +482,38 @@ lemma iIndepFun.integral_fun_prod_eq_prod_integral
     (hX : iIndepFun X μ) (mX : ∀ i, AEStronglyMeasurable (X i) μ) :
     ∫ ω, ∏ i, X i ω ∂μ = ∏ i, μ[X i] :=
   hX.integral_fun_prod_comp (fun i ↦ (mX i).aemeasurable) (fun _ ↦ aestronglyMeasurable_id)
+
+section SetIntegral
+
+variable {Ω 𝓧 : Type*} {m mΩ : MeasurableSpace Ω} {P : Measure Ω} [m𝓧 : MeasurableSpace 𝓧]
+  {X : Ω → 𝓧} {A : Set Ω}
+
+/-- If a random variable `X` is independent of a sigma-algebra `m` and `A` is a set in `m`
+then `∫ ω in A, f (X ω) ∂P = P.real A • ∫ ω, f (X ω) ∂P` for a measurable function `f : 𝓧 → E`. -/
+lemma Indep.setIntegral_eq_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (hm : m ≤ mΩ) {f : 𝓧 → E} (hA1 : Indep m (m𝓧.comap X) P)
+    (hX : AEMeasurable X P) (hA2 : MeasurableSet[m] A)
+    (hf : AEStronglyMeasurable f (P.map X)) :
+    ∫ ω in A, f (X ω) ∂P = P.real A • ∫ ω, f (X ω) ∂P :=
+  calc ∫ ω in A, f (X ω) ∂P
+    = ∫ ω, id (A.indicator (1 : Ω → ℝ) ω) • f (X ω) ∂P := by
+        rw [← integral_indicator (hm A hA2)]
+        congr with ω
+        by_cases hω : ω ∈ A <;> simp [hω]
+  _ = P.real A • ∫ ω, f (X ω) ∂P := by
+    rw [IndepFun.integral_fun_comp_smul_comp _ _ hX (by fun_prop) hf]
+    · simp [hm A hA2]
+    · exact hA1.indicator_indepFun 1 hA2
+    · exact (aemeasurable_indicator_const_iff 1).2 (hm A hA2).nullMeasurableSet
+
+/-- If a random variable `X` is independent of a sigma-algebra `m` and `A` is a set in `m`
+then `∫ ω in A, f (X ω) ∂P = P.real A * ∫ ω, f (X ω) ∂P` for a measurable function `f : 𝓧 → ℝ`. -/
+lemma Indep.setIntegral_eq_mul (hm : m ≤ mΩ) {f : 𝓧 → ℝ} (hA1 : Indep m (m𝓧.comap X) P)
+    (hX : AEMeasurable X P) (hA : MeasurableSet[m] A)
+    (hf : AEStronglyMeasurable f (P.map X)) :
+    ∫ ω in A, f (X ω) ∂P = P.real A * ∫ ω, f (X ω) ∂P :=
+  hA1.setIntegral_eq_smul hm hX hA hf
+
+end SetIntegral
 
 end ProbabilityTheory

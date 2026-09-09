@@ -182,8 +182,6 @@ protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
-@[deprecated (since := "2026-02-05")] alias mk_prod_swap_eq := eq_swap
-
 theorem congr_right {a b c : α} : s(a, b) = s(a, c) ↔ b = c := by
   simp +contextual
 
@@ -268,8 +266,6 @@ theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) 
 @[simp]
 theorem map_mk (f : α → β) (a b : α) : map f s(a, b) = s(f a, f b) := rfl
 
-@[deprecated (since := "2026-02-05")] alias map_pair_eq := map_mk
-
 theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) := by
   intro z z'
   refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
@@ -298,6 +294,7 @@ lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂
   conv_rhs => rw [← lift_comp_map, comp_apply]
 
 section Membership
+variable {x : α}
 
 /-! ### Membership and set coercion -/
 
@@ -324,7 +321,7 @@ theorem mem_iff' {a b c : α} : Sym2.Mem a s(b, c) ↔ a = b ∨ a = c :=
 instance : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
   coe_injective z z' h := by
-    simp only [Set.ext_iff, Set.mem_setOf_eq] at h
+    simp only [Set.ext_iff, Set.mem_ofPred_eq] at h
     obtain ⟨x, y⟩ := z
     obtain ⟨x', y'⟩ := z'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
@@ -360,6 +357,9 @@ theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
+@[simp] lemma fst_out_mk_self : (Quot.out s(x, x)).1 = x := by simpa using out_fst_mem s(x, x)
+@[simp] lemma snd_out_mk_self : (Quot.out s(x, x)).2 = x := by simpa using out_snd_mem s(x, x)
+
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
   simp
 
@@ -367,7 +367,7 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧
 
 theorem coe_map (f : α → β) (z : Sym2 α) : z.map f = f '' z := by
   cases z
-  simp [Set.image_pair]
+  simp
 
 /-- Given an element of the unordered pair, give the other element using `Classical.choose`.
 See also `Mem.other'` for the computable version.
@@ -512,8 +512,6 @@ def IsDiag : Sym2 α → Prop :=
 theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
   Iff.rfl
 
-@[deprecated (since := "2026-02-05")] alias isDiag_iff_proj_eq := mk_isDiag_iff
-
 protected lemma IsDiag.map : z.IsDiag → (z.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) z
 
 lemma isDiag_map (hf : Injective f) : (z.map f).IsDiag ↔ z.IsDiag :=
@@ -553,17 +551,13 @@ def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 
 @[simp] lemma mem_diagSet : z ∈ diagSet ↔ z.IsDiag := .rfl
 
-@[deprecated mem_diagSet (since := "2025-12-10")]
-theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rfl
-
 @[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
   ext ⟨a, b⟩; simp [diag, eq_comm]
 
-theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
+theorem diagSet_eq_setOfPred_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
-@[deprecated Set.compl_setOf (since := "2025-12-10")]
-theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
-  congrArg _ diagSet_eq_setOf_isDiag
+@[deprecated (since := "2026-07-09")]
+alias diagSet_eq_setOf_isDiag := diagSet_eq_setOfPred_isDiag
 
 theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ := by ext; simp
 
@@ -591,13 +585,11 @@ variable {r r₁ r₂ : α → α → Prop}
 of elements that are related.
 -/
 def fromRel (sym : Std.Symm r) : Set (Sym2 α) :=
-  setOf <| lift ⟨r, fun _ _ ↦ propext ⟨symm, symm⟩⟩
+  Set.ofPred <| lift ⟨r, fun _ _ ↦ propext ⟨symm, symm⟩⟩
 
 @[simp]
 theorem fromRel_prop {sym : Std.Symm r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
-
-@[deprecated (since := "2026-02-05")] alias fromRel_proj_prop := fromRel_prop
 
 theorem fromRel_mono_iff (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
     fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
@@ -648,19 +640,9 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) in
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Std.Symm r) :
     fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
 
-@[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
-theorem reflexive_iff_diagSet_subset_fromRel (sym : Std.Symm r) :
-    Std.Refl r ↔ diagSet ⊆ fromRel sym := by simp
-
-@[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
-theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Std.Symm r) :
-    Std.Irrefl r ↔ fromRel sym ⊆ diagSetᶜ := by simp
-
 theorem fromRel_irrefl {sym : Std.Symm r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
   mp := by intro ⟨h⟩; apply Sym2.ind; aesop
   mpr h := ⟨fun _ hr ↦ h (fromRel_prop.mpr hr) rfl⟩
-
-@[deprecated (since := "2026-02-12")] alias fromRel_irreflexive := fromRel_irrefl
 
 theorem mem_fromRel_irrefl_other_ne {sym : Std.Symm r} (irrefl : Std.Irrefl r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
@@ -849,7 +831,6 @@ section SymEquiv
 attribute [local instance] List.Vector.Perm.isSetoid
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private def fromVector : List.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 
@@ -1032,8 +1013,6 @@ For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements f
 def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
-
-@[deprecated (since := "2026-02-05")] alias mk'_mem_sym2_iff := mk_mem_sym2_iff
 
 lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn

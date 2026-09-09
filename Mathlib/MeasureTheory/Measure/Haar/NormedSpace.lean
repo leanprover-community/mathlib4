@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!

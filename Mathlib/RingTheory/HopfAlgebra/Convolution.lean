@@ -23,6 +23,9 @@ f * g = f g
          |
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
+
+It also provides `HopfAlgebra.ofSurjective`, which transfers the Hopf algebra axioms along a
+surjective bialgebra homomorphism intertwining the antipodes.
 -/
 
 public section
@@ -95,6 +98,40 @@ variable [Semiring C] [HopfAlgebra R C]
 
 end LinearMap
 
+namespace HopfAlgebra
+variable [Semiring A] [HopfAlgebra R A]
+
+section
+variable {f : A →ₗ[R] A}
+
+/-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `f`
+with `f * id = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_convMul_id_eq_one (h : toConv f * toConv LinearMap.id = 1) :
+    f = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h LinearMap.id_mul_antipode)
+
+/-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `f`
+with `id * f = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_id_convMul_eq_one (h : toConv LinearMap.id * toConv f = 1) :
+    f = antipode R :=
+  toConv_injective (left_inv_eq_right_inv LinearMap.antipode_mul_id h).symm
+
+end
+
+variable {B : Type*} [Semiring B] [HopfAlgebraStruct R B]
+
+/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism
+intertwining the antipodes. -/
+abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
+    (map_antipode : ∀ a, f (antipode R a) = antipode R (f a)) : HopfAlgebra R B := by
+  refine .ofConvInverse (antipode R) ?_ ?_ <;>
+    refine f.toCoalgHom.convCompLeft_injective hf ?_ <;>
+    rw [map_mul, f.convCompLeft_eq_convCompRight map_antipode,
+      f.convCompLeft_eq_convCompRight (g' := .id) fun _ ↦ rfl, ← map_mul] <;>
+    simp only [LinearMap.antipode_mul_id, LinearMap.id_mul_antipode, map_one]
+
+end HopfAlgebra
+
 namespace LinearMap
 variable [Semiring C] [HopfAlgebra R C]
 
@@ -115,7 +152,7 @@ lemma comul_right_inv : toConv δ * toConv 𝑭 = 1 := by
     _ = δ ∘ₗ (toConv id * toConv 𝑺).ofConv := by simp [LinearMap.convMul_def]
     _ = δ ∘ₗ (1 : WithConv (C →ₗ[R] C)).ofConv := by rw [id_mul_antipode]
     _ = η ∘ₗ ε := by
-        simp [LinearMap.convOne_def, show (δ ∘ₗ η : R →ₗ[R] C ⊗[R] C) = η from by ext; simp; rfl,
+        simp [LinearMap.convOne_def, show (δ ∘ₗ η : R →ₗ[R] C ⊗[R] C) = η by ext; simp; rfl,
           ← comp_assoc]
 
 end LinearMap
@@ -157,21 +194,3 @@ lemma counitAlgHom_comp_antipodeAlgHom :
   AlgHom.toLinearMap_injective <| by simp
 
 end AlgHom
-
-namespace HopfAlgebra
-
-open LinearMap
-
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [HopfAlgebra R A] [HopfAlgebraStruct R B]
-
-/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism intertwining
-the antipodes. -/
-noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
-    (hS : antipode R ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ antipode R) : HopfAlgebra R B := by
-  refine .ofConvInverse (antipode R) ?_ ?_ <;>
-    refine f.toCoalgHom.convCompLeft_injective hf ?_ <;>
-    rw [map_mul, f.convCompLeft_eq_convCompRight hS, f.convCompLeft_toConv_id, ← map_mul] <;>
-    simp only [antipode_mul_id, id_mul_antipode, map_one]
-
-end HopfAlgebra

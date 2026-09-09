@@ -50,11 +50,7 @@ noncomputable instance : HopfAlgebraStruct R c.Quotient where
 @[simp]
 lemma antipode_mkₐ (a : A) : antipode R (c.mkₐ R a) = c.mkₐ R (antipode R a) := rfl
 
-lemma antipode_comp_mkₐ :
-    (antipode R).comp (c.mkₐ R).toLinearMap = (c.mkₐ R).toLinearMap ∘ₗ antipode R := by
-  ext a; exact antipode_mkₐ c a
-
 noncomputable instance : HopfAlgebra R c.Quotient :=
-  .ofSurjective (Bialgebra.Quotient.mkBialgHom c) (c.mkₐ_surjective (α := R)) (antipode_comp_mkₐ c)
+  .ofSurjective (Bialgebra.Quotient.mkBialgHom c) (c.mkₐ_surjective (α := R)) fun _ ↦ rfl
 
 end HopfAlgebra.Quotient

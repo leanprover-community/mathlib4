@@ -149,7 +149,7 @@ variable (C : Type*) [Category* C]
 
 /-- Prove that a category is connected by supplying an explicit initial object. -/
 lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
-  letI : Nonempty C := ⟨x⟩
+  let : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]
@@ -159,7 +159,7 @@ lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C 
 
 /-- Prove that a category is connected by supplying an explicit terminal object. -/
 lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected C := by
-  letI : Nonempty C := ⟨x⟩
+  let : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]

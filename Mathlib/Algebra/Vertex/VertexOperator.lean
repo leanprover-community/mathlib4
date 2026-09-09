@@ -10,6 +10,7 @@ public import Mathlib.Data.Int.Interval
 
 /-!
 # Vertex operators
+
 In this file we introduce vertex operators as linear maps to Laurent series.
 
 ## Definitions

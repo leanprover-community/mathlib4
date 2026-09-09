@@ -119,6 +119,7 @@ variable (F : V ⥤ W) [F.LaxMonoidal]
 
 open Functor.LaxMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : EnrichedCategory W (TransportEnrichment F C) where
   Hom := fun X Y : C => F.obj (X ⟶[V] Y)
   id := fun X : C => ε F ≫ F.map (eId V X)
@@ -167,7 +168,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
 attribute [local simp] types_tensorObj_def in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom X Y := 𝒞.Hom X Y
@@ -176,6 +177,7 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
+@[implicit_reducible]
 def enrichedCategoryTypeEquivCategory (C : Type u₁) :
     EnrichedCategory (Type v) C ≃ Category.{v} C where
   toFun _ := categoryOfEnrichedCategoryType C
@@ -210,10 +212,12 @@ def ForgetEnrichment (W : Type v) [Category.{w} W] [MonoidalCategory W] (C : Typ
 variable (W)
 
 /-- Typecheck an object of `C` as an object of `ForgetEnrichment W C`. -/
+@[implicit_reducible]
 def ForgetEnrichment.of (X : C) : ForgetEnrichment W C :=
   X
 
 /-- Typecheck an object of `ForgetEnrichment W C` as an object of `C`. -/
+@[implicit_reducible]
 def ForgetEnrichment.to (X : ForgetEnrichment W C) : C :=
   X
 
@@ -337,11 +341,10 @@ variable {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
   {D : Type u₂} [EnrichedCategory W D]
   {E : Type u₃} [EnrichedCategory W E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An enriched functor induces an honest functor of the underlying categories,
 by mapping the `(𝟙_ W)`-shaped morphisms.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def forget (F : EnrichedFunctor W C D) :
     ForgetEnrichment W C ⥤ ForgetEnrichment W D where
   obj X := ForgetEnrichment.of W (F.obj (ForgetEnrichment.to W X))
@@ -349,7 +352,6 @@ def forget (F : EnrichedFunctor W C D) :
     ForgetEnrichment.homOf W
       (ForgetEnrichment.homTo W f ≫ F.map (ForgetEnrichment.to W _) (ForgetEnrichment.to W _))
   map_comp f g := by
-    dsimp
     apply_fun ForgetEnrichment.homTo W
     · simp only [Iso.cancel_iso_inv_left, Category.assoc, ← tensorHom_comp_tensorHom,
         ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, ForgetEnrichment.homTo_comp]
@@ -478,6 +480,7 @@ variable [BraidedCategory V]
 
 open BraidedCategory
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A presheaf isomorphic to the Yoneda embedding of
 the `V`-object of natural transformations from `F` to `G`.

@@ -101,25 +101,18 @@ instance : CommMonoid (WithConv <| C →ₐ[R] A) := fast_instance%
 end AlgHom
 
 namespace BialgHom
-variable [Semiring C] [Bialgebra R C]
 
-section Semiring
-variable [Semiring A] [Bialgebra R A]
+section AlgebraCoalgebra
+variable [Semiring A] [Algebra R A] [Coalgebra R A] [Semiring C] [Algebra R C] [Coalgebra R C]
+  (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
 
-/-- Pre- and post-composing the convolution by `f` agree on linear maps it intertwines. -/
-lemma convCompLeft_eq_convCompRight (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
-    (hg : g ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ g') :
+lemma convCompLeft_eq_convCompRight (h : Function.Semiconj f g' g) :
     f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
-  WithConv.ext hg
+  WithConv.ext <| LinearMap.ext fun a ↦ by simpa [BialgHom.toCoalgHom_apply] using (h a).symm
 
-/-- Pre- and post-composing the convolution by `f` agree on the identity. -/
-lemma convCompLeft_toConv_id (f : A →ₐc[R] C) :
-    f.toCoalgHom.convCompLeft (toConv .id) = f.toAlgHom.convCompRight (toConv .id) :=
-  f.convCompLeft_eq_convCompRight (g' := .id) (by simp)
+end AlgebraCoalgebra
 
-end Semiring
-
-variable [CommSemiring A] [Bialgebra R A]
+variable [CommSemiring A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
 
 instance : One (WithConv <| C →ₐc[R] A) where
   one := toConv <| (unitBialgHom R A).comp <| counitBialgHom R C
@@ -131,7 +124,7 @@ lemma convOne_apply (c : C) : (1 : WithConv <| C →ₐc[R] A) c = algebraMap R 
 
 @[simp]
 lemma toLinearMap_convOne :
-    toConv (SemilinearMapClass.semilinearMap (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
+    toConv (LinearMap.ofClass (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
 
 @[simp] lemma toAlgHom_convOne : toConv (1 : WithConv <| C →ₐc[R] A).ofConv.toAlgHom = 1 := rfl
 
@@ -149,7 +142,7 @@ lemma convMul_def (f g : WithConv <| C →ₐc[R] A) :
 
 private lemma convPow_succ (f : WithConv <| C →ₐc[R] A) (n : ℕ) : f ^ (n + 1) = (f ^ n) * f := rfl
 
--- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- TODO: Make simp once `LinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toLinearMap = toConv f.ofConv.toLinearMap * toConv g.ofConv.toLinearMap :=
@@ -160,7 +153,7 @@ lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toAlgHom = toConv f.ofConv.toAlgHom * toConv g.ofConv.toAlgHom :=
   rfl
 
--- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- TODO: Make simp once `LinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n

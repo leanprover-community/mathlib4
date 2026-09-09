@@ -25,7 +25,7 @@ theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R 
 
 theorem Set.star_centralizer : star s.centralizer = (star s).centralizer := by
   simp_rw [centralizer, ← commute_iff_eq]
-  conv_lhs => simp only [← star_preimage, preimage_setOf_eq, ← commute_star_comm]
+  conv_lhs => simp only [← star_preimage, preimage_ofPred_eq, ← commute_star_comm]
   conv_rhs => simp only [← image_star, forall_mem_image]
 
 theorem Set.union_star_self_comm (hcomm : ∀ x ∈ s, ∀ y ∈ s, y * x = x * y)
