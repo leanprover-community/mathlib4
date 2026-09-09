@@ -460,7 +460,7 @@ protected def range (φ : A →ₙₐ[R] B) : NonUnitalSubalgebra R B where
 theorem mem_range (φ : A →ₙₐ[R] B) {y : B} : y ∈ φ.range ↔ ∃ x : A, φ x = y :=
   NonUnitalRingHom.mem_srange
 
-theorem mem_range_self (φ : A →ₙₐ[R] B) (x : A) : φ x ∈ (φ.range) :=
+theorem mem_range_self (φ : A →ₙₐ[R] B) (x : A) : φ x ∈ φ.range :=
   (NonUnitalAlgHom.mem_range φ).2 ⟨x, rfl⟩
 
 @[simp]
@@ -502,7 +502,7 @@ theorem injective_codRestrict
 
 This is the bundled version of `Set.rangeFactorization`. -/
 abbrev rangeRestrict (f : A →ₙₐ[R] B) :
-    A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
+    A →ₙₐ[R] f.range :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/
