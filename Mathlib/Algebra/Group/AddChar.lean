@@ -94,7 +94,7 @@ variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ
 /-- Define coercion to a function. -/
 instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
-  coe_injective' φ ψ h := by cases φ; cases ψ; congr
+  coe_injective φ ψ h := by cases φ; cases ψ; congr
 
 initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
 
@@ -338,7 +338,6 @@ lemma sum_eq_ite (ψ : AddChar A R) [Decidable (ψ = 0)] :
 variable [CharZero R]
 
 lemma sum_eq_zero_iff_ne_zero : ∑ x, ψ x = 0 ↔ ψ ≠ 0 := by
-  classical
   rw [sum_eq_ite, Ne.ite_eq_right_iff]; exact Nat.cast_ne_zero.2 Fintype.card_ne_zero
 
 lemma sum_ne_zero_iff_eq_zero : ∑ x, ψ x ≠ 0 ↔ ψ = 0 := sum_eq_zero_iff_ne_zero.not_left

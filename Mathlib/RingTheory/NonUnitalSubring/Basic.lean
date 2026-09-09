@@ -337,7 +337,7 @@ end Order
 /-! ## Center of a ring -/
 
 section Center
-variable {R : Type u}
+variable {R : Type u} {S : Type v}
 
 section NonUnitalNonAssocRing
 variable (R) [NonUnitalNonAssocRing R]
@@ -375,7 +375,7 @@ is isomorphic to the center of its opposite. -/
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
-variable [NonUnitalRing R]
+variable [NonUnitalRing R] [NonUnitalRing S]
 
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
@@ -386,6 +386,19 @@ theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subs
 
 instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
   decidable_of_iff' _ mem_center_iff
+
+theorem map_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
+    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    map f (center R) = center S :=
+  SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
 theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
@@ -551,7 +564,7 @@ lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalRing R] (s : Set 
 /-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
 semiring. -/
 theorem isMulCommutative_closure {R : Type*} [NonUnitalRing R] {s : Set R}
-    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : IsMulCommutative (closure s) :=
+    (hcomm : s.Pairwise Commute) : IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
@@ -561,14 +574,14 @@ open scoped IsMulCommutative in
 ring. -/
 @[deprecated isMulCommutative_closure (since := "2026-03-11")]
 abbrev closureNonUnitalCommRingOfComm {R : Type*} [NonUnitalRing R] {s : Set R}
-    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : NonUnitalCommRing (closure s) :=
+    (hcomm : s.Pairwise Commute) : NonUnitalCommRing (closure s) :=
   have := isMulCommutative_closure hcomm
   inferInstance
 
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalRing R]
     [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set R)) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
@@ -669,6 +682,9 @@ theorem top_prod (s : NonUnitalSubring S) :
 theorem top_prod_top : (⊤ : NonUnitalSubring R).prod (⊤ : NonUnitalSubring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of `NonUnitalSubring`s is isomorphic to their product as rings. -/
 def prodEquiv (s : NonUnitalSubring R) (t : NonUnitalSubring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -693,7 +709,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → NonUnitalSubring R}
 
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists,
     exists_prop]
 
@@ -821,7 +837,7 @@ variable {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S] {s t : No
 monoid are equal. -/
 def nonUnitalSubringCongr (h : s = t) : s ≃+* t :=
   {
-    Equiv.setCongr <| congr_arg _ h with
+    Set.equivOfEq <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 

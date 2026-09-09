@@ -18,17 +18,17 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 public section
 
-open Set Metric CFC CStarAlgebra Unitization
+open Set Metric CStarAlgebra Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
 /-- The star projections in a non-unital C⋆-algebra are exactly the extreme points of
 the nonnegative closed unit ball. -/
-theorem isStarProjection_iff_mem_extremePoints_setOf_nonneg_inter_unitClosedBall
+theorem isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall
     [PartialOrder A] [StarOrderedRing A] {e : A} :
     IsStarProjection e ↔ e ∈ extremePoints ℝ ({x : A | 0 ≤ x} ∩ closedBall 0 1) := by
   simp only [mem_closedBall_zero_iff, mem_extremePoints_iff_left, mem_inter_iff,
-    mem_setOf_eq, and_imp]
+    mem_ofPred_eq, and_imp]
   refine ⟨fun he ↦ ⟨⟨he.nonneg, he.norm_le⟩,
     fun a ha ha1 b hb hb1 ⟨t, s, h0t, h0s, hts, hlin⟩ ↦ ?_⟩, fun ⟨⟨h1, h2⟩, h3⟩ ↦ ?_⟩
   · /- Suppose `e` is a star projection, and `a` and `b` are in the nonnegative closed unit ball
@@ -71,15 +71,17 @@ theorem isStarProjection_iff_mem_extremePoints_setOf_nonneg_inter_unitClosedBall
     closed unit ball. So `2 • e - e * e` is in the nonnegative closed unit ball.
     Then using the extremity of `e`, we get `e * e = e` since `e * e` is obviously in the
     nonnegative closed unit ball, and `e = 2⁻¹ • e * e + 2⁻¹ • (2 • e - e * e)`. -/
-    have := calc
-      0 ≤ (e : A⁺¹) * (2 - e) := by
-        have : (e : A⁺¹) ≤ 1 := norm_le_one_iff_of_nonneg _ (by simpa) |>.mp (by simpa [norm_inr])
-        apply Commute.mul_nonneg (by simpa) (by grw [sub_nonneg, this, one_le_two])
-        simp [commute_iff_eq, mul_sub, sub_mul, mul_two, two_mul]
-      _ = (((2 : ℝ) • e - e * e : A) : A⁺¹) := by simp [mul_sub, two_smul, mul_two]
-    refine ⟨h3 _ (Commute.mul_nonneg h1 h1 rfl) ?_ ((2 : ℝ) • e - e * e) this.of_inr ?_
+    have : 0 ≤ (2 : ℝ) • e - e * e := by
+      have : e * e ≤ e := le_of_inr <| by
+        simpa using mul_self_le_of_nonneg_of_norm_le_one h1.inr (by simpa [norm_inr])
+      simpa [two_smul] using le_add_of_nonneg_of_le h1 this
+    refine ⟨h3 _ (Commute.mul_nonneg h1 h1 rfl) ?_ ((2 : ℝ) • e - e * e) this ?_
       ⟨2⁻¹, 2⁻¹, by simp [smul_sub, ← one_div, smul_smul]⟩, h1.isSelfAdjoint⟩
-    · grw [norm_mul_le, h2, one_mul]
-    · rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _ this, ← sub_nonneg]
+    · grw [norm_mul_le, h2, h2, one_mul]
+    · rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _ this.inr, ← sub_nonneg]
       calc 0 ≤ star (1 - e : A⁺¹) * (1 - e) := star_mul_self_nonneg _
         _ = _ := by simp [LE.le.star_eq, h1, mul_sub, sub_mul, two_smul, sub_sub, add_sub]
+
+@[deprecated (since := "2026-07-09")]
+alias isStarProjection_iff_mem_extremePoints_setOf_nonneg_inter_unitClosedBall :=
+  isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall

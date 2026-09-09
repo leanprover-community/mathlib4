@@ -62,7 +62,14 @@ lemma isSMulRegular_map [SMul R M] [SMul S M] (f : R → S) (smul : ∀ m : M, f
 
 protected alias ⟨IsSMulRegular.of_map, IsSMulRegular.map⟩ := isSMulRegular_map
 
+theorem isAddTorsionFree_iff' [AddMonoid M] : IsAddTorsionFree M ↔ ∀ n ≠ 0, IsSMulRegular M n :=
+  isAddTorsionFree_iff M
+
 namespace IsSMulRegular
+
+theorem nat_of_isAddTorsionFree [AddMonoid M] [IsAddTorsionFree M] {n : ℕ} (h : n ≠ 0) :
+    IsSMulRegular M n :=
+  isAddTorsionFree_iff'.mp ‹_› n h
 
 @[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
     IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
@@ -137,8 +144,7 @@ variable (M)
 @[simp]
 theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
   dsimp only [Function.comp_def] at ab
-  rw [one_smul, one_smul] at ab
-  assumption
+  rwa [one_smul, one_smul] at ab
 
 variable {M}
 
@@ -216,15 +222,18 @@ end CommSemigroup
 
 end IsSMulRegular
 
+/-- If scalar multiplication is left cancellative, every element is regular. -/
+theorem IsSMulRegular.all [SMul R M] [IsLeftCancelSMul R M] (a : R) :
+    IsSMulRegular M a := fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+
 section Group
 
 variable {G : Type*} [Group G]
 
-/-- An element of a group acting on a Type is regular. This relies on the availability
-of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/
-theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
-  intro x y h
-  convert! congr_arg (g⁻¹ • ·) h using 1 <;> simp [← smul_assoc]
+/-- An element of a group acting on a type is regular. -/
+@[deprecated IsSMulRegular.all (since := "2026-09-08")]
+theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g :=
+  IsSMulRegular.all g
 
 end Group
 

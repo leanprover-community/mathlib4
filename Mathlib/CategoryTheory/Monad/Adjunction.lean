@@ -31,7 +31,7 @@ Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflec
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -42,7 +42,6 @@ variable {L : C ⥤ D} {R : D ⥤ C}
 namespace Adjunction
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
@@ -61,7 +60,6 @@ def toMonad (h : L ⊣ R) : Monad C where
     simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
@@ -79,18 +77,21 @@ def toComonad (h : L ⊣ R) : Comonad D where
     rw [← L.map_comp]
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The monad induced by the Eilenberg-Moore adjunction is the original monad. -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
   MonadIso.mk (NatIso.ofComponents fun _ => Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The comonad induced by the Eilenberg-Moore adjunction is the original comonad. -/
 @[simps!]
 def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
   ComonadIso.mk (NatIso.ofComponents fun _ => Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
 unit is an isomorphism.
@@ -151,7 +152,6 @@ noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ �
 end Adjunction
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
@@ -189,6 +189,7 @@ instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
 instance (T : Monad C) : (Monad.comparison T.adj).Full where
   map_surjective {_ _} f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
   mem_essImage X :=
@@ -199,7 +200,6 @@ instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
     ⟨Monad.Algebra.isoMk (Iso.refl _)⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
 sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
@@ -239,6 +239,7 @@ instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
 instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
   map_surjective f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where
   mem_essImage X :=
@@ -312,14 +313,12 @@ noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget where
   eqv := { }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 instance μ_iso_of_reflective [Reflective R] : IsIso (reflectorAdjunction R).toMonad.μ := by
   dsimp
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance δ_iso_of_coreflective [Coreflective R] : IsIso (coreflectorAdjunction R).toComonad.δ := by
   dsimp
   infer_instance
@@ -329,8 +328,8 @@ attribute [instance] ComonadicLeftAdjoint.eqv
 
 namespace Reflective
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [Reflective R] (X : (reflectorAdjunction R).toMonad.Algebra) :
     IsIso ((reflectorAdjunction R).unit.app X.A) :=
   ⟨⟨X.a,
@@ -358,6 +357,7 @@ instance comparison_essSurj [Reflective R] :
     Adjunction.right_triangle_components, comp_id]
   apply (X.unit_assoc _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
@@ -366,8 +366,8 @@ end Reflective
 
 namespace Coreflective
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [Coreflective R] (X : (coreflectorAdjunction R).toComonad.Coalgebra) :
     IsIso ((coreflectorAdjunction R).counit.app X.A) :=
   ⟨⟨X.a,
@@ -390,6 +390,7 @@ instance comparison_essSurj [Coreflective R] :
     assoc]
   simpa using (coreflectorAdjunction R).counit.app X.A ≫= X.counit.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
     (Comonad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by cat_disch⟩

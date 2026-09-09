@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
+
 We prove that cyclotomic extensions of `ℚ` are totally complex, meaning that
 `NrRealPlaces K = 0` if `IsCyclotomicExtension {n} ℚ K` and `2 < n`.
 

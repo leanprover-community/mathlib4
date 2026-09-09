@@ -42,13 +42,13 @@ def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • ⟪f i, 
 /-- The weight function making `wInner` into the compact inner product. -/
 noncomputable abbrev cWeight : ι → ℝ := Function.const _ (Fintype.card ι)⁻¹
 
-@[inherit_doc] notation "⟪" f ", " g "⟫_[" 𝕝 ", " w "]" => wInner (𝕜 := 𝕝) w f g
+@[inherit_doc wInner] notation3 "⟪" f ", " g "⟫_[" 𝕝 ", " w "]" => wInner (𝕜 := 𝕝) w f g
 
 /-- Discrete inner product giving rise to the discrete L2 norm. -/
-notation "⟪" f ", " g "⟫_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, 1]
+notation3 "⟪" f ", " g "⟫_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, 1]
 
 /-- Compact inner product giving rise to the compact L2 norm. -/
-notation "⟪" f ", " g "⟫ₙ_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, cWeight]
+notation3 "⟪" f ", " g "⟫ₙ_[" 𝕝 "]" => ⟪f, g⟫_[𝕝, cWeight]
 
 lemma wInner_cWeight_eq_smul_wInner_one (f g : ∀ i, E i) :
     ⟪f, g⟫ₙ_[𝕜] = (Fintype.card ι : ℚ≥0)⁻¹ • ⟪f, g⟫_[𝕜] := by

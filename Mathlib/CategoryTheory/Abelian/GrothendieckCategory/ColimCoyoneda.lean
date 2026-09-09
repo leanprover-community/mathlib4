@@ -67,7 +67,6 @@ which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
 that is induced by `y : X ⟶ Y.obj j₀`. -/
 @[simps]
@@ -87,6 +86,7 @@ lemma hf (j : Under j₀) :
     colimit.ι (kernel (g y)) j ≫ f y = (kernel.ι (g y)).app j :=
   (IsColimit.ι_map _ _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {y} in
 include hc hy in
@@ -100,7 +100,6 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
     (fun _ ↦ by simpa using! hy.symm)).epi_f rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
@@ -118,7 +117,6 @@ variable {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
 include hXκ hc
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open injectivity₀ in
 lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀ = 0) :
     ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
@@ -160,7 +158,6 @@ we deduce that `z` factors as `X ⟶ Y.obj j ⟶ c.pt` for some `j`
 -/
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `J ⥤ MonoOver X` which sends `j : J` to the inverse image by `z : X ⟶ c.pt`
 of the subobject `Y.obj j` of `c.pt`; it is defined here as the object in `MonoOver X`
 corresponding to the monomorphism
@@ -170,7 +167,6 @@ noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
   obj j := MonoOver.mk ((pullback.snd c.ι ((Functor.const _).map z)).app j)
   map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`,
 which is an isomorphism when `J` is filtered, see `isIso_f`. -/
 noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=

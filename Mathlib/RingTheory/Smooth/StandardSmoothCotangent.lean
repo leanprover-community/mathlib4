@@ -114,6 +114,7 @@ lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux :
     simpa using this i
   · exact P.relation_mem_ker i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma cotangentComplexAux_surjective : Function.Surjective P.cotangentComplexAux := by
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← P.basisDeriv.span_eq, Submodule.span_le]
   rintro - ⟨i, rfl⟩
@@ -213,7 +214,6 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [Finsupp.single_eq_pi_single]
   · exact hcompl.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma basisKaehlerOfIsCompl_apply {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) (k : κ) :
@@ -330,7 +330,7 @@ instance IsStandardSmoothOfRelativeDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton Ω[S⁄R] := by
   cases subsingleton_or_nontrivial S
   · exact Module.subsingleton S _
-  haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
+  have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
 

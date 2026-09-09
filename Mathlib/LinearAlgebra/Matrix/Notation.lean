@@ -228,9 +228,10 @@ section ColRow
 variable {ι : Type*}
 
 @[simp]
-theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
+theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = of vecEmpty :=
   empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem replicateCol_cons (x : α) (u : Fin m → α) :
     replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
@@ -257,6 +258,7 @@ theorem transpose_empty_rows (A : Matrix m' (Fin 0) α) : Aᵀ = of ![] :=
 theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![] :=
   funext fun _ => empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
     (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
@@ -366,13 +368,14 @@ section VecMulVec
 variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
-theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![] :=
+theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = of ![] :=
   empty_eq _
 
 @[simp]
 theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = of fun _ => ![] :=
   funext fun _ => empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
     vecMulVec (vecCons x v) w = vecCons (x • w) (vecMulVec v w) := by
@@ -398,9 +401,10 @@ section Submatrix
 
 @[simp]
 theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' → n') :
-    submatrix A row col = ![] :=
+    submatrix A row col = of ![] :=
   empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
     submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by

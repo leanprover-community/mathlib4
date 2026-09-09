@@ -183,12 +183,10 @@ theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)
     sym a * sym b = sym (⅟2 * (a * b + b * a)) :=
   rfl
 
-set_option linter.existingAttributeWarning false in
 @[simp, to_additive existing]
 theorem sym_inv [Inv α] (a : α) : sym a⁻¹ = (sym a)⁻¹ :=
   rfl
 
-set_option linter.existingAttributeWarning false in
 @[simp, to_additive existing]
 theorem unsym_inv [Inv α] (a : αˢʸᵐ) : unsym a⁻¹ = (unsym a)⁻¹ :=
   rfl
@@ -249,6 +247,7 @@ theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) 
     ⅟(sym a) = sym (⅟a) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
     zero_mul := fun _ => by

@@ -75,7 +75,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
 
 instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ where
   coe f := f.toFun
-  coe_injective' f g := by cases f; cases g; simp
+  coe_injective f g := by cases f; cases g; simp
 
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
@@ -154,10 +154,10 @@ theorem map_ne {x y : P₁'} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  f.isometry.lipschitz
+  f.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.isometry.antilipschitz
+  f.isometry.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
@@ -505,6 +505,12 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
 @[simp]
 theorem symm_symm : e.symm.symm = e := rfl
 
+theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
+  e.toAffineEquiv.symm_apply_eq
+
+theorem eq_symm_apply {x y} : y = e.symm x ↔ e y = x :=
+  e.toAffineEquiv.eq_symm_apply
+
 theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[𝕜] P) → _) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
@@ -627,10 +633,10 @@ theorem map_ne {x y : P} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitz
+  e.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitz
+  e.isometry.antilipschitzWith
 
 @[simp]
 theorem ediam_image (s : Set P) : ediam (e '' s) = ediam s :=

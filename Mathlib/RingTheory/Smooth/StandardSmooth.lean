@@ -30,6 +30,17 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 - `Algebra.IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension
   `n` if it admits a submersive `R`-presentation of dimension `n`.
 
+## Main results
+
+- `Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial`: If `ι` is finite, the polynomial
+  algebra `MvPolynomial ι R` is `R`-standard smooth of relative dimension `Nat.card ι`.
+- Standard smoothness is stable under composition
+  (`Algebra.IsStandardSmooth.trans`), base change (`Algebra.IsStandardSmooth.baseChange`) and
+  localization away from an element (`Algebra.IsStandardSmooth.localization_away`), and similarly
+  for standard smoothness of a fixed relative dimension.
+- `Algebra.IsStandardSmooth.finitePresentation`: A standard smooth algebra is of finite
+  presentation.
+
 ## TODO
 
 - Show that locally on the target, smooth algebras are standard smooth.
@@ -45,7 +56,7 @@ in June 2024.
 
 universe t t' w w' u v
 
-open TensorProduct Module MvPolynomial
+open TensorProduct
 
 variable (n m : ℕ)
 
@@ -117,7 +128,7 @@ instance IsStandardSmoothOfRelativeDimension.id :
 
 variable (R) in
 /-- The polynomial algebra `MvPolynomial ι R` is standard smooth over `R` of relative
-dimension `Nat.card ι`. -/
+dimension `Nat.card ι`, for a finite type `ι`. -/
 lemma IsStandardSmoothOfRelativeDimension.mvPolynomial [Finite ι] :
     IsStandardSmoothOfRelativeDimension (Nat.card ι) R (MvPolynomial ι R) :=
   (SubmersivePresentation.mvPolynomial.{0} R ι).isStandardSmoothOfRelativeDimension
@@ -128,6 +139,11 @@ dimension `n`. -/
 instance IsStandardSmoothOfRelativeDimension.mvPolynomial_fin {n : ℕ} :
     IsStandardSmoothOfRelativeDimension n R (MvPolynomial (Fin n) R) := by
   simpa using IsStandardSmoothOfRelativeDimension.mvPolynomial R (Fin n)
+
+/-- The polynomial algebra `MvPolynomial ι R` is standard smooth over `R` when `ι` is finite. -/
+instance IsStandardSmooth.mvPolynomial [Finite ι] :
+    IsStandardSmooth R (MvPolynomial ι R) :=
+  IsStandardSmoothOfRelativeDimension.mvPolynomial R ι|>.isStandardSmooth
 
 instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
     FinitePresentation R S := by

@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Algebra
 
@@ -213,7 +213,7 @@ theorem Metric.smul_image_closedBall {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ)
 
 theorem Metric.smul_image_sphere {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
     (s • ·) '' sphere x ε = sphere (s • x) (‖s‖ * ε) := by
-  simp_rw [← Metric.closedBall_diff_ball, Set.image_diff (smul_right_injective β hs),
+  simp_rw [← Metric.closedBall_sdiff_ball, Set.image_sdiff (smul_right_injective β hs),
     smul_image_ball hs, smul_image_closedBall hs]
 
 end NormedDivisionRingModule

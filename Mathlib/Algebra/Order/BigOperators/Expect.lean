@@ -154,13 +154,11 @@ end LinearOrderedAddCommMonoid
 
 section LinearOrderedCancelAddMonoid
 variable [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
-  [PosSMulStrictMono ℚ≥0 α] {a : α} {s : Finset ι} {f g : ι → α}
+  {a : α} {s : Finset ι} {f g : ι → α}
 
 lemma exists_le_of_expect_le_expect (hs : s.Nonempty) (h : 𝔼 i ∈ s, g i ≤ 𝔼 i ∈ s, f i) :
-    ∃ x ∈ s, g x ≤ f x := by
-  obtain ⟨_, hx⟩ := hs
-  contrapose! h
-  exact expect_lt_expect (fun _ hx ↦ le_of_lt (h _ hx)) ⟨_, ⟨hx, h _ hx⟩⟩
+    ∃ x ∈ s, g x ≤ f x :=
+  exists_le_of_sum_le hs <| by rw [← card_smul_expect, ← card_smul_expect]; gcongr
 
 lemma exists_le_of_le_expect (hs : s.Nonempty) (h : a ≤ 𝔼 i ∈ s, f i) : ∃ x ∈ s, a ≤ f x :=
   exists_le_of_expect_le_expect hs (by rwa [expect_const hs _])
@@ -220,21 +218,22 @@ open scoped BigOperators
 attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for `Finset.expect`. -/
 @[positivity Finset.expect _ _]
-meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match e with
   | ~q(@Finset.expect $ι _ $instα $instmod $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) := ← (do
+    let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
       assumeInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some
-        q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps))
+      pure <| some
+        q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps)
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos

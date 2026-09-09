@@ -172,6 +172,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpo
 section IsCartanSubalgebra
 
 variable [H.IsCartanSubalgebra] [IsNoetherian R L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma trace_toEnd_genWeightSpaceChain_eq_zero
     (hp : genWeightSpace M (p • α + χ) = ⊥)
@@ -202,6 +203,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
   | add => simp_all
   | smul => simp_all
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
@@ -239,7 +241,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
-  convert_to _ =
+  convert_to! _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
   simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
@@ -272,8 +274,8 @@ def chainBotCoeff : ℕ := chainTopCoeff (-α) β
 @[simp] lemma chainBotCoeff_neg : chainBotCoeff (-α) β = chainTopCoeff α β := by
   rw [← chainTopCoeff_neg, neg_neg]
 
-@[simp] lemma chainTopCoeff_zero : chainTopCoeff 0 β = 0 := dif_pos rfl
-@[simp] lemma chainBotCoeff_zero : chainBotCoeff 0 β = 0 := dif_pos neg_zero
+@[simp] lemma chainTopCoeff_zero : chainTopCoeff 0 β = 0 := dite_eq_left rfl
+@[simp] lemma chainBotCoeff_zero : chainBotCoeff 0 β = 0 := dite_eq_left neg_zero
 
 section
 variable (hα : α ≠ 0)
@@ -284,7 +286,7 @@ lemma chainTopCoeff_add_one :
     chainTopCoeff α β + 1 =
       Nat.find (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists := by
   classical
-  rw [chainTopCoeff, dif_neg hα]
+  rw [chainTopCoeff, dite_eq_right hα]
   apply Nat.succ_pred_eq_of_pos
   rw [zero_lt_iff]
   intro e

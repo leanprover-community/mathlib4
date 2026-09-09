@@ -54,6 +54,8 @@ theorem isHermitian_iff_isSelfAdjoint {A : Matrix n n α} :
 protected alias ⟨IsHermitian.isSelfAdjoint, _root_.IsSelfAdjoint.isHermitian⟩ :=
   isHermitian_iff_isSelfAdjoint
 
+theorem IsHermitian.star_eq (hA : A.IsHermitian) : star A = A := hA.isSelfAdjoint.star_eq
+
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 
@@ -62,6 +64,13 @@ theorem IsHermitian.apply {A : Matrix n n α} (h : A.IsHermitian) (i j : n) : st
 
 theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, star (A j i) = A i j :=
   ⟨IsHermitian.apply, IsHermitian.ext⟩
+
+@[simp] lemma isHermitian_iff_isSymm [TrivialStar α] {A : Matrix n n α} :
+    A.IsHermitian ↔ A.IsSymm := by
+  simp [IsHermitian.ext_iff, IsSymm.ext_iff]
+
+lemma IsHermitian.isSymm [TrivialStar α] {A : Matrix n n α} (hA : A.IsHermitian) : A.IsSymm :=
+  isHermitian_iff_isSymm.mp hA
 
 @[simp]
 theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
@@ -188,7 +197,6 @@ theorem isHermitian_blockDiagonal_iff [DecidableEq n] {M : n → Matrix m m α} 
 
 /-- A diagonal matrix is Hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/
-@[simp]
 theorem isHermitian_diagonal [TrivialStar α] [DecidableEq n] (v : n → α) :
     (diagonal v).IsHermitian :=
   isHermitian_diagonal_of_self_adjoint _ (IsSelfAdjoint.all _)
@@ -296,6 +304,11 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
 lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
+
+lemma IsHermitian.star_dotProduct_mulVec_comm [Fintype n] {A : Matrix n n α}
+    (hA : A.IsHermitian) (x y : n → α) :
+    star (star x ⬝ᵥ A *ᵥ y) = star y ⬝ᵥ A *ᵥ x := by
+  rw [star_dotProduct, star_star, star_mulVec, hA.eq, ← dotProduct_mulVec]
 
 end NonUnitalSemiring
 

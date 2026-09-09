@@ -50,7 +50,7 @@ scoped[CompactlySupported] notation (priority := 2000)
 @[inherit_doc]
 scoped[CompactlySupported] notation α " →C_c " β => CompactlySupportedContinuousMap α β
 
-open CompactlySupported
+open scoped CompactlySupported
 
 section
 
@@ -74,7 +74,7 @@ variable [TopologicalSpace β] [Zero β]
 
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -141,10 +141,10 @@ noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
     · exact .zero
 
 lemma toContinuousMap_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) :
-    (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
+    (f.compLeft g).toContinuousMap = g.comp f := ite_eq_left hg
 
 lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft g = g ∘ f := by
-  simp [compLeft, if_pos hg]
+  simp [compLeft, ite_eq_left hg]
 
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
@@ -667,6 +667,7 @@ open NNReal
 
 namespace CompactlySupportedContinuousMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
     f₁ + g = f₂ := by
   refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩

@@ -73,17 +73,17 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     exact ⟨univ.sigma B, by simpa⟩
 
   isBase_exchange B₁ B₂ h₁ h₂ := by
-    simp only [mem_diff, Sigma.exists, and_imp, Sigma.forall]
+    simp only [mem_sdiff, Sigma.exists, and_imp, Sigma.forall]
     intro i e he₁ he₂
     have hf_ex := (h₁ i).exchange (h₂ i) ⟨he₁, by simpa⟩
     obtain ⟨f, ⟨hf₁, hf₂⟩, hfB⟩ := hf_ex
     refine ⟨i, f, ⟨hf₁, hf₂⟩, fun j ↦ ?_⟩
-    rw [← union_singleton, preimage_union, preimage_diff]
+    rw [← union_singleton, preimage_union, preimage_sdiff]
     obtain (rfl | hne) := eq_or_ne i j
     · simpa only [show ∀ x, {⟨i,x⟩} = Sigma.mk i '' {x} by simp,
         preimage_image_eq _ sigma_mk_injective, union_singleton]
     rw [preimage_singleton_eq_empty.2 (by simpa), preimage_singleton_eq_empty.2 (by simpa),
-      diff_empty, union_empty]
+      sdiff_empty, union_empty]
     exact h₁ j
 
   maximality X _ I hI hIX := by
@@ -232,12 +232,10 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
   let e := Equiv.sumEquivSigmaBool (ULift.{v} α) (ULift.{u} β)
   (S.mapEquiv e.symm).mapEquiv (Equiv.sumCongr Equiv.ulift Equiv.ulift)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_ground (M : Matroid α) (N : Matroid β) :
     (M.sum N).E = (.inl '' M.E) ∪ (.inr '' N.E) := by
   simp [Matroid.sum, Set.ext_iff, mapEquiv, mapEmbedding, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_indep_iff (M : Matroid α) (N : Matroid β) {I : Set (α ⊕ β)} :
     (M.sum N).Indep I ↔ M.Indep (.inl ⁻¹' I) ∧ N.Indep (.inr ⁻¹' I) := by
   simp only [Matroid.sum, mapEquiv_indep_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
@@ -245,7 +243,6 @@ set_option backward.isDefEq.respectTransparency false in
   convert! Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_isBase_iff {M : Matroid α} {N : Matroid β} {B : Set (α ⊕ β)} :
     (M.sum N).IsBase B ↔ M.IsBase (.inl ⁻¹' B) ∧ N.IsBase (.inr ⁻¹' B) := by
   simp only [Matroid.sum, mapEquiv_isBase_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
@@ -253,7 +250,6 @@ set_option backward.isDefEq.respectTransparency false in
   convert! Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_isBasis_iff {M : Matroid α} {N : Matroid β} {I X : Set (α ⊕ β)} :
     (M.sum N).IsBasis I X ↔
       (M.IsBasis (Sum.inl ⁻¹' I) (Sum.inl ⁻¹' X) ∧ N.IsBasis (Sum.inr ⁻¹' I) (Sum.inr ⁻¹' X)) := by

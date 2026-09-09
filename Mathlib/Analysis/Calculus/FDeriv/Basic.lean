@@ -109,7 +109,7 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Topology NNReal
 
 noncomputable section
 
@@ -181,8 +181,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {f : E → F}
+variable {f' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter (E × E)}
@@ -267,14 +267,20 @@ theorem hasFDerivWithinAt_insert [T1Space E] {y : E} :
 alias ⟨_, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
 
 @[simp]
-theorem hasFDerivWithinAt_diff_singleton_self :
+theorem hasFDerivWithinAt_sdiff_singleton_self :
     HasFDerivWithinAt f f' (s \ {x}) x ↔ HasFDerivWithinAt f f' s x := by
-  rw [← hasFDerivWithinAt_insert_self, insert_diff_singleton, hasFDerivWithinAt_insert_self]
+  rw [← hasFDerivWithinAt_insert_self, insert_sdiff_singleton, hasFDerivWithinAt_insert_self]
+
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton_self := hasFDerivWithinAt_sdiff_singleton_self
 
 @[simp]
-theorem hasFDerivWithinAt_diff_singleton [T1Space E] (y : E) :
+theorem hasFDerivWithinAt_sdiff_singleton [T1Space E] (y : E) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
-  rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
+  rw [← hasFDerivWithinAt_insert, insert_sdiff_singleton, hasFDerivWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton := hasFDerivWithinAt_sdiff_singleton
 
 @[simp]
 protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
@@ -362,7 +368,7 @@ as this statement is empty. -/
 theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     HasFDerivWithinAt f f' s x := by
   rw [accPt_principal_iff_nhdsWithin, not_neBot] at h
-  rw [← hasFDerivWithinAt_diff_singleton_self, hasFDerivWithinAt_iff_isLittleOTVS, h]
+  rw [← hasFDerivWithinAt_sdiff_singleton_self, hasFDerivWithinAt_iff_isLittleOTVS, h]
   exact .bot
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
@@ -372,7 +378,7 @@ theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWit
 
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, if_pos (.of_not_accPt h)]
+  rw [fderivWithin, ite_eq_left (.of_not_accPt h)]
 
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
     fderivWithin 𝕜 f s x = 0 :=
@@ -384,7 +390,7 @@ theorem fderivWithin_zero_of_not_uniqueDiffWithinAt {f : 𝕜 → F} {x : 𝕜} 
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  simp only [fderivWithin, dif_pos h]
+  simp only [fderivWithin, dite_eq_left h]
   split_ifs with h₀
   exacts [h₀, Classical.choose_spec h]
 
@@ -730,7 +736,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
-variable {x x₀ : E}
+variable {x : E}
 variable {s : Set E}
 variable {L : Filter (E × E)}
 

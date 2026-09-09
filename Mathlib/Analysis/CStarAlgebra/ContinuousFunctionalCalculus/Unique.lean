@@ -238,7 +238,7 @@ lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (
 @[fun_prop]
 lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := by
   rw [continuous_induced_rng]
-  convert_to Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
+  convert_to! Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
   exact ContinuousMap.continuous_postcomp _ |>.comp continuous_induced_dom
 
 lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
@@ -262,14 +262,14 @@ lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal) =
     ((-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal) := by
   apply toContinuousMap_injective
-  simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
+  simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using! (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
 
 lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
     ((f + g).toNNReal + (-f).toNNReal + (-g).toNNReal) =
       ((-(f + g)).toNNReal + f.toNNReal + g.toNNReal) := by
   apply toContinuousMap_injective
-  simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
+  simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using! (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g
 
 end ContinuousMapZero
@@ -319,7 +319,6 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
       rw [sub_eq_add_neg, add_comm]
   map_star' f := by simp only [star_trivial, star_sub, ← map_star]
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapZeroOfNNReal := by
@@ -328,6 +327,7 @@ lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ�
 
 end IsTopologicalRing
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp high]
 lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)₀) :
@@ -456,6 +456,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [ContinuousMap.UniqueHom R B] [FunLike F A B] [AlgHomClass F S A B]
   [StarHomClass F A B]
 
+set_option backward.isDefEq.respectTransparency false in
 include S in
 /-- Star algebra homomorphisms commute with the continuous functional calculus. -/
 lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
@@ -471,7 +472,7 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
   suffices ψ.comp (cfcHom ha) = (cfcHom hψa).comp (ContinuousMap.compStarAlgHom' R R ι) by
     have hf' : ContinuousOn f (spectrum R (ψ a)) := hf.mono h_spec
     rw [cfc_apply .., cfc_apply ..]
-    congrm($(this) ⟨_, hf.restrict⟩)
+    congrm($(this) ⟨_, hf.domRestrict⟩)
   refine ContinuousMap.UniqueHom.eq_of_continuous_of_map_id _ _ _ ?_ ?_ ?apply_id
   case apply_id =>
     trans cfcHom hψa (.restrict (spectrum R (ψ a)) (.id R))

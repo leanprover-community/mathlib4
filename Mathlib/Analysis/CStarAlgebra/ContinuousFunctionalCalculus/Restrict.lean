@@ -50,6 +50,7 @@ lemma compactSpace {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
 
 universe u v w
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If the spectrum of an element restricts to a smaller scalar ring, then a continuous functional
 calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
@@ -109,6 +110,7 @@ lemma isClosedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S]
     (ContinuousMap.isUniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongr h.homeomorph.symm (.refl _) |>.isUniformEmbedding)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a `ContinuousFunctionalCalculus S A q`. If we form the predicate `p` for `a : A`
 characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
@@ -153,13 +155,14 @@ lemma cfcHom_eq_restrict (f : C(S, R)) {a : A} (hpa : p a) (hqa : q a) (h : Spec
   · exact h.continuous_starAlgHom (cfcHom_continuous hqa)
   · exact h.starAlgHom_id (cfcHom_id hqa)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma cfc_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) {a : A} (hpa : p a)
     (hqa : q a) (h : SpectrumRestricts a f) (g : R → R) :
     cfc g a = cfc (fun x ↦ algebraMap R S (g (f x))) a := by
   by_cases hg : ContinuousOn g (spectrum R a)
   · rw [cfc_apply g a, cfcHom_eq_restrict f hpa hqa h, SpectrumRestricts.starAlgHom_apply,
       cfcHom_eq_cfc_extend 0]
-    apply cfc_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     lift x to spectrum S a using hx
     simp [Function.comp]
   · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by
@@ -212,6 +215,7 @@ def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
 universe u v w
 
 open ContinuousMapZero
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If the quasispectrum of an element restricts to a smaller scalar ring, then a non-unital
 continuous functional calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
@@ -277,6 +281,7 @@ lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →
 
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a `NonUnitalContinuousFunctionalCalculus S A q`. If we form the predicate `p` for `a : A`
 characterized by: `q a` and the quasispectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
@@ -320,6 +325,7 @@ lemma cfcₙHom_eq_restrict (f : C(S, R)) {a : A} (hpa : p a) (hqa : q a)
   · exact h.continuous_nonUnitalStarAlgHom (cfcₙHom_continuous hqa)
   · exact h.nonUnitalStarAlgHom_id (cfcₙHom_id hqa)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) {a : A}
     (hpa : p a) (hqa : q a) (h : QuasispectrumRestricts a f) (g : R → R) :
     cfcₙ g a = cfcₙ (fun x ↦ algebraMap R S (g (f x))) a := by
@@ -327,7 +333,7 @@ lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S
   · obtain ⟨hg, hg0⟩ := hg
     rw [cfcₙ_apply g a, cfcₙHom_eq_restrict f hpa hqa h, nonUnitalStarAlgHom_apply,
       cfcₙHom_eq_cfcₙ_extend 0]
-    apply cfcₙ_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     lift x to σₙ S a using hx
     simp
   · simp only [not_and_or] at hg

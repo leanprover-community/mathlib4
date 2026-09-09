@@ -69,14 +69,12 @@ variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [FunLike F A B] [NonUnitalRingHomClass F A B]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalStarRingHomClass F A B` into an actual
-`NonUnitalStarRingHom`. This is declared as the default coercion from `F` to `A →⋆ₙ+ B`. -/
-@[coe]
-def toNonUnitalStarRingHom [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆ₙ+* B :=
+`NonUnitalStarRingHom`. -/
+def _root_.NonUnitalStarRingHom.ofClass [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆ₙ+* B :=
   { (f : A →ₙ+* B) with
     map_star' := map_star f }
 
-instance [NonUnitalStarRingHomClass F A B] : CoeHead F (A →⋆ₙ+* B) :=
-  ⟨toNonUnitalStarRingHom⟩
+@[deprecated (since := "2026-09-03")] alias toNonUnitalStarRingHom := NonUnitalStarRingHom.ofClass
 
 end NonUnitalStarRingHomClass
 
@@ -92,7 +90,7 @@ variable [NonUnitalNonAssocSemiring D] [Star D]
 
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_mul f := f.map_mul'
@@ -108,9 +106,11 @@ def Simps.apply (f : A →⋆ₙ+* B) : A → B := f
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
-    [NonUnitalStarRingHomClass F A B] (f : F) : ⇑(f : A →⋆ₙ+* B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
+    [NonUnitalStarRingHomClass F A B] (f : F) : ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-08")] alias coe_coe := NonUnitalStarRingHom.coe_ofClass
 
 @[simp]
 theorem coe_toNonUnitalRingHom (f : A →⋆ₙ+* B) : ⇑f.toNonUnitalRingHom = f :=
@@ -204,7 +204,7 @@ end Basic
 section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
-variable {A B C : Type*}
+variable {A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [StarAddMonoid B]
 
@@ -269,18 +269,13 @@ instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A
     NonUnitalStarRingHomClass F A B where
 
 /-- Turn an element of a type `F` satisfying `StarRingEquivClass F A B` into an actual
-`StarRingEquiv`. This is declared as the default coercion from `F` to `A ≃⋆+* B`. -/
-@[coe]
-def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
+`StarRingEquiv`. -/
+def _root_.StarRingEquiv.ofClass {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f }
 
-/-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
-`StarRingEquivClass.toStarRingEquiv`. -/
-instance instCoeHead {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
-  ⟨toStarRingEquiv⟩
+@[deprecated (since := "2026-09-03")] alias toStarRingEquiv := StarRingEquiv.ofClass
 
 end StarRingEquivClass
 
@@ -310,7 +305,28 @@ instance : StarRingEquivClass (A ≃⋆+* B) A B where
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
 instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
+
+section
+
+variable {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B]
+
+/-- A ⋆-ring equivalence is a non-unital ⋆-ring homomorphism. -/
+def toNonUnitalStarRingHom (f : A ≃⋆+* B) : A →⋆ₙ+* B where
+  toNonUnitalRingHom := f
+  map_star' := f.map_star'
+
+instance : CoeOut (A ≃⋆+* B) (A →⋆ₙ+* B) where coe := StarRingEquiv.toNonUnitalStarRingHom
+
+lemma toNonUnitalRingHom_toNonUnitalStarRingHom (f : A ≃⋆+* B) :
+    f.toNonUnitalStarRingHom.toNonUnitalRingHom = f.toRingEquiv.toNonUnitalRingHom := rfl
+
+@[simp]
+lemma coe_toNonUnitalStarRingHom {A B : Type*}
+    [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B] (f : A ≃⋆+* B) :
+    (f.toNonUnitalStarRingHom : A → B) = f := rfl
+
+end
 
 instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
 
@@ -415,7 +431,6 @@ theorem rightInverse_symm (e : A ≃⋆+* B) : Function.RightInverse e.symm e :=
   e.right_inv
 
 end Basic
-
 
 section Bijective
 

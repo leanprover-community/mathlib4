@@ -21,11 +21,11 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 public section
 
-section SpectrumDiagonal
+open Matrix Module End
 
 variable {R n M : Type*} [DecidableEq n] [Fintype n]
 
-open Matrix Module End
+section SpectrumDiagonal
 
 section NontrivialCommRing
 
@@ -77,6 +77,13 @@ end NontrivialCommRing
 namespace Matrix
 
 variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
+
+lemma _root_.Module.End.HasEigenvalue.nonempty
+    {A : Matrix n n R} {μ : R} (hμ : HasEigenvalue A.toLin' μ) :
+    Nonempty n := by
+  rw [hasEigenvalue_iff] at hμ
+  contrapose! hμ
+  exact Submodule.eq_bot_of_subsingleton
 
 @[simp]
 lemma iSup_eigenspace_toLin_diagonal_eq_top :

@@ -74,8 +74,6 @@ def mk {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
   obj := Over.mk f
   property := hf
 
-@[deprecated (since := "2025-12-18")] alias mk' := mk
-
 /-- The inclusion from monomorphisms over X to morphisms over X. -/
 abbrev forget (X : C) : MonoOver X ⥤ Over X :=
   ObjectProperty.ι _
@@ -90,16 +88,12 @@ theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
 theorem mk_coe {X A : C} (f : A ⟶ X) [Mono f] : (mk f : C) = A :=
   rfl
 
-@[deprecated (since := "2025-12-18")] alias mk'_coe' := mk_coe
-
 /-- Convenience notation for the underlying arrow of a monomorphism over X. -/
 abbrev arrow (f : MonoOver X) : (f : C) ⟶ X := f.obj.hom
 
 @[simp]
 theorem mk_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk f).arrow = f :=
   rfl
-
-@[deprecated (since := "2025-12-18")] alias mk'_arrow := mk_arrow
 
 theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow := rfl
 
@@ -119,9 +113,7 @@ instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
     intro h₁ h₂
     apply InducedCategory.hom_ext
     apply Over.OverMorphism.ext
-    rw [← cancel_mono g.arrow]
-    erw [Over.w h₁.hom]
-    erw [Over.w h₂.hom]⟩
+    rw [← cancel_mono g.arrow, Over.w h₁.hom, Over.w h₂.hom]⟩
 
 @[reassoc]
 theorem w {f g : MonoOver X} (k : f ⟶ g) : k.hom.left ≫ g.arrow = f.arrow :=
@@ -145,16 +137,12 @@ package it as an isomorphism. -/
 def mkArrowIso {X : C} (f : MonoOver X) : mk f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
-@[deprecated (since := "2025-12-18")] alias mk'ArrowIso := mkArrowIso
-
 instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.hom.left :=
   inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
 
 lemma isIso_iff_isIso_hom_left {A B : MonoOver X} (f : A ⟶ B) :
     IsIso f ↔ IsIso f.hom.left :=
   (isIso_iff_of_reflects_iso _ (MonoOver.forget X ⋙ Over.forget _)).symm
-
-@[deprecated (since := "2025-12-18")] alias isIso_iff_isIso_left := isIso_iff_isIso_hom_left
 
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
 given suitable evidence that morphisms are taken to monomorphisms.
@@ -246,7 +234,6 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
 def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
@@ -256,7 +243,6 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     (strongEpiMonoFactorisationSigmaDesc F).e)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
     CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
       c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
@@ -290,7 +276,7 @@ variable [HasPullbacks C]
 by pulling back a monomorphism along `f`. -/
 def pullback (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X :=
   MonoOver.lift (Over.pullback f) (fun g => by
-    haveI : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
+    have : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
     apply pullback.snd_of_mono)
 
 /-- pullback commutes with composition (up to a natural isomorphism) -/
@@ -363,6 +349,7 @@ theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : 
 theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
     refine ⟨homMk e.hom.left ?_, rfl⟩
@@ -514,12 +501,55 @@ def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
     · apply imageMonoIsoSource (Z.arrow ≫ f)
     · apply imageMonoIsoSource_hom_self)
 
-/-- `exists` is adjoint to `pullback` when images exist -/
+instance full_exists (f : X ⟶ Y) [Mono f] : Functor.Full («exists» f) :=
+  Functor.Full.of_iso (existsIsoMap f).symm
+
+/-- `exists` is left adjoint to `pullback` when images exist -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   ((Over.mapPullbackAdj f).comp imageForgetAdj).restrictFullyFaithful
     (fullyFaithfulForget X) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma factorThruImage_comp_existsPullbackAdj_counit_app_hom_left
+    (f : X ⟶ Y) [HasPullbacks C] (B : MonoOver Y) :
+    factorThruImage (pullback.snd B.arrow f ≫ f) ≫
+        ((existsPullbackAdj f).counit.app B).hom.left = pullback.fst B.arrow f := by
+  have hw : ((existsPullbackAdj f).counit.app B).hom.left ≫ B.arrow =
+      image.ι (pullback.snd B.arrow f ≫ f) :=
+    MonoOver.w ((existsPullbackAdj f).counit.app B)
+  rw [← cancel_mono B.arrow, Category.assoc, hw, image.fac, pullback.condition]
+
+/-- `MonoOver.exists` commutes with composition (up to isomorphism). -/
+def existsComp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacks C] :
+    «exists» (f ≫ g) ≅ «exists» f ⋙ «exists» g :=
+  ((conjugateIsoEquiv (existsPullbackAdj (f ≫ g))
+    ((existsPullbackAdj f).comp (existsPullbackAdj g))).symm (pullbackComp f g)).symm
+
 end Exists
+
+section HasStrongEpiMonoFactorisations
+
+variable [HasStrongEpiMonoFactorisations C]
+
+/-- Given a strong epi-mono factorization of `f : Over X` as `e ≫ m`, the image of `f` is
+isomorphic to `MonoOver.mk m`. -/
+@[simps!]
+def imageObjIso (f : Over X)
+    {Z : C} (e : f.left ⟶ Z) [StrongEpi e] (m : Z ⟶ X) [Mono m] (fac : e ≫ m = f.hom) :
+    image.obj f ≅ MonoOver.mk m :=
+  MonoOver.isoMk (image.isoStrongEpiMono e m fac).symm
+    (image.isoStrongEpiMono_inv_comp_mono e m fac)
+
+/-- Given `p : X ⟶ Y`, `f : MonoOver X`, and a strong-epi-mono factorization of
+`f.arrow ≫ p` as `e ≫ m`, `(exists p).obj f` is isomorphic to `MonoOver.mk m`. -/
+@[simps!]
+def existsObjIso (p : X ⟶ Y) (f : MonoOver X)
+    {Z : C} (e : f.obj.left ⟶ Z) [StrongEpi e] (m : Z ⟶ Y) [Mono m] (fac : e ≫ m = f.arrow ≫ p) :
+    («exists» p).obj f ≅ MonoOver.mk m :=
+  imageObjIso (Over.mk (f.arrow ≫ p)) e m fac
+
+end HasStrongEpiMonoFactorisations
 
 end MonoOver
 

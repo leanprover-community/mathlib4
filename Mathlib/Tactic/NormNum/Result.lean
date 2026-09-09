@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Int.Cast.Basic
-public import Qq.MetaM
 
 public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
 
@@ -32,7 +31,7 @@ universe u
 variable {α : Type u}
 
 open Lean
-open Lean.Meta Qq Lean.Elab Term
+open Lean.Meta Qq Lean.Elab
 
 namespace Mathlib
 namespace Meta.NormNum
@@ -41,11 +40,11 @@ variable {u : Level}
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
-@[implicit_reducible]
+@[instance_reducible]
 def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
-@[implicit_reducible]
+@[instance_reducible]
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
@@ -316,7 +315,6 @@ set_option linter.unusedVariables false
 -- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
 -- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
 -- Fixed in https://github.com/leanprover/lean4/pull/13043
-set_option backward.inferInstanceAs.wrap false in
 instance {α : Q(Type u)} {x : Q($α)} : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/

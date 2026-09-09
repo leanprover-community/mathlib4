@@ -122,8 +122,10 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
 
-theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+theorem Convex.setOfPred_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
   by_cases hP : P <;> simp [hP, hs, convex_univ]
+
+@[deprecated (since := "2026-07-09")] alias Convex.setOf_const_imp := Convex.setOfPred_const_imp
 
 end SMul
 
@@ -373,14 +375,14 @@ theorem AntitoneOn.convex_gt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β)
 theorem Monotone.convex_le (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
 
-theorem Monotone.convex_lt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
+theorem Monotone.convex_lt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x < r } :=
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_lt convex_univ r)
 
 theorem Monotone.convex_ge (hf : Monotone f) (r : β) : Convex 𝕜 { x | r ≤ f x } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_ge convex_univ r)
 
-theorem Monotone.convex_gt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
+theorem Monotone.convex_gt (hf : Monotone f) (r : β) : Convex 𝕜 { x | r < f x } :=
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_gt convex_univ r)
 
 theorem Antitone.convex_le (hf : Antitone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.antitoneOn univ).convex_le convex_univ r)
@@ -643,7 +645,7 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   intro u hu v hv a b ha hb hab
   obtain ⟨c, hc1, hc2⟩ := halg ha
   obtain ⟨d, hd1, hd2⟩ := halg hb
-  convert! hs hu hv hc1 hd1 _ using 2
+  convert hs hu hv hc1 hd1 _
   · rw [← hc2, algebraMap_smul]
   · rw [← hd2, algebraMap_smul]
   rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab

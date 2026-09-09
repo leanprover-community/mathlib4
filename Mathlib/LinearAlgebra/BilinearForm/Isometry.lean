@@ -25,7 +25,7 @@ This file should be kept in sync with the corresponding file for quadratic maps,
 -/
 @[expose] public section
 
-variable {R M M₁ M₂ M₃ M₄ N : Type*}
+variable {R M M₁ M₂ M₃ M₄ : Type*}
 
 namespace LinearMap
 
@@ -34,8 +34,7 @@ namespace BilinForm
 variable [CommSemiring R]
 variable [AddCommMonoid M]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [AddCommMonoid N]
-variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Module R N]
+variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
 
 /-- An isometry between two bilinear spaces `M₁, B₁` and `M₂, B₂` over a ring `R`,
 is a linear map between `M₁` and `M₂` that commutes with the bilinear forms. -/
@@ -54,7 +53,7 @@ variable {B₃ : LinearMap.BilinForm R M₃} {B₄ : LinearMap.BilinForm R M₄}
 
 instance instFunLike : FunLike (B₁ →bᵢ B₂) M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
 
 instance instLinearMapClass : LinearMapClass (B₁ →bᵢ B₂) R M₁ M₂ where
   map_add f := f.toLinearMap.map_add

@@ -413,7 +413,7 @@ theorem log_doublingGamma_eq :
 
 theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ doublingGamma) := by
   refine (((ConvexOn.add ?_ ?_).add ?_).add_const _).congr log_doublingGamma_eq.symm
-  · convert
+  · convert!
       convexOn_log_Gamma.comp_affineMap (DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1
     · simpa only [zero_div] using! (preimage_const_mul_Ioi₀ (0 : ℝ) one_half_pos).symm

@@ -5,15 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Init.Data.ULift
-public import Init.Data.Fin.Fold
-public import Init.Data.List.Nat.Pairwise
-public import Init.Data.List.Nat.Range
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main definitions
@@ -105,7 +102,6 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     intro i j
     convert! h' i ((b.indexEquiv b').symm j)
     simp [Basis.toMatrix_apply]
-  classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
     ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
   congr

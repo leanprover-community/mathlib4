@@ -76,6 +76,22 @@ initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_app
 
 @[simp] lemma symm_symm (e : G ≃+c[a, b] H) : e.symm.symm = e := rfl
 
+theorem symm_apply_eq (e : G ≃+c[a, b] H) {a b} :
+    e.symm a = b ↔ a = e b :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : G ≃+c[a, b] H) {a b} :
+    b = e.symm a ↔ e b = a :=
+  e.toEquiv.eq_symm_apply
+
+@[simp] theorem apply_symm_apply (e : G ≃+c[a, b] H) (a) :
+    e (e.symm a) = a :=
+  e.toEquiv.apply_symm_apply _
+
+@[simp] theorem symm_apply_apply (e : G ≃+c[a, b] H) (a) :
+    e.symm (e a) = a :=
+  e.toEquiv.symm_apply_apply _
+
 /-- The identity map as an `AddConstEquiv`. -/
 @[simps! toEquiv apply]
 def refl (a : G) : G ≃+c[a, a] G where

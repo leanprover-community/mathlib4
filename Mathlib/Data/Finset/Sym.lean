@@ -142,8 +142,6 @@ theorem not_isDiag_mk_of_mem_offDiag {a b : α} (h : (a, b) ∈ s.offDiag) : ¬ 
 
 section Sym2
 
-variable {m : Sym2 α}
-
 @[simp]
 theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
   rw [← mem_sym2_iff]
@@ -212,7 +210,8 @@ lemma sym_map [DecidableEq β] {n : ℕ} (g : α ↪ β) (s : Finset α) :
     obtain ⟨a, ha, rfl⟩ := hd
     exact ⟨a, hb a ha, rfl⟩
 
--- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+-- @[simp]
 theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=

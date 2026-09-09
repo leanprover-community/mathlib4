@@ -254,9 +254,9 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
         (fun i => (z i).toNNReal) ?_ hp
     -- verify the hypothesis `∑ i ∈ s, (w i).toNNReal = 1`, using `∑ i ∈ s, w i = 1` .
     have h_sum_nnreal : ∑ i ∈ s, w i = ↑(∑ i ∈ s, (w i).toNNReal) := by
-      rw [coe_finsetSum]
-      refine sum_congr rfl fun i hi => (coe_toNNReal ?_).symm
-      refine (lt_top_of_sum_ne_top ?_ hi).ne
+      push_cast
+      congr! with i hi
+      refine (coe_toNNReal (lt_top_of_sum_ne_top ?_ hi).ne).symm
       exact hw'.symm ▸ ENNReal.one_ne_top
     rwa [← coe_inj, ← h_sum_nnreal]
 
@@ -324,12 +324,12 @@ for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. 
   if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
 
 theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
-  rw [LpAddConst, if_neg]
+  rw [LpAddConst, ite_eq_right]
   intro h
   exact lt_irrefl _ (h.2.trans_le hp)
 
 theorem LpAddConst_zero : LpAddConst 0 = 1 := by
-  rw [LpAddConst, if_neg]
+  rw [LpAddConst, ite_eq_right]
   intro h
   exact lt_irrefl _ h.1
 
@@ -351,8 +351,8 @@ theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 
       · simp
       · rwa [ENNReal.inv_lt_one, one_lt_ofReal]
     rw [show LpAddConst (ENNReal.ofReal p)⁻¹ =
-        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) from by
-      rw [LpAddConst, if_pos hmem]]
+        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) by
+      rw [LpAddConst, ite_eq_left hmem]]
     simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
     rw [ENNReal.toReal_ofReal hp]
     exact rpow_add_le_mul_rpow_add_rpow _ _ h.le
@@ -366,7 +366,7 @@ theorem rpow_add_le_mul_rpow_add_rpow'' (z₁ z₂ : ℝ≥0∞) {p : ℝ≥0∞
       LpAddConst p * (z₁ ^ p.toReal⁻¹ + z₂ ^ p.toReal⁻¹) := by
   by_cases p_zero : p = 0
   · simp [p_zero, LpAddConst_zero]
-  convert! rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity) using 1
+  convert rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity)
   rw [← ENNReal.toReal_inv, ENNReal.ofReal_toReal (by simpa), inv_inv]
 
 end ENNReal

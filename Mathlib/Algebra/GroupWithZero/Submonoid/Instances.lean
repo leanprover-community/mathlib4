@@ -43,7 +43,7 @@ instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
     obtain ⟨y, hy⟩ := x.prop
     use y⁻¹
     simp [← hy]⟩
-  exists_pair_ne := ⟨⟨f 0, 0, rfl⟩, ⟨f 1, by simp [- map_one]⟩, by simp⟩
+  exists_pair_ne := ⟨⟨f 0, 0, rfl⟩, ⟨f 1, by simp [-map_one]⟩, by simp⟩
   inv_zero := Subtype.ext inv_zero
   mul_inv_cancel := by
     rintro ⟨a, ha⟩ h

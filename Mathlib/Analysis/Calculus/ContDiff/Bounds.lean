@@ -26,12 +26,12 @@ open scoped NNReal Nat ContDiff
 
 universe u uD uE uF uG
 
-open Set Fin Filter Function
+open Set Fin Function
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddCommGroup D]
   [NormedSpace 𝕜 D] {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {s s₁ t u : Set E}
+  {s t u : Set E}
 
 /-!## Quantitative bounds -/
 
@@ -154,9 +154,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg B) fun y => ?_
     refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => ?_
-    simp only [Eu, Fu, Gu, hBu, Bu₀, compL_apply, coe_comp', Function.comp_apply,
-      ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
-      LinearIsometryEquiv.norm_map]
+    simp only [Eu, Fu, Gu, hBu, Bu₀, compL_apply, comp_apply, ContinuousLinearEquiv.coe_coe,
+      LinearIsometryEquiv.coe_coe, flip_apply, LinearIsometryEquiv.norm_map]
     calc
       ‖B (isoE y) (isoF x)‖ ≤ ‖B (isoE y)‖ * ‖isoF x‖ := ContinuousLinearMap.le_opNorm _ _
       _ ≤ ‖B‖ * ‖isoE y‖ * ‖isoF x‖ := by gcongr; apply ContinuousLinearMap.le_opNorm
@@ -284,7 +283,6 @@ theorem norm_iteratedFDeriv_mul_le {f : E → A} {g : E → A} {N : ℕ∞ω} (h
 -- TODO: Add `norm_iteratedFDeriv[Within]_list_prod_le` for non-commutative `NormedRing A`.
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u : Finset ι}
     {f : ι → E → A'} {N : ℕ∞ω} (hf : ∀ i ∈ u, ContDiffOn 𝕜 N (f i) s)
     (hs : UniqueDiffOn 𝕜 s) {x : E} (hx : x ∈ s) {n : ℕ} (hn : n ≤ N) :

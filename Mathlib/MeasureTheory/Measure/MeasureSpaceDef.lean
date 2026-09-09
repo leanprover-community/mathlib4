@@ -59,11 +59,11 @@ assert_not_exists Module.Basis
 
 noncomputable section
 
-open Set Function MeasurableSpace Topology Filter ENNReal NNReal
+open Set Function MeasurableSpace Filter ENNReal
 
 open Filter hiding map
 
-variable {α β γ δ : Type*} {ι : Sort*}
+variable {α β δ : Type*} {ι : Sort*}
 
 namespace MeasureTheory
 
@@ -88,7 +88,7 @@ theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
 
 instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) ℝ≥0∞ where
   coe μ := μ.toOuterMeasure
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
+  coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
 
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
@@ -315,7 +315,7 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter
 
 end ae
 
-open Classical in
+open scoped Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
 This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
@@ -334,7 +334,7 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
-  HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
+  (subset_toMeasurable ..).eventuallySubset
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
@@ -398,7 +398,7 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 -/
 
 
-variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : Measure α}
+variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ : Measure α}
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function.
@@ -484,12 +484,14 @@ theorem aemeasurable_pi_iff {g : α → Π a, X a} :
   constructor
   · exact AEMeasurable.eval
   · intro h
-    use fun x a ↦ (h a).mk _ x, measurable_pi_lambda _ fun a ↦ (h a).measurable_mk
+    use fun x a ↦ (h a).mk _ x, .of_eval fun a ↦ (h a).measurable_mk
     exact (eventually_countable_forall.mpr fun a ↦ (h a).ae_eq_mk).mono fun _ h ↦ funext h
 
 @[fun_prop]
-theorem aemeasurable_pi_lambda (f : α → Π a, X a) (hf : ∀ a, AEMeasurable (fun c ↦ f c a) μ) :
+theorem AEMeasurable.of_eval {f : α → Π a, X a} (hf : ∀ a, AEMeasurable (fun c ↦ f c a) μ) :
     AEMeasurable f μ :=
   aemeasurable_pi_iff.mpr hf
+
+@[deprecated (since := "2026-08-20")] alias aemeasurable_pi_lambda := AEMeasurable.of_eval
 
 end

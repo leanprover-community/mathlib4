@@ -39,10 +39,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `TopCommRingCat.of R` being printed as `{ α := R, ... }` by
-`delabStructureInstance`. -/
+/-- This prints `TopCommRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ α := R, ... }` by `delabStructureInstance`. -/
 @[app_delab TopCommRingCat.of]
-meta def TopCommRingCat.delabOf : Delab := delabApp
+meta def TopCommRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -69,7 +69,7 @@ instance : Category TopCommRingCat.{u} where
 
 instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } R S where
   coe f := f.val
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Continuous f } where
   hom f := f
@@ -79,7 +79,7 @@ theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing
     (of X : Type u) = X := rfl
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
-  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl)
+  HasForget₂.mk' (fun R => ↧R) (fun _ => rfl)
     (fun f => CommRingCat.ofHom f.val) HEq.rfl
 
 instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
@@ -88,7 +88,7 @@ instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
 
 /-- The forgetful functor to `TopCat`. -/
 instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat :=
-  HasForget₂.mk' (fun R => TopCat.of R) (fun _ => rfl) (fun f => TopCat.ofHom ⟨⇑f.1, f.2⟩) HEq.rfl
+  HasForget₂.mk' (fun R => ↧R) (fun _ => rfl) (fun f => TopCat.ofHom ⟨⇑f.1, f.2⟩) HEq.rfl
 
 instance forgetToTopCatCommRing (R : TopCommRingCat) :
     CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=

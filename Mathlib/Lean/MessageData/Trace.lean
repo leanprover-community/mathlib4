@@ -7,7 +7,6 @@ module
 
 import Mathlib.Init
 public import Lean.Message
-public import Std.Data.HashSet.Basic
 
 /-!
 # Utilities for analyzing `MessageData`

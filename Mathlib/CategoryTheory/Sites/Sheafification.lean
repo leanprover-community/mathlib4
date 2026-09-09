@@ -149,9 +149,7 @@ variable {D}
 set_option backward.defeqAttrib.useBackward true in
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
   refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).hom, ?_, ?_⟩
-  · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) :).app ⟨P, hP⟩
-    rw [← sheafificationAdjunction J D |>.right_triangle]
-    rfl
+  · exact sheafificationAdjunction J D |>.right_triangle_components ⟨P, hP⟩
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
     change _ ≫ (sheafificationAdjunction J D).unit.app ((sheafToPresheaf J D).obj ⟨P, hP⟩) = _
     rw [← (sheafificationAdjunction J D).inv_counit_map (X := ⟨P, hP⟩)]
@@ -179,7 +177,6 @@ theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
   rw [Adjunction.homEquiv_counit]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     toSheafify J P ≫ sheafifyLift J η hQ = η := by
@@ -249,7 +246,6 @@ instance (P : Sheaf J D) :
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma sheafifyLift_id_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
     sheafifyLift J (𝟙 P) hP ≫ toSheafify J P = 𝟙 (sheafify J P) := by
