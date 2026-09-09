@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+
+import Mathlib.Algebra.Order.Star.Real
+import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Laplacian Matrix
@@ -281,3 +286,5 @@ theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
   rw [Module.finrank_eq_card_basis G.lapMatrix_ker_basis]
 
 end SimpleGraph
+
+#min_imports
