@@ -43,13 +43,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump
 /-- Two bump functions centered at `0` with the same ratio `rOut / rIn` are dilations of each other:
 `f` is `g` precomposed with scaling by `g.rIn / f.rIn`. -/
 theorem toFun_eq_comp_smul {f g : ContDiffBump (0 : E)} (h : f.rOut / f.rIn = g.rOut / g.rIn) :
-    (⇑f) = fun x ↦ g ((g.rIn / f.rIn) • x) := by
-  ext x
+    ⇑f = fun x ↦ g ((g.rIn / f.rIn) • x) := by
+  ext
   simp only [ContDiffBump.toFun, Function.comp_apply, sub_zero, h, smul_smul]
   congr 2
-  have hf : f.rIn ≠ 0 := f.rIn_pos.ne'
-  have hg : g.rIn ≠ 0 := g.rIn_pos.ne'
-  field_simp
+  field_simp [f.rIn_pos.ne', g.rIn_pos.ne']
 
 /-- The iterated derivatives of two bump functions centered at `0` with the same ratio `rOut / rIn`
 scale by the dilation factor `g.rIn / f.rIn`. -/
