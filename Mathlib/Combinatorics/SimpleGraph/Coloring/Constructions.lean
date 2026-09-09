@@ -5,6 +5,7 @@ Authors: Iván Renison
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
@@ -35,6 +36,9 @@ def pathGraph.bicoloring (n : ℕ) :
     intro u v
     rw [pathGraph_adj]
     rintro (h | h) <;> simp [← h, not_iff, Nat.succ_mod_two_eq_zero_iff]
+
+theorem IsBipartite.pathGraph (n : ℕ) : (pathGraph n).IsBipartite := by
+  simpa using pathGraph.bicoloring n |>.colorable
 
 /-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n` -/
 def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
@@ -96,6 +100,9 @@ def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph 
           ← Fin.even_iff_mod_of_even h, Fin.even_add_one_iff_odd]
         apply Classical.not_iff.mpr
         simp [Fin.not_odd_iff_even_of_even h, Fin.not_even_iff_odd_of_even h]
+
+theorem IsBipartite.cycleGraph_of_even {n : ℕ} (h : Even n) : (cycleGraph n).IsBipartite := by
+  simpa using cycleGraph.bicoloring_of_even n h |>.colorable
 
 theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even n) :
     (cycleGraph n).chromaticNumber = 2 := by
