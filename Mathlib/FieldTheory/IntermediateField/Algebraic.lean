@@ -142,6 +142,14 @@ instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
     FiniteDimensional K (E.map f) :=
   LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
 
+/-- The preimage of a finite-dimensional intermediate field under an algebra homomorphism is
+finite-dimensional. -/
+instance finiteDimensional_comap {L' : Type*} [Field L'] [Algebra K L']
+    (f : L' →ₐ[K] L) [FiniteDimensional K E] : FiniteDimensional K (E.comap f) := by
+  let g : E.comap f →ₐ[K] E :=
+    (f.comp (E.comap f).val).codRestrict E.toSubalgebra (fun x ↦ x.2)
+  exact FiniteDimensional.of_injective g.toLinearMap g.injective
+
 end FiniteDimensional
 
 theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=

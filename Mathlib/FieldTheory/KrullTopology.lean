@@ -46,6 +46,9 @@ all intermediate fields `E` with `E/K` finite dimensional.
 
 - `AlgEquiv.restrictNormalHom_continuous`: restriction to a normal subextension is continuous.
 
+- `AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable`: restriction across a purely
+  inseparable extension is a topological embedding when the smaller field is normal over the base.
+
 - `AlgEquiv.restrictNormalEquivOfIsPurelyInseparable`: restriction across a purely inseparable
   extension induces a topological group isomorphism when both fields are normal over the base.
 
@@ -243,47 +246,38 @@ theorem AlgEquiv.restrictNormalHom_continuous {k K : Type*} [Field k] [Field K] 
   apply f.injective
   exact (σ.restrictNormal_commutes L x).trans (hσ ⟨f x, ⟨x, x.2, rfl⟩⟩)
 
-open IntermediateField in
+open scoped Topology in
+/-- In a tower `L'/L/K` with `L'/L` purely inseparable and `L/K` normal, restriction of
+automorphisms is a topological embedding for the Krull topology.
+No normality of `L'/K` is needed. -/
+theorem AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable
+    (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+    [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [IsPurelyInseparable L L'] :
+    Topology.IsEmbedding (AlgEquiv.restrictNormalHom L : Gal(L'/K) →* Gal(L/K)) := by
+  refine ⟨?_, AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable K L L'⟩
+  rw [IsTopologicalGroup.isInducing_iff_nhds_one]
+  apply le_antisymm
+  · simpa only [map_one] using
+      ((AlgEquiv.restrictNormalHom_continuous (k := K) (K := L') L).continuousAt
+        (x := 1)).le_comap
+  · rw [((galGroupBasis K L).nhds_one_hasBasis.comap (AlgEquiv.restrictNormalHom L)).le_basis_iff
+      (galGroupBasis K L').nhds_one_hasBasis]
+    rintro _ ⟨_, ⟨E, hE : FiniteDimensional K _, rfl⟩, rfl⟩
+    let f := IsScalarTower.toAlgHom K L L'
+    refine ⟨_, ⟨_, ⟨E.comap f, IntermediateField.finiteDimensional_comap f, rfl⟩, rfl⟩, ?_⟩
+    exact (E.comap_fixingSubgroup_of_isPurelyInseparable K L L').le
+
 /-- For a tower `L'/L/K` with `L'/L` purely inseparable and both `L/K` and `L'/K` normal,
 restriction induces an isomorphism of topological groups for the Krull topology. -/
 noncomputable def AlgEquiv.restrictNormalEquivOfIsPurelyInseparable
     (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
     [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [Normal K L']
     [IsPurelyInseparable L L'] : Gal(L'/K) ≃ₜ* Gal(L/K) := by
+  let h := AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable K L L'
   let e : Gal(L'/K) ≃* Gal(L/K) :=
     MulEquiv.ofBijective (AlgEquiv.restrictNormalHom L)
-      ⟨AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable K L L',
-        AlgEquiv.restrictNormalHom_surjective L'⟩
-  refine { e with
-    continuous_toFun := AlgEquiv.restrictNormalHom_continuous L
-    continuous_invFun := ?_ }
-  classical
-  apply continuous_of_continuousAt_one e.symm
-  rw [ContinuousAt, map_one]
-  refine ((galGroupBasis K L).nhds_one_hasBasis.tendsto_iff
-    (galGroupBasis K L').nhds_one_hasBasis).mpr ?_
-  rintro _ ⟨_, ⟨F, hF : FiniteDimensional K _, rfl⟩, rfl⟩
-  have : Algebra.EssFiniteType K F := inferInstance
-  obtain ⟨s, rfl⟩ := essFiniteType_iff.mp this
-  let q := ringExpChar L
-  have : ExpChar L' q := expChar_of_injective_ringHom (algebraMap L L').injective q
-  choose n y hy using fun x : L' ↦ IsPurelyInseparable.pow_mem L q x
-  refine ⟨_, ⟨_, ⟨adjoin K (y '' (s : Set L')), ?_, rfl⟩, rfl⟩, ?_⟩
-  · exact finiteDimensional_adjoin fun x _ ↦ Algebra.IsIntegral.isIntegral x
-  · intro σ hσ
-    change e.symm σ ∈ (adjoin K (s : Set L')).fixingSubgroup
-    rw [IntermediateField.mem_fixingSubgroup_iff]
-    change ∀ x ∈ adjoin K (s : Set L'), e.symm σ • x = x
-    rw [forall_mem_adjoin_smul_eq_self_iff]
-    intro x hx
-    apply iterateFrobenius_inj L' q (n x)
-    change (e.symm σ x) ^ q ^ n x = x ^ q ^ n x
-    rw [← map_pow, ← hy x]
-    rw [← AlgEquiv.restrictNormal_commutes]
-    change algebraMap L L' (e (e.symm σ) (y x)) = _
-    rw [e.apply_symm_apply]
-    congr 1
-    exact hσ ⟨y x, subset_adjoin K _ ⟨x, hx, rfl⟩⟩
+      ⟨h.injective, AlgEquiv.restrictNormalHom_surjective L'⟩
+  exact ContinuousMulEquiv.mk' (e.toEquiv.toHomeomorphOfIsInducing h.isInducing) e.map_mul
 
 @[simp]
 theorem AlgEquiv.restrictNormalEquivOfIsPurelyInseparable_apply
