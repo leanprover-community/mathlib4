@@ -60,14 +60,12 @@ meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e :=
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
   | _, _, _ => throwError "not Finset.dens"
 
-private meta def findMemFinset {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) (p : Q(Prop))
-    (e : Q($p)) :
-    MetaM <| Option <| (a : Q($α)) × Q($a ∈ $s) := withNewMCtxDepth do
+private meta def isMemFinset? {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) (p : Q(Prop)) :
+    MetaM <| Option <| (a : Q($α)) ×' $p =Q ($a ∈ $s) := withNewMCtxDepth do
   let m ← mkFreshExprMVarQ q($α)
   let .defEq _ ← isDefEqQ q($p) q($m ∈ $s) | return none
   let ⟨m, _⟩ ← instantiateMVarsQ' q($m)
-  let ⟨e, _⟩ ← instantiateMVarsQ' q($e)
-  return some ⟨q($m), q($e)⟩
+  return some ⟨q($m), ⟨⟩⟩
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∑ a ∈ s, f a` is nonnegative if `f` is, and
@@ -111,9 +109,10 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
       for ldecl in ← getLCtx do
         if ldecl.isImplementationDetail then continue
         unless ← Meta.isProp ldecl.type do continue
-        let .some ⟨a, ha⟩ ← findMemFinset q($s) ldecl.type ldecl.toExpr | continue
+        have ty : Q(Prop) := ldecl.type
+        have ha : Q($ty) := ldecl.toExpr
+        let .some ⟨a, _⟩ ← isMemFinset? q($s) ty | continue
         have fa : Q($α) := .betaRev f #[a]
-        let fa ← instantiateMVarsQ q($fa)
         let : $fa =Q $f $a := ⟨⟩
         let .positive pa ← catchNone (core zα pα fa) | continue
         assertInstancesCommute
