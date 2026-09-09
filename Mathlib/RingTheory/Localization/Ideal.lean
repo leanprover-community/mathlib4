@@ -371,9 +371,9 @@ lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {R
   simp only [IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     Subtype.exists, exists_prop, this] at hx ⊢
   obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
-  sorry /- was: simp only [← map_mul,
+  simp only [MonoidHom.coe_coe, ← map_mul,
     (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
-  exact ⟨a, ha, H⟩ -/
+  exact ⟨a, ha, H⟩
 
 lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     (f : R →+* R') (hf : Function.Surjective f) (g : S →+* S') (hg : Function.Surjective g)

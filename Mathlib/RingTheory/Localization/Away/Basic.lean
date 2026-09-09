@@ -265,7 +265,7 @@ variable {Aₚ} {Bₚ}
 
 lemma mapₐ_injective_of_injective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
     (hf : Function.Injective f) : Function.Injective (mapₐ Aₚ Bₚ f a) :=
-  sorry -- IsLocalization.map_injective_of_injective _ _ _ hf
+  IsLocalization.map_injective_of_injective _ _ _ hf
 
 lemma mapₐ_surjective_of_surjective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
     (hf : Function.Surjective f) : Function.Surjective (mapₐ Aₚ Bₚ f a) :=
@@ -273,7 +273,7 @@ lemma mapₐ_surjective_of_surjective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] 
     simp only [AlgHom.toRingHom_eq_coe, Submonoid.map_powers,
       RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_coe]
     infer_instance
-  sorry -- IsLocalization.map_surjective_of_surjective _ _ _ hf
+  IsLocalization.map_surjective_of_surjective _ _ _ hf
 
 end Algebra
 
