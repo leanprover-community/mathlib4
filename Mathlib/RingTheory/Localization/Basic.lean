@@ -253,11 +253,11 @@ theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
       mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
   simp [map_mk']
 
-theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
-    algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm T = M by
-      rw [← H, ← Submonoid.map_coe_toMulEquiv, AlgEquiv.symm_toMulEquiv,
-        ← Submonoid.comap_equiv_eq_map_symm, ← Submonoid.map_coe_toMulEquiv,
-        Submonoid.comap_map_eq_of_injective (h : R ≃* P).injective]) := rfl
+theorem algEquivOfAlgEquiv_symm :
+    (algEquivOfAlgEquiv S Q h H).symm =
+      algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm.toMonoidHom T = M by
+        rw [← H]; convert Submonoid.map_id M; ext; simp) :=
+  rfl
 
 end AlgEquivOfAlgEquiv
 

@@ -157,15 +157,16 @@ lemma Splits.taylor {p : R[X]} (hp : p.Splits) (r : R) : (p.taylor r).Splits := 
 theorem splits_iff_exists_multiset' {f : R[X]} :
     Splits f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X + C ·)).prod := by
   refine ⟨fun hf ↦ ?_, ?_⟩
-  · let S : Submonoid R[X] := MonoidHom.mrange C
-    have hS : S = {C a | a : R} := MonoidHom.coe_mrange C
+  · let S : Submonoid R[X] := C.toMonoidHom.mrange
+    have hS : S = {C a | a : R} := C.toMonoidHom.coe_mrange
     rw [Splits, Submonoid.closure_union, ← hS, Submonoid.closure_eq, Submonoid.mem_sup] at hf
     obtain ⟨-, ⟨a, rfl⟩, g, hg, rfl⟩ := hf
     obtain ⟨mg, hmg, rfl⟩ := Submonoid.exists_multiset_of_mem_closure hg
     choose! j hj using hmg
     have hmg : mg = (mg.map j).map (X + C ·) := by simp [Multiset.map_congr rfl hj]
-    rw [hmg, leadingCoeff_mul_monic, leadingCoeff_C]
+    rw [hmg, leadingCoeff_mul_monic]
     · use mg.map j
+      simp
     · rw [hmg]
       apply monic_multiset_prod_of_monic
       simp [monic_X_add_C]

@@ -294,7 +294,7 @@ variable {R S Rₘ Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Rₘ] [Comm
 variable (M : Submonoid R)
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-variable [IsLocalization (M.map (algebraMap R S)) Sₘ]
+variable [IsLocalization (M.map (algebraMap R S).toMonoidHom) Sₘ]
 include M
 
 /-- This holds in general for epimorphisms. -/
@@ -323,7 +323,7 @@ theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ 
 theorem localization_map [FormallyUnramified R S] :
     FormallyUnramified Rₘ Sₘ := by
   have : FormallyUnramified S Sₘ :=
-    FormallyUnramified.of_isLocalization (M.map (algebraMap R S))
+    FormallyUnramified.of_isLocalization (M.map (algebraMap R S).toMonoidHom)
   have : FormallyUnramified R Sₘ := FormallyUnramified.comp R S Sₘ
   exact FormallyUnramified.localization_base M
 

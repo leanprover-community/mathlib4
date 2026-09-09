@@ -125,7 +125,7 @@ theorem associated_of_valuation_eq (x y : K)
     simp_all
   by_cases hy : y = 0
   · simp_all
-  have : (y / x) ∈ MonoidHom.mker (((maximalIdeal A).valuation K)) := by simp_all
+  have : (y / x) ∈ ((maximalIdeal A).valuation K).toMonoidHom.mker := by simp_all
   rw [mker_valuation_eq_isUnitSubmonoid] at this
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1

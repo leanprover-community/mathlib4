@@ -87,8 +87,8 @@ if `P` holds for `M⁻¹R →+* M⁻¹S` whenever `P` holds for `R →+* S`. -/
 def RingHom.LocalizationPreserves :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (M : Submonoid R) (R' S' : Type u)
     [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [IsLocalization M R']
-    [IsLocalization (M.map f) S'],
-    P f → P (IsLocalization.map S' f (Submonoid.le_comap_map M) : R' →+* S')
+    [IsLocalization (M.map f.toMonoidHom) S'],
+    P f → P (IsLocalization.map S' f (Submonoid.le_comap_map (f := f.toMonoidHom) M) : R' →+* S')
 
 /-- A property `P` of ring homs is said to be preserved by localization away
 if `P` holds for `Rᵣ →+* Sᵣ` whenever `P` holds for `R →+* S`. -/
@@ -258,21 +258,23 @@ lemma RingHom.HoldsForLocalization.isLocalizationMap
     {f : R →+* S} (hy : M ≤ Submonoid.comap f T) (hf : P f) :
     P (IsLocalization.map (S := R') S' f hy) := by
   have hle : Submonoid.map f M ≤ T := by simpa [Submonoid.map_le_iff_le_comap]
-  let : Algebra (Localization (M.map f)) S' :=
-    IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (M.map f) T hle
-  have : IsScalarTower S (Localization (Submonoid.map f M)) S' :=
+  let : Algebra (Localization (M.map f.toMonoidHom)) S' :=
+    IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (M.map f.toMonoidHom) T hle
+  have : IsScalarTower S (Localization (Submonoid.map f.toMonoidHom M)) S' :=
     IsLocalization.localization_isScalarTower_of_submonoid_le _ _ _ _ _
   have : IsLocalization (T.map (algebraMap S (Localization (M.map f)))) S' :=
     IsLocalization.isLocalization_of_submonoid_le _ _ (M.map f) T hle
   have heq : IsLocalization.map (S := R') S' f hy =
       (algebraMap _ _).comp
-        (IsLocalization.map (M := M) (T := M.map f) (S := R') (Localization (M.map f)) f
+        (IsLocalization.map (M := M) (T := M.map f.toMonoidHom) (S := R')
+          (Localization (M.map f.toMonoidHom)) f
           (M.le_comap_map)) := by
     apply IsLocalization.ringHom_ext M
     ext
     simp [← IsScalarTower.algebraMap_apply]
   rw [heq]
-  exact hPc _ _ (hPp _ _ _ _ hf) (hPl _ (T.map (algebraMap S (Localization (M.map f)))))
+  exact hPc _ _ (hPp _ _ _ _ hf)
+    (hPl _ (T.map (algebraMap S (Localization (M.map f.toMonoidHom))).toMonoidHom))
 
 lemma RingHom.HoldsForLocalization.localRingHom (hPc : StableUnderComposition P)
     (hPp : LocalizationPreserves P) (hPl : HoldsForLocalization P)
@@ -356,7 +358,7 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) :
     RingHom.LocalizationAwayPreserves P := by
   intro R S _ _ f r R' S' _ _ _ _ _ _ hf
-  have : IsLocalization ((Submonoid.powers r).map f) S' := by rwa [Submonoid.map_powers]
+  have : IsLocalization ((Submonoid.powers r).map f.toMonoidHom) S' := by rwa [Submonoid.map_powers]
   exact H f (Submonoid.powers r) R' S' hf
 
 lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P)

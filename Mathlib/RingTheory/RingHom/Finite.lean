@@ -65,10 +65,10 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
   introv R hf
   let := f.toAlgebra
   let := ((algebraMap S S').comp f).toAlgebra
-  let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
+  let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map (f := f.toMonoidHom) M)
   let := f'.toAlgebra
   have : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq'
-    (IsLocalization.map_comp M.le_comap_map).symm
+    (IsLocalization.map_comp (M.le_comap_map (f := f.toMonoidHom))).symm
   have : IsScalarTower R S S' := IsScalarTower.of_algebraMap_eq' rfl
   have : IsLocalization (Algebra.algebraMapSubmonoid S M) S' := by
     rwa [Algebra.algebraMapSubmonoid, RingHom.algebraMap_toAlgebra]
@@ -90,12 +90,12 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   -- We first setup the instances
   let := f.toAlgebra
   let := fun r : s => (Localization.awayMap f r).toAlgebra
-  have (r : s) : IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S))
+  have (r : s) : IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S).toMonoidHom)
       (Localization.Away (f r)) := by
     rw [Submonoid.map_powers]; exact Localization.isLocalization
   have : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
     fun r => IsScalarTower.of_algebraMap_eq'
-      (IsLocalization.map_comp (Submonoid.powers (r : R)).le_comap_map).symm
+      (IsLocalization.map_comp ((Submonoid.powers (r : R)).le_comap_map (f := f.toMonoidHom))).symm
   -- By the hypothesis, we may find a finite generating set for each `Sᵣ`. This set can then be
   -- lifted into `R` by multiplying a sufficiently large power of `r`. I claim that the union of
   -- these generates `S`.

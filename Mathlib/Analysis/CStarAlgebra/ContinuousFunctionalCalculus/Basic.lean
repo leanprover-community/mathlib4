@@ -434,7 +434,7 @@ instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
     have := CStarAlgebra.spectralOrderedRing A⁺¹
     apply spectrum_nonneg_of_nonneg
     rw [StarOrderedRing.nonneg_iff] at ha ⊢
-    have := AddSubmonoid.mem_map_of_mem (Unitization.inrNonUnitalStarAlgHom ℂ A) ha
+    have := AddSubmonoid.mem_map_of_mem (Unitization.inrNonUnitalStarAlgHom ℂ A).toAddMonoidHom ha
     rw [AddMonoidHom.map_mclosure, ← Set.range_comp] at this
     apply AddSubmonoid.closure_mono ?_ this
     rintro _ ⟨s, rfl⟩

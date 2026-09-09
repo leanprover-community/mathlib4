@@ -99,9 +99,9 @@ variable [Algebra Rₚ Aₚ] [Algebra Rₚ Bₚ] [IsScalarTower R Rₚ Aₚ] [Is
 namespace IsLocalization
 
 instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
-    IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
-  rw [AlgHom.toRingHom_eq_coe, ← Submonoid.map_coe_toMonoidHom, AlgHom.toRingHom_toMonoidHom,
-    Submonoid.map_coe_toMonoidHom, algebraMapSubmonoid_map_eq M f]
+    IsLocalization ((algebraMapSubmonoid A M).map f.toMonoidHom) Bₚ := by
+  rw [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
+    algebraMapSubmonoid_map_eq M f]
   infer_instance
 
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
@@ -190,7 +190,7 @@ attribute [local instance] Polynomial.algebra in
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
 lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
-    [IsLocalization S A] : IsLocalization (S.map C) A[X] :=
+    [IsLocalization S A] : IsLocalization (S.map C.toMonoidHom) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
     .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
 

@@ -122,7 +122,8 @@ section CommSemiring
 theorem of_ringEquiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
     {K : Type*} [CommSemiring K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
     (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsFractionRing S K] :
-    IsFractionRing R K := IsLocalization.of_ringEquiv_left e (MulEquivClass.map_nonZeroDivisors e) h
+    IsFractionRing R K :=
+  IsLocalization.of_ringEquiv_left e (MulEquivClass.map_nonZeroDivisors e.toMulEquiv) h
 
 end CommSemiring
 
@@ -434,7 +435,7 @@ variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
 fraction rings `K ≃+* L`. -/
 @[simps! apply]
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
-  IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
+  IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h.toMulEquiv)
 
 lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
@@ -533,7 +534,7 @@ variable {R A K B L : Type*} [CommSemiring R] [CommRing A] [CommRing B] [CommRin
 `f : A →ₐ[R] K, g : B →ₐ[R] L`, an isomorphism `h : A ≃ₐ[R] B` induces an isomorphism of
 fraction rings `K ≃ₐ[R] L`. -/
 noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
-  IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
+  IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h.toMulEquiv)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -633,7 +634,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
   convert! isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
-  exact (MulEquivClass.map_nonZeroDivisors h).symm
+  exact (MulEquivClass.map_nonZeroDivisors h.toMulEquiv).symm
 
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
 

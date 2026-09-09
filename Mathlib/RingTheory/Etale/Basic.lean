@@ -173,7 +173,7 @@ variable (M : Submonoid R)
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 /-! and that Rₘ and Sₘ are localizations of R and S at M. -/
-variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
+variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S).toMonoidHom) Sₘ]
 include M
 
 theorem of_isLocalization : FormallyEtale R Rₘ :=
@@ -189,7 +189,7 @@ theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
 
 /-- The localization of a formally étale map is formally étale. -/
 theorem localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
-  have : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
+  have : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S).toMonoidHom)
   have : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
   exact FormallyEtale.localization_base M
 

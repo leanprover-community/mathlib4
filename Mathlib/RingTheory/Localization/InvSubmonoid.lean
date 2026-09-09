@@ -49,15 +49,15 @@ theorem submonoid_map_le_is_unit : M.map (algebraMap R S) ≤ IsUnit.submonoid S
   exact IsLocalization.map_units S ⟨_, ha⟩
 
 /-- There is an equivalence of monoids between the image of `M` and `invSubmonoid`. -/
-noncomputable abbrev equivInvSubmonoid : M.map (algebraMap R S) ≃* invSubmonoid M S :=
-  ((M.map (algebraMap R S)).leftInvEquiv (submonoid_map_le_is_unit M S)).symm
+noncomputable abbrev equivInvSubmonoid : M.map (algebraMap R S).toMonoidHom ≃* invSubmonoid M S :=
+  ((M.map (algebraMap R S).toMonoidHom).leftInvEquiv (submonoid_map_le_is_unit M S)).symm
 
 /-- There is a canonical map from `M` to `invSubmonoid` sending `x` to `1 / x`. -/
 noncomputable def toInvSubmonoid : M →* invSubmonoid M S :=
   (equivInvSubmonoid M S).toMonoidHom.comp ((algebraMap R S : R →* S).submonoidMap M)
 
 theorem toInvSubmonoid_surjective : Function.Surjective (toInvSubmonoid M S) :=
-  Function.Surjective.comp (β := M.map (algebraMap R S))
+  Function.Surjective.comp (β := M.map (algebraMap R S).toMonoidHom)
     (Equiv.surjective (equivInvSubmonoid _ _).toEquiv) (MonoidHom.submonoidMap_surjective _ _)
 
 @[simp]

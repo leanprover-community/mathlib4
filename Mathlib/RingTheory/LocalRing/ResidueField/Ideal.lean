@@ -127,7 +127,7 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
 
 instance [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
   IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
-    (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)
+    (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm.toMulEquiv) (by simp)
 
 instance [Finite (R ⧸ I)] : Finite I.ResidueField :=
   IsLocalization.finite (R ⧸ I) (nonZeroDivisors (R ⧸ I))

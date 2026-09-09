@@ -309,7 +309,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
       IsLocalization.Away (((algebraMap S (Localization.Away a.val)).comp f) r) (Sₐ a) :=
     inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
   have (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
-    (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
+    (Submonoid.map f.toMonoidHom (Submonoid.powers r))) (Sₐ a) := by
     convert! (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
     simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
@@ -323,8 +323,8 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
       inferInstance, inferInstance, fun a ↦ ?_, fun a ↦ ?_⟩
   · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
   · convert!
-    IsLocalization.commutes (T := Sₐ a) (M₁ := (Submonoid.powers r).map f) (S₁ := S') (S₂ :=
-      Localization.Away a.val) (M₂ := Submonoid.powers a.val)
+    IsLocalization.commutes (T := Sₐ a) (M₁ := (Submonoid.powers r).map f.toMonoidHom) (S₁ := S')
+      (S₂ := Localization.Away a.val) (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]
   · rw [algebraMap_toAlgebra, IsLocalization.Away.map, IsLocalization.map_comp_map]
     exact hPl ((algebraMap _ (Localization.Away a.val)).comp f) r R' (Sₐ a) (hs _ a.2)
@@ -336,20 +336,23 @@ lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :
   obtain ⟨s, hsone, hs⟩ := hf
   rw [locally_iff_exists hPl.away.respectsIso]
   let Mₐ (a : s) : Submonoid (Localization.Away a.val) :=
-    (M.map f).map (algebraMap S (Localization.Away a.val))
+    (M.map f).map (algebraMap S (Localization.Away a.val)).toMonoidHom
   let Sₐ (a : s) := Localization (Mₐ a)
   have hM (a : s) : M.map ((algebraMap S (Localization.Away a.val)).comp f) = Mₐ a :=
-    (M.map_map _ _).symm
-  have (a : s) :
-      IsLocalization (M.map ((algebraMap S (Localization.Away a.val)).comp f)) (Sₐ a) := by
-    rw [hM]
+    sorry -- was: (M.map_map _ _).symm
+  have (a : s) : IsLocalization
+      (M.map ((algebraMap S (Localization.Away a.val)).comp f).toMonoidHom) (Sₐ a) := by
+    simp only [toMonoidHom_eq_coe, hM]
     infer_instance
   have (a : s) :
-      IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val) (M.map f)) (Sₐ a) :=
+      IsLocalization
+        (Algebra.algebraMapSubmonoid (Localization.Away a.val) (M.map f.toMonoidHom)) (Sₐ a) :=
     inferInstanceAs <| IsLocalization (Mₐ a) (Sₐ a)
+  sorry /- partially fixed version:
   let (a : s) : Algebra S' (Sₐ a) :=
     (IsLocalization.map (Sₐ a) (algebraMap S (Localization.Away a.val))
-      (M.map f).le_comap_map).toAlgebra
+      ((M.map f.toMonoidHom).le_comap_map
+        (f := (algebraMap S (Localization.Away a.val)).toMonoidHom))).toAlgebra
   have (a : s) : IsScalarTower S S' (Sₐ a) :=
     IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp (M.map f).le_comap_map).symm
   refine ⟨s, fun a ↦ algebraMap S S' a.val, ?_, Sₐ,

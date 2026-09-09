@@ -41,13 +41,13 @@ If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.
 
 See also `Polynomial.isLocalization` for the univariate case. -/
-instance isLocalization : IsLocalization (M.map <| C (σ := σ)) (MvPolynomial σ S) :=
+instance isLocalization : IsLocalization (M.map (C (σ := σ)).toMonoidHom) (MvPolynomial σ S) :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange M S _).mpr <|
     .of_equiv (algebraTensorAlgEquiv _ _).toLinearEquiv fun _ ↦ by simp
 
 lemma isLocalization_C_mk' (a : R) (m : M) :
     C (IsLocalization.mk' S a m) = IsLocalization.mk' (MvPolynomial σ S) (C (σ := σ) a)
-      ⟨C m, Submonoid.mem_map_of_mem C m.property⟩ := by
+      ⟨C m, Submonoid.mem_map_of_mem C.toMonoidHom m.property⟩ := by
   simp_rw [IsLocalization.eq_mk'_iff_mul_eq, algebraMap_def, map_C, ← map_mul,
     IsLocalization.mk'_spec]
 

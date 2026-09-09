@@ -239,7 +239,8 @@ variable {B : Type*} [CommSemiring B] [Algebra R B]
 variable (Aₚ : Type*) [CommSemiring Aₚ] [Algebra A Aₚ] [Algebra R Aₚ] [IsScalarTower R A Aₚ]
 variable (Bₚ : Type*) [CommSemiring Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [IsScalarTower R B Bₚ]
 
-instance {f : A →+* B} (a : A) [Away (f a) Bₚ] : IsLocalization (.map f (.powers a)) Bₚ := by
+instance {f : A →+* B} (a : A) [Away (f a) Bₚ] :
+    IsLocalization (.map f.toMonoidHom (.powers a)) Bₚ := by
   simpa
 
 instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :

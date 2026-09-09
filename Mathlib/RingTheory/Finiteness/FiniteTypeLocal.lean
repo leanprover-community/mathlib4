@@ -67,13 +67,14 @@ then there exists some `m : M` such that `m • x` falls in the
 adjoin of `IsLocalization.finsetIntegerMultiple _ s` over `R`.
 -/
 theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S']
-    [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S)) S'] (x : S) (s : Finset S')
-    (hx : algebraMap S S' x ∈ Algebra.adjoin R (s : Set S')) :
+    [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S).toMonoidHom) S']
+    (x : S) (s : Finset S') (hx : algebraMap S S' x ∈ Algebra.adjoin R (s : Set S')) :
     ∃ m : M, m • x ∈
       Algebra.adjoin R
-        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
+        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S).toMonoidHom) s : Set S) := by
   obtain ⟨⟨_, a, ha, rfl⟩, e⟩ :=
-    IsLocalization.exists_smul_mem_of_mem_adjoin (M.map (algebraMap R S)) x s (Algebra.adjoin R _)
+    IsLocalization.exists_smul_mem_of_mem_adjoin
+      (M.map (algebraMap R S).toMonoidHom) x s (Algebra.adjoin R _)
       Algebra.subset_adjoin (by rintro _ ⟨a, _, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
   refine ⟨⟨a, ha⟩, ?_⟩
   simpa only [Submonoid.smul_def, algebraMap_smul] using e

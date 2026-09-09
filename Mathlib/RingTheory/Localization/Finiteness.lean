@@ -53,16 +53,16 @@ then there exists some `m : M` such that `m • x` falls in the
 span of `IsLocalization.finsetIntegerMultiple _ s` over `R`.
 -/
 theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebra R S']
-    [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S)) S'] (x : S) (s : Finset S')
+    [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S).toMonoidHom) S'] (x : S) (s : Finset S')
     (hx : algebraMap S S' x ∈ Submodule.span R (s : Set S')) :
     ∃ m : M, m • x ∈
       Submodule.span R
-        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
+        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S).toMonoidHom) s : Set S) := by
   let g : S →ₐ[R] S' :=
     AlgHom.mk' (algebraMap S S') fun c x => by simp [Algebra.algebraMap_eq_smul_one]
   have g_apply : ∀ x, g x = algebraMap S S' x := fun _ => rfl
   -- We first obtain the `y' ∈ M` such that `s' = y' • s` is falls in the image of `S` in `S'`.
-  let y := IsLocalization.commonDenomOfFinset (M.map (algebraMap R S)) s
+  let y := IsLocalization.commonDenomOfFinset (M.map (algebraMap R S).toMonoidHom) s
   have hx₁ : (y : S) • (s : Set S') = g '' _ :=
     (IsLocalization.finsetIntegerMultiple_image _ s).symm
   obtain ⟨y', hy', e : algebraMap R S y' = y⟩ := y.prop
@@ -79,11 +79,11 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   -- Thus `a • (y' • x) = a • x' ∈ span s'` in `S` for some `a ∈ M`.
   obtain ⟨x', hx', hx'' : algebraMap _ _ _ = _⟩ := hx
   obtain ⟨⟨_, a, ha₁, rfl⟩, ha₂⟩ :=
-    (IsLocalization.eq_iff_exists (M.map (algebraMap R S)) S').mp hx''
+    (IsLocalization.eq_iff_exists (M.map (algebraMap R S).toMonoidHom) S').mp hx''
   use (⟨a, ha₁⟩ : M) * (⟨y', hy'⟩ : M)
   convert!
     (Submodule.span R
-          (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s :
+        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S).toMonoidHom) s :
             Set S)).smul_mem
       a hx' using 1
   convert! ha₂.symm using 1
@@ -332,5 +332,6 @@ lemma RingHom.ker_fg_of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
     (RingHom.ker f).FG := by
   apply Ideal.fg_of_localizationSpan t ht
   intro g
-  rw [← IsLocalization.ker_map (Localization.Away (f g.val)) f (Submonoid.map_powers f g.val)]
+  rw [← IsLocalization.ker_map (Localization.Away (f g.val)) f
+    (Submonoid.map_powers f.toMonoidHom g.val)]
   exact H g

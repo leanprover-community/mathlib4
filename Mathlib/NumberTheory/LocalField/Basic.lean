@@ -120,10 +120,10 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
     (isCompact_iff_compactSpace.mpr (inferInstance : CompactSpace 𝒪[K]))
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
-    ⟨.ofBijective (MonoidHom.mrange (valuation K)).subtype ⟨Subtype.val_injective, fun x ↦
+    ⟨.ofBijective ((valuation K).toMonoidHom.mrange).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
   have : Nontrivial (ValueGroupWithZero K)ˣ := isNontrivial_iff_nontrivial_units.mp inferInstance
-  have : Nontrivial (↥(MonoidHom.mrange (valuation K)))ˣ :=
+  have : Nontrivial (↥((valuation K).toMonoidHom.mrange))ˣ :=
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
   exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
 
