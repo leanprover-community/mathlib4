@@ -214,7 +214,7 @@ lemma exists_isNilpotent_of_not_isReduced {R : Type*} [Zero R] [Pow R ℕ] (h : 
 end Nilpotent
 
 section MonoidWithZero
-variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
+variable [MonoidWithZero M₀] {a b : M₀} {n : ℕ}
 
 @[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
   | n + 1, _ => by rw [pow_succ, mul_zero]
@@ -274,6 +274,26 @@ theorem exists_right_inv_of_exists_left_inv {α} [MonoidWithZero α]
   obtain ⟨c, hc⟩ := h b (left_ne_zero_of_mul <| hb.trans_ne one_ne_zero)
   refine ⟨b, ?_⟩
   conv_lhs => rw [← one_mul (a * b), ← hc, mul_assoc, ← mul_assoc b, hb, one_mul, hc]
+
+/-- In a reduced monoid, annihilation is symmetric. -/
+theorem mul_eq_zero_comm_of_reduced (h : a * b = 0) : b * a = 0 := by
+  refine IsReduced.eq_zero _ ⟨2, ?_⟩
+  have h2 : (b * a) ^ 2 = b * (a * b) * a := by simp [pow_two, mul_assoc]
+  rw [h2, h]
+  simp
+
+/-- A reduced monoid is semicommutative: `a * b = 0` implies `a * r * b = 0` for all `r`. -/
+theorem mul_mid_eq_zero_of_reduced (h : a * b = 0) (r : M₀) : a * r * b = 0 := by
+  have hba : b * a = 0 := mul_eq_zero_comm_of_reduced h
+  refine IsReduced.eq_zero _ ⟨2, ?_⟩
+  have h2 : (a * r * b) ^ 2 = a * r * (b * a) * (r * b) := by simp [pow_two, mul_assoc]
+  simp [h2, hba]
+
+/-- In a reduced monoid, `a * b * b = 0` implies `a * b = 0`. -/
+theorem mul_eq_zero_of_mul_sq_eq_zero_of_reduced (h : a * b * b = 0) : a * b = 0 := by
+  have h2 : b * (a * b) = 0 := mul_eq_zero_comm_of_reduced (a := a * b) (b := b) h
+  refine IsReduced.eq_zero _ ⟨2, ?_⟩
+  simp [pow_two, mul_assoc, h2]
 
 end MonoidWithZero
 
@@ -543,28 +563,6 @@ end CommGroupWithZero
 
 section IsReduced
 
-variable {R : Type*} [MonoidWithZero R] [IsReduced R]
 
-variable {a b : R}
-
-/-- In a reduced monoid, annihilation is symmetric. -/
-theorem mul_eq_zero_comm_of_reduced (h : a * b = 0) : b * a = 0 := by
-  refine IsReduced.eq_zero _ ⟨2, ?_⟩
-  have h2 : (b * a) ^ 2 = b * (a * b) * a := by simp [pow_two, mul_assoc]
-  rw [h2, h]
-  simp
-
-/-- A reduced monoid is semicommutative: `a * b = 0` implies `a * r * b = 0` for all `r`. -/
-theorem mul_mid_eq_zero_of_reduced (h : a * b = 0) (r : R) : a * r * b = 0 := by
-  have hba : b * a = 0 := mul_eq_zero_comm_of_reduced h
-  refine IsReduced.eq_zero _ ⟨2, ?_⟩
-  have h2 : (a * r * b) ^ 2 = a * r * (b * a) * (r * b) := by simp [pow_two, mul_assoc]
-  simp [h2, hba]
-
-/-- In a reduced monoid, `a * b * b = 0` implies `a * b = 0`. -/
-theorem mul_eq_zero_of_mul_sq_eq_zero_of_reduced (h : a * b * b = 0) : a * b = 0 := by
-  have h2 : b * (a * b) = 0 := mul_eq_zero_comm_of_reduced (a := a * b) (b := b) h
-  refine IsReduced.eq_zero _ ⟨2, ?_⟩
-  simp [pow_two, mul_assoc, h2]
 
 end IsReduced
