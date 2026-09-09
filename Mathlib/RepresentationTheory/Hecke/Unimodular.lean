@@ -51,6 +51,11 @@ lemma inv_eq_iff (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G))
     x.inv = y ↔ x = y.inv :=
   ⟨by intro rfl; simp, by intro rfl; simp⟩
 
+lemma relPosition_mem_one_eq_iff {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)} {c : G ⧸ H₁} :
+    relPosition c (1 : G) = x ↔ c ∈ x.inv.leftDecomposition :=
+  QuotientGroup.induction_on c fun g =>
+    ⟨fun h => by simpa using congrArg (fun y => y.inv) h, by simp [← DoubleCoset.inv_eq_iff]⟩
+
 end DoubleCoset
 
 /-- A subgroup `H` is called Hecke unimodular if `Nat.card HgH = Nat.card Hg⁻¹H` for any `g`. -/
@@ -103,23 +108,13 @@ lemma inv_degree (x : DoubleCoset₀ H H) :
     x.inv.degree = x.degree := by
   simp [inv, degree]
 
-omit [H.IsHeckeUnimodular] in
-lemma relPosition_mem_one_eq_inv {x : DoubleCoset₀ H H} {c : G ⧸ H} :
-    c ∈ x.leftDecomposition → relPosition c (1 : G) = x.val.inv :=
-  QuotientGroup.induction_on c (fun g h => by simp; simpa using congrArg (fun y => y.inv) h)
-
 @[simp]
 lemma structureConst_apply_one {x y : DoubleCoset₀ H H} [Decidable (y = x.inv)] :
     x.structureConst y (mk H H 1) = if y = x.inv then x.degree else 0 := by
   rw [structureConst_coe, structureConst_mk, degree, degree_def]
   by_cases h : y = x.inv
-  · simp only [↓reduceIte, h]
-    congr 2
-    simpa using fun _ => relPosition_mem_one_eq_inv
+  · simp [h, relPosition_mem_one_eq_iff]
   · simp only [↓reduceIte, h, Nat.card_eq_zero, isEmpty_iff]
-    exact .inl (fun ⟨a, ha⟩ => by
-      simp only [ne_eq, Set.mem_ofPred_eq] at ha
-      apply h
-      simpa [← coe_inv, ha.2, Subtype.ext_iff (a1 := y)] using relPosition_mem_one_eq_inv ha.1)
+    exact .inl fun ⟨_, ha⟩ => h (by rw [Subtype.ext_iff, ← ha]; simp [relPosition_mem_one_eq_iff])
 
 end DoubleCoset₀
