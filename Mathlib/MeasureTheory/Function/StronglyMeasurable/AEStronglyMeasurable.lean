@@ -573,7 +573,6 @@ theorem nullMeasurableSet_eq_fun {E} [TopologicalSpace E] [MetrizableSpace E] {f
     (hf.stronglyMeasurable_mk.measurableSet_eq_fun
           hg.stronglyMeasurable_mk).nullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (hf.mk f x = hg.mk g x) = (f x = g x)
   simp only [hfx, hgx]
 
 @[to_additive]
@@ -587,7 +586,6 @@ theorem nullMeasurableSet_lt [Preorder β] [OrderClosedTopology β] [PseudoMetri
   apply
     (hf.stronglyMeasurable_mk.measurableSet_lt hg.stronglyMeasurable_mk).nullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (hf.mk f x < hg.mk g x) = (f x < g x)
   simp only [hfx, hgx]
 
 theorem nullMeasurableSet_le [Preorder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
@@ -596,7 +594,6 @@ theorem nullMeasurableSet_le [Preorder β] [OrderClosedTopology β] [PseudoMetri
   apply
     (hf.stronglyMeasurable_mk.measurableSet_le hg.stronglyMeasurable_mk).nullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (hf.mk f x ≤ hg.mk g x) = (f x ≤ g x)
   simp only [hfx, hgx]
 
 theorem _root_.aestronglyMeasurable_of_aestronglyMeasurable_trim {α} {m m0 : MeasurableSpace α}

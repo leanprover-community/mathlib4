@@ -228,5 +228,5 @@ theorem MeasureTheory.volume_eq_of_finrank_eq_one (h : Module.finrank ℝ E = 1)
     ext x
     simp [f, mul_comm, smul_smul]
   _ = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := by
-    rw [map_addHaar_smul _ (by simpa using hv)]
+    rw [map_addHaar_smul _ (by simpa using hv), Measure.map_smul _ (by fun_prop)]
     simp

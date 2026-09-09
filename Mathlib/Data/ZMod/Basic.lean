@@ -519,6 +519,10 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 theorem natCast_eq_zero_iff (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
 
+lemma neg_one_eq_one_iff {n : ℕ} : (-1 : ZMod n) = 1 ↔ n = 1 ∨ n = 2 := by
+  rw [neg_eq_iff_add_eq_zero, one_add_one_eq_two, ← Nat.cast_ofNat, natCast_eq_zero_iff,
+    Nat.dvd_prime Nat.prime_two]
+
 set_option backward.isDefEq.respectTransparency false in
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
