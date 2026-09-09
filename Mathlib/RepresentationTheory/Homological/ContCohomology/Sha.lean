@@ -38,7 +38,6 @@ open CategoryTheory
 
 namespace ContinuousCohomology
 
-#check
 /-- The Tate-Shafarevich group of a continuous representation. -/
 @[simps!]
 noncomputable def tateSha : AddSubgroup (continuousCohomology n A) :=
