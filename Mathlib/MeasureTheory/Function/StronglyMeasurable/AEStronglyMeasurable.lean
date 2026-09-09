@@ -381,6 +381,11 @@ protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
   ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
 
+@[simp] protected theorem star_iff
+    {R : Type*} [TopologicalSpace R] [InvolutiveStar R] [ContinuousStar R] {f : α → R} :
+    AEStronglyMeasurable (star f) μ ↔ AEStronglyMeasurable f μ :=
+  ⟨fun h ↦ by simpa using h.star, fun h ↦ h.star⟩
+
 end Star
 
 section Order
