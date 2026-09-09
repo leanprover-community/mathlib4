@@ -145,7 +145,12 @@ theorem d_eq [DecidableEq G] :
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  --try remove `ChainComplex.of_X`
+  -- try remove `ChainComplex.of_X`, if removing it needs erw `Coinvariants.map_mk`
+  -- which needs `Representation.free k G (Fin (n + 1) → G) =`
+  -- `ρ (HomologicalComplex.X (barComplex k G) (n + 1))`
+  -- the equality works with `with_implicit rfl`, but not `with_reducible_and_instances rfl`
+  -- attempts: setting `ChainComplex.of` instance reducible won't work,
+  -- only setting reducible would help
   simp [d_single (k := k), ChainComplex.of_X, barComplex.d_single (k := k), TensorProduct.tmul_add,
     TensorProduct.tmul_sum]
 

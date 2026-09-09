@@ -52,6 +52,7 @@ theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ res f₁ B} {
   subst h
   rfl
 
+--attribute [local reducible] ChainComplex.of in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 @[simps! -isSimp f f_hom]
@@ -62,8 +63,15 @@ noncomputable def chainsMap :
     subst hij
     ext
     --try remove `of_X`
-    simp [Fin.comp_contractNth, map_add, inhomogeneousChains.d, Rep.hom_comm_apply φ,
-      ChainComplex.of_X]
+    simp only [res_obj_ρ, ModuleCat.ofHom_comp, ChainComplex.of_d',
+      inhomogeneousChains.d, eqToHom_refl, Category.id_comp, Category.assoc, ModuleCat.hom_comp,
+      ConcreteCategory.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, lsingle_apply,
+      lmapDomain_apply, mapDomain_single, coe_lsum, LinearMap.coe_add, LinearMap.coe_sum,
+      LinearMap.coe_smul, Pi.add_apply, map_zero, Finset.sum_apply, Pi.smul_apply,
+      smul_zero, Finset.sum_const_zero, add_zero, sum_single_index, smul_single, map_add, map_sum]
+    rw [mapRange.linearMap_apply, mapRange.linearMap_apply]
+
+    --simp [Fin.comp_contractNth, map_add, inhomogeneousChains.d, Rep.hom_comm_apply φ,
     rfl
 
 lemma chainsMap_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg : f = g)
