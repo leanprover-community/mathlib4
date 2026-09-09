@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 
+import Mathlib.RingTheory.IsReduced
+
 /-!
 # Theory of univariate polynomials
 
@@ -311,6 +313,27 @@ theorem one_add_X_pow_sub_X_pow {S : Type*} [CommRing S] (d : ℕ) :
   ext i
   simp [Polynomial.coeff_one_add_X_pow]
   split_ifs <;> simp_all [Nat.choose_eq_zero_of_lt, lt_iff_le_and_ne]
+
+/-- Armendariz's theorem for reduced semirings: if `p * q = 0` in `R[X]` with `R` reduced, then
+every coefficient of `p` annihilates every coefficient of `q`. -/
+theorem coeff_mul_coeff_eq_zero_of_isReduced [IsReduced R] (p q : R[X]) (h : p * q = 0) (j i : ℕ) :
+    coeff p i * coeff q j = 0 := by
+  revert i -- Revert so iHj quantifies over Nat instead of bounded Nat.
+  induction j using Nat.strong_induction_on with
+  | _ j IHj =>
+    intro i
+    induction i using Nat.strong_induction_on with
+    | _ i IHi =>
+      have : ∑ x ∈ Finset.antidiagonal (i + j), (coeff p x.1 * coeff q x.2) * coeff q j = 0 := by
+        rw [← Finset.sum_mul, ← coeff_mul, h, coeff_zero, zero_mul]
+      have : ∑ x ∈ Finset.antidiagonal (i + j),
+          (coeff p x.1 * coeff q x.2) * coeff q j = (coeff p i * coeff q j) * coeff q j := by
+        apply Finset.sum_eq_single (i, j)
+        · rintro ⟨s, t⟩ hst hne
+          grind [Finset.mem_antidiagonal.mp hst, IsReduced.mul_mid_eq_zero]
+        · intro hmem
+          grind [Finset.mem_antidiagonal]
+      grind [IsReduced.mul_eq_zero_of_mul_sq_eq_zero]
 
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
