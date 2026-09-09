@@ -599,7 +599,7 @@ theorem map_leftInverse {g : S →+* R} (hf : LeftInverse f g) :
 
 /-- If `f` is a right-inverse of `g` then `map f` is a right-inverse of `map g`. -/
 theorem map_rightInverse {g : S →+* R} (hf : RightInverse f g) :
-    RightInverse (map f : MvPowerSeries σ R →  MvPowerSeries σ S) (map g) :=
+    RightInverse (map f : MvPowerSeries σ R → MvPowerSeries σ S) (map g) :=
   (map_leftInverse hf.leftInverse).rightInverse
 
 end Map
