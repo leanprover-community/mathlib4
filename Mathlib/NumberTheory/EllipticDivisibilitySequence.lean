@@ -268,36 +268,28 @@ lemma atomRel_odd (m : ℤ) : atomRel W (2 * m + 2) (2 * m) 2 0 =
     W (2 * m + 1) * W 1 ^ 3 - W (m + 2) * W m ^ 3 + W (m - 1) * W (m + 1) ^ 3 := by
   grind only [atomRel, atom]
 
-lemma atom_mul_atomRel (m n r s c d : ℤ) : atom W c d * atomRel W m n r s =
-    atom W n d * atomRel W m r s c + atom W n c * atomRel W m r s d +
-    atom W n r * atomRel W m s c d - atom W r d * atomRel W m n s c -
-    atom W r c * atomRel W m n s d - atom W n s * atomRel W m r c d +
-    atom W s d * atomRel W m n r c + atom W s c * atomRel W m n r d +
-    atom W r s * atomRel W m n c d - 2 * atom W m d * atomRel W n r s c := by
-  unfold atomRel
-  ring1
-
-lemma atom_mul_atomRel_fst (m n r c d : ℤ) : atom W c d * atomRel W m n r c =
-    atom W r c * atomRel W m n c d - atom W n c * atomRel W m r c d +
-      atom W m c * atomRel W n r c d := by
-  unfold atomRel
-  ring1
-
-lemma atom_mul_atomRel_snd (m n r c d : ℤ) : atom W c d * atomRel W m n r d =
-    atom W r d * atomRel W m n c d - atom W n d * atomRel W m r c d +
-      atom W m d * atomRel W n r c d := by
-  unfold atomRel
-  ring1
+lemma atom_mul_atomRel (a b c d e f : ℤ) {u v w x y z : R} (h : u + v + w + x + y + z = 0) :
+    (u + v) * atom W a b * atomRel W c d e f - (u + w) * atom W a c * atomRel W b d e f +
+    (u + x) * atom W a d * atomRel W b c e f - (u + y) * atom W a e * atomRel W b c d f +
+    (u + z) * atom W a f * atomRel W b c d e + (v + w) * atom W b c * atomRel W a d e f -
+    (v + x) * atom W b d * atomRel W a c e f + (v + y) * atom W b e * atomRel W a c d f -
+    (v + z) * atom W b f * atomRel W a c d e + (w + x) * atom W c d * atomRel W a b e f -
+    (w + y) * atom W c e * atomRel W a b d f + (w + z) * atom W c f * atomRel W a b d e +
+    (x + y) * atom W d e * atomRel W a b c f - (x + z) * atom W d f * atomRel W a b c e +
+    (y + z) * atom W e f * atomRel W a b c d = 0 := by
+  simp only [atomRel]
+  grind only
 
 variable {W} in
-lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) : σ.sign •
-    atomRel W (t <| σ 0) (t <| σ 1) (t <| σ 2) (t <| σ 3) = atomRel W (t 0) (t 1) (t 2) (t 3) := by
+lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) :
+    σ.sign • atomRel W (t <| σ 0) (t <| σ 1) (t <| σ 2) (t <| σ 3) =
+      atomRel W (t 0) (t 1) (t 2) (t 3) := by
   induction Equiv.Perm.mclosure_swap_castSucc_succ 3 ▸ Submonoid.mem_top σ using
     Submonoid.closure_induction generalizing t with
   | mem _ h => rcases h with ⟨_ | _ | _ | -, rfl⟩ <;>
     simp [Equiv.swap_apply_def] <;> grind only [neg_atomRel₁₂, neg_atomRel₂₃, neg_atomRel₃₄]
   | one => simp
-  | mul σ τ _ _ hσ hτ => simpa [mul_smul] using congrArg _ (hτ (t ∘ σ)) |>.trans <| hσ t
+  | mul σ τ _ _ hσ hτ => simpa [mul_smul] using congrArg _ (hτ <| t ∘ σ) |>.trans <| hσ t
 
 variable {W} in
 lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
@@ -305,7 +297,7 @@ lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰
     (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) {a b c d : ℤ}
     (parity : [a, b, c, d].Pairwise (· % 2 = · % 2)) : atomRel W a b c d = 0 := by
   wlog _ : 0 ≤ a ∧ 0 ≤ b ∧ 0 ≤ c ∧ 0 ≤ d generalizing a b c d with h
-  · exact atomRel_abs neg .. ▸ h (parity.map _ (by grind)) <| by simp
+  · exact atomRel_abs neg .. ▸ h (parity.map _ <| by grind) <| by simp
   wlog _ : d ≤ c ∧ c ≤ b ∧ b ≤ a generalizing a b c d with h
   · erw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort ![a, b, c, d]) ![a, b, c, d],
       smul_eq_zero_iff_eq, h <| parity.perm (Equiv.Perm.ofFn_comp_perm _ ![a, b, c, d]).symm .symm]
@@ -315,22 +307,18 @@ lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰
   · rcases (by omega : a = b ∨ b = c ∨ c = d) with rfl | rfl | rfl <;>
       simp [pow_mem two 3 |>.right (W 0) <| by grind only [atomRel_same₂₃, atom, odd 1]]
   replace parity : a % 2 = b % 2 ∧ b % 2 = c % 2 ∧ c % 2 = d % 2 := by grind
-  induction a using @Int.strongRec 0 generalizing b c d with
+  induction hn : 4 * a + b + c + d using @Int.strongRec 0 generalizing a b c d with
   | lt => omega
-  | ge a _ ih =>
-    have ha : atom W (a % 2 + 2) (a % 2) ∈ R⁰ := by
-      rcases a.emod_two_eq_zero_or_one with _ | _ <;> grind (genLocal := 0) [atom, mul_mem]
-    wlog _ : d ≤ a % 2 + 2 generalizing b c d with h
-    · exact ha.left _ <| by rw [atom_mul_atomRel]; grind (genLocal := 0) [= (h), = (ih)]
-    wlog hd : d = a % 2 generalizing b c d with h
-    · rw [show d = a % 2 + 2 by omega]
-      exact ha.left _ <| by rw [atom_mul_atomRel_fst]; grind (genLocal := 0) [= (h), = (ih)]
-    wlog _ : c = a % 2 + 2 generalizing b c with h
-    · exact ha.left _ <| by rw [hd, atom_mul_atomRel_snd]; grind (genLocal := 0) [= (h), = (ih)]
-    by_cases a = b + 2
-    · grind (genLocal := 0) [odd <| b / 2, atomRel_neg₄ W a b c d,
-        atomRel_avg_sub W (by simp) |>.trans <| even <| a / 2]
-    · grind (genLocal := 0) [= (ih), =_ atomRel_neg₄, @atomRel_avg_sub _ _ W a b c d <| by grind]
+  | ge _ _ ih =>
+    replace ih (a b c d : ℤ) := (@ih (4 * a + b + c + d) · a b c d)
+    wlog _ : c = a % 2 + 2
+    · have ha : atom W (a % 2 + 2) (a % 2) ∈ R⁰ := by grind only [atom, mul_mem]
+      exact ha.left _ <| by grind (genLocal := 0) [atom_same, atomRel_same₃₄,
+        atomRel.eq_def W a b c, @atom_mul_atomRel R _ W a b c (max d <| a % 2 + 2)
+          (min d <| a % 2 + 2) (a % 2) 0 0 0 (-1) 0 1 <| by norm_num1, = (ih)]
+    wlog _ : a = b + 2
+    · grind (genLocal := 0) [=_ atomRel_neg₄, @atomRel_avg_sub R _ W a b c d <| by grind, = (ih)]
+    grind [odd (b / 2), atomRel_neg₄ W a b c d, atomRel_avg_sub W (by simp) |>.trans (even (a / 2))]
 
 lemma map_atomRel (a b c d : ℤ) : f (atomRel W a b c d) = atomRel (f ∘ W) a b c d := by
   simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
@@ -904,9 +892,11 @@ end Map
 open Polynomial in
 /-- The canonical normalised EDS is an elliptic net. -/
 theorem IsEllipticNet.normEDS : IsEllipticNet <| normEDS b c d := by
-  convert of_even_odd (normEDS_neg X (C c) (C d)) (by simp) (by simp [X_mem_nonZeroDivisors])
-    (normEDS_rel_even _ _ _) (normEDS_rel_odd _ _ _) |>.comp <| evalRingHom b
-  ext; simp_rw [Function.comp_apply, map_normEDS, coe_evalRingHom, eval_X, eval_C]
+  suffices h : IsEllipticNet <| _root_.normEDS (X : R[X]) (C c) (C d) by
+    convert h.comp <| evalRingHom b
+    simp_rw [Function.comp_def, map_normEDS, coe_evalRingHom, eval_X, eval_C]
+  exact of_even_odd (normEDS_neg X _ _) (by simp) (by simp [X_mem_nonZeroDivisors])
+    (normEDS_rel_even _ _ _) (normEDS_rel_odd _ _ _)
 
 /-- The canonical normalised EDS is an elliptic sequence. -/
 theorem IsEllipticSequence.normEDS : IsEllipticSequence <| normEDS b c d :=
