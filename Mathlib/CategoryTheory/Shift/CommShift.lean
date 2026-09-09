@@ -431,6 +431,18 @@ instance leftUnitor : CommShift F₁.leftUnitor.hom A where
 
 instance rightUnitor : CommShift F₁.rightUnitor.hom A where
 
+variable {A τ} in
+lemma of_comp_faithful [G.Faithful]
+    (h : NatTrans.CommShift (Functor.whiskerRight τ G) A := by infer_instance) :
+    τ.CommShift A where
+  shift_comm a := by
+    ext X
+    apply G.map_injective
+    dsimp
+    simp only [Functor.map_comp]
+    simp [dsimp% (Functor.whiskerRight τ G).app_shift a X,
+      Functor.commShiftIso_comp_inv_app, ← Functor.map_comp]
+
 end CommShift
 
 end NatTrans
