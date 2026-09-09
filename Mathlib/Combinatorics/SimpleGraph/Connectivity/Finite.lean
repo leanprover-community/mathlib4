@@ -260,7 +260,7 @@ instance decidablePreconnected : Decidable G.Preconnected :=
   (Fintype.truncList V).lift
     (fun ⟨l, hl⟩ ↦ match l, hl with
       | [], hl => isTrue fun x _ ↦ absurd (hl.2 x) (by simp)
-      | u :: l, hl => decidable_of_iff _ (preconnected_iff_length_bfsList_eq hl.1 hl.2 u).symm)
+      | u :: l, hl => decidable_of_iff _ (preconnected_iff_length_bfsList hl.1 hl.2 u).symm)
     fun _ _ ↦ Subsingleton.elim ..
 
 /-- Decides connectedness of `G` by checking whether the vertex set is empty and, if not,
@@ -269,7 +269,7 @@ instance decidableConnected : Decidable G.Connected :=
   (Fintype.truncList V).lift
     (fun ⟨l, hl⟩ ↦ match l, hl with
       | [], hl => isFalse fun hG ↦ absurd (hl.2 hG.nonempty.some) (by simp)
-      | u :: l, hl => decidable_of_iff _ (connected_iff_length_bfsList_eq hl.1 hl.2 u).symm)
+      | u :: l, hl => decidable_of_iff _ (connected_iff_length_bfsList hl.1 hl.2 u).symm)
     fun _ _ ↦ Subsingleton.elim ..
 
 instance : Fintype G.ConnectedComponent :=
