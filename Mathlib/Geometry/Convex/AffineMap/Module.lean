@@ -9,7 +9,7 @@ public import Mathlib.Geometry.Convex.AffineMap.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 
 /-!
-# The module of affine maps into a module
+# The module of affine maps from a convex space to a module
 
 This file shows that the affine maps from a convex space `X` to a module `M` themselves form a
 module, and that the convex space structure this induces is the pointwise one.
@@ -52,7 +52,7 @@ lemma coe_add (f g : ConvexSpace.AffineMap R X M) : ⇑(f + g) = ⇑f + ⇑g := 
 lemma add_apply (f g : ConvexSpace.AffineMap R X M) (x : X) : (f + g) x = f x + g x := rfl
 
 section SMul
-variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
+variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
 
 instance : SMul S (ConvexSpace.AffineMap R X M) where smul s f := ⟨s • f, by fun_prop⟩
 
@@ -61,6 +61,18 @@ lemma coe_smul (s : S) (f : ConvexSpace.AffineMap R X M) : ⇑(s • f) = s • 
 
 @[simp]
 lemma smul_apply (s : S) (f : ConvexSpace.AffineMap R X M) (x : X) : (s • f) x = s • f x := rfl
+
+variable {T : Type*} [Monoid T] [DistribMulAction T M] [SMulCommClass T R M]
+
+instance [SMulCommClass S T M] : SMulCommClass S T (ConvexSpace.AffineMap R X M) where
+  smul_comm _ _ _ := ext <| funext fun _ ↦ smul_comm ..
+
+instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (ConvexSpace.AffineMap R X M) where
+  smul_assoc _ _ _ := ext <| funext fun _ ↦ smul_assoc ..
+
+instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
+    IsCentralScalar S (ConvexSpace.AffineMap R X M) where
+  op_smul_eq_smul _ _ := ext <| funext fun _ ↦ op_smul_eq_smul ..
 
 end SMul
 
@@ -83,11 +95,11 @@ lemma coe_sum {ι : Type*} (s : Finset ι) (f : ι → ConvexSpace.AffineMap R X
 lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → ConvexSpace.AffineMap R X M) (x : X) :
     (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by rw [coe_sum, Finset.sum_apply]
 
-instance [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] :
+instance [Monoid S] [DistribMulAction S M] [SMulCommClass S R M] :
     DistribMulAction S (ConvexSpace.AffineMap R X M) :=
   fast_instance% DFunLike.coe_injective.distribMulAction (coeAddMonoidHom R X M) fun _ _ ↦ rfl
 
-instance instModule [Semiring S] [Module S M] [SMulCommClass R S M] :
+instance instModule [Semiring S] [Module S M] [SMulCommClass S R M] :
     Module S (ConvexSpace.AffineMap R X M) :=
   fast_instance% DFunLike.coe_injective.module S (coeAddMonoidHom R X M) fun _ _ ↦ rfl
 
@@ -122,13 +134,15 @@ end ConvexSpace.AffineMap
 
 /-! ### Compatibility with the pointwise convex space structure -/
 
-section CommSemiring
-variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
-  [AddCommMonoid M] [Module R M] [ConvexSpace R M] [IsModuleConvexSpace R M]
+section Pointwise
+variable {R S : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Semiring S]
+  [PartialOrder S] [IsStrictOrderedRing S] [ConvexSpace R X] [AddCommMonoid M] [Module R M]
+  [Module S M] [SMulCommClass S R M] [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace S M]
+  [IsModuleConvexSpace S M]
 
 instance ConvexSpace.AffineMap.instIsModuleConvexSpace :
-    IsModuleConvexSpace R (ConvexSpace.AffineMap R X M) where
+    IsModuleConvexSpace S (ConvexSpace.AffineMap R X M) where
   sConvexComb_eq_sum w := by ext x; simp [Finsupp.sum]
 
-end CommSemiring
+end Pointwise
 end Convexity

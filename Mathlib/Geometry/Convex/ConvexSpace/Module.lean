@@ -161,14 +161,14 @@ lemma IsAffineMap.add (hf : IsAffineMap R f) (hg : IsAffineMap R g) : IsAffineMa
   isAffineMap_add.comp (hf.prodMk hg)
 
 section SMul
-variable {M : Type*} [Monoid M] [DistribMulAction M N] [SMulCommClass R M N] {m : M}
+variable {M : Type*} [Monoid M] [DistribMulAction M N] [SMulCommClass M R N] {m : M}
 
 @[fun_prop]
 lemma isAffineMap_const_smul : IsAffineMap R fun x : N ↦ m • x where
   map_sConvexComb w := by
     rw [sConvexComb_eq_sum, sConvexComb_eq_sum, StdSimplex.weights_map,
       Finsupp.sum_mapDomain_index (by simp) fun _ b₁ b₂ ↦ add_smul b₁ b₂ _, Finsupp.smul_sum]
-    exact Finsupp.sum_congr fun i _ ↦ (smul_comm _ m i).symm
+    simp [smul_comm]
 
 @[fun_prop]
 lemma IsAffineMap.const_smul (hf : IsAffineMap R f) : IsAffineMap R (m • f) :=
@@ -182,6 +182,21 @@ lemma IsStarConvexSet.add (hs : IsStarConvexSet R x s) (ht : IsStarConvexSet R y
   rw [← Set.add_image_prod]; exact (hs.prod ht).image (by fun_prop)
 
 end IsModuleConvexSpace
+
+section IsConvexCombComm
+variable {S : Type*} [Semiring S] [PartialOrder S] [IsStrictOrderedRing S] [Module S M]
+  [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace S M] [IsModuleConvexSpace S M]
+  [SMulCommClass R S M]
+
+/-- The convex space structures over `R` and over `S` on a module commute as soon as the `R` and `S`
+actions do. -/
+instance IsConvexCombComm.of_module : IsConvexCombComm R S M where
+  iConvexComb_comm' f g := by
+    simp only [iConvexComb_eq_sum, Finsupp.sum, Finset.smul_sum]
+    rw [Finset.sum_comm]
+    simp only [smul_comm]
+
+end IsConvexCombComm
 
 variable (R I) in
 lemma StdSimplex.isAffineMap_weights : IsAffineMap R (weights (R := R) (X := I)) where

@@ -17,7 +17,8 @@ open Convexity Finsupp
 
 public noncomputable section
 
-variable {I R : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+variable {I R S : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+  [Semiring S] [PartialOrder S] [IsStrictOrderedRing S]
 
 namespace Prod
 variable {X Y : Type*} [ConvexSpace R X] [ConvexSpace R Y]
@@ -59,6 +60,13 @@ lemma snd_convexCombPair (a b : R) (ha hb hab) (x y : X × Y) :
     (convexCombPair a b ha hb hab x y).snd = convexCombPair a b ha hb hab x.snd y.snd :=
   isAffineMap_snd.map_convexCombPair ..
 
+instance [ConvexSpace S X] [ConvexSpace S Y] [IsConvexCombComm R S X]
+    [IsConvexCombComm R S Y] : IsConvexCombComm R S (X × Y) where
+  iConvexComb_comm' f g := by
+    ext
+    · simpa using iConvexComb_comm f g fun e k ↦ (e k).fst
+    · simpa using iConvexComb_comm f g fun e k ↦ (e k).snd
+
 end Prod
 
 namespace Pi
@@ -85,6 +93,10 @@ lemma iConvexComb_apply (w : StdSimplex R I) (f : I → ∀ i, X i) (i : ι) :
 lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ∀ i, X i) (i : ι) :
     convexCombPair a b ha hb hab f g i = convexCombPair a b ha hb hab (f i) (g i) :=
   isAffineMap_eval.map_convexCombPair ..
+
+instance [∀ i, ConvexSpace S (X i)] [∀ i, IsConvexCombComm R S (X i)] :
+    IsConvexCombComm R S (∀ i, X i) where
+  iConvexComb_comm' f g := by ext i; simpa using iConvexComb_comm f g fun e k ↦ e k i
 
 end Pi
 
@@ -117,6 +129,9 @@ lemma iConvexComb_apply (w : StdSimplex R I) (f : I → ι →₀ X) (i : ι) :
 lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ι →₀ X) (i : ι) :
     convexCombPair a b ha hb hab f g i = convexCombPair a b ha hb hab (f i) (g i) :=
   isAffineMap_eval.map_convexCombPair ..
+
+instance [ConvexSpace S X] [IsConvexCombComm R S X] : IsConvexCombComm R S (ι →₀ X) where
+  iConvexComb_comm' f g := by ext i; simpa using iConvexComb_comm f g fun e k ↦ e k i
 
 end Finsupp
 
