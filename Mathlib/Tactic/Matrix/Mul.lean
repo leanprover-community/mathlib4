@@ -95,11 +95,15 @@ def proveDotProduct (normalizer : EntryNormalizer) (m : ℕ) (as bs : List Q($α
 
 end
 
-/-- Prove `[a₀, …] = [b₀, …]` from proofs of `aᵢ = bᵢ`. -/
-def mkListCongr (α : Expr) (hs : Array Expr) : MetaM Expr := do
-  let u ← getDecLevel α
-  hs.foldrM (init := ← mkEqRefl (mkApp (mkConst ``List.nil [u]) α)) fun h acc => do
-    mkCongr (← mkCongrArg (mkApp (mkConst ``List.cons [u]) α) h) acc
+/-- Prove `[a₀, …] = [b₀, …]` in `List α` from proofs of `aᵢ = bᵢ` by manually applying `congr`.
+`MVarId.congrN` also works, but takes around 40x heartbeats to elaborate. -/
+def mkListCongr {u : Level} {α : Q(Type u)} :
+    List ((a : Q($α)) × (b : Q($α)) × Q($a = $b)) →
+      (l₁ : Q(List $α)) × (l₂ : Q(List $α)) × Q($l₁ = $l₂)
+  | [] => ⟨q([]), q([]), q(rfl)⟩
+  | ⟨a, b, h⟩ :: es =>
+    let ⟨l₁, l₂, hl⟩ := mkListCongr es
+    ⟨q($a :: $l₁), q($b :: $l₂), q(congr (congrArg List.cons $h) $hl)⟩
 
 /-- Prove `e = C`, where `e` is the product of the matrix literals with rows `rowsA` and
 `rowsB` over `α`, and `C` is the literal of the product with entries normalized by
@@ -115,7 +119,9 @@ def proveMul {u : Level} (normalizer : EntryNormalizer) (e : Expr) (l m n : ℕ)
   let cells ← Array.ofFnM (n := l) fun i => Array.ofFnM (n := n) fun j =>
     proveDotProduct zα aα mα normalizer m rowsA[i]!.toList cols[j]!.toList
   let entries := cells.map (·.map (·.result))
-  let hAll ← mkListCongr q(List $α) (← cells.mapM fun row => mkListCongr α (row.map (·.proof)))
+  let ⟨_, _, hAll⟩ := mkListCongr (α := q(List $α)) <| cells.toList.map fun row =>
+    mkListCongr <| row.toList.map fun d =>
+      ⟨q(ListMatrix.dotProduct $(d.n) $(d.l₁) $(d.l₂)), d.result, d.proof⟩
   let mkLists (rows : Array (Array Expr)) : MetaM Q(List (List $α)) := do
     mkListLit q(List $α) (← rows.toList.mapM (mkListLit α ·.toList))
   have A : Q(List (List $α)) := ← mkLists rowsA
@@ -123,7 +129,7 @@ def proveMul {u : Level} (normalizer : EntryNormalizer) (e : Expr) (l m n : ℕ)
   have C : Q(Matrix (Fin $l) (Fin $n) $α) :=
     Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (entries[i]!)[j]!)
   let hMul := q((ofLists_mul $l $m $n $A $B).symm)
-  let hC ← mkCongrArg q(ofLists (α := $α) $l $n) hAll
+  let hC := q(congrArg (ofLists (α := $α) $l $n) $hAll)
   let pf ← mkEqTrans hMul hC
   -- `pf` is stated on `ofLists` forms; the hint to `e = C` holds because `ofLists` on
   -- a row-list literal unfolds to exactly the `Matrix.of`/`vecCons` term of the `!![…]`
