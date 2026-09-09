@@ -3,8 +3,10 @@ Copyright (c) 2026 Francisco Ramírez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Francisco Ramírez
 -/
-import Mathlib.MeasureTheory.Measure.Hausdorff
-import Mathlib.Topology.MetricSpace.HausdorffDimension
+module
+
+public import Mathlib.MeasureTheory.Measure.Hausdorff
+public import Mathlib.Topology.MetricSpace.HausdorffDimension
 
 /-!
 # Frostman's mass distribution principle
@@ -36,6 +38,8 @@ fractal geometry.
 Hausdorff dimension, Frostman, mass distribution principle, fractal
 -/
 
+@[expose] public section
+
 open scoped MeasureTheory ENNReal NNReal
 
 variable {X : Type*} [EMetricSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -51,7 +55,7 @@ theorem massBound_le_dimH
     (hbound : ∀ s : Set X, Metric.ediam s ≤ ε → ν s ≤ Metric.ediam s ^ (d : ℝ)) :
     (d : ℝ≥0∞) ≤ dimH A := by
   -- Mass distribution: `ν ≤ μH[d]`.
-  have hle : ν ≤ μH[(d : ℝ)] := le_hausdorffMeasure (d : ℝ) ν ε hε hbound
+  have hle : ν ≤ μH[(d : ℝ)] := Measure.le_hausdorffMeasure (d : ℝ) ν ε hε hbound
   -- In particular `ν A ≤ μH[d] A`, so `μH[d] A ≠ 0`.
   have hνle : ν A ≤ μH[(d : ℝ)] A := hle A
   have hAne : μH[(d : ℝ)] A ≠ 0 := by
