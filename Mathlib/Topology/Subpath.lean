@@ -232,8 +232,8 @@ theorem subpath_trans_subpath (γ : Path a b) (s t u : I) :
 /-- Composition of consecutive subpath classes is the class of the subpath between their outer
 endpoints. -/
 @[simp]
-theorem mk_subpath_trans_subpath (γ : Path a b) (s t u : I) : (Quotient.mk (γ.subpath s t)).trans
-    (Quotient.mk (γ.subpath t u)) = Quotient.mk (γ.subpath s u) := by
+theorem mk_subpath_trans_mk_subpath (γ : Path a b) (s t u : I) :
+    (Quotient.mk (γ.subpath s t)).trans (.mk (γ.subpath t u)) = .mk (γ.subpath s u) := by
   rw [← Quotient.mk_trans]
   exact Quotient.eq.mpr (Path.Homotopic.subpath_trans_subpath γ s t u)
 
