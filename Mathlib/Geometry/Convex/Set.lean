@@ -140,7 +140,7 @@ def ConvexSpace.subtype (s : Set X) (hs : IsConvexSet R s) : ConvexSpace R s := 
 lemma isAffineMap_subtypeVal (s : Set X) (hs : IsConvexSet R s) :
     letI : ConvexSpace R s := .subtype s hs
     IsAffineMap R ((↑) : s → X) :=
-  letI : ConvexSpace R s := .subtype s hs
+  let : ConvexSpace R s := .subtype s hs
   ⟨fun _ ↦ rfl⟩
 
 @[simp]
@@ -152,14 +152,14 @@ lemma subtypeVal_sConvexComb (s : Set X) (hs : IsConvexSet R s) (w : StdSimplex 
 lemma subtypeVal_iConvexComb (s : Set X) (hs : IsConvexSet R s) (w : StdSimplex R I) (f : I → s) :
     letI : ConvexSpace R s := .subtype s hs
     (↑(w.iConvexComb f) : X) = w.iConvexComb (fun i ↦ (f i).val) :=
-  letI : ConvexSpace R s := .subtype s hs
+  let : ConvexSpace R s := .subtype s hs
   (isAffineMap_subtypeVal ..).map_iConvexComb ..
 
 @[simp]
 lemma subtypeVal_convexCombPair (s : Set X) (hs : IsConvexSet R s) (a b : R) (ha hb hab) (x y : s) :
     letI : ConvexSpace R s := .subtype s hs
     (↑(convexCombPair a b ha hb hab x y) : X) = convexCombPair a b ha hb hab x.val y.val :=
-  letI : ConvexSpace R s := .subtype s hs
+  let : ConvexSpace R s := .subtype s hs
   (isAffineMap_subtypeVal ..).map_convexCombPair ..
 
 /-- A convex subset of a cancellative convex space is a cancellative convex space. -/
