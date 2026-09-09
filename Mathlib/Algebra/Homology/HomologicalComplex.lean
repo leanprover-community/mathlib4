@@ -653,7 +653,6 @@ variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
 theorem of_X : (of X d sq).X = X :=
   rfl
 
-@[simp]
 theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   simp [of]
 
