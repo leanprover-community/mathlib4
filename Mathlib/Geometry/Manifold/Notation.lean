@@ -480,6 +480,24 @@ where
       model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst']
       normedSpaceInfo? := some { normedSpace := e, baseField := K }
     }
+  /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant
+  on a type (represented by an expression `e`):
+  if successful, return `some m` where `m` is an expression describing the model found.
+  Otherwise, return `none`. -/
+  -- Shared function used for the `fromManifold` and `fromEuclideanSpace` strategies.
+  tryFromEuclideanSpace (e : Expr) : TermElabM (Option Expr) := do
+    -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
+    match (← instantiateMVars e).cleanupAnnotations with
+    | mkApp2 (.const `EuclideanSpace _) k _n =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a Euclidean space over `{k}`"
+      mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
+    | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a Euclidean half-space"
+      mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
+    | mkApp (.const `EuclideanQuadrant _) n =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a Euclidean quadrant"
+      mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
+    | _ => return none
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
@@ -504,20 +522,25 @@ where
         | _ => return none
       | trace[Elab.DiffGeo.MDiff]
           "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
-        -- Try a normed space, and a normed field as last alternatives.
-        let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
-          match_expr type with
-          | NormedSpace K E _ _ =>
-            if ← withReducible (pureIsDefEq E H) then return some (inst, K)
-            else return none
-          | _ => return none
-        if let some (inst, K) := a then
-          trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
-          return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
-        trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
-          assuming it is a non-trivially normed field"
-        -- Return the trivial model with corners: this will work if `H` is a normed field.
-        mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
+        -- As last alternatives, check if `H` is Euclidean half-space, a Euclidean quadrant,
+        -- Euclidean space, a normed space or a normed field.
+        if let some m ← tryFromEuclideanSpace H then
+          return m
+        else
+          trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
+          let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+            match_expr type with
+            | NormedSpace K E _ _ =>
+              if ← withReducible (pureIsDefEq E H) then return some (inst, K)
+              else return none
+            | _ => return none
+          if let some (inst, K) := a then
+            trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
+            return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
+          trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
+            assuming it is a non-trivially normed field"
+          -- Return the trivial model with corners: this will work if `H` is a normed field.
+          mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
@@ -531,15 +554,8 @@ where
     mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
-    -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
-    match (← instantiateMVars e).cleanupAnnotations with
-    | mkApp2 (.const `EuclideanSpace _) k _n =>
-      mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
-    | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
-      mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
-    | mkApp (.const `EuclideanQuadrant _) n =>
-      mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
-    | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
+    if let some m ← tryFromEuclideanSpace e then return m else
+    throwError "`{e}` is not a Euclidean space, half-space or quadrant"
   /-- Attempt to find a model with corners on a closed interval of real numbers,
   or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do

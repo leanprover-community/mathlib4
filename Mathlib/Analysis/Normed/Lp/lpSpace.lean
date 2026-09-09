@@ -348,7 +348,7 @@ namespace PreLp
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
 variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
-deriving instance SMul 𝕜, AddCommGroup for PreLp E
+deriving instance SMul 𝕜, AddCommMonoid, AddCommGroup for PreLp E
 
 @[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
 @[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
@@ -1253,7 +1253,7 @@ end OfLE
 
 section Eval
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p : ℝ≥0∞}
 
 variable (E p) in
 /-- Evaluation at a single coordinate, as a linear map on `lp E p`. -/

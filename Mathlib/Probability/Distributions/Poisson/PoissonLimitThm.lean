@@ -38,7 +38,9 @@ namespace ProbabilityTheory
 
 open scoped NNReal
 
-open Filter Topology ENNReal
+open Filter ENNReal
+
+open scoped Topology
 
 variable {p : ℕ → ℝ} {r : ℝ} (k : ℕ)
 

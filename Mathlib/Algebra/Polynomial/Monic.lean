@@ -200,6 +200,12 @@ theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDe
   | zero => simp
   | succ n hn => rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
 
+theorem natDegree_le_of_dvd (hp : p.Monic) (hq : q ≠ 0) (hdvd : p ∣ q) :
+    p.natDegree ≤ q.natDegree := by
+  rcases hdvd with ⟨r, rfl⟩
+  by_cases r = 0 <;>
+    simp_all [natDegree_mul']
+
 end Monic
 
 @[simp]
@@ -545,7 +551,7 @@ theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S
 
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
     Monic (h.unit⁻¹ • p) := by
-  rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
+  rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (IsSMulRegular.all _), Units.smul_def]
   simp
 
 theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q : R[X]} :
