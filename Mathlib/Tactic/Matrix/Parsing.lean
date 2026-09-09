@@ -13,11 +13,9 @@ public meta import Mathlib.LinearAlgebra.Matrix.Notation -- shake: keep (!![] el
 Parsers matching `!![…]` matrix literal expressions into their dimensions, element type,
 and entry expressions, for tactics evaluating functions of a concrete matrix.
 
-TODO: `!![…]` still elaborates to `Matrix.of` applied to `Matrix.vecCons` chains; but there is
-a wip draft PR that switches it to the merged `Matrix.ofArray`.
-
-This files needs a corresponding adaptation if that is merged -- but in the best case, the entirety
-of this file can be gone.
+TODO: `!![…]` elaborates to `Matrix.of` applied to `Matrix.vecCons` chains, which is the shape
+matched here. Once it elaborates through `Matrix.ofArray` instead, adapt this parser, or remove
+it if the array form can be read directly.
 
 ## Main definitions
 
@@ -28,7 +26,7 @@ public meta section
 
 open Lean Meta
 
-namespace Mathlib.Tactic.Echelon
+namespace Mathlib.Tactic.Matrix
 
 /-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
 entries. -/
@@ -51,4 +49,4 @@ def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Arr
   unless entries.all (·.size == n) do return none
   return some (m, n, R, entries)
 
-end Mathlib.Tactic.Echelon
+end Mathlib.Tactic.Matrix

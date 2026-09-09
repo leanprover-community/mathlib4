@@ -6,7 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Tactic.Echelon.Bareiss
-public import Mathlib.Tactic.Echelon.Parsing
+public import Mathlib.Tactic.Matrix.Parsing
 
 /-!
 # `eval_rank`: rank of matrix literals by Bareiss elimination
@@ -37,7 +37,7 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
 def normRankCore : Simp.Simproc := fun e => do
   let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
   let A ← instantiateMVars A
-  let some (m, n, R, entries) ← matchMatrixLit? A
+  let some (m, n, R, entries) ← Matrix.matchMatrixLit? A
     | trace[Tactic.evalRank] "not a closed matrix literal{indentExpr A}"
       return .continue
   match ← checkBareissApplicable R with

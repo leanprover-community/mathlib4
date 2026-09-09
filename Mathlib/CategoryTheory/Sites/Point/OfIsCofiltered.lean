@@ -100,18 +100,20 @@ is cofiltered and initially small. -/
 @[simps]
 noncomputable def functor : N ⥤ (fiber.{w} p).Elements where
   obj U := Functor.elementsMk _ (p.obj U) (fiberMk (𝟙 _))
-  map {U V} f := CategoryOfElements.homMk _ _ (p.map f) (by simp)
+  map {U V} f := Functor.Elements.homMk (p.map f) (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
 instance [IsCofiltered N] : (functor.{w} p).Initial := by
-  refine Functor.initial_of_exists_of_isCofiltered _ ?_ ?_
-  · rintro ⟨X, x⟩
+  refine Functor.initial_of_exists_of_isCofiltered _ (fun e ↦ ?_) ?_
+  · induction e with | mk x
     obtain ⟨U, f, rfl⟩ := fiberMk_jointly_surjective x
     exact ⟨U, f, by simp⟩
-  · rintro ⟨X, x⟩ V ⟨φ₁, hφ₁⟩ ⟨φ₂, hφ₂⟩
+  · intro e V φ₁ φ₂
+    induction e with | mk x
     obtain ⟨U, f, rfl⟩ := fiberMk_jointly_surjective x
     obtain ⟨W, g, hg⟩ := exists_of_fiberMk_eq_fiberMk
-      (show fiberMk.{w} φ₁ = fiberMk.{w} φ₂ by simpa using hφ₁.trans hφ₂.symm)
+      (show fiberMk.{w} φ₁.hom = fiberMk.{w} φ₂.hom by
+        simpa using φ₁.map_val.trans φ₂.map_val.symm)
     exact ⟨_, g, by cat_disch⟩
 
 instance [IsCofiltered N] :

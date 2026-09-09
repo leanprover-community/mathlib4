@@ -24,6 +24,7 @@ open Set
 
 namespace Filter
 
+@[to_dual eventually_forall_le_atBot]
 theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
     (∀ᶠ x in atTop, ∀ y, x ≤ y → p y) ↔ ∀ᶠ x in atTop, p x := by
   refine ⟨fun h ↦ h.mono fun x hx ↦ hx x le_rfl, fun h ↦ ?_⟩
@@ -32,19 +33,11 @@ theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
   simp only [mem_iInter] at hS hx
   exact hS fun z hz ↦ le_trans (hx ⟨z, hz⟩) hy
 
-theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
-    (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
-  eventually_forall_ge_atTop (α := αᵒᵈ)
-
+@[to_dual eventually_forall_le_atBot]
 theorem Tendsto.eventually_forall_ge_atTop [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
     ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
   rw [← Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
-
-theorem Tendsto.eventually_forall_le_atBot [Preorder β] {l : Filter α}
-    {p : β → Prop} {f : α → β} (hf : Tendsto f l atBot) (h_evtl : ∀ᶠ x in atBot, p x) :
-    ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
-  rw [← Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
 /-!
 ### Sequences
@@ -53,6 +46,10 @@ theorem Tendsto.eventually_forall_le_atBot [Preorder β] {l : Filter α}
 /-- If `u` is a sequence which is unbounded above,
 then after any point, it reaches a value strictly greater than all previous values.
 -/
+@[to_dual low_scores
+/-- If `u` is a sequence which is unbounded below,
+then after any point, it reaches a value strictly smaller than all previous values.
+-/]
 theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tendsto u atTop atTop) :
     ∀ N, ∃ n ≥ N, ∀ k < n, u k < u n := by
   intro N
@@ -67,26 +64,16 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   use n, hnN
   grind
 
-/-- If `u` is a sequence which is unbounded below,
-then after any point, it reaches a value strictly smaller than all previous values.
--/
-theorem low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β} (hu : Tendsto u atTop atBot) :
-    ∀ N, ∃ n ≥ N, ∀ k < n, u n < u k :=
-  @high_scores βᵒᵈ _ _ _ hu
-
 /-- If `u` is a sequence which is unbounded above,
 then it `Frequently` reaches a value strictly greater than all previous values.
 -/
+@[to_dual frequently_low_scores
+/-- If `u` is a sequence which is unbounded below,
+then it `Frequently` reaches a value strictly smaller than all previous values.
+-/]
 theorem frequently_high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ᶠ n in atTop, ∀ k < n, u k < u n := by
   simpa [frequently_atTop] using high_scores hu
-
-/-- If `u` is a sequence which is unbounded below,
-then it `Frequently` reaches a value strictly smaller than all previous values.
--/
-theorem frequently_low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β}
-    (hu : Tendsto u atTop atBot) : ∃ᶠ n in atTop, ∀ k < n, u n < u k :=
-  @frequently_high_scores βᵒᵈ _ _ _ hu
 
 theorem strictMono_subseq_of_tendsto_atTop [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=
