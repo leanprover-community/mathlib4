@@ -131,18 +131,23 @@ variable [DecidableEq α]
 
 /-- Given a multiset `s`, `s.toFinsupp` returns the finitely supported function on `ℕ` given by
 the multiplicities of the elements of `s`. -/
-@[simps symm_apply]
-noncomputable def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
-  toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
-  invFun f := Finsupp.toMultiset f
+def toFinsupp (s : Multiset α) : (α →₀ ℕ) :=
+  ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
+
+/-- Given a multiset `s`, `s.toFinsupp` returns the finitely supported function on `ℕ` given by
+the multiplicities of the elements of `s`. -/
+@[simps]
+noncomputable def toFinsuppAddEquiv : Multiset α ≃+ (α →₀ ℕ) where
+  toFun := toFinsupp
+  invFun := Finsupp.toMultiset
   map_add' _ _ := Finsupp.ext fun _ => count_add _ _ _
   right_inv f :=
     Finsupp.ext fun a => by
-      simp only [Finsupp.toMultiset_apply, Finsupp.sum, Multiset.count_sum',
+      simp only [toFinsupp, Finsupp.toMultiset_apply, Finsupp.sum, Multiset.count_sum',
         Multiset.count_singleton, mul_boole, Finsupp.coe_mk, Finsupp.mem_support_iff,
         Multiset.count_nsmul, Finset.sum_ite_eq, ite_not, ite_eq_right_iff]
       exact Eq.symm
-  left_inv s := by simp only [Finsupp.toMultiset_apply, Finsupp.sum, Finsupp.coe_mk,
+  left_inv s := by simp only [toFinsupp, Finsupp.toMultiset_apply, Finsupp.sum, Finsupp.coe_mk,
     Multiset.toFinset_sum_count_nsmul_eq]
 
 @[simp]
@@ -151,10 +156,10 @@ theorem toFinsupp_support (s : Multiset α) : s.toFinsupp.support = s.toFinset :
 @[simp]
 theorem toFinsupp_apply (s : Multiset α) (a : α) : toFinsupp s a = s.count a := rfl
 
-theorem toFinsupp_zero : toFinsupp (0 : Multiset α) = 0 := _root_.map_zero _
+theorem toFinsupp_zero : toFinsupp (0 : Multiset α) = 0 := _root_.map_zero toFinsuppAddEquiv
 
 theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + toFinsupp t :=
-  _root_.map_add toFinsupp s t
+  _root_.map_add toFinsuppAddEquiv s t
 
 @[simp]
 theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 := by
@@ -162,11 +167,11 @@ theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.s
 
 @[simp]
 theorem toFinsupp_toMultiset (s : Multiset α) : Finsupp.toMultiset (toFinsupp s) = s :=
-  Multiset.toFinsupp.symm_apply_apply s
+  toFinsuppAddEquiv.symm_apply_apply s
 
 theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
     toFinsupp s = f ↔ s = Finsupp.toMultiset f :=
-  Multiset.toFinsupp.eq_symm_apply.symm
+  toFinsuppAddEquiv.eq_symm_apply.symm
 
 theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext
@@ -185,18 +190,18 @@ end Multiset
 @[simp]
 theorem Finsupp.toMultiset_toFinsupp [DecidableEq α] (f : α →₀ ℕ) :
     Multiset.toFinsupp (Finsupp.toMultiset f) = f :=
-  Multiset.toFinsupp.apply_symm_apply _
+  Multiset.toFinsuppAddEquiv.apply_symm_apply _
 
 theorem Finsupp.toMultiset_eq_iff [DecidableEq α] {f : α →₀ ℕ} {s : Multiset α} :
     Finsupp.toMultiset f = s ↔ f = Multiset.toFinsupp s :=
-  Multiset.toFinsupp.symm_apply_eq
+  Multiset.toFinsuppAddEquiv.symm_apply_eq
 
 /-! ### As an order isomorphism -/
 
 namespace Finsupp
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
 noncomputable def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
-  toEquiv := Multiset.toFinsupp.symm.toEquiv
+  toEquiv := Multiset.toFinsuppAddEquiv.symm.toEquiv
   map_rel_iff' {f g} := by simp [le_def, Multiset.le_iff_count]
 
 @[simp]
@@ -243,7 +248,7 @@ finitely-supported maps `α →₀ ℕ` with total mass `n`.
 See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
 noncomputable def equivNatSum :
     Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
-  Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
+  Multiset.toFinsuppAddEquiv.toEquiv.subtypeEquiv <| by simp
 
 @[simp] lemma coe_equivNatSum_apply_apply (s : Sym α n) (a : α) :
     (equivNatSum α n s : α →₀ ℕ) a = (s : Multiset α).count a :=
