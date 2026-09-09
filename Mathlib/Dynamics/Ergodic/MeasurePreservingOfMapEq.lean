@@ -3,7 +3,9 @@ Copyright (c) 2026 Francisco Ramírez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Francisco Ramírez
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
+
+module
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 
 /-!
 # Measure-preserving map from a fixed point of the pushforward
@@ -23,6 +25,8 @@ pushforward and needs to promote it to `MeasurePreserving`.
 
 measure preserving, pushforward, fixed point, invariant measure
 -/
+
+@[expose] public section
 
 open MeasureTheory
 

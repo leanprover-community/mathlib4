@@ -4593,8 +4593,8 @@ public import Mathlib.Dynamics.Ergodic.Conservative
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.Dynamics.Ergodic.Extreme
 public import Mathlib.Dynamics.Ergodic.Function
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Ergodic.MeasurePreservingOfMapEq
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Ergodic.RadonNikodym
 public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Dynamics.FixedPoints.Defs
