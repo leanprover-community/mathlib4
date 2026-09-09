@@ -41,6 +41,8 @@ theorem pairwise'_iff : Pairwise' r ↔ ∀ ⦃i j⦄, i ≠ j → r i j := by
   simp only [Pairwise', Pairwise]
   grind
 
+alias ⟨pairwise'_apply, pairwise'_mk⟩ := pairwise'_iff
+
 theorem Pairwise.mono (hr : Pairwise s r) (h : ∀ ⦃i j⦄, r i j → p i j) : Pairwise s p := by
   grind [Pairwise]
 
