@@ -43,7 +43,7 @@ def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
 @[deprecated ProbabilityTheory.binomial_real_singleton (since := "2026-04-07")]
 theorem binomial_apply (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) (i : Fin (n + 1)) :
     binomial p h n i = p ^ (i : ℕ) * (1 - p) ^ ((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := by
-  simp [binomial]
+  simp [binomial, ofFintype_apply]
 
 @[deprecated ProbabilityTheory.binomial_real_zero (since := "2026-04-07")]
 theorem binomial_apply_zero (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
@@ -63,7 +63,7 @@ theorem binomial_apply_self (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
 @[deprecated ProbabilityTheory.binomial_one_eq_bernoulliMeasure (since := "2026-05-31")]
 theorem binomial_one_eq_bernoulli (p : ℝ≥0) (h : p ≤ 1) :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
-  ext i; fin_cases i <;> simp [binomial_apply, bernoulli_apply]
+  refine PMF.ext fun i ↦ ?_; fin_cases i <;> simp [binomial_apply, map_apply, bernoulli_apply]
 
 @[deprecated ProbabilityTheory.binomial_singleton (since := "2026-04-07")]
 theorem binomial_apply_of_le {k b : ℕ} (hb : k ≤ b) {x : ℝ≥0} (h : x ≤ 1) :

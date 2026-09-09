@@ -195,75 +195,75 @@ lemma uniformPDF_ite {s : Set E} {x : E} :
 
 end pdf
 
-end MeasureTheory
+namespace Measure
 
-namespace PMF
-
-variable {α : Type*}
+variable {α : Type*} [MeasurableSpace α]
 
 open scoped NNReal ENNReal
 
 section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
-def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
-  classical
-  refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s ?_ ?_
-  · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
-    have : (s.card : ℝ≥0∞) ≠ 0 := by
-      simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
-        Finset.nonempty_iff_ne_empty.1 hs
-    exact ENNReal.mul_inv_cancel this <| ENNReal.natCast_ne_top s.card
-  · exact fun x hx => by simp only [hx, ite_false]
+def uniformOfFinset (s : Finset α) : Measure α :=
+  ∑ a ∈ s, (s.card⁻¹ : ℝ≥0∞) • dirac a
 
-variable {s : Finset α} (hs : s.Nonempty) {a : α}
+variable [MeasurableSingletonClass α] {s : Finset α} {a : α}
 
 open scoped Classical in
 @[simp]
-theorem uniformOfFinset_apply (a : α) :
-    uniformOfFinset s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-  rfl
+theorem uniformOfFinset_apply_singleton (a : α) :
+    uniformOfFinset s {a} = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 := by
+  rw [uniformOfFinset, finsetSum_apply]
+  split_ifs with ha
+  · rw [Finset.sum_eq_single_of_mem a ha]
+    · simp
+    · simp +contextual
+  · rw [Finset.sum_eq_zero]
+    simp
+    grind
 
-theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (s.card : ℝ≥0∞)⁻¹ := by
+@[deprecated (since := "2026-08-18")] alias _root_.uniformOfFinset_apply :=
+  uniformOfFinset_apply_singleton
+
+theorem uniformOfFinset_apply_singleton_of_mem (ha : a ∈ s) :
+    uniformOfFinset s {a} = (s.card : ℝ≥0∞)⁻¹ := by
   simp [ha]
 
-theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFinset_apply_of_mem :=
+  uniformOfFinset_apply_singleton_of_mem
 
-@[simp]
-theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s := by
-  ext a
-  simp [mem_support_iff]
+theorem uniformOfFinset_apply_singleton_of_notMem (ha : a ∉ s) : uniformOfFinset s {a} = 0 := by
+  simp [ha]
 
-theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
-  simp
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFinset_apply_of_notMem :=
+  uniformOfFinset_apply_singleton_of_notMem
+
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.support_uniformOfFinset :=
+  uniformOfFinset_apply_singleton_of_mem
+
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.mem_support_uniformOfFinset_iff :=
+  uniformOfFinset_apply_singleton_of_mem
 
 section Measure
 
 variable (t : Set α)
 
 open scoped Classical in
-@[simp]
-theorem toOuterMeasure_uniformOfFinset_apply :
-    (uniformOfFinset s hs).toOuterMeasure t = #{x ∈ s | x ∈ t} / #s :=
+theorem uniformOfFinset_apply :
+    uniformOfFinset s t = #{x ∈ s | x ∈ t} / #s :=
   calc
-    (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
-      toOuterMeasure_apply (uniformOfFinset s hs) t
-    _ = ∑' x, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
-      tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm]
-    _ = ∑ x ∈ s with x ∈ t, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
-      tsum_eq_sum fun _ hx => ite_eq_right fun h => hx (Finset.mem_filter.2 h)
-    _ = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ :=
-      Finset.sum_congr rfl fun x hx => by
-        have : x ∈ s ∧ x ∈ t := by simpa using hx
-        simp only [this, and_self_iff, ite_true]
+    uniformOfFinset s t = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ := by
+      rw [uniformOfFinset, finsetSum_apply, Finset.sum_filter]
+      refine Finset.sum_congr rfl fun x hx ↦ ?_
+      split_ifs with hx' <;> simp_all
     _ = #{x ∈ s | x ∈ t} / #s := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 
-open scoped Classical in
-@[simp]
-theorem toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
-    (uniformOfFinset s hs).toMeasure t = #{x ∈ s | x ∈ t} / #s :=
-  (toMeasure_apply_eq_toOuterMeasure_apply _ ht).trans (toOuterMeasure_uniformOfFinset_apply hs t)
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.toOuterMeasure_uniformOfFinset_apply :=
+  uniformOfFinset_apply
+
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.toMeasure_uniformOfFinset_apply :=
+  uniformOfFinset_apply
 
 end Measure
 
@@ -271,37 +271,24 @@ end UniformOfFinset
 
 section UniformOfFintype
 
-/-- The uniform pmf taking the same uniform value on all of the fintype `α` -/
-def uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] : PMF α :=
-  uniformOfFinset Finset.univ Finset.univ_nonempty
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFintype := uniformOfFinset
 
-variable [Fintype α] [Nonempty α]
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.uniformOfFintype_apply :=
+  uniformOfFinset_apply_singleton
 
-@[simp]
-theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
-  simp [uniformOfFintype, Finset.mem_univ, uniformOfFinset_apply]
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.support_uniformOfFintype :=
+  uniformOfFinset_apply_singleton_of_mem
 
-@[simp]
-theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
-    (uniformOfFintype α).support = ⊤ :=
-  Set.ext fun x => by simp [mem_support_iff]
-
-theorem mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.mem_support_uniformOfFintype :=
+  uniformOfFinset_apply_singleton_of_mem
 
 section Measure
 
-variable (s : Set α)
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.toOuterMeasure_uniformOfFintype_apply :=
+  uniformOfFinset_apply
 
-theorem toOuterMeasure_uniformOfFintype_apply [Fintype s] :
-    (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
-  classical
-  rw [uniformOfFintype, toOuterMeasure_uniformOfFinset_apply, Fintype.card_subtype,
-    Finset.card_univ]
-
-theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) [Fintype s] :
-    (uniformOfFintype α).toMeasure s = Fintype.card s / Fintype.card α := by
-  classical
-  simp [uniformOfFintype, Fintype.card_subtype, hs]
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.toMeasure_uniformOfFintype_apply :=
+  uniformOfFinset_apply
 
 end Measure
 
@@ -310,66 +297,49 @@ end UniformOfFintype
 section OfMultiset
 
 open scoped Classical in
-/-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
+/-- Given a non-empty multiset `s` we construct the measure which sends `a` to the fraction of
   elements in `s` that are `a`. -/
-def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
-  ⟨fun a => s.count a / (Multiset.card s),
-    ENNReal.summable.hasSum_iff.2
-      (calc
-        (∑' b : α, (s.count b : ℝ≥0∞) / (Multiset.card s))
-          = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, (s.count b : ℝ≥0∞) := by
-            simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
-        _ = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑ b ∈ s.toFinset, (s.count b : ℝ≥0∞) :=
-          (congr_arg (fun x => (Multiset.card s : ℝ≥0∞)⁻¹ * x)
-            (tsum_eq_sum fun a ha =>
-              Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset]))
-        _ = 1 := by
-          rw [← Nat.cast_sum, Multiset.toFinset_sum_count_eq s,
-            ENNReal.inv_mul_cancel (Nat.cast_ne_zero.2 (hs ∘ Multiset.card_eq_zero.1))
-              (ENNReal.natCast_ne_top _)]
-        )⟩
+def ofMultiset (s : Multiset α) : Measure α :=
+  ∑ a ∈ s.toFinset, (s.count a / s.card : ℝ≥0∞) • dirac a
 
-variable {s : Multiset α} (hs : s ≠ 0)
+variable [MeasurableSingletonClass α] {s : Multiset α}
 
 open scoped Classical in
 @[simp]
-theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
-  rfl
+theorem ofMultiset_apply_singleton (a : α) : ofMultiset s {a} = s.count a / (Multiset.card s) := by
+  by_cases ha : a ∈ s
+  · rw [ofMultiset, finsetSum_apply, Finset.sum_eq_single_of_mem a (by simpa)]
+    · simp
+    · simp +contextual
+  · rw [ofMultiset, finsetSum_apply, Finset.sum_eq_zero]
+    · simp [ha]
+    · simp
+      grind
 
-open scoped Classical in
-@[simp]
-theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
-  Set.ext (by simp [mem_support_iff])
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.ofMultiset_apply :=
+  ofMultiset_apply_singleton
 
-open scoped Classical in
-theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
-  simp
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.support_ofMultiset :=
+  ofMultiset_apply_singleton
 
-theorem ofMultiset_apply_of_notMem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
-  simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
-    ENNReal.natCast_ne_top, or_false] using ha
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.mem_support_ofMultiset_iff :=
+  ofMultiset_apply_singleton
+
+theorem ofMultiset_apply_singleton_of_notMem {a : α} (ha : a ∉ s) : ofMultiset s {a} = 0 := by simpa
+
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.ofMultiset_apply_of_notMem :=
+  ofMultiset_apply_singleton_of_notMem
 
 section Measure
 
-variable (t : Set α)
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.toOuterMeasure_ofMultiset_apply :=
+  ofMultiset_apply_singleton
 
-open scoped Classical in
-@[simp]
-theorem toOuterMeasure_ofMultiset_apply :
-    (ofMultiset s hs).toOuterMeasure t =
-      (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) := by
-  simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
-  refine tsum_congr fun x => ?_
-  by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
-
-open scoped Classical in
-@[simp]
-theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
-    (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) :=
-  (toMeasure_apply_eq_toOuterMeasure_apply _ ht).trans (toOuterMeasure_ofMultiset_apply hs t)
+@[deprecated (since := "2026-08-18")] alias _root_.PMF.toMeasure_ofMultiset_apply :=
+  ofMultiset_apply_singleton
 
 end Measure
 
 end OfMultiset
 
-end PMF
+end MeasureTheory.Measure
