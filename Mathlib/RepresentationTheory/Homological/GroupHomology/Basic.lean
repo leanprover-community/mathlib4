@@ -145,7 +145,7 @@ theorem d_eq [DecidableEq G] :
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  --tru remove `ChainComplex.of_X`
+  --try remove `ChainComplex.of_X`
   simp [d_single (k := k), ChainComplex.of_X, barComplex.d_single (k := k), TensorProduct.tmul_add,
     TensorProduct.tmul_sum]
 
