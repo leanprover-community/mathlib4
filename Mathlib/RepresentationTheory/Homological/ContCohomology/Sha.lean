@@ -11,7 +11,7 @@ public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functorial
 /-!
 # The Tate-Shafarevich group of a continuous representation
 
-This file defines a general notion of a Tate-Shafarevich group for a continuous representation `A`
+This file defines a general notion of a Tate--Shafarevich group for a continuous representation `A`
 over a field `K`, as the intersection of the kernels of the maps `Hⁿ(K, A) → Hⁿ(Kᵥ, Aᵥ)`.
 
 Here `Kᵥ` is a `K`-algebra for each place `v` in an arbitrary indexing set `V`,
