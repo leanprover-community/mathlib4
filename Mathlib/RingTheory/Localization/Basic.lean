@@ -90,7 +90,7 @@ noncomputable abbrev mapPiEvalRingHom :
 
 open Function in
 theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
-  let T := S.comap (Pi.evalRingHom R i)
+  let T := S.comap (Pi.evalRingHom R i).toMonoidHom
   classical
   refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
   · obtain ⟨r₁, s₁, rfl⟩ := exists_mk'_eq T x₁

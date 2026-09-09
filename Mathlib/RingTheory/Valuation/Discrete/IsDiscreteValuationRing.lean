@@ -104,8 +104,8 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
     exact hπ.ne_zero
 
 lemma mker_valuation_eq_isUnitSubmonoid :
-    MonoidHom.mker ((IsDiscreteValuationRing.maximalIdeal A).valuation K) =
-    (IsUnit.submonoid A).map (algebraMap A K) := by
+    ((IsDiscreteValuationRing.maximalIdeal A).valuation K).toMonoidHom.mker =
+      (IsUnit.submonoid A).map (algebraMap A K).toMonoidHom := by
   ext a
   simp only [MonoidHom.mem_mker, Submonoid.mem_map]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

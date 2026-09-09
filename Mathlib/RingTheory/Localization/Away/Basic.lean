@@ -269,8 +269,9 @@ lemma mapₐ_injective_of_injective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [A
 
 lemma mapₐ_surjective_of_surjective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
     (hf : Function.Surjective f) : Function.Surjective (mapₐ Aₚ Bₚ f a) :=
-  have : IsLocalization (Submonoid.map f.toRingHom (Submonoid.powers a)) Bₚ := by
-    simp only [AlgHom.toRingHom_eq_coe, Submonoid.map_powers, RingHom.coe_coe]
+  have : IsLocalization (Submonoid.map f.toMonoidHom (Submonoid.powers a)) Bₚ := by
+    simp only [AlgHom.toRingHom_eq_coe, Submonoid.map_powers,
+      RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_coe]
     infer_instance
   sorry -- IsLocalization.map_surjective_of_surjective _ _ _ hf
 
