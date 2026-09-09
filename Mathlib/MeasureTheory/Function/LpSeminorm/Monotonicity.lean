@@ -241,17 +241,20 @@ section Star
 variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
 
 @[simp]
-theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} (hf : AEStronglyMeasurable f μ) :
-    eLpNorm (star f) p μ = eLpNorm f p μ :=
-  eLpNorm_congr_norm_ae hf.star hf <| .of_forall <| by simp
+theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} :
+    eLpNorm (star f) p μ = eLpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · exact eLpNorm_congr_norm_ae hf.star hf <| .of_forall <| by simp
+  · have : ¬ AEStronglyMeasurable (star f) μ := by simpa using hf
+    simp [eLpNorm_of_not_aestronglyMeasurable, hf, this]
 
 @[simp]
 theorem AEEqFun.eLpNorm_star {p : ℝ≥0∞} {f : α →ₘ[μ] R} : eLpNorm (star f : α →ₘ[μ] R) p μ =
     eLpNorm f p μ :=
-  (eLpNorm_congr_ae (coeFn_star f)).trans <| MeasureTheory.eLpNorm_star f.aestronglyMeasurable
+  (eLpNorm_congr_ae (coeFn_star f)).trans <| MeasureTheory.eLpNorm_star
 
 protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ :=
-  by simpa [MemLp, eLpNorm_star hf.aestronglyMeasurable] using hf
+  by simpa [MemLp, eLpNorm_star] using hf
 
 end Star
 
@@ -259,10 +262,9 @@ section RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
 
-@[simp] lemma eLpNorm_conj (f : α → 𝕜) (p : ℝ≥0∞) (μ : Measure α) (hf : AEStronglyMeasurable f μ) :
+@[simp] lemma eLpNorm_conj (f : α → 𝕜) (p : ℝ≥0∞) (μ : Measure α) :
     eLpNorm (conj f) p μ = eLpNorm f p μ :=
-  eLpNorm_congr_norm_ae (RCLike.continuous_conj.comp_aestronglyMeasurable hf) hf <|
-    .of_forall fun x ↦ RCLike.norm_conj (f x)
+  eLpNorm_star
 
 theorem MemLp.re (hf : MemLp f p μ) : MemLp (fun x => RCLike.re (f x)) p μ := by
   have : ∀ x, ‖RCLike.re (f x)‖ ≤ 1 * ‖f x‖ := by
