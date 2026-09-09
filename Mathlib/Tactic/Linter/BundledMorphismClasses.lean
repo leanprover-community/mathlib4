@@ -59,6 +59,12 @@ meta def falseProjectionNames : Array Name :=
   (morphismClassesToLint.map fun n ↦ n.str <| ("to" ++ n.getString!.dropEnd 5))
   ++ #[`CompletelyPositiveMapClass.toCompletelyPositiveLinearMap]
 
+/-- Names of the (long-term) class projection names: `LinearMap.ofClass` etc. -/
+-- TODO: this includes `SemilinearMap.ofClass`, which does not exist
+-- This should be harmless in practice.
+meta def classProjections : Array Name :=
+  morphismClassesToLint.map fun n ↦ (Name.mkSimple (n.getString!.dropEnd 5).toString).str "ofClass"
+
 open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions which take a bundled morphism class (such as
 `LinearMapClass`) as an argument: usually, this is a bad idea. -/
@@ -98,7 +104,9 @@ open Batteries.Tactic.Lint in
         -- Note that this linter has false positives if a `{clsName}Class` is just coerced to a function."
     else if constantInfo.isTheorem then
       -- Check if the theorem statement references any constant which takes in a morphism class.
-      let constants := constantInfo.type.getUsedConstants
+      -- Exception: a constant `LinearMap.ofClass` is usually fine: exclude that to first
+      -- approximation.
+      let constants := constantInfo.type.getUsedConstants.filter (!classProjections.contains ·)
       let env := ← getEnv
       -- For each declaration used in this theorem's statement, collect all morphism classes
       -- involved in it.

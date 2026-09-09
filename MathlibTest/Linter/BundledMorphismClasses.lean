@@ -92,8 +92,16 @@ lemma foolem {f : F} : LinearMap.baz (R := R) f = f := sorry
 -- This version is better.
 lemma foolem_fixed {f : M →ₗ[R] N} : LinearMap.baz (R := R) f = f := sorry
 
+-- A theorem referencing (e.g.) LinearMap.ofClass is not linted: these class projections are
+-- exempt. (Currently, we hard-code idealised names for these. TODO make nicer!)
+lemma coe_ofClass {f : F} : ⇑(LinearMap.ofClass f) = f :=
+  rfl
+
+-- This theorem references LinearMap.ofClass (which is fine), and LinearMap.baz (which is not).
+lemma withProjection {f : F} : LinearMap.baz (R := R) (LinearMap.ofClass f) = f := sorry
+
 /--
-error: -- Found 4 errors in 12 declarations (plus 0 automatically generated ones) in the current file with 1 linters
+error: -- Found 5 errors in 14 declarations (plus 0 automatically generated ones) in the current file with 1 linters
 
 /- The `defsWithMorphismClass` linter reports:
 FOUND definitions with a bundled morphism argument.
@@ -108,6 +116,10 @@ please change the definition to take in a `LinearMap` argument instead. -/
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the definition to take in a `SemilinearMap` argument instead. -/
 #check @foolem /- The theorem `foolem` involves a definition on a bundled morphism
+(namely `TODO`), but takes in the morphism class `LinearMapClass` as argument:
+Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
+please change the theorem to reference a concrete `LinearMap` instead. -/
+#check @withProjection /- The theorem `withProjection` involves a definition on a bundled morphism
 (namely `TODO`), but takes in the morphism class `LinearMapClass` as argument:
 Per https://github.com/leanprover-community/mathlib4/issues/31365, this is a bad idea:
 please change the theorem to reference a concrete `LinearMap` instead. -/
