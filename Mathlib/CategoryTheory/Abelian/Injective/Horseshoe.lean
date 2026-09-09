@@ -96,20 +96,6 @@ lemma shortExact_shortComplexExtend :
     h.shortComplexExtend.ShortExact :=
   h.shortExact_shortComplex.map_of_exact (ComplexShape.embeddingUpNat.extendFunctor C)
 
-/- TODO, relate these three triangles:
-The difficulty is the compatibility with `mor₃`, but it must work as
-these triangles identify to short exact sequences in the heart of
-the canonical t-structure: in that case, the connecting homomorphism is unique.
-
-variable [HasDerivedCategory C]
-have T₁ := DerivedCategory.triangleOfSES h.shortExact_shortComplexExtend
-have T₂ := DerivedCategory.Q.mapTriangle.obj
-  (triangleOfDegreewiseSplit h.shortComplexExtend sorry)
-have T₃ := ShortComplex.ShortExact.singleTriangle hS
-
--- `singleTriangleIso` below relates T₂ and T₃
--/
-
 noncomputable def splittingExtend (n : ℤ) :
     (h.shortComplexExtend.map (HomologicalComplex.eval C (ComplexShape.up ℤ) n)).Splitting :=
   ComplexShape.embeddingUpNat.splittingExtend (S := h.shortComplex) h.splitting n

@@ -136,13 +136,12 @@ lemma triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp :
   have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
   rw [← cancel_epi (Q.map (CochainComplex.mappingCone.descShortComplex S)),
     descShortComplex_triangleOfSESδ, ← Functor.map_comp_assoc,
-    mappingCone.descShortComplex_comp_homOfDegreewiseSplit]
+    Q_map_eq_of_homotopy _ (mappingCone.descShortComplexCompHomOfDegreewiseSplitHomotopy S σ)]
 
 @[simps!]
 noncomputable def mapTriangleOfDegreewiseSplitIsotriangleOfSES :
     DerivedCategory.Q.mapTriangle.obj (triangleOfDegreewiseSplit S σ) ≅
-    triangleOfSES (S := S)
-      (shortExact_of_degreewise_shortExact _ (fun n ↦ (σ n).shortExact)) :=
+    triangleOfSES (shortExact_of_degreewise_shortExact _ (fun n ↦ (σ n).shortExact)) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by
     simp [triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp σ])
 
