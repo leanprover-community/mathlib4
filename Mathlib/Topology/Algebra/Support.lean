@@ -367,7 +367,7 @@ section Compact
 
 variable [CompactSpace α]
 
-/-- In a compact space `α`, any function has compact support. -/
+/-- In a compact space `α`, any function has compact multiplicative support. -/
 @[to_additive /-- In a compact space `α`, any function has compact support. -/]
 theorem HasCompactMulSupport.of_compactSpace (f : α → γ) :
     HasCompactMulSupport f :=
