@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
-meta import Mathlib.Tactic.GRewrite
 
 /-!
 # Lucas's theorem
@@ -45,7 +44,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
   simp only [add_pow, one_pow, mul_one, ← pow_mul, sum_mul_sum]
   conv_lhs =>
-    enter [1, 2, k, 2, k']
+    enter [1, 1, 2, k, 2, k']
     rw [← mul_assoc, mul_right_comm _ _ (X ^ (p * k')), ← pow_add, mul_assoc, ← cast_mul]
   have h_iff : ∀ x ∈ range (n % p + 1) ×ˢ range (n / p + 1),
       k = x.1 + p * x.2 ↔ (k % p, k / p) = x := by
@@ -192,7 +191,7 @@ lemma primeFactors_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
   intro p hp
   simp only [mem_primeFactors, ne_eq] at hp
   obtain ⟨hp₁, hp₂, hp₃⟩ := hp
-  haveI : Fact (Nat.Prime p) := ⟨hp₁⟩
+  have : Fact (Nat.Prime p) := ⟨hp₁⟩
   simp_rw [Finset.dvd_gcd_iff, ← modEq_zero_iff_dvd] at hp₂
   have := eq_pow_multiplicity_of_choose_modEq_zero_nat h.pos hp₂
   have dvd_pow : n.minFac ∣  p ^ multiplicity p n := this ▸ minFac_dvd _
@@ -218,7 +217,7 @@ theorem gcd_choose_eq_one_of_not_isPrimePow (hn : 1 < n) (hpn : ¬ IsPrimePow n)
   contrapose! hpn
   obtain ⟨q, hq, h⟩ := Nat.exists_prime_and_dvd hpn
   simp_rw [Finset.dvd_gcd_iff, ← modEq_zero_iff_dvd] at h
-  haveI : Fact (Nat.Prime q) := ⟨hq⟩
+  have : Fact (Nat.Prime q) := ⟨hq⟩
   have := eq_pow_multiplicity_of_choose_modEq_zero_nat (zero_lt_of_lt hn) h
   refine (isPrimePow_nat_iff n).mpr ⟨q, _, hq, Dvd.multiplicity_pos ?_, this.symm⟩
   specialize h 1 (by grind)

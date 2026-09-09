@@ -669,7 +669,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
   obtain ⟨x₀, hx₀, hmax⟩ : ∃ x : ℝ, 0 ≤ x ∧ ∀ y : ℝ, 0 ≤ y → ‖f y‖ ≤ ‖f x‖ := by
     have hfc : ContinuousOn (fun x : ℝ => f x) (Ici 0) := by
       refine hd.continuousOn.comp continuous_ofReal.continuousOn fun x hx => ?_
-      rwa [closure_setOf_lt_re]
+      rwa [closure_setOfPred_lt_re]
     by_cases! h₀ : ∀ x : ℝ, 0 ≤ x → f x = 0
     · refine ⟨0, le_rfl, fun y hy => ?_⟩; rw [h₀ y hy, h₀ 0 le_rfl]
     rcases h₀ with ⟨x₀, hx₀, hne⟩
@@ -693,7 +693,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       -- move to a lemma?
       intro z hz
       rw [mem_ball, dist_zero_left, dist_eq, Complex.norm_of_nonneg hx₀] at hz
-      rw [mem_setOf_eq]
+      rw [mem_ofPred_eq]
       contrapose! hz
       calc
         x₀ ≤ x₀ - z.re := (le_sub_self_iff _).2 hz
@@ -764,7 +764,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   rcases him with ⟨C, hC⟩
   -- Due to continuity, it suffices to prove the equality on the open right half-plane.
   suffices ∀ z : ℂ, 0 < z.re → f z = 0 by
-    simpa only [closure_setOf_lt_re] using!
+    simpa only [closure_setOfPred_lt_re] using!
       EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
   -- Consider $g_n(z)=e^{nz}f(z)$.
   set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z

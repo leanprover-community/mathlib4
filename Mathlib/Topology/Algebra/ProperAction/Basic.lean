@@ -139,7 +139,7 @@ theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G]
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
-  have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp [f, g]
+  have : g ∘ f = Function.diag := by ext x <;> simp [f, g]
   have range_gf : range (g ∘ f) = diagonal X := by simp [this]
   rw [← range_gf]
   exact (proper_g.comp proper_f).isClosed_range
@@ -260,14 +260,14 @@ open scoped Pointwise in
 /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g • U` intersects `V` is compact.
 
-See `MulAction.properSMul_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+See `MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty` for the two-way implication
 under additional conditions on `G` and `X`. -/
 @[to_additive /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g +ᵥ U` intersects `V` is compact.
 
-See `AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+See `AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty` for the two-way implication
 under additional conditions on `G` and `X`. -/]
-lemma ProperSMul.isCompact_setOf_inter_nonempty
+lemma ProperSMul.isCompact_setOfPred_inter_nonempty
     {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
     {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
     IsCompact {g : G | (g • U ∩ V).Nonempty} := by
@@ -278,6 +278,12 @@ lemma ProperSMul.isCompact_setOf_inter_nonempty
   suffices (∃ v, v ∈ g • U ∧ v ∈ V) ↔ ∃ u, g • u ∈ V ∧ u ∈ U by simpa
   rw [← (MulAction.toPerm g).exists_congr_right]
   simp [and_comm]
+
+@[deprecated (since := "2026-07-09")]
+alias ProperSMul.isCompact_setOf_inter_nonempty := ProperSMul.isCompact_setOfPred_inter_nonempty
+
+@[deprecated (since := "2026-07-09")]
+alias ProperVAdd.isCompact_setOf_inter_nonempty := ProperVAdd.isCompact_setOfPred_inter_nonempty
 
 /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
 action is proper. -/

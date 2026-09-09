@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Control.Functor
 public import Mathlib.Data.SProd
-public import Mathlib.Util.CompileInductive
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Data.List.Basic
 public import Batteries.Logic
@@ -24,7 +23,7 @@ proofs about these definitions, those are contained in other files in `Data.List
 
 namespace List
 
-open Function Nat
+open Nat
 
 universe u v w x
 

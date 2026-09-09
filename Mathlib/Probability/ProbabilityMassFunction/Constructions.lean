@@ -311,14 +311,15 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
   refine Set.ext fun b => ?_
   induction b
   · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, ENNReal.coe_sub,
-      ENNReal.coe_one, Bool.cond_prop, Set.mem_setOf_eq, Bool.false_eq_true, ite_false, not_iff_not]
+      ENNReal.coe_one, Bool.cond_prop, Set.mem_ofPred_eq, Bool.false_eq_true, ite_false,
+      not_iff_not]
     constructor
     · intro h'
       simp only [tsub_eq_zero_iff_le, one_le_coe_iff] at h'
       exact eq_of_le_of_ge h h'
     · intro h'
       simp only [h', ENNReal.coe_one, tsub_self]
-  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq, ne_eq,
+  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_ofPred_eq, ne_eq,
       ENNReal.coe_eq_zero]
 
 @[deprecated ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem (since := "2026-05-29")]

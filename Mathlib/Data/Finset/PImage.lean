@@ -66,6 +66,7 @@ theorem mem_pimage : b ∈ s.pimage f ↔ ∃ a ∈ s, b ∈ f a := by
 theorem coe_pimage : (s.pimage f : Set β) = f.image s :=
   Set.ext fun _ => mem_pimage
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
     (s.pimage fun x => Part.some (f x)) = s.image f := by

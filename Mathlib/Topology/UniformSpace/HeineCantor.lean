@@ -25,7 +25,9 @@ uniform space, uniform continuity, compact space
 
 public section
 
-open Uniformity Topology Filter UniformSpace Set
+open Filter UniformSpace Set
+
+open scoped Uniformity Topology
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
@@ -48,7 +50,7 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
     (hf : ContinuousOn f s) : UniformContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict]
   rw [isCompact_iff_compactSpace] at hs
-  rw [continuousOn_iff_continuous_restrict] at hf
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact CompactSpace.uniformContinuous_of_continuous hf
 
 /-- If `s` is compact and `f` is continuous at all points of `s`, then `f` is

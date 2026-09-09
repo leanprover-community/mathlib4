@@ -64,8 +64,9 @@ theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
 
 @[simp]
 theorem revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
-  if_pos H
+  ite_eq_left H
 
+set_option backward.isDefEq.respectTransparency false in
 lemma revAt_eq_self_of_lt {N i : ℕ} (h : N < i) : revAt N i = i := by simp [revAt, Nat.not_le.mpr h]
 
 theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
@@ -176,9 +177,10 @@ theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.na
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
   reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
     (p.reflect N).natDegree ≤ max N p.natDegree := by
-  simp +contextual [-le_sup_iff, natDegree_le_iff_coeff_eq_zero,
+  simp +contextual [-le_max_iff, natDegree_le_iff_coeff_eq_zero,
     revAt, not_le_of_gt, coeff_eq_zero_of_natDegree_lt]
 
 section Eval₂
@@ -229,11 +231,12 @@ theorem reverse_zero : reverse (0 : R[X]) = 0 :=
 @[simp]
 theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
   rw [Nat.cast_lt] at hn
-  rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
+  rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, ite_eq_right (not_le_of_gt hn),
     coeff_eq_zero_of_natDegree_lt hn]
 
 theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :

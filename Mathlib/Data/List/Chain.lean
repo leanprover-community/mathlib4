@@ -178,12 +178,12 @@ theorem isChain_cons_of_isChain_cons_pmap {S : β → β → Prop} {p : α → P
     (H : ∀ a b ha hb, S (f a ha) (f b hb) → R a b) : IsChain R (a :: l) :=
   ((isChain_cons_pmap f _ _).1 hl₂).imp (by grind)
 
-protected theorem IsChain.sublist [Trans R R R] (hl : l₂.IsChain R) (h : l₁ <+ l₂) :
+protected theorem IsChain.sublist [IsTrans α R] (hl : l₂.IsChain R) (h : l₁ <+ l₂) :
     l₁.IsChain R := by
   rw [isChain_iff_pairwise] at hl ⊢
   exact hl.sublist h
 
-protected theorem IsChain.rel_cons [Trans R R R] (hl : (a :: l).IsChain R) (hb : b ∈ l) :
+protected theorem IsChain.rel_cons [IsTrans α R] (hl : (a :: l).IsChain R) (hb : b ∈ l) :
     R a b := by
   rw [isChain_iff_pairwise] at hl
   exact rel_of_pairwise_cons hl hb
@@ -263,19 +263,6 @@ theorem IsChain.take (h : IsChain R l) (n : ℕ) : IsChain R (take n l) :=
 theorem IsChain.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : IsChain R (x :: l)) :
     IsChain R (y :: l) :=
   IsChain.cons_of_imp @h hl
-
-@[deprecated isChain_iff_getElem (since := "2025-11-25")]
-theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
-    ∀ (i : Fin (l.length.pred)),
-    haveI H := Nat.sub_one_add_one (Nat.lt_of_lt_pred i.pos).ne'
-    R (l.get (i.castSucc.cast H)) (l.get (i.succ.cast H)) := by
-  simp [isChain_iff_getElem, Fin.forall_iff, Nat.lt_sub_iff_add_lt]
-
-@[deprecated isChain_iff_getElem (since := "2025-11-25")]
-theorem isChain_cons_iff_get {R} {a : α} {l : List α} : IsChain R (a :: l) ↔
-    ∀ (i : Fin l.length), R ((a :: l).get i.castSucc) ((a :: l).get i.succ) := by
-  simp only [isChain_iff_getElem, length_cons, Fin.forall_iff, Nat.add_lt_add_iff_right,
-    getElem_cons_succ, Fin.castSucc_mk, get_eq_getElem, Fin.succ_mk]
 
 theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by simp_all [isChain_iff_getElem]

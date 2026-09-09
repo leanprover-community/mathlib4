@@ -38,7 +38,7 @@ assert_not_exists Module.Basis Ideal ContinuousMul
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal Bornology
+open Filter Function Set NNReal ENNReal Bornology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -168,6 +168,11 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using!
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
+/-- The set of functions which are 1-Lipschitz on a metric space separates points. -/
+theorem _root_.Set.separatesPoints_lipschitzWith_one (E : Type*) [MetricSpace E] :
+    { f : E → ℝ | LipschitzWith 1 f }.SeparatesPoints :=
+  fun _ y _ ↦ ⟨(dist · y), by simp [LipschitzWith.dist_left], by simpa⟩
+
 end Metric
 
 section EMetric
@@ -296,8 +301,6 @@ theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x =
 
 end Real
 end LocallyLipschitz
-
-open Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 
