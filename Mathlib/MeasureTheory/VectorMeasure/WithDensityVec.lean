@@ -91,7 +91,7 @@ lemma variation_WithDensity_le :
   · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
     rw [withDensity_apply hf, MeasureTheory.withDensity_apply _ hs]
     apply enorm_setIntegral_le_lintegral_enorm_transpose
-  · simp [withDensity, hf, Measure.zero_le ]
+  · simp [withDensity, hf, Measure.zero_le]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `‖B x y‖ = ‖B · y‖ * ‖x‖` for all `x, y`, then the variation of a vector measure with

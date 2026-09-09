@@ -53,6 +53,11 @@ variable (R) in
 This is the preferred way to construct a term of `CommBialgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CommBialgCat.of R X` as `↧X`. -/
+@[app_delab CommBialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
 
