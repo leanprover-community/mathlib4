@@ -10,16 +10,27 @@ public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.NormNum.Core
 
 /-!
-# `norm_matmul`: products of matrix literals
+# Products of matrix literals
 
-This module defines the `norm_matmul` simproc, which rewrites a product of matrix literals to
-the literal of the product through `ofLists_mul`, with the entries computed by `norm_num`.
+`proveMul` proves `A * B = C` for matrix literals `A` and `B`, with the entries of `C` normalized
+by a given `EntryCertifier`, and returns it as a `Simp.Result` that other tactics consume in
+`MetaM`; `norm_matmul` is the simproc wrapping it, currently using `norm_num` as the certifier.
+
+## Main definitions
+
+* `EntryCertifier`
+* `proveMul`
+* `normMatMulCore`
+* `norm_matmul`
 
 ## Implementation notes
 
 The simproc simplifies the factors before matching them, so that a product of products is
-evaluated inside-out. It is meant to run as a pre-procedure, `simp [↓ norm_matmul]`, where it
-takes precedence over the simp lemmas unfolding products of `vecCons` rows.
+evaluated inside-out.
+
+Note that the simp lemmas unfolding `vecCons` compete with this simproc due to how `!![]` is
+currently elaborated, so this tactic should be used by `simp only` or with `↓` to run as a
+pre-procedure.
 -/
 
 public meta section
@@ -133,8 +144,10 @@ open Mathlib.Tactic.Matrix
 
 /-- The `norm_matmul` simproc rewrites a product of matrix literals with non-symbolic entries
 to the literal of the product, with the entries computed by `norm_num`. Use it as
-`simp [↓ norm_matmul]`; `norm_num` ignores simprocs given as arguments. Terms that it cannot
-evaluate are skipped, and can be viewed by using `set_option trace.Tactic.norm_matmul true`. -/
+`simp only [norm_matmul]`; alongside the default simp set it must run as a pre-procedure,
+`simp [↓ norm_matmul]`, ahead of the simp lemmas on `vecCons` rows. `norm_num` ignores simprocs
+given as arguments. Terms that it cannot evaluate are skipped, and can be viewed by using
+`set_option trace.Tactic.norm_matmul true`. -/
 simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := fun e => do
   try normMatMulCore (Mathlib.Meta.NormNum.eval ·) e
   catch ex =>
