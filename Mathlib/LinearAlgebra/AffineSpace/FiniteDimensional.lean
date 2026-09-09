@@ -233,8 +233,8 @@ lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι} (hsfin : s.Finit
   rw [← vectorSpan_image_eq_span_vsub_set_right_ne k p hi,
     ← direction_affineSpan, htop, direction_top]
 
-lemma affineSpan_range_ne_top_of_card_le_finrank [Fintype ι]
-    (hι : Fintype.card ι ≤ finrank k V) (p : ι → P) : affineSpan k (Set.range p) ≠ ⊤ := by
+lemma affineSpan_range_ne_top_of_card_le_finrank (hι : ENat.card ι ≤ finrank k V) (p : ι → P) :
+    affineSpan k (Set.range p) ≠ ⊤ := by
   simpa using
     affineSpan_image_ne_top_of_encard_le_finrank k Set.finite_univ (by simpa) p
 
