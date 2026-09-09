@@ -187,11 +187,9 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
 end PPrime
 
 /-- Multiplicativity of the ideal norm in number rings. -/
-theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
-    cardQuot (I * J) = cardQuot I * cardQuot J := by
-  let b := Module.Free.chooseBasis ℤ S
-  have : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
-  exact UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
+theorem cardQuot_mul [IsDedekindDomain S] [Infinite S] (I J : Ideal S) :
+    cardQuot (I * J) = cardQuot I * cardQuot J :=
+  UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
       (fun {I J} hI => by simp [Ideal.isUnit_iff.mp hI, Ideal.mul_top])
       (fun {I} i hI =>
         have : Ideal.IsPrime I := Ideal.isPrime_of_prime hI
@@ -255,27 +253,26 @@ theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
 
 end Ring.HasFiniteQuotients
 
-/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
-noncomputable def Ideal.absNorm [IsDedekindDomain S] [Module.Free ℤ S] :
+-- `Infinite S` is what makes this multiplicative at `⊥`: `I * ⊥ = ⊥` forces `absNorm ⊥ = 0`.
+/-- The absolute norm of the ideal `I : Ideal S` is the cardinality of the quotient `S ⧸ I`. -/
+noncomputable def Ideal.absNorm [IsDedekindDomain S] [Infinite S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
   map_mul' I J := by rw [cardQuot_mul]
   map_one' := by rw [Ideal.one_eq_top, cardQuot_top]
-  map_zero' := by
-    have : Infinite S := Module.Free.infinite ℤ S
-    rw [Ideal.zero_eq_bot, cardQuot_bot]
+  map_zero' := by rw [Ideal.zero_eq_bot, cardQuot_bot]
 
 namespace Ring.HasFiniteQuotients
 
 variable [Ring.HasFiniteQuotients S]
 
 /-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
-theorem finite_absNorm_le [IsDedekindDomain S] [Module.Free ℤ S] (B : ℕ) :
+theorem finite_absNorm_le [IsDedekindDomain S] [Infinite S] (B : ℕ) :
     {I : Ideal S | I.absNorm ≤ B}.Finite :=
   finite_cardQuot_le B
 
 /-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
-theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain S] [Module.Free ℤ S] (B : ℕ) :
+theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain S] [Infinite S] (B : ℕ) :
     {p : IsDedekindDomain.HeightOneSpectrum S | p.asIdeal.absNorm ≤ B}.Finite :=
   finite_cardQuot_heightOneSpectrum_le B
 
@@ -283,7 +280,11 @@ end Ring.HasFiniteQuotients
 
 namespace Ideal
 
-variable [IsDedekindDomain S] [Module.Free ℤ S]
+variable [IsDedekindDomain S]
+
+section Infinite
+
+variable [Infinite S]
 
 theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 
@@ -344,7 +345,14 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
-variable [Module.Finite ℤ S]
+end Infinite
+
+section Free
+
+variable [Module.Free ℤ S] [Module.Finite ℤ S]
+
+-- A nontrivial free `ℤ`-module is infinite; local to this section to supply `Infinite S`.
+local instance : Infinite S := Module.Free.infinite ℤ S
 
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
@@ -542,6 +550,8 @@ theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     ← Ideal.span_singleton_absNorm, Ideal.mem_span_singleton, Ideal.absNorm_span_singleton,
     Int.natAbs_dvd]
   rwa [Ideal.absNorm_span_singleton, ← Int.prime_iff_natAbs_prime]
+
+end Free
 
 end Ideal
 

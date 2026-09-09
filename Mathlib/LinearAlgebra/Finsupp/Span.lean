@@ -106,9 +106,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule R M) {m : M}
     (hm : m ∈ ⨆ i, p i) : ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i := by
-  have :=
-    CompleteLattice.IsCompactElement.exists_finset_of_le_iSup (Submodule R M)
-      (Submodule.singleton_span_isCompactElement m) p
+  have := (Submodule.singleton_span_isCompactElement m).exists_finset_of_le_iSup p
   simp only [Submodule.span_singleton_le_iff_mem] at this
   exact this hm
 
