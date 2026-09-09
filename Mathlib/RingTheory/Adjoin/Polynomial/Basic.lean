@@ -78,10 +78,9 @@ lemma adjoin_mem_exists_aeval' {R A σ : Type*}
     [CommSemiring R] [CommSemiring A] [Algebra R A]
     {S : Set A} {a : A} {f : σ → A} (hS : S ⊆ Set.range f)
     (ha : a ∈ adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a := by
-  rw [← AlgHom.mem_range]
-  revert a ha
-  rw [← SetLike.le_def, adjoin_le_iff, AlgHom.coe_range]
-  exact hS.trans (Set.range_subset_range_iff_exists_comp.2 ⟨MvPolynomial.X, funext (by simp)⟩)
+  have ha : a ∈ adjoin R (Set.range f) := adjoin_mono hS ha
+  rw [Algebra.adjoin_range_eq_range_aeval] at ha
+  simp_all
 
 lemma adjoin_eq_exists_aeval' {R A σ : Type*}
     [CommSemiring R] [CommSemiring A] [Algebra R A]
