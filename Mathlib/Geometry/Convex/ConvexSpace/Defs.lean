@@ -8,6 +8,7 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Positivity.Basic
@@ -61,7 +62,7 @@ structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) 
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-attribute [simp] StdSimplex.total
+attribute [simp] StdSimplex.total StdSimplex.nonneg
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
@@ -75,6 +76,9 @@ variable {R : Type u} [PartialOrder R] [Semiring R] {w : StdSimplex R X} {x : X}
 
 @[simp] lemma weights_ne_zero [Nontrivial R] : ∀ w : StdSimplex R X, w.weights ≠ 0 := by
   rintro ⟨_, -, total⟩ rfl; simp at total
+
+@[simp] lemma weights_pos [Nontrivial R] (w : StdSimplex R X) : 0 < w.weights :=
+  w.nonneg.lt_of_ne w.weights_ne_zero.symm
 
 lemma support_weights_nonempty [Nontrivial R] (w : StdSimplex R X) :
     w.weights.support.Nonempty := by simp
@@ -757,3 +761,31 @@ lemma isAffineMap_convexCombPair (m : X) :
 end CommSemiring
 
 end Convexity
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Convexity
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative,
+and even positive, ie nonzero, when `R` is nontrivial. -/
+@[positivity Convexity.StdSimplex.weights _]
+meta def evalStdSimplexWeights : PositivityExt where eval {_ _} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  let w ← match ← whnfR e with
+    | .app _ w | .proj ``StdSimplex 0 w => pure w
+    | _ => throwError "not `StdSimplex.weights`"
+  -- `StdSimplex.weights_pos` needs `Nontrivial R`, so fall back to nonnegativity without it.
+  match ← observing? (mkAppM ``StdSimplex.weights_pos #[w]) with
+  | some p => pure (.positive p)
+  | none => pure (.nonnegative (← mkAppM ``StdSimplex.nonneg #[w]))
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative.
+
+This handles `w.weights i`; see `evalStdSimplexWeights` for the unapplied `w.weights`. -/
+@[positivity DFunLike.coe (Convexity.StdSimplex.weights _) _]
+meta def evalStdSimplexWeightsApply : PositivityExt where eval {_ _} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  let .app (.app _coe (.app _ w)) i ← whnfR e | throwError "not `StdSimplex.weights`"
+  let p ← mkAppOptM ``StdSimplex.weights_nonneg #[none, none, none, none, w, i]
+  pure (.nonnegative p)
+
+end Mathlib.Meta.Positivity
