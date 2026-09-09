@@ -475,7 +475,7 @@ theorem coeff_ofMulAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h : H)
   have hg : Function.Injective (g • · : H → H) := by
     intro h₁ h₂
     simp
-  simp [ofMulAction_def, Finsupp.mapDomain_apply, hg]
+  simp [ofMulAction_def, hg]
 
 @[deprecated (since := "2026-06-18")] alias ofMulAction_apply := coeff_ofMulAction
 
