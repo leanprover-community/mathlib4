@@ -174,18 +174,18 @@ open Set
 /-- The preimage of a `Submonoid` along a `MonoidHom` is a `Submonoid`. -/
 @[to_additive
   /-- The preimage of an `AddSubmonoid` along an `AddMonoidHom` is an `AddSubmonoid`. -/]
-def comap (f : F) (S : Submonoid N) :
+def comap (f : M →* N) (S : Submonoid N) :
     Submonoid M where
   carrier := f ⁻¹' S
   one_mem' := show f 1 ∈ S by rw [map_one]; exact S.one_mem
   mul_mem' ha hb := show f (_ * _) ∈ S by rw [map_mul]; exact S.mul_mem ha hb
 
 @[to_additive (attr := simp)]
-theorem coe_comap (S : Submonoid N) (f : F) : (S.comap f : Set M) = f ⁻¹' S :=
+theorem coe_comap (S : Submonoid N) (f : M →* N) : (S.comap f : Set M) = f ⁻¹' S :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mem_comap {S : Submonoid N} {f : F} {x : M} : x ∈ S.comap f ↔ f x ∈ S :=
+theorem mem_comap {S : Submonoid N} {f : M →* N} {x : M} : x ∈ S.comap f ↔ f x ∈ S :=
   Iff.rfl
 
 @[to_additive]
@@ -200,7 +200,7 @@ theorem comap_id (S : Submonoid P) : S.comap (MonoidHom.id P) = S :=
 /-- The image of a `Submonoid` along a `MonoidHom` is a `Submonoid`. -/
 @[to_additive
   /-- The image of an `AddSubmonoid` along an `AddMonoidHom` is an `AddSubmonoid`. -/]
-def map (f : F) (S : Submonoid M) :
+def map (f : M →* N) (S : Submonoid M) :
     Submonoid N where
   carrier := f '' S
   one_mem' := ⟨1, S.one_mem, map_one f⟩
@@ -209,46 +209,48 @@ def map (f : F) (S : Submonoid M) :
     exact ⟨x * y, S.mul_mem hx hy, by rw [map_mul]⟩
 
 @[to_additive (attr := simp)]
-theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
+theorem coe_map (f : M →* N) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem map_coe_toMonoidHom (f : F) (S : Submonoid M) : S.map (f : M →* N) = S.map f :=
-  rfl
+-- now a syntactic tautology
+--@[to_additive (attr := simp)]
+--theorem map_coe_toMonoidHom (f : M →* N) (S : Submonoid M) : S.map (f : M →* N) = S.map f :=
+--  rfl
+
+-- now a tautology also
+-- @[to_additive (attr := simp)]
+-- theorem map_coe_toMulEquiv (f : M ≃* N) (S : Submonoid M) : S.map f = S.map f.toMonoidHom :=
+--   rfl
 
 @[to_additive (attr := simp)]
-theorem map_coe_toMulEquiv {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) (S : Submonoid M) :
-    S.map (f : M ≃* N) = S.map f :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
+theorem mem_map {f : M →* N} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
 
 @[to_additive]
-theorem mem_map_of_mem (f : F) {S : Submonoid M} {x : M} (hx : x ∈ S) : f x ∈ S.map f :=
+theorem mem_map_of_mem (f : M →* N) {S : Submonoid M} {x : M} (hx : x ∈ S) : f x ∈ S.map f :=
   mem_image_of_mem f hx
 
 @[to_additive]
-theorem apply_coe_mem_map (f : F) (S : Submonoid M) (x : S) : f x ∈ S.map f :=
+theorem apply_coe_mem_map (f : M →* N) (S : Submonoid M) (x : S) : f x ∈ S.map f :=
   mem_map_of_mem f x.2
 
 @[to_additive]
 theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 
+variable {T : Submonoid N} {f : M →* N}
+
 @[to_additive (attr := simp 1100)]
-theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x : M} :
+theorem mem_map_iff_mem (hf : Function.Injective f) {S : Submonoid M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
 
 variable {T : Submonoid N} {f : F}
 
 @[to_additive]
-theorem map_le_iff_le_comap {f : F} {S : Submonoid M} {T : Submonoid N} :
+theorem map_le_iff_le_comap :
     S.map f ≤ T ↔ S ≤ T.comap f :=
   image_subset_iff
 
-variable (f) in
 @[to_additive]
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
 
@@ -285,29 +287,30 @@ theorem comap_map_comap : ((T.comap f).map f).comap f = T.comap f :=
   (gc_map_comap f).u_l_u_eq_u _
 
 @[to_additive]
-theorem map_sup (S T : Submonoid M) (f : F) : (S ⊔ T).map f = S.map f ⊔ T.map f :=
+theorem map_sup (S T : Submonoid M) (f : M →* N) : (S ⊔ T).map f = S.map f ⊔ T.map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_sup
 
 @[to_additive]
-theorem map_iSup {ι : Sort*} (f : F) (s : ι → Submonoid M) : (iSup s).map f = ⨆ i, (s i).map f :=
+theorem map_iSup {ι : Sort*} (f : M →* N) (s : ι → Submonoid M) :
+    (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
 
 @[to_additive]
-theorem map_inf (S T : Submonoid M) (f : F) (hf : Function.Injective f) :
+theorem map_inf (S T : Submonoid M) (f : M →* N) (hf : Function.Injective f) :
     (S ⊓ T).map f = S.map f ⊓ T.map f := SetLike.coe_injective (Set.image_inter hf)
 
 @[to_additive]
-theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : M →* N) (hf : Function.Injective f)
     (s : ι → Submonoid M) : (iInf s).map f = ⨅ i, (s i).map f := by
   apply SetLike.coe_injective
   simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 @[to_additive]
-theorem comap_inf (S T : Submonoid N) (f : F) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
+theorem comap_inf (S T : Submonoid N) (f : M →* N) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_inf
 
 @[to_additive]
-theorem comap_iInf {ι : Sort*} (f : F) (s : ι → Submonoid N) :
+theorem comap_iInf {ι : Sort*} (f : M →* N) (s : ι → Submonoid N) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_iInf
 
