@@ -5,17 +5,21 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
 /-!
 # The topological abelianization of the absolute Galois group.
 
 We define the absolute Galois group of a field `K` and its topological abelianization.
+The absolute Galois group acts on the separable and algebraic closures of `K`, and is a
+Galois group for the separable closure in the sense of `IsGaloisGroup`.
 
 ## Main definitions
 - `Field.absoluteGaloisGroup` : The Galois group of the field extension `K^sep/K`,
   where `K^sep` is a separable closure of `K`.
+- `Field.absoluteGaloisGroup.mulSemiringActionOfNormal` : the action on a normal extension
+  equipped with an embedding into the algebraic closure.
 - `Field.absoluteGaloisGroupAbelianization` : The topological abelianization of
   `Field.absoluteGaloisGroup K`, that is, the quotient of `Field.absoluteGaloisGroup K` by the
   topological closure of its commutator subgroup.
@@ -52,6 +56,15 @@ add_decl_doc instTopologicalSpaceAbsoluteGaloisGroup
 
 local notation "G_K" => absoluteGaloisGroup
 
+instance : MulSemiringAction (G_K K) (SeparableClosure K) :=
+  inferInstanceAs (MulSemiringAction Gal(SeparableClosure K/K) (SeparableClosure K))
+
+instance : FaithfulSMul (G_K K) (SeparableClosure K) :=
+  inferInstanceAs (FaithfulSMul Gal(SeparableClosure K/K) (SeparableClosure K))
+
+instance : IsGaloisGroup (G_K K) K (SeparableClosure K) :=
+  inferInstanceAs (IsGaloisGroup Gal(SeparableClosure K/K) K (SeparableClosure K))
+
 /-- Restriction from the algebraic closure to the separable closure induces an isomorphism of
 topological groups from the automorphism group of the algebraic closure to the absolute Galois
 group. -/
@@ -62,6 +75,60 @@ noncomputable def absoluteGaloisGroup.restrictAlgebraicClosure :
 @[simp]
 theorem absoluteGaloisGroup.restrictAlgebraicClosure_apply (σ : Gal(AlgebraicClosure K/K)) :
     restrictAlgebraicClosure K σ = σ.restrictNormal (SeparableClosure K) := rfl
+
+/-! ### Actions on field extensions -/
+
+instance : MulSemiringAction (G_K K) (AlgebraicClosure K) :=
+  MulSemiringAction.compHom _ (absoluteGaloisGroup.restrictAlgebraicClosure K).symm.toMonoidHom
+
+instance : SMulCommClass (G_K K) K (AlgebraicClosure K) :=
+  SMul.comp.smulCommClass (absoluteGaloisGroup.restrictAlgebraicClosure K).symm
+
+instance : FaithfulSMul (G_K K) (AlgebraicClosure K) :=
+  ⟨fun h ↦ (absoluteGaloisGroup.restrictAlgebraicClosure K).symm.injective (AlgEquiv.ext h)⟩
+
+theorem absoluteGaloisGroup.smul_algebraicClosure_def (σ : G_K K) (x : AlgebraicClosure K) :
+    σ • x = (restrictAlgebraicClosure K).symm σ x := rfl
+
+theorem absoluteGaloisGroup.restrictAlgebraicClosure_smul (σ : Gal(AlgebraicClosure K/K))
+    (x : SeparableClosure K) :
+    restrictAlgebraicClosure K σ • x = σ.restrictNormal (SeparableClosure K) x := rfl
+
+@[simp]
+theorem absoluteGaloisGroup.coe_smul (σ : G_K K) (x : SeparableClosure K) :
+    ↑(σ • x) = σ • (x : AlgebraicClosure K) := by
+  obtain ⟨τ, rfl⟩ := (restrictAlgebraicClosure K).surjective σ
+  simpa only [smul_algebraicClosure_def, ContinuousMulEquiv.symm_apply_apply,
+    restrictAlgebraicClosure_smul, IntermediateField.algebraMap_apply] using
+    τ.restrictNormal_commutes (SeparableClosure K) x
+
+section Normal
+
+variable [Algebra K L] [Normal K L] [Algebra L (AlgebraicClosure K)]
+  [IsScalarTower K L (AlgebraicClosure K)]
+
+/-- The action of the absolute Galois group on a normal extension, using its given embedding
+into the algebraic closure. -/
+@[implicit_reducible]
+noncomputable def absoluteGaloisGroup.mulSemiringActionOfNormal : MulSemiringAction (G_K K) L :=
+  MulSemiringAction.compHom L
+    ((AlgEquiv.restrictNormalHom L).comp (restrictAlgebraicClosure K).symm.toMonoidHom)
+
+instance absoluteGaloisGroup.smulCommClassOfNormal : letI := mulSemiringActionOfNormal K L
+    SMulCommClass (G_K K) K L :=
+  SMul.comp.smulCommClass
+    ((AlgEquiv.restrictNormalHom L).comp (restrictAlgebraicClosure K).symm.toMonoidHom)
+
+@[simp]
+theorem absoluteGaloisGroup.algebraMap_smulOfNormal (σ : G_K K) (x : L) :
+    letI := mulSemiringActionOfNormal K L
+    algebraMap L (AlgebraicClosure K) (σ • x) =
+      σ • algebraMap L (AlgebraicClosure K) x :=
+  ((restrictAlgebraicClosure K).symm σ).restrictNormal_commutes L x
+
+end Normal
+
+/-! ### Maps of absolute Galois groups -/
 
 section
 
