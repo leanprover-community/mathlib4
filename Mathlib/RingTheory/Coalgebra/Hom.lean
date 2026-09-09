@@ -155,15 +155,17 @@ theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
--- XXX: is this naming scheme appropriate and consistent with similar classes?
-theorem coe_fn_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
+theorem coe_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
   DFunLike.coe_injective
 
-theorem coe_fn_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
+theorem coe_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
+@[deprecated (since := "2026-09-09")] alias coe_fn_injective := coe_injective
+@[deprecated (since := "2026-09-09")] alias coe_fn_inj := coe_inj
+
 theorem linearMapOfClass_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
-  fun φ₁ φ₂ H => coe_fn_injective <|
+  fun φ₁ φ₂ H => coe_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
 
 @[deprecated (since := "2026-09-09")] alias coe_linearMap_injective := linearMapOfClass_injective
