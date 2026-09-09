@@ -286,5 +286,3 @@ theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
   rw [Module.finrank_eq_card_basis G.lapMatrix_ker_basis]
 
 end SimpleGraph
-
-#min_imports
