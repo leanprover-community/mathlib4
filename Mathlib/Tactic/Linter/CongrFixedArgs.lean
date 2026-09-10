@@ -42,40 +42,32 @@ public register_option linter.congrFixedArgs : Bool := {
 
 namespace CongrFixedArgs
 
-/-- Given a theorem `declName` whose conclusion is `f a₁ ... aₙ = f b₁ ... bₙ` (or `↔`) for a
-constant `f`, returns the name of `f` together with the positions `i` of the explicit arguments of
-`f` for which `aᵢ` and `bᵢ` are the same. Arguments which are proofs or types, and those on which
-later arguments of `f` depend, are skipped. -/
-def fixedArgs (declName : Name) : MetaM (Option (Name × Array Nat)) := do
-  let (_, _, type) ← forallMetaTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
-  let some (lhs, rhs) := type.eqOrIff? | return none
-  let some fnName := lhs.getAppFn.constName? | return none
+/-- Given a `@[congr]` theorem `thm` whose conclusion is `f a₁ ... aₙ = f b₁ ... bₙ` (or `↔`),
+returns the positions `i` of the explicit arguments of `f` for which `aᵢ` and `bᵢ` are the same.
+Arguments which are proofs or types, and those on which later arguments of `f` depend, are
+skipped. -/
+def fixedArgs (thm : SimpCongrTheorem) : MetaM (Array Nat) := do
+  let (_, _, type) ← forallMetaTelescopeReducing (← getConstInfo thm.theoremName).type
+  let some (lhs, rhs) := type.eqOrIff? | return #[]
   let fnInfo ← getFunInfoNArgs lhs.getAppFn lhs.getAppNumArgs
-  let lhsArgs := lhs.getAppArgs
-  let rhsArgs := rhs.getAppArgs
-  let mut fixed := #[]
-  for h : i in [:lhsArgs.size] do
-    let some pinfo := fnInfo.paramInfo[i]? | continue
-    if pinfo.binderInfo.isExplicit && !pinfo.hasFwdDeps && some lhsArgs[i] == rhsArgs[i]? then
-      unless (← isProof lhsArgs[i]) || (← isType lhsArgs[i]) do
-        fixed := fixed.push i
-  return some (fnName, fixed)
+  let args := lhs.getAppArgs.zip <| rhs.getAppArgs.zip fnInfo.paramInfo
+  let fixed : Array Bool ← args.mapM fun (a, b, p) ↦ do
+    return p.binderInfo.isExplicit && !p.hasFwdDeps && a == b && !(← isProof a) && !(← isType a)
+  return fixed.zipIdx.filterMap (fun x ↦ if x.fst == true then some x.snd else none)
 
-/-- Logs a warning at `ref` if `declName` is a `@[congr]` theorem with fixed explicit arguments. -/
-def lintCongrTheorem (ref : Syntax) (declName : Name) : CommandElabM Unit := do
-  let some (fnName, fixed) ← liftTermElabM <| fixedArgs declName | return
-  -- `@[congr]` theorems are indexed by the head function of their conclusion.
-  unless (congrExtension.getState (← getEnv)).get fnName |>.any (·.theoremName == declName) do
-    return
+/-- Logs a warning at `ref` if the `@[congr]` theorem `thm` has fixed explicit arguments. -/
+def lintCongrTheorem (ref : Syntax) (thm : SimpCongrTheorem) : CommandElabM Unit := do
+  let fixed ← liftTermElabM <| fixedArgs thm
   if fixed.isEmpty then return
   -- Display each argument as `x : T`, as in the signature of the head function.
-  let args ← liftTermElabM <| forallTelescopeReducing (← getConstInfo fnName).type fun xs _ ↦
-    fixed.toList.filterMapM fun i ↦ do
+  let args ← liftTermElabM <| forallTelescopeReducing (← getConstInfo thm.funName).type fun xs _ ↦
+    fixed.filterMapM fun i ↦ do
       let some x := xs[i]? | return none
       addMessageContext m!"`{x} : {← inferType x}`"
   logLint linter.congrFixedArgs ref m!"\
-    The `@[congr]` theorem `{.ofConstName declName}` does not allow the following explicit \
-    arguments of `{.ofConstName fnName}` to change:{indentD (MessageData.joinSep args "\n")}\n\
+    The `@[congr]` theorem `{.ofConstName thm.theoremName}` does not allow the following explicit \
+    arguments of `{.ofConstName thm.funName}` to change:\
+      {indentD (MessageData.joinSep args.toList "\n")}\n\
     This violates the recommendation in the documentation of `@[congr]`."
 
 @[inherit_doc Mathlib.Linter.linter.congrFixedArgs]
@@ -88,6 +80,7 @@ def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let some congrAttr := stx.find? fun s ↦
     s.isOfKind ``Lean.Parser.Attr.simple && s[0].getId == ``congr | return
   let env ← getEnv
+  let congrThms := (congrExtension.getState env).lemmas.toList.flatMap (·.2)
   let mut linted : NameSet := {}
   -- `attribute [congr] foo bar`: lint the named theorems.
   for s in stx.topDown do
@@ -95,20 +88,20 @@ def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for id in s[4].getArgs do
       let some declName ← (do return some (← liftCoreM <| realizeGlobalConstNoOverload id))
         <|> pure none | continue
+      let some thm := congrThms.find? (·.theoremName == declName) | continue
       unless linted.contains declName do
         linted := linted.insert declName
-        lintCongrTheorem id declName
+        lintCongrTheorem id thm
   -- `@[congr] theorem foo ...`: lint the `@[congr]` theorems declared in this command.
   let some cmdRange := stx.getRange? | return
-  for (_, thms) in (congrExtension.getState env).lemmas.toList do
-    for thm in thms do
-      let declName := thm.theoremName
-      if linted.contains declName || (env.getModuleIdxFor? declName).isSome then continue
-      let some ranges ← findDeclarationRanges? declName | continue
-      let pos := (← getFileMap).ofPosition ranges.range.pos
-      if cmdRange.start ≤ pos && pos < cmdRange.stop then
-        linted := linted.insert declName
-        lintCongrTheorem congrAttr declName
+  for thm in congrThms do
+    let declName := thm.theoremName
+    if linted.contains declName || (env.getModuleIdxFor? declName).isSome then continue
+    let some ranges ← findDeclarationRanges? declName | continue
+    let pos := (← getFileMap).ofPosition ranges.range.pos
+    if cmdRange.start ≤ pos && pos < cmdRange.stop then
+      linted := linted.insert declName
+      lintCongrTheorem congrAttr thm
 
 initialize addLinter congrFixedArgsLinter
 
