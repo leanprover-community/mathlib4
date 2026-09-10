@@ -63,11 +63,11 @@ lemma house_add_mul_le :
   · refine add_le_add (by grind)
       (mul_le_mul (le_refl _) (by grind [house_mul_le]) (house_nonneg _) (house_nonneg _))
   · rw [house_intCast]; rw [house_intCast]; rw [house_intCast]; rw [mul_assoc]
-  · refine add_le_add (mul_le_mul (le_refl _) (mod_cast ((finProdFinEquiv.symm.toFun t).1).isLt)
+  · refine add_le_add (mul_le_mul (le_refl _) (mod_cast ((finProdFinEquiv.symm t).1).isLt)
       (Int.cast_nonneg (Int.zero_le_ofNat (a q t))) (Int.cast_nonneg (abs_nonneg (c₁ α' β' γ')))) ?_
     · rw [mul_assoc, mul_assoc]
       apply mul_le_mul (by rfl) ?_ (mul_nonneg (by positivity) (house_nonneg _)) (by simp)
-      · apply mul_le_mul (mod_cast ((finProdFinEquiv.symm.toFun t).2).isLt) (le_refl _)
+      · apply mul_le_mul (mod_cast ((finProdFinEquiv.symm t).2).isLt) (le_refl _)
           (house_nonneg _) (by simp)
   · rw [mul_add]; simp only [Int.cast_abs, mul_one]
 
@@ -345,7 +345,7 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
               · rw [← smul_eq_mul]
                 exact mod_cast c₁α_ne_zero α β σ α' β' γ' hirr htriv habc
               · rw [mul_comm (m K) q]
-                apply mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt) ?_ (Nat.zero_le
+                apply mul_le_mul (((finProdFinEquiv.symm t).1).isLt) ?_ (Nat.zero_le
                     _) (Nat.zero_le _)
                 · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
             · simp only [smul_eq_mul, zsmul_eq_mul]
@@ -359,7 +359,7 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
               · rw [← smul_eq_mul]
                 exact mod_cast c₁γ_ne_zero α β σ α' β' γ' hirr htriv habc
               · rw [mul_comm (m K) q]
-                apply mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt) ?_ (Nat.zero_le
+                apply mul_le_mul (((finProdFinEquiv.symm t).2).isLt) ?_ (Nat.zero_le
                     _) (Nat.zero_le _)
                 · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
             · apply house_nonneg

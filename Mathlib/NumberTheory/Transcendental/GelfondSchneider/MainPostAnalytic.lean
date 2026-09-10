@@ -423,7 +423,7 @@ lemma c_coeffspow_r :
         rw [add_comm]
         refine add_tsub_cancel_of_le ?_
         rw [mul_comm (m K)]
-        apply mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt) ?_ (Nat.zero_le _) (Nat.zero_le
+        apply mul_le_mul (((finProdFinEquiv.symm t).1).isLt) ?_ (Nat.zero_le _) (Nat.zero_le
             _)
         · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
       rw [this]
@@ -434,7 +434,7 @@ lemma c_coeffspow_r :
         rw [add_comm]
         refine add_tsub_cancel_of_le ?_
         rw [mul_comm (m K)]
-        apply mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt) ?_ (Nat.zero_le _) (Nat.zero_le
+        apply mul_le_mul (((finProdFinEquiv.symm t).2).isLt) ?_ (Nat.zero_le _) (Nat.zero_le
             _)
         · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
       rw [this]

@@ -159,11 +159,11 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
       · gcongr; apply norm_add_le
       · gcongr
         · simp only [RCLike.norm_natCast, _root_.norm_natCast, Nat.cast_le]
-          exact ((finProdFinEquiv.symm.toFun i).1).isLt
+          exact ((finProdFinEquiv.symm i).1).isLt
         · simp only [Complex.norm_mul, RCLike.norm_natCast]
           apply mul_le_mul ?_ (by rfl) (by simp) (by simp)
           · simp only [Nat.cast_le]
-            exact ((finProdFinEquiv.symm.toFun i).2).isLt
+            exact ((finProdFinEquiv.symm i).2).isLt
       · gcongr; simp
       · congr
         nth_rw 1 [← mul_one (a:=(‖(q : ℤ)‖))]
@@ -208,7 +208,7 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
           · apply Real.rpow_le_rpow_of_exponent_le
             · simp only [Nat.one_le_cast]
               trans
-              · apply n_one_le q hq0 h2mq
+              · apply one_le_n q hq0 h2mq
               exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
             · refine (div_le_div_iff_of_pos_right ?_).mpr ?_
               · simp only [Nat.ofNat_pos]
