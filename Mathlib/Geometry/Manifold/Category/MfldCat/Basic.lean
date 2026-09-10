@@ -12,7 +12,7 @@ public import Mathlib.Geometry.Manifold.Category.MfldCat.OfModel
 
 `MfldCat 𝕜 n` is the category of `C^n` manifolds over `𝕜`, where the model with corners is allowed
 to vary between objects. Each object bundles a model vector space `E`, a model space `H`, a model
-with corners `I : ModelWithCorners 𝕜 E H`, and a manifold `ModelWithCorners.MfldCat I n`.
+with corners `I : ModelWithCorners 𝕜 E H`, and an object of `ModelWithCorners.MfldCat I n`.
 
 We define several standard constructions:
 * `MfldCat.fromModelWithCorners I n : ModelWithCorners.MfldCat I n ⥤ MfldCat 𝕜 n` is the fully
