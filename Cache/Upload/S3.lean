@@ -11,8 +11,8 @@ import Cache.Upload.Rclone
 /-!
 # The S3 backend
 
-The complete s3 upload path; the production S3 backend is Cloudflare R2.
-This module holds:
+The complete s3 upload path; the production S3 backend is Cloudflare R2, and
+both tools sign with R2's region `auto`. This module holds:
 
 * the credential set (`S3Credentials`) and its resolution (`s3AuthFrom`);
 * the destination resolution (`s3UploadDestFrom`);
@@ -125,9 +125,9 @@ so no credential appears on a command line. `RCLONE_S3_SESSION_TOKEN` is set for
 temporary credential and cleared otherwise, so a stale token in the caller's
 environment is not inherited. Region `auto` matches the curl tool's SigV4
 region. rclone refuses to run without a provider, so `provider` must carry
-one; `putStagedViaRclone` keeps the caller's `RCLONE_S3_PROVIDER` and
-defaults to the generic `Other`. Every other `RCLONE_S3_*` option inherits
-from the caller, so an operator can tune transfers without a code change.
+one; `s3PutStaged` passes the caller's `RCLONE_S3_PROVIDER` and defaults to
+the generic `Other`. Every other `RCLONE_S3_*` option inherits from the
+caller, so an operator can tune transfers without a code change.
 -/
 def rcloneEnv (creds : S3Credentials) (endpoint provider : String) :
     Array (String × Option String) :=
@@ -156,14 +156,11 @@ def s3UploadToolFrom (forceCurl rcloneAvailable : Bool) : S3UploadTool :=
   if !forceCurl && rcloneAvailable then .rclone else .curl
 
 /--
-The staged put on the s3 backend: resolve the transfer tool
-(`s3UploadToolFrom`) and transfer, each request signed with `creds`. Only
-this resolution reads the `MATHLIB_CACHE_PUT_FORCE_CURL` flag, and the
-availability probe runs only when the flag does not already force curl. The
-rclone tool receives the credentials through its child environment
-(`rcloneEnv`), with the endpoint and bucket split from the destination base
-(`s3EndpointSplit`) and the provider from the caller's `RCLONE_S3_PROVIDER`
-(the generic `Other` when unset).
+The staged put on the s3 backend: split the base (`s3EndpointSplit`), resolve
+the transfer tool (`s3UploadToolFrom`), and transfer, each request signed with
+`creds`. Only this resolution reads the `MATHLIB_CACHE_PUT_FORCE_CURL` flag,
+and the availability probe runs only when the flag does not already force
+curl.
 -/
 def s3PutStaged (dest : StagedUploadDest) (creds : S3Credentials) (srcDir : FilePath)
     (fileNames : Array String) (overwrite : Bool) (markerSha? : Option String) :

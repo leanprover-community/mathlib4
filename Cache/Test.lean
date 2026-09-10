@@ -615,12 +615,11 @@ end RoundTrip
 
 section Marker
 
-/-- URL shape for the per-SHA marker blob written by `cache put`
+/-- URL shape for the per-SHA marker blob `cache put` writes
 (`StagedUploadDest.markerURL`, on the destination `stagedUploadDestFrom`
-resolves). Probed by `cache query` with a HEAD request. The marker lives at
-`/m/{repo}/{sha}` under the base; its presence is a 200 HEAD response that
-signals "all artifacts for this commit were uploaded". This shape enables
-cheap per-commit discovery via HEAD (no blob-listing). -/
+resolves) and `cache query` probes with a HEAD request. The marker lives at
+`/m/{repo}/{sha}` under the base; a 200 HEAD response signals that all
+artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "StagedUploadDest.markerURL:"
   let dest (backend : UploadBackend) (container? : Option Container)
@@ -1296,8 +1295,8 @@ def test_s3AuthFrom : IO Unit := do
 
 /-- `isValidScope` gates every scope before it reaches a URL path or a file
 name (the fork namespace, the marker path, and the marker's local temp file):
-hex SHAs pass, and anything with path characters or ref syntax is rejected —
-`getRepoScope` throws on it rather than letting it leak into a path. -/
+hex SHAs pass; a value with path characters or ref syntax is rejected, and
+`getRepoScope` throws on it. -/
 def test_isValidScope : IO Unit := do
   IO.println "isValidScope:"
   assertTrue "a full SHA passes"
@@ -1430,8 +1429,8 @@ def test_stagedUploadDestFrom : IO Unit := do
   assertTrue "s3: a put base loses its trailing slashes"
     ((stagedUploadDestFrom .s3 none (some "https://s3.example.org/bucket-prefix//") (some .forks)
       "alice/mathlib4" none).toOption.map (·.base) == some "https://s3.example.org/bucket-prefix")
-  -- The resolved destination and the read-side URL policy must never
-  -- disagree: `fileURL` is exactly `mkFileURL` against the same base.
+  -- The resolved destination follows the read-side URL policy: `fileURL` is
+  -- exactly `mkFileURL` against the same base.
   if let .ok d := stagedUploadDestFrom .s3 none (some putBase)
       (some .forks) "Alice/Mathlib4" (some "sha1") then
     assertEq "files prefix matches the curl URL shape"
@@ -1520,10 +1519,11 @@ def test_s3EndpointSplit : IO Unit := do
   assertTrue "a non-URL errors"
     (s3EndpointSplit "host.example/bucket" matches .error _)
 
-/-- The rclone invocations, pinned: the files copy filters to `*.ltar` and
-skips existing objects (the curl tool's `If-None-Match: *`); the marker
-copy overwrites freely, like the curl marker put; and both remotes are the
-same `{prefix}/{name}` shape every other tool addresses. -/
+/-- The rclone invocations, pinned: the files copy is restricted to the
+caller's `--files-from` list and skips existing objects (the curl tool's
+`If-None-Match: *`); the marker copy overwrites freely, like the curl marker
+put; and both remotes are the same `{prefix}/{name}` shape every other tool
+addresses. -/
 def test_rcloneArgs : IO Unit := do
   IO.println "rcloneArgs:"
   if let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")

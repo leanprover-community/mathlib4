@@ -40,9 +40,9 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `query`         | Find the most recent commit with cached entries on the current branch |
 
 
-#### Operating an external cache
+### Operating an external cache
 
-The upload commands (`put`, `put!`, `put-staged`) are internal to mathlib CI: the commands are documented in [`CI.md`](./CI.md), but public consumers of this tool shouldn't rely on their details: see [Operating an external cache](#operating-an-external-cache).
+The upload commands (`put`, `put!`, `put-staged`) are internal to mathlib CI and documented in [`CI.md`](./CI.md); public consumers of this tool should not rely on their details.
 
 A custom cache can rely on the staging commands:
 
@@ -53,11 +53,11 @@ A custom cache can rely on the staging commands:
 | `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 
-
-- `stage`, to produce the artifact set to upload
-- The `MATHLIB_CACHE_GET_URL` environment variable can be set for `cache get` to download from a custom endpoint
-- Because `get` requests `{endpoint}/f/{hash}.ltar`, the staged files must be uploaded under an `f/` prefix. (`stage` writes the `.ltar`
-files flat into the staging directory; the `f/` segment is added at upload.)
+To operate an external cache, run `stage` to produce the artifact set, upload
+it under an `f/` prefix with any storage client, and point readers at the
+endpoint with `MATHLIB_CACHE_GET_URL`. `get` requests
+`{endpoint}/f/{hash}.ltar`; `stage` writes the `.ltar` files flat into the
+staging directory, so the upload adds the `f/` segment.
 
 Example:
 
@@ -97,8 +97,7 @@ Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-
 ## Trust-ordered containers
 
 The cache is split across multiple containers, logical namespaces in the URL
-contract `/{container}/{key}`. Container names
-accepted by `--cache-from=LIST`:
+contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
 `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
 
 `cache get` resolves a file by trying a default chain of containers in
