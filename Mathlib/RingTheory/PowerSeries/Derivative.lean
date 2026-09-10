@@ -84,11 +84,11 @@ theorem derivative_coe (f : R[X]) : d⁄dX (f : R⟦X⟧) = Polynomial.derivativ
 @[simp] theorem derivative_X : d⁄dX (X : R⟦X⟧) = 1 :=
   MvPowerSeries.pderiv_X_self
 
-theorem iterate_derivative_zero {k : ℕ} : (d⁄dX R)^[k] (0 : R⟦X⟧) = 0 := by
+theorem iterate_derivative_zero {k : ℕ} : d⁄dX^[k] (0 : R⟦X⟧) = 0 := by
   simp
 
 theorem derivative_monomial (a : R) (n : ℕ) :
-    d⁄dX R (monomial n a) = monomial (n - 1) (a * n) := by
+    d⁄dX (monomial n a) = monomial (n - 1) (a * n) := by
   ext k
   rw [coeff_derivative, coeff_monomial, coeff_monomial]
   cases n with
@@ -103,34 +103,34 @@ theorem derivative_monomial (a : R) (n : ℕ) :
 
 @[simp]
 theorem derivative_monomial_succ (a : R) (n : ℕ) :
-    d⁄dX R (monomial (n + 1) a) = monomial n (a * (n + 1)) := by
+    d⁄dX (monomial (n + 1) a) = monomial n (a * (n + 1)) := by
   simp [derivative_monomial]
 
-theorem derivative_C_mul_X (a : R) : d⁄dX R (C a * X) = C a := by
+theorem derivative_C_mul_X (a : R) : d⁄dX (C a * X) = C a := by
   simp
 
 theorem derivative_C_mul_X_pow (a : R) (n : ℕ) :
-    d⁄dX R (C a * X ^ n) = C (a * n) * X ^ (n - 1) := by
+    d⁄dX (C a * X ^ n) = C (a * n) * X ^ (n - 1) := by
   rw [← monomial_eq_C_mul_X_pow, ← monomial_eq_C_mul_X_pow, derivative_monomial]
 
-theorem derivative_C_mul_X_sq (a : R) : d⁄dX R (C a * X ^ 2) = C (a * 2) * X := by
+theorem derivative_C_mul_X_sq (a : R) : d⁄dX (C a * X ^ 2) = C (a * 2) * X := by
   rw [derivative_C_mul_X_pow, Nat.cast_two, pow_one]
 
-theorem derivative_X_pow (n : ℕ) : d⁄dX R (X ^ n : R⟦X⟧) = C (n : R) * X ^ (n - 1) := by
+theorem derivative_X_pow (n : ℕ) : d⁄dX (X ^ n : R⟦X⟧) = C (n : R) * X ^ (n - 1) := by
   simp
 
 theorem derivative_X_pow_succ (n : ℕ) :
-    d⁄dX R (X ^ (n + 1) : R⟦X⟧) = C (n + 1 : R) * X ^ n := by
+    d⁄dX (X ^ (n + 1) : R⟦X⟧) = C (n + 1 : R) * X ^ n := by
   simp
 
-theorem derivative_X_sq : d⁄dX R (X ^ 2 : R⟦X⟧) = C 2 * X := by
+theorem derivative_X_sq : d⁄dX (X ^ 2 : R⟦X⟧) = C 2 * X := by
   rw [derivative_X_pow, Nat.cast_two, pow_one]
 
-theorem derivative_X_add_C (c : R) : d⁄dX R (X + C c : R⟦X⟧) = 1 := by
+theorem derivative_X_add_C (c : R) : d⁄dX (X + C c) = 1 := by
   simp
 
 theorem iterate_derivative_sum {ι : Type*} (k : ℕ) (s : Finset ι) (f : ι → R⟦X⟧) :
-    (d⁄dX R)^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, (d⁄dX R)^[k] (f b) := by
+    d⁄dX^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, d⁄dX^[k] (f b) := by
   induction k with
   | zero => simp
   | succ k ih => simp only [Function.iterate_succ_apply', ih, map_sum]
@@ -138,7 +138,7 @@ theorem iterate_derivative_sum {ι : Type*} (k : ℕ) (s : Finset ι) (f : ι �
 @[simp]
 theorem iterate_derivative_smul {S : Type*} [SMul S R⟦X⟧]
     [LinearMap.CompatibleSMul R⟦X⟧ R⟦X⟧ S R] (s : S) (f : R⟦X⟧) (k : ℕ) :
-    (d⁄dX R)^[k] (s • f) = s • (d⁄dX R)^[k] f := by
+    d⁄dX^[k] (s • f) = s • d⁄dX^[k] f := by
   induction k generalizing f with
   | zero => simp
   | succ k ih => simp [Function.iterate_succ_apply, ih]
