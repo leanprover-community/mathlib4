@@ -95,6 +95,11 @@ on:
         required: false
         type: boolean
         default: false
+      report:
+        description: post the run summary to Zulip. Off for trials.
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -426,7 +431,7 @@ jobs:
       # job has no other upload path.
       - name: Mint short-lived R2 credentials from the broker
         id: mint
-        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-cache-credentials@95b988d946f83d44dbd31d18432b5f4741ba18aa # mathlib-ci#67
+        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-credentials@100d8d685e1e485c6eabb6d74c491548caa32c79 # mathlib-ci#67
         with:
           broker-url: ${{ env.BROKER_BASE_URL }}
           on-failure: fail
@@ -718,7 +723,11 @@ jobs:
   report:
     name: Post run summary to Zulip
     needs: [build_and_stage, upload, consume]
-    if: ${{ always() && github.repository == 'leanprover-community/mathlib4' }}
+    # Scheduled runs always report; a dispatch reports unless its `report`
+    # input is off.
+    if: >-
+      ${{ always() && github.repository == 'leanprover-community/mathlib4'
+          && (github.event_name != 'workflow_dispatch' || inputs.report) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
