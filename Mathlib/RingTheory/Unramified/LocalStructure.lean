@@ -102,7 +102,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
     {P : Ideal R} [P.IsPrime] {Q : Ideal S} [Q.IsPrime]
     [Q.LiesOver P] [IsUnramifiedAt R Q] (x : S) (p : R[X])
     [Algebra (Localization.AtPrime P) (Localization.AtPrime Q)]
-    [Localization.AtPrime.IsLiesOverAlgebra P Q]
+    [IsScalarTower R (Localization.AtPrime P) (Localization.AtPrime Q)]
     (hp₁ : Ideal.span {p.map (algebraMap R P.ResidueField)} =
       RingHom.ker (aeval ((1 : P.ResidueField) ⊗ₜ[R] x)).toRingHom)
     (hp₂ : R[x] = ⊤) :
@@ -196,7 +196,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
       ring
     · rw [dvd_add_left (dvd_mul_of_dvd_right (dvd_pow (by simp [m, minpoly.dvd_iff]) (by simp)) _),
         ← isUnit_iff_dvd_one]
-      exact hm.not_unit
+      exact hm.not_isUnit
   have hm' : derivative m ≠ 0 :=
     (separable_iff_derivative_ne_zero hm.irreducible).mp (IsSeparable.isSeparable ..)
   suffices ¬m ∣ derivative (q.map (algebraMap R _)) by
@@ -205,16 +205,16 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
   obtain ⟨c, hc⟩ := hmp₁
   simp_all [hm.dvd_mul, dvd_add_left, pow_two, mul_dvd_mul_iff_left, hm.ne_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [IsUnramifiedAt R Q]
     [Algebra (Localization.AtPrime (Q.under R)) (Localization.AtPrime Q)]
-    [Localization.AtPrime.IsLiesOverAlgebra (Q.under R) Q] :
+    [IsScalarTower R (Localization.AtPrime (Q.under R)) (Localization.AtPrime Q)] :
     ∃ t ∉ Q, (∀ Q' ∈ (Q.under R).primesOver S, Q' ≠ Q → t ∈ Q') ∧
       adjoin (Ideal.under R Q).ResidueField {algebraMap _ Q.ResidueField t} = ⊤ := by
   let p := Q.under R
   #adaptation_note /-- Needed after nightly-2023-02-23 -/
   have : p.IsPrime := Ideal.IsPrime.under R Q
-  classical
   #adaptation_note /-- After nightly-2026-04-06, typeclass synthesis fails to find these
   instances; provide them explicitly. -/
   let : Module p.ResidueField (p.Fiber S) := TensorProduct.leftModule
@@ -286,14 +286,15 @@ lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
   let p := Q.under R
   let := Localization.AtPrime.algebraOfLiesOver p (Q.under R[t])
   let := Localization.AtPrime.algebraOfLiesOver (Q.under R[t]) Q
-  classical
   refine ⟨t, ?_, RingHom.injective _, ?_⟩
   · refine Set.ext fun Q' ↦ ⟨fun ⟨_, _⟩ ↦ ?_, fun e ↦ by exact ⟨e ▸ inferInstance, ⟨e ▸ rfl⟩⟩⟩
     by_contra! H
     have : Q'.LiesOver p := .trans _ (Q.under (R[t])) _
     exact htQ (SetLike.le_def.mp (Q'.over_def (Q.under (R[t]))).ge
       (x := ⟨t, self_mem_adjoin_singleton _ _⟩) (htQ' Q' ⟨‹_›, ‹_›⟩ H))
-  · change Function.Surjective (IsScalarTower.toAlgHom p.ResidueField _ _)
+  · have h : IsScalarTower (Localization.AtPrime p) (Localization.AtPrime (Q.under R[t]))
+      (Localization.AtPrime Q) := inferInstance
+    change Function.Surjective (IsScalarTower.toAlgHom p.ResidueField _ _)
     rw [← AlgHom.range_eq_top, ← top_le_iff, ← ht]
     refine adjoin_singleton_le ?_
     use algebraMap (R[t]) _ ⟨t, self_mem_adjoin_singleton _ _⟩
@@ -317,7 +318,8 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
       Localization.localRingHom_surjective_of_primesOver_eq_singleton hQ' hQ'Q.2⟩
   obtain ⟨r, hrQ', H⟩ := Localization.exists_awayMap_bijective_of_residueField_surjective hQ' hQ'Q.2
   have : Module.Finite R S' := finite_adjoin_simple_of_isIntegral (IsIntegral.isIntegral _)
-  have : IsUnramifiedAt R Q' := .of_equiv <| .symm <| .ofBijective (IsScalarTower.toAlgHom _ _ _) hφ
+  have h : IsScalarTower R (Localization.AtPrime Q') (Localization.AtPrime Q) := inferInstance
+  have : IsUnramifiedAt R Q' := .of_equiv <| .symm <| .ofBijective h.toAlgHom hφ
   obtain ⟨f, hfQ', hf⟩ :=
     IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
     (R := R) (S := S') ⟨⟨x, self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective
@@ -381,6 +383,7 @@ lemma IsEtaleAt.exists_isStandardEtale
     exact .trans (PrimeSpectrum.basicOpen_mul_le_left _ _) h
   exact ⟨f * g, ‹Q.IsPrime›.mul_notMem hfQ hgQ, (hg.of_dvd (by simp)).isStandardEtale⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `S` a finitely presented `R`-algebra, and `p` a prime of `S`. If `S` is smooth over `R`
 at `p`, then there exists `f ∉ p` such that `R → S[1/f]` factors through some `R[X₁,...,Xₙ]`,
 and that `S[1/f]` is standard etale over `R[X₁,...,Xₙ]`. -/
@@ -389,7 +392,6 @@ theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
     ∃ f ∉ p, ∃ (n : ℕ) (_ : Algebra (MvPolynomial (Fin n) R) (Localization.Away f)),
       IsScalarTower R (MvPolynomial (Fin n) R) (Localization.Away f) ∧
       IsStandardEtale (MvPolynomial (Fin n) R) (Localization.Away f) := by
-  classical
   obtain ⟨f, hfp, H⟩ := IsSmoothAt.exists_notMem_isStandardSmooth R p
   obtain ⟨n, φ, hgC, hg⟩ := RingHom.IsStandardSmooth.exists_etale_mvPolynomial
     (f := algebraMap R (Localization.Away f)) (by simpa [RingHom.isStandardSmooth_algebraMap])

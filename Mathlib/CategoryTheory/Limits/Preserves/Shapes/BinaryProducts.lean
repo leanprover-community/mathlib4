@@ -5,7 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
@@ -129,8 +129,9 @@ end
 
 section
 
-variable {P X Y Z : C} (f : X ⟶ P) (g : Y ⟶ P)
+variable {P X Y : C} (f : X ⟶ P) (g : Y ⟶ P)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The map of a binary cofan is a colimit iff
 the cofork consisting of the mapped morphisms is a colimit.

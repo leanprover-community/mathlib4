@@ -324,6 +324,7 @@ variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
 lemma toLinearMap_ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp map_comp_comul) :
     (ofAlgEquiv f counit_comp map_comp_comul : A →ₗ[R] B) = f := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Promotes a bijective bialgebra homomorphism to a bialgebra equivalence. -/
 @[simps! apply]
 noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐc[R] B :=

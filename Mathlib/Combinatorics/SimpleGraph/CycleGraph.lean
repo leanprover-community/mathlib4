@@ -119,9 +119,6 @@ def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
     simp [cycleGraph_adj]
   Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit := cycleGraph.cycle
-
 private theorem cycleGraph.length_cycle_cons (n : ℕ) :
     ∀ m : Fin (n + 3), (cycleGraph.cycleCons n m).length = m.val
   | ⟨0, h⟩ => by
@@ -138,9 +135,6 @@ variable {n : ℕ}
 theorem cycleGraph.length_cycle : (cycleGraph.cycle n).length = n + 3 := by
   unfold cycleGraph.cycle
   simp [cycleGraph.length_cycle_cons]
-
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
 
 private theorem cycleGraph.getVert_cycleCons (m : Fin (n + 3)) (i : ℕ) (hi : i ≤ m.val) :
     (cycleGraph.cycleCons n m).getVert i = (m - i) % (n + 3) := by
@@ -165,5 +159,32 @@ theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
   isCycle_iff_isPath_tail_and_le_length.mpr ⟨cycleGraph.isPath_tail_cycle, by simp⟩
 
 end cycle
+
+section IsContained
+
+variable {V : Type*} {G : SimpleGraph V}
+
+lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
+    cycleGraph n ⊑ G ↔ ∃ (v : V) (p : G.Walk v v), p.IsCycle ∧ p.length = n := by
+  have hn' : n - 3 + 3 = n := by lia
+  refine ⟨fun ⟨h⟩ ↦ ⟨_, _, cycleGraph.isCycle_cycle.map (hn' ▸ h).injective, by simp [hn']⟩, ?_⟩
+  intro ⟨a, p, hp₁, hp₂⟩
+  refine ⟨⟨fun n ↦ p.support[n.succ]'(by grind [not_nil_iff_lt_length]), ?_⟩, ?_⟩
+  · intro ⟨x, hx⟩ ⟨y, hy⟩ hab
+    wlog hle : x > y
+    · have hne : x ≠ y := by simpa using hab.ne
+      exact this hn hn' a p hp₁ hp₂ y hy x hx hab.symm (by lia) |>.symm
+    rcases cycleGraph_adj'.mp hab with hab | hab
+    · simp_rw [show x = y + 1 by grind [Fin.sub_val_of_le]]
+      exact p.isChain_adj_support.getElem _ _ |>.symm
+    · rw [Fin.coe_sub_iff_lt.mpr hle] at hab
+      simp_rw [show x = n - 1 by lia, show y = 0 by lia, Fin.succ_mk, show n - 1 + 1 = n by lia]
+      simp [← hp₂, hp₁.not_nil]
+  · have hlen : p.tail.support.length = n := by grind [length_tail_add_one]
+    have (m : Fin n) : p.support[m.succ]'(by grind) = p.tail.support[m] := by simp [hp₁.not_nil]
+    simp_rw [this]
+    exact hlen ▸ (isPath_iff_injective_get_support _).mp hp₁.isPath_tail
+
+end IsContained
 
 end SimpleGraph

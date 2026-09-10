@@ -19,7 +19,7 @@ for `DList`.
 @[expose] public section
 
 
-open Function Equiv
+open Equiv
 
 namespace Batteries
 

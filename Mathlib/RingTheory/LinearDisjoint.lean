@@ -593,9 +593,9 @@ theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Typ
 theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
   nontriviality S
   rw [linearDisjoint_iff_injective]
-  letI : Field (A ⊗[R] B) := H.toField
+  let : Field (A ⊗[R] B) := H.toField
   -- need this otherwise `RingHom.injective` does not work
-  letI : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
+  let : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
   exact RingHom.injective _
 
 /-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`
@@ -617,7 +617,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
     [Module.Flat R A] [Module.Flat R B] [Algebra.Transcendental R A] [Algebra.Transcendental R B] :
     ¬IsField (A ⊗[R] B) := fun H ↦ by
-  letI := H.toField
+  let := H.toField
   obtain ⟨a, hta⟩ := ‹Algebra.Transcendental R A›
   obtain ⟨b, htb⟩ := ‹Algebra.Transcendental R B›
   have ha : Function.Injective (algebraMap R A) := Algebra.injective_of_transcendental
@@ -626,10 +626,10 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   let fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
   have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
   have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
-  haveI := hfa.isDomain fa.toRingHom
-  haveI := hfb.isDomain fb.toRingHom
-  haveI := ha.isDomain _
-  haveI : Module.Flat R (toSubmodule fa.range) :=
+  have := hfa.isDomain fa.toRingHom
+  have := hfb.isDomain fb.toRingHom
+  have := ha.isDomain _
+  have : Module.Flat R (toSubmodule fa.range) :=
     .of_linearEquiv (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
   have key1 : Module.rank R ↥(fa.range ⊓ fb.range) ≤ 1 :=
     (include_range R A B).rank_inf_le_one_of_flat_left
@@ -641,7 +641,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   have htab : Function.Injective gab := hfa.comp hta
   algebraize_only [ga.toRingHom, gb.toRingHom]
   let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R R A B
-  haveI := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
+  have := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
   have hf : Function.Injective f := RingHom.injective _
   have key2 : gab.range ≤ fa.range ⊓ fb.range := by
     simp_rw [gab, ga, ← aeval_algHom]
@@ -723,7 +723,7 @@ theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
     (LinearEquiv.ofFinrankEq (A ⊗[R] B) _ (by simp)).toLinearMap
   replace hj : Function.Injective j' := by simpa [j']
   have hf : Function.Surjective (mulMap' A B).toLinearMap := mulMap'_surjective A B
-  haveI := Subalgebra.finite_sup A B
+  have := Subalgebra.finite_sup A B
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
   exact Subtype.val_injective.comp (OrzechProperty.injective_of_surjective_of_injective j' _ hj hf)
 
@@ -761,9 +761,9 @@ theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
   · rw [h2, Nat.coprime_zero_right] at H
     rw [eq_bot_of_finrank_one H]
     exact bot_left _
-  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h1)
-  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
-  haveI := finite_sup A B
+  have := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h1)
+  have := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
+  have := finite_sup A B
   have : Module.finrank R A ≤ Module.finrank R ↥(A ⊔ B) :=
     LinearMap.finrank_le_finrank_of_injective <|
       Submodule.inclusion_injective (show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp)

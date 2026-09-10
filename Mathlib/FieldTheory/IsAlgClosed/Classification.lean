@@ -95,7 +95,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
   calc
     Cardinal.lift.{max u w} #K ≤ Cardinal.lift.{max u w}
         (max #(Algebra.adjoin R (Set.range v)) ℵ₀) := by
-      letI := isAlgClosure_of_transcendence_basis v hv
+      let := isAlgClosure_of_transcendence_basis v hv
       simpa using Algebra.IsAlgebraic.cardinalMk_le_max (Algebra.adjoin R (Set.range v)) K
     _ = Cardinal.lift.{v} (max #(MvPolynomial ι R) ℵ₀) := by
       rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
@@ -173,8 +173,8 @@ theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < 
 
 private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
-  letI : Algebra (ZMod p) K := ZMod.algebra _ _
-  letI : Algebra (ZMod p) L := ZMod.algebra _ _
+  let : Algebra (ZMod p) K := ZMod.algebra _ _
+  let : Algebra (ZMod p) L := ZMod.algebra _ _
   obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p) K
   obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p) L
   have hL : ℵ₀ < #L := by
@@ -193,11 +193,11 @@ if they have the same cardinality and the same characteristic. -/
 theorem ringEquiv_of_equiv_of_char_eq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
-  · haveI : Fact p.Prime := ⟨hp⟩
+  · have : Fact p.Prime := ⟨hp⟩
     exact ringEquiv_of_Cardinal_eq_of_charP p hK hKL
   · simp only [hp] at *
-    letI : CharZero K := CharP.charP_to_charZero K
-    letI : CharZero L := CharP.charP_to_charZero L
+    let : CharZero K := CharP.charP_to_charZero K
+    let : CharZero L := CharP.charP_to_charZero L
     exact ringEquiv_of_equiv_of_charZero hK hKL
 
 end IsAlgClosed

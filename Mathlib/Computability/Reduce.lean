@@ -5,7 +5,7 @@ Authors: Minchao Wu, Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.Halting
+public import Mathlib.Computability.RE
 
 /-!
 # Strong reducibility and degrees.
@@ -57,7 +57,7 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ q → q ≤₀ r → p ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁,
-      fun a => ⟨fun h => by rw [comp_apply, ← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      fun a => ⟨fun h => by rwa [comp_apply, ← h₂, ← h₁], fun h => by rwa [h₁, h₂]⟩⟩
 
 instance stdRefl_manyOneReducible {α} [Primcodable α] : Std.Refl (@ManyOneReducible α α _ _) where
   refl := manyOneReducible_refl
@@ -66,8 +66,6 @@ instance stdRefl_manyOneReducible {α} [Primcodable α] : Std.Refl (@ManyOneRedu
 
 instance isTrans_manyOneReducible {α} [Primcodable α] : IsTrans (α → Prop) ManyOneReducible where
   trans _ _ _ := ManyOneReducible.trans
-
-@[deprecated (since := "2026-02-21")] alias transitive_manyOneReducible := isTrans_manyOneReducible
 
 /--
 `p` is one-one reducible to `q` if there is an injective computable function translating questions
@@ -92,7 +90,7 @@ theorem OneOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Prim
     {q : β → Prop} {r : γ → Prop} : p ≤₁ q → q ≤₁ r → p ≤₁ r
   | ⟨f, c₁, i₁, h₁⟩, ⟨g, c₂, i₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁, i₂.comp i₁, fun a =>
-      ⟨fun h => by rw [comp_apply, ← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      ⟨fun h => by rwa [comp_apply, ← h₂, ← h₁], fun h => by rwa [h₁, h₂]⟩⟩
 
 theorem OneOneReducible.to_many_one {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ q → p ≤₀ q
@@ -113,8 +111,6 @@ instance stdRefl_oneOneReducible {α} [Primcodable α] : Std.Refl (@OneOneReduci
 
 instance isTrans_oneOneReducible {α} [Primcodable α] : IsTrans (α → Prop) OneOneReducible where
   trans _ _ _ := OneOneReducible.trans
-
-@[deprecated (since := "2026-02-21")] alias transitive_oneOneReducible := isTrans_oneOneReducible
 
 namespace ComputablePred
 
@@ -291,7 +287,7 @@ theorem toNat_manyOneReducible {p : Set α} : toNat p ≤₀ p :=
 
 @[simp]
 theorem manyOneReducible_toNat {p : Set α} : p ≤₀ toNat p :=
-  ⟨Encodable.encode, Computable.encode, by simp [toNat, setOf]⟩
+  ⟨Encodable.encode, Computable.encode, by simp [toNat, Set.ofPred]⟩
 
 @[simp]
 theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : toNat p ≤₀ toNat q ↔ p ≤₀ q :=
@@ -369,10 +365,12 @@ instance instLE : LE ManyOneDegree :=
 theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ q :=
   manyOneReducible_toNat_toNat
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on; simp; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
@@ -417,6 +415,7 @@ theorem add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
         (toNat_manyOneReducible.trans OneOneReducible.disjoin_left.to_many_one)
         (toNat_manyOneReducible.trans OneOneReducible.disjoin_right.to_many_one)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃ ↔ d₁ ≤ d₃ ∧ d₂ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on

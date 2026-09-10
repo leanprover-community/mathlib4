@@ -405,16 +405,16 @@ public theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ}
       (Path.Homotopic.hcomp (h_rectangles i) (Path.Homotopic.refl suffix))).trans
       (Path.Homotopic.trans_assoc _ _ _)
   -- Consecutive paths are homotopic: γ_aux i.succ ≃ γ_aux i.castSucc
-  -- This follows from decomposing using subpath_trans and applying h_rectangles i
+  -- This follows from decomposing using mk_subpath_trans_mk_subpath and applying h_rectangles i
   have h_step : ∀ (i : Fin n), Path.Homotopic (γ_aux i.succ) (γ_aux i.castSucc) := by
     intro i
     apply exact
     simp only [γ_aux, mk_trans, mk_cast]
     -- Decompose γ|[0, i+1] = γ|[0, i] · γ|[i, i+1]
-    rw [← Path.Homotopic.Quotient.subpath_trans γ
+    rw [← Path.Homotopic.mk_subpath_trans_mk_subpath γ
       (part.t 0) (part.t i.castSucc) (part.t i.succ)]
     -- Decompose γ'|[i, last n] = γ'|[i, i+1] · γ'|[i+1, last n]
-    rw [← Path.Homotopic.Quotient.subpath_trans γ'
+    rw [← Path.Homotopic.mk_subpath_trans_mk_subpath γ'
       (part.t i.castSucc) (part.t i.succ) (part.t (Fin.last n))]
     -- Right-associate everything so rectangle_with_suffix can fire
     simp only [trans_assoc]

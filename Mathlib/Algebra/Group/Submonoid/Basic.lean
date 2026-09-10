@@ -346,18 +346,18 @@ section IsUnit
 /-- The submonoid consisting of the units of a monoid -/
 @[to_additive /-- The additive submonoid consisting of the additive units of an additive monoid -/]
 def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
-  carrier := setOf IsUnit
-  one_mem' := by simp only [isUnit_one, Set.mem_setOf_eq]
+  carrier := Set.ofPred IsUnit
+  one_mem' := by simp only [isUnit_one, Set.mem_ofPred_eq]
   mul_mem' := by
     intro a b ha hb
-    rw [Set.mem_setOf_eq] at *
+    rw [Set.mem_ofPred_eq] at *
     exact IsUnit.mul ha hb
 
 @[to_additive]
 theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
     a ∈ IsUnit.submonoid M ↔ IsUnit a := by
-  change a ∈ setOf IsUnit ↔ IsUnit a
-  rw [Set.mem_setOf_eq]
+  change a ∈ Set.ofPred IsUnit ↔ IsUnit a
+  rw [Set.mem_ofPred_eq]
 
 end IsUnit
 

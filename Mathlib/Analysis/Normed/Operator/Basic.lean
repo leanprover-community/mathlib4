@@ -66,7 +66,7 @@ theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 
 theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
     (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_coe]
+  rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_ofClass]
   simp_rw [← LinearMap.coe_range, Set.subset_def, SetLike.mem_coe] at h ⊢
   intro _ _
   rw [← Submodule.add_mem_iff_left (f : E →ₛₗ[σ₁₂] F).range (h _ <| mem_ball_self hr)]
@@ -142,8 +142,6 @@ theorem ebound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
 
 section
 
-open Filter
-
 variable (𝕜 E)
 
 /-- Given a unit-length element `x` of a normed space `E` over a field `𝕜`, the natural linear
@@ -192,7 +190,7 @@ theorem bounds_bddBelow {f : E →SL[σ₁₂] F} : BddBelow { c | 0 ≤ c ∧ �
 theorem isLeast_opNorm [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     IsLeast {c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
-  simp only [setOf_and, setOf_forall]
+  simp only [ofPred_and, ofPred_forall]
   refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> fun_prop
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/

@@ -60,6 +60,7 @@ lemma equivPiTensorComplSingletonTensor_tprod (i₀ : ι) (m : ∀ i, M i) :
     (fun i ↦ M ((Equiv.subtypeNeSumPUnit.{0} i₀) i))]
   exact (LinearEquiv.lTensor_tmul _ _ _ _).trans (by congr; simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma equivPiTensorComplSingletonTensor_symm_tmul (i₀ : ι)
     (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) (x : M i₀) :
@@ -83,6 +84,7 @@ section AddCommMonoid
 variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
     {φ φ' : (⨂[R] i, M i) →ₗ[R] N}
