@@ -54,9 +54,10 @@ lemma similar_iff_exists_edist_eq :
 /-- Similarity holds if and only if all extended distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_edist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (edist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise' fun i₁ i₂ ↦ (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) := by
   rw [similar_iff_exists_edist_eq]
+  simp_rw [pairwise'_iff]
   refine ⟨?_, ?_⟩ <;> rintro ⟨r, hr, h⟩ <;> refine ⟨r, hr, fun i₁ i₂ ↦ ?_⟩
   · exact fun _ ↦ h i₁ i₂
   · by_cases hi : i₁ = i₂
@@ -217,7 +218,7 @@ lemma similar_iff_exists_nndist_eq :
 /-- Similarity holds if and only if all non-negative distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_nndist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise' fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
       r * nndist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_edist_eq, edist_nndist]
   exact_mod_cast Iff.rfl
@@ -233,7 +234,7 @@ lemma similar_iff_exists_dist_eq :
 /-- Similarity holds if and only if all distances between points with different indices are
 proportional. -/
 lemma similar_iff_exists_pairwise_dist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise' fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_nndist_eq, dist_nndist]
   exact_mod_cast Iff.rfl
@@ -247,7 +248,7 @@ lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔
 
 /-- Similarity holds iff pairwise distances are proportional with a positive ratio. -/
 lemma similar_iff_exists_pos_pairwise_dist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ, 0 < r ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ, 0 < r ∧ Pairwise' fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_dist_eq]
   simp_rw [← pos_iff_ne_zero, NNReal.exists, ← NNReal.coe_pos, NNReal.coe_mk]
@@ -318,6 +319,7 @@ theorem similar_of_dist_mul_eq_dist_mul_eq (h_ne : dist a b ≠ 0) (h_ne' : dist
   have hr_pos : 0 < r := by positivity
   apply Similar.of_exists_pos_pairwise_dist_eq
   use r
+  rw [pairwise'_iff]
   refine ⟨hr_pos, ?_⟩
   intro i j hij
   fin_cases i <;> fin_cases j <;> try {rw [dist_self, dist_self, mul_zero]}
