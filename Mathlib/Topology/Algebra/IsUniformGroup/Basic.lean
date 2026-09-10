@@ -85,10 +85,10 @@ namespace IsLeftUniformGroup
 
 variable (G : Type*) [Group G] [UniformSpace G] [IsLeftUniformGroup G]
 
+-- not an instance for performance reasons, see benchmark on PR #42117
 /-- A locally compact left-uniform group is complete. -/
 @[to_additive
 /-- A locally compact left-uniform additive group is complete. -/]
--- not an instance for performance reasons, see benchmark on PR #42117
 theorem completeSpace_of_weaklyLocallyCompactSpace
     [WeaklyLocallyCompactSpace G] : CompleteSpace G where
   complete {f} hf := by
@@ -108,10 +108,10 @@ namespace IsRightUniformGroup
 
 variable (G : Type*) [Group G] [UniformSpace G] [IsRightUniformGroup G]
 
+-- not an instance for performance reasons, see benchmark on PR #42117
 /-- A locally compact right-uniform group is complete. -/
 @[to_additive
 /-- A locally compact right-uniform additive group is complete. -/]
--- not an instance for performance reasons, see benchmark on PR #42117
 theorem completeSpace_of_weaklyLocallyCompactSpace
     [WeaklyLocallyCompactSpace G] : CompleteSpace G :=
   completeSpace_mulOpposite_iff.1
