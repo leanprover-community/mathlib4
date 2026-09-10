@@ -40,7 +40,8 @@ lemma circumcenter_mem_perpBisector :
 
 namespace Equilateral
 
-lemma equilateral_faceOpposite [NeZero n] (h : s.Equilateral) : (s.faceOpposite i).Equilateral := by
+/-- The face of an equilateral simplex opposite a vertex is equilateral. -/
+lemma faceOpposite [NeZero n] (h : s.Equilateral) : (s.faceOpposite i).Equilateral := by
   obtain ⟨r, hr⟩ := h
   use r
   aesop
