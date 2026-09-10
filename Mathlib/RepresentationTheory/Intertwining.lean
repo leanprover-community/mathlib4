@@ -220,6 +220,16 @@ lemma comp_toLinearMap (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
 lemma comp_apply (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) (v : V) :
     comp f g v = f (g v) := rfl
 
+@[simp]
+lemma comp_zero (f : IntertwiningMap σ τ) :
+    comp f (0 : IntertwiningMap ρ σ) = 0 := by
+  ext; simp
+
+@[simp]
+lemma zero_comp (g : IntertwiningMap ρ σ) :
+    comp (0 : IntertwiningMap σ τ) g = 0 := by
+  ext; simp
+
 lemma comp_add (f₁ f₂ : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
     (f₁ + f₂).comp g = comp f₁ g + comp f₂ g := by ext1; simp [LinearMap.add_comp]
 
