@@ -5,8 +5,8 @@ Authors: Aaron Liu, Adam Topaz
 -/
 module
 
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.RingTheory.Valuation.Basic
-public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Tactic.Continuity
 
 /-!

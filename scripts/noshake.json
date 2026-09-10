@@ -530,7 +530,7 @@
   "Mathlib.Analysis.Normed.Group.AddCircle":
   ["Mathlib.Topology.Instances.AddCircle.Real"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
-  "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
+  "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Basic.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.Analysis.Convex.Star": ["Mathlib.Algebra.Order.Module.Synonym"],
   "Mathlib.Analysis.Convex.Basic":
