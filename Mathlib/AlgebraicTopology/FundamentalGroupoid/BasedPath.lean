@@ -484,7 +484,7 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
   exact h_start.trans h_move
 
 theorem exists_refined_terminal_vertex
-    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X]
+    [LocallyPathConnectedSpace X]
     {x₀ : X} {n' : ℕ} {U : Set X} (hU_open : IsOpen U)
     (α : BasedPath x₀) (hα : endpoint α ∈ U)
     (part : IntervalPartition (n' + 1)) (T : TubeData X x₀ (endpoint α) (n' + 1))
