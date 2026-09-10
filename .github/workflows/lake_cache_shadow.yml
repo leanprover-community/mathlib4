@@ -410,19 +410,6 @@ jobs:
           name: lake-cache-staging-${{ github.run_id }}
           path: lake-cache-staging
 
-      # The composite action takes the broker's base URL and appends the
-      # /r2-credentials route itself, while the repository variable carries
-      # the full mint endpoint; strip the route here.
-      - name: Resolve the broker base URL
-        env:
-          BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
-        run: |
-          if [ -z "${BROKER_URL}" ]; then
-            echo "::error::MATHLIB_CACHE_BROKER_URL (repository variable) must be set"
-            exit 1
-          fi
-          echo "BROKER_BASE_URL=${BROKER_URL%/r2-credentials}" >> "$GITHUB_ENV"
-
       # The job's whole credential: short-lived, scoped to the shadow
       # bucket's cache/ prefix, and expiring on its own. The action masks
       # the credential and exposes it as step outputs; it sets no
@@ -431,9 +418,9 @@ jobs:
       # job has no other upload path.
       - name: Mint short-lived R2 credentials from the broker
         id: mint
-        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-credentials@100d8d685e1e485c6eabb6d74c491548caa32c79 # mathlib-ci#67
+        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-credentials@314c7a9fb5f85aa58489839639c9e35901fd6672 # mathlib-ci#67
         with:
-          broker-url: ${{ env.BROKER_BASE_URL }}
+          broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           on-failure: fail
 
       # Lake reads the credential as LAKE_CACHE_KEY (`<id>:<secret>`) plus
