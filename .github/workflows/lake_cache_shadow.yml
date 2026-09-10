@@ -418,7 +418,7 @@ jobs:
       # fails the job: it has no other upload path.
       - name: Mint short-lived R2 credentials from the broker
         id: mint
-        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-s3-credentials@aad64478d2083f30499e292e1152a46050e29387 # mathlib-ci#67
+        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-s3-credentials@99886d844428186a1f096797057c06d7f4835c67 # mathlib-ci#67
         with:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
