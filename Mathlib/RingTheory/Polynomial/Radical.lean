@@ -19,7 +19,7 @@ See `Mathlib.RingTheory.Radical.Basic` for the definition of `radical` and `divR
 
 public section
 
-open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
+open Polynomial UniqueFactorizationMonoid EuclideanDomain
 
 variable {k : Type*} [Field k] [DecidableEq k]
 

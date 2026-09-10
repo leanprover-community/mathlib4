@@ -24,15 +24,15 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 public section
 
-open scoped Ring
-open Asymptotics ContinuousLinearMap Topology
+open Asymptotics ContinuousLinearMap
+
+open scoped Ring Topology
 
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
 variable {x : E}
@@ -442,7 +442,7 @@ theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         (proj l.attach[i.cast List.length_attach.symm]) <•
           ((l.attach.drop (.succ i)).map x).prod) x := by
-  classical exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
+  exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
 
 /--
 Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.

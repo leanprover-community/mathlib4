@@ -277,7 +277,7 @@ def kronecker [Mul α] : Matrix l m α → Matrix n p α → Matrix (l × n) (m 
 @[inherit_doc Matrix.kroneckerMap]
 scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
-open Kronecker
+open scoped Kronecker
 
 @[simp]
 theorem kronecker_apply [Mul α] (A : Matrix l m α) (B : Matrix n p α) (i₁ i₂ j₁ j₂) :
@@ -444,7 +444,7 @@ scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (TensorProduct
 @[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
   Matrix.kroneckerMap (TensorProduct.tmul R) x y
 
-open Kronecker
+open scoped Kronecker
 
 @[simp]
 theorem kroneckerTMul_apply (A : Matrix l m α) (B : Matrix n p β) (i₁ i₂ j₁ j₂) :
@@ -537,7 +537,7 @@ end Module
 
 section Algebra
 
-open Kronecker
+open scoped Kronecker
 
 open Algebra.TensorProduct
 

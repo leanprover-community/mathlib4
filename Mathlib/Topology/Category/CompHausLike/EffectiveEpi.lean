@@ -23,7 +23,7 @@ If furthermore explicit finite coproducts exist, then `CompHausLike P` is precoh
 
 universe u
 
-open CategoryTheory Limits Topology
+open CategoryTheory Topology
 
 namespace CompHausLike
 

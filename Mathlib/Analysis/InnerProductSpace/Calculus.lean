@@ -33,7 +33,7 @@ The last part of the file should be generalized to `PiLp`.
 
 noncomputable section
 
-open RCLike Real Filter
+open RCLike Real
 
 section DerivInner
 

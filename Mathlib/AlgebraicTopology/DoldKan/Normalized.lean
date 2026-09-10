@@ -31,7 +31,9 @@ with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-  CategoryTheory.Subobject CategoryTheory.Idempotents DoldKan
+  CategoryTheory.Subobject CategoryTheory.Idempotents
+
+open scoped DoldKan
 
 noncomputable section
 
@@ -73,6 +75,7 @@ def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
       ← alternatingFaceMapComplex_obj_d]
     exact PInfty.comm (n + 1) n
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap (X : SimplicialObject A) :
@@ -87,7 +90,6 @@ theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f 
   cat_disch
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :
     PInfty ≫ PInftyToNormalizedMooreComplex X = PInftyToNormalizedMooreComplex X := by cat_disch

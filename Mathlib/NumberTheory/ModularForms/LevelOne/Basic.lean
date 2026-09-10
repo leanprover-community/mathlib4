@@ -22,7 +22,9 @@ Finite-dimensionality of these spaces is proved in a later file
 public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
-  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic MatrixGroups
+  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
+
+open scoped MatrixGroups
 
 local notation "𝕢" => qParam
 
@@ -114,4 +116,4 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) = 0 := by
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
-  simpa [← coe_eq_zero_iff] using levelOne_neg_weight_eq_zero hk f
+  simpa [← FunLike.coe_zero_iff] using levelOne_neg_weight_eq_zero hk f

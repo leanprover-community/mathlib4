@@ -30,7 +30,6 @@ example {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ 
 /-- error: expression contains metavariables:
 x ⊗ y ⊗ ?_ -/
 #guard_msgs in
-set_option pp.mvars false in
 example {x y z w : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⊗ y ⊗ w ⟶ y ⊗ z ⊗ w)
     (η : f ⊗ₘ (g ▷ w) = h) :
     (f ⊗ₘ g) ▷ w = 𝟙 _ ⊗≫ h ⊗≫ 𝟙 _ := by

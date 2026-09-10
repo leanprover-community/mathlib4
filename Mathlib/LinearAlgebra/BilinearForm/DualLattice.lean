@@ -119,7 +119,7 @@ lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis_flip hB]
 
@@ -128,7 +128,7 @@ lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
     dualBasis_flip_dualBasis hB]
 
@@ -137,7 +137,7 @@ lemma dualSubmodule_dualSubmodule_of_basis
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis hB hB']
 
