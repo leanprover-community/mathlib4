@@ -6,7 +6,7 @@ import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Basic.Complex.Basic
 import Mathlib.Basic.Real.Basic
-import Mathlib.LinearAlgebra.Matrix.Cartan
+import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.Echelon.Zsqrtd
 import Mathlib.Tactic.NormNum.NatFib

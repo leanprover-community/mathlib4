@@ -6,6 +6,12 @@ Authors: Rao Xiaojia
 module
 
 public meta import Mathlib.LinearAlgebra.Matrix.Notation -- shake: keep (!![] elaboration)
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Tactic.SetLike
 
 /-!
 # Parsing matrix literals
@@ -19,7 +25,7 @@ it if the array form can be read directly.
 
 ## Main definitions
 
-- `matchMatrixLit?`: match a closed matrix literal.
+- `matchMatrixLit?`: match a matrix literal, closed by default.
 -/
 
 public meta section
@@ -28,12 +34,13 @@ open Lean Meta
 
 namespace Mathlib.Tactic.Matrix
 
-/-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
-entries. -/
-def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
-  -- closedness: a literal with free variables (hypothesis- or let-bound) or metavariables
-  -- is not evaluable here; unfold or substitute such variables before calling the tactic
-  if A.hasFVar || A.hasMVar then return none
+/-- Match a `Fin`-indexed matrix literal: its dimensions, element type, and rows of entries;
+with `closed`, only a literal without free variables or metavariables. -/
+def matchMatrixLit? (A : Expr) (closed := true) :
+    MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
+  -- a literal with free variables (hypothesis- or let-bound) or metavariables is not evaluable
+  -- by a tactic computing with its entries; unfold or substitute such variables before calling it
+  if closed && (A.hasFVar || A.hasMVar) then return none
   let_expr Matrix finM finN R := ← inferType A | return none
   let_expr Fin mE := finM | return none
   let_expr Fin nE := finN | return none

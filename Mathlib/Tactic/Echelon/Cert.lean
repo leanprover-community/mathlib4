@@ -12,6 +12,7 @@ public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (referenced by name)
 public import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Echelon.Core
 
 import Mathlib.Data.List.OfFn
 

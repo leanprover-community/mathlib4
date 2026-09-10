@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Notation  -- shake: keep (!![] elaboration)
+public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Matrix.ListMatrix
 
 /-!
@@ -25,8 +25,8 @@ The definitions recurse on the dimensions, so on literals they reduce in the ker
 `vecCons` form of the `!![…]` notation, and a literal in that notation is definitionally an
 `ofLists` term.
 
-When the elaboration of the `!![…]` notation changes, `ofList` and `ofLists` will become
-unnecessary.
+When the elaboration of the `!![…]` notation changes to list-based, `ofList` and `ofLists` will
+become unnecessary.
 -/
 
 @[expose] public section
@@ -51,11 +51,16 @@ theorem ofList_apply [Zero α] (n : ℕ) (l : List α) (i : Fin n) : ofList n l 
   | zero => exact i.elim0
   | succ n ih => cases l <;> refine Fin.cases ?_ ?_ i <;> simp [ofList, ih]
 
+/-- The first `n` elements of the first `m` lists as a function of two indices, padded with
+`0`. -/
+def ofListsFun [Zero α] : (m n : ℕ) → List (List α) → Fin m → Fin n → α
+  | 0, _, _ => ![]
+  | m + 1, n, [] => vecCons (ofList n []) (ofListsFun m n [])
+  | m + 1, n, row :: rows => vecCons (ofList n row) (ofListsFun m n rows)
+
 /-- Construct a matrix from the first `n` elements of the first `m` lists, padded with `0`. -/
-def ofLists [Zero α] : (m n : ℕ) → List (List α) → Matrix (Fin m) (Fin n) α
-  | 0, _, _ => of ![]
-  | m + 1, n, [] => of (vecCons (ofList n []) (ofLists m n []))
-  | m + 1, n, row :: rows => of (vecCons (ofList n row) (ofLists m n rows))
+def ofLists [Zero α] (m n : ℕ) (rows : List (List α)) : Matrix (Fin m) (Fin n) α :=
+  of (ofListsFun m n rows)
 
 @[simp]
 theorem ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : Fin m) :

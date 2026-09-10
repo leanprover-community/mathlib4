@@ -2,7 +2,9 @@ module
 
 import Mathlib.Tactic.NormMatMul
 
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Basic.Complex.Basic
+import Mathlib.Tactic.Polynomial.Basic
 
 /-! # Tests for the `norm_matmul` simproc -/
 
@@ -39,6 +41,18 @@ example : (!![3] : Matrix (Fin 1) (Fin 1) ℚ) * !![4] = !![12] := by
 example : (!![1, -2; -3, 4] : Matrix (Fin 2) (Fin 2) ℤ) * !![-5, 6; 7, -8] =
     !![-19, 22; 43, -50] := by
   simp only [norm_matmul]
+
+-- symbolic entries: the sums of products stay as terms, and the numeric parts are normalized
+example (c : ℚ) : !![c, 1; 0, 1] * !![1, 0; 1, 1] = !![c + 1, 1; 1, 1] := by
+  simp only [norm_matmul]; norm_num
+
+-- entries in a polynomial ring, closed entrywise by `polynomial`. `ring_nf` also works.
+open Polynomial in
+example : (!![X, 1; 0, X] : Matrix (Fin 2) (Fin 2) ℚ[X]) * !![X, 1; 1, 0] =
+    !![X ^ 2 + 1, X; X, 0] := by
+  simp only [norm_matmul]
+  refine Matrix.ext fun i j => ?_
+  fin_cases i <;> fin_cases j <;> simp; polynomial
 
 -- a chain of four factors
 example : (!![5, 3, 1, 8, 6;
