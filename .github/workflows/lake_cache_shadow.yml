@@ -407,9 +407,8 @@ jobs:
 
       # The composite action takes the broker's base URL and appends the
       # /r2-credentials route itself, while the repository variable carries
-      # the full mint endpoint; strip the route here. The put base is the
-      # shadow bucket's cache/ prefix, the namespace the grant covers.
-      - name: Resolve the mint inputs
+      # the full mint endpoint; strip the route here.
+      - name: Resolve the broker base URL
         env:
           BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
         run: |
@@ -417,21 +416,18 @@ jobs:
             echo "::error::MATHLIB_CACHE_BROKER_URL (repository variable) must be set"
             exit 1
           fi
-          {
-            echo "BROKER_BASE_URL=${BROKER_URL%/r2-credentials}"
-            echo "SHADOW_PUT_BASE_URL=${LAKE_CACHE_ARTIFACT_ENDPOINT%/artifacts}"
-          } >> "$GITHUB_ENV"
+          echo "BROKER_BASE_URL=${BROKER_URL%/r2-credentials}" >> "$GITHUB_ENV"
 
       # The job's whole credential: short-lived, scoped to the shadow
       # bucket's cache/ prefix, and expiring on its own. The action masks
-      # the credential and exports MATHLIB_CACHE_S3_*, MATHLIB_CACHE_PUT_BASE_URL
-      # and the MATHLIB_CACHE_DEVELOPER_MINTED sentinel. `fail`: this job
-      # has no other upload path.
+      # the credential and exports MATHLIB_CACHE_S3_* and the
+      # MATHLIB_CACHE_DEVELOPER_MINTED sentinel; the upload destination
+      # stays this workflow's (the LAKE_CACHE_*_ENDPOINT variables).
+      # `fail`: this job has no other upload path.
       - name: Mint short-lived R2 credentials from the broker
-        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-cache-credentials@9473fccd25902125ea64f7d7253810daeea563d4 # mathlib-ci#67
+        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-cache-credentials@a0da8227c5878ac5908920b915dda7b036ea32d6 # mathlib-ci#67
         with:
           broker-url: ${{ env.BROKER_BASE_URL }}
-          put-base-url: ${{ env.SHADOW_PUT_BASE_URL }}
           on-failure: fail
 
       # Lake reads the credential as LAKE_CACHE_KEY (`<id>:<secret>`) plus
@@ -444,8 +440,8 @@ jobs:
             echo "::error::the mint step exported no MATHLIB_CACHE_DEVELOPER_MINTED=true sentinel"
             exit 1
           fi
-          if [ "${MATHLIB_CACHE_PUT_BASE_URL:-}" != "${SHADOW_PUT_BASE_URL}" ]; then
-            echo "::error::MATHLIB_CACHE_PUT_BASE_URL does not match the put-base-url input"
+          if [ -n "${MATHLIB_CACHE_PUT_BASE_URL:-}" ]; then
+            echo "::error::the mint step exported MATHLIB_CACHE_PUT_BASE_URL; the destination is the caller's"
             exit 1
           fi
           for name in MATHLIB_CACHE_S3_ACCESS_KEY_ID MATHLIB_CACHE_S3_SECRET_ACCESS_KEY MATHLIB_CACHE_S3_SESSION_TOKEN; do
@@ -458,7 +454,7 @@ jobs:
             echo "LAKE_CACHE_KEY=${MATHLIB_CACHE_S3_ACCESS_KEY_ID}:${MATHLIB_CACHE_S3_SECRET_ACCESS_KEY}"
             echo "LAKE_CACHE_SESSION_TOKEN=${MATHLIB_CACHE_S3_SESSION_TOKEN}"
           } >> "$GITHUB_ENV"
-          echo "::notice::credential exported for lake (put base ${MATHLIB_CACHE_PUT_BASE_URL})"
+          echo "::notice::credential exported for lake"
 
       # Proves the minted credential signs a session-token PUT before Lake
       # holds it: a put-staged failure after this step passes isolates to
