@@ -25,7 +25,7 @@ arguments plus the non-overwrite guard. A non-overwrite put adds
 `If-None-Match: *`, which Azure and S3-compatible backends answer with
 409/412 for a blob that already exists (`classifyUpload` excuses those).
 
-Every backend passes its secrets in the argument list, so callers print curl
+Every backend passes its secrets in the argument list, so callers should print curl
 failures without the argument list (`showArgsOnError := false`).
 -/
 def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=

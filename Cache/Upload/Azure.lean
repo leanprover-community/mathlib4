@@ -57,7 +57,7 @@ def getAzureDateHeader : IO String := do
 The curl arguments for an upload authenticated with an Azure OAuth bearer
 token: the `x-ms-blob-type` header a blob PUT requires, the api-version and
 date headers, and the token itself. The argument list carries the token, so
-callers print curl failures without the argument list.
+callers should print curl failures without the argument list.
 -/
 def azureBearerCurlArgs (token : String) : IO (Array String) := do
   return #["-H", "x-ms-blob-type: BlockBlob",

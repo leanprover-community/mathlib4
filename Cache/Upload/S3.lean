@@ -91,7 +91,7 @@ request with SigV4 (`--aws-sigv4`); region `auto` fits R2. The
 upload; curl supports this from 7.87, and this path runs in CI, whose runners
 ship newer curls. A temporary credential also sends its session token, which
 SigV4 covers as an `x-amz-*` header. The argument list carries the secrets,
-so callers print curl failures without the argument list.
+so callers should print curl failures without the argument list.
 -/
 def s3CurlArgs (creds : S3Credentials) : Array String :=
   let sessionArgs : Array String := match creds.sessionToken? with
