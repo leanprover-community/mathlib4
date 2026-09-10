@@ -9,11 +9,11 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.Algebra.Ring.Defs
 
 /-!
-# Endomorphism ring (rsp. semiring) of a commutative group (monoid) object
+# Endomorphism ring (resp. semiring) of a commutative group (resp. monoid) object
 
-We show that given a monoid object `G : Mon C` whose underlying structure is commutative,
-its endomorphism type `End G` is a semiring. If this object is a group object, i.e., `G : Grp C`,
-then this semiring would in fact be a ring.
+Given an additive monoid object `G : AddMon C`, whose underlying structure is commutative, we
+show that its endomorphism type `End G` is a semiring. If this object is a group object,
+i.e., `G : AddGrp C`, then this semiring is in fact a ring.
 -/
 
 @[expose] public noncomputable section
