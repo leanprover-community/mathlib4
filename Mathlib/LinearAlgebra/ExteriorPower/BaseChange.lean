@@ -38,25 +38,23 @@ lemma baseChangeι_mul_add_swap (x y : S ⊗[R] M) :
     ExteriorAlgebra.baseChangeι R M S x * ExteriorAlgebra.baseChangeι R M S y +
       ExteriorAlgebra.baseChangeι R M S y * ExteriorAlgebra.baseChangeι R M S x = 0 := by
   -- Reduce the anticommutation relation to pure tensors in each variable.
-  refine TensorProduct.inductionOn x ?_ (fun a b ↦ ?_) --(fun x₁ x₂ hx₁ hx₂ ↦ ?_)
-  · refine TensorProduct.inductionOn y ?_ (fun c d ↦ ?_) --(fun y₁ y₂ ↦ ?_)
+  refine TensorProduct.inductionOn x ?_ (fun a b ha hb ↦ ?_)
+  · refine TensorProduct.inductionOn y ?_ (fun c d hc hd ↦ ?_)
     · simp [Algebra.TensorProduct.tmul_mul_tmul, ExteriorAlgebra.ι_add_mul_swap, mul_comm,
         ← TensorProduct.tmul_add]
-    · intro hc hd x y
+    · intro x y
       simpa [map_add, add_mul, mul_add, add_assoc, add_left_comm, add_comm] using
         congrArg₂ (· + ·) (hc x y) (hd x y)
-  · intro ha hb
-    simpa [map_add, add_mul, mul_add, add_assoc, add_left_comm, add_comm] using
+  · simpa [map_add, add_mul, mul_add, add_assoc, add_left_comm, add_comm] using
       congrArg₂ (· + ·) ha hb
 
 lemma baseChangeι_sq_zero (x : S ⊗[R] M) : baseChangeι R M S x * baseChangeι R M S x = 0 := by
   -- Check the square-zero relation by induction on the tensor and use the anticommutation lemma
   -- for the cross term in the add case.
-  refine TensorProduct.inductionOn x ?_ (fun s m ↦ ?_) --(fun x y hx hy ↦ ?_)
+  refine TensorProduct.inductionOn x ?_ (fun a b ha hb ↦ ?_) --(fun x y hx hy ↦ ?_)
   · simp [ExteriorAlgebra.baseChangeι, Algebra.TensorProduct.tmul_mul_tmul]
-  · intro h1 h2
-    simp only [map_add, mul_add, add_mul, add_left_comm, add_assoc]
-    simp [h1, h2, ExteriorAlgebra.baseChangeι_mul_add_swap R M S _ _]
+  · simp only [map_add, mul_add, add_mul, add_left_comm, add_assoc]
+    simp [ha, hb, ExteriorAlgebra.baseChangeι_mul_add_swap R M S a b]
 
 /-- The exterior algebra map from `ExteriorAlgebra S (S ⊗[R] M)` to `S ⊗[R] ExteriorAlgebra R M`,
 lift from `ExteriorAlgebra.baseChangeι`. -/
