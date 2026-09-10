@@ -5,9 +5,10 @@ set_option linter.congrFixedArgs true
 
 def myMap (f : Nat → Nat) (l : List Nat) : List Nat := l.map f
 
--- `l` is the same on both sides.
 /--
-warning: The `@[congr]` theorem `myMap_congr` does not allow the following explicit arguments of `myMap` to change: `l` (argument #2). This violates the recommendation in the documentation of `@[congr]`.
+warning: The `@[congr]` theorem `myMap_congr` does not allow the following explicit arguments of `myMap` to change:
+  `l : List Nat`
+This violates the recommendation in the documentation of `@[congr]`.
 
 Note: This linter can be disabled with `set_option linter.congrFixedArgs false`
 -/
@@ -17,7 +18,7 @@ theorem myMap_congr {f g : Nat → Nat} {l : List Nat} (h : ∀ x ∈ l, f x = g
     myMap f l = myMap g l :=
   List.map_congr_left h
 
--- Every explicit argument may change: no warning.
+-- Every explicit argument changes: no warning.
 #guard_msgs in
 @[congr]
 theorem myMap_congr' {f g : Nat → Nat} {l l' : List Nat} (hl : l = l')
@@ -29,14 +30,32 @@ theorem myMap_congr'' {f g : Nat → Nat} {l : List Nat} (h : ∀ x ∈ l, f x =
     myMap f l = myMap g l :=
   List.map_congr_left h
 
--- The attribute can also be added with the `attribute` command.
 /--
-warning: The `@[congr]` theorem `myMap_congr''` does not allow the following explicit arguments of `myMap` to change: `l` (argument #2). This violates the recommendation in the documentation of `@[congr]`.
+warning: The `@[congr]` theorem `myMap_congr''` does not allow the following explicit arguments of `myMap` to change:
+  `l : List Nat`
+This violates the recommendation in the documentation of `@[congr]`.
 
 Note: This linter can be disabled with `set_option linter.congrFixedArgs false`
 -/
 #guard_msgs in
 attribute [congr] myMap_congr''
+
+def myZipWith (f : Nat → Nat → Nat) (l₁ l₂ : List Nat) : List Nat := List.zipWith f l₁ l₂
+
+/--
+warning: The `@[congr]` theorem `myZipWith_congr` does not allow the following explicit arguments of `myZipWith` to change:
+  `l₁ : List Nat`
+  `l₂ : List Nat`
+This violates the recommendation in the documentation of `@[congr]`.
+
+Note: This linter can be disabled with `set_option linter.congrFixedArgs false`
+-/
+#guard_msgs in
+@[congr]
+theorem myZipWith_congr {f g : Nat → Nat → Nat} {l₁ l₂ : List Nat} (h : ∀ a b, f a b = g a b) :
+    myZipWith f l₁ l₂ = myZipWith g l₁ l₂ := by
+  have : f = g := funext fun a ↦ funext (h a)
+  rw [this]
 
 def myGet (l : List Nat) (i : Nat) (_h : i < l.length) : Nat := l[i]
 

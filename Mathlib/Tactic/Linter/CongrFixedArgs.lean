@@ -68,11 +68,14 @@ def lintCongrTheorem (ref : Syntax) (declName : Name) : CommandElabM Unit := do
   unless (congrExtension.getState (← getEnv)).get fnName |>.any (·.theoremName == declName) do
     return
   if fixed.isEmpty then return
-  let binderNames := (← getConstInfo fnName).type.getForallBinderNames.toArray
-  let args := fixed.toList.map fun i ↦ m!"`{binderNames[i]?.getD `_}` (argument #{i + 1})"
+  -- Display each argument as `x : T`, as in the signature of the head function.
+  let args ← liftTermElabM <| forallTelescopeReducing (← getConstInfo fnName).type fun xs _ ↦
+    fixed.toList.filterMapM fun i ↦ do
+      let some x := xs[i]? | return none
+      addMessageContext m!"`{x} : {← inferType x}`"
   logLint linter.congrFixedArgs ref m!"\
     The `@[congr]` theorem `{.ofConstName declName}` does not allow the following explicit \
-    arguments of `{.ofConstName fnName}` to change: {MessageData.joinSep args ", "}. \
+    arguments of `{.ofConstName fnName}` to change:{indentD (MessageData.joinSep args "\n")}\n\
     This violates the recommendation in the documentation of `@[congr]`."
 
 @[inherit_doc Mathlib.Linter.linter.congrFixedArgs]
