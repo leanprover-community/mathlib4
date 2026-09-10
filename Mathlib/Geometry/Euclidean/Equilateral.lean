@@ -74,8 +74,8 @@ lemma dist_centroid_eq (h : s.Equilateral) :
 
 /-- The centroid is the circumcenter. -/
 lemma centroid_eq_circumcenter (h : s.Equilateral) : s.centroid = s.circumcenter :=
-    s.eq_circumcenter_of_dist_eq s.centroid_mem_affineSpan (r := dist (s.points 0) s.centroid)
-      fun _ ↦ h.dist_centroid_eq
+  s.eq_circumcenter_of_dist_eq s.centroid_mem_affineSpan (r := dist (s.points 0) s.centroid)
+    fun _ ↦ h.dist_centroid_eq
 
 /-- The centroid is the Monge point. -/
 lemma centroid_eq_mongePoint (h : s.Equilateral) : s.centroid = s.mongePoint := by
