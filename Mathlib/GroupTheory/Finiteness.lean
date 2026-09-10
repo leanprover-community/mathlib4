@@ -53,7 +53,7 @@ class IsAddFG (M : Type*) [Add M] : Prop where
 
 section Mul
 
-variable (M M' : Type*) [Mul M] [Mul M']
+variable {M M' : Type*} [Mul M] [Mul M']
 
 /-- A type with multiplication is finitely generated if there is a finite subset such that every
 element of the type can be written as a finite product of elements from this finite subset.
@@ -63,8 +63,6 @@ This generalizes and will eventually replace the four existing definitions
 @[to_additive existing]
 class IsMulFG (M : Type*) [Mul M] : Prop where
   out (M) : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
-
-variable {M M'}
 
 -- We give this instance low priority to avoid slow typeclass resolutions.
 @[to_additive]
@@ -80,6 +78,34 @@ theorem IsMulFG.of_surjective {F : Type*} [FunLike F M M'] [MulHomClass F M M'] 
   use S.image f
   rwa [Finset.coe_image, ← MulHom.coe_coe, ← MulHom.map_mclosure, hS, ← MulHom.srange_eq_map,
     MulHom.srange_eq_top_iff_surjective]
+
+@[to_additive]
+theorem isMulFG_congr {F : Type*} [EquivLike F M M'] [MulEquivClass F M M'] (f : F) :
+    IsMulFG M ↔ IsMulFG M' :=
+  ⟨fun _ ↦ .of_surjective _ (f : M ≃* M').surjective,
+    fun _ ↦ .of_surjective _ (f : M ≃* M').symm.surjective⟩
+
+@[simp]
+theorem isMulFG_multiplicative_iff {M : Type*} [Add M] :
+    IsMulFG (Multiplicative M) ↔ IsAddFG M := by
+  classical
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S.image Multiplicative.toAdd, ?_⟩,
+    fun ⟨S, hS⟩ ↦ ⟨S.image Multiplicative.toAdd.symm, ?_⟩⟩
+  · apply AddSubsemigroup.toSubsemigroup.injective
+    rwa [Finset.coe_image, AddSubsemigroup.toSubsemigroup_closure, Equiv.preimage_image, map_top]
+  · apply AddSubsemigroup.toSubsemigroup.symm.injective
+    rwa [Finset.coe_image, Equiv.image_symm_eq_preimage, ← AddSubsemigroup.toSubsemigroup_closure,
+      OrderIso.symm_apply_apply, map_top]
+
+@[simp]
+theorem isAddFG_additive_iff : IsAddFG (Additive M) ↔ IsMulFG M := by
+  rw [← isMulFG_multiplicative_iff, isMulFG_congr (MulEquiv.multiplicativeAdditive M)]
+
+instance [IsMulFG M] : IsAddFG (Additive M) :=
+  isMulFG_multiplicative_iff.mp ‹_›
+
+instance {M : Type*} [Add M] [IsAddFG M] : IsMulFG (Multiplicative M) :=
+  isAddFG_additive_iff.mp ‹_›
 
 end Mul
 
@@ -143,8 +169,8 @@ instance [IsMulFG M] : IsMulFG (MonoidHom.mrange f) :=
 @[to_additive]
 instance [IsMulFG M] [IsMulFG M'] : IsMulFG (M × M') := by
   classical
-  obtain ⟨S, hS⟩ := isMulFG_iff.mp ‹IsMulFG M›
-  obtain ⟨S', hS'⟩ := isMulFG_iff.mp ‹IsMulFG M'›
+  obtain ⟨S, hS⟩ := exists_of_isMulFG M
+  obtain ⟨S', hS'⟩ := exists_of_isMulFG M'
   rw [isMulFG_iff]
   use (S ∪ {1}) ×ˢ (S' ∪ {1})
   simp [Submonoid.closure_prod, hS, hS']
@@ -376,18 +402,11 @@ lemma Submonoid.FG.exists_minimal_closure_eq (hP : P.FG) :
   exists_minimal_of_wellFoundedLT _ (isMulFG_iff.mp hP)
 
 theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun h =>
-    let ⟨S, hS, hf⟩ := (Submonoid.fg_iff _).1 h
-    (AddSubmonoid.fg_iff _).mpr
-      ⟨Additive.toMul ⁻¹' S, by simp [← Submonoid.toAddSubmonoid_closure, hS], hf⟩,
-    fun h =>
-    let ⟨T, hT, hf⟩ := (AddSubmonoid.fg_iff _).1 h
-    (Submonoid.fg_iff _).mpr
-      ⟨Additive.ofMul ⁻¹' T, by simp [← AddSubmonoid.toSubmonoid'_closure, hT], hf⟩⟩
+  isAddFG_additive_iff.symm
 
 theorem AddSubmonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] (P : AddSubmonoid M) :
-    P.FG ↔ P.toSubmonoid.FG := by
-  convert! (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
+    P.FG ↔ P.toSubmonoid.FG :=
+  isMulFG_multiplicative_iff.symm
 
 @[to_additive]
 theorem Submonoid.FG.bot : FG (⊥ : Submonoid M) :=
@@ -477,21 +496,19 @@ lemma Submonoid.exists_minimal_closure_eq_top [Monoid.FG M] :
     ∃ S : Finset M, Minimal (fun S ↦ Submonoid.closure (SetLike.coe S) = ⊤) S :=
   Monoid.FG.fg_top.exists_minimal_closure_eq
 
-theorem Monoid.fg_iff_add_fg : Monoid.FG M ↔ AddMonoid.FG (Additive M) := by
-  rw [fg_def, AddMonoid.fg_def]
-  exact Submonoid.fg_iff_add_fg ⊤
+theorem Monoid.fg_iff_add_fg : Monoid.FG M ↔ AddMonoid.FG (Additive M) :=
+  isAddFG_additive_iff.symm
 
 theorem AddMonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] :
-    AddMonoid.FG M ↔ Monoid.FG (Multiplicative M) := by
-  rw [fg_def, Monoid.fg_def]
-  exact AddSubmonoid.fg_iff_mul_fg ⊤
+    AddMonoid.FG M ↔ Monoid.FG (Multiplicative M) :=
+  isMulFG_multiplicative_iff.symm
 
 instance AddMonoid.fg_of_monoid_fg [Monoid.FG M] : AddMonoid.FG (Additive M) :=
-  Monoid.fg_iff_add_fg.1 ‹_›
+  inferInstance
 
 instance Monoid.fg_of_addMonoid_fg {M : Type*} [AddMonoid M] [AddMonoid.FG M] :
     Monoid.FG (Multiplicative M) :=
-  AddMonoid.fg_iff_mul_fg.1 ‹_›
+  inferInstance
 
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
@@ -711,19 +728,17 @@ instance Monoid.fg_of_group_fg [Group.FG G] : Monoid.FG G :=
 theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG := by
   rfl
 
-theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) := by
-  rw [Group.fg_def, AddGroup.fg_def]
-  exact Subgroup.fg_iff_add_fg ⊤
+theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
+  isAddFG_additive_iff.symm
 
-theorem AddGroup.fg_iff_mul_fg : AddGroup.FG H ↔ Group.FG (Multiplicative H) := by
-  rw [fg_def, Group.fg_def]
-  exact AddSubgroup.fg_iff_mul_fg ⊤
+theorem AddGroup.fg_iff_mul_fg : AddGroup.FG H ↔ Group.FG (Multiplicative H) :=
+  isMulFG_multiplicative_iff.symm
 
 instance AddGroup.fg_of_group_fg [Group.FG G] : AddGroup.FG (Additive G) :=
-  GroupFG.iff_add_fg.1 ‹_›
+  inferInstance
 
 instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) :=
-  AddGroup.fg_iff_mul_fg.1 ‹_›
+  inferInstance
 
 @[to_additive]
 instance (priority := 100) Group.fg_of_finite [Finite G] : Group.FG G := by
