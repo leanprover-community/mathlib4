@@ -143,7 +143,7 @@ lemma ofHom_apply (f : ContMDiffMap I I' X Y n) (x : X) : ofHom f x = f x := rfl
 lemma inv_hom_apply (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by simp
 lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
 
-instance inhabited : Inhabited (MfldCat 𝕜 n) := ⟨of 𝕜 (modelWithCornersSelf 𝕜 𝕜)⟩
+instance inhabited : Inhabited (MfldCat 𝕜 n) := ⟨of PUnit (modelWithCornersSelf 𝕜 PUnit)⟩
 
 /-- A normed space is a `C^n` manifold (modeled on itself). -/
 abbrev ofNormedSpace (n : ℕ∞ω) (E : Type u) [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
