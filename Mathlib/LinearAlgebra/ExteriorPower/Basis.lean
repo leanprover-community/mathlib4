@@ -86,8 +86,8 @@ lemma ιMultiDual_apply_nondiag (s t : powersetCard I n) (hst : s ≠ t) :
 independent in the `n`th exterior power of `M`. -/
 lemma ιMulti_family_linearIndependent_ofBasis :
     LinearIndependent R (ιMulti_family R n b) :=
-  LinearIndependent.of_pairwise_dual_eq_zero_one _ (fun s ↦ ιMultiDual R n b s)
-    (fun _ _ h => ιMultiDual_apply_nondiag R n b _ _ h)
+  LinearIndependent.of_pairwise'_dual_eq_zero_one _ (fun s ↦ ιMultiDual R n b s)
+    (fun _ _ _ _ h => ιMultiDual_apply_nondiag R n b _ _ h)
     (fun _ => ιMultiDual_apply_diag _ _ _ _)
 
 variable {R} in

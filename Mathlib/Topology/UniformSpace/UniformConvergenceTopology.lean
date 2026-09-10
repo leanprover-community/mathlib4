@@ -974,7 +974,7 @@ protected def congrLeft {𝔗 : Set (Set γ)} (e : γ ≃ α) (he : 𝔗 ⊆ ima
 
 /-- If `𝔖` covers `α`, then the topology of `𝔖`-convergence is T₂. -/
 theorem t2Space_of_covering [T2Space β] (h : ⋃₀ 𝔖 = univ) : T2Space (α →ᵤ[𝔖] β) where
-  t2 f g hfg := by
+  t2 f _ g _ hfg := by
     obtain ⟨x, hx⟩ := not_forall.mp (mt funext hfg)
     obtain ⟨s, hs, hxs⟩ : ∃ s ∈ 𝔖, x ∈ s := mem_sUnion.mp (h.symm ▸ True.intro)
     exact separated_by_continuous (uniformContinuous_eval_of_mem β 𝔖 hxs hs).continuous hx
