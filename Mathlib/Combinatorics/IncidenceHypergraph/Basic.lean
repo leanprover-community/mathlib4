@@ -89,6 +89,7 @@ lemma range_attach'_subset : range G.attach' ⊆ V(G) := by
   exact G.attach'_mem i
 
 open Classical in
+/-- The vertex attached to an incidence, with an arbitrary value outside `I(G)`. -/
 noncomputable def attach [Nonempty ν] (G : IncidenceHypergraph ν ι ε) (i : ι) : ν :=
   if h : i ∈ I(G) then G.attach' ⟨i, h⟩ else Classical.arbitrary ν
 
@@ -100,6 +101,7 @@ lemma attach'_eq_attach [Nonempty ν] (i : I(G)) : G.attach' i = attach G i := b
   simp [attach]
 
 open Classical in
+/-- The edge associated with an incidence, with an arbitrary value outside `I(G)`. -/
 noncomputable def edgeMap [Nonempty ε] (G : IncidenceHypergraph ν ι ε) (i : ι) : ε :=
   if h : i ∈ I(G) then G.edgeMap' ⟨i, h⟩ else Classical.arbitrary ε
 
@@ -167,7 +169,7 @@ instance : Std.Symm (G.IsLink e) where
 lemma isLink_comm : G.IsLink e u v ↔ G.IsLink e v u :=
   ⟨.symm, .symm⟩
 
-lemma isLink_attach [Nonempty ε] [Nonempty ν] (hi : i ∈ I(G)) (hj : j ∈ I(G)) (hij : i ≠ j)
+lemma isLink_attach (hi : i ∈ I(G)) (hj : j ∈ I(G)) (hij : i ≠ j)
     (he : G.edgeMap' ⟨i, hi⟩ = G.edgeMap' ⟨j, hj⟩) :
     G.IsLink (G.edgeMap' ⟨i, hi⟩) (G.attach' ⟨i, hi⟩) (G.attach' ⟨j, hj⟩) :=
   ⟨⟨i, hi⟩, ⟨j, hj⟩, Subtype.coe_ne_coe.mp hij, rfl, he.symm, rfl, rfl⟩
