@@ -15,8 +15,8 @@ facts about matrix literals.
 
 ## Implementation notes
 
-The definitions in this file are intended for defining reflection certificates and should
-not be used for theory interface.
+The definitions in this file are intended for defining reflection certificates only and should
+not be used for any theory.
 
 `ListMatrix` namespace is used to avoid accidental collision with other downstream definitions.
 

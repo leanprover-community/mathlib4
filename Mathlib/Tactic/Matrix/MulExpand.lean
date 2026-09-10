@@ -13,15 +13,12 @@ public meta import Mathlib.Tactic.Matrix.ListMatrix
 /-!
 # Expansion of products of list matrices
 
-`proveMul` rewrites `ListMatrix.mul l m n A B` for list literals `A` and `B` to the literal
+`proveMul` rewrites `ListMatrix.mul l m n A B` for list literals `A` and `B` to the a literal
 whose entries are the sums of products of the entries, with the proof for other tactics to
 consume in `MetaM`.
 
-## Implementation notes
-
-The entries are stated as sums of products by applying the unfolding equations of
-`ListMatrix.dotProduct` one term at a time, instead of leaving the unfolding to the kernel, which
-can trigger evaluation of arithmetic.
+The entries are obtained by unfolding equations of `ListMatrix.dotProduct` one term at a time,
+instead of leaving the unfolding to the kernel, which can trigger evaluation of arithmetic.
 -/
 
 public meta section
@@ -36,7 +33,7 @@ section
 -- caller synthesised, rather than rebuilding a projection path in every cell
 variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
 
-/-- A dot product of two lists of entries, `ListMatrix.dotProduct n l₁ l₂ = result`, with its
+/-- A dot product of two lists of entries, `ListMatrix.dotProduct n l₁ l₂ = expr`, with its
 proof. -/
 structure DotProductEq where
   /-- The number of terms. -/
@@ -46,9 +43,9 @@ structure DotProductEq where
   /-- The second list. -/
   l₂ : Q(List $α)
   /-- The right-hand side. -/
-  result : Q($α)
+  expr : Q($α)
   /-- The proof. -/
-  proof : Q(ListMatrix.dotProduct $n $l₁ $l₂ = $result)
+  proof : Q(ListMatrix.dotProduct $n $l₁ $l₂ = $expr)
 
 /-- The unfolding of the dot product of the entries `as` and `bs` to the fold
 `a₀ * b₀ + (a₁ * b₁ + (… + 0))`, by the equations of `ListMatrix.dotProduct`; its `n` is the
@@ -113,14 +110,14 @@ def proveMul {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α))
   let mulEntryEqs := A.map fun row => Bt.map fun col => proveDotProduct zα aα mα m row col
   let ⟨_, C, hC⟩ := mkListCongr (α := q(List $α)) <| mulEntryEqs.map fun row =>
     mkListCongr <| row.map fun d =>
-      ⟨q(ListMatrix.dotProduct $(d.n) $(d.l₁) $(d.l₂)), d.result, d.proof⟩
+      ⟨q(ListMatrix.dotProduct $(d.n) $(d.l₁) $(d.l₂)), d.expr, d.proof⟩
   let listA := mkListLitQ (α := q(List $α)) (A.map mkListLitQ)
   let listB := mkListLitQ (α := q(List $α)) (B.map mkListLitQ)
   -- `hC` is stated on the dot products of the rows and columns, to which `ListMatrix.mul` on the
   -- literals unfolds, so the kernel settles the hint by reduction
   { A := listA,
     B := listB,
-    rows := mulEntryEqs.map (·.map (·.result)),
+    rows := mulEntryEqs.map (·.map (·.expr)),
     expr := C,
     proof := mkExpectedPropHint hC q(ListMatrix.mul $l $m $n $listA $listB = $C) }
 
