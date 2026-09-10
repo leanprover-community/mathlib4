@@ -351,14 +351,14 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
       exact uniformContinuous_id }
 
 variable {α} in
-@[to_additive, simps! apply symm_apply toEquiv]
+@[to_additive (attr := simps! apply symm_apply toEquiv)]
 def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
   toEquiv := MulOpposite.opEquiv
   uniformContinuous_toFun := MulOpposite.uniformContinuous_op
   uniformContinuous_invFun := MulOpposite.uniformContinuous_unop
 
 variable {α} in
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem _root_.completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
   MulOpposite.opUniformEquiv.symm.completeSpace_iff
 
