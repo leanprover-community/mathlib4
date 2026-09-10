@@ -282,6 +282,7 @@ def cocycles₂ : Submodule k (G × G → A) := LinearMap.ker (d₂₃ A).hom
 
 variable {A}
 
+@[macro_inline]
 instance : FunLike (cocycles₁ A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -348,6 +349,7 @@ def cocycles₁IsoOfIsTrivial [hA : A.IsTrivial] :
       { val := f
         property := mem_cocycles₁_of_addMonoidHom f } }
 
+@[macro_inline]
 instance : FunLike (cocycles₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -416,6 +418,7 @@ def coboundaries₂ : Submodule k (G × G → A) :=
 
 variable {A}
 
+@[macro_inline]
 instance : FunLike (coboundaries₁ A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -448,6 +451,7 @@ theorem coboundaries₁_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
   simp_rw [coboundaries₁, d₀₁_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl
 
+@[macro_inline]
 instance : FunLike (coboundaries₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
