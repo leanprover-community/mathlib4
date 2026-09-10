@@ -48,6 +48,8 @@ arguments. -/]
 def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 
+attribute [wikidata Q215382] Disjoint
+
 @[to_dual (attr := simp)]
 theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
   fun x _ _ ↦ le_of_eq (Subsingleton.elim x ⊥)
