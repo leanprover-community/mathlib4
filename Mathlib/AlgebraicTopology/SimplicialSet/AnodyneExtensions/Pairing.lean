@@ -110,6 +110,7 @@ section
 
 variable [P.IsRegular]
 
+@[deprecated IsRegular.wf (since := "2026-09-10")]
 lemma wf : WellFounded P.AncestralRel := IsRegular.wf
 
 end
@@ -188,7 +189,7 @@ instance [P.IsProper] : (P.ofIso e hA).IsProper where
 
 instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
   wf := by
-    have hP := P.wf
+    have hP := IsRegular.wf (P := P)
     rw [wellFounded_iff_isEmpty_descending_chain] at hP ⊢
     by_contra!
     obtain ⟨f, hf⟩ := this
