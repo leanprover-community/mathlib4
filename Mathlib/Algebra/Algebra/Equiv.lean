@@ -65,9 +65,12 @@ instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
-def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+def _root_.AlgEquiv.ofClass {F R A B : Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B]
+    (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with commutes' := commutes f }
+
+@[deprecated (since := "2026-09-08")] alias toAlgEquiv := AlgEquiv.ofClass
 
 end AlgEquivClass
 
@@ -133,9 +136,11 @@ theorem toEquiv_eq_coe : e.toEquiv = e :=
   rfl
 
 @[simp]
-protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
-    ⇑(AlgEquivClass.toAlgEquiv f) = f :=
+protected theorem coe_ofClass {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-08")] protected alias coe_coe := AlgEquiv.coe_ofClass
 
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
@@ -256,16 +261,21 @@ theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
 
 @[simp]
-theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
+theorem apply_ofClass_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₂) :
-    f ((AlgEquivClass.toAlgEquiv f).symm x) = x :=
+    f ((ofClass f).symm x) = x :=
   EquivLike.right_inv f x
 
 @[simp]
-theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
+theorem ofClass_symm_apply_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₁) :
-    (AlgEquivClass.toAlgEquiv f).symm (f x) = x :=
+    (ofClass f).symm (f x) = x :=
   EquivLike.left_inv f x
+
+@[deprecated (since := "2026-09-08")]
+alias coe_apply_coe_coe_symm_apply := apply_ofClass_symm_apply
+@[deprecated (since := "2026-09-08")]
+alias coe_coe_symm_apply_coe_apply := ofClass_symm_apply_apply
 
 /-- `simp` normal form of `invFun_eq_symm` -/
 @[simp]
@@ -841,7 +851,7 @@ end RingEquiv
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 section
 
@@ -957,7 +967,6 @@ variable {R S M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [Module R
   [SMulCommClass S R M₁] [SMulCommClass S R M₂] [SMul R S] [IsScalarTower R S M₁]
   [IsScalarTower R S M₂]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/

@@ -16,7 +16,7 @@ public import Mathlib.Data.Nat.Digits.Defs
 /-!
 # Digits of a natural number
 
-This provides lemma about the digits of natural numbers.
+This provides lemmas about the digits of natural numbers.
 -/
 
 public section
@@ -214,6 +214,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 
 
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
+  simp only [Bool.cond_eq_ite]
   induction n using Nat.binaryRecFromOne with
   | zero => simp
   | one => simp

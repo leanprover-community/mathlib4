@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Determinant.Bird.Meta
 public meta import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Determinant.Bird.Meta
 
 /-!
 
@@ -73,7 +74,7 @@ improve performance.
 
 public meta section
 
-open Lean Meta Qq
+open Lean Qq
 open Mathlib.Tactic.Ring
 
 variable {u : Level} {α : Q(Type u)} {rα : Q(CommRing $α)}

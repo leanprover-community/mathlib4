@@ -64,10 +64,10 @@ lemma mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ 
   congr
 
 @[to_additive (attr := simp)]
-lemma mulIndicator_of_mem (h : a ∈ s) (f : α → M) : mulIndicator s f a = f a := if_pos h
+lemma mulIndicator_of_mem (h : a ∈ s) (f : α → M) : mulIndicator s f a = f a := ite_eq_left h
 
 @[to_additive (attr := simp)]
-lemma mulIndicator_of_notMem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 := if_neg h
+lemma mulIndicator_of_notMem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 := ite_eq_right h
 
 @[to_additive]
 lemma mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :

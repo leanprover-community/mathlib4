@@ -167,9 +167,6 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
     (x : ToType X) : (f ≫ g) x = g (f x) := by
   simp [ConcreteCategory.comp_apply]
 
-@[deprecated (since := "2026-02-06")] alias _root_.CategoryTheory.comp_apply' :=
-  _root_.CategoryTheory.comp_apply
-
 theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : ToType X} (h : x = x') : f x = f x' :=
   congrArg (f : ToType X → ToType Y) h
 
@@ -185,7 +182,6 @@ theorem hom_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
 
 open ConcreteCategory
 
-set_option backward.isDefEq.respectTransparency false in
 instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{v'} D]
     {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
     [ConcreteCategory.{w} D FD] (f : C → D) :

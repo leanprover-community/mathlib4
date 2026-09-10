@@ -107,9 +107,9 @@ theorem coeff_expand_smul (φ : MvPowerSeries σ R) (m : σ →₀ ℕ) :
   have {d : σ →₀ ℕ} : (d.prod fun s e ↦ (X s (R := R) ^ p) ^ e) = monomial (p • d) 1 := by
     simp [monomial_smul_eq]
   rw [finsum_eq_single _ m]
-  · rw [this, coeff_monomial, if_pos rfl, mul_one]
+  · rw [this, coeff_monomial, ite_eq_left rfl, mul_one]
   · intro d hd
-    rw [this, coeff_monomial, if_neg _, mul_zero]
+    rw [this, coeff_monomial, ite_eq_right _, mul_zero]
     simp [nsmul_right_inj hp, hd.symm]
 
 @[simp]
@@ -132,7 +132,7 @@ theorem coeff_expand_of_not_dvd (φ : MvPowerSeries σ R) {m : σ →₀ ℕ} {i
   rw [this, coeff_monomial] at hd
   have meq : m = p • d := by
     by_contra hc
-    rw [if_neg hc] at hd
+    rw [ite_eq_right hc] at hd
     contradiction
   simp [meq]
 
@@ -201,8 +201,8 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
   · obtain ⟨m, hm⟩ : ∃ m, p • m = d := ⟨d.mapRange (fun a ↦ a / p) (by simp),
       by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
     by_cases h_le : m ≤ n
-    · rw [← hm, coeff_trunc', if_pos (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
-        MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', if_pos h_le]
+    · rw [← hm, coeff_trunc', ite_eq_left (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
+        MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', ite_eq_left h_le]
     · have not_le : ¬ p • m ≤ p • n := by
         obtain ⟨i, hi⟩ : ∃ i, m i > n i := by
           by_contra! hc
@@ -210,13 +210,13 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
         have : ¬ p • m i ≤ p • n i := by
           simp [Nat.mul_lt_mul_of_pos_left hi (p.ne_zero_iff_zero_lt.mp hp)]
         exact Not.intro fun a ↦ this (a i)
-      rw [coeff_trunc', ← hm, if_neg not_le, MvPolynomial.coeff_expand_smul _ hp, coeff_trunc',
-        if_neg h_le]
+      rw [coeff_trunc', ← hm, ite_eq_right not_le, MvPolynomial.coeff_expand_smul _ hp,
+        coeff_trunc', ite_eq_right h_le]
   · obtain ⟨i, hi⟩ := h
     rw [MvPolynomial.coeff_expand_of_not_dvd _ hi]
     by_cases hd : d ≤ p • n
-    · rw [coeff_trunc', if_pos hd, coeff_expand_of_not_dvd _ hp _ hi]
-    rw [coeff_trunc', if_neg hd]
+    · rw [coeff_trunc', ite_eq_left hd, coeff_expand_of_not_dvd _ hp _ hi]
+    rw [coeff_trunc', ite_eq_right hd]
 
 include hp in
 theorem trunc'_expand_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) [DecidableEq σ] (f : MvPowerSeries σ R) :
@@ -254,6 +254,16 @@ theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
     conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
     simp_rw [← map_frobenius_expand p hp, pow_succ', add_comm k, iterateFrobenius_add,
       ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
+
+theorem _root_.FiniteField.MvPowerSeries.expand_card {K : Type*} [Field K] [Fintype K]
+    (f : MvPowerSeries σ K) :
+    f.expand (Fintype.card K) Fintype.card_ne_zero = f ^ (Fintype.card K) := by
+  obtain ⟨p, hp⟩ := CharP.exists K
+  rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
+  have : Fact p.Prime := ⟨hp⟩
+  simp_rw [hn]
+  rw [← MvPowerSeries.map_iterateFrobenius_expand _ (NeZero.ne' p).symm, iterateFrobenius_eq_pow,
+    FiniteField.frobenius_pow hn, RingHom.one_def, MvPowerSeries.map_id, RingHom.id_apply]
 
 end ExpChar
 
