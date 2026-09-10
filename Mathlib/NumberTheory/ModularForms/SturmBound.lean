@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.OrderChangeLevel
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Sturm bounds and finite-dimensionality
@@ -22,11 +23,11 @@ determinant-one groups, and over `ℝ` for all arithmetic groups.
 
 @[expose] public section
 
-open Matrix.SpecialLinearGroup UpperHalfPlane
+open Complex Matrix.SpecialLinearGroup UpperHalfPlane
 open scoped Pointwise
 open OnePoint
 
-open scoped MatrixGroups
+open scoped ComplexConjugate MatrixGroups
 
 open scoped Manifold ModularForm
 
@@ -307,28 +308,166 @@ lemma finrank_complex_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] [G.Has
           Nat.lt_floor_add_one (G.sturmBound k)))
 
 /-- Modular forms at any arithmetic level form a finite-dimensional real vector space.
-Restriction to the intersection with `SL(2, ℤ)` also covers determinant `-1`. -/
+Restriction to the determinant-one part also covers determinant `-1`. -/
 instance finiteDimensional_real (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ) :
     FiniteDimensional ℝ (ModularForm G k) := by
-  let K := G ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))
-  let L : ModularForm G k →ₗ[ℝ] ModularForm K k :=
-    { toFun := ModularForm.restrict inf_le_left
+  let L : ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k :=
+    { toFun := ModularForm.restrict G.detOnePart_le
       map_add' f g := by ext z; rfl
       map_smul' c f := by ext z; rfl }
-  exact FiniteDimensional.of_injective L (ModularForm.restrict_injective inf_le_left)
+  exact FiniteDimensional.of_injective L (ModularForm.restrict_injective G.detOnePart_le)
+
+/-- If `G` contains an element of determinant `-1`, restriction to its determinant-one part takes
+real-linearly independent families to complex-linearly independent families. -/
+lemma linearIndependent_restrict_detOnePart
+    {G : Subgroup (GL (Fin 2) ℝ)} {k : ℤ} {ι : Type*}
+    (f : ι → ModularForm G k) (hf : LinearIndependent ℝ f) {γ : GL (Fin 2) ℝ}
+    (hγ : γ ∈ G) (hdet : γ.det = -1) :
+    LinearIndependent ℂ (fun i ↦ (ModularForm.restrict G.detOnePart_le (f i) :
+      ModularForm G.detOnePart k)) := by
+  rw [linearIndependent_iff]
+  intro l hl
+  have hl_fun : (∑ i ∈ l.support, l i • (f i : ℍ → ℂ)) = 0 := by
+    ext z
+    simpa [Finsupp.linearCombination_apply, Finsupp.sum] using congr_fun
+      (congr_arg (fun F : ModularForm G.detOnePart k ↦ (F : ℍ → ℂ)) hl) z
+  have hdet' : γ.det.val = -1 := by
+    simpa using congr_arg Units.val hdet
+  have hsigma : σ γ = Complex.conjCAE := by
+    simp only [σ]
+    split_ifs with h
+    · rw [hdet'] at h
+      norm_num at h
+    · rfl
+  have hl_conj : (∑ i ∈ l.support, conj (l i) • (f i : ℍ → ℂ)) = 0 := by
+    have hs := congr_arg (fun F : ℍ → ℂ ↦ F ∣[k] γ) hl_fun
+    simp_rw [SlashAction.sum_slash, smul_slash,
+      SlashInvariantForm.slash_action_eqn (f _) γ hγ] at hs
+    rw [hsigma] at hs
+    simpa using hs
+  have hl_re : (∑ i ∈ l.support, (l i).re • (f i : ℍ → ℂ)) = 0 := by
+    ext z
+    have h1 := congr_fun hl_fun z
+    have h2 := congr_fun hl_conj z
+    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Pi.zero_apply] at h1 h2 ⊢
+    have htwice :
+        2 * ∑ i ∈ l.support, (l i).re • (f i) z =
+          (∑ i ∈ l.support, l i * (f i) z) +
+            ∑ i ∈ l.support, conj (l i) * (f i) z := by
+      rw [Finset.mul_sum, ← Finset.sum_add_distrib]
+      apply Finset.sum_congr rfl
+      intro i hi
+      rw [Complex.real_smul, Complex.re_eq_add_conj]
+      ring
+    rw [h1, h2, add_zero] at htwice
+    exact (mul_eq_zero.mp htwice).resolve_left (by norm_num)
+  have hl_im : (∑ i ∈ l.support, (l i).im • (f i : ℍ → ℂ)) = 0 := by
+    ext z
+    have h1 := congr_fun hl_fun z
+    have h2 := congr_fun hl_conj z
+    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Pi.zero_apply] at h1 h2 ⊢
+    have htwice :
+        (2 * Complex.I) * ∑ i ∈ l.support, (l i).im • (f i) z =
+          (∑ i ∈ l.support, l i * (f i) z) -
+            ∑ i ∈ l.support, conj (l i) * (f i) z := by
+      rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
+      apply Finset.sum_congr rfl
+      intro i hi
+      rw [Complex.real_smul, Complex.im_eq_sub_conj]
+      field_simp
+    rw [h1, h2, sub_zero] at htwice
+    exact (mul_eq_zero.mp htwice).resolve_left (by norm_num)
+  have hl_re' : ∑ i ∈ l.support, (l i).re • f i = 0 := by
+    apply DFunLike.coe_injective
+    rw [FunLike.coe_sum]
+    simp_rw [FunLike.coe_smul]
+    exact hl_re
+  have hl_im' : ∑ i ∈ l.support, (l i).im • f i = 0 := by
+    apply DFunLike.coe_injective
+    rw [FunLike.coe_sum]
+    simp_rw [FunLike.coe_smul]
+    exact hl_im
+  ext i
+  by_cases hi : i ∈ l.support
+  · apply Complex.ext
+    · exact linearIndependent_iff'.mp hf l.support (fun j ↦ (l j).re) hl_re' i hi
+    · exact linearIndependent_iff'.mp hf l.support (fun j ↦ (l j).im) hl_im' i hi
+  · simpa only [Finsupp.zero_apply] using
+      (not_ne_iff.mp ((Finsupp.mem_support_iff).not.mp hi))
+
+/-- Complex base extension followed by restriction to the determinant-one part. -/
+noncomputable def restrictBaseChange
+    {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ) :
+    TensorProduct ℝ ℂ (ModularForm G k) →ₗ[ℂ] ModularForm G.detOnePart k :=
+  TensorProduct.AlgebraTensorModule.lift
+    { toFun c :=
+        { toFun f := c • ModularForm.restrict G.detOnePart_le f
+          map_add' f g := by
+            ext z
+            exact mul_add c (f z) (g z)
+          map_smul' r f := by
+            rw [show ModularForm.restrict G.detOnePart_le (r • f) =
+              r • ModularForm.restrict G.detOnePart_le f by rfl]
+            ext z
+            simp only [smul_apply, RingHom.id_apply, smul_eq_mul, Complex.real_smul]
+            ring }
+      map_add' c d := by
+        ext f z
+        exact add_mul c d (f z)
+      map_smul' c d := by
+        ext f z
+        exact mul_assoc c d (f z) }
+
+@[simp]
+lemma restrictBaseChange_tmul
+    {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
+    (c : ℂ) (f : ModularForm G k) :
+    restrictBaseChange k (c ⊗ₜ[ℝ] f) = c • ModularForm.restrict G.detOnePart_le f :=
+  rfl
+
+/-- If `G` contains an element of determinant `-1`, complex base extension followed by restriction
+to the determinant-one part is injective. -/
+lemma restrictBaseChange_injective
+    {G : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
+    {γ : GL (Fin 2) ℝ} (hγ : γ ∈ G) (hdet : γ.det = -1) :
+    Function.Injective (restrictBaseChange k :
+      TensorProduct ℝ ℂ (ModularForm G k) → ModularForm G.detOnePart k) := by
+  let b := Module.Free.chooseBasis ℝ (ModularForm G k)
+  apply (restrictBaseChange k).injective_of_linearIndependent
+    (Module.Basis.baseChange ℂ b).span_eq
+  have hli : LinearIndependent ℂ (fun i ↦ (ModularForm.restrict G.detOnePart_le (b i) :
+      ModularForm G.detOnePart k)) :=
+    linearIndependent_restrict_detOnePart b b.linearIndependent hγ hdet
+  rw [show (⇑(restrictBaseChange k) ∘ ⇑(Module.Basis.baseChange ℂ b)) =
+    fun i ↦ ModularForm.restrict G.detOnePart_le (b i) by
+      funext i
+      rw [Function.comp_apply, Module.Basis.baseChange_apply, restrictBaseChange_tmul, one_smul]]
+  exact hli
 
 /-- The real dimension at an arbitrary arithmetic level is bounded using restriction to its
 determinant-one subgroup. -/
 lemma finrank_real_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ) :
     Module.finrank ℝ (ModularForm G k) ≤ 2 *
-      (⌊(G ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))).sturmBound k⌋₊ + 1) := by
-  let K := G ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))
-  let L : ModularForm G k →ₗ[ℝ] ModularForm K k :=
-    { toFun := ModularForm.restrict inf_le_left
+      (⌊G.detOnePart.sturmBound k⌋₊ + 1) := by
+  let L : ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k :=
+    { toFun := ModularForm.restrict G.detOnePart_le
       map_add' f g := by ext z; rfl
       map_smul' c f := by ext z; rfl }
-  refine (L.finrank_le_finrank_of_injective (ModularForm.restrict_injective inf_le_left)).trans ?_
-  rw [← Module.finrank_mul_finrank ℝ ℂ (ModularForm K k), Complex.finrank_real_complex]
-  exact Nat.mul_le_mul_left 2 (finrank_complex_le K k)
+  refine (L.finrank_le_finrank_of_injective
+    (ModularForm.restrict_injective G.detOnePart_le)).trans ?_
+  rw [← Module.finrank_mul_finrank ℝ ℂ (ModularForm G.detOnePart k),
+    Complex.finrank_real_complex]
+  exact Nat.mul_le_mul_left 2 (finrank_complex_le G.detOnePart k)
+
+/-- If an arithmetic subgroup contains an element of determinant `-1`, its real dimension is
+bounded by the complex Sturm bound for its determinant-one part, with no factor of two. -/
+lemma finrank_real_le_of_exists_det_eq_neg_one
+    (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ)
+    (hdet : ∃ γ ∈ G, γ.det = -1) :
+    Module.finrank ℝ (ModularForm G k) ≤ ⌊G.detOnePart.sturmBound k⌋₊ + 1 := by
+  obtain ⟨γ, hγ, hγdet⟩ := hdet
+  rw [← Module.finrank_baseChange (R := ℂ) (S := ℝ)]
+  exact ((restrictBaseChange k).finrank_le_finrank_of_injective
+    (restrictBaseChange_injective hγ hγdet)).trans (finrank_complex_le G.detOnePart k)
 
 end ModularForm

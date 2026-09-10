@@ -136,6 +136,35 @@ instance IsArithmetic.isFiniteRelIndex (G H : Subgroup (GL (Fin 2) ℝ))
 instance IsArithmetic.inter {Γ Γ'} [IsArithmetic Γ] [IsArithmetic Γ'] : IsArithmetic (Γ ⊓ Γ') :=
   ⟨is_commensurable.inf_left is_commensurable⟩
 
+/-- The determinant-one part of a subgroup of `GL(2, ℝ)`. -/
+noncomputable def detOnePart (G : Subgroup (GL (Fin 2) ℝ)) : Subgroup (GL (Fin 2) ℝ) :=
+  G ⊓ (Matrix.SpecialLinearGroup.toGL : SL(2, ℝ) →* GL (Fin 2) ℝ).range
+
+lemma detOnePart_le (G : Subgroup (GL (Fin 2) ℝ)) : G.detOnePart ≤ G := by
+  simp [detOnePart]
+
+instance (G : Subgroup (GL (Fin 2) ℝ)) : G.detOnePart.HasDetOne where
+  det_eq {g} hg := by
+    simp only [detOnePart, mem_inf] at hg
+    rcases hg.2 with ⟨x, -, rfl⟩
+    simp
+
+/-- The determinant-one part of an arithmetic subgroup is arithmetic. -/
+instance (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] : G.detOnePart.IsArithmetic := by
+  let L := G ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))
+  have hLK : L ≤ G.detOnePart := by
+    rintro g ⟨hg, x, -, rfl⟩
+    refine ⟨hg, ⟨Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ) x, ?_⟩⟩
+    rfl
+  have hL : L.IsArithmetic := inferInstance
+  have hLGfin : L.IsFiniteRelIndex G := @IsArithmetic.isFiniteRelIndex L G hL inferInstance
+  have hLKfin : L.IsFiniteRelIndex G.detOnePart :=
+    @isFiniteRelIndex_of_le_right _ _ L G.detOnePart G G.detOnePart_le hLGfin
+  have hKLfin : G.detOnePart.IsFiniteRelIndex L :=
+    ⟨by rw [relIndex_eq_one.mpr hLK]; norm_num⟩
+  exact ⟨(show G.detOnePart.Commensurable L from ⟨hKLfin, hLKfin⟩).trans
+    IsArithmetic.is_commensurable⟩
+
 open scoped Pointwise in
 /-- Conjugation by an element of an arithmetic group preserves arithmeticity. -/
 lemma isArithmetic_conj_of_mem {K H : Subgroup (GL (Fin 2) ℝ)}
