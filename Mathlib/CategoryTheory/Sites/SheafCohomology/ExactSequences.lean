@@ -90,7 +90,6 @@ noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     ext
     simp [← H.map_comp_apply, f.comm₁₂, f.comm₂₃, ← δ_naturality n₀ n₁ h h₁ h₂ f]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma longSequenceHom_id (h : n₀ + 1 = n₁ := by lia) :
     longSequenceHom n₀ n₁ h₁ h₁ (𝟙 _) h = 𝟙 _ := by
