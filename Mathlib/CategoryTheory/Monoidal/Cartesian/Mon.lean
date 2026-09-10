@@ -293,12 +293,6 @@ end Mon.Hom
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commMonoid Hom.addCommMonoid
 
-section
-variable {G : AddMon C} [BraidedCategory C] [IsCommAddMonObj G.X]
-#synth AddCommMonoid (G ⟶ G)
-#check Hom.addCommMonoid
-end
-
 end BraidedCategory
 
 /-- A monoid morphism `f : M ⟶ N` induces a monoid homomorphism `M(X) →* N(X)` for every `X`. -/
