@@ -56,7 +56,8 @@ def normMatMulCore : Simp.Simproc := fun e => do
   have aα : Q(Add $α) := ← synthInstanceQ q(Add $α)
   have mα : Q(Mul $α) := ← synthInstanceQ q(Mul $α)
   let r := proveMul zα aα mα l m n rowsA rowsB
-  let s ← Mathlib.Meta.NormNum.deriveSimp (← readThe Simp.Context) false r.expr
+  let s ← Mathlib.Meta.NormNum.deriveSimp (← readThe Simp.Context) (useSimp := false)
+    (e := r.expr)
   let some rows := rowsOfLit? s.expr
     | throwError "expected a list literal of rows{indentExpr s.expr}"
   let rows := rows.toArray.map List.toArray
