@@ -404,7 +404,7 @@ instance [FinTrdeg K L] : LocallyCompactSpace Gal(L/K) := by
 
 variable (K L) in
 instance [FinTrdeg K L] : CompleteSpace Gal(L/K) :=
-  IsLeftUniformGroup.completeSpace_of_weaklyLocallyCompactSpace
+  IsLeftUniformGroup.completeSpace_of_weaklyLocallyCompactSpace Gal(L/K)
 
 variable (K L) in
 open IntermediateField in
