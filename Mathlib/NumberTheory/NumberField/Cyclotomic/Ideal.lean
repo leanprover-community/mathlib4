@@ -345,7 +345,6 @@ section general
 
 variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧

@@ -68,8 +68,9 @@ def stdGaussian : Measure E :=
 
 variable [BorelSpace E]
 
-instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E) :=
-  Measure.isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E) := by
+  rw [stdGaussian]
+  infer_instance
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by

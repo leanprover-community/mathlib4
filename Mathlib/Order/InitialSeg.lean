@@ -71,6 +71,7 @@ namespace InitialSeg
 instance : Coe (r ≼i s) (r ↪r s) :=
   ⟨InitialSeg.toRelEmbedding⟩
 
+@[macro_inline]
 instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
   coe_injective := by
@@ -456,8 +457,6 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
 /-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
 abbrev pemptyToPUnit : @emptyRelation PEmpty ≺i @emptyRelation PUnit :=
   (@ofIsEmpty _ _ emptyRelation _ _ PUnit.unit) fun _ => not_false
-
-@[deprecated (since := "2026-02-08")] alias pemptyToPunit := pemptyToPUnit
 
 protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   (f : r ≼i s).acc a

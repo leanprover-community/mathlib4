@@ -44,12 +44,12 @@ def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E1]
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E2]
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 
@@ -236,7 +236,7 @@ theorem cosh_sub_sinh : cosh x - sinh x = exp (-x) := by
 @[simp]
 theorem sinh_sub_cosh : sinh x - cosh x = -exp (-x) := by rw [← neg_sub, cosh_sub_sinh]
 
-@[simp]
+@[simp, dlmf 4.35.E11]
 theorem cosh_sq_sub_sinh_sq : cosh x ^ 2 - sinh x ^ 2 = 1 := by
   rw [sq_sub_sq, cosh_add_sinh, cosh_sub_sinh, ← exp_add, add_neg_cancel, exp_zero]
 
@@ -248,8 +248,10 @@ theorem sinh_sq : sinh x ^ 2 = cosh x ^ 2 - 1 := by
   rw [← cosh_sq_sub_sinh_sq x]
   ring
 
+@[dlmf 4.35.E27]
 theorem cosh_two_mul : cosh (2 * x) = cosh x ^ 2 + sinh x ^ 2 := by rw [two_mul, cosh_add, sq, sq]
 
+@[dlmf 4.35.E26]
 theorem sinh_two_mul : sinh (2 * x) = 2 * sinh x * cosh x := by
   rw [two_mul, sinh_add]
   ring
