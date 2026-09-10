@@ -118,12 +118,11 @@ lemma isLocalization_away {U V : X.affineOpens}
   let := (X.presheaf.map (homOfLE (X := X.Opens) h).op).hom.toAlgebra
   have : IsLocalization.Away f Γ(X, U) := by
     subst hU; exact V.2.isLocalization_of_eq_basicOpen _ _ rfl
-  sorry /- proof was:
-  simp only [IsLocalization.Away, ← Submonoid.map_powers]
+  rw [IsLocalization.Away, ← MonoidHom.coe_coe, ← Submonoid.map_powers]
   refine IsLocalization.of_surjective _ _ _ Ideal.Quotient.mk_surjective _
     Ideal.Quotient.mk_surjective ?_ ?_
   · simp [RingHom.algebraMap_toAlgebra, Ideal.quotientMap_comp_mk]; rfl
-  · simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl] -/
+  · simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
 
 instance isOpenImmersion_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
     IsOpenImmersion (I.glueDataObjMap (X.affineBasicOpen_le f)) := by

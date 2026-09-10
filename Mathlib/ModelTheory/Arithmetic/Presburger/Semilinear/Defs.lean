@@ -102,9 +102,8 @@ theorem IsLinearSet.add (hs₁ : IsLinearSet s₁) (hs₂ : IsLinearSet s₂) : 
 theorem IsLinearSet.image (hs : IsLinearSet s) (f : F) : IsLinearSet (f '' s) := by
   rcases hs with ⟨a, t, ht, rfl⟩
   refine ⟨f a, f '' t, ht.image f, ?_⟩
-  sorry /- proof was:
-  simp [image_vadd_distrib, ← AddMonoidHom.map_mclosure],
-  adding (AddMonoidHomClass.toAddMonoidHom f) didn't help -/
+  simp [image_vadd_distrib, ← AddMonoidHom.coe_coe f ▸
+    AddMonoidHom.map_mclosure (f := AddMonoidHomClass.toAddMonoidHom f)]
 
 /-- A set is semilinear if it is a finite union of linear sets. -/
 def IsSemilinearSet (s : Set M) : Prop :=

@@ -119,13 +119,13 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   have := isUniformAddGroup_of_addCommGroup (G := K)
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
     (isCompact_iff_compactSpace.mpr (inferInstance : CompactSpace 𝒪[K]))
-  let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
+  let e : MonoidHom.mrange (valuation K).toMonoidHom ≃*o ValueGroupWithZero K :=
     ⟨.ofBijective ((valuation K).toMonoidHom.mrange).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
   have : Nontrivial (ValueGroupWithZero K)ˣ := isNontrivial_iff_nontrivial_units.mp inferInstance
-  have : Nontrivial (↥((valuation K).toMonoidHom.mrange))ˣ :=
+  have : Nontrivial ((valuation K).toMonoidHom.mrange)ˣ :=
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
-  sorry -- was: exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
+  exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
 
 instance : IsCyclic (ValueGroupWithZero K)ˣ :=
   (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
