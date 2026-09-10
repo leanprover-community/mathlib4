@@ -81,18 +81,20 @@ has no default, because a bucket endpoint is account-specific.
 -/
 def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
-    Except String StagedUploadDest :=
-  if let some url := putUrl? then
-    -- A user-supplied URL carries no container policy; the prefix follows the
-    -- repo alone, flat for `MATHLIBREPO` and repo-namespaced otherwise.
-    .ok { base := url, label := "(env override)",
-          filesPrefix := fileDirPath none repo scope?,
-          markerPrefix := markerDirPath repo }
-  else
-    let putBase? := normalizeBaseURL putBase?
-    match backend with
-    | .azure => azureUploadDestFrom putBase? container? repo scope?
-    | .s3 => s3UploadDestFrom putBase? container? repo scope?
+    Except String StagedUploadDest := do
+  let dest : StagedUploadDest ← if let some url := putUrl? then
+      -- A user-supplied URL carries no container policy; the prefix follows the
+      -- repo alone, flat for `MATHLIBREPO` and repo-namespaced otherwise.
+      pure { base := url, label := "(env override)",
+             filesPrefix := fileDirPath none repo scope?,
+             markerPrefix := markerDirPath repo }
+    else
+      let putBase? := normalizeBaseURL putBase?
+      match backend with
+      | .azure => azureUploadDestFrom putBase? container? repo scope?
+      | .s3 => s3UploadDestFrom putBase? container? repo scope?
+  if backend == .s3 then discard (s3EndpointSplit dest.base)
+  return dest
 
 /--
 `stagedUploadDestFrom` on the endpoint variables in the environment. `scope?`

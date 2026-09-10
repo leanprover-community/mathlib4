@@ -1373,8 +1373,16 @@ def test_stagedUploadDestFrom : IO Unit := do
     ((stagedUploadDestFrom .azure (some "https://my.example.org") none none
         MATHLIBREPO none).toOption == some expectFlatUrl)
   assertTrue "PUT_URL applies on the s3 backend too"
-    ((stagedUploadDestFrom .s3 (some "https://my.example.org") none none
-        MATHLIBREPO none).toOption == some expectFlatUrl)
+    ((stagedUploadDestFrom .s3 (some "https://my.example.org/bucket") none none
+        MATHLIBREPO none).toOption ==
+      some { expectFlatUrl with base := "https://my.example.org/bucket" })
+  -- A forgotten bucket fails at resolution, not at the server.
+  assertTrue "s3: a put base without a bucket path errors"
+    (stagedUploadDestFrom .s3 none (some "https://s3.example.org") (some .forks)
+      "alice/mathlib4" none matches .error _)
+  assertTrue "s3: a PUT_URL without a bucket path errors"
+    (stagedUploadDestFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
+      matches .error _)
   let expectAzureForks : StagedUploadDest :=
     { base := azureAccountURL
       label := "forks"
@@ -1484,9 +1492,9 @@ def test_s3CurlArgs : IO Unit := do
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
 
 /-- The transfer-tool policy for the s3 backend: rclone when available, curl
-otherwise, and MATHLIB_CACHE_PUT_FORCE_CURL selects curl whether rclone is
-available or not. The azure backend has no policy to test: it always
-transfers with curl (`azurePutStaged`). -/
+otherwise; MATHLIB_CACHE_PUT_FORCE_CURL selects curl regardless. The azure
+backend has no policy to test: it always transfers with curl
+(`azurePutStaged`). -/
 def test_s3UploadToolFrom : IO Unit := do
   IO.println "s3UploadToolFrom:"
   assertTrue "rclone when available"
