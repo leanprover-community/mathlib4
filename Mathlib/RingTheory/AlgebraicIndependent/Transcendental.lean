@@ -101,11 +101,8 @@ open AlgebraicIndependent
 theorem AlgebraicIndependent.option_iff_transcendental (hx : AlgebraicIndependent R x) (a : A) :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
       Transcendental (adjoin R (range x)) a := by
-  rw [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
-    ← AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
-    RingHom.coe_comp]
-  exact Injective.of_comp_iff' (Polynomial.aeval a)
-    (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
+  simp [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
+    ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin]
 
 theorem AlgebraicIndependent.option_iff {a : A} :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
@@ -137,7 +134,7 @@ theorem algebraicIndependent_of_set_of_finite (s : Set ι)
   classical
   refine algebraicIndependent_of_finite_type fun t hfin ↦ ?_
   suffices AlgebraicIndependent R fun i : ↥(t ∩ s ∪ t \ s) ↦ x i from
-    this.comp (Equiv.setCongr (t.inter_union_sdiff s).symm) (Equiv.injective _)
+    this.comp (Set.equivOfEq (t.inter_union_sdiff s).symm) (Equiv.injective _)
   refine hfin.sdiff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
     fun {a u} ha hu ha' h ↦ ?_
   have : a ∉ t ∩ s ∪ u := (·.elim (ha.2 ·.2) ha')
@@ -146,7 +143,7 @@ theorem algebraicIndependent_of_set_of_finite (s : Set ι)
               H _ (hfin.subset (union_subset inter_subset_left <| hu.trans sdiff_subset)) h a ha.2
                 this).comp
           _ (subtypeInsertEquivOption this).injective).comp
-      (Equiv.setCongr union_insert) (Equiv.injective _) with
+      (Set.equivOfEq union_insert) (Equiv.injective _) with
     x
   by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
 

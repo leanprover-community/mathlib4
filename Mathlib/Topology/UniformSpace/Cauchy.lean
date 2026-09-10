@@ -19,8 +19,9 @@ public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 universe u v
 
-open Filter Function TopologicalSpace Topology Set UniformSpace Uniformity
-open scoped SetRel
+open Filter Function TopologicalSpace Set UniformSpace
+
+open scoped Topology Uniformity SetRel
 
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
@@ -409,6 +410,15 @@ instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒ�
     MulOpposite.op_surjective.exists.mpr <|
       let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
       ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
+
+@[to_additive]
+theorem completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α where
+  mpr _ := inferInstance
+  mp _ :=
+    { complete hf :=
+      MulOpposite.unop_surjective.exists.mpr <|
+        let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_op)
+        ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_op_nhds _⟩}
 
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=

@@ -26,7 +26,9 @@ of `Δ[x.dim]` for `x : X.N`.
 
 universe u
 
-open CategoryTheory Simplicial Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SSet
 
