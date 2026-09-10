@@ -34,12 +34,6 @@ between an edge and a vertex, and there could be isolated vertices and edges.
 
 Within the `IncidenceHypergraph` scope, `V(G)`, `I(G)`, and `E(G)` denote the vertex, incidence,
 and edge sets.
-
-## File organization
-
-The subgraph order and empty-incidence constructions are developed in
-`Mathlib.Combinatorics.IncidenceHypergraph.Subgraph`.
-
 -/
 
 @[expose] public section
