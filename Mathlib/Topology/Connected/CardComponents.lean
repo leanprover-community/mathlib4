@@ -42,13 +42,13 @@ components of `X` is bounded by the cardinality of the fiber of any point. -/
 lemma IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton [ConnectedSpace Y]
     (y : Y) : ENat.card (ConnectedComponents X) ≤ (f ⁻¹' {y}).encard := by
   suffices h : ∀ {n : ℕ} (U : Fin n → Set X) (hU₁ : ∀ i, IsClopen (U i)) (hU₂ : ∀ i, (U i).Nonempty)
-      (hU₃ : Pairwise (Disjoint on U)) (hU₄ : ⋃ i, U i = Set.univ),
+      (hU₃ : Pairwise' (Disjoint on U)) (hU₄ : ⋃ i, U i = Set.univ),
       n ≤ (f ⁻¹' {y}).encard by
     obtain (hy | hy) := finite_or_infinite (ConnectedComponents X)
     · cases nonempty_fintype (ConnectedComponents X)
       simp only [ENat.card_eq_coe_fintype_card]
       refine h (fun i ↦ ConnectedComponents.mk ⁻¹' {(Fintype.equivFin _).symm i}) (fun i ↦ ?_)
-          (fun i ↦ ?_) (fun i j hij ↦ Disjoint.preimage _ (by simp [hij])) ?_
+          (fun i ↦ ?_) (fun i _ j _ hij ↦ Disjoint.preimage _ (by simp [hij])) ?_
       · exact (isClopen_discrete _).preimage continuous_coe
       · exact (Set.singleton_nonempty _).preimage surjective_coe
       · simp [← Set.preimage_iUnion]
@@ -59,7 +59,8 @@ lemma IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton [Conne
   intro n U hU1 hU2 hU3 hU4
   have heq : f ⁻¹' {y} = ⋃ i, (U i ∩ f ⁻¹' {y}) := by
     conv_lhs => rw [← Set.univ_inter (f ⁻¹' {y}), ← hU4, Set.iUnion_inter]
-  rw [heq, Set.encard_iUnion_of_finite fun i j hij ↦ .inter_left _ (.inter_right _ <| hU3 hij)]
+  rw [pairwise'_iff] at hU3
+  rw [heq, Set.encard_iUnion_of_finite fun i _ j _ hij ↦ .inter_left _ (.inter_right _ <| hU3 hij)]
   trans ∑ i : Fin n, 1
   · simp
   · rw [finsum_eq_sum_of_fintype]
@@ -82,7 +83,7 @@ lemma IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton
   suffices h : ∀ (y : ConnectedComponents Y), Finite (ConnectedComponents (f ⁻¹' mk ⁻¹' {y})) by
     refine .of_equiv _ (equivOfIsClopen (U := fun y ↦ f ⁻¹' mk ⁻¹' {y}) ?_ ?_ ?_).symm
     · exact fun y ↦ (isClopen_discrete {y}).preimage (continuous_coe.comp hfc)
-    · exact fun i j hij ↦ (Disjoint.preimage mk (by simpa)).preimage f
+    · exact fun i _ j _ hij ↦ (Disjoint.preimage mk (by simpa)).preimage f
     · rw [Set.iUnion_eq_univ_iff]
       exact fun x ↦ ⟨mk (f x), rfl⟩
   intro y
