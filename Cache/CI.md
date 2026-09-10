@@ -46,10 +46,8 @@ The cache binary sets the rclone credentials, endpoint, provider (`Other`
 unless the environment names one), and region; every other `RCLONE_S3_*`
 option inherits from the environment.
 
-The s3 backend targets Cloudflare R2, the production bucket. Both tools sign
-with region `auto`, which R2 accepts and AWS S3 rejects. On the curl tool the
-non-overwrite guard relies on the store honoring `If-None-Match: *`, as R2 and
-AWS S3 do.
+The curl tool's non-overwrite guard relies on the store honoring
+`If-None-Match: *`.
 
 ## Environment variables
 
@@ -58,6 +56,7 @@ AWS S3 do.
 | `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure OIDC bearer token (`--backend=azure`, the default). |
 | `MATHLIB_CACHE_S3_ACCESS_KEY_ID`, `MATHLIB_CACHE_S3_SECRET_ACCESS_KEY` | S3 credentials (SigV4), for `--backend=s3`. The pair must be set together. |
 | `MATHLIB_CACHE_S3_SESSION_TOKEN` | Session token of a temporary S3 credential; optional. |
+| `MATHLIB_CACHE_S3_REGION` | The SigV4 signing region the store expects, for `--backend=s3`. Required. |
 | `MATHLIB_CACHE_PUT_BASE_URL` | The upload base: the `--container` write is rebased under it (`{base}/{container}/{key}`) and keeps the container path policy. The azure backend defaults to the Azure storage account. For `--backend=s3` it names the bucket endpoint (`https://host/bucket`) and is required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend. On `--backend=s3` it must name the bucket by path (`https://host/bucket[/prefix]`). |
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |

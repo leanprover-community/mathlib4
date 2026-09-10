@@ -1293,6 +1293,15 @@ def test_s3AuthFrom : IO Unit := do
   assertTrue "a stray session token alone errors"
     (s3AuthFrom none none (some "ST") matches .error _)
 
+/-- `s3RegionFrom` resolves the s3 backend's signing region. An unset region
+errors, and so does a value that is not a region name. -/
+def test_s3RegionFrom : IO Unit := do
+  IO.println "s3RegionFrom:"
+  assertTrue "a plain name" (s3RegionFrom (some "auto") matches .ok "auto")
+  assertTrue "an AWS region" (s3RegionFrom (some "eu-west-1") matches .ok "eu-west-1")
+  assertTrue "unset errors" (s3RegionFrom none matches .error _)
+  assertTrue "a value with a colon errors" (s3RegionFrom (some "eu:west") matches .error _)
+
 /-- `isValidScope` gates every scope before it reaches a URL path or a file
 name (the fork namespace, the marker path, and the marker's local temp file):
 hex SHAs pass; a value with path characters or ref syntax is rejected, and
@@ -1468,14 +1477,14 @@ def test_stagedUploadDestFrom : IO Unit := do
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
-every backend (`uploadPutArgs`). Pins the S3 shape: SigV4 with region `auto`,
+every backend (`uploadPutArgs`). Pins the S3 shape: SigV4 in the given region,
 the `UNSIGNED-PAYLOAD` hash that lets curl sign a `-T` upload, and the
 session-token header for temporary credentials. The azure arguments spawn
 `date`, so this covers S3 only. -/
 def test_s3CurlArgs : IO Unit := do
   IO.println "s3CurlArgs:"
-  let s3 := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", some "ST"⟩) (overwrite := false)
-  assertTrue "S3 signs with SigV4, region auto"
+  let s3 := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", some "ST"⟩ "auto") (overwrite := false)
+  assertTrue "S3 signs with SigV4 in the given region"
     ((s3.toList.zip s3.toList.tail).contains ("--aws-sigv4", "aws:amz:auto:s3"))
   assertTrue "S3 carries the keypair as --user"
     ((s3.toList.zip s3.toList.tail).contains ("--user", "AK:SK"))
@@ -1485,7 +1494,7 @@ def test_s3CurlArgs : IO Unit := do
   assertTrue "non-overwrite adds If-None-Match" (s3.contains "If-None-Match: *")
   assertTrue "S3 sends no Azure blob-type header"
     (!s3.contains "x-ms-blob-type: BlockBlob")
-  let s3Static := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", none⟩) (overwrite := true)
+  let s3Static := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", none⟩ "auto") (overwrite := true)
   assertTrue "a static keypair sends no session token"
     (s3Static.all (!·.startsWith "x-amz-security-token"))
   assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
@@ -1557,7 +1566,7 @@ endpoint set, a stale session token cleared when the credential has none,
 and nothing else touched. -/
 def test_rcloneEnv : IO Unit := do
   IO.println "rcloneEnv:"
-  let env := rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://host.example" "Other"
+  let env := rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://host.example" "Other" "auto"
   assertTrue "credentials and endpoint are set"
     (env.contains ("RCLONE_S3_ACCESS_KEY_ID", some "AK") &&
      env.contains ("RCLONE_S3_SECRET_ACCESS_KEY", some "SK") &&
@@ -1565,11 +1574,11 @@ def test_rcloneEnv : IO Unit := do
      env.contains ("RCLONE_S3_SESSION_TOKEN", some "tok"))
   assertTrue "config comes from the tool, not ambient credentials"
     (env.contains ("RCLONE_S3_ENV_AUTH", some "false"))
-  assertTrue "the region matches the curl tool's SigV4 region"
+  assertTrue "the region is the one given"
     (env.contains ("RCLONE_S3_REGION", some "auto"))
   assertTrue "the provider is set (rclone refuses to run without one)"
     (env.contains ("RCLONE_S3_PROVIDER", some "Other"))
-  let noSession := rcloneEnv ⟨"AK", "SK", none⟩ "https://host.example" "Other"
+  let noSession := rcloneEnv ⟨"AK", "SK", none⟩ "https://host.example" "Other" "auto"
   assertTrue "a static keypair clears any ambient session token"
     (noSession.contains ("RCLONE_S3_SESSION_TOKEN", none))
 
@@ -1605,7 +1614,8 @@ def test_putStagedViaRclone : IO Unit := do
     let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
-    putStagedViaRclone dest (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other")
+    putStagedViaRclone dest
+      (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other" "auto")
       "devbucket" (some "abc1") staging
       #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
     let copyArgs ← IO.FS.readFile (dir / "args-copy")
@@ -1807,6 +1817,7 @@ def runAll : IO Unit := do
   test_uploadBackendParse
   test_azureAuthFrom
   test_s3AuthFrom
+  test_s3RegionFrom
   test_isValidScope
   test_fileDirPath
   test_stagedUploadDestFrom

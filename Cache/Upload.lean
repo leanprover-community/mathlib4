@@ -48,7 +48,8 @@ def runPut [Monad m] [MonadLiftT IO m] (container? : Option Container)
     azurePutStaged dest token srcDir fileNames overwrite markerSha?
   | .s3 =>
     let creds ← getS3Auth
+    let region ← getS3Region
     let fileNames ← getFileNames
-    s3PutStaged dest creds srcDir fileNames overwrite markerSha?
+    s3PutStaged dest creds region srcDir fileNames overwrite markerSha?
 
 end Cache.Requests

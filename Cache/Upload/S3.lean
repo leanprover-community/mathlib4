@@ -11,10 +11,10 @@ import Cache.Upload.Rclone
 /-!
 # The S3 backend
 
-The complete s3 upload path; the production S3 backend is Cloudflare R2, and
-both tools sign with R2's region `auto`. This module holds:
+The complete s3 upload path. This module holds:
 
-* the credential set (`S3Credentials`) and its resolution (`s3AuthFrom`);
+* the credential set (`S3Credentials`) and its resolution (`s3AuthFrom`), and
+  the signing region (`s3RegionFrom`);
 * the destination resolution (`s3UploadDestFrom`);
 * the transfer-tool policy (`s3UploadToolFrom`);
 * the SigV4 curl arguments (`s3CurlArgs`);
@@ -85,19 +85,37 @@ def getS3Auth : IO S3Credentials := do
     (← getEnvNonEmpty "MATHLIB_CACHE_S3_SESSION_TOKEN")
 
 /--
+The SigV4 signing region, from the raw `MATHLIB_CACHE_S3_REGION` value
+(`region?`). The region is store-specific, so unset errors; so does a value
+that is not a region name.
+
+Pure so the policy is testable; `getS3Region` wires the environment in.
+-/
+def s3RegionFrom (region? : Option String) : Except String String :=
+  match region? with
+  | some region =>
+    if region.all (fun c => c.isAlphanum || c == '-') then .ok region
+    else .error s!"MATHLIB_CACHE_S3_REGION '{region}' is not a region name"
+  | none => .error "--backend=s3 needs MATHLIB_CACHE_S3_REGION"
+
+/-- Retrieves the s3 signing region from the environment via `s3RegionFrom`. -/
+def getS3Region : IO String := do
+  IO.ofExcept <| s3RegionFrom (← getEnvNonEmpty "MATHLIB_CACHE_S3_REGION")
+
+/--
 The curl arguments for an upload signed with S3 credentials. curl signs each
-request with SigV4 (`--aws-sigv4`); region `auto` fits R2. The
+request with SigV4 (`--aws-sigv4`) in `region`. The
 `x-amz-content-sha256: UNSIGNED-PAYLOAD` header lets curl sign a `-T` file
 upload; curl supports this from 7.87, and this path runs in CI, whose runners
 ship newer curls. A temporary credential also sends its session token, which
 SigV4 covers as an `x-amz-*` header. The argument list carries the secrets,
 so callers should print curl failures without the argument list.
 -/
-def s3CurlArgs (creds : S3Credentials) : Array String :=
+def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
   let sessionArgs : Array String := match creds.sessionToken? with
     | some token => #["-H", s!"x-amz-security-token: {token}"]
     | none => #[]
-  #["--aws-sigv4", "aws:amz:auto:s3", "--user", s!"{creds.keyId}:{creds.secret}",
+  #["--aws-sigv4", s!"aws:amz:{region}:s3", "--user", s!"{creds.keyId}:{creds.secret}",
     "-H", "x-amz-content-sha256: UNSIGNED-PAYLOAD"] ++ sessionArgs
 
 /--
@@ -123,13 +141,13 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
 The rclone S3 backend configuration. It is passed in the child environment,
 so no credential appears on a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
 temporary credential and cleared otherwise, so a stale token in the caller's
-environment is not inherited. Region `auto` matches the curl tool's SigV4
-region. rclone refuses to run without a provider, so `provider` must carry
+environment is not inherited. `region` is the region the curl tool signs
+with. rclone refuses to run without a provider, so `provider` must carry
 one; `s3PutStaged` passes the caller's `RCLONE_S3_PROVIDER` and defaults to
 the generic `Other`. Every other `RCLONE_S3_*` option inherits from the
 caller, so an operator can tune transfers without a code change.
 -/
-def rcloneEnv (creds : S3Credentials) (endpoint provider : String) :
+def rcloneEnv (creds : S3Credentials) (endpoint provider region : String) :
     Array (String × Option String) :=
   #[("RCLONE_S3_ENV_AUTH", some "false"),
     ("RCLONE_S3_ACCESS_KEY_ID", some creds.keyId),
@@ -137,7 +155,7 @@ def rcloneEnv (creds : S3Credentials) (endpoint provider : String) :
     ("RCLONE_S3_SESSION_TOKEN", creds.sessionToken?),
     ("RCLONE_S3_ENDPOINT", some endpoint),
     ("RCLONE_S3_PROVIDER", some provider),
-    ("RCLONE_S3_REGION", some "auto")]
+    ("RCLONE_S3_REGION", some region)]
 
 /-- The transfer tool an s3 upload uses. -/
 inductive S3UploadTool where
@@ -158,22 +176,23 @@ def s3UploadToolFrom (forceCurl rcloneAvailable : Bool) : S3UploadTool :=
 /--
 The staged put on the s3 backend: split the base (`s3EndpointSplit`), resolve
 the transfer tool (`s3UploadToolFrom`), and transfer, each request signed with
-`creds`. Only this resolution reads the `MATHLIB_CACHE_PUT_FORCE_CURL` flag,
-and the availability probe runs only when the flag does not already force
-curl.
+`creds` in `region`. Only this resolution reads the
+`MATHLIB_CACHE_PUT_FORCE_CURL` flag, and the availability probe runs only when
+the flag does not already force curl.
 -/
-def s3PutStaged (dest : StagedUploadDest) (creds : S3Credentials) (srcDir : FilePath)
-    (fileNames : Array String) (overwrite : Bool) (markerSha? : Option String) :
-    IO Unit := do
+def s3PutStaged (dest : StagedUploadDest) (creds : S3Credentials) (region : String)
+    (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
+    (markerSha? : Option String) : IO Unit := do
   let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.base)
   let forceCurl ← getEnvFlag "MATHLIB_CACHE_PUT_FORCE_CURL" (ifUnset := false)
   let available ← if forceCurl then pure false else rcloneAvailable
   match s3UploadToolFrom forceCurl available with
   | .curl =>
-    putStagedViaCurl dest (pure (s3CurlArgs creds)) srcDir fileNames overwrite markerSha?
+    putStagedViaCurl dest (pure (s3CurlArgs creds region)) srcDir fileNames overwrite
+      markerSha?
   | .rclone =>
     let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
-    putStagedViaRclone dest (rcloneEnv creds endpoint provider) bucketPath
+    putStagedViaRclone dest (rcloneEnv creds endpoint provider region) bucketPath
       markerSha? srcDir fileNames overwrite
 
 end Cache.Requests

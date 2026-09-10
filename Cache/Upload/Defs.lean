@@ -39,8 +39,7 @@ on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`); the default. -/
   | azure
-  /-- An S3-compatible bucket (`Cache/Upload/S3.lean`); Cloudflare R2 in
-  production. -/
+  /-- An S3-compatible bucket (`Cache/Upload/S3.lean`). -/
   | s3
   deriving DecidableEq, Repr, BEq, Inhabited
 
