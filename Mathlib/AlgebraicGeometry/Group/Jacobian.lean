@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Preliminary design for Jacobians in algebraic geometry
@@ -23,10 +24,23 @@ recorded placeholder types carry the full dependency graph.
 
 By a smooth curve we mean a geometrically irreducible, smooth scheme of relative dimension one
 over a field.
+
+## Curves without rational points
+
+The Jacobian `Jacobian C` and its structure as an abelian variety are defined for every smooth
+proper curve `C`, whether or not `C` has a `k`-rational point. Only the Abel-Jacobi map
+`Jacobian.ofCurve` and the universal property `Jacobian.existsUnique_ofCurve_comp` depend on the
+choice of a rational point `P`, and say nothing when `C` has no rational point. Base change
+(`Jacobian.baseChange`) fills most of this gap: a smooth geometrically irreducible curve acquires
+a rational point after a finite separable extension `K / k`, and the universal property of
+`Jacobian (C_K) ≅ (Jacobian C)_K` then characterises the base change of `Jacobian C` to `K`.
+Pinning down `Jacobian C` itself also needs the Galois descent datum, or a point-free universal
+property phrased via the Albanese torsor `Pic¹`; neither is recorded in this blueprint yet.
 -/
 
--- Every declaration here is an intentionally private `def_wanted` / `theorem_wanted` /
--- `instance_wanted` placeholder, so the module exports nothing.
+-- Every declaration here is either an intentionally private `def_wanted` / `theorem_wanted` /
+-- `instance_wanted` placeholder, or a private helper instance needed to state one, so the
+-- module exports nothing.
 set_option linter.privateModule false
 
 universe u
@@ -55,6 +69,12 @@ namespace Jacobian
 
 /-- The group scheme structure on the Jacobian of the curve `C`. -/
 instance_wanted : GrpObj (❰Jacobian❱ C)
+
+/-- The group structure on the Jacobian of `C` is commutative, so `Jacobian C` is an abelian
+variety. Given the instances below, this is a consequence of
+`isCommMonObj_of_isProper_of_geometricallyIntegral`, as soon as Mathlib knows that a smooth
+geometrically irreducible scheme over a field is geometrically integral. -/
+instance_wanted : IsCommMonObj (❰Jacobian❱ C)
 
 /-- The Jacobian of `C` is smooth of relative dimension `g` over `k`, where `g` is the
 genus of `C`. -/
@@ -98,6 +118,62 @@ theorem_wanted isMonHom_of_ofCurve_comp (C : Over (Spec (.of k))) [IsProper C.ho
     {A : Over (Spec (.of k))} [Smooth A.hom] [IsProper A.hom] [GrpObj A]
     [GeometricallyIrreducible A.hom] (f : C ⟶ A) (hf : P ≫ f = η[A]) :
     ∀ g : ❰Jacobian❱ C ⟶ A, f = ❰ofCurve❱ P ≫ g → IsMonHom g
+
+/-! ## Base change
+
+For a field extension `K / k`, viewed as a morphism `f : Spec K ⟶ Spec k`, the base change of
+`Jacobian C` along `f` is the Jacobian of the base change of `C`, compatibly with the group
+structures and with the Abel-Jacobi maps. Base change along `f` is the functor
+`Over.pullback f : Over (Spec k) ⥤ Over (Spec K)`. -/
+
+section BaseChange
+
+open scoped CategoryTheory.Obj
+
+variable {K : Type u} [Field K] (f : Spec (.of K) ⟶ Spec (.of k))
+
+-- Instance search does not see through `(Over.pullback f).obj X` to the underlying
+-- `pullback.snd X.hom f`, so we record the base change instances we need here.
+
+instance (X : Over (Spec (.of k))) [IsProper X.hom] : IsProper ((Over.pullback f).obj X).hom := by
+  dsimp; infer_instance
+
+instance (X : Over (Spec (.of k))) (n : ℕ) [SmoothOfRelativeDimension n X.hom] :
+    SmoothOfRelativeDimension n ((Over.pullback f).obj X).hom := by
+  dsimp; infer_instance
+
+instance (X : Over (Spec (.of k))) [GeometricallyIrreducible X.hom] :
+    GeometricallyIrreducible ((Over.pullback f).obj X).hom := by
+  dsimp; infer_instance
+
+/-- The genus of a smooth proper curve is invariant under base change. -/
+theorem_wanted genus_baseChange (C : Over (Spec (.of k))) [IsProper C.hom]
+    [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom] :
+    ❰genus❱ ((Over.pullback f).obj C) = ❰genus❱ C
+
+/-- The Jacobian commutes with base change: the base change along `f : Spec K ⟶ Spec k` of the
+Jacobian of `C` is the Jacobian of the base change of `C`. -/
+def_wanted baseChange (C : Over (Spec (.of k))) [IsProper C.hom]
+    [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom] :
+    (Over.pullback f).obj (❰Jacobian❱ C) ≅ ❰Jacobian❱ ((Over.pullback f).obj C)
+
+/-- The base change isomorphism `Jacobian.baseChange` is an isomorphism of group schemes over
+`K`, where the base change of `Jacobian C` carries the group structure inherited from
+`Jacobian C` (via `CategoryTheory.Functor.grpObjObj`). -/
+theorem_wanted isMonHom_baseChange_hom (C : Over (Spec (.of k))) [IsProper C.hom]
+    [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom] :
+    IsMonHom (❰baseChange❱ f C).hom
+
+/-- The Abel-Jacobi map is compatible with base change: the base change of `ofCurve P`,
+composed with `Jacobian.baseChange`, is the Abel-Jacobi map of the base-changed curve at the
+base-changed point `P`. -/
+theorem_wanted ofCurve_baseChange (C : Over (Spec (.of k))) [IsProper C.hom]
+    [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom]
+    (P : 𝟙_ (Over (Spec (.of k))) ⟶ C) :
+    (Over.pullback f).map (❰ofCurve❱ P) ≫ (❰baseChange❱ f C).hom =
+      ❰ofCurve❱ (Functor.LaxMonoidal.ε (Over.pullback f) ≫ (Over.pullback f).map P)
+
+end BaseChange
 
 end Jacobian
 
