@@ -78,6 +78,11 @@ theorem Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
 theorem Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
   ⟨hxy.somePath.trans hyz.somePath⟩
 
+instance : IsEquiv X Joined where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
 theorem Joined.map {x y : X} {f : X → Y} (h : Joined x y) (hf : Continuous f) :
     Joined (f x) (f y) :=
   ⟨h.somePath.map hf⟩
@@ -226,11 +231,17 @@ theorem JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
   simp_all only [joinedIn_iff_joined]
   exact h.symm
 
+instance : Std.Symm (JoinedIn F) where
+  symm _ _ := .symm
+
 theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
   obtain ⟨hx, hy⟩ := hxy.mem
   obtain ⟨hx, hy⟩ := hyz.mem
   simp_all only [joinedIn_iff_joined]
   exact hxy.trans hyz
+
+instance : IsTrans X (JoinedIn F) where
+  trans _ _ _ := .trans
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
   refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
