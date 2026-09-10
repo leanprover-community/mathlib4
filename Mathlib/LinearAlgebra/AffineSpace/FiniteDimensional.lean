@@ -235,6 +235,7 @@ lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι} (hsfin : s.Finit
 
 lemma affineSpan_range_ne_top_of_card_le_finrank (hι : ENat.card ι ≤ finrank k V) (p : ι → P) :
     affineSpan k (Set.range p) ≠ ⊤ := by
+  have := ENat.card_lt_top.mp <| hι.trans_lt <| ENat.natCast_lt_top _
   simpa using
     affineSpan_image_ne_top_of_encard_le_finrank k Set.finite_univ (by simpa) p
 
