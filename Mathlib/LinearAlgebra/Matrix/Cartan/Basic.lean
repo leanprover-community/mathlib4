@@ -401,27 +401,28 @@ theorem E₈_det : (E 8).det = 1 := by
 
 /-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
-  Pairwise fun i j ↦ A i j = 0 ∨ A i j = -1
+  Pairwise' fun i j ↦ A i j = 0 ∨ A i j = -1
 
 set_option backward.isDefEq.respectTransparency.types false in
-instance {ι : Type*} [Fintype ι] [DecidableEq ι] : DecidablePred (Matrix.IsSimplyLaced (ι := ι)) :=
-  inferInstanceAs <|
-    DecidablePred fun A : Matrix ι ι ℤ ↦ ∀ ⦃i j : ι⦄, i ≠ j → (fun i j ↦ A i j = 0 ∨ A i j = -1) i j
+instance {ι : Type*} [Fintype ι] [DecidableEq ι] :
+    DecidablePred (Matrix.IsSimplyLaced (ι := ι)) :=
+  inferInstanceAs <|  DecidablePred fun A : Matrix ι ι ℤ ↦
+    ∀ ⦃i⦄, i ∈ Set.univ → ∀ ⦃j⦄, j ∈ Set.univ → i ≠ j →  (fun i j ↦ A i j = 0 ∨ A i j = -1) i j
 
 lemma _root_.Matrix.isSimplyLaced_iff_of_linearOrder
     {ι : Type*} [LinearOrder ι] (A : Matrix ι ι ℤ) (hA : A.IsSymm) :
     A.IsSimplyLaced ↔ ∀ ⦃i j : ι⦄, j < i → (A i j = 0 ∨ A i j = -1) := by
   constructor
   · intro h i j hij
-    exact h hij.ne'
-  · intro h i j hij
+    exact h (Set.mem_univ _) (Set.mem_univ _) hij.ne'
+  · intro h i _ j _ hij
     obtain hij | hij := hij.lt_or_gt
     · simpa only [hA.apply i j] using h hij
     · exact h hij
 
 @[simp] theorem _root_.Matrix.isSimplyLaced_transpose {ι : Type*} (A : Matrix ι ι ℤ) :
     A.transpose.IsSimplyLaced ↔ A.IsSimplyLaced := by
-  rw [IsSimplyLaced, IsSimplyLaced, Pairwise, Pairwise, forall_comm]
+  rw [IsSimplyLaced, IsSimplyLaced, pairwise'_iff, pairwise'_iff, forall_comm]
   aesop
 
 theorem isSimplyLaced_A (n : ℕ) : IsSimplyLaced (A n) := by
