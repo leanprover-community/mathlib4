@@ -54,7 +54,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
   rw [squarefree_iff_emultiplicity_le_one] at hn
   by_cases hp : p.Prime
   · have := hn p
-    rw [← multiplicity_eq_factorization hp hn']
+    rw [← multiplicity_eq_factorization hp]
     simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
     exact multiplicity_le_of_emultiplicity_le this
   · rw [factorization_eq_zero_of_not_prime _ hp]
