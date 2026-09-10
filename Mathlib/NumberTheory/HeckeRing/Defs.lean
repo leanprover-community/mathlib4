@@ -198,6 +198,7 @@ variable (Δ : Submonoid G) (H₁ H₂ : Subgroup G) (Z : Type*)
 
 /-- Elements of `HeckeCosetModule Δ H₁ H₂ Z` are functions `HeckeCoset Δ H₁ H₂ → Z` (finitely
 supported). -/
+@[macro_inline]
 instance [Zero Z] : FunLike (HeckeCosetModule Δ H₁ H₂ Z) (HeckeCoset Δ H₁ H₂) Z :=
   inferInstanceAs (FunLike (HeckeCoset Δ H₁ H₂ →₀ Z) (HeckeCoset Δ H₁ H₂) Z)
 

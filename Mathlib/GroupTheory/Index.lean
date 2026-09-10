@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
@@ -351,6 +351,11 @@ theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
 @[to_additive index_mul_card]
 theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
   rw [mul_comm, card_mul_index]
+
+/-- The index of a finite subgroup is the quotient of the cardinalities. -/
+@[to_additive /-- The index of a finite additive subgroup is the quotient of the cardinalities. -/]
+theorem index_eq_card_div [Finite H] : H.index = Nat.card G / Nat.card H := by
+  rw [← card_mul_index H, Nat.mul_div_cancel_left _ Nat.card_pos]
 
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=

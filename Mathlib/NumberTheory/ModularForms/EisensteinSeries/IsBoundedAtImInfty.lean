@@ -72,7 +72,4 @@ theorem isBoundedAtImInfty_eisensteinSeriesSIF {N : â„•} [NeZero N] (a : Fin 2 â
       summand_bound_of_mem_verticalStrip (lt_trans two_pos hk').le x two_pos
       (verticalStrip_anti_right N hz hn)
 
-@[deprecated (since := "2026-02-10")]
-alias isBoundedAtImInfty_eisensteinSeries_SIF := isBoundedAtImInfty_eisensteinSeriesSIF
-
 end EisensteinSeries

@@ -132,6 +132,7 @@ theorem val_eq_toMeasure (ν : FiniteMeasure Ω) : ν.val = (ν : Measure Ω) :=
 theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → Measure Ω) :=
   Subtype.coe_injective
 
+@[macro_inline]
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
   coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
@@ -928,25 +929,24 @@ lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
     (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by ext; simp [*]
 
-@[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) (ν : FiniteMeasure Ω) :
+@[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) {ν : FiniteMeasure Ω} (hf : AEMeasurable f ν) :
     (c • ν).map f = c • (ν.map f) := by
   ext s _
-  simp [toMeasure_smul]
+  simp [toMeasure_smul, hf]
 
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_mble
-  map_smul' := map_smul
+  map_smul' m _ := map_smul m f_mble.aemeasurable
 
-lemma mass_map_le (f : Ω → Ω') (μ : FiniteMeasure Ω) : (μ.map f).mass ≤ μ.mass := by
+lemma mass_map_le {f : Ω → Ω'} {μ : FiniteMeasure Ω} (hf : AEMeasurable f μ) :
+    (μ.map f).mass ≤ μ.mass := by
   simp only [mass, coeFn_def, toMeasure_map, ne_eq, measure_ne_top, not_false_eq_true,
     ENNReal.toNNReal_le_toNNReal]
-  by_cases hf : AEMeasurable f μ
-  · rw [Measure.map_apply_of_aemeasurable hf MeasurableSet.univ]
-    exact measure_mono (subset_univ _)
-  · simp [Measure.map_of_not_aemeasurable hf]
+  rw [Measure.map_apply_of_aemeasurable hf MeasurableSet.univ]
+  exact measure_mono (subset_univ _)
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 variable [TopologicalSpace Ω'] [BorelSpace Ω']
@@ -980,7 +980,7 @@ noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
     FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable
-  map_smul' := map_smul
+  map_smul' m _ := map_smul m f_cont.aemeasurable
 
 lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
     [MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [NormalSpace Ω']
