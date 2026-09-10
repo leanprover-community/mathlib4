@@ -11,6 +11,8 @@ public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Data.Fin.Tuple.Sort
@@ -292,6 +294,55 @@ lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) 
   | mul σ τ _ _ hσ hτ => simpa [mul_smul] using congrArg _ (hτ <| t ∘ σ) |>.trans <| hσ t
 
 variable {W} in
+lemma foo (v : Fin 4 → ℤ) (neg : W.Odd) (hv : ¬ Function.Injective v) (h0 : W 0 = 0) :
+    atomRel W (v 0) (v 1) (v 2) (v 3) = 0 := by
+  obtain ⟨i, j, h⟩ := Function.not_injective_iff.mp hv
+  fin_cases i <;> fin_cases j <;> simp_all
+
+theorem test {n : ℕ} {v : Fin n → ℤ} {x y : ℤ} :
+    Antitone (Matrix.vecCons x (Matrix.vecCons y v)) ↔ y ≤ x ∧ Antitone (Matrix.vecCons y v) := by
+  simp only [Nat.succ_eq_add_one, antitone_vecCons, Matrix.cons_val_zero]
+
+-- #exit
+
+variable {W} in
+lemma atomRel_of_even_odd' (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
+    (even : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m - 2) 2 0 = 0)
+    (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) (v : Fin 4 → ℤ)
+    -- Function.IsConst?
+    (parity : ∀ i j, v i % 2 = v j % 2) : atomRel W (v 0) (v 1) (v 2) (v 3) = 0 := by
+  wlog hn : 0 ≤ v generalizing v with h -- todo: 0 ≤ v
+  · exact atomRel_abs neg .. ▸ h (abs ∘ v) (by grind) (by simp [Pi.le_def])
+  wlog hm : Antitone v generalizing v with h
+  · rw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort v) v, smul_eq_zero_iff_eq]
+    exact h (v ∘ (Fin.revPerm.trans <| Tuple.sort v)) (fun i j ↦ parity _ _) (fun i ↦ hn _)
+      ((Tuple.monotone_sort v).comp_antitone Fin.rev_anti :)
+  by_cases hv : Function.Injective v; swap
+  · refine foo v neg hv ?_
+    exact pow_mem two 3 |>.right (W 0) (by grind only [atomRel_same₂₃, atom, odd 1])
+  replace hv : StrictAnti v := hm.strictAnti_of_injective hv
+  induction hn' : 4 * v 0 + v 1 + v 2 + v 3 using @Int.strongRec 0 generalizing v with
+  | lt n _ => simp_rw [Pi.le_def, Pi.zero_apply] at hn; grind
+  | ge n _ ih =>
+    -- replace ih (v : Fin 4 → ℤ) := ih (4 * v 0 + v 1 + v 2 + v 3)
+    replace ih (a b c d : ℤ) := (@ih (4 * a + b + c + d) · ![a, b, c, d])
+    simp [Pi.le_def, Pi.zero_apply, Fin.forall_fin_succ, antitone_vecCons] at *
+    replace hc : v 3 < v 2 ∧ v 2 < v 1 ∧ v 1 < v 0 := by
+      have : v = ![v 0, v 1, v 2, v 3] := (FinVec.etaExpand_eq v).symm
+      rw [this] at hv
+      simp at hv
+      grind
+    by_cases t : v 2 = v 0 % 2 + 2
+    · wlog _ : v 0 = v 1 + 2
+      · grind (genLocal := 0) [=_ atomRel_neg₄, @atomRel_avg_sub R _ W (v 0) (v 1) (v 2) (v 3) <| by grind, = (ih)]
+      grind [odd (v 1 / 2), atomRel_neg₄ W (v 0) (v 1) (v 2) (v 3), atomRel_avg_sub W (by simp) |>.trans (even (v 0 / 2))]
+    · have ha : atom W (v 0 % 2 + 2) (v 0 % 2) ∈ R⁰ := by grind only [atom, mul_mem]
+      apply ha.left _
+      grind [atom_same, atomRel_same₃₄,
+        atomRel.eq_def W (v 0) (v 1) (v 2), @atom_mul_atomRel R _ W (v 0) (v 1) (v 2) (max (v 3) <| (v 0) % 2 + 2)
+          (min (v 3) <| (v 0) % 2 + 2) ((v 0) % 2) 0 0 0 (-1) 0 1 <| by norm_num1]
+
+variable {W} in
 lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (even : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m - 2) 2 0 = 0)
     (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) {a b c d : ℤ}
@@ -319,6 +370,8 @@ lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰
     wlog _ : a = b + 2
     · grind (genLocal := 0) [=_ atomRel_neg₄, @atomRel_avg_sub R _ W a b c d <| by grind, = (ih)]
     grind [odd (b / 2), atomRel_neg₄ W a b c d, atomRel_avg_sub W (by simp) |>.trans (even (a / 2))]
+
+#exit
 
 lemma map_atomRel (a b c d : ℤ) : f (atomRel W a b c d) = atomRel (f ∘ W) a b c d := by
   simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
