@@ -110,7 +110,7 @@ private lemma eq_zero_of_orderAtInfty_gt_sturmBound_SL2Z {k : ℤ}
   simpa only [hkcast, Nat.cast_ofNat] using (Nat.cast_div_le (α := ℝ) (m := k.toNat) (n := 12))
 
 private lemma totalCuspOrder_le_sturmBound_of_le
-    {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [G.HasDetOne]
+    {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
     (hG : G ≤ 𝒮ℒ) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
     {k : ℤ} (f : ModularForm G k) (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
   have hn : ModularForm.norm 𝒮ℒ f ≠ 0 := ModularForm.norm_ne_zero 𝒮ℒ (by simpa using hf)
