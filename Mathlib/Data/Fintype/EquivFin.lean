@@ -567,6 +567,28 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
     simp [ht]
 
+/-- An infinite type admits an injective self-map that is not surjective. -/
+theorem exists_injective_not_surjective (α : Type*) [Infinite α] :
+    ∃ f : α → α, Injective f ∧ ¬ Surjective f := by
+  classical
+  let e : ℕ ↪ α := natEmbedding α
+  let g : α ≃ ℕ ⊕ ↥(Set.range e)ᶜ :=
+    (Equiv.Set.sumCompl (Set.range e)).symm.trans
+      ((Equiv.ofInjective e e.injective).symm.sumCongr (Equiv.refl _))
+  refine ⟨g.symm ∘ Sum.map Nat.succ id ∘ g,
+    g.symm.injective.comp ((Nat.succ_injective.sumMap injective_id).comp g.injective),
+    fun hsurj => ?_⟩
+  obtain ⟨x, hx⟩ := hsurj (g.symm (Sum.inl 0))
+  simp only [Function.comp_apply] at hx
+  have hx2 := g.symm.injective hx
+  rcases hgx : g x with n | b <;> rw [hgx] at hx2 <;> simp [Sum.map] at hx2
+
+/-- An infinite type is equivalent to a proper subset of itself. -/
+theorem exists_equiv_set_ne_univ (α : Type*) [Infinite α] :
+    ∃ s : Set α, s ≠ Set.univ ∧ Nonempty (α ≃ s) := by
+  obtain ⟨f, hf, hf'⟩ := exists_injective_not_surjective α
+  exact ⟨Set.range f, mt Set.range_eq_univ.1 hf', ⟨Equiv.ofInjective f hf⟩⟩
+
 end Infinite
 
 /-- If every finset in a type has bounded cardinality, that type is finite. -/
