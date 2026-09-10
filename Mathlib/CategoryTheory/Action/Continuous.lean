@@ -40,7 +40,6 @@ namespace Action
 instance : HasForget₂ (Action V G) TopCat :=
   HasForget₂.trans (Action V G) V TopCat
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
   smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
   one_smul x := by
