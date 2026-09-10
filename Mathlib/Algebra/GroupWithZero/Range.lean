@@ -292,6 +292,10 @@ def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : valueGroup f :=
   simp only [mk, map_mul, MulMemClass.mk_mul_mk, Units.mk0_mul, Subtype.mk.injEq]
   rw [mul_mul_mul_comm, mul_inv]
 
+lemma mk_eq_div {r s : A} (hr : f r ≠ 0) (hs : f s ≠ 0) :
+    (valueGroup.mk f r s hr hs : Bˣ) = f s / f r := by
+  simp [valueGroup.mk, inv_mul_eq_div]
+
 theorem exists_mk (f : A →*₀ B) (x : valueGroup f) :
     ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
   have hx := x.2
