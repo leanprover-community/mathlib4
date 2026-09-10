@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.Radical.Basic
 
 /-!
 # Nilpotent elements
@@ -145,3 +146,16 @@ theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := 
   simp [← p.mapQ_pow, hk]
 
 end Module.End
+
+open UniqueFactorizationMonoid in
+lemma Ideal.radical_span_singleton_eq_span_radical [CommSemiring R] [UniqueFactorizationMonoid R]
+    [NormalizationMonoid R] (h : x ≠ 0) :
+    (span {x}).radical = span {UniqueFactorizationMonoid.radical x} := by
+  apply le_antisymm
+  · rw [Ideal.IsRadical.radical_le_iff]
+    · rw [Ideal.span_singleton_le_span_singleton]
+      exact UniqueFactorizationMonoid.radical_dvd_self
+    · rw [← isRadical_iff_span_singleton]
+      exact UniqueFactorizationMonoid.isRadical_radical
+  · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
+    exact exists_dvd_radical_self_pow h
