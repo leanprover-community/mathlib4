@@ -38,6 +38,9 @@ lemma mem_leftDecomposition_mk {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : 
     (g : G ⧸ H₂) ∈ x.leftDecomposition ↔ DoubleCoset.mk H₁ H₂ g = x := by
   simp [Quotient.leftDecomposition]
 
+instance (x : Quotient (H₁ : Set G) (H₂ : Set G)) : Nonempty x.leftDecomposition :=
+  nonempty_subtype.mpr ⟨_, mem_leftDecomposition_mk.mpr (out_eq' x)⟩
+
 instance (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
     MulAction H₁ x.leftDecomposition where
   smul h q := ⟨h • (q : G ⧸ H₂), by
@@ -52,6 +55,14 @@ lemma coe_smul_leftDecomposition {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ 
     (y : x.leftDecomposition) :
     ((h • y : x.leftDecomposition) : G ⧸ H₂) = (h : G) • (y : G ⧸ H₂) :=
   rfl
+
+lemma mem_leftDecomposition_eq_smul {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)}
+    {c d : G ⧸ H₂} (hc : c ∈ x.leftDecomposition) (hd : d ∈ x.leftDecomposition) :
+    ∃ (h₁ : G), h₁ ∈ H₁ ∧ c = h₁ • d := by
+  have {y : G ⧸ H₂} (hy : y ∈ x.leftDecomposition) : DoubleCoset.mk H₁ H₂ y.out = x := by
+    simp [← mem_leftDecomposition_mk, hy]
+  obtain ⟨_, hh₁, _, hh₂, h⟩ := eq.mp ((this hd).trans (this hc).symm)
+  exact ⟨_, hh₁, by rw [← QuotientGroup.out_eq' c, h]; simp [hh₂, ← MulAction.Quotient.mk_smul_out]⟩
 
 lemma stabilizer_leftCoset :
     MulAction.stabilizer H₁ (g : G ⧸ H₂) = (ConjAct.toConjAct g • H₂).subgroupOf H₁ := by
@@ -68,6 +79,10 @@ variable (H₁ H₂ g) in
 abbrev leftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
 
 namespace leftDecompQuotient
+
+lemma natCard_eq_relIndex :
+    Nat.card (leftDecompQuotient H₁ H₂ g) = (ConjAct.toConjAct g • H₂).relIndex H₁ := by
+  rw [leftDecompQuotient, Subgroup.relIndex, Subgroup.index, stabilizer_leftCoset]
 
 /-- The map sending `⟦h₁⟧` to `h₁gH₂`. -/
 def toLeftCoset :
@@ -94,7 +109,7 @@ lemma mem_range_toLeftCoset_iff :
     exact ⟨QuotientGroup.mk ⟨h₁, hh₁⟩, by simp [hh₂]⟩
 
 /-- The equivalence between `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` and `{xH₂ | H₁xH₂ = H₁gH₂}`. -/
-@[simps! apply]
+@[simps!]
 noncomputable def toLeftDecompositionEquiv :
     leftDecompQuotient H₁ H₂ g ≃ (mk H₁ H₂ g).leftDecomposition :=
   (Equiv.ofInjective toLeftCoset toLeftCoset_injective).trans (Set.equivOfEq (by
