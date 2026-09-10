@@ -300,14 +300,14 @@ lemma from_ofList_hom_comm_zero :
       (koszulComplex φ).d (0 + 1) 0 ≫ fromOfListHomZero φ a := by
   ext y
   have h := LinearMap.congr_fun (appendMap_d_eq_zero φ a) (y, 0)
-  simpa [d_eq_d, fromOfListHomSucc, fromOfListHomZero] using! h
+  simpa [d_def, fromOfListHomSucc, fromOfListHomZero] using! h
 
 lemma from_ofList_hom_comm_pos (i : ℕ) :
     fromOfListHomSucc φ a (i + 1) ≫ (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) =
       (koszulComplex φ).d (i + 1 + 1) (i + 1) ≫ fromOfListHomSucc φ a i := by
   ext y
   have h := LinearMap.congr_fun (appendMap_d_eq_pos φ a i) (y, 0)
-  simpa [d_eq_d, fromOfListHomSucc] using! h
+  simpa [d_def, fromOfListHomSucc] using! h
 
 /-- The homomorphism given by inclusion to the first component
 using `exteriorPowerProdEquivProd`. -/
@@ -350,7 +350,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma to_self_hom_comm (i : ℕ) :
     toUpOneHom φ a (i + 1) ≫ (koszulComplex φ).d (i + 1) i =
       (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) ≫ toUpOneHom φ a i := by
-  rw [d_eq_d, d_eq_d]
+  rw [d_def, d_def]
   ext y
   have h := LinearMap.congr_fun (appendMap_d_eq_pos φ a i)
     ((exteriorPowerProdEquivProd R M (i + 1)).symm y)
@@ -435,14 +435,14 @@ lemma shortComplexProd_δ_eq (i : ℕ) :
   have hx₁ : (((-1 : R) ^ i * a) • ((upOne φ).iCycles (i + 1))) ≫ (shortComplexProd φ a).f.f i =
     ((upOne φ).iCycles (i + 1) ≫ ModuleCat.ofHom compinr) ≫
       (koszulComplex (appendMap φ a)).d (i + 1) i := by
-    rw [d_eq_d]
+    rw [d_def]
     rcases i with _ | n
     · ext z
       have h := LinearMap.congr_fun (appendMap_d_eq_zero φ a) (0, ((upOne φ).iCycles 1).hom z)
       simpa using! h.symm
     · ext z
       have hcyc : koszulComplex.d φ n (((upOne φ).iCycles (n + 2)).hom z) = 0 := by
-        simpa [d_eq_d] using! congrArg (fun F => ModuleCat.Hom.hom F z) hx₃
+        simpa [d_def] using! congrArg (fun F => ModuleCat.Hom.hom F z) hx₃
       have h := LinearMap.congr_fun (appendMap_d_eq_pos φ a n)
         (0, ((upOne φ).iCycles (n + 2)).hom z)
       have hsc : ((-1 : ℤ) ^ (n + 1)) • a • (((upOne φ).iCycles (n + 2)).hom z, 0) =
