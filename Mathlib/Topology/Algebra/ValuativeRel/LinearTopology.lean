@@ -10,7 +10,26 @@ public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
-TODO-/
+# Valuative topologies are linear
+
+If a ring `O` acts on a ring `R` carrying a valuative topology in such a way that the action never
+increases the valuation, then the open balls of `R` are `O`-submodules. Since they form a basis of
+neighborhoods of zero, the topology on `R` is `O`-linear, and so is the topology induced on `O` by
+any `O`-linear map `O →ₗ[O] R` which is inducing.
+
+## Main results
+
+* `IsLinearTopology.of_valuation_smul_le`, `IsLinearTopology.of_valuation_smul_le_of_isInducing`:
+  the two statements above, stated for an action satisfying
+  `∀ (o : O) (x : R), valuation R (o • x) ≤ valuation R x`.
+* `IsLinearTopology.of_isIntegerSMul`, `IsLinearTopology.of_isIntegerSMul_of_isInducing`: the same
+  statements for an action by integers, i.e. under `[IsIntegerSMul O R]`. In particular the ring of
+  integers `(valuation R).integer` acts by integers on `R`, so the topology on `R` is linear over
+  it.
+* `Valuation.Integers.isLinearTopology`, `Valuation.Integers.isLinearTopology_self`: the same
+  statements for a ring of integers in the sense of `Valuation.Integers`, which need not be
+  definitionally `(valuation R).integer`.
+-/
 
 @[expose] public section
 
@@ -47,35 +66,25 @@ theorem of_valuation_smul_le_of_isInducing [TopologicalSpace O]
   rw [hf.nhds_eq_comap, map_zero]
   exact (IsValuativeTopology.hasBasis_nhds_zero R).comap _
 
-end SMul
-
-end IsLinearTopology
-
-section IsIntegerSMul
-
-/-- The ring of integers of `R` acts on `R` by integers. -/
-instance : IsIntegerSMul (valuation R).integer R where
-  smul_vle o x :=
-    (Valuation.vle_iff_le (valuation R)).mpr ((valuation R).valuation_integer_smul_le o x)
-
-instance _root_.IsLinearTopology.of_isIntegerSMul [IsIntegerSMul O R] : IsLinearTopology O R :=
+instance of_isIntegerSMul [IsIntegerSMul O R] : IsLinearTopology O R :=
   .of_valuation_smul_le fun o x ↦ valuation_smul_le o x
 
 /-- If `O` acts by integers on a ring `R` carrying a valuative topology, and if `O` carries the
 topology induced by an `O`-linear map `f : O →ₗ[O] R`, then the topology on `O` is `O`-linear:
 the preimages under `f` of the open balls of `R` form a basis of neighborhoods of zero made of
 left ideals. -/
-theorem _root_.IsLinearTopology.of_isIntegerSMul_of_isInducing [IsIntegerSMul O R]
+theorem of_isIntegerSMul_of_isInducing [IsIntegerSMul O R]
     [TopologicalSpace O] (f : O →ₗ[O] R) (hf : Topology.IsInducing f) : IsLinearTopology O O :=
   .of_valuation_smul_le_of_isInducing (fun o x ↦ valuation_smul_le o x) f hf
 
-end IsIntegerSMul
+end SMul
+
+end IsLinearTopology
 
 section Integers
 
 variable {A : Type*} [CommRing A] [ValuativeRel A] {O : Type*} [CommRing O] [Algebra O A]
-
-variable [TopologicalSpace A] [IsValuativeTopology A]
+  [TopologicalSpace A] [IsValuativeTopology A]
 
 /-- If `O` is a ring of integers for the valuative relation on `A`, in the sense of
 `Valuation.Integers`, then the topology on `A` is `O`-linear. -/

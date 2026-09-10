@@ -438,6 +438,11 @@ theorem Integers.isIntegerSMul (hO : (valuation R).Integers O) :
     IsIntegerSMul O R where
   smul_vle _ _ := (valuation R).vle_iff_le.mpr hO.smul_le
 
+/-- The ring of integers of `R` acts on `R` by integers. -/
+instance : IsIntegerSMul (valuation R).integer R where
+  smul_vle o x :=
+    (Valuation.vle_iff_le (valuation R)).mpr ((valuation R).valuation_integer_smul_le o x)
+
 end Integers
 
 end Valuation
