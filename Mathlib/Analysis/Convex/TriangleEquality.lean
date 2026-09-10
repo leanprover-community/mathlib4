@@ -96,7 +96,7 @@ theorem norm_sum_eq_iff_pairwise_sameRay :
       le_antisymm (norm_sum_le _ _) (by linarith [norm_add_le (v a) (∑ j ∈ t, v j)])
     refine ⟨ih ht, ?_⟩
     have hat : SameRay ℝ (v a) (∑ j ∈ t, v j) := sameRay_iff_norm_add.2 (by rw [h, ht])
-    exact fun j hj ↦ hat.trans (sameRay_sum fun i hi ↦ (ih ht).forall₂ hj hi).symm
+    exact fun j hj ↦ hat.trans (sameRay_sum (ih ht) hj).symm
       fun h ↦ Or.inr <| eq_zero_of_sum_norm_eq_zero (by simpa [h] using ht.symm) hj
 
 end Normed
