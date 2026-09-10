@@ -350,6 +350,22 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
 
+variable {α} in
+@[to_additive, simps! apply symm_apply toEquiv]
+def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
+  toEquiv := MulOpposite.opEquiv
+  uniformContinuous_toFun := MulOpposite.uniformContinuous_op
+  uniformContinuous_invFun := MulOpposite.uniformContinuous_unop
+
+variable {α} in
+@[to_additive]
+theorem completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
+  MulOpposite.opUniformEquiv.symm.completeSpace_iff
+
+@[to_additive]
+instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ :=
+  completeSpace_mulOpposite_iff.2 ‹CompleteSpace α›
+
 end
 
 /-- If `ι` has a unique element, then `ι → α` is uniformly isomorphic to `α`. -/

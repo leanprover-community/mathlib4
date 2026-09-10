@@ -404,22 +404,6 @@ lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty �
     CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
   ⟨fun _ ↦ ⟨.fst_of_prod (β := β), .snd_of_prod (α := α)⟩, fun ⟨_, _⟩ ↦ .prod⟩
 
-@[to_additive]
-instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
-  complete hf :=
-    MulOpposite.op_surjective.exists.mpr <|
-      let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
-      ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
-
-@[to_additive]
-theorem completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α where
-  mpr _ := inferInstance
-  mp _ :=
-    { complete hf :=
-      MulOpposite.unop_surjective.exists.mpr <|
-        let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_op)
-        ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_op_nhds _⟩}
-
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
   ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
