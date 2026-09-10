@@ -37,7 +37,9 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
 
 -/
 
-open Bundle FiberBundle Topology Module
+open Bundle FiberBundle Module
+
+open scoped Topology
 
 open scoped Manifold ContDiff
 

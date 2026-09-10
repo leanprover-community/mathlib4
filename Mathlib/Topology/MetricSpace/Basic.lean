@@ -183,20 +183,45 @@ end Metric
 
 section EqRel
 
--- TODO: add `dist_congr` similar to `edist_congr`?
-instance SeparationQuotient.instDist {α : Type u} [PseudoMetricSpace α] :
-    Dist (SeparationQuotient α) where
+variable {α : Type u} [PseudoMetricSpace α]
+
+theorem dist_congr_right {x y z : α} (h : dist x y = 0) :
+    dist x z = dist y z := by
+  rw [← sub_eq_zero, ← abs_nonpos_iff]
+  exact (abs_dist_sub_le ..).trans_eq h
+
+theorem dist_congr_left {x y z : α} (h : dist x y = 0) :
+    dist z x = dist z y := by
+  simp [dist_comm, dist_congr_right h]
+
+theorem dist_congr {w x y z : α} (hl : dist w x = 0) (hr : dist y z = 0) :
+    dist w y = dist x z :=
+  (dist_congr_right hl).trans (dist_congr_left hr)
+
+instance SeparationQuotient.instDist : Dist (SeparationQuotient α) where
   dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_edist, dist_edist, ← edist_mk x,
     ← edist_mk x', mk_eq_mk.2 hx, mk_eq_mk.2 hy]
 
-theorem SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : α) :
+theorem SeparationQuotient.dist_mk (p q : α) :
     dist (mk p) (mk q) = dist p q :=
   rfl
 
-instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α] :
-    MetricSpace (SeparationQuotient α) :=
+instance SeparationQuotient.instMetricSpace : MetricSpace (SeparationQuotient α) :=
   EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 fun _ _ ↦ dist_nonneg) <|
     surjective_mk.forall₂.2 edist_dist
+
+theorem nndist_congr_right {x y z : α} (h : nndist x y = 0) :
+    nndist x z = nndist y z := by
+  apply NNReal.eq
+  exact dist_congr_right (congrArg ((↑·) : ℝ≥0 → ℝ) h)
+
+theorem nndist_congr_left {x y z : α} (h : nndist x y = 0) :
+    nndist z x = nndist z y := by
+  simp [nndist_comm, nndist_congr_right h]
+
+theorem nndist_congr {w x y z : α} (hl : nndist w x = 0) (hr : nndist y z = 0) :
+    nndist w y = nndist x z :=
+  (nndist_congr_right hl).trans (nndist_congr_left hr)
 
 end EqRel
 

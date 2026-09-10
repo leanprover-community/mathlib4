@@ -280,8 +280,8 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_insert {x : P}
     orthogonalProjection_vsub_orthogonalProjection, norm_smul, abs_mul]
 
 lemma signedInfDist_singleton :
-    (affineSpan ℝ ({q} : Set P)).signedInfDist p = signedDist (p -ᵥ q) q := by
-  simpa using signedInfDist_eq_signedDist_of_mem (mem_affineSpan ℝ (Set.mem_singleton q))
+    ({q} : AffineSubspace ℝ P).signedInfDist p = signedDist (p -ᵥ q) q := by
+  simpa using signedInfDist_eq_signedDist_of_mem (mem_singleton q)
 
 end AffineSubspace
 
