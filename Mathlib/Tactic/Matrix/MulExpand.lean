@@ -13,8 +13,8 @@ public meta import Mathlib.Tactic.Matrix.ListMatrix
 /-!
 # Expansion of products of list matrices
 
-`proveMul` rewrites `ListMatrix.mul l m n A B`, for list literals `A` and `B`, to the literal
-whose entries are the sums of products of the entries, with the proof, for other tactics to
+`proveMul` rewrites `ListMatrix.mul l m n A B` for list literals `A` and `B` to the literal
+whose entries are the sums of products of the entries, with the proof for other tactics to
 consume in `MetaM`.
 
 ## Implementation notes
