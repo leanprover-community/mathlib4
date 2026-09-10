@@ -1001,7 +1001,7 @@ theorem NNReal.exists_forall_lt_of_strictMono {f : Γ₀ →*₀ ℝ≥0} (hf : 
     rcases eq_or_ne δ 0 with rfl | hδ₀
     · simpa using hr
     · exact absurd (by simpa [Units.ext_iff] using Subsingleton.elim (Units.mk0 δ hδ₀) 1) hδ.ne
-  · obtain ⟨γ, hγ⟩ := NNReal.exists_lt_of_strictMono hf hr
+  · obtain ⟨γ, hγ⟩ := exists_lt_of_strictMono hf hr
     exact ⟨γ, fun δ hδ ↦ (hf hδ).trans hγ⟩
 
 /-- If `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive real `r` there exists
