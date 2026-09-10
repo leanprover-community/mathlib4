@@ -159,14 +159,6 @@ lemma _root_.Function.Injective.extend_of_disjoint {f : α → β} {g : α → �
   · rw [extend_apply' _ _ _ hx, extend_apply' _ _ _ hy] at h
     exact hj h
 
-/-- `Function.extend f Sum.inl Sum.inr : β → α ⊕ β` is injective when `f` is:
-elements in the range of `f` are sent into `Sum.inl` along `f`'s (injective) inverse,
-and everything else is sent to itself under `Sum.inr`. -/
-lemma _root_.Function.Injective.extend_sum_inl_inr {f : α → β} (hf : f.Injective) :
-    Injective (extend f (Sum.inl : α → α ⊕ β) (Sum.inr : β → α ⊕ β)) :=
-  hf.extend_of_disjoint (fun _ _ ↦ Sum.inl.inj) (fun _ _ ↦ Sum.inr.inj)
-    isCompl_range_inl_range_inr.disjoint
-
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
 has codomain `↥s` instead of `Subtype s`. -/
 def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x => ⟨f x, h x⟩
