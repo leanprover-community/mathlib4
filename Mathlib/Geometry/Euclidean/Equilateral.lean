@@ -48,9 +48,8 @@ lemma faceOpposite [NeZero n] (h : s.Equilateral) : (s.faceOpposite i).Equilater
 
 /-- Any point lies on the perpendicular bisector of any two other points. -/
 lemma mem_perpBisector (h : s.Equilateral) (hij : i ≠ j) (hik : i ≠ k) :
-    s.points i ∈ perpBisector (s.points j) (s.points k) := by
-  obtain ⟨r, hr⟩ := h
-  simp_all only [ne_eq, mem_perpBisector_iff_dist_eq, not_false_eq_true]
+    s.points i ∈ perpBisector (s.points j) (s.points k) :=
+  mem_perpBisector_iff_dist_eq.2 (h.dist_eq hij hik)
 
 section Center
 
