@@ -303,13 +303,14 @@ theorem exists_mk (f : A →*₀ B) (x : valueGroup f) :
   obtain ⟨r, hr, s, hs, hrs⟩ := hx
   exact ⟨r, s, hr, hs,  by simp [valueGroup.mk, ← hrs, mul_comm]⟩
 
+end valueGroup
+
 theorem mem_valueGroup_iff_exists_mk_of_comm (f : A →*₀ B) {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ r s hr hs, y = valueGroup.mk f r s hr hs := by
   refine ⟨fun hy ↦ ?_, fun ⟨r, s, hr, hs, hy⟩ ↦ by aesop⟩
-  obtain ⟨r, s, hr, hs, h⟩ := exists_mk f ⟨y, hy⟩
+  obtain ⟨r, s, hr, hs, h⟩ := valueGroup.exists_mk f ⟨y, hy⟩
   exact ⟨r, s, hr, hs, Subtype.ext_iff.mp h⟩
 
-end valueGroup
 namespace ValueGroup₀
 
 /-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`
