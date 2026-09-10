@@ -364,22 +364,22 @@ end Isometric
 -- namespace
 /-- A uniform embedding from a uniform space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem IsUniformEmbedding.to_isometric {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
+theorem IsUniformEmbedding.isometric {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) : (letI := h.comapMetricSpace f; Isometric f) :=
   let _ := h.comapMetricSpace f
   Isometric.of_dist_eq fun _ _ => rfl
 
 /-- An embedding from a topological space to a pseudometric space is an isometry with respect to the
 induced pseudometric space structure on the source space. -/
-theorem Topology.IsEmbedding.to_isometric {α β} [TopologicalSpace α] [PseudoMetricSpace β]
+theorem Topology.IsEmbedding.isometric {α β} [TopologicalSpace α] [PseudoMetricSpace β]
     {f : α → β} (h : IsEmbedding f) : (letI := h.comapPseudoMetricSpace; Isometric f) :=
   let _ := h.comapPseudoMetricSpace
   Isometric.of_dist_eq fun _ _ => rfl
 
 @[deprecated (since := "2026-09-09")] alias IsUniformEmbedding.to_isometry :=
-  IsUniformEmbedding.to_isometric
+  IsUniformEmbedding.isometric
 @[deprecated (since := "2026-09-09")] alias Topology.IsEmbedding.to_isometry :=
-  Topology.IsEmbedding.to_isometric
+  Topology.IsEmbedding.isometric
 
 theorem PseudoEMetricSpace.isometric_induced (f : α → β) [m : PseudoEMetricSpace β] :
     letI := m.induced f; Isometric f := fun _ _ ↦ rfl

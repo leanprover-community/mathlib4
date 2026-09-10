@@ -135,7 +135,7 @@ theorem _root_.Topology.IsClosedEmbedding.IsCompletelyPseudoMetrizableSpace [Top
   let := upgradeIsCompletelyPseudoMetrizable Y
   let : PseudoMetricSpace X := hf.isEmbedding.comapPseudoMetricSpace
   have : CompleteSpace X := by
-    rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometric.isUniformInducing]
+    rw [completeSpace_iff_isComplete_range hf.isEmbedding.isometric.isUniformInducing]
     exact hf.isClosed_range.isComplete
   infer_instance
 
@@ -252,7 +252,7 @@ theorem _root_.Topology.IsClosedEmbedding.IsCompletelyMetrizableSpace [Topologic
   let := upgradeIsCompletelyMetrizable Y
   let : MetricSpace X := hf.isEmbedding.comapMetricSpace f
   have : CompleteSpace X := by
-    rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometric.isUniformInducing]
+    rw [completeSpace_iff_isComplete_range hf.isEmbedding.isometric.isUniformInducing]
     exact hf.isClosed_range.isComplete
   infer_instance
 
