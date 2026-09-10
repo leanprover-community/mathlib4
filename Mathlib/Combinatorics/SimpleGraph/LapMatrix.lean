@@ -5,9 +5,14 @@ Authors: Adrian Wüthrich
 -/
 module
 
-public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.Matrix.PosDef
+
+import Mathlib.Algebra.Order.Star.Real
+import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Laplacian Matrix
