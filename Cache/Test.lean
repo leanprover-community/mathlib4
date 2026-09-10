@@ -536,6 +536,10 @@ def test_tempFileNames : IO Unit := do
     ((IO.CURLCFG.toString.splitOn IO.PROCTAG).length == 2)
   assertTrue "the curl config sits in the cache directory"
     (IO.CURLCFG.parent == some IO.CACHEDIR)
+  assertTrue "an upload's curl config sits under the given directory"
+    ((IO.curlConfigIn "staging").parent == some "staging")
+  assertTrue "an upload's curl config carries the same tagged name"
+    ((IO.curlConfigIn "staging").fileName == IO.CURLCFG.fileName)
   -- The tag must not reintroduce a path separator or a shell/curl-config hazard.
   assertTrue "the tag is a bare identifier" (IO.PROCTAG.all fun c => c.isAlphanum)
 

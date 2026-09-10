@@ -78,16 +78,17 @@ The staged put on the curl tool: validate the system curl, then send the
 `.ltar` files named by `fileNames` under `srcDir`, then the per-SHA marker
 when `markerSha?` names one. `getSignArgs` produces the backend's signing
 arguments and runs once per transfer, so a time-sensitive header (the Azure
-date) is fresh for each. The curl config file is written to `srcDir` for the
-duration of the transfer. A files failure exits 1; a marker failure only
-warns (see `uploadMarkerWith`).
+date) is fresh for each. The curl config file is written under `srcDir` for the
+duration of the transfer, named after this process (`IO.curlConfigIn`), so two
+uploads from one cache directory cannot write each other's file list. A files
+failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
 -/
 def putStagedViaCurl (dest : StagedUploadDest) (getSignArgs : IO (Array String))
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
     (markerSha? : Option String) : IO Unit := do
   discard IO.validateCurl
   let files := fileNames.map fun (f : String) => srcDir / f
-  putFilesViaCurl dest files (srcDir / "curl.config") overwrite (← getSignArgs)
+  putFilesViaCurl dest files (IO.curlConfigIn srcDir) overwrite (← getSignArgs)
   if let some sha := markerSha? then
     uploadMarkerWith (dest.markerURL sha) sha fun file => do
       -- A marker may be overwritten freely, so its PUT carries no
