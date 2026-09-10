@@ -111,15 +111,10 @@ lemma tateComplex_d_neg (n : ℕ) :
 def tateComplex.map (φ : X ⟶ Y) : tateComplex X ⟶ tateComplex Y := by
   refine CochainComplex.ConnectData.map _ _ (chainsMap (.id G) φ) (cochainsMap (.id G) φ) ?_
   ext
-  simp only [tateComplexConnectData_d₀, Rep.tateNorm_eq, Representation.norm,
-    lsingle_comp_chainsMap_f_assoc, MonoidHom.coe_id, CompTriple.comp_eq, ModuleCat.ofHom_comp,
-    Category.assoc, ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp,
-    Representation.IntertwiningMap.coe_toLinearMap, Function.comp_apply,
-    cochainsMap_id_f_hom_eq_compLeft, Finsupp.coe_lsum, Finsupp.lsingle_apply, map_zero,
-    Finsupp.sum_single_index, LinearMap.compLeft_apply, LinearMap.pi_apply, LinearMap.coe_sum,
-    Finset.sum_apply, map_sum, Rep.hom_comm_apply]
-  rw [Finsupp.lsum_apply, Finsupp.lsingle_apply]
-  simp
+  simp [tateComplexConnectData_d₀, Rep.tateNorm_eq, Representation.norm,
+    lsingle_comp_chainsMap_f_assoc, MonoidHom.coe_id, CompTriple.comp_eq, Category.assoc,
+    Representation.IntertwiningMap.coe_toLinearMap,  cochainsMap_id_f_hom_eq_compLeft,
+    Rep.hom_comm_apply, (Finsupp.lsum_apply), (Finsupp.lsingle_apply)]
 
 @[simp]
 lemma tateComplex.map_zero : tateComplex.map (0 : X ⟶ Y) = 0 := by cat_disch

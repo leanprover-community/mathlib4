@@ -60,25 +60,16 @@ noncomputable def chainsMap :
   f i := ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ lmapDomain A k (f ∘ ·)
   comm' i j (hij : _ = _) := by
     subst hij
-    ext
+    ext g
     simp only [res_obj_ρ, ModuleCat.ofHom_comp, ChainComplex.of_d',
       inhomogeneousChains.d, eqToHom_refl, Category.id_comp, Category.assoc, ModuleCat.hom_comp,
       ConcreteCategory.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, lsingle_apply,
       lmapDomain_apply, mapDomain_single, coe_lsum, LinearMap.coe_add, LinearMap.coe_sum,
       LinearMap.coe_smul, Pi.add_apply, map_zero, Finset.sum_apply, Pi.smul_apply,
       smul_zero, Finset.sum_const_zero, add_zero, sum_single_index, smul_single, map_add, map_sum]
-    rw [mapRange.linearMap_apply, mapRange.linearMap_apply, lmapDomain_apply]
-    conv_rhs =>
-      enter[2, 2, x]
-      rw [mapRange.linearMap_apply, lmapDomain_apply]
-      simp [Fin.contractNth_apply_of_lt, Fin.contractNth_apply_of_eq, Fin.contractNth_apply_of_gt]
-    rw [lsum_apply]
-    simp only [IntertwiningMap.coe_toLinearMap, mapRange_single, LinearMap.coe_add,
-      LinearMap.coe_comp, LinearMap.coe_sum, LinearMap.coe_smul, Function.comp_apply, Pi.add_apply,
-      map_zero, Finset.sum_apply, Pi.smul_apply, smul_zero, Finset.sum_const_zero, add_zero,
-      sum_single_index, lsingle_apply, smul_single, mapDomain_single, Rep.hom_comm_apply φ,
-      MonoidHom.coe_comp, map_inv, res_obj_ρ, map_mul, Fin.comp_contractNth, add_left_inj]
-    rfl
+    simp [mapRange.linearMap_apply _, lmapDomain_apply _, IntertwiningMap.coe_toLinearMap,
+      lsum_apply _, Rep.hom_comm_apply φ, res_obj_ρ, Fin.comp_contractNth,
+      Function.comp_def f (fun i : Fin _ ↦ g i.succ)]
 
 lemma chainsMap_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg : f = g)
     (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) :
