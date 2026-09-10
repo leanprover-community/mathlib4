@@ -271,8 +271,7 @@ lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h
           2)) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq=
         ((abs (c₁ α' β' γ') + 1) ^ (h K * (1 + 4 * m K ^ 2) * r α β σ α' β' γ' hirr htriv habc q hq0
             h2mq)) := by
-          rw [pow_mul]
-          rw [pow_mul]
+          rw [pow_mul, pow_mul]
       rw [this]; clear this
       calc _ ≤ abs (c₁ α' β' γ') ^ (h K * (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 2 * m K *
           q^2)):= ?_
@@ -307,9 +306,7 @@ lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h
               ring
             rw [this]
             simp only [mul_assoc,le_refl]
-      · rw [mul_add]
-        rw [mul_add]
-        rw [add_mul]
+      · rw [mul_add, mul_add, add_mul]
         simp only [mul_one]
         refine pow_le_pow_right₀ ?_ ?_
         · exact one_le_abs_c₁ α' β' γ'
@@ -367,11 +364,7 @@ lemma eq5 : c₅ α' β' γ' ^ (-(r α β σ α' β' γ' hirr htriv habc q hq0 h
     simp only [Int.cast_abs, norm_pow]
     rw [Int.norm_eq_abs]
     simp only [Int.cast_abs, Int.cast_mul, Int.cast_pow, abs_abs]
-    rw [← abs_pow]
-    rw [← Real.rpow_natCast]
-    rw [← Real.rpow_natCast]
-    rw [← Real.rpow_natCast]
-    rw [← Real.rpow_add]
+    rw [← abs_pow, ← Real.rpow_natCast, ← Real.rpow_natCast, ← Real.rpow_natCast, ← Real.rpow_add]
     · rw [← Real.rpow_mul]
       · rw [mul_comm]
         norm_cast

@@ -264,8 +264,7 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
                         simp only [ne_eq, Nat.cast_eq_zero]
                         rw [← ne_eq]
                         exact Nat.ne_zero_of_lt hq0
-            rw [this]
-            rw [add_comm]
+            rw [this, add_comm]
         · unfold c₉; apply Real.exp_pos
       · positivity
       · apply mul_nonneg (Real.rpow_nonneg _ _) (Real.rpow_nonneg (by positivity) _)
@@ -716,8 +715,7 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
   · simp only [← mul_assoc]
     rw [mul_comm]
     unfold c₁₂
-    rw [Real.mul_rpow]
-    rw [Real.mul_rpow]
+    rw [Real.mul_rpow, Real.mul_rpow]
     nth_rw 7 [mul_comm]
     simp only [← mul_assoc]
     rw [mul_comm]
@@ -778,8 +776,7 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
           · positivity
           · positivity
           · positivity
-        · rw [(sqt_etc α β σ α' β' γ' hirr htriv habc) q hq0 h2mq]
-          rw [Real.mul_rpow]
+        · rw [(sqt_etc α β σ α' β' γ' hirr htriv habc) q hq0 h2mq, Real.mul_rpow]
           apply mul_le_mul
           · rw [mul_comm ((m K) : ℝ) ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)]
           · rw [mul_comm]
@@ -799,20 +796,12 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
           · positivity
           · positivity
           · positivity
-        · rw [← Real.rpow_mul]
-          rw [← Real.rpow_mul]
-          rw [Real.sqrt_eq_rpow]
-          rw [← Real.rpow_mul]
-          rw [mul_comm ((m K) : ℝ) (1/2)]
-          rw [mul_comm ((m K) : ℝ) 2]
+        · rw [← Real.rpow_mul, ← Real.rpow_mul, Real.sqrt_eq_rpow, ← Real.rpow_mul,
+            mul_comm ((m K) : ℝ) (1/2), mul_comm ((m K) : ℝ) 2]
           simp only [mul_assoc]
           congr
-          rw [Real.inv_rpow]
-          rw [← mul_assoc]
-          rw [← Real.rpow_add]
-          rw [← Real.rpow_neg]
-          rw [← Real.rpow_add]
-          rw [← Real.rpow_add]
+          rw [Real.inv_rpow, ← mul_assoc, ← Real.rpow_add, ← Real.rpow_neg, ← Real.rpow_add,
+            ← Real.rpow_add]
           · ring_nf
           · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
           · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -1071,9 +1060,10 @@ lemma eq8 :
           rw [le_iff_lt_or_eq]
           left
           trans
-          apply one_lt_two
-          simp only [lt_add_iff_pos_left, Nat.ofNat_pos, mul_pos_iff_of_pos_left, Nat.cast_pos]
-          unfold h; exact Module.finrank_pos
+          · apply one_lt_two
+          · simp only [lt_add_iff_pos_left, Nat.ofNat_pos, mul_pos_iff_of_pos_left,
+              Nat.cast_pos]
+            unfold h; exact Module.finrank_pos
         · simp only [Nat.one_le_cast]
           exact one_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
       · simp only [← mul_assoc]
@@ -1105,9 +1095,10 @@ lemma eq8 :
               apply mul_le_mul ?_ (le_refl _) (by positivity) (by positivity)
               · norm_cast
                 trans
-                apply q_le_two_mn q h2mq
-                apply mul_le_mul (le_refl _) (n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-                    (by positivity) (by positivity)
+                · apply q_le_two_mn q h2mq
+                · apply mul_le_mul (le_refl _)
+                      (n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+                      (by positivity) (by positivity)
             · ring_nf
               rw [mul_inv_cancel₀]
               simp only [one_mul]
@@ -1146,16 +1137,16 @@ lemma eq8 :
     · apply Real.rpow_nonneg
       rw [add_comm]
       trans
-      apply zero_le_one
-      refine le_add_of_le_of_nonneg ?_ ?_
-      · simp only [le_refl]
-      · simp only [inv_nonneg, norm_nonneg]
+      · apply zero_le_one
+      · refine le_add_of_le_of_nonneg ?_ ?_
+        · simp only [le_refl]
+        · simp only [inv_nonneg, norm_nonneg]
     · rw [add_comm]
       trans
-      apply zero_le_one
-      refine le_add_of_le_of_nonneg ?_ ?_
-      · simp only [le_refl]
-      · simp only [inv_nonneg, norm_nonneg]
+      · apply zero_le_one
+      · refine le_add_of_le_of_nonneg ?_ ?_
+        · simp only [le_refl]
+        · simp only [inv_nonneg, norm_nonneg]
     · simp only [Nat.cast_nonneg]
     · positivity
     · positivity
@@ -1216,18 +1207,15 @@ lemma use6and8 : norm ((Algebra.norm ℚ (rho α β σ α' β' γ' hirr htriv ha
       · positivity
   · unfold c₁₄
     simp only [← Real.rpow_natCast] at *
-    rw [Real.mul_rpow]
-    rw [← Real.rpow_mul]
+    rw [Real.mul_rpow, ← Real.rpow_mul]
     nth_rw 3 [mul_comm]
     nth_rw 1 [← Real.rpow_mul]
     nth_rw 5 [mul_comm]
     simp only [← mul_assoc]
     nth_rw  2 [mul_assoc]
-    rw [← Real.rpow_add]
-    rw [mul_comm]
+    rw [← Real.rpow_add, mul_comm]
     simp only [← mul_assoc]
-    rw [Real.rpow_mul]
-    rw [← Real.mul_rpow]
+    rw [Real.rpow_mul, ← Real.mul_rpow]
     nth_rw 7 [mul_comm]
     nth_rw 2 [mul_comm]
     apply mul_le_mul

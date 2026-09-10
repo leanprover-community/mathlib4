@@ -311,15 +311,13 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
           rw [house_intCast]
         · apply mul_le_mul
           · simp only [nsmul_eq_mul, smul_eq_mul]
-            rw [← mul_pow]
-            rw [mul_add]
+            rw [← mul_pow, mul_add]
             calc _ ≤  house ((↑(c₁ α' β' γ') * ↑(a q t) + ↑(c₁ α' β' γ') *
                   (↑(b q t) * β'))) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq :=?_
                  _ ≤  (↑|c₁ α' β' γ'| * (↑|↑q| * (1 + house
                      β'))) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := ?_
             · apply house_pow_le _ _
-            · rw [← mul_add]
-              rw [pow_le_pow_iff_left₀]
+            · rw [← mul_add, pow_le_pow_iff_left₀]
               · have := house_add_mul_le α' β' γ' q t
                 simp only [mul_assoc] at *
                 norm_cast at *
@@ -431,9 +429,7 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
       · simp only [← mul_assoc]
         rw [← mul_pow]
         simp only [mul_assoc]
-        rw [← mul_pow]
-        rw [← mul_pow]
-        rw [← mul_pow]
+        rw [← mul_pow, ← mul_pow, ← mul_pow]
         simp only [Int.cast_abs,
         Nat.abs_cast, Int.cast_natCast, zpow_natCast]
         rw [mul_comm ((1 + house β') ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
@@ -449,12 +445,9 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
         rw [mul_comm  ((c₆ α' β' γ' * ↑q) ^ r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (c₇ α' β'
             γ' ^ q)]
         simp only [mul_assoc]
-        rw [← mul_pow]
-        rw [← mul_pow]
+        rw [← mul_pow, ← mul_pow]
         nth_rw 1 [← mul_assoc]
-        rw [← mul_pow]
-        rw [pow_mul]
-        rw [← mul_comm (q : ℝ) (c₆ α' β' γ')]
+        rw [← mul_pow, pow_mul, ← mul_comm (q : ℝ) (c₆ α' β' γ')]
         unfold c₇ c₆
         simp only [mul_assoc]
         rfl
@@ -698,8 +691,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
                 calc _ ≤ √(2 * ↑(m K)) * ↑(n K q) ^ (1 / 2 : ℝ) := ?_
                      _ ≤ √(2 * ↑(m K)) * ↑(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ^ (1 / 2 :
                          ℝ) := ?_
-                · rw [this]
-                  rw [Real.sqrt_mul]
+                · rw [this, Real.sqrt_mul]
                   refine mul_le_mul_of_nonneg_left ?_ ?_
                   · rw [le_iff_lt_or_eq]
                     right
@@ -757,9 +749,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
     simp only [← mul_assoc]
     nth_rw 1  [← Real.rpow_add]
     simp only [mul_assoc]
-    rw [← Real.mul_rpow]
-    rw [← mul_assoc]
-    rw [← mul_assoc]
+    rw [← Real.mul_rpow, ← mul_assoc, ← mul_assoc]
     nth_rw 8 [mul_comm]
     rw [mul_rotate]
     nth_rw 1 [← mul_assoc]

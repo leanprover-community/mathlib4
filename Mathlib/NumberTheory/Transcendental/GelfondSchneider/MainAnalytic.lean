@@ -222,8 +222,7 @@ lemma systemCoeffs_map_eq_exp_mul_r :
     change _ = σ ((↑(a q t) + b q t • β') ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ)
         * (α' ^ (a q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)))
         * (γ' ^ (b q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1))))
-    rw [map_mul]
-    rw [map_mul]
+    rw [map_mul, map_mul]
     nth_rw 1 [mul_assoc]
     have : σ ((↑(a q t) + (b q t) • β') ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) =
         (↑(a q t) + ↑(b q t) * β) ^ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) := by
@@ -441,14 +440,12 @@ lemma ρ_is_int :
   · rw [Finset.smul_sum]
     apply IsIntegral.sum
     intros x hx
-    rw [← mul_assoc, H2]
-    rw [zsmul_eq_mul]
+    rw [← mul_assoc, H2, zsmul_eq_mul]
     nth_rw 1 [mul_comm]
     rw [mul_assoc]
     apply IsIntegral.mul
     · exact RingOfIntegers.isIntegral_coe ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) x)
-    · rw [mul_comm]
-      rw [← zsmul_eq_mul]
+    · rw [mul_comm, ← zsmul_eq_mul]
       have triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
          ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
         simp only [zsmul_eq_mul, Int.cast_mul]; ring
@@ -469,8 +466,7 @@ lemma ρ_is_int :
            * c₁ α' β' γ' ^ (m K * q) • α' ^ ((a q x) *
            (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)) * c₁ α' β' γ' ^ (m K * q) •
              γ' ^ ((b q x) * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)))) := by
-          rw [← H]
-          rw [neg_smul]
+          rw [← H, neg_smul]
           simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
             IsIntegral.neg_iff]
       clear H

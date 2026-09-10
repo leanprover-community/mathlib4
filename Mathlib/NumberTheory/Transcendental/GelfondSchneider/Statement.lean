@@ -171,8 +171,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
             · simp only [tsub_le_iff_right, sub_add_cancel]
               rw [mul_comm]
               norm_cast
-          · rw [sub_eq_neg_add]
-            rw [mul_add]
+          · rw [sub_eq_neg_add, mul_add]
             simp only [mul_neg, le_neg_add_iff_add_le]
             calc _ ≤  2 *  (6 * (↑(h K))) + 2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
                 ℝ) := ?_
@@ -184,9 +183,9 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
               apply mul_le_mul (le_refl _) (by norm_cast) (by positivity) (by positivity)
             · ring_nf; simp only [le_refl]
     trans
-    apply this
-    simp only [Real.rpow_ofNat]
-    apply H6
+    · apply this
+    · simp only [Real.rpow_ofNat]
+      apply H6
     · exact c15_nonneg α β σ α' β' γ' hirr htriv habc
     · apply div_ne_zero
       · have : 3 * (h K) < ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
