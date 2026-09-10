@@ -6,9 +6,9 @@ Authors: Kenny Lau, Devon Tuma, Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Regular
-public import Mathlib.Algebra.GroupWithZero.Action.Basic
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Regular
