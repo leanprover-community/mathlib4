@@ -89,13 +89,13 @@ theorem edist_eq (hf : Isometric f) (x y : α) : edist (f x) (f y) = edist x y :
 theorem lipschitzWith (h : Isometric f) : LipschitzWith 1 f :=
   LipschitzWith.of_edist_le fun x y => (h x y).le
 
-@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
+@[deprecated (since := "2026-08-16")] alias _root_.Isometry.lipschitz := lipschitzWith
 @[deprecated (since := "2026-09-10")] alias _root_.Isometry.lipschitzWith := lipschitzWith
 
 theorem antilipschitzWith (h : Isometric f) : AntilipschitzWith 1 f := fun x y => by
   simp only [h x y, ENNReal.coe_one, one_mul, le_refl]
 
-@[deprecated (since := "2026-08-16")] alias antilipschitz := antilipschitzWith
+@[deprecated (since := "2026-08-16")] alias _root_.Isometry.antilipschitz := antilipschitzWith
 @[deprecated (since := "2026-09-10")] alias _root_.Isometry.antilipschitzWith :=
   antilipschitzWith
 
@@ -315,7 +315,8 @@ theorem preimage_setOfPred_dist (hf : Isometric f) (x : α) (p : ℝ → Prop) :
     f ⁻¹' { y | p (dist y (f x)) } = { y | p (dist y x) } := by
   simp [hf.dist_eq]
 
-@[deprecated (since := "2026-07-09")] alias preimage_setOf_dist := preimage_setOfPred_dist
+@[deprecated (since := "2026-07-09")] alias _root_.Isometry.preimage_setOf_dist :=
+  preimage_setOfPred_dist
 @[deprecated (since := "2026-09-10")] alias _root_.Isometry.preimage_setOfPred_dist :=
   preimage_setOfPred_dist
 
