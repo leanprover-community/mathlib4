@@ -33,8 +33,6 @@ In a strictly convex space, we prove
 - `norm_add_lt_of_not_sameRay`, `sameRay_iff_norm_add`, `dist_add_dist_eq_iff`:
   the triangle inequality `dist x y + dist y z ≤ dist x z` is a strict inequality unless `y` belongs
   to the segment `[x -[ℝ] z]`.
-- `Isometric.affineIsometryOfStrictConvexSpace`: an isometry of `NormedAddTorsor`s for real
-  normed spaces, strictly convex in the case of the codomain, is an affine isometry.
 
 We also provide several lemmas that can be used as alternative constructors for `StrictConvex ℝ E`:
 

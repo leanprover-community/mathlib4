@@ -16,6 +16,9 @@ public import Mathlib.Analysis.Normed.Affine.Isometry
 This file proves results about betweenness for points in an affine space for a strictly convex
 space.
 
+We also prove `Isometric.affineIsometryOfStrictConvexSpace`: an isometry of `NormedAddTorsor`s for
+real normed spaces, strictly convex in the case of the codomain, is an affine isometry.
+
 -/
 
 @[expose] public section
