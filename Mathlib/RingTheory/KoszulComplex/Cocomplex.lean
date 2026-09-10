@@ -198,9 +198,8 @@ instance (T : Type v) [CommRing T] (g : R →+* T) :
       ModuleCat.hom_add, LinearMap.baseChange_add]
     rfl
 
-variable {S : Type (max u v)} [CommRing S] (f : R →+* S)
+variable {S : Type u} [CommRing S] (f : R →+* S)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The base change isomorphism for Koszul cocomplex. -/
 noncomputable def baseChangeIso {M : Type u} [AddCommGroup M] [Module R M] (x : M) :
     letI := f.toAlgebra
