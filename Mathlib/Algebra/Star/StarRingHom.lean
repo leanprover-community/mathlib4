@@ -359,6 +359,10 @@ nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
       simpa only [apply_inv_apply, inv_apply_apply] using!
         congr_arg (inv e) (map_star e (inv e b)).symm }
 
+@[simp]
+theorem toRingEquiv_symm (e : A ≃⋆+* B) :
+    e.symm.toRingEquiv = e.toRingEquiv.symm := rfl
+
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : A ≃⋆+* B) : A → B := e
 
