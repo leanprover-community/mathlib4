@@ -861,14 +861,7 @@ theorem ofLeftInverse'_symm_apply {g : S → R} {f : R →ₙ+* S} (h : Function
 
 end RingEquiv
 
-namespace NonUnitalSubring
-
-variable {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-
-theorem closure_preimage_le (f : R →ₙ+* S) (s : Set S) :
-    closure ((f : R → S) ⁻¹' s) ≤ (closure s).comap f :=
-  NonUnitalRingHom.closure_preimage_le f s
-
-end NonUnitalSubring
+@[deprecated (since := "2026-09-10")]
+alias NonUnitalSubring.closure_preimage_le := NonUnitalRingHom.closure_preimage_le
 
 end Hom
