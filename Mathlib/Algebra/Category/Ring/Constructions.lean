@@ -204,15 +204,8 @@ theorem coproductCocone_inl :
 theorem coproductCocone_inr :
     (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
--- The attributes identify `↑(coproductCocone A B).pt` with `↑A ⊗[ℤ] ↑B` at `.implicit`
--- transparency. Do not route `uniq` through `RingHom.toIntAlgHom`/`liftEquiv`: that equates the
--- diamond `Ring.toIntAlgebra (A ⊗[ℤ] B) ≟ Algebra.TensorProduct.leftAlgebra`, which is only
--- default-transparency defeq and hence needs `backward.isDefEq.respectTransparency false`.
--- Overall conclusion: The difficult part was getting rid of `respectTransparency false`;
--- `instances false` was only needed because `respectTransparency false` suppresses the
--- first-pass implicit bump.
-attribute [local implicit_reducible] coproductCocone Limits.BinaryCofan.mk in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
 def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
@@ -221,20 +214,17 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
       (fun _ _ => by apply Commute.all)).toRingHom
   fac (s : BinaryCofan A B) := fun ⟨j⟩ => by cases j <;> ext a <;> simp
   uniq (s : BinaryCofan A B) := by
-    intro m hm
-    have h1 : ∀ a : ↑A, m.hom (a ⊗ₜ 1) = s.inl.hom a := fun a ↦
-      congr($(congrArg Hom.hom (hm (Discrete.mk WalkingPair.left))) a)
-    have h2 : ∀ b : ↑B, m.hom (1 ⊗ₜ b) = s.inr.hom b := fun b ↦
-      congr($(congrArg Hom.hom (hm (Discrete.mk WalkingPair.right))) b)
-    ext x
-    induction x using TensorProduct.induction_on with
-    | zero => simp
-    | tmul a b =>
-      have key : (a ⊗ₜ[ℤ] b : ↑A ⊗[ℤ] ↑B) = a ⊗ₜ 1 * 1 ⊗ₜ b := by
-        rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-      rw [key, map_mul, map_mul, h1, h2]
-      simp
-    | add x y hx hy => simp [hx, hy]
+    rintro ⟨m : A ⊗[ℤ] B →+* s.pt⟩ hm
+    apply CommRingCat.hom_ext
+    apply RingHom.toIntAlgHom_injective
+    apply Algebra.TensorProduct.liftEquiv.symm.injective
+    apply Subtype.ext
+    rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
+    constructor
+    · ext a
+      simp [map_one, mul_one, ← hm (Discrete.mk WalkingPair.left)]
+    · ext b
+      simp [map_one, ← hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=

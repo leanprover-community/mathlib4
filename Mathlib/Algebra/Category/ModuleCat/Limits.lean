@@ -233,9 +233,8 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
         ext
         exact DirectLimit.of_f }
 
--- this was just failing because `respectTransparency false` suppressed the bump
-attribute [local implicit_reducible] directLimitCocone directLimitDiagram in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]

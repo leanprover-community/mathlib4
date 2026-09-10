@@ -481,7 +481,6 @@ noncomputable def mapHomologicalComplexObjXIso (i : ι) :
   else H.mapIso (homotopyCofiber.XIso φ i hi) ≪≫
     (homotopyCofiber.XIso ((H.mapHomologicalComplex c).map φ) i hi).symm
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inlX_mapHomologicalComplexObjXIso_inv
@@ -491,7 +490,6 @@ lemma inlX_mapHomologicalComplexObjXIso_inv
   obtain rfl := c.next_eq' hij
   simp [mapHomologicalComplexObjXIso, dite_eq_left hij, ← Functor.map_comp]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inrX_mapHomologicalComplexObjXIso_inv (i : ι) :

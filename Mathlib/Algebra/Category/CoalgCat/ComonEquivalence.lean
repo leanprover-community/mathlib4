@@ -126,36 +126,6 @@ attribute [local instance] instMonoidalCategoryAux
 
 open MonoidalCategory ModuleCat.MonoidalCategory
 
-set_option linter.style.longLine true in
-/-
-[Meta.isDefEq] ❌️ [reducible] CoalgebraStruct.comul =?= CoalgebraStruct.comul ▼
-  [] ✅️ [reducible] R =?= ?m.107 ▶
-  [] ✅️ [default] ↑(K ⊗ L).toModuleCat =?= ↑?X ▶
-  [] ✅️ [default] CommRing.toCommSemiring =?= CommRing.toCommSemiring ▶
-  [] ✅️ [default] (K ⊗ L).isAddCommGroup.toAddCommMonoid =?= (K ⊗ L).isAddCommGroup.toAddCommMonoid ▶
-  [] ✅️ [default] (K ⊗ L).isModule =?= (K ⊗ L).isModule ▶
-  [] ❌️ [default] (K ⊗ L).instCoalgebra.toCoalgebraStruct =?= ofComonObjCoalgebraStruct (K ⊗ L).toModuleCat ▼
-    [] ❌️ [default] ofComonObjCoalgebraStruct
-          ((comonEquivalence R).symm.inverse.obj K ⊗
-              (comonEquivalence R).symm.inverse.obj L).X =?= ofComonObjCoalgebraStruct (K ⊗ L).toModuleCat ▼
-      [] ✅️ [default] ((comonEquivalence R).symm.inverse.obj K ⊗
-              (comonEquivalence R).symm.inverse.obj L).X =?= (K ⊗ L).toModuleCat ▶
-      [] ❌️ [default] ((comonEquivalence R).symm.inverse.obj K ⊗ (comonEquivalence R).symm.inverse.obj L).comon =?= ?inst✝ ▼
-        [] ((comonEquivalence R).symm.inverse.obj K ⊗
-                (comonEquivalence R).symm.inverse.obj L).comon [nonassignable] =?= ?inst✝ [assignable]
-        [assign.checkTypes] ❌️ (?inst✝ : ComonObj
-              (K ⊗
-                  L).toModuleCat) := (((comonEquivalence R).symm.inverse.obj K ⊗
-                (comonEquivalence R).symm.inverse.obj
-                  L).comon : ComonObj
-              ((comonEquivalence R).symm.inverse.obj K ⊗ (comonEquivalence R).symm.inverse.obj L).X) ▼
-          [] ❌️ [instances] ComonObj
-                (K ⊗
-                    L).toModuleCat =?= ComonObj
-                ((comonEquivalence R).symm.inverse.obj K ⊗ (comonEquivalence R).symm.inverse.obj L).X ▶
-          [synthInstance] ❌️ ComonObj (K ⊗ L).toModuleCat ▶
--/
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 theorem tensorObj_comul (K L : CoalgCat R) :
     Coalgebra.comul (R := R) (A := (K ⊗ L : CoalgCat R))
@@ -187,7 +157,6 @@ theorem rightUnitor_hom_toLinearMap :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj :
@@ -198,7 +167,6 @@ theorem comul_tensorObj :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_right :
@@ -211,7 +179,6 @@ theorem comul_tensorObj_tensorObj_right :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
@@ -224,7 +191,6 @@ theorem comul_tensorObj_tensorObj_left :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj :
     Coalgebra.counit (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
@@ -233,7 +199,6 @@ theorem counit_tensorObj :
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_right :
     Coalgebra.counit (R := R)
@@ -243,7 +208,6 @@ theorem counit_tensorObj_tensorObj_right :
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_left :
     Coalgebra.counit (R := R)

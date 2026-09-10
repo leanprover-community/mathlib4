@@ -185,7 +185,6 @@ section Adjunction
 
 variable [P.IsStableUnderComposition] [Q.IsStableUnderBaseChange]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `P.Over.map` is left adjoint to `P.Over.pullback` if pullbacks of morphisms satisfying `P`
@@ -346,7 +345,6 @@ section Adjunction
 
 variable [P.IsStableUnderComposition] [Q.IsStableUnderCobaseChange]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in

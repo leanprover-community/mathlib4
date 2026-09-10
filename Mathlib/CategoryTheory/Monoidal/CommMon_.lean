@@ -366,7 +366,6 @@ end EquivLaxBraidedFunctorPUnit
 
 open EquivLaxBraidedFunctorPUnit
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Commutative monoid objects in `C` are "just" braided lax monoidal functors from the trivial

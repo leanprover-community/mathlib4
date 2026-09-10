@@ -349,7 +349,6 @@ def id : StrictlyUnitaryPseudofunctor B B where
   map_id _ := rfl
   mapId_eq_eqToIso _ := rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryPseudofunctor`. -/

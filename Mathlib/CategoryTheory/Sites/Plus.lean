@@ -227,7 +227,6 @@ variable (D) in
 def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
   app P := J.toPlus P
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `(P ⟶ P⁺)⁺ = P⁺ ⟶ P⁺⁺` -/

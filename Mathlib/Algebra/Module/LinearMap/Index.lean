@@ -90,7 +90,6 @@ Potential fix: mark `LinearMap.ker` implicit-reducible, then remove both backwar
 options.
 -/
 set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] public lemma index_id :
     (id : M →ₗ[R] M).index = 0 := by

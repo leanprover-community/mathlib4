@@ -129,7 +129,6 @@ end MonFunctorCategoryEquivalence
 
 open MonFunctorCategoryEquivalence
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `D` is a monoidal category,
@@ -239,7 +238,6 @@ end ComonFunctorCategoryEquivalence
 
 open ComonFunctorCategoryEquivalence
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
@@ -261,7 +259,6 @@ namespace CommMonFunctorCategoryEquivalence
 
 variable {C D}
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Functor translating a commutative monoid object in a functor category

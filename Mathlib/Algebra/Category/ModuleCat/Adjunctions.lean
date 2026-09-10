@@ -364,7 +364,7 @@ is isomorphic to the original functor.
 def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
-attribute [local implicit_reducible] Free embedding in
+set_option backward.isDefEq.respectTransparency false in
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their
 compositions with the embedding functor are isomorphic.
 -/
@@ -380,8 +380,7 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
       | single f' r =>
         rw [Iso.app_hom, Iso.app_hom, ← smul_single_one, F.map_smul, G.map_smul, smul_comp,
           comp_smul]
-        change r • ((embedding R C ⋙ F).map f' ≫ α.hom.app Y) =
-          r • (α.hom.app X ≫ (embedding R C ⋙ G).map f')
+        change r • (embedding R C ⋙ F).map f' ≫ _ = r • _ ≫ (embedding R C ⋙ G).map f'
         rw [α.hom.naturality f'])
 
 /-- `Free.lift` is unique amongst `R`-linear functors `Free R C ⥤ D`

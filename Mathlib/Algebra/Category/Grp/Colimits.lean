@@ -101,10 +101,8 @@ lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
   simp only [DFinsupp.singleAddHom_apply]
   exact AddSubgroup.subset_closure ⟨j, j', f, x, rfl⟩
 
-attribute [local implicit_reducible] uliftFunctor in
--- set_option backward.isDefEq.respectTransparency.instances false in
--- set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 The obvious additive map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
 -/
@@ -129,7 +127,6 @@ lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
   simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single]
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option dsimp.resynthInstances false in

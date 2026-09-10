@@ -131,7 +131,6 @@ section
 
 variable {B} {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B'] (F : Pseudofunctor B' B)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The hom direction of the (strong) natural isomorphism of pseudofunctors
@@ -141,7 +140,6 @@ noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
   app b' := 𝟙 _
   naturality f := (ρ_ _) ≪≫ (λ_ _).symm
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inv direction of the (strong) natural isomorphism of pseudofunctors

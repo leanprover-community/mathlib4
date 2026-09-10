@@ -627,7 +627,6 @@ set_option backward.isDefEq.respectTransparency.instances false in
 noncomputable def inv : P.X ⟶ TensorBimod.X (regular R) P :=
   (λ_ P.X).inv ≫ (η[R.X] ▷ _) ≫ coequalizer.π _ _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
@@ -692,7 +691,6 @@ set_option backward.isDefEq.respectTransparency.instances false in
 noncomputable def inv : P.X ⟶ TensorBimod.X P (regular S) :=
   (ρ_ P.X).inv ≫ (_ ◁ η[S.X]) ≫ coequalizer.π _ _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by

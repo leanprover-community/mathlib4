@@ -194,7 +194,6 @@ instance commShiftOp [CommShift F A] :
 lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
     (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts on the opposite

@@ -47,7 +47,6 @@ noncomputable def equivPiTensorComplSingletonTensor (i₀ : ι) :
 
 variable (i₀ : ι)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 #adaptation_note
 /--
 We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
@@ -87,7 +86,6 @@ Then both backward compatibility options can go: first `respectTransparency fals
 `instanceSearchTypes false`.
 -/
 set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 set_option dsimp.resynthInstances false in
 @[simp]

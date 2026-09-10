@@ -94,11 +94,8 @@ def free : Type u ⥤ AddCommMonCat.{u} where
   obj α := .of (α →₀ ℕ)
   map f := ofHom (Finsupp.mapDomain.addMonoidHom f)
 
--- Under `respectTransparency false` this needed `instances false`, because the old mode suppresses
--- the first-pass implicit bump, so instance-mvar assignments (and the synth-and-unify fallback)
--- ran at `.reducible`; with the default options, `implicit_reducible` on `free` suffices.
-attribute [local implicit_reducible] free in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative monoids. -/
 noncomputable
 def adj : free ⊣ forget AddCommMonCat.{u} where

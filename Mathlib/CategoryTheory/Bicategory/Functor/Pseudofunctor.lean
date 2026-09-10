@@ -152,7 +152,6 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
 instance : Inhabited (B ⥤ᵖ B) :=
   ⟨id B⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of pseudofunctors. -/

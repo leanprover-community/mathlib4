@@ -172,7 +172,6 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
   | _ => funext; rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The 2-isomorphism `normalizeIso p f` is natural in `f`. -/
