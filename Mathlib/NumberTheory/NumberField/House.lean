@@ -6,7 +6,6 @@ Authors: Michail Karatarakis
 module
 
 public import Mathlib.NumberTheory.SiegelsLemma
-public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 
@@ -37,7 +36,7 @@ open Module.Free Module canonicalEmbedding Matrix Finset
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- The house of an algebraic number as the norm of its image by the canonical embedding. -/
-def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
+abbrev house (α : K) : ℝ := ‖canonicalEmbedding K α‖
 
 /-- The house is the largest of the modulus of the conjugates of an algebraic number. -/
 theorem house_eq_sup' (α : K) :
@@ -48,7 +47,6 @@ theorem house_sum_le_sum_house {ι : Type*} (s : Finset ι) (α : ι → K) :
     house (∑ i ∈ s, α i) ≤ ∑ i ∈ s, house (α i) := by
   simp only [house, map_sum]; apply norm_sum_le_of_le; intros; rfl
 
-@[simp]
 theorem house_nonneg (α : K) : 0 ≤ house α := norm_nonneg _
 
 theorem house_mul_le (α β : K) : house (α * β) ≤ house α * house β := by
@@ -295,9 +293,9 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       gcongr
       apply norm_mul_le
     · rw [mul_assoc, mul_assoc]
+      -- `gcongr` discharges the `0 ≤ house _` side goal itself, `house` being a norm.
       gcongr _ * (?_ * _)
-      · apply house_nonneg
-      · exact habs kr.1 lu.1
+      exact habs kr.1 lu.1
     · gcongr
       simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
     · rw [mul_right_comm, c₂]
@@ -368,18 +366,3 @@ theorem exists_ne_zero_int_vec_house_le :
 end
 
 end NumberField.house
-
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq
-
-/-- Extension of the `positivity` tactic for the house of an algebraic number:
-it is always non-negative. -/
-@[positivity NumberField.house _]
-meta def evalHouse : PositivityExt where eval {_ _} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  let .app _ x ← whnfR e | throwError "not NumberField.house"
-  let p ← mkAppM ``NumberField.house_nonneg #[x]
-  pure (.nonnegative p)
-
-end Mathlib.Meta.Positivity
