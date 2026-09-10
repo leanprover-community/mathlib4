@@ -12,7 +12,7 @@ import Mathlib.Topology.MetricSpace.Infsep
 # The Second Main Theorem of Value Distribution Theory
 
 This file will, in the future, establish the second main theorem of Value Distribution Theory. At
-present, it collect material that will be used in the proof.
+present, it collects material that will be used in the proof.
 
 See Section VI.4 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
 discussion. A full formalized proof of the second main theorem is available at
