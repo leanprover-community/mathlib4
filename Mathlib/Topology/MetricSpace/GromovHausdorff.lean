@@ -99,7 +99,7 @@ def GHSpace.Rep (p : GHSpace) : Type :=
 
 theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X]
     {p : NonemptyCompacts ℓ_infty_ℝ} :
-    ⟦p⟧ = toGHSpace X ↔ ∃ Ψ : X → ℓ_infty_ℝ, Isometry Ψ ∧ range Ψ = p := by
+    ⟦p⟧ = toGHSpace X ↔ ∃ Ψ : X → ℓ_infty_ℝ, Isometric Ψ ∧ range Ψ = p := by
   simp only [toGHSpace, Quotient.eq]
   refine ⟨fun h => ?_, ?_⟩
   · rcases Setoid.symm h with ⟨e⟩
@@ -184,7 +184,7 @@ theorem dist_ghDist (p q : GHSpace) : dist p q = ghDist p.Rep q.Rep := by
 of isometric copies of the spaces, in any metric space. -/
 theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X]
     {Y : Type v} [MetricSpace Y] [CompactSpace Y] [Nonempty Y] {γ : Type w} [MetricSpace γ]
-    {Φ : X → γ} {Ψ : Y → γ} (ha : Isometry Φ) (hb : Isometry Ψ) :
+    {Φ : X → γ} {Ψ : Y → γ} (ha : Isometric Φ) (hb : Isometric Ψ) :
     ghDist X Y ≤ hausdorffDist (range Φ) (range Ψ) := by
   /- For the proof, we want to embed `γ` in `ℓ^∞(ℝ)`, to say that the Hausdorff distance is realized
     in `ℓ^∞(ℝ)` and therefore bounded below by the Gromov-Hausdorff-distance. However, `γ` is not
@@ -193,8 +193,8 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
   let s : Set γ := range Φ ∪ range Ψ
   let Φ' : X → s := fun y => ⟨Φ y, mem_union_left _ (mem_range_self _)⟩
   let Ψ' : Y → s := fun y => ⟨Ψ y, mem_union_right _ (mem_range_self _)⟩
-  have IΦ' : Isometry Φ' := fun x y => ha x y
-  have IΨ' : Isometry Ψ' := fun x y => hb x y
+  have IΦ' : Isometric Φ' := fun x y => ha x y
+  have IΨ' : Isometric Ψ' := fun x y => hb x y
   have : IsCompact s := (isCompact_range ha.continuous).union (isCompact_range hb.continuous)
   have : CompactSpace s := ⟨isCompact_iff_isCompact_univ.1 ‹IsCompact s›⟩
   have ΦΦ' : Φ = Subtype.val ∘ Φ' := rfl
@@ -370,7 +370,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     · refine (Set.Nonempty.prod ?_ ?_).image _ <;> exact ⟨_, rfl⟩
     · rintro b ⟨⟨p, q⟩, ⟨hp, hq⟩, rfl⟩
       exact B p q hp hq
-  · exact ghDist_le_hausdorffDist (isometry_optimalGHInjl X Y) (isometry_optimalGHInjr X Y)
+  · exact ghDist_le_hausdorffDist (isometric_optimalGHInjl X Y) (isometric_optimalGHInjr X Y)
 
 /-- The Gromov-Hausdorff distance can also be realized by a coupling in `ℓ^∞(ℝ)`, by embedding
 the optimal coupling through its Kuratowski embedding. -/
@@ -378,13 +378,13 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
     (Y : Type v) [MetricSpace Y] [CompactSpace Y] [Nonempty Y] :
     ∃ Φ : X → ℓ_infty_ℝ,
       ∃ Ψ : Y → ℓ_infty_ℝ,
-        Isometry Φ ∧ Isometry Ψ ∧ ghDist X Y = hausdorffDist (range Φ) (range Ψ) := by
+        Isometric Φ ∧ Isometric Ψ ∧ ghDist X Y = hausdorffDist (range Φ) (range Ψ) := by
   let F := kuratowskiEmbedding (OptimalGHCoupling X Y)
   let Φ := F ∘ optimalGHInjl X Y
   let Ψ := F ∘ optimalGHInjr X Y
   refine ⟨Φ, Ψ, ?_, ?_, ?_⟩
-  · exact (kuratowskiEmbedding.isometry _).comp (isometry_optimalGHInjl X Y)
-  · exact (kuratowskiEmbedding.isometry _).comp (isometry_optimalGHInjr X Y)
+  · exact (kuratowskiEmbedding.isometry _).comp (isometric_optimalGHInjl X Y)
+  · exact (kuratowskiEmbedding.isometry _).comp (isometric_optimalGHInjr X Y)
   · rw [← image_univ, ← image_univ, image_comp F, image_univ, image_comp F (optimalGHInjr X Y),
       image_univ, ← hausdorffDist_optimal]
     exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
@@ -449,9 +449,9 @@ instance : MetricSpace GHSpace where
     let γ1 := OptimalGHCoupling X Y
     let γ2 := OptimalGHCoupling Y Z
     let Φ : Y → γ1 := optimalGHInjr X Y
-    have hΦ : Isometry Φ := isometry_optimalGHInjr X Y
+    have hΦ : Isometric Φ := isometric_optimalGHInjr X Y
     let Ψ : Y → γ2 := optimalGHInjl Y Z
-    have hΨ : Isometry Ψ := isometry_optimalGHInjl Y Z
+    have hΨ : Isometric Ψ := isometric_optimalGHInjl Y Z
     have Comm : toGlueL hΦ hΨ ∘ optimalGHInjr X Y = toGlueR hΦ hΨ ∘ optimalGHInjl Y Z :=
       toGlue_commute hΦ hΨ
     calc
@@ -459,18 +459,18 @@ instance : MetricSpace GHSpace where
         rw [x.toGHSpace_rep, z.toGHSpace_rep]
       _ ≤ hausdorffDist (range (toGlueL hΦ hΨ ∘ optimalGHInjl X Y))
             (range (toGlueR hΦ hΨ ∘ optimalGHInjr Y Z)) :=
-        (ghDist_le_hausdorffDist ((toGlueL_isometry hΦ hΨ).comp (isometry_optimalGHInjl X Y))
-          ((toGlueR_isometry hΦ hΨ).comp (isometry_optimalGHInjr Y Z)))
+        (ghDist_le_hausdorffDist ((toGlueL_isometric hΦ hΨ).comp (isometric_optimalGHInjl X Y))
+          ((toGlueR_isometric hΦ hΨ).comp (isometric_optimalGHInjr Y Z)))
       _ ≤ hausdorffDist (range (toGlueL hΦ hΨ ∘ optimalGHInjl X Y))
               (range (toGlueL hΦ hΨ ∘ optimalGHInjr X Y)) +
             hausdorffDist (range (toGlueL hΦ hΨ ∘ optimalGHInjr X Y))
               (range (toGlueR hΦ hΨ ∘ optimalGHInjr Y Z)) := by
         refine hausdorffDist_triangle <| hausdorffEDist_ne_top_of_nonempty_of_bounded
           (range_nonempty _) (range_nonempty _) ?_ ?_
-        · exact (isCompact_range (Isometry.continuous
-            ((toGlueL_isometry hΦ hΨ).comp (isometry_optimalGHInjl X Y)))).isBounded
-        · exact (isCompact_range (Isometry.continuous
-            ((toGlueL_isometry hΦ hΨ).comp (isometry_optimalGHInjr X Y)))).isBounded
+        · exact (isCompact_range (Isometric.continuous
+            ((toGlueL_isometric hΦ hΨ).comp (isometric_optimalGHInjl X Y)))).isBounded
+        · exact (isCompact_range (Isometric.continuous
+            ((toGlueL_isometric hΦ hΨ).comp (isometric_optimalGHInjr X Y)))).isBounded
       _ = hausdorffDist (toGlueL hΦ hΨ '' range (optimalGHInjl X Y))
               (toGlueL hΦ hΨ '' range (optimalGHInjr X Y)) +
             hausdorffDist (toGlueR hΦ hΨ '' range (optimalGHInjl Y Z))
@@ -478,8 +478,8 @@ instance : MetricSpace GHSpace where
         simp only [← range_comp, Comm]
       _ = hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) +
             hausdorffDist (range (optimalGHInjl Y Z)) (range (optimalGHInjr Y Z)) := by
-        rw [hausdorffDist_image (toGlueL_isometry hΦ hΨ),
-          hausdorffDist_image (toGlueR_isometry hΦ hΨ)]
+        rw [hausdorffDist_image (toGlueL_isometric hΦ hΨ),
+          hausdorffDist_image (toGlueR_isometric hΦ hΨ)]
       _ = dist (toGHSpace X) (toGHSpace Y) + dist (toGHSpace Y) (toGHSpace Z) := by
         rw [hausdorffDist_optimal, hausdorffDist_optimal, ghDist, ghDist]
       _ = dist x y + dist y z := by rw [x.toGHSpace_rep, y.toGHSpace_rep, z.toGHSpace_rep]
@@ -504,8 +504,8 @@ variable {X : Type u} [MetricSpace X]
 
 theorem ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
     dist p.toGHSpace q.toGHSpace ≤ dist p q := by
-  have ha : Isometry ((↑) : p → X) := isometry_subtype_coe
-  have hb : Isometry ((↑) : q → X) := isometry_subtype_coe
+  have ha : Isometric ((↑) : p → X) := isometry_subtype_coe
+  have hb : Isometric ((↑) : q → X) := isometry_subtype_coe
   have A : dist p q = hausdorffDist (p : Set X) q := rfl
   have I : ↑p = range ((↑) : p → X) := Subtype.range_coe_subtype.symm
   have J : ↑q = range ((↑) : q → X) := Subtype.range_coe_subtype.symm
@@ -553,8 +553,8 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     glueMetricApprox (fun x : s => (x : X)) (fun x => Φ x) (ε₂ / 2 + δ) (by linarith) this
   let Fl := @Sum.inl X Y
   let Fr := @Sum.inr X Y
-  have Il : Isometry Fl := Isometry.of_dist_eq fun x y => rfl
-  have Ir : Isometry Fr := Isometry.of_dist_eq fun x y => rfl
+  have Il : Isometric Fl := Isometric.of_dist_eq fun x y => rfl
+  have Ir : Isometric Fr := Isometric.of_dist_eq fun x y => rfl
   /- The proof goes as follows : the `ghDist` is bounded by the Hausdorff distance of the images
     in the coupling, which is bounded (using the triangular inequality) by the sum of the Hausdorff
     distances of `X` and `s` (in the coupling or, equivalently in the original space), of `s` and
@@ -912,7 +912,7 @@ structure AuxGluingStruct (A : Type) [MetricSpace A] : Type 1 where
   Space : Type
   metric : MetricSpace Space
   embed : A → Space
-  isom : Isometry embed
+  isom : Isometric embed
 
 attribute [local instance] AuxGluingStruct.metric
 
@@ -927,11 +927,11 @@ instance (A : Type) [MetricSpace A] : Inhabited (AuxGluingStruct A) :=
 at step `n` by adding `X (n+1)`, glued in an optimal way to the `X n` already sitting there. -/
 def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
   Nat.recOn n default fun n Y =>
-    { Space := GlueSpace Y.isom (isometry_optimalGHInjl (X n) (X (n + 1)))
+    { Space := GlueSpace Y.isom (isometric_optimalGHInjl (X n) (X (n + 1)))
       metric := by infer_instance
       embed :=
-        toGlueR Y.isom (isometry_optimalGHInjl (X n) (X (n + 1))) ∘ optimalGHInjr (X n) (X (n + 1))
-      isom := (toGlueR_isometry _ _).comp (isometry_optimalGHInjr (X n) (X (n + 1))) }
+        toGlueR Y.isom (isometric_optimalGHInjl (X n) (X (n + 1))) ∘ optimalGHInjr (X n) (X (n + 1))
+      isom := (toGlueR_isometric _ _).comp (isometric_optimalGHInjr (X n) (X (n + 1))) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Gromov-Hausdorff space is complete. -/
@@ -947,14 +947,14 @@ instance : CompleteSpace GHSpace := by
   -- this equality is true by definition but Lean unfolds some defs in the wrong order
   have E :
     ∀ n : ℕ,
-      GlueSpace (Y n).isom (isometry_optimalGHInjl (X n) (X (n + 1))) = (Y (n + 1)).Space :=
+      GlueSpace (Y n).isom (isometric_optimalGHInjl (X n) (X (n + 1))) = (Y (n + 1)).Space :=
     fun n => by dsimp only [Y, auxGluing]
   let c n := cast (E n)
-  have ic : ∀ n, Isometry (c n) := fun n x y => by dsimp only [Y, auxGluing]; exact rfl
+  have ic : ∀ n, Isometric (c n) := fun n x y => by dsimp only [Y, auxGluing]; exact rfl
   -- there is a canonical embedding of `Y n` in `Y (n+1)`, by construction
   let f : ∀ n, (Y n).Space → (Y (n + 1)).Space := fun n =>
-    c n ∘ toGlueL (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ))
-  have I : ∀ n, Isometry (f n) := fun n => (ic n).comp (toGlueL_isometry _ _)
+    c n ∘ toGlueL (Y n).isom (isometric_optimalGHInjl (X n) (X n.succ))
+  have I : ∀ n, Isometric (f n) := fun n => (ic n).comp (toGlueL_isometric _ _)
   -- consider the inductive limit `Z0` of the `Y n`, and then its completion `Z`
   let Z0 := Metric.InductiveLimit I
   let Z := UniformSpace.Completion Z0
@@ -962,33 +962,33 @@ instance : CompleteSpace GHSpace := by
   let coeZ := ((↑) : Z0 → Z)
   -- let `X2 n` be the image of `X n` in the space `Z`
   let X2 n := range (coeZ ∘ Φ n ∘ (Y n).embed)
-  have isom : ∀ n, Isometry (coeZ ∘ Φ n ∘ (Y n).embed) := by
+  have isom : ∀ n, Isometric (coeZ ∘ Φ n ∘ (Y n).embed) := by
     intro n
-    refine UniformSpace.Completion.coe_isometry.comp ?_
-    exact (toInductiveLimit_isometry _ _).comp (Y n).isom
+    refine UniformSpace.Completion.coe_isometric.comp ?_
+    exact (toInductiveLimit_isometric _ _).comp (Y n).isom
   -- The Hausdorff distance of `X2 n` and `X2 (n+1)` is by construction the distance between
   -- `u n` and `u (n+1)`, therefore bounded by `1/2^n`
   have X2n : ∀ n, X2 n =
     range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
-      (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjl (X n) (X n.succ)) := by
+      (isometric_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjl (X n) (X n.succ)) := by
     intro n
     change X2 n = range (coeZ ∘ Φ n.succ ∘ c n ∘
-      toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ)) ∘
+      toGlueR (Y n).isom (isometric_optimalGHInjl (X n) (X n.succ)) ∘
       optimalGHInjl (X n) (X n.succ))
     simp only [X2, Φ]
     rw [← toInductiveLimit_commute I]
     simp only [f, ← toGlue_commute, Function.comp_assoc]
   have X2nsucc : ∀ n, X2 n.succ =
       range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
-        (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjr (X n) (X n.succ)) := by
+        (isometric_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjr (X n) (X n.succ)) := by
     intro n
     rfl
   have D2 : ∀ n, hausdorffDist (X2 n) (X2 n.succ) < d n := fun n ↦ by
     rw [X2n n, X2nsucc n, range_comp, range_comp, hausdorffDist_image,
       hausdorffDist_optimal, ← dist_ghDist]
     · exact hu n n n.succ (le_refl n) (le_succ n)
-    · apply UniformSpace.Completion.coe_isometry.comp _
-      exact (toInductiveLimit_isometry _ _).comp ((ic n).comp (toGlueR_isometry _ _))
+    · apply UniformSpace.Completion.coe_isometric.comp _
+      exact (toInductiveLimit_isometric _ _).comp ((ic n).comp (toGlueR_isometric _ _))
   -- consider `X2 n` as a member `X3 n` of the type of nonempty compact subsets of `Z`, which
   -- is a metric space
   let X3 : ℕ → NonemptyCompacts Z := fun n =>

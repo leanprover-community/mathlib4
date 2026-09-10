@@ -15,7 +15,7 @@ show that every C⋆-algebra is a `RegularNormedAlgebra`.
 
 In addition, we show that in a `RegularNormedAlgebra` which is a `StarRing` for which the
 involution is isometric, that multiplication on the right is also an isometry (i.e.,
-`Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
+`Isometric (ContinuousLinearMap.mul 𝕜 E).flip`).
 -/
 
 public section
@@ -47,8 +47,10 @@ lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖�
 
 variable (E)
 
-lemma isometry_mul_flip : Isometry (mul 𝕜 E).flip :=
-  AddMonoidHomClass.isometry_of_norm _ (opNorm_mul_flip_apply 𝕜)
+lemma isometric_mul_flip : Isometric (mul 𝕜 E).flip :=
+  AddMonoidHomClass.isometric_of_norm _ (opNorm_mul_flip_apply 𝕜)
+
+@[deprecated (since := "2026-09-09")] alias isometry_mul_flip := isometric_mul_flip
 
 end ContinuousLinearMap
 
@@ -58,7 +60,7 @@ variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
 instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
-  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
+  isometric_mul' := AddMonoidHomClass.isometric_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_unitClosedBall_eq_nnnorm]
     refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_

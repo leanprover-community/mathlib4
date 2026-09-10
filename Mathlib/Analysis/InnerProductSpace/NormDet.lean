@@ -405,13 +405,13 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
         ((g.symm.toLinearIsometry.toLinearMap ∘ₗ f.rangeRestrict) '' s)) =
         ENNReal.ofReal f.normDet * μH[finrank ℝ U] s by
       simpa [Set.image_image]
-    rw [(LinearIsometry.isometry _).hausdorffMeasure_image (by simp),
+    rw [(LinearIsometry.isometric _).hausdorffMeasure_image (by simp),
       addHaar_image_linearMap μH[finrank ℝ U], ← normDet_eq_abs_det,
       normDet_comp_of_finrank_eq _ _ hrank.symm, g.symm.toLinearIsometry.normDet_eq_one]
     simp
   · suffices μH[finrank ℝ U] (f.range.subtypeₗᵢ '' (f.rangeRestrict '' s)) = 0 by
       simpa [(f.normDet_eq_zero_tfae.out 2 1).mp h, Set.image_image]
-    rw [(LinearIsometry.isometry _).hausdorffMeasure_image (by simp)]
+    rw [(LinearIsometry.isometric _).hausdorffMeasure_image (by simp)]
     have h : (finrank ℝ f.range : ℝ) < finrank ℝ U := by
       exact_mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
     simp [Real.hausdorffMeasure_of_finrank_lt h]

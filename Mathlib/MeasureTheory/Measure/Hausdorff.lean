@@ -348,7 +348,7 @@ theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ
     (mkMetric m₁ : OuterMeasure X) ≤ mkMetric m₂ := by
   convert! @mkMetric_mono_smul X _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 
-theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometry f)
+theorem isometric_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometric f)
     (H : Monotone m ∨ Surjective f) : comap f (mkMetric m) = mkMetric m := by
   simp only [mkMetric, mkMetric', mkMetric'.pre, comap_iSup]
   refine surjective_id.iSup_congr id fun ε => surjective_id.iSup_congr id fun hε => ?_
@@ -361,6 +361,8 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
     apply le_trans _ (h_mono (ediam_mono hst))
     simp only [(ediam_mono hst).trans ht, le_refl, ciInf_pos]
 
+@[deprecated (since := "2026-09-09")] alias isometry_comap_mkMetric := isometric_comap_mkMetric
+
 theorem mkMetric_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) (hc' : c ≠ 0) :
     (mkMetric (c • m) : OuterMeasure X) = c • mkMetric m := by
   simp only [mkMetric, mkMetric', mkMetric'.pre]
@@ -371,13 +373,15 @@ theorem mkMetric_nnreal_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0} (hc :
   rw [ENNReal.smul_def, ENNReal.smul_def,
     mkMetric_smul m ENNReal.coe_ne_top (ENNReal.coe_ne_zero.mpr hc)]
 
-theorem isometry_map_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometry f)
+theorem isometric_map_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometric f)
     (H : Monotone m ∨ Surjective f) : map f (mkMetric m) = restrict (range f) (mkMetric m) := by
-  rw [← isometry_comap_mkMetric _ hf H, map_comap]
+  rw [← isometric_comap_mkMetric _ hf H, map_comap]
+
+@[deprecated (since := "2026-09-09")] alias isometry_map_mkMetric := isometric_map_mkMetric
 
 theorem isometryEquiv_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) (f : X ≃ᵢ Y) :
     comap f (mkMetric m) = mkMetric m :=
-  isometry_comap_mkMetric _ f.isometry (Or.inr f.surjective)
+  isometric_comap_mkMetric _ f.isometry (Or.inr f.surjective)
 
 theorem isometryEquiv_map_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) (f : X ≃ᵢ Y) :
     map f (mkMetric m) = mkMetric m := by
@@ -817,27 +821,36 @@ end AntilipschitzWith
 -/
 
 
-namespace Isometry
+namespace Isometric
 
 variable {f : X → Y} {d : ℝ}
 
-theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
+theorem hausdorffMeasure_image (hf : Isometric f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
     μH[d] (f '' s) = μH[d] s := by
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
-  rw [OuterMeasure.isometry_comap_mkMetric _ hf (hd.imp_left _)]
+  rw [OuterMeasure.isometric_comap_mkMetric _ hf (hd.imp_left _)]
   exact ENNReal.monotone_rpow_of_nonneg
 
-theorem hausdorffMeasure_preimage (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set Y) :
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.hausdorffMeasure_image :=
+  hausdorffMeasure_image
+
+theorem hausdorffMeasure_preimage (hf : Isometric f) (hd : 0 ≤ d ∨ Surjective f) (s : Set Y) :
     μH[d] (f ⁻¹' s) = μH[d] (s ∩ range f) := by
   rw [← hf.hausdorffMeasure_image hd, image_preimage_eq_inter_range]
 
-theorem map_hausdorffMeasure (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) :
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.hausdorffMeasure_preimage :=
+  hausdorffMeasure_preimage
+
+theorem map_hausdorffMeasure (hf : Isometric f) (hd : 0 ≤ d ∨ Surjective f) :
     Measure.map f μH[d] = μH[d].restrict (range f) := by
   ext1 s hs
   rw [map_apply hf.continuous.measurable hs, Measure.restrict_apply hs,
     hf.hausdorffMeasure_preimage hd]
 
-end Isometry
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.map_hausdorffMeasure :=
+  map_hausdorffMeasure
+
+end Isometric
 
 namespace IsometryEquiv
 
@@ -1045,8 +1058,8 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
       μH[1] ((‖v‖ • ·) '' LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s) = ‖v‖₊ • μH[1] s by
     simpa only [Set.image_image, smul_comm (norm _), inv_smul_smul₀ hn,
       LinearMap.toSpanSingleton_apply] using this
-  have iso_smul : Isometry (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v)) := by
-    refine AddMonoidHomClass.isometry_of_norm _ fun x => (norm_smul _ _).trans ?_
+  have iso_smul : Isometric (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v)) := by
+    refine AddMonoidHomClass.isometric_of_norm _ fun x => (norm_smul _ _).trans ?_
     rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel₀ hn, mul_one, LinearMap.id_apply]
   rw [Set.image_smul, Measure.hausdorffMeasure_smul₀ zero_le_one hn, nnnorm_norm,
       NNReal.rpow_one, iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]

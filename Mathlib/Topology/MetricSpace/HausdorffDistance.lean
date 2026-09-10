@@ -197,7 +197,7 @@ theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x
     _ < infEDist x s := h
 
 /-- The infimum edistance is invariant under isometries -/
-theorem infEDist_image (hΦ : Isometry Φ) : infEDist (Φ x) (Φ '' t) = infEDist x t := by
+theorem infEDist_image (hΦ : Isometric Φ) : infEDist (Φ x) (Φ '' t) = infEDist x t := by
   simp only [infEDist, iInf_image, hΦ.edist_eq]
 
 @[to_additive (attr := simp)]
@@ -327,7 +327,7 @@ theorem infEDist_le_infEDist_add_hausdorffEDist :
         rw [add_add_add_comm, ENNReal.add_halves]
 
 /-- The Hausdorff edistance is invariant under isometries. -/
-theorem hausdorffEDist_image (h : Isometry Φ) :
+theorem hausdorffEDist_image (h : Isometric Φ) :
     hausdorffEDist (Φ '' s) (Φ '' t) = hausdorffEDist s t := by
   simp only [hausdorffEDist_def, iSup_image, infEDist_image h]
 
@@ -594,7 +594,7 @@ theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     rwa [Ne, ← mem_closure_iff_infDist_zero hs]
 
 /-- The infimum distance is invariant under isometries. -/
-theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x t := by
+theorem infDist_image (hΦ : Isometric Φ) : infDist (Φ x) (Φ '' t) = infDist x t := by
   simp [infDist, infEDist_image hΦ]
 
 theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
@@ -776,7 +776,7 @@ theorem infDist_le_infDist_add_hausdorffDist (fin : hausdorffEDist s t ≠ ⊤) 
   exact mt (nonempty_of_hausdorffEDist_ne_top · fin) h
 
 /-- The Hausdorff distance is invariant under isometries. -/
-theorem hausdorffDist_image (h : Isometry Φ) :
+theorem hausdorffDist_image (h : Isometric Φ) :
     hausdorffDist (Φ '' s) (Φ '' t) = hausdorffDist s t := by
   simp [hausdorffDist, hausdorffEDist_image h]
 

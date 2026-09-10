@@ -144,9 +144,9 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
   predicate_zero := .zero
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
-    have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp <|
+    have : Isometric ((StarAlgebra.elemental ℂ a).subtype.comp <|
         (continuousFunctionalCalculus a).toStarAlgHom) :=
-      isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+      isometric_subtype_coe.comp <| StarAlgEquiv.isometric (continuousFunctionalCalculus a)
     refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
     case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
     case hom_map_spectrum =>
@@ -164,18 +164,18 @@ lemma cfcHom_eq_of_isStarNormal (a : A) [ha : IsStarNormal a] :
       (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a).toStarAlgHom := by
   refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
   · exact continuous_subtype_val.comp <|
-      (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
+      (StarAlgEquiv.isometric (continuousFunctionalCalculus a)).continuous
   · simp [continuousFunctionalCalculus_map_id a]
 
 instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
   isometric a ha := by
     rw [cfcHom_eq_of_isStarNormal]
-    exact isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    exact isometric_subtype_coe.comp <| StarAlgEquiv.isometric (continuousFunctionalCalculus a)
 
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
+  SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometric_ofReal (.zero _)
     fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 end Unital
@@ -201,7 +201,7 @@ open ContinuousMapZero in
 instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
     NonUnitalIsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
   isometric a ha := by
-    refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
+    refine AddMonoidHomClass.isometric_of_norm _ fun f ↦ ?_
     rw [← norm_inr (𝕜 := ℂ), ← inrNonUnitalStarAlgHom_apply, ← NonUnitalStarAlgHom.comp_apply,
       inr_comp_cfcₙHom_eq_cfcₙAux a, cfcₙAux]
     simp only [NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply,
@@ -212,7 +212,7 @@ instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
 
 instance IsSelfAdjoint.instNonUnitalIsometricContinuousFunctionalCalculus :
     NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  QuasispectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
+  QuasispectrumRestricts.isometric_cfc Complex.reCLM Complex.isometric_ofReal (.zero _)
     fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 end NonUnital

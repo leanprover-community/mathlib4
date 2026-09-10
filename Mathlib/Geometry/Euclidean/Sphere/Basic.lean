@@ -184,12 +184,15 @@ theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
   simp
 
 /-- If `ps` is cospherical, then any of its isometric images is cospherical. -/
-theorem _root_.Isometry.cospherical {E F : Type*} [MetricSpace E] [MetricSpace F] {f : E → F}
-    (hf : Isometry f) {ps : Set E} (hps : Cospherical ps) : Cospherical (f '' ps) := by
+theorem _root_.Isometric.cospherical {E F : Type*} [MetricSpace E] [MetricSpace F] {f : E → F}
+    (hf : Isometric f) {ps : Set E} (hps : Cospherical ps) : Cospherical (f '' ps) := by
   rcases hps with ⟨c, r, hc⟩
   refine ⟨f c, r, ?_⟩
   rintro _ ⟨p, hp, rfl⟩
   rw [hf.dist_eq, hc p hp]
+
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.cospherical :=
+  _root_.Isometric.cospherical
 
 end MetricSpace
 
@@ -202,14 +205,14 @@ containing it is cospherical. -/
 theorem Cospherical.inclusion {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
     (hps : Cospherical ps) (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) := by
-  refine Isometry.cospherical ?_ hps
+  refine Isometric.cospherical ?_ hps
   exact S₁.subtypeₐᵢ.isometry
 
 /-- If a set of points in an affine subspace is cospherical, then its image under the coercion
 to the ambient space is cospherical. -/
 theorem Cospherical.subtype_val {S : AffineSubspace ℝ P} [Nonempty S] {ps : Set S}
     (hps : Cospherical ps) : Cospherical (Subtype.val '' ps) :=
-  Isometry.cospherical S.subtypeₐᵢ.isometry hps
+  Isometric.cospherical S.subtypeₐᵢ.isometry hps
 
 omit [NormedSpace ℝ V] in
 /-- For a point on a sphere, the norm of its displacement from the center equals the radius. -/
