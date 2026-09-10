@@ -153,19 +153,24 @@ theorem IsSMulRegular.set (h : IsSMulRegular β a) : IsSMulRegular (Set β) a :=
 theorem IsSMulRegular.finset (h : IsSMulRegular β a) : IsSMulRegular (Finset β) a :=
   Finset.image_injective h
 
+@[to_additive]
 theorem IsSMulRegular.smul_finset_subset_smul_finset_iff (h : IsSMulRegular β a) :
     a • s ⊆ a • t ↔ s ⊆ t := image_subset_image_iff h
 
+@[to_additive]
 theorem IsSMulRegular.smul_finset_inter (h : IsSMulRegular β a) :
     a • (s ∩ t) = a • s ∩ a • t := image_inter _ _ h
 
+@[to_additive]
 theorem IsSMulRegular.smul_finset_sdiff (h : IsSMulRegular β a) :
     a • (s \ t) = a • s \ a • t := image_sdiff _ _ h
 
 open scoped symmDiff in
+@[to_additive]
 theorem IsSMulRegular.smul_finset_symmDiff (h : IsSMulRegular β a) :
     a • s ∆ t = (a • s) ∆ (a • t) := image_symmDiff _ _ h
 
+@[to_additive]
 theorem IsSMulRegular.card_smul_finset (h : IsSMulRegular β a) (s : Finset β) :
     (a • s).card = s.card := card_image_of_injective _ h
 
@@ -185,24 +190,24 @@ theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :
 
 @[to_additive (attr := simp)]
 theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
-  image_subset_image_iff (IsSMulRegular.all a)
+  IsSMulRegular.smul_finset_subset_smul_finset_iff (.all a)
 
 @[to_additive]
 theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter _ _ (IsSMulRegular.all a)
+  IsSMulRegular.smul_finset_inter (.all a)
 
 @[to_additive]
 theorem smul_finset_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_sdiff _ _ (IsSMulRegular.all a)
+  IsSMulRegular.smul_finset_sdiff (.all a)
 
 open scoped symmDiff in
 @[to_additive]
 theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff _ _ (IsSMulRegular.all a)
+  IsSMulRegular.smul_finset_symmDiff (.all a)
 
 @[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
-  card_image_of_injective _ (IsSMulRegular.all a)
+  IsSMulRegular.card_smul_finset (.all a) s
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_finset_iff (a : α) {b : β} : a • b ∈ a • s ↔ b ∈ s :=
