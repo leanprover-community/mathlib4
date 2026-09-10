@@ -293,7 +293,7 @@ theorem isOpen_sheet [LocallyPathConnectedSpace X] [SemilocallySimplyConnectedSp
 theorem mem_sheet_self {U : Set X} (hxU : x ∈ U) (p : Path x₀ x) :
     ofBasedPath x₀ (BasedPath.ofPath p) ∈ sheet U hxU (Path.Homotopic.Quotient.mk p) :=
   ⟨BasedPath.ofPath p, mem_pathComponentIn_self
-    (by simpa [BasedPath.ofPath, BasedPath.endpoint_def, p.target] using hxU), rfl⟩
+    (by simpa [BasedPath.endpoint_ofPath] using hxU), rfl⟩
 
 /-- Sheet surjection onto `U`: every point of `U` is the projection of a point of the sheet. -/
 theorem sheet_surjOn

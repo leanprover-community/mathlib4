@@ -192,7 +192,7 @@ original path and then a new endpoint path. -/
       subst t
       simp [tail, hab.le]
   ⟨⟨fun t : I ↦ f t, hf_cont.comp continuous_subtype_val⟩,
-    by simpa [f, ha, endpoint_def] using! γ.toPath.source⟩
+    by simpa [f, ha, endpoint_def] using! γ.toPath.extend_zero⟩
 
 public theorem deformTerminal_apply_of_le {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
@@ -240,7 +240,7 @@ at `t = 1` it is `γ` itself. Joint continuity in `t` is `continuous_initialSegm
 
 @[simp] public theorem initialSegmentFamily_zero {x₀ : X} (γ : BasedPath x₀) :
     γ.initialSegmentFamily 0 = ofPath (Path.refl x₀) := by
-  simp [initialSegmentFamily, Path.initialSegmentFamily_zero]
+  rw [initialSegmentFamily, Path.initialSegmentFamily_zero, ofPath_cast]
 
 @[simp] public theorem initialSegmentFamily_one {x₀ : X} (γ : BasedPath x₀) :
     γ.initialSegmentFamily 1 = γ := by
