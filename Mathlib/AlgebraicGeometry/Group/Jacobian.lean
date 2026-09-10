@@ -160,6 +160,8 @@ def_wanted baseChange (C : Over (Spec (.of k))) [IsProper C.hom]
 /-- The base change isomorphism `Jacobian.baseChange` is an isomorphism of group schemes over
 `K`, where the base change of `Jacobian C` carries the group structure inherited from
 `Jacobian C` (via `CategoryTheory.Functor.grpObjObj`). -/
+-- This can be an `instance_wanted` after
+-- https://github.com/leanprover-community/batteries/pull/1959 is merged.
 theorem_wanted isMonHom_baseChange_hom (C : Over (Spec (.of k))) [IsProper C.hom]
     [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom] :
     IsMonHom (❰baseChange❱ f C).hom
