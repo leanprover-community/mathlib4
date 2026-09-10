@@ -84,13 +84,11 @@ actually asked for as missing and rebuilt them), and, worse, two curls writing o
 -/
 initialize PROCTAG : String ← toString <$> IO.Process.getPID
 
-/-- The curl configuration file this process writes under `dir`. One per process; see
-`PROCTAG`. -/
+/-- The curl configuration file this process writes under `dir`; see `PROCTAG`. -/
 def curlConfigIn (dir : FilePath) : FilePath :=
   dir / s!"curl-{PROCTAG}.cfg"
 
-/-- Target file path for `curl` configurations in the local cache directory. One per
-process; see `PROCTAG`. -/
+/-- This process's curl configuration file in the local cache directory (`curlConfigIn`). -/
 def CURLCFG :=
   curlConfigIn IO.CACHEDIR
 

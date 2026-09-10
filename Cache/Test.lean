@@ -1384,7 +1384,7 @@ def test_stagedUploadDestFrom : IO Unit := do
     ((stagedUploadDestFrom .s3 (some "https://my.example.org/bucket") none none
         MATHLIBREPO none).toOption ==
       some { expectFlatUrl with base := "https://my.example.org/bucket" })
-  -- A forgotten bucket fails at resolution, not at the server.
+  -- A base without a bucket path fails at resolution.
   assertTrue "s3: a put base without a bucket path errors"
     (stagedUploadDestFrom .s3 none (some "https://s3.example.org") (some .forks)
       "alice/mathlib4" none matches .error _)

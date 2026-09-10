@@ -79,8 +79,7 @@ The staged put on the curl tool: validate the system curl, then send the
 when `markerSha?` names one. `getSignArgs` produces the backend's signing
 arguments and runs once per curl invocation: once for the files batch and
 once for the marker. The curl config file is written under `srcDir` for the
-duration of the transfer, named after this process (`IO.curlConfigIn`), so two
-uploads from one cache directory cannot write each other's file list. A files
+duration of the transfer, named after this process (`IO.curlConfigIn`). A files
 failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
 -/
 def putStagedViaCurl (dest : StagedUploadDest) (getSignArgs : IO (Array String))

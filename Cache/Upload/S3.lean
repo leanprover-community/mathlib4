@@ -13,8 +13,8 @@ import Cache.Upload.Rclone
 
 The complete s3 upload path. This module holds:
 
-* the credential set (`S3Credentials`) and its resolution (`s3AuthFrom`), and
-  the signing region (`s3RegionFrom`);
+* the credential set (`S3Credentials`), its resolution (`s3AuthFrom`), and the
+  signing region (`s3RegionFrom`);
 * the destination resolution (`s3UploadDestFrom`);
 * the transfer-tool policy (`s3UploadToolFrom`);
 * the SigV4 curl arguments (`s3CurlArgs`);
@@ -86,8 +86,8 @@ def getS3Auth : IO S3Credentials := do
 
 /--
 The SigV4 signing region, from the raw `MATHLIB_CACHE_S3_REGION` value
-(`region?`). The region is store-specific, so unset errors; so does a value
-that is not a region name.
+(`region?`). The store defines its region, so an unset value is an error, and
+so is a value that is not a region name.
 
 Pure so the policy is testable; `getS3Region` wires the environment in.
 -/
@@ -141,8 +141,8 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
 The rclone S3 backend configuration. It is passed in the child environment,
 so no credential appears on a command line. `RCLONE_S3_SESSION_TOKEN` is set for a
 temporary credential and cleared otherwise, so a stale token in the caller's
-environment is not inherited. `region` is the region the curl tool signs
-with. rclone refuses to run without a provider, so `provider` must carry
+environment is not inherited. `region` is the SigV4 signing region the curl
+tool also uses. rclone refuses to run without a provider, so `provider` must carry
 one; `s3PutStaged` passes the caller's `RCLONE_S3_PROVIDER` and defaults to
 the generic `Other`. Every other `RCLONE_S3_*` option inherits from the
 caller, so an operator can tune transfers without a code change.

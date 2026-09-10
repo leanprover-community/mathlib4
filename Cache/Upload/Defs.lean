@@ -92,6 +92,7 @@ def stagedUploadDestFrom (backend : UploadBackend) (putUrl? putBase? : Option St
       match backend with
       | .azure => azureUploadDestFrom putBase? container? repo scope?
       | .s3 => s3UploadDestFrom putBase? container? repo scope?
+  -- An s3 base must have the form `https://endpoint/bucket`.
   if backend == .s3 then discard (s3EndpointSplit dest.base)
   return dest
 
