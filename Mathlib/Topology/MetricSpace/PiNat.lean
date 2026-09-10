@@ -1022,7 +1022,7 @@ noncomputable instance : PseudoEMetricSpace (PiNatEmbed X Y f) :=
 lemma edist_def (x y : PiNatEmbed X Y f) :
     edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (f i x.ofPiNat) (f i y.ofPiNat)) := rfl
 
-lemma isometric_embed : Isometric (embed X Y f) := PseudoEMetricSpace.isometry_induced _
+lemma isometric_embed : Isometric (embed X Y f) := PseudoEMetricSpace.isometric_induced _
 
 @[deprecated (since := "2026-09-09")] alias isometry_embed := isometric_embed
 

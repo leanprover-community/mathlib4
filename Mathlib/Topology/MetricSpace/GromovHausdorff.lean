@@ -103,12 +103,12 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
   simp only [toGHSpace, Quotient.eq]
   refine ⟨fun h => ?_, ?_⟩
   · rcases Setoid.symm h with ⟨e⟩
-    have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
+    have f := (kuratowskiEmbedding.isometric X).isometryEquivOnRange.trans e
     use fun x => f x, isometry_subtype_coe.comp f.isometry
     rw [range_comp', f.range_eq_univ, Set.image_univ, Subtype.range_coe]
   · rintro ⟨Ψ, ⟨isomΨ, rangeΨ⟩⟩
     have f :=
-      ((kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm.trans
+      ((kuratowskiEmbedding.isometric X).isometryEquivOnRange.symm.trans
           isomΨ.isometryEquivOnRange).symm
     have E : (range Ψ ≃ᵢ NonemptyCompacts.kuratowskiEmbedding X)
         = (p ≃ᵢ range (kuratowskiEmbedding X)) := by
@@ -150,13 +150,13 @@ theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [C
       (NonemptyCompacts.kuratowskiEmbedding X ≃ᵢ NonemptyCompacts.kuratowskiEmbedding Y) =
         (range (kuratowskiEmbedding X) ≃ᵢ range (kuratowskiEmbedding Y)) := by
       dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rfl
-    have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange
-    have g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange.symm
+    have f := (kuratowskiEmbedding.isometric X).isometryEquivOnRange
+    have g := (kuratowskiEmbedding.isometric Y).isometryEquivOnRange.symm
     exact ⟨f.trans <| (cast I e).trans g⟩, by
     rintro ⟨e⟩
     simp only [toGHSpace]
-    have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm
-    have g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange
+    have f := (kuratowskiEmbedding.isometric X).isometryEquivOnRange.symm
+    have g := (kuratowskiEmbedding.isometric Y).isometryEquivOnRange
     have I :
       (range (kuratowskiEmbedding X) ≃ᵢ range (kuratowskiEmbedding Y)) =
         (NonemptyCompacts.kuratowskiEmbedding X ≃ᵢ NonemptyCompacts.kuratowskiEmbedding Y) := by
@@ -206,24 +206,24 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
   -- Embed `s` in `ℓ^∞(ℝ)` through its Kuratowski embedding
   let F := kuratowskiEmbedding s
   have : hausdorffDist (F '' range Φ') (F '' range Ψ') = hausdorffDist (range Φ') (range Ψ') :=
-    hausdorffDist_image (kuratowskiEmbedding.isometry _)
+    hausdorffDist_image (kuratowskiEmbedding.isometric _)
   rw [← this]
   -- Let `A` and `B` be the images of `X` and `Y` under this embedding. They are in `ℓ^∞(ℝ)`, and
   -- their Hausdorff distance is the same as in the original space.
   let A : NonemptyCompacts ℓ_infty_ℝ :=
     ⟨⟨F '' range Φ',
-        (isCompact_range IΦ'.continuous).image (kuratowskiEmbedding.isometry _).continuous⟩,
+        (isCompact_range IΦ'.continuous).image (kuratowskiEmbedding.isometric _).continuous⟩,
       (range_nonempty _).image _⟩
   let B : NonemptyCompacts ℓ_infty_ℝ :=
     ⟨⟨F '' range Ψ',
-        (isCompact_range IΨ'.continuous).image (kuratowskiEmbedding.isometry _).continuous⟩,
+        (isCompact_range IΨ'.continuous).image (kuratowskiEmbedding.isometric _).continuous⟩,
       (range_nonempty _).image _⟩
   have AX : ⟦A⟧ = toGHSpace X := by
     rw [eq_toGHSpace_iff]
-    exact ⟨fun x => F (Φ' x), (kuratowskiEmbedding.isometry _).comp IΦ', range_comp _ _⟩
+    exact ⟨fun x => F (Φ' x), (kuratowskiEmbedding.isometric _).comp IΦ', range_comp _ _⟩
   have BY : ⟦B⟧ = toGHSpace Y := by
     rw [eq_toGHSpace_iff]
-    exact ⟨fun x => F (Ψ' x), (kuratowskiEmbedding.isometry _).comp IΨ', range_comp _ _⟩
+    exact ⟨fun x => F (Ψ' x), (kuratowskiEmbedding.isometric _).comp IΨ', range_comp _ _⟩
   refine csInf_le ⟨0, ?_⟩ ?_
   · simp only [lowerBounds, mem_image, mem_prod, mem_ofPred_eq, Prod.exists, and_imp,
       forall_exists_index]
@@ -383,11 +383,11 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
   let Φ := F ∘ optimalGHInjl X Y
   let Ψ := F ∘ optimalGHInjr X Y
   refine ⟨Φ, Ψ, ?_, ?_, ?_⟩
-  · exact (kuratowskiEmbedding.isometry _).comp (isometric_optimalGHInjl X Y)
-  · exact (kuratowskiEmbedding.isometry _).comp (isometric_optimalGHInjr X Y)
+  · exact (kuratowskiEmbedding.isometric _).comp (isometric_optimalGHInjl X Y)
+  · exact (kuratowskiEmbedding.isometric _).comp (isometric_optimalGHInjr X Y)
   · rw [← image_univ, ← image_univ, image_comp F, image_univ, image_comp F (optimalGHInjr X Y),
       image_univ, ← hausdorffDist_optimal]
-    exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
+    exact (hausdorffDist_image (kuratowskiEmbedding.isometric _)).symm
 
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where

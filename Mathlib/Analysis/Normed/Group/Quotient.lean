@@ -165,7 +165,7 @@ equal to the distance from `x` to `S`. -/
 /-- An alternative definition of the norm on the quotient group: the norm of `((x : M) : M ⧸ S)` is
 equal to the distance from `x` to `S`. -/]
 lemma norm_mk (x : M) : ‖(x : M ⧸ S)‖ = infDist x S := by
-  rw [norm_eq_infDist, ← infDist_image (IsometryEquiv.divLeft x).isometry,
+  rw [norm_eq_infDist, ← infDist_image (IsometryEquiv.divLeft x).isometric,
     ← IsometryEquiv.preimage_symm]
   simp
 
@@ -477,7 +477,7 @@ def Submodule.quotientQuotientLIEQuotient (h : S ≤ T) : (M ⧸ S) ⧸ map S.mk
   norm_map' :=
     (AddMonoidHomClass.isometric_iff_norm _).mp
       (QuotientAddGroup.quotientQuotientIsometryEquivQuotient
-        ((Submodule.toAddSubgroup_le S T).mpr h)).isometry
+        ((Submodule.toAddSubgroup_le S T).mpr h)).isometric
 
 /-- An isometric version of `Submodule.quotientQuotientEquivQuotientSup`. -/
 def Submodule.quotientQuotientLIEQuotientSup : (M ⧸ S) ⧸ map S.mkQ T ≃ₗᵢ[R] M ⧸ (S ⊔ T) :=

@@ -265,7 +265,7 @@ def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P wher
   left_inv x := by simp [inv_smul_smul₀ hk]
   right_inv p := by simp [smul_inv_smul₀ hk]
   edist_eq' := ⟨‖k‖₊, nnnorm_ne_zero_iff.mpr hk, fun x y ↦ by
-    rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometry ..]
+    rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometric ..]
     exact edist_smul₀ ..⟩
 
 -- Cannot be @[simp] because `x` and `y` cannot be inferred by `simp`.

@@ -381,7 +381,7 @@ theorem isometric_map_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf
 
 theorem isometryEquiv_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) (f : X ≃ᵢ Y) :
     comap f (mkMetric m) = mkMetric m :=
-  isometric_comap_mkMetric _ f.isometry (Or.inr f.surjective)
+  isometric_comap_mkMetric _ f.isometric (Or.inr f.surjective)
 
 theorem isometryEquiv_map_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) (f : X ≃ᵢ Y) :
     map f (mkMetric m) = mkMetric m := by
@@ -856,7 +856,7 @@ namespace IsometryEquiv
 
 @[simp]
 theorem hausdorffMeasure_image (e : X ≃ᵢ Y) (d : ℝ) (s : Set X) : μH[d] (e '' s) = μH[d] s :=
-  e.isometry.hausdorffMeasure_image (Or.inr e.surjective) s
+  e.isometric.hausdorffMeasure_image (Or.inr e.surjective) s
 
 @[simp]
 theorem hausdorffMeasure_preimage (e : X ≃ᵢ Y) (d : ℝ) (s : Set Y) : μH[d] (e ⁻¹' s) = μH[d] s := by
@@ -864,7 +864,7 @@ theorem hausdorffMeasure_preimage (e : X ≃ᵢ Y) (d : ℝ) (s : Set Y) : μH[d
 
 @[simp]
 theorem map_hausdorffMeasure (e : X ≃ᵢ Y) (d : ℝ) : Measure.map e μH[d] = μH[d] := by
-  rw [e.isometry.map_hausdorffMeasure (Or.inr e.surjective), e.surjective.range_eq, restrict_univ]
+  rw [e.isometric.map_hausdorffMeasure (Or.inr e.surjective), e.surjective.range_eq, restrict_univ]
 
 theorem measurePreserving_hausdorffMeasure (e : X ≃ᵢ Y) (d : ℝ) : MeasurePreserving e μH[d] μH[d] :=
   ⟨e.continuous.measurable, map_hausdorffMeasure _ _⟩

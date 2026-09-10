@@ -212,7 +212,7 @@ theorem Cospherical.inclusion {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁]
 to the ambient space is cospherical. -/
 theorem Cospherical.subtype_val {S : AffineSubspace ℝ P} [Nonempty S] {ps : Set S}
     (hps : Cospherical ps) : Cospherical (Subtype.val '' ps) :=
-  Isometric.cospherical S.subtypeₐᵢ.isometry hps
+  Isometric.cospherical S.subtypeₐᵢ.isometric hps
 
 omit [NormedSpace ℝ V] in
 /-- For a point on a sphere, the norm of its displacement from the center equals the radius. -/

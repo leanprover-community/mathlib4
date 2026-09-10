@@ -126,7 +126,7 @@ instance (priority := 100) toContinuousSemilinearMapClass
 
 instance (priority := 100) toIsometryClass [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] :
     IsometryClass 𝓕 E E₂ where
-  isometry := SemilinearIsometryClass.isometric
+  isometric := SemilinearIsometryClass.isometric
 
 end SemilinearIsometryClass
 
@@ -389,7 +389,7 @@ end submoduleMap
 
 end LinearIsometry
 
-/-- Construct a `LinearIsometry` from a `LinearMap` satisfying `Isometric`. -/
+/-- Construct a `LinearIsometry` from a `LinearMap` which is an isometry. -/
 def LinearMap.toLinearIsometry (f : E →ₛₗ[σ₁₂] E₂) (hf : Isometric f) : E →ₛₗᵢ[σ₁₂] E₂ :=
   { f with
     norm_map' := by

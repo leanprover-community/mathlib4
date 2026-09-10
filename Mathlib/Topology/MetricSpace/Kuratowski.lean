@@ -110,15 +110,18 @@ def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α 
 /--
 The Kuratowski embedding is an isometry.
 Theorem 2.1 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]. -/
-protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
+protected theorem kuratowskiEmbedding.isometric (α : Type u) [MetricSpace α] [SeparableSpace α] :
     Isometric (kuratowskiEmbedding α) :=
   Classical.choose_spec (exists_isometric_embedding α)
+
+@[deprecated (since := "2026-09-10")]
+alias kuratowskiEmbedding.isometry := kuratowskiEmbedding.isometric
 
 /-- Version of the Kuratowski embedding for nonempty compacts -/
 nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
     [Nonempty α] : NonemptyCompacts ℓ^∞(ℕ, ℝ) where
   carrier := range (kuratowskiEmbedding α)
-  isCompact' := isCompact_range (kuratowskiEmbedding.isometry α).continuous
+  isCompact' := isCompact_range (kuratowskiEmbedding.isometric α).continuous
   nonempty' := range_nonempty _
 
 /--
