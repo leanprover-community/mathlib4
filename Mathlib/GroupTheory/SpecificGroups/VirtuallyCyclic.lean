@@ -68,7 +68,7 @@ and normal: the normal core of any cyclic finite-index subgroup. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.exists_isCyclic_and_finiteIndex_and_normal [IsVirtuallyCyclic G] :
     ∃ H : Subgroup G, IsCyclic H ∧ H.FiniteIndex ∧ H.Normal := by
-  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
+  obtain ⟨H, hc, hfi⟩ := exists_isCyclic_and_finiteIndex G
   exact ⟨H.normalCore, Subgroup.isCyclic_of_le H.normalCore_le, inferInstance, inferInstance⟩
 
 /-- A virtually cyclic group is virtually nilpotent: a cyclic group is
@@ -77,7 +77,7 @@ commutative, hence nilpotent. This slots next to
 @[to_additive]
 theorem IsVirtuallyCyclic.isVirtuallyNilpotent [IsVirtuallyCyclic G] :
     IsVirtuallyNilpotent G := by
-  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
+  obtain ⟨H, hc, hfi⟩ := exists_isCyclic_and_finiteIndex G
   exact ⟨H, inferInstance, hfi⟩
 
 /-- The image of a virtually cyclic group under a surjective homomorphism is
@@ -85,7 +85,7 @@ virtually cyclic. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.of_surjective (f : G →* G') (hf : Function.Surjective f)
     [IsVirtuallyCyclic G] : IsVirtuallyCyclic G' := by
-  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G›.exists_isCyclic_and_finiteIndex
+  obtain ⟨H, hc, hfi⟩ := exists_isCyclic_and_finiteIndex G
   exact ⟨H.map f, isCyclic_of_surjective _ (f.subgroupMap_surjective H),
     Subgroup.FiniteIndex.map_of_surjective H hf⟩
 
@@ -94,10 +94,8 @@ preimage of the cyclic finite-index subgroup witnesses it. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.of_injective (f : G →* G') (hf : Function.Injective f)
     [IsVirtuallyCyclic G'] : IsVirtuallyCyclic G := by
-  obtain ⟨H, hc, hfi⟩ := ‹IsVirtuallyCyclic G'›.exists_isCyclic_and_finiteIndex
-  exact ⟨H.comap f,
-    isCyclic_of_injective (f.subgroupComap H) (f.subgroupComap_injective H hf),
-    inferInstance⟩
+  obtain ⟨H, hc, hfi⟩ := exists_isCyclic_and_finiteIndex G'
+  exact ⟨H.comap f, isCyclic_of_injective _ (f.subgroupComap_injective H hf), inferInstance⟩
 
 /-- Every subgroup of a virtually cyclic group is virtually cyclic. -/
 @[to_additive]

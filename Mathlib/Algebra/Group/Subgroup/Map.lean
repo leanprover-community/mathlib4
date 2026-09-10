@@ -520,7 +520,7 @@ theorem subgroupMap_surjective (f : G →* G') (H : Subgroup G) :
   f.submonoidMap_surjective H.toSubmonoid
 
 @[to_additive]
-theorem subgroupMap_injective {f : G →* G'} (hf : Function.Injective f) (H : Subgroup G) :
+theorem subgroupMap_injective (f : G →* G') (H : Subgroup G) (hf : Function.Injective f) :
     Function.Injective (f.subgroupMap H) :=
   f.submonoidMap_injective hf H.toSubmonoid
 
