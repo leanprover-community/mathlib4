@@ -53,15 +53,16 @@ there is at most one morphism between distinct objects.
 
 (In a category with zero morphisms, that must be the zero morphism.) -/
 def HomOrthogonal {ι : Type*} (s : ι → C) : Prop :=
-  Pairwise fun i j => Subsingleton (s i ⟶ s j)
+  Pairwise' fun i j => Subsingleton (s i ⟶ s j)
 
 namespace HomOrthogonal
 
 variable {ι : Type*} {s : ι → C}
 
 theorem eq_zero [HasZeroMorphisms C] (o : HomOrthogonal s) {i j : ι} (w : i ≠ j) (f : s i ⟶ s j) :
-    f = 0 :=
-  (o w).elim _ _
+    f = 0 := by
+  rw [HomOrthogonal, pairwise'_iff] at o
+  exact (o w).elim _ _
 
 section
 

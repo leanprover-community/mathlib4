@@ -95,12 +95,12 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
   choose complMatch hcomplMatch_compl hcomplMatch_match using exists_complMatch
   let M2 : Subgraph G := ⨆ K, complMatch K
   have hM2 : M2.IsMatching := by
-    refine .iSup hcomplMatch_match fun i j hij ↦ (?_ : Disjoint _ _)
+    refine .iSup hcomplMatch_match fun i _ j _ hij ↦ (?_ : Disjoint _ _)
     rw [(hcomplMatch_match i).support_eq_verts, hcomplMatch_compl i,
         (hcomplMatch_match j).support_eq_verts, hcomplMatch_compl j]
     exact Set.disjoint_of_subset Set.sdiff_subset Set.sdiff_subset <|
       Set.disjoint_image_of_injective Subtype.val_injective <|
-        SimpleGraph.pairwise_disjoint_supp_connectedComponent _ hij
+        (pairwise'_apply (SimpleGraph.pairwise_disjoint_supp_connectedComponent _)  hij)
   have disjointM12 : Disjoint M1.support M2.support := by
     rw [hM1.2.support_eq_verts, hM2.support_eq_verts, Subgraph.verts_iSup,
       Set.disjoint_iUnion_right]
