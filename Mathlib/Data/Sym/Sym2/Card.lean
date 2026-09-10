@@ -40,9 +40,7 @@ theorem finite_mk_fiber (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).Finite := b
 
 theorem ncard_mk_fiber_of_isDiag {z : Sym2 α} (hz : z.IsDiag) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = 1 := by
-  cases z
-  cases hz
-  simp [mk_fiber]
+  simp [mk_fiber_of_isDiag hz]
 
 theorem ncard_mk_fiber_of_not_isDiag {z : Sym2 α} (hz : ¬z.IsDiag) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = 2 := by

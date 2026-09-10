@@ -544,6 +544,13 @@ theorem diagElem_mk {a b : α} (h : IsDiag s(a, b)) : s(a, b).diagElem h = a := 
 theorem diag_diagElem (h : z.IsDiag) : diag (z.diagElem h) = z := by
   cases z; cases h; rfl
 
+theorem mk_fiber_of_isDiag (hz : z.IsDiag) :
+    Sym2.mk.uncurry ⁻¹' {z} = {Function.diag (z.diagElem hz)} := by
+  cases z
+  rw [diagElem_mk]
+  cases hz
+  simp [mk_fiber]
+
 /-- `Sym2.diagElem` and `Sym2.diag` as an equivalence. -/
 @[simps]
 def diagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
