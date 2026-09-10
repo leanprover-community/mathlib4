@@ -9,7 +9,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.CompactOpen
 
 import Mathlib.Topology.ContinuousMap.SecondCountableSpace
-import Mathlib.Topology.UniformSpace.Uniformizable
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # A measurable space structure on the type of continuous maps
