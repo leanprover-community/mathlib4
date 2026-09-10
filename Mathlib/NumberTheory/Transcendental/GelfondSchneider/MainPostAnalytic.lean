@@ -96,7 +96,7 @@ lemma norm_Algebra_norm_rho_nonzero :
   exact H
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma c1rho_neq_0 : c1ρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 := by
+lemma c1ρ_ne_zero : c1ρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 := by
   intros H
   injection H with H1
   simp only [zsmul_eq_mul, mul_eq_zero, Int.cast_eq_zero] at H1
@@ -115,7 +115,7 @@ lemma house_geq_1 : 1 ≤ house (c1ρ α β σ α' β' γ' hirr htriv habc q hq0
       habc q hq0 h2mq))
   simp only [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
   rw [← ne_eq]
-  exact c1rho_neq_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+  exact c1ρ_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma eq5zero : 1 ≤ norm
@@ -125,7 +125,7 @@ lemma eq5zero : 1 ≤ norm
   have H1 : 0 ≤ ‖(Algebra.norm ℤ) (c1ρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq)‖ := by
     positivity
   have H2 : 0 ≠ ‖(Algebra.norm ℤ) (c1ρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq)‖ := by
-    have := c1rho_neq_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+    have := c1ρ_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
     symm
     intros H
     apply this
@@ -144,7 +144,7 @@ lemma eq5zero : 1 ≤ norm
 def c₅ : ℝ := ((abs (c₁ α' β' γ') + 1) ^ (((↑(h K) * (1+4 * m K^2)))))
 
 omit [DecidableEq (K →+* ℂ)] in
-lemma c5nonneg : 0 < c₅ α' β' γ' := by
+lemma c₅_pos : 0 < c₅ α' β' γ' := by
     unfold c₅
     apply pow_pos
     simp only [Int.cast_abs]
