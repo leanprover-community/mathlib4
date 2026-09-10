@@ -351,7 +351,9 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
       exact uniformContinuous_id }
 
 variable {α} in
-@[to_additive (attr := simps! apply symm_apply toEquiv)]
+/- `MulOpposite.op` as a uniform equivalence. -/
+@[to_additive (attr := simps! apply symm_apply toEquiv)
+/-- `AddOpposite.op` as a uniform equivalence. -/]
 def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
   toEquiv := MulOpposite.opEquiv
   uniformContinuous_toFun := MulOpposite.uniformContinuous_op
