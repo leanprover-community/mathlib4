@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Notation  -- shake: keep (!![] elaboration)
+public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Matrix.ListMatrix
 
 /-!
@@ -25,8 +25,8 @@ The definitions recurse on the dimensions, so on literals they reduce in the ker
 `vecCons` form of the `!![…]` notation, and a literal in that notation is definitionally an
 `ofLists` term.
 
-When the elaboration of the `!![…]` notation changes, `ofList` and `ofLists` will become
-unnecessary.
+When the elaboration of the `!![…]` notation changes to list-based, `ofList` and `ofLists` will
+become unnecessary.
 -/
 
 @[expose] public section

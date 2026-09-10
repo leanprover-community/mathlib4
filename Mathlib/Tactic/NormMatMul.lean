@@ -14,7 +14,7 @@ public import Mathlib.Tactic.NormNum.Basic  -- shake: keep (`+`/`*` extensions r
 # The `norm_matmul` simproc
 
 `norm_matmul` rewrites a product of matrix literals to the literal of the product, with the
-entries computed by `norm_num`.
+entries normalised by `norm_num` if possible.
 
 ## Implementation notes
 
@@ -66,18 +66,13 @@ def normMatMulCore : Simp.Simproc := fun e => do
     (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr l, toExpr m, toExpr n, r.A, r.B]))
     (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr l, toExpr n])
       (← mkEqTrans r.proof (← s.getProof)))
-  -- `pf` is stated on `ofLists` forms; the hint holds because `ofLists` on a row-list literal
-  -- unfolds to exactly the `Matrix.of`/`vecCons` term of the `!![…]` literal, so the kernel
-  -- settles it by reduction at both ends
+  -- `ofLists` on the row lists unfolds to the `!![…]` literals
   return .done { expr := C, proof? := some (mkExpectedPropHint pf q($e = $C)) }
 
 end Mathlib.Tactic.Matrix
 
 open Mathlib.Tactic.Matrix
 
-/-- The `norm_matmul` simproc rewrites a product of matrix literals with non-symbolic entries
-to the literal of the product, with the entries computed by `norm_num`. Terms that it cannot
-evaluate are skipped, and can be viewed by using `set_option trace.Tactic.norm_matmul true`. -/
 simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := fun e => do
   try normMatMulCore e
   catch ex =>

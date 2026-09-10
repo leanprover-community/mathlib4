@@ -29,10 +29,6 @@ this representation need to be mindful of traversing the structure in an efficie
 
 @[expose] public section
 
-theorem List.getD_rightpad {α : Type*} (n i : ℕ) (a : α) (l : List α) :
-    (l.rightpad n a).getD i a = l.getD i a := by
-  grind [List.rightpad]
-
 namespace Mathlib.Tactic.Matrix.ListMatrix
 
 variable {α : Type*}
@@ -92,8 +88,9 @@ theorem getD_mul [Mul α] [Add α] [Zero α] {l m n i j : ℕ} (A B : List (List
     (hj : j < n) :
     ((mul l m n A B).getD i []).getD j 0 =
       dotProduct m (A.getD i []) ((transpose n B).getD j []) := by
-  rw [mul, ← List.getElem_eq_getD (i := i), List.getElem_map, List.getElem_eq_getD,
-    List.getD_rightpad, ← List.getElem_eq_getD, List.getElem_map, List.getElem_eq_getD]
+  have hA : (A.rightpad l []).getD i [] = A.getD i [] := by grind [List.rightpad]
+  rw [mul, ← List.getElem_eq_getD (i := i), List.getElem_map, List.getElem_eq_getD, hA,
+    ← List.getElem_eq_getD, List.getElem_map, List.getElem_eq_getD]
   · simp [hj]
   · grind [List.rightpad]
 

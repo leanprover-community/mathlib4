@@ -63,8 +63,6 @@ def mkDotProductChain : List Q($α) → List Q($α) → DotProductEq zα aα mα
 def proveDotProduct (m : ℕ) (as bs : List Q($α)) : DotProductEq zα aα mα :=
   let ⟨_, l₁, l₂, fold, h⟩ := mkDotProductChain zα aα mα as bs
   have mQ : Q(ℕ) := q($m)
-  -- restate the chain's successor tower as the numeral `m`: Qq cannot check the two equal, the
-  -- kernel does by literal arithmetic
   ⟨mQ, l₁, l₂, fold, mkExpectedPropHint h q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold)⟩
 
 end
@@ -102,7 +100,8 @@ structure MulEq {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $�
 
 /-- Rewrite `ListMatrix.mul l m n listA listB`, for `listA` the list literal of the `l` rows `A`
 of `m` entries and `listB` that of the `m` rows `B` of `n` entries over `α`, to the literal whose
-entries are the sums of products of the entries. -/
+entries are the sums of products of the entries. The rows are not checked against `l`, `m` and
+`n`. -/
 def proveMul {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
     (l m n : ℕ) (A B : List (List Q($α))) : MulEq zα aα mα l m n :=
   -- transpose of B
@@ -113,8 +112,6 @@ def proveMul {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α))
       ⟨q(ListMatrix.dotProduct $(d.n) $(d.l₁) $(d.l₂)), d.expr, d.proof⟩
   let listA := mkListLitQ (α := q(List $α)) (A.map mkListLitQ)
   let listB := mkListLitQ (α := q(List $α)) (B.map mkListLitQ)
-  -- `hC` is stated on the dot products of the rows and columns, to which `ListMatrix.mul` on the
-  -- literals unfolds, so the kernel settles the hint by reduction
   { A := listA,
     B := listB,
     rows := mulEntryEqs.map (·.map (·.expr)),
