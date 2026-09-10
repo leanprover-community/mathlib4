@@ -135,6 +135,20 @@ theorem norm_pos_iff_valuation_pos {x : R} : 0 < v.norm x ↔ (0 : Γ₀) < v x 
     StrictMono.lt_iff_lt (RankLeOne.strictMono' (v := v))]
   rw [v.restrict_pos_iff]
 
+/-- Absolute value corresponding to a valuation of rank at most one. -/
+@[simps]
+def absoluteValue (v : Valuation L Γ₀) [hv : RankLeOne v] : AbsoluteValue L ℝ where
+  toFun    := v.norm
+  map_mul' := by simp [v.norm_def]
+  nonneg'  := by simp [v.norm_def]
+  eq_zero' := by simp [v.norm_def]
+  add_le' x y := by
+    calc
+      v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
+        simp [v.norm_def, hv.strictMono'.le_iff_le]
+      _ ≤ v.norm x + v.norm y :=
+        max_le_add_of_nonneg (by simp [v.norm_def]) (by simp [v.norm_def])
+
 end Valuation
 
 namespace Valued
