@@ -164,7 +164,7 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
 @[to_additive /-- **Schreier's Lemma**: A finite index additive subgroup of a finitely generated
   additive group is finitely generated. -/]
 instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := by
-  obtain ⟨S, hS⟩ := Group.isMulFG_iff.mp hG
+  obtain ⟨S, hS⟩ := Group.exists_of_mulFG G
   obtain ⟨T, -, hT⟩ := exists_finset_card_le_mul H hS
   exact Group.isMulFG_iff.mpr ⟨T, hT⟩
 
