@@ -27,8 +27,10 @@ A p-group is a group in which the order of every element is a power of `p`.
   `IsPGroup.exists_fixed_point_of_prime_dvd_card_of_fixed_point`: existence of fixed points;
 * `IsPGroup.center_nontrivial`: the center of a nontrivial finite p-group is nontrivial;
 * `IsPGroup.commutative_of_card_eq_prime_sq`: a group of order `p ^ 2` is commutative;
-* `IsPGroup.isCoatom_iff_index_eq_prime`: in an abelian p-group, the maximal subgroups are
-  exactly the subgroups of index `p`.
+* `IsPGroup.isCoatom_iff_index_eq_prime`: in an abelian p-group, a subgroup is maximal iff it has
+  index `p`;
+* `IsPGroup.not_isCyclic_iff_exists_ne_index_eq_prime`: a finite abelian p-group is non-cyclic iff
+  it has two distinct subgroups of index `p`.
 
 The condition is also shown to pass to subgroups, quotients, images and joins, and p-groups for
 distinct primes are shown to be disjoint.
@@ -508,13 +510,13 @@ theorem isCoatom_iff_index_eq_prime (hA : IsPGroup p A) (M : Subgroup A) :
   exact (card_eq_or_dvd (hA.to_quotient M)).resolve_left h.ne_one
 
 /-- A finite abelian p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
-theorem not_isCyclic_iff_exists_index_eq_prime_and_ne [Finite A] (hA : IsPGroup p A) :
-    ¬ IsCyclic A ↔ ∃ H₁ H₂ : Subgroup A, H₁.index = p ∧ H₂.index = p ∧ H₁ ≠ H₂ := by
-  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, h₁, h₂, hne⟩ hcyc ↦ hne ?_⟩
+theorem not_isCyclic_iff_exists_ne_index_eq_prime [Finite A] (hA : IsPGroup p A) :
+    ¬ IsCyclic A ↔ ∃ H₁ H₂ : Subgroup A, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by
+  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, hne, h₁, h₂⟩ _ ↦ hne ?_⟩
   · by_contra! h
-    refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ h M₁ M₂ ?_ ?_)
-    · exact (hA.isCoatom_iff_index_eq_prime M₁).mp hM₁
-    · exact (hA.isCoatom_iff_index_eq_prime M₂).mp hM₂
+    refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ by_contra fun hne ↦ ?_)
+    exact h M₁ M₂ hne ((hA.isCoatom_iff_index_eq_prime M₁).mp hM₁)
+      ((hA.isCoatom_iff_index_eq_prime M₂).mp hM₂)
   · rw [IsCyclic.subgroup_eq_iff_card_eq, ← mul_right_inj' (a := H₁.index)
       Subgroup.index_ne_zero_of_finite, Subgroup.index_mul_card, h₁, ← h₂, Subgroup.index_mul_card]
 
