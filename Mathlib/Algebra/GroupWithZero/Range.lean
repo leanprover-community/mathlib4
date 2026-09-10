@@ -168,6 +168,12 @@ lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) 
   simp only [restrict₀_apply, embedding_apply]
   aesop
 
+@[simp]
+theorem restrict₀_inj {a b : A} :
+    restrict₀ f a = restrict₀ f b ↔ f a = f b := by
+  simp only [restrict₀_apply]
+  aesop
+
 end ValueGroup₀
 
 end Restrict
@@ -285,6 +291,23 @@ def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : valueGroup f :=
       mk f (r₁ * r₂) (s₁ * s₂) (by simp_all) (by simp_all) := by
   simp only [mk, map_mul, MulMemClass.mk_mul_mk, Units.mk0_mul, Subtype.mk.injEq]
   rw [mul_mul_mul_comm, mul_inv]
+
+lemma mk_eq_div {r s : A} (hr : f r ≠ 0) (hs : f s ≠ 0) :
+    (valueGroup.mk f r s hr hs : Bˣ) = f s / f r := by
+  simp [valueGroup.mk, inv_mul_eq_div]
+
+theorem exists_mk (f : A →*₀ B) (x : valueGroup f) :
+    ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
+  have hx := x.2
+  rw [mem_valueGroup_iff_of_comm'] at hx
+  obtain ⟨r, hr, s, hs, hrs⟩ := hx
+  exact ⟨r, s, hr, hs,  by simp [valueGroup.mk, ← hrs, mul_comm]⟩
+
+theorem mem_valueGroup_iff_exists_mk_of_comm (f : A →*₀ B) {y : Bˣ} :
+    y ∈ valueGroup f ↔ ∃ r s hr hs, y = valueGroup.mk f r s hr hs := by
+  refine ⟨fun hy ↦ ?_, fun ⟨r, s, hr, hs, hy⟩ ↦ by aesop⟩
+  obtain ⟨r, s, hr, hs, h⟩ := exists_mk f ⟨y, hy⟩
+  exact ⟨r, s, hr, hs, Subtype.ext_iff.mp h⟩
 
 end valueGroup
 namespace ValueGroup₀
