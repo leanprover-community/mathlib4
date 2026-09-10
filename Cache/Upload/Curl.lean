@@ -77,8 +77,8 @@ def putFilesViaCurl
 The staged put on the curl tool: validate the system curl, then send the
 `.ltar` files named by `fileNames` under `srcDir`, then the per-SHA marker
 when `markerSha?` names one. `getSignArgs` produces the backend's signing
-arguments and runs once per transfer, so a time-sensitive header (the Azure
-date) is fresh for each. The curl config file is written under `srcDir` for the
+arguments and runs once per curl invocation: once for the files batch and
+once for the marker. The curl config file is written under `srcDir` for the
 duration of the transfer, named after this process (`IO.curlConfigIn`), so two
 uploads from one cache directory cannot write each other's file list. A files
 failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
