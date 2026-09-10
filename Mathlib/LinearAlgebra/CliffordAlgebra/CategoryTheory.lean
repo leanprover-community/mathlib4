@@ -29,7 +29,7 @@ variable {R : Type u} [CommRing R]
 This is `CliffordAlgebra.map` through the lens of category theory. -/
 @[simps]
 def QuadraticModuleCat.cliffordAlgebra : QuadraticModuleCat.{u} R ⥤ AlgCat.{u} R where
-  obj M := AlgCat.of R (CliffordAlgebra M.form)
+  obj M := ↧(CliffordAlgebra M.form)
   map {_M _N} f := AlgCat.ofHom <| CliffordAlgebra.map f.toIsometry
   map_id _M := by simp
   map_comp {_M _N _P} f g := by ext; simp
