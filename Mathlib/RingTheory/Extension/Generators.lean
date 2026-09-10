@@ -629,6 +629,7 @@ noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
   rfl

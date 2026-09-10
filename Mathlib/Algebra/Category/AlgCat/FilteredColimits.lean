@@ -34,6 +34,7 @@ variable {c : Cocone (F ⋙ forget₂ _ RingCat)} [IsFilteredOrEmpty J]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- (Implementation): The algebra instance on the cocone point of the underlying diagram of rings
 is induced from the `j`-th inclusion map. Any choice of `j` gives a propositionally equal algebra
 instance. -/

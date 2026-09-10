@@ -375,6 +375,7 @@ def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
 
 end
 
+set_option dsimp.resynthInstances false in
 /-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
 over category `Over E`. -/
 def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v, u}) ⥤ Over (T := Cat.{v, u}) E where

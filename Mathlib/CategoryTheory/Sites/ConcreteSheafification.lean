@@ -164,6 +164,7 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   cases i; rfl
 
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj (op X))) :
     (J.toPlus P).app _ x = mk (Meq.mk S x) := by
   dsimp [mk, toPlus]
@@ -181,6 +182,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (I : S.Arrow) :
     (J.toPlus P).app _ (x I) = (J.plusObj P).map I.f.op (mk x) := by
   dsimp only [toPlus, plusObj]

@@ -438,6 +438,7 @@ def free : TopCat.{v} ⥤ TopModuleCat.{max v u} R :=
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- The free-forgetful adjoint for `TopModuleCat R`. -/
 noncomputable
 def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{max v u} where

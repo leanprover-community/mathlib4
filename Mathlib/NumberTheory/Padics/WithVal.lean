@@ -69,6 +69,7 @@ Potential fix: make the following definitions implicit-reducible:
 
 Then both backward compatibility options can go.
 -/
+set_option dsimp.resynthInstances false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 open MonoidWithZeroHom.ValueGroup₀ in

@@ -96,6 +96,7 @@ two points is the infimum of the length of paths between these points.
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+set_option dsimp.resynthInstances false in
 set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The standard Riemannian metric on a vector space with an inner product, given by this inner

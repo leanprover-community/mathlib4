@@ -902,6 +902,7 @@ protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
   map_injective {_X _Y} _f _g hfg := Mon.Hom.ext <| map_injective congr(($hfg).hom)
 
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 /-- Natural transformations between functors lift to monoid objects. -/
 @[to_additive (attr := simps!)
 /-- Natural transformations between functors lift to additive monoid objects. -/]
@@ -910,6 +911,7 @@ def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapM
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[to_additive (attr := simps!)
 /-- Natural isomorphisms between functors lift to additive monoid objects. -/]
@@ -944,6 +946,7 @@ variable [F.Monoidal]
 open scoped Obj
 
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 @[to_additive]
 protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
   map_surjective {X Y} f :=
@@ -1048,6 +1051,7 @@ instance [F.Braided] : F.mapMon.Braided where
 
 set_option backward.defeqAttrib.useBackward true in
 variable (C D) in
+set_option dsimp.resynthInstances false in
 /-- `mapMon` is functorial in the lax monoidal functor. -/
 @[to_additive (attr := simps)
 /-- `mapAddMon` is functorial in the lax monoidal functor. -/]
@@ -1064,6 +1068,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.LaxMonoidal] [a.IsMonoidal]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to monoid objects. -/
 @[to_additive (attr := simps)
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to additive
@@ -1125,6 +1130,7 @@ variable (C)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
 @[to_additive (attr := simps) addMonToLaxMonoidal
 /-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
@@ -1139,6 +1145,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
 @[to_additive (attr := simps!)
 /-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
@@ -1149,6 +1156,7 @@ def unitIso :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option dsimp.resynthInstances false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `counitIso`. -/
 @[to_additive (attr := simps!) /-- Auxiliary definition for `counitIso`. -/]
@@ -1168,12 +1176,14 @@ theorem monToLaxMonoidal_laxMonoidalToMon_obj_mul (F : Mon C) :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 @[to_additive]
 theorem isMonHom_counitIsoAux (F : Mon C) :
     IsMonHom (counitIsoAux C F).hom where
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
 @[to_additive (attr := simps!)
 /-- Implementation of `AddMon.equivLaxMonoidalFunctorPUnit`. -/]
@@ -1190,6 +1200,7 @@ attribute [local simp] eqToIso_map
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 /--
 Monoid objects in `C` are "just" lax monoidal functors from the trivial monoidal category to `C`.
 -/

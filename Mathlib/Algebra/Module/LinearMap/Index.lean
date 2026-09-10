@@ -89,6 +89,7 @@ Since `Free` stays unsynthesizable, `finrank R ↥⊥` is left unrewritten and t
 Potential fix: mark `LinearMap.ker` implicit-reducible, then remove both backward compatibility
 options.
 -/
+set_option dsimp.resynthInstances false in
 set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] public lemma index_id :
