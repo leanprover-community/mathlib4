@@ -7,8 +7,7 @@ def myMap (f : Nat → Nat) (l : List Nat) : List Nat := l.map f
 
 -- `l` is the same on both sides.
 /--
-warning: The `@[congr]` theorem `myMap_congr` does not allow the following explicit arguments of `myMap` to change: `l` (argument #2).
-When `simp` uses this theorem, it does not simplify these arguments, and tactics which don't revisit the result (such as `norm_cast`) leave them unsimplified. Add an equality hypothesis for each of them (as in `Finset.sum_congr`).
+warning: The `@[congr]` theorem `myMap_congr` does not allow the following explicit arguments of `myMap` to change: `l` (argument #2). This violates the recommendation in the documentation of `@[congr]`.
 
 Note: This linter can be disabled with `set_option linter.congrFixedArgs false`
 -/
@@ -32,26 +31,12 @@ theorem myMap_congr'' {f g : Nat → Nat} {l : List Nat} (h : ∀ x ∈ l, f x =
 
 -- The attribute can also be added with the `attribute` command.
 /--
-warning: The `@[congr]` theorem `myMap_congr''` does not allow the following explicit arguments of `myMap` to change: `l` (argument #2).
-When `simp` uses this theorem, it does not simplify these arguments, and tactics which don't revisit the result (such as `norm_cast`) leave them unsimplified. Add an equality hypothesis for each of them (as in `Finset.sum_congr`).
+warning: The `@[congr]` theorem `myMap_congr''` does not allow the following explicit arguments of `myMap` to change: `l` (argument #2). This violates the recommendation in the documentation of `@[congr]`.
 
 Note: This linter can be disabled with `set_option linter.congrFixedArgs false`
 -/
 #guard_msgs in
 attribute [congr] myMap_congr''
-
--- The linter can be disabled.
-#guard_msgs in
-set_option linter.congrFixedArgs false in
-@[congr]
-theorem myMap_congr''' {f g : Nat → Nat} {l : List Nat} (h : ∀ x ∈ l, f x = g x) :
-    myMap f l = myMap g l :=
-  List.map_congr_left h
-
--- Other attributes don't trigger the linter.
-#guard_msgs in
-@[simp]
-theorem myMap_nil (f : Nat → Nat) : myMap f [] = [] := rfl
 
 def myGet (l : List Nat) (i : Nat) (_h : i < l.length) : Nat := l[i]
 
