@@ -75,7 +75,7 @@ The measure of a set `s`, denoted `μ s`, is an extended nonnegative real. The r
 is written `μ.real s`.
 -/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
-  m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
+  m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise' (Disjoint on f) →
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
@@ -122,7 +122,7 @@ theorem trimmed (μ : Measure α) : μ.toOuterMeasure.trim = μ.toOuterMeasure :
 def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m ∅ MeasurableSet.empty = 0)
     (mU :
       ∀ ⦃f : ℕ → Set α⦄ (h : ∀ i, MeasurableSet (f i)),
-        Pairwise (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, m (f i) (h i)) :
+        Pairwise' (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, m (f i) (h i)) :
     Measure α :=
   { toOuterMeasure := inducedOuterMeasure m _ m0
     m_iUnion := fun f hf hd =>
@@ -136,7 +136,7 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
     {m0 : m ∅ MeasurableSet.empty = 0}
     {mU :
       ∀ ⦃f : ℕ → Set α⦄ (h : ∀ i, MeasurableSet (f i)),
-        Pairwise (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, m (f i) (h i)}
+        Pairwise' (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, m (f i) (h i)}
     (s : Set α) (hs : MeasurableSet s) : ofMeasurable m m0 mU s = m s hs :=
   inducedOuterMeasure_eq m0 mU hs
 
@@ -307,8 +307,8 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter
     (h_eq : m = MeasurableSpace.generateFrom s)
     (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)
     (h_compl : ∀ᵐ x ∂μ, ∀ t, MeasurableSet t → C x t → C x tᶜ)
-    (h_union : ∀ᵐ x ∂μ, ∀ f : ℕ → Set α,
-        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
+    (h_union : ∀ᵐ x ∂μ, ∀ f : ℕ → Set α, Pairwise' (Disjoint on f) →
+      (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
     ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
   filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
     using MeasurableSpace.induction_on_inter (C := fun t _ ↦ C x t)

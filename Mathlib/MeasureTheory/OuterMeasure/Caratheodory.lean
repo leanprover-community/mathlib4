@@ -124,18 +124,19 @@ lemma isCaratheodory_disjointed {ι : Type*} [Preorder ι] [LocallyFiniteOrderBo
   disjointedRec (fun _ j ht ↦ m.isCaratheodory_sdiff ht <| h j) (h i)
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
-    (hd : Pairwise (Disjoint on s)) {t : Set α} :
+    (hd : Pairwise' (Disjoint on s)) {t : Set α} :
     ∀ {n}, (∑ i ∈ Finset.range n, m (t ∩ s i)) = m (t ∩ ⋃ i < n, s i)
   | 0 => by simp
   | Nat.succ n => by
     rw [biUnion_lt_succ, Finset.sum_range_succ, Set.union_comm, isCaratheodory_sum h hd,
       m.measure_inter_union _ (h n), add_comm]
     intro a
+    rw [pairwise'_iff] at hd
     simpa using fun (h₁ : a ∈ s n) i (hi : i < n) h₂ => (hd (ne_of_gt hi)).le_bot ⟨h₁, h₂⟩
 
 /-- Use `isCaratheodory_iUnion` instead, which does not require the disjoint assumption. -/
 theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
-    (hd : Pairwise (Disjoint on s)) : IsCaratheodory m (⋃ i, s i) := by
+    (hd : Pairwise' (Disjoint on s)) : IsCaratheodory m (⋃ i, s i) := by
   apply (isCaratheodory_iff_le' m).mpr
   intro t
   have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
@@ -154,8 +155,8 @@ lemma isCaratheodory_iUnion {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s
   exact m.isCaratheodory_iUnion_of_disjoint (m.isCaratheodory_disjointed h)
     (disjoint_disjointed _)
 
-theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : Pairwise (Disjoint on s)) :
-    m (⋃ i, s i) = ∑' i, m (s i) := by
+theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
+    (hd : Pairwise' (Disjoint on s)) : m (⋃ i, s i) = ∑' i, m (s i) := by
   refine le_antisymm (measure_iUnion_le s) ?_
   rw [ENNReal.tsum_eq_iSup_nat]
   refine iSup_le fun n => ?_
@@ -187,7 +188,7 @@ theorem isCaratheodory_iff_le {s : Set α} :
   isCaratheodory_iff_le' m
 
 protected theorem iUnion_eq_of_caratheodory {s : ℕ → Set α}
-    (h : ∀ i, MeasurableSet[OuterMeasure.caratheodory m] (s i)) (hd : Pairwise (Disjoint on s)) :
+    (h : ∀ i, MeasurableSet[OuterMeasure.caratheodory m] (s i)) (hd : Pairwise' (Disjoint on s)) :
     m (⋃ i, s i) = ∑' i, m (s i) :=
   f_iUnion m h hd
 

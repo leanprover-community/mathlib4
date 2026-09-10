@@ -1007,9 +1007,10 @@ variable (X Y f) in
 /-- `X` equipped with the distance coming from `∀ i, Y i` embeds in `∀ i, Y i`. -/
 noncomputable def embed : PiNatEmbed X Y f → ∀ i, Y i := fun x i ↦ f i x.ofPiNat
 
-lemma embed_injective (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+lemma embed_injective (separating_f : Pairwise' fun x y ↦ ∃ i, f i x ≠ f i y) :
     Injective (embed X Y f) := by
-  simpa [Pairwise, not_imp_comm (a := _ = _), funext_iff, Function.Injective] using! separating_f
+  simpa [pairwise'_iff, not_imp_comm (a := _ = _), funext_iff, Function.Injective]
+    using! separating_f
 
 variable [Encodable ι]
 
@@ -1050,11 +1051,11 @@ variable [∀ i, EMetricSpace (Y i)]
 
 /-- If the functions `f i : X → Y i` separate points of `X`, then `X` can be embedded into
 `∀ i, Y i`. -/
-noncomputable abbrev emetricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+noncomputable abbrev emetricSpace (separating_f : Pairwise' fun x y ↦ ∃ i, f i x ≠ f i y) :
     EMetricSpace (PiNatEmbed X Y f) :=
   .induced (embed X Y f) (embed_injective separating_f) PiCountable.emetricSpace
 
-lemma isUniformEmbedding_embed (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+lemma isUniformEmbedding_embed (separating_f : Pairwise' fun x y ↦ ∃ i, f i x ≠ f i y) :
     IsUniformEmbedding (embed X Y f) :=
   let := emetricSpace separating_f; isometry_embed.isUniformEmbedding
 
@@ -1066,7 +1067,7 @@ variable [∀ i, MetricSpace (Y i)]
 
 /-- If the functions `f i : X → Y i` separate points of `X`, then `X` can be embedded into
 `∀ i, Y i`. -/
-noncomputable abbrev metricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+noncomputable abbrev metricSpace (separating_f : Pairwise' fun x y ↦ ∃ i, f i x ≠ f i y) :
     MetricSpace (PiNatEmbed X Y f) :=
   (emetricSpace separating_f).toMetricSpace fun x y ↦ by simp [edist_dist]
 
@@ -1074,7 +1075,7 @@ section CompactSpace
 variable [TopologicalSpace X] [CompactSpace X]
 
 lemma isHomeomorph_toPiNat (continuous_f : ∀ i, Continuous (f i))
-    (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    (separating_f : Pairwise' fun x y ↦ ∃ i, f i x ≠ f i y) :
     IsHomeomorph (toPiNat : X → PiNatEmbed X Y f) := by
   let := emetricSpace separating_f
   rw [isHomeomorph_iff_continuous_bijective]
@@ -1085,7 +1086,7 @@ variable (X Y f) in
 continuous functions `f i : X → Y i`. -/
 @[simps!]
 noncomputable def toPiNatHomeo (continuous_f : ∀ i, Continuous (f i))
-    (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    (separating_f : Pairwise' fun x y ↦ ∃ i, f i x ≠ f i y) :
     X ≃ₜ PiNatEmbed X Y f :=
   (toPiNatEquiv X Y f).toHomeomorphOfIsInducing
     (isHomeomorph_toPiNat continuous_f separating_f).isInducing
@@ -1093,7 +1094,7 @@ noncomputable def toPiNatHomeo (continuous_f : ∀ i, Continuous (f i))
 /-- If `X` is compact, and there exists a sequence of continuous functions `f i : X → Y i` to
 metric spaces `Y i` that separate points on `X`, then `X` is metrizable. -/
 lemma TopologicalSpace.MetrizableSpace.of_countable_separating (f : ∀ i, X → Y i)
-    (continuous_f : ∀ i, Continuous (f i)) (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    (continuous_f : ∀ i, Continuous (f i)) (separating_f : Pairwise' fun x y ↦ ∃ i, f i x ≠ f i y) :
     MetrizableSpace X :=
   letI := Metric.PiNatEmbed.metricSpace separating_f
   (Metric.PiNatEmbed.toPiNatHomeo X Y f continuous_f separating_f).isEmbedding.metrizableSpace
@@ -1147,7 +1148,8 @@ lemma continuous_distDenseSeq_inv :
     Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (distDenseSeq X) → X) := by
   refine continuous_iff_continuousAt.mpr fun x s hs ↦ ?_
   obtain ⟨i, t, ht, hts⟩ := separation hs
-  rw [(isUniformEmbedding_embed injective_distDenseSeq).isEmbedding.nhds_eq_comap, nhds_pi]
+  rw [(isUniformEmbedding_embed (pairwise'_mk injective_distDenseSeq)).isEmbedding.nhds_eq_comap,
+    nhds_pi]
   exact ⟨_, Filter.mem_pi_of_mem _ ht, fun x hx ↦ hts hx⟩
 
 theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding F := by
@@ -1160,7 +1162,7 @@ theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding 
     continuous_invFun := continuous_distDenseSeq_inv }
   let secondstep : PiNatEmbed X (fun i => I) (distDenseSeq X) → ℕ → I := embed _ _ _
   let isEmbedding_secondstep : IsEmbedding secondstep :=
-      (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
+      (isUniformEmbedding_embed (pairwise'_mk injective_distDenseSeq)).isEmbedding
   exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
 
 end MetricSpace

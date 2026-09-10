@@ -33,13 +33,15 @@ variable {μ} {s t u v : Set α}
 /-- If `s : ι → Set α` is a countable family of pairwise a.e. disjoint sets, then there exists a
 family of measurable null sets `t i` such that `s i \ t i` are pairwise disjoint. -/
 theorem exists_null_pairwise_disjoint_sdiff [Countable ι] {s : ι → Set α}
-    (hd : Pairwise (AEDisjoint μ on s)) : ∃ t : ι → Set α, (∀ i, MeasurableSet (t i)) ∧
-    (∀ i, μ (t i) = 0) ∧ Pairwise (Disjoint on fun i => s i \ t i) := by
+    (hd : Pairwise' (AEDisjoint μ on s)) : ∃ t : ι → Set α, (∀ i, MeasurableSet (t i)) ∧
+    (∀ i, μ (t i) = 0) ∧ Pairwise' (Disjoint on fun i => s i \ t i) := by
+  simp_rw [pairwise'_iff]
   refine ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
     measurableSet_toMeasurable _ _, fun i => ?_, ?_⟩
   · simp only [measure_toMeasurable, inter_iUnion]
+    rw [pairwise'_iff] at hd
     exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)
-  · simp only [Pairwise, disjoint_left, onFun, mem_sdiff, not_and, and_imp, Classical.not_not]
+  · simp only [disjoint_left, onFun, mem_sdiff, not_and, and_imp, Classical.not_not]
     intro i j hne x hi hU hj
     replace hU : x ∉ s i ∩ iUnion fun j ↦ iUnion fun _ ↦ s j :=
       fun h ↦ hU (subset_toMeasurable _ _ h)
@@ -68,8 +70,8 @@ protected theorem comm : AEDisjoint μ s t ↔ AEDisjoint μ t s :=
 protected theorem _root_.Disjoint.aedisjoint (h : Disjoint s t) : AEDisjoint μ s t := by
   rw [AEDisjoint, disjoint_iff_inter_eq_empty.1 h, measure_empty]
 
-protected theorem _root_.Pairwise.aedisjoint {f : ι → Set α} (hf : Pairwise (Disjoint on f)) :
-    Pairwise (AEDisjoint μ on f) :=
+protected theorem _root_.Pairwise'.aedisjoint {f : ι → Set α} (hf : Pairwise' (Disjoint on f)) :
+    Pairwise' (AEDisjoint μ on f) :=
   hf.mono fun _i _j h => h.aedisjoint
 
 protected theorem _root_.Set.PairwiseDisjoint.aedisjoint {f : ι → Set α} {s : Set ι}
