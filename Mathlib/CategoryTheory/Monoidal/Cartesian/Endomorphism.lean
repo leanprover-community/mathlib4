@@ -33,6 +33,7 @@ instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (G ⟶ G) := 
 lemma AddMon.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
     : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
 
+/-- Given an `f : End G`, it returns the corrending term of typ `G ⟶ G` -/
 def AddMon.End.toHom (f : End G) : G ⟶ G := f
 
 
@@ -110,6 +111,8 @@ variable {G : AddGrp C} {H : AddGrp C}
 lemma AddGrp.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
     : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
 
+
+/-- Given an `f : End G`, it returns the corrending term of typ `G ⟶ G` -/
 def AddGrp.End.toHom (f : End G) : G ⟶ G := f
 
 
