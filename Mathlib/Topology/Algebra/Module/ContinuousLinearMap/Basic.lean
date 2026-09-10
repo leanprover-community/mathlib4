@@ -8,12 +8,12 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-public import Mathlib.Topology.Algebra.Module.Basic
+public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.FunLike.Ring
-public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Topology.Algebra.Group.ZPow
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Continuous linear maps
@@ -121,6 +121,7 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) 
   cases g
   congr
 
+@[macro_inline]
 instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective _ _ h := coe_injective (DFunLike.coe_injective h)
