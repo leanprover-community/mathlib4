@@ -65,10 +65,10 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
   introv R hf
   let := f.toAlgebra
   let := ((algebraMap S S').comp f).toAlgebra
-  let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map (f := f.toMonoidHom) M)
+  let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
   let := f'.toAlgebra
   have : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq'
-    (IsLocalization.map_comp (M.le_comap_map (f := f.toMonoidHom))).symm
+    (IsLocalization.map_comp M.le_comap_map).symm
   have : IsScalarTower R S S' := IsScalarTower.of_algebraMap_eq' rfl
   have : IsLocalization (Algebra.algebraMapSubmonoid S M) S' := by
     rwa [Algebra.algebraMapSubmonoid, RingHom.algebraMap_toAlgebra]

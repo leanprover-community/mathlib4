@@ -53,11 +53,10 @@ then there exists some `m : M` such that `m • x` falls in the
 span of `IsLocalization.finsetIntegerMultiple _ s` over `R`.
 -/
 theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebra R S']
-    [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S).toMonoidHom) S'] (x : S) (s : Finset S')
-    (hx : algebraMap S S' x ∈ Submodule.span R (s : Set S')) :
-    ∃ m : M, m • x ∈
-      Submodule.span R
-        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S).toMonoidHom) s : Set S) := by
+    [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S).toMonoidHom) S'] (x : S)
+    (s : Finset S') (hx : algebraMap S S' x ∈ Submodule.span R (s : Set S')) :
+    ∃ m : M, m • x ∈ Submodule.span R
+    (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S).toMonoidHom) s : Set S) := by
   let g : S →ₐ[R] S' :=
     AlgHom.mk' (algebraMap S S') fun c x => by simp [Algebra.algebraMap_eq_smul_one]
   have g_apply : ∀ x, g x = algebraMap S S' x := fun _ => rfl
