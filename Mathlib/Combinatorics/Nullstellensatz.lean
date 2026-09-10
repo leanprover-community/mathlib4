@@ -168,6 +168,33 @@ private theorem Alon.monic_P (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.Monic (P S i) :=
   Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
+/-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
+  for `e ≤ S.card`. -/
+private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι →₀ ℕ)
+    (hm : m ∈ (Alon.P S i).support) :
+    ∃ e ≤ S.card, m = single i e := by
+  classical
+  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P]
+  rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
+  simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
+  obtain ⟨e, he, hm⟩ := hm
+  have : Nontrivial R := nontrivial_of_ne _ _ he
+  refine ⟨e (), ?_, ?_⟩
+  · suffices e ≼[lex] single () #S by
+      simpa [MonomialOrder.lex_le_iff_of_unique] using this
+    rw [← Alon.degree_P]
+    apply MonomialOrder.le_degree
+    rw [mem_support_iff]
+    convert! he
+  · rw [← hm]
+    ext j
+    by_cases hj : j = i
+    · rw [hj, mapDomain_apply_of_injective (Function.injective_of_subsingleton _), single_eq_same]
+    · rw [mapDomain_of_notMem_range, single_eq_of_ne hj]
+      simp [Set.range_const, Set.mem_singleton_iff, hj]
+
+variable [Finite σ]
+
 /-- The **Combinatorial Nullstellensatz**.
 
 If `f` vanishes at every point `x : σ → R` such that `x s ∈ S s` for all `s`,
