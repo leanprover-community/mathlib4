@@ -553,7 +553,8 @@ theorem uniformContinuous_comap' {f : γ → β} {g : α → γ} [v : UniformSpa
 set_option warn.classDefReducibility false in
 /-- Given `f : α → β` and a uniformity `u` on `α`, the image of `u` under `f`
 is the finest uniformity on `β` making the map `f` uniformly continuous.
-It does not always agree with the coinduced topology. -/
+You almost *never* want to put this as an instance on a type,
+and it does not always agree with the coinduced topology. -/
 def UniformSpace.map (f : α → β) (u : UniformSpace α) : UniformSpace β :=
   UniformSpace.generateFilter (𝓤[u].map (Prod.map f f))
 
