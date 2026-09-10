@@ -53,7 +53,7 @@ variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (m�
 proof. -/
 structure DotProductEq where
   /-- The number of terms. -/
-  n : Q(ℕ)
+  n : Q(Nat)
   /-- The first list. -/
   l₁ : Q(List $α)
   /-- The second list. -/
@@ -66,9 +66,9 @@ structure DotProductEq where
 /-- The dot product of the `m` entries `as` and `bs`, `ListMatrix.dotProduct m l₁ l₂ = fold`, with
 `m` a numeral and `fold` the sum of the products `a₀ * b₀ + (a₁ * b₁ + (… + 0))`, unfolded by
 the equations of `ListMatrix.dotProduct`. -/
-def proveDotProduct (m : ℕ) (as bs : List Q($α)) : DotProductEq zα aα mα :=
+def proveDotProduct (m : Nat) (as bs : List Q($α)) : DotProductEq zα aα mα :=
   let ⟨_, l₁, l₂, fold, h⟩ := go as bs
-  have mQ : Q(ℕ) := q($m)
+  have mQ : Q(Nat) := q($m)
   ⟨mQ, l₁, l₂, fold, mkExpectedPropHint h q(ListMatrix.dotProduct $mQ $l₁ $l₂ = $fold)⟩
 where
   /-- The chain of the equations, whose `n` is the successor tower `((0 + 1) + 1) + …` they
@@ -83,7 +83,7 @@ where
 /-- The expansion of the product `ListMatrix.mul l m n A B` of two list literals with the
 associated proof term. The input matrices are put as fields of the structure to avoid
 over-long dependent type signatures downstream. -/
-structure MulEq (l m n : ℕ) where
+structure MulEq (l m n : Nat) where
   /-- The list literal of the first factor. -/
   A : Q(List (List $α))
   /-- The list literal of the second factor. -/
@@ -98,7 +98,7 @@ structure MulEq (l m n : ℕ) where
 /-- Rewrite `ListMatrix.mul l m n A B`, for `A` the list literal of the `l` rows `listA` of `m`
 entries and `B` that of the `m` rows `listB` of `n` entries over `α`, to the literal whose entries
 are the sums of products of the entries. The rows are not checked against `l`, `m` and `n`. -/
-def proveMul (l m n : ℕ) (listA listB : List (List Q($α))) : MulEq zα aα mα l m n :=
+def proveMul (l m n : Nat) (listA listB : List (List Q($α))) : MulEq zα aα mα l m n :=
   let Bt := letI : Zero Q($α) := ⟨q(0)⟩; ListMatrix.transpose n listB
   let mulEntryEqs := listA.map fun row => Bt.map fun col => proveDotProduct zα aα mα m row col
   let ⟨_, C, hC⟩ := mkListCongr (α := q(List $α)) <| mulEntryEqs.map fun row =>
