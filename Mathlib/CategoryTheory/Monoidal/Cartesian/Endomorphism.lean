@@ -12,11 +12,11 @@ public import Mathlib.Algebra.Ring.Defs
 # Endomorphism ring (rsp. semiring) of a commutative group (monoid) object
 
 We show that given a monoid object `G : Mon C` whose underlying structure is commutative,
-its endomorphism type `G ⟶ G` is a semiring. If this object is a group object, i.e., `G : Grp C`,
+its endomorphism type `End G` is a semiring. If this object is a group object, i.e., `G : Grp C`,
 then this semiring would in fact be a ring.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open CategoryTheory
 
@@ -28,96 +28,162 @@ open AddMonObj CartesianMonoidalCategory
 
 variable {G : AddMon C} {H : AddMon C}
 
-instance : Mul (G ⟶ G) where
-  mul f g := {
-    hom := g.hom ≫ f.hom
-    isAddMonHom_hom := inferInstance
-  }
-
-instance : One (G ⟶ G) where
-  one := {
-    hom := 𝟙 G.X
-    isAddMonHom_hom := by infer_instance
-  }
-
-namespace AddMon
-lemma add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
-    : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
-
-lemma mul_hom (f g : (G ⟶ G)) :
-    (f * g).hom = g.hom ≫ f.hom := rfl
-
-lemma one_hom (G₀ : AddMon C) : (1 : G₀ ⟶ G₀).hom = 𝟙 G₀.X := rfl
-end AddMon
-
-
 instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (G ⟶ G) := Hom.addCommMonoid
 
-open AddMon
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (G ⟶ G) where
+lemma AddMon.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
+    : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
+
+def AddMon.End.toHom (f : End G) : G ⟶ G := f
+
+
+open AddMon End
+
+instance : Zero (End G) where
+  zero := ((0 : G ⟶ G) : End G)
+
+instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
+  add f g :=  by exact (toHom f) + (toHom g)
+
+
+namespace AddMon.End
+lemma toHom_eq (f g : End G) : f = g ↔ End.toHom f = End.toHom g := by
+  constructor <;> intro h
+  · exact AddMon.Hom.ext' (congrArg AddMon.Hom.hom h)
+  · exact End.ext h
+
+lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X]
+  : toHom (f + g) = toHom f + toHom g := rfl
+
+lemma toHom_zero : toHom (0 : End G) = 0 := rfl
+
+lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rfl
+end AddMon.End
+
+
+/- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
+an additive commutative monoid structure -/
+instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G) where
+  add_assoc f g h := by
+    simp only [toHom_eq, toHom_add, add_assoc (toHom f) (toHom g) (toHom h)]
+  zero_add f := by
+    simp only [toHom_eq, toHom_add, toHom_zero]
+    exact zero_add (toHom f)
+  add_zero f := by
+    simp only [toHom_eq, toHom_add, toHom_zero]
+    exact add_zero (toHom f)
+  nsmul n f := by
+    exact n • (toHom f)
+  add_comm f g := by
+    simp only [toHom_eq, toHom_add]
+    exact add_comm (toHom f) (toHom g)
+
+/- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
+an semiring structure -/
+instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
   zero_add := zero_add
   add_zero := add_zero
-  mul_assoc f g h := by ext; simp[mul_hom]
-  one_mul f := by ext; simp only [mul_hom, one_hom, Category.comp_id]
-  mul_one f := by ext; simp only [mul_hom, AddMon.one_hom, Category.id_comp]
-  zero_mul f := by ext; simp only [mul_hom, zero_hom, comp_toUnit_assoc]
-  mul_zero f := by ext; simp only [zero_hom, mul_hom, Category.assoc, IsAddMonHom.zero_hom]
+  one_mul := one_mul
+  mul_one := mul_one
+  zero_mul f := by
+    simp only [mul_def, Limits.comp_zero]
+  mul_zero f := by
+    simp only [mul_def, Limits.zero_comp]
   left_distrib f g h := by
+    simp only [mul_def, toHom_eq, toHom_comp, toHom_add, Hom.add_def]
     ext
-    simp only [mul_hom, add_hom, Category.assoc, IsAddMonHom.add_hom, lift_map_assoc]
+    simp only [Category.assoc, comp_hom', monMonoidalStruct_tensorObj_X, lift_hom, hom_add,
+      IsAddMonHom.add_hom, lift_map_assoc]
   right_distrib f g h := by
+    simp only [mul_def, toHom_eq, toHom_comp, toHom_add]
     ext
-    simp only [mul_hom, add_hom, reassoc_of% (comp_lift h.hom f.hom g.hom).symm]
+    simp only [add_hom, comp_hom',
+      reassoc_of% (comp_lift (toHom h).hom (toHom f).hom (toHom g).hom).symm]
 
 end EndomorphismSemiring
 
 section EndomorphismRing
 
-open CategoryTheory MonoidalCategory AddGrp AddMonObj CartesianMonoidalCategory
+open AddMonObj CartesianMonoidalCategory
 
-variable {D : Type*} [Category* D] [CartesianMonoidalCategory D]
-variable {A B : AddGrp D}
+variable {G : AddGrp C} {H : AddGrp C}
 
-instance : Mul (A ⟶ A) where
-  mul f g := g ≫ f
+lemma AddGrp.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
+    : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
 
-instance : One (A ⟶ A) where
-  one := 𝟙 A
+def AddGrp.End.toHom (f : End G) : G ⟶ G := f
 
-namespace AddGrp
-lemma toAddMonHom (f g : A ⟶ B) : f = g ↔ f.hom = g.hom := by
+
+open AddGrp End
+
+instance : Zero (End G) where
+  zero := ((0 : G ⟶ G) : End G)
+
+instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
+  add f g :=  by exact (toHom f) + (toHom g)
+
+
+namespace AddGrp.End
+lemma toHom_eq (f g : End G) : f = g ↔ End.toHom f = End.toHom g := by
   constructor <;> intro h
-  · exact InducedCategory.hom_ext_iff.mp h
-  · exact AddGrp.hom_ext_iff.mpr (congrArg AddMon.Hom.hom h)
+  · exact AddGrp.hom_ext_iff.mpr (congrArg AddMon.Hom.hom (congrArg InducedCategory.Hom.hom h))
+  · exact End.ext h
 
-lemma mul_hom (f g : A ⟶ A) : (f * g).hom = f.hom * g.hom := by
-  ext
-  have : (f * g).hom = g.hom ≫ f.hom := rfl
-  simp [AddMon.mul_hom, this]
+lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X]
+  : toHom (f + g) = toHom f + toHom g := rfl
 
-lemma one_hom : (InducedCategory.Hom.hom (1 : A ⟶ A)) = (1 : A.toAddMon ⟶ A.toAddMon) := rfl
-end AddGrp
+lemma toHom_zero : toHom (0 : End G) = 0 := rfl
 
-open AddGrp
-noncomputable instance [BraidedCategory D] [IsCommAddMonObj A.X] : Ring (A ⟶ A) where
+lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rfl
+end AddGrp.End
+
+
+/- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
+an additive commutative group structure -/
+instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G) where
+  add_assoc f g h := by
+    simp only [toHom_eq, toHom_add, add_assoc (toHom f) (toHom g) (toHom h)]
+  zero_add f := by
+    simp only [toHom_eq, toHom_add, toHom_zero]
+    exact zero_add (toHom f)
+  add_zero f := by
+    simp only [toHom_eq, toHom_add, toHom_zero]
+    exact add_zero (toHom f)
+  nsmul n f := by
+    exact n • (toHom f)
+  neg f := by
+    exact (- (toHom f))
+  zsmul n f := by
+    exact n • (toHom f)
+  neg_add_cancel f := by
+    rw[toHom_eq, toHom_add]
+    have : toHom (- toHom f) = - toHom f := rfl
+    rw[this, neg_add_cancel, toHom_zero]
+    rfl
+  add_comm f g := by
+    simp only [toHom_eq, toHom_add]
+    exact add_comm (toHom f) (toHom g)
+
+/- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
+an ring structure -/
+instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
   zero_add := zero_add
   add_zero := add_zero
-  mul_assoc f g h := by
-    ext; simp only [mul_hom, mul_assoc f.hom g.hom h.hom]
-  one_mul f := by
-    ext
-    simp only [mul_hom, one_hom, one_mul f.hom]
-  mul_one f := by
-    ext
-    simp only [mul_hom, one_hom, mul_one f.hom]
+  one_mul := one_mul
+  mul_one := mul_one
   zero_mul f := by
-    simp only [toAddMonHom, mul_hom, zero_hom, zero_mul]
+    simp only [mul_def, Limits.comp_zero]
   mul_zero f := by
-    simp only [toAddMonHom, mul_hom, zero_hom, mul_zero]
+    simp only [mul_def, Limits.zero_comp]
   left_distrib f g h := by
-    simp only [toAddMonHom, mul_hom, Hom.hom_add, left_distrib]
+    simp only [mul_def, toHom_eq, toHom_comp, toHom_add, Hom.add_def]
+    ext
+    simp only [Category.assoc, IsAddMonHom.add_hom, lift_map_assoc, comp', lift_hom,
+      AddMon.comp_hom', tensorObj_X, AddMon.lift_hom, hom_add]
   right_distrib f g h := by
-    simp only [toAddMonHom, mul_hom, Hom.hom_add, right_distrib]
-  neg_add_cancel f := neg_add_cancel f
+    simp only [mul_def, toHom_eq, toHom_comp, toHom_add]
+    ext
+    simp only [add_hom, comp',
+      reassoc_of% (comp_lift (toHom h).hom (toHom f).hom (toHom g).hom).symm]
+  neg_add_cancel := neg_add_cancel
 
 end EndomorphismRing
