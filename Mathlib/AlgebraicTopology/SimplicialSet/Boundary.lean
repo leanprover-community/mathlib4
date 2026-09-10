@@ -114,7 +114,6 @@ namespace stdSimplex
 
 variable {n : ℕ} (A : (Δ[n] : SSet.{u}).Subcomplex)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
     HasDimensionLT A n where
   degenerate_eq_top i hi := by
@@ -127,7 +126,6 @@ lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
       rintro rfl
       exact h (le_antisymm (by simp) (by simpa [← ofSimplex_objEquiv_symm_id]))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_boundary_iff :
     A ≤ boundary.{u} n ↔ A ≠ ⊤ := by
   refine ⟨fun h ↦ ?_, fun hA ↦ ?_⟩
