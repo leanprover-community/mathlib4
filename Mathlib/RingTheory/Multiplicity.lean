@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
@@ -22,9 +22,7 @@ several basic results on it.
 * `emultiplicity a b`: for two elements `a` and `b` of a commutative monoid returns the largest
   number `n` such that `a ^ n ∣ b` or infinity, written `⊤`, if `a ^ n ∣ b` for all natural numbers
   `n`.
-* `multiplicity a b`: a `ℕ`-valued version of `multiplicity`, defaulting for `1` instead of `⊤`.
-  The reason for using `1` as a default value instead of `0` is to have `multiplicity_eq_zero_iff`.
-* `FiniteMultiplicity a b`: a predicate denoting that the multiplicity of `a` in `b` is finite.
+* `multiplicity a b`: a `ℕ`-valued version of `multiplicity`, defaulting for `0` instead of `⊤`.
 -/
 
 @[expose] public section
@@ -45,9 +43,9 @@ open scoped Classical in
 noncomputable def emultiplicity [Monoid α] (a b : α) : ℕ∞ :=
   if h : FiniteMultiplicity a b then Nat.find h else ⊤
 
-/-- A `ℕ`-valued version of `emultiplicity`, returning `1` instead of `⊤`. -/
+/-- A `ℕ`-valued version of `emultiplicity`, returning `0` instead of `⊤`. -/
 noncomputable def multiplicity [Monoid α] (a b : α) : ℕ :=
-  (emultiplicity a b).untopD 1
+  (emultiplicity a b).toNat
 
 section Monoid
 
@@ -73,7 +71,6 @@ theorem finiteMultiplicity_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplic
 theorem multiplicity_eq_of_emultiplicity_eq_some {n : ℕ} (h : emultiplicity a b = n) :
     multiplicity a b = n := by
   simp [multiplicity, h]
-  rfl
 
 theorem emultiplicity_ne_of_multiplicity_ne {n : ℕ} :
     multiplicity a b ≠ n → emultiplicity a b ≠ n :=
@@ -89,23 +86,28 @@ theorem FiniteMultiplicity.emultiplicity_eq_iff_multiplicity_eq {n : ℕ}
     (h : FiniteMultiplicity a b) : emultiplicity a b = n ↔ multiplicity a b = n := by
   simp [h.emultiplicity_eq_multiplicity]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem emultiplicity_eq_iff_multiplicity_eq_of_ne_one {n : ℕ} (h : n ≠ 1) :
+theorem emultiplicity_eq_iff_multiplicity_eq_of_ne_zero {n : ℕ} (h : n ≠ 0) :
     emultiplicity a b = n ↔ multiplicity a b = n := by
   constructor
   · exact multiplicity_eq_of_emultiplicity_eq_some
   · intro h₂
-    simpa [multiplicity, WithTop.untopD_eq_iff, h] using! h₂
+    rwa [multiplicity, ENat.toNat_eq_iff h] at h₂
 
-theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero :
-    emultiplicity a b = 0 ↔ multiplicity a b = 0 :=
-  emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one
+theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero (h : FiniteMultiplicity a b) :
+    emultiplicity a b = 0 ↔ multiplicity a b = 0 := by
+  rw [h.emultiplicity_eq_multiplicity, cast_eq_zero]
+
+@[deprecated (since := "2026-09-08")] alias emultiplicity_eq_iff_multiplicity_eq_of_ne_one :=
+  emultiplicity_eq_iff_multiplicity_eq_of_ne_zero
 
 @[simp]
-theorem multiplicity_eq_one_of_not_finiteMultiplicity (h : ¬FiniteMultiplicity a b) :
-    multiplicity a b = 1 := by
+theorem multiplicity_eq_zero_of_not_finiteMultiplicity (h : ¬FiniteMultiplicity a b) :
+    multiplicity a b = 0 := by
   rw [multiplicity, emultiplicity_eq_top.mpr h]
   decide
+
+@[deprecated (since := "2026-09-08")] alias multiplicity_eq_one_of_not_finiteMultiplicity :=
+  multiplicity_eq_zero_of_not_finiteMultiplicity
 
 @[simp]
 theorem multiplicity_le_emultiplicity :
@@ -156,9 +158,9 @@ theorem FiniteMultiplicity.lt_multiplicity_of_lt_emultiplicity (hfin : FiniteMul
   rw [emultiplicity_eq_multiplicity hfin] at h
   assumption_mod_cast
 
-theorem emultiplicity_pos_iff :
+theorem emultiplicity_pos_iff (h : FiniteMultiplicity a b) :
     0 < emultiplicity a b ↔ 0 < multiplicity a b := by
-  simp [pos_iff_ne_zero, pos_iff_ne_zero, emultiplicity_eq_zero_iff_multiplicity_eq_zero]
+  simp [pos_iff_ne_zero, pos_iff_ne_zero, emultiplicity_eq_zero_iff_multiplicity_eq_zero h]
 
 theorem FiniteMultiplicity.def : FiniteMultiplicity a b ↔ ∃ n : ℕ, ¬a ^ (n + 1) ∣ b :=
   Iff.rfl
@@ -217,7 +219,7 @@ theorem not_pow_dvd_of_emultiplicity_lt {m : ℕ} (hm : emultiplicity a b < m) :
     ¬a ^ m ∣ b := fun nh => by
   unfold emultiplicity at hm
   split at hm
-  · simp only [cast_lt, find_lt_iff] at hm
+  · simp only [ENat.natCast_lt_natCast, find_lt_iff] at hm
     obtain ⟨n, hn1, hn2⟩ := hm
     exact hn2 ((pow_dvd_pow _ hn1).trans nh)
   · simp at hm
@@ -228,13 +230,14 @@ theorem FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt (hf : FiniteMultiplici
   rw [hf.emultiplicity_eq_multiplicity]
   norm_cast
 
-theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < multiplicity a b := by
-  refine Nat.pos_iff_ne_zero.2 fun h => ?_
-  simpa [hdiv] using FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt
-    (by by_contra! nh; simp [nh] at h) (lt_one_iff.mpr h)
+theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) (h : FiniteMultiplicity a b) :
+    0 < multiplicity a b := by
+  contrapose! hdiv
+  simpa using h.not_pow_dvd_of_multiplicity_lt (m := 1) (by simpa using hdiv)
 
-theorem emultiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < emultiplicity a b :=
-  lt_emultiplicity_of_lt_multiplicity (multiplicity_pos_of_dvd hdiv)
+theorem emultiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < emultiplicity a b := by
+  contrapose! hdiv
+  simpa using not_pow_dvd_of_emultiplicity_lt (m := 1) (by simpa using hdiv)
 
 theorem emultiplicity_eq_of_dvd_of_not_dvd {k : ℕ} (hk : a ^ k ∣ b) (hsucc : ¬a ^ (k + 1) ∣ b) :
     emultiplicity a b = k := by classical
@@ -321,17 +324,20 @@ theorem emultiplicity_eq_zero_of_irreducible_ne {R : Type*} [CommMonoidWithZero 
   emultiplicity_eq_zero.2 ((ha.dvd_irreducible_iff_associated hb).not.2 fun ⟨u, _⟩ ↦ by
     simp_all [Subsingleton.elim u 1])
 
-theorem multiplicity_eq_zero :
-    multiplicity a b = 0 ↔ ¬a ∣ b :=
-  (emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one).symm.trans emultiplicity_eq_zero
+theorem multiplicity_eq_zero (h : FiniteMultiplicity a b) :
+    multiplicity a b = 0 ↔ ¬a ∣ b := by
+  rw [← emultiplicity_eq_zero_iff_multiplicity_eq_zero h, emultiplicity_eq_zero]
+
+theorem multiplicity_eq_zero_of_not_dvd (h : ¬ a ∣ b) : multiplicity a b = 0 :=
+  multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_eq_zero.mpr h)
 
 theorem emultiplicity_ne_zero :
     emultiplicity a b ≠ 0 ↔ a ∣ b := by
   simp [emultiplicity_eq_zero]
 
-theorem multiplicity_ne_zero :
+theorem multiplicity_ne_zero (h : FiniteMultiplicity a b) :
     multiplicity a b ≠ 0 ↔ a ∣ b := by
-  simp [multiplicity_eq_zero]
+  simp [multiplicity_eq_zero h]
 
 theorem FiniteMultiplicity.exists_eq_pow_mul_and_not_dvd (hfin : FiniteMultiplicity a b) :
     ∃ c : α, b = a ^ multiplicity a b * c ∧ ¬a ∣ c := by
@@ -354,7 +360,7 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       obtain ⟨w, h_1⟩ := h_1
       split
       next h_2 =>
-        simp_all only [cast_le, le_find_iff, lt_find_iff, Decidable.not_not, le_refl,
+        simp_all only [ENat.natCast_le_natCast, le_find_iff, lt_find_iff, Decidable.not_not, le_rfl,
           not_true_eq_false, not_false_eq_true, implies_true]
       next h_2 => simp_all only [not_exists, Decidable.not_not, le_top]
     next h_1 =>
@@ -406,11 +412,12 @@ theorem dvd_of_emultiplicity_pos {a b : α} (h : 0 < emultiplicity a b) : a ∣ 
 theorem dvd_of_multiplicity_pos {a b : α} (h : 0 < multiplicity a b) : a ∣ b :=
   dvd_of_emultiplicity_pos (lt_emultiplicity_of_lt_multiplicity h)
 
-theorem dvd_iff_multiplicity_pos {a b : α} : 0 < multiplicity a b ↔ a ∣ b :=
-  ⟨dvd_of_multiplicity_pos, fun hdvd => Nat.pos_of_ne_zero (by simpa [multiplicity_eq_zero])⟩
+theorem dvd_iff_multiplicity_pos {a b : α} (h : FiniteMultiplicity a b) :
+    0 < multiplicity a b ↔ a ∣ b := by
+  rw [pos_iff_ne_zero, multiplicity_ne_zero h]
 
-theorem dvd_iff_emultiplicity_pos {a b : α} : 0 < emultiplicity a b ↔ a ∣ b :=
-  emultiplicity_pos_iff.trans dvd_iff_multiplicity_pos
+theorem dvd_iff_emultiplicity_pos {a b : α} : 0 < emultiplicity a b ↔ a ∣ b := by
+  rw [pos_iff_ne_zero, emultiplicity_ne_zero]
 
 theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a ≠ 1 ∧ 0 < b := by
   rw [← not_iff_not, FiniteMultiplicity.not_iff_forall, not_and_or, not_ne_iff, not_lt,
@@ -446,7 +453,7 @@ theorem emultiplicity_of_isUnit_right {a b : α} (ha : ¬IsUnit a)
 
 theorem multiplicity_of_isUnit_right {a b : α} (ha : ¬IsUnit a)
     (hb : IsUnit b) : multiplicity a b = 0 :=
-  multiplicity_eq_zero.mpr fun h ↦ ha (isUnit_of_dvd_unit h hb)
+  multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_of_isUnit_right ha hb)
 
 theorem emultiplicity_of_one_right {a : α} (ha : ¬IsUnit a) : emultiplicity a 1 = 0 :=
   emultiplicity_of_isUnit_right ha isUnit_one
@@ -491,8 +498,8 @@ theorem FiniteMultiplicity.ne_zero {a b : α} (h : FiniteMultiplicity a b) : b �
 theorem emultiplicity_zero (a : α) : emultiplicity a 0 = ⊤ :=
   emultiplicity_eq_top.2 (fun v ↦ v.ne_zero rfl)
 
-theorem multiplicity_zero (a : α) : multiplicity a 0 = 1 :=
-  multiplicity_eq_one_of_not_finiteMultiplicity fun h ↦ h.ne_zero rfl
+theorem multiplicity_zero (a : α) : multiplicity a 0 = 0 :=
+  multiplicity_eq_zero_of_not_finiteMultiplicity fun h ↦ h.ne_zero rfl
 
 @[simp]
 theorem emultiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : emultiplicity 0 a = 0 :=
@@ -500,7 +507,7 @@ theorem emultiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : emultipl
 
 @[simp]
 theorem multiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : multiplicity 0 a = 0 :=
-  multiplicity_eq_zero.2 <| mt zero_dvd_iff.1 ha
+  multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_zero_eq_zero_of_ne_zero a ha)
 
 end MonoidWithZero
 
@@ -661,23 +668,21 @@ theorem FiniteMultiplicity.pow {p a : α} (hp : Prime p)
   | k + 1, ha => by rw [_root_.pow_succ']; exact hp.finiteMultiplicity_mul ha (ha.pow hp)
 
 @[simp]
-theorem multiplicity_self {a : α} : multiplicity a a = 1 := by
-  by_cases ha : FiniteMultiplicity a a
-  · rw [ha.multiplicity_eq_iff]
-    simp only [pow_one, dvd_refl, reduceAdd, true_and]
-    rintro ⟨v, hv⟩
-    nth_rw 1 [← mul_one a] at hv
-    simp only [sq, mul_assoc, mul_eq_mul_left_iff] at hv
-    obtain hv | rfl := hv
-    · have : IsUnit a := .of_mul_eq_one v hv.symm
-      simpa [this] using ha.not_isUnit
-    · simpa using ha.ne_zero
-  · simp [ha]
+theorem multiplicity_self {a : α} (ha : FiniteMultiplicity a a) : multiplicity a a = 1 := by
+  rw [ha.multiplicity_eq_iff]
+  simp only [pow_one, dvd_refl, reduceAdd, true_and]
+  rintro ⟨v, hv⟩
+  nth_rw 1 [← mul_one a] at hv
+  simp only [sq, mul_assoc, mul_eq_mul_left_iff] at hv
+  obtain hv | rfl := hv
+  · have : IsUnit a := .of_mul_eq_one v hv.symm
+    simpa [this] using ha.not_isUnit
+  · simpa using ha.ne_zero
 
 @[simp]
 theorem FiniteMultiplicity.emultiplicity_self {a : α} (hfin : FiniteMultiplicity a a) :
     emultiplicity a a = 1 := by
-  simp [hfin.emultiplicity_eq_multiplicity]
+  simp [hfin, emultiplicity_eq_multiplicity]
 
 theorem multiplicity_mul {p a b : α} (hp : Prime p) (hfin : FiniteMultiplicity p (a * b)) :
     multiplicity p (a * b) = multiplicity p a + multiplicity p b := by
@@ -750,8 +755,10 @@ theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
     (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.Coprime a b) : multiplicity p a = 0 := by
   apply Nat.eq_zero_of_not_pos
   intro nh
-  have da : p ∣ a := by simpa [multiplicity_eq_zero] using nh.ne.symm
-  have db : p ∣ b := by simpa [multiplicity_eq_zero] using (nh.trans_le hle).ne.symm
+  have ha : FiniteMultiplicity p a := by grind [multiplicity_eq_zero_of_not_finiteMultiplicity]
+  have hb : FiniteMultiplicity p b := by grind [multiplicity_eq_zero_of_not_finiteMultiplicity]
+  have da : p ∣ a := by simpa [multiplicity_eq_zero ha] using nh.ne.symm
+  have db : p ∣ b := by simpa [multiplicity_eq_zero hb] using (nh.trans_le hle).ne.symm
   have := Nat.dvd_gcd da db
   rw [Coprime.gcd_eq_one hab, Nat.dvd_one] at this
   exact hp this

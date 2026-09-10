@@ -104,6 +104,7 @@ namespace Diffeomorph
 theorem toEquiv_injective : Injective (Diffeomorph.toEquiv : (M ≃ₘ^n⟮I, I'⟯ M') → M ≃ M')
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance : EquivLike (M ≃ₘ^n⟮I, I'⟯ M') M M' where
   coe Φ := Φ.toEquiv
   inv Φ := Φ.toEquiv.symm
@@ -119,7 +120,7 @@ def toContMDiffMap (Φ : M ≃ₘ^n⟮I, I'⟯ M') : C^n⟮I, M; I', M'⟯ :=
 instance : Coe (M ≃ₘ^n⟮I, I'⟯ M') C^n⟮I, M; I', M'⟯ :=
   ⟨toContMDiffMap⟩
 
-@[continuity]
+@[fun_prop, continuity]
 protected theorem continuous (h : M ≃ₘ^n⟮I, I'⟯ M') : Continuous h :=
   h.contMDiff_toFun.continuous
 

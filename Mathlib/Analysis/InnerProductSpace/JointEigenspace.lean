@@ -47,7 +47,7 @@ namespace LinearMap
 
 namespace IsSymmetric
 
-variable {𝕜 E n m : Type*}
+variable {𝕜 E n : Type*}
 
 open Submodule
 

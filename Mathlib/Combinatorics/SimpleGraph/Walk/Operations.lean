@@ -699,7 +699,8 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
 theorem drop_drop (p : G.Walk u v) (n m : ℕ) :
     (p.drop n).drop m = (p.drop (n + m)).copy (drop_getVert ..).symm rfl := by
   apply ext_support
-  grind [support_copy, drop_support_eq_support_drop_min, drop_length, List.drop_drop]
+  simp_rw [support_copy, drop_support_eq_support_drop_min, drop_length, List.drop_drop]
+  grind
 
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by

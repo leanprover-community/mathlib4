@@ -15,10 +15,8 @@ public import Mathlib.Topology.Category.TopCat.ULift
 # The singular simplicial set of a topological space and geometric realization of a simplicial set
 
 The *singular simplicial set* `TopCat.toSSet.obj X` of a topological space `X`
-has `n`-simplices which identify to continuous maps `stdSimplex ℝ (Fin (n + 1)) → X`,
-where `stdSimplex ℝ (Fin (n + 1))` is the standard topological `n`-simplex,
-defined as the subtype of `Fin (n + 1) → ℝ` consisting of functions `f`
-such that `0 ≤ f i` for all `i` and `∑ i, f i = 1`.
+has `n`-simplices which identify to continuous maps `StdSimplex ℝ (Fin (n + 1)) → X`,
+where `StdSimplex ℝ (Fin (n + 1))` is the standard topological `n`-simplex.
 
 The *geometric realization* functor `SSet.toTop` is left adjoint to `TopCat.toSSet`.
 It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
@@ -42,7 +40,7 @@ It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embeddi
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Convexity
 
 /-- The functor associating the *singular simplicial set* to a topological space.
 
@@ -58,11 +56,10 @@ noncomputable def TopCat.toSSet : TopCat.{u} ⥤ SSet.{u} :=
 then `(toSSet.obj X).obj n` identifies to the type of continuous
 maps from the standard simplex `stdSimplex ℝ (Fin (n.unop.len + 1))` to `X`. -/
 noncomputable def TopCat.toSSetObjEquiv (X : TopCat.{u}) (n : SimplexCategoryᵒᵖ) :
-    (toSSet.obj X).obj n ≃ C(stdSimplex ℝ (Fin (n.unop.len + 1)), X) :=
+    (toSSet.obj X).obj n ≃ C(StdSimplex ℝ (Fin (n.unop.len + 1)), X) :=
   Equiv.ulift.{0}.trans (ConcreteCategory.homEquiv.trans
     (Homeomorph.ulift.continuousMapCongr (.refl _)))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The *geometric realization functor* is
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
@@ -83,19 +80,16 @@ noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
 instance : SSet.toTop.{u}.IsLeftAdjoint := sSetTopAdj.isLeftAdjoint
 instance : TopCat.toSSet.{u}.IsRightAdjoint := sSetTopAdj.isRightAdjoint
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :
     SSet.stdSimplex.{u} ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   Presheaf.isExtensionAlongULiftYoneda _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma sSetTopAdj_unit_app_app_down (S : SSet) (m : SimplexCategoryᵒᵖ) (a : S.obj m) :
     ((sSetTopAdj.unit.app S).app m a).down =
       SSet.toTopSimplex.inv.app _ ≫ SSet.toTop.map (SSet.yonedaEquiv.symm a) := by

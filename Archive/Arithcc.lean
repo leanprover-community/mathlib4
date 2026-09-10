@@ -3,9 +3,11 @@ Copyright (c) 2020 Xi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # A compiler for arithmetic expressions
@@ -42,6 +44,7 @@ described by McCarthy and Painter, which is considered the first proof of compil
 compiler
 -/
 
+@[expose] public section
 
 namespace Arithcc
 
@@ -74,7 +77,6 @@ section Source
 
 /-! ### Source language -/
 
-
 /-- An expression in the source language is formed by constants, variables, and sums. -/
 inductive Expr
   | const (v : Word) : Expr
@@ -94,7 +96,6 @@ end Source
 section Target
 
 /-! ### Target language -/
-
 
 /-- Instructions of the target machine language (3.1--3.7). -/
 inductive Instruction
@@ -262,14 +263,10 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
   intro r hr
   obtain ⟨_, h⟩ := h
   specialize h r (lt_trans hr (Register.lt_succ_self _))
-  rwa [if_neg (ne_of_lt hr)] at h
+  rwa [ite_eq_right (ne_of_lt hr)] at h
 
-set_option linter.flexible false in
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The main **compiler correctness theorem**.
-
-Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit.
--/
+Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit. -/
 theorem compiler_correctness
     (map : Identifier → Register) (e : Expr) (ξ : Identifier → Word) (η : State) (t : Register)
     (hmap : ∀ x, read (loc x map) η = ξ x) (ht : ∀ x, loc x map < t) :
@@ -324,11 +321,11 @@ theorem compiler_correctness
       simp_all
     have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := calc
       ζ₄ = step (Instruction.add t) ζ₃ := by simp_all
-      _  = { ζ₃ with ac := read t ζ₃ + ζ₃.ac } := by simp [step]
-      _  = { ζ₃ with ac := ν } := by simp_all
-      _  ≃[t + 1] { { write t ν₁ η with ac := ν₂ } with ac := ν } := by
-        simp [StateEq] at hζ₃ ⊢; cases hζ₃; assumption
-      _  ≃[t + 1] { write t ν₁ η with ac := ν } := by simp_all; rfl
+      _ = { ζ₃ with ac := read t ζ₃ + ζ₃.ac } := by simp [step]
+      _ = { ζ₃ with ac := ν } := by simp_all
+      _ ≃[t + 1] { { write t ν₁ η with ac := ν₂ } with ac := ν } := by
+        simp only [StateEq, true_and]; exact hζ₃.2
+      _ ≃[t + 1] { write t ν₁ η with ac := ν } := by simp_all; rfl
     apply write_eq_implies_stateEq <;> assumption
 
 end Correctness

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Basic.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -58,7 +58,9 @@ noncomputable section
 namespace Complex
 variable {z : ℂ}
 
-open ComplexConjugate Topology Filter
+open Topology Filter
+
+open scoped ComplexConjugate
 
 instance : NormedField ℂ where
   dist_eq _ _ := rfl
@@ -158,9 +160,6 @@ theorem continuous_re : Continuous re :=
 lemma uniformContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
 
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_re :=
-  uniformContinuous_re
-
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
   rfl
@@ -180,9 +179,6 @@ theorem continuous_im : Continuous im :=
 @[fun_prop]
 lemma uniformContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
-
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_im :=
-  uniformContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -480,7 +476,7 @@ end Complex
 
 namespace RCLike
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 local notation "reC" => @RCLike.re ℂ _
 local notation "imC" => @RCLike.im ℂ _
@@ -576,7 +572,7 @@ section tsum
 
 variable {α : Type*} {L : SummationFilter α}
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x L ↔ HasSum f (conj x) L :=
   RCLike.hasSum_conj _

@@ -21,8 +21,6 @@ variable {α : Type*}
 
 namespace Multiset
 
-open List
-
 instance : IsOrderedCancelAddMonoid (Multiset α) where
   add_le_add_left := fun _ _ => add_le_add_left
   le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left

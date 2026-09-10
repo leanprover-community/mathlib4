@@ -35,7 +35,7 @@ instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
 @[simp] theorem moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
-    ModuleCat.of R X.toModuleCat = X.toModuleCat :=
+    ↧X.toModuleCat = X.toModuleCat :=
   rfl
 
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
@@ -90,12 +90,12 @@ lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
-    { obj := fun M => ModuleCat.of R M
+    { obj := fun M => ↧M
       map := fun f => ModuleCat.ofHom f.toIsometry.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : QuadraticModuleCat R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
+    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -130,8 +130,6 @@ def ofIso (e : Q₁.IsometryEquiv Q₂) : QuadraticModuleCat.of Q₁ ≅ Quadrat
 end QuadraticModuleCat
 
 namespace CategoryTheory.Iso
-
-open QuadraticForm
 
 variable {X Y Z : QuadraticModuleCat.{v} R}
 

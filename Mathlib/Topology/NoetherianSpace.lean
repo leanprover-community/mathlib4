@@ -52,8 +52,8 @@ namespace TopologicalSpace
 abbrev NoetherianSpace : Prop := WellFoundedGT (Opens α)
 
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
-  rw [NoetherianSpace, CompleteLattice.wellFoundedGT_iff_isSupFiniteCompact,
-    CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
+  rw [NoetherianSpace, wellFoundedGT_iff_isSupFiniteCompact,
+    isSupFiniteCompact_iff_all_elements_compact]
   exact forall_congr' Opens.isCompactElement_iff
 
 instance (priority := 100) NoetherianSpace.compactSpace [h : NoetherianSpace α] : CompactSpace α :=
@@ -92,10 +92,10 @@ theorem noetherianSpace_TFAE :
   tfae_finish
 
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
-  (noetherianSpace_TFAE α).out 0 2
+  (noetherianSpace_TFAE α).out 1 3
 
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
-  Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
+  Iff.mp ((noetherianSpace_TFAE α).out 1 2) ‹_›
 
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,

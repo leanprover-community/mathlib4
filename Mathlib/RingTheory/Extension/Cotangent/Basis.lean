@@ -314,7 +314,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
   rw [← Submodule.comap_le_comap_iff_of_le_range (f := P.ker.subtype) (by simp),
     Submodule.comap_subtype_self,
     Submodule.comap_sup_of_injective P.ker.subtype_injective (by simpa using hJ)
-    (by simp [Ideal.mul_le_left]),
+    (by simp [Ideal.mul_le_right]),
     Submodule.comap_smul'' P.ker.subtype_injective (by simp)]
   simp only [Submodule.comap_subtype_self, J]
   rw [← Submodule.coe_subtype, Ideal.span, Set.range_comp, ← Submodule.map_span,

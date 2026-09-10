@@ -236,8 +236,8 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'_of_measurableSet [IsFini
       (f := fun (_ : SigmaFinite (μ.restrict (μ.sigmaFiniteSetWRT' ν ∪ s))) ↦ _) ?_).trans ?_
     · have := sigmaFinite_restrict_sigmaFiniteSetWRT' μ ν
       infer_instance
-    · exact le_iSup₂ (f := fun s _ ↦ ⨆ (_ : SigmaFinite (μ.restrict _)), ν s)
-        (μ.sigmaFiniteSetWRT' ν ∪ s) (measurableSet_sigmaFiniteSetWRT'.union hs)
+    · grw [← le_iSup₂ _ ?_]
+      exact measurableSet_sigmaFiniteSetWRT'.union hs
   exact h_lt.not_ge h_le
 
 /-- For all sets `s` in `(μ.sigmaFiniteSetWRT ν)ᶜ`, if `ν s ≠ 0` then `μ s = ∞`. -/
@@ -272,7 +272,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [SFinite ν]
       sigmaFinite_restrict_sigmaFiniteSetWRT' _ _,
       fun t ht_subset hνt ↦ measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' ht_subset ?_⟩
     exact fun hν't ↦ hνt (hνν' hν't)
-  rw [Measure.sigmaFiniteSetWRT, dif_pos h] at hs_subset
+  rw [Measure.sigmaFiniteSetWRT, dite_eq_left h] at hs_subset
   exact h.choose_spec.2.2 s hs_subset hνs
 
 lemma restrict_compl_sigmaFiniteSetWRT [SFinite ν] (hμν : μ ≪ ν) :

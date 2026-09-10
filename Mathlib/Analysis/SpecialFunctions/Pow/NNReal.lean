@@ -559,7 +559,7 @@ theorem rpow_ofNNReal {M : ℝ≥0} {P : ℝ} (hP : 0 ≤ P) : (M : ℝ≥0∞) 
 @[simp]
 theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
   cases x
-  · exact dif_pos zero_lt_one
+  · exact dite_eq_left zero_lt_one
   · change ite _ _ _ = _
     simp only [NNReal.rpow_one, ite_eq_right_iff, top_ne_coe, and_imp]
     exact fun _ => zero_le_one.not_gt

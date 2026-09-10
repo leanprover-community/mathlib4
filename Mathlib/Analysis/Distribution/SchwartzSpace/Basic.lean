@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.Tactic.FunProp
@@ -16,7 +15,7 @@ public import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
-import Mathlib.Tactic.MoveAdd
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 
 /-!
@@ -89,6 +88,7 @@ scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 
 namespace SchwartzMap
 
+@[macro_inline]
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -1093,7 +1093,7 @@ section Integration
 /-! ### Integration -/
 
 
-open Real Complex Filter MeasureTheory MeasureTheory.Measure Module
+open Real Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]

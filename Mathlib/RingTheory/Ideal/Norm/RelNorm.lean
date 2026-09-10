@@ -162,7 +162,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
     spanNorm R I * spanNorm R J ≤ spanNorm R (I * J) := by
   rw [spanNorm, spanNorm, spanNorm]
   nth_rw 1 [map]; nth_rw 1 [map]
-  rw [Ideal.span_mul_span', ← Set.image_mul]
+  rw [Ideal.span_mul_span, ← Set.image_mul]
   refine Ideal.span_mono (Set.monotone_image ?_)
   rintro _ ⟨x, hxI, y, hyJ, rfl⟩
   exact Ideal.mul_mem_mul hxI hyJ
@@ -451,6 +451,10 @@ end relNorm_prime
 section absNorm
 
 variable [Module.Free ℤ R] [Module.Free ℤ S] [Module.Finite ℤ S]
+
+-- A nontrivial free `ℤ`-module is infinite; local to this section to supply `Infinite R`/`S`.
+local instance : Infinite R := Module.Free.infinite ℤ R
+local instance : Infinite S := Module.Free.infinite ℤ S
 
 open UniqueFactorizationMonoid in
 theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :

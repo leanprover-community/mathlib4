@@ -194,6 +194,10 @@ theorem tendsto_nhds_unique_of_frequently_eq [T2Space X] {f g : Y → X} {l : Fi
   have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prodMk_nhds hb).frequently hfg
   not_not.1 fun hne => this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
 
+theorem tendsto_nhds_unique_of_forall [T2Space X] {f g : Y → X} {l : Filter Y} {a b : X}
+    [NeBot l] (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : ∀ y, f y = g y) : a = b :=
+  tendsto_nhds_unique_of_eventuallyEq ha hb (Eventually.of_forall hfg)
+
 /-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
 is the infimum of set neighborhoods filters for `s` and `t`.
 
@@ -617,7 +621,7 @@ don't need to assume each `V i` closed because it follows from compactness since
 assumed to be Hausdorff. -/
 theorem exists_subset_nhds_of_isCompact [T2Space X] {ι : Type*} [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) {U : Set X}
-    (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
+    (hU : U ∈ 𝓝ˢ (⋂ i, V i)) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV hV_cpct (fun i => (hV_cpct i).isClosed) hU
 
 theorem CompactExhaustion.isClosed [T2Space X] (K : CompactExhaustion X) (n : ℕ) : IsClosed (K n) :=

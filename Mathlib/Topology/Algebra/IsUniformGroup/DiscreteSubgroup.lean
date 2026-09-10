@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.Commensurable
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Discrete subgroups of topological groups
@@ -19,7 +19,7 @@ be used in other files without requiring lots of group-theoretic imports.
 
 @[expose] public section
 
-open Filter Topology Uniformity
+open Filter Topology
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
 
@@ -59,7 +59,7 @@ lemma Subgroup.discreteTopology_iff_of_finiteIndex {H : Subgroup G} [H.FiniteInd
   suffices IsOpen (H : Set G) by
     rw [discreteTopology_iff_isOpen_singleton_one, isOpen_singleton_iff_nhds_eq_pure,
         ← H.coe_one, ← this.isOpenEmbedding_subtypeVal.map_nhds_eq, nhds_discrete, map_pure]
-  exact H.isOpen_of_isClosed_of_finiteIndex Subgroup.isClosed_of_discrete
+  exact H.isOpen_of_isClosed_of_finiteIndex Subgroup.isClosed_of_discreteTopology
 
 @[to_additive]
 lemma Subgroup.discreteTopology_iff_of_isFiniteRelIndex {H K : Subgroup G} (hHK : H ≤ K)
@@ -74,8 +74,8 @@ lemma Subgroup.Commensurable.discreteTopology_iff
     {H K : Subgroup G} (h : Commensurable H K) :
     DiscreteTopology H ↔ DiscreteTopology K :=
   calc DiscreteTopology H ↔ DiscreteTopology ↑(H ⊓ K) :=
-    haveI : IsFiniteRelIndex (H ⊓ K) H := ⟨Subgroup.inf_relIndex_left H K ▸ h.2⟩
+    haveI : IsFiniteRelIndex (H ⊓ K) H := ⟨Subgroup.inf_relIndex_left H K ▸ h.2.relIndex_ne_zero⟩
     (Subgroup.discreteTopology_iff_of_isFiniteRelIndex inf_le_left).symm
   _ ↔ DiscreteTopology K :=
-    haveI : IsFiniteRelIndex (H ⊓ K) K := ⟨Subgroup.inf_relIndex_right H K ▸ h.1⟩
+    haveI : IsFiniteRelIndex (H ⊓ K) K := ⟨Subgroup.inf_relIndex_right H K ▸ h.1.relIndex_ne_zero⟩
     Subgroup.discreteTopology_iff_of_isFiniteRelIndex inf_le_right

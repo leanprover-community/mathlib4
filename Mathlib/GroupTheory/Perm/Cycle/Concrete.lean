@@ -364,7 +364,6 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
       have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
       exact Quotient.sound' hc.toList_isRotated)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ x) :
     toCycle f hf = toList f x := by
   have key : (Finset.univ : Finset α).val = x ::ₘ Finset.univ.val.erase x := by simp
