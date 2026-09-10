@@ -42,6 +42,7 @@ variable (h2mq : 2 * m K ∣ q ^ 2)
 
 variable [DecidableEq (K →+* ℂ)]
 
+omit [DecidableEq (K →+* ℂ)] in
 /-- A house bound for the scaled coefficient `c₁ • (a + b • β')`. -/
 @[nolint unusedArguments]
 lemma house_add_mul_le :
@@ -82,11 +83,13 @@ lemma one_le_c₄ : 1 ≤ c₄ α' β' γ' := one_le_mul_of_one_le_of_one_le
 /-- The constant `|c₁| * (1 + house β')`. -/
 def c₆ : ℝ := (|↑(c₁ α' β' γ')| * (1 + house β'))
 
+omit [DecidableEq (K →+* ℂ)] in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma c₆_nonneg : 0 ≤ c₆ α' β' γ' := by
   unfold c₆ house; positivity
 
+omit [DecidableEq (K →+* ℂ)] in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma one_le_c₆ : 1 ≤ c₆ α' β' γ' := by
@@ -100,6 +103,7 @@ lemma one_le_c₆ : 1 ≤ c₆ α' β' γ' := by
 def c₇ : ℝ := ((((|↑(c₁ α' β' γ')| * |↑(c₁ α' β' γ')| *
   (|↑(c₁ α' β' γ')| * (house α' * (|↑(c₁ α' β' γ')| * house γ'))))) ^ m K))
 
+omit [DecidableEq (K →+* ℂ)] in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma one_le_c₇ : 1 ≤ c₇ α' β' γ' := by
@@ -283,23 +287,19 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
     trans
     · exact house_mul_le _ _
     refine mul_le_mul_of_nonneg (le_refl _) ?_ (house_nonneg _) (by positivity)
-
     trans
     · exact house_mul_le _ _
     refine mul_le_mul_of_nonneg (le_refl _) ?_ (house_nonneg _) (by positivity)
-
     trans
     · exact house_mul_le _ _
     refine mul_le_mul_of_nonneg (le_refl _) ?_ (house_nonneg _) (by positivity)
-
     trans
     · exact house_mul_le _ _
     refine mul_le_mul_of_nonneg ?_ ?_ (house_nonneg _) (by positivity)
     · simp [nsmul_eq_mul, zsmul_eq_mul, smul_eq_mul, Int.cast_pow]
     · trans
       · exact house_mul_le _ _
-      ·
-        refine mul_le_mul_of_nonneg ?_ ?_ (by positivity) (by positivity) <;>
+      · refine mul_le_mul_of_nonneg ?_ ?_ (by positivity) (by positivity) <;>
           simp [house]
   · apply Finset.sum_le_sum
     intros t ht
@@ -532,6 +532,7 @@ lemma sqt_etc : Real.sqrt (2*m K*(r α β σ α' β' γ' hirr htriv habc q hq0 h
 /-- The constant combining `c₆`, `√(2m)` and `c₇`, bounding `house ρ`. -/
 def c₈ : ℝ := (c₆ α' β' γ' * √(2 * ↑(m K)) * c₇ α' β' γ' ^ (2 * m K) * c₄ α' β' γ' * (2 * ↑(m K)))
 
+omit [DecidableEq (K →+* ℂ)] in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma c7_nonneg : 0 ≤ c₇ α' β' γ' := by
@@ -543,7 +544,8 @@ lemma c8_nonneg : 0 ≤ c₈ α' β' γ' := by
   unfold c₈
   apply mul_nonneg ?_ (by positivity)
   · apply mul_nonneg ?_ (le_trans zero_le_one (one_le_c₄ α β σ α' β' γ' hirr htriv habc))
-    · apply mul_nonneg (mul_nonneg (c₆_nonneg α β σ α' β' γ' hirr htriv habc) (by simp)) (pow_nonneg (c7_nonneg α β σ α' β' γ' hirr htriv habc) _)
+    · apply mul_nonneg (mul_nonneg (c₆_nonneg α β σ α' β' γ' hirr htriv habc) (by simp))
+        (pow_nonneg (c7_nonneg α β σ α' β' γ' hirr htriv habc) _)
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma c8_geq_one : 1 ≤ c₈ α' β' γ' := by
@@ -570,6 +572,7 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma zero_lt_r : 0 < r α β σ α' β' γ' hirr htriv habc q hq0 h2mq :=
   r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
 
+omit [DecidableEq (K →+* ℂ)] in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 theorem q_sq2_neq_1 (m q : ℕ) (_ : 0 < q)
@@ -621,7 +624,8 @@ theorem eq6b.extracted_1_1 :
         exact this
       · norm_cast; exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
     · nth_rw 1 [← mul_one (a:= (2 * (m K : ℝ)) ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℝ))]
-      apply mul_le_mul (by grind) (mod_cast (one_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) (by grind) (by positivity)
+      apply mul_le_mul (by grind) (mod_cast (one_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq))
+        (by grind) (by positivity)
 
 include α β σ α' β' γ' hirr htriv habc in
 theorem eq6b.extracted_1_2 :
@@ -652,6 +656,7 @@ theorem eq6b.extracted_1_2 :
 
 open Real
 
+omit [DecidableEq (K →+* ℂ)] in
 include h2mq in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
@@ -705,7 +710,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
                   · rw [le_iff_lt_or_eq]
                     right
                     exact Real.sqrt_eq_rpow ↑(n K q)
-                  · simp only [Nat.ofNat_nonneg, Real.sqrt_nonneg]
+                  · simp only [Real.sqrt_nonneg]
                   grind
                 · refine mul_le_mul_of_nonneg_left ?_ ?_
                   · apply Real.rpow_le_rpow
@@ -713,7 +718,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
                     · simp only [Nat.cast_le]
                       exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
                     · simp only [one_div, inv_nonneg, Nat.ofNat_nonneg]
-                  · simp only [Nat.ofNat_nonneg, Real.sqrt_nonneg]
+                  · simp only [Real.sqrt_nonneg]
               · unfold c₆ house; positivity
           · simp only [Real.rpow_natCast]
             rw [← pow_mul]

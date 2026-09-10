@@ -79,7 +79,7 @@ lemma exists_analyticOn_factor_R_at_add_one (l' : Fin (m K)) :
       _ = (z - (l' + 1)) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) *
         ((z - (l' + 1)) ^ (o - (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) * R'' z) := by
         rw [← Nat.add_sub_of_le ho, pow_add]
-        simp [mul_assoc, mul_left_comm, mul_comm]
+        simp [mul_left_comm, mul_comm]
   · intro z hz
     have hpow : AnalyticAt ℂ (fun z : ℂ => (z - (l' + 1)) ^ (o - (r α β σ α' β' γ' hirr htriv habc)
         q hq0 h2mq)) z := by
@@ -157,7 +157,8 @@ lemma R_mul_pow_neg_analyticOn (l' : Fin (m K)) :
   unfold R'R
   refine AnalyticOn.mul ?_ ?_
   · apply AnalyticOn.mono
-    · have : ∀ (z : ℂ), AnalyticAt ℂ ((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z := by fun_prop
+    · have : ∀ (z : ℂ), AnalyticAt ℂ ((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z := by
+        fun_prop
       · apply analyticOn_univ.mpr (fun x a ↦ this x)
     simp only [Set.subset_univ]
   · apply AnalyticOn.zpow (AnalyticOn.sub analyticOn_id analyticOn_const)
@@ -212,6 +213,7 @@ lemma R_eq_pow_mul_R' (l' : Fin (m K)) (z : ℂ) :
 def evaluationPoints (K : Type) [Field K] [NumberField K] : Finset ℂ :=
    Finset.image (fun (k': ℕ) ↦ (k' + 1 : ℂ)) (Finset.range (m K))
 
+omit [DecidableEq (K →+* ℂ)] in
 @[nolint unusedArguments]
 lemma mem_evaluationPoints_iff {z : ℂ} :
     z ∈ (evaluationPoints K) ↔ ∃ k : Fin (m K), z = k + 1 := by
@@ -222,15 +224,18 @@ lemma mem_evaluationPoints_iff {z : ℂ} :
 def evaluationPointsCompl (K : Type) [Field K] [NumberField K] : Set ℂ := ((evaluationPoints K))ᶜ
 
 
+omit [DecidableEq (K →+* ℂ)] in
 @[nolint unusedArguments]
 lemma S_U_isOpen : IsOpen (evaluationPointsCompl K) :=
   isOpen_compl_iff.mpr (Finset.isClosed _)
 
 
+omit [DecidableEq (K →+* ℂ)] in
 lemma S.U_nhds :
   ∀ z, z ∈ evaluationPointsCompl K → (evaluationPointsCompl K) ∈ nhds z :=
-  fun z hz ↦ IsOpen.mem_nhds (S_U_isOpen) hz
+  fun _z hz ↦ IsOpen.mem_nhds (S_U_isOpen) hz
 
+omit [DecidableEq (K →+* ℂ)] in
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
 lemma sub_ne_zero_of_mem_evaluationPoints_compl {z : ℂ}
@@ -345,7 +350,7 @@ lemma SR_eq_SRl0 {z : ℂ} :
       ∏ k' ∈ Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)},
         ((((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 1) - (k' + 1)) / (z - (k' + 1 : ℂ))) ^
         ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)) := by
-    simp [hpow]
+    simp
     grind
   _ =
     ((z - a) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) *
@@ -444,7 +449,6 @@ lemma SR_eq_SRl {z : ℂ} (l' : Fin ((m K))) (hl : l' ≠ (l₀' α β σ α' β
     have : Finset.range (m K) \ ({↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) }∪
         {↑l'}) ∪ {↑l'}
      = Finset.range (m K) \ {(↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))} := by grind
-
     simp only [Finset.prod_singleton] at H
     rw [this] at H
     rw [H]; clear H this
@@ -615,7 +619,7 @@ lemma holS :
         · unfold S
           let Hw : ∃ k' : Fin (m K), w = (k' : ℂ) + 1 := ⟨(l₀' α β σ α' β' γ' hirr htriv habc) q hq0
               h2mq, hw0⟩
-          simp [Hw, hw0]
+          simp [hw0]
         · have hwCompl : w ∈ evaluationPointsCompl K := by
             intro hwEval
             rcases ((mem_evaluationPoints_iff)).1 hwEval with ⟨k, rfl⟩
@@ -628,7 +632,7 @@ lemma holS :
             have hk : (k : ℕ) = ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) :=
               (dist_nat_cast_lt_one (k : ℕ) ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
                   ℕ)).1 hdist
-            exact hw0 (by simpa [hk])
+            exact hw0 (by simp [hk])
           exact ((SR_eq_SRl0 α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hwCompl).trans
             ((S_eq_restricted_of_mem_compl α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hwCompl)
       · have hU :
@@ -661,7 +665,7 @@ lemma holS :
             apply Hzl0
             calc
               z = (l' : ℂ) + 1 := hl'
-              _ = w := by simpa [hw1]
+              _ = w := by simp [hw1]
               _ = ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1 := hw0
           have hchoose : Hw.choose = l' := by
             apply Fin.ext
@@ -683,11 +687,11 @@ lemma holS :
               simpa [dist_add_right] using this
             have hk : (k : ℕ) = (l' : ℕ) :=
               (dist_nat_cast_lt_one (k : ℕ) (l' : ℕ)).1 hdist
-            exact hw1 (by simpa [hk])
+            exact hw1 (by simp [hk])
           have hl_ne : l' ≠ (l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
             intro hEq
             apply Hzl0
-            simpa [hl', hEq]
+            simp [hl', hEq]
           exact ((SR_eq_SRl α β σ α' β' γ' hirr htriv habc) q hq0 h2mq l' hl_ne hwCompl).trans
             ((S_eq_restricted_of_mem_compl α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hwCompl)
       · have hl_ne : l' ≠ (l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
@@ -725,12 +729,13 @@ lemma hcauchy :
         + 1) := by
   apply two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
     (s := (∅ : Set ℂ))
-  · simpa using (Set.countable_empty : Set.Countable (∅ : Set ℂ))
+  · simp
   · have hmpos : (0 : ℝ) < (m K) := by
       simp only [Nat.cast_pos]
       exact Nat.zero_lt_succ (2 * (h K) + 1)
     have hdivpos : (0 : ℝ) < ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / q := by
-      exact div_pos (by exact_mod_cast r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (by exact_mod_cast hq0)
+      exact div_pos (by exact_mod_cast r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (by
+        exact_mod_cast hq0)
     have hmul : ((m K) : ℝ) < (m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) /
         q) := by
       have h1 : (1 : ℝ) < 1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / q := by linarith
@@ -751,7 +756,7 @@ lemma hcauchy :
     simpa using AnalyticAt.differentiableAt (holS α β σ α' β' γ' hirr htriv habc q hq0 h2mq x)
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma S_eq_SR_on_circle : ∀ (z : ℂ) (hz : z ∈ Metric.sphere 0
+lemma S_eq_SR_on_circle : ∀ (z : ℂ) (_hz : z ∈ Metric.sphere 0
     ((m K) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q : ℝ)))),
   (S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z = (SR α β σ α' β' γ' hirr htriv
       habc) q hq0 h2mq z := by
