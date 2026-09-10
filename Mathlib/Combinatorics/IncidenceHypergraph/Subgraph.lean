@@ -120,6 +120,18 @@ lemma IsLink.mono (hHG : H ≤ G) (h : H.IsLink e u v) : G.IsLink e u v := by
 lemma Adj.mono (hHG : H ≤ G) (h : H.Adj u v) : G.Adj u v :=
   h.imp fun _ he ↦ he.mono hHG
 
+@[gcongr]
+lemma IsSubgraph.dual_le (hHG : H ≤ G) : H.dual ≤ G.dual where
+  vertexSet_mono := hHG.edgeSet_mono
+  incidenceSet_mono := hHG.incidenceSet_mono
+  edgeSet_mono := hHG.vertexSet_mono
+  edgeMap'_eq := hHG.attach'_eq
+  attach'_eq := hHG.edgeMap'_eq
+
+@[simp]
+lemma dual_le_dual_iff : H.dual ≤ G.dual ↔ H ≤ G :=
+  ⟨fun h ↦ by simpa using h.dual_le, IsSubgraph.dual_le⟩
+
 /-! ### Compatibility -/
 
 /-- Two incidence hypergraphs are compatible when every shared incidence label has the same
@@ -147,6 +159,14 @@ instance : Std.Symm (Compatible : IncidenceHypergraph ν ι ε → _ → Prop) w
 
 lemma compatible_comm : G.Compatible H ↔ H.Compatible G :=
   ⟨Compatible.symm, Compatible.symm⟩
+
+lemma Compatible.dual (h : G.Compatible H) : G.dual.Compatible H.dual where
+  edgeMap_eq := h.attach_eq
+  attach_eq := h.edgeMap_eq
+
+@[simp]
+lemma dual_compatible_dual : G.dual.Compatible H.dual ↔ G.Compatible H :=
+  ⟨fun h ↦ by simpa using h.dual, Compatible.dual⟩
 
 lemma Compatible.of_disjoint_incidenceSet (h : Disjoint I(G) I(H)) : G.Compatible H where
   edgeMap_eq _ hiG hiH := (Set.disjoint_left.mp h hiG hiH).elim
@@ -202,6 +222,10 @@ def noIncidence (V : Set ν) (E : Set ε) (ι : Type*) : IncidenceHypergraph ν 
   edgeMap'_mem i := i.property.elim
   attach' i := i.property.elim
   attach'_mem i := i.property.elim
+
+@[simp]
+lemma dual_noIncidence (V : Set ν) (E : Set ε) (ι : Type*) :
+    (noIncidence V E ι).dual = noIncidence E V ι := rfl
 
 lemma incidenceSet_eq_empty : I(G) = ∅ ↔ G = noIncidence V(G) E(G) ι :=
   ⟨fun h ↦ IncidenceHypergraph.ext rfl h rfl (fun _ hi _ ↦ (h ▸ hi).elim)
@@ -266,6 +290,9 @@ lemma edgeSet_bot : E((⊥ : IncidenceHypergraph ν ι ε)) = ∅ :=
   rfl
 
 @[simp]
+lemma dual_bot : (⊥ : IncidenceHypergraph ν ι ε).dual = ⊥ := rfl
+
+@[simp]
 lemma noIncidence_empty_empty : noIncidence (∅ : Set ν) (∅ : Set ε) ι = ⊥ :=
   rfl
 
@@ -326,5 +353,50 @@ lemma Compatible.disjoint_incidenceSet_of_disjoint_edgeSet (h : G.Compatible H)
     (hE : Disjoint E(G) E(H)) : Disjoint I(G) I(H) :=
   Set.disjoint_left.mpr fun i hiG hiH ↦ Set.disjoint_left.mp hE (G.edgeMap'_mem ⟨i, hiG⟩)
     (h.edgeMap_eq hiG hiH ▸ H.edgeMap'_mem ⟨i, hiH⟩)
+
+/-! ### Degree and order -/
+
+@[gcongr]
+lemma IsSubgraph.degree_le (hHG : H ≤ G) : H.degree v ≤ G.degree v :=
+  Set.encard_le_encard_of_injOn
+    (fun i hi ↦ (hHG.attach'_eq i).trans hi) (Set.inclusion_injective _).injOn
+
+@[gcongr]
+lemma IsSubgraph.order_le (hHG : H ≤ G) : H.order e ≤ G.order e :=
+  hHG.dual_le.degree_le
+
+@[simp]
+lemma degree_noIncidence (V : Set ν) (E : Set ε) (ι : Type*) (v : ν) :
+    (noIncidence V E ι).degree v = 0 := degree_eq_zero_of_incidenceSet_eq_empty rfl
+
+@[simp]
+lemma order_noIncidence (V : Set ν) (E : Set ε) (ι : Type*) (e : ε) :
+    (noIncidence V E ι).order e = 0 := order_eq_zero_of_incidenceSet_eq_empty rfl
+
+lemma degree_bot (v : ν) : (⊥ : IncidenceHypergraph ν ι ε).degree v = 0 :=
+  degree_noIncidence _ _ _ _
+
+lemma order_bot (e : ε) : (⊥ : IncidenceHypergraph ν ι ε).order e = 0 :=
+  order_noIncidence _ _ _ _
+
+variable {k : ℕ∞}
+
+@[simp]
+lemma isUniform_noIncidence (V : Set ν) (E : Set ε) (ι : Type*) :
+    (noIncidence V E ι).IsUniform k ↔ E = ∅ ∨ k = 0 := by
+  by_cases hk : k = 0 <;> simp [IsUniform, hk, Set.eq_empty_iff_forall_notMem, eq_comm]
+
+@[simp]
+lemma isRegular_noIncidence (V : Set ν) (E : Set ε) (ι : Type*) :
+    (noIncidence V E ι).IsRegular k ↔ V = ∅ ∨ k = 0 := by
+  rw [← isUniform_dual, dual_noIncidence, isUniform_noIncidence]
+
+@[simp]
+lemma isUniform_bot (k : ℕ∞) : (⊥ : IncidenceHypergraph ν ι ε).IsUniform k :=
+  isUniform_of_edgeSet_eq_empty rfl
+
+@[simp]
+lemma isRegular_bot (k : ℕ∞) : (⊥ : IncidenceHypergraph ν ι ε).IsRegular k :=
+  isRegular_of_vertexSet_eq_empty rfl
 
 end IncidenceHypergraph
