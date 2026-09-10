@@ -83,8 +83,8 @@ theorem t0Space_iff_inseparable (X : Type u) [TopologicalSpace X] :
   ⟨fun ⟨h⟩ => h, fun h => ⟨h⟩⟩
 
 theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ Pairwise fun x y : X => ¬Inseparable x y := by
-  simp only [t0Space_iff_inseparable, Ne, not_imp_not, Pairwise]
+    T0Space X ↔ Pairwise' fun x y : X => ¬Inseparable x y := by
+  simp only [t0Space_iff_inseparable, Ne, not_imp_not, pairwise'_iff]
 
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
@@ -133,16 +133,16 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
   inseparable_iff_eq.symm.trans hb.inseparable_iff
 
 theorem t0Space_iff_exists_isOpen_xor_mem (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) := by
+    T0Space X ↔ Pairwise' fun x y => ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
-    inseparable_iff_forall_isOpen, Pairwise]
+    inseparable_iff_forall_isOpen, pairwise'_iff]
 
 @[deprecated (since := "2026-04-04")]
 alias t0Space_iff_exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor_mem
 
 theorem exists_isOpen_xor_mem [T0Space X] {x y : X} (h : x ≠ y) :
-    ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) :=
-  (t0Space_iff_exists_isOpen_xor_mem X).1 ‹_› h
+    ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) := by
+  exact pairwise'_apply ((t0Space_iff_exists_isOpen_xor_mem X).1 ‹_›) h
 
 @[deprecated (since := "2026-04-04")] alias exists_isOpen_xor'_mem := exists_isOpen_xor_mem
 
@@ -232,7 +232,7 @@ instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   IsEmbedding.subtypeVal.t0Space
 
 theorem t0Space_iff_or_notMem_closure (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
+    T0Space X ↔ Pairwise' fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 
 instance Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
@@ -477,8 +477,9 @@ theorem CofiniteTopology.continuous_of [T1Space X] : Continuous (@CofiniteTopolo
   t1Space_iff_continuous_cofinite_of.mp ‹_›
 
 theorem t1Space_iff_exists_open :
-    T1Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U :=
-  (t1Space_TFAE X).out 1 7
+    T1Space X ↔ Pairwise' fun x y => ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U := by
+  rw [pairwise'_iff]
+  exact (t1Space_TFAE X).out 1 7
 
 theorem t1Space_iff_disjoint_pure_nhds : T1Space X ↔ ∀ ⦃x y : X⦄, x ≠ y → Disjoint (pure x) (𝓝 y) :=
   (t1Space_TFAE X).out 1 9

@@ -485,7 +485,7 @@ variable (g) in
 /-- The parametrization of the kernel of `toPermHom` -/
 def kerParam : (Perm (Function.fixedPoints g)) ×
     ((c : g.cycleFactorsFinset) → Subgroup.zpowers c.val) →* Perm α :=
-  MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers)
+  MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise'_commute_of_mem_zpowers)
     g.commute_ofSubtype_noncommPiCoprod
 
 set_option backward.isDefEq.respectTransparency false in
@@ -515,7 +515,8 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
       ← notMem_support]
     contrapose hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
-      (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).2 (v b).2) hx
+      (comm := fun a ha b hb h ↦ pairwise'_apply g.pairwise'_commute_of_mem_zpowers h
+        (v a) (v b) (v a).2 (v b).2) hx
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v a) ha
 
 theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
