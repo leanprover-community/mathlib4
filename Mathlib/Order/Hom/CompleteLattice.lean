@@ -136,7 +136,7 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
   { ‹sSupHomClass F α β› with
     map_sup := fun f a b => by
       rw [← sSup_pair, map_sSup]
-      simp only [Set.image_pair, sSup_insert, sSup_singleton]
+      simp
     map_bot := fun f => by
       rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 

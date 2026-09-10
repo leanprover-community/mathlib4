@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Subset
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.Compactness.Compact
@@ -562,7 +562,7 @@ instance subsingleton [PreconnectedSpace α] : Subsingleton (ConnectedComponents
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨x, rfl⟩ := surjective_coe x
   obtain ⟨y, rfl⟩ := surjective_coe y
-  simp_rw [coe_eq_coe, PreconnectedSpace.connectedComponent_eq_univ, ]
+  simp_rw [coe_eq_coe, PreconnectedSpace.connectedComponent_eq_univ]
 
 section
 

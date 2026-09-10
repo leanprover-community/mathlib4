@@ -22,13 +22,13 @@ open RCLike Real Module
 
 open LinearMap (BilinForm)
 
+open scoped InnerProductSpace
+
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section Submodule
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-! ### Inner product space structure on subspaces -/
 
@@ -38,7 +38,7 @@ instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 
 
 /-- The inner product on submodules is the same as on the ambient space. -/
 @[simp]
-theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫ = ⟪(x : E), ↑y⟫ :=
+theorem Submodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_𝕜 = ⟪(x : E), y⟫_𝕜 :=
   rfl
 
 theorem Orthonormal.codRestrict {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) (s : Submodule 𝕜 E)
@@ -52,6 +52,21 @@ theorem orthonormal_span {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) :
     Submodule.subset_span (Set.mem_range_self i)
 
 end Submodule
+
+section ClosedSubmodule
+
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+/-- Induced inner product on a closed submodule. -/
+instance ClosedSubmodule.innerProductSpace (W : ClosedSubmodule 𝕜 E) : InnerProductSpace 𝕜 W :=
+  fast_instance% W.toSubmodule.innerProductSpace
+
+/-- The inner product on closed submodules is the same as on the ambient space. -/
+@[simp]
+theorem ClosedSubmodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_𝕜 = ⟪(x : E), y⟫_𝕜 :=
+  rfl
+
+end ClosedSubmodule
 
 /-! ### Families of mutually-orthogonal subspaces of an inner product space -/
 
@@ -206,8 +221,7 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       intro s₁ hs₁ s₂ hs₂
       rw [← Finset.sum_sdiff_sub_sum_sdiff]
       refine (abs_sub _ _).trans_lt ?_
-      have : ∀ i, 0 ≤ ‖f i‖ ^ 2 := fun i : ι => sq_nonneg _
-      simp only [Finset.abs_sum_of_nonneg' this]
+      simp only [sq_nonneg, implies_true, Finset.abs_sum_of_nonneg]
       have : ((∑ i ∈ s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖f i‖ ^ 2) < √ε ^ 2 := by
         rw [← hV.norm_sq_sdiff_sum, sq_lt_sq, abs_of_nonneg (sqrt_nonneg _),
           abs_of_nonneg (norm_nonneg _)]
@@ -225,15 +239,11 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       have Hs₁ : ∑ x ∈ s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert! H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left
-        rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
-        · simp
-        · exact fun i => sq_nonneg _
+        simp [← Finset.sum_sdiff this, Finset.abs_sum_of_nonneg]
       have Hs₂ : ∑ x ∈ s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert! H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right
-        rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
-        · simp
-        · exact fun i => sq_nonneg _
+        simp [← Finset.sum_sdiff this, Finset.abs_sum_of_nonneg]
       linarith
 
 end
@@ -246,7 +256,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-variable {ι : Type*} {G : ι → Type*}
+variable {ι : Type*}
 
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the

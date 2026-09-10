@@ -195,7 +195,6 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
           (StructuredArrow.proj s.pt F).mapCone s')
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 
@@ -415,9 +414,9 @@ instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)
 instance (G : D ⥤ Type*) [RepresentablyFlat F] [IsCofiltered G.Elements] :
     IsCofiltered (F ⋙ G).Elements := by
   suffices h : IsCofiltered (StructuredArrow PUnit (F ⋙ G)) from
-    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _).symm
+    .of_equivalence (Functor.Elements.structuredArrowEquivalence _).symm
   have : IsCofiltered (StructuredArrow PUnit G) :=
-    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _)
+    .of_equivalence (Functor.Elements.structuredArrowEquivalence _)
   infer_instance
 
 end

@@ -41,7 +41,7 @@ section
 
 open scoped Pointwise
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R) (f : R →+* S)
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R)
 variable (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S']
 
