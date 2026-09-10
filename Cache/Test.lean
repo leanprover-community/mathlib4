@@ -1614,7 +1614,7 @@ def test_putStagedViaRclone : IO Unit := do
     let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
-    putStagedViaRclone dest
+    withSuppressedOutput <| putStagedViaRclone dest
       (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other" "auto")
       "devbucket" (some "abc1") staging
       #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
