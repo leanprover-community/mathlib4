@@ -61,12 +61,10 @@ def normMatMulCore : Simp.Simproc := fun e => do
     | throwError "expected a list literal of rows{indentExpr s.expr}"
   let rows := rows.toArray.map List.toArray
   let C := Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (rows[i]!)[j]!)
-  let listA := mkListLitQ (α := q(List $α)) (rowsA.map mkListLitQ)
-  let listB := mkListLitQ (α := q(List $α)) (rowsB.map mkListLitQ)
   let pf ← mkEqTrans
-    (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr l, toExpr m, toExpr n, listA, listB]))
+    (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr l, toExpr m, toExpr n, r.A, r.B]))
     (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr l, toExpr n])
-      (← mkEqTrans (← r.getProof) (← s.getProof)))
+      (← mkEqTrans r.proof (← s.getProof)))
   -- `pf` is stated on `ofLists` forms; the hint holds because `ofLists` on a row-list literal
   -- unfolds to exactly the `Matrix.of`/`vecCons` term of the `!![…]` literal, so the kernel
   -- settles it by reduction at both ends

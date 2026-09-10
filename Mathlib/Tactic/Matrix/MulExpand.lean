@@ -87,11 +87,27 @@ def mkListLitQ {u : Level} {α : Q(Type u)} : List Q($α) → Q(List $α)
   | [] => q([])
   | a :: as => q($a :: $(mkListLitQ as))
 
+/-- The expansion of the product `ListMatrix.mul l m n A B` of two list literals with the
+associated proof term. The input matrices are put as fields of the structure to avoid
+over-long dependent type signatures. -/
+structure MulEq {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
+    (l m n : ℕ) where
+  /-- The list literal of the first factor. -/
+  A : Q(List (List $α))
+  /-- The list literal of the second factor. -/
+  B : Q(List (List $α))
+  /-- The rows of the product, each entry the sum of the products of the entries. -/
+  rows : List (List Q($α))
+  /-- The list literal of `rows`. -/
+  expr : Q(List (List $α))
+  /-- The proof. -/
+  proof : Q(ListMatrix.mul $l $m $n $A $B = $expr)
+
 /-- Rewrite `ListMatrix.mul l m n listA listB`, for `listA` the list literal of the `l` rows `A`
 of `m` entries and `listB` that of the `m` rows `B` of `n` entries over `α`, to the literal whose
 entries are the sums of products of the entries. -/
 def proveMul {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
-    (l m n : ℕ) (A B : List (List Q($α))) : Simp.Result :=
+    (l m n : ℕ) (A B : List (List Q($α))) : MulEq zα aα mα l m n :=
   -- transpose of B
   let Bt := letI : Zero Q($α) := ⟨q(0)⟩; ListMatrix.transpose n B
   let mulEntryEqs := A.map fun row => Bt.map fun col => proveDotProduct zα aα mα m row col
@@ -102,7 +118,10 @@ def proveMul {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α))
   let listB := mkListLitQ (α := q(List $α)) (B.map mkListLitQ)
   -- `hC` is stated on the dot products of the rows and columns, to which `ListMatrix.mul` on the
   -- literals unfolds, so the kernel settles the hint by reduction
-  { expr := C,
-    proof? := some (mkExpectedPropHint hC q(ListMatrix.mul $l $m $n $listA $listB = $C)) }
+  { A := listA,
+    B := listB,
+    rows := mulEntryEqs.map (·.map (·.result)),
+    expr := C,
+    proof := mkExpectedPropHint hC q(ListMatrix.mul $l $m $n $listA $listB = $C) }
 
 end Mathlib.Tactic.Matrix
