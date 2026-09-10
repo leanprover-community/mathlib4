@@ -93,8 +93,9 @@ def iIsOrtho {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
   B.IsOrthoᵢ v
 
 theorem iIsOrtho_def {n : Type w} {B : BilinForm R M} {v : n → M} :
-    B.iIsOrtho v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
-  Iff.rfl
+    B.iIsOrtho v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 := by
+  unfold iIsOrtho IsOrthoᵢ
+  rw [pairwise'_iff]
 
 section
 

@@ -660,7 +660,7 @@ lemma tprod_extend_one {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ �
 
 @[to_additive]
 lemma tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem (s : γ → Set β) (f : β → α)
-    (i : β) (hi : i ∈ ⋃ d, s d) (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) :
+    (i : β) (hi : i ∈ ⋃ d, s d) (hs : Pairwise' (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) :
     ∏' d, (s d).mulIndicator f i = f i := by
   obtain ⟨j, hj⟩ := Set.mem_iUnion.mp hi
   rw [← tprod_subtype_eq_of_mulSupport_subset (s := {j})]
@@ -669,9 +669,9 @@ lemma tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem (s : γ → Set β) (f
 
 @[to_additive]
 lemma tprod_mulIndicator_of_mem_union_disjoint (s : γ → Set β) (f : β → α)
-    (hs : Pairwise (Disjoint on s)) (i : β) (hi : i ∈ ⋃ d, s d) :
+    (hs : Pairwise' (Disjoint on s)) (i : β) (hi : i ∈ ⋃ d, s d) :
     ∏' d, (s d).mulIndicator f i = f i :=
-  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem s f i hi (pairwise_disjoint_mono hs
+  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem s f i hi (pairwise'_disjoint_mono hs
     <| fun _ _ hi ↦ hi.1)
 
 @[to_additive]
@@ -681,17 +681,17 @@ lemma tprod_mulIndicator_of_notMem (s : γ → Set β) (f : β → α) (i : β) 
 
 @[to_additive]
 lemma mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport (s : γ → Set β) (f : β → α)
-    (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : β) :
+    (hs : Pairwise' (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : β) :
     (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
   by_cases h₀ : i ∈ ⋃ d, s d
   · simp only [h₀, hs, Set.mulIndicator_of_mem, tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem]
   · aesop
 
 @[to_additive]
-lemma mulIndicator_iUnion_of_pairwise_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s))
+lemma mulIndicator_iUnion_of_pairwise_disjoint (s : γ → Set β) (hs : Pairwise' (Disjoint on s))
     (f : β → α) : (⋃ d, s d).mulIndicator f = fun i ↦ ∏' d, (s d).mulIndicator f i := by
   ext i
-  exact mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport s f (pairwise_disjoint_mono hs
+  exact mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport s f (pairwise'_disjoint_mono hs
     <| fun _ _ hi ↦ hi.1) i
 
 variable [T2Space α]
