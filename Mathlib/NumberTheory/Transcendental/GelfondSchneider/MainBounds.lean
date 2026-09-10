@@ -134,7 +134,7 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
     · simpa using (Complex.norm_exp_le_exp_norm ((ρ α β) q i * z))
     · simp
     · apply mul_nonneg
-      · exact Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))) _
+      · exact Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'))) _
       · exact Real.rpow_nonneg (by simp) _
   · apply sum_le_sum
     intros i hi
@@ -180,7 +180,7 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
     · apply mul_nonneg
       · simp only [Real.rpow_natCast]
         apply pow_nonneg
-        exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))
+        exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'))
       · apply Real.rpow_nonneg
         simp only [Nat.cast_nonneg]
   · simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
@@ -190,7 +190,7 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
         · simp only [Real.rpow_natCast]
           refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
           left
-          exact ⟨one_le_c₄ α β σ α' β' γ' hirr htriv habc, n_le_r α β σ α' β' γ' hirr htriv habc q
+          exact ⟨one_le_c₄ α β σ α' β' γ', n_le_r α β σ α' β' γ' hirr htriv habc q
               hq0 h2mq⟩
         · calc _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^ ((((n K) q : ℝ) + 1) /
             2) := ?_
@@ -213,8 +213,7 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
               · simp only [add_le_add_iff_right, Nat.cast_le]
                 exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
         · apply Real.rpow_nonneg; simp only [Nat.cast_nonneg]
-        · apply Real.rpow_nonneg; exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv
-            habc))
+        · apply Real.rpow_nonneg; exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'))
       · rw [Real.rpow_def_of_pos (x:= (c₉ α β K))]
         · calc _ ≤ Real.exp ( |1 + ‖β‖| *  ‖Complex.log α‖ * (↑(m K)) *
                    |(q : ℝ) * (1 + ↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) / ↑q)|) := ?_
@@ -274,10 +273,10 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
         · unfold c₉; apply Real.exp_pos
       · positivity
       · apply mul_nonneg (Real.rpow_nonneg _ _) (Real.rpow_nonneg (by positivity) _)
-        exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))
+        exact le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'))
     · simp only [Real.rpow_natCast, norm_mul, Real.norm_eq_abs]
       apply mul_nonneg
-        (mul_nonneg (pow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc)))
+        (mul_nonneg (pow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ')))
             _) (by positivity))
         (Real.exp_nonneg _)
 
@@ -289,8 +288,8 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma c10_nonneg : 0 ≤ (c₁₀ α β α' β' γ') := by
   unfold c₁₀
   apply mul_nonneg (mul_nonneg (mul_nonneg (by positivity)
-      (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv
-          habc)))) (c9_nonneg α β σ α' β' γ' hirr htriv habc))
+      (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'))))
+          (c9_nonneg α β σ α' β' γ' hirr htriv habc))
   · apply Real.rpow_nonneg; exact c9_nonneg α β σ α' β' γ' hirr htriv habc
 
 include α β σ α' β' γ' hirr htriv habc in
@@ -300,8 +299,7 @@ lemma one_le_c10 : 1 ≤ (c₁₀ α β α' β' γ') := by
   have hm : (1 : ℝ) ≤ (m K) := by exact_mod_cast (one_le_m K)
   have h1 : (1 : ℝ) ≤ (2 : ℝ) * (m K) := by nlinarith
   have h2 : 1 ≤ (2 : ℝ) * (m K) * (c₄ α' β' γ') := by
-    simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h1 (one_le_c₄ α β σ α' β' γ' hirr htriv
-        habc)
+    simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h1 (one_le_c₄ α β σ α' β' γ')
   have h3 : 1 ≤ (2 : ℝ) * (m K) * (c₄ α' β' γ') * (c₉ α β K) := by
     simpa [mul_assoc] using one_le_mul_of_one_le_of_one_le h2 (c9_gt_1 α β σ α' β' γ' hirr htriv
         habc)
@@ -329,15 +327,15 @@ lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htr
              (1/2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq + 3) : ℝ) := ?_
     · apply mul_le_mul (eq6b.extracted_1_1 α β σ α' β' γ' hirr htriv habc q hq0 h2mq) le_rfl ?_
         (by positivity)
-      (apply mul_nonneg (mul_nonneg (Real.rpow_nonneg (le_trans zero_le_one (one_le_c₄ α β σ α' β'
-          γ' hirr htriv habc)) _)
+      (apply mul_nonneg (mul_nonneg (Real.rpow_nonneg (le_trans zero_le_one
+          (one_le_c₄ α β σ α' β' γ')) _)
         (by positivity)) (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _))
     · unfold c₁₀
       nth_rw 2 [Real.mul_rpow _
           (by apply Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) ((2 * ↑(m K) : ℝ)))]
       · nth_rw 2 [Real.mul_rpow _ (by grind [c9_nonneg α β σ α' β' γ' hirr htriv habc])]
         · nth_rw 2 [Real.mul_rpow (by positivity)
-            (by apply le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc)))]
+            (by apply le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ')))]
           · simp only [← mul_assoc, mul_assoc ((2*(m K) : ℝ) ^ ((r α β σ α' β' γ' hirr htriv habc) q
               hq0 h2mq : ℝ))
                 ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ((c₄ α' β' γ') ^ ((r α β σ α' β'
@@ -349,8 +347,7 @@ lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htr
             · apply mul_le_mul (by simp) ?_
                 (mul_nonneg
                     (by positivity) (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _))
-                (Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv
-                    habc))) _)
+                (Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'))) _)
               · rw [Real.rpow_add
                   (by grind [c9_pos α β σ α' β' γ' hirr htriv habc]), mul_comm, mul_assoc]
                 · apply mul_le_mul
@@ -374,14 +371,14 @@ lemma abs_R : (q * q) * (((c₄ α' β' γ') ^ ((r α β σ α' β' γ' hirr htr
                   · apply mul_nonneg (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc)
                       _) (mul_nonneg (by simp)
                       (by apply Real.rpow_nonneg (by simp)))
-            · apply mul_nonneg (Real.rpow_nonneg (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'
-                hirr htriv habc))) _)
+            · apply mul_nonneg
+                (Real.rpow_nonneg (le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')) _)
                (mul_nonneg
                    (by positivity) (Real.rpow_nonneg (c9_nonneg α β σ α' β' γ' hirr htriv habc) _))
         · apply mul_nonneg
-            (by positivity) (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc)))
+            (by positivity) (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ')))
       · apply mul_nonneg (mul_nonneg
-          (by positivity) (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ' hirr htriv habc))))
+          (by positivity) (le_trans zero_le_one ((one_le_c₄ α β σ α' β' γ'))))
           (c9_nonneg α β σ α' β' γ' hirr htriv habc)
 
 include α β σ α' β' γ' hirr htriv habc in
@@ -767,7 +764,7 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
           have := (q_le_2sqrtmr α β σ α' β' γ' hirr htriv habc) q hq0 h2mq
           apply Real.rpow_le_rpow
           · simp only [Nat.cast_nonneg]
-          · rw [(q_eq_sqrtmn α β σ α' β' γ' hirr htriv habc) q h2mq]
+          · rw [(q_eq_sqrtmn α β σ α' β' γ' habc) q h2mq]
             simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg,
               Real.sqrt_mul, Nat.ofNat_nonneg]
             simp only [mul_assoc]
