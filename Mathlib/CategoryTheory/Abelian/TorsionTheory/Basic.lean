@@ -60,15 +60,19 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C]
 
 namespace ObjectProperty
+
+section HasZeroMorphisms
+
+variable [HasZeroMorphisms C]
 
 /-!
 ### Interaction of the left and right orthogonal
 
-The results in this section hold under weaker assumptions than `Abelian C` (a category with
-zero morphisms suffices).
+Everything in this section only needs `C` to have zero morphisms. The two instances for closure
+under extensions, further down, additionally need `Preadditive C` and `Balanced C`.
 -/
 
 section Orthogonal
@@ -153,19 +157,6 @@ instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderQuotients where
   prop_of_epi f _ hX := (P.leftOrthogonal_iff _).mpr
     fun _ g hZ ↦ zero_of_epi_comp f (hX (f ≫ g) hZ)
 
-/-- The left orthogonal of a property of objects is closed under extensions. -/
-instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderExtensions where
-  prop_X₂_of_shortExact := by
-    intro s hs hX₁ hX₃ Z k hZ
-    let t : CokernelCofork s.f := CokernelCofork.ofπ k (hX₁ (s.f ≫ k) hZ)
-    -- the type ascription on `l` matters: it puts the morphism at type `s.X₃ ⟶ Z` rather
-    -- than the definitionally equal `(CokernelCofork.ofπ s.g _).pt ⟶ t.pt`; without it,
-    -- `simp [← hfac, hl]` cannot close the goal because the rewrite does not fire.
-    let l : s.X₃ ⟶ Z := hs.gIsCokernel.desc t
-    have hl : l = 0 := hX₃ l hZ
-    have hfac : s.g ≫ l = k := hs.gIsCokernel.fac t WalkingParallelPair.one
-    simp [← hfac, hl]
-
 /-- The left orthogonal of a property of objects is closed under colimits of any shape. -/
 instance (P : ObjectProperty C) {J : Type u'} [Category.{v'} J] :
     P.leftOrthogonal.IsClosedUnderColimitsOfShape J where
@@ -181,18 +172,6 @@ instance (P : ObjectProperty C) : P.rightOrthogonal.IsClosedUnderSubobjects wher
   prop_of_mono i _ hY := (P.rightOrthogonal_iff _).mpr
     fun _ f hX ↦ zero_of_comp_mono i (hY (f ≫ i) hX)
 
-/-- The right orthogonal of a property of objects is closed under extensions. -/
-instance (P : ObjectProperty C) : P.rightOrthogonal.IsClosedUnderExtensions where
-  prop_X₂_of_shortExact := by
-    intro s hs hX₁ hX₃ Z k hZ
-    let t : KernelFork s.g := KernelFork.ofι k (hX₃ (k ≫ s.g) hZ)
-    -- as in the previous instance, the type ascription on `l` is essential; without it,
-    -- `simp [← hfac, hl]` cannot close the goal because the rewrite does not fire.
-    let l : Z ⟶ s.X₁ := hs.fIsKernel.lift t
-    have hl : l = 0 := hX₁ l hZ
-    have hfac : l ≫ s.f = k := hs.fIsKernel.fac t WalkingParallelPair.zero
-    simp [← hfac, hl]
-
 /-- The right orthogonal of a property of objects is closed under limits of any shape. -/
 instance (P : ObjectProperty C) {J : Type u'} [Category.{v'} J] :
     P.rightOrthogonal.IsClosedUnderLimitsOfShape J where
@@ -203,7 +182,7 @@ instance (P : ObjectProperty C) {J : Type u'} [Category.{v'} J] :
     simp only [zero_comp]
     exact hX.prop_diag_obj j (f ≫ hX.π.app j) hY
 
-omit [Abelian C] in
+omit [HasZeroMorphisms C] in
 /-- A property of objects `P.op` is closed under quotients iff `P` is closed under
 subobjects, since epimorphisms in `Cᵒᵖ` correspond to monomorphisms in `C`. -/
 lemma isClosedUnderQuotients_op_iff (P : ObjectProperty C) :
@@ -218,7 +197,40 @@ lemma isClosedUnderExtensions_op_iff (P : ObjectProperty C) :
   ⟨fun h ↦ ⟨fun hS h₁ h₃ ↦ h.prop_X₂_of_shortExact hS.op h₃ h₁⟩,
     fun h ↦ ⟨fun hS h₁ h₃ ↦ h.prop_X₂_of_shortExact hS.unop h₃ h₁⟩⟩
 
+end HasZeroMorphisms
+
+/-! Closure under extensions uses the kernel and cokernel supplied by a short exact sequence, so
+these two instances are stated for preadditive balanced categories. -/
+
+section Extensions
+
+variable [Preadditive C] [Balanced C]
+
+/-- The left orthogonal of a property of objects is closed under extensions. -/
+instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderExtensions where
+  prop_X₂_of_shortExact := by
+    intro s hs hX₁ hX₃ Z k hZ
+    let t : CokernelCofork s.f := CokernelCofork.ofπ k (hX₁ (s.f ≫ k) hZ)
+    let l : s.X₃ ⟶ Z := hs.gIsCokernel.desc t
+    have hl : l = 0 := hX₃ l hZ
+    have hfac : s.g ≫ l = k := hs.gIsCokernel.fac t WalkingParallelPair.one
+    simp [← hfac, hl]
+
+/-- The right orthogonal of a property of objects is closed under extensions. -/
+instance (P : ObjectProperty C) : P.rightOrthogonal.IsClosedUnderExtensions where
+  prop_X₂_of_shortExact := by
+    intro s hs hX₁ hX₃ Z k hZ
+    let t : KernelFork s.g := KernelFork.ofι k (hX₃ (k ≫ s.g) hZ)
+    let l : Z ⟶ s.X₁ := hs.fIsKernel.lift t
+    have hl : l = 0 := hX₁ l hZ
+    have hfac : l ≫ s.f = k := hs.fIsKernel.fac t WalkingParallelPair.zero
+    simp [← hfac, hl]
+
+end Extensions
+
 end ObjectProperty
+
+variable [Abelian C]
 
 namespace Abelian
 
@@ -289,6 +301,12 @@ lemma shortExact_shortComplexPullbackπCokernelπ :
 
 end PullbackCokernel
 
+end Abelian
+
+namespace ObjectProperty
+
+open Abelian
+
 /-- If `P` is closed under quotients and coproducts, then the supremum of the `P`-subobjects
 of any object satisfies `P`; that is, every object has a largest `P`-subobject. -/
 lemma prop_sSup (P : ObjectProperty C)
@@ -358,8 +376,11 @@ theorem rightOrthogonal_leftOrthogonal_eq_self (P : ObjectProperty C)
     [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     P.rightOrthogonal.leftOrthogonal = P :=
-  le_antisymm (rightOrthogonal_leftOrthogonal_le P)
-    (ObjectProperty.le_rightOrthogonal_leftOrthogonal P)
+  le_antisymm P.rightOrthogonal_leftOrthogonal_le P.le_rightOrthogonal_leftOrthogonal
+
+end ObjectProperty
+
+namespace Abelian
 
 /-- A torsion theory in an abelian category consists of two classes, `T` and `F`, of
 torsion and torsion-free objects, respectively, such that `T` is the left orthogonal
@@ -368,13 +389,20 @@ structure TorsionTheory (T F : ObjectProperty C) : Prop where
   torsion_eq_leftOrthogonal : T = F.leftOrthogonal
   free_eq_rightOrthogonal : F = T.rightOrthogonal
 
-/-- A property of objects is a torsion class if it is the torsion class of some
-torsion theory. -/
-def IsTorsionClass (P : ObjectProperty C) : Prop := ∃ F, TorsionTheory P F
+/-- A property of objects is a torsion class if it is the torsion class of some torsion theory.
+
+This is a typeclass, on the model of `Functor.IsLeftAdjoint`: every construction of a torsion
+theory registers an instance for its torsion class, and the closure properties of torsion
+classes are then available by instance search. See `IsTorsionClass.torsionTheory` for the
+torsion theory itself. -/
+class IsTorsionClass (P : ObjectProperty C) : Prop where
+  exists_torsionFreeClass : ∃ F, TorsionTheory P F
 
 /-- A property of objects is a torsion-free class if it is the torsion-free class of some
-torsion theory. -/
-def IsTorsionFreeClass (P : ObjectProperty C) : Prop := ∃ T, TorsionTheory T P
+torsion theory. This is a typeclass; see `IsTorsionClass` for the design and
+`IsTorsionFreeClass.torsionTheory` for the torsion theory itself. -/
+class IsTorsionFreeClass (P : ObjectProperty C) : Prop where
+  exists_torsionClass : ∃ T, TorsionTheory T P
 
 namespace TorsionTheory
 
@@ -394,7 +422,7 @@ lemma free_iff (hTF : TorsionTheory T F) (Y : C) :
 
 /-- The torsion theory generated by a property of objects `P`: the torsion-free class is the
 right orthogonal of `P`, and the torsion class is the left orthogonal of that. -/
-lemma generatedBy (P : ObjectProperty C) :
+lemma generated_by (P : ObjectProperty C) :
     TorsionTheory P.rightOrthogonal.leftOrthogonal P.rightOrthogonal where
   torsion_eq_leftOrthogonal := rfl
   free_eq_rightOrthogonal :=
@@ -402,7 +430,7 @@ lemma generatedBy (P : ObjectProperty C) :
 
 /-- The torsion theory cogenerated by a property of objects `P`: the torsion class is the
 left orthogonal of `P`, and the torsion-free class is the right orthogonal of that. -/
-lemma cogeneratedBy (P : ObjectProperty C) :
+lemma cogenerated_by (P : ObjectProperty C) :
     TorsionTheory P.leftOrthogonal P.leftOrthogonal.rightOrthogonal where
   torsion_eq_leftOrthogonal :=
     (ObjectProperty.leftOrthogonal_rightOrthogonal_leftOrthogonal P).symm
@@ -451,7 +479,83 @@ lemma free_isClosedUnderProducts (hTF : TorsionTheory T F) (J : Type w) :
     F.IsClosedUnderLimitsOfShape (Discrete J) :=
   hTF.free_eq_rightOrthogonal ▸ inferInstance
 
+/-- A torsion theory exhibits its torsion class as a torsion class. -/
+lemma isTorsionClass (hTF : TorsionTheory T F) : IsTorsionClass T := ⟨⟨F, hTF⟩⟩
+
+/-- A torsion theory exhibits its torsion-free class as a torsion-free class. -/
+lemma isTorsionFreeClass (hTF : TorsionTheory T F) : IsTorsionFreeClass F := ⟨⟨T, hTF⟩⟩
+
 end TorsionTheory
+
+/-- A left orthogonal is the torsion class of the torsion theory it cogenerates. -/
+instance (P : ObjectProperty C) : IsTorsionClass P.leftOrthogonal :=
+  (TorsionTheory.cogenerated_by P).isTorsionClass
+
+/-- A right orthogonal is the torsion-free class of the torsion theory it generates. -/
+instance (P : ObjectProperty C) : IsTorsionFreeClass P.rightOrthogonal :=
+  (TorsionTheory.generated_by P).isTorsionFreeClass
+
+/-- A property of objects is a torsion class iff it is the left orthogonal of its right
+orthogonal. -/
+lemma isTorsionClass_iff_rightOrthogonal_leftOrthogonal_eq (P : ObjectProperty C) :
+    IsTorsionClass P ↔ P.rightOrthogonal.leftOrthogonal = P :=
+  ⟨fun ⟨⟨F, h⟩⟩ ↦ by rw [← h.free_eq_rightOrthogonal, ← h.torsion_eq_leftOrthogonal],
+    fun h ↦ ⟨⟨P.rightOrthogonal, ⟨h.symm, rfl⟩⟩⟩⟩
+
+/-- A property of objects is a torsion-free class iff it is the right orthogonal of its left
+orthogonal. -/
+lemma isTorsionFreeClass_iff_leftOrthogonal_rightOrthogonal_eq (P : ObjectProperty C) :
+    IsTorsionFreeClass P ↔ P.leftOrthogonal.rightOrthogonal = P :=
+  ⟨fun ⟨⟨T, h⟩⟩ ↦ by rw [← h.torsion_eq_leftOrthogonal, ← h.free_eq_rightOrthogonal],
+    fun h ↦ ⟨⟨P.leftOrthogonal, ⟨rfl, h.symm⟩⟩⟩⟩
+
+namespace IsTorsionClass
+
+variable (P : ObjectProperty C) [IsTorsionClass P]
+
+/-- The torsion theory whose torsion class is `P`; its torsion-free class is necessarily
+`P.rightOrthogonal`. -/
+lemma torsionTheory : TorsionTheory P P.rightOrthogonal :=
+  ⟨((isTorsionClass_iff_rightOrthogonal_leftOrthogonal_eq P).mp inferInstance).symm, rfl⟩
+
+/-- A torsion class is closed under quotients. -/
+instance : P.IsClosedUnderQuotients := (torsionTheory P).torsion_isClosedUnderQuotients
+
+/-- A torsion class is closed under extensions. -/
+instance : P.IsClosedUnderExtensions := (torsionTheory P).torsion_isClosedUnderExtensions
+
+/-- A torsion class is closed under colimits of any shape, not only coproducts. -/
+instance {J : Type u'} [Category.{v'} J] : P.IsClosedUnderColimitsOfShape J :=
+  (torsionTheory P).torsion_eq_leftOrthogonal ▸ inferInstance
+
+/-- The opposite of a torsion class is a torsion-free class. -/
+instance : IsTorsionFreeClass P.op := (torsionTheory P).op.isTorsionFreeClass
+
+end IsTorsionClass
+
+namespace IsTorsionFreeClass
+
+variable (P : ObjectProperty C) [IsTorsionFreeClass P]
+
+/-- The torsion theory whose torsion-free class is `P`; its torsion class is necessarily
+`P.leftOrthogonal`. -/
+lemma torsionTheory : TorsionTheory P.leftOrthogonal P :=
+  ⟨rfl, ((isTorsionFreeClass_iff_leftOrthogonal_rightOrthogonal_eq P).mp inferInstance).symm⟩
+
+/-- A torsion-free class is closed under subobjects. -/
+instance : P.IsClosedUnderSubobjects := (torsionTheory P).free_isClosedUnderSubobjects
+
+/-- A torsion-free class is closed under extensions. -/
+instance : P.IsClosedUnderExtensions := (torsionTheory P).free_isClosedUnderExtensions
+
+/-- A torsion-free class is closed under limits of any shape, not only products. -/
+instance {J : Type u'} [Category.{v'} J] : P.IsClosedUnderLimitsOfShape J :=
+  (torsionTheory P).free_eq_rightOrthogonal ▸ inferInstance
+
+/-- The opposite of a torsion-free class is a torsion class. -/
+instance : IsTorsionClass P.op := (torsionTheory P).op.isTorsionClass
+
+end IsTorsionFreeClass
 
 /-- In a well-powered abelian category with coproducts, a property of objects `P` is a torsion
 class if and only if it is closed under quotients, extensions, and coproducts. This is a
@@ -461,19 +565,17 @@ theorem isTorsionClass_iff (P : ObjectProperty C)
     IsTorsionClass P ↔
       P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
         ∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J) := by
-  refine ⟨fun ⟨F, hPF⟩ ↦ ⟨hPF.torsion_isClosedUnderQuotients,
-    hPF.torsion_isClosedUnderExtensions, hPF.torsion_isClosedUnderCoproducts⟩, ?_⟩
+  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, fun _ ↦ inferInstance⟩, ?_⟩
   -- these hypotheses are consumed as instances by `rightOrthogonal_leftOrthogonal_eq_self`
   rintro ⟨hquot, hext, hcoprod⟩
-  exact ⟨P.rightOrthogonal,
-    { torsion_eq_leftOrthogonal := (rightOrthogonal_leftOrthogonal_eq_self P).symm
-      free_eq_rightOrthogonal := rfl }⟩
+  exact (isTorsionClass_iff_rightOrthogonal_leftOrthogonal_eq P).mpr
+    P.rightOrthogonal_leftOrthogonal_eq_self
 
 /-- A property of objects is a torsion-free class if and only if its opposite is a torsion
 class in the opposite category. -/
 lemma isTorsionFreeClass_iff_isTorsionClass_op (P : ObjectProperty C) :
     IsTorsionFreeClass P ↔ IsTorsionClass P.op :=
-  ⟨fun ⟨T, hTP⟩ ↦ ⟨T.op, hTP.op⟩, fun ⟨Q, hQ⟩ ↦ ⟨Q.unop, hQ.unop⟩⟩
+  ⟨fun _ ↦ inferInstance, fun ⟨⟨Q, hQ⟩⟩ ↦ ⟨⟨Q.unop, hQ.unop⟩⟩⟩
 
 /-- In a well-copowered abelian category with products, a property of objects `P` is a
 torsion-free class if and only if it is closed under subobjects, extensions, and products.
