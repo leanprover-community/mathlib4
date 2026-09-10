@@ -75,7 +75,7 @@ private theorem finite_den_eq_and_close {x : ℝ} (n : ℕ) (hn : 0 < n) :
   apply Set.Finite.of_finite_image (f := fun q : ℚ => q.num)
   · apply Set.Finite.subset (Set.finite_Icc ⌊(n : ℝ) * x - 1⌋ ⌈(n : ℝ) * x + 1⌉)
     rintro k ⟨q, ⟨hden, hclose⟩, rfl⟩
-    have hn' : (0 : ℝ) < n := by exact_mod_cast hn
+    have hn' : (0 : ℝ) < n := mod_cast hn
     have hqx : (q : ℝ) = (q.num : ℝ) / n := by
       rw [← hden]; exact_mod_cast (Rat.num_div_den q).symm
     rw [hden, hqx] at hclose
@@ -130,8 +130,7 @@ theorem Irrational.liouvilleWith {x : ℝ} (hx : Irrational x) {p : ℝ} (hp2 : 
   have hqx : (q.num : ℝ) / (n : ℝ) = (q : ℝ) := by
     rw [← hden]; exact_mod_cast Rat.num_div_den q
   refine ⟨q.num, ?_, ?_⟩
-  · have := hx.ne_rational q.num (n : ℤ)
-    simpa using this
+  · simpa using hx.ne_rational q.num (n : ℤ)
   · rw [hqx, ← hden]
     have hn1 : (1 : ℝ) ≤ (q.den : ℝ) := by exact_mod_cast q.pos
     have hstep : (q.den : ℝ) ^ p ≤ (q.den : ℝ) ^ (2 : ℕ) := by
