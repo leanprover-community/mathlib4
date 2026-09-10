@@ -313,57 +313,6 @@ abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
 scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addCommGroup
 
-section EndomorphismRing
-
-open CategoryTheory MonoidalCategory AddGrp AddMonObj CartesianMonoidalCategory
-
-variable {D : Type*} [Category* D] [CartesianMonoidalCategory D]
-variable {A B : AddGrp D}
-
-instance : Mul (A ⟶ A) where
-  mul f g := g ≫ f
-
-instance : One (A ⟶ A) where
-  one := 𝟙 A
-
-namespace AddGrp
-lemma toAddMonHom (f g : A ⟶ B) : f = g ↔ f.hom = g.hom := by
-  constructor <;> intro h
-  · exact InducedCategory.hom_ext_iff.mp h
-  · exact AddGrp.hom_ext_iff.mpr (congrArg AddMon.Hom.hom h)
-
-lemma mul_hom (f g : A ⟶ A) : (f * g).hom = f.hom * g.hom := by
-  ext
-  have : (f * g).hom = g.hom ≫ f.hom := rfl
-  simp [AddMon.mul_hom, this]
-
-lemma one_hom : (InducedCategory.Hom.hom (1 : A ⟶ A)) = (1 : A.toAddMon ⟶ A.toAddMon) := rfl
-end AddGrp
-
-open AddGrp
-noncomputable instance [BraidedCategory D] [IsCommAddMonObj A.X] : Ring (A ⟶ A) where
-  zero_add := zero_add
-  add_zero := add_zero
-  mul_assoc f g h := by
-    ext; simp only [mul_hom, mul_assoc f.hom g.hom h.hom]
-  one_mul f := by
-    ext
-    simp only [mul_hom, one_hom, one_mul f.hom]
-  mul_one f := by
-    ext
-    simp only [mul_hom, one_hom, mul_one f.hom]
-  zero_mul f := by
-    simp only [toAddMonHom, mul_hom, zero_hom, zero_mul]
-  mul_zero f := by
-    simp only [toAddMonHom, mul_hom, zero_hom, mul_zero]
-  left_distrib f g h := by
-    simp only [toAddMonHom, mul_hom, Hom.hom_add, left_distrib]
-  right_distrib f g h := by
-    simp only [toAddMonHom, mul_hom, Hom.hom_add, right_distrib]
-  neg_add_cancel f := neg_add_cancel f
-
-end EndomorphismRing
-
 section
 
 @[to_additive]
