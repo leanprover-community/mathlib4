@@ -166,8 +166,6 @@ instance hasForgetToTopCat : HasForget₂ (MfldCat 𝕜 n) TopCat.{u} where
 def isoOfDiffeomorph (e : M ≃ₘ^n⟮M.I, N.I⟯ N) : M ≅ N where
   hom := ofHom e.toContMDiffMap
   inv := ofHom e.symm.toContMDiffMap
-  hom_inv_id := by ext x; exact e.symm_apply_apply x
-  inv_hom_id := by ext x; exact e.apply_symm_apply x
 
 /-- Build a diffeomorphism from an isomorphism in `MfldCat 𝕜 n`. -/
 @[expose, simps]
@@ -184,8 +182,6 @@ def diffeomorphOfIso (i : M ≅ N) : M ≃ₘ^n⟮M.I, N.I⟯ N where
 def isoEquivDiffeomorph : (M ≅ N) ≃ (M ≃ₘ^n⟮M.I, N.I⟯ N) where
   toFun := diffeomorphOfIso
   invFun := isoOfDiffeomorph
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The functor interpreting a `C^n` manifold modeled on a fixed `I` as an object of `MfldCat 𝕜 n`,
 where the model is allowed to vary. -/
