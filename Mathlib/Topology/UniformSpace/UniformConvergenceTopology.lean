@@ -458,6 +458,7 @@ protected theorem tendsto_iff_tendstoUniformly {F : ι → α →ᵤ β} {f : α
   simp only [mem_ofPred, UniformFun.gen, Function.comp_def]
 
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
 isomorphism between `α →ᵤ β × γ` and `(α →ᵤ β) × (α →ᵤ γ)`. -/
 protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃ᵤ (α →ᵤ β) × (α →ᵤ γ) :=

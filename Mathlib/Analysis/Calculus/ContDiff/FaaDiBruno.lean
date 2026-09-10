@@ -1049,6 +1049,7 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
 `q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
 theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E → F}

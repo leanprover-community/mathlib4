@@ -177,6 +177,7 @@ lemma ExcenterExists.excenterWeights_ne_zero {signs : Finset (Fin (n + 1))}
     s.ExcenterExists signsᶜ ↔ s.ExcenterExists signs := by
   simp [ExcenterExists]
 
+set_option dsimp.resynthInstances false in
 lemma sum_excenterWeights (signs : Finset (Fin (n + 1))) [Decidable (s.ExcenterExists signs)] :
     ∑ i, s.excenterWeights signs i = if s.ExcenterExists signs then 1 else 0 := by
   simp_rw [ExcenterExists, excenterWeights]

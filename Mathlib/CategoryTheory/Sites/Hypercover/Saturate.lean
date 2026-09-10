@@ -112,6 +112,7 @@ variable {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 @[simp]
 lemma toSaturateOfHasPullbacks_fromSaturateOfHasPullbacks :
     E.toSaturateOfHasPullbacks.comp E.fromSaturateOfHasPullbacks = .id _ := by

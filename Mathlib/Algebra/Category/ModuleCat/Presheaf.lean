@@ -215,6 +215,7 @@ lemma ofPresheaf_presheaf : (ofPresheaf M map_smul).presheaf = M := rfl
 end
 
 set_option backward.isDefEq.respectTransparency.types false in
+set_option dsimp.resynthInstances false in
 /-- The morphism of presheaves of modules `M₁ ⟶ M₂` given by a morphism
 of abelian presheaves `M₁.presheaf ⟶ M₂.presheaf`
 which satisfy a suitable linearity condition. -/

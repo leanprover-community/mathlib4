@@ -72,6 +72,7 @@ lemma map_lift_mapCone (c : Cone F) :
   have h₂ := (c.π.app i).property
   simpa [-Functor.comp_obj, ← comp_apply, ← Functor.map_comp, liftedConeElement, liftedConeElement']
 
+set_option dsimp.resynthInstances false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_π_liftedConeElement (i : I) :

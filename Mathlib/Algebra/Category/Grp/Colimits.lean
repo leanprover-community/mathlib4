@@ -132,6 +132,7 @@ lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
 set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /--
 The obvious additive map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
 -/

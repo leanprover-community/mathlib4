@@ -225,6 +225,7 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
     · simp_all [signBijAux, (mem_finPairsLT.1 hab).not_ge]
     · simp_all [signBijAux, dite_eq_right h, (mem_finPairsLT.1 hab).le]
 
+set_option dsimp.resynthInstances false in
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
   rw [← signAux_inv g]
   unfold signAux

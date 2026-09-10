@@ -612,6 +612,7 @@ After that, `instanceSearchTypes false` can be removed, too.
 -/
 set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 theorem hasMFDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasMFDerivAt[s ∩ t] f x f' ↔ HasMFDerivAt[s] f x f' := by
   rw [HasMFDerivWithinAt, HasMFDerivWithinAt, extChartAt_preimage_inter_eq,
@@ -625,6 +626,7 @@ After that, `instanceSearchTypes false` can be removed, too.
 -/
 set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 theorem hasMFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
     HasMFDerivAt[s ∩ t] f x f' ↔ HasMFDerivAt[s] f x f' := by
   rw [HasMFDerivWithinAt, HasMFDerivWithinAt, extChartAt_preimage_inter_eq, hasFDerivWithinAt_inter,

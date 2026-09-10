@@ -70,6 +70,7 @@ instance limitAlgebra :
   inferInstanceAs <| Algebra R (Shrink (sectionsSubalgebra F))
 
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- `limit.π (F ⋙ forget (AlgCat R)) j` as an `AlgHom`. -/
 def limitπAlgHom (j) :
     (Types.Small.limitCone (F ⋙ forget (AlgCat R))).pt →ₐ[R]

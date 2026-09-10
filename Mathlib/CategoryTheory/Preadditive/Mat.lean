@@ -315,6 +315,7 @@ set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
+set_option dsimp.resynthInstances false in
 @[simps]
 def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M.X i) where
   hom := biproduct.lift fun i j _ => if h : j = i then eqToHom (congr_arg M.X h) else 0

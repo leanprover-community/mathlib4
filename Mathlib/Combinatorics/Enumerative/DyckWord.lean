@@ -308,6 +308,7 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
   · rw [length_range, u, length_append]
     exact Nat.lt_add_right _ (firstReturn_lt_length h)
 
+set_option dsimp.resynthInstances false in
 @[simp]
 lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
   have u : p.nest.toList = U :: p.toList ++ [D] := rfl

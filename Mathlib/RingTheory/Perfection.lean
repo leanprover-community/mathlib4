@@ -679,12 +679,14 @@ theorem coeff_pow_p (x : PreTilt O p) (n : ℕ) : coeff (n + 1) x ^ p = coeff n 
   Perfection.coeff_pow_p x n
 
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 @[simp]
 theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
     (coeff n (((frobeniusEquiv _ p).symm) x)) = coeff (n + 1) x := by
   simp [PreTilt, coeff]
 
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
     (coeff m (((frobeniusEquiv _ p).symm^[n]) x)) = coeff (m + n) x := by

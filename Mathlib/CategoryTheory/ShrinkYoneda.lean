@@ -420,6 +420,7 @@ noncomputable def uliftYonedaIsoShrinkCoyoneda :
       exact (shrinkCoyoneda_map_app_shrinkCoyonedaObjObjEquiv_symm _ _).symm)
 
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 /-- The functor `shrinkCoyoneda.{w}` followed by the evaluation
 at `Y : C` and `uliftFunctor.{v}` identifies to `yoneda.obj Y` followed
 by `uliftFunctor.{w}`. -/

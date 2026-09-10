@@ -245,6 +245,7 @@ theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = 
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
+set_option dsimp.resynthInstances false in
 theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β)
     (g : ∀ b ∈ (p.bindOnSupport f).support, PMF γ) :
     (p.bindOnSupport f).bindOnSupport g =

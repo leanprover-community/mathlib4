@@ -149,6 +149,7 @@ lemma restrict_RankOne_hom_eq :
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {K} in
+set_option dsimp.resynthInstances false in
 theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom v (v.restrict x) < γ := by
   have hγ_pos : 0 < γ := pos_iff_ne_zero.mpr hγ
   obtain ⟨x, h⟩ := NNReal.exists_lt_of_strictMono (RankOne.strictMono v.restrict) hγ_pos

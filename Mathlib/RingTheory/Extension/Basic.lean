@@ -283,6 +283,7 @@ def Hom.mapKer (f : P.Hom P')
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+set_option dsimp.resynthInstances false in
 /-- The canonical hom from `P` to its base change `P.baseChange`. -/
 @[simps]
 noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :

@@ -239,6 +239,7 @@ section LinearOrder
 
 variable [LinearOrder α] {l : List α} {a m : α}
 
+set_option dsimp.resynthInstances false in
 set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by

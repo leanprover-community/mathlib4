@@ -68,6 +68,7 @@ variable [∀ i, Zero (α i)] (r : ι → ι → Prop) (s : ∀ i, α i → α i
   `DFinsupp.Lex`. This is used to show that a function `x` is accessible if
   `DFinsupp.single i (x i)` is accessible for each `i` in the (finite) support of `x`
   (`DFinsupp.Lex.acc_of_single`). -/
+set_option dsimp.resynthInstances false in
 theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
     Fibration (InvImage (GameAdd (DFinsupp.Lex r s) (DFinsupp.Lex r s)) snd) (DFinsupp.Lex r s)
       fun x => piecewise x.2.1 x.2.2 x.1 := by

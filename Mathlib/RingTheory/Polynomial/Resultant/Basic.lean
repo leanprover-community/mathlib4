@@ -148,6 +148,7 @@ lemma resultant_map_map (φ : R →+* S) :
 theorem resultant_C_zero_left : resultant (C r) g 0 m = r ^ m := by simp
 
 set_option backward.defeqAttrib.useBackward true in
+set_option dsimp.resynthInstances false in
 /-- `Res(f, g) = (-1)ᵐⁿ Res(g, f)` -/
 lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m := by
   rw [resultant, resultant, sylvester_comm, Matrix.det_reindex, Equiv.Perm.sign_eq_prod_prod_Ioi]

@@ -242,6 +242,7 @@ instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).IsMonoidal where
   leftAdjoint_μ X Y := by

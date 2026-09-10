@@ -259,6 +259,7 @@ def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι �
   · congr <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 @[simp]
 theorem DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply [DecidableEq ι]
     {V : ι → Submodule 𝕜 E} (hV : DirectSum.IsInternal V)

@@ -44,6 +44,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option dsimp.resynthInstances false in
 /-- Construct an `IsLimit` structure of kernels given `Function.Exact`. -/
 noncomputable
 def isLimitKernelFork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.hom)

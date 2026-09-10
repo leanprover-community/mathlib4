@@ -175,6 +175,7 @@ variable [SemilatticeSup α] [OrderBot α] [Finite α]
 -- `Set.toFinset_Iic` then never fires. Lean reports that as an unused simp argument, not an error.
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.instances false in
+set_option dsimp.resynthInstances false in
 @[simp] lemma supIrredLowerSet_symm_apply (s : {s : LowerSet α // SupIrred s}) [Fintype s] :
     supIrredLowerSet.symm s = (s.1 : Set α).toFinset.sup id := by
   classical
@@ -192,6 +193,7 @@ variable [SemilatticeInf α] [OrderTop α] [Finite α]
 -- This is the dual of `supIrredLowerSet_symm_apply` above. The failure is the same.
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.instances false in
+set_option dsimp.resynthInstances false in
 @[simp] lemma infIrredUpperSet_symm_apply (s : {s : UpperSet α // InfIrred s}) [Fintype s] :
     infIrredUpperSet.symm s = (s.1 : Set α).toFinset.inf id := by
   classical

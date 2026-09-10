@@ -188,6 +188,7 @@ lemma IsClosed.convexHull_subset_affineSpan_isVisible (hs : IsClosed (convexHull
       hxz.mem_convexHull_isVisible hx hz) (ne_of_mem_of_not_mem hz hx).symm
 
 open Submodule in
+set_option dsimp.resynthInstances false in
 /-- If `s` is a closed set of dimension `d` and `x` is a point outside of its convex hull,
 then `x` sees at least `d` points of the convex hull of `s` that actually lie in `s`. -/
 lemma rank_le_card_isVisible (hs : IsClosed (convexHull ℝ s)) (hx : x ∉ convexHull ℝ s) :

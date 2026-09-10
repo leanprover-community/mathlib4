@@ -285,6 +285,7 @@ theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 
 theorem inv_natCast_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 :=
   inv_intCast_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
 
+set_option dsimp.resynthInstances false in
 theorem inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
   simp only [den_inv, num_intCast]
   grind

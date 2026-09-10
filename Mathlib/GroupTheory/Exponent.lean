@@ -86,6 +86,7 @@ theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
 
 set_option backward.isDefEq.respectTransparency false in
 open MulOpposite in
+set_option dsimp.resynthInstances false in
 @[to_additive (attr := simp)]
 theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
   simp only [Monoid.exponent, ExponentExists]
