@@ -357,24 +357,6 @@ theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
     ← radical_dvd_iff_primeFactors_subset hb]
   exact radical_dvd_self.trans h
 
-theorem exists_self_dvd_radical_pow (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
-  induction a using induction_on_prime with
-  | h₁ => tauto
-  | h₂ x h => simpa [radical_of_isUnit h, ← isUnit_iff_dvd_one]
-  | h₃ b p ne p_prime ih =>
-    rcases ih ne with ⟨c, hc⟩
-    rcases p_prime.irreducible.dvd_or_isRelPrime (n := b) with dvd | coprime
-    · use c + 1; rw [radical_mul_of_dvd dvd, pow_succ']
-      refine mul_dvd_mul ?_ hc
-      rw [(associated_normalize p).dvd_iff_dvd_left, ← radical_of_prime p_prime]
-      exact radical_dvd_radical dvd ne
-    · use c + 1; rw [radical_mul coprime, radical_of_prime p_prime, mul_pow]
-      refine mul_dvd_mul ?_ ?_
-      · rw [pow_succ]
-        exact dvd_mul_of_dvd_right (associated_normalize p).dvd _
-      · rw [pow_succ]
-        exact dvd_mul_of_dvd_left hc _
-
 end UniqueFactorizationMonoid
 
 open UniqueFactorizationMonoid
