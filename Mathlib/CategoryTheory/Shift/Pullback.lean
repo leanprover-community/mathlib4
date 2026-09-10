@@ -163,23 +163,7 @@ def PullbackShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
 
 namespace Functor
 
-set_option linter.style.longLine false in
--- `respectTransparency.instances false` and the `rfl` that used to end `commShiftIso_add`
--- compensated for each other. Both are now removed.
--- With the option, the rewrites in `commShiftIso_add` produce the `PullbackShift` spelling.
--- Then `rw [id_comp, assoc, assoc]` cannot close the goal with its own `rfl`, so an explicit
--- `rfl` at `.default` was necessary. Without the option, that `rw` closes the goal.
--- With the option and the `rfl`, the declaration compiles. With the option and no `rfl`, there
--- are unsolved goals. With neither, the declaration compiles. A test that removes only the
--- option hides this simplification.
---
--- The parent `respectTransparency false` is still necessary. It covers two `.default`-only steps
--- and no instance metavariable. These steps are the final `rfl` of `commShiftIso_zero` and the
--- `rw [F.commShiftIso_add' …]` of `commShiftIso_add`. Both fail without the parent option.
---
--- `PullbackShift C φ` is a type synonym for `C` with a different `HasShift`. It must stay opaque
--- to instance search. `implicit_reducible` on `PullbackShift` and `PullbackShift.functor` does
--- not help (verified).
+set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then `PullbackShift.functor F φ`
@@ -214,6 +198,7 @@ instance commShiftPullback : (PullbackShift.functor φ F).CommShift A where
     simp only [comp_obj, id_comp, comp_map, assoc]
     slice_rhs 3 4 => rw [← map_comp, ← map_comp, Iso.inv_hom_id_app, map_id, map_id]
     rw [id_comp, assoc, assoc]
+    rfl
 
 lemma commShiftPullback_iso_eq (a : A) (b : B) (h : b = φ a) :
     (PullbackShift.functor φ F).commShiftIso a (C := PullbackShift C φ) (D := PullbackShift D φ) =

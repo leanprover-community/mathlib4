@@ -564,33 +564,8 @@ def _root_.AlgHom.liftOfSurjective (f : A →ₐ[R] B) (hf : Function.Surjective
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) : B →ₐ[R] C :=
   .comp (Ideal.Quotient.liftₐ _ g H) (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
 
--- A local `implicit_reducible` mark set replaces both options.
--- `linter.tacticCheckInstances true` names candidate constants. There are two gaps.
---
--- Gap 1 replaces the parent `respectTransparency false`. No instance metavariable is involved.
--- The body of `liftOfSurjective` gives an ideal inclusion where `Quotient.liftₐ` wants a
--- pointwise statement. After `dsimp` the goal keeps `Quotient.liftₐ (ker ↑f) g H`, and the later
--- `rw` steps check that argument at [implicit]:
---      H : ker f.toRingHom ≤ ker g.toRingHom
---      expected: ∀ a ∈ ker ↑f, g a = 0        ❌ below [default]
---   `RingHom.ker` and `Ideal.comap` remove this error. Measured: they do not make the pair above
---   defeq at [implicit]. They let `dsimp` reduce the `AlgHom.comp` application to a direct
---   application, so the failing check does not arise in that shape.
---
--- Gap 2 replaces `instances false`. `dsimp` rewrites `f.toRingHom` to `↑f` in the ideal, but not
--- in the instance argument, because simp skips instance arguments.
--- ❌ mvar-type check at [instances]:
---      Semiring (A ⧸ ker ↑f)  =?=  Semiring (A ⧸ ker f.toRingHom)
---      assigned: (Ideal.Quotient.ring (ker f.toRingHom)).toSemiring
---      synth ✅ Ideal.Quotient.semiring (ker ↑f)
---      unify synthesized =?= assigned ❌ at [implicit], blocked by `↑f =?= f.1`
---   Gap 2 remains after the parent option is removed. So `instances false` was not collateral.
---   The mark `RingHomClass.toRingHom` removes it.
---
--- The definition is unchanged. Each of the three marks is necessary. `Set.singleton` also appears
--- in the linter output, but the proof does not need it. The marks are local, so
--- `allowUnsafeReducibility` is not necessary.
-attribute [local implicit_reducible] RingHom.ker Ideal.comap RingHomClass.toRingHom in
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Surjective f)
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :

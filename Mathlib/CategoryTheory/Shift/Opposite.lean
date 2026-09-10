@@ -194,51 +194,6 @@ instance commShiftOp [CommShift F A] :
 lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
     (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
 
--- Both options are still needed, and neither one alone is enough. Measured, per configuration:
---   * parent option only: exactly three `simp only` arguments go unused, `unop_comp` twice and
---     `Category.assoc` once, and the final `rfl` of `commShiftIso_add` then fails.
---     `with_unfolding_all rfl` does not rescue it.
---   * `instances false` only: eleven arguments go unused, and both `erw` steps fail
---     (`oppositeShiftFunctorZero_hom_app` and `oppositeShiftFunctorAdd_hom_app`).
---   * neither option: as the previous case.
--- The rest of this note describes the **parent-option-only** configuration.
---
--- ❌ mvar-type check at [instances] — the `[HasShift ?C A]` argument, after the `ᵒᵖ`-stated
---    `NatIso.removeOp_hom` / `NatTrans.removeOp_app` have already pinned `?C := Cᵒᵖ`:
---      HasShift Cᵒᵖ A  =?=  HasShift (OppositeShift C A) A
---        blocked by `Cᵒᵖ =?= OppositeShift C A`, and inside it by `Opposite =?= OppositeShift`
---      assigned: instHasShiftOppositeShift C A
---      synth ❌ — `HasShift Cᵒᵖ A` deliberately does not exist, and both candidates
---        `#[inst✝², inst✝¹]` fail → no unify
--- `OppositeShift C A` is a type synonym for `Cᵒᵖ` whose whole point is to carry a *different*
--- `HasShift`, so it must stay opaque to instance search: `instance_reducible` is out, and
--- `implicit_reducible` does not reach a check pinned to `.instances`.
--- With every option removed the shape differs: the rejected metavariable is the `Iso` being
--- rewritten rather than a `HasShift` instance, the check runs at [implicit], and there is no
--- synthesis step. The blocking pair is the same `Opposite =?= OppositeShift`.
---
--- The rejection does not make `isoZero_inv_app` fail. Its LHS and the goal subterm are both headed
--- by `NatTrans.app`, and the goal subterm is *mixed*: the outer `NatTrans.app` is `ᵒᵖ`-spelled
--- (left that way by the `removeOp` lemmas above) while the `CommShift.isoZero` inside it is
--- `OppositeShift`-spelled. One `isDefEq` then tries two things:
---   1. same head, unify the arguments pairwise. `?A` and the `AddMonoid A` slot pass, then the
---      `[HasShift ?C A]` slot can only take `instHasShiftOppositeShift`, which is the rejection
---      above. Rolled back.
---   2. both sides are unfolded to the projection form `(CommShift.isoZero … ).inv.1 X`, and the
---      *projected structures* are compared first. Now `?C := OppositeShift C A` and
---      `?inst := instCategoryOppositeShift C A`, everything is consistent and passes.
--- So the rewrite succeeds either way — in a *different spelling*. Nothing is reordered: the two
--- rewrite sequences are identical lemma for lemma, only `unop_comp` (and the `Category.assoc` steps
--- it enables) drop out of the one without `instances false`.
--- That is what reaches `unop_comp` below, which involves no `HasShift` at all: it is not a failed
--- rewrite but a *discrimination-tree miss*. With `instances false` the rejected assignment goes
--- through, so `CommShift.isoZero_inv_app` / `isoAdd_inv_app` rewrite into the `Cᵒᵖ` /
--- `Category.opposite` spelling, and `unop_comp` — indexed under `Opposite` — matches and fires.
--- Without it those lemmas instantiate honestly at `OppositeShift C A` and
--- `instCategoryOppositeShift`,
--- the resulting `CategoryStruct.comp` is indexed under `OppositeShift`, and simp never retrieves
--- `unop_comp` at all: with every `Meta.Tactic.simp` trace class enabled it appears only in the echo
--- of the argument list and in the unused-argument warning, never in a rewrite attempt.
 set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 /--

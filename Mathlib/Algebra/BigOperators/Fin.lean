@@ -617,10 +617,9 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
   rintro x hx
   rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
--- `Nat.mod`: the `Fintype (Fin ↑0)` instance produced along the way is spelled through
--- `(0 : Fin (n + 1)).val = 0 % (n + 1)`, and only unfolding `Nat.mod` makes it agree with the
--- `Fintype (Fin 0)` the goal expects.
+-- TODO
 attribute [local implicit_reducible] Nat.mod in
+-- set_option backward.isDefEq.respectTransparency.instances false in
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])

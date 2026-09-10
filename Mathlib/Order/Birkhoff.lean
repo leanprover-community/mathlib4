@@ -157,24 +157,6 @@ namespace OrderIso
 section SemilatticeSup
 variable [SemilatticeSup α] [OrderBot α] [Finite α]
 
--- Both options stay. This declaration is left unfixed. See the last paragraph.
--- ❌ mvar-type check at [instances], on the `[Fintype ↥s]` argument of `Set.toFinset_Iic`:
---      Fintype ↑(Set.Iic a)  =?=  Fintype ↥↑⟨LowerSet.Iic a, hs⟩
---        blocked by `{ x // x ∈ Set.Iic a } =?= ↥↑⟨LowerSet.Iic a, hs⟩`
---      assigned: `inst✝`, the `[Fintype s]` binder, after `obtain ⟨a, rfl⟩` rewrote `s`
---      synth ✅ Set.instFintypeIic a
---      unify assigned =?= synthesized ❌ at [implicit]
---   The gap is the same with the parent option removed. So `instances false` was not collateral.
--- The fallback unify cannot be repaired. It compares the local binder `inst✝` against the global
--- `Set.instFintypeIic a`. No unfolding makes those two equal. `Fintype` is a subsingleton, but
--- that is a proposition and not a definitional equality. Therefore `implicit_reducible` marks do
--- not help here. Only the direct check can be repaired, and it is pinned to exactly [instances],
--- so a repair needs `instance_reducible` on `LowerSet.Iic`. That mark is too strong to add for one
--- lemma, so both options stay.
--- Effect: `simp` rewrites the set under `Set.toFinset` but leaves the `Fintype` argument stale.
--- `Set.toFinset_Iic` then never fires. Lean reports that as an unused simp argument, not an error.
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option dsimp.resynthInstances false in
 @[simp] lemma supIrredLowerSet_symm_apply (s : {s : LowerSet α // SupIrred s}) [Fintype s] :
     supIrredLowerSet.symm s = (s.1 : Set α).toFinset.sup id := by
@@ -190,9 +172,6 @@ end SemilatticeSup
 section SemilatticeInf
 variable [SemilatticeInf α] [OrderTop α] [Finite α]
 
--- This is the dual of `supIrredLowerSet_symm_apply` above. The failure is the same.
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option dsimp.resynthInstances false in
 @[simp] lemma infIrredUpperSet_symm_apply (s : {s : UpperSet α // InfIrred s}) [Fintype s] :
     infIrredUpperSet.symm s = (s.1 : Set α).toFinset.inf id := by

@@ -812,17 +812,8 @@ Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` 
 -/
 
 
--- ❌ mvar-type check at [instances] (in `right_inv`):
---      Fintype ↑{i | ↑i = 0 ∨ ↑i = ↑(Fin.last n) ∨ ∃ j, ∃ (_ : j ∈ s), ↑i = ↑j + 1}
---        =?= Fintype { x // x ∈ {i | ↑i = ↑0 ∨ ↑i = ↑(Fin.last n) ∨ ∃ j, ∃ (_ : j ∈ s), ↑i = ↑j+1} }
---      assigned: Subtype.fintype (Membership.mem {i | ↑i = ↑0 ∨ …})
---      synth ✅ Subtype.fintype (Membership.mem {i | ↑i = 0 ∨ …})
---      unify synthesized =?= assigned ❌ at [implicit] (`0` vs `↑0`, i.e. `Fin.val_zero`;
---        the two agree only at `.default`)
---      not collateral of the parent option: measured with every option at default, so the
---        `.implicit` argument bump is active and the fallback still fails
--- trigger: `Fin.val_zero` rewrites the set-builder predicate under `Set.toFinset` but not its
--- `Fintype ↑{i | …}` instance argument. Fix: rewrite `Set.toFinset_ofPred` first.
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency false in
 /-- Bijection between compositions of `n` and subsets of `{0, ..., n-2}`, defined by
 considering the restriction of the subset to `{1, ..., n-1}` and shifting to the left by one. -/
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
@@ -856,8 +847,8 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     intro s
     ext i
     have : (i : ℕ) + 1 ≠ n := by lia
-    simp_rw [Set.toFinset_ofPred, Finset.mem_filter_univ, add_comm, Fin.ext_iff, Fin.val_zero,
-      Fin.val_last, exists_prop, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
+    simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_ofPred,
+      Finset.mem_filter_univ, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
       exists_eq_right']
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=

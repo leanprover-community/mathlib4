@@ -86,11 +86,12 @@ The two spellings meet because `simp` mixes them: after `range_id`, the `@[simp]
 Since `Free` stays unsynthesizable, `finrank R ↥⊥` is left unrewritten and the goal
 `finrank R ↥⊥ = 0` is not closed.
 
-Fix: mark `LinearMap.ker` implicit-reducible. That is applied below, scoped to this declaration.
-It removes all three options, not only two. Measured: no single option is enough on its own, and
-the mark alone is enough.
+Potential fix: mark `LinearMap.ker` implicit-reducible, then remove both backward compatibility
+options.
 -/
-attribute [local implicit_reducible] LinearMap.ker in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] public lemma index_id :
     (id : M →ₗ[R] M).index = 0 := by
   nontriviality R

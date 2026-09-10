@@ -1297,21 +1297,8 @@ noncomputable def coker : Arrow C ⥤ C where
   obj f := cokernel f.hom
   map {f g} u := cokernel.desc _ (u.right ≫ cokernel.π _) (by simp [← Arrow.w_assoc u])
 
--- A local `implicit_reducible` mark replaces both options.
--- ❌ mvar-type check at [instances]:
---      HasCokernel (Comma.right Y) Y.hom                 -- that is `Y.right`, from the `_`
---        =?= HasCokernel (Arrow.rightFunc.obj Y) Y.hom   -- from the expected type of `app f`
---      assigned: HasCokernels.has_colimit (X := Y.left) (Y := Arrow.rightFunc.obj Y) Y.hom
---      synth ✅ HasCokernels.has_colimit (X := Y.left) (Y := Comma.right Y) Y.hom
---      unify synthesized =?= assigned ❌ at [implicit], blocked by
---        `Arrow.rightFunc.obj Y =?= Y.right`
---   `types false` does not change the [implicit] argument bump. So [implicit] is also the level
---   at the default settings, and `instances false` was not collateral. `instances false` was
---   needed because the direct check is pinned to exactly [instances]. Without it the
---   metavariable stayed unassigned, and the error was `declaration has metavariables`.
--- The mark on `Arrow.rightFunc` lets the fallback unify close the gap at [implicit]. The `_` in
--- `cokernel.π _` needs no change.
-attribute [local implicit_reducible] Arrow.rightFunc in
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cokernel projection is natural. -/
 @[simps] def coker.π : Arrow.rightFunc ⟶ coker (C := C) where app f := cokernel.π _

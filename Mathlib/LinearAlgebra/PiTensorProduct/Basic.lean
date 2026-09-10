@@ -737,22 +737,12 @@ theorem reindex_symm (e : ι ≃ ι₂) :
   ext x
   simp [reindex]
 
--- ❌ mvar-type check at [instances]:
---      FunLike ((⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, s i) (⨂[R] i, s i) (⨂[R] i, s i)
---        =?= FunLike ((⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, s ((Equiv.refl ι).symm i))
---              (⨂[R] i, s i) (⨂[R] i, s ((Equiv.refl ι).symm i))
---      assigned: EquivLike.toFunLike
---      synth ❌ → no unify
---      `s ((Equiv.refl ι).symm i)` vs `s i`: `.default` only
--- Cause: `simp [reindex, domDomCongrLinearEquiv']` unfolds the goal into `LinearEquiv.ofLinearMap`
--- structure literals. The codomain of these literals still contains `(Equiv.refl ι).symm`.
--- Fix: stay at the `tprod` level and use `reindex_tprod`, as `reindex_trans` above does.
--- Alternative: make more declarations implicit-reducible
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
-  apply LinearEquiv.toLinearMap_injective
-  ext f
-  exact reindex_tprod (Equiv.refl ι) f
+  ext
+  simp [reindex, domDomCongrLinearEquiv']
 
 variable {t : ι → Type*}
 variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]

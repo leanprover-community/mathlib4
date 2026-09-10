@@ -119,28 +119,13 @@ theorem map_id_obj (x : X) (U) : (map (𝟙 X) x).obj U = U := rfl
 theorem map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q⟩ = ⟨⟨U, p⟩, q⟩ :=
   rfl
 
--- ❌ mvar-type check at [instances]:
---      Category.{u, u} (OpenNhds x)
---        =?= SmallCategory (OpenNhds ((ConcreteCategory.hom (𝟙 X)) x))
---      assigned: Preorder.smallCategory (OpenNhds ((ConcreteCategory.hom (𝟙 X)) x))
---      synth ✅ Preorder.smallCategory (OpenNhds x)
---      unify synthesized =?= assigned ❌ at [implicit] (`(𝟙 X) x` vs `x`)
--- trigger: `map (𝟙 X) x` has domain `OpenNhds ((𝟙 X) x)`; `simp` normalises `(𝟙 X) x ⇝ x` in the
--- visible part of the goal but not in the `Category (OpenNhds ((𝟙 X) x))` instance argument, and
--- the fallback unify then cannot bridge the two.
--- The gap is `.implicit`-shaped, not `.default`-shaped: `ConcreteCategory.hom (𝟙 X)` already whnfs
--- to `ContinuousMap.id X` at `.implicit`, and only `ContinuousMap.id` itself was semireducible.
--- Marking it `implicit_reducible` lets the fallback unify close the gap, so `instances false` and
--- `types false` both go away and the `simp` proofs stand.
--- (Do *not* mark `TopCat.instCategory` / `TopCat.instConcreteCategoryContinuousMapCarrier`
--- `implicit_reducible`: instances are already `instance_reducible`, and the promotion moves them
--- out of reach of `.instances`-level projection reduction, which breaks strictly more.)
-attribute [local implicit_reducible] ContinuousMap.id in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
   simp
 
-attribute [local implicit_reducible] ContinuousMap.id in
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)

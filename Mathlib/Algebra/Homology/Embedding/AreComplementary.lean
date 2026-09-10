@@ -309,9 +309,7 @@ noncomputable def shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE e₁).X₃ ⟶ K.truncGE e₂ :=
   cokernel.desc _ (K.πTruncGE e₂) (ac.hom_ext _)
 
--- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
--- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
--- the test can fail.
+set_option backward.isDefEq.respectTransparency.instances false in
 @[reassoc (attr := simp)]
 lemma g_shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE e₁).g ≫ K.shortComplexTruncLEX₃ToTruncGE ac = K.πTruncGE e₂ :=

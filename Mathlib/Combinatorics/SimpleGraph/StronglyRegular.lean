@@ -90,26 +90,15 @@ theorem IsSRGWith.top :
   of_adj _ _ := card_commonNeighbors_top
   of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
 
--- ❌ mvar-type check at [instances]:
---      Fintype ↑(G.neighborSet v ∩ G.neighborSet w)
---        =?= Fintype { x // x ∈ G.commonNeighbors v w }
---      assigned: Subtype.fintype (Membership.mem (G.commonNeighbors v w))
---      synth ✅ (G.neighborSet v).fintypeInterOfRight (G.neighborSet w)
---      unify synthesized =?= assigned ❌ at [implicit] (`Set.fintypeInterOfRight …` vs
---        `Subtype.fintype …`; needs `commonNeighbors` delta-unfolded, i.e. `.default`)
---      needed on its own merits: the companion `types false` does not affect the `.implicit`
---        argument bump, so [implicit] is already the default-settings figure
--- trigger: `simp [commonNeighbors]` rewrites the set argument of `Set.toFinset` but not its
--- `Fintype ↑(G.commonNeighbors v w)` instance argument, so `Set.toFinset_inter`/
--- `neighborFinset_def` can no longer fire. Fix: convert with a standalone `Finset` identity.
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
     #(G.neighborFinset v ∪ G.neighborFinset w) =
       2 * k - Fintype.card (G.commonNeighbors v w) := by
-  have key : (G.commonNeighbors v w).toFinset = G.neighborFinset v ∩ G.neighborFinset w := by
-    ext x; simp [mem_commonNeighbors]
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
-  rw [Nat.sub_add_cancel, ← Set.toFinset_card, key]
-  · simp [Finset.card_union_add_card_inter, h.regular.degree_eq, two_mul]
+  rw [Nat.sub_add_cancel, ← Set.toFinset_card]
+  · simp [commonNeighbors, ← neighborFinset_def, Finset.card_union_add_card_inter,
+      h.regular.degree_eq, two_mul]
   · apply le_trans (card_commonNeighbors_le_degree_left _ _ _)
     simp [h.regular.degree_eq, two_mul]
 

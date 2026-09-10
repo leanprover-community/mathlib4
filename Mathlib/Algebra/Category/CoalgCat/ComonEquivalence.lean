@@ -155,36 +155,6 @@ set_option linter.style.longLine true in
                 ((comonEquivalence R).symm.inverse.obj K ⊗ (comonEquivalence R).symm.inverse.obj L).X ▶
           [synthInstance] ❌️ ComonObj (K ⊗ L).toModuleCat ▶
 -/
--- The trace above is the parent-only configuration. Both options stay. They do different jobs,
--- and neither one alone is enough.
---
--- `ofComonObjCoalgebraStruct X` takes `[ComonObj X]`, so its fields are projections of an instance
--- argument. Comparing it against `(K ⊗ L).instCoalgebra` forces Lean to solve
--- `?inst : ComonObj (K ⊗ L).toModuleCat`. There is no `ComonObj` instance at all, so synthesis
--- cannot solve it. The trace reports `synthInstance.instances #[]`.
---
--- With no option the comparison runs at [implicit] and never reaches the assignment:
---      (K ⊗ L).instCoalgebra.1  =?=  { comul := ModuleCat.Hom.hom Δ, counit := … }
---      ❌ [implicit] CoalgebraStruct.comul =?= ModuleCat.Hom.hom Δ
---      stuck MVar ?inst✝ : ComonObj (K ⊗ L).toModuleCat
---   The right side does whnf into the structure literal at [implicit]. The left side does not
---   unfold far enough to expose a `ComonObj`.
---
--- The parent option raises the comparison to [default]. Only there does the left side unfold, and
--- Lean attempts the assignment shown in the trace above. `instances false` is then needed to
--- accept that assignment, because the pinned [instances] check fails and the synth fallback has
--- nothing to return. So `instances false` is load-bearing and not collateral of the parent option.
---
--- No mark repairs this. Measured: `implicit_reducible` on `comonEquivalence`, `ofComon`,
--- `ofComonObj` and `instMonoidalCategoryAux` fails with either option alone and with neither.
--- `instance_reducible` on `ofComonObj`/`instMonoidalCategoryAux` also fails. The blocker is a
--- missing instance, not a transparency wall.
---
--- Independently the statement is only [default]-type-correct. It equates `↑(K ⊗ L).toModuleCat`
--- with `TensorProduct R ↑K.toModuleCat ↑L.toModuleCat`, and
--- `(K ⊗ L).isAddCommGroup.toAddCommMonoid` with `TensorProduct.addCommMonoid`.
--- The other declarations below keep both options for related reasons. Their statements fail
--- earlier, at instance synthesis for `CoalgebraStruct R (M ⊗[R] N)`.
 set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency false in
 theorem tensorObj_comul (K L : CoalgCat R) :

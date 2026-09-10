@@ -38,9 +38,7 @@ protected structure Path (x y : X) where
 attribute [simp] Path.hom₀ Path.hom₁
 
 -- Would need `(ULift.{u, 0} ↑unitInterval) = TopCat.I` at instances transparency
--- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
--- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
--- the test can fail.
+set_option backward.isDefEq.respectTransparency.instances false in
 variable {X} in
 /-- The bijection between `TopCat.Path X x y` and `_root_.Path x y`. -/
 @[simps!]

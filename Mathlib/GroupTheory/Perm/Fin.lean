@@ -218,21 +218,8 @@ theorem cycleRange_mk_zero (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
   have : NeZero n := .of_pos h
   cycleRange_zero n
 
--- ❌ mvar-type check at [instances] (the `[DecidablePred p]` of `Equiv.Perm.sign_extendDomain`):
---      DecidablePred fun x => x ∈ Set.range (Fin.castLE ⋯)
---        =?= (a : Fin n) → Decidable ((fun x => x ∈ Set.range ⇑(Fin.castLEEmb ⋯)) a)
---      assigned: fun a => Fintype.decidableMemRangeFintype (f := ⇑(Fin.castLEEmb ⋯)) a
---      synth ✅ fun a => Fintype.decidableMemRangeFintype (f := Fin.castLE ⋯) a
---      unify synthesized =?= assigned ❌ at [implicit]
---        (`Fin.castLE ⋯` vs `⇑(Fin.castLEEmb ⋯)`, where the `Function.Embedding` carrier
---         projection reduces only at `.default`)
---      with every option at default, this unify also fails at [implicit].
---        Therefore `instances false` is not collateral of the parent option.
--- Cause: in the predicate that it matches, `simp [cycleRange]` rewrites `⇑(castLEEmb ⋯)` to
--- `castLE ⋯` with `Fin.coe_castLEEmb`. `cycleRange` is a bad `rfl` lemma because it didn't hold
--- at implicit transparency. It becomes legitimate if we make `castLEEmb` implicit-reducible,
--- which is the suggested fix.
-attribute [local implicit_reducible] castLEEmb in
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_cycleRange (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ) := by
   simp [cycleRange]
@@ -309,8 +296,8 @@ theorem isCycle_cycleRange [NeZero n] (h0 : i ≠ 0) : IsCycle (cycleRange i) :=
   · exact (h0 rfl).elim
   exact isCycle_finRotate.extendDomain _
 
--- Same failure and fix as `sign_cycleRange` above (via `cycleType_extendDomain`).
-attribute [local implicit_reducible] castLEEmb in
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cycleType_cycleRange [NeZero n] (h0 : i ≠ 0) :
     cycleType (cycleRange i) = {(i + 1 : ℕ)} := by

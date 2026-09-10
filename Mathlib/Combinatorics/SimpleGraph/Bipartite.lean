@@ -542,21 +542,14 @@ theorem bipartiteDoubleCover_le : G.bipartiteDoubleCover ≤ completeBipartiteGr
   | .inl _, .inr _ | .inr _, .inl _ => by simp
   | .inl _, .inl _ | .inr _, .inr _ => by simp at hadj
 
--- ❌ mvar-type check at [instances]:
---      Fintype ↑{Adj := fun x x_1 => match x, x_1 with | .inl v', .inr w' => G.Adj v' w' | …,
---                symm := ⋯, loopless := ⋯}.edgeSet
---        =?= Fintype ↑G.bipartiteDoubleCover.edgeSet
---      assigned: G.bipartiteDoubleCover.fintypeEdgeSet
---      synth ❌ (`DecidableRel` unavailable for the bare `SimpleGraph.mk` literal) → no unify
---      the two spellings agree only at `.default`
--- trigger: `simp` unfolds the `@[simp] def bipartiteDoubleCover` in the goal but not in the
--- `Fintype ↑(·.edgeSet)` instance argument. Fix: rewrite `mem_edgeFinset`/`mem_edgeSet` first.
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bipartite double cover of `G` has twice the number of edges as `G`. -/
 theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
     #G.bipartiteDoubleCover.edgeFinset = 2 * #G.edgeFinset := by
   rw [two_mul_card_edgeFinset, eq_comm]
   apply card_bij (fun (v, w) _ ↦ s(.inl v, .inr w))
-    (fun _ h ↦ by rw [mem_edgeFinset, mem_edgeSet]; simpa using h) (by grind) (fun e he ↦ ?_)
+    (fun _ h ↦ by simpa using h) (by grind) (fun e he ↦ ?_)
   induction e with | _ v w
   rw [mem_edgeFinset, mem_edgeSet] at he
   match v, w with

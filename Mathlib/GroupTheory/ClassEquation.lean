@@ -44,23 +44,8 @@ theorem Group.sum_card_conj_classes_eq_card [Finite G] :
   cases nonempty_fintype G
   simp [← sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
 
--- ❌ mvar-type check at [instances]:
---      Fintype ↑{x | x.carrier.Nontrivial}  =?=  Fintype { x // x ∈ noncenter G }
---      assigned: Subtype.fintype (Membership.mem (noncenter G))
---      synth ✅ Subtype.fintype (Membership.mem {x | x.carrier.Nontrivial})
---      unify synthesized =?= assigned ❌ at [implicit] (`noncenter G` vs `Set.ofPred …`;
---        needs `noncenter` delta-unfolded, i.e. `.default`)
---      `instances false` is *not* collateral of the parent option here, though it looks like it:
---        `respectTransparency false` does suppress the `.implicit` bump on implicit/instance
---        arguments in `isDefEqArgs`, which drops this fallback to [reducible]. But measured with
---        every option at default (bump active) the unify still fails at [implicit], so the
---        `.instances`-pinned check had to be relaxed regardless of the parent option.
--- trigger: `simp only [noncenter]` rewrites the set argument of `Set.toFinset` but not its
--- `Fintype ↑(noncenter G)` instance argument, blocking `Set.toFinset_ofPred`.
--- Second, independent cause of the parent option (not an instance mvar):
---      Quot ⇑(IsConj.setoid G)  =?=  ConjClasses G   -- `.default` only
--- from `rintro ⟨g⟩` destructuring the quotient.
--- Fix: `ConjClasses.mk_surjective` + membership lemmas, no unfolding.
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency false in
 /-- The **class equation** for finite groups. The cardinality of a group is equal to the size
 of its center plus the sum of the size of all its nontrivial conjugacy classes. -/
 theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
@@ -82,12 +67,11 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
     _ = _ := ?_
   rw [Finset.card_eq_sum_ones]
   refine Finset.sum_congr rfl ?_
-  rintro x hx
-  obtain ⟨g, rfl⟩ := ConjClasses.mk_surjective x
-  simp only [Finset.mem_sdiff, Finset.mem_univ, true_and, Set.mem_toFinset, mem_noncenter,
-             Set.not_nontrivial_iff] at hx
+  rintro ⟨g⟩ hg
+  simp only [noncenter, Set.toFinset_ofPred, Finset.mem_univ, true_and,
+             Finset.mem_sdiff, Finset.mem_filter, Set.not_nontrivial_iff] at hg
   rw [eq_comm, ← Set.toFinset_card, Finset.card_eq_one]
-  exact ⟨g, Finset.coe_injective <| by simpa using hx.eq_singleton_of_mem mem_carrier_mk⟩
+  exact ⟨g, Finset.coe_injective <| by simpa using hg.eq_singleton_of_mem mem_carrier_mk⟩
 
 theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
     [∀ x : ConjClasses G, Fintype x.carrier] [Fintype G] [Fintype <| Subgroup.center G]

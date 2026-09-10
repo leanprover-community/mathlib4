@@ -54,9 +54,7 @@ instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F
     obtain ⟨A, ⟨i⟩⟩ := exists_lift_of_continuous (F := F) X
     exact ⟨A, ⟨ObjectProperty.isoMk _ i⟩⟩
 
--- `backward.isDefEq.respectTransparency.instances false` was here. It is obsolete on this
--- toolchain. This declaration compiles with no replacement. Checked with a poison test, so
--- the test can fail.
+set_option backward.isDefEq.respectTransparency.instances false in
 instance : (functorToContAction F).EssSurj := by
   let F' : C ⥤ FintypeCat.{u₁} := F ⋙ FintypeCat.uSwitch.{w, u₁}
   let : FiberFunctor F' := FiberFunctor.comp_right _

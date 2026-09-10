@@ -290,9 +290,7 @@ theorem Monotone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedT
   _root_.ge_of_tendsto ha ((eventually_ge_atTop b).mono fun _ hxy => hf hxy)
 
 -- Defeq abuse: `ha` should be translated into a statement about the order dual
--- 3 `backward.isDefEq.respectTransparency.instances false` options were here and below.
--- They are obsolete on this toolchain. The declarations compile with no replacement.
--- Checked with a poison test, so the test can fail.
+set_option backward.isDefEq.respectTransparency.instances false in
 theorem Monotone.le_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [Preorder β] [IsCodirectedOrder β] {f : β → α} {a : α} (hf : Monotone f)
     (ha : Tendsto f atBot (𝓝 a)) (b : β) :
@@ -300,6 +298,7 @@ theorem Monotone.le_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedT
   hf.dual.ge_of_tendsto ha b
 
 -- Defeq abuse: `ha` should be translated into a statement about the order dual
+set_option backward.isDefEq.respectTransparency.instances false in
 theorem Antitone.le_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [Preorder β] [IsDirectedOrder β] {f : β → α} {a : α} (hf : Antitone f)
     (ha : Tendsto f atTop (𝓝 a)) (b : β) :
@@ -307,6 +306,7 @@ theorem Antitone.le_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedT
   hf.dual_right.ge_of_tendsto ha b
 
 -- Defeq abuse: `ha` should be translated into a statement about the order dual
+set_option backward.isDefEq.respectTransparency.instances false in
 theorem Antitone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [Preorder β] [IsCodirectedOrder β] {f : β → α} {a : α} (hf : Antitone f)
     (ha : Tendsto f atBot (𝓝 a)) (b : β) :

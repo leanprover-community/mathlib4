@@ -237,16 +237,12 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
   rw [ZMod.card_units_eq_totient p]
   exact Nat.le_sub_one_of_lt (Nat.totient_lt p hp)
 
--- Note: `simp` must not be given `ZMod` to unfold here: rewriting the type `(ZMod 0)ˣ` to `ℤˣ`
--- leaves the local `inst✝ : Fintype (ZMod 0)ˣ` at the old spelling, and every later instance-mvar
--- assignment `?inst : Fintype ℤˣ := inst✝` fails the exact-`.instances` type check
--- (`ZMod` only reduces at `.default`). Simp closes the goal without unfolding `ZMod`.
--- Note: There's a global `Fintype ℤˣ` instance, so this becomes a non-canonical situation after
--- unfolding `ZMod`.
+set_option backward.isDefEq.respectTransparency.instances false in
+set_option backward.isDefEq.respectTransparency false in
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
   rcases eq_zero_or_neZero p with rfl | hp
-  · simp [not_prime_zero, zero_tsub]
+  · simp [ZMod, not_prime_zero, zero_tsub]
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]
 
 @[simp]
