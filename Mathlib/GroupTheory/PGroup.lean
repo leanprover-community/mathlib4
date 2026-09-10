@@ -26,13 +26,14 @@ A p-group is a group in which the order of every element is a power of `p`.
 * `IsPGroup.nonempty_fixed_point_of_prime_not_dvd_card` and
   `IsPGroup.exists_fixed_point_of_prime_dvd_card_of_fixed_point`: existence of fixed points;
 * `IsPGroup.center_nontrivial`: the center of a nontrivial finite p-group is nontrivial;
-* `IsPGroup.commutative_of_card_eq_prime_sq`: a group of order `p ^ 2` is commutative;
+* `IsPGroup.isMulCommutative_of_card_eq_prime_sq`: a group of order `p ^ 2` is commutative;
+* `IsPGroup.isSimpleGroup_iff_card_eq`: a finite p-group is simple iff it has cardinality `p`;
 * `IsPGroup.isCoatom_iff_index_eq_prime`: in an abelian p-group, a subgroup is maximal iff it has
   index `p`;
 * `IsPGroup.not_isCyclic_iff_exists_ne_index_eq_prime`: a finite abelian p-group is non-cyclic iff
   it has two distinct subgroups of index `p`.
 
-The condition is also shown to pass to subgroups, quotients, images and joins, and p-groups for
+Being a p-group is also shown to pass to subgroups, quotients, images and joins, and p-groups for
 distinct primes are shown to be disjoint.
 -/
 
@@ -340,6 +341,15 @@ theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
   exact
       bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 
+/-- A p-group is simple iff it has cardinality `p`. -/
+theorem isSimpleGroup_iff_card_eq [Finite G] : IsSimpleGroup G ↔ Nat.card G = p := by
+  refine ⟨fun h ↦ ?_, fun h ↦ isSimpleGroup_of_prime_card h⟩
+  have : IsMulCommutative G := Subgroup.center_eq_top_iff.mp <|
+    (h.eq_bot_or_eq_top_of_normal (Subgroup.center G) inferInstance).resolve_left <|
+      ne_bot_of_gt <| bot_lt_center hG
+  replace h := Group.is_simple_iff_prime_card.mp h
+  exact ((Nat.prime_dvd_prime_iff_eq Fact.out h).mp (hG.card_eq_or_dvd.resolve_left h.ne_one)).symm
+
 end GIsPGroup
 
 theorem to_le {H K : Subgroup G} (hK : IsPGroup p K) (hHK : H ≤ K) : IsPGroup p H :=
@@ -484,8 +494,8 @@ theorem isMulCommutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : IsMulCo
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
   isMulCommutative_of_isCyclic_quotient_center_self G
 
-/-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commutative_of_card_eq_prime_sq`
-for just the proof that `∀ a b, a * b = b * a` -/
+/-- A group of order `p ^ 2` is commutative. See also
+`IsPGroup.isMulCommutative_of_card_eq_prime_sq` for just the proof that `G` is commutative. -/
 @[instance_reducible]
 def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
