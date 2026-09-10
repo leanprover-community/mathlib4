@@ -420,41 +420,51 @@ jobs:
 
       # The job's whole credential: short-lived, scoped to the shadow
       # bucket's cache/ prefix, and expiring on its own. The action masks
-      # the credential and exports MATHLIB_CACHE_S3_* and the
-      # MATHLIB_CACHE_DEVELOPER_MINTED sentinel; the upload destination
-      # stays this workflow's (the LAKE_CACHE_*_ENDPOINT variables).
-      # `fail`: this job has no other upload path.
+      # the credential and exposes it as step outputs; it sets no
+      # environment variables, and the upload destination stays this
+      # workflow's (the LAKE_CACHE_*_ENDPOINT variables). `fail`: this
+      # job has no other upload path.
       - name: Mint short-lived R2 credentials from the broker
-        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-cache-credentials@a0da8227c5878ac5908920b915dda7b036ea32d6 # mathlib-ci#67
+        id: mint
+        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-cache-credentials@95b988d946f83d44dbd31d18432b5f4741ba18aa # mathlib-ci#67
         with:
           broker-url: ${{ env.BROKER_BASE_URL }}
           on-failure: fail
 
       # Lake reads the credential as LAKE_CACHE_KEY (`<id>:<secret>`) plus
       # LAKE_CACHE_SESSION_TOKEN (sent as x-amz-security-token); the
-      # carryover curls read the same. Checks the action's export contract
+      # carryover curls read the same. Checks the action's output contract
       # on the way.
       - name: Export the minted credential in Lake's shape
+        env:
+          MINTED: ${{ steps.mint.outputs.minted }}
+          GRANT: ${{ steps.mint.outputs.grant }}
+          ACCESS_KEY_ID: ${{ steps.mint.outputs.access-key-id }}
+          SECRET_ACCESS_KEY: ${{ steps.mint.outputs.secret-access-key }}
+          SESSION_TOKEN: ${{ steps.mint.outputs.session-token }}
         run: |
-          if [ "${MATHLIB_CACHE_DEVELOPER_MINTED:-}" != "true" ]; then
-            echo "::error::the mint step exported no MATHLIB_CACHE_DEVELOPER_MINTED=true sentinel"
+          if [ "${MINTED}" != "true" ]; then
+            echo "::error::the mint step set no minted=true output"
             exit 1
           fi
-          if [ -n "${MATHLIB_CACHE_PUT_BASE_URL:-}" ]; then
-            echo "::error::the mint step exported MATHLIB_CACHE_PUT_BASE_URL; the destination is the caller's"
-            exit 1
-          fi
-          for name in MATHLIB_CACHE_S3_ACCESS_KEY_ID MATHLIB_CACHE_S3_SECRET_ACCESS_KEY MATHLIB_CACHE_S3_SESSION_TOKEN; do
-            if [ -z "${!name:-}" ]; then
-              echo "::error::the mint step exported no ${name}"
+          for name in ACCESS_KEY_ID SECRET_ACCESS_KEY SESSION_TOKEN; do
+            if [ -z "${!name}" ]; then
+              echo "::error::the mint step set no ${name,,} output"
+              exit 1
+            fi
+          done
+          for name in MATHLIB_CACHE_S3_ACCESS_KEY_ID MATHLIB_CACHE_S3_SECRET_ACCESS_KEY \
+              MATHLIB_CACHE_S3_SESSION_TOKEN MATHLIB_CACHE_PUT_BASE_URL MATHLIB_CACHE_DEVELOPER_MINTED; do
+            if [ -n "${!name:-}" ]; then
+              echo "::error::the mint step exported ${name}; the action must set no environment variables"
               exit 1
             fi
           done
           {
-            echo "LAKE_CACHE_KEY=${MATHLIB_CACHE_S3_ACCESS_KEY_ID}:${MATHLIB_CACHE_S3_SECRET_ACCESS_KEY}"
-            echo "LAKE_CACHE_SESSION_TOKEN=${MATHLIB_CACHE_S3_SESSION_TOKEN}"
+            echo "LAKE_CACHE_KEY=${ACCESS_KEY_ID}:${SECRET_ACCESS_KEY}"
+            echo "LAKE_CACHE_SESSION_TOKEN=${SESSION_TOKEN}"
           } >> "$GITHUB_ENV"
-          echo "::notice::credential exported for lake"
+          echo "::notice::credential exported for lake (grant ${GRANT})"
 
       # Proves the minted credential signs a session-token PUT before Lake
       # holds it: a put-staged failure after this step passes isolates to
