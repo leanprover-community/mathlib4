@@ -150,6 +150,24 @@ theorem uniformity_eq_comap_nhds_one_swapped :
   rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
   simp
 
+namespace MulOpposite
+
+@[to_additive]
+instance : IsLeftUniformGroup Gᵣᵐᵒᵖ where
+  uniformity_eq := by
+    rw [uniformity_mulOpposite, MulOpposite.opHomeomorph.symm.nhds_eq_comap,
+      IsRightUniformGroup.uniformity_eq, comap_comap, comap_comap]
+    simp [Function.comp_def]
+
+@[to_additive]
+instance : IsRightUniformGroup Gₗᵐᵒᵖ where
+  uniformity_eq := by
+    rw [uniformity_mulOpposite, MulOpposite.opHomeomorph.symm.nhds_eq_comap,
+      IsLeftUniformGroup.uniformity_eq, comap_comap, comap_comap]
+    simp [Function.comp_def]
+
+end MulOpposite
+
 end LeftRight
 
 section IsUniformGroup
