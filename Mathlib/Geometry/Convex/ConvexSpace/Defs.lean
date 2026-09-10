@@ -523,6 +523,8 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
     (s.map f).iConvexComb g = s.iConvexComb (fun i ↦ g (f i)) := by
   simp only [iConvexComb, map_map]
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 @[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → X}
     (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
     w.iConvexComb f = w.iConvexComb g := by

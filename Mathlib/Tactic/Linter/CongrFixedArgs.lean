@@ -1,0 +1,122 @@
+/-
+Copyright (c) 2026 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Meta.Tactic.Simp.SimpCongrTheorems
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+
+/-!
+# The `congrFixedArgs` linter
+
+The `congrFixedArgs` linter emits a warning when a theorem is given the `@[congr]` attribute, but
+some explicit argument of the function in its conclusion is the same on both sides.
+
+When `simp` uses such a congruence theorem, it never visits that argument. Usually `simp` will
+revisit the resulting expression and simplify the argument later, but this doesn't happen with
+`singlePass := true`, or when a `post` method returns `.done` (as in `norm_cast`), so the argument
+is left unsimplified. For example, if `Set.image_congr : (∀ a ∈ s, f a = g a) → f '' s = g '' s`
+were a `@[congr]` theorem, then `norm_cast` could simplify `f` but not `s` in `f '' s`.
+
+The fix is to add an equality hypothesis for each such argument, as in `Finset.sum_congr`.
+
+Arguments which are proofs or types, and arguments on which later arguments depend, are ignored.
+-/
+
+meta section
+
+open Lean Meta Elab Command Linter
+
+namespace Mathlib.Linter
+
+/--
+The `congrFixedArgs` linter emits a warning when a theorem is given the `@[congr]` attribute, but
+some explicit argument of the function in its conclusion is the same on both sides. `simp` never
+visits such an argument when using the congruence theorem, which can leave it unsimplified (e.g.
+by `norm_cast`). Add an equality hypothesis for each such argument instead.
+-/
+public register_option linter.congrFixedArgs : Bool := {
+  defValue := true
+  descr := "enable the congrFixedArgs linter"
+}
+
+namespace CongrFixedArgs
+
+/-- Given a `@[congr]` theorem `declName` whose conclusion is `f a₁ ... aₙ = f b₁ ... bₙ` (or `↔`),
+returns `f` together with the positions `i` of the explicit arguments of `f` for which `aᵢ` and
+`bᵢ` are the same. Arguments which are proofs or types, and those on which later arguments of `f`
+depend, are skipped. -/
+def fixedArgs (declName : Name) : MetaM (Option (Expr × Array Nat)) := do
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
+  let some (lhs, rhs) := type.eqOrIff? | return none
+  let fn := lhs.getAppFn
+  let fnInfo ← getFunInfoNArgs fn lhs.getAppNumArgs
+  let lhsArgs := lhs.getAppArgs
+  let rhsArgs := rhs.getAppArgs
+  let mut fixed := #[]
+  for h : i in [:lhsArgs.size] do
+    let some pinfo := fnInfo.paramInfo[i]? | continue
+    if pinfo.binderInfo.isExplicit && !pinfo.hasFwdDeps && some lhsArgs[i] == rhsArgs[i]? then
+      unless (← isProof lhsArgs[i]) || (← isType lhsArgs[i]) do
+        fixed := fixed.push i
+  return some (fn, fixed)
+
+/-- Whether `declName` is registered as a `@[congr]` theorem. -/
+def isCongrTheorem (env : Environment) (declName : Name) : Bool :=
+  (congrExtension.getState env).lemmas.toList.any (·.2.any (·.theoremName == declName))
+
+/-- Logs a warning at `ref` if the `@[congr]` theorem `declName` has fixed explicit arguments. -/
+def lintCongrTheorem (ref : Syntax) (declName : Name) : CommandElabM Unit := do
+  let some (fn, fixed) ← liftTermElabM <| fixedArgs declName | return
+  if fixed.isEmpty then return
+  let binderNames := (← liftTermElabM <| inferType fn).getForallBinderNames.toArray
+  let args := fixed.toList.map fun i ↦ m!"`{binderNames[i]?.getD `_}` (argument #{i + 1})"
+  logLint linter.congrFixedArgs ref m!"\
+    The `@[congr]` theorem `{.ofConstName declName}` does not allow the following explicit \
+    arguments of `{.ofConstName fn.constName!}` to change: {MessageData.joinSep args ", "}.\n\
+    When `simp` uses this theorem, it does not simplify these arguments, and tactics which don't \
+    revisit the result (such as `norm_cast`) leave them unsimplified. Add an equality hypothesis \
+    for each of them (as in `Finset.sum_congr`)."
+
+@[inherit_doc Mathlib.Linter.linter.congrFixedArgs]
+def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless getLinterValue linter.congrFixedArgs (← getLinterOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  -- Only commands which mention the `congr` attribute can add `@[congr]` theorems.
+  let some congrAttr := stx.find? fun s ↦
+    s.isOfKind ``Lean.Parser.Attr.simple && s[0].getId == `congr | return
+  let env ← getEnv
+  let mut linted : NameSet := {}
+  -- `attribute [congr] foo bar`: lint the named theorems.
+  for s in stx.topDown do
+    unless s.isOfKind ``Lean.Parser.Command.attribute do continue
+    for id in s[4].getArgs do
+      let some declName ← (do return some (← liftCoreM <| realizeGlobalConstNoOverload id))
+        <|> pure none | continue
+      if isCongrTheorem env declName && !linted.contains declName then
+        linted := linted.insert declName
+        lintCongrTheorem id declName
+  -- `@[congr] theorem foo ...`: lint the `@[congr]` theorems declared in this command.
+  let some cmdRange := stx.getRange? | return
+  for (_, thms) in (congrExtension.getState env).lemmas.toList do
+    for thm in thms do
+      let declName := thm.theoremName
+      if linted.contains declName || (env.getModuleIdxFor? declName).isSome then continue
+      let some ranges ← findDeclarationRanges? declName | continue
+      let pos := (← getFileMap).ofPosition ranges.range.pos
+      if cmdRange.start ≤ pos && pos < cmdRange.stop then
+        linted := linted.insert declName
+        lintCongrTheorem congrAttr declName
+
+initialize addLinter congrFixedArgsLinter
+
+end CongrFixedArgs
+
+end Mathlib.Linter

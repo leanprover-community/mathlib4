@@ -31,6 +31,8 @@ theorem find?_eq_find?_of_perm {p : α → Bool} {l₁ l₂ : List α}
   | trans _ _ ih1 ih2 =>
     refine (ih1 ?_).trans (ih2 ?_) <;> grind
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]
 theorem find?_congr {p₁ p₂ : α → Bool} {l : List α} (h : ∀ x ∈ l, p₁ x = p₂ x) :
