@@ -576,6 +576,7 @@ theorem map_injective (hf : Injective f) :
   simp [Injective, MvPowerSeries.ext_iff]
   grind
 
+@[simp]
 theorem map_injective_iff : Injective (map (σ := σ) f) ↔ Injective f := by
   refine ⟨fun h r r' eq ↦ ?_, map_injective⟩
   specialize h (a₁ := C r) (a₂ := C r')
@@ -587,6 +588,7 @@ theorem map_surjective (hf : Surjective f) :
   choose q _ using fun _ ↦ hf (coeff _ p)
   exact ⟨q, by simpa [MvPowerSeries.ext_iff]⟩
 
+@[simp]
 theorem map_surjective_iff : Surjective (map (σ := σ) f) ↔ Surjective f := by
   refine ⟨fun h s ↦ ?_, map_surjective⟩
   obtain ⟨p, hp⟩ := h (C s)

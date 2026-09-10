@@ -116,8 +116,10 @@ variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable (σ) in
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
 @[simps apply]
-def congrAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPowerSeries σ A₁ ≃ₐ[R] MvPowerSeries σ A₂ := {
-  mapAlgHom (e : A₁ →ₐ[R] A₂), congrRingEquiv σ (e : A₁ ≃+* A₂) with toFun := map (e : A₁ →+* A₂) }
+def congrAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPowerSeries σ A₁ ≃ₐ[R] MvPowerSeries σ A₂ where
+  __ := mapAlgHom (e : A₁ →ₐ[R] A₂)
+  __ := congrRingEquiv σ (e : A₁ ≃+* A₂)
+  toFun := map (e : A₁ →+* A₂)
 
 @[simp]
 theorem congrAlgEquiv_refl : congrAlgEquiv σ (AlgEquiv.refl : A₁ ≃ₐ[R] A₁) = AlgEquiv.refl :=
@@ -193,11 +195,11 @@ theorem sumToIter_C (r : R) : sumToIter σ τ R (C r) = C (C r) := by
   simpa using sumToIter_monomial 0 r
 
 @[simp]
-theorem sumToIter_Xl (b : σ) : sumToIter σ τ R (X (Sum.inl b)) = X b := by
+theorem sumToIter_X_inl (b : σ) : sumToIter σ τ R (X (Sum.inl b)) = X b := by
   simpa [X_def] using sumToIter_monomial ((single b 1).sumElim (0 : τ →₀ ℕ)) (1 : R)
 
 @[simp]
-theorem sumToIter_Xr (b : τ) : sumToIter σ τ R (X (Sum.inr b)) = C (X b) := by
+theorem sumToIter_X_inr (b : τ) : sumToIter σ τ R (X (Sum.inr b)) = C (X b) := by
   simpa [X_def] using sumToIter_monomial ((0 : σ →₀ ℕ).sumElim (single b 1)) 1
 
 /-- An inverse function of `sumToIter`. -/
@@ -244,9 +246,9 @@ theorem sumAlgEquiv_symm_X (b : σ) : (sumAlgEquiv σ τ R).symm (X b) = X (Sum.
 theorem sumAlgEquiv_symm_C_X (c : τ) : (sumAlgEquiv σ τ R).symm (C (X c)) = X (Sum.inr c) := by
   simp [AlgEquiv.symm_apply_eq]
 
-theorem sumAlgEquiv_comp_rename_inr : (sumAlgEquiv σ τ R).toAlgHom.comp
-    (rename Embedding.inr) = IsScalarTower.toAlgHom R (MvPowerSeries τ R)
-      (MvPowerSeries σ (MvPowerSeries τ R)) := by
+theorem sumAlgEquiv_comp_rename_inr :
+    (sumAlgEquiv σ τ R).toAlgHom.comp (rename Embedding.inr) =
+      IsScalarTower.toAlgHom R (MvPowerSeries τ R) (MvPowerSeries σ (MvPowerSeries τ R)) := by
   classical
   ext p x y
   suffices coeff (x.sumElim y) ((rename Embedding.inr) p) = coeff y (if x = 0 then p else 0) by
