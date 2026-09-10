@@ -61,7 +61,7 @@ lemma edgeCut_vertexSet_diff : G.edgeCut (V(G) \ S) = G.edgeCut S := by
 lemma IsSubgraph.edgeCut_eq_inter (hHG : H ≤ G) : H.edgeCut S = E(H) ∩ G.edgeCut S := by
   grind [hHG.isLink_iff']
 
-@[grind =]
+@[simp, grind =]
 lemma edgeCut_symmDiff : G.edgeCut (S ∆ S') = G.edgeCut S ∆ G.edgeCut S' := by
   ext e
   wlog he : e ∈ E(G) generalizing
@@ -93,14 +93,19 @@ lemma IsEdgeCut.subset_edgeSet (hF : G.IsEdgeCut F) : F ⊆ E(G) := by
   obtain ⟨S, rfl⟩ := hF
   exact G.edgeCut_subset_edgeSet
 
-lemma IsEdgeCut.symmDiff (hF : G.IsEdgeCut F) (hF' : G.IsEdgeCut F') : G.IsEdgeCut (F ∆ F') := by
+protected lemma IsEdgeCut.symmDiff (hF : G.IsEdgeCut F) (hF' : G.IsEdgeCut F') :
+    G.IsEdgeCut (F ∆ F') := by
   obtain ⟨S, rfl⟩ := hF
   obtain ⟨S', rfl⟩ := hF'
   use S ∆ S', edgeCut_symmDiff
 
 @[grind →]
-lemma IsEdgeCut.of_symmDiff (hF : G.IsEdgeCut F) (hsymmDiff : G.IsEdgeCut (F ∆ F')) :
+lemma IsEdgeCut.right_of_symmDiff (hF : G.IsEdgeCut F) (hsymmDiff : G.IsEdgeCut (F ∆ F')) :
     G.IsEdgeCut F' := by simpa using hF.symmDiff hsymmDiff
+
+@[grind →]
+lemma IsEdgeCut.left_of_symmDiff (hF' : G.IsEdgeCut F') (hsymmDiff : G.IsEdgeCut (F ∆ F')) :
+    G.IsEdgeCut F := by simpa using hsymmDiff.symmDiff hF'
 
 lemma IsEdgeCut.inter_edgeSet_of_le (hHG : H ≤ G) (hF : G.IsEdgeCut F) :
     H.IsEdgeCut (E(H) ∩ F) := by
@@ -108,10 +113,12 @@ lemma IsEdgeCut.inter_edgeSet_of_le (hHG : H ≤ G) (hF : G.IsEdgeCut F) :
   use S
   exact hHG.edgeCut_eq_inter
 
+@[gcongr]
 lemma IsEdgeCut.anti_of_subset (hHG : H ≤ G) (hFH : F ⊆ E(H)) (hF : G.IsEdgeCut F) :
     H.IsEdgeCut F :=
   inter_eq_right.mpr hFH ▸ hF.inter_edgeSet_of_le hHG
 
+@[gcongr]
 lemma IsEdgeCut.of_isClosedSubgraph (hGH : G ≤c H) (hF : G.IsEdgeCut F) : H.IsEdgeCut F := by
   obtain ⟨S, hSG, rfl⟩ := hF.exists
   use S
@@ -138,6 +145,7 @@ lemma IsBridge.isEdgeCut (he : G.IsBridge e) : G.IsEdgeCut {e} := he
 lemma IsBridge.mem_edgeSet (he : G.IsBridge e) : e ∈ E(G) := by
   simpa using IsEdgeCut.subset_edgeSet he
 
+@[gcongr]
 lemma IsBridge.anti_of_mem (hHG : H ≤ G) (heH : e ∈ E(H)) (he : G.IsBridge e) : H.IsBridge e :=
   he.anti_of_subset hHG (singleton_subset_iff.mpr heH)
 
@@ -158,7 +166,7 @@ section IsBond
 @[expose]
 def IsBond (G : Graph α β) (F : Set β) : Prop := Minimal (fun F ↦ G.IsEdgeCut F ∧ F.Nonempty) F
 
-
+@[grind →]
 lemma IsBond.isEdgeCut (hB : G.IsBond B) : G.IsEdgeCut B := hB.prop.1
 
 lemma IsBond.nonempty (hB : G.IsBond B) : B.Nonempty := hB.prop.2
