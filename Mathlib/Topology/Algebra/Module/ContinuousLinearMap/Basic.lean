@@ -121,6 +121,7 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) 
   cases g
   congr
 
+@[macro_inline]
 instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective _ _ h := coe_injective (DFunLike.coe_injective h)
