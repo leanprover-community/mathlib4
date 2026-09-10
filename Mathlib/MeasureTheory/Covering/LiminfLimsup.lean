@@ -168,8 +168,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
     exact max_le_max (le_refl 0) hi
   simp_rw [← cthickening_max_zero (r₁ _), ← cthickening_max_zero (r₂ _)]
   rcases le_or_gt 1 M with hM' | hM'
-  · apply LE.le.eventuallyLE
-    refine mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono ?_ (s i))
+  · refine .of_subset <| mono_blimsup' <| hMr.mono fun i hi _ => cthickening_mono ?_ (s i)
     exact (le_mul_of_one_le_left (hRp i) hM').trans hi
   · simp only [← @cthickening_closure _ _ _ (s _)]
     have hs : ∀ i, IsClosed (closure (s i)) := fun i => isClosed_closure
@@ -198,7 +197,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     clear p hr r; intro p r hr
     have hr' : Tendsto (fun i => M * r i) atTop (𝓝[>] 0) := by
       convert! TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
-    refine eventuallyLE_antisymm_iff.mpr ⟨?_, ?_⟩
+    refine eventuallySubset_antisymm_iff.mpr ⟨?_, ?_⟩
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p (inv_pos.mpr hM) hr'
         (Eventually.of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p hM hr
@@ -226,15 +225,13 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     blimsup_congr (Eventually.of_forall h₂)]
   exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
     (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
-  refine eventuallyLE_antisymm_iff.mpr ⟨?_, LE.le.eventuallyLE ?_⟩
-  · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (one_half_pos (α := ℝ)) r hr).symm
-      EventuallyEq.rfl]
-    apply LE.le.eventuallyLE
+  refine eventuallySubset_antisymm_iff.mpr ⟨?_, .of_subset ?_⟩
+  · refine (blimsup_cthickening_mul_ae_eq μ p s (one_half_pos (α := ℝ)) r hr).superset.trans
+      (.of_subset ?_)
     refine mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) ?_ (s i))
     nlinarith [hi pi]
   · exact mono_blimsup fun i _ => thickening_subset_cthickening _ _
