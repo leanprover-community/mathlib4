@@ -108,8 +108,7 @@ lemma longSequenceHom_comp {S₃ : ShortComplex (Sheaf J AddCommGrpCat)} (h₃ :
 /-- The long exact sequence of cohomology is functorial -/
 @[simps]
 noncomputable def longSequenceFunctor :
-    ObjectProperty.FullSubcategory (ShortComplex.ShortExact (C := (Sheaf J AddCommGrpCat.{w}))) ⥤
-      ComposableArrows AddCommGrpCat.{w'} 5 where
+    ShortExactSequence (Sheaf J AddCommGrpCat.{w}) ⥤ ComposableArrows AddCommGrpCat.{w'} 5 where
   obj S := longSequence S.property n₀ n₁ h
   map {S₁ S₂} f := longSequenceHom n₀ n₁ S₁.property S₂.property f.hom h
 
