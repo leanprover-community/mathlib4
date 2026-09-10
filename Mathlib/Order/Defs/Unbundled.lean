@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Defs
 public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.CrossRefAttribute
 
 
 /-!
@@ -22,6 +23,7 @@ and proves some basic lemmas about them.
 /-! ### Unbundled classes -/
 
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
+@[wikidata Q64861, wikidata Q54933015]
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 
@@ -33,26 +35,32 @@ instance (priority := 100) {α : Sort*} {r : α → α → Prop} [Trans r r r] :
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
+@[wikidata Q1425985, wikidata Q78054942, wikidata Q7240591]
 class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends Std.Refl r, IsTrans α r
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
 `IsPreorder X r` and `Std.Antisymm r`. -/
+@[wikidata Q1069998, wikidata Q474715]
 class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Antisymm r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `Std.Total r`. -/
+@[wikidata Q369377, wikidata Q3054922]
 class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, Std.Total r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `Std.Symm r`. -/
+@[wikidata Q130998]
 class IsEquiv (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Symm r
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
 `Std.Irrefl r` and `IsTrans X r`. -/
+@[wikidata Q11077412]
 class IsStrictOrder (α : Sort*) (r : α → α → Prop) : Prop extends Std.Irrefl r, IsTrans α r
 
 /-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
 that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a`. -/
+@[wikidata Q1414271]
 class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) : Prop extends IsStrictOrder α lt where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
@@ -227,6 +235,9 @@ variable {α : Type*} [LE α] {P : α → Prop} {x y : α}
 @[to_dual /-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/]
 def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
 
+attribute [wikidata Q97378556] Minimal
+attribute [wikidata Q111315902] Maximal
+
 @[to_dual]
 lemma Minimal.prop (h : Minimal P x) : P x :=
   h.1
@@ -261,6 +272,9 @@ also a member. Also called up-set, upward-closed set. -/
 members is also a member. Also called down-set, downward-closed set. -/]
 def IsUpperSet {α : Type*} [LE α] (s : Set α) : Prop :=
   ∀ ⦃a b : α⦄, a ≤ b → a ∈ s → b ∈ s
+
+attribute [wikidata Q2528262] IsUpperSet
+attribute [wikidata Q120868099] IsLowerSet
 
 @[inherit_doc IsUpperSet]
 structure UpperSet (α : Type*) [LE α] where

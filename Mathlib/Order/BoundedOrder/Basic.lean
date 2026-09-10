@@ -252,6 +252,7 @@ end OrderDual
 
 /-- A bounded order describes an order `(≤)` with a top and bottom element,
   denoted `⊤` and `⊥` respectively. -/
+@[wikidata Q10326443]
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 
 attribute [to_dual self (reorder := 3 4)] BoundedOrder.mk
