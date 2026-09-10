@@ -120,8 +120,8 @@ theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [
 theorem nndist_vadd_right (v : V) (x : P) : nndist x (v +ᵥ x) = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_right _ _
 
-/-- Isometric between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
-addition/subtraction of `x : P`. -/
+/-- Isometry equivalence between the tangent space `V` of a (semi)normed add torsor `P` and `P`
+given by addition/subtraction of `x : P`. -/
 @[simps!]
 def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P where
   toEquiv := Equiv.vaddConst x
@@ -135,8 +135,8 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
 theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
 
-/-- Isometric between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
-subtraction from `x : P`. -/
+/-- Isometry equivalence between the tangent space `V` of a (semi)normed add torsor `P` and `P`
+given by subtraction from `x : P`. -/
 @[simps!]
 def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V where
   toEquiv := Equiv.constVSub x
