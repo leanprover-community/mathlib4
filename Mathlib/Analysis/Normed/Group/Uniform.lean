@@ -43,7 +43,7 @@ theorem Isometric.norm_map_of_map_one {f : E → F} (hi : Isometric f) (h₁ : f
 @[to_additive (attr := simp) norm_map]
 theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖ = ‖x‖ :=
-  (IsometryClass.isometry f).norm_map_of_map_one (map_one f) x
+  (IsometryClass.isometric f).norm_map_of_map_one (map_one f) x
 
 @[to_additive (attr := simp) nnnorm_map]
 theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
@@ -119,7 +119,7 @@ theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕 E F] (f :
 @[to_additive]
 theorem MonoidHomClass.isometric_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     Isometric f ↔ ∀ x, ‖f x‖ = ‖x‖ := by
-  simp only [isometry_iff_dist_eq, dist_eq_norm_inv_mul, ← map_inv, ← map_mul]
+  simp only [isometric_iff_dist_eq, dist_eq_norm_inv_mul, ← map_inv, ← map_mul]
   refine ⟨fun h x => ?_, fun h x y => h _⟩
   simpa using h x 1
 

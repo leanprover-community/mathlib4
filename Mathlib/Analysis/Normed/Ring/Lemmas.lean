@@ -212,9 +212,9 @@ end SeparationQuotient
 namespace NNReal
 
 lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
-  rw [← NNReal.isometry_coe.lipschitzWith_iff]
+  rw [← NNReal.isometric_coe.lipschitzWith_iff]
   have : Isometric (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
-    NNReal.isometry_coe.prodMap NNReal.isometry_coe
+    NNReal.isometric_coe.prodMap NNReal.isometric_coe
   convert!
     (((LipschitzWith.prod_fst.comp this.lipschitzWith).sub
           (LipschitzWith.prod_snd.comp this.lipschitzWith)).max_const

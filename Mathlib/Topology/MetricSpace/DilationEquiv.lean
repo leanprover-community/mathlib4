@@ -190,7 +190,7 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
 def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
-  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometric⟩
   __ := e.toEquiv
 
 @[simp]
@@ -214,7 +214,7 @@ lemma _root_.IsometryEquiv.coe_symm_toDilationEquiv (e : X ≃ᵢ Y) :
 
 @[simp]
 lemma _root_.IsometryEquiv.toDilationEquiv_toDilation (e : X ≃ᵢ Y) :
-    (e.toDilationEquiv.toDilation : X →ᵈ Y) = e.isometry.toDilation :=
+    (e.toDilationEquiv.toDilation : X →ᵈ Y) = e.isometric.toDilation :=
   rfl
 
 @[simp]
