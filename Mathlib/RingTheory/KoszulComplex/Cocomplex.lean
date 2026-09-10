@@ -129,7 +129,7 @@ lemma map_f (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
 @[reassoc]
 lemma map_id_refl (x : M) : koszulCocomplex.map R (M := M) .id (Eq.refl x) = 𝟙 _ := by
   ext i x
-  simp only [map_f, ofHom_id, ModuleCat.hom_id, exteriorPower.map_id, HomologicalComplex.id_f]
+  simp [map_f]
 
 @[reassoc]
 lemma map_id (x y : M) (h : x = y) : koszulCocomplex.map R (M := M) .id h =
