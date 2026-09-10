@@ -80,10 +80,6 @@ abbrev leftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
 
 namespace leftDecompQuotient
 
-lemma natCard_eq_relIndex :
-    Nat.card (leftDecompQuotient H₁ H₂ g) = (ConjAct.toConjAct g • H₂).relIndex H₁ := by
-  rw [leftDecompQuotient, Subgroup.relIndex, Subgroup.index, stabilizer_leftCoset]
-
 /-- The map sending `⟦h₁⟧` to `h₁gH₂`. -/
 def toLeftCoset :
     leftDecompQuotient H₁ H₂ g → G ⧸ H₂ :=
