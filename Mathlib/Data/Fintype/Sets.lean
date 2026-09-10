@@ -255,7 +255,7 @@ instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
 @[simp]
-theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
+theorem Fintype.univ_Prop [DecidableEq Prop] : (Finset.univ : Finset Prop) = {True, False} :=
   Finset.eq_of_veq <| by simp; rfl
 
 instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
