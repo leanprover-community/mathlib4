@@ -21,8 +21,9 @@ entries normalised by `norm_num` if possible.
 The product is rewritten on the row lists of the factors, and the equation between the `!![…]`
 literals follows from the one between their `ofLists` forms by a single definitional hint.
 
-Note that the simp lemmas unfolding `vecCons` compete with this simproc due to how `!![]` is
-currently elaborated, so the simproc should be used by `simp only`.
+Note that there are simp lemmas rewriting a product of `vecCons`, which compete with this
+simproc due to how `!![]` is currently elaborated, so the simproc should be used by
+`simp only`.
 -/
 
 public meta section
@@ -33,17 +34,13 @@ initialize registerTraceClass `Tactic.norm_matmul
 
 namespace Mathlib.Tactic.Matrix
 
-/-- The rows of a list literal `[[a₀₀, a₀₁, …], …]`. -/
-def rowsOfLit? (e : Expr) : Option (List (List Expr)) := do
-  let (_, rows) ← e.listLit?
-  rows.mapM fun row => (·.2) <$> row.listLit?
-
 /-- Core of the `norm_matmul` simproc. -/
 def normMatMulCore : Simp.Simproc := fun e => do
   let_expr HMul.hMul _ _ _ _ A B := e | return .continue
   let some (l, m, R, rowsA) ← matchMatrixLit? A
     | trace[Tactic.norm_matmul] "not a closed matrix literal{indentExpr A}"
       return .continue
+  -- use the `m` and `R` from parsing `A` above
   let some (_, n, _, rowsB) ← matchMatrixLit? B
     | trace[Tactic.norm_matmul] "not a closed matrix literal{indentExpr B}"
       return .continue
@@ -56,16 +53,18 @@ def normMatMulCore : Simp.Simproc := fun e => do
   have aα : Q(Add $α) := ← synthInstanceQ q(Add $α)
   have mα : Q(Mul $α) := ← synthInstanceQ q(Mul $α)
   let r := proveMul zα aα mα l m n rowsA rowsB
-  let s ← Mathlib.Meta.NormNum.deriveSimp (← readThe Simp.Context) (useSimp := false)
-    (e := r.expr)
-  let some rows := rowsOfLit? s.expr
-    | throwError "expected a list literal of rows{indentExpr s.expr}"
-  let rows := rows.toArray.map List.toArray
-  let C := Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (rows[i]!)[j]!)
+  let ctx ← readThe Simp.Context
+  let cells ← r.rows.mapM (·.mapM fun a => do
+    let s ← Mathlib.Meta.NormNum.deriveSimp ctx (useSimp := false) (e := a)
+    have b : Q($α) := s.expr
+    return (⟨a, b, ← s.getProof⟩ : (a : Q($α)) × (b : Q($α)) × Q($a = $b)))
+  let ⟨_, _, hV⟩ := mkListCongr (α := q(List $α)) <| cells.map fun row => mkListCongr row
+  let entries := cells.toArray.map fun row => row.toArray.map (·.2.1)
+  let C := Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (entries[i]!)[j]!)
   let pf ← mkEqTrans
     (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr l, toExpr m, toExpr n, r.A, r.B]))
     (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr l, toExpr n])
-      (← mkEqTrans r.proof (← s.getProof)))
+      (← mkEqTrans r.proof hV))
   -- `ofLists` on the row lists unfolds to the `!![…]` literals
   return .done { expr := C, proof? := some (mkExpectedPropHint pf q($e = $C)) }
 
