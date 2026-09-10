@@ -195,8 +195,8 @@ theorem gc_map_comap (f : R →ₙ+* S) :
 noncomputable def equivMapOfInjective (f : R →ₙ+* S) (hf : Function.Injective (f : R → S)) :
     s ≃+* s.map f :=
   { Equiv.Set.image f s hf with
-    map_mul' := fun _ _ => Subtype.ext (map_mul f _ _)
-    map_add' := fun _ _ => Subtype.ext (map_add f _ _) }
+    map_mul' _ _ := Subtype.ext (map_mul f _ _)
+    map_add' _ _ := Subtype.ext (map_add f _ _) }
 
 @[simp]
 theorem coe_equivMapOfInjective_apply (f : R →ₙ+* S) (hf : Function.Injective f) (x : s) :
