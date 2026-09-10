@@ -20,6 +20,7 @@ In this file the unit interval `[0, 1]` in `ℝ` is denoted by `I`, and `X` is a
 
 * `Path x y` is the type of paths from `x` to `y`, i.e., continuous maps from `I` to `X`
   mapping `0` to `x` and `1` to `y`.
+* `Path.interior γ` is the image of the open parameter interval `(0, 1)`.
 * `Path.refl x : Path x x` is the constant path at `x`.
 * `Path.symm γ : Path y x` is the reverse of a path `γ : Path x y`.
 * `Path.trans γ γ' : Path x z` is the concatenation of two paths `γ : Path x y`, `γ' : Path y z`.
@@ -642,5 +643,21 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
     (refl x).reparam f hfcont hf₀ hf₁ = refl x := by
   ext
   simp
+
+/-! ### Path interiors -/
+
+/-- The image of the open parameter interval. This need not be the topological interior of the
+range, and for a general path it may contain either endpoint. -/
+def interior (γ : Path x y) : Set X := γ '' Ioo (0 : I) 1
+
+lemma interior_subset_range (γ : Path x y) : γ.interior ⊆ range γ := image_subset_range ..
+
+/-- If two parameters are the endpoints of the unit interval and have the same path value,
+the source and target of the path coincide. -/
+lemma source_eq_target_of_eq_of_pair {γ : Path x y} {s t : I} (heq : γ s = γ t)
+    (hp : ({s, t} : Set I) = {0, 1}) : x = y := by
+  obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := pair_eq_pair_iff.mp hp
+  · simpa [Path.source, Path.target] using heq
+  simpa [Path.source, Path.target] using heq.symm
 
 end Path
