@@ -105,8 +105,13 @@ theorem d_eq :
       (freeLiftLEquiv k G (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftLEquiv k G (Fin (n + 1) → G) A).toModuleIso.hom := by
-  ext
-  simp [d_hom_apply, map_add, barComplex.d_single (k := k), homEquiv]
+  ext x y
+  -- try to remove `ChainComplex.of_X`, if removing it need erw `barComplex.d_single`
+  -- which needs `(barComplex k G) n = free k G (Fin n → G)`
+  -- the equality works with `with_implicit rfl`, but not `with_reducible_and_instances rfl`
+  -- attempts: setting `ChainComplex.of` instance reducible won't work,
+  -- only setting reducible would help
+  simp [d_hom_apply, homEquiv, Linear.leftComp, ChainComplex.of_X, barComplex.d_single (k := k) n y]
 
 end inhomogeneousCochains
 
@@ -121,7 +126,7 @@ set_option backward.isDefEq.respectTransparency false in
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
-  CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
+  CochainComplex.of (fun n => ↧((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
     rw [d_eq, d_eq]
     slice_lhs 3 4 => rw [Iso.hom_inv_id]

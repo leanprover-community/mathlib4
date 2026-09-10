@@ -1100,6 +1100,9 @@ theorem removeNth_removeNth_eq_swap {α : Sort*} (m : Fin (n + 2) → α)
     i.removeNth (j.removeNth m) = (i.predAbove j).removeNth ((j.succAbove i).removeNth m) :=
   heq_iff_eq.mp (removeNth_removeNth_heq_swap m i j)
 
+theorem removeNth_comp {M N : Type*} (f : M → N) (i : ℕ) (v : Fin (i + 1) → M) (x : Fin (i + 1)) :
+    x.removeNth (f ∘ v) = f ∘ x.removeNth v := rfl
+
 end InsertNth
 
 section Find

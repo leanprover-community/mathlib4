@@ -60,9 +60,16 @@ noncomputable def chainsMap :
   f i := ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ lmapDomain A k (f ∘ ·)
   comm' i j (hij : _ = _) := by
     subst hij
-    ext
-    simp [Fin.comp_contractNth, map_add, inhomogeneousChains.d, Rep.hom_comm_apply φ]
-    rfl
+    ext g
+    simp only [res_obj_ρ, ModuleCat.ofHom_comp, ChainComplex.of_d',
+      inhomogeneousChains.d, eqToHom_refl, Category.id_comp, Category.assoc, ModuleCat.hom_comp,
+      ConcreteCategory.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, lsingle_apply,
+      lmapDomain_apply, mapDomain_single, coe_lsum, LinearMap.coe_add, LinearMap.coe_sum,
+      LinearMap.coe_smul, Pi.add_apply, map_zero, Finset.sum_apply, Pi.smul_apply,
+      smul_zero, Finset.sum_const_zero, add_zero, sum_single_index, smul_single, map_add, map_sum]
+    simp [mapRange.linearMap_apply _, lmapDomain_apply _, IntertwiningMap.coe_toLinearMap,
+      lsum_apply _, Rep.hom_comm_apply φ, res_obj_ρ, Fin.comp_contractNth,
+      Function.comp_def f (fun i : Fin _ ↦ g i.succ)]
 
 lemma chainsMap_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg : f = g)
     (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) :
@@ -74,11 +81,15 @@ lemma lsingle_comp_chainsMap_f (n : ℕ) (x : Fin n → G) :
     ModuleCat.ofHom (lsingle x) ≫ (chainsMap f φ).f n =
       ModuleCat.ofHom (lsingle (f ∘ x) ∘ₗ φ.hom.toLinearMap) := by
   ext
-  simp [chainsMap_f]
+  simp [chainsMap_f, lmapDomain_apply, res_obj_ρ,
+    IntertwiningMap.coe_toLinearMap, (mapRange.linearMap_apply), (lsingle_apply)]
 
 lemma chainsMap_f_single (n : ℕ) (x : Fin n → G) (a : A) :
     (chainsMap f φ).f n (single x a) = single (f ∘ x) (φ.hom a) := by
-  simp [chainsMap_f]
+  simp only [chainsMap_f, ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp,
+    Function.comp_apply, res_obj_ρ]
+  rw [mapRange.linearMap_apply, lmapDomain_apply]
+  simp
 
 @[simp]
 lemma chainsMap_id :
@@ -97,7 +108,9 @@ lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     (f : G →* H) (g : H →* K) (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
     chainsMap (g.comp f) (φ ≫ (resFunctor f).map ψ) = chainsMap f φ ≫ chainsMap g ψ := by
   ext
-  simp [chainsMap_f, Function.comp_assoc]
+  simp [chainsMap_f, MonoidHom.coe_comp, Function.comp_assoc, Rep.hom_comp, res_obj_ρ,
+    IntertwiningMap.comp_toLinearMap, resMap_hom_toLinearMap,
+    Category.assoc, (mapRange.linearMap_apply), (lmapDomain_apply)]
 
 lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     chainsMap (MonoidHom.id G) (φ ≫ ψ) =
@@ -106,7 +119,8 @@ lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
 
 @[simp]
 lemma chainsMap_zero : chainsMap f (0 : A ⟶ res f B) = 0 := by
-  ext; simp [chainsMap_f, LinearMap.zero_apply (M₂ := B)]
+  ext
+  simp [chainsMap_f, IntertwiningMap.zero_toLinearMap, lmapDomain_apply, (mapRange.linearMap_apply)]
 
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by
@@ -227,26 +241,31 @@ noncomputable abbrev chainsMap₃ :
 lemma chainsMap_f_0_comp_chainsIso₀ :
     (chainsMap f φ).f 0 ≫ (chainsIso₀ B).hom = (chainsIso₀ A).hom ≫ φ.toModuleCatHom := by
   ext
-  simp [chainsMap_f, Unique.eq_default (α := Fin 0 → G), Unique.eq_default (α := Fin 0 → H),
-    chainsIso₀]
+  simp [Unique.eq_default (α := Fin 0 → G), chainsMap_f, Unique.eq_default (α := Fin 0 → H),
+    chainsIso₀, Category.assoc, lmapDomain_apply, (mapRange.linearMap_apply),
+    IntertwiningMap.coe_toLinearMap, res_obj_ρ, (uniqueLinearEquiv_apply _)]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_1_comp_chainsIso₁ :
     (chainsMap f φ).f 1 ≫ (chainsIso₁ B).hom = (chainsIso₁ A).hom ≫ chainsMap₁ f φ := by
   ext x
-  simp [chainsMap_f, chainsIso₁]
+  simp [chainsMap_f, chainsIso₁, (domLCongr_apply), (mapRange.linearMap_apply), Category.assoc,
+    lmapDomain_apply, mapDomain_single, res_obj_ρ, domCongr_apply, equivMapDomain_single,
+    IntertwiningMap.coe_toLinearMap, mapRange_single]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_2_comp_chainsIso₂ :
     (chainsMap f φ).f 2 ≫ (chainsIso₂ B).hom = (chainsIso₂ A).hom ≫ chainsMap₂ f φ := by
   ext
-  simp [chainsMap_f, chainsIso₂]
+  simp [chainsMap_f, (domLCongr_apply), (mapRange.linearMap_apply), chainsIso₂,
+    lmapDomain_apply, mapDomain_single, res_obj_ρ, domCongr_apply, IntertwiningMap.coe_toLinearMap]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_3_comp_chainsIso₃ :
     (chainsMap f φ).f 3 ≫ (chainsIso₃ B).hom = (chainsIso₃ A).hom ≫ chainsMap₃ f φ := by
   ext
-  simp [chainsMap_f, chainsIso₃, ← Fin.comp_tail]
+  simp [chainsMap_f, chainsIso₃, (domLCongr_apply), (mapRange.linearMap_apply), ← Fin.comp_tail,
+    Category.assoc, lmapDomain_apply, IntertwiningMap.coe_toLinearMap, mapRange_single]
 
 open ShortComplex
 
