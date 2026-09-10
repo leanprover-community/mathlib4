@@ -40,7 +40,7 @@ open Set AnalyticAt AnalyticOnNhd
 
 namespace GelfondSchneider
 
-variable {K : Type} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
+variable {K : Type*} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
   (hirr : ∀ i j : ℤ, β ≠ i / j) (htriv : α ≠ 0 ∧ α ≠ 1)
   (habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ')
 
