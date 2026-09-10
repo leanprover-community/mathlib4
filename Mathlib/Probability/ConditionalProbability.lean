@@ -6,6 +6,7 @@ Authors: Rishikesh Vaishnav
 module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Conditional Probability
@@ -71,6 +72,7 @@ variable (μ) in
 /-- The conditional probability measure of measure `μ` on set `s` is `μ` restricted to `s`
 and scaled by the inverse of `μ s` (to make it a probability measure):
 `(μ s)⁻¹ • μ.restrict s`. -/
+@[wikidata Q327069]
 def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 
@@ -267,7 +269,7 @@ theorem cond_add_cond_compl_eq (hms : MeasurableSet s) (μ : Measure Ω) [IsFini
     μ[t | s] * μ s + μ[t | sᶜ] * μ sᶜ = μ t := by
   rw [cond_mul_eq_inter hms, cond_mul_eq_inter hms.compl, Set.inter_comm _ t,
     Set.inter_comm _ t]
-  exact measure_inter_add_diff t hms
+  exact measure_inter_add_sdiff t hms
 
 /-- **Bayes' Theorem** -/
 theorem cond_eq_inv_mul_cond_mul (hms : MeasurableSet s) (hmt : MeasurableSet t) (μ : Measure Ω)

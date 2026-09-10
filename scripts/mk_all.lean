@@ -52,7 +52,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- If the package is `mathlib`, then it removes the libraries `Cache` and `MathlibTest` and it
   -- adds `Mathlib/Tactic`.
   let libs := ← match args.flag? "lib" with
-              | some lib => return #[lib.as! String]
+              | some lib => pure #[lib.as! String]
               | none => getLeanLibs
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
@@ -77,7 +77,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
-    let fileContent := (if useModule then "module  -- shake: keep-all\n\n" else "") ++
+    let fileContent := (if useModule then "module  -- shake: keep-all --deprecated_module: ignore\n\n" else "") ++
       ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
       (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
       "\n"

@@ -80,6 +80,7 @@ variable (hI : IsInitial I)
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
+set_option backward.defeqAttrib.useBackward true in
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
     piComparison F (fun x ↦ op (X x)) = F.map (opCoproductIsoProduct' hc (productIsProduct _)).inv ≫
@@ -96,7 +97,7 @@ theorem piComparison_fac :
 
 variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 include hc in
 /--
 If `F` preserves a particular product, then it `IsSheafFor` the corresponding presieve of arrows.
@@ -118,7 +119,6 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
 variable [HasInitial C] [∀ i, Mono (c.inj i)]
   (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
 
-set_option backward.isDefEq.respectTransparency false in
 include hd hF hI in
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
@@ -128,7 +128,7 @@ theorem firstMap_eq_secondMap :
     Equalizer.Presieve.Arrows.firstMap F X c.inj =
     Equalizer.Presieve.Arrows.secondMap F X c.inj := by
   ext ⟨i, j⟩ a
-  simp only [Equalizer.Presieve.Arrows.firstMap, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
+  simp only [Equalizer.Presieve.Arrows.firstMap, limit.lift_π, Fan.mk_π_app,
     TypeCat.Fun.toFun_apply, comp_apply, Equalizer.Presieve.Arrows.secondMap]
   by_cases hi : i = j
   · rw [hi, Mono.right_cancellation _ _ pullback.condition]
@@ -139,7 +139,6 @@ theorem firstMap_eq_secondMap :
     ext ⟨i⟩
     exact i.elim
 
-set_option backward.isDefEq.respectTransparency false in
 include hc hd hF hI in
 /--
 If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it

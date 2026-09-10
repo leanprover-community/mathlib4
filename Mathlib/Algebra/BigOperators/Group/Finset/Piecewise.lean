@@ -16,7 +16,7 @@ This file proves lemmas on the sum and product of piecewise functions, including
 
 public section
 
-variable {ι κ M β γ : Type*} {s : Finset ι}
+variable {ι M γ : Type*} {s : Finset ι}
 
 namespace Finset
 
@@ -41,8 +41,9 @@ theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
     _ = (∏ x : {x ∈ s | p x}, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
           ∏ x : {x ∈ s | ¬p x}, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
       congr_arg₂ _ (prod_congr rfl fun x _hx ↦
-        congr_arg h (dif_pos <| by simpa using (mem_filter.mp x.2).2))
-        (prod_congr rfl fun x _hx => congr_arg h (dif_neg <| by simpa using (mem_filter.mp x.2).2))
+        congr_arg h (dite_eq_left <| by simpa using (mem_filter.mp x.2).2))
+        (prod_congr rfl fun x _hx =>
+          congr_arg h (dite_eq_right <| by simpa using (mem_filter.mp x.2).2))
 
 @[to_additive]
 theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → γ)
@@ -116,9 +117,9 @@ lemma prod_attach_eq_prod_dite [Fintype ι] (s : Finset ι) (f : s → M) [Decid
 theorem prod_dite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, a = x → M) :
     ∏ x ∈ s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
-  · rw [Finset.prod_eq_single a, dif_pos rfl]
+  · rw [Finset.prod_eq_single a, dite_eq_left rfl]
     · intro _ _ h
-      rw [dif_neg]
+      rw [dite_eq_right]
       exact h.symm
     · simp [h]
   · rw [Finset.prod_eq_one]
@@ -128,9 +129,9 @@ theorem prod_dite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, 
 theorem prod_dite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, x = a → M) :
     ∏ x ∈ s, (if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
-  · rw [Finset.prod_eq_single a, dif_pos rfl]
+  · rw [Finset.prod_eq_single a, dite_eq_left rfl]
     · intro _ _ h
-      rw [dif_neg]
+      rw [dite_eq_right]
       exact h
     · simp [h]
   · rw [Finset.prod_eq_one]
@@ -156,13 +157,13 @@ theorem prod_ite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
 @[to_additive]
 theorem prod_ite_eq_of_mem [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) (h : a ∈ s) :
     (∏ x ∈ s, if a = x then b x else 1) = b a := by
-  simp only [prod_ite_eq, if_pos h]
+  simp only [prod_ite_eq, ite_eq_left h]
 
 /-- The difference with `Finset.prod_ite_eq_of_mem` is that the arguments to `Eq` are swapped. -/
 @[to_additive]
 theorem prod_ite_eq_of_mem' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) (h : a ∈ s) :
     (∏ x ∈ s, if x = a then b x else 1) = b a := by
-  simp only [prod_ite_eq', if_pos h]
+  simp only [prod_ite_eq', ite_eq_left h]
 
 @[to_additive (attr := simp)]
 theorem prod_pi_mulSingle' [DecidableEq ι] (a : ι) (x : M) (s : Finset ι) :
@@ -182,43 +183,54 @@ theorem prod_piecewise [DecidableEq ι] (s t : Finset ι) (f g : ι → M) :
   rw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
 
 @[to_additive]
-theorem prod_inter_mul_prod_diff [DecidableEq ι] (s t : Finset ι) (f : ι → M) :
+theorem prod_inter_mul_prod_sdiff [DecidableEq ι] (s t : Finset ι) (f : ι → M) :
     (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, f x = ∏ x ∈ s, f x := by
   convert! (s.prod_piecewise t f f).symm
   simp +unfoldPartialApp [Finset.piecewise]
 
+@[deprecated (since := "2026-06-03")] alias prod_inter_mul_prod_diff := prod_inter_mul_prod_sdiff
+
 @[to_additive]
-theorem prod_eq_mul_prod_diff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
+theorem prod_eq_mul_prod_sdiff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
     (h : i ∉ s → f i = 1) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x := by
   by_cases hs : i ∈ s
-  · convert! (s.prod_inter_mul_prod_diff { i } f).symm
+  · convert! (s.prod_inter_mul_prod_sdiff { i } f).symm
     simp [hs]
   · simp_all only [not_false_eq_true, forall_const, one_mul]
     apply Finset.prod_congr <;> aesop
 
-@[to_additive]
-theorem prod_eq_mul_prod_diff_singleton_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
-    (f : ι → M) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x :=
-  prod_eq_mul_prod_diff_singleton _ _ (by simp_all)
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_mul_prod_diff_singleton := prod_eq_mul_prod_sdiff_singleton
 
 @[to_additive]
-theorem prod_eq_prod_diff_singleton_mul [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
+theorem prod_eq_mul_prod_sdiff_singleton_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
+    (f : ι → M) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x :=
+  prod_eq_mul_prod_sdiff_singleton _ _ (by simp_all)
+
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_mul_prod_diff_singleton_of_mem := prod_eq_mul_prod_sdiff_singleton_of_mem
+
+@[to_additive]
+theorem prod_eq_prod_sdiff_singleton_mul [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
     (f : ι → M) : ∏ x ∈ s, f x = (∏ x ∈ s \ {i}, f x) * f i := by
-  rw [prod_eq_mul_prod_diff_singleton_of_mem h, mul_comm]
+  rw [prod_eq_mul_prod_sdiff_singleton_of_mem h, mul_comm]
+
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_prod_diff_singleton_mul := prod_eq_prod_sdiff_singleton_mul
 
 @[to_additive]
 theorem _root_.Fintype.prod_eq_mul_prod_compl [DecidableEq ι] [Fintype ι] (a : ι) (f : ι → M) :
     ∏ i, f i = f a * ∏ i ∈ {a}ᶜ, f i :=
-  prod_eq_mul_prod_diff_singleton_of_mem (mem_univ a) f
+  prod_eq_mul_prod_sdiff_singleton_of_mem (mem_univ a) f
 
 @[to_additive]
 theorem _root_.Fintype.prod_eq_prod_compl_mul [DecidableEq ι] [Fintype ι] (a : ι) (f : ι → M) :
     ∏ i, f i = (∏ i ∈ {a}ᶜ, f i) * f a :=
-  prod_eq_prod_diff_singleton_mul (mem_univ a) f
+  prod_eq_prod_sdiff_singleton_mul (mem_univ a) f
 
 theorem dvd_prod_of_mem (f : ι → M) {a : ι} {s : Finset ι} (ha : a ∈ s) : f a ∣ ∏ i ∈ s, f i := by
   classical
-    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem ha]
+    rw [Finset.prod_eq_mul_prod_sdiff_singleton_of_mem ha]
     exact dvd_mul_right _ _
 
 @[to_additive]
@@ -244,11 +256,11 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
     ∏ i ∈ s, ite (p i) a 1 = ite (∃ i ∈ s, p i) a 1 := by
   split_ifs with h
   · obtain ⟨i, hi, hpi⟩ := h
-    rw [prod_eq_single_of_mem _ hi, if_pos hpi]
-    exact fun j hj hji ↦ if_neg fun hpj ↦ hji <| h _ hj _ hi hpj hpi
+    rw [prod_eq_single_of_mem _ hi, ite_eq_left hpi]
+    exact fun j hj hji ↦ ite_eq_right fun hpj ↦ hji <| h _ hj _ hi hpj hpi
   · push Not at h
     rw [prod_eq_one]
-    exact fun i hi => if_neg (h i hi)
+    exact fun i hi => ite_eq_right (h i hi)
 
 @[to_additive sum_boole_nsmul]
 theorem prod_pow_boole [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) :
@@ -258,7 +270,7 @@ theorem prod_pow_boole [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) 
 lemma prod_eq_prod_iff_single [IsRightCancelMul M] {f g : ι → M} {i : ι} (hi : i ∈ s)
     (hfg : ∀ j ∈ s, j ≠ i → f j = g j) : ∏ j ∈ s, f j = ∏ j ∈ s, g j ↔ f i = g i := by
   classical
-  rw [prod_eq_mul_prod_diff_singleton_of_mem hi, prod_eq_mul_prod_diff_singleton_of_mem hi,
+  rw [prod_eq_mul_prod_sdiff_singleton_of_mem hi, prod_eq_mul_prod_sdiff_singleton_of_mem hi,
     prod_congr rfl (by simpa), mul_left_inj]
 
 end CommMonoid
@@ -289,23 +301,23 @@ lemma prod_ite_mem (s : Finset ι) (f : ι → M) : ∏ i, (if i ∈ s then f i 
 @[to_additive /-- See also `Finset.sum_dite_eq`. -/]
 lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → M) :
     ∏ j, (if h : i = j then f j h else 1) = f i rfl := by
-  rw [Finset.prod_dite_eq, if_pos (mem_univ _)]
+  rw [Finset.prod_dite_eq, ite_eq_left (mem_univ _)]
 
 /-- See also `Finset.prod_dite_eq'`. -/
 @[to_additive /-- See also `Finset.sum_dite_eq'`. -/]
 lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
     ∏ j, (if h : j = i then f j h else 1) = f i rfl := by
-  rw [Finset.prod_dite_eq', if_pos (mem_univ _)]
+  rw [Finset.prod_dite_eq', ite_eq_left (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq`. -/
 @[to_additive /-- See also `Finset.sum_ite_eq`. -/]
 lemma prod_ite_eq (i : ι) (f : ι → M) : ∏ j, (if i = j then f j else 1) = f i := by
-  rw [Finset.prod_ite_eq, if_pos (mem_univ _)]
+  rw [Finset.prod_ite_eq, ite_eq_left (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq'`. -/
 @[to_additive /-- See also `Finset.sum_ite_eq'`. -/]
 lemma prod_ite_eq' (i : ι) (f : ι → M) : ∏ j, (if j = i then f j else 1) = f i := by
-  rw [Finset.prod_ite_eq', if_pos (mem_univ _)]
+  rw [Finset.prod_ite_eq', ite_eq_left (mem_univ _)]
 
 /-- See also `Finset.prod_pi_mulSingle`. -/
 @[to_additive /-- See also `Finset.sum_pi_single`. -/]

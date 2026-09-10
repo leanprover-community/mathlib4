@@ -69,21 +69,21 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
   have h1 : (L.comp (.rotation θ)).comp (.inl ℝ E E)
       = Real.cos θ • L.comp (.inl ℝ E E) - Real.sin θ • L.comp (.inr ℝ E E) := by
     ext x
-    simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inl_apply,
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inl_apply,
       ContinuousLinearMap.rotation_apply, smul_zero, add_zero]
     rw [← L.comp_inl_add_comp_inr]
     simp [-neg_smul, sub_eq_add_neg]
   have h2 : (L.comp (.rotation θ)).comp (.inr ℝ E E)
       = Real.sin θ • L.comp (.inl ℝ E E) + Real.cos θ • L.comp (.inr ℝ E E) := by
     ext x
-    simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inr_apply,
-      ContinuousLinearMap.rotation_apply, smul_zero, zero_add, ContinuousLinearMap.add_apply,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inr_apply,
+      ContinuousLinearMap.rotation_apply, smul_zero, zero_add, add_apply, smul_apply,
+      ContinuousLinearMap.inl_apply, smul_eq_mul]
     rw [← L.comp_inl_add_comp_inr]
     simp
   rw [h1, h2]
-  simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.coe_add']
+  simp only [FunLike.coe_sub, FunLike.coe_smul,
+    FunLike.coe_add]
   rw [variance_sub, variance_smul, variance_add, variance_smul, variance_smul, covariance_smul_left,
     covariance_smul_right, variance_smul, covariance_smul_left, covariance_smul_right]
   · have h := Real.cos_sq_add_sin_sq θ
@@ -220,22 +220,25 @@ lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0
   rw [charFunDual_dirac, charFunDual_eq L, h L, integral_complex_ofReal, integral_dual L]
   simp
 
-/-- If a Gaussian measure is not a Dirac, then it has no atoms. -/
-lemma noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
+/-- If a Gaussian measure is not a Dirac, then it has value zero on singletons. -/
+lemma nullSingletonClass (h : ∀ x, μ ≠ Measure.dirac x) : NullSingletonClass μ where
   measure_singleton x := by
     obtain ⟨L, hL⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] ≠ 0 := by
       contrapose! h
       exact ⟨_, eq_dirac_of_variance_eq_zero h⟩
     have hL_zero : μ.map L {L x} = 0 := by
-      have : NoAtoms (μ.map L) := by
+      have : NullSingletonClass (μ.map L) := by
         rw [map_eq_gaussianReal L]
-        refine noAtoms_gaussianReal ?_
+        refine nullSingletonClass_gaussianReal ?_
         simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
         exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
       rw [measure_singleton]
     rw [Measure.map_apply (by fun_prop) (measurableSet_singleton _)] at hL_zero
     refine measure_mono_null ?_ hL_zero
     exact fun ⦃a⦄ ↦ congrArg ⇑L
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms := nullSingletonClass
 
 /-- Characteristic function of a centered Gaussian measure. -/
 lemma charFunDual_eq_of_integral_eq_zero (hμ : μ[id] = 0) (L : StrongDual ℝ E) :

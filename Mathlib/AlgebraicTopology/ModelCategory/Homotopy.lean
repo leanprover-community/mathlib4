@@ -41,7 +41,6 @@ namespace LeftHomotopyRel
 
 variable {f g : X ⟶ Y} [IsCofibrant X]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When two morphisms `X ⟶ Y` with `X` cofibrant are related by a left homotopy,
 this is a choice of a right homotopy relative to any good path object for `Y`. -/
 noncomputable def rightHomotopy (h : LeftHomotopyRel f g) (Q : PathObject Y) [Q.IsGood] :
@@ -172,7 +171,6 @@ namespace RightHomotopyClass
 
 variable (Z)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma precomp_bijective_of_cofibration_of_weakEquivalence
     [IsFibrant Z] (f : X ⟶ Y) [Cofibration f] [WeakEquivalence f] :
     Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by
@@ -243,11 +241,9 @@ when `X` is cofibrant and `Y` is fibrant. -/
 def leftHomotopyClassEquivRightHomotopyClass :
     LeftHomotopyClass X Y ≃ RightHomotopyClass X Y where
   toFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
-    dsimp
     rw [RightHomotopyClass.mk_eq_mk_iff]
     exact h.rightHomotopyRel)
   invFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
-    dsimp
     rw [LeftHomotopyClass.mk_eq_mk_iff]
     exact h.leftHomotopyRel)
   left_inv := by rintro ⟨f⟩; rfl

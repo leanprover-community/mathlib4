@@ -26,7 +26,7 @@ assert_not_exists Fintype
 
 open Function
 
-variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G H : Type*}
+variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G : Type*}
 
 variable [EquivLike F α β]
 
@@ -93,7 +93,7 @@ variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃
 
 /-- The equivalence `(M₁ →* N) ≃ (M₂ →* N)` obtained by postcomposition with
 a multiplicative equivalence `e : M₁ ≃* M₂`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps apply)
 /-- The equivalence `(M₁ →+ N) ≃ (M₂ →+ N)` obtained by postcomposition with
 an additive equivalence `e : M₁ ≃+ M₂`. -/]
 def monoidHomCongrLeftEquiv (e : M₁ ≃* M₂) : (M₁ →* N) ≃ (M₂ →* N) where
@@ -104,7 +104,7 @@ def monoidHomCongrLeftEquiv (e : M₁ ≃* M₂) : (M₁ →* N) ≃ (M₂ →* 
 
 /-- The equivalence `(M →* N₁) ≃ (M →* N₂)` obtained by postcomposition with
 a multiplicative equivalence `e : N₁ ≃* N₂`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps apply)
 /-- The equivalence `(M →+ N₁) ≃ (M →+ N₂)` obtained by postcomposition with
 an additive equivalence `e : N₁ ≃+ N₂`. -/]
 def monoidHomCongrRightEquiv (e : N₁ ≃* N₂) : (M →* N₁) ≃ (M →* N₂) where

@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
@@ -31,13 +32,13 @@ namespace Algebra
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b : R} {n : ℕ}
+variable {R : Type u} {S : Type v} {A : Type z} {B : Type*} {a b : R} {n : ℕ}
 
 section aeval
 
 open Algebra
 
-variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
+variable [CommSemiring R] [Semiring A] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
@@ -57,6 +58,10 @@ theorem adjoin_singleton_eq_range_aeval (x : A) :
 theorem _root_.Polynomial.aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
   simp [adjoin_singleton_eq_range_aeval]
 
+instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : Polynomial A) :
+    CoeDep B (p.aeval x) (Algebra.adjoin A {x}) where
+  coe := ⟨p.aeval x, aeval_mem_adjoin_singleton A x⟩
+
 theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ R[x]) :
     ∃ p : R[X], aeval x p = a := by
   rw [Algebra.adjoin_singleton_eq_range_aeval] at h
@@ -69,14 +74,26 @@ theorem adjoin_eq_exists_aeval (a : R[x]) :
   rw [Algebra.adjoin_singleton_eq_range_aeval] at this
   simp_all
 
+lemma exists_mvPolynomial_aeval_eq_of_mem_adjoin {R A σ : Type*}
+    [CommSemiring R] [CommSemiring A] [Algebra R A]
+    {S : Set A} {a : A} {f : σ → A} (hS : S ⊆ Set.range f)
+    (ha : a ∈ adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a := by
+  have ha : a ∈ adjoin R (Set.range f) := adjoin_mono hS ha
+  rw [Algebra.adjoin_range_eq_range_aeval] at ha
+  simp_all
+
+lemma exists_mvPolynomial_eq_of_adjoin {R A σ : Type*}
+    [CommSemiring R] [CommSemiring A] [Algebra R A]
+    {S : Set A} {f : σ → A} (hS : S ⊆ Set.range f)
+    (a : adjoin R S) : ∃ p : MvPolynomial σ R, p.aeval f = a :=
+  exists_mvPolynomial_aeval_eq_of_mem_adjoin hS a.2
+
 /--
 Proving a fact about `a : adjoin R {x}` is the same as proving it for
 `aeval x p` where `p`is an arbitrary polynomial. -/
 @[elab_as_elim]
 theorem adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
-    (a : adjoin R {x}) (f : ∀ (p : Polynomial R),
-    M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
-    M a := by
+    (a : adjoin R {x}) (f : ∀ (p : Polynomial R), M (aeval x p : adjoin R {x})) : M a := by
   obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
   grind
 

@@ -19,6 +19,8 @@ For the fact that monads are "just" monoids in the category of endofunctors, see
 `CategoryTheory.Monad.EquivMon`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -133,7 +135,6 @@ lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.a
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext h
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Category (Monad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
@@ -141,7 +142,7 @@ instance : Category (Monad C) where
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance : Category (Comonad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
@@ -173,7 +174,6 @@ theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T�
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward
 direction is a monad morphism. -/
 @[simps]
@@ -194,7 +194,6 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
           NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc]
         simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a comonad isomorphism from a natural isomorphism of functors where the forward
 direction is a comonad morphism. -/
 @[simps]
@@ -285,6 +284,7 @@ end Monad
 
 namespace Comonad
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The identity comonad. -/
 @[simps!]
 def id : Comonad C where
@@ -297,13 +297,13 @@ instance : Inhabited (Comonad C) :=
 
 end Comonad
 
-open Iso Functor
+open Iso CategoryTheory.Functor
 
 variable {C}
 
 namespace Monad
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Transport a monad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
   toFunctor := F
@@ -312,7 +312,7 @@ def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C wh
   left_unit X := by
     simp only [Functor.id_obj, NatTrans.comp_app, comp_obj, NatTrans.hcomp_app, Category.assoc,
       hom_inv_id_app_assoc]
-    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
+    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X)]
     simp
   right_unit X := by
     simp only [NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
@@ -336,7 +336,6 @@ end Monad
 
 namespace Comonad
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a comonad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
   toFunctor := F
@@ -363,12 +362,10 @@ end Comonad
 
 namespace Monad
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_unit_app (T : Monad C) (X : C) [IsIso T.μ] :
     T.map (T.η.app X) = T.η.app (T.obj X) := by
   simp [← cancel_mono (T.μ.app _)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
     IsSplitMono (T.η.app X) ↔ IsIso (T.η.app X) := by
   refine ⟨fun _ ↦ ⟨retraction (T.η.app X), by simp, ?_⟩, fun _ ↦ inferInstance⟩
@@ -379,12 +376,10 @@ end Monad
 
 namespace Comonad
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_counit_app (T : Comonad C) (X : C) [IsIso T.δ] :
     T.map (T.ε.app X) = T.ε.app (T.obj X) := by
   simp [← cancel_epi (T.δ.app _)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_iff_isIso_counit (T : Comonad C) (X : C) [IsIso T.δ] :
     IsSplitEpi (T.ε.app X) ↔ IsIso (T.ε.app X) := by
   refine ⟨fun _ ↦ ⟨section_ (T.ε.app X), ?_, by simp⟩, fun _ ↦ inferInstance⟩

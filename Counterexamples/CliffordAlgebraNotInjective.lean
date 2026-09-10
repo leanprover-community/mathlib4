@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Pi
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.RingTheory.MvPolynomial.Ideal
-import Mathlib.Tactic.Ring.NamePolyVars
+module
+
+public import Mathlib.Algebra.CharP.Pi
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.RingTheory.MvPolynomial.Ideal
+public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-! # `algebraMap R (CliffordAlgebra Q)` is not always injective.
 
@@ -30,10 +32,9 @@ As a bonus result, we also show `BilinMap.not_forall_toQuadraticMap_surjective`:
 are quadratic forms that cannot be expressed via even non-symmetric bilinear forms.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
-open LinearMap (BilinForm)
-open LinearMap (BilinMap)
+open LinearMap (BilinForm BilinMap)
 
 name_poly_vars X, Y, Z over ZMod 2
 
@@ -50,8 +51,8 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
     x ∈ kIdeal ↔ ∀ m : Fin 3 →₀ ℕ, m ∈ x.support → ∃ i, 2 ≤ m i := by
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
-    simp_rw [kIdeal, MvPolynomial.X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
-      Function.comp_def]
+    simp_rw [kIdeal, MvPolynomial.X, monomial_mul_monomial, one_mul, ← Finsupp.single_add,
+      ← Set.range_comp, Function.comp_def]
   rw [this, mem_ideal_span_monomial_image]
   simp
 
@@ -79,7 +80,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     norm_num at hi
   rw [as_sum x, CharTwo.sum_mul_self]
   refine sum_mem fun m hm => ?_
-  rw [mem_kIdeal_iff, monomial_mul]
+  rw [mem_kIdeal_iff, monomial_mul_monomial]
   intro m' hm'
   obtain rfl := Finset.mem_singleton.1 (support_monomial_subset hm')
   rw [mem_ideal_span_X_image] at this
@@ -154,7 +155,7 @@ theorem sq_map_add_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a 
 
 theorem sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a - b) = sq i a - sq i b := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, sq_map_add_char_two]
 
 /-- The quadratic form (metric) is just Euclidean -/
@@ -162,10 +163,10 @@ def Q' : QuadraticForm K (Fin 3 → K) :=
   ∑ i, sq i
 
 theorem Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
-  simp only [Q', QuadraticMap.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
+  simp only [Q', sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
 
 theorem Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
-  simp only [Q', QuadraticMap.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
+  simp only [Q', sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
 
 theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
   calc
@@ -176,7 +177,7 @@ theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
       simp [Q', sq]
-    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
+    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, ite_eq_left]
 
 theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv
@@ -234,7 +235,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
   simp_rw [← map_smul, ← map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
     ← Submodule.Quotient.mk_sub]
-  convert! LinearMap.map_zero _ using 2
+  convert LinearMap.map_zero _
   rw [Submodule.Quotient.mk_eq_zero]
   simp +decide [sub_zero]
 
@@ -242,7 +243,6 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
   suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by
     have := congr_arg (fun x => (β * γ) • x) this
-    dsimp only at this
     simp_rw [smul_sub, smul_smul] at this
     rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq,
       zero_mul, mul_zero, zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this

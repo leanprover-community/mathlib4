@@ -60,7 +60,7 @@ variable {C}
 /-- A triangle `(X,Y,Z,f,g,h)` in `C` is defined by the morphisms `f : X ⟶ Y`, `g : Y ⟶ Z`
 and `h : Z ⟶ X⟦1⟧`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧) : Triangle C where
   obj₁ := X
   obj₂ := Y
@@ -153,20 +153,17 @@ lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
   TriangleMorphism.ext h₁ h₂ h₃
 
-@[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
-@[simp]
 lemma id_hom₂ (A : Triangle C) : TriangleMorphism.hom₂ (𝟙 A) = 𝟙 _ := rfl
-@[simp]
 lemma id_hom₃ (A : Triangle C) : TriangleMorphism.hom₃ (𝟙 A) = 𝟙 _ := rfl
 
-@[simp, reassoc]
+@[reassoc]
 lemma comp_hom₁ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₁ = f.hom₁ ≫ g.hom₁ := rfl
-@[simp, reassoc]
+@[reassoc]
 lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₂ = f.hom₂ ≫ g.hom₂ := rfl
-@[simp, reassoc]
+@[reassoc]
 lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
 
@@ -292,10 +289,8 @@ instance : AddCommGroup (T₁ ⟶ T₂) where
   add_comm f g := by ext <;> apply add_comm
   neg_add_cancel f := by ext <;> apply neg_add_cancel
   sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
-  nsmul n f := n • f
   nsmul_zero f := by cat_disch
   nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
-  zsmul n f := n • f
   zsmul_zero' := by cat_disch
   zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
   zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
@@ -337,7 +332,7 @@ def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct
     Triangle C :=
   Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism of triangles
 `binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
 @[simps!]
@@ -360,6 +355,7 @@ def productTriangle : Triangle C :=
     (Limits.Pi.map (fun j => (T j).mor₂))
     (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A projection from the product of a family of triangles. -/
 @[simps]
 def productTriangle.π (j : J) :
@@ -372,7 +368,7 @@ def productTriangle.π (j : J) :
 @[simp]
 def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
@@ -395,7 +391,7 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
     all_goals
       exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
@@ -410,6 +406,7 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
 @[simps]
@@ -440,16 +437,19 @@ def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The first morphism of a triangle, as a natural transformation `π₁ ⟶ π₂`. -/
 @[simps]
 def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
   app T := T.mor₁
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The second morphism of a triangle, as a natural transformation `π₂ ⟶ π₃`. -/
 @[simps]
 def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
   app T := T.mor₂
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The third morphism of a triangle, as a natural
 transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ (1 : ℤ)`. -/
 @[simps]
@@ -468,11 +468,10 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable {J : Type*} [Category* J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}

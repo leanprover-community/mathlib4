@@ -261,13 +261,13 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_div (hA : A.Nonempty) (B : Finse
 @[to_additive /-- Special case of the **Plünnecke-Ruzsa inequality**. Addition version. -/]
 theorem pluennecke_ruzsa_inequality_pow_mul (hA : A.Nonempty) (B : Finset G) (n : ℕ) :
     #(B ^ n) ≤ (#(A * B) / #A : ℚ≥0) ^ n * #A := by
-  simpa only [_root_.pow_zero, div_one] using pluennecke_ruzsa_inequality_pow_div_pow_mul hA _ _ 0
+  simpa only [_root_.pow_zero, div_one] using! pluennecke_ruzsa_inequality_pow_div_pow_mul hA _ _ 0
 
 /-- Special case of the **Plünnecke-Ruzsa inequality**. Division version. -/
 @[to_additive /-- Special case of the **Plünnecke-Ruzsa inequality**. Subtraction version. -/]
 theorem pluennecke_ruzsa_inequality_pow_div (hA : A.Nonempty) (B : Finset G) (n : ℕ) :
     #(B ^ n) ≤ (#(A / B) / #A : ℚ≥0) ^ n * #A := by
-  simpa only [_root_.pow_zero, div_one] using pluennecke_ruzsa_inequality_pow_div_pow_div hA _ _ 0
+  simpa only [_root_.pow_zero, div_one] using! pluennecke_ruzsa_inequality_pow_div_pow_div hA _ _ 0
 
 end CommGroup
 end Finset

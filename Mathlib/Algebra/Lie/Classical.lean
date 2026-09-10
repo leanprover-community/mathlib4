@@ -74,7 +74,7 @@ namespace LieAlgebra
 open Matrix
 
 variable (n p q l : Type*) (R : Type u₂)
-variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
+variable [DecidableEq p] [DecidableEq q] [DecidableEq l]
 variable [CommRing R]
 
 @[simp]
@@ -84,6 +84,9 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
       (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
+
+variable [DecidableEq n]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 namespace SpecialLinear
 
@@ -200,7 +203,7 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
     simp [Pso, h, hi, one_apply]
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
   invertibleOfRightInverse _ _ (pso_inv p q R hi)
 
@@ -362,8 +365,8 @@ theorem indefiniteDiagonal_assoc :
   ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
-      Sum.elim_inl, if_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
-      Equiv.sumAssoc_apply_inl_inr, if_false, Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₁,
+      Sum.elim_inl, ite_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
+      Equiv.sumAssoc_apply_inl_inr, ite_false, Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₁,
       Matrix.fromBlocks_apply₂₂, Equiv.sumAssoc_apply_inr, Sum.elim_inr, Sum.inl_injective.eq_iff,
       Sum.inr_injective.eq_iff, reduceCtorEq] <;>
     congr 1

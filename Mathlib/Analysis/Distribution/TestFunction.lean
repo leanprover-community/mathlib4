@@ -53,7 +53,7 @@ distributions, test function
 
 @[expose] public section
 
-open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
+open Function Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
@@ -79,7 +79,7 @@ scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω 
 with compact support. -/
 scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
-open Distributions
+open scoped Distributions
 
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
@@ -117,7 +117,7 @@ namespace TestFunction
 
 instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
@@ -126,6 +126,8 @@ protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contD
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
+protected theorem zero_on_compl (f : 𝓓^{n}(Ω, F)) : EqOn f 0 Ωᶜ := fun _ hx ↦
+  image_eq_zero_of_notMem_tsupport fun h ↦ hx (f.tsupport_subset h)
 
 @[fun_prop]
 protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
@@ -171,55 +173,68 @@ theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : 
 
 section AddCommGroup
 
-@[simps -fullyApplied]
 instance : Zero 𝓓^{n}(Ω, F) where
   zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
 
-@[simps -fullyApplied]
+instance : IsZeroApply 𝓓^{n}(Ω, F) E F where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
+
 instance : Add 𝓓^{n}(Ω, F) where
   add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
     tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsAddApply 𝓓^{n}(Ω, F) E F where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
+
 instance : Neg 𝓓^{n}(Ω, F) where
   neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsNegApply 𝓓^{n}(Ω, F) E F where
+  neg_apply _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
+
 instance : Sub 𝓓^{n}(Ω, F) where
   sub f g := ⟨f - g, f.contDiff.sub g.contDiff, f.hasCompactSupport.sub g.hasCompactSupport,
     tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsSubApply 𝓓^{n}(Ω, F) E F where
+  sub_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
+
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     SMul R 𝓓^{n}(Ω, F) where
   smul c f := ⟨c • f, f.contDiff.const_smul c, f.hasCompactSupport.smul_left,
     tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
 
-instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    IsSMulApply R 𝓓^{n}(Ω, F) E F where
+  smul_apply _ _ _ := rfl
 
-variable (Ω F n) in
-/-- Coercion as an additive homomorphism. -/
-@[simps -fullyApplied]
-def coeFnAddMonoidHom : 𝓓^{n}(Ω, F) →+ E → F where
-  toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+@[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
+
+instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance% FunLike.addCommGroup
+
+@[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
+
+@[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
 
 end AddCommGroup
 
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}(Ω, F) := fast_instance%
-  DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
+    Module R 𝓓^{n}(Ω, F) := fast_instance% FunLike.module
 
 instance {R S} [Semiring R] [Semiring S] [Module R F] [Module S F] [SMulCommClass ℝ R F]
     [SMulCommClass ℝ S F] [ContinuousConstSMul R F] [ContinuousConstSMul S F] [SMul R S]
     [IsScalarTower R S F] :
-    IsScalarTower R S 𝓓^{n}(Ω, F) where
-  smul_assoc _ _ _ := by ext; simp
+    IsScalarTower R S 𝓓^{n}(Ω, F) := FunLike.isScalarTower
 
 end Module
 
@@ -244,7 +259,7 @@ limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
 Note that this has no reason to be a locally convex (or even vector space) topology. For this
 reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
 topology which is coarser than this original topology. See `TestFunction.topologicalSpace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
@@ -265,7 +280,7 @@ noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
     @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
 
 noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
-  topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
+  isTopologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
 noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
   IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
@@ -310,14 +325,10 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
-
 @[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
-
-@[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
@@ -330,7 +341,7 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [← f.coe_restrictScalars ℝ]
   rw [continuous_iff_le_induced]
   have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
-    topologicalAddGroup_induced _
+    isTopologicalAddGroup_induced _
   have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
   have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
@@ -401,6 +412,7 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
@@ -567,7 +579,7 @@ lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
     (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
   rw [lineDerivCLM_eq_fderivCLM, fderivCLM_apply]
   split_ifs with hk
-  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
     rw [(f.contDiff.differentiable hk'.ne').differentiableAt.lineDeriv_eq_fderiv]
   · rfl
 
@@ -663,6 +675,11 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
   replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
   exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+protected theorem integrable_smul {f : E → F} {μ : Measure E}
+    (φ : 𝓓^{n}(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
+    Integrable (fun x ↦ φ x • f x) μ :=
+  φ.integrable_bilin (ContinuousLinearMap.lsmul ℝ ℝ) hf
 
 /-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
 `LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both

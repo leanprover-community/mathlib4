@@ -6,6 +6,8 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Universal property of the tensor product
@@ -24,21 +26,18 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R R₂ R₃ R' R'' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
+variable {R R₂ R₃ R' : Type*}
+variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R']
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {A M N P Q S : Type*}
-variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
+variable {P₂ P₃ : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P'] [AddCommMonoid Q']
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
-variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
+variable [AddCommMonoid P₂]
+variable [AddCommMonoid P₃]
 variable [DistribMulAction R' M]
-variable [Module R'' M]
 variable [Module R M] [Module R N] [Module R S]
-variable [Module R P'] [Module R Q']
-variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
-variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
+variable [Module R₂ P₂]
+variable [Module R₃ P₃]
 
 variable (M N)
 
@@ -59,7 +58,7 @@ def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
     M ⊗[R] N →+ P :=
   (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
-    AddCon.addConGen_le fun x y hxy =>
+    AddCon.addConGen_le.2 fun x y hxy =>
       match x, y, hxy with
       | _, _, .of_zero_left n =>
         (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
@@ -92,6 +91,7 @@ variable {M N}
 variable (f : M →ₗ[R] N →ₗ[R] P)
 variable (f' : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
@@ -106,7 +106,7 @@ variable {f f'}
 
 @[simp]
 theorem liftAux.smulₛₗ (r : R) (x) : liftAux f' (r • x) = σ₁₂ r • liftAux f' x :=
-  TensorProduct.induction_on x (smul_zero _).symm
+  TensorProduct.inductionOn x
     (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f' p).map_smulₛₗ])
     fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f').map_add, ih1, ih2, smul_add]
 
@@ -132,7 +132,7 @@ theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
 
 theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   LinearMap.ext fun z =>
-    TensorProduct.induction_on z (by simp_rw [map_zero]) H fun x y ihx ihy => by
+    TensorProduct.inductionOn z H fun x y ihx ihy => by
       rw [g.map_add, h.map_add, ihx, ihy]
 
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
@@ -262,7 +262,7 @@ variable (R M N)
 
 /-- The tensor product of modules is commutative, up to linear equivalence. -/
 protected def comm : M ⊗[R] N ≃ₗ[R] N ⊗[R] M :=
-  LinearEquiv.ofLinear (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
+  LinearEquiv.ofLinearMap (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
     (ext' fun _ _ => rfl)
 
 @[simp]
@@ -307,6 +307,7 @@ variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If M and N are both R- and A-modules and their actions on them commute,
 and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
 canonical S-linear map from `M ⊗[A] N` to `M ⊗[R] N`,
@@ -321,23 +322,19 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
       map_smul' := fun _ _ ↦ rfl }
   map_smul' s x := by
     induction x with
-    | zero => simp
     | add x y _ _ => simp_all
     | tmul x y => simp [smul_tmul']
 
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
-/- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
-`TensorProduct.ker_mapOfCompatibleSMul`. -/
+/-- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
+`TensorProduct.AlgebraTensorModule.ker_mapOfCompatibleSMul`. -/
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
-  fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
+  fun x ↦ x.inductionOn (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
 attribute [local instance] SMulCommClass.symm
-
-@[deprecated "with (S := R)" (since := "2026-02-21")]
-alias mapOfCompatibleSMul' := mapOfCompatibleSMul
 
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
 then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N` as `S`-modules,
@@ -345,9 +342,9 @@ where `S` is any other ring acting on `M` and whose action commutes with the `A`
 def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[S] M ⊗[R] N where
   __ := mapOfCompatibleSMul R A S M N
   invFun := mapOfCompatibleSMul A R S M N
-  left_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
+  left_inv x := x.inductionOn (fun _ _ ↦ rfl)
     fun _ _ h h' ↦ by simpa using congr($h + $h')
-  right_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
+  right_inv x := x.inductionOn (fun _ _ ↦ rfl)
     fun _ _ h h' ↦ by simpa using congr($h + $h')
 
 end CompatibleSMul
@@ -359,9 +356,9 @@ end Semiring
 section Ring
 
 variable {R : Type*} [CommSemiring R]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
-variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
-variable [Module R M] [Module R N] [Module R P] [Module R Q]
+variable {M : Type*} {N : Type*} {P : Type*} {S : Type*}
+variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P]
+variable [Module R M] [Module R N] [Module R P]
 
 namespace TensorProduct
 
@@ -378,8 +375,7 @@ instance neg : Neg (M ⊗[R] N) where
   neg := Neg.aux R
 
 protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
-  x.induction_on
-    (by rw [add_zero]; apply (Neg.aux R).map_zero)
+  x.inductionOn
     (fun x y => by convert! (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
     fun x y hx hy => by
     suffices -x + x + (-y + y) = 0 by
@@ -392,7 +388,6 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
 
 instance addCommGroup : AddCommGroup (M ⊗[R] N) where
   neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
-  zsmul := (· • ·)
   zsmul_zero' := by simp
   zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
   zsmul_neg' := fun n x => by

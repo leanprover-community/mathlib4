@@ -165,6 +165,7 @@ def Functor.closedSieves : Subfunctor (Functor.sieves C) where
   obj X := {S : Sieve X.unop | J₁.IsClosed S}
   map f _ := J₁.isClosed_pullback f.unop _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
 The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
@@ -215,6 +216,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
     rw [← J₁.pullback_close, this _ hf]
     apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A sieve `S` is covering for `J` if and only if the subobject classifier
 is a sheaf for `S`. -/
@@ -230,7 +232,7 @@ lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
     rw [Subtype.ext_iff] at this
     exact this
   refine H.isSeparatedFor.ext fun Y f hf ↦ ?_
-  simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_setOf]
+  simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_ofPred]
   ext1
   dsimp
   rw [Sieve.pullback_top, ← J.pullback_close, S.pullback_eq_top_of_mem hf,
@@ -274,11 +276,11 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
   sieves X := { S | c X S = ⊤ }
   top_mem' X := top_unique ((c X).le_closure _)
   pullback_stable' X Y S f hS := by
-    rw [Set.mem_setOf_eq] at hS
-    rw [Set.mem_setOf_eq, hc, hS, Sieve.pullback_top]
+    rw [Set.mem_ofPred_eq] at hS
+    rw [Set.mem_ofPred_eq, hc, hS, Sieve.pullback_top]
   transitive' X S hS R hR := by
-    rw [Set.mem_setOf_eq] at hS
-    rw [Set.mem_setOf_eq, ← (c X).idempotent, eq_top_iff, ← hS]
+    rw [Set.mem_ofPred_eq] at hS
+    rw [Set.mem_ofPred_eq, ← (c X).idempotent, eq_top_iff, ← hS]
     apply (c X).monotone fun Y f hf => _
     intro Y f hf
     rw [Sieve.mem_iff_pullback_eq_top, ← hc]

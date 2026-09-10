@@ -51,8 +51,8 @@ instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
       (WidePushoutShape.Hom.init i)) := by
   rw [mono_iff_injective]
   cases i
-  · simpa using f.left.isOpenEmbedding.injective
-  · simpa using g.left.isOpenEmbedding.injective
+  · simpa using! f.left.isOpenEmbedding.injective
+  · simpa using! g.left.isOpenEmbedding.injective
 
 instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f.left] [IsOpenImmersion g.left]
@@ -93,7 +93,7 @@ noncomputable instance : CreatesColimit F (MorphismProperty.Over.forget P ⊤ S)
     (Scheme.IsLocallyDirected.openCover _).pushforwardIso e.inv
   rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) 𝒰]
   intro i
-  simpa [𝒰, e] using (F.obj i).prop
+  simpa [𝒰, e] using! (F.obj i).prop
 
 instance : HasColimit F := hasColimit_of_created _ (MorphismProperty.Over.forget P ⊤ S)
 

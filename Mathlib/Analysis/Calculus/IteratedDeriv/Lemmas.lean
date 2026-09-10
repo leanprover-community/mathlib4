@@ -75,15 +75,14 @@ theorem iteratedDerivWithin_add
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     iteratedDerivWithin n (f + g) s x =
       iteratedDerivWithin n f s x + iteratedDerivWithin n g s x := by
-  simp_rw [iteratedDerivWithin, iteratedFDerivWithin_add_apply hf hg h hx,
-    ContinuousMultilinearMap.add_apply]
+  simp_rw [iteratedDerivWithin, iteratedFDerivWithin_add_apply hf hg h hx, add_apply]
 
 include h hx in
 theorem iteratedDerivWithin_fun_add
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     iteratedDerivWithin n (fun z ↦ f z + g z) s x =
       iteratedDerivWithin n f s x + iteratedDerivWithin n g s x := by
-  simpa using iteratedDerivWithin_add hx h hf hg
+  simpa using! iteratedDerivWithin_add hx h hf hg
 
 theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
@@ -103,9 +102,7 @@ theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
 include h hx in
 theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s x) :
     iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by
-  simp_rw [iteratedDerivWithin]
-  rw [iteratedFDerivWithin_const_smul_apply (a := c) hf h hx]
-  simp only [ContinuousMultilinearMap.smul_apply]
+  simp [iteratedDerivWithin, iteratedFDerivWithin_const_smul_apply hf h hx]
 
 include h hx in
 theorem iteratedDerivWithin_fun_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s x) :
@@ -322,9 +319,14 @@ theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
 
 theorem iteratedDeriv_const_sub (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c - f z) x = iteratedDeriv n (-f) x := by
-  simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_const_sub hn c
+  simpa only [← iteratedDerivWithin_univ] using! iteratedDerivWithin_const_sub hn c
 
-@[simp, to_fun iteratedDeriv_fun_neg]
+@[simp]
+lemma iteratedDeriv_fun_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
+    iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
+  simpa only [← iteratedDerivWithin_univ] using! iteratedDerivWithin_neg f
+
+@[simp]
 lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (-f) a = -(iteratedDeriv n f a) := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_neg f

@@ -20,7 +20,7 @@ theorem test_check_tactic : True := by
 #simp only [] => 0
 
 #guard_msgs (substring := true) in
-whatsnew in
+#whats_new in
 theorem test_whatsnew : True := trivial
 
 #guard_msgs (substring := true) in

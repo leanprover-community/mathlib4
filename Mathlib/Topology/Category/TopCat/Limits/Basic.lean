@@ -21,7 +21,7 @@ underlying types are just the limits in the category of types.
 @[expose] public section
 
 
-open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
+open TopologicalSpace CategoryTheory CategoryTheory.Limits
 
 universe v u u' w
 
@@ -41,7 +41,7 @@ Generally you should just use `limit.cone F`, unless you need the actual definit
 (which is in terms of `Types.limitCone`).
 -/
 def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
-  pt := TopCat.of { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
+  pt := ↧{ u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
   π :=
     { app := fun j => ofHom
         { toFun := fun u => u.val j
@@ -85,6 +85,7 @@ instance topologicalSpaceConePtOfConeForget :
     TopologicalSpace (conePtOfConeForget c) :=
   (⨅ j, (F.obj j).str.induced (c.π.app j))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, this is a cone for `F` whose point is
 `c.pt` with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -99,6 +100,7 @@ def coneOfConeForget : Cone F where
         ext
         apply ConcreteCategory.congr_hom (c.π.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
 with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -123,6 +125,7 @@ variable {F : J ⥤ TopCat.{u}} (c : Cone F) (hc : IsLimit c)
 
 include hc
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem induced_of_isLimit :
     c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
@@ -197,6 +200,7 @@ instance topologicalSpaceCoconePtOfCoconeForget :
     TopologicalSpace (coconePtOfCoconeForget c) :=
   (⨆ j, (F.obj j).str.coinduced (c.ι.app j))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, this is a cocone for `F` whose point is
 `c.pt` with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
@@ -212,6 +216,7 @@ def coconeOfCoconeForget : Cocone F where
         ext
         apply ConcreteCategory.congr_hom (c.ι.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
 with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
@@ -236,6 +241,7 @@ variable (c : Cocone F) (hc : IsColimit c)
 
 include hc
 
+set_option backward.defeqAttrib.useBackward true in
 theorem coinduced_of_isColimit :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   let c' := coconeOfCoconeForget ((forget).mapCocone c)
@@ -256,6 +262,7 @@ lemma isOpen_iff_of_isColimit (X : Set c.pt) :
   · simp only [← isOpen_coinduced]
     apply isOpen_iSup_iff
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isClosed_iff_of_isColimit (X : Set c.pt) :
     IsClosed X ↔ ∀ (j : J), IsClosed (c.ι.app j ⁻¹' X) := by
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
@@ -321,7 +328,7 @@ def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/
-def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
+def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ ↧PUnit :=
   terminalIsTerminal.uniqueUpToIso isTerminalPUnit
 
 /-- The initial object of `Top` is `PEmpty`. -/
@@ -331,7 +338,7 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/
-def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
+def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ ↧PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
 
 /-- The unique map ∅ ⟶ X is inducing. -/

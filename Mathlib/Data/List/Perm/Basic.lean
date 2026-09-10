@@ -9,6 +9,7 @@ public import Batteries.Data.List.Perm
 public import Mathlib.Logic.Relation
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Logic.OpClass
 
 /-!
 # List Permutations
@@ -37,7 +38,14 @@ lemma perm_rfl : l ~ l := Perm.refl _
 attribute [symm] Perm.symm
 attribute [trans] Perm.trans
 
-instance : Std.Symm (α := List α) Perm := ⟨fun _ _ ↦ .symm⟩
+instance : IsEquiv (List α) Perm where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
+instance : IsPreorder (List α) Subperm where
+  refl := .refl
+  trans _ _ _ := .trans
 
 theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
   ⟨h.symm.subset.trans, h.subset.trans⟩
@@ -164,7 +172,8 @@ end Rel
 lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
     (l : List α) (a : α) :
     count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
-  convert! countP_eq_countP_filter_add l _ P
+  unfold count
+  convert countP_eq_countP_filter_add l _ P
   simp only [decide_not]
 
 theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} [rcomm : RightCommutative f] (p : l₁ ~ l₂) :

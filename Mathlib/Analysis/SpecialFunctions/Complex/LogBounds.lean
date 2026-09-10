@@ -75,7 +75,7 @@ lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
 lemma logTaylor_succ (n : ℕ) :
     logTaylor (n + 1) = logTaylor n + (fun z : ℂ ↦ (-1) ^ (n + 1) * z ^ n / n) := by
   funext
-  simpa only [logTaylor] using Finset.sum_range_succ ..
+  simpa only [logTaylor] using! Finset.sum_range_succ ..
 
 lemma logTaylor_at_zero (n : ℕ) : logTaylor n 0 = 0 := by
   induction n with
@@ -286,6 +286,11 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
   simp [field, pow_add, ← mul_pow]
+
+lemma hasSum_taylorSeries_neg_log' {z : ℂ} (hz : ‖z‖ < 1) :
+    HasSum (fun n : ℕ ↦ z ^ (n + 1) / (n + 1)) (-log (1 - z)) := by
+  rw_mod_cast [hasSum_nat_add_iff 1 (f := fun n ↦ z ^ n / n) (g := -log (1 - z))]
+  simpa using hasSum_taylorSeries_neg_log hz
 
 end Complex
 

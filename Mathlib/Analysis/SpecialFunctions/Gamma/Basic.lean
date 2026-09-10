@@ -68,11 +68,11 @@ theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
   rw [← Ioc_union_Ioi_eq_Ioi (@zero_le_one ℝ _ _ _ _), integrableOn_union]
   constructor
   · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
-    refine IntegrableOn.continuousOn_mul continuousOn_id.neg.rexp ?_ isCompact_Icc
-    refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
-    exact intervalIntegrable_rpow' (by linarith)
-  · refine integrable_of_isBigO_exp_neg one_half_pos ?_ (Gamma_integrand_isLittleO _).isBigO
-    exact continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind))
+    exact (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp
+      ((intervalIntegrable_rpow' (by linarith)).continuousOn_mul continuousOn_id.neg.rexp)
+  · exact integrable_of_isBigO_exp_neg one_half_pos
+      (continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind)))
+      (Gamma_integrand_isLittleO _).isBigO
 
 end Real
 
@@ -113,7 +113,6 @@ See `Complex.GammaIntegral_convergent` for a proof of the convergence of the int
 theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaIntegral s) := by
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
-  dsimp only
   rw [map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
     cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, map_mul,
     ← ofReal_log (le_of_lt hx), conj_ofReal, map_sub, map_one]
@@ -192,12 +191,12 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (-((-x).exp * x ^ s) + (-x).exp * (s * x ^ (s - 1))) x := by
     intro x hx
     have d1 : HasDerivAt (fun y : ℝ => (-y).exp) (-(-x).exp) x := by
-      simpa using (hasDerivAt_neg x).exp
+      simpa using! (hasDerivAt_neg x).exp
     have d2 : HasDerivAt (fun y : ℝ => (y : ℂ) ^ s) (s * x ^ (s - 1)) x := by
       have t := @HasDerivAt.cpow_const _ _ _ s (hasDerivAt_id ↑x) ?_
-      · simpa only [mul_one] using t.comp_ofReal
+      · simpa only [mul_one] using! t.comp_ofReal
       · exact ofReal_mem_slitPlane.2 hx.1
-    simpa only [ofReal_neg, neg_mul] using d1.ofReal_comp.mul d2
+    simpa only [ofReal_neg, neg_mul] using! d1.ofReal_comp.mul d2
   have cont := (continuous_ofReal.comp continuous_neg.rexp).mul (continuous_ofReal_cpow_const hs)
   have der_ible :=
     (Gamma_integrand_deriv_integrable_A hs hX).add (Gamma_integrand_deriv_integrable_B hs hX)
@@ -228,7 +227,7 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     ring_nf
   refine Tendsto.congr' this ?_
   suffices Tendsto (fun X => -X ^ s * (-X).exp : ℝ → ℂ) atTop (𝓝 0) by
-    simpa using Tendsto.add (Tendsto.const_mul s (tendsto_partialGamma hs)) this
+    simpa using! Tendsto.add (Tendsto.const_mul s (tendsto_partialGamma hs)) this
   rw [tendsto_zero_iff_norm_tendsto_zero]
   have :
       (fun e : ℝ => ‖-(e : ℂ) ^ s * (-e).exp‖) =ᶠ[atTop] fun e : ℝ => e ^ s.re * (-1 * e).exp := by
@@ -309,6 +308,7 @@ private theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamm
     · linarith
 
 /-- The recurrence relation for the `Γ` function. -/
+@[grind =]
 theorem Gamma_add_one (s : ℂ) (h2 : s ≠ 0) : Gamma (s + 1) = s * Gamma s := by
   let n := ⌊1 - s.re⌋₊
   have t1 : -s.re < n := by simpa only [sub_sub_cancel_left] using Nat.sub_one_lt_floor (1 - s.re)
@@ -473,10 +473,11 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
 open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
-meta def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
+meta def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Gamma $a) =>
-    match ← core q(inferInstance) q(inferInstance) a with
+    match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
       assertInstancesCommute
       pure (.positive q(Gamma_pos_of_pos $pa))

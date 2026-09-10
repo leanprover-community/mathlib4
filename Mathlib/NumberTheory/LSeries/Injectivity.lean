@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
 public import Mathlib.NumberTheory.LSeries.Linearity
+public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
 # A converging L-series determines its coefficients
@@ -96,7 +97,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
       have H₁ : (k / (n + 1) : ℂ) = (k / (n + 1) : ℝ) := by push_cast; rfl
       have H₂ : (n + 1) / k < (1 : ℝ) :=
         (div_lt_one <| mod_cast n.succ_pos.trans H).mpr <| mod_cast H
-      simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, F]
+      simp only [Set.mem_ofPred_eq, H, Set.indicator_of_mem, F]
       conv =>
         enter [1, x]
         rw [div_eq_mul_inv, H₁, ← ofReal_cpow H₀, ← ofReal_inv, ← Real.inv_rpow H₀, inv_div]
@@ -109,7 +110,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   filter_upwards [mem_atTop y] with y' hy' k
   -- it remains to show that `‖F y' k‖ ≤ ‖F y k‖` (for `y' ≥ y`)
   rcases lt_or_ge (n + 1) k with H | H
-  · simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, norm_div, norm_cpow_real,
+  · simp only [Set.mem_ofPred_eq, H, Set.indicator_of_mem, norm_div, norm_cpow_real,
       Complex.norm_natCast, F]
     rw [← Nat.cast_one, ← Nat.cast_add, Complex.norm_natCast]
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
@@ -124,7 +125,7 @@ lemma LSeries.tendsto_atTop {f : ℕ → ℂ} (ha : abscissaOfAbsConv f < ⊤) :
     Tendsto (fun x : ℝ ↦ LSeries f x) atTop (nhds (f 1)) := by
   let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
   have hF₀ : F 0 = 0 := rfl
-  have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
+  have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := ite_eq_right hn
   have ha' : abscissaOfAbsConv F < ⊤ := (abscissaOfAbsConv_congr hF).symm ▸ ha
   simp_rw [← LSeries_congr hF]
   convert! LSeries.tendsto_cpow_mul_atTop (n := 0) (fun _ hm ↦ Nat.le_zero.mp hm ▸ hF₀) ha' using 1
@@ -142,13 +143,13 @@ for all `n ≠ 0` or the L-series converges nowhere. -/
 lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
     (fun x : ℝ ↦ LSeries f x) =ᶠ[atTop] 0 ↔ (∀ n ≠ 0, f n = 0) ∨ abscissaOfAbsConv f = ⊤ := by
   by_cases h : abscissaOfAbsConv f = ⊤
-  · simpa [h] using
+  · simpa [h] using!
       Eventually.of_forall <| by simp [LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h]
   · simp only [ne_eq, h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ Eventually.of_forall fun x ↦ ?_⟩
     · let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
       have hF₀ : F 0 = 0 := rfl
-      have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
+      have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := ite_eq_right hn
       suffices ∀ n, F n = 0 from fun n hn ↦ (hF hn).symm.trans (this n)
       have ha : ¬ abscissaOfAbsConv F = ⊤ := abscissaOfAbsConv_congr hF ▸ h
       have h' (x : ℝ) : LSeries F x = LSeries f x := LSeries_congr hF x
@@ -167,7 +168,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
       cases n with
       | zero => exact Tendsto.congr' (H' 0).symm <| by simp [hF₀]
       | succ n =>
-          simpa using LSeries.tendsto_cpow_mul_atTop (fun m hm ↦ ih m <| lt_succ_of_le hm) <|
+          simpa using! LSeries.tendsto_cpow_mul_atTop (fun m hm ↦ ih m <| lt_succ_of_le hm) <|
             Ne.lt_top ha
     · simp [LSeries_congr (fun {n} ↦ H n) x, show (fun _ : ℕ ↦ (0 : ℂ)) = 0 from rfl]
 
@@ -177,7 +178,7 @@ L-series converges nowhere. -/
 lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
     LSeries f = 0 ↔ f = 0 ∨ abscissaOfAbsConv f = ⊤ := by
   by_cases h : abscissaOfAbsConv f = ⊤
-  · simpa [h] using LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
+  · simpa [h] using! LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
   · simp only [h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
     convert! (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
@@ -185,7 +186,7 @@ lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
       ext (- | m)
       · simp [hf]
       · simp [H']
-    · simpa only [H] using Filter.EventuallyEq.rfl
+    · simpa only [H] using! Filter.EventuallyEq.rfl
 
 open Filter in
 /-- If the `LSeries` of `f` and of `g` converge somewhere and agree on large real arguments,

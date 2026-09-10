@@ -32,7 +32,9 @@ contracting map, fixed point, Banach fixed point theorem
 
 @[expose] public section
 
-open NNReal Topology ENNReal Filter Function
+open NNReal ENNReal Filter Function
+
+open scoped Topology
 
 variable {α : Type*}
 
@@ -44,7 +46,7 @@ namespace ContractingWith
 
 variable [EMetricSpace α] {K : ℝ≥0} {f : α → α}
 
-open EMetric Set
+open Set
 
 theorem toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f := hf.2
 
@@ -91,6 +93,7 @@ We include more conclusions in this theorem to avoid proving them again later.
 
 The main API for this theorem are the functions `efixedPoint` and `fixedPoint`,
 and lemmas about these functions. -/
+@[wikidata Q220680]
 theorem exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) :
     ∃ y, IsFixedPt f y ∧ Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y) ∧
       ∀ n : ℕ, edist (f^[n] x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
@@ -152,7 +155,7 @@ theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     ∃ y ∈ s, IsFixedPt f y ∧ Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y) ∧
       ∀ n : ℕ, edist (f^[n] x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) := by
-  haveI := hsc.completeSpace_coe
+  have := hsc.completeSpace_coe
   rcases hf.exists_fixedPoint ⟨x, hxs⟩ hx with ⟨y, hfy, h_tendsto, hle⟩
   refine ⟨y, y.2, Subtype.ext_iff.1 hfy, ?_, fun n ↦ ?_⟩
   · convert! (continuous_subtype_val.tendsto _).comp h_tendsto

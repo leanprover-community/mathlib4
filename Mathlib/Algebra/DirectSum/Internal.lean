@@ -140,7 +140,6 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
   DirectSum.toSemiring_of _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
@@ -148,7 +147,6 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finsetSum_apply, AddSubmonoidClass.coe_finsetSum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)
@@ -247,8 +245,9 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 
 variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
-/- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for the above typeclasses for convenience. -/
+/-! The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
+state them for the above typeclasses for convenience. -/
+
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -319,7 +318,7 @@ theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Sem
 theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     DirectSum.coeAlgHom A (DirectSum.of (fun i => A i) i x) = x :=
-  DirectSum.toSemiring_of _ (by rfl) (fun _ _ => (by rfl)) _ _
+  DirectSum.toSemiring_of _ rfl (fun _ _ => rfl) _ _
 
 end DirectSum
 

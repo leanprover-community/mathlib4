@@ -77,7 +77,9 @@ banach-steinhaus, uniform boundedness, equicontinuity
 
 @[expose] public section
 
-open Filter Topology Set ContinuousLinearMap
+open Filter Set ContinuousLinearMap
+
+open scoped Topology
 
 section defs
 
@@ -127,7 +129,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGro
     -- Consider the family of all `p`-closed-balls with integer radius.
     -- By lower semicontinuity, each of these closed balls is indeed closed...
     have h₁ : ∀ n : ℕ, IsClosed (p.closedBall (0 : E) n) := fun n ↦ by
-      simpa [p.closedBall_zero_eq] using hp.isClosed_preimage n
+      simpa [p.closedBall_zero_eq] using! hp.isClosed_preimage n
     -- ... and clearly they cover the whole space.
     have h₂ : (⋃ n : ℕ, p.closedBall (0 : E) n) = univ :=
       eq_univ_of_forall fun x ↦ mem_iUnion.mpr (exists_nat_ge <| p (x - 0))
@@ -225,28 +227,5 @@ def continuousLinearMapOfTendsto
     exact ((h x).comp hu).isVonNBounded_range 𝕜₂
 
 end PolynormableSpace
-
-section Deprecated
-
-variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGroup F]
-    [ContinuousSMul 𝕜₁ E] [BarrelledSpace 𝕜₁ E] [ContinuousSMul 𝕜₂ F] {𝓕 : ι → E →SL[σ₁₂] F}
-    {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
-include hq
-
-/-- Given a sequence of continuous linear maps which converges pointwise and for which the
-domain is barrelled, the Banach-Steinhaus theorem is used to guarantee that the limit map
-is a *continuous* linear map as well.
-
-This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
-but the proof ultimately goes back to sequences. -/
-@[deprecated continuousLinearMapOfTendsto (since := "2026-01-16")]
-protected abbrev WithSeminorms.continuousLinearMapOfTendsto [T2Space F] {l : Filter α}
-    [l.IsCountablyGenerated] [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F}
-    (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
-    E →SL[σ₁₂] F :=
-  haveI : PolynormableSpace 𝕜₂ F := hq.toPolynormableSpace
-  continuousLinearMapOfTendsto g h
-
-end Deprecated
 
 end TVS_anyField

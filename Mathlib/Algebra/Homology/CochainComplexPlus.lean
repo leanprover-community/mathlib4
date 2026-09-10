@@ -107,6 +107,9 @@ below cochain complexes. -/
 def quasiIso [CategoryWithHomology C] : MorphismProperty (Plus C) :=
   (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).inverseImage (ι C)
 
+lemma quasiIso_iff [CategoryWithHomology C] {X Y : Plus C} (f : X ⟶ Y) :
+    quasiIso C f ↔ QuasiIso f.hom := Iff.rfl
+
 instance [CategoryWithHomology C] : (quasiIso C).HasTwoOutOfThreeProperty := by
   dsimp [quasiIso]
   infer_instance
@@ -135,6 +138,7 @@ section
 
 variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor on categories of bounded below cochain complexes that
 is induced by a functor (which preserves zero morphisms). -/
 @[simps!]

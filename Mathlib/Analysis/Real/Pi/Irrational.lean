@@ -166,14 +166,14 @@ Prove a degree bound for `sinPoly n` by induction. Note this is where we find th
 explicit description of `sinPoly`.
 -/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
-  | 0 => by simp [sinPoly]
-  | 1 => by simp only [natDegree_C, zero_le', sinPoly]
+  | 0
+  | 1 => by simp [sinPoly]
   | n + 2 => by
-      rw [sinPoly]
-      refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
-      · exact (sinPoly_natDegree_le (n + 1)).trans (by simp)
-      refine natDegree_mul_le.trans ?_
-      simpa [add_comm 2] using sinPoly_natDegree_le n
+    rw [sinPoly]
+    refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
+    · exact (sinPoly_natDegree_le (n + 1)).trans (by simp)
+    refine natDegree_mul_le.trans ?_
+    simpa [add_comm 2] using sinPoly_natDegree_le n
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -255,9 +255,10 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   intro x hx
   simp only [uIoc_of_le, neg_le_self_iff, zero_le_one, mem_Ioc] at hx
   rw [norm_eq_abs, abs_mul, abs_pow]
-  refine mul_le_one₀ (pow_le_one₀ (abs_nonneg _) ?_) (abs_nonneg _) (abs_cos_le_one _)
-  rw [abs_le]
-  constructor <;> nlinarith
+  have : |1 - x ^ 2| ≤ 1 := by
+    rw [abs_le]
+    constructor <;> nlinarith
+  bound [abs_cos_le_one]
 
 /--
 Auxiliary for the proof that `π` is irrational.

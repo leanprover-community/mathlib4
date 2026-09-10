@@ -5,9 +5,7 @@ Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
-public meta import Batteries.Data.String.Matcher
 public meta import Lake.Util.Casing
-public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
@@ -526,10 +524,10 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
     -- Convert the module name to a file name, then lint that file.
     let path := mkFilePath (module.components.map toString)|>.addExtension "lean"
 
-    let (errors, changed) := ← lintFile opts path styleExceptions
+    let (errors, changed) ← lintFile opts path styleExceptions
     if let some c := changed then
       if fix then
-        let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
+        let _ ← IO.FS.writeFile path ("\n".intercalate c.toList)
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
@@ -570,6 +568,7 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
   let exceptions := [
     `Mathlib.Analysis.CStarAlgebra.lpSpace,
     `Mathlib.Analysis.InnerProductSpace.l2Space,
+    `Mathlib.Analysis.Normed.Lp.lpHolder,
     `Mathlib.Analysis.Normed.Lp.lpSpace
   ]
   -- We allow only names in UpperCamelCase, possibly with a trailing underscore.

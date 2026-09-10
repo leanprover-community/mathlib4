@@ -59,11 +59,9 @@ def mkQ : G →+ ModN G n := (LinearMap.range (LinearMap.lsmul ℤ G n)).mkQ
 
 variable [NeZero n]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a free module `G` over `ℤ`, construct the corresponding basis
 of `G / ⟨n⟩` over `ℤ / nℤ`. -/
 noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (ModN G n) := by
-  set ψ : G →+ G := zsmulAddGroupHom n
   set nG := LinearMap.range (LinearMap.lsmul ℤ G n)
   set H := G ⧸ nG
   set φ : G →ₗ[ℤ] H := nG.mkQ
@@ -81,12 +79,12 @@ noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (M
     simp only [Submodule.mkQ_apply, g] at hx
     rw [Submodule.liftQ_apply] at hx
     replace hx : ∀ b, ↑n ∣ f x b := by
-      simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using hx
+      simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using! hx
     simp only [Submodule.mkQ_apply]
     rw [Submodule.Quotient.mk_eq_zero]
     choose c hc using hx
     refine ⟨b.repr.symm ⟨(f x).support, c, by simp [hc, NeZero.ne]⟩, b.repr.injective ?_⟩
-    simpa [DFunLike.ext_iff, eq_comm] using hc
+    simpa [DFunLike.ext_iff, eq_comm] using! hc
   · suffices mod ∘ b.repr = g ∘ nG.mkQ by
       exact (this ▸ (mapRange_surjective _ (map_zero _) ZMod.intCast_surjective).comp
         b.repr.surjective).of_comp

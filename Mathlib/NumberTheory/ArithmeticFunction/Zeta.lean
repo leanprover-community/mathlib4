@@ -50,12 +50,13 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
   rfl
 
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
-  if_neg h
+  ite_eq_right h
 
 theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 
 theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
@@ -141,16 +142,18 @@ open scoped zeta
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
   if h0 : k = 0 then ζ else ⟨fun x ↦ f x ^ k, by simp_rw [map_zero, zero_pow h0]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif_pos rfl]
+theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dite_eq_left rfl]
 
 @[simp]
 theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
   ext; simp [ppow]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
-  rw [ppow, dif_neg (Nat.ne_of_gt kpos), coe_mk]
+  rw [ppow, dite_eq_right (Nat.ne_of_gt kpos), coe_mk]
 
 theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
   ext x
@@ -218,15 +221,16 @@ end IsMultiplicative
 end ArithmeticFunction
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p? e :=
+  match p? with | none => throwError "no PartialOrder instance" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
-    let rn ← core z p n
     assumeInstancesCommute
+    let rn ← core z p n
     match rn with
     | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.zeta_pos $pn)
     | _ => return .nonnegative q(Nat.zero_le _)

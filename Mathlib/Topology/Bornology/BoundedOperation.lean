@@ -162,7 +162,7 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub :
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 
-open Filter Pointwise Bornology
+open Filter Bornology
 
 /-
 TODO:
@@ -200,7 +200,7 @@ theorem tendsto_sub_const_cobounded (x : R) :
 @[simp]
 theorem tendsto_const_sub_cobounded (x : R) :
     Tendsto (x - ·) (cobounded R) (cobounded R) := by
-  simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
+  simpa only [sub_eq_add_neg] using! (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
 
 end SeminormedAddCommGroup
 

@@ -5,11 +5,11 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Chebyshev
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Arcosh
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
@@ -44,7 +44,15 @@ theorem eval_T_real_mem_Icc (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
   grind [T_real_cos, cos_mem_Icc]
 
 theorem abs_eval_T_real_le_one (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
-    |(T ℝ n).eval x| ≤ 1 := by grind [eval_T_real_mem_Icc]
+    |(T ℝ n).eval x| ≤ 1 := by
+  #adaptation_note /-- Before nightly-2026-04-07, this was just
+  `grind [eval_T_real_mem_Icc]`. `grind`'s e-matching now keeps the
+  `Polynomial.eval` produced by the lemma (which uses `instCommSemiring.toSemiring`)
+  and the `Polynomial.eval` propagated by abs unfolding (which uses `Real.semiring`)
+  as distinct atoms, even though they are `rfl`-equal, so the contradiction is
+  never found. -/
+  have h := eval_T_real_mem_Icc n (Set.mem_Icc.mpr (abs_le.mp hx))
+  exact abs_le.mpr (Set.mem_Icc.mp h)
 
 theorem one_le_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ x) : 1 ≤ (T ℝ n).eval x := by
   rw [← cosh_arcosh hx]
@@ -295,13 +303,11 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
     refine h.elim (fun h => ?_) (fun h => ?_)
     · refine le_abs.mpr (.inr (le_neg_of_le_neg ?_))
       have := isMinOn_iff.mp h (cos (1 * π / n)) (by grind [abs_cos_le_one])
-      rw [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
+      rwa [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
         by simp⟩] at this
-      assumption
     · refine le_abs.mpr (.inl ?_)
       have := isMaxOn_iff.mp h (cos (0 * π / n)) (by simp)
-      rw [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
-      assumption
+      rwa [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
   · rintro ⟨k, hk, hx⟩
     rw [hx]
     exact isExtrOn_T_real hn hk

@@ -29,13 +29,13 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 public section
 
 
-open MeasureTheory Filter Finset Real
+open MeasureTheory Filter Real
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology Nat
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
 
 /-- For `t : ℝ` with `t ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `x ↦ μ[X ^ n * exp (x * X)]` at `t` is `μ[X ^ (n + 1) * exp (t * X)]`. -/
@@ -144,7 +144,7 @@ lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
   symm
   rw [interior_eq_univ]
   ext t
-  simpa using h t
+  simpa using! h t
 
 lemma analyticOnNhd_iteratedDeriv_mgf (n : ℕ) :
     AnalyticOnNhd ℝ (iteratedDeriv n (mgf X μ)) (interior (integrableExpSet X μ)) := by

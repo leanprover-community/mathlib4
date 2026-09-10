@@ -146,11 +146,13 @@ theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β →
     (s.disjiUnion f h).filter p
       = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjiUnion_singleton {f : α → β} (hf : f.Injective) :
     s.disjiUnion (fun a ↦ {f a}) (fun _ _ _ _ ↦ disjoint_singleton.mpr ∘ hf.ne) =
       s.map ⟨f, hf⟩ := by
   ext; simp [eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_disjiUnion_left
     (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
     Disjoint (s.disjiUnion f hf) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
@@ -300,6 +302,17 @@ lemma union_biUnion [DecidableEq α] : (s₁ ∪ s₂).biUnion t = s₁.biUnion 
 lemma biUnion_union : s.biUnion (fun x ↦ t₁ x ∪ t₂ x) = s.biUnion t₁ ∪ s.biUnion t₂ := by grind
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
+
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s`, in the case where the indexing
+function on `s.attach` happens to factor through `α`. See `Finset.attach_biUnion'` for the version
+without that hypothesis. -/
+lemma attach_biUnion {f : α → Finset β} : s.attach.biUnion (f ·) = s.biUnion f := by aesop
+
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s` by extending the function to all of
+`α` with `∅` outside `s`. See `Finset.attach_biUnion` for the version when the indexing function is
+already defined on all of `α`. -/
+lemma attach_biUnion' [DecidableEq α] {f : s → Finset β} :
+    s.attach.biUnion f = s.biUnion fun a ↦ if h : a ∈ s then f ⟨a, h⟩ else ∅ := by aesop
 
 end BUnion
 end Finset

@@ -191,9 +191,7 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
   rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
-  rw [congr_symm_tmul]
-  dsimp
-  simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
+  simp [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
 
 /-- A special case for when `b₁` has grade 0. -/
 theorem tmul_zero_coe_mul_coe_tmul {i₂ : ι} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :
@@ -241,6 +239,7 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
     rw [← SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul,
       SetLike.coe_gOne, one_mul]
 
+set_option backward.defeqAttrib.useBackward true in
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
   algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
@@ -293,6 +292,7 @@ lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗�
 
 variable {C} [Ring C] [Algebra R C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
 product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
@@ -329,6 +329,7 @@ theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     lift 𝒜 ℬ f g h_anti_commutes (a ᵍ⊗ₜ b) = f a * g b :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The universal property of the graded tensor product; every algebra morphism uniquely factors
 as a pair of algebra morphisms that anticommute with respect to the grading. -/
 def liftEquiv :

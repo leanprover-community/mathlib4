@@ -25,20 +25,18 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [Category.{w} J]
-
 section Pullback
 
 variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
-abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
+abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ X :=
   ofHom ⟨Prod.fst ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
-abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
+abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ Y :=
   ofHom ⟨Prod.snd ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
@@ -51,6 +49,7 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
       ext ⟨x, h⟩
       simpa)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The constructed cone is a limit. -/
 def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g) :=
   PullbackCone.isLimitAux' _
@@ -59,7 +58,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       constructor; swap
       · exact ofHom
           { toFun := fun x =>
-              ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using! ConcreteCategory.congr_hom S.condition x⟩
             continuous_toFun := by fun_prop }
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
@@ -73,12 +72,12 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`.
         apply Subtype.ext
         apply Prod.ext
-        · simpa using ConcreteCategory.congr_hom h₁ x
-        · simpa using ConcreteCategory.congr_hom h₂ x)
+        · simpa using! ConcreteCategory.congr_hom h₁ x
+        · simpa using! ConcreteCategory.congr_hom h₂ x)
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
 def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
-    pullback f g ≅ TopCat.of { p : X × Y // f p.1 = g p.2 } :=
+    pullback f g ≅ ↧{ p : X × Y // f p.1 = g p.2 } :=
   (limit.isLimit _).conePointUniqueUpToIso (pullbackConeIsLimit f g)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -127,14 +126,13 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
   simp only [induced_compose, induced_inf]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Set.range (prod.lift (pullback.fst f g) (pullback.snd f g)) =
       { x | (Limits.prod.fst ≫ f) x = (Limits.prod.snd ≫ g) x } := by
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [← ConcreteCategory.comp_apply, Set.mem_setOf_eq]
+    simp only [← ConcreteCategory.comp_apply, Set.mem_ofPred_eq]
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
@@ -166,7 +164,6 @@ def pullbackHomeoPreimage
     ext x
     exact Exists.choose_spec x.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     IsInducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
@@ -187,7 +184,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
     rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
-    simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+    simp only [limit.lift_π, PullbackCone.mk_π_app]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by

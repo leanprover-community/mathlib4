@@ -3,15 +3,19 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.TrivSqZeroExt.Basic
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.RingTheory.PicardGroup
+module
+
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.RingTheory.PicardGroup
 
 /-!
 # A class of examples of invertible modules that are not isomorphic to ideals
 
 References: https://math.stackexchange.com/a/5090562 or https://mathoverflow.net/a/499258
 -/
+
+public section
 
 variable (R : Type*) [CommRing R]
 
@@ -27,7 +31,7 @@ instance : IsFractionRing (SqZeroExtQuotMax R) (SqZeroExtQuotMax R) :=
     have := hx.1 (.inr <| .single ⟨M, hM⟩ 1) <| by
       ext1; · simp
       simpa [-DFinsupp.single_apply, ← DFinsupp.single_smul, DFinsupp.single_eq_zero]
-        using (Ideal.Quotient.mk_eq_mk_iff_sub_mem ..).mpr (by simpa)
+        using! (Ideal.Quotient.mk_eq_mk_iff_sub_mem ..).mpr (by simpa)
     simpa using congr(($this).snd)
 
 /-- R as an algebra over `SqZeroExtQuotMax R`. -/

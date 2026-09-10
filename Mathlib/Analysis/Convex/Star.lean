@@ -39,13 +39,11 @@ Concretely, the empty set is star-convex at every point.
 
 ## TODO
 
-Balanced sets are star-convex.
-
 The closure of a star-convex set is star-convex.
 
-Star-convex sets are contractible.
-
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
+
+Replace with `Convexity.IsStarConvexSet`.
 -/
 
 @[expose] public section

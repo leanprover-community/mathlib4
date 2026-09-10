@@ -63,9 +63,10 @@ variable [Module A M] [Module B M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
+@[macro_inline]
 instance : FunLike (Derivation R A M) A M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+  coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
 
 instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
@@ -444,7 +445,7 @@ variable {A : Type*} [CommRing A] [Algebra R A]
 section
 
 variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
-variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
+variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (a b : A)
 
 protected theorem map_neg : D (-a) = -D a :=
   map_neg D a

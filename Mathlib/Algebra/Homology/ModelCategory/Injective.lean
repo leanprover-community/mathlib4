@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # The model category structure on bounded below complexes
@@ -30,7 +31,7 @@ The `ModelCategory` instance is scoped in the namespace
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory HomotopicalAlgebra Limits
 
@@ -88,6 +89,7 @@ instance {A B : CochainComplex.Plus C} (i : A ⟶ B) [Cofibration i] :
     Mono i := by
   rwa [← cofibration_iff]
 
+set_option backward.defeqAttrib.useBackward true in
 open HomComplex in
 /-- Let `sq` be a commutative square in the category of bounded below cochain complexes
 in an abelian category. We assume that the left morphism `i` is a monomorphism,
@@ -113,7 +115,7 @@ private lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶
     obtain ⟨b, rfl⟩ := ObjectProperty.homMk_surjective b
     dsimp at i p t b hp hi
     have hip : QuasiIso i ∨ QuasiIso p := by
-      simpa only [weakEquivalence_iff] using hip
+      simpa only [weakEquivalence_iff] using! hip
     replace sq : CommSq t i p b := sq.map (ObjectProperty.ι _)
     suffices sq.HasLift from ⟨⟨{ l := ObjectProperty.homMk sq.lift }⟩⟩
     have sq' (n : ℤ) : CommSq (t.f n) (i.f n) (p.f n) (b.f n) :=

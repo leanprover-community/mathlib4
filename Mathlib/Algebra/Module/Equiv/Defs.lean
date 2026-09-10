@@ -140,6 +140,7 @@ instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 /-- The equivalence of types underlying a linear equivalence. -/
+@[implicit_reducible]
 def toEquiv (e : M ≃ₛₗ[σ] M₂) : M ≃ M₂ := e.toAddEquiv.toEquiv
 
 theorem toEquiv_injective :
@@ -159,6 +160,7 @@ theorem toLinearMap_injective : Injective (toLinearMap : (M ≃ₛₗ[σ] M₂) 
 theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
   toLinearMap_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   coe e := e.toFun
   inv := LinearEquiv.invFun
@@ -170,8 +172,10 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add')
   map_smulₛₗ := (·.map_smul')
 
-theorem toLinearMap_eq_coe {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = SemilinearMapClass.semilinearMap e :=
+theorem toLinearMap_eq_ofClass {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = .ofClass e :=
   rfl
+
+@[deprecated (since := "2026-09-03")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
 
 @[simp]
 theorem coe_mk {f invFun left_inv right_inv} :
@@ -243,7 +247,7 @@ theorem refl_apply [Module R M] (x : M) : refl R M x = x :=
   rfl
 
 /-- Linear equivalences are symmetric. -/
-@[symm]
+@[symm, implicit_reducible]
 def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
   { e.toLinearMap.inverse e.invFun e.left_inv e.right_inv,
     e.toEquiv.symm with
@@ -296,6 +300,7 @@ variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₄
 variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₄₃ σ₃₂ σ₄₂]
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
+set_option linter.overlappingInstances false in
 /-- Linear equivalences are transitive. -/
 -- Note: the `RingHomCompTriple σ₃₂ σ₂₁ σ₃₁` is unused, but is convenient to carry around
 -- implicitly for lemmas like `LinearEquiv.self_trans_symm`.
@@ -540,8 +545,7 @@ theorem coe_symm_mk [Module R M] [Module R M₂]
 @[simp]
 theorem coe_symm_mk' [Module R M] [Module R M₂]
     {f inv_fun left_inv right_inv} :
-    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
-  rfl
+    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun := rfl
 
 protected theorem bijective : Function.Bijective e :=
   e.toEquiv.bijective
@@ -583,6 +587,7 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
   f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl

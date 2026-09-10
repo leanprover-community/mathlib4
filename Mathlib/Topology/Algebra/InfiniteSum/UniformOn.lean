@@ -63,7 +63,7 @@ theorem HasProdUniformlyOn.multipliableUniformlyOn (h : HasProdUniformlyOn f g s
 @[to_additive]
 lemma hasProdUniformlyOn_iff_tendstoUniformlyOn :
     HasProdUniformlyOn f g s ↔ TendstoUniformlyOn (∏ i ∈ ·, f i ·) g atTop s := by
-  simpa [HasProdUniformlyOn, HasProd, ← UniformOnFun.ofFun_prod, Finset.prod_fn] using
+  simpa [HasProdUniformlyOn, HasProd, ← UniformOnFun.ofFun_prod, Finset.prod_fn] using!
     UniformOnFun.tendsto_iff_tendstoUniformlyOn (𝔖 := {s})
 
 @[to_additive]
@@ -97,12 +97,6 @@ theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g s) (hx : x ∈ s)
 theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g s) :
     s.EqOn (∏' b, f b ·) g :=
   fun _ hx ↦ (h.hasProd hx).tprod_eq
-
-@[deprecated (since := "2025-11-23")]
-alias HasProdUniformlyOn.tprod_eq := HasProdUniformlyOn.tprod_eqOn
-
-@[deprecated (since := "2025-11-23")]
-alias HasSumUniformlyOn.tsum_eq := HasSumUniformlyOn.tsum_eqOn
 
 @[to_additive]
 theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f s) (hx : x ∈ s) :
@@ -323,7 +317,7 @@ theorem HasProdUniformly.multipliableUniformly (h : HasProdUniformly f g) :
 @[to_additive]
 lemma hasProdUniformly_iff_tendstoUniformly :
     HasProdUniformly f g ↔ TendstoUniformly (∏ i ∈ ·, f i ·) g atTop := by
-  simpa [HasProdUniformly, HasProd, ← UniformFun.ofFun_prod, Finset.prod_fn] using
+  simpa [HasProdUniformly, HasProd, ← UniformFun.ofFun_prod, Finset.prod_fn] using!
     UniformFun.tendsto_iff_tendstoUniformly
 
 @[to_additive]

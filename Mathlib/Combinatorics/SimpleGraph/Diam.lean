@@ -114,7 +114,7 @@ lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj
 
 lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
     G.eccent u = 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
-  have h : 1 ≤ G.eccent u := ENat.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
+  have h : 1 ≤ G.eccent u := Order.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
   rw [← h.ge_iff_eq']
   exact eccent_le_one_iff u
 
@@ -368,9 +368,9 @@ lemma radius_ne_top_iff [Nonempty α] [Finite α] : G.radius ≠ ⊤ ↔ G.Conne
   exact h u v
 
 lemma radius_ne_zero_of_nontrivial [Nontrivial α] : G.radius ≠ 0 := by
-  rw [← ENat.one_le_iff_ne_zero]
+  rw [← Order.one_le_iff_ne_zero]
   apply le_iInf
-  simp [ENat.one_le_iff_ne_zero, G.eccent_ne_zero]
+  simp [Order.one_le_iff_ne_zero, G.eccent_ne_zero]
 
 lemma radius_eq_zero_iff : G.radius = 0 ↔ Nonempty α ∧ Subsingleton α := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨_, _⟩ ↦ ?_⟩
@@ -391,7 +391,7 @@ lemma ediam_eq_top_iff_radius_eq_top [Nonempty α] : G.ediam = ⊤ ↔ G.radius 
   intro hr
   obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
   have hdiam : G.ediam ≤ 2 * G.eccent w := ediam_le_two_mul_eccent w
-  exact ne_top_of_lt <| lt_of_le_of_lt hdiam <| WithTop.mul_lt_top (ENat.coe_lt_top 2) <|
+  exact ne_top_of_lt <| lt_of_le_of_lt hdiam <| WithTop.mul_lt_top (ENat.natCast_lt_top 2) <|
     lt_top_iff_ne_top.mpr (hw ▸ hr)
 
 lemma ediam_le_two_mul_radius : G.ediam ≤ 2 * G.radius := by

@@ -192,7 +192,7 @@ and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
   · exact fun n _ hn l _ ↦ hn l (by lia)
 
 variable {lt ge}
-lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
+lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dite_eq_left _
 
 end strongRec
 
@@ -355,5 +355,8 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 @[simp] lemma gcd_negSucc_ofNat (m n : ℕ) : gcd (negSucc m) n = (m + 1).gcd n := by simp [gcd]
 @[simp] lemma gcd_negSucc_negSucc (m n : ℕ) :
     (negSucc m).gcd (negSucc n) = (m + 1).gcd (n + 1) := by simp [gcd]
+
+theorem gcd_right_comm (a b c : ℤ) : gcd (gcd a b) c = gcd (gcd a c) b := by
+  rw [gcd_assoc, gcd_assoc, gcd_comm b c]
 
 end Int

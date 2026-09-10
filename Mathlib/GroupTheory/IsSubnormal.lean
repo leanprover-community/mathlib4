@@ -189,8 +189,7 @@ lemma isSubnormal_iff : H.IsSubnormal ↔
       · grind
       · refine monotone_nat_of_le_succ ?_
         grind only [monotone_iff_forall_lt]
-      · simp +instances only
-        grind
+      · grind
   mpr := by
     rintro ⟨n, hyps⟩
     revert H
@@ -217,7 +216,7 @@ lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
     IsSubnormal (H.map K.subtype) := by
   induction Hsn with
   | top =>
-    rwa [← MonoidHom.range_eq_map, range_subtype]
+    rwa [Subgroup.map_top, range_subtype]
   | step A B h_le hSubn hN ih =>
     refine step (A.map K.subtype) (B.map K.subtype) (map_mono h_le) ih ?_
     rw [normal_subgroupOf_iff_le_normalizer h_le] at hN

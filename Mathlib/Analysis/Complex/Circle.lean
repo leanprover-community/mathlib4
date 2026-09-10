@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Normed.Field.UnitBall
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The circle
@@ -44,9 +45,12 @@ is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 noncomputable section
 
-open Complex Function Metric ComplexConjugate
+open Complex Function Metric
+
+open scoped ComplexConjugate
 
 /-- The unit circle in `ℂ`. -/
+@[wikidata Q203425]
 def Circle : Type := Submonoid.unitSphere ℂ
 deriving TopologicalSpace
 
@@ -67,7 +71,9 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 -- Not simp because `SetLike.coe_eq_coe` already proves it
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
-lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+@[simp] lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+@[simp] lemma nnnorm_coe (z : Circle) : ‖(z : ℂ)‖₊ = 1 := NNReal.coe_injective z.norm_coe
+@[simp] lemma enorm_coe (z : Circle) : ‖(z : ℂ)‖ₑ = 1 := by simp [enorm_eq_nnnorm]
 
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
@@ -154,6 +160,7 @@ lemma exp_pi_ne_one : Circle.exp Real.pi ≠ 1 := by
 
 variable {e : AddChar ℝ Circle}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
   have h := Circle.coe_inv_eq_conj ⟨e x, ?_⟩
@@ -192,11 +199,18 @@ instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [Continuous
     ContinuousSMul Circle α :=
   inferInstanceAs <| ContinuousSMul (Submonoid.unitSphere _) α
 
-@[simp]
-protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
-    (u : Circle) (v : E) :
-    ‖u • v‖ = ‖v‖ := by
-  rw [smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
+section Norm
+
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle) (v : E)
+
+@[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp [smul_def, norm_smul]
+@[simp] protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
+@[simp] protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
+
+instance : IsIsometricSMul Circle E :=
+  ⟨fun _ ↦ Isometry.of_dist_eq fun _ _ ↦ by simp [dist_eq_norm, ← smul_sub]⟩
+
+end Norm
 
 end Circle
 
@@ -212,7 +226,7 @@ def fourierChar : AddChar ℝ Circle where
 
 @[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
 
-open FourierTransform
+open scoped FourierTransform
 
 theorem fourierChar_apply' (x : ℝ) : 𝐞 x = Circle.exp (2 * π * x) := rfl
 
@@ -245,6 +259,6 @@ theorem continuous_probChar : Continuous probChar := map_continuous Circle.exp
 theorem probChar_ne_one : probChar ≠ 1 := by
   rw [DFunLike.ne_iff]
   use Real.pi
-  simpa only [probChar_apply'] using Circle.exp_pi_ne_one
+  simpa only [probChar_apply'] using! Circle.exp_pi_ne_one
 
 end Real

@@ -191,7 +191,7 @@ theorem tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 
--- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+-- TODO: Should we introduce `Odd.tsub`? It will probably only be used by `ℕ`.
 lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm

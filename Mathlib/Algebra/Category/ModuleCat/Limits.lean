@@ -40,7 +40,6 @@ instance moduleObj (j) :
     Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
   inferInstanceAs <| Module R (F.obj j)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
@@ -78,6 +77,7 @@ instance limitModule :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
   inferInstanceAs <| Module R (Shrink (sectionsSubmodule F))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
 def limitπLinearMap (j) :
@@ -96,13 +96,14 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 def limitCone : Cone F where
-  pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
+  pt := ↧(Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
     { app j := ofHom (limitπLinearMap F j)
       naturality _ _ f := by
         ext
-        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
+        simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
@@ -186,7 +187,7 @@ instance forget₂AddCommGroup_reflectsLimit :
   reflects {c} hc := ⟨by
     have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat) := ⟨_, hc⟩
     have : Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))) := by
-      simpa only [AddCommGrpCat.hasLimit_iff_small_sections] using this
+      simpa only [AddCommGrpCat.hasLimit_iff_small_sections] using! this
     have := reflectsLimit_of_reflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrpCat)
     exact isLimitOfReflects _ hc⟩
 
@@ -209,7 +210,7 @@ variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j 
 /-- The diagram (in the sense of `CategoryTheory`) of an unbundled `directLimit` of modules. -/
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
-  obj i := ModuleCat.of R (G i)
+  obj i := ↧(G i)
   map hij := ofHom (f _ _ hij.le)
   map_id i := by
     ext
@@ -232,6 +233,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
         ext
         exact DirectLimit.of_f }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/

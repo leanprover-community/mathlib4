@@ -3,13 +3,15 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Recall
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Recall
 
 /-!
 # IMO 2024 Q1
@@ -25,6 +27,8 @@ We follow Solution 3 from the
 First reducing modulo 2, any answer that is not a multiple of 2 is inductively shown to be
 contained in a decreasing sequence of intervals, with empty intersection.
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -47,7 +51,8 @@ lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   simp
 
 lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m) ↔ Condition α := by
-  peel with n hn
+  unfold Condition
+  congr! 2 with n hn
   apply dvd_iff_dvd_of_dvd_sub
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
   norm_cast

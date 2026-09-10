@@ -39,8 +39,6 @@ arithmetic functions, totient
 
 open Nat Monoid
 
-variable {R : Type*}
-
 namespace ArithmeticFunction
 
 /-- `λ` is the Carmichael function, also known as the reduced totient function,
@@ -154,8 +152,10 @@ theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
 
 theorem two_mul_carmichael_two_pow_of_three_le_eq_totient {n : ℕ} (hn : 3 ≤ n) :
     2 * carmichael (2 ^ n) = (2 ^ n).totient := by
-  rw [carmichael_two_pow_of_ne_two, ← pow_succ', totient_prime_pow prime_two]
-  all_goals lia
+  rw [carmichael_two_pow_of_ne_two, ← pow_succ', totient_prime_pow prime_two] <;>
+  · #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
 
 @[simp]
 theorem carmichael_pow_of_prime_ne_two {p : ℕ} (n : ℕ) (hp : p.Prime) (hp₂ : p ≠ 2) :
@@ -163,5 +163,18 @@ theorem carmichael_pow_of_prime_ne_two {p : ℕ} (n : ℕ) (hp : p.Prime) (hp₂
   have : NeZero p := ⟨hp.ne_zero⟩
   rw [carmichael_eq_exponent', ← ZMod.card_units_eq_totient, Fintype.card_eq_nat_card]
   exact IsCyclic.iff_exponent_eq_card.mp <| ZMod.isCyclic_units_of_prime_pow p hp hp₂ n
+
+@[simp]
+theorem carmichael_one : carmichael 1 = 1 := by
+  rw [← pow_zero 2, carmichael_two_pow_of_le_two (zero_le 2), pow_zero]
+
+@[simp]
+theorem carmichael_two : carmichael 2 = 1 := by
+  rw [← pow_one 2, carmichael_two_pow_of_le_two one_le_two, tsub_self, pow_zero]
+
+theorem carmichael_of_prime {n : ℕ} (hn : n.Prime) : carmichael n = n - 1 := by
+  by_cases ne_two : n = 2
+  · simp [ne_two]
+  · rw [← Nat.totient_prime hn, ← pow_one n, ← carmichael_pow_of_prime_ne_two 1 hn ne_two]
 
 end ArithmeticFunction

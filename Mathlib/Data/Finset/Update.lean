@@ -44,7 +44,7 @@ theorem updateFinset_singleton {y} :
   congr with j
   by_cases hj : j = i
   · cases hj
-    simp only [dif_pos, Finset.mem_singleton, update_self, updateFinset]
+    simp only [dite_eq_left, Finset.mem_singleton, update_self, updateFinset]
   · simp [hj, updateFinset]
 
 theorem update_eq_updateFinset {y} :
@@ -52,7 +52,7 @@ theorem update_eq_updateFinset {y} :
   congr with j
   by_cases hj : j = i
   · cases hj
-    simp only [dif_pos, Finset.mem_singleton, update_self, updateFinset]
+    simp only [dite_eq_left, Finset.mem_singleton, update_self, updateFinset]
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateFinset]
 
@@ -79,7 +79,8 @@ theorem updateFinset_updateFinset (hst : Disjoint s t) :
   set e := Equiv.Finset.union s t hst
   ext i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
-    simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, false_or, not_false_iff]
+    simp only [updateFinset, his, hit, dite_eq_left, dite_eq_right, Finset.mem_union, false_or,
+      not_false_iff]
   · exfalso; exact Finset.disjoint_left.mp hst his hit
   · exact piCongrLeft_sumInl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sumInr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
@@ -92,7 +93,7 @@ lemma updateFinset_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t)
 lemma restrict_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i)
     (y : Π i : t, π i) : s.restrict (updateFinset x t y) = restrict₂ hst y := by
   ext i
-  simp [updateFinset, dif_pos (hst i.2)]
+  simp [updateFinset, dite_eq_left (hst i.2)]
 
 lemma restrict_updateFinset {s : Finset ι} (x : Π i, π i) (y : Π i : s, π i) :
     s.restrict (updateFinset x s y) = y := by

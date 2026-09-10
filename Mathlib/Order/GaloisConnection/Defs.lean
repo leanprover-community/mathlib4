@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -27,12 +27,11 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 assert_not_exists CompleteLattice RelIso
 
-open Function OrderDual Set
+open Function OrderDual
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a₁ a₂ : α}
-  {b₁ b₂ : β}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
 `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
@@ -248,7 +247,7 @@ def GaloisConnection.toGaloisInsertion {α β : Type*} [Preorder α] [Preorder �
     choice_eq := fun _ _ => rfl }
 
 /-- Lift the bottom along a Galois connection -/
-@[to_dual (attr := implicit_reducible) /-- Lift the top along a Galois connection -/]
+@[to_dual (attr := instance_reducible) /-- Lift the top along a Galois connection -/]
 def GaloisConnection.liftOrderBot {α β : Type*} [Preorder α] [OrderBot α] [PartialOrder β]
     {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     OrderBot β where
