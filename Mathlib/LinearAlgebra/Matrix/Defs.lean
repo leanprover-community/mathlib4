@@ -446,24 +446,25 @@ theorem transpose_zero [Zero α] : (0 : Matrix m n α)ᵀ = 0 := rfl
 @[simp]
 theorem transpose_eq_zero [Zero α] {M : Matrix m n α} : Mᵀ = 0 ↔ M = 0 := transpose_inj
 
-@[simp]
+@[push, simp]
 theorem transpose_add [Add α] (M : Matrix m n α) (N : Matrix m n α) : (M + N)ᵀ = Mᵀ + Nᵀ := by
   ext
   simp
 
-@[simp]
+@[push, simp]
 theorem transpose_sub [Sub α] (M : Matrix m n α) (N : Matrix m n α) : (M - N)ᵀ = Mᵀ - Nᵀ := by
   ext
   simp
 
-@[simp]
+@[push, simp]
 theorem transpose_smul {R : Type*} [SMul R α] (c : R) (M : Matrix m n α) : (c • M)ᵀ = c • Mᵀ :=
   rfl
 
-@[simp]
+@[push, simp]
 theorem transpose_neg [Neg α] (M : Matrix m n α) : (-M)ᵀ = -Mᵀ :=
   rfl
 
+@[push ←]
 theorem transpose_map {f : α → β} {M : Matrix m n α} : Mᵀ.map f = (M.map f)ᵀ :=
   rfl
 
@@ -491,7 +492,7 @@ theorem submatrix_submatrix {l₂ o₂ : Type*} (A : Matrix m n α) (r₁ : l �
     (A.submatrix r₁ c₁).submatrix r₂ c₂ = A.submatrix (r₁ ∘ r₂) (c₁ ∘ c₂) :=
   ext fun _ _ => rfl
 
-@[simp]
+@[push, simp]
 theorem transpose_submatrix (A : Matrix m n α) (r : l → m) (c : o → n) :
     (A.submatrix r c)ᵀ = Aᵀ.submatrix c r :=
   ext fun _ _ => rfl
