@@ -867,7 +867,7 @@ variable {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocR
 
 theorem closure_preimage_le (f : R →ₙ+* S) (s : Set S) :
     closure ((f : R → S) ⁻¹' s) ≤ (closure s).comap f :=
-  closure_le.2 fun _x hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
+  NonUnitalRingHom.closure_preimage_le f s
 
 end NonUnitalSubring
 
