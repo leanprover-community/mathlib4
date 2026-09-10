@@ -185,7 +185,7 @@ lemma systemCoeffs_ne_zero_r : systemCoeffsR α β σ α' β' γ' hirr htriv hab
     cases H1 with
     | inl H1 =>
       rcases H1 with ⟨h1, h2⟩
-      exact β'_ne_zero α β σ α' β' γ' hirr habc q t h1
+      exact a_add_b_smul_β'_ne_zero α β σ α' β' γ' hirr habc q t h1
     | inr H2 => exact (alpha'_beta'_gamma'_ne_zero α β σ α' β' γ' hirr htriv habc).1 H2.1
   | inr H2 =>
     exfalso
@@ -222,8 +222,7 @@ lemma systemCoeffs_map_eq_exp_mul_r :
     change _ = σ ((↑(a q t) + b q t • β') ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ)
         * (α' ^ (a q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)))
         * (γ' ^ (b q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1))))
-    rw [map_mul]
-    rw [map_mul]
+    rw [map_mul, map_mul]
     nth_rw 1 [mul_assoc]
     have : σ ((↑(a q t) + (b q t) • β') ^ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) =
         (↑(a q t) + ↑(b q t) * β) ^ ((r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) := by
@@ -236,7 +235,7 @@ lemma systemCoeffs_map_eq_exp_mul_r :
           htriv habc q hq0 h2mq + 1)) =
         (↑(a q t) + ↑(b q t) * β)^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) *
           cexp (ρ α β q t * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)) := by
-      simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
+      simp_all only [finProdFinEquiv_symm_apply,
         Fin.coe_modNat,
         Fin.coe_divNat, Nat.cast_add, Nat.cast_one, nsmul_eq_mul,b, a]
     rw [this]; clear this
@@ -248,7 +247,7 @@ lemma systemCoeffs_map_eq_exp_mul_r :
         ) =
         cexp ((↑(a q t) + ↑(b q t) • β) * Complex.log α * (l₀' α β σ α' β' γ' hirr htriv habc q hq0
             h2mq +1)) := by
-          simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
+          simp_all only [finProdFinEquiv_symm_apply,
           Fin.coe_modNat,
             Fin.coe_divNat, Nat.cast_add, Nat.cast_one,
             nsmul_eq_mul, b, a]
@@ -416,7 +415,7 @@ lemma ρ_is_int :
         · apply isIntegral_c₁_pow_smul_pow α' β' γ'
           · rw [mul_comm]
             apply Nat.mul_le_mul ((l₀' α β σ α' β' γ' hirr htriv habc q hq0
-                h2mq).isLt) ((finProdFinEquiv.symm.toFun x).1.isLt)
+                h2mq).isLt) ((finProdFinEquiv.symm x).1.isLt)
           · rw [← zsmul_eq_mul]; exact isIntegral_c₁α α' β' γ'
       · have : c₁ α' β' γ' ^ (m K * q - ((b q x) * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq +
           1))) *
@@ -426,7 +425,7 @@ lemma ρ_is_int :
           nth_rw 1 [mul_comm]
           apply mul_le_mul
           · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
-          · exact (finProdFinEquiv.symm.toFun x).2.isLt
+          · exact (finProdFinEquiv.symm x).2.isLt
           · simp only [zero_le]
           · simp only [zero_le]
         rw [← this]
@@ -441,14 +440,12 @@ lemma ρ_is_int :
   · rw [Finset.smul_sum]
     apply IsIntegral.sum
     intros x hx
-    rw [← mul_assoc, H2]
-    rw [zsmul_eq_mul]
+    rw [← mul_assoc, H2, zsmul_eq_mul]
     nth_rw 1 [mul_comm]
     rw [mul_assoc]
     apply IsIntegral.mul
     · exact RingOfIntegers.isIntegral_coe ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) x)
-    · rw [mul_comm]
-      rw [← zsmul_eq_mul]
+    · rw [mul_comm, ← zsmul_eq_mul]
       have triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
          ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
         simp only [zsmul_eq_mul, Int.cast_mul]; ring
@@ -469,8 +466,7 @@ lemma ρ_is_int :
            * c₁ α' β' γ' ^ (m K * q) • α' ^ ((a q x) *
            (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)) * c₁ α' β' γ' ^ (m K * q) •
              γ' ^ ((b q x) * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1)))) := by
-          rw [← H]
-          rw [neg_smul]
+          rw [← H, neg_smul]
           simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
             IsIntegral.neg_iff]
       clear H
@@ -492,7 +488,7 @@ lemma ρ_is_int :
           · rw [mul_comm]
             apply Nat.mul_le_mul
             · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
-            exact (finProdFinEquiv.symm.toFun x).1.isLt
+            exact (finProdFinEquiv.symm x).1.isLt
           · rw [← zsmul_eq_mul]; exact isIntegral_c₁α α' β' γ'
       · have : c₁ α' β' γ' ^ (m K * q - (b q x * (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq +
           1))) *
@@ -502,7 +498,7 @@ lemma ρ_is_int :
           nth_rw 1 [mul_comm]
           apply mul_le_mul
           · exact (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq).isLt
-          · exact (finProdFinEquiv.symm.toFun x).2.isLt
+          · exact (finProdFinEquiv.symm x).2.isLt
           · simp only [zero_le]
           · simp only [zero_le]
         rw [← this]

@@ -50,26 +50,26 @@ hand side of `R` we have `η₁ρ₁ + η₂ρ₂ᵏ + ... + ηₜρₜᵏ = 0`,
 -/
 
 lemma eq_iff_finProdFinEquiv_symm_ext (i j : Fin (q * q)) : i = j ↔
-    (finProdFinEquiv.symm.1 i).1 = (finProdFinEquiv.symm.1 j).1 ∧
-    ((finProdFinEquiv.symm.1 i).2 : Fin q) = (finProdFinEquiv.symm.1 j).2 := by
-  rw [← Prod.ext_iff, Equiv.toFun_as_coe, EmbeddingLike.apply_eq_iff_eq]
+    (finProdFinEquiv.symm i).1 = (finProdFinEquiv.symm j).1 ∧
+    ((finProdFinEquiv.symm i).2 : Fin q) = (finProdFinEquiv.symm j).2 := by
+  rw [← Prod.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 
 include hirr htriv in
 lemma rho_injective (i j : Fin (q * q)) (hij : i ≠ j) : ρ α β q i ≠ ρ α β q j := by
   rw [ne_eq, eq_iff_finProdFinEquiv_symm_ext q, not_and'] at hij
   simp only [ρ, not_or, ne_eq, mul_eq_mul_right_iff, not_or]
   constructor
-  · by_cases Heq : (finProdFinEquiv.symm.1 i).2 = (finProdFinEquiv.symm.1 j).2
+  · by_cases Heq : (finProdFinEquiv.symm i).2 = (finProdFinEquiv.symm j).2
     · unfold a b
       rw [Heq]
       intro H
       apply (hij Heq)
-      simp only [Equiv.toFun_as_coe, nsmul_eq_mul, add_left_inj, Nat.cast_inj] at H
+      simp only [nsmul_eq_mul, add_left_inj, Nat.cast_inj] at H
       exact Fin.eq_of_val_eq H
-    · let i2 : ℕ := (finProdFinEquiv.symm.toFun i).2 + 1
-      let j2 : ℕ := (finProdFinEquiv.symm.toFun j).2 + 1
-      let i1 : ℕ := (finProdFinEquiv.symm.toFun i).1 + 1
-      let j1 : ℕ := (finProdFinEquiv.symm.toFun j).1 + 1
+    · let i2 : ℕ := (finProdFinEquiv.symm i).2 + 1
+      let j2 : ℕ := (finProdFinEquiv.symm j).2 + 1
+      let i1 : ℕ := (finProdFinEquiv.symm i).1 + 1
+      let j1 : ℕ := (finProdFinEquiv.symm j).1 + 1
       rw [← ne_eq]
       change i1 + i2 • β ≠ j1 + j2 • β
       intros H
@@ -179,9 +179,9 @@ lemma ηvec_eq_zero (hVecMulEq0 : (V α β q).vecMul
 lemma hbound_sigma : η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 :=
   (house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
     (A_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    (Nat.mul_pos (one_le_m K) (n_one_le q hq0 h2mq))
+    (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq))
     ((mul_assoc 2 _ _).symm ▸ lt_mul_of_one_lt_left
-      (Nat.mul_pos (one_le_m K) (n_one_le q hq0 h2mq)) Nat.one_lt_two
+      (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)) Nat.one_lt_two
       |>.trans_eq ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
     (fun u t ↦ house_matrixA_le α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq)
     (Fintype.card_fin _)).choose_spec.1
@@ -264,9 +264,9 @@ lemma coeffs_mul_deriv_eq_zero : σ (cCoeffs α' β' γ' q) * ((Complex.log α)^
   rw [coeffs_mulVec_A_eq]
   have hMt0 := (house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
     (A_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    (Nat.mul_pos (one_le_m K) (n_one_le q hq0 h2mq))
+    (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq))
     ((mul_assoc 2 _ _).symm ▸ lt_mul_of_one_lt_left
-      (Nat.mul_pos (one_le_m K) (n_one_le q hq0 h2mq)) Nat.one_lt_two
+      (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)) Nat.one_lt_two
       |>.trans_eq ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
     (fun u t ↦ house_matrixA_le α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq)
     (Fintype.card_fin _)).choose_spec.2.1
