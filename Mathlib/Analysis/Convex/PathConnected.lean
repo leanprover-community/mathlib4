@@ -134,3 +134,26 @@ theorem segment_image_Ioc {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ioc 0 
   convert! image_affine_Ioc (sub_pos_of_lt h) x 0 1 using 2 <;> ring
 
 end Real
+
+namespace unitInterval
+
+/-- Every nonempty open subinterval of the unit interval is path-connected. -/
+lemma isPathConnected_Ioo {a b : I} (hab : a < b) : IsPathConnected (Ioo a b) := by
+  have himg : Set.projIcc (0 : ℝ) 1 zero_le_one '' Ioo (a : ℝ) (b : ℝ) = Ioo a b := by
+    ext t
+    constructor
+    · rintro ⟨r, hr, rfl⟩
+      have h0 : (0 : ℝ) ≤ r := a.2.1.trans hr.1.le
+      have h1 : r ≤ 1 := hr.2.le.trans b.2.2
+      have hcoe : ((Set.projIcc (0 : ℝ) 1 zero_le_one r : I) : ℝ) = r := by
+        simp [Set.projIcc, min_eq_right h1, max_eq_right h0]
+      rw [mem_Ioo, ← Subtype.coe_lt_coe, ← Subtype.coe_lt_coe, hcoe]
+      exact hr
+    · intro ht
+      refine ⟨(t : ℝ), ⟨Subtype.coe_lt_coe.2 ht.1, Subtype.coe_lt_coe.2 ht.2⟩, ?_⟩
+      simp [Set.projIcc, min_eq_right t.2.2, max_eq_right t.2.1]
+  rw [← himg]
+  exact ((convex_Ioo (a : ℝ) (b : ℝ)).isPathConnected
+    (Set.nonempty_Ioo.2 (Subtype.coe_lt_coe.2 hab))).image continuous_projIcc
+
+end unitInterval

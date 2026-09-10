@@ -497,6 +497,13 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   rintro y rfl
   exact JoinedIn.refl rfl
 
+/-- The range of every path is path-connected. -/
+theorem Path.range_isPathConnected (γ : Path x y) : IsPathConnected (range γ) := by
+  refine ⟨x, γ.source_mem_range, ?_⟩
+  rintro _ ⟨t, rfl⟩
+  refine ⟨(γ.truncateOfLE t.2.1).cast γ.extend_zero.symm (γ.extend_extends' t).symm, ?_⟩
+  exact fun s ↦ γ.truncate_range (mem_range_self s)
+
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn F x) :=
   ⟨x, mem_pathComponentIn_self h, fun _ ⟨γ, hγ⟩ ↦ by
     refine ⟨γ, fun t ↦
