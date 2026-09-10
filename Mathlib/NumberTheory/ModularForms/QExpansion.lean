@@ -787,3 +787,59 @@ protected lemma ModularFormClass.qExpansion_coeff_unique {c : ℕ → ℂ} (hh :
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) (m : ℕ) :
     c m = (qExpansion h f).coeff m :=
   qExpansion_coeff_unique f hh (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ) hf m
+
+namespace ModularForm
+
+/-- At an irregular cusp, the `q`-expansion is supported in degrees of the same parity as the
+weight. -/
+lemma qExpansion_coeff_eq_zero_of_not_isRegularAtInfty [Γ.IsArithmetic] [Γ.HasDetOne]
+    (f : ModularForm Γ k) (hirr : ¬Γ.IsRegularAtInfty) (n : ℕ) (hn : Odd (k + n)) :
+    (qExpansion Γ.strictWidthInfty f).coeff n = 0 := by
+  have hfshift (τ : ℍ) : f (Γ.widthInfty +ᵥ τ) = (-1 : ℂ) ^ k * f τ := by
+    have hw : -Matrix.GeneralLinearGroup.upperRightHom Γ.widthInfty ∈ Γ := by
+      have hp := Γ.widthInfty_mem_periods
+      simp only [Subgroup.periods, Subgroup.mem_strictPeriods_iff,
+        Subgroup.mem_adjoinNegOne_iff] at hp
+      exact hp.resolve_left fun h ↦ hirr (Γ.isRegularAtInfty_iff.mpr
+        (Γ.mem_strictPeriods_iff.mpr h))
+    have hf := SlashInvariantForm.slash_action_eqn'' f hw τ
+    have ha : Matrix.GeneralLinearGroup.upperRightHom Γ.widthInfty • τ =
+        Γ.widthInfty +ᵥ τ := by
+      ext
+      simp [UpperHalfPlane.coe_smul, σ, num, denom,
+        Matrix.GeneralLinearGroup.upperRightHom_apply, UpperHalfPlane.coe_vadd, add_comm]
+    rw [neg_smul, ha] at hf
+    simpa [denom, Matrix.GeneralLinearGroup.upperRightHom_apply] using hf
+  have hqshift (τ : ℍ) : 𝕢 Γ.strictWidthInfty (Γ.widthInfty +ᵥ τ) =
+      -𝕢 Γ.strictWidthInfty τ := by
+    rw [Γ.strictWidthInfty_of_not_isRegularAtInfty hirr]
+    simp only [Periodic.qParam, UpperHalfPlane.coe_vadd]
+    push_cast
+    rw [show 2 * π * I * (↑Γ.widthInfty + τ) / (2 * Γ.widthInfty) =
+      π * I + 2 * π * I * τ / (2 * Γ.widthInfty) by
+        field_simp [Γ.widthInfty_pos.ne'], exp_add, exp_pi_mul_I]
+    ring
+  let c (m : ℕ) := (-1 : ℂ) ^ k * ((-1 : ℂ) ^ m * (qExpansion Γ.strictWidthInfty f).coeff m)
+  have hsum (τ : ℍ) : HasSum (fun m ↦ c m • 𝕢 Γ.strictWidthInfty τ ^ m) (f τ) := by
+    have hs := (hasSum_qExpansion f Γ.strictWidthInfty_pos Γ.strictWidthInfty_mem_strictPeriods
+      (Γ.widthInfty +ᵥ τ)).mul_left ((-1 : ℂ) ^ k)
+    rw [hfshift] at hs
+    have hsignsq : (-1 : ℂ) ^ k * (-1 : ℂ) ^ k = 1 := by
+      rw [← zpow_add₀ (by norm_num)]
+      exact Even.neg_one_zpow ⟨k, by ring⟩
+    rw [show f τ = (-1 : ℂ) ^ k * ((-1 : ℂ) ^ k * f τ) by
+      rw [← mul_assoc, hsignsq, one_mul]]
+    apply hs.congr_fun
+    intro m
+    rw [hqshift]
+    simp only [c, smul_eq_mul]
+    rw [neg_pow]
+    ring
+  have hc := ModularFormClass.qExpansion_coeff_unique Γ.strictWidthInfty_pos
+    Γ.strictWidthInfty_mem_strictPeriods hsum n
+  have hsign : (-1 : ℂ) ^ k * (-1 : ℂ) ^ n = -1 := by
+    rw [← zpow_natCast, ← zpow_add₀ (by norm_num), hn.neg_one_zpow]
+  simp only [c, ← mul_assoc, hsign, neg_one_mul] at hc
+  simpa only [CharZero.neg_eq_self_iff] using hc
+
+end ModularForm

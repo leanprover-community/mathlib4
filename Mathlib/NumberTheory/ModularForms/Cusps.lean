@@ -163,6 +163,10 @@ noncomputable def cuspsSubMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
   carrier := {c | IsCusp c 𝒢}
   smul_mem' g _ hc := IsCusp.smul_of_mem hc g.property
 
+@[simp] lemma mem_cuspsSubMulAction {𝒢} {c : OnePoint ℝ} :
+    c ∈ cuspsSubMulAction 𝒢 ↔ IsCusp c 𝒢 :=
+  Iff.rfl
+
 /-- The type of cusp orbits of `𝒢`, i.e. orbits for the action of `𝒢` on its own cusps. -/
 abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
   MulAction.orbitRel.Quotient 𝒢 (cuspsSubMulAction 𝒢)
@@ -179,10 +183,6 @@ noncomputable def map (hGH : G ≤ H) : CuspOrbits G → CuspOrbits H :=
 @[simp] lemma map_mk (hGH : G ≤ H) (c : cuspsSubMulAction G) :
     map hGH ⟦c⟧ = ⟦⟨c.val, c.property.mono hGH⟩⟧ := rfl
 
-@[simp] lemma map_refl (c : CuspOrbits G) : map le_rfl c = c := by
-  induction c using Quotient.inductionOn
-  rfl
-
 @[simp] lemma map_map (hGH : G ≤ H) (hHK : H ≤ K) (c : CuspOrbits G) :
     map hHK (map hGH c) = map (hGH.trans hHK) c := by
   induction c using Quotient.inductionOn
@@ -193,7 +193,7 @@ lemma map_surjective (hGH : G ≤ H) [G.IsFiniteRelIndex H] :
     Function.Surjective (map hGH) := by
   intro c
   induction c using Quotient.inductionOn with
-  | h c => exact ⟨⟦⟨c.val, c.property.of_isFiniteRelIndex⟩⟧, rfl⟩
+  | h c => exact ⟨⟦⟨c.val, c.property.of_isFiniteRelIndex⟩⟧, by simp⟩
 
 open scoped Pointwise
 
@@ -208,57 +208,38 @@ noncomputable def conj (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ) :
     exact show (g * a.val * g⁻¹) • (g • d.val) = g • c.val from by
       simp only [mul_smul, inv_smul_smul, ha'])
 
-@[simp] lemma conj_mk (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ)
-    (c : cuspsSubMulAction G) :
-    conj G g ⟦c⟧ = ⟦⟨g • c.val, c.property.smul g⟩⟧ := rfl
+@[simp] lemma conj_mk (g : GL (Fin 2) ℝ) (c : cuspsSubMulAction G) :
+    conj G g ⟦c⟧ = ⟦⟨g • c.val, c.property.smul g⟩⟧ :=
+  rfl
 
 lemma conj_bijective (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ) :
     Function.Bijective (conj G g) := by
   constructor
-  · intro c d
-    induction c using Quotient.inductionOn with | h c =>
-    induction d using Quotient.inductionOn with | h d =>
-    intro h
+  · refine Quotient.forall.mpr fun c ↦ Quotient.forall.mpr fun d h ↦ ?_
     obtain ⟨a, ha⟩ := Quotient.eq.mp h
     refine Quotient.eq.mpr ⟨⟨ConjAct.toConjAct g⁻¹ • a.val, ?_⟩, ?_⟩
     · exact G.mem_pointwise_smul_iff_inv_smul_mem.mp a.property
     · have ha' : (a : GL (Fin 2) ℝ) • (g • d.val) = g • c.val := congr(Subtype.val $ha)
-      apply Subtype.ext
-      exact show (g⁻¹ * a.val * g) • d.val = c.val from by
-        simp only [mul_smul, ha', inv_smul_smul]
-  · intro c
-    induction c using Quotient.inductionOn with | h c =>
-    have hc : IsCusp (g⁻¹ • c.val) G := by
-      simpa only [← mul_smul, ← ConjAct.toConjAct_mul, inv_mul_cancel,
-        ConjAct.toConjAct_one, one_smul] using c.property.smul g⁻¹
-    refine ⟨⟦⟨g⁻¹ • c.val, hc⟩⟧, ?_⟩
-    simp only [conj_mk, smul_inv_smul]
+      ext
+      simpa [-ConjAct.toConjAct_inv, -map_inv, ConjAct.toConjAct_smul, mul_smul, inv_smul_eq_iff]
+  · refine Quotient.forall.mpr fun c ↦ ⟨⟦⟨g⁻¹ • c.val, ?_⟩⟧, by simp⟩
+    simpa [← mul_smul, ← ConjAct.toConjAct_mul] using c.property.smul g⁻¹
 
 @[simp] lemma map_conj (hGH : G ≤ H) (g : GL (Fin 2) ℝ) (c : CuspOrbits G) :
-    map ((Subgroup.pointwise_smul_le_pointwise_smul_iff
-      (a := ConjAct.toConjAct g)).mpr hGH) (conj G g c) = conj H g (map hGH c) := by
+    map (by simpa) (conj G g c) = conj H g (map hGH c) := by
   induction c using Quotient.inductionOn
   rfl
 
+/-- The natural map from cusp orbits for `G` to those for `G.adjoinNegOne` is a bijection. -/
 lemma map_adjoinNegOne_bijective (G : Subgroup (GL (Fin 2) ℝ)) :
     Function.Bijective (map G.le_adjoinNegOne) := by
-  refine ⟨?_, map_surjective G.le_adjoinNegOne⟩
-  intro c d
-  induction c using Quotient.inductionOn with | h c =>
-  induction d using Quotient.inductionOn with | h d =>
-  intro h
+  refine ⟨Quotient.forall.mpr fun c ↦ Quotient.forall.mpr fun d h ↦ ?_,
+    map_surjective G.le_adjoinNegOne⟩
   obtain ⟨a, ha⟩ := Quotient.eq.mp h
   have ha' : (a : GL (Fin 2) ℝ) • d.val = c.val := congr(Subtype.val $ha)
   rcases a.property with hmem | hmem
   · exact Quotient.eq.mpr ⟨⟨a.val, hmem⟩, Subtype.ext ha'⟩
-  · refine Quotient.eq.mpr ⟨⟨-a.val, hmem⟩, Subtype.ext ?_⟩
-    have hneg : (-a.val) • d.val = a.val • d.val := by
-      induction d.val using OnePoint.rec with
-      | infty => simp [OnePoint.smul_infty_eq_ite]
-      | coe x =>
-        simp [OnePoint.smul_some_eq_ite]
-        simp only [← neg_add, neg_eq_zero, neg_div_neg_eq]
-    exact hneg.trans ha'
+  · exact Quotient.eq.mpr ⟨⟨-a.val, hmem⟩, Subtype.ext <| by simpa using ha'⟩
 
 end CuspOrbits
 

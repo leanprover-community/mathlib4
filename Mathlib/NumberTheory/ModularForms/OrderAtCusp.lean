@@ -208,9 +208,8 @@ lemma orderAtCusp_nonneg {c : OnePoint ℝ} (hc : IsCusp c G)
 
 /-- A modular form has nonnegative order at every cusp orbit. -/
 lemma orderAtCuspOrbit_nonneg [DiscreteTopology G] (c : CuspOrbits G) (f : F) :
-    0 ≤ orderAtCuspOrbit G k c f := by
-  induction c using Quotient.inductionOn with
-  | h c => exact orderAtCusp_nonneg G k c.property f
+    0 ≤ orderAtCuspOrbit G k c f :=
+  Quotient.inductionOn c (orderAtCusp_nonneg G k ·.property f)
 
 /--
 The total order of vanishing of `F` at all cusp orbits.
@@ -227,8 +226,8 @@ lemma orderAtCuspOrbit_le_totalCuspOrder [G.IsArithmetic] (c : CuspOrbits G) (f 
   let : Fintype (CuspOrbits G) := Fintype.ofFinite _
   exact Finset.single_le_sum (fun d _ ↦ orderAtCuspOrbit_nonneg G k d f) (Finset.mem_univ c)
 
-lemma totalCuspOrder_nonneg [G.IsArithmetic] (f : F) : 0 ≤ totalCuspOrder G k f := by
-  exact Finset.sum_nonneg fun c _ ↦ orderAtCuspOrbit_nonneg G k c f
+lemma totalCuspOrder_nonneg [G.IsArithmetic] (f : F) : 0 ≤ totalCuspOrder G k f :=
+  Finset.sum_nonneg fun c _ ↦ orderAtCuspOrbit_nonneg G k c f
 
 open scoped Pointwise in
 /-- Translation preserves the order at the corresponding cusp orbit. -/

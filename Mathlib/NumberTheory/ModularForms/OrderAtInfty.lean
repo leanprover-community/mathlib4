@@ -384,17 +384,52 @@ lemma isTheta_orderAtInfty (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
     isTheta_analyticOrderAt hh hfper hfhol hfbdd hfne
 
 /-- The order at infinity is additive on products of periodic functions holomorphic on `ℍ ∪ ∞`. -/
-lemma orderAtInfty_mul_of_holo (hh : 0 < h)
+lemma orderAtInfty_mul_of_holo (hh : 0 < h) {h' : ℝ} (hh' : 0 < h')
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f)
-    (hgper : Periodic (g ∘ ofComplex) h) (hghol : MDiff g) (hgbdd : IsBoundedAtImInfty g) :
+    (hgper : Periodic (g ∘ ofComplex) h') (hghol : MDiff g) (hgbdd : IsBoundedAtImInfty g) :
     orderAtInfty (f * g) = orderAtInfty f + orderAtInfty g := by
-  have hf := analyticAt_cuspFunction_zero hh hfper hfhol hfbdd
-  have hg := analyticAt_cuspFunction_zero hh hgper hghol hgbdd
-  rw [orderAtInfty_eq_analyticOrderAt_div (f := f * g) hh (hfper.mul hgper) (hfhol.mul hghol)
-      (hfbdd.mul hgbdd), cuspFunction_mul hf.continuousAt hg.continuousAt,
-    analyticOrderAt_mul hf hg, orderAtInfty_eq_analyticOrderAt_div hh hfper hfhol hfbdd,
-    orderAtInfty_eq_analyticOrderAt_div hh hgper hghol hgbdd, ENat.toENNReal_add,
-    EReal.coe_ennreal_add, EReal.add_div_of_nonneg_right (EReal.coe_nonneg.mpr hh.le)]
+  rcases eq_or_ne f 0 with rfl | hfne
+  · have : orderAtInfty (0 : ℍ → ℂ) = ⊤ := by
+      rw [orderAtInfty_eq_top_iff_eq_zero hh hfper hfhol hfbdd]
+    rw [zero_mul, this, EReal.top_add_iff_ne_bot.mpr ?_]
+    exact (EReal.bot_lt_zero.trans_le hgbdd.orderAtInfty_nonneg).ne'
+  rcases eq_or_ne g 0 with rfl | hgne
+  · have : orderAtInfty (0 : ℍ → ℂ) = ⊤ := by
+      rw [orderAtInfty_eq_top_iff_eq_zero hh' hgper hghol hgbdd]
+    rw [mul_zero, this, EReal.add_top_iff_ne_bot.mpr ?_]
+    exact (EReal.bot_lt_zero.trans_le hfbdd.orderAtInfty_nonneg).ne'
+  have hfθ := isTheta_orderAtInfty hh hfper hfhol hfbdd hfne
+  have hgθ := isTheta_orderAtInfty hh' hgper hghol hgbdd hgne
+  have := hfθ.mul hgθ
+  simp only [← Real.exp_add, ← mul_add] at this
+  have := orderAtInfty_eq_of_isTheta this
+  simp [Pi.mul_def, this, ← orderAtInfty_eq_of_isTheta hfθ, ← orderAtInfty_eq_of_isTheta hgθ]
+
+lemma orderAtInfty_prod_of_holo {ι : Type*} {s : Finset ι} {f : ι → ℍ → ℂ} {h : ι → ℝ}
+    (hh : ∀ i ∈ s, 0 < h i) (hfper : ∀ i ∈ s, Periodic (f i ∘ ofComplex) (h i))
+    (hfhol : ∀ i ∈ s, MDiff (f i)) (hfbdd : ∀ i ∈ s, IsBoundedAtImInfty (f i)) :
+    orderAtInfty (∏ i ∈ s, f i) = ∑ i ∈ s, orderAtInfty (f i) := by
+  classical
+  by_cases! hfne : ∀ i ∈ s, f i ≠ 0
+  · have hθ : ∀ i ∈ s,
+        f i =Θ[atImInfty] fun τ ↦ exp (-2 * π * τ.im * (orderAtInfty (f i)).toReal) :=
+      fun i hi ↦ isTheta_orderAtInfty (hh i hi) (hfper i hi) (hfhol i hi) (hfbdd i hi) (hfne i hi)
+    have hprodθ := Asymptotics.IsTheta.finsetProd hθ
+    simp only [← Real.exp_sum, ← Finset.mul_sum] at hprodθ
+    have hcoe : (↑(∑ i ∈ s, (orderAtInfty (f i)).toReal) : EReal) =
+        ∑ i ∈ s, ↑(orderAtInfty (f i)).toReal :=
+      Finset.induction_on s (by simp) fun i t hi ih ↦ by simp [hi, EReal.coe_add, ih]
+    rw [s.prod_fn, orderAtInfty_eq_of_isTheta hprodθ, hcoe]
+    exact Finset.sum_congr rfl fun i hi ↦ (orderAtInfty_eq_of_isTheta (hθ i hi)).symm
+  · obtain ⟨i, hi, hfi⟩ := hfne
+    have horder : orderAtInfty (f i) = ⊤ :=
+      (orderAtInfty_eq_top_iff_eq_zero (hh i hi) (hfper i hi) (hfhol i hi) (hfbdd i hi)).2 hfi
+    have hzero : orderAtInfty (0 : ℍ → ℂ) = ⊤ :=
+      orderAtInfty_eq_top_iff.mpr fun _ ↦ Asymptotics.isBigO_zero _ _
+    rw [Finset.prod_eq_zero hi hfi, hzero, ← Finset.add_sum_erase _ _ hi, horder,
+      EReal.top_add_iff_ne_bot.mpr]
+    exact (EReal.bot_lt_zero.trans_le <| Finset.sum_nonneg fun j hj ↦
+      (hfbdd j (Finset.mem_of_mem_erase hj)).orderAtInfty_nonneg).ne'
 
 /-!
 ## Relation to the `q`-expansion

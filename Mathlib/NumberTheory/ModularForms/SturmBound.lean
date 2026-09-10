@@ -121,7 +121,7 @@ private lemma totalCuspOrder_le_sturmBound_of_le
   rw [sturmBoundSL2Z] at hbound
   have hnorm : totalCuspOrder G k f ≤
       totalCuspOrder 𝒮ℒ (k * Nat.card (𝒮ℒ ⧸ G.subgroupOf 𝒮ℒ)) (ModularForm.norm 𝒮ℒ f) :=
-    totalCuspOrder_le_norm hG hneg f
+    (totalCuspOrder_eq_norm hG hneg f).le
   rw [totalCuspOrder_SL2Z] at hnorm
   simpa only [sturmBound, hrat, Rat.cast_natCast, Int.cast_mul,
     Int.cast_natCast] using hnorm.trans hbound
@@ -138,16 +138,15 @@ private lemma totalCuspOrder_le_sturmBound_of_negOne_mem
       ((ModularForm.restrict_eq_zero_iff inf_le_left f).not.mpr hf)
   have hsum : (G.relIndex H : EReal) * totalCuspOrder H k f ≤ G.sturmBound k :=
     (relIndex_mul_totalCuspOrder_eq_restrict inf_le_left hnegG f).le.trans hbound
-  have hrat : (G.ratProjIndex : ℝ) = G.relIndex H * (H.ratProjIndex : ℝ) := by
-    exact_mod_cast ratProjIndex_eq_relIndex_mul inf_le_left hnegG hneg
-  have hpos : (0 : EReal) < G.relIndex H := by
-    exact_mod_cast Nat.pos_of_ne_zero G.relIndex_ne_zero
+  have hrat : (G.ratProjIndex : ℝ) = G.relIndex H * (H.ratProjIndex : ℝ) :=
+    mod_cast ratProjIndex_eq_relIndex_mul inf_le_left hnegG hneg
+  have hpos : (0 : EReal) < G.relIndex H :=
+    mod_cast Nat.pos_of_ne_zero G.relIndex_ne_zero
   rw [mul_comm, ← EReal.le_div_iff_mul_le hpos (EReal.natCast_ne_top _)] at hsum
   have hbudget : (G.sturmBound k : EReal) / G.relIndex H = H.sturmBound k := by
     rw [← EReal.coe_natCast, ← EReal.coe_div, EReal.coe_eq_coe_iff]
     simp only [sturmBound, hrat]
-    have hd : (G.relIndex H : ℝ) ≠ 0 := by
-      exact_mod_cast (show G.relIndex H ≠ 0 from G.relIndex_ne_zero)
+    have hd : (G.relIndex H : ℝ) ≠ 0 := mod_cast (show G.relIndex H ≠ 0 from G.relIndex_ne_zero)
     field_simp
   exact hsum.trans_eq hbudget
 
@@ -170,8 +169,8 @@ lemma totalCuspOrder_le_sturmBound
   have hsum : (G.relIndex G.adjoinNegOne : EReal) * totalCuspOrder G k f ≤
       G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) :=
     (relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne f).trans hbound
-  have hpos : (0 : EReal) < G.relIndex G.adjoinNegOne := by
-    exact_mod_cast Nat.pos_of_ne_zero G.relIndex_ne_zero
+  have hpos : (0 : EReal) < G.relIndex G.adjoinNegOne :=
+    mod_cast Nat.pos_of_ne_zero G.relIndex_ne_zero
   rw [mul_comm, ← EReal.le_div_iff_mul_le hpos (EReal.natCast_ne_top _)] at hsum
   have hbudget : (G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) : EReal) /
       G.relIndex G.adjoinNegOne = G.sturmBound k := by
@@ -199,21 +198,19 @@ lemma eq_zero_of_orderAtInfty_gt_sturmBound
   rw [orderAtCuspOrbit_mk, orderAtCusp_infty G k Fact.out f] at h
   exact hf.trans_le h
 
-/-- Finitely many Fourier coefficients determine a modular form. -/
-instance finiteDimensional_complex (G : Subgroup (GL (Fin 2) ℝ))
-    [G.IsArithmetic] [G.HasDetOne] (k : ℤ) : FiniteDimensional ℂ (ModularForm G k) := by
-  obtain ⟨N, hN⟩ : ∃ N : ℕ, G.regularityFactorInfty * G.sturmBound k < N := exists_nat_gt _
-  let L : ModularForm G k →ₗ[ℂ] (Fin N → ℂ) :=
-    { toFun f i := (qExpansion G.strictWidthInfty f).coeff i
-      map_add' f g := by
-        ext i
-        simp [ModularForm.qExpansion_add G.strictWidthInfty_pos
-          G.strictWidthInfty_mem_strictPeriods]
-      map_smul' c f := by
-        ext i
-        simp [ModularForm.qExpansion_smul G.strictWidthInfty_pos
-          G.strictWidthInfty_mem_strictPeriods] }
-  apply FiniteDimensional.of_injective L
+private noncomputable def qExpansionCoeffMap {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
+    [G.HasDetOne] (k : ℤ) (N : ℕ) : ModularForm G k →ₗ[ℂ] (Fin N → ℂ) where
+  toFun f i := (qExpansion G.strictWidthInfty f).coeff i
+  map_add' f g := by
+    ext i
+    simp [ModularForm.qExpansion_add G.strictWidthInfty_pos G.strictWidthInfty_mem_strictPeriods]
+  map_smul' c f := by
+    ext i
+    simp [ModularForm.qExpansion_smul G.strictWidthInfty_pos G.strictWidthInfty_mem_strictPeriods]
+
+private lemma qExpansionCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
+    [G.HasDetOne] {k : ℤ} {N : ℕ} (hN : G.regularityFactorInfty * G.sturmBound k < N) :
+    Function.Injective (qExpansionCoeffMap k N : ModularForm G k → Fin N → ℂ) := by
   apply (LinearMap.ker_eq_bot).mp
   rw [LinearMap.ker_eq_bot']
   intro f hf
@@ -230,9 +227,84 @@ instance finiteDimensional_complex (G : Subgroup (GL (Fin 2) ℝ))
       (G.regularityFactorInfty : EReal) * (G.sturmBound k : EReal) :=
     (qExpansion_order_le_totalCuspOrder G k f).trans
     (mul_le_mul_of_nonneg_left (totalCuspOrder_le_sturmBound f hne) (by positivity))
-  have hN' : (G.regularityFactorInfty : EReal) * (G.sturmBound k : EReal) < N := by
-    exact_mod_cast hN
-  exact hN'.not_ge (horder'.trans hbound)
+  have hN' : (G.regularityFactorInfty : EReal) * (G.sturmBound k : EReal) < N := mod_cast hN
+  grind
+
+open scoped Classical in
+private noncomputable def sturmCoeffIndex (G : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) (n : ℕ) : ℕ :=
+  if G.IsRegularAtInfty then n else if Even k then 2 * n else 2 * n + 1
+
+private noncomputable def sturmCoeffMap {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
+    [G.HasDetOne] (k : ℤ) (N : ℕ) : ModularForm G k →ₗ[ℂ] (Fin N → ℂ) where
+  toFun f i := (qExpansion G.strictWidthInfty f).coeff (sturmCoeffIndex G k i)
+  map_add' f g := by
+    ext i
+    simp [ModularForm.qExpansion_add G.strictWidthInfty_pos G.strictWidthInfty_mem_strictPeriods]
+  map_smul' c f := by
+    ext i
+    simp [ModularForm.qExpansion_smul G.strictWidthInfty_pos G.strictWidthInfty_mem_strictPeriods]
+
+private lemma sturmCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
+    [G.HasDetOne] {k : ℤ} {N : ℕ} (hN : G.sturmBound k < N) :
+    Function.Injective (sturmCoeffMap k N : ModularForm G k → Fin N → ℂ) := by
+  by_cases hreg : G.IsRegularAtInfty
+  · have heq : sturmCoeffMap (G := G) k N = qExpansionCoeffMap (G := G) k N := by
+      ext f i
+      simp [sturmCoeffMap, sturmCoeffIndex, hreg, qExpansionCoeffMap]
+    rw [heq]
+    exact qExpansionCoeffMap_injective (G := G) (by simpa [hreg] using hN)
+  apply (LinearMap.ker_eq_bot).mp
+  rw [LinearMap.ker_eq_bot']
+  intro f hf
+  apply qExpansionCoeffMap_injective (N := 2 * N) (by
+    simpa [G.regularityFactorInfty_of_not_isRegularAtInfty hreg, Nat.cast_mul] using
+      mul_lt_mul_of_pos_left hN (by norm_num : (0 : ℝ) < 2))
+  funext i
+  simp only [qExpansionCoeffMap, LinearMap.coe_mk, AddHom.coe_mk]
+  rw [show ((0 : ModularForm G k) : ℍ → ℂ) = 0 by rfl, UpperHalfPlane.qExpansion_zero]
+  simp only [map_zero]
+  by_cases hi : Odd (k + (i.val : ℤ))
+  · exact qExpansion_coeff_eq_zero_of_not_isRegularAtInfty f hreg i.val hi
+  have hi' : Even (k + (i.val : ℤ)) := Int.not_odd_iff_even.mp hi
+  by_cases hk : Even k
+  · have hii : Even (i.val : ℤ) := by
+      rcases hi' with ⟨a, ha⟩
+      rcases hk with ⟨b, hb⟩
+      exact ⟨a - b, by omega⟩
+    have hij : 2 * (i.val / 2) = i.val := by
+      rcases hii with ⟨j, hj⟩
+      omega
+    have hjN : i.val / 2 < N := by omega
+    simpa [sturmCoeffMap, sturmCoeffIndex, hreg, hk, hij] using
+      congrFun hf ⟨i.val / 2, hjN⟩
+  · have hk' : Odd k := Int.not_even_iff_odd.mp hk
+    have hii : Odd (i.val : ℤ) := by
+      rcases hi' with ⟨a, ha⟩
+      rcases hk' with ⟨b, hb⟩
+      exact ⟨a - b - 1, by omega⟩
+    have hij : 2 * (i.val / 2) + 1 = i.val := by
+      rcases hii with ⟨j, hj⟩
+      omega
+    have hjN : i.val / 2 < N := by omega
+    simpa [sturmCoeffMap, sturmCoeffIndex, hreg, hk, hij] using
+      congrFun hf ⟨i.val / 2, hjN⟩
+
+/-- Finitely many Fourier coefficients determine a modular form. -/
+instance finiteDimensional_complex (G : Subgroup (GL (Fin 2) ℝ))
+    [G.IsArithmetic] [G.HasDetOne] (k : ℤ) : FiniteDimensional ℂ (ModularForm G k) := by
+  obtain ⟨N, hN⟩ : ∃ N : ℕ, G.sturmBound k < N := exists_nat_gt _
+  exact FiniteDimensional.of_injective (sturmCoeffMap k N) (sturmCoeffMap_injective hN)
+
+/-- The complex dimension of a space of modular forms is bounded by the number of Fourier
+coefficients up to the Sturm bound. -/
+lemma finrank_complex_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] [G.HasDetOne] (k : ℤ) :
+    Module.finrank ℂ (ModularForm G k) ≤ ⌊G.sturmBound k⌋₊ + 1 := by
+  let N := ⌊G.sturmBound k⌋₊ + 1
+  simpa only [Module.finrank_fin_fun] using
+    (sturmCoeffMap k N).finrank_le_finrank_of_injective
+      (sturmCoeffMap_injective (by
+        simpa only [N, Nat.cast_add, Nat.cast_one] using
+          Nat.lt_floor_add_one (G.sturmBound k)))
 
 /-- Modular forms at any arithmetic level form a finite-dimensional real vector space.
 Restriction to the intersection with `SL(2, ℤ)` also covers determinant `-1`. -/
@@ -244,5 +316,19 @@ instance finiteDimensional_real (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic]
       map_add' f g := by ext z; rfl
       map_smul' c f := by ext z; rfl }
   exact FiniteDimensional.of_injective L (ModularForm.restrict_injective inf_le_left)
+
+/-- The real dimension at an arbitrary arithmetic level is bounded using restriction to its
+determinant-one subgroup. -/
+lemma finrank_real_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ) :
+    Module.finrank ℝ (ModularForm G k) ≤ 2 *
+      (⌊(G ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))).sturmBound k⌋₊ + 1) := by
+  let K := G ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))
+  let L : ModularForm G k →ₗ[ℝ] ModularForm K k :=
+    { toFun := ModularForm.restrict inf_le_left
+      map_add' f g := by ext z; rfl
+      map_smul' c f := by ext z; rfl }
+  refine (L.finrank_le_finrank_of_injective (ModularForm.restrict_injective inf_le_left)).trans ?_
+  rw [← Module.finrank_mul_finrank ℝ ℂ (ModularForm K k), Complex.finrank_real_complex]
+  exact Nat.mul_le_mul_left 2 (finrank_complex_le K k)
 
 end ModularForm
