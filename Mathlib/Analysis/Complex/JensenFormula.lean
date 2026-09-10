@@ -261,6 +261,33 @@ lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
     aesop
 
 /--
+Let `D : ℂ → ℤ` be a function with locally finite support within the circle with center `c` and
+radius `R`, such as the zero- and pole divisor of a meromorphic function on the circle. Then, the
+Herglotz–Riesz weighted circle average of the function `∑ᶠ u, (D u * log ‖· - u‖)` at a point `w`
+of the open ball equals `∑ᶠ u, D u * log ‖w - u‖`.
+
+This is the analogue of `circleAverage_log_norm_factorizedRational` for the Poisson integral, and
+generalizes `circleAverage_re_herglotzRieszKernel_mul_log` from a single point `ρ` to a divisor on
+the circle.
+-/
+theorem circleAverage_re_herglotzRieszKernel_smul_log_norm_factorizedRational {R : ℝ} {c w : ℂ}
+    (D : Function.locallyFinsuppWithin (sphere c R) ℤ) (hw : w ∈ ball c R) :
+    circleAverage (Complex.re ∘ herglotzRieszKernel c w • ∑ᶠ u, (D u * log ‖· - u‖)) c R
+      = ∑ᶠ u, D u * log ‖w - u‖ := by
+  have hD := D.finiteSupport (isCompact_sphere c R)
+  have hw' : w ∉ sphere c |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
+  rw [finsum_eq_sum_of_support_subset (s := hD.toFinset) _ (fun u ↦ by contrapose; aesop),
+    finsum_eq_sum_of_support_subset (s := hD.toFinset) _ (fun u ↦ by aesop),
+    Finset.smul_sum, circleAverage_sum (fun i _ ↦ by fun_prop)]
+  refine Finset.sum_congr rfl fun u hu ↦ ?_
+  rw [← circleAverage_re_herglotzRieszKernel_mul_log
+    (D.supportWithinDomain (hD.mem_toFinset.1 hu)) hw, ← smul_eq_mul, ← circleAverage_smul]
+  congr 1
+  ext z
+  simp only [Pi.smul_apply, Pi.smul_apply', Pi.mul_apply, Function.comp_apply, smul_eq_mul]
+  ring
+
+/--
 If  `g : ℂ → ℂ` is analytic without zero on the closed ball with center `c` and radius `R`, then the
 circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 -/
@@ -304,6 +331,36 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
 variable {R : ℝ} {c w : ℂ} {f : ℂ → ℂ}
 
 /--
+Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
+decomposition, the Herglotz–Riesz weighted circle average of `log ‖f ·‖` at a point `w` of the open
+ball equals `log ‖h w‖`, corrected by a finite sum over the divisor of `f` on the circle.
+
+This is the Poisson–Jensen formula expressed in terms of the extended canonical decomposition; see
+`MeromorphicOn.log_norm_meromorphicTrailingCoeffAt` for the formulation in terms of `f` alone.
+-/
+theorem Complex.ECanonicalDecomp.circleAverage_re_herglotzRieszKernel_smul_log_norm {h : ℂ → ℂ}
+    (D : Complex.ECanonicalDecomp f h R) (hw : w ∈ ball 0 R) :
+    circleAverage (Complex.re ∘ herglotzRieszKernel 0 w • (Real.log ‖f ·‖)) 0 R
+      = ∑ᶠ u, (divisor f (sphere 0 R)) u * Real.log ‖w - u‖ + Real.log ‖h w‖ := by
+  have hR : 0 < R := pos_of_mem_ball hw
+  have h₃w : w ∉ sphere 0 |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
+  -- Replace `log ‖f‖` by the boundary sum plus `log ‖h‖` and integrate term by term, using the
+  -- Poisson formula for the harmonic function `log ‖h‖`.
+  rw [circleAverage_congr_codiscreteWithin (f₂ := Complex.re ∘ herglotzRieszKernel 0 w •
+      (∑ᶠ u, (divisor f (sphere 0 R) u * Real.log ‖· - u‖) + (Real.log ‖h ·‖))) ?_ hR.ne',
+    smul_add, circleAverage_add (by fun_prop) ?_,
+    circleAverage_re_herglotzRieszKernel_smul_log_norm_factorizedRational _ hw,
+    InnerProductSpace.HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
+      (fun x hx ↦ (D.analyticOnNhd x hx).harmonicAt_log_norm (D.ne_zero x hx)) hw]
+  · have : CircleIntegrable (fun z ↦ Real.log ‖h z‖) 0 R := by
+      apply circleIntegrable_log_norm (D.analyticOnNhd.meromorphicOn.mono_set _)
+      simpa [abs_of_pos hR] using sphere_subset_closedBall
+    fun_prop
+  · rw [abs_of_pos hR]
+    filter_upwards [D.log_norm_eventuallyEq] with a ha
+    simp [ha]
+
+/--
 **The Poisson–Jensen Formula.** If `f` is meromorphic on `closedBall 0 R` and has vanishing order at
 an interior point `w ∈ ball 0 R`, then the logarithm of the norm of the trailing coefficient of `f`
 at `w` equals a Herglotz–Riesz weighted circle average of `log ‖f ·‖`, corrected by a finite sum
@@ -318,103 +375,15 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 
       = circleAverage (Complex.re ∘ herglotzRieszKernel 0 w * (log ‖f ·‖)) 0 R
         - ∑ᶠ i, (divisor f (ball 0 R) i) * log ‖Complex.canonicalFactor R i w‖ := by
   have hR : 0 < R := pos_of_mem_ball h₁w
-  have h₃w : w ∉ sphere 0 |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
   -- Write `f = (Blaschke product) • h` with `h` analytic and nowhere zero on the closed
   -- ball, where the Blaschke product collects the zeros and poles of `f`.
   obtain ⟨h, h₀h⟩ := h₁f.exists_ecanonicalDecomp <| by
     apply (h₁f.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_closedBall hR.le)).1
     exact ⟨⟨w, ball_subset_closedBall h₁w⟩, by simp [h₂w]⟩
-  have h₁h := h₀h.analyticOnNhd
-  have h₂h := h₀h.ne_zero
-  have h₃h := h₀h.eventuallyEq
-  -- Auxiliary finiteness and integrability facts for the boundary computation below.
-  have h₂f : (divisor f (sphere 0 R)).support.Finite := divisor_sphere_support_finite
-  have h₃f : (divisor f (ball 0 R)).support.Finite := h₁f.divisor_ball_support_finite
-  have h₄f {a : ℂ} (ha : (divisor f (sphere 0 R)) a = 0) :
-      ∀ b ∈ h₂f.toFinset, ‖a - b‖ ^ (divisor f (sphere 0 R)) b ≠ 0 := by
-    intro b hb
-    rw [Finite.mem_toFinset] at hb
-    refine zpow_ne_zero _ ?_
-    rw [norm_ne_zero_iff, sub_ne_zero]
-    rintro rfl
-    exact hb ha
-  have cast_smul {x : ℂ} {φ : ℂ → ℝ} :
-      (divisor f (sphere 0 R)) x • φ = ((divisor f (sphere 0 R)) x : ℝ) • φ := by aesop
-  have ρ₁ : CircleIntegrable (Complex.re ∘ herglotzRieszKernel 0 w • (log ‖h ·‖)) 0 R := by
-    have : CircleIntegrable (fun z ↦ Real.log ‖h z‖) 0 R := by
-      apply circleIntegrable_log_norm (h₁h.meromorphicOn.mono_set _)
-      simpa [abs_of_pos hR] using sphere_subset_closedBall
-    fun_prop
-  have ρ₂ : ∀ i ∈ h₂f.toFinset, CircleIntegrable ((divisor f (sphere 0 R)) i •
-      Complex.re ∘ herglotzRieszKernel 0 w • (log ‖· - i‖)) 0 R :=
-    fun i _ ↦ by fun_prop
-  -- The Poisson–Jensen identity for the circle average of `log ‖f‖`, obtained by replacing `f` with
-  -- its canonical decomposition and integrating term by term.
-  have key : circleAverage (Complex.re ∘ herglotzRieszKernel 0 w • (log ‖f ·‖)) 0 R =
-      ∑ᶠ x, (divisor f (sphere 0 R)) x * log ‖w - x‖ + log ‖h w‖ :=
-    calc circleAverage (Complex.re ∘ herglotzRieszKernel 0 w • (log ‖f ·‖)) 0 R
-      _ = circleAverage (Complex.re ∘ herglotzRieszKernel 0 w •
-          (log ‖(((∏ᶠ u, (Complex.canonicalFactor R u) ^ (-divisor f (ball 0 R) u))
-            * (∏ᶠ u, (· - u) ^ (divisor f (sphere 0 R)) u)) • h) ·‖)) 0 R := by
-        apply circleAverage_congr_codiscreteWithin _ hR.ne'
-        rw [abs_of_pos hR]
-        filter_upwards [h₃h.filter_mono (codiscreteWithin_mono sphere_subset_closedBall)]
-        simp_all
-      _ = circleAverage (Complex.re ∘ herglotzRieszKernel 0 w •
-          (log ‖(((∏ᶠ u, (· - u) ^ (divisor f (sphere 0 R)) u)) • h) ·‖)) 0 R := by
-        apply circleAverage_congr_sphere
-        rw [abs_of_pos hR]
-        intro a ha
-        simp only [Pi.smul_apply', Pi.mul_apply, Function.comp_apply, norm_smul, norm_smul,
-          norm_mul]
-        congr
-        convert one_mul (a := ‖(∏ᶠ (u : ℂ), (· - u) ^ (divisor f (sphere 0 R)) u) a‖)
-        rw [finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _ (by aesop)]
-        simp only [zpow_neg, Finset.prod_apply, Pi.inv_apply, Pi.pow_apply, Finset.prod_inv_distrib,
-          norm_inv, norm_prod, norm_zpow, inv_eq_one]
-        apply Finset.prod_eq_one
-        intro b hb
-        simp [Complex.norm_canonicalFactor_eval_circle_eq_one
-          ((divisor f (ball 0 R)).supportWithinDomain (h₃f.mem_toFinset.1 hb)) ha]
-      _ = circleAverage (Complex.re ∘ herglotzRieszKernel 0 w • fun x ↦
-          ∑ u ∈ h₂f.toFinset, (divisor f (sphere 0 R) u) * log ‖x - u‖ + log ‖h x‖) 0 R := by
-        apply circleAverage_congr_codiscreteWithin _ hR.ne'
-        rw [abs_of_pos hR]
-        filter_upwards [(divisor f (sphere 0 R)).eq_zero_codiscreteWithin,
-          Filter.self_mem_codiscreteWithin (sphere 0 R)] with a ha h₂a
-        simp only [Pi.smul_apply', smul_eq_mul, Complex.norm_mul, Function.comp_apply,
-          mul_eq_mul_left_iff]
-        left
-        rw [finprod_eq_prod_of_mulSupport_subset (s := h₂f.toFinset) _ (by aesop)]
-        simp only [Finset.prod_apply, Pi.pow_apply, norm_prod, norm_zpow]
-        rw [log_mul (Finset.prod_ne_zero_iff.2 (h₄f ha))
-            (by simp [h₂h a (Std.le_of_eq h₂a)]), log_prod (h₄f ha)]
-        congr 1
-        exact Finset.sum_congr rfl (fun i hi ↦ log_zpow ‖a - i‖ ((divisor f (sphere 0 R)) i))
-      _ = circleAverage ((∑ u ∈ h₂f.toFinset,
-              (divisor f (sphere 0 R) u) • Complex.re ∘ herglotzRieszKernel 0 w • (log ‖· - u‖))
-            + Complex.re ∘ herglotzRieszKernel 0 w • (log ‖h ·‖)) 0 R := by
-        apply circleAverage_congr_sphere
-        intro b hb
-        simp only [Pi.smul_apply', Function.comp_apply, smul_eq_mul, zsmul_eq_mul, Pi.add_apply,
-          Finset.sum_apply, Pi.mul_apply, Pi.intCast_apply, mul_add, Finset.mul_sum]
-        congr
-        ext
-        ring
-      _ = ∑ᶠ (x : ℂ), (divisor f (sphere 0 R)) x * log ‖w - x‖ + log ‖h w‖ := by
-        rw [circleAverage_add (CircleIntegrable.sum _ ρ₂) ρ₁, circleAverage_sum ρ₂,
-          InnerProductSpace.HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
-            (fun x hx ↦ (h₁h x hx).harmonicAt_log_norm (h₂h x hx)) h₁w,
-          finsum_eq_sum_of_support_subset (s := h₂f.toFinset) _ (fun _ _ ↦ (by aesop))]
-        congr 1
-        apply Finset.sum_congr rfl
-        intro x hx
-        rw [cast_smul, circleAverage_smul, smul_eq_mul, smul_eq_mul,
-          circleAverage_re_herglotzRieszKernel_mul_log
-            ((divisor f (sphere 0 R)).supportWithinDomain (h₂f.mem_toFinset.1 hx)) h₁w]
-  -- Combine the circle-average identity with the value of `log ‖f‖` at `w`.
+  -- Combine the circle-average identity with the value of `log ‖h‖` at `w`.
   rw [show (Complex.re ∘ herglotzRieszKernel 0 w * (log ‖f ·‖))
-        = Complex.re ∘ herglotzRieszKernel 0 w • (log ‖f ·‖) by ext x; simp [smul_eq_mul], key,
+        = Complex.re ∘ herglotzRieszKernel 0 w • (log ‖f ·‖) by ext x; simp [smul_eq_mul],
+    h₀h.circleAverage_re_herglotzRieszKernel_smul_log_norm h₁w,
     h₀h.log_norm_eq (ball_subset_closedBall h₁w) h₂w hR]
   ring_nf
 
