@@ -129,9 +129,7 @@ namespace NonUnitalRingHom
 
 open NonUnitalSubsemiring
 
-variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
-variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : R →ₙ+* S) (g : G)
+variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T] (f : R →ₙ+* S)
 
 /-- The range of a non-unital ring homomorphism is a non-unital subsemiring.
 See note [range copy pattern]. -/
@@ -521,7 +519,6 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice_eq _ _ := rfl
 
 variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
 @[simp]
@@ -671,15 +668,11 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalRingHom
 
-variable {F : Type*} [FunLike F R S]
-
-theorem eq_of_eqOn_stop {f g : F}
+theorem eq_of_eqOn_stop {F : Type*} [FunLike F R S] {f g : F}
     (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
   DFunLike.ext _ _ fun _ => h trivial
 
 variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
-  [NonUnitalRingHomClass F R S]
-  {S' : Type*} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 
 open NonUnitalSubsemiringClass NonUnitalSubsemiring
@@ -713,11 +706,14 @@ theorem srange_eq_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective
 
 /-- If two non-unital ring homomorphisms are equal on a set, then they are equal on its
 non-unital subsemiring closure. -/
-theorem eqOn_sclosure {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R → S) s) :
+theorem eqOn_sclosure {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+    {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R → S) s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ eqSlocus f g from closure_le.2 h
 
-theorem eq_of_eqOn_sdense {s : Set R} (hs : closure s = ⊤) {f g : F}
+theorem eq_of_eqOn_sdense
+    {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+    {s : Set R} (hs : closure s = ⊤) {f g : F}
     (h : s.EqOn (f : R → S) (g : R → S)) : f = g :=
   eq_of_eqOn_stop <| hs ▸ eqOn_sclosure h
 
