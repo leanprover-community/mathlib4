@@ -233,10 +233,10 @@ public theorem ContinuousMap.isOpen_setOf_mapsTo_forall_mem
     (p : Fin m → α) {V : Fin m → Set X} (hV : ∀ j, IsOpen (V j)) :
     IsOpen {f : C(α, X) | (∀ i, MapsTo f (K i) (U i)) ∧ ∀ j, f (p j) ∈ V j} := by
   have h₁ : IsOpen {f : C(α, X) | ∀ i, MapsTo f (K i) (U i)} := by
-    rw [setOf_forall]
-    exact isOpen_iInter_of_finite fun i ↦ ContinuousMap.isOpen_setOf_mapsTo (hK i) (hU i)
+    rw [ofPred_forall]
+    exact isOpen_iInter_of_finite fun i ↦ ContinuousMap.isOpen_setOfPred_mapsTo (hK i) (hU i)
   have h₂ : IsOpen {f : C(α, X) | ∀ j, f (p j) ∈ V j} := by
-    rw [setOf_forall]
+    rw [ofPred_forall]
     exact isOpen_iInter_of_finite fun j ↦ (hV j).preimage (continuous_eval_const (p j))
   exact h₁.inter h₂
 

@@ -800,18 +800,18 @@ public theorem toPath_homotopic_of_joinedIn_slsc
     intro s
     rw [K_fn_apply, Path.trans_apply]
     by_cases hs : (s : ℝ) ≤ 1 / 2
-    · rw [dif_pos hs,
+    · rw [dite_eq_left hs,
         joinedInSLSC_uFn_zero_left_eq_zero_of_le_half hs,
         joinedInSLSC_vFn_eq_two_mul_of_le_half hs, hF0_eq]; rfl
-    · rw [dif_neg hs,
+    · rw [dite_eq_right hs,
         joinedInSLSC_uFn_zero_left_eq_two_mul_sub_one_of_half_le (not_le.mp hs).le,
         joinedInSLSC_vFn_eq_one_of_half_le (not_le.mp hs).le]; rfl
   have hK_one : ∀ s : I, K_fn (1, s) = (β.toPath.trans (Path.refl v)) s := by
     intro s
     rw [K_fn_apply, Path.trans_apply, joinedInSLSC_uFn_one_left]
     by_cases hs : (s : ℝ) ≤ 1 / 2
-    · rw [dif_pos hs, joinedInSLSC_vFn_eq_two_mul_of_le_half hs, hF1_eq]; rfl
-    · rw [dif_neg hs,
+    · rw [dite_eq_left hs, joinedInSLSC_vFn_eq_two_mul_of_le_half hs, hF1_eq]; rfl
+    · rw [dite_eq_right hs,
         joinedInSLSC_vFn_eq_one_of_half_le (not_le.mp hs).le, hF1_eq]; rfl
   have hK_at_zero : ∀ t : I, K_fn (t, 0) = x₀ := fun t ↦ by
     rw [K_fn_apply, joinedInSLSC_vFn_zero_right]
