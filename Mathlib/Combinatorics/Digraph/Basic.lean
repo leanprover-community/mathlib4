@@ -247,13 +247,6 @@ instance {G : Digraph V} : PartialOrder G.SpanningSubgraph :=
 @[grind =] theorem SpanningSubgraph.le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
     H ≤ K ↔ H.val ≤ K.val := .rfl
 
-
-/-- The adjacency relation of a spanning subgraph, restricted to the edges of the ambient
-digraph. -/
-@[simp] def SpanningSubgraph.Adj {G : Digraph V} (H : G.SpanningSubgraph) :
-    {e : V × V // G.Adj e.1 e.2} → Prop := fun e ↦ H.val.Adj e.1.1 e.1.2
-
-
 /-- The top subgraph `⊤` -/
 instance : OrderTop G.SpanningSubgraph where
   top := ⟨G, by simp⟩
@@ -301,73 +294,13 @@ instance : HNot G.SpanningSubgraph where
 instance : SDiff G.SpanningSubgraph where
   sdiff H K := H ⊓ Kᶜ
 
-@[simp] theorem SpanningSubgraph.sSup_val_adj {G : Digraph V} (s : Set G.SpanningSubgraph)
-    (v w : V) : (sSup s).val.Adj v w ↔ ∃ H ∈ s, H.val.Adj v w := .rfl
-
-@[simp] theorem SpanningSubgraph.sInf_val_adj {G : Digraph V} (s : Set G.SpanningSubgraph)
-    (v w : V) : (sInf s).val.Adj v w ↔
-      (∀ H ∈ s, H.val.Adj v w) ∧ G.Adj v w := .rfl
-
-@[simp] theorem SpanningSubgraph.compl_val_adj {G : Digraph V} (H : G.SpanningSubgraph)
-    (v w : V) : (Hᶜ).val.Adj v w ↔ G.Adj v w ∧ ¬H.val.Adj v w := .rfl
-
-@[simp] theorem SpanningSubgraph.himp_val_adj {G : Digraph V} (H K : G.SpanningSubgraph)
-    (v w : V) : (H ⇨ K).val.Adj v w ↔ (G.Adj v w ∧ ¬H.val.Adj v w) ∨ K.val.Adj v w := .rfl
-
-@[simp] theorem SpanningSubgraph.sdiff_val_adj {G : Digraph V} (H K : G.SpanningSubgraph)
-    (v w : V) : (H \ K).val.Adj v w ↔ H.val.Adj v w ∧ (G.Adj v w ∧ ¬K.val.Adj v w) := .rfl
-
-@[grind =]
-theorem SpanningSubgraph.adj_le_adj_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
-    H.Adj ≤ K.Adj ↔ ∀ ⦃v w⦄, H.val.Adj v w → K.val.Adj v w :=
-  ⟨fun h v w hvw ↦ h ⟨(v, w), H.property.left.right hvw⟩ hvw, fun h _ he ↦ h he⟩
-
-theorem SpanningSubgraph.adj_le_iff {G : Digraph V} {H K : G.SpanningSubgraph} :
-    H.Adj ≤ K.Adj ↔ H ≤ K := by
-  grind
-
-theorem SpanningSubgraph.adj_injective {G : Digraph V} :
-    Function.Injective (SpanningSubgraph.Adj (G := G)) :=
-  fun _ _ h ↦ (SpanningSubgraph.adj_le_iff.mp h.le).antisymm (SpanningSubgraph.adj_le_iff.mp h.ge)
-
-@[simp] theorem SpanningSubgraph.adj_sSup {G : Digraph V} (s : Set G.SpanningSubgraph) :
-    SpanningSubgraph.Adj (sSup s) = ⨆ H ∈ s, SpanningSubgraph.Adj H := by
-  ext e
-  simp
-
-@[simp] theorem SpanningSubgraph.adj_sInf {G : Digraph V} (s : Set G.SpanningSubgraph) :
-    SpanningSubgraph.Adj (sInf s) = ⨅ H ∈ s, SpanningSubgraph.Adj H := by
-  ext e
-  simp [e.2]
-
-@[simp] theorem SpanningSubgraph.adj_top {G : Digraph V} :
-    SpanningSubgraph.Adj (⊤ : G.SpanningSubgraph) = ⊤ := by
-  ext e
-  exact iff_true_intro e.2
-
-@[simp] theorem SpanningSubgraph.adj_compl {G : Digraph V} (H : G.SpanningSubgraph) :
-    SpanningSubgraph.Adj Hᶜ = (SpanningSubgraph.Adj H)ᶜ := by
-  ext e
-  simp [e.2]
-
-@[simp] theorem SpanningSubgraph.adj_himp {G : Digraph V} (H K : G.SpanningSubgraph) :
-    SpanningSubgraph.Adj (H ⇨ K) = SpanningSubgraph.Adj H ⇨ SpanningSubgraph.Adj K := by
-  ext e
-  simp [himp_eq, e.2, or_comm]
-
-@[simp] theorem SpanningSubgraph.adj_sdiff {G : Digraph V} (H K : G.SpanningSubgraph) :
-    SpanningSubgraph.Adj (H \ K) = SpanningSubgraph.Adj H \ SpanningSubgraph.Adj K := by
-  ext e
-  simp [sdiff_eq, e.2]
-
-instance : CompleteAtomicBooleanAlgebra G.SpanningSubgraph :=
-  fast_instance% Function.Injective.completeAtomicBooleanAlgebra SpanningSubgraph.Adj
-    SpanningSubgraph.adj_injective SpanningSubgraph.adj_le_iff (fun {_ _} ↦ ?_) (fun _ _ ↦ rfl)
-      (fun _ _ ↦ rfl) SpanningSubgraph.adj_sSup SpanningSubgraph.adj_sInf SpanningSubgraph.adj_top
-      rfl SpanningSubgraph.adj_compl SpanningSubgraph.adj_himp SpanningSubgraph.adj_compl
-      SpanningSubgraph.adj_sdiff
-where finally
-  simp_rw [lt_iff_le_not_ge, SpanningSubgraph.adj_le_iff]
+instance : CompleteAtomicBooleanAlgebra G.SpanningSubgraph := fast_instance% by
+  apply Function.Injective.completeAtomicBooleanAlgebra
+    (fun (H : G.SpanningSubgraph) (e : {e : V × V // G.Adj e.1 e.2}) ↦ H.val.Adj e.1.1 e.1.2) <;>
+    simp [SpanningSubgraph, Function.Injective, funext_iff, Subtype.ext_iff, Digraph.ext_iff,
+      Pi.le_def, le_Prop_eq, lt_iff_le_not_ge, Subtype.forall, Prod.forall, SupSet.sSup,
+      InfSet.sInf, Top.top, Bot.bot, Compl.compl, HImp.himp, HNot.hnot, SDiff.sdiff, Max.max,
+      Min.min, Lattice.inf, SemilatticeSup.sup, SemilatticeInf.inf, imp_iff_not_or] <;> grind
 
 end SpanningSubgraphs
 
