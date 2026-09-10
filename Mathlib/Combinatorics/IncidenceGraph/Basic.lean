@@ -61,6 +61,7 @@ scoped notation "E(" G ")" => IncidenceHypergraph.edgeSet (IncidenceGraph.toInci
 /-! ## Other incidence -/
 
 open Classical in
+/-- The other incidence of the same edge, with an arbitrary value outside `I(G)`. -/
 noncomputable def other [Nonempty ι] (i : ι) : ι :=
   if h : i ∈ I(G) then G.other' ⟨i, h⟩ else Classical.arbitrary ι
 
