@@ -61,7 +61,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
     refine ⟨Nat.zero_lt_succ (2 * (h K) + 1), ?_⟩
     refine ⟨Module.finrank_pos, ?_⟩
     · apply pow_pos
-      grind [(c15_geg_1 α β σ α' β' γ' hirr htriv habc)]
+      grind [(one_le_c₁₅ α β σ α' β' γ' hirr htriv habc)]
   have h2mq : 2 * (m K) ∣ q ^ 2 := by
     rw [pow_two, mul_assoc]; exact dvd_mul_right _ _
   let u : Fin ((m K) * (n K) q) := ⟨0, by
@@ -79,7 +79,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
       apply mul_le_mul (le_refl _) ?_ (by positivity) (by positivity)
       · simp only [Nat.one_le_ceil_iff];
         apply pow_pos
-        grind [(c15_geg_1 α β σ α' β' γ' hirr htriv habc)]
+        grind [(one_le_c₁₅ α β σ α' β' γ' hirr htriv habc)]
   have H2 : (2 * (m K)) * (c₁₅ α β α' β' γ') ^ 4 ≤ q := by
     simp only [q, mul_assoc, Nat.cast_mul, Nat.cast_ofNat, Nat.ofNat_pos, mul_le_mul_iff_right₀]
     apply mul_le_mul (le_refl _) ?_ ?_ (by positivity)
@@ -91,7 +91,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
         · norm_cast
           grind [Module.finrank_pos]
     · apply pow_nonneg
-      grind [(c15_geg_1 α β σ α' β' γ' hirr htriv habc)]
+      grind [(one_le_c₁₅ α β σ α' β' γ' hirr htriv habc)]
   have H3 : 6* (h K) ≤ (n K) q := by
     unfold n
     calc _ ≤ ((2 * (m K)) * (6 * (h K))) ^ 2 / (2 * (m K)) := ?_
@@ -142,7 +142,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
     · apply H4
     simp only [Nat.cast_le]
     exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-  apply absurd (use5 α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq) ?_
+  apply absurd (r_rpow_lt_c₁₅_rpow α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ?_
   · simp only [Real.rpow_natCast, not_lt]
     rw [← Real.rpow_le_rpow_iff (z:= ( ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h
         K)) / 2) : ℝ)⁻¹)]
@@ -153,7 +153,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
         β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h K)))) ≤
        (c₁₅ α β α' β' γ') ^ (4 : ℝ)  := by
         apply Real.rpow_le_rpow_of_exponent_le
-        · exact c15_geg_1 α β σ α' β' γ' hirr htriv habc
+        · exact one_le_c₁₅ α β σ α' β' γ' hirr htriv habc
         · rw [mul_div]
           ring_nf
           simp only [mul_assoc]
@@ -186,7 +186,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
     · apply this
     · simp only [Real.rpow_ofNat]
       apply H6
-    · exact c15_nonneg α β σ α' β' γ' hirr htriv habc
+    · exact c₁₅_nonneg α β σ α' β' γ' hirr htriv habc
     · apply div_ne_zero
       · have : 3 * (h K) < ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
           calc _ < (6 * (h K) : ℝ)  := by norm_cast; grind [Module.finrank_pos]
@@ -194,7 +194,7 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
         grind
       · simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
     · positivity
-    · apply pow_nonneg (c15_nonneg α β σ α' β' γ' hirr htriv habc)
+    · apply pow_nonneg (c₁₅_nonneg α β σ α' β' γ' hirr htriv habc)
     · positivity
     · have Hh : 0 < (h K) := by unfold h; exact Module.finrank_pos
       unfold h at *

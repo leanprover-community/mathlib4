@@ -517,7 +517,7 @@ def c1ρ : 𝓞 K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int α β σ α' β' γ' hirr htriv habc q hq0 h2mq)) ℤ
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma one_le_c1rho : 1 ≤ ↑(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) := by
+lemma one_le_cρ : 1 ≤ ↑(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) := by
   apply Int.one_le_abs
   by_contra H
   simp only [mul_eq_zero, pow_eq_zero_iff', ne_eq,
@@ -527,8 +527,8 @@ lemma one_le_c1rho : 1 ≤ ↑(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2
   | inr h2 => apply (c₁_ne_zero α' β' γ'); exact h2.1
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma one_le_norm_c1rho : 1 ≤ norm (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) := by
-  have := one_le_c1rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+lemma one_le_norm_cρ : 1 ≤ norm (cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) := by
+  have := one_le_cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq
   have : |(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq)| = ‖(cρ α β σ α' β' γ' hirr htriv habc q
       hq0 h2mq : ℤ)‖ := by
     simp only [Int.cast_abs]
@@ -541,8 +541,8 @@ lemma one_le_norm_c1rho : 1 ≤ norm (cρ α β σ α' β' γ' hirr htriv habc q
   exact cρ_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
 
 include α β σ α' β' γ' hirr htriv habc in
-lemma zero_le_c1rho : 0 ≤ ↑(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) :=
-  Int.le_of_lt (one_le_c1rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+lemma zero_le_cρ : 0 ≤ ↑(cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq) :=
+  Int.le_of_lt (one_le_cρ α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma crho_le_abs_crho :
