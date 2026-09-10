@@ -173,7 +173,7 @@ section
 variable (X)
 
 /-- The forgetful functor mapping an arrow to its domain. -/
-@[stacks 001G]
+@[stacks 001G, implicit_reducible]
 def forget : Over X ⥤ T :=
   Comma.fst _ _
 
@@ -287,7 +287,7 @@ lemma mapCongr_rfl {X Y : T} (f : X ⟶ Y) :
 variable (T) in
 /-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
-  obj X := Cat.of (Over X)
+  obj X := ↧(Over X)
   map f := (map f).toCatHom
   map_id X := congr($(mapId_eq X).toCatHom)
   map_comp f g := congr($(mapComp_eq f g).toCatHom)
@@ -521,7 +521,6 @@ def iteratedSliceForwardIsoPost (f : Over X) :
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 /-- If `X : T` is terminal, then the over category of `X` is equivalent to `T`. -/
@@ -877,7 +876,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
 variable (T) in
 /-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
-  obj X := Cat.of (Under X.unop)
+  obj X := ↧(Under X.unop)
   map f := (map f.unop).toCatHom
   map_id X := congr($(mapId_eq X.unop).toCatHom)
   map_comp f g := congr($(mapComp_eq (g.unop) (f.unop)).toCatHom)
@@ -1206,7 +1205,6 @@ end Functor
 
 namespace StructuredArrow
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor from the structured arrow category on the projection functor for any structured
 arrow category. -/
@@ -1218,7 +1216,6 @@ def ofStructuredArrowProjEquivalence.functor (F : D ⥤ T) (Y : T) (X : D) :
       (fun g => by exact g.hom) (fun m => by have := m.w; cat_disch)) _ _
     (fun f => f.right.hom) (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofStructuredArrowProjEquivalence.functor`. -/
 @[simps!]
@@ -1240,7 +1237,6 @@ def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical functor from the structured arrow category on the diagonal functor
 `T ⥤ T × T` to the structured arrow category on `Under.forget`. -/
@@ -1317,7 +1313,6 @@ end StructuredArrow
 
 namespace CostructuredArrow
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor from the costructured arrow category on the projection functor for any costructured
 arrow category. -/
@@ -1329,7 +1324,6 @@ def ofCostructuredArrowProjEquivalence.functor (F : T ⥤ D) (Y : D) (X : T) :
       (fun g => by exact g.hom) (fun m => by have := m.w; cat_disch)) _ _
     (fun f => f.left.hom) (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofCostructuredArrowProjEquivalence.functor`. -/
 @[simps!]
@@ -1364,7 +1358,6 @@ def ofDiagEquivalence.functor (X : T × T) :
     _ _
     (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofDiagEquivalence.functor`. -/
 @[simps!]

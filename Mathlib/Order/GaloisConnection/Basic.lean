@@ -89,7 +89,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] {l : α → β} {u : β → α}
 
 @[to_dual (rename := α ↔ β, a₁ → b₁, a₂ → b₂)]
 theorem l_sup (gc : GaloisConnection l u) : l (a₁ ⊔ a₂) = l a₁ ⊔ l a₂ :=
-  (gc.isLUB_l_image isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
+  (gc.isLUB_l_image isLUB_pair).unique <| by simp [isLUB_pair]
 
 end SemilatticeSup
 
@@ -141,8 +141,8 @@ section image2
 section LUB_GLB
 
 variable [Preorder α] [Preorder β] [Preorder γ] {s : Set α}
-  {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
-  {a₀ : α} {b₀ : β} {c₀ : γ}
+  {t : Set β} {l u : α → β → γ} {u₁ : β → γ → α} {u₂ : α → γ → β}
+  {a₀ : α} {b₀ : β}
 
 @[to_dual]
 theorem isLUB_image2_of_isLUB_isLUB (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
@@ -179,7 +179,7 @@ end LUB_GLB
 section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {s : Set α}
-  {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
+  {t : Set β} {l u : α → β → γ} {u₁ : β → γ → α} {u₂ : α → γ → β}
 
 @[to_dual]
 theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))

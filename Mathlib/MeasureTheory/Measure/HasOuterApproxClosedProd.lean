@@ -135,7 +135,7 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     refine tendsto_lintegral_filter_of_dominated_convergence 1
       (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun n ↦ ae_of_all _ fun ω ↦ ?_)
       (by simp) (ae_of_all _ this)
-    grw [Finset.prod_le_one (by simp), Finset.prod_le_one (by simp)]
+    grw [Finset.prod_le_one₀ (by simp), Finset.prod_le_one₀ (by simp)]
     · simp
     · exact fun j _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (ht j) _ _
     · exact fun i _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (hs i) _ _
@@ -146,7 +146,7 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     refine tendsto_lintegral_filter_of_dominated_convergence 1
       (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun _ ↦ ae_of_all _ fun _ ↦ ?_)
       (by simp) (ae_of_all _ this)
-    grw [Finset.prod_le_one (by simp), Finset.prod_le_one (by simp)]
+    grw [Finset.prod_le_one₀ (by simp), Finset.prod_le_one₀ (by simp)]
     · simp
     · exact fun j _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (ht j) _ _
     · exact fun i _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (hs i) _ _
@@ -204,7 +204,6 @@ lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction {μ : Measure 
     ξ = μ.prod ν :=
   ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
 
-set_option linter.flexible false in -- simp followed by fun_prop
 lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i, X i) × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : ∀ (f : (i : ι) → X i →ᵇ ℝ) (g : T →ᵇ ℝ),
@@ -247,7 +246,6 @@ lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction {μ : Measure Z}
     ξ = μ.prod ν :=
   ext_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
 
-set_option linter.flexible false in -- simp followed by fun_prop
 /-- A finite measure `μ` over `X × Y` is determined by the values `∫ p, f p.1 * g p.2 ∂μ`,
 for `f : X → ℝ` and `g : Y → ℝ` any bounded continuous functions. -/
 lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
