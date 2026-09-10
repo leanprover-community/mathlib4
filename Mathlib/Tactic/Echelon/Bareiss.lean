@@ -50,7 +50,8 @@ def checkDecideEq {u : Level} (α : Q(Type u)) : MetaM Bool := do
 /-- `norm_num`'s core as an entry certifier. -/
 def normNumCertifier : EntryCertifier := fun p => do
   let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
-  return (b, prf)
+  unless b do throwError "norm_num refutes{indentExpr p}"
+  return prf
 
 /-- The applicability check of the Bareiss method, which requires a commutative domain. -/
 def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do

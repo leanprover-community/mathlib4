@@ -9,6 +9,8 @@ public import Mathlib.Data.Fin.Tuple.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Echelon.Core
+public import Mathlib.Tactic.Matrix.MulExpand
+public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (referenced by name)
 public import Mathlib.Util.Qq
 
 import Mathlib.Data.List.OfFn
@@ -17,7 +19,7 @@ import Mathlib.Data.List.OfFn
 # Certificate construction for the Bareiss decomposition
 
 `certifyDecomposition` builds the `Echelon.Decomposition` certificate from the decomposition
-data, proving each certificate condition by `decide`, or from proofs of the
+data, proving each certificate condition by kernel evaluation, or from proofs of the
 individual entries supplied by an entry certifier.
 
 ## Main definitions
@@ -29,14 +31,13 @@ individual entries supplied by an entry certifier.
 ## Implementation notes
 
 The elimination records its echelon form `U`, making the product a certificate obligation
-of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`. On the
-certifier path this is built one entry at a time. `norm_num` does close it today (via
-@[simp] rewrites), but is several times slower and does not handle some edge cases
-(e.g. 0x0).
+of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`.
 
-Once a list-based matrix multiplication exists, the better route is to prove the product
-condition of the list representation and bridge it to the matrix-based version, leaving only
-the per-entry arithmetic evidence to the certifier.
+The product is proved on the row lists of the literals: `ListMatrix.mul` on them is expanded
+to the sums of products of the entries, which the certifier proves equal to the recorded
+entries of `U`, and the equation of the matrix literals follows by a single definitional hint.
+Stated entrywise on the matrices, every entry would carry indexed reads, which the kernel
+evaluates by walking the literal.
 -/
 
 @[expose] public section
@@ -164,22 +165,13 @@ def certifyDefEq (p : Q(Prop)) : MetaM Q($p) := do
   | Eq _ lhs _ => mkEqRefl lhs
   | _ => throwError "expected an equation:{indentExpr p}"
 
-/-- Prove that a recorded `entry` is nonzero by having `certifier` refute its equation with
-`zero`; `site` names the entry in errors. -/
-def certifyNonzeroEntry {u : Level} {α : Q(Type u)} (certifier : EntryCertifier)
-    (entry zero : Q($α)) (site : MessageData) : MetaM Q($entry ≠ $zero) := do
-  let (b, prf) ← certifier q($entry = $zero)
-  if b then throwError "{site} is zero"
-  return prf
-
 /-- Prove `∀ i, L.diag i ≠ 0` from the recorded entries of `L`. -/
 def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) (certifier : EntryCertifier) :
     MetaM Q(∀ i, ($(L.matrix)).diag i ≠ 0) := do
   let zero : Q($α) ← mkNumeral α 0
   certifyForallFin q(∀ i, ($(L.matrix)).diag i ≠ 0) fun i _ =>
-    certifyNonzeroEntry certifier (L.entries[i]!)[i]! zero
-      m!"the diagonal entry of the transform at {i}"
+    certifier q($((L.entries[i]!)[i]!) ≠ $zero)
 
 /-- Prove `L.IsLowerTriangular`: the elimination emits literal zeros above the diagonal,
 so every entry condition closes by `rfl`. -/
@@ -204,14 +196,16 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
         ∀ c : Fin $n, $pivot i = c → $(U.matrix) i c ≠ 0) fun i p => do
     let_expr And zeros nonzeros := p
       | throwError "unexpected shape of the pivot entry conditions:{indentExpr p}"
+    -- typed, so that the quotation below can read the context through the type of `hz`
+    have zeros : Q(Prop) := zeros
+    have nonzeros : Q(Prop) := nonzeros
     -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
     let col? := if h : i < pivots.size then some pivots[i] else none
     let hz ← certifyForallFin zeros fun j cell =>
       certifyImplication (col?.all (j < ·)) cell certifyDefEq
     let hn ← certifyForallFin nonzeros fun c cell =>
       certifyImplication (col? == some c) cell fun _ =>
-        certifyNonzeroEntry certifier (U.entries[i]!)[c]! zero
-          m!"the pivot entry at ({i}, {c})"
+        certifier q($((U.entries[i]!)[c]!) ≠ $zero)
     mkAppM ``And.intro #[hz, hn]
   -- both pivot-function conditions are decided at once in their adjacent-pairs chain
   -- form, which reduces linearly along the list
@@ -228,30 +222,36 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
     q(congrArg (fun f => Matrix.of f) (FinVec.etaExpand_eq (fun i => $A ($σ i))).symm)
     q(($A).submatrix $σ id = $Aσ)
 
-/-- Prove the product `L * Aσ = U` entrywise from the literals' recorded entries. At
-concrete indices the product reduces to the fold of its terms, which `certifier` settles
-against the entry of `U`. -/
+open Mathlib.Tactic.Matrix in
+/-- Prove the product `L * Aσ = U` from the literals' recorded entries: the product of the row
+lists is expanded to the sums of products, which `certifier?` proves equal to the entries of `U`,
+or the kernel evaluates when there is none. -/
 def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (certifier : EntryCertifier) :
+    (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
     MetaM Q($(L.matrix) * $(Aσ.matrix) = $(U.matrix)) := do
-  have zero : Q($α) := ← mkNumeral α 0
-  -- synthesised once, so that every cell references one instance node rather than rebuilding
-  -- the projection path from `_cr`
-  have _hmul : Q(HMul $α $α $α) := ← synthInstanceQ q(HMul $α $α $α)
-  have _hadd : Q(HAdd $α $α $α) := ← synthInstanceQ q(HAdd $α $α $α)
-  let cell (i j : Nat) : MetaM Expr := do
-    let terms : Array Q($α) := Array.ofFn (n := m) fun c =>
-      q($((L.entries[i]!)[c]!) * $((Aσ.entries[c]!)[j]!))
-    -- the fold must reproduce what `(L * Aσ) i j` expands to
-    have sum : Q($α) := terms.foldr (fun t acc => q($t + $acc)) zero
-    have entry : Q($α) := (U.entries[i]!)[j]!
-    let (b, prf) ← certifier q($sum = $entry)
-    unless b do
-      throwError "the product of the transform does not match the echelon form at ({i}, {j})"
-    return prf
-  return q(Matrix.ext $(← certifyForallFin
-      q(∀ i j, ($(L.matrix) * $(Aσ.matrix)) i j = $(U.matrix) i j) fun i p => do
-    certifyForallFin p fun j _ => cell i j))
+  let rows (entries : Array (Array Q($α))) : List (List Q($α)) := entries.toList.map Array.toList
+  let r := proveMul (← synthInstanceQ q(Zero $α)) (← synthInstanceQ q(Add $α))
+    (← synthInstanceQ q(Mul $α)) m m n (rows L.entries) (rows Aσ.entries)
+  have F : Q(List (List $α)) := r.expr
+  have listU : Q(List (List $α)) := mkListLitQ (α := q(List $α)) ((rows U.entries).map mkListLitQ)
+  let hV : Q($F = $listU) ← match certifier? with
+    | none =>
+      -- the kernel evaluates the sums of products against the recorded entries
+      pure (mkExpectedPropHint q(Eq.refl $F) q($F = $listU))
+    | some certifier => do
+      let rowEqs ← r.rows.zipIdx.mapM fun (row, i) =>
+        mkListCongr <$> row.zipIdx.mapM fun (fold, j) => do
+          have entry : Q($α) := (U.entries[i]!)[j]!
+          return ⟨fold, entry, ← certifier q($fold = $entry)⟩
+      let ⟨_, _, h⟩ := mkListCongr (α := q(List $α)) rowEqs
+      pure h
+  let pf ← mkEqTrans
+    (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr m, toExpr m, toExpr n, r.A, r.B]))
+    (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr m, toExpr n])
+      (← mkEqTrans r.proof hV))
+  -- `pf` is stated on `ofLists` forms, which unfold on row-list literals to exactly the
+  -- `Matrix.of`/`vecCons` terms of the literals, so the kernel settles the hint by reduction
+  return mkExpectedPropHint pf q($(L.matrix) * $(Aσ.matrix) = $(U.matrix))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`, proving every condition by `decide` unless `certifier?`
@@ -274,8 +274,7 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have Aσm := Aσ.matrix
   have Um := U.matrix
   let hperm ← dispatch q(($A).submatrix $σ id = $Aσm) fun _ => certifyPermEq A Aσm σ
-  let hprod ← dispatch q($Lm * $Aσm = $Um) fun certifier =>
-    certifyProductEq _cr L Aσ U certifier
+  have hprod : Q($Lm * $Aσm = $Um) := ← certifyProductEq _cr L Aσ U certifier?
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let hpivot ← dispatch q(($Um).IsPivotedBy $pivot) fun certifier =>
     certifyPivotedBy _cr U pivot data.pivot certifier

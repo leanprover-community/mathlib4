@@ -92,10 +92,9 @@ def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
 the decomposition constructed. -/
 @[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
 
-/-- An entry certifier settles a proposition about a single entry, returning its truth value
-together with a proof of the proposition or of its negation, and throwing on a proposition
-it cannot settle. -/
-@[expose] def EntryCertifier := Expr → MetaM (Bool × Expr)
+/-- An entry certifier proves a proposition about a single entry, throwing on a proposition
+it cannot prove. -/
+@[expose] def EntryCertifier := Expr → MetaM Expr
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
@@ -170,7 +169,7 @@ certifier its certificate conditions are built with. -/
 structure Model where
   /-- Run the elimination on the entries of a matrix literal. -/
   producer : Producer
-  /-- Settle a proposition about a single entry, or `none` when `decide` proves them all. -/
+  /-- Prove a proposition about a single entry, or `none` when `decide` proves them all. -/
   entryCertifier? : Option EntryCertifier := none
 
 /-- An extension of the Bareiss ring computation model. -/
