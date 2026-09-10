@@ -110,8 +110,6 @@ variable {R} in
 instance (V : FGModuleCat.{v} R) : Module.Finite R V :=
   V.property
 
--- Needs to unfold the `forget₂` at `instances` transparency.
-set_option backward.isDefEq.respectTransparency.instances false in
 instance : (forget₂ (FGModuleCat.{v} R) (ModuleCat.{v} R)).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

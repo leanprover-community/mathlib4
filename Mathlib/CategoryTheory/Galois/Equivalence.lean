@@ -54,7 +54,6 @@ instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F
     obtain ⟨A, ⟨i⟩⟩ := exists_lift_of_continuous (F := F) X
     exact ⟨A, ⟨ObjectProperty.isoMk _ i⟩⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 instance : (functorToContAction F).EssSurj := by
   let F' : C ⥤ FintypeCat.{u₁} := F ⋙ FintypeCat.uSwitch.{w, u₁}
   let : FiberFunctor F' := FiberFunctor.comp_right _

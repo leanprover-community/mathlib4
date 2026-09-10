@@ -78,7 +78,6 @@ lemma evaluation_eq_zero_iff_notMem_basicOpen (x : U) (f : X.presheaf.obj (op U)
   rw [X.toRingedSpace.mem_basicOpen f x.1 x.2, ← not_iff_not, not_not]
   exact (IsLocalRing.residue_ne_zero_iff_isUnit _)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
   simp
@@ -89,13 +88,11 @@ lemma basicOpen_eq_bot_iff_forall_evaluation_eq_zero (f : X.presheaf.obj (op U))
   exact ⟨fun h ↦ h ▸ fun a _ hc ↦ hc,
     fun h ↦ eq_bot_iff.mpr <| fun a ha ↦ h a (X.toRingedSpace.basicOpen_le f ha) ha⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma Γevaluation_eq_zero_iff_notMem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f = 0 ↔ x ∉ X.toRingedSpace.basicOpen f :=
   evaluation_eq_zero_iff_notMem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
   evaluation_ne_zero_iff_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f

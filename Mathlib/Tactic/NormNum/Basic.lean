@@ -559,12 +559,10 @@ theorem isRat_div {α : Type u} [DivisionRing α] : {a b : α} → {cn : ℤ} �
     IsRat (a * b⁻¹) cn cd → IsRat (a / b) cn cd
   | _, _, _, _, h => by simpa [div_eq_mul_inv] using h
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Helper function to synthesize a typed `DivisionSemiring α` expression. -/
 def inferDivisionSemiring {u : Level} (α : Q(Type u)) : MetaM Q(DivisionSemiring $α) :=
   return ← synthInstanceQ q(DivisionSemiring $α) <|> throwError "not a division semiring"
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Helper function to synthesize a typed `DivisionRing α` expression. -/
 def inferDivisionRing {u : Level} (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ q(DivisionRing $α) <|> throwError "not a division ring"

@@ -521,8 +521,6 @@ lemma trW_of_isIso [P.ContainsZero] {X Y : C} (f : X ⟶ Y) [IsIso f] : P.trW f 
   refine (P.trW.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
--- TODO: regressed after removing respectTransparency
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma smul_mem_trW_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     P.trW (n • f) ↔ P.trW f :=
   P.trW.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))

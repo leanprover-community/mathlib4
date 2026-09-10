@@ -691,9 +691,7 @@ universe u v
 variable {K : Type u} [NontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
-@[implicit_reducible]
-private def myId {α : Sort u} (a : α) : α :=
-  a
+set_option allowUnsafeReducibility true
 
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides
@@ -702,7 +700,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
     f = spectralAlgNorm K L := by
   apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
   intro x
-  let E : Type v := myId K⟮x⟯
+  let E : Type v := id K⟮x⟯
   let : Field E := id <| show Field K⟮x⟯ by infer_instance
   let : Module K E := id <| show Module K K⟮x⟯ by infer_instance
   let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id

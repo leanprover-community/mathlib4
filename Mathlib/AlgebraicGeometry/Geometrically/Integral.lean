@@ -82,7 +82,6 @@ instance (s : S) [GeometricallyIntegral f] :
     GeometricallyIntegral (f.fiberToSpecResidueField s) :=
   MorphismProperty.pullback_snd _ _ inferInstance
 
-set_option backward.isDefEq.respectTransparency.instances false in
 instance (s : S) [GeometricallyIntegral f] : IsIntegral (f.fiber s) :=
   GeometricallyIntegral.geometrically_isIntegral _ _ _ (.of_hasPullback _ _)
 

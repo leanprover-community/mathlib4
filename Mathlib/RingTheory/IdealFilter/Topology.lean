@@ -124,9 +124,6 @@ lemma mem_nhds_zero_iff {s : Set (WithIdealFilter F)} :
     s ∈ 𝓝 0 ↔ ∃ I ∈ F, idealSet I ⊆ s := by
   simpa [zero_vadd] using mem_nhds_iff (a := 0) (s := s)
 
--- Defeq abuse: uses `AddSubmonoidClass (Submodule A A) A` as
--- `AddSubmonoidClass (Submodule A A) (WithIdealFilter F)`.
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- The topology is linear in the sense that `𝓝 0` has a basis of ideals. -/
 instance instIsLinearTopology : IsLinearTopology (WithIdealFilter F) (WithIdealFilter F) :=
   IsLinearTopology.mk_of_hasBasis' (R := (WithIdealFilter F))

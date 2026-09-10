@@ -55,7 +55,6 @@ lemma mem_freeLocus {p} : p ∈ freeLocus R M ↔
     Module.Free (Localization.AtPrime p.asIdeal) (LocalizedModule p.asIdeal.primeCompl M) :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
     (Rₚ Mₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal]

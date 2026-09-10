@@ -323,18 +323,15 @@ lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
 
 variable (X Y : Scheme.{u})
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- (Implementation Detail)
 The coproduct of the two schemes is given by indexed coproducts over `WalkingPair`. -/
 noncomputable
 def coprodIsoSigma : X ⨿ Y ≅ ∐ fun i : ULift.{u} WalkingPair ↦ i.1.casesOn X Y :=
   Sigma.whiskerEquiv Equiv.ulift.symm (fun _ ↦ by exact Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma ι_left_coprodIsoSigma_inv : Sigma.ι _ ⟨.left⟩ ≫ (coprodIsoSigma X Y).inv = coprod.inl :=
   Sigma.ι_comp_map' _ _ _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma ι_right_coprodIsoSigma_inv : Sigma.ι _ ⟨.right⟩ ≫ (coprodIsoSigma X Y).inv = coprod.inr :=
   Sigma.ι_comp_map' _ _ _
 

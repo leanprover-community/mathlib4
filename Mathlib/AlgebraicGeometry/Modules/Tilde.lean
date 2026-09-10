@@ -414,7 +414,6 @@ def tildeSelf : tilde (ModuleCat.of R R) ≅ SheafOfModules.unit.{u} _ := .refl 
 instance : IsIso (Scheme.Modules.fromTildeΓ (SheafOfModules.unit.{u} (Spec R).ringCatSheaf)) :=
   isIso_fromTildeΓ_iff.mpr ⟨_, ⟨tildeSelf⟩⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Tilde of direct sums of `R` as an `R`-module is isomorphic to the free sheaf. -/
 noncomputable
 def tildeFinsupp (ι : Type u) : tilde (ModuleCat.of R (ι →₀ R)) ≅ SheafOfModules.free.{u} ι :=

@@ -580,8 +580,6 @@ lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (h
   ext v
   simp [mvfderiv, -Pi.smul_apply', fromTangentSpace_mfderiv_smul_apply ha hg]
 
-set_option allowUnsafeReducibility true in
-attribute [local semireducible] TangentSpace in
 @[simp, to_fun mvfderiv_fun_mul]
 lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     d% (f * g) x = f x • d% g x + (g x) • (d% f x) := by

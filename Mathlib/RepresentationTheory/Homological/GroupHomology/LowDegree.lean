@@ -635,7 +635,6 @@ def cyclesOfIsCycle₁ (x : G →₀ A) (hx : IsCycle₁ x) :
     cycles₁ (Rep.ofDistribMulAction k G A) :=
   ⟨x, (mem_cycles₁_iff (A := Rep.ofDistribMulAction k G A) x).2 hx⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem isCycle₁_of_mem_cycles₁
     (x : G →₀ A) (hx : x ∈ cycles₁ (Rep.ofDistribMulAction k G A)) :
     IsCycle₁ x := by
@@ -649,7 +648,6 @@ def boundariesOfIsBoundary₁ (x : G →₀ A) (hx : IsBoundary₁ x) :
     boundaries₁ (Rep.ofDistribMulAction k G A) :=
   ⟨x, hx⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem isBoundary₁_of_mem_boundaries₁
     (x : G →₀ A) (hx : x ∈ boundaries₁ (Rep.ofDistribMulAction k G A)) :
     IsBoundary₁ x := hx
@@ -662,7 +660,6 @@ def cyclesOfIsCycle₂ (x : G × G →₀ A) (hx : IsCycle₂ x) :
     cycles₂ (Rep.ofDistribMulAction k G A) :=
   ⟨x, (mem_cycles₂_iff (A := Rep.ofDistribMulAction k G A) x).2 hx⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem isCycle₂_of_mem_cycles₂
     (x : G × G →₀ A) (hx : x ∈ cycles₂ (Rep.ofDistribMulAction k G A)) :
     IsCycle₂ x := (mem_cycles₂_iff (A := Rep.ofDistribMulAction k G A) x).1 hx
@@ -675,7 +672,6 @@ def boundariesOfIsBoundary₂ (x : G × G →₀ A) (hx : IsBoundary₂ x) :
     boundaries₂ (Rep.ofDistribMulAction k G A) :=
   ⟨x, hx⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem isBoundary₂_of_mem_boundaries₂
     (x : G × G →₀ A) (hx : x ∈ boundaries₂ (Rep.ofDistribMulAction k G A)) :
     IsBoundary₂ x := hx

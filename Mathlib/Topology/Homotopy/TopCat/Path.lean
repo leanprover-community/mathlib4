@@ -37,8 +37,6 @@ protected structure Path (x y : X) where
 
 attribute [simp] Path.hom₀ Path.hom₁
 
--- Would need `(ULift.{u, 0} ↑unitInterval) = TopCat.I` at instances transparency
-set_option backward.isDefEq.respectTransparency.instances false in
 variable {X} in
 /-- The bijection between `TopCat.Path X x y` and `_root_.Path x y`. -/
 @[simps!]

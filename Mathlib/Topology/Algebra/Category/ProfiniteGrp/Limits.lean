@@ -93,8 +93,6 @@ def toLimit (P : ProfiniteGrp.{u}) : P ⟶ limit (diagram P) :=
   ofHom { toLimitFun P with
   continuous_toFun := toLimitFun_continuous P }
 
--- Defeq abuse, see `change` below.
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- An auxiliary result, superseded by `toLimit_surjective` -/
 theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr

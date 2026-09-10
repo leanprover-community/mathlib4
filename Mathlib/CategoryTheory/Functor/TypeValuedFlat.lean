@@ -73,8 +73,6 @@ def fromOverSubfunctor : Subfunctor (Over.forget X ⋙ F) where
   obj U := F.map U.hom ⁻¹' {x}
   map _ _ _ := by simpa [← comp_apply, ← Functor.map_comp]
 
--- Would need `(Over.forget X ⋙ F).obj U = F.obj U.left` at `instances` transparency.
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma mem_fromOverSubfunctor_iff {U : Over X} (u : F.obj U.left) :
     u ∈ (fromOverSubfunctor F x).obj U ↔ F.map U.hom u = x := Iff.rfl

@@ -62,8 +62,6 @@ section
 variable (W : MorphismProperty C) {X : C}
   (P : StructuredArrow (W.Q.obj X) W.Q → Prop)
 
--- The new goal given in the `suffices` clause is not type-correct
-set_option backward.isDefEq.respectTransparency.instances false in
 open Construction in
 private lemma induction_structuredArrow'
     (hP₀ : P (StructuredArrow.mk (𝟙 (W.Q.obj X))))

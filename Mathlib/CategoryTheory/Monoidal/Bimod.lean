@@ -622,7 +622,6 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable def hom : TensorBimod.X (regular R) P ⟶ P.X :=
   coequalizer.desc P.actLeft (by dsimp; rw [Category.assoc, left_assoc])
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- The underlying morphism of the inverse component of the left unitor isomorphism. -/
 noncomputable def inv : P.X ⟶ TensorBimod.X (regular R) P :=
   (λ_ P.X).inv ≫ (η[R.X] ▷ _) ≫ coequalizer.π _ _
@@ -686,7 +685,6 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable def hom : TensorBimod.X P (regular S) ⟶ P.X :=
   coequalizer.desc P.actRight (by dsimp; rw [Category.assoc, right_assoc, Iso.hom_inv_id_assoc])
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- The underlying morphism of the inverse component of the right unitor isomorphism. -/
 noncomputable def inv : P.X ⟶ TensorBimod.X P (regular S) :=
   (ρ_ P.X).inv ≫ (_ ◁ η[S.X]) ≫ coequalizer.π _ _

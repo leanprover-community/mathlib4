@@ -48,8 +48,6 @@ instance : CoeSort FiniteGrp.{u} (Type u) where
 instance : Category FiniteGrp :=
   inferInstanceAs <| Category (InducedCategory _ FiniteGrp.toGrp)
 
--- Would need to have a new type synonym for the `FunLike` instance for the induced category.
-set_option backward.isDefEq.respectTransparency.instances false in
 @[to_additive]
 instance : ConcreteCategory FiniteGrp (· →* ·) :=
   inferInstanceAs <| ConcreteCategory (InducedCategory _ toGrp) _

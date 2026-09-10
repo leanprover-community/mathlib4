@@ -142,7 +142,6 @@ lemma LocalSubring.exists_le_valuationSubring (A : LocalSubring K) :
     apply hCA.2.1
     exact isUnit_iff_exists_inv.mpr ⟨⟨b, hCB.1 hbB⟩, Subtype.ext congr(($e).1)⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma Ideal.image_subset_nonunits_valuationSubring {A : Subring K} (I : Ideal A) (hI : I ≠ ⊤) :
     ∃ B : ValuationSubring K, A ≤ B.toSubring ∧ A.subtype '' I ⊆ B.nonunits := by
   have ⟨M, hM, le⟩ := I.exists_le_maximal hI

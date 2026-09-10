@@ -119,7 +119,6 @@ lemma ι_image_le (W : U.toScheme.Opens) : U.ι ''ᵁ W ≤ U := by
 lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
   Opens.inclusion'_map_eq_top _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma mem_ι_image_iff {x : U} {V : Opens U} : (x : X) ∈ U.ι ''ᵁ V ↔ x ∈ V :=
   U.ι.apply_mem_image_iff
@@ -152,7 +151,6 @@ def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
     U.toScheme.presheaf.stalk x ≅ X.presheaf.stalk x.1 :=
   X.restrictStalkIso (Opens.isOpenEmbedding _) _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
     {V : U.toScheme.Opens} (x : U) (hx : x ∈ V) :
@@ -160,7 +158,6 @@ lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
         X.presheaf.germ (U.ι ''ᵁ V) x.1 ⟨x, hx, rfl⟩ :=
     PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.isOpenEmbedding _ _ _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[reassoc]
 lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
     (hx : x ∈ V) : X.presheaf.germ (U.ι ''ᵁ V) x ⟨x, hx, rfl⟩ ≫
@@ -233,7 +230,6 @@ lemma Scheme.Opens.ι_image_basicOpen_topIso_inv (r : Γ(X, U)) :
   simp only [Scheme.Opens.toScheme_presheaf_obj]
   rw [ι_image_basicOpen', basicOpen_res_eq, topIso_inv, basicOpen_res_eq X]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma Scheme.Opens.mem_basicOpen_toScheme {U : X.Opens} {V : Scheme.Opens U} {r : Γ(U, V)} {x : U} :
     x ∈ U.toScheme.basicOpen r ↔ (x : X) ∈ X.basicOpen r := by

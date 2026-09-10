@@ -139,7 +139,6 @@ instance restrict_RankOne : RankOne (v.restrict) where
   hom' := (RankOne.hom v).comp embedding
   strictMono' := (strictMono v).comp embedding_strictMono
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma restrict_RankOne_hom_eq :
   RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl

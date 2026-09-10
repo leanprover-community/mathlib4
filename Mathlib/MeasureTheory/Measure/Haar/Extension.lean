@@ -162,13 +162,11 @@ noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E 
     rw [map_smul]
     exact integral_smul x (H.pushforward μA f)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[to_additive]
 theorem integrate_apply (f : CompactlySupportedContinuousMap B E) :
     H.integrate μA μC f = ∫ c, pushforward H μA f c ∂μC :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[to_additive]
 theorem integrate_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f ≤ g) :
     integrate H μA μC f ≤ integrate H μA μC g :=
@@ -177,7 +175,6 @@ theorem integrate_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f ≤ 
 
 variable [T2Space B] [MeasurableSpace B] [BorelSpace B]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
 can define a Haar measure on `B` induced by the Haar measures on `A` and `C`. -/
 @[to_additive /-- If `φ : A →+ B` and `ψ : B →+ C` define a short exact sequence of additive
@@ -186,18 +183,15 @@ and `C`. -/]
 noncomputable def inducedMeasure : Measure B :=
   RealRMK.rieszMeasure ⟨integrate H μA μC, fun _ _ ↦ integrate_mono H μA μC⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[to_additive]
 instance inducedMeasure_regular : (inducedMeasure H μA μC).Regular :=
   RealRMK.regular_rieszMeasure _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[to_additive]
 theorem integral_inducedMeasure (f : CompactlySupportedContinuousMap B ℝ) :
     ∫ b : B, f b ∂(inducedMeasure H μA μC) = integrate H μA μC f := by
   apply RealRMK.integral_rieszMeasure
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[to_additive]
 instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) where
   lt_top_of_isCompact K hK := by
@@ -236,7 +230,6 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, and if
 `ψ` is injective on an open set `U`, then the induced measure on `U` is bounded above by

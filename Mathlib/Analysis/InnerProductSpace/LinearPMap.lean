@@ -234,7 +234,6 @@ variable {A : E →ₗ.[𝕜] E}
 
 theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Every self-adjoint `LinearPMap` has dense domain.
 
 This is not true by definition since we define the adjoint without the assumption that the

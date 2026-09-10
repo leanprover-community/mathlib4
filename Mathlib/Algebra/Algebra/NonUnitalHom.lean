@@ -100,9 +100,6 @@ variable [Semiring R] [Semiring S] {φ : R →+* S}
   {A B : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
   [NonUnitalNonAssocSemiring B] [Module S B]
 
--- This needs `DFunLike.coe φ = DFunLike.coe (φ : R →* S)` to hold at `instances` transparency,
--- which seems reasonable but isn't true at the moment.
-set_option backward.isDefEq.respectTransparency.instances false in
 -- see Note [lower instance priority]
 instance (priority := 100) {F R S A B : Type*}
     {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}

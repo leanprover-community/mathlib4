@@ -72,8 +72,6 @@ theorem of_injective [hG' : IsZGroup G'] (hf : Function.Injective f) : IsZGroup 
 
 instance [IsZGroup G] (H : Subgroup G) : IsZGroup H := of_injective H.subtype_injective
 
--- Needs to unfold `Sylow.mapSurjective`.
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem of_surjective [Finite G] [hG : IsZGroup G] (hf : Function.Surjective f) : IsZGroup G' := by
   rw [isZGroup_iff] at hG ⊢
   intro p hp P
@@ -248,7 +246,6 @@ theorem le_center_or_le_commutator [P.Normal] : P ≤ Subgroup.center G ∨ P �
   · rw [← h, commutator_def]
     exact Subgroup.commutator_mono le_top le_top
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- A cyclic Sylow subgroup is either central in its normalizer or contained in the commutator
   subgroup. -/
 theorem normalizer_le_centralizer_or_le_commutator :

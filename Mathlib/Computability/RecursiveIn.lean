@@ -219,7 +219,7 @@ theorem partrec_of_oracle
   Nat.RecursiveIn.partrec_of_oracle (by simpa only [Partrec.nat_iff] using hO) hf
 
 /-- If a function is recursive in a constant partial function, then it is partial recursive. -/
-lemma partrec_of_const {s} (hf : RecursiveIn {(fun _ => s : ℕ →. ℕ)} f) : Partrec f :=
+lemma partrec_of_const {s} (hf : RecursiveIn {fun _ => s} f) : Partrec f :=
   hf.partrec_of_oracle
     (fun g hg => by rw [Set.mem_singleton_iff.mp hg]; exact .const' s)
 

@@ -113,11 +113,8 @@ def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
       rw [Representation.single_smul]
       exact σ.toSubmodule.smul_mem' a (σ.apply_mem_toSubmodule g hv)
 
--- Type-correct statement would be `(Representation.asModuleEquiv ρ).symm v ∈ asSubmodule σ`.
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
-lemma mem_asSubmodule_iff {σ : Subrepresentation ρ} {v : W} :
-    v ∈ asSubmodule σ ↔ v ∈ σ := by rfl
+lemma mem_asSubmodule_iff {σ : Subrepresentation ρ} {v : W} : v ∈ asSubmodule σ ↔ v ∈ σ := by rfl
 
 /-- A subrepresentation of `ofModule M` can be thought of as an `A[G]` submodule of `M`.
 -/
@@ -133,9 +130,6 @@ def asSubmodule' (σ : Subrepresentation (Representation.ofModule (k := A) (G :=
       exact σ.toSubmodule.smul_mem' ((algebraMap A A) a) <| by
         simpa [Representation.ofModule, RestrictScalars.lsmul] using! σ.apply_mem_toSubmodule g hm
 
--- Type-correct statement would be
--- `m ∈ asSubmodule' σ ↔ Representation.asModuleEquiv (Representation.ofModule M) m ∈ σ`.
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma mem_asSubmodule'_iff {σ : Subrepresentation (Representation.ofModule (k := A) (G := G) M)}
     {m : M} : m ∈ asSubmodule' σ ↔ m ∈ σ := by rfl
@@ -150,9 +144,6 @@ def ofSubmodule (N : Submodule A[G] M) :
     simpa [Representation.ofModule, RestrictScalars.lsmul] using!
       Submodule.smul_of_tower_mem N (MonoidAlgebra.single g 1) hv
 
--- Type-correct statement would be
--- `Representation.asModuleEquiv (Representation.ofModule M) m ∈ ofSubmodule N ↔ m ∈ N`.
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N ↔ m ∈ N := by rfl
 
@@ -169,7 +160,6 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
     rw [Representation.single_smul, one_smul] at h
     exact h
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} : w ∈ ofSubmodule' N ↔ w ∈ N :=
   .rfl

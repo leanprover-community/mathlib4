@@ -35,8 +35,6 @@ namespace SimplexCategory
 
 open SSet
 
--- Needs to unfold `toTop` at `instances` transparency
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- The homeomorphism between the topological realization of a standard simplex
 in `SSet` and the corresponding topological standard simplex. -/
 noncomputable def toTopHomeo (n : SimplexCategory) :

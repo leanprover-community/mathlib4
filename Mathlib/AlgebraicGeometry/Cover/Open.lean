@@ -200,7 +200,6 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
   convert! pullbackSymmetry_inv_comp_fst ((𝒰.X i.1).affineCover.f i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- A family of elements spanning the unit ideal of `R` gives an affine open cover of `Spec R`. -/
 @[simps]
 noncomputable

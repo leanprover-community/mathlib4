@@ -183,7 +183,6 @@ lemma S'_compactSpace [TopologicalSpace S] [T2Space S] [TopologicalSpace T]
 
 end
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- This object is used to show that a certain map `T ⟶ X` descends
 to a map `S ⊗ N∪{∞} → X`. Because epimorphisms in `LightProfinite`
 are effective, it does so if the two maps `pullback π π → T → S ⊗ N∪{∞}`

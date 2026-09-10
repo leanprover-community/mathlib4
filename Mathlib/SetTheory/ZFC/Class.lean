@@ -31,7 +31,7 @@ universe u
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
-@[instance_reducible, pp_with_univ, use_set_notation_for_order]
+@[pp_with_univ, use_set_notation_for_order]
 def Class :=
   Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
@@ -371,7 +371,7 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
   right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.2
 
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_notMem_univ : { o | IsOrdinal o } ∉ Class.univ.{u} := by
+theorem isOrdinal_notMem_univ : IsOrdinal ∉ Class.univ.{u} := by
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
     apply Class.mem_irrefl x

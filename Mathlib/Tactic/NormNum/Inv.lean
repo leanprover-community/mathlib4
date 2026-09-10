@@ -20,7 +20,6 @@ namespace Mathlib.Meta.NormNum
 
 open Lean.Meta Qq
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
 def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM Q(CharZero $α) :=
@@ -32,7 +31,6 @@ def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible
     MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ q(CharZero $α)).toOption
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
 def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
     (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
@@ -46,7 +44,6 @@ def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
       MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ q(CharZero $α)).toOption
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
 def inferCharZeroOfDivisionRing {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=

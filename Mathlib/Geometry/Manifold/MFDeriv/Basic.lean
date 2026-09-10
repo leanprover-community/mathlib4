@@ -579,13 +579,11 @@ theorem mdifferentiableAt_of_isInvertible_mfderiv (hf : (mfderiv% f x).IsInverti
     MDiffAt f x :=
   mdifferentiableAt_of_mfderiv_injective hf.injective
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem HasMFDerivWithinAt.mono (h : HasMFDerivAt[t] f x f') (hst : s ⊆ t) :
     HasMFDerivAt[s] f x f' :=
   ⟨ContinuousWithinAt.mono h.1 hst,
     HasFDerivWithinAt.mono h.2 (inter_subset_inter (preimage_mono hst) (Subset.refl _))⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem HasMFDerivAt.hasMFDerivWithinAt (h : HasMFDerivAt% f x f') : HasMFDerivAt[s] f x f' :=
   ⟨ContinuousAt.continuousWithinAt h.1, HasFDerivWithinAt.mono h.2 inter_subset_right⟩
 
@@ -633,7 +631,6 @@ theorem hasMFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
     continuousWithinAt_inter h]
   exact extChartAt_preimage_mem_nhds h
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem HasMFDerivWithinAt.union (hs : HasMFDerivAt[s] f x f') (ht : HasMFDerivAt[t] f x f') :
     HasMFDerivAt[s ∪ t] f x f' := by
   constructor
@@ -893,7 +890,6 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
 
 /-! ### Congruence lemmas for derivatives on manifolds -/
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- If two sets coincide locally, except maybe at a point, then it is equivalent to have a manifold
 derivative within one or the other. -/
 theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
@@ -954,7 +950,6 @@ theorem HasMFDerivWithinAt.congr_mfderiv (h : HasMFDerivAt[s] f x f') (h' : f' =
     HasMFDerivAt[s] f x f₁' :=
   h' ▸ h
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem HasMFDerivWithinAt.congr_of_eventuallyEq
     (h : HasMFDerivAt[s] f x f') (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     HasMFDerivAt[s] f₁ x f' := by

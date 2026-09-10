@@ -45,11 +45,6 @@ namespace ProbabilityTheory
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
 
--- This requires `RingHomCompTriple (starRingEnd ℝ) (RingHom.id ℝ) (RingHom.id ℝ)`, but the instance
--- `RingHomCompTriple.right_ids` forces it to be
--- `RingHomCompTriple (starRingEnd ℝ) (RingHom.id ℝ) (starRingEnd ℝ)`, but the third parameter is
--- an `outParam` so we can't just add the missing instance for `TrivialStar R`.
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Covariance of a measure on an inner product space, as a continuous bilinear form. -/
 noncomputable
 def covarianceBilin (μ : Measure E) : E →L[ℝ] E →L[ℝ] ℝ :=
@@ -186,8 +181,6 @@ section covarianceOperator
 
 variable [CompleteSpace E]
 
--- See comment on `ProbabilityTheory.covarianceBilin`.
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- The covariance operator of the measure `μ`. This is the bounded operator `F : E →L[ℝ] E`
 associated to the continuous bilinear form `B : E →L[ℝ] E →L[ℝ] ℝ` such that
 `B x y = ∫ z, ⟪x, z⟫ * ⟪y, z⟫ ∂μ` (see `covarianceOperator_inner`). Namely we have

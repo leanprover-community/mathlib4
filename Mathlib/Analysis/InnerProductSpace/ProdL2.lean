@@ -139,7 +139,6 @@ theorem sndL_comp_coe_orthogonalDecomposition :
     WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjectionOnto := by
   ext; simp
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then the
 quotient `E ⧸ K` is isometrically isomorphic to the orthogonal complement `Kᗮ` of `K`. -/
 def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
@@ -155,35 +154,29 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
     · rw [sInf_image', ← Equiv.iInf_comp (Equiv.neg K)]
       simp
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 theorem coe_quotientEquivOrthogonal :
     ⇑K.quotientEquivOrthogonal = K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 theorem coe_quotientEquivOrthogonal_symm :
     ⇑K.quotientEquivOrthogonal.symm = (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 lemma toLinearEquiv_quotientEquivOrthogonal :
     (quotientEquivOrthogonal K).toLinearEquiv = K.quotientEquivOfIsCompl _ K.isCompl_orthogonal :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem quotientEquivOrthogonal_mk (x : E) (hx : x ∈ Kᗮ) :
     K.quotientEquivOrthogonal (Quotient.mk x) = ⟨x, hx⟩ := by
   simp [← K.quotientEquivOfIsCompl_apply_mk_right K.isCompl_orthogonal ⟨x, hx⟩]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem quotientEquivOrthogonal_symm_eq_mk (x : E) (hx : x ∈ Kᗮ) :
     K.quotientEquivOrthogonal.symm ⟨x, hx⟩ = Quotient.mk x := by
   simp
 
-set_option backward.isDefEq.respectTransparency.instances false in
 noncomputable instance instQuotientInnerProductSpace :
     InnerProductSpace 𝕜 (E ⧸ K) where
   inner x y := ⟪K.quotientEquivOrthogonal x, K.quotientEquivOrthogonal y⟫_𝕜
@@ -192,13 +185,11 @@ noncomputable instance instQuotientInnerProductSpace :
   conj_inner_symm x y := inner_conj_symm _ _
   norm_sq_eq_re_inner y := by rw [inner_self_eq_norm_sq, LinearIsometryEquiv.norm_map]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 theorem inner_quotient_eq (x y : E ⧸ K) :
     ⟪x, y⟫_𝕜 = ⟪K.quotientEquivOrthogonal x, K.quotientEquivOrthogonal y⟫_𝕜 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem Quotient.inner_mk_mk (x y : E) (hx : x ∈ Kᗮ) (hy : y ∈ Kᗮ) :
     ⟪Quotient.mk (p := K) x, Quotient.mk y⟫_𝕜 = ⟪x, y⟫_𝕜 := by
   simp [K.quotientEquivOrthogonal_mk x hx, K.quotientEquivOrthogonal_mk y hy]

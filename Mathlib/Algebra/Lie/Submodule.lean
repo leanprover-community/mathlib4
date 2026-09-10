@@ -518,9 +518,6 @@ variable (R L M)
     inj' := toSubmodule_injective
     map_rel_iff' := Iff.rfl }
 
--- Defeq abuse: need `FunLike _ (LieSubmodule R L M) (Submodule R M)ᵒᵈ`, get
--- `FunLike _ (LieSubmodule R L M)ᵒᵈ (Submodule R M)ᵒᵈ`.
-set_option backward.isDefEq.respectTransparency.instances false in
 instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
   RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
 
@@ -730,9 +727,6 @@ variable (f : M →ₗ⁅R,L⁆ M') (N N₂ : LieSubmodule R L M) (N' : LieSubmo
 
 /-- A morphism of Lie modules `f : M → M'` pushes forward Lie submodules of `M` to Lie submodules
 of `M'`. -/
--- Later we will want to know that `LieSubmodule.map` and `Submodule.map` are related in order for`
--- the `FunLike` instances to be compatible.
-@[instance_reducible]
 def map : LieSubmodule R L M' :=
   { (N : Submodule R M).map (f : M →ₗ[R] M') with
     lie_mem := fun {x m'} h ↦ by

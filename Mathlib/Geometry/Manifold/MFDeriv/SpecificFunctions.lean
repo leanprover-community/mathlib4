@@ -120,7 +120,6 @@ section id
 
 /-! #### Identity -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hasMFDerivAt_id (x : M) :
     HasMFDerivAt% (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace% x)) := by
   refine ⟨continuousAt_id, ?_⟩
@@ -483,7 +482,6 @@ theorem MDifferentiableOn.prodMap (hf : MDiff[s] f) (hg : MDiff[r] g) :
 theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace% p.1 →L[𝕜] TangentSpace% (f p.1)}
     (hf : HasMFDerivAt[Prod.fst '' s] f p.1 df)
@@ -664,7 +662,6 @@ lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
       refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
       exact (chartAt H x).open_target.mem_nhds (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hasMFDerivAt_sumSwap :
     HasMFDerivAt% (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
   refine ⟨by fun_prop, ?_⟩
@@ -709,7 +706,6 @@ lemma writtenInExtChartAt_sumInr_eventuallyEq_id :
     Sum.inr_injective.extend_apply <| chartAt H q',
     (chartAt H q').right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hasMFDerivWithinAt_inl :
     HasMFDerivAt[s] (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace% q)) := by
   refine ⟨by fun_prop, ?_⟩
@@ -724,7 +720,6 @@ theorem hasMFDerivAt_inl :
     HasMFDerivAt% (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
   simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inl (s := Set.univ)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hasMFDerivWithinAt_inr {t : Set M'} :
     HasMFDerivAt[t] (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace% q')) := by
   refine ⟨by fun_prop, ?_⟩

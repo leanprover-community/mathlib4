@@ -95,7 +95,6 @@ variable (A B) in
 variable (A B) in
 @[simp] lemma braiding_inv_hom : (β_ A B).inv.hom = (comm R B A).toAlgHom := rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 attribute [local ext] Quiver.Hom.unop_inj in
 instance : CartesianMonoidalCategory (CommAlgCat.{u} R)ᵒᵖ where
   isTerminalTensorUnit := terminalOpOfInitial isInitialSelf

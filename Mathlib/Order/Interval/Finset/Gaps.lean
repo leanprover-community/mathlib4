@@ -94,9 +94,6 @@ theorem intervalGapsWithin_snd_of_lt (hj : j < k) :
   simp only [coe_castPred, val_natCast, Nat.mod_succ_eq_iff_lt]
   lia
 
--- Defeq abuse: `F.orderEmbOfFin_mem` infers the `LinearOrder (Lex (α × α))` as
--- `LinearOrder (α × α)`.
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
     (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1))
     F := by

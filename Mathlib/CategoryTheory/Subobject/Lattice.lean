@@ -66,7 +66,6 @@ def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
   iso_of_both_ways (leTop _)
     (homMk (pullback.lift f (𝟙 _) (by simp)) (pullback.lift_snd _ _ _))
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
 as the category is thin this is an isomorphism. -/
 def topLEPullbackSelf {A B : C} (f : A ⟶ B) [Mono f] :

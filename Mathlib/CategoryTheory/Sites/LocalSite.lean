@@ -159,7 +159,6 @@ instance (A : Type u') [Category.{v'} A] [HasColimitsOfSize.{v, v} A]
 instance : (coconstantSheaf.{w} J A).IsRightAdjoint :=
   ⟨Γ J A, ⟨ΓCoconstantSheafAdj J A⟩⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The global sections of the coconstant sheaf on a type are naturally isomorphic to that type. -/
 noncomputable def coconstantSheafΓNatIsoId :

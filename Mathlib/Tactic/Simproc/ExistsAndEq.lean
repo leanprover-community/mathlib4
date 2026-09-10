@@ -422,7 +422,7 @@ simproc ↓ existsAndEq (Exists _) := fun e => do
   lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
     let some u := f.constLevels![0]? | unreachable!
     have α : Q(Sort $u) := α; have p : Q($α → Prop) := p
-    let some (a : Q($α)) := (xs[0]? :) | return .continue
+    let some (a : Q($α)) := xs[0]? | return .continue
     let some path ← findEqPath a body | return .continue
     let (fvars, lctx, newBody, a') ← findEq a body path
     withLCtx' lctx do

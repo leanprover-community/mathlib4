@@ -26,7 +26,6 @@ universe u
 variable {α : Type*} {m n : ℕ}
 
 /-- Alternate definition of `Vector` based on `Fin2`. -/
-@[instance_reducible]
 def Vector3 (α : Type u) (n : ℕ) : Type u :=
   Fin2 n → α
 

@@ -112,7 +112,6 @@ theorem Coloring.mem_colorClasses {v : V} : C.colorClass (C v) ∈ C.colorClasse
 theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
   Setoid.finite_classes_ker _
 
-set_option backward.isDefEq.respectTransparency.instances false in
 set_option dsimp.resynthInstances false in
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
     Fintype.card C.colorClasses ≤ Fintype.card α := by

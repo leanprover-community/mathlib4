@@ -283,7 +283,6 @@ variable (I I') in
 def OpenPartialHomeomorph.MDifferentiable (f : OpenPartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 
-set_option backward.isDefEq.respectTransparency.instances false in
 variable (I I') in
 /-- `HasMFDerivWithinAt I I' f s x f'` indicates that the function `f` between manifolds
 has, at the point `x` and within the set `s`, the derivative `f'`. Here, `f'` is a continuous linear
@@ -302,7 +301,6 @@ def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
     HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f'
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 variable (I I') in
 /-- `HasMFDerivAt I I' f x f'` indicates that the function `f` between manifolds
 has, at the point `x`, the derivative `f'`. Here, `f'` is a continuous linear

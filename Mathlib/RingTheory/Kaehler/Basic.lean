@@ -765,7 +765,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
     | zero => simp
     | tmul r s =>
       obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s
-      simp only [mapBaseChange_tmul, LinearMap.mem_ker]
+      simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]
       induction x using Finsupp.induction_linear
       · simp
       · simp [smul_add, *]

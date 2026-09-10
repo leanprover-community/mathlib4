@@ -112,7 +112,6 @@ variable
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.instances false in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 include f in
 /--

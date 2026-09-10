@@ -350,7 +350,6 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
       let eq : Q($op $s $f = $op (Finset.cons $a $s' $h) $f) := q(congr_fun (congr_arg _ $pf) _)
       pure (res.eq_trans eq)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating products of finsets.
 
@@ -380,7 +379,6 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
       pure <| res.eq_trans eq)
     s
 
-set_option backward.isDefEq.respectTransparency.instances false in
 attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating sums of finsets.
 

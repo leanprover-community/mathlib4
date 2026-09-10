@@ -160,7 +160,7 @@ instance : AddCommGroup (LeftInvariantDerivation I G) :=
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by
-    simp only [LinearMap.map_smul_of_tower]; rw [left_invariant']⟩
+    simp only [LinearMap.map_smul_of_tower, map_smul]; rw [left_invariant']⟩
 
 variable (r)
 

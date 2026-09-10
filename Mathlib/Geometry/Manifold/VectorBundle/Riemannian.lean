@@ -95,8 +95,6 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
--- TODO: regressed after removing respectTransparency
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- A trivial vector bundle, in which the model fiber has a scalar product,
 is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by

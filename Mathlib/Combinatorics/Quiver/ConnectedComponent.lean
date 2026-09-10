@@ -181,9 +181,6 @@ lemma stronglyConnectedComponent_singleton_iff (v : V) :
       exists_path_of_stronglyConnectedComponent_eq (a := w) (b := v) h_same_scc
     exact (h_no_bidir w hw_ne) ⟨hba, hab⟩
 
--- Defeq abuse: `h` does not apply to `a` and `b`, as `a b : Symmetrify V` and this leaks into
--- `p`, which has type `@Path V inst✝ a b` which makes no sense at `instances` transparency.
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma IsStronglyConnected.isStronglyConnected_symmetrify (h : IsStronglyConnected V) :
     IsStronglyConnected (Symmetrify V) := by
   intro a b

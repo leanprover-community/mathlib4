@@ -135,7 +135,6 @@ lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv [Small.{v'} R']
     hasInjectiveDimensionLE_iff_of_linearEquiv_aux eN]
   exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux eR ((eM.symm.trans e).trans eN) n
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N) :
     injectiveDimension M = injectiveDimension N := by

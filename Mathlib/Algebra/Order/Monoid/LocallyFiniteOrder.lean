@@ -180,7 +180,6 @@ def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
 
-set_option backward.isDefEq.respectTransparency.instances false in
 lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     StrictMono (orderMonoidHom G) :=

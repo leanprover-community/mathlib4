@@ -48,7 +48,6 @@ noncomputable def shrinkYonedaMon :
 
 open MonObj
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- The type `(shrinkYonedaMon.obj M).obj Y` is equivalent to `Y.unop ⟶ M.X`. -/
 noncomputable def shrinkYonedaMonObjObjEquiv {M : Mon C} {Y : Cᵒᵖ} :
     (shrinkYonedaMon.{w}.obj M).obj Y ≃* (Y.unop ⟶ M.X) :=
@@ -84,7 +83,6 @@ noncomputable def shrinkYonedaGrp :
   obj X := GrpCat.shrinkFunctor (yonedaGrp.obj X)
   map f := GrpCat.shrinkFunctorMap (yonedaGrp.map f)
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- The type `(shrinkYonedaGrp.obj M).obj Y` is equivalent to `Y.unop ⟶ M.X`. -/
 noncomputable def shrinkYonedaGrpObjObjEquiv {M : Grp C} {Y : Cᵒᵖ} :
     (shrinkYonedaGrp.{w}.obj M).obj Y ≃* (Y.unop ⟶ M.X) :=

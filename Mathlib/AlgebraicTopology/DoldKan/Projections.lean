@@ -71,7 +71,6 @@ theorem P_add_Q (q : ℕ) : P q + Q q = 𝟙 K[X] := by
   rw [Q]
   abel
 
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem P_add_Q_f (q n : ℕ) : (P q).f n + (Q q).f n = 𝟙 (X _⦋n⦌) :=
   HomologicalComplex.congr_hom (P_add_Q q) n
 

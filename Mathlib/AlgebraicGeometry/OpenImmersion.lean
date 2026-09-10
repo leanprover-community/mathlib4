@@ -44,7 +44,6 @@ instance IsOpenImmersion.comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 namespace LocallyRingedSpace.IsOpenImmersion
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- To show that a locally ringed space is a scheme, it suffices to show that it has a jointly
 surjective family of open immersions from affine schemes. -/
 protected def scheme (X : LocallyRingedSpace.{u})

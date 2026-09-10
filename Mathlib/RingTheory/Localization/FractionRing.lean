@@ -486,9 +486,6 @@ variable {A B : Type*} (K L : Type*) [CommRing A] [CommRing B] [CommRing K] [Com
 local instance : RingHomInvPair (f : A →+* B) f.symm :=
   RingHomInvPair.of_ringEquiv f
 
-local instance : RingHomInvPair (f.symm : B →+* A) f :=
-  RingHomInvPair.of_ringEquiv f.symm
-
 /-- Given rings `A, B` and localization maps to their fraction rings
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces a semilinear equivalence
 fraction rings `K ≃ₛₗ[f.toRingHom] L`. -/

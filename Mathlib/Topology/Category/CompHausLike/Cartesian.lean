@@ -41,7 +41,6 @@ def productCone : BinaryFan X Y :=
   BinaryFan.mk (P := CompHausLike.of P (X × Y))
     (ofHom _ { toFun := Prod.fst }) (ofHom _ { toFun := Prod.snd })
 
--- `continuity` getting confused about category theory
 /--
 When the predicate `P` is preserved under taking type-theoretic products, that product is a
 category-theoretic product in `CompHausLike P`.

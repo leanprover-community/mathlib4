@@ -44,8 +44,6 @@ instance : CoeSort NonemptyFinLinOrd (Type _) where
 instance : LargeCategory NonemptyFinLinOrd :=
   inferInstanceAs <| Category (InducedCategory _ toLinOrd)
 
--- Would need to have a new type synonym for the `FunLike` instance for the induced category.
-set_option backward.isDefEq.respectTransparency.instances false in
 instance : ConcreteCategory NonemptyFinLinOrd (· →o ·) :=
   inferInstanceAs <| ConcreteCategory (InducedCategory _ toLinOrd) _
 

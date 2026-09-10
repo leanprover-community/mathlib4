@@ -58,9 +58,6 @@ open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
   `α` to `β`. It is defined as `α → Part β`. -/
--- `#check (fun _ => 1 : ℕ →. ℕ)` yields `ℕ → Part ℕ` and this leads to trouble down the line with
---  `({fun _ => 1} : Set (ℕ →. ℕ))` if `PFun` is not sufficiently reducible.
-@[instance_reducible]
 def PFun (α β : Type*) :=
   α → Part β
 

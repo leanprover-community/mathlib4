@@ -528,7 +528,6 @@ irreducible_def liftAlgHom {s : A → A → Prop} :
                  AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
                  MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
 
-set_option backward.isDefEq.respectTransparency.instances false in
 @[simp]
 theorem liftAlgHom_mkAlgHom_apply (f : A →ₐ[S] B) {s : A → A → Prop}
     (w : ∀ ⦃x y⦄, s x y → f x = f y) (x) : (liftAlgHom S ⟨f, w⟩) ((mkAlgHom S s) x) = f x := by

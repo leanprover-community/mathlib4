@@ -98,7 +98,6 @@ lemma forget₂_map_restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ri
     (forget₂ _ Ab).map ((ModuleCat.restrictScalars f).map g) = (forget₂ _ Ab).map g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.instances false in
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).Faithful where
   map_injective h := by
@@ -655,7 +654,6 @@ end RestrictionCoextensionAdj
 
 set_option backward.isDefEq.respectTransparency false in
 -- Porting note: very fiddly universes
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Restriction of scalars is left adjoint to coextension of scalars. -/
 -- @[simps] Porting note: not in normal form and not used
 def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :

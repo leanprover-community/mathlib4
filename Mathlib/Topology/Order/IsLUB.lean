@@ -154,8 +154,6 @@ theorem isLUB_iff_of_subset_of_subset_closure {α : Type*} [TopologicalSpace α]
   isLUB_congr <| (upperBounds_closure (s := s) ▸ upperBounds_mono_set hts).antisymm <|
     upperBounds_mono_set hst
 
--- Defeq abuse: `hst` and `hts` should be translated into statements about the order dual.
-set_option backward.isDefEq.respectTransparency.instances false in
 theorem isGLB_iff_of_subset_of_subset_closure {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) {x : α} :
     IsGLB s x ↔ IsGLB t x :=

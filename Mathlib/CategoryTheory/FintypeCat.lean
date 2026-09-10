@@ -235,14 +235,9 @@ attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) :
     Fintype.card (incl.obj (mk n)) = n := by
-  -- Use `unfold` rather than `simp only` to keep instances in sync.
-  unfold incl mk len at *
-  dsimp only
-  conv_rhs => rw [← Fintype.card_fin n]
-  -- This `convert` would not be necessary if `Fintype.card_congr'` and `Fintype.ofEquiv_card` had
-  -- the `Fintype` instances as implicit arguments, which would make more sense for this and many
-  -- other lemmas in that file.
-  convert! Eq.trans (Fintype.ofEquiv_card Equiv.ulift).symm (@Fintype.card_congr' _ _ _ _ rfl)
+  convert! Finset.card_fin n
+  dsimp [incl, mk, len]
+  convert! (Fintype.ofEquiv_card Equiv.ulift).symm
 
 end Skeleton
 

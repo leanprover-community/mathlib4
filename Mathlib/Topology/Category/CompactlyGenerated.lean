@@ -49,8 +49,6 @@ attribute [instance] is_compactly_generated
 instance : Category.{w, w + 1} CompactlyGenerated.{u, w} :=
   inferInstanceAs <| Category (InducedCategory _ toTop)
 
--- Would need to have a new type synonym for the `FunLike` instance for the induced category.
-set_option backward.isDefEq.respectTransparency.instances false in
 instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
   inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 

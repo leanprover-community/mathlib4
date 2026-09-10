@@ -564,7 +564,6 @@ protected theorem orthogonalProjectionOnto_apply_eq_sum {U : Submodule 𝕜 E}
 @[deprecated (since := "2026-05-05")] alias orthogonalProjection_apply_eq_sum :=
   OrthonormalBasis.orthogonalProjectionOnto_apply_eq_sum
 
-set_option backward.isDefEq.respectTransparency.instances false in
 protected theorem orthogonalProjectionOnto_eq_sum_rankOne {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (b : OrthonormalBasis ι 𝕜 U) :
     U.orthogonalProjectionOnto = ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i : E) := by
@@ -573,7 +572,6 @@ protected theorem orthogonalProjectionOnto_eq_sum_rankOne {U : Submodule 𝕜 E}
 @[deprecated (since := "2026-05-05")] alias orthogonalProjection_eq_sum_rankOne :=
   OrthonormalBasis.orthogonalProjectionOnto_eq_sum_rankOne
 
-set_option backward.isDefEq.respectTransparency.instances false in
 protected theorem starProjection_eq_sum_rankOne {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
     (b : OrthonormalBasis ι 𝕜 U) :
     U.starProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (b i : E) (b i : E) := by

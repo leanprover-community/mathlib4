@@ -346,7 +346,6 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
 
 variable [Module.Finite ℤ S]
 
-set_option backward.isDefEq.respectTransparency.instances false in
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/

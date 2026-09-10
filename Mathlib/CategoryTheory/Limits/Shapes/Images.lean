@@ -148,7 +148,7 @@ def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)
 
 /-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f`
 gives a mono factorisation of `g` -/
-@[implicit_reducible, simps]
+@[simps]
 def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsIso sq] :
     MonoFactorisation g.hom where
   I := F.I
@@ -740,7 +740,10 @@ instance (priority := 100) hasImageMapOfIsIso {f g : Arrow C} [HasImage f.hom] [
     (sq : f ⟶ g) [IsIso sq] : HasImageMap sq :=
   HasImageMap.mk
     { map := image.lift ((Image.monoFactorisation g.hom).ofArrowIso (inv sq))
-      map_ι := by simp [ ← image.lift_fac ((Image.monoFactorisation g.hom).ofArrowIso (inv sq))] }
+      map_ι := by
+        erw [← cancel_mono (inv sq).right, Category.assoc, ← MonoFactorisation.ofArrowIso_m,
+          image.lift_fac, Category.assoc, ← Comma.comp_right, IsIso.hom_inv_id, Comma.id_right,
+          Category.comp_id] }
 
 instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [HasImage h.hom]
     (sq1 : f ⟶ g) (sq2 : g ⟶ h) [HasImageMap sq1] [HasImageMap sq2] : HasImageMap (sq1 ≫ sq2) :=

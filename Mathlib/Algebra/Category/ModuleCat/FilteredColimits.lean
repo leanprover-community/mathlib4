@@ -156,7 +156,8 @@ def colimitCocone : Cocone F where
     { app := coconeMorphism F
       naturality _ _ f := by
         ext
-        simpa using! (F ⋙ forget (ModuleCat R)).ιColimitType_map f _ }
+        simpa using! (Types.TypeMax.colimitCocone
+          (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
 
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
 We already know that this is a morphism between additive groups. The only thing left to see is that

@@ -47,7 +47,7 @@ def Iic (b : α) := { x | x ≤ b }
 @[to_dual] theorem Iic_def (b : α) : { x | x ≤ b } = Iic b := rfl
 
 /-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
-@[instance_reducible, to_dual self (reorder := a b)]
+@[to_dual self (reorder := a b)]
 def Ioo (a b : α) := { x | a < x ∧ x < b }
 
 to_dual_insert_cast Ioo := by simp only [and_comm]
