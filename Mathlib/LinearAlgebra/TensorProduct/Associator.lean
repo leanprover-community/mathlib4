@@ -17,13 +17,11 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
-variable {R'' : Type*} [Semiring R'']
 variable {A M N P Q S T : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
-variable [Module R'' M]
 variable (M N)
 
 namespace TensorProduct
@@ -214,10 +212,6 @@ lemma lid_tensor :
 
 section
 
-variable {P' Q' : Type*}
-variable [AddCommMonoid P'] [Module R P']
-variable [AddCommMonoid Q'] [Module R Q']
-
 variable (R M N P Q)
 
 /-- A tensor product analogue of `mul_left_comm`. -/
@@ -391,7 +385,6 @@ lemma tensorProductAssoc_def (eA : A ≃ₗ[R] A') (eB : B ≃ₗ[R] B') (eC : C
       (TensorProduct.assoc R A' B' C') <| congr eA.symm <| congr eB.symm (eC).symm) := by
   ext x
   induction x with
-  | zero => simp
   | add => simp [*]
   | tmul x a => induction x <;> simp [*, add_tmul]
 

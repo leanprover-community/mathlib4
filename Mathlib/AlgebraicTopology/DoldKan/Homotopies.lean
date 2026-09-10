@@ -61,7 +61,9 @@ compatible with the application of additive functors (see `map_Hσ`).
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
-  CategoryTheory.SimplicialObject Homotopy Opposite Simplicial DoldKan
+  CategoryTheory.SimplicialObject Homotopy Opposite
+
+open scoped Simplicial DoldKan
 
 noncomputable section
 

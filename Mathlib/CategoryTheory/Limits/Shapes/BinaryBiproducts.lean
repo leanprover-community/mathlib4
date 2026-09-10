@@ -5,7 +5,6 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
@@ -39,7 +38,6 @@ open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
-variable {J : Type w}
 universe uC' uC uD' uD
 variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]

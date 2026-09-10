@@ -5,7 +5,8 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Basic.Countable.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basics on First-Order Structures
@@ -109,12 +110,7 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
   fun _ => instIsEmptySum
 
 @[simp]
-theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
-  sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
-
-instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
-  simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
-  exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
+theorem card_empty : Language.empty.card = 0 := by simp [card]
 
 instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective

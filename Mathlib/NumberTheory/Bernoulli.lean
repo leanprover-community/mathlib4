@@ -671,6 +671,57 @@ theorem vonStaudt_clausen (k : ℕ) :
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd
 
+section Valuation
+
+variable {k p : ℕ} [Fact p.Prime]
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then the `p`-adic valuation of the Bernoulli
+number `B₂ₖ` is `WithZero.exp 1`, the valuation of `1 / p`. -/
+theorem padicValuation_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    Rat.padicValuation p (bernoulli (2 * k)) = WithZero.exp 1 := by
+  have hkey := not_dvd_den_bernoulli_add_indicator (k := k) (p := p) hk
+  rw [show vonStaudtIndicator (2 * k) p = 1 by simp [vonStaudtIndicator, hpk]] at hkey
+  have h1 : 1 < Rat.padicValuation p (1 / (p : ℚ)) := by simp
+  simpa using (Rat.padicValuation p).map_sub_eq_of_lt_right
+    (lt_of_le_of_lt (Rat.padicValuation_le_one_iff.mpr hkey) h1)
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then the `p`-adic valuation of the Bernoulli
+number `B₂ₖ` is `-1`. -/
+theorem padicValRat_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    padicValRat p (bernoulli (2 * k)) = -1 := by
+  grind [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+    WithZero.exp_inj, WithZero.exp_ne_zero, padicValuation_bernoulli hk hpk]
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` divides the denominator of the
+Bernoulli number `B₂ₖ`. -/
+theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den := by
+  by_contra hcon
+  simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk] at hcon
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
+Bernoulli number `B₂ₖ`. -/
+theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    ¬ (p : ℤ) ∣ (bernoulli (2 * k)).num := by
+  rw [Int.natCast_dvd]
+  exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
+    (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p ^ 2` does not divide the denominator of
+the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multiplicity one. -/
+theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
+  have hp : p.Prime := Fact.out
+  have hpne : (p : ℚ) ≠ 0 := mod_cast hp.ne_zero
+  have h1 : ¬ p ∣ (p * bernoulli (2 * k)).den := by
+    simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk, ← WithZero.exp_add]
+  have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
+    have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
+    rwa [one_div, inv_mul_cancel_left₀ hpne, show ((p : ℚ)⁻¹).den = p by simp [hp.ne_zero]] at hd
+  contrapose! h1
+  simpa [Nat.mul_dvd_mul_iff_left hp.pos, pow_two] using h1.trans h2
+
+end Valuation
+
 end Bernoulli
 
 end vonStaudtClausen
