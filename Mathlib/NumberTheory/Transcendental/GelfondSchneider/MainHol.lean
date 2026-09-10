@@ -28,7 +28,7 @@ noncomputable section
 
 namespace GelfondSchneider
 
-variable {K : Type} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
+variable {K : Type*} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
   (hirr : ∀ i j : ℤ, β ≠ i / j) (htriv : α ≠ 0 ∧ α ≠ 1)
   (habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ')
 
@@ -210,7 +210,7 @@ lemma R_eq_pow_mul_R' (l' : Fin (m K)) (z : ℂ) :
         add_neg_cancel, zpow_zero, mul_one]
 
 /-- The evaluation points `1, …, m`, as a `Finset ℂ`. -/
-def evaluationPoints (K : Type) [Field K] [NumberField K] : Finset ℂ :=
+def evaluationPoints (K : Type*) [Field K] [NumberField K] : Finset ℂ :=
    Finset.image (fun (k': ℕ) ↦ (k' + 1 : ℂ)) (Finset.range (m K))
 
 omit [DecidableEq (K →+* ℂ)] in
@@ -221,7 +221,7 @@ lemma mem_evaluationPoints_iff {z : ℂ} :
   grind
 
 /-- The complement of the evaluation points. -/
-def evaluationPointsCompl (K : Type) [Field K] [NumberField K] : Set ℂ := ((evaluationPoints K))ᶜ
+def evaluationPointsCompl (K : Type*) [Field K] [NumberField K] : Set ℂ := ((evaluationPoints K))ᶜ
 
 
 omit [DecidableEq (K →+* ℂ)] in

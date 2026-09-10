@@ -30,7 +30,7 @@ noncomputable section
 
 namespace GelfondSchneider
 
-variable {K : Type} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
+variable {K : Type*} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
   (hirr : ∀ i j : ℤ, β ≠ i / j) (htriv : α ≠ 0 ∧ α ≠ 1)
   (habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ')
 
@@ -45,7 +45,7 @@ variable (h2mq : 2 * m K ∣ q ^ 2)
 variable [DecidableEq (K →+* ℂ)]
 
 /-- The constant `exp (|1 + ‖β‖| * ‖log α‖ * m)`. -/
-def c₉ (K : Type) [Field K] [NumberField K] : ℝ := Real.exp (|1 + ‖β‖| *  ‖Complex.log α‖ * (↑(m K)
+def c₉ (K : Type*) [Field K] [NumberField K] : ℝ := Real.exp (|1 + ‖β‖| *  ‖Complex.log α‖ * (↑(m K)
     : ℝ))
 
 omit [DecidableEq (K →+* ℂ)] in
@@ -66,7 +66,7 @@ lemma one_le_c₉ : 1 ≤ (c₉ α β K) := by
   positivity
 
 /-- The constant `m ^ (m - 1)`. -/
-def c₁₁ (K : Type) [Field K] [NumberField K] : ℝ := (↑(m K) ^ ((m K) - 1))
+def c₁₁ (K : Type*) [Field K] [NumberField K] : ℝ := (↑(m K) ^ ((m K) - 1))
 
 omit [DecidableEq (K →+* ℂ)] in
 @[nolint unusedArguments]

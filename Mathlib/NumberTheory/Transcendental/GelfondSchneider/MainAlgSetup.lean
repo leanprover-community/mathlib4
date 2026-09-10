@@ -35,7 +35,7 @@ noncomputable section
 
 namespace GelfondSchneider
 
-variable {K : Type} [Field K] [NumberField K] (q : ℕ) (hq0 : 0 < q) (h2mq : 2 * m K ∣ q ^ 2)
+variable {K : Type*} [Field K] [NumberField K] (q : ℕ) (hq0 : 0 < q) (h2mq : 2 * m K ∣ q ^ 2)
 
 include h2mq in
 lemma q_sq_eq_two_mn : q ^ 2 = 2 * m K * n K q := Eq.symm (Nat.mul_div_cancel' h2mq)

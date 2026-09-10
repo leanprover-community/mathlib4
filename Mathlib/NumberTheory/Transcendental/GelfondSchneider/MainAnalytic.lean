@@ -29,7 +29,7 @@ noncomputable section
 
 namespace GelfondSchneider
 
-variable {K : Type} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
+variable {K : Type*} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
   (hirr : ∀ i j : ℤ, β ≠ i / j) (htriv : α ≠ 0 ∧ α ≠ 1)
   (habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ')
 
@@ -371,10 +371,7 @@ lemma ρ_is_int :
     apply IsIntegral.mul
     · exact RingOfIntegers.isIntegral_coe ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) x)
     · rw [mul_comm, ← zsmul_eq_mul]
-      have triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
-         ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
-        simp only [zsmul_eq_mul, Int.cast_mul]; ring
-      have := triple_comm K
+      have := zsmul_mul_mul_distrib
         (c₁ α' β' γ'^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) : ℤ)
         (c₁ α' β' γ'^(m K * q) : ℤ)
         (c₁ α' β' γ'^(m K * q) : ℤ)
@@ -446,10 +443,7 @@ lemma ρ_is_int :
     apply IsIntegral.mul
     · exact RingOfIntegers.isIntegral_coe ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) x)
     · rw [mul_comm, ← zsmul_eq_mul]
-      have triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
-         ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
-        simp only [zsmul_eq_mul, Int.cast_mul]; ring
-      have H := triple_comm K
+      have H := zsmul_mul_mul_distrib
         (c₁ α' β' γ'^(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq))
         (c₁ α' β' γ'^(m K * q) : ℤ)
         (c₁ α' β' γ'^(m K * q) : ℤ)
