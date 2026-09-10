@@ -408,7 +408,9 @@ theorem MetricSpace.isometric_induced (f : α → β) (hf : f.Injective) [m : Me
 /-- `IsometryClass F α β` states that `F` is a type of isometries. -/
 class IsometryClass (F : Type*) (α β : outParam Type*)
     [PseudoEMetricSpace α] [PseudoEMetricSpace β] [FunLike F α β] : Prop where
-  protected isometry (f : F) : Isometric f
+  protected isometric (f : F) : Isometric f
+
+@[deprecated (since := "2026-09-10")] alias IsometryClass.isometry := IsometryClass.isometric
 
 namespace IsometryClass
 
@@ -419,22 +421,22 @@ section
 variable [FunLike F α β] [IsometryClass F α β] (f : F)
 
 protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
-  (IsometryClass.isometry f).edist_eq x y
+  (IsometryClass.isometric f).edist_eq x y
 
 protected theorem continuous : Continuous f :=
-  (IsometryClass.isometry f).continuous
+  (IsometryClass.isometric f).continuous
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  (IsometryClass.isometry f).lipschitzWith
+  (IsometryClass.isometric f).lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  (IsometryClass.isometry f).antilipschitzWith
+  (IsometryClass.isometric f).antilipschitzWith
 
 theorem ediam_image (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
-  (IsometryClass.isometry f).ediam_image s
+  (IsometryClass.isometric f).ediam_image s
 
 theorem ediam_range : Metric.ediam (range f) = Metric.ediam (univ : Set α) :=
-  (IsometryClass.isometry f).ediam_range
+  (IsometryClass.isometric f).ediam_range
 
 instance toContinuousMapClass : ContinuousMapClass F α β where
   map_continuous := IsometryClass.continuous
@@ -443,7 +445,7 @@ end
 
 instance toHomeomorphClass [EquivLike F α β] [IsometryClass F α β] : HomeomorphClass F α β where
   map_continuous := IsometryClass.continuous
-  inv_continuous f := ((IsometryClass.isometry f).right_inv (EquivLike.right_inv f)).continuous
+  inv_continuous f := ((IsometryClass.isometric f).right_inv (EquivLike.right_inv f)).continuous
 
 end PseudoEMetricSpace
 
@@ -451,16 +453,16 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β] [IsometryClass F α β] (f : F)
 
 protected theorem dist_eq (x y : α) : dist (f x) (f y) = dist x y :=
-  (IsometryClass.isometry f).dist_eq x y
+  (IsometryClass.isometric f).dist_eq x y
 
 protected theorem nndist_eq (x y : α) : nndist (f x) (f y) = nndist x y :=
-  (IsometryClass.isometry f).nndist_eq x y
+  (IsometryClass.isometric f).nndist_eq x y
 
 theorem diam_image (s : Set α) : Metric.diam (f '' s) = Metric.diam s :=
-  (IsometryClass.isometry f).diam_image s
+  (IsometryClass.isometric f).diam_image s
 
 theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set α) :=
-  (IsometryClass.isometry f).diam_range
+  (IsometryClass.isometric f).diam_range
 
 end PseudoMetricSpace
 
@@ -495,7 +497,7 @@ instance : EquivLike (α ≃ᵢ β) α β where
   coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
 
 instance : IsometryClass (IsometryEquiv α β) α β where
-  isometry := isometry_toFun
+  isometric := isometry_toFun
 
 theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a := rfl
 
@@ -503,8 +505,9 @@ theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a := rfl
 
 @[simp] theorem coe_mk (e : α ≃ β) (h) : ⇑(mk e h) = e := rfl
 
-protected theorem isometry (h : α ≃ᵢ β) : Isometric h :=
+protected theorem isometric (h : α ≃ᵢ β) : Isometric h :=
   h.isometry_toFun
+@[deprecated (since := "2026-09-10")] alias isometry := IsometryEquiv.isometric
 
 protected theorem bijective (h : α ≃ᵢ β) : Bijective h :=
   h.toEquiv.bijective
@@ -516,22 +519,22 @@ protected theorem surjective (h : α ≃ᵢ β) : Surjective h :=
   h.toEquiv.surjective
 
 protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : edist (h x) (h y) = edist x y :=
-  h.isometry.edist_eq x y
+  h.isometric.edist_eq x y
 
 protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=
-  h.isometry.dist_eq x y
+  h.isometric.dist_eq x y
 
 protected theorem nndist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : nndist (h x) (h y) = nndist x y :=
-  h.isometry.nndist_eq x y
+  h.isometric.nndist_eq x y
 
 protected theorem continuous (h : α ≃ᵢ β) : Continuous h :=
-  h.isometry.continuous
+  h.isometric.continuous
 
 @[simp]
 theorem ediam_image (h : α ≃ᵢ β) (s : Set α) : Metric.ediam (h '' s) = Metric.ediam s :=
-  h.isometry.ediam_image s
+  h.isometric.ediam_image s
 
 @[ext]
 theorem ext ⦃h₁ h₂ : α ≃ᵢ β⦄ (H : ∀ x, h₁ x = h₂ x) : h₁ = h₂ :=
@@ -562,7 +565,7 @@ theorem trans_apply (h₁ : α ≃ᵢ β) (h₂ : β ≃ᵢ γ) (x : α) : h₁.
 
 /-- The inverse of an isometric isomorphism, as an isometric isomorphism. -/
 protected def symm (h : α ≃ᵢ β) : β ≃ᵢ α where
-  isometry_toFun := h.isometry.right_inv h.right_inv
+  isometry_toFun := h.isometric.right_inv h.right_inv
   toEquiv := h.toEquiv.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -616,7 +619,7 @@ theorem symm_trans_apply (h₁ : α ≃ᵢ β) (h₂ : β ≃ᵢ γ) (x : γ) :
   rfl
 
 theorem ediam_univ (h : α ≃ᵢ β) : Metric.ediam (univ : Set α) = Metric.ediam (univ : Set β) := by
-  rw [← h.range_eq_univ, h.isometry.ediam_range]
+  rw [← h.range_eq_univ, h.isometric.ediam_range]
 
 @[simp]
 theorem ediam_preimage (h : α ≃ᵢ β) (s : Set β) : Metric.ediam (h ⁻¹' s) = Metric.ediam s := by
@@ -625,12 +628,12 @@ theorem ediam_preimage (h : α ≃ᵢ β) (s : Set β) : Metric.ediam (h ⁻¹' 
 @[simp]
 theorem preimage_eball (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
     h ⁻¹' Metric.eball x r = Metric.eball (h.symm x) r := by
-  rw [← h.isometry.preimage_eball (h.symm x) r, h.apply_symm_apply]
+  rw [← h.isometric.preimage_eball (h.symm x) r, h.apply_symm_apply]
 
 @[simp]
 theorem preimage_closedEBall (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
     h ⁻¹' Metric.closedEBall x r = Metric.closedEBall (h.symm x) r := by
-  rw [← h.isometry.preimage_closedEBall (h.symm x) r, h.apply_symm_apply]
+  rw [← h.isometric.preimage_closedEBall (h.symm x) r, h.apply_symm_apply]
 
 @[simp]
 theorem image_eball (h : α ≃ᵢ β) (x : α) (r : ℝ≥0∞) :
@@ -694,7 +697,7 @@ theorem mul_apply (e₁ e₂ : α ≃ᵢ α) (x : α) : (e₁ * e₂) x = e₁ (
 
 theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpace β := by
   simp only [completeSpace_iff_isComplete_univ, ← e.range_eq_univ, ← image_univ,
-    isComplete_image_iff e.isometry.isUniformInducing]
+    isComplete_image_iff e.isometric.isUniformInducing]
 
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
@@ -781,7 +784,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
 
 @[simp]
 theorem diam_image (s : Set α) : Metric.diam (h '' s) = Metric.diam s :=
-  h.isometry.diam_image s
+  h.isometric.diam_image s
 
 @[simp]
 theorem diam_preimage (s : Set β) : Metric.diam (h ⁻¹' s) = Metric.diam s := by
@@ -794,17 +797,17 @@ theorem diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
 @[simp]
 theorem preimage_ball (h : α ≃ᵢ β) (x : β) (r : ℝ) :
     h ⁻¹' Metric.ball x r = Metric.ball (h.symm x) r := by
-  rw [← h.isometry.preimage_ball (h.symm x) r, h.apply_symm_apply]
+  rw [← h.isometric.preimage_ball (h.symm x) r, h.apply_symm_apply]
 
 @[simp]
 theorem preimage_sphere (h : α ≃ᵢ β) (x : β) (r : ℝ) :
     h ⁻¹' Metric.sphere x r = Metric.sphere (h.symm x) r := by
-  rw [← h.isometry.preimage_sphere (h.symm x) r, h.apply_symm_apply]
+  rw [← h.isometric.preimage_sphere (h.symm x) r, h.apply_symm_apply]
 
 @[simp]
 theorem preimage_closedBall (h : α ≃ᵢ β) (x : β) (r : ℝ) :
     h ⁻¹' Metric.closedBall x r = Metric.closedBall (h.symm x) r := by
-  rw [← h.isometry.preimage_closedBall (h.symm x) r, h.apply_symm_apply]
+  rw [← h.isometric.preimage_closedBall (h.symm x) r, h.apply_symm_apply]
 
 @[simp]
 theorem image_ball (h : α ≃ᵢ β) (x : α) (r : ℝ) : h '' Metric.ball x r = Metric.ball (h x) r := by
@@ -870,7 +873,7 @@ an actual `IsometryEquiv`. This is declared as the default coercion from `F` to 
 @[coe]
 def toIsometryEquiv (f : F) : α ≃ᵢ β :=
   { (f : α ≃ β) with
-    isometry_toFun := IsometryClass.isometry f }
+    isometry_toFun := IsometryClass.isometric f }
 
 @[simp]
 theorem coe_coe (f : F) : ⇑(toIsometryEquiv f) = ⇑f := rfl
