@@ -32,6 +32,7 @@ on:
         # GitHub environment for the `upload_cache` job. Its only role is to fix the
         # OIDC `sub` claim to `...:environment:<name>`, which the Azure cache app's
         # federated credential is scoped to; it must match the writer `cache_application_id`.
+        # The cache broker's grant for the R2 upload names this environment too.
         type: string
         required: true
       publish_cache:
@@ -601,8 +602,9 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the Azure cache
-    # app's federated credential is scoped to. A token minted by any job without this environment
-    # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
+    # app's federated credential and the cache broker's grant are scoped to. A token minted by
+    # any job without this environment (e.g. the untrusted build/post_steps/style_lint jobs)
+    # cannot satisfy that trust.
     environment:
       name: ${{ inputs.cache_environment }}
       # Skip creating a GitHub deployment record/UI; we use the environment only to
@@ -681,6 +683,47 @@ jobs:
           # container.
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
+
+      # Second upload of the same staged set, to the R2 bucket. Only the `master`
+      # container takes this path: master pushes, bors `staging`, and `v4.*` tags.
+      # The action exchanges this job's OIDC token for short-lived S3 credentials
+      # and exposes them as masked step outputs. The upload step below maps them
+      # into the cache tool's variables, so only that step holds them. A failed
+      # mint fails only this step, and the upload below is skipped. An empty
+      # `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off.
+      - name: Mint R2 credentials from the cache broker
+        id: mint-r2
+        if: env.MATHLIB_CACHE_PRIMARY == 'master' && vars.MATHLIB_CACHE_BROKER_URL != ''
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@eefa5304fcda37696e07a4c2e25e7b9a696add09 # mathlib-ci#67
+        with:
+          broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+          audience: mathlib-cache-broker
+
+      # A failure here warns and the job succeeds: the Azure upload holds this
+      # run's files. The action sets `success` after every credential output.
+      - name: Upload staged cache to R2
+        if: steps.mint-r2.outputs.success == 'true'
+        continue-on-error: true
+        shell: bash
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
+          MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
+          MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
+          # The flat write puts `{url}/f/{hash}.ltar` under the bucket's `mathlib4/`
+          # prefix, which the cache resolver serves.
+          MATHLIB_CACHE_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
+        run: |
+          if [ -z "$MATHLIB_CACHE_PUT_URL" ]; then
+            echo "::warning::the secret MATHLIB_CACHE_R2_PUT_URL is unset; the R2 upload is skipped"
+            exit 1
+          fi
+          echo "Uploading cache to R2 (the bucket's master prefix)..."
+          if ! lake env "$CACHE_BIN" put-staged --backend=s3 --staging-dir="cache-staging" --repo="$REPO"; then
+            echo "::warning::the R2 upload failed; the Azure upload holds this run's files"
+            exit 1
+          fi
 
   post_steps:
     name: Post-Build Step
