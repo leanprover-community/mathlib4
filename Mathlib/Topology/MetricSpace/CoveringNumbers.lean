@@ -382,7 +382,8 @@ end Comparisons
 the covering number of the set.
 See `Isometric.coveringNumber_image` for the version in an `EMetricSpace`, in which injectivity is
 a consequence of being an isometry. -/
-lemma _root_.Isometric.coveringNumber_image' {f : X → Y} (hf : Isometric f) (hf_inj : Set.InjOn f A) :
+lemma _root_.Isometric.coveringNumber_image'
+    {f : X → Y} (hf : Isometric f) (hf_inj : Set.InjOn f A) :
     coveringNumber ε (f '' A) = coveringNumber ε A := by
   refine le_antisymm ?_ ?_
   · simp only [coveringNumber, le_iInf_iff]
