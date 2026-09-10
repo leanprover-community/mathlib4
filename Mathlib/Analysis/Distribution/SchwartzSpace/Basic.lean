@@ -88,6 +88,7 @@ scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 
 namespace SchwartzMap
 
+@[macro_inline]
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr

@@ -618,7 +618,7 @@ theorem IsCyclic.infinite_of_ne_bot [Group G] [hG : IsCyclic G] {H : Subgroup G}
   have hg₀ : orderOf g = 0 := Infinite.orderOf_eq_zero_of_forall_mem_zpowers fun x ↦ hg ▸ mem_top x
   obtain ⟨i, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg H
   have hi : i ≠ 0 := fun hi ↦ by simp [hi] at h
-  refine Set.Infinite.to_subtype <| infinite_zpowers.mpr ?_
+  refine infinite_zpowers.mpr ?_
   rw [← orderOf_eq_zero_iff, orderOf_zpow' _ hi, hg₀, Nat.zero_div]
 
 @[to_additive]
@@ -628,7 +628,8 @@ instance [Group G] [IsCyclic G] {H : Subgroup G} [h : Nontrivial H] : Infinite H
 lemma zpowersHom_bijective [Group G] {g : G} (hg : zpowers g = ⊤) :
     Function.Bijective (zpowersHom G g) := by
   refine ⟨(MonoidHom.ker_eq_bot_iff _).mp ?_, MonoidHom.range_eq_top.mp hg⟩
-  simp [zpowersHom_ker_eq, ← infinite_zpowers, hg, Set.infinite_univ]
+  simpa [zpowersHom_ker_eq, ← infinite_zpowers, hg]
+    using Subgroup.topEquiv.symm.toEquiv.infinite_iff.mp ‹_›
 
 /-- The isomorphism between `Multiplicative ℤ` and the infinite cyclic group `G` sending
 `Multiplicative.ofAdd 1` to the generator `g : G`. -/
@@ -668,7 +669,8 @@ abbrev intCyclicMulEquiv [Group G] [IsCyclic G] : Multiplicative ℤ ≃* G :=
 lemma zmultiplesHom_bijective [AddGroup G] {g : G} (hg : zmultiples g = ⊤) :
     Function.Bijective (zmultiplesHom G g) := by
   refine ⟨(AddMonoidHom.ker_eq_bot_iff _).mp ?_, AddMonoidHom.range_eq_top.mp hg⟩
-  simp [zmultiplesHom_ker_eq, ← infinite_zmultiples, hg, Set.infinite_univ]
+  simpa [zmultiplesHom_ker_eq, ← infinite_zmultiples, hg]
+    using AddSubgroup.topEquiv.symm.toEquiv.infinite_iff.mp ‹_›
 
 /-- The isomorphism between `ℤ` and the infinite cyclic group `G` sending
 `1` to the generator `g : G`. -/
@@ -950,37 +952,36 @@ end WithZero
 
 section SubgroupCard
 
+variable [Group G] [IsCyclic G] {H K : Subgroup G}
+
 /-- In a cyclic group, `H ≤ K` iff `K.index ∣ H.index`. -/
 @[to_additive /-- In an additive cyclic group, `H ≤ K` iff `K.index ∣ H.index`. -/]
-theorem IsCyclic.subgroup_le_iff_index_dvd [Group G] [IsCyclic G] {H K : Subgroup G} :
+theorem IsCyclic.subgroup_le_iff_index_dvd :
     H ≤ K ↔ K.index ∣ H.index := by
-  refine ⟨Subgroup.index_dvd_of_le, fun h ↦ ?_⟩
   obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp ‹_›
-  obtain ⟨i, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg H
-  obtain ⟨j, rfl⟩ := Subgroup.exists_zpowers_eq_of_zpowers_eq_top hg K
-  rw [Subgroup.index_zpowers_zpow hg, Subgroup.index_zpowers_zpow hg] at h
-  rwa [Subgroup.zpowers_le_zpowers_iff]
+  obtain ⟨i, rfl⟩ := H.exists_zpowers_eq_of_zpowers_eq_top hg
+  obtain ⟨j, rfl⟩ := K.exists_zpowers_eq_of_zpowers_eq_top hg
+  simp_rw [Subgroup.index_zpowers_zpow hg, Subgroup.zpowers_le_zpowers_iff]
 
-/-- In a cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
+/-- In a cyclic group, if `H` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
 @[to_additive
-/-- In an additive cyclic group, if `K` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/]
-theorem IsCyclic.subgroup_le_iff_card_dvd [Group G] [IsCyclic G] {H K : Subgroup G} [h : Finite K] :
+/-- In an additive cyclic group, if `H` is finite then `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/]
+theorem IsCyclic.subgroup_le_iff_card_dvd [h : Finite H] :
     H ≤ K ↔ Nat.card H ∣ Nat.card K := by
-  obtain _ | _ := subsingleton_or_nontrivial K
-  · simp [Subgroup.eq_bot_of_subsingleton]
+  cases subsingleton_or_nontrivial H
+  · simp [H.eq_bot_of_subsingleton]
   · have : Finite G := by
       contrapose! h
       infer_instance
-    rw [subgroup_le_iff_index_dvd, Subgroup.index_eq_card_div, Subgroup.index_eq_card_div,
-      Nat.div_dvd_div_iff_left Nat.card_pos (Subgroup.card_subgroup_dvd_card K)
-      (Subgroup.card_subgroup_dvd_card H)]
+    rw [subgroup_le_iff_index_dvd, H.index_eq_card_div, K.index_eq_card_div,
+      Nat.div_dvd_div_iff_left Nat.card_pos K.card_subgroup_dvd_card H.card_subgroup_dvd_card]
 
 /-- In a cyclic group, if `H` and `K` are finite then `H = K` iff `Nat.card H = Nat.card K`. -/
 @[to_additive
 /-- In an additive cyclic group, if `H` and `K` are finite then `H = K` iff
 `Nat.card H = Nat.card K`. -/]
-theorem IsCyclic.subgroup_eq_iff_card_eq [Group G] [IsCyclic G] {H K : Subgroup G} [Finite H]
-    [Finite K] : H = K ↔ Nat.card H = Nat.card K := by
+theorem IsCyclic.subgroup_eq_iff_card_eq [Finite H] [Finite K] :
+    H = K ↔ Nat.card H = Nat.card K := by
   rw [le_antisymm_iff, IsCyclic.subgroup_le_iff_card_dvd, IsCyclic.subgroup_le_iff_card_dvd,
     Nat.dvd_antisymm_iff]
 
