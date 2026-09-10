@@ -5,8 +5,7 @@ Authors: Jun Kwon
 -/
 module
 
-public import Mathlib.Data.Set.Insert
-public import Mathlib.Tactic.WLOG
+public import Mathlib.Data.Set.Card.Arithmetic
 
 /-!
 # Incidence hypergraphs
@@ -18,8 +17,13 @@ incidence has an associated edge and an attached vertex.
 
 * `IncidenceHypergraph`: the incidence hypergraph structure.
 * `IncidenceHypergraph.IsLink`: two distinct incidences of an edge with specified attached vertices.
-* `IncidenceHypergraph.Inc`: the vertices attached to incidences of an edge.
+* `IncidenceHypergraph.endSet`: the vertices attached to incidences of an edge.
 * `IncidenceHypergraph.Adj`: two vertices are joined by an `IsLink`.
+* `IncidenceHypergraph.dual`: exchange vertices and edges while preserving incidence labels.
+* `IncidenceHypergraph.degree`: the number of incidences attached to a vertex.
+* `IncidenceHypergraph.order`: the number of incidences belonging to an edge.
+* `IncidenceHypergraph.IsUniform`: all active edges have a specified order.
+* `IncidenceHypergraph.IsRegular`: all active vertices have a specified degree.
 
 ## Implementation notes
 
@@ -29,6 +33,10 @@ The underlying mathematical data is a span of sets `V(G) ← I(G) → E(G)`, wit
 
 This is a quite permissive definition of a hypergraph, where there can be multiple incidences
 between an edge and a vertex, and there could be isolated vertices and edges.
+
+Degrees and edge orders count incidences with multiplicity and take values in `ℕ∞`. All infinite
+fibers have count `⊤`, regardless of their cardinality. Duality exchanges degree with order and
+regularity with uniformity.
 
 ## Notation
 
@@ -40,7 +48,7 @@ and edge sets.
 
 variable {ν ι ε : Type*}
 
-open Set
+open Set Function
 
 /-- A incidence based hypergraph definition on ambient vertex, incidence and edge types `ν`, `ι`
 and `ε`. -/
@@ -269,5 +277,218 @@ protected lemma ext (hV : V(G) = V(H)) (hI : I(G) = I(H)) (hE : E(G) = E(H))
   obtain rfl : edgeMap = edgeMap' := funext fun i ↦ hEdge i i.property i.property
   obtain rfl : attach = attach' := funext fun i ↦ hAttach i i.property i.property
   rfl
+
+/-! ### Duality -/
+
+/-- The incidence dual, obtained by exchanging vertices and edges while preserving incidences. -/
+@[simps vertexSet incidenceSet edgeSet]
+def dual (G : IncidenceHypergraph ν ι ε) : IncidenceHypergraph ε ι ν where
+  vertexSet := E(G)
+  incidenceSet := I(G)
+  edgeSet := V(G)
+  edgeMap' := G.attach'
+  edgeMap'_mem := G.attach'_mem
+  attach' := G.edgeMap'
+  attach'_mem := G.edgeMap'_mem
+
+@[simp]
+lemma edgeMap_dual [Nonempty ν] (G : IncidenceHypergraph ν ι ε) (i : ι) :
+    G.dual.edgeMap i = G.attach i :=
+  rfl
+
+@[simp]
+lemma attach_dual [Nonempty ε] (G : IncidenceHypergraph ν ι ε) (i : ι) :
+    G.dual.attach i = G.edgeMap i :=
+  rfl
+
+@[simp]
+lemma dual_dual (G : IncidenceHypergraph ν ι ε) : G.dual.dual = G :=
+  rfl
+
+@[simp]
+lemma mem_endSet_dual : e ∈ G.dual.endSet v ↔ v ∈ G.endSet e :=
+  ⟨fun ⟨i, hv, he⟩ ↦ ⟨i, he, hv⟩, fun ⟨i, he, hv⟩ ↦ ⟨i, hv, he⟩⟩
+
+lemma dual_bijective : Bijective (dual : IncidenceHypergraph ν ι ε → _) :=
+  ⟨fun _ _ h ↦ by simpa using congrArg dual h, fun G ↦ ⟨G.dual, G.dual_dual⟩⟩
+
+@[simp]
+lemma dual_inj : G.dual = H.dual ↔ G = H :=
+  dual_bijective.injective.eq_iff
+
+/-! ### Degree and order -/
+
+/-- The number of incidences attached to a vertex, with value `⊤` for an infinite fiber.
+Repeated incidences are counted separately. The degree is zero outside the active vertex set. -/
+noncomputable def degree (G : IncidenceHypergraph ν ι ε) (v : ν) : ℕ∞ :=
+  (G.attach' ⁻¹' {v}).encard
+
+/-- The number of incidences belonging to an edge, with value `⊤` for an infinite fiber.
+Repeated incidences are counted separately. The order is zero outside the active edge set. -/
+noncomputable def order (G : IncidenceHypergraph ν ι ε) (e : ε) : ℕ∞ :=
+  (G.edgeMap' ⁻¹' {e}).encard
+
+@[simp]
+lemma degree_dual (G : IncidenceHypergraph ν ι ε) (e : ε) : G.dual.degree e = G.order e :=
+  rfl
+
+@[simp]
+lemma order_dual (G : IncidenceHypergraph ν ι ε) (v : ν) : G.dual.order v = G.degree v :=
+  rfl
+
+lemma degree_eq_zero [Nonempty ν] : G.degree v = 0 ↔ ∀ i ∈ I(G), G.attach i ≠ v := by
+  simp [degree, Set.eq_empty_iff_forall_notMem]
+
+lemma degree_pos [Nonempty ν] : 0 < G.degree v ↔ ∃ i ∈ I(G), G.attach i = v := by
+  simp [degree, Set.Nonempty]
+
+@[simp]
+lemma degree_of_notMem_vertexSet (hv : v ∉ V(G)) : G.degree v = 0 := by
+  rw [degree, encard_eq_zero, preimage_eq_empty_iff, disjoint_singleton_left]
+  exact mt (G.range_attach'_subset ·) hv
+
+lemma degree_attach_pos [Nonempty ν] (G : IncidenceHypergraph ν ι ε) (hi : i ∈ I(G)) :
+    0 < G.degree (G.attach i) :=
+  degree_pos.mpr ⟨i, hi, rfl⟩
+
+lemma mem_vertexSet_of_degree_pos (h : 0 < G.degree v) : v ∈ V(G) := by
+  rw [degree, encard_pos] at h
+  obtain ⟨i, rfl⟩ := h
+  exact G.attach'_mem i
+
+lemma degree_le_encard_incidenceSet : G.degree v ≤ I(G).encard :=
+  Set.encard_le_card
+
+lemma degree_lt_top_of_finite (hI : I(G).Finite) : G.degree v < ⊤ :=
+  degree_le_encard_incidenceSet.trans_lt hI.encard_lt_top
+
+lemma order_eq_zero : G.order e = 0 ↔ G.endSet e = ∅ := by
+  simp [order, endSet]
+
+lemma order_pos : 0 < G.order e ↔ (G.endSet e).Nonempty := by
+  simp [order, endSet]
+
+@[simp]
+lemma order_of_notMem_edgeSet (he : e ∉ E(G)) : G.order e = 0 :=
+  degree_of_notMem_vertexSet (G := G.dual) he
+
+lemma order_edgeMap'_pos (G : IncidenceHypergraph ν ι ε) (i : I(G)) :
+    0 < G.order (G.edgeMap' i) := Set.encard_pos.mpr ⟨i, rfl⟩
+
+lemma mem_edgeSet_of_order_pos (h : 0 < G.order e) : e ∈ E(G) :=
+  mem_vertexSet_of_degree_pos (G := G.dual) h
+
+lemma order_le_encard_incidenceSet : G.order e ≤ I(G).encard :=
+  degree_le_encard_incidenceSet (G := G.dual)
+
+lemma encard_endSet_le_order : (G.endSet e).encard ≤ G.order e :=
+  Set.encard_image_le _ _
+
+lemma degree_eq_zero_iff_forall_notMem_endSet : G.degree v = 0 ↔ ∀ e, v ∉ G.endSet e := by
+  rw [← order_dual G v, order_eq_zero, Set.eq_empty_iff_forall_notMem]
+  simp
+
+/-- An edge has order greater than one exactly when it supports a link, possibly a loop. -/
+lemma one_lt_order_iff : 1 < G.order e ↔ ∃ u v, G.IsLink e u v := by
+  rw [order, Set.one_lt_encard_iff]
+  constructor
+  · rintro ⟨i, j, hi, hj, hij⟩
+    exact ⟨G.attach' i, G.attach' j, i, j, hij, hi, hj, rfl, rfl⟩
+  rintro ⟨u, v, i, j, hij, hi, hj, -, -⟩
+  exact ⟨i, j, hi, hj, hij⟩
+
+lemma IsLink.one_lt_order {u : ν} (h : G.IsLink e u v) : 1 < G.order e :=
+  one_lt_order_iff.mpr ⟨u, v, h⟩
+
+lemma degree_eq_zero_of_incidenceSet_eq_empty (hI : I(G) = ∅) : G.degree v = 0 :=
+  Set.encard_eq_zero.mpr <| Set.eq_empty_iff_forall_notMem.mpr fun i ↦
+    (Set.notMem_empty i.val (hI ▸ i.property)).elim
+
+lemma order_eq_zero_of_incidenceSet_eq_empty (hI : I(G) = ∅) : G.order e = 0 :=
+  degree_eq_zero_of_incidenceSet_eq_empty (G := G.dual) hI
+
+/-! ### Counting incidences -/
+
+/-- Summing degrees over a finite active vertex set counts all incidences. This is true without
+finiteness assumption but requires importing topology here. -/
+lemma sum_degree (G : IncidenceHypergraph ν ι ε) [Fintype V(G)] :
+    ∑ v : V(G), G.degree v = I(G).encard := by
+  have hUnion : ⋃ v : V(G), G.attach' ⁻¹' {v.val} = Set.univ := by
+    ext i
+    simp only [Set.mem_iUnion, Set.mem_preimage, Set.mem_singleton_iff, Set.mem_univ, iff_true]
+    exact ⟨⟨G.attach' i, G.attach'_mem i⟩, rfl⟩
+  have hDisjoint :
+      Pairwise fun v w : V(G) ↦ Disjoint (G.attach' ⁻¹' {v.val}) (G.attach' ⁻¹' {w.val}) :=
+    fun v w hvw ↦  Set.disjoint_left.mpr fun i hv hw ↦ hvw (Subtype.ext (hv.symm.trans hw))
+  simpa [hUnion, degree, Set.encard_univ, finsum_eq_sum_of_fintype] using
+    (Set.encard_iUnion_of_finite hDisjoint).symm
+
+/-- Summing orders over a finite active edge set counts all incidences. This is true without
+finiteness assumption but requires importing topology here. -/
+lemma sum_order (G : IncidenceHypergraph ν ι ε) [Fintype E(G)] :
+    ∑ e : E(G), G.order e = I(G).encard := by
+  let : Fintype V(G.dual) := ‹Fintype E(G)›
+  exact G.dual.sum_degree
+
+/-- The degree sum equals the edge order sum when both active indexing sets are finite. This is true
+without finiteness assumption but requires importing topology here. -/
+lemma sum_degree_eq_sum_order (G : IncidenceHypergraph ν ι ε) [Fintype V(G)] [Fintype E(G)] :
+    ∑ v : V(G), G.degree v = ∑ e : E(G), G.order e :=
+  G.sum_degree.trans G.sum_order.symm
+
+variable {k l : ℕ∞}
+
+/-! ### Uniformity and regularity -/
+
+/-- Every active edge has order `k`, counting incidences with multiplicity.
+For `k = ⊤`, this means that every active edge has infinitely many incidences. -/
+def IsUniform (G : IncidenceHypergraph ν ι ε) (k : ℕ∞) : Prop :=
+  ∀ e ∈ E(G), G.order e = k
+
+/-- Every active vertex has degree `k`, counting incidences with multiplicity.
+For `k = ⊤`, this means that every active vertex has infinitely many incidences. -/
+def IsRegular (G : IncidenceHypergraph ν ι ε) (k : ℕ∞) : Prop :=
+  ∀ v ∈ V(G), G.degree v = k
+
+lemma IsUniform.order_eq (h : G.IsUniform k) (he : e ∈ E(G)) : G.order e = k :=
+  h e he
+
+lemma IsRegular.degree_eq (h : G.IsRegular k) (hv : v ∈ V(G)) : G.degree v = k :=
+  h v hv
+
+@[simp]
+lemma isUniform_dual : G.dual.IsUniform k ↔ G.IsRegular k :=
+  Iff.rfl
+
+@[simp]
+lemma isRegular_dual : G.dual.IsRegular k ↔ G.IsUniform k :=
+  Iff.rfl
+
+lemma IsUniform.eq_of_nonempty (hk : G.IsUniform k) (hl : G.IsUniform l) (hE : E(G).Nonempty) :
+    k = l := by
+  obtain ⟨e, he⟩ := hE
+  exact (hk.order_eq he).symm.trans (hl.order_eq he)
+
+lemma IsRegular.eq_of_nonempty (hk : G.IsRegular k) (hl : G.IsRegular l) (hV : V(G).Nonempty) :
+    k = l :=
+  IsUniform.eq_of_nonempty (G := G.dual) hk hl hV
+
+lemma isUniform_of_edgeSet_eq_empty (hE : E(G) = ∅) : G.IsUniform k := by
+  simp [IsUniform, hE]
+
+lemma isRegular_of_vertexSet_eq_empty (hV : V(G) = ∅) : G.IsRegular k :=
+  G.dual.isUniform_of_edgeSet_eq_empty hV
+
+@[simp]
+lemma isUniform_zero : G.IsUniform 0 ↔ I(G) = ∅ := by
+  refine ⟨fun h ↦ eq_empty_iff_forall_notMem.mpr fun i hi ↦ ?_,
+    fun h e he ↦ order_eq_zero_of_incidenceSet_eq_empty h⟩
+  have hpos := G.order_edgeMap'_pos ⟨i, hi⟩
+  rw [h.order_eq (G.edgeMap'_mem ⟨i, hi⟩)] at hpos
+  exact lt_irrefl _ hpos
+
+@[simp]
+lemma isRegular_zero : G.IsRegular 0 ↔ I(G) = ∅ :=
+  G.dual.isUniform_zero
 
 end IncidenceHypergraph
