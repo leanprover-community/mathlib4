@@ -11,7 +11,8 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 /-!
 # Derivatives of the `tan` and `arctan` functions.
 
-Continuity and derivatives of the tangent and arctangent functions.
+Continuity and derivatives of the tangent and arctangent functions. We also record the classical
+limit `tan x / x → 1` as `x → 0` (`Real.tendsto_tan_div_nhdsNE_zero`).
 -/
 
 public section
@@ -70,6 +71,11 @@ theorem hasDerivAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : ℝ) (π
 theorem differentiableAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : ℝ) (π / 2)) :
     DifferentiableAt ℝ tan x :=
   (hasDerivAt_tan_of_mem_Ioo h).differentiableAt
+
+/-- The classical limit `lim_{x → 0} (tan x) / x = 1`. -/
+theorem tendsto_tan_div_nhdsNE_zero : Tendsto (fun x : ℝ ↦ tan x / x) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_tan (x := 0) (by simp))).congr
+    fun _ ↦ by simp [slope_def_field]
 
 theorem hasStrictDerivAt_arctan (x : ℝ) : HasStrictDerivAt arctan (1 / (1 + x ^ 2)) x := by
   have A : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'

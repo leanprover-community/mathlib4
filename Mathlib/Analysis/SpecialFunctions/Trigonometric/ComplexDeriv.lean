@@ -11,7 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 # Complex trigonometric functions
 
-Basic facts and derivatives for the complex trigonometric functions.
+Basic facts and derivatives for the complex trigonometric functions. We also record the classical
+limit `tan z / z → 1` as `z → 0` (`Complex.tendsto_tan_div_nhdsNE_zero`); its real counterpart
+`Real.tendsto_tan_div_nhdsNE_zero` is in the file `ArctanDeriv.lean`.
 -/
 
 public section
@@ -68,5 +70,10 @@ theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
 @[simp]
 theorem contDiffAt_tan {x : ℂ} {n : WithTop ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x ≠ 0 :=
   ⟨fun h => continuousAt_tan.1 h.continuousAt, contDiff_sin.contDiffAt.div contDiff_cos.contDiffAt⟩
+
+/-- The classical limit `lim_{z → 0} (tan z) / z = 1`, for the complex tangent. -/
+theorem tendsto_tan_div_nhdsNE_zero : Tendsto (fun z : ℂ ↦ tan z / z) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_tan (x := 0) (by simp))).congr
+    fun _ ↦ by simp [slope_def_field]
 
 end Complex
