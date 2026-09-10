@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Tactic.Matrix.Mul
+import Mathlib.Tactic.NormMatMul
 
 import Mathlib.Basic.Complex.Basic
 
