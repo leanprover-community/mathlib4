@@ -47,7 +47,9 @@ public section
 
 universe u
 
-open CategoryTheory MonoidalCategory MonoidalClosed Simplicial HomotopicalAlgebra Limits
+open CategoryTheory MonoidalCategory MonoidalClosed HomotopicalAlgebra Limits
+
+open scoped Simplicial
 
 namespace SSet
 

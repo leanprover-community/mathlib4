@@ -402,18 +402,25 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
 of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
   toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
-    (· ∈ nonZeroDivisors _)
-    (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
+    (· ∈ nonZeroDivisors _ : Associates M₀ → Prop)
+    (by simp [mem_nonZeroDivisors_iff, Associates.forall_associated, Associates.mk_mul_mk])
     (by simp +instances [Associated.setoid])
-  map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
+  map_mul' := by
+    simp_rw [Subtype.forall, Associates.forall_associated, Equiv.toFun_as_coe,
+      Submonoid.mk_mul_mk, Associates.mk_mul_mk, ← Associates.quotient_mk_eq_mk]
+    intros
+    repeat rw [Equiv.subtypeQuotientEquivQuotientSubtype_mk]
+    simp [Associates.mk_mul_mk]
 
 @[simp]
 lemma associatesNonZeroDivisorsEquiv_mk_mk (a : M₀) (ha) :
-    associatesNonZeroDivisorsEquiv ⟨⟦a⟧, ha⟩ = ⟦⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩⟧ := rfl
+    associatesNonZeroDivisorsEquiv ⟨.mk a, ha⟩ = .mk ⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩ :=
+  rfl
 
 @[simp]
 lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
-    associatesNonZeroDivisorsEquiv.symm ⟦⟨a, ha⟩⟧ = ⟨⟦a⟧, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
+    associatesNonZeroDivisorsEquiv.symm (.mk ⟨a, ha⟩) =
+      ⟨.mk a, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
   rfl
 
 end CommMonoidWithZero

@@ -40,7 +40,7 @@ open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {ι 𝕜 E F F₁ F₂ : Type*}
+variable {ι 𝕜 E F : Type*}
 
 section definition
 

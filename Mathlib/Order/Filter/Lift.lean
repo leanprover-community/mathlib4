@@ -195,7 +195,7 @@ theorem lift_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) (hg' : g univ = ⊤) :
     (iInf f).lift g = ⨅ i, (f i).lift g := by
   cases isEmpty_or_nonempty ι
-  · simp [iInf_of_empty, hg']
+  · simp [hg']
   · exact lift_iInf hg
 
 end lift
