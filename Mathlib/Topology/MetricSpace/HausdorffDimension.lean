@@ -48,7 +48,7 @@ properties of Hausdorff dimension.
   `HolderOnWith`, and locally Hölder maps, as well as for `Set.image` and `Set.range`.
 * `LipschitzWith.dimH_image_le` etc: Lipschitz continuous maps do not increase the Hausdorff
   dimension of sets.
-* for a map that is known to be both Lipschitz and antilipschitz (e.g., for an `Isometric` or
+* for a map that is known to be both Lipschitz and antilipschitz (e.g., for an isometry or
   a `ContinuousLinearEquiv`) we also prove `dimH (f '' s) = dimH s`.
 
 ### Hausdorff measure in `ℝⁿ`
