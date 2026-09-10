@@ -90,11 +90,8 @@ lemma lsingle_comp_chainsMap_f (n : ℕ) (x : Fin n → G) :
     ModuleCat.ofHom (lsingle x) ≫ (chainsMap f φ).f n =
       ModuleCat.ofHom (lsingle (f ∘ x) ∘ₗ φ.hom.toLinearMap) := by
   ext
-  simp only [chainsMap_f, ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp,
-    Function.comp_apply, lsingle_apply, lmapDomain_apply, mapDomain_single, res_obj_ρ,
-    ModuleCat.ofHom_comp, IntertwiningMap.coe_toLinearMap]
-  rw [mapRange.linearMap_apply, lsingle_apply]
-  simp
+  simp [chainsMap_f, lmapDomain_apply, res_obj_ρ,
+    IntertwiningMap.coe_toLinearMap, (mapRange.linearMap_apply), (lsingle_apply)]
 
 lemma chainsMap_f_single (n : ℕ) (x : Fin n → G) (a : A) :
     (chainsMap f φ).f n (single x a) = single (f ∘ x) (φ.hom a) := by
@@ -120,13 +117,9 @@ lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     (f : G →* H) (g : H →* K) (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
     chainsMap (g.comp f) (φ ≫ (resFunctor f).map ψ) = chainsMap f φ ≫ chainsMap g ψ := by
   ext
-  simp only [chainsMap_f, MonoidHom.coe_comp, Function.comp_assoc, Rep.hom_comp, res_obj_ρ,
-    IntertwiningMap.comp_toLinearMap, resMap_hom_toLinearMap, ModuleCat.hom_comp,
-    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, lsingle_apply,
-    lmapDomain_apply, mapDomain_single, HomologicalComplex.comp_f, Category.assoc]
-  rw [mapRange.linearMap_apply, mapRange.linearMap_apply, mapRange.linearMap_apply,
-    lmapDomain_apply]
-  simp
+  simp [chainsMap_f, MonoidHom.coe_comp, Function.comp_assoc, Rep.hom_comp, res_obj_ρ,
+    IntertwiningMap.comp_toLinearMap, resMap_hom_toLinearMap,
+    Category.assoc, (mapRange.linearMap_apply), (lmapDomain_apply)]
 
 lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     chainsMap (MonoidHom.id G) (φ ≫ ψ) =
@@ -136,12 +129,7 @@ lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
 @[simp]
 lemma chainsMap_zero : chainsMap f (0 : A ⟶ res f B) = 0 := by
   ext
-  simp only [chainsMap_f, zero_hom, IntertwiningMap.zero_toLinearMap, ModuleCat.hom_comp,
-    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, lsingle_apply,
-    lmapDomain_apply, mapDomain_single, HomologicalComplex.zero_f, Limits.comp_zero,
-    ModuleCat.hom_zero, LinearMap.zero_apply]
-  rw [mapRange.linearMap_apply]
-  simp
+  simp [chainsMap_f, IntertwiningMap.zero_toLinearMap, lmapDomain_apply, (mapRange.linearMap_apply)]
 
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by
@@ -262,54 +250,31 @@ noncomputable abbrev chainsMap₃ :
 lemma chainsMap_f_0_comp_chainsIso₀ :
     (chainsMap f φ).f 0 ≫ (chainsIso₀ B).hom = (chainsIso₀ A).hom ≫ φ.toModuleCatHom := by
   ext
-  simp only [Unique.eq_default (α := Fin 0 → G), chainsMap_f, Unique.eq_default (α := Fin 0 → H),
-    chainsIso₀, LinearEquiv.toModuleIso_hom, Category.assoc, ModuleCat.hom_comp,
-    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    lsingle_apply, lmapDomain_apply, mapDomain_single, res_obj_ρ, IntertwiningMap.coe_toLinearMap,
-    uniqueLinearEquiv_apply, single_eq_same]
-  rw [uniqueLinearEquiv_apply, mapRange.linearMap_apply]
-  simp
-
+  simp [Unique.eq_default (α := Fin 0 → G), chainsMap_f, Unique.eq_default (α := Fin 0 → H),
+    chainsIso₀, Category.assoc, lmapDomain_apply, (mapRange.linearMap_apply),
+    IntertwiningMap.coe_toLinearMap, res_obj_ρ, (uniqueLinearEquiv_apply _)]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_1_comp_chainsIso₁ :
     (chainsMap f φ).f 1 ≫ (chainsIso₁ B).hom = (chainsIso₁ A).hom ≫ chainsMap₁ f φ := by
   ext x
-  simp only [chainsMap_f, chainsIso₁, LinearEquiv.toModuleIso_hom, Category.assoc,
-    ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, lsingle_apply, lmapDomain_apply, mapDomain_single, ModuleCat.ofHom_comp,
-    res_obj_ρ, domLCongr_apply, domCongr_apply, equivMapDomain_single, Equiv.funUnique_apply,
-    Fin.default_eq_zero, Fin.isValue, mapRange.linearMap_apply, IntertwiningMap.coe_toLinearMap,
-    mapRange_single]
-  rw [domLCongr_apply, mapRange.linearMap_apply]
-  simp
+  simp [chainsMap_f, chainsIso₁, (domLCongr_apply), (mapRange.linearMap_apply), Category.assoc,
+    lmapDomain_apply, mapDomain_single, res_obj_ρ, domCongr_apply, equivMapDomain_single,
+    IntertwiningMap.coe_toLinearMap, mapRange_single]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_2_comp_chainsIso₂ :
     (chainsMap f φ).f 2 ≫ (chainsIso₂ B).hom = (chainsIso₂ A).hom ≫ chainsMap₂ f φ := by
   ext
-  simp only [chainsMap_f, chainsIso₂, LinearEquiv.toModuleIso_hom, Category.assoc,
-    ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, lsingle_apply, lmapDomain_apply, mapDomain_single, ModuleCat.ofHom_comp,
-    res_obj_ρ, domLCongr_apply, domCongr_apply, equivMapDomain_single, piFinTwoEquiv_apply,
-    Fin.isValue, Prod.map_apply, mapRange.linearMap_apply, IntertwiningMap.coe_toLinearMap,
-    mapRange_single]
-  rw [domLCongr_apply, mapRange.linearMap_apply]
-  simp
+  simp [chainsMap_f, (domLCongr_apply), (mapRange.linearMap_apply), chainsIso₂,
+    lmapDomain_apply, mapDomain_single, res_obj_ρ, domCongr_apply, IntertwiningMap.coe_toLinearMap]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_3_comp_chainsIso₃ :
     (chainsMap f φ).f 3 ≫ (chainsIso₃ B).hom = (chainsIso₃ A).hom ≫ chainsMap₃ f φ := by
   ext
-  simp only [chainsMap_f, chainsIso₃, Nat.reduceAdd, LinearEquiv.toModuleIso_hom, Category.assoc,
-    ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, lsingle_apply, lmapDomain_apply, mapDomain_single, ModuleCat.ofHom_comp,
-    res_obj_ρ, domLCongr_apply, domCongr_apply, equivMapDomain_single, Equiv.trans_apply,
-    Fin.consEquiv_symm_apply, Fin.isValue, Equiv.prodCongr_apply, Equiv.coe_refl,
-    piFinTwoEquiv_apply, Prod.map_apply, id_eq, mapRange.linearMap_apply,
-    IntertwiningMap.coe_toLinearMap, mapRange_single]
-  rw [domLCongr_apply, mapRange.linearMap_apply]
-  simp [← Fin.comp_tail]
+  simp [chainsMap_f, chainsIso₃, (domLCongr_apply), (mapRange.linearMap_apply), ← Fin.comp_tail,
+    Category.assoc, lmapDomain_apply, IntertwiningMap.coe_toLinearMap, mapRange_single]
 
 open ShortComplex
 

@@ -231,15 +231,9 @@ where the vertical arrows are `chainsIso₁` and `chainsIso₀` respectively.
 theorem comp_d₁₀_eq :
     (chainsIso₁ A).hom ≫ d₁₀ A = (inhomogeneousChains A).d 1 0 ≫ (chainsIso₀ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp only [chainsIso₁, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp,
-      ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      domLCongr_apply, domCongr_apply, equivMapDomain_single, Equiv.funUnique_apply,
-      Fin.default_eq_zero, Fin.isValue, d₁₀_single (G := G), sub_eq_add_neg, zero_add,
-      ChainComplex.of_d', Nat.reduceAdd, eqToHom_refl, Category.id_comp, chainsIso₀,
-      inhomogeneousChains.d_single (G := G), Unique.eq_default (α := Fin 0 → G), Finset.univ_unique,
-      Fin.val_eq_zero, pow_one, neg_smul, one_smul, Finset.sum_neg_distrib, Finset.sum_const,
-      Finset.card_singleton, map_add, map_neg]
-    rw [uniqueLinearEquiv_apply, uniqueLinearEquiv_apply, single_eq_same, single_eq_same]
+    simp [chainsIso₁, domLCongr_apply, domCongr_apply, d₁₀_single (G := G), sub_eq_add_neg,
+      chainsIso₀, inhomogeneousChains.d_single (G := G), Unique.eq_default (α := Fin 0 → G),
+      uniqueLinearEquiv_apply _, single_eq_same]
 
 -- @[reassoc (attr := simp), elementwise (attr := simp)]
 @[reassoc, elementwise]
@@ -263,15 +257,9 @@ where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 theorem comp_d₂₁_eq :
     (chainsIso₂ A).hom ≫ d₂₁ A = (inhomogeneousChains A).d 2 1 ≫ (chainsIso₁ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp only [chainsIso₂, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp,
-      ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      domLCongr_single, piFinTwoEquiv_apply, Fin.isValue, d₂₁_single (G := G), sub_eq_add_neg,
-      add_assoc, Nat.reduceAdd, ChainComplex.of_d', eqToHom_refl, Category.id_comp, chainsIso₁,
-      inhomogeneousChains.d_single (G := G), smul_single, Fin.sum_univ_two, Fin.coe_ofNat_eq_mod,
-      Nat.zero_mod, zero_add, pow_one, neg_smul, one_smul, single_neg, Nat.mod_succ, even_two,
-      Even.neg_pow, one_pow, map_add, map_neg]
-    rw [domLCongr_single, domLCongr_single, domLCongr_single]
-    simp [Fin.contractNth_apply_of_lt, Fin.contractNth_apply_of_eq]
+    simp [chainsIso₂, (domLCongr_single), d₂₁_single (G := G), sub_eq_add_neg,
+      add_assoc, chainsIso₁, inhomogeneousChains.d_single (G := G),
+      Fin.contractNth_apply_of_lt, Fin.contractNth_apply_of_eq]
 
 @[reassoc, elementwise]
 theorem eq_d₂₁_comp_inv :
@@ -294,20 +282,12 @@ where the vertical arrows are `chainsIso₃` and `chainsIso₂` respectively.
 theorem comp_d₃₂_eq :
     (chainsIso₃ A).hom ≫ d₃₂ A = (inhomogeneousChains A).d 3 2 ≫ (chainsIso₂ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp only [chainsIso₃, Nat.reduceAdd, LinearEquiv.toModuleIso_hom, d₃₂, Prod.mk.eta,
-      sub_eq_add_neg, add_assoc, ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp,
-      coe_lsum, LinearMap.coe_add, LinearMap.coe_neg, LinearEquiv.coe_coe, Function.comp_apply,
-      domLCongr_single, Equiv.trans_apply, Fin.consEquiv_symm_apply, Fin.isValue, Fin.tail_def,
-      Equiv.prodCongr_apply, Equiv.coe_refl, piFinTwoEquiv_apply, Prod.map_apply, id_eq,
-      Fin.succ_zero_eq_one, Fin.succ_one_eq_two, Pi.add_apply, map_zero, lsingle_apply,
-      Pi.neg_apply, neg_zero, add_zero, sum_single_index, add_rotate' (-(single (_ * _, _) _)),
-      add_left_comm (single (_, _ * _) _), ChainComplex.of_d', eqToHom_refl, Category.id_comp,
-      chainsIso₂, inhomogeneousChains.d_single (G := G), pow_succ, mul_neg, mul_one, neg_smul,
-      smul_single, Finset.sum_neg_distrib, Fin.sum_univ_three, Fin.coe_ofNat_eq_mod, Nat.zero_mod,
-      pow_zero, one_smul, Nat.one_mod, single_neg, Nat.mod_succ, neg_neg, neg_add_rev, map_add,
-      map_neg]
-    rw [domLCongr_single, domLCongr_single, domLCongr_single, domLCongr_single]
-    simp [Fin.contractNth_apply_of_lt, Fin.contractNth_apply_of_eq, Fin.contractNth_apply_of_gt]
+    simp [chainsIso₂, (domLCongr_single), pow_succ, chainsIso₃,
+      -domLCongr_apply, d₃₂, Fin.sum_univ_three,
+      Fin.tail_def, sub_eq_add_neg, add_assoc,
+      inhomogeneousChains.d_single (G := G), add_rotate' (-(single (_ * _, _) _)),
+      add_left_comm (single (_, _ * _) _),
+      Fin.contractNth_apply_of_lt, Fin.contractNth_apply_of_eq, Fin.contractNth_apply_of_gt]
 
 @[reassoc, elementwise]
 theorem eq_d₃₂_comp_inv :

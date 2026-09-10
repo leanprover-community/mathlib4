@@ -48,13 +48,11 @@ lemma map_chainsFunctor_shortExact :
     exact := by
       have : LinearMap.range X.f.hom.toLinearMap = LinearMap.ker X.g.hom.toLinearMap :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
-      simp only [moduleCat_exact_iff_range_eq_ker, map_X₂, chainsFunctor_obj,
-        HomologicalComplex.eval_obj, map_X₁, map_f, chainsFunctor_map, HomologicalComplex.eval_map,
+      simp [moduleCat_exact_iff_range_eq_ker, map_X₂, chainsFunctor_obj,
         chainsMap_id_f_hom_eq_mapRange,
         range_mapRange_linearMap X.f.hom.toLinearMap
             (LinearMap.ker_eq_bot.2 <| (Rep.mono_iff_injective X.f).1 hX.mono_f),
-        this, map_X₃, map_g]
-      rw [ker_mapRange]
+        this, (ker_mapRange)]
     mono_f := chainsMap_id_f_map_mono X.f i
     epi_g := letI := hX.epi_g; chainsMap_id_f_map_epi X.g i }
 
@@ -149,13 +147,9 @@ theorem δ₀_apply
   using! δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by
     rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]; simp)
     ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by
-      simp only [chainsMap_id_f_hom_eq_mapRange, chainsIso₁, LinearEquiv.toModuleIso_inv,
-        domLCongr_symm, ConcreteCategory.hom_ofHom, LinearEquiv.coe_coe, domLCongr_apply,
-        domCongr_apply, ← hy, mapRange.linearMap_apply,
-        Representation.IntertwiningMap.coe_toLinearMap, equivMapDomain_apply, Equiv.symm_symm,
-        Equiv.funUnique_apply, Fin.default_eq_zero, Fin.isValue, mapRange_apply]
-      rw [mapRange.linearMap_apply]
-      simp)
+      simp [chainsMap_id_f_hom_eq_mapRange, chainsIso₁, domLCongr_symm, domLCongr_apply, ← hy,
+        Representation.IntertwiningMap.coe_toLinearMap, equivMapDomain_apply,
+        Equiv.funUnique_apply, (mapRange.linearMap_apply)])
     ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by
       conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]
       simp [chainsIso₀, ← hx])
@@ -183,13 +177,9 @@ theorem δ₁_apply
   using! δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by
     rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]; simp)
     ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ => by
-      simp only [chainsMap_id_f_hom_eq_mapRange, chainsIso₂, LinearEquiv.toModuleIso_inv,
-        domLCongr_symm, ConcreteCategory.hom_ofHom, LinearEquiv.coe_coe, domLCongr_apply,
-        domCongr_apply, ← hy, mapRange.linearMap_apply,
-        Representation.IntertwiningMap.coe_toLinearMap, equivMapDomain_apply, Equiv.symm_symm,
-        piFinTwoEquiv_apply, Fin.isValue, mapRange_apply]
-      rw [mapRange.linearMap_apply]
-      simp)
+      simp [chainsMap_id_f_hom_eq_mapRange, chainsIso₂, domLCongr_symm, domLCongr_apply, ← hy,
+        Representation.IntertwiningMap.coe_toLinearMap, equivMapDomain_apply,
+        mapRange_apply, (mapRange.linearMap_apply)])
     ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by
     conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]
     simp [← hx, chainsIso₁])
