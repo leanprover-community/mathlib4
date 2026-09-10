@@ -60,6 +60,18 @@ protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd �
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
     exact le_add_self
 
+@[simp]
+protected theorem top_add_of_ne_bot [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
+    {a : WithBot α} (h : a ≠ ⊥) : ⊤ + a = ⊤ := by
+  lift a to α using h
+  exact WithBot.coe_inj.mpr (by simp [eq_top_iff])
+
+@[simp]
+protected theorem add_top_of_ne_bot [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
+    {a : WithBot α} (h : a ≠ ⊥) : a + ⊤ = ⊤ := by
+  lift a to α using h
+  exact WithBot.coe_inj.mpr (by simp [eq_top_iff])
+
 lemma lt_zero_iff_eq_bot {α : Type*} [AddMonoid α] [Preorder α] [CanonicallyOrderedAdd α]
     (a : WithBot α) : a < 0 ↔ a = ⊥ := by
   induction a <;> simp
