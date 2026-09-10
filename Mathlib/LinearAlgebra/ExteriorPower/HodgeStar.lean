@@ -7,30 +7,27 @@ module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
-public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 # Hodge star on exterior powers
-
-We construct the Hodge star associated to a bijective bilinear form and a bijective linear form
-on the top exterior power.
 -/
 
-@[expose] public section
+noncomputable section
 
 namespace exteriorPower
 
 open Function Module
 
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+variable {R M : Type*}
+  [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Module.Free R M]
+  (B : LinearMap.BilinForm R M) (hB : Bijective B)
+  (vol : ⋀[R]^(finrank R M) M ≃ₗ[R] R)
+  {k l : ℕ} (hkl : k + l = finrank R M)
 
-/-- The Hodge star associated to `B` and `vol`, in complementary degrees. -/
-@[simps!]
-noncomputable def hodgeStar (B : LinearMap.BilinForm K V) (hB : Bijective B)
-    (vol : Dual K (⋀[K]^(finrank K V) V)) (hvol : Bijective vol) (k l : ℕ)
-    (hkl : k + l = finrank K V) :
-    ⋀[K]^k V ≃ₗ[K] ⋀[K]^l V :=
-  (LinearEquiv.ofBijective (B.exteriorPower k) (B.bijective_exteriorPower k hB)).flip.trans
-    (wedgePairingEquiv vol hvol k l hkl).symm
+/-- The Hodge star associated to `B` and `vol`. -/
+public def hodgeStar :
+    ⋀[R]^k M ≃ₗ[R] ⋀[R]^l M :=
+  letI e : ⋀[R]^l M ≃ₗ[R] Dual R (⋀[R]^l M) := .ofBijective _ (B.bijective_exteriorPower l hB)
+  (wedgePairing vol hkl).toPerfPair.trans e.symm
 
 end exteriorPower

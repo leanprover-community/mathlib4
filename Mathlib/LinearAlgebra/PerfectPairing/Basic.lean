@@ -40,6 +40,16 @@ class IsPerfPair (p : M →ₗ[R] N →ₗ[R] R) where
   bijective_left (p) : Bijective p
   bijective_right (p) : Bijective p.flip
 
+@[nontriviality]
+lemma isPerfPair_of_subsingleton [Subsingleton R] (p : M →ₗ[R] N →ₗ[R] R) :
+    p.IsPerfPair where
+  bijective_left := by
+    have : Subsingleton M := Module.subsingleton R _
+    exact bijective_of_subsingleton' _
+  bijective_right := by
+    have : Subsingleton N := Module.subsingleton R _
+    exact bijective_of_subsingleton' _
+
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 protected lemma IsPerfPair.flip (hp : p.IsPerfPair) : p.flip.IsPerfPair where
   bijective_left := IsPerfPair.bijective_right p

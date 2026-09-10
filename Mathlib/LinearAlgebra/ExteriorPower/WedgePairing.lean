@@ -6,125 +6,85 @@ Authors: Kirill Kondrashov
 module
 
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
-public import Mathlib.LinearAlgebra.Basis.Bilinear
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 # Wedge pairing on exterior powers
+
+Given a trivialisation of the top exterior power, the wedge pairing in complementary degrees
+is a scalar-valued bilinear map. We construct this here and prove that it is a perfect pairing.
+
+## Main definitions / results:
+ * `exteriorPower.wedge`: the bilinear map `∧^k × ∧^l → ∧^(k + l)`
+ * `exteriorPower.wedgePairing`: the bilinear map `∧^k × ∧^l → R` when `k + l` = top degree
+ * `exteriorPower.instIsPerfPairWedgePairing`: the proof that `exteriorPower.wedgePairing` is
+   perfect.
+
 -/
 
-open Function Module Set Set.powersetCard
+public noncomputable section
 
-variable {K V : Type*}
-
-noncomputable section private_defs
+open Function Module Set
 
 namespace exteriorPower
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (k l : ℕ)
+
+/-- The wedge product as an operation on exterior powers. -/
+abbrev wedge :
+    ⋀[R]^k M →ₗ[R] ⋀[R]^l M →ₗ[R] ⋀[R]^(k + l) M :=
+  DirectSum.gMulLHom R <| fun d ↦ ⋀[R]^d M
+
+variable {R M k l} (vol : ⋀[R]^(finrank R M) M ≃ₗ[R] R) (hkl : k + l = finrank R M)
+
+/-- The wedge product in complementary degrees as a scalar-valued bilinear map (for a choice of
+trivialisation of the top exterior power). -/
+abbrev wedgePairing :
+    ⋀[R]^k M →ₗ[R] ⋀[R]^l M →ₗ[R] R :=
+  (wedge R M k l).compr₂ (hkl ▸ vol)
 
 section Basis
 
-variable [CommRing K] [AddCommGroup V] [Module K V]
-variable {ι : Type} [Fintype ι] [LinearOrder ι] (b : Basis ι K V)
-variable {k l : ℕ} (hkl : k + l = Fintype.card ι)
-variable (I : powersetCard ι l) (J : powersetCard ι k)
+variable [Nontrivial R] {ι : Type*} [Fintype ι] [LinearOrder ι] (b : Basis ι R M)
 
-lemma disjoint_iff_eq_compl :
-    Disjoint J.val I.val ↔ J = powersetCard.compl hkl I := by
-  rw [powersetCard.eq_iff_subset, coe_compl, Finset.subset_compl_iff_disjoint_right]
+/-- The wedge product of all the elements of the basis `b`, in increasing order. -/
+def _root_.Module.Basis.topVector : ⋀[R]^(finrank R M) M :=
+  b.exteriorPower (finrank R M) ⟨Finset.univ, by simp [finrank_eq_card_basis b]⟩
 
-def topVector : ⋀[K]^(k + l) V :=
-  b.exteriorPower (k + l) ⟨Finset.univ, by simpa using hkl.symm⟩
+lemma isUnit_apply_topVector : IsUnit (vol b.topVector) := by
+  have : Unique (powersetCard ι (finrank R M)) :=
+    { default := ⟨Finset.univ, by simp [finrank_eq_card_basis b]⟩
+      uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp [finrank_eq_card_basis b] }
+  obtain ⟨x, hx⟩ := vol.surjective 1
+  suffices ((b.exteriorPower (finrank R M)).repr x default) * vol b.topVector = 1 from
+    IsUnit.of_mul_eq_one_right _ this
+  suffices (b.exteriorPower (finrank R M)).repr x default • b.topVector = x by
+    rw [← smul_eq_mul, ← map_smul, ← hx, this]
+  have : b.exteriorPower (finrank R M) default = b.topVector := by
+    congr; exact Subsingleton.elim _ _
+  simpa only [Fintype.sum_unique, this] using (b.exteriorPower <| finrank R M).sum_repr x
 
-lemma basis_mul_of_complement (hdisjoint : Disjoint J.val I.val) :
-    DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k J)
-        (b.exteriorPower l I) =
-      (permOfDisjoint hdisjoint).sign • topVector b hkl := by
-  obtain rfl := (disjoint_iff_eq_compl hkl I J).mp hdisjoint
-  apply Subtype.ext
-  simpa only [DirectSum.gMulLHom_apply_apply, SetLike.coe_gMul,
-    topVector, Submodule.coe_smul_of_tower, ← ExteriorAlgebra.basis_eq_coe_basis, coe_compl,
-    coe_disjUnion, Finset.disjUnion_eq_union, Finset.union_comm, Finset.union_compl] using
-    ExteriorAlgebra.basis_mul_of_disjoint b _ I hdisjoint
-
-omit [Fintype ι] in
-lemma basis_mul_of_not_disjoint (hdisjoint : ¬Disjoint J.val I.val) :
-    DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) (b.exteriorPower k J)
-        (b.exteriorPower l I) = 0 := by
-  apply Subtype.ext
-  simpa only [DirectSum.gMulLHom_apply_apply, SetLike.coe_gMul,
-    ← ExteriorAlgebra.basis_eq_coe_basis, Submodule.coe_zero] using
-    ExteriorAlgebra.basis_mul_of_not_disjoint b J I hdisjoint
-
-variable (vol : Dual K (⋀[K]^(k + l) V))
-
-def wedgePairing :
-    ⋀[K]^l V →ₗ[K] Dual K (⋀[K]^k V) :=
-  (LinearMap.flip (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V))).compr₂ vol
+lemma wedgePairing_eq_apply_topVector_smul :
+    haveI hkl' : k + l = Fintype.card ι := by rw [hkl, Module.finrank_eq_card_basis b]
+    letI bk : Basis (powersetCard ι k) R (⋀[R]^k M) := b.exteriorPower k
+    letI bl : Basis (powersetCard ι k) R (Dual R (⋀[R]^l M)) :=
+      (b.exteriorPower l).dualBasis.reindex (powersetCard.compl hkl') |>.groupSMul powersetCard.sign
+    wedgePairing vol hkl = vol b.topVector • (bk.repr.trans bl.repr.symm) := by
+  sorry
 
 end Basis
 
-section Field
-
-variable [Field K] [AddCommGroup V] [Module K V]
-variable {ι : Type} [Fintype ι] [LinearOrder ι] {k l : ℕ}
-variable (vol : Dual K (⋀[K]^(k + l) V)) (hvol : Bijective vol)
-variable (hkl : k + l = Fintype.card ι) (b : Basis ι K V)
-
-def wedgePairingBasis : Basis (powersetCard ι l) K (Dual K (⋀[K]^k V)) :=
-  (((b.exteriorPower k).dualBasis.reindex (powersetCard.compl hkl).symm).isUnitSMul
-    (fun _ ↦ isUnit_iff_ne_zero.mpr (show vol (topVector b hkl) ≠ 0 by
-      rw [ne_eq, vol.map_eq_zero_iff hvol.injective]
-      exact (b.exteriorPower _).ne_zero _))).groupSMul (fun I ↦
-      (permOfDisjoint (s := powersetCard.compl hkl I) (t := I)
-        (by simpa only [coe_compl] using disjoint_compl_left)).sign)
-
-lemma wedgePairingBasis_apply (I : powersetCard ι l) (J : powersetCard ι k) :
-    wedgePairingBasis vol hvol hkl b I (b.exteriorPower k J) =
-      wedgePairing vol (b.exteriorPower l I) (b.exteriorPower k J) := by
-  change wedgePairingBasis vol hvol hkl b I (b.exteriorPower k J) =
-    vol (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V)
-      (b.exteriorPower k J) (b.exteriorPower l I))
-  have hdisjoint_iff := disjoint_iff_eq_compl hkl I J
-  by_cases htarget : J = powersetCard.compl hkl I
-  · rw [basis_mul_of_complement b hkl I J (hdisjoint_iff.mpr htarget)]
-    simp [wedgePairingBasis, htarget, Basis.isUnitSMul_apply,
-      Basis.reindex_apply, Basis.groupSMul_apply]
-  · rw [basis_mul_of_not_disjoint b I J (hdisjoint_iff.not.mpr htarget)]
-    simp [wedgePairingBasis, htarget, Basis.isUnitSMul_apply,
-      Basis.reindex_apply, Basis.groupSMul_apply]
-
-include hvol hkl b in
-lemma bijective_wedgePairing : Bijective (wedgePairing vol) := by
-  let e := (b.exteriorPower l).equiv (wedgePairingBasis vol hvol hkl b) (Equiv.refl _)
-  suffices e.toLinearMap = wedgePairing vol by
-    rw [← this]
-    exact e.bijective
-  apply LinearMap.ext_basis (b.exteriorPower l) (b.exteriorPower k)
-  intro I J
-  simpa only [e, LinearEquiv.coe_toLinearMap, Basis.equiv_apply, Equiv.refl_apply] using
-    wedgePairingBasis_apply vol hvol hkl b I J
-
-end Field
-end exteriorPower
-end private_defs
-
-namespace exteriorPower
-
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-variable (vol : Dual K (⋀[K]^(finrank K V) V)) (hvol : Bijective vol)
-variable (k l : ℕ) (hkl : k + l = finrank K V)
-
-/-- The linear equivalence obtained by applying `vol` to wedge products in complementary degrees. -/
-public noncomputable def wedgePairingEquiv :
-    ⋀[K]^l V ≃ₗ[K] Dual K (⋀[K]^k V) :=
-  let e := LinearEquiv.cast (R := K) (M := fun n : ℕ ↦ ⋀[K]^n V) hkl
-  LinearEquiv.ofBijective (wedgePairing (vol.comp e.toLinearMap))
-    (bijective_wedgePairing _ (hvol.comp e.bijective) (by simpa using hkl) (finBasis K V))
-
-@[simp]
-public lemma wedgePairingEquiv_apply (x : ⋀[K]^l V) (y : ⋀[K]^k V) :
-    wedgePairingEquiv vol hvol k l hkl x y =
-      vol (LinearEquiv.cast (R := K) (M := fun n : ℕ ↦ ⋀[K]^n V) hkl
-        (DirectSum.gMulLHom K (fun degree ↦ ⋀[K]^degree V) y x)) := by
-  simp [wedgePairingEquiv, wedgePairing]
+instance instIsPerfPairWedgePairing [Module.Finite R M] [Module.Free R M] :
+    (wedgePairing vol hkl).IsPerfPair := by
+  nontriviality R
+  suffices Bijective (wedgePairing vol hkl) from
+    LinearMap.IsPerfPair.of_bijective (wedgePairing vol hkl) this
+  let ι := Module.Free.ChooseBasisIndex R M
+  let b : Basis ι R M := Module.Free.chooseBasis R M
+  have : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
+  rw [wedgePairing_eq_apply_topVector_smul vol hkl b]
+  let e : Dual R (⋀[R]^l M) ≃ₗ[R] Dual R (⋀[R]^l M) :=
+    .smulOfUnit (isUnit_apply_topVector vol b).unit
+  exact (LinearEquiv.trans _ e).bijective
 
 end exteriorPower

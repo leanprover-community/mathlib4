@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.Data.Finset.Sort
+public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
@@ -22,7 +23,7 @@ the finite sets of that type.
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open Finset Function Set
 
@@ -59,7 +60,7 @@ lemma mem_range_ofFinEmbEquiv_symm_iff_mem (s : powersetCard I n) (i : I) :
   simp [ofFinEmbEquiv_symm_apply]
 
 /-- The natural enumeration of the elements of linearly-ordered type. -/
-@[simps!] def orderIsoOfFin {n : ℕ} {I : Type*} [LinearOrder I] (s : powersetCard I n) :
+@[simps!] def orderIsoOfFin {n : ℕ} (s : powersetCard I n) :
     Fin n ≃o s.val :=
   s.val.orderIsoOfFin s.prop
 
@@ -67,7 +68,7 @@ lemma mem_range_ofFinEmbEquiv_symm_iff_mem (s : powersetCard I n) (i : I) :
 to a `Finset` of card `n` and sorting the resulting set. In other words, given `s₁ < s₂ < ⋯ < sₘ`
 and `t₁ < t₂ < ⋯ < tₙ` (disjoint) this is the permutation obtained by sorting
 `s₁, s₂, …, sₘ, t₁, t₂, …, tₙ`. -/
-def permOfDisjoint {m n : ℕ} {I : Type*} [LinearOrder I]
+def permOfDisjoint {m n : ℕ}
     {s : powersetCard I m} {t : powersetCard I n} (h : Disjoint s.val t.val) :
     Equiv.Perm (Fin (m + n)) :=
   letI e₁ : Fin (m + n) ≃ Fin m ⊕ Fin n := finSumFinEquiv.symm
@@ -75,6 +76,23 @@ def permOfDisjoint {m n : ℕ} {I : Type*} [LinearOrder I]
   letI e₃ : s.val ⊕ t.val ≃ disjUnion h := Equiv.Finset.disjUnionEquiv _ _ h
   letI e₄ : disjUnion h ≃o Fin (m + n) := (orderIsoOfFin (disjUnion h)).symm
   e₁.trans <| e₂.trans <| e₃.trans <| e₄
+
+/-- A subset `s` of a linearly-ordered finite type `I`, determines a permutation of `I` by moving
+all these terms of `s` to the front. This is the sign of that permutation. -/
+protected def sign [Fintype I] (s : powersetCard I n) : ℤˣ :=
+  have : ∃ m, n + m = Fintype.card I := Nat.le.dest <| powersetCard.nonempty_iff.mp ⟨s⟩
+  (powersetCard.permOfDisjoint (s := s) (t := (powersetCard.compl this.choose_spec).symm s) <| by
+    have := this.choose_spec
+    rwa [powersetCard.disjoint_iff_eq_compl, Equiv.apply_symm_apply]).sign
+
+lemma sign_eq_permOfDisjoint_sign [Fintype I] {m : ℕ} (hkl : n + m = Fintype.card I)
+    (s : powersetCard I n) (t : powersetCard I m) (hst : Disjoint s.val t.val) :
+    powersetCard.sign s = (powersetCard.permOfDisjoint hst).sign := by
+  have h : ∃ m, n + m = Fintype.card I := Nat.le.dest <| powersetCard.nonempty_iff.mp ⟨s⟩
+  obtain rfl : m = h.choose := by have := h.choose_spec; lia
+  obtain rfl : t = (powersetCard.compl h.choose_spec).symm s :=
+    (Equiv.eq_symm_apply _).mpr ((powersetCard.disjoint_iff_eq_compl h.choose_spec).mp hst).symm
+  rfl
 
 end order
 
