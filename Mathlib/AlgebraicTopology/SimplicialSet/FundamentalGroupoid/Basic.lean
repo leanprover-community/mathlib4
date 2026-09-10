@@ -280,7 +280,6 @@ variable {D : Type*} [Groupoid D]
 def desc : FundamentalGroupoid X ⥤ D :=
   Truncated.FundamentalGroupoid.desc obj map map_comp
 
-
 @[simp]
 lemma desc_obj_mk (x : X _⦋0⦌) :
     (desc obj map map_comp).obj (mk x) = obj x := rfl
