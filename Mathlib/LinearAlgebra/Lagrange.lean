@@ -393,12 +393,12 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
     simp only [Subtype.mk_eq_mk, dite_eq_ite]
     rw [mem_degreeLT] at hf
     conv => rhs; rw [eq_interpolate hvs hf]
-    exact interpolate_eq_of_values_eq_on _ _ fun _ hi => if_pos hi
+    exact interpolate_eq_of_values_eq_on _ _ fun _ hi => ite_eq_left hi
   right_inv := by
     intro f
     ext ⟨i, hi⟩
     simp only [eval_interpolate_at_node _ hvs hi]
-    exact dif_pos hi
+    exact dite_eq_left hi
 
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
@@ -486,11 +486,6 @@ theorem eval_iterate_derivative_eq_sum (hvs : Set.InjOn v s) {P : Polynomial F} 
         ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (x - v a) := by
   nth_rewrite 1 [eq_interpolate hvs hP, iterate_derivative_interpolate _ hvs hk]
   simp [eval_finsetSum, eval_prod]
-
-@[deprecated eq_interpolate (since := "2026-01-14")]
-theorem interpolate_poly_eq_self
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
-    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
 
 theorem coeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :

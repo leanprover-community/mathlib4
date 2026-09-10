@@ -9,7 +9,7 @@ public import Qq
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
-public import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!
 # Notation classes for lattice operations
@@ -47,19 +47,10 @@ class Compl (α : Type*) where
 
 export Compl (compl)
 
-/-- Set / lattice complement -/
-@[deprecated Compl (since := "2026-01-04")]
-class HasCompl (α : Type*) where
-  /-- Set / lattice complement -/
-  compl : α → α
-
-attribute [deprecated Compl.compl (since := "2026-01-04")] HasCompl.compl
-
 @[inherit_doc]
 postfix:1024 "ᶜ" => compl
 
 initialize_simps_projections Compl
-initialize_simps_projections HasCompl
 
 /-! ### `Sup` and `Inf` -/
 

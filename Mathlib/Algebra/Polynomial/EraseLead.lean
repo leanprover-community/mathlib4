@@ -133,7 +133,7 @@ theorem eraseLead_monomial (i : ℕ) (r : R) : eraseLead (monomial i r) = 0 := b
   by_cases hr : r = 0
   · subst r
     simp only [monomial_zero_right, eraseLead_zero]
-  · rw [eraseLead, natDegree_monomial, if_neg hr, erase_monomial]
+  · rw [eraseLead, natDegree_monomial, ite_eq_right hr, erase_monomial]
 
 @[simp]
 theorem eraseLead_C (r : R) : eraseLead (C r) = 0 :=
@@ -158,9 +158,9 @@ theorem eraseLead_add_of_degree_lt_left {p q : R[X]} (pq : q.degree < p.degree) 
     (p + q).eraseLead = p.eraseLead + q := by
   ext n
   by_cases nd : n = p.natDegree
-  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_left_of_degree_lt pq).symm]
+  · rw [nd, eraseLead_coeff, ite_eq_left (natDegree_add_eq_left_of_degree_lt pq).symm]
     simpa using (coeff_eq_zero_of_degree_lt (lt_of_lt_of_le pq degree_le_natDegree)).symm
-  · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, if_neg, if_neg nd]
+  · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, ite_eq_right, ite_eq_right nd]
     rintro rfl
     exact nd (natDegree_add_eq_left_of_degree_lt pq)
 
@@ -172,9 +172,9 @@ theorem eraseLead_add_of_degree_lt_right {p q : R[X]} (pq : p.degree < q.degree)
     (p + q).eraseLead = p + q.eraseLead := by
   ext n
   by_cases nd : n = q.natDegree
-  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_right_of_degree_lt pq).symm]
+  · rw [nd, eraseLead_coeff, ite_eq_left (natDegree_add_eq_right_of_degree_lt pq).symm]
     simpa using (coeff_eq_zero_of_degree_lt (lt_of_lt_of_le pq degree_le_natDegree)).symm
-  · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, if_neg, if_neg nd]
+  · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, ite_eq_right, ite_eq_right nd]
     rintro rfl
     exact nd (natDegree_add_eq_right_of_degree_lt pq)
 
@@ -249,7 +249,7 @@ lemma two_le_natDegree_of_nextCoeff_eraseLead (hlead : f.eraseLead ≠ 0)
 theorem leadingCoeff_eraseLead_eq_nextCoeff (h : f.nextCoeff ≠ 0) :
     f.eraseLead.leadingCoeff = f.nextCoeff := by
   have := natDegree_pos_of_nextCoeff_ne_zero h
-  rw [leadingCoeff, nextCoeff, natDegree_eraseLead h, if_neg,
+  rw [leadingCoeff, nextCoeff, natDegree_eraseLead h, ite_eq_right,
     eraseLead_coeff_of_ne _ (tsub_lt_self _ _).ne]
   all_goals positivity
 
@@ -295,14 +295,15 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
   · --n < P.natDegree
     have hd₁ : n < ((X - C x) * P).eraseLead.natDegree := by
       linarith [natDegree_eraseLead_add_one h₂]
-    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg hd₁.ne']
-    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg (by lia)]
+    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, ite_eq_right hd₁.ne']
+    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial,
+      ite_eq_right (by lia)]
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
       sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
     rcases hn₂ : n
     · simpa [coeff_monomial, hp] using! fun _ ↦ by lia
-    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by lia),
-        if_neg (by lia), mul_zero, sub_zero]
+    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, ite_eq_right (by lia),
+        ite_eq_right (by lia), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.
     trans 0 <;> rw [coeff_eq_zero_of_natDegree_lt]
     · grw [eraseLead_natDegree_le, eraseLead_natDegree_le]
@@ -396,9 +397,9 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
   · obtain ⟨j, _, h⟩ := exists_ne_zero_of_sum_ne_zero h
     exact ⟨j, (ite_ne_right_iff.mp h).1.symm⟩
   · rintro ⟨j, _, rfl⟩
-    rw [sum_eq_single_of_mem j (mem_univ j), if_pos rfl]
+    rw [sum_eq_single_of_mem j (mem_univ j), ite_eq_left rfl]
     · exact hx j
-    · exact fun m _ hmj => if_neg fun h => hmj.symm (hk h)
+    · exact fun m _ hmj => ite_eq_right fun h => hmj.symm (hk h)
 
 theorem card_support_eq {n : ℕ} :
     #f.support = n ↔
@@ -432,7 +433,7 @@ theorem card_support_eq {n : ℕ} :
         rw [sum_eq_single, coeff_C_mul, coeff_X_pow_self, mul_one]
         · exact hx i
         · intro j _ hji
-          rw [coeff_C_mul, coeff_X_pow, if_neg (hk.injective.ne hji.symm), mul_zero]
+          rw [coeff_C_mul, coeff_X_pow, ite_eq_right (hk.injective.ne hji.symm), mul_zero]
         · exact fun hi => (hi (mem_univ i)).elim
     · intro i
       by_cases hi : ∃ i₀, Fin.castSucc i₀ = i

@@ -46,7 +46,7 @@ composition is deterministic, the equation fails.
 * [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory Set
 

@@ -67,7 +67,6 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toProfinite).op ⋙ locallyConstantPresheaf X))
@@ -175,7 +174,7 @@ def lanSheafProfinite (X : Type (u + 1)) :
     rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
       fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
     exact ((CompHausLike.LocallyConstant.functor.{u, u + 1}
-      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).property
+      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 1 3).mp)).obj X).property
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
 def lanCondensedSet (X : Type (u + 1)) : CondensedSet.{u} :=
@@ -225,10 +224,10 @@ noncomputable instance (X : Profinite) [Finite X] :
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
 def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
-    F.obj ⟨X⟩ ≅ (X → F.obj ⟨Profinite.of PUnit.{u + 1}⟩) :=
+    F.obj ⟨X⟩ ≅ (X → F.obj ⟨↧PUnit.{u + 1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
-      (Types.productLimitCone.{u, u + 1} fun _ ↦ F.obj ⟨Profinite.of PUnit.{u + 1}⟩).2
+      (Types.productLimitCone.{u, u + 1} fun _ ↦ F.obj ⟨↧PUnit.{u + 1}⟩).2
 
 @[simp]
 lemma isoFinYonedaComponents_hom (X : Profinite.{u}) [Finite X] :
@@ -242,7 +241,7 @@ lemma isoFinYonedaComponents_hom_apply (X : Profinite.{u}) [Finite X] (y : F.obj
   rfl
 
 lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y]
-    (f : Y → F.obj ⟨Profinite.of PUnit⟩) (g : X ⟶ Y) :
+    (f : Y → F.obj ⟨↧PUnit⟩) (g : X ⟶ Y) :
     (isoFinYonedaComponents F X).inv (f ∘ g) = F.map g.op ((isoFinYonedaComponents F Y).inv f) := by
   apply injective_of_mono (isoFinYonedaComponents F X).hom
   simp only [Iso.inv_hom_id_apply]
@@ -357,7 +356,6 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toLightProfinite).op ⋙ locallyConstantPresheaf X))
@@ -374,7 +372,6 @@ noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
   (Functor.Final.isColimitWhiskerEquiv (opOpEquivalence ℕ).inverse _).symm
     (isColimitLocallyConstantPresheaf _ _ S.asLimit)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
     (s : Cocone (S.diagram.rightOp ⋙ locallyConstantPresheaf X))
@@ -519,10 +516,10 @@ noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
 def isoFinYonedaComponents (X : LightProfinite.{u}) [Finite X] :
-    F.obj ⟨X⟩ ≅ (X → F.obj ⟨LightProfinite.of PUnit.{u + 1}⟩) :=
+    F.obj ⟨X⟩ ≅ (X → F.obj ⟨↧PUnit.{u + 1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
-      (Types.productLimitCone.{u, u} fun _ ↦ F.obj ⟨LightProfinite.of PUnit.{u + 1}⟩).2
+      (Types.productLimitCone.{u, u} fun _ ↦ F.obj ⟨↧PUnit.{u + 1}⟩).2
 
 @[simp]
 lemma isoFinYonedaComponents_hom (X : LightProfinite.{u}) [Finite X] :
@@ -535,7 +532,7 @@ lemma isoFinYonedaComponents_hom_apply (X : LightProfinite.{u}) [Finite X] (y : 
       F.map ((LightProfinite.of PUnit.{u + 1}).const x).op y := rfl
 
 lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Finite X] [Finite Y]
-    (f : Y → F.obj ⟨LightProfinite.of PUnit⟩) (g : X ⟶ Y) :
+    (f : Y → F.obj ⟨↧PUnit⟩) (g : X ⟶ Y) :
     (isoFinYonedaComponents F X).inv (f ∘ g) = F.map g.op ((isoFinYonedaComponents F Y).inv f) := by
   apply injective_of_mono (isoFinYonedaComponents F X).hom
   simp only [Iso.inv_hom_id_apply]

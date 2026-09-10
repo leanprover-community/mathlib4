@@ -488,7 +488,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
         ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
-        ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
+        ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, ite_eq_left,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
   · simp [Set.MapsTo, isUnramifiedIn_comap]
@@ -511,7 +511,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
         ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
-        ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
+        ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, ite_eq_right,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
   · simp [Set.MapsTo, isUnramifiedIn_comap]
@@ -602,11 +602,11 @@ namespace LiesOver
 
 instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ] :
     AbsoluteValue.LiesOver (mk ψ).1 (mk φ).1 where
-  comp_eq := by simp [← LiesOver.over ψ φ, ← coe_mk_comp]
+  under_eq := by simp [under_def, ← LiesOver.over ψ φ, ← coe_mk_comp]
 
 theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
-  simpa only [coe_apply] using! AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
+  simpa only [coe_apply] using! AbsoluteValue.ext_iff.1 (LiesOver.under_eq w.1 v.1) _
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
@@ -663,7 +663,7 @@ variable {L} {v} {w : InfinitePlace L}
 
 theorem mk_mem_unramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ unramifiedPlacesOver L v :=
-  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩,
+  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).1 (mk v.embedding).1⟩,
     h.2.mk_isUnramified⟩
 
 theorem liesOver_embedding_of_mem_ramifiedPlacesOver (hw : w ∈ ramifiedPlacesOver L v) :
@@ -677,7 +677,7 @@ theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver
 
 theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ ramifiedPlacesOver L v :=
-  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩, h.2.mk_isRamified⟩
+  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.under_eq (mk φ).1 (mk v.embedding).1⟩, h.2.mk_isRamified⟩
 
 variable (w)
 

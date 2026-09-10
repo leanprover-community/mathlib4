@@ -35,7 +35,7 @@ assert_not_exists Monoid
 
 open Function Multiset Nat
 
-variable {α β R : Type*}
+variable {α β : Type*}
 
 namespace Finset
 
@@ -202,6 +202,9 @@ theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
 
 theorem Multiset.toFinset_card_eq_card_iff_nodup {m : Multiset α} :
     #m.toFinset = card m ↔ m.Nodup := dedup_card_eq_card_iff_nodup
+
+theorem nodup_iff_le_length_dedup : m.Nodup ↔ m.card ≤ m.dedup.card := by
+  rw [← dedup_card_eq_card_iff_nodup, card_le_card m.dedup_le |>.ge_iff_eq]
 
 theorem List.card_toFinset : #l.toFinset = l.dedup.length :=
   rfl
@@ -448,6 +451,17 @@ grind_pattern card_le_card_of_injective => f.Injective, #t
 
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
+
+lemma card_le_card_of_surjective {f : s → t} (hf : f.Surjective) : #t ≤ #s := by
+  rcases t.eq_empty_or_nonempty with rfl | ⟨b₀, hb₀⟩
+  · simp
+  · classical apply card_le_card_of_surjOn (fun a ↦ if ha : a ∈ s then (f ⟨a, ha⟩ : β) else b₀)
+    intro b hb
+    obtain ⟨⟨a, ha⟩, hab⟩ := hf ⟨b, hb⟩
+    grind
+
+grind_pattern card_le_card_of_surjective => f.Surjective, #s
+grind_pattern card_le_card_of_surjective => f.Surjective, #t
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
 
@@ -741,6 +755,10 @@ theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
+
+lemma Nontrivial.one_lt_card (hs : s.Nontrivial) : 1 < #s := s.one_lt_card_iff_nontrivial.mpr hs
+
+lemma Nontrivial.two_le_card (hs : s.Nontrivial) : 2 ≤ #s := s.one_lt_card_iff_nontrivial.mpr hs
 
 /-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
     cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/

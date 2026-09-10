@@ -76,7 +76,7 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mra
     exact .of_surjective _ (RingEquiv.ofBijective _ this).symm.surjective
   have : IsDomain O := hv.hom_inj.isDomain
   have : ValuationRing O := ValuationRing.of_integers v hv
-  have := ((IsBezout.TFAE (R := O)).out 1 3)
+  have := ((IsBezout.TFAE (R := O)).out 2 4)
   rw [this, hv.wfDvdMonoid_iff_wellFounded_gt_on_v, hv.wellFounded_gt_on_v_iff_discrete_mrange,
     LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
   exact H

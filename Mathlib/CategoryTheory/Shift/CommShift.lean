@@ -87,7 +87,7 @@ noncomputable def isoAdd {a b : A}
     shiftFunctor C (a + b) ⋙ F ≅ F ⋙ shiftFunctor D (a + b) :=
   CommShift.isoAdd' rfl e₁ e₂
 
-@[simp]
+@[simp, reassoc]
 lemma isoAdd_hom_app {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) (X : C) :
@@ -96,7 +96,7 @@ lemma isoAdd_hom_app {a b : A}
           (shiftFunctor D b).map (e₁.hom.app X) ≫ (shiftFunctorAdd D a b).inv.app (F.obj X) := by
   simp only [isoAdd, isoAdd'_hom_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
 
-@[simp]
+@[simp, reassoc]
 lemma isoAdd_inv_app {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) (X : C) :
@@ -405,6 +405,9 @@ lemma of_isIso [IsIso τ] [NatTrans.CommShift τ A] :
 variable (F₁) in
 instance id : NatTrans.CommShift (𝟙 F₁) A where
 
+instance isoRefl_hom : NatTrans.CommShift (Iso.refl F₁).hom A := by
+  dsimp; infer_instance
+
 attribute [local simp] Functor.commShiftIso_comp_hom_app
   shift_app_comm shift_app_comm_assoc
 
@@ -428,6 +431,18 @@ instance leftUnitor : CommShift F₁.leftUnitor.hom A where
 
 instance rightUnitor : CommShift F₁.rightUnitor.hom A where
 
+variable {A τ} in
+lemma of_comp_faithful [G.Faithful]
+    (h : NatTrans.CommShift (Functor.whiskerRight τ G) A := by infer_instance) :
+    τ.CommShift A where
+  shift_comm a := by
+    ext X
+    apply G.map_injective
+    dsimp
+    simp only [Functor.map_comp]
+    simp [dsimp% (Functor.whiskerRight τ G).app_shift a X,
+      Functor.commShiftIso_comp_inv_app, ← Functor.map_comp]
+
 end CommShift
 
 end NatTrans
@@ -436,7 +451,7 @@ namespace Functor
 
 namespace CommShift
 
-variable {C D E : Type*} [Category* C] [Category* D]
+variable {C D : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : C ⥤ D} (e : F ≅ G)
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
   [F.CommShift A]
@@ -480,7 +495,6 @@ variable [AddMonoid A] [HasShift D A]
 
 namespace CommShift
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` is a fully faithful functor which is used
 to construct a shift by `A` on `C` from a shift on `D`,
 then the functor `F` itself commutes with the shift by `A`. -/

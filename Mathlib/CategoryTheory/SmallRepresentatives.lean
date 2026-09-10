@@ -111,7 +111,6 @@ the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is fully faithful. -/
 def fullyFaithfulFunctor : h.functor.FullyFaithful where
   preimage := h.homEquiv.symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : h.functor.IsEquivalence where
   faithful := h.fullyFaithfulFunctor.faithful
   full := h.fullyFaithfulFunctor.full
