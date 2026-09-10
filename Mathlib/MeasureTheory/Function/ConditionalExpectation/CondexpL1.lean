@@ -157,15 +157,15 @@ variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem condExpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : condExpIndL1 hm μ s x = condExpIndL1Fin hm hs hμs x := by
-  simp only [condExpIndL1, And.intro hs hμs, dif_pos, Ne, not_false_iff, and_self_iff]
+  simp only [condExpIndL1, And.intro hs hμs, dite_eq_left, Ne, not_false_iff, and_self_iff]
 
 theorem condExpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hμs, not_true, Ne, dif_neg, not_false_iff,
+  simp only [condExpIndL1, hμs, not_true, Ne, dite_eq_right, not_false_iff,
     and_false]
 
 theorem condExpIndL1_of_not_measurableSet (hs : ¬MeasurableSet s) (x : G) :
     condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hs, dif_neg, not_false_iff, false_and]
+  simp only [condExpIndL1, hs, dite_eq_right, not_false_iff, false_and]
 
 theorem condExpIndL1_add (x y : G) :
     condExpIndL1 hm μ s (x + y) = condExpIndL1 hm μ s x + condExpIndL1 hm μ s y := by

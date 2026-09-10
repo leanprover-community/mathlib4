@@ -35,7 +35,9 @@ nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite HomotopicalAlgebra
+open CategoryTheory Limits Opposite HomotopicalAlgebra
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -325,7 +327,6 @@ The `simp` annotation on this lemma was removed because it would be redundant no
 lemma ι_b_ι (c : Cell i d) : c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _ = c.map := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
@@ -335,7 +336,6 @@ lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n
 
 end Cell
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
   w := w i d

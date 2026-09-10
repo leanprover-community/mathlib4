@@ -5,10 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.Rat
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The cardinality of the reals
@@ -262,6 +262,10 @@ theorem mk_Icc_real {a b : ℝ} (h : a < b) : #(Icc a b) = 𝔠 :=
 /-- The cardinality of the interval $(a, b]$. -/
 theorem mk_Ioc_real {a b : ℝ} (h : a < b) : #(Ioc a b) = 𝔠 :=
   le_antisymm (mk_real ▸ mk_set_le _) (mk_Ioo_real h ▸ mk_le_mk_of_subset Ioo_subset_Ioc_self)
+
+@[simp]
+theorem mk_unitInterval : #unitInterval = 𝔠 := by
+  rw [unitInterval, mk_Icc_real zero_lt_one]
 
 @[simp]
 lemma Real.Ioo_countable_iff {x y : ℝ} :

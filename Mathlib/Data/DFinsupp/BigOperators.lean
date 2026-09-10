@@ -26,7 +26,7 @@ The support is internally represented (in the primed `DFinsupp.support'`) as a `
 represents a superset of the true support of the function, quotiented by the always-true relation so
 that this does not impact equality. This approach has computational benefits over storing a
 `Finset`; it allows us to add together two finitely-supported functions without
-having to evaluate the resulting function to recompute its support (which would required
+having to evaluate the resulting function to recompute its support (which would require
 decidability of `b = 0` for `b : β i`).
 
 The true support of the function can still be recovered with `DFinsupp.support`; but these
@@ -386,7 +386,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom` -/
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
-  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+  liftAddHom.toEquiv.eq_symm_apply.1 rfl
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_apply_single` -/
 theorem liftAddHom_apply_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)

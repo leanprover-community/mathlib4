@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -554,9 +553,9 @@ instance : IsUpper Prop where
     congr
     exact le_antisymm
       (fun h hs => by
-        simp only [compl_Iic, mem_ofPred_eq]
-        rw [← Ioi_True, ← Ioi_False] at hs
         rcases hs with (rfl | rfl)
         · use True
-        · use False)
+          simp
+        · use False
+          simp)
       (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_ge]))

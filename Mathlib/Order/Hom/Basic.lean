@@ -143,14 +143,15 @@ attribute [simp] map_le_map_iff
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
 @[coe]
-def OrderIsoClass.toOrderIso [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) :
+def OrderIso.ofClass [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) :
     α ≃o β :=
   { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
-/-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
-`OrderIsoClass.toOrderIso`. -/
+@[deprecated (since := "2026-09-02")] alias OrderIsoClass.toOrderIso := OrderIso.ofClass
+
+/-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via `OrderIso.ofClass`. -/
 instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
-  ⟨OrderIsoClass.toOrderIso⟩
+  ⟨.ofClass⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
@@ -170,14 +171,15 @@ protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
 `OrderHom`. This is declared as the default coercion from `F` to `α →o β`. -/
 @[coe]
-def toOrderHom (f : F) : α →o β where
+def _root_.OrderHom.ofClass (f : F) : α →o β where
   toFun := f
   monotone' := OrderHomClass.monotone f
 
-/-- Any type satisfying `OrderHomClass` can be cast into `OrderHom` via
-`OrderHomClass.toOrderHom`. -/
+/-- Any type satisfying `OrderHomClass` can be cast into `OrderHom` via `OrderHom.ofClass`. -/
 instance : CoeTC F (α →o β) :=
-  ⟨toOrderHom⟩
+  ⟨.ofClass⟩
+
+@[deprecated (since := "2026-09-02")] alias toOrderHom := OrderHom.ofClass
 
 end OrderHomClass
 
@@ -251,7 +253,7 @@ initialize_simps_projections OrderHom (toFun → coe)
 theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   DFunLike.coe_injective h
 
-@[simp] theorem coe_eq (f : α →o β) : OrderHomClass.toOrderHom f = f := rfl
+@[simp] theorem coe_eq (f : α →o β) : .ofClass f = f := rfl
 
 @[simp] theorem _root_.OrderHomClass.coe_coe {F} [FunLike F α β] [OrderHomClass F α β] (f : F) :
     ⇑(f : α →o β) = f :=
@@ -844,11 +846,15 @@ theorem symm_apply_apply (e : α ≃o β) (x : α) : e.symm (e x) = x :=
 theorem symm_refl (α : Type*) [LE α] : (refl α).symm = refl α :=
   rfl
 
-theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
 theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = e x :=
   e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃o β) {x : α} {y : β} : x = e.symm y ↔ e x = y :=
+  e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
+  e.eq_symm_apply.symm
 
 @[simp]
 theorem symm_symm (e : α ≃o β) : e.symm.symm = e := rfl
@@ -912,7 +918,6 @@ theorem trans_assoc (f : α ≃o β) (g : β ≃o γ) (h : γ ≃o δ) :
     (f.trans g).trans h = f.trans (g.trans h) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
@@ -990,7 +995,6 @@ def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
   map_rel_iff' := Prod.swap_le_swap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
 @[simps! (attr := grind =)]
 def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
@@ -1031,8 +1035,6 @@ theorem dualDual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual
   rfl
 
 end LE
-
-open Set
 
 section LE
 

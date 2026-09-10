@@ -125,7 +125,7 @@ instead of linearly increasing the work per `MyIso`-related declaration.
 
 -/
 
-@[expose] public section
+public section
 
 
 /-- The class `EquivLike E α β` expresses that terms of type `E` have an

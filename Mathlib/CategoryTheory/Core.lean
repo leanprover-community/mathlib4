@@ -157,11 +157,9 @@ def core {F G : C ⥤ D} (α : F ≅ G) : F.core ≅ G.core :=
   NatIso.ofComponents
     (fun x ↦ Groupoid.isoEquivHom _ _ |>.symm <| .mk <| α.app x.of)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma coreComp {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) : (α ≪≫ β).core = α.core ≪≫ β.core := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma coreId {F : C ⥤ D} : (Iso.refl F).core = Iso.refl F.core := rfl
 
@@ -210,7 +208,6 @@ def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C)
     functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma functorToCore_comp_left {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) = F ⋙ functorToCore H :=
   Functor.ext_of_iso (functorToCoreCompLeftIso H F) (by cat_disch)
@@ -229,7 +226,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem inclusion_comp_functorToCore : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
   Functor.ext_of_iso inclusionCompFunctorToCoreIso (by cat_disch)
 
@@ -258,7 +254,6 @@ def core (E : C ≌ D) : Core C ≌ Core D where
 
 end Equivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
 /-- Taking the core of a functor is functorial if we discard non-invertible natural
 transformations. -/

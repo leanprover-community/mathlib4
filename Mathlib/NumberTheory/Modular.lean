@@ -105,7 +105,7 @@ end BottomRow
 
 section TendstoLemmas
 
-open Filter ContinuousLinearMap
+open Filter
 
 attribute [local simp] FunLike.coe_smul
 

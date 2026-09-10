@@ -432,7 +432,7 @@ lemma neighborSet_subset_between_union_compl (hw : w ∈ sᶜ) :
   · exact Or.inl ⟨hadj, Or.inr ⟨hw, hv⟩⟩
   · exact Or.inr hv
 
-variable [DecidableEq V] [Fintype V] {s t : Finset V} [DecidableRel G.Adj]
+variable [DecidableEq V] [Fintype V] {s : Finset V} [DecidableRel G.Adj]
 
 /-- The neighbor finset of `v ∈ s` in `G.between s sᶜ` excludes the vertices in `s` adjacent to `v`
 in `G`. -/
@@ -477,7 +477,7 @@ theorem edgeSet_completeBipartiteGraph :
     .range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
   refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
   · cases u <;> cases v <;> simp_all
-  · grind [completeBipartiteGraph_adj, mem_edgeSet]
+  · grind [mem_edgeSet]
 
 theorem encard_edgeSet_completeBipartiteGraph :
     (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by

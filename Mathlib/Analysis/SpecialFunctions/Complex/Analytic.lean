@@ -57,7 +57,7 @@ theorem AnalyticWithinAt.cpow (fa : AnalyticWithinAt ℂ f s x) (ga : AnalyticWi
   have e : (fun z ↦ f z ^ g z) =ᶠ[𝓝[insert x s] x] fun z ↦ exp (log (f z) * g z) := by
     filter_upwards [(fa.continuousWithinAt_insert.eventually_ne (slitPlane_ne_zero m))]
     intro z fz
-    simp only [fz, cpow_def, if_false]
+    simp only [fz, cpow_def, ite_false]
   apply AnalyticWithinAt.congr_of_eventuallyEq_insert _ e
   exact ((fa.clog m).mul ga).cexp
 
