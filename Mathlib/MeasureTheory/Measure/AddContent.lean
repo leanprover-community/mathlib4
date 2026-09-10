@@ -119,18 +119,18 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   grind [Set.bot_eq_empty (α := α), addContent_empty]
 
 lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
-    (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
+    (h_dis : Pairwise' (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
     m (⋃ i, f i) = ∑ i, m (f i) := by
   convert! addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
   · simp
   · simpa
-  · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
+  · simpa [Set.PairwiseDisjoint, Set.pairwise'_univ]
   · simpa
 
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
-  convert! addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  convert! addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i _ j _ hij ↦ ?_) ?_ using 2
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
@@ -305,7 +305,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
   have h1 : ∀ j, f j ∈ supClosure C :=
     hC.isSetRing_supClosure.disjointed_mem fun j =>
       subset_supClosure <| h_ss <| (J.equivFin.symm j).2
-  have h2 : Pairwise (Disjoint on f) := disjoint_disjointed _
+  have h2 : Pairwise' (Disjoint on f) := disjoint_disjointed _
   have h3 : ⋃ i, f i ∈ supClosure C :=
     supClosed_supClosure.iSup_mem (subset_supClosure hC.empty_mem) h1
   grw [← m.supClosure_apply_of_mem hC ht,
@@ -327,9 +327,9 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hC : IsSetSemiring C)
     -- TODO: `m_subadd` is in fact equivalent to `m.IsSigmaSubadditive`.
     (m_subadd : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : ⋃ i, f i ∈ C)
-      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
+      (_hf_disj : Pairwise' (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
-    (hf_disj : Pairwise (Disjoint on f)) :
+    (hf_disj : Pairwise' (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
   refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_

@@ -338,7 +338,7 @@ lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
   aesop (add simp [PairwiseDisjoint, Set.Pairwise])
 
 /-- If the range of `f` is pairwise disjoint, then the image of any set `s` under `f` is as well. -/
-lemma _root_.Pairwise.pairwiseDisjoint (h : Pairwise' (Disjoint on f)) (s : Set ι) :
+lemma _root_.Pairwise'.pairwiseDisjoint (h : Pairwise' (Disjoint on f)) (s : Set ι) :
     s.PairwiseDisjoint f := h.set_pairwise s
 
 end PartialOrderBot
