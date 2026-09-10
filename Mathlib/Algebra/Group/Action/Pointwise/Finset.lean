@@ -176,7 +176,7 @@ variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β] {s t : Finset β
 
 @[to_additive]
 instance : IsLeftCancelSMul α (Finset β) where
-  left_cancel' a := Finset.image_injective fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+  left_cancel' a := Finset.image_injective (IsSMulRegular.all a)
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :
@@ -185,28 +185,28 @@ theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :
 
 @[to_additive (attr := simp)]
 theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
-  image_subset_image_iff fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+  image_subset_image_iff (IsSMulRegular.all a)
 
 @[to_additive]
 theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter _ _ fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+  image_inter _ _ (IsSMulRegular.all a)
 
 @[to_additive]
 theorem smul_finset_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_sdiff _ _ fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+  image_sdiff _ _ (IsSMulRegular.all a)
 
 open scoped symmDiff in
 @[to_additive]
 theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff _ _ fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+  image_symmDiff _ _ (IsSMulRegular.all a)
 
 @[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
-  card_image_of_injective _ fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+  card_image_of_injective _ (IsSMulRegular.all a)
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_finset_iff (a : α) {b : β} : a • b ∈ a • s ↔ b ∈ s :=
-  Function.Injective.mem_finset_image fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _
+  Function.Injective.mem_finset_image (IsSMulRegular.all a)
 
 end IsLeftCancelSMul
 
