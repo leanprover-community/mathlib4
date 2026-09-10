@@ -47,7 +47,8 @@ variable {a b n p : ℕ}
 
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
 mapping each prime factor of `n` to its multiplicity in `n`. -/
-def factorization (n : ℕ) : ℕ →₀ ℕ := Multiset.toFinsupp n.primeFactorsList
+def factorization (n : ℕ) : ℕ →₀ ℕ :=
+  Multiset.toFinsupp n.primeFactorsList
 
 /-- The support of `n.factorization` is exactly `n.primeFactors`. -/
 @[simp] lemma support_factorization (n : ℕ) : (factorization n).support = n.primeFactors := rfl
@@ -77,7 +78,7 @@ theorem factorization_le_padicValNat {n p : ℕ} : n.factorization p ≤ padicVa
   · simp [n.factorization.notMem_support_iff.mp (mt prime_of_mem_primeFactors pp)]
 
 theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
-    n.factorization = Multiset.toFinsupp (n.primeFactorsList : Multiset ℕ) := by
+    n.factorization = Multiset.toFinsupp (n.primeFactorsList : Multiset ℕ) :=
   rfl
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
