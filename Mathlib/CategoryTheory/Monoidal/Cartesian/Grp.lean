@@ -345,7 +345,7 @@ noncomputable instance [BraidedCategory D] [IsCommAddMonObj A.X] : Ring (A ⟶ A
   zero_add := zero_add
   add_zero := add_zero
   mul_assoc f g h := by
-    ext ; simp only [mul_hom, mul_assoc f.hom g.hom h.hom]
+    ext; simp only [mul_hom, mul_assoc f.hom g.hom h.hom]
   one_mul f := by
     ext
     simp only [mul_hom, one_hom, one_mul f.hom]

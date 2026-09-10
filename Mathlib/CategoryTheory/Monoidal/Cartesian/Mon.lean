@@ -327,11 +327,11 @@ open AddMon
 instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (G ⟶ G) where
   zero_add := zero_add
   add_zero := add_zero
-  mul_assoc f g h := by ext ; simp[mul_hom]
-  one_mul f := by ext ; simp only [mul_hom, one_hom, Category.comp_id]
-  mul_one f := by ext ; simp only [mul_hom, AddMon.one_hom, Category.id_comp]
-  zero_mul f := by ext ; simp only [mul_hom, zero_hom, comp_toUnit_assoc]
-  mul_zero f := by ext ; simp only [zero_hom, mul_hom, Category.assoc, IsAddMonHom.zero_hom]
+  mul_assoc f g h := by ext; simp[mul_hom]
+  one_mul f := by ext; simp only [mul_hom, one_hom, Category.comp_id]
+  mul_one f := by ext; simp only [mul_hom, AddMon.one_hom, Category.id_comp]
+  zero_mul f := by ext; simp only [mul_hom, zero_hom, comp_toUnit_assoc]
+  mul_zero f := by ext; simp only [zero_hom, mul_hom, Category.assoc, IsAddMonHom.zero_hom]
   left_distrib f g h := by
     ext
     simp only [mul_hom, add_hom, Category.assoc, IsAddMonHom.add_hom, lift_map_assoc]
