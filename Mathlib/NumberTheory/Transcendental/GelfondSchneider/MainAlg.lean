@@ -74,7 +74,7 @@ Let `α` and `β` be algebraic numbers with `α ≠ 0, 1` and `β` irrational.
 We prove that `α ^ β` is transcendental by contradiction, assuming `γ = α ^ β` is algebraic.
 -/
 
-variable {K : Type} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
+variable {K : Type*} [Field K] (α : ℂ) (β : ℂ) (σ : K →+* ℂ) (α' : K) (β' : K) (γ' : K)
   (hirr : ∀ i j : ℤ, β ≠ i / j) (htriv : α ≠ 0 ∧ α ≠ 1)
   (habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ')
 
@@ -144,21 +144,21 @@ Let `m = 2h + 2` and `n = q² / (2m)`, where `q²` is a perfect square divisible
 -/
 
 /-- The finrank of the field extension `K`. -/
-def h (K : Type) [Field K] [NumberField K] : ℕ := Module.finrank ℚ K
+def h (K : Type*) [Field K] [NumberField K] : ℕ := Module.finrank ℚ K
 
 /-- A parameter `m` dependent on the degree `h = [K : ℚ]`. -/
-def m (K : Type) [Field K] [NumberField K] : ℕ := 2 * (h K) + 2
+def m (K : Type*) [Field K] [NumberField K] : ℕ := 2 * (h K) + 2
 
-lemma one_le_m (K : Type) [Field K] [NumberField K] : 1 ≤ m K :=
+lemma one_le_m (K : Type*) [Field K] [NumberField K] : 1 ≤ m K :=
   Nat.succ_le_succ (Nat.zero_le (2 * (h K) + 1))
 
 variable (q : ℕ) (hq0 : 0 < q)
 
 /-- A target bound parameter `n` dependent on a free parameter `q`. -/
-def n (K : Type) [Field K] [NumberField K] (q : ℕ) : ℕ := q ^ 2 / (2 * (m K))
+def n (K : Type*) [Field K] [NumberField K] (q : ℕ) : ℕ := q ^ 2 / (2 * (m K))
 
 /-- House exponent `m K * (2 * (m K * n K q))`. -/
-def houseExponent (K : Type) [Field K] [NumberField K] (q : ℕ) : ℕ :=
+def houseExponent (K : Type*) [Field K] [NumberField K] (q : ℕ) : ℕ :=
   m K * (2 * (m K * n K q))
 
 variable (u : Fin (m K * n K q)) (t : Fin (q * q))
@@ -266,7 +266,7 @@ Multiplying the system by `c₁^(n-1) c₁^(mq) c₁^(mq) = c₁^(n-1+2mq) ≤ c
 coefficients are integers in `K`.
 -/
 
-lemma zsmul_mul_mul_distrib {K : Type} [Field K] (a b c : ℤ) (x y z : K) :
+lemma zsmul_mul_mul_distrib {K : Type*} [Field K] (a b c : ℤ) (x y z : K) :
     ((a * b) * c) • ((x * y) * z) = a • x * b • y * c • z := by
   simp [zsmul_eq_mul]; ring
 
