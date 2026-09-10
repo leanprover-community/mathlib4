@@ -945,17 +945,15 @@ lemma isNontrivial_iff_nontrivial_units :
     · exact ⟨s.val, by simp, by simpa using h.symm⟩
     · exact ⟨r.val, by simp, by simpa using hr⟩
 
-/-- `O` acts on `R` by *integers*, i.e. by elements of valuation at most one: scaling never
-increases the valuation. -/
+/-- The action of `O` on `R` never increases the valuation, i.e. `∀ o : O, ∀ r : R, o • r ≤ᵥ r`. -/
 class IsIntegerSMul (O R : Type*) [Semiring R] [ValuativeRel R] [SMul O R] : Prop where
-  smul_vle (o : O) (x : R) : o • x ≤ᵥ x
+  smul_vle (o : O) (r : R) : o • r ≤ᵥ r
 
-lemma smul_vle {O : Type*} [SMul O R] [IsIntegerSMul O R] (o : O) (x : R) : o • x ≤ᵥ x :=
-  IsIntegerSMul.smul_vle o x
+lemma smul_vle {O : Type*} [SMul O R] [IsIntegerSMul O R] (o : O) (r : R) : o • r ≤ᵥ r :=
+  IsIntegerSMul.smul_vle o r
 
 /-- A ring with a valuative relation is its own ring of integers, i.e. all of its elements have
-valuation at most one. This holds for the ring of integers of a valued field, and for `ℤ_[p]`
-with its `p`-adic valuative relation. -/
+relative valuation at most one. -/
 abbrev IsIntegerRing (R : Type*) [Semiring R] [ValuativeRel R] : Prop := IsIntegerSMul R R
 
 variable (R) in
@@ -966,8 +964,8 @@ lemma vle_one_of_isIntegerRing [IsIntegerRing R] (x : R) : x ≤ᵥ 1 := by
 lemma IsIntegerSMul.of_forall_smul_one_vle_one {O : Type*} [SMul O R] [IsScalarTower O R R]
     (h : ∀ o : O, o • (1 : R) ≤ᵥ 1) : IsIntegerSMul O R where
   smul_vle o x := by
-    rw [show o • x = (o • (1 : R)) * x by rw [smul_mul_assoc, one_mul]]
-    simpa using mul_vle_mul_left (h o) x
+    rw [← one_mul x, ← smul_mul_assoc]
+    exact mul_vle_mul_left (h o) _
 
 section Valuation
 

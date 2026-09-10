@@ -23,25 +23,23 @@ namespace IsLinearTopology
 
 section SMul
 
--- variable {O R : Type*} [Ring O] [Ring R] [Module O R]
---   [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
-
 /-- If a ring `O` acts on a ring `R` carrying a valuative topology without increasing the
-valuation, then the topology on `R` is `O`-linear: the open balls
-`Valuation.ltSubmoduleOfSMulLe (valuation R) h γ` form a basis of neighborhoods of zero made of
-`O`-submodules.
-This is stated for an arbitrary such `O`, rather than for `(valuation R).integer`, so that it
-applies to rings that are only propositionally, and not definitionally, the ring of integers. -/
-theorem _root_.IsLinearTopology.of_valuation_smul_le
+valuation, then the topology on `R` is `O`-linear.
+
+The open balls `(valuation R).ltSubmoduleOfSMulLe h γ` form a basis of neighborhoods of zero made of
+`O`-submodules. -/
+theorem of_valuation_smul_le
     (h : ∀ (o : O) (x : R), valuation R (o • x) ≤ valuation R x) : IsLinearTopology O R :=
   IsLinearTopology.mk_of_hasBasis O (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
     (s := (valuation R).ltSubmoduleOfSMulLe h) (IsValuativeTopology.hasBasis_nhds_zero R)
 
 /-- If a ring `O` acts on a ring `R` carrying a valuative topology without increasing the
 valuation, and if `O` carries the topology induced by an `O`-linear map `f : O →ₗ[O] R`, then the
-topology on `O` is `O`-linear: the preimages under `f` of the open balls of `R` form a basis of
+topology on `O` is `O`-linear.
+
+The preimages under `f` of the open balls of `R` form a basis of
 neighborhoods of zero made of left ideals. -/
-theorem _root_.IsLinearTopology.of_valuation_smul_le_of_isInducing [TopologicalSpace O]
+theorem of_valuation_smul_le_of_isInducing [TopologicalSpace O]
     (h : ∀ (o : O) (x : R), valuation R (o • x) ≤ valuation R x)
     (f : O →ₗ[O] R) (hf : Topology.IsInducing f) : IsLinearTopology O O := by
   refine IsLinearTopology.mk_of_hasBasis O (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
@@ -70,8 +68,6 @@ left ideals. -/
 theorem _root_.IsLinearTopology.of_isIntegerSMul_of_isInducing [IsIntegerSMul O R]
     [TopologicalSpace O] (f : O →ₗ[O] R) (hf : Topology.IsInducing f) : IsLinearTopology O O :=
   .of_valuation_smul_le_of_isInducing (fun o x ↦ valuation_smul_le o x) f hf
-
-instance : IsLinearTopology (valuation R).integer R := inferInstance
 
 end IsIntegerSMul
 
