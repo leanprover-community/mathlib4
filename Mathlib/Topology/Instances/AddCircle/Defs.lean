@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.GroupTheory.QuotientGroup.ModEq
 
 /-!
