@@ -173,6 +173,18 @@ lemma smoothOfRelativeDimension_isStableUnderBaseChange :
 alias isSmoothOfRelativeDimension_isStableUnderBaseChange :=
   smoothOfRelativeDimension_isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n g] :
+    SmoothOfRelativeDimension n (pullback.fst f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_fst f g inferInstance
+
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n f] :
+    SmoothOfRelativeDimension n (pullback.snd f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_snd f g inferInstance
+
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
