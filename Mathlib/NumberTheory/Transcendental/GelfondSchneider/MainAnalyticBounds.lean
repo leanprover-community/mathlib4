@@ -75,7 +75,6 @@ lemma house_add_mul_le :
 /-! On the other hand `house (ρ) ≤ t c₄ⁿ n⁽ⁿ⁻¹⁾⁄₂ (c₆q)ʳ c₇^q ≤ c₈ʳ r⁽ʳ⁺³⁾⁄₂`.
 -/
 
-include α β σ α' β' γ' in
 @[nolint unusedArguments]
 lemma one_le_c₄ : 1 ≤ c₄ α' β' γ' := one_le_mul_of_one_le_of_one_le
   (le_max_left 1 (house.c₁ K * house.c₁ K * 2 * ↑(m K))) (one_le_c₃ α' β' γ')
@@ -84,13 +83,11 @@ lemma one_le_c₄ : 1 ≤ c₄ α' β' γ' := one_le_mul_of_one_le_of_one_le
 def c₆ : ℝ := (|↑(c₁ α' β' γ')| * (1 + house β'))
 
 omit [DecidableEq (K →+* ℂ)] in
-include α β σ α' β' γ' in
 @[nolint unusedArguments]
 lemma c₆_nonneg : 0 ≤ c₆ α' β' γ' := by
   unfold c₆ house; positivity
 
 omit [DecidableEq (K →+* ℂ)] in
-include α β σ α' β' γ' in
 @[nolint unusedArguments]
 lemma one_le_c₆ : 1 ≤ c₆ α' β' γ' := by
   unfold c₆
@@ -374,7 +371,7 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
     · apply mul_nonneg
       · simp only [Real.rpow_natCast]
         apply pow_nonneg
-        · exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+        · exact le_trans zero_le_one (one_le_c₄ α' β' γ')
       · positivity
   · apply Finset.sum_le_sum
     intros t ht
@@ -422,7 +419,7 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
     · apply mul_nonneg
       · simp only [Real.rpow_natCast]
         apply pow_nonneg
-        · exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+        · exact le_trans zero_le_one (one_le_c₄ α' β' γ')
       · positivity
   · simp only [ sum_const, card_univ, Fintype.card_fin]
     simp only [nsmul_eq_mul]
@@ -465,13 +462,13 @@ lemma eq6a : house (rho α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ≤
       · apply mul_nonneg
         · simp only [Real.rpow_natCast]
           apply pow_nonneg
-          · exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+          · exact le_trans zero_le_one (one_le_c₄ α' β' γ')
         · positivity
     · apply mul_nonneg
       · apply mul_nonneg
         · simp only [Real.rpow_natCast]
           apply pow_nonneg
-          · exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+          · exact le_trans zero_le_one (one_le_c₄ α' β' γ')
         · positivity
       · unfold house; positivity
     · positivity
@@ -507,13 +504,13 @@ lemma bound_n_le_r :
         hq0 h2mq : ℝ) + 1))))) := by
     apply mul_le_mul
     · simp only [Real.rpow_natCast]
-      refine pow_le_pow_right₀ (one_le_c₄ α β σ α' β' γ') (n_le_r α β σ α' β' γ'
+      refine pow_le_pow_right₀ (one_le_c₄ α' β' γ') (n_le_r α β σ α' β' γ'
           hirr htriv habc q hq0 h2mq)
     · exact bound_n_le_r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq
     · apply Real.rpow_nonneg
       simp only [Nat.cast_nonneg]
     · apply Real.rpow_nonneg
-      exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+      exact le_trans zero_le_one (one_le_c₄ α' β' γ')
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma q_le_2sqrtmr : q^2 ≤ 2*m K*r α β σ α' β' γ' hirr htriv habc q hq0 h2mq := by
@@ -533,26 +530,25 @@ lemma sqt_etc : Real.sqrt (2*m K*(r α β σ α' β' γ' hirr htriv habc q hq0 h
 def c₈ : ℝ := (c₆ α' β' γ' * √(2 * ↑(m K)) * c₇ α' β' γ' ^ (2 * m K) * c₄ α' β' γ' * (2 * ↑(m K)))
 
 omit [DecidableEq (K →+* ℂ)] in
-include α β σ α' β' γ' in
 @[nolint unusedArguments]
 lemma c7_nonneg : 0 ≤ c₇ α' β' γ' := by
   unfold c₇ house
   positivity
 
-include α β σ α' β' γ' hirr htriv habc in
+include α β σ α' β' γ' in
 lemma c8_nonneg : 0 ≤ c₈ α' β' γ' := by
   unfold c₈
   apply mul_nonneg ?_ (by positivity)
-  · apply mul_nonneg ?_ (le_trans zero_le_one (one_le_c₄ α β σ α' β' γ'))
-    · apply mul_nonneg (mul_nonneg (c₆_nonneg α β σ α' β' γ') (by simp))
-        (pow_nonneg (c7_nonneg α β σ α' β' γ') _)
+  · apply mul_nonneg ?_ (le_trans zero_le_one (one_le_c₄ α' β' γ'))
+    · apply mul_nonneg (mul_nonneg (c₆_nonneg α' β' γ') (by simp))
+        (pow_nonneg (c7_nonneg α' β' γ') _)
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma c8_geq_one : 1 ≤ c₈ α' β' γ' := by
   unfold c₈
-  have : 1 ≤ c₆ α' β' γ' := one_le_c₆ α β σ α' β' γ'
+  have : 1 ≤ c₆ α' β' γ' := one_le_c₆ α' β' γ'
   have : 1 ≤ c₇ α' β' γ' := one_le_c₇ α β σ α' β' γ' hirr htriv habc
-  have := one_le_c₄ α β σ α' β' γ'
+  have := one_le_c₄ α' β' γ'
   apply one_le_mul_of_one_le_of_one_le
   · apply one_le_mul_of_one_le_of_one_le
     · apply one_le_mul_of_one_le_of_one_le
@@ -572,9 +568,6 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma zero_lt_r : 0 < r α β σ α' β' γ' hirr htriv habc q hq0 h2mq :=
   r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
 
-omit [DecidableEq (K →+* ℂ)] in
-include α β σ α' β' γ' in
-@[nolint unusedArguments]
 theorem q_sq2_neq_1 (m q : ℕ) (_ : 0 < q)
     (h2mq : 2 * m ∣ q ^ 2) : q ^ 2 ≠ 1 := by
   intro hq2eq1
@@ -656,9 +649,10 @@ theorem eq6b.extracted_1_2 :
 
 open Real
 
+omit habc in
 omit [DecidableEq (K →+* ℂ)] in
 include h2mq in
-include α β σ α' β' γ' habc in
+include α β σ α' β' γ' in
 @[nolint unusedArguments]
 lemma q_eq_sqrtmn : q = sqrt (2 * m K* n K q) := by
   norm_cast
@@ -691,7 +685,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
     · simp only [mul_assoc]
       apply mul_le_mul
       · simp only [Real.rpow_natCast]
-        refine pow_le_pow_right₀ (one_le_c₄ α β σ α' β' γ') (n_le_r α β σ α' β' γ'
+        refine pow_le_pow_right₀ (one_le_c₄ α' β' γ') (n_le_r α β σ α' β' γ'
             hirr htriv habc q hq0 h2mq)
       · apply mul_le_mul
         · exact bound_n_le_r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq
@@ -700,7 +694,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
             refine pow_le_pow_left₀ ?_ ?_ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
             · unfold c₆ house; positivity
             · refine mul_le_mul_of_nonneg_left ?_ ?_
-              · have := q_eq_sqrtmn α β σ α' β' γ' habc q h2mq
+              · have := q_eq_sqrtmn α β σ α' β' γ' q h2mq
                 calc _ ≤ √(2 * ↑(m K)) * ↑(n K q) ^ (1 / 2 : ℝ) := ?_
                      _ ≤ √(2 * ↑(m K)) * ↑(r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ^ (1 / 2 :
                          ℝ) := ?_
@@ -745,7 +739,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
           · simp only [Real.rpow_natCast]
             · apply mul_nonneg
               · apply pow_nonneg
-                exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+                exact le_trans zero_le_one (one_le_c₄ α' β' γ')
               · positivity
           · positivity
         · positivity
@@ -788,37 +782,37 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
     · positivity
     · simp only [Real.rpow_natCast]
       apply pow_nonneg
-      · apply c8_nonneg α β σ α' β' γ' hirr htriv habc
+      · apply c8_nonneg α β σ α' β' γ'
     · apply mul_nonneg
       · apply mul_nonneg
         · apply mul_nonneg
-          · apply c₆_nonneg α β σ α' β' γ'
+          · apply c₆_nonneg α' β' γ'
           · simp only [Nat.ofNat_nonneg,
             Real.sqrt_mul, Real.sqrt_pos, Nat.ofNat_pos,
             mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
         · apply pow_nonneg
-          · apply c7_nonneg α β σ α' β' γ'
-      · exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+          · apply c7_nonneg α' β' γ'
+      · exact le_trans zero_le_one (one_le_c₄ α' β' γ')
     · positivity
     · simp only [Nat.cast_pos]
       apply zero_lt_r α β σ α' β' γ' hirr htriv habc
     · simp only [Nat.cast_nonneg]
     · apply mul_nonneg
-      · exact c₆_nonneg α β σ α' β' γ'
+      · exact c₆_nonneg α' β' γ'
       · simp only [Nat.ofNat_nonneg, Real.sqrt_mul,
         Real.sqrt_pos, Nat.ofNat_pos,
         mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
     · apply mul_nonneg
       · apply pow_nonneg
-        · exact c7_nonneg α β σ α' β' γ'
-      · exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+        · exact c7_nonneg α' β' γ'
+      · exact le_trans zero_le_one (one_le_c₄ α' β' γ')
     · apply pow_nonneg
-      · exact c7_nonneg α β σ α' β' γ'
-    · exact le_trans zero_le_one (one_le_c₄ α β σ α' β' γ')
+      · exact c7_nonneg α' β' γ'
+    · exact le_trans zero_le_one (one_le_c₄ α' β' γ')
     · simp only [Nat.cast_pos]
       exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
     · apply mul_nonneg
-      · exact c₆_nonneg α β σ α' β' γ'
+      · exact c₆_nonneg α' β' γ'
       · simp only [Nat.ofNat_nonneg, Real.sqrt_mul,
         Real.sqrt_pos, Nat.ofNat_pos,
         mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]

@@ -236,7 +236,7 @@ lemma S.U_nhds :
   fun _z hz ↦ IsOpen.mem_nhds (S_U_isOpen) hz
 
 omit [DecidableEq (K →+* ℂ)] in
-include α β σ α' β' γ' habc in
+include α β σ α' β' γ' in
 @[nolint unusedArguments]
 lemma sub_ne_zero_of_mem_evaluationPoints_compl {z : ℂ}
     (hz : z ∈ (evaluationPointsCompl K)) (k : Fin (m K)) :
@@ -265,7 +265,7 @@ lemma SR_analyticOn_evaluationPoints_compl :
     · apply analyticOn_univ.mpr fun x a ↦ this x
     simp only [Set.subset_univ]
   · refine AnalyticOn.zpow (AnalyticOn.sub analyticOn_id analyticOn_const) fun z hz ↦ ?_
-    exact sub_ne_zero_of_mem_evaluationPoints_compl α β σ α' β' γ' habc hz _
+    exact sub_ne_zero_of_mem_evaluationPoints_compl α β σ α' β' γ' hz _
   · apply Finset.analyticOn_fun_prod
     intros u hu
     simp only [Finset.mem_sdiff, Finset.mem_range, Finset.mem_singleton] at hu
@@ -273,7 +273,7 @@ lemma SR_analyticOn_evaluationPoints_compl :
     refine AnalyticOn.div (analyticOn_const) ?_ ?_
     · refine DifferentiableOn.analyticOn ?_ (S_U_isOpen)
       fun_prop
-    · exact fun z hz ↦ sub_ne_zero_of_mem_evaluationPoints_compl α β σ α' β' γ' habc hz
+    · exact fun z hz ↦ sub_ne_zero_of_mem_evaluationPoints_compl α β σ α' β' γ' hz
         ⟨u, hu.1⟩
 
 include α β σ α' β' γ' hirr htriv habc in
@@ -325,7 +325,7 @@ lemma SR_eq_SRl0 {z : ℂ} :
   let a : ℂ := ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1
   have hne : z - a ≠ 0 := by
    simpa [a] using
-    sub_ne_zero_of_mem_evaluationPoints_compl α β σ α' β' γ' habc hz ((l₀' α β σ α' β' γ'
+    sub_ne_zero_of_mem_evaluationPoints_compl α β σ α' β' γ' hz ((l₀' α β σ α' β' γ'
         hirr htriv habc) q hq0 h2mq)
   have hpow :
     (z - a) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) *
