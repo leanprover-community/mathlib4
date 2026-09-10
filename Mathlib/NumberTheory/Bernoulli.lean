@@ -436,11 +436,11 @@ private lemma sum_pow_add_indicator_eq_zero {p : ℕ} (l : ℕ) [Fact p.Prime] :
   grind
 
 /- A rational number `x` is `p`-integral if `p` does not divide its denominator. -/
-private abbrev pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := Rat.padicValuation p x ≤ 1
+private abbrev pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := x ∈ (Rat.padicValuation p).integer
 
-private lemma pIntegral_mul {p : ℕ} [Fact p.Prime] {x y : ℚ}
-    (hx : pIntegral p x) (hy : pIntegral p y) : pIntegral p (x * y) :=
-  ((Rat.padicValuation p).map_mul x y).trans_le (mul_le_one' hx hy)
+private lemma pIntegral_iff_not_dvd_den {p : ℕ} [Fact p.Prime] {x : ℚ} :
+    pIntegral p x ↔ ¬ p ∣ x.den :=
+  Rat.padicValuation_le_one_iff
 
 /- Denominators of the "other primes" part of the indicator sum
 stay coprime to a fixed prime `p`. -/
@@ -484,7 +484,7 @@ private lemma pIntegral_pow_div {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
     norm_cast
     simp
   rw [hrw]
-  exact Rat.padicValuation_le_one_iff.2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1
+  exact pIntegral_iff_not_dvd_den.2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1
     (hM'_cop.coprime_dvd_left (by
       rw [hM'_eq]; exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _))).symm)
 
@@ -527,7 +527,7 @@ private lemma pIntegral_choose_mul_pow_div {k m p : ℕ} (hm_lt : m < k) [Fact p
   have h_denom_rat : (2 * (k : ℚ) - 2 * m + 1) = ((d + 1 : ℕ) : ℚ) := by
     simp only [hd_def]; push_cast [Nat.cast_sub hkm]; ring
   rw [h_exp, h_denom_rat, mul_div_assoc]
-  exact pIntegral_mul (mod_cast Int.padicValuation_le_one p ((2 * k).choose (2 * m)))
+  exact mul_mem (natCast_mem _ ((2 * k).choose (2 * m)))
     (pIntegral_pow_div hd_plus_one_ne_zero (factorization_succ_le_sub_one hd))
 
 /- Uses the induction hypothesis on `B_{2m} + e_{2m}(p)/p`
@@ -549,15 +549,15 @@ private lemma pIntegral_bernoulli_even_term {k m p : ℕ} (hm_lt : m < k) [Fact 
   rw [hdecomp]
   have hcmp := pIntegral_choose_mul_pow_div (p := p) hm_lt (by lia)
   have H x := choose_two_mul_succ_mul_div_eq x hm_lt
-  apply (Rat.padicValuation p).map_sub_le
+  apply sub_mem
   · rw [mul_assoc, mul_div_assoc]
-    apply pIntegral_mul ih
+    apply mul_mem ih
     have hpow_mul : ((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m) /
         (2 * k - 2 * m + 1) =
         (p : ℚ) * (((2 * k).choose (2 * m) : ℚ) * P / (2 * k - 2 * m + 1)) := by
       rw [hpow]; ring
     rw [H, hpow_mul]
-    exact pIntegral_mul (Int.padicValuation_le_one p p) hcmp
+    exact mul_mem (natCast_mem _ p) hcmp
   · unfold vonStaudtIndicator
     split_ifs
     · grind
@@ -641,10 +641,10 @@ private lemma not_dvd_den_bernoulli_add_indicator {k p : ℕ} (hk : k > 0) [Fact
   | _ k ih =>
     obtain ⟨T, hT⟩ := bernoulli_add_indicator_eq_sub (p := p) hk
     rw [hT]
-    have hT_int : pIntegral p T := Int.padicValuation_le_one p T
+    have hT_int : pIntegral p T := intCast_mem _ T
     have hR := pIntegral_faulhaber_sum hk fun m hm_pos hm_lt ↦
-      Rat.padicValuation_le_one_iff.mpr (ih m hm_lt hm_pos)
-    exact Rat.padicValuation_le_one_iff.mp ((Rat.padicValuation p).map_sub_le hT_int hR)
+      pIntegral_iff_not_dvd_den.mpr (ih m hm_lt hm_pos)
+    exact pIntegral_iff_not_dvd_den.mp (sub_mem hT_int hR)
 
 /- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
 private lemma not_dvd_den_vonStaudt_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime] :
