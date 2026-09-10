@@ -636,19 +636,15 @@ section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
-/-- Auxiliary definition for differentials for `ChainComplex.of`. -/
-def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i ⟶ X j :=
-  if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
-
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
-abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
+@[implicit_reducible]
+def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     ChainComplex V α :=
   { X := X
-    d := of.d X d
-    shape := fun i j w => by simp [of.d, (Ne.symm w)]
+    d i j := if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
+    shape := fun i j w => by simp [(Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
-      dsimp [of.d] at hij hjk ⊢
       subst hij hjk
       simp only [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
 
@@ -657,13 +653,16 @@ variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
 theorem of_X : (of X d sq).X = X :=
   rfl
 
-@[simp]
-theorem of_d (j : α) : of.d X d (j + 1) j = d j := by
-  dsimp [of.d]
-  rw [ite_eq_left rfl, Category.id_comp]
+theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
+  simp [of]
 
-theorem of_d_ne {i j : α} (h : i ≠ j + 1) : of.d X d i j = 0 := by
-  simp [of.d, dite_eq_right h]
+@[simp]
+theorem of_d' (j i : α) (h : i = j + 1 := by omega) : (of X d sq).d i j =
+    eqToHom (by rw [h, of_X]) ≫ d j := by
+  simp [of, h]
+
+theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
+  simp [of, dite_eq_right h]
 
 end Of
 
@@ -747,7 +746,8 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
     mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   rw [show n + 2 = n + 1 + 1 from rfl]
-  simp [mk, mkAux]
+  simp only [mk, mkAux, of_d]
+  rfl
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
@@ -769,7 +769,7 @@ lemma mk_d (n : ℕ) :
   set_option backward.isDefEq.respectTransparency false in
     rw [eqToHom_refl, comp_id] at eq
   refine Eq.trans ?_ eq
-  dsimp only [mk, of, of.d]
+  dsimp only [mk, of]
   rw [dite_eq_left (by rfl), eqToHom_refl, id_comp]
   rfl
 
@@ -807,7 +807,7 @@ def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
   obtain _ | n := n
   · apply eqToIso
-    dsimp [mk', mk, of, mkAux, of.d]
+    dsimp [mk', mk, of, mkAux]
     rw [id_comp]
   · exact mkXIso _ _ _ _ _ (succ' d₀).2.2 (fun S => succ' S.f) n
 
