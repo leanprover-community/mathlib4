@@ -410,7 +410,8 @@ lemma dvd_mod_seventeen {b : ℕ} (h : b.Coprime 561) : 17 ∣ b ^ 560 - 1 := by
 
 /-- Divisibility combination lemma: if 3, 11, and 17 each divide `b ^ 560 - 1`,
 then their product `561` divides `b ^ 560 - 1`. -/
-lemma dvd_561_of_prime_factors {b : ℕ} (h3 : 3 ∣ b ^ 560 - 1) (h11 : 11 ∣ b ^ 560 - 1) (h17 : 17 ∣ b ^ 560 - 1) :
+lemma dvd_561_of_prime_factors {b : ℕ} (h3 : 3 ∣ b ^ 560 - 1) (h11 : 11 ∣ b ^ 560 - 1)
+    (h17 : 17 ∣ b ^ 560 - 1) :
     561 ∣ b ^ 560 - 1 :=
   (by decide : Nat.Coprime (3 * 11) 17).mul_dvd_of_dvd_of_dvd
     ((by decide : Nat.Coprime 3 11).mul_dvd_of_dvd_of_dvd h3 h11) h17
