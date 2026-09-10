@@ -23,9 +23,8 @@ a general strictly convex space is `norm_sum_eq_iff_pairwise_sameRay`.
   then every nonzero summand has the same phase as the sum.
 * `Complex.norm_sum_eq_iff_pairwise_normalize_eq`: for nonzero summands, triangle equality holds
   iff all the summands have the same phase.
-* `Complex.norm_sum_eq_iff_exists_mul`: triangle equality holds iff every summand is a nonnegative
+* `Complex.norm_sum_eq_iff_exists_mul`: triangle equality hol ds iff every summand is a nonnegative
   real multiple of a single complex number.
-
 
 ## Tags
 
@@ -45,8 +44,9 @@ variable {ι : Type*} {s : Finset ι} {i : ι} {v : ι → ℂ}
 lemma normalize_eq_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ on v)) (hi : i ∈ s)
     (hvi : v i ≠ 0) :
     NormedSpace.normalize (v i) = NormedSpace.normalize (∑ j ∈ s, v j) :=
-  (sameRay_sum fun _ hj ↦ hp.forall₂ hi hj).normalize_eq hvi
+  (sameRay_sum hp hi).normalize_eq hvi
     (sum_ne_zero_of_pairwise_sameRay hp hi hvi)
+
 
 /-- **Triangle equality** for nonzero summands: the norm of the sum equals the sum of the norms
 exactly when all the summands share a phase. -/
