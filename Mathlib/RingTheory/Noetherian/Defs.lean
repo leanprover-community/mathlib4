@@ -112,7 +112,7 @@ variable {R M : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] 
   [Module R N]
 
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
-  refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 1 4).symm
+  refine .trans ?_ (wellFoundedGT_characterisations.out 1 4).symm
   exact
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩

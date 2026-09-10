@@ -265,46 +265,6 @@ instance (priority := 100) IsUniformGroup.of_compactSpace [UniformSpace β] [Gro
 
 end IsUniformGroup
 
-section IsTopologicalGroup
-
-open Filter
-
-variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-
-attribute [local instance] IsTopologicalGroup.rightUniformSpace
-
-variable {G}
-
-@[to_additive]
-instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
-    IsClosed (H : Set G) := by
-  have hd : IsDiscrete (H : Set G) := isDiscrete_iff_discreteTopology.mpr ‹_›
-  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
-    nhds_inter_eq_singleton_of_mem_discrete hd H.one_mem
-  have : (fun p : G × G => p.2 * p.1⁻¹) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
-  apply isClosed_of_spaced_out this
-  intro h h_in h' h'_in
-  contrapose
-  simp only [Set.mem_preimage]
-  rintro (hyp : h' * h⁻¹ ∈ V)
-  have : h' * h⁻¹ ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.mul_mem h'_in (H.inv_mem h_in))
-  exact (eq_of_mul_inv_eq_one this).symm
-
-@[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
-    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
-  IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
-
-@[to_additive]
-lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
-    (hf : Function.Injective f) (hf' : IsDiscrete (f.range : Set G)) :
-    Tendsto f cofinite (cocompact _) := by
-  replace hf : Function.Injective f.rangeRestrict := by simpa
-  exact (f.range.tendsto_coe_cofinite_of_discrete hf').comp hf.tendsto_cofinite
-
-end IsTopologicalGroup
-
 namespace MulOpposite
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]

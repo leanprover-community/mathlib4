@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Ring.AddAut
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.Group.ZPow
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 import Mathlib.Algebra.Order.Interval.Set.Group

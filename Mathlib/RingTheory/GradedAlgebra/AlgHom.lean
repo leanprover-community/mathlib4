@@ -53,7 +53,7 @@ variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [AlgHomClass F R
 
 In future mathlib this will be deprioritised in favour of using structural projections. -/
 def ofClass (f : F) : 𝒜 →ₐᵍ[R] ℬ :=
-  { (AlgHomClass.toAlgHom f : A →ₐ[R] B), (.ofClass f : 𝒜 →+*ᵍ ℬ) with }
+  { (AlgHom.ofClass f), (.ofClass f : 𝒜 →+*ᵍ ℬ) with }
 
 end ofClass
 
@@ -79,7 +79,7 @@ attribute [coe] GradedAlgHom.toAlgHom
 instance : CoeOut (𝒜 →ₐᵍ[R] ℬ) (A →ₐ[R] B) := ⟨toAlgHom⟩
 
 @[simp] lemma toAlgHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
-    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHomClass.toAlgHom f := rfl
+    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHom.ofClass f := rfl
 
 @[simp] lemma toGradedRingHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
     [AlgHomClass F R A B] (f : F) :

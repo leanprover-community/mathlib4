@@ -260,6 +260,26 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStr
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c h
 
+/-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
+`fun x => b (f x) (g x)`. -/
+theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
+    (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0∞)
+    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ) [hpqr : HolderTriple p q r] :
+    eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ := by
+  by_cases hc : c = ∞
+  · obtain (rfl | hr) := eq_zero_or_pos r
+    · simp [eLpNorm_exponent_zero]
+    by_cases hfg : eLpNorm f p μ * eLpNorm g q μ = 0
+    · rw [hc, mul_assoc, ENNReal.top_mul', ite_eq_left hfg, nonpos_iff_eq_zero]
+      apply eLpNorm_eq_zero_of_ae_zero
+      obtain ⟨hp, hq⟩ : p ≠ 0 ∧ q ≠ 0 := by grind [hpqr.le, hpqr.symm.le]
+      obtain (h' | h') := by simpa [eLpNorm_eq_zero_iff, hp, hf, hq, hg] using hfg
+      all_goals filter_upwards [h, h'] with x hx hfg; simpa [hfg] using hx
+    · simp [hc, mul_assoc, hfg]
+  · lift c to ℝ≥0 using hc
+    apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c
+    simpa only [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h
+
 open NNReal in
 theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E → F → G) (c : ℝ≥0)
     (hf : MemLp f p μ) (hg : MemLp g q μ)

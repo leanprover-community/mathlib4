@@ -5,7 +5,8 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Basic.Countable.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basics on First-Order Structures
