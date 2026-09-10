@@ -129,12 +129,24 @@ instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinu
   rw [Matrix.SpecialLinearGroup.det_mapGL, map_pow] at this
   simp [this]
 
-instance IsArithmetic.isFiniteRelIndexSL (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
-    𝒢.IsFiniteRelIndex 𝒮ℒ :=
-  ⟨is_commensurable.1.relIndex_ne_zero⟩
+instance IsArithmetic.isFiniteRelIndex (G H : Subgroup (GL (Fin 2) ℝ))
+    [G.IsArithmetic] [H.IsArithmetic] : G.IsFiniteRelIndex H :=
+  (is_commensurable.trans is_commensurable.symm).1
 
 instance IsArithmetic.inter {Γ Γ'} [IsArithmetic Γ] [IsArithmetic Γ'] : IsArithmetic (Γ ⊓ Γ') :=
   ⟨is_commensurable.inf_left is_commensurable⟩
+
+open scoped Pointwise in
+/-- Conjugation by an element of an arithmetic group preserves arithmeticity. -/
+lemma isArithmetic_conj_of_mem {K H : Subgroup (GL (Fin 2) ℝ)}
+    [K.IsArithmetic] [H.IsArithmetic] {r : GL (Fin 2) ℝ} (hr : r ∈ H) :
+    (ConjAct.toConjAct r • K).IsArithmetic := by
+  have hKH : K.Commensurable H := IsArithmetic.is_commensurable.trans
+    IsArithmetic.is_commensurable.symm
+  have hc : (ConjAct.toConjAct r • K).Commensurable H := by
+    simpa only [conjAct_pointwise_smul_eq_self (H.le_normalizer hr)] using
+      hKH.smul (ConjAct.toConjAct r)
+  exact ⟨hc.trans IsArithmetic.is_commensurable⟩
 
 end SL2Z_in_GL2R
 
@@ -165,13 +177,13 @@ instance Subgroup.IsArithmetic.discreteTopology {𝒢 : Subgroup (GL (Fin 2) ℝ
 
 section adjoinNeg
 
-section Group
+namespace Subgroup
 
 variable {G : Type*} [Group G] [HasDistribNeg G]
 
 /-- Given a subgroup `𝒢` of a group with compatible negation, this is the subgroup generated
 by `𝒢` and `-1`. -/
-def Subgroup.adjoinNegOne (𝒢 : Subgroup G) : Subgroup G where
+def adjoinNegOne (𝒢 : Subgroup G) : Subgroup G where
   carrier := {g | g ∈ 𝒢 ∨ -g ∈ 𝒢}
   mul_mem' ha hb := by
     rcases ha with ha | ha <;>
@@ -184,46 +196,51 @@ def Subgroup.adjoinNegOne (𝒢 : Subgroup G) : Subgroup G where
     · have := inv_mem ha
       aesop
 
-@[simp] lemma Subgroup.mem_adjoinNegOne_iff {𝒢 : Subgroup G} {g : G} :
+@[simp] lemma mem_adjoinNegOne_iff {𝒢 : Subgroup G} {g : G} :
     g ∈ 𝒢.adjoinNegOne ↔ g ∈ 𝒢 ∨ -g ∈ 𝒢 :=
   Iff.rfl
 
-lemma Subgroup.le_adjoinNegOne (𝒢 : Subgroup G) : 𝒢 ≤ 𝒢.adjoinNegOne :=
+lemma le_adjoinNegOne (𝒢 : Subgroup G) : 𝒢 ≤ 𝒢.adjoinNegOne :=
   fun _ hg ↦ .inl hg
 
-lemma Subgroup.negOne_mem_adjoinNegOne (𝒢 : Subgroup G) : -1 ∈ 𝒢.adjoinNegOne := by simp
+lemma negOne_mem_adjoinNegOne (𝒢 : Subgroup G) : -1 ∈ 𝒢.adjoinNegOne := by simp
 
-@[simp] lemma Subgroup.adjoinNegOne_eq_self_iff {𝒢 : Subgroup G} :
+@[simp] lemma adjoinNegOne_eq_self_iff {𝒢 : Subgroup G} :
     𝒢.adjoinNegOne = 𝒢 ↔ -1 ∈ 𝒢 :=
   ⟨fun h ↦ h ▸ negOne_mem_adjoinNegOne 𝒢, fun hG ↦ 𝒢.le_adjoinNegOne.antisymm'
     fun g hg ↦ hg.elim id (fun h ↦ by simpa using mul_mem hG h)⟩
 
-lemma Subgroup.relindex_adjoinNegOne_eq_two {𝒢 : Subgroup G} (h𝒢 : -1 ∉ 𝒢) :
+lemma relindex_adjoinNegOne_eq_two {𝒢 : Subgroup G} (h𝒢 : -1 ∉ 𝒢) :
     𝒢.relIndex 𝒢.adjoinNegOne = 2 := by
   refine relIndex_eq_two_iff_exists_notMem_and.mpr ⟨_, 𝒢.negOne_mem_adjoinNegOne, h𝒢, ?_⟩
   simp [mem_adjoinNegOne_iff, or_comm]
 
-lemma Subgroup.relIndex_adjoinNegOne_ne_zero (𝒢 : Subgroup G) :
+lemma relIndex_adjoinNegOne_ne_zero (𝒢 : Subgroup G) :
     𝒢.relIndex 𝒢.adjoinNegOne ≠ 0 := by
   by_cases hG : -1 ∈ 𝒢
   · simp [adjoinNegOne_eq_self_iff.mpr hG]
   · simp [𝒢.relindex_adjoinNegOne_eq_two hG]
 
-instance (𝒢 : Subgroup G) : Subgroup.IsFiniteRelIndex 𝒢 𝒢.adjoinNegOne :=
+instance (𝒢 : Subgroup G) : IsFiniteRelIndex 𝒢 𝒢.adjoinNegOne :=
   ⟨𝒢.relIndex_adjoinNegOne_ne_zero⟩
 
-lemma Subgroup.commensurable_adjoinNegOne_self (𝒢 : Subgroup G) :
+lemma commensurable_adjoinNegOne_self (𝒢 : Subgroup G) :
     Commensurable 𝒢.adjoinNegOne 𝒢 :=
-  ⟨⟨by simp [Subgroup.relIndex_eq_one.mpr 𝒢.le_adjoinNegOne]⟩, ⟨𝒢.relIndex_adjoinNegOne_ne_zero⟩⟩
+  ⟨⟨by simp [relIndex_eq_one.mpr 𝒢.le_adjoinNegOne]⟩, ⟨𝒢.relIndex_adjoinNegOne_ne_zero⟩⟩
 
 /-- Adjoining `-1` commutes with taking images under a homomorphism that preserves negation. -/
-lemma Subgroup.map_adjoinNegOne {H : Type*} [Group H] [HasDistribNeg H]
+lemma map_adjoinNegOne {H : Type*} [Group H] [HasDistribNeg H]
     (𝒢 : Subgroup G) (f : G →* H) (hf : ∀ g, f (-g) = -f g) :
     𝒢.adjoinNegOne.map f = (𝒢.map f).adjoinNegOne := by
   ext
-  grind [Subgroup.mem_map, Subgroup.mem_adjoinNegOne_iff, neg_neg]
+  grind [mem_map, mem_adjoinNegOne_iff, neg_neg]
 
-end Group
+/-- Adjoining `-1` preserves inclusion. -/
+lemma adjoinNegOne_mono {𝒢 ℋ : Subgroup G} (h : 𝒢 ≤ ℋ) : 𝒢.adjoinNegOne ≤ ℋ.adjoinNegOne := by
+  intro g
+  aesop
+
+end Subgroup
 
 variable {R : Type*} [Ring R]
 

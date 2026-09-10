@@ -193,8 +193,7 @@ lemma orderAtInfty_prod {ι : Type*} (s : Finset ι) (F : ι → ℍ → E) :
       (Filter.const_boundedAtFilter atImInfty (1 : E))
   | @insert i s hi ih =>
     rw [Finset.sum_insert hi, Finset.prod_insert hi]
-    exact (add_le_add le_rfl ih).trans
-      (orderAtInfty_mul (f := F i) (g := ∏ j ∈ s, F j))
+    exact (add_le_add le_rfl ih).trans (orderAtInfty_mul (f := F i) (g := ∏ j ∈ s, F j))
 
 end SeminormedRing
 
@@ -227,34 +226,21 @@ lemma orderAtInfty_comp_equiv [Norm E] (f : ℍ → E) (e : ℍ ≃ ℍ) {a : �
         (inv_pos.mpr ha)
   have hbigO (t : ℝ) : (f ∘ e) =O[atImInfty] (fun τ ↦ exp (-2 * π * τ.im * t)) ↔
       f =O[atImInfty] (fun τ ↦ exp (-2 * π * τ.im * (t / a))) := by
-    constructor
-    · intro h
-      convert h.comp_tendsto hmap' using 1
-      · ext τ; simp
-      · ext τ; simp only [Function.comp_def, he']; congr 1; ring
-    · intro h
-      convert h.comp_tendsto hmap using 1
-      ext τ
-      simp only [Function.comp_def, he]
-      congr 1
-      field_simp
+    constructor <;> intro h
+    · convert h.comp_tendsto hmap' using 1 <;>
+      grind
+    · convert h.comp_tendsto hmap using 1
+      grind
   have hiff (t : ℝ) : t < orderAtInfty (f ∘ e) ↔ t < (a : EReal) * orderAtInfty f := by
     rw [mul_comm (a : EReal), ← EReal.div_lt_iff (EReal.coe_pos.mpr ha) (EReal.coe_ne_top _),
       ← EReal.coe_div]
     simp only [lt_orderAtInfty_iff, hbigO]
     constructor
-    · rintro ⟨s, hts, hs⟩
-      exact ⟨s / a, (div_lt_div_iff_of_pos_right ha).mpr hts, hs⟩
-    · rintro ⟨s, hts, hs⟩
-      refine ⟨s * a, (div_lt_iff₀ ha).mp hts, ?_⟩
-      simpa [ha.ne'] using hs
-  apply le_antisymm
+    · exact fun ⟨s, hts, hs⟩ ↦ ⟨s / a, (div_lt_div_iff_of_pos_right ha).mpr hts, hs⟩
+    · exact fun ⟨s, hts, hs⟩ ↦ ⟨s * a, (div_lt_iff₀ ha).mp hts, by grind⟩
+  apply le_antisymm <;>
   · by_contra! h
-    obtain ⟨t, ht, ht'⟩ := EReal.lt_iff_exists_real_btwn.mp h
-    exact ht.not_gt ((hiff t).mp ht')
-  · by_contra! h
-    obtain ⟨t, ht, ht'⟩ := EReal.lt_iff_exists_real_btwn.mp h
-    exact ht.not_gt ((hiff t).mpr ht')
+    grind [EReal.lt_iff_exists_real_btwn]
 
 /-- Scalar multiplication by a nonzero constant preserves the order. -/
 lemma orderAtInfty_const_mul [NormedRing E] [NormMulClass E] (c : E) (hc : c ≠ 0)
@@ -262,13 +248,9 @@ lemma orderAtInfty_const_mul [NormedRing E] [NormMulClass E] (c : E) (hc : c ≠
     orderAtInfty (fun τ ↦ c * f τ) = orderAtInfty f := by
   have hiff (t : ℝ) : t < orderAtInfty (fun τ ↦ c * f τ) ↔ t < orderAtInfty f := by
     simp only [lt_orderAtInfty_iff, Asymptotics.isBigO_const_mul_left_iff hc]
-  apply le_antisymm
+  apply le_antisymm <;>
   · by_contra! h
-    obtain ⟨t, ht, ht'⟩ := EReal.lt_iff_exists_real_btwn.mp h
-    exact ht.not_gt ((hiff t).mp ht')
-  · by_contra! h
-    obtain ⟨t, ht, ht'⟩ := EReal.lt_iff_exists_real_btwn.mp h
-    exact ht.not_gt ((hiff t).mpr ht')
+    grind [EReal.lt_iff_exists_real_btwn]
 
 open scoped MatrixGroups ModularForm in
 /-- Negating the matrix in a slash operator preserves the order at infinity. -/
@@ -293,14 +275,11 @@ open scoped MatrixGroups ModularForm in
 lemma orderAtInfty_slash_of_upperTriangular (f : ℍ → ℂ) (k : ℤ) (g : GL (Fin 2) ℝ)
     (hg : g 1 0 = 0) :
     orderAtInfty (f ∣[k] g) = (|g 0 0 / g 1 1| : ℝ) * orderAtInfty f := by
-  have hd : g 1 1 ≠ 0 := by
-    intro h
-    exact g.det_ne_zero (by simp [Matrix.det_fin_two, hg, h])
+  have hd : g 1 1 ≠ 0 := fun h ↦ g.det_ne_zero (by simp [Matrix.det_fin_two, hg, h])
   have ha : 0 < |g 0 0 / g 1 1| := by
     simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
   have him (τ : ℍ) : (g • τ).im = |g 0 0 / g 1 1| * τ.im := by
-    simp [im_smul, num, denom, hg, abs_div, abs_mul,
-      abs_of_pos τ.im_pos, mul_div_right_comm]
+    simp [im_smul, num, denom, hg, abs_div, abs_mul, abs_of_pos τ.im_pos, mul_div_right_comm]
   have hnorm : (fun τ ↦ ‖(f ∣[k] g) τ‖) =
       fun τ ↦ (‖g.det.val ^ (k - 1)‖ * ‖g 1 1 ^ (-k)‖) * ‖f (g • τ)‖ := by
     ext τ
@@ -310,43 +289,6 @@ lemma orderAtInfty_slash_of_upperTriangular (f : ℍ → ℂ) (k : ℤ) (g : GL 
   simpa only [Function.comp_def, MulAction.toPerm_apply, orderAtInfty_norm] using
     orderAtInfty_comp_equiv (fun τ ↦ ‖f τ‖) (MulAction.toPerm g) ha him
 
-open scoped MatrixGroups ModularForm Pointwise in
-/-- The width-weighted order is unchanged by an upper triangular change of cusp coordinate. -/
-lemma width_mul_orderAtInfty_slash_of_upperTriangular
-    (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G] (hw : 0 < G.widthInfty)
-    (f : ℍ → ℂ) (k : ℤ) (g : GL (Fin 2) ℝ) (hg : g 1 0 = 0)
-    (ha : 0 < g 0 0 / g 1 1) :
-    (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
-      G.widthInfty * orderAtInfty f := by
-  rw [Subgroup.widthInfty_conj_of_upperTriangular hw hg ha,
-    orderAtInfty_slash_of_upperTriangular f k g hg, abs_of_pos ha,
-    ← mul_assoc, ← EReal.coe_mul, div_mul_cancel₀ _ ha.ne']
-
-open OnePoint in
-open scoped MatrixGroups ModularForm Pointwise in
-lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq
-    (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G]
-    (f : ℍ → ℂ) (k : ℤ) (g h : GL (Fin 2) ℝ)
-    (hw : 0 < (ConjAct.toConjAct g⁻¹ • G).widthInfty)
-    (hcg : g • (∞ : OnePoint ℝ) = h • ∞)
-    (hdg : 0 < g.det.val) (hdh : 0 < h.det.val) :
-    (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
-      (ConjAct.toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
-  let t := g⁻¹ * h
-  have ht : t 1 0 = 0 := by
-    apply OnePoint.smul_infty_eq_self_iff.mp
-    simp only [t, mul_smul, ← hcg, inv_smul_smul]
-  have hd : 0 < t.det.val := by
-    simpa only [t, map_mul, map_inv, Units.val_mul, Units.val_inv_eq_inv_val] using
-      mul_pos (inv_pos.mpr hdg) hdh
-  have ha : 0 < t 0 0 / t 1 1 := by
-    rw [Matrix.GeneralLinearGroup.val_det_apply, Matrix.det_fin_two, ht, mul_zero,
-      sub_zero] at hd
-    exact div_pos_iff.mpr (mul_pos_iff.mp hd)
-  have heq := width_mul_orderAtInfty_slash_of_upperTriangular
-    (ConjAct.toConjAct g⁻¹ • G) hw (f ∣[k] g) k t ht ha
-  simpa only [t, mul_inv_rev, inv_inv, ← ConjAct.toConjAct_mul, ← mul_smul,
-    mul_inv_cancel_right, ← SlashAction.slash_mul, mul_inv_cancel_left] using heq.symm
 
 /-!
 ## Theory for periodic holomorphic functions
@@ -401,8 +343,8 @@ lemma orderAtInfty_eq_analyticOrderAt_div (hh : 0 < h) (hfper : Periodic (f ∘ 
   rcases eq_or_ne f 0 with rfl | hfne
   · have hcusp : cuspFunction h (0 : ℍ → ℂ) = 0 := by
       simp only [cuspFunction, Periodic.cuspFunction, Function.comp_def, Pi.zero_apply]
-      rw [(tendsto_const_nhds (x := (0 : ℂ))).limUnder_eq]
-      exact update_eq_self 0 (fun _ ↦ 0)
+      rw [tendsto_const_nhds.limUnder_eq]
+      apply update_eq_self
     have horder : analyticOrderAt (0 : ℂ → ℂ) 0 = ⊤ :=
       analyticOrderAt_eq_top.mpr (Filter.Eventually.of_forall fun _ ↦ rfl)
     rw [hcusp, horder, ENat.toENNReal_top, EReal.coe_ennreal_top,

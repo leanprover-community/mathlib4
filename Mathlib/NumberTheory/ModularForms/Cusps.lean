@@ -167,6 +167,101 @@ noncomputable def cuspsSubMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
 abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
   MulAction.orbitRel.Quotient 𝒢 (cuspsSubMulAction 𝒢)
 
+namespace CuspOrbits
+
+variable {G H K : Subgroup (GL (Fin 2) ℝ)}
+
+/-- The map on cusp orbits induced by an inclusion of groups. -/
+noncomputable def map (hGH : G ≤ H) : CuspOrbits G → CuspOrbits H :=
+  Quotient.map (fun c ↦ ⟨c.val, c.property.mono hGH⟩)
+    (fun _ _ ⟨g, hg⟩ ↦ ⟨⟨g.val, hGH g.property⟩, Subtype.ext (congr(Subtype.val $hg))⟩)
+
+@[simp] lemma map_mk (hGH : G ≤ H) (c : cuspsSubMulAction G) :
+    map hGH ⟦c⟧ = ⟦⟨c.val, c.property.mono hGH⟩⟧ := rfl
+
+@[simp] lemma map_refl (c : CuspOrbits G) : map le_rfl c = c := by
+  induction c using Quotient.inductionOn
+  rfl
+
+@[simp] lemma map_map (hGH : G ≤ H) (hHK : H ≤ K) (c : CuspOrbits G) :
+    map hHK (map hGH c) = map (hGH.trans hHK) c := by
+  induction c using Quotient.inductionOn
+  rfl
+
+/-- Every cusp orbit lifts along an inclusion of finite relative index. -/
+lemma map_surjective (hGH : G ≤ H) [G.IsFiniteRelIndex H] :
+    Function.Surjective (map hGH) := by
+  intro c
+  induction c using Quotient.inductionOn with
+  | h c => exact ⟨⟦⟨c.val, c.property.of_isFiniteRelIndex⟩⟧, rfl⟩
+
+open scoped Pointwise
+
+/-- Conjugation transports cusp orbits along the action on the projective line. -/
+noncomputable def conj (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ) :
+    CuspOrbits G → CuspOrbits (ConjAct.toConjAct g • G) :=
+  Quotient.map (fun c ↦ ⟨g • c.val, c.property.smul g⟩) (by
+    rintro c d ⟨a, ha⟩
+    refine ⟨⟨ConjAct.toConjAct g • a.val, G.smul_mem_pointwise_smul _ _ a.property⟩, ?_⟩
+    have ha' : (a : GL (Fin 2) ℝ) • d.val = c.val := congr(Subtype.val $ha)
+    apply Subtype.ext
+    exact show (g * a.val * g⁻¹) • (g • d.val) = g • c.val from by
+      simp only [mul_smul, inv_smul_smul, ha'])
+
+@[simp] lemma conj_mk (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ)
+    (c : cuspsSubMulAction G) :
+    conj G g ⟦c⟧ = ⟦⟨g • c.val, c.property.smul g⟩⟧ := rfl
+
+lemma conj_bijective (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ) :
+    Function.Bijective (conj G g) := by
+  constructor
+  · intro c d
+    induction c using Quotient.inductionOn with | h c =>
+    induction d using Quotient.inductionOn with | h d =>
+    intro h
+    obtain ⟨a, ha⟩ := Quotient.eq.mp h
+    refine Quotient.eq.mpr ⟨⟨ConjAct.toConjAct g⁻¹ • a.val, ?_⟩, ?_⟩
+    · exact G.mem_pointwise_smul_iff_inv_smul_mem.mp a.property
+    · have ha' : (a : GL (Fin 2) ℝ) • (g • d.val) = g • c.val := congr(Subtype.val $ha)
+      apply Subtype.ext
+      exact show (g⁻¹ * a.val * g) • d.val = c.val from by
+        simp only [mul_smul, ha', inv_smul_smul]
+  · intro c
+    induction c using Quotient.inductionOn with | h c =>
+    have hc : IsCusp (g⁻¹ • c.val) G := by
+      simpa only [← mul_smul, ← ConjAct.toConjAct_mul, inv_mul_cancel,
+        ConjAct.toConjAct_one, one_smul] using c.property.smul g⁻¹
+    refine ⟨⟦⟨g⁻¹ • c.val, hc⟩⟧, ?_⟩
+    simp only [conj_mk, smul_inv_smul]
+
+@[simp] lemma map_conj (hGH : G ≤ H) (g : GL (Fin 2) ℝ) (c : CuspOrbits G) :
+    map ((Subgroup.pointwise_smul_le_pointwise_smul_iff
+      (a := ConjAct.toConjAct g)).mpr hGH) (conj G g c) = conj H g (map hGH c) := by
+  induction c using Quotient.inductionOn
+  rfl
+
+lemma map_adjoinNegOne_bijective (G : Subgroup (GL (Fin 2) ℝ)) :
+    Function.Bijective (map G.le_adjoinNegOne) := by
+  refine ⟨?_, map_surjective G.le_adjoinNegOne⟩
+  intro c d
+  induction c using Quotient.inductionOn with | h c =>
+  induction d using Quotient.inductionOn with | h d =>
+  intro h
+  obtain ⟨a, ha⟩ := Quotient.eq.mp h
+  have ha' : (a : GL (Fin 2) ℝ) • d.val = c.val := congr(Subtype.val $ha)
+  rcases a.property with hmem | hmem
+  · exact Quotient.eq.mpr ⟨⟨a.val, hmem⟩, Subtype.ext ha'⟩
+  · refine Quotient.eq.mpr ⟨⟨-a.val, hmem⟩, Subtype.ext ?_⟩
+    have hneg : (-a.val) • d.val = a.val • d.val := by
+      induction d.val using OnePoint.rec with
+      | infty => simp [OnePoint.smul_infty_eq_ite]
+      | coe x =>
+        simp [OnePoint.smul_some_eq_ite]
+        simp only [← neg_add, neg_eq_zero, neg_div_neg_eq]
+    exact hneg.trans ha'
+
+end CuspOrbits
+
 /-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing
 that `CuspOrbits 𝒢` is finite for arithmetic subgroups. -/
 noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] :
@@ -245,6 +340,19 @@ def IsRegularAtInfty : Prop :=
 
 lemma IsRegularAtInfty.eq (h : 𝒢.IsRegularAtInfty) : 𝒢.strictPeriods = 𝒢.periods := h
 
+open scoped Classical in
+/-- The regularity factor at infinity: one for a regular cusp and two otherwise. -/
+noncomputable def regularityFactorInfty : ℕ :=
+  if 𝒢.IsRegularAtInfty then 1 else 2
+
+@[simp] lemma regularityFactorInfty_of_isRegularAtInfty (h : 𝒢.IsRegularAtInfty) :
+    𝒢.regularityFactorInfty = 1 := by
+  simp [regularityFactorInfty, h]
+
+@[simp] lemma regularityFactorInfty_of_not_isRegularAtInfty (h : ¬ 𝒢.IsRegularAtInfty) :
+    𝒢.regularityFactorInfty = 2 := by
+  simp [regularityFactorInfty, h]
+
 lemma relIndex_strictPeriods :
     𝒢.strictPeriods.relIndex 𝒢.periods = 1 ∨ 𝒢.strictPeriods.relIndex 𝒢.periods = 2 := by
   by_cases h : 𝒢.strictPeriods = 𝒢.periods
@@ -258,6 +366,15 @@ lemma relIndex_strictPeriods :
     rcases hb with h | h
     · exact Or.inr h
     · simpa only [neg_mul_neg] using Or.inl (mul_mem h <| hu_mem.resolve_left hu_notMem)
+
+/-- The regularity factor is the index of strict periods in periods. -/
+lemma relIndex_strictPeriods_eq_regularityFactorInfty :
+    𝒢.strictPeriods.relIndex 𝒢.periods = 𝒢.regularityFactorInfty := by
+  by_cases h : 𝒢.IsRegularAtInfty
+  · simp [h.eq, regularityFactorInfty, h]
+  · rw [𝒢.regularityFactorInfty_of_not_isRegularAtInfty h]
+    exact 𝒢.relIndex_strictPeriods.resolve_left fun hi ↦
+      h (𝒢.strictPeriods_le_periods.antisymm (AddSubgroup.relIndex_eq_one.mp hi))
 
 lemma commensurable_strictPeriods_periods :
     𝒢.strictPeriods.Commensurable 𝒢.periods := by
@@ -420,6 +537,47 @@ lemma isRegularAtInfty_iff [DiscreteTopology 𝒢.periods] :
   apply 𝒢.strictPeriods_le_periods.antisymm
   rwa [periods_eq_zmultiples_widthInfty, AddSubgroup.zmultiples_le]
 
+lemma strictWidthInfty_of_isRegularAtInfty (h𝒢 : 𝒢.IsRegularAtInfty) :
+    𝒢.strictWidthInfty = 𝒢.widthInfty := by
+  have heq : 𝒢.strictPeriods = 𝒢.adjoinNegOne.strictPeriods := h𝒢.eq
+  simp only [widthInfty, strictWidthInfty]
+  congr!
+
+lemma strictWidthInfty_of_not_isRegularAtInfty (h𝒢 : ¬ 𝒢.IsRegularAtInfty) :
+    𝒢.strictWidthInfty = 2 * 𝒢.widthInfty := by
+  by_cases hd : DiscreteTopology 𝒢.strictPeriods
+  · have : DiscreteTopology 𝒢.periods :=
+      𝒢.commensurable_strictPeriods_periods.discreteTopology_iff.mp hd
+    have hw : 0 < 𝒢.widthInfty := by
+      refine 𝒢.widthInfty_nonneg.lt_of_ne fun h ↦ h𝒢 ?_
+      exact isRegularAtInfty_iff.mpr (h ▸ 𝒢.strictPeriods.zero_mem)
+    have hi : 𝒢.strictPeriods.relIndex 𝒢.periods = 2 :=
+      𝒢.relIndex_strictPeriods.resolve_left fun hi ↦
+        h𝒢 (𝒢.strictPeriods_le_periods.antisymm (AddSubgroup.relIndex_eq_one.mp hi))
+    obtain ⟨n, hn⟩ := (𝒢.periods_eq_zmultiples_widthInfty ▸
+      𝒢.strictPeriods_le_periods 𝒢.strictWidthInfty_mem_strictPeriods)
+    have hnpos : 0 ≤ n := by
+      have hn' : 0 ≤ n * 𝒢.widthInfty := by
+        simpa only [← hn, zsmul_eq_mul] using 𝒢.strictWidthInfty_nonneg
+      exact_mod_cast (nonneg_of_mul_nonneg_left hn' hw)
+    rw [strictPeriods_eq_zmultiples_strictWidthInfty, periods_eq_zmultiples_widthInfty,
+      ← hn, AddSubgroup.relIndex_zmultiples_zsmul] at hi
+    have hn2 : n = 2 := by
+      have hnabs : n.natAbs = 2 := by
+        simpa [addOrderOf_eq_zero (not_isOfFinAddOrder_of_isAddTorsionFree hw.ne')] using hi
+      omega
+    simpa [hn2, zsmul_eq_mul] using hn.symm
+  · have hp : ¬ DiscreteTopology 𝒢.adjoinNegOne.strictPeriods :=
+      mt 𝒢.commensurable_strictPeriods_periods.discreteTopology_iff.mpr hd
+    simp [widthInfty, strictWidthInfty, hd, hp]
+
+/-- The strict width is the width multiplied by the regularity factor. -/
+lemma strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty :
+    𝒢.strictWidthInfty = 𝒢.regularityFactorInfty * 𝒢.widthInfty := by
+  by_cases h : 𝒢.IsRegularAtInfty
+  · simp [𝒢.strictWidthInfty_of_isRegularAtInfty h, h]
+  · simp [𝒢.strictWidthInfty_of_not_isRegularAtInfty h, h]
+
 lemma widthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.widthInfty := by
   apply strictWidthInfty_pos
 
@@ -464,6 +622,33 @@ lemma widthInfty_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
     (ConjAct.toConjAct g⁻¹ • G).widthInfty = G.widthInfty / (g 0 0 / g 1 1) := by
   simpa [widthInfty, adjoinNegOne_conj] using
     strictWidthInfty_conj_of_upperTriangular hw hg ha
+
+/-- Cusp widths scale by the absolute value of the coordinate dilation, allowing either
+orientation. -/
+lemma widthInfty_conj_of_upperTriangular_abs {G : Subgroup (GL (Fin 2) ℝ)}
+    [DiscreteTopology G] (hw : 0 < G.widthInfty)
+    {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+    (ConjAct.toConjAct g⁻¹ • G).widthInfty = G.widthInfty / |g 0 0 / g 1 1| := by
+  have ha : 0 < |g 0 0 / g 1 1| := by
+    simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
+  have hperiods : (ConjAct.toConjAct g⁻¹ • G.adjoinNegOne).strictPeriods =
+      AddSubgroup.zmultiples (G.widthInfty / |g 0 0 / g 1 1|) := by
+    ext x
+    rw [mem_strictPeriods_conj_of_upperTriangular hg,
+      strictPeriods_eq_zmultiples_strictWidthInfty]
+    rcases le_total 0 (g 0 0 / g 1 1) with h | h
+    · rw [abs_of_nonneg h]
+      grind [AddSubgroup.mem_zmultiples_iff, widthInfty]
+    · rw [abs_of_nonpos h]
+      constructor <;> exact fun ⟨m, hm⟩ ↦ ⟨-m, by grind [widthInfty]⟩
+  have hp : 0 < G.widthInfty / |g 0 0 / g 1 1| := div_pos hw ha
+  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
+    AddSubgroup.zmultiples_eq_zmultiples_iff
+      (not_isOfFinAddOrder_of_isAddTorsionFree hp.ne')] at hperiods
+  rw [widthInfty, adjoinNegOne_conj]
+  have hn : 0 ≤ (ConjAct.toConjAct g⁻¹ • G.adjoinNegOne).strictWidthInfty :=
+    strictWidthInfty_nonneg _
+  grind
 
 /-- In a discrete determinant-one group with a cusp at infinity, every element fixing
 infinity is a signed translation. -/
