@@ -270,14 +270,15 @@ omit [Algebra S T] in
 lemma of_forall_exists_mul_mem_range [QuasiFinite R S] (f : S →ₐ[R] T)
     (H : ∀ x : T, ∃ s : S, IsUnit (f s) ∧ x * f s ∈ f.range) :
     QuasiFinite R T := by
-  let φ : Localization ((IsUnit.submonoid T).comap f.toMonoidHom) →ₐ[R] T :=
-    IsLocalization.liftAlgHom (M := (IsUnit.submonoid T).comap f.toMonoidHom) (f := f)
-      (by simp [IsUnit.mem_submonoid_iff])
+  let φ : Localization ((IsUnit.submonoid T).comap (MonoidHomClass.toMonoidHom f)) →ₐ[R] T :=
+    IsLocalization.liftAlgHom (M := (IsUnit.submonoid T).comap (MonoidHomClass.toMonoidHom f))
+      (f := f) (by simp [IsUnit.mem_submonoid_iff])
   suffices Function.Surjective φ from .of_surjective_algHom φ this
   intro x
   obtain ⟨s, hs, t, ht⟩ := H x
-  refine ⟨IsLocalization.mk' (M := (IsUnit.submonoid T).comap f.toMonoidHom) _ t ⟨s, hs⟩, ?_⟩
-  sorry -- simpa [φ, IsLocalization.lift_mk', Units.mul_inv_eq_iff_eq_mul, IsUnit.coe_liftRight]
+  refine ⟨IsLocalization.mk' (M := (IsUnit.submonoid T).comap (MonoidHomClass.toMonoidHom f)) _ t
+    ⟨s, hs⟩, ?_⟩
+  simpa [φ, IsLocalization.lift_mk', Units.mul_inv_eq_iff_eq_mul, IsUnit.coe_liftRight]
 
 omit [Algebra S T] in
 lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPrime]

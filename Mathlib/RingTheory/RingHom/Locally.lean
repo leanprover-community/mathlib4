@@ -184,7 +184,8 @@ lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
     · rw [← Ideal.map_span, hsone, Ideal.map_top]
     · rintro - ⟨a, ha, rfl⟩
       have : IsLocalization (Submonoid.powers (e.toMonoidHom a)) (Localization.Away (e a)) :=
-        sorry -- synthesis works on `master`, TODO!
+        inferInstanceAs <| IsLocalization (Submonoid.powers (e a)) (Localization.Away (e a))
+        -- synthesis works on `master`, TODO!
       let e' : Localization.Away a ≃+* Localization.Away (e a) :=
         IsLocalization.ringEquivOfRingEquiv _ _ e (Submonoid.map_powers e.toMonoidHom a)
       have : (algebraMap T (Localization.Away (e a))).comp e.toRingHom =

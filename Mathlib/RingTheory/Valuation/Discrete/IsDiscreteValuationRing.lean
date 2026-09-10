@@ -108,12 +108,12 @@ lemma mker_valuation_eq_isUnitSubmonoid :
       (IsUnit.submonoid A).map (algebraMap A K).toMonoidHom := by
   ext a
   simp only [MonoidHom.mem_mker, Submonoid.mem_map]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨b, rfl⟩ := IsDiscreteValuationRing.exists_lift_of_le_one h.le
-    sorry /- was: rw [valuation_eq_one_iff_notMem] at h
-    simp only [IsDiscreteValuationRing.maximalIdeal, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-      not_not] at h
-    use b, h -/
+  refine ⟨?_, fun h ↦ ?_⟩
+  · simp_intro h
+    obtain ⟨b, rfl⟩ := IsDiscreteValuationRing.exists_lift_of_le_one h.le
+    simp only [valuation_eq_one_iff_notMem, IsDiscreteValuationRing.maximalIdeal,
+      IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at h
+    use b, h
   · obtain ⟨x, h, rfl⟩ := h
     simpa [IsDiscreteValuationRing.maximalIdeal] using! h
 
@@ -129,8 +129,9 @@ theorem associated_of_valuation_eq (x y : K)
   rw [mker_valuation_eq_isUnitSubmonoid] at this
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1
-  sorry /- was: simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1, h.2]
-  field_simp -/
+  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1,
+    MonoidHom.coe_coe (algebraMap A K) ▸ h.2]
+  field_simp
 
 theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =
     ((maximalIdeal A).valuation K).valuationSubring.toSubring := by

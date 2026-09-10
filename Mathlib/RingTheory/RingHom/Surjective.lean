@@ -61,7 +61,7 @@ theorem surjective_localizationPreserves :
   obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (M.map f.toMonoidHom) x
   obtain ⟨y, rfl⟩ := H x
   use IsLocalization.mk' R' y ⟨s, hs⟩
-  sorry -- was: rw [IsLocalization.map_mk']
+  simp [IsLocalization.map_mk']
 
 /-- `R →+* S` is surjective if there exists a set `{ r }` that spans `R` such that
   `Rᵣ →+* Sᵣ` is surjective. -/

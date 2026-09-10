@@ -87,8 +87,8 @@ if `P` holds for `M⁻¹R →+* M⁻¹S` whenever `P` holds for `R →+* S`. -/
 def RingHom.LocalizationPreserves :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (M : Submonoid R) (R' S' : Type u)
     [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [IsLocalization M R']
-    [IsLocalization (M.map f.toMonoidHom) S'],
-    P f → P (IsLocalization.map S' f (Submonoid.le_comap_map (f := f.toMonoidHom) M) : R' →+* S')
+    [IsLocalization (M.map (MonoidHomClass.toMonoidHom f)) S'],
+    P f → P (IsLocalization.map S' f (Submonoid.le_comap_map M) : R' →+* S')
 
 /-- A property `P` of ring homs is said to be preserved by localization away
 if `P` holds for `Rᵣ →+* Sᵣ` whenever `P` holds for `R →+* S`. -/
@@ -257,24 +257,26 @@ lemma RingHom.HoldsForLocalization.isLocalizationMap
     (S' : Type u) [CommRing S'] [Algebra S S'] [IsLocalization T S']
     {f : R →+* S} (hy : M ≤ Submonoid.comap f T) (hf : P f) :
     P (IsLocalization.map (S := R') S' f hy) := by
-  have hle : Submonoid.map f M ≤ T := by simpa [Submonoid.map_le_iff_le_comap]
-  let : Algebra (Localization (M.map f.toMonoidHom)) S' :=
-    IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (M.map f.toMonoidHom) T hle
-  have : IsScalarTower S (Localization (Submonoid.map f.toMonoidHom M)) S' :=
+  have hle : Submonoid.map (MonoidHomClass.toMonoidHom f) M ≤ T := by
+    simpa [Submonoid.map_le_iff_le_comap]
+  let : Algebra (Localization (M.map (MonoidHomClass.toMonoidHom f))) S' :=
+    IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (M.map (MonoidHomClass.toMonoidHom f)) T hle
+  have : IsScalarTower S (Localization (Submonoid.map (MonoidHomClass.toMonoidHom f) M)) S' :=
     IsLocalization.localization_isScalarTower_of_submonoid_le _ _ _ _ _
-  have : IsLocalization (T.map (algebraMap S (Localization (M.map f.toMonoidHom))).toMonoidHom) S' :=
-    sorry -- IsLocalization.isLocalization_of_submonoid_le _ _ (M.map f) T hle
+  have : IsLocalization (T.map (algebraMap S
+      (Localization (M.map (MonoidHomClass.toMonoidHom f)))).toMonoidHom) S' :=
+    IsLocalization.isLocalization_of_submonoid_le _ _ (M.map (MonoidHomClass.toMonoidHom f)) T hle
   have heq : IsLocalization.map (S := R') S' f hy =
-      (algebraMap _ _).comp
-        (IsLocalization.map (M := M) (T := M.map f.toMonoidHom) (S := R')
-          (Localization (M.map f.toMonoidHom)) f
+      (algebraMap (Localization (Submonoid.map ((MonoidHomClass.toMonoidHom f)) M)) _).comp
+        (IsLocalization.map (M := M) (T := M.map (MonoidHomClass.toMonoidHom f)) (S := R')
+          (Localization (M.map (MonoidHomClass.toMonoidHom f))) f
           (M.le_comap_map)) := by
     apply IsLocalization.ringHom_ext M
-    ext
-    sorry -- was: simp [← IsScalarTower.algebraMap_apply]
+    ext x
+    simp [← IsScalarTower.algebraMap_apply]
   rw [heq]
   exact hPc _ _ (hPp _ _ _ _ hf)
-    (hPl _ (T.map (algebraMap S (Localization (M.map f.toMonoidHom))).toMonoidHom))
+    (hPl _ (T.map (algebraMap S (Localization (M.map (MonoidHomClass.toMonoidHom f)))).toMonoidHom))
 
 lemma RingHom.HoldsForLocalization.localRingHom (hPc : StableUnderComposition P)
     (hPp : LocalizationPreserves P) (hPl : HoldsForLocalization P)
@@ -358,7 +360,8 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) :
     RingHom.LocalizationAwayPreserves P := by
   intro R S _ _ f r R' S' _ _ _ _ _ _ hf
-  have : IsLocalization ((Submonoid.powers r).map f.toMonoidHom) S' := by rwa [Submonoid.map_powers]
+  have : IsLocalization ((Submonoid.powers r).map (MonoidHomClass.toMonoidHom f)) S' := by
+    rwa [Submonoid.map_powers]
   exact H f (Submonoid.powers r) R' S' hf
 
 lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P)
@@ -499,16 +502,16 @@ lemma RingHom.IsStableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R
 /-- If `P` is stable under base change and holds for `f`, then `P` holds for `f` localized
 at any submonoid `M` of `R`. -/
 lemma RingHom.IsStableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
-    (f : R →+* S) [IsLocalization (M.map f.toMonoidHom) Sᵣ] (hf : P f) :
-    P (IsLocalization.map Sᵣ f (M.le_comap_map (f := f.toMonoidHom)) : Rᵣ →+* Sᵣ) := by
-  sorry /- proof was:
+    (f : R →+* S) [IsLocalization (M.map (MonoidHomClass.toMonoidHom f)) Sᵣ] (hf : P f) :
+    P (IsLocalization.map Sᵣ f (M.le_comap_map
+    (f := (MonoidHomClass.toMonoidHom f))) : Rᵣ →+* Sᵣ) := by
   algebraize [f, IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map,
     (IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map).comp (algebraMap R Rᵣ)]
   have : IsScalarTower R S Sᵣ := IsScalarTower.of_algebraMap_eq'
     (IsLocalization.map_comp M.le_comap_map)
   have : IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ :=
-    inferInstanceAs <| IsLocalization (M.map f) Sᵣ
-  apply hP.of_isLocalization M hf -/
+    inferInstanceAs <| IsLocalization (M.map (MonoidHomClass.toMonoidHom f)) Sᵣ
+  apply hP.of_isLocalization M hf
 
 lemma RingHom.IsStableUnderBaseChange.localizationPreserves : LocalizationPreserves P := by
   introv R hf
