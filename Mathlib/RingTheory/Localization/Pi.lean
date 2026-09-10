@@ -53,7 +53,8 @@ instance (M : Π i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
 variable (S' : Type*) [CommSemiring S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))
 
 theorem iff_map_piEvalRingHom [Finite ι] :
-    IsLocalization M S' ↔ IsLocalization (.pi .univ fun i ↦ M.map (Pi.evalRingHom R i).toMonoidHom) S' :=
+    IsLocalization M S' ↔ IsLocalization (.pi .univ fun i ↦
+    M.map (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i))) S' :=
   iff_of_le_of_exists_dvd M _ (fun m hm i _ ↦ ⟨m, hm, rfl⟩) fun n hn ↦ by
     choose m mem eq using hn
     have := Fintype.ofFinite ι
@@ -61,7 +62,7 @@ theorem iff_map_piEvalRingHom [Finite ι] :
     rw [Fintype.prod_apply]
     exact (eq i ⟨⟩).symm.dvd.trans (Finset.dvd_prod_of_mem _ <| Finset.mem_univ _)
 
-variable [∀ i, IsLocalization (M.map (Pi.evalRingHom R i).toMonoidHom) (S i)]
+variable [∀ i, IsLocalization (M.map (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i))) (S i)]
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
 the projection of `M` onto each corresponding factor. Given a ring homomorphism from the direct
@@ -70,7 +71,7 @@ maps to a unit under this homomorphism. -/
 lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
     IsUnit ((RingHom.pi fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
   Pi.isUnit_iff.mpr fun i ↦ map_units _
-    (⟨y.1 i, y, y.2, rfl⟩ : M.map (Pi.evalRingHom R i).toMonoidHom)
+    (⟨y.1 i, y, y.2, rfl⟩ : M.map (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i)))
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
 the projection of `M` onto each factor. Then the canonical map from the localization of the direct
@@ -79,8 +80,8 @@ is bijective. -/
 theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M S'] [Finite ι] :
     Function.Bijective (lift (S := S') (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) :=
   have := (iff_map_piEvalRingHom R (Π i, S i) M).mpr inferInstance
-  sorry /- was (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
-    Submonoid.map_equiv_eq_comap_symm _ _).bijective -/
+  (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
+    Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
 open Function
 
@@ -90,7 +91,7 @@ lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom
     [∀ i, Ring.KrullDimLE 0 (R i)] [∀ i, IsLocalRing (R i)] :
     Surjective (RingHom.pi (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
   apply Surjective.piMap (fun i ↦ ?_)
-  by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i).toMonoidHom)
+  by_cases h₀ : (0 : R i) ∈ (M.map (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i)))
   · have := uniqueOfZeroMem h₀ (S := (S i))
     exact surjective_to_subsingleton (algebraMap (R i) (S i))
   · exact (IsLocalization.atUnits _ _ (by simpa)).surjective
@@ -103,7 +104,7 @@ lemma algebraMap_pi_surjective_of_isLocalization [∀ i, Ring.KrullDimLE 0 (R i)
     [∀ i, IsLocalRing (R i)] [IsLocalization M S']
     [Finite ι] : Surjective (algebraMap (Π i, R i) S') := by
   intro s
-  set S := fun (i : ι) => Localization (M.map (Pi.evalRingHom R i).toMonoidHom)
+  set S := fun (i : ι) => Localization (M.map (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i)))
   obtain ⟨r, hr⟩ :=
     surjective_piRingHom_algebraMap_comp_piEvalRingHom
     S M ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)

@@ -85,27 +85,26 @@ variable {i : ι} (S : Submonoid (R i))
 
 /-- `IsLocalization.map` applied to a projection homomorphism from a product ring. -/
 noncomputable abbrev mapPiEvalRingHom :
-    Localization (S.comap (Pi.evalRingHom R i).toMonoidHom) →+* Localization S :=
-  sorry --map (T := S) _ (Pi.evalRingHom R i) le_rfl
+    Localization (S.comap (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i))) →+* Localization S :=
+  map (T := S) _ (Pi.evalRingHom R i) le_rfl
 
 open Function in
 theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
-  let T := S.comap (Pi.evalRingHom R i).toMonoidHom
+  let T := S.comap (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i))
   classical
   refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
   · obtain ⟨r₁, s₁, rfl⟩ := exists_mk'_eq T x₁
     obtain ⟨r₂, s₂, rfl⟩ := exists_mk'_eq T x₂
-    sorry /- proof was: simp_rw [map_mk'] at eq
+    simp_rw [map_mk'] at eq
     rw [IsLocalization.eq] at eq ⊢
     obtain ⟨s, hs⟩ := eq
     refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
     obtain rfl | ne := eq_or_ne j i
     · simpa using hs
-    · simp [update_of_ne ne] -/
+    · simp [update_of_ne ne]
   · obtain ⟨r, s, rfl⟩ := exists_mk'_eq S x
-    sorry /- proof was:
     exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
-      by simp [map_mk']⟩ -/
+      by simp [map_mk']⟩
 
 end Localization
 
@@ -331,7 +330,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     IsLocalization M P := by
   constructor; constructor
   · intro y
-    convert! (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
+    convert! (IsLocalization.map_units S y).map (MonoidHomClass.toMonoidHom h)
     exact (h.commutes y).symm
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)
@@ -385,11 +384,13 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     IsLocalization (Algebra.algebraMapSubmonoid S₁ M₂) T where
   map_units := by
     rintro ⟨m, ⟨a, ha, rfl⟩⟩
-    sorry /- rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
-    exact IsUnit.map _ (IsLocalization.map_units _ ⟨a, ha⟩) -/
+    simp only [MonoidHom.coe_coe]
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
+    exact IsUnit.map _ (IsLocalization.map_units _ ⟨a, ha⟩)
   surj a := by
     obtain ⟨⟨y, -, m, hm, rfl⟩, hy⟩ := surj (M := Algebra.algebraMapSubmonoid S₂ M₁) a
-    sorry /- rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₁ T] at hy
+    simp only [MonoidHom.coe_coe] at hy
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₁ T] at hy
     obtain ⟨⟨z, n, hn⟩, hz⟩ := IsLocalization.surj (M := M₂) y
     have hunit : IsUnit (algebraMap R S₁ m) := map_units _ ⟨m, hm⟩
     use ⟨algebraMap R S₁ z * hunit.unit⁻¹, ⟨algebraMap R S₁ n, n, hn, rfl⟩⟩
@@ -400,21 +401,22 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
         (algebraMap S₁ T) (((algebraMap R S₁) m) * hunit.unit⁻¹.val)
     · rw [map_mul]
       ring
-    simp -/
+    simp
   exists_of_eq {x y} hxy := by
     obtain ⟨r, s, d, hr, hs⟩ := IsLocalization.surj₂ M₁ S₁ x y
     apply_fun (· * algebraMap S₁ T (algebraMap R S₁ d)) at hxy
     simp_rw [← map_mul, hr, hs, ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R S₂ T] at hxy
     obtain ⟨⟨-, c, hmc, rfl⟩, hc⟩ := exists_of_eq (M := Algebra.algebraMapSubmonoid S₂ M₁) hxy
-    sorry /- simp_rw [← map_mul] at hc
+    simp only [MonoidHom.coe_coe] at hc
+    simp_rw [← map_mul] at hc
     obtain ⟨a, ha⟩ := IsLocalization.exists_of_eq (M := M₂) hc
     use ⟨algebraMap R S₁ a, a, a.property, rfl⟩
     apply (map_units S₁ d).mul_right_cancel
     rw [mul_assoc, hr, mul_assoc, hs]
     apply (map_units S₁ ⟨c, hmc⟩).mul_right_cancel
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
-    ring -/
+    ring
 
 variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommSemiring Rₘ] [CommSemiring Sₙ] [CommSemiring Rₘ']
   [CommSemiring Sₙ'] [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ]
@@ -619,8 +621,8 @@ theorem localizationAlgebraMap_def :
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  have : IsLocalization (M.map (algebraMap R S).toMonoidHom) Sₘ := i
-  sorry -- was: IsLocalization.map_injective_of_injective _ _ _ hRS
+  have : IsLocalization (M.map (MonoidHomClass.toMonoidHom (algebraMap R S))) Sₘ := i
+  IsLocalization.map_injective_of_injective _ _ _ hRS
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid R M) Rₘ := by
   simpa

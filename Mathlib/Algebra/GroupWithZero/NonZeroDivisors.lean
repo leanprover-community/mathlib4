@@ -257,9 +257,8 @@ theorem MulEquivClass.map_nonZeroDivisors
     Submonoid.map h (nonZeroDivisors M₀) = nonZeroDivisors S := by
   ext
   simp_rw [Submonoid.map_equiv_eq_comap_symm , Submonoid.mem_comap, mem_nonZeroDivisors_iff,
-    ← h.symm.forall_congr_right, h.symm.toEquiv_eq_coe, h.symm.coe_toEquiv,
-    MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe, ← map_mul,
-      map_eq_zero_iff _ h.symm.injective]
+    ← h.symm.forall_congr_right, h.symm.toEquiv_eq_coe, h.symm.coe_toEquiv, MonoidHom.coe_coe,
+    ← map_mul, map_eq_zero_iff _ h.symm.injective]
 
 theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M₀'] [MonoidWithZeroHomClass F M₀ M₀']
     (f : F) (hf : Injective f) {S : Submonoid M₀} (hS : S ≤ M₀⁰) : S.map f ≤ M₀'⁰ := by

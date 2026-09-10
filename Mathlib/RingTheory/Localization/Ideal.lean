@@ -382,13 +382,15 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     IsLocalization (M.map f.toMonoidHom) S' where
   map_units := by
     rintro ⟨_, y, hy, rfl⟩
-    sorry -- simpa only [← RingHom.comp_apply, H] using (IsLocalization.map_units S ⟨y, hy⟩).map g
+    simpa only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe, ← RingHom.comp_apply, ← H]
+      using (IsLocalization.map_units S ⟨y, hy⟩).map g
   surj := by
     intro z
     obtain ⟨z, rfl⟩ := hg z
     obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
     refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
-    sorry -- simpa only [map_mul, ← RingHom.comp_apply, H] using DFunLike.congr_arg g e
+    simpa only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe, map_mul, ← RingHom.comp_apply, H]
+      using DFunLike.congr_arg g e
   exists_of_eq := by
     intro x y e
     obtain ⟨x, rfl⟩ := hf x

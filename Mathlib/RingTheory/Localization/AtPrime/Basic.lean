@@ -422,7 +422,7 @@ noncomputable abbrev mapPiEvalRingHom :
   localRingHom _ _ _ rfl
 
 theorem mapPiEvalRingHom_bijective : Function.Bijective (mapPiEvalRingHom I) :=
-  sorry -- was: Localization.mapPiEvalRingHom_bijective _
+  Localization.mapPiEvalRingHom_bijective _
 
 theorem mapPiEvalRingHom_comp_algebraMap :
     (mapPiEvalRingHom I).comp (algebraMap _ _) = (algebraMap _ _).comp (Pi.evalRingHom R i) :=
@@ -659,9 +659,9 @@ lemma under_map_eq_map : (Ideal.map (algebraMap R Sₚ) p).under S = pS := by
     obtain ⟨c, hc⟩ := hy
     obtain ⟨α, hα, e⟩ := (c * s).prop
     refine ⟨α, hα, ?_⟩
-    sorry /- was:
-    rw [Algebra.smul_def, e, Submonoid.coe_mul, mul_assoc, mul_comm _ x, hc]
-    exact Ideal.mul_mem_left _ _ y.prop -/
+    simp only [MonoidHom.coe_coe, Submonoid.coe_mul] at e
+    rw [Algebra.smul_def, e, mul_assoc, mul_comm _ x, hc]
+    exact Ideal.mul_mem_left _ _ y.prop
   obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ β * α = 1 + γ := by
     obtain ⟨β, hβ⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p α)⁻¹
     refine ⟨β, β * α - 1, ?_, ?_⟩
@@ -714,11 +714,10 @@ noncomputable def equivQuotientMapMaximalIdeal : S ⧸ pS ≃+* Sₚ ⧸ pSₚ :
     · rw [Algebra.smul_def]
       apply Ideal.mul_mem_right
       exact Ideal.mem_map_of_mem _ hγ
-    simp only
+    simp only [MonoidHom.coe_coe] at e ⊢
     rw [mul_comm, mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul,
-      IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e]
-    sorry /- proof was: , ← Algebra.smul_def, smul_smul,
-      hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right] -/
+      IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
+      hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
 
 end isomorphisms
 

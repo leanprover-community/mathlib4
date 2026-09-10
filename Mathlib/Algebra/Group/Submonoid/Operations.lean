@@ -534,22 +534,22 @@ theorem prod_bot_sup_bot_prod (s : Submonoid M) (t : Submonoid N) :
 
 @[to_additive]
 theorem mem_map_equiv {f : M ≃* N} {K : Submonoid M} {x : N} :
-    x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
+    x ∈ K.map (MonoidHomClass.toMonoidHom f) ↔ f.symm x ∈ K :=
   Set.mem_image_equiv
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
-    K.map f = K.comap f.symm.toMonoidHom :=
+    K.map f = K.comap (MonoidHomClass.toMonoidHom f.symm) :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
-    K.comap f = K.map f.symm.toMonoidHom :=
+    K.comap f = K.map (MonoidHomClass.toMonoidHom f.symm) :=
   (map_equiv_eq_comap_symm f.symm K).symm
 
 -- TODO: should this lemma be fixed to generalise to any surjective monoid homomorphism instead?
 @[to_additive (attr := simp)]
-theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f.toMonoidHom = ⊤ :=
+theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map (MonoidHomClass.toMonoidHom f) = ⊤ :=
   SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 
 @[to_additive le_prod_iff]
