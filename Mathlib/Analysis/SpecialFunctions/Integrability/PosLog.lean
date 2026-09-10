@@ -9,9 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Integrability.Log
 
 /-!
 # Integrability of Functions Prominently Involving the Logarithm
--/
-
-/-!
 ## Integrability for Logarithms of Meromorphic Functions
 
 We establish integrability for functions of the form `log ‖meromorphic‖`. In the real setting, these
