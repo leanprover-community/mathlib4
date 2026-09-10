@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv

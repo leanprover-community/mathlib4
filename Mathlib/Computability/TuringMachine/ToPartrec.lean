@@ -872,7 +872,6 @@ theorem trNormal_respects (c k v s) :
       exact ⟨_, h₁, h.trans h₂⟩
   | fix f IH => apply IH
 
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem tr_ret_respects (k v s) : ∃ b₂,
     TrCfg (stepRet k v) b₂ ∧
       Reaches₁ (TM2.step tr)
@@ -881,8 +880,8 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
   | halt => exact ⟨_, rfl, TransGen.single rfl⟩
   | cons₁ fs as k _ =>
     obtain ⟨s', h₁, h₂⟩ := trNormal_respects fs (Cont.cons₂ v k) as none
-    refine ⟨s', h₁, TransGen.head rfl ?_⟩; simp
-    refine (move₂_ok (by decide) ?_ (splitAtPred_false _)).trans ?_; · rfl
+    refine ⟨s', h₁, TransGen.head rfl ?_⟩
+    refine (move₂_ok (by decide) rfl (splitAtPred_false _)).trans ?_
     simp only [TM2.step, Option.mem_def, Option.elim, id_eq, elim_update_main, elim_main, elim_aux,
       List.append_nil, elim_update_aux]
     refine (move₂_ok (L₁ := ?_) (o := ?_) (L₂ := ?_) (by decide) rfl ?_).trans ?_
@@ -923,8 +922,8 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       refine ⟨_, h₁, TransGen.head rfl <| TransGen.trans ?_ h₂⟩
       rw [trCont, tr]; simp only [pop', TM2.stepAux, elim_main, this.1]
       convert! clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
-      · simp
-        convert! rfl
+      · simp only [elim_update_main]
+        rfl
       · exact fun x h => trNat_natEnd _ _ (List.tail_subset _ h)
       · exact ⟨rfl, this.2⟩
 
@@ -968,7 +967,6 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.pred q₁ q₂) => insert Q <| trStmts₁ q₁ ∪ insert (unrev q₂) (trStmts₁ q₂)
   | Q@(Λ'.ret _) => {Q}
 
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
@@ -987,7 +985,8 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · intro h x h'
       simp only [Finset.mem_insert]
       exact Or.inr (Or.inr <| q_ih h h')
-  · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;> simp
+  · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;>
+    simp only [Finset.union_insert, Finset.mem_insert, Finset.mem_union]
     · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
     · rcases Finset.mem_insert.1 h' with h' | h' <;> simp [h', unrev]
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
@@ -1164,43 +1163,37 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
     · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
--- simp acts on multiple goals at the same time
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
-  have W := fun {q} => trStmts₁_self q
+  have W {q} := trStmts₁_self q
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
-    simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
-  any_goals
-    obtain ⟨h₁, h₂⟩ := Finset.insert_subset_iff.1 HS₁
-    first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- move
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- clear
-  · exact supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- copy
-  · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₃⟩, q_ih H₁ h₂⟩ -- push
-  · refine supports_insert.2 ⟨fun _ => h₂ _ W, ?_⟩ -- read
-    exact supports_biUnion.2 fun _ => q_ih _ (H₁ _) fun _ h => h₂ _ h
-  · refine supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.1, fun _ => h₂.1⟩, ?_⟩ -- succ
-    exact supports_insert.2 ⟨⟨fun _ => h₂.2 _ W, fun _ => h₂.1⟩, q_ih H₁ h₂.2⟩
-  · refine -- pred
-      supports_insert.2 ⟨⟨fun _ => h₁, fun _ => h₂.2 _ (Or.inl W),
-                          fun _ => h₂.1, fun _ => h₂.1⟩, ?_⟩
-    refine supports_insert.2 ⟨⟨fun _ => h₂.2 _ (Or.inr W), fun _ => h₂.1⟩, ?_⟩
-    refine supports_union.2 ⟨?_, ?_⟩
-    · exact q₁_ih H₁.1 fun _ h => h₂.2 _ (Or.inl h)
-    · exact q₂_ih H₁.2 fun _ h => h₂.2 _ (Or.inr h)
-  · exact supports_singleton.2 (ret_supports H₁)  -- ret
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _
+  | ret => exact supports_singleton.2 (ret_supports H₁)
+  all_goals obtain ⟨h₁, h₂⟩ := Finset.insert_subset_iff.1 HS₁
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₂ W, fun _ ↦ h₁⟩, q_ih H₁ h₂⟩
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₂ W, fun _ ↦ h₁⟩, q_ih H₁ h₂⟩
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₁, fun _ ↦ h₂ W⟩, q_ih H₁ h₂⟩
+  · exact supports_insert.2 ⟨⟨fun _ ↦ h₂ W, fun _ ↦ h₂ W⟩, q_ih H₁ h₂⟩
+  · simp_rw [Finset.subset_iff, Finset.mem_biUnion, Finset.mem_univ, true_and,
+      forall_exists_index] at h₂
+    exact supports_insert.2 ⟨fun _ ↦ h₂ _ W, supports_biUnion.2 fun _ ↦ q_ih _ (H₁ _) fun _ ↦ h₂ _⟩
+  · simp_rw [Finset.subset_iff, Finset.mem_insert, forall_eq_or_imp] at h₂
+    exact supports_insert.2 ⟨⟨fun _ ↦ h₁, fun _ ↦ h₂.1, fun _ ↦ h₂.1⟩,
+      supports_insert.2 ⟨⟨fun _ ↦ h₂.2 _ W, fun _ ↦ h₂.1⟩, q_ih H₁ h₂.2⟩⟩
+  · simp_rw [trStmts₁, Finset.union_insert, Finset.subset_iff, Finset.mem_insert, Finset.mem_union,
+      forall_eq_or_imp] at h₂ ⊢
+    exact supports_insert.2 ⟨⟨fun _ ↦ h₁, fun _ ↦ h₂.2 _ (.inl W), fun _ ↦ h₂.1, fun _ ↦ h₂.1⟩,
+      supports_insert.2 ⟨⟨fun _ ↦ h₂.2 _ (.inr W), fun _ ↦ h₂.1⟩, supports_union.2
+        ⟨q₁_ih H₁.1 fun _ h ↦ h₂.2 _ (.inl h), q₂_ih H₁.2 fun _ h ↦ h₂.2 _ (.inr h)⟩⟩⟩
 
 theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStmts₁ q ∪ K ⊆ S)
     (H₃ : K ⊆ S → Supports K S) : Supports (trStmts₁ q ∪ K) S := by
   simp only [Finset.union_subset_iff] at H₂
   exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 
-set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
-  induction c generalizing k with simp [Λ'.Supports, head]
+  induction c generalizing k with simp only [trNormal, head, Λ'.Supports]
   | zero' => exact Finset.union_subset_right Hk
   | succ => intro; split_ifs <;> exact Finset.union_subset_right Hk
   | tail => exact Finset.union_subset_right Hk
