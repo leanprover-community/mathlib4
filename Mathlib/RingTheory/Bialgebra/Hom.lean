@@ -112,6 +112,7 @@ section AlgebraCoalgebra
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
+@[macro_inline]
 instance funLike : FunLike (A →ₐc[R] B) A B where
   coe f := f.toFun
   coe_injective f g h := by
