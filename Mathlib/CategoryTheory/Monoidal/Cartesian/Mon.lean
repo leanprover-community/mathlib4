@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.ConcreteCategory.Representable
-public import Mathlib.Algebra.Ring.Defs
+
 
 
 /-!
@@ -293,53 +293,13 @@ end Mon.Hom
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commMonoid Hom.addCommMonoid
 
+section
+variable {G : AddMon C} [BraidedCategory C] [IsCommAddMonObj G.X]
+#synth AddCommMonoid (G ⟶ G)
+#check Hom.addCommMonoid
+end
+
 end BraidedCategory
-
-section EndomorphismSemiring
-
-open CategoryTheory AddMonObj CartesianMonoidalCategory
-
-variable {G : AddMon C} {H : AddMon C}
-
-instance : Mul (G ⟶ G) where
-  mul f g := {
-    hom := g.hom ≫ f.hom
-    isAddMonHom_hom := inferInstance
-  }
-
-instance : One (G ⟶ G) where
-  one := {
-    hom := 𝟙 G.X
-    isAddMonHom_hom := by infer_instance
-  }
-
-namespace AddMon
-lemma add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
-    : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
-
-lemma mul_hom (f g : (G ⟶ G)) :
-    (f * g).hom = g.hom ≫ f.hom := rfl
-
-lemma one_hom (G₀ : AddMon C) : (1 : G₀ ⟶ G₀).hom = 𝟙 G₀.X := rfl
-end AddMon
-
-open AddMon
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (G ⟶ G) where
-  zero_add := zero_add
-  add_zero := add_zero
-  mul_assoc f g h := by ext; simp[mul_hom]
-  one_mul f := by ext; simp only [mul_hom, one_hom, Category.comp_id]
-  mul_one f := by ext; simp only [mul_hom, AddMon.one_hom, Category.id_comp]
-  zero_mul f := by ext; simp only [mul_hom, zero_hom, comp_toUnit_assoc]
-  mul_zero f := by ext; simp only [zero_hom, mul_hom, Category.assoc, IsAddMonHom.zero_hom]
-  left_distrib f g h := by
-    ext
-    simp only [mul_hom, add_hom, Category.assoc, IsAddMonHom.add_hom, lift_map_assoc]
-  right_distrib f g h := by
-    ext
-    simp only [mul_hom, add_hom, reassoc_of% (comp_lift h.hom f.hom g.hom).symm]
-
-end EndomorphismSemiring
 
 /-- A monoid morphism `f : M ⟶ N` induces a monoid homomorphism `M(X) →* N(X)` for every `X`. -/
 @[to_additive (attr := simps!)
