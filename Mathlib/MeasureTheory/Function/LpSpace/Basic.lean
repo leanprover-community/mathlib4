@@ -411,8 +411,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
             -- Squeezed for performance reasons
             simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using! this
           simp only [Lp.enorm_def]
-          exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
-            (eLpNorm_add_le hp.out)
+          exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le (eLpNorm_add_le hp.out)
         eq_zero_of_map_eq_zero' _ := (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
     edist := edist
     edist_dist := Lp.edist_dist }

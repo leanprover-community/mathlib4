@@ -109,14 +109,7 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
 
 theorem eLpNorm_sub_le' {f g : α → E} (p : ℝ≥0∞) :
     eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
-  by_cases! hf : ¬ AEStronglyMeasurable f μ
-  · rw [eLpNorm_of_not_aestronglyMeasurable hf, top_add, mul_top (LpAddConst_ne_zero p)]
-    exact le_top
-  by_cases! hg : ¬ AEStronglyMeasurable g μ
-  · rw [eLpNorm_of_not_aestronglyMeasurable hg, add_top, mul_top (LpAddConst_ne_zero p)]
-    exact le_top
-  simpa only [sub_eq_add_neg, eLpNorm_neg] using
-    eLpNorm_add_le' (f := f) (g := -g) p
+  simpa only [sub_eq_add_neg, eLpNorm_neg] using eLpNorm_add_le' (f := f) (g := -g) p
 
 theorem eLpNorm_sub_le {f g : α → E} (hp : 1 ≤ p) :
     eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
