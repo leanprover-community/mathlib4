@@ -104,7 +104,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
   refine ⟨fun h => ?_, ?_⟩
   · rcases Setoid.symm h with ⟨e⟩
     have f := (kuratowskiEmbedding.isometric X).isometryEquivOnRange.trans e
-    use fun x => f x, isometry_subtype_coe.comp f.isometry
+    use fun x => f x, isometric_subtype_coe.comp f.isometric
     rw [range_comp', f.range_eq_univ, Set.image_univ, Subtype.range_coe]
   · rintro ⟨Ψ, ⟨isomΨ, rangeΨ⟩⟩
     have f :=
@@ -116,7 +116,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
     exact ⟨cast E f⟩
 
 theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace p :=
-  eq_toGHSpace_iff.2 ⟨fun x => x, isometry_subtype_coe, Subtype.range_coe⟩
+  eq_toGHSpace_iff.2 ⟨fun x => x, isometric_subtype_coe, Subtype.range_coe⟩
 
 section
 
@@ -201,7 +201,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
   have ΨΨ' : Ψ = Subtype.val ∘ Ψ' := rfl
   have : hausdorffDist (range Φ) (range Ψ) = hausdorffDist (range Φ') (range Ψ') := by
     rw [ΦΦ', ΨΨ', range_comp, range_comp]
-    exact hausdorffDist_image isometry_subtype_coe
+    exact hausdorffDist_image isometric_subtype_coe
   rw [this]
   -- Embed `s` in `ℓ^∞(ℝ)` through its Kuratowski embedding
   let F := kuratowskiEmbedding s
@@ -504,8 +504,8 @@ variable {X : Type u} [MetricSpace X]
 
 theorem ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
     dist p.toGHSpace q.toGHSpace ≤ dist p q := by
-  have ha : Isometric ((↑) : p → X) := isometry_subtype_coe
-  have hb : Isometric ((↑) : q → X) := isometry_subtype_coe
+  have ha : Isometric ((↑) : p → X) := isometric_subtype_coe
+  have hb : Isometric ((↑) : q → X) := isometric_subtype_coe
   have A : dist p q = hausdorffDist (p : Set X) q := rfl
   have I : ↑p = range ((↑) : p → X) := Subtype.range_coe_subtype.symm
   have J : ↑q = range ((↑) : q → X) := Subtype.range_coe_subtype.symm

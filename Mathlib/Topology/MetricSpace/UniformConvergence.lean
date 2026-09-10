@@ -175,7 +175,7 @@ lemma isometric_ofFun_boundedContinuousFunction [TopologicalSpace α] :
 lemma isometric_ofFun_continuousMap [TopologicalSpace α] [CompactSpace α] :
     Isometric (ofFun ∘ DFunLike.coe : C(α, β) → α →ᵤ β) :=
   isometric_ofFun_boundedContinuousFunction.comp <|
-    ContinuousMap.isometryEquivBoundedOfCompact α β |>.isometry
+    ContinuousMap.isometryEquivBoundedOfCompact α β |>.isometric
 
 @[deprecated (since := "2026-09-09")] alias isometry_ofFun_continuousMap :=
   isometric_ofFun_continuousMap

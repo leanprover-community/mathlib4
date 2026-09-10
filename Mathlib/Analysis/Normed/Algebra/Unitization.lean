@@ -179,7 +179,8 @@ theorem antilipschitzWith_addEquiv :
       ‖algebraMap 𝕜 _ x.fst + mul 𝕜 A x.snd‖ ≤ ‖algebraMap 𝕜 _ x.fst‖ + ‖mul 𝕜 A x.snd‖ :=
         norm_add_le _ _
       _ = ‖x.fst‖ + ‖x.snd‖ := by
-        rw [norm_algebraMap', (AddMonoidHomClass.isometric_iff_norm (mul 𝕜 A)).mp (isometric_mul 𝕜 A)]
+        rw [norm_algebraMap',
+          (AddMonoidHomClass.isometric_iff_norm (mul 𝕜 A)).mp (isometric_mul 𝕜 A)]
       _ ≤ _ := (add_le_add (le_max_left _ _) (le_max_right _ _)).trans_eq (two_mul _).symm
 
 open Bornology Filter

@@ -347,7 +347,7 @@ instance : IsIsometricSMul SL(2, ℝ) ℍ :=
       exact (isometric_real_vadd v).comp (isometric_pos_mul u)
     · obtain ⟨u, v, w, h⟩ := exists_SL2_smul_eq_of_apply_zero_one_ne_zero g hc
       rw [h]
-      exact
-        (isometric_real_vadd w).comp (h₀.comp <| (isometric_real_vadd v).comp <| isometric_pos_mul u)⟩
+      exact (isometric_real_vadd w).comp
+        (h₀.comp <| (isometric_real_vadd v).comp <| isometric_pos_mul u)⟩
 
 end UpperHalfPlane

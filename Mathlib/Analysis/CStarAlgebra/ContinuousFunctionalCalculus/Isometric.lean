@@ -456,7 +456,7 @@ open NNReal in
 instance Nonneg.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   SpectrumRestricts.isometric_cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    NNReal.isometry_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
+    NNReal.isometric_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 end Unital
 
@@ -471,7 +471,7 @@ open NNReal in
 instance Nonneg.instNonUnitalIsometricContinuousFunctionalCalculus :
     NonUnitalIsometricContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   QuasispectrumRestricts.isometric_cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    NNReal.isometry_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
+    NNReal.isometric_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 end NonUnital
 

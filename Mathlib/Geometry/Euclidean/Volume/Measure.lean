@@ -125,7 +125,8 @@ theorem IsometryEquiv.measurePreserving_euclideanHausdorffMeasure (e : X ≃ᵢ 
     MeasurePreserving e μHE[d] μHE[d] :=
   (IsometryEquiv.measurePreserving_hausdorffMeasure e d).smul_measure _
 
-theorem Isometric.euclideanHausdorffMeasure_image {f : X → Y} {d : ℕ} (hf : Isometric f) (s : Set X) :
+theorem Isometric.euclideanHausdorffMeasure_image
+    {f : X → Y} {d : ℕ} (hf : Isometric f) (s : Set X) :
     μHE[d] (f '' s) = μHE[d] s := by
   simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [Isometric.hausdorffMeasure_image hf (by simp)]
@@ -229,7 +230,7 @@ open EuclideanGeometry
 omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
 theorem AffineSubspace.euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
-  isometry_subtype_coe.euclideanHausdorffMeasure_image _
+  isometric_subtype_coe.euclideanHausdorffMeasure_image _
 
 /-!
 ### `μHE[d]` is translation invariant
@@ -312,8 +313,8 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
     Lucky we have just developed euclideanHausdorffMeasure, which allows us to move the measure to
     the global vector space. -/
   simp_rw [← InnerProductSpace.euclideanHausdorffMeasure_eq_volume]
-  conv_lhs => rw [← isometry_subtype_coe.euclideanHausdorffMeasure_image]
-  conv_rhs => rw [← isometry_subtype_coe.euclideanHausdorffMeasure_image]
+  conv_lhs => rw [← isometric_subtype_coe.euclideanHausdorffMeasure_image]
+  conv_rhs => rw [← isometric_subtype_coe.euclideanHausdorffMeasure_image]
   congrm μHE[$hrank] ?_
   ext y
   simp [u, vadd_vadd, add_comm]

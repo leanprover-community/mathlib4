@@ -206,7 +206,7 @@ theorem Cospherical.inclusion {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁]
     (hps : Cospherical ps) (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) := by
   refine Isometric.cospherical ?_ hps
-  exact S₁.subtypeₐᵢ.isometry
+  exact S₁.subtypeₐᵢ.isometric
 
 /-- If a set of points in an affine subspace is cospherical, then its image under the coercion
 to the ambient space is cospherical. -/
