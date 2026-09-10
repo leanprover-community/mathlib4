@@ -145,6 +145,7 @@ lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
 
 instance inhabited : Inhabited (MfldCat 𝕜 n) := ⟨of PUnit (modelWithCornersSelf 𝕜 PUnit)⟩
 
+variable (𝕜) in
 /-- A normed space is a `C^n` manifold (modeled on itself). -/
 abbrev ofNormedSpace (n : ℕ∞ω) (E : Type u) [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
     MfldCat 𝕜 n :=
