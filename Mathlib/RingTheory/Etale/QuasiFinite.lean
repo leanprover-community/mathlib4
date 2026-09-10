@@ -317,7 +317,6 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     apply Localization.awayMap_awayMap_surjective
     refine Localization.awayMap_surjective_iff.mpr fun a ↦ ?_
     induction a with
-    | zero => use 0; simp
     | tmul a b =>
       obtain ⟨b', m, e : _ = _⟩ := Localization.awayMap_surjective_iff.mp hg b
       refine ⟨e₀ ^ m * a ⊗ₜ b', m, ?_⟩
@@ -362,7 +361,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   convert! equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
   dsimp [-AlgEquiv.symm_toRingEquiv,
-    ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
+    ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_ofClass]
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--
