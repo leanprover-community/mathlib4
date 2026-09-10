@@ -31,7 +31,9 @@ public import Mathlib.Tactic.Abel
 
 noncomputable section
 
-open Uniformity Topology Filter Pointwise
+open Filter Pointwise
+
+open scoped Uniformity Topology
 
 section IsUniformGroup
 
@@ -137,9 +139,13 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
     simp [← preimage_smul_inv, preimage]
 
 @[to_additive]
-theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
-  convert! TotallyBounded.image hs uniformContinuous_inv
-  aesop
+protected lemma TotallyBounded.inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded s⁻¹ := by
+  simpa using hs.image uniformContinuous_inv
+
+@[to_additive (attr := simp)]
+lemma totallyBounded_inv {s : Set α} : TotallyBounded s⁻¹ ↔ TotallyBounded s where
+  mp hs := by simpa using hs.inv
+  mpr := .inv
 
 section UniformConvergence
 
@@ -258,46 +264,6 @@ instance (priority := 100) IsUniformGroup.of_compactSpace [UniformSpace β] [Gro
   uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
 
 end IsUniformGroup
-
-section IsTopologicalGroup
-
-open Filter
-
-variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-
-attribute [local instance] IsTopologicalGroup.rightUniformSpace
-
-variable {G}
-
-@[to_additive]
-instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
-    IsClosed (H : Set G) := by
-  have hd : IsDiscrete (H : Set G) := isDiscrete_iff_discreteTopology.mpr ‹_›
-  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
-    nhds_inter_eq_singleton_of_mem_discrete hd H.one_mem
-  have : (fun p : G × G => p.2 * p.1⁻¹) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
-  apply isClosed_of_spaced_out this
-  intro h h_in h' h'_in
-  contrapose
-  simp only [Set.mem_preimage]
-  rintro (hyp : h' * h⁻¹ ∈ V)
-  have : h' * h⁻¹ ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.mul_mem h'_in (H.inv_mem h_in))
-  exact (eq_of_mul_inv_eq_one this).symm
-
-@[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
-    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
-  IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
-
-@[to_additive]
-lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
-    (hf : Function.Injective f) (hf' : IsDiscrete (f.range : Set G)) :
-    Tendsto f cofinite (cocompact _) := by
-  replace hf : Function.Injective f.rangeRestrict := by simpa
-  exact (f.range.tendsto_coe_cofinite_of_discrete hf').comp hf.tendsto_cofinite
-
-end IsTopologicalGroup
 
 namespace MulOpposite
 
@@ -643,7 +609,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
       simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
-    simp only [mem_setOf_eq, forall_true_left, mem_image] at hx
+    simp only [mem_ofPred_eq, forall_true_left, mem_image] at hx
     intro i j
     rcases hx i with ⟨M, hM⟩
     refine ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg => ?_⟩
@@ -683,7 +649,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
       simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
-    simp only [mem_setOf_eq, forall_true_left]
+    simp only [mem_ofPred_eq, forall_true_left]
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'

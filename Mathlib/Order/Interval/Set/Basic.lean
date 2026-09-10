@@ -407,10 +407,6 @@ theorem notMem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_ge h.1
 @[to_dual notMem_Ioc_of_gt]
 theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_ge h.1
 
-@[deprecated (since := "2026-02-10")] alias notMem_Ioi_self := self_notMem_Ioi
-
-@[deprecated (since := "2026-02-10")] alias notMem_Iio_self := self_notMem_Iio
-
 @[to_dual notMem_Ico_of_ge]
 theorem notMem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
@@ -682,7 +678,7 @@ theorem Ioc_inter_Iic (a b c : α) : Ioc a b ∩ Iic c = Ioc a (b ⊓ c) := by
 
 end Inf
 
-variable [Lattice α] {a b c a₁ a₂ b₁ b₂ : α}
+variable [Lattice α] {a₁ a₂ b₁ b₂ : α}
 
 @[to_dual self]
 theorem Icc_inter_Icc : Icc a₁ b₁ ∩ Icc a₂ b₂ = Icc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by

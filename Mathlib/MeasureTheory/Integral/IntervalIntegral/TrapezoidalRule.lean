@@ -5,9 +5,14 @@ Authors: P. Michael Kielstra
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Field
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.MeasureTheory.Covering.Besicovitch
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # The trapezoidal rule
@@ -25,7 +30,9 @@ bound.
 
 @[expose] public section
 
-open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
+open MeasureTheory intervalIntegral Finset HasDerivWithinAt Set
+
+open scoped Interval
 
 /-- Integration of `f` from `a` to `b` using the trapezoidal rule with `N+1` total evaluations of
 `f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
@@ -252,9 +259,7 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   · simp [h_eq]
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
-  have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_ne)
-  have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 two_ne_zero
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
     rw [← iteratedDerivWithin_one]
-    exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
-  exact trapezoidal_error_le h_df h_ddf fpp_bound N_nonzero
+    exact h_f_c2.differentiableOn_iteratedDerivWithin (by norm_cast) (uniqueDiffOn_uIcc h_ne)
+  exact trapezoidal_error_le (h_f_c2.differentiableOn two_ne_zero) h_ddf fpp_bound N_nonzero

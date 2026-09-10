@@ -295,7 +295,6 @@ lemma Cover.LocallyDirected.ofIsBasisOpensRange_le_iff (i j : 𝒰.I₀) :
     letI := Cover.LocallyDirected.ofIsBasisOpensRange hle H
     i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange := hle
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Cover.LocallyDirected.ofIsBasisOpensRange_trans {i j : 𝒰.I₀} :
     letI := Cover.LocallyDirected.ofIsBasisOpensRange hle H
     (hij : i ≤ j) → 𝒰.trans (homOfLE hij) = IsOpenImmersion.lift (𝒰.f j) (𝒰.f i) (hle.mp hij) :=
@@ -327,7 +326,6 @@ instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
     convert! X.isBasis_affineOpens
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma directedAffineCover_trans {U V : X.affineOpens} (hUV : U ≤ V) :
     Cover.trans X.directedAffineCover (homOfLE hUV) = X.homOfLE hUV := rfl

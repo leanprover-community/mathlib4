@@ -6,7 +6,7 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.Topology.LocallyFinsupp
-public import Mathlib.Topology.Spectral.Basic
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Pushforward of functions with locally finite support
@@ -30,14 +30,14 @@ specialized to the degree of the residue field extension
 
 @[expose] public section
 
-open Set Order Topology TopologicalSpace
+open Set TopologicalSpace
 
 variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → Y} (hf : IsSpectralMap f) (w : X → R)
 
 namespace Function.locallyFinsupp
 
-variable [Semiring R] {W : Set Y} (hW : IsOpen W) (c : Function.locallyFinsupp X R)
+variable [Semiring R] (c : Function.locallyFinsupp X R)
   [PrespectralSpace Y]
 
 variable (f) in

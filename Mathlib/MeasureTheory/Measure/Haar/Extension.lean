@@ -117,7 +117,7 @@ noncomputable def pushforward :
       have h (a) (ha : a ∈ S) : edist (H.pullback f (t * b) a) (H.pullback f b a) ≤ .ofReal δ := by
         rw [edist_dist]
         exact ENNReal.ofReal_le_ofReal (@hf ⟨t * b * φ a, b * φ a⟩ (by simpa)).le
-      grw [Set.mem_setOf_eq, dist_integral_le_lintegral_edist (H.pullback f (t * b)).integrable
+      grw [Set.mem_ofPred_eq, dist_integral_le_lintegral_edist (H.pullback f (t * b)).integrable
         (H.pullback f b).integrable, ← setLIntegral_eq_of_support_subset]
       · refine ENNReal.toReal_lt_of_lt_ofReal ((setLIntegral_mono measurable_const h).trans_lt ?_)
         rwa [lintegral_const, restrict_apply_univ]

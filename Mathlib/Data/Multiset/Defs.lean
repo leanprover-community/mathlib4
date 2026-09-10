@@ -11,6 +11,7 @@ public import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Multisets
@@ -61,9 +62,9 @@ assert_not_exists Monoid OrderHom
 
 universe v
 
-open List Subtype Nat Function
+open List Subtype Nat
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*} {β : Type v}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed. -/

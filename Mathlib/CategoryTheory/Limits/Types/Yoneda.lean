@@ -6,6 +6,7 @@ Authors: Kim Morrison, Reid Barton
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Cones and limits
@@ -43,7 +44,6 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
   invFun τ := ⟨τ.app, fun {j j'} f => by simpa using! (τ.naturality f).symm⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
 @[simps]
