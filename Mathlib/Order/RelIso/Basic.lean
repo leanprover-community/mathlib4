@@ -98,6 +98,7 @@ end RelHomClass
 
 namespace RelHom
 
+@[macro_inline]
 instance : FunLike (r →r s) α β where
   coe o := o.toFun
   coe_injective f g h := by
@@ -220,6 +221,7 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
+@[macro_inline]
 instance : FunLike (r ↪r s) α β where
   coe x := x.toFun
   coe_injective f g h := by
@@ -571,6 +573,7 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
+@[macro_inline]
 instance : FunLike (r ≃r s) α β where
   coe x := x
   coe_injective := Equiv.coe_fn_injective.comp toEquiv_injective
@@ -578,6 +581,7 @@ instance : FunLike (r ≃r s) α β where
 instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
+@[macro_inline]
 instance : EquivLike (r ≃r s) α β where
   coe f := f
   inv f := f.toEquiv.symm
