@@ -89,9 +89,9 @@ theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0)
     0 < n.factorization p := by
   rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
 
-theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
+theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) :
     multiplicity p n = n.factorization p := by
-  simp [factorization, pp, padicValNat_def' pp.ne_one hn]
+  simp [factorization, pp, padicValNat_def]
 
 /-! ### Basic facts about factorization -/
 
