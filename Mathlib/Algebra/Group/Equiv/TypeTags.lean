@@ -113,9 +113,25 @@ and multiplicative endomorphisms of `Multiplicative A`. -/
     map_mul' := fun _ _ => rfl }
 
 @[deprecated (since := "2026-09-10")] alias monoidEndToAdditive := MulEquiv.monoidEnd
+@[deprecated (since := "2026-09-10")] alias monoidEndToAdditive_apply_apply :=
+  MulEquiv.monoidEnd_apply_apply
+@[deprecated (since := "2026-09-10")] alias monoidEndToAdditive_symm_apply_apply :=
+  MulEquiv.monoidEnd_symm_apply_apply
 @[deprecated (since := "2026-09-10")] alias addMonoidEndToMultiplicative := MulEquiv.addMonoidEnd
+@[deprecated (since := "2026-09-10")] alias addMonoidEndToMultiplicative_apply_apply :=
+  MulEquiv.addMonoidEnd_apply_apply
+@[deprecated (since := "2026-09-10")] alias addMonoidEndToMultiplicative_symm_apply_apply :=
+  MulEquiv.addMonoidEnd_symm_apply_apply
 @[deprecated (since := "2026-09-10")] alias MulEquiv.Monoid.End := MulEquiv.monoidEnd
+@[deprecated (since := "2026-09-10")] alias MulEquiv.Monoid.End_apply_apply :=
+  MulEquiv.monoidEnd_apply_apply
+@[deprecated (since := "2026-09-10")] alias MulEquiv.Monoid.End_symm_apply_apply :=
+  MulEquiv.monoidEnd_symm_apply_apply
 @[deprecated (since := "2026-09-10")] alias MulEquiv.AddMonoid.End := MulEquiv.addMonoidEnd
+@[deprecated (since := "2026-09-10")] alias MulEquiv.AddMonoid.End_apply_apply :=
+  MulEquiv.addMonoidEnd_apply_apply
+@[deprecated (since := "2026-09-10")] alias MulEquiv.AddMonoid.End_symm_apply_apply :=
+  MulEquiv.addMonoidEnd_symm_apply_apply
 
 /-- `Multiplicative (∀ i : ι, K i)` is equivalent to `∀ i : ι, Multiplicative (K i)`. -/
 @[simps]
@@ -161,9 +177,16 @@ def MulEquiv.multiplicativeAdditive [Mul H] : Multiplicative (Additive H) ≃* H
 
 @[deprecated (since := "2026-09-10")] alias MulEquiv.toMultiplicative_toAdditive :=
   MulEquiv.multiplicativeAdditive
-
+@[deprecated (since := "2026-09-10")] alias MulEquiv.toMultiplicative_toAdditive_apply :=
+  MulEquiv.multiplicativeAdditive_apply
+@[deprecated (since := "2026-09-10")] alias MulEquiv.toMultiplicative_toAdditive_symm_apply :=
+  MulEquiv.multiplicativeAdditive_symm_apply
 @[deprecated (since := "2026-09-10")] alias AddEquiv.toAdditive_toMultiplicative :=
   AddEquiv.additiveMultiplicative
+@[deprecated (since := "2026-09-10")] alias AddEquiv.toAdditive_toMultiplicative_apply :=
+  AddEquiv.additiveMultiplicative_apply
+@[deprecated (since := "2026-09-10")] alias AddEquiv.toAdditive_toMultiplicative_symm_apply :=
+  AddEquiv.additiveMultiplicative_symm_apply
 
 /-- `Multiplicative (G × H)` is equivalent to `Multiplicative G × Multiplicative H`. -/
 @[simps]
