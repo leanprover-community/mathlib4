@@ -113,7 +113,8 @@ lemma Finite.ncard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs 
   rw [← finsum_one, finsum_mem_biUnion h ht hs, finsum_mem_congr rfl fun i hi ↦ finsum_one]
 
 lemma ncard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).Finite)
-    (h : Pairwise (Disjoint on s)) : (⋃ i, s i).ncard = ∑ᶠ i : ι, (s i).ncard := by
+    (h : Pairwise' (Disjoint on s)) : (⋃ i, s i).ncard = ∑ᶠ i : ι, (s i).ncard := by
+  rw [pairwise'_iff] at h
   rw [← finsum_mem_univ, ← finite_univ.ncard_biUnion (by simpa) (fun _ _ _ _ hab ↦ h hab)]
   simp
 
@@ -128,8 +129,9 @@ lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
       finsum_mem_insert _ (notMem_sdiff_of_mem <| mem_singleton i) ht.sdiff]
     simp [hn]
 
-lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :
+lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise' (Disjoint on s)) :
     (⋃ i, s i).encard = ∑ᶠ i, (s i).encard := by
+  rw [pairwise'_iff] at hs
   rw [← finsum_mem_univ, ← finite_univ.encard_biUnion (fun a _ b _ hab ↦ hs hab)]
   simp
 

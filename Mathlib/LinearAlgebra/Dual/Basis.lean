@@ -220,7 +220,7 @@ elab "use_finite_instance" : tactic => evalUseFiniteInstance
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval_same : ∀ i, ε i (e i) = 1
-  eval_of_ne : Pairwise fun i j ↦ ε i (e j) = 0
+  eval_of_ne : Pairwise' fun i j ↦ ε i (e j) = 0
   protected total : ∀ {m₁ m₂ : M}, (∀ i, ε i m₁ = ε i m₂) → m₁ = m₂
   protected finite : ∀ m : M, {i | ε i m ≠ 0}.Finite := by use_finite_instance
 
@@ -261,7 +261,7 @@ theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   rw [lc, map_finsuppSum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
   · simp [h.eval_same, smul_eq_mul]
   · intro q _ q_ne
-    simp [h.eval_of_ne q_ne.symm, smul_eq_mul]
+    simp [pairwise'_apply h.eval_of_ne q_ne.symm, smul_eq_mul]
   · simp
 
 @[simp]
@@ -295,7 +295,7 @@ theorem coe_basis : ⇑h.basis = e := by
   ext j
   rcases eq_or_ne i j with rfl | hne
   · simp [h.eval_same]
-  · simp [hne, h.eval_of_ne hne.symm]
+  · simp [hne, pairwise'_apply h.eval_of_ne hne.symm]
 
 theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
     ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
