@@ -220,7 +220,7 @@ ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
 noncomputable irreducible_def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
   mapEquiv
     { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
-        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl, Submonoid.map_id]) with
+        (show S.map _ = S by simp) with
       commutes' := fun _ => ringEquivOfRingEquiv_eq _ _ }
 
 @[simp]

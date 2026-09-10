@@ -146,14 +146,13 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     apply_fun algebraMap _ L at has
     apply_fun Algebra.norm K at has
     simp only [map_mul] at has
-    sorry /- was: rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
-      ← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_apply R K L,
+    rw [MonoidHom.coe_coe, ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R K L,
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [map_mul, map_pow]
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
-      ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)] -/
+      ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
   · intro a ha
     rw [Set.mem_preimage, Function.comp_apply, Algebra.intNorm_eq_of_isLocalization M (Bₘ := Sₘ)]
     exact subset_span (Set.mem_image_of_mem _ (mem_map_of_mem _ ha))

@@ -808,6 +808,15 @@ theorem toMonoidHom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
 theorem toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
 
+@[simp]
+theorem toMonoidHom_refl' : MonoidHomClass.toMonoidHom (RingEquiv.refl R) = MonoidHom.id R :=
+  rfl
+
+@[simp]
+theorem toAddMonoidHom_refl' : AddMonoidHomClass.toAddMonoidHom (RingEquiv.refl R) =
+    AddMonoidHom.id R :=
+  rfl
+
 theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toRingHom (e.symm.toRingHom y) = y :=
   e.toEquiv.apply_symm_apply
