@@ -82,3 +82,9 @@ def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x
 end Identities
 
 end Polynomial
+
+@[deprecated powAddExpansion (since := "2026-09-10")]
+alias Polynomial.powAddExpansion := powAddExpansion
+
+@[deprecated powSubPowFactor (since := "2026-09-10")]
+alias Polynomial.powSubPowFactor := powSubPowFactor
