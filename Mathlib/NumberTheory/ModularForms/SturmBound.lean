@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.CuspOrder
+public import Mathlib.NumberTheory.ModularForms.OrderChangeLevel
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
 /-!
@@ -14,7 +14,7 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 The Sturm bound `k * G.ratProjIndex / 12` bounds the total cusp order of a nonzero
 modular form for an arithmetic determinant-one group. The proof uses the norm to level
 one and restriction to a common arithmetic subgroup; the cusp counting is isolated in
-`CuspOrder.lean`.
+`OrderChangeLevel.lean`.
 
 The resulting bound on Fourier coefficients proves finite-dimensionality over `ℂ` for
 determinant-one groups, and over `ℝ` for all arithmetic groups.
@@ -114,8 +114,7 @@ private lemma totalCuspOrder_le_sturmBound_of_le
     (hG : G ≤ 𝒮ℒ) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
     {k : ℤ} (f : ModularForm G k) (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
   have hn : ModularForm.norm 𝒮ℒ f ≠ 0 := ModularForm.norm_ne_zero 𝒮ℒ (by simpa using hf)
-  have hbound : orderAtInfty (ModularForm.norm 𝒮ℒ f) ≤
-      sturmBound 𝒮ℒ (k * G.relIndex 𝒮ℒ) :=
+  have hbound : orderAtInfty (ModularForm.norm 𝒮ℒ f) ≤ sturmBound 𝒮ℒ (k * G.relIndex 𝒮ℒ) :=
     le_of_not_gt fun h ↦ hn (eq_zero_of_orderAtInfty_gt_sturmBound_SL2Z _ h)
   have hrat : G.ratProjIndex = (G.relIndex 𝒮ℒ : ℚ) := by
     simp [ratProjIndex, adjoinNegOne_eq_self_iff.mpr hneg, relIndex_eq_one.mpr hG]

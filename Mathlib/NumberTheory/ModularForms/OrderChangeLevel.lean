@@ -294,7 +294,7 @@ open scoped Classical in
 /-- Restriction counts the full degree in the fiber above infinity. -/
 lemma relIndex_mul_orderAtCusp_infty_eq_sum_fiber_restrict
     {K H : Subgroup (GL (Fin 2) ℝ)} [K.IsArithmetic] [H.IsArithmetic]
-    [K.HasDetOne] [H.HasDetOne] (hKH : K ≤ H) (hnegK : (-1 : GL (Fin 2) ℝ) ∈ K)
+    [H.HasDetOne] (hKH : K ≤ H) (hnegK : (-1 : GL (Fin 2) ℝ) ∈ K)
     {k : ℤ} (f : ModularForm H k) :
     let := Fintype.ofFinite (CuspOrbits K)
     (K.relIndex H : EReal) * orderAtCusp H k ∞ f =
@@ -389,7 +389,7 @@ open Subgroup
 
 /-- The sum of cusp orders in a fiber of the map induced by an inclusion. -/
 noncomputable def cuspOrderFiber {G H : Subgroup (GL (Fin 2) ℝ)}
-    [G.IsArithmetic] [H.IsArithmetic] [G.HasDetOne] (hGH : G ≤ H) {k : ℤ}
+    [G.IsArithmetic] (hGH : G ≤ H) {k : ℤ}
     (f : ModularForm G k) (c : CuspOrbits H) : EReal := by
   classical
   let := Fintype.ofFinite (CuspOrbits G)
@@ -397,7 +397,7 @@ noncomputable def cuspOrderFiber {G H : Subgroup (GL (Fin 2) ℝ)}
 
 /-- Summing over the fibers recovers the total cusp order. -/
 lemma sum_cuspOrderFiber {G H : Subgroup (GL (Fin 2) ℝ)}
-    [G.IsArithmetic] [H.IsArithmetic] [G.HasDetOne] (hGH : G ≤ H) {k : ℤ}
+    [G.IsArithmetic] [H.IsArithmetic] (hGH : G ≤ H) {k : ℤ}
     (f : ModularForm G k) :
     let := Fintype.ofFinite (CuspOrbits H)
     ∑ c, cuspOrderFiber hGH f c = totalCuspOrder G k f := by
@@ -408,10 +408,9 @@ lemma sum_cuspOrderFiber {G H : Subgroup (GL (Fin 2) ℝ)}
 
 /-- A change of cusp coordinates preserves the sum over a fiber. -/
 lemma cuspOrderFiber_translate {G H : Subgroup (GL (Fin 2) ℝ)}
-    [G.IsArithmetic] [H.IsArithmetic] [G.HasDetOne] (hGH : G ≤ H) {k : ℤ}
+    [G.IsArithmetic] (hGH : G ≤ H) {k : ℤ}
     (f : ModularForm G k) (c : CuspOrbits H) (g : GL (Fin 2) ℝ)
-    [(ConjAct.toConjAct g⁻¹ • G).IsArithmetic]
-    [(ConjAct.toConjAct g⁻¹ • H).IsArithmetic] :
+    [(ConjAct.toConjAct g⁻¹ • G).IsArithmetic] :
     cuspOrderFiber ((pointwise_smul_le_pointwise_smul_iff
       (a := ConjAct.toConjAct g⁻¹)).mpr hGH)
       (ModularForm.translate f g) (CuspOrbits.conj H g⁻¹ c) = cuspOrderFiber hGH f c := by
@@ -429,7 +428,7 @@ lemma cuspOrderFiber_translate {G H : Subgroup (GL (Fin 2) ℝ)}
 level contains `-1`. -/
 lemma relIndex_mul_orderAtCuspOrbit_eq_cuspOrderFiber_restrict
     {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [H.IsArithmetic]
-    [G.HasDetOne] [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
+    [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
     {k : ℤ} (f : ModularForm H k) (c : CuspOrbits H) :
     (G.relIndex H : EReal) * orderAtCuspOrbit H k c f =
       cuspOrderFiber hGH (ModularForm.restrict hGH f) c := by
@@ -481,7 +480,7 @@ private lemma coe_mul_sum {ι : Type*} (s : Finset ι) {a : ℝ} (ha : 0 ≤ a)
 belongs to the smaller level. -/
 lemma relIndex_mul_totalCuspOrder_eq_restrict
     {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [H.IsArithmetic]
-    [G.HasDetOne] [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
+    [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
     {k : ℤ} (f : ModularForm H k) :
     (G.relIndex H : EReal) * totalCuspOrder H k f =
       totalCuspOrder G k (ModularForm.restrict hGH f) := by
@@ -495,7 +494,7 @@ lemma relIndex_mul_totalCuspOrder_eq_restrict
 /-- In the fiber above infinity, the widths exactly count the factors of a norm. -/
 lemma cuspOrderFiber_infty_eq_sum_quotientFunc
     {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [H.IsArithmetic]
-    [G.HasDetOne] [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
+    [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
     {k : ℤ} (f : ModularForm G k) :
     let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
     cuspOrderFiber hGH f ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧ =
@@ -622,7 +621,7 @@ lemma sum_orderAtInfty_slash_quotientFunc_le_norm
 /-- The order of a norm at a target cusp dominates the sum over the source cusp fiber. -/
 lemma cuspOrderFiber_le_orderAtCuspOrbit_norm
     {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [H.IsArithmetic]
-    [G.HasDetOne] [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
+    [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
     {k : ℤ} (f : ModularForm G k) (c : CuspOrbits H) :
     cuspOrderFiber hGH f c ≤ orderAtCuspOrbit H (k * Nat.card (H ⧸ G.subgroupOf H)) c
       (ModularForm.norm H f) := by
@@ -667,7 +666,7 @@ lemma cuspOrderFiber_le_orderAtCuspOrbit_norm
 /-- Norm does not decrease total cusp order when the smaller level contains `-1`. -/
 lemma totalCuspOrder_le_norm
     {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [H.IsArithmetic]
-    [G.HasDetOne] [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
+    [H.HasDetOne] (hGH : G ≤ H) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
     {k : ℤ} (f : ModularForm G k) :
     totalCuspOrder G k f ≤ totalCuspOrder H (k * Nat.card (H ⧸ G.subgroupOf H))
       (ModularForm.norm H f) := by
@@ -679,7 +678,7 @@ lemma totalCuspOrder_le_norm
 /-- Adjoining `-1` multiplies total cusp order by at least the degree of the norm.
 The map on cusp orbits is a bijection, and the extra norm factors differ only by signs. -/
 lemma relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne
-    {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [G.HasDetOne]
+    {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
     {k : ℤ} (f : ModularForm G k) :
     (G.relIndex G.adjoinNegOne : EReal) * totalCuspOrder G k f ≤
       totalCuspOrder G.adjoinNegOne (k * Nat.card (G.adjoinNegOne ⧸ G.subgroupOf G.adjoinNegOne))

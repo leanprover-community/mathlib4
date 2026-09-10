@@ -195,7 +195,7 @@ lemma orderAtCusp_eq_qExpansion_order [DiscreteTopology G] [Fact (IsCusp OnePoin
 open scoped Pointwise in
 omit [G.HasDetPlusMinusOne] in
 /-- A modular form has nonnegative order at every cusp. -/
-lemma orderAtCusp_nonneg [DiscreteTopology G] {c : OnePoint ℝ} (hc : IsCusp c G)
+lemma orderAtCusp_nonneg {c : OnePoint ℝ} (hc : IsCusp c G)
     (f : F) : 0 ≤ orderAtCusp G k c f := by
   have hsc : (cuspScalingMatrix c)⁻¹ • c = OnePoint.infty :=
     inv_smul_eq_iff.mpr (cuspScalingMatrix_smul c).symm
