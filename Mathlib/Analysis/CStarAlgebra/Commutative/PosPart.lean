@@ -57,8 +57,8 @@ open ContinuousMap WeakDual in
 protected lemma posPart_mono : Monotone (fun a : A ↦ a⁺) := by
   let φ : A →⋆ₙₐ[ℂ] C(characterSpace ℂ A⁺¹, ℂ) :=
     .comp (gelfandStarTransform A⁺¹) (Unitization.inrNonUnitalStarAlgHom ℂ A)
-  have hφ : Isometry φ :=
-    StarAlgEquiv.isometry (gelfandStarTransform (A⁺¹)) |>.comp <| Unitization.isometry_inr
+  have hφ : Isometric φ :=
+    StarAlgEquiv.isometric (gelfandStarTransform (A⁺¹)) |>.comp <| Unitization.isometric_inr
   intro a b hab
   simp only
   by_cases ha : IsSelfAdjoint a

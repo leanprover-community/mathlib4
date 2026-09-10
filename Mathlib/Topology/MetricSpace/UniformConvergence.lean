@@ -165,19 +165,25 @@ noncomputable instance {β : Type*} [MetricSpace β] [BoundedSpace β] : MetricS
   .ofT0PseudoMetricSpace _
 
 open BoundedContinuousFunction in
-lemma isometry_ofFun_boundedContinuousFunction [TopologicalSpace α] :
-    Isometry (ofFun ∘ DFunLike.coe : (α →ᵇ β) → α →ᵤ β) := by
-  simp [Isometry, edist_def, edist_eq_iSup]
+lemma isometric_ofFun_boundedContinuousFunction [TopologicalSpace α] :
+    Isometric (ofFun ∘ DFunLike.coe : (α →ᵇ β) → α →ᵤ β) := by
+  simp [Isometric, edist_def, edist_eq_iSup]
 
-lemma isometry_ofFun_continuousMap [TopologicalSpace α] [CompactSpace α] :
-    Isometry (ofFun ∘ DFunLike.coe : C(α, β) → α →ᵤ β) :=
-  isometry_ofFun_boundedContinuousFunction.comp <|
+@[deprecated (since := "2026-09-09")] alias isometry_ofFun_boundedContinuousFunction :=
+  isometric_ofFun_boundedContinuousFunction
+
+lemma isometric_ofFun_continuousMap [TopologicalSpace α] [CompactSpace α] :
+    Isometric (ofFun ∘ DFunLike.coe : C(α, β) → α →ᵤ β) :=
+  isometric_ofFun_boundedContinuousFunction.comp <|
     ContinuousMap.isometryEquivBoundedOfCompact α β |>.isometry
+
+@[deprecated (since := "2026-09-09")] alias isometry_ofFun_continuousMap :=
+  isometric_ofFun_continuousMap
 
 lemma edist_continuousMapMk [TopologicalSpace α] [CompactSpace α]
     {f g : α →ᵤ β} (hf : Continuous (toFun f)) (hg : Continuous (toFun g)) :
     edist (⟨_, hf⟩ : C(α, β)) ⟨_, hg⟩ = edist f g := by
-  simp [← isometry_ofFun_continuousMap.edist_eq]
+  simp [← isometric_ofFun_continuousMap.edist_eq]
 
 end Metric
 
@@ -277,9 +283,11 @@ lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖) :
     LipschitzWith 1 (UniformFun.ofFun ∘ s.domRestrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → (s →ᵤ β)) :=
   UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval ⟨s, hs, x.2⟩
 
-lemma isometry_restrict (s : Set α) :
-    Isometry (UniformFun.ofFun ∘ s.domRestrict ∘ toFun {s} : (α →ᵤ[{s}] β) → (s →ᵤ β)) := by
-  simp [Isometry, edist_def, UniformFun.edist_def, iSup_subtype]
+lemma isometric_restrict (s : Set α) :
+    Isometric (UniformFun.ofFun ∘ s.domRestrict ∘ toFun {s} : (α →ᵤ[{s}] β) → (s →ᵤ β)) := by
+  simp [Isometric, edist_def, UniformFun.edist_def, iSup_subtype]
+
+@[deprecated (since := "2026-09-09")] alias isometry_restrict := isometric_restrict
 
 end EMetric
 

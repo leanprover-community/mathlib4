@@ -78,7 +78,7 @@ theorem norm_resolvent_le_inv_infDist_support {μ : Measure 𝕜} {a : A}
   have : 0 < infDist a (algebraMap 𝕜 A '' μ.support) := by
     refine (IsClosed.notMem_iff_infDist_pos ?_ ((Set.nonempty_of_mem hx).image _)).mp hz
     refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
-    exact (algebraMap_isometry 𝕜 A).isClosedEmbedding
+    exact (algebraMap_isometric 𝕜 A).isClosedEmbedding
   have : infDist a (algebraMap 𝕜 A '' μ.support) ≤ ‖(algebraMap 𝕜 A) x - a‖ := by
     grw [infDist_le_dist_of_mem (y := (algebraMap 𝕜 A) x), ← dist_eq_norm, dist_comm]
     simp [hx]
@@ -136,7 +136,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] {μ : Me
   have : 0 < infDist a (algebraMap 𝕜 A '' μ.support) := by
     refine (IsClosed.notMem_iff_infDist_pos ?_ (h.image _)).mp ha
     refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
-    exact (algebraMap_isometry 𝕜 A).isClosedEmbedding
+    exact (algebraMap_isometric 𝕜 A).isClosedEmbedding
   let s : Set A := ball a ((infDist a (algebraMap 𝕜 A '' μ.support)) / 2)
   have hs_z : s ∈ 𝓝 a := ball_mem_nhds _ (by positivity)
   have hs_μ : s ⊆ (algebraMap 𝕜 A '' μ.support)ᶜ := by
@@ -178,7 +178,7 @@ theorem analyticOn_resolventTransform [NormedAlgebra 𝕜 ℂ] {μ : Measure �
     exact (hasDerivAt_resolventTransform z hz).differentiableAt.differentiableWithinAt
   apply isOpen_compl_iff.mpr
   refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
-  exact (algebraMap_isometry 𝕜 ℂ).isClosedEmbedding
+  exact (algebraMap_isometric 𝕜 ℂ).isClosedEmbedding
 
 end Deriv
 

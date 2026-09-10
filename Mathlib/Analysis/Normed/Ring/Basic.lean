@@ -26,7 +26,7 @@ A normed ring instance can be constructed from a given real absolute value on a 
 
 -- Guard against import creep.
 assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
-  IsOfFinOrder Isometry.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
+  IsOfFinOrder Isometric.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
   RestrictScalars
 
 variable {G α β ι : Type*}

@@ -253,11 +253,14 @@ theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), ← Lp.norm_def]
   congr
 
-theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
-    Isometry (lpMeasSubgroupToLpTrim F p μ hm) :=
-  Isometry.of_dist_eq fun f g => by
+theorem isometric_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
+    Isometric (lpMeasSubgroupToLpTrim F p μ hm) :=
+  Isometric.of_dist_eq fun f g => by
     rw [dist_eq_norm, ← lpMeasSubgroupToLpTrim_sub, lpMeasSubgroupToLpTrim_norm_map,
       dist_eq_norm]
+
+@[deprecated (since := "2026-09-09")] alias isometry_lpMeasSubgroupToLpTrim :=
+  isometric_lpMeasSubgroupToLpTrim
 
 variable (F p μ)
 
@@ -268,7 +271,7 @@ noncomputable def lpMeasSubgroupToLpTrimIso [Fact (1 ≤ p)] (hm : m ≤ m0) :
   invFun := lpTrimToLpMeasSubgroup F p μ hm
   left_inv := lpMeasSubgroupToLpTrim_left_inv hm
   right_inv := lpMeasSubgroupToLpTrim_right_inv hm
-  isometry_toFun := isometry_lpMeasSubgroupToLpTrim hm
+  isometry_toFun := isometric_lpMeasSubgroupToLpTrim hm
 
 variable (𝕜)
 

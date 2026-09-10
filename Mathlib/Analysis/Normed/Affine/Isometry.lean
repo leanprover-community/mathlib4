@@ -140,11 +140,13 @@ theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndis
 @[simp]
 theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]
 
-protected theorem isometry : Isometry f :=
+protected theorem isometric : Isometric f :=
   f.edist_map
 
+@[deprecated (since := "2026-09-10")] alias isometry := AffineIsometry.isometric
+
 protected theorem injective : Injective f₁ :=
-  f₁.isometry.injective
+  f₁.isometric.injective
 
 @[simp]
 theorem map_eq_iff {x y : P₁'} : f₁ x = f₁ y ↔ x = y :=
@@ -154,26 +156,26 @@ theorem map_ne {x y : P₁'} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  f.isometry.lipschitzWith
+  f.isometric.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.isometry.antilipschitzWith
+  f.isometric.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
-  f.isometry.continuous
+  f.isometric.continuous
 
 theorem ediam_image (s : Set P) : ediam (f '' s) = ediam s :=
-  f.isometry.ediam_image s
+  f.isometric.ediam_image s
 
 theorem ediam_range : ediam (range f) = ediam (univ : Set P) :=
-  f.isometry.ediam_range
+  f.isometric.ediam_range
 
 theorem diam_image (s : Set P) : Metric.diam (f '' s) = Metric.diam s :=
-  f.isometry.diam_image s
+  f.isometric.diam_image s
 
 theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
-  f.isometry.diam_range
+  f.isometric.diam_range
 
 /-- Interpret an affine isometry as a continuous affine map. -/
 def toContinuousAffineMap : P →ᴬ[𝕜] P₂ := { f with cont := f.continuous }
@@ -193,7 +195,7 @@ theorem coe_toContinuousAffineMap : ⇑f.toContinuousAffineMap = f := rfl
 @[simp]
 theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
     Continuous (f ∘ g) ↔ Continuous g :=
-  f.isometry.comp_continuous_iff
+  f.isometric.comp_continuous_iff
 
 /-- The identity affine isometry. -/
 def id : P →ᵃⁱ[𝕜] P :=
@@ -404,12 +406,14 @@ namespace AffineIsometryEquiv
 
 variable (e : P ≃ᵃⁱ[𝕜] P₂)
 
-protected theorem isometry : Isometry e :=
-  e.toAffineIsometry.isometry
+protected theorem isometric : Isometric e :=
+  e.toAffineIsometry.isometric
+
+@[deprecated (since := "2026-09-10")] alias isometry := AffineIsometryEquiv.isometric
 
 /-- Reinterpret an `AffineIsometryEquiv` as an `IsometryEquiv`. -/
 def toIsometryEquiv : P ≃ᵢ P₂ :=
-  ⟨e.toAffineEquiv.toEquiv, e.isometry⟩
+  ⟨e.toAffineEquiv.toEquiv, e.isometric⟩
 
 @[simp]
 theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
@@ -428,7 +432,7 @@ theorem coe_toHomeomorph : ⇑e.toHomeomorph = e :=
   rfl
 
 protected theorem continuous : Continuous e :=
-  e.isometry.continuous
+  e.isometric.continuous
 
 protected theorem continuousAt {x} : ContinuousAt e x :=
   e.continuous.continuousAt
@@ -633,28 +637,28 @@ theorem map_ne {x y : P} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitzWith
+  e.isometric.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitzWith
+  e.isometric.antilipschitzWith
 
 @[simp]
 theorem ediam_image (s : Set P) : ediam (e '' s) = ediam s :=
-  e.isometry.ediam_image s
+  e.isometric.ediam_image s
 
 @[simp]
 theorem diam_image (s : Set P) : Metric.diam (e '' s) = Metric.diam s :=
-  e.isometry.diam_image s
+  e.isometric.diam_image s
 
 variable {α : Type*} [TopologicalSpace α]
 
 @[simp]
 theorem comp_continuousOn_iff {f : α → P} {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=
-  e.isometry.comp_continuousOn_iff
+  e.isometric.comp_continuousOn_iff
 
 @[simp]
 theorem comp_continuous_iff {f : α → P} : Continuous (e ∘ f) ↔ Continuous f :=
-  e.isometry.comp_continuous_iff
+  e.isometric.comp_continuous_iff
 
 section Constructions
 
@@ -749,9 +753,9 @@ theorem constVAdd_zero : constVAdd 𝕜 P (0 : V) = refl 𝕜 P :=
 include 𝕜 in
 /-- The map `g` from `V` to `V₂` corresponding to a map `f` from `P` to `P₂`, at a base point `p`,
 is an isometry if `f` is one. -/
-theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
-    (hg : ∀ v, g v = f (v +ᵥ p) -ᵥ f p) : Isometry g := by
-  convert! (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
+theorem vadd_vsub {f : P → P₂} (hf : Isometric f) {p : P} {g : V → V₂}
+    (hg : ∀ v, g v = f (v +ᵥ p) -ᵥ f p) : Isometric g := by
+  convert! (vaddConst 𝕜 (f p)).symm.isometric.comp (hf.comp (vaddConst 𝕜 p).isometric)
   exact funext hg
 
 variable (𝕜) in

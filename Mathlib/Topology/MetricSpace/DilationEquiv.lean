@@ -219,7 +219,7 @@ lemma _root_.IsometryEquiv.toDilationEquiv_toDilation (e : X ≃ᵢ Y) :
 
 @[simp]
 lemma _root_.IsometryEquiv.toDilationEquiv_ratio (e : X ≃ᵢ Y) : ratio e.toDilationEquiv = 1 := by
-  rw [← ratio_toDilation, IsometryEquiv.toDilationEquiv_toDilation, Isometry.toDilation_ratio]
+  rw [← ratio_toDilation, IsometryEquiv.toDilationEquiv_toDilation, Isometric.toDilation_ratio]
 
 /-- Reinterpret a `DilationEquiv` as a homeomorphism. -/
 def toHomeomorph (e : X ≃ᵈ Y) : X ≃ₜ Y where

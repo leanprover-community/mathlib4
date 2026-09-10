@@ -380,9 +380,9 @@ end Comparisons
 
 /-- The covering number of the image of a set under an injective isometry is equal to
 the covering number of the set.
-See `Isometry.coveringNumber_image` for the version in an `EMetricSpace`, in which injectivity is
+See `Isometric.coveringNumber_image` for the version in an `EMetricSpace`, in which injectivity is
 a consequence of being an isometry. -/
-lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_inj : Set.InjOn f A) :
+lemma _root_.Isometric.coveringNumber_image' {f : X → Y} (hf : Isometric f) (hf_inj : Set.InjOn f A) :
     coveringNumber ε (f '' A) = coveringNumber ε A := by
   refine le_antisymm ?_ ?_
   · simp only [coveringNumber, le_iInf_iff]
@@ -410,13 +410,19 @@ lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_
     rw [InjOn.encard_image]
     exact hf_inj.mono hC'_subset
 
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.coveringNumber_image' :=
+  _root_.Isometric.coveringNumber_image'
+
 /-- The covering number of the image of a set under an injective isometry is equal to
 the covering number of the set.
-See `Isometry.coveringNumber_image'` for the version in a `PseudoEMetricSpace` and not
+See `Isometric.coveringNumber_image'` for the version in a `PseudoEMetricSpace` and not
 an `EMetricSpace`, for which an additional injectivity assumption is needed. -/
-lemma _root_.Isometry.coveringNumber_image {X : Type*} [EMetricSpace X]
-    {f : X → Y} (hf : Isometry f) {A : Set X} :
+lemma _root_.Isometric.coveringNumber_image {X : Type*} [EMetricSpace X]
+    {f : X → Y} (hf : Isometric f) {A : Set X} :
     coveringNumber ε (f '' A) = coveringNumber ε A :=
   hf.coveringNumber_image' hf.injective.injOn
+
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.coveringNumber_image :=
+  _root_.Isometric.coveringNumber_image
 
 end Metric

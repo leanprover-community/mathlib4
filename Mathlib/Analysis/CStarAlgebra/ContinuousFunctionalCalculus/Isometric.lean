@@ -32,7 +32,7 @@ class IsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → P
     [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [MetricSpace A] [Algebra R A] : Prop
     extends ContinuousFunctionalCalculus R A p where
-  isometric (a : A) (ha : p a) : Isometry (cfcHom ha (R := R))
+  isometric (a : A) (ha : p a) : Isometric (cfcHom ha (R := R))
 
 section MetricSpace
 
@@ -42,12 +42,14 @@ variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
   [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
   [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
-lemma isometry_cfcHom (a : A) (ha : p a := by cfc_tac) :
-    Isometry (cfcHom (show p a from ha) (R := R)) :=
+lemma isometric_cfcHom (a : A) (ha : p a := by cfc_tac) :
+    Isometric (cfcHom (show p a from ha) (R := R)) :=
   IsometricContinuousFunctionalCalculus.isometric a ha
 
+@[deprecated (since := "2026-09-09")] alias isometry_cfcHom := isometric_cfcHom
+
 instance [CompleteSpace R] : ClosedEmbeddingContinuousFunctionalCalculus R A p where
-  isClosedEmbedding a ha := (isometry_cfcHom a).isClosedEmbedding
+  isClosedEmbedding a ha := (isometric_cfcHom a).isClosedEmbedding
 
 end MetricSpace
 
@@ -61,7 +63,7 @@ variable [IsometricContinuousFunctionalCalculus 𝕜 A p]
 
 lemma norm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
     ‖cfcHom (show p a from ha) f‖ = ‖f‖ := by
-  refine isometry_cfcHom a |>.norm_map_of_map_zero (map_zero _) f
+  refine isometric_cfcHom a |>.norm_map_of_map_zero (map_zero _) f
 
 lemma nnnorm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
     ‖cfcHom (show p a from ha) f‖₊ = ‖f‖₊ :=
@@ -194,7 +196,7 @@ variable [CompleteSpace R] [ContinuousMap.UniqueHom R A]
 
 set_option backward.isDefEq.respectTransparency.types false in
 open scoped ContinuousFunctionalCalculus in
-protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
+protected theorem isometric_cfc (f : C(S, R)) (halg : Isometric (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
     IsometricContinuousFunctionalCalculus R A p where
   toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
@@ -203,7 +205,7 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     have := SpectrumRestricts.cfc f halg.isClosedEmbedding h0 h
     rw [cfcHom_eq_restrict f ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
-    simp only [starAlgHom_apply, isometry_cfcHom a ha' |>.dist_eq]
+    simp only [starAlgHom_apply, isometric_cfcHom a ha' |>.dist_eq]
     refine le_antisymm ?_ ?_
     all_goals refine ContinuousMap.dist_le dist_nonneg |>.mpr fun x ↦ ?_
     · simpa [halg.dist_eq] using ContinuousMap.dist_apply_le_dist _
@@ -229,7 +231,7 @@ class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop
     extends NonUnitalContinuousFunctionalCalculus R A p where
-  isometric (a : A) (ha : p a) : Isometry (cfcₙHom ha (R := R))
+  isometric (a : A) (ha : p a) : Isometric (cfcₙHom ha (R := R))
 
 section MetricSpace
 
@@ -243,12 +245,14 @@ open scoped NonUnitalContinuousFunctionalCalculus
 
 variable [NonUnitalIsometricContinuousFunctionalCalculus R A p]
 
-lemma isometry_cfcₙHom (a : A) (ha : p a := by cfc_tac) :
-    Isometry (cfcₙHom (show p a from ha) (R := R)) :=
+lemma isometric_cfcₙHom (a : A) (ha : p a := by cfc_tac) :
+    Isometric (cfcₙHom (show p a from ha) (R := R)) :=
   NonUnitalIsometricContinuousFunctionalCalculus.isometric a ha
 
+@[deprecated (since := "2026-09-10")] alias isometry_cfcₙHom := isometric_cfcₙHom
+
 instance [CompleteSpace R] : NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p where
-  isClosedEmbedding a ha := (isometry_cfcₙHom a).isClosedEmbedding
+  isClosedEmbedding a ha := (isometric_cfcₙHom a).isClosedEmbedding
 
 end MetricSpace
 
@@ -264,7 +268,7 @@ open scoped ContinuousMapZero NonUnitalContinuousFunctionalCalculus
 
 lemma norm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_tac) :
     ‖cfcₙHom (show p a from ha) f‖ = ‖f‖ := by
-  refine isometry_cfcₙHom a |>.norm_map_of_map_zero (map_zero _) f
+  refine isometric_cfcₙHom a |>.norm_map_of_map_zero (map_zero _) f
 
 lemma nnnorm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_tac) :
     ‖cfcₙHom (show p a from ha) f‖₊ = ‖f‖₊ :=
@@ -405,7 +409,7 @@ variable [CompleteSpace R] [ContinuousMapZero.UniqueHom R A]
 
 set_option backward.isDefEq.respectTransparency.types false in
 open scoped NonUnitalContinuousFunctionalCalculus in
-protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
+protected theorem isometric_cfc (f : C(S, R)) (halg : Isometric (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
     NonUnitalIsometricContinuousFunctionalCalculus R A p where
   toNonUnitalContinuousFunctionalCalculus := QuasispectrumRestricts.cfc f
@@ -415,7 +419,7 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     have := QuasispectrumRestricts.cfc f halg.isClosedEmbedding h0 h
     rw [cfcₙHom_eq_restrict f ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
-    simp only [nonUnitalStarAlgHom_apply, isometry_cfcₙHom a ha' |>.dist_eq]
+    simp only [nonUnitalStarAlgHom_apply, isometric_cfcₙHom a ha' |>.dist_eq]
     refine le_antisymm ?_ ?_
     all_goals refine ContinuousMap.dist_le dist_nonneg |>.mpr fun x ↦ ?_
     · simpa [halg.dist_eq] using! ContinuousMap.dist_apply_le_dist _
@@ -425,6 +429,8 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
         ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.dist_eq, x']
       congr! 2
       all_goals ext; exact haf.left_inv _ |>.symm
+
+@[deprecated (since := "2026-09-09")] alias isometry_cfc := QuasispectrumRestricts.isometric_cfc
 
 end QuasispectrumRestricts
 
@@ -639,9 +645,9 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
       simp only [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
       exact h_cpct |>.union isCompact_singleton
     rw [cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
-    refine isometry_cfcHom a |>.comp ?_
+    refine isometric_cfcHom a |>.comp ?_
     simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom]
-    refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
+    refine AddMonoidHomClass.isometric_of_norm _ fun f ↦ ?_
     let ι : C(σ 𝕜 a, σₙ 𝕜 a) := ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum 𝕜 a⟩
     change ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
     apply le_antisymm (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)

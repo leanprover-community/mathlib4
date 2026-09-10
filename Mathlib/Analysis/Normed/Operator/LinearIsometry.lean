@@ -84,39 +84,41 @@ namespace SemilinearIsometryClass
 
 variable [FunLike 𝓕 E E₂]
 
-protected theorem isometry [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Isometry f :=
-  AddMonoidHomClass.isometry_of_norm _ (norm_map _)
+protected theorem isometric [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Isometric f :=
+  AddMonoidHomClass.isometric_of_norm _ (norm_map _)
+
+@[deprecated (since := "2026-09-10")] alias isometry := SemilinearIsometryClass.isometric
 
 @[continuity]
 protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Continuous f :=
-  (SemilinearIsometryClass.isometry f).continuous
+  (SemilinearIsometryClass.isometric f).continuous
 
 -- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
 theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
 protected theorem lipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).lipschitzWith
+  (SemilinearIsometryClass.isometric f).lipschitzWith
 
 protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     AntilipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).antilipschitzWith
+  (SemilinearIsometryClass.isometric f).antilipschitzWith
 
 theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
     Metric.ediam (f '' s) = Metric.ediam s :=
-  (SemilinearIsometryClass.isometry f).ediam_image s
+  (SemilinearIsometryClass.isometric f).ediam_image s
 
 theorem ediam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     Metric.ediam (range f) = Metric.ediam (univ : Set E) :=
-  (SemilinearIsometryClass.isometry f).ediam_range
+  (SemilinearIsometryClass.isometric f).ediam_range
 
 theorem diam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
     Metric.diam (f '' s) = Metric.diam s :=
-  (SemilinearIsometryClass.isometry f).diam_image s
+  (SemilinearIsometryClass.isometric f).diam_image s
 
 theorem diam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     Metric.diam (range f) = Metric.diam (univ : Set E) :=
-  (SemilinearIsometryClass.isometry f).diam_range
+  (SemilinearIsometryClass.isometric f).diam_range
 
 instance (priority := 100) toContinuousSemilinearMapClass
     [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
@@ -124,7 +126,7 @@ instance (priority := 100) toContinuousSemilinearMapClass
 
 instance (priority := 100) toIsometryClass [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] :
     IsometryClass 𝓕 E E₂ where
-  isometry := SemilinearIsometryClass.isometry
+  isometry := SemilinearIsometryClass.isometric
 
 end SemilinearIsometryClass
 
@@ -196,15 +198,17 @@ protected lemma norm_map (x : E) : ‖f x‖ = ‖x‖ := by simp
 protected lemma nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
 protected lemma enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
 
-protected theorem isometry : Isometry f :=
-  AddMonoidHomClass.isometry_of_norm f.toLinearMap f.norm_map
+protected theorem isometric : Isometric f :=
+  AddMonoidHomClass.isometric_of_norm f.toLinearMap f.norm_map
 
-lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
+@[deprecated (since := "2026-09-10")] alias isometry := LinearIsometry.isometric
+
+lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometric.isEmbedding
 
 @[simp]
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
+  _root_.isComplete_image_iff (SemilinearIsometryClass.isometric f).isUniformInducing
 
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
@@ -216,14 +220,14 @@ instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [Com
 
 @[simp]
 theorem dist_map (x y : E) : dist (f x) (f y) = dist x y :=
-  f.isometry.dist_eq x y
+  f.isometric.dist_eq x y
 
 @[simp]
 theorem edist_map (x y : E) : edist (f x) (f y) = edist x y :=
-  f.isometry.edist_eq x y
+  f.isometric.edist_eq x y
 
 protected theorem injective : Injective f₁ :=
-  Isometry.injective (LinearIsometry.isometry f₁)
+  Isometric.injective (LinearIsometry.isometric f₁)
 
 @[simp]
 theorem map_eq_iff {x y : F} : f₁ x = f₁ y ↔ x = y :=
@@ -233,39 +237,39 @@ theorem map_ne {x y : F} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  f.isometry.lipschitzWith
+  f.isometric.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.isometry.antilipschitzWith
+  f.isometric.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
-  f.isometry.continuous
+  f.isometric.continuous
 
 @[simp]
 theorem preimage_ball (x : E) (r : ℝ) : f ⁻¹' Metric.ball (f x) r = Metric.ball x r :=
-  f.isometry.preimage_ball x r
+  f.isometric.preimage_ball x r
 
 @[simp]
 theorem preimage_sphere (x : E) (r : ℝ) : f ⁻¹' Metric.sphere (f x) r = Metric.sphere x r :=
-  f.isometry.preimage_sphere x r
+  f.isometric.preimage_sphere x r
 
 @[simp]
 theorem preimage_closedBall (x : E) (r : ℝ) :
     f ⁻¹' Metric.closedBall (f x) r = Metric.closedBall x r :=
-  f.isometry.preimage_closedBall x r
+  f.isometric.preimage_closedBall x r
 
 theorem ediam_image (s : Set E) : Metric.ediam (f '' s) = Metric.ediam s :=
-  f.isometry.ediam_image s
+  f.isometric.ediam_image s
 
 theorem ediam_range : Metric.ediam (range f) = Metric.ediam (univ : Set E) :=
-  f.isometry.ediam_range
+  f.isometric.ediam_range
 
 theorem diam_image (s : Set E) : Metric.diam (f '' s) = Metric.diam s :=
-  Isometry.diam_image (LinearIsometry.isometry f) s
+  Isometric.diam_image (LinearIsometry.isometric f) s
 
 theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set E) :=
-  Isometry.diam_range (LinearIsometry.isometry f)
+  Isometric.diam_range (LinearIsometry.isometric f)
 
 /-- Interpret a linear isometry as a continuous linear map. -/
 def toContinuousLinearMap : E →SL[σ₁₂] E₂ :=
@@ -290,7 +294,7 @@ theorem coe_toContinuousLinearMap : ⇑f.toContinuousLinearMap = f :=
 @[simp]
 theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → E} :
     Continuous (f ∘ g) ↔ Continuous g :=
-  f.isometry.comp_continuous_iff
+  f.isometric.comp_continuous_iff
 
 /-- The identity linear isometry. -/
 def id : E →ₗᵢ[R] E :=
@@ -385,8 +389,8 @@ end submoduleMap
 
 end LinearIsometry
 
-/-- Construct a `LinearIsometry` from a `LinearMap` satisfying `Isometry`. -/
-def LinearMap.toLinearIsometry (f : E →ₛₗ[σ₁₂] E₂) (hf : Isometry f) : E →ₛₗᵢ[σ₁₂] E₂ :=
+/-- Construct a `LinearIsometry` from a `LinearMap` satisfying `Isometric`. -/
+def LinearMap.toLinearIsometry (f : E →ₛₗ[σ₁₂] E₂) (hf : Isometric f) : E →ₛₗᵢ[σ₁₂] E₂ :=
   { f with
     norm_map' := by
       simp_rw [← dist_zero_right]
@@ -545,12 +549,14 @@ theorem toLinearIsometry_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} :
 theorem coe_toLinearIsometry : ⇑e.toLinearIsometry = e :=
   rfl
 
-protected theorem isometry : Isometry e :=
-  e.toLinearIsometry.isometry
+protected theorem isometric : Isometric e :=
+  e.toLinearIsometry.isometric
+
+@[deprecated (since := "2026-09-10")] alias isometry := LinearIsometryEquiv.isometric
 
 /-- Reinterpret a `LinearIsometryEquiv` as an `IsometryEquiv`. -/
 def toIsometryEquiv : E ≃ᵢ E₂ :=
-  ⟨e.toLinearEquiv.toEquiv, e.isometry⟩
+  ⟨e.toLinearEquiv.toEquiv, e.isometric⟩
 
 theorem toIsometryEquiv_injective :
     Function.Injective (toIsometryEquiv : (E ≃ₛₗᵢ[σ₁₂] E₂) → E ≃ᵢ E₂) := fun x _ h =>
@@ -585,7 +591,7 @@ theorem coe_toHomeomorph : ⇑e.toHomeomorph = e :=
   rfl
 
 protected theorem continuous : Continuous e :=
-  e.isometry.continuous
+  e.isometric.continuous
 
 protected theorem continuousAt {x} : ContinuousAt e x :=
   e.continuous.continuousAt
@@ -907,21 +913,21 @@ theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitzWith
+  e.isometric.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitzWith
+  e.isometric.antilipschitzWith
 
 theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem ediam_image (s : Set E) : Metric.ediam (e '' s) = Metric.ediam s :=
-  e.isometry.ediam_image s
+  e.isometric.ediam_image s
 
 @[simp]
 theorem diam_image (s : Set E) : Metric.diam (e '' s) = Metric.diam s :=
-  e.isometry.diam_image s
+  e.isometric.diam_image s
 
 @[simp]
 theorem preimage_ball (x : E₂) (r : ℝ) : e ⁻¹' Metric.ball x r = Metric.ball (e.symm x) r :=
@@ -952,11 +958,11 @@ variable {α : Type*} [TopologicalSpace α]
 
 @[simp]
 theorem comp_continuousOn_iff {f : α → E} {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=
-  e.isometry.comp_continuousOn_iff
+  e.isometric.comp_continuousOn_iff
 
 @[simp]
 theorem comp_continuous_iff {f : α → E} : Continuous (e ∘ f) ↔ Continuous f :=
-  e.isometry.comp_continuous_iff
+  e.isometric.comp_continuous_iff
 
 instance completeSpace_map (p : Submodule R E) [CompleteSpace p] :
     CompleteSpace (p.map (e : E →ₛₗ[σ₁₂] E₂)) :=
@@ -1104,7 +1110,9 @@ noncomputable def LinearIsometry.equivRange {R S : Type*} [Semiring R] [Ring S] 
 namespace MulOpposite
 variable {R H : Type*} [Semiring R] [SeminormedAddCommGroup H] [Module R H]
 
-theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
+theorem isometric_opLinearEquiv : Isometric (opLinearEquiv R (M := H)) := fun _ _ => rfl
+
+@[deprecated (since := "2026-09-10")] alias isometry_opLinearEquiv := isometric_opLinearEquiv
 
 variable (R H) in
 /-- The linear isometry equivalence version of the function `op`. -/

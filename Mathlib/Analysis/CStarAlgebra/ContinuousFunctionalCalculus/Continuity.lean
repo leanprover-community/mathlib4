@@ -166,7 +166,7 @@ lemma lipschitzOnWith_cfc_fun (a : A) :
   by_cases ha : p a
   · intro f hf g hg
     simp only
-    rw [cfc_apply .., cfc_apply .., isometry_cfcHom (R := R) a ha |>.edist_eq]
+    rw [cfc_apply .., cfc_apply .., isometric_cfcHom (R := R) a ha |>.edist_eq]
     simp only [ENNReal.coe_one, one_mul]
     rw [edist_continuousRestrict_of_singleton hf hg]
   · simpa [cfc_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
@@ -225,7 +225,7 @@ theorem continuous_cfcHomSuperset_left
     simp only [Metric.mem_closedBall, dist_comm g, dist_eq_norm] at hg
     refine ⟨_, g_cont, fun x ↦ ?_⟩
     rw [← map_sub, cfcHomSuperset_apply]
-    rw [isometry_cfcHom (R := 𝕜) _ (ha' x) |>.norm_map_of_map_zero (map_zero (cfcHom (ha' x)))]
+    rw [isometric_cfcHom (R := 𝕜) _ (ha' x) |>.norm_map_of_map_zero (map_zero (cfcHom (ha' x)))]
     rw [ContinuousMap.norm_le _ hε.le] at hg ⊢
     aesop
 
@@ -705,9 +705,9 @@ lemma lipschitzOnWith_cfcₙ_fun (a : A) :
   by_cases ha : p a
   · rintro f ⟨hf, hf0⟩ g ⟨hg, hg0⟩
     simp only
-    rw [cfcₙ_apply .., cfcₙ_apply .., isometry_cfcₙHom (R := R) a ha |>.edist_eq]
+    rw [cfcₙ_apply .., cfcₙ_apply .., isometric_cfcₙHom (R := R) a ha |>.edist_eq]
     simp only [ENNReal.coe_one, one_mul]
-    rw [← ContinuousMapZero.isometry_toContinuousMap.edist_eq,
+    rw [← ContinuousMapZero.isometric_toContinuousMap.edist_eq,
       edist_continuousRestrict_of_singleton hf hg]
   · simpa [cfcₙ_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
 
@@ -760,7 +760,7 @@ theorem continuous_cfcₙHomSuperset_left
     simp only [Metric.mem_closedBall, dist_comm g, dist_eq_norm] at hg
     refine ⟨_, g_cont, fun x ↦ ?_⟩
     rw [← map_sub, cfcₙHomSuperset_apply]
-    rw [isometry_cfcₙHom (R := 𝕜) _ (ha' x) |>.norm_map_of_map_zero (map_zero (cfcₙHom (ha' x)))]
+    rw [isometric_cfcₙHom (R := 𝕜) _ (ha' x) |>.norm_map_of_map_zero (map_zero (cfcₙHom (ha' x)))]
     rw [ContinuousMapZero.norm_def, ContinuousMap.norm_le _ hε.le] at hg ⊢
     aesop
 

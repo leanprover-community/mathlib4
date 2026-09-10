@@ -133,12 +133,12 @@ lemma eq_midpoint_of_dist_eq_half (hx : dist x y = dist x z / 2) (hy : dist y z 
   · rwa [invOf_eq_inv, ← div_eq_inv_mul]
   · rwa [invOf_eq_inv, ← one_div, sub_half, one_div, ← div_eq_inv_mul]
 
-namespace Isometry
+namespace Isometric
 
 /-- An isometry of `NormedAddTorsor`s for real normed spaces, strictly convex in the case of the
 codomain, is an affine isometry.  Unlike Mazur-Ulam, this does not require the isometry to be
 surjective. -/
-noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometry f) : PF →ᵃⁱ[ℝ] PE :=
+noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometric f) : PF →ᵃⁱ[ℝ] PE :=
   { AffineMap.ofMapMidpoint f
       (fun x y => by
         apply eq_midpoint_of_dist_eq_half
@@ -149,10 +149,20 @@ noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometry f) : PF →�
       hi.continuous with
     norm_map := fun x => by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
 
-@[simp] lemma coe_affineIsometryOfStrictConvexSpace (hi : Isometry f) :
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.affineIsometryOfStrictConvexSpace :=
+  affineIsometryOfStrictConvexSpace
+
+@[simp] lemma coe_affineIsometryOfStrictConvexSpace (hi : Isometric f) :
     ⇑hi.affineIsometryOfStrictConvexSpace = f := rfl
 
-@[simp] lemma affineIsometryOfStrictConvexSpace_apply (hi : Isometry f) (p : PF) :
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.coe_affineIsometryOfStrictConvexSpace :=
+  coe_affineIsometryOfStrictConvexSpace
+
+@[simp] lemma affineIsometryOfStrictConvexSpace_apply (hi : Isometric f) (p : PF) :
     hi.affineIsometryOfStrictConvexSpace p = f p := rfl
 
-end Isometry
+@[deprecated (since := "2026-09-10")]
+alias _root_.Isometry.affineIsometryOfStrictConvexSpace_apply :=
+  affineIsometryOfStrictConvexSpace_apply
+
+end Isometric

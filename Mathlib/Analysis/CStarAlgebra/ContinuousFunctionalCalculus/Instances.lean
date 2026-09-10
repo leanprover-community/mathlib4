@@ -138,7 +138,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
         ⟨cfcₙAux hp₁ a ha f, cfcₙAux_mem_range_inr hp₁ a ha f⟩
     refine ⟨ψ, ?continuous, ?injective, ?map_id, fun f ↦ ?map_spec, fun f ↦ ?isStarNormal⟩
     case continuous =>
-      rw [isometry_inr (𝕜 := 𝕜) |>.isEmbedding.continuous_iff]
+      rw [isometric_inr (𝕜 := 𝕜) |>.isEmbedding.continuous_iff]
       have := continuous_cfcₙAux hp₁ a ha
       simp only [coe_comp, NonUnitalStarAlgHom.coe_coe, Function.comp_def,
         inrRangeEquiv_symm_apply, coe_codRestrict, ψ]
@@ -172,7 +172,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
     NonUnitalClosedEmbeddingContinuousFunctionalCalculus 𝕜 A p where
   toNonUnitalContinuousFunctionalCalculus := RCLike.nonUnitalContinuousFunctionalCalculus hp₁
   isClosedEmbedding a ha := by
-    apply isometry_inr (𝕜 := 𝕜) (A := A) |>.isClosedEmbedding |>.of_comp_iff.mp
+    apply isometric_inr (𝕜 := 𝕜) (A := A) |>.isClosedEmbedding |>.of_comp_iff.mp
     convert! isClosedEmbedding_cfcₙAux hp₁ a ha
     congrm (⇑$(inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux hp₁ a ha))
 
@@ -216,7 +216,7 @@ lemma QuasispectrumRestricts.isSelfAdjoint (a : A) (ha : QuasispectrumRestricts 
 instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
   QuasispectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
-    Complex.isometry_ofReal.isClosedEmbedding (.zero _)
+    Complex.isometric_ofReal.isClosedEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts)
 
 end SelfAdjointNonUnital
@@ -234,7 +234,7 @@ lemma IsSelfAdjoint.spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
 instance IsSelfAdjoint.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
   SpectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
-    Complex.isometry_ofReal.isClosedEmbedding (.zero _)
+    Complex.isometric_ofReal.isClosedEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts)
 
 @[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead."
@@ -352,7 +352,7 @@ lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
 lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a := by
   exact ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
-    Complex.isometry_ofReal.isClosedEmbedding ha ha.isStarNormal f
+    Complex.isometric_ofReal.isClosedEmbedding ha ha.isStarNormal f
 
 lemma cfc_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ spectrum ℂ a, star (f x) = f x)
     (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -379,7 +379,7 @@ lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
 lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.re : ℂ → ℂ) a := by
   exact ha.quasispectrumRestricts.cfcₙ_eq_restrict (f := Complex.reCLM)
-    Complex.isometry_ofReal.isClosedEmbedding ha ha.isStarNormal f
+    Complex.isometric_ofReal.isClosedEmbedding ha ha.isStarNormal f
 
 lemma cfcₙ_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ σₙ ℂ a, star (f x) = f x)
     (ha : IsSelfAdjoint a := by cfc_tac) :

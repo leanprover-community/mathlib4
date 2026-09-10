@@ -115,7 +115,7 @@ private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Non
       (diam_union (mem_range_self _) (mem_range_self _))
     _ = diam (univ : Set X) + (dist (α := X) default default + 1 + dist (α := Y) default default) +
         diam (univ : Set Y) := by
-      rw [isometry_inl.diam_range, isometry_inr.diam_range]
+      rw [isometric_inl.diam_range, isometric_inr.diam_range]
       rfl
     _ = 1 * diam (univ : Set X) + 1 + 1 * diam (univ : Set Y) := by simp
     _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> norm_num
@@ -486,23 +486,27 @@ def optimalGHInjl (x : X) : OptimalGHCoupling X Y :=
   Quotient.mk'' (inl x)
 
 /-- The injection of `X` in the optimal coupling between `X` and `Y` is an isometry. -/
-theorem isometry_optimalGHInjl : Isometry (optimalGHInjl X Y) :=
-  Isometry.of_dist_eq fun _ _ => candidates_dist_inl (optimalGHDist_mem_candidatesB X Y) _ _
+theorem isometric_optimalGHInjl : Isometric (optimalGHInjl X Y) :=
+  Isometric.of_dist_eq fun _ _ => candidates_dist_inl (optimalGHDist_mem_candidatesB X Y) _ _
+
+@[deprecated (since := "2026-09-09")] alias isometry_optimalGHInjl := isometric_optimalGHInjl
 
 /-- Injection of `Y` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjr (y : Y) : OptimalGHCoupling X Y :=
   Quotient.mk'' (inr y)
 
 /-- The injection of `Y` in the optimal coupling between `X` and `Y` is an isometry. -/
-theorem isometry_optimalGHInjr : Isometry (optimalGHInjr X Y) :=
-  Isometry.of_dist_eq fun _ _ => candidates_dist_inr (optimalGHDist_mem_candidatesB X Y) _ _
+theorem isometric_optimalGHInjr : Isometric (optimalGHInjr X Y) :=
+  Isometric.of_dist_eq fun _ _ => candidates_dist_inr (optimalGHDist_mem_candidatesB X Y) _ _
+
+@[deprecated (since := "2026-09-09")] alias isometry_optimalGHInjr := isometric_optimalGHInjr
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The optimal coupling between two compact spaces `X` and `Y` is still a compact space -/
 instance compactSpace_optimalGHCoupling : CompactSpace (OptimalGHCoupling X Y) := ⟨by
   rw [← range_quotient_mk']
   exact isCompact_range (continuous_sum_dom.2
-    ⟨(isometry_optimalGHInjl X Y).continuous, (isometry_optimalGHInjr X Y).continuous⟩)⟩
+    ⟨(isometric_optimalGHInjl X Y).continuous, (isometric_optimalGHInjr X Y).continuous⟩)⟩
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

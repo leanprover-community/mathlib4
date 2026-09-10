@@ -400,7 +400,7 @@ theorem radius_compContinuousLinearMap_linearIsometryEquiv_eq [Nontrivial E]
 /-- This is a version of `radius_compContinuousLinearMap_linearIsometryEquiv_eq` with better
 opportunity for unification, at the cost of manually supplying some hypotheses. -/
 theorem radius_compContinuousLinearMap_eq [Nontrivial E]
-    (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (hu_iso : Isometry u)
+    (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (hu_iso : Isometric u)
     (hu_surj : Function.Surjective u) :
     (p.compContinuousLinearMap u).radius = p.radius :=
   let v : E ≃ₗᵢ[𝕜] F :=

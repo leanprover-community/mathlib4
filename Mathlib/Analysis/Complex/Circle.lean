@@ -208,7 +208,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle)
 @[simp] protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
 
 instance : IsIsometricSMul Circle E :=
-  ⟨fun _ ↦ Isometry.of_dist_eq fun _ _ ↦ by simp [dist_eq_norm, ← smul_sub]⟩
+  ⟨fun _ ↦ Isometric.of_dist_eq fun _ _ ↦ by simp [dist_eq_norm, ← smul_sub]⟩
 
 end Norm
 

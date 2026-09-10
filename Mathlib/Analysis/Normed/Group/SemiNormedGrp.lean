@@ -157,14 +157,17 @@ theorem isZero_of_subsingleton (V : SemiNormedGrp) [Subsingleton V] : Limits.IsZ
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGrp.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-theorem iso_isometry_of_normNoninc {V W : SemiNormedGrp} (i : V ≅ W) (h1 : i.hom.hom.NormNoninc)
-    (h2 : i.inv.hom.NormNoninc) : Isometry i.hom := by
-  apply AddMonoidHomClass.isometry_of_norm
+theorem iso_isometric_of_normNoninc {V W : SemiNormedGrp} (i : V ≅ W) (h1 : i.hom.hom.NormNoninc)
+    (h2 : i.inv.hom.NormNoninc) : Isometric i.hom := by
+  apply AddMonoidHomClass.isometric_of_norm
   intro v
   apply le_antisymm (h1 v)
   calc
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← comp_apply, Iso.hom_inv_id, id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
+
+@[deprecated (since := "2026-09-09")] alias iso_isometry_of_normNoninc :=
+  iso_isometric_of_normNoninc
 
 instance Hom.add {M N : SemiNormedGrp} : Add (M ⟶ N) where
   add f g := ofHom (f.hom + g.hom)
@@ -375,13 +378,15 @@ theorem isZero_of_subsingleton (V : SemiNormedGrp₁) [Subsingleton V] : Limits.
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGrp₁.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := by
-  change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
-  refine AddMonoidHomClass.isometry_of_norm _ ?_
+theorem iso_isometric {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometric i.hom := by
+  change Isometric (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
+  refine AddMonoidHomClass.isometric_of_norm _ ?_
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
     ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← comp_apply, Iso.hom_inv_id, id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
+
+@[deprecated (since := "2026-09-09")] alias iso_isometry := iso_isometric
 
 end SemiNormedGrp₁

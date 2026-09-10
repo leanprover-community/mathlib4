@@ -63,12 +63,14 @@ def starNormedAddGroupHom : NormedAddGroupHom E E :=
   { starAddEquiv with bound' := ⟨1, fun _ => le_trans (norm_star _).le (one_mul _).symm.le⟩ }
 
 /-- The `star` map in a normed star group is an isometry -/
-theorem star_isometry : Isometry (star : E → E) :=
-  show Isometry starAddEquiv from
-    AddMonoidHomClass.isometry_of_norm starAddEquiv (show ∀ x, ‖x⋆‖ = ‖x‖ from norm_star)
+theorem star_isometric : Isometric (star : E → E) :=
+  show Isometric starAddEquiv from
+    AddMonoidHomClass.isometric_of_norm starAddEquiv (show ∀ x, ‖x⋆‖ = ‖x‖ from norm_star)
+
+@[deprecated (since := "2026-09-09")] alias star_isometry := star_isometric
 
 instance (priority := 100) NormedStarGroup.to_continuousStar : ContinuousStar E :=
-  ⟨star_isometry.continuous⟩
+  ⟨star_isometric.continuous⟩
 
 noncomputable
 instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] [StarModule 𝕜 E] :
@@ -78,22 +80,22 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
 variable (x : E) (r : ℝ)
 
 @[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
-  simpa using star_isometry.preimage_ball (star x) r
+  simpa using star_isometric.preimage_ball (star x) r
 
 @[simp] lemma Metric.star_closedBall : star (closedBall x r) = closedBall (star x) r := by
-  simpa using star_isometry.preimage_closedBall (star x) r
+  simpa using star_isometric.preimage_closedBall (star x) r
 
 @[simp] lemma Metric.star_sphere : star (sphere x r) = sphere (star x) r := by
-  simpa using star_isometry.preimage_sphere (star x) r
+  simpa using star_isometric.preimage_sphere (star x) r
 
 @[simp] lemma dist_star_star (x y : E) : dist (star x) (star y) = dist x y :=
-  star_isometry.dist_eq x y
+  star_isometric.dist_eq x y
 
 @[simp] lemma edist_star_star (x y : E) : edist (star x) (star y) = edist x y :=
-  star_isometry.edist_eq x y
+  star_isometric.edist_eq x y
 
 @[simp] lemma nndist_star_star (x y : E) : nndist (star x) (star y) = nndist x y :=
-  star_isometry.nndist_eq x y
+  star_isometric.nndist_eq x y
 
 end NormedStarGroup
 

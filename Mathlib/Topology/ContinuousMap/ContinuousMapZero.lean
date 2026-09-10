@@ -480,9 +480,11 @@ variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactS
 noncomputable instance [MetricSpace R] [Zero R] : MetricSpace C(α, R)₀ :=
   ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _
 
-lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :
-    Isometry (toContinuousMap : C(α, R)₀ → C(α, R)) :=
+lemma isometric_toContinuousMap [MetricSpace R] [Zero R] :
+    Isometric (toContinuousMap : C(α, R)₀ → C(α, R)) :=
   fun _ _ ↦ rfl
+
+@[deprecated (since := "2026-09-09")] alias isometry_toContinuousMap := isometric_toContinuousMap
 
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖

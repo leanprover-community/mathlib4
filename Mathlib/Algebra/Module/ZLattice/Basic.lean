@@ -664,7 +664,7 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
   let f := Submodule.comapSubtypeEquivOfLe (span_le_restrictScalars ℤ ℝ s)
   have : DiscreteTopology L := by
     let e : span ℤ s ≃L[ℤ] L :=
-      ⟨f.symm, continuous_of_discreteTopology, Isometry.continuous fun _ ↦ congrFun rfl⟩
+      ⟨f.symm, continuous_of_discreteTopology, Isometric.continuous fun _ ↦ congrFun rfl⟩
     exact e.toHomeomorph.discreteTopology
   have : IsZLattice ℝ L := ⟨eq_top_iff.mpr <|
     span_span_coe_preimage.symm.le.trans (span_mono (Set.preimage_mono subset_span))⟩
