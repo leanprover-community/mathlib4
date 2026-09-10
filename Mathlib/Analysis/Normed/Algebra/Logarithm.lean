@@ -31,7 +31,7 @@ the series and the relation to `NormedSpace.exp` are left to later files.
 
 ## Main results
 
-* `NormedSpace.log_eq_tsum`, `NormedSpace.log_eq_tsum_div`: `log` as a `tsum`.
+* `NormedSpace.log_eq_tsum`: `log` as a `tsum`.
 * `NormedSpace.log_one`, `NormedSpace.log_op`, `NormedSpace.star_log`, `NormedSpace.log_mem`,
   `Commute.log`: immediate properties.
 
@@ -55,7 +55,7 @@ the series and the relation to `NormedSpace.exp` are left to later files.
 * Over `ℝ` and `ℂ`, `NormedSpace.log` agrees with `Real.log` and `Complex.log` on `‖x - 1‖ < 1`.
 * Analytic continuation of `log` in the ultrametric case (probably best to be opinionated
   and define `log p = 0` so we get a "canonical branch" analogous to how mathlib has
-  chosen a branch of `Complex.log`.
+  chosen a branch of `Complex.log`).
 -/
 
 @[expose] public section
