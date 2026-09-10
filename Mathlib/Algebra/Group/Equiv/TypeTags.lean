@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.Spread
 
 /-!
