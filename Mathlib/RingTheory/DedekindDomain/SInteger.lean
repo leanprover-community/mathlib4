@@ -90,7 +90,7 @@ end Set
 
 /-- The submonoid of non-zero elements of `R` that are not contained in any non-zero prime ideal
     away from `S`. -/
-def Localization.submonoid : Submonoid R := Ideal.iInfPrimeCompl
+def Localization.submonoid : Submonoid R := Ideal.sInfPrimeCompl
   (S := (fun v : HeightOneSpectrum R ↦ v.asIdeal) '' Sᶜ)
   (by rintro _ ⟨v, _, rfl⟩; exact v.isPrime) ⊓ nonZeroDivisors R
 
@@ -118,14 +118,33 @@ just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective
   rintro ⟨y, rfl⟩ v
   exact v.valuation_le_one y
 
+open Ideal IsDedekindDomain.HeightOneSpectrum in
+/-- A generator of a positive power of the denominator ideal of `z` belongs to each of its prime
+power factors. -/
+lemma mem_prime_pow_of_span_eq_prod (z : K) {n : ℕ} (hn : n ≠ 0) {α : R}
+    (hα : span {α} = (∏ v ∈ (Support.finite (R := R) z).toFinset,
+    v.asIdeal ^ (v.valuation K z).log.toNat) ^ n) (v : HeightOneSpectrum R) :
+    α ∈ v.asIdeal ^ (v.valuation K z).log.toNat := by
+  let T := (Support.finite (R := R) z).toFinset
+  rw [← span_singleton_le_iff_mem, hα]
+  calc
+    (∏ v ∈ T, v.asIdeal ^ (v.valuation K z).log.toNat) ^ n ≤
+        ∏ v ∈ T, v.asIdeal ^ (v.valuation K z).log.toNat := pow_le_self hn
+    _ ≤ T.inf fun v ↦ v.asIdeal ^ (v.valuation K z).log.toNat := prod_le_inf
+    _ ≤ v.asIdeal ^ (v.valuation K z).log.toNat := by
+      by_cases hvT : v ∈ T
+      · exact Finset.inf_le hvT
+      · by_cases hz : z = 0
+        · simp [hz]
+        · simp_all [Int.toNat_eq_zero.mpr, WithZero.log_le_iff_le_exp, T, Support]
+
 open Ideal IsDedekindDomain.HeightOneSpectrum Set in
-lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
-    ∀ z : S.integer K, ∃ x : R × Localization.submonoid S,
+lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] (z : S.integer K) :
+    ∃ x : R × Localization.submonoid S,
     z * algebraMap R (S.integer K) x.2 = algebraMap R (S.integer K) x.1 := by
-  intro z
   simp only [Prod.exists, Subtype.exists]
   -- Let `T` be the finite set of places that have `v(z) > 1`.
-  let T := (Support.finite (R := R) (k := (z : K))).toFinset
+  let T := (Support.finite (R := R) (z : K)).toFinset
   -- `I` is the denominator ideal of `z`.
   let I := ∏ v ∈ T, v.asIdeal ^ (v.valuation K z).log.toNat
   have hI_ne_zero : I ≠ 0 := by
@@ -137,18 +156,6 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
     ((Fact.out : IsMulTorsion (ClassGroup R)) (ClassGroup.mk0 I₀))
   obtain ⟨α, hα⟩ : (I ^ n).IsPrincipal := by
     simp_all [← MonoidHom.map_pow, ClassGroup.mk0_eq_one_iff, I₀]
-  have hα_mem_pow (v : HeightOneSpectrum R) :
-      α ∈ v.asIdeal ^ (v.valuation K z).log.toNat := by
-    rw [← span_singleton_le_iff_mem, ← submodule_span_eq, ← hα]
-    calc
-      I ^ n ≤ I := pow_le_self hn.ne'
-      _ ≤ T.inf fun v ↦ v.asIdeal ^ (v.valuation K z).log.toNat := prod_le_inf
-      _ ≤ v.asIdeal ^ (v.valuation K z).log.toNat := by
-        by_cases hvT : v ∈ T
-        · exact Finset.inf_le hvT
-        · by_cases hz : z = 0
-          · simp [hz]
-          · simp_all [Int.toNat_eq_zero.mpr, WithZero.log_le_iff_le_exp, T, Support]
   have hαz_valuation_le_one (v : HeightOneSpectrum R) :
       v.valuation K (algebraMap R K α * z) ≤ 1 := by
     let e := (v.valuation K z).log.toNat
@@ -157,9 +164,9 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
             rw [map_mul]
     _ ≤ WithZero.exp (-(e : ℤ)) * WithZero.exp (e : ℤ) := by
             apply mul_le_mul' _ <| WithZero.le_exp_of_log_le (Int.self_le_toNat _)
-            simpa [valuation_of_algebraMap, intValuation_le_pow_iff_mem, -WithZero.exp_neg]
-              using hα_mem_pow v
-    _ = 1 := by simp
+            simpa [valuation_of_algebraMap, intValuation_le_pow_iff_mem] using
+              mem_prime_pow_of_span_eq_prod (R := R) K z hn.ne' hα.symm v
+    _ = 1 := by simp [← WithZero.exp_add]
   -- we can write `z * α = β` for some `β ∈ R`.
   obtain ⟨β, hβ⟩ : ∃ β : R, z * algebraMap R K α = algebraMap R K β := by
     simpa [mul_comm, eq_comm] using
@@ -168,7 +175,7 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
   refine ⟨β, α, ?_, SetLike.coe_eq_coe.mp hβ⟩
   -- we are left to prove that `α ∈ Localization.submonoid S`, i.e. that `α` is non-zero and not
   -- contained in any prime ideal not in `S`.
-  simp only [Localization.submonoid, Submonoid.mem_inf, mem_iInfPrimeCompl_iff,
+  simp only [Localization.submonoid, Submonoid.mem_inf, mem_sInfPrimeCompl_iff,
     mem_nonZeroDivisors_iff_ne_zero]
   refine ⟨?_, fun hα0 ↦ hI_ne_zero <| eq_zero_of_pow_eq_zero (by simpa [hα0] using hα)⟩
   rintro _ ⟨v, hvS, rfl⟩ _
@@ -179,10 +186,11 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] :
     simpa [HeightOneSpectrum.ext
       (w.isMaximal.eq_of_le v.isPrime.ne_top' (IsPrime.le_of_pow_le hwle))] using hwT
   apply hvS
-  contrapose! hvT
+  contrapose hvT
   simp [T, HeightOneSpectrum.Support, integer_valuation_le_one S K z hvS]
 
-/-- When every class in the class group has finite order, the ring of `S`-integers is a localization of `R` at the multiplicative set `S`. -/
+/-- When every class in the class group has finite order, the ring of `S`-integers is a localization
+  of `R` at the multiplicative set `S`. -/
 instance IsLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsLocalization (Localization.submonoid S) <| S.integer K where
   map_units := by
@@ -197,7 +205,8 @@ instance IsLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
   exists_of_eq := fun h ↦
     ⟨1, by simpa using (IsFractionRing.injective R K (congrArg Subtype.val h))⟩
 
-/-- The ring of `S`-integers is a Dedekind domain when the every element in class group has finite order. -/
+/-- The ring of `S`-integers is a Dedekind domain when the every element in class group has finite
+  order. -/
 instance isDedekindDomainSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsDedekindDomain (S.integer K) :=
   IsLocalization.isDedekindDomain _
