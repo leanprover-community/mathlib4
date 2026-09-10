@@ -37,12 +37,12 @@ namespace Mathlib.Tactic.Matrix
 /-- Core of the `norm_matmul` simproc. -/
 def normMatMulCore : Simp.Simproc := fun e => do
   let_expr HMul.hMul _ _ _ _ A B := e | return .continue
-  let some (l, m, R, rowsA) ← matchMatrixLit? A
-    | trace[Tactic.norm_matmul] "not a closed matrix literal{indentExpr A}"
+  let some (l, m, R, rowsA) ← matchMatrixLit? A (closed := false)
+    | trace[Tactic.norm_matmul] "not a matrix literal{indentExpr A}"
       return .continue
   -- use the `m` and `R` from parsing `A` above
-  let some (_, n, _, rowsB) ← matchMatrixLit? B
-    | trace[Tactic.norm_matmul] "not a closed matrix literal{indentExpr B}"
+  let some (_, n, _, rowsB) ← matchMatrixLit? B (closed := false)
+    | trace[Tactic.norm_matmul] "not a matrix literal{indentExpr B}"
       return .continue
   let u ← getDecLevel R
   have α : Q(Type u) := R
