@@ -20,11 +20,9 @@ Besson–Courtois–Gallot–Sambusetti.
 
 * `Group.IsVirtuallyCyclic` : a group with a cyclic subgroup of finite index.
 * `Group.IsVirtuallyCyclic.isVirtuallyNilpotent` : virtually cyclic groups are
-  virtually nilpotent (companion to `Group.IsNilpotent.isVirtuallyNilpotent`).
-* `Group.IsVirtuallyCyclic.of_surjective`,
-  `Group.IsVirtuallyCyclic.of_injective` : preservation under surjective
-  homomorphisms and group embeddings. Instances provide the cyclic and finite
-  base cases and closure under subgroups and quotients.
+  virtually nilpotent.
+* `Group.IsVirtuallyCyclic.of_surjective`, `Group.IsVirtuallyCyclic.of_injective` :
+  preservation under surjective and injective homomorphisms.
 
 ## TODO
 
@@ -55,25 +53,21 @@ class IsVirtuallyCyclic (G : Type*) [Group G] : Prop where
 instance (priority := 100) [IsCyclic G] : IsVirtuallyCyclic G :=
   ⟨⊤, inferInstance, inferInstance⟩
 
-/-- A finite group is virtually cyclic — via the trivial subgroup, which is
-cyclic and of finite index. -/
+/-- A finite group is virtually cyclic. -/
 @[to_additive]
 -- see Note [lower instance priority]
 instance (priority := 100) [Finite G] : IsVirtuallyCyclic G :=
   ⟨⊥, inferInstance, inferInstance⟩
 
 variable (G) in
-/-- A virtually cyclic group has a subgroup that is cyclic, of finite index
-and normal: the normal core of any cyclic finite-index subgroup. -/
+/-- A virtually cyclic group has a normal cyclic subgroup of finite index. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.exists_isCyclic_and_finiteIndex_and_normal [IsVirtuallyCyclic G] :
     ∃ H : Subgroup G, IsCyclic H ∧ H.FiniteIndex ∧ H.Normal := by
   obtain ⟨H, hc, hfi⟩ := exists_isCyclic_and_finiteIndex G
   exact ⟨H.normalCore, Subgroup.isCyclic_of_le H.normalCore_le, inferInstance, inferInstance⟩
 
-/-- A virtually cyclic group is virtually nilpotent: a cyclic group is
-commutative, hence nilpotent. This slots next to
-`Group.IsNilpotent.isVirtuallyNilpotent`. -/
+/-- A virtually cyclic group is virtually nilpotent. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.isVirtuallyNilpotent [IsVirtuallyCyclic G] :
     IsVirtuallyNilpotent G := by
@@ -89,8 +83,7 @@ theorem IsVirtuallyCyclic.of_surjective (f : G →* G') (hf : Function.Surjectiv
   exact ⟨H.map f, isCyclic_of_surjective _ (f.subgroupMap_surjective H),
     Subgroup.FiniteIndex.map_of_surjective H hf⟩
 
-/-- A group embedding into a virtually cyclic group is virtually cyclic: the
-preimage of the cyclic finite-index subgroup witnesses it. -/
+/-- A group embedding into a virtually cyclic group is virtually cyclic. -/
 @[to_additive]
 theorem IsVirtuallyCyclic.of_injective (f : G →* G') (hf : Function.Injective f)
     [IsVirtuallyCyclic G'] : IsVirtuallyCyclic G := by
