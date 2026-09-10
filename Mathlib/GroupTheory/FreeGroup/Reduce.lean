@@ -231,11 +231,6 @@ theorem toWord_pow (x : FreeGroup α) (n : ℕ) :
   simp
 
 @[to_additive (attr := simp)]
-theorem toWord_of_pow (a : α) (n : ℕ) : (of a ^ n).toWord = List.replicate n (a, true) := by
-  rw [of, pow_mk, List.flatten_replicate_singleton, toWord]
-  exact reduce_replicate _ _
-
-@[to_additive (attr := simp)]
 theorem toWord_eq_nil_iff {x : FreeGroup α} : x.toWord = [] ↔ x = 1 :=
   toWord_injective.eq_iff' toWord_one
 
@@ -251,6 +246,20 @@ theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (redu
 theorem toWord_inv (x : FreeGroup α) : x⁻¹.toWord = invRev x.toWord := by
   rcases x with ⟨L⟩
   rw [quot_mk_eq_mk, inv_mk, toWord_mk, toWord_mk, reduce_invRev]
+
+@[to_additive (attr := simp)]
+theorem toWord_of_pow (a : α) (n : ℕ) : (of a ^ n).toWord = List.replicate n (a, true) := by
+  rw [of, pow_mk, List.flatten_replicate_singleton, toWord]
+  exact reduce_replicate _ _
+
+@[to_additive (attr := simp)]
+theorem toWord_of_zpow (a : α) (n : ℤ) :
+    (of a ^ n).toWord = List.replicate n.natAbs (a, decide (0 ≤ n)) := by
+  by_cases! hn : 0 ≤ n
+  · lift n to ℕ using hn
+    simp
+  · rw [zpow_eq_inv_pow_natAbs _ (le_of_lt hn)]
+    simp [FreeGroup.invRev, hn]
 
 @[to_additive]
 theorem reduce_append_reduce_reduce : reduce (reduce L₁ ++ reduce L₂) = reduce (L₁ ++ L₂) := by
@@ -382,6 +391,18 @@ theorem idxOf_toWord_mul_of_eq {a : α} (x : FreeGroup α) {b : α × Bool} (hb�
 
 end Reduce
 
+@[to_additive]
+theorem eq_of_of_zpow_eq_of_zpow {a b : α} (hab : a ≠ b) {n m : ℤ} (h : of a ^ n = of b ^ m) :
+    n = 0 ∧ m = 0 := by
+  classical
+  simp [← toWord_inj, hab] at h
+  lia
+
+@[to_additive]
+theorem eq_of_of_pow_eq_of_pow {a b : α} (hab : a ≠ b) {n m : ℕ} (h : of a ^ n = of b ^ m) :
+    n = 0 ∧ m = 0 := by
+  simpa [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
+
 @[to_additive (attr := simp)]
 theorem one_ne_of (a : α) : 1 ≠ of a :=
   letI := Classical.decEq α; ne_of_apply_ne toWord <| by simp
@@ -432,6 +453,10 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
 @[to_additive (attr := simp)]
 theorem norm_of_pow (a : α) (n : ℕ) : norm (of a ^ n) = n := by
   rw [norm, toWord_of_pow, List.length_replicate]
+
+@[to_additive (attr := simp)]
+theorem norm_of_zpow (a : α) (n : ℤ) : norm (of a ^ n) = n.natAbs := by
+  rw [norm, toWord_of_zpow, List.length_replicate]
 
 @[to_additive]
 theorem norm_surjective [Nonempty α] : Function.Surjective (norm (α := α)) := by
