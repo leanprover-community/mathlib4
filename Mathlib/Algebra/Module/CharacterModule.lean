@@ -46,6 +46,7 @@ def CharacterModule : Type uA := A →+ AddCircle (1 : ℚ)
 namespace CharacterModule
 
 set_option backward.isDefEq.respectTransparency.types false in
+@[macro_inline]
 instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
   coe_injective _ _ _ := by simp_all

@@ -172,6 +172,7 @@ section DFunLike
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {Q Q' : QuadraticMap R M N}
 
+@[macro_inline]
 instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
   coe_injective x y h := by cases x; cases y; congr
