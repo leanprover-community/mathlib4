@@ -15,10 +15,10 @@ to vary between objects. Each object bundles a model vector space `E`, a model s
 with corners `I : ModelWithCorners 𝕜 E H`, and a manifold `ModelWithCorners.MfldCat I n`.
 
 We define several standard constructions:
-* `MfldCat.fromModelWithCorners I n : ModelWithCorners.MfldCat I n ⥤ MfldCat 𝕜 n` realizes the
-category of manifolds on a fixed model space `I` as a subcategory of `MfldCat 𝕜 n`.
+* `MfldCat.fromModelWithCorners I n : ModelWithCorners.MfldCat I n ⥤ MfldCat 𝕜 n` regards a `C^n`
+  manifold modeled on a fixed `I` as an object of `MfldCat 𝕜 n`
 * `HasForget₂ (MfldCat 𝕜 n) TopCat` is the forgetful functor into the category of topological spaces
-* `MfldCat.ofNormedSpace`, realizes a normed space as a `C^n` manifold modeled on itself.
+* `MfldCat.ofNormedSpace` realizes a normed space as a `C^n` manifold modeled on itself.
 
 ## Implementation notes
 
