@@ -1066,6 +1066,11 @@ theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Ideal.ext fun x => by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
 
+variable {v} in
+lemma IsEquiv.supp {Γ₀' : Type*} [LinearOrderedCommMonoidWithZero Γ₀'] {w : Valuation R Γ₀'}
+    (h : v.IsEquiv w) : v.supp = w.supp := by
+  ext; simp [h.eq_zero]
+
 end Supp
 
 end Valuation
