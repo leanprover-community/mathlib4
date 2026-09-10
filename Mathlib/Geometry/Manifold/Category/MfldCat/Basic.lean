@@ -11,17 +11,14 @@ public import Mathlib.Geometry.Manifold.Category.MfldCat.OfModel
 # The category of `C^n` manifolds
 
 `MfldCat 𝕜 n` is the category of `C^n` manifolds over `𝕜`, where the model with corners is allowed
-to vary between objects: an object bundles a model vector space `E`, a model space `H`, a model with
-corners `I : ModelWithCorners 𝕜 E H`, and a term of `ModelWithCorners.MfldCat I n` (a `C^n` manifold
-modeled on `I`). Thus `MfldCat 𝕜 n` includes manifolds with boundary and corners.
+to vary between objects. Each object bundles a model vector space `E`, a model space `H`, a model
+with corners `I : ModelWithCorners 𝕜 E H`, and a manifold `ModelWithCorners.MfldCat I n`.
 
-The functor `MfldCat.fromModelWithCorners I n : ModelWithCorners.MfldCat I n ⥤ MfldCat 𝕜 n`
-interprets a manifold modeled on a fixed `I` as an object of `MfldCat 𝕜 n`; this is how concrete
-constructions performed in the fixed-model world carry over.
-
-We also implement `HasForget₂ (MfldCat 𝕜 n) TopCat`—the forgetful functor into the category of
-topological spaces—and `MfldCat.ofNormedSpace`, which realizes a normed space as a `C^n` manifold
-modeled on itself.
+We define several standard constructions:
+* `MfldCat.fromModelWithCorners I n : ModelWithCorners.MfldCat I n ⥤ MfldCat 𝕜 n` realizes the
+category of manifolds on a fixed model space `I` as a subcategory of `MfldCat 𝕜 n`.
+* `HasForget₂ (MfldCat 𝕜 n) TopCat` is the forgetful functor into the category of topological spaces
+* `MfldCat.ofNormedSpace`, realizes a normed space as a `C^n` manifold modeled on itself.
 
 ## Implementation notes
 
