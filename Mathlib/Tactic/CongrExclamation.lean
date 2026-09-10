@@ -95,7 +95,7 @@ public meta section
 
 universe u v
 
-open Lean Meta Elab Tactic
+open Lean Mathlib Meta Elab Tactic
 
 initialize registerTraceClass `congr!
 initialize registerTraceClass `congr!.synthesize
@@ -669,7 +669,7 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   let s ← saveState
   /- We do `liftReflToEq` here rather than in `preCongr!` since we don't want to commit to it
      if there are no relevant congr lemmas. -/
-  let mvarId ← Mathlib.Tactic.liftReflToEq mvarId
+  let mvarId ← liftReflToEq mvarId
   for (passName, pass) in congrPasses! do
     try
       if let some mvarIds ← pass config mvarId then
