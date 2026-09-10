@@ -247,6 +247,8 @@ def _root_.Isometric.toDilation (f : α → β) (hf : Isometric f) : α →ᵈ �
 
 @[deprecated (since := "2026-09-10")] alias _root_.Isometry.toDilation :=
   _root_.Isometric.toDilation
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.toDilation_toFun :=
+  _root_.Isometric.toDilation_toFun
 
 @[simp]
 lemma _root_.Isometric.toDilation_ratio {f : α → β} {hf : Isometric f} :

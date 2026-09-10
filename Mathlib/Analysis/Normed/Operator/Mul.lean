@@ -105,6 +105,8 @@ a C⋆-norm when the norm on `A` is a C⋆-norm. -/
 class _root_.RegularNormedAlgebra : Prop where
   /-- The left regular representation of the algebra on itself is an isometry. -/
   isometric_mul' : Isometric (mul 𝕜 R)
+@[deprecated (since := "2026-09-10")]
+alias RegularNormedAlgebra.isometry_mul' := RegularNormedAlgebra.isometric_mul'
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
 instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [NontriviallyNormedField 𝕜]

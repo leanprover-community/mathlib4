@@ -839,6 +839,11 @@ def Isometric.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f 
 @[deprecated (since := "2026-09-10")] alias Isometry.isometryEquivOnRange :=
   Isometric.isometryEquivOnRange
 
+@[deprecated (since := "2026-09-10")] alias Isometry.isometryEquivOnRange_apply :=
+  Isometric.isometryEquivOnRange_apply
+@[deprecated (since := "2026-09-10")] alias Isometry.isometryEquivOnRange_toEquiv :=
+  Isometric.isometryEquivOnRange_apply
+
 open NNReal in
 /-- Post-composition by an isometry does not change the Lipschitz-property of a function. -/
 lemma Isometric.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
