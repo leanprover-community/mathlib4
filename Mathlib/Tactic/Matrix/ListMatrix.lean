@@ -39,8 +39,6 @@ def dotProduct [Mul α] [Add α] [Zero α] : ℕ → List α → List α → α
   | 0, _, _ => 0
   | n + 1, l₁, l₂ => l₁.headD 0 * l₂.headD 0 + dotProduct n l₁.tail l₂.tail
 
-/-! Controlled unfolding helpers of `dotProduct` -/
-
 theorem dotProduct_zero [Mul α] [Add α] [Zero α] (l₁ l₂ : List α) : dotProduct 0 l₁ l₂ = 0 :=
   rfl
 
@@ -89,9 +87,11 @@ theorem getD_mul [Mul α] [Add α] [Zero α] {l m n i j : ℕ} (A B : List (List
     ((mul l m n A B).getD i []).getD j 0 =
       dotProduct m (A.getD i []) ((transpose n B).getD j []) := by
   have hA : (A.rightpad l []).getD i [] = A.getD i [] := by grind [List.rightpad]
-  rw [mul, ← List.getElem_eq_getD (i := i), List.getElem_map, List.getElem_eq_getD, hA,
-    ← List.getElem_eq_getD, List.getElem_map, List.getElem_eq_getD]
-  · simp [hj]
-  · grind [List.rightpad]
+  rw [← List.getElem_eq_getD (i := i) (h := ?_)]
+  · simp only [mul, List.getElem_map]
+    rw [List.getElem_eq_getD [], hA, ← List.getElem_eq_getD (i := j) (h := ?_)]
+    · grind
+    · simpa using hj
+  · simp [mul]; lia
 
 end Mathlib.Tactic.Matrix.ListMatrix

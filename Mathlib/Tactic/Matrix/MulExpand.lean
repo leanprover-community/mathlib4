@@ -18,7 +18,8 @@ whose entries are the sums of products of the entries, with the proof for other 
 consume in `MetaM`.
 
 The entries are obtained by unfolding equations of `ListMatrix.dotProduct` one term at a time,
-instead of leaving the unfolding to the kernel, which can trigger evaluation of arithmetic.
+instead of leaving the unfolding to the kernel, which can trigger evaluation of arithmetic
+prematurely.
 -/
 
 public meta section
