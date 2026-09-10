@@ -114,9 +114,8 @@ variable (G : Type*) [Group G] [UniformSpace G] [IsRightUniformGroup G]
 -- not an instance for performance reasons, see benchmark on PR #42117
 theorem completeSpace_of_weaklyLocallyCompactSpace
     [WeaklyLocallyCompactSpace G] : CompleteSpace G :=
-  have := IsLeftUniformGroup.completeSpace_of_weaklyLocallyCompactSpace Gᵐᵒᵖ
-  IsUniformInducing.completeSpace ⟨comap_uniformity_mulOpposite⟩
-    (MulOpposite.op_surjective.range_eq ▸ isComplete_univ)
+  completeSpace_mulOpposite_iff.1
+    (IsLeftUniformGroup.completeSpace_of_weaklyLocallyCompactSpace Gᵐᵒᵖ)
 
 end IsRightUniformGroup
 

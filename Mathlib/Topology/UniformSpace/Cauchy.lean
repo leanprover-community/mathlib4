@@ -411,6 +411,15 @@ instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒ�
       let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
       ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
 
+@[to_additive]
+theorem completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α where
+  mpr _ := inferInstance
+  mp _ :=
+    { complete hf :=
+      MulOpposite.unop_surjective.exists.mpr <|
+        let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_op)
+        ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_op_nhds _⟩}
+
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
   ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
