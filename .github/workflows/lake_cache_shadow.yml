@@ -418,7 +418,7 @@ jobs:
       # fails the job: it has no other upload path.
       - name: Mint short-lived R2 credentials from the broker
         id: mint
-        uses: leanprover-community/mathlib-ci/.github/actions/broker-create-s3-credentials@99886d844428186a1f096797057c06d7f4835c67 # mathlib-ci#67
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@eefa5304fcda37696e07a4c2e25e7b9a696add09 # mathlib-ci#67
         with:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
@@ -429,14 +429,14 @@ jobs:
       # on the way.
       - name: Export the minted credential in Lake's shape
         env:
-          MINTED: ${{ steps.mint.outputs.minted }}
+          SUCCESS: ${{ steps.mint.outputs.success }}
           GRANT: ${{ steps.mint.outputs.grant }}
           ACCESS_KEY_ID: ${{ steps.mint.outputs.access-key-id }}
           SECRET_ACCESS_KEY: ${{ steps.mint.outputs.secret-access-key }}
           SESSION_TOKEN: ${{ steps.mint.outputs.session-token }}
         run: |
-          if [ "${MINTED}" != "true" ]; then
-            echo "::error::the mint step set no minted=true output"
+          if [ "${SUCCESS}" != "true" ]; then
+            echo "::error::the mint step set no success=true output"
             exit 1
           fi
           for name in ACCESS_KEY_ID SECRET_ACCESS_KEY SESSION_TOKEN; do
