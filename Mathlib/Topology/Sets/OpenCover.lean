@@ -126,7 +126,7 @@ theorem IsPreirreducible.of_subset_iUnion {X ι : Type*} [TopologicalSpace X]
 theorem PreirreducibleSpace.of_isOpenCover {X ι : Type*} [TopologicalSpace X]
     {U : ι → Opens X} (hn : Pairwise' ((¬ Disjoint · ·) on U)) (hU : IsOpenCover U)
     (h : ∀ i, PreirreducibleSpace (U i)) :
-    PreirreducibleSpace X := 
+    PreirreducibleSpace X :=
   have h' (i : _) : IsPreirreducible (U i).carrier := IsPreirreducible.of_subtype
   ⟨IsPreirreducible.of_subset_iUnion hn h' isOpen_univ (by simpa using hU.iSup_set_eq_univ)⟩
 
