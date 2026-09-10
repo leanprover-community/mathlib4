@@ -145,7 +145,7 @@ variable {L : Type v} [AddCommGroup L] [Module R L]
 @[reassoc]
 lemma map_id : map φ LinearMap.id φ (LinearMap.comp_id φ) = 𝟙 _ := by
   ext i x
-  simp [map_f, exteriorPower.map_id]
+  simp [map_f, exteriorPower.map_id, ChainComplex.of_X]
 
 @[reassoc]
 lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ'' : L →ₗ[R] R)
