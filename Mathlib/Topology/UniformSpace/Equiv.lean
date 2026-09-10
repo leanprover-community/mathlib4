@@ -359,11 +359,11 @@ def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
 
 variable {α} in
 @[to_additive]
-theorem completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
+theorem _root_.completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
   MulOpposite.opUniformEquiv.symm.completeSpace_iff
 
 @[to_additive]
-instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ :=
+instance _root_.CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ :=
   completeSpace_mulOpposite_iff.2 ‹CompleteSpace α›
 
 end
