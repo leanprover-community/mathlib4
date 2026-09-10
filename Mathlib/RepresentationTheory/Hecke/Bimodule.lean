@@ -10,11 +10,12 @@ public import Mathlib.RepresentationTheory.Hecke.LeftFiniteDoubleCoset
 public import Mathlib.RepresentationTheory.Hecke.StructureConst
 
 /-!
-# Hecke bimodules and action on Hecke modules
+# Hecke bimodules and Hecke algebras
 
 This file introduces the Hecke bimodule `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])`, which naturally can be viewed
 as an `(End_G(k[G ⧸ H₁])ᵒᵖ, End_G(k[G ⧸ H₂]))`-bimodule. We identify this intertwining space with
-the free module over double cosets admitting finite left-coset decomposition.
+the free module over double cosets admitting finite left-coset decomposition. We then add an
+`MulOpposite` layer to transport everything to the Hecke algebra `End_G(k[G ⧸ H₁])ᵒᵖ`.
 -/
 
 @[expose] public section
@@ -130,8 +131,8 @@ lemma ext_coeff {x y : HeckeBimodule k H₁ H₂} (hxy : ∀ z, x.coeff z = y.co
       exact hc ⟨DoubleCoset₀.mk H₁ H₂ c.out, mem_leftDecomposition_mk.mpr rfl⟩
     rw [hzero, hzero]
 
-/-- The linearization of `HeckeBimodule.mk` gives a linear equivalence from
-`DoubleCoset₀ H₁ H₂ →₀ k` to the Hecke bimodule `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])`. -/
+/-- The linearization of `mk` gives a linear equivalence from `DoubleCoset₀ H₁ H₂ →₀ k` to the
+Hecke bimodule `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])`. -/
 noncomputable def mkLinearEquiv :
     (DoubleCoset₀ H₁ H₂ →₀ k) ≃ₗ[k] HeckeBimodule k H₁ H₂ where
   toLinearMap := Finsupp.lift _ k _ mk
@@ -179,7 +180,8 @@ lemma action_mk_apply (x : DoubleCoset₀ H₁ H₂) (v : HeckeModule H₂ ρ) :
   rw [action_eq_comp, IntertwiningMap.comp_apply, mk_apply, doubleCosetVector_def, map_sum]
 
 theorem action_mk_mk (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H₃) :
-    (mk x).action (mk y) (k := k) = (x.structureConst y).sum fun w n => n • (mk w) := by classical
+    (mk x).action (mk y) (k := k) = (x.structureConst y).sum fun w n => (n : k) • (mk w) := by
+  classical
   refine ext_coeff fun z => calc
   _ = (x.structureConst y z : k) := by
     rw [← DoubleCoset₀.mk_rep z, DoubleCoset₀.structureConst_coe, structureConst_mk, coeff_apply]
@@ -189,5 +191,112 @@ theorem action_mk_mk (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H�
 end Action
 
 end HeckeBimodule
+
+variable {W : Type*} [AddCommGroup W] [Module k W] (σ : Representation k G W)
+
+instance : SMul (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap σ ρ) where
+  smul f g := g.comp f.unop
+
+lemma IntertWiningMap.op_smul_eq_precomp (f : MulOpposite (IntertwiningMap σ σ))
+    (g : IntertwiningMap σ ρ) :
+    f • g = g.comp f.unop := rfl
+
+instance : Module (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap σ ρ) :=
+  fast_instance%
+  { one_smul _ := rfl, mul_smul _ _ _ := rfl,
+    smul_zero _ := by ext; simp [IntertWiningMap.op_smul_eq_precomp],
+    smul_add f x y := IntertwiningMap.comp_add _ _ _ x y f.unop,
+    add_smul x y f := IntertwiningMap.add_comp _ _ _ f x.unop y.unop,
+    zero_smul _ := by ext; simp [IntertWiningMap.op_smul_eq_precomp]}
+
+variable (k H) in
+/-- The standard Hecke algebra. -/
+abbrev HeckeAlgebra := MulOpposite (HeckeBimodule k H H)
+
+namespace HeckeAlgebra
+
+/-- The element of the Hecke algebra attached to a double coset `HgH` admitting finite left-coset
+decomposition, which is constructed from the charateristic function on `HgH`. -/
+noncomputable def mk (x : DoubleCoset₀ H H) :
+    HeckeAlgebra k H := MulOpposite.opLinearEquiv k (HeckeBimodule.mk x)
+
+lemma mk_eq_op_mk (x : DoubleCoset₀ H H) :
+    mk x (k := k) = MulOpposite.op (HeckeBimodule.mk x) := rfl
+
+lemma mk_one :
+    mk (DoubleCoset₀.mk H H 1) (k := k) = 1 := by classical
+  simp only [mk, MulOpposite.coe_opLinearEquiv, MulOpposite.op_eq_one_iff]
+  ext c
+  refine QuotientGroup.induction_on c ?_
+  simp only [HeckeBimodule.mk_apply, coeff_doubleCosetVector, mem_leftDecomposition_mk, eq,
+    IntertwiningMap.coe_one, id_eq, coeff_cosetVector, Finsupp.single_apply, QuotientGroup.eq,
+    inv_one, one_mul]
+  refine fun z => if_congr ⟨?_, ?_⟩ rfl rfl
+  · rintro ⟨h, hh, l, hl, heq⟩
+    rw [show z = h⁻¹ * (h * z * l) * l⁻¹ by simp [mul_assoc], ← heq]
+    simp [H.inv_mem, H.mul_mem, hl, hh]
+  · exact fun hz => ⟨z⁻¹, H.inv_mem hz, 1, H.one_mem, by simp⟩
+
+lemma smul_eq_comp (f : HeckeAlgebra k H) (v : HeckeModule H ρ) :
+    f • v = v.comp f.unop := rfl
+
+lemma smul_eq_mul (f g : HeckeAlgebra k H) :
+    f • g = f * g := rfl
+
+lemma mul_eq_action (f g : HeckeAlgebra k H) :
+    f * g = MulOpposite.op (HeckeBimodule.action f.unop g.unop) := rfl
+
+lemma mk_mul_mk (x y : DoubleCoset₀ H H) :
+    (mk x (k := k)) * (mk y) = (x.structureConst y).sum fun w n => (n : k) • (mk w) := by
+  simp only [mul_eq_action, mk, ← (MulOpposite.opLinearEquiv k).map_smul, ← map_finsuppSum]
+  simp [HeckeBimodule.action_mk_mk]
+
+/-- The linearization of `mk` gives a linear equivalence from `DoubleCoset₀ H H →₀ k` to the
+Hecke algebra `End_G(k[G ⧸ H])ᵒᵖ`. -/
+noncomputable def mkLinearEquiv :
+    (DoubleCoset₀ H H →₀ k) ≃ₗ[k] HeckeAlgebra k H :=
+  HeckeBimodule.mkLinearEquiv.trans (MulOpposite.opLinearEquiv k)
+
+@[simp]
+lemma mkLinearEquiv_apply (x : DoubleCoset₀ H H) (r : k) :
+    mkLinearEquiv (.single x r) = r • (mk x) := by
+  simp [mkLinearEquiv, mk]
+
+/-- The linear map sending Hecke algebra elements to coordinates in the basis given by `mk`. -/
+noncomputable def coeff :
+    HeckeAlgebra k H →ₗ[k] (DoubleCoset₀ H H →₀ k) := mkLinearEquiv.symm.toLinearMap
+
+lemma coeff_eq_unop_coeff (f : HeckeAlgebra k H) :
+    f.coeff = f.unop.coeff := rfl
+
+@[simp]
+lemma mkLinearEquiv_symm_apply (f : HeckeAlgebra k H) :
+    mkLinearEquiv.symm f = f.coeff := rfl
+
+@[simp]
+lemma coeff_mk_eq_single (x y : DoubleCoset₀ H H) [Decidable (x = y)] :
+    (mk x).coeff y = if x = y then (1 : k) else 0 := by
+  simp [coeff_eq_unop_coeff, mk_eq_op_mk, Finsupp.single_apply]
+
+@[ext]
+lemma ext {f g : HeckeAlgebra k H} (h : ∀ x, f.coeff x = g.coeff x) :
+    f = g := by
+  apply mkLinearEquiv.symm.injective
+  ext x
+  exact h x
+
+lemma inductionOn {p : HeckeAlgebra k H → Prop} (f : HeckeAlgebra k H)
+    (mk' : ∀ x : DoubleCoset₀ H H, p (mk x))
+    (smul : ∀ (r : k) x , p x → p (r • x))
+    (add : ∀ x y, p x → p y → p (x + y)) :
+    p f := by
+  rw [← MulOpposite.op_unop f]
+  refine HeckeBimodule.inductionOn f.unop (p := fun x => p (MulOpposite.op x)) ?_ ?_ ?_ ?_
+  · simpa using smul 0 (mk (DoubleCoset₀.mk H H 1)) (mk' (DoubleCoset₀.mk H H 1))
+  · exact fun x => by simpa [HeckeAlgebra.mk] using mk' x
+  · exact fun r x hx => by simpa using smul r (MulOpposite.op x) hx
+  · exact fun x y hx hy => by simpa using add (MulOpposite.op x) (MulOpposite.op y) hx hy
+
+end HeckeAlgebra
 
 end Representation

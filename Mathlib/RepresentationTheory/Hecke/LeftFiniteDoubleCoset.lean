@@ -269,16 +269,6 @@ lemma mk_mul_mem [IsLeftFinite H₁ H₂ g] (h₂ : H₂) :
     mk H₁ H₂ (g * h₂) = mk H₁ H₂ g := by
   simp [mk]
 
-@[simp]
-lemma diag_mk_one_rep_mem (H : Subgroup G) : (mk H H 1).rep ∈ H := by
-  obtain ⟨_, h₁, _, h₂, heq⟩ := mk_eq.mp (show mk H H 1 = mk H H (mk H H 1).rep from by simp)
-  simp [heq, H.mul_mem h₁ h₂]
-
-@[simp]
-lemma diag_mk_one_degree_eq_one (H : Subgroup G) : (mk H H 1).degree = 1 := by
-  rw [mk_degree, leftDecompQuotient.natCard_eq_relIndex, ConjAct.toConjAct_one, one_smul,
-    Subgroup.relIndex_self]
-
 noncomputable instance (x : DoubleCoset₀ H₁ H₂) : Fintype x.leftDecomposition := by
   rw [leftDecomposition, ← mk_rep_eq_val x]
   infer_instance
