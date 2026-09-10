@@ -145,6 +145,11 @@ The trust model does not attempt to defend against:
   whichever host answers a read carries the storage tenant's trust. That is the
   default read host `https://cache.mathlib.org`, or a host named by
   `MATHLIB_CACHE_GET_URL`.
+- **Substituted write endpoint** — the cache does not verify the host it uploads
+  to: whichever host `MATHLIB_CACHE_PUT_URL` or `MATHLIB_CACHE_PUT_BASE_URL`
+  names receives the upload, and on the azure backend the bearer token with it.
+  The trusted branch's workflow defines the upload job's environment, and a
+  token captured this way stays bounded by Layer 1.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
 - **Maintainer trust on the trusted branches** — write access to a branch the
   cache binary is built from can land a bad tool, workflow, or toolchain.
