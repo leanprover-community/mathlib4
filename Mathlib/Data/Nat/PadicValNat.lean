@@ -9,15 +9,7 @@ public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.RingTheory.Multiplicity
 
 /-!
-# The maximal power of one natural number dividing another
-
-Here we introduce `p.maxPowDvd n` which returns the maximal `k : ℕ` for
-which `p ^ k ∣ n` with the convention that `maxPowDvd 1 n = 0` for all `n`.
-
-We prove enough about `maxPowDvd` in this file to show equality with `Nat.padicValNat` in
-`padicValNat.padicValNat_eq_maxPowDvd`.
-
-The implementation of `maxPowDvd` improves on the speed of `padicValNat`.
+# The p-adic valuation on natural numbers
 -/
 
 @[expose] public section
