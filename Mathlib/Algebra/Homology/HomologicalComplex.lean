@@ -638,7 +638,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
-@[implicit_reducible]
+@[implicit_reducible, simps X]
 def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     ChainComplex V α :=
   { X := X
@@ -650,13 +650,10 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 
-theorem of_X : (of X d sq).X = X :=
-  rfl
-
-theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
+@[simp]
+theorem of_d (j : α) : dsimp% (of X d sq).d (j + 1) j = d j := by
   simp [of]
 
-@[simp]
 theorem of_d' (j i : α) (h : i = j + 1 := by omega) : (of X d sq).d i j =
     eqToHom (by rw [h, of_X]) ≫ d j := by
   simp [of, h]
