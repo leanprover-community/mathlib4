@@ -38,6 +38,7 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `ProofWidgets,
   `Archive,
   `Counterexamples,
+  `Wanted,
   `MathlibTest,
   -- Allow PRs to upload oleans for Reap for testing.
   `Requests,
@@ -68,9 +69,31 @@ initialize CACHEDIR : FilePath ← do
       | some path => return path / ".cache" / "mathlib"
       | none => pure ⟨".cache"⟩
 
-/-- Target file path for `curl` configurations -/
+/--
+A tag unique to this `cache` process, mixed into the names of every temporary file it writes into
+`CACHEDIR`.
+
+`CACHEDIR` is shared by design: it defaults to one directory per user
+(`~/.cache/mathlib`), so every checkout, worktree, and CI job on a machine pools its
+downloads there. Two `cache` runs can therefore be in flight in it at once, and until
+they were tagged they wrote each other's files — one run's `curl.cfg` overwritten by the
+other's before curl read it (so it fetched the wrong list, then reported the files it was
+actually asked for as missing and rebuilt them), and, worse, two curls writing one
+`<hash>.ltar.part` and renaming the interleaved result into place, leaving a corrupt
+`.ltar` that every later run would find, trust, and fail to decompress.
+-/
+initialize PROCTAG : String ← toString <$> IO.Process.getPID
+
+/-- Target file path for `curl` configurations. One per process; see `PROCTAG`. -/
 def CURLCFG :=
-  IO.CACHEDIR / "curl.cfg"
+  IO.CACHEDIR / s!"curl-{PROCTAG}.cfg"
+
+/--
+Suffix for a download still in flight, before it is renamed to `<hash>.ltar`. One per process; see
+`PROCTAG`.
+-/
+def PARTSUFFIX :=
+  s!".{PROCTAG}.part"
 
 /-- curl version at https://github.com/leanprover-community/static-curl -/
 def CURLVERSION :=
@@ -120,7 +143,7 @@ NOTE: making changes to the generated `.ltar` files invalidates them while it *d
 the file hash! This means any such change needs to be accompanied by a change
 to the root hash affecting *all* files
 (e.g. any modification to lakefile, lean-toolchain or manifest). -/
-def rootHashGeneration : UInt64 := 4
+def rootHashGeneration : UInt64 := 5
 
 /--
 `CacheM` stores the following information:
@@ -202,16 +225,19 @@ where
       loop h (← processLine a line)
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
+def runCmd (cmd : String) (args : Array String)
+    (throwFailure stderrAsErr showArgsOnError := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
   if (out.exitCode != 0 || stderrAsErr && !out.stderr.isEmpty) && throwFailure then
-    throw <| IO.userError s!"failure in {cmd} {args}:\n{out.stderr}"
+    let invocation := if showArgsOnError then s!"{cmd} {args}" else cmd
+    throw <| IO.userError s!"failure in {invocation}:\n{out.stderr}"
   else if !out.stderr.isEmpty then
     IO.eprintln out.stderr
   return out.stdout
 
-def runCurl (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
-  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr
+def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true) :
+    IO String := do
+  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr showArgsOnError
 
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
@@ -235,11 +261,15 @@ def validateCurl : IO Bool := do
           "-L", "-o", CURLBIN.toString]
         let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
         return true
-      if version >= (7, 70) then
+      -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
+      -- and read the `exitcode` and `errormsg` fields of the per-transfer
+      -- JSON report (curl 7.75); an older curl rejects the flag or omits
+      -- the fields.
+      if version >= (7, 75) then
         IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"Warning: recommended `curl` version ≥7.70. Found {v}. Can't use `--parallel`."
+        IO.println s!"Warning: recommended `curl` version ≥7.75. Found {v}. Can't use `--parallel`."
         return false
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
@@ -310,6 +340,8 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "olean.private.hash", false),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "ir.sig", false),
+    (packageDir / LIBDIR / path.withExtension "ir.sig.hash", false),
     (packageDir / LIBDIR / path.withExtension "ir", false),
     (packageDir / LIBDIR / path.withExtension "ir.hash", false),
     (packageDir / IRDIR  / path.withExtension "c", true),

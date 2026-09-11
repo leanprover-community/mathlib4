@@ -3,8 +3,10 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Heather Macbeth
 -/
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Positivity
 
 /-!
 # The Motzkin polynomial
@@ -21,7 +23,7 @@ variable {K : Type*} [CommRing K] [LinearOrder K] [IsStrictOrderedRing K]
 
 /-- The **Motzkin polynomial** is nonnegative.
 This bivariate polynomial cannot be written as a sum of squares. -/
-lemma motzkin_polynomial_nonneg (x y : K) :
+public lemma motzkin_polynomial_nonneg (x y : K) :
     0 ≤ x ^ 4 * y ^ 2 + x ^ 2 * y ^ 4 - 3 * x ^ 2 * y ^ 2 + 1 := by
   by_cases hx : x = 0
   · simp [hx]

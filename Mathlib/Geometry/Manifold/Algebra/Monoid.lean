@@ -6,7 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
@@ -305,7 +304,7 @@ instance : One (ContMDiffMonoidMorphism I I' n G G') :=
 instance : Inhabited (ContMDiffMonoidMorphism I I' n G G') :=
   ⟨1⟩
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike (ContMDiffMonoidMorphism I I' n G G') G G' where
   coe a := a.toFun
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h

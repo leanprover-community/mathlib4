@@ -113,7 +113,6 @@ noncomputable def cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
   (S.mapCyclesIso (forget₂ C Ab)).hom ((ShortComplex.abCyclesIso _).inv ⟨x₂, hx₂⟩)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma i_cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
     (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
@@ -166,7 +165,6 @@ lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁
   rw [ConcreteCategory.comp_apply, eq₁]
   exact h₁.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)

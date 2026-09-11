@@ -9,7 +9,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.Clopen
 
 /-!
-## Ultrametric spaces
+# Ultrametric spaces
 
 This file defines ultrametric spaces, implemented as a mixin on the `Dist`,
 so that it can apply on pseudometric spaces as well.

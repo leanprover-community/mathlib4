@@ -147,7 +147,7 @@ namespace Classical
 open PSet ZFSet
 
 /-- All functions are classically definable. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}) : Definable n F where
   out xs := (F (mk <| xs ·)).out
 
@@ -509,7 +509,7 @@ lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe
   simp [mem_sInter h]
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
-  let this := congr_arg sUnion H
+  let := congr_arg sUnion H
   rwa [sUnion_singleton, sUnion_singleton] at this
 
 @[simp]
@@ -563,12 +563,12 @@ def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
   toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
   invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 sep_subset⟩
   left_inv := by simp +contextual [Function.LeftInverse]
-  right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.setOf_and]
+  right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.ofPred_and]
 
 theorem insert_eq (x y : ZFSet) : insert x y = {x} ∪ y := by
   ext; simp
 
-theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
+instance mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 
@@ -576,9 +576,6 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
 @[elab_as_elim]
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
   mem_wf.induction x h
-
-instance : IsWellFounded ZFSet (· ∈ ·) :=
-  ⟨mem_wf⟩
 
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
@@ -639,6 +636,7 @@ variable {α : Type*} [Small.{u} α]
 noncomputable def range (f : α → ZFSet.{u}) : ZFSet.{u} :=
   ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ ∃ i, f i = x :=
   Quotient.inductionOn x fun y => by

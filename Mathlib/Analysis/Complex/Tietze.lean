@@ -17,7 +17,7 @@ There are two main results here:
 
 - `RCLike.instTietzeExtensionTVS`: finite-dimensional topological vector spaces over `ℝ` (or `ℂ`)
   have the Tietze extension property.
-- `BoundedContinuousFunction.exists_norm_eq_restrict_eq`: when mapping into a finite-dimensional
+- `BoundedContinuousFunction.exists_norm_eq_domRestrict_eq`: when mapping into a finite-dimensional
   normed vector space over `ℝ` (or `ℂ`), the extension can be chosen to preserve the norm of the
   bounded continuous function it extends.
 
@@ -110,8 +110,8 @@ include 𝕜 hs in
 embedding and bundled composition. If `e : C(X, Y)` is a closed embedding of a topological space
 into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous function, then there exists
 a bounded continuous function `g : Y →ᵇ ℝ` of the same norm such that `g ∘ e = f`. -/
-theorem exists_norm_eq_restrict_eq (f : s →ᵇ E) :
-    ∃ g : X →ᵇ E, ‖g‖ = ‖f‖ ∧ g.restrict s = f := by
+theorem exists_norm_eq_domRestrict_eq (f : s →ᵇ E) :
+    ∃ g : X →ᵇ E, ‖g‖ = ‖f‖ ∧ g.domRestrict s = f := by
   by_cases hf : ‖f‖ = 0; · exact ⟨0, by aesop⟩
   have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by simp_all : 0 < ‖f‖)
   have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using! f.norm_coe_le_norm x
@@ -124,5 +124,8 @@ theorem exists_norm_eq_restrict_eq (f : s →ᵇ E) :
   have hx : f x = g' x := by simpa using! congr($(hg) x).symm
   rw [hx]
   exact g'.norm_le (norm_nonneg g') |>.mp le_rfl x
+
+@[deprecated (since := "2026-07-19")]
+alias exists_norm_eq_restrict_eq := exists_norm_eq_domRestrict_eq
 
 end BoundedContinuousFunction

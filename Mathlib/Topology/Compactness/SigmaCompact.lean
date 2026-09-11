@@ -199,7 +199,9 @@ variable [SigmaCompactSpace X]
 open SigmaCompactSpace
 
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
-def compactCovering : ℕ → Set X :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def compactCovering : ℕ → Set X :=
   accumulate exists_compact_covering.choose
 
 theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
@@ -280,7 +282,7 @@ protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyF
 
 /-- If `f : ι → Set X` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
   @Encodable.ofEquiv _ _ (hf.countable_univ hne).toEncodable (Equiv.Set.univ _).symm
@@ -331,6 +333,7 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
+@[macro_inline]
 instance : FunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
   coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl

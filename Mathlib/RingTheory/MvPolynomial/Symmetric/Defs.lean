@@ -6,8 +6,8 @@ Authors: Hanting Zhang, Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -70,6 +70,14 @@ variable {R : Type*} [CommSemiring R]
 def esymm (s : Multiset R) (n : ℕ) : R :=
   ((s.powersetCard n).map Multiset.prod).sum
 
+@[simp] lemma esymm_zero (s : Multiset R) :
+    s.esymm 0 = 1 := by
+  simp [esymm]
+
+lemma esymm_of_card_lt {s : Multiset R} {n : ℕ} (h : s.card < n) :
+    s.esymm n = 0 := by
+  simp [esymm, powersetCard_eq_empty _ h]
+
 theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
     (s.val.map f).esymm n = (s.powersetCard n).sum fun t => t.prod f := by
   simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
@@ -106,7 +114,7 @@ def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
 
 /-- The subalgebra of symmetric `MvPolynomial`s. -/
 def symmetricSubalgebra (σ R : Type*) [CommSemiring R] : Subalgebra R (MvPolynomial σ R) where
-  carrier := setOf IsSymmetric
+  carrier := Set.ofPred IsSymmetric
   algebraMap_mem' r e := rename_C e r
   mul_mem' ha hb e := by rw [map_mul, ha, hb]
   add_mem' ha hb e := by rw [map_add, ha, hb]
@@ -173,6 +181,7 @@ end CommRing
 
 end IsSymmetric
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
 @[simps! apply_coe symm_apply_coe]
 def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :

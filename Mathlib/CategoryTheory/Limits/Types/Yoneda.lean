@@ -6,6 +6,7 @@ Authors: Kim Morrison, Reid Barton
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Cones and limits
@@ -22,7 +23,7 @@ universe v u
 
 namespace CategoryTheory.Limits
 
-open Functor Opposite
+open CategoryTheory.Functor Opposite
 
 section
 
@@ -43,7 +44,6 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
   invFun τ := ⟨τ.app, fun {j j'} f => by simpa using! (τ.naturality f).symm⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
 @[simps]
@@ -89,9 +89,9 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
   inv := ↾fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
     simp [Functor.sections, ← t.naturality]) ⟨⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp←] comp_apply in
-set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `F` and `X`. -/

@@ -63,6 +63,7 @@ variable [Module A M] [Module B M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
+@[macro_inline]
 instance : FunLike (Derivation R A M) A M where
   coe D := D.toFun
   coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
@@ -240,6 +241,15 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
 instance : AddCommMonoid (Derivation R A M) :=
   coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => rfl) fun _ _ => rfl
 
+/-- `coe` as an `AddMonoidHom`. -/
+def coeAddMonoidHom : Derivation R A M →+ A →ₗ[R] M where
+  toFun := (↑)
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+@[simp]
+lemma coeAddMonoidHom_apply (D : Derivation R A M) : coeAddMonoidHom D = D := rfl
+
 /-- `coeFn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := (⇑)
@@ -261,6 +271,16 @@ instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M)
 
 instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
+
+theorem coe_sum_linearMap {ι : Type*} (t : Finset ι) (f : ι → Derivation R A M) :
+    ∑ i ∈ t, f i = ∑ i ∈ t, (f i : A →ₗ[R] M) :=
+  _root_.map_sum coeAddMonoidHom f t
+
+instance : IsZeroApply (Derivation R A M) A M where
+  zero_apply := by simp
+
+instance : IsAddApply (Derivation R A M) A M where
+  add_apply := by simp
 
 end Scalar
 
@@ -455,7 +475,7 @@ variable {A : Type*} [CommRing A] [Algebra R A]
 section
 
 variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
-variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
+variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (a b : A)
 
 protected theorem map_neg : D (-a) = -D a :=
   map_neg D a

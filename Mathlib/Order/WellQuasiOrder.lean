@@ -88,8 +88,8 @@ product of well-quasi-ordered sets and `Pi.wellQuasiOrderedLE` when the relation
 theorem WellQuasiOrdered.pi {ι : Type*} {α : ι → Type*} [Finite ι] {r : ∀ i, (α i → α i → Prop)}
     [∀ i, IsPreorder (α i) (r i)] (hr : ∀ i, WellQuasiOrdered (r i)) :
     WellQuasiOrdered fun a b : ∀ i, α i => ∀ i, r i (a i) (b i) := by
-  haveI := Fintype.ofFinite ι
-  haveI : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
+  have := Fintype.ofFinite ι
+  have : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
     { refl a i := refl (a i)
       trans a b c hab hbc i := _root_.trans (hab i) (hbc i) }
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ i, α i),
@@ -144,7 +144,7 @@ lemma Finite.to_wellQuasiOrderedLE [Finite α] : WellQuasiOrderedLE α where
 
 instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrderedLE α] :
     WellFoundedLT α := by
-  rw [WellFoundedLT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+  rw [WellFoundedLT, RelEmbedding.wellFounded_iff_isEmpty]
   refine ⟨fun f ↦ ?_⟩
   obtain ⟨a, b, h, hf⟩ := wellQuasiOrdered_le f
   exact (f.map_rel_iff.2 h).not_ge hf
@@ -169,7 +169,7 @@ theorem wellQuasiOrderedLE_iff :
     fun ⟨hwf, hc⟩ ↦ ⟨fun f ↦ ?_⟩⟩
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq (· > ·) f
   · exfalso
-    apply RelEmbedding.not_wellFounded _ hwf.wf
+    apply RelEmbedding.not_wellFounded _ hwf
     exact (RelEmbedding.ofMonotone _ h1).swap
   · contrapose! hc
     refine ⟨Set.range (f ∘ g), ?_, ?_⟩

@@ -37,7 +37,7 @@ conditional expectation, pull-out, bilinear map
 public section
 
 
-open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
+open MeasureTheory.Lp Filter ContinuousLinearMap
 
 open scoped NNReal ENNReal Topology MeasureTheory
 

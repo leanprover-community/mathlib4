@@ -140,7 +140,6 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
   DirectSum.toSemiring_of _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
@@ -148,7 +147,6 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finsetSum_apply, AddSubmonoidClass.coe_finsetSum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) = r.sum fun i ri => r'.sum fun j rj => if i + j = n then (ri * rj : R)

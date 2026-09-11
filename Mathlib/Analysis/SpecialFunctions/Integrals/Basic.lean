@@ -47,7 +47,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} (c d : ℝ)
 
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 section
@@ -366,6 +366,17 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     · simp [hc]
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
       field_simp
+
+theorem integral_id_div_sq_add_sq {c : ℝ} (hc : c ≠ 0) :
+    ∫ x : ℝ in a..b, x / (c ^ 2 + x ^ 2) = (log (c ^ 2 + b ^ 2) - log (c ^ 2 + a ^ 2)) / 2 := by
+  rw [sub_div]
+  apply integral_eq_sub_of_hasDerivAt (f := fun x => log (c ^ 2 + x ^ 2) / 2)
+  · intro x _
+    have h := (((hasDerivAt_pow 2 x).const_add (c ^ 2)).log
+      (by dsimp; positivity)).div_const 2
+    convert! h using 1
+    ring
+  · exact (continuous_id.div (by fun_prop) fun x => by positivity).intervalIntegrable _ _
 
 /-- The integrand is chosen to match the conclusion of `Real.deriv_log_log`. -/
 @[simp]

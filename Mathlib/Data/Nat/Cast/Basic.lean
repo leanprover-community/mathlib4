@@ -28,8 +28,6 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 assert_not_exists IsOrderedMonoid Commute.zero_right Commute.add_right abs_eq_max_neg
   NeZero.natCast_ne MulOpposite.op_natCast
 
-open Additive Multiplicative
-
 variable {α β : Type*}
 
 namespace Nat
@@ -56,7 +54,7 @@ variable [NonAssocSemiring α]
 
 variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
-@[implicit_reducible]
+@[instance_reducible]
 def castRingHom : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 

@@ -109,7 +109,7 @@ instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
 lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
-  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
+  let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
   exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
 
 lemma psmul_eq_psmul (n : ℕ+) (x : X[S⁻¹]) :
@@ -203,7 +203,7 @@ instance : Ring R[S⁻¹] where
 lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
-  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
+  let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
   exact congr($(AddCommGroup.uniqueIntModule.2 inst).smul n x)
 
 open nonZeroDivisors

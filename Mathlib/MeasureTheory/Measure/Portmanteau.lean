@@ -214,16 +214,16 @@ theorem tendsto_measure_of_le_liminf_measure_of_limsup_measure_le {ι : Type*} {
     (h_E₁ : (L.limsup fun i ↦ μs i E₁) ≤ μ E₁) : L.Tendsto (fun i ↦ μs i E) (𝓝 (μ E)) := by
   apply tendsto_of_le_liminf_of_limsup_le
   · have E₀_ae_eq_E : E₀ =ᵐ[μ] E :=
-      EventuallyLE.antisymm E₀_subset.eventuallyLE
-        (subset_E₁.eventuallyLE.trans (ae_le_set.mpr nulldiff))
+      E₀_subset.eventuallySubset.antisymm <|
+        subset_E₁.eventuallySubset.trans (ae_le_set.mpr nulldiff)
     calc
       μ E = μ E₀ := measure_congr E₀_ae_eq_E.symm
       _ ≤ L.liminf fun i ↦ μs i E₀ := h_E₀
       _ ≤ L.liminf fun i ↦ μs i E :=
         liminf_le_liminf (.of_forall fun _ ↦ measure_mono E₀_subset)
   · have E_ae_eq_E₁ : E =ᵐ[μ] E₁ :=
-      EventuallyLE.antisymm subset_E₁.eventuallyLE
-        ((ae_le_set.mpr nulldiff).trans E₀_subset.eventuallyLE)
+      EventuallyLE.antisymm subset_E₁.eventuallySubset <|
+        (ae_le_set.mpr nulldiff).trans E₀_subset.eventuallySubset
     calc
       (L.limsup fun i ↦ μs i E) ≤ L.limsup fun i ↦ μs i E₁ :=
         limsup_le_limsup (.of_forall fun _ ↦ measure_mono subset_E₁)
@@ -435,7 +435,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
             Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)))
     (F : Set Ω) (F_closed : IsClosed F) :
     L.limsup (fun i ↦ μs i F) ≤ μ F := by
-  letI : PseudoMetricSpace Ω := TopologicalSpace.pseudoMetrizableSpacePseudoMetric Ω
+  let : PseudoMetricSpace Ω := TopologicalSpace.pseudoMetrizableSpacePseudoMetric Ω
   rcases L.eq_or_neBot with rfl | _
   · simp only [limsup_bot, bot_eq_zero', zero_le]
   have ex := exists_null_frontiers_thickening μ F
@@ -797,7 +797,6 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     (h : ∀ (u : Set Ω), IsOpen u → ∀ x ∈ u, ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
     {G : Set Ω} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
     ∃ T : Finset (Set Ω), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
-  classical
   obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set Ω), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
     have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : Ω) ∧ s ⊆ G := fun x ↦ h G hG x x.2
     choose! s hsS hs_nhds hsG using this

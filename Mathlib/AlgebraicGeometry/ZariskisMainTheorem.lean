@@ -71,22 +71,22 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     (hU.primeIdealOf ⟨f x, hxU⟩).asIdeal (hV.primeIdealOf ⟨x, hxV⟩).asIdeal
   have : (algebraMap R (Localization.Away e)).Finite := RingHom.finite_algebraMap.mpr ‹_›
-  let φ : Γ(S, U) ⟶ .of R := CommRingCat.ofHom <| algebraMap Γ(S, U) R
+  let φ : Γ(S, U) ⟶ ↧R := CommRingCat.ofHom <| algebraMap Γ(S, U) R
   have hφ : φ.hom.Etale := RingHom.etale_algebraMap.mpr ‹_›
   have : Etale (Spec.map φ) := HasRingHomProperty.Spec_iff.mpr hφ
-  let e₁ : Spec (.of (R ⊗ Γ(X, V))) ≅ pullback (Spec.map (f.appLE U V hUV)) (Spec.map φ) :=
+  let e₁ : Spec ↧(R ⊗ Γ(X, V)) ≅ pullback (Spec.map (f.appLE U V hUV)) (Spec.map φ) :=
     (pullbackSpecIso _ _ _).symm ≪≫ pullbackSymmetry _ _
   have he₁ : e₁.hom ≫ pullback.fst _ _ =
       Spec.map (CommRingCat.ofHom Algebra.TensorProduct.includeRight.toRingHom) := by
     dsimp [e₁, RingHom.algebraMap_toAlgebra]
     rw [Category.assoc, pullbackSymmetry_hom_comp_fst]
     exact pullbackSpecIso_inv_snd ..
-  let g : Spec (.of (R ⊗[Γ(S, U)] Γ(X, V))) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
+  let g : Spec ↧(R ⊗[Γ(S, U)] Γ(X, V)) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
     e₁.hom ≫ pullback.map _ _ _ _ hV.fromSpec (𝟙 _) hU.fromSpec
       (IsAffineOpen.SpecMap_appLE_fromSpec ..) (by simp)
   let W₁ := g ''ᵁ PrimeSpectrum.basicOpen e
   have : IsFinite (W₁.ι ≫ pullback.snd f _) := by
-    let ι : Spec (.of (Localization.Away e)) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
+    let ι : Spec ↧(Localization.Away e) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
       Spec.map (CommRingCat.ofHom <| algebraMap _ _) ≫ g
     have : ι.opensRange = W₁ := by
       simp only [Scheme.Hom.opensRange_comp, ι, W₁]
@@ -101,7 +101,7 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
   have : IsFinite W₁.ι := .of_comp _ (pullback.snd f _)
   let W₂ : (pullback f (Spec.map φ ≫ hU.fromSpec)).Opens :=
     ⟨W₁ᶜ, by simpa using W₁.ι.isClosedMap.isClosed_range⟩
-  refine ⟨Spec (.of R), Spec.map φ ≫ hU.fromSpec, inferInstance,
+  refine ⟨Spec ↧R, Spec.map φ ≫ hU.fromSpec, inferInstance,
     ⟨⟨P, ‹_›⟩, ?_⟩, W₁, W₂, ⟨g ⟨P', ‹_›⟩, ?_⟩, ?_, ‹_›, ?_⟩
   · dsimp [Spec.map_apply]
     convert! hU.fromSpec_primeIdealOf ⟨f x, hxU⟩
@@ -188,6 +188,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     (Q := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation) this
     ⟨⟨‹_›, inferInstance⟩, inferInstance⟩ ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 **Zariski's main theorem**
 
@@ -287,6 +288,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
   rw [← RingHom.algebraMap_toAlgebra (X.presheaf.germ _ _ _).hom, @RingHom.quasiFinite_algebraMap]
   exact .of_isLocalization (hr.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
     IsOpen { x | f.QuasiFiniteAt x } := by
   wlog H : IsAffineHom f
@@ -399,6 +401,7 @@ lemma IsClosedImmersion.eq_proper_inf_monomorphisms :
   ext
   exact IsClosedImmersion.iff_isProper_and_mono ..
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 02UP]
 lemma exists_isFinite_morphismRestrict_of_finite_preimage_singleton
     [IsProper f] (y : Y) (hx : (f ⁻¹' {y}).Finite) :

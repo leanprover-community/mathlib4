@@ -62,6 +62,7 @@ lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.t
   ext x
   exact congrFun h x
 
+@[macro_inline]
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
   coe_injective := toFun_injective ρ σ
@@ -74,8 +75,9 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
 -- we are actively moving away from these design decisions.
 -- See e.g. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20homomorphism.20type.20vs.20abstract.20class/with/492579416
 @[simp]
-lemma coe_eq_toLinearMap {f : IntertwiningMap ρ σ} :
-  SemilinearMapClass.semilinearMap f = f.toLinearMap := rfl
+lemma ofClass_eq_toLinearMap {f : IntertwiningMap ρ σ} : .ofClass f = f.toLinearMap := rfl
+
+@[deprecated (since := "2026-09-03")] alias coe_eq_toLinearMap := ofClass_eq_toLinearMap
 
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 
@@ -101,7 +103,7 @@ instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
 instance : Add (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
-    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2,]⟩⟩
+    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2]⟩⟩
 
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
@@ -161,9 +163,9 @@ lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) 
 
 section group
 
-variable {V W P : Type*} [AddCommMonoid V] [AddCommGroup W]
-  [AddCommGroup P] [Module A V] [Module A W] [Module A P] (ρ : Representation A G V)
-  (σ : Representation A G W) (τ : Representation A G P) (f : V →ₗ[A] W)
+variable {V W : Type*} [AddCommMonoid V] [AddCommGroup W]
+  [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
+  (f : V →ₗ[A] W)
 
 instance : Neg (IntertwiningMap ρ σ) :=
   ⟨fun f ↦ ⟨-f.toLinearMap, by simp [LinearMap.neg_comp, f.2]⟩⟩
@@ -209,8 +211,8 @@ def id : IntertwiningMap ρ ρ where
 @[simp]
 lemma toLinearMap_id : (id ρ).toLinearMap = LinearMap.id := rfl
 
-@[simp]
-lemma id_apply (v : V) : id ρ v = v := rfl
+@[simp] lemma coe_id : ⇑(id ρ) = _root_.id := rfl
+@[simp high] lemma id_apply (v : V) : id ρ v = v := rfl
 
 variable {ρ σ τ} in
 /-- Composition of intertwining maps.
@@ -352,6 +354,7 @@ lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ
 lemma toLinearEquiv_inj (φ ψ : σ.Equiv ρ) : φ.toLinearEquiv = ψ.toLinearEquiv ↔ φ = ψ :=
   toLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (Equiv ρ σ) V W where
   coe φ := φ.toLinearEquiv
   inv φ := φ.invFun
@@ -390,8 +393,6 @@ def refl : Equiv ρ ρ where
 
 @[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
-lemma coe_invFun : φ.invFun = φ.symm := rfl
-
 theorem toLinearEquiv_toLinearMap :
   φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
 
@@ -418,6 +419,8 @@ lemma mk_symm {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e
     (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
 
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
+
+lemma coe_invFun : φ.invFun = φ.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 

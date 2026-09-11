@@ -321,6 +321,7 @@ variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 ### Coercion to function
 -/
 
+@[macro_inline]
 instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
   coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl

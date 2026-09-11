@@ -61,7 +61,9 @@ compatible with the application of additive functors (see `map_Hσ`).
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
-  CategoryTheory.SimplicialObject Homotopy Opposite Simplicial DoldKan
+  CategoryTheory.SimplicialObject Homotopy Opposite
+
+open scoped Simplicial DoldKan
 
 noncomputable section
 
@@ -115,7 +117,6 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
   canonicalizer; a minimization would help. The original proof was: `grind [hσ', hσ]` -/
   simp [hσ', hσ, ha]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
     (hσ' q n (n + 1) rfl : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ := by
@@ -150,7 +151,6 @@ theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : Simplicia
   · rw [zero_comp, comp_zero]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For each q, `Hσ q` is a natural transformation. -/
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Hσ q
@@ -161,7 +161,6 @@ def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapCo
     ext n m hnm
     simp only [alternatingFaceMapComplex_map_f, hσ'_naturality]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
 theorem map_hσ' {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n m : ℕ) (hnm : c.Rel m n) :
