@@ -2,6 +2,7 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Groupoid
 
 open CategoryTheory
 
@@ -45,7 +46,7 @@ example {x y : Discrete Unit} (f g : x ⟶ y) (h : f = g)
     {D : Type uD} [Category.{vD} D] (F : Discrete Unit ⥤ D) : F.map f = F.map g :=
   closed_map.{vD, uD} f g h F
 
--- Classify every category in the source declaration, including abbreviated instance types.
+-- Classify every category in the source declaration.
 abbrev Cat.{vCat, uCat} (C : Type uCat) := Category.{vCat} C
 
 @[map]
@@ -57,6 +58,29 @@ example {C : Type u} [Category.{v} C] {E : Type uE} [Category.{vE} E] (G : C ⥤
     {x y : C} (f g : x ⟶ y) (h : f = g) {D : Type uD} [Category.{vD} D]
     (F : E ⥤ D) : F.map (G.map f) = F.map (G.map g) :=
   through_functor_map.{v, vE, vD, u, uE, uD} G f g h F
+
+-- Recognize inherited category structure even when no morphisms or functors expose its universes.
+@[map]
+lemma extra_groupoid.{uS, vS, uG, vG} {C : Type uS} [Category.{vS} C]
+    {E : Type uG} [Groupoid.{vG} E] (_e : E)
+    {x y : C} (f g : x ⟶ y) (h : f = g) : f = g := h
+
+example {C : Type u} [Category.{v} C] {E : Type uE} [Groupoid.{vE} E] (e : E)
+    {x y : C} (f g : x ⟶ y) (h : f = g) {D : Type uD} [Category.{vD} D]
+    (F : C ⥤ D) : F.map f = F.map g :=
+  extra_groupoid_map.{v, vE, vD, u, uE, uD} e f g h F
+
+-- Reduce abbreviated instance types underneath dependent binders too.
+@[map]
+lemma extra_family.{uS, vS, uA, vA} {C : Type uS} [Category.{vS} C]
+    {E : Unit → Type uA} [∀ i, Cat.{vA, uA} (E i)] (_e : E ())
+    {x y : C} (f g : x ⟶ y) (h : f = g) : f = g := h
+
+example {C : Type u} [Category.{v} C] {E : Unit → Type uE}
+    [∀ i, Category.{vE} (E i)] (e : E ())
+    {x y : C} (f g : x ⟶ y) (h : f = g) {D : Type uD} [Category.{vD} D]
+    (F : C ⥤ D) : F.map f = F.map g :=
+  extra_family_map.{v, vE, vD, u, uE, uD} e f g h F
 
 -- Classify parameters inside composite levels, putting a shared parameter in the morphism group.
 set_option linter.checkUnivs false in
@@ -72,7 +96,8 @@ example {C : Type (max u w)} [Category.{max v w} C]
 -- Reordering must preserve source parameter names and add exactly two distinct parameters.
 open Lean Elab Command in
 run_cmd liftTermElabM do
-  for src in [``extra, ``shared, ``collision, ``closed, ``through_functor, ``composite] do
+  for src in [``extra, ``shared, ``collision, ``closed, ``through_functor,
+      ``extra_groupoid, ``extra_family, ``composite] do
     let srcLevels := (← getConstInfo src).levelParams
     let tgtLevels := (← getConstInfo (src.appendAfter "_map")).levelParams
     guard <| srcLevels.all tgtLevels.contains

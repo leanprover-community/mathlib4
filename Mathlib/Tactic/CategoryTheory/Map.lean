@@ -84,26 +84,37 @@ def mapExpr (pf : Expr) : Term.TermElabM Expr := do
     mkLambdaFVars xs inner
 
 /-- Collect the universe parameters used for morphisms and objects in category-theoretic types.
-Traversing the levels also handles expressions such as `max u v` and `u + 1`. -/
-private def collectCategoryUniverses (type : Expr) :
-    StateRefT (CollectLevelParams.State × CollectLevelParams.State) MetaM Unit :=
-  type.forEach fun e => do
-    let (homLevels, objLevels) := match e with
-      | .const ``Category [v, u] | .const ``CategoryStruct [v, u]
-      | .const ``Quiver [v, u] | .const ``Quiver.Hom [v, u] => ([v], [u])
-      | .const ``CategoryTheory.Functor [vC, vD, uC, uD] => ([vC, vD], [uC, uD])
-      | _ => ([], [])
-    modify fun (hom, obj) =>
-      (CollectLevelParams.visitLevels homLevels hom, CollectLevelParams.visitLevels objLevels obj)
+Traversing the levels also handles expressions such as `max u v` and `u + 1`.
+Reduce under binders to expose abbreviated instance types, and follow parent projections to
+recognize structures inheriting from `Quiver`, such as `Groupoid`. -/
+private partial def collectCategoryUniverses (type : Expr) :
+    StateRefT (CollectLevelParams.State × CollectLevelParams.State) MetaM Unit := do
+  forallTelescopeReducing type (whnfType := true) fun xs body => do
+    for x in xs do
+      collectCategoryUniverses (← inferType x)
+    body.forEach fun e => do
+      let (homLevels, objLevels) := match e with
+        | .const ``Category [v, u] | .const ``CategoryStruct [v, u]
+        | .const ``Quiver [v, u] | .const ``Quiver.Hom [v, u] => ([v], [u])
+        | .const ``CategoryTheory.Functor [vC, vD, uC, uD] => ([vC, vD], [uC, uD])
+        | _ => ([], [])
+      modify fun (hom, obj) =>
+        (CollectLevelParams.visitLevels homLevels hom, CollectLevelParams.visitLevels objLevels obj)
+    let .const name _ := body.getAppFn | return
+    let some path := getPathToBaseStructure? (← getEnv) ``Quiver name | return
+    unless path.isEmpty do
+      withLocalDeclD `inst body fun inst => do
+        let quiver ← path.foldlM (fun inst proj => do
+          let args := (← whnf (← inferType inst)).getAppArgs
+          mkAppOptM proj (args.map some |>.push (some inst))) inst
+        collectCategoryUniverses (← inferType quiver)
 
 /-- Order universe parameters by their roles in the generated declaration's type.
 Shared parameters belong to the morphism group; unrelated parameters are placed last.
 Within each group, retain source order and put new target parameters after source parameters. -/
 private def orderMapUniverses (type : Expr) (source target : List Name) : MetaM (List Name) := do
-  let (hom, obj) ← forallTelescopeReducing type (whnfType := true) fun xs body => do
-    let types ← xs.mapM fun x => do whnf (← inferType x)
-    let (_, (hom, obj)) ← (types.push body |>.forM collectCategoryUniverses).run ({}, {})
-    return (hom.params, obj.params)
+  let (_, (hom, obj)) ← (collectCategoryUniverses type).run ({}, {})
+  let (hom, obj) := (hom.params, obj.params)
   let isHom := hom.contains
   let isObj := fun n => obj.contains n && !isHom n
   return source.filter isHom ++ target.filter isHom ++
