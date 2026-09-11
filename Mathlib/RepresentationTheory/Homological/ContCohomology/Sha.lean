@@ -20,12 +20,12 @@ where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing s
 ## Main definitions
 
 * `ContinuousCohomology.tateShafarevich`: the Tate–Shafarevich group of a Galois module.
-* TODO: notation for the Tate–Shafarevich group `ContinuousCohomology.tateShafarevich`.
-* TODO: define the classical Tate–Shafarevich group in `Mathlib/AlgebraicGeometry/EllipticCurve`.
 
-## Main statements
+## TODOs
 
-* TODO: prove that the Tate–Shafarevich group of a torsion Galois module is torsion.
+* Add the notation Ш for `ContinuousCohomology.tateShafarevich`.
+* Prove that `ContinuousCohomology.tateShafarevich` of a discrete Galois module is torsion.
+* Define the classical Tate–Shafarevich group in `Mathlib/AlgebraicGeometry/EllipticCurve`.
 
 ## Implementation notes
 
