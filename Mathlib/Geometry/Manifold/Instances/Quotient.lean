@@ -6,8 +6,8 @@ Authors: Michael Rothgang, Pepa Montero, Archibald Browne, Enrique Díaz, Juan J
 -/
 module
 
-public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Geometry.Manifold.Algebra.SMul
+public import Mathlib.Topology.Covering.Quotient
 
 /-!
 # Quotients of manifolds
