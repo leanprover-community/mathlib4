@@ -40,12 +40,6 @@ lemma circumcenter_mem_perpBisector :
 
 namespace Equilateral
 
-/-- The face of an equilateral simplex opposite a vertex is equilateral. -/
-lemma faceOpposite [NeZero n] (h : s.Equilateral) : (s.faceOpposite i).Equilateral := by
-  obtain ⟨r, hr⟩ := h
-  use r
-  aesop
-
 /-- Any point lies on the perpendicular bisector of any two other points. -/
 lemma mem_perpBisector (h : s.Equilateral) (hij : i ≠ j) (hik : i ≠ k) :
     s.points i ∈ perpBisector (s.points j) (s.points k) :=
