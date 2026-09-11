@@ -801,7 +801,7 @@ theorem mfderivWithin_add (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
   (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mfderivWithin hs
 
 section sum
-variable {ι : Type} {t : Finset ι} {f : ι → M → E'} {f' : ι → TangentSpace% z →L[𝕜] E'}
+variable {ι : Type*} {t : Finset ι} {f : ι → M → E'} {f' : ι → TangentSpace% z →L[𝕜] E'}
 
 lemma HasMFDerivWithinAt.sum (hf : ∀ i ∈ t, HasMFDerivAt[s] (f i) z (f' i)) :
     HasMFDerivAt[s] (∑ i ∈ t, f i) z (∑ i ∈ t, f' i) := by
@@ -997,7 +997,7 @@ theorem HasMFDerivAt.mul (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p')
   hasMFDerivWithinAt_univ.mp <| hp.hasMFDerivWithinAt.mul hq.hasMFDerivWithinAt
 
 section prod
-variable {ι : Type} {t : Finset ι} {f : ι → M → F'} {f' : ι → TangentSpace% z →L[𝕜] F'}
+variable {ι : Type*} {t : Finset ι} {f : ι → M → F'} {f' : ι → TangentSpace% z →L[𝕜] F'}
 
 set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prod [DecidableEq ι]
