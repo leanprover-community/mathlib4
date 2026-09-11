@@ -56,7 +56,7 @@ section Pi
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
 This is `Equiv.piCongrLeft` as a `ContinuousLinearEquiv`.
 -/
-def piCongrLeft (R : Type*) [Semiring R] {ι ι' : Type*}
+def piCongrLeft {ι ι' : Type*}
     (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
     [∀ i, TopologicalSpace (φ i)]
     (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃L[R] (i : ι) → φ i where
@@ -69,7 +69,7 @@ is isomorphic (topologically and algebraically) to the product of
 
 This is `Equiv.sumPiEquivProdPi` as a `ContinuousLinearEquiv`.
 -/
-def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*)
+def sumPiEquivProdPi (S T : Type*)
     (A : S ⊕ T → Type*) [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)]
     [∀ st, TopologicalSpace (A st)] :
     ((st : S ⊕ T) → A st) ≃L[R] ((s : S) → A (Sum.inl s)) × ((t : T) → A (Sum.inr t)) where
@@ -82,7 +82,7 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*)
 This is `Equiv.piUnique` as a `ContinuousLinearEquiv`.
 -/
 @[simps! -fullyApplied]
-def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
+def piUnique {α : Type*} [Unique α] (f : α → Type*)
     [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] [∀ x, TopologicalSpace (f x)] :
     (Π t, f t) ≃L[R] f default where
   __ := LinearEquiv.piUnique R f
