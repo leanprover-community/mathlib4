@@ -578,8 +578,6 @@ theorem cdf_map_orderIso (μ : Measure ℝ) [IsProbabilityMeasure μ]
     (e : OrderIso ℝ ℝ) (y : ℝ) :
     cdf (Measure.map (fun x : ℝ => e x) μ) y = cdf μ (e.symm y) := by
   have hmeas : Measurable (fun x : ℝ => e x) := (OrderIso.continuous e).measurable
-  have : IsProbabilityMeasure (Measure.map (fun x : ℝ => e x) μ) :=
-    Measure.isProbabilityMeasure_map hmeas.aemeasurable
   have hpre : Set.preimage (fun x : ℝ => e x) (Set.Iic y) = Set.Iic (e.symm y) := by
     ext z
     exact Iff.symm e.le_symm_apply
