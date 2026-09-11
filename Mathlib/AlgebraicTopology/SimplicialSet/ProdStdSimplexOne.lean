@@ -116,9 +116,8 @@ lemma mem_range_objEquiv_nonDegenerateEquiv₁_iff (i x : Fin (p + 1)) :
     obtain ⟨hy₁, hy₂⟩ := Prod.ext_iff.mp hy
     dsimp at hy₁ hy₂
     rw [stdSimplex.objMk₁_apply_eq_one_iff, Fin.succ_castSucc, Fin.castSucc_le_castSucc_iff] at hy₂
-    rw [← hy₁, stdSimplex.objEquiv_symm_σ_apply, Fin.predAbove_of_succ_le _ _ hy₂,
+    rwa [← hy₁, stdSimplex.objEquiv_symm_σ_apply, Fin.predAbove_of_succ_le _ _ hy₂,
       ← Fin.succ_le_succ_iff, Fin.succ_pred]
-    exact hy₂
   · refine fun hx ↦ ⟨x.succ, Prod.ext ?_ ?_⟩
     · dsimp
       rw [stdSimplex.objEquiv_symm_σ_apply,
