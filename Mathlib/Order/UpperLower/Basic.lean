@@ -92,6 +92,14 @@ theorem isUpperSet_preimage_ofDual_iff : IsUpperSet (ofDual ⁻¹' s) ↔ IsLowe
 theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} : IsUpperSet (toDual ⁻¹' s) ↔ IsLowerSet s :=
   Iff.rfl
 
+@[to_dual (attr := simp)]
+theorem isUpperSet_image_toDual_iff : IsUpperSet (toDual '' s) ↔ IsLowerSet s := by
+  rw [toDual.image_eq_preimage_symm]; exact isUpperSet_preimage_ofDual_iff
+
+@[to_dual (attr := simp)]
+theorem isUpperSet_image_ofDual_iff {s : Set αᵒᵈ} : IsUpperSet (ofDual '' s) ↔ IsLowerSet s := by
+  rw [ofDual.image_eq_preimage_symm]; exact isUpperSet_preimage_toDual_iff
+
 @[to_dual] alias ⟨_, IsUpperSet.toDual⟩ := isLowerSet_preimage_ofDual_iff
 @[to_dual] alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
 

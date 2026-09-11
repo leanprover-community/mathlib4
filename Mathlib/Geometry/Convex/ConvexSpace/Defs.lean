@@ -198,10 +198,11 @@ lemma map_duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : X
     (duple x y hs ht h).map f = duple (f x) (f y) hs ht h := by
   ext; simp [mapDomain_add]
 
-@[simp]
+@[to_fun (attr := simp) map_fun_id]
 lemma map_id (f : StdSimplex R X) : f.map id = f := by
   ext; simp
 
+@[to_fun map_fun_id']
 lemma map_id' : map (R := R) (id : X → X) = id := by aesop
 
 lemma map_comp (f : StdSimplex R X) (g₁ : X → Y) (g₂ : Y → Z) :

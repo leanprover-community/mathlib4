@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.ByContra
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.GRewrite
@@ -239,6 +240,12 @@ instance [MulRightReflectLE α] : IsRightCancelMul α where
 alias add_right_cancel'' := add_right_cancel
 @[to_additive existing, deprecated (since := "2026-03-14")]
 alias mul_right_cancel'' := mul_right_cancel
+
+@[to_additive] lemma le_iff_ge_of_mul_eq_mul [MulLeftMono α] [MulLeftReflectLE α]
+    [MulRightMono α] [MulRightReflectLE α] {a₁ a₂ b₁ b₂ : α} (hab : a₁ * b₁ = a₂ * b₂) :
+    a₁ ≤ a₂ ↔ b₂ ≤ b₁ where
+  mp ha := by grw [← mul_le_mul_iff_left, hab, ha]
+  mpr hb := by grw [← mul_le_mul_iff_right, hab, hb]
 
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
