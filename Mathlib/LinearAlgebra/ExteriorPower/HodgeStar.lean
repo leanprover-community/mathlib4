@@ -25,6 +25,7 @@ variable {R M : Type*}
   {k l : ℕ} (hkl : k + l = finrank R M)
 
 /-- The Hodge star associated to `B` and `vol`. -/
+@[expose, simps!]
 public def hodgeStar :
     ⋀[R]^k M ≃ₗ[R] ⋀[R]^l M :=
   letI e : ⋀[R]^l M ≃ₗ[R] Dual R (⋀[R]^l M) := .ofBijective _ (B.bijective_exteriorPower l hB)
