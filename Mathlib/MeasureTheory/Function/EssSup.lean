@@ -335,11 +335,12 @@ namespace ENNReal
 
 variable {f : α → ℝ≥0∞}
 
-lemma essSup_piecewise {s : Set α} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s) :
+lemma essSup_piecewise {s : Set α} [DecidablePred (· ∈ s)] {g} (hs : NullMeasurableSet s μ) :
     essSup (s.piecewise f g) μ = max (essSup f (μ.restrict s)) (essSup g (μ.restrict sᶜ)) := by
-  simp only [essSup, limsup_piecewise, blimsup_eq_limsup, ae_restrict_eq, hs, hs.compl]; rfl
+  simp only [essSup, limsup_piecewise, blimsup_eq_limsup, ae_restrict_eq₀, hs, hs.compl]; rfl
 
-theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞} (hs : MeasurableSet s) :
+theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞}
+    (hs : NullMeasurableSet s μ) :
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   classical
   simp only [← piecewise_eq_indicator, essSup_piecewise hs, max_eq_left_iff]
