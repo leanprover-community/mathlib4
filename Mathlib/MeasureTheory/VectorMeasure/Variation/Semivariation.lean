@@ -153,7 +153,7 @@ private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
     apply antitone_nat_of_succ_le (fun n ↦ ?_)
     simp only [Function.iterate_succ', Function.comp_apply, s]
     apply t_subs _ (hs n).1 (hs n).2
-  have u_disj : Pairwise (Disjoint on u) := by
+  have u_disj : Pairwise' (Disjoint on u) := by
     apply (pairwise'_disjoint_on _).2 (fun m n hmn ↦ ?_)
     have : Disjoint (u m) (s (m + 1)) := by simp [u, disjoint_sdiff_left]
     apply this.mono_right
