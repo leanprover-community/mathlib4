@@ -8156,6 +8156,7 @@ public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.DerivedSet
 public import Mathlib.Topology.DiscreteQuotient
 public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Topology.EMetricSpace.ArcLength
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 public import Mathlib.Topology.EMetricSpace.Defs
@@ -8164,6 +8165,7 @@ public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.EMetricSpace.PairReduction
 public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.EMetricSpace.PathLength
 public import Mathlib.Topology.EMetricSpace.Pi
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 public import Mathlib.Topology.EMetricSpace.Weak
