@@ -416,6 +416,9 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm b c hb hf hg h
 
+@[deprecated (since := "2026-09-11")] alias eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm :=
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm
+
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm_of_pos {p q r : ℝ≥0∞} (b : E → F → G) (c : ℝ≥0)
