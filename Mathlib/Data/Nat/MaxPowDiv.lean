@@ -110,7 +110,4 @@ private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : n �
     refine iff_of_true (Nat.dvd_mul_right_of_dvd ?_ _) hle
     exact Nat.pow_dvd_pow p hle
 
-@[simp]
-theorem snd_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).2 = n.divMaxPow p := rfl
-
 end Nat

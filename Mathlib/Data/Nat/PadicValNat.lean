@@ -47,7 +47,7 @@ theorem padicValNat_def {p n : ℕ} : padicValNat p n = multiplicity p n := by
   · simp_all
   nth_rw 2 [← divMaxPow_mul_pow_padicValNat p n]
   rw [pow_add_one', mul_dvd_mul_iff_right (pow_ne_zero (padicValNat p n) hp0)]
-  exact not_dvd_divMaxPow hp hn
+  exact not_dvd_divMaxPow (Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨hp0, hp⟩) hn
 
 @[simp]
 theorem _root_.padicValNat_zero_left (n : ℕ) : padicValNat 0 n = 0 := by simp [padicValNat]
@@ -192,6 +192,9 @@ theorem divMaxPow_self {p : ℕ} (hp : p ≠ 0) : p.divMaxPow p = 1 := by
 
 @[simp]
 theorem fst_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).1 = padicValNat p n := rfl
+
+@[simp]
+theorem snd_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).2 = n.divMaxPow p := rfl
 
 @[deprecated (since := "2026-03-15")]
 alias maxPowDiv := padicValNat
