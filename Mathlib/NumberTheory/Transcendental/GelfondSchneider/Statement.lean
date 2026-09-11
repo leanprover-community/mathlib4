@@ -146,54 +146,57 @@ theorem transcendental_cpow_of_isAlgebraic_of_irrational (α β : ℂ)
   · simp only [Real.rpow_natCast, not_lt]
     rw [← Real.rpow_le_rpow_iff (z:= ( ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h
         K)) / 2) : ℝ)⁻¹)]
-    rw [← Real.rpow_mul, mul_inv_cancel₀]
-    simp only [inv_div, Real.rpow_one]
-    rw [← Real.rpow_natCast, ← Real.rpow_mul]
-    have : (c₁₅ α β α' β' γ') ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) * (2 / (↑((r α
-        β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h K)))) ≤
-       (c₁₅ α β α' β' γ') ^ (4 : ℝ)  := by
-        apply Real.rpow_le_rpow_of_exponent_le
-        · exact one_le_c₁₅ α β σ α' β' γ' hirr htriv habc
-        · rw [mul_div]
-          ring_nf
-          simp only [mul_assoc]
-          rw [mul_comm]
-          simp only [mul_assoc]
-          refine (inv_mul_le_iff₀' ?_).mpr ?_
-          · calc _ < ↑(h K) * 3 := ?_
-                 _ ≤ (((h K) * 6 - ↑(h K) * 3) : ℝ) := ?_
-                 _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - (h K) * 3 := ?_
-            · have : 0 < (h K) := by
-                grind [Module.finrank_pos]
-              simp only [Nat.ofNat_pos, mul_pos_iff_of_pos_right, Nat.cast_pos, gt_iff_lt]
-              grind
-            · ring_nf; simp only [le_refl]
-            · simp only [tsub_le_iff_right, sub_add_cancel]
-              rw [mul_comm]
-              norm_cast
-          · rw [sub_eq_neg_add, mul_add]
-            simp only [mul_neg, le_neg_add_iff_add_le]
-            calc _ ≤  2 *  (6 * (↑(h K))) + 2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
-                ℝ) := ?_
-                 _ ≤  2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) + 2 * ((r α β σ α' β'
-                     γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
-                 _ ≤  4 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
-            · simp only [add_le_add_iff_right]; ring_nf; simp only [le_refl]
-            · simp only [add_le_add_iff_right]
-              apply mul_le_mul (le_refl _) (by norm_cast) (by positivity) (by positivity)
-            · ring_nf; simp only [le_refl]
-    trans
-    · apply this
-    · simp only [Real.rpow_ofNat]
-      apply H6
-    · exact c₁₅_nonneg α β σ α' β' γ' hirr htriv habc
-    · apply div_ne_zero
-      · have : 3 * (h K) < ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
-          calc _ < (6 * (h K) : ℝ)  := by norm_cast; grind [Module.finrank_pos]
-               _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :ℝ) := by norm_cast;
-        grind
-      · simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
-    · positivity
+    · rw [← Real.rpow_mul, mul_inv_cancel₀]
+      · simp only [inv_div, Real.rpow_one]
+        rw [← Real.rpow_natCast, ← Real.rpow_mul]
+        · have : (c₁₅ α β α' β' γ') ^ (((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)
+            * (2 / (↑((r α
+              β σ α' β' γ' hirr htriv habc) q hq0 h2mq) - 3 * ↑(h K)))) ≤
+             (c₁₅ α β α' β' γ') ^ (4 : ℝ)  := by
+              apply Real.rpow_le_rpow_of_exponent_le
+              · exact one_le_c₁₅ α β σ α' β' γ' hirr htriv habc
+              · rw [mul_div]
+                ring_nf
+                simp only [mul_assoc]
+                rw [mul_comm]
+                simp only [mul_assoc]
+                refine (inv_mul_le_iff₀' ?_).mpr ?_
+                · calc _ < ↑(h K) * 3 := ?_
+                       _ ≤ (((h K) * 6 - ↑(h K) * 3) : ℝ) := ?_
+                       _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) - (h K) * 3 := ?_
+                  · have : 0 < (h K) := by
+                      grind [Module.finrank_pos]
+                    simp only [Nat.ofNat_pos, mul_pos_iff_of_pos_right, Nat.cast_pos, gt_iff_lt]
+                    grind
+                  · ring_nf; simp only [le_refl]
+                  · simp only [tsub_le_iff_right, sub_add_cancel]
+                    rw [mul_comm]
+                    norm_cast
+                · rw [sub_eq_neg_add, mul_add]
+                  simp only [mul_neg, le_neg_add_iff_add_le]
+                  calc _ ≤  2 *  (6 * (↑(h K)))
+                      + 2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
+                      ℝ) := ?_
+                       _ ≤  2 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)
+                           + 2 * ((r α β σ α' β'
+                           γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
+                       _ ≤  4 * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
+                  · simp only [add_le_add_iff_right]; ring_nf; simp only [le_refl]
+                  · simp only [add_le_add_iff_right]
+                    apply mul_le_mul (le_refl _) (by norm_cast) (by positivity) (by positivity)
+                  · ring_nf; simp only [le_refl]
+          trans
+          · apply this
+          · simp only [Real.rpow_ofNat]
+            apply H6
+        · exact c₁₅_nonneg α β σ α' β' γ' hirr htriv habc
+      · apply div_ne_zero
+        · have : 3 * (h K) < ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := by
+            calc _ < (6 * (h K) : ℝ)  := by norm_cast; grind [Module.finrank_pos]
+                 _ ≤ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :ℝ) := by norm_cast;
+          grind
+        · simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
+      · positivity
     · apply pow_nonneg (c₁₅_nonneg α β σ α' β' γ' hirr htriv habc)
     · positivity
     · have Hh : 0 < (h K) := by unfold h; exact Module.finrank_pos
