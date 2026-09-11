@@ -236,11 +236,11 @@ theorem dist_starProjection_eq_infDist
     dist y (U.starProjection y) = Metric.infDist y U := by
   simp [Metric.infDist_eq_iInf, U.starProjection_minimal, dist_eq_norm]
 
-/-- The norm of the orthogonal projection of `y` onto `Uᗮ` is `Metric.infDist y U`. -/
-theorem norm_starProjection_orthogonal_eq_infDist
-    {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (y : E) :
-    ‖Uᗮ.starProjection y‖ = Metric.infDist y U := by
-  simpa [U.starProjection_orthogonal_val, dist_eq_norm] using U.dist_starProjection_eq_infDist y
+/-- The norm of the orthogonal projection of `y` onto `U` is `Metric.infDist y Uᗮ`. -/
+theorem norm_starProjection_eq_infDist
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
+    ‖U.starProjection y‖ = Metric.infDist y Uᗮ := by
+  simp [← Uᗮ.dist_starProjection_eq_infDist y]
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
