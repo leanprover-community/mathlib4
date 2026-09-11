@@ -33,20 +33,22 @@ instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (G ⟶ G) := 
 lemma AddMon.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
     : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
 
+namespace AddMon.End
+
 /-- Given an `f : End G`, it returns the corrending term of typ `G ⟶ G` -/
-def AddMon.End.toHom (f : End G) : G ⟶ G := f
+def toHom (f : End G) : G ⟶ G := f
 
 
 open AddMon End
 
-instance : Zero (End G) where
+scoped instance : Zero (End G) where
   zero := ((0 : G ⟶ G) : End G)
 
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g :=  by exact (toHom f) + (toHom g)
 
 
-namespace AddMon.End
+
 lemma toHom_eq (f g : End G) : f = g ↔ End.toHom f = End.toHom g := by
   constructor <;> intro h
   · exact AddMon.Hom.ext' (congrArg AddMon.Hom.hom h)
@@ -58,12 +60,11 @@ lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X]
 lemma toHom_zero : toHom (0 : End G) = 0 := rfl
 
 lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rfl
-end AddMon.End
 
 
 /- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
 an additive commutative monoid structure -/
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G) where
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G) where
   add_assoc f g h := by
     simp only [toHom_eq, toHom_add, add_assoc (toHom f) (toHom g) (toHom h)]
   zero_add f := by
@@ -80,7 +81,7 @@ instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G) where
 
 /- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
 an semiring structure -/
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
   zero_add := zero_add
   add_zero := add_zero
   one_mul := one_mul
@@ -100,6 +101,8 @@ instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
     simp only [add_hom, comp_hom',
       reassoc_of% (comp_lift (toHom h).hom (toHom f).hom (toHom g).hom).symm]
 
+end AddMon.End
+
 end EndomorphismSemiring
 
 section EndomorphismRing
@@ -111,21 +114,20 @@ variable {G : AddGrp C} {H : AddGrp C}
 lemma AddGrp.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
     : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
 
+namespace AddGrp.End
 
 /-- Given an `f : End G`, it returns the corrending term of typ `G ⟶ G` -/
-def AddGrp.End.toHom (f : End G) : G ⟶ G := f
+def toHom (f : End G) : G ⟶ G := f
 
 
 open AddGrp End
 
-instance : Zero (End G) where
+scoped instance : Zero (End G) where
   zero := ((0 : G ⟶ G) : End G)
 
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g :=  by exact (toHom f) + (toHom g)
 
-
-namespace AddGrp.End
 lemma toHom_eq (f g : End G) : f = g ↔ End.toHom f = End.toHom g := by
   constructor <;> intro h
   · exact AddGrp.hom_ext_iff.mpr (congrArg AddMon.Hom.hom (congrArg InducedCategory.Hom.hom h))
@@ -137,12 +139,12 @@ lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X]
 lemma toHom_zero : toHom (0 : End G) = 0 := rfl
 
 lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rfl
-end AddGrp.End
+
 
 
 /- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
 an additive commutative group structure -/
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G) where
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G) where
   add_assoc f g h := by
     simp only [toHom_eq, toHom_add, add_assoc (toHom f) (toHom g) (toHom h)]
   zero_add f := by
@@ -168,7 +170,7 @@ instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G) where
 
 /- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
 an ring structure -/
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
   zero_add := zero_add
   add_zero := add_zero
   one_mul := one_mul
@@ -188,5 +190,7 @@ instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
     simp only [add_hom, comp',
       reassoc_of% (comp_lift (toHom h).hom (toHom f).hom (toHom g).hom).symm]
   neg_add_cancel := neg_add_cancel
+
+end AddGrp.End
 
 end EndomorphismRing
