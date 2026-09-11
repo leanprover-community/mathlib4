@@ -17,6 +17,9 @@ in some category `C`, creates a new lemma named `H_map` of the form
 `∀ .. {D} (F : C ⥤ D), F.map f = F.map g` and then applies
 `simp only [Functor.map_comp, Functor.map_id]`.
 
+The generated lemma preserves the source's universe parameters in their original order,
+followed by the target category's object and morphism universe parameters.
+
 There is also a term elaborator `map_of% t` for use within proofs.
 -/
 
@@ -60,26 +63,11 @@ def mapExprHom (e : Expr) (uLev vLev : Level) : Term.TermElabM Expr := do
 
 /--
 Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produce a proof of the
-`map` lemma, quantifying over every target category `D` and every functor `F : C ⥤ D` (using two
-fresh level parameters per generated lemma).
-
-Returns the target category's object-level and morphism-level names (`uD`, then `vD`) so the caller
-can place them in the generated declaration's `levelParams` in its preferred order.
+`map` lemma, quantifying over every target category `D` and every functor `F : C ⥤ D`.
+The target category uses fresh universe metavariables, which the attribute generalizes to
+parameters and `map_of%` leaves for the surrounding elaboration to determine.
 -/
-def mapExpr (pf : Expr) : Term.TermElabM (Expr × Array Name) := do
-  let uD ← mkFreshUserName `u
-  let vD ← mkFreshUserName `v
-  forallTelescopeReducing (← inferType pf) fun xs _ => do
-    let pfApp := mkAppN pf xs
-    let inner ← mapExprHom pfApp (.param uD) (.param vD)
-    let full ← mkLambdaFVars xs inner
-    return (full, #[uD, vD])
-
-/--
-Like `mapExpr`, but uses fresh level metavariables for the target category so that `map_of% t` can
-specialize to any `D` and `F` in context (see `addRelatedDecl` path for rigid universe parameters).
--/
-def mapExprMVars (pf : Expr) : Term.TermElabM Expr := do
+def mapExpr (pf : Expr) : Term.TermElabM Expr := do
   let uLev ← mkFreshLevelMVar
   let vLev ← mkFreshLevelMVar
   forallTelescopeReducing (← inferType pf) fun xs _ => do
@@ -112,14 +100,12 @@ initialize registerBuiltinAttribute {
     let tgt := src.appendAfter "_map"
     addRelatedDecl src tgt ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
-        let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
-        let value := value.instantiateLevelParams levels levelMVars
-        let (pf, tgtLevelNames) ← mapExpr value
-        let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
-        let outLevels := match r.newParamNames.toList, tgtLevelNames.toList with
-          | [srcObj, srcHom], [tgtObj, tgtHom] => [srcHom, tgtHom, srcObj, tgtObj]
-          | _, _ => tgtLevelNames.toList ++ r.newParamNames.toList
-        pure (r.expr, outLevels)
+        let pf ← mapExpr value
+        -- Preserve the source parameters and append the target object and morphism universes,
+        -- in the order in which their binders occur in the generated proof.
+        let r := (← getMCtx).levelMVarToParam levels.contains (fun _ => false) pf
+        setMCtx r.mctx
+        pure (r.expr, levels ++ r.newParamNames.toList)
   | _ => throwUnsupportedSyntax }
 
 /--
@@ -129,6 +115,6 @@ produces the corresponding statement with a functor applied and
 -/
 elab "map_of% " t:term : term => do
   let e ← Term.withSynthesizeLight <| Term.elabTerm t none
-  mapExprMVars e
+  mapExpr e
 
 end Mathlib.Tactic.CategoryTheory.Map
