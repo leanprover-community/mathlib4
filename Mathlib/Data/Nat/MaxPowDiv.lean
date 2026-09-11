@@ -9,6 +9,7 @@ public import Mathlib.Basic.Logic.Basic
 
 import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.RingTheory.Multiplicity
 
 /-!
 # The maximal power of one natural number dividing another
@@ -41,7 +42,7 @@ def maxPowDvdDiv (p n : ℕ) : ℕ × ℕ :=
   /-- Auxiliary definition for `Nat.maxPowDvdDiv`. -/
   go (p : ℕ) (hp : 1 < p ∧ n ≠ 0) :=
     if hmod : n % p = 0 then
-      let (e, q) := go (p * p) <| by simp [Nat.one_lt_mul_iff, hp, Nat.lt_trans Nat.one_pos]
+      let (e, q) := go (p * p) <| by simp [hp]
       if q % p = 0 then (2 * e + 1, q / p) else (2 * e, q)
     else
       (0, n)
@@ -75,6 +76,52 @@ theorem maxPowDvdDiv.go_spec {n p : ℕ} (hnp) :
     simp_all [Nat.dvd_iff_mod_eq_zero, Nat.two_mul, Nat.mul_pow, Nat.pow_add]
   | case3 =>
     simp_all [Nat.dvd_iff_mod_eq_zero]
+
+open maxPowDvdDiv in
+@[simp]
+theorem divMaxPow_mul_pow_padicValNat (p n : ℕ) : divMaxPow n p * p ^ padicValNat p n = n := by
+  unfold divMaxPow padicValNat
+  fun_cases maxPowDvdDiv with
+  | case1 h => exact go_spec h |>.1
+  | case2 h => simp
+
+theorem not_dvd_divMaxPow {p n : ℕ} (hp1 : p ≠ 1) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
+  by_cases hp0 : p = 0
+  · simpa [hp0, divMaxPow, maxPowDvdDiv]
+  have hp : 1 < p := Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨hp0, hp1⟩
+  simp [divMaxPow, maxPowDvdDiv, maxPowDvdDiv.go_spec, *]
+
+theorem padicValNat_def {p n : ℕ} : padicValNat p n = multiplicity p n := by
+  by_cases hn : n = 0
+  · simp [padicValNat, maxPowDvdDiv, hn]
+  by_cases hp : p = 1
+  · simp [padicValNat, maxPowDvdDiv, hp]
+  have key := not_dvd_divMaxPow hp hn
+
+
+  have key := divMaxPow_mul_pow_padicValNat p n
+  by_cases hn : n = 0
+  · simp [hn]
+    sorry
+  by_cases hp : p = 1
+  · simp [hp]
+    sorry
+  by_cases hp : p = 0
+  · rw [hp] at key
+    simp [hp]
+    sorry
+  have h : FiniteMultiplicity p n := finiteMultiplicity_iff.mpr ⟨hp, pos_of_ne_zero hn⟩
+  refine (h.multiplicity_eq_iff.mpr ⟨Dvd.intro_left (n.divMaxPow p)
+    (divMaxPow_mul_pow_padicValNat p n), ?_⟩).symm
+  have := divMaxPow_mul_pow_padicValNat p n
+  have key := not_dvd_divMaxPow hp hn
+  contrapose! key
+  by_cases hp : p = 0
+  · simp_all
+  intro h'
+
+
+  have := divMaxPow_mul_pow_padicValNat p n
 
 theorem maxPowDvdDiv_of_base_le_one {p : ℕ} (hp : p ≤ 1) (n : ℕ) : maxPowDvdDiv p n = (0, n) := by
   simp [maxPowDvdDiv, Nat.not_lt_of_ge hp]
@@ -123,13 +170,7 @@ theorem _root_.padicValNat_one_right (p : ℕ) : padicValNat p 1 = 0 := by simp 
 @[simp]
 theorem divMaxPow_one_left (p : ℕ) : divMaxPow 1 p = 1 := by simp [divMaxPow]
 
-open maxPowDvdDiv in
-@[simp]
-theorem divMaxPow_mul_pow_padicValNat (p n : ℕ) : divMaxPow n p * p ^ padicValNat p n = n := by
-  unfold divMaxPow padicValNat
-  fun_cases maxPowDvdDiv with
-  | case1 h => exact go_spec h |>.1
-  | case2 h => simp
+
 
 @[simp]
 theorem pow_padicValNat_mul_divMaxPow (p n : ℕ) : p ^ padicValNat p n * divMaxPow n p = n := by
@@ -150,9 +191,6 @@ theorem padicValNat_le_self {p : ℕ} (n : ℕ) : padicValNat p n ≤ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
   · exact Nat.le_of_lt <| padicValNat_lt_self hn
-
-theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
-  simp [divMaxPow, maxPowDvdDiv, maxPowDvdDiv.go_spec, *]
 
 private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : n ≠ 0)
     (hab : p ^ a * b = n) (hb : ¬p ∣ b) : p ^ k ∣ n ↔ k ≤ a := by
