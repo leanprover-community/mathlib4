@@ -23,7 +23,7 @@ where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing s
 
 ## TODOs
 
-* Add the notation Ш for `ContinuousCohomology.tateShafarevich`.
+* Add a notation for `ContinuousCohomology.tateShafarevich`.
 * Prove that `ContinuousCohomology.tateShafarevich` of a discrete Galois module is torsion.
 * Define the classical Tate–Shafarevich group in `Mathlib/AlgebraicGeometry/EllipticCurve`.
 
