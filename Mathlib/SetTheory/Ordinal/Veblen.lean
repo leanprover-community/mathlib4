@@ -580,6 +580,10 @@ theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
   apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone zero_le
   simpa using iterate_omega0_opow_lt_epsilon_zero 2
 
+/-- Epsilon numbers are exponentially principal. -/
+theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
+  (isPrincipal_opow_iff_omega0_opow_eq (omega0_lt_epsilon o)).2 (omega0_opow_epsilon o)
+
 theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (natCast_lt_omega0 n).trans <| omega0_lt_epsilon o
 
