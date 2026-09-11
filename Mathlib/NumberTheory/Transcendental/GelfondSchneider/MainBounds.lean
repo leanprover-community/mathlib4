@@ -1099,9 +1099,13 @@ lemma eq8 :
                       (n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
                       (by positivity) (by positivity)
             · ring_nf
-              rw [mul_inv_cancel₀]
+              rw [mul_inv_cancel₀ (by
+                simp only [ne_eq, Nat.cast_eq_zero]
+                exact Nat.ne_zero_of_lt (one_le_m K))]
               simp only [one_mul]
-              rw [mul_inv_cancel₀]
+              rw [mul_inv_cancel₀ (by
+                simp only [ne_eq, Nat.cast_eq_zero]
+                exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)]
               simp only [one_mul]
               nth_rw 1 [← Real.rpow_one (x:=(2 + ((m K) : ℝ)⁻¹))]
               apply Real.rpow_le_rpow_of_exponent_le
@@ -1109,10 +1113,6 @@ lemma eq8 :
                 · simp only [Nat.one_le_ofNat]
               · simp only [Nat.one_le_cast]
                 exact one_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-              · simp only [ne_eq,
-                  Nat.cast_eq_zero]; exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-              · simp only [ne_eq, Nat.cast_eq_zero]
-                exact Nat.ne_zero_of_lt ((one_le_m K))
         · apply mul_nonneg
           · apply mul_nonneg
             · positivity
