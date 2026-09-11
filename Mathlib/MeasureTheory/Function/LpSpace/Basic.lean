@@ -902,10 +902,8 @@ def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
     compLpL₂ p μ B g f = (B g).compLp f := rfl
 
 theorem norm_compLpL₂_le [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
-    ‖B.compLpL₂ p μ‖ ≤ ‖B‖ := by
-  unfold compLpL₂
-  apply LinearMap.mkContinuous₂_norm_le
-  exact norm_nonneg B
+    ‖B.compLpL₂ p μ‖ ≤ ‖B‖ :=
+  LinearMap.mkContinuous₂_norm_le _ (norm_nonneg _) _
 
 end Bilinear
 
@@ -946,7 +944,7 @@ private lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ₑ ≤ c ^ (1 / p).toReal * ‖f‖ₑ := by
   simp only [Lp.enorm_def]
   rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
-  apply eLpNorm_le_of_measure_le_smul h
+  exact eLpNorm_le_of_measure_le_smul h
 
 private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :

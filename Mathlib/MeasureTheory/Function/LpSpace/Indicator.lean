@@ -37,8 +37,7 @@ namespace MeasureTheory
 for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
 management of `ℝ≥0∞`-arithmetic. -/
 theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
-      NullMeasurableSet s μ →
+    ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → NullMeasurableSet s μ →
       eLpNorm (s.indicator fun _ => c) p μ ≤ ε := by
   rcases eq_or_ne p 0 with (rfl | h'p)
   · exact ⟨1, zero_lt_one, fun s _ hs => by
@@ -80,8 +79,7 @@ theorem _root_.HasCompactSupport.memLp_of_enorm_bound {f : X → E} (hf : HasCom
     (h2f : AEStronglyMeasurable f μ) {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) (hC : C ≠ ⊤) :
       MemLp f p μ := by
   have : MemLp f ∞ μ := by
-    rw [memLp_iff]
-    rw [eLpNorm_exponent_top h2f]
+    rw [memLp_iff, eLpNorm_exponent_top h2f]
     exact eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_ne_top le_top
