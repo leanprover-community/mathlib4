@@ -31,4 +31,8 @@ public def hodgeStar :
   letI e : ⋀[R]^l M ≃ₗ[R] Dual R (⋀[R]^l M) := .ofBijective _ (B.bijective_exteriorPower l hB)
   (wedgePairing vol hkl).toPerfPair.trans e.symm
 
+lemma wedgePairing_eq_apply_hodgeStar (x : ⋀[R]^k M) (y : ⋀[R]^l M) :
+    wedgePairing vol hkl x y = B.exteriorPower l (hodgeStar B hB vol hkl x) y := by
+  simp [hodgeStar]
+
 end exteriorPower
