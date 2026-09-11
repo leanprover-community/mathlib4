@@ -5,10 +5,13 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Echelon.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.MulExpand
+public import Mathlib.Util.Qq
 public meta import Mathlib.Tactic.Echelon.Core
+public meta import Mathlib.Tactic.Matrix.MulExpand
 
 /-!
 # Certificate construction for the Bareiss decomposition

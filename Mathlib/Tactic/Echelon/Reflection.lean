@@ -5,10 +5,8 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.Tactic.Matrix.OfLists
-
-import Mathlib.Data.List.OfFn
 
 /-!
 # Reflection lemmas for the echelon certificate
