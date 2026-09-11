@@ -158,18 +158,11 @@ where the vertical arrows are `cochainsIso₀` and `cochainsIso₁` respectively
 theorem comp_d₀₁_eq :
     (cochainsIso₀ A).hom ≫ d₀₁ A =
       (inhomogeneousCochains A).d 0 1 ≫ (cochainsIso₁ A).hom := by
-  ext x a y
-  simp only [cochainsIso₀, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp,
-    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    LinearEquiv.funUnique_apply, LinearMap.coe_single, Function.comp_apply, Function.eval,
-    d₀₁_hom_apply, zero_add, ↓reduceDIte, Nat.reduceAdd, eqToHom_refl, Category.comp_id,
-    cochainsIso₁, Iso.symm_hom, LinearEquiv.toModuleIso_inv, LinearEquiv.funCongrLeft_symm,
-    LinearEquiv.funCongrLeft_apply, Equiv.funUnique_symm_apply, LinearMap.funLeft_apply,
-    inhomogeneousCochains.d_hom_apply, Fin.isValue, uniqueElim_const, Finset.univ_unique,
-    Fin.default_eq_zero, Fin.val_eq_zero, pow_one, neg_smul, one_smul, Finset.sum_neg_distrib,
-    Finset.sum_singleton, ← sub_eq_add_neg, CochainComplex.of.d]
-  rw [← Subsingleton.elim (α := Fin 0 → G) default (fun i ↦ y), Subsingleton.elim
-    (Fin.contractNth 0 _) default, Pi.default_def]
+  ext x a
+  simp [cochainsIso₀, LinearEquiv.toModuleIso_hom, d₀₁_hom_apply, eqToHom_refl,
+    cochainsIso₁, LinearEquiv.toModuleIso_inv, LinearEquiv.funCongrLeft_symm,
+    LinearEquiv.funCongrLeft_apply, inhomogeneousCochains.d_hom_apply,
+    ← sub_eq_add_neg, CochainComplex.of_d', ← Subsingleton.elim (α := Fin 0 → G) default]
 
 -- @[reassoc (attr := simp), elementwise (attr := simp)]
 @[reassoc, elementwise]
@@ -1014,8 +1007,9 @@ group homs `G → A`. -/
 def H1IsoOfIsTrivial :
     H1 A ≅ ↧(Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
-    ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
-      CochainComplex.of.d, isTrivial_apply]).symm ≪≫
+    ext
+    simp [-CochainComplex.of_d, inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
+      CochainComplex.of_d', isTrivial_apply, (Pi.zero_apply)]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
 set_option backward.isDefEq.respectTransparency false in
