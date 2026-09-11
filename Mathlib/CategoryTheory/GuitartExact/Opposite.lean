@@ -64,8 +64,7 @@ def inverse :
         (Quiver.Hom.unop_inj (by exact StructuredArrow.w φ.left)))
           (by
             ext
-            exact Quiver.Hom.unop_inj
-              ((StructuredArrow.proj _ _).congr_map (CostructuredArrow.w φ)))).op
+            exact ((StructuredArrow.proj _ _).congr_map (CostructuredArrow.w φ)))).op
 
 end structuredArrowRightwardsOpEquivalence
 
