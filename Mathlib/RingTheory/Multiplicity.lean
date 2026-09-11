@@ -524,7 +524,7 @@ theorem multiplicity_zero_left (a : α) : multiplicity 0 a = 0 := by
   · exact multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_zero_eq_zero_of_ne_zero a ha)
 
 @[deprecated (since := "2026-09-11")] alias multiplicity_zero_eq_zero_of_ne_zero :=
-multiplicity_zero_left
+  multiplicity_zero_left
 
 end MonoidWithZero
 
