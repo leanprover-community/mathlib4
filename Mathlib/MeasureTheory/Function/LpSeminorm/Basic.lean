@@ -906,10 +906,10 @@ end MapMeasure
 
 section Liminf
 
-variable [MeasurableSpace E] [OpensMeasurableSpace E] {R : ℝ≥0}
+variable [MeasurableSpace E] [OpensMeasurableSpace E]
 
 theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α → E}
-    (hfmeas : ∀ n, Measurable (f n)) (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) :
+    (hfmeas : ∀ n, Measurable (f n)) (hbdd : ⨆ n, eLpNorm (f n) p μ < ∞) :
     ∀ᵐ x ∂μ, liminf (fun n => ((‖f n x‖ₑ) ^ p.toReal : ℝ≥0∞)) atTop < ∞ := by
   by_cases hp0 : p.toReal = 0
   · simp only [hp0, ENNReal.rpow_zero]
@@ -922,26 +922,28 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
     ae_lt_top (.liminf fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
       (lt_of_le_of_lt
           (lintegral_liminf_le fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
-          (lt_of_le_of_lt ?_ (by finiteness : (R : ℝ≥0∞) ^ p.toReal < ∞))).ne
+          (lt_of_le_of_lt ?_ (by finiteness : (⨆ n, eLpNorm (f n) p μ) ^ p.toReal < ∞))).ne
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp', one_div] at hbdd
   simp_rw [liminf_eq, eventually_atTop]
-  exact
-    sSup_le fun b ⟨a, ha⟩ =>
-      (ha a le_rfl).trans ((ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp')).1 (hbdd _))
+  refine sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans ?_
+  apply (ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp')).1
+  simp only [← enorm_eq_nnnorm, ← one_div, ← eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp']
+  exact le_iSup (fun b ↦ eLpNorm (f b) p μ) a
 
 theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : ℕ → α → E}
-    (hfmeas : ∀ n, Measurable (f n)) (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) :
+    (hfmeas : ∀ n, Measurable (f n)) (hbdd : ⨆ n, eLpNorm (f n) p μ < ∞) :
     ∀ᵐ x ∂μ, liminf (fun n => (‖f n x‖ₑ)) atTop < ∞ := by
   by_cases hp' : p = ∞
   · subst hp'
     simp_rw [eLpNorm_exponent_top] at hbdd
-    have : ∀ n, ∀ᵐ x ∂μ, (‖f n x‖ₑ) < R + 1 := fun n =>
+    have : ∀ n, ∀ᵐ x ∂μ, (‖f n x‖ₑ) < (⨆ n, eLpNorm (f n) ∞ μ) + 1 := fun n =>
       ae_lt_of_essSup_lt
-        (lt_of_le_of_lt (hbdd n) <| ENNReal.lt_add_right ENNReal.coe_ne_top one_ne_zero)
+        (lt_of_le_of_lt (le_iSup (fun b ↦ eLpNorm (f b) ∞ μ) n)
+          <| ENNReal.lt_add_right hbdd.ne one_ne_zero)
     rw [← ae_all_iff] at this
     filter_upwards [this] with x hx using lt_of_le_of_lt
         (liminf_le_of_frequently_le' <| Frequently.of_forall fun n => (hx n).le)
-        (ENNReal.add_lt_top.2 ⟨ENNReal.coe_lt_top, ENNReal.one_lt_top⟩)
+        (ENNReal.add_lt_top.2 ⟨hbdd.lt_top, ENNReal.one_lt_top⟩)
   filter_upwards [ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd hfmeas hbdd] with x hx
   have hppos : 0 < p.toReal := ENNReal.toReal_pos hp hp'
   have :
