@@ -5,4 +5,4 @@ info: 100000
 -/
 #guard_msgs in
 /- Previously this would hang -/
-#eval padicValNat 2 (2 ^ 100000)
+#eval multiplicity 2 (2 ^ 100000)

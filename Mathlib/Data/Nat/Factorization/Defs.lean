@@ -25,7 +25,7 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 * As discussed in this Zulip thread:
   https://leanprover.zulipchat.com/#narrow/stream/217875/topic/Multiplicity.20in.20the.20naturals
   We have lots of disparate ways of talking about the multiplicity of a prime
-  in a natural number, including `factors.count`, `padicValNat`, `multiplicity`,
+  in a natural number, including `factors.count`, `multiplicity`, `multiplicity`,
   and the material in `Data/PNat/Factors`.  Move some of this material to this file,
   prove results about the relationships between these definitions,
   and (where appropriate) choose a uniform canonical way of expressing these ideas.
@@ -59,8 +59,9 @@ theorem primeFactorsList_count_eq {n p : ℕ} : n.primeFactorsList.count p = n.f
 /-- We can write both `n.factorization p` and `n.factors.count p` to represent the power
 of `p` in the factorization of `n`: we declare the former to be the simp-normal form. -/
 @[simp]
-theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p = padicValNat p n := by
-  rw [← primeFactorsList_count_eq]
+theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) :
+    n.factorization p = multiplicity p n := by
+  rw [← padicValNat_def, ← primeFactorsList_count_eq]
   rcases n.eq_zero_or_pos with (rfl | hn0)
   · simp [count]
   apply _root_.le_antisymm
@@ -72,7 +73,7 @@ theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p
     have := h.count_le p
     simp at this
 
-theorem factorization_le_padicValNat {n p : ℕ} : n.factorization p ≤ padicValNat p n := by
+theorem factorization_le_multiplicity {n p : ℕ} : n.factorization p ≤ multiplicity p n := by
   by_cases pp : p.Prime
   · exact (factorization_def n pp).le
   · simp [n.factorization.notMem_support_iff.mp (mt prime_of_mem_primeFactors pp)]
@@ -87,7 +88,7 @@ theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0)
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) :
     multiplicity p n = n.factorization p := by
-  rw [factorization_def n pp, padicValNat_def]
+  rw [factorization_def n pp]
 
 /-! ### Basic facts about factorization -/
 
