@@ -234,15 +234,15 @@ namespace IsQuotientCoveringMap
     · have ⟨U, hU, hGU⟩ := h.disjoint e
       exact ⟨U, hU, fun g hg ↦ by rw [hGU g hg, one_smul]⟩
 
-@[to_additive] theorem isLocalHomeomorph (h : IsQuotientCoveringMap f G) :
-    IsLocalHomeomorph f :=
-  h.isCoveringMap.isLocalHomeomorph
-
 @[to_additive] theorem isOpenQuotientMap (h : IsQuotientCoveringMap f G) :
     IsOpenQuotientMap f where
   surjective := h.surjective
   continuous := h.isCoveringMap.continuous
   isOpenMap := h.isCoveringMap.isOpenMap
+
+@[to_additive] theorem isLocalHomeomorph (h : IsQuotientCoveringMap f G) :
+    IsLocalHomeomorph f :=
+  h.isCoveringMap.isLocalHomeomorph
 
 end IsQuotientCoveringMap
 
