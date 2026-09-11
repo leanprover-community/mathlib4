@@ -68,7 +68,7 @@ variable {k} in
 theorem AffineIndepOn.affineIndependent {p : ι → P} {s : Set ι} (h : AffineIndepOn k p s) :
     AffineIndependent k (fun x : s ↦ p x) := h
 
-theorem affineIndependent_set_coe_iff {p : ι → P} {s : Set ι} :
+theorem affineIndependent_subtypeVal_iff {p : ι → P} {s : Set ι} :
     AffineIndependent k (fun x : s ↦ p x) ↔ AffineIndepOn k p s :=
   Iff.rfl
 
@@ -540,7 +540,7 @@ lemma AffineIndependent.indicator_extend_eq_of_affineCombination_comp_embedding_
 
 theorem affineIndepOn_iff_linearIndepOn_vsub {p : ι → P} {s : Set ι} {i : ι} (hi : i ∈ s) :
     AffineIndepOn k p s ↔ LinearIndepOn k (fun j ↦ p j -ᵥ p i) (s \ {i}) := by
-  rw [← affineIndependent_set_coe_iff, affineIndependent_iff_linearIndependent_vsub _ _ ⟨i, hi⟩,
+  rw [← affineIndependent_subtypeVal_iff, affineIndependent_iff_linearIndependent_vsub _ _ ⟨i, hi⟩,
     ← linearIndependent_set_coe_iff]
   exact linearIndependent_equiv'
     ((Equiv.subtypeEquivRight (by simp)).trans (Equiv.Set.sep s (· ≠ i)).symm) rfl
