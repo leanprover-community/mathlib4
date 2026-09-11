@@ -287,7 +287,7 @@ lemma genEigenrange_nat {f : End R M} {μ : R} {k : ℕ} :
 lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
     (h : f.HasUnifEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
-  simp [HasUnifEigenvalue, Nat.cast_zero, genEigenspace_zero] at h
+  simp [HasUnifEigenvalue, genEigenspace_zero] at h
 
 /-- If there exists a natural number `k` such that the kernel of `(f - μ • id) ^ k` is the
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
@@ -714,7 +714,7 @@ theorem independent_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M)
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.mp hx'; clear hx'
   let g := f - μ₂ • 1
   simp_rw [mem_genEigenspace, ← exists_prop] at hy ⊢
-  peel hy with l hlk hl
+  gconvert hy with l hlk hl
   simp only [LinearMap.mem_ker] at hl
   have hyz : (g ^ l) (y + z) ∈
       (f.genEigenspace μ₁ k) ⊓ s.sup fun μ ↦ f.genEigenspace μ k := by
@@ -857,7 +857,7 @@ lemma genEigenspace_le_smul (f : Module.End R M) (μ t : R) (k : ℕ∞) :
     (f.genEigenspace μ k) ≤ (t • f).genEigenspace (t * μ) k := by
   intro m hm
   simp_rw [mem_genEigenspace, ← exists_prop, LinearMap.mem_ker] at hm ⊢
-  peel hm with l hlk hl
+  gconvert hm using 2 with l hlk hl
   rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hl, smul_zero]
 
 lemma genEigenspace_inf_le_add

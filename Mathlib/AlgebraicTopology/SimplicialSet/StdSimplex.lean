@@ -73,6 +73,7 @@ instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
   fun a b ↦ decidable_of_iff (stdSimplex.objEquiv a = stdSimplex.objEquiv b) (by simp)
 
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
+@[macro_inline]
 instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
   coe_injective _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
@@ -302,7 +303,7 @@ lemma face_empty (n : ℕ) :
 lemma face_univ (n : ℕ) :
     face.{u} (.univ : Finset (Fin (n + 1))) = ⊤ := by
   ext
-  simp only [Subfunctor.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+  simp only [Subfunctor.top_obj, Set.mem_univ, iff_true]
   apply Finset.subset_univ
 
 end stdSimplex
@@ -848,23 +849,19 @@ def toOfSimplex : Δ[n] ⟶ ofSimplex x :=
 lemma toOfSimplex_ι :
     toOfSimplex x ≫ (ofSimplex x).ι = yonedaEquiv.symm x := rfl
 
-@[simp]
 lemma yonedaEquiv_toOfSimplex :
-    yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ :=
-  yonedaEquiv.symm.injective (by cat_disch)
+    dsimp% yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ := by
+  obtain ⟨x, rfl⟩ := yonedaEquiv.surjective x
+  dsimp [toOfSimplex]
+  cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 instance : Epi (toOfSimplex x) := by
   rw [← range_eq_top_iff]
   ext m ⟨_, u, rfl⟩
-  simp only [range_eq_ofSimplex, yonedaEquiv_toOfSimplex, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true]
-  refine ⟨u, ?_⟩
-  dsimp
-  ext
-  rw [← yonedaEquiv.right_inv x]
-  aesop
+  simp only [range_eq_ofSimplex, Subfunctor.toFunctor_obj,
+    yonedaEquiv_toOfSimplex, Subfunctor.top_obj,
+    Set.mem_univ, iff_true]
+  exact ⟨u, by dsimp⟩
 
 lemma isIso_toOfSimplex_iff :
     IsIso (toOfSimplex x) ↔ Mono (yonedaEquiv.symm x) := by
