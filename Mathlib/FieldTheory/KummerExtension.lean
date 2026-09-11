@@ -104,6 +104,14 @@ theorem X_pow_mul_sub_C_irreducible
     Irreducible (X ^ (n * m) - C a) := by
   simpa [pow_mul] using irreducible_comp hm (by simpa using hn)
 
+theorem norm_root_X_pow_sub_C {n : ℕ} {a : K} (hn : n ≠ 0) :
+    Algebra.norm K (root (X ^ n - C a)) = (-1) ^ n * -a := by
+  rw [← AdjoinRoot.powerBasis_gen (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a),
+    Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly,
+    minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hn),
+    coeff_sub, coeff_X_pow, ite_eq_right hn.symm]
+  simp
+
 -- TODO: generalize to even `n`
 theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
@@ -119,11 +127,8 @@ theorem X_pow_sub_C_irreducible_of_odd
     apply IH (Nat.odd_mul.mp hn).2
     intro q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
-    rw [← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
-      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
-      minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hp.ne_zero),
-      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, ite_eq_right hp.ne_zero.symm,
-      zero_sub, (Nat.odd_mul.mp hn).1.neg_pow, one_pow, neg_one_mul, neg_neg]
+    rw [← map_pow, hb, norm_root_X_pow_sub_C hp.ne_zero, (Nat.odd_mul.mp hn).1.neg_pow,
+      one_pow, neg_one_mul, neg_neg]
 
 theorem X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :=
