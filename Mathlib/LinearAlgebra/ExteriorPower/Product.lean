@@ -27,76 +27,6 @@ open TensorProduct
 
 namespace ExteriorAlgebra
 
-section RingHelpers
-
-variable {M} in
-@[simp]
-lemma algebraMapInv_ι (x : M) : algebraMapInv (ι R x) = (0 : R) := by
-  simp [algebraMapInv]
-
-variable {M} in
-lemma algebraMapInv_algebraMap (r : R) :
-    algebraMapInv (algebraMap R (ExteriorAlgebra R M) r) = r :=
-  algebraMap_leftInverse M r
-
-variable {M} in
-@[simp]
-lemma ιInv_ι (x : M) : ιInv (ι R x : ExteriorAlgebra R M) = x :=
-  ι_leftInverse x
-
-variable {M} in
-@[simp]
-lemma ιInv_one : ιInv (1 : ExteriorAlgebra R M) = 0 := by
-  let : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
-  have : IsCentralScalar R M := ⟨fun r m => rfl⟩
-  simp [ιInv]
-
-variable {M} in
-@[simp]
-lemma ιInv_algebraMap (r : R) : ιInv (algebraMap R (ExteriorAlgebra R M) r) = 0 := by
-  rw [Algebra.algebraMap_eq_smul_one, map_smul, ιInv_one, smul_zero]
-
-lemma ι_mul_ι_ring (a b : R) : ι R a * ι R b = 0 := by
-  trans a • ι R (1 : R) * b • ι R (1 : R)
-  · simp [← map_smul, smul_eq_mul, mul_one]
-  · rw [smul_mul_smul_comm, ι_sq_zero, smul_zero]
-
-/-- Every element of the exterior algebra of the base ring decomposes into a scalar part and a
-generator part. -/
-lemma eq_algebraMap_add_ι (t : ExteriorAlgebra R R) :
-    t = algebraMap R _ (algebraMapInv t) + ι R (ιInv t) := by
-  induction t using ExteriorAlgebra.induction with
-  | algebraMap r => simp
-  | ι x => simp
-  | add a b ha hb =>
-    nth_rw 1 [ha, hb]
-    simp [map_add, ← add_assoc, ← add_comm ((ι R) (ιInv a))]
-  | mul a b ha hb =>
-    obtain ⟨α, x, ha⟩ : ∃ α x, a = algebraMap R _ α + ι R x := ⟨_, _, ha⟩
-    obtain ⟨β, y, hb⟩ : ∃ β y, b = algebraMap R _ β + ι R y := ⟨_, _, hb⟩
-    subst ha hb
-    have e1 : algebraMap R (ExteriorAlgebra R R) α * ι R y = ι R (α • y) := by
-      rw [← Algebra.smul_def, ← map_smul]
-    have e2 : (ι R x : ExteriorAlgebra R R) * algebraMap R _ β = ι R (β • x) := by
-      rw [← Algebra.commutes, ← Algebra.smul_def, ← map_smul]
-    rw [add_mul, mul_add, mul_add, ι_mul_ι_ring, e1, e2, ← map_mul, add_zero, add_assoc, ← map_add]
-    simp [-map_mul]
-
-variable {R} in
-/-- The exterior algebra of the base ring is a free module of rank two, with basis `1, ι 1`. -/
-noncomputable def prodRingEquiv : (R × R) ≃ₗ[R] ExteriorAlgebra R R where
-  __ := LinearMap.coprod (Algebra.linearMap R (ExteriorAlgebra R R)) (ι R)
-  invFun := algebraMapInv.toLinearMap.prod ιInv
-  left_inv x := by simp
-  right_inv x := by simp [← eq_algebraMap_add_ι R x]
-
-variable {R} in
-@[simp]
-lemma prodRingEquiv_apply (c : R × R) :
-    prodRingEquiv c = algebraMap R (ExteriorAlgebra R R) c.1 + ι R c.2 := rfl
-
-end RingHelpers
-
 variable {N} in
 /-- The exterior algebra of `M × R` is, as a module, the product of two copies of the exterior
 algebra of `M`; the pair `(x, y)` corresponds to `x + y ∧ ι (0, 1)`. -/
@@ -105,7 +35,7 @@ noncomputable def prodEquivProd :
   (LinearEquiv.prodCongr (TensorProduct.rid R (ExteriorAlgebra R M)).symm
       (TensorProduct.rid R (ExteriorAlgebra R M)).symm).trans <|
     ((TensorProduct.prodRight R R (ExteriorAlgebra R M) R R).symm).trans <|
-      (TensorProduct.congr (LinearEquiv.refl R _) prodRingEquiv).trans <|
+      (TensorProduct.congr (LinearEquiv.refl R _) (prodRingEquiv R)).trans <|
         ((GradedTensorProduct.of R _ _).trans (prodEquivTensor R M R).symm.toLinearEquiv)
 
 lemma prodEquivProd_apply (x y : ExteriorAlgebra R M) :
