@@ -17,12 +17,12 @@ lemma comp_map {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ 
     f ≫ g = h := w
 
 /-- info: Tests.Map.comp_map_map.{v₁, u₁, u_1, u_2} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
-  (h : x ⟶ z) (w : f ≫ g = h) {D : Type u_1} [instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map f ≫ F.map g = F.map h -/
+  (h : x ⟶ z) (w : f ≫ g = h) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map f ≫ F.map g = F.map h -/
 #guard_msgs in
 #check comp_map_map
 
 /-- info: Tests.Map.comp_map_assoc_map.{v₁, u₁, u_1, u_2} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
-  (h : x ⟶ z) (w : f ≫ g = h) {Z : C} (h✝ : z ⟶ Z) {D : Type u_1} [instD : Category.{u_2, u_1} D] (F : C ⥤ D) :
+  (h : x ⟶ z) (w : f ≫ g = h) {Z : C} (h✝ : z ⟶ Z) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) :
   F.map f ≫ F.map g ≫ F.map h✝ = F.map h ≫ F.map h✝ -/
 #guard_msgs in
 #check comp_map_assoc_map
@@ -32,7 +32,7 @@ lemma comp_map_reassoc {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w 
     f ≫ g = h := w
 
 /-- info: Tests.Map.comp_map_reassoc_map_assoc.{v₁, u₁, u_1, u_2} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ⟶ y)
-  (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {D : Type u_1} [instD : Category.{u_2, u_1} D] (F : C ⥤ D) {Z : D}
+  (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) {Z : D}
   (h✝ : F.obj z ⟶ Z) : F.map f ≫ F.map g ≫ h✝ = F.map h ≫ h✝ -/
 #guard_msgs in
 #check comp_map_reassoc_map_assoc
@@ -42,7 +42,7 @@ lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
     f ≫ g = 𝟙 _ := w
 
 /-- info: Tests.Map.comp_eq_id_map.{v₁, u₁, u_1, u_2} {C : Type u₁} [Category.{v₁, u₁} C] {x y : C} (f : x ⟶ y) (g : y ⟶ x)
-  (w : f ≫ g = 𝟙 x) {D : Type u_1} [instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map f ≫ F.map g = 𝟙 (F.obj x) -/
+  (w : f ≫ g = 𝟙 x) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map f ≫ F.map g = 𝟙 (F.obj x) -/
 #guard_msgs in
 #check comp_eq_id_map
 
@@ -58,7 +58,7 @@ example {x y : Cᵒᵖ} (f g : x ⟶ y) (h : f = g)
   exact op_hom_eq_map f g h F
 
 /-- info: Tests.Map.comp_map_dual_map.{v₁, u₁, u_1, u_2} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : y ⟶ x) (g : z ⟶ y)
-  (h : z ⟶ x) (w : g ≫ f = h) {D : Type u_1} [instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map g ≫ F.map f = F.map h -/
+  (h : z ⟶ x) (w : g ≫ f = h) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map g ≫ F.map f = F.map h -/
 #guard_msgs in
 #check comp_map_dual_map
 

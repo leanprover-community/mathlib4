@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.Lean.Meta.Simp
 public import Mathlib.Util.AddRelatedDecl
+public import Qq
 
 /-!
 # The `map` attribute
@@ -25,7 +26,7 @@ There is also a term elaborator `map_of% t` for use within proofs.
 
 public meta section
 
-open Lean Meta Elab Tactic
+open Lean Meta Elab Tactic Qq
 open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.Map
@@ -35,26 +36,28 @@ namespace Mathlib.Tactic.CategoryTheory.Map
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
-/-- A variant of `Functor.congr_map` with the equality before the target category and functor. -/
-@[to_dual none]
-theorem congr_map'.{v, u, v', u'} {C : Type u} [Category.{v} C]
-    {X Y : C} {f g : X ⟶ Y} (w : f = g) {D : Type u'} [instD : Category.{v'} D]
-    (F : C ⥤ D) : F.map f = F.map g := F.congr_map w
-
 /-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
-def mapExprHom (e : Expr) (uLev vLev : Level) : Term.TermElabM Expr := do
-  let some _ := (← inferType e).cleanupAnnotations.eq? |
-    throwError "`@[map]` expects an equality"
-  let lem := mkConst ``congr_map' [← mkFreshLevelMVar, ← mkFreshLevelMVar, vLev, uLev]
-  let (args, _, _) ← forallMetaBoundedTelescope (← inferType lem) 7
-  let inst := args[1]!.mvarId!
-  inst.setKind .synthetic
-  try args[6]!.mvarId!.assignIfDefEq e catch _ =>
+def mapExprHom (type : Q(Prop)) (e : Q($type)) (uLev vLev : Level) : Term.TermElabM Expr := do
+  let u ← mkFreshLevelMVar
+  let v ← mkFreshLevelMVar
+  let C ← mkFreshExprMVarQ q(Type u)
+  let instC ← mkFreshExprMVarQ q(Category.{v} $C) .synthetic
+  let X ← mkFreshExprMVarQ q($C)
+  let Y ← mkFreshExprMVarQ q($C)
+  let f ← mkFreshExprMVarQ q($X ⟶ $Y)
+  let g ← mkFreshExprMVarQ q($X ⟶ $Y)
+  let eqType : Q(Prop) := q($f = $g)
+  unless ← isDefEq type eqType do
     throwError "`@[map]` expects an equality of morphisms"
+  let _ : $type =Q $eqType := ⟨⟩
+  let mappedType : Q(Prop) := q(∀ {D : Type uLev} [_instD : Category.{vLev} D] (F : $C ⥤ D),
+    F.map $f = F.map $g)
+  let mappedProof : Q($mappedType) := q(fun {D : Type uLev} [_instD : Category.{vLev} D]
+    (F : $C ⥤ D) => F.congr_map $e)
   -- As in `reassoc_of%`, let simplification use the instance even if synthesis is still pending.
+  let inst := instC.mvarId!
   let (pf, ()) ← withEnsuringLocalInstance inst do
-    let pf := mkAppN lem args
-    let (_, pf) ← simpEq mapCompSimp (← inferType pf) pf
+    let (_, pf) ← simpEq mapCompSimp mappedType mappedProof
     return (pf, ())
   -- Rewriting can determine the source category after this elaborator returns.
   unless ← Term.synthesizeInstMVarCore inst do
@@ -70,9 +73,12 @@ parameters and `map_of%` leaves for the surrounding elaboration to determine.
 def mapExpr (pf : Expr) : Term.TermElabM Expr := do
   let uLev ← mkFreshLevelMVar
   let vLev ← mkFreshLevelMVar
-  forallTelescopeReducing (← inferType pf) fun xs _ => do
+  forallTelescopeReducing (← inferType pf) (whnfType := true) fun xs type => do
+    let type := (← instantiateMVars type).consumeMData
+    let some _ := type.eq? | throwError "`@[map]` expects an equality"
+    let type : Q(Prop) := type
     let pfApp := mkAppN pf xs
-    let inner ← mapExprHom pfApp uLev vLev
+    let inner ← mapExprHom type pfApp uLev vLev
     mkLambdaFVars xs inner
 
 /--
