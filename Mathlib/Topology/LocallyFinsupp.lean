@@ -652,7 +652,7 @@ noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : S
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
@@ -679,7 +679,7 @@ Present a function with with finite support as a finsum of singleton indicator f
   ext z
   by_cases hz : z ∉ U
   · aesop
-  simp
+  simp [restrict_apply]
   by_cases hz : z ∈ F.support
   · aesop
   · aesop
