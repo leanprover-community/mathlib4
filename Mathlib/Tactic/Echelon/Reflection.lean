@@ -57,6 +57,11 @@ end PivotChain
 
 variable {R : Type*}
 
+theorem getD_eq_zero_of_forall_eq_zero [Zero R] {l : List R} (h : ∀ x ∈ l, x = 0) (i : ℕ) :
+    l.getD i 0 = 0 := by
+  rw [List.eq_replicate_of_mem h]
+  grind
+
 /-- The entries above the diagonal of a list of rows, collected row by row. -/
 def aboveDiagonal (k : Nat) : List (List R) → List R
   | [] => []
@@ -72,13 +77,12 @@ theorem getD_eq_zero_of_aboveDiagonal [Zero R] {k i j : Nat} {rows : List (List 
     cases i with
     | zero =>
       obtain ⟨d, rfl⟩ : ∃ d, j = (k + 1) + d := ⟨j - (k + 1), by lia⟩
-      rw [List.getD_cons_zero, List.getD_eq_getElem?_getD, ← List.getElem?_drop]
-      cases hx : (row.drop (k + 1))[d]? with
-      | none => rfl
-      | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
+      rw [List.getD_cons_zero, List.getD_eq_getElem?_getD, ← List.getElem?_drop,
+        ← List.getD_eq_getElem?_getD]
+      exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) d
     | succ i =>
       rw [List.getD_cons_succ]
-      exact ih (fun x hx => h x (Or.inr hx)) (by lia)
+      exact ih (fun x hx ↦ h x (Or.inr hx)) (by lia)
 
 theorem isLowerTriangular_ofLists [Zero R] {m : ℕ} {rows : List (List R)} {N : ℕ}
     (h : aboveDiagonal 0 rows = List.replicate N 0) : (ofLists m m rows).IsLowerTriangular := by
@@ -135,30 +139,27 @@ theorem getD_eq_zero_of_pivotPrefixes [Zero R] {ps : List (WithTop (Fin n))}
   | cons p ps ih =>
     cases i with
     | zero =>
-      rw [← List.headD_eq_getD, List.getD_eq_getElem?_getD]
+      rw [← List.headD_eq_getD]
       cases p with
       | coe q =>
         simp only [List.getD_cons_zero, WithTop.coe_lt_coe] at hj
         simp only [pivotPrefixes, List.mem_append] at h
-        rw [← List.getElem?_take_of_lt hj]
-        cases hx : ((rows.headD []).take q)[j]? with
-        | none => rfl
-        | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
+        rw [List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj,
+          ← List.getD_eq_getElem?_getD]
+        exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) j
       | top =>
         simp only [pivotPrefixes, List.mem_append] at h
-        cases hx : (rows.headD [])[j]? with
-        | none => rfl
-        | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
+        exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) j
     | succ i =>
       rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
         ← List.getD_eq_getElem?_getD]
       cases p with
       | coe q =>
         simp only [pivotPrefixes, List.mem_append] at h
-        exact ih (fun x hx => h x (Or.inr hx)) (by simpa using hi) hj
+        exact ih (fun x hx ↦ h x (Or.inr hx)) (by simpa using hi) hj
       | top =>
         simp only [pivotPrefixes, List.mem_append] at h
-        exact ih (fun x hx => h x (Or.inr hx)) (by simpa using hi) hj
+        exact ih (fun x hx ↦ h x (Or.inr hx)) (by simpa using hi) hj
 
 theorem getD_ne_zero_of_pivotEntries [Zero R] {ps : List (WithTop (Fin n))}
     {rows : List (List R)} (h : ∀ x ∈ pivotEntries ps rows, x ≠ 0) {i : ℕ} {c : Fin n}
@@ -176,21 +177,23 @@ theorem getD_ne_zero_of_pivotEntries [Zero R] {ps : List (WithTop (Fin n))}
       rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
         ← List.getD_eq_getElem?_getD]
       cases p with
-      | coe q => exact ih (fun x hx => h x (List.mem_cons_of_mem _ hx)) hc
+      | coe q => exact ih (fun x hx ↦ h x (List.mem_cons_of_mem _ hx)) hc
       | top => exact ih h hc
 
 theorem isPivotedBy_ofLists [Zero R] {m : ℕ} {rows : List (List R)}
     {pivot : Fin m → WithTop (Fin n)} {ps : List (WithTop (Fin n))} (hps : List.ofFn pivot = ps)
     (hchain : ps.IsChain PivotStep) {N : ℕ} (hzero : pivotPrefixes ps rows = List.replicate N 0)
     (hnz : ∀ x ∈ pivotEntries ps rows, x ≠ 0) : (ofLists m n rows).IsPivotedBy pivot := by
-  have hmono := (isChain_ofFn_iff_monotone_and_strictMonoOn pivot).mp (hps ▸ hchain)
-  refine Matrix.isPivotedBy_iff.mpr ⟨hmono.1, hmono.2, fun i => ?_⟩
+  obtain ⟨hmono, hstrict⟩ := (isChain_ofFn_iff_monotone_and_strictMonoOn pivot).mp (hps ▸ hchain)
+  refine Matrix.isPivotedBy_iff.mpr ⟨hmono, hstrict, fun i ↦ ?_⟩
   have hi : ps.getD i ⊤ = pivot i := by simp [← hps]
-  refine ⟨fun j hj => ?_, fun c hc => ?_⟩
-  · rw [ofLists_apply, ofList_apply]
+  constructor
+  · intro j hj
+    rw [ofLists_apply, ofList_apply]
     exact getD_eq_zero_of_pivotPrefixes (List.eq_replicate_iff.mp hzero).2 (by simp [← hps])
       (hi ▸ hj)
-  · rw [ofLists_apply, ofList_apply]
+  · intro c hc
+    rw [ofLists_apply, ofList_apply]
     exact getD_ne_zero_of_pivotEntries hnz (hi.trans hc)
 
 end Mathlib.Tactic.Echelon
