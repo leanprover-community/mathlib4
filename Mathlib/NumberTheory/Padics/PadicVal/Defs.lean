@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 module
 
-public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.PadicValNat
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Factors
 
@@ -46,16 +46,7 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
     · simp
     · simp [← padicValNat_eq_emultiplicity_of_ne_one, *]
 
-theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
-    padicValNat p n = multiplicity p n :=
-  .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|
-    padicValNat_eq_emultiplicity_of_ne_one hp hn
-
-/-- A simplification of `padicValNat` when one input is prime, by analogy with
-`padicValRat_def`. -/
-theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
-    padicValNat p n = multiplicity p n :=
-  padicValNat_def' hp.out.ne_one hn
+@[deprecated (since := "2026-09-08")] alias padicValNat_def' := padicValNat_def
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
@@ -98,7 +89,7 @@ theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : �
     n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
-      |>.emultiplicity_eq_multiplicity, ← padicValNat_def' ha.ne_one hb,
+      |>.emultiplicity_eq_multiplicity, ← padicValNat_def,
     ENat.natCast_le_natCast]
 
 /-- A weak upper bound on `padicValNat p n`. -/
