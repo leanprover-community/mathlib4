@@ -389,7 +389,7 @@ private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[
   .ofSurjective (toH' H h).fromCompletion <| by
     have h_sub : Set.range (toH' H h) ⊆ Set.range ⇑(toH' H h).fromCompletion := by
       rintro _ ⟨f, rfl⟩
-      exact ⟨f, UniformSpace.Completion.extension_coe (toH' H h).isometry.uniformContinuous f⟩
+      exact ⟨f, UniformSpace.Completion.extension_coe (toH' H h).isometric.uniformContinuous f⟩
     have h_dense : Dense (Set.range (toH' H h)) := by
       convert dense_iff_topologicalClosure_eq_top.mpr (kerFun_dense H')
       simp only [LinearIsometry.coe_mk, toH', ← LinearMap.coe_range,
@@ -397,7 +397,7 @@ private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[
       congr! 1
       aesop
     rw [← Set.range_eq_univ,
-      ← (toH' H h).fromCompletion.isometry.isClosedEmbedding.isClosed_range.closure_eq,
+      ← (toH' H h).fromCompletion.isometric.isClosedEmbedding.isClosed_range.closure_eq,
       (h_dense.mono h_sub).closure_eq]
 
 end Equiv
@@ -416,7 +416,7 @@ private lemma toH'_apply_single (h : kernel H = kernel H') (x : X) (v : V) :
 private lemma equivAux_apply_coe (h : kernel H = kernel H') (x₀ : H₀ (kernel H)) :
     OfKernel.equivAux h x₀ = OfKernel.toH' H h x₀ := by
   simpa [OfKernel.equivAux]
-    using UniformSpace.Completion.extension_coe (OfKernel.toH' H h).isometry.uniformContinuous _
+    using UniformSpace.Completion.extension_coe (OfKernel.toH' H h).isometric.uniformContinuous _
 
 /-- If the two RKHS have the same kernel, then they are isometrically isomorphic. -/
 def equiv (h : kernel H = kernel H') : H ≃ₗᵢ[𝕜] H' :=

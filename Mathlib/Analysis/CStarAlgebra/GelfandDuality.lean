@@ -45,7 +45,7 @@ Then `η₁ : id → F ∘ G := gelfandStarTransform` and
 
 * `spectrum.gelfandTransform_eq` : the Gelfand transform is spectrum-preserving when the algebra is
   a commutative complex Banach algebra.
-* `gelfandTransform_isometry` : the Gelfand transform is an isometry when the algebra is a
+* `gelfandTransform_isometric` : the Gelfand transform is an isometry when the algebra is a
   commutative (unital) C⋆-algebra over `ℂ`.
 * `gelfandTransform_bijective` : the Gelfand transform is bijective when the algebra is a
   commutative (unital) C⋆-algebra over `ℂ`.
@@ -141,8 +141,8 @@ theorem gelfandTransform_map_star (a : A) :
 variable (A)
 
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
-theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
-  refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => ?_
+theorem gelfandTransform_isometric : Isometric (gelfandTransform ℂ A) := by
+  refine AddMonoidHomClass.isometric_of_norm (gelfandTransform ℂ A) fun a => ?_
   /- By `spectrum.gelfandTransform_eq`, the spectra of `star a * a` and its
     `gelfandTransform` coincide. Therefore, so do their spectral radii, and since they are
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
@@ -155,10 +155,12 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using!
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 
+@[deprecated (since := "2026-09-09")] alias gelfandTransform_isometry := gelfandTransform_isometric
+
 set_option backward.defeqAttrib.useBackward true in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
-  refine ⟨(gelfandTransform_isometry A).injective, ?_⟩
+  refine ⟨(gelfandTransform_isometric A).injective, ?_⟩
   /- The range of `gelfandTransform ℂ A` is actually a `StarSubalgebra`. The key lemma below may be
     hard to spot; it's `map_star` coming from `WeakDual.Complex.instStarHomClass`, which is a
     nontrivial result. -/
@@ -177,7 +179,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
   have h : rng.topologicalClosure = rng := le_antisymm
     (StarSubalgebra.topologicalClosure_minimal le_rfl
-      (gelfandTransform_isometry A).isClosedEmbedding.isClosed_range)
+      (gelfandTransform_isometric A).isClosedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
   refine h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     _ (fun _ _ => ?_)
@@ -206,7 +208,7 @@ open scoped CStarAlgebra in
 open Unitization in
 lemma norm_add_eq_max (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
   let f := gelfandStarTransform A⁺¹ ∘ inrNonUnitalAlgHom ℂ A
-  have hf : Isometry f := gelfandTransform_isometry _ |>.comp isometry_inr
+  have hf : Isometric f := gelfandTransform_isometric _ |>.comp isometric_inr
   simp_rw [← hf.norm_map_of_map_zero (by simp [f]), show f (a + b) = f a + f b by simp [f]]
   exact ContinuousMap.norm_add_eq_max <| by simpa [f] using congr(f $h)
 

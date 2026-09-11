@@ -92,7 +92,7 @@ theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (
   true when `E` is not complete, so we need to go first to the completion, and argue there. -/
   let g := UniformSpace.Completion.toComplₗᵢ (𝕜 := ℝ) (E := E)
   have : ‖(g ∘ f) b - (g ∘ f) a‖ₑ = ‖f b - f a‖ₑ := by
-    rw [← edist_eq_enorm_sub, Function.comp_def, g.isometry.edist_eq, edist_eq_enorm_sub]
+    rw [← edist_eq_enorm_sub, Function.comp_def, g.isometric.edist_eq, edist_eq_enorm_sub]
   rw [← this, ← integral_deriv_of_contDiffOn_Icc (g.contDiff.comp_contDiffOn h) hab,
     integral_of_le hab, restrict_Ioc_eq_restrict_Icc]
   apply (enorm_integral_le_lintegral_enorm _).trans

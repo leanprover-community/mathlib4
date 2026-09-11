@@ -104,24 +104,28 @@ This is a useful class because it gives rise to a nice norm on the unitization; 
 a C⋆-norm when the norm on `A` is a C⋆-norm. -/
 class _root_.RegularNormedAlgebra : Prop where
   /-- The left regular representation of the algebra on itself is an isometry. -/
-  isometry_mul' : Isometry (mul 𝕜 R)
+  isometric_mul' : Isometric (mul 𝕜 R)
+@[deprecated (since := "2026-09-10")]
+alias RegularNormedAlgebra.isometry_mul' := RegularNormedAlgebra.isometric_mul'
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
 instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [NontriviallyNormedField 𝕜]
     [SeminormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
-  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
+  isometric_mul' := AddMonoidHomClass.isometric_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
       convert! ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
       simp [norm_one]
 
 variable [RegularNormedAlgebra 𝕜 R]
 
-lemma isometry_mul : Isometry (mul 𝕜 R) :=
-  RegularNormedAlgebra.isometry_mul'
+lemma isometric_mul : Isometric (mul 𝕜 R) :=
+  RegularNormedAlgebra.isometric_mul'
+
+@[deprecated (since := "2026-09-09")] alias isometry_mul := isometric_mul
 
 @[simp]
 lemma opNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖ = ‖x‖ :=
-  (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 R)).mp (isometry_mul 𝕜 R) x
+  (AddMonoidHomClass.isometric_iff_norm (mul 𝕜 R)).mp (isometric_mul 𝕜 R) x
 
 @[simp]
 lemma opNNNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖₊ = ‖x‖₊ :=

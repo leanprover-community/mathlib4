@@ -857,9 +857,12 @@ theorem norm_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
     (∀ x : H, ‖u x‖ = ‖x‖) ↔ adjoint u ∘L u = 1 := by
   rw [LinearMap.norm_map_iff_inner_map_map u, u.inner_map_map_iff_adjoint_comp_self]
 
-theorem isometry_iff_adjoint_comp_self (u : H →L[𝕜] K) :
-    Isometry u ↔ adjoint u ∘L u = 1 := by
-  rw [AddMonoidHomClass.isometry_iff_norm, norm_map_iff_adjoint_comp_self]
+theorem isometric_iff_adjoint_comp_self (u : H →L[𝕜] K) :
+    Isometric u ↔ adjoint u ∘L u = 1 := by
+  rw [AddMonoidHomClass.isometric_iff_norm, norm_map_iff_adjoint_comp_self]
+
+@[deprecated (since := "2026-09-09")] alias isometry_iff_adjoint_comp_self :=
+  isometric_iff_adjoint_comp_self
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
@@ -1069,7 +1072,7 @@ theorem LinearIsometry.adjoint_comp_self {E E' : Type*}
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [CompleteSpace E'] (f : E →ₗᵢ[𝕜] E') :
     f.toContinuousLinearMap.adjoint ∘L f.toContinuousLinearMap = 1 :=
-  f.toContinuousLinearMap.isometry_iff_adjoint_comp_self.mp f.isometry
+  f.toContinuousLinearMap.isometric_iff_adjoint_comp_self.mp f.isometric
 
 /-- A version of `LinearIsometry.adjoint_comp_self` in terms of `LinearMap.adjoint`. -/
 @[simp]

@@ -423,7 +423,9 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → C₀(α, β)} {f :
     @BoundedContinuousFunction.tendsto_iff_tendstoUniformly _ _ _ _ _ (fun i => (F i).toBCF)
       f.toBCF l
 
-theorem isometry_toBCF : Isometry (toBCF : C₀(α, β) → α →ᵇ β) := by tauto
+theorem isometric_toBCF : Isometric (toBCF : C₀(α, β) → α →ᵇ β) := by tauto
+
+@[deprecated (since := "2026-09-09")] alias isometry_toBCF := isometric_toBCF
 
 theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →ᵇ β)) := by
   refine isClosed_iff_clusterPt.mpr fun f hf => ?_
@@ -443,7 +445,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
-  (completeSpace_iff_isComplete_range isometry_toBCF.isUniformInducing).mpr
+  (completeSpace_iff_isComplete_range isometric_toBCF.isUniformInducing).mpr
     isClosed_range_toBCF.isComplete
 
 end Metric

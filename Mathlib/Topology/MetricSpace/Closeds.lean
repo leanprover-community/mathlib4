@@ -206,8 +206,10 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
 
-theorem isometry_singleton : Isometry ({·} : α → Closeds α) :=
+theorem isometric_singleton : Isometric ({·} : α → Closeds α) :=
   fun _ _ => hausdorffEDist_singleton
+
+@[deprecated (since := "2026-09-09")] alias isometry_singleton := isometric_singleton
 
 theorem lipschitz_sup : LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
   .of_edist_le fun _ _ => hausdorffEDist_union_le
@@ -233,11 +235,15 @@ instance instEMetricSpace : EMetricSpace (Compacts α) where
 theorem edist_eq {s t : Compacts α} : edist s t = hausdorffEDist (s : Set α) t :=
   rfl
 
-theorem isometry_toCloseds : Isometry (Compacts.toCloseds (α := α)) :=
+theorem isometric_toCloseds : Isometric (Compacts.toCloseds (α := α)) :=
   fun _ _ => rfl
 
-theorem isometry_singleton : Isometry ({·} : α → Compacts α) :=
+@[deprecated (since := "2026-09-09")] alias isometry_toCloseds := isometric_toCloseds
+
+theorem isometric_singleton : Isometric ({·} : α → Compacts α) :=
   fun _ _ => hausdorffEDist_singleton
+
+@[deprecated (since := "2026-09-09")] alias isometry_singleton := isometric_singleton
 
 theorem lipschitz_sup :
     LipschitzWith 1 fun p : Compacts α × Compacts α => p.1 ⊔ p.2 :=
@@ -263,14 +269,20 @@ instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
 /-- `NonemptyCompacts.toCloseds` is an isometry -/
-theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
+theorem isometric_toCloseds : Isometric (@NonemptyCompacts.toCloseds α _ _) :=
   fun _ _ => rfl
 
-theorem isometry_toCompacts : Isometry (NonemptyCompacts.toCompacts (α := α)) :=
+@[deprecated (since := "2026-09-09")] alias isometry_toCloseds := isometric_toCloseds
+
+theorem isometric_toCompacts : Isometric (NonemptyCompacts.toCompacts (α := α)) :=
   fun _ _ => rfl
 
-theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
+@[deprecated (since := "2026-09-09")] alias isometry_toCompacts := isometric_toCompacts
+
+theorem isometric_singleton : Isometric ({·} : α → NonemptyCompacts α) :=
   fun _ _ => hausdorffEDist_singleton
+
+@[deprecated (since := "2026-09-09")] alias isometry_singleton := isometric_singleton
 
 theorem lipschitz_sup :
     LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts α => p.1 ⊔ p.2 :=

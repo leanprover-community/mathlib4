@@ -86,8 +86,8 @@ end CommRing
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : AbsoluteValue K ℝ)
   (w : AbsoluteValue L ℝ) [w.LiesOver v]
 
-theorem isometry_map : Isometry (WithAbs.map v w (algebraMap K L)) := by
-  rw [← AbsoluteValue.LiesOver.under_eq w v, AddMonoidHomClass.isometry_iff_norm]
+theorem isometry_map : Isometric (WithAbs.map v w (algebraMap K L)) := by
+  rw [← AbsoluteValue.LiesOver.under_eq w v, AddMonoidHomClass.isometric_iff_norm]
   simp_rw [map_apply, norm_eq_apply_ofAbs]
   simp [AbsoluteValue.under_def]
 
@@ -133,7 +133,7 @@ instance : letI := algebraOfLiesOver v w
     ContinuousSMul v.Completion w.Completion :=
   let := algebraOfLiesOver v w
   continuousSMul_of_algebraMap v.Completion w.Completion
-    (UniformSpace.Completion.isometry_mapRingHom (WithAbs.isometry_map v w)).continuous
+    (UniformSpace.Completion.isometric_mapRingHom (WithAbs.isometry_map v w)).continuous
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
   [ContinuousSMul v.Completion w.Completion]
@@ -161,7 +161,7 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
-theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
+theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometric f) :
     LocallyCompactSpace v.Completion :=
   h.completion_extension.isClosedEmbedding.locallyCompactSpace
 

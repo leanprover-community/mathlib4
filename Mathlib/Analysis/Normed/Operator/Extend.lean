@@ -362,7 +362,7 @@ variable [PseudoMetricSpace R₂] [CompleteSpace F] [IsBoundedSMul R₂ F]
 `UniformSpace.Completion.extension`. -/
 def fromCompletion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F where
   __ := f.toContinuousLinearMap.fromCompletion
-  norm_map' := f.isometry.completion_extension.norm_map_of_map_zero
+  norm_map' := f.isometric.completion_extension.norm_map_of_map_zero
     f.toContinuousLinearMap.fromCompletion.map_zero
 
 theorem fromCompletion_apply_coe (x : E) : f.fromCompletion x = f x :=
@@ -371,7 +371,7 @@ theorem fromCompletion_apply_coe (x : E) : f.fromCompletion x = f x :=
 @[simp low]
 theorem coe_fromCompletion : f.fromCompletion = Completion.extension f := by
   refine Completion.ext f.fromCompletion.continuous Completion.continuous_extension fun a => ?_
-  rw [fromCompletion_apply_coe, Completion.extension_coe f.isometry.uniformContinuous]
+  rw [fromCompletion_apply_coe, Completion.extension_coe f.isometric.uniformContinuous]
 
 @[simp]
 theorem toContinuousLinearMap_fromCompletion :
@@ -403,7 +403,7 @@ theorem completion_apply_coe (x : E) : f.completion x = f x :=
 @[simp low]
 theorem coe_completion : f.completion = Completion.map f := by
   refine Completion.ext f.completion.continuous Completion.continuous_map fun a => ?_
-  rw [completion_apply_coe, Completion.map_coe f.isometry.uniformContinuous]
+  rw [completion_apply_coe, Completion.map_coe f.isometric.uniformContinuous]
 
 @[simp]
 theorem toContinuousLinearMap_completion :

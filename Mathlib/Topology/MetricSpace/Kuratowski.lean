@@ -57,8 +57,8 @@ theorem embeddingOfSubset_dist_le (a b : α) :
   ring
 
 /-- When the reference set is dense, the embedding map is an isometry on its image. -/
-theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) := by
-  refine Isometry.of_dist_eq fun a b => ?_
+theorem embeddingOfSubset_isometric (H : DenseRange x) : Isometric (embeddingOfSubset x) := by
+  refine Isometric.of_dist_eq fun a b => ?_
   refine (embeddingOfSubset_dist_le x a b).antisymm (le_of_forall_pos_le_add fun e epos => ?_)
   -- First step: find n with dist a (x n) < e
   rcases Metric.mem_closure_range_iff.1 (H a) (e / 2) (half_pos epos) with ⟨n, hn⟩
@@ -81,9 +81,12 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
       _ = dist (embeddingOfSubset x b) (embeddingOfSubset x a) + e := by ring
   simpa [dist_comm] using this
 
+@[deprecated (since := "2026-09-09")] alias embeddingOfSubset_isometry :=
+  embeddingOfSubset_isometric
+
 /-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
-    ∃ f : α → ℓ^∞(ℕ, ℝ), Isometry f := by
+    ∃ f : α → ℓ^∞(ℕ, ℝ), Isometric f := by
   rcases (univ : Set α).eq_empty_or_nonempty with h | h
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
@@ -93,7 +96,7 @@ theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpac
     rcases this with ⟨S, ⟨S_countable, S_dense⟩⟩
     rcases Set.countable_iff_exists_subset_range.1 S_countable with ⟨x, x_range⟩
     -- Use embeddingOfSubset to construct the desired isometry
-    exact ⟨embeddingOfSubset x, embeddingOfSubset_isometry x (S_dense.mono x_range)⟩
+    exact ⟨embeddingOfSubset x, embeddingOfSubset_isometric x (S_dense.mono x_range)⟩
 
 end KuratowskiEmbedding
 
@@ -107,15 +110,18 @@ def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α 
 /--
 The Kuratowski embedding is an isometry.
 Theorem 2.1 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]. -/
-protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
-    Isometry (kuratowskiEmbedding α) :=
+protected theorem kuratowskiEmbedding.isometric (α : Type u) [MetricSpace α] [SeparableSpace α] :
+    Isometric (kuratowskiEmbedding α) :=
   Classical.choose_spec (exists_isometric_embedding α)
+
+@[deprecated (since := "2026-09-10")]
+alias kuratowskiEmbedding.isometry := kuratowskiEmbedding.isometric
 
 /-- Version of the Kuratowski embedding for nonempty compacts -/
 nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
     [Nonempty α] : NonemptyCompacts ℓ^∞(ℕ, ℝ) where
   carrier := range (kuratowskiEmbedding α)
-  isCompact' := isCompact_range (kuratowskiEmbedding.isometry α).continuous
+  isCompact' := isCompact_range (kuratowskiEmbedding.isometric α).continuous
   nonempty' := range_nonempty _
 
 /--
