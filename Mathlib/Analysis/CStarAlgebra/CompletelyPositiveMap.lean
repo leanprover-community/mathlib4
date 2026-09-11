@@ -111,6 +111,7 @@ variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
   [StarOrderedRing A₂]
 
+@[macro_inline]
 instance : FunLike (A₁ →CP A₂) A₁ A₂ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -133,7 +134,7 @@ lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M :
   let k := Fintype.card n
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
   have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
-    simp only [mapₗ, LinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
+    simp only [mapₗ, LinearMap.coe_ofClass, LinearMap.coe_mk, AddHom.coe_mk]
     exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
   simpa [reindexₐ_symm] using map_nonneg (reindexₐ ℂ A₂ e).symm hmain
@@ -150,7 +151,7 @@ open CStarMatrix CFC in
 /-- Non-unital star algebra homomorphisms are completely positive. -/
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
   map_cstarMatrix_nonneg' φ k M hM := by
-    change 0 ≤ (mapₙₐ (φ : A₁ →⋆ₙₐ[ℂ] A₂)) M
+    change 0 ≤ mapₙₐ (.ofClass φ) M
     exact map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass
