@@ -5,16 +5,10 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Fin.Tuple.Reflection  -- shake: keep (Qq dependency)
-public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
-public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Echelon.Core
+public import Mathlib.Tactic.Echelon.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.MulExpand
-public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (referenced by name)
-public import Mathlib.Util.Qq
 public meta import Mathlib.Tactic.Echelon.Core
-
-import Mathlib.Data.List.OfFn
 
 /-!
 # Certificate construction for the Bareiss decomposition
@@ -40,138 +34,6 @@ entries of `U`, and the equation of the matrix literals follows by a single defi
 Stated entrywise on the matrices, every entry would carry indexed reads, which the kernel
 evaluates by walking the literal.
 -/
-
-@[expose] public section
-
-namespace Mathlib.Tactic.Echelon
-
-/-! ### The pivot-function conditions in chain form
-
-The pivot certificates defined in the theory file using `Monotone` and `StrictMonoOn` have
-decidable instances but require `O(n^2)` comparisons, since they use the general decidable
-instances from `Monotone` which check all pairs. The following part defines a `List.isChain`-based
-alternative that can be decided in `O(n) comparisons`.
--/
-
-variable {α : Type*} [Top α]
-
-/-- One step of a pivot function: strictly increasing, with `⊤` absorbing. -/
-def PivotStep [LT α] (a b : α) : Prop :=
-  a < b ∨ a = ⊤ ∧ b = ⊤
-
-instance [Preorder α] : IsTrans α PivotStep where
-  trans a b c h₁ h₂ := by
-    simp only [PivotStep] at *
-    grind
-
-instance [LT α] [i : ∀ a b : α, Decidable (a < b ∨ a = ⊤ ∧ b = ⊤)] :
-    DecidableRel (PivotStep (α := α)) := i
-
-/-- TODO: List.ofFn still brings up a O(n^2) construction. This can be improved by using a
-list bridge eventually. -/
-theorem isChain_ofFn_iff_monotone_and_strictMonoOn [PartialOrder α] {m : ℕ} (l : Fin m → α) :
-    (List.ofFn l).IsChain PivotStep ↔ Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} := by
-  rw [List.isChain_iff_pairwise, List.pairwise_ofFn]
-  simp only [PivotStep, Monotone, StrictMonoOn]
-  grind [le_of_lt, LE.le.eq_or_lt]
-
-/-! ### The pivot entry conditions as row sweeps
-
-The entries before the pivot columns and the entries at them are collected along the rows, so
-that the zero conditions reduce to one list equation and the nonzero conditions to one list of
-entries. -/
-
-section PivotSweeps
-
-open Mathlib.Tactic.Matrix
-
-variable {R : Type*} {n : ℕ}
-
-/-- The entries of each row before its pivot column, collected row by row; a row whose pivot
-is `⊤` contributes all its entries. -/
-def pivotPrefixes : List (WithTop (Fin n)) → List (List R) → List R
-  | [], _ => []
-  | (p : Fin n) :: ps, rows => (rows.headD []).take p ++ pivotPrefixes ps rows.tail
-  | none :: ps, rows => rows.headD [] ++ pivotPrefixes ps rows.tail
-
-/-- The entry of each row at its pivot column, for the rows whose pivot is a column. -/
-def pivotEntries [Zero R] : List (WithTop (Fin n)) → List (List R) → List R
-  | [], _ => []
-  | (p : Fin n) :: ps, rows => (rows.headD []).getD p 0 :: pivotEntries ps rows.tail
-  | none :: ps, rows => pivotEntries ps rows.tail
-
-theorem getD_eq_zero_of_pivotPrefixes [Zero R] {ps : List (WithTop (Fin n))}
-    {rows : List (List R)} (h : ∀ x ∈ pivotPrefixes ps rows, x = 0) {i : ℕ} {j : Fin n}
-    (hi : i < ps.length) (hj : (j : WithTop (Fin n)) < ps.getD i ⊤) :
-    (rows.getD i []).getD j 0 = 0 := by
-  induction ps generalizing rows i with
-  | nil => simp at hi
-  | cons p ps ih =>
-    cases i with
-    | zero =>
-      rw [← List.headD_eq_getD, List.getD_eq_getElem?_getD]
-      cases p with
-      | coe q =>
-        simp only [List.getD_cons_zero, WithTop.coe_lt_coe] at hj
-        simp only [pivotPrefixes, List.mem_append] at h
-        rw [← List.getElem?_take_of_lt hj]
-        cases hx : ((rows.headD []).take q)[j]? with
-        | none => rfl
-        | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
-      | top =>
-        simp only [pivotPrefixes, List.mem_append] at h
-        cases hx : (rows.headD [])[j]? with
-        | none => rfl
-        | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
-    | succ i =>
-      rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
-        ← List.getD_eq_getElem?_getD]
-      cases p with
-      | coe q =>
-        simp only [pivotPrefixes, List.mem_append] at h
-        exact ih (fun x hx => h x (Or.inr hx)) (by simpa using hi) hj
-      | top =>
-        simp only [pivotPrefixes, List.mem_append] at h
-        exact ih (fun x hx => h x (Or.inr hx)) (by simpa using hi) hj
-
-theorem getD_ne_zero_of_pivotEntries [Zero R] {ps : List (WithTop (Fin n))}
-    {rows : List (List R)} (h : ∀ x ∈ pivotEntries ps rows, x ≠ 0) {i : ℕ} {c : Fin n}
-    (hc : ps.getD i ⊤ = c) : (rows.getD i []).getD c 0 ≠ 0 := by
-  induction ps generalizing rows i with
-  | nil => simp at hc
-  | cons p ps ih =>
-    cases i with
-    | zero =>
-      rw [List.getD_cons_zero] at hc
-      subst hc
-      rw [← List.headD_eq_getD]
-      exact h _ (List.mem_cons_self ..)
-    | succ i =>
-      rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
-        ← List.getD_eq_getElem?_getD]
-      cases p with
-      | coe q => exact ih (fun x hx => h x (List.mem_cons_of_mem _ hx)) hc
-      | top => exact ih h hc
-
-theorem isPivotedBy_ofLists [Zero R] {m : ℕ} {rows : List (List R)}
-    {pivot : Fin m → WithTop (Fin n)} {ps : List (WithTop (Fin n))} (hps : List.ofFn pivot = ps)
-    (hchain : ps.IsChain PivotStep) {N : ℕ} (hzero : pivotPrefixes ps rows = List.replicate N 0)
-    (hnz : ∀ x ∈ pivotEntries ps rows, x ≠ 0) : (ofLists m n rows).IsPivotedBy pivot := by
-  have hmono := (isChain_ofFn_iff_monotone_and_strictMonoOn pivot).mp (hps ▸ hchain)
-  refine Matrix.isPivotedBy_iff.mpr ⟨hmono.1, hmono.2, fun i => ?_⟩
-  have hi : ps.getD i ⊤ = pivot i := by simp [← hps]
-  refine ⟨fun j hj => ?_, fun c hc => ?_⟩
-  · rw [ofLists_apply, ofList_apply]
-    exact getD_eq_zero_of_pivotPrefixes (List.eq_replicate_iff.mp hzero).2 (by simp [← hps])
-      (hi ▸ hj)
-  · rw [ofLists_apply, ofList_apply]
-    exact getD_ne_zero_of_pivotEntries hnz (hi.trans hc)
-
-end PivotSweeps
-
-end Mathlib.Tactic.Echelon
-
-end
 
 public meta section
 
@@ -230,16 +92,16 @@ def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (L : MatrixViews u m m α) (certifier? : Option EntryCertifier) :
     MetaM Q(∀ i, ($(L.matrix)).diag i ≠ 0) := do
   have rows : Q(List (List $α)) := L.lit
-  let hnz : Q(∀ x ∈ ListMatrix.diagonal 0 $m $rows, x ≠ 0) ← match certifier? with
-    | none => mkDecideProofQ q(∀ x ∈ ListMatrix.diagonal 0 $m $rows, x ≠ 0)
+  let hnz : Q(∀ x ∈ diag 0 $m $rows, x ≠ 0) ← match certifier? with
+    | none => mkDecideProofQ q(∀ x ∈ diag 0 $m $rows, x ≠ 0)
     | some certifier => do
       let proofs ← L.entries.zipIdx.mapM fun (row, i) => do
         have entry : Q($α) := row[i]!
         certifier q($entry ≠ 0)
-      have hForall : Q((ListMatrix.diagonal 0 $m $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
+      have hForall : Q((diag 0 $m $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
       pure q(List.forall_iff_forall_mem.mp $hForall)
   -- `L.matrix` is the `ofLists` term on `rows`, so the hint is settled without reduction
-  return mkExpectedPropHint q(diag_ofLists_ne_zero $rows $hnz) q(∀ i, ($(L.matrix)).diag i ≠ 0)
+  return mkExpectedPropHint q(diag_ofLists_ne_zero $hnz) q(∀ i, ($(L.matrix)).diag i ≠ 0)
 
 /-- Prove `L.IsLowerTriangular` from the recorded rows of `L`: the elimination emits literal
 zeros above the diagonal, so the list of those entries reduces to the replicated zero. -/
@@ -247,15 +109,12 @@ def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommR
     (L : MatrixViews u m m α) : MetaM Q(($(L.matrix)).IsLowerTriangular) := do
   have rows : Q(List (List $α)) := L.lit
   have n : Q(Nat) := mkNatLit (m * (m - 1) / 2)
-  have hrep : Q(ListMatrix.aboveDiagonal 0 $rows = List.replicate $n (0 : $α)) :=
-    mkExpectedPropHint q(Eq.refl (ListMatrix.aboveDiagonal 0 $rows))
-      q(ListMatrix.aboveDiagonal 0 $rows = List.replicate $n (0 : $α))
-  -- `BlockTriangular` spelled out (`toDual j < toDual i` is `i < j`)
-  let prf : Q(∀ i j : Fin $m, OrderDual.toDual j < OrderDual.toDual i →
-      ofLists $m $m $rows i j = 0) :=
-    q(fun _ _ hij => ofLists_eq_zero_of_lt $rows (List.eq_replicate_iff.mp $hrep).2 hij)
-  -- `L.matrix` is the `ofLists` term on `rows`, so the hint unfolds `IsLowerTriangular` only
-  return mkExpectedPropHint prf q(($(L.matrix)).IsLowerTriangular)
+  have hrep : Q(aboveDiagonal 0 $rows = List.replicate $n (0 : $α)) :=
+    mkExpectedPropHint q(Eq.refl (aboveDiagonal 0 $rows))
+      q(aboveDiagonal 0 $rows = List.replicate $n (0 : $α))
+  -- `L.matrix` is the `ofLists` term on `rows`, so the hint is settled without reduction
+  return mkExpectedPropHint q(isLowerTriangular_ofLists (m := $m) $hrep)
+    q(($(L.matrix)).IsLowerTriangular)
 
 /-- Prove `U.IsPivotedBy pivot` from the recorded rows of `U` and the pivot list: the entries
 before the pivot columns are literal zeros, so their list reduces to the replicated zero; the
