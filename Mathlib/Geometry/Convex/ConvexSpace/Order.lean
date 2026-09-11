@@ -290,9 +290,9 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [PartialOrder X]
   rw [le_iff_forall_isUpperSet, le_iff_forall_isLowerSet]
   simp [OrderDual.ofDual.setCongr.forall_congr_left, Equiv.image_eq_preimage_symm]
 
-@[simp] lemma map_toDual_le_map_toDual_iff {w₁ w₂ : StdSimplex R X} :
+lemma map_toDual_le_map_toDual_iff {w₁ w₂ : StdSimplex R X} :
     w₁.map OrderDual.toDual ≤ w₂.map OrderDual.toDual ↔ w₂ ≤ w₁ := by
-  simp [ofDual_le_iff, map_map]
+  simp [map_map]
 
 variable (R X) in
 /-- The stochastic dominance order on the standard simplex is self-dual. -/
