@@ -29,11 +29,20 @@ where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing s
 
 ## Implementation notes
 
-The generality of this definition will be useful to define the Tate–Shafarevich groups occurring in
-Poitou–Tate duality. When `K` is a global field, `V` is the set of places of `K`, `A` is the group
-of rational points of an abelian variety over the separable closure `Kˢ` of `K`, and `n = 1`, this
-recovers the classical definition of the Tate–Shafarevich group of an abelian variety, since
-`Hⁿ(Kᵥ, A(Kˢ)) ≅ Hⁿ(Kᵥ, A(Kᵥˢ))` by the Greenberg approximation theorem.
+Mathematicians seem to use "Tate-Shafarevich group" in two distinct contexts. They have in common
+the set-up that `K` is a global field, `A` is a discrete `G_K`-module, `V` is the set of places of
+`K`, and `Kᵥ` is the completion of `K` at `v : V`.
+
+The first context is when `A` is finite. This is used, for example, in the statement of global
+Poitou-Tate duality. In this theorem, the Tate-Shafarevich group is defined exactly as in this file.
+It agrees with Definition 8.6.2 of [Neukirch–Schmidt–Wingberg].
+
+The second context is when `A` is the `Kˢ`-valued points of a group scheme `A` such as an abelian
+variety. Then the Tate-Shafarevich group is usually defined as the intersection of the kernels of
+the maps `H¹(K, A(Kˢ)) → H¹(Kᵥ, A(Kᵥˢ))`. Note that in particular the module changes as well as the
+group, so technically this is not quite what is happening in this definition. However the inclusion
+`H¹(Kᵥ, A(Kᵥˢ)) → H¹(Kᵥ, A(Kˢ))` is an isomorphism by the Greenberg approximation theorem, so the
+definition in this file is still mathematically correct.
 
 ## References
 
