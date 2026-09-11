@@ -451,21 +451,22 @@ theorem emultiplicity_of_isUnit_right {a b : α} (ha : ¬IsUnit a)
     (hb : IsUnit b) : emultiplicity a b = 0 :=
   emultiplicity_eq_zero.mpr fun h ↦ ha (isUnit_of_dvd_unit h hb)
 
-theorem multiplicity_of_isUnit_right {a b : α} (ha : ¬IsUnit a)
-    (hb : IsUnit b) : multiplicity a b = 0 :=
-  multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_of_isUnit_right ha hb)
+theorem multiplicity_of_isUnit_right {a b : α} (hb : IsUnit b) : multiplicity a b = 0 := by
+  by_cases ha : IsUnit a
+  · simp [ha]
+  · exact multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_of_isUnit_right ha hb)
 
 theorem emultiplicity_of_one_right {a : α} (ha : ¬IsUnit a) : emultiplicity a 1 = 0 :=
   emultiplicity_of_isUnit_right ha isUnit_one
 
-theorem multiplicity_of_one_right {a : α} (ha : ¬IsUnit a) : multiplicity a 1 = 0 :=
-  multiplicity_of_isUnit_right ha isUnit_one
+theorem multiplicity_of_one_right {a : α} : multiplicity a 1 = 0 :=
+  multiplicity_of_isUnit_right isUnit_one
 
 theorem emultiplicity_of_unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : emultiplicity a u = 0 :=
   emultiplicity_of_isUnit_right ha u.isUnit
 
-theorem multiplicity_of_unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : multiplicity a u = 0 :=
-  multiplicity_of_isUnit_right ha u.isUnit
+theorem multiplicity_of_unit_right {a : α} (u : αˣ) : multiplicity a u = 0 :=
+  multiplicity_of_isUnit_right u.isUnit
 
 theorem emultiplicity_le_emultiplicity_of_dvd_left {a b c : α} (hdvd : a ∣ b) :
     emultiplicity b c ≤ emultiplicity a c :=
