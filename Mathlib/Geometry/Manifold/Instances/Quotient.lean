@@ -52,6 +52,10 @@ instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
 
 namespace orbitRel.Quotient
 
+/-!
+## Local sections of the quotient map
+-/
+
 variable {x : orbitRel.Quotient G M}
 
 variable (x) in
@@ -83,6 +87,10 @@ lemma exists_smul_mem_localInverseAt_target {m : M}
   obtain ⟨g, hg⟩ := orbitRel_apply.mp (Quotient.exact
     (isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.apply_localInverseAt_of_mem hm))
   exact ⟨g, by simpa [hg] using (x.localInverseAt).map_source hm⟩
+
+/-!
+## Transition maps between charts
+-/
 
 variable (x y : orbitRel.Quotient G M)
 
@@ -118,6 +126,10 @@ lemma transitionMap_locally_smul {h : H} (hh : h ∈ (transitionMap x y).source)
   exact ⟨g, hg, transitionMap_eqOn_smul x y g⟩
 
 end orbitRel.Quotient
+
+/-!
+## Smooth manifold structure on quotient by a smooth action
+-/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
