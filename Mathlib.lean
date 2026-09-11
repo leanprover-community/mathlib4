@@ -4879,6 +4879,7 @@ public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.Coset.Defs
 public import Mathlib.GroupTheory.CosetCover
 public import Mathlib.GroupTheory.Coxeter.Basic
+public import Mathlib.GroupTheory.Coxeter.Dihedral
 public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
