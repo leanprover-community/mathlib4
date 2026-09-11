@@ -435,8 +435,12 @@ private lemma sum_pow_add_indicator_eq_zero {p : ℕ} (l : ℕ) [Fact p.Prime] :
   rw [hbij, FiniteField.sum_pow_units, ZMod.card]
   grind
 
+/- The subring of rationals that are `p`-integral, i.e. the valuation subring of the `p`-adic
+valuation. -/
+private abbrev pIntegrals (p : ℕ) [Fact p.Prime] : Subring ℚ := (Rat.padicValuation p).integer
+
 /- A rational number `x` is `p`-integral if `p` does not divide its denominator. -/
-private abbrev pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := x ∈ (Rat.padicValuation p).integer
+private abbrev pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := x ∈ pIntegrals p
 
 private lemma pIntegral_iff_not_dvd_den {p : ℕ} [Fact p.Prime] {x : ℚ} :
     pIntegral p x ↔ ¬ p ∣ x.den :=
