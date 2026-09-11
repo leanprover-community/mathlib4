@@ -23,7 +23,7 @@ individual entries supplied by an entry certifier.
 ## Main definitions
 
 - `certifyDecomposition`: build the `Echelon.Decomposition` certificate of a matrix literal.
-- `mkMatrixViews`: elaborate a matrix literal together with its entry view.
+- `mkMatrixViews`: elaborate the row list of a matrix literal and its `ofLists` term.
 - `mkPerm`, `mkPivotLit`: elaborate the row permutation and the pivot function.
 
 ## Implementation notes
@@ -48,8 +48,7 @@ namespace Mathlib.Tactic.Echelon
 def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
   mkNumeral q(Fin $n) i
 
-/-- Three views of one matrix literal: `entries` the row-major entries, `lit` the same entries
-as a list of rows, and `matrix` that list read as a matrix by `ofLists`. -/
+/-- Three views of one matrix literal. -/
 structure MatrixViews (u : Level) (m n : ℕ) (α : Q(Type u)) where
   /-- The matrix, the `ofLists` term on `lit`. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
@@ -89,8 +88,7 @@ def mkForallChain (proofs : List Expr) : MetaM Expr :=
   | [] => pure q(True.intro)
   | last :: rest => rest.foldlM (fun acc h => mkAppM ``And.intro #[h, acc]) last
 
-/-- Prove `∀ i, L.diag i ≠ 0` from the recorded rows of `L`: the diagonal entries are nonzero
-by `certifier?`, or by `decide` when there is none. -/
+/-- Prove `∀ i, L.diag i ≠ 0` from the rows of `L`. -/
 def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) (certifier? : Option EntryCertifier) :
     MetaM Q(∀ i, ($(L.matrix)).diag i ≠ 0) := do
@@ -103,11 +101,10 @@ def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
         certifier q($entry ≠ 0)
       have hForall : Q((diag 0 $m $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
       pure q(List.forall_iff_forall_mem.mp $hForall)
-  -- `L.matrix` is the `ofLists` term on `rows`, so the hint is settled without reduction
   return mkExpectedPropHint q(diag_ofLists_ne_zero $hnz) q(∀ i, ($(L.matrix)).diag i ≠ 0)
 
-/-- Prove `L.IsLowerTriangular` from the recorded rows of `L`: the elimination emits literal
-zeros above the diagonal, so the list of those entries reduces to the replicated zero. -/
+/-- Prove `L.IsLowerTriangular` from the rows of `L`, whose entries above the diagonal are
+literal zeros. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) : MetaM Q(($(L.matrix)).IsLowerTriangular) := do
   have rows : Q(List (List $α)) := L.lit
@@ -115,19 +112,15 @@ def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have hrep : Q(aboveDiagonal 0 $rows = List.replicate $n (0 : $α)) :=
     mkExpectedPropHint q(Eq.refl (aboveDiagonal 0 $rows))
       q(aboveDiagonal 0 $rows = List.replicate $n (0 : $α))
-  -- `L.matrix` is the `ofLists` term on `rows`, so the hint is settled without reduction
   return mkExpectedPropHint q(isLowerTriangular_ofLists (m := $m) $hrep)
     q(($(L.matrix)).IsLowerTriangular)
 
-/-- Prove `U.IsPivotedBy pivot` from the recorded rows of `U` and the pivot list: the entries
-before the pivot columns are literal zeros, so their list reduces to the replicated zero; the
-entries at the pivot columns are nonzero by `certifier?`, or by `decide` when there is none; and
-the pivot-function conditions are decided on the pivot list in chain form. -/
+/-- Prove `U.IsPivotedBy pivot` from the rows of `U`, whose entries before the pivot columns are
+literal zeros, and the pivot list. -/
 def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat)
     (certifier? : Option EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy $pivot) := do
   have rows : Q(List (List $α)) := U.lit
-  -- the pivot list, `⊤` on the rows the elimination left zero
   let psEntries : List Q(WithTop (Fin $n)) ← (List.range m).mapM fun i => do
     if h : i < pivots.size then
       return q(WithTop.some $(← mkFinNumeral n pivots[i]))
@@ -138,9 +131,8 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   have hps : Q(List.ofFn $pivot = $ps) :=
     mkExpectedPropHint q(Eq.refl (List.ofFn $pivot)) q(List.ofFn $pivot = $ps)
   let hchain ← mkDecideProofQ q(($ps).IsChain PivotStep)
-  -- the entries before the pivot columns: the pivot column of a pivot row, the whole row otherwise
-  let N := pivots.toList.sum + ((U.entries.drop pivots.size).map List.length).sum
-  have nQ : Q(ℕ) := mkNatLit N
+  let numBefore := pivots.toList.sum + ((U.entries.drop pivots.size).map List.length).sum
+  have nQ : Q(ℕ) := mkNatLit numBefore
   have hzero : Q(pivotPrefixes $ps $rows = List.replicate $nQ (0 : $α)) :=
     mkExpectedPropHint q(Eq.refl (pivotPrefixes $ps $rows))
       q(pivotPrefixes $ps $rows = List.replicate $nQ (0 : $α))
@@ -152,11 +144,10 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
         certifier q($entry ≠ 0)
       have hForall : Q((pivotEntries $ps $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
       pure q(List.forall_iff_forall_mem.mp $hForall)
-  -- `U.matrix` is the `ofLists` term on `rows`, so the hint is settled without reduction
   return mkExpectedPropHint q(isPivotedBy_ofLists $hps $hchain $hzero $hnz)
     q(($(U.matrix)).IsPivotedBy $pivot)
 
-/-- Prove the row arrangement `A.submatrix σ id = Aσ` by reflection using `FinVec.etaExpand_eq`. -/
+/-- Prove the row arrangement `A.submatrix σ id = Aσ`. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
     (Aσ : Q(Matrix (Fin $m) (Fin $n) $α)) (σ : Q(Equiv.Perm (Fin $m))) :
     MetaM Q(($A).submatrix $σ id = $Aσ) := do
@@ -164,9 +155,7 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
     q(congrArg (fun f => Matrix.of f) (FinVec.etaExpand_eq (fun i => $A ($σ i))).symm)
     q(($A).submatrix $σ id = $Aσ)
 
-/-- Prove the product `L * Aσ = U` from the literals' recorded entries: the product of the row
-lists is expanded to the sums of products, which `certifier?` proves equal to the entries of `U`,
-or the kernel evaluates when there is none. -/
+/-- Prove the product `L * Aσ = U` from the rows of the views. -/
 def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
     MetaM Q($(L.matrix) * $(Aσ.matrix) = $(U.matrix)) := do
@@ -175,9 +164,7 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   have F : Q(List (List $α)) := r.expr
   have listU : Q(List (List $α)) := U.lit
   let hV : Q($F = $listU) ← match certifier? with
-    | none =>
-      -- the kernel evaluates the sums of products against the recorded entries
-      pure (mkExpectedPropHint q(Eq.refl $F) q($F = $listU))
+    | none => pure (mkExpectedPropHint q(Eq.refl $F) q($F = $listU))
     | some certifier => do
       let rowEqs ← r.rows.zipIdx.mapM fun (row, i) =>
         mkListCongr <$> row.zipIdx.mapM fun (fold, j) => do
@@ -189,13 +176,11 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr m, toExpr m, toExpr n, r.A, r.B]))
     (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr m, toExpr n])
       (← mkEqTrans r.proof hV))
-  -- `pf` is stated on the row lists `proveMul` built from the same entries as the views, so
-  -- the hint is settled by a structural comparison of those lists with `L.lit` and `Aσ.lit`
+  -- `proveMul` rebuilt the row lists from the views' entries; the hint compares them structurally
   return mkExpectedPropHint pf q($(L.matrix) * $(Aσ.matrix) = $(U.matrix))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
-`entries`, the parsed entries of `A`, proving every condition by `decide` unless `certifier?`
-supplies a certifier for the entry ones. -/
+`entries`, the parsed entries of `A`. -/
 def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
     (data : BareissData Expr) (certifier? : Option EntryCertifier) :

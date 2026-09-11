@@ -31,12 +31,11 @@ sweep along the rows that the kernel evaluates, with a bridge lemma to the condi
 
 The kernel has no random access into a list: reading the entry at position `k` walks `k` cells.
 Each condition is therefore a sweep whose recursion mirrors the list constructors and reads each
-row once, and two conditions that need entries at the same position take them from the same
-suffix of the row, which the kernel computes once.
+row once.
 
 A zero condition is closed by one equation between the collected entries and a replicated zero,
-which the kernel decides by evaluation. A nonzero condition takes the collected entries as a
-list, so that proofs of the individual entries can be attached along it.
+decided by evaluation; a nonzero condition collects the entries as a list, along which proofs of
+the individual entries are attached.
 -/
 
 @[expose] public section
