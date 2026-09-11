@@ -3654,6 +3654,7 @@ public import Mathlib.Combinatorics.Additive.ErdosGinzburgZiv
 public import Mathlib.Combinatorics.Additive.FreimanHom
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 public import Mathlib.Combinatorics.Additive.Randomisation
+public import Mathlib.Combinatorics.Additive.RestrictedSumset
 public import Mathlib.Combinatorics.Additive.RuzsaCovering
 public import Mathlib.Combinatorics.Additive.SmallTripling
 public import Mathlib.Combinatorics.Additive.SubsetSum
