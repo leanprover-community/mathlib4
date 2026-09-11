@@ -46,14 +46,6 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
     · simp
     · simp [← padicValNat_eq_emultiplicity_of_ne_one, *]
 
-theorem padicValNat_def {n : ℕ} : padicValNat p n = multiplicity p n := by
-  by_cases hn : n = 0
-  · simp [hn]
-  by_cases hp : p = 1
-  · simp [hp]
-  exact (multiplicity_eq_of_emultiplicity_eq_some
-    (padicValNat_eq_emultiplicity_of_ne_one hp hn).symm).symm
-
 @[deprecated (since := "2026-09-08")] alias padicValNat_def' := padicValNat_def
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
