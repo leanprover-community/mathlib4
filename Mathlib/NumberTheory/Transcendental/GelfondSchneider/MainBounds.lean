@@ -1048,8 +1048,8 @@ lemma eq8 :
       · rw [← norm_inv, ← inv_pow, ← norm_inv]
         simp only [Real.rpow_natCast]
         apply pow_le_pow_left₀
-        simp only [norm_inv, inv_nonneg, norm_nonneg]
-        simp only [norm_inv, le_add_iff_nonneg_right, zero_le_one]
+        · simp only [norm_inv, inv_nonneg, norm_nonneg]
+        · simp only [norm_inv, le_add_iff_nonneg_right, zero_le_one]
       · apply mul_le_mul
         · nth_rw 1 [← Real.rpow_one (x:= (m K))]
           apply Real.rpow_le_rpow_of_exponent_le
