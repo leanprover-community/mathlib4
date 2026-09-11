@@ -221,12 +221,8 @@ lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.
     {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] (f : F) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C / τ.im ^ (k / 2 : ℝ) := by
   obtain ⟨C, hC⟩ := petersson_bounded_left k Γ f f
-  refine ⟨C.sqrt, fun τ ↦ ?_⟩
-  specialize hC τ
-  rw [← sq_le_sq₀ (by positivity) (by positivity), div_pow, Real.sq_sqrt ((norm_nonneg _).trans hC)]
-  grw [← hC]
-  rw [petersson, ← Real.rpow_mul_natCast τ.im_pos.le]
-  simp [abs_of_pos τ.im_pos, field]
+  refine ⟨C.sqrt, fun τ ↦ (le_div_iff₀ (by positivity)).mpr (Real.le_sqrt_of_sq_le ?_)⟩
+  simpa [petersson, sq, abs_of_pos τ.im_pos, ← Real.rpow_mul_natCast τ.im_pos.le, field] using hC τ
 
 /-- The `n`-th `q`-expansion coefficient is an exponentially rescaled Fourier coefficient of the
 restriction of the function to a horizontal line. -/
@@ -412,13 +408,12 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C * (max 1 (1 / (τ.im) ^ k)) := by
   obtain ⟨C, hC⟩ := ModularFormClass.exists_petersson_le hk Γ f f
-  refine ⟨C.sqrt, fun τ ↦ ?_⟩
+  refine ⟨C.sqrt, fun τ ↦ (div_le_iff₀ (by positivity)).mp (Real.le_sqrt_of_sq_le ?_)⟩
   lift k to ℕ using hk
   specialize hC τ
-  have hC' : 0 ≤ C := le_trans (by positivity) <| (div_le_iff₀ (by positivity)).mpr hC
   have h : 0 < ‖(τ.im : ℂ) ^ (k : ℤ)‖ := mod_cast norm_pos_iff.mpr (pow_ne_zero _ τ.im_ne_zero)
   rw [petersson, norm_mul, norm_mul, Complex.norm_conj, ← sq, ← le_div_iff₀ h, mul_div_assoc] at hC
-  rw [← sq_le_sq₀ (by positivity) (by positivity), mul_pow, sq_sqrt hC']
+  rw [div_pow, div_le_iff₀ (by positivity)]
   refine hC.trans (congrArg (C * ·) ?_).le
   -- remains to show `(max τ.im (1 / τ.im)) ^ k / ‖τ.im ^ k‖ = (max 1 (1 / τ.im ^ k)) ^ 2`,
   -- which is easier after lifting to `NNReal`
