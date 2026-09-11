@@ -180,7 +180,7 @@ open Limits TypeCat
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism `Profunctor.id.comp P ≅ P` for composition of profunctors. -/
-@[simps! hom_app_app inv_app_app]
+@[simps! inv_app_app]
 def leftUnitor (P : Profunctor.{u} C D) : Profunctor.id.comp P ≅ P :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ {
     hom := ↾Quot.lift (fun ⟨d, f, x⟩ ↦ (P.map f).app _ x) fun _ _ ↦ by rintro ⟨f, x⟩; simp
@@ -193,6 +193,13 @@ def leftUnitor (P : Profunctor.{u} C D) : Profunctor.id.comp P ≅ P :=
       exact ⟨f, ⟨𝟙 X, x⟩, by cat_disch⟩ })
     (fun f ↦ by dsimp; ext; simp [compDiagram, chosenCoend.ι_apply _]))
     (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
+
+set_option backward.defeqAttrib.useBackward true in
+attribute [local simp] Types.chosenCoend_def in
+@[simp]
+lemma leftUnitor_hom_app_app_mk (P : Profunctor.{u} C D) (X : C) (Y : Dᵒᵖ)
+    (d : C) (f : d ⟶ X) (x : (P.obj d).obj Y) :
+    dsimp% ((P.leftUnitor).hom.app X).app Y (Quot.mk _ ⟨d, f, x⟩) = (P.map f).app Y x := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -216,7 +223,7 @@ variable {C : Type u} [Category* C] {D : Type u} [Category.{u} D]
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism `P.comp Profunctor.id ≅ P` for composition of profunctors. -/
-@[simps! hom_app_app inv_app_app]
+@[simps! inv_app_app]
 def rightUnitor (P : Profunctor.{u} C D) : P.comp .id ≅ P :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ {
     hom := ↾Quot.lift (fun ⟨d, x, f⟩ ↦ (P.obj X).map f.op x) fun _ _ h ↦ by cases h; simp
@@ -230,6 +237,13 @@ def rightUnitor (P : Profunctor.{u} C D) : P.comp .id ≅ P :=
     (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
 set_option backward.defeqAttrib.useBackward true in
+attribute [local simp] Types.chosenCoend_def in
+@[simp]
+lemma rightUnitor_hom_app_app_mk (P : Profunctor.{u} C D) (X : C) (Y : Dᵒᵖ)
+    (d : D) (x : (P.obj X).obj (op d)) (f : Y.unop ⟶ d) :
+    dsimp% ((P.rightUnitor).hom.app X).app Y (Quot.mk _ ⟨d, x, f⟩) = (P.obj X).map f.op x := rfl
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def in
 @[simp]
@@ -238,7 +252,7 @@ lemma whiskerRight_id {P Q : Profunctor.{u} C D} (f : P ⟶ Q) :
       (P.rightUnitor).hom ≫ f ≫ (Q.rightUnitor).inv := by
   rw [← cancel_mono (Q.rightUnitor).hom]
   ext _ _ ⟨_, _, g⟩
-  simp [chosenCoend.map_apply, -types_comp_apply]
+  simp [chosenCoend.map_apply]
 
 
 end RightUnitor
@@ -255,7 +269,6 @@ set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 /-- The objectwise components of the associator isomorphism
 `(P.comp Q).comp R ≅ P.comp (Q.comp R)`. -/
-@[simps hom inv]
 def associatorComponents (X : C) (Y : Fᵒᵖ) :
     (P.comp Q |>.comp R |>.obj X |>.obj Y) ≅ P.comp (Q.comp R) |>.obj X |>.obj Y where
   hom := by
@@ -302,11 +315,32 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism `(P.comp Q).comp R ≅ P.comp (Q.comp R)` for composition of
 profunctors. -/
-@[simps! hom_app_app inv_app_app]
 def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ associatorComponents P Q R X Y)
-    fun _ ↦ by ext ⟨_, ⟨_, _, _⟩, _⟩; simp [chosenCoend_def, chosenCoend.map_apply, Quot.map])
-    fun _ ↦ by ext _ ⟨_, ⟨_, _, _⟩, _⟩; simp [chosenCoend_def, chosenCoend.map_apply, Quot.map]
+    fun _ ↦ by
+      ext ⟨_, ⟨_, _, _⟩, _⟩
+      simp [associatorComponents, chosenCoend_def, chosenCoend.map_apply, Quot.map])
+    fun _ ↦ by
+      ext _ ⟨_, ⟨_, _, _⟩, _⟩
+      simp [associatorComponents, chosenCoend_def, chosenCoend.map_apply, Quot.map]
+
+set_option backward.defeqAttrib.useBackward true in
+attribute [local simp] Types.chosenCoend_def in
+@[simp]
+lemma associator_hom_app_app_mk (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
+    (p : (P.obj X).obj (op d)) (q : (Q.obj d).obj (op e)) (r : (R.obj e).obj Y) :
+    dsimp% (((associator.{w} P Q R).hom.app X).app Y
+      (Quot.mk _ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩)) =
+      Quot.mk _ ⟨d, p, Quot.mk _ ⟨e, q, r⟩⟩ := rfl
+
+set_option backward.defeqAttrib.useBackward true in
+attribute [local simp] Types.chosenCoend_def in
+@[simp]
+lemma associator_inv_app_app_mk (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
+    (p : (P.obj X).obj (op d)) (q : (Q.obj d).obj (op e)) (r : (R.obj e).obj Y) :
+    dsimp% (((associator.{w} P Q R).inv.app X).app Y
+      (Quot.mk _ ⟨d, p, Quot.mk _ ⟨e, q, r⟩⟩)) =
+      Quot.mk _ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩ := rfl
 
 @[simp]
 lemma comp_whiskerLeft {S : Profunctor.{max u w} E F} (f : R ⟶ S) :
