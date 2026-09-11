@@ -143,7 +143,7 @@ theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differe
       _        ⊆ t ∪ s  := by gcongr
   obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
   convert hc'
-  exact tendsto_nhds_unique hb (by simpa [hc'] using! tendsto_const_nhds)
+  exact tendsto_nhds_unique_of_forall hb tendsto_const_nhds (by simp [hc'])
 
 /-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
 (i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/

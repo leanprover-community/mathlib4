@@ -652,7 +652,7 @@ end Conjugation
 
 section IsCycleOn
 
-variable {f g : Perm α} {s t : Set α} {a b x y : α}
+variable {f g : Perm α} {s : Set α} {a b x y : α}
 
 /-- A permutation is a cycle on `s` when any two points of `s` are related by repeated application
 of the permutation. Note that this means the identity is a cycle of subsingleton sets. -/

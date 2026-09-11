@@ -365,8 +365,6 @@ theorem linearIndepOn_equiv (e : ι ≃ ι') {f : ι' → M} {s : Set ι} :
 theorem linearIndepOn_univ_iff : LinearIndepOn R v univ ↔ LinearIndependent R v :=
   linearIndependent_equiv' (Equiv.Set.univ ι) rfl
 
-@[deprecated (since := "2026-02-24")] alias linearIndepOn_univ := linearIndepOn_univ_iff
-
 alias ⟨_, LinearIndependent.linearIndepOn_univ⟩ := linearIndepOn_univ_iff
 
 lemma LinearIndependent.linearIndepOn (h : LinearIndependent R v) (s : Set ι) :
@@ -908,7 +906,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-variable {v : ι → V} {s t : Set ι} {x y : V}
+variable {v : ι → V} {s : Set ι}
 
 open Submodule
 

@@ -48,7 +48,9 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 noncomputable section
 
-open Topology Filter unitInterval Set Function
+open Filter unitInterval Set Function
+
+open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
 
@@ -61,6 +63,7 @@ structure Path (x y : X) extends C(I, X) where
   /-- The end point of a `Path`. -/
   target' : toFun 1 = y
 
+@[macro_inline]
 instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
   coe_injective γ₁ γ₂ h := by

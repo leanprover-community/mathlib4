@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.ExistsUnique
+public import Mathlib.Basic.Logic.Basic
+public import Mathlib.Basic.Nonempty
+public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Function.Defs
-public import Mathlib.Logic.ExistsUnique
-public import Mathlib.Logic.Nonempty
-public import Mathlib.Logic.Nontrivial.Defs
 public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
 
@@ -48,6 +48,10 @@ theorem const_injective [Nonempty α] : Injective (const α : β → α → β) 
 @[simp]
 theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
+
+theorem eq_const_iff {f : α → β} {b : β} :
+    f = const α b ↔ ∀ a : α, f a = b := by
+  simp only [funext_iff, const_apply]
 
 section onFun
 
@@ -599,6 +603,10 @@ theorem injective_surjInv (h : Surjective f) : Injective (surjInv h) :=
 theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α → β) :
     Surjective f :=
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
+
+@[nontriviality] theorem bijective_of_subsingleton' [Nonempty α] [Subsingleton α] [Subsingleton β]
+    (f : α → β) : Bijective f :=
+  ⟨injective_of_subsingleton f, surjective_to_subsingleton f⟩
 
 theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦

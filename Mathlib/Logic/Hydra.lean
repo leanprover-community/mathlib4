@@ -227,10 +227,7 @@ theorem acc_cutExpand_iff {s} : Acc (CutExpand r) s ↔ ∀ a ∈ s, Acc r a := 
     exact ⟨{b}, a, by simp [hb], ha, rfl⟩
 
 /-- `CutExpand r` is well-founded when `r` is. -/
-theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
+instance _root_.WellFounded.cutExpand [hr : WellFounded r] : WellFounded (CutExpand r) :=
   ⟨fun _ ↦ acc_cutExpand fun _ _ => hr.apply _⟩
-
-instance [h : IsWellFounded α r] : IsWellFounded _ (CutExpand r) :=
-  ⟨h.wf.cutExpand⟩
 
 end Relation
