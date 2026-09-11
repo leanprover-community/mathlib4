@@ -567,7 +567,10 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
     simp [ht]
 
-/-- An infinite type admits an injective self-map that is not surjective. -/
+/-- An infinite type admits an injective self-map that is not surjective.
+
+On a finite type every injective self-map is instead surjective, by
+`Finite.injective_iff_surjective`. -/
 theorem exists_injective_not_surjective (α : Type*) [Infinite α] :
     ∃ f : α → α, Injective f ∧ ¬ Surjective f := by
   classical
@@ -583,7 +586,10 @@ theorem exists_injective_not_surjective (α : Type*) [Infinite α] :
   have hx2 := g.symm.injective hx
   rcases hgx : g x with n | b <;> rw [hgx] at hx2 <;> simp [Sum.map] at hx2
 
-/-- An infinite type is equivalent to a proper subset of itself. -/
+/-- An infinite type is equivalent to a proper subset of itself.
+
+The reverse implication is `Infinite.of_injective_to_set`: an injection into a proper subset
+forces the type to be infinite. -/
 theorem exists_equiv_set_ne_univ (α : Type*) [Infinite α] :
     ∃ s : Set α, s ≠ Set.univ ∧ Nonempty (α ≃ s) := by
   obtain ⟨f, hf, hf'⟩ := exists_injective_not_surjective α
