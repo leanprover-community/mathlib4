@@ -585,18 +585,27 @@ lemma A_ne_zero : A α' β' γ' q ≠ 0 := by
 
 variable [DecidableEq (K →+* ℂ)]
 
-include α β σ α' β' γ' hirr htriv habc in
-/-- A non-trivial integer vector (in `𝓞 K`) residing in the kernel of the matrix `A`.
-Its existence is guaranteed by Siegel's lemma (`exists_ne_zero_int_vec_house_le`). -/
-abbrev η : Fin (q * q) → 𝓞 K :=
-  (house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
+include α β σ α' β' γ' hirr htriv habc hq0 h2mq in
+/-- Siegel's lemma applied to the scaled matrix `A`: a non-zero integral kernel vector whose
+entries have controlled house. Both `η` and `η_spec` are read off from this. -/
+theorem exists_eta :
+    ∃ ξ : Fin (q * q) → 𝓞 K, ξ ≠ 0 ∧ (A α' β' γ' q).mulVec ξ = 0 ∧
+      ∀ l, house (ξ l).1 ≤ house.c₁ K * ((house.c₁ K * ↑(q * q) *
+        (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2))) ^
+        ((↑(m K * n K q) : ℝ) / (↑(q * q) - ↑(m K * n K q)))) :=
+  house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
     (A_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
     (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq))
     ((mul_assoc 2 _ _).symm ▸ lt_mul_of_one_lt_left
       (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)) Nat.one_lt_two
       |>.trans_eq ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
     (fun u t ↦ house_matrixA_le α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq)
-    (Fintype.card_fin _)).choose
+    (Fintype.card_fin _)
+
+/-- A non-trivial integer vector (in `𝓞 K`) residing in the kernel of the matrix `A`.
+Its existence is guaranteed by Siegel's lemma (`exists_ne_zero_int_vec_house_le`). -/
+def η : Fin (q * q) → 𝓞 K :=
+  (exists_eta α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
 
 /-- A real-valued bounding constant used to bound the norm (house) of the
 solution vector `η`. -/
@@ -611,15 +620,8 @@ lemma η_spec (t : Fin (q * q)) :
         (c₃ α' β' γ' ^ (n K q : ℝ) *
           (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2))) ^
         ((m K * n K q : ℝ) / (↑(q * q : ℝ) - ↑(m K * n K q))) := by
-  dsimp [η]
-  exact_mod_cast (Exists.choose_spec (house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
-    (A_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq))
-    ((mul_assoc 2 _ _).symm ▸ lt_mul_of_one_lt_left
-      (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)) Nat.one_lt_two
-      |>.trans_eq ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
-    (fun u t ↦ house_matrixA_le α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq)
-    (Fintype.card_fin _))).2.2 t
+  exact_mod_cast
+    (exists_eta α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec.2.2 t
 
 /-!
 `‖ηₖ‖ ≤ c₄ⁿ * n^((n - 1) / 2)`, for `1 ≤ k ≤ t`.
