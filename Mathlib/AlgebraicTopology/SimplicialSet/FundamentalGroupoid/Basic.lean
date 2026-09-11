@@ -227,8 +227,9 @@ variable {X Y : SSet.{u}}
 
 variable (X) in
 /-- The fundamental groupoid of a simplicial set `X`. -/
-abbrev FundamentalGroupoid : Type u :=
+def FundamentalGroupoid : Type u :=
   ((truncation 2).obj X).FundamentalGroupoid
+deriving Groupoid
 
 namespace FundamentalGroupoid
 
