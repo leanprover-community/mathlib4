@@ -250,10 +250,8 @@ lemma intersectionNondeg_le_intersectionNondeg (i j k : Fin (p + 1))
   simp only [Set.mem_inter_iff] at hxy ⊢
   fin_cases y
   all_goals
-  · dsimp at hxy ⊢
-    simp only [mem_range_objEquiv_nonDegenerateEquiv₀_iff,
-      mem_range_objEquiv_nonDegenerateEquiv₁_iff] at hxy ⊢
-    lia
+  · grind [mem_range_objEquiv_nonDegenerateEquiv₀_iff,
+      mem_range_objEquiv_nonDegenerateEquiv₁_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma intersectionNondeg_le_intersectionNondeg' (i j k : Fin (p + 1))
