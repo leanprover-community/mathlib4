@@ -193,9 +193,6 @@ theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
 instance : IsLocalHom (C : _ →+* Polynomial R) where
   map_nonunit := by simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
 
-instance : IsLocalHom (algebraMap R (Polynomial R)) :=
-  inferInstanceAs (IsLocalHom C)
-
 end CommRing
 
 section CommAlgebra

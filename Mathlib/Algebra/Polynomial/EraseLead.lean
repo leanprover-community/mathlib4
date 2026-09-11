@@ -37,7 +37,7 @@ variable {R : Type*} [Semiring R] {f : R[X]}
 /-- `eraseLead f` for a polynomial `f` is the polynomial obtained by
 subtracting from `f` the leading term of `f`. -/
 def eraseLead (f : R[X]) : R[X] :=
-  Polynomial.erase f.natDegree f
+  f.erase f.natDegree
 
 section EraseLead
 
@@ -55,7 +55,8 @@ theorem eraseLead_coeff_of_ne (i : ℕ) (hi : i ≠ f.natDegree) : f.eraseLead.c
   simp [eraseLead_coeff, hi]
 
 @[simp]
-theorem eraseLead_zero : eraseLead (0 : R[X]) = 0 := by simp only [eraseLead, erase_zero]
+theorem eraseLead_zero : eraseLead (0 : R[X]) = 0 := by
+  simp only [eraseLead, AddMonoidAlgebra.erase_zero]
 
 @[simp]
 theorem eraseLead_add_monomial_natDegree_leadingCoeff (f : R[X]) :
