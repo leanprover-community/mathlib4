@@ -893,19 +893,15 @@ section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
-/-- Auxiliary definition for differentials for `CochainComplex.of`. -/
-def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i ⟶ X j :=
-  if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
-
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
-abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
+@[implicit_reducible, simps X]
+def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
     CochainComplex V α :=
   { X := X
-    d := of.d X d
+    d i j := if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
     shape := fun i j w => dite_eq_right (c := i + 1 = j) w
     d_comp_d' := fun i j k => by
-      dsimp [of.d]
       split_ifs with h h' h'
       · subst h h'
         simp [sq]
@@ -913,16 +909,16 @@ abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (
 
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
 
-theorem of_X : (of X d sq).X = X :=
-  rfl
-
 @[simp]
-theorem of_d (j : α) : of.d X d j (j + 1) = d j := by
-  dsimp [of.d]
-  rw [ite_eq_left rfl, Category.comp_id]
+theorem of_d (j : α) : dsimp% (of X d sq).d j (j + 1) = d j := by
+  simp [of]
 
-theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : of.d X d i j = 0 := by
-  simp [of.d, dite_eq_right h]
+theorem of_d' (i j : α) (h : i = j + 1 := by omega) : (of X d sq).d j i =
+    d j ≫ eqToHom (by rw [h, of_X]) := by
+  simp [of, h]
+
+theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
+  simp [of, dite_eq_right h]
 
 end Of
 
