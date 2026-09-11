@@ -75,6 +75,13 @@ def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))
   | [x] => q({$x})
   | x :: xs => q(Insert.insert $x $(mkSetLiteralQ β xs))
 
+/-- Returns the list literal `[a₀, …]` of `elems`, with the universe level taken from `α`, where
+`Lean.Meta.mkListLit` computes it in `MetaM`. -/
+def mkListLitQ {u : Level} {α : Q(Type u)} (elems : List Q($α)) : Q(List $α) :=
+  match elems with
+  | [] => q([])
+  | a :: as => q($a :: $(mkListLitQ as))
+
 /-- Returns the natural number literal `n` as used in the frontend. It is a `OfNat.ofNat`
 application. Recall that all theorems and definitions containing numeric literals are encoded using
 `OfNat.ofNat` applications in the frontend.
