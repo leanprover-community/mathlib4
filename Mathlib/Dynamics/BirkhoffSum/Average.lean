@@ -89,11 +89,11 @@ theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
 @[deprecated (since := "2026-08-19")] alias birkhoffAverage_congr_ring':= birkhoffAverage_congr_ring
 
 theorem birkhoffAverage_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
-    birkhoffAverage R f (fun x ↦ g (f x)) n x = birkhoffAverage R f g n (f x) := by
+    birkhoffAverage R f (g ∘ f) n x = birkhoffAverage R f g n (f x) := by
   simp only [birkhoffAverage, birkhoffSum_comp_apply]
 
 theorem birkhoffAverage_comp (f : α → α) (g : α → M) (n : ℕ) :
-    birkhoffAverage R f (fun x ↦ g (f x)) n = birkhoffAverage R f g n ∘ f :=
+    birkhoffAverage R f (g ∘ f) n = (birkhoffAverage R f g n) ∘ f :=
   funext <| birkhoffAverage_comp_apply R f g n
 
 theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFixedPt f x)
