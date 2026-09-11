@@ -897,18 +897,18 @@ theorem ρᵣ_eq_log_zpow_mul_S : ρᵣ α β σ α' β' γ' hirr htriv habc q h
       simp only [prod_const_one]
     rw [← H1]
     apply Finset.prod_congr
-    rfl
-    intros x hx
-    rw [div_self]
-    simp only [one_pow]
-    have : ∀ x ∈ Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)},
-      ↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ≠ x := by
-        intros x hx
-        grind only [= Finset.mem_sdiff, = Finset.mem_singleton]
-    have := this x hx
-    intros HC
-    rw [sub_eq_zero] at HC
-    norm_cast at HC
+    · rfl
+    · intros x hx
+      rw [div_self]
+      · simp only [one_pow]
+      · have : ∀ x ∈ Finset.range (m K) \ {↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)},
+          ↑↑((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) ≠ x := by
+            intros x hx
+            grind only [= Finset.mem_sdiff, = Finset.mem_singleton]
+        have := this x hx
+        intros HC
+        rw [sub_eq_zero] at HC
+        norm_cast at HC
 
 include α β σ α' β' γ' hirr htriv habc in
 @[nolint unusedArguments]
