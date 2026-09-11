@@ -81,9 +81,9 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- The proof of `l.Forall p` from the proofs of `p x` at the entries `x` of `l`, in order. -/
+/-- The proof of `l.Forall p` from the proofs of `p x` along `l`, folded from the last proof
+since `Forall` ends with its last conjunct. -/
 def mkForallChain (proofs : List Expr) : MetaM Expr :=
-  -- `Forall` ends with its last conjunct, so the chain is folded from the last proof
   match proofs.reverse with
   | [] => pure q(True.intro)
   | last :: rest => rest.foldlM (fun acc h => mkAppM ``And.intro #[h, acc]) last
@@ -103,8 +103,7 @@ def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
       pure q(List.forall_iff_forall_mem.mp $hForall)
   return mkExpectedPropHint q(diag_ofLists_ne_zero $hnz) q(∀ i, ($(L.matrix)).diag i ≠ 0)
 
-/-- Prove `L.IsLowerTriangular` from the rows of `L`, whose entries above the diagonal are
-literal zeros. -/
+/-- Prove `L.IsLowerTriangular` from the rows of `L`. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) : MetaM Q(($(L.matrix)).IsLowerTriangular) := do
   have rows : Q(List (List $α)) := L.lit
@@ -115,8 +114,7 @@ def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   return mkExpectedPropHint q(isLowerTriangular_ofLists (m := $m) $hrep)
     q(($(L.matrix)).IsLowerTriangular)
 
-/-- Prove `U.IsPivotedBy pivot` from the rows of `U`, whose entries before the pivot columns are
-literal zeros, and the pivot list. -/
+/-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/
 def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat)
     (certifier? : Option EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy $pivot) := do
@@ -176,7 +174,6 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr m, toExpr m, toExpr n, r.A, r.B]))
     (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr m, toExpr n])
       (← mkEqTrans r.proof hV))
-  -- `proveMul` rebuilt the row lists from the views' entries; the hint compares them structurally
   return mkExpectedPropHint pf q($(L.matrix) * $(Aσ.matrix) = $(U.matrix))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and

@@ -11,31 +11,8 @@ public import Mathlib.Tactic.Matrix.OfLists
 /-!
 # Reflection lemmas for the echelon certificate
 
-The conditions of `Echelon.Decomposition` on a matrix given as a list of rows, each stated as a
-sweep along the rows that the kernel evaluates, with a bridge lemma to the condition on `ofLists`.
-
-## Main definitions
-
-- `PivotStep`
-- `aboveDiagonal`, `diag`
-- `pivotPrefixes`, `pivotEntries`
-
-## Main results
-
-- `isChain_ofFn_iff_monotone_and_strictMonoOn`
-- `isLowerTriangular_ofLists`
-- `diag_ofLists_ne_zero`
-- `isPivotedBy_ofLists`
-
-## Implementation notes
-
-The kernel has no random access into a list: reading the entry at position `k` walks `k` cells.
-Each condition is therefore a sweep whose recursion mirrors the list constructors and reads each
-row once.
-
-A zero condition is closed by one equation between the collected entries and a replicated zero,
-decided by evaluation; a nonzero condition collects the entries as a list, along which proofs of
-the individual entries are attached.
+The conditions of `Echelon.Decomposition` on a matrix given as a list of rows, each a sweep along
+the rows, with a bridge lemma to the condition on `ofLists`.
 -/
 
 @[expose] public section
@@ -78,12 +55,9 @@ theorem isChain_ofFn_iff_monotone_and_strictMonoOn [PartialOrder α] {m : ℕ} (
 
 end PivotChain
 
-/-! ### The entry conditions as row sweeps -/
-
 variable {R : Type*}
 
-/-- The entries above the diagonal of a list of rows, row `k` contributing its entries after
-position `k`, collected row by row. -/
+/-- The entries above the diagonal of a list of rows, collected row by row. -/
 def aboveDiagonal (k : Nat) : List (List R) → List R
   | [] => []
   | row :: rows => (row.drop k).tail ++ aboveDiagonal (k + 1) rows
@@ -112,9 +86,8 @@ theorem isLowerTriangular_ofLists [Zero R] {m : ℕ} {rows : List (List R)} {N :
   rw [ofLists_apply, ofList_apply]
   exact getD_eq_zero_of_aboveDiagonal (List.eq_replicate_iff.mp h).2 (by simpa using hij)
 
-/-- The first `c` diagonal entries of a list of rows, row `k` contributing its entry at
-position `k`, with missing rows and entries read as `0`. The entry is read from the same
-`row.drop k` as `aboveDiagonal`, which the kernel then computes once for both. -/
+/-- The first `c` diagonal entries of a list of rows, missing ones read as `0`, taken from the
+`row.drop k` that `aboveDiagonal` also reads. -/
 def diag [Zero R] (k : Nat) : Nat → List (List R) → List R
   | 0, _ => []
   | c + 1, rows => ((rows.headD []).drop k).headD 0 :: diag (k + 1) c rows.tail
@@ -141,14 +114,13 @@ theorem diag_ofLists_ne_zero [Zero R] {m : ℕ} {rows : List (List R)}
 
 variable {n : ℕ}
 
-/-- The entries of each row before its pivot column, collected row by row; a row whose pivot
-is `⊤` contributes all its entries. -/
+/-- The entries of each row before its pivot column, all of the row when the pivot is `⊤`. -/
 def pivotPrefixes : List (WithTop (Fin n)) → List (List R) → List R
   | [], _ => []
   | (p : Fin n) :: ps, rows => (rows.headD []).take p ++ pivotPrefixes ps rows.tail
   | none :: ps, rows => rows.headD [] ++ pivotPrefixes ps rows.tail
 
-/-- The entry of each row at its pivot column, for the rows whose pivot is a column. -/
+/-- The entries of the rows at their pivot columns. -/
 def pivotEntries [Zero R] : List (WithTop (Fin n)) → List (List R) → List R
   | [], _ => []
   | (p : Fin n) :: ps, rows => (rows.headD []).getD p 0 :: pivotEntries ps rows.tail
