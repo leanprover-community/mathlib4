@@ -402,8 +402,8 @@ variable {p : ℝ≥0∞}
 variable {f : ι → α → E} {g : α → E}
 
 /-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
-allow `p = ∞` and only require `AEStronglyMeasurable`. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAddCommGroup E]
+allow `p = ∞`. -/
+theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
@@ -424,28 +424,19 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAdd
   · simp [hε_top]
   · simp [hε.ne']
 
-/-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
-allow `p = ∞`. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
-    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ) {l : Filter ι}
-    (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
-  refine TendstoInMeasure.congr (fun i => (hf i).ae_eq_mk.symm) hg.ae_eq_mk.symm ?_
-  refine tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable hp_ne_zero hp_ne_top ?_
-  have : (fun n => eLpNorm ((hf n).mk (f n) - hg.mk g) p μ) = fun n => eLpNorm (f n - g) p μ := by
-    ext1 n
-    exact eLpNorm_congr_ae (EventuallyEq.sub (hf n).ae_eq_mk.symm hg.ae_eq_mk.symm)
-  rw [this]
-  exact hfg
+@[deprecated (since := "2026-09-11")]
+alias tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable :=
+  tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top
 
 /-- See also `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` which work for general
 Lp-convergence for all `p ≠ 0`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {f : ι → α → E}
-    {g : α → E} {l : Filter ι} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hg : AEStronglyMeasurable g μ) (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
+    {g : α → E} {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   refine tendstoInMeasure_of_ne_top fun δ hδ hδ_top ↦ ?_
-  simp only [eLpNorm_exponent_top ((hf _).sub hg), eLpNormEssSup] at hfg
+  replace hfg : Tendsto (fun n ↦ essSup (fun x ↦ ‖(f n - g) x‖ₑ) μ) l (𝓝 0) :=
+    tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hfg
+      (fun n ↦ by positivity) (fun n ↦ eLpNormEssSup_le_eLpNorm_top)
   rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro ε hε
   specialize hfg (δ / 2) (ENNReal.div_pos_iff.2 ⟨hδ.ne', ENNReal.ofNat_ne_top⟩)
@@ -459,19 +450,18 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {
 
 /-- Convergence in Lp implies convergence in measure. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E] {l : Filter ι}
-    (hp_ne_zero : p ≠ 0) (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
-    (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
+    (hp_ne_zero : p ≠ 0) (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) :
+    TendstoInMeasure μ f l g := by
   by_cases hp_ne_top : p = ∞
   · subst hp_ne_top
-    exact tendstoInMeasure_of_tendsto_eLpNorm_top hf hg hfg
-  · exact tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top hp_ne_zero hp_ne_top hf hg hfg
+    exact tendstoInMeasure_of_tendsto_eLpNorm_top hfg
+  · exact tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top hp_ne_zero hp_ne_top hfg
 
 /-- Convergence in Lp implies convergence in measure. -/
 theorem tendstoInMeasure_of_tendsto_Lp [NormedAddCommGroup E] [hp : Fact (1 ≤ p)]
     {f : ι → Lp E p μ} {g : Lp E p μ}
     {l : Filter ι} (hfg : Tendsto f l (𝓝 g)) : TendstoInMeasure μ (fun n => f n) l g :=
   tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne'
-    (fun _ => Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
     ((Lp.tendsto_Lp_iff_tendsto_eLpNorm' _ _).mp hfg)
 
 end TendstoInMeasureOf
