@@ -305,16 +305,16 @@ theorem emultiplicity_one_left (b : α) : emultiplicity 1 b = ⊤ :=
   emultiplicity_eq_top.2 (FiniteMultiplicity.not_of_one_left _)
 
 @[simp]
-theorem multiplicity_one_left (b : α) : multiplicity 1 b = 0 := by
-  simp [multiplicity]
-
-@[simp]
 theorem multiplicity_one_right : multiplicity a 1 = 0 := by
   by_cases ha : FiniteMultiplicity a 1
   · simp [ha.multiplicity_eq_iff, ha.not_dvd_of_one_right]
   · exact multiplicity_eq_zero_of_not_finiteMultiplicity ha
 
 @[deprecated (since := "2026-09-11")] alias FiniteMultiplicity.one_right := multiplicity_one_right
+
+@[simp]
+theorem multiplicity_one_left (b : α) : multiplicity 1 b = 0 := by
+  simp [multiplicity]
 
 theorem FiniteMultiplicity.not_of_unit_left (a : α) (u : αˣ) : ¬ FiniteMultiplicity (u : α) a :=
   FiniteMultiplicity.not_of_isUnit_left a u.isUnit
