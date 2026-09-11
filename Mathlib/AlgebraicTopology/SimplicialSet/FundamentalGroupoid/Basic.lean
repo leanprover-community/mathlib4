@@ -239,11 +239,16 @@ lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   Truncated.FundamentalGroupoid.mk_surjective
 
 /-- Induction principle for the objects of the fundamental groupoid of a simplicial set. -/
-@[elab_as_elim, cases_eliminator, induction_eliminator]
+@[implicit_reducible, elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : FundamentalGroupoid X → Sort*}
     (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : FundamentalGroupoid X) :
     motive x :=
   mk _
+
+@[simp]
+lemma rec_mk {motive : FundamentalGroupoid X → Sort*}
+    (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : X _⦋0⦌) :
+    FundamentalGroupoid.rec (motive := motive) mk (.mk x) = mk x := rfl
 
 /-- Constructor for morphisms in the fundamental groupoid of a simplicial set `X`. -/
 def homMk {x y : X _⦋0⦌} (e : Edge x y) : mk x ⟶ mk y :=
@@ -337,7 +342,8 @@ lemma isIso_mapFundamentalGroupoid_of_isIso (f : X ⟶ Y)
 
 lemma isEquivalence_mapFundamentalGroupoid (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
-    (mapFundamentalGroupoid f).IsEquivalence :=
-  (isoCatMapFundamentalGroupoid f).toEquivalence.isEquivalence_functor
+    (mapFundamentalGroupoid f).IsEquivalence := by
+  have := isIso_mapFundamentalGroupoid_of_isIso f
+  infer_instance
 
 end SSet
