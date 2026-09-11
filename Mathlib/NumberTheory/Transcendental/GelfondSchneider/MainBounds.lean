@@ -795,16 +795,16 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
             · positivity
           · rw [← Real.rpow_mul, ← Real.rpow_mul, Real.sqrt_eq_rpow, ← Real.rpow_mul,
               mul_comm ((m K) : ℝ) (1/2), mul_comm ((m K) : ℝ) 2]
-            simp only [mul_assoc]
-            congr
-            rw [Real.inv_rpow, ← mul_assoc, ← Real.rpow_add, ← Real.rpow_neg, ← Real.rpow_add,
-              ← Real.rpow_add]
-            · ring_nf
-            · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-            · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-            · simp only [Nat.cast_nonneg]
-            · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-            · simp only [Nat.cast_nonneg]
+            · simp only [mul_assoc]
+              congr
+              rw [Real.inv_rpow, ← mul_assoc, ← Real.rpow_add, ← Real.rpow_neg, ← Real.rpow_add,
+                ← Real.rpow_add]
+              · ring_nf
+              · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+              · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+              · simp only [Nat.cast_nonneg]
+              · simp only [Nat.cast_pos]; exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+              · simp only [Nat.cast_nonneg]
             · simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
             · positivity
             · simp only [Nat.cast_nonneg]
