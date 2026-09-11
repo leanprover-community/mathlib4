@@ -14,7 +14,6 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 @[expose] public section
 
-
 variable {R S M : Type*} {a b : R} {s : S}
 
 namespace IsSMulRegular
