@@ -21,6 +21,8 @@ open Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
+variable {α : Type*}
+
 /-! ### The pivot-function conditions in chain form
 
 The pivot certificates defined in the theory file using `Monotone` and `StrictMonoOn` have
@@ -29,9 +31,9 @@ instances from `Monotone` which check all pairs. The following part defines a `L
 alternative that can be decided in `O(n) comparisons`.
 -/
 
-section PivotChain
+section Top
 
-variable {α : Type*} [Top α]
+variable [Top α]
 
 /-- One step of a pivot function: strictly increasing, with `⊤` absorbing. -/
 def PivotStep [LT α] (a b : α) : Prop :=
@@ -53,21 +55,19 @@ theorem isChain_ofFn_iff_monotone_and_strictMonoOn [PartialOrder α] {m : ℕ} (
   simp only [PivotStep, Monotone, StrictMonoOn]
   grind [le_of_lt, LE.le.eq_or_lt]
 
-end PivotChain
+end Top
 
-variable {R : Type*}
-
-theorem getD_eq_zero_of_forall_eq_zero [Zero R] {l : List R} (h : ∀ x ∈ l, x = 0) (i : ℕ) :
+theorem getD_eq_zero_of_forall_eq_zero [Zero α] {l : List α} (h : ∀ x ∈ l, x = 0) (i : ℕ) :
     l.getD i 0 = 0 := by
   rw [List.eq_replicate_of_mem h]
   grind
 
 /-- The entries above the diagonal of a list of rows, collected row by row. -/
-def aboveDiagonal (k : Nat) : List (List R) → List R
+def aboveDiagonal (k : Nat) : List (List α) → List α
   | [] => []
   | row :: rows => (row.drop k).tail ++ aboveDiagonal (k + 1) rows
 
-theorem getD_eq_zero_of_aboveDiagonal [Zero R] {k i j : Nat} {rows : List (List R)}
+theorem getD_eq_zero_of_aboveDiagonal [Zero α] {k i j : Nat} {rows : List (List α)}
     (h : ∀ x ∈ aboveDiagonal k rows, x = 0) (hij : k + i < j) :
     (rows.getD i []).getD j 0 = 0 := by
   induction rows generalizing k i with
@@ -84,7 +84,7 @@ theorem getD_eq_zero_of_aboveDiagonal [Zero R] {k i j : Nat} {rows : List (List 
       rw [List.getD_cons_succ]
       exact ih (fun x hx ↦ h x (Or.inr hx)) (by lia)
 
-theorem isLowerTriangular_ofLists [Zero R] {m : ℕ} {rows : List (List R)} {N : ℕ}
+theorem isLowerTriangular_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {N : ℕ}
     (h : aboveDiagonal 0 rows = List.replicate N 0) : (ofLists m m rows).IsLowerTriangular := by
   intro i j hij
   rw [ofLists_apply, ofList_apply]
@@ -92,11 +92,11 @@ theorem isLowerTriangular_ofLists [Zero R] {m : ℕ} {rows : List (List R)} {N :
 
 /-- The first `c` diagonal entries of a list of rows, missing ones read as `0`, taken from the
 `row.drop k` that `aboveDiagonal` also reads. -/
-def diag [Zero R] (k : Nat) : Nat → List (List R) → List R
+def diag [Zero α] (k : Nat) : Nat → List (List α) → List α
   | 0, _ => []
   | c + 1, rows => ((rows.headD []).drop k).headD 0 :: diag (k + 1) c rows.tail
 
-theorem getD_ne_zero_of_diag [Zero R] {k c i : Nat} {rows : List (List R)}
+theorem getD_ne_zero_of_diag [Zero α] {k c i : Nat} {rows : List (List α)}
     (h : ∀ x ∈ diag k c rows, x ≠ 0) (hi : i < c) : (rows.getD i []).getD (k + i) 0 ≠ 0 := by
   induction c generalizing k i rows with
   | zero => simp at hi
@@ -111,7 +111,7 @@ theorem getD_ne_zero_of_diag [Zero R] {k c i : Nat} {rows : List (List R)}
         ← List.getD_eq_getElem?_getD, ← Nat.add_assoc, Nat.add_right_comm]
       exact ih h.2 (by lia)
 
-theorem diag_ofLists_ne_zero [Zero R] {m : ℕ} {rows : List (List R)}
+theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
     (h : ∀ x ∈ diag 0 m rows, x ≠ 0) (i : Fin m) : (ofLists m m rows).diag i ≠ 0 := by
   rw [Matrix.diag_apply, ofLists_apply, ofList_apply]
   simpa using getD_ne_zero_of_diag h i.isLt
@@ -119,19 +119,19 @@ theorem diag_ofLists_ne_zero [Zero R] {m : ℕ} {rows : List (List R)}
 variable {n : ℕ}
 
 /-- The entries of each row before its pivot column, all of the row when the pivot is `⊤`. -/
-def pivotPrefixes : List (WithTop (Fin n)) → List (List R) → List R
+def pivotPrefixes : List (WithTop (Fin n)) → List (List α) → List α
   | [], _ => []
   | (p : Fin n) :: ps, rows => (rows.headD []).take p ++ pivotPrefixes ps rows.tail
   | none :: ps, rows => rows.headD [] ++ pivotPrefixes ps rows.tail
 
 /-- The entries of the rows at their pivot columns. -/
-def pivotEntries [Zero R] : List (WithTop (Fin n)) → List (List R) → List R
+def pivotEntries [Zero α] : List (WithTop (Fin n)) → List (List α) → List α
   | [], _ => []
   | (p : Fin n) :: ps, rows => (rows.headD []).getD p 0 :: pivotEntries ps rows.tail
   | none :: ps, rows => pivotEntries ps rows.tail
 
-theorem getD_eq_zero_of_pivotPrefixes [Zero R] {ps : List (WithTop (Fin n))}
-    {rows : List (List R)} (h : ∀ x ∈ pivotPrefixes ps rows, x = 0) {i : ℕ} {j : Fin n}
+theorem getD_eq_zero_of_pivotPrefixes [Zero α] {ps : List (WithTop (Fin n))}
+    {rows : List (List α)} (h : ∀ x ∈ pivotPrefixes ps rows, x = 0) {i : ℕ} {j : Fin n}
     (hi : i < ps.length) (hj : (j : WithTop (Fin n)) < ps.getD i ⊤) :
     (rows.getD i []).getD j 0 = 0 := by
   induction ps generalizing rows i with
@@ -161,8 +161,8 @@ theorem getD_eq_zero_of_pivotPrefixes [Zero R] {ps : List (WithTop (Fin n))}
         simp only [pivotPrefixes, List.mem_append] at h
         exact ih (fun x hx ↦ h x (Or.inr hx)) (by simpa using hi) hj
 
-theorem getD_ne_zero_of_pivotEntries [Zero R] {ps : List (WithTop (Fin n))}
-    {rows : List (List R)} (h : ∀ x ∈ pivotEntries ps rows, x ≠ 0) {i : ℕ} {c : Fin n}
+theorem getD_ne_zero_of_pivotEntries [Zero α] {ps : List (WithTop (Fin n))}
+    {rows : List (List α)} (h : ∀ x ∈ pivotEntries ps rows, x ≠ 0) {i : ℕ} {c : Fin n}
     (hc : ps.getD i ⊤ = c) : (rows.getD i []).getD c 0 ≠ 0 := by
   induction ps generalizing rows i with
   | nil => simp at hc
@@ -180,7 +180,7 @@ theorem getD_ne_zero_of_pivotEntries [Zero R] {ps : List (WithTop (Fin n))}
       | coe q => exact ih (fun x hx ↦ h x (List.mem_cons_of_mem _ hx)) hc
       | top => exact ih h hc
 
-theorem isPivotedBy_ofLists [Zero R] {m : ℕ} {rows : List (List R)}
+theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)}
     {pivot : Fin m → WithTop (Fin n)} {ps : List (WithTop (Fin n))} (hps : List.ofFn pivot = ps)
     (hchain : ps.IsChain PivotStep) {N : ℕ} (hzero : pivotPrefixes ps rows = List.replicate N 0)
     (hnz : ∀ x ∈ pivotEntries ps rows, x ≠ 0) : (ofLists m n rows).IsPivotedBy pivot := by
