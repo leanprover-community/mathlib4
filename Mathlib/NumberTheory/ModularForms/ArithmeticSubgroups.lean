@@ -87,6 +87,35 @@ instance (Γ : Subgroup (GL n R)) [HasDetPlusMinusOne Γ] (g : ConjAct <| GL n R
 
 end det_typeclasses
 
+section detOnePart
+
+variable {R : Type*} [CommRing R]
+
+/-- The determinant-one part of a subgroup of `GL(2, ℝ)`. -/
+noncomputable def detOnePart (G : Subgroup (GL n R)) : Subgroup (GL n R) :=
+  G ⊓ (Matrix.SpecialLinearGroup.toGL : SL n R →* GL n R).range
+
+@[simp]
+lemma mem_detOnePart {G : Subgroup (GL n R)} {g : GL n R} :
+    g ∈ G.detOnePart ↔ g ∈ G ∧ g.det = 1 := by
+  simp only [detOnePart, mem_inf, MonoidHom.mem_range, and_congr_right_iff]
+  intro hg
+  constructor
+  · rintro ⟨x, rfl⟩
+    simp
+  · exact fun hdet ↦ ⟨⟨g, Units.ext_iff.mp hdet⟩, Units.ext (Matrix.ext (fun i j ↦ rfl))⟩
+
+lemma detOnePart_le (G : Subgroup (GL n R)) : G.detOnePart ≤ G := by
+  simp [detOnePart]
+
+instance (G : Subgroup (GL n R)) : G.detOnePart.HasDetOne where
+  det_eq {g} hg := by
+    simp only [detOnePart, mem_inf] at hg
+    rcases hg.2 with ⟨x, -, rfl⟩
+    simp
+
+end detOnePart
+
 section SL2Z_in_GL2R
 
 /-- The image of the modular group `SL(2, ℤ)`, as a subgroup of `GL(2, ℝ)`. -/
@@ -135,19 +164,6 @@ instance IsArithmetic.isFiniteRelIndex (G H : Subgroup (GL (Fin 2) ℝ))
 
 instance IsArithmetic.inter {Γ Γ'} [IsArithmetic Γ] [IsArithmetic Γ'] : IsArithmetic (Γ ⊓ Γ') :=
   ⟨is_commensurable.inf_left is_commensurable⟩
-
-/-- The determinant-one part of a subgroup of `GL(2, ℝ)`. -/
-noncomputable def detOnePart (G : Subgroup (GL (Fin 2) ℝ)) : Subgroup (GL (Fin 2) ℝ) :=
-  G ⊓ (Matrix.SpecialLinearGroup.toGL : SL(2, ℝ) →* GL (Fin 2) ℝ).range
-
-lemma detOnePart_le (G : Subgroup (GL (Fin 2) ℝ)) : G.detOnePart ≤ G := by
-  simp [detOnePart]
-
-instance (G : Subgroup (GL (Fin 2) ℝ)) : G.detOnePart.HasDetOne where
-  det_eq {g} hg := by
-    simp only [detOnePart, mem_inf] at hg
-    rcases hg.2 with ⟨x, -, rfl⟩
-    simp
 
 /-- The determinant-one part of an arithmetic subgroup is arithmetic. -/
 instance (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] : G.detOnePart.IsArithmetic := by
@@ -307,6 +323,12 @@ instance {𝒢 : Subgroup (GL n R)} [𝒢.HasDetPlusMinusOne] :
 instance {𝒢 : Subgroup (GL n R)} [𝒢.HasDetOne] [Fact (Even (Fintype.card n))] :
     𝒢.adjoinNegOne.HasDetOne :=
   (Subgroup.hasDetOne_adjoinNegOne_iff Fact.out).2 ‹_›
+
+lemma adjoinNegOne_detOnePart {G : Subgroup (GL n R)} (hn : Even (Fintype.card n)) :
+    G.detOnePart.adjoinNegOne = G.adjoinNegOne.detOnePart := by
+  ext
+  simp [Units.ext_iff, det_neg, hn.neg_one_pow]
+  grind
 
 end CommRing
 
