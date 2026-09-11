@@ -22,7 +22,7 @@ theorem for normed vector spaces over an `RCLike` field (`ContDiffAt.toOpenParti
   (since there is not a normed vector space version of `PartialDiffeomorph`)
 
 ## Main results
-* `isLocalDiffeomorphAt_of_isInvertible_mfderiv`: if `f` is `ContMDiffOn` an open set `U` and has
+* `isLocalDiffeomorphAt_of_isInvertible_mfderiv`: if `f` is `C^n` on an open set `U` and has
   bijective differential at an interior point `p ∈ U`, then `f` is a local diffeomorphism at `p`.
 
 ## TODO
@@ -112,7 +112,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   (hf : ContDiffOn 𝕜 n f U) (hU : IsOpen U) (hpU : p ∈ U) (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p)
   (hn : n ≠ 0)
 
-/-- If `f` is `ContDiffOn` an open set `U` and has invertible derivative at `p ∈ U`, then it is a
+/-- If `f` is `C^n` on an open set `U` and has invertible derivative at `p ∈ U`, then it is a
 local diffeomorphism near `p`. This is a stronger version of `ContDiffAt.toOpenPartialHomeomorph`
 with a slightly stronger differentiability hypothesis.
 
