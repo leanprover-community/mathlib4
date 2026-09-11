@@ -81,7 +81,7 @@ where the operations are already defined on the destination type `D`.
 The functor `F` must preserve all the data parts of the monoidal structure between the two
 categories.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     MonoidalCategory.{v₂} D where
@@ -134,7 +134,7 @@ instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithfu
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps -isSimp, implicit_reducible]
+@[simps -isSimp, instance_reducible]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
@@ -158,7 +158,7 @@ the fields `whiskerLeft_eq` and following were all filled by the `cat_disch` aut
 attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse

@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The canonical bilinear form on a finite root pairing
+
 Given a finite root pairing, we define a canonical map from weight space to coweight space, and the
 corresponding bilinear form. This form is symmetric and Weyl-invariant, and if the base ring is
 linearly ordered, then the form is root-positive, positive-semidefinite on the weight space, and

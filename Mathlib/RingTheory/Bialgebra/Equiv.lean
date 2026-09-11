@@ -115,6 +115,7 @@ theorem toEquiv_inj {e₁ e₂ : A ≃ₐc[R] B} : e₁.toEquiv = e₂.toEquiv �
 theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B) → A →ₐc[R] B) :=
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
+@[macro_inline]
 instance : EquivLike (A ≃ₐc[R] B) A B where
   coe f := f.toFun
   inv := fun f => f.invFun
@@ -122,6 +123,7 @@ instance : EquivLike (A ≃ₐc[R] B) A B where
   left_inv := fun f => f.left_inv
   right_inv := fun f => f.right_inv
 
+@[macro_inline]
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe
   coe_injective := DFunLike.coe_injective
@@ -280,10 +282,10 @@ lemma apply_symm_apply (e : A ≃ₐc[R] B) : ∀ x, e (e.symm x) = x := e.toEqu
 lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEquiv.symm_apply_apply
 
 @[simp] lemma comp_symm (e : A ≃ₐc[R] B) : (e : A →ₐc[R] B).comp e.symm = .id R B :=
-  BialgHom.coe_algHom_injective e.toAlgEquiv.comp_symm
+  BialgHom.coe_toAlgHom_injective e.toAlgEquiv.comp_symm
 
 @[simp] lemma symm_comp (e : A ≃ₐc[R] B) : (e.symm : B →ₐc[R] A).comp e = .id R A :=
-  BialgHom.coe_algHom_injective e.toAlgEquiv.symm_comp
+  BialgHom.coe_toAlgHom_injective e.toAlgEquiv.symm_comp
 
 @[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
@@ -324,6 +326,7 @@ variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
 lemma toLinearMap_ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp map_comp_comul) :
     (ofAlgEquiv f counit_comp map_comp_comul : A →ₗ[R] B) = f := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Promotes a bijective bialgebra homomorphism to a bialgebra equivalence. -/
 @[simps! apply]
 noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐc[R] B :=

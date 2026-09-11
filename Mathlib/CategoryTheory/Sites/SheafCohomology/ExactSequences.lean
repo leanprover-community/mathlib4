@@ -15,7 +15,7 @@ of sheaves. We also show it is functorial. In practice, it is often best to work
 cohomology as a Type (the long sequence necessarily takes values in the category `AddCommGrpCat`,
 so the objects in it are really `AddCommGrpCat.of (H F n)`). To do this, you can use the lemmas
 `CategoryTheory.Sheaf.H.longSequence_exact₁`, `CategoryTheory.Sheaf.H.longSequence_exact₂` and
-`CategoryTheory.Sheaf.H.longSequence_exact₃`.
+`CategoryTheory.Sheaf.H.longSequence_exact₃`
 
 ## Main definitions
 
@@ -80,7 +80,6 @@ open ComposableArrows
 theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
 noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
@@ -89,14 +88,13 @@ noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
   any_goals
     dsimp
     ext
-    simp [← H.map_comp_apply, f.4, f.5, ← δ_naturality n₀ n₁ h h₁ h₂ f]
+    simp [← H.map_comp_apply, f.comm₁₂, f.comm₂₃, ← δ_naturality n₀ n₁ h h₁ h₂ f]
 
 @[simp]
 lemma longSequenceHom_id (h : n₀ + 1 = n₁ := by lia) :
     longSequenceHom n₀ n₁ h₁ h₁ (𝟙 _) h = 𝟙 _ := by
   ext1 <;> cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] H.map_comp_apply in
 @[simp]
 lemma longSequenceHom_comp {S₃ : ShortComplex (Sheaf J AddCommGrpCat)} (h₃ : S₃.ShortExact)
@@ -106,10 +104,9 @@ lemma longSequenceHom_comp {S₃ : ShortComplex (Sheaf J AddCommGrpCat)} (h₃ :
   ext1 <;> cat_disch
 
 /-- The long exact sequence of cohomology is functorial -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def longSequenceFunctor :
-    ObjectProperty.FullSubcategory (ShortComplex.ShortExact (C := (Sheaf J AddCommGrpCat.{w}))) ⥤
-      ComposableArrows AddCommGrpCat.{w'} 5 where
+    ShortExactSequence (Sheaf J AddCommGrpCat.{w}) ⥤ ComposableArrows AddCommGrpCat.{w'} 5 where
   obj S := longSequence S.property n₀ n₁ h
   map {S₁ S₂} f := longSequenceHom n₀ n₁ S₁.property S₂.property f.hom h
 
@@ -118,30 +115,30 @@ lemma longSequence_exact₁' (h : n₀ + 1 = n₁ := by lia) :
       ((longSequence_exact hS n₀ n₁ h).zero 2)).Exact :=
   (longSequence_exact hS n₀ n₁ h).exact 2
 
-lemma longSequence_exact₃' (h : n₀ + 1 = n₁ := by lia) :
-    (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (δ hS n₀ n₁ h))
-      ((longSequence_exact hS n₀ n₁ h).zero 1)).Exact :=
-  (longSequence_exact hS n₀ n₁ h).exact 1
-
 lemma longSequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (ofHom (map S.f n)) (ofHom (map S.g n))
       (((longSequence_exact hS n _ rfl).sc 0).zero)).Exact :=
   (longSequence_exact hS n _ rfl).exact 0
 
-include hS in
-lemma longSequence_exact₂ (n : ℕ) (x₂ : H S.X₂ n) (hx₂ : map S.g n x₂ = 0) :
-    ∃ x₁ : H S.X₁ n, map S.f n x₁ = x₂ :=
-  Ext.covariant_sequence_exact₂ _ hS _ hx₂
+lemma longSequence_exact₃' (h : n₀ + 1 = n₁ := by lia) :
+    (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (δ hS n₀ n₁ h))
+      ((longSequence_exact hS n₀ n₁ h).zero 1)).Exact :=
+  (longSequence_exact hS n₀ n₁ h).exact 1
 
-lemma longSequence_exact₃ (x₃ : H S.X₃ n₀)
+lemma longSequence_exact₁ {n₁ : ℕ} (x₁ : H S.X₁ n₁)
+    (hx₁ : map S.f n₁ x₁ = 0) {n₀ : ℕ} (h : n₀ + 1 = n₁) :
+    ∃ x₃ : H S.X₃ n₀, δ hS n₀ n₁ h x₃ = x₁ :=
+  Ext.covariant_sequence_exact₁ _ hS x₁ hx₁ h
+
+include hS in
+lemma longSequence_exact₂ {n : ℕ} (x₂ : H S.X₂ n) (hx₂ : map S.g n x₂ = 0) :
+    ∃ x₁ : H S.X₁ n, map S.f n x₁ = x₂ :=
+  Ext.covariant_sequence_exact₂ _ hS x₂ hx₂
+
+lemma longSequence_exact₃ {n₀ : ℕ} (x₃ : H S.X₃ n₀) {n₁ : ℕ} (h : n₀ + 1 = n₁)
     (hx₃ : δ hS n₀ n₁ h x₃ = 0) :
     ∃ x₂ : H S.X₂ n₀, map S.g n₀ x₂ = x₃ :=
-  Ext.covariant_sequence_exact₃ _ _ _ h hx₃
-
-lemma longSequence_exact₁ (x₁ : H S.X₁ n₁)
-    (hx₁ : map S.f n₁ x₁ = 0) :
-    ∃ x₃ : H S.X₃ n₀, δ hS n₀ n₁ h x₃ = x₁ :=
-  Ext.covariant_sequence_exact₁ _ _ _ hx₁ h
+  Ext.covariant_sequence_exact₃ _ hS x₃ h hx₃
 
 variable {T : C} (hT : Limits.IsTerminal T)
 
@@ -150,7 +147,7 @@ open Opposite
 lemma longSequence_equiv₀_exact₃ (x₃ : S.X₃.obj.obj (op T))
     (hx₃ : (δ hS 0 1 rfl) ((equiv₀ S.X₃ hT).symm x₃) = 0) :
     ∃ x₂ : S.X₂.obj.obj (op T), S.g.hom.app (op T) x₂ = x₃ := by
-  obtain ⟨x₂', hx₂'⟩ := longSequence_exact₃ hS 0 _ _ ((equiv₀ S.X₃ hT).symm x₃) hx₃
+  obtain ⟨x₂', hx₂'⟩ := longSequence_exact₃ hS ((equiv₀ S.X₃ hT).symm x₃) rfl hx₃
   use equiv₀ S.X₂ hT x₂'
   simp [equiv₀_naturality, hx₂']
 

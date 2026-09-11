@@ -188,7 +188,7 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
@@ -204,11 +204,11 @@ noncomputable instance : Inv (Cauchy abv) :=
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
+  congr_arg mk <| by rw [dite_eq_left] <;> [rfl; exact zero_limZero]
 
 @[simp]
 theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
-  congr_arg mk <| by rw [dif_neg]
+  congr_arg mk <| by rw [dite_eq_right]
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h ↦
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h

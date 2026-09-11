@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Function.Holder
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Group.Prod
@@ -73,13 +74,11 @@ The following notations are localized in the scope `Convolution`:
 
 ## To do
 
-* Existence and (uniform) continuity of the convolution if
+* Uniform continuity of the convolution if
   one of the maps is in `ℒ^p` and the other in `ℒ^q` with `1 / p + 1 / q = 1`.
   This might require a generalization of `MeasureTheory.MemLp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
-* The convolution is an `AEStronglyMeasurable` function
-  (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255I).
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere (this likely requires changes in `to_additive`)
 -/
@@ -89,7 +88,7 @@ assert_not_exists ContDiffAt HasDerivAt
 @[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open Bornology ContinuousLinearMap Metric Topology
+open ContinuousLinearMap Metric Topology
 open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
@@ -98,7 +97,7 @@ variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : 
   {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
-  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
+  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y : E}
 
 namespace MeasureTheory
 section NontriviallyNormedField
@@ -174,7 +173,7 @@ section Group
 
 variable [AddGroup G]
 
-theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
+theorem AEStronglyMeasurable.convolution_integrand' [SFinite ν] [MeasurableAdd₂ G]
     [MeasurableNeg G] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
@@ -513,15 +512,57 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   · rw [h, L.map_zero₂]
   · exact (h <| sub_add_cancel x t).elim
 
-section
+section IsAddRightInvariant
 
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvariant μ]
+
+/-- The convolution of two a.e. strongly measurable functions is a.e. strongly measurable. -/
+@[fun_prop]
+protected theorem AEStronglyMeasurable.convolution (hf : AEStronglyMeasurable f μ)
+    (hg : AEStronglyMeasurable g μ) : AEStronglyMeasurable (f ⋆[L, μ] g) μ := by
+  suffices AEStronglyMeasurable (fun ⟨x, t⟩ ↦ g (x - t)) (μ.prod μ) from
+    (L.aestronglyMeasurable_comp₂ hf.comp_snd this).integral_prod_right'
+  exact hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_of_right_invariant μ μ)
 
 theorem Integrable.integrable_convolution (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⋆[L, μ] g) μ :=
   (hf.convolution_integrand L hg).integral_prod_left
 
-end
+end IsAddRightInvariant
+
+section IsAddLeftInvariant
+
+variable [MeasurableAdd₂ G] [MeasurableNeg G] [IsNegInvariant μ] [IsAddLeftInvariant μ]
+
+omit [NormedSpace ℝ F] in
+lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q r]
+    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x₀ : G) :
+    eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
+  have hmp := μ.measurePreserving_sub_left x₀
+  rw [← eLpNorm_comp_measurePreserving hg hmp]
+  exact eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm L hf (hg.comp_measurePreserving hmp)
+
+omit [NormedSpace ℝ F] in
+/-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
+convolution of `f` and `g` exists everywhere. -/
+theorem ConvolutionExists.of_memLp_memLp {p q : ENNReal}
+    [hpq : p.HolderConjugate q] (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
+    ConvolutionExists f g L μ := by
+  intro x
+  apply memLp_one_iff_integrable.mp
+  exact (eLpNorm_convolution_integrand_le L hfp.aestronglyMeasurable
+      hgq.aestronglyMeasurable x).trans_lt (by finiteness)
+
+/-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
+by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
+theorem enorm_convolution_le {p q : ENNReal}
+    [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
+    (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
+  calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := enorm_integral_le_lintegral_enorm _
+    _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_enorm_le_eLpNorm_one
+    _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := eLpNorm_convolution_integrand_le L hf hg x₀
+
+end IsAddLeftInvariant
 
 variable [TopologicalSpace G]
 variable [IsTopologicalAddGroup G]
@@ -644,6 +685,11 @@ theorem convolution_flip : g ⋆[L.flip, μ] f = f ⋆[L, μ] g := by
   simp_rw [convolution_def]
   rw [← integral_sub_left_eq_self _ μ x]
   simp_rw [sub_sub_self, flip_apply]
+
+/-- Special case of `convolution_flip` when `L` is symmetric. -/
+theorem convolution_symm (L : E →L[𝕜] E →L[𝕜] F) (hL : L.flip = L) :
+    f ⋆[L, μ] f' = f' ⋆[L, μ] f := by
+  rw [← convolution_flip, hL]
 
 /-- The symmetric definition of convolution. -/
 theorem convolution_eq_swap : (f ⋆[L, μ] g) x = ∫ t, L (f (x - t)) (g t) ∂μ := by
@@ -807,8 +853,8 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
   have hgi : dist (g i (k i)) z₀ < ε / 3 := hgδ hpi (hki.trans <| half_lt_self hδ)
   have h1 : ∀ x' ∈ ball (k i) (δ / 2), dist (g i x') (g i (k i)) ≤ ε / 3 + ε / 3 := by
     intro x' hx'
-    refine (dist_triangle_right _ _ _).trans (add_le_add (hgδ hpi ?_).le hgi.le)
-    exact ((dist_triangle _ _ _).trans_lt (add_lt_add hx'.out hki)).trans_eq (add_halves δ)
+    grw [dist_triangle_right, hgδ hpi ?_, hgi]
+    grw [dist_triangle, hx'.out, hki, add_halves]
   have := dist_convolution_le (add_pos h2ε h2ε).le hφi hnφi hiφi hmgi h1
   refine ((dist_triangle _ _ _).trans_lt (add_lt_add_of_le_of_lt this hgi)).trans_eq ?_
   ring
@@ -827,7 +873,6 @@ variable [NormedSpace 𝕜 E]
 variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-variable {n : ℕ∞}
 variable [MeasurableSpace G] {μ ν : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 

@@ -245,7 +245,7 @@ theorem pi_le_pi [∀ i, NeBot (f₁ i)] : pi f₁ ≤ pi f₂ ↔ ∀ i, f₁ i
 theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
   refine ⟨fun h => ?_, congr_arg pi⟩
   have hle : f₁ ≤ f₂ := pi_le_pi.1 h.le
-  haveI : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
+  have : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
   exact hle.antisymm (pi_le_pi.1 h.ge)
 
 theorem tendsto_piMap_pi {β : ι → Type*} {f : ∀ i, α i → β i} {l : ∀ i, Filter (α i)}

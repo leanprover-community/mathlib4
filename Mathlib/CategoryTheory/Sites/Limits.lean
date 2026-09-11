@@ -53,6 +53,7 @@ noncomputable section
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An auxiliary definition to be used below.
 
@@ -227,7 +228,6 @@ instance [HasFiniteColimits D] : HasFiniteColimits (Sheaf J D) :=
 instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   ⟨inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If every cocone on a diagram of sheaves which is a colimit on the level of presheaves satisfies
 the condition that the cocone point is a sheaf, then the functor from sheaves to presheaves
@@ -235,7 +235,7 @@ creates colimits of the diagram.
 Note: this almost never holds in sheaf categories in general, but it does for the extensive
 topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :
     CreatesColimit F (sheafToPresheaf J D) :=

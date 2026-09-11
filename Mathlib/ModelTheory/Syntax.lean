@@ -197,6 +197,7 @@ def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
   | var (Sum.inl c) => Constants.term (Sum.inr c)
   | func f ts => func (Sum.inl f) fun i => (ts i).varsToConstants
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bijection between terms with constants and terms with extra variables. -/
 @[simps]
 def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=

@@ -58,10 +58,13 @@ jobs:
           } | tee -a "$GITHUB_OUTPUT"
 
       - name: Checkout new commit
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ steps.meta.outputs.new-sha }}
           fetch-depth: 0
+          # `new-sha` is fork PR code already built by build_fork.yml; allow the
+          # fork checkout under this workflow_run.
+          allow-unsafe-pr-checkout: true
 
       - name: Resolve merge-base against master
         id: resolve
@@ -136,7 +139,7 @@ jobs:
       # Tooling is checked out unconditionally: the patcher (from CI_SCRIPTS_DIR)
       # is needed on the cache-miss path too, to post the warning notice.
       - name: Checkout local actions
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -178,6 +181,9 @@ jobs:
           PR_NUMBER:      ${{ steps.pr.outputs.pr-number }}
           MODE:           warning
           DEFAULT_BRANCH: master
+          # If a real diff is already shown, keep it (relabelled) rather than
+          # blanking it to "unavailable" and give an actionable remedy.
+          NEW_HEADING:    '#### Declarations diff (Lean -- stale; merge master and push to refresh)'
         run: |
           # Record the cache miss in the step summary first, so a later patcher
           # error (e.g. a transient GitHub failure) still leaves this run-local

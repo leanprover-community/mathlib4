@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
 public import Mathlib.Tactic.FunProp
@@ -16,7 +15,7 @@ public import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
-import Mathlib.Tactic.MoveAdd
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 
 /-!
@@ -89,6 +88,7 @@ scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 
 namespace SchwartzMap
 
+@[macro_inline]
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -732,7 +732,7 @@ end bilin
 section smul
 
 variable (F) in
-open Classical in
+open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
 where `g` is a function of temperate growth. -/
 def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
@@ -1093,7 +1093,7 @@ section Integration
 /-! ### Integration -/
 
 
-open Real Complex Filter MeasureTheory MeasureTheory.Measure Module
+open Real Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
@@ -1202,6 +1202,15 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
     toBoundedContinuousFunctionCLM 𝕜 E F f x = f x :=
   rfl
 
+theorem toBoundedContinuousFunctionCLM_injective :
+    Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
+  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
+
+instance : T3Space 𝓢(E, F) :=
+  suffices T2Space 𝓢(E, F) from inferInstance
+  .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ ..)
+    (ContinuousLinearMap.continuous _)
+
 end BoundedContinuousFunction
 
 section ZeroAtInfty
@@ -1261,7 +1270,7 @@ variable (𝕜 F) in
 The maximum index `k` and the constant `C` depend on `p` and `μ`.
 -/
 theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] :
+    [hμ : μ.HasTemperateGrowth] [SecondCountableTopologyEither E F] :
     ∃ (k : ℕ) (C : ℝ≥0), ∀ (f : 𝓢(E, F)), eLpNorm f p μ ≤
       C * ENNReal.ofReal ((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f) := by
   -- Apply Hölder's inequality `‖f‖_p ≤ ‖f₁‖_p * ‖f₂‖_∞` to obtain the `L^p` norm of `f = f₁ • f₂`
@@ -1269,17 +1278,17 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   rcases hμ.exists_eLpNorm_lt_top p with ⟨k, hk⟩
   refine ⟨k, (eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ).toNNReal * 2 ^ k, fun f ↦ ?_⟩
   have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
+  have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ := by fun_prop
   calc eLpNorm (⇑f) p μ
   _ = eLpNorm ((fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) • fun x ↦ (1 + ‖x‖) ^ k • f x) p μ := by
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
     simp [(h_one_add x).ne']
-  _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
-    refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
-    refine Continuous.aestronglyMeasurable ?_
-    exact .rpow_const (by fun_prop) fun x ↦ .inl (h_one_add x).ne'
+  _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ :=
+    eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p hf'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
+    rw [eLpNorm_exponent_top hf']
     refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
     simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using!
@@ -1291,7 +1300,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
 
 /-- The `L^p` norm of a Schwartz function is finite. -/
 theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] : eLpNorm f p μ < ⊤ := by
+    [hμ : μ.HasTemperateGrowth] [SecondCountableTopologyEither E F] : eLpNorm f p μ < ⊤ := by
   rcases eLpNorm_le_seminorm ℝ F p μ with ⟨k, C, hC⟩
   exact lt_of_le_of_lt (hC f) (ENNReal.mul_lt_top ENNReal.coe_lt_top ENNReal.ofReal_lt_top)
 
@@ -1306,7 +1315,7 @@ theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f �
 /-- Schwartz functions are in `L^p` for any `p`. -/
 theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
-  ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
+  f.eLpNorm_lt_top p μ
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
@@ -1337,6 +1346,7 @@ theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperat
     ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
   rw [norm_toLp, ← ENNReal.ofReal_le_ofReal_iff (by positivity),
     ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
+  rw [eLpNorm_exponent_top f.continuous.aestronglyMeasurable]
   exact eLpNormEssSup_le_of_ae_bound <| .of_forall <| norm_le_seminorm ℝ f
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
@@ -1378,7 +1388,7 @@ theorem denseRange_toLpCLM [FiniteDimensional ℝ E] [BorelSpace E] {p : ℝ≥0
   refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := MemLp.exist_eLpNorm_sub_le hp hp'.out (Lp.memLp f) hε
   use (hg₁.toSchwartzMap hg₂).toLp p μ
-  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp p μ : E → F) =ᶠ[ae μ] (f : E → F) - g := by
+  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp p μ : E → F) =ᵐ[μ] (f : E → F) - g := by
     filter_upwards [(hg₁.toSchwartzMap hg₂).coeFn_toLp p μ]
     simp
   simp only [Set.mem_range, toLpCLM_apply, exists_apply_eq_apply, Metric.mem_closedBall', true_and,

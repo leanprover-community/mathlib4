@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Analysis.PSeries
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Convergence of `p`-series on lattices
@@ -158,7 +159,6 @@ variable (L)
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
-  classical
   cases subsingleton_or_nontrivial L
   · refine ⟨1, zero_lt_one, fun r hr s ↦ ?_⟩
     have hr : r ≠ 0 := by linarith
@@ -240,8 +240,7 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
   · exact .of_finite
   refine Summable.of_norm_bounded_eventually
     (.mul_left ((1 / 2) ^ r) (summable_norm_rpow L r hr)) ?_
-  have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
-    L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
+  have H : IsClosed (X := E) L := L.toAddSubgroup.isClosed_of_discreteTopology
   refine ((Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
     (Metric.isBounded_closedBall (x := (0 : E)) (r := 2 * ‖x‖)) H).preimage_embedding
     (.subtype _)).subset ?_

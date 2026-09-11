@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Control.Functor
 public import Mathlib.Data.SProd
-public import Mathlib.Util.CompileInductive
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Data.List.Basic
 public import Batteries.Logic
@@ -24,7 +23,7 @@ proofs about these definitions, those are contained in other files in `Data.List
 
 namespace List
 
-open Function Nat
+open Nat
 
 universe u v w x
 
@@ -170,7 +169,7 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   | t :: ts, is =>
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
   termination_by ts is => (length ts + length is, length ts)
-  decreasing_by all_goals (simp_wf; grind)
+  decreasing_by all_goals grind
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/

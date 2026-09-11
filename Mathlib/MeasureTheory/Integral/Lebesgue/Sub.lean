@@ -17,7 +17,9 @@ the monotone convergence theorem that use this subtraction in their proofs.
 
 public section
 
-open Filter ENNReal Topology
+open Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -93,7 +95,7 @@ theorem lintegral_iInf' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasu
     intro n m hnm x
     by_cases hx : x ∈ aeSeqSet h_meas p
     · exact aeSeq.prop_of_mem_aeSeqSet h_meas hx hnm
-    · simp only [aeSeq, hx, if_false]
+    · simp only [aeSeq, hx, ite_false]
       exact le_rfl
   rw [lintegral_congr_ae (aeSeq.iInf h_meas hp).symm]
   simp_rw [iInf_apply]

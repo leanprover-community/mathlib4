@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. This module introduces
 multiplication and scalar multiplication on Hahn series. If `Γ` is an ordered cancellative
@@ -67,7 +68,7 @@ instance [Zero R] [IntCast R] : IntCast R⟦Γ⟧ where intCast z := single 0 z
 instance [Zero R] [NNRatCast R] : NNRatCast R⟦Γ⟧ where nnratCast q := single 0 q
 instance [Zero R] [RatCast R] : RatCast R⟦Γ⟧ where ratCast q := single 0 q
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem coeff_one [Zero R] [One R] {a : Γ} : (1 : R⟦Γ⟧).coeff a = if a = 0 then 1 else 0 :=
   coeff_single
@@ -185,7 +186,7 @@ instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
             { a : Γ' | (VAddAntidiagonal a (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support
               ((of R).symm y).isPWO_support a)).Nonempty } := by
           intro a ha
-          simp only [Set.mem_setOf_eq]
+          simp only [Set.mem_ofPred_eq]
           contrapose! ha
           simp [ha]
         (isPWO_support_vaddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support).mono h }
@@ -345,7 +346,7 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
   refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
     fun a ↦ Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a)
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   contrapose! hx
   simp [coeff_smul, hx]
 
@@ -400,7 +401,7 @@ theorem of_symm_smul_of_eq_mul [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} :
 
 theorem coeff_mul [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ} :
     (x * y).coeff a =
-      ∑ ij ∈ addAntidiagonal x.isPWO_support y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd :=
+      ∑ ij ∈ antidiagonal x.isPWO_support y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd :=
   rfl
 
 protected lemma map_mul [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R →ₙ+* S)
@@ -408,9 +409,9 @@ protected lemma map_mul [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring
   ext
   simp only [map_coeff, coeff_mul, map_sum, map_mul]
   refine Eq.symm (sum_subset (fun gh hgh => ?_) (fun gh hgh hz => ?_))
-  · simp_all only [mem_addAntidiagonal, mem_support, map_coeff, ne_eq, and_true]
+  · simp_all only [mem_antidiagonal, mem_support, map_coeff, ne_eq, and_true]
     exact ⟨fun h => hgh.1 (map_zero f ▸ congrArg f h), fun h => hgh.2.1 (map_zero f ▸ congrArg f h)⟩
-  · simp_all only [mem_addAntidiagonal, mem_support, ne_eq, map_coeff, and_true,
+  · simp_all only [mem_antidiagonal, mem_support, ne_eq, map_coeff, and_true,
       not_and, not_not]
     by_cases h : f (x.coeff gh.1) = 0
     · exact mul_eq_zero_of_left h (f (y.coeff gh.2))
@@ -419,13 +420,13 @@ protected lemma map_mul [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring
 theorem coeff_mul_left' [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hxs : x.support ⊆ s) :
     (x * y).coeff a =
-      ∑ ij ∈ addAntidiagonal hs y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd :=
+      ∑ ij ∈ antidiagonal hs y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd :=
   HahnModule.coeff_smul_left hs hxs
 
 theorem coeff_mul_right' [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hys : y.support ⊆ s) :
     (x * y).coeff a =
-      ∑ ij ∈ addAntidiagonal x.isPWO_support hs a, x.coeff ij.fst * y.coeff ij.snd :=
+      ∑ ij ∈ antidiagonal x.isPWO_support hs a, x.coeff ij.fst * y.coeff ij.snd :=
   HahnModule.coeff_smul_right hs hys
 
 instance [NonUnitalNonAssocSemiring R] : Distrib R⟦Γ⟧ where
@@ -453,14 +454,14 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ�
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [notMem_empty, not_and, Set.mem_singleton_iff,
-      mem_addAntidiagonal, iff_false]
+      mem_antidiagonal, iff_false]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx
   trans ∑ ij ∈ {(a, b)}, x.coeff ij.fst * (single b r).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_addAntidiagonal, mem_singleton]
+    simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_antidiagonal, mem_singleton]
     constructor
     · rintro ⟨_, rfl, h1⟩
       exact ⟨add_right_cancel h1, rfl⟩
@@ -496,9 +497,6 @@ theorem support_mul_subset [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} :
   rw [← of_symm_smul_of_eq_mul, ← vadd_eq_add]
   exact HahnModule.support_smul_subset_vadd_support
 
-@[deprecated (since := "2025-12-09")]
-alias support_mul_subset_add_support := support_mul_subset
-
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
   zero_mul _ := by
     ext
@@ -532,9 +530,6 @@ theorem orderTop_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadin
     ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
-@[deprecated (since := "2026-01-02")]
-alias orderTop_mul_of_nonzero := orderTop_mul_of_ne_zero
-
 @[simp]
 theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
     (x * y).orderTop = x.orderTop + y.orderTop := by
@@ -545,7 +540,7 @@ theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
 
 theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
-  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
+  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j : Γ ↦ rfl
 
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
@@ -559,15 +554,9 @@ theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
-@[deprecated (since := "2026-01-02")]
-alias order_mul_of_nonzero := order_mul_of_ne_zero
-
 theorem leadingCoeff_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
   simp only [leadingCoeff_eq, order_mul_of_ne_zero h, coeff_mul_order_add_order]
-
-@[deprecated (since := "2026-01-02")]
-alias leadingCoeff_mul_of_nonzero := leadingCoeff_mul_of_ne_zero
 
 @[simp]
 theorem leadingCoeff_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
@@ -621,7 +610,7 @@ instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring R⟦Γ⟧ where
   mul_comm x y := by
     ext
     simp_rw [coeff_mul, mul_comm]
-    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_addAntidiagonal.symm) <| by simp
+    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_antidiagonal.symm) <| by simp
 
 instance [CommSemiring R] : CommSemiring R⟦Γ⟧ where
 instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing R⟦Γ⟧ where
@@ -681,7 +670,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
     intro x y hx hy
     obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
-    · simp_all only [Set.mem_setOf_eq, orderTop_self_sub_one_pos_iff]
+    · simp_all only [Set.mem_ofPred_eq, orderTop_self_sub_one_pos_iff]
       have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
       constructor
       · rw [Units.val_mul, orderTop_mul_of_ne_zero (by simp [h1]), hx.1, hy.1, add_zero]
@@ -780,7 +769,7 @@ theorem single_mul_single {a b : Γ} {r s : R} :
   · rw [h, coeff_mul_single_add]
     simp
   · rw [coeff_single_of_ne h, coeff_mul, sum_eq_zero]
-    simp_rw [mem_addAntidiagonal]
+    simp_rw [mem_antidiagonal]
     rintro ⟨y, z⟩ ⟨hy, hz, rfl⟩
     rw [eq_of_mem_support_single hy, eq_of_mem_support_single hz] at h
     exact (h rfl).elim
@@ -863,13 +852,13 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
     simp only [coeff_mul, embDomain_coeff]
     trans
       ∑ ij ∈
-        (addAntidiagonal x.isPWO_support y.isPWO_support g).map
+        (antidiagonal x.isPWO_support y.isPWO_support g).map
           (f.toEmbedding.prodMap f.toEmbedding),
         (embDomain f x).coeff ij.1 * (embDomain f y).coeff ij.2
     · simp
     apply sum_subset
     · rintro ⟨i, j⟩ hij
-      simp only [mem_map, mem_addAntidiagonal,
+      simp only [mem_map, mem_antidiagonal,
         Function.Embedding.coe_prodMap, mem_support, Prod.exists] at hij
       obtain ⟨i, j, ⟨hx, hy, rfl⟩, rfl, rfl⟩ := hij
       simp [hx, hy, hf]
@@ -877,12 +866,12 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
       contrapose! h2
       obtain ⟨i, _, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).1
       obtain ⟨j, _, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).2
-      simp only [mem_map, mem_addAntidiagonal,
+      simp only [mem_map, mem_antidiagonal,
         Function.Embedding.coe_prodMap, mem_support, Prod.exists]
-      simp only [mem_addAntidiagonal, embDomain_coeff, mem_support, ← hf,
+      simp only [mem_antidiagonal, embDomain_coeff, mem_support, ← hf,
         OrderEmbedding.eq_iff_eq] at h1
       exact ⟨i, j, h1, rfl⟩
-  · rw [embDomain_notin_range hg, eq_comm]
+  · rw [embDomain_of_notMem_range hg, eq_comm]
     contrapose! hg
     obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset ((mem_support _ _).2 hg)
     obtain ⟨i, _, rfl⟩ := support_embDomain_subset hi
@@ -966,7 +955,7 @@ variable [NonUnitalNonAssocSemiring R]
 instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
   -- TODO: This proof is painful because `coeff_mul` isn't stated in terms of `Finsupp.sum`.
   mul_left_cancel_of_ne_zero {x} hx y z hyz := by
-    letI : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelCommMonoid R := ⟨⟩
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=
@@ -975,20 +964,20 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     have ha : y.coeff a ≠ z.coeff a := this.min_mem hyz
     refine ⟨x.order + a, ?_⟩
     rwa [coeff_mul, coeff_mul, sum_subset subset_union_left,
-      sum_subset (s₁ := addAntidiagonal _ _ _) subset_union_right,
+      sum_subset (s₁ := antidiagonal _ _ _) subset_union_right,
       sum_eq_sum_iff_single (i := (x.order, a)), mul_right_inj' (coeff_order_eq_zero.not.2 hx)]
     · simp [hx]
       grind
-    · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_left_iff, Prod.mk.injEq,
+    · simp +contextual only [mem_union, mem_antidiagonal, mul_eq_mul_left_iff, Prod.mk.injEq,
         ne_eq, ← and_or_left, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
       rintro b c hxb - hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq (order_le_of_coeff_ne_zero hxb)
-        (Set.IsWF.min_le _ _ hbc'), eq_comm]
+        (Set.IsWF.min_le this hyz hbc'), eq_comm]
     · simp +contextual [← and_or_left, ← or_and_right]
     · simp +contextual [← and_or_left, ← or_and_right]
   mul_right_cancel_of_ne_zero {x} hx y z hyz := by
-    letI : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelCommMonoid R := ⟨⟩
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=
@@ -997,16 +986,17 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     have ha : y.coeff a ≠ z.coeff a := this.min_mem hyz
     refine ⟨a + x.order, ?_⟩
     rwa [coeff_mul, coeff_mul, sum_subset subset_union_left,
-      sum_subset (s₁ := addAntidiagonal _ _ _) subset_union_right,
+      sum_subset (s₁ := antidiagonal _ _ _) subset_union_right,
       sum_eq_sum_iff_single (i := (a, x.order)), mul_left_inj' (coeff_order_eq_zero.not.2 hx)]
     · simp [hx]
       grind
-    · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_right_iff, Prod.mk.injEq,
+    · simp +contextual only [mem_union, mem_antidiagonal, mul_eq_mul_right_iff, Prod.mk.injEq,
         ne_eq, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq
-        (Set.IsWF.min_le _ _ hbc') (order_le_of_coeff_ne_zero hxb), eq_comm]
+        (Set.IsWF.min_le this hyz ((Set.mem_ofPred (p := fun a => y.coeff a ≠ z.coeff a)).mpr hbc'))
+        (order_le_of_coeff_ne_zero hxb), eq_comm]
     · simp +contextual [← or_and_right]
     · simp +contextual [← or_and_right]
 

@@ -12,8 +12,8 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
-import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -79,6 +79,12 @@ instance finiteDimensional_direction_affineSpan_singleton (p : P) :
   rw [direction_affineSpan]
   infer_instance
 
+/-- The direction of a singleton is finite-dimensional. -/
+instance finiteDimensional_direction_singleton (p : P) :
+    FiniteDimensional k ({p} : AffineSubspace k P).direction := by
+  rw [← affineSpan_singleton]
+  infer_instance
+
 /-- The direction of the affine span of a family indexed by a
 `Fintype` is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_range [Finite ι] (p : ι → P) :
@@ -91,19 +97,35 @@ instance finiteDimensional_direction_affineSpan_image_of_finite [Finite ι] (p :
     FiniteDimensional k (affineSpan k (p '' s)).direction :=
   finiteDimensional_direction_affineSpan_of_finite k (Set.toFinite _)
 
-/-- An affine-independent family of points in a finite-dimensional affine space is finite. -/
-theorem finite_of_fin_dim_affineIndependent [FiniteDimensional k V] {p : ι → P}
-    (hi : AffineIndependent k p) : Finite ι := by
+/-- An affine-independent family of points `p` generates a finite-dimensional subspace iff `p` is
+finite. -/
+theorem finiteDimensional_iff_finite {p : ι → P} (hi : AffineIndependent k p) :
+    FiniteDimensional k (vectorSpan k (Set.range p)) ↔ Finite ι := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ finiteDimensional_vectorSpan_range _ _⟩
   nontriviality ι; inhabit ι
   rw [affineIndependent_iff_linearIndependent_vsub k p default] at hi
-  letI : IsNoetherian k V := IsNoetherian.iff_fg.2 inferInstance
-  exact
-    (Set.finite_singleton default).finite_of_compl (Set.finite_coe_iff.1 hi.finite_of_isNoetherian)
+  refine (Set.finite_singleton default).finite_of_compl (Set.finite_coe_iff.mp ?_)
+  exact hi.codRestrict (vectorSpan k (Set.range p)) (by simp [vsub_mem_vectorSpan]) |>.finite
 
-/-- An affine-independent subset of a finite-dimensional affine space is finite. -/
-theorem finite_set_of_fin_dim_affineIndependent [FiniteDimensional k V] {s : Set ι} {f : s → P}
-    (hi : AffineIndependent k f) : s.Finite :=
-  @Set.toFinite _ s (finite_of_fin_dim_affineIndependent k hi)
+/-- An affine-independent family of points in a finite-dimensional affine subspace is finite. -/
+@[deprecated finiteDimensional_iff_finite (since := "2026-09-01")]
+theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndependent k p)
+    [FiniteDimensional k (vectorSpan k (Set.range p))] : Finite ι :=
+  finiteDimensional_iff_finite k hi |>.mp inferInstance
+
+/-- An affine-independent subset `s` generates a finite-dimensional subspace iff `s` isfinite. -/
+theorem finiteDimensional_iff_setFinite {s : Set ι} {f : s → P}
+    (hi : AffineIndependent k f) : FiniteDimensional k (vectorSpan k (Set.range f)) ↔ s.Finite := by
+  refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
+  · exact @s.toFinite _ (finiteDimensional_iff_finite k hi |>.mp inferInstance)
+  · have := h.to_subtype
+    exact finiteDimensional_vectorSpan_range k f
+
+/-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
+@[deprecated finiteDimensional_iff_setFinite (since := "2026-09-01")]
+theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
+    [FiniteDimensional k (vectorSpan k (Set.range f))] : s.Finite :=
+  finiteDimensional_iff_setFinite k hi |>.mp inferInstance
 
 variable {k}
 
@@ -168,6 +190,16 @@ theorem AffineIndependent.vectorSpan_eq_top_of_card_eq_finrank_add_one [FiniteDi
     vectorSpan k (Set.range p) = ⊤ :=
   Submodule.eq_top_of_finrank_eq <| hi.finrank_vectorSpan hc
 
+namespace Affine.Simplex
+
+/-- A convenience instance for use when restricting to the affine subspace spanned by the vertices
+of a simplex. -/
+scoped instance fact_finrank_direction_affineSpan_eq {n : ℕ} {s : Simplex k P n} :
+    Fact (finrank k (affineSpan k (Set.range s.points)).direction = n) :=
+  ⟨by rw [direction_affineSpan]; exact s.independent.finrank_vectorSpan (Fintype.card_fin _)⟩
+
+end Affine.Simplex
+
 variable (k)
 
 /-- The `vectorSpan` of `n + 1` points in an indexed family has
@@ -184,6 +216,28 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
   rw [Finset.card_image_of_injective _ (vsub_left_injective p₁), Finset.card_erase_of_mem hp₁,
     tsub_le_iff_right, ← hc]
   apply Finset.card_image_le
+
+lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι} (hsfin : s.Finite)
+    (hs : s.encard ≤ finrank k V) (p : ι → P) : affineSpan k (p '' s) ≠ ⊤ := by
+  obtain rfl | ⟨i, hi⟩ := s.eq_empty_or_nonempty
+  · simp
+  set t := (· -ᵥ p i) '' p '' (s \ {i})
+  have : Fintype t := ((hsfin.sdiff.image p).image _).fintype
+  have hcard : t.toFinset.card < finrank k V := by
+    rw [← ENat.natCast_lt_natCast, ← Set.encard_eq_coe_toFinset_card]
+    calc
+    _ ≤ (s \ {i}).encard := by grind [Set.encard_image_le]
+    _ < _ := (hsfin.sdiff.encard_lt_encard (by grind)).trans_le hs
+  intro htop
+  apply (span_lt_top_of_card_lt_finrank hcard).ne
+  rw [← vectorSpan_image_eq_span_vsub_set_right_ne k p hi,
+    ← direction_affineSpan, htop, direction_top]
+
+lemma affineSpan_range_ne_top_of_card_le_finrank (hι : ENat.card ι ≤ finrank k V) (p : ι → P) :
+    affineSpan k (Set.range p) ≠ ⊤ := by
+  have : Finite ι := ENat.card_lt_top.mp <| hι.trans_lt <| ENat.natCast_lt_top _
+  simpa using
+    affineSpan_image_ne_top_of_encard_le_finrank k Set.finite_univ (by simpa) p
 
 /-- The `vectorSpan` of an indexed family of `n + 1` points has
 dimension at most `n`. -/
@@ -383,7 +437,7 @@ variable (k)
 finite-dimensional. -/
 instance finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional k (vectorSpan k s)]
     (p : P) : FiniteDimensional k (vectorSpan k (insert p s)) := by
-  haveI : FiniteDimensional k (affineSpan k s).direction :=
+  have : FiniteDimensional k (affineSpan k s).direction :=
     (direction_affineSpan k s).symm ▸ inferInstance
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
   exact finiteDimensional_vectorSpan_insert (affineSpan k s) p
@@ -393,7 +447,7 @@ direction of the `affineSpan` is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_insert_set (s : Set P)
     [FiniteDimensional k (affineSpan k s).direction] (p : P) :
     FiniteDimensional k (affineSpan k (insert p s)).direction := by
-  haveI : FiniteDimensional k (vectorSpan k s) := (direction_affineSpan k s) ▸ inferInstance
+  have : FiniteDimensional k (vectorSpan k s) := (direction_affineSpan k s) ▸ inferInstance
   rw [direction_affineSpan]
   infer_instance
 
@@ -827,11 +881,14 @@ protected theorem finiteDimensional [Finite ι] (b : AffineBasis ι k P) : Finit
   (b.basisOf i).finiteDimensional_of_finite
 
 protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Finite ι :=
-  finite_of_fin_dim_affineIndependent k b.ind
+  finiteDimensional_iff_finite k b.ind |>.mp inferInstance
 
-protected theorem finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
+protected theorem setFinite [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
     s.Finite :=
-  finite_set_of_fin_dim_affineIndependent k b.ind
+  finiteDimensional_iff_setFinite k b.ind |>.mp inferInstance
+
+@[deprecated AffineBasis.setFinite (since := "2026-09-01")]
+protected alias finite_set := AffineBasis.setFinite
 
 theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
     Fintype.card ι = Module.finrank k V + 1 :=
@@ -841,7 +898,7 @@ theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
 theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional k V]
     (h : Fintype.card ι = Module.finrank k V + 1) : Nonempty (AffineBasis ι k P) := by
   obtain ⟨s, b, hb⟩ := AffineBasis.exists_affineBasis k V P
-  lift s to Finset P using b.finite_set
+  lift s to Finset P using b.setFinite
   refine ⟨b.reindex <| Fintype.equivOfCardEq ?_⟩
   rw [h, ← b.card_eq_finrank_add_one]
 

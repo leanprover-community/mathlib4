@@ -171,6 +171,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace Computable
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `P` is computable, and if for every `x` there exists an `n` such that `P x n` holds,
 then the function mapping `x` to the minimal such `n` (using `Nat.find`) is computable.
 This formally bridges `Partrec.rfind` with total unbounded search. -/
@@ -211,7 +212,7 @@ theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computa
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold REPred
-  dsimp only []
+  dsimp only
   refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
       Part.ext fun a => ?_

@@ -172,7 +172,7 @@ theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
 theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
     [StrongRankCondition R] :
     Module.rank R S.X₂ = Module.rank R S.X₁ + Module.rank R S.X₃ := by
-  haveI := free_shortExact hS'
+  have := free_shortExact hS'
   rw [Module.Free.rank_eq_card_chooseBasisIndex, Module.Free.rank_eq_card_chooseBasisIndex R S.X₁,
     Module.Free.rank_eq_card_chooseBasisIndex R S.X₃, Cardinal.add_def, Cardinal.eq]
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R S.X₂) (Basis.ofShortExact hS'

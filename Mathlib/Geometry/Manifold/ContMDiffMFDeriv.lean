@@ -161,7 +161,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · apply mdifferentiableWithinAt_extChartAt_symm
       exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
     · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
-  rw [inTangentCoordinates_eq_mfderiv_comp, A,
+  rw [inTangentCoordinates_eq_mfderiv_comp_abuse, A,
     ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
   · exact mfderivWithin_eq_fderivWithin
   · exact mdifferentiableAt_extChartAt (by simpa using h'x)
@@ -278,8 +278,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
   let s' : Set (TangentBundle I M) := (π E (TangentSpace I) ⁻¹' s)
   let b₁ : TangentBundle I M → M := fun p ↦ p.1
   let v : Π (y : TangentBundle I M), TangentSpace% (b₁ y) := fun y ↦ y.2
-  have hv : ContMDiffWithinAt I.tangent I.tangent m (fun y ↦ (v y : TangentBundle I M)) s' x₀ :=
-    contMDiffWithinAt_id
+  have hv : CMDiffAt[s'] m (fun y ↦ (v y : TangentBundle I M)) x₀ := contMDiffWithinAt_id
   let b₂ : TangentBundle I M → M' := f ∘ b₁
   have hb₂ : CMDiffAt[s'] m b₂ x₀ :=
     ((hf (b₁ x₀) hx₀).of_le (le_self_add.trans hmn)).comp _
@@ -360,7 +359,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     · exact ModelWithCorners.uniqueDiffWithinAt_image I
     · exact differentiableAt_id.prodMk (differentiableAt_const _)
   simp +unfoldPartialApp only [Bundle.zeroSection, tangentMap, mfderiv, A,
-    if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
+    ite_eq_left, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
     Function.comp_def, map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
@@ -416,7 +415,6 @@ lemma contMDiff_equivTangentBundleProd :
   exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prodMk
     (contMDiff_snd.contMDiff_tangentMap le_rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
 lemma contMDiff_equivTangentBundleProd_symm :
@@ -525,3 +523,23 @@ lemma contMDiff_equivTangentBundleProd_symm :
     simp [fderivWithin_snd, U]
 
 end EquivTangentBundleProd
+
+variable (I) in
+/-- A version of `VectorField.injective_eval_mdifferentiableAt_sec`
+specialized to vector fields on a `C¹` manifold `M` -/
+lemma injective_eval_mdifferentiableAt_vectorField [IsManifold I 1 M]
+    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace% x →L[𝕜] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_mdifferentiableAt_sec ..
+
+variable (I) in
+/-- A version of `VectorField.injective_eval_contMDiffAt_sec`
+specialized to vector fields on a `C¹` manifold `M` -/
+lemma injective_eval_contMDiffAt_vectorField [IsManifold I 1 M]
+    (V : Type*) [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace% x →L[𝕜] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_contMDiffAt_sec ..
