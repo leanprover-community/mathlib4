@@ -227,6 +227,7 @@ variable {X Y : SSet.{u}}
 
 variable (X) in
 /-- The fundamental groupoid of a simplicial set `X`. -/
+@[implicit_reducible]
 def FundamentalGroupoid : Type u :=
   ((truncation 2).obj X).FundamentalGroupoid
 deriving Groupoid
