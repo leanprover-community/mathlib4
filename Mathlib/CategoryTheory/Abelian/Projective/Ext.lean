@@ -258,16 +258,28 @@ lemma mk₀_comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1
   congr 3
   simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
+-- The `(-1) ^ m` can be explained by the fact that in the complex of morphisms
+-- `HomComplex R.cochainComplex ((singleFunctor C 0).obj S.X₂)`
+-- there is a sign `(-1) ^ m` in the differential `d n m`:
+-- the computation here is consistent with the snake lemma applied to the short exact
+-- sequence of cochain complexes of morphisms from `R.cochainComplex`
+-- to the single complexes `S.X₁`, `S.X₂` and `S.X₃`, see [conrad2000], p. 13
 open CochainComplex.HomComplex in
-lemma extMk_comp_extClass
+lemma extMk_comp_extClass'
     {S : ShortComplex C} (hS : S.ShortExact) (f₃ : R.complex.X n ⟶ S.X₃)
-    (f₂ : R.complex.X n ⟶ S.X₂) (hf₂ : f₂ ≫ S.g = f₃)
     (m : ℕ) (hm : n + 1 = m)
-    (f₁ : R.complex.X m ⟶ S.X₁) (hf₁ : f₁ ≫ S.f = R.complex.d m n ≫ f₂)
+    (f₂ : R.complex.X n ⟶ S.X₂) (hf₂ : f₂ ≫ S.g = f₃)
+    (f₁ : R.complex.X m ⟶ S.X₁) (hf₁ : Int.negOnePow m • f₁ ≫ S.f = R.complex.d m n ≫ f₂)
     (m' : ℕ) (hm' : m + 1 = m') :
     (R.extMk f₃ m hm (by simp [← hf₂, ← reassoc_of% hf₁])).comp hS.extClass hm =
-    R.extMk f₁ m' hm' (by have := hS.mono_f; simp [← cancel_mono S.f, hf₁]) := by
+    R.extMk f₁ m' hm' (by
+      have := hS.mono_f
+      rw [← smul_left_cancel_iff (Int.negOnePow m), smul_smul,
+        Int.units_mul_self, one_smul] at hf₁
+      simp [← cancel_mono S.f, hf₁]) := by
   have := HasDerivedCategory.standard C
+  rw [← smul_left_cancel_iff (Int.negOnePow m), smul_smul,
+    Int.units_mul_self, one_smul] at hf₁
   ext
   simp only [Ext.comp_hom, extMk_hom, DerivedCategory.singleFunctorIsoCompQ_hom_app,
     Category.id_comp, DerivedCategory.singleFunctorIsoCompQ_inv_app,
@@ -287,9 +299,10 @@ lemma extMk_comp_extClass
     Cocycle.equivHomShift_symm_shiftedHomComp, Cocycle.equivHomShift_symm_shiftedHomComp,
     ← CohomologyClass.toShiftedHom_mk, ← CohomologyClass.toShiftedHom_mk]
   congr 1
+  symm
   rw [← sub_eq_zero, ← CohomologyClass.mk_sub, CohomologyClass.mk_eq_zero_iff,
     mem_coboundaries_iff _ n (by lia)]
-  refine ⟨Int.negOnePow n • ((Cochain.toSingleEquiv (neg_add_cancel _)).symm
+  refine ⟨((Cochain.toSingleEquiv (neg_add_cancel _)).symm
     ((R.cochainComplexXIso (-n) n (by lia)).hom ≫ f₂)).comp (mappingCocone.inl _) (by lia), ?_⟩
   dsimp
   simp only [Cocycle.comp_coe, Cocycle.toSingleMk_coe]
@@ -308,13 +321,24 @@ lemma extMk_comp_extClass
           (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 0,
         dsimp% mappingCocone.liftShortComplex_f_snd_v
           (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 0 (-1) (by lia),
-        smul_smul, ← Int.negOnePow_add, Int.negOnePow_odd (n + m) (by grind),
         Cochain.toSingleMk_v' _ (neg_add_cancel (n : ℤ)) (p + 1) 0 (by lia) (by lia),
         Cochain.toSingleMk_v' _ (neg_add_cancel (m : ℤ)) p 0 (by lia) (by lia),
         HomologicalComplex.single_map_f_self, HomologicalComplex.singleObjXSelf,
         reassoc_of% hf₁]
-    · --obtain rfl : p = 1-m := by lia
-      sorry
+    · simp [mappingCocone.ext_to_iff _ _ _ (add_neg_cancel 1),
+        δ_v n m (by lia) _ p 1 hpq 0 (p + 1) (by lia) (by lia),
+        Cochain.toSingleEquiv_symm_apply,
+        Cochain.toSingleMk_v_eq_zero _ _ _ _ _ (show p ≠ -m by lia),
+        Cochain.comp_v (n₁ := n) (n₂ := 1) (n₁₂ := m) _ _ (by lia) p 0 1 (by lia) (by lia),
+        Cocycle.equivHomShift_apply,
+        Cochain.toSingleMk_v_eq_zero _ _ _ _ _ (show p + 1 ≠ -n by lia),
+        Cochain.rightUnshift_v _ _ (zero_add 1) 0 1 (by lia) _ (zero_add 0),
+        mappingCocone.inl_v_d_assoc _ _ _ (zero_add 1),
+        dsimp% mappingCocone.triangleδ_f_fst_f _ 0,
+        dsimp% mappingCocone.triangleδ_f_snd_v _ 0, ← hf₂,
+        HomologicalComplex.single_map_f_self,
+        Cochain.toSingleMk_v' _ (neg_add_cancel (n : ℤ)) p 0 (by lia) (by lia),
+        HomologicalComplex.singleObjXSelf]
   · apply IsZero.eq_of_tgt
     rw [mappingCocone.isZero_X_iff _ q (q - 1) (by lia)]
     constructor
