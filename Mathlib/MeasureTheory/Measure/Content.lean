@@ -84,6 +84,7 @@ instance : Inhabited (Content G) :=
 
 namespace Content
 
+@[macro_inline]
 instance : FunLike (Content G) (Compacts G) ℝ≥0∞ where
   coe μ s := μ.toFun s
   coe_injective := by
