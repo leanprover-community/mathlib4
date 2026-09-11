@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Real.Star
+public import Mathlib.Data.Int.Interval
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Vec
@@ -41,7 +43,7 @@ order on matrices on `ℝ` or `ℂ`.
 -- assert_not_exists MonoidAlgebra
 assert_not_exists NormedGroup
 
-open Matrix
+open Function Matrix
 
 namespace Matrix
 
@@ -281,7 +283,7 @@ theorem _root_.Matrix.posDef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef 
   ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 lemma diag_pos [Nontrivial R] {A : Matrix n n R} (hA : A.PosDef) {i : n} : 0 < A i i := by
-  classical simpa [trace] using hA.2 (x := Finsupp.single i 1)
+  simpa [trace] using hA.2 (x := Finsupp.single i 1)
 
 end PosDef
 
@@ -347,6 +349,33 @@ protected lemma zpow [StarOrderedRing R'] [DecidableEq n]
 
 lemma trace_nonneg [AddLeftMono R] {A : Matrix n n R} (hA : A.PosSemidef) : 0 ≤ A.trace :=
   Fintype.sum_nonneg fun _ ↦ hA.diag_nonneg
+
+/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
+theorem dotProduct_mulVec_zero_iff [StarOrderedRing R'] [NoZeroDivisors R']
+    {A : Matrix n n R'} (hA : A.PosSemidef) {x : n → R'} :
+    star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
+  refine ⟨fun hx ↦ ?_, fun hx ↦ by simp [hx]⟩
+  suffices h : ∀ y, star x ⬝ᵥ A *ᵥ y = 0 by
+    refine dotProduct_star_self_eq_zero.mp ?_
+    simpa [dotProduct_mulVec, star_mulVec, hA.isHermitian.eq] using h (A *ᵥ x)
+  intro y
+  set z := star x ⬝ᵥ A *ᵥ y with hz
+  suffices h : star z * z ≤ 0 by simpa using le_antisymm h (by simp)
+  calc star z * z ≤ 2 • (star z * z) + star z * z * (star y ⬝ᵥ A *ᵥ y) := by
+        rw [two_smul, add_assoc]
+        apply le_add_of_nonneg_right (add_nonneg (by simp) _)
+        exact mul_nonneg (by simp) (hA.dotProduct_mulVec_nonneg y)
+    _ ≤ 0 := neg_nonneg.mp <| le_of_le_of_eq
+        (hA.dotProduct_mulVec_nonneg (-(1 + star y ⬝ᵥ A *ᵥ y) • x + star z • y)) <| by
+      simp [mulVec_add, mulVec_smul, hx, ← hz, ← hA.isHermitian.star_dotProduct_mulVec_comm x y,
+        hA.isHermitian.star_dotProduct_mulVec_comm y y]
+      ring
+
+/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
+theorem toLinearMap₂'_zero_iff [StarOrderedRing R'] [NoZeroDivisors R'] [DecidableEq n]
+    {A : Matrix n n R'} (hA : PosSemidef A) {x : n → R'} :
+    Matrix.toLinearMap₂' R' A (star x) x = 0 ↔ A *ᵥ x = 0 := by
+  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff
 
 end PosSemidef
 
@@ -467,23 +496,60 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
   classical
   simpa using mul_mul_conjTranspose_same .one hA
 
-theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
-    (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
-  refine of_dotProduct_mulVec_pos hM fun x hx ↦ ?_
-  simp only [toQuadraticMap', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
-    toLinearMap₂'_apply'] at hMq
-  apply hMq x hx
+theorem of_toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+    [DecidableEq n] {M : Matrix n n R} (hM : M.IsSymm)
+    (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
+  refine of_dotProduct_mulVec_pos (by simpa) fun x hx ↦ ?_
+  simpa [toQuadraticForm', toLinearMap₂'_apply'] using hMq x hx
 
-theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
-    M.toQuadraticMap'.PosDef := by
+theorem toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+    [DecidableEq n] {M : Matrix n n R} (hM : M.PosDef) :
+    M.toQuadraticForm'.PosDef := by
   intro x hx
-  simp only [Matrix.toQuadraticMap', LinearMap.BilinMap.toQuadraticMap_apply,
-    toLinearMap₂'_apply']
-  apply hM.dotProduct_mulVec_pos hx
+  simpa [Matrix.toQuadraticForm', toLinearMap₂'_apply'] using hM.dotProduct_mulVec_pos hx
+
+/-- See also `LinearMap.isPosSemidef_iff_posSemidef_toMatrix` for the semi-definite case. -/
+theorem _root_.LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix
+    {R M : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+    [AddCommGroup M] [Module R M] [DecidableEq n]
+    (b : Module.Basis n R M) (B : LinearMap.BilinForm R M) (hB_symm : B.IsSymm) :
+    B.toQuadraticMap.PosDef ↔ (B.toMatrix b).PosDef := by
+  have aux (i j : n) (s t : R) : t * B (b i) (b j) * s = t * (s * B (b j) (b i)) := by
+    grind [hB_symm.eq (b i) (b j)]
+  refine ⟨fun h ↦ ⟨?_, fun v hv ↦ ?_⟩, fun h v hv ↦ ?_⟩
+  · simp [isHermitian_iff_isSymm, IsSymm.ext_iff, hB_symm.eq (b _) (b _)]
+  · simpa [Finsupp.linearCombination_apply, map_finsuppSum, Finsupp.mul_sum, ← aux] using
+      h _ (b.repr.symm.map_ne_zero_iff.mpr hv)
+  · rw [B.toQuadraticMap_apply, ← b.linearCombination_repr (x := v)]
+    simpa [Finsupp.linearCombination_apply, map_finsuppSum, Finsupp.mul_sum, aux]
+      using h.2 (b.repr.map_ne_zero_iff.mpr hv)
 
 lemma trace_pos [Nontrivial R] [IsOrderedCancelAddMonoid R] [Nonempty n] {A : Matrix n n R}
     (hA : A.PosDef) : 0 < A.trace :=
   Finset.sum_pos (fun _ _ ↦ hA.diag_pos) Finset.univ_nonempty
+
+theorem det_pos [DecidableEq n] [Nontrivial R'] [IsOrderedRing R'] [PosMulReflectLT R']
+    {A : Matrix n n R'} (hA : A.PosDef) :
+    0 < A.det := by
+  suffices ∀ k (N : Matrix (Fin k) (Fin k) R'), N.PosDef → 0 < N.det by
+    rw [← det_submatrix_equiv_self (Fintype.equivFin n).symm A]
+    exact this _ _ (hA.submatrix <| Equiv.injective _)
+  intro k
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    intro N hN
+    set M := N.submatrix Fin.succ Fin.succ with M_def
+    set v : Fin (k + 1) → R' := N.adjugate.col 0 with v_def
+    have hM : M.PosDef := hN.submatrix <| Fin.succ_injective k
+    have hvM : v 0 = M.det := by simp [M_def, v_def, adjugate_fin_succ_eq_det_submatrix]
+    replace ih : 0 < M.det := ih _ hM
+    suffices 0 < M.det * N.det from lt_of_mul_lt_mul_left (by grind) ih.le
+    have hNv : N *ᵥ v = fun i ↦ if i = 0 then N.det else 0 := by
+      ext; simp [v_def, ← col_mul_eq_mulVec_col, mul_adjugate, Matrix.one_apply]
+    have hv₀ : v ≠ 0 := fun contra ↦ ih.ne' <| by simp [← hvM, contra]
+    have hM_det : star M.det = M.det := by rw [← det_conjTranspose, hM.1]
+    simpa [hNv, dotProduct, hvM, hM_det] using hN.dotProduct_mulVec_pos hv₀
 
 section Field
 variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
@@ -568,9 +634,41 @@ theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert fromBlocks₁₁ Bᴴ A hD <;> simp
+  convert! fromBlocks₁₁ Bᴴ A hD <;> simp
 
 end SchurComplement
+
+/-- The **Cauchy-Schwarz inequality** for a positive definite matrix. -/
+lemma star_dotProduct_mulVec_mul_le {R : Type*}
+    [CommRing R] [PartialOrder R] [StarRing R] [IsOrderedRing R] [PosMulReflectLE R]
+    {A : Matrix n n R} (hA : A.PosDef) (x y : n → R) :
+    letI xAy := star x ⬝ᵥ A *ᵥ y
+    letI xAa := star x ⬝ᵥ A *ᵥ x
+    letI yAy := star y ⬝ᵥ A *ᵥ y
+    (star xAy) * xAy ≤ xAa * yAy := by
+  rcases eq_or_ne y 0 with rfl | hy; · simp
+  have := hA.posSemidef.dotProduct_mulVec_nonneg
+    ((star y ⬝ᵥ A *ᵥ y) • x - star (star x ⬝ᵥ A *ᵥ y) • y)
+  refine le_of_mul_le_mul_left (sub_nonneg.mp (this.trans_eq ?_)) (hA.dotProduct_mulVec_pos hy)
+  simp [hA.isHermitian.star_dotProduct_mulVec_comm, mulVec_sub, mulVec_smul]
+  ring
+
+lemma finite_setOfPred_dotProduct_mulVec_le {A : Matrix n n ℤ} (hA : A.PosDef) (r : ℤ) :
+    {v | v ⬝ᵥ A *ᵥ v ≤ r}.Finite := by
+  classical
+  set B : ℤ := ∑ j, |A j j * r| with hB
+  refine Set.Finite.of_finite_image ?_ (mulVec_injective_of_det_ne_zero hA.det_pos.ne').injOn
+  refine (Set.Finite.pi fun _ : n ↦ Set.finite_Icc (-B) B).subset ?_
+  rintro - ⟨v, hv, rfl⟩ j
+  have h₁ : ((A *ᵥ v) j) ^ 2 ≤ (A j j) * (v ⬝ᵥ A *ᵥ v) := by
+    simpa [pow_two] using hA.star_dotProduct_mulVec_mul_le (Pi.single j 1) v
+  have h₂ : (A j j) * (v ⬝ᵥ A *ᵥ v) ≤ B := by
+    refine le_trans ?_ (Finset.single_le_sum (fun i _ ↦ abs_nonneg _) (Finset.mem_univ j))
+    exact le_trans (mul_le_mul_of_nonneg_left hv hA.diag_pos.le) (le_abs_self _)
+  simp_rw [Set.mem_univ, Set.mem_Icc, forall_const, ← abs_le]
+  refine le_trans ?_ (h₁.trans h₂)
+  rw [← sq_abs]
+  exact Int.le_self_sq _
 
 end PosDef
 
@@ -578,20 +676,19 @@ end Matrix
 
 namespace QuadraticForm
 
-open QuadraticMap
 
 variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
-  rw [← toQuadraticMap_associated ℝ Q,
-    ← (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)]
+  rw [← Q.toQuadraticMap_associated ℝ,
+    ← (LinearMap.toMatrix₂' ℝ).left_inv (Q.associatedHom ℝ)]
   exact hQ.toQuadraticForm'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
-  rw [← toQuadraticMap_associated ℝ Q, ←
-    (LinearMap.toMatrix₂' ℝ).left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
+  rw [← Q.toQuadraticMap_associated ℝ,
+    ← (LinearMap.toMatrix₂' ℝ).left_inv (Q.associatedHom ℝ)] at hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 
 end QuadraticForm

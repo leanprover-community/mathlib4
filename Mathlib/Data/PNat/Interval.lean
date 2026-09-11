@@ -93,6 +93,7 @@ theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = b - a := by
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← card_uIcc, Fintype.card_ofFinset]
 

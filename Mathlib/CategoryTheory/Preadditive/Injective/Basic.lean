@@ -105,7 +105,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Injective P ↔ Injective Q :=
 /-- The axiom of choice says that every nonempty type is an injective object in `Type`. -/
 instance (X : Type u₁) [Nonempty X] : Injective X where
   factors g f mono :=
-    ⟨TypeCat.ofHom fun z => by
+    ⟨↾fun z => by
       classical
       exact
           if h : z ∈ Set.range f then g (Classical.choose h) else Nonempty.some inferInstance, by
@@ -122,7 +122,7 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := WithBot X
         injective := inferInstance
-        f := TypeCat.ofHom WithBot.some
+        f := ↾WithBot.some
         mono := by
           rw [mono_iff_injective]
           exact WithBot.coe_injective }
@@ -135,7 +135,6 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
     refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
@@ -182,7 +181,7 @@ theorem projective_iff_injective_op {P : C} : Projective P ↔ Injective (op P) 
 theorem injective_iff_preservesEpimorphisms_yoneda_obj (J : C) :
     Injective J ↔ (yoneda.obj J).PreservesEpimorphisms := by
   rw [injective_iff_projective_op, Projective.projective_iff_preservesEpimorphisms_coyoneda_obj]
-  exact Functor.preservesEpimorphisms.iso_iff (Coyoneda.objOpOp _)
+  exact Functor.PreservesEpimorphisms.iso_iff (Coyoneda.objOpOp _)
 
 section Adjunction
 
@@ -191,6 +190,7 @@ open CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
@@ -275,7 +275,6 @@ namespace Adjunction
 
 variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
   ⟨fun {X} {Y} f g => by
@@ -285,12 +284,11 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by
     intro
-    haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
+    have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
     rcases hI.factors (G.map f) (G.map g) with ⟨w,h⟩
     use inv (adj.counit.app _) ≫ F.map w ≫ adj.counit.app _
     exact G.map_injective (by simpa)⟩
@@ -303,7 +301,7 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
   injective := adj.map_injective _ I.injective
   f := G.map I.f
   mono := by
-    haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits; infer_instance
+    have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits; infer_instance
 
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monomorphisms and is faithful,
   then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.

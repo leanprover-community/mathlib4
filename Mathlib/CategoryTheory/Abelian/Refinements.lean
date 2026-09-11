@@ -123,6 +123,7 @@ lemma ShortComplex.eq_liftCycles_homologyπ_up_to_refinements {A : C} (γ : A �
   congr 1
   rw [← cancel_mono S.iCycles, liftCycles_i]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f : X ⟶ Y}
     {c : CokernelCofork f} (hc : IsColimit c) {A : C} (y : A ⟶ Y) :
     y ≫ c.π = 0 ↔ ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ X), π ≫ y = x ≫ f := by
@@ -135,7 +136,6 @@ lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f :
   · rintro ⟨A', π, hπ, x, fac⟩
     simp [← cancel_epi π, reassoc_of% fac, condition]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ShortComplex.liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
     {A : C} (x₂ : A ⟶ S.X₂) (hx₂ : x₂ ≫ S.g = 0) :
     S.liftCycles x₂ hx₂ ≫ S.homologyπ = 0 ↔

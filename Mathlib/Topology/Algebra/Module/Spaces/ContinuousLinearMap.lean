@@ -5,7 +5,9 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 /-!
 # Topology of bounded convergence on the space of continuous linear map
@@ -35,7 +37,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 
 ## Main statements
 
-* `ContinuousLinearMap.topologicalAddGroup` and
+* `ContinuousLinearMap.isTopologicalAddGroup` and
   `ContinuousLinearMap.continuousSMul` register these facts as instances for the special
   case of bounded convergence.
 
@@ -70,9 +72,11 @@ instance topologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] :
     TopologicalSpace (E →SL[σ] F) :=
   fast_instance% UniformConvergenceCLM.instTopologicalSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
-instance topologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
+instance isTopologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
     IsTopologicalAddGroup (E →SL[σ] F) :=
   UniformConvergenceCLM.instIsTopologicalAddGroup σ F _
+
+@[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
@@ -298,14 +302,17 @@ theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x
     f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
 
 /-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
-def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
-  (coeLMₛₗ σ₂₃).comp L.toLinearMap
+@[simps -isSimp apply]
+def toLinearMap₁₂ : (E →SL[σ₁₃] F →SL[σ₂₃] G) →ₗ[𝕜₃] E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G where
+  toFun L := (coeLMₛₗ σ₂₃).comp L.toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
-@[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+@[simp] lemma toLinearMap₁₂_apply_apply_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
     L.toLinearMap₁₂ v w = L v w := rfl
 
 lemma toLinearMap₁₂_injective :
-    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)).Injective := by
+    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃) : _ → _).Injective := by
   simp [Function.Injective, LinearMap.ext_iff, ← ContinuousLinearMap.ext_iff]
 
 lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
@@ -382,7 +389,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
-  convert isUniformEmbedding_toUniformOnFun using 4 with s
+  convert! isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
 theorem uniformContinuous_restrictScalars :
@@ -501,13 +508,11 @@ spaces of continuous (semi)linear maps. -/
 @[simps apply symm_apply toLinearEquiv_apply toLinearEquiv_symm_apply]
 def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
     (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
-{ e₁₂.arrowCongrEquiv e₄₃ with
+{ e₁₂.arrowCongrEquivₛₗ e₄₃ with
     -- given explicitly to help `simps`
     toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
     -- given explicitly to help `simps`
     invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
-    map_add' := fun f g => by simp only [add_comp, comp_add]
-    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
     continuous_toFun := ((postcomp F e₄₃.toContinuousLinearMap).comp
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp

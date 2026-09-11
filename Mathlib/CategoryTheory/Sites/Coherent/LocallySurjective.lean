@@ -57,6 +57,7 @@ lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ 
     rw [regularTopology.mem_sieves_iff_hasEffectiveEpi]
     exact ⟨X', π, h, h'⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
@@ -67,7 +68,6 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
   rw [mem_sieves_iff_contains_colimit_cofan] at h
   obtain ⟨α, _, Y, π, h, h'⟩ := h
   let y : (a : α) → (F.obj ⟨Y a⟩) := fun a ↦ (h' a).choose
-  let _ : Fintype α := Fintype.ofFinite _
   let ht := (Types.productLimitCone (fun a ↦ F.obj ⟨Y a⟩)).isLimit
   let ht' := (Functor.Initial.isLimitWhiskerEquiv (Discrete.opposite α).inverse
     (Cocone.op (Cofan.mk X π))).symm h.some.op
@@ -103,6 +103,7 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.hom.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
@@ -114,7 +115,6 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
     obtain ⟨α, _, Z, π, h, h'⟩ := h
     rw [mem_sieves_iff_hasEffectiveEpi]
     let x : (a : α) → (F.obj ⟨Z a⟩) := fun a ↦ (h' a).choose
-    let _ : Fintype α := Fintype.ofFinite _
     let i' : ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
       (PreservesProduct.iso F _).symm ≪≫ F.mapIso (opCoproductIsoProduct _).symm
     refine ⟨∐ Z, Sigma.desc π, inferInstance, i'.hom x, ?_⟩
@@ -126,7 +126,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.trans_hom, Iso.symm_hom,
       Functor.mapIso_inv, comp_apply, ← f.naturality_apply (Sigma.ι Z a).op, i']
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
-    convert this
+    convert! this
     · rw [← Functor.map_comp_apply, opCoproductIsoProduct_inv_comp_ι, ← piComparison_comp_π]
       change ((PreservesProduct.iso F _).hom ≫ _) _ = _
       have := Types.productIso_hom_comp_eval (fun a ↦ F.obj (op (Z a))) a

@@ -54,12 +54,12 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
-variable (H K : Subgroup G) {k : Set G}
+variable (H K : Subgroup G)
 
 open Set
 
@@ -82,7 +82,7 @@ theorem coe_comap (K : Subgroup N) (f : G →* N) : (K.comap f : Set G) = f ⁻�
 theorem mem_comap {K : Subgroup N} {f : G →* N} {x : G} : x ∈ K.comap f ↔ f x ∈ K :=
   Iff.rfl
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem comap_mono {f : G →* N} {K K' : Subgroup N} : K ≤ K' → comap f K ≤ comap f K' :=
   preimage_mono
 
@@ -158,11 +158,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
     x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
   Set.mem_image_equiv
 
--- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100, nolint simpNF)]
+@[to_additive (attr := simp 1100)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image
@@ -373,6 +369,10 @@ theorem subgroupOf_eq_top {H K : Subgroup G} : H.subgroupOf K = ⊤ ↔ K ≤ H 
 variable (H : Subgroup G)
 
 @[to_additive]
+instance [IsMulCommutative G] : IsMulCommutative H :=
+  IsMulCommutative.of_setLike_mul_comm fun a _ b _ ↦ mul_comm' a b
+
+@[to_additive]
 instance map_isMulCommutative (f : G →* G') [IsMulCommutative H] : IsMulCommutative (H.map f) := by
   refine .of_setLike_mul_comm ?_
   rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
@@ -497,9 +497,17 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
 
 @[to_additive]
-lemma subgroupComap_surjective_of_surjective (f : G →* G') (H' : Subgroup G') (hf : Surjective f) :
+lemma subgroupComap_surjective (f : G →* G') (H' : Subgroup G') (hf : Surjective f) :
     Surjective (f.subgroupComap H') :=
-  f.submonoidComap_surjective_of_surjective H'.toSubmonoid hf
+  f.submonoidComap_surjective H'.toSubmonoid hf
+
+@[to_additive (attr := deprecated (since := "2026-09-09"))]
+alias subgroupComap_surjective_of_surjective := subgroupComap_surjective
+
+@[to_additive]
+lemma subgroupComap_injective (f : G →* G') (H' : Subgroup G') (hf : Injective f) :
+    Injective (f.subgroupComap H') :=
+  f.submonoidComap_injective H'.toSubmonoid hf
 
 /-- The `MonoidHom` from a subgroup to its image. -/
 @[to_additive (attr := simps!) /-- the `AddMonoidHom` from an additive subgroup to its image -/]
@@ -510,6 +518,11 @@ def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
 theorem subgroupMap_surjective (f : G →* G') (H : Subgroup G) :
     Function.Surjective (f.subgroupMap H) :=
   f.submonoidMap_surjective H.toSubmonoid
+
+@[to_additive]
+theorem subgroupMap_injective (f : G →* G') (H : Subgroup G) (hf : Function.Injective f) :
+    Function.Injective (f.subgroupMap H) :=
+  f.submonoidMap_injective hf H.toSubmonoid
 
 end MonoidHom
 
@@ -523,7 +536,7 @@ group are equal. -/
       /-- Makes the identity additive isomorphism from a proof
       two subgroups of an additive group are equal. -/]
 def subgroupCongr (h : H = K) : H ≃* K :=
-  { Equiv.setCongr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 @[to_additive (attr := simp)]
 lemma subgroupCongr_apply (h : H = K) (x) :

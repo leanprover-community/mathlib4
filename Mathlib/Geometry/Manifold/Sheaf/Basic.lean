@@ -70,14 +70,14 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
     have : ChartedSpace.LiftPropAt P f (Opens.inclusion hUV x') := by
       rw [hG.liftPropAt_iff_comp_inclusion hUV]
       exact hU x'
-    convert this
+    convert! this
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
 a sheaf of types on `M` which, to each open set `U` in `M`, associates the type of bundled
 functions from `U` to `M'` satisfying the lift of `P`. -/
 def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) :
-    TopCat.Sheaf (Type u) (TopCat.of M) :=
+    TopCat.Sheaf (Type u) ↧M :=
   TopCat.subsheafToTypes (hG.localPredicate M M')
 
 instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)

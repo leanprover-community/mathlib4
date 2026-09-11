@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.IsEmpty.Basic
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -26,41 +27,45 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
-  ⟨refl_of r⟩
+  inferInstance
 
-@[deprecated (since := "2026-01-09")] alias IsRefl.swap := Std.Refl.swap
-
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
-  ⟨irrefl_of r⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
-  ⟨fun _ _ _ h₁ h₂ => trans_of r h₂ h₁⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
-  ⟨fun _ _ h₁ h₂ => _root_.antisymm h₂ h₁⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
-  ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
+  inferInstance
 
-@[deprecated (since := "2026-01-05")] alias IsAsymm.swap := Std.Asymm.swap
-
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
-  ⟨fun a b => (total_of r a b).symm⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Trichotomous.swap (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (swap r) :=
-  ⟨fun a b hab hba ↦ trichotomous a b hba hab⟩
+  inferInstance
 
-@[deprecated (since := "2026-01-24")] alias IsTrichotomous.swap := Std.Trichotomous.swap
-
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
-  { Std.Refl.swap r, IsTrans.swap r with }
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
-  { Std.Irrefl.swap r, IsTrans.swap r with }
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
-  { IsPreorder.swap r, Std.Antisymm.swap r with }
+  inferInstance
 
 theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
@@ -103,8 +108,9 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toMax := maxOfLe,
     toDecidableLE := hD }
 
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
-  { Std.Trichotomous.swap r, IsStrictOrder.swap r with }
+  inferInstance
 
 /-! ### Order connection -/
 
@@ -139,22 +145,25 @@ theorem InvImage.trichotomous [Std.Trichotomous r] {f : β → α} (h : Function
     Std.Trichotomous (InvImage r f) :=
   ⟨fun {a b} hab hba ↦ h <| Std.Trichotomous.trichotomous (f a) (f b) hab hba⟩
 
-@[deprecated (since := "2026-01-24")] alias InvImage.isTrichotomous := InvImage.trichotomous
-
 instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f) where
   asymm a b h h2 := Std.Asymm.asymm (f a) (f b) h h2
 
 /-! ### Well-order -/
 
+-- TODO: upstream this attribute to core?
+attribute [class] WellFounded
 
 /-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
-@[mk_iff] class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
+@[deprecated WellFounded (since := "2026-09-07"), mk_iff]
+class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
 
+attribute [deprecated "simply use `WellFounded`" (since := "2026-09-07")] isWellFounded_iff
+
 instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
-    IsWellFounded α WellFoundedRelation.rel :=
-  { h with }
+    @WellFounded α WellFoundedRelation.rel :=
+  h.wf
 
 theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
@@ -191,59 +200,63 @@ theorem WellFounded.psigma_skipLeft (α : Type u) {β : Type v} {s : β → β �
 
 end PSigma
 
-namespace IsWellFounded
+namespace WellFounded
 
-variable (r) [IsWellFounded α r]
+-- The declarations in this section are variations on existing declarations,
+-- but using `WellFounded` as a type class parameter
+
+variable (r : α → α → Prop) [i : WellFounded r]
 
 /-- Induction on a well-founded relation. -/
-theorem induction {motive : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → motive y) → motive x) :
+theorem induction' {motive : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → motive y) → motive x) :
     motive a :=
-  wf.induction _ ind
+  i.induction _ ind
 
 /-- All values are accessible under the well-founded relation. -/
-theorem apply : ∀ a, Acc r a :=
-  wf.apply
+theorem apply' : ∀ a, Acc r a :=
+  i.apply
 
 /-- Creates data, given a way to generate a value from all that compare as less under a well-founded
-relation. See also `IsWellFounded.fix_eq`. -/
-def fix {motive : α → Sort*} : (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) →
+relation. See also `WellFounded.fix_eq`. -/
+def fix' {motive : α → Sort*} : (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) →
     ∀ x : α, motive x :=
-  wf.fix
+  i.fix
 
-/-- The value from `IsWellFounded.fix` is built from the previous ones as specified. -/
-theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) :
-    ∀ x, fix r ind x = ind x fun y _ => fix r ind y :=
-  wf.fix_eq ind
+/-- The value from `WellFounded.fix'` is built from the previous ones as specified. -/
+theorem fix'_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) :
+    ∀ x, fix' r ind x = ind x fun y _ => fix' r ind y :=
+  i.fix_eq ind
 
 /-- Derive a `WellFoundedRelation` instance from an `isWellFounded` instance. -/
 @[instance_reducible]
 def toWellFoundedRelation : WellFoundedRelation α :=
-  ⟨r, IsWellFounded.wf⟩
+  ⟨r, i⟩
 
-end IsWellFounded
+end WellFounded
 
-theorem WellFounded.asymmetric {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b) :
+theorem WellFounded.asymmetric {α : Sort*} {r : α → α → Prop} [h : WellFounded r] (a b) :
     r a b → ¬r b a :=
   @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _
 
-theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b c) :
+theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} [h : WellFounded r] (a b c) :
     r a b → r b c → ¬r c a :=
   @WellFoundedRelation.asymmetric₃ _ ⟨_, h⟩ _ _ _
 
 -- see Note [lower instance priority]
-instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : Std.Asymm r :=
-  ⟨IsWellFounded.wf.asymmetric⟩
+instance (priority := 100) (r : α → α → Prop) [WellFounded r] : Std.Asymm r :=
+  ⟨WellFounded.asymmetric⟩
 
-instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
-  ⟨i.wf.transGen⟩
+instance (r : α → α → Prop) [i : WellFounded r] : WellFounded (Relation.TransGen r) :=
+  WellFounded.transGen i
 
 /-- A class for a well-founded relation `<`. -/
 @[to_dual /-- A class for a well-founded relation `>`. -/]
 abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
-  IsWellFounded α (· < ·)
+  @WellFounded α (· < ·)
 
+-- TODO: deprecate
 @[to_dual wellFounded_gt]
-lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
+lemma wellFounded_lt [LT α] [i : WellFoundedLT α] : @WellFounded α (· < ·) := i
 
 -- See note [lower instance priority]
 @[to_dual]
@@ -252,18 +265,22 @@ instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFou
 
 @[to_dual]
 theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
+  .rfl
 
 /-- A well order is a well-founded linear order. -/
+@[wikidata Q659746]
 class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
-    extends IsWellFounded α r, Std.Trichotomous r
+    extends Std.Trichotomous r where
+  [wf : WellFounded r]
+
+attribute [instance] IsWellOrder.wf
 
 instance (r) [IsWellOrder α r] : IsTrans α r where
   trans a b c hab hbc := by
     rcases trichotomous_of r a c with (hac | rfl | hca)
     · exact hac
     · exact asymm_of r hab hbc |>.elim
-    · exact IsWellFounded.wf.asymmetric₃ a b c hab hbc hca |>.elim
+    · exact IsWellOrder.wf.asymmetric₃ a b c hab hbc hca |>.elim
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
@@ -277,12 +294,12 @@ variable [LT α] [WellFoundedLT α]
 @[to_dual /-- Inducts on a well-founded `>` relation. -/]
 theorem induction {motive : α → Prop} (a : α)
     (ind : ∀ x, (∀ y, y < x → motive y) → motive x) : motive a :=
-  IsWellFounded.induction _ _ ind
+  WellFounded.induction' _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
 @[to_dual /-- All values are accessible under the well-founded `>`. -/]
 theorem apply : ∀ a : α, Acc (· < ·) a :=
-  IsWellFounded.apply _
+  WellFounded.apply' _
 
 /-- Creates data, given a way to generate a value from all that compare as lesser. See also
 `WellFoundedLT.fix_eq`. -/
@@ -290,25 +307,26 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
 See also `WellFoundedGT.fix_eq`. -/]
 def fix {motive : α → Sort*} : (ind : ∀ x : α, (∀ y : α, y < x → motive y) → motive x) →
     ∀ x : α, motive x :=
-  IsWellFounded.fix (· < ·)
+  WellFounded.fix' (· < ·)
 
 /-- The value from `WellFoundedLT.fix` is built from the previous ones as specified. -/
 @[to_dual /-- The value from `WellFoundedGT.fix` is built from the successive ones as specified. -/]
 theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, y < x → motive y) → motive x) :
     ∀ x, fix ind x = ind x fun y _ => fix ind y :=
-  IsWellFounded.fix_eq _ ind
+  WellFounded.fix'_eq _ ind
 
+-- TODO: rename to `WellFoundedRelation.ofWellFoundedLT`
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
   /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
 def toWellFoundedRelation : WellFoundedRelation α :=
-  IsWellFounded.toWellFoundedRelation (· < ·)
+  WellFounded.toWellFoundedRelation (· < ·)
 
 end WellFoundedLT
 
-open Classical in
+open scoped Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
   linearOrderOfSTO r
 
@@ -331,9 +349,9 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   wf := wellFounded_of_isEmpty r
   trichotomous := isEmptyElim
 
-instance Prod.Lex.instIsWellFounded [IsWellFounded α r] [IsWellFounded β s] :
-    IsWellFounded (α × β) (Prod.Lex r s) :=
-  ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
+instance Prod.Lex.instWellFounded [i₁ : WellFounded r] [i₂ : WellFounded s] :
+    WellFounded (Prod.Lex r s) :=
+  i₁.prod_lex i₂
 
 instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
   trichotomous := fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ hab hba ↦ by
@@ -343,31 +361,27 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
       (mt (Prod.Lex.right a₁) hab) (mt (Prod.Lex.right a₁) hba)
     rfl
 
-instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
-  ⟨InvImage.wf f IsWellFounded.wf⟩
+instance (r : α → α → Prop) [i : WellFounded r] (f : β → α) : WellFounded (InvImage r f) :=
+  InvImage.wf f i
 
-instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
-  ⟨(measure f).wf⟩
+instance (f : α → ℕ) : WellFounded (InvImage (· < ·) f) :=
+  (measure f).wf
 
-theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
-    (h : Subrelation s r) : IsWellFounded α s :=
-  ⟨h.wf IsWellFounded.wf⟩
+theorem Subrelation.isWellFounded (r : α → α → Prop) [i : WellFounded r] {s : α → α → Prop}
+    (h : Subrelation s r) : WellFounded s :=
+  h.wf i
 
 @[to_dual]
 instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) where
-  wf := by
-    suffices h : ∀ a, ∀ a' ≤ a, ∀ b, Acc (· < ·) (a', b) from ⟨fun x => h x.1 x.1 le_rfl x.2⟩
-    intro a a' ha b
-    induction a using WellFoundedLT.induction generalizing a' b with | ind a iha
-    induction b using WellFoundedLT.induction generalizing a' with | ind b ihb
-    refine Acc.intro (a', b) fun x hx => ?_
-    obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
-    · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
-    · exact ihb x.2 hb x.1 (ha'.trans ha)
-
-@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedLT' := Prod.wellFoundedLT
-@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedGT' := Prod.wellFoundedGT
+    WellFoundedLT (α × β) := by
+  suffices h : ∀ a, ∀ a' ≤ a, ∀ b, Acc (· < ·) (a', b) from ⟨fun x => h x.1 x.1 le_rfl x.2⟩
+  intro a a' ha b
+  induction a using WellFoundedLT.induction generalizing a' b with | ind a iha
+  induction b using WellFoundedLT.induction generalizing a' with | ind b ihb
+  refine Acc.intro (a', b) fun x hx => ?_
+  obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
+  · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
+  · exact ihb x.2 hb x.1 (ha'.trans ha)
 
 namespace Set
 
@@ -425,8 +439,6 @@ instance instTotal [Std.Total r] {f : β → α} : Std.Total (f ⁻¹'o r) :=
 theorem antisymm [Std.Antisymm r] {f : β → α} (hf : f.Injective) : Std.Antisymm (f ⁻¹'o r) :=
   ⟨fun _ _ h₁ h₂ ↦ hf <| antisymm_of r h₁ h₂⟩
 
-@[deprecated (since := "2026-01-06")] alias isAntisymm := antisymm
-
 end Order.Preimage
 
 /-! ### Strict-non strict relations -/
@@ -455,185 +467,94 @@ instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : Std.Irrefl s
 /-! #### `⊆` and `⊂` -/
 
 section Subset
-variable [HasSubset α] {a b c : α}
 
-lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
+attribute [to_set_notation]
+  le_of_eq_of_le le_of_le_of_eq le_refl le_rfl le_of_eq ge_of_eq ne_of_not_le ne_of_not_ge
+  le_trans le_antisymm ge_antisymm Eq.trans_le Eq.le Eq.ge le_antisymm_iff ge_antisymm_iff
 
-lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
+@[deprecated (since := "2026-05-24")] alias HasSubset.subset.trans_eq := LE.le.trans_eq
 
-@[refl, simp]
-lemma subset_refl [@Std.Refl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
-
-lemma subset_rfl [@Std.Refl α (· ⊆ ·)] : a ⊆ a := refl _
-
-lemma subset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
-
-lemma superset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
-
-lemma ne_of_not_subset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
-
-lemma ne_of_not_superset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
-
-@[trans]
-lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
-
-lemma subset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
-
-lemma superset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → b = a := antisymm'
-
-alias Eq.trans_subset := subset_of_eq_of_subset
-
-alias HasSubset.subset.trans_eq := subset_of_subset_of_eq
-
-alias Eq.subset := subset_of_eq
-
-@[deprecated (since := "2026-01-24")] alias Eq.subset' := Eq.subset
-
-alias Eq.superset := superset_of_eq
-
+@[deprecated LE.le.trans (since := "2026-05-24")]
 alias HasSubset.Subset.trans := subset_trans
 
+@[deprecated LE.le.antisymm (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm := subset_antisymm
 
+@[deprecated LE.le.antisymm' (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm' := superset_antisymm
-
-theorem subset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun h => ⟨h.subset, h.superset⟩, fun h => h.1.antisymm h.2⟩
-
-theorem superset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a = b ↔ b ⊆ a ∧ a ⊆ b :=
-  ⟨fun h => ⟨h.superset, h.subset⟩, fun h => h.1.antisymm' h.2⟩
 
 end Subset
 
-section Ssubset
-variable [HasSSubset α] {a b c : α}
+section SSubset
 
-lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
+attribute [to_set_notation]
+  lt_of_eq_of_lt lt_of_lt_of_eq lt_irrefl ne_of_lt ne_of_gt lt_trans lt_asymm Eq.trans_lt
 
-lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [← hbc]
+@[deprecated (since := "2026-06-11")] alias ssubset_irrfl := ssubset_irrefl
 
-lemma ssubset_irrefl [@Std.Irrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.trans_eq := LT.lt.trans_eq
 
-lemma ssubset_irrfl [@Std.Irrefl α (· ⊂ ·)] {a : α} : ¬a ⊂ a := irrefl _
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.false := LT.lt.false
 
-lemma ne_of_ssubset [@Std.Irrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → a ≠ b := ne_of_irrefl
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.ne := LT.lt.ne
 
-lemma ne_of_ssuperset [@Std.Irrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → b ≠ a := ne_of_irrefl'
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.ne' := LT.lt.ne'
 
-@[trans]
-lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.trans := LT.lt.trans
 
-lemma ssubset_asymm [Std.Asymm (α := α) (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.asymm := LT.lt.asymm
 
-alias Eq.trans_ssubset := ssubset_of_eq_of_ssubset
+end SSubset
 
-alias HasSSubset.SSubset.trans_eq := ssubset_of_ssubset_of_eq
+section SubsetSSubset
 
-alias HasSSubset.SSubset.false := ssubset_irrfl
+attribute [to_set_notation] lt_iff_le_not_ge le_of_lt
+  not_le_of_gt not_lt_of_ge lt_of_le_not_ge
+  LT.lt.le LT.lt.not_ge LE.le.not_gt LE.le.lt_of_not_ge
+  lt_of_le_of_lt lt_of_lt_of_le lt_of_le_of_ne lt_of_ne_of_le eq_or_lt_of_le lt_or_eq_of_le
+  eq_of_le_of_not_lt eq_of_le_of_not_lt'
+  LE.le.trans_lt LT.lt.trans_le LE.le.lt_of_ne Ne.lt_of_le
+  LE.le.eq_or_lt LE.le.lt_or_eq
+  LE.le.eq_of_not_lt LE.le.eq_of_not_lt'
+  lt_iff_le_and_ne le_iff_lt_or_eq
 
-alias HasSSubset.SSubset.ne := ne_of_ssubset
+-- TODO: deprecate these aliases
+alias ssubset_iff_subset_not_subset := ssubset_iff_subset_not_superset
+alias not_subset_of_ssubset := not_subset_of_ssuperset
+alias not_ssubset_of_subset := not_ssubset_of_superset
+alias ssubset_of_subset_not_subset := ssubset_of_subset_not_superset
+alias LT.lt.not_subset := LT.lt.not_superset
+alias LE.le.not_ssubset := LE.le.not_ssuperset
+alias LE.le.ssubset_of_not_subset := LE.le.ssubset_of_not_superset
 
-alias HasSSubset.SSubset.ne' := ne_of_ssuperset
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.subset := LT.lt.subset
+@[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.not_subset := LT.lt.not_superset
+@[deprecated (since := "2026-05-24")] alias HasSubset.Subset.not_ssubset := LE.le.not_ssuperset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.ssubset_of_not_subset := LE.le.ssubset_of_not_superset
 
-alias HasSSubset.SSubset.trans := ssubset_trans
+alias eq_of_superset_of_not_ssuperset := eq_of_subset_of_not_ssubset'
+alias LE.le.eq_of_not_ssuperset := LE.le.eq_of_not_ssubset'
 
-alias HasSSubset.SSubset.asymm := ssubset_asymm
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.trans_ssubset := LE.le.trans_ssubset
+@[deprecated (since := "2026-05-24")]
+alias HasSSubset.SSubset.trans_subset := LT.lt.trans_subset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.ssubset_of_ne := LE.le.ssubset_of_ne
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.eq_or_ssubset := LE.le.eq_or_ssubset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.ssubset_or_eq := LE.le.ssubset_or_eq
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.eq_of_not_ssubset := LE.le.eq_of_not_ssubset
+@[deprecated (since := "2026-05-24")]
+alias HasSubset.Subset.eq_of_not_ssuperset := LE.le.eq_of_not_ssuperset
 
-end Ssubset
+-- TODO: deprecate
+alias ssubset_iff_subset_ne := ssubset_iff_subset_and_ne
 
-section SubsetSsubset
-
-variable [HasSubset α] [HasSSubset α] [IsNonstrictStrictOrder α (· ⊆ ·) (· ⊂ ·)] {a b c : α}
-
-theorem ssubset_iff_subset_not_subset : a ⊂ b ↔ a ⊆ b ∧ ¬b ⊆ a :=
-  right_iff_left_not_left
-
-theorem subset_of_ssubset (h : a ⊂ b) : a ⊆ b :=
-  (ssubset_iff_subset_not_subset.1 h).1
-
-theorem not_subset_of_ssubset (h : a ⊂ b) : ¬b ⊆ a :=
-  (ssubset_iff_subset_not_subset.1 h).2
-
-theorem not_ssubset_of_subset (h : a ⊆ b) : ¬b ⊂ a := fun h' => not_subset_of_ssubset h' h
-
-theorem ssubset_of_subset_not_subset (h₁ : a ⊆ b) (h₂ : ¬b ⊆ a) : a ⊂ b :=
-  ssubset_iff_subset_not_subset.2 ⟨h₁, h₂⟩
-
-alias HasSSubset.SSubset.subset := subset_of_ssubset
-
-alias HasSSubset.SSubset.not_subset := not_subset_of_ssubset
-
-alias HasSubset.Subset.not_ssubset := not_ssubset_of_subset
-
-alias HasSubset.Subset.ssubset_of_not_subset := ssubset_of_subset_not_subset
-
-theorem ssubset_of_subset_of_ssubset [IsTrans α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : b ⊂ c) : a ⊂ c :=
-  (h₁.trans h₂.subset).ssubset_of_not_subset fun h => h₂.not_subset <| h.trans h₁
-
-theorem ssubset_of_ssubset_of_subset [IsTrans α (· ⊆ ·)] (h₁ : a ⊂ b) (h₂ : b ⊆ c) : a ⊂ c :=
-  (h₁.subset.trans h₂).ssubset_of_not_subset fun h => h₁.not_subset <| h₂.trans h
-
-theorem ssubset_of_subset_of_ne [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : a ≠ b) : a ⊂ b :=
-  h₁.ssubset_of_not_subset <| mt h₁.antisymm h₂
-
-theorem ssubset_of_ne_of_subset [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ≠ b) (h₂ : a ⊆ b) : a ⊂ b :=
-  ssubset_of_subset_of_ne h₂ h₁
-
-theorem eq_or_ssubset_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a = b ∨ a ⊂ b :=
-  (em (b ⊆ a)).imp h.antisymm h.ssubset_of_not_subset
-
-theorem ssubset_or_eq_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a ⊂ b ∨ a = b :=
-  (eq_or_ssubset_of_subset h).symm
-
-lemma eq_of_subset_of_not_ssubset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
-  (eq_or_ssubset_of_subset hab).resolve_right hba
-
-lemma eq_of_superset_of_not_ssuperset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
-    b = a := ((eq_or_ssubset_of_subset hab).resolve_right hba).symm
-
-alias HasSubset.Subset.trans_ssubset := ssubset_of_subset_of_ssubset
-
-alias HasSSubset.SSubset.trans_subset := ssubset_of_ssubset_of_subset
-
-alias HasSubset.Subset.ssubset_of_ne := ssubset_of_subset_of_ne
-
-alias Ne.ssubset_of_subset := ssubset_of_ne_of_subset
-
-alias HasSubset.Subset.eq_or_ssubset := eq_or_ssubset_of_subset
-
-alias HasSubset.Subset.ssubset_or_eq := ssubset_or_eq_of_subset
-
-alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
-alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
-
-theorem ssubset_iff_subset_ne [@Std.Antisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
-  ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩
-
-theorem subset_iff_ssubset_or_eq [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a ⊆ b ↔ a ⊂ b ∨ a = b :=
-  ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
-
-namespace GCongr
-
-variable [IsTrans α (· ⊆ ·)] {a b c d : α}
-
-@[gcongr]
-theorem ssubset_imp_ssubset (h₁ : c ⊆ a) (h₂ : b ⊆ d) : a ⊂ b → c ⊂ d :=
-  fun h => (h₁.trans_ssubset h).trans_subset h₂
-
-@[gcongr]
-theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → c ⊃ d :=
-  ssubset_imp_ssubset h₂ h₁
-
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] meta def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
-
-end GCongr
-
-end SubsetSsubset
+end SubsetSSubset
 
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
 
@@ -648,7 +569,6 @@ but after translation `instReflLe` becomes `instReflGe : Std.Refl (· ≥ ·)`. 
 theorem Std.ge_refl {α : Type*} [LE α] [inst : @Std.Refl α (· ≥ ·)] (a : α) : a ≤ a :=
   @Std.Refl.refl α (· ≥ ·) inst a
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing Std.ge_refl] Std.le_refl
 
 @[to_dual instIsTransGe]
@@ -710,26 +630,15 @@ instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 theorem isTrans_le [Preorder α] : IsTrans α LE.le :=
   inferInstance
 
-@[deprecated (since := "2026-02-21")]
-alias transitive_ge := isTrans_ge
-@[to_dual existing transitive_ge, deprecated (since := "2026-02-21")]
-alias transitive_le := isTrans_le
-
 @[to_dual isTrans_gt]
 theorem isTrans_lt [Preorder α] : IsTrans α LT.lt :=
   inferInstance
 
-@[deprecated (since := "2026-02-21")]
-alias transitive_gt := isTrans_gt
-@[to_dual existing transitive_gt, deprecated (since := "2026-02-21")]
-alias transitive_lt := isTrans_lt
-
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
-  @Std.Total.swap α _ h
+  inferInstanceAs <| @Std.Total α <| swap (· ≤ ·)
 
-instance : WellFoundedLT ℕ :=
-  ⟨Nat.lt_wfRel.wf⟩
+instance : WellFoundedLT ℕ := Nat.lt_wfRel.wf
 
 @[to_dual isWellOrder_gt]
 instance (priority := 100) isWellOrder_lt [LinearOrder α] [WellFoundedLT α] :

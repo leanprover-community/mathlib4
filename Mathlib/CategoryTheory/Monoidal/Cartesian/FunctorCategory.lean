@@ -29,6 +29,8 @@ variable {J C D E : Type*} [Category* J] [Category* C] [Category* D] [Category* 
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
   fst X Y := { app _ := CartesianMonoidalCategory.fst _ _ }
   snd X Y := { app _ := CartesianMonoidalCategory.snd _ _ }
@@ -141,15 +143,17 @@ lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
 
+set_option backward.defeqAttrib.useBackward true in
 instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by
   apply preservesColimitsOfShape_of_evaluation
   intro k
-  haveI : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
+  have : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
   exact preservesColimitsOfShape_of_natIso this.symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A finite-products-preserving functor distributes over the tensor product of functors. -/
 @[simps!]
 noncomputable def tensorObjComp (F G : D ⥤ C) (H : C ⥤ E) [PreservesFiniteProducts H] :

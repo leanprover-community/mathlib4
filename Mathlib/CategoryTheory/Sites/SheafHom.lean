@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Over
 
-/-! Internal hom of sheaves
+/-! # Internal hom of sheaves
 
 In this file, given two sheaves `F` and `G` on a site `(C, J)` with values
 in a category `A`, we define a sheaf of types
@@ -39,13 +39,14 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable (F G : Cᵒᵖ ⥤ A)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given two presheaves `F` and `G` on a category `C` with values in a category `A`,
 this `presheafHom F G` is the presheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
 @[simps! obj]
 def presheafHom : Cᵒᵖ ⥤ Type _ where
   obj X := (Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G
-  map f := TypeCat.ofHom (Functor.whiskerLeft (Over.map f.unop).op)
+  map f := ↾(Functor.whiskerLeft (Over.map f.unop).op)
   map_id := by
     rintro ⟨X⟩
     ext φ ⟨Y⟩
@@ -67,6 +68,7 @@ lemma presheafHom_map_app {X Y Z : C} (f : Z ⟶ Y) (g : Y ⟶ X) (h : Z ⟶ X) 
   subst w
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma presheafHom_map_app_op_mk_id {X Y : C} (g : Y ⟶ X)
     (α : (presheafHom F G).obj (op X)) :
@@ -76,6 +78,7 @@ lemma presheafHom_map_app_op_mk_id {X Y : C} (g : Y ⟶ X)
 
 variable (F G)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The sections of the presheaf `presheafHom F G` identify to morphisms `F ⟶ G`. -/
 def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
   toFun s :=
@@ -100,6 +103,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows)
     (hx : x.Compatible) (y : (presheafHom F G).obj (op X)) :
@@ -128,6 +132,7 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
+set_option backward.defeqAttrib.useBackward true in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
     ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
@@ -164,6 +169,7 @@ end PresheafHom.IsSheafFor
 
 variable (F G S)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hG in
 open PresheafHom.IsSheafFor in
@@ -216,7 +222,7 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
 (see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   obj X := ((J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G)
-  map f := TypeCat.ofHom ((J.overMapPullback A f.unop).map)
+  map f := ↾((J.overMapPullback A f.unop).map)
   map_id X := by
     ext φ : 4
     exact ConcreteCategory.congr_hom ((presheafHom F.1 G.1).map_id X) φ.1
@@ -245,6 +251,6 @@ def sheafHomSectionsEquiv (F G : Sheaf J A) :
 
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :
-    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := rfl
+    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := (rfl)
 
 end CategoryTheory

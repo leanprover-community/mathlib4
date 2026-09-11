@@ -30,6 +30,7 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i ≫ p = f`, and `f` has the left lifting property with respect to `p`,
 then `f` is a retract of `i`. -/
 noncomputable def RetractArrow.ofLeftLiftingProperty
@@ -39,6 +40,7 @@ noncomputable def RetractArrow.ofLeftLiftingProperty
   { i := Arrow.homMk (𝟙 X) sq.lift
     r := Arrow.homMk (𝟙 X) p }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i ≫ p = f`, and `f` has the right lifting property with respect to `i`,
 then `f` is a retract of `p`. -/
 noncomputable def RetractArrow.ofRightLiftingProperty

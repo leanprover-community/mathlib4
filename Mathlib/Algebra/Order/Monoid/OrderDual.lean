@@ -17,8 +17,6 @@ universe u
 
 variable {α : Type u}
 
-open Function
-
 namespace OrderDual
 
 @[to_additive]

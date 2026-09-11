@@ -77,14 +77,14 @@ instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
 
 instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
   forget₂ :=
-      { obj := fun X => MonCat.of X
+      { obj := fun X => ↧X
         map := fun f => MonCat.ofHom f.toMonoidHom }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : GrpWithZero.{u}} (e : α ≃* β) : α ≅ β where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom (.ofClass e)
+  inv := ofHom (.ofClass e.symm)
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _
@@ -93,3 +93,13 @@ def Iso.mk {α β : GrpWithZero.{u}} (e : α ≃* β) : α ≅ β where
     exact e.apply_symm_apply _
 
 end GrpWithZero
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `GrpWithZero.of X` as `↧X`. -/
+@[app_delab GrpWithZero.of]
+meta def GrpWithZero.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Polynomial.Cardinal
 public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
-### Cardinality of algebraic numbers
+# Cardinality of algebraic numbers
 
 In this file, we prove variants of the following result: the cardinality of algebraic numbers under
 an R-algebra is at most `#R[X] * ℵ₀`.
@@ -31,8 +31,8 @@ namespace Algebraic
 
 theorem infinite_of_charZero (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
     [CharZero A] : { x : A | IsAlgebraic R x }.Infinite := by
-  letI := MulActionWithZero.nontrivial R A
-  exact infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
+  let := MulActionWithZero.nontrivial R A
+  exact infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_natCast
 
 theorem aleph0_le_cardinalMk_of_charZero (R A : Type*) [CommRing R] [Ring A]
     [Algebra R A] [CharZero A] : ℵ₀ ≤ #{ x : A // IsAlgebraic R x } :=

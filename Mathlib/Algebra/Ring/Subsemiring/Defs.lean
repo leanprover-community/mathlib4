@@ -140,7 +140,7 @@ namespace Subsemiring
 
 instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R) R
 
@@ -240,8 +240,8 @@ protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmo
   carrier := s
   zero_mem' := by exact ha ▸ sa.zero_mem
   one_mem' := by exact hm ▸ sm.one_mem
-  add_mem' {x y} := by simpa only [← ha] using sa.add_mem
-  mul_mem' {x y} := by simpa only [← hm] using sm.mul_mem
+  add_mem' {x y} := by simpa only [← ha] using! sa.add_mem
+  mul_mem' {x y} := by simpa only [← hm] using! sm.mul_mem
 
 @[simp]
 theorem mem_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubmonoid R} (ha : ↑sa = s)
@@ -400,8 +400,10 @@ def domRestrict (f : R →+* S) (s : σR) : s →+* S :=
   f.comp <| SubsemiringClass.subtype s
 
 @[simp]
-theorem restrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f x :=
+theorem domRestrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /-- The subsemiring of elements `x : R` such that `f x = g x` -/
 def eqLocusS (f g : R →+* S) : Subsemiring R :=

@@ -72,6 +72,12 @@ instance isSmall_iSup {α : Type*} (W : α → MorphismProperty C)
     obtain ⟨i, hf⟩ := hf
     exact ⟨⟨i, ⟨_, hf⟩⟩, rfl⟩
 
+instance {α : Type t} [Small.{w} α] (W : α → MorphismProperty C) [∀ i, IsSmall.{w} (W i)] :
+    IsSmall.{w} (⨆ i, W i) := by
+  choose α A B f hf using fun i ↦ (isSmall_iff_eq_ofHoms.{w} (W i)).1 inferInstance
+  simp only [hf, iSup_ofHoms]
+  infer_instance
+
 end MorphismProperty
 
 end CategoryTheory

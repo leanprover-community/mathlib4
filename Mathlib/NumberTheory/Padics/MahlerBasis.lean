@@ -176,12 +176,12 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     refine (nnnorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     rw [mem_range] at hi
-    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by lia)
+    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
     rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, PadicInt.norm_eq_zpow_neg_valuation
       (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
       zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff,
       ← PadicInt.valuation_coe, PadicInt.coe_natCast, Padic.valuation_natCast, Nat.one_le_cast]
-    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by lia) (by lia)
+    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by lia) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_add_one (fun i _ ↦ ?_)
     calc ‖((-1 : ℤ) ^ (n - i) * n.choose i) • (f (i + ↑(p ^ t)) - f i)‖
@@ -342,12 +342,13 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[
       (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
     hasSum_mahlerSeries (fwdDiff_tendsto_zero f)
   -- Now show that the sum of the Mahler terms must equal `f` on a dense set, so it is actually `f`.
-  convert this using 1
+  convert! this using 1
   refine ContinuousMap.coe_injective (denseRange_natCast.equalizer
     (map_continuous f) (map_continuous _) (funext fun n ↦ ?_))
   simpa [mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl]
     using shift_eq_sum_fwdDiff_iter 1 f n 0
 
+set_option backward.isDefEq.respectTransparency false in
 variable (E) in
 /--
 The isometric equivalence from `C(ℤ_[p], E)` to the space of sequences in `E` tending to `0` given
@@ -384,5 +385,34 @@ lemma mahlerEquiv_symm_apply (a : C₀(ℕ, E)) : (mahlerEquiv E).symm a = (mahl
   rfl
 
 end mahler_coeff
+
+section DenseSpan
+
+open Submodule
+/-!
+### Continuous linear functionals are determined by their values on the Mahler basis
+-/
+variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
+  [IsBoundedSMul ℤ_[p] R]
+
+theorem dense_span_mahler : Dense (span R
+      (.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
+  refine fun f ↦ mem_closure_of_tendsto (PadicInt.hasSum_mahler _) ?_
+  refine .of_forall fun s ↦ Submodule.sum_mem _ fun c _ ↦ ?_
+  simp only [span_range_eq_iSup]
+  apply mem_iSup_of_mem (i := c)
+  rw [mem_span_singleton]
+  use (fwdDiff 1)^[c] f 0
+  ext x
+  simp [PadicInt.mahlerTerm]
+
+lemma ext_mahler {μ : C(ℤ_[p], R) →L[R] R}
+    (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) : μ = 0 := by
+  apply ContinuousLinearMap.ext_on dense_span_mahler
+  rintro _ ⟨n, rfl⟩
+  simpa using hμ n
+
+end DenseSpan
+
 
 end PadicInt
