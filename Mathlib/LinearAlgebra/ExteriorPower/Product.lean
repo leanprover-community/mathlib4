@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
 
 /-!
