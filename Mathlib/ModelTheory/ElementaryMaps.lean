@@ -63,6 +63,7 @@ namespace ElementaryEmbedding
 
 attribute [coe] toFun
 
+@[macro_inline]
 instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe f := f.toFun
   coe_injective f g h := by
