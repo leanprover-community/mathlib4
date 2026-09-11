@@ -51,6 +51,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 
+@[macro_inline]
 instance : EquivLike (α ≃ᵤ β) α β where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm

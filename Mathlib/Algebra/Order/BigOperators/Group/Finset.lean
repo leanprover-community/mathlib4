@@ -14,6 +14,8 @@ public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Multiset.Powerset
 public import Mathlib.Tactic.Bound.Attribute
 
+import Mathlib.Algebra.Order.Monoid.OrderDual
+
 /-!
 # Big operators on a finset in ordered groups
 
@@ -226,7 +228,7 @@ alias prod_le_prod_of_injOn' := prod_le_prod_of_injOn
 
 @[to_additive]
 theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
-    {f : ι → N} {s : Finset ι} [MulLeftMono N] :
+    {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
     refine Finset.induction_on s
@@ -240,7 +242,7 @@ theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] 
 
 @[to_additive sum_pos_iff_of_nonneg]
 lemma one_lt_prod_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
-    {f : ι → N} {s : Finset ι} [MulLeftMono N] (hf : ∀ x ∈ s, 1 ≤ f x) :
+    {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] (hf : ∀ x ∈ s, 1 ≤ f x) :
     1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x := by
   have hsum : 1 ≤ ∏ x ∈ s, f x := one_le_prod hf
   rw [hsum.lt_iff_ne', Ne, prod_eq_one_iff_of_one_le hf, not_forall]
@@ -248,7 +250,7 @@ lemma one_lt_prod_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [P
 
 @[to_additive]
 theorem prod_eq_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
-    {f : ι → N} {s : Finset ι} [MulLeftMono N] :
+    {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   prod_eq_one_iff_of_one_le (N := Nᵒᵈ)
 
@@ -256,7 +258,7 @@ theorem prod_eq_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] 
 
 @[to_additive]
 lemma prod_lt_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
-    {f : ι → N} {s : Finset ι} [MulLeftMono N] (hf : ∀ x ∈ s, f x ≤ 1) :
+    {f : ι → N} {s : Finset ι} [IsOrderedMonoid N] (hf : ∀ x ∈ s, f x ≤ 1) :
     ∏ x ∈ s, f x < 1 ↔ ∃ x ∈ s, f x < 1 :=
   one_lt_prod_iff_of_one_le (N := Nᵒᵈ) hf
 
@@ -668,7 +670,7 @@ section LinearOrderedCancelCommMonoid
 variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s : Finset ι}
 
 @[to_additive]
-theorem exists_lt_of_prod_lt [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :
+theorem exists_lt_of_prod_lt [IsOrderedMonoid M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :
     ∃ i ∈ s, f i < g i := by
   contrapose! Hlt with Hle
   exact prod_le_prod Hle
@@ -676,14 +678,14 @@ theorem exists_lt_of_prod_lt [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈
 @[deprecated (since := "2026-09-01")] alias exists_lt_of_prod_lt' := exists_lt_of_prod_lt
 
 @[to_additive exists_pos_of_sum_zero_of_exists_nonzero]
-theorem exists_one_lt_of_prod_one_of_exists_ne_one [MulLeftMono M] (f : ι → M)
+theorem exists_one_lt_of_prod_one_of_exists_ne_one [IsOrderedMonoid M] (f : ι → M)
     (h₁ : ∏ i ∈ s, f i = 1) (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, 1 < f i := by
   by_contra! h
   have : ¬ ∃ x ∈ s, f x < 1 := by simp [← prod_lt_one_iff_of_le_one h, h₁]
   grind
 
 @[to_additive exists_neg_of_sum_zero_of_exists_nonzero]
-theorem exists_lt_one_of_prod_one_of_exists_ne_one [MulLeftMono M] (f : ι → M)
+theorem exists_lt_one_of_prod_one_of_exists_ne_one [IsOrderedMonoid M] (f : ι → M)
     (h₁ : ∏ i ∈ s, f i = 1) (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, f i < 1 :=
   exists_one_lt_of_prod_one_of_exists_ne_one (M := Mᵒᵈ) f h₁ h₂
 
@@ -748,12 +750,12 @@ lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod fun _ 
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le {ι M : Type*} [Fintype ι] [CommMonoid M] [PartialOrder M]
-    [MulLeftMono M] {f : ι → M} (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
+    [IsOrderedMonoid M] {f : ι → M} (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
   (Finset.prod_eq_one_iff_of_one_le fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 @[to_additive]
 lemma prod_eq_one_iff_of_le_one {ι M : Type*} [Fintype ι] [CommMonoid M] [PartialOrder M]
-    [MulLeftMono M] {f : ι → M} (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
+    [IsOrderedMonoid M] {f : ι → M} (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
   (Finset.prod_eq_one_iff_of_le_one fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 end OrderedCommMonoid

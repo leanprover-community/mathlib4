@@ -113,7 +113,9 @@ to_dual_insert_cast_fun OrderIso :=
 infixl:25 " ≃o " => OrderIso
 
 -- These instances are here just to make `to_dual` work correctly
+@[macro_inline]
 instance (α β : Type*) [LE α] [LE β] : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
+@[macro_inline]
 instance (α β : Type*) [LE α] [LE β] : FunLike (α ≃o β) α β := RelIso.instFunLike
 
 section
@@ -223,6 +225,7 @@ namespace OrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
+@[macro_inline]
 instance : FunLike (α →o β) α β where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -777,6 +780,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ] [LE δ]
 
+@[macro_inline]
 instance : EquivLike (α ≃o β) α β :=
   inferInstance
 

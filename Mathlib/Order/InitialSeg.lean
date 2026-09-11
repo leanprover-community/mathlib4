@@ -71,6 +71,7 @@ namespace InitialSeg
 instance : Coe (r ≼i s) (r ↪r s) :=
   ⟨InitialSeg.toRelEmbedding⟩
 
+@[macro_inline]
 instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
   coe_injective := by

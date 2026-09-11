@@ -74,6 +74,7 @@ variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
     [AddCommMonoid E₄] [PartialOrder E₄]
     [Module R E₁] [Module R E₂] [Module R E₃] [Module R E₄]
 
+@[macro_inline]
 instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
   coe f := f.toFun
   coe_injective f g h := by
