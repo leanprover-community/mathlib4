@@ -159,6 +159,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("sup₂", ["Inf₂"]),
   ("sinf", ["SSup"]),
   ("ssup", ["SInf"]),
+  ("liminf", ["Limsup"]),
+  ("limsup", ["Liminf"]),
+  ("bliminf", ["Blimsup"]),
+  ("blimsup", ["Bliminf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
   ("min?", ["Max?"]),
@@ -268,7 +272,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("bihimp", "SymmDiff"),
   ("symmDiff", "Bihimp"),
   ("isRightContinuous", "IsLeftContinuous"),
+  ("isLeftContinuous", "IsRightContinuous"),
   ("isCadlag", "IsCaglad"),
+  ("isCaglad", "IsCadlag"),
 
   -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
