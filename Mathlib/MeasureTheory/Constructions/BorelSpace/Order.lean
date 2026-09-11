@@ -1059,12 +1059,30 @@ theorem Measurable.liminf {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
     Measurable fun x => liminf (fun i => f i x) atTop :=
   .liminf' hf atTop_countable_basis fun _ => to_countable _
 
+/-- The `liminf` over `ℕ` of a sequence of ae measurable functions is ae measurable. -/
+@[fun_prop]
+protected theorem AEMeasurable.liminf {f : ℕ → δ → α} {μ : Measure δ}
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    AEMeasurable (fun x ↦ liminf (fun i ↦ f i x) atTop) μ := by
+  refine ⟨fun x => liminf (fun i => (hf i).mk _ x) atTop, ?_, ?_⟩
+  · exact Measurable.liminf (fun i ↦ (hf i).measurable_mk)
+  · filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with x hx using by simp [hx]
+
 /-- `limsup` over `ℕ` is measurable. See `Measurable.limsup'` for a version with a general filter.
 -/
 @[fun_prop]
 theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun x => limsup (fun i => f i x) atTop :=
   .limsup' hf atTop_countable_basis fun _ => to_countable _
+
+/-- The `limsup` over `ℕ` of a sequence of ae measurable functions is ae measurable. -/
+@[fun_prop]
+protected theorem AEMeasurable.limsup {f : ℕ → δ → α} {μ : Measure δ}
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    AEMeasurable (fun x ↦ limsup (fun i ↦ f i x) atTop) μ := by
+  refine ⟨fun x => limsup (fun i => (hf i).mk _ x) atTop, ?_, ?_⟩
+  · exact Measurable.limsup (fun i ↦ (hf i).measurable_mk)
+  · filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with x hx using by simp [hx]
 
 end ConditionallyCompleteLinearOrder
 
