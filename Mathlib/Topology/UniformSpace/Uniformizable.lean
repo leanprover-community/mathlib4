@@ -49,8 +49,8 @@ associated to some open entourage `uc`, and `u` contains the ball centered at `x
 associated to the composition `s ○ uc ○ s`. -/
 def IsThickening (c u : Set X) :=
   ∃ (x : X) (uc s : SetRel X X),
-    IsOpen uc ∧ uc ∈ 𝓤 X ∧ c = closure (ball x uc) ∧
-    ball x (s ○ uc ○ s) ⊆ u ∧ s ∈ 𝓤 X
+    IsOpen uc ∧ uc ∈ 𝓤 X ∧ c = closure (uc.ball x) ∧
+    (s ○ uc ○ s).ball x ⊆ u ∧ s ∈ 𝓤 X
 
 /-- Given a pair consisting of a closed set `c` contained in an open set `u`
 satisfying the predicate `IsThickening`, it is always possible to refine it to two pairs
@@ -65,35 +65,38 @@ theorem urysohns_main {c u : Set X} (IsThickeningcu : IsThickening c u) :
   have hsub := calc ds ○ (ds ○ uc ○ ds) ○ ds
     _ = (ds ○ ds) ○ uc ○ (ds ○ ds) := by simp [comp_assoc]
     _ ⊆ s ○ uc ○ s := comp_subset_comp (comp_subset_comp_left hdsd) hdsd
-  replace hsub := (ball_mono hsub x).trans hn
+  replace hsub := (SetRel.ball_mono hsub x).trans hn
   have : ds.IsRefl := id_subset_iff.1 (refl_le_uniformity hdsu)
-  refine ⟨ball x (ds ○ uc ○ ds), isOpen_ball x ho, ?_, subset_trans ?_ hsub,
+  refine ⟨(ds ○ uc ○ ds).ball x, isOpen_ball x ho, ?_, subset_trans ?_ hsub,
       ⟨x, uc, ds, huc, ucu, rfl, subset_rfl, hdsu⟩,
       ⟨x, ds ○ uc ○ ds, ds, ho, mem_of_superset ucu (right_subset_comp.trans left_subset_comp),
         rfl, hsub, hdsu⟩⟩ <;>
-  · refine closure_ball_subset.trans (ball_mono ?_ x)
+  · refine closure_ball_subset.trans (SetRel.ball_mono ?_ x)
     rw [closure_eq_inter_uniformity]
     exact iInter₂_subset_of_subset ds hdsu (by simp [comp_assoc])
 
 public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X where
   completely_regular x K hK hx :=
-    have ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
+    have ⟨O, hOu, hOo, hbO⟩ : ∃ O ∈ 𝓤 X, IsOpen O ∧ SetRel.ball O x ⊆ Kᶜ :=
+      isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
     have ⟨(u3 : SetRel X X), hu3u, _, hu3O⟩ := comp_comp_symm_mem_uniformity_sets hOu
     have hu3O := ((comp_subset_comp_left (comp_subset_comp_right interior_subset))).trans hu3O
     let c : Urysohns.CU IsThickening :=
-    { C := closure (ball x (interior u3))
-      U := ball x O
+    { C := closure (SetRel.ball (interior u3) x)
+      U := SetRel.ball O x
       closed_C := isClosed_closure
       open_U := isOpen_ball x hOo
-      subset := closure_ball_subset.trans <| (ball_mono · x) <| by
+      subset := closure_ball_subset.trans <| SetRel.ball_mono (by
         simp_rw [closure_eq_inter_uniformity, ← comp_assoc]
-        exact (iInter₂_subset u3 hu3u).trans hu3O
+        exact (iInter₂_subset u3 hu3u).trans hu3O) x
       hP _ IsThickeningcu _ _ := urysohns_main IsThickeningcu
       P_C_U := ⟨x, interior u3, u3,
-        isOpen_interior, interior_mem_uniformity hu3u, rfl, ball_mono hu3O x, hu3u⟩ }
+        isOpen_interior, interior_mem_uniformity hu3u, rfl,
+        SetRel.ball_mono hu3O x, hu3u⟩ }
     ⟨fun x ↦ ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
-      Subtype.ext (c.lim_of_mem_C x <| subset_closure (refl_mem_uniformity <|
-        interior_mem_uniformity hu3u)), fun y hy ↦ Subtype.ext (c.lim_of_notMem_U y (hbO · hy))⟩
+      Subtype.ext (c.lim_of_mem_C x <|
+        subset_closure (refl_mem_uniformity <| interior_mem_uniformity hu3u)),
+      fun y hy ↦ Subtype.ext (c.lim_of_notMem_U y (hbO · hy))⟩
 
 end UniformSpace
 

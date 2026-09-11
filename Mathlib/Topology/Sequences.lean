@@ -355,7 +355,8 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   intro V V_in
   unfold IsSeqCompact at h
   contrapose! h
-  obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
+  obtain ⟨u, u_in, hu⟩ :
+      ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u n ∉ SetRel.ball V (u m) := by
     simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
     simpa only [forall_and, forall_mem_image, not_and] using! seq_of_forall_finite_exists h
   refine ⟨u, u_in, fun x _ φ hφ huφ => ?_⟩
@@ -390,11 +391,11 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
   have huc : CauchySeq u := hV.toHasBasis.cauchySeq_iff.2 fun N _ =>
       ⟨N, fun m hm n hn => hWV' _ <| @htW N (_, _) ⟨ht_anti hm (hu _), ht_anti hn (hu _)⟩⟩
   rcases hs.exists_tendsto (fun n => hts n (hu n)) huc with ⟨x, hxs, hx⟩
-  refine ⟨x, hxs, (nhds_basis_uniformity' hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
-  obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ ball x (W N) :=
-    ((eventually_ge_atTop N).and (hx <| ball_mem_nhds x (hW N))).exists
-  refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N ?_⟩
-  exact ⟨ht_anti hNn (hu n), ht_anti hNn hy⟩
+  refine ⟨x, hxs, (nhds_basis_uniformity hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
+  obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ SetRel.ball (W N) x :=
+    ((eventually_ge_atTop N).and (hx <| SetRel.ball_mem_nhds x (hW N))).exists
+  refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, htW N ?_, hn⟩
+  exact ⟨ht_anti hNn hy, ht_anti hNn (hu n)⟩
 
 end UniformSpaceSeqCompact
 
