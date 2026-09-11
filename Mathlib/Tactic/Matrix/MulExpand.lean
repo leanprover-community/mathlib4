@@ -6,9 +6,9 @@ Authors: Rao Xiaojia
 module
 
 public import Batteries.Logic  -- shake: keep (Qq dependency)
-public import Mathlib.Util.Qq
 
 public meta import Mathlib.Tactic.Matrix.ListMatrix
+public meta import Mathlib.Util.Qq
 
 /-!
 # Expansion of products of list matrices
@@ -28,26 +28,19 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Matrix
 
+-- the classes are parameters so that every quotation references the one instance term the
+-- caller synthesised, rather than rebuilding a projection path in every cell
+variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
+
 /-- Construct a proof term that `[a₀, …] = [b₀, …]` in `List α` from proofs of `aᵢ = bᵢ`.
 `MVarId.congrN` also works, but is much slower to elaborate. -/
-def mkListCongr {u : Level} {α : Q(Type u)} :
+def mkListCongr :
     List ((a : Q($α)) × (b : Q($α)) × Q($a = $b)) →
       (l₁ : Q(List $α)) × (l₂ : Q(List $α)) × Q($l₁ = $l₂)
   | [] => ⟨q([]), q([]), q(rfl)⟩
   | ⟨a, b, h⟩ :: es =>
     let ⟨l₁, l₂, hl⟩ := mkListCongr es
     ⟨q($a :: $l₁), q($b :: $l₂), q(congrArg₂ List.cons $h $hl)⟩
-
-/-- The list literal `[a₀, …]` of the entries `as`. -/
-def mkListLitQ {u : Level} {α : Q(Type u)} : List Q($α) → Q(List $α)
-  | [] => q([])
-  | a :: as => q($a :: $(mkListLitQ as))
-
-section
-
--- the classes are parameters so that every quotation references the one instance term the
--- caller synthesised, rather than rebuilding a projection path in every cell
-variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
 
 /-- A dot product of two lists of entries, `ListMatrix.dotProduct n l₁ l₂ = expr`, with its
 proof. -/
@@ -110,7 +103,5 @@ def proveMul (l m n : Nat) (listA listB : List (List Q($α))) : MulEq zα aα m�
     rows := mulEntryEqs.map (·.map (·.expr)),
     expr := C,
     proof := mkExpectedPropHint hC q(ListMatrix.mul $l $m $n $A $B = $C) }
-
-end
 
 end Mathlib.Tactic.Matrix
