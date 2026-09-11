@@ -697,3 +697,12 @@ lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
 end Group
 
 end ExponentTwo
+
+theorem ringChar_eq_addMonoidExponent (R : Type*) [NonAssocSemiring R] :
+    ringChar R = AddMonoid.exponent R := by
+  apply dvd_antisymm
+  · apply ringChar.dvd
+    rw [← nsmul_one, AddMonoid.exponent_nsmul_eq_zero]
+  · rw [AddMonoid.exponent_dvd_iff_forall_nsmul_eq_zero]
+    intro g
+    rw [nsmul_eq_mul, ringChar.Nat.cast_ringChar, zero_mul]
