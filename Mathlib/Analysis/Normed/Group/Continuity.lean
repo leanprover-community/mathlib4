@@ -137,14 +137,18 @@ end SeminormedGroup
 section Instances
 
 @[to_additive]
-instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
+instance SeminormedGroup.toESeminormedMonoid [SeminormedGroup E] : ESeminormedMonoid E where
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+  enorm_zero := by simp [enorm_eq_nnnorm]
+  enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
+
+@[to_additive]
+instance SeminormedCommGroup.toESeminormedCommMonoid [SeminormedCommGroup E] :
+    ESeminormedCommMonoid E where
 
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
-  enorm_zero := by simp [enorm_eq_nnnorm]
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
-  enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
