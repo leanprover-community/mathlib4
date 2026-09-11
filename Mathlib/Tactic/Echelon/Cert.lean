@@ -274,7 +274,7 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have Lm := L.matrix
   have Aσm := Aσ.matrix
   have Um := U.matrix
-  let hperm ← dispatch q(($A).submatrix $σ id = $Aσm) fun _ => certifyPermEq A Aσm σ
+  let hperm ← certifyPermEq A Aσm σ
   have hprod : Q($Lm * $Aσm = $Um) := ← certifyProductEq _cr L Aσ U certifier?
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let hpivot ← dispatch q(($Um).IsPivotedBy $pivot) fun certifier =>
