@@ -98,8 +98,8 @@ lemma koszulComplex.d_comp_d (n : ℕ) :
   simpa [koszulComplex.d, ← exteriorPower.alternatingMapLinearEquiv_comp]
 
 /-- The Koszul complex, with objects exterior powers and differential `koszulComplex.d`. -/
-@[stacks 0622 "only recording chain complex"]
-noncomputable abbrev koszulComplex : ChainComplex (ModuleCat R) ℕ :=
+@[implicit_reducible, stacks 0622 "only recording chain complex"]
+noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
   ChainComplex.of (fun n ↦ of R (⋀[R]^n M))
     (fun n ↦ ofHom (koszulComplex.d φ n))
     (fun n ↦ by rw [← ofHom_comp, koszulComplex.d_comp_d, ofHom_zero])
@@ -148,7 +148,8 @@ variable {L : Type v} [AddCommGroup L] [Module R L]
 @[reassoc]
 lemma map_id : map φ LinearMap.id φ (LinearMap.comp_id φ) = 𝟙 _ := by
   ext i x
-  simp [map_f, exteriorPower.map_id, ChainComplex.of_X]
+  --there are some problem on simp of `X`
+  simp [map_f, exteriorPower.map_id, koszulComplex]
 
 @[reassoc]
 lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ'' : L →ₗ[R] R)
