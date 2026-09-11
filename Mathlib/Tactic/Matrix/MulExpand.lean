@@ -6,9 +6,9 @@ Authors: Rao Xiaojia
 module
 
 public import Batteries.Logic  -- shake: keep (Qq dependency)
+public import Mathlib.Util.Qq
 
 public meta import Mathlib.Tactic.Matrix.ListMatrix
-public meta import Mathlib.Util.Qq
 
 /-!
 # Expansion of products of list matrices
@@ -41,6 +41,11 @@ def mkListCongr :
   | ⟨a, b, h⟩ :: es =>
     let ⟨l₁, l₂, hl⟩ := mkListCongr es
     ⟨q($a :: $l₁), q($b :: $l₂), q(congrArg₂ List.cons $h $hl)⟩
+
+/-- The list literal `[a₀, …]` of the entries `as`. -/
+def mkListLitQ : List Q($α) → Q(List $α)
+  | [] => q([])
+  | a :: as => q($a :: $(mkListLitQ as))
 
 /-- A dot product of two lists of entries, `ListMatrix.dotProduct n l₁ l₂ = expr`, with its
 proof. -/
