@@ -1056,7 +1056,7 @@ theorem ringHom_ext {f g : SkewMonoidAlgebra k G →+* k} (h₁ : ∀ b, f (sing
     (h_of : ∀ a, f (single a 1) = g (single a 1)) : f = g :=
   have {a : G} {b₁ b₂ : k} : (single 1 b₁) * (single a b₂) = single a (b₁ * b₂) := by
     simp [single_mul_single, one_mul, one_smul]
-  RingHom.toAddMonoidHom_injective <|
+  RingHom.coe_addMonoidHom_injective <|
     addHom_ext fun a b ↦ by rw [← mul_one b, ← this, AddMonoidHom.coe_coe f,
       AddMonoidHom.coe_coe g, f.map_mul, g.map_mul, h₁, h_of]
 
