@@ -239,10 +239,9 @@ parallelogram. The statement says that the two diagonals of this parallelogram h
 midpoint. See <https://en.wikipedia.org/wiki/Varignon%27s_theorem>. -/
 theorem midpoint_midpoint_midpoint_rotate (p₁ p₂ p₃ p₄ : P) :
     midpoint R (midpoint R p₁ p₂) (midpoint R p₃ p₄) =
-      midpoint R (midpoint R p₂ p₃) (midpoint R p₄ p₁) :=
-  (midpoint_eq_midpoint_iff_vsub_eq_vsub R).2 <| by
-    rw [midpoint_vsub_midpoint_same_middle, midpoint_comm p₃ p₄,
-      midpoint_vsub_midpoint_same_left]
+      midpoint R (midpoint R p₂ p₃) (midpoint R p₄ p₁) := by
+  rw [midpoint_eq_midpoint_iff_vsub_eq_vsub, midpoint_vsub_midpoint_same_middle,
+    midpoint_comm p₃ p₄, midpoint_vsub_midpoint_same_left]
 
 end
 
