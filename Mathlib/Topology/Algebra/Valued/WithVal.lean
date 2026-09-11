@@ -423,7 +423,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
 def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
-    ValueGroup₀ (.ofClass v) where
+    v.ValueGroup₀ where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
   left_inv x := by
@@ -612,7 +612,7 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
 
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
-    (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+    (γ : v.ValueGroup₀ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
   obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (.ofClass v) γ
   exact ⟨r, 1, by

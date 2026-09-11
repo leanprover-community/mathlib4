@@ -40,7 +40,7 @@ variable (v : Valuation R Γ) [hv : v.IsRankOneDiscrete]
 /-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 TODO: rename this into lowerCamelCase. -/
 @[simps!]
-noncomputable def valueGroup₀_equiv_withZeroMulInt : ValueGroup₀ (.ofClass v) ≃*o ℤᵐ⁰ where
+noncomputable def valueGroup₀_equiv_withZeroMulInt : v.ValueGroup₀ ≃*o ℤᵐ⁰ where
   __ := MulEquiv.withZero (intEquivOfZPowersEqTop _
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)).symm
   map_le_map_iff' {x y} := by

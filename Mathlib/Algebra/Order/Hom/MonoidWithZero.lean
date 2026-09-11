@@ -100,6 +100,10 @@ instance : FunLike (α →*₀o β) α β where
 
 initialize_simps_projections OrderMonoidWithZeroHom (toFun → apply, -toMonoidWithZeroHom)
 
+@[simp]
+lemma coe_coe [FunLike F α β] [OrderHomClass F α β] [MonoidWithZeroHomClass F α β] (f : F) :
+    ⇑(f : α →*₀o β) = f := rfl
+
 attribute [coe] toMonoidWithZeroHom
 
 instance : Coe (α →*₀o β) (α →*₀ β) := ⟨toMonoidWithZeroHom⟩
