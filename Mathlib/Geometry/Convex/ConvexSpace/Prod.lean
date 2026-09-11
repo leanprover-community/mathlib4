@@ -11,6 +11,9 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 # Product of convex spaces
 
 This file defines the cartesian product of convex spaces.
+
+We also show that products, `Pi` types and `Finsupp` types of cancellative convex spaces are
+cancellative.
 -/
 
 open Convexity Finsupp
@@ -59,6 +62,9 @@ lemma snd_convexCombPair (a b : R) (ha hb hab) (x y : X × Y) :
     (convexCombPair a b ha hb hab x y).snd = convexCombPair a b ha hb hab x.snd y.snd :=
   isAffineMap_snd.map_convexCombPair ..
 
+instance [IsCancelConvexSpace R X] [IsCancelConvexSpace R Y] : IsCancelConvexSpace R (X × Y) where
+  convexCombPair_left_injective a b ha hb hab y x₁ x₂ := by simp [Prod.ext_iff, *]
+
 end Prod
 
 namespace Pi
@@ -85,6 +91,9 @@ lemma iConvexComb_apply (w : StdSimplex R I) (f : I → ∀ i, X i) (i : ι) :
 lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ∀ i, X i) (i : ι) :
     convexCombPair a b ha hb hab f g i = convexCombPair a b ha hb hab (f i) (g i) :=
   isAffineMap_eval.map_convexCombPair ..
+
+instance [∀ i, IsCancelConvexSpace R (X i)] : IsCancelConvexSpace R (∀ i, X i) where
+  convexCombPair_left_injective a b ha hb hab g f₁ f₂ := by simp [funext_iff, *]
 
 end Pi
 
@@ -117,5 +126,8 @@ lemma iConvexComb_apply (w : StdSimplex R I) (f : I → ι →₀ X) (i : ι) :
 lemma convexCombPair_apply (a b : R) (ha hb hab) (f g : ι →₀ X) (i : ι) :
     convexCombPair a b ha hb hab f g i = convexCombPair a b ha hb hab (f i) (g i) :=
   isAffineMap_eval.map_convexCombPair ..
+
+instance [IsCancelConvexSpace R X] : IsCancelConvexSpace R (ι →₀ X) where
+  convexCombPair_left_injective a b ha hb hab g f₁ f₂ := by simp [Finsupp.ext_iff, *]
 
 end Finsupp
