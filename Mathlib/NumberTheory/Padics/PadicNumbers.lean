@@ -1076,7 +1076,7 @@ lemma valuation_intCast (n : ℤ) : valuation (n : ℚ_[p]) = padicValInt p n :=
 
 @[simp]
 lemma valuation_natCast (n : ℕ) : valuation (n : ℚ_[p]) = multiplicity p n := by
-  rw [← Rat.cast_natCast, valuation_ratCast, padicValRat.of_nat]
+  rw [← Rat.cast_natCast, valuation_ratCast, padicValRat.of_nat, padicValNat_def]
 
 @[simp]
 lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -1085,11 +1085,11 @@ lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
-  rw [← Nat.cast_one, valuation_natCast, multiplicity_one_right, cast_zero]
+  rw [← Nat.cast_one, valuation_natCast, multiplicity_of_one_right, cast_zero]
 
 -- not @[simp], since simp can prove it
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by
-  rw [valuation_natCast, multiplicity_self, cast_one]
+  rw [valuation_natCast, ← padicValNat_def, padicValNat_self, cast_one]
 
 theorem le_valuation_add {x y : ℚ_[p]} (hxy : x + y ≠ 0) :
     min x.valuation y.valuation ≤ (x + y).valuation := by
