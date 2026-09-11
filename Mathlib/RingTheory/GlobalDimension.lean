@@ -38,13 +38,11 @@ Prove that global dimension is invariant of universe if assuming `Small.{v} R`. 
 
 universe v u
 
-variable (R : Type u) [CommRing R]
-
 open CategoryTheory
 
 section GlobalDimension
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R]
 
 open Abelian
 
