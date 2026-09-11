@@ -13,9 +13,10 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 # Continuous linear equivalences on (dependent) product types
 
 ## Main Definitions
-* `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.
 * `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
 * `piUnique`: `Equiv.piUnique` as a continuous linear equivalence.
+* `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.
+* `piCongrRight`: `Equiv.piCongrRight` as a continuous linear equivalence.
 * `Fin.consEquivL`: `Fin.consEquiv` as a continuous linear equivalence.
 * `ContinuousLinearMap.finCons`: `Fin.cons` in the codomain of continuous linear maps.
 
