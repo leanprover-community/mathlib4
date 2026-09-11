@@ -68,14 +68,15 @@ variable {R A B F : Type*} [CommSemiring R]
 /-- Turn an element of a type `F` satisfying `CoalgHomClass F R A B` into an actual
 `CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
 @[coe]
-def toCoalgHom (f : F) : A →ₗc[R] B :=
+def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
     toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
-instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
-  ⟨CoalgHomClass.toCoalgHom⟩
+@[deprecated (since := "2026-09-09")] alias toCoalgHom := CoalgHom.ofClass
+
+instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) := ⟨.ofClass⟩
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
@@ -121,9 +122,11 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₗc[R] B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-09")] alias coe_coe := CoalgHom.coe_ofClass
 
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
@@ -138,29 +141,38 @@ theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A �
   rfl
 
 @[simp]
-theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
+theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = f :=
   rfl
 
+@[deprecated (since := "2026-09-09")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
+
 @[simp, norm_cast]
-theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
+theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
+
+@[deprecated (since := "2026-09-09")] alias coe_toLinearMap := coe_linearMapOfClass
 
 @[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
-theorem coe_fn_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
+theorem coe_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
   DFunLike.coe_injective
 
-theorem coe_fn_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
+theorem coe_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
-  fun φ₁ φ₂ H => coe_fn_injective <|
+@[deprecated (since := "2026-09-09")] alias coe_fn_injective := coe_injective
+@[deprecated (since := "2026-09-09")] alias coe_fn_inj := coe_inj
+
+theorem linearMapOfClass_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
+  fun φ₁ φ₂ H => coe_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
 
-theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
-  LinearMap.toAddMonoidHom_injective.comp coe_linearMap_injective
+@[deprecated (since := "2026-09-09")] alias coe_linearMap_injective := linearMapOfClass_injective
+
+theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
+  LinearMap.toAddMonoidHom_injective.comp linearMapOfClass_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₗc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
   DFunLike.congr_fun H x
@@ -174,7 +186,7 @@ theorem ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ�
 
 @[ext high]
 theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
-  coe_linearMap_injective (by ext; assumption)
+  linearMapOfClass_injective (by ext; assumption)
 
 @[simp]
 theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
