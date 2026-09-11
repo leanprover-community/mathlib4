@@ -70,9 +70,6 @@ theorem maxPowDvdDiv.go_spec {n p : ℕ} (hnp) :
   | case3 =>
     simp_all [Nat.dvd_iff_mod_eq_zero]
 
-theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
-  simp [divMaxPow, maxPowDvdDiv, maxPowDvdDiv.go_spec, *]
-
 theorem maxPowDvdDiv_of_base_le_one {p : ℕ} (hp : p ≤ 1) (n : ℕ) : maxPowDvdDiv p n = (0, n) := by
   simp [maxPowDvdDiv, Nat.not_lt_of_ge hp]
 
@@ -95,6 +92,9 @@ theorem maxPowDvdDiv_zero_right (p : ℕ) : maxPowDvdDiv p 0 = (0, 0) := by simp
 
 @[simp]
 theorem divMaxPow_zero_left (p : ℕ) : divMaxPow 0 p = 0 := by simp [divMaxPow]
+
+theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
+  simp [divMaxPow, maxPowDvdDiv, maxPowDvdDiv.go_spec, *]
 
 private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : n ≠ 0)
     (hab : p ^ a * b = n) (hb : ¬p ∣ b) : p ^ k ∣ n ↔ k ≤ a := by
