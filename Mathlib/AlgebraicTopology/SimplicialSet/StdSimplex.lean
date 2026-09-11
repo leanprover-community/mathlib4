@@ -918,10 +918,7 @@ noncomputable def ofSimplexRepresentableBy :
 @[simp]
 lemma ofSimplexRepresentableBy_id :
     dsimp% (ofSimplexRepresentableBy x).homEquiv (𝟙 ⦋n⦌) = x := by
-  dsimp [ofSimplexRepresentableBy]
-  simp only [Iso.homCongr_apply, Iso.refl_inv, asIso_hom,
-    Category.id_comp, yonedaEquiv_symm_comp, Equiv.apply_symm_apply,
-    toOfSimplex_app_objEquiv_symm.{u}]
+  simp [ofSimplexRepresentableBy]
 
 @[simp]
 lemma yonedaEquiv_isoOfRepresentableBy_ofSimplexRepresentableBy_hom :
