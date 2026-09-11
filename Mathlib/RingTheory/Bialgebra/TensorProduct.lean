@@ -141,10 +141,7 @@ variable (R S A) in
 bialgebra equivalence. -/
 @[expose] protected def rid : A ⊗[R] R ≃ₐc[S] A where
   toCoalgEquiv := Coalgebra.TensorProduct.rid R S A
-  map_mul' x y := by
-    simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
-      LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
-      coalgebra_rid_eq_algebra_rid_apply, map_mul]
+  map_mul' x y := by simp [coalgebra_rid_eq_algebra_rid_apply]
 
 @[simp]
 theorem rid_toCoalgEquiv :
@@ -246,6 +243,23 @@ def _root_.Coalgebra.Repr.mul {b : A} (ℛ₁ : Coalgebra.Repr R a ι) (ℛ₂ :
     Coalgebra.Repr R (a * b) (ι × κ) := (ℛ₁.tmul ℛ₂).induced (R := R) (mulCoalgHom R A)
 
 end Semiring
+
+@[simp]
+lemma counitAlgHom_comp_includeRight [CommSemiring A] [Semiring B] [Algebra R A] [Bialgebra R B] :
+    ((counitAlgHom A (A ⊗[R] B)).restrictScalars R).comp Algebra.TensorProduct.includeRight =
+      (Algebra.ofId R A).comp (counitAlgHom R B) := by
+  ext; simp [Algebra.algebraMap_eq_smul_one]
+
+lemma comul_includeRight [CommSemiring A] [CommSemiring B] [Bialgebra R B] [Algebra R A] :
+    (RingHomClass.toRingHom (Bialgebra.comulAlgHom A (A ⊗[R] B))).comp
+      (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
+      (Algebra.TensorProduct.mapRingHom (algebraMap R A)
+        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
+        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
+        (by simp [← IsScalarTower.algebraMap_eq])
+        (by simp [← IsScalarTower.algebraMap_eq])).comp
+        (RingHomClass.toRingHom (Bialgebra.comulAlgHom R B)) := by
+  ext x; simp [← (ℛ R x).eq, TensorProduct.tmul_sum]
 
 section CommSemiring
 variable [CommSemiring A] [Bialgebra R A]

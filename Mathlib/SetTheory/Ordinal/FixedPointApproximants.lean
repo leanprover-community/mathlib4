@@ -139,6 +139,43 @@ theorem lfpApprox_eq_of_mem_fixedPoints (hab : a ≤ b)
   · exact apply_lfpApprox_le_lfpApprox_of_lt f hi'
   · simp [IH i hi hi', hf]
 
+theorem lfpApprox_eq_all_of_fixedPoint (hx : x ≤ f x) :
+    (∀ o, lfpApprox f x o = x) ↔ f x = x := by
+  refine ⟨fun h ↦ ?_, fun h o ↦ ?_⟩
+  · specialize h 1
+    rwa [← zero_add 1, lfpApprox_add_one f hx, lfpApprox_zero] at h
+  · have : lfpApprox f x 0 ∈ fixedPoints f := by
+      rwa [mem_fixedPoints_iff, lfpApprox_zero]
+    simpa [lfpApprox_zero] using
+      lfpApprox_eq_of_mem_fixedPoints f zero_le this
+
+/-- If the sequence of ordinal-indexed approximations takes a value twice,
+then it actually stabilised at that value. -/
+lemma lfpApprox_mem_fixedPoints_of_eq (hx : x ≤ f x) (hab : a < b) (hac : a ≤ c)
+    (hf : lfpApprox f x a = lfpApprox f x b) : lfpApprox f x c ∈ fixedPoints f := by
+  have H : lfpApprox f x a ∈ fixedPoints f := by
+    rw [mem_fixedPoints_iff, ← lfpApprox_add_one f hx]
+    exact (lfpApprox_mono_right f).eq_of_ge_of_le
+      hf (lt_add_one a).le (add_one_le_of_lt hab)
+  rwa [lfpApprox_eq_of_mem_fixedPoints f hac H]
+
+theorem lfpApprox_eq_of_fixedPoint_or_zero (hx : x ≤ f x) (o : Ordinal) :
+    lfpApprox f x o = x ↔ f x = x ∨ o = 0 := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · rcases eq_or_ne o 0 with (rfl | ho)
+    · exact Or.inr rfl
+    · have hpos : (0 : Ordinal) < o :=
+        zero_lt_one.trans_le (one_le_iff_ne_zero.mpr ho)
+      have hmem : lfpApprox f x 0 ∈ fixedPoints f :=
+        lfpApprox_mem_fixedPoints_of_eq f hx hpos (le_refl _)
+          ((lfpApprox_zero f).trans h.symm)
+      have hfx : f x = x :=
+        (mem_fixedPoints_iff.mp (by simpa [lfpApprox_zero] using hmem))
+      exact Or.inl hfx
+  · rcases h with (hf | rfl)
+    · exact (lfpApprox_eq_all_of_fixedPoint f hx).mpr hf o
+    · exact lfpApprox_zero f
+
 variable (x) in
 /-- There are distinct indices smaller than the successor of the domain's cardinality
 yielding the same value -/
@@ -152,16 +189,6 @@ theorem exists_lfpApprox_eq_lfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| 
   apply And.intro
   · intro h_eq; rw [Subtype.coe_inj] at h_eq; exact h_nab h_eq
   · exact h_fab
-
-/-- If the sequence of ordinal-indexed approximations takes a value twice,
-then it actually stabilised at that value. -/
-lemma lfpApprox_mem_fixedPoints_of_eq (hx : x ≤ f x) (hab : a < b) (hac : a ≤ c)
-    (hf : lfpApprox f x a = lfpApprox f x b) : lfpApprox f x c ∈ fixedPoints f := by
-  have H : lfpApprox f x a ∈ fixedPoints f := by
-    rw [mem_fixedPoints_iff, ← lfpApprox_add_one f hx]
-    exact (lfpApprox_mono_right f).eq_of_ge_of_le
-      hf (lt_add_one a).le (add_one_le_of_lt hab)
-  rwa [lfpApprox_eq_of_mem_fixedPoints f hac H]
 
 /-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
 theorem lfpApprox_ord_mem_fixedPoint (hx : x ≤ f x) :
@@ -198,6 +225,28 @@ theorem lfpApprox_ord_eq_lfp : lfpApprox f ⊥ (ord <| succ #α) = f.lfp := by
 theorem lfp_mem_range_lfpApprox : f.lfp ∈ Set.range (lfpApprox f ⊥) := by
   use ord <| succ #α
   exact lfpApprox_ord_eq_lfp f
+
+/-- If `lfpApprox f x a` is a fixed point, then the supremum of the whole
+ordinal-indexed sequence equals the value at `a`. -/
+lemma iSup_lfpApprox_eq_of_mem_fixedPoints (hf : lfpApprox f x a ∈ fixedPoints f) :
+    ⨆ i : Ordinal, lfpApprox f x i = lfpApprox f x a := by
+  apply (le_iSup (lfpApprox f x) a).antisymm'
+  refine ciSup_le fun i => ?_
+  by_cases h : i ≤ a
+  · exact lfpApprox_mono_right f h
+  · exact (lfpApprox_eq_of_mem_fixedPoints f (le_of_not_ge h) hf).le
+
+/-- The ordinal-indexed supremum of `lfpApprox` equals `nextFixed`: the least fixed point
+greater than or equal to `x`. -/
+theorem nextFixed_eq_iSup_lfpApprox (hx : x ≤ f x) :
+    (f.nextFixed x hx).val = ⨆ a : Ordinal, lfpApprox f x a := by
+  let o := (succ #α).ord
+  have hfix : lfpApprox f x o ∈ fixedPoints f :=
+    lfpApprox_ord_mem_fixedPoint f hx
+  rw [iSup_lfpApprox_eq_of_mem_fixedPoints f hfix]
+  apply le_antisymm
+  · exact f.nextFixed_le hx (y := ⟨lfpApprox f x o, hfix⟩) (le_lfpApprox f)
+  · exact lfpApprox_le_of_mem_fixedPoints f (f.nextFixed x hx).2 (f.le_nextFixed hx) o
 
 variable (x) in
 /-- The ordinal-indexed sequence approximating the greatest fixed point greater than
@@ -247,6 +296,18 @@ theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_ab : a ≤ b)
     (h : gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a :=
   lfpApprox_eq_of_mem_fixedPoints f.dual h_ab h
 
+theorem gfpApprox_eq_all_of_fixedPoint (hx : f x ≤ x) :
+    (∀ o, gfpApprox f x o = x) ↔ f x = x :=
+  lfpApprox_eq_all_of_fixedPoint f.dual hx
+
+lemma gfpApprox_mem_fixedPoints_of_eq (hx : f x ≤ x) (hab : a < b) (hac : a ≤ c)
+    (hf : gfpApprox f x a = gfpApprox f x b) : gfpApprox f x c ∈ fixedPoints f :=
+  lfpApprox_mem_fixedPoints_of_eq f.dual hx hab hac hf
+
+theorem gfpApprox_eq_of_fixedPoint_or_zero (hx : f x ≤ x) (o : Ordinal) :
+    gfpApprox f x o = x ↔ f x = x ∨ o = 0 :=
+  lfpApprox_eq_of_fixedPoint_or_zero f.dual hx o
+
 /-- There are distinct indices smaller than the successor of the domain's cardinality
 yielding the same value -/
 theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
@@ -272,5 +333,17 @@ theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = f.gfp :=
 /-- Some approximation of the least fixed point starting from `⊤` is the greatest fixed point. -/
 theorem gfp_mem_range_gfpApprox : f.gfp ∈ Set.range (gfpApprox f ⊤) :=
   lfp_mem_range_lfpApprox f.dual
+
+/-- If `gfpApprox f x a` is a fixed point, then the infimum of the whole
+ordinal-indexed sequence equals the value at `a`. -/
+lemma iInf_gfpApprox_eq_of_mem_fixedPoints (hf : gfpApprox f x a ∈ fixedPoints f) :
+    ⨅ i : Ordinal, gfpApprox f x i = gfpApprox f x a :=
+  iSup_lfpApprox_eq_of_mem_fixedPoints f.dual hf
+
+/-- The ordinal-indexed infimum of `gfpApprox` equals `prevFixed`: the greatest fixed point
+less than or equal to `x`. -/
+theorem prevFixed_eq_iInf_gfpApprox (hx : f x ≤ x) :
+    (f.prevFixed x hx).val = ⨅ a : Ordinal, gfpApprox f x a :=
+  nextFixed_eq_iSup_lfpApprox f.dual hx
 
 end OrdinalApprox

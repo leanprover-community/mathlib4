@@ -113,12 +113,13 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
     simpa [hσi] using (this.trans H).trans (totalDegree_rename_le _ _)
   · refine (map_eq_zero_iff _ (rename_injective _ Subtype.val_injective)).not.mpr fun H ↦ ?_
     let e := (Equiv.optionSubtypeNe i).symm
-    have : coeff _ (F₀.coeff _) = _ :=
+    have : (F₀.coeff _).coeff _ = _ :=
       optionEquivLeft_coeff_some_coeff_none _ _ (σ.equivMapDomain e) (renameEquiv k e F)
     dsimp only [F₀] at this
     rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain, coeff_rename_mapDomain _
       e.injective, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_none,
-      ← renameEquiv_apply, H, coeff_zero, eq_comm, ← notMem_support_iff] at this
+      ← renameEquiv_apply, H, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply, eq_comm,
+      ← notMem_support_iff] at this
     exact this hσ
   · apply_fun Subalgebra.val _ at H
     simp_rw [toPolynomialAdjoinImageCompl, Polynomial.coe_mapAlgHom, Polynomial.coeff_map,
@@ -135,7 +136,6 @@ theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (
   rw [h, Polynomial.coeff_zero]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hp H in
 theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) :
     ∃ i, ∃ σ ∈ F.support, ¬ p ∣ σ i := by
@@ -236,7 +236,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
   replace eq := congr(Polynomial.coeff $eq (σ i))
   rwa [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
     (aeval_toPolynomialAdjoinImageCompl_eq_zero hFa i)), Polynomial.coeff_mul_C,
-    Polynomial.coeff_expand hp.pos, if_neg hi, eq_mul_inv_iff_mul_eq₀
+    Polynomial.coeff_expand hp.pos, ite_eq_right hi, eq_mul_inv_iff_mul_eq₀
     (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
     Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
 

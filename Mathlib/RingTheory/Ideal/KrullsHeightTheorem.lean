@@ -49,7 +49,7 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) (hp : IsLocalRing.maximalIdeal R ∈ I.minimalPrimes) :
     IsArtinianRing (R ⧸ I) :=
   have : Ring.KrullDimLE 0 (R ⧸ I) := Ring.krullDimLE_zero_iff.mpr fun J prime ↦
-    Ideal.isMaximal_of_isIntegral_of_isMaximal_comap _ <| by
+    Ideal.isMaximal_of_isIntegral_of_isMaximal_under _ <| by
       convert! IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)
@@ -243,11 +243,36 @@ lemma Ideal.height_le_card_of_mem_minimalPrimes_span_finset {p : Ideal R} {s : F
   · exact Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes _ _ hI
   · simpa using Submodule.spanRank_span_le_card (s : Set R)
 
-lemma Ideal.height_le_card_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
+lemma Ideal.height_span_le_card_of_span_ne_top {s : Finset R} (ht : Ideal.span (s : Set R) ≠ ⊤) :
+    (Ideal.span (s : Set R)).height ≤ s.card := by
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes ht
+  grw [height_mono hp.1.2, height_le_card_of_mem_minimalPrimes_span_finset hp]
+
+lemma Ideal.height_le_ncard_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
     (hs : s.Finite) (hI : p ∈ (Ideal.span s).minimalPrimes) :
     p.height ≤ s.ncard := by
   rw [s.ncard_eq_toFinset_card hs]
   exact Ideal.height_le_card_of_mem_minimalPrimes_span_finset (by simpa)
+
+@[deprecated (since := "2026-06-29")]
+alias Ideal.height_le_card_of_mem_minimalPrimes_span :=
+  Ideal.height_le_ncard_of_mem_minimalPrimes_span
+
+lemma Ideal.height_span_le_ncard_of_span_ne_top {s : Set R} (hs : s.Finite)
+    (ht : Ideal.span s ≠ ⊤) : (Ideal.span s).height ≤ s.ncard := by
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes ht
+  grw [height_mono hp.1.2, height_le_ncard_of_mem_minimalPrimes_span hs hp]
+
+lemma Ideal.height_le_encard_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
+    (hI : p ∈ (Ideal.span s).minimalPrimes) : p.height ≤ s.encard := by
+  by_cases! hs : s.Finite
+  · exact hs.cast_ncard_eq ▸ Ideal.height_le_ncard_of_mem_minimalPrimes_span hs hI
+  · simp [hs]
+
+lemma Ideal.height_span_le_encard_of_span_ne_top {s : Set R} (ht : Ideal.span s ≠ ⊤) :
+    (Ideal.span s).height ≤ s.encard := by
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes ht
+  grw [height_mono hp.1.2, height_le_encard_of_mem_minimalPrimes_span hp]
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
@@ -303,7 +328,7 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
   constructor
   · intro h
     obtain ⟨I, hI, e₁, e₂⟩ := exists_spanRank_eq_and_height_eq p (IsPrime.ne_top ‹_›)
-    refine ⟨I, Ideal.mem_minimalPrimes_of_height_eq hI e₂.ge, e₁.symm ▸ ?_⟩
+    refine ⟨I, Ideal.mem_minimalPrimes_of_height_le hI e₂.ge, e₁.symm ▸ ?_⟩
     norm_cast
   · rintro ⟨I, hp, hI⟩
     exact le_trans

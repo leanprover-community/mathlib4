@@ -258,6 +258,24 @@ theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s �
     let ⟨s, hxs, hso, hs⟩ := h x
     ⟨s, hxs, (hxy.mem_open_iff hso).1 hxs, hs⟩
 
+variable (X) in
+-- since this instance is usually the desired instance, its priority is not lowered
+-- see Note [lower instance priority]
+instance [T0Space X] [Nontrivial X] : NontrivialTopology X := by
+  obtain ⟨a, b, hab⟩ := exists_pair_ne X
+  exact nontrivial_iff_exists_not_inseparable.mpr ⟨a, b, mt Inseparable.eq hab⟩
+
+theorem subsingleton_iff_indiscreteTopology [T0Space X] :
+    Subsingleton X ↔ IndiscreteTopology X := by
+  refine ⟨?_, Function.mtr ?_⟩
+  · intro; infer_instance
+  · rw [not_subsingleton_iff_nontrivial, not_indiscrete_iff]
+    intro; infer_instance
+
+theorem nontrivial_iff_nontrivialTopology [T0Space X] : Nontrivial X ↔ NontrivialTopology X := by
+  rw [← not_subsingleton_iff_nontrivial, ← not_indiscrete_iff, not_iff_not]
+  exact subsingleton_iff_indiscreteTopology
+
 /-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
 
 In other words, given two points `x y : X`,
@@ -348,6 +366,7 @@ class T1Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- A singleton in a T₁ space is a closed set. -/
   t1 : ∀ x, IsClosed ({x} : Set X)
 
+@[closedness .]
 theorem isClosed_singleton [T1Space X] {x : X} : IsClosed ({x} : Set X) :=
   T1Space.t1 x
 
@@ -452,26 +471,26 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_finish
 
 theorem t1Space_iff_continuous_cofinite_of : T1Space X ↔ Continuous (@CofiniteTopology.of X) :=
-  (t1Space_TFAE X).out 0 3
+  (t1Space_TFAE X).out 1 4
 
 theorem CofiniteTopology.continuous_of [T1Space X] : Continuous (@CofiniteTopology.of X) :=
   t1Space_iff_continuous_cofinite_of.mp ‹_›
 
 theorem t1Space_iff_exists_open :
     T1Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U :=
-  (t1Space_TFAE X).out 0 6
+  (t1Space_TFAE X).out 1 7
 
 theorem t1Space_iff_disjoint_pure_nhds : T1Space X ↔ ∀ ⦃x y : X⦄, x ≠ y → Disjoint (pure x) (𝓝 y) :=
-  (t1Space_TFAE X).out 0 8
+  (t1Space_TFAE X).out 1 9
 
 theorem t1Space_iff_disjoint_nhds_pure : T1Space X ↔ ∀ ⦃x y : X⦄, x ≠ y → Disjoint (𝓝 x) (pure y) :=
-  (t1Space_TFAE X).out 0 7
+  (t1Space_TFAE X).out 1 8
 
 theorem t1Space_iff_specializes_imp_eq : T1Space X ↔ ∀ ⦃x y : X⦄, x ⤳ y → x = y :=
-  (t1Space_TFAE X).out 0 9
+  (t1Space_TFAE X).out 1 10
 
 theorem t1Space_iff_t0Space_and_r0Space : T1Space X ↔ T0Space X ∧ R0Space X :=
-  (t1Space_TFAE X).out 0 10
+  (t1Space_TFAE X).out 1 11
 
 theorem disjoint_pure_nhds [T1Space X] {x y : X} (h : x ≠ y) : Disjoint (pure x) (𝓝 y) :=
   t1Space_iff_disjoint_pure_nhds.mp ‹_› h
@@ -568,6 +587,7 @@ theorem compl_singleton_mem_nhds_iff [T1Space X] {x y : X} : {x}ᶜ ∈ 𝓝 y �
 theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ ∈ 𝓝 y :=
   compl_singleton_mem_nhds_iff.mpr h
 
+@[closedness =]
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
@@ -619,13 +639,15 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
 
-lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
-  simp_rw [eventuallyEq_set] at h ⊢
+lemma eventuallyEqSet_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    insert x s =ᶠ[𝓝 x] insert x t := by
+  simp_rw [eventuallyEqSet_iff] at h ⊢
   simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
     nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
     eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
   filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr (Iff.rfl)
+
+@[deprecated (since := "2026-08-14")] alias eventuallyEq_insert := eventuallyEqSet_insert
 
 @[simp]
 theorem ker_nhds [T1Space X] (x : X) : (𝓝 x).ker = {x} := by
@@ -756,7 +778,7 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
     {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
-  exact continuousWithinAt_congr_set (eventuallyEq_insert h)
+  exact continuousWithinAt_congr_set (eventuallyEqSet_insert h)
 
 theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
@@ -805,14 +827,18 @@ instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X
 lemma Set.Finite.isDiscrete [T1Space X] {s : Set X} (hs : s.Finite) : IsDiscrete s :=
   ⟨@Finite.instDiscreteTopology _ _ _ hs.to_subtype⟩
 
+theorem subsingleton_iff_discrete_and_indiscrete :
+    Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ subsingleton_iff_indiscreteTopology.2 ‹_›⟩
+
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   have : Finite s := hs
   fun_prop
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
-  rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
+  rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 1 10 :)]
   refine ⟨fun h ↦ ⟨fun x y xspecy ↦ ?_⟩, ?_⟩
   · rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
   · -- TODO is there are better way to do this,
@@ -1083,7 +1109,6 @@ protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
   .sInf <| forall_mem_range.2 ht
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (h₁ : @R1Space X t₁) (h₂ : @R1Space X t₂) : @R1Space X (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]

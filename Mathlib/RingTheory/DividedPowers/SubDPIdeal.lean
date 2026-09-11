@@ -100,17 +100,18 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 def dividedPowers {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)] :
     DividedPowers J where
   dpow n x        := if x ∈ J then hI.dpow n x else 0
-  dpow_null hx    := by simp [if_neg hx]
-  dpow_zero hx    := by simp [if_pos hx, hI.dpow_zero (hJ.isSubideal hx)]
-  dpow_one hx     := by simp [if_pos hx, hI.dpow_one (hJ.isSubideal hx)]
-  dpow_mem hn hx  := by simp [if_pos hx, hJ.dpow_mem _ hn hx]
-  dpow_add hx hy  := by simp_rw [if_pos hx, if_pos hy, if_pos (Ideal.add_mem J hx hy),
-    hI.dpow_add (hJ.isSubideal hx) (hJ.isSubideal hy)]
+  dpow_null hx    := by simp [ite_eq_right hx]
+  dpow_zero hx    := by simp [ite_eq_left hx, hI.dpow_zero (hJ.isSubideal hx)]
+  dpow_one hx     := by simp [ite_eq_left hx, hI.dpow_one (hJ.isSubideal hx)]
+  dpow_mem hn hx  := by simp [ite_eq_left hx, hJ.dpow_mem _ hn hx]
+  dpow_add hx hy  := by
+    simp_rw [ite_eq_left hx, ite_eq_left hy, ite_eq_left (Ideal.add_mem J hx hy),
+      hI.dpow_add (hJ.isSubideal hx) (hJ.isSubideal hy)]
   dpow_mul hx     := by
-    simp [if_pos hx, if_pos (mul_mem_left J _ hx), hI.dpow_mul (hJ.isSubideal hx)]
-  mul_dpow hx     := by simp [if_pos hx, hI.mul_dpow (hJ.isSubideal hx)]
+    simp [ite_eq_left hx, ite_eq_left (mul_mem_left J _ hx), hI.dpow_mul (hJ.isSubideal hx)]
+  mul_dpow hx     := by simp [ite_eq_left hx, hI.mul_dpow (hJ.isSubideal hx)]
   dpow_comp hn hx := by
-    simp [if_pos hx, if_pos (hJ.dpow_mem _ hn hx), hI.dpow_comp hn (hJ.isSubideal hx)]
+    simp [ite_eq_left hx, ite_eq_left (hJ.dpow_mem _ hn hx), hI.dpow_comp hn (hJ.isSubideal hx)]
 
 variable {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)]
 
@@ -118,7 +119,7 @@ lemma dpow_eq (n : ℕ) (a : A) :
     (IsSubDPIdeal.dividedPowers hI hJ).dpow n a = if a ∈ J then hI.dpow n a else 0 := rfl
 
 lemma dpow_eq_of_mem {n : ℕ} {a : A} (ha : a ∈ J) :
-    (IsSubDPIdeal.dividedPowers hI hJ).dpow n a = hI.dpow n a := by rw [dpow_eq, if_pos ha]
+    (IsSubDPIdeal.dividedPowers hI hJ).dpow n a = hI.dpow n a := by rw [dpow_eq, ite_eq_left ha]
 
 theorem isDPMorphism (hJ : IsSubDPIdeal hI J) :
     (IsSubDPIdeal.dividedPowers hI hJ).IsDPMorphism hI (RingHom.id A) := by
@@ -261,7 +262,7 @@ See [P. Berthelot, *Cohomologie cristalline des schémas de caractéristique $p$
 (Proposition 1.6.1 (i))][Berthelot-1974] -/
 def prod (J : Ideal A) : SubDPIdeal hI where
   carrier := I • J
-  isSubideal := mul_le_right
+  isSubideal := mul_le_left
   dpow_mem m hm x hx := by
     induction hx using Submodule.smul_induction_on' generalizing m with
     | smul a ha b hb =>
@@ -269,7 +270,7 @@ def prod (J : Ideal A) : SubDPIdeal hI where
       exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
         (hI.dpow_mem hm ha)
     | add x hx y hy hx' hy' =>
-      rw [hI.dpow_add' (mul_le_right hx) (mul_le_right hy)]
+      rw [hI.dpow_add' (mul_le_left hx) (mul_le_left hy)]
       apply Submodule.sum_mem (I • J)
       intro k _
       by_cases hk0 : k = 0
@@ -565,7 +566,7 @@ theorem dpow_apply' (hIf : IsSubDPIdeal hI (RingHom.ker f ⊓ I)) {n : ℕ} {a :
   classical
   simp only [dpow, Function.extend_def]
   have h : ∃ (a_1 : I), f ↑a_1 = f a := by use ⟨a, ha⟩
-  rw [dif_pos h, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
+  rw [dite_eq_left h, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
   apply (hI.isSubDPIdeal_inf_iff.mp hIf) (Submodule.coe_mem _) ha
   rw [RingHom.mem_ker, map_sub, sub_eq_zero, h.choose_spec]
 
@@ -577,7 +578,7 @@ noncomputable def dividedPowers : DividedPowers J where
   dpow := dpow hI f
   dpow_null n {x} hx' := by
     classical
-    rw [dpow, Function.extend_def, dif_neg, Pi.zero_apply]
+    rw [dpow, Function.extend_def, dite_eq_right, Pi.zero_apply]
     rintro ⟨⟨a, ha⟩, rfl⟩
     exact (hIJ ▸ hx') (apply_coe_mem_map f I ⟨a, ha⟩)
   dpow_zero {x} hx := by

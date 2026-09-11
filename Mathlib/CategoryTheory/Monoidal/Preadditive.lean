@@ -283,7 +283,7 @@ theorem rightDistributor_assoc {J : Type} [Finite J] (f : J → C) (X Y : C) :
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,
     comp_tensor_id, tensorIso_hom, rightDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map,
     biproduct.ι_π, Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero,
-    Finset.mem_univ, if_true]
+    Finset.mem_univ, ite_true]
   simp_rw [← tensorHom_id]
   simp only [← comp_tensor_id, biproduct.ι_π, dite_tensor, comp_dite]
   simp
@@ -301,7 +301,7 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Finite J]
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,
     tensor_sum, comp_tensor_id, tensorIso_hom, leftDistributor_hom, rightDistributor_hom,
     biproduct.mapIso_hom, biproduct.ι_map, biproduct.ι_π, Finset.sum_dite_irrel,
-    Finset.sum_dite_eq', Finset.sum_const_zero, Finset.mem_univ, if_true]
+    Finset.sum_dite_eq', Finset.sum_const_zero, Finset.mem_univ, ite_true]
   simp_rw [← tensorHom_id, ← id_tensorHom]
   simp only [← comp_tensor_id, ← id_tensor_comp_assoc, Category.assoc, biproduct.ι_π, comp_dite,
     dite_comp, tensor_dite, dite_tensor]

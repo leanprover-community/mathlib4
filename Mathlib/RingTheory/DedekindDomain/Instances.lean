@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
 # Instances for Dedekind domains

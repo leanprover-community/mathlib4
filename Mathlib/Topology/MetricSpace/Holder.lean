@@ -246,7 +246,7 @@ namespace HolderWith
 
 variable {C r : ℝ≥0} {f : X → Y}
 
-theorem restrict_iff {s : Set X} : HolderWith C r (s.restrict f) ↔ HolderOnWith C r f s := by
+theorem restrict_iff {s : Set X} : HolderWith C r (s.domRestrict f) ↔ HolderOnWith C r f s := by
   simp [HolderWith, HolderOnWith]
 
 protected alias ⟨_, _root_.HolderOnWith.holderWith⟩ := restrict_iff

@@ -87,8 +87,8 @@ lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
     (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
     IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_left, isCusp_iff_of_relIndex_ne_zero inf_le_right]
-  · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
-  · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
+  · simpa [Subgroup.inf_relIndex_right] using h𝒢.1.relIndex_ne_zero
+  · simpa [Subgroup.inf_relIndex_left] using h𝒢.2.relIndex_ne_zero
 
 lemma IsCusp.mono {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ} (hGH : 𝒢 ≤ ℋ)
     (hc : IsCusp c 𝒢) : IsCusp c ℋ :=
@@ -128,7 +128,6 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
       simp [OnePoint.map_smul, mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
 lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
   rw [isCusp_SL2Z_iff]
@@ -168,7 +167,6 @@ noncomputable def cuspsSubMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
 abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
   MulAction.orbitRel.Quotient 𝒢 (cuspsSubMulAction 𝒢)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing
 that `CuspOrbits 𝒢` is finite for arithmetic subgroups. -/
 noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] :
@@ -183,7 +181,6 @@ noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAr
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
       simp [mul_smul])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cosetToCuspOrbit_apply_mk {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.IsArithmetic] (g : SL(2, ℤ)) :
     cosetToCuspOrbit 𝒢 ⟦g⟧ = ⟦⟨mapGL ℝ g⁻¹ • ∞,
@@ -264,6 +261,7 @@ lemma relIndex_strictPeriods :
 
 lemma commensurable_strictPeriods_periods :
     𝒢.strictPeriods.Commensurable 𝒢.periods := by
+  simp_rw [AddSubgroup.Commensurable, AddSubgroup.isFiniteRelIndex_iff_relIndex_ne_zero]
   constructor
   · rcases 𝒢.relIndex_strictPeriods with h | h <;> simp [h]
   · simp [AddSubgroup.relIndex_eq_one.mpr 𝒢.strictPeriods_le_periods]
@@ -335,7 +333,7 @@ lemma widthInfty_nonneg : 0 ≤ 𝒢.widthInfty := 𝒢.adjoinNegOne.strictWidth
 variable {𝒢} in
 lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strictPeriods] :
     𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
-  simp [Subgroup.strictWidthInfty, dif_pos,
+  simp [Subgroup.strictWidthInfty, dite_eq_left,
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
       <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
 
@@ -357,7 +355,7 @@ lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
   · simp [strictPeriods_eq_zmultiples_strictWidthInfty]
-  · simp [strictWidthInfty, dif_neg h]
+  · simp [strictWidthInfty, dite_eq_right h]
 
 variable {𝒢} in
 lemma periods_eq_zmultiples_widthInfty [DiscreteTopology 𝒢.periods] :

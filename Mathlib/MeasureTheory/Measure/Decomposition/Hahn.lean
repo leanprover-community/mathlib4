@@ -35,7 +35,9 @@ public section
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure
 
-open Set Filter Topology ENNReal
+open Set Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 

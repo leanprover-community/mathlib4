@@ -30,7 +30,7 @@ namespace Abelian
 
 namespace SpectralObject
 
-variable {C ι ι' κ : Type*} [Category* C] [Abelian C] [Category* ι] [Preorder ι']
+variable {C ι ι' : Type*} [Category* C] [Abelian C] [Category* ι] [Preorder ι']
   (X : SpectralObject C ι) (X' : SpectralObject C ι')
 
 section
@@ -61,7 +61,7 @@ end
 
 section
 
-variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+variable {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
   (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
   (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
@@ -243,8 +243,8 @@ end
 
 section
 
-variable (i₀ i₁ i₂ i₃ i₄ i₅ : ι') (hi₀₁ : i₀ ≤ i₁)
-  (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
+variable (i₀ i₁ i₂ i₃ i₄ : ι') (hi₀₁ : i₀ ≤ i₁)
+  (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄)
 
 /-- For a spectral object indexed by a preorder, this is the map
 `E^{n₁}(i₀ ≤ i₁ ≤ i₃ ≤ i₄) ⟶ E^{n₁}(i₀ ≤ i₂ ≤ i₃ ≤ i₄)`. -/

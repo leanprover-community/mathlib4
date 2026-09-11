@@ -186,6 +186,10 @@ instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
     s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
   s.independent.mem_affineSpan_iff _ _
 
+lemma mem_affineSpan_range {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∈ affineSpan k (Set.range s.points) :=
+  mem_affineSpan k (Set.mem_range_self i)
+
 lemma affineCombination_mem_affineSpan_faceOpposite_iff {n : ℕ} [NeZero n] {s : Simplex k P n}
     {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) {i : Fin (n + 1)} :
     Finset.univ.affineCombination k s.points w ∈
@@ -275,7 +279,6 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_face_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
     {fs : Finset (Fin (n + 1))} {n' : ℕ} (h : #fs = n' + 1) :
     Set.range ((s.reindex e).face h).points =
