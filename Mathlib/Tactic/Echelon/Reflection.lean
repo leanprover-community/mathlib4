@@ -23,40 +23,6 @@ namespace Mathlib.Tactic.Echelon
 
 variable {α : Type*}
 
-/-! ### The pivot-function conditions in chain form
-
-The pivot certificates defined in the theory file using `Monotone` and `StrictMonoOn` have
-decidable instances but require `O(n^2)` comparisons, since they use the general decidable
-instances from `Monotone` which check all pairs. The following part defines a `List.isChain`-based
-alternative that can be decided in `O(n) comparisons`.
--/
-
-section Top
-
-variable [Top α]
-
-/-- One step of a pivot function: strictly increasing, with `⊤` absorbing. -/
-def PivotStep [LT α] (a b : α) : Prop :=
-  a < b ∨ a = ⊤ ∧ b = ⊤
-
-instance [Preorder α] : IsTrans α PivotStep where
-  trans a b c h₁ h₂ := by
-    simp only [PivotStep] at *
-    grind
-
-instance [LT α] [i : ∀ a b : α, Decidable (a < b ∨ a = ⊤ ∧ b = ⊤)] :
-    DecidableRel (PivotStep (α := α)) := i
-
-/-- TODO: List.ofFn still brings up a O(n^2) construction. This can be improved by using a
-list bridge eventually. -/
-theorem isChain_ofFn_iff_monotone_and_strictMonoOn [PartialOrder α] {m : ℕ} (l : Fin m → α) :
-    (List.ofFn l).IsChain PivotStep ↔ Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} := by
-  rw [List.isChain_iff_pairwise, List.pairwise_ofFn]
-  simp only [PivotStep, Monotone, StrictMonoOn]
-  grind [le_of_lt, LE.le.eq_or_lt]
-
-end Top
-
 theorem getD_eq_zero_of_forall_eq_zero [Zero α] {l : List α} (h : ∀ x ∈ l, x = 0) (i : ℕ) :
     l.getD i 0 = 0 := by
   rw [List.eq_replicate_of_mem h]
@@ -118,82 +84,121 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
 
 variable {n : ℕ}
 
-/-- The entries of each row before its pivot column, all of the row when the pivot is `⊤`. -/
-def pivotPrefixes : List (WithTop (Fin n)) → List (List α) → List α
-  | [], _ => []
-  | (p : Fin n) :: ps, rows => (rows.headD []).take p ++ pivotPrefixes ps rows.tail
-  | none :: ps, rows => rows.headD [] ++ pivotPrefixes ps rows.tail
+/-- The pivot function of the list of pivot columns, `⊤` for the rows beyond the list. -/
+def pivotOfList (m : ℕ) (cols : List (Fin n)) : Fin m → WithTop (Fin n) :=
+  fun i ↦ (cols[(i : ℕ)]?).elim ⊤ (↑)
+
+/-- `true` when the list is strictly increasing. -/
+def isStrictlyIncreasing : List (Fin n) → Bool
+  | a :: b :: l => Nat.blt a b && isStrictlyIncreasing (b :: l)
+  | _ => true
+
+theorem isStrictlyIncreasing_iff_isChain :
+    ∀ {l : List (Fin n)}, isStrictlyIncreasing l = true ↔ l.IsChain (· < ·)
+  | [] => by simp [isStrictlyIncreasing]
+  | [_] => by simp [isStrictlyIncreasing]
+  | _ :: b :: l => by
+    simp [isStrictlyIncreasing, List.isChain_cons_cons, Nat.blt_eq,
+      isStrictlyIncreasing_iff_isChain (l := b :: l)]
+
+theorem monotone_pivotOfList_of_isStrictlyIncreasing {m : ℕ} {cols : List (Fin n)}
+    (h : isStrictlyIncreasing cols = true) : Monotone (pivotOfList m cols) := by
+  rw [isStrictlyIncreasing_iff_isChain, List.isChain_iff_pairwise, List.pairwise_iff_getElem] at h
+  intro i j hij
+  rcases hij.lt_or_eq with hlt | rfl
+  · by_cases hj : (j : ℕ) < cols.length
+    · have hi : (i : ℕ) < cols.length := lt_trans hlt hj
+      simp only [pivotOfList, List.getElem?_eq_getElem hi, List.getElem?_eq_getElem hj,
+        Option.elim_some]
+      exact WithTop.coe_le_coe.mpr (le_of_lt (h i j hi hj hlt))
+    · simp only [pivotOfList, List.getElem?_eq_none (not_lt.mp hj), Option.elim_none]
+      exact le_top
+  · exact le_rfl
+
+theorem strictMonoOn_pivotOfList_of_isStrictlyIncreasing {m : ℕ} {cols : List (Fin n)}
+    (h : isStrictlyIncreasing cols = true) :
+    StrictMonoOn (pivotOfList m cols) {i | pivotOfList m cols i ≠ ⊤} := by
+  rw [isStrictlyIncreasing_iff_isChain, List.isChain_iff_pairwise, List.pairwise_iff_getElem] at h
+  intro i hi j hj hij
+  simp only [pivotOfList, Set.mem_ofPred_eq] at *
+  have hi' : (i : ℕ) < cols.length := by
+    by_contra hc
+    simp [List.getElem?_eq_none (not_lt.mp hc)] at hi
+  have hj' : (j : ℕ) < cols.length := by
+    by_contra hc
+    simp [List.getElem?_eq_none (not_lt.mp hc)] at hj
+  simp only [List.getElem?_eq_getElem hi', List.getElem?_eq_getElem hj', Option.elim_some]
+  exact WithTop.coe_lt_coe.mpr (h i j hi' hj' hij)
+
+/-- The entries of each row before its pivot column, and all of the rows beyond the pivot
+list. -/
+def pivotPrefixes : List (Fin n) → List (List α) → List α
+  | [], rows => rows.flatten
+  | p :: ps, rows => (rows.headD []).take p ++ pivotPrefixes ps rows.tail
 
 /-- The entries of the rows at their pivot columns. -/
-def pivotEntries [Zero α] : List (WithTop (Fin n)) → List (List α) → List α
+def pivotEntries [Zero α] : List (Fin n) → List (List α) → List α
   | [], _ => []
-  | (p : Fin n) :: ps, rows => (rows.headD []).getD p 0 :: pivotEntries ps rows.tail
-  | none :: ps, rows => pivotEntries ps rows.tail
+  | p :: ps, rows => (rows.headD []).getD p 0 :: pivotEntries ps rows.tail
 
-theorem getD_eq_zero_of_pivotPrefixes [Zero α] {ps : List (WithTop (Fin n))}
-    {rows : List (List α)} (h : ∀ x ∈ pivotPrefixes ps rows, x = 0) {i : ℕ} {j : Fin n}
-    (hi : i < ps.length) (hj : (j : WithTop (Fin n)) < ps.getD i ⊤) :
-    (rows.getD i []).getD j 0 = 0 := by
-  induction ps generalizing rows i with
-  | nil => simp at hi
+theorem getD_eq_zero_of_pivotPrefixes [Zero α] {cols : List (Fin n)} {rows : List (List α)}
+    (h : ∀ x ∈ pivotPrefixes cols rows, x = 0) {i : ℕ} {j : Fin n}
+    (hj : (j : WithTop (Fin n)) < (cols[i]?).elim ⊤ (↑)) : (rows.getD i []).getD j 0 = 0 := by
+  induction cols generalizing rows i with
+  | nil =>
+    simp only [pivotPrefixes] at h
+    rw [List.getD_eq_getElem?_getD (l := rows)]
+    cases hrow : rows[i]? with
+    | none => rfl
+    | some row =>
+      exact getD_eq_zero_of_forall_eq_zero
+        (fun x hx ↦ h x (List.mem_flatten.mpr ⟨row, List.mem_of_getElem? hrow, hx⟩)) j
   | cons p ps ih =>
+    simp only [pivotPrefixes, List.mem_append] at h
     cases i with
     | zero =>
-      rw [← List.headD_eq_getD]
-      cases p with
-      | coe q =>
-        simp only [List.getD_cons_zero, WithTop.coe_lt_coe] at hj
-        simp only [pivotPrefixes, List.mem_append] at h
-        rw [List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj,
-          ← List.getD_eq_getElem?_getD]
-        exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) j
-      | top =>
-        simp only [pivotPrefixes, List.mem_append] at h
-        exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) j
+      simp only [List.getElem?_cons_zero, Option.elim_some, WithTop.coe_lt_coe] at hj
+      rw [← List.headD_eq_getD, List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj,
+        ← List.getD_eq_getElem?_getD]
+      exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) j
     | succ i =>
       rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
         ← List.getD_eq_getElem?_getD]
-      cases p with
-      | coe q =>
-        simp only [pivotPrefixes, List.mem_append] at h
-        exact ih (fun x hx ↦ h x (Or.inr hx)) (by simpa using hi) hj
-      | top =>
-        simp only [pivotPrefixes, List.mem_append] at h
-        exact ih (fun x hx ↦ h x (Or.inr hx)) (by simpa using hi) hj
+      exact ih (fun x hx ↦ h x (Or.inr hx)) hj
 
-theorem getD_ne_zero_of_pivotEntries [Zero α] {ps : List (WithTop (Fin n))}
-    {rows : List (List α)} (h : ∀ x ∈ pivotEntries ps rows, x ≠ 0) {i : ℕ} {c : Fin n}
-    (hc : ps.getD i ⊤ = c) : (rows.getD i []).getD c 0 ≠ 0 := by
-  induction ps generalizing rows i with
+theorem getD_ne_zero_of_pivotEntries [Zero α] {cols : List (Fin n)} {rows : List (List α)}
+    (h : ∀ x ∈ pivotEntries cols rows, x ≠ 0) {i : ℕ} {c : Fin n} (hc : cols[i]? = some c) :
+    (rows.getD i []).getD c 0 ≠ 0 := by
+  induction cols generalizing rows i with
   | nil => simp at hc
   | cons p ps ih =>
     cases i with
     | zero =>
-      rw [List.getD_cons_zero] at hc
+      simp only [List.getElem?_cons_zero, Option.some.injEq] at hc
       subst hc
       rw [← List.headD_eq_getD]
       exact h _ (List.mem_cons_self ..)
     | succ i =>
       rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
         ← List.getD_eq_getElem?_getD]
-      cases p with
-      | coe q => exact ih (fun x hx ↦ h x (List.mem_cons_of_mem _ hx)) hc
-      | top => exact ih h hc
+      exact ih (fun x hx ↦ h x (List.mem_cons_of_mem _ hx)) hc
 
-theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)}
-    {pivot : Fin m → WithTop (Fin n)} {ps : List (WithTop (Fin n))} (hps : List.ofFn pivot = ps)
-    (hchain : ps.IsChain PivotStep) {N : ℕ} (hzero : pivotPrefixes ps rows = List.replicate N 0)
-    (hnz : ∀ x ∈ pivotEntries ps rows, x ≠ 0) : (ofLists m n rows).IsPivotedBy pivot := by
-  obtain ⟨hmono, hstrict⟩ := (isChain_ofFn_iff_monotone_and_strictMonoOn pivot).mp (hps ▸ hchain)
-  refine Matrix.isPivotedBy_iff.mpr ⟨hmono, hstrict, fun i ↦ ?_⟩
-  have hi : ps.getD i ⊤ = pivot i := by simp [← hps]
+theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
+    (hinc : isStrictlyIncreasing cols = true) {N : ℕ}
+    (hzero : pivotPrefixes cols rows = List.replicate N 0)
+    (hnz : ∀ x ∈ pivotEntries cols rows, x ≠ 0) :
+    (ofLists m n rows).IsPivotedBy (pivotOfList m cols) := by
+  refine Matrix.isPivotedBy_iff.mpr ⟨monotone_pivotOfList_of_isStrictlyIncreasing hinc,
+    strictMonoOn_pivotOfList_of_isStrictlyIncreasing hinc, fun i ↦ ?_⟩
   constructor
   · intro j hj
     rw [ofLists_apply, ofList_apply]
-    exact getD_eq_zero_of_pivotPrefixes (List.eq_replicate_iff.mp hzero).2 (by simp [← hps])
-      (hi ▸ hj)
+    exact getD_eq_zero_of_pivotPrefixes (List.eq_replicate_iff.mp hzero).2 hj
   · intro c hc
     rw [ofLists_apply, ofList_apply]
-    exact getD_ne_zero_of_pivotEntries hnz (hi.trans hc)
+    refine getD_ne_zero_of_pivotEntries hnz ?_
+    cases hci : cols[(i : ℕ)]? with
+    | none => simp [pivotOfList, hci] at hc
+    | some d => simpa [pivotOfList, hci] using hc
 
 end Mathlib.Tactic.Echelon
