@@ -226,6 +226,13 @@ theorem midpoint_vsub_midpoint_same_right (p₁ p₂ p₃ : P) :
     midpoint R p₁ p₃ -ᵥ midpoint R p₂ p₃ = (⅟2 : R) • (p₁ -ᵥ p₂) := by
   rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, add_zero]
 
+/-- The shared point `p₂` is the right argument of the first midpoint and the left argument of
+the second. The vector from `midpoint R p₂ p₃` to `midpoint R p₁ p₂` is half the vector from
+`p₃` to `p₁`. -/
+theorem midpoint_vsub_midpoint_same_middle (p₁ p₂ p₃ : P) :
+    midpoint R p₁ p₂ -ᵥ midpoint R p₂ p₃ = (⅟2 : R) • (p₁ -ᵥ p₃) := by
+  rw [midpoint_vsub_midpoint, midpoint_eq_smul_add, vsub_add_vsub_cancel]
+
 end
 
 namespace AddMonoidHom
