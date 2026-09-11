@@ -526,6 +526,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Finset
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.GroupWithZero.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Action.Regular
 public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.GroupWithZero.Associated
@@ -1960,6 +1961,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
+public import Mathlib.Analysis.Complex.ValueDistribution.SecondMainTheorem
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Approximation

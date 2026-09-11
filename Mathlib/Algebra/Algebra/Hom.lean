@@ -107,9 +107,30 @@ namespace AlgHom
 
 section Semiring
 
-variable {R : Type uR} [CommSemiring R]
-variable {A : Type uA} {B : Type uB} [Semiring A] [Semiring B]
-variable [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
+
+@[macro_inline]
+instance funLike : FunLike (A →ₐ[R] B) A B where
+  coe f := f.toFun
+  coe_injective f g h := by
+    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    congr
+
+instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+  map_add f := f.map_add'
+  map_zero f := f.map_zero'
+  map_mul f := f.map_mul'
+  map_one f := f.map_one'
+  commutes f := f.commutes'
+
+@[simp] lemma _root_.AlgHomClass.linearMapOfClass_ofClass {R A B F : Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) : (ofClass f : A →ₗ[R] B) = f := rfl
+
+@[deprecated (since := "2026-09-08")] alias
+_root_.AlgHomClass.toLinearMap_toAlgHom := AlgHomClass.linearMapOfClass_ofClass
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (f : A →ₐ[R] B) : A → B := f
