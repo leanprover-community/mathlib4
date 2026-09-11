@@ -32,33 +32,31 @@ namespace Mathlib.Tactic.CategoryTheory.Map
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
-private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
-  let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
-  let (``Quiver.Hom, #[C, _, _, _]) := α.getAppFnArgs |
-    throwError "`@[map]` expects an equality of morphisms"
-  let u ← mkFreshLevelMVar
-  unless ← isDefEq (.sort (.succ u)) (← inferType C) do
-    throwError "`@[map]` expects an equality of morphisms"
-  let v ← mkFreshLevelMVar
-  let catC := mkApp (.const ``CategoryTheory.Category [v, u]) C
-  let instC ← try synthInstance catC catch _ =>
-    throwError "`@[map]` expects an equality of morphisms"
-  return (C, instC)
+/-- A variant of `Functor.congr_map` with the equality before the target category and functor. -/
+@[to_dual none]
+theorem congr_map'.{v, u, v', u'} {C : Type u} [Category.{v} C]
+    {X Y : C} {f g : X ⟶ Y} (w : f = g) {D : Type u'} [instD : Category.{v'} D]
+    (F : C ⥤ D) : F.map f = F.map g := F.congr_map w
 
 /-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
-def mapExprHom (e : Expr) (uLev vLev : Level) : MetaM Expr := do
-  let eqTy := (← inferType e).cleanupAnnotations
-  let (C, instC) ← extractCatInstanceFromEq eqTy
-  let Dsort := .sort (Level.succ uLev)
-  withLocalDecl `D .implicit Dsort fun dFVar => do
-    let catD := .app (.const ``CategoryTheory.Category [vLev, uLev]) dFVar
-    withLocalDecl `instD .instImplicit catD fun instDFVar => do
-      let Fty ← mkAppOptM ``CategoryTheory.Functor #[C, instC, dFVar, instDFVar]
-      withLocalDecl `F .default Fty fun fFVar => do
-        let pf₀ ← mkAppM ``CategoryTheory.Functor.congr_map #[fFVar, e]
-        let ty ← instantiateMVars (← inferType pf₀)
-        let (_, pf') ← simpEq (fun e' => mapCompSimp e') ty pf₀
-        mkLambdaFVars #[dFVar, instDFVar, fFVar] pf'
+def mapExprHom (e : Expr) (uLev vLev : Level) : Term.TermElabM Expr := do
+  let some _ := (← inferType e).cleanupAnnotations.eq? |
+    throwError "`@[map]` expects an equality"
+  let lem := mkConst ``congr_map' [← mkFreshLevelMVar, ← mkFreshLevelMVar, vLev, uLev]
+  let (args, _, _) ← forallMetaBoundedTelescope (← inferType lem) 7
+  let inst := args[1]!.mvarId!
+  inst.setKind .synthetic
+  try args[6]!.mvarId!.assignIfDefEq e catch _ =>
+    throwError "`@[map]` expects an equality of morphisms"
+  -- As in `reassoc_of%`, let simplification use the instance even if synthesis is still pending.
+  let (pf, ()) ← withEnsuringLocalInstance inst do
+    let pf := mkAppN lem args
+    let (_, pf) ← simpEq mapCompSimp (← inferType pf) pf
+    return (pf, ())
+  -- Rewriting can determine the source category after this elaborator returns.
+  unless ← Term.synthesizeInstMVarCore inst do
+    Term.registerSyntheticMVarWithCurrRef inst (.typeClass none)
+  return pf
 
 /--
 Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produce a proof of the
@@ -68,7 +66,7 @@ fresh level parameters per generated lemma).
 Returns the target category's object-level and morphism-level names (`uD`, then `vD`) so the caller
 can place them in the generated declaration's `levelParams` in its preferred order.
 -/
-def mapExpr (pf : Expr) : MetaM (Expr × Array Name) := do
+def mapExpr (pf : Expr) : Term.TermElabM (Expr × Array Name) := do
   let uD ← mkFreshUserName `u
   let vD ← mkFreshUserName `v
   forallTelescopeReducing (← inferType pf) fun xs _ => do
@@ -81,7 +79,7 @@ def mapExpr (pf : Expr) : MetaM (Expr × Array Name) := do
 Like `mapExpr`, but uses fresh level metavariables for the target category so that `map_of% t` can
 specialize to any `D` and `F` in context (see `addRelatedDecl` path for rigid universe parameters).
 -/
-def mapExprMVars (pf : Expr) : MetaM Expr := do
+def mapExprMVars (pf : Expr) : Term.TermElabM Expr := do
   let uLev ← mkFreshLevelMVar
   let vLev ← mkFreshLevelMVar
   forallTelescopeReducing (← inferType pf) fun xs _ => do
@@ -125,26 +123,12 @@ initialize registerBuiltinAttribute {
   | _ => throwUnsupportedSyntax }
 
 /--
-Auxiliary definition for `map_of%`
--/
-private partial def elabMapOfTerm (t : Syntax) : Term.TermElabM Expr := do
-  match t with
-  | `(term| ($t)) => elabMapOfTerm t
-  | `(term| @$id:ident) | `(term| $id:ident) =>
-    if (← withRef id <| Term.isLocalIdent? id).isNone then
-      try mkConstWithFreshMVarLevels (← resolveGlobalConstNoOverload id)
-      catch _ => Term.elabTerm t none
-    else
-      Term.elabTerm t none
-  | _ => Term.elabTerm t none
-
-/--
 `map_of% t`, where `t` is an equality `f = g` between morphisms (possibly under `∀` binders),
 produces the corresponding statement with a functor applied and
 `simp only [Functor.map_comp, Functor.map_id]` on each side.
 -/
 elab "map_of% " t:term : term => do
-  let e ← Term.withSynthesizeLight <| elabMapOfTerm t
+  let e ← Term.withSynthesizeLight <| Term.elabTerm t none
   mapExprMVars e
 
 end Mathlib.Tactic.CategoryTheory.Map

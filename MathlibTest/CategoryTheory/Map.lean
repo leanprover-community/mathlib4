@@ -97,4 +97,52 @@ example {D : Type*} [Category* D] {x y z : C} (F : C ⥤ D) (f : x ⟶ y) (g : y
   rw [map_of% (foo)]
   exact w
 
+section
+
+variable {D : Type u₂} [Category.{v₂} D] {x y z : C}
+  (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h)
+
+-- Macro expansion must behave like the underlying theorem, including its implicit arguments.
+local macro "map_test_foo" : term => `(foo)
+
+example : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% map_test_foo]
+  exact w
+
+example : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% ((map_test_foo))]
+  exact w
+
+example : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% @foo]
+  exact w
+
+example : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% foo.{v₁, u₁}]
+  exact w
+
+example : F.map f ≫ F.map g = F.map h := by
+  exact (map_of% (foo w)) F
+
+-- A local theorem with implicit binders must also allow inference from the rewrite target.
+example (eqs : ∀ {x y z : C} {f : x ⟶ y} {g : y ⟶ z} {h : x ⟶ z},
+    f ≫ g = h → f ≫ g = h) : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% eqs]
+  exact w
+
+end
+
+example {D : Type u₂} [Category.{v₂} D] {x y : C}
+    (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 x) :
+    F.map f ≫ F.map g = 𝟙 (F.obj x) := by
+  rw [map_of% comp_eq_id]
+  exact w
+
+-- The source instance can be synthesized through the opposite-category instance.
+example {D : Type u₂} [Category.{v₂} D] {x y z : Cᵒᵖ}
+    (F : Cᵒᵖ ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
+    F.map f ≫ F.map g = F.map h := by
+  rw [map_of% foo]
+  exact w
+
 end Tests.Map
