@@ -25,64 +25,48 @@ variable {α : Type*}
 
 theorem getD_eq_zero_of_forall_eq_zero [Zero α] {l : List α} (h : ∀ x ∈ l, x = 0) (i : ℕ) :
     l.getD i 0 = 0 := by
-  rw [List.eq_replicate_of_mem h]
-  grind
+  grind [List.eq_replicate_of_mem h]
 
 theorem getD_succ (l : List α) (i : ℕ) (d : α) : l.getD (i + 1) d = l.tail.getD i d := by
   simp [List.getD_eq_getElem?_getD]
 
-/-- The entries above the diagonal of a list of rows, collected row by row. -/
-def aboveDiagonal (k : Nat) : List (List α) → List α
-  | [] => []
-  | row :: rows => (row.drop k).tail ++ aboveDiagonal (k + 1) rows
+/-- The first `c` rows from row `k` on, each with a nonzero entry at its diagonal position `k`
+followed by zeros to width `n`; a missing row reads as zero and fails. -/
+def IsLowerTriangularDiag [Zero α] (n k : ℕ) : ℕ → List (List α) → Prop
+  | 0, _ => True
+  | c + 1, rows =>
+    ((rows.headD []).drop k).headD 0 ≠ 0 ∧
+      ((rows.headD []).drop k).tail = List.replicate (n - (k + 1)) 0 ∧
+      IsLowerTriangularDiag n (k + 1) c rows.tail
 
-theorem getD_eq_zero_of_aboveDiagonal [Zero α] {k i j : Nat} {rows : List (List α)}
-    (h : ∀ x ∈ aboveDiagonal k rows, x = 0) (hij : k + i < j) :
-    (rows.getD i []).getD j 0 = 0 := by
-  induction rows generalizing k i with
-  | nil => simp
-  | cons row rows ih =>
-    simp only [aboveDiagonal, List.tail_drop, List.mem_append] at h
-    cases i with
-    | zero =>
-      have := getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) (j - (k + 1))
-      rw [List.getD_cons_zero]
-      rwa [List.getD_eq_getElem?_getD, List.getElem?_drop,
-        Nat.add_sub_cancel' (by lia : k + 1 ≤ j), ← List.getD_eq_getElem?_getD] at this
-    | succ i =>
-      rw [List.getD_cons_succ]
-      exact ih (fun x hx ↦ h x (Or.inr hx)) (by lia)
-
-theorem isLowerTriangular_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {N : ℕ}
-    (h : aboveDiagonal 0 rows = List.replicate N 0) : (ofLists m m rows).IsLowerTriangular := by
-  intro i j hij
-  rw [ofLists_apply, ofList_apply]
-  exact getD_eq_zero_of_aboveDiagonal (List.eq_replicate_iff.mp h).2 (by simpa using hij)
-
-/-- The first `c` diagonal entries of a list of rows, missing ones read as `0`, taken from the
-`row.drop k` that `aboveDiagonal` also reads. -/
-def diag [Zero α] (k : Nat) : Nat → List (List α) → List α
-  | 0, _ => []
-  | c + 1, rows => ((rows.headD []).drop k).headD 0 :: diag (k + 1) c rows.tail
-
-theorem getD_ne_zero_of_diag [Zero α] {k c i : Nat} {rows : List (List α)}
-    (h : ∀ x ∈ diag k c rows, x ≠ 0) (hi : i < c) : (rows.getD i []).getD (k + i) 0 ≠ 0 := by
+theorem getD_of_isLowerTriangularDiag [Zero α] {n k c i : ℕ} {rows : List (List α)}
+    (h : IsLowerTriangularDiag n k c rows) (hi : i < c) :
+    (rows.getD i []).getD (k + i) 0 ≠ 0 ∧ ∀ j, k + i < j → (rows.getD i []).getD j 0 = 0 := by
   induction c generalizing k i rows with
   | zero => simp at hi
   | succ c ih =>
-    simp only [diag, List.forall_mem_cons] at h
+    obtain ⟨hd, hz, hrest⟩ := h
     cases i with
     | zero =>
       rw [← List.headD_eq_getD]
-      simpa using h.1
+      refine ⟨by simpa using hd, fun j hj ↦ ?_⟩
+      have := getD_eq_zero_of_forall_eq_zero (List.eq_replicate_iff.mp hz).2 (j - (k + 1))
+      rwa [List.tail_drop, List.getD_eq_getElem?_getD, List.getElem?_drop,
+        Nat.add_sub_cancel' (by lia : k + 1 ≤ j), ← List.getD_eq_getElem?_getD] at this
     | succ i =>
       rw [getD_succ, ← Nat.add_assoc, Nat.add_right_comm]
-      exact ih h.2 (by lia)
+      exact ih hrest (by lia)
+
+theorem isLowerTriangular_ofLists [Zero α] {m : ℕ} {rows : List (List α)}
+    (h : IsLowerTriangularDiag m 0 m rows) : (ofLists m m rows).IsLowerTriangular := by
+  intro i j hij
+  rw [ofLists_apply, ofList_apply]
+  exact (getD_of_isLowerTriangularDiag h i.isLt).2 j (by simpa using hij)
 
 theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
-    (h : ∀ x ∈ diag 0 m rows, x ≠ 0) (i : Fin m) : (ofLists m m rows).diag i ≠ 0 := by
+    (h : IsLowerTriangularDiag m 0 m rows) (i : Fin m) : (ofLists m m rows).diag i ≠ 0 := by
   rw [Matrix.diag_apply, ofLists_apply, ofList_apply]
-  simpa using getD_ne_zero_of_diag h i.isLt
+  simpa using (getD_of_isLowerTriangularDiag h i.isLt).1
 
 variable {n : ℕ}
 
@@ -132,69 +116,47 @@ theorem strictMonoOn_pivotOfList_of_isStrictlyIncreasing {m : ℕ} {cols : List 
   fun _ _ _ hj hij ↦
     pivotOfList_lt_pivotOfList h hij (lt_of_not_ge (mt pivotOfList_eq_top_iff.mpr hj))
 
-/-- The entries of each row before its pivot column, and all of the rows beyond the pivot
-list. -/
-def pivotPrefixes : List (Fin n) → List (List α) → List α
-  | [], rows => rows.flatten
-  | p :: ps, rows => (rows.headD []).take p ++ pivotPrefixes ps rows.tail
+/-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
+beyond the pivot list, all zero. -/
+def IsPivotedList [Zero α] (n : ℕ) : List (Fin n) → List (List α) → Prop
+  | [], rows => rows = List.replicate rows.length (List.replicate n 0)
+  | p :: ps, rows =>
+    (rows.headD []).getD p 0 ≠ 0 ∧ (rows.headD []).take p = List.replicate p 0 ∧
+      IsPivotedList n ps rows.tail
 
-/-- The entries of the rows at their pivot columns. -/
-def pivotEntries [Zero α] : List (Fin n) → List (List α) → List α
-  | [], _ => []
-  | p :: ps, rows => (rows.headD []).getD p 0 :: pivotEntries ps rows.tail
-
-theorem getD_eq_zero_of_pivotPrefixes [Zero α] {cols : List (Fin n)} {rows : List (List α)}
-    (h : ∀ x ∈ pivotPrefixes cols rows, x = 0) {i : ℕ} {j : Fin n}
-    (hj : (j : WithTop (Fin n)) < (cols[i]?).elim ⊤ (↑)) : (rows.getD i []).getD j 0 = 0 := by
+theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
+    (h : IsPivotedList n cols rows) (i : ℕ) :
+    (∀ j : Fin n, (j : WithTop (Fin n)) < (cols[i]?).elim ⊤ (↑) → (rows.getD i []).getD j 0 = 0) ∧
+      ∀ c : Fin n, (cols[i]?).elim ⊤ (↑) = (c : WithTop (Fin n)) →
+        (rows.getD i []).getD c 0 ≠ 0 := by
   induction cols generalizing rows i with
   | nil =>
-    refine getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x ?_) j
-    simp only [pivotPrefixes, List.mem_flatten]
-    rw [List.getD_eq_getElem?_getD] at hx
-    cases hrow : rows[i]? with
-    | none => simp [hrow] at hx
-    | some row => exact ⟨row, List.mem_of_getElem? hrow, by simpa [hrow] using hx⟩
+    refine ⟨fun j _ ↦ ?_, fun c hc ↦ by simp at hc⟩
+    rw [List.getD_eq_getElem?_getD (l := rows)]
+    cases hr : rows[i]? with
+    | none => rfl
+    | some row =>
+      rw [Option.getD_some, (List.eq_replicate_iff.mp h).2 row (List.mem_of_getElem? hr)]
+      exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ (List.mem_replicate.mp hx).2) j
   | cons p ps ih =>
-    simp only [pivotPrefixes, List.mem_append] at h
+    obtain ⟨hd, hz, hrest⟩ := h
     cases i with
     | zero =>
-      simp only [List.getElem?_cons_zero, Option.elim_some, WithTop.coe_lt_coe] at hj
-      rw [← List.headD_eq_getD, List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj,
-        ← List.getD_eq_getElem?_getD]
-      exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ h x (Or.inl hx)) j
-    | succ i =>
-      rw [getD_succ]
-      exact ih (fun x hx ↦ h x (Or.inr hx)) hj
-
-theorem getD_ne_zero_of_pivotEntries [Zero α] {cols : List (Fin n)} {rows : List (List α)}
-    (h : ∀ x ∈ pivotEntries cols rows, x ≠ 0) {i : ℕ} {c : Fin n}
-    (hc : (cols[i]?).elim ⊤ (↑) = (c : WithTop (Fin n))) : (rows.getD i []).getD c 0 ≠ 0 := by
-  induction cols generalizing rows i with
-  | nil => simp at hc
-  | cons p ps ih =>
-    cases i with
-    | zero =>
-      simp only [List.getElem?_cons_zero, Option.elim_some, WithTop.coe_eq_coe] at hc
-      subst hc
       rw [← List.headD_eq_getD]
-      exact h _ (List.mem_cons_self ..)
+      simp only [List.getElem?_cons_zero, Option.elim_some, WithTop.coe_lt_coe, WithTop.coe_eq_coe]
+      refine ⟨fun j hj ↦ ?_, fun c hc ↦ hc ▸ hd⟩
+      rw [List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj, ← List.getD_eq_getElem?_getD]
+      exact getD_eq_zero_of_forall_eq_zero (List.eq_replicate_iff.mp hz).2 j
     | succ i =>
       rw [getD_succ]
-      exact ih (fun x hx ↦ h x (List.mem_cons_of_mem _ hx)) hc
+      exact ih hrest i
 
 theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
-    (hinc : isStrictlyIncreasing cols = true) {N : ℕ}
-    (hzero : pivotPrefixes cols rows = List.replicate N 0)
-    (hnz : ∀ x ∈ pivotEntries cols rows, x ≠ 0) :
+    (hinc : isStrictlyIncreasing cols = true) (h : IsPivotedList n cols rows) :
     (ofLists m n rows).IsPivotedBy (pivotOfList m cols) := by
   refine Matrix.isPivotedBy_iff.mpr ⟨monotone_pivotOfList_of_isStrictlyIncreasing hinc,
     strictMonoOn_pivotOfList_of_isStrictlyIncreasing hinc, fun i ↦ ?_⟩
-  constructor
-  · intro j hj
-    rw [ofLists_apply, ofList_apply]
-    exact getD_eq_zero_of_pivotPrefixes (List.eq_replicate_iff.mp hzero).2 hj
-  · intro c hc
-    rw [ofLists_apply, ofList_apply]
-    exact getD_ne_zero_of_pivotEntries hnz hc
+  simp only [ofLists_apply, ofList_apply, pivotOfList]
+  exact getD_of_isPivotedList h i
 
 end Mathlib.Tactic.Echelon

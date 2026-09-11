@@ -76,61 +76,40 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- The proof of `l.Forall p` from the proofs of `p x` along `l`, folded from the last proof
-since `Forall` ends with its last conjunct. -/
-def mkForallChain (proofs : List Expr) : MetaM Expr :=
-  match proofs.reverse with
-  | [] => pure q(True.intro)
-  | last :: rest => rest.foldlM (fun acc h => mkAppM ``And.intro #[h, acc]) last
-
-/-- Prove `∀ i, L.diag i ≠ 0` from the rows of `L`. -/
-def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : MatrixViews u m m α) (certifier? : Option EntryCertifier) :
-    MetaM Q(∀ i, ($(L.matrix)).diag i ≠ 0) := do
+/-- Prove `L.IsLowerTriangular` and `∀ i, L.diag i ≠ 0` from the rows of `L`, with `certifier`
+proving the diagonal entries nonzero. -/
+def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (L : MatrixViews u m m α) (certifier : EntryCertifier) :
+    MetaM (Q(($(L.matrix)).IsLowerTriangular) × Q(∀ i, ($(L.matrix)).diag i ≠ 0)) := do
   have rows : Q(List (List $α)) := L.lit
-  let hnz : Q(∀ x ∈ diag 0 $m $rows, x ≠ 0) ← match certifier? with
-    | none => mkDecideProofQ q(∀ x ∈ diag 0 $m $rows, x ≠ 0)
-    | some certifier => do
-      let proofs ← L.entries.zipIdx.mapM fun (row, i) => do
-        have entry : Q($α) := row[i]!
-        certifier q($entry ≠ 0)
-      have hForall : Q((diag 0 $m $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
-      pure q(List.forall_iff_forall_mem.mp $hForall)
-  return mkExpectedPropHint q(diag_ofLists_ne_zero $hnz) q(∀ i, ($(L.matrix)).diag i ≠ 0)
-
-/-- Prove `L.IsLowerTriangular` from the rows of `L`. -/
-def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : MatrixViews u m m α) : MetaM Q(($(L.matrix)).IsLowerTriangular) := do
-  have rows : Q(List (List $α)) := L.lit
-  have n : Q(Nat) := mkNatLit (m * (m - 1) / 2)
-  have hrep : Q(aboveDiagonal 0 $rows = List.replicate $n (0 : $α)) :=
-    mkExpectedPropHint q(Eq.refl (aboveDiagonal 0 $rows))
-      q(aboveDiagonal 0 $rows = List.replicate $n (0 : $α))
-  return mkExpectedPropHint q(isLowerTriangular_ofLists (m := $m) $hrep)
-    q(($(L.matrix)).IsLowerTriangular)
+  -- one cell per row: the nonzero diagonal entry, then the `Eq.refl` of the zeros after it
+  let chain : Expr ← L.entries.zipIdx.foldrM (init := q(True.intro)) fun (row, k) rest => do
+    have entry : Q($α) := row[k]!
+    have c : Q(ℕ) := mkNatLit (m - (k + 1))
+    let hz : Q(List.replicate $c (0 : $α) = List.replicate $c 0) := q(Eq.refl _)
+    mkAppM ``And.intro #[← certifier q($entry ≠ 0), ← mkAppM ``And.intro #[hz, rest]]
+  have h : Q(IsLowerTriangularDiag $m 0 $m $rows) := chain
+  return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
+    mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
 
 /-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/
 def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (cols : Q(List (Fin $n))) (pivots : Array Nat)
-    (certifier? : Option EntryCertifier) :
-    MetaM Q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols)) := do
+    (certifier : EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols)) := do
   have rows : Q(List (List $α)) := U.lit
   have hinc : Q(isStrictlyIncreasing $cols = true) :=
     mkExpectedPropHint q(Eq.refl true) q(isStrictlyIncreasing $cols = true)
-  let numBefore := pivots.toList.sum + ((U.entries.drop pivots.size).map List.length).sum
-  have nQ : Q(ℕ) := mkNatLit numBefore
-  have hzero : Q(pivotPrefixes $cols $rows = List.replicate $nQ (0 : $α)) :=
-    mkExpectedPropHint q(Eq.refl (pivotPrefixes $cols $rows))
-      q(pivotPrefixes $cols $rows = List.replicate $nQ (0 : $α))
-  let hnz : Q(∀ x ∈ pivotEntries $cols $rows, x ≠ 0) ← match certifier? with
-    | none => mkDecideProofQ q(∀ x ∈ pivotEntries $cols $rows, x ≠ 0)
-    | some certifier => do
-      let proofs ← pivots.toList.zipIdx.mapM fun (p, i) => do
-        have entry : Q($α) := (U.entries[i]!)[p]!
-        certifier q($entry ≠ 0)
-      have hForall : Q((pivotEntries $cols $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
-      pure q(List.forall_iff_forall_mem.mp $hForall)
-  return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hinc $hzero $hnz)
+  -- the rows beyond the pivots are zero rows
+  have r : Q(ℕ) := mkNatLit (m - pivots.size)
+  let zeroRows : Expr := q(Eq.refl (List.replicate $r (List.replicate $n (0 : $α))))
+  -- one cell per pivot row: the nonzero pivot entry, then the `Eq.refl` of the zeros before it
+  let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (p, i) rest => do
+    have entry : Q($α) := (U.entries[i]!)[p]!
+    have pQ : Q(ℕ) := mkNatLit p
+    let hz : Q(List.replicate $pQ (0 : $α) = List.replicate $pQ 0) := q(Eq.refl _)
+    mkAppM ``And.intro #[← certifier q($entry ≠ 0), ← mkAppM ``And.intro #[hz, rest]]
+  have h : Q(IsPivotedList $n $cols $rows) := chain
+  return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hinc $h)
     q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols))
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ`. -/
@@ -182,10 +161,12 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   let hperm ← certifyPermEq A Aσm σ
   have hprod : Q($Lm * $Aσm = $Um) := ← certifyProductEq _cr L Aσ U certifier?
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
+  let certifier := certifier?.getD mkDecideProofQ
   have hpivot : Q(($Um).IsPivotedBy (pivotOfList $m $cols)) :=
-    ← certifyPivotedBy _cr U cols data.pivot certifier?
-  have hlower : Q(($Lm).IsLowerTriangular) := ← certifyLowerTriangular _cr L
-  have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := ← certifyNonzeroDiag _cr L certifier?
+    ← certifyPivotedBy _cr U cols data.pivot certifier
+  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag _cr L certifier
+  have hlower : Q(($Lm).IsLowerTriangular) := hlower
+  have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
   return q(⟨$Lm, $σ, pivotOfList $m $cols, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon
