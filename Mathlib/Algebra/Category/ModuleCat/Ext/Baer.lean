@@ -45,7 +45,7 @@ universe than `ModuleCat.{v} R`.
 
 universe u v
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 open CategoryTheory Abelian
 
@@ -127,8 +127,8 @@ lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
 private noncomputable def extQuotientBotZeroEquiv [Small.{v} R] (M : ModuleCat.{v} R) :
     (Ext ↧(Shrink.{v} (R ⧸ (⊥ : Ideal R))) M 0) ≃ M :=
   (Ext.homEquiv₀.trans ModuleCat.homEquiv).trans ((((Shrink.linearEquiv _ _).trans
-    (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M R).trans
-      (LinearMap.ringLmapEquivSelf R R M)).toEquiv
+    (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M ℕ).trans
+      (LinearMap.ringLmapEquivSelf R ℕ M)).toEquiv
 
 /-- If `Ext⁰(R ⧸ ⊥, M)` is a subsingleton, then `M` is a subsingleton. -/
 private lemma subsingleton_of_ext_quotient_bot_zero [Small.{v} R] (M : ModuleCat.{v} R)
