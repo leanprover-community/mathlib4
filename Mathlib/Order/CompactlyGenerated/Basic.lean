@@ -129,9 +129,7 @@ lemma isCompactElement_iff_exists_le_finsetSup_of_le_isLUB {α : Type*} [Semilat
 above `k` has a finite subset with `sSup` above `k`. -/
 theorem isCompactElement_iff_exists_le_sSup_of_le_sSup (k : α) :
     IsCompactElement k ↔ ∀ s : Set α, k ≤ sSup s → ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id := by
-  convert isCompactElement_iff_exists_le_finsetSup_of_le_isLUB
-  · simp [isLUB_iff_sSup_eq]
-  · infer_instance
+  simp [isLUB_iff_sSup_eq, isCompactElement_iff_exists_le_finsetSup_of_le_isLUB]
 
 theorem isCompactElement_iff_exists_le_iSup_of_le_iSup.{u} {α : Type u} [CompleteLattice α]
     (k : α) : IsCompactElement k ↔
