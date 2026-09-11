@@ -22,15 +22,15 @@ In this file, we define the global dimension of ring and proved some of its basi
 
 # Main definition and results
 
-* `globalDimension` : The global (homological) dimension of a (commutative) ring defined as
+* `globalDimension` : The (left) global (homological) dimension of a (commutative) ring defined as
   the supremum of projective dimension over all modules.
 
 * `globalDimension_le_tfae` : For natrual number `n`, `globalDimension R ≤ n` iff all
   finitely generated modules over `R` has projective dimension not exceeding `n` iff for all
   `Ext N M (n + 1)` vanish.
 
-* `globalDimension_eq_sup_projectiveDimension_finite` : Global dimension is equal to the supremum of
-  projective dimension over finitely generated modules.
+* `globalDimension_eq_sup_projectiveDimension_finite` : The (left) Global dimension is equal to
+  the supremum of projective dimension over finitely generated modules.
 
 -/
 
@@ -46,7 +46,7 @@ variable (R : Type u) [Ring R]
 
 open Abelian
 
-/-- The global (homological) dimension of a (commutative) ring defined as
+/-- The (left) global (homological) dimension of a (commutative) ring defined as
 the supremum of projective dimension over all modules. -/
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
