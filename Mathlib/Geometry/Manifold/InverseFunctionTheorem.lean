@@ -43,58 +43,60 @@ section DiffeoExtChartAt
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H]
-  {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  (n : WithTop ℕ∞)
 
 /-- If `p` is an interior point of `M`, then `extChartAt I p` can be restricted to an open set
 on which it becomes a `PartialDiffeomorph` (viewing `E` as a manifold modeled on itself trivially)
 -/
-def extChartAtPartialDiffeomorph [IsManifold I n M] {p : M} (hp : I.IsInteriorPoint p) :
+def extChartAtPartialDiffeomorph (I : ModelWithCorners 𝕜 E H) (p : M) (n : WithTop ℕ∞)
+    [IsManifold I n M] :
     PartialDiffeomorph I 𝓘(𝕜, E) M E n where
-  toPartialEquiv := (extChartAt I p).restr ((extChartAt I p) ⁻¹' (Classical.choose hp))
+  toPartialEquiv := (extChartAt I p).restr ((extChartAt I p) ⁻¹' interior (range I))
   open_source := by
     rw [PartialEquiv.restr_source, extChartAt_source]
-    exact isOpen_extChartAt_preimage _ (Classical.choose_spec hp).1.1
+    exact isOpen_extChartAt_preimage _ isOpen_interior
   open_target := by
     rw [PartialEquiv.restr_target, PartialEquiv.target_inter_inv_preimage_preimage,
-      extChartAt_target, inter_assoc, inter_comm (range I) _,
-      inter_eq_left.mpr (Classical.choose_spec hp).1.2]
-    exact IsOpen.inter (IsOpen.preimage I.continuous_invFun (chartAt H p).open_target)
-      (Classical.choose_spec hp).1.1
+      extChartAt_target, inter_assoc, inter_comm (range I) _, inter_eq_left.mpr interior_subset]
+    refine IsOpen.inter (IsOpen.preimage I.continuous_invFun (chartAt H p).open_target)
+      isOpen_interior
   contMDiffOn_toFun := contMDiffOn_extChartAt.mono (by simp)
   contMDiffOn_invFun := (contMDiffOn_extChartAt_symm p).mono inter_subset_left
 
-lemma eqOn_extChartAtPartialDiffeomorph_extChartAt [IsManifold I n M] {p : M}
-    (hp : I.IsInteriorPoint p) :
-    EqOn (extChartAtPartialDiffeomorph n hp) (extChartAt I p)
-    (extChartAtPartialDiffeomorph n hp).source :=
+lemma eqOn_extChartAtPartialDiffeomorph_extChartAt (I : ModelWithCorners 𝕜 E H) (p : M)
+    (n : WithTop ℕ∞) [IsManifold I n M] :
+    EqOn (extChartAtPartialDiffeomorph I p n) (extChartAt I p)
+    (extChartAtPartialDiffeomorph I p n).source :=
   graphOn_inj.mp rfl
 
-lemma eqOn_extChartAtPartialDiffeomorph_symm_extChartAt_symm [IsManifold I n M] {p : M}
-    (hp : I.IsInteriorPoint p) :
-    EqOn (extChartAtPartialDiffeomorph n hp).symm (extChartAt I p).symm
-    (extChartAtPartialDiffeomorph n hp).target :=
+lemma eqOn_extChartAtPartialDiffeomorph_symm_extChartAt_symm (I : ModelWithCorners 𝕜 E H) (p : M)
+    (n : WithTop ℕ∞) [IsManifold I n M] :
+    EqOn (extChartAtPartialDiffeomorph I p n).symm (extChartAt I p).symm
+    (extChartAtPartialDiffeomorph I p n).target :=
   graphOn_inj.mp rfl
 
-lemma mem_extChartAtPartialDiffeomorph_source [IsManifold I n M] {p : M}
-    (hp : I.IsInteriorPoint p) :
-    p ∈ (extChartAtPartialDiffeomorph n hp).source :=
-  ⟨mem_extChartAt_source p, (Classical.choose_spec hp).2⟩
+lemma mem_extChartAtPartialDiffeomorph_source {I : ModelWithCorners 𝕜 E H} {p : M}
+    (hp : I.IsInteriorPoint p) (n : WithTop ℕ∞) [IsManifold I n M] :
+    p ∈ (extChartAtPartialDiffeomorph I p n).source :=
+  ⟨mem_extChartAt_source p,
+  (mem_of_subset_of_mem (subset_sUnion_of_mem (Classical.choose_spec hp).1))
+    (Classical.choose_spec hp).2⟩
 
-lemma mem_extChartAtPartialDiffeomorph_target [IsManifold I n M] {p : M}
-    (hp : I.IsInteriorPoint p) :
-    (extChartAtPartialDiffeomorph n hp) p ∈ (extChartAtPartialDiffeomorph n hp).target :=
-  (extChartAtPartialDiffeomorph n hp).map_source' (mem_extChartAtPartialDiffeomorph_source n hp)
 
-lemma extChartAtPartialDiffeomorph_source_subset [IsManifold I n M] {p : M}
-    (hp : I.IsInteriorPoint p) :
-    (extChartAtPartialDiffeomorph n hp).source ⊆ (extChartAt I p).source  := by
+lemma mem_extChartAtPartialDiffeomorph_target {I : ModelWithCorners 𝕜 E H} {p : M}
+    (hp : I.IsInteriorPoint p) (n : WithTop ℕ∞) [IsManifold I n M] :
+    (extChartAtPartialDiffeomorph I p n) p ∈ (extChartAtPartialDiffeomorph I p n).target :=
+  (extChartAtPartialDiffeomorph I p n).map_source' (mem_extChartAtPartialDiffeomorph_source hp n)
+
+
+lemma extChartAtPartialDiffeomorph_source_subset (I : ModelWithCorners 𝕜 E H) (p : M)
+    (n : WithTop ℕ∞) [IsManifold I n M] :
+    (extChartAtPartialDiffeomorph I p n).source ⊆ (extChartAt I p).source  := by
   simp [extChartAtPartialDiffeomorph]
 
-lemma extChartAtPartialDiffeomorph_target_subset [IsManifold I n M] {p : M}
-    (hp : I.IsInteriorPoint p) :
-    (extChartAtPartialDiffeomorph n hp).target ⊆ (extChartAt I p).target :=
+lemma extChartAtPartialDiffeomorph_target_subset (I : ModelWithCorners 𝕜 E H) (p : M)
+    (n : WithTop ℕ∞) [IsManifold I n M] :
+    (extChartAtPartialDiffeomorph I p n).target ⊆ (extChartAt I p).target :=
   inter_subset_left
 
 end DiffeoExtChartAt
@@ -194,23 +196,23 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   let g : E₁ → E₂ := writtenInExtChartAt I₁ I₂ p f
   let φ₀ : PartialEquiv M₁ E₁ := extChartAt I₁ p
   let ψ₀ : PartialEquiv M₂ E₂ := extChartAt I₂ (f p)
-  let φ₁ : PartialDiffeomorph I₁ 𝓘(𝕜, E₁) M₁ E₁ n := extChartAtPartialDiffeomorph n hp
-  let ψ₁ : PartialDiffeomorph I₂ 𝓘(𝕜, E₂) M₂ E₂ n := extChartAtPartialDiffeomorph n hfp
+  let φ₁ : PartialDiffeomorph I₁ 𝓘(𝕜, E₁) M₁ E₁ n := extChartAtPartialDiffeomorph I₁ p n
+  let ψ₁ : PartialDiffeomorph I₂ 𝓘(𝕜, E₂) M₂ E₂ n := extChartAtPartialDiffeomorph I₂ (f p) n
   -- define `U ⊆ E₁`, an open set where we can easily show that `g` is ContDiff
   let U : Set E₁ := φ₁ '' (φ₁.source ∩ (A ∩ f ⁻¹' ψ₁.source))
   have hg : ContDiffOn 𝕜 n g U := by
     refine ((contMDiffOn_iff.mp hf).2 p (f p)).mono ?_
     rintro e ⟨m, ⟨hm₁, hm₂, hm₃⟩, rfl⟩
-    refine ⟨extChartAtPartialDiffeomorph_target_subset n hp (φ₁.map_source hm₁), ?_⟩
+    refine ⟨extChartAtPartialDiffeomorph_target_subset I₁ p n (φ₁.map_source hm₁), ?_⟩
     simp only [mem_preimage] at hm₃ ⊢
-    rw [eqOn_extChartAtPartialDiffeomorph_extChartAt n hp hm₁,
-      φ₀.left_inv (extChartAtPartialDiffeomorph_source_subset n hp hm₁)]
-    exact ⟨hm₂, extChartAtPartialDiffeomorph_source_subset n hfp hm₃⟩
+    rw [eqOn_extChartAtPartialDiffeomorph_extChartAt I₁ p n hm₁,
+      φ₀.left_inv (extChartAtPartialDiffeomorph_source_subset I₁ p n hm₁)]
+    exact ⟨hm₂, extChartAtPartialDiffeomorph_source_subset I₂ (f p) n hm₃⟩
   have U_open : IsOpen U := by
     refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
     exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
-  have φ₀p_mem_U : φ₀ p ∈ U := mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source n hp,
-    hpA, mem_extChartAtPartialDiffeomorph_source n hfp⟩
+  have φ₀p_mem_U : φ₀ p ∈ U := mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source hp n,
+    hpA, mem_extChartAtPartialDiffeomorph_source hfp n⟩
   -- use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence
   obtain ⟨g', hg'⟩ := isInvertible_fderivWithin_writtenInExtChartAt hf'
   have hg' : HasFDerivAt g g'.toContinuousLinearMap (extChartAt I₁ p p) :=
@@ -220,15 +222,15 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   diffeomorphism `M₁ → M₂` -/
   use (φ₁.trans (hg.toPartialDiffeomorph U_open φ₀p_mem_U hg' hn)).trans ψ₁.symm
   constructor
-  · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source n hp,
+  · refine ⟨⟨mem_extChartAtPartialDiffeomorph_source hp n,
       (hg.toPartialDiffeomorph_mem_source U_open φ₀p_mem_U hg' hn)⟩, ?_⟩
     change (ψ₁ ∘ f ∘ φ₀.symm) (φ₀ p) ∈ ψ₁.target
     simp [φ₀.left_inv (mem_extChartAt_source p),
-      ψ₁.map_source (mem_extChartAtPartialDiffeomorph_source n hfp)]
+      ψ₁.map_source (mem_extChartAtPartialDiffeomorph_source hfp _)]
   · rintro m ⟨⟨hm₁, _, hm₂, _⟩, _⟩
     change f m = ψ₀.symm (ψ₀ (f (φ₀.symm (φ₀ m))))
-    rw[φ₀.left_inv ((extChartAtPartialDiffeomorph_source_subset n hp) hm₁), ψ₀.left_inv ?_]
-    exact (extChartAtPartialDiffeomorph_source_subset n hfp)
+    rw[φ₀.left_inv ((extChartAtPartialDiffeomorph_source_subset I₁ p n) hm₁), ψ₀.left_inv ?_]
+    exact (extChartAtPartialDiffeomorph_source_subset I₂ (f p) n)
       (φ₁.injOn.mem_of_mem_image inter_subset_left hm₁ hm₂).2.2
 
 end ManifoldInverseFunctionTheorem
