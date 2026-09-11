@@ -8,7 +8,7 @@ module
 public import Mathlib.RepresentationTheory.Intertwining
 
 /-!
-# Equivalences of representations
+# Constructions of equivalences of representations
 
 ## Main purpose
 
