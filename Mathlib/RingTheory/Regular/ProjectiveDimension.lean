@@ -116,7 +116,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
         (hasProjectiveDimensionLT_of_ge M (n + 1) (n + 2) (Nat.le_add_right _ 1))⟩
       apply hasProjectiveDimensionLT_of_forall_finite
       intro L _
-      have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
+      have zero := HasProjectiveDimensionLT.subsingleton ↧(QuotSMulTop x M)
         (n + 2) _ (le_refl _) L
       have exac := Ext.contravariant_sequence_exact₁' hS L (n + 1) (n + 2) (add_comm 1 (n + 1))
       have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
@@ -162,7 +162,7 @@ lemma projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular (M : ModuleC
       rw [Nat.cast_add, Nat.cast_one, projectiveDimension_eq_of_iso
         (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x rs').toModuleIso, add_comm _ 1,
         ← add_assoc, ← projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular M x reg.1 mem.1,
-        ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' reg.2 mem.2 len]
+        ← hn ↧(QuotSMulTop x M) rs' reg.2 mem.2 len]
 
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
@@ -176,7 +176,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
       nth_rw 1 [← (Ideal.ofList rs).mul_top, ← smul_eq_mul, Submodule.map_smul'']
       simp )))
   rw [projectiveDimension_eq_of_iso e.toModuleIso,
-    projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular (ModuleCat.of R (Shrink.{v} R)) rs
+    projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular ↧(Shrink.{v} R) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
     ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
 

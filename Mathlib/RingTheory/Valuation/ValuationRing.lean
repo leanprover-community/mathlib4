@@ -257,6 +257,11 @@ theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A
 theorem range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
   ext; exact mem_integer_iff _ _ _
 
+theorem integers : (valuation A K).Integers A where
+  hom_inj := IsFractionRing.injective A K
+  map_le_one a := (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩
+  exists_of_le_one _ h := (mem_integer_iff _ _ _).mp h
+
 end
 
 section

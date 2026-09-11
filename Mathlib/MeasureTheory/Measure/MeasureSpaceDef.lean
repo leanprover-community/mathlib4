@@ -86,6 +86,7 @@ theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) ℝ≥0∞ where
   coe μ := μ.toOuterMeasure
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h

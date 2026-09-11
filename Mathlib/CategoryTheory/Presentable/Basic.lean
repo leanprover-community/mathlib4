@@ -118,6 +118,9 @@ lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegula
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
 
+instance : IsAccessible.{w} (𝟭 C) :=
+  ⟨.aleph0, Cardinal.fact_isRegular_aleph0, inferInstance⟩
+
 instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) [IsAccessible.{w} F]
     [IsAccessible.{w} G] : IsAccessible.{w} (F ⋙ G) := by
   obtain ⟨κF, _, _⟩ := IsAccessible.exists_cardinal (F := F)
@@ -416,6 +419,7 @@ class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
     HasCardinalFilteredColimits.{w} C κ where
 
+variable {κ} in
 lemma HasCardinalFilteredColimits.of_le {κ : Cardinal.{w}} [Fact κ.IsRegular]
     [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
     HasCardinalFilteredColimits C κ' where

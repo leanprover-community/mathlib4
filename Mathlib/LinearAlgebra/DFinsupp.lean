@@ -112,6 +112,7 @@ section Lsum
 variable (S)
 variable [DecidableEq ι]
 
+@[macro_inline]
 instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :

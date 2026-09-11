@@ -73,7 +73,7 @@ theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ
   ext
   simp only [TensorProduct.AlgebraTensorModule.curry_apply,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-    Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
+    Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_ofClass, map_mul]
   rfl
 
 theorem coe_mulMap_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
@@ -119,7 +119,6 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
   rintro _ ⟨x, rfl⟩
   induction x with
-  | zero => rw [map_zero]; exact zero_mem _
   | tmul a b => exact mul_mem_mul a.2 b.2
   | add a b ha hb => rw [map_add]; exact add_mem ha hb
 

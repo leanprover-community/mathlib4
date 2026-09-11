@@ -613,6 +613,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
     ext ⟨φ, hφ⟩
     exact (mem_dualAnnihilator φ).mp hφ w hw)
 
+@[macro_inline]
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
   coe_injective φ ψ h := by

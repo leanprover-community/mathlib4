@@ -127,7 +127,7 @@ end proper_orbit_map
 /-- Any discrete subgroup of `SL(2, ℝ)` acts properly discontinuously on `ℍ`. -/
 instance instProperlyDiscontinuousSL2RSubgroup (𝒢 : Subgroup SL(2, ℝ)) [DiscreteTopology 𝒢] :
     ProperlyDiscontinuousSMul 𝒢 ℍ := by
-  have : IsClosed (𝒢 : Set SL(2, ℝ)) := Subgroup.isClosed_of_discrete
+  have : IsClosed (𝒢 : Set SL(2, ℝ)) := Subgroup.isClosed_of_discreteTopology
   rw [properlyDiscontinuousSMul_iff_properSMul]
   infer_instance
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Category.Preord
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # Category of partial orders
@@ -35,6 +36,11 @@ initialize_simps_projections PartOrd (carrier → coe, -str)
 
 namespace PartOrd
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `PartOrd.of X` as `↧X`. -/
+@[app_delab PartOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort PartOrd (Type _) :=
   ⟨PartOrd.carrier⟩
 
@@ -43,22 +49,18 @@ attribute [coe] PartOrd.carrier
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
 structure Hom (X Y : PartOrd.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category PartOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrd (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `PartOrd` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : PartOrd.{u}} (f : Hom X Y) :=
@@ -135,7 +137,7 @@ lemma hom_inv_apply {X Y : PartOrd} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s 
   simp
 
 instance hasForgetToPreord : HasForget₂ PartOrd Preord where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Preord.ofHom f.hom
 
 /-- Constructs an equivalence between partial orders from an order isomorphism between them. -/
@@ -161,7 +163,7 @@ def dualEquiv : PartOrd ≌ PartOrd where
 /-- The ulift functor `PartOrd.{u} ⥤ PartOrd.{max u v}`. -/
 @[simps]
 def uliftFunctor : PartOrd.{u} ⥤ PartOrd.{max u v} where
-  obj X := .of (ULift.{v} X)
+  obj X := ↧(ULift.{v} X)
   map f := PartOrd.ofHom ⟨fun x ↦ ULift.up (f (ULift.down x)),
     fun x y hxy ↦ f.hom.monotone hxy⟩
 
@@ -174,7 +176,7 @@ theorem partOrd_dual_comp_forget_to_preord :
 
 /-- `Antisymmetrization` as a functor. It is the free functor. -/
 def preordToPartOrd : Preord.{u} ⥤ PartOrd where
-  obj X := .of (Antisymmetrization X (· ≤ ·))
+  obj X := ↧(Antisymmetrization X (· ≤ ·))
   map f := PartOrd.ofHom f.hom.antisymmetrization
   map_id X := by
     ext x

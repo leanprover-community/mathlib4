@@ -40,7 +40,7 @@ constant maps.
 @[simps]
 def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat R) where
   obj X := {
-    obj := fun ⟨S⟩ ↦ ModuleCat.of R (LocallyConstant S X)
+    obj := fun ⟨S⟩ ↦ ↧(LocallyConstant S X)
     map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom.hom) }
   map f := { app := fun S ↦ ModuleCat.ofHom (mapₗ R f.hom) }
 
@@ -76,14 +76,14 @@ abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u + 1} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) where
+    M ≅ ↧(LocallyConstant (CompHaus.of PUnit.{u + 1}) M) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) :=
+      ↧(LocallyConstant (CompHaus.of PUnit.{u + 1}) M) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -187,14 +187,14 @@ abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) where
+    M ≅ ↧(LocallyConstant (LightProfinite.of PUnit.{u + 1}) M) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) :=
+      ↧(LocallyConstant (LightProfinite.of PUnit.{u + 1}) M) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 -- Not stating this explicitly causes timeouts below.

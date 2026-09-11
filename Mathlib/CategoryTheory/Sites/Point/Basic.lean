@@ -94,23 +94,21 @@ instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 
 /-- The fiber functor on categories of presheaves that is given by a point of a site. -/
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
-  (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π Φ.fiber).op ⋙ colim
+  (Functor.whiskeringLeft _ _ _).obj (Functor.Elements.π Φ.fiber).op ⋙ colim
 
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`, this
 is the canonical map `P.obj (op X) ⟶ Φ.presheafFiber.obj P`. -/
 noncomputable def toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
-  colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
+  colimit.ι ((Functor.Elements.π Φ.fiber).op ⋙ P) (op (Φ.fiber.elementsMk X x))
 
 @[ext]
 lemma presheafFiber_hom_ext
     {P : Cᵒᵖ ⥤ A} {T : A} {f g : Φ.presheafFiber.obj P ⟶ T}
     (h : ∀ (X : C) (x : Φ.fiber.obj X), Φ.toPresheafFiber X x P ≫ f =
       Φ.toPresheafFiber X x P ≫ g) : f = g :=
-  colimit.hom_ext (by rintro ⟨⟨X, x⟩⟩; exact h X x)
+  colimit.hom_ext (fun _ ↦ h _ _)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
 as a natural transformation. -/
@@ -124,8 +122,9 @@ noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
 lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.map f.op ≫ Φ.toPresheafFiber X x P =
       Φ.toPresheafFiber Y (Φ.fiber.map f x) P :=
-  colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ P)
-      (CategoryOfElements.homMk ⟨X, x⟩ ⟨Y, Φ.fiber.map f x⟩ f rfl).op
+  colimit.w ((Functor.Elements.π Φ.fiber).op ⋙ P)
+      (Functor.Elements.homMk (x := Functor.elementsMk _ X x)
+        (y := Functor.elementsMk _ Y (Φ.fiber.map f x)) f rfl).op
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
@@ -137,7 +136,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The (colimit) cocone which defines the fiber of a presheaf. -/
 @[simps]
 noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
-    Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ P) where
+    Cocone ((Functor.Elements.π Φ.fiber).op ⋙ P) where
   pt := Φ.presheafFiber.obj P
   ι.app x := Φ.toPresheafFiber x.unop.1 x.unop.2 P
 
@@ -208,29 +207,29 @@ instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ (forget A) :=
 lemma toPresheafFiber_jointly_surjective (p : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z = p := by
-  obtain ⟨⟨X, x⟩, z, rfl⟩ := Types.jointly_surjective_of_isColimit
+  obtain ⟨_, z, rfl⟩ := Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) p
-  exact ⟨X, x, z, rfl⟩
+      (colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P))) p
+  exact ⟨_, _, z, rfl⟩
 
 lemma toPresheafFiber_jointly_surjective₂ (p₁ p₂ : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z₁ = p₁ ∧ Φ.toPresheafFiber X x P z₂ = p₂ := by
-  obtain ⟨⟨X, x⟩, z₁, z₂, rfl, rfl⟩ := Types.FilteredColimit.jointly_surjective_of_isColimit₂
+  obtain ⟨_, z₁, z₂, rfl, rfl⟩ := Types.FilteredColimit.jointly_surjective_of_isColimit₂
     (isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) p₁ p₂
-  exact ⟨X, x, z₁, z₂, rfl, rfl⟩
+      (colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P))) p₁ p₂
+  exact ⟨_, _, z₁, z₂, rfl, rfl⟩
 
 lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))) :
     Φ.toPresheafFiber X x P z₁ = Φ.toPresheafFiber X x P z₂ ↔
       ∃ (Y : C) (f : Y ⟶ X) (y : Φ.fiber.obj Y), Φ.fiber.map f y = x ∧
         P.map f.op z₁ = P.map f.op z₂ := by
-  refine ((colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P)).eq_iff' ..).trans ?_
+  refine ((colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P)).eq_iff' ..).trans ?_
   constructor
-  · rintro ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
-    exact ⟨Y, f, y, hf, hf'⟩
+  · rintro ⟨_, ⟨f, hf⟩, hf'⟩
+    exact ⟨_, f, _, hf, hf'⟩
   · rintro ⟨Y, f, y, hf, hf'⟩
-    exact ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
+    exact ⟨op (Functor.elementsMk _ _ y), ⟨f, hf⟩, hf'⟩
 
 variable (f : P ⟶ Q)
 
@@ -346,7 +345,7 @@ lemma toPresheafFiber_presheafFiberCompIso_hom_app
   have := Functor.Final.preservesColimitsOfShape_of_final
     (FinallySmall.fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
   simp only [presheafFiberCompIso]
-  exact ι_preservesColimitIso_inv F ((CategoryOfElements.π Φ.fiber).op ⋙ P) _
+  exact ι_preservesColimitIso_inv F ((Functor.Elements.π Φ.fiber).op ⋙ P) _
 
 /-- If `Φ` is a point of a site and `F : A ⥤ B` is a functor which preserves
 filtered colimits, then taking fibers of sheaves at `Φ` commutes with `F`. -/

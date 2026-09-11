@@ -205,7 +205,7 @@ instance [Mono f] : IsIso (toRange f) :=
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.range_eq_univ]
+    Set.range_eq_univ]
 
 lemma range_eq_top [Epi f] : Subcomplex.range f = ⊤ := by
   rwa [range_eq_top_iff]
@@ -260,7 +260,6 @@ lemma preimage_id (A : X.Subcomplex) : A.preimage (𝟙 X) = A := rfl
 lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
     A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
 

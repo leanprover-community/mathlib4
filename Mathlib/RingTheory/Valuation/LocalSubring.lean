@@ -242,7 +242,7 @@ lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing 
     suffices IsUnit a from this.map (algebraMap R K).rangeRestrict
     apply IsUnit.of_map f
     apply (IsLocalHom.of_surjective g.rangeRestrict g.rangeRestrict_surjective).1
-    convert ha
+    convert! ha
     simp only [← h, RingHom.coe_comp, Function.comp_apply]
     ext
     simp

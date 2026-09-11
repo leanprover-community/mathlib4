@@ -5,6 +5,7 @@ Authors: Iván Renison
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
@@ -36,6 +37,9 @@ def pathGraph.bicoloring (n : ℕ) :
     rw [pathGraph_adj]
     rintro (h | h) <;> simp [← h, not_iff, Nat.succ_mod_two_eq_zero_iff]
 
+theorem IsBipartite.pathGraph (n : ℕ) : (pathGraph n).IsBipartite := by
+  simpa using pathGraph.bicoloring n |>.colorable
+
 /-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n` -/
 def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
   toFun v := ⟨v, trans v.2 h⟩
@@ -56,14 +60,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Even p.length ↔ (c u ↔ c v) := by
-  induction p with
-  | nil => simp
-  | @cons u v w h p ih =>
-    simp only [Walk.length_cons, Nat.even_add_one]
-    have : ¬ c u = true ↔ c v = true := by
-      rw [← not_iff, ← Bool.eq_iff_iff]
-      exact c.valid h
-    tauto
+  induction p <;> grind [c.valid, Walk.length_cons]
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
@@ -96,6 +93,9 @@ def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph 
           ← Fin.even_iff_mod_of_even h, Fin.even_add_one_iff_odd]
         apply Classical.not_iff.mpr
         simp [Fin.not_odd_iff_even_of_even h, Fin.not_even_iff_odd_of_even h]
+
+theorem IsBipartite.cycleGraph_of_even {n : ℕ} (h : Even n) : (cycleGraph n).IsBipartite := by
+  simpa using cycleGraph.bicoloring_of_even n h |>.colorable
 
 theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even n) :
     (cycleGraph n).chromaticNumber = 2 := by

@@ -287,7 +287,7 @@ lemma mapCongr_rfl {X Y : T} (f : X ⟶ Y) :
 variable (T) in
 /-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
-  obj X := Cat.of (Over X)
+  obj X := ↧(Over X)
   map f := (map f).toCatHom
   map_id X := congr($(mapId_eq X).toCatHom)
   map_comp f g := congr($(mapComp_eq f g).toCatHom)
@@ -876,7 +876,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
 variable (T) in
 /-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
-  obj X := Cat.of (Under X.unop)
+  obj X := ↧(Under X.unop)
   map f := (map f.unop).toCatHom
   map_id X := congr($(mapId_eq X.unop).toCatHom)
   map_comp f g := congr($(mapComp_eq (g.unop) (f.unop)).toCatHom)

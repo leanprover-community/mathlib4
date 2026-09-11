@@ -82,15 +82,25 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     positivity
   by_cases hp : p = 0
   · simp only [h_Lp, toLpₗ_apply, Lp.norm_toLp]
-    simp [hp]
+    rw [hp, eLpNorm_exponent_zero h_Lp.aestronglyMeasurable,
+      eLpNorm_exponent_zero (f := ⇑L)
+        (L.continuous.comp_aestronglyMeasurable h_Lp.aestronglyMeasurable)]
+    simp
   by_cases hp_top : p = ∞
-  · simp only [hp_top, StrongDual.toLpₗ_apply h_Lp, Lp.norm_toLp, eLpNorm_exponent_top] at h_Lp ⊢
+  · simp only [hp_top, StrongDual.toLpₗ_apply h_Lp, Lp.norm_toLp] at h_Lp ⊢
+    rw [eLpNorm_exponent_top (f := ⇑L)
+      (L.continuous.comp_aestronglyMeasurable h_Lp.aestronglyMeasurable),
+      eLpNorm_exponent_top h_Lp.aestronglyMeasurable]
     simp only [eLpNormEssSup, id_eq]
     suffices (essSup (fun x ↦ ‖L x‖ₑ) μ).toReal ≤ (essSup (fun x ↦ ‖L‖ₑ * ‖x‖ₑ) μ).toReal by
       rwa [ENNReal.essSup_const_mul, ENNReal.toReal_mul, toReal_enorm] at this
     gcongr
     · rw [ENNReal.essSup_const_mul]
-      exact ENNReal.mul_ne_top (by simp) h_Lp.eLpNorm_ne_top
+      have hid : essSup enorm μ ≠ ∞ := by
+        change eLpNormEssSup id μ ≠ ∞
+        rw [← eLpNorm_exponent_top h_Lp.aestronglyMeasurable]
+        exact h_Lp.eLpNorm_ne_top
+      exact ENNReal.mul_ne_top (by simp) hid
     · exact essSup_mono_ae <| ae_of_all _ L.le_opENorm
   have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, Ne.lt_top hp_top]
   suffices ‖L.toLpₗ μ p‖
@@ -99,10 +109,12 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     simp only [ENNReal.toReal_mul]
     rw [← ENNReal.toReal_rpow, Real.mul_rpow (by positivity) (by positivity),
       ← Real.rpow_mul (by positivity), mul_inv_cancel₀ h0.ne', Real.rpow_one, toReal_enorm]
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top, ENNReal.toReal_rpow]
+    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top h_Lp.aestronglyMeasurable,
+      ENNReal.toReal_rpow]
     simp
   rw [StrongDual.toLpₗ_apply h_Lp, Lp.norm_toLp,
-    eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top]
+    eLpNorm_eq_lintegral_rpow_enorm_toReal (f := ⇑L) (by simp [hp]) hp_top
+      (L.continuous.comp_aestronglyMeasurable h_Lp.aestronglyMeasurable)]
   simp only [one_div]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   suffices ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ ≤ ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ by
@@ -111,7 +123,8 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     rwa [ENNReal.ofReal_toReal]
     refine ENNReal.mul_ne_top (by simp) ?_
     have h := h_Lp.eLpNorm_ne_top
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top] at h
+    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top
+      h_Lp.aestronglyMeasurable] at h
     simpa [h0] using h
   calc ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ
   _ ≤ ∫⁻ x, ‖L‖ₑ ^ p.toReal * ‖x‖ₑ ^ p.toReal ∂μ := by

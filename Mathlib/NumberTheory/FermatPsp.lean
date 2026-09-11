@@ -21,8 +21,8 @@ is a composite number that passes the Fermat primality test to base `b` and is c
 Fermat pseudoprimes can also be seen as composite numbers for which Fermat's little theorem holds
 true.
 
-Numbers which are Fermat pseudoprimes to all bases are known as Carmichael numbers (not yet defined
-in this file).
+Numbers which are Fermat pseudoprimes to all bases are known as Carmichael numbers
+(defined in `Mathlib/NumberTheory/CarmichaelNumber.lean`).
 
 ## Main Results
 

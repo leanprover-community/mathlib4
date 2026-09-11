@@ -59,6 +59,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance : EquivLike (X ≃ₜ Y) X Y where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm

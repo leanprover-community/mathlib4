@@ -211,7 +211,6 @@ theorem mem_intermediateFieldEquivSubgroupChar_iff (F : IntermediateField ℚ K)
       ∀ σ : Gal(K/ℚ), σ ∈ F.fixingSubgroup → χ (galEquivZMod n K σ) = 1 := by
   simp [intermediateFieldEquivSubgroupChar]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Assume that `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is
 the set of characters whose conductor divides `m`.

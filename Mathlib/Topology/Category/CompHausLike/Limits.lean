@@ -60,7 +60,7 @@ variable [HasExplicitFiniteCoproduct X]
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
 union with its usual topology.
 -/
-abbrev finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
+abbrev finiteCoproduct : CompHausLike P := ↧(Σ (a : α), X a)
 
 /--
 The inclusion of one of the factors into the explicit finite coproduct.
@@ -205,7 +205,7 @@ def pullback : CompHausLike P :=
   haveI : CompactSpace set :=
     isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.hom.continuous.comp continuous_fst)
       (g.hom.hom.continuous.comp continuous_snd)).isCompact
-  CompHausLike.of P set
+  ↧set
 
 /--
 The projection from the pullback to the first component.

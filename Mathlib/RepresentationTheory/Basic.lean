@@ -449,7 +449,7 @@ variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 `ℤ`-linear `M`-representation on `Additive G`. -/
 def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
   (addMonoidEndRingEquivInt (Additive G) : AddMonoid.End (Additive G) →* _).comp
-    ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
+    ((MulEquiv.monoidEnd G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
 
 @[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
     ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
@@ -475,7 +475,7 @@ theorem coeff_ofMulAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h : H)
   have hg : Function.Injective (g • · : H → H) := by
     intro h₁ h₂
     simp
-  simp [ofMulAction_def, Finsupp.mapDomain_apply, hg]
+  simp [ofMulAction_def, hg]
 
 @[deprecated (since := "2026-06-18")] alias ofMulAction_apply := coeff_ofMulAction
 

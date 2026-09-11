@@ -828,17 +828,17 @@ variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
 def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=
-  fun φ n => coeff n φ
+  fun φ n => φ.coeff n
 
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
   ⟨toMvPowerSeries⟩
 
-theorem coe_def : (φ : MvPowerSeries σ R) = fun n => coeff n φ :=
+theorem coe_def : (φ : MvPowerSeries σ R) = fun n => φ.coeff n :=
   rfl
 
-@[simp, norm_cast]
-theorem coeff_coe (n : σ →₀ ℕ) : MvPowerSeries.coeff n ↑φ = coeff n φ :=
+@[simp]
+theorem coeff_coe (n : σ →₀ ℕ) : MvPowerSeries.coeff n ↑φ = φ.coeff n :=
   rfl
 
 @[simp, norm_cast]
@@ -846,8 +846,7 @@ theorem coe_monomial (n : σ →₀ ℕ) (a : R) :
     (monomial n a : MvPowerSeries σ R) = MvPowerSeries.monomial n a :=
   MvPowerSeries.ext fun m => by
     classical
-    rw [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial]
-    split_ifs with h₁ h₂ <;> first | rfl | subst m; contradiction
+    simp [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial, eq_comm]
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : MvPolynomial σ R) : MvPowerSeries σ R) = 0 :=

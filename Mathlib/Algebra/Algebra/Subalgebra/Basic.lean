@@ -1044,7 +1044,7 @@ theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ �
 
 theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
     Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
-      (LinearMapClass.linearMap φ) (LinearMapClass.linearMap ψ) := rfl
+      (LinearMap.ofClass φ) (LinearMap.ofClass ψ) := rfl
 
 theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
     S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl

@@ -41,25 +41,26 @@ attribute [coe] HeytAlg.carrier
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `HeytAlg.of X` as `↧X`. -/
+@[app_delab HeytAlg.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `HeytAlg R`. -/
 @[ext]
 structure Hom (X Y : HeytAlg.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `HeytingHom`. -/
   hom' : HeytingHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category HeytAlg.{u} where
   Hom X Y := Hom X Y
   id X := ⟨HeytingHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory HeytAlg (HeytingHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `HeytAlg` back into a `HeytingHom`. -/
 abbrev Hom.hom {X Y : HeytAlg.{u}} (f : Hom X Y) :=
@@ -150,7 +151,7 @@ instance : Inhabited HeytAlg :=
 
 @[simps]
 instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/

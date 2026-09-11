@@ -807,11 +807,12 @@ lemma edist_eq_tsum (x y : ∀ i, F i) :
     edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
 
 lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
-    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := ENNReal.le_tsum _
+    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := by
+  grw [edist_eq_tsum, ← ENNReal.le_tsum i]
 
 lemma edist_le_two : edist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
-    rw [edist_eq_tsum]; gcongr; exact min_le_left ..
+    grw [edist_eq_tsum, min_le_left]
 
 lemma edist_lt_top : edist x y < ∞ := edist_le_two.trans_lt (by simp)
 

@@ -848,7 +848,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
   have : IsProbabilityMeasure μ := MemLp.isProbabilityMeasure_of_indepFun
     (X 0) (X 1) (zero_lt_one.trans_le hp).ne' hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) μ := fun i =>
-    (hident i).aestronglyMeasurable_iff.2 hℒp.1
+    (hident i).aestronglyMeasurable_iff.2 hℒp.aestronglyMeasurable
   have hint : Integrable (X 0) μ := hℒp.integrable hp
   have havg (n : ℕ) :
       AEStronglyMeasurable (fun ω => (n : ℝ)⁻¹ • (∑ i ∈ range n, X i ω)) μ :=

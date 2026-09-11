@@ -40,6 +40,11 @@ initialize_simps_projections Frm (carrier → coe, -str)
 
 namespace Frm
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Frm.of X` as `↧X`. -/
+@[app_delab Frm.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Frm (Type _) :=
   ⟨Frm.carrier⟩
 
@@ -48,22 +53,18 @@ attribute [coe] Frm.carrier
 /-- The type of morphisms in `Frm R`. -/
 @[ext]
 structure Hom (X Y : Frm.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `FrameHom`. -/
   hom' : FrameHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category Frm.{u} where
   Hom X Y := Hom X Y
   id X := ⟨FrameHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Frm (FrameHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Frm` back into a `FrameHom`. -/
 abbrev Hom.hom {X Y : Frm.{u}} (f : Hom X Y) :=
@@ -149,7 +150,7 @@ instance : Inhabited Frm :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ Frm Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom f.hom
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/

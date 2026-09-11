@@ -87,8 +87,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
-  refine t.induction_on ?_ ?_ ?_
-  · use 0; simp only [map_zero]
+  refine t.inductionOn ?_ ?_
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
     simp only [map_add, Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
@@ -212,6 +211,7 @@ structure Weight where
 
 namespace Weight
 
+@[macro_inline]
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
   coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all

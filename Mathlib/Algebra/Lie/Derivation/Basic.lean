@@ -59,6 +59,7 @@ variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
+@[macro_inline]
 instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
   coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h

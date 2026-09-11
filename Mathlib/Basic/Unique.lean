@@ -39,7 +39,6 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 The typeclass `Unique α` is implemented as a type,
 rather than a `Prop`-valued predicate,
 for good definitional properties of the default term.
-
 -/
 
 @[expose] public section

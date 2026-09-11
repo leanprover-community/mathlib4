@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.Commensurable
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Discrete subgroups of topological groups
@@ -52,14 +52,15 @@ variable [IsTopologicalGroup G] [T2Space G]
 
 /-- If `G` is a topological group and `H` a finite-index subgroup, then `G` is topologically
 discrete iff `H` is. -/
-@[to_additive]
+@[to_additive /-- If `G` is an additive topological group and `H` a finite-index additive subgroup,
+then `G` is topologically discrete iff `H` is. -/]
 lemma Subgroup.discreteTopology_iff_of_finiteIndex {H : Subgroup G} [H.FiniteIndex] :
     DiscreteTopology H ↔ DiscreteTopology G := by
   refine ⟨fun hH ↦ ?_, fun hG ↦ inferInstance⟩
   suffices IsOpen (H : Set G) by
     rw [discreteTopology_iff_isOpen_singleton_one, isOpen_singleton_iff_nhds_eq_pure,
         ← H.coe_one, ← this.isOpenEmbedding_subtypeVal.map_nhds_eq, nhds_discrete, map_pure]
-  exact H.isOpen_of_isClosed_of_finiteIndex Subgroup.isClosed_of_discrete
+  exact H.isOpen_of_isClosed_of_finiteIndex Subgroup.isClosed_of_discreteTopology
 
 @[to_additive]
 lemma Subgroup.discreteTopology_iff_of_isFiniteRelIndex {H K : Subgroup G} (hHK : H ≤ K)

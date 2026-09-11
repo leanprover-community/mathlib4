@@ -147,23 +147,16 @@ end ConditionallyCompleteLinearOrderBot
 section CompleteLinearOrder
 variable [CompleteLinearOrder α] {s : Set α} {f : ι → α} {x : α}
 
+@[to_dual]
 lemma sSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by
   obtain ⟨y, hy⟩ := not_forall_not.mp hlim
   obtain ⟨i, his, hi⟩ := lt_sSup_iff.mp hy.lt
   exact eq_of_le_of_not_lt (le_sSup his) (hy.2 hi) ▸ his
 
-lemma sInf_mem_of_not_isPredPrelimit (hlim : ¬ IsPredPrelimit (sInf s)) : sInf s ∈ s := by
-  obtain ⟨y, hy⟩ := not_forall_not.mp hlim
-  obtain ⟨i, his, hi⟩ := sInf_lt_iff.mp hy.lt
-  exact eq_of_le_of_not_lt (sInf_le his) (hy.2 · hi) ▸ his
-
+@[to_dual]
 lemma exists_eq_iSup_of_not_isSuccPrelimit (hf : ¬ IsSuccPrelimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
   sSup_mem_of_not_isSuccPrelimit hf
-
-lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i)) :
-    ∃ i, f i = ⨅ i, f i :=
-  sInf_mem_of_not_isPredPrelimit hf
 
 /-- Similar to `sSup_lt_iff` but with a weaker RHS, as it does not require a uniform bound. -/
 @[to_dual lt_sInf_iff_of_not_isPredPrelimit

@@ -267,6 +267,11 @@ theorem direction_eq_vectorSpan (s : AffineSubspace k P) : s.direction = vectorS
 theorem direction_singleton (x : P) : ({x} : AffineSubspace k P).direction = ⊥ := by
   simp [direction]
 
+@[simp]
+theorem direction_eq_bot_iff {s : AffineSubspace k P} :
+    s.direction = ⊥ ↔ (s : Set P).Subsingleton := by
+  simp [direction]
+
 /-- Alternative definition of the direction when the affine subspace is nonempty. This is defined so
 that the order on submodules (as used in the definition of `Submodule.span`) can be used in the
 proof of `coe_direction_eq_vsub_set`, and is not intended to be used beyond that proof. -/

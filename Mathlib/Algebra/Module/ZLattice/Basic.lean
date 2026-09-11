@@ -330,7 +330,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
   have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
   refine Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete hs ?_
   rw [← coe_toAddSubgroup]
-  exact AddSubgroup.isClosed_of_discrete
+  exact AddSubgroup.isClosed_of_discreteTopology
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :

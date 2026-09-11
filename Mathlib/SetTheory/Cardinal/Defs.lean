@@ -167,9 +167,13 @@ theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 
 /-- A cardinal lifted to the same universe equals itself. -/
-@[simp]
 theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
+
+/-- The map lifting a cardinal to the same universe is equal to the identity. -/
+@[simp]
+theorem lift_eq_id : lift.{u, u} = id := by
+  funext; exact lift_id _
 
 /-- A cardinal lifted to the zero universe equals itself. -/
 @[simp]

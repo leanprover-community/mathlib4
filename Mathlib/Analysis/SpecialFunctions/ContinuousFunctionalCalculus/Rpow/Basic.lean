@@ -107,8 +107,7 @@ lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a :
 lemma nnrpow_eq_cfcₙ_real [T2Space A] [IsSemitopologicalRing A] (a : A)
     (y : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfcₙ (fun x : ℝ => x ^ (y : ℝ)) a := by
   rw [nnrpow_def, cfcₙ_nnreal_eq_real ..]
-  refine cfcₙ_congr ?_
-  intro x hx
+  congr! 1 with x hx
   have : 0 ≤ x := by grind
   simp [this]
 
@@ -116,7 +115,7 @@ lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
     a ^ (x + y) = a ^ x * a ^ y := by
   simp only [nnrpow_def]
   rw [← cfcₙ_mul _ _ a]
-  congr! 2 with z
+  congr! 1 with z hz
   exact mod_cast z.rpow_add' <| ne_of_gt (add_pos hx hy)
 
 @[simp]
@@ -156,7 +155,7 @@ lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
     all_goals try simp
     simp only [nnrpow_def]
     rw [← cfcₙ_comp _ _ a]
-    congr! 2 with u
+    congr! 1 with u hu
     ext
     simp [Real.rpow_mul]
   case neg =>
@@ -418,8 +417,7 @@ lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := r
 lemma rpow_eq_cfc_real [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ}
     (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfc (fun x : ℝ => x ^ y) a := by
   rw [CFC.rpow_def, cfc_nnreal_eq_real ..]
-  refine cfc_congr ?_
-  intro x hx
+  congr! 1 with x hx
   simp only [NNReal.coe_rpow, Real.coe_toNNReal']
   grind
 
@@ -461,8 +459,7 @@ lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
   have ha' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
   simp only [rpow_def]
   rw [← cfc_mul _ _ a]
-  refine cfc_congr ?_
-  intro z hz
+  congr! 1 with z hz
   have : z ≠ 0 := by aesop
   simp [NNReal.rpow_add this _ _]
 
@@ -472,7 +469,7 @@ lemma rpow_rpow [IsSemitopologicalRing A] [T2Space A]
   have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha.isUnit
   simp only [rpow_def]
   rw [← cfc_comp _ _ a ha.nonneg]
-  refine cfc_congr fun _ _ => ?_
+  congr! 1 with _ _
   simp [NNReal.rpow_mul]
 
 lemma rpow_rpow_inv [IsSemitopologicalRing A] [T2Space A]
@@ -489,7 +486,7 @@ lemma rpow_rpow_of_exponent_nonneg [IsSemitopologicalRing A] [T2Space A] (a : A)
     (hx : 0 ≤ x) (hy : 0 ≤ y) (ha : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
   simp only [rpow_def]
   rw [← cfc_comp _ _ a]
-  refine cfc_congr fun _ _ => ?_
+  congr! 1 with _ _
   simp [NNReal.rpow_mul]
 
 lemma rpow_mul_rpow_neg {a : A} (x : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
@@ -521,7 +518,7 @@ lemma rpow_neg [IsSemitopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
   suffices h₁ : ContinuousOn (fun z ↦ z ^ x) (Inv.inv '' (spectrum ℝ≥0 (a : A))) by
     rw [← cfc_inv_id (R := ℝ≥0) a, rpow_def, rpow_def,
         ← cfc_comp' (fun z => z ^ x) (Inv.inv : ℝ≥0 → ℝ≥0) (a : A) h₁]
-    refine cfc_congr fun _ _ => ?_
+    congr! 1 with _ _
     simp [NNReal.rpow_neg, NNReal.inv_rpow]
   refine NNReal.continuousOn_rpow_const (.inl ?_)
   rintro ⟨z, hz, hz'⟩
@@ -530,7 +527,7 @@ lemma rpow_neg [IsSemitopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
 lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
     (a : A) ^ (n : ℝ) = (↑(a ^ n) : A) := by
   rw [← cfc_zpow (R := ℝ≥0) a n, rpow_def]
-  refine cfc_congr fun _ _ => ?_
+  congr! 1 with _ _
   simp
 
 /-- `a ^ x` bundled as an element of `Aˣ` for `a : Aˣ`. -/

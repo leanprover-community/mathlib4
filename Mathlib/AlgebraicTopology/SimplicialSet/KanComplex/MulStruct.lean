@@ -40,6 +40,20 @@ namespace PtSimplex
 
 variable {X} {n : ℕ} {x : X _⦋0⦌}
 
+variable (x) in
+/-- The bijection `X.PtSimplex 0 x ≃ X _⦋0⦌`. -/
+@[simps, implicit_reducible]
+def equiv₀ : X.PtSimplex 0 x ≃ X _⦋0⦌ where
+  toFun f := yonedaEquiv f.map
+  invFun y := { map := yonedaEquiv.symm y }
+  left_inv f := by simp
+  right_inv y := by simp only [Equiv.apply_symm_apply]
+
+lemma map_eq_const_equiv₀ (s : X.PtSimplex 0 x) :
+    s.map = const (equiv₀ _ s) := by
+  obtain ⟨y, rfl⟩ := (equiv₀ _).symm.surjective s
+  simp [yonedaEquiv_symm_zero]
+
 @[reassoc]
 lemma comp_map_eq_const
     (s : X.PtSimplex n x) {Y : SSet.{u}} (φ : Y ⟶ Δ[n]) [Y.HasDimensionLT n] :
@@ -148,6 +162,35 @@ def ofEq {f g : X.PtSimplex n x} (h : f = g) (i : Fin (n + 1)) :
   (refl f i).copy rfl h
 
 end RelStruct
+
+/-- One of the variants of the homotopy relation on `n`-simplices that are
+constant on the boundary. Simplices `f` and `g` are related
+if they appear respectively as the zeroth and first faces of a
+`n + 1`-simplex such that all the other faces are constant. -/
+abbrev RelStruct₀ (f g : X.PtSimplex n x) := RelStruct f g 0
+
+namespace RelStruct₀
+
+/-- In dimension `0`, the type `RelStruct₀` identify to a type of edges
+between `0`-simplices. -/
+@[implicit_reducible, simps +dsimpLhs]
+def equiv₀ {f g : X.PtSimplex 0 x} :
+    RelStruct₀ f g ≃
+      X.Edge (PtSimplex.equiv₀ x g) (PtSimplex.equiv₀ x f) where
+  toFun h :=
+    Edge.mk (yonedaEquiv h.map)
+      (by simp [← stdSimplex.yonedaEquiv_δ_comp, dsimp% h.δ_succ_map])
+      (by simp [← stdSimplex.yonedaEquiv_δ_comp, dsimp% h.δ_castSucc_map])
+  invFun e :=
+    { map := yonedaEquiv.symm e.edge
+      δ_succ_map := by simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+      δ_castSucc_map := by simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+      δ_map_of_gt := by grind
+      δ_map_of_lt := by grind }
+  left_inv h := by cat_disch
+  right_inv e := by cat_disch
+
+end RelStruct₀
 
 /-- For each `i : Fin n`, this structure is a candidate for the relation saying
 that `fg` is the product of `f` and `g` in the homotopy group (of a Kan complex).
@@ -421,6 +464,98 @@ noncomputable def assoc' [KanComplex X]
     (h : MulStruct f₀₂ f₂₃ f₀₃ i) :
     MulStruct f₀₁ f₁₃ f₀₃ i :=
   (assoc (h₁₃.op rfl) (h₀₂.op rfl) (h.op rfl)).unop
+
+section
+
+variable [X.KanComplex] {p q r : X.PtSimplex (n + 1) x} {i : Fin (n + 1)}
+
+/-- A `MulStruct q .const p i` structure deduced from a `MulStruct p .const q i` structure. -/
+@[no_expose]
+noncomputable def mulOneEqSymm (h : MulStruct p .const q i) :
+    MulStruct q .const p i :=
+  assoc h (mulOne _ i) (mulOne p i)
+
+/-- A `MulStruct .const q p i` structure deduced from a `MulStruct .const p q i` structure. -/
+@[no_expose]
+noncomputable def oneMulEqSymm (h : MulStruct .const p q i) :
+    MulStruct .const q p i :=
+  assoc' (oneMul _ i) h (oneMul p i)
+
+/-- A `MulStruct .const p q i` structure deduced from a `MulStruct p .const q i` structure. -/
+@[no_expose]
+noncomputable def oneMulEqOfMulOneEq (h : MulStruct p .const q i) :
+    MulStruct .const p q i :=
+  (assoc' (oneMul p i) h (mulOne p i)).oneMulEqSymm
+
+/-- A `MulStruct p .const q i` structure deduced from a `MulStruct .const p q i` structure. -/
+@[no_expose]
+noncomputable def mulOneEqOfOneMulEq (h : MulStruct .const p q i) :
+    MulStruct p .const q i :=
+  (assoc h (mulOne p i) (oneMul p i)).mulOneEqSymm
+
+/-- A `MulStruct p .const r i` structure deduced from `MulStruct p .const q i` and
+`MulStruct q .const r i` structures. -/
+@[no_expose]
+noncomputable def mulOneEqTrans (h : MulStruct p .const q i)
+    (h' : MulStruct q .const r i) :
+    MulStruct p .const r i :=
+  assoc (oneMul p i) h h'.oneMulEqOfMulOneEq
+
+/-- A `MulStruct .const p r i` structure deduced from `MulStruct .const p q i` and
+`MulStruct .const q r i` structures. -/
+@[no_expose]
+noncomputable def oneMulEqTrans (h : MulStruct .const p q i)
+    (h' : MulStruct .const q r i) :
+    MulStruct .const p r i :=
+  assoc' h (mulOne p i) h'.mulOneEqOfOneMulEq
+
+end
+
+lemma nonempty [KanComplex X] (p q : X.PtSimplex (n + 1) x) (i : Fin (n + 1)) :
+    ∃ (r : X.PtSimplex (n + 1) x), Nonempty (MulStruct p q r i) := by
+  let α (j : Fin (n + 3)) (hj : j ≠ i.castSucc.succ) : Δ[n + 1] ⟶ X :=
+    if j = i.castSucc.castSucc then q.map else
+      if j = i.succ.succ then p.map else const x
+  have δ_α (j) (hj) (k : Fin (n + 2)) : stdSimplex.δ k ≫ α j hj = const x := by
+    dsimp [α]; split_ifs <;> simp
+  have hα : horn.IsCompatible α := fun _ _ _ _ _ ↦ by simp [δ_α]
+  refine ⟨.mk (stdSimplex.δ i.castSucc.succ ≫ hα.liftOfKanComplex) ?_,
+    ⟨{map := hα.liftOfKanComplex
+      δ_castSucc_castSucc_map := ?_
+      δ_succ_succ_map := ?_
+      δ_map_of_lt _ _ := ?_
+      δ_map_of_gt _ _ := ?_ }⟩⟩
+  · ext j : 1
+    simp only [boundary.ι_ι_assoc, Subcomplex.ofSimplex_ι, comp_const]
+    by_cases! hj : j ≤ i.castSucc
+    · rw [stdSimplex.δ_comp_δ_assoc (by grind),
+        hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+    · rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.succ) (j := j) (by grind),
+        hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+  all_goals grind [horn.IsCompatible.δ_liftOfKanComplex]
+
+lemma exists_left_inverse [KanComplex X] (p : X.PtSimplex (n + 1) x) (i : Fin (n + 1)) :
+    ∃ (q : X.PtSimplex (n + 1) x), Nonempty (MulStruct q p .const i) := by
+  let α (j : Fin (n + 3)) (hj : j ≠ i.succ.succ) : Δ[n + 1] ⟶ X :=
+    if j = i.castSucc.castSucc then p.map else const x
+  have δ_α (j) (hj) (k : Fin (n + 2)) : stdSimplex.δ k ≫ α j hj = const x := by
+    dsimp [α]; split_ifs <;> simp
+  have hα : horn.IsCompatible α := fun _ _ _ _ _ ↦ by simp [δ_α]
+  refine ⟨.mk (stdSimplex.δ i.succ.succ ≫ hα.liftOfKanComplex) ?_,
+    ⟨{map := hα.liftOfKanComplex
+      δ_succ_castSucc_map := ?_
+      δ_castSucc_castSucc_map := ?_
+      δ_map_of_lt _ _ := ?_
+      δ_map_of_gt _ _ := ?_ }⟩⟩
+  · ext j : 1
+    simp only [boundary.ι_ι_assoc, Subcomplex.ofSimplex_ι, comp_const]
+    by_cases! hj : j ≤ i.succ
+    · rw [stdSimplex.δ_comp_δ_assoc (by grind),
+        hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+    · obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (by grind)
+      rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.succ.succ) (j := j) (by grind),
+          hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+  all_goals grind [RelativeMorphism.const_map, horn.IsCompatible.δ_liftOfKanComplex]
 
 end MulStruct
 

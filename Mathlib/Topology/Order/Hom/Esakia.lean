@@ -110,6 +110,7 @@ namespace PseudoEpimorphism
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
+@[macro_inline]
 instance instFunLike : FunLike (PseudoEpimorphism α β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -215,6 +216,7 @@ variable [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β]
 def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
   { f with }
 
+@[macro_inline]
 instance instFunLike : FunLike (EsakiaHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by

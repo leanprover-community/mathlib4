@@ -188,7 +188,7 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -309,7 +309,7 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -379,7 +379,7 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
   [FunLike F M N] : Prop
   extends MulHomClass F M N, OneHomClass F M N
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
   coe_injective f g h := by
@@ -961,7 +961,7 @@ protected def End := M →* M
 
 namespace End
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
 
 @[to_additive (attr := ext)]

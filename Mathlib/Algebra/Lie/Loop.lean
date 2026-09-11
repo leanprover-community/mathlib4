@@ -80,12 +80,10 @@ noncomputable instance [DecidableEq A] [AddCommMonoid A] :
     rw [decomposeTensor_apply] at hi hj ⊢
     obtain ⟨xi, rfl⟩ := hi
     obtain ⟨xj, rfl⟩ := hj
-    induction xi using TensorProduct.induction_on with
-    | zero => simp
+    induction xi using TensorProduct.inductionOn with
     | tmul x y =>
       simp only [LinearMap.rTensor_tmul, Submodule.subtype_apply]
-      induction xj using TensorProduct.induction_on with
-      | zero => simp
+      induction xj using TensorProduct.inductionOn with
       | tmul u v =>
         obtain ⟨x, hx⟩ := x
         obtain ⟨u, hu⟩ := u

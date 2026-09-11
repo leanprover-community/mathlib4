@@ -116,15 +116,11 @@ theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
   simp [eq_iff_true_of_subsingleton]
 
-set_option linter.translate.warnInvalid false in
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
 @[to_dual (attr := simps!)
 /-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/]
 def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
   initialIsInitial.uniqueUpToIso t
-
-attribute [to_dual existing terminalIsoIsTerminal_inv] initialIsoIsInitial_hom
-attribute [to_dual existing terminalIsoIsTerminal_hom] initialIsoIsInitial_inv
 
 /-- Any morphism from a terminal object is split mono. -/
 @[to_dual isSplitEpi_to /-- Any morphism to an initial object is split epi. -/]
