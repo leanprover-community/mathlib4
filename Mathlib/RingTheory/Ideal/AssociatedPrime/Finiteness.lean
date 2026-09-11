@@ -92,7 +92,8 @@ a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, 
 theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
     ∃ s : RelSeries {(N₁, N₂) | Submodule.IsQuotientEquivQuotientPrime (A := A) (M := M) N₁ N₂},
       s.head = ⊥ ∧ s.last = ⊤ := by
-  refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
+  refine WellFoundedGT.induction_top
+    (C := (∃ s : RelSeries _, s.head = ⊥ ∧ s.last = ·)) ?_ ⟨.singleton _ ⊥, rfl, rfl⟩
   rintro N hN ⟨s, hs₁, hs₂⟩
   have := Submodule.Quotient.nontrivial_iff.mpr hN
   obtain ⟨p, hp⟩ := associatedPrimes.nonempty A (M ⧸ N)

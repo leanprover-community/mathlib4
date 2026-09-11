@@ -362,52 +362,6 @@ end LinearOrder
 
 end Function
 
-section Induction
-
-/-- Let `r` be a relation on `α`, let `f : α → β` be a function, let `C : β → Prop`, and
-let `bot : α`. This induction principle shows that `C (f bot)` holds, given that
-* some `a` that is accessible by `r` satisfies `C (f a)`, and
-* for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
-  satisfying `r c b` and `C (f c)`. -/
-theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : β → Prop}
-    {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) : C (f a) → C (f bot) :=
-  (@Acc.recOn _ _ (fun x _ => C (f x) → C (f bot)) _ ha) fun x _ ih' hC =>
-    (eq_or_ne (f x) (f bot)).elim (fun h => h ▸ hC) (fun h =>
-      let ⟨y, hy₁, hy₂⟩ := ih x h hC
-      ih' y hy₁ hy₂)
-
-/-- Let `r` be a relation on `α`, let `C : α → Prop` and let `bot : α`.
-This induction principle shows that `C bot` holds, given that
-* some `a` that is accessible by `r` satisfies `C a`, and
-* for each `b ≠ bot` such that `C b` holds, there is `c` satisfying `r c b` and `C c`. -/
-theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : α → Prop}
-    (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
-  ha.induction_bot' ih
-
-/-- Let `r` be a well-founded relation on `α`, let `f : α → β` be a function,
-let `C : β → Prop`, and let `bot : α`.
-This induction principle shows that `C (f bot)` holds, given that
-* some `a` satisfies `C (f a)`, and
-* for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
-  satisfying `r c b` and `C (f c)`. -/
-theorem WellFounded.induction_bot' {α β} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
-    {C : β → Prop} {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) :
-    C (f a) → C (f bot) :=
-  (hwf.apply a).induction_bot' ih
-
-/-- Let `r` be a well-founded relation on `α`, let `C : α → Prop`, and let `bot : α`.
-This induction principle shows that `C bot` holds, given that
-* some `a` satisfies `C a`, and
-* for each `b` that satisfies `C b`, there is `c` satisfying `r c b` and `C c`.
-
-The naming is inspired by the fact that when `r` is transitive, it follows that `bot` is
-the smallest element w.r.t. `r` that satisfies `C`. -/
-theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
-    {C : α → Prop} (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
-  hwf.induction_bot' ih
-
-end Induction
-
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
 @[to_dual (attr := instance_reducible)
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
