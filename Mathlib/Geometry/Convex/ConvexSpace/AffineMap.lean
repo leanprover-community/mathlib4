@@ -31,6 +31,7 @@ protected structure AffineMap
 
 namespace AffineMap
 
+@[macro_inline]
 instance {X Y : Type*} [ConvexSpace R X] [ConvexSpace R Y] :
     FunLike (ConvexSpace.AffineMap R X Y) X Y where
   coe := ConvexSpace.AffineMap.toFun
