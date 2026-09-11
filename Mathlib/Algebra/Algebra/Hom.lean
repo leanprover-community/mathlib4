@@ -50,22 +50,6 @@ class AlgHomClass (F : Type*) (R : outParam Type*) [CommSemiring R] (A B : outPa
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
-instance {R : Type*} [CommSemiring R] (A B : Type*) [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] : FunLike (A →ₐ[R] B) A B where
-  coe f := f.toFun
-  coe_injective f g h := by
-    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩
-    rcases g
-    congr
-
-instance {R : Type*} [CommSemiring R] (A B : Type*) [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] : AlgHomClass (A →ₐ[R] B) R A B where
-  map_add f := f.map_add'
-  map_zero f := f.map_zero'
-  map_mul f := f.map_mul'
-  map_one f := f.map_one'
-  commutes f := f.commutes'
-
 namespace AlgHomClass
 
 variable {F R : Type*} [CommSemiring R] {A B : Type*} [Semiring A] [Semiring B]
@@ -425,6 +409,18 @@ end IsScalarTower
 alias Algebra.algHom := IsScalarTower.toAlgHom
 
 alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
+
+namespace AlgHomClass
+
+-- TODO: rename again when RingHomClass.toRingHom gets renamed
+@[simp]
+lemma toRingHom_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
+
+@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := toRingHom_ofClass
+
+end AlgHomClass
 
 namespace RingHom
 
