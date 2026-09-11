@@ -66,14 +66,14 @@ variable {G H : IncidenceHypergraph ν ι ε} {e : ε} {v : ν} {k : ℕ∞}
 
 /-- Two incidence hypergraphs are equal if their active sets and incidence maps agree. -/
 @[ext]
-protected lemma ext [Nonempty ν] [Nonempty ε] {G H : IncidenceHypergraph ν ι ε}
-    (hV : V(G) = V(H)) (hI : I(G) = I(H)) (hE : E(G) = E(H))
-    (hEdge : ∀ i ∈ I(G), edgeMap G i = edgeMap H i)
-    (hAttach : ∀ i ∈ I(G), attach G i = attach H i) : G = H := by
+protected lemma ext {G H : IncidenceHypergraph ν ι ε} (hV : V(G) = V(H)) (hI : I(G) = I(H))
+    (hE : E(G) = E(H)) (hEdge : ∀ (i : ι) (hiG : i ∈ I(G)) (hiH : i ∈ I(H)),
+    G.edgeMap' ⟨i, hiG⟩ = H.edgeMap' ⟨i, hiH⟩) (hAttach : ∀ (i : ι) (hiG : i ∈ I(G))
+    (hiH : i ∈ I(H)), G.attach' ⟨i, hiG⟩ = H.attach' ⟨i, hiH⟩) : G = H := by
   cases G
   cases H
   cases hI
-  simp_all [edgeMap, attach, toEdge, toVert, verts, incs, edges, funext_iff]
+  simp_all [verts, incs, edges, funext_iff]
 
 /-! ### Duality -/
 
