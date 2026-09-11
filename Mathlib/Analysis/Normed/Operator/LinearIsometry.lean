@@ -95,12 +95,18 @@ protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
 theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
-protected theorem lipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
+protected theorem lipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
   (SemilinearIsometryClass.isometry f).lipschitzWith
 
-protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := SemilinearIsometryClass.lipschitzWith
+
+protected theorem antilipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     AntilipschitzWith 1 f :=
   (SemilinearIsometryClass.isometry f).antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := SemilinearIsometryClass.antilipschitzWith
 
 theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
     Metric.ediam (f '' s) = Metric.ediam s :=
@@ -233,11 +239,17 @@ theorem map_eq_iff {x y : F} : f₁ x = f₁ y ↔ x = y :=
 theorem map_ne {x y : F} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
-protected theorem lipschitz : LipschitzWith 1 f :=
+protected theorem lipschitzWith : LipschitzWith 1 f :=
   f.isometry.lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 f :=
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := LinearIsometry.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 f :=
   f.isometry.antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := LinearIsometry.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
@@ -908,11 +920,17 @@ theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
 theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
-protected theorem lipschitz : LipschitzWith 1 e :=
+protected theorem lipschitzWith : LipschitzWith 1 e :=
   e.isometry.lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 e :=
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := LinearIsometryEquiv.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 e :=
   e.isometry.antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := LinearIsometryEquiv.antilipschitzWith
 
 theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s

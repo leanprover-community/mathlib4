@@ -307,11 +307,17 @@ protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
 protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
 
-protected theorem lipschitz : LipschitzWith 1 f :=
+protected theorem lipschitzWith : LipschitzWith 1 f :=
   (IsometryClass.isometry f).lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 f :=
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := IsometryClass.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 f :=
   (IsometryClass.isometry f).antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := IsometryClass.antilipschitzWith
 
 theorem ediam_image (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
   (IsometryClass.isometry f).ediam_image s
