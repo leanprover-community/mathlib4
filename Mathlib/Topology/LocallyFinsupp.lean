@@ -802,13 +802,13 @@ variable {Y : Type*} {y : Y} [Zero Y] [LinearOrder Y]
 Truncation of a function with locally finite support: the pointwise minimum with a non-negative
 constant `y`.
 -/
-noncomputable abbrev trunc (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
+noncomputable abbrev truncate (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
     locallyFinsuppWithin U Y := D.mapRange (min · y) (min_eq_left hy)
 
 /--
 Truncation of a function with locally finite support: the pointwise minimum with the constant `1`.
 -/
-noncomputable abbrev trunc₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
+noncomputable abbrev truncate₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
     locallyFinsuppWithin U Y := D.trunc 1 zero_le_one
 
 /-- Evaluation of the truncation. -/
