@@ -149,7 +149,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     fun ⟨P, HP⟩ hP hPN ↦ ?_
   obtain ⟨p, hp⟩ := IsPrincipalIdealRing.principal <| under ℤ P
   have hp0 : p ≠ 0 := fun h ↦ nonZeroDivisors.coe_ne_zero ⟨P, HP⟩ <|
-    eq_bot_of_comap_eq_bot (R := ℤ) <| by simpa only [hp, submodule_span_eq, span_singleton_eq_bot]
+    eq_bot_of_under_eq_bot (R := ℤ) <| by simpa only [hp, submodule_span_eq, span_singleton_eq_bot]
   have hpprime := (span_singleton_prime hp0).mp
   simp only [← submodule_span_eq, ← hp] at hpprime
   have hlies : P.LiesOver (span {p}) := by
