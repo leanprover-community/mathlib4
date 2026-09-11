@@ -27,7 +27,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -153,7 +153,6 @@ theorem nonempty_indParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (hA :
 
 namespace IndParallelPairPresentation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)`
 as the colimit of `(P.φ, P.ψ)` in `Cᵒᵖ ⥤ Type v`. -/
 noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B}

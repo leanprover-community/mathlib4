@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Formalization of IMO 1987, Q1
@@ -20,6 +22,8 @@ by `x` for the right-hand side.
 The original problem assumes `n ≥ 1`. It turns out that a version with `n * (n - 1)!` in the RHS
 holds true for `n = 0` as well, so we first prove it, then deduce the original version in the case
 `n ≥ 1`. -/
+
+@[expose] public section
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
@@ -38,7 +42,7 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
       setProdEquivSigma _
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
-      (sigmaCongrRight fun x => Equiv.setCongr <| by simp only [SetCoe.forall]; simp)
+      sigmaCongrRight fun x => Equiv.subtypeEquivRight (by simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 
 theorem card_fixed_points :
@@ -54,7 +58,7 @@ fixed points. -/
 def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 
-instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (setOf _)
+instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (Set.ofPred _)
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=

@@ -29,7 +29,7 @@ assert_not_exists RelIso IsOrderedMonoid Field
 
 open Additive Function Multiplicative Nat
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace Int
 
@@ -81,7 +81,7 @@ variable [NonAssocRing α]
 
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def castRingHom : ℤ →+* α where
   toFun := Int.cast
   map_zero' := cast_zero

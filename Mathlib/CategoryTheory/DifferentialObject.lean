@@ -161,7 +161,6 @@ universe v' u'
 variable (D : Type u') [Category.{v'} D]
 variable [HasZeroMorphisms D] [HasShift D S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
 morphisms can be lifted to a functor `DifferentialObject S C ⥤ DifferentialObject S D`. -/
 @[simps]
@@ -223,6 +222,7 @@ The type of `C`-morphisms that can be lifted back to morphisms in the category `
 abbrev HomSubtype (X Y : DifferentialObject S C) :=
   { f : FC X.obj Y.obj // X.d ≫ (ConcreteCategory.ofHom f)⟦1⟧' = (ConcreteCategory.ofHom f) ≫ Y.d }
 
+@[macro_inline]
 instance (X Y : DifferentialObject S C) :
     FunLike (HomSubtype S C X Y) (CC X.obj) (CC Y.obj) where
   coe f := f.1
@@ -276,7 +276,6 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
 nonrec def shiftFunctorAdd (m n : S) :
@@ -294,8 +293,8 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
 def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by

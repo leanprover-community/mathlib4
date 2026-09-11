@@ -18,9 +18,9 @@ invariants of the representation.
 
 namespace ContinuousCohomology
 
-open CategoryTheory Functor TopRep ContRepresentation
+open CategoryTheory TopRep ContRepresentation
 
-variable {k G : Type*} [CommRing k] [Group G] [TopologicalSpace k] [IsTopologicalRing k]
+variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
 set_option allowUnsafeReducibility true in
@@ -31,8 +31,8 @@ variable (X : TopRep k G)
 lemma cocycles₀IsoAux (σ : (homogeneousCochains X).X 0)
     (hσ : σ ∈ ((homogeneousCochains X).d 0 1).hom.ker) : σ.1 1 ∈ X.ρ.invariants := by
   simp only [Nat.reduceAdd, LinearMap.mem_ker, ContinuousLinearMap.coe_coe,
-    Subtype.ext_iff, homogeneousCochains.d₀₁_apply _] at hσ
-  simp only [Nat.reduceAdd, mem_invariants]
+    Subtype.ext_iff, homogeneousCochains.d_apply _] at hσ
+  simp only [mem_invariants]
   intro g
   rw [d_succ, hom_sub, hom_ofHom, ContIntertwiningMap.sub_apply, d_zero,
     ZeroMemClass.coe_zero, sub_eq_zero] at hσ
@@ -48,12 +48,12 @@ lemma mem_const_resol₀ (x : X) (hx : x ∈ X.ρ.invariants) :
 lemma cocycles₀IsoAux' (x : X) (h : ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants) :
     ⟨ContinuousMap.const G x, h⟩ ∈ ((homogeneousCochains X).d 0 1).hom.ker := by
   rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe,
-    homogeneousCochains.d₀₁_apply]
+    homogeneousCochains.d_apply]
   simp [d_succ, hom_sub, ContIntertwiningMap.sub_apply, d_zero]
 
 /-- The isomorphism between the zeroth cocycles and the kernel of the zeroth differential. -/
 noncomputable abbrev cocycles₀Iso : cocycles X 0 ≅
-    TopModuleCat.of k ((homogeneousCochains X).d 0 1).hom.ker :=
+    ↧((homogeneousCochains X).d 0 1).hom.ker :=
   Limits.KernelFork.mapIsoOfIsLimit ((homogeneousCochains X).cyclesIsKernel 0 1 (by simp))
     (TopModuleCat.isLimitKer _) (Iso.refl _)
 
@@ -68,7 +68,7 @@ def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants
   left_inv := fun ⟨⟨(x : C(G, X)), hx'⟩, hx⟩ ↦ by
     ext g
     rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe,
-      homogeneousCochains.d₀₁_apply] at hx
+      homogeneousCochains.d_apply] at hx
     simp only [Nat.reduceAdd, d_succ, d_zero, ConcreteCategory.hom_ofHom, hom_sub,
       ContIntertwiningMap.sub_apply, coind₁ι_toFun, coind₁Map_toFun, ZeroMemClass.coe_zero,
       sub_eq_zero, ContinuousMap.const_apply] at hx ⊢
@@ -82,7 +82,7 @@ def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants
 /-- The isomorphism between the zeroth continuous cohomology group and
 the invariants of a representation. -/
 noncomputable def zeroIso (A : TopRep k G) :
-    continuousCohomology 0 A ≅ TopModuleCat.of k A.ρ.invariants :=
+    continuousCohomology 0 A ≅ ↧A.ρ.invariants :=
   (homogeneousCochains A).isoHomologyπ₀.symm ≪≫ cocycles₀Iso A ≪≫
     TopModuleCat.ofIso (d₀kerIso A)
 

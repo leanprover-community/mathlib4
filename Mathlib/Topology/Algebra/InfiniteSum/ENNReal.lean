@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Edward van de Meent
 -/
 module
 
-public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums in extended nonnegative reals
@@ -28,8 +28,9 @@ public section
 
 open Set Function
 
-open Filter Function Metric Set Topology
-open scoped Finset ENNReal NNReal
+open Filter Function Metric Set
+
+open scoped Topology Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -240,7 +241,7 @@ theorem tendsto_tsum_compl_atTop_zero {α : Type*} {f : α → ℝ≥0∞} (hf :
 
 protected theorem tsum_apply {ι α : Type*} {f : ι → α → ℝ≥0∞} {x : α} :
     (∑' i, f i) x = ∑' i, f i x :=
-  tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
+  Pi.tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
 
 theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
     ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=
@@ -255,11 +256,11 @@ theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : �
 theorem tsum_le_tsum_comp_of_surjective {f : α → β} (hf : Surjective f) (g : β → ℝ≥0∞) :
     ∑' y, g y ≤ ∑' x, g (f x) :=
   calc ∑' y, g y = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
-  _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) _
+  _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) (g ∘ f)
 
 theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
     ∑' x : s, f x ≤ ∑' x : t, f x :=
-  tsum_comp_le_tsum_of_injective (inclusion_injective h) _
+  tsum_comp_le_tsum_of_injective (inclusion_injective h) (f ∘ (↑))
 
 theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑' i, ∑' x : t i, f x :=
@@ -283,10 +284,13 @@ theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
-  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
-  _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
+  calc
+    ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b : Bool, if b = true then s else t, f x :=
+      tsum_congr_set_coe _ (by ext x; simp [or_comm])
+    _ ≤ _ := by
+      simpa using tsum_iUnion_le f (fun b : Bool => if b = true then s else t)
 
-open Classical in
+open scoped Classical in
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
   ENNReal.summable.tsum_eq_add_tsum_ite' b
@@ -437,8 +441,6 @@ theorem tsum_indicator_ne_zero {f : α → ℝ≥0} (hf : Summable f) {s : Set �
   hap ((Set.indicator_apply_eq_self.mpr (absurd ha)).symm.trans
     ((indicator_summable hf s).tsum_eq_zero_iff.1 h' a))
 
-open Finset
-
 /-- For `f : ℕ → ℝ≥0`, then `∑' k, f (k + i)` tends to zero. This does not require a summability
 assumption on `f`, as otherwise all sums are zero. -/
 theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
@@ -470,7 +472,7 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
   simpa using tsum_lt_tsum (fun a => zero_le) hi hg
 
-open Classical in
+open scoped Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine (NNReal.summable_of_le (fun i' => ?_) hf).tsum_eq_add_tsum_ite' i
@@ -573,7 +575,7 @@ theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f 
 
 theorem ENNReal.hasProd_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     HasProd f (⨅ s : Finset α, ∏ i ∈ s, f i) :=
-  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one' h₀)
+  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one h₀)
 
 theorem ENNReal.tprod_eq_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     ∏' i, f i = ⨅ s : Finset α, ∏ i ∈ s, f i :=

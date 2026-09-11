@@ -200,6 +200,7 @@ instance : IsCofibrant P.I :=
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance [HasBinaryCoproducts C] [CategoryWithCofibrations C] [P.IsGood]
     [(cofibrations C).RespectsIso] : P.symm.IsGood where

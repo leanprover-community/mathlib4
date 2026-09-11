@@ -91,6 +91,7 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
+@[macro_inline]
 instance : FunLike (CentroidHom α) α α where
   coe f := f.toFun
   coe_injective f g h := by
@@ -463,6 +464,7 @@ def centerToCentroidCenter :
     rfl
   map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
 
+@[macro_inline]
 instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
   coe f := f.val.toFun
   coe_injective f g h := by
@@ -519,6 +521,7 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with

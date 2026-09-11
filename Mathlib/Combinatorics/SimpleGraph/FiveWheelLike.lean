@@ -20,7 +20,7 @@ structures as well as graphs which avoid this structure. These have two key uses
   first appeared. We give this proof below, see `colorable_of_cliqueFree_lt_minDegree`.
 
 If `G` is maximally `Kᵣ₊₂`-free and `¬ G.Adj x y` (with `x ≠ y`) then there exists an `r`-set `s`
- such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
+such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
 
 If `¬ G.IsCompleteMultipartite` then it contains a `G.IsPathGraph3Compl v w₁ w₂` consisting of
 an edge `w₁w₂` and a vertex `v` such that `vw₁` and `vw₂` are non-edges.
@@ -28,7 +28,7 @@ an edge `w₁w₂` and a vertex `v` such that `vw₁` and `vw₂` are non-edges.
 Hence any maximally `Kᵣ₊₂`-free graph that is not complete-multipartite must contain distinct
 vertices `v, w₁, w₂`, together with `r`-sets `s` and `t`, such that `{v, w₁, w₂}` induces the
 single edge `w₁w₂`, `s ∪ t` is disjoint from `{v, w₁, w₂}`, and `s ∪ {v}`, `t ∪ {v}`, `s ∪ {w₁}` and
- `t ∪ {w₂}` are all `r + 1`-cliques.
+`t ∪ {w₂}` are all `r + 1`-cliques.
 
 This leads to the definition of an `IsFiveWheelLike` structure which can be found in any maximally
 `Kᵣ₊₂`-free graph that is not complete-multipartite (see

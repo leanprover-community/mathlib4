@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Slope
 public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Algebra.Group.Order
 /-!
 # Mean value theorem
 

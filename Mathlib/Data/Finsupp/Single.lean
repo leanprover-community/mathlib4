@@ -33,7 +33,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β γ ι M M' N P G H R S : Type*}
+variable {α β ι M N P H : Type*}
 
 namespace Finsupp
 
@@ -99,7 +99,7 @@ theorem single_of_single_apply (a a' : α) (b : M) :
   grind
 
 @[simp] lemma support_single (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
-  if_neg hb
+  ite_eq_right hb
 
 @[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
@@ -361,7 +361,6 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     haveI := Classical.decEq α
     if a' = a then 0 else f a'
   mem_support_toFun a' := by
-    classical
     grind
 
 @[grind =]
@@ -373,7 +372,6 @@ theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
 @[simp]
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
     (f.erase a).support = f.support.erase a := by
-  classical
   grind
 
 @[simp]

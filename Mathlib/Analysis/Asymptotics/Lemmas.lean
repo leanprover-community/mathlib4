@@ -5,11 +5,12 @@ Authors: Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Asymptotics.Ring
 public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Further basic lemmas about asymptotics
@@ -18,26 +19,27 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 public section
 
-open Set Topology Filter NNReal
+open Set Filter
+
+open scoped Topology
 
 namespace Asymptotics
 
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
-  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
+  {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
+  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
   [SeminormedAddGroup E''']
-  [SeminormedRing R']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
-variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
-variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
-variable {l l' : Filter α}
+variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F}
+variable {f' : α → E'} {g' : α → F'}
+variable {f'' : α → E''} {g'' : α → F''}
+variable {l : Filter α}
 @[simp]
 theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
   rw [IsBigOWith_def, eventually_principal]
@@ -610,7 +612,7 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₂ x - f₁ x :=
   IsBigOWith.of_bound <|
     mem_of_superset h.bound fun x hx => by
-      simp only [mem_setOf_eq] at hx ⊢
+      simp only [mem_ofPred_eq] at hx ⊢
       rw [mul_comm, one_div, ← div_eq_mul_inv, le_div_iff₀, mul_sub, mul_one, mul_comm]
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
@@ -744,7 +746,7 @@ lemma isBigO_nat_atTop_induction {f : ℕ → E''} {g : ℕ → F''}
   let ubounds := {C | ∀ m ∈ Finset.Icc n₀ n₁, ‖f m‖ ≤ C * ‖g m‖}
   let C₁ := (Finset.Icc n₀ n₁).sup' (Finset.nonempty_Icc.mpr H₁) fun n => ‖f n‖ / ‖g n‖
   have C₁_mem : C₁ ∈ ubounds := by
-    rw [Set.mem_setOf]
+    rw [Set.mem_ofPred]
     intro m hm
     calc ‖f m‖ = (‖f m‖ / ‖g m‖) * ‖g m‖ := by by_cases hm' : g m = 0 <;> grind [norm_eq_zero]
       _ ≤ C₁ * ‖g m‖ := by
