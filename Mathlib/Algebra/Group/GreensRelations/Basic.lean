@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Data.Set.Basic
-public import Mathlib.Data.Finite.Defs
+public import Mathlib.Basic.Finite.Defs
 
 /-!
 # Green's Relations: Definitions and Basic Properties
