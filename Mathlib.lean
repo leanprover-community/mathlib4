@@ -5385,6 +5385,7 @@ public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.LinearAlgebra.Reflection
 public import Mathlib.LinearAlgebra.RootSystem.Base
 public import Mathlib.LinearAlgebra.RootSystem.BaseChange
+public import Mathlib.LinearAlgebra.RootSystem.BaseCriterion
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.Basic
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
