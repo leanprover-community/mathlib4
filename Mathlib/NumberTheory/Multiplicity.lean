@@ -348,7 +348,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
     multiplicity 2 (x ^ n - y ^ n) + 1 =
       multiplicity 2 (x + y) + multiplicity 2 (x - y) + multiplicity 2 n := by
   simp only [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
-  iterate 4 rw [multiplicity_eq_emultiplicity]
+  iterate 4 rw [← padicValNat_def, padicValNat_eq_emultiplicity]
   · exact Nat.two_pow_sub_pow hxy hx hneven
   · exact hn
   · exact Nat.sub_ne_zero_of_lt hyx
