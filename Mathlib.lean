@@ -4359,6 +4359,7 @@ public import Mathlib.Data.Nat.Nth
 public import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Data.Nat.Order.Lemmas
 public import Mathlib.Data.Nat.PSub
+public import Mathlib.Data.Nat.PadicValNat
 public import Mathlib.Data.Nat.Pairing
 public import Mathlib.Data.Nat.Periodic
 public import Mathlib.Data.Nat.Prime.Basic
