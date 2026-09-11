@@ -142,18 +142,13 @@ instance [HasSummableGeomSeries A] :
   intro x hx₁
   let (eq := hx) (r, a) := (ofLp x).toProd
   have hra_norm : ‖r‖ + ‖a‖ < 1 := by simpa [hx, unitization_norm_def] using hx₁
-  have hr_norm : ‖r‖ < 1 := by grind [norm_nonneg]
-  have hr₁ : 1 - r ≠ 0 := by grind [norm_one, sub_eq_zero]
-  suffices key : IsQuasiregular (-((1 - r)⁻¹ • a)) by
-    rw [← isUnit_map_iff (unitizationAlgEquiv 𝕜)]
-    convert key.isUnit' 𝕜 |>.smul <| Units.mk0 (1 - r) hr₁
-    ext <;> simp [hx, smul_inv_smul₀, hr₁]
-  exact .of_norm_lt_one <| calc
-    ‖-((1 - r)⁻¹ • a)‖ ≤ (1 - ‖r‖)⁻¹ * ‖a‖ := by
-      rw [norm_neg, norm_smul, norm_inv]
-      gcongr
-      linarith [norm_sub_norm_le 1 r, norm_one (α := 𝕜)]
-    _ < (1 - ‖r‖)⁻¹ * (1 - ‖r‖) := by gcongr; linarith
-    _ = 1 := inv_mul_cancel₀ <| by positivity
+  have ha : ‖a‖ < ‖1 - r‖ := by linarith [norm_sub_norm_le 1 r, norm_one (α := 𝕜)]
+  have hr : 0 < ‖1 - r‖ := (norm_nonneg a).trans_lt ha
+  have hr₁ : 1 - r ≠ 0 := norm_pos_iff.mp hr
+  have key : IsQuasiregular (-((1 - r)⁻¹ • a)) :=
+    .of_norm_lt_one <| by rwa [norm_neg, norm_smul, norm_inv, inv_mul_lt_one₀ hr]
+  rw [← isUnit_map_iff (unitizationAlgEquiv 𝕜)]
+  convert key.isUnit' 𝕜 |>.smul <| Units.mk0 (1 - r) hr₁
+  ext <;> simp [hx, smul_inv_smul₀, hr₁]
 
 end WithLp
