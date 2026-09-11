@@ -157,6 +157,16 @@ theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| ExteriorAlgebra R M) := fun x => by
   simp [algebraMapInv]
 
+variable {M} in
+lemma algebraMapInv_algebraMap (r : R) :
+    algebraMapInv (algebraMap R (ExteriorAlgebra R M) r) = r :=
+  algebraMap_leftInverse M r
+
+variable {M} in
+@[simp]
+lemma algebraMapInv_ι (x : M) : algebraMapInv (ι R x) = (0 : R) := by
+  simp [algebraMapInv]
+
 @[simp]
 theorem algebraMap_inj (x y : R) :
     algebraMap R (ExteriorAlgebra R M) x = algebraMap R (ExteriorAlgebra R M) y ↔ x = y :=
@@ -207,6 +217,21 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
   simp [ιInv]
+
+@[simp]
+lemma ιInv_ι (x : M) : ιInv (ι R x) = x :=
+  ι_leftInverse x
+
+@[simp]
+lemma ιInv_one : ιInv (1 : ExteriorAlgebra R M) = 0 := by
+  let : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  --`TrivSqZeroExt.snd_one` need these
+  have : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  simp [ιInv]
+
+@[simp]
+lemma ιInv_algebraMap (r : R) : ιInv (algebraMap R (ExteriorAlgebra R M) r) = 0 := by
+  rw [Algebra.algebraMap_eq_smul_one, map_smul, ιInv_one, smul_zero]
 
 variable (R) in
 @[simp]
@@ -519,6 +544,45 @@ variable {K E F : Type*} [Field K] [AddCommGroup E]
 lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :
     Function.Injective (map f) :=
   map_injective (LinearMap.exists_leftInverse_of_injective f hf)
+
+section self
+
+lemma ι_mul_ι_ring (a b : R) : ι R a * ι R b = 0 := by
+  trans a • ι R (1 : R) * b • ι R (1 : R)
+  · simp [← map_smul, smul_eq_mul, mul_one]
+  · rw [smul_mul_smul_comm, ι_sq_zero, smul_zero]
+
+lemma eq_algebraMap_add_ι (t : ExteriorAlgebra R R) :
+    t = algebraMap R _ (algebraMapInv t) + ι R (ιInv t) := by
+  induction t using ExteriorAlgebra.induction with
+  | algebraMap r => simp
+  | ι x => simp
+  | add a b ha hb =>
+    nth_rw 1 [ha, hb]
+    simp [map_add, ← add_assoc, ← add_comm ((ι R) (ιInv a))]
+  | mul a b ha hb =>
+    obtain ⟨α, x, rfl⟩ : ∃ α x, a = algebraMap R _ α + ι R x := ⟨_, _, ha⟩
+    obtain ⟨β, y, rfl⟩ : ∃ β y, b = algebraMap R _ β + ι R y := ⟨_, _, hb⟩
+    have e1 : algebraMap R (ExteriorAlgebra R R) α * ι R y = ι R (α • y) := by
+      rw [← Algebra.smul_def, ← map_smul]
+    have e2 : (ι R x : ExteriorAlgebra R R) * algebraMap R _ β = ι R (β • x) := by
+      rw [← Algebra.commutes, ← Algebra.smul_def, ← map_smul]
+    rw [add_mul, mul_add, mul_add, ι_mul_ι_ring, e1, e2, ← map_mul, add_zero, add_assoc, ← map_add]
+    simp [-map_mul]
+
+variable (R) in
+/-- The exterior algebra of the base ring is a free module of rank two, with basis `1, ι 1`. -/
+noncomputable def prodRingEquiv : (R × R) ≃ₗ[R] ExteriorAlgebra R R where
+  __ := LinearMap.coprod (Algebra.linearMap R (ExteriorAlgebra R R)) (ι R)
+  invFun := algebraMapInv.toLinearMap.prod ιInv
+  left_inv x := by simp
+  right_inv x := by simp [← eq_algebraMap_add_ι x]
+
+@[simp]
+lemma prodRingEquiv_apply (c : R × R) :
+    prodRingEquiv R c = algebraMap R (ExteriorAlgebra R R) c.1 + ι R c.2 := rfl
+
+end self
 
 end ExteriorAlgebra
 
