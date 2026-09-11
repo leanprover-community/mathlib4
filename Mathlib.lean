@@ -5093,6 +5093,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
 public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.Alternating.Bilinear
 public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.Alternating.DomCoprod
 public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
