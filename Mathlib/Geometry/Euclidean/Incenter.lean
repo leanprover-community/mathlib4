@@ -934,13 +934,13 @@ lemma ExcenterExists.affineSpan_faceOpposite_mem_tangentSet [Fact (Module.finran
   rw [h.affineSpan_faceOpposite_eq_orthRadius]
   exact Set.mem_image_of_mem _ (h.touchpoint_mem_exsphere _)
 
-lemma affineSpan_faceOpposite_mem_tangentSet_insphere [hf : Fact (Module.finrank ℝ V = n)]
+lemma affineSpan_faceOpposite_mem_tangentSet_insphere [Fact (Module.finrank ℝ V = n)]
     (i : Fin (n + 1)) :
     affineSpan ℝ (Set.range (s.faceOpposite i).points) ∈ s.insphere.tangentSet :=
   s.excenterExists_empty.affineSpan_faceOpposite_mem_tangentSet _
 
 variable {s} in
-lemma ExcenterExists.affineSpan_faceOpposite_mem_tangentsFrom [hf : Fact (Module.finrank ℝ V = n)]
+lemma ExcenterExists.affineSpan_faceOpposite_mem_tangentsFrom [Fact (Module.finrank ℝ V = n)]
     {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hij : i ≠ j) :
     affineSpan ℝ (Set.range (s.faceOpposite i).points) ∈
       (s.exsphere signs).tangentsFrom (s.points j) := by
@@ -948,7 +948,7 @@ lemma ExcenterExists.affineSpan_faceOpposite_mem_tangentsFrom [hf : Fact (Module
   simp only [range_faceOpposite_points, Set.mem_image, Set.mem_compl_iff, Set.mem_singleton_iff]
   exact ⟨j, hij.symm, rfl⟩
 
-lemma affineSpan_faceOpposite_mem_tangentsFrom_insphere [hf : Fact (Module.finrank ℝ V = n)]
+lemma affineSpan_faceOpposite_mem_tangentsFrom_insphere [Fact (Module.finrank ℝ V = n)]
     {i j : Fin (n + 1)} (hij : i ≠ j) :
     affineSpan ℝ (Set.range (s.faceOpposite i).points) ∈ s.insphere.tangentsFrom (s.points j) :=
   s.excenterExists_empty.affineSpan_faceOpposite_mem_tangentsFrom hij
@@ -1373,7 +1373,7 @@ lemma affineSpan_pair_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = 2)]
     line[ℝ, t.points i₂, t.points i₃] = t.insphere.orthRadius (t.touchpoint ∅ i₁) :=
   t.affineSpan_pair_eq_orthRadius ∅ h₁₂ h₁₃ h₂₃
 
-lemma affineSpan_pair_mem_tangentSet [hf : Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
+lemma affineSpan_pair_mem_tangentSet [Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
     {i j : Fin 3} (hij : i ≠ j) :
     line[ℝ, t.points i, t.points j] ∈ (t.exsphere signs).tangentSet := by
   obtain ⟨i', hc⟩ : ∃ i' : Fin 3, {i'}ᶜ = ({i, j} : Finset (Fin 3)) := by decide +revert
@@ -1381,12 +1381,12 @@ lemma affineSpan_pair_mem_tangentSet [hf : Fact (Module.finrank ℝ V = 2)] (sig
   convert (t.excenterExists signs).affineSpan_faceOpposite_mem_tangentSet i'
   simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
 
-lemma affineSpan_pair_mem_tangentSet_insphere [hf : Fact (Module.finrank ℝ V = 2)]
+lemma affineSpan_pair_mem_tangentSet_insphere [Fact (Module.finrank ℝ V = 2)]
     {i j : Fin 3} (hij : i ≠ j) :
     line[ℝ, t.points i, t.points j] ∈ t.insphere.tangentSet :=
   t.affineSpan_pair_mem_tangentSet ∅ hij
 
-lemma affineSpan_pair_mem_tangentsFrom [hf : Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
+lemma affineSpan_pair_mem_tangentsFrom [Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
     {i j : Fin 3} (hij : i ≠ j) :
     line[ℝ, t.points i, t.points j] ∈ (t.exsphere signs).tangentsFrom (t.points i) := by
   obtain ⟨i', hi'i, hc⟩ : ∃ i' : Fin 3, i' ≠ i ∧ {i'}ᶜ = ({i, j} : Finset (Fin 3)) := by
@@ -1395,22 +1395,22 @@ lemma affineSpan_pair_mem_tangentsFrom [hf : Fact (Module.finrank ℝ V = 2)] (s
   convert (t.excenterExists signs).affineSpan_faceOpposite_mem_tangentsFrom hi'i
   simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
 
-lemma affineSpan_pair_mem_tangentsFrom_insphere [hf : Fact (Module.finrank ℝ V = 2)]
+lemma affineSpan_pair_mem_tangentsFrom_insphere [Fact (Module.finrank ℝ V = 2)]
     {i j : Fin 3} (hij : i ≠ j) :
     line[ℝ, t.points i, t.points j] ∈ t.insphere.tangentsFrom (t.points i) :=
   t.affineSpan_pair_mem_tangentsFrom ∅ hij
 
-@[simp] lemma ncard_tangentsFrom [hf : Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
+@[simp] lemma ncard_tangentsFrom [Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
     (i : Fin 3) : ((t.exsphere signs).tangentsFrom (t.points i)).ncard = 2 :=
   (t.exsphere signs).ncard_tangentsFrom_eq_two_of_radius_lt_dist
     (t.excenterExists signs).exradius_pos
     ((t.excenterExists signs).exradius_lt_dist_point_excenter _)
 
-@[simp] lemma ncard_tangentsFrom_insphere [hf : Fact (Module.finrank ℝ V = 2)] (i : Fin 3) :
+@[simp] lemma ncard_tangentsFrom_insphere [Fact (Module.finrank ℝ V = 2)] (i : Fin 3) :
     (t.insphere.tangentsFrom (t.points i)).ncard = 2 :=
   t.ncard_tangentsFrom ∅ _
 
-lemma tangentsFrom_eq_pair_affineSpan_pair [hf : Fact (Module.finrank ℝ V = 2)]
+lemma tangentsFrom_eq_pair_affineSpan_pair [Fact (Module.finrank ℝ V = 2)]
     (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     (t.exsphere signs).tangentsFrom (t.points i₁) =
       {line[ℝ, t.points i₁, t.points i₂], line[ℝ, t.points i₁, t.points i₃]} := by
@@ -1424,7 +1424,7 @@ lemma tangentsFrom_eq_pair_affineSpan_pair [hf : Fact (Module.finrank ℝ V = 2)
     apply t.independent.injective_affineSpan_image.ne
     grind
 
-lemma tangentsFrom_insphere_eq_pair_affineSpan_pair [hf : Fact (Module.finrank ℝ V = 2)]
+lemma tangentsFrom_insphere_eq_pair_affineSpan_pair [Fact (Module.finrank ℝ V = 2)]
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     t.insphere.tangentsFrom (t.points i₁) =
       {line[ℝ, t.points i₁, t.points i₂], line[ℝ, t.points i₁, t.points i₃]} :=
