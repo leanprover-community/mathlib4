@@ -113,19 +113,19 @@ lemma reduce_of_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : 0 < A.1 0 0) :
     reduce A = (T ^ (-(A.1 0 1 / A.1 1 1))) • A := by
   rw [reduce]
   simp only [zpow_neg, Int.ediv_neg, neg_neg] at *
-  simp_rw [if_pos hc, if_pos ha]
+  simp_rw [ite_eq_left hc, ite_eq_left ha]
 
 lemma reduce_of_not_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : ¬ 0 < A.1 0 0) :
     reduce A = (T ^ (-(-A.1 0 1 / -A.1 1 1))) • (S • (S • A)) := by
   rw [reduce]
   simp only [zpow_neg, Int.ediv_neg, neg_neg] at *
-  simp_rw [if_pos hc, if_neg ha]
+  simp_rw [ite_eq_left hc, ite_eq_right ha]
 
 @[simp]
 lemma reduce_reduceStep {A : Δ m} (hc : (A.1 1 0) ≠ 0) :
     reduce (reduceStep A) = reduce A := by
   symm
-  rw [reduce, if_neg hc]
+  rw [reduce, ite_eq_right hc]
 
 private lemma A_c_eq_zero {A : Δ m} (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m := by
   simpa only [det_fin_two, ha, mul_zero, sub_zero] using A.2
@@ -191,7 +191,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
       suffices A.1 1 0 = 0 ∧ n * A.1 1 0 < A.1 0 0 ∧
           n * A.1 1 1 ≤ A.1 0 1 ∧ |A.1 0 1 + -(n * A.1 1 1)| < |A.1 1 1| by
         simpa only [reps, Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
-          Equiv.symm_apply_apply, Set.mem_setOf_eq, of_apply, cons_val', vecMul, cons_dotProduct,
+          Equiv.symm_apply_apply, Set.mem_ofPred_eq, of_apply, cons_val', vecMul, cons_dotProduct,
           vecHead, one_mul, vecTail, Function.comp_apply, Fin.succ_zero_eq_one, neg_mul,
           dotProduct_of_isEmpty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
           cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
@@ -200,7 +200,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
     · simp only [reps, Fin.isValue, reduce_of_not_pos h h1, Int.ediv_neg, neg_neg, smul_def, ←
         mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
         Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
-        Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
+        Set.mem_ofPred_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
         vecTail, Function.comp_apply, Fin.succ_zero_eq_one, h, mul_zero, dotProduct_of_isEmpty,
         add_zero, zero_mul, neg_zero, empty_val', cons_val_fin_one, cons_val_one, cons_val_zero,
         lt_neg, neg_add_rev, zero_add, le_add_neg_iff_add_le, ← le_neg, abs_neg, true_and]

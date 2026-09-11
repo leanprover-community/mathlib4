@@ -5,11 +5,15 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.MeasureTheory.Measure.Support
 
 import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Resolvent Transform of a Measure
@@ -64,7 +68,7 @@ theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] 
   have h1 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a) :=
     HasDerivAt.continuousOn (fun _ hx ↦ hasDerivAt_resolvent_const_left hx)
   have h2 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a)ᶜ := by
-    rw [continuousOn_iff_continuous_restrict]
+    rw [continuousOn_iff_continuous_domRestrict]
     convert continuous_const (y := (0 : A)) with x
     simp
   have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet a).measurableSet

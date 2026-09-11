@@ -135,7 +135,7 @@ lemma IsRetrocompact_iff_isSpectralMap_subtypeVal :
     IsRetrocompact s ↔ IsSpectralMap (Subtype.val : s → X) := by
   refine ⟨fun hs ↦ ⟨continuous_subtype_val, fun t htopen htcomp ↦ ?_⟩, fun hs t htcomp htopen ↦ ?_⟩
   · rw [IsEmbedding.subtypeVal.isCompact_iff, image_preimage_eq_inter_range,
-      Subtype.range_coe_subtype, setOf_mem_eq, inter_comm]
+      Subtype.range_coe_subtype, ofPred_mem_eq, inter_comm]
     exact hs htcomp htopen
   · simpa using (hs.isCompact_preimage_of_isOpen htopen htcomp).image continuous_subtype_val
 

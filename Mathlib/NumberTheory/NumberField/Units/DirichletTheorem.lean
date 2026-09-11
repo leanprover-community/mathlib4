@@ -310,8 +310,8 @@ theorem exists_unit (w₁ : InfinitePlace K) :
         rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
         exact seq_decreasing K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem (t := {I : Ideal (𝓞 K) | Ideal.absNorm I ≤ B})
-    (fun n ↦ ?_) (Ideal.finite_setOf_absNorm_le B)
-  rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
+    (fun n ↦ ?_) (Ideal.finite_setOfPred_absNorm_le B)
+  rw [Set.mem_ofPred_eq, Ideal.absNorm_span_singleton]
   exact seq_norm_le K w₁ hB n
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -479,7 +479,7 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
-  simp_rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
+  simp_rw [fundSystem, ← Equiv.eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
 
 theorem logEmbedding_fundSystem (i : Fin (rank K)) :
     logEmbedding K (Additive.ofMul (fundSystem K i)) = basisUnitLattice K i := by

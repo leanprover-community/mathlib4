@@ -17,7 +17,7 @@ is defined as `∫ᵛ x, f x ∂[B; μ.restrict s]`.
 The API in this file is modelled on the API for the Bochner integral.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists InnerProductSpace
 
@@ -26,7 +26,7 @@ open scoped ENNReal NNReal Finset
 
 variable {ι X E F G H : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [NormedAddCommGroup H]
-  {μ ν : VectorMeasure X F} {f g : X → E} {s t : Set X}
+  {μ : VectorMeasure X F} {f g : X → E} {s t : Set X}
 
 namespace MeasureTheory.VectorMeasure
 
@@ -252,7 +252,7 @@ theorem setIntegral_of_variation_apply_eq_zero (f : X → E) {s : Set X}
     rw [variation_restrict h's]
     apply Measure.restrict_eq_zero.2 hs
   have : μ.restrict s = 0 := variation_eq_zero.1 this
-  simpa [integral_eq_setToFun, this] using! setToFun_zero_left
+  simp [this]
 
 theorem setIntegral_dirac' {mX : MeasurableSpace X} [CompleteSpace G] {a : X} {v : F}
     (hf : StronglyMeasurable f) {s : Set X} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
@@ -569,10 +569,9 @@ lemma tendsto_setIntegral_of_L1 {ι} (f : X → E)
   · apply hfi.mono_measure
     grw [variation_restrict_le, Measure.restrict_le_self]
   · filter_upwards [hFi] with i hi using hi.restrict
-  · simp_rw [← eLpNorm_one_eq_lintegral_enorm] at hF ⊢
-    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
+  · apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
       (fun i ↦ ?_)
-    apply eLpNorm_mono_measure
+    gcongr
     grw [variation_restrict_le]
     apply Measure.restrict_le_self
 
@@ -584,7 +583,9 @@ lemma tendsto_setIntegral_of_L1' {ι} (f : X → E)
     (s : Set X) :
     Tendsto (fun i ↦ ∫ᵛ x in s, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x in s, f x ∂[B; μ])) := by
   refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
-  simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
-  exact hF
+  apply hF.congr'
+  filter_upwards [hFi] with i hi
+  rw [eLpNorm_one_eq_lintegral_enorm (hi.aestronglyMeasurable.sub hfi)]
+  rfl
 
 end MeasureTheory.VectorMeasure

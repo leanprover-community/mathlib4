@@ -159,10 +159,10 @@ lemma exists_min_eq_gaussNorm (p : R[X]) (hc : 0 ≤ c) :
     ∀ j, j < i → v (p.coeff j) * c ^ j < p.gaussNorm v c := by
   have h_nonempty : {i | gaussNorm v c p = v (p.coeff i) * c ^ i}.Nonempty := by
     obtain ⟨i, hi⟩ := exists_eq_gaussNorm v c p
-    exact ⟨i, Set.mem_setOf.mpr hi⟩
+    exact ⟨i, Set.mem_ofPred.mpr hi⟩
   refine ⟨Nat.find h_nonempty, Nat.find_spec h_nonempty, ?_⟩
   intro j hj_lt
-  simp only [Nat.lt_find_iff, Set.mem_setOf_eq] at hj_lt
+  simp only [Nat.lt_find_iff, Set.mem_ofPred_eq] at hj_lt
   exact lt_of_le_of_ne (le_gaussNorm v _ hc j) fun a ↦ hj_lt j (Nat.le_refl j) a.symm
 
 /-- If `v` is a nonnegative nonarchimedean function with `v 0 = 0` and `c` is nonnegative, the
@@ -203,7 +203,7 @@ theorem gaussNorm_mul_le [MulHomClass F R ℝ] (hna : IsNonarchimedean v) (p q :
   simp only [gaussNorm, support_nonempty, ne_eq, hpq, not_false_eq_true, ↓reduceDIte, h_supp_p,
     h_supp_q, sup'_le_iff, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   intro i _
-  obtain ⟨j, _, _⟩ := IsNonarchimedean.finset_image_add_of_nonempty hna _ nonempty_range_add_one
+  obtain ⟨j, _, _⟩ := hna.finset_image_add_of_nonempty _ nonempty_range_add_one
   calc
   v (∑ j ∈ range (i + 1), p.coeff j * q.coeff (i - j)) * c ^ i
   _ ≤ v (p.coeff j * q.coeff (i - j)) * c ^ i := by gcongr
@@ -237,7 +237,7 @@ private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
   apply le_of_eq_of_le _ <| (p * q).le_gaussNorm v hc0 (i + j)
   -- gaussNorm v c p * gaussNorm v c q is actually equal to v ((p * q).coeff (i + j)) * c ^ (i + j)
   rw [hi_p, hj_q, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp) (by simp)]
+    hna.apply_sum_eq_of_lt (k := i) _ (v.map_neg) (by simp)]
   /- IsNonarchimedean.apply_sum_eq_of_lt makes the goal almost trivial so we are left to prove
   the hmax hypothesis -/
   · grind

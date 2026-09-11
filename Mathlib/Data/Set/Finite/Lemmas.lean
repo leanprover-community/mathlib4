@@ -6,9 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 module
 
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Logic.Embedding.Set
 
 /-!
@@ -30,7 +29,7 @@ open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Set
 
@@ -39,7 +38,7 @@ namespace Set
 theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n ↪ α), range f = s :=
   ⟨_, (Fintype.equivFin (h.toFinset : Set α)).symm.asEmbedding, by
-    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, setOf_mem_eq]⟩
+    simp only [Finset.coe_sort_coe, Equiv.asEmbedding_range, Finite.coe_toFinset, ofPred_mem_eq]⟩
 
 theorem Finite.fin_param {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n → α), Injective f ∧ range f = s :=
@@ -54,7 +53,7 @@ theorem Finite.induction_to {C : Set α → Prop} {S : Set α} (h : S.Finite)
   have : Finite {T : Set α // T ⊆ S} := Finite.of_equiv (Set S) (Equiv.Set.powerset S).symm
   rw [← Subtype.coe_mk (p := (· ⊆ S)) _ le_rfl]
   rw [← Subtype.coe_mk (p := (· ⊆ S)) _ hS0] at H0
-  refine Finite.to_wellFoundedGT.wf.induction_bot' (fun s hs hs' ↦ ?_) H0
+  refine Finite.to_wellFoundedGT.induction_bot' (fun s hs hs' ↦ ?_) H0
   obtain ⟨a, ⟨ha1, ha2⟩, ha'⟩ := H1 s (ssubset_of_ne_of_subset hs s.2) hs'
   exact ⟨⟨insert a s.1, insert_subset ha1 s.2⟩, Set.ssubset_insert ha2, ha'⟩
 
@@ -68,31 +67,23 @@ theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} 
 
 /-! ### Infinite sets -/
 
-variable {s t : Set α}
+variable {s : Set α}
 
 /-! ### Order properties -/
 
+@[to_dual]
 theorem exists_min_image [LinearOrder β] (s : Set α) (f : α → β) (h1 : s.Finite) :
     s.Nonempty → ∃ a ∈ s, ∀ b ∈ s, f a ≤ f b
   | ⟨x, hx⟩ => by
     simpa only [exists_prop, Finite.mem_toFinset] using
       h1.toFinset.exists_min_image f ⟨x, h1.mem_toFinset.2 hx⟩
 
-theorem exists_max_image [LinearOrder β] (s : Set α) (f : α → β) (h1 : s.Finite) :
-    s.Nonempty → ∃ a ∈ s, ∀ b ∈ s, f b ≤ f a
-  | ⟨x, hx⟩ => by
-    simpa only [exists_prop, Finite.mem_toFinset] using
-      h1.toFinset.exists_max_image f ⟨x, h1.mem_toFinset.2 hx⟩
-
+@[to_dual]
 theorem exists_lower_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f : α → β)
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f a ≤ f b := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · exact ‹Nonempty α›.elim fun a => ⟨a, fun _ => False.elim⟩
   · rcases Set.exists_min_image s f h hs with ⟨x₀, _, hx₀⟩
     exact ⟨x₀, fun x hx => hx₀ x hx⟩
-
-theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f : α → β)
-    (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f b ≤ f a :=
-  exists_lower_bound_image (β := βᵒᵈ) s f h
 
 end Set

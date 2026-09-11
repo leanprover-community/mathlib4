@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.SupClosed
 
-import Mathlib.Data.Nat.Pairing
 import Mathlib.Order.Bounds.Lattice
 
 /-!
@@ -56,7 +55,7 @@ lemma CountableSupClosed.iSup_mem [CompleteLattice α] [Countable ι] [Nonempty 
     (hs : CountableSupClosed s) {A : ι → α} (hA : ∀ n, A n ∈ s) :
     ⨆ n, A n ∈ s := by
   let i₀ := Nonempty.some (α := ι) inferInstance
-  exact hs.isLUB_mem (range A) (by simp [range]; grind) ⟨A i₀, by simp⟩ (countable_range A) _
+  exact hs.isLUB_mem (range A) (by grind) ⟨A i₀, by simp⟩ (countable_range A) _
     isLUB_iSup
 
 @[to_dual]
@@ -180,9 +179,9 @@ variable [Preorder α]
 /-- Every set generates a set closed under countable supremum. -/
 @[to_dual /-- Every set generates a set closed under countable infimum. -/]
 def countableSupClosure : ClosureOperator (Set α) := .ofPred
-  (fun s a ↦ ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a)
+  (fun s ↦ {a | ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a})
   CountableSupClosed
-  (fun s x hxs ↦ ⟨{x}, by simp; grind, by simp, by simp, by simp⟩)
+  (fun s x hxs ↦ ⟨{x}, by grind, by simp, by simp, by simp⟩)
   (fun s ↦ by
     constructor
     intro A hA hA_ne hAc x hx
@@ -229,7 +228,7 @@ lemma countableSupClosure_eq_sInter (s : Set α) :
     countableSupClosure s = ⋂₀ {t | s ⊆ t ∧ CountableSupClosed t} := by
   have : CountableSupClosed (⋂₀ {t | s ⊆ t ∧ CountableSupClosed t}) := by
     constructor
-    simp only [Set.subset_sInter_iff, Set.mem_setOf_eq, and_imp, Set.mem_sInter]
+    simp only [Set.subset_sInter_iff, Set.mem_ofPred_eq, and_imp, Set.mem_sInter]
     intro t ht ht_ne ht_c x hx t' hst' ht'
     exact ht'.isLUB_mem t (ht t' hst' ht') ht_ne ht_c x hx
   refine le_antisymm (countableSupClosure_min (by grind) (by grind)) (Set.sInter_subset_of_mem ?_)

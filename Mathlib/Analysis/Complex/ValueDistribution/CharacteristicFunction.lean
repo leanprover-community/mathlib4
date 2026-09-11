@@ -33,7 +33,7 @@ Approximation*][MR3156076] for a detailed discussion.
 
 @[expose] public section
 
-open Filter Metric Real Set
+open Filter Real Set
 
 namespace ValueDistribution
 

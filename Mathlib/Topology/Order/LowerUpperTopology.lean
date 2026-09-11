@@ -6,7 +6,7 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -267,7 +267,7 @@ theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
 theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x : α} :
     Filter.Tendsto f l (𝓝 x) ↔ ∀ y, ¬y ≤ x → ∀ᶠ z in l, ¬y ≤ f z := by
   simp +instances [topology_eq_lowerTopology, tendsto_nhds_generateFrom_iff, Filter.Eventually, Ici,
-    compl_setOf]
+    compl_ofPred]
 
 /--
 The closure of a singleton `{a}` in the lower topology is the left-closed right-infinite interval
@@ -363,7 +363,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
       intro s hs
       obtain ⟨a, ha⟩ := (subset_insert_iff_of_notMem hUS).mp hS1 hs
       subst hS2 ha
-      simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
+      simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_ofPred_eq, mem_Iio, not_lt]
     · intro b hb
       rw [mem_Ici, sSup_le_iff]
       intro c hc
@@ -478,6 +478,23 @@ end CompleteLinearOrder
 
 end IsUpper
 
+section LinearOrder
+
+variable (α : Type*) [LinearOrder α]
+
+theorem preorderTopology_le_lower_of_linearOrder : Preorder.topology α ≤ Topology.lower α :=
+  TopologicalSpace.generateFrom_anti fun s ⟨a, h⟩ ↦ ⟨a, by simp [← h]⟩
+
+theorem preorderTopology_le_upper_of_linearOrder : Preorder.topology α ≤ Topology.upper α :=
+  TopologicalSpace.generateFrom_anti fun s ⟨a, h⟩ ↦ ⟨a, by simp [← h]⟩
+
+theorem lower_inf_upper_eq_preorderTopology :
+    Topology.lower α ⊓ Topology.upper α = Preorder.topology α := by
+  unfold Topology.lower Topology.upper Preorder.topology
+  simp [generateFrom_union, Set.ofPred_or, exists_or, eq_comm, or_comm]
+
+end LinearOrder
+
 instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
     IsLower (α × β) where
@@ -554,9 +571,9 @@ instance : IsUpper Prop where
     congr
     exact le_antisymm
       (fun h hs => by
-        simp only [compl_Iic, mem_setOf_eq]
-        rw [← Ioi_True, ← Ioi_False] at hs
         rcases hs with (rfl | rfl)
         · use True
-        · use False)
+          simp
+        · use False
+          simp)
       (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_ge]))

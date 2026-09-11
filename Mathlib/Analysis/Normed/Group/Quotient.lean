@@ -99,7 +99,9 @@ the previous paragraph kicks in.
 
 noncomputable section
 
-open Metric Set Topology NNReal
+open Metric Set NNReal
+
+open scoped Topology
 
 namespace QuotientGroup
 variable {M : Type*} [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
@@ -152,7 +154,7 @@ lemma norm_lt_iff : ‖x‖ < r ↔ ∃ m : M, ↑m = x ∧ ‖m‖ < r := by
 lemma nhds_one_hasBasis : (𝓝 (1 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ {x | ‖x‖ < ε} := by
   have : ∀ ε : ℝ, mk '' ball (1 : M) ε = {x : M ⧸ S | ‖x‖ < ε} := by
     refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
-    rw [ball_one_eq, mem_setOf_eq, norm_lt_iff, mem_image]
+    rw [ball_one_eq, mem_ofPred_eq, norm_lt_iff, mem_image]
     exact exists_congr fun _ ↦ and_comm
   rw [← mk_one, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball
@@ -211,7 +213,7 @@ noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) w
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one_left, (nhds_one_hasBasis.comap _).eq_biInf]
-    simp only [dist, preimage_setOf_eq, norm_eq_groupSeminorm]
+    simp only [dist, preimage_ofPred_eq, norm_eq_groupSeminorm]
 
 variable (S) in
 /-- The quotient in the category of normed groups. -/
@@ -259,7 +261,7 @@ def quotientQuotientIsometryEquivQuotient (h : S ≤ T) : (M ⧸ S) ⧸ T.map (m
 
 end QuotientGroup
 
-open QuotientAddGroup Metric Set Topology NNReal
+open QuotientAddGroup Metric Set NNReal
 
 variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 

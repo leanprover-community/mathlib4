@@ -113,7 +113,7 @@ lemma Unitary.spectrum_subset_slitPlane_iff_norm_lt_two {u : A} (hu : u ∈ unit
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 lemma IsSelfAdjoint.cfc_arg (u : A) : IsSelfAdjoint (cfc (ofReal ∘ arg : ℂ → ℂ) u) := by
-  simp [isSelfAdjoint_iff, ← cfc_star, Function.comp_def]
+  simp [isSelfAdjoint_iff, ← cfc_star]
 
 /-- The selfadjoint element obtained by taking the argument (using the principal branch and the
 continuous functional calculus) of a unitary whose spectrum does not contain `-1`. This returns
@@ -133,7 +133,7 @@ lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ �
   simp only [Set.image_image, coe_algebraMap, smul_eq_mul, mul_comm I, ← exp_eq_exp_ℂ,
     exp_ofReal_mul_I_re]
   refine ⟨?_, ?_⟩
-  · cases CStarAlgebra.norm_or_neg_norm_mem_spectrum x.2 with
+  · cases CStarAlgebra.norm_or_neg_norm_mem_spectrum x.1 with
     | inl h => exact ⟨_, h, rfl⟩
     | inr h => exact ⟨_, h, by simp⟩
   · rintro - ⟨y, hy, rfl⟩
@@ -159,7 +159,7 @@ lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
     rwa [expUnitary_coe, ← CFC.exp_eq_normedSpace_exp (𝕜 := ℂ), ← cfc_comp_smul ..,
       cfc_map_spectrum ..] at this
   conv_rhs => rw [← cfc_id' ℂ (x : A)]
-  refine cfc_congr fun y hy ↦ ?_
+  congr! 1 with y hy
   rw [← x.2.spectrumRestricts.algebraMap_image] at hy
   obtain ⟨y, hy, rfl⟩ := hy
   simp only [coe_algebraMap, smul_eq_mul, mul_comm I, ← exp_eq_exp_ℂ, ofReal_inj]
@@ -175,7 +175,7 @@ lemma expUnitary_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
   rw [expUnitary_coe, argSelfAdjoint_coe, ← CFC.exp_eq_normedSpace_exp (𝕜 := ℂ),
     ← cfc_comp_smul .., ← cfc_comp' ..]
   conv_rhs => rw [← cfc_id' ℂ (u : A)]
-  refine cfc_congr fun y hy ↦ ?_
+  congr! 1 with y hy
   have hy₁ : ‖y‖ = 1 := spectrum.norm_eq_one_of_unitary u.2 hy
   have : I * y.arg = log y :=
     Complex.ext (by simp [log_re, spectrum.norm_eq_one_of_unitary u.2 hy]) (by simp [log_im])
@@ -225,10 +225,10 @@ lemma Unitary.continuousOn_argSelfAdjoint :
   apply ContinuousOn.image_comp_continuous ?_ continuous_subtype_val
   apply continuousOn_cfc A (s := sphere 0 1 ∩ {z | 2 * (1 - z.re) ≤ ε}) ?_ _ ?_ |>.mono
   · rintro - ⟨v, hv, rfl⟩
-    simp only [Set.subset_inter_iff, Set.mem_setOf_eq]
+    simp only [Set.subset_inter_iff, Set.mem_ofPred_eq]
     refine ⟨inferInstance, spectrum_subset_circle v, ?_⟩
     intro z hz
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     trans ‖(v - 1 : A)‖ ^ 2
     · exact two_mul_one_sub_le_norm_sub_one_sq v.2 hz
     · refine Real.le_sqrt (by positivity) (by positivity) |>.mp ?_

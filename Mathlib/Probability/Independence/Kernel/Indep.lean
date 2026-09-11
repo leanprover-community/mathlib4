@@ -133,7 +133,8 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
   simp [IndepSet]
 
 lemma iIndepSets_congr (h : κ =ᵐ[μ] η) : iIndepSets π κ μ ↔ iIndepSets π η μ := by
-  peel 3
+  unfold iIndepSets
+  congr! 3
   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
   · filter_upwards [h, h'] with a ha h'a
     simpa [ha] using h'a
@@ -141,7 +142,8 @@ lemma iIndepSets_congr (h : κ =ᵐ[μ] η) : iIndepSets π κ μ ↔ iIndepSets
 alias ⟨iIndepSets.congr, _⟩ := iIndepSets_congr
 
 lemma indepSets_congr (h : κ =ᵐ[μ] η) : IndepSets s1 s2 κ μ ↔ IndepSets s1 s2 η μ := by
-  peel 4
+  unfold IndepSets
+  congr! 4
   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
   · filter_upwards [h, h'] with a ha h'a
     simpa [ha] using h'a
@@ -279,7 +281,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ] :
     Indep m' ⊥ κ μ := by
   intro s t _ ht
-  rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
+  rw [Set.mem_ofPred_eq, MeasurableSpace.measurableSet_bot_iff] at ht
   rcases eq_zero_or_isMarkovKernel κ with rfl | h
   · simp
   refine Filter.Eventually.of_forall (fun a ↦ ?_)
@@ -555,10 +557,10 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
       rw [Finset.mem_union] at hi_mem_union
       rcases hi_mem_union with hi1 | hi2
       · have hi2 : i ∉ p2 := fun hip2 => Set.disjoint_left.mp hST (hp1 hi1) (hp2 hip2)
-        simp_rw [g, if_pos hi1, if_neg hi2, Set.inter_univ]
+        simp_rw [g, ite_eq_left hi1, ite_eq_right hi2, Set.inter_univ]
         exact ht1_m i hi1
       · have hi1 : i ∉ p1 := fun hip1 => Set.disjoint_right.mp hST (hp2 hi2) (hp1 hip1)
-        simp_rw [g, if_neg hi1, if_pos hi2, Set.univ_inter]
+        simp_rw [g, ite_eq_right hi1, ite_eq_left hi2, Set.univ_inter]
         exact ht2_m i hi2
     have h_p1_inter_p2 :
       ((⋂ x ∈ p1, f1 x) ∩ ⋂ x ∈ p2, f2 x) =
@@ -647,7 +649,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { i } {j | j < i}
       (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
+  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
@@ -655,7 +657,7 @@ theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { k } {j | j ≤ i}
       (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
+  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (n : ℕ) :
@@ -694,7 +696,7 @@ theorem iIndepSets.piiUnionInter_of_notMem {π : ι → Set (Set Ω)} {a : ι} {
     suffices h_forall : ∀ n ∈ s, f n = ft1 n by grind
     intro n hnS
     have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hnS)
-    simp_rw [f, if_pos hnS, if_neg hn_ne_a]
+    simp_rw [f, ite_eq_left hnS, ite_eq_right hn_ne_a]
   have h_μ_t1 : ∀ᵐ a' ∂μ, κ a' t1 = ∏ n ∈ s, κ a' (f n) := by
     filter_upwards [hp_ind s h_f_mem_pi] with a' ha'
     rw [h_t1, ← ha']
