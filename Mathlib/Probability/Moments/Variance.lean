@@ -113,17 +113,13 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   by_contra h
   rw [← Ne, ← lt_top_iff_ne_top] at h
   have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
-    rw [memLp_iff]
     have hm : AEStronglyMeasurable (fun ω => X ω - μ[X]) μ :=
-      (hXm.sub aestronglyMeasurable_const).congr <| by
-        filter_upwards with x
-        rfl
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top
-      hm]
+      (hXm.sub aestronglyMeasurable_const).congr <| by filter_upwards with x using rfl
+    rw [memLp_iff, eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top hm]
     simp only [ENNReal.toReal_ofNat, ENNReal.rpow_two]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
-  convert! this.add (memLp_const (∫ x, X x ∂μ))
+  convert! this.add (memLp_const μ[X])
   ext ω
   rw [Pi.add_apply, sub_add_cancel]
 
@@ -375,10 +371,9 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
   · symm
     rw [evariance_eq_top hX hℒ, ENNReal.sub_eq_top_iff]
     refine ⟨?_, ENNReal.ofReal_ne_top⟩
-    rw [MemLp] at hℒ
     simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top hX, not_lt,
       top_le_iff, ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos,
-      and_true, or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
+      and_true, or_iff_not_imp_left, not_and_or, zero_lt_two, MemLp] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 
 /-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/

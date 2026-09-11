@@ -239,8 +239,13 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemL
 
 /-- Convergence in Lp implies uniform tightness. -/
 private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
-    (hg : MemLp g p μ) (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0)) :
+    (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0)) :
     UnifTight f p μ := by
+  have hg : MemLp g p μ := by
+    obtain ⟨n, hn⟩ :  ∃ x, eLpNorm (f x - g) p μ < ∞ :=
+        ((tendsto_order.1 hfg).2 _ zero_lt_top).exists
+    rw [show g = f n - (f n - g) by abel]
+    exact MemLp.sub (hf n) hn
   have : f = (fun _ => g) + fun n => f n - g := by ext1 n; simp
   rw [this]
   refine UnifTight.add ?_ ?_
@@ -376,13 +381,13 @@ A sequence of functions `f` converges to `g` in Lp
 if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure. -/
 theorem tendstoInMeasure_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, MemLp (f n) p μ) (hg : MemLp g p μ) :
-    TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
-      ↔ Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) where
+    TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ ↔
+      Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) where
   mp h := tendsto_Lp_of_tendstoInMeasure hp hp'
     (fun n => (hf n).aestronglyMeasurable) hg h.2.1 h.2.2 h.1
   mpr h := ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne' h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h,
-      unifTight_of_tendsto_Lp hp' hf hg h⟩
+      unifTight_of_tendsto_Lp hp' hf h⟩
 
 end VitaliConvergence
 end MeasureTheory
