@@ -467,6 +467,8 @@ theorem multiplicity_of_isUnit_right {a b : α} (hb : IsUnit b) : multiplicity a
 theorem emultiplicity_of_one_right {a : α} (ha : ¬IsUnit a) : emultiplicity a 1 = 0 :=
   emultiplicity_of_isUnit_right ha isUnit_one
 
+@[deprecated (since := "2026-09-11")] alias multiplicity_of_one_right := multiplicity_one_right
+
 theorem emultiplicity_of_unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : emultiplicity a u = 0 :=
   emultiplicity_of_isUnit_right ha u.isUnit
 
