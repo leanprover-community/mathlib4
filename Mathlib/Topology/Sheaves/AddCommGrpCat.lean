@@ -72,6 +72,7 @@ instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCo
 /-- The cohomology of a sheaf of abelian groups in degree `n`. -/
 abbrev H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
 abbrev H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n →+ H G n :=
     CategoryTheory.Sheaf.H.map f n
