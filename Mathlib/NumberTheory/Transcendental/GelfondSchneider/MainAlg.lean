@@ -26,6 +26,7 @@ the height bounds on `A` and on the solution vector `η` that Siegel's lemma ret
 
 ## Main results
 
+- `exists_common_field_of_isAlgebraic`: a number field `K` containing `α`, `β` and `γ`.
 - `house_matrixA_le`: an upper bound on the house of the entries of the Siegel matrix `A`.
 - `house_eta_le_c₄_pow`: the resulting bound on the house of the solution vector `η`.
 
@@ -48,12 +49,12 @@ Suppose that `α, β, γ` lie in an algebraic field `K` with degree `h`.
 
 lemma isNumberField_adjoin_of_isAlgebraic (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
     (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
-    NumberField (adjoin ℚ {α, β, γ}) where
-  to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := finiteDimensional_adjoin fun _ hx ↦ by
+    NumberField (adjoin ℚ {α, β, γ}) :=
+  have : FiniteDimensional ℚ (adjoin ℚ {α, β, γ}) := finiteDimensional_adjoin fun _ hx ↦ by
     rcases hx with rfl | rfl | rfl
     exacts [isAlgebraic_iff_isIntegral.1 hα, isAlgebraic_iff_isIntegral.1 hβ,
       isAlgebraic_iff_isIntegral.1 hγ]
+  NumberField.of_module_finite (K := ℚ) _
 
 lemma exists_common_field_of_isAlgebraic (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
     (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
@@ -114,30 +115,30 @@ lemma c₁_ne_zero : c₁ α' β' γ' ≠ 0 := (Int.zero_lt_one.trans_le (one_le
 lemma one_le_abs_c₁ : 1 ≤ |c₁ α' β' γ'| := (one_le_c₁ _ _ _).trans (le_abs_self _)
 
 omit [NumberField K] in
-private lemma isIntegral_zsmul_of_abs {x : ℤ} {u : K} (h : IsIntegral ℤ (x • u)) :
-    IsIntegral ℤ (|x| • u) :=
-  (abs_choice x).elim (·.symm ▸ h) fun hx ↦ hx.symm ▸ (neg_smul x u).symm ▸ h.neg
+private lemma isIntegral_zsmul_of_dvd {c d : ℤ} {x : K} (h : IsIntegral ℤ (d • x))
+    (hdc : d ∣ c) : IsIntegral ℤ (c • x) := by
+  obtain ⟨e, rfl⟩ := hdc
+  rw [mul_comm, mul_smul]
+  exact h.zsmul e
 
 omit [NumberField K] in
-private lemma isIntegral_c₁_smul_aux (x : K) (a b : ℤ)
-    (he : a * b * intDenom x = intDenom α' * intDenom β' * intDenom γ') :
-    IsIntegral ℤ (c₁ α' β' γ' • x) := by
-  rw [c₁, ← he]
-  exact isIntegral_zsmul_of_abs <| by
-    simpa [zsmul_eq_mul, mul_assoc, intDenom] using
-      IsIntegral.smul (a * b) (Algebra.isIntegral_natDenominator_smul x)
+private lemma isIntegral_intDenom_smul (x : K) : IsIntegral ℤ (intDenom x • x) := by
+  simpa [intDenom, zsmul_eq_mul] using Algebra.isIntegral_natDenominator_smul x
 
 omit [NumberField K] in
 lemma isIntegral_c₁α : IsIntegral ℤ (c₁ α' β' γ' • α') :=
-  isIntegral_c₁_smul_aux _ _ _ α' (intDenom γ') (intDenom β') (by ring)
+  isIntegral_zsmul_of_dvd (isIntegral_intDenom_smul α')
+    ((dvd_abs _ _).mpr ((dvd_mul_right _ _).mul_right _))
 
 omit [NumberField K] in
 lemma isIntegral_c₁β : IsIntegral ℤ (c₁ α' β' γ' • β') :=
-  isIntegral_c₁_smul_aux _ _ _ β' (intDenom γ') (intDenom α') (by ring)
+  isIntegral_zsmul_of_dvd (isIntegral_intDenom_smul β')
+    ((dvd_abs _ _).mpr ((dvd_mul_left _ _).mul_right _))
 
 omit [NumberField K] in
 lemma isIntegral_c₁γ : IsIntegral ℤ (c₁ α' β' γ' • γ') :=
-  isIntegral_c₁_smul_aux _ _ _ γ' (intDenom α') (intDenom β') (by ring)
+  isIntegral_zsmul_of_dvd (isIntegral_intDenom_smul γ') ((dvd_abs _ _).mpr (dvd_mul_left _ _))
+
 
 /-!
 Let `m = 2h + 2` and `n = q² / (2m)`, where `q²` is a perfect square divisible by `2m`.
@@ -158,7 +159,7 @@ variable (q : ℕ) (hq0 : 0 < q)
 def n (K : Type*) [Field K] [NumberField K] (q : ℕ) : ℕ := q ^ 2 / (2 * (m K))
 
 /-- House exponent `m K * (2 * (m K * n K q))`. -/
-def houseExponent (K : Type*) [Field K] [NumberField K] (q : ℕ) : ℕ :=
+abbrev houseExponent (K : Type*) [Field K] [NumberField K] (q : ℕ) : ℕ :=
   m K * (2 * (m K * n K q))
 
 variable (u : Fin (m K * n K q)) (t : Fin (q * q))
@@ -195,8 +196,6 @@ def k : ℕ := (finProdFinEquiv.symm u).2
 /-- A variable `l` that satisfies 1 ≤ l ≤ m -/
 def l : ℕ := (finProdFinEquiv.symm u).1 + 1
 
-lemma one_le_a : 1 ≤ a q t := Nat.le_add_left 1 _
-
 lemma a_le : a q t ≤ q := Nat.succ_le_of_lt (finProdFinEquiv.symm t).1.isLt
 
 lemma one_le_b : 1 ≤ b q t := Nat.le_add_left 1 _
@@ -205,9 +204,20 @@ lemma b_le : b q t ≤ q := Nat.succ_le_of_lt (finProdFinEquiv.symm t).2.isLt
 
 lemma k_lt : k q u < n K q := (finProdFinEquiv.symm u).2.isLt
 
-lemma one_le_l : 1 ≤ l q u := Nat.le_add_left 1 _
-
 lemma l_le : l q u ≤ m K := Nat.succ_le_of_lt (finProdFinEquiv.symm u).1.isLt
+
+include u in
+omit t in
+lemma k_le_n_sub_one : k q u ≤ n K q - 1 :=
+  Nat.le_sub_one_of_lt (k_lt q u)
+
+include u t in
+lemma al_le_mq : a q t * l q u ≤ m K * q :=
+  (Nat.mul_le_mul (a_le q t) (l_le q u)).trans_eq (mul_comm _ _)
+
+include u t in
+lemma bl_le_mq : b q t * l q u ≤ m K * q :=
+  (Nat.mul_le_mul (b_le q t) (l_le q u)).trans_eq (mul_comm _ _)
 
 /-- The core algebraic coefficient appearing in the evaluation of the `k`-th derivative
 of the auxiliary function at point `l`. Evaluates to `(a + bβ')^k * α'^(al) * γ'^(bl)`. -/
@@ -216,11 +226,18 @@ abbrev systemCoeffs : K :=
 
 variable (h2mq : 2 * m K ∣ q ^ 2)
 
+include h2mq in
+lemma two_mul_m_mul_n_eq_sq : 2 * (m K * n K q) = q ^ 2 := by
+  rw [← mul_assoc]; exact Nat.mul_div_cancel' h2mq
+
 include hq0 h2mq in
-lemma one_le_n : 1 ≤ n K q := by
-  simp only [n, m, h]
-  exact (Nat.one_le_div_iff (by positivity [one_le_m K])).2
-    (Nat.le_of_dvd (Nat.pow_pos hq0) h2mq)
+lemma one_le_n : 1 ≤ n K q :=
+  (Nat.one_le_div_iff (by positivity [one_le_m K])).2 (Nat.le_of_dvd (Nat.pow_pos hq0) h2mq)
+
+include hq0 h2mq in
+/-- The Siegel system has a positive number `m n` of equations. -/
+lemma m_mul_n_pos : 0 < m K * n K q :=
+  Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)
 
 /-!
 Let `c₁, c₂, …` be natural numbers independent of `n`. There exists `c₁` such that
@@ -233,33 +250,27 @@ abbrev cCoeffs (q : ℕ) : ℤ :=
   c₁ α' β' γ' ^ (n K q - 1) * c₁ α' β' γ' ^ (m K * q) * c₁ α' β' γ' ^ (m K * q)
 
 omit [NumberField K] in
-lemma isIntegral_c₁_pow_smul_pow (u : K) (n k a l : ℕ) (hnk : a * l ≤ n * k)
-    (H : IsIntegral ℤ (↑(c₁ α' β' γ') * u)) :
-    IsIntegral ℤ (c₁ α' β' γ' ^ (n * k) • u ^ (a * l)) := by
-  rw [zsmul_eq_mul, Int.cast_pow, ← Nat.sub_add_cancel hnk, pow_add, mul_assoc, ← mul_pow]
-  exact ((isIntegral_intCast (c₁ α' β' γ')).pow _).mul (H.pow _)
-
-lemma isIntegral_c₁_pow_smul_α'_pow' :
-    IsIntegral ℤ (c₁ α' β' γ' ^ (m K * q) • α' ^ (a q t * l q u)) :=
-  isIntegral_c₁_pow_smul_pow _ _ _ α' (m K) q (a q t) (l q u)
-    ((Nat.mul_le_mul (a_le q t) (l_le q u)).trans_eq (mul_comm _ _))
-      (by grind [isIntegral_c₁α])
-
-lemma isIntegral_c₁_pow_smul_γ'_pow' :
-    IsIntegral ℤ (c₁ α' β' γ' ^ (m K * q) • γ' ^ (b q t * l q u)) :=
-  isIntegral_c₁_pow_smul_pow _ _ _ γ' (m K) q (b q t) (l q u)
-    ((Nat.mul_le_mul (b_le q t) (l_le q u)).trans_eq (mul_comm _ _))
-      (by grind [isIntegral_c₁γ])
+/-- Re-pair a scalar power with the element it scales: `c ^ N • x ^ i` splits as the unmatched
+factor `c ^ (N - i)` times the `i`-th power of `c • x`, whenever `i ≤ N`. -/
+private lemma zsmul_pow_eq {c : ℤ} {x : K} {i N : ℕ} (hiN : i ≤ N) :
+    c ^ N • x ^ i = c ^ (N - i) • (c • x) ^ i := by
+  rw [smul_pow, ← mul_smul, ← pow_add, Nat.sub_add_cancel hiN]
 
 omit [NumberField K] in
-lemma isIntegral_c₁_pow_smul_add_smul_pow (n k : ℕ) (hkn : k ≤ n - 1) (a b : ℕ) :
-    IsIntegral ℤ (c₁ α' β' γ' ^ (n - 1) • (↑a + ↑b • β') ^ k) := by
-  rw [zsmul_eq_mul, Int.cast_pow, ← Nat.sub_add_cancel hkn, pow_add, mul_assoc, ← mul_pow,
-    mul_add]
-  refine ((isIntegral_intCast _).pow _).mul ((IsIntegral.add ?_ ?_).pow _)
-  · exact (isIntegral_intCast _).mul (isIntegral_natCast _)
-  · rw [nsmul_eq_mul, ← mul_assoc, mul_comm (c₁ α' β' γ' : K), mul_assoc]
-    exact (isIntegral_natCast _).mul (by grind [isIntegral_c₁β])
+/-- If `c • x` is an algebraic integer and `i ≤ N`, then so is `c ^ N • x ^ i`. -/
+lemma isIntegral_zsmul_pow {c : ℤ} {x : K} (h : IsIntegral ℤ (c • x)) {i N : ℕ}
+    (hiN : i ≤ N) : IsIntegral ℤ (c ^ N • x ^ i) := by
+  rw [zsmul_pow_eq hiN]
+  exact (h.pow i).zsmul _
+
+/-- Scaling `x ^ i` by `c ^ N` with `i ≤ N`: the unmatched factor `|c| ^ (N - i)` comes out,
+and the paired part is bounded with any exponent `M ≥ i`. -/
+private lemma house_zsmul_pow_le {c : ℤ} {x : K} (h : 1 ≤ house (c • x)) {i N M : ℕ}
+    (hiN : i ≤ N) (hiM : i ≤ M) :
+    house (c ^ N • x ^ i) ≤ |c| ^ (N - i) * (|c| * house x) ^ M := by
+  rw [zsmul_pow_eq hiN, house_zsmul, abs_pow, Int.cast_pow]
+  gcongr
+  exact (house_pow_le_pow h hiM).trans_eq (by rw [house_zsmul])
 
 /-!
 Multiplying the system by `c₁^(n-1) c₁^(mq) c₁^(mq) = c₁^(n-1+2mq) ≤ c₂^n` ensures the
@@ -270,14 +281,28 @@ lemma zsmul_mul_mul_distrib {K : Type*} [Field K] (a b c : ℤ) (x y z : K) :
     ((a * b) * c) • ((x * y) * z) = a • x * b • y * c • z := by
   simp [zsmul_eq_mul]; ring
 
+omit [NumberField K] in
+private lemma isIntegral_c₁_smul_addNSMul (a b : ℕ) :
+    IsIntegral ℤ (c₁ α' β' γ' • ((a : K) + b • β')) := by
+  simpa [smul_add, zsmul_eq_mul, nsmul_eq_mul, mul_assoc, mul_left_comm, mul_comm] using
+    ((isIntegral_intCast (c₁ α' β' γ')).mul (isIntegral_natCast a)).add
+      ((isIntegral_natCast b).mul (isIntegral_c₁β α' β' γ'))
+
+omit [NumberField K] in
+/-- The scaled sum `c₁ • (a + b • β')` is an algebraic integer over `ℤ`. -/
+lemma isIntegral_c₁_smul_a_b_β' :
+    IsIntegral ℤ (c₁ α' β' γ' • ((a q t : K) + b q t • β')) := by
+  simpa [smul_add, zsmul_eq_mul, nsmul_eq_mul, mul_assoc, mul_left_comm, mul_comm] using
+    ((isIntegral_intCast (c₁ α' β' γ')).mul (isIntegral_natCast (a q t))).add
+      ((isIntegral_natCast (b q t)).mul (isIntegral_c₁β α' β' γ'))
+
 /-- The scaled system coefficient `cCoeffs • systemCoeffs` is an algebraic integer over `ℤ`. -/
 lemma isIntegral_cCoeffs_smul_systemCoeffs :
     IsIntegral ℤ (cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q u t) := by
   rw [zsmul_mul_mul_distrib, mul_assoc]
-  exact (isIntegral_c₁_pow_smul_add_smul_pow _ _ _ (n K q) (k q u)
-      (Nat.le_sub_one_of_lt (k_lt q u)) (a q t) (b q t)).mul
-    ((isIntegral_c₁_pow_smul_α'_pow' α' β' γ' q u t).mul
-      (isIntegral_c₁_pow_smul_γ'_pow' α' β' γ' q u t))
+  exact (isIntegral_zsmul_pow (isIntegral_c₁_smul_a_b_β' α' β' γ' q t) (k_le_n_sub_one q u)).mul
+    ((isIntegral_zsmul_pow (isIntegral_c₁α α' β' γ') (al_le_mq q u t)).mul
+      (isIntegral_zsmul_pow (isIntegral_c₁γ α' β' γ') (bl_le_mq q u t)))
 
 /-- The matrix representing the homogeneous linear system of `mn` equations in `q^2` unknowns.
 Its entries are scaled to strictly reside in the ring of integers `𝓞 K`. -/
@@ -289,6 +314,16 @@ lemma map_A : algebraMap (𝓞 K) K (A α' β' γ' q u t) =
     cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q u t :=
   (rfl)
 
+include hirr σ habc in
+lemma a_add_b_smul_β'_ne_zero : ((a q t : K) + b q t • β') ≠ 0 := fun H ↦
+  hirr (-(a q t : ℤ)) (b q t) <| by
+    have hEq : (a q t : ℂ) + b q t * β = 0 := by
+      simpa [nsmul_eq_mul, map_add, map_mul, ← habc.2.1] using congrArg σ H
+    push_cast
+    exact eq_div_iff_mul_eq
+      (Nat.cast_ne_zero.mpr (Nat.one_le_iff_ne_zero.mp (one_le_b q t))) |>.mpr
+      (by linear_combination hEq)
+
 include α β σ hirr htriv habc in
 lemma c₁α_ne_zero : c₁ α' β' γ' • α' ≠ 0 :=
   smul_ne_zero (c₁_ne_zero _ _ _)
@@ -299,42 +334,14 @@ lemma c₁γ_ne_zero : c₁ α' β' γ' • γ' ≠ 0 :=
   smul_ne_zero (c₁_ne_zero _ _ _)
     (alpha'_beta'_gamma'_ne_zero α β σ α' β' γ' hirr htriv habc).2.2
 
-omit [NumberField K] in
-private lemma isIntegral_c₁_smul_addNSMul (a b : ℕ) :
-    IsIntegral ℤ (c₁ α' β' γ' • ((a : K) + b • β')) := by
-  simpa [smul_add, zsmul_eq_mul, nsmul_eq_mul, mul_assoc, mul_left_comm, mul_comm] using
-    ((isIntegral_intCast (c₁ α' β' γ')).mul (isIntegral_natCast a)).add
-      ((isIntegral_natCast b).mul (isIntegral_c₁β α' β' γ'))
-
-omit [NumberField K] in
-/-- The scaled sum `c₁ • (q + q • β')` is an algebraic integer over `ℤ`. -/
-lemma isIntegral_c₁_smul_q_β' : IsIntegral ℤ (c₁ α' β' γ' • ((q : K) + q • β')) :=
-  isIntegral_c₁_smul_addNSMul _ _ _ q q
-
-omit [NumberField K] in
-/-- The scaled sum `c₁ • (a + b • β')` is an algebraic integer over `ℤ`. -/
-lemma isIntegral_c₁_smul_a_b_β' :
-    IsIntegral ℤ (c₁ α' β' γ' • ((a q t : K) + b q t • β')) :=
-  isIntegral_c₁_smul_addNSMul _ _ _ _ _
-
-include hirr σ habc in
-lemma a_add_b_smul_β'_ne_zero : ((a q t : K) + b q t • β') ≠ 0 := fun H ↦
-  hirr (-(a q t : ℤ)) (b q t) <| by
-    have hEq : (a q t : ℂ) + b q t * β = 0 := by
-      simpa [nsmul_eq_mul, map_add, map_mul, ← habc.2.1] using congrArg σ H
-    push_cast
-    exact eq_div_iff_mul_eq
-      (Nat.cast_ne_zero.mpr (Nat.one_le_iff_ne_zero.mp (one_le_b q t))) |>.mpr (by grind)
-
-include α β σ hirr htriv habc in
-lemma one_le_house_c₁γ : 1 ≤ house (c₁ α' β' γ' • γ') :=
-  one_le_house_of_isIntegral (isIntegral_c₁γ α' β' γ')
-    (c₁γ_ne_zero α β σ α' β' γ' hirr htriv habc)
+/-- If `x ≠ 0` and `c₁ • x` is an algebraic integer, its house is at least `1`. -/
+private lemma one_le_house_c₁_smul {x : K} (hx : IsIntegral ℤ (c₁ α' β' γ' • x))
+    (hx0 : x ≠ 0) : 1 ≤ house (c₁ α' β' γ' • x) :=
+  one_le_house_of_isIntegral hx (smul_ne_zero (c₁_ne_zero _ _ _) hx0)
 
 /-- A large integer constant independent of `n` and `q`, used as a foundational base
 to bound the houses (maximum absolute values of conjugates) of the algebraic coefficients. -/
-def c₂ : ℤ := (|c₁ α' β' γ'| ^ (((1 + 2 * (m K) *
-  (2 * (m K)))) + (1 + 2 * (m K) * (2 * (m K)))))
+def c₂ : ℤ := (|c₁ α' β' γ'| ^ (((1 + 2 * (m K) * (2 * (m K)))) + (1 + 2 * (m K) * (2 * (m K)))))
 
 lemma one_le_c₂ : 1 ≤ c₂ α' β' γ' := one_le_pow₀ (one_le_abs_c₁ α' β' γ')
 
@@ -345,237 +352,115 @@ Used to establish a strict upper bound on the entries of the linear system matri
 def c₃ : ℝ := c₂ α' β' γ' * (1 + house β') * sqrt (2 * m K) *
   (max 1 ((house α' ^ (2 * m K ^ 2)) * house γ' ^ (2 * m K ^ 2)))
 
+/-- `√(2m)` is at least `1`, since `1 ≤ m`. -/
+lemma one_le_sqrt_two_mul_m : (1 : ℝ) ≤ √(2 * m K) :=
+  one_le_sqrt.mpr (mod_cast (by have := one_le_m K; linarith))
+
 lemma one_le_c₃ : 1 ≤ c₃ α' β' γ' :=
   one_le_mul_of_one_le_of_one_le (one_le_mul_of_one_le_of_one_le
   (one_le_mul_of_one_le_of_one_le (mod_cast one_le_c₂ α' β' γ') <|
   le_add_of_nonneg_right <| house_nonneg _) <|
-  one_le_sqrt.mpr <| mod_cast (by have := one_le_m K; linarith)) <| le_max_left 1 _
+  one_le_sqrt_two_mul_m) <| le_max_left 1 _
 
 /-! Moreover, the absolute value of the conjugates of the various coefficients is at most
   `c₂^n (q + q * |β|) ^ (n - 1) * |α| ^ (m q) * |γ| ^ (m q) ≤ c₃^n * n^((n - 1) / 2)`.
 -/
-include u in
-omit t h2mq in
-lemma k_le_n_sub_one : k q u ≤ n K q - 1 :=
-  Nat.le_sub_one_of_lt (k_lt q u)
 
-include u t in
-lemma al_le_mq : a q t * l q u ≤ m K * q :=
-  (Nat.mul_le_mul (a_le q t) (l_le q u)).trans_eq (mul_comm _ _)
+include h2mq in
+lemma mq_le_m_two_mnq : (m K) * q ≤ (m K) * (2 * ((m K) * (n K q))) :=
+  Nat.mul_le_mul_left _ <| (two_mul_m_mul_n_eq_sq q h2mq).symm ▸ Nat.le_self_pow two_ne_zero q
 
-include u t in
-lemma bl_le_mq : b q t * l q u ≤ m K * q :=
-  (Nat.mul_le_mul (b_le q t) (l_le q u)).trans_eq (mul_comm _ _)
+lemma house_a_add_b_smul_le :
+    house ((a q t : K) + b q t • β') ≤ |(q : ℤ)| * (1 + house β') := by
+  rw [mul_one_add]
+  refine (house_add_le _ _).trans (add_le_add ?_ ((house_nsmul _ _).le.trans ?_))
+  · rw [house_natCast]; exact_mod_cast a_le q t
+  · gcongr; exact_mod_cast b_le q t
 
-include hq0 h2mq in
-lemma mq_le_m_two_mnq : (m K) * q ≤ (m K) * (2 * ((m K) * (n K q))) := by
-  refine Nat.mul_le_mul_left (m K) ?_
-  calc q
-    _ ≤ q ^ 2 := by simpa [pow_two] using Nat.le_mul_of_pos_right q hq0
-    _ = 2 * ((m K) * (n K q)) := by
-      simp only [n, ← Nat.mul_assoc]
-      exact (Nat.mul_div_cancel' h2mq).symm
-
-include α' β' γ' in
-lemma house_cCoeffs_smul_eq_factorized :
-    house (cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q u t) =
-    house ((c₁ α' β' γ' ^ ((n K q - 1) - k q u) *
-        c₁ α' β' γ' ^ (m K * q - a q t * l q u) *
-        (c₁ α' β' γ' : K) ^ (m K * q - b q t * l q u)) • (((c₁ α' β' γ' : K) ^ k q u) *
-        ((a q t : K) + (b q t) * β') ^ k q u * ((c₁ α' β' γ' : K) ^ (a q t * l q u)) *
-        α' ^ (a q t * l q u) * ((c₁ α' β' γ' : K) ^ (b q t * l q u)) *
-        γ' ^ (b q t * l q u))) := by
-  rw [cCoeffs, show c₁ α' β' γ' ^ (n K q - 1) * c₁ α' β' γ' ^ (m K * q) *
-        c₁ α' β' γ' ^ (m K * q) =
-        (c₁ α' β' γ' ^ (n K q - 1 - k q u) *
-          c₁ α' β' γ' ^ (m K * q - a q t * l q u) *
-          c₁ α' β' γ' ^ (m K * q - b q t * l q u)) *
-        (c₁ α' β' γ' ^ k q u * c₁ α' β' γ' ^ (a q t * l q u) *
-          c₁ α' β' γ' ^ (b q t * l q u)) by
-      rw [← pow_sub_mul_pow _ (k_le_n_sub_one q u)]
-      nth_rw 1 [← pow_sub_mul_pow _ (al_le_mq q u t)]
-      rw [← pow_sub_mul_pow _ (bl_le_mq q u t)]; ring, mul_smul]
-  congr 1; ring
-
-omit α β σ hirr htriv habc hq0 h2mq in
-include α' β' γ' u t q in
-lemma house_factorized_le_prod :
-    house ((c₁ α' β' γ' ^ ((n K q - 1) - k q u) *
-        c₁ α' β' γ' ^ (m K * q - a q t * l q u) *
-        (c₁ α' β' γ' : K) ^ (m K * q - b q t * l q u)) • (((c₁ α' β' γ' : K) ^ k q u) *
-        ((a q t : K) + (b q t) * β') ^ k q u * ((c₁ α' β' γ' : K) ^ (a q t * l q u)) *
-        α' ^ (a q t * l q u) * ((c₁ α' β' γ' : K) ^ (b q t * l q u)) *
-        γ' ^ (b q t * l q u))) ≤
-    house (((c₁ α' β' γ' : K) ^ (n K q - 1 - k q u) * (c₁ α' β' γ' : K) ^
-        (m K * q - a q t * l q u) *
-        (c₁ α' β' γ' : K) ^ (m K * q - b q t * l q u))) *
-        house (c₁ α' β' γ' ^ (k q u) • (↑(a q t) + (b q t) • β') ^ (k q u)) *
-        house (c₁ α' β' γ' ^ (a q t * l q u) • α' ^ (a q t * l q u)) *
-        house (c₁ α' β' γ' ^ (b q t * l q u) • γ' ^ (b q t * l q u)) := by
-  simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, mul_assoc]
-  refine (house_mul_le _ _).trans (mul_le_mul_of_nonneg_left ?_ (house_nonneg _))
-  rw [← mul_assoc, ← mul_assoc, ← mul_assoc]
-  refine (house_mul_le _ _).trans ?_
-  rw [← mul_assoc]
-  exact mul_le_mul (by grind [mul_assoc, house_mul_le]) le_rfl (house_nonneg _)
-    (mul_nonneg (house_nonneg _) (house_nonneg _))
-
-include K α' β' γ' u t q in
-lemma house_prod_le_smul_pow :
-    house (((c₁ α' β' γ' : K) ^ (n K q - 1 - k q u) * (c₁ α' β' γ' : K) ^
-        (m K * q - a q t * l q u) *
-        (c₁ α' β' γ' : K) ^ (m K * q - b q t * l q u))) *
-        house (c₁ α' β' γ' ^ (k q u) • (↑(a q t) + (b q t) • β') ^ (k q u)) *
-        house (c₁ α' β' γ' ^ (a q t * l q u) • α' ^ (a q t * l q u)) *
-        house (c₁ α' β' γ' ^ (b q t * l q u) • γ' ^ (b q t * l q u)) ≤
-    house (((c₁ α' β' γ' : K) ^ (n K q - 1 - k q u) * (c₁ α' β' γ' : K) ^
-        (m K * q - a q t * l q u) *
-        (c₁ α' β' γ' : K) ^ (m K * q - b q t * l q u))) *
-        house (c₁ α' β' γ' • (↑(a q t) + (b q t) • β')) ^ (k q u) *
-        house (c₁ α' β' γ' • α') ^ (a q t * l q u) *
-        house (c₁ α' β' γ' • γ') ^ (b q t * l q u) := by
-  simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, ← mul_pow]
-  gcongr <;> exact house_pow_le _ _
-
-include α β K σ α' β' γ' hirr htriv habc hq0 h2mq u t q in
-lemma house_smul_pow_le_abs :
-    house (((c₁ α' β' γ' : K) ^ (n K q - 1 - k q u) * (c₁ α' β' γ' : K) ^
-        (m K * q - a q t * l q u) *
-        (c₁ α' β' γ' : K) ^ (m K * q - b q t * l q u))) *
-        house (c₁ α' β' γ' • (↑(a q t) + (b q t) • β')) ^ (k q u) *
-        house (c₁ α' β' γ' • α') ^ (a q t * l q u) *
-        house (c₁ α' β' γ' • γ') ^ (b q t * l q u) ≤
-    |(((c₁ α' β' γ') ^ (n K q - 1 - k q u) *
-        (c₁ α' β' γ') ^ (m K * q - a q t * l q u) *
-        (c₁ α' β' γ') ^ (m K * q - b q t * l q u)))| * (|c₁ α' β' γ'| *
-        (|(q : ℤ)| * (1 + house (β')))) ^ (n K q - 1) * (|c₁ α' β' γ'| * house (α')) ^
-        (houseExponent K q) * (|c₁ α' β' γ'| * house (γ')) ^
-        (houseExponent K q) := by
-  have hbd : ∀ x : K, house (c₁ α' β' γ' • x) ≤ ↑|c₁ α' β' γ'| * house x :=
-    fun x ↦ (house_zsmul x (c₁ α' β' γ')).le
-  gcongr
-  · rw [← @house_intCast K _]; simp
-  · refine (pow_le_pow_right₀
-        (one_le_house_of_isIntegral (isIntegral_c₁_smul_a_b_β' _ _ _ q t)
-          (smul_ne_zero (c₁_ne_zero α' β' γ')
-            (a_add_b_smul_β'_ne_zero α β σ α' β' γ' hirr habc q t))) (k_le_n_sub_one q u)).trans
-      (pow_le_pow_left₀ (house_nonneg _) ((hbd _).trans
-        (mul_le_mul_of_nonneg_left ?_ (by positivity))) _)
-    rw [show (↑(a q t) + b q t • β' : K) =
-          ((a q t : ℤ) : K) + ((b q t : ℤ) : K) * β' by push_cast [nsmul_eq_mul]; rfl,
-        mul_one_add (((|(q : ℤ)| : ℤ) : ℝ)) (house β')]
-    refine (house_add_le _ _).trans (add_le_add ?_ ((house_mul_le _ _).trans ?_))
-    · simp only [house_intCast, a]
-      gcongr
-      exact_mod_cast a_le q t
-    · simp only [house_intCast, b]
-      gcongr
-      exact_mod_cast b_le q t
-  · exact (pow_le_pow_left₀ (house_nonneg _) (hbd _) _).trans (pow_le_pow_right₀
-      ((one_le_house_of_isIntegral (isIntegral_c₁α α' β' γ')
-        (c₁α_ne_zero α β σ α' β' γ' hirr htriv habc)).trans (hbd _))
-        ((al_le_mq q u t).trans (mq_le_m_two_mnq q hq0 h2mq)))
-  · exact (pow_le_pow_left₀ (house_nonneg _) (hbd _) _).trans (pow_le_pow_right₀
-      ((one_le_house_c₁γ α β σ α' β' γ' hirr htriv habc).trans (hbd _))
-        ((bl_le_mq q u t).trans (mq_le_m_two_mnq q hq0 h2mq)))
-
-include hq0 h2mq u t q in
-lemma abs_bound_le_c₂ :
-    |(((c₁ α' β' γ') ^ (n K q - 1 - k q u) *
-        (c₁ α' β' γ') ^ (m K * q - a q t * l q u) *
-        (c₁ α' β' γ') ^ (m K * q - b q t * l q u)))| * (|c₁ α' β' γ'| *
-        (|(q : ℤ)| * (1 + house (β')))) ^ (n K q - 1) * (|c₁ α' β' γ'| * house (α')) ^
-        (houseExponent K q) * (|c₁ α' β' γ'| * house (γ')) ^
-        (houseExponent K q) ≤
-    ↑(c₂ α' β' γ') ^ (n K q) *
-      (↑|↑q| ^ ((n K q ) - 1) * (1 + house β') ^ (n K q - 1) *
-      house α' ^ (houseExponent K q) *
-      house γ' ^ (houseExponent K q)) := by
-  calc
-    _ = |(c₁ α' β' γ')| ^ (n K q - 1 - k q u) *
-          |(c₁ α' β' γ')| ^ (m K * q - a q t * l q u) *
-          |(c₁ α' β' γ')| ^ (m K * q - b q t * l q u) *
-          ↑|c₁ α' β' γ'| ^ ((n K q - 1) +  (2 * m K *
-          (2 * (m K * n K q)))) *
+include α β σ hirr htriv habc hq0 h2mq in
+lemma house_cCoeffs_smul_le_c₃ :
+    house (cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q u t) ≤
+      c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) := by
+  have hE := mq_le_m_two_mnq (K := K) q h2mq
+  have hexp : (n K q - 1 - k q u) + (m K * q - a q t * l q u) + (m K * q - b q t * l q u) +
+      ((n K q - 1) + (houseExponent K q + houseExponent K q)) ≤
+      ((1 + 2 * m K * (2 * m K)) + (1 + 2 * m K * (2 * m K))) * n K q := by
+    grind [k_le_n_sub_one q u, al_le_mq q u t, bl_le_mq q u t]
+  rw [zsmul_mul_mul_distrib]
+  calc _ ≤ |c₁ α' β' γ'| ^ (n K q - 1 - k q u) *
+            (|c₁ α' β' γ'| * (|(q : ℤ)| * (1 + house β'))) ^ (n K q - 1) *
+          (|c₁ α' β' γ'| ^ (m K * q - a q t * l q u) *
+            (|c₁ α' β' γ'| * house α') ^ houseExponent K q) *
+          (|c₁ α' β' γ'| ^ (m K * q - b q t * l q u) *
+            (|c₁ α' β' γ'| * house γ') ^ houseExponent K q) := ?_
+    _ = (|c₁ α' β' γ'| : ℝ) ^ ((n K q - 1 - k q u) + (m K * q - a q t * l q u) +
+          (m K * q - b q t * l q u) + ((n K q - 1) +
+            (houseExponent K q + houseExponent K q))) *
           (↑|↑q| ^ ((n K q) - 1) * (1 + house β') ^ (n K q - 1) *
-          house α' ^ (houseExponent K q) *
-          house γ' ^ (houseExponent K q)) := ?_
+            house α' ^ (houseExponent K q) * house γ' ^ (houseExponent K q)) := ?_
     _ ≤ ↑(c₂ α' β' γ') ^ (n K q) *
           (↑|↑q| ^ ((n K q ) - 1) * (1 + house β') ^ (n K q - 1) *
           house α' ^ (houseExponent K q) *
           house γ' ^ (houseExponent K q)) := ?_
-  · simp only [abs_pow, mul_pow, Int.cast_abs, Int.cast_pow, Nat.abs_cast, ← pow_add, two_mul,
-      houseExponent]
-    push_cast; ring
-  · gcongr
-    simp only [← pow_add, Int.cast_abs, c₂, Int.cast_pow, ← pow_mul]
-    refine pow_le_pow_right₀ (mod_cast one_le_abs_c₁ α' β' γ') ?_
-    simp only [add_mul, one_mul, mul_assoc,
-      (Nat.two_mul (m K * (2 * (m K * n K q)))), add_assoc]
-    gcongr <;> grind [k_le_n_sub_one q u, al_le_mq q u t, bl_le_mq q u t,
-      mq_le_m_two_mnq q hq0 h2mq]
+    _ ≤ _ := ?_
+  · obtain ⟨hα, -, hγ⟩ := alpha'_beta'_gamma'_ne_zero α β σ α' β' γ' hirr htriv habc
+    refine ((house_mul_le _ _).trans (mul_le_mul_of_nonneg_right (house_mul_le _ _)
+      (house_nonneg _))).trans ?_
+    gcongr
+    · exact (house_zsmul_pow_le (one_le_house_c₁_smul _ _ _
+        (isIntegral_c₁_smul_a_b_β' α' β' γ' q t)
+        (a_add_b_smul_β'_ne_zero α β σ α' β' γ' hirr habc q t))
+        (k_le_n_sub_one q u) (k_le_n_sub_one q u)).trans
+        (by gcongr; exact house_a_add_b_smul_le β' q t)
+    · exact house_zsmul_pow_le (one_le_house_c₁_smul _ _ _ (isIntegral_c₁α α' β' γ') hα)
+        (al_le_mq q u t) ((al_le_mq q u t).trans hE)
+    · exact house_zsmul_pow_le (one_le_house_c₁_smul _ _ _ (isIntegral_c₁γ α' β' γ') hγ)
+        (bl_le_mq q u t) ((bl_le_mq q u t).trans hE)
+  · push_cast [abs_mul, abs_pow, mul_pow]
+    ring
+  · rw [c₂]
+    push_cast [← pow_mul]
+    gcongr
+    exact mod_cast one_le_abs_c₁ α' β' γ'
+  · have hpow : ∀ x : ℝ, x ^ houseExponent K q = (x ^ (2 * m K ^ 2)) ^ n K q := fun x ↦ by
+      rw [← pow_mul]; congr 1; ring
+    have hq : |(q : ℝ)| = √(2 * m K) * √(n K q) := by
+      rw [← sqrt_mul (by positivity), show (2 * (m K : ℝ) * n K q) = (q : ℝ) ^ 2 from
+        by exact_mod_cast (mul_assoc 2 (m K) (n K q)) ▸ two_mul_m_mul_n_eq_sq q h2mq,
+        sqrt_sq_eq_abs]
+    rw [show (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) = √(n K q) ^ (n K q - 1) by
+        rw [sqrt_eq_rpow, ← rpow_natCast _ (n K q - 1), ← rpow_mul (Nat.cast_nonneg _),
+          Nat.cast_sub (one_le_n q hq0 h2mq), Nat.cast_one]
+        ring_nf,
+      rpow_natCast, hq, hpow, hpow, show c₃ α' β' γ' ^ n K q = ↑(c₂ α' β' γ') ^ n K q *
+        (1 + house β') ^ n K q * √(2 * m K) ^ n K q *
+        max 1 (house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ n K q by
+        rw [c₃, mul_pow, mul_pow, mul_pow]]
+    calc
+      _ = ↑(c₂ α' β' γ') ^ n K q * (1 + house β') ^ (n K q - 1) * √(2 * m K) ^ (n K q - 1) *
+            (house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ n K q *
+            √(n K q) ^ (n K q - 1) := by ring
+      _ ≤ _ := by
+        gcongr
+        any_goals (unfold c₂; positivity)
+        · exact le_add_of_nonneg_right (house_nonneg _)
+        · exact Nat.sub_le _ 1
+        · exact one_le_sqrt_two_mul_m
+        · exact Nat.sub_le _ 1
+        · exact le_max_right _ _
 
-include α' β' γ' hq0 h2mq q in
-lemma c₂_bound_le_c₃ :
-    ↑(c₂ α' β' γ') ^ (n K q) *
-      (↑|↑q| ^ ((n K q ) - 1) * (1 + house β') ^ (n K q - 1) *
-      house α' ^ (houseExponent K q) *
-      house γ' ^ (houseExponent K q)) ≤
-    c₃ α' β' γ' ^ (n K q : ℝ) *
-      (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) := by
-  calc
-    _ ≤ ↑(c₂ α' β' γ') ^ (n K q) *
-          (√(2 * m K) ^ (n K q - 1) *
-          √((n K q : ℝ)) ^ ((n K q : ℝ) - 1) *
-          ((1 + house β') ^ (n K q - 1) *
-          (house α' ^ (houseExponent K q) *
-           house γ' ^ (houseExponent K q)))) := ?_
-    _ ≤ ↑(c₂ α' β' γ') ^ (n K q) *
-          (√(2 * m K) ^ (n K q) *
-          √((n K q : ℝ)) ^ ((n K q : ℝ) - 1) *
-          ((1 + house β') ^ (n K q) *
-          (max 1 (house α' ^ (2 * m K ^ 2) *
-            house γ' ^ (2 * m K ^ 2))) ^ (n K q))) := ?_
-    _ = c₃ α' β' γ' ^ (n K q : ℝ) *
-          (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) := ?_
-  · refine mul_le_mul_of_nonneg_left ?_ (by unfold c₂; positivity)
-    conv_lhs => rw [mul_assoc, mul_assoc]
-    refine mul_le_mul_of_nonneg_right ?_ (by positivity)
-    rw [← Nat.cast_one (R := ℝ), ← Nat.cast_sub (one_le_n q hq0 h2mq),
-      rpow_natCast, ← mul_pow, ← sqrt_mul (by positivity)]
-    gcongr; push_cast [abs_of_nonneg (show (0 : ℝ) ≤ q by positivity)]
-    exact (le_sqrt (by positivity) (by positivity)).2
-      (mod_cast (Nat.mul_div_cancel' h2mq).symm.le)
-  · gcongr <;> first
-      | omega
-      | (unfold c₂; positivity)
-      | exact one_le_sqrt.mpr (by exact_mod_cast (by grind [one_le_m K]))
-      | (rw [show houseExponent K q = 2 * m K ^ 2 * n K q by simp [houseExponent]; ring,
-            pow_mul (house α'), pow_mul (house γ'), ← mul_pow]
-         exact pow_le_pow_left₀ (by positivity) (le_max_right _ _) _)
-      | simp
-  · rw [show (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) =
-          sqrt (n K q) ^ ((n K q : ℝ) - 1) by
-        rw [sqrt_eq_rpow, ← rpow_mul (Nat.cast_nonneg _), mul_comm, mul_div, mul_one]]
-    simp_rw [c₃, rpow_natCast, mul_pow]; ring
-
-include α β K σ α' β' γ' hirr htriv habc hq0 h2mq u t q in
+include α β σ hirr htriv habc hq0 h2mq in
 lemma house_matrixA_le :
     house ((algebraMap (𝓞 K) K) ((A α' β' γ' q) u t)) ≤
-      (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) := by
-  rw [map_A, house_cCoeffs_smul_eq_factorized]
-  have h₁ := @house_factorized_le_prod K _ α' β' γ' _ q u t
-  have h₂ := @house_prod_le_smul_pow K _ α' β' γ' _ q u t
-  have h₃ := @house_smul_pow_le_abs K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq
-  have h₄ := @abs_bound_le_c₂ K _ α' β' γ' _ q hq0 u t h2mq
-  have h₅ := @c₂_bound_le_c₃ K _ α' β' γ' _ q hq0 h2mq
-  exact h₁.trans (h₂.trans (h₃.trans (h₄.trans h₅)))
+      (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) :=
+  map_A α' β' γ' q u t ▸
+    house_cCoeffs_smul_le_c₃ α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq
 
 include α β σ α' β' γ' hirr htriv habc q hq0 h2mq in
 /-- The matrix `A` is nonzero, ensuring Siegel's lemma yields a nontrivial solution. -/
 lemma A_ne_zero : A α' β' γ' q ≠ 0 := by
   intro H
-  let u : Fin _ := ⟨0, Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)⟩
+  let u : Fin _ := ⟨0, m_mul_n_pos q hq0 h2mq⟩
   let t : Fin _ := ⟨0, mul_pos hq0 hq0⟩
   have H_eval : (A α' β' γ' q u t).val = 0 := by rw [H]; rfl
   simp only [A, RingOfIntegers.restrict, zsmul_eq_mul, Int.cast_mul, Int.cast_pow] at H_eval
@@ -583,11 +468,17 @@ lemma A_ne_zero : A α' β' γ' q ≠ 0 := by
   have := a_add_b_smul_β'_ne_zero α β σ α' β' γ' hirr habc q t
   revert H_eval; simp [c₁_ne_zero, hα, hγ]; grind
 
+include hq0 h2mq in
+/-- The Siegel system is underdetermined: there are fewer equations `m n` than unknowns `q²`. -/
+lemma m_mul_n_lt_sq : m K * n K q < q * q :=
+  (lt_two_mul_self (m_mul_n_pos q hq0 h2mq)).trans_eq
+    ((two_mul_m_mul_n_eq_sq q h2mq).trans (pow_two q))
+
 variable [DecidableEq (K →+* ℂ)]
 
 include α β σ α' β' γ' hirr htriv habc hq0 h2mq in
 /-- Siegel's lemma applied to the scaled matrix `A`: a non-zero integral kernel vector whose
-entries have controlled house. Both `η` and `η_spec` are read off from this. -/
+entries have controlled house. -/
 theorem exists_eta :
     ∃ ξ : Fin (q * q) → 𝓞 K, ξ ≠ 0 ∧ (A α' β' γ' q).mulVec ξ = 0 ∧
       ∀ l, house (ξ l).1 ≤ house.c₁ K * ((house.c₁ K * ↑(q * q) *
@@ -595,10 +486,7 @@ theorem exists_eta :
         ((↑(m K * n K q) : ℝ) / (↑(q * q) - ↑(m K * n K q)))) :=
   house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
     (A_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq))
-    ((mul_assoc 2 _ _).symm ▸ lt_mul_of_one_lt_left
-      (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)) Nat.one_lt_two
-      |>.trans_eq ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
+    (m_mul_n_pos q hq0 h2mq) (m_mul_n_lt_sq q hq0 h2mq) (Fintype.card_fin _)
     (fun u t ↦ house_matrixA_le α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq)
     (Fintype.card_fin _)
 
@@ -607,58 +495,58 @@ Its existence is guaranteed by Siegel's lemma (`exists_ne_zero_int_vec_house_le`
 def η : Fin (q * q) → 𝓞 K :=
   (exists_eta α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
 
+/-- The Siegel factor `c₁(K)² · 2m` is at least `1`. -/
+lemma one_le_houseC₁_sq_mul : (1 : ℝ) ≤ house.c₁ K * house.c₁ K * 2 * m K := by
+  have h1 := house.one_le_c₁ K
+  have hm : (1 : ℝ) ≤ (m K : ℝ) := mod_cast one_le_m K
+  nlinarith
+
 /-- A real-valued bounding constant used to bound the norm (house) of the
 solution vector `η`. -/
-def c₄ : ℝ := (max 1 ((house.c₁ K) * house.c₁ K * 2 * (m K))) * (c₃ α' β' γ' : ℝ)
+def c₄ : ℝ := house.c₁ K * house.c₁ K * 2 * m K * c₃ α' β' γ'
 
 include hq0 h2mq in
-open house in
+/-- The bound on the entries of `η` supplied by Siegel's lemma. -/
 lemma η_spec (t : Fin (q * q)) :
     house (algebraMap (𝓞 K) K
         (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t)) ≤
       house.c₁ K * (house.c₁ K * ↑(q * q) *
-        (c₃ α' β' γ' ^ (n K q : ℝ) *
-          (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2))) ^
-        ((m K * n K q : ℝ) / (↑(q * q : ℝ) - ↑(m K * n K q))) := by
-  exact_mod_cast
-    (exists_eta α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec.2.2 t
+        (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2))) ^
+        ((↑(m K * n K q) : ℝ) / (↑(q * q) - ↑(m K * n K q))) :=
+  (exists_eta α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec.2.2 t
 
-/-!
-`‖ηₖ‖ ≤ c₄ⁿ * n^((n - 1) / 2)`, for `1 ≤ k ≤ t`.
+/--
+`‖ηₖ‖ ≤ c₄ⁿ * n^((n + 1) / 2)`, for `1 ≤ k ≤ t`.
 -/
 lemma house_eta_le_c₄_pow :
     house (algebraMap (𝓞 K) K
         (η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq t)) ≤
       c₄ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) + 1) / 2) := by
   have hn : (1 : ℝ) ≤ (n K q : ℝ) := mod_cast one_le_n q hq0 h2mq
-  have hqR : (q : ℝ) * q = 2 * (m K * n K q : ℝ) := by
-    exact_mod_cast (pow_two q).symm.trans ((Nat.mul_div_cancel' h2mq).symm.trans (mul_assoc ..))
+  have hA := one_le_houseC₁_sq_mul (K := K)
   have hN : (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) =
       (n K q : ℝ) ^ (((n K q : ℝ) + 1) / 2) := by
-    nth_rw 1 [← Real.rpow_one (n K q : ℝ)]
-    rw [← Real.rpow_add (zero_lt_one.trans_le hn)]; congr 1; ring
+    rw [show ((n K q : ℝ) + 1) / 2 = 1 + ((n K q : ℝ) - 1) / 2 from by ring,
+      rpow_one_add' (by positivity) (ne_of_gt (by linarith))]
   calc _ ≤ house.c₁ K * (house.c₁ K * ↑(q * q) *
             (c₃ α' β' γ' ^ (n K q : ℝ) *
             (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2))) ^
-            ((m K * n K q : ℝ) /
-              (↑(q * q : ℝ) - ↑(m K * n K q))) := ?_
-      _ = house.c₁ K * (house.c₁ K * 2 * m K *
+            ((↑(m K * n K q) : ℝ) / (↑(q * q) - ↑(m K * n K q))) := ?_
+      _ = house.c₁ K * house.c₁ K * 2 * m K *
             c₃ α' β' γ' ^ (n K q : ℝ) * ((n K q : ℝ) *
-            (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2))) := ?_
+            (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) := ?_
       _ ≤ c₄ α' β' γ' ^ (n K q : ℝ) *
             (n K q : ℝ) ^ (((n K q : ℝ) + 1) / 2) := ?_
   · exact η_spec α β σ α' β' γ' hirr htriv habc q hq0 h2mq t
-  · rw [show ((↑(q * q : ℝ) : ℝ) - ↑(m K * n K q)) =
-       (m K * n K q : ℝ) by push_cast; linarith [hqR],
-       div_self (mod_cast (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)).ne'), rpow_one]
-    push_cast; linear_combination
-      (house.c₁ K ^ 2 * c₃ α' β' γ' ^ (n K q : ℝ) *
-            (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) * hqR
-  · simp only [← mul_assoc, hN]
-    refine mul_le_mul_of_nonneg_right ?_ (by positivity)
-    rw [c₄, mul_rpow (by positivity) (zero_le_one.trans (one_le_c₃ _ _ _))]
-    refine mul_le_mul_of_nonneg_right ?_ (rpow_nonneg (zero_le_one.trans (one_le_c₃ _ _ _)) _)
-    exact (le_max_right _ _).trans <| by
-      simpa [Real.rpow_one] using rpow_le_rpow_of_exponent_le (le_max_left _ _) hn
+  · push_cast
+    rw [show (q : ℝ) * q = 2 * ((m K : ℝ) * n K q) from mod_cast
+          (pow_two q).symm.trans (two_mul_m_mul_n_eq_sq q h2mq).symm,
+        show (2 : ℝ) * ((m K : ℝ) * n K q) - (m K : ℝ) * n K q = (m K : ℝ) * n K q by ring,
+        div_self (mod_cast (m_mul_n_pos q hq0 h2mq).ne'), rpow_one]
+    ring
+  · rw [hN, c₄, mul_rpow (by linarith) (zero_le_one.trans (one_le_c₃ _ _ _))]
+    exact mul_le_mul_of_nonneg_right
+      (mul_le_mul_of_nonneg_right (Real.self_le_rpow_of_one_le hA hn)
+        (rpow_nonneg (zero_le_one.trans (one_le_c₃ _ _ _)) _)) (by positivity)
 
 end GelfondSchneider
