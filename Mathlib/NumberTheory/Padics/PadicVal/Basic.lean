@@ -432,7 +432,8 @@ namespace multiplicity
 variable {p a b : ℕ} [hp : Fact p.Prime]
 
 /-- A rewrite lemma for `multiplicity p (a * b)` with conditions `a ≠ 0`, `b ≠ 0`. -/
-protected theorem mul : a ≠ 0 → b ≠ 0 → multiplicity p (a * b) = multiplicity p a + multiplicity p b :=
+protected theorem mul :
+    a ≠ 0 → b ≠ 0 → multiplicity p (a * b) = multiplicity p a + multiplicity p b :=
   mod_cast padicValRat.mul (p := p) (q := a) (r := b)
 
 protected theorem div_of_dvd (h : b ∣ a) :
@@ -455,7 +456,8 @@ protected theorem pow (a n : ℕ) : multiplicity p (a ^ n) = n * multiplicity p 
 protected theorem prime_pow (n : ℕ) : multiplicity p (p ^ n) = n := by
   rw [multiplicity.pow p, Nat.multiplicity_self, mul_one]
 
-protected theorem div_pow (dvd : p ^ a ∣ b) : multiplicity p (b / p ^ a) = multiplicity p b - a := by
+protected theorem div_pow (dvd : p ^ a ∣ b) :
+    multiplicity p (b / p ^ a) = multiplicity p b - a := by
   rw [multiplicity.div_of_dvd dvd, multiplicity.prime_pow]
 
 protected theorem div' {m : ℕ} (cpm : Coprime p m) {b : ℕ} (dvd : m ∣ b) :

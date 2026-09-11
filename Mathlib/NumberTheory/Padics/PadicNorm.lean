@@ -42,7 +42,7 @@ p-adic, p adic, padic, norm, valuation
 
 /-- If `q ≠ 0`, the `p`-adic norm of a rational `q` is `p ^ (-padicValRat p q)`.
 If `q = 0`, the `p`-adic norm of `q` is `0`. -/
-def padicNorm (p : ℕ) (q : ℚ) : ℚ :=
+noncomputable def padicNorm (p : ℕ) (q : ℚ) : ℚ :=
   if q = 0 then 0 else (p : ℚ) ^ (-padicValRat p q)
 
 namespace padicNorm
@@ -76,7 +76,7 @@ protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 
 See also `padicNorm.padicNorm_p_of_prime` for a version assuming `p` is prime. -/
 theorem padicNorm_p (hp : 1 < p) : padicNorm p p = (p : ℚ)⁻¹ := by
-  simp [padicNorm, (pos_of_gt hp).ne', padicValNat.self hp]
+  simp [padicNorm, (pos_of_gt hp).ne', multiplicity.self hp]
 
 /-- The `p`-adic norm of `p` is `p⁻¹` if `p` is prime.
 
@@ -88,7 +88,7 @@ theorem padicNorm_p_of_prime [Fact p.Prime] : padicNorm p p = (p : ℚ)⁻¹ :=
 /-- The `p`-adic norm of `q` is `1` if `q` is prime and not equal to `p`. -/
 theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : Fact q.Prime]
     (ne : p ≠ q) : padicNorm p q = 1 := by
-  have p : padicValRat p q = 0 := mod_cast padicValNat_primes ne
+  have p : padicValRat p q = 0 := mod_cast multiplicity_primes ne
   rw [padicNorm, p]
   simp [q_prime.1.ne_zero]
 

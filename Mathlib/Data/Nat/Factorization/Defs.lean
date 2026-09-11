@@ -59,7 +59,8 @@ theorem primeFactorsList_count_eq {n p : ℕ} : n.primeFactorsList.count p = n.f
 /-- We can write both `n.factorization p` and `n.factors.count p` to represent the power
 of `p` in the factorization of `n`: we declare the former to be the simp-normal form. -/
 @[simp]
-theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p = multiplicity p n := by
+theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) :
+    n.factorization p = multiplicity p n := by
   rw [← primeFactorsList_count_eq]
   rcases n.eq_zero_or_pos with (rfl | hn0)
   · simp [count]
