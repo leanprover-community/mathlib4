@@ -303,8 +303,6 @@ theorem test {n : ℕ} {v : Fin n → ℤ} {x y : ℤ} :
     Antitone (Matrix.vecCons x (Matrix.vecCons y v)) ↔ y ≤ x ∧ Antitone (Matrix.vecCons y v) := by
   simp only [Nat.succ_eq_add_one, antitone_vecCons, Matrix.cons_val_zero]
 
--- #exit
-
 variable {W} in
 lemma atomRel_of_even_odd' (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (even : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m - 2) 2 0 = 0)
@@ -321,26 +319,37 @@ lemma atomRel_of_even_odd' (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R�
   · refine foo v neg hv ?_
     exact pow_mem two 3 |>.right (W 0) (by grind only [atomRel_same₂₃, atom, odd 1])
   replace hv : StrictAnti v := hm.strictAnti_of_injective hv
+  clear hm
+  replace parity : ∃ c : ℤ, ∀ i, v i % 2 = c := ⟨v 0 % 2, fun i ↦ parity _ _⟩
   induction hn' : 4 * v 0 + v 1 + v 2 + v 3 using @Int.strongRec 0 generalizing v with
   | lt n _ => simp_rw [Pi.le_def, Pi.zero_apply] at hn; grind
   | ge n _ ih =>
-    -- replace ih (v : Fin 4 → ℤ) := ih (4 * v 0 + v 1 + v 2 + v 3)
     replace ih (a b c d : ℤ) := (@ih (4 * a + b + c + d) · ![a, b, c, d])
-    simp [Pi.le_def, Pi.zero_apply, Fin.forall_fin_succ, antitone_vecCons] at *
-    replace hc : v 3 < v 2 ∧ v 2 < v 1 ∧ v 1 < v 0 := by
+    simp only [Pi.le_def, ↓Fin.forall_fin_succ, Pi.ofNat_apply, Fin.isValue, Fin.succ_zero_eq_one,
+      Fin.succ_one_eq_two, Fin.reduceSucc, IsEmpty.forall_iff, and_true] at hn
+    simp only [↓Fin.forall_fin_succ, Fin.isValue, Fin.succ_zero_eq_one, Fin.succ_one_eq_two,
+      Fin.reduceSucc, IsEmpty.forall_iff, and_true, exists_eq_left'] at parity
+    simp only [Pi.le_def, ↓Fin.forall_fin_succ, Pi.ofNat_apply, Fin.isValue, --Matrix.cons_val_zero,
+      Fin.succ_zero_eq_one, Fin.succ_one_eq_two, Matrix.cons_val,
+      Fin.reduceSucc, IsEmpty.forall_iff, and_true,
+      strictAnti_vecCons, Nat.reduceAdd, strictAnti_vecEmpty, exists_eq_left', forall_const,
+      and_imp] at ih
+    replace hc : v 1 < v 0 ∧ v 2 < v 1 ∧ v 3 < v 2 := by
       have : v = ![v 0, v 1, v 2, v 3] := (FinVec.etaExpand_eq v).symm
       rw [this] at hv
       simp at hv
       grind
     by_cases t : v 2 = v 0 % 2 + 2
     · wlog _ : v 0 = v 1 + 2
-      · grind (genLocal := 0) [=_ atomRel_neg₄, @atomRel_avg_sub R _ W (v 0) (v 1) (v 2) (v 3) <| by grind, = (ih)]
-      grind [odd (v 1 / 2), atomRel_neg₄ W (v 0) (v 1) (v 2) (v 3), atomRel_avg_sub W (by simp) |>.trans (even (v 0 / 2))]
+      · have := @atomRel_avg_sub R _ W (v 0) (v 1) (v 2) (v 3) <| by grind
+        grind [=_ atomRel_neg₄]
+      have := atomRel_avg_sub W (by simp) |>.trans (even (v 0 / 2))
+      grind [odd (v 1 / 2), atomRel_neg₄ W (v 0) (v 1) (v 2) (v 3)]
     · have ha : atom W (v 0 % 2 + 2) (v 0 % 2) ∈ R⁰ := by grind only [atom, mul_mem]
       apply ha.left _
-      grind [atom_same, atomRel_same₃₄,
-        atomRel.eq_def W (v 0) (v 1) (v 2), @atom_mul_atomRel R _ W (v 0) (v 1) (v 2) (max (v 3) <| (v 0) % 2 + 2)
-          (min (v 3) <| (v 0) % 2 + 2) ((v 0) % 2) 0 0 0 (-1) 0 1 <| by norm_num1]
+      have := @atom_mul_atomRel R _ W (v 0) (v 1) (v 2) (max (v 3) <| v 0 % 2 + 2)
+        (min (v 3) <| v 0 % 2 + 2) (v 0 % 2) 0 0 0 (-1) 0 1 <| by norm_num1
+      grind [atom_same, atomRel_same₃₄, atomRel.eq_def W (v 0) (v 1) (v 2)]
 
 variable {W} in
 lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
@@ -370,8 +379,6 @@ lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰
     wlog _ : a = b + 2
     · grind (genLocal := 0) [=_ atomRel_neg₄, @atomRel_avg_sub R _ W a b c d <| by grind, = (ih)]
     grind [odd (b / 2), atomRel_neg₄ W a b c d, atomRel_avg_sub W (by simp) |>.trans (even (a / 2))]
-
-#exit
 
 lemma map_atomRel (a b c d : ℤ) : f (atomRel W a b c d) = atomRel (f ∘ W) a b c d := by
   simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
