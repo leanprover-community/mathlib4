@@ -41,9 +41,11 @@ def toHom (f : End G) : G ⟶ G := f
 
 open AddMon End
 
+/-- The zero homomorphism in `End G` for an additive commutative monoid object `G : AddMon C` -/
 scoped instance : Zero (End G) where
   zero := ((0 : G ⟶ G) : End G)
 
+/-- The addition in `End G` for a additive commutative monoid object `G : AddMon C` -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g :=  by exact (toHom f) + (toHom g)
 
@@ -62,7 +64,7 @@ lemma toHom_zero : toHom (0 : End G) = 0 := rfl
 lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rfl
 
 
-/- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
+/-- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
 an additive commutative monoid structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G) where
   add_assoc f g h := by
@@ -79,7 +81,7 @@ scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G
     simp only [toHom_eq, toHom_add]
     exact add_comm (toHom f) (toHom g)
 
-/- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
+/-- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
 an semiring structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
   zero_add := zero_add
@@ -122,9 +124,11 @@ def toHom (f : End G) : G ⟶ G := f
 
 open AddGrp End
 
+/-- The zero homomorphism in `End G` for an additive commutative group object `G : GrpMon C` -/
 scoped instance : Zero (End G) where
   zero := ((0 : G ⟶ G) : End G)
 
+/-- The addition in `End G` for a additive commutative group object `G : AddGrp C` -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g :=  by exact (toHom f) + (toHom g)
 
@@ -142,7 +146,7 @@ lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rf
 
 
 
-/- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
+/-- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
 an additive commutative group structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G) where
   add_assoc f g h := by
@@ -168,7 +172,7 @@ scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G)
     simp only [toHom_eq, toHom_add]
     exact add_comm (toHom f) (toHom g)
 
-/- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
+/-- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
 an ring structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
   zero_add := zero_add
