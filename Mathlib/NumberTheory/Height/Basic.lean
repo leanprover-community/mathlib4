@@ -121,7 +121,7 @@ lemma mulHeight₁_eq (x : K) :
 
 @[simp]
 lemma mulHeight₁_zero : mulHeight₁ (0 : K) = 1 := by
-  simp [mulHeight₁_eq]
+  simp [mulHeight₁_eq, sup_of_le_right]
 
 @[simp]
 lemma mulHeight₁_one : mulHeight₁ (1 : K) = 1 := by
@@ -329,7 +329,7 @@ private lemma hasFiniteMulSupport_iSup_nonarchAbsVal {x : ι → K} (hx : x ≠ 
 private lemma hasFiniteMulSupport_max_nonarchAbsVal (x : K) :
     (fun v : nonarchAbsVal ↦ v.val x ⊔ 1).HasFiniteMulSupport := by
   rcases eq_or_ne x 0 with rfl | hx
-  · simp [HasFiniteMulSupport]
+  · simp [HasFiniteMulSupport, sup_of_le_right]
   fun_prop
 
 /-- The multiplicative height of a tuple does not change under scaling. -/

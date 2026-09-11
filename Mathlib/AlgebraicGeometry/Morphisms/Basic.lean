@@ -184,7 +184,7 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   apply (⨆ i, U i).ι.image_injective
   dsimp
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
-  simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
+  simp [Scheme.Hom.image_preimage_eq_opensRange_inf, inf_of_le_right (le_iSup U _)]
 
 lemma of_forall_exists_morphismRestrict (H : ∀ x, ∃ U : Y.Opens, x ∈ U ∧ P (f ∣_ U)) : P f := by
   choose U hxU hU using H

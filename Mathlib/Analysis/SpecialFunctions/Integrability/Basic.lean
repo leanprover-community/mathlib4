@@ -243,7 +243,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     apply intervalIntegrable_deriv_of_nonneg (g := fun x ↦ -(x * log x - x))
     · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
     · intro s ⟨hs, _⟩
-      norm_num at *
+      norm_num [min_eq_left, max_eq_right] at *
       simpa using! (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       grind [Pi.neg_apply, log_nonpos_iff]

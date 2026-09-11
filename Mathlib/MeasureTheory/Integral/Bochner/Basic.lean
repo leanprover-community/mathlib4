@@ -561,7 +561,7 @@ theorem tendsto_integral_norm_approxOn_sub
 theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf : Integrable f μ) :
     ∫ a, f a ∂μ = ∫ a, (Real.toNNReal (f a) : ℝ) ∂μ - ∫ a, (Real.toNNReal (-f a) : ℝ) ∂μ := by
   rw [← integral_sub hf.real_toNNReal]
-  · simp
+  · simp [Real.coe_toNNReal']
   · exact hf.neg.real_toNNReal
 
 theorem integral_abs_eq_two_mul_integral_posPart_sub_integral {f : α → ℝ} (hf : Integrable f μ) :

@@ -163,7 +163,7 @@ theorem lift_injective : Injective lift.{u, v} :=
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
   lift_injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u} a ≤ lift.{u} b ↔ a ≤ b :=
   liftInitialSeg.le_iff_le
 

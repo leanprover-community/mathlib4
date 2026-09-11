@@ -657,7 +657,7 @@ theorem nnnorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnnorm = NNNorm.nnnorm ∘ �
 theorem self_eq_nnrealPart_sub_nnrealPart_neg (f : α →ᵇ ℝ) :
     ⇑f = (↑) ∘ f.nnrealPart - (↑) ∘ (-f).nnrealPart := by
   funext x
-  dsimp
+  dsimp [Real.coe_toNNReal']
   simp only [max_zero_sub_max_neg_zero_eq_self]
 
 /-- Express the absolute value of a bounded continuous function in terms of its
@@ -665,7 +665,7 @@ positive and negative parts. -/
 theorem abs_self_eq_nnrealPart_add_nnrealPart_neg (f : α →ᵇ ℝ) :
     abs ∘ ⇑f = (↑) ∘ f.nnrealPart + (↑) ∘ (-f).nnrealPart := by
   funext x
-  dsimp
+  dsimp [Real.coe_toNNReal']
   simp only [max_zero_add_max_neg_zero_eq_abs_self]
 
 end NonnegativePart

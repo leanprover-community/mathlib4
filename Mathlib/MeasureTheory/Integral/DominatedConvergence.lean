@@ -463,7 +463,7 @@ theorem continuousOn_primitive_interval' (h_int : IntervalIntegrable f μ b₁ b
     (ha : a ∈ [[b₁, b₂]]) : ContinuousOn (fun b => ∫ x in a..b, f x ∂μ) [[b₁, b₂]] := fun _ _ ↦ by
   refine continuousWithinAt_primitive (measure_singleton _) ?_
   rw [min_eq_right ha.1, max_eq_right ha.2]
-  simpa [intervalIntegrable_iff, uIoc] using h_int
+  grind [intervalIntegrable_iff, uIoc]
 
 theorem continuousOn_primitive_interval (h_int : IntegrableOn f (uIcc a b) μ) :
     ContinuousOn (fun x => ∫ t in a..x, f t ∂μ) (uIcc a b) :=
@@ -648,9 +648,10 @@ theorem continuousOn_Ici_primitive_Ioi [NullSingletonClass μ] {a₀ : ℝ}
       intro b hb
       simp [← integral_Ioi_sub_Ioi hf hb.1]
     have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a₀ a) a :=
-      continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
+      continuousWithinAt_primitive (measure_singleton a) (by simpa [max_eq_right ha])
     exact (continuousWithinAt_const.sub h_cwa).congr h_split (h_split a (right_mem_Icc.2 ha))
-  · simpa [ha] using (hf.mono_set (Ioi_subset_Ioi ha)).continuousWithinAt_Ici_primitive_Ioi
+  · simpa [max_eq_right ha]
+      using (hf.mono_set (Ioi_subset_Ioi ha)).continuousWithinAt_Ici_primitive_Ioi
 
 theorem continuousWithinAt_Iic_primitive_Iio {a₀ : ℝ} (hf : IntegrableOn f (Iio a₀) μ) :
     ContinuousWithinAt (fun b ↦ ∫ x in Iio b, f x ∂μ) (Iic a₀) a₀ := by
@@ -675,7 +676,8 @@ theorem continuousOn_Iic_primitive_Iio [NullSingletonClass μ] {a₀ : ℝ}
   intro a (ha : a ≤ a₀)
   rw [continuousWithinAt_iff_continuous_left_right]
   constructor
-  · simpa [ha] using (hf.mono_set (Iio_subset_Iio ha)).continuousWithinAt_Iic_primitive_Iio
+  · simpa [min_eq_right ha]
+      using (hf.mono_set (Iio_subset_Iio ha)).continuousWithinAt_Iic_primitive_Iio
   · rw [Iic_inter_Ici]
     have h_int : IntervalIntegrable f μ a a₀ :=
       (intervalIntegrable_iff_integrableOn_Ico_of_le ha).2 <| hf.mono_set Ico_subset_Iio_self
@@ -684,7 +686,7 @@ theorem continuousOn_Iic_primitive_Iio [NullSingletonClass μ] {a₀ : ℝ}
       intro b hb
       simp [integral_symm b a₀, ← integral_Iio_sub_Iio' hf (hf.mono_set (Iio_subset_Iio hb.2))]
     have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a a₀) a :=
-      continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
+      continuousWithinAt_primitive (measure_singleton a) (by simpa [min_eq_right ha])
     exact (continuousWithinAt_const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
 
 theorem continuousOn_Ici_primitive_Ici [NullSingletonClass μ] {a₀ : ℝ}

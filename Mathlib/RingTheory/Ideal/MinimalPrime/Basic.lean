@@ -180,11 +180,12 @@ lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.
     p ∈ (I ⊔ J).minimalPrimes := by
   refine ⟨⟨‹_›, ?_⟩, fun q ⟨_, hq⟩ hqp ↦ ?_⟩
   · rw [sup_le_iff]
-    refine ⟨hle, by simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.le⟩
+    refine ⟨hle, ?_⟩
+    simpa [sup_of_le_right, hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.le
   · rw [sup_le_iff] at hq
     have h2 : p.map (Quotient.mk I) ≤ q.map (Quotient.mk I) :=
       h.2 ⟨isPrime_map_quotientMk_of_isPrime hq.1, map_mono hq.2⟩ (map_mono hqp)
-    simpa [comap_map_quotientMk, hq.1, sup_le_iff] using comap_mono (f := Ideal.Quotient.mk I) h2
+    simpa [sup_of_le_right, hq.1] using comap_mono (f := Ideal.Quotient.mk I) h2
 
 variable {S : Type*} [CommRing S] [Algebra R S]
 
@@ -211,6 +212,7 @@ lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
         q.map (Ideal.Quotient.mk (p.map (algebraMap R S))) :=
       hJ.2 ⟨Ideal.isPrime_map_quotientMk_of_isPrime h1, Ideal.map_mono hleq.2⟩
         (Ideal.map_mono hqle)
-    simpa [h1] using Ideal.comap_mono (f := Ideal.Quotient.mk (p.map (algebraMap R S))) h2
+    simpa [sup_of_le_right, h1]
+      using Ideal.comap_mono (f := Ideal.Quotient.mk (p.map (algebraMap R S))) h2
 
 end

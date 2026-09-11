@@ -687,8 +687,8 @@ theorem meromorphicOrderAt_add_of_ne
     (h : meromorphicOrderAt f₁ x ≠ meromorphicOrderAt f₂ x) :
     meromorphicOrderAt (f₁ + f₂) x = min (meromorphicOrderAt f₁ x) (meromorphicOrderAt f₂ x) := by
   rcases lt_or_lt_iff_ne.mpr h with h | h
-  · simpa [h.le] using meromorphicOrderAt_add_eq_left_of_lt hf₂ h
-  · simpa [h.le] using meromorphicOrderAt_add_eq_right_of_lt hf₁ h
+  · rw [meromorphicOrderAt_add_eq_left_of_lt hf₂ h, inf_of_le_left h.le]
+  · rw [meromorphicOrderAt_add_eq_right_of_lt hf₁ h, inf_of_le_right h.le]
 
 /-!
 ## Level Sets of the Order Function

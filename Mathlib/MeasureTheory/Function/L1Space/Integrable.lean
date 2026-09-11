@@ -744,7 +744,7 @@ theorem Integrable.real_toNNReal {f : α → ℝ} (hf : Integrable f μ) :
   refine lt_of_le_of_lt ?_ ((hasFiniteIntegral_iff_norm _).1 hf.hasFiniteIntegral)
   apply lintegral_mono
   intro x
-  simp [abs_le, le_abs_self]
+  simp [Real.coe_toNNReal', abs_le, le_abs_self]
 
 theorem ofReal_toReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < ∞) :
     (fun x => ENNReal.ofReal (f x).toReal) =ᵐ[μ] f := by

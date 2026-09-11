@@ -327,7 +327,7 @@ theorem clusterPt_iff_lift'_closure' {F : Filter X} :
   rw [clusterPt_iff_lift'_closure, inf_comm]
   constructor
   · intro h
-    simp [h, pure_neBot]
+    simp [inf_of_le_left h, pure_neBot]
   · intro h U hU
     simp_rw [← forall_mem_nonempty_iff_neBot, mem_inf_iff] at h
     simpa using h ({x} ∩ U) ⟨{x}, by simp, U, hU, rfl⟩

@@ -133,7 +133,7 @@ lemma nnnorm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖₊ ≤ ‖x‖₊ := by
   induction n with
   | zero => simp
-  | succ n hn => simpa [pow_add, hn] using nnnorm_mul_le_max (x ^ n) x
+  | succ n hn => grw [pow_add, nnnorm_mul_le_max, hn, pow_one, max_self]
 
 @[to_additive]
 lemma norm_pow_le (x : S) (n : ℕ) :

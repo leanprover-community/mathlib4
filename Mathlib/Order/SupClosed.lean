@@ -115,9 +115,9 @@ lemma SupClosed.insert_upperBounds {s : Set α} {a : α} (hs : SupClosed s) (ha 
 @[to_dual]
 lemma SupClosed.insert_lowerBounds {s : Set α} {a : α} (h : SupClosed s) (ha : a ∈ lowerBounds s) :
     SupClosed (insert a s) := by
-  rw [SupClosed]
-  have ha' : ∀ b ∈ s, a ≤ b := fun _ a ↦ ha a
-  aesop
+  unfold SupClosed at h ⊢
+  rw [mem_lowerBounds] at ha
+  simp +contextual [h, ha, sup_of_le_left, sup_of_le_right]
 
 end Set
 
@@ -211,7 +211,7 @@ section LinearOrder
 variable [LinearOrder α]
 
 @[to_dual (attr := simp)] protected lemma LinearOrder.supClosed (s : Set α) : SupClosed s :=
-  fun a ha b hb ↦ by cases le_total a b <;> simp [*]
+  fun a ha b hb ↦ by grind
 
 @[simp] protected lemma LinearOrder.isSublattice (s : Set α) : IsSublattice s :=
   ⟨LinearOrder.supClosed _, LinearOrder.infClosed _⟩

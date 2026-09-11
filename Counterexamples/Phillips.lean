@@ -543,7 +543,7 @@ theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ �
 theorem integral_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∫ x in Icc 0 1, φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   rw [← integral_congr_ae (comp_ae_eq_const Hcont φ)]
-  simp
+  simp [max_eq_left]
 
 /-!
 The next few statements show that the function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` takes its
@@ -580,7 +580,7 @@ theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
   simp only [this, map_zero] at h
   specialize h (volume.restrict (Icc (0 : ℝ) 1)).extensionToBoundedFunctions
   simp_rw [toFunctions_toMeasure_continuousPart _ _ MeasurableSet.univ] at h
-  simp at h
+  norm_num at h
 
 end Phillips1940
 

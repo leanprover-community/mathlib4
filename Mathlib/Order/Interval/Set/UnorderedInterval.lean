@@ -249,11 +249,11 @@ scoped[Interval] notation "Ι" => Set.uIoc
 
 open scoped Interval
 
-@[simp, grind =] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [uIoc, h]
-@[simp, grind =] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by simp [uIoc, h]
+@[simp, grind =] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by grind [uIoc]
+@[simp, grind =] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by grind [uIoc]
 
 lemma uIoc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
-  cases le_total a b <;> simp [uIoc, *]
+  grind [uIoc]
 
 lemma mem_uIoc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
   rw [uIoc_eq_union, mem_union, mem_Ioc, mem_Ioc]

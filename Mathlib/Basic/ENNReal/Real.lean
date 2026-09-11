@@ -262,7 +262,7 @@ lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
 theorem ofReal_le_iff_le_toReal {a : ℝ} {b : ℝ≥0∞} (hb : b ≠ ∞) :
     ENNReal.ofReal a ≤ b ↔ a ≤ ENNReal.toReal b := by
   lift b to ℝ≥0 using hb
-  simpa [ENNReal.ofReal, ENNReal.toReal] using Real.toNNReal_le_iff_le_coe
+  simp
 
 theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : b ≠ ∞) :
     ENNReal.ofReal a < b ↔ a < ENNReal.toReal b := by

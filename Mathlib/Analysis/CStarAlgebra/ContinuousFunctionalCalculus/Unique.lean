@@ -76,14 +76,14 @@ lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)) :
     (f + g).toNNReal + (-f).toNNReal + (-g).toNNReal =
       (-(f + g)).toNNReal + f.toNNReal + g.toNNReal := by
   ext x
-  simp [max_neg_zero, -neg_add_rev]
+  simp [Real.coe_toNNReal', max_neg_zero, -neg_add_rev]
   abel
 
 lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)) :
     (f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal =
       (-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal := by
   ext x
-  simp [max_neg_zero, add_mul, mul_add]
+  simp [Real.coe_toNNReal', max_neg_zero, add_mul, mul_add]
   abel
 
 @[simp]
@@ -250,8 +250,8 @@ lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
 lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r • f.toNNReal := by
   ext x
   by_cases! h : 0 ≤ f x
-  · simpa [max_eq_left h, NNReal.smul_def] using mul_nonneg r.coe_nonneg h
-  · simpa [max_eq_right h.le, NNReal.smul_def]
+  · simpa [Real.coe_toNNReal', max_eq_left h, NNReal.smul_def] using mul_nonneg r.coe_nonneg h
+  · simpa [Real.coe_toNNReal', max_eq_right h.le, NNReal.smul_def]
       using mul_nonpos_of_nonneg_of_nonpos r.coe_nonneg h.le
 
 @[simp]

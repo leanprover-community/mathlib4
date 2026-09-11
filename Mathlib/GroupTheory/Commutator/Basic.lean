@@ -360,11 +360,11 @@ theorem commutator_sup_right (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ 
   have hHNM : ⁅H, N⁆ ≤ M := commutator_le_of_le hHM hNM
   have hKNM : ⁅K, N⁆ ≤ M := commutator_le_of_le hKM hNM
   suffices (⁅H.subgroupOf M, N.subgroupOf M⁆ ⊔ ⁅K.subgroupOf M, N.subgroupOf M⁆).Normal by
-    simpa [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM] using
+    simpa [← map_subtype_inj, map_sup, map_commutator, inf_of_le_left, hHM, hKM, hNM] using
       commutator_sup_right_of_normal (H.subgroupOf M) (K.subgroupOf M) (N.subgroupOf M)
   suffices M ≤ normalizer (⁅H, N⁆ ⊔ ⁅K, N⁆ : Subgroup G) by
     convert Subgroup.normal_subgroupOf_of_le_normalizer this
-    simp [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM, hHNM, hKNM]
+    simp [← map_subtype_inj, map_sup, map_commutator, inf_of_le_left, hHM, hKM, hNM, hHNM, hKNM]
   have hHKN : ⁅H, N⁆ ⊔ ⁅K, N⁆ ≤ N := sup_le (commutator_le_right H N) (commutator_le_right K N)
   refine sup_le (sup_le ?_ ?_) ?_
   · grw [le_normalizer_iff_commutator_le_right, hHKN, ← le_sup_left]
