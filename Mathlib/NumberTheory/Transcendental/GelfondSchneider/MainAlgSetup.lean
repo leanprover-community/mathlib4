@@ -18,8 +18,7 @@ They are used when bounding the order of vanishing of the auxiliary function.
 ## Main results
 
 * `q_sq_eq_two_mn`: `q ^ 2 = 2 * m * n`.
-* `m_mul_n_pos`: `0 < m * n`.
-* `m_mul_n_lt_q_mul_q`: `m * n < q * q`, so the linear system is underdetermined.
+* `q_sq_le_two_mn`, `q_le_two_mn`: `q ^ 2 ≤ 2 * m * n` and `q ≤ 2 * m * n`.
 
 ## References
 * Loo-Keng Hua, Introduction to Number Theory, Springer, 1982. Chapter 17.9.
@@ -37,16 +36,15 @@ namespace GelfondSchneider
 variable {K : Type*} [Field K] [NumberField K] (q : ℕ) (hq0 : 0 < q) (h2mq : 2 * m K ∣ q ^ 2)
 
 include h2mq in
-lemma q_sq_eq_two_mn : q ^ 2 = 2 * m K * n K q := Eq.symm (Nat.mul_div_cancel' h2mq)
+lemma q_sq_eq_two_mn : q ^ 2 = 2 * m K * n K q :=
+  ((mul_assoc 2 (m K) (n K q)).trans (two_mul_m_mul_n_eq_sq q h2mq)).symm
 
-include hq0 h2mq in
-lemma m_mul_n_pos : 0 < m K * n K q :=
-  Nat.mul_pos (one_le_m K) <| by simpa [n, Nat.div_pos_iff] using
-    ⟨Nat.zero_lt_succ (2 * h K + 1), Nat.le_of_dvd (Nat.pow_pos hq0) h2mq⟩
+include h2mq in
+lemma q_sq_le_two_mn : q ^ 2 ≤ 2 * m K * n K q := by
+  simpa using le_of_eq (q_sq_eq_two_mn q h2mq)
 
-include hq0 h2mq in
-lemma m_mul_n_lt_q_mul_q : m K * n K q < q * q :=
-  lt_of_lt_of_eq (by grind [m_mul_n_pos q hq0 h2mq]) <|
-  (q_sq_eq_two_mn q h2mq).symm.trans (pow_two q)
+include h2mq in
+lemma q_le_two_mn : q ≤ 2 * m K * n K q :=
+  le_trans (Nat.le_pow Nat.zero_lt_two) (by simpa using le_of_eq (q_sq_eq_two_mn q h2mq))
 
 end GelfondSchneider
