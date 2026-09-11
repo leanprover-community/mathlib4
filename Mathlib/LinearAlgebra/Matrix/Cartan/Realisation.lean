@@ -574,7 +574,7 @@ namespace Matrix.IsFiniteCartan
 
 variable {n R M N} {A : Matrix n n ℤ} (hA : A.IsFiniteCartan)
 
-/-- If Cartan matrix is invertible in `R` then it has a canonical realisation. -/
+/-- If a Cartan matrix is invertible in `R` then it has a canonical realisation. -/
 def toRealisation (hAI : Invertible <| A.map (Int.cast : ℤ → R)) :
     CartanMatrix.Realisation n R (n → R) (n → R) where
   matrix := A
