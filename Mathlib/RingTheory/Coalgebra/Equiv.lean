@@ -89,6 +89,7 @@ theorem toEquiv_inj {e₁ e₂ : A ≃ₗc[R] B} : e₁.toEquiv = e₂.toEquiv �
 theorem toCoalgHom_injective : Function.Injective (toCoalgHom : (A ≃ₗc[R] B) → A →ₗc[R] B) :=
   fun _ _ H => toEquiv_injective <| Equiv.ext <| CoalgHom.congr_fun H
 
+@[macro_inline]
 instance : EquivLike (A ≃ₗc[R] B) A B where
   coe e := e.toFun
   inv := CoalgEquiv.invFun
@@ -96,6 +97,7 @@ instance : EquivLike (A ≃ₗc[R] B) A B where
   left_inv := CoalgEquiv.left_inv
   right_inv := CoalgEquiv.right_inv
 
+@[macro_inline]
 instance : FunLike (A ≃ₗc[R] B) A B where
   coe := DFunLike.coe
   coe_injective := DFunLike.coe_injective

@@ -33,6 +33,7 @@ namespace AffineMap
 variable {X Y Z T : Type*} [ConvexSpace R X] [ConvexSpace R Y] [ConvexSpace R Z] [ConvexSpace R T]
   {f g : ConvexSpace.AffineMap R X Y}
 
+@[macro_inline]
 instance : FunLike (ConvexSpace.AffineMap R X Y) X Y where
   coe := ConvexSpace.AffineMap.toFun
   coe_injective := fun ⟨f, _⟩ ⟨g, _⟩ h ↦ by simpa
