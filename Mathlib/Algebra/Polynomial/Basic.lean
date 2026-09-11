@@ -97,9 +97,11 @@ defeq `R[ℕ]`. -/
 @[deprecated id (since := "2026-07-18")]
 def ofFinsupp : R[ℕ] → R[X] := id
 
+@[deprecated AddMonoidAlgebra.forall (since := "2026-09-11")]
 theorem forall_iff_forall_finsupp (P : R[X] → Prop) : (∀ p, P p) ↔ ∀ q, P ⟨q⟩ :=
   AddMonoidAlgebra.forall
 
+@[deprecated AddMonoidAlgebra.exists (since := "2026-09-11")]
 theorem exists_iff_exists_finsupp (P : R[X] → Prop) : (∃ p, P p) ↔ ∃ q, P ⟨q⟩ :=
   AddMonoidAlgebra.exists
 
@@ -462,15 +464,6 @@ theorem X_pow_mul_monomial (k n : ℕ) (r : R) : X ^ k * monomial n r = monomial
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem coeff_ofFinsupp (p) : coeff (ofFinsupp p : R[X]) = p.coeff := rfl
 
-@[deprecated AddMonoidAlgebra.coeff_ofCoeff (since := "2026-09-03")]
-protected theorem coeff_ofCoeff (q : ℕ →₀ R) : coeff (.ofCoeff q : R[X]) = q := rfl
-
-@[deprecated AddMonoidAlgebra.coeff_injective (since := "2026-09-03")]
-protected theorem coeff_injective : Injective (coeff : R[X] → ℕ →₀ R) := coeff_injective
-
-@[deprecated AddMonoidAlgebra.coeff_inj (since := "2026-09-03")]
-protected theorem coeff_inj : p.coeff = q.coeff ↔ p = q := coeff_inj
-
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp.coeff i = f.coeff i := rfl
 
@@ -491,9 +484,6 @@ theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
 theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
   simp_rw [eq_comm (a := n) (b := 0)]
   exact coeff_monomial
-
-@[deprecated AddMonoidAlgebra.coeff_one_zero (since := "2026-09-03")]
-protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := coeff_one_zero
 
 @[simp]
 theorem coeff_X_one : coeff (X : R[X]) 1 = 1 :=
@@ -844,53 +834,39 @@ protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
   Polynomial.induction_on p (monomial 0) add fun n a _h ↦
     by rw [C_mul_X_pow_eq_monomial]; exact monomial _ _
 
-/-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
-irreducible_def erase (n : ℕ) (p : R[X]) : R[X] := AddMonoidAlgebra.erase n p
-
 @[deprecated "Now a tautology" (since := "2026-07-18")]
-theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := by
-  simp [erase_def, toFinsupp]
+theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := rfl
 
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
-    (ofFinsupp (p.erase n) : R[X]) = (ofFinsupp p : R[X]).erase n := by
-  simp [erase_def, ofFinsupp]
+    (ofFinsupp (p.erase n) : R[X]) = (ofFinsupp p : R[X]).erase n := rfl
 
 @[simp]
 theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).erase n := by
-  simp [support, erase_def, Finsupp.support_erase]
+  simp [support, Finsupp.support_erase]
 
-theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p := by
-  simp [monomial, erase]
+theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p :=
+  AddMonoidAlgebra.single_add_erase n p
 
 theorem coeff_erase (p : R[X]) (n i : ℕ) :
     (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
-  rcases p with ⟨⟩
-  simp only [erase_def]
-  exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
+  simp [Finsupp.erase_apply]
 
 @[simp]
-theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 := by ext; simp [coeff_erase]
+theorem erase_monomial {n : ℕ} {a : R} : (monomial n a).erase n = 0 :=
+  AddMonoidAlgebra.erase_single n a
 
 @[simp]
-theorem erase_monomial {n : ℕ} {a : R} : erase n (monomial n a) = 0 := by simp [erase_def, monomial]
-
-@[simp]
-theorem erase_same (p : R[X]) (n : ℕ) : coeff (p.erase n) n = 0 := by simp [coeff_erase]
+theorem erase_same (p : R[X]) (n : ℕ) : coeff (p.erase n) n = 0 := by simp
 
 @[simp]
 theorem erase_ne (p : R[X]) {n i : ℕ} (h : i ≠ n) : coeff (p.erase n) i = coeff p i := by
-  simp [coeff_erase, h]
+  simp [h]
 
 section Update
 
-/-- Replace the coefficient of a `p : R[X]` at a given degree `n : ℕ`
-by a given value `a : R`. If `a = 0`, this is equal to `p.erase n`
-If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
-def update (p : R[X]) (n : ℕ) (a : R) : R[X] := AddMonoidAlgebra.update n a p
-
 theorem coeff_update (p : R[X]) (n : ℕ) (a : R) :
-    (p.update n a).coeff = Function.update p.coeff n a := by simp [update]
+    (p.update n a).coeff = Function.update p.coeff n a := by simp
 
 theorem coeff_update_apply (p : R[X]) (n : ℕ) (a : R) (i : ℕ) :
     (p.update n a).coeff i = if i = n then a else p.coeff i := by
@@ -910,7 +886,7 @@ theorem update_zero_eq_erase (p : R[X]) (n : ℕ) : p.update n 0 = p.erase n := 
 
 theorem support_update (p : R[X]) (n : ℕ) (a : R) [Decidable (a = 0)] :
     support (p.update n a) = if a = 0 then p.support.erase n else insert n p.support := by
-  classical simp [support, update, Finsupp.support_update]
+  classical simp [support, Finsupp.support_update]
 
 theorem support_update_zero (p : R[X]) (n : ℕ) : support (p.update n 0) = p.support.erase n := by
   rw [update_zero_eq_erase, support_erase]
