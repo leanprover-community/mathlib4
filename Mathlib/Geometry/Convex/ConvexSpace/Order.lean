@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Order.UpperLower.CompleteLattice
 
 /-!
 # Ordered convex spaces
@@ -16,191 +17,293 @@ combinations is monotone.
 
 ## Main declarations
 
-* `Convexity.StdSimplex.upperMass`: The upper mass function of a distribution `w` over a partial
-  order, namely the map sending `x` to the total weight `w` puts on `{y | x ≤ y}`.
+* `Convexity.StdSimplex.mass`: The mass function of a distribution `w`, namely the map sending a
+  set `s` to the total weight that `w` puts on `s`.
 * `Convexity.StdSimplex.instPartialOrder`: The stochastic dominance order on `StdSimplex R X`,
-  namely the order induced by the pointwise order on upper mass functions.
+  namely `w₁ ≤ w₂` iff `w₁` puts less mass than `w₂` on every upper set.
 * `Convexity.IsOrderedConvexSpace`: Typeclass for a convex space over a partial order in which
   `sConvexComb` is monotone for stochastic dominance.
 -/
 
-open Finsupp
+open Finsupp Set
 
 public section
 
 namespace Convexity
 variable {I R X : Type*}
 
+section ConvexSpace
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
+
+instance : ConvexSpace R Xᵒᵈ := ‹ConvexSpace R X›
+
+@[simp]
+lemma toDual_sConvexComb (w : StdSimplex R X) :
+    OrderDual.toDual w.sConvexComb = w.iConvexComb OrderDual.toDual :=
+  congr(sConvexComb $(StdSimplex.map_id w)).symm
+
+@[simp]
+lemma ofDual_sConvexComb (w : StdSimplex R Xᵒᵈ) :
+    OrderDual.ofDual w.sConvexComb = w.iConvexComb OrderDual.ofDual :=
+  congr(sConvexComb $(StdSimplex.map_id w)).symm
+
+@[fun_prop]
+lemma isAffineMap_toDual : IsAffineMap R (OrderDual.toDual : X → Xᵒᵈ) where
+  map_sConvexComb := toDual_sConvexComb
+
+@[fun_prop]
+lemma isAffineMap_ofDual : IsAffineMap R (OrderDual.ofDual : Xᵒᵈ → X) where
+  map_sConvexComb := ofDual_sConvexComb
+
+@[simp]
+lemma toDual_iConvexComb (w : StdSimplex R I) (f : I → X) :
+    OrderDual.toDual (w.iConvexComb f) = w.iConvexComb (fun i ↦ OrderDual.toDual (f i)) :=
+  isAffineMap_toDual.map_iConvexComb ..
+
+@[simp]
+lemma ofDual_iConvexComb (w : StdSimplex R I) (f : I → Xᵒᵈ) :
+    OrderDual.ofDual (w.iConvexComb f) = w.iConvexComb (fun i ↦ OrderDual.ofDual (f i)) :=
+  isAffineMap_ofDual.map_iConvexComb ..
+
+@[simp]
+lemma toDual_convexCombPair (a b : R) (ha hb hab) (x y : X) :
+    OrderDual.toDual (convexCombPair a b ha hb hab x y) =
+      convexCombPair a b ha hb hab (OrderDual.toDual x) (OrderDual.toDual y) :=
+  isAffineMap_toDual.map_convexCombPair ..
+
+@[simp]
+lemma ofDual_convexCombPair (a b : R) (ha hb hab) (x y : Xᵒᵈ) :
+    OrderDual.ofDual (convexCombPair a b ha hb hab x y) =
+      convexCombPair a b ha hb hab (OrderDual.ofDual x) (OrderDual.ofDual y) :=
+  isAffineMap_ofDual.map_convexCombPair ..
+
+end ConvexSpace
+
 namespace StdSimplex
-section PartialOrder
-variable [Semiring R] [PartialOrder R] [PartialOrder X] {w w₁ w₂ : StdSimplex R X} {x y : X}
+section Mass
+variable [Semiring R] [PartialOrder R] {w w₁ w₂ : StdSimplex R X} {s t : Set X}
 
 variable (w) in
-/-- The upper mass function of a distribution `w` over a partial order: `w.upperMass x` is the
-total weight that `w` puts on the up-set of `x`.
+/-- The mass function of a distribution `w`: `w.mass s` is the total weight that `w` puts on `s`. -/
+noncomputable def mass (s : Set X) : R :=
+  open scoped Classical in (w.weights.filter (· ∈ s)).sum fun _x r ↦ r
 
-This is the (complementary) cumulative distribution function of `w`, and it determines `w`.
-See `StdSimplex.upperMass_injective`. -/
-noncomputable def upperMass (x : X) : R :=
-  open scoped Classical in (w.weights.filter (x ≤ ·)).sum fun _y r ↦ r
+lemma mass_eq_finsuppSum (w : StdSimplex R X) (s : Set X) [DecidablePred (· ∈ s)] :
+    w.mass s = (w.weights.filter (· ∈ s)).sum fun _x r ↦ r := by rw [mass]; congr!
 
-lemma upperMass_eq_finsuppSum [DecidableLE X] (w : StdSimplex R X) (x : X) :
-    w.upperMass x = (w.weights.filter (x ≤ ·)).sum fun _y r ↦ r := by rw [upperMass]; congr!
+lemma mass_eq_sum (w : StdSimplex R X) (s : Set X) [DecidablePred (· ∈ s)] :
+    w.mass s = ∑ x ∈ w.weights.support with x ∈ s, w.weights x := by
+  rw [mass_eq_finsuppSum, sum_filter_index, support_filter]
 
-lemma upperMass_eq_sum [DecidableLE X] (w : StdSimplex R X) (x : X) :
-    w.upperMass x = ∑ y ∈ w.weights.support with x ≤ y, w.weights y := by
-  rw [upperMass_eq_finsuppSum, sum_filter_index, support_filter]
+@[simp] lemma mass_empty (w : StdSimplex R X) : w.mass ∅ = 0 := by simp [mass_eq_sum]
 
-/-- If no point of the support of `w` lies strictly between `x` and `y`, then the mass `w` puts
-above `x` is the mass it puts on `x` plus the mass it puts above `y`. -/
-lemma upperMass_eq_weights_add_upperMass (hxy : x < y) (hm : ∀ z, w.weights z ≠ 0 → x < z → y ≤ z) :
-    w.upperMass x = w.weights x + w.upperMass y := by
+@[simp] lemma mass_univ (w : StdSimplex R X) : w.mass univ = 1 := by
+  simpa [mass_eq_sum, Finsupp.sum] using w.total
+
+lemma mass_union_of_disjoint (hst : Disjoint s t) (w : StdSimplex R X) :
+    w.mass (s ∪ t) = w.mass s + w.mass t := by
   classical
-  have : w.weights.filter (x ≤ ·) = .single x (w.weights x) + w.weights.filter (y ≤ ·) := by
-    ext z; simp [filter_apply]; grind [lt_of_le_of_ne]
-  simp [upperMass, this, sum_add_index']
+  simp only [mass_eq_sum, mem_union, Finset.filter_or]
+  grind [Finset.sum_union, Finset.disjoint_left]
 
-open scoped Classical in
-/-- The mass `w` puts above `x` is the mass it puts on `x` plus the mass it puts strictly above
-`x`. -/
-lemma upperMass_eq_weights_add_sum (w : StdSimplex R X) (x : X) :
-    w.upperMass x = w.weights x + ∑ y ∈ w.weights.support with x < y, w.weights y := by
-  have : w.weights.filter (x ≤ ·) = .single x (w.weights x) + w.weights.filter (x < ·) := by
-    ext z; simp [filter_apply]; grind [lt_of_le_of_ne]
-  simp [upperMass, this, sum_add_index', sum_filter_index]
+@[simp] lemma mass_singleton (w : StdSimplex R X) (x : X) : w.mass {x} = w.weights x := by
+  classical simp [mass_eq_sum, Finset.sum_filter, eq_comm]
 
-/-- If no point of the support of `w` lies strictly above `x`, then the mass `w` puts above `x` is
-exactly the mass it puts on `x`. -/
-lemma upperMass_eq_weights (hx : ∀ y, w.weights y ≠ 0 → ¬ x < y) : w.upperMass x = w.weights x := by
-  classical
-  have : w.weights.filter (x ≤ ·) = .single x (w.weights x) := by
-    ext y; simp [filter_apply]; grind [lt_of_le_of_ne]
-  rw [upperMass, this, sum_single_index rfl]
-
-@[simp] lemma upperMass_top [OrderTop X] (w : StdSimplex R X) : w.upperMass ⊤ = w.weights ⊤ :=
-  upperMass_eq_weights fun _ _ ↦ not_top_lt
+@[simp]
+lemma mass_add_mass_compl (w : StdSimplex R X) (s : Set X) : w.mass s + w.mass sᶜ = 1 := by
+  classical simpa [mass_eq_sum, Finset.sum_filter_add_sum_filter_not, Finsupp.sum] using w.total
 
 variable [IsStrictOrderedRing R]
 
-@[simp] lemma upperMass_nonneg (w : StdSimplex R X) (x : X) : 0 ≤ w.upperMass x := by
-  classical rw [upperMass_eq_sum]; exact Finset.sum_nonneg fun _ _ ↦ w.weights_nonneg _
+@[simp] lemma mass_nonneg (w : StdSimplex R X) (s : Set X) : 0 ≤ w.mass s := by
+  classical rw [mass_eq_sum]; exact Finset.sum_nonneg fun _ _ ↦ w.weights_nonneg _
 
-@[simp] lemma upperMass_single [DecidableLE X] (x y : X) :
-    (single x : StdSimplex R X).upperMass y = if y ≤ x then 1 else 0 := by
-  rw [upperMass_eq_sum, weights_single]; split <;> simp [Finset.filter_singleton, *]
+@[simp] lemma mass_single (x : X) (s : Set X) [Decidable (x ∈ s)] :
+    (single x : StdSimplex R X).mass s = if x ∈ s then 1 else 0 := by
+  classical rw [mass_eq_sum, weights_single]; split <;> simp [Finset.filter_singleton, *]
 
-omit [IsStrictOrderedRing R] in
-lemma upperMass_add_sum_not [DecidableLE X] (w : StdSimplex R X) (x : X) :
-    w.upperMass x + ∑ y ∈ w.weights.support with ¬ x ≤ y, w.weights y = 1 := by
-  rw [upperMass_eq_sum, Finset.sum_filter_add_sum_filter_not]
-  simpa [Finsupp.sum] using w.total
+@[simp] lemma mass_map (w : StdSimplex R I) (f : I → X) (s : Set X) :
+    (w.map f).mass s = w.mass (f ⁻¹' s) := by
+  classical simp [mass_eq_finsuppSum, sum_mapDomain_index]
 
-@[simp] lemma upperMass_le_one (w : StdSimplex R X) (x : X) : w.upperMass x ≤ 1 := by
+@[gcongr] lemma mass_mono (w : StdSimplex R X) (hst : s ⊆ t) : w.mass s ≤ w.mass t := by
+  classical rw [mass_eq_sum, mass_eq_sum]; gcongr; simp
+
+@[simp] lemma mass_le_one : w.mass s ≤ 1 := by
+  rw [← mass_add_mass_compl]; exact le_add_of_nonneg_right (mass_nonneg ..)
+
+lemma mass_eq_zero_iff : w.mass s = 0 ↔ ∀ x, w.weights x ≠ 0 → x ∉ s := by
   classical
-  rw [← upperMass_add_sum_not w x]
-  exact le_add_of_nonneg_right (Finset.sum_nonneg fun _ _ ↦ w.weights_nonneg _)
+  rw [mass_eq_sum, Finset.sum_eq_zero_iff_of_nonneg fun _ _ ↦ w.weights_nonneg _]
+  simp +contextual [Finset.mem_filter, not_imp_not, eq_comm]
+
+lemma mass_eq_one_iff : w.mass s = 1 ↔ ∀ x, w.weights x ≠ 0 → x ∈ s := by
+  rw [← w.mass_add_mass_compl s, left_eq_add, mass_eq_zero_iff]; simp
+
+@[simp]
+lemma mass_compl_le_mass_compl_iff : w₁.mass sᶜ ≤ w₂.mass sᶜ ↔ w₂.mass s ≤ w₁.mass s :=
+  le_iff_ge_of_add_eq_add <| by simp [add_comm]
+
+end Mass
+
+section PartialOrder
+variable [Semiring R] [PartialOrder R] [PartialOrder X] {w w₁ w₂ : StdSimplex R X} {s t : Set X}
+  {x y : X}
+
+/-- The mass that `w` puts above `x` is the mass it puts on `x` plus the mass it puts strictly
+above `x`. -/
+lemma mass_Ici_eq_weights_add_mass_Ioi (w : StdSimplex R X) (x : X) :
+    w.mass (Ici x) = w.weights x + w.mass (Ioi x) := by
+  rw [← mass_singleton, ← mass_union_of_disjoint]
+  · congr 1
+    ext y
+    simp [le_iff_lt_or_eq, or_comm]
+  · simp
+
+/-- If, on the support of `w`, lying in `s` is the same as lying above `x`, then the mass that `w`
+puts on `s` is the mass it puts above `x`. -/
+lemma mass_eq_mass_Ici (w : StdSimplex R X) (h : ∀ ⦃y⦄, w.weights y ≠ 0 → (y ∈ s ↔ x ≤ y)) :
+    w.mass s = w.mass (Ici x) := by
+  classical rw [mass_eq_sum, mass_eq_sum]; congr! 2 with y hy; exact h (mem_support_iff.1 hy)
+
+variable [IsStrictOrderedRing R]
 
 /-- `w` puts all of its mass above `x` exactly when its support lies above `x`. -/
-lemma upperMass_eq_one_iff : w.upperMass x = 1 ↔ ∀ y, w.weights y ≠ 0 → x ≤ y := by
-  classical
-  have h := upperMass_add_sum_not w x
-  refine ⟨fun h1 y hy ↦ ?_, fun hall ↦ ?_⟩
-  · rw [h1] at h
-    have hz := add_left_cancel (h.trans (add_zero 1).symm)
-    by_contra! hxy
-    exact hy <| (Finset.sum_eq_zero_iff_of_nonneg fun _ _ ↦ w.weights_nonneg _).1 hz y <| by
-      simp [hy, hxy]
-  · rwa [Finset.sum_eq_zero fun y ↦ by simp +contextual [hall], add_zero] at h
+lemma mass_Ici_eq_one_iff : w.mass (Ici x) = 1 ↔ ∀ y, w.weights y ≠ 0 → x ≤ y := mass_eq_one_iff
 
-/-- A distribution over a partial order is determined by its upper mass function. -/
-lemma upperMass_injective : (upperMass : StdSimplex R X → X → R).Injective := by
-  classical
-  rintro w₁ w₂ h
-  ext x
-  set S := w₁.weights.support ∪ w₂.weights.support with hS
-  -- The mass `w` puts above `x` is the mass it puts on `x` plus the mass it puts on the elements
-  -- of `S` strictly above `x`.
-  have key (w : StdSimplex R X) (hw : w.weights.support ⊆ S) (x : X) :
-      w.upperMass x = w.weights x + ∑ y ∈ S with x < y, w.weights y := by
-    rw [upperMass_eq_weights_add_sum]
-    congr 1
-    exact Finset.sum_subset (by gcongr) <| by simp_all
-  have key' (x : X) :
-      w₁.weights x + ∑ y ∈ S with x < y, w₁.weights y
-        = w₂.weights x + ∑ y ∈ S with x < y, w₂.weights y :=
-    (key w₁ Finset.subset_union_left x).symm.trans
-      ((congrFun h x).trans (key w₂ Finset.subset_union_right x))
-  -- We prove that `w₁` and `w₂` agree at `x` by induction on the number of elements of `S` lying
-  -- strictly above `x`.
-  have main n x (hx : Finset.card {y ∈ S | x < y} ≤ n) : w₁.weights x = w₂.weights x := by
-    induction n generalizing x with
-    | zero =>
-      have h₀ : {y ∈ S | x < y} = ∅ := Finset.card_eq_zero.1 (Nat.le_zero.1 hx)
-      simpa [h₀] using key' x
-    | succ n ih =>
-      have hsum : ∑ y ∈ S with x < y, w₁.weights y = ∑ y ∈ S with x < y, w₂.weights y := by
-        congr! 1 with y hy
-        refine ih y ?_
-        simp only [Finset.mem_filter] at hy
-        -- The elements of `S` strictly above `y` are strictly above `x`, but `y` isn't
-        have hss : {z ∈ S | y < z} ⊂ {z ∈ S | x < z} := by
-          refine (Finset.ssubset_iff_of_subset fun z hz ↦ ?_).2 ⟨y, by simp [hy.1, hy.2], by simp⟩
-          simp only [Finset.mem_filter] at hz ⊢
-          exact ⟨hz.1, hy.2.trans hz.2⟩
-        exact Nat.lt_succ_iff.1 <| (Finset.card_lt_card hss).trans_le hx
-      exact add_right_cancel (hsum ▸ key' x)
-  exact main _ x le_rfl
+/-- `w` puts all of its mass below `x` exactly when its support lies below `x`. -/
+lemma mass_Iic_eq_one_iff : w.mass (Iic x) = 1 ↔ ∀ y, w.weights y ≠ 0 → y ≤ x := mass_eq_one_iff
 
-/-- The standard simplex indexed by a partial order is partially ordered by stochastic dominance.
-`w₁ ≤ w₂` iff on each lower set the weight of `w₁` is less than that of `w₂`. -/
-noncomputable instance instPartialOrder : PartialOrder (StdSimplex R X) :=
-  .lift upperMass upperMass_injective
+/-- The standard simplex indexed by a partial order is partially ordered by **stochastic
+dominance**: `w₁ ≤ w₂` iff on each upper set the mass of `w₁` is at most that of `w₂`.
 
-lemma le_def : w₁ ≤ w₂ ↔ ∀ x, w₁.upperMass x ≤ w₂.upperMass x := .rfl
+Equivalently, `w₁ ≤ w₂` iff `w₂` puts at most as much mass as `w₁` on each down-set
+(`StdSimplex.le_iff_forall_isLowerSet`), which makes stochastic dominance self-dual. -/
+noncomputable instance instPartialOrder : PartialOrder (StdSimplex R X) where
+  le w₁ w₂ := ∀ ⦃s : Set X⦄, IsUpperSet s → w₁.mass s ≤ w₂.mass s
+  le_refl w s _ := le_rfl
+  le_trans w₁ w₂ w₃ h₁₂ h₂₃ s hs := (h₁₂ hs).trans (h₂₃ hs)
+  le_antisymm w₁ w₂ h₁₂ h₂₁ := by
+    have key {s : Set X} (hs : IsUpperSet s) : w₁.mass s = w₂.mass s := (h₁₂ hs).antisymm (h₂₁ hs)
+    ext x
+    have h := w₁.mass_Ici_eq_weights_add_mass_Ioi x
+    rw [key (isUpperSet_Ici x), key (isUpperSet_Ioi x),
+      w₂.mass_Ici_eq_weights_add_mass_Ioi x] at h
+    exact (add_right_cancel h).symm
 
-@[gcongr] alias ⟨upperMass_le_upperMass, _⟩ := le_def
+lemma le_iff_forall_isUpperSet :
+    w₁ ≤ w₂ ↔ ∀ ⦃s : Set X⦄, IsUpperSet s → w₁.mass s ≤ w₂.mass s := .rfl
+
+lemma le_iff_forall_isLowerSet :
+    w₁ ≤ w₂ ↔ ∀ ⦃s : Set X⦄, IsLowerSet s → w₂.mass s ≤ w₁.mass s :=
+  compl_surjective.forall.trans <| by simp
+
+@[gcongr]
+lemma mass_mono_of_isUpperSet (hw : w₁ ≤ w₂) (hst : s ⊆ t) (ht : IsUpperSet t) :
+    w₁.mass s ≤ w₂.mass t := by grw [hst, le_iff_forall_isUpperSet.1 hw ht]
+
+lemma mass_mono_of_isLowerSet (hw : w₁ ≤ w₂) (hst : s ⊆ t) (ht : IsLowerSet t) :
+    w₂.mass s ≤ w₁.mass t := by grw [hst, le_iff_forall_isLowerSet.1 hw ht]
+
+@[gcongr] lemma mass_Ici_mono (hw : w₁ ≤ w₂) : w₁.mass (Ici x) ≤ w₂.mass (Ici x) := by
+  gcongr; exact isUpperSet_Ici _
+
+@[gcongr] lemma mass_Iic_mono (hw : w₁ ≤ w₂) : w₂.mass (Iic x) ≤ w₁.mass (Iic x) :=
+  mass_mono_of_isLowerSet hw .rfl <| isLowerSet_Iic _
+
+lemma mass_strictMono :
+    StrictMono fun (w : StdSimplex R X) (s : UpperSet X) ↦ w.mass (s : Set X) := by
+  intro w₁ w₂ h
+  refine lt_of_le_of_ne (fun s ↦ le_iff_forall_isUpperSet.1 h.le s.2) fun hmass ↦ h.ne ?_
+  exact le_antisymm h.le <| le_iff_forall_isUpperSet.2 fun s hs ↦ (congrFun hmass ⟨s, hs⟩).ge
+
+/-- If `w₁ ≤ w₂` and `w₁` puts all of its mass on an upper set `s`, then so does `w₂`. -/
+lemma mass_eq_one_of_le (hs : IsUpperSet s) (h : w₁ ≤ w₂) (h₁ : w₁.mass s = 1) : w₂.mass s = 1 :=
+  le_antisymm (mass_le_one ..) (h₁ ▸ le_iff_forall_isUpperSet.1 h hs)
+
+/-- If `w₁ ≤ w₂` and `w₂` puts all of its mass on a down-set `s`, then so does `w₁`. -/
+lemma mass_eq_one_of_ge (hs : IsLowerSet s) (h : w₁ ≤ w₂) (h₂ : w₂.mass s = 1) : w₁.mass s = 1 :=
+  le_antisymm (mass_le_one ..) (h₂ ▸ le_iff_forall_isLowerSet.1 h hs)
 
 lemma forall_le_of_le (h : w₁ ≤ w₂) (h₁ : ∀ ⦃y⦄, w₁.weights y ≠ 0 → x ≤ y) :
     ∀ ⦃y⦄, w₂.weights y ≠ 0 → x ≤ y := by
-  rw [← upperMass_eq_one_iff] at h₁ ⊢
-  exact le_antisymm (upperMass_le_one _ _) (h₁ ▸ le_def.1 h x)
+  rw [← mass_Ici_eq_one_iff] at h₁ ⊢
+  exact mass_eq_one_of_le (isUpperSet_Ici x) h h₁
 
-@[simp] lemma upperMass_map [DecidableLE X] (w : StdSimplex R I) (f : I → X) (x : X) :
-    (w.map f).upperMass x = (w.weights.filter fun i ↦ x ≤ f i).sum fun _i r ↦ r := by
-  simp [upperMass_eq_finsuppSum, sum_mapDomain_index]
+lemma forall_ge_of_le (h : w₁ ≤ w₂) (h₂ : ∀ ⦃y⦄, w₂.weights y ≠ 0 → y ≤ x) :
+    ∀ ⦃y⦄, w₁.weights y ≠ 0 → y ≤ x := by
+  rw [← mass_Iic_eq_one_iff] at h₂ ⊢
+  exact mass_eq_one_of_ge (isLowerSet_Iic x) h h₂
 
 lemma monotone_map {w : StdSimplex R I} : Monotone (w.map : (I → X) → StdSimplex R X) := by
-  classical
-  rintro f g hfg x
-  rw [upperMass_map, upperMass_map, sum_filter_index, sum_filter_index, support_filter,
-    support_filter]
-  gcongr
-  · simp
-  · exact hfg _
+  intro f g hfg s hs; rw [mass_map, mass_map]; gcongr; exact fun i hi ↦ hs (hfg i) hi
 
-@[gcongr] lemma map_le_map {w : StdSimplex R I} {f g : I → X} (hfg : f ≤ g) : w.map f ≤ w.map g :=
+@[gcongr, to_dual self]
+lemma map_le_map {w : StdSimplex R I} {f g : I → X} (hfg : f ≤ g) : w.map f ≤ w.map g :=
   monotone_map hfg
 
-@[simp] lemma single_le_single_iff : (single x : StdSimplex R X) ≤ single y ↔ x ≤ y := by
+@[simp, to_dual self]
+lemma single_le_single_iff : (single x : StdSimplex R X) ≤ single y ↔ x ≤ y := by
   classical
-  refine ⟨fun h ↦ ?_, fun hxm ↦ le_def.2 fun z ↦ ?_⟩
-  · have hx := le_def.1 h x
-    simp only [upperMass_single, le_refl, ite_true] at hx
-    by_contra hxm
-    rw [ite_eq_right_iff.2 fun h ↦ absurd h hxm] at hx
-    exact absurd hx zero_lt_one.not_ge
-  · simp only [upperMass_single]
-    split_ifs with hzx hzm hzm
-    · exact le_rfl
-    · exact absurd (hzx.trans hxm) hzm
-    · exact zero_le_one
-    · exact le_rfl
+  simpa [le_iff_forall_isUpperSet, apply_ite, ite_apply, zero_lt_one.not_ge, not_imp_not]
+    using ⟨fun h ↦ by simpa using h (isUpperSet_Ici x), fun hxy s hs ↦ hs hxy⟩
 
-@[gcongr] alias ⟨_, single_le_single⟩ := single_le_single_iff
+@[gcongr, to_dual self] alias ⟨_, single_mono⟩ := single_le_single_iff
 
-lemma monotone_single : Monotone (single : X → StdSimplex R X) := fun _x _m ↦ single_le_single
 
 end PartialOrder
+
+section LinearOrder
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [LinearOrder X]
+  {w₁ w₂ : StdSimplex R X}
+
+/-- Over a linear order, stochastic dominance can be tested on the principal upper sets alone, ie by
+comparing the (complementary) cumulative distribution functions. This is the usual definition of
+stochastic dominance.
+
+This fails over a general partial order: see the module docstring. -/
+lemma le_iff_forall_Ici : w₁ ≤ w₂ ↔ ∀ x, w₁.mass (Ici x) ≤ w₂.mass (Ici x) := by
+  classical
+  refine ⟨fun h _ ↦ mass_Ici_mono h, fun h ↦ le_iff_forall_isUpperSet.2 fun s hs ↦ ?_⟩
+  set F : Finset X := w₁.weights.support ∪ w₂.weights.support
+  -- As an upper set of the finite linear order `F`, `s` is either empty or of the form `Ici x`.
+  obtain hse | ⟨x, hsx⟩ := (hs.preimage (f := ((↑) : F → X)) fun _ _ h ↦ h).eq_empty_or_Ici
+  -- If `s` misses `F`, then neither distribution charges `s`.
+  · have key (w : StdSimplex R X) (hw : w.weights.support ⊆ F) : w.mass s = 0 :=
+      mass_eq_zero_iff.2 fun y hy hys ↦
+        Set.eq_empty_iff_forall_notMem.1 hse ⟨y, hw (mem_support_iff.2 hy)⟩ hys
+    rw [key w₁ Finset.subset_union_left, key w₂ Finset.subset_union_right]
+  -- Otherwise, on `F` the set `s` coincides with `Ici x`, so both masses are masses above `x`.
+  · have key (w : StdSimplex R X) (hw : w.weights.support ⊆ F) : w.mass s = w.mass (Ici ↑x) :=
+      mass_eq_mass_Ici _ fun y hy ↦ by
+        simpa [← Subtype.coe_le_coe] using Set.ext_iff.1 hsx ⟨y, hw (mem_support_iff.2 hy)⟩
+    rw [key w₁ Finset.subset_union_left, key w₂ Finset.subset_union_right]
+    exact h _
+
+end LinearOrder
+
+section OrderDual
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [PartialOrder X]
+
+@[simp] lemma ofDual_le_iff {w₁ w₂ : StdSimplex R Xᵒᵈ} :
+    w₂ ≤ w₁ ↔ w₁.map OrderDual.ofDual ≤ w₂.map OrderDual.ofDual := by
+  rw [le_iff_forall_isUpperSet, le_iff_forall_isLowerSet]
+  simp [OrderDual.ofDual.setCongr.forall_congr_left, Equiv.image_eq_preimage_symm]
+
+@[simp] lemma map_toDual_le_map_toDual_iff {w₁ w₂ : StdSimplex R X} :
+    w₁.map OrderDual.toDual ≤ w₂.map OrderDual.toDual ↔ w₂ ≤ w₁ := by
+  simp [ofDual_le_iff, map_map]
+
+variable (R X) in
+/-- The stochastic dominance order on the standard simplex is self-dual. -/
+noncomputable def toDualOrderIso : (StdSimplex R X)ᵒᵈ ≃o StdSimplex R Xᵒᵈ where
+  toFun w := w.ofDual.map .toDual
+  invFun w := .toDual <| w.map OrderDual.ofDual
+  left_inv w := by ext; simp
+  right_inv w := by ext; simp
+  map_rel_iff' := map_toDual_le_map_toDual_iff
+
+end OrderDual
 end StdSimplex
 
 section IsOrderedConvexSpace
@@ -220,23 +323,28 @@ export IsOrderedConvexSpace (monotone_sConvexComb)
 
 variable [IsOrderedConvexSpace R X] {v : StdSimplex R I} {w₁ w₂ : StdSimplex R X} {f g : I → X}
 
-@[gcongr]
+@[gcongr, to_dual self]
 lemma sConvexComb_le_sConvexComb (h : w₁ ≤ w₂) : w₁.sConvexComb ≤ w₂.sConvexComb :=
   monotone_sConvexComb h
 
 lemma monotone_iConvexComb (v : StdSimplex R I) : Monotone (v.iConvexComb : (I → X) → X) :=
   fun _f _g hfg ↦ monotone_sConvexComb <| StdSimplex.monotone_map hfg
 
-@[gcongr]
+@[gcongr, to_dual self]
 lemma iConvexComb_le_iConvexComb (hfg : f ≤ g) : v.iConvexComb f ≤ v.iConvexComb g :=
   monotone_iConvexComb _ hfg
 
-@[gcongr]
+@[gcongr, to_dual self (dont_translate := R)]
 lemma convexCombPair_le_convexCombPair {a b : R} (ha hb hab) {x₁ x₂ y₁ y₂ : X} (hx : x₁ ≤ x₂)
     (hy : y₁ ≤ y₂) :
     convexCombPair a b ha hb hab x₁ y₁ ≤ convexCombPair a b ha hb hab x₂ y₂ := by
   simp only [convexCombPair_def]
   exact iConvexComb_le_iConvexComb (Fin.forall_fin_two.2 ⟨by simpa using hx, by simpa using hy⟩)
+
+instance isOrderedConvexSpace_orderDual : IsOrderedConvexSpace R Xᵒᵈ where
+  monotone_sConvexComb _w₁ _w₂ h := by
+    rw [← OrderDual.ofDual_le_ofDual, ofDual_sConvexComb, ofDual_sConvexComb]
+    exact sConvexComb_le_sConvexComb (StdSimplex.ofDual_le_iff.1 h)
 
 end IsOrderedConvexSpace
 end Convexity
