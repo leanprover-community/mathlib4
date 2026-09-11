@@ -5,7 +5,7 @@ Authors: Sebastian Monnet
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
@@ -43,6 +43,14 @@ all intermediate fields `E` with `E/K` finite dimensional.
 
 - `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
   in `Gal(L/K)` of any element in `L` is open for the Krull topology.
+
+- `AlgEquiv.restrictNormalHom_continuous`: restriction to a normal subextension is continuous.
+
+- `AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable`: restriction across a purely
+  inseparable extension is a topological embedding when the smaller field is normal over the base.
+
+- `AlgEquiv.restrictNormalEquivOfIsPurelyInseparable`: restriction across a purely inseparable
+  extension induces a topological group isomorphism when both fields are normal over the base.
 
 ## Notation
 
@@ -217,6 +225,64 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
       exact hφx (h_in_H hxE) }
 
 end KrullT2
+
+section Restriction
+
+open IntermediateField in
+/-- Restriction of automorphisms to a normal subextension is continuous for the Krull
+topology. -/
+theorem AlgEquiv.restrictNormalHom_continuous {k K : Type*} [Field k] [Field K] [Algebra k K]
+    (L : Type*) [Field L] [Algebra k L] [Algebra L K] [IsScalarTower k L K] [Normal k L] :
+    Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
+  apply continuous_of_continuousAt_one _
+  rw [ContinuousAt, map_one]
+  refine ((galGroupBasis k K).nhds_one_hasBasis.tendsto_iff
+    (galGroupBasis k L).nhds_one_hasBasis).mpr ?_
+  rintro _ ⟨_, ⟨F, hF : FiniteDimensional k _, rfl⟩, rfl⟩
+  let f := IsScalarTower.toAlgHom k L K
+  refine ⟨_, ⟨_, ⟨F.map f, IntermediateField.finiteDimensional_map f, rfl⟩, rfl⟩, ?_⟩
+  exact (F.map_fixingSubgroup K).le
+
+/-- In a tower `L'/L/K` with `L'/L` purely inseparable and `L/K` normal, restriction of
+automorphisms is a topological embedding for the Krull topology.
+No normality of `L'/K` is needed. -/
+theorem AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable
+    (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+    [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [IsPurelyInseparable L L'] :
+    Topology.IsEmbedding (AlgEquiv.restrictNormalHom L : Gal(L'/K) →* Gal(L/K)) := by
+  refine ⟨?_, AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable K L L'⟩
+  rw [IsTopologicalGroup.isInducing_iff_nhds_one]
+  apply le_antisymm
+  · simpa only [map_one] using
+      ((AlgEquiv.restrictNormalHom_continuous (k := K) (K := L') L).continuousAt
+        (x := 1)).le_comap
+  · rw [((galGroupBasis K L).nhds_one_hasBasis.comap (AlgEquiv.restrictNormalHom L)).le_basis_iff
+      (galGroupBasis K L').nhds_one_hasBasis]
+    rintro _ ⟨_, ⟨E, hE : FiniteDimensional K _, rfl⟩, rfl⟩
+    let f := IsScalarTower.toAlgHom K L L'
+    refine ⟨_, ⟨_, ⟨E.comap f, IntermediateField.finiteDimensional_comap f, rfl⟩, rfl⟩, ?_⟩
+    exact (E.comap_fixingSubgroup_of_isPurelyInseparable K L L').le
+
+/-- For a tower `L'/L/K` with `L'/L` purely inseparable and both `L/K` and `L'/K` normal,
+restriction induces an isomorphism of topological groups for the Krull topology. -/
+noncomputable def AlgEquiv.restrictNormalEquivOfIsPurelyInseparable
+    (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+    [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [Normal K L']
+    [IsPurelyInseparable L L'] : Gal(L'/K) ≃ₜ* Gal(L/K) := by
+  have h := AlgEquiv.restrictNormalHom_isEmbedding_of_isPurelyInseparable K L L'
+  let e : Gal(L'/K) ≃* Gal(L/K) :=
+    MulEquiv.ofBijective (AlgEquiv.restrictNormalHom L)
+      ⟨h.injective, AlgEquiv.restrictNormalHom_surjective L'⟩
+  exact ContinuousMulEquiv.mk' (e.toEquiv.toHomeomorphOfIsInducing h.isInducing) e.map_mul
+
+@[simp]
+theorem AlgEquiv.restrictNormalEquivOfIsPurelyInseparable_apply
+    (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+    [Algebra L L'] [IsScalarTower K L L'] [Normal K L] [Normal K L']
+    [IsPurelyInseparable L L'] (σ : Gal(L'/K)) :
+    restrictNormalEquivOfIsPurelyInseparable K L L' σ = σ.restrictNormal L := rfl
+
+end Restriction
 
 section TotallySeparated
 
