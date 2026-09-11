@@ -232,7 +232,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     obtain ⟨k, hk⟩ := hw
     simpa [mulVec_eq_sum, diagonal_apply, hl] using! congr_fun hk (Sum.inl i)
   refine ⟨i, (w (Sum.inr i))⁻¹, ?_⟩
-  suffices ∃ d : ι → K, (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) ∧
+  suffices ∃ d : ι → K, (∀ i, d i ≠ 0) ∧ Pairwise' ((· ≠ ·) on d) ∧
       diagonal (Sum.elim 0 d) ∈ cartanSubalgebra b by
     obtain ⟨d, hd₀, hd₁, hd₂⟩ := this
     let x : H := ⟨⟨diagonal (Sum.elim 0 d), cartanSubalgebra_le_lieAlgebra hd₂⟩, hd₂⟩
@@ -250,6 +250,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
           simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero, this, hij, hi] using!
             congr_fun hk (Sum.inr j)
         rw [← hχx]
+        rw [pairwise'_iff] at hd₁
         exact hd₁ <| by simp [hij.symm]
   simp_rw [cartanSubalgebra, LieSubalgebra.mem_mk_iff', diagonal_elim_mem_span_h_iff]
   exact (exists_congr fun d ↦ by tauto).mp b.exists_mem_span_pairingIn_ne_zero_and_pairwise_ne

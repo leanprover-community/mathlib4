@@ -189,7 +189,7 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
     exact ⟨f n, hf_mem h, rfl⟩
   -- Then the points `T (f n)` are bounded away from each other, using the separation property
   -- of the `f n` and the lower bound on their norms.
-  have hp : Pairwise fun x₁ x₂ ↦ ‖μ‖ ≤ ‖T (f x₁) - T (f x₂)‖ := by
+  have hp : Pairwise' fun x₁ x₂ ↦ ‖μ‖ ≤ ‖T (f x₁) - T (f x₂)‖ := by
     have : Std.Symm fun x₁ x₂ ↦ ‖μ‖ ≤ ‖T (f x₁) - T (f x₂)‖ := by grind [symm_def, norm_sub_rev]
     apply Pairwise.of_lt
     intro m n hmn
@@ -211,6 +211,7 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
   rw [Metric.cauchySeq_iff'] at hψy
   obtain ⟨N, hN⟩ := hψy ‖μ‖ (by positivity)
   have : ‖T (f (ψ (N + 1))) - T (f (ψ N))‖ < ‖μ‖ := by simpa [dist_eq_norm_sub] using hN (N + 1)
+  rw [pairwise'_iff] at hp
   refine this.not_ge (hp ?_)
   simp [hψ.injective.eq_iff]
 

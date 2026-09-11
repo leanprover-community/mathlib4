@@ -375,8 +375,9 @@ open scoped Function in
 /-- If the pairwise products of bounded continuous functions are all zero, then the norm of their
 sum is the maximum of their norms. -/
 lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ R)} (s : Finset ι)
-    (h : Pairwise ((· * · = 0) on f)) :
+    (h : Pairwise' ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
+  rw [pairwise'_iff] at h
   classical
   induction s using Finset.induction_on with
   | empty => simp

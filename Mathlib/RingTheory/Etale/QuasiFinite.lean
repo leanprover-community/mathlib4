@@ -500,7 +500,7 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
       have : ∀ i ≠ 0, e' i ∈ P'' := by
         intro j hj
         rw [← Ideal.IsPrime.mul_mem_left_iff (I := P'') heP'']
-        simp [φ, ← he'0, he'.ortho hj.symm]
+        simp [φ, ← he'0, pairwise'_apply he'.ortho hj.symm]
       refine ⟨by simp [this], Fin.cases (fun _ ↦ ?_) (by simp [this])⟩
       simp only [Fin.cons_zero]
       apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hpQ
@@ -536,7 +536,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
       have := (Set.ncard_eq_zero hpSfin).mp h
       refine ⟨R, inferInstance, inferInstance, inferInstance, p, inferInstance, ⟨rfl⟩, 0, 1,
         ⟨⟨by simp [IsIdempotentElem],
-          by simp only [Nat.reduceAdd, Pi.one_apply, mul_one, Subsingleton.pairwise]⟩,
+          by simp only [Nat.reduceAdd, Pi.one_apply, mul_one, Subsingleton.pairwise']⟩,
           by simp⟩, nofun, nofun, nofun, ?_, nofun, ?_⟩
       · rw! [ofId_self, Ideal.ResidueField.mapₐ_id]; exact Function.bijective_id
       · exact fun P h₁ h₂ ↦ (this.le

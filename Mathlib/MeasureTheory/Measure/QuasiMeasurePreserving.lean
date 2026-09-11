@@ -206,7 +206,8 @@ theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G]
     {_ : MeasurableSpace α} {μ : Measure α} {s : Set α}
     (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • ·) μ μ) :
-    Pairwise (AEDisjoint μ on fun g : G => g • s) := by
+    Pairwise' (AEDisjoint μ on fun g : G => g • s) := by
+  rw [pairwise'_iff]
   intro g₁ g₂ hg
   let g := g₂⁻¹ * g₁
   replace hg : g ≠ 1 := by

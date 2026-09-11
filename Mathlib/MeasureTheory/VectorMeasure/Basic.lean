@@ -93,7 +93,7 @@ theorem of_if {ι : Type*} {x : ι} {B : Set ι} {A : Set α} [Decidable (x ∈ 
 
 variable [T2Space M]
 
-theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
+theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise' (Disjoint on f)) :
     v (⋃ i, f i) = ∑' i, v (f i) :=
   (hasSum_of_disjoint_iUnion hm hd).tsum_eq.symm
 
@@ -114,7 +114,7 @@ theorem of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd :
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
   rw [Set.union_eq_iUnion, of_disjoint_iUnion, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts [fun b => Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
+  exacts [fun b => Bool.casesOn b hB hA, pairwise'_disjoint_on_bool.2 h]
 
 theorem of_add_of_sdiff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B) (h : A ⊆ B) :
     v A + v (B \ A) = v B := by
@@ -157,13 +157,13 @@ theorem of_sdiff_of_sdiff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Me
 theorem of_iUnion_nonneg {M : Type*} [TopologicalSpace M]
     [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
-    (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, 0 ≤ v (f i)) : 0 ≤ v (⋃ i, f i) :=
+    (hf₂ : Pairwise' (Disjoint on f)) (hf₃ : ∀ i, 0 ≤ v (f i)) : 0 ≤ v (⋃ i, f i) :=
   (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonneg hf₃
 
 theorem of_iUnion_nonpos {M : Type*} [TopologicalSpace M]
     [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
-    (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, v (f i) ≤ 0) : v (⋃ i, f i) ≤ 0 :=
+    (hf₂ : Pairwise' (Disjoint on f)) (hf₃ : ∀ i, v (f i) ≤ 0) : v (⋃ i, f i) ≤ 0 :=
   (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonpos hf₃
 
 theorem of_nonneg_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (h : Disjoint A B)
@@ -190,7 +190,7 @@ theorem tendsto_vectorMeasure_iUnion_atTop_nat
   dsimp
   rw [← of_biUnion_finset]
   · rw [biUnion_range_succ_disjointed, Monotone.partialSups_eq hm]
-  · exact fun i hi j hj hij ↦ disjoint_disjointed _ hij
+  · exact fun i hi j hj hij ↦ pairwise'_apply (disjoint_disjointed _) hij
   · exact fun b hb ↦ ht _
 
 theorem tendsto_vectorMeasure_iInter_atTop_nat
@@ -393,7 +393,7 @@ def dirac (x : β) (v : M) : VectorMeasure β M where
     nth_rewrite 2 [show v = if x ∈ f j then v else 0 by simp [hj]]
     apply hasSum_single
     intro i hi
-    have : Disjoint (f i) (f j) := f_disj hi
+    have : Disjoint (f i) (f j) := pairwise'_apply f_disj hi
     grind
 
 @[simp] lemma dirac_apply_of_mem (hs : MeasurableSet s) (hx : x ∈ s) : dirac x v s = v :=
