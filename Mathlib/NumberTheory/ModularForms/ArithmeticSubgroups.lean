@@ -95,24 +95,19 @@ variable {R : Type*} [CommRing R]
 noncomputable def detOnePart (G : Subgroup (GL n R)) : Subgroup (GL n R) :=
   G ⊓ (Matrix.SpecialLinearGroup.toGL : SL n R →* GL n R).range
 
-@[simp]
-lemma mem_detOnePart {G : Subgroup (GL n R)} {g : GL n R} :
+@[simp] lemma mem_detOnePart {G : Subgroup (GL n R)} {g : GL n R} :
     g ∈ G.detOnePart ↔ g ∈ G ∧ g.det = 1 := by
   simp only [detOnePart, mem_inf, MonoidHom.mem_range, and_congr_right_iff]
   intro hg
   constructor
-  · rintro ⟨x, rfl⟩
-    simp
-  · exact fun hdet ↦ ⟨⟨g, Units.ext_iff.mp hdet⟩, Units.ext (Matrix.ext (fun i j ↦ rfl))⟩
+  · grind [coeToGL_det]
+  · simpa [Units.ext_iff, GeneralLinearGroup.val_det_apply] using fun hdet ↦ ⟨⟨g, hdet⟩, rfl⟩
 
 lemma detOnePart_le (G : Subgroup (GL n R)) : G.detOnePart ≤ G := by
   simp [detOnePart]
 
 instance (G : Subgroup (GL n R)) : G.detOnePart.HasDetOne where
-  det_eq {g} hg := by
-    simp only [detOnePart, mem_inf] at hg
-    rcases hg.2 with ⟨x, -, rfl⟩
-    simp
+  det_eq {g} := by grind [detOnePart, mem_inf, MonoidHom.mem_range, coeToGL_det]
 
 end detOnePart
 
@@ -169,17 +164,11 @@ instance IsArithmetic.inter {Γ Γ'} [IsArithmetic Γ] [IsArithmetic Γ'] : IsAr
 instance (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] : G.detOnePart.IsArithmetic := by
   let L := G ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))
   have hLK : L ≤ G.detOnePart := by
-    rintro g ⟨hg, x, -, rfl⟩
-    refine ⟨hg, ⟨Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ) x, ?_⟩⟩
-    rfl
-  have hL : L.IsArithmetic := inferInstance
-  have hLGfin : L.IsFiniteRelIndex G := @IsArithmetic.isFiniteRelIndex L G hL inferInstance
-  have hLKfin : L.IsFiniteRelIndex G.detOnePart :=
-    @isFiniteRelIndex_of_le_right _ _ L G.detOnePart G G.detOnePart_le hLGfin
-  have hKLfin : G.detOnePart.IsFiniteRelIndex L :=
-    ⟨by rw [relIndex_eq_one.mpr hLK]; norm_num⟩
-  exact ⟨(show G.detOnePart.Commensurable L from ⟨hKLfin, hLKfin⟩).trans
-    IsArithmetic.is_commensurable⟩
+    rintro g ⟨hg, x, _, hx⟩
+    exact ⟨hg, ⟨x, rfl⟩⟩
+  have hLKfin : L.IsFiniteRelIndex G.detOnePart := isFiniteRelIndex_of_le_right _ G.detOnePart_le
+  have hKLfin : G.detOnePart.IsFiniteRelIndex L := isFiniteRelIndex_of_le_right _ hLK
+  exact ⟨.trans ⟨hKLfin, hLKfin⟩ IsArithmetic.is_commensurable⟩
 
 open scoped Pointwise in
 /-- Conjugation by an element of an arithmetic group preserves arithmeticity. -/
