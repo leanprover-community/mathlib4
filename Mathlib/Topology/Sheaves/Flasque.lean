@@ -193,15 +193,15 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
 noncomputable section
 
 /-- The sheafification of the presheaf that is `ℤ` on `U` and `0` elsewhere. -/
-abbrev freeAbSheaf (U : Opens X) : Sheaf AddCommGrpCat.{u} X :=
+private abbrev freeAbSheaf (U : Opens X) : Sheaf AddCommGrpCat.{u} X :=
   (presheafToSheaf _ _).obj (yoneda.obj U ⋙ AddCommGrpCat.free)
 
 /-- If `U` is contained in `V`, we get a natural morphism from `freeAbSheaf U` to `freeAbSheaf V` -/
-abbrev freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
+private abbrev freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
   (presheafToSheaf _ _).map (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
 
 /-- Morphisms out of `freeAbSheaf U` are in correspondance with the sections `I.obj.obj (op U)` -/
-def freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
+private def freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
     (freeAbSheaf U ⟶ I) ≃ I.obj.obj (op U) :=
   ((sheafificationAdjunction _ _).homEquiv (yoneda.obj U ⋙ AddCommGrpCat.free) I).trans <|
     ((AddCommGrpCat.adj.whiskerRight _).homEquiv (yoneda.obj U)
@@ -209,7 +209,7 @@ def freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
       yonedaEquiv
 
 set_option backward.isDefEq.respectTransparency false in
-lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
+private lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
     (I : Sheaf AddCommGrpCat.{u} X) (f : freeAbSheaf V ⟶ I) :
     freeAbSheafHomEquiv U I (freeAbSheafMap i ≫ f) =
       I.obj.map i.op (freeAbSheafHomEquiv V I f) := by
@@ -219,7 +219,7 @@ lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
   exact (yonedaEquiv_naturality _ i).symm
 
 set_option backward.isDefEq.respectTransparency false in
-instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
+private instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
     Mono (freeAbSheafMap i) :=
   haveI : PreservesFiniteLimits (presheafToSheaf (Opens.grothendieckTopology X)
       AddCommGrpCat.{u}) := HasSheafify.isLeftExact
@@ -262,7 +262,7 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
   | succ n hn =>
     obtain ⟨I, _, f, hf⟩ := EnoughInjectives.presentation F
     have hS := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    haveI := of_shortExact_of_isFlasque₁₂ hS
+    have := of_shortExact_of_isFlasque₁₂ hS
     exact ShortComplex.Exact.isZero_of_both_isZero
       ((Sheaf.H.longSequence_exact hS (n+1) (n+2) rfl).exact 2) (hn _)
       (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
