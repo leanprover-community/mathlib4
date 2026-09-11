@@ -771,16 +771,11 @@ locallyFinsuppWithin`, which is well-defined when `f 0 = 0`.
 def mapRange (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsuppWithin U Y) :
     locallyFinsuppWithin U Z where
   toFun := f ∘ g
-  supportWithinDomain' x hx := by
-    by_contra
-    have : g x = 0 := by aesop
-    aesop
-  supportLocallyFiniteWithinDomain' x hx := by
-    obtain ⟨t, h₁t, h₂t⟩ := g.supportLocallyFiniteWithinDomain x hx
-    use t, h₁t
-    apply h₂t.subset
-    intro z hz
-    aesop
+  supportWithinDomain' := by grw [support_comp_subset hf g, ← g.supportWithinDomain]
+  supportLocallyFiniteWithinDomain' := by
+    peel g.supportLocallyFiniteWithinDomain with x hx t htx ht
+    grw [support_comp_subset hf g]
+    assumption
 
 @[simp, grind =]
 theorem mapRange_apply {f : Y → Z} {hf : f 0 = 0} {g : locallyFinsuppWithin U Y} {a : X} :
