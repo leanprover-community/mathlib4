@@ -51,8 +51,8 @@ operations on relations. For example:
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
   `Relation.Map R f g := fun c d ↦ ∃ a b, R a b ∧ f a = c ∧ g b = d`.
 
-The latter approach is embodied by `SetRel α β`, with the dedicated notation `○` for composition.
-(Note that `○` is _not_ the same as function composition `∘`.)
+The latter approach is embodied by `SetRel α β`, with dedicated notation such as `○` for
+composition. Note that `○` is _not_ the same as function composition `∘`.
 
 Previously, `SetRel` suffered from the leakage of its definition as
 ```
@@ -60,7 +60,7 @@ def SetRel (α β : Type*) := α → β → Prop
 ```
 The fact that `SetRel` wasn't an `abbrev` confuses automation.
 But simply making it an `abbrev` would have killed the point of having a separate less see-through
-type to perform relation operations on. So we instead redefined it as
+type to perform relation operations on, so we instead redefined
 ```
 abbrev SetRel (α β : Type*) := Set (α × β)
 ```
@@ -349,7 +349,26 @@ variable (R s) in
 /-- Restrict the domain of a relation to a subtype. -/
 def restrictDomain : SetRel s β := {(a, b) | ↑a ~[R] b}
 
+variable (R b) in
+/-- The ball of `b : β` with respect to a relation between `α` and `β` is the set of `a : α` related
+to `b`. -/
+def ball : Set α := {a | a ~[R] b}
+
+@[simp, grind =] lemma mem_ball : a ∈ R.ball b ↔ a ~[R] b := .rfl
+
+@[gcongr]
+lemma ball_mono (h : R₁ ⊆ R₂) (b : β) : R₁.ball b ⊆ R₂.ball b := fun _a hab ↦ h hab
+
+variable (R₁ R₂ b) in
+lemma ball_inter : ball (R₁ ∩ R₂) b = ball R₁ b ∩ ball R₂ b := rfl
+
+lemma ball_iInter (R : ι → Set (α × β)) (b : β) : ball (⋂ i, R i) b = ⋂ i, ball (R i) b := by
+  ext; simp
+
 variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
+
+lemma ball_subset_ball_of_comp_subset (hab : a ~[R₁] b) (h : R₁ ○ R₁ ⊆ R₂) :
+    R₁.ball a ⊆ R₂.ball b := fun _c hc ↦ h ⟨a, hc, hab⟩
 
 /-! ### Reflexive relations -/
 
@@ -422,6 +441,7 @@ variable (R) in
 protected abbrev IsSymm : Prop := Std.Symm (· ~[R] ·)
 
 variable (R) in
+@[grind →]
 protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab
 
 variable (R) in
@@ -467,6 +487,10 @@ instance isSymm_comp_inv : (R ○ R.inv).IsSymm where
 instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
 
 instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
+
+lemma mem_comp_comp {U V W : SetRel α α} [U.IsSymm] {p : α × α} :
+    p ∈ U ○ V ○ W ↔ (U.ball p.1 ×ˢ W.ball p.2 ∩ V).Nonempty := by
+  grind [Set.nonempty_def, Prod.exists]
 
 lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,

@@ -230,14 +230,16 @@ theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopo
 
 theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α → β} (b : β)
     (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
-    ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
+    ∃ a, closure (e '' SetRel.ball s a) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
     ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SetRel.IsSymm U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
       rwa [← he₁.comap_uniformity, (uniformity_hasBasis_open_symmetric.comap _).mem_iff] at hs
-  rcases he₂.dense.mem_nhds (UniformSpace.ball_mem_nhds b hU) with ⟨a, ha⟩
-  refine ⟨a, mem_of_superset ?_ (closure_mono <| image_mono <| UniformSpace.ball_mono hs a)⟩
-  have ho : IsOpen (UniformSpace.ball (e a) U) := UniformSpace.isOpen_ball (e a) hUo
-  refine mem_of_superset (ho.mem_nhds <| UniformSpace.mem_ball_symmetry.2 ha) fun y hy => ?_
+  rcases he₂.dense.mem_nhds (SetRel.ball_mem_nhds b hU) with ⟨a, ha⟩
+  refine ⟨a, mem_of_superset ?_
+    (closure_mono <| image_mono <| SetRel.ball_mono hs a)⟩
+  have ho : IsOpen (SetRel.ball U (e a)) := UniformSpace.isOpen_ball (e a) hUo
+  have hab : (b, e a) ∈ U := SetRel.symm U (SetRel.mem_ball.mp ha)
+  refine mem_of_superset (ho.mem_nhds <| SetRel.mem_ball.mpr hab) fun y hy => ?_
   refine mem_closure_iff_nhds.2 fun V hV => ?_
   rcases he₂.dense.mem_nhds (inter_mem hV (ho.mem_nhds hy)) with ⟨x, hxV, hxU⟩
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩
