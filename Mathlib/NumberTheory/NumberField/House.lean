@@ -52,7 +52,8 @@ theorem house_nonneg (α : K) : 0 ≤ house α := norm_nonneg _
 theorem house_mul_le (α β : K) : house (α * β) ≤ house α * house β := by
   simp only [house, map_mul]; apply norm_mul_le
 
-lemma house_prod_le (s : Finset K) : house (∏ x ∈ s, x) ≤ ∏ x ∈ s, house x := by
+lemma house_prod_le {ι : Type*} (s : Finset ι) (f : ι → K) :
+    house (∏ i ∈ s, f i) ≤ ∏ i ∈ s, house (f i) := by
   simpa [house, map_prod] using Finset.norm_prod_le _ _
 
 theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
@@ -60,6 +61,10 @@ theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
 
 theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := by
   simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
+
+theorem house_pow_le_pow {α : K} (hα : 1 ≤ house α) {i j : ℕ} (hij : i ≤ j) :
+    house (α ^ i) ≤ house α ^ j :=
+  (house_pow_le _ _).trans (pow_le_pow_right₀ hα hij)
 
 theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
@@ -71,6 +76,9 @@ theorem house_nsmul (α : K) (c : ℕ) : house (c • α) = c * house α := by
 
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
+
+@[simp] theorem house_natCast (x : ℕ) : house (x : K) = x := by
+  simpa using house_intCast (K := K) x
 
 theorem house_zsmul (α : K) (n : ℤ) : house (n • α) = |n| * house α := by
   rw [house, house, map_zsmul, norm_zsmul ℝ, Real.norm_eq_abs, ← Int.cast_abs]
@@ -178,6 +186,13 @@ end DecidableEq
 theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
   simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
     exists_const, house_nonneg]
+
+/-- The elements of `newBasis K` are nonzero algebraic integers, so their houses, and hence
+their supremum, are at least `1`. -/
+theorem one_le_supOfBasis : 1 ≤ supOfBasis K := by
+  obtain ⟨r⟩ : Nonempty (K →+* ℂ) := inferInstance
+  refine le_trans ?_ (Finset.le_sup' _ (mem_univ r))
+  exact one_le_house_of_isIntegral (newBasis K r).2 (by simpa using (newBasis K).ne_zero r)
 
 variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 
@@ -314,6 +329,11 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
 
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
 def c₁ := finrank ℚ K * c₂ K
+
+/-- Siegel's constant `c₁ K` is at least `1`. -/
+theorem one_le_c₁ : 1 ≤ c₁ K :=
+  one_le_mul_of_one_le_of_one_le (mod_cast Module.finrank_pos (R := ℚ) (M := K))
+    (one_le_mul_of_one_le_of_one_le (le_max_left _ _) (one_le_supOfBasis K))
 
 include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
