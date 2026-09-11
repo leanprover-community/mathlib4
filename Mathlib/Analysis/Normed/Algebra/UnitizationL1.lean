@@ -132,7 +132,7 @@ noncomputable instance instUnitizationNormedAlgebra :
     simp_rw [unitization_norm_def, ofLp_smul, fst_smul, snd_smul, norm_smul, mul_add]
     exact le_rfl
 
-instance hasSummableGeomSeries_unitization [HasSummableGeomSeries A] :
+instance [HasSummableGeomSeries A] :
     HasSummableGeomSeries (WithLp 1 (Unitization 𝕜 A)) := by
   /- Take `x = (r, a) : Unitization 𝕜 A` with `‖x‖ = ‖r‖ + ‖a‖ < 1`.
   Then `‖r‖ < 1`, so `r ≠ 1`, and `‖b‖ < 1` where `b := (1 - r)⁻¹ • a`. By hypothesis, `-b` is
