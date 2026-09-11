@@ -122,7 +122,6 @@ section Val
 theorem head_fin_const (a : α) : (vecHead fun _ : Fin (n + 1) => a) = a :=
   rfl
 
-@[simp]
 theorem cons_val_zero (x : α) (u : Fin m → α) : vecCons x u 0 = x :=
   rfl
 
@@ -265,7 +264,6 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   The simplifier needs a special lemma for length `≥ 2`, in addition to
   `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
-@[simp]
 theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = u 0 :=
   rfl
 
