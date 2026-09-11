@@ -230,5 +230,5 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
 
 end Main
 
-noncomputable instance {n : ℕ} : Decidable (∃ x y, n = x ^ 2 + y ^ 2) :=
+instance {n : ℕ} : Decidable (∃ x y, n = x ^ 2 + y ^ 2) :=
   decidable_of_iff' _ Nat.eq_sq_add_sq_iff
