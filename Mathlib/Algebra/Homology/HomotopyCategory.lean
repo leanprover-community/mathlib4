@@ -246,6 +246,7 @@ lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexSha
 `HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c` and
 `F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c` when `F : V ⥤ W` is
 an additive functor. -/
+@[implicit_reducible]
 def Functor.mapHomotopyCategoryFactors (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c ≅
       F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c :=
