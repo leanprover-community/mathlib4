@@ -253,18 +253,24 @@ lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio
   · obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
 
-theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
+theorem lipschitzWith : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
 
-theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
+@[deprecated (since := "2026-09-11")]
+alias lipschitz := lipschitzWith
+
+theorem antilipschitzWith : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
   have hr : ratio f ≠ 0 := ratio_ne_zero f
   exact mod_cast
     (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
+
+@[deprecated (since := "2026-09-11")]
+alias antilipschitz := antilipschitzWith
 
 /-- A dilation from an emetric space is injective -/
 protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β] [DilationClass F α β]
     (f : F) :
     Injective f :=
-  (antilipschitz f).injective
+  (antilipschitzWith f).injective
 
 /-- The identity is a dilation -/
 protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
@@ -372,7 +378,7 @@ theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injectiv
 
 /-- A dilation from a metric space is a uniform inducing map -/
 theorem isUniformInducing : IsUniformInducing (f : α → β) :=
-  (antilipschitz f).isUniformInducing (lipschitz f).uniformContinuous
+  (antilipschitzWith f).isUniformInducing (lipschitz f).uniformContinuous
 
 theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
@@ -380,14 +386,14 @@ theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
 
 /-- A dilation is continuous. -/
 theorem toContinuous : Continuous (f : α → β) :=
-  (lipschitz f).continuous
+  (lipschitzWith f).continuous
 
 /-- Dilations scale the diameter by `ratio f` in pseudoemetric spaces. -/
 theorem ediam_image (s : Set α) : ediam ((f : α → β) '' s) = ratio f * ediam s := by
-  refine ((lipschitz f).ediam_image_le s).antisymm ?_
+  refine ((lipschitzWith f).ediam_image_le s).antisymm ?_
   apply ENNReal.mul_le_of_le_div'
   rw [div_eq_mul_inv, mul_comm, ← ENNReal.coe_inv]
-  exacts [(antilipschitz f).le_mul_ediam_image s, ratio_ne_zero f]
+  exacts [(antilipschitzWith f).le_mul_ediam_image s, ratio_ne_zero f]
 
 /-- A dilation scales the diameter of the range by `ratio f`. -/
 theorem ediam_range : ediam (range (f : α → β)) = ratio f * ediam (univ : Set α) := by
@@ -421,7 +427,7 @@ variable [FunLike F α β]
 /-- A dilation from a metric space is a uniform embedding -/
 lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
     IsUniformEmbedding f :=
-  (antilipschitz f).isUniformEmbedding (lipschitz f).uniformContinuous
+  (antilipschitzWith f).isUniformEmbedding (lipschitzWith f).uniformContinuous
 
 /-- A dilation from a metric space is an embedding -/
 theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
@@ -431,7 +437,7 @@ theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
 /-- A dilation from a complete emetric space is a closed embedding -/
 lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
     IsClosedEmbedding f :=
-  (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
+  (antilipschitzWith f).isClosedEmbedding (lipschitzWith f).uniformContinuous
 
 end EMetricDilation
 
@@ -473,11 +479,11 @@ theorem mapsTo_closedBall (x : α) (r' : ℝ) :
   fun y hy => (dist_eq f y x).trans_le <| mul_le_mul_of_nonneg_left hy (NNReal.coe_nonneg _)
 
 lemma tendsto_cobounded : Filter.Tendsto f (cobounded α) (cobounded β) :=
-  (Dilation.antilipschitz f).tendsto_cobounded
+  (Dilation.antilipschitzWith f).tendsto_cobounded
 
 @[simp]
 lemma comap_cobounded : Filter.comap f (cobounded β) = cobounded α :=
-  le_antisymm (lipschitz f).comap_cobounded_le (tendsto_cobounded f).le_comap
+  le_antisymm (lipschitzWith f).comap_cobounded_le (tendsto_cobounded f).le_comap
 
 end PseudoMetricDilation
 
