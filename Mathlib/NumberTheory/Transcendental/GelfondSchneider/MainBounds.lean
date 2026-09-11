@@ -774,23 +774,23 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
             · positivity
             · positivity
           · rw [(sqt_etc α β σ α' β' γ' hirr htriv habc) q hq0 h2mq, Real.mul_rpow]
-            apply mul_le_mul
-            · rw [mul_comm ((m K) : ℝ) ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)]
-            · rw [mul_comm]
-              nth_rw 5 [mul_comm]
-              apply mul_le_mul
-              · simp only [le_refl]
+            · apply mul_le_mul
+              · rw [mul_comm ((m K) : ℝ) ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)]
               · rw [mul_comm]
+                nth_rw 5 [mul_comm]
                 apply mul_le_mul
-                · norm_cast
-                  exact Nat.factorial_le_pow ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
                 · simp only [le_refl]
+                · rw [mul_comm]
+                  apply mul_le_mul
+                  · norm_cast
+                    exact Nat.factorial_le_pow ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
+                  · simp only [le_refl]
+                  · positivity
+                  · positivity
                 · positivity
                 · positivity
               · positivity
               · positivity
-            · positivity
-            · positivity
             · positivity
             · positivity
           · rw [← Real.rpow_mul, ← Real.rpow_mul, Real.sqrt_eq_rpow, ← Real.rpow_mul,
