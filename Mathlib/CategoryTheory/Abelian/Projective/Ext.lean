@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
@@ -18,13 +19,6 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Extend
 Given a projective resolution `R` of an object `X` in an abelian category `C`,
 we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.complex` and to make computations in the `Ext`-group.
-
-## TODO
-* Functoriality in `X`: this would involve a morphism `X ⟶ X'`, projective
-  resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
-  of cochain complexes `R.complex ⟶ R'.complex`; in this context,
-  we should be able to compute the precomposition of an element
-  `R.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
 
 -/
 
@@ -263,5 +257,24 @@ lemma mk₀_comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1
     ShiftedHom.map_mk₀, ShiftedHom.mk₀_comp_mk₀, ShiftedHom.mk₀_comp_mk₀]
   congr 3
   simp [← Functor.map_comp_assoc, ← Functor.map_comp]
+
+open CochainComplex.HomComplex in
+lemma extMk_comp_extClass
+    {S : ShortComplex C} (hS : S.ShortExact) (f₃ : R.complex.X n ⟶ S.X₃)
+    (f₂ : R.complex.X n ⟶ S.X₂) (hf₂ : f₂ ≫ S.g = f₃)
+    (m : ℕ) (hm : n + 1 = m)
+    (f₁ : R.complex.X m ⟶ S.X₁) (hf₁ : f₁ ≫ S.f = R.complex.d m n ≫ f₂)
+    (m' : ℕ) (hm' : m + 1 = m') :
+    (R.extMk f₃ m hm (by simp [← hf₂, ← reassoc_of% hf₁])).comp hS.extClass hm =
+    R.extMk f₁ m' hm' (by have := hS.mono_f; simp [← cancel_mono S.f, hf₁]) := by
+  have := HasDerivedCategory.standard C
+  ext
+  simp only [Ext.comp_hom, extMk_hom, DerivedCategory.singleFunctorIsoCompQ_hom_app,
+    Category.id_comp, DerivedCategory.singleFunctorIsoCompQ_inv_app,
+    ShortComplex.ShortExact.extClass_hom, ← DerivedCategory.Q_obj_single_obj,
+    ShiftedHom.comp_mk₀_id]
+  rw [ShiftedHom.comp_assoc (a₂₃ := (m : ℤ)) _ _ _ (by lia) (by lia) (by lia)]
+  congr 1
+  sorry
 
 end CategoryTheory.ProjectiveResolution
