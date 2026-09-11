@@ -28,8 +28,15 @@ jobs:
           lake exe cache get
       - name: Generate Mathlib.lean and verify module
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          set +e
           lake exe mk_all
+          MKALL_RC=$?
+          set -e
+          if [ "$MKALL_RC" -ne 0 ] && git diff --quiet -- Mathlib.lean; then
+            echo "mk_all failed without generating the expected Mathlib.lean change"
+            exit "$MKALL_RC"
+          fi
           lake env lean Mathlib/GroupTheory/Coxeter/Dihedral.lean
           lake exe lint-style Mathlib/GroupTheory/Coxeter/Dihedral.lean
           test -z "$(grep -nE '\bsorry\b|\badmit\b' Mathlib/GroupTheory/Coxeter/Dihedral.lean || true)"
