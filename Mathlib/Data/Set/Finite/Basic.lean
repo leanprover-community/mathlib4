@@ -496,6 +496,7 @@ theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α)
 
 alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 
+@[gcongr]
 theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) : t.Finite := by
   have := hs.to_subtype
   exact Finite.Set.subset _ ht

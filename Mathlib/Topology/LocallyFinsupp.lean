@@ -773,9 +773,8 @@ def mapRange (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsuppWithin U Y) :
   toFun := f ∘ g
   supportWithinDomain' := by grw [support_comp_subset hf g, ← g.supportWithinDomain]
   supportLocallyFiniteWithinDomain' := by
-    peel g.supportLocallyFiniteWithinDomain with x hx t htx ht
     grw [support_comp_subset hf g]
-    assumption
+    exact g.supportLocallyFiniteWithinDomain
 
 @[simp, grind =]
 theorem mapRange_apply {f : Y → Z} {hf : f 0 = 0} {g : locallyFinsuppWithin U Y} {a : X} :
