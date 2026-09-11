@@ -181,7 +181,7 @@ lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M₁ → M₂} {p : M�
   rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)]
   rfl
 
-/-- The inverse function theorem for manifolds. If `f` is `ContMDiff` on a neighborhood of an
+/-- The inverse function theorem for manifolds. If `f` is `C^n` on a neighborhood of an
 interior point `p` and has bijective differential at `p`, then `f` is a local diffeomorphism at `p`.
 -/
 theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInteriorPoint p)
