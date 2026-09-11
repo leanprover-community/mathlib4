@@ -206,12 +206,9 @@ lemma ofSimplex_codimOneSimplex (j : Fin p) :
   · dsimp [intersectionNondeg]
     simp only [le_inf_iff, Subcomplex.ofSimplex_le_iff,
       Subcomplex.mem_ofSimplex_obj_iff]
-    constructor
-    · refine ⟨SimplexCategory.δ j.succ.castSucc, ?_⟩
-      rw [← Fin.succ_castSucc, ← δ_succ_nonDegenerateEquiv]
-      rfl
-    · refine ⟨SimplexCategory.δ j.succ.castSucc, ?_⟩
-      rw [Fin.succ_castSucc, ← δ_castSucc_nonDegenerateEquiv]
+    refine ⟨⟨SimplexCategory.δ j.succ.castSucc, ?_⟩, ⟨SimplexCategory.δ j.succ.castSucc, ?_⟩⟩
+    · simp [SimplicialObject.δ, ← δ_succ_nonDegenerateEquiv]
+    · rw [Fin.succ_castSucc, ← δ_castSucc_nonDegenerateEquiv]
       rfl
   · rintro ⟨⟨k⟩⟩ s hs
     obtain ⟨f, rfl⟩ := prodStdSimplex.objEquiv.symm.surjective s
