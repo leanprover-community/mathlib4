@@ -137,6 +137,7 @@ def toOrderAddMonoidHom (f : α →+*o β) : α →+o β :=
 def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
   { f with }
 
+@[macro_inline]
 instance : FunLike (α →+*o β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -299,6 +300,7 @@ variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [
 def toOrderIso (f : α ≃+*o β) : α ≃o β :=
   ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
 
+@[macro_inline]
 instance : EquivLike (α ≃+*o β) α β where
   coe f := f.toFun
   inv f := f.invFun

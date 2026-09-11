@@ -108,10 +108,10 @@ theorem X_pow_mul_sub_C_irreducible
 theorem norm_root_X_pow_sub_C {n : ℕ} {a : K} (hn : n ≠ 0) :
     Algebra.norm K (root (X ^ n - C a)) = (-1) ^ n * -a := by
   rw [← AdjoinRoot.powerBasis_gen (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a),
-    Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
+    Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly,
     minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hn),
-    natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow,
-    ite_eq_right hn.symm, zero_sub]
+    coeff_sub, coeff_X_pow, ite_eq_right hn.symm]
+  simp
 
 theorem X_pow_two_pow_sub_C_irreducible_of_isSquare_neg_one
     (n : ℕ) {a : K} (hi : IsSquare (-1 : K)) (ha : ∀ b : K, b ^ 2 ≠ a) :
