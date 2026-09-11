@@ -233,7 +233,8 @@ abbrev FundamentalGroupoid : Type u :=
 namespace FundamentalGroupoid
 
 /-- Constructor for objects of the fundamental groupoid of a simplicial set `X`. -/
-abbrev mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
+@[implicit_reducible]
+def mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   Truncated.FundamentalGroupoid.mk_surjective
