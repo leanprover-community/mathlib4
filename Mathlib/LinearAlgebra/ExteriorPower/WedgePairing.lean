@@ -71,43 +71,36 @@ lemma wedgePairing_eq_apply_topVector_smul :
       (b.exteriorPower l).dualBasis.reindex (powersetCard.compl hkl') |>.groupSMul powersetCard.sign
     wedgePairing vol hkl = vol b.topVector • (bk.repr.trans bl.repr.symm) := by
   classical
-  have hpairing (leftSet : powersetCard ι k) (rightSet : powersetCard ι l) :
-      wedgePairing vol hkl (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) =
-        if Disjoint leftSet.val rightSet.val then powersetCard.sign leftSet • vol b.topVector
-        else 0 := by
-    have hkl' : k + l = Fintype.card ι := by rw [hkl, finrank_eq_card_basis b]
-    let topWedge : ⋀[R]^(k + l) M :=
-      b.exteriorPower (k + l) ⟨Finset.univ, by simp [hkl']⟩
-    have htopWedge (degree : ℕ) (hdegree : degree = finrank R M) :
-        (hdegree ▸ vol : ⋀[R]^degree M →ₗ[R] R) (b.exteriorPower degree
-          ⟨Finset.univ, by simp [hdegree, finrank_eq_card_basis b]⟩) = vol b.topVector := by
-      subst degree
-      rfl
-    simp only [wedgePairing, LinearMap.compr₂_apply]
-    by_cases hdisjoint : Disjoint leftSet.val rightSet.val
-    · rw [ite_eq_left hdisjoint]
-      have hcompl : leftSet = powersetCard.compl hkl' rightSet :=
-        (powersetCard.disjoint_iff_eq_compl hkl').mp hdisjoint
-      suffices wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) =
-          powersetCard.sign leftSet • topWedge by
-        rw [this]; simpa [topWedge] using htopWedge (k + l) hkl
+  have hcard : k + l = Fintype.card ι := by rw [hkl, finrank_eq_card_basis b]
+  have htopVector : (hkl ▸ vol : ⋀[R]^(k + l) M →ₗ[R] R)
+      (b.exteriorPower (k + l) ⟨Finset.univ, by simp [hcard]⟩) = vol b.topVector := by
+    generalize k + l = degree at hcard hkl ⊢
+    subst hkl
+    rfl
+  refine (b.exteriorPower k).ext fun leftSet ↦ (b.exteriorPower l).ext fun rightSet ↦ ?_
+  simp only [LinearMap.smul_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+    Basis.repr_self, Basis.repr_symm_single_one, Basis.groupSMul_apply, Pi.smul_apply',
+    Basis.reindex_apply, Basis.dualBasis_apply_self]
+  simp only [Equiv.eq_symm_apply, eq_comm (a := powersetCard.compl hcard rightSet),
+    ← powersetCard.disjoint_iff_eq_compl]
+  by_cases hdisjoint : Disjoint leftSet.val rightSet.val
+  · have hcompl := (powersetCard.disjoint_iff_eq_compl hcard).mp hdisjoint
+    have hwedge : wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) =
+        powersetCard.sign leftSet •
+          b.exteriorPower (k + l) ⟨Finset.univ, by simp [hcard]⟩ := by
       apply Subtype.ext
-      rw [powersetCard.sign_eq_permOfDisjoint_sign hkl' leftSet rightSet hdisjoint]
-      simpa [-coe_basis, topWedge, ← ExteriorAlgebra.basis_eq_coe_basis, hcompl,
+      rw [powersetCard.sign_eq_permOfDisjoint_sign hcard leftSet rightSet hdisjoint]
+      simpa [-coe_basis, ← ExteriorAlgebra.basis_eq_coe_basis, hcompl,
         Finset.disjUnion_eq_union, Finset.union_comm] using
         ExteriorAlgebra.basis_mul_of_disjoint b leftSet rightSet hdisjoint
-    · rw [ite_eq_right hdisjoint]
-      suffices wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) = 0 by
-        rw [this, map_zero]
+    rw [wedgePairing, LinearMap.compr₂_apply, hwedge, map_zsmul_unit, htopVector]
+    simp [hdisjoint]
+  · have hwedge : wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) = 0 := by
       apply Subtype.ext
       simpa [-coe_basis, ← ExteriorAlgebra.basis_eq_coe_basis] using
         ExteriorAlgebra.basis_mul_of_not_disjoint b leftSet rightSet hdisjoint
-  refine (b.exteriorPower k).ext fun leftSet ↦ (b.exteriorPower l).ext fun rightSet ↦ ?_
-  simp only [LinearMap.smul_apply,
-    LinearEquiv.coe_coe, LinearEquiv.trans_apply, Basis.repr_self, Basis.repr_symm_single_one,
-    Basis.groupSMul_apply, Pi.smul_apply', Basis.reindex_apply, Basis.dualBasis_apply_self,
-    hpairing]
-  simp [Equiv.eq_symm_apply, eq_comm, ← powersetCard.disjoint_iff_eq_compl, smul_ite]
+    rw [wedgePairing, LinearMap.compr₂_apply, hwedge, map_zero]
+    simp [hdisjoint]
 
 end Basis
 
