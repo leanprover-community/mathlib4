@@ -279,7 +279,7 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let hpivot ← dispatch q(($Um).IsPivotedBy $pivot) fun certifier =>
     certifyPivotedBy _cr U pivot data.pivot certifier
-  let hlower ← dispatch q(($Lm).IsLowerTriangular) fun _ => certifyLowerTriangular _cr Lm
+  let hlower ← certifyLowerTriangular _cr Lm
   let hdiag ← dispatch q(∀ i, ($Lm).diag i ≠ 0) fun certifier =>
     certifyNonzeroDiag _cr L certifier
   return q(⟨$Lm, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
