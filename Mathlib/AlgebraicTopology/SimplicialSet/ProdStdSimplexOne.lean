@@ -316,24 +316,15 @@ lemma filtration.isPushout (j : Fin p) :
     (stdSimplex.isoOfRepresentableBy
       (Subcomplex.ofSimplexRepresentableBy _)) (Iso.refl _)
   · ext : 1
-    dsimp
-    simp only [Category.assoc, Category.comp_id, ι_ι]
-    rw [Subcomplex.homOfLE_ι,
-      Subcomplex.isoOfRepresentableBy_ofSimplexRepresentableBy_hom]
-    dsimp [CosimplicialObject.δ]
-    rw [← dsimp% yonedaEquiv_symm_map (X := _ ⊗ _),
-      ← δ_succ_nonDegenerateEquiv]
-    rfl
+    simp [Subcomplex.isoOfRepresentableBy_ofSimplexRepresentableBy_hom,
+      CosimplicialObject.δ, ← dsimp% yonedaEquiv_symm_map (X := _ ⊗ _),
+      ← δ_succ_nonDegenerateEquiv, SimplicialObject.δ]
   · ext : 1
     dsimp
-    simp only [Category.assoc]
-    rw [Subcomplex.homOfLE_ι,
+    simp_rw [Category.assoc, Subcomplex.homOfLE_ι,
       Subcomplex.isoOfRepresentableBy_ofSimplexRepresentableBy_hom,
-      Subcomplex.isoOfRepresentableBy_ofSimplexRepresentableBy_hom]
-    dsimp [CosimplicialObject.δ]
-    rw [← dsimp% yonedaEquiv_symm_map (X := _ ⊗ _),
       Fin.succ_castSucc, ← δ_castSucc_nonDegenerateEquiv]
-    rfl
+    simp [SimplicialObject.δ, CosimplicialObject.δ, ← dsimp% yonedaEquiv_symm_map (X := _ ⊗ _)]
   · simp
   · cat_disch
 
