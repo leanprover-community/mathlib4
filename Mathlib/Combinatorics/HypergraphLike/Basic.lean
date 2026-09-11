@@ -19,7 +19,7 @@ as `SimpleGraph`, `Graph`, and `Digraph`.
   structure, with supplied edge and endpoint maps and source, target, link, and adjacency relations.
 * `HyperGraphLike.edgeFiber` and `HyperGraphLike.vertexFiber`: the active incidence labels belonging
   to an edge or vertex.
-* `HyperGraphLike.incVerts` and `HyperGraphLike.toEdges`: the vertices of an edge and the edges at
+* `HyperGraphLike.incVerts` and `HyperGraphLike.incEdges`: the vertices of an edge and the edges at
   a vertex, forgetting incidence multiplicity and orientation.
 * `HyperGraphLike.degree` and `HyperGraphLike.order`: count incidences at a vertex or edge in `ℕ∞`.
 * `HyperGraphLike.IsUniform` and `HyperGraphLike.IsRegular`: constant edge order and vertex degree.
@@ -279,69 +279,69 @@ def incVerts (G : Gr) (e : E) : Set V :=
   (fun i : I(G) ↦ (toVert G i : V)) '' {i | (toEdge G i : E) = e}
 
 /-- The set of edges incident to a vertex, forgetting incidence multiplicity and orientation. -/
-def toEdges (G : Gr) (v : V) : Set E :=
+def incEdges (G : Gr) (v : V) : Set E :=
   (fun i : I(G) ↦ (toEdge G i : E)) '' {i | (toVert G i : V) = v}
 
 @[simp]
-lemma mem_toEdges : e ∈ toEdges G v ↔ v ∈ incVerts G e := by
-  simp [toEdges, incVerts, and_comm]
+lemma mem_incEdges : e ∈ incEdges G v ↔ v ∈ incVerts G e := by
+  simp [incEdges, incVerts, and_comm]
 
 lemma incVerts_eq_image [Nonempty V] (G : Gr) : incVerts G e = attach G '' edgeFiber G e := by
   simp only [incVerts, edgeFiber, image_image, toVert_eq_attach]
 
-lemma toEdges_eq_image [Nonempty E] (G : Gr) : toEdges G v = edgeMap G '' vertexFiber G v := by
-  simp only [toEdges, vertexFiber, image_image, toEdge_eq_edgeMap]
+lemma incEdges_eq_image [Nonempty E] (G : Gr) : incEdges G v = edgeMap G '' vertexFiber G v := by
+  simp only [incEdges, vertexFiber, image_image, toEdge_eq_edgeMap]
 
 lemma mem_incVerts_iff_exists_incidence [Nonempty V] [Nonempty E] :
     v ∈ incVerts G e ↔ ∃ i, i ∈ I(G) ∧ edgeMap G i = e ∧ attach G i = v := by
   simp [incVerts_eq_image, and_assoc]
 
-lemma mem_toEdges_iff_exists_incidence [Nonempty V] [Nonempty E] :
-    e ∈ toEdges G v ↔ ∃ i, i ∈ I(G) ∧ attach G i = v ∧ edgeMap G i = e := by
-  rw [toEdges_eq_image]
+lemma mem_incEdges_iff_exists_incidence [Nonempty V] [Nonempty E] :
+    e ∈ incEdges G v ↔ ∃ i, i ∈ I(G) ∧ attach G i = v ∧ edgeMap G i = e := by
+  rw [incEdges_eq_image]
   simp only [mem_image, mem_vertexFiber, and_assoc]
 
 lemma incVerts_subset_verts : incVerts G e ⊆ V(G) := by
   rintro v ⟨i, _, rfl⟩
   exact (toVert G i).property
 
-lemma toEdges_subset_edges : toEdges G v ⊆ E(G) := by
+lemma incEdges_subset_edges : incEdges G v ⊆ E(G) := by
   rintro e ⟨i, _, rfl⟩
   exact (toEdge G i).property
 
 lemma mem_edges_of_mem_incVerts (h : v ∈ incVerts G e) : e ∈ E(G) :=
-  toEdges_subset_edges (mem_toEdges.mpr h)
+  incEdges_subset_edges (mem_incEdges.mpr h)
 
-lemma mem_verts_of_mem_toEdges (h : e ∈ toEdges G v) : v ∈ V(G) :=
-  incVerts_subset_verts (mem_toEdges.mp h)
+lemma mem_verts_of_mem_incEdges (h : e ∈ incEdges G v) : v ∈ V(G) :=
+  incVerts_subset_verts (mem_incEdges.mp h)
 
 @[simp]
 lemma incVerts_of_notMem_edges (he : e ∉ E(G)) : incVerts G e = ∅ :=
   eq_empty_iff_forall_notMem.mpr fun _ hv ↦ he (mem_edges_of_mem_incVerts hv)
 
 @[simp]
-lemma toEdges_of_notMem_verts (hv : v ∉ V(G)) : toEdges G v = ∅ :=
-  eq_empty_iff_forall_notMem.mpr fun _ he ↦ hv (mem_verts_of_mem_toEdges he)
+lemma incEdges_of_notMem_verts (hv : v ∉ V(G)) : incEdges G v = ∅ :=
+  eq_empty_iff_forall_notMem.mpr fun _ he ↦ hv (mem_verts_of_mem_incEdges he)
 
 lemma incVerts_eq_empty : incVerts G e = ∅ ↔ edgeFiber G e = ∅ := by
   simp [incVerts, edgeFiber]
 
-lemma toEdges_eq_empty : toEdges G v = ∅ ↔ vertexFiber G v = ∅ := by
-  simp [toEdges, vertexFiber]
+lemma incEdges_eq_empty : incEdges G v = ∅ ↔ vertexFiber G v = ∅ := by
+  simp [incEdges, vertexFiber]
 
 lemma incVerts_nonempty : (incVerts G e).Nonempty ↔ (edgeFiber G e).Nonempty := by
   simp [incVerts, edgeFiber]
 
-lemma toEdges_nonempty : (toEdges G v).Nonempty ↔ (vertexFiber G v).Nonempty := by
-  simp [toEdges, vertexFiber]
+lemma incEdges_nonempty : (incEdges G v).Nonempty ↔ (vertexFiber G v).Nonempty := by
+  simp [incEdges, vertexFiber]
 
 lemma attach_mem_incVerts [Nonempty V] [Nonempty E] (hi : i ∈ I(G)) :
     attach G i ∈ incVerts G (edgeMap G i) :=
   mem_incVerts_iff_exists_incidence.mpr ⟨i, hi, rfl, rfl⟩
 
-lemma edgeMap_mem_toEdges [Nonempty V] [Nonempty E] (hi : i ∈ I(G)) :
-    edgeMap G i ∈ toEdges G (attach G i) :=
-  mem_toEdges.mpr (attach_mem_incVerts hi)
+lemma edgeMap_mem_incEdges [Nonempty V] [Nonempty E] (hi : i ∈ I(G)) :
+    edgeMap G i ∈ incEdges G (attach G i) :=
+  mem_incEdges.mpr (attach_mem_incVerts hi)
 
 @[grind →]
 lemma IsLink.left_mem_incVerts (h : IsLink G e u v) : u ∈ incVerts G e := by
@@ -357,12 +357,12 @@ lemma IsLink.pair_subset_incVerts (h : IsLink G e u v) : {u, v} ⊆ incVerts G e
   Set.pair_subset_iff.mpr ⟨h.left_mem_incVerts, h.right_mem_incVerts⟩
 
 @[grind →]
-lemma IsLink.mem_toEdges_left (h : IsLink G e u v) : e ∈ toEdges G u :=
-  mem_toEdges.mpr h.left_mem_incVerts
+lemma IsLink.mem_incEdges_left (h : IsLink G e u v) : e ∈ incEdges G u :=
+  mem_incEdges.mpr h.left_mem_incVerts
 
 @[grind →]
-lemma IsLink.mem_toEdges_right (h : IsLink G e u v) : e ∈ toEdges G v :=
-  mem_toEdges.mpr h.right_mem_incVerts
+lemma IsLink.mem_incEdges_right (h : IsLink G e u v) : e ∈ incEdges G v :=
+  mem_incEdges.mpr h.right_mem_incVerts
 
 /-! ### Degree and order -/
 
@@ -384,22 +384,22 @@ lemma degree_eq_zero [Nonempty V] : degree G v = 0 ↔ ∀ i ∈ I(G), attach G 
 lemma degree_pos [Nonempty V] : 0 < degree G v ↔ ∃ i ∈ I(G), attach G i = v := by
   simp [degree_eq_encard_vertexFiber, Set.Nonempty]
 
-lemma degree_eq_zero_iff_toEdges_eq_empty : degree G v = 0 ↔ toEdges G v = ∅ := by
-  simp [degree_eq_encard_vertexFiber, toEdges_eq_empty]
+lemma degree_eq_zero_iff_incEdges_eq_empty : degree G v = 0 ↔ incEdges G v = ∅ := by
+  simp [degree_eq_encard_vertexFiber, incEdges_eq_empty]
 
-lemma degree_pos_iff_nonempty_toEdges : 0 < degree G v ↔ (toEdges G v).Nonempty := by
-  simp [degree_eq_encard_vertexFiber, toEdges_nonempty]
+lemma degree_pos_iff_nonempty_incEdges : 0 < degree G v ↔ (incEdges G v).Nonempty := by
+  simp [degree_eq_encard_vertexFiber, incEdges_nonempty]
 
 @[simp]
 lemma degree_of_notMem_verts (hv : v ∉ V(G)) : degree G v = 0 :=
-  degree_eq_zero_iff_toEdges_eq_empty.mpr (toEdges_of_notMem_verts hv)
+  degree_eq_zero_iff_incEdges_eq_empty.mpr (incEdges_of_notMem_verts hv)
 
 lemma degree_attach_pos [Nonempty V] (hi : i ∈ I(G)) : 0 < degree G (attach G i) :=
   degree_pos.mpr ⟨i, hi, rfl⟩
 
 lemma mem_verts_of_degree_pos (h : 0 < degree G v) : v ∈ V(G) := by
-  obtain ⟨e, he⟩ := degree_pos_iff_nonempty_toEdges.mp h
-  exact mem_verts_of_mem_toEdges he
+  obtain ⟨e, he⟩ := degree_pos_iff_nonempty_incEdges.mp h
+  exact mem_verts_of_mem_incEdges he
 
 lemma degree_le_encard_incs : degree G v ≤ I(G).encard :=
   (degree_eq_encard_vertexFiber G).trans_le (encard_mono vertexFiber_subset_incs)
@@ -445,13 +445,13 @@ lemma order_lt_top_of_finite (hI : I(G).Finite) : order G e < ⊤ :=
 
 lemma encard_incVerts_le_order : (incVerts G e).encard ≤ order G e := encard_image_le _ _
 
-lemma encard_toEdges_le_degree : (toEdges G v).encard ≤ degree G v := encard_image_le _ _
+lemma encard_incEdges_le_degree : (incEdges G v).encard ≤ degree G v := encard_image_le _ _
 
 lemma degree_pos_iff_exists_mem_incVerts : 0 < degree G v ↔ ∃ e, v ∈ incVerts G e := by
-  simp only [degree_pos_iff_nonempty_toEdges, Set.Nonempty, mem_toEdges]
+  simp only [degree_pos_iff_nonempty_incEdges, Set.Nonempty, mem_incEdges]
 
 lemma degree_eq_zero_iff_forall_notMem_incVerts : degree G v = 0 ↔ ∀ e, v ∉ incVerts G e := by
-  simp only [degree_eq_zero_iff_toEdges_eq_empty, eq_empty_iff_forall_notMem, mem_toEdges]
+  simp only [degree_eq_zero_iff_incEdges_eq_empty, eq_empty_iff_forall_notMem, mem_incEdges]
 
 lemma degree_eq_zero_of_incs_eq_empty (hI : I(G) = ∅) : degree G v = 0 := by
   simpa [hI] using degree_le_encard_incs (G := G) (v := v)
