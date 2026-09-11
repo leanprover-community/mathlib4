@@ -9,8 +9,8 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Order.SupIndep
 
 /-!

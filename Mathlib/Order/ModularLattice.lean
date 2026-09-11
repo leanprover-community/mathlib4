@@ -5,10 +5,10 @@ Authors: Aaron Anderson, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Cover
-public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.Monotone.Set.Congr
 
 /-!
 # Modular Lattices

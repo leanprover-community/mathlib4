@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Basic.Rel
-public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.ModelTheory.Semantics
 public import Mathlib.Tactic.FunProp
 

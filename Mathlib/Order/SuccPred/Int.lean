@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.Nat
 
 /-!
 # Successors and predecessors of integers

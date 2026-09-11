@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Algebra.Module.Submodule.Union
-public import Mathlib.Data.Int.Star
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Block

@@ -5,10 +5,10 @@ Authors: Kevin Buzzard, Bhavik Mehta, Oliver Nash
 -/
 module
 
-public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Int.ConditionallyCompleteOrder
 public import Mathlib.Order.Lattice.Nat
+public import Mathlib.Order.SuccPred.Int
 
 /-!
 # Order-connected subsets of linear orders
