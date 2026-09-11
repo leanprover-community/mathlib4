@@ -73,6 +73,19 @@ def lintCongrTheorem (ref : Syntax) (thm : SimpCongrTheorem) : CommandElabM Unit
       {indentD (MessageData.joinSep args.toList "\n")}\n\
     This violates the recommendation in the documentation of `@[congr]`."
 
+/-- Whether `stx` is the `congr` attribute. -/
+def isCongrAttr (stx : Syntax) : Bool :=
+  stx.isOfKind ``Lean.Parser.Attr.simple && stx[0].getId == ``congr
+
+/-- The identifiers `foo bar` in the `attribute [congr] foo bar` commands occurring in `stx`. -/
+def congrAttributeTargets (stx : Syntax) : Array Syntax := Id.run do
+  let mut ids := #[]
+  for s in stx.topDown do
+    -- `attribute [attrs,*] ids*`
+    if s.isOfKind ``Lean.Parser.Command.attribute && (s[2].find? isCongrAttr).isSome then
+      ids := ids ++ s[4].getArgs
+  return ids
+
 @[inherit_doc Mathlib.Linter.linter.congrFixedArgs]
 def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.congrFixedArgs (← getLinterOptions) do
@@ -80,21 +93,18 @@ def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   -- Only commands which mention the `congr` attribute can add `@[congr]` theorems.
-  let some congrAttr := stx.find? fun s ↦
-    s.isOfKind ``Lean.Parser.Attr.simple && s[0].getId == ``congr | return
+  let some congrAttr := stx.find? isCongrAttr | return
   let env ← getEnv
   let congrThms := (congrExtension.getState env).lemmas.toList.flatMap (·.2)
   let mut linted : NameSet := {}
   -- `attribute [congr] foo bar`: lint the named theorems.
-  for s in stx.topDown do
-    unless s.isOfKind ``Lean.Parser.Command.attribute do continue
-    for id in s[4].getArgs do
-      let some declName ← (do return some (← liftCoreM <| realizeGlobalConstNoOverload id))
-        <|> pure none | continue
-      let some thm := congrThms.find? (·.theoremName == declName) | continue
-      unless linted.contains declName do
-        linted := linted.insert declName
-        lintCongrTheorem id thm
+  for id in congrAttributeTargets stx do
+    let declName ← try liftCoreM <| realizeGlobalConstNoOverload id catch _ => continue
+    -- This fails for `attribute [local congr] foo in ...`, whose attribute is already gone.
+    let some thm := congrThms.find? (·.theoremName == declName) | continue
+    unless linted.contains declName do
+      linted := linted.insert declName
+      lintCongrTheorem id thm
   -- `@[congr] theorem foo ...`: lint the `@[congr]` theorems declared in this command.
   let some cmdRange := stx.getRange? | return
   for thm in congrThms do
