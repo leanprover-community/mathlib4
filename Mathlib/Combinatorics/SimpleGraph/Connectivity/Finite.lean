@@ -66,7 +66,11 @@ private lemma Reachable.mem_of_forall_adj_mem (huv : G.Reachable u v)
 
 /-- One round of breadth-first search: `G.bfsStep s l acc` prepends to `acc` the vertices of the
 list `l` of vertices remaining to be visited that are adjacent to some vertex of the frontier `s`,
-namely the vertices getting visited during this round. -/
+namely the vertices getting visited during this round.
+
+This is intended to make proving reachability/connected in/of a concrete finite graph efficient
+using `decide`. In particular, it isn't designed to be efficient with `#eval`.
+-/
 def bfsStep (G : SimpleGraph V) [DecidableRel G.Adj] (s : List V) : List V → List V → List V
   | [], acc => acc
   | w :: l, acc => G.bfsStep s l (if s.any (G.Adj · w) then w :: acc else acc)
@@ -86,8 +90,8 @@ lemma bfsStep_eq_reverse_filter_append :
 lemma nodup_bfsStep_append (hl : l.Nodup) (hacc : acc.Nodup) (h : ∀ x ∈ l, x ∉ acc) :
     (G.bfsStep s l [] ++ acc).Nodup := by
   rw [bfsStep_eq_reverse_filter_append, List.append_nil]
-  exact List.Nodup.append (List.nodup_reverse.2 (hl.filter _)) hacc fun x hx hx' ↦
-    h x (List.mem_of_mem_filter (List.mem_reverse.1 hx)) hx'
+  exact (hl.filter _).reverse.append hacc fun x hx ↦
+    h x (List.mem_of_mem_filter (List.mem_reverse.1 hx))
 
 /-- Iterate breadth-first search at most `n` times, stopping as soon as a round visits no new
 vertex.
