@@ -41,7 +41,7 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
   each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 * `IsLocalDiffeomorphAt_of_isInvertible_mderiv` (proved in `InverseFunctionTheorem.lean`): if `f` is
-  `C^n` an open set `U` and has bijective differential at an interior point `p ∈ U`, then
+  `C^n` on an open set `U` and has bijective differential at an interior point `p ∈ U`, then
   `f` is a local diffeomorphism at `p`.
 
 ## TODO
