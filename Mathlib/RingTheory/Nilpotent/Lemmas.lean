@@ -38,12 +38,12 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
   exact forall_comm.trans (forall_congr' fun r => exists_imp.symm)
 
-theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] {x : R} :
+theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] :
     IsNilpotent x ↔ 0 ∈ Submonoid.powers x := Iff.rfl
 
 section CommSemiring
 
-variable [CommSemiring R] {x : R}
+variable [CommSemiring R]
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/
 def nilradical (R : Type*) [CommSemiring R] : Ideal R :=
@@ -67,8 +67,21 @@ theorem nilradical_le_prime (J : Ideal R) [H : J.IsPrime] : nilradical R ≤ J :
 theorem nilradical_eq_zero (R : Type*) [CommSemiring R] [IsReduced R] : nilradical R = 0 :=
   Ideal.ext fun _ => isNilpotent_iff_eq_zero
 
-theorem nilradical_eq_bot_iff {R : Type*} [CommSemiring R] : nilradical R = ⊥ ↔ IsReduced R := by
+theorem nilradical_eq_bot_iff : nilradical R = ⊥ ↔ IsReduced R := by
   simp_rw [eq_bot_iff, SetLike.le_def, Submodule.mem_bot, mem_nilradical, isReduced_iff]
+
+open UniqueFactorizationMonoid in
+lemma Ideal.radical_span_singleton_eq_span_radical [UniqueFactorizationMonoid R]
+    [NormalizationMonoid R] (h : x ≠ 0) :
+    (span {x}).radical = span {UniqueFactorizationMonoid.radical x} := by
+  apply le_antisymm
+  · rw [Ideal.IsRadical.radical_le_iff]
+    · rw [Ideal.span_singleton_le_span_singleton]
+      exact UniqueFactorizationMonoid.radical_dvd_self
+    · rw [← isRadical_iff_span_singleton]
+      exact UniqueFactorizationMonoid.isRadical_radical
+  · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
+    exact exists_dvd_radical_self_pow h
 
 end CommSemiring
 
@@ -146,16 +159,3 @@ theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := 
   simp [← p.mapQ_pow, hk]
 
 end Module.End
-
-open UniqueFactorizationMonoid in
-lemma Ideal.radical_span_singleton_eq_span_radical [CommSemiring R] [UniqueFactorizationMonoid R]
-    [NormalizationMonoid R] (h : x ≠ 0) :
-    (span {x}).radical = span {UniqueFactorizationMonoid.radical x} := by
-  apply le_antisymm
-  · rw [Ideal.IsRadical.radical_le_iff]
-    · rw [Ideal.span_singleton_le_span_singleton]
-      exact UniqueFactorizationMonoid.radical_dvd_self
-    · rw [← isRadical_iff_span_singleton]
-      exact UniqueFactorizationMonoid.isRadical_radical
-  · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
-    exact exists_dvd_radical_self_pow h
