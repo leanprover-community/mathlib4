@@ -378,7 +378,7 @@ theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injectiv
 
 /-- A dilation from a metric space is a uniform inducing map -/
 theorem isUniformInducing : IsUniformInducing (f : α → β) :=
-  (antilipschitzWith f).isUniformInducing (lipschitz f).uniformContinuous
+  (antilipschitzWith f).isUniformInducing (lipschitzWith f).uniformContinuous
 
 theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=

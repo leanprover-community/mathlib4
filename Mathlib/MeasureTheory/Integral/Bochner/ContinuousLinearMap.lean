@@ -114,7 +114,7 @@ namespace LinearIsometry
 variable [CompleteSpace F] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E] [NormedSpace ℝ E]
 
 theorem integral_comp_comm (L : E →ₗᵢ[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) :=
-  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
 
 end LinearIsometry
 
