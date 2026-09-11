@@ -225,15 +225,8 @@ lemma ofSimplex_codimOneSimplex (j : Fin p) :
     dsimp at h₁₁ h₁₂ h₂₁ h₂₂ ⊢
     rw [stdSimplex.objEquiv_symm_σ_apply] at h₁₁ h₂₁
     fin_cases y
-    · dsimp at h₁₂ h₂₂ ⊢
-      simp only [stdSimplex.objMk₁_apply_eq_zero_iff, ← Fin.le_castSucc_iff,
-        Fin.castSucc_le_castSucc_iff, Fin.castSucc_succ] at h₁₂ h₂₂ ⊢
-      rw [Fin.predAbove_of_le_castSucc _ _ h₁₂] at h₁₁
-      simpa [← h₁₁] using! h₁₂
-    · dsimp at h₁₂ h₂₂ ⊢
-      simp only [stdSimplex.objMk₁_apply_eq_one_iff, Fin.succ_le_castSucc_iff] at h₁₂ h₂₂ ⊢
-      rw [Fin.predAbove_of_castSucc_lt _ _ h₂₂] at h₂₁
-      rwa [← h₂₁, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
+    · grind [stdSimplex.objMk₁_apply_eq_zero_iff, Fin.predAbove_of_le_castSucc, Fin.castPred]
+    · grind [stdSimplex.objMk₁_apply_eq_one_iff, Fin.pred, Fin.predAbove_of_castSucc_lt]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma intersectionNondeg_le_intersectionNondeg (i j k : Fin (p + 1))
