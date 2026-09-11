@@ -97,7 +97,7 @@ theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
 theorem besselJ_neg_comm (a : ℤ) (x : ℂ) : J (-a) x = J a (-x) := by
   rw [besselJ_neg_int, ← besselJ_int_neg]
 
-/-- `J (-a)` is analytic for integer `a`. -/
+/-- `J a` is analytic for integer `a`. -/
 @[fun_prop]
 theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J a) x := by
   wlog! ha : 0 ≤ a
