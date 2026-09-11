@@ -22,7 +22,7 @@ The valuation induces a norm on `ℚ`. This norm is defined in
 `Mathlib/NumberTheory/Padics/PadicNorm.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -46,16 +46,15 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
     · simp
     · simp [← padicValNat_eq_emultiplicity_of_ne_one, *]
 
-theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
-    padicValNat p n = multiplicity p n :=
-  .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|
-    padicValNat_eq_emultiplicity_of_ne_one hp hn
+theorem padicValNat_def {n : ℕ} : padicValNat p n = multiplicity p n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  by_cases hp : p = 1
+  · simp [hp]
+  exact (multiplicity_eq_of_emultiplicity_eq_some
+    (padicValNat_eq_emultiplicity_of_ne_one hp hn).symm).symm
 
-/-- A simplification of `padicValNat` when one input is prime, by analogy with
-`padicValRat_def`. -/
-theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
-    padicValNat p n = multiplicity p n :=
-  padicValNat_def' hp.out.ne_one hn
+@[deprecated (since := "2026-09-08")] alias padicValNat_def' := padicValNat_def
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
@@ -98,5 +97,13 @@ theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : �
     n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
-      |>.emultiplicity_eq_multiplicity, ← padicValNat_def' ha.ne_one hb,
-    Nat.cast_le]
+      |>.emultiplicity_eq_multiplicity, ← padicValNat_def,
+    ENat.natCast_le_natCast]
+
+/-- A weak upper bound on `padicValNat p n`. -/
+theorem mul_padicValNat_le {p n : ℕ} : p * padicValNat p n ≤ n := by
+  obtain rfl | hp := eq_or_ne p 1
+  · simp
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  grw [Nat.mul_le_pow hp, Nat.le_of_dvd hn.bot_lt pow_padicValNat_dvd]

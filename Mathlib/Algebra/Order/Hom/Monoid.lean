@@ -267,7 +267,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α] [MulOneClass β]
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -496,7 +496,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [Mul α] [Mul β]
   [Mul γ] [Mul δ] {f g : α ≃*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (α ≃*o β) α β where
   coe f := f.toFun
   inv f := f.invFun
@@ -687,16 +687,16 @@ theorem self_comp_symm (e : α ≃*o β) : e ∘ e.symm = id :=
   funext e.apply_symm_apply
 
 @[to_additive]
-theorem apply_eq_iff_symm_apply (e : α ≃*o β) {x : α} {y : β} : e x = y ↔ x = e.symm y :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
-@[to_additive]
 theorem symm_apply_eq (e : α ≃*o β) {x y} : e.symm x = y ↔ x = e y :=
   e.toEquiv.symm_apply_eq
 
 @[to_additive]
 theorem eq_symm_apply (e : α ≃*o β) {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
+
+@[to_additive (attr := deprecated eq_symm_apply (since := "2026-07-26"))]
+theorem apply_eq_iff_symm_apply (e : α ≃*o β) {x : α} {y : β} : e x = y ↔ x = e.symm y :=
+  e.eq_symm_apply.symm
 
 @[to_additive]
 theorem eq_comp_symm (e : α ≃*o β) (f : β → α) (g : α → α) :

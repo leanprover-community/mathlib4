@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
 import Mathlib.Probability.Notation
+public import Mathlib.Probability.Notation
 
 /-!
 # Taylor expansion of the characteristic function
@@ -30,8 +31,9 @@ characteristic function, Taylor expansion
 public section
 
 
-open ProbabilityTheory Complex Set VectorFourier
-open scoped Nat RealInnerProductSpace Topology
+open Complex Set VectorFourier
+
+open scoped ProbabilityTheory Nat RealInnerProductSpace Topology
 
 namespace MeasureTheory
 
@@ -66,7 +68,6 @@ lemma continuous_charFun : Continuous (charFun μ) := by
   refine contDiff_zero.1 (contDiff_charFun ?_)
   simpa using by fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin n → E) :
     iteratedFDeriv ℝ n (charFun μ) t x = I ^ n * ∫ y, (∏ i, ⟪y, x i⟫) * exp (⟪y, t⟫ * I) ∂μ := by
   have h : innerₗ E = (innerSL ℝ).toLinearMap₁₂ := rfl
@@ -85,8 +86,8 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin
   rw [fourierIntegral_continuousMultilinearMap_apply Real.continuous_fourierChar]
   swap;
   · exact integrable_fourierPowSMulRight _ (by simpa using hint.integrable_norm_pow') (by fun_prop)
-  simp only [fourierIntegral, Real.fourierChar, Circle.exp, ContinuousMap.coe_mk, ofReal_mul,
-    ofReal_ofNat, innerSL, map_neg, map_smul, ContinuousLinearMap.toLinearMap₁₂_apply,
+  simp only [fourierIntegral, Real.fourierChar, Circle.coe_exp, ofReal_mul,
+    ofReal_ofNat, innerSL, map_neg, map_smul, ContinuousLinearMap.toLinearMap₁₂_apply_apply_apply,
     LinearMap.mkContinuous₂_apply, innerₛₗ_apply_apply, smul_eq_mul, neg_neg, AddChar.coe_mk,
     ofReal_inv, fourierPowSMulRight_apply, Pi.ofNat_apply, real_smul, ofReal_prod, mul_one,
     Circle.smul_def]
@@ -127,7 +128,6 @@ lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
     (hint : MemLp id 2 (P.map X)) (t : ℝ) :
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
       1 + (P[X] : ℝ) * t * I - (P[X ^ 2] : ℝ) * t ^ 2 / 2 := by
-  have : IsProbabilityMeasure (P.map X) := Measure.isProbabilityMeasure_map hX
   convert! taylorWithinEval_charFun_zero hint t with x
   simp only [Pi.pow_apply, Nat.reduceAdd, Finset.sum_range_succ, Finset.range_one,
     Finset.sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, mul_one,

@@ -54,12 +54,12 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
-variable (H K : Subgroup G) {k : Set G}
+variable (H K : Subgroup G)
 
 open Set
 
@@ -393,7 +393,6 @@ end Subgroup
 namespace MulEquiv
 variable {H : Type*} [Group H]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their inverse images.
@@ -420,7 +419,6 @@ lemma coe_comapSubgroup (e : G ≃* H) : comapSubgroup e = Subgroup.comap e.toMo
 @[to_additive (attr := simp)]
 lemma symm_comapSubgroup (e : G ≃* H) : (comapSubgroup e).symm = comapSubgroup e.symm := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their forward images.
@@ -499,9 +497,17 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
 
 @[to_additive]
-lemma subgroupComap_surjective_of_surjective (f : G →* G') (H' : Subgroup G') (hf : Surjective f) :
+lemma subgroupComap_surjective (f : G →* G') (H' : Subgroup G') (hf : Surjective f) :
     Surjective (f.subgroupComap H') :=
-  f.submonoidComap_surjective_of_surjective H'.toSubmonoid hf
+  f.submonoidComap_surjective H'.toSubmonoid hf
+
+@[to_additive (attr := deprecated (since := "2026-09-09"))]
+alias subgroupComap_surjective_of_surjective := subgroupComap_surjective
+
+@[to_additive]
+lemma subgroupComap_injective (f : G →* G') (H' : Subgroup G') (hf : Injective f) :
+    Injective (f.subgroupComap H') :=
+  f.submonoidComap_injective H'.toSubmonoid hf
 
 /-- The `MonoidHom` from a subgroup to its image. -/
 @[to_additive (attr := simps!) /-- the `AddMonoidHom` from an additive subgroup to its image -/]
@@ -512,6 +518,11 @@ def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
 theorem subgroupMap_surjective (f : G →* G') (H : Subgroup G) :
     Function.Surjective (f.subgroupMap H) :=
   f.submonoidMap_surjective H.toSubmonoid
+
+@[to_additive]
+theorem subgroupMap_injective (f : G →* G') (H : Subgroup G) (hf : Function.Injective f) :
+    Function.Injective (f.subgroupMap H) :=
+  f.submonoidMap_injective hf H.toSubmonoid
 
 end MonoidHom
 
@@ -525,7 +536,7 @@ group are equal. -/
       /-- Makes the identity additive isomorphism from a proof
       two subgroups of an additive group are equal. -/]
 def subgroupCongr (h : H = K) : H ≃* K :=
-  { Equiv.setCongr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 @[to_additive (attr := simp)]
 lemma subgroupCongr_apply (h : H = K) (x) :

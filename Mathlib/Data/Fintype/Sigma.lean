@@ -14,11 +14,6 @@ public import Mathlib.Data.Fintype.OfMap
 
 public section
 
-
-open Function
-
-open Nat
-
 universe u v
 
 variable {ι α : Type*} {κ : ι → Type*} [Π i, Fintype (κ i)]

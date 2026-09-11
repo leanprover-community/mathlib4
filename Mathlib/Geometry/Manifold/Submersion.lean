@@ -314,7 +314,7 @@ mathematically, this is just the identity map; however, this is technically usef
 us to always work with `hf.smallComplement`. -/
 def smallEquiv (hf : IsSubmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
   haveI := hf.small
-  ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
+  ((Shrink.addEquiv (α := F)).continuousLinearEquiv 𝕜).symm
 
 lemma trans_F (h : IsSubmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsSubmersionAtOfComplement F' I J n f x := by

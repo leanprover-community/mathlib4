@@ -2,6 +2,7 @@ module  -- shake: keep-all --deprecated_module: ignore
 
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.AddGroup
 public import Mathlib.Tactic.Algebra.AlgebraNF
 public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Lemmas
@@ -104,6 +105,12 @@ public import Mathlib.Tactic.Determinant.Bird.Cert
 public import Mathlib.Tactic.Determinant.Bird.Meta
 public import Mathlib.Tactic.DuplicateDecls
 public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Tactic.Echelon.Bareiss
+public import Mathlib.Tactic.Echelon.Cert
+public import Mathlib.Tactic.Echelon.Core
+public import Mathlib.Tactic.Echelon.Parsing
+public import Mathlib.Tactic.Echelon.Rat
+public import Mathlib.Tactic.Echelon.Zsqrtd
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eval
@@ -154,6 +161,25 @@ public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
+public import Mathlib.Tactic.Inclusion.Core.Core
+public import Mathlib.Tactic.Inclusion.Core.DiscrTreeExt
+public import Mathlib.Tactic.Inclusion.Core.Elab
+public import Mathlib.Tactic.Inclusion.Core.Expr
+public import Mathlib.Tactic.Inclusion.Core.Extensions
+public import Mathlib.Tactic.Inclusion.Core.Inclusion
+public import Mathlib.Tactic.Inclusion.Core.ToSet
+public import Mathlib.Tactic.Inclusion.Core.Types
+public import Mathlib.Tactic.Inclusion.Extension.Core.Core
+public import Mathlib.Tactic.Inclusion.Extension.Core.Init
+public import Mathlib.Tactic.Inclusion.Extension.Interval
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
+public import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
+public import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic
 public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
@@ -180,7 +206,6 @@ public import Mathlib.Tactic.LinearCombinationPrime
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.CommandRanges
-public import Mathlib.Tactic.Linter.CommandStart
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -191,8 +216,10 @@ public import Mathlib.Tactic.Linter.FindDeprecations
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
+public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
@@ -216,6 +243,7 @@ public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.ModCases
 public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Monotonicity
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.Monotonicity.Basic
@@ -252,6 +280,7 @@ public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Tactic.NormNum.RealSqrt
 public import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Tactic.NormRank
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
@@ -286,7 +315,6 @@ public import Mathlib.Tactic.Relation.Symm
 public import Mathlib.Tactic.Rename
 public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Replace
-public import Mathlib.Tactic.RewriteSearch
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Ring.Basic
@@ -302,6 +330,7 @@ public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.SetLike
 public import Mathlib.Tactic.SetNotationForOrder
+public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.Divisors
@@ -309,6 +338,7 @@ public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
 public import Mathlib.Tactic.Simproc.VecPerm
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs

@@ -120,9 +120,11 @@ open TopologicalSpace Topology
 
 universe u
 
-variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
+variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*}
 
-open Set OpenPartialHomeomorph Manifold
+open Set OpenPartialHomeomorph
+
+open scoped Manifold
 
 /-! ### Charted spaces -/
 
@@ -276,8 +278,9 @@ theorem ChartedSpace.locallyPathConnectedSpace [LocallyPathConnectedSpace H] :
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
   · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
-    refine e.continuousOn_symm.mono <| subset_trans ?_ e.image_source_subset
-    exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
+    refine e.continuousOn_symm.mono ?_
+    unfold t
+    grw [pathComponentIn_subset, inter_subset_right, e.image_source_subset]
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
 
