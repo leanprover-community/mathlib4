@@ -161,7 +161,7 @@ theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
   ext fun _ => rfl
 
-theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
+theorem toAddMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) :=
@@ -389,6 +389,14 @@ theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
     ((f : α →+* β) : α → β) = f :=
   rfl
 
+attribute [coe] RingHom.toMonoidWithZeroHom
+
+instance : Coe (α →+* β) (α →*₀ β) :=
+  ⟨RingHom.toMonoidWithZeroHom⟩
+
+@[simp]
+theorem coe_toMonoidWithZeroHom (f : α →+* β) : ⇑(f : α →*₀ β) = f := rfl
+
 attribute [coe] RingHom.toMonoidHom
 
 instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
@@ -396,9 +404,6 @@ instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
 
 @[simp]
 theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
-  rfl
-
-theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 
 @[simp]
@@ -449,10 +454,13 @@ theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
   ext fun _ => rfl
 
-theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
+theorem toMonoidWithZeroHom_injective : Injective (fun f : α →+* β => (f : α →*₀ β)) := fun _ _ h =>
+  ext <| DFunLike.congr_fun (F := α →*₀ β) h
+
+theorem toAddMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
   ext <| DFunLike.congr_fun (F := α →+ β) h
 
-theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
+theorem toMonoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 /-- Ring homomorphisms map zero to zero. -/

@@ -524,7 +524,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem ringHom_ext' ⦃F G : (⨁ i, A i) →+* R⦄
     (h : ∀ i, (↑F : _ →+ R).comp (of A i) = (↑G : _ →+ R).comp (of A i)) : F = G :=
-  RingHom.coe_addMonoidHom_injective <| DirectSum.addHom_ext' h
+  RingHom.toAddMonoidHom_injective <| DirectSum.addHom_ext' h
 
 /-- Two `RingHom`s out of a direct sum are equal if they agree on the generators. -/
 theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
@@ -590,7 +590,7 @@ def liftRingHom :
     ext xi xv
     exact toAddMonoid_of (fun _ => f.1) xi xv
   right_inv F := by
-    apply RingHom.coe_addMonoidHom_injective
+    apply RingHom.toAddMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
     simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
 

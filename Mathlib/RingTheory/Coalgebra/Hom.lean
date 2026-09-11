@@ -159,7 +159,7 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₗc[R] B) �
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
   LinearMap.toAddMonoidHom_injective.comp coe_linearMap_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₗc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=

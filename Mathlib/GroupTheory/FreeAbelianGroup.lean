@@ -504,7 +504,7 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
   left_inv f := MonoidHom.ext <| by
     simp only [RingHom.coe_monoidHom_mk, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
       ofMulHom_coe, Function.comp_apply, lift_apply_of, forall_const]
-  right_inv F := RingHom.coe_addMonoidHom_injective <| by
+  right_inv F := RingHom.toAddMonoidHom_injective <| by
     simp only
     rw [← lift.apply_symm_apply (↑F : FreeAbelianGroup α →+ R)]
     rfl

@@ -163,11 +163,15 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S
     map_one := fun f => f.map_one }
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
+@[coe]
 def toMonoidWithZeroHom : R →*₀ S :=
-  .ofClass abv
+  { (abv : R →* S) with
+    map_zero' := abv.map_zero }
+
+instance : Coe (AbsoluteValue R S) (R →*₀ S) := ⟨fun f ↦ f.toMonoidWithZeroHom⟩
 
 @[simp]
-theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
+theorem coe_toMonoidWithZeroHom : ⇑(abv : R →*₀ S) = abv :=
   rfl
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*` and `1`. -/
