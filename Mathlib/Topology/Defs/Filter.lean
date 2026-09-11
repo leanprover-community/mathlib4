@@ -202,8 +202,8 @@ hold:
 * for any open set `s` we have `y ∈ s → x ∈ s`;
 * `y` is a cluster point of the filter `pure x = 𝓟 {x}`.
 
-This relation defines a preorder on `X`. If `X` is a T₀ space, then this preorder is a partial
-order. If `X` is a T₁ space, then this partial order is trivial : `x ⤳ y ↔ x = y`. -/
+This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this `Preorder` is a
+`PartialOrder`. If `X` is a T₁ space, then this `PartialOrder` is trivial: `x ⤳ y ↔ x = y`. -/
 def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
 
 @[inherit_doc]
