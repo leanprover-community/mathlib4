@@ -66,6 +66,8 @@ theorem pow_multiplicity_mul_divMaxPow (p n : ℕ) : p ^ multiplicity p n * divM
 @[deprecated (since := "2026-09-11")] alias pow_padicValNat_mul_divMaxPow :=
   pow_multiplicity_mul_divMaxPow
 
+@[deprecated (since := "2026-09-11")] alias _root_.pow_padicValNat_dvd := pow_multiplicity_dvd
+
 theorem multiplicity_lt_self {p n : ℕ} (hn : n ≠ 0) : multiplicity p n < n := by
   match p with
   | 0 | 1 => simp [Nat.pos_of_ne_zero hn]
