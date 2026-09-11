@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Regular.Defs
+public import Mathlib.Algebra.Group.PPow.Rec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.Simps
 
@@ -139,17 +140,63 @@ end IsRightCancelMul
 
 end Mul
 
+/-- `PSMul` is an implementation detail of `AddSemigroup`. It is needed because
+it is impossible to extend `SMul ℕ+ M` and `SMul ℕ M` at the same time. -/
+class PSMul (M : Type*) where
+  /-- Multiplication by a positive natural number.
+  Set this to `psmulRec` unless `Module` diamonds are possible. -/
+  protected psmul : ℕ+ → M → M
+
+/-- `PPow` is an implementation detail of `Semigroup`. It is needed because it is
+impossible to extend `Pow M ℕ+` and `Pow M ℕ` at the same time. -/
+@[to_additive]
+class PPow (M : Type*) where
+  /-- Raising to the power of a positive natural number. -/
+  protected ppow : ℕ+ → M → M
+
+@[default_instance high, to_additive toSMul]
+instance PPow.toPow {M : Type*} [PPow M] : Pow M ℕ+ :=
+  ⟨fun x n ↦ PPow.ppow n x⟩
+
+@[to_additive ofSMul]
+instance PPow.ofPow {M : Type*} [Pow M ℕ+] : PPow M := ⟨fun n x ↦ Pow.pow x n⟩
+
+/--
+An abbreviation for `ppowRec` with an additional assumption on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated
+squaring in compiled code.
+-/
+@[to_additive
+/-- An abbreviation for `psmulRec` with an additional assumption on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated
+doubling in compiled code as an automatic parameter. -/]
+abbrev ppowRecAuto {M : Type*} [Mul M] (_h : ∀ a b c : M, a * b * c = a * (b * c))
+    (k : ℕ+) (m : M) : M :=
+  ppowRec k m
+
 /-- A semigroup is a type with an associative `(*)`. -/
-@[ext]
-class Semigroup (G : Type*) extends Mul G where
+class Semigroup (G : Type*) extends Mul G, PPow G where
+  ppow := ppowRecAuto mul_assoc
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
+  /-- Raising to the power `(1 : ℕ+)` gives the same element. -/
+  protected ppow_one (x : G) : x ^ (1 : ℕ+) = x := by
+    first | intros; rfl | exact @ppowRec_one _ ⟨_⟩
+  /-- Raising to the power `(n + 1 : ℕ+)` behaves as expected. -/
+  protected ppow_succ (n : ℕ+) (x : G) : x ^ (n + 1) = x ^ n * x := by
+    first | intros; rfl | exact @ppowRec_succ _ ⟨_⟩
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
-@[ext]
-class AddSemigroup (G : Type*) extends Add G where
+class AddSemigroup (G : Type*) extends Add G, PSMul G where
+  psmul := psmulRecAuto add_assoc
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
+  /-- Scalar multiplication by `(1 : ℕ+)` gives the same element. -/
+  protected psmul_one (x : G) : (1 : ℕ+) • x = x := by
+    first | intros; rfl | exact @psmulRec_one _ ⟨_⟩
+  /-- Scalar multiplication by `(n + 1 : ℕ+)` behaves as expected. -/
+  protected psmul_succ (n : ℕ+) (x : G) : (n + 1 : ℕ+) • x = n • x + x := by
+    first | intros; rfl | exact @psmulRec_succ _ ⟨_⟩
 
 attribute [to_additive] Semigroup
 
@@ -160,6 +207,25 @@ variable [Semigroup G]
 @[to_additive]
 theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
+
+@[to_additive (attr := simp) psmul_eq_smul]
+theorem ppow_eq_pow (n : ℕ+) (x : G) : PPow.ppow n x = x ^ n :=
+  rfl
+
+@[to_additive (attr := simp high) one_psmul]
+theorem ppow_one (a : G) : a ^ (1 : ℕ+) = a :=
+  Semigroup.ppow_one _
+
+@[to_additive (reorder := a n) succ_psmul]
+theorem ppow_succ (a : G) (n : ℕ+) : a ^ (n + 1) = a ^ n * a :=
+  Semigroup.ppow_succ n a
+
+@[to_additive (reorder := a n) succ_psmul']
+lemma ppow_succ' (a : G) (n : ℕ+) :
+    a ^ (n + 1) = a * a ^ n := by
+  induction n with
+  | one => simp [ppow_succ]
+  | succ n IH => rw [ppow_succ _ n, ppow_succ, IH, mul_assoc]
 
 end Semigroup
 
@@ -211,11 +277,9 @@ class CommMagma (G : Type*) extends Mul G where
 attribute [to_additive] CommMagma
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
-@[ext]
 class CommSemigroup (G : Type*) extends Semigroup G, CommMagma G where
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
-@[ext]
 class AddCommSemigroup (G : Type*) extends AddSemigroup G, AddCommMagma G where
 
 attribute [to_additive] CommSemigroup
@@ -315,7 +379,11 @@ add_decl_doc RightCancelSemigroup.toIsRightCancelMul
 add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
 
 
-/-! We initialize the projections for the semigroup structures for `@[simps]` here. -/
+/-! We initialize the projections for the semigroup structures for `@[simps]` here.
+
+The lemmas generated for the `ppow` projections will *not* apply to `x ^ y`, since the argument
+order of these projections does not match the argument order of `^`. The `psmul` lemmas will be
+correct. -/
 initialize_simps_projections Semigroup
 initialize_simps_projections AddSemigroup
 initialize_simps_projections CommSemigroup
