@@ -24,10 +24,8 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 @[expose] public section
 
-universe uR uA uB
-
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
-structure AlgHom (R : Type uR) [CommSemiring R] (A : Type uA) (B : Type uB) [Semiring A]
+structure AlgHom (R : Type*) [CommSemiring R] (A B : Type*) [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 
@@ -52,7 +50,7 @@ class AlgHomClass (F : Type*) (R : outParam Type*) [CommSemiring R] (A B : outPa
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
-instance {R : Type uR} [CommSemiring R] (A : Type uA) (B : Type uB) [Semiring A] [Semiring B]
+instance {R : Type*} [CommSemiring R] (A B : Type*) [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective f g h := by
@@ -60,7 +58,7 @@ instance {R : Type uR} [CommSemiring R] (A : Type uA) (B : Type uB) [Semiring A]
     rcases g
     congr
 
-instance {R : Type uR} [CommSemiring R] (A : Type uA) (B : Type uB) [Semiring A] [Semiring B]
+instance {R : Type*} [CommSemiring R] (A B : Type*) [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] : AlgHomClass (A →ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
@@ -317,10 +315,8 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
 
 section comp
 
-universe uC uD
-
-variable {C : Type uC} [Semiring C] [Algebra R C]
-variable {D : Type uD} [Semiring D] [Algebra R D]
+variable {C : Type*} [Semiring C] [Algebra R C]
+variable {D : Type*} [Semiring D] [Algebra R D]
 
 /-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
 domain of `φ₁` equal to the codomain of `φ₂`, then
@@ -480,8 +476,8 @@ end RingHom
 
 namespace Algebra
 
-variable (R : Type uR) (A : Type uA) (B : Type uB)
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable (R : Type*) [CommSemiring R] (A B : Type*)
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
@@ -523,7 +519,7 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
 
 end MulDistribMulAction
 
-variable (M : Submonoid R) {B : Type uB} [Semiring B] [Algebra R B] {A}
+variable (M : Submonoid R) {B : Type*} [Semiring B] [Algebra R B] {A}
 
 lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
