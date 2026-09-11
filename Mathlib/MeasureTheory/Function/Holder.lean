@@ -44,15 +44,16 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 theorem MeasureTheory.eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm {f : α → E} {g : α → F}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     eLpNorm (fun a ↦ B (f a) (g a)) r μ ≤ ‖B‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
-  eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm hf hg (B ·) ‖B‖ₑ (.of_forall fun _ ↦ B.le_opENorm₂ ..)
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm (B · ·) ‖B‖ₑ B.continuous₂ hf hg
+    (.of_forall fun _ ↦ B.le_opENorm₂ ..)
 
 namespace ContinuousLinearMap
 
 variable (r) in
 theorem memLp_of_bilin {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : MemLp g q μ) :
     MemLp (fun x ↦ B (f x) (g x)) r μ :=
-  MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg
-    (B.aestronglyMeasurable_comp₂ hf.1 hg.1) (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
+  MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg B.continuous₂
+    (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
 theorem integrable_of_bilin_of_bdd_left {f : α → E} {g : α → F} (C : ℝ)
     (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) (hg : Integrable g μ) :
@@ -80,7 +81,9 @@ lemma nnnorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖B.holder r f g‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
   simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← enorm_eq_nnnorm, Lp.enorm_def]
   apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
-  exact eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm B (Lp.memLp f).1 (Lp.memLp g).1
+  exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm (B · ·) ‖B‖₊ B.continuous₂
+    (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g)
+    (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
 lemma norm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖B.holder r f g‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
@@ -178,10 +181,10 @@ variable [NormedRing 𝕜] [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [Is
 /-- Heterogeneous scalar multiplication of `MeasureTheory.Lp` functions by `MeasureTheory.Lp`
 functions when the exponents satisfy `ENNReal.HolderTriple p q r`. -/
 instance : HSMul (Lp 𝕜 p μ) (Lp E q μ) (Lp E r μ) where
-  hSMul f g := (Lp.memLp g).smul (Lp.memLp f) |>.toLp (⇑f • ⇑g)
+  hSMul f g := (Lp.memLp f).smul (Lp.memLp g) |>.toLp (⇑f • ⇑g)
 
 lemma smul_def {f : Lp 𝕜 p μ} {g : Lp E q μ} :
-    f • g = ((Lp.memLp g).smul (Lp.memLp f)).toLp (⇑f • ⇑g) :=
+    f • g = ((Lp.memLp f).smul (Lp.memLp g)).toLp (⇑f • ⇑g) :=
   rfl
 
 lemma coeFn_lpSMul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
@@ -194,7 +197,7 @@ protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
   simp only [Lp.norm_def, ← ENNReal.toReal_mul]
   refine ENNReal.toReal_mono (by finiteness) ?_
   rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
-  exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
+  exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g)
 
 end MulActionWithZero
 
