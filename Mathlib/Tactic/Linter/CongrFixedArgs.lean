@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Meta.CongrTheorems
 public meta import Lean.Meta.Tactic.Simp.SimpCongrTheorems
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
@@ -23,7 +24,9 @@ Usually `simp` will revisit the resulting expression and simplify the argument l
 doesn't happen with `singlePass := true`, or when a `post` method returns `.done`
 (as in `norm_cast`), so the argument is left unsimplified.
 
-Arguments which are proofs or types, and arguments on which later arguments depend, are ignored.
+The linter only considers explicit non-type arguments which `simp` would rewrite with the default
+congruence procedure. In particular, proofs, instances, and arguments on which later
+non-proof arguments depend are ignored, as are types.
 -/
 
 meta section
@@ -43,16 +46,16 @@ public register_option linter.congrFixedArgs : Bool := {
 namespace CongrFixedArgs
 
 /-- Given a `@[congr]` theorem `thm` whose conclusion is `f a₁ ... aₙ = f b₁ ... bₙ` (or `↔`),
-returns the positions `i` of the explicit arguments of `f` for which `aᵢ` and `bᵢ` are the same.
-Arguments which are proofs or types, and those on which later arguments of `f` depend, are
-skipped. -/
+returns the positions `i` of the explicit non-type arguments of `f` for which `aᵢ` and `bᵢ` are the
+same, but which `simp` would rewrite with the default congruence procedure. -/
 def fixedArgs (thm : SimpCongrTheorem) : MetaM (Array Nat) := do
   let (_, _, type) ← forallMetaTelescopeReducing (← getConstInfo thm.theoremName).type
   let some (lhs, rhs) := type.eqOrIff? | return #[]
   let fnInfo ← getFunInfoNArgs lhs.getAppFn lhs.getAppNumArgs
-  let args := lhs.getAppArgs.zip <| rhs.getAppArgs.zip fnInfo.paramInfo
-  let fixed : Array Bool ← args.mapM fun (a, b, p) ↦ do
-    return p.binderInfo.isExplicit && !p.hasFwdDeps && a == b && !(← isProof a) && !(← isType a)
+  let kinds ← getCongrSimpKinds lhs.getAppFn fnInfo
+  let args := lhs.getAppArgs.zip <| rhs.getAppArgs.zip <| fnInfo.paramInfo.zip kinds
+  let fixed : Array Bool ← args.mapM fun (a, b, p, k) ↦ do
+    return p.binderInfo.isExplicit && (k matches .eq) && a == b && !(← isType a)
   return fixed.zipIdx.filterMap (fun x ↦ if x.fst == true then some x.snd else none)
 
 /-- Logs a warning at `ref` if the `@[congr]` theorem `thm` has fixed explicit arguments. -/
