@@ -267,10 +267,8 @@ lemma intersectionNondeg_le_intersectionNondeg' (i j k : Fin (p + 1))
   simp only [Set.mem_inter_iff] at hxy ⊢
   fin_cases y
   all_goals
-  · dsimp at hxy ⊢
-    simp only [mem_range_objEquiv_nonDegenerateEquiv₀_iff,
-      mem_range_objEquiv_nonDegenerateEquiv₁_iff] at hxy ⊢
-    lia
+  · grind [mem_range_objEquiv_nonDegenerateEquiv₀_iff,
+      mem_range_objEquiv_nonDegenerateEquiv₁_iff]
 
 lemma filtration.bicartSq (j : Fin p) :
     Subcomplex.BicartSq (Subcomplex.ofSimplex (codimOneSimplex.{u} j.succ.castSucc).1)
