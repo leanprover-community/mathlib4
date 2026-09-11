@@ -69,7 +69,8 @@ lemma edgeCut_symmDiff : G.edgeCut (S ∆ S') = G.edgeCut S ∆ G.edgeCut S' := 
   obtain ⟨x, y, hxy⟩ := exists_isLink_of_mem_edgeSet he
   grind [hxy.mem_edgeCut_iff]
 
-lemma IsClosedSubgraph.edgeCut_subset (hHG : H ≤c G) (hS : S ⊆ V(H)) : G.edgeCut S ⊆ E(H) :=
+protected lemma IsClosedSubgraph.edgeCut_subset_edgeSet (hHG : H ≤c G) (hS : S ⊆ V(H)) :
+    G.edgeCut S ⊆ E(H) :=
   fun _ ⟨_, _, hxy, hu, _⟩ ↦ hHG.closed hxy.inc_left (hS hu)
 
 end edgeCut
@@ -80,13 +81,13 @@ section IsEdgeCut
 are between the set of vertices and its complement. -/
 def IsEdgeCut (G : Graph α β) (F : Set β) : Prop := ∃ S : Set α, G.edgeCut S = F
 
-lemma IsEdgeCut.exists (hF : G.IsEdgeCut F) : ∃ S ⊆ V(G), G.edgeCut S = F := by
+lemma IsEdgeCut.exists_edgeCut (hF : G.IsEdgeCut F) : ∃ S ⊆ V(G), G.edgeCut S = F := by
   obtain ⟨S, rfl⟩ := hF
   exact ⟨V(G) ∩ S, inter_subset_left .., by grind [edgeCut]⟩
 
 lemma IsEdgeCut.exists_of_isLink (he : G.IsLink e u v) (heF : e ∈ F) (hF : G.IsEdgeCut F) :
     ∃ S ⊆ V(G), G.edgeCut S = F ∧ u ∈ S ∧ v ∉ S := by
-  obtain ⟨S, hS, rfl⟩ := hF.exists
+  obtain ⟨S, hS, rfl⟩ := hF.exists_edgeCut
   grind [he.mem_edgeCut_iff, G.edgeCut_vertexSet_diff (S := S)]
 
 lemma IsEdgeCut.subset_edgeSet (hF : G.IsEdgeCut F) : F ⊆ E(G) := by
@@ -110,8 +111,7 @@ lemma IsEdgeCut.left_of_symmDiff (hF' : G.IsEdgeCut F') (hsymmDiff : G.IsEdgeCut
 lemma IsEdgeCut.inter_edgeSet_of_le (hHG : H ≤ G) (hF : G.IsEdgeCut F) :
     H.IsEdgeCut (E(H) ∩ F) := by
   obtain ⟨S, rfl⟩ := hF
-  use S
-  exact hHG.edgeCut_eq_inter
+  exact ⟨S, hHG.edgeCut_eq_inter⟩
 
 @[gcongr]
 lemma IsEdgeCut.anti_of_subset (hHG : H ≤ G) (hFH : F ⊆ E(H)) (hF : G.IsEdgeCut F) :
@@ -120,7 +120,7 @@ lemma IsEdgeCut.anti_of_subset (hHG : H ≤ G) (hFH : F ⊆ E(H)) (hF : G.IsEdge
 
 @[gcongr]
 lemma IsEdgeCut.of_isClosedSubgraph (hGH : G ≤c H) (hF : G.IsEdgeCut F) : H.IsEdgeCut F := by
-  obtain ⟨S, hSG, rfl⟩ := hF.exists
+  obtain ⟨S, hSG, rfl⟩ := hF.exists_edgeCut
   use S
   ext e
   wlog he : e ∈ E(G) generalizing
@@ -139,7 +139,7 @@ section IsBridge
 /-- A bridge (isthmus) is an edge that constitutes a singleton edge cut. -/
 @[expose] def IsBridge (G : Graph α β) (e : β) : Prop := G.IsEdgeCut {e}
 
-lemma IsBridge.isEdgeCut (he : G.IsBridge e) : G.IsEdgeCut {e} := he
+lemma IsBridge.isEdgeCut_singleton (he : G.IsBridge e) : G.IsEdgeCut {e} := he
 
 @[grind .]
 lemma IsBridge.mem_edgeSet (he : G.IsBridge e) : e ∈ E(G) := by
@@ -150,7 +150,7 @@ lemma IsBridge.anti_of_mem (hHG : H ≤ G) (heH : e ∈ E(H)) (he : G.IsBridge e
   he.anti_of_subset hHG (singleton_subset_iff.mpr heH)
 
 lemma IsBridge.of_isClosedSubgraph (hcle : H ≤c G) (he : H.IsBridge e) : G.IsBridge e :=
-  he.isEdgeCut.of_isClosedSubgraph hcle
+  he.isEdgeCut_singleton.of_isClosedSubgraph hcle
 
 lemma IsClosedSubgraph.isBridge_iff (he : e ∈ E(H)) (h : H ≤c G) : G.IsBridge e ↔ H.IsBridge e :=
   ⟨fun hb ↦ hb.anti_of_mem h.le he, fun hb ↦ hb.of_isClosedSubgraph h⟩
@@ -174,14 +174,15 @@ lemma IsBond.nonempty (hB : G.IsBond B) : B.Nonempty := hB.prop.2
 @[grind →]
 lemma IsBond.subset (hB : G.IsBond B) : B ⊆ E(G) := hB.isEdgeCut.subset_edgeSet
 
-@[grind .]
-lemma IsBridge.isBond (he : G.IsBridge e) : G.IsBond {e} := by
-  refine ⟨⟨he, by simp⟩, fun F' hF' hF'e ↦ ?_⟩
+lemma isBond_singleton_iff_isBridge : G.IsBond {e} ↔ G.IsBridge e := by
+  refine ⟨(·.isEdgeCut), fun he ↦ ⟨⟨he, by simp⟩, fun F' hF' hF'e ↦ ?_⟩⟩
   obtain rfl | rfl := subset_singleton_iff_eq.mp hF'e
   · simp at hF'
   exact hF'e
+alias ⟨_, IsBridge.isBond_singleton⟩ := isBond_singleton_iff_isBridge
 
-lemma IsBond.isBridge (heB : e ∈ B) (hB : G.IsBond B) : (G.deleteEdges (B \ {e})).IsBridge e := by
+lemma IsBond.isBridge_deleteEdges (heB : e ∈ B) (hB : G.IsBond B) :
+    (G.deleteEdges (B \ {e})).IsBridge e := by
   have := hB.prop.1.inter_edgeSet_of_le (G.deleteEdges_le (F := B \ {e}))
   rw [edgeSet_deleteEdges, inter_comm, inter_sdiff_distrib_left, inter_eq_left.mpr hB.subset,
     inter_eq_right.mpr sdiff_subset] at this
