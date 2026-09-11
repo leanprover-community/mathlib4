@@ -76,8 +76,8 @@ lemma house_add_mul_le :
 -/
 
 @[nolint unusedArguments]
-lemma one_le_c₄ : 1 ≤ c₄ α' β' γ' := one_le_mul_of_one_le_of_one_le
-  (le_max_left 1 (house.c₁ K * house.c₁ K * 2 * ↑(m K))) (one_le_c₃ α' β' γ')
+lemma one_le_c₄ : 1 ≤ c₄ α' β' γ' :=
+  one_le_mul_of_one_le_of_one_le (one_le_houseC₁_sq_mul (K := K)) (one_le_c₃ α' β' γ')
 
 /-- The constant `|c₁| * (1 + house β')`. -/
 def c₆ : ℝ := (|↑(c₁ α' β' γ')| * (1 + house β'))
@@ -718,11 +718,7 @@ lemma eq6b : (q*q) * ((((c₄ α' β' γ' ^ (n K q : ℝ) *
         · positivity
       · unfold c₆ c₇ house; positivity
       · simp only [Real.rpow_natCast]
-        unfold c₄
-        apply pow_nonneg
-        simp only [lt_sup_iff, zero_lt_one, true_or,
-          mul_nonneg_iff_of_pos_left]
-        exact le_trans zero_le_one (one_le_c₃ α' β' γ')
+        exact pow_nonneg (le_trans zero_le_one (one_le_c₄ α' β' γ')) _
     · unfold c₆ c₇ house
       · apply mul_nonneg
         · apply mul_nonneg
