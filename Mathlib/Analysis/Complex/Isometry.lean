@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Isometries of the Complex Plane
@@ -32,16 +33,17 @@ The proof of `linear_isometry_complex_aux` is separated in the following parts:
 
 
 noncomputable section
+suppress_compilation -- needed to avoid a panic!
 
 open Complex
 
 open CharZero
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 local notation "|" x "|" => Complex.abs x
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An element of the unit circle defines a `LinearIsometryEquiv` from `ℂ` to itself, by
 rotation. -/
 def rotation : Circle →* ℂ ≃ₗᵢ[ℝ] ℂ where
@@ -100,23 +102,14 @@ theorem LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re {f : ℂ →ₗ�
 
 theorem LinearIsometry.im_apply_eq_im {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) :
     z + conj z = f z + conj (f z) := by
-  have : ‖f z - 1‖ = ‖z - 1‖ := by rw [← f.norm_map (z - 1), f.map_sub, h]
-  apply_fun fun x => x ^ 2 at this
-  simp only [← normSq_eq_norm_sq] at this
-  rw [← ofReal_inj, ← mul_conj, ← mul_conj] at this
-  rw [map_sub, map_sub] at this
-  simp only [sub_mul, mul_sub, one_mul] at this
-  rw [mul_conj, normSq_eq_norm_sq, LinearIsometry.norm_map] at this
-  rw [mul_conj, normSq_eq_norm_sq] at this
-  simp only [sub_sub, sub_right_inj, mul_one, ofReal_pow, map_one] at this
-  simp only [add_sub, sub_left_inj] at this
-  rw [add_comm, ← this, add_comm]
+  have hsq : ‖f z - 1‖ ^ 2 = ‖z - 1‖ ^ 2 := by simpa [h] using f.norm_map (z - 1)
+  simp_rw [← normSq_eq_norm_sq, Complex.normSq_sub] at hsq
+  simpa [normSq_eq_norm_sq, Complex.add_conj, LinearIsometry.norm_map] using hsq.symm
 
 theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) : (f z).re = z.re := by
   apply LinearIsometry.re_apply_eq_re_of_add_conj_eq
   apply LinearIsometry.im_apply_eq_im h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     f = LinearIsometryEquiv.refl ℝ ℂ ∨ f = conjLIE := by
   have h0 : f I = I ∨ f I = -I := by
@@ -133,6 +126,7 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
       intro i
       fin_cases i <;> simp [h, h']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
     ∃ a : Circle, f = rotation a ∨ f = conjLIE.trans (rotation a) := by
   let a : Circle := ⟨f 1, by simp [Submonoid.unitSphere, f.norm_map]⟩
@@ -142,7 +136,6 @@ theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
   · simpa using eq_mul_of_inv_mul_eq h₁
   · exact eq_mul_of_inv_mul_eq h₂
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The matrix representation of `rotation a` is equal to the conformal matrix
 `!![re a, -im a; im a, re a]`. -/
 theorem toMatrix_rotation (a : Circle) :
@@ -155,7 +148,6 @@ theorem toMatrix_rotation (a : Circle) :
     Matrix.cons_val_fin_one]
   fin_cases i <;> fin_cases j <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of `rotation` (as a linear map) is equal to `1`. -/
 @[simp]
 theorem det_rotation (a : Circle) : LinearMap.det ((rotation a).toLinearEquiv : ℂ →ₗ[ℝ] ℂ) = 1 := by

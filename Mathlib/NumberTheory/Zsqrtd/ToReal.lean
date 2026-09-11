@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!

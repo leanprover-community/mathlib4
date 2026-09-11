@@ -48,16 +48,17 @@ instance : lightProfiniteToLightCondSet.Full :=
 instance : lightProfiniteToLightCondSet.Faithful :=
   inferInstanceAs ((coherentTopology LightProfinite).yoneda).Faithful
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
 -/
 @[simps!]
 noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
     lightProfiniteToLightCondSet.{u} ≅ LightProfinite.toTopCat.{u} ⋙ topCatToLightCondSet.{u} :=
-  NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
+  dsimp% NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
     NatIso.ofComponents fun S ↦ {
-      hom f := { toFun := f.hom }
-      inv f := InducedCategory.homMk (TopCat.ofHom f) }
+      hom := ↾fun f ↦ { toFun := f.hom }
+      inv := ↾fun f ↦ InducedCategory.homMk (TopCat.ofHom f) }
 
 /--
 The functor from `LightProfinite` to `LightCondSet` preserves countable limits.

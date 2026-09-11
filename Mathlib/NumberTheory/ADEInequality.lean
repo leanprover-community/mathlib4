@@ -28,12 +28,12 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 
 ## Main declarations
 
-* `pqr.A' q r`, the multiset `{1,q,r}`
-* `pqr.D' r`, the multiset `{2,2,r}`
-* `pqr.E6`, the multiset `{2,3,3}`
-* `pqr.E7`, the multiset `{2,3,4}`
-* `pqr.E8`, the multiset `{2,3,5}`
-* `pqr.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
+* `ADEInequality.A' q r`, the multiset `{1,q,r}`
+* `ADEInequality.D' r`, the multiset `{2,2,r}`
+* `ADEInequality.E6`, the multiset `{2,3,3}`
+* `ADEInequality.E7`, the multiset `{2,3,4}`
+* `ADEInequality.E8`, the multiset `{2,3,5}`
+* `ADEInequality.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
 
 -/
 
@@ -99,7 +99,7 @@ This solution is related to the Dynkin diagrams $E_8$. -/
 def E8 : Multiset ℕ+ :=
   E' 5
 
-/-- `sum_inv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
+/-- `sumInv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
 of the elements of `pqr`, as rational number.
 
 The intended argument is a multiset `{p,q,r}` of cardinality `3`. -/
@@ -110,7 +110,7 @@ theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ
   simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,
     map_singleton, sum_singleton]
 
-/-- A multiset `pqr` of positive natural numbers is `admissible`
+/-- A multiset `pqr` of positive natural numbers is `Admissible`
 if it is equal to `A' q r`, or `D' r`, or one of `E6`, `E7`, or `E8`. -/
 def Admissible (pqr : Multiset ℕ+) : Prop :=
   (∃ q r, A' q r = pqr) ∨ (∃ r, D' r = pqr) ∨ E' 3 = pqr ∨ E' 4 = pqr ∨ E' 5 = pqr
@@ -152,52 +152,31 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
     norm_num
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
-  have h3 : (0 : ℚ) < 3 := by simp
   contrapose! H
   rw [sumInv_pqr]
   have h3q := H.trans hpq
   have h3r := h3q.trans hqr
-  have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv₀ _ h3]
-    · assumption_mod_cast
-    · simp
-  have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv₀ _ h3]
-    · assumption_mod_cast
-    · simp
-  have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv₀ _ h3]
-    · assumption_mod_cast
-    · simp
+  have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast H)
+  have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast h3q)
+  have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast h3r)
   calc
     (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add hp hq) hr
     _ = 1 := by norm_num
 
 theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 := by
-  have h4 : (0 : ℚ) < 4 := by simp
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
-  have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := by
-    rw [inv_le_inv₀ _ h4]
-    · assumption_mod_cast
-    · simp
-  have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := by
-    rw [inv_le_inv₀ _ h4]
-    · assumption_mod_cast
-    · simp
+  have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast H)
+  have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast h4r)
   calc
     (2⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹) ≤ 2⁻¹ + 4⁻¹ + 4⁻¹ := add_le_add (add_le_add le_rfl hq) hr
     _ = 1 := by norm_num
 
 theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
-  have h6 : (0 : ℚ) < 6 := by simp
   contrapose! H
   rw [sumInv_pqr]
-  have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := by
-    rw [inv_le_inv₀ _ h6]
-    · assumption_mod_cast
-    · simp
+  have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast H)
   calc
     (2⁻¹ + 3⁻¹ + (r : ℚ)⁻¹ : ℚ) ≤ 2⁻¹ + 3⁻¹ + 6⁻¹ := add_le_add (add_le_add le_rfl le_rfl) hr
     _ = 1 := by norm_num
@@ -243,7 +222,7 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
 
 /-- A multiset `{p,q,r}` of positive natural numbers
 is a solution to `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1` if and only if
-it is `admissible` which means it is one of:
+it is `Admissible` which means it is one of:
 
 * `A' q r := {1,q,r}`
 * `D' r := {2,2,r}`

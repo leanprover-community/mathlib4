@@ -8,6 +8,6 @@ import Mathlib.Tactic
 #find_syntax "test_find_syntax" approx
 
 -- Guard against the shake tool modifying our imports
-/-- info: [public import Init, import Mathlib.Tactic] -/
+/-- info: [public import Init, public meta import Init, import Mathlib.Tactic] -/
 #guard_msgs in
 run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"

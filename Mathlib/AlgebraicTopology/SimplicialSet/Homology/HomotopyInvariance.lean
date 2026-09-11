@@ -40,7 +40,7 @@ using the definition `SSet.Homotopy.toSimplicialObjectHomotopy` from the file
 
 /-! The invariance of singular homology (of topological spaces)
 is obtained in the file
-`Mathlib/AlgebraicTopology/SingularHomology/HomotopyInvarianceTopCat.lean`. -/
+`Mathlib/AlgebraicTopology/SingularHomology/HomotopyInvariance.lean`. -/
 assert_not_exists TopologicalSpace
 
 universe v u w

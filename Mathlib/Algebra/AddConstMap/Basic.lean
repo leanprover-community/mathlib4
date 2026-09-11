@@ -321,9 +321,10 @@ variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 ### Coercion to function
 -/
 
+@[macro_inline]
 instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+  coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 @[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl

@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Field.Rat
 # Basic results about modules over the rationals.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

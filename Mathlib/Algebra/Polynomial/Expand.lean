@@ -47,8 +47,9 @@ variable {R}
 
 theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
-  simp [expand, eval₂]
+  simp [expand, eval₂_eq_sum]
 
 @[simp]
 theorem expand_C (r : R) : expand R p (C r) = C r :=
@@ -92,9 +93,9 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
   simp only [expand_eq_sum]
   simp_rw [coeff_sum, ← pow_mul, C_mul_X_pow_eq_monomial, coeff_monomial, sum]
   split_ifs with h
-  · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, if_pos rfl]
+  · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, ite_eq_left rfl]
     · intro b _ hb2
-      rw [if_neg]
+      rw [ite_eq_right]
       intro hb3
       apply hb2
       rw [← hb3, Nat.mul_div_cancel_left b hp]
@@ -103,13 +104,13 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
       split_ifs <;> rfl
   · rw [Finset.sum_eq_zero]
     intro k _
-    rw [if_neg]
+    rw [ite_eq_right]
     exact fun hkn => h ⟨k, hkn.symm⟩
 
 @[simp]
 theorem coeff_expand_mul {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
     (expand R p f).coeff (n * p) = f.coeff n := by
-  rw [coeff_expand hp, if_pos (dvd_mul_left _ _), Nat.mul_div_cancel _ hp]
+  rw [coeff_expand hp, ite_eq_left (dvd_mul_left _ _), Nat.mul_div_cancel _ hp]
 
 @[simp]
 theorem coeff_expand_mul' {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
@@ -185,7 +186,7 @@ noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     (contract p f).coeff n = f.coeff (n * p) := by
-  simp only [contract, coeff_monomial, sum_ite_eq', finset_sum_coeff, mem_range, not_lt,
+  simp only [contract, coeff_monomial, sum_ite_eq', finsetSum_coeff, mem_range, not_lt,
     ite_eq_left_iff]
   intro hn
   apply (coeff_eq_zero_of_natDegree_lt _).symm
@@ -226,7 +227,7 @@ theorem contract_mul_expand {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
     obtain ⟨y, rfl⟩ := h
     refine (nex ⟨⟨x, y⟩, (Nat.mul_right_cancel_iff hp.bot_lt).mp ?_, by simp_rw [mul_comm]⟩).elim
     rw [← eq, mul_comm, mul_add]
-  · rw [coeff_expand hp.bot_lt, if_neg h, mul_zero]
+  · rw [coeff_expand hp.bot_lt, ite_eq_right h, mul_zero]
 
 @[simp] theorem isCoprime_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
     IsCoprime (expand R p f) (expand R p g) ↔ IsCoprime f g :=
@@ -257,7 +258,7 @@ theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivati
     expand R p (contract p f) = f := by
   obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
   · rw [expand_one, contract_one]
-  · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
+  · have := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
 theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine f.induction_on' (fun a b ha hb => ?_) fun n a => ?_
@@ -265,9 +266,6 @@ theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
       mul_pow, ← C.map_pow, frobenius_def]
     ring
-
-@[deprecated (since := "2025-12-27")]
-alias expand_char := map_frobenius_expand
 
 theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
     map (iterateFrobenius R p n) (expand R (p ^ n) f) = f ^ p ^ n := by
@@ -278,9 +276,6 @@ theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
     conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
     simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
       ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
-
-@[deprecated (since := "2025-12-27")]
-alias map_expand_pow_char := map_iterateFrobenius_expand
 
 end ExpChar
 
@@ -312,7 +307,7 @@ variable (R : Type u) [CommRing R] [IsDomain R]
 theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   refine ⟨fun f hf1 => ?_⟩
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)
-  rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
+  rw [coeff_expand hp, ite_eq_left (dvd_zero _), p.zero_div] at hf2
   rw [hf2, isUnit_C] at hf1; rw [expand_eq_C hp] at hf2; rwa [hf2, isUnit_C]
 
 variable {R}

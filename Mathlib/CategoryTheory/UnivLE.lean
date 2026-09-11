@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Basic.UnivLE
 public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Logic.UnivLE
 
 /-!
 # Universe inequalities and essential surjectivity of `uliftFunctor`.
@@ -26,8 +26,9 @@ noncomputable section
 theorem UnivLE.ofEssSurj (w : (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj) :
     UnivLE.{max u v, v} where
   small α := by
-    obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage α
-    exact ⟨a', ⟨(Iso.toEquiv m).symm.trans Equiv.ulift⟩⟩
+    obtain ⟨a', m⟩ := w.mem_essImage α
+    obtain ⟨m'⟩ := m
+    exact ⟨a', ⟨(Iso.toEquiv m').symm.trans Equiv.ulift⟩⟩
 
 instance EssSurj.ofUnivLE [UnivLE.{max u v, v}] :
     (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj where

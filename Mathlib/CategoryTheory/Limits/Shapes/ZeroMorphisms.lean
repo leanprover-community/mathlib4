@@ -131,6 +131,10 @@ theorem zero_of_epi_comp {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] (h : f 
   rw [← comp_zero, cancel_epi] at h
   exact h
 
+lemma comp_eq_zero_iff_of_epi {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] :
+    f ≫ g = 0 ↔ g = 0 :=
+  ⟨zero_of_epi_comp _, by simp +contextual⟩
+
 theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image.ι f = 0) :
     f = 0 := by rw [← image.fac f, w, HasZeroMorphisms.comp_zero]
 
@@ -222,7 +226,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
@@ -250,7 +254,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
 asks for an instance of `HasZeroObject`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
@@ -543,6 +547,8 @@ def imageZero {X Y : C} : image (0 : X ⟶ Y) ≅ 0 :=
 def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 :=
   image.eqToIso h ≪≫ imageZero
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem image.ι_zero {X Y : C} [HasImage (0 : X ⟶ Y)] : image.ι (0 : X ⟶ Y) = 0 := by
   rw [← image.lift_fac (monoFactorisationZero X Y)]
@@ -560,13 +566,11 @@ theorem image.ι_zero' [HasEqualizers C] {X Y : C} {f : X ⟶ Y} (h : f = 0) [Ha
 
 end Image
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_sigma_ι {β : Type u'} [HasZeroMorphisms C] (f : β → C)
     [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) := by
   classical exact IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
     [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) := by
@@ -584,13 +588,11 @@ instance isSplitMono_coprod_inr [HasZeroMorphisms C] {X Y : C} [HasColimit (pair
     IsSplitMono (coprod.inr : Y ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc 0 (𝟙 Y) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_prod_fst [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.fst : X ⨯ Y ⟶ X) :=
   IsSplitEpi.mk' { section_ := prod.lift (𝟙 X) 0 }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.snd : X ⨯ Y ⟶ Y) :=
@@ -665,12 +667,10 @@ variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [Has
 def Pi.ι (b : β) : f b ⟶ ∏ᶜ f :=
   Pi.lift (Function.update (fun _ ↦ 0) b (𝟙 _))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), grind =]
 lemma Pi.ι_π_eq_id (b : β) : Pi.ι f b ≫ Pi.π f b = 𝟙 _ := by
   simp [Pi.ι]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, grind =]
 lemma Pi.ι_π_of_ne {b c : β} (h : b ≠ c) : Pi.ι f b ≫ Pi.π f c = 0 := by
   simp [Pi.ι, Function.update_of_ne h.symm]
@@ -693,12 +693,10 @@ variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [Has
 def Sigma.π (b : β) : ∐ f ⟶ f b :=
   Limits.Sigma.desc (Function.update (fun _ ↦ 0) b (𝟙 _))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), grind =]
 lemma Sigma.ι_π_eq_id (b : β) : Sigma.ι f b ≫ Sigma.π f b = 𝟙 _ := by
   simp [Sigma.π]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, grind =]
 lemma Sigma.ι_π_of_ne {b c : β} (h : b ≠ c) : Sigma.ι f b ≫ Sigma.π f c = 0 := by
   simp [Sigma.π, Function.update_of_ne h]
@@ -727,22 +725,18 @@ into any product of objects `X ⨯ Y`. -/
 def prod.inr : Y ⟶ X ⨯ Y :=
   prod.lift 0 (𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inl_fst : prod.inl X Y ≫ prod.fst = 𝟙 X := by
   simp [prod.inl]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inl_snd : prod.inl X Y ≫ prod.snd = 0 := by
   simp [prod.inl]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inr_fst : prod.inr X Y ≫ prod.fst = 0 := by
   simp [prod.inr]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inr_snd : prod.inr X Y ≫ prod.snd = 𝟙 Y := by
   simp [prod.inr]
@@ -805,7 +799,7 @@ open Limits
 
 variable {C : Type*} [Category* C] [HasZeroMorphisms C] (P : ObjectProperty C)
 
-instance [HasZeroMorphisms C] : HasZeroMorphisms P.FullSubcategory where
+instance : HasZeroMorphisms P.FullSubcategory where
   -- Note: Add zero field explicitly for a better transparency of definitional properties
   zero _ _ := { zero := P.homMk 0 }
   __ := P.fullyFaithfulι.hasZeroMorphisms

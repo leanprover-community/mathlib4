@@ -5,8 +5,11 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.List.Basic
 public import Mathlib.Logic.Relator
+public import Batteries.Data.List.Basic
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Double universal quantification on a list
@@ -16,7 +19,7 @@ This file provides an API for `List.Forall₂` (definition in `Data.List.Defs`).
 of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat Function

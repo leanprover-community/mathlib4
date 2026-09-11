@@ -73,7 +73,7 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] 
     [BorelSpace E] {P P' : Measure E} [IsFiniteMeasure P] [IsFiniteMeasure P']
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable E
+  let := TopologicalSpace.upgradeIsCompletelyMetrizable E
   exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA heq
 
 end MeasureTheory

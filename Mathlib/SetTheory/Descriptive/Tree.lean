@@ -33,7 +33,7 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
 
 @[simps!] instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
 
-instance (A : Type*) : PartialOrder (tree A) := .ofSetLike (tree A) (List A)
+example (A : Type*) : PartialOrder (tree A) := inferInstance
 
 namespace Tree
 variable {A : Type*} {S T : tree A}
@@ -101,9 +101,11 @@ def pullSub : tree A where
 
 variable {T x y}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_pullSub_short (hl : y.length ≤ x.length) : y ∈ pullSub T x ↔ y <+: x ∧ [] ∈ T := by
   simp [pullSub, List.take_of_length_le hl, List.drop_eq_nil_iff.mpr hl]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_pullSub_long (hl : x.length ≤ y.length) : y ∈ pullSub T x ↔ ∃ z ∈ T, y = x ++ z where
   mp := by
     intro ⟨h1, h2⟩; use y.drop x.length, h2
@@ -136,6 +138,7 @@ lemma pullSub_adjunction (S T : tree A) (x : List A) : pullSub S x ≤ T ↔ S �
 
 @[simp] lemma pullSub_nil : pullSub T [] = T := by simp [pullSub]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pullSub_append : pullSub (pullSub T y) x = pullSub T (x ++ y) := by
   ext z; rcases le_total x.length z.length with hl | hl
   · by_cases hp : x <+: z

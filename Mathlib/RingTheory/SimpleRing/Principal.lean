@@ -16,7 +16,7 @@ Indeed, it is a field.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsSimpleRing R]
 

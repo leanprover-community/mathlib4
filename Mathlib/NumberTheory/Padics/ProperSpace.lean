@@ -30,11 +30,13 @@ Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists FiniteDimensional
 
-open Metric Topology
+open Metric
+
+open scoped Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 
@@ -54,7 +56,7 @@ theorem totallyBounded_univ : TotallyBounded (Set.univ : Set ℤ_[p]) := by
 /-- The set of p-adic integers `ℤ_[p]` is a compact topological space. -/
 instance compactSpace : CompactSpace ℤ_[p] := by
   rw [← isCompact_univ_iff, isCompact_iff_totallyBounded_isComplete]
-  exact ⟨totallyBounded_univ p, complete_univ⟩
+  exact ⟨totallyBounded_univ p, isComplete_univ⟩
 
 end PadicInt
 
@@ -66,6 +68,6 @@ instance : ProperSpace ℚ_[p] := by
   have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
   simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this
-  simpa only [isCompact_iff_compactSpace] using PadicInt.compactSpace p
+  simpa only [isCompact_iff_compactSpace] using! PadicInt.compactSpace p
 
 end Padic

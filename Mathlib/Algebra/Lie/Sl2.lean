@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
 
@@ -65,12 +66,12 @@ lemma lie_lie_smul_f (t : IsSl2Triple h e f) : ⁅h, f⁆ = -((2 : R) • f) := 
 
 lemma e_ne_zero (t : IsSl2Triple h e f) : e ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 variable {R}
@@ -243,5 +244,36 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
       leibniz_lie h, IsSl2Triple.lie_h_e_smul R t, smul_lie, ih, lie_smul, ← add_smul]
     congr 1
     ring
+
+section CharZero
+
+variable [IsDomain R] [CharZero R]
+  [Nontrivial M] [IsTorsionFree R M] [Module.Finite R M] [IsTriangularizable R L M]
+  (t : IsSl2Triple h e f)
+
+lemma exists_hasPrimitiveVectorWith :
+    ∃ (μ : R) (m : M), m ≠ 0 ∧ HasPrimitiveVectorWith t m μ := by
+  obtain ⟨μ₀, hμ₀⟩ := IsTriangularizable.exists_hasEigenvalue R L M h
+  obtain ⟨m₀, hm₀⟩ := hμ₀.exists_hasEigenvector
+  let evals (n : ℕ) : R := μ₀ + 2 * (n : R)
+  let e_vecs (n : ℕ) : M := ((toEnd R L M e) ^ n) m₀
+  have h_exists_zero : ∃ k, e_vecs k = 0 := by
+    by_contra! contra
+    have h_inj : Function.Injective evals := fun a b hab ↦ by
+      simpa [evals, add_right_inj, mul_eq_mul_left_iff, Nat.cast_inj] using hab
+    have aux (μ : range evals) : (toEnd R L M h).HasEigenvector μ (e_vecs μ.property.choose) := by
+      set n := μ.property.choose
+      refine ⟨?_, contra n⟩
+      rw [Module.End.mem_eigenspace_iff, toEnd_apply_apply, ← μ.property.choose_spec]
+      exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
+    have _i := ((toEnd R L M h).eigenvectors_linearIndependent (range evals) _ aux).finite
+    exact (Set.infinite_range_of_injective h_inj) (Set.toFinite _)
+  obtain ⟨n, hn_ne, hn_zero⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists hm₀.2 h_exists_zero
+  exact ⟨evals n, e_vecs n, hn_ne,
+    { ne_zero := hn_ne
+      lie_h := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
+      lie_e := by rwa [lie_e_pow_toEnd_e n] }⟩
+
+end CharZero
 
 end IsSl2Triple

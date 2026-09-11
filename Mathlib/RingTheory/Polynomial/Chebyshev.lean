@@ -83,7 +83,7 @@ protected theorem induct (motive : ℤ → Prop)
     (neg_add_one : ∀ (n : ℕ), motive (-↑n) → motive (-↑n + 1) → motive (-↑n - 1)) :
     ∀ (a : ℤ), motive a :=
   T.induct motive zero one add_two fun n hn hnm => by
-    simpa only [Int.negSucc_eq, neg_add] using neg_add_one n hn hnm
+    simpa only [Int.negSucc_eq, neg_add] using! neg_add_one n hn hnm
 
 /-- Another induction principle used for proving facts about Chebyshev polynomials,
     which is sometimes easier to use -/
@@ -96,13 +96,13 @@ protected theorem induct' (motive : ℤ → Prop)
     ∀ (a : ℤ), motive a := by
   refine Chebyshev.induct motive zero one add_two ?_
   have neg' (n : ℤ) (h : motive (-n)) : motive n := by
-    convert neg (-n) h; rw [neg_neg]
+    convert! neg (-n) h; rw [neg_neg]
   intro n h₀ h₁
   cases n with
   | zero => exact neg 1 h₁
   | succ n =>
     apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
-    convert h₁ using 1; omega
+    convert! h₁ using 1; omega
 
 @[simp]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
@@ -164,7 +164,6 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -338,7 +337,6 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -498,6 +496,7 @@ theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := 
     show n + 2 + 1 - 2 = n + 1 by ring] at h
   linear_combination (norm := ring_nf) h
 
+@[dlmf 18.9.E9]
 theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
   linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
 
@@ -595,7 +594,6 @@ theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
@@ -705,7 +703,6 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
       sub_add_cancel]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -850,6 +847,7 @@ theorem algebraMap_eval_S [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((S R n).eval x) = (S R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
+@[dlmf 18.9.E21]
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -876,7 +874,7 @@ theorem T_derivative_mem_span_T (n : ℕ) :
   · simp [hn]
   rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
   refine Submodule.smul_of_tower_mem _ n ?_
-  convert U_mem_span_T R (n - 1) using 2 <;> grind
+  convert! U_mem_span_T R (n - 1) using 2 <;> grind
 
 theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     derivative^[k] (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - k)) := by
@@ -889,7 +887,7 @@ theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     suffices Submodule.span ℕ ((fun m : ℕ => derivative (T R m)) '' Set.Icc 0 (n - k)) ≤
       Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - (k + 1))) by
       apply this
-      convert Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
+      convert! Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
       simp [Set.image]
     refine Submodule.span_le.mpr (fun x hx => ?_)
     obtain ⟨m, hm, rfl⟩ := hx
@@ -1082,6 +1080,7 @@ variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
 polynomials. -/
+@[dlmf 18.18.E21]
 theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
   induction k using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]

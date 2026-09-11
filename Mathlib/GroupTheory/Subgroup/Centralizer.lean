@@ -74,6 +74,10 @@ theorem centralizer_le {s t : Set G} (h : s ⊆ t) : centralizer t ≤ centraliz
 theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s ⊆ center G :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 
+@[to_additive (attr := simp)]
+theorem centralizer_center : centralizer (center G : Set G) = ⊤ :=
+  centralizer_eq_top_iff_subset.mpr le_rfl
+
 @[to_additive]
 theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
     (Subgroup.centralizer s).map f ≤ Subgroup.centralizer (f '' s) := by
@@ -118,7 +122,7 @@ theorem centralizer_closure (s : Set G) : centralizer (closure s) = centralizer 
 @[to_additive]
 theorem centralizer_eq_iInf (s : Set G) : centralizer s = ⨅ g ∈ s, centralizer {g} :=
   le_antisymm (le_iInf₂ fun g hg ↦ centralizer_le (Set.singleton_subset_iff.mpr hg)) fun x hx ↦ by
-    simpa only [mem_iInf, mem_centralizer_singleton_iff, eq_comm (a := x * _)] using hx
+    simpa only [mem_iInf, mem_centralizer_singleton_iff, eq_comm (a := x * _)] using! hx
 
 @[to_additive]
 theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :
@@ -133,7 +137,7 @@ theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive
 /-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
-theorem isMulCommutative_closure {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+theorem isMulCommutative_closure {k : Set G} (hcomm : k.Pairwise Commute) :
     IsMulCommutative (closure k) :=
   have := closure_le_centralizer_centralizer k
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -143,7 +147,7 @@ open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-10"))
 /-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
-abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+abbrev closureCommGroupOfComm {k : Set G} (hcomm : k.Pairwise Commute) :
     CommGroup (closure k) :=
   have := isMulCommutative_closure hcomm
   inferInstance
@@ -151,13 +155,13 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
 @[to_additive]
 instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S G] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set G)) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 @[to_additive]
 theorem centralizer_le_normalizer (s : Set G) : centralizer s ≤ normalizer s := by
   refine fun g hg h ↦ ⟨fun hh ↦ ?_, fun hh ↦ ?_⟩
   · simpa [← hg h hh]
-  · convert hh
+  · convert! hh
     simpa using hg _ hh
 
 @[to_additive]

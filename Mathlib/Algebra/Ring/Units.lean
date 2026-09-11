@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w x

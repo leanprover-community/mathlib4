@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.Deriv.Slope
 
 /-!
@@ -276,6 +276,41 @@ lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) (v : E) :
   rw [← hasLineDerivWithinAt_univ]
   exact hf.hasFDerivWithinAt.hasLineDerivWithinAt v
 
+/-- A local, vector-valued version of Euler's theorem on homogeneous functions.
+
+If `f (t • x) = w t • f x` for `t` in a neighborhood of `1`, then the derivative of `f` at
+`x`, applied to `x`, is `w' • f x`, where `w'` is the derivative of `w` at `1`.
+-/
+theorem HasFDerivAt.apply_self_eq_smul_of_eventuallyEq {w : 𝕜 → 𝕜} {w' : 𝕜}
+    (hf : HasFDerivAt f L x) (hw : HasDerivAt w w' 1)
+    (hhom : (fun t ↦ f (t • x)) =ᶠ[𝓝 1] fun t ↦ w t • f x) : L x = w' • f x := by
+  have hfx : HasDerivAt (fun t : 𝕜 ↦ f (t • x)) (L x) 1 := by
+    have : HasDerivAt (f ∘ fun y ↦ y • x) (L ((1 : 𝕜) • x)) (1 : 𝕜) :=
+      hf.comp_hasDerivAt_of_eq (1 : 𝕜) ((hasDerivAt_id' (1 : 𝕜)).smul_const x) (by simp)
+    simpa
+  exact (hfx.congr_of_eventuallyEq hhom.symm).unique (hw.smul_const (f x))
+
+/-- A vector-valued version of Euler's theorem for a homogeneous function.
+
+If `f (t • y) = w t • f y` for all scalars `t` and points `y`, then the derivative of `f` at
+`x`, applied to `x`, is `w' • f x`, where `w'` is the derivative of `w` at `1`.
+-/
+theorem HasFDerivAt.apply_self_eq_smul_of_homogeneous {w : 𝕜 → 𝕜} {w' : 𝕜}
+    (hf : HasFDerivAt f L x) (hw : HasDerivAt w w' 1)
+    (hhom : ∀ t y, f (t • y) = w t • f y) : L x = w' • f x :=
+  hf.apply_self_eq_smul_of_eventuallyEq hw <| .of_forall fun t ↦ hhom t x
+
+/-- A vector-valued version of Euler's theorem for a homogeneous function of natural degree.
+
+If `f (t • y) = t ^ k • f y` for all scalars `t` and points `y`, then the derivative of `f` at
+`x`, applied to `x`, is `k • f x`.
+-/
+theorem HasFDerivAt.apply_self_eq_nsmul_of_homogeneous {k : ℕ} (hf : HasFDerivAt f L x)
+    (hhom : ∀ (t : 𝕜) y, f (t • y) = t ^ k • f y) : L x = k • f x := by
+  have : L x = ((k : 𝕜) * 1 ^ (k - 1)) • f x :=
+    hf.apply_self_eq_smul_of_homogeneous (hasDerivAt_pow k (1 : 𝕜)) hhom
+  simpa [Nat.cast_smul_eq_nsmul]
+
 theorem DifferentiableAt.lineDifferentiableAt (hf : DifferentiableAt 𝕜 f x) :
     LineDifferentiableAt 𝕜 f x v :=
   hf.hasFDerivAt.hasLineDerivAt _ |>.lineDifferentiableAt
@@ -303,7 +338,7 @@ theorem hasLineDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
   apply hasDerivWithinAt_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; fun_prop
-  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
+  have : s =ᶠ[𝓝 (F 0)] t := by convert! h; simp [F]
   exact B.preimage_mem_nhds this
 
 theorem lineDifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
@@ -318,7 +353,7 @@ theorem lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
   apply derivWithin_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; fun_prop
-  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
+  have : s =ᶠ[𝓝 (F 0)] t := by convert! h; simp [F]
   exact B.preimage_mem_nhds this
 
 theorem Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
@@ -326,7 +361,7 @@ theorem Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
   apply hasDerivAt_iff
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; fun_prop
-  have : f₀ =ᶠ[𝓝 (F 0)] f₁ := by convert h; simp [F]
+  have : f₀ =ᶠ[𝓝 (F 0)] f₁ := by convert! h; simp [F]
   exact B.preimage_mem_nhds this
 
 theorem Filter.EventuallyEq.lineDifferentiableAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
@@ -398,7 +433,8 @@ theorem HasLineDerivAt.le_of_lip' {f : E → F} {f' : F} {x₀ : E} (hf : HasLin
   have A : Continuous (fun (t : 𝕜) ↦ x₀ + t • v) := by fun_prop
   have : ∀ᶠ x in 𝓝 (x₀ + (0 : 𝕜) • v), ‖f x - f x₀‖ ≤ C * ‖x - x₀‖ := by simpa using hlip
   filter_upwards [(A.continuousAt (x := 0)).preimage_mem_nhds this] with t ht
-  simp only [preimage_setOf_eq, add_sub_cancel_left, norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
+  simp only [preimage_ofPred_eq, add_sub_cancel_left, norm_smul, mem_ofPred_eq,
+    mul_comm (‖t‖)] at ht
   simpa [mul_assoc] using ht
 
 /-- Converse to the mean value inequality: if `f` is line differentiable at `x₀` and `C`-lipschitz
@@ -433,7 +469,8 @@ theorem norm_lineDeriv_le_of_lip' {f : E → F} {x₀ : E}
   have A : Continuous (fun (t : 𝕜) ↦ x₀ + t • v) := by fun_prop
   have : ∀ᶠ x in 𝓝 (x₀ + (0 : 𝕜) • v), ‖f x - f x₀‖ ≤ C * ‖x - x₀‖ := by simpa using hlip
   filter_upwards [(A.continuousAt (x := 0)).preimage_mem_nhds this] with t ht
-  simp only [preimage_setOf_eq, add_sub_cancel_left, norm_smul, mem_setOf_eq, mul_comm (‖t‖)] at ht
+  simp only [preimage_ofPred_eq, add_sub_cancel_left, norm_smul, mem_ofPred_eq,
+    mul_comm (‖t‖)] at ht
   simpa [mul_assoc] using ht
 
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz on a neighborhood of `x₀`
@@ -499,11 +536,11 @@ theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c 
   simp only [HasLineDerivWithinAt] at h ⊢
   let g := fun (t : 𝕜) ↦ c • t
   let s' := (fun (t : 𝕜) ↦ x + t • v) ⁻¹' s
-  have A : HasDerivAt g c 0 := by simpa using (hasDerivAt_id (0 : 𝕜)).const_smul c
-  have B : HasDerivWithinAt (fun t ↦ f (x + t • v)) f' s' (g 0) := by simpa [g] using h
+  have A : HasDerivAt g c 0 := by simpa using! (hasDerivAt_id (0 : 𝕜)).const_smul c
+  have B : HasDerivWithinAt (fun t ↦ f (x + t • v)) f' s' (g 0) := by simpa [g] using! h
   have Z := B.scomp (0 : 𝕜) A.hasDerivWithinAt (mapsTo_preimage g s')
   simp only [g, s', Function.comp_def, smul_eq_mul, mul_comm c, ← smul_smul] at Z
-  convert Z
+  convert! Z
   ext t
   simp [← smul_smul]
 

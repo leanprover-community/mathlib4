@@ -30,11 +30,11 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 
 @[expose] public section
 
-open Filter Topology Set ContinuousLinearMap Bornology
+open Filter Set ContinuousLinearMap Bornology
 
 section Definition
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
   [TopologicalSpace E]
 
@@ -62,7 +62,7 @@ section Normed
 
 namespace MontelSpace
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
   [hM : MontelSpace 𝕜 E]
 
@@ -78,7 +78,7 @@ end Normed
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
 variable {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E]
-  [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜₁ E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E]
   [AddCommGroup F] [Module 𝕜₂ F]
   [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F]
 
@@ -110,7 +110,7 @@ def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpac
     apply hs.mono
     apply UniformConvergenceCLM.topologicalSpace_mono
     intro x hx
-    exact hx.totallyBounded.isVonNBounded 𝕜₁
+    exact hx.isVonNBounded 𝕜₁
   continuous_invFun := by
     apply continuous_of_continuousAt_zero (LinearEquiv.toCompactConvergenceCLM σ E F).symm
     rw [ContinuousAt, _root_.map_zero, CompactConvergenceCLM.hasBasis_nhds_zero.tendsto_iff

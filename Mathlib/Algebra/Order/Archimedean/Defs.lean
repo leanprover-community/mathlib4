@@ -23,7 +23,7 @@ This file defines the archimedean property for ordered monoids.
   property" where for `x` and `y > 1`, there exists a natural number `n` such that `x ≤ y ^ n`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -71,7 +71,7 @@ theorem exists_nat_ge (x : R) : ∃ n : ℕ, x ≤ n := by
 end OrderedSemiring
 
 section StrictOrderedSemiring
-variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R] {y : R}
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R]
 
 theorem exists_nat_gt (x : R) : ∃ n : ℕ, x < n :=
   (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]

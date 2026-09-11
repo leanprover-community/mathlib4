@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Bind operation for multisets
@@ -153,6 +154,7 @@ theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s
 @[simp]
 theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 
+@[congr]
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
@@ -256,10 +258,10 @@ open scoped Function in -- required for scoped `on` notation
   have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
-  have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
+  have _ : Std.Symm fun a b : List β ↦ List.Disjoint a b := { symm a b h := h.symm }
   exact Quot.induction_on s <| by
     unfold Function.onFun
-    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
+    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :

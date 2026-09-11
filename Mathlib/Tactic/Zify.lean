@@ -10,7 +10,6 @@ public import Mathlib.Order.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # `zify` tactic
@@ -25,6 +24,7 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   h : ¬↑x * ↑y * ↑z < 0
   ⊢ ↑c < ↑a + 3 * ↑b
   -/
+
 ```
 -/
 
@@ -106,12 +106,10 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
   let (r, _) ← simp prop ctx_result.ctx
   applySimpResultToProp' proof prop r
 
-@[zify_simps] lemma natCast_eq (a b : Nat) : a = b ↔ (a : Int) = (b : Int) := Int.ofNat_inj.symm
-@[zify_simps] lemma natCast_le (a b : Nat) : a ≤ b ↔ (a : Int) ≤ (b : Int) := Int.ofNat_le.symm
-@[zify_simps] lemma natCast_lt (a b : Nat) : a < b ↔ (a : Int) < (b : Int) := Int.ofNat_lt.symm
+attribute [zify_simps ←] Int.ofNat_inj Int.ofNat_le Int.ofNat_lt Int.ofNat_dvd
+
 @[zify_simps] lemma natCast_ne (a b : Nat) : a ≠ b ↔ (a : Int) ≠ (b : Int) :=
   not_congr Int.ofNat_inj.symm
-@[zify_simps] lemma natCast_dvd (a b : Nat) : a ∣ b ↔ (a : Int) ∣ (b : Int) := Int.ofNat_dvd.symm
 -- TODO: is it worth adding lemmas for Prime and Coprime as well?
 -- Doing so in this file would require adding imports.
 
@@ -121,10 +119,6 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 -- `zify` will push through `ℕ` subtraction.
 
 variable {R : Type*} [AddGroupWithOne R]
-
-@[deprecated "use Nat.cast_sub" (since := "2026-02-21"), norm_cast]
-theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
-    ((n - m : ℕ) : R) = n - m := Nat.cast_sub (m.le_add_right k |>.trans h)
 
 @[norm_cast] theorem Nat.cast_sub_of_lt {m n} (h : m < n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub h.le
