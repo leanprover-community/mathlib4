@@ -227,6 +227,11 @@ protected lemma IsAffineMap.neg (hf : IsAffineMap R f) : IsAffineMap R (-f) :=
 protected lemma IsAffineMap.sub (hf : IsAffineMap R f) (hg : IsAffineMap R g) :
     IsAffineMap R (f - g) := isAffineMap_sub.comp (hf.prodMk hg)
 
+@[to_fun (attr := simp)]
+lemma isAffineMap_neg_iff : IsAffineMap R (-f) ↔ IsAffineMap R f where
+  mp hf := by simpa using hf.neg
+  mpr := .neg
+
 end ConvexSpaceDomain
 
 lemma IsStarConvexSet.neg (hs : IsStarConvexSet R x s) : IsStarConvexSet R (-x) (-s) := by
