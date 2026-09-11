@@ -589,13 +589,6 @@ lemma strictWidthInfty_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
   have hn : 0 ≤ (ConjAct.toConjAct g⁻¹ • G).strictWidthInfty := strictWidthInfty_nonneg _
   grind
 
-/-- Adjoining `-1` commutes with conjugation. -/
-lemma adjoinNegOne_conj (G : Subgroup (GL (Fin 2) ℝ)) (g : ConjAct (GL (Fin 2) ℝ)) :
-    (g • G).adjoinNegOne = g • G.adjoinNegOne := by
-  ext x
-  simp only [mem_adjoinNegOne_iff, mem_pointwise_smul_iff_inv_smul_mem,
-    ConjAct.smul_def, mul_neg, neg_mul]
-
 /-- Cusp widths scale inversely under an upper triangular change of coordinate. -/
 lemma widthInfty_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
     [DiscreteTopology G] (hw : 0 < G.widthInfty)

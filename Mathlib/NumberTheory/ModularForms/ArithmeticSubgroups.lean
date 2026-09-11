@@ -274,6 +274,13 @@ lemma adjoinNegOne_mono {𝒢 ℋ : Subgroup G} (h : 𝒢 ≤ ℋ) : 𝒢.adjoin
   intro g
   aesop
 
+open scoped Pointwise in
+/-- Adjoining `-1` commutes with conjugation. -/
+lemma adjoinNegOne_conj (𝒢 : Subgroup G) (g : ConjAct G) :
+    (g • 𝒢).adjoinNegOne = g • 𝒢.adjoinNegOne := by
+  ext
+  simp [mem_pointwise_smul_iff_inv_smul_mem, ConjAct.smul_def]
+
 end Subgroup
 
 variable {R : Type*} [Ring R]
