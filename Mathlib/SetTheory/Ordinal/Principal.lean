@@ -518,14 +518,17 @@ theorem isSuccLimit_of_isPrincipal_opow (ho₂ : 2 < o) (ho : IsPrincipal (· ^ 
   · exact (succ_le_of_lt (lt_two_iff.2 ha₁)).trans_lt ho₂
   · exact (succ_le_of_lt (left_lt_opow ha₁ one_lt_two)).trans_lt (ho ha ho₂)
 
+/-- If `ω ^ o = o`, then `o` is multiplicatively principal. -/
+theorem isPrincipal_mul_of_omega0_opow_eq (ho : ω ^ o = o) : IsPrincipal (· * ·) o := by
+  simpa [ho] using isPrincipal_mul_omega0_opow_opow o
+
 /-- Above `ω`, closure under exponentiation is equivalent to being a fixed point of `ω ^ ·`. -/
 theorem isPrincipal_opow_iff_omega0_opow_eq (hoω : ω < o) :
     IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
   refine ⟨fun ho ↦ ?_, fun ho ↦ ?_⟩
   · exact op_eq_self_of_isPrincipal hoω (isNormal_opow one_lt_omega0) ho
       (isSuccLimit_of_isPrincipal_opow ((natCast_lt_omega0 2).trans hoω) ho)
-  · have hom : IsPrincipal (· * ·) o := by
-      simpa [ho] using isPrincipal_mul_omega0_opow_opow o
+  · have hom := isPrincipal_mul_of_omega0_opow_eq ho
     have hol := isSuccLimit_of_isPrincipal_mul ((natCast_lt_omega0 2).trans hoω) hom
     intro a b ha hb
     rw [← ho] at ha
