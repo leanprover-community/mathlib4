@@ -312,9 +312,8 @@ theorem multiplicity_one_right : multiplicity a 1 = 0 := by
 
 @[deprecated (since := "2026-09-11")] alias FiniteMultiplicity.one_right := multiplicity_one_right
 
-@[simp]
 theorem multiplicity_one_left (b : α) : multiplicity 1 b = 0 := by
-  simp [multiplicity]
+  simp
 
 theorem FiniteMultiplicity.not_of_unit_left (a : α) (u : αˣ) : ¬ FiniteMultiplicity (u : α) a :=
   FiniteMultiplicity.not_of_isUnit_left a u.isUnit
