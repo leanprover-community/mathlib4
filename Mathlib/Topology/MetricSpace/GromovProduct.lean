@@ -29,7 +29,7 @@ In proofs where it is useful to convert `gromovProduct` to a `dist`, users shoul
 the relevant lemmas to the `grind [...]` list in an application.
 -/
 
-@[expose] public section
+public section
 
 namespace Metric
 
@@ -38,7 +38,7 @@ variable {X : Type*} [PseudoMetricSpace X] (x y z : X)
 /-- The Gromov product of `y` and `z` with respect to `x`. -/
 noncomputable def gromovProduct : ℝ := (dist x y + dist x z - dist y z) / 2
 
-lemma gromovProduct_eq : gromovProduct x y z = (dist x y + dist x z - dist y z) / 2 := rfl
+lemma gromovProduct_eq : gromovProduct x y z = (dist x y + dist x z - dist y z) / 2 := by rfl
 
 lemma gromovProduct_comm : gromovProduct x y z = gromovProduct x z y := by
   grind [gromovProduct_eq, dist_comm]
@@ -61,7 +61,7 @@ lemma gromovProduct_self_left : gromovProduct x x y = 0 := by
 
 @[simp, grind =]
 lemma gromovProduct_self_right : gromovProduct x y x = 0 := by
-  simp [gromovProduct, dist_comm]
+  simp [gromovProduct_eq, dist_comm]
 
 @[simp]
 lemma gromovProduct_self : gromovProduct x y y = dist x y := by
@@ -72,6 +72,5 @@ lemma gromovProduct_add_gromovProduct₁₃ : gromovProduct x y z + gromovProduc
 
 lemma gromovProduct_add_gromovProduct₁₂ : gromovProduct x y z + gromovProduct y x z = dist x y := by
   grind [gromovProduct_eq, dist_comm]
-
 
 end Metric
