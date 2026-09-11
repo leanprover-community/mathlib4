@@ -21,11 +21,12 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 @[expose] public section
 
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+
 namespace ContinuousLinearEquiv
 
-variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [TopologicalSpace M]
-  [AddCommMonoid M₂] [TopologicalSpace M₂]
-  {module_M : Module R M} {module_M₂ : Module R₂ M₂} {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+variable {R₂ M₂ : Type*} [Semiring R₂] [AddCommMonoid M₂] [TopologicalSpace M₂] [Module R₂ M₂]
+  {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
   {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 
 /-- Continuous linear equivalence between two equal submodules:
@@ -110,6 +111,5 @@ end ContinuousLinearEquiv
 
 /-- The top submodule is continuous linearly equivalent to the module.
 This is the continuous version of `Submodule.topEquiv`. -/
-abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
+abbrev _root_.Submodule.topContEquiv : (⊤ : Submodule R M) ≃L[R] M where
   __ := Submodule.topEquiv
