@@ -321,7 +321,7 @@ lemma mapFundamentalGroupoid_obj_mk (f : X ⟶ Y) (x : X _⦋0⦌) :
 
 @[simp]
 lemma mapFundamentalGroupoid_map_homMk (f : X ⟶ Y) {x y : X _⦋0⦌} (e : Edge x y) :
-    (mapFundamentalGroupoid f).map (homMk e) = homMk (e.map f) := by rfl
+    (mapFundamentalGroupoid f).map (homMk e) = homMk (e.map f) := (rfl)
 
 example (f : X ⟶ Y) (x : X _⦋0⦌) :
     (mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x) := by
