@@ -116,7 +116,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
         lia
       · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
         rintro ⟨x₁, y₁⟩ - h₁ ⟨x₂, y₂⟩ - h₂ h₃ h₄
-        simp_all
+        simp
         lia
       · simp only [mem_filter, mem_product, mem_range, mem_sigma, exists_prop, Sigma.exists,
           and_imp, Prod.forall, Prod.mk.injEq]

@@ -275,7 +275,7 @@ theorem negPart_divisor_add_le_add {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf�
       negPart_divisor_add_le_max hf₁ hf₂
     _ ≤ (divisor f₁ U)⁻ + (divisor f₂ U)⁻ := by
       by_cases h : (divisor f₁ U)⁻ ≤ (divisor f₂ U)⁻
-      <;> simp_all [negPart_nonneg]
+      <;> simp [negPart_nonneg]
 
 /--
 If orders are finite, the divisor of the scalar product of two meromorphic functions is the sum of

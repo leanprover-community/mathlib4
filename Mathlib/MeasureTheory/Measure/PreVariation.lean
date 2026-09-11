@@ -123,7 +123,7 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
     preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
   let ε' := min ε (preVariationFun f s).toNNReal
   have hε' : ε' ≤ preVariationFun f s := by simp_all [ε']
-  have : ε' ≤ ε := by simp_all [ε']
+  have : ε' ≤ ε := by simp [ε']
   obtain hw | hw : preVariationFun f s ≠ 0 ∨ preVariationFun f s = 0 := ne_or_eq _ _
   · have : 0 < ε' := by
       simp only [lt_inf_iff, ε']

@@ -202,7 +202,7 @@ lemma isPullback_χ_truth (m : F ⟶ G) [Mono m] :
       (.of_horiz_isIso_mono ⟨_⟩ : IsPullback (𝟙 _) _ (Presheaf.χ m.hom) (closedSieves J).ι)
     · simp only [Category.comp_id]
       exact Presheaf.isPullback_χ_truth m.hom
-    · simp_all
+    · simp
 
 set_option backward.isDefEq.respectTransparency false in
 lemma χ_unique (m : F ⟶ G) [Mono m] (χ' : G ⟶ Sheaf.Ω J)

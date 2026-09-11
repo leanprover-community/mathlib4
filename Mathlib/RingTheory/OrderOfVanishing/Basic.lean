@@ -37,8 +37,7 @@ def ord (x : R) : ℕ∞ := Module.length R (R ⧸ Ideal.span {x})
 
 @[simp]
 lemma ord_one : ord R 1 = 0 := by
-  simp_all [ord,
-    Ideal.span_singleton_one, Submodule.Quotient.subsingleton_iff]
+  simp [ord, Ideal.span_singleton_one, Submodule.Quotient.subsingleton_iff]
 
 end Ring
 
