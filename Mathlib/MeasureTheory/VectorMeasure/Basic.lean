@@ -54,7 +54,7 @@ theorem not_measurable (v : VectorMeasure α M) {i : Set α} (hi : ¬MeasurableS
   v.not_measurable' hi
 
 theorem m_iUnion (v : VectorMeasure α M) {f : ℕ → Set α} (hf₁ : ∀ i, MeasurableSet (f i))
-    (hf₂ : Pairwise (Disjoint on f)) : HasSum (fun i => v (f i)) (v (⋃ i, f i)) :=
+    (hf₂ : Pairwise' (Disjoint on f)) : HasSum (fun i => v (f i)) (v (⋃ i, f i)) :=
   v.m_iUnion' hf₁ hf₂
 
 @[deprecated (since := "2026-06-10")] alias coe_injective := DFunLike.coe_injective
@@ -77,7 +77,7 @@ theorem ext {s t : VectorMeasure α M} (h : ∀ i : Set α, MeasurableSet i → 
 
 variable [Countable β] {v : VectorMeasure α M} {f : β → Set α}
 
-theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
+theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise' (Disjoint on f)) :
     HasSum (fun i => v (f i)) (v (⋃ i, f i)) := by
   rcases Countable.exists_injective_nat β with ⟨e, he⟩
   rw [← hasSum_extend_zero he]

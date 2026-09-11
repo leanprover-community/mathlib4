@@ -56,7 +56,7 @@ theorem Std.Symm.pairwise'_on [LinearOrder ι] [Std.Symm r] (f : ι → α) :
 
 @[deprecated (since := "2026-06-10")] alias Symmetric.pairwise_on := Std.Symm.pairwise'_on
 
-theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
+theorem pairwise'_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise' (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
   Std.Symm.pairwise'_on f
 
@@ -64,7 +64,7 @@ theorem pairwise'_disjoint_mono [PartialOrder α] [OrderBot α] (hs : Pairwise' 
     (h : g ≤ f) : Pairwise' (Disjoint on g) :=
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
 
-theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
+theorem Pairwise'.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
     {e : α → β} {f : α → γ} (hf : Pairwise' (Disjoint on f)) (he : FactorsThrough f e) :
     Pairwise' (Disjoint on extend e f ⊥) := by
   simp only [pairwise'_iff] at *
