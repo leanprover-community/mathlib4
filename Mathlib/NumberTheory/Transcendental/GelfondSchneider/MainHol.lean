@@ -417,16 +417,15 @@ lemma SR_eq_SRl {z : ℂ} (l' : Fin ((m K))) (hl : l' ≠ (l₀' α β σ α' β
     simp only [add_sub_add_right_eq_sub, sub_self,
       mul_eq_mul_left_iff, Nat.cast_eq_zero]
     left; left
-    rw [zero_pow]
+    rw [zero_pow (r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq).ne']
     simp only [zero_mul, mul_eq_zero, inv_eq_zero, pow_eq_zero_iff', ne_eq]
     right
     right
     constructor
-    by_contra HR
-    apply hl
-    (expose_names; exact False.elim (hz (↑l') this_1 (id (Eq.symm H))))
-    (expose_names; exact fun a ↦ hz (↑l') this_1 (id (Eq.symm H)))
-    (expose_names; exact fun a ↦ hz (↑l') this_1 (id (Eq.symm H)))
+    · by_contra HR
+      apply hl
+      (expose_names; exact False.elim (hz (↑l') this_1 (id (Eq.symm H))))
+    · (expose_names; exact fun a ↦ hz (↑l') this_1 (id (Eq.symm H)))
   · nth_rw 6 [← mul_assoc]
     nth_rw 5 [← mul_assoc]
     nth_rw 8 [mul_comm]
@@ -477,29 +476,29 @@ lemma S_eq_restricted_of_mem_compl {z : ℂ} :
 
 lemma dist_nat_cast_lt_one (n m : ℕ) : dist (n : ℂ) (m : ℂ) < 1 ↔ n = m := by
   apply Iff.intro
-  rw [Complex.dist_eq]
-  by_cases H : m ≤ n
-  · have : norm (((n : ℂ)) - (m : ℂ)) = (n - m : ℕ) := by
-     norm_cast
-    rw [this]
-    simp only [Nat.cast_lt_one]
-    intros H'
-    grind
-  · have : norm (((n : ℂ)) - (m : ℂ)) = norm ((m : ℂ) - (n : ℂ)) := by
-      calc _ = norm (-((m : ℂ) - (n : ℂ))) := ?_
-           _ = norm (((m : ℂ)) - (n : ℂ)) := ?_
-      · simp only [neg_sub]
-      · symm
-        rw [← norm_neg]
-    rw [this]
-    have : norm (((m : ℂ)) - (n : ℂ)) = (m - n : ℕ) := by
-     simp only [not_le] at H
-     have : n ≤ m := by grind
-     norm_cast
-    rw [this]
-    simp only [Nat.cast_lt_one]
-    intros H'
-    grind
+  · rw [Complex.dist_eq]
+    by_cases H : m ≤ n
+    · have : norm (((n : ℂ)) - (m : ℂ)) = (n - m : ℕ) := by
+       norm_cast
+      rw [this]
+      simp only [Nat.cast_lt_one]
+      intros H'
+      grind
+    · have : norm (((n : ℂ)) - (m : ℂ)) = norm ((m : ℂ) - (n : ℂ)) := by
+        calc _ = norm (-((m : ℂ) - (n : ℂ))) := ?_
+             _ = norm (((m : ℂ)) - (n : ℂ)) := ?_
+        · simp only [neg_sub]
+        · symm
+          rw [← norm_neg]
+      rw [this]
+      have : norm (((m : ℂ)) - (n : ℂ)) = (m - n : ℕ) := by
+       simp only [not_le] at H
+       have : n ≤ m := by grind
+       norm_cast
+      rw [this]
+      simp only [Nat.cast_lt_one]
+      intros H'
+      grind
   · aesop
 
 
@@ -519,8 +518,8 @@ lemma SRl_is_analytic_at_ball_of_radius_one (l' : Fin ((m K))) (hl : l' ≠ (l�
         · apply AnalyticOn.mono
           · refine analyticOn_univ_iff_differentiable.mpr ?_
             refine (fun_sub_iff_left ?_).mpr ?_
-            simp only [differentiable_const]
-            simp only [differentiable_fun_id]
+            · simp only [differentiable_const]
+            · simp only [differentiable_fun_id]
           · exact fun ⦃a⦄ a ↦ trivial
         · intros z hz
           simp only [Metric.mem_ball] at hz
