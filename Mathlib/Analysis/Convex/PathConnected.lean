@@ -139,16 +139,7 @@ namespace unitInterval
 
 /-- Every nonempty open subinterval of the unit interval is path-connected. -/
 lemma isPathConnected_Ioo {a b : I} (hab : a < b) : IsPathConnected (Ioo a b) := by
-  suffices Set.projIcc (0 : ℝ) 1 zero_le_one '' Ioo (a : ℝ) (b : ℝ) = Ioo a b by
-    exact this ▸ ((convex_Ioo (a : ℝ) (b : ℝ)).isPathConnected
-      (Set.nonempty_Ioo.2 (Subtype.coe_lt_coe.2 hab))).image continuous_projIcc
-  ext t
-  refine ⟨?_, fun ht ↦ ⟨(t : ℝ), ⟨Subtype.coe_lt_coe.2 ht.1, Subtype.coe_lt_coe.2 ht.2⟩, ?_⟩⟩
-  · rintro ⟨r, hr, rfl⟩
-    have hcoe : ((Set.projIcc (0 : ℝ) 1 zero_le_one r : I) : ℝ) = r := by
-      simp [Set.projIcc, min_eq_right (hr.2.le.trans b.2.2), max_eq_right (a.2.1.trans hr.1.le)]
-    rw [mem_Ioo, ← Subtype.coe_lt_coe, ← Subtype.coe_lt_coe, hcoe]
-    exact hr
-  simp [Set.projIcc, min_eq_right t.2.2, max_eq_right t.2.1]
+  rw [Topology.IsInducing.subtypeVal.isPathConnected_iff, image_subtype_val_Ioo]
+  exact (convex_Ioo _ _).isPathConnected (nonempty_Ioo.mpr hab)
 
 end unitInterval
