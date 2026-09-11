@@ -421,7 +421,7 @@ lemma norm_z_minus_km_lower_bound_on_sphere (km : Fin ((m K))) :
 lemma prod_bound {ι} (f : ι → ℝ) (s : Finset ι) (C : ℝ) (hC : ∀ x ∈ s, 0 ≤ f x)
    (h : ∀ x ∈ s, f x ≤ C) :  ∏ x ∈ s, f x ≤ C ^ s.card := by
   rw [← Finset.prod_const]
-  exact Finset.prod_le_prod hC h
+  exact Finset.prod_le_prod₀ hC h
 
 include hz h2mq in
 include α β σ α' β' γ' hirr htriv habc in
@@ -484,7 +484,7 @@ lemma abs_denom : norm (((z - ((l₀' α β σ α' β' γ' hirr htriv habc) q hq
             left
             ring
           · rw [norm_prod]
-            apply Finset.prod_le_prod
+            apply Finset.prod_le_prod₀
             · intro x hx
               rw [norm_pow, ← norm_pow]
               positivity
