@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 public import Mathlib.Probability.Process.Predictable
-public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.StoppedValue
 
 /-!
 # Martingales
@@ -548,8 +548,8 @@ namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
     {τ : Ω → WithTop ℕ} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
-    Integrable (stoppedValue f τ) μ :=
-  integrable_stoppedValue ℕ hτ hf.integrable hbdd
+    Integrable (𝒢.stoppedValue f τ μ) μ :=
+  𝒢.integrable_stoppedValue hτ hf.integrable hbdd
 
 end Submartingale
 

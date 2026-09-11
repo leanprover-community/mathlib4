@@ -5,7 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.StoppedValue
 public import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -41,7 +41,7 @@ open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
-variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
+variable {Ω β ι : Type*} {mΩ : MeasurableSpace Ω}
 
 section Basic
 
@@ -397,7 +397,7 @@ end Inequalities
 
 /-- A discrete hitting time is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
+    [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι mΩ} {u : ι → Ω → β} {s : Set β}
     {n n' : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
   intro i
@@ -410,7 +410,7 @@ theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι]
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
 theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
-    [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
+    [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι mΩ} {u : ι → Ω → β}
     {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
@@ -420,9 +420,11 @@ theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι
     MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+    [Zero β] [TopologicalSpace β] (𝓕 : Filtration ι mΩ) (P : Measure Ω)
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
-    stoppedValue u (fun ω ↦ (hittingBtwn u s n m ω : ι)) ω ∈ s := by
-  simp only [stoppedValue, hittingBtwn, ite_eq_left h]
+    𝓕.stoppedValue u (fun ω ↦ (hittingBtwn u s n m ω : ι)) P ω ∈ s := by
+  simp only [hittingBtwn, Set.mem_Icc, ite_eq_left h, WithTop.coe_inj,
+    Filtration.stoppedValue_of_eq_coe]
   obtain ⟨j, hj₁, hj₂⟩ := h
   have : sInf (Set.Icc n m ∩ {i | u i ω ∈ s}) ∈ Set.Icc n m ∩ {i | u i ω ∈ s} :=
     csInf_mem (Set.nonempty_of_mem ⟨hj₁, hj₂⟩)
@@ -432,7 +434,7 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
-    [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+    [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι mΩ} {u : ι → Ω → β}
     {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
     IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by

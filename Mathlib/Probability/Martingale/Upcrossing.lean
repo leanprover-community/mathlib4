@@ -218,39 +218,54 @@ theorem upperCrossingTime_mono (hnm : n ≤ m) :
 
 end ConditionallyCompleteLinearOrderBot
 
-variable {a b : ℝ} {f : ℕ → Ω → ℝ} {N : ℕ} {n m : ℕ} {ω : Ω}
+variable {a b : ℝ} {f : ℕ → Ω → ℝ} {N : ℕ} {n m : ℕ} {ω : Ω} {𝓕 : Filtration ℕ m0}
 
-theorem stoppedValue_lowerCrossingTime (h : lowerCrossingTime a b f N n ω ≠ N) :
-    stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) ω ≤ a := by
+theorem stoppedValue_lowerCrossingTime (𝓕 : Filtration ℕ m0) (μ : Measure Ω)
+    (h : lowerCrossingTime a b f N n ω ≠ N) :
+    𝓕.stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) μ ω ≤ a := by
   obtain ⟨j, hj₁, hj₂⟩ :=
     (hittingBtwn_le_iff_of_lt _ (lt_of_le_of_ne lowerCrossingTime_le h)).1 le_rfl
-  exact stoppedValue_hittingBtwn_mem ⟨j, ⟨hj₁.1, le_trans hj₁.2 lowerCrossingTime_le⟩, hj₂⟩
+  have := stoppedValue_hittingBtwn_mem 𝓕 μ ⟨j, ⟨hj₁.1, le_trans hj₁.2 lowerCrossingTime_le⟩, hj₂⟩
+  simp_all [lowerCrossingTime]
 
-theorem stoppedValue_upperCrossingTime (h : upperCrossingTime a b f N (n + 1) ω ≠ N) :
-    b ≤ stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) ω := by
+theorem stoppedValue_upperCrossingTime (𝓕 : Filtration ℕ m0) (μ : Measure Ω)
+    (h : upperCrossingTime a b f N (n + 1) ω ≠ N) :
+    b ≤ 𝓕.stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) μ ω := by
   obtain ⟨j, hj₁, hj₂⟩ :=
     (hittingBtwn_le_iff_of_lt _ (lt_of_le_of_ne upperCrossingTime_le h)).1 le_rfl
-  exact stoppedValue_hittingBtwn_mem ⟨j, ⟨hj₁.1, le_trans hj₁.2 (hittingBtwn_le _)⟩, hj₂⟩
+  have := stoppedValue_hittingBtwn_mem 𝓕 μ ⟨j, ⟨hj₁.1, le_trans hj₁.2 (hittingBtwn_le _)⟩, hj₂⟩
+  simp_all [upperCrossingTime]
 
 theorem upperCrossingTime_lt_lowerCrossingTime (hab : a < b)
     (hn : lowerCrossingTime a b f N (n + 1) ω ≠ N) :
     upperCrossingTime a b f N (n + 1) ω < lowerCrossingTime a b f N (n + 1) ω := by
+  let mΩ : MeasurableSpace Ω := ⊥
+  let 𝓕 : Filtration ℕ mΩ :=
+    { seq _ := ⊥
+      mono' _ _ _ := le_rfl
+      le' _ := le_rfl }
+  let μ : Measure Ω := 0
   refine lt_of_le_of_ne upperCrossingTime_le_lowerCrossingTime fun h =>
-    not_le.2 hab <| le_trans ?_ (stoppedValue_lowerCrossingTime hn)
-  simp only [stoppedValue]
-  rw [← h]
-  exact stoppedValue_upperCrossingTime (h.symm ▸ hn)
+    not_le.2 hab <| le_trans ?_ (stoppedValue_lowerCrossingTime 𝓕 μ hn)
+  have := stoppedValue_upperCrossingTime 𝓕 μ (h.symm ▸ hn)
+  simp_all
 
 theorem lowerCrossingTime_lt_upperCrossingTime (hab : a < b)
     (hn : upperCrossingTime a b f N (n + 1) ω ≠ N) :
     lowerCrossingTime a b f N n ω < upperCrossingTime a b f N (n + 1) ω := by
+  let mΩ : MeasurableSpace Ω := ⊥
+  let 𝓕 : Filtration ℕ mΩ :=
+    { seq _ := ⊥
+      mono' _ _ _ := le_rfl
+      le' _ := le_rfl }
+  let μ : Measure Ω := 0
   refine lt_of_le_of_ne lowerCrossingTime_le_upperCrossingTime_succ fun h =>
-    not_le.2 hab <| le_trans (stoppedValue_upperCrossingTime hn) ?_
-  simp only [stoppedValue]
-  rw [← h]
-  exact stoppedValue_lowerCrossingTime (h.symm ▸ hn)
+    not_le.2 hab <| le_trans (stoppedValue_upperCrossingTime 𝓕 μ hn) ?_
+  have := stoppedValue_lowerCrossingTime 𝓕 μ (h.symm ▸ hn)
+  simp_all
 
-theorem upperCrossingTime_lt_succ (hab : a < b) (hn : upperCrossingTime a b f N (n + 1) ω ≠ N) :
+theorem upperCrossingTime_lt_succ (hab : a < b)
+    (hn : upperCrossingTime a b f N (n + 1) ω ≠ N) :
     upperCrossingTime a b f N n ω < upperCrossingTime a b f N (n + 1) ω :=
   lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime
     (lowerCrossingTime_lt_upperCrossingTime hab hn)
@@ -540,27 +555,34 @@ theorem lowerCrossingTime_lt_of_lt_upcrossingsBefore (hN : 0 < N) (hab : a < b)
   lt_of_le_of_lt lowerCrossingTime_le_upperCrossingTime_succ
     (upperCrossingTime_lt_of_le_upcrossingsBefore hN hab hn)
 
-theorem le_sub_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
-    (hn : n < upcrossingsBefore a b f N ω) :
-    b - a ≤ stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) ω -
-      stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) ω :=
+theorem le_sub_of_le_upcrossingsBefore (𝓕 : Filtration ℕ m0) (μ : Measure Ω)
+    (hN : 0 < N) (hab : a < b) (hn : n < upcrossingsBefore a b f N ω) :
+    b - a ≤ 𝓕.stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) μ ω -
+      𝓕.stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) μ ω :=
   sub_le_sub
-    (stoppedValue_upperCrossingTime (upperCrossingTime_lt_of_le_upcrossingsBefore hN hab hn).ne)
-    (stoppedValue_lowerCrossingTime (lowerCrossingTime_lt_of_lt_upcrossingsBefore hN hab hn).ne)
+    (stoppedValue_upperCrossingTime 𝓕 μ (upperCrossingTime_lt_of_le_upcrossingsBefore hN hab hn).ne)
+    (stoppedValue_lowerCrossingTime 𝓕 μ (lowerCrossingTime_lt_of_lt_upcrossingsBefore hN hab hn).ne)
 
-theorem sub_eq_zero_of_upcrossingsBefore_lt (hab : a < b) (hn : upcrossingsBefore a b f N ω < n) :
-    stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) ω -
-      stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) ω = 0 := by
+theorem sub_eq_zero_of_upcrossingsBefore_lt (𝓕 : Filtration ℕ m0) (μ : Measure Ω)
+    (hab : a < b) (hn : upcrossingsBefore a b f N ω < n) :
+    𝓕.stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) μ ω -
+      𝓕.stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) μ ω = 0 := by
   have : N ≤ upperCrossingTime a b f N n ω := by
     rw [upcrossingsBefore] at hn
     rw [← not_lt]
     exact fun h => not_le.2 hn (le_csSup (upperCrossingTime_lt_bddAbove hab) h)
-  simp [stoppedValue, upperCrossingTime_stabilize' (Nat.le_succ n) this,
+  simp [upperCrossingTime_stabilize' (Nat.le_succ n) this,
     lowerCrossingTime_stabilize' le_rfl (le_trans this upperCrossingTime_le_lowerCrossingTime)]
 
 theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
     (b - a) * upcrossingsBefore a b f N ω ≤
     ∑ k ∈ Finset.range N, upcrossingStrat a b f N k ω * (f (k + 1) - f k) ω := by
+  let mΩ : MeasurableSpace Ω := ⊥
+  let 𝓕 : Filtration ℕ mΩ :=
+    { seq _ := ⊥
+      mono' _ _ _ := le_rfl
+      le' _ := le_rfl }
+  let μ : Measure Ω := 0
   by_cases hN : N = 0
   · simp [hN]
   simp_rw [upcrossingStrat, Finset.sum_mul, ←
@@ -568,8 +590,8 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
   rw [Finset.sum_comm]
   have h₁ : ∀ k, ∑ n ∈ Finset.range N, (Set.Ico (lowerCrossingTime a b f N k ω)
       (upperCrossingTime a b f N (k + 1) ω)).indicator (fun m => f (m + 1) ω - f m ω) n =
-      stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
-        stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω := by
+      𝓕.stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) μ ω -
+        𝓕.stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) μ ω := by
     intro k
     rw [Finset.sum_indicator_eq_sum_filter, (_ : Finset.filter (fun i => i ∈ Set.Ico
       (lowerCrossingTime a b f N k ω) (upperCrossingTime a b f N (k + 1) ω)) (Finset.range N) =
@@ -577,37 +599,38 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
       Finset.sum_Ico_eq_add_neg _ lowerCrossingTime_le_upperCrossingTime_succ,
       Finset.sum_range_sub fun n => f n ω, Finset.sum_range_sub fun n => f n ω, neg_sub,
       sub_add_sub_cancel]
-    · rfl
+    · simp
     · ext i
       simp only [Set.mem_Ico, Finset.mem_filter, Finset.mem_range, Finset.mem_Ico,
         and_iff_right_iff_imp, and_imp]
       exact fun _ h => lt_of_lt_of_le h upperCrossingTime_le
   simp_rw [h₁]
   have h₂ : ∑ _k ∈ Finset.range (upcrossingsBefore a b f N ω), (b - a) ≤
-      ∑ k ∈ Finset.range N, (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
-        stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω) := by
+      ∑ k ∈ Finset.range N, (𝓕.stoppedValue f
+        (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) μ ω -
+        𝓕.stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) μ ω) := by
     calc
       ∑ _k ∈ Finset.range (upcrossingsBefore a b f N ω), (b - a) ≤
           ∑ k ∈ Finset.range (upcrossingsBefore a b f N ω),
-            (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
-              stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω) := by
+            (𝓕.stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) μ ω -
+              𝓕.stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) μ ω) := by
         gcongr ∑ k ∈ _, ?_ with i hi
-        refine le_sub_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab ?_
+        refine le_sub_of_le_upcrossingsBefore 𝓕 μ (zero_lt_iff.2 hN) hab ?_
         rwa [Finset.mem_range] at hi
       _ ≤ ∑ k ∈ Finset.range N,
-          (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
-          stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω) := by
+          (𝓕.stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) μ ω -
+          𝓕.stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) μ ω) := by
         refine Finset.sum_le_sum_of_subset_of_nonneg
           (Finset.range_subset_range.2 (upcrossingsBefore_le f ω hab)) fun i _ hi => ?_
         by_cases hi' : i = upcrossingsBefore a b f N ω
         · subst hi'
-          simp only [stoppedValue]
+          simp only [ENat.some_eq_natCast, Nat.cast_inj, Filtration.stoppedValue_of_eq_coe,
+            sub_nonneg]
           rw [upperCrossingTime_eq_of_upcrossingsBefore_lt hab (Nat.lt_succ_self _)]
           by_cases heq : lowerCrossingTime a b f N (upcrossingsBefore a b f N ω) ω = N
-          · rw [heq, sub_self]
-          · rw [sub_nonneg]
-            exact le_trans (stoppedValue_lowerCrossingTime heq) hf
-        · rw [sub_eq_zero_of_upcrossingsBefore_lt hab]
+          · rw [heq]
+          · simpa using le_trans (stoppedValue_lowerCrossingTime 𝓕 μ heq) hf
+        · rw [sub_eq_zero_of_upcrossingsBefore_lt 𝓕 μ hab]
           rw [Finset.mem_range, not_lt] at hi
           exact lt_of_le_of_ne hi (Ne.symm hi')
   refine le_trans ?_ h₂
