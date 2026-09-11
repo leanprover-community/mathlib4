@@ -18,8 +18,10 @@ in some category `C`, creates a new lemma named `H_map` of the form
 `∀ .. {D} (F : C ⥤ D), F.map f = F.map g` and then applies
 `simp only [Functor.map_comp, Functor.map_id]`.
 
-The generated lemma preserves the source's universe parameters in their original order,
-followed by the target category's object and morphism universe parameters.
+The generated lemma orders morphism universes before object universes, with source universes
+before target universes in each group. Source parameters retain their names and relative order
+within each group. A parameter used for both objects and morphisms goes in the morphism group;
+parameters unrelated to category universes come last.
 
 There is also a term elaborator `map_of% t` for use within proofs.
 -/
@@ -81,6 +83,33 @@ def mapExpr (pf : Expr) : Term.TermElabM Expr := do
     let inner ← mapExprHom type pfApp uLev vLev
     mkLambdaFVars xs inner
 
+/-- Collect the universe parameters used for morphisms and objects in category-theoretic types.
+Traversing the levels also handles expressions such as `max u v` and `u + 1`. -/
+private def collectCategoryUniverses (type : Expr) :
+    StateRefT (CollectLevelParams.State × CollectLevelParams.State) MetaM Unit :=
+  type.forEach fun e => do
+    let (homLevels, objLevels) := match e with
+      | .const ``Category [v, u] | .const ``CategoryStruct [v, u]
+      | .const ``Quiver [v, u] | .const ``Quiver.Hom [v, u] => ([v], [u])
+      | .const ``CategoryTheory.Functor [vC, vD, uC, uD] => ([vC, vD], [uC, uD])
+      | _ => ([], [])
+    modify fun (hom, obj) =>
+      (CollectLevelParams.visitLevels homLevels hom, CollectLevelParams.visitLevels objLevels obj)
+
+/-- Order universe parameters by their roles in the generated declaration's type.
+Shared parameters belong to the morphism group; unrelated parameters are placed last.
+Within each group, retain source order and put new target parameters after source parameters. -/
+private def orderMapUniverses (type : Expr) (source target : List Name) : MetaM (List Name) := do
+  let (hom, obj) ← forallTelescopeReducing type (whnfType := true) fun xs body => do
+    let types ← xs.mapM fun x => do whnf (← inferType x)
+    let (_, (hom, obj)) ← (types.push body |>.forM collectCategoryUniverses).run ({}, {})
+    return (hom.params, obj.params)
+  let isHom := hom.contains
+  let isObj := fun n => obj.contains n && !isHom n
+  return source.filter isHom ++ target.filter isHom ++
+    source.filter isObj ++ target.filter isObj ++
+    (source ++ target).filter (fun n => !isHom n && !isObj n)
+
 /--
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
 in some category `C`, creates a new lemma named `H_map` of the form
@@ -107,11 +136,10 @@ initialize registerBuiltinAttribute {
     addRelatedDecl src tgt ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
         let pf ← mapExpr value
-        -- Preserve the source parameters and append the target object and morphism universes,
-        -- in the order in which their binders occur in the generated proof.
         let r := (← getMCtx).levelMVarToParam levels.contains (fun _ => false) pf
         setMCtx r.mctx
-        pure (r.expr, levels ++ r.newParamNames.toList)
+        let ordered ← orderMapUniverses (← inferType r.expr) levels r.newParamNames.toList
+        pure (r.expr, ordered)
   | _ => throwUnsupportedSyntax }
 
 /--
