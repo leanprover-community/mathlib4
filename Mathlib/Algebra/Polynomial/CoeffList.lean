@@ -156,6 +156,54 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
     · simp
       lia
 
+/-- Construct a polynomial from a little-endian (i.e. constant term first) coefficient list.
+
+`ofCoeffs [c₀, c₁, ...] = C c₀ + C c₁ * X + ...`
+
+Little-endian ordering of coefficients is convenient for:
+
+* defining multiplication by X (by cons `(0 :: )`)
+* defining addition of two polynomials of different degrees (their coefficient lists indexes align)
+-/
+noncomputable def ofCoeffs : List R → R[X]
+  | [] => 0
+  | c :: p => C c + X * ofCoeffs p
+
+@[simp]
+theorem ofCoeffs_nil : ofCoeffs ([] : List R) = 0 := rfl
+
+theorem ofCoeffs_cons (c : R) (p : List R) : ofCoeffs (c :: p) = C c + X * ofCoeffs p := rfl
+
+@[simp]
+theorem coeff_ofCoeffs (l : List R) (i : ℕ) : (ofCoeffs l).coeff i = l.getD i 0 := by
+  induction l generalizing i with
+  | nil => simp
+  | cons c p ih =>
+    cases i with
+    | zero => simp [ofCoeffs_cons]
+    | succ i => simp [ofCoeffs_cons, coeff_X_mul, ih]
+
+@[simp]
+theorem ofCoeffs_reverse_coeffList (P : R[X]) : ofCoeffs P.coeffList.reverse = P := by
+  ext i
+  rw [coeff_ofCoeffs, coeffList, List.map_reverse, List.reverse_reverse]
+  rcases lt_or_ge i P.degree.succ with h | h
+  · grind
+  · have hd : P.degree < i := by
+      rw [← Order.succ_le_iff, ← WithBot.succ_eq_succ]
+      exact (WithBot.coe_le rfl).mpr h
+    grind [coeff_eq_zero_of_degree_lt]
+
+theorem map_ofCoeffs {S : Type*} [Semiring S] (f : R →+* S) (l : List R) :
+    (ofCoeffs l).map f = ofCoeffs (l.map f) := by
+  induction l with
+  | nil => simp
+  | cons c p ih =>
+    simp only [ofCoeffs_cons, Polynomial.map_add, map_C, Polynomial.map_mul, map_X, List.map_cons]
+    exact
+      toFinsupp_inj.mp
+        (congrArg toFinsupp (congrArg (HAdd.hAdd (C (f c))) (congrArg (HMul.hMul X) ih)))
+
 end Semiring
 
 section Ring
