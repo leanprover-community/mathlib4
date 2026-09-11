@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
+# ℤ-modules are equivalent to additive commutative groups
+
 The forgetful functor from ℤ-modules to additive commutative groups is
 an equivalence of categories.
 
-TODO:
-either use this equivalence to transport the monoidal structure from `Module ℤ` to `Ab`,
+## TODO
+
+Either use this equivalence to transport the monoidal structure from `Module ℤ` to `Ab`,
 or, having constructed that monoidal structure directly, show this functor is monoidal.
 -/
 
@@ -41,7 +44,7 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.
 /-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is essentially surjective. -/
 instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).EssSurj where
   mem_essImage A :=
-    ⟨ModuleCat.of ℤ A,
+    ⟨↧A,
       ⟨{  hom := 𝟙 A
           inv := 𝟙 A }⟩⟩
 
