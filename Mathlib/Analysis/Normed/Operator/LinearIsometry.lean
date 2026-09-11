@@ -139,6 +139,7 @@ theorem toLinearMap_injective : Injective (toLinearMap : (E →ₛₗᵢ[σ₁�
 theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = g.toLinearMap ↔ f = g :=
   toLinearMap_injective.eq_iff
 
+@[macro_inline]
 instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
@@ -477,6 +478,7 @@ theorem toLinearEquiv_injective : Injective (toLinearEquiv : (E ≃ₛₗᵢ[σ�
 theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEquiv = g.toLinearEquiv ↔ f = g :=
   toLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun

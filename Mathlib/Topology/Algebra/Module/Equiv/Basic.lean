@@ -132,6 +132,7 @@ instance : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ ≃ₛₗ[σ₁₂] M₂) where
 @[simp] lemma toLinearMap_toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) :
     e.toContinuousLinearMap.toLinearMap = e.toLinearEquiv.toLinearMap := rfl
 
+@[macro_inline]
 instance equivLike :
     EquivLike (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toFun

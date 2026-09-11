@@ -69,6 +69,7 @@ theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P₁ ≃ᴬ[k] P�
   rintro ⟨e, econt, einv_cont⟩ ⟨e', e'cont, e'inv_cont⟩ H
   congr
 
+@[macro_inline]
 instance instEquivLike : EquivLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -85,6 +86,7 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
   coe_injective _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
