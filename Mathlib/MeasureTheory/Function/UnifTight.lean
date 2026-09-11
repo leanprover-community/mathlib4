@@ -41,7 +41,9 @@ uniformly integrable, uniformly tight, Vitali convergence theorem
 
 namespace MeasureTheory
 
-open Set Filter Topology ENNReal
+open Set Filter ENNReal
+
+open scoped Topology
 
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
 

@@ -378,6 +378,7 @@ lemma mdifferentiableWithinAt_add_section
     · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
 
+@[to_fun mdifferentiableAt_fun_add_section]
 lemma mdifferentiableAt_add_section
     (hs : MDiffAt (T% s) x₀) (ht : MDiffAt (T% t) x₀) :
     MDiffAt (T% (s + t)) x₀ := by
@@ -446,6 +447,7 @@ lemma MDifferentiableWithinAt.smul_section
     · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
+@[to_fun]
 lemma MDifferentiableAt.smul_section
     (hf : MDiffAt f x₀) (hs : MDiffAt (T% s) x₀) : MDiffAt (T% (f • s)) x₀ := by
   rw [← mdifferentiableWithinAt_univ] at hs ⊢
@@ -746,11 +748,11 @@ lemma _root_.VectorBundle.injective_eval_mdifferentiableAt_sec [∀ x, Module �
   simpa using congr($h (extend F σ₀) (mdifferentiableAt_extend ..))
 
 variable (V) in
-lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec {n : WithTop ℕ∞} [∀ x, Module 𝕜 (V x)]
+lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec [∀ x, Module 𝕜 (V x)]
     (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
     Function.Injective
       (fun A : V x →L[𝕜] W ↦
-        fun (Z : Π x, V x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) := by
+        fun (Z : Π x, V x) (_ : CMDiffAt k (T% Z) x) ↦ A (Z x)) := by
   intro X X' h
   ext σ₀
   simpa using congr($h (extend F σ₀) (contMDiffAt_extend ..))

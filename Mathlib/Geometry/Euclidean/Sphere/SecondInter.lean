@@ -27,7 +27,7 @@ through a point on that sphere.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 

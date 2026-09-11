@@ -170,8 +170,8 @@ lemma measurePreserving_equivPiIoc :
     MeasurePreserving (measurableEquivPiIoc a) volume (Measure.comap Subtype.val volume) := by
   refine (⟨(measurableEquivPiIoc a).symm.measurable, symm ?_⟩ :
     MeasurePreserving (measurableEquivPiIoc a).symm _ _).symm
-  have := Measure.map_map (μ := volume.comap Subtype.val) (measurable_pi_lambda
-    (fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))
+  have := Measure.map_map (μ := volume.comap Subtype.val) (.of_eval
+    (f := fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))
     (fun i => AddCircle.measurable_mk'.comp (measurable_pi_apply i)))
     measurable_subtype_coe (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
   simp only [Function.comp_def] at this

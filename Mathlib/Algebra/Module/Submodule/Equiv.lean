@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Range
 
-/-! ### Linear equivalences involving submodules -/
+/-! # Linear equivalences involving submodules -/
 
 @[expose] public section
 
@@ -35,7 +35,7 @@ variable (p q : Submodule R M)
 
 /-- Linear equivalence between two equal submodules. -/
 def ofEq (h : p = q) : p ≃ₗ[R] q :=
-  { Equiv.setCongr (congr_arg _ h) with
+  { Set.equivOfEq (congr_arg _ h) with
     map_smul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
