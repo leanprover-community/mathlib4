@@ -602,8 +602,7 @@ theorem tendstoInMeasure_iff_tendsto_Lp_finite [IsFiniteMeasure μ] (hp : 1 ≤ 
       Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) :=
   ⟨fun h => tendsto_Lp_finite_of_tendstoInMeasure hp hp'
       (fun n => (hf n).aestronglyMeasurable) hg h.2 h.1, fun h =>
-    ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne'
-        (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
+    ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne' h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h⟩⟩
 
 /-- This lemma is superseded by `unifIntegrable_of` which do not require `C` to be positive. -/
