@@ -56,7 +56,7 @@ lemma isHyperbolicWith_of_forall_dist_le {k : ℝ} (hk : ∀ x y : X, dist x y �
 /-- A bounded space is δ-hyperbolic with respect to its diameter. -/
 theorem isHyperbolicWith_diam_univ [BoundedSpace X] :
     IsHyperbolicWith X (diam (Set.univ : Set X)) := by
-  grind [Bornology.isBounded_univ, dist_le_diam_of_mem]
+  grind [dist_le_diam_of_mem]
 
 instance [BoundedSpace X] : IsHyperbolic X := ⟨_, isHyperbolicWith_diam_univ⟩
 
