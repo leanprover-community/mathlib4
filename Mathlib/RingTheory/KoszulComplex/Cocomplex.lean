@@ -88,7 +88,8 @@ lemma koszulCocomplex.d_apply_ιMulti (x : M) (i : ℕ) (m : Fin i → M) :
 
 variable {M} in
 /-- The Koszul cocomplex with objects exterior powers and differential `koszulCocomplex.d`. -/
-noncomputable abbrev koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} R) ℕ :=
+@[implicit_reducible]
+noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} R) ℕ :=
   CochainComplex.of (fun n ↦ of R (⋀[R]^n M))
     (fun n ↦ ofHom (koszulCocomplex.d R M x n))
     (fun n ↦ by
@@ -124,7 +125,7 @@ noncomputable def map (f : M →ₗ[R] N) {x : M} {y : N} (h : f x = y) :
     koszulCocomplex R x ⟶ koszulCocomplex R y :=
   CochainComplex.ofHom (fun i ↦ ofHom (exteriorPower.map i f))
     (fun i ↦ hom_ext <| LinearMap.ext fun z ↦ Subtype.ext
-      (by simp [koszulCocomplex.d, exteriorPower.oneEquiv_symm_apply, h]))
+      (by simp [koszulCocomplex, exteriorPower.oneEquiv_symm_apply, h]))
 
 lemma map_f (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
     (map R f h).f i = ofHom (exteriorPower.map i f) := rfl
@@ -132,7 +133,8 @@ lemma map_f (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
 @[reassoc]
 lemma map_id_refl (x : M) : koszulCocomplex.map R (M := M) .id (Eq.refl x) = 𝟙 _ := by
   ext i x
-  simp [map_f]
+  --there are some problem on simp of `X`
+  simp [map_f, koszulCocomplex]
 
 @[reassoc]
 lemma map_id (x y : M) (h : x = y) : koszulCocomplex.map R (M := M) .id h =
