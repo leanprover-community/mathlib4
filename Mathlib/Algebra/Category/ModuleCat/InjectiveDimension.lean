@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
@@ -41,7 +40,7 @@ universe v v' u u'
 
 variable {R : Type u} [Ring R]
 
-open CategoryTheory Abelian
+open CategoryTheory
 
 namespace ModuleCat
 
@@ -106,7 +105,7 @@ private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
       f'.hom.exact_map_mkQ_range injf' (Submodule.mkQ_surjective _)
     let I : ModuleCat.{v} R :=
       let := Module.compHom I' eR.toRingHom
-      ModuleCat.of R I'
+      ↧I'
     let eI : I ≃ₛₗ[RingHomClass.toRingHom eR] I' := {
       __ := AddEquiv.refl I
       map_smul' r i := rfl }
@@ -126,7 +125,6 @@ private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
     exact (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
       ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] small_lift in
 lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)

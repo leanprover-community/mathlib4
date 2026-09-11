@@ -5,10 +5,9 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Basic
-public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Algebra.Order.Module.Basic
+public import Mathlib.Algebra.Module.Submodule.Defs
 
 /-!
 # Archimedean classes for ordered module

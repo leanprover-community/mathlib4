@@ -29,7 +29,7 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 @[expose] public section
 
-open Bundle Filter Set TopologicalSpace Topology
+open Bundle Set TopologicalSpace Topology
 
 /-! ### The trivial bundle -/
 
@@ -222,7 +222,7 @@ theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
 
 end Bundle.Trivialization
 
-open Bundle Trivialization
+open Bundle
 
 variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSpace (E₁ x)]
   [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]

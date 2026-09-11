@@ -18,7 +18,7 @@ if and only if `a` has infinite order (in other words, if `a / p` is irrational)
 
 public section
 
-open Metric MeasureTheory AddSubgroup
+open MeasureTheory AddSubgroup
 open scoped Pointwise
 
 namespace AddCircle

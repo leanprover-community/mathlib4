@@ -144,8 +144,6 @@ instance (m : ComonadBicat B) : Comonad m.hom :=
 def mkOfComonad {a : B} (t : a ⟶ a) [Comonad t] : ComonadBicat B :=
   Comonad.toOplax t
 
-open Comonad
-
 section
 
 variable {a : B} (t : a ⟶ a) [Comonad t]

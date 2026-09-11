@@ -40,7 +40,7 @@ coincide with the existing topology and uniformity on matrices.
 open WithLp
 open scoped Matrix
 
-variable {𝕜 m n l E : Type*}
+variable {𝕜 m n l : Type*}
 
 section EntrywiseSupNorm
 
@@ -107,6 +107,19 @@ def toEuclideanCLM :
       map_mul' := fun _ _ ↦ rfl
       map_star' := adjoint_toContinuousLinearMap }
 
+@[fun_prop]
+lemma continuous_uncurry_toEuclideanCLM :
+    Continuous (fun (S, x) ↦ toEuclideanCLM (n := n) (𝕜 := 𝕜) S x) := by
+  refine Continuous.comp (by fun_prop) <| continuous_pi fun i ↦ ?_
+  simp only [LinearEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.invFun_as_coe,
+    LinearEquiv.coe_symm_toEquiv, toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
+    LinearEquiv.coe_coe, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
+    linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk,
+    LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
+    Finsupp.equivFunOnFinite_symm_apply_apply]
+  fun_prop
+
 lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
     (toEuclideanCLM (n := n) (𝕜 := 𝕜) A : _ →ₗ[𝕜] _) = toEuclideanLin A :=
   rfl
@@ -149,7 +162,7 @@ def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
     _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
 
-open Bornology Filter
+open Filter
 open scoped Topology Uniformity
 
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with

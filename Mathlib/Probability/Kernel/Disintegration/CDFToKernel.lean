@@ -49,7 +49,7 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 @[expose] public section
 
-open MeasureTheory Set Filter TopologicalSpace
+open MeasureTheory Set Filter
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
@@ -313,9 +313,10 @@ lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
   rw [← memLp_one_iff_integrable]
-  refine ⟨(Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
+  rw [memLp_iff]
   refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
-  refine (eLpNorm_le_of_ae_bound (C := 1) ?_).trans (by simp)
+  refine (eLpNorm_le_of_ae_bound (C := 1)
+    ((Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable) ?_).trans (by simp)
   filter_upwards [hf.bddBelow_range a, hf.nonneg a, hf.le_one a]
     with t hbdd_below h_nonneg h_le_one
   rw [Real.norm_eq_abs, abs_of_nonneg]

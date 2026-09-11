@@ -86,7 +86,7 @@ end Definitions
 
 namespace FinStronglyMeasurable
 
-variable {m0 : MeasurableSpace α} {μ : Measure α} {f g : α → β}
+variable {m0 : MeasurableSpace α} {μ : Measure α} {f : α → β}
 
 theorem aefinStronglyMeasurable [Zero β] [TopologicalSpace β] (hf : FinStronglyMeasurable f μ) :
     AEFinStronglyMeasurable f μ :=
@@ -381,6 +381,11 @@ protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
   ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
 
+@[simp] protected theorem star_iff
+    {R : Type*} [TopologicalSpace R] [InvolutiveStar R] [ContinuousStar R] {f : α → R} :
+    AEStronglyMeasurable (star f) μ ↔ AEStronglyMeasurable f μ :=
+  ⟨fun h ↦ by simpa using h.star, fun h ↦ h.star⟩
+
 end Star
 
 section Order
@@ -573,7 +578,6 @@ theorem nullMeasurableSet_eq_fun {E} [TopologicalSpace E] [MetrizableSpace E] {f
     (hf.stronglyMeasurable_mk.measurableSet_eq_fun
           hg.stronglyMeasurable_mk).nullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (hf.mk f x = hg.mk g x) = (f x = g x)
   simp only [hfx, hgx]
 
 @[to_additive]
@@ -587,7 +591,6 @@ theorem nullMeasurableSet_lt [Preorder β] [OrderClosedTopology β] [PseudoMetri
   apply
     (hf.stronglyMeasurable_mk.measurableSet_lt hg.stronglyMeasurable_mk).nullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (hf.mk f x < hg.mk g x) = (f x < g x)
   simp only [hfx, hgx]
 
 theorem nullMeasurableSet_le [Preorder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
@@ -596,7 +599,6 @@ theorem nullMeasurableSet_le [Preorder β] [OrderClosedTopology β] [PseudoMetri
   apply
     (hf.stronglyMeasurable_mk.measurableSet_le hg.stronglyMeasurable_mk).nullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (hf.mk f x ≤ hg.mk g x) = (f x ≤ g x)
   simp only [hfx, hgx]
 
 theorem _root_.aestronglyMeasurable_of_aestronglyMeasurable_trim {α} {m m0 : MeasurableSpace α}
@@ -762,6 +764,13 @@ theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     intro hx_mem
     rw [Set.mem_compl_iff] at hx_mem
     simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_notMem, hx hx_mem]
+
+theorem piecewise_iff {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+    AEStronglyMeasurable (s.piecewise f g) μ ↔
+      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable g (μ.restrict sᶜ) := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.piecewise hs hg⟩
+  · exact h.restrict.congr (piecewise_ae_eq_restrict hs)
+  · exact h.restrict.congr (piecewise_ae_eq_restrict_compl hs)
 
 @[fun_prop]
 theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι → Measure α}

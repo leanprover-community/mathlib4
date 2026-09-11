@@ -5,8 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Lattice.Order
 
 /-!
 # Finite Exhaustions
@@ -34,6 +35,7 @@ structure Set.FiniteExhaustion {α : Type*} (s : Set α) where
 
 namespace Set.FiniteExhaustion
 
+@[macro_inline]
 instance {α : Type*} {s : Set α} : FunLike (FiniteExhaustion s) ℕ (Set α) where
   coe := toFun
   coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl

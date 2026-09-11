@@ -88,6 +88,21 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
+lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
+  rw [show {A | A.PosSemidef} = {A : Matrix n n 𝕜 | A.IsHermitian} ∩
+    ⋂ x : n →₀ 𝕜, {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} by aesop]
+  refine IsClosed.inter ?_ ?_
+  · exact isClosed_eq (by fun_prop) (by fun_prop)
+  · refine isClosed_iInter <| fun _ ↦ isClosed_le continuous_const ?_
+    simp only [Finsupp.sum]
+    fun_prop
+
+lemma instOrderClosedTopology : OrderClosedTopology (Matrix n n 𝕜) where
+  isClosed_le' := isClosed_le_of_isClosed_nonneg <| by
+    simpa [nonneg_iff_posSemidef] using posSemidef_is_closed
+
+scoped[MatrixOrder] attribute [instance] Matrix.instOrderClosedTopology
+
 variable [Fintype n]
 
 lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
@@ -133,22 +148,6 @@ lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
     inv_pow', CFC.sq_sqrt A]
 
 end sqrtDeprecated
-
-/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
-theorem dotProduct_mulVec_zero_iff {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
-  classical
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ dotProduct_zero _⟩
-  obtain ⟨B, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hA.nonneg
-  simp_rw [← Matrix.mulVec_mulVec, dotProduct_mulVec _ _ (B *ᵥ x), star_eq_conjTranspose,
-    vecMul_conjTranspose, star_star, dotProduct_star_self_eq_zero] at h ⊢
-  rw [h, mulVec_zero]
-
-/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
-theorem toLinearMap₂'_zero_iff [DecidableEq n]
-    {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
-  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
 theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
     (CFC.sqrt A).det = RCLike.sqrt A.det := by
@@ -339,7 +338,6 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
   InnerProductSpace.ofCore _
 
 open scoped Norms.L2Operator in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
 given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
@@ -355,7 +353,7 @@ instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
     rw [ContinuousMap.norm_eq_norm_coeFn]
     refine Function.Surjective.pi_norm_comp ?_ _
     rw [← Function.Surjective.of_comp_iff'
-      (Equiv.setCongr hA.spectrum_real_eq_range_eigenvalues).bijective]
+      (Set.equivOfEq hA.spectrum_real_eq_range_eigenvalues).bijective]
     exact Set.codRestrict_range_surjective hA.eigenvalues
 
 scoped[Matrix.Norms.L2Operator] attribute [instance]

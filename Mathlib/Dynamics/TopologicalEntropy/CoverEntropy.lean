@@ -63,8 +63,9 @@ Get versions of the topological entropy on (pseudo-e)metric spaces.
 
 @[expose] public section
 
-open Set SetRel Uniformity UniformSpace
-open scoped Finset
+open Set SetRel UniformSpace
+
+open scoped Uniformity Finset
 
 namespace Dynamics
 

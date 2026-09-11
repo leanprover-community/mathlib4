@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.Condensed.Light.Epi
-public import Mathlib.Condensed.Light.Functors
 
 /-!
 

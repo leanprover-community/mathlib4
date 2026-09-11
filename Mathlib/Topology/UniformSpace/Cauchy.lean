@@ -19,8 +19,9 @@ public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 universe u v
 
-open Filter Function TopologicalSpace Topology Set UniformSpace Uniformity
-open scoped SetRel
+open Filter Function TopologicalSpace Set UniformSpace
+
+open scoped Topology Uniformity SetRel
 
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
@@ -403,13 +404,6 @@ lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty �
     CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
   ⟨fun _ ↦ ⟨.fst_of_prod (β := β), .snd_of_prod (α := α)⟩, fun ⟨_, _⟩ ↦ .prod⟩
 
-@[to_additive]
-instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
-  complete hf :=
-    MulOpposite.op_surjective.exists.mpr <|
-      let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
-      ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
-
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
   ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
@@ -472,8 +466,6 @@ instance : CompleteSpace α where
   complete {f} hf := by
     obtain ⟨x, rfl⟩ := eq_pure_of_cauchy hf
     exact ⟨x, pure_le_nhds x⟩
-
-variable {X}
 
 /-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
 noncomputable def cauchyConst {f : Filter α} (hf : Cauchy f) : α :=
@@ -831,7 +823,7 @@ namespace SequentiallyComplete
 
 variable {f : Filter α} (hf : Cauchy f) {U : ℕ → SetRel α α} (U_mem : ∀ n, U n ∈ 𝓤 α)
 
-open Set Finset
+open Set
 
 noncomputable section
 

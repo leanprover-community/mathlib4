@@ -139,7 +139,7 @@ theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G]
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
-  have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp [f, g]
+  have : g ∘ f = Function.diag := by ext x <;> simp [f, g]
   have range_gf : range (g ∘ f) = diagonal X := by simp [this]
   rw [← range_gf]
   exact (proper_g.comp proper_f).isClosed_range
@@ -287,7 +287,8 @@ alias ProperVAdd.isCompact_setOf_inter_nonempty := ProperVAdd.isCompact_setOfPre
 
 /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
 action is proper. -/
-@[to_additive]
+@[to_additive /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper
+map, then the action is proper. -/]
 lemma MulAction.properSMul_of_proper_orbitMap
     [ContinuousSMul G X] [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
     {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by

@@ -34,17 +34,15 @@ condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
 -/
 abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
-  IsWellFounded α DvdNotUnit
+  @WellFounded α DvdNotUnit
 
 theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :
-    WellFounded (DvdNotUnit (α := α)) :=
-  h.wf
+    @WellFounded α DvdNotUnit :=
+  h
 
 namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
-
-open Associates Nat
 
 variable [WfDvdMonoid α]
 
@@ -133,10 +131,12 @@ of prime factors, use the definition `of_exists_prime_factors`
 @[wikidata Q1052579 "This Mathlib declaration captures 'unique factorization'.
 Use in conjunction with `IsDomain` to capture unique factorization domain."]
 class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
-    extends IsCancelMulZero α, IsWellFounded α DvdNotUnit where
+    extends IsCancelMulZero α where
+  [toWellFounded : @WellFounded α DvdNotUnit]
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 attribute [instance 100] UniqueFactorizationMonoid.toIsCancelMulZero
+attribute [instance] UniqueFactorizationMonoid.toWellFounded
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
@@ -178,11 +178,13 @@ namespace UniqueFactorizationMonoid
 
 variable [CommMonoidWithZero α]
 
+instance [Subsingleton α] : WfDvdMonoid α :=
+  ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
+
 variable (α) in
 theorem of_subsingleton [Subsingleton α] : UniqueFactorizationMonoid α where
   mul_left_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
   mul_right_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
-  wf := ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
   irreducible_iff_prime {a} := by simp [Subsingleton.elim a 0]
 
 variable [UniqueFactorizationMonoid α]
@@ -193,7 +195,7 @@ noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)
 
 theorem factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a := by
-  rw [factors, dif_neg ane0]
+  rw [factors, dite_eq_right ane0]
   exact (Classical.choose_spec (exists_prime_factors a ane0)).2
 
 @[simp]
@@ -208,7 +210,7 @@ theorem dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
 
 theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
   have ane0 := ne_zero_of_mem_factors hx
-  rw [factors, dif_neg ane0] at hx
+  rw [factors, dite_eq_right ane0] at hx
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 x hx
 
 theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
