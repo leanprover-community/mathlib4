@@ -46,17 +46,17 @@ lemma sConvexComb_apply (w : StdSimplex S (ConvexSpace.AffineMap R X Y)) (x : X)
 
 /-- Evaluation at a point is affine in the affine map. -/
 @[fun_prop]
-lemma isAffineMap_apply (x : X) : IsAffineMap S fun f : ConvexSpace.AffineMap R X Y ↦ f x where
+lemma isAffineMap_eval (x : X) : IsAffineMap S fun f : ConvexSpace.AffineMap R X Y ↦ f x where
   map_sConvexComb _ := sConvexComb_apply ..
 
 @[simp]
 lemma iConvexComb_apply (w : StdSimplex S I) (f : I → ConvexSpace.AffineMap R X Y) (x : X) :
-    w.iConvexComb f x = w.iConvexComb fun i ↦ f i x := (isAffineMap_apply x).map_iConvexComb ..
+    w.iConvexComb f x = w.iConvexComb fun i ↦ f i x := (isAffineMap_eval x).map_iConvexComb ..
 
 @[simp]
 lemma convexCombPair_apply (a b : S) (ha hb hab) (f g : ConvexSpace.AffineMap R X Y) (x : X) :
     convexCombPair a b ha hb hab f g x = convexCombPair a b ha hb hab (f x) (g x) :=
-  (isAffineMap_apply x).map_convexCombPair ..
+  (isAffineMap_eval x).map_convexCombPair ..
 
 @[fun_prop]
 lemma isAffineMap_const_comp [IsConvexCombComm S R Z] (g : ConvexSpace.AffineMap R Y Z)

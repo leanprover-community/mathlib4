@@ -190,7 +190,7 @@ variable {S : Type*} [Semiring S] [PartialOrder S] [IsStrictOrderedRing S] [Modu
 
 /-- The convex space structures over `R` and over `S` on a module commute as soon as the `R` and `S`
 actions do. -/
-instance IsConvexCombComm.of_module : IsConvexCombComm R S M where
+instance _root_.SMulCommClass.toIsConvexCombComm : IsConvexCombComm R S M where
   iConvexComb_comm' f g := by
     simp only [iConvexComb_eq_sum, Finsupp.sum, Finset.smul_sum]
     rw [Finset.sum_comm]

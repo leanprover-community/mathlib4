@@ -580,15 +580,15 @@ variable {R S X I J : Type*} [PartialOrder R] [Semiring R] [IsStrictOrderedRing 
   [Semiring S] [IsStrictOrderedRing S] [ConvexSpace R X] [ConvexSpace S X]
 
 variable (R S X) in
-/-- Typeclass for the `R`-convex space and `S`-convex space structures on `X` to commute, namely for
-`R`-convex combinations to be `S`-affine.
+/-- `IsConvexCombComm R S X` indicates that the `R`-convex and `S`-convex space structures on `X`
+commute, namely for `R`-convex combinations to be `S`-affine.
 
-This is the convex space analogue of `SMulCommClass`.
-
-The condition is stated for families indexed by `Fin n`, so that the class does not depend on an
-extra universe parameter. See `Convexity.iConvexComb_comm` for the general statement. -/
+This is the convex space analogue of `SMulCommClass`. -/
 class IsConvexCombComm : Prop where
-  /-- Use `Convexity.iConvexComb_comm` instead. -/
+  /-- `R`-convex combinations commute with `S`-convex combinations of `Fin n`-indexed families.
+
+  This is stated for `Fin n` so that the class does not depend on an extra universe parameter.
+  Use `Convexity.iConvexComb_comm` instead, which works for arbitrary index types. -/
   protected iConvexComb_comm' {n : ℕ} (f : StdSimplex R (Fin n → X)) (g : StdSimplex S (Fin n)) :
     f.iConvexComb (fun e ↦ g.iConvexComb e) = g.iConvexComb (fun i ↦ f.iConvexComb (· i))
 
@@ -616,6 +616,7 @@ end IsConvexCombComm
 
 variable {R X I J : Type*} [PartialOrder R] [CommSemiring R] [IsStrictOrderedRing R]
   [ConvexSpace R X] in
+/-- When `R` is commutative, so are its convex combinations. -/
 instance IsConvexCombComm.instSelf : IsConvexCombComm R R X where
   iConvexComb_comm' f g := by
     change f.iConvexComb (fun e ↦ g.iConvexComb e) = g.iConvexComb fun i ↦ f.iConvexComb (· i)

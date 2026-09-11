@@ -48,6 +48,7 @@ initialize_simps_projections ConvexSpace.AffineMap (toFun → apply)
 @[fun_prop]
 lemma isAffineMap (f : ConvexSpace.AffineMap R X Y) : IsAffineMap R f := f.isAffineMap_toFun
 
+variable (X) in
 /-- The identity map, as a bundled affine map of convex spaces. -/
 @[simps, implicit_reducible]
 def id : ConvexSpace.AffineMap R X X where
@@ -63,8 +64,8 @@ def comp (g : ConvexSpace.AffineMap R Y Z) (f : ConvexSpace.AffineMap R X Y) :
 lemma coe_comp (g : ConvexSpace.AffineMap R Y Z) (f : ConvexSpace.AffineMap R X Y) :
     ⇑(g.comp f) = g ∘ f := rfl
 
-@[simp] lemma id_comp (f : ConvexSpace.AffineMap R X Y) : .comp .id f = f := rfl
-@[simp] lemma comp_id (f : ConvexSpace.AffineMap R X Y) : f.comp .id = f := rfl
+@[simp] lemma id_comp (f : ConvexSpace.AffineMap R X Y) : .comp (.id _) f = f := rfl
+@[simp] lemma comp_id (f : ConvexSpace.AffineMap R X Y) : f.comp (.id _) = f := rfl
 
 lemma assoc (f₁ : ConvexSpace.AffineMap R Z T) (f₂ : ConvexSpace.AffineMap R Y Z)
     (f₃ : ConvexSpace.AffineMap R X Y) :
@@ -102,7 +103,7 @@ lemma coe_affineMap {M N : Type*} (f : M → N) :
     ⇑(affineMap (R := R) f) = map f := rfl
 
 @[simp]
-lemma affineMap_id (M : Type*) : affineMap (R := R) (id : M → M) = .id := by aesop
+lemma affineMap_id (M : Type*) : affineMap (R := R) (id : M → M) = .id _ := by aesop
 
 /-- Given a map `f : M → X` where `X` is a convex space over `R`, this is the affine
 map `StdSimplex R M → X` which sends the vertex corresponding to `m : M` to `f m`. -/

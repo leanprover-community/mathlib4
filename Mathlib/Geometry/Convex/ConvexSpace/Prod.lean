@@ -154,10 +154,13 @@ protected lemma IsAffineMap.fst {f : X → Y × Z} (hf : IsAffineMap R f) :
 protected lemma IsAffineMap.snd {f : X → Y × Z} (hf : IsAffineMap R f) :
     IsAffineMap R fun x ↦ (f x).2 := Prod.isAffineMap_snd.comp hf
 
+lemma isAffineMap_prod_iff {f : X → Y × Z} :
+    IsAffineMap R f ↔ (IsAffineMap R fun x ↦ (f x).1) ∧ IsAffineMap R fun x ↦ (f x).2 :=
+  ⟨fun hf ↦ ⟨hf.fst, hf.snd⟩, fun hf ↦ hf.1.prodMk hf.2⟩
+
 @[simp]
 lemma isAffineMap_prodMk_iff {f : X → Y} {g : X → Z} :
-    (IsAffineMap R fun x ↦ (f x, g x)) ↔ IsAffineMap R f ∧ IsAffineMap R g :=
-  ⟨fun hf ↦ ⟨hf.fst, hf.snd⟩, fun hf ↦ hf.1.prodMk hf.2⟩
+    (IsAffineMap R fun x ↦ (f x, g x)) ↔ IsAffineMap R f ∧ IsAffineMap R g := isAffineMap_prod_iff
 
 end Prod
 

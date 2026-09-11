@@ -64,13 +64,13 @@ instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
 
 end SMul
 
-instance instAddCommMonoid : AddCommMonoid (ConvexSpace.AffineMap R X M) :=
+instance : AddCommMonoid (ConvexSpace.AffineMap R X M) :=
   fast_instance% FunLike.addCommMonoid
 
 instance [Monoid S] [DistribMulAction S M] [SMulCommClass S R M] :
     DistribMulAction S (ConvexSpace.AffineMap R X M) := fast_instance% FunLike.distribMulAction
 
-instance instModule [Semiring S] [Module S M] [SMulCommClass S R M] :
+instance [Semiring S] [Module S M] [SMulCommClass S R M] :
     Module S (ConvexSpace.AffineMap R X M) := fast_instance% FunLike.module
 
 end AddCommMonoid
@@ -88,7 +88,7 @@ instance : Sub (ConvexSpace.AffineMap R X M) where
 
 instance : IsSubApply (ConvexSpace.AffineMap R X M) X M where sub_apply _ _ _ := rfl
 
-instance instAddCommGroup : AddCommGroup (ConvexSpace.AffineMap R X M) :=
+instance : AddCommGroup (ConvexSpace.AffineMap R X M) :=
   fast_instance% FunLike.addCommGroup
 
 end AddCommGroup
