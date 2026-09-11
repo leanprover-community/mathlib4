@@ -82,7 +82,7 @@ theorem indepFun_iff_hasCondDistrib_const_of_hasLaw [IsFiniteMeasure P]
   simp [indepFun_iff_hasLaw_prodMk_prod hX hY, HasCondDistrib, ← hX.map_eq, ← hY.map_eq,
     Measure.compProd_const]
 
-/-- Two a.e.-measurable random variables are independent if and only if the conditional
+/-- Two `AEMeasurable` random variables are independent if and only if the conditional
 distribution of the second given the first is the constant kernel at its marginal distribution. -/
 theorem indepFun_iff_hasCondDistrib_const [IsFiniteMeasure P]
     (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
@@ -99,20 +99,15 @@ variable [StandardBorelSpace 𝓨] [Nonempty 𝓨] [IsFiniteMeasure P]
 /-- The regular conditional distribution of `Y` given `X` is a conditional distribution. -/
 lemma hasCondDistrib_condDistrib (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
     HasCondDistrib Y X (condDistrib Y X P) P where
-  aemeasurable := hX.prodMk hY
   map_eq := (compProd_map_condDistrib hY).symm
 
 /-- A finite kernel is a conditional distribution of `Y` given `X` if and only if it is almost
 everywhere equal to the regular conditional distribution. -/
 theorem hasCondDistrib_iff_condDistrib_ae_eq [IsFiniteKernel κ]
     (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
-    HasCondDistrib Y X κ P ↔ condDistrib Y X P =ᵐ[P.map X] κ := by
-  constructor
-  · intro h
-    exact condDistrib_ae_eq_of_measure_eq_compProd X hY h.map_eq
-  · intro h
-    exact ⟨hX.prodMk hY,
-      (hasCondDistrib_condDistrib hX hY).map_eq.trans (Measure.compProd_congr h)⟩
+    HasCondDistrib Y X κ P ↔ condDistrib Y X P =ᵐ[P.map X] κ where
+  mp h := condDistrib_ae_eq_of_measure_eq_compProd X hY h.map_eq
+  mpr h := ⟨by fun_prop, (hasCondDistrib_condDistrib hX hY).map_eq.trans (Measure.compProd_congr h)⟩
 
 /-- Two random variables with specified laws are independent if and only if the conditional
 distribution of the second given the first is almost everywhere the constant kernel at its law. -/
@@ -123,7 +118,7 @@ theorem indepFun_iff_condDistrib_ae_eq_const_of_hasLaw {μ : Measure 𝓧} {ν :
   rw [← hX.map_eq, indepFun_iff_hasCondDistrib_const_of_hasLaw hX hY,
     hasCondDistrib_iff_condDistrib_ae_eq hX.aemeasurable hY.aemeasurable]
 
-/-- Two a.e.-measurable random variables are independent if and only if the conditional
+/-- Two `AEMeasurable` random variables are independent if and only if the conditional
 distribution of the second given the first is almost everywhere its marginal distribution. -/
 theorem indepFun_iff_condDistrib_ae_eq_const
     (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
