@@ -577,7 +577,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
     simp_rw [Nat.pred_succ]
-    exact (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) (by grind)).trans
+    exact (List.sum_eq_length_nsmul _ (x.fst ^ n • x.snd) (by grind)).trans
       (by rw [List.length_map, List.length_range])
 where
   aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
