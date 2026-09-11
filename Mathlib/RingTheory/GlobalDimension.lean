@@ -69,15 +69,13 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
   tfae_have 1 → 2 := by
     simpa only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
       using fun h M _ ↦ h M
-  tfae_have 2 → 3 := fun h N M ↦ (ModuleCat.hasInjectiveDimensionLT_of_quotients M (n + 1)
-    (fun I ↦ ((h (ModuleCat.of R (Shrink.{v} (R ⧸ I)))).subsingleton _ _ _ (le_refl _)
-    M))).subsingleton _ _ _ (le_refl _) N
+  tfae_have 2 → 4 := fun h M ↦ (ModuleCat.hasInjectiveDimensionLT_of_quotients M (n + 1)
+    (fun I ↦ ((h (ModuleCat.of R (Shrink.{v} (R ⧸ I)))).subsingleton _ _ _ (le_refl _) M)))
+  tfae_have 4 → 3 := fun h N M ↦ (h M).subsingleton _ _ _ (le_refl _) N
   tfae_have 3 → 1 := by
     intro h
     simp only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
     exact fun M ↦ hasProjectiveDimensionLT_of_enoughInjectives M _ (h M)
-  tfae_have 3 → 4 := fun h M ↦ hasInjectiveDimensionLT_of_enoughProjectives M _ (h · M)
-  tfae_have 4 → 3 := fun h N M ↦ (h M).subsingleton _ _ _ (le_refl _) N
   tfae_finish
 
 lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDimension.{v} R =
