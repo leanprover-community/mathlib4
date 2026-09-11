@@ -723,9 +723,11 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
       · simp only [Real.rpow_natCast, le_refl]
       · apply mul_le_mul
         · simp only [Real.rpow_natCast, le_refl]
-        · calc _ ≤ (Real.sqrt (2*(m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))^((r α β σ
+        · calc _ ≤ (Real.sqrt (2*(m K) * (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))
+            ^((r α β σ
             α' β' γ' hirr htriv habc) q hq0 h2mq * (m K) : ℝ) *
-                   ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))⁻¹ ^ ((m K) * (r α β σ α' β'
+                   ((↑((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ))⁻¹
+                       ^ ((m K) * (r α β σ α' β'
                        γ' hirr htriv habc) q hq0 h2mq : ℝ) *
                   ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq).factorial *
                   ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)^((1/2 : ℝ)*((r α β σ α' β' γ'
@@ -743,7 +745,8 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
                _= ((↑(m K) * 2 : ℝ) ^ (((m K) : ℝ) * (1 / 2: ℝ))) ^ ((r α β σ α' β' γ' hirr htriv
                    habc) q hq0 h2mq : ℝ)*
                 ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) ^
-                (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 :
+                (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)
+                    * ( ( (3 : ℝ) - ((m K): ℝ))/2 :
                     ℝ)) + (3 / 2 : ℝ))) := ?_
           · rw [Real.mul_rpow]
             · simp only [mul_assoc]
@@ -1086,10 +1089,13 @@ lemma eq8 :
                 simp only [ne_eq, Nat.cast_eq_zero]
                 exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)]
               simp only [one_mul]
-              calc _ ≤ ((m K) : ℝ)⁻¹ + (2*((m K) : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
+              calc _ ≤ ((m K) : ℝ)⁻¹
+                  + (2*((m K) : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
                   ℝ))
-                        * (((m K) : ℝ)⁻¹ * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)⁻¹) :=?_
-                   _ ≤ (2 + ((m K) : ℝ)⁻¹) ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
+                            * (((m K) : ℝ)⁻¹
+                              * ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)⁻¹) :=?_
+                   _ ≤ (2 + ((m K) : ℝ)⁻¹)
+                       ^ ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) := ?_
               · simp only [add_le_add_iff_left]
                 apply mul_le_mul ?_ (le_refl _) (by positivity) (by positivity)
                 · norm_cast
@@ -1212,23 +1218,23 @@ lemma norm_algebraNorm_rho_le :
         rw [← Real.rpow_add, mul_comm]
         · simp only [← mul_assoc]
           rw [Real.rpow_mul, ← Real.mul_rpow]
-          nth_rw 7 [mul_comm]
-          nth_rw 2 [mul_comm]
-          apply mul_le_mul
-          · simp only [Real.rpow_natCast]
-            simp only [le_refl]
-          · rw [le_iff_lt_or_eq]
-            right
-            congr
-            refine Nat.cast_pred ?_
-            unfold h; exact Module.finrank_pos
-          · positivity
-          · simp only [Real.rpow_natCast]
-            apply pow_nonneg
-            apply mul_nonneg
-            · apply pow_nonneg
-              exact c₈_nonneg α' β' γ'
-            · exact (c₁₃_nonneg α β α' β' γ')
+          · nth_rw 7 [mul_comm]
+            nth_rw 2 [mul_comm]
+            apply mul_le_mul
+            · simp only [Real.rpow_natCast]
+              simp only [le_refl]
+            · rw [le_iff_lt_or_eq]
+              right
+              congr
+              refine Nat.cast_pred ?_
+              unfold h; exact Module.finrank_pos
+            · positivity
+            · simp only [Real.rpow_natCast]
+              apply pow_nonneg
+              apply mul_nonneg
+              · apply pow_nonneg
+                exact c₈_nonneg α' β' γ'
+              · exact (c₁₃_nonneg α β α' β' γ')
           · exact (c₁₃_nonneg α β α' β' γ')
           · simp only [Real.rpow_natCast]
             apply pow_nonneg
