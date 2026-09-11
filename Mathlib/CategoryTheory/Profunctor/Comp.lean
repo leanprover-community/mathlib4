@@ -47,7 +47,7 @@ section Definition
 variable {C : Type*} [Category* C] {D : Type u} [Category.{v} D] {E : Type*} [Category* E]
 
 /-- The bifunctor whose coend defines the composite of two profunctors. -/
-@[simps! obj_obj obj_map map_app]
+@[implicit_reducible, simps! obj_obj obj_map map_app]
 def compDiagram (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) (X : C) (Y : E) :
     Dᵒᵖ ⥤ D ⥤ Type max w w' where
   obj U := {
@@ -55,7 +55,6 @@ def compDiagram (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) (X : C) (Y : 
     map f := TypeCat.ofHom (Prod.map id ((Q.map f).app _)) }
   map g := { app U := TypeCat.ofHom (Prod.map ((P.obj _).map g) id) }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map on composition diagrams induced by morphisms in the outer variables. -/
 @[simps]
 def compDiagramMap (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
@@ -77,7 +76,7 @@ lemma compDiagramMap_comp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
 open Limits
 
 /-- Composition of profunctors using a chosen coend construction. -/
-@[simps! obj_obj obj_map map_app]
+@[implicit_reducible, simps! obj_obj obj_map map_app]
 def univComp [Limits.ChosenCoends.{v, u} (Type (max w w'))]
     (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) : Profunctor.{max w w'} C E :=
   .ofCore {
@@ -85,7 +84,7 @@ def univComp [Limits.ChosenCoends.{v, u} (Type (max w w'))]
     map f g := chosenCoend.map <| compDiagramMap P Q f g }
 
 /-- Composition of profunctors in the standard universe configuration. -/
-@[simps! obj_obj obj_map map_app]
+@[implicit_reducible, simps! obj_obj obj_map map_app]
 def comp (P : Profunctor.{max u w} C D) (Q : Profunctor.{max u w} D E) : Profunctor.{max u w} C E :=
   Profunctor.univComp.{max u w, max u w} P Q
 
@@ -93,7 +92,7 @@ end Definition
 
 section Whisker
 
-open TypeCat Limits Types Functor
+open TypeCat Limits Types
 
 variable {C D E : Type u} [Category* C] [Category* D] [Category* E]
 
@@ -249,7 +248,7 @@ section Associator
 variable {C D E F : Type u} [Category* C] [Category* D] [Category* E] [Category* F]
   (P : Profunctor.{max w u} C D) (Q : Profunctor.{max w u} D E) (R : Profunctor.{max w u} E F)
 
-open TypeCat Limits Types Functor
+open TypeCat Limits Types
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -269,7 +268,7 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
       refine Quot.inductionOn x ?_
       rintro ⟨d, p, q⟩
       dsimp [Quot.map]
-      simp only [map_id, NatTrans.id_app, types_id_apply]
+      simp only [Functor.map_id, NatTrans.id_app, types_id_apply]
       -- First use the inner coend condition, then apply the outer quotient constructor.
       let outer (x : ((Q.comp R).obj d).obj Y) :=
         chosenCoend.ι (P.compDiagram (Q.comp R) X (unop Y)) d (p, x)
@@ -286,7 +285,7 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
       refine Quot.inductionOn x ?_
       rintro ⟨e, q, r⟩
       dsimp [Quot.map]
-      simp only [map_id, types_id_apply]
+      simp only [Functor.map_id, types_id_apply]
       -- First use the inner coend condition, then apply the outer quotient constructor.
       let outer (x : ((P.comp Q).obj X).obj (op e)) :=
         chosenCoend.ι ((P.comp Q).compDiagram R X (unop Y)) e (x, r)
