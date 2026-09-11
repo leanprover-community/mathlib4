@@ -829,7 +829,6 @@ def single {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) :
       then (K.XIsoOfEq h.1).inv ≫ f ≫ (L.XIsoOfEq h.2).hom
       else 0)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
     (single f n).v p q hpq = f := by

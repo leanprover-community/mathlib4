@@ -55,6 +55,7 @@ lemma descShortComplex_singleδ :
       (Q.commShiftIso (1 : ℤ)).hom.app _ :=
   descShortComplex_triangleOfSESδ _
 
+@[reassoc (attr := simp)]
 lemma singleδ_liftShortComplex :
     hS.singleδ ≫ (Q.map (CochainComplex.mappingCocone.liftShortComplex
         (S.map (HomologicalComplex.single C (.up ℤ) 0))))⟦(1 : ℤ)⟧' =

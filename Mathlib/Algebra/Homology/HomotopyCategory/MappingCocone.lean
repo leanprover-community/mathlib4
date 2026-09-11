@@ -45,6 +45,12 @@ section
 
 variable [HasHomotopyCofiber φ]
 
+@[simp]
+lemma isZero_X_iff (i j : ℤ) (hj : j + 1 = i := by lia) :
+    IsZero ((mappingCocone φ).X i) ↔ IsZero (K.X i) ∧ IsZero (L.X j) := by
+  obtain rfl : j = i + -1 := by lia
+  simp [mappingCocone, mappingCone.isZero_X_iff]
+
 /-- The first projection `mappingCocone φ ⟶ K`. -/
 @[no_expose]
 noncomputable def fst : mappingCocone φ ⟶ K :=

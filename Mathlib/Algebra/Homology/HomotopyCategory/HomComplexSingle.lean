@@ -139,6 +139,15 @@ lemma toSingleMk_v {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
       f ≫ (HomologicalComplex.singleObjXSelf (.up ℤ) q X).inv := by
   simp [toSingleMk]
 
+lemma toSingleMk_v' {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    (p' q' : ℤ) (h' : p' + n = q') (hp' : p' = p) :
+    (toSingleMk f h).v p' q' h' =
+      (K.XIsoOfEq (by lia)).hom ≫ f ≫
+        (HomologicalComplex.singleObjXIsoOfEq (.up ℤ) q X q' (by lia)).inv := by
+  obtain rfl : p = p' := by lia
+  obtain rfl : q = q' := by lia
+  cat_disch
+
 lemma toSingleMk_v_eq_zero {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     (p' q' : ℤ) (hpq' : p' + n = q') (hp' : p' ≠ p) :
     (toSingleMk f h).v p' q' hpq' = 0 :=

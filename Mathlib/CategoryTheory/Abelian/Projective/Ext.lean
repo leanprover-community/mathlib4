@@ -26,7 +26,7 @@ of the complex `R.complex` and to make computations in the `Ext`-group.
 
 universe w v u
 
-open CategoryTheory CochainComplex HomComplex Abelian Localization
+open CategoryTheory Limits CochainComplex HomComplex Abelian Localization
 
 namespace CategoryTheory.ProjectiveResolution
 
@@ -275,6 +275,49 @@ lemma extMk_comp_extClass
     ShiftedHom.comp_mk₀_id]
   rw [ShiftedHom.comp_assoc (a₂₃ := (m : ℤ)) _ _ _ (by lia) (by lia) (by lia)]
   congr 1
-  sorry
+  have := CochainComplex.mappingCocone.quasiIso_liftShortComplex
+    (hS.map_of_exact (HomologicalComplex.single C (.up ℤ) 0))
+  refine (ShiftedHom.postcompIsoEquiv
+    (asIso (DerivedCategory.Q.map (CochainComplex.mappingCocone.liftShortComplex
+    ((S.map (HomologicalComplex.single C _ 0))))))).injective ?_
+  dsimp
+  rw [ShiftedHom.comp_assoc _ _ _  (by lia) (zero_add 1) (by lia),
+    ShiftedHom.comp_mk₀, ShortComplex.ShortExact.singleδ_liftShortComplex,
+    ← ShiftedHom.map, ← ShiftedHom.map_comp, ← ShiftedHom.map_mk₀, ← ShiftedHom.map_comp,
+    Cocycle.equivHomShift_symm_shiftedHomComp, Cocycle.equivHomShift_symm_shiftedHomComp,
+    ← CohomologyClass.toShiftedHom_mk, ← CohomologyClass.toShiftedHom_mk]
+  congr 1
+  rw [← sub_eq_zero, ← CohomologyClass.mk_sub, CohomologyClass.mk_eq_zero_iff,
+    mem_coboundaries_iff _ n (by lia)]
+  refine ⟨Int.negOnePow n • ((Cochain.toSingleEquiv (neg_add_cancel _)).symm
+    ((R.cochainComplexXIso (-n) n (by lia)).hom ≫ f₂)).comp (mappingCocone.inl _) (by lia), ?_⟩
+  dsimp
+  simp only [Cocycle.comp_coe, Cocycle.toSingleMk_coe]
+  ext p q hpq
+  by_cases! hq : q = 0 ∨ q = 1
+  · obtain rfl | rfl := hq
+    · simp [mappingCocone.ext_to_iff _ _ _ (zero_add (-1)),
+        δ_v n m (by lia) _ p 0 hpq (-1) (p + 1) (by lia) (by lia),
+        Cochain.toSingleEquiv_symm_apply,
+        Cochain.toSingleMk_v_eq_zero _ _ _ _ _ (show p ≠ -n by lia),
+        Cochain.comp_v (n₁ := n) (n₂ := 1) (n₁₂ := m) _ _ (by lia) p (-1) 0 (by lia) (by lia),
+        Cocycle.equivHomShift_apply, R.cochainComplex_d p (p + 1) m n,
+        Cochain.rightUnshift_v _ _ (zero_add 0) _ _ (zero_add 0) _ (zero_add 0),
+        ShiftedHom.mk₀, shiftFunctorZero'_eq_shiftFunctorZero, shiftFunctorZero_inv_app_f,
+        dsimp% mappingCocone.liftShortComplex_f_fst_f
+          (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 0,
+        dsimp% mappingCocone.liftShortComplex_f_snd_v
+          (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 0 (-1) (by lia),
+        smul_smul, ← Int.negOnePow_add, Int.negOnePow_odd (n + m) (by grind),
+        Cochain.toSingleMk_v' _ (neg_add_cancel (n : ℤ)) (p + 1) 0 (by lia) (by lia),
+        Cochain.toSingleMk_v' _ (neg_add_cancel (m : ℤ)) p 0 (by lia) (by lia),
+        HomologicalComplex.single_map_f_self, HomologicalComplex.singleObjXSelf,
+        reassoc_of% hf₁]
+    · --obtain rfl : p = 1-m := by lia
+      sorry
+  · apply IsZero.eq_of_tgt
+    rw [mappingCocone.isZero_X_iff _ q (q - 1) (by lia)]
+    constructor
+    all_goals exact HomologicalComplex.isZero_single_obj_X _ _ _ _ (by lia)
 
 end CategoryTheory.ProjectiveResolution
