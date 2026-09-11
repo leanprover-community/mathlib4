@@ -156,19 +156,10 @@ instance convNonUnitalRing : NonUnitalRing (WithConv (C →ₗ[R] A)) where
 end NonUnitalRing
 
 section Semiring
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [AddCommMonoid C] [Module R C]
+variable [Semiring A] [Algebra R A] [AddCommMonoid C] [Module R C]
 
 section CoalgebraStruct
 variable [CoalgebraStruct R C]
-
-lemma algHom_comp_convMul_distrib (h : A →ₐ B) (f g : WithConv (C →ₗ[R] A)) :
-    h.toLinearMap.comp (f * g).ofConv =
-      (toConv (h.toLinearMap.comp f.ofConv) * toConv (h.toLinearMap.comp g.ofConv)).ofConv := by
-  simp [convMul_def, map_comp, ← comp_assoc, AlgHom.comp_mul']
-
-end CoalgebraStruct
-
-variable [Coalgebra R C]
 
 /-- Convolution unit on linear maps from a coalgebra to an algebra. -/
 instance convOne : One (WithConv (C →ₗ[R] A)) where one := toConv (Algebra.linearMap R A ∘ₗ counit)
@@ -177,6 +168,26 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 
 @[simp] lemma convOne_apply (c : C) :
     (1 : WithConv (C →ₗ[R] A)) c = algebraMap R A (counit (R := R) c) := rfl
+
+@[simp]
+lemma convOne_comp_coalgHom [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (h : B →ₗc[R] C) :
+    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
+  ext; simp
+
+variable [Semiring B] [Algebra R B]
+
+lemma algHom_comp_convMul_distrib (h : A →ₐ B) (f g : WithConv (C →ₗ[R] A)) :
+    h.toLinearMap.comp (f * g).ofConv =
+      (toConv (h.toLinearMap.comp f.ofConv) * toConv (h.toLinearMap.comp g.ofConv)).ofConv := by
+  simp [convMul_def, map_comp, ← comp_assoc, AlgHom.comp_mul']
+
+@[simp] lemma algHom_comp_convOne (h : A →ₐ[R] B) :
+    h.toLinearMap ∘ₗ (1 : WithConv (C →ₗ[R] A)).ofConv = (1 : WithConv (C →ₗ[R] B)).ofConv := by
+  ext; simp
+
+end CoalgebraStruct
+
+variable [Coalgebra R C]
 
 /-- Convolution semiring structure on linear maps from a coalgebra to an algebra. -/
 instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
@@ -222,3 +233,60 @@ instance convCommRing : CommRing (WithConv (C →ₗ[R] A)) where
 
 end CommRing
 end LinearMap
+
+open LinearMap
+
+variable [Semiring A] [Algebra R A] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+
+namespace AlgHom
+variable [Semiring B] [Algebra R B]
+
+/-- Post-composition by an algebra homomorphism, as a homomorphism of convolution algebras. -/
+@[expose, simps]
+def convCompRight (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (C →ₗ[R] B) where
+  toFun f := toConv (h.toLinearMap.comp f.ofConv)
+  map_one' := WithConv.ext (algHom_comp_convOne h)
+  map_mul' f g := WithConv.ext (algHom_comp_convMul_distrib h f g)
+  map_zero' := WithConv.ext (by ext; simp)
+  map_add' f g := WithConv.ext (by ext; simp)
+  commutes' r := WithConv.ext (by ext; simp)
+
+lemma convCompRight_injective {h : A →ₐ[R] B} (hh : Function.Injective h) :
+    Function.Injective (convCompRight h (C := C)) := fun _ _ e ↦
+  WithConv.ext <| (LinearMap.cancel_left hh).1 congr(($e).ofConv)
+
+@[simp] lemma convCompRight_id : (AlgHom.id R A).convCompRight (C := C) = AlgHom.id R _ := rfl
+
+lemma convCompRight_comp {D : Type*} [Semiring D] [Algebra R D] (h₁ : B →ₐ[R] D) (h₂ : A →ₐ[R] B) :
+    (h₁.comp h₂).convCompRight (C := C) = h₁.convCompRight.comp h₂.convCompRight := rfl
+
+end AlgHom
+
+namespace CoalgHom
+variable [AddCommMonoid B] [Module R B] [Coalgebra R B]
+
+/-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
+@[expose, simps]
+def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (B →ₗ[R] A) where
+  toFun f := toConv (f.ofConv.comp (h : B →ₗ[R] C))
+  map_one' := WithConv.ext (convOne_comp_coalgHom h)
+  map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
+  map_zero' := WithConv.ext (by ext; simp)
+  map_add' f g := WithConv.ext (by ext; simp)
+  commutes' r := WithConv.ext (by ext; simp)
+
+lemma convCompLeft_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
+    Function.Injective (convCompLeft h (A := A)) := fun _ _ e ↦
+  WithConv.ext <| (LinearMap.cancel_right hh).1 congr(($e).ofConv)
+
+@[simp] lemma convCompLeft_id : (CoalgHom.id R C).convCompLeft (A := A) = AlgHom.id R _ := rfl
+
+lemma convCompLeft_comp {D : Type*} [AddCommMonoid D] [Module R D] [Coalgebra R D]
+    (h₁ : B →ₗc[R] C) (h₂ : D →ₗc[R] B) :
+    (h₁.comp h₂).convCompLeft (A := A) = h₂.convCompLeft.comp h₁.convCompLeft := rfl
+
+lemma convCompLeft_comp_convCompRight {D : Type*} [Semiring D] [Algebra R D] (h : B →ₗc[R] C)
+    (φ : A →ₐ[R] D) : h.convCompLeft.comp φ.convCompRight = φ.convCompRight.comp h.convCompLeft :=
+  rfl
+
+end CoalgHom
