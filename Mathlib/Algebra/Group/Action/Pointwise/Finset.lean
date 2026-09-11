@@ -144,11 +144,6 @@ end Semigroup
 section SMul
 variable [SMul α β] [DecidableEq β] {s t : Finset β} {a : α}
 
-omit [DecidableEq β] in
-/-- If `a` is regular on `β`, it is regular on `Set β`. -/
-theorem IsSMulRegular.set (h : IsSMulRegular β a) : IsSMulRegular (Set β) a :=
-  Set.image_injective.mpr h
-
 /-- If `a` is regular on `β`, it is regular on `Finset β`. -/
 theorem IsSMulRegular.finset (h : IsSMulRegular β a) : IsSMulRegular (Finset β) a :=
   Finset.image_injective h

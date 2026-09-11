@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Pointwise actions on sets
@@ -184,33 +185,59 @@ protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β)
 
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 
+section SMul
+variable [SMul α β] {s t : Set β} {a : α}
+
+/-- If `a` is regular on `β`, it is regular on `Set β`. -/
+theorem IsSMulRegular.set (h : IsSMulRegular β a) : IsSMulRegular (Set β) a :=
+  Set.image_injective.mpr h
+
+@[to_additive]
+theorem IsSMulRegular.smul_set_subset_smul_set_iff (h : IsSMulRegular β a) :
+    a • s ⊆ a • t ↔ s ⊆ t := image_subset_image_iff h
+
+@[to_additive]
+theorem IsSMulRegular.smul_set_inter (h : IsSMulRegular β a) :
+    a • (s ∩ t) = a • s ∩ a • t := image_inter h
+
+@[to_additive]
+theorem IsSMulRegular.smul_set_sdiff (h : IsSMulRegular β a) :
+    a • (s \ t) = a • s \ a • t := image_sdiff h _ _
+
+open scoped symmDiff in
+@[to_additive]
+theorem IsSMulRegular.smul_set_symmDiff (h : IsSMulRegular β a) :
+    a • s ∆ t = (a • s) ∆ (a • t) := image_symmDiff h _ _
+
+end SMul
+
 section IsLeftCancelSMul
 variable [SMul α β] [IsLeftCancelSMul α β] {s t : Set β} {a : α} {x : β}
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_set_iff : a • x ∈ a • s ↔ x ∈ s :=
-  Function.Injective.mem_set_image (fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _)
+  Function.Injective.mem_set_image (IsSMulRegular.all a)
 
 @[to_additive (attr := simp)]
 theorem smul_set_subset_smul_set_iff : a • s ⊆ a • t ↔ s ⊆ t :=
-  image_subset_image_iff (fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _)
+  IsSMulRegular.smul_set_subset_smul_set_iff (.all a)
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter (fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _)
+  IsSMulRegular.smul_set_inter (.all a)
 
 @[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_sdiff (fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _) _ _
+  IsSMulRegular.smul_set_sdiff (.all a)
 
 open scoped symmDiff in
 @[to_additive]
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff (fun _ _ ↦ IsLeftCancelSMul.left_cancel a _ _) _ _
+  IsSMulRegular.smul_set_symmDiff (.all a)
 
 @[to_additive]
 instance : IsLeftCancelSMul α (Set β) where
-  left_cancel' a s t := by simp [le_antisymm_iff]
+  left_cancel' a := Set.image_injective.mpr (IsSMulRegular.all a)
 
 end IsLeftCancelSMul
 
