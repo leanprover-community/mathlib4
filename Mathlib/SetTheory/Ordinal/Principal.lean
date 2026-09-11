@@ -550,11 +550,12 @@ theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq :
     IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ ω ^ o = o := by
   refine ⟨fun ho ↦ ?_, ?_⟩
   · simp only [or_iff_not_imp_left]
-    refine fun ho₀ ho₂ (hoω : o ≠ ω) ↦ ?_
-    rcases lt_or_ge 2 o with h₂ | h₂
+    refine fun ho₀ ho₂ hoω ↦ ?_
+    rcases gt_or_lt_of_ne ho₂ with h₂ | h₂
     · have hoω' := omega0_le_of_isSuccLimit (isSuccLimit_of_isPrincipal_opow h₂ ho)
-      exact (isPrincipal_opow_iff_omega0_opow_eq (lt_of_le_of_ne hoω' hoω.symm)).1 ho
-    · rcases le_two_iff.1 h₂ with (rfl | rfl | rfl) <;> simp_all
+      exact (isPrincipal_opow_iff_omega0_opow_eq (hoω'.lt_of_ne' hoω)).1 ho
+    · rw [lt_two_iff, le_one_iff] at h₂
+      simp_all
   · rintro (rfl | rfl | rfl | ho)
     · exact isPrincipal_zero
     · exact isPrincipal_opow_two
