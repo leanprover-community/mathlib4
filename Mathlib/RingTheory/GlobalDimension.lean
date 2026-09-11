@@ -159,6 +159,8 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
     rw [← ModuleCat.projectiveDimension_eq_of_semiLinearEquiv e e']
     exact le_iSup _ _
 
+variable (R : Type u) [CommRing R]
+
 variable {R} in
 lemma globalDimension_localization_le [Small.{v} R] (S : Submonoid R) :
     globalDimension.{v} (Localization S) ≤ globalDimension.{v} R := by
