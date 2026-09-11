@@ -439,11 +439,8 @@ private lemma sum_pow_add_indicator_eq_zero {p : ℕ} (l : ℕ) [Fact p.Prime] :
 valuation. -/
 private abbrev pIntegrals (p : ℕ) [Fact p.Prime] : Subring ℚ := (Rat.padicValuation p).integer
 
-/- A rational number `x` is `p`-integral if `p` does not divide its denominator. -/
-private abbrev pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := x ∈ pIntegrals p
-
 private lemma pIntegral_iff_not_dvd_den {p : ℕ} [Fact p.Prime] {x : ℚ} :
-    pIntegral p x ↔ ¬ p ∣ x.den :=
+    x ∈ pIntegrals p ↔ ¬ p ∣ x.den :=
   Rat.padicValuation_le_one_iff
 
 /- Denominators of the "other primes" part of the indicator sum
@@ -472,7 +469,7 @@ private lemma sum_one_div_prime_eq_indicator_div_add {k p : ℕ} (hk : k > 0) [F
 
 /- If the `p`-adic valuation of `M` is at most `N`, then `p^N / M` is `p`-integral. -/
 private lemma pIntegral_pow_div {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
-    (hv : M.factorization p ≤ N) : pIntegral p ((p : ℚ) ^ N / M) := by
+    (hv : M.factorization p ≤ N) : ((p : ℚ) ^ N / M) ∈ pIntegrals p := by
   set e := M.factorization p
   set M' := M / p ^ e
   have hM'_cop : M'.Coprime p := (Nat.coprime_ordCompl Fact.out hM).symm
@@ -524,7 +521,8 @@ private lemma choose_two_mul_succ_mul_div_eq {k m : ℕ} (x : ℚ) (hm_lt : m < 
 /- `p`-integrality of the core even-index summand after denominator normalization. -/
 private lemma pIntegral_choose_mul_pow_div {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
     (hd : 2 * k - 2 * m ≥ 2) :
-    pIntegral p (((2 * k).choose (2 * m) : ℚ) * p ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) := by
+    (((2 * k).choose (2 * m) : ℚ) * p ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) ∈
+      pIntegrals p := by
   set d := 2 * k - 2 * m with hd_def
   have ⟨hd_plus_one_ne_zero, h_exp, hkm⟩ :
       d + 1 ≠ 0 ∧ 2 * k - 2 * m - 1 = d - 1 ∧ 2 * m ≤ 2 * k := by lia
@@ -537,9 +535,9 @@ private lemma pIntegral_choose_mul_pow_div {k m p : ℕ} (hm_lt : m < k) [Fact p
 /- Uses the induction hypothesis on `B_{2m} + e_{2m}(p)/p`
 to prove `p`-integrality of the even term. -/
 private lemma pIntegral_bernoulli_even_term {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
-    (ih : pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
-    pIntegral p (bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
-      (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1)) := by
+    (ih : (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) ∈ pIntegrals p) :
+    (bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
+      (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1)) ∈ pIntegrals p := by
   have hp_ne : (p : ℚ) ≠ 0 := mod_cast (Nat.Prime.ne_zero Fact.out)
   set P := (p : ℚ) ^ (2 * k - 2 * m - 1)
   have hpow : (p : ℚ) ^ (2 * k - 2 * m) = P * p := by
@@ -569,9 +567,10 @@ private lemma pIntegral_bernoulli_even_term {k m p : ℕ} (hm_lt : m < k) [Fact 
 
 /- The full remainder sum in Faulhaber's formula is `p`-integral. -/
 private lemma pIntegral_faulhaber_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime]
-    (ih : ∀ m, 0 < m → m < k → pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
-    pIntegral p (∑ i ∈ range (2 * k),
-      bernoulli i * ((2 * k + 1).choose i) * p ^ (2 * k - i) / (2 * k + 1)) := by
+    (ih : ∀ m, 0 < m → m < k →
+      (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) ∈ pIntegrals p) :
+    (∑ i ∈ range (2 * k),
+      bernoulli i * ((2 * k + 1).choose i) * p ^ (2 * k - i) / (2 * k + 1)) ∈ pIntegrals p := by
   refine (Rat.padicValuation p).map_sum_le fun i hi ↦ ?_
   rw [Finset.mem_range] at hi
   rcases i with _ | _ | i
@@ -645,7 +644,7 @@ private lemma not_dvd_den_bernoulli_add_indicator {k p : ℕ} (hk : k > 0) [Fact
   | _ k ih =>
     obtain ⟨T, hT⟩ := bernoulli_add_indicator_eq_sub (p := p) hk
     rw [hT]
-    have hT_int : pIntegral p T := intCast_mem _ T
+    have hT_int : (T : ℚ) ∈ pIntegrals p := intCast_mem _ T
     have hR := pIntegral_faulhaber_sum hk fun m hm_pos hm_lt ↦
       pIntegral_iff_not_dvd_den.mpr (ih m hm_lt hm_pos)
     exact pIntegral_iff_not_dvd_den.mp (sub_mem hT_int hR)
