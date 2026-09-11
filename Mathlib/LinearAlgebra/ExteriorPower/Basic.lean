@@ -360,7 +360,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
   use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans
-    ((Equiv.Set.congr Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
+    ((Set.equivOfEq Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
   apply Submodule.mem_span_of_mem
   use ⟨(Finset.image α Finset.univ), α_card⟩
   rw [ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
@@ -415,9 +415,11 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 end ιMulti_family
 
-lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     Subsingleton (⋀[R]^i M) := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+  let : LinearOrder ι := LinearOrder.lift' e e.injective
   replace hi : range (ιMulti_family R i g) = ∅ := by
     rw [range_eq_empty_iff, powersetCard.eq_empty_iff.mpr hi, isEmpty_coe_sort]
   suffices (⊥ : Submodule R (⋀[R]^i M)) = ⊤ by

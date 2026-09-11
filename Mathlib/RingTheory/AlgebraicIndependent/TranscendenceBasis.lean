@@ -578,7 +578,7 @@ lemma of_isAlgebraic_adjoin_insert_sdiff (hj : j ∈ insert i s)
       H₁.comp_equiv <|
         .symm <|
           ((Equiv.swap j i).image s).trans <|
-            Equiv.Set.congr <| Equiv.image_swap_of_mem_of_notMem hj hi with
+            Set.equivOfEq <| Equiv.image_swap_of_mem_of_notMem hj hi with
       ⟨x, rfl | hxi, hxj⟩
     · simp [eq]
     · simp [Equiv.swap_apply_of_ne_of_ne hxj (ne_of_mem_of_not_mem hxi hi)]

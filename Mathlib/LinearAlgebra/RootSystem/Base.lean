@@ -156,7 +156,7 @@ protected def map :
 /-- The natural bijection between support of a base and that of its push forward. -/
 @[simps!] def supportMapEquiv [DecidableEq ι₂] :
     b.support ≃ (b.map e).support :=
-  (e.indexEquiv.imageFinset b.support).trans <| Equiv.Finset.congr (b.support_map_eq e).symm
+  (e.indexEquiv.imageFinset b.support).trans <| Finset.equivOfEq (b.support_map_eq e).symm
 
 end Map
 
