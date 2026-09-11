@@ -63,7 +63,7 @@ variable (x) in
 abbrev localInverseAt : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt x.out
 
-lemma localInverseAt_apply_mk {g : G} {m : M} (hm : g • m ∈ (x.localInverseAt).target) :
+lemma localInverseAt_apply_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (x.localInverseAt).target) :
     x.localInverseAt ⟦m⟧ = g • m := by
   rw [← orbitRel.Quotient.quotient_smul_eq (g := g),
     ← isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm,
@@ -77,7 +77,7 @@ lemma localInverseAt_symm_trans_eqOn_smul (x y : orbitRel.Quotient G M) (g : G) 
   intro m hm
   simpa only [OpenPartialHomeomorph.coe_trans, Function.comp_apply,
     isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt_symm]
-    using localInverseAt_apply_mk hm
+    using localInverseAt_apply_mk_eq_smul hm
 
 /-- If `⟦m⟧` is in the target of `πinv x`, then there is some `g ∈ G` such that
 `g • m` is also in the target of `πinv x`. -/
