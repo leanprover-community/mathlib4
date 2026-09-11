@@ -303,7 +303,7 @@ theorem restrict_union_le (s s' : Set α) : μ.restrict (s ∪ s') ≤ μ.restri
   le_iff.2 fun t ht ↦ by
     simpa [ht, inter_union_distrib_left] using measure_union_le (t ∩ s) (t ∩ s')
 
-theorem restrict_iUnion_apply_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
+theorem restrict_iUnion_apply_ae [Countable ι] {s : ι → Set α} (hd : Pairwise' (AEDisjoint μ on s))
     (hm : ∀ i, NullMeasurableSet (s i) μ) {t : Set α} (ht : MeasurableSet t) :
     μ.restrict (⋃ i, s i) t = ∑' i, μ.restrict (s i) t := by
   simp only [restrict_apply, ht, inter_iUnion]
@@ -311,7 +311,7 @@ theorem restrict_iUnion_apply_ae [Countable ι] {s : ι → Set α} (hd : Pairwi
     measure_iUnion₀ (hd.mono fun i j h => h.mono inter_subset_right inter_subset_right)
       fun i => ht.nullMeasurableSet.inter (hm i)
 
-theorem restrict_iUnion_apply [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
+theorem restrict_iUnion_apply [Countable ι] {s : ι → Set α} (hd : Pairwise' (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) {t : Set α} (ht : MeasurableSet t) :
     μ.restrict (⋃ i, s i) t = ∑' i, μ.restrict (s i) t :=
   restrict_iUnion_apply_ae hd.aedisjoint (fun i => (hm i).nullMeasurableSet) ht
@@ -522,11 +522,11 @@ lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s
   rw [restrict_apply ht] at htν ⊢
   exact h htν
 
-theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
+theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise' (AEDisjoint μ on s))
     (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
   ext fun t ht => by simp only [sum_apply _ ht, restrict_iUnion_apply_ae hd hm ht]
 
-theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
+theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise' (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
   restrict_iUnion_ae hd.aedisjoint fun i => (hm i).nullMeasurableSet
 
@@ -534,7 +534,8 @@ theorem restrict_biUnion {s : ι → Set α} {T : Set ι} (hT : Countable T)
     (hd : T.Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = sum fun (i : T) => μ.restrict (s i) := by
   rw [Set.biUnion_eq_iUnion]
-  exact restrict_iUnion (fun i j hij ↦ hd i.coe_prop j.coe_prop (Subtype.coe_ne_coe.mpr hij)) (hm ·)
+  exact restrict_iUnion (fun i _ j _ hij ↦
+    hd i.coe_prop j.coe_prop (Subtype.coe_ne_coe.mpr hij)) (hm ·)
 
 theorem restrict_biUnion_finset {s : ι → Set α} {T : Finset ι}
     (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
