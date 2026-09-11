@@ -54,6 +54,7 @@ theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (
   cases g
   congr
 
+@[macro_inline]
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h

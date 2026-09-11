@@ -192,6 +192,7 @@ def algEquiv (S : Type*) [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S 
     (E →WOT[𝕜₁] E) ≃ₐ[S] (E →L[𝕜₁] E) :=
   equiv.algEquiv S
 
+@[macro_inline]
 instance instFunLike : FunLike (E →SWOT[σ] F) E F where
   coe f := toCLM f
   coe_injective := DFunLike.coe_injective.comp toCLM_injective
