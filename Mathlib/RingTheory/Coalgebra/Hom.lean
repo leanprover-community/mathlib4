@@ -98,6 +98,7 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Modu
   [AddCommMonoid C] [Module R C] [AddCommMonoid D] [Module R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
+@[macro_inline]
 instance funLike : FunLike (A →ₗc[R] B) A B where
   coe f := f.toFun
   coe_injective f g h := by

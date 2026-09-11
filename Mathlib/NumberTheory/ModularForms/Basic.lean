@@ -102,6 +102,7 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k 
   holo : ∀ f : F, MDiff (f : ℍ → ℂ)
   zero_at_cusps (f : F) {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsZeroAt f k
 
+@[macro_inline]
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
@@ -119,6 +120,7 @@ lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     Continuous f :=
   (ModularFormClass.holo f).continuous
 
+@[macro_inline]
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h

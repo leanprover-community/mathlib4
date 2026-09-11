@@ -43,6 +43,7 @@ under the `SlashAction`. -/
 class SlashInvariantFormClass [FunLike F ℍ ℂ] : Prop where
   slash_action_eq : ∀ (f : F), ∀ γ ∈ Γ, (f : ℍ → ℂ) ∣[k] γ = f
 
+@[macro_inline]
 instance (priority := 100) SlashInvariantForm.funLike :
     FunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
