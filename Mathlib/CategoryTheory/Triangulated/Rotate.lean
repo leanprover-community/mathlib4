@@ -51,7 +51,7 @@ applying `rotate` gives a triangle of the form:
   Y  ───> Z  ───>  X⟦1⟧ ───> Y⟦1⟧
 ```
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Triangle.rotate (T : Triangle C) : Triangle C :=
   Triangle.mk T.mor₂ T.mor₃ (-T.mor₁⟦1⟧')
 
@@ -70,7 +70,7 @@ applying `invRotate` gives a triangle that can be thought of as:
 (note that this diagram doesn't technically fit the definition of triangle, as `Z⟦-1⟧⟦1⟧` is
 not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shiftEquiv C 1`)
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Triangle.invRotate (T : Triangle C) : Triangle C :=
   Triangle.mk (-T.mor₃⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) (T.mor₁)
     (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _)

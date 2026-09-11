@@ -50,7 +50,19 @@ lemma descShortComplex_triangleOfSESδ :
       (Functor.commShiftIso Q 1).hom.app S.X₁ := by
   simp [triangleOfSESδ]
 
-set_option backward.isDefEq.respectTransparency false in
+lemma triangleOfSESδ_liftShortComplex :
+    triangleOfSESδ hS ≫ (Q.map (CochainComplex.mappingCocone.liftShortComplex S))⟦(1 : ℤ)⟧' =
+      Q.map (CochainComplex.mappingCocone.triangle S.g).mor₃ ≫
+        (Q.commShiftIso (1 : ℤ)).hom.app _ := by
+  have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
+  dsimp
+  rw [← cancel_epi (Q.map (CochainComplex.mappingCone.descShortComplex S)),
+    descShortComplex_triangleOfSESδ_assoc, ← Functor.commShiftIso_hom_naturality,
+    ← Functor.map_comp_assoc,
+    Q_map_eq_of_homotopy (CochainComplex.homotopyMappingConeTriangleMor₃CompliftShortComplex S),
+    Functor.map_comp_assoc]
+  dsimp
+
 @[reassoc]
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :

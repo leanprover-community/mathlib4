@@ -30,8 +30,14 @@ variable {C : Type*} [Category* C] [Preadditive C]
 
 /-- The mapping cocone of a morphism `φ : K ⟶ L` of cochain complexes: it is
 `(mappingCone φ)⟦(-1 : ℤ)⟧`. -/
+@[no_expose]
 noncomputable def mappingCocone [HasHomotopyCofiber φ] :
     CochainComplex C ℤ := (mappingCone φ)⟦(-1 : ℤ)⟧
+
+@[no_expose]
+noncomputable def shiftMappingCoconeIso [HasHomotopyCofiber φ] :
+    (mappingCocone φ)⟦(1 : ℤ)⟧ ≅ mappingCone φ :=
+  (shiftFunctorCompIsoId (CochainComplex C ℤ) (-1 : ℤ) 1 (by lia)).app _
 
 namespace mappingCocone
 
@@ -40,65 +46,139 @@ section
 variable [HasHomotopyCofiber φ]
 
 /-- The first projection `mappingCocone φ ⟶ K`. -/
+@[no_expose]
 noncomputable def fst : mappingCocone φ ⟶ K :=
   -((mappingCone.fst φ).leftShift (-1) 0 (add_neg_cancel 1)).homOf
 
 /-- The second projection in `Cochain (mappingCocone φ) L (-1)`. -/
+@[no_expose]
 noncomputable def snd : Cochain (mappingCocone φ) L (-1) :=
   (mappingCone.snd φ).leftShift (-1) (-1) (zero_add _)
 
 /-- The left inclusion in `Cochain K (mappingCocone φ) 0`. -/
+@[no_expose]
 noncomputable def inl : Cochain K (mappingCocone φ) 0 :=
   (mappingCone.inl φ).rightShift (-1) 0 (zero_add _)
 
 /-- The right inclusion in `Cocycle L (mappingCocone φ) 1`. -/
+@[no_expose]
 noncomputable def inr : Cocycle L (mappingCocone φ) 1 :=
   (Cocycle.ofHom (mappingCone.inr φ)).rightShift (-1) 1 (by lia)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_fst_f (p : ℤ) :
     (inl φ).v p p (add_zero p) ≫ (fst φ).f p = 𝟙 _ := by
-  simp [inl, fst, Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia),
+  simp [mappingCocone, inl, fst, Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia),
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia)]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_snd_v (p q : ℤ) (hpq : p + -1 = q) :
     (inl φ).v p p (add_zero p) ≫ (snd φ).v p q hpq = 0 := by
   obtain rfl : q = p + -1 := by lia
-  simp [inl, snd, Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia),
+  simp [mappingCocone, inl, snd, Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia),
     Cochain.leftShift_v _ _ _ _ _ _ hpq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_v_fst_f (p q : ℤ) (hpq : p + 1 = q) :
     (inr φ).1.v p q hpq ≫ (fst φ).f q = 0 := by
-  simp [inr, fst, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
+  simp [mappingCocone, inr, fst, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
     Cochain.leftShift_v _ _ _ _ _ _ _ _ hpq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_v_snd_v (p q : ℤ) (hpq : p + 1 = q) :
     (inr φ).1.v p q hpq ≫ (snd φ).v q p (by lia) = 𝟙 _ := by
-  simp [inr, snd, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
+  simp [mappingCocone, inr, snd, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
     Cochain.leftShift_v _ _ _ _ _ _ _ _ (add_zero p),
     Int.negOnePow_even 2 ⟨1, rfl⟩]
 
-set_option backward.isDefEq.respectTransparency false in
+lemma ext_to (i j : ℤ) (hij : i + -1 = j) {A : C} {f g : A ⟶ (mappingCocone φ).X i}
+    (h₁ : f ≫ (fst φ).f i = g ≫ (fst φ).f i)
+    (h₂ : f ≫ (snd φ).v i j hij = g ≫ (snd φ).v i j hij) :
+    f = g := by
+  dsimp [mappingCocone] at f g h₁ h₂ ⊢
+  refine mappingCone.ext_to _ (i + -1) i (by lia) ?_ ?_
+  · simpa [fst, Cochain.leftShift_v (n := 1) _ (-1) 0 (by lia) i i (by lia)
+      (i + -1) (by lia)] using h₁
+  · obtain rfl : j = i + -1 := by lia
+    simpa [snd, Cochain.leftShift_v (n := 0) _ (-1) (-1) (by lia) i (i + -1) (by lia)
+      (i + -1) (by lia)] using h₂
+
+lemma ext_to_iff (i j : ℤ) (hij : i + -1 = j) {A : C} (f g : A ⟶ (mappingCocone φ).X i) :
+    f = g ↔ f ≫ (fst φ).f i = g ≫ (fst φ).f i ∧
+      f ≫ (snd φ).v i j hij = g ≫ (snd φ).v i j hij := by
+  constructor
+  · rintro rfl
+    tauto
+  · rintro ⟨h₁, h₂⟩
+    exact ext_to φ i j hij h₁ h₂
+
+attribute [local implicit_reducible] mappingCocone in
+open HomComplex in
+lemma ext_from (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : (mappingCocone φ).X j ⟶ A}
+    (h₁ : (inl φ).v j j (add_zero j) ≫ f = (inl φ).v j j (add_zero j) ≫ g)
+    (h₂ : (inr φ).1.v i j hij ≫ f = (inr φ).1.v i j hij ≫ g) :
+    f = g := by
+  dsimp [mappingCocone]
+  refine mappingCone.ext_from _ j (j + -1) (by lia) ?_ ?_
+  · simpa [inl, Cochain.rightShift_v (n := -1) _ (-1) 0 (by lia) j j (by lia)
+      (j + -1) (by lia)] using h₁
+  · obtain rfl : i = j + -1 := by lia
+    simpa [inr, Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) (j + -1) j (by lia)] using h₂
+
+lemma ext_from_iff (i j : ℤ) (hij : i + 1 = j) {A : C} (f g : (mappingCocone φ).X j ⟶ A) :
+    f = g ↔ (inl φ).v j j (add_zero j) ≫ f = (inl φ).v j j (add_zero j) ≫ g ∧
+      (inr φ).1.v i j hij ≫ f = (inr φ).1.v i j hij ≫ g := by
+  constructor
+  · rintro rfl
+    tauto
+  · rintro ⟨h₁, h₂⟩
+    exact ext_from φ i j hij h₁ h₂
+
+@[reassoc]
+lemma inl_v_d (i j : ℤ) (hij : i + 1 = j) :
+    (inl φ).v i i (add_zero i) ≫ (mappingCocone φ).d i j =
+      K.d i j ≫ (inl φ).v j j (add_zero j) - φ.f i ≫ (inr φ).1.v i j hij := by
+  obtain rfl : i = j + -1 := by lia
+  simp [inl, inr, mappingCocone,
+    Cochain.rightShift_v _ (-1) 0 (zero_add (-1)) (j + -1) (j + -1) (by lia)
+      (j + -1 + -1) (by lia),
+    mappingCone.inl_v_d _ (j + -1) (j + -1 + -1) j (by lia) (by lia),
+    Cochain.rightShift_v (n := -1) _ (-1) 0 (by lia) j j (by lia) (j + -1) (by lia),
+    Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) (j + -1) j (by lia) (j + -1) (by lia)]
+  rfl
+
+@[reassoc]
+lemma inr_v_d (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
+    (inr φ).1.v i j hij ≫ (mappingCocone φ).d j k =
+      -L.d i j ≫ (inr φ).1.v j k hjk := by
+  obtain rfl : j = k + -1 := by lia
+  simp [inr, mappingCocone,
+    Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) i (k + -1) (by lia) i (by lia),
+    Cochain.rightShift_v (n := 0) _ (-1) 1 (by lia) (k + -1) k (by lia) (k + -1) (by lia)]
+  rfl
+
+@[reassoc]
+lemma d_fst_v (i j : ℤ) :
+    (mappingCocone φ).d i j ≫ (fst φ).f j = (fst φ).f i ≫ K.d i j := by
+  simp
+
+@[reassoc]
+lemma d_snd_v (i j k : ℤ) (hij : j + -1 = i) (hjk : i + -1 = k) :
+    (mappingCocone φ).d i j ≫ (snd φ).v j i (by lia) =
+      - (snd φ).v i k hjk ≫ L.d k i - (fst φ).f i ≫ φ.f i := by
+  simp [ext_from_iff _ k i (by lia), inl_v_d_assoc φ i j (by lia),
+    inr_v_d_assoc φ k i j (by lia) (by lia)]
+
 lemma id_X (p q : ℤ) (hpq : p + -1 = q) :
     (fst φ).f p ≫ (inl φ).v p p (add_zero p) +
       (snd φ).v p q hpq ≫ (inr φ).1.v q p (by lia) = 𝟙 _ := by
   obtain rfl : q = p + -1 := by lia
-  simp [fst, inl, snd, inr, mappingCocone,
+  simpa [fst, inl, snd, inr, mappingCocone,
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia),
     Cochain.rightShift_v _ _ _ _ _ _ _ _ hpq,
     Cochain.leftShift_v _ _ _ _ _ _ _ _ (add_zero (p + -1)),
     Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (p + -1)),
-    Int.negOnePow_even 2 ⟨1, rfl⟩,
-    mappingCone.id_X φ (p + -1) p (by lia)]
+    Int.negOnePow_even 2 ⟨1, rfl⟩] using! mappingCone.id_X φ (p + -1) p (by lia)
 
 section
 
@@ -106,6 +186,7 @@ variable {M : CochainComplex C ℤ} {n m : ℤ}
   (α : Cochain K M m) (β : Cochain L M n) (h : m + 1 = n)
 
 /-- Constructor for cochains from `mappingCocone`. -/
+@[no_expose]
 noncomputable def descCochain : Cochain (mappingCocone φ) M m :=
   (-m + 1).negOnePow • (mappingCone.descCochain φ α β h).leftShift (-1) m (by lia)
 
@@ -205,6 +286,7 @@ variable {M : CochainComplex C ℤ} {n m : ℤ}
   (α : Cochain M K n) (β : Cochain M L m) (h : m + 1 = n)
 
 /-- Constructor for cochains to `mappingCocone`. -/
+@[no_expose]
 noncomputable def liftCochain : Cochain M (mappingCocone φ) n :=
   (mappingCone.liftCochain φ α β h).rightShift (-1) n (by lia)
 
@@ -306,27 +388,51 @@ section
 
 variable [HasBinaryBiproducts C]
 
-/-- Given a morphism `φ : K ⟶ L` of cochain complexes, this is the triangle
-`mappingCocone φ ⟶ K ⟶ L ⟶ ...`. -/
-@[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
-noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
-  Triangle.mk (fst φ) φ
-    ((mappingCone.triangle φ).mor₂ ≫ (shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).inv.app _)
+@[no_expose]
+noncomputable def triangleδ : L ⟶ (mappingCocone φ)⟦(1 : ℤ)⟧ :=
+  (mappingCone.triangle φ).mor₂ ≫ (shiftMappingCoconeIso φ).inv
 
-set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+lemma triangleδ_f_snd_v (n : ℤ) :
+    (triangleδ φ).f n ≫ (snd φ).v (n + 1) n (by lia) = 𝟙 _ := by
+  simp [mappingCocone, triangleδ, shiftMappingCoconeIso, snd,
+    HomComplex.Cochain.leftShift_v (n := 0) _ (-1) (-1) (by lia) (n + 1) n (by lia) n (by lia),
+    Int.negOnePow_even 2 (by grind), CochainComplex.shiftFunctorCompIsoId_inv_app]
+
+@[reassoc (attr := simp)]
+lemma triangleδ_f_fst_f (n : ℤ) :
+    (triangleδ φ).f n ≫ (fst φ).f (n + 1) = 0 := by
+  simp [mappingCocone, triangleδ, shiftMappingCoconeIso, fst,
+    HomComplex.Cochain.leftShift_v (n := 1) _ (-1) 0 (by lia) (n + 1) (n + 1) (by lia) n (by lia),
+    CochainComplex.shiftFunctorCompIsoId_inv_app]
+
+@[reassoc (attr := simp)]
+lemma triangleδ_shiftMappingCoconeIso_hom :
+    triangleδ φ ≫ (shiftMappingCoconeIso φ).hom = mappingCone.inr φ := by
+  simp [triangleδ]
+
 set_option backward.isDefEq.respectTransparency false in
-/-- Rotating the triangle `mappingCocone.triangle φ` gives a triangle that is
-isomorphic to `mappingCone.triangle φ`. -/
-noncomputable def rotateTriangleIso :
-    (triangle φ).rotate ≅ mappingCone.triangle φ := by
-  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    ((shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).app _)
-    (by simp) (by simp [triangle]) ?_
-  dsimp
+@[reassoc (attr := simp)]
+lemma shiftMappingCoconeIso_hom_mappingConeTriangle_mor₃ :
+    dsimp% (shiftMappingCoconeIso φ).hom ≫ (mappingCone.triangle φ).mor₃ = -(fst φ)⟦1⟧' := by
+  dsimp [triangleδ, shiftMappingCoconeIso]
   ext n
   simp [fst, mappingCone.triangle, Cochain.leftShift_v _ _ _ _ _ _ _ _ rfl,
     Cochain.rightShift_v _ _ _ _ _ _ _ _ rfl,
     shiftFunctorCompIsoId, shiftFunctorAdd'_inv_app_f', shiftFunctorZero_hom_app_f]
+
+/-- Given a morphism `φ : K ⟶ L` of cochain complexes, this is the triangle
+`mappingCocone φ ⟶ K ⟶ L ⟶ ...`. -/
+@[implicit_reducible, simps!]
+noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
+  Triangle.mk (fst φ) φ (triangleδ φ)
+
+/-- Rotating the triangle `mappingCocone.triangle φ` gives a triangle that is
+isomorphic to `mappingCone.triangle φ`. -/
+noncomputable def rotateTriangleIso :
+    (triangle φ).rotate ≅ mappingCone.triangle φ :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    (shiftMappingCoconeIso φ) (by simp) (by simp) (by simp)
 
 end
 
