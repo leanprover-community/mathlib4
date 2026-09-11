@@ -67,8 +67,11 @@ variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop :=
   ∀ ⦃u v w⦄, ¬ G.Adj u v → ¬ G.Adj v w → ¬ G.Adj u w
 
-protected lemma IsCompleteMultipartite.bot : (emptyGraph α).IsCompleteMultipartite := ⟨by simp⟩
-protected lemma IsCompleteMultipartite.top : (completeGraph α).IsCompleteMultipartite := ⟨by simp⟩
+protected lemma IsCompleteMultipartite.bot : (emptyGraph α).IsCompleteMultipartite := by
+  simp [IsCompleteMultipartite]
+
+protected lemma IsCompleteMultipartite.top : (completeGraph α).IsCompleteMultipartite := by
+  simp [IsCompleteMultipartite]
 
 @[deprecated (since := "2026-09-07")] alias bot_isCompleteMultipartite := IsCompleteMultipartite.bot
 
@@ -82,7 +85,7 @@ protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
 /-- The setoid given by non-adjacency -/
 @[instance_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
-    ⟨(¬ G.Adj · ·), ⟨G.loopless, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
+    ⟨(¬ G.Adj · ·), ⟨G.adj_irrefl, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
 
 lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → Type*) :
     (completeMultipartiteGraph V).IsCompleteMultipartite := by
@@ -374,7 +377,7 @@ theorem nonempty_of_eq_zero_or_eq_zero (h : r = 0 ∨ t = 0) :
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
 theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
   fun _ h₁ _ h₂ hne ↦ Finset.disjoint_left.mpr fun _ h₁' h₂' ↦
-    G.loopless _ (K.isCompleteBetween h₁ h₂ hne h₁' h₂')
+    G.adj_irrefl (K.isCompleteBetween h₁ h₂ hne h₁' h₂')
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
@@ -494,7 +497,7 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
         obtain ⟨v, hv⟩ : s.Nonempty := by
           rw [← Finset.card_pos, hs]
           exact Nat.pos_of_ne_zero ht
-        exact G.irrefl <| hadj s hs_mem hv hv
+        exact G.adj_irrefl <| hadj s hs_mem hv hv
       · rw [Finset.card_cons, K.card_parts.resolve_right ht]
         exact .inl rfl
       · simp_rw [mem_cons, forall_eq_or_imp]

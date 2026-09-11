@@ -940,7 +940,7 @@ alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
 
 @[simp]
 lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by
-  grind [bypass, support_nil, SimpleGraph.irrefl]
+  grind [bypass, support_nil, SimpleGraph.adj_irrefl]
 
 @[simp]
 lemma nil_bypass (p : G.Walk u u) : p.bypass.Nil := by

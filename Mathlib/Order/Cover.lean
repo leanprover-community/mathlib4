@@ -243,6 +243,8 @@ variable [Preorder α] [Preorder β] {a b c : α}
 
 @[simp] lemma covBy_irrefl : ¬ a ⋖ a := by simp [CovBy]
 
+instance : Std.Irrefl (α := α) (· ⋖ ·) where irrefl := by simp
+
 @[to_dual self]
 theorem not_covBy_iff_nonempty_Ioo (h : a < b) : ¬a ⋖ b ↔ (Ioo a b).Nonempty :=
   not_covBy_iff h

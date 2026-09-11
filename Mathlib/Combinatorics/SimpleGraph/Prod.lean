@@ -42,7 +42,7 @@ variable {G : SimpleGraph α} {H : SimpleGraph β}
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
-  symm x y := by simp [eq_comm, adj_comm]
+  adj_symm x y := by simp [eq_comm, adj_comm]
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
@@ -55,10 +55,10 @@ theorem boxProd_adj {x y : α × β} :
 
 theorem boxProd_adj_left {a₁ : α} {b : β} {a₂ : α} :
     (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
-  simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
+  simp only [boxProd_adj, and_true, SimpleGraph.adj_irrefl, false_and, or_false]
 
 theorem boxProd_adj_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
-  simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
+  simp only [boxProd_adj, SimpleGraph.adj_irrefl, false_and, and_true, false_or]
 
 theorem neighborSet_boxProd (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by

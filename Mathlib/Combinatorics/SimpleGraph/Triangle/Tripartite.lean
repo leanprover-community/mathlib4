@@ -64,8 +64,8 @@ open Rel
 containing them both. -/
 def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) where
   Adj := Rel t
-  symm x y h := by cases h <;> constructor <;> assumption
-  loopless x hx := nomatch hx
+  adj_symm x y h := by cases h <;> constructor <;> assumption
+  adj_irrefl x hx := nomatch hx
 
 variable {a a' : α} {b b' : β} {c c' : γ} {x : α × β × γ}
 

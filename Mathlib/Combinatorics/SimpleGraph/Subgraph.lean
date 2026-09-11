@@ -99,7 +99,7 @@ namespace Subgraph
 variable {G : SimpleGraph V} {G' G₁ G₂ : G.Subgraph} {a b : V}
 
 protected theorem loopless (G' : Subgraph G) (v : V) : ¬ G'.Adj v v :=
-  fun h ↦ G.loopless v (G'.adj_sub h)
+  fun h ↦ G.adj_irrefl (G'.adj_sub h)
 
 instance irrefl_adj : Std.Irrefl G'.Adj := ⟨G'.loopless⟩
 instance symm_adj : Std.Symm G'.Adj := ⟨G'.symm⟩
@@ -137,8 +137,8 @@ theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)
 @[simps]
 protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
   Adj v w := G'.Adj v w
-  symm _ _ h := G'.symm h
-  loopless v h := loopless G v (G'.adj_sub h)
+  adj_symm _ _ h := G'.symm h
+  adj_irrefl _ h := G.adj_irrefl (G'.adj_sub h)
 
 @[simp]
 theorem Adj.adj_sub' (G' : Subgraph G) (u v : G'.verts) (h : G'.Adj u v) : G.Adj u v :=
@@ -169,8 +169,8 @@ In general, this adds in all vertices from `V` as isolated vertices. -/
 @[simps]
 protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   Adj := G'.Adj
-  symm := G'.symm
-  loopless v hv := G.loopless v (G'.adj_sub hv)
+  adj_symm := G'.symm
+  adj_irrefl _ hv := G.adj_irrefl (G'.adj_sub hv)
 
 attribute [grind =] Subgraph.spanningCoe_adj
 
@@ -331,7 +331,7 @@ instance : Top G.Subgraph where
   top.Adj := G.Adj
   top.adj_sub := id
   top.edge_vert := @fun v _ _ => Set.mem_univ v
-  top.symm := G.symm
+  top.symm := G.adj_symm
 
 /-- The `bot` subgraph is the subgraph with no vertices or edges. -/
 instance : Bot G.Subgraph where
@@ -358,7 +358,7 @@ instance : InfSet G.Subgraph where
       Adj := fun a b => (∀ ⦃G'⦄, G' ∈ s → Adj G' a b) ∧ G.Adj a b
       adj_sub := And.right
       edge_vert := fun hab => Set.mem_iInter₂_of_mem fun G' hG' => G'.edge_vert <| hab.1 hG'
-      symm _ _ := And.imp (forall₂_imp fun _ _ ↦ Adj.symm) G.adj_symm }
+      symm _ _ := And.imp (forall₂_imp fun _ _ ↦ Adj.symm) (G.adj_symm ·) }
 
 @[simp]
 theorem sup_adj : (G₁ ⊔ G₂).Adj a b ↔ G₁.Adj a b ∨ G₂.Adj a b :=
@@ -579,7 +579,7 @@ def _root_.SimpleGraph.toSubgraph (H : SimpleGraph V) (h : H ≤ G) : G.Subgraph
   Adj := H.Adj
   adj_sub e := h e
   edge_vert _ := Set.mem_univ _
-  symm := H.symm
+  symm := H.adj_symm
 
 theorem support_mono {H H' : Subgraph G} (h : H ≤ H') : H.support ⊆ H'.support :=
   SetRel.dom_mono fun _ hvw ↦ h.2 hvw

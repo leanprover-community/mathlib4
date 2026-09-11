@@ -84,22 +84,18 @@ theorem IsClique.of_subsingleton {G : SimpleGraph α} (hs : s.Subsingleton) : G.
   hs.pairwise G.Adj
 
 lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b :=
-  have := G.symm
   Set.pairwise_pair_of_symm
 
 @[simp]
 lemma isClique_insert : G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, a ≠ b → G.Adj a b :=
-  have := G.symm
   Set.pairwise_insert_of_symm
 
 lemma isClique_insert_of_notMem (ha : a ∉ s) :
     G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, G.Adj a b :=
-  have := G.symm
   Set.pairwise_insert_of_symm_of_notMem ha
 
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
     G.IsClique (insert a s) :=
-  have := G.symm
   hs.insert_of_symm h
 
 @[gcongr]
@@ -528,7 +524,7 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
       refine Embedding.isContained ⟨φ.setValue x s, fun {a b} ↦ ?_⟩
       simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms, ite_false]
       rw [apply_ite (G.Adj · _), apply_ite (G.Adj _ ·), apply_ite (G.Adj _ ·)]
-      convert! @hφ a b <;> simp only [← φ.apply_eq_iff_eq, SimpleGraph.irrefl, hx]
+      convert! @hφ a b <;> simp only [← φ.apply_eq_iff_eq, SimpleGraph.adj_irrefl, hx]
   · refine Embedding.isContained ⟨φ, ?_⟩
     simp_rw [Set.mem_range, not_exists, ← ne_eq] at mt
     conv at hφ => enter [a, b]; rw [G.adj_replaceVertex_iff_of_ne _ (mt a) (mt b)]
