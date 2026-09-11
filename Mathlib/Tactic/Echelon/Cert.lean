@@ -89,19 +89,22 @@ namespace Mathlib.Tactic.Echelon
 def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
   mkNumeral q(Fin $n) i
 
-/-- Two views of one matrix literal: `matrix` the elaborated term, and `entries` the
-row-major entries it was built from. -/
+/-- Three views of one matrix literal: `entries` the row-major entries, `lit` the same entries
+as a list of rows, and `matrix` that list read as a matrix by `ofLists`. -/
 structure MatrixViews (u : Level) (m n : ℕ) (α : Q(Type u)) where
-  /-- The matrix literal. -/
+  /-- The matrix, the `ofLists` term on `lit`. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
+  /-- The entries as a list of rows. -/
+  lit : Q(List (List $α))
   /-- The row-major entries. -/
-  entries : Array (Array Q($α))
+  entries : List (List Q($α))
 
 /-- Build the `MatrixViews` of the row-major entries `rows`. -/
-def mkMatrixViews {u : Level} (α : Q(Type u)) (m n : Nat) (rows : Array (Array Q($α))) :
-    MatrixViews u m n α :=
-  { matrix := Matrix.mkLiteralQ (m := m) (n := n) (.of fun i j => (rows[i]!)[j]!),
-    entries := rows }
+def mkMatrixViews {u : Level} {α : Q(Type u)} (_cr : Q(CommRing $α)) (m n : Nat)
+    (rows : Array (Array Q($α))) : MatrixViews u m n α :=
+  let entries := rows.toList.map Array.toList
+  have lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
+  { matrix := q(ofLists $m $n $lit), lit, entries }
 
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
@@ -178,8 +181,7 @@ def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
 zeros above the diagonal, so the list of those entries reduces to the replicated zero. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) : MetaM Q(($(L.matrix)).IsLowerTriangular) := do
-  have rows : Q(List (List $α)) :=
-    mkListLitQ (α := q(List $α)) (L.entries.toList.map fun row => mkListLitQ row.toList)
+  have rows : Q(List (List $α)) := L.lit
   have n : Q(Nat) := mkNatLit (m * (m - 1) / 2)
   have hrep : Q(ListMatrix.aboveDiagonal 0 $rows = List.replicate $n (0 : $α)) :=
     mkExpectedPropHint q(Eq.refl (ListMatrix.aboveDiagonal 0 $rows))
@@ -188,7 +190,7 @@ def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   let prf : Q(∀ i j : Fin $m, OrderDual.toDual j < OrderDual.toDual i →
       ofLists $m $m $rows i j = 0) :=
     q(fun _ _ hij => ofLists_eq_zero_of_lt $rows (List.eq_replicate_iff.mp $hrep).2 hij)
-  -- `ofLists` on the row list unfolds to the `!![…]` literal
+  -- `L.matrix` is the `ofLists` term on `rows`, so the hint unfolds `IsLowerTriangular` only
   return mkExpectedPropHint prf q(($(L.matrix)).IsLowerTriangular)
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot` via `isPivotedBy_iff`.
@@ -235,11 +237,10 @@ or the kernel evaluates when there is none. -/
 def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
     MetaM Q($(L.matrix) * $(Aσ.matrix) = $(U.matrix)) := do
-  let rows (entries : Array (Array Q($α))) : List (List Q($α)) := entries.toList.map Array.toList
   let r := proveMul (← synthInstanceQ q(Zero $α)) (← synthInstanceQ q(Add $α))
-    (← synthInstanceQ q(Mul $α)) m m n (rows L.entries) (rows Aσ.entries)
+    (← synthInstanceQ q(Mul $α)) m m n L.entries Aσ.entries
   have F : Q(List (List $α)) := r.expr
-  have listU : Q(List (List $α)) := mkListLitQ (α := q(List $α)) ((rows U.entries).map mkListLitQ)
+  have listU : Q(List (List $α)) := U.lit
   let hV : Q($F = $listU) ← match certifier? with
     | none =>
       -- the kernel evaluates the sums of products against the recorded entries
@@ -255,8 +256,8 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr m, toExpr m, toExpr n, r.A, r.B]))
     (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr m, toExpr n])
       (← mkEqTrans r.proof hV))
-  -- `pf` is stated on `ofLists` forms, which unfold on row-list literals to exactly the
-  -- `Matrix.of`/`vecCons` terms of the literals, so the kernel settles the hint by reduction
+  -- `pf` is stated on the row lists `proveMul` built from the same entries as the views, so
+  -- the hint is settled by a structural comparison of those lists with `L.lit` and `Aσ.lit`
   return mkExpectedPropHint pf q($(L.matrix) * $(Aσ.matrix) = $(U.matrix))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
@@ -266,10 +267,10 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
     (data : BareissData Expr) (certifier? : Option EntryCertifier) :
     MetaM Q(Echelon.Decomposition $A) := do
-  have L := mkMatrixViews α m m data.L
-  have U := mkMatrixViews α m n data.U
+  have L := mkMatrixViews _cr m m data.L
+  have U := mkMatrixViews _cr m n data.U
   let aEntries := data.rowOrder.map (entries[·]!)
-  have Aσ := mkMatrixViews α m n aEntries
+  have Aσ := mkMatrixViews _cr m n aEntries
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
   let dispatch (p : Q(Prop)) (certify : EntryCertifier → MetaM Q($p)) : MetaM Q($p) :=
