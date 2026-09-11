@@ -90,4 +90,10 @@ theorem ofLists_mul [Mul α] [AddCommMonoid α] (l m n : ℕ) (A B : List (List 
   simp only [← row_transpose, ← ofLists_transpose, row_apply', ofLists_apply, ofList_apply,
     ← ListMatrix.dotProduct_eq, ListMatrix.getD_mul A B i.isLt j.isLt]
 
+theorem ofLists_eq_zero_of_lt [Zero α] {m : ℕ} (rows : List (List α))
+    (h : ∀ x ∈ ListMatrix.aboveDiagonal 0 rows, x = 0) {i j : Fin m} (hij : i < j) :
+    ofLists m m rows i j = 0 := by
+  rw [ofLists_apply, ofList_apply]
+  exact ListMatrix.getD_eq_zero_of_aboveDiagonal h (by simpa using hij)
+
 end Mathlib.Tactic.Matrix

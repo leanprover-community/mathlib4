@@ -81,7 +81,7 @@ end
 
 public meta section
 
-open Lean Meta Qq
+open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
@@ -174,16 +174,22 @@ def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   certifyForallFin q(∀ i, ($(L.matrix)).diag i ≠ 0) fun i _ =>
     certifier q($((L.entries[i]!)[i]!) ≠ $zero)
 
-/-- Prove `L.IsLowerTriangular`: the elimination emits literal zeros above the diagonal,
-so every entry condition closes by `rfl`. -/
+/-- Prove `L.IsLowerTriangular` from the recorded rows of `L`: the elimination emits literal
+zeros above the diagonal, so the list of those entries reduces to the replicated zero. -/
 def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : Q(Matrix (Fin $m) (Fin $m) $α)) : MetaM Q(($L).IsLowerTriangular) := do
-  -- `BlockTriangular` spelled out (`toDual j < toDual i` is `i < j`), as the `reducible`
-  -- ambient inside `simp` cannot unfold it
-  let prf ← certifyForallFin
-      q(∀ i j : Fin $m, OrderDual.toDual j < OrderDual.toDual i → $L i j = 0) fun i p => do
-    certifyForallFin p fun j cell => certifyImplication (i < j) cell certifyDefEq
-  return q($prf)
+    (L : MatrixViews u m m α) : MetaM Q(($(L.matrix)).IsLowerTriangular) := do
+  have rows : Q(List (List $α)) :=
+    mkListLitQ (α := q(List $α)) (L.entries.toList.map fun row => mkListLitQ row.toList)
+  have n : Q(Nat) := mkNatLit (m * (m - 1) / 2)
+  have hrep : Q(ListMatrix.aboveDiagonal 0 $rows = List.replicate $n (0 : $α)) :=
+    mkExpectedPropHint q(Eq.refl (ListMatrix.aboveDiagonal 0 $rows))
+      q(ListMatrix.aboveDiagonal 0 $rows = List.replicate $n (0 : $α))
+  -- `BlockTriangular` spelled out (`toDual j < toDual i` is `i < j`)
+  let prf : Q(∀ i j : Fin $m, OrderDual.toDual j < OrderDual.toDual i →
+      ofLists $m $m $rows i j = 0) :=
+    q(fun _ _ hij => ofLists_eq_zero_of_lt $rows (List.eq_replicate_iff.mp $hrep).2 hij)
+  -- `ofLists` on the row list unfolds to the `!![…]` literal
+  return mkExpectedPropHint prf q(($(L.matrix)).IsLowerTriangular)
 
 /-- Prove the characterisation of `U.IsPivotedBy pivot` via `isPivotedBy_iff`.
 The first two conditions are decidable. The entry conditions require equality check against 0
@@ -223,7 +229,6 @@ def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m
     q(congrArg (fun f => Matrix.of f) (FinVec.etaExpand_eq (fun i => $A ($σ i))).symm)
     q(($A).submatrix $σ id = $Aσ)
 
-open Mathlib.Tactic.Matrix in
 /-- Prove the product `L * Aσ = U` from the literals' recorded entries: the product of the row
 lists is expanded to the sums of products, which `certifier?` proves equal to the entries of `U`,
 or the kernel evaluates when there is none. -/
@@ -279,7 +284,7 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let hpivot ← dispatch q(($Um).IsPivotedBy $pivot) fun certifier =>
     certifyPivotedBy _cr U pivot data.pivot certifier
-  let hlower ← certifyLowerTriangular _cr Lm
+  have hlower : Q(($Lm).IsLowerTriangular) := ← certifyLowerTriangular _cr L
   let hdiag ← dispatch q(∀ i, ($Lm).diag i ≠ 0) fun certifier =>
     certifyNonzeroDiag _cr L certifier
   return q(⟨$Lm, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)

@@ -94,4 +94,28 @@ theorem getD_mul [Mul α] [Add α] [Zero α] {l m n i j : Nat} (A B : List (List
     · simpa using hj
   · simp [mul]; lia
 
+/-- The entries above the diagonal of a list of rows, row `k` contributing its entries after
+position `k`, collected row by row. -/
+def aboveDiagonal (k : Nat) : List (List α) → List α
+  | [] => []
+  | row :: rows => row.drop (k + 1) ++ aboveDiagonal (k + 1) rows
+
+theorem getD_eq_zero_of_aboveDiagonal [Zero α] {k i j : Nat} {rows : List (List α)}
+    (h : ∀ x ∈ aboveDiagonal k rows, x = 0) (hij : k + i < j) :
+    (rows.getD i []).getD j 0 = 0 := by
+  induction rows generalizing k i with
+  | nil => simp
+  | cons row rows ih =>
+    simp only [aboveDiagonal, List.mem_append] at h
+    cases i with
+    | zero =>
+      obtain ⟨d, rfl⟩ : ∃ d, j = (k + 1) + d := ⟨j - (k + 1), by lia⟩
+      rw [List.getD_cons_zero, List.getD_eq_getElem?_getD, ← List.getElem?_drop]
+      cases hx : (row.drop (k + 1))[d]? with
+      | none => rfl
+      | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
+    | succ i =>
+      rw [List.getD_cons_succ]
+      exact ih (fun x hx => h x (Or.inr hx)) (by lia)
+
 end Mathlib.Tactic.Matrix.ListMatrix
