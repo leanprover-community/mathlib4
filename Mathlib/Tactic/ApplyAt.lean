@@ -28,6 +28,7 @@ metavariables/goals for any terms of `αⱼ` for `j = 1, …, i-1`,
 then replaces the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying those metavariables and the
 original `i`.
 -/
+@[nolint tacticAlt]
 elab "apply " t:term " at " i:ident : tactic => withSynthesize <| withMainContext do
   let f ← elabTermForApply t
   let some ldecl := (← getLCtx).findFromUserName? i.getId

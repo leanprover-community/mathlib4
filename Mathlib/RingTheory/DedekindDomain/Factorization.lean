@@ -5,9 +5,10 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -885,7 +886,7 @@ section multiplicity
 
 @[simp]
 lemma Ideal.emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) : emultiplicity I ⊥ = ⊤ :=
-  Submodule.zero_eq_bot (R := R) (M := R) ▸ emultiplicity_zero I
+  Submodule.zero_eq_bot (R := R) (M := R) ▸ emultiplicity_zero_right I
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 
@@ -934,7 +935,7 @@ lemma emultiplicity_iSup (I : ι → Ideal R) :
   induction ι using Finite.induction_empty_option with
   | h_empty =>
     rw [iSup_of_empty, iInf_of_empty]
-    exact emultiplicity_zero _
+    exact emultiplicity_zero_right _
   | of_equiv e ih =>
     specialize ih (I ∘ e)
     rw [← sSup_range, ← sInf_range] at ih ⊢

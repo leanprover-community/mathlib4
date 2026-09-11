@@ -188,7 +188,7 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -309,7 +309,7 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -379,7 +379,7 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
   [FunLike F M N] : Prop
   extends MulHomClass F M N, OneHomClass F M N
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
   coe_injective f g h := by
@@ -923,17 +923,23 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
       _ = g (f (g x * g y)) := by rw [f.map_mul]
       _ = g x * g y := h₁ _
 
-/-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
+/-- If `M` and `N` have multiplications, `f` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
 @[to_additive
-/-- If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
+/-- If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
-theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N} (is_surj : Function.Surjective f)
-    (is_comm : IsMulCommutative M) : IsMulCommutative N where
+theorem Function.Surjective.isMulCommutative [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
+    {f : F} (is_surj : Function.Surjective f) (is_comm : IsMulCommutative M) :
+    IsMulCommutative N where
   is_comm.comm a b := by
     have ⟨a', ha'⟩ := is_surj a
     have ⟨b', hb'⟩ := is_surj b
     simp [← ha', ← hb', ← map_mul, mul_comm']
+
+@[deprecated (since := "2026-08-11")]
+alias Function.Surjective.add_comm := Function.Surjective.isAddCommutative
+@[to_additive existing, deprecated (since := "2026-08-11")]
+alias Function.Surjective.mul_comm := Function.Surjective.isMulCommutative
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)
@@ -955,7 +961,7 @@ protected def End := M →* M
 
 namespace End
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
 
 @[to_additive (attr := ext)]

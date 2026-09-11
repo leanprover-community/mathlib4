@@ -22,7 +22,7 @@ variable {α : Type u} {β : Type v} {X : Type*}
 
 open scoped Uniformity Topology NNReal ENNReal Pointwise
 
-variable [PseudoEMetricSpace α]
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α]
 
 open EMetric
 
@@ -73,8 +73,6 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
     simp [ofPred_forall, εpos]
 
 end Pi
-
-variable {γ : Type w} [EMetricSpace γ]
 
 section Pi
 

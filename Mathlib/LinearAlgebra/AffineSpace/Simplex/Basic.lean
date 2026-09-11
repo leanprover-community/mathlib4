@@ -186,6 +186,10 @@ instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
     s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
   s.independent.mem_affineSpan_iff _ _
 
+lemma mem_affineSpan_range {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∈ affineSpan k (Set.range s.points) :=
+  mem_affineSpan k (Set.mem_range_self i)
+
 lemma affineCombination_mem_affineSpan_faceOpposite_iff {n : ℕ} [NeZero n] {s : Simplex k P n}
     {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) {i : Fin (n + 1)} :
     Finset.univ.affineCombination k s.points w ∈
@@ -558,7 +562,6 @@ lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : 
     convert! hw'01
     convert! Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
     simp only [map_orderEmbOfFin_univ, Finset.affineCombination_indicator_subset _ _ fs.subset_univ]
-    congr
     grind [Set.indicator_eq_self, mem_support]
 
 lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P n)

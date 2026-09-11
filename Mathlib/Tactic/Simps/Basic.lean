@@ -12,6 +12,9 @@ public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes
+public import Batteries.Util.LibraryNote
+public import Lean.Elab.ConfigEval
+public import Lean.Elab.Tactic.Simp
 
 /-!
 # Simps attribute
@@ -327,6 +330,7 @@ Some common uses:
   `initialize_simps_projections` after defining the `DFunLike` instance (or instance that implies
   a `DFunLike` instance).
   ```
+    @[macro_inline]
     instance {mM : Mul M} {mN : Mul N} : FunLike (MulHom M N) M N := ...
     initialize_simps_projections MulHom (toFun → apply)
   ```

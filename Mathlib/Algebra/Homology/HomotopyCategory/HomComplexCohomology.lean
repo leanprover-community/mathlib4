@@ -33,7 +33,7 @@ open CategoryTheory Category Limits Preadditive
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] {R : Type*} [Ring R] [Linear R C]
+variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 
@@ -179,8 +179,8 @@ in degree `m`. -/
 @[simps]
 def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
     ((HomComplex K L).sc' n m p).LeftHomologyData where
-  K := .of (Cocycle K L m)
-  H := .of (CohomologyClass K L m)
+  K := ↧(Cocycle K L m)
+  H := ↧(CohomologyClass K L m)
   i := AddCommGrpCat.ofHom (Cocycle.toCochainAddMonoidHom K L m)
   π := AddCommGrpCat.ofHom (CohomologyClass.mkAddMonoidHom K L m)
   wi := by cat_disch

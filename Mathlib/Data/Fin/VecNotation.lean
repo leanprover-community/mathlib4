@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Basic
 
+import Mathlib.Data.Set.Image
+
 /-!
 # Matrix and vector notation
 
@@ -96,7 +98,7 @@ def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
 def vecTail {n : ℕ} (v : Fin n.succ → α) : Fin n → α :=
   v ∘ Fin.succ
 
-variable {m n : ℕ}
+variable {n : ℕ}
 
 /-- Use `![...]` notation for displaying a vector `Fin n → α`, for example:
 

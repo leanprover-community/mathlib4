@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
+public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
@@ -159,7 +160,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a b : α}
+variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a : α}
 
 theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
   OrderClosedTopology.isClosed_le'.measurableSet
@@ -183,7 +184,7 @@ section LinearOrder
 variable [LinearOrder α] {a b x : α} {μ : Measure α}
 
 -- we open this scope only here to avoid issues with list being treated as intervals above
-open Interval
+open scoped Interval
 
 @[simp, measurability]
 theorem measurableSet_Iio [ClosedIciTopology α] : MeasurableSet (Iio a) :=
@@ -908,7 +909,7 @@ variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountab
 protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable (fun b ↦ ⨆ i, f i b) := by
   rcases isEmpty_or_nonempty ι with hι | hι
-  · simp [iSup_of_empty']
+  · simp
   have A : MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} :=
     measurableSet_bddAbove_range hf
   have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const
@@ -1058,12 +1059,30 @@ theorem Measurable.liminf {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
     Measurable fun x => liminf (fun i => f i x) atTop :=
   .liminf' hf atTop_countable_basis fun _ => to_countable _
 
+/-- The `liminf` over `ℕ` of a sequence of ae measurable functions is ae measurable. -/
+@[fun_prop]
+protected theorem AEMeasurable.liminf {f : ℕ → δ → α} {μ : Measure δ}
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    AEMeasurable (fun x ↦ liminf (fun i ↦ f i x) atTop) μ := by
+  refine ⟨fun x => liminf (fun i => (hf i).mk _ x) atTop, ?_, ?_⟩
+  · exact Measurable.liminf (fun i ↦ (hf i).measurable_mk)
+  · filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with x hx using by simp [hx]
+
 /-- `limsup` over `ℕ` is measurable. See `Measurable.limsup'` for a version with a general filter.
 -/
 @[fun_prop]
 theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun x => limsup (fun i => f i x) atTop :=
   .limsup' hf atTop_countable_basis fun _ => to_countable _
+
+/-- The `limsup` over `ℕ` of a sequence of ae measurable functions is ae measurable. -/
+@[fun_prop]
+protected theorem AEMeasurable.limsup {f : ℕ → δ → α} {μ : Measure δ}
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    AEMeasurable (fun x ↦ limsup (fun i ↦ f i x) atTop) μ := by
+  refine ⟨fun x => limsup (fun i => (hf i).mk _ x) atTop, ?_, ?_⟩
+  · exact Measurable.limsup (fun i ↦ (hf i).measurable_mk)
+  · filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with x hx using by simp [hx]
 
 end ConditionallyCompleteLinearOrder
 
