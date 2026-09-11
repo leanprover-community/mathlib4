@@ -31,8 +31,8 @@ lemma nhdsKer_singleton_eq_ker_nhds (x : X) : nhdsKer {x} = (𝓝 x).ker := by s
 theorem mem_nhdsKer_singleton : x ∈ nhdsKer {y} ↔ x ⤳ y := by
   rw [nhdsKer_singleton_eq_ker_nhds, ker_nhds_eq_specializes, mem_ofPred]
 
-lemma nhdsKer_def (s : Set X) : nhdsKer s = ⋂₀ {t : Set X | IsOpen t ∧ s ⊆ t} :=
-  (hasBasis_nhdsSet _).ker.trans sInter_eq_biInter.symm
+lemma nhdsKer_def (s : Set X) : nhdsKer s = ⋂₀ {t : Set X | IsOpen t ∧ s ⊆ t} := by
+  simp [nhdsKer, (hasBasis_nhdsSet _).ker, sInter_eq_biInter]
 
 lemma mem_nhdsKer : x ∈ nhdsKer s ↔ ∀ U, IsOpen U → s ⊆ U → x ∈ U := by simp [nhdsKer_def]
 

@@ -46,10 +46,9 @@ section SetFiniteConstructors
 
 /-- There are finitely many subsets of a given finite set -/
 theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | b ⊆ a }.Finite := by
-  convert! ((Finset.powerset h.toFinset).map Finset.coeEmb.1).finite_toSet
-  ext s
-  simpa [← @exists_finite_iff_finset α fun t => t ⊆ a ∧ t = s, Finite.subset_toFinset,
-    ← and_assoc, Finset.coeEmb] using h.subset
+  refine ((Finset.powerset h.toFinset).map Finset.coeEmb.1).finite_toSet.subset fun s hs => ?_
+  simp only [Finset.coe_map, Set.mem_image, Finset.mem_coe, Finset.mem_powerset, Finset.coeEmb]
+  exact ⟨(h.subset hs).toFinset, by simp [show s ⊆ a from hs], by simp⟩
 
 protected theorem Finite.powerset {s : Set α} (h : s.Finite) : (𝒫 s).Finite :=
   h.finite_subsets

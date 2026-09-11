@@ -271,8 +271,10 @@ lemma ProperSMul.isCompact_setOfPred_inter_nonempty
     {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
     {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
     IsCompact {g : G | (g • U ∩ V).Nonempty} := by
-  convert!
-    ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage (hV.prod hU)).image
+  suffices h : {g : G | (g • U ∩ V).Nonempty} =
+      Prod.fst '' ((fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) ⁻¹' (V ×ˢ U)) by
+    rw [h]
+    exact ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage (hV.prod hU)).image
       continuous_fst
   ext g
   suffices (∃ v, v ∈ g • U ∧ v ∈ V) ↔ ∃ u, g • u ∈ V ∧ u ∈ U by simpa

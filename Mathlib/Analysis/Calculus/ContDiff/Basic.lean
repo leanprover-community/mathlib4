@@ -372,7 +372,7 @@ theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
   · intro m hm x hx
     convert!
       (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
-        ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
+        ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (mapsTo_preimage ..))
     ext y v
     change p (g x) (Nat.succ m) (g.contLinear ∘ cons y v)
       = p (g x) m.succ (cons (g.contLinear y) (g.contLinear ∘ v))

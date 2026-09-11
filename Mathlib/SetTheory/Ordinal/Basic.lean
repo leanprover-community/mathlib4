@@ -337,8 +337,9 @@ theorem type_mono [LinearOrder α] [WellFoundedLT α] {s t : Set α} (h : s ⊆ 
 
 This is registered as a principal segment embedding into the ordinals, with top `type r`. -/
 def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordinal.{u} r (· < ·) := by
-  refine ⟨RelEmbedding.ofMonotone _ fun a b ha ↦
-    ((PrincipalSeg.ofElement r a).codRestrict _ ?_ ?_).ordinal_type_lt, type r, fun a ↦ ⟨?_, ?_⟩⟩
+  refine ⟨RelEmbedding.ofMonotone (fun a ↦ type (Subrel r (r · a))) fun a b ha ↦
+    ((PrincipalSeg.ofElement r a).codRestrict {x | r x b} ?_ ?_).ordinal_type_lt, type r,
+    fun a ↦ ⟨?_, ?_⟩⟩
   · rintro ⟨c, hc⟩
     exact trans hc ha
   · exact ha

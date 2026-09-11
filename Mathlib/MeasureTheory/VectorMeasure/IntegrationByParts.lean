@@ -139,9 +139,8 @@ lemma setIntegral_Icc_rightLim_sub_leftLim_eq
       simp [indicator]
       grind
     · apply Measurable.aestronglyMeasurable
-      simp only [indicator, mem_Icc, Pi.one_apply]
-      apply Measurable.piecewise ?_ (by fun_prop) (by fun_prop)
-      apply MeasurableSet.inter <;> exact measurableSet_le (by fun_prop) (by fun_prop)
+      change Measurable (({p : α × α | a ≤ p.1} ∩ {p | p.1 ≤ p.2}).indicator 1)
+      measurability
   _ = ∫ᵛ y in Icc a b, (∫ᵛ x in Icc a b, (Icc y b).indicator 1 x ∂•hf.vectorMeasure)
       ∂[B; hg.vectorMeasure]:= by
     apply VectorMeasure.setIntegral_congr_ae

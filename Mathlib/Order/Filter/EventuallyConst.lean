@@ -82,7 +82,7 @@ theorem eventuallyEmptyOrUniv_iff' {s : Set α} :
 
 @[deprecated eventuallyEmptyOrUniv_iff' (since := "2026-08-25")]
 theorem eventuallyConst_set' {s : Set α} :
-    EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
+    EventuallyConst (· ∈ s) l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
   eventuallyConst_pred'
 
 theorem eventuallyEmptyOrUniv_iff {s : Set α} :
@@ -91,7 +91,7 @@ theorem eventuallyEmptyOrUniv_iff {s : Set α} :
 
 @[deprecated eventuallyEmptyOrUniv_iff (since := "2026-08-25")]
 theorem eventuallyConst_set {s : Set α} :
-    EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
+    EventuallyConst (· ∈ s) l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
 
 theorem eventuallyEmptyOrUniv_preimage {s : Set β} {f : α → β} :
@@ -100,7 +100,7 @@ theorem eventuallyEmptyOrUniv_preimage {s : Set β} {f : α → β} :
 
 @[deprecated eventuallyEmptyOrUniv_preimage (since := "2026-08-25")]
 theorem eventuallyConst_preimage {s : Set β} {f : α → β} :
-    EventuallyConst (f ⁻¹' s) l ↔ EventuallyConst s (map f l) :=
+    EventuallyConst (· ∈ f ⁻¹' s) l ↔ EventuallyConst (· ∈ s) (map f l) :=
   .rfl
 
 theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
@@ -203,25 +203,25 @@ variable [One β] {s : Set α} {c : β}
 @[to_additive (attr := deprecated EventuallyEmptyOrUniv.of_mulIndicator_const
   (since := "2026-08-25"))]
 lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
-    EventuallyConst s l :=
+    EventuallyConst (· ∈ s) l :=
   EventuallyEmptyOrUniv.of_mulIndicator_const h hc
 
 @[to_additive (attr := deprecated EventuallyEmptyOrUniv.mulIndicator_const
   (since := "2026-08-25"))]
-theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
+theorem mulIndicator_const (h : EventuallyConst (· ∈ s) l) (c : β) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l :=
   EventuallyEmptyOrUniv.mulIndicator_const h c
 
 @[to_additive (attr := deprecated EventuallyEmptyOrUniv.mulIndicator_const_iff_of_ne
   (since := "2026-08-25"))]
 theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
-    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst s l :=
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst (· ∈ s) l :=
   EventuallyEmptyOrUniv.mulIndicator_const_iff_of_ne hc
 
 @[to_additive (attr := deprecated EventuallyEmptyOrUniv.mulIndicator_const_iff
   (since := "2026-08-25"))]
 theorem mulIndicator_const_iff :
-    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst s l :=
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst (· ∈ s) l :=
   EventuallyEmptyOrUniv.mulIndicator_const_iff
 
 end EventuallyConst

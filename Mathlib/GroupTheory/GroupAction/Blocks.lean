@@ -711,7 +711,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
   · simp [hfB_e]
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk
-    exact Set.biInter_subset_of_mem hk
+    exact Set.iInter₂_subset k hk
   have hfB' : B'.Finite := by
     obtain ⟨b, hb : b ∈ B⟩ := hfB_ne
     obtain ⟨k, hk : k • b = a⟩ := exists_smul_eq G b a

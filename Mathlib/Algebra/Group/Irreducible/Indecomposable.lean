@@ -32,8 +32,7 @@ def IsMulIndecomposable (v : ι → M) (s : Set ι) (i : ι) : Prop :=
 
 @[to_additive]
 protected lemma IsMulIndecomposable.subset (v : ι → M) (s : Set ι) :
-    {i | IsMulIndecomposable v s i} ⊆ s := by
-  aesop
+    {i | IsMulIndecomposable v s i} ⊆ s := fun _ hi ↦ hi.1
 
 @[to_additive]
 lemma isMulIndecomposable_id_univ [Subsingleton Mˣ] {x : M} (hx : x ≠ 1) :

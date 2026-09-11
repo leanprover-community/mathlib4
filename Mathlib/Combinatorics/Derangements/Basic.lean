@@ -39,8 +39,8 @@ def derangements (α : Type*) : Set (Perm α) :=
 variable {α β : Type*}
 
 theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
-    f ∈ derangements α ↔ fixedPoints f = ∅ :=
-  Set.eq_empty_iff_forall_notMem.symm
+    f ∈ derangements α ↔ fixedPoints f = ∅ := by
+  simp [derangements, Set.eq_empty_iff_forall_notMem, IsFixedPt]
 
 /-- If `α` is equivalent to `β`, then `derangements α` is equivalent to `derangements β`. -/
 def Equiv.derangementsCongr (e : α ≃ β) : derangements α ≃ derangements β :=

@@ -210,7 +210,9 @@ theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F M N] [AddEquivClass F
 the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s) :
     IsSemilinearSet { x | ∃ y, Sum.elim x y ∈ s } := by
-  convert! hs.image (LinearMap.funLeft ℕ M Sum.inl)
+  suffices h : { x | ∃ y, Sum.elim x y ∈ s } = ⇑(LinearMap.funLeft ℕ M Sum.inl) '' s by
+    rw [h]
+    exact hs.image _
   ext x
   constructor
   · intro ⟨y, hy⟩

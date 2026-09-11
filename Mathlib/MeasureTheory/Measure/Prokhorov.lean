@@ -547,7 +547,7 @@ lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
     · right
       simp only [Monotone, mem_Iic, iUnion_subset_iff, K']
       intro a b hab i hi
-      apply subset_biUnion_of_mem
+      apply subset_biUnion_of_mem (s := {i | i ≤ b}) (u := K)
       exact hi.trans hab
   apply IsCompact.closure_of_subset h'K
   intro μ hμ n
@@ -555,7 +555,7 @@ lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
   _ ≤ μ (K n)ᶜ := by
     gcongr
     simp only [mem_Iic, K']
-    apply subset_biUnion_of_mem
+    apply subset_biUnion_of_mem (s := {i | i ≤ n}) (u := K)
     exact le_rfl (a := n)
   _ ≤ u n := by grind
 
@@ -586,7 +586,8 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
   have Measurebound n : (μlim (⋃ (i ≤ n), U i) : ℝ) ≤ 1 - ε := calc
     (μlim (⋃ (i ≤ n), U i) : ℝ)
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ n), U i) : ℝ)) atTop := by
-      have hopen : IsOpen (⋃ i ≤ n, U i) := isOpen_biUnion fun i a ↦ O i
+      have hopen : IsOpen (⋃ i ≤ n, U i) :=
+        isOpen_biUnion (s := {i | i ≤ n}) fun i a ↦ O i
       have := ProbabilityMeasure.le_liminf_measure_open_of_tendsto hμconverges hopen
       simp_rw [Function.comp_apply, ← ennreal_coeFn_eq_coeFn_toMeasure] at this
       rw [← ofNNReal_liminf] at this
@@ -599,8 +600,9 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       · simp only [NNReal.coe_le_coe, eventually_atTop]
         use n + 1
         intro b hypo
-        refine (μ (sub b)).apply_mono
-            <| Set.biUnion_mono (fun i (hi : i ≤ n) ↦ hi.trans ?_) fun _ _ ↦ le_rfl
+        refine (μ (sub b)).apply_mono <|
+          Set.biUnion_mono (s := {i | i ≤ sub b}) (s' := {i | i ≤ n})
+            (fun i (hi : i ≤ n) ↦ hi.trans ?_) fun _ _ ↦ le_rfl
         exact le_trans (Nat.le_add_right n 1) (le_trans hypo (StrictMono.le_apply hsubmono))
       · use 0; simp
       · use 1
