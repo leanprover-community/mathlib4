@@ -204,7 +204,11 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
       simp only [Finsupp.coe_add, Pi.add_apply]
     · rw [Finsupp.sum_add_index (by simp) (by simp), Finsupp.sum_single_index (by simp),
         Finsupp.sum_single_index (by simp), h]
-  simpa using (IsRegular.of_pos ha).isSMulRegular (vadd_right_cancel _ hx)
+  -- Now simplify the weighted subtraction
+  congr 1
+  rw [Finset.weightedVSubOfPoint_apply]
+  simp only [id]
+  -- Convert to Finsupp.sum
   change (Finsupp.single x s + Finsupp.single y t).sum (fun p w => w • (p -ᵥ y)) = _
   rw [Finsupp.sum_add_index (by simp) (fun _ a b => by simp [add_smul]),
     Finsupp.sum_single_index (by simp), Finsupp.sum_single_index (by simp)]

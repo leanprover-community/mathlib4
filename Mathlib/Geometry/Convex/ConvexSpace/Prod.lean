@@ -147,7 +147,8 @@ instance [ConvexSpace S X] [IsConvexCombComm R S X] : IsConvexCombComm R S (ι �
   iConvexComb_comm' f g := by ext i; simpa using iConvexComb_comm f g fun e k ↦ e k i
 
 instance [IsCancelConvexSpace R X] : IsCancelConvexSpace R (ι →₀ X) where
-  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by ext i; exact isAffineMap_eval.eq_of_sConvexComb ha hw₁ hw₂ h
+  eq_of_sConvexComb ha _ _ _ _ _ hw₁ hw₂ h := by
+    ext i; exact isAffineMap_eval.eq_of_sConvexComb ha hw₁ hw₂ h
 
 end Finsupp
 
