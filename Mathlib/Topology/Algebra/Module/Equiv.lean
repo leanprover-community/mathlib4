@@ -163,6 +163,7 @@ instance : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ ≃ₛₗ[σ₁₂] M₂) where
 @[simp] lemma toLinearMap_toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) :
     e.toContinuousLinearMap.toLinearMap = e.toLinearEquiv.toLinearMap := rfl
 
+@[macro_inline]
 instance equivLike :
     EquivLike (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toFun
@@ -644,6 +645,11 @@ theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) 
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
   rfl
 
+@[simp]
+theorem toContinuousLinearMap_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse f₁ f₂ h₁ h₂ : M₁ →SL[σ₁₂] M₂) = f₁ :=
+  rfl
+
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`.
 *ToDo*: Improve the naming to make it match `LinearEquiv.ofLinearMap` -/
@@ -661,6 +667,11 @@ theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂
 @[simp]
 theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
+  rfl
+
+@[simp]
+theorem toContinuousLinearMap_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse' f₁ f₂ h₁ h₂ : M₁ →SL[σ₁₂] M₂) = f₁ :=
   rfl
 
 theorem eq_comp_toContinuousLinearMap_symm (e₁₂ : M₁ ≃SL[σ₁₂] M₂) [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
@@ -1224,5 +1235,30 @@ theorem _root_.LinearEquiv.isHomeomorph_iff (e : M ≃ₛₗ[σ] M₁) :
     IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := e.toEquiv.isHomeomorph_iff
 
 end IsHomeomorph
+
+@[simp]
+lemma toLinearEquiv_inv (f : V ≃L[R] V) :
+    (f⁻¹).toLinearEquiv = f.toLinearEquiv⁻¹ := rfl
+
+@[simp]
+lemma toLinearEquiv_mul (f g : V ≃L[R] V) :
+    (f * g).toLinearEquiv = f.toLinearEquiv * g.toLinearEquiv := rfl
+
+/-- `ContinuousLinearEquiv.toLinearEquiv` as a multiplicative monoid homomorphism `MonoidHom`. -/
+@[simps]
+def toLinearEquivMonoidHom : (V ≃L[R] V) →* (V ≃ₗ[R] V) where
+  toFun := ContinuousLinearEquiv.toLinearEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+@[simp]
+lemma toLinearEquiv_pow (f : V ≃L[R] V) (n : ℕ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_pow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
+
+@[simp]
+lemma toLinearEquiv_zpow (f : V ≃L[R] V) (n : ℤ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
 
 end ContinuousLinearEquiv

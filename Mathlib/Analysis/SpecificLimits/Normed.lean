@@ -292,13 +292,13 @@ section NonUnitalNormedRing
 variable {R : Type*} [NonUnitalNormedRing R]
 
 -- this lemma should be removed (and unnecessary) once we have a `Pow G ℕ+` instance for semigroups
-private lemma _root_.norm_iterate_mul_le {R : Type*} [NonUnitalNormedRing R] (x : R) (n : ℕ) :
+private lemma _root_.norm_iterate_mul_le (x : R) (n : ℕ) :
     ‖(· * x)^[n] x‖ ≤ ‖x‖ ^ (n + 1) := by
   induction n with
   | zero => simp
   | succ n ih => grw [iterate_succ_apply', norm_mul_le, ih, ← pow_succ]
 
-lemma summable_geometric_iterate_of_norm_lt_one [HasSummableGeomSeries R] {x : R} (h : ‖x‖ < 1) :
+lemma summable_iterate_mul_of_norm_lt_one [HasSummableGeomSeries R] {x : R} (h : ‖x‖ < 1) :
     Summable ((· * x)^[·] x) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
@@ -311,7 +311,7 @@ instance [CompleteSpace R] : HasSummableGeomSeries R where
 protected theorem Summable.add_geom_series_mul_self {x : R} (h : Summable ((· * x)^[·] x)) :
     x + (∑' i : ℕ, (· * x)^[i] x) * x = (∑' i : ℕ, (· * x)^[i] x) := by
   rw [← h.tsum_mul_right, h.tsum_eq_zero_add]
-  simp [Function.iterate_succ_apply']
+  simp [iterate_succ_apply']
 
 protected theorem Summable.add_self_mul_geom_series {x : R} (h : Summable ((· * x)^[·] x)) :
     x + x * (∑' i : ℕ, (· * x)^[i] x) = (∑' i : ℕ, (· * x)^[i] x) := by
@@ -368,18 +368,19 @@ theorem hasSummableGeomSeries_iff_isQuasiregular :
   congr!
   exact summable_iterate_mul_iff_isQuasiregular ‹_›
 
-variable [HasSummableGeomSeries R]
+lemma IsQuasiregular.of_norm_lt_one [HasSummableGeomSeries R]
+    {x : R} (h : ‖x‖ < 1) : IsQuasiregular x :=
+  hasSummableGeomSeries_iff_isQuasiregular.mp inferInstance h
 
-theorem IsQuasiregular.of_norm_lt_one ⦃x : R⦄ (hx : ‖x‖ < 1) : IsQuasiregular x :=
-  hasSummableGeomSeries_iff_isQuasiregular.mp ‹_› hx
+variable [HasSummableGeomSeries R]
 
 theorem add_geom_series_mul_self {x : R} (hx : ‖x‖ < 1) :
     x + (∑' i : ℕ, (· * x)^[i] x) * x = (∑' i : ℕ, (· * x)^[i] x) :=
-  summable_geometric_iterate_of_norm_lt_one hx |>.add_geom_series_mul_self
+  summable_iterate_mul_of_norm_lt_one hx |>.add_geom_series_mul_self
 
 theorem add_self_mul_geom_series {x : R} (hx : ‖x‖ < 1) :
     x + x * (∑' i : ℕ, (· * x)^[i] x) = (∑' i : ℕ, (· * x)^[i] x) :=
-  summable_geometric_iterate_of_norm_lt_one hx |>.add_self_mul_geom_series
+  summable_iterate_mul_of_norm_lt_one hx |>.add_self_mul_geom_series
 
 end NonUnitalNormedRing
 
@@ -396,7 +397,7 @@ alias ⟨_, HasSummableGeomSeries.of_summable_pow⟩ := hasSummableGeomSeries_if
 
 /-- If `‖x‖ < 1` and `x` lies in a normed ring, then `∑' n : ℕ, x ^ n` is summable
 if and only if `1 - x` is invertible. -/
-theorem hasSummableGeomSeries_iff_isUnit {R : Type*} [NormedRing R] :
+theorem hasSummableGeomSeries_iff_isUnit :
     HasSummableGeomSeries R ↔ ∀ ⦃x : R⦄, ‖x‖ < 1 → IsUnit (1 - x) := by
   rw [neg_involutive.surjective.forall]
   simp_rw [norm_neg, sub_neg_eq_add, hasSummableGeomSeries_iff_isQuasiregular,
@@ -416,6 +417,11 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     positivity [sub_pos.mpr h, one_le_norm_one R]
 
 variable [HasSummableGeomSeries R]
+
+/-- The element `1 - x` also available bundled as a term of `Rˣ` with inverse `∑' n : ℕ, x ^ n`
+in `Units.oneSub`. -/
+theorem IsUnit.one_sub_of_norm_lt_one {x : R} (hx : ‖x‖ < 1) : IsUnit (1 - x) :=
+  hasSummableGeomSeries_iff_isUnit.mp inferInstance hx
 
 lemma summable_geometric_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : Summable (fun n ↦ x ^ n) :=
   hasSummableGeomSeries_iff_summable_pow.mp inferInstance h
