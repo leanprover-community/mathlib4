@@ -79,7 +79,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     exact ⟨g, hg⟩
   obtain ⟨s, hs⟩ := nonempty_sections_of_finite_cofiltered_system F
   let a := (ProfiniteGrp.of G).isoLimittoFiniteQuotientFunctor.inv.hom
-    ⟨fun N ↦ (s N).1, (fun {N N'} f ↦ congr_arg Subtype.val (hs f))⟩
+    ⟨fun N ↦ (s N).1, (fun {N N'} f ↦ congr($(hs f).val))⟩
   have (N : OpenNormalSubgroup G) : QuotientGroup.mk (s := N.1.1) a = s N := by
     change ((ProfiniteGrp.of G).isoLimittoFiniteQuotientFunctor.hom.hom a).1 N = _
     simp only [a]
@@ -144,7 +144,7 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
     ext g
     obtain ⟨g, rfl⟩ := Ideal.Quotient.mk_surjective g
-    exact DFunLike.congr_fun hx' (Ideal.Quotient.mk _ (Subalgebra.inclusion h g))⟩
+    congrm $hx' (Ideal.Quotient.mk _ (Subalgebra.inclusion h g))⟩
   map_id N := by ext ⟨⟨⟨x⟩, hx⟩, hx'⟩; rfl
   map_comp f g := by ext ⟨⟨⟨x⟩, hx⟩, hx'⟩; rfl
 
@@ -206,6 +206,6 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     lift x to B' N.1.1 using fun g ↦ hN g.2
     change Ideal.Quotient.mk Q (QuotientGroup.mk (s := N) a • x).1 = _
     rw [this]
-    exact DFunLike.congr_fun (s N).2 (Ideal.Quotient.mk _ x)
+    congrm $((s N).2) (Ideal.Quotient.mk _ x)
 
 end ProfiniteGrp

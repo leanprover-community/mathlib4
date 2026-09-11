@@ -74,11 +74,11 @@ def isColimitCocone : IsColimit (cocone f g) :=
       | Sum.inl x₁ => s.inl x₁
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
-    exact ConcreteCategory.congr_hom s.condition t))) (fun _ => rfl) (fun _ => rfl)
+    congrm $s.condition t))) (fun _ => rfl) (fun _ => rfl)
       (fun s m h₁ h₂ => by
       ext ⟨x₁ | x₂⟩
-      · exact ConcreteCategory.congr_hom h₁ x₁
-      · exact ConcreteCategory.congr_hom h₂ x₂)
+      · congrm $h₁ x₁
+      · congrm $h₂ x₂)
 
 @[simp]
 lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
@@ -210,9 +210,9 @@ variable {f g}
 lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
-  convert! congr_arg e.hom.hom h
-  · exact ConcreteCategory.congr_hom (e.hom.w WalkingSpan.left).symm x₁
-  · exact ConcreteCategory.congr_hom (e.hom.w WalkingSpan.right).symm x₂
+  convert! congr(e.hom.hom $h)
+  · congrm $((e.hom.w WalkingSpan.left).symm) x₁
+  · congrm $((e.hom.w WalkingSpan.right).symm) x₂
 
 lemma pushoutCocone_inl_eq_inr_iff_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) :
@@ -275,7 +275,7 @@ lemma eq_or_eq_of_isPushout' (h : IsPushout t l r b)
   · exact Or.inl h₁
   · by_cases h₂ : x₃ ∈ Set.range l
     · obtain ⟨x₁, rfl⟩ := h₂
-      exact Or.inl ⟨t x₁, by simpa only [← hx₃] using! ConcreteCategory.congr_hom h.w x₁⟩
+      exact Or.inl ⟨t x₁, by simpa only [← hx₃] using! congr($h.w x₁)⟩
     · exact Or.inr ⟨x₃, hx₃, h₂⟩
 
 /-- A pushout square in `Type` where the top map is injective is a pullback square.
@@ -313,8 +313,8 @@ lemma mono_of_isPushout_of_isPullback {k : X₄ ⟶ X₅} (h₁ : IsPushout t l 
   subst facr facb
   have : Function.Injective l :=
     fun x₁ y₁ h ↦ ext_of_isPullback h₂ ((mono_iff_injective _).1 hr'
-      ((ConcreteCategory.congr_hom h₂.w x₁).trans (Eq.trans (by simp [h])
-      (ConcreteCategory.congr_hom h₂.w.symm y₁)))) h
+      (congr($h₂.w x₁).trans (Eq.trans (by simp [h])
+      congr($h₂.w.symm y₁)))) h
   rw [mono_iff_injective] at hr' ⊢
   have w := ConcreteCategory.congr_hom h₁.w
   simp only [comp_apply] at w
@@ -362,8 +362,8 @@ lemma isPushout_of_isPullback_of_mono {k : X₄ ⟶ X₅}
     have hx₄ := Set.mem_univ x₄
     simp only [← h₂, Set.sup_eq_union, Set.mem_union, Set.mem_range] at hx₄
     obtain (⟨x₂, rfl⟩ | ⟨x₃, rfl⟩) := hx₄
-    · exact ⟨_, ConcreteCategory.congr_hom hφ₁ x₂⟩
-    · exact ⟨_, ConcreteCategory.congr_hom hφ₂ x₃⟩
+    · exact ⟨_, congr($hφ₁ x₂)⟩
+    · exact ⟨_, congr($hφ₂ x₃)⟩
   exact IsPushout.of_iso (IsPushout.of_hasPushout t l)
     (Iso.refl _) (Iso.refl _) (Iso.refl _) (asIso φ) (by simp) (by simp)
     (by simpa) (by simpa)

@@ -229,7 +229,7 @@ theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
-    congr_arg exp <| neg_neg x
+    congr(exp $(neg_neg x))
 
 theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩

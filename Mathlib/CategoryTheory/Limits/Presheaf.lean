@@ -455,16 +455,13 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
     (uliftYonedaMap.{w} F X) (F.op.lan.obj _) (F.op.lanUnit.app (uliftYoneda.obj X)))
     (fun {X Y} f => by
       apply uliftYonedaEquiv.injective
-      have eq₁ := ConcreteCategory.congr_hom
-        ((uliftYoneda.{max w v₁}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
+      have eq₁ := congr($((uliftYoneda.{max w v₁}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
         (uliftYonedaMap F Y) (F.op.lan.obj (uliftYoneda.obj Y))
-          (F.op.lanUnit.app (uliftYoneda.obj Y)) _) ⟨f⟩
-      have eq₂ := ConcreteCategory.congr_hom
-        (((uliftYoneda.{max w v₁}.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
+          (F.op.lanUnit.app (uliftYoneda.obj Y)) _) ⟨f⟩)
+      have eq₂ := congr($((uliftYoneda.{max w v₁}.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
         (uliftYonedaMap F X) (F.op.lan.obj (uliftYoneda.obj X))
-          (F.op.lanUnit.app (uliftYoneda.obj X))) _) ⟨𝟙 _⟩
-      have eq₃ := ConcreteCategory.congr_hom (congr_app (F.op.lanUnit.naturality
-        (uliftYoneda.{max w v₂}.map f)) _) ⟨𝟙 _⟩
+          (F.op.lanUnit.app (uliftYoneda.obj X)) _) ⟨𝟙 _⟩)
+      have eq₃ := congr($(F.op.lanUnit.naturality (uliftYoneda.{max w v₂}.map f)).app _ ⟨𝟙 _⟩)
       dsimp [uliftYoneda, uliftYonedaMap, uliftYonedaEquiv,
         Functor.leftKanExtensionUnique] at eq₁ eq₂ eq₃ ⊢
       simp only [Functor.map_id] at eq₂
@@ -507,8 +504,8 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
       uliftYonedaEquiv.{max w v₂}.symm y.2 :=
     uliftYonedaEquiv.injective
       (by simpa only [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality] using f.2)
-  have eq₂ := ConcreteCategory.congr_hom ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).naturality
-    (F.map f.1.unop).op) ((φ.app x.1.unop).app _ (ULift.up (𝟙 _)))
+  have eq₂ := congr($((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).naturality
+    (F.map f.1.unop).op) ((φ.app x.1.unop).app _ (.up (𝟙 _))))
   have eq₃ := ConcreteCategory.congr_hom (CC := fun X ↦ X)
     (congr_app (φ.naturality f.1.unop) _) (ULift.up (𝟙 _))
   have eq₄ := ConcreteCategory.congr_hom ((φ.app x.1.unop).naturality (F.map f.1.unop).op)
@@ -824,7 +821,7 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
         (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app u.obj =
       colimit.ι ((Functor.Elements.π F).op ⋙ shrinkYoneda.{w}.obj u.obj) (op u) :=
     IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
-  simpa using ConcreteCategory.congr_hom this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+  simpa using congr($this (shrinkYonedaObjObjEquiv.symm (𝟙 _)))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The object of the category of elements `shrinkYoneda.{w}.flip.obj (op X)`

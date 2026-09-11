@@ -58,7 +58,7 @@ def dayConvolutionInternalHomDiagramFunctor (F : C ⥤ V) :
         ext j k
         dsimp
         simpa [-NatTrans.naturality] using!
-          congr_arg (ihom <| F.obj <| unop j).map (η.naturality <| k ◁ f) }
+          congr((ihom <| F.obj <| unop j).map $(η.naturality <| k ◁ f)) }
 
 /-- `DayConvolutionInternalHom F G H` asserts that `H` is the value at `G` of
 an internal hom functor of `F` for the Day convolution monoidal structure.

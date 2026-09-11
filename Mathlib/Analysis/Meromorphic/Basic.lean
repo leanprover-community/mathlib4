@@ -298,7 +298,7 @@ lemma inv {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp
-    · replace hfg := congr_arg (·⁻¹) hfg
+    · replace hfg := congr($hfg⁻¹)
       simp only [smul_inv₀] at hfg
       rw [inv_smul_eq_iff₀ (pow_ne_zero m (sub_ne_zero.mpr hz_ne)), smul_comm,
         eq_inv_smul_iff₀ (pow_ne_zero n (sub_ne_zero.mpr hz_ne))] at hfg

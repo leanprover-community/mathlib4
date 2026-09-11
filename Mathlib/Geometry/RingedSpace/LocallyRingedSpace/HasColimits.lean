@@ -95,10 +95,8 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
           (colimit.ι (F ⋙ forgetToSheafedSpace) i).hom
           (colimit.desc (F ⋙ forgetToSheafedSpace) (forgetToSheafedSpace.mapCocone s)).hom y
         simp only [← IsIso.comp_inv_eq,
-          ← InducedCategory.comp_hom,
-          PresheafedSpace.stalkMap.congr_hom _ _
-            (congr_arg (InducedCategory.Hom.hom) (colimit.ι_desc
-              (forgetToSheafedSpace.mapCocone s) i))] at this
+          ← InducedCategory.comp_hom, PresheafedSpace.stalkMap.congr_hom _ _ congr($(colimit.ι_desc
+              (forgetToSheafedSpace.mapCocone s) i).hom)] at this
         rw [← this]
         dsimp
         infer_instance)
@@ -108,7 +106,7 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
   uniq s f h :=
     LocallyRingedSpace.forgetToSheafedSpace.map_injective
       (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j =>
-        congr_arg LocallyRingedSpace.Hom.toShHom (h j))
+        congr($(h j).toShHom))
 
 instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
@@ -273,7 +271,7 @@ noncomputable def coequalizerCofork : Cofork f g :=
 theorem isLocalHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g) (x)
     (h : IsLocalHom (f.hom.stalkMap x).hom) :
     IsLocalHom (g.hom.stalkMap x).hom := by
-  rw [PresheafedSpace.stalkMap.congr_hom _ _ (congr_arg InducedCategory.Hom.hom H.symm) x]
+  rw [PresheafedSpace.stalkMap.congr_hom _ _ congr($(H.symm).hom) x]
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in

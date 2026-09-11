@@ -384,7 +384,7 @@ variable {f} in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma Cell.ι_t_app {j : ι} (c : f.Cell j) (x : SimplexCategoryᵒᵖ) :
     c.ιSigmaHorn.app x ≫ (f.t j).app x = c.mapHorn.app x :=
-  NatTrans.congr_app c.ι_t x
+  congr($(c.ι_t).app x)
 
 /-- Given a rank `j` cell `c` for a rank function `f` for a proper
 pairing of a subcomplex of a simplicial set, this is
@@ -461,7 +461,7 @@ variable {f} in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma Cell.ι_b_app {j : ι} (c : f.Cell j) (x : SimplexCategoryᵒᵖ) :
     c.ιSigmaStdSimplex.app x ≫ (f.b j).app x = c.mapToSucc.app x :=
-  NatTrans.congr_app c.ι_b x
+  congr($(c.ι_b).app x)
 
 @[reassoc]
 lemma w (j : ι) :
@@ -553,7 +553,7 @@ private lemma isPushout_aux₂ {j : ι} : Function.Injective (f.mapN (j := j)) :
 
 private lemma isPushout_aux₃ {j : ι} :
     Function.Injective fun (x : (Subcomplex.range (f.m j)).N) ↦ S.mk ((f.b j).app _ x.simplex) :=
-  fun _ _ h ↦ f.isPushout_aux₂ (congr_arg (S.map (Subcomplex.ι _)) h)
+  fun _ _ h ↦ f.isPushout_aux₂ congr(S.map (Subcomplex.ι _) $h)
 
 lemma isPushout (j : ι) :
     IsPushout (f.t j) (f.m j) (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where

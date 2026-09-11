@@ -29,10 +29,10 @@ theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsRed
   introv R _ _
   constructor
   rintro x ⟨_ | n, e⟩
-  · simpa using congr_arg (· * x) e
+  · simpa using congr($e * x)
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx
-  let hx' := congr_arg (· ^ n.succ) hx
+  let hx' := congr($hx ^ n.succ)
   simp only [mul_pow, e, zero_mul, ← map_pow] at hx'
   rw [← (algebraMap R S).map_zero] at hx'
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'

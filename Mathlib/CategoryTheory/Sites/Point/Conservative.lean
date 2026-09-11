@@ -154,8 +154,7 @@ lemma jointly_reflect_ofArrows_mem
     obtain ⟨i, y, rfl⟩ := hf Φ x
     refine ⟨Φ.obj.presheafFiber.map (Sigma.ι (fun i ↦ shrinkYoneda.{w}.obj (U i)) i)
       (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.app _ y), ?_⟩
-    have := ConcreteCategory.congr_hom
-      (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
+    have := congr($(Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y)
     dsimp at this ⊢
     rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
@@ -201,8 +200,7 @@ private lemma mk'.isLocallySurjective
       (Presheaf.imageSieve_mem J f' (shrinkYonedaObjObjEquiv.symm (𝟙 U)))
     rintro V g ⟨v, hv⟩
     refine ⟨(pullback.fst f (shrinkYonedaEquiv.{w}.symm s)).app _ v, ?_⟩
-    refine (ConcreteCategory.congr_hom (NatTrans.congr_app
-      (pullback.condition (f := f)) (op V)) _).trans ?_
+    refine congr($(pullback.condition (f := f)).app (op V) _).trans ?_
     dsimp at hv ⊢
     refine (congr_arg _ hv).trans ?_
     refine (congr_arg _ (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op (𝟙 _))).trans ?_

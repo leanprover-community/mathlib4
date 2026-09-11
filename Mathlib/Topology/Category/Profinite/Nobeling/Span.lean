@@ -51,7 +51,7 @@ theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
     l.eval C = πJ C s (l.eval (π C (· ∈ s))) := by
   ext f
   simp only [πJ, LocallyConstant.comapₗ]
-  exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood C (· ∈ s) hl)) _).symm
+  exact (congr($(Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood C (· ∈ s) hl)) _)).symm
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
 noncomputable
@@ -61,7 +61,7 @@ instance : Fintype (π C (· ∈ s)) := by
   intro ⟨_, x, hx, rfl⟩ ⟨_, y, hy, rfl⟩ h
   ext i
   by_cases hi : i ∈ s
-  · exact congrFun h ⟨i, hi⟩
+  · congrm $h ⟨i, hi⟩
   · simp only [Proj, ite_eq_right hi]
 
 open scoped Classical in

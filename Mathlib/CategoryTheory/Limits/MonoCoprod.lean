@@ -106,8 +106,8 @@ instance monoCoprodType : MonoCoprod (Type u) :=
         (fun f₁ f₂ m h₁ h₂ => by
           ext x
           rcases x with x | x
-          · exact ConcreteCategory.congr_hom h₁ x
-          · exact ConcreteCategory.congr_hom h₂ x)
+          · congrm $h₁ x
+          · congrm $h₂ x)
     · rw [mono_iff_injective]
       intro a₁ a₂ h
       simpa using h

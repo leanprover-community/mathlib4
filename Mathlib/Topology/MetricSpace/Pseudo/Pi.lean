@@ -94,7 +94,7 @@ lemma nndist_pi_const_le (a b : α) : (nndist (fun _ : β => a) fun _ => b) ≤ 
 
 @[simp]
 lemma dist_pi_const [Nonempty β] (a b : α) : (dist (fun _ : β => a) fun _ => b) = dist a b := by
-  simpa only [dist_edist] using congr_arg ENNReal.toReal (edist_pi_const a b)
+  simpa only [dist_edist] using congr($(edist_pi_const a b).toReal)
 
 @[simp]
 lemma nndist_pi_const [Nonempty β] (a b : α) : (nndist (fun _ : β => a) fun _ => b) = nndist a b :=

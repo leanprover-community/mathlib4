@@ -494,7 +494,7 @@ lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₁_mem_lattice⟩ L.ω₁_div_two_notMem_lattice
     · ext i
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₂_mem_lattice⟩ L.ω₂_div_two_notMem_lattice
-  exact congr_fun (this l.2) _
+  congrm $(this l.2) _
 
 lemma periodic_weierstrassP (l : L.lattice) : ℘[L].Periodic l :=
   (L.weierstrassP_add_coe · l)

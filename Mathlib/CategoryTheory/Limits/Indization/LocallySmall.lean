@@ -65,7 +65,7 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
     Category.assoc, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_mk, comp_apply,
     Equiv.ulift_apply]
   have (a : limit ((F.op ⋙ G) ⋙ uliftFunctor.{u, v})) := congrArg ULift.down
-    (ConcreteCategory.congr_hom (preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
+    congr($(preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
   refine Eq.trans (dsimp% this _) ?_
   rw [HasLimit.isoOfNatIso_hom_π_apply]
   dsimp

@@ -602,7 +602,7 @@ theorem aeval_X_left : aeval X = AlgHom.id R (MvPolynomial σ R) :=
   (aeval_unique (AlgHom.id R _)).symm
 
 theorem aeval_X_left_apply (p : MvPolynomial σ R) : aeval X p = p :=
-  AlgHom.congr_fun aeval_X_left p
+  congr($aeval_X_left p)
 
 theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B) :
     φ.comp (aeval f) = aeval fun i => φ (f i) := by
@@ -644,7 +644,7 @@ theorem eval₂Hom_zero' (f : R →+* S₂) : eval₂Hom f (fun _ => 0 : σ → 
 
 theorem eval₂Hom_zero_apply (f : R →+* S₂) (p : MvPolynomial σ R) :
     eval₂Hom f (0 : σ → S₂) p = f (constantCoeff p) :=
-  RingHom.congr_fun (eval₂Hom_zero f) p
+  congr($(eval₂Hom_zero f) p)
 
 theorem eval₂Hom_zero'_apply (f : R →+* S₂) (p : MvPolynomial σ R) :
     eval₂Hom f (fun _ => 0 : σ → S₂) p = f (constantCoeff p) :=

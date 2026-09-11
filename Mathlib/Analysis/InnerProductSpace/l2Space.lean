@@ -169,7 +169,7 @@ theorem inner_single_left [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
 
 theorem inner_single_right [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪f, lp.single 2 i a⟫ = ⟪f i, a⟫ := by
-  simpa [inner_conj_symm] using congr_arg conj (inner_single_left (𝕜 := 𝕜) i a f)
+  simpa [inner_conj_symm] using congr(conj $(inner_single_left (𝕜 := 𝕜) i a f))
 
 end lp
 
@@ -398,7 +398,7 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     apply ContinuousLinearEquiv.coe_injective
     refine lp.ext_continuousLinearMap (ENNReal.ofNat_ne_top (n := nat_lit 2)) fun i => ?_
     ext
-    exact congr_fun h i
+    congrm $h i
 
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :

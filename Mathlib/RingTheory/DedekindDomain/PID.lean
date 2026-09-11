@@ -76,7 +76,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   obtain ⟨w, hw, hvw⟩ := Submodule.mem_mul_span_singleton.1 this
   refine ⟨⟨w, ?_⟩⟩
   rw [← FractionalIdeal.coe_spanSingleton S, ← inv_inv I, eq_comm]
-  refine congr_arg coeToSubmodule (Units.eq_inv_of_mul_eq_one_left (le_antisymm ?_ ?_))
+  congrm coeToSubmodule $(Units.eq_inv_of_mul_eq_one_left (le_antisymm ?_ ?_))
   · conv_rhs => rw [← hinv, mul_comm]
     grw [FractionalIdeal.spanSingleton_le_iff_mem.mpr hw]
   · rw [FractionalIdeal.one_le, ← hvw, mul_comm]

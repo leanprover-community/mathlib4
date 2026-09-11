@@ -252,7 +252,7 @@ theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun 
   obtain rfl | ne := eq_or_ne k 0
   · exact ⟨0, Algebra.norm_zero ..⟩
   have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
-  exact ⟨x, congr_arg (·.1) eq⟩
+  exact ⟨x, congr($(eq).1)⟩
 
 end norm
 

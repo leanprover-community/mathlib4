@@ -156,7 +156,7 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     congr
     ext ⟨⟨l, hl⟩⟩
     have := hi' l hl
-    exact congr_arg val (Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
+    congrm val $(Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
 
 lemma compatibility [WellFoundedLT J]
     {j : J} (e : d.Extension val₀ j) {i : J} (e' : d.Extension val₀ i) (h : i ≤ j) :
@@ -195,7 +195,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
   map_limit i hi hij := by
     obtain hij | rfl := hij.lt_or_eq
     · have hij' : i ≤ j := (Order.lt_succ_iff_of_not_isMax hj).mp hij
-      have := congr_arg (F.map (homOfLE hij').op) (d.map_succ j hj e.val)
+      have := congr(F.map (homOfLE hij').op $(d.map_succ j hj e.val))
       rw [e.map_limit i hi, ← comp_apply, ← map_comp, ← op_comp, homOfLE_comp] at this
       rw [this]
       congr

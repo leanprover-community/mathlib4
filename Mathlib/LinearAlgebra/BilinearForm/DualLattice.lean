@@ -87,7 +87,7 @@ lemma dualSubmoduleToDual_injective [IsDomain R] (hB : B.Nondegenerate) [IsTorsi
   apply LinearMap.ker_eq_bot.mp hB.ker_eq_bot
   apply LinearMap.ext_on hN
   intro z hz
-  simpa using congr_arg (algebraMap R S) (LinearMap.congr_fun e ⟨z, hz⟩)
+  simpa using congr(algebraMap R S ($e ⟨z, hz⟩))
 
 lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :

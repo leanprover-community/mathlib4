@@ -159,7 +159,7 @@ noncomputable def liftHom : F.obj j ⟶ X :=
     (Cocone.mk _
       { app := fun i ↦ (s.1 ⟨i⟩).f'
         naturality i i' g := by
-          have := congr_arg SqStruct.f' (s.2 g.op)
+          have := congr(SqStruct.f' $(s.2 g.op))
           dsimp at this ⊢
           rw [this, comp_id] })
 
@@ -226,11 +226,11 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasLift : sq.HasLift := by
   obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
-  replace hs := congr_arg SqStruct.f' hs
+  replace hs := congr(SqStruct.f' $hs)
   dsimp at hs
   let t : Cocone F := Cocone.mk X
     { app j := (s.1 ⟨j⟩).f'
-      naturality j j' g := by simpa using congr_arg SqStruct.f' (s.2 g.op) }
+      naturality j j' g := by simpa using congr(SqStruct.f' $(s.2 g.op)) }
   let l := hc.desc t
   have hl (j : J) : c.ι.app j ≫ l = (s.1 ⟨j⟩).f' := hc.fac t j
   exact ⟨⟨{

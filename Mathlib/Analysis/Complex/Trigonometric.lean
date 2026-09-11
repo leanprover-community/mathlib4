@@ -912,7 +912,7 @@ theorem cos_one_pos : 0 < cos 1 :=
   cos_pos_of_le_one (le_of_eq abs_one)
 
 theorem cos_two_neg : cos 2 < 0 :=
-  calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
+  calc cos 2 = cos (2 * 1) := congr(cos $((mul_one _).symm))
     _ = _ := Real.cos_two_mul 1
     _ ≤ 2 * (5 / 9) ^ 2 - 1 := by
       gcongr

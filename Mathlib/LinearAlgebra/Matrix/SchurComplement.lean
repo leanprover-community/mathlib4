@@ -114,13 +114,13 @@ def invertibleOfFromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m
       have := invOf_mul_self (fromBlocks A B 0 D)
       rw [← fromBlocks_toBlocks (⅟(fromBlocks A B 0 D)), fromBlocks_multiply] at this
       simpa only [Matrix.toBlocks_fromBlocks₁₁, Matrix.mul_zero, add_zero, ← fromBlocks_one] using
-        congr_arg Matrix.toBlocks₁₁ this
+        congr(Matrix.toBlocks₁₁ $this)
   snd :=
     invertibleOfRightInverse _ (⅟(fromBlocks A B 0 D)).toBlocks₂₂ <| by
       have := mul_invOf_self (fromBlocks A B 0 D)
       rw [← fromBlocks_toBlocks (⅟(fromBlocks A B 0 D)), fromBlocks_multiply] at this
       simpa only [Matrix.toBlocks_fromBlocks₂₂, Matrix.zero_mul, zero_add, ← fromBlocks_one] using
-        congr_arg Matrix.toBlocks₂₂ this
+        congr(Matrix.toBlocks₂₂ $this)
 
 /-- Both diagonal entries of an invertible lower-block-triangular matrix are invertible (by reading
 off the diagonal entries of the inverse). -/
@@ -130,14 +130,14 @@ def invertibleOfFromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n
     invertibleOfRightInverse _ (⅟(fromBlocks A 0 C D)).toBlocks₁₁ <| by
       have := mul_invOf_self (fromBlocks A 0 C D)
       rw [← fromBlocks_toBlocks (⅟(fromBlocks A 0 C D)), fromBlocks_multiply] at this
-      replace := congr_arg Matrix.toBlocks₁₁ this
+      replace := congr(Matrix.toBlocks₁₁ $this)
       simpa only [Matrix.toBlocks_fromBlocks₁₁, Matrix.zero_mul, add_zero, ← fromBlocks_one] using
         this
   snd :=
     invertibleOfLeftInverse _ (⅟(fromBlocks A 0 C D)).toBlocks₂₂ <| by
       have := invOf_mul_self (fromBlocks A 0 C D)
       rw [← fromBlocks_toBlocks (⅟(fromBlocks A 0 C D)), fromBlocks_multiply] at this
-      replace := congr_arg Matrix.toBlocks₂₂ this
+      replace := congr(Matrix.toBlocks₂₂ $this)
       simpa only [Matrix.toBlocks_fromBlocks₂₂, Matrix.mul_zero, zero_add, ← fromBlocks_one] using
         this
 

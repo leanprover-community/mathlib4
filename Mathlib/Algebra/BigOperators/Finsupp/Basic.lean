@@ -55,9 +55,8 @@ lemma prod_fun_one (f : α →₀ M) : f.prod (fun _ _ ↦ (1 : N)) = 1 := by si
 
 @[to_additive]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
-    (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) := by
-  refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) ?_)
-  exact notMem_support_iff.1 hx
+    (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) :=
+  Finset.prod_subset hs <| by simp_all
 
 @[to_additive]
 theorem prod_fintype [Fintype α] (f : α →₀ M) (g : α → M → N) (h : ∀ i, g i 0 = 1) :
@@ -420,7 +419,7 @@ lemma sum_finsetSum
 
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
-  DFunLike.congr_fun liftAddHom_singleAddHom f
+  congr($liftAddHom_singleAddHom f)
 
 /-- The `Finsupp` version of `Finset.univ_sum_single` -/
 @[simp]

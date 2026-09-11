@@ -230,7 +230,7 @@ theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ �
   · exact (isLeast_nth hn).csInf_eq.symm
   · rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
-    refine ((congr_arg sInf <| Set.eq_empty_of_forall_notMem fun k hk => ?_).trans sInf_empty).symm
+    refine (congr(sInf $(Set.eq_empty_of_forall_notMem fun k hk => ?_)).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
     exact (hk.2 _ ((hlt hf).trans_le hn)).false
 
@@ -473,7 +473,7 @@ protected theorem count_eq_zero (h : ∃ n, p n) {n : ℕ} : count p n = 0 ↔ n
 
 variable (p) in
 theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i ∧ n ≤ i} := by
-  refine (nth_eq_sInf _ _).trans (congr_arg sInf ?_)
+  refine (nth_eq_sInf _ _).trans congr(sInf $(?_))
   refine Set.ext fun a => and_congr_right fun hpa => ?_
   refine ⟨fun h => not_lt.1 fun ha => ?_, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
   have hn : nth p (count p a) < a := h _ (count_strict_mono hpa ha)

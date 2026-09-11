@@ -64,7 +64,7 @@ theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
 
 theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : ∀ i, α i) :
     (Pi.π α i :) ((piIsoPi α).inv x) = x i :=
-  ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
+  congr($(piIsoPi_inv_π α i) x)
 
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
     (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := rfl
@@ -106,7 +106,7 @@ theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
 
 theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).hom ((Sigma.ι α i :) x) = Sigma.mk i x :=
-  ConcreteCategory.congr_hom (sigmaIsoSigma_hom_ι α i) x
+  congr($(sigmaIsoSigma_hom_ι α i) x)
 
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i :) x := by
@@ -239,7 +239,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
     rfl
   · intro s m h₁ h₂
     ext (x | x)
-    exacts [ConcreteCategory.congr_hom h₁ x, ConcreteCategory.congr_hom h₂ x]
+    exacts [congr($h₁ x), congr($h₂ x)]
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
@@ -307,7 +307,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
         ext x
         dsimp
         rw [dite_eq_right]
-        · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
+        · congrm g $(Equiv.ofInjective_symm_apply ..)
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
           rwa [disjoint_iff.mp h₃.1] at this

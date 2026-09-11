@@ -122,7 +122,7 @@ variable [Fintype ι] {s : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → �
 
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
-  refine congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ ?_)
+  congrm NNReal.toReal $(Finset.sup_congr rfl fun i _ ↦ ?_)
   simp only [Real.nndist_eq', max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 

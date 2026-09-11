@@ -496,7 +496,7 @@ theorem coe_codRestrict (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf
 theorem injective_codRestrict
     (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (NonUnitalAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H congr($(hxy).val)⟩
 
 /-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 

@@ -123,7 +123,7 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsi
         (m * (P.pairing j i * lsq i)) • P.coroot i +
         (n * (P.pairing j i * lsq j)) • P.coroot j := by
     rw [h₂, h₃] at h₁
-    replace h₁ := congr_arg (fun n ↦ P.pairing j i • n) h₁
+    replace h₁ := congr(P.pairing j i • $h₁)
     simp only [add_smul, smul_add, ← mul_smul, smul_eq_mul] at h₁
     module_nf at h₁ ⊢
     exact h₁

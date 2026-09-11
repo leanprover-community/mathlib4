@@ -47,27 +47,25 @@ lemma toTopHomeo_naturality {n m : SimplexCategory} (f : n ⟶ m) :
     toTopHomeo m ∘ SSet.toTop.{u}.map (SSet.stdSimplex.map f) =
     StdSimplex.map f ∘ n.toTopHomeo := by
   ext x : 1
-  exact ULift.up_injective (ConcreteCategory.congr_hom ((forget TopCat).congr_map
-    (toTopSimplex.hom.naturality f)) x)
+  exact ULift.up_injective congr($((forget TopCat).congr_map (toTopSimplex.hom.naturality f)) x)
 
 lemma toTopHomeo_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
     (x : |stdSimplex.obj n|) :
     m.toTopHomeo ((SSet.toTop.{u}.map (SSet.stdSimplex.map f) x)) =
       (StdSimplex.map f) (n.toTopHomeo x) :=
-  congr_fun (toTopHomeo_naturality f) x
+  congr($(toTopHomeo_naturality f) x)
 
 lemma toTopHomeo_symm_naturality {n m : SimplexCategory} (f : n ⟶ m) :
     m.toTopHomeo.symm ∘ StdSimplex.map f =
       (SSet.toTop.{u}.map (SSet.stdSimplex.map f)).hom ∘ n.toTopHomeo.symm := by
   ext x : 1
-  exact ConcreteCategory.congr_hom ((forget _).congr_map
-    (toTopSimplex.inv.naturality f)) _
+  congrm $((forget _).congr_map (toTopSimplex.inv.naturality f)) _
 
 lemma toTopHomeo_symm_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
     (x : StdSimplex ℝ (Fin (n.len + 1))) :
     m.toTopHomeo.symm (StdSimplex.map f x) =
       SSet.toTop.{u}.map (SSet.stdSimplex.map f) (n.toTopHomeo.symm x) :=
-  congr_fun (toTopHomeo_symm_naturality f) x
+  congr($(toTopHomeo_symm_naturality f) x)
 
 end SimplexCategory
 

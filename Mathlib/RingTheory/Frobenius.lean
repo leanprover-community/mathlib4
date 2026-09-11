@@ -84,7 +84,7 @@ def restrict : S ⧸ Q →ₐ[R ⧸ Q.under R] S ⧸ Q where
   toRingHom := Ideal.quotientMap Q φ H.le_comap
   commutes' x := by
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    exact DFunLike.congr_arg (Ideal.Quotient.mk Q) (φ.commutes x)
+    congrm Ideal.Quotient.mk Q $(φ.commutes x)
 
 lemma restrict_apply (x : S ⧸ Q) :
     H.restrict x = x ^ Nat.card (R ⧸ Q.under R) := by
@@ -236,7 +236,7 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   obtain ⟨σ, hσ⟩ := Ideal.Quotient.stabilizerHom_surjective G P Q l
   refine ⟨σ, fun x ↦ ?_⟩
   rw [← Ideal.Quotient.eq, Nat.card_eq_fintype_card, hk]
-  exact DFunLike.congr_fun hσ (Ideal.Quotient.mk Q x)
+  congrm $hσ (Ideal.Quotient.mk Q x)
 
 variable (S G) in
 lemma exists_primesOver_isConj (P : Ideal R)

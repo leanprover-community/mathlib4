@@ -183,7 +183,7 @@ instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type (max u v)) :
   equalizerSieve_mem {X} x y h := by
     rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
     obtain ⟨W, h₁, h₂, eq⟩ := h
-    exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
+    exact J.superset_covering (fun Y f hf => congr($(eq).val ⟨Y, f, hf⟩)) W.2
 
 set_option backward.isDefEq.respectTransparency false in
 instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type (max u v)) :

@@ -53,11 +53,11 @@ protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
 protected theorem derivWithin.star :
     derivWithin (fun y => star (f y)) s x = star (derivWithin f s x) := by
   by_cases hxs : UniqueDiffWithinAt 𝕜 s x
-  · exact DFunLike.congr_fun (fderivWithin_star hxs) _
+  · congrm $(fderivWithin_star hxs) _
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hxs]
 
 protected theorem deriv.star : deriv (fun y => star (f y)) x = star (deriv f x) :=
-  DFunLike.congr_fun fderiv_star _
+  congr($fderiv_star _)
 
 @[simp]
 protected theorem deriv.star' : (deriv fun y => star (f y)) = fun x => star (deriv f x) :=

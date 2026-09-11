@@ -788,7 +788,7 @@ theorem pred_ncard_le_ncard_sdiff_singleton (s : Set α) (a : α) :
 alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
 
 theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
-  congr_arg ENat.toNat <| encard_exchange ha hb
+  congr($(encard_exchange ha hb).toNat)
 
 theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
     (insert a s \ {b}).ncard = s.ncard := by
@@ -812,7 +812,7 @@ theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s
   to_encard_tac; rw [hs.cast_ncard_eq, (hs.image _).cast_ncard_eq]; apply encard_image_le
 
 theorem InjOn.ncard_image (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
-  congr_arg ENat.toNat <| H.encard_image
+  congr($(H.encard_image).toNat)
 
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
     Set.InjOn f s := by

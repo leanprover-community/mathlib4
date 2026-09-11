@@ -77,14 +77,14 @@ noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
         strArrowMk₂ (⦋0⦌.const _ i.castSucc) :=
           StructuredArrow.homMk (Hom.tr (δ 1)).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
-      exact ConcreteCategory.congr_hom (s.w φ) x
+      congrm $(s.w φ) x
     arrow_tgt := fun i ↦ by
       dsimp
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
           strArrowMk₂ (⦋0⦌.const _ i.succ) :=
         StructuredArrow.homMk (Hom.tr (δ 0)).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
-      exact ConcreteCategory.congr_hom (s.w φ) x }
+      congrm $(s.w φ) x }
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma fac_aux₁ {n : ℕ}
@@ -154,14 +154,14 @@ lemma fac_aux₂ {n : ℕ}
               Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [dsimp% [α] this]
             dsimp [α₂] at h₂ ⊢
-            rw [h₂, ← dsimp% [α₂] ConcreteCategory.congr_hom (s.w β₂) x]
+            rw [h₂, ← dsimp% [α₂] congr($(s.w β₂) x)]
             rfl
         | 1 =>
             have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
               Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [dsimp% [α] this]
             dsimp [α₀] at h₀ ⊢
-            rw [h₀, ← dsimp% [α₀] ConcreteCategory.congr_hom (s.w β₀) x]
+            rw [h₀, ← dsimp% [α₀] congr($(s.w β₀) x)]
             rfl
       rw [← StructuredArrow.w β₁, Functor.map_comp_apply]
       dsimp [fromPUnit] at this ⊢
@@ -200,13 +200,13 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
       rw [spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (⦋0⦌.const ⦋n⦌ (f.toOrderHom k)) :=
         StructuredArrow.homMk ((Hom.tr (⦋0⦌.const _ (by exact k))).op) (by simp; rfl)
-      exact ConcreteCategory.congr_hom (s.w α).symm x
+      congrm $((s.w α).symm) x
     · dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
       rw [← Functor.map_comp_apply]
       let α : strArrowMk₂ f ⟶ strArrowMk₂ (mkOfSucc k ≫ f) :=
         StructuredArrow.homMk (Hom.tr (mkOfSucc k)).op (by simp)
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _).trans
-        (ConcreteCategory.congr_hom (s.w α).symm x)
+        congr($((s.w α).symm) x)
   uniq s m hm := by
     ext x
     apply sx.spineInjective (X := X)
@@ -216,10 +216,8 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
       const_obj_obj, comp_obj, proj_obj, mk_right, op_obj, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
       spine_spineToSimplex_apply]
     ext i
-    · exact ConcreteCategory.congr_hom (hm (StructuredArrow.mk
-        (Y := op ⦋0⦌₂) (⦋0⦌.const ⦋n⦌ i).op)) x
-    · exact ConcreteCategory.congr_hom (hm (.mk (Y := op ⦋1⦌₂)
-        (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
+    · congrm $(hm (StructuredArrow.mk (Y := op ⦋0⦌₂) (⦋0⦌.const ⦋n⦌ i).op)) x
+    · congrm $(hm (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
 
 /-- Since `StrictSegal.isPointwiseRightKanExtensionAt` proves that the appropriate
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension. -/

@@ -145,14 +145,14 @@ theorem LinearMap.dualMap_injective_of_surjective {f : M₁ →ₗ[R] M₂} (hf 
   intro φ ψ h
   ext x
   obtain ⟨y, rfl⟩ := hf x
-  exact congr_arg (fun g : Module.Dual R M₁ => g y) h
+  congrm $h y
 
 /-- The `LinearEquiv` version of `LinearMap.dualMap`. -/
 def LinearEquiv.dualMap (f : M₁ ≃ₗ[R] M₂) : Dual R M₂ ≃ₗ[R] Dual R M₁ where
   __ := f.toLinearMap.dualMap
   invFun := f.symm.toLinearMap.dualMap
-  left_inv φ := LinearMap.ext fun x ↦ congr_arg φ (f.right_inv x)
-  right_inv φ := LinearMap.ext fun x ↦ congr_arg φ (f.left_inv x)
+  left_inv φ := LinearMap.ext fun x ↦ congr(φ $(f.right_inv x))
+  right_inv φ := LinearMap.ext fun x ↦ congr(φ $(f.left_inv x))
 
 @[simp]
 theorem LinearEquiv.dualMap_apply (f : M₁ ≃ₗ[R] M₂) (g : Dual R M₂) (x : M₁) :
@@ -251,7 +251,7 @@ lemma dualMap_dualMap_eq_iff_of_injective
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]
   refine ⟨fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
-    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap)⟩
+    congr(LinearMap.comp $a ((evalEquiv R M).symm.toLinearMap))⟩
   rw [propext (cancel_left h), LinearEquiv.eq_comp_toLinearMap_iff] at hfg
   exact hfg
 
@@ -272,7 +272,7 @@ lemma IsReflexive.of_split (i : N →ₗ[R] M) (s : M →ₗ[R] N) (H : s ∘ₗ
     ⟨.of_comp (f := i.dualMap.dualMap) <|
       (bijective_dual_eval R M).1.comp (injective_of_comp_eq_id i _ H),
     .of_comp (g := s) <| (surjective_of_comp_eq_id i.dualMap.dualMap s.dualMap.dualMap <|
-      congr_arg (dualMap ∘ dualMap) H).comp (bijective_dual_eval R M).2⟩
+      congr((dualMap ∘ dualMap) $H)).comp (bijective_dual_eval R M).2⟩
 
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
 def mapEvalEquiv : Submodule R M ≃o Submodule R (Dual R (Dual R M)) :=
@@ -294,7 +294,7 @@ lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
     let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
     have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
       ext m f
-      exact DFunLike.congr_arg f (e.apply_symm_apply m).symm
+      congrm f $((e.apply_symm_apply m).symm)
     simp only [this,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)

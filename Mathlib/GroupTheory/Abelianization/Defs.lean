@@ -142,7 +142,7 @@ theorem map_comp {I : Type w} [Group I] (g : H →* I) : (map g).comp (map f) = 
 @[simp]
 theorem map_map_apply {I : Type w} [Group I] {g : H →* I} {x : Abelianization G} :
     map g (map f x) = map (g.comp f) x :=
-  DFunLike.congr_fun (map_comp _ _) x
+  congr($(map_comp _ _) x)
 
 end Map
 

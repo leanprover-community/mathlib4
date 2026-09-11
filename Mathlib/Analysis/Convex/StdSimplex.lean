@@ -398,7 +398,7 @@ lemma continuous_map [TopologicalSpace S] [IsTopologicalSemiring S] (f : X → Y
 lemma vertex_injective [Nontrivial S] [DecidableEq X] :
     Function.Injective (vertex (S := S) (X := X)) := by
   intro x y h
-  replace h := DFunLike.congr_fun h x
+  replace h := congr($h x)
   by_contra!
   simp [Pi.single_eq_of_ne this] at h
 

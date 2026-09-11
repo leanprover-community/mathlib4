@@ -329,7 +329,7 @@ The action of `unitsMulComplexConjInv` of the torsion is the same as the 2-power
 theorem map_unitsMulComplexConjInv_torsion :
     Subgroup.map (unitsMulComplexConjInv K) (torsion K) = (powMonoidHom 2).range := by
   rw [← MonoidHom.domRestrict_range]
-  exact congr_arg (MonoidHom.range ·) (MonoidHom.ext fun ζ ↦ by simp)
+  congrm MonoidHom.range $(MonoidHom.ext fun ζ ↦ by simp)
 
 /--
 The kernel of `unitsMulComplexConjInv` is the subgroup of real units.
@@ -463,7 +463,7 @@ theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticEx
       (fun x ↦ (le_sup_left (a := E)) x.prop)
     have := ((IntermediateField.isSimpleOrder_of_finrank_prime E K
       (IsQuadraticExtension.finrank_eq_two E K ▸ Nat.prime_two)).eq_bot_or_eq_top L).resolve_left ?_
-    · simpa [L] using congr_arg IntermediateField.toSubfield this
+    · simpa [L] using congr(IntermediateField.toSubfield $this)
     · contrapose h
       rw [← SetLike.coe_set_eq, Subfield.coe_toIntermediateField] at h
       rw [← sup_eq_left, ← SetLike.coe_set_eq, h, IntermediateField.coe_bot]

@@ -242,11 +242,11 @@ transformations between trifunctors, we obtain a braided category structure.
 def ofBifunctor : BraidedCategory C where
   braiding X Y := (β.app X).app Y
   braiding_naturality_right _ _ _ _ := (β.app _).hom.naturality _
-  braiding_naturality_left _ _ := NatTrans.congr_app (β.hom.naturality _) _
+  braiding_naturality_left _ _ := congr($(β.hom.naturality _).app _)
   hexagon_forward X Y Z :=
-    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app hexagon_forward X) Y) Z
+    congr((($(hexagon_forward).app X).app Y).app Z)
   hexagon_reverse X Y Z :=
-    (NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app hexagon_reverse X) Y) Z)
+    congr((($(hexagon_reverse).app X).app Y).app Z)
 
 end BraidedCategory
 
@@ -261,6 +261,6 @@ def SymmetricCategory.ofCurried [BraidedCategory C]
     (h : (curriedBraidingNatIso C).hom ≫ (flipFunctor _ _ _).map (curriedBraidingNatIso C).hom =
       𝟙 _) :
     SymmetricCategory C where
-  symmetry X Y := NatTrans.congr_app (NatTrans.congr_app h X) Y
+  symmetry X Y := congr(($(h).app X).app Y)
 
 end CategoryTheory

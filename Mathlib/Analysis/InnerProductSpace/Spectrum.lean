@@ -195,7 +195,7 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
     ∀ w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ,
       T (hT.diagonalization.symm w) = hT.diagonalization.symm (toLp 2 fun μ => (μ : 𝕜) • w μ) by
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
-      congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
+      congr(hT.diagonalization $(this (hT.diagonalization v)) μ)
   intro w
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
   simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
@@ -338,8 +338,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
       T ((hT.eigenvectorBasis hn).repr.symm w) =
         (hT.eigenvectorBasis hn).repr.symm (toLp 2 fun i ↦ hT.eigenvalues hn i * w i) by
     simpa [OrthonormalBasis.sum_repr_symm] using
-      congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
-        (this ((hT.eigenvectorBasis hn).repr v))
+      congr((hT.eigenvectorBasis hn).repr $(this ((hT.eigenvectorBasis hn).repr v)) i)
   intro w
   simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]
   apply Fintype.sum_congr

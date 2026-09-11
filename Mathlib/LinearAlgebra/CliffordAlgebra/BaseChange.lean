@@ -119,7 +119,7 @@ theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
 theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (involute x) =
       TensorProduct.map LinearMap.id (involute.toLinearMap) (toBaseChange A Q x) :=
-  DFunLike.congr_fun (toBaseChange_comp_involute A Q) x
+  congr($(toBaseChange_comp_involute A Q) x)
 
 open MulOpposite
 
@@ -143,9 +143,9 @@ theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
 theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (reverse x) =
       TensorProduct.map LinearMap.id reverse (toBaseChange A Q x) := by
-  have := DFunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
-  refine (congr_arg unop this).trans ?_; clear this
-  refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
+  have := congr($(toBaseChange_comp_reverseOp A Q) x)
+  refine congr(unop $this).trans ?_; clear this
+  refine congr($((TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm) _).trans ?_
   rw [reverse, AlgEquiv.toAlgHom_toLinearMap, AlgEquiv.toLinearEquiv_toOpposite]
   dsimp
   -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!?
@@ -161,7 +161,7 @@ theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
 
 @[simp] theorem toBaseChange_ofBaseChange (Q : QuadraticForm R V) (x : A ⊗[R] CliffordAlgebra Q) :
     toBaseChange A Q (ofBaseChange A Q x) = x :=
-  AlgHom.congr_fun (toBaseChange_comp_ofBaseChange A Q :) x
+  congr($(toBaseChange_comp_ofBaseChange A Q) x)
 
 theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     (ofBaseChange A Q).comp (toBaseChange A Q) = AlgHom.id _ _ := by
@@ -173,7 +173,7 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
 @[simp] theorem ofBaseChange_toBaseChange
     (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     ofBaseChange A Q (toBaseChange A Q x) = x :=
-  AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q :) x
+  congr($(ofBaseChange_comp_toBaseChange A Q) x)
 
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
 base-changing the clifford algebra itself; $<|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|$.

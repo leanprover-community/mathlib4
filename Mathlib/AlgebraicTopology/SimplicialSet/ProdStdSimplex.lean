@@ -189,12 +189,12 @@ lemma nonDegenerate_ext₁ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
   ext
   apply objEquiv.injective
   ext i : 3
-  · exact DFunLike.congr_fun h i
+  · congrm $h i
   · have h₁ := z₁.2
     have h₂ := z₂.2
     rw [nonDegenerate_max_dim_iff] at h₁ h₂
     simpa only [orderHomOfSimplex_coe, h, Fin.ext_iff, add_right_inj]
-      using! DFunLike.congr_fun (h₁.trans h₂.symm) i
+      using! congr($(h₁.trans h₂.symm) i)
 
 lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
     (h : z₁.1.2 = z₂.1.2) (hn : p + q = n := by lia) :

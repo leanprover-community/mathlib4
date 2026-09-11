@@ -340,7 +340,7 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
     simp_rw [neg_apply, flip_apply]
     exact (h.neg _ _).symm
   intro x
-  let h' := congr_fun₂ h x x
+  let h' := congr($h x x)
   simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 

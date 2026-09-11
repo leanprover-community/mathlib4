@@ -57,7 +57,7 @@ lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
   suffices IsNilpotent ((g - algebraMap R (End R M) μ).restrict h₂) by
     replace this : g.restrict h₁ - algebraMap R (End R p) μ = 0 :=
       eq_zero_of_isNilpotent_of_isFinitelySemisimple this (by simpa using hss.restrict _)
-    simpa [LinearMap.restrict_apply, sub_eq_zero] using LinearMap.congr_fun this ⟨m, hm⟩
+    simpa [LinearMap.restrict_apply, sub_eq_zero] using congr($this ⟨m, hm⟩)
   simpa [LinearMap.restrict_sub h₄ h₃] using (LinearMap.restrict_commute hfg h₄ h₃).isNilpotent_sub
     (f.isNilpotent_restrict_sub_algebraMap μ l) (Module.End.isNilpotent.restrict h₃ hnil)
 

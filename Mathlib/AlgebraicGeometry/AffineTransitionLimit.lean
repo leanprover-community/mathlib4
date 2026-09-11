@@ -612,7 +612,7 @@ lemma exists_eq (j : A.𝒰D.I₀) : ∃ (k : I) (hki' : k ⟶ A.i'),
     (by simp [pullback.condition])
     (by
       rw [← cancel_mono ((A.𝒰X j.1.1).f j.1.2), ← cancel_mono (pullback.fst f (A.𝒰S.f j.1.1))]
-      have H₃ := congr(pullback.fst (A.c.π.app A.i') (A.𝒰D.f j) ≫ $(A.hab))
+      have H₃ := congr(pullback.fst (A.c.π.app A.i') (A.𝒰D.f j) ≫ $A.hab)
       simp only [pullback.condition_assoc, 𝒰D, ← A.c.w A.hii', Category.assoc] at H₃
       simpa [Scheme.Cover.pullbackHom, g, ← H₁, ← H₂, -Cone.w, -Cone.w_assoc] using! H₃)
   refine ⟨k.left, k.hom, ?_⟩
@@ -1198,7 +1198,7 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
         (isColimitOfPreserves _ hc.op)))) (c.pt.isoSpec.inv ≫ a) (by
         ext i
         have : c.π.app i ≫ Spec.map (t.app (.op i)) = a ≫ Spec.map φ := by
-          simpa using! congr((($ha).app i))
+          simpa using! congr(($ha).app i)
         simp [c', e, e', ← this, Iso.eq_inv_comp, isoSpec_hom_naturality_assoc]) ⟨_, rfl⟩
     refine ⟨i, f, ?_⟩
     simpa [Iso.eq_inv_comp, c', isoSpec_hom_naturality_assoc, e'] using! hf

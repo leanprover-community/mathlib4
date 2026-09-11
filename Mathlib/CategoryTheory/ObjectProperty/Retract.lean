@@ -155,7 +155,7 @@ instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     obtain ⟨a, h₁, h₂⟩ : ∃ (a : Subtype R) (h₁ : Q (X a)), g (h a) h₁ = g r hx := by
       obtain ⟨_, hr⟩ := hX ⟨⟨⟨_, hx⟩, r.r ≫ r.i, by simp⟩, ⟨_, _, r, hx, rfl⟩⟩
       exact ⟨_, _, hr⟩
-    obtain rfl : x = X a := Subtype.ext_iff.1 (congr_arg Sigma.fst h₂.symm)
+    obtain rfl : x = X a := Subtype.ext_iff.1 congr($(h₂.symm).fst)
     have hri : (h a).r ≫ (h a).i = r.r ≫ r.i := by
       rw [Sigma.ext_iff, heq_eq_eq] at h₂
       exact Subtype.ext_iff.1 h₂.2

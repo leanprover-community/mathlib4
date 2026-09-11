@@ -75,7 +75,7 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     rintro ⟨i : s⟩
     obtain ⟨a, ha, ha'⟩ := h i
     apply ha
-    simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+    simpa using congr($(linearIndependent_iff.mp hs (.single i a) (by simpa)) i)
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 

@@ -78,7 +78,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       apply f.injective <| ContinuousLinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp [← this, hxy]
-    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
+    simpa [huv.isUnit.smul_left_cancel] using congr($h_smul u)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
   set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
     smulRightL 𝕜 _ _ d

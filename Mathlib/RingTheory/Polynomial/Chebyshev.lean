@@ -854,14 +854,14 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   | one =>
     simp
   | add_two n ih1 ih2 =>
-    have h₁ := congr_arg derivative (T_add_two R n)
+    have h₁ := congr(derivative $(T_add_two R n))
     have h₂ := U_sub_one R n
     have h₃ := T_eq_U_sub_X_mul_U R (n + 1)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
     linear_combination (norm := (push_cast; ring_nf))
       h₁ - ih2 + 2 * (X : R[X]) * ih1 + 2 * h₃ - n * h₂
   | neg_add_one n ih1 ih2 =>
-    have h₁ := congr_arg derivative (T_sub_one R (-n))
+    have h₁ := congr(derivative $(T_sub_one R (-n)))
     have h₂ := U_sub_two R (-n)
     have h₃ := T_eq_U_sub_X_mul_U R (-n)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
@@ -903,7 +903,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
 
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
-  have h₁ := congr_arg derivative <| T_eq_X_mul_T_sub_pol_U R n
+  have h₁ := congr(derivative $(T_eq_X_mul_T_sub_pol_U R n))
   simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
     T_derivative_eq_U, C_eq_natCast] at h₁
   have h₂ := T_eq_U_sub_X_mul_U R (n + 1)
@@ -920,7 +920,7 @@ theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
 
 theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative^[2] (T R n) = X * derivative (T R n) - (n ^ 2 : R[X]) * T R n := by
-  have h₁ := congr_arg derivative <| one_sub_X_sq_mul_derivative_T_eq_poly_in_T (R := R) (n - 1)
+  have h₁ := congr(derivative $(one_sub_X_sq_mul_derivative_T_eq_poly_in_T (R := R) (n - 1)))
   simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
     C_eq_natCast, sub_add_cancel, Int.cast_sub, Int.cast_one, derivative_intCast] at h₁
   have h₂ := add_one_mul_self_mul_T_eq_poly_in_T (R := R) (n - 1)
@@ -931,7 +931,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
 theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
     (1 - X ^ 2) * derivative^[2] (U R n) =
       3 * X * derivative (U R n) - ((n + 2) * n : R[X]) * U R n := by
-  have h := congr_arg derivative <| add_one_mul_T_eq_poly_in_U (R := R) n
+  have h := congr(derivative $(add_one_mul_T_eq_poly_in_U (R := R) n))
   simp only [derivative_add, derivative_sub, derivative_mul, derivative_X, derivative_one,
     derivative_X_pow, derivative_intCast, C_eq_natCast, T_derivative_eq_U] at h
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
@@ -1120,12 +1120,12 @@ theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
   | one => simp
   | add_two m ih1 ih2 =>
     have h₁ := T_mul_T R ((m + 1) * n) n
-    have h₂ := congr_arg (comp · (T R n)) <| T_add_two R m
+    have h₂ := congr(comp $(T_add_two R m) (T R n))
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
   | neg_add_one m ih1 ih2 =>
     have h₁ := T_mul_T R ((-m) * n) n
-    have h₂ := congr_arg (comp · (T R n)) <| T_add_two R (-m - 1)
+    have h₂ := congr(comp $(T_add_two R (-m - 1)) (T R n))
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
 
@@ -1136,12 +1136,12 @@ theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
   | one => simp
   | add_two m ih1 ih2 =>
     have h₁ := C_mul_C R ((m + 1) * n) n
-    have h₂ := congr_arg (comp · (C R n)) <| C_add_two R m
+    have h₂ := congr(comp $(C_add_two R m) (C R n))
     simp only [sub_comp, mul_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
   | neg_add_one m ih1 ih2 =>
     have h₁ := C_mul_C R ((-m) * n) n
-    have h₂ := congr_arg (comp · (C R n)) <| C_add_two R (-m - 1)
+    have h₂ := congr(comp $(C_add_two R (-m - 1)) (C R n))
     simp only [sub_comp, mul_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
 

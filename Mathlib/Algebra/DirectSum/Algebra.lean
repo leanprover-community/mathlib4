@@ -77,7 +77,7 @@ instance : Algebra R (⨁ i, A i) where
   { toFun := (DirectSum.of A 0).comp GAlgebra.toFun
     map_zero' := map_zero _
     map_add' := map_add _
-    map_one' := DFunLike.congr_arg (DirectSum.of A 0) GAlgebra.map_one
+    map_one' := congr(DirectSum.of A 0 $GAlgebra.map_one)
     map_mul' a b := by
       simp only [AddMonoidHom.comp_apply]
       rw [of_mul_of]

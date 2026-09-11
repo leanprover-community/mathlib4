@@ -88,7 +88,7 @@ theorem colimitLimitToLimitColimit_injective :
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
-      simpa using! ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+      simpa using! congr(limit.π (curry.obj F ⋙ colim) j $h)
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp only [colimit_eq_iff] at h

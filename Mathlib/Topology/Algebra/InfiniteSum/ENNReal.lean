@@ -485,7 +485,7 @@ namespace ENNReal
 
 theorem tsum_toNNReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
     (∑' a, f a).toNNReal = ∑' a, (f a).toNNReal :=
-  (congr_arg ENNReal.toNNReal (tsum_congr fun x => (coe_toNNReal (hf x)).symm)).trans
+  congr($(tsum_congr fun x => (coe_toNNReal (hf x)).symm).toNNReal).trans
     NNReal.tsum_eq_toNNReal_tsum.symm
 
 theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :

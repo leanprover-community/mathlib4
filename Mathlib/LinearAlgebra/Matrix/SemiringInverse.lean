@@ -267,7 +267,7 @@ theorem detp_mul :
     simp_rw [hι]
   rw [h, h, neg_neg, add_assoc]
   conv_rhs => rw [add_assoc]
-  refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
+  congrm $(sum_congr rfl fun σ hσ ↦ ?_) + $(add_comm ..)
   replace hσ : ¬ Function.Injective σ := by
     contrapose hσ
     rw [notMem_compl, mem_map, ofSign_disjUnion]
@@ -278,7 +278,7 @@ theorem detp_mul :
     split_ifs with h h <;> simp only [hσ, h]
   rw [← mul_neg_one, hf (mem_ofSign.mpr (sign_swap hij)), sum_map]
   simp_rw [prod_mul_distrib, mulRightEmbedding_apply, Perm.mul_apply]
-  refine sum_congr rfl fun τ hτ ↦ congr_arg (_ * ·) ?_
+  congr! 2 with τ hτ
   rw [← Equiv.prod_comp (swap i j)]
   simp only [hσ]
 
@@ -292,7 +292,7 @@ theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
 theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
   let A' : Matrix n n R := A.updateRow j (A i)
   have h' s : (A * adjp s A) i j = (A' * adjp s A') j j := sum_congr rfl fun _ _ ↦
-    congr_arg₂ (· * ·) (by simp [A']) <| sum_congr rfl fun σ hσ ↦ prod_congr rfl fun _ _ ↦ by aesop
+    congr($(by simp) * $(sum_congr rfl fun σ hσ ↦ prod_congr rfl fun _ _ ↦ by aesop))
   simp_rw [h', mul_adjp_apply_eq]
   apply detp_eq_of_row_eq h
   simp [A', Matrix.row_apply', h]

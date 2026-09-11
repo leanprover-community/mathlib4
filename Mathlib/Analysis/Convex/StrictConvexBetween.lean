@@ -122,7 +122,7 @@ lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
   · rw [← dist_ne_zero] at hne
     obtain ⟨a, b, _, hb, _, H⟩ := this
     rw [smul_zero, zero_add] at H
-    have H' := congr_arg norm H
+    have H' := congr(norm $H)
     rw [norm_smul, Real.norm_of_nonneg hb, ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy,
       mul_left_inj' hne] at H'
     rw [AffineMap.lineMap_apply, ← H', H, vsub_vadd]

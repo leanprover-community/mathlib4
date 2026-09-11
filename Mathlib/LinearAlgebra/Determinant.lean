@@ -369,7 +369,7 @@ theorem range_lt_top_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M}
   rw [lt_top_iff_ne_top]
   intro h
   obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective h
-  simpa [hf] using congr_arg LinearMap.det hg
+  simpa [hf] using congr(LinearMap.det $hg)
 
 /-- When the function is over the base ring, the determinant is the evaluation at `1`. -/
 @[simp] lemma det_ring (f : R →ₗ[R] R) : f.det = f 1 := by

@@ -124,7 +124,7 @@ instance : SubNegMonoid (Completion α) where
     Completion.induction_on₂ a b
       (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
         (continuous_map₂ continuous_fst (Completion.continuous_map.comp continuous_snd)))
-      fun a b ↦ mod_cast congr_arg ((↑) : α → Completion α) (sub_eq_add_neg a b)
+      fun a b ↦ mod_cast congr($(sub_eq_add_neg a b))
   zsmul_zero' a :=
     Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦
       show (0 : ℤ) • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
