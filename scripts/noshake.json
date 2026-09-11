@@ -471,7 +471,7 @@
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.Int.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order", "Mathlib.Tactic.OfNat"],
-  "Mathlib.Data.Int.ConditionallyCompleteOrder":
+  "Mathlib.Order.Int.ConditionallyCompleteOrder":
   ["Mathlib.Order.ConditionallyCompleteLattice.Basic"],
   "Mathlib.Data.Int.Basic": ["Mathlib.Tactic.OfNat"],
   "Mathlib.Basic.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
