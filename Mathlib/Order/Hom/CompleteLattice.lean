@@ -205,7 +205,7 @@ section SupSet
 
 variable [SupSet β] [SupSet γ] [SupSet δ]
 
-@[to_dual]
+@[to_dual (attr := macro_inline)]
 instance : FunLike (sSupHom α β) α β where
   coe := sSupHom.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -335,6 +335,7 @@ namespace FrameHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
+@[macro_inline]
 instance : FunLike (FrameHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -439,6 +440,7 @@ namespace CompleteLatticeHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
+@[macro_inline]
 instance : FunLike (CompleteLatticeHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
