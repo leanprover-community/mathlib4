@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Kirill Kondrashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kirill Kondrashov
+Authors: Kirill Kondrashov, Oliver Nash
 -/
 module
 
@@ -70,7 +70,37 @@ lemma wedgePairing_eq_apply_topVector_smul :
     letI bl : Basis (powersetCard ι k) R (Dual R (⋀[R]^l M)) :=
       (b.exteriorPower l).dualBasis.reindex (powersetCard.compl hkl') |>.groupSMul powersetCard.sign
     wedgePairing vol hkl = vol b.topVector • (bk.repr.trans bl.repr.symm) := by
-  sorry
+  classical
+  have hkl' : k + l = Fintype.card ι := by rw [hkl, finrank_eq_card_basis b]
+  let topWedge : ⋀[R]^(k + l) M :=
+    b.exteriorPower (k + l) ⟨Finset.univ, by simp [hkl']⟩
+  have htopWedge (degree : ℕ) (hdegree : degree = finrank R M) :
+      (hdegree ▸ vol : ⋀[R]^degree M →ₗ[R] R) (b.exteriorPower degree
+        ⟨Finset.univ, by simp [hdegree, finrank_eq_card_basis b]⟩) = vol b.topVector := by
+    subst degree
+    rfl
+  refine (b.exteriorPower k).ext fun leftSet ↦ (b.exteriorPower l).ext fun rightSet ↦ ?_
+  simp only [wedgePairing, LinearMap.compr₂_apply, LinearMap.smul_apply,
+    LinearEquiv.coe_coe, LinearEquiv.trans_apply, Basis.repr_self, Basis.repr_symm_single_one,
+    Basis.groupSMul_apply, Pi.smul_apply', Basis.reindex_apply, Basis.dualBasis_apply_self]
+  by_cases hdisjoint : Disjoint leftSet.val rightSet.val
+  · have hcompl : leftSet = powersetCard.compl hkl' rightSet :=
+      (powersetCard.disjoint_iff_eq_compl hkl').mp hdisjoint
+    suffices wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) =
+        powersetCard.sign leftSet • topWedge by
+      rw [this]; simpa [hcompl, topWedge] using htopWedge (k + l) hkl
+    apply Subtype.ext
+    rw [powersetCard.sign_eq_permOfDisjoint_sign hkl' leftSet rightSet hdisjoint]
+    simpa [-coe_basis, topWedge, ← ExteriorAlgebra.basis_eq_coe_basis, hcompl,
+      Finset.disjUnion_eq_union, Finset.union_comm] using
+      ExteriorAlgebra.basis_mul_of_disjoint b leftSet rightSet hdisjoint
+  · have hcompl : leftSet ≠ powersetCard.compl hkl' rightSet :=
+      (powersetCard.disjoint_iff_eq_compl hkl').not.mp hdisjoint
+    suffices wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) = 0 by
+      rw [this]; simp [Equiv.eq_symm_apply, ne_comm, hcompl]
+    apply Subtype.ext
+    simpa [-coe_basis, ← ExteriorAlgebra.basis_eq_coe_basis] using
+      ExteriorAlgebra.basis_mul_of_not_disjoint b leftSet rightSet hdisjoint
 
 end Basis
 
