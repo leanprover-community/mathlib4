@@ -85,6 +85,7 @@ structure GrothendieckTopology where
 
 namespace GrothendieckTopology
 
+@[macro_inline]
 instance : DFunLike (GrothendieckTopology C) C (fun X ↦ Set (Sieve X)) where
   coe J X := sieves J X
   coe_injective J₁ J₂ h := by cases J₁; cases J₂; congr
