@@ -41,17 +41,12 @@ theorem closure_Ioi' {a : α} (h : (Ioi a).Nonempty) : closure (Ioi a) = Ici a :
 theorem closure_Ioi (a : α) [NoMaxOrder α] : closure (Ioi a) = Ici a :=
   closure_Ioi' nonempty_Ioi
 
-@[to_dual]
+@[to_dual IsMin.of_disjoint_nhds_Iio]
 theorem IsMax.of_disjoint_nhds_Ioi {x : α} {u : Set α} (hu : u ∈ nhds x)
     (hd : Disjoint u (Set.Ioi x)) : IsMax x := by
   by_contra hx
   exact (mem_closure_iff_nhds.mp (closure_Ioi' (not_isMax_iff.mp hx) ▸ self_mem_Ici) u hu).ne_empty
     (disjoint_iff.mp hd)
-
-@[to_dual]
-theorem IsMin.of_disjoint_nhds_Iio {x : α} {u : Set α} (hu : u ∈ nhds x)
-    (hd : Disjoint u (Set.Iio x)) : IsMin x :=
-  IsMax.of_disjoint_nhds_Ioi (α := αᵒᵈ) hu hd
 
 @[to_dual]
 theorem nonempty_nhds_inter_Ioi {x : α} {u : Set α} (hu : u ∈ nhds x) (hx : ¬IsMax x) :

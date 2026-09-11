@@ -484,7 +484,8 @@ lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
     exact le_csSup h_bdd (mem_image_of_mem _ hy)
 
 /-- A monotone map has a limit to the left of any point `x`, equal to `sSup (f '' (Iio x))`. -/
-@[to_dual]
+@[to_dual /-- A monotone map has a limit to the right of any point `x`, equal to
+`sInf (f '' (Ioi x))`. -/]
 theorem Monotone.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) :=
