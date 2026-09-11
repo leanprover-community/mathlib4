@@ -1210,30 +1210,30 @@ lemma norm_algebraNorm_rho_le :
         simp only [← mul_assoc]
         nth_rw  2 [mul_assoc]
         rw [← Real.rpow_add, mul_comm]
-        simp only [← mul_assoc]
-        rw [Real.rpow_mul, ← Real.mul_rpow]
-        nth_rw 7 [mul_comm]
-        nth_rw 2 [mul_comm]
-        apply mul_le_mul
-        · simp only [Real.rpow_natCast]
-          simp only [le_refl]
-        · rw [le_iff_lt_or_eq]
-          right
-          congr
-          refine Nat.cast_pred ?_
-          unfold h; exact Module.finrank_pos
-        · positivity
-        · simp only [Real.rpow_natCast]
-          apply pow_nonneg
-          apply mul_nonneg
-          · apply pow_nonneg
-            exact c₈_nonneg α' β' γ'
+        · simp only [← mul_assoc]
+          rw [Real.rpow_mul, ← Real.mul_rpow]
+          nth_rw 7 [mul_comm]
+          nth_rw 2 [mul_comm]
+          apply mul_le_mul
+          · simp only [Real.rpow_natCast]
+            simp only [le_refl]
+          · rw [le_iff_lt_or_eq]
+            right
+            congr
+            refine Nat.cast_pred ?_
+            unfold h; exact Module.finrank_pos
+          · positivity
+          · simp only [Real.rpow_natCast]
+            apply pow_nonneg
+            apply mul_nonneg
+            · apply pow_nonneg
+              exact c₈_nonneg α' β' γ'
+            · exact (c₁₃_nonneg α β α' β' γ')
           · exact (c₁₃_nonneg α β α' β' γ')
-        · exact (c₁₃_nonneg α β α' β' γ')
-        · simp only [Real.rpow_natCast]
-          apply pow_nonneg
-          exact c₈_nonneg α' β' γ'
-        · exact c₈_nonneg α' β' γ'
+          · simp only [Real.rpow_natCast]
+            apply pow_nonneg
+            exact c₈_nonneg α' β' γ'
+          · exact c₈_nonneg α' β' γ'
         · simp only [Nat.cast_pos]
           exact r_qt_0 α β σ α' β' γ' hirr htriv habc q hq0 h2mq
       · simp only [Nat.cast_nonneg]
