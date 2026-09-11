@@ -330,10 +330,10 @@ example (f : X ⟶ Y) (x : X _⦋0⦌) :
 /-- The isomorphism of fundamental groupoids that is induced
 by a morphism of simplicial sets which induces an isomorphism
 on the `2`-truncations. -/
-noncomputable def isoCatMapFundamentalGroupoid (f : X ⟶ Y)
+lemma isIso_mapFundamentalGroupoid_of_isIso (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
-    IsoCat (FundamentalGroupoid X) (FundamentalGroupoid Y) :=
-  Truncated.mapIsoFundamentalGroupoid (asIso ((truncation 2).map f))
+    (mapFundamentalGroupoid f).IsIso :=
+  Truncated.mapIsoFundamentalGroupoid (asIso ((truncation 2).map f))|>.isIso_functor
 
 lemma isEquivalence_mapFundamentalGroupoid (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
