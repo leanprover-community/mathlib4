@@ -216,10 +216,8 @@ lemma ofSimplex_codimOneSimplex (j : Fin p) :
     refine ⟨x, Prod.ext rfl ?_⟩
     obtain ⟨x₁, h₁⟩ := hs.1 hxy
     obtain ⟨x₂, h₂⟩ := hs.2 hxy
-    have h₁₁ := congr_arg Prod.fst h₁
-    have h₁₂ := congr_arg Prod.snd h₁
-    have h₂₁ := congr_arg Prod.fst h₂
-    have h₂₂ := congr_arg Prod.snd h₂
+    obtain ⟨h₁₁, h₁₂⟩ := Prod.ext_iff.mp h₁
+    obtain ⟨h₂₁, h₂₂⟩ := Prod.ext_iff.mp h₂
     dsimp at h₁₁ h₁₂ h₂₁ h₂₂ ⊢
     rw [stdSimplex.objEquiv_symm_σ_apply] at h₁₁ h₂₁
     fin_cases y
