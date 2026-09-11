@@ -83,7 +83,8 @@ lemma Rep.comp_eq_zero : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
 
 lemma Rep.d_comp_tateNorm : (inhomogeneousChains M).d 1 0 ≫ M.tateNorm = 0 := by
   simp only [tateNorm, ← Category.assoc, Preadditive.IsIso.comp_right_eq_zero]
-  simp [← comp_d₁₀_eq _]
+  rw [← comp_d₁₀_eq _]
+  simp
 
 /-- The Tate norm connecting complexes of inhomogeneous chains and cochains. -/
 @[simps]
@@ -110,7 +111,10 @@ lemma tateComplex_d_neg (n : ℕ) :
 def tateComplex.map (φ : X ⟶ Y) : tateComplex X ⟶ tateComplex Y := by
   refine CochainComplex.ConnectData.map _ _ (chainsMap (.id G) φ) (cochainsMap (.id G) φ) ?_
   ext
-  simp [Rep.tateNorm_eq, Representation.norm, Rep.hom_comm_apply]
+  simp [-ChainComplex.of_X, tateComplexConnectData_d₀, Rep.tateNorm_eq, Representation.norm,
+    lsingle_comp_chainsMap_f_assoc, MonoidHom.coe_id, CompTriple.comp_eq, Category.assoc,
+    Representation.IntertwiningMap.coe_toLinearMap,  cochainsMap_id_f_hom_eq_compLeft,
+    Rep.hom_comm_apply, (Finsupp.lsum_apply), (Finsupp.lsingle_apply)]
 
 @[simp]
 lemma tateComplex.map_zero : tateComplex.map (0 : X ⟶ Y) = 0 := by cat_disch
