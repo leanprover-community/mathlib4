@@ -95,8 +95,6 @@ lemma longSequenceHom_id (h : n₀ + 1 = n₁ := by lia) :
     longSequenceHom n₀ n₁ h₁ h₁ (𝟙 _) h = 𝟙 _ := by
   ext1 <;> cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] H.map_comp_apply in
 @[simp]
 lemma longSequenceHom_comp {S₃ : ShortComplex (Sheaf J AddCommGrpCat)} (h₃ : S₃.ShortExact)
@@ -106,7 +104,7 @@ lemma longSequenceHom_comp {S₃ : ShortComplex (Sheaf J AddCommGrpCat)} (h₃ :
   ext1 <;> cat_disch
 
 /-- The long exact sequence of cohomology is functorial -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def longSequenceFunctor :
     ShortExactSequence (Sheaf J AddCommGrpCat.{w}) ⥤ ComposableArrows AddCommGrpCat.{w'} 5 where
   obj S := longSequence S.property n₀ n₁ h
