@@ -90,6 +90,14 @@ lemma binomial_singleton (n k : ℕ) (p : I) :
   rw [← ENNReal.ofReal_toReal (a := Bin(n, p) _) (by simp), ← measureReal_def,
     binomial_real_singleton]
 
+/-- The number of successes among `Set.ncard`-many independent Bernoulli trials over a finite
+set `u` follows the binomial distribution with `u.ncard` trials. -/
+lemma map_ncard_setBernoulli_eq_binomial {ι : Type*} [Countable ι] {u : Set ι}
+    (hu : u.Finite) (p : I) :
+    setBer(u, p).map Set.ncard = binomial u.ncard p := by
+  refine ext_of_singleton fun k ↦ ?_
+  rw [map_ncard_setBernoulli_singleton hu, binomial_singleton]
+
 lemma map_cast_binomial_real_singleton [MeasurableSingletonClass R] [CharZero R] (n k : ℕ) (p : I) :
     Bin(R, n, p).real {(k : R)} = (n.choose k) * p ^ k * (1 - p) ^ (n - k) := by
   rw [map_measureReal_apply (by fun_prop) (by measurability)]

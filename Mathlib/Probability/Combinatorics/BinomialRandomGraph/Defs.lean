@@ -6,7 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Sym.Card
+public import Mathlib.Data.Sym.NatCard
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
+public import Mathlib.Probability.Distributions.Binomial
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 /-!
@@ -95,5 +97,19 @@ variable (p) in
   congr!
   rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
     ← Nat.card_coe_set_eq]
+
+variable (V p) in
+/-- The number of edges of a binomial random graph `G(V, p)` is binomially distributed
+with `(Nat.card V).choose 2` trials. -/
+theorem binomialRandom_map_ncard_edgeSet [Finite V] :
+    G(V, p).map (fun G ↦ G.edgeSet.ncard) = binomial ((Nat.card V).choose 2) p := by
+  have hmap : G(V, p).map (fun G ↦ G.edgeSet.ncard)
+      = setBer((Sym2.diagSetᶜ : Set (Sym2 V)), p).map Set.ncard := by
+    rw [binomialRandom_eq_map, Measure.map_map (by fun_prop) measurable_fromEdgeSet]
+    refine Measure.map_congr ?_
+    filter_upwards [setBernoulli_ae_subset] with s hs
+    change (fromEdgeSet s).edgeSet.ncard = s.ncard
+    rw [edgeSet_fromEdgeSet, sdiff_eq_left.mpr (Set.subset_compl_iff_disjoint_right.mp hs)]
+  rw [hmap, map_ncard_setBernoulli_eq_binomial (Set.toFinite _), Sym2.ncard_diagSet_compl]
 
 end SimpleGraph
