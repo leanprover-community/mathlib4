@@ -36,10 +36,9 @@ private theorem length_le_of_mem_toChunks_go {n : ℕ} (hn : 0 < n) (xs : List �
     · simpa using ha
   | cons x xs ih =>
     rw [toChunks.go.eq_2]
-    split
-    · rename_i hsize
-      apply ih
-      · exact Nat.one_le_iff_ne_zero.mpr (Nat.ne_of_gt hn)
+    split_ifs with hsize
+    · apply ih
+      · exact Nat.one_le_of_lt hn
       · intro l hl
         rw [Array.toList_push] at hl
         rcases mem_append.mp hl with hl | hl
@@ -48,16 +47,13 @@ private theorem length_le_of_mem_toChunks_go {n : ℕ} (hn : 0 < n) (xs : List �
           subst l
           have : a.size = n := by simpa using hsize
           simpa using Nat.le_of_eq this
-    · rename_i hsize
-      apply ih
-      · simp only [Array.size_push]
-        have : a.size ≠ n := by simpa using hsize
-        rcases Nat.eq_or_lt_of_le ha with h | h
-        · exact (this h).elim
-        · exact Nat.add_one_le_iff.mpr h
+    · apply ih
+      · have : a.size ≠ n := by simpa using hsize
+        simp only [Array.size_push]
+        omega
       · exact hA
 
-private theorem nil_not_mem_toChunks_go (n : ℕ) (xs : List α) (a : Array α)
+private theorem nil_notMem_toChunks_go (n : ℕ) (xs : List α) (a : Array α)
     (A : Array (List α)) (ha : a.toList ≠ []) (hA : [] ∉ A.toList) :
     [] ∉ toChunks.go n xs a A := by
   induction xs generalizing a A with
@@ -91,7 +87,7 @@ theorem toChunks_eq_nil (n : ℕ) (xs : List α) : xs.toChunks n = [] ↔ xs = [
   · rintro rfl
     exact toChunks.eq_1 n
 
-theorem nil_not_mem_toChunks (n : ℕ) (xs : List α) : [] ∉ xs.toChunks n := by
+theorem nil_notMem_toChunks (n : ℕ) (xs : List α) : [] ∉ xs.toChunks n := by
   rcases n with _ | n
   · cases xs with
     | nil => simp [toChunks]
@@ -100,11 +96,11 @@ theorem nil_not_mem_toChunks (n : ℕ) (xs : List α) : [] ∉ xs.toChunks n := 
     | nil => rw [toChunks.eq_1]; simp
     | cons x xs =>
       rw [toChunks.eq_3 _ _ _ (Nat.succ_ne_zero _)]
-      exact nil_not_mem_toChunks_go _ _ _ _ (by simp) (by simp)
+      exact nil_notMem_toChunks_go _ _ _ _ (by simp) (by simp)
 
 theorem ne_nil_of_mem_toChunks {n : ℕ} {xs l : List α} (hl : l ∈ xs.toChunks n) : l ≠ [] := by
   rintro rfl
-  exact nil_not_mem_toChunks n xs hl
+  exact nil_notMem_toChunks n xs hl
 
 theorem sublist_of_mem_toChunks {n : ℕ} {xs l : List α} (hl : l ∈ xs.toChunks n) : l <+ xs := by
   rw [← flatten_toChunks n xs]
