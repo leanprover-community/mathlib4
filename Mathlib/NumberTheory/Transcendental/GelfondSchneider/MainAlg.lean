@@ -377,6 +377,43 @@ lemma house_a_add_b_smul_le :
   · rw [house_natCast]; exact_mod_cast a_le q t
   · gcongr; exact_mod_cast b_le q t
 
+include α' β' γ' hq0 h2mq q in
+/-- The `c₂`-level bound is at most `c₃ ^ n * n ^ ((n - 1) / 2)`. This step is pure arithmetic
+in the constants: it needs neither `σ` nor the transcendence hypotheses. -/
+lemma c₂_bound_le_c₃ :
+    ↑(c₂ α' β' γ') ^ (n K q) *
+      (↑|↑q| ^ ((n K q ) - 1) * (1 + house β') ^ (n K q - 1) *
+      house α' ^ (houseExponent K q) *
+      house γ' ^ (houseExponent K q)) ≤
+    c₃ α' β' γ' ^ (n K q : ℝ) *
+      (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) := by
+  have hpow : ∀ x : ℝ, x ^ houseExponent K q = (x ^ (2 * m K ^ 2)) ^ n K q := fun x ↦ by
+    rw [← pow_mul]; congr 1; ring
+  have hq : |(q : ℝ)| = √(2 * m K) * √(n K q) := by
+    rw [← sqrt_mul (by positivity), show (2 * (m K : ℝ) * n K q) = (q : ℝ) ^ 2 from
+      by exact_mod_cast (mul_assoc 2 (m K) (n K q)) ▸ two_mul_m_mul_n_eq_sq q h2mq,
+      sqrt_sq_eq_abs]
+  rw [show (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) = √(n K q) ^ (n K q - 1) by
+      rw [sqrt_eq_rpow, ← rpow_natCast _ (n K q - 1), ← rpow_mul (Nat.cast_nonneg _),
+        Nat.cast_sub (one_le_n q hq0 h2mq), Nat.cast_one]
+      ring_nf,
+    rpow_natCast, hq, hpow, hpow, show c₃ α' β' γ' ^ n K q = ↑(c₂ α' β' γ') ^ n K q *
+      (1 + house β') ^ n K q * √(2 * m K) ^ n K q *
+      max 1 (house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ n K q by
+      rw [c₃, mul_pow, mul_pow, mul_pow]]
+  calc
+    _ = ↑(c₂ α' β' γ') ^ n K q * (1 + house β') ^ (n K q - 1) * √(2 * m K) ^ (n K q - 1) *
+          (house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ n K q *
+          √(n K q) ^ (n K q - 1) := by ring
+    _ ≤ _ := by
+      gcongr
+      any_goals (unfold c₂; positivity)
+      · exact le_add_of_nonneg_right (house_nonneg _)
+      · exact Nat.sub_le _ 1
+      · exact one_le_sqrt_two_mul_m
+      · exact Nat.sub_le _ 1
+      · exact le_max_right _ _
+
 include α β σ hirr htriv habc hq0 h2mq in
 lemma house_cCoeffs_smul_le_c₃ :
     house (cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q u t) ≤
@@ -422,32 +459,7 @@ lemma house_cCoeffs_smul_le_c₃ :
     push_cast [← pow_mul]
     gcongr
     exact mod_cast one_le_abs_c₁ α' β' γ'
-  · have hpow : ∀ x : ℝ, x ^ houseExponent K q = (x ^ (2 * m K ^ 2)) ^ n K q := fun x ↦ by
-      rw [← pow_mul]; congr 1; ring
-    have hq : |(q : ℝ)| = √(2 * m K) * √(n K q) := by
-      rw [← sqrt_mul (by positivity), show (2 * (m K : ℝ) * n K q) = (q : ℝ) ^ 2 from
-        by exact_mod_cast (mul_assoc 2 (m K) (n K q)) ▸ two_mul_m_mul_n_eq_sq q h2mq,
-        sqrt_sq_eq_abs]
-    rw [show (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2) = √(n K q) ^ (n K q - 1) by
-        rw [sqrt_eq_rpow, ← rpow_natCast _ (n K q - 1), ← rpow_mul (Nat.cast_nonneg _),
-          Nat.cast_sub (one_le_n q hq0 h2mq), Nat.cast_one]
-        ring_nf,
-      rpow_natCast, hq, hpow, hpow, show c₃ α' β' γ' ^ n K q = ↑(c₂ α' β' γ') ^ n K q *
-        (1 + house β') ^ n K q * √(2 * m K) ^ n K q *
-        max 1 (house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ n K q by
-        rw [c₃, mul_pow, mul_pow, mul_pow]]
-    calc
-      _ = ↑(c₂ α' β' γ') ^ n K q * (1 + house β') ^ (n K q - 1) * √(2 * m K) ^ (n K q - 1) *
-            (house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ n K q *
-            √(n K q) ^ (n K q - 1) := by ring
-      _ ≤ _ := by
-        gcongr
-        any_goals (unfold c₂; positivity)
-        · exact le_add_of_nonneg_right (house_nonneg _)
-        · exact Nat.sub_le _ 1
-        · exact one_le_sqrt_two_mul_m
-        · exact Nat.sub_le _ 1
-        · exact le_max_right _ _
+  · exact c₂_bound_le_c₃ α' β' γ' q hq0 h2mq
 
 include α β σ hirr htriv habc hq0 h2mq in
 lemma house_matrixA_le :
