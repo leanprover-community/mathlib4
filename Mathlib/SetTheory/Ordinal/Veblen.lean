@@ -563,8 +563,8 @@ theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
 /-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
 theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :
     IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
-  rw [isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq]
-  simp [epsilon, mem_range_veblen one_ne_zero]
+  rw [isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq, mem_range_veblen one_ne_zero]
+  simp
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
