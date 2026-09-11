@@ -9,6 +9,8 @@ import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
+@[expose] public section
+
 open CategoryTheory
 
 universe v u
@@ -24,7 +26,7 @@ structure Fun (X Y : TestCat.{u}) where
 
 instance (X Y : TestCat.{u}) : FunLike (Fun X Y) X.α Y.α where
   coe := Fun.toFun
-  coe_injective' _ _ _ := by aesop
+  coe_injective _ _ _ := by aesop
 
 protected def Fun.id (X : TestCat.{u}) : Fun X X where
   toFun := id
@@ -38,9 +40,9 @@ mk_concrete_category TestCat Fun Fun.id Fun.comp
 #guard_msgs in
 #check Hom
 
-/-- info: TestCat.Hom.mk.{u_1} {X Y : TestCat} (hom' : X.Fun Y) : X.Hom Y -/
+/-- info: TestCat.Hom._mkInternal.{u_1} {X Y : TestCat} (hom' : X.Fun Y) : X.Hom Y -/
 #guard_msgs in
-#check Hom.mk
+#check Hom._mkInternal
 
 /-- info: TestCat.Hom.hom'.{u_1} {X Y : TestCat} (self : X.Hom Y) : X.Fun Y -/
 #guard_msgs in
@@ -153,10 +155,10 @@ mk_concrete_category (ModuleTestCat.{v} R) (· →ₗ[R] ·) (@LinearMap.id R ·
 #check Hom
 
 /--
-info: ModuleTestCat.Hom.mk.{v, u} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (hom' : ↑X →ₗ[R] ↑Y) : X.Hom Y
+info: ModuleTestCat.Hom._mkInternal.{v, u} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (hom' : ↑X →ₗ[R] ↑Y) : X.Hom Y
 -/
 #guard_msgs in
-#check Hom.mk
+#check Hom._mkInternal
 
 /--
 info: ModuleTestCat.Hom.hom'.{v, u} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (self : X.Hom Y) : ↑X →ₗ[R] ↑Y
