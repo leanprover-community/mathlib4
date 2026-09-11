@@ -75,12 +75,14 @@ lemma isSMulRegular_map [SMul R M] [SMul S M] (f : R → S) (smul : ∀ m : M, f
 @[to_additive]
 protected alias ⟨IsSMulRegular.of_map, IsSMulRegular.map⟩ := isSMulRegular_map
 
-theorem isAddTorsionFree_iff' [AddMonoid M] : IsAddTorsionFree M ↔ ∀ n ≠ 0, IsSMulRegular M n :=
-  isAddTorsionFree_iff M
+theorem isAddTorsionFree_iff' [AddCommMonoid M] :
+    IsAddTorsionFree M ↔ ∀ n ≠ 0, IsSMulRegular M n where
+  mp _ _ hn _ _ := eq_of_nsmul_eq_nsmul_of_addCommute hn (add_comm _ _)
+  mpr := .of_nsmul_right_injective
 
 namespace IsSMulRegular
 
-theorem nat_of_isAddTorsionFree [AddMonoid M] [IsAddTorsionFree M] {n : ℕ} (h : n ≠ 0) :
+theorem nat_of_isAddTorsionFree [AddCommMonoid M] [IsAddTorsionFree M] {n : ℕ} (h : n ≠ 0) :
     IsSMulRegular M n :=
   isAddTorsionFree_iff'.mp ‹_› n h
 

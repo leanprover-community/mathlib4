@@ -25,7 +25,7 @@ variable {M : Type*} [CommMonoidWithZero M]
 theorem IsMulTorsionFree.mk' [IsReduced M]
     (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
     IsMulTorsionFree M := by
-  refine ⟨fun n hn x y hxy ↦ ?_⟩
+  refine .of_pow_left_injective fun n hn x y hxy ↦ ?_
   by_cases h : x ≠ 0 ∧ y ≠ 0
   · exact ih x h.1 y h.2 n hn hxy
   grind [eq_zero_of_pow_eq_zero, zero_pow]
