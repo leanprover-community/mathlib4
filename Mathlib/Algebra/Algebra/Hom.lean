@@ -89,25 +89,14 @@ def _root_.AlgHom.ofClass [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
 
 @[deprecated (since := "2026-09-07")] alias toAlgHom := AlgHom.ofClass
 
--- TODO: rename again when RingHomClass.toRingHom gets renamed
-@[simp]
-lemma toRingHom_ofClass [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
-
-@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := toRingHom_ofClass
-
-@[simp] lemma linearMapOfClass_ofClass [AlgHomClass F R A B] (f : F) :
-    (AlgHom.ofClass f : A →ₗ[R] B) = f := rfl
-
-@[deprecated (since := "2026-09-08")] alias toLinearMap_toAlgHom := linearMapOfClass_ofClass
-
 end AlgHomClass
 
 namespace AlgHom
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable {R : Type*} [CommSemiring R] {A B : Type*} [Semiring A] [Semiring B]
+variable {C D : Type*} [Semiring C] [Semiring D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 @[macro_inline]
