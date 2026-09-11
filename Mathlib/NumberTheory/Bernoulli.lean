@@ -499,10 +499,10 @@ private lemma factorization_succ_le_sub_one {p d : ℕ} [Fact p.Prime] (hd : d �
     suffices ∀ n : ℕ, n ≥ 2 → ¬(p = 2 ∧ n = 2) → n + 1 ≤ p ^ (n - 1) from this d hd hcase
     intro n hn hne'
     induction hn with
-    | refl => norm_num at hne' ⊢; lia
+    | refl => simp at hne' ⊢; lia
     | @step m hm IH =>
       by_cases hm2 : p = 2 ∧ m = 2
-      · obtain ⟨rfl, rfl⟩ := hm2; norm_num
+      · obtain ⟨rfl, rfl⟩ := hm2; simp
       · calc m + 1 + 1 ≤ p ^ (m - 1) + 1 := by linarith [IH hm2]
           _ ≤ p ^ (m - 1) * p := by nlinarith [Nat.one_le_pow (m - 1) p (by lia)]
           _ = p ^ m := by rw [show m = m - 1 + 1 by lia]; exact pow_succ ..

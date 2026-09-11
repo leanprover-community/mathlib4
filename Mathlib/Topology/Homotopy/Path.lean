@@ -159,12 +159,12 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
     (F.toHomotopy.continuous.comp (by fun_prop)).continuousOn
-    (G.toHomotopy.continuous.comp (by fun_prop)).continuousOn fun x hx ↦ by norm_num [hx]
+    (G.toHomotopy.continuous.comp (by fun_prop)).continuousOn fun x hx ↦ by simp [hx]
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
     rcases ht with ht | ht
-    · norm_num [ht]
+    · simp [ht]
     · rw [Set.mem_singleton_iff] at ht
       norm_num [ht]
 
@@ -178,8 +178,8 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
-    F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
-  show ite _ _ _ = _ by norm_num
+    F.hcomp G (t, ⟨1 / 2, by simp, by norm_num⟩) = x₁ :=
+  show ite _ _ _ = _ by simp
 
 end
 
@@ -191,8 +191,8 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
   toFun x := p ⟨σ x.1 * x.2 + x.1 * f x.2,
     show (σ x.1 : ℝ) • (x.2 : ℝ) + (x.1 : ℝ) • (f x.2 : ℝ) ∈ I from
       convex_Icc _ _ x.2.2 (f x.2).2 (by unit_interval) (by unit_interval) (by simp)⟩
-  map_zero_left x := by norm_num
-  map_one_left x := by norm_num
+  map_zero_left x := by simp
+  map_one_left x := by simp
   prop' t x hx := by
     rcases hx with hx | hx
     · rw [hx]

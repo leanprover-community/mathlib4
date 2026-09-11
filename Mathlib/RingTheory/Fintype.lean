@@ -48,7 +48,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
       simp only [map_ofNat, map_zero] at H
       replace H : ((2 : ℕ) : ZMod 3) = 0 := H
       rw [natCast_eq_zero_iff] at H
-      norm_num at H
+      simp at H
     · simp
 
 end Ring

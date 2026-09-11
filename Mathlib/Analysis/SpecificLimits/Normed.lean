@@ -819,7 +819,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
 
 theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i ∈ range n, (-1 : ℝ) ^ i‖ ≤ 1 := by
   rw [neg_one_geom_sum]
-  split_ifs <;> norm_num
+  split_ifs <;> simp
 
 /-- The **alternating series test** for monotone sequences.
 See also `Monotone.tendsto_alternating_series_of_tendsto_zero`. -/

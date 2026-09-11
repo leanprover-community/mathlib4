@@ -79,7 +79,7 @@ lemma monotone_sqrt : Monotone (sqrt : A → A) := by
   intro a b hab
   rw [CFC.sqrt_eq_nnrpow a, CFC.sqrt_eq_nnrpow b]
   refine (monotone_nnrpow (A := A) ?_) hab
-  constructor <;> norm_num
+  constructor <;> simp
 
 @[gcongr]
 lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
@@ -119,7 +119,7 @@ lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
 lemma concaveOn_sqrt : ConcaveOn ℝ (Ici (0 : A)) (sqrt : A → A) := by
   eta_expand
   simp_rw [sqrt_eq_nnrpow]
-  exact concaveOn_nnrpow ⟨by norm_num, by norm_num⟩
+  exact concaveOn_nnrpow ⟨by simp, by simp⟩
 
 end NonUnitalCStarAlgebra
 

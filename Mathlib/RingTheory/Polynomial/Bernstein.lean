@@ -56,7 +56,7 @@ def bernsteinPolynomial (n ν : ℕ) : R[X] :=
   (choose n ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν)
 
 example : bernsteinPolynomial ℤ 3 2 = 3 * X ^ 2 - 3 * X ^ 3 := by
-  norm_num [bernsteinPolynomial, choose]
+  simp [bernsteinPolynomial, choose]
   ring
 
 namespace bernsteinPolynomial

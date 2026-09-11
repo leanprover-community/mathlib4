@@ -394,7 +394,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
         (le_of_lt (T_lt_one hnorm)) this) (norm_nonneg _))
     _ < ‖F.derivative.aeval a‖ * T ^ 1 :=
       (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one₀ (T_pos hnorm hnsol)
-        (T_lt_one hnorm) (by norm_num)) (deriv_norm_pos hnorm))
+        (T_lt_one hnorm) (by simp)) (deriv_norm_pos hnorm))
     _ = ‖F.aeval a‖ / ‖F.derivative.aeval a‖ := by
       rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,
         PadicInt.coe_mul, norm_mul]

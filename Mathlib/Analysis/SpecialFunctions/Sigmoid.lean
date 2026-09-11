@@ -129,7 +129,7 @@ open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
-    by norm_num
+    by simp
 
 lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
   tendsto_const_nhds.add_atTop (tendsto_exp_comp_atTop.mpr tendsto_neg_atBot_atTop)

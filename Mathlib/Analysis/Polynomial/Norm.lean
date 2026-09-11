@@ -65,7 +65,7 @@ lemma supNorm_zero : (0 : A[X]).supNorm = 0 := gaussNorm_zero ..
 
 lemma supNorm_nonneg : 0 ≤ p.supNorm := by
   apply gaussNorm_nonneg
-  norm_num
+  simp
 
 @[simp]
 lemma supNorm_C {a : A} : (C a).supNorm = ‖a‖ := gaussNorm_C ..
@@ -81,7 +81,7 @@ lemma supNorm_X [NormOneClass A] : (X : A[X]).supNorm = 1 := by
   rw [← monomial_one_one_eq_X, supNorm_monomial, norm_one]
 
 lemma le_supNorm (i : ℕ) : ‖p.coeff i‖ ≤ p.supNorm := by
-  simpa using! le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by norm_num : (0 : ℝ) ≤ 1) i
+  simpa using! le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by simp : (0 : ℝ) ≤ 1) i
 
 lemma exists_eq_supNorm : ∃ i : ℕ, p.supNorm = ‖p.coeff i‖ := by
   simpa using! p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1

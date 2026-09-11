@@ -160,7 +160,7 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
     (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
     (hf : ∀ x : f.domain, f x ≤ N x) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
-  have N_0 : N 0 = 0 := by grind [N_hom 2 (by norm_num) 0, smul_zero]
+  have N_0 : N 0 = 0 := by grind [N_hom 2 (by simp) 0, smul_zero]
   let s : PointedCone ℝ (E × ℝ) :=
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
       zero_mem' := by simp [N_0]

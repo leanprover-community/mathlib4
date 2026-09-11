@@ -63,7 +63,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     exact isMultiplyPretransitive_of_le' (one_le_two) (le_of_lt hsn')
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
-    exact lt_trans (by norm_num) hsn'
+    exact lt_trans (by simp) hsn'
   have hGa : IsCoatom (stabilizer G a) := by
     rw [isCoatom_stabilizer_iff_preprimitive]
     exact isPreprimitive_of_is_two_pretransitive hG'
@@ -252,7 +252,7 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
         rw [← is_one_preprimitive_iff]
         rw [← isMultiplyPreprimitive_succ_iff_ofStabilizer]
         · apply is_two_preprimitive hG hsn hsn' hprim
-        · norm_num
+        · simp
       have : IsPreprimitive ↥(fixingSubgroup G (insert a (Subtype.val '' t)))
           (ofFixingSubgroup G (insert a (Subtype.val '' t))) :=
         IsPreprimitive.of_surjective

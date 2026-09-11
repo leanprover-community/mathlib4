@@ -479,9 +479,9 @@ theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s)
     have heq : EqOn (fun z ↦ conj (riemannZeta (conj z))) riemannZeta {1}ᶜ :=
       hg_an.eqOn_of_preconnected_of_eventuallyEq analyticOn_riemannZeta
         (isConnected_compl_singleton_of_one_lt_rank (by simp) 1).isPreconnected
-        (by norm_num : (2 : ℂ) ∈ _)
+        (by simp : (2 : ℂ) ∈ _)
         (eventuallyEq_of_mem
-          ((isOpen_lt continuous_const continuous_re).mem_nhds (by norm_num)) hgz)
+          ((isOpen_lt continuous_const continuous_re).mem_nhds (by simp)) hgz)
     simpa using congrArg (starRingEnd ℂ) (heq hs)
 
 lemma riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by

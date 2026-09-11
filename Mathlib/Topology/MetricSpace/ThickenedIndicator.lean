@@ -62,7 +62,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
   rw [show (fun x : α => (1 : ℝ≥0∞) - infEDist x E / ENNReal.ofReal δ) = sub ∘ f by rfl]
   apply (@ENNReal.continuous_nnreal_sub 1).comp
   apply (ENNReal.continuous_div_const (ENNReal.ofReal δ) _).comp continuous_infEDist
-  norm_num [δ_pos]
+  simp [δ_pos]
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by

@@ -379,7 +379,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
     ↑4 / ↑5 * ε ≤ #(star hP G ε hU V) / ↑4 ^ #P.parts := by
   have hm : (0 : ℝ) ≤ 1 - (↑m)⁻¹ := sub_nonneg_of_le (inv_le_one_of_one_le₀ <| one_le_m_coe hPα)
   have hε : 0 ≤ 1 - ε / 10 :=
-    sub_nonneg_of_le (div_le_one_of_le₀ (hε₁.trans <| by simp) <| by norm_num)
+    sub_nonneg_of_le (div_le_one_of_le₀ (hε₁.trans <| by simp) <| by simp)
   have hε₀ : 0 < ε := by sz_positivity
   calc
     4 / 5 * ε = (1 - 1 / 10) * (1 - 9⁻¹) * ε := by norm_num

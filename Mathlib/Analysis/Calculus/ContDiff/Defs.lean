@@ -406,7 +406,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
         change ((p' y 0) (init (@cons 0 (fun _ => E) z 0))) (@cons 0 (fun _ => E) z 0 (last 0)) =
           ((p' y 0) 0) z
         congr
-        norm_num [eq_iff_true_of_subsingleton]
+        simp [eq_iff_true_of_subsingleton]
       · convert! (Hp'.mono inter_subset_left).congr fun x hx => Hp'.zero_eq x hx.1 using 1
         · ext x y
           change p' x 0 (init (@snoc 0 (fun _ : Fin 1 => E) 0 y)) y = p' x 0 0 y

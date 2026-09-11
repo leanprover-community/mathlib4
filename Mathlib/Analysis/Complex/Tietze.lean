@@ -97,7 +97,7 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : 
 
 instance unitInterval.instTietzeExtension : TietzeExtension unitInterval := by
   rw [unitInterval.eq_closedBall]
-  exact Metric.instTietzeExtensionClosedBall ℝ _ (by norm_num)
+  exact Metric.instTietzeExtensionClosedBall ℝ _ (by simp)
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
 variable (𝕜 : Type v) [RCLike 𝕜]
