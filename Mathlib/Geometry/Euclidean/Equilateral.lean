@@ -24,14 +24,20 @@ particularly that the centroid, circumcenter, and Monge point coincide.
 
 namespace Affine
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {R V P : Type*} [RCLike R] [NormedAddCommGroup V] [InnerProductSpace R V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 namespace Simplex
 
-variable {n : ℕ} {i j k : Fin (n + 1)} {s : Simplex ℝ P n}
+variable {n : ℕ} {i j k : Fin (n + 1)} {s : Simplex R P n}
 
-open AffineSubspace EuclideanGeometry
+lemma sum_inner_vsub_centroid (i : Fin (n + 1)) :
+    ∑ l, inner R (s.points i -ᵥ s.centroid) (s.points l -ᵥ s.centroid) = 0 := by
+  simp [← inner_sum, s.centroid_weighted_vsub_eq_zero]
+
+open AffineSubspace
+
+variable [InnerProductSpace ℝ V] {s : Simplex ℝ P n}
 
 /-- The circumcenter lies on the perpendicular bisector of any two points. -/
 lemma circumcenter_mem_perpBisector :
@@ -50,8 +56,6 @@ section Center
 lemma dist_centroid_sq_eq (h : s.Equilateral) (hjk : j ≠ k) : dist (s.points i) s.centroid ^ 2 =
     (n * dist (s.points j) (s.points k) ^ 2 - ∑ k, dist (s.points k) s.centroid ^ 2) / (n + 1) := by
   obtain ⟨r, hr⟩ := h
-  have : ∑ l, inner ℝ (s.points i -ᵥ s.centroid) (s.points l -ᵥ s.centroid) = 0 := by
-    simp [← inner_sum, s.centroid_weighted_vsub_eq_zero]
   have h l (hl : l ∈ Finset.univ.erase i) :
       2 * inner ℝ (s.points i -ᵥ s.centroid) (s.points l -ᵥ s.centroid) =
         ‖s.points i -ᵥ s.centroid‖ ^ 2 + ‖s.points l -ᵥ s.centroid‖ ^ 2 - r ^ 2 := by
@@ -59,7 +63,7 @@ lemma dist_centroid_sq_eq (h : s.Equilateral) (hjk : j ≠ k) : dist (s.points i
       norm_sub_sq_real]
   have := Finset.sum_congr rfl h
   simp [← Finset.mul_sum, Finset.sum_sub_distrib, Finset.sum_add_distrib] at this
-  grind [dist_eq_norm_vsub]
+  grind [dist_eq_norm_vsub, s.sum_inner_vsub_centroid i]
 
 /-- The distance between any point and the centroid is constant. -/
 lemma dist_centroid_eq (h : s.Equilateral) :
@@ -89,7 +93,7 @@ end Simplex
 
 namespace Triangle
 
-variable {i j k : Fin 3} {t : Triangle ℝ P}
+variable {i j k : Fin 3} [InnerProductSpace ℝ V] {t : Triangle ℝ P}
 
 /-- The centroid is the orthocenter. -/
 lemma centroid_eq_orthocenter (h : t.Equilateral) : t.centroid = t.orthocenter :=
