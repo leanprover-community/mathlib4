@@ -154,7 +154,7 @@ private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
     simp only [Function.iterate_succ', Function.comp_apply, s]
     apply t_subs _ (hs n).1 (hs n).2
   have u_disj : Pairwise (Disjoint on u) := by
-    apply (pairwise_disjoint_on _).2 (fun m n hmn ↦ ?_)
+    apply (pairwise'_disjoint_on _).2 (fun m n hmn ↦ ?_)
     have : Disjoint (u m) (s (m + 1)) := by simp [u, disjoint_sdiff_left]
     apply this.mono_right
     simp only [sdiff_le_iff, sup_eq_union, u]

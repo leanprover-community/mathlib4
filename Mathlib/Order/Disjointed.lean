@@ -204,7 +204,7 @@ section LinearOrder -- the index type is a linear order
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 theorem disjoint_disjointed (f : ι → α) : Pairwise' (Disjoint on disjointed f) :=
-  (pairwise_disjoint_on _).mpr fun _ _ ↦ disjoint_disjointed_of_lt f
+  (pairwise'_disjoint_on _).mpr fun _ _ ↦ disjoint_disjointed_of_lt f
 
 /-- `disjointed f` is the unique sequence that is pairwise disjoint and has the same partial sups
 as `f`. -/
