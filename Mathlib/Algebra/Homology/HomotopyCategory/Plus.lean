@@ -290,7 +290,6 @@ variable {C D}
 variable (F : C ⥤ D) [F.Additive]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor between bounded below homotopy categories that is induced
 by an additive functor. -/
 @[implicit_reducible]
