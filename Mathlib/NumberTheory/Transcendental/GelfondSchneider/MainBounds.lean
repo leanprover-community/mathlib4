@@ -1079,10 +1079,12 @@ lemma eq8 :
             rw [mul_rotate]
             simp only [mul_assoc]
             nth_rw 2 [← mul_assoc]
-            rw [inv_mul_cancel₀]
+            rw [inv_mul_cancel₀ (by positivity)]
             simp only [one_mul]
             nth_rw 1 [← mul_assoc]
-            rw [inv_mul_cancel₀]
+            rw [inv_mul_cancel₀ (by
+              simp only [ne_eq, Nat.cast_eq_zero]
+              exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)]
             simp only [one_mul]
             calc _ ≤ ((m K) : ℝ)⁻¹ + (2*((m K) : ℝ)*((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
                 ℝ))
@@ -1111,10 +1113,6 @@ lemma eq8 :
                   Nat.cast_eq_zero]; exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
               · simp only [ne_eq, Nat.cast_eq_zero]
                 exact Nat.ne_zero_of_lt ((one_le_m K))
-            · simp only [ne_eq,
-                Nat.cast_eq_zero];exact r_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
-            · simp only [ne_eq, Nat.cast_eq_zero]
-              exact Nat.ne_zero_of_lt hq0
         · apply mul_nonneg
           · apply mul_nonneg
             · positivity
