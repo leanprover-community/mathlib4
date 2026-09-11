@@ -75,6 +75,100 @@ theorem isChain_ofFn_iff_monotone_and_strictMonoOn [PartialOrder α] {m : ℕ} (
   simp only [PivotStep, Monotone, StrictMonoOn]
   grind [le_of_lt, LE.le.eq_or_lt]
 
+/-! ### The pivot entry conditions as row sweeps
+
+The entries before the pivot columns and the entries at them are collected along the rows, so
+that the zero conditions reduce to one list equation and the nonzero conditions to one list of
+entries. -/
+
+section PivotSweeps
+
+open Mathlib.Tactic.Matrix
+
+variable {R : Type*} {n : ℕ}
+
+/-- The entries of each row before its pivot column, collected row by row; a row whose pivot
+is `⊤` contributes all its entries. -/
+def pivotPrefixes : List (WithTop (Fin n)) → List (List R) → List R
+  | [], _ => []
+  | (p : Fin n) :: ps, rows => (rows.headD []).take p ++ pivotPrefixes ps rows.tail
+  | none :: ps, rows => rows.headD [] ++ pivotPrefixes ps rows.tail
+
+/-- The entry of each row at its pivot column, for the rows whose pivot is a column. -/
+def pivotEntries [Zero R] : List (WithTop (Fin n)) → List (List R) → List R
+  | [], _ => []
+  | (p : Fin n) :: ps, rows => (rows.headD []).getD p 0 :: pivotEntries ps rows.tail
+  | none :: ps, rows => pivotEntries ps rows.tail
+
+theorem getD_eq_zero_of_pivotPrefixes [Zero R] {ps : List (WithTop (Fin n))}
+    {rows : List (List R)} (h : ∀ x ∈ pivotPrefixes ps rows, x = 0) {i : ℕ} {j : Fin n}
+    (hi : i < ps.length) (hj : (j : WithTop (Fin n)) < ps.getD i ⊤) :
+    (rows.getD i []).getD j 0 = 0 := by
+  induction ps generalizing rows i with
+  | nil => simp at hi
+  | cons p ps ih =>
+    cases i with
+    | zero =>
+      rw [← List.headD_eq_getD, List.getD_eq_getElem?_getD]
+      cases p with
+      | coe q =>
+        simp only [List.getD_cons_zero, WithTop.coe_lt_coe] at hj
+        simp only [pivotPrefixes, List.mem_append] at h
+        rw [← List.getElem?_take_of_lt hj]
+        cases hx : ((rows.headD []).take q)[j]? with
+        | none => rfl
+        | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
+      | top =>
+        simp only [pivotPrefixes, List.mem_append] at h
+        cases hx : (rows.headD [])[j]? with
+        | none => rfl
+        | some x => exact h x (Or.inl (List.mem_of_getElem? hx))
+    | succ i =>
+      rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
+        ← List.getD_eq_getElem?_getD]
+      cases p with
+      | coe q =>
+        simp only [pivotPrefixes, List.mem_append] at h
+        exact ih (fun x hx => h x (Or.inr hx)) (by simpa using hi) hj
+      | top =>
+        simp only [pivotPrefixes, List.mem_append] at h
+        exact ih (fun x hx => h x (Or.inr hx)) (by simpa using hi) hj
+
+theorem getD_ne_zero_of_pivotEntries [Zero R] {ps : List (WithTop (Fin n))}
+    {rows : List (List R)} (h : ∀ x ∈ pivotEntries ps rows, x ≠ 0) {i : ℕ} {c : Fin n}
+    (hc : ps.getD i ⊤ = c) : (rows.getD i []).getD c 0 ≠ 0 := by
+  induction ps generalizing rows i with
+  | nil => simp at hc
+  | cons p ps ih =>
+    cases i with
+    | zero =>
+      rw [List.getD_cons_zero] at hc
+      subst hc
+      rw [← List.headD_eq_getD]
+      exact h _ (List.mem_cons_self ..)
+    | succ i =>
+      rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
+        ← List.getD_eq_getElem?_getD]
+      cases p with
+      | coe q => exact ih (fun x hx => h x (List.mem_cons_of_mem _ hx)) hc
+      | top => exact ih h hc
+
+theorem isPivotedBy_ofLists [Zero R] {m : ℕ} {rows : List (List R)}
+    {pivot : Fin m → WithTop (Fin n)} {ps : List (WithTop (Fin n))} (hps : List.ofFn pivot = ps)
+    (hchain : ps.IsChain PivotStep) {N : ℕ} (hzero : pivotPrefixes ps rows = List.replicate N 0)
+    (hnz : ∀ x ∈ pivotEntries ps rows, x ≠ 0) : (ofLists m n rows).IsPivotedBy pivot := by
+  have hmono := (isChain_ofFn_iff_monotone_and_strictMonoOn pivot).mp (hps ▸ hchain)
+  refine Matrix.isPivotedBy_iff.mpr ⟨hmono.1, hmono.2, fun i => ?_⟩
+  have hi : ps.getD i ⊤ = pivot i := by simp [← hps]
+  refine ⟨fun j hj => ?_, fun c hc => ?_⟩
+  · rw [ofLists_apply, ofList_apply]
+    exact getD_eq_zero_of_pivotPrefixes (List.eq_replicate_iff.mp hzero).2 (by simp [← hps])
+      (hi ▸ hj)
+  · rw [ofLists_apply, ofList_apply]
+    exact getD_ne_zero_of_pivotEntries hnz (hi.trans hc)
+
+end PivotSweeps
+
 end Mathlib.Tactic.Echelon
 
 end
@@ -123,59 +217,29 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
   return acc
 
-/-- Prove the quantified statement `p` over a literal `Fin` domain from proofs of its
-instances, `certifier i` proving it at index `i`. The proof recurses on the index list
-`List.finRange n`, so the motive is spelled once rather than once per index. -/
-def certifyForallFin (p : Q(Prop)) (certifier : Nat → (q : Q(Prop)) → MetaM Q($q)) :
-    MetaM Q($p) :=
-  forallBoundedTelescope p (some 1) fun is body => do
-    let #[i] := is
-      | throwError "expected a quantified statement:{indentExpr p}"
-    let motive ← mkLambdaFVars is body
-    let fin ← inferType i
-    let_expr Fin nE := fin | throwError "expected a quantifier over `Fin`:{indentExpr p}"
-    let some n ← getNatValue? nE
-      | throwError "expected a literal `Fin` domain:{indentExpr p}"
-    -- the conjunction takes its statement from the proofs, so that the one defeq check
-    -- against the quantified goal is left to the kernel rather than run here as well; its
-    -- innermost conjunct is the last proof itself, as `List.Forall` ends without a `True`
-    let rec go (j : Nat) : MetaM Expr := do
-      let h ← certifier j (mkApp motive (← mkNumeral fin j)).headBeta
-      if j + 1 < n then mkAppM ``And.intro #[h, ← go (j + 1)] else pure h
-    let acc ← if n == 0 then pure q(True.intro) else go 0
-    have nQ : Q(ℕ) := nE
-    have motiveQ : Q(Fin $nQ → Prop) := motive
-    have forAll : Q((List.finRange $nQ).Forall $motiveQ) := acc
-    mkExpectedTypeHint
-      q(fun i => List.forall_iff_forall_mem.mp $forAll i (List.mem_finRange i)) p
+/-- The proof of `l.Forall p` from the proofs of `p x` at the entries `x` of `l`, in order. -/
+def mkForallChain (proofs : List Expr) : MetaM Expr :=
+  -- `Forall` ends with its last conjunct, so the chain is folded from the last proof
+  match proofs.reverse with
+  | [] => pure q(True.intro)
+  | last :: rest => rest.foldlM (fun acc h => mkAppM ``And.intro #[h, acc]) last
 
-/-- Prove an implication `P → Q` where the caller already knows from the recorded data
-whether `P` holds, which saves a decision on `P` again. -/
-def certifyImplication (holds : Bool) (p : Q(Prop)) (certifier : (q : Q(Prop)) → MetaM Q($q)) :
-    MetaM Q($p) := do
-  let .forallE nm dom body bi := p
-    | throwError "expected an implication:{indentExpr p}"
-  if body.hasLooseBVars then -- shouldn't happen, but a safety check
-    throwError "the conclusion depends on the hypothesis:{indentExpr p}"
-  if holds then
-    return .lam nm dom (← certifier body) bi
-  else
-    have hyp : Q(Prop) := dom
-    mkAppOptM ``Not.elim #[none, some body, ← mkDecideProofQ q(¬ $hyp)]
-
-/-- Prove a defeq `p` by `rfl`. -/
-def certifyDefEq (p : Q(Prop)) : MetaM Q($p) := do
-  match_expr p with
-  | Eq _ lhs _ => mkEqRefl lhs
-  | _ => throwError "expected an equation:{indentExpr p}"
-
-/-- Prove `∀ i, L.diag i ≠ 0` from the recorded entries of `L`. -/
+/-- Prove `∀ i, L.diag i ≠ 0` from the recorded rows of `L`: the diagonal entries are nonzero
+by `certifier?`, or by `decide` when there is none. -/
 def certifyNonzeroDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
-    (L : MatrixViews u m m α) (certifier : EntryCertifier) :
+    (L : MatrixViews u m m α) (certifier? : Option EntryCertifier) :
     MetaM Q(∀ i, ($(L.matrix)).diag i ≠ 0) := do
-  let zero : Q($α) ← mkNumeral α 0
-  certifyForallFin q(∀ i, ($(L.matrix)).diag i ≠ 0) fun i _ =>
-    certifier q($((L.entries[i]!)[i]!) ≠ $zero)
+  have rows : Q(List (List $α)) := L.lit
+  let hnz : Q(∀ x ∈ ListMatrix.diagonal 0 $m $rows, x ≠ 0) ← match certifier? with
+    | none => mkDecideProofQ q(∀ x ∈ ListMatrix.diagonal 0 $m $rows, x ≠ 0)
+    | some certifier => do
+      let proofs ← L.entries.zipIdx.mapM fun (row, i) => do
+        have entry : Q($α) := row[i]!
+        certifier q($entry ≠ 0)
+      have hForall : Q((ListMatrix.diagonal 0 $m $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
+      pure q(List.forall_iff_forall_mem.mp $hForall)
+  -- `L.matrix` is the `ofLists` term on `rows`, so the hint is settled without reduction
+  return mkExpectedPropHint q(diag_ofLists_ne_zero $rows $hnz) q(∀ i, ($(L.matrix)).diag i ≠ 0)
 
 /-- Prove `L.IsLowerTriangular` from the recorded rows of `L`: the elimination emits literal
 zeros above the diagonal, so the list of those entries reduces to the replicated zero. -/
@@ -193,35 +257,42 @@ def certifyLowerTriangular {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   -- `L.matrix` is the `ofLists` term on `rows`, so the hint unfolds `IsLowerTriangular` only
   return mkExpectedPropHint prf q(($(L.matrix)).IsLowerTriangular)
 
-/-- Prove the characterisation of `U.IsPivotedBy pivot` via `isPivotedBy_iff`.
-The first two conditions are decidable. The entry conditions require equality check against 0
-and need to invoke the entry certifier to construct the non-zero proofs. -/
+/-- Prove `U.IsPivotedBy pivot` from the recorded rows of `U` and the pivot list: the entries
+before the pivot columns are literal zeros, so their list reduces to the replicated zero; the
+entries at the pivot columns are nonzero by `certifier?`, or by `decide` when there is none; and
+the pivot-function conditions are decided on the pivot list in chain form. -/
 def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (pivot : Q(Fin $m → WithTop (Fin $n))) (pivots : Array Nat)
-    (certifier : EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy $pivot) := do
-  let zero : Q($α) ← mkNumeral α 0
-  let entryConds ← certifyForallFin
-      q(∀ i, (∀ j : Fin $n, (j : WithTop (Fin $n)) < $pivot i → $(U.matrix) i j = 0) ∧
-        ∀ c : Fin $n, $pivot i = c → $(U.matrix) i c ≠ 0) fun i p => do
-    let_expr And zeros nonzeros := p
-      | throwError "unexpected shape of the pivot entry conditions:{indentExpr p}"
-    -- typed, so that the quotation below can read the context through the type of `hz`
-    have zeros : Q(Prop) := zeros
-    have nonzeros : Q(Prop) := nonzeros
-    -- `pivot i` is the recorded column, or `⊤` on a row the elimination left zero
-    let col? := if h : i < pivots.size then some pivots[i] else none
-    let hz ← certifyForallFin zeros fun j cell =>
-      certifyImplication (col?.all (j < ·)) cell certifyDefEq
-    let hn ← certifyForallFin nonzeros fun c cell =>
-      certifyImplication (col? == some c) cell fun _ =>
-        certifier q($((U.entries[i]!)[c]!) ≠ $zero)
-    mkAppM ``And.intro #[hz, hn]
-  -- both pivot-function conditions are decided at once in their adjacent-pairs chain
-  -- form, which reduces linearly along the list
-  let hChain ← mkDecideProofQ q((List.ofFn $pivot).IsChain PivotStep)
-  let hMonoStrict : Q(Monotone $pivot ∧ StrictMonoOn $pivot {i | $pivot i ≠ ⊤}) :=
-    q((isChain_ofFn_iff_monotone_and_strictMonoOn $pivot).mp $hChain)
-  return q(Matrix.isPivotedBy_iff.mpr ⟨($hMonoStrict).1, ($hMonoStrict).2, $entryConds⟩)
+    (certifier? : Option EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy $pivot) := do
+  have rows : Q(List (List $α)) := U.lit
+  -- the pivot list, `⊤` on the rows the elimination left zero
+  let psEntries : List Q(WithTop (Fin $n)) ← (List.range m).mapM fun i => do
+    if h : i < pivots.size then
+      return q(WithTop.some $(← mkFinNumeral n pivots[i]))
+    else
+      return q(⊤ : WithTop (Fin $n))
+  have ps : Q(List (WithTop (Fin $n))) :=
+    mkListLitQ (u := .zero) (α := q(WithTop (Fin $n))) psEntries
+  have hps : Q(List.ofFn $pivot = $ps) :=
+    mkExpectedPropHint q(Eq.refl (List.ofFn $pivot)) q(List.ofFn $pivot = $ps)
+  let hchain ← mkDecideProofQ q(($ps).IsChain PivotStep)
+  -- the entries before the pivot columns: the pivot column of a pivot row, the whole row otherwise
+  let N := pivots.toList.sum + ((U.entries.drop pivots.size).map List.length).sum
+  have nQ : Q(ℕ) := mkNatLit N
+  have hzero : Q(pivotPrefixes $ps $rows = List.replicate $nQ (0 : $α)) :=
+    mkExpectedPropHint q(Eq.refl (pivotPrefixes $ps $rows))
+      q(pivotPrefixes $ps $rows = List.replicate $nQ (0 : $α))
+  let hnz : Q(∀ x ∈ pivotEntries $ps $rows, x ≠ 0) ← match certifier? with
+    | none => mkDecideProofQ q(∀ x ∈ pivotEntries $ps $rows, x ≠ 0)
+    | some certifier => do
+      let proofs ← pivots.toList.zipIdx.mapM fun (p, i) => do
+        have entry : Q($α) := (U.entries[i]!)[p]!
+        certifier q($entry ≠ 0)
+      have hForall : Q((pivotEntries $ps $rows).Forall (· ≠ 0)) := ← mkForallChain proofs
+      pure q(List.forall_iff_forall_mem.mp $hForall)
+  -- `U.matrix` is the `ofLists` term on `rows`, so the hint is settled without reduction
+  return mkExpectedPropHint q(isPivotedBy_ofLists $hps $hchain $hzero $hnz)
+    q(($(U.matrix)).IsPivotedBy $pivot)
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ` by reflection using `FinVec.etaExpand_eq`. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
@@ -273,21 +344,15 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have Aσ := mkMatrixViews _cr m n aEntries
   let σ ← mkPerm m data.swaps
   let pivot ← mkPivotLit m n data.pivot
-  let dispatch (p : Q(Prop)) (certify : EntryCertifier → MetaM Q($p)) : MetaM Q($p) :=
-    match certifier? with
-    | none => mkDecideProofQ p
-    | some certifier => certify certifier
   have Lm := L.matrix
   have Aσm := Aσ.matrix
   have Um := U.matrix
   let hperm ← certifyPermEq A Aσm σ
   have hprod : Q($Lm * $Aσm = $Um) := ← certifyProductEq _cr L Aσ U certifier?
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
-  let hpivot ← dispatch q(($Um).IsPivotedBy $pivot) fun certifier =>
-    certifyPivotedBy _cr U pivot data.pivot certifier
+  have hpivot : Q(($Um).IsPivotedBy $pivot) := ← certifyPivotedBy _cr U pivot data.pivot certifier?
   have hlower : Q(($Lm).IsLowerTriangular) := ← certifyLowerTriangular _cr L
-  let hdiag ← dispatch q(∀ i, ($Lm).diag i ≠ 0) fun certifier =>
-    certifyNonzeroDiag _cr L certifier
+  have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := ← certifyNonzeroDiag _cr L certifier?
   return q(⟨$Lm, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon

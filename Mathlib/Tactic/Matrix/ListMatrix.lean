@@ -98,7 +98,7 @@ theorem getD_mul [Mul α] [Add α] [Zero α] {l m n i j : Nat} (A B : List (List
 position `k`, collected row by row. -/
 def aboveDiagonal (k : Nat) : List (List α) → List α
   | [] => []
-  | row :: rows => row.drop (k + 1) ++ aboveDiagonal (k + 1) rows
+  | row :: rows => (row.drop k).tail ++ aboveDiagonal (k + 1) rows
 
 theorem getD_eq_zero_of_aboveDiagonal [Zero α] {k i j : Nat} {rows : List (List α)}
     (h : ∀ x ∈ aboveDiagonal k rows, x = 0) (hij : k + i < j) :
@@ -106,7 +106,7 @@ theorem getD_eq_zero_of_aboveDiagonal [Zero α] {k i j : Nat} {rows : List (List
   induction rows generalizing k i with
   | nil => simp
   | cons row rows ih =>
-    simp only [aboveDiagonal, List.mem_append] at h
+    simp only [aboveDiagonal, List.tail_drop, List.mem_append] at h
     cases i with
     | zero =>
       obtain ⟨d, rfl⟩ : ∃ d, j = (k + 1) + d := ⟨j - (k + 1), by lia⟩
@@ -117,5 +117,27 @@ theorem getD_eq_zero_of_aboveDiagonal [Zero α] {k i j : Nat} {rows : List (List
     | succ i =>
       rw [List.getD_cons_succ]
       exact ih (fun x hx => h x (Or.inr hx)) (by lia)
+
+/-- The first `c` diagonal entries of a list of rows, row `k` contributing its entry at
+position `k`, with missing rows and entries read as `0`. The entry is read from the same
+`row.drop k` as `aboveDiagonal`, which the kernel then computes once for both. -/
+def diagonal [Zero α] (k : Nat) : Nat → List (List α) → List α
+  | 0, _ => []
+  | c + 1, rows => ((rows.headD []).drop k).headD 0 :: diagonal (k + 1) c rows.tail
+
+theorem getD_ne_zero_of_diagonal [Zero α] {k c i : Nat} {rows : List (List α)}
+    (h : ∀ x ∈ diagonal k c rows, x ≠ 0) (hi : i < c) : (rows.getD i []).getD (k + i) 0 ≠ 0 := by
+  induction c generalizing k i rows with
+  | zero => simp at hi
+  | succ c ih =>
+    simp only [diagonal, List.forall_mem_cons] at h
+    cases i with
+    | zero =>
+      rw [← List.headD_eq_getD]
+      simpa using h.1
+    | succ i =>
+      rw [List.getD_eq_getElem?_getD (l := rows), ← List.getElem?_tail,
+        ← List.getD_eq_getElem?_getD, ← Nat.add_assoc, Nat.add_right_comm]
+      exact ih h.2 (by lia)
 
 end Mathlib.Tactic.Matrix.ListMatrix

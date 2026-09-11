@@ -96,4 +96,10 @@ theorem ofLists_eq_zero_of_lt [Zero α] {m : ℕ} (rows : List (List α))
   rw [ofLists_apply, ofList_apply]
   exact ListMatrix.getD_eq_zero_of_aboveDiagonal h (by simpa using hij)
 
+theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} (rows : List (List α))
+    (h : ∀ x ∈ ListMatrix.diagonal 0 m rows, x ≠ 0) (i : Fin m) :
+    (ofLists m m rows).diag i ≠ 0 := by
+  rw [diag_apply, ofLists_apply, ofList_apply]
+  simpa using ListMatrix.getD_ne_zero_of_diagonal h i.isLt
+
 end Mathlib.Tactic.Matrix
