@@ -63,8 +63,8 @@ noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommS
       NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans,
       OppositeShift.adjunction, OppositeShift.natTrans, NatTrans.OppositeShift.natIsoId,
       NatTrans.OppositeShift.natIsoComp, OppositeShift.functor]
-    simp only [Category.comp_id, Category.id_comp]
-    erw [Category.comp_id] -- FIXME: this seems to be an issue with adjuction.op?
+    rw [unop_id]
+    simp
   rw [eq]
   exact inferInstanceAs (Adjunction.CommShift (PullbackShift.adjunction
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
