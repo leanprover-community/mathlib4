@@ -746,31 +746,31 @@ lemma S_norm_bound : ∀ (_hz : z ∈ Metric.sphere 0 ((m K) * (1 + ((r α β σ
                 (((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - ((m K): ℝ))/2 :
                     ℝ)) + (3 / 2 : ℝ))) := ?_
           · rw [Real.mul_rpow]
-            simp only [mul_assoc]
-            apply mul_le_mul
-            have := (sqt_etc α β σ α' β' γ' hirr htriv habc) q hq0 h2mq
-            have := (q_le_2sqrtmr α β σ α' β' γ' hirr htriv habc) q hq0 h2mq
-            apply Real.rpow_le_rpow
-            · simp only [Nat.cast_nonneg]
-            · rw [q_eq_sqrtmn q h2mq]
-              simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg,
-                Real.sqrt_mul, Nat.ofNat_nonneg]
-              simp only [mul_assoc]
+            · simp only [mul_assoc]
               apply mul_le_mul
-              · simp only [le_refl]
-              · apply mul_le_mul
-                · simp only [le_refl]
-                · simp only [Nat.cast_nonneg, Real.sqrt_le_sqrt_iff, Nat.cast_le]
-                  exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+              · have := (sqt_etc α β σ α' β' γ' hirr htriv habc) q hq0 h2mq
+                have := (q_le_2sqrtmr α β σ α' β' γ' hirr htriv habc) q hq0 h2mq
+                apply Real.rpow_le_rpow
+                · simp only [Nat.cast_nonneg]
+                · rw [q_eq_sqrtmn q h2mq]
+                  simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg,
+                    Real.sqrt_mul, Nat.ofNat_nonneg]
+                  simp only [mul_assoc]
+                  apply mul_le_mul
+                  · simp only [le_refl]
+                  · apply mul_le_mul
+                    · simp only [le_refl]
+                    · simp only [Nat.cast_nonneg, Real.sqrt_le_sqrt_iff, Nat.cast_le]
+                      exact n_le_r α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+                    · positivity
+                    · positivity
+                  · positivity
+                  · positivity
                 · positivity
-                · positivity
+              · ring_nf
+                simp only [one_div, le_refl]
               · positivity
               · positivity
-            · positivity
-            · ring_nf
-              simp only [one_div, le_refl]
-            · positivity
-            · positivity
             · positivity
             · positivity
           · rw [(sqt_etc α β σ α' β' γ' hirr htriv habc) q hq0 h2mq, Real.mul_rpow]
