@@ -170,7 +170,7 @@ this is the periodic chain complex in `ModuleCat k` given by
 `... ⟶ A --N--> A --(ρ(g) - 𝟙)--> A --N--> A --(ρ(g) - 𝟙)--> A ⟶ 0` where `N` is the norm map.
 Its homology is the group homology of `A`. -/
 noncomputable abbrev moduleCatChainComplex : ChainComplex (ModuleCat k) ℕ :=
-  HomologicalComplex.alternatingConst (ModuleCat.of k A.V) (φ := ModuleCat.ofHom
+  HomologicalComplex.alternatingConst ↧A.V (φ := ModuleCat.ofHom
     A.norm.hom.toLinearMap) (ψ := ModuleCat.ofHom (applyAsHom A g - 𝟙 A).hom.toLinearMap)
     (by ext; simp [sub_hom, applyAsHom, norm]) (by ext; simp [sub_hom, applyAsHom, norm])
     fun _ _ => ComplexShape.down_nat_odd_add
@@ -180,7 +180,7 @@ this is the periodic chain complex in `Rep k G` given by
 `0 ⟶ A --(ρ(g) - 𝟙)--> A --N--> A --(ρ(g) - 𝟙)--> A --N--> A ⟶ ...` where `N` is the norm map.
 Its cohomology is the group cohomology of `A`. -/
 noncomputable abbrev moduleCatCochainComplex : CochainComplex (ModuleCat k) ℕ :=
-  HomologicalComplex.alternatingConst (ModuleCat.of k A.V) (φ := ModuleCat.ofHom (applyAsHom A g -
+  HomologicalComplex.alternatingConst ↧A.V (φ := ModuleCat.ofHom (applyAsHom A g -
     𝟙 A).hom.toLinearMap) (ψ := ModuleCat.ofHom A.norm.hom.toLinearMap)
     (by ext; simp [sub_hom, applyAsHom, norm]) (by ext; simp [sub_hom, applyAsHom, norm])
     fun _ _ => ComplexShape.up_nat_odd_add
