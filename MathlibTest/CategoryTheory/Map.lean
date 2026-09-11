@@ -3,12 +3,13 @@ module
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Functor.Category
 
 open CategoryTheory Opposite
 
 namespace Tests.Map
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -109,10 +110,6 @@ example : F.map f ≫ F.map g = F.map h := by
   exact w
 
 example : F.map f ≫ F.map g = F.map h := by
-  rw [map_of% ((map_test_foo))]
-  exact w
-
-example : F.map f ≫ F.map g = F.map h := by
   rw [map_of% @foo]
   exact w
 
@@ -143,5 +140,42 @@ example {D : Type u₂} [Category.{v₂} D] {x y z : Cᵒᵖ}
     F.map f ≫ F.map g = F.map h := by
   rw [map_of% foo]
   exact w
+
+-- Simplification must preserve an equality as the conclusion, even when it is reflexive.
+@[map]
+lemma refl_hom {x y : C} (f : x ⟶ y) : f = f := rfl
+
+example {x y : C} (f : x ⟶ y) {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) :
+    F.map f = F.map f :=
+  refl_hom_map f F
+
+-- Mapping a generated lemma must retain its first target category and functor as arguments.
+attribute [map] comp_eq_id_map
+
+example {x y : C} (f : x ⟶ y) (g : y ⟶ x) (h : f ≫ g = 𝟙 x)
+    {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+    {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E) :
+    G.map (F.map f) ≫ G.map (F.map g) = 𝟙 (G.obj (F.obj x)) :=
+  comp_eq_id_map_map f g h F G
+
+example {x y : C} (f g : x ⟶ y) (h : f = g)
+    {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+    {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E) :
+    G.map (F.map f) = G.map (F.map g) :=
+  (map_of% (map_of% h)) F G
+
+-- Natural transformations use a derived category instance with composite universe levels.
+@[map]
+lemma nat_eq {D : Type u₂} [Category.{v₂} D]
+    {F G : C ⥤ D} (α β : F ⟶ G) (h : α = β) : α = β := h
+
+example {D : Type u₂} [Category.{v₂} D] {F G : C ⥤ D} (α β : F ⟶ G) (h : α = β)
+    {E : Type u₃} [Category.{v₃} E] (K : (C ⥤ D) ⥤ E) : K.map α = K.map β :=
+  nat_eq_map α β h K
+
+example {D : Type u₂} [Category.{v₂} D] {F G : C ⥤ D} (α β : F ⟶ G) (h : α = β)
+    {E : Type u₃} [Category.{v₃} E] (K : (C ⥤ D) ⥤ E) : K.map α = K.map β := by
+  rw [map_of% nat_eq]
+  exact h
 
 end Tests.Map
