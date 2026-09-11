@@ -53,7 +53,7 @@ lemma mk_surjective : Function.Surjective (mk (X := X)) :=
 
 /-- The bijection `FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory` that is
 used to define the category structure on `FundamentalGroupoid X`
-when `X` is a`2`-truncated simplicial set. -/
+when `X` is a `2`-truncated simplicial set. -/
 def equivFreeGroupoid : FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory where
   toFun x := FreeGroupoid.mk (HomotopyCategory.mk x.pt)
   invFun x := mk x.as.as.as.as
