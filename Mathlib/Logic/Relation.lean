@@ -865,26 +865,32 @@ lemma eqvGen_mono {r r' : α → α → Prop} (h : r ≤ r') : EqvGen r ≤ EqvG
   | _, _, .trans _ _ _ hxy hyz => .trans _ _ _ (eqvGen_mono h _ _ hxy) (eqvGen_mono h _ _ hyz)
   | _, _, .rel _ _ hab => .rel _ _ (h _ _ hab)
 
-lemma reflGen_le_eqvGen : ReflGen r ≤ EqvGen r
+end EqvGen
+
+lemma reflGen_le_eqvGen (r : α → α → Prop) : ReflGen r ≤ EqvGen r
   |  _, _, .refl => .refl _
   |  _, _, .single h => .rel _ _ h
 
-lemma symmGen_le_eqvGen : SymmGen r ≤ EqvGen r
+lemma symmGen_le_eqvGen (r : α → α → Prop) : SymmGen r ≤ EqvGen r
   | _, _, .inl h => .rel _ _ h
   | _, _, .inr h => _root_.symm <| .rel _ _ h
 
-lemma transGen_le_eqvGen : TransGen r ≤ EqvGen r := by
+lemma transGen_le_eqvGen (r : α → α → Prop) : TransGen r ≤ EqvGen r := by
   intro _ _ h
   induction h using TransGen.trans_induction_on with
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
 
-lemma reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
+lemma reflTransGen_le_eqvGen (r : α → α → Prop) : ReflTransGen r ≤ EqvGen r := by
   intro _ _ h
   induction h using ReflTransGen.trans_induction_on with
   | refl => exact .refl _
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
+
+namespace EqvGen
+
+variable (r)
 
 @[simp, grind =]
 lemma eqvGen_reflGen : EqvGen (ReflGen r) = EqvGen r :=
@@ -915,6 +921,18 @@ lemma reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
   rw [← eqvGen_eq_reflTransGen, eqvGen_symmGen]
 
 end EqvGen
+
+@[deprecated (since := "2026-09-10")]
+alias EqvGen.reflGen_le_eqvGen := reflGen_le_eqvGen
+
+@[deprecated (since := "2026-09-10")]
+alias EqvGen.symmGen_le_eqvGen := symmGen_le_eqvGen
+
+@[deprecated (since := "2026-09-10")]
+alias EqvGen.transGen_le_eqvGen := transGen_le_eqvGen
+
+@[deprecated (since := "2026-09-10")]
+alias EqvGen.reflTransGen_le_eqvGen := reflTransGen_le_eqvGen
 
 /-- The join of a relation on a single type is a new relation for which
 pairs of terms are related if there is a third term they are both
