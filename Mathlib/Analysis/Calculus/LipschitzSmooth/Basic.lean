@@ -32,7 +32,8 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
 variable (𝕜)
 
 /-- A function `f : E → F` is **`K`-smooth** if it is Fréchet differentiable and its
-first-order Taylor remainder is bounded by `K / 2 * dist x y ^ 2` for all `x` and `y`. -/
+first-order Taylor remainder is bounded by `K / 2 * dist x y ^ 2` for all `x` and `y`.
+The factor `1 / 2` gives constant `K` in `LipschitzSmoothWith.fderiv_apply_sub_norm_le`. -/
 structure LipschitzSmoothWith (K : NNReal) (f : E → F) : Prop where
   differentiable : Differentiable 𝕜 f
   fderiv_norm_le : ∀ x y,
@@ -40,7 +41,8 @@ structure LipschitzSmoothWith (K : NNReal) (f : E → F) : Prop where
 
 /-- A function `f : E → F` is **`K`-smooth on `s`** if it is Fréchet differentiable within
 `s` and its first-order Taylor remainder is bounded by `K / 2 * dist x y ^ 2` for all
-`x`, `y ∈ s`. -/
+`x`, `y ∈ s`.
+The factor `1 / 2` gives constant `K` in `LipschitzSmoothWith.fderiv_apply_sub_norm_le`. -/
 structure LipschitzSmoothOnWith (K : NNReal) (f : E → F) (s : Set E) : Prop where
   differentiableOn : DifferentiableOn 𝕜 f s
   fderivWithin_norm_le : ∀ x ∈ s, ∀ y ∈ s,
