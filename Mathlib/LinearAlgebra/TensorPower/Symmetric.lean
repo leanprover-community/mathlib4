@@ -21,7 +21,7 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 
 * `SymmetricPower.module`: the symmetric tensor power is a module over `R`.
 
-## TODO:
+## TODO
 
 * Grading: show that there is a map `Sym[R]^i M × Sym[R]^j M → Sym[R]^(i + j) M` that is
   associative and commutative, and that `n ↦ Sym[R]^n M` is a graded (semi)ring and algebra.
