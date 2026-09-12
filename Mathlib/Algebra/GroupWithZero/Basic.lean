@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.SelfInv
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Conv
@@ -109,7 +109,7 @@ theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
 
 Somewhat arbitrarily, we define the default element to be `0`.
 All other elements will be provably equal to it, but not necessarily definitionally equal. -/
-@[instance_reducible]
+@[implicit_reducible]
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
   default := 0
   uniq := eq_zero_of_zero_eq_one h
@@ -144,7 +144,7 @@ end
 
 section Nilpotent
 
-variable {R S : Type*} {x : R}
+variable {R S : Type*} {x y : R}
 
 /-- An element is said to be nilpotent if some natural-number-power of it equals zero.
 
@@ -213,6 +213,14 @@ lemma exists_isNilpotent_of_not_isReduced {R : Type*} [Zero R] [Pow R ℕ] (h : 
 
 end Nilpotent
 
+section SemigroupWithZero
+variable {S₀ : Type*} [SemigroupWithZero S₀]
+
+@[simp] lemma zero_ppow (n : ℕ+) : (0 : S₀) ^ n = 0 := by
+  induction n using Semigroup.ppow_induction (0 : S₀) <;> simp
+
+end SemigroupWithZero
+
 section MonoidWithZero
 variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
 
@@ -266,6 +274,12 @@ lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
 @[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
   obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
 
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero := eq_zero_of_pow_eq_zero
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff := pow_eq_zero_iff
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero_iff := pow_ne_zero_iff
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero := pow_ne_zero
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff' := pow_eq_zero_iff'
+
 theorem exists_right_inv_of_exists_left_inv {α} [MonoidWithZero α]
     (h : ∀ a : α, a ≠ 0 → ∃ b : α, b * a = 1) {a : α} (ha : a ≠ 0) : ∃ b : α, a * b = 1 := by
   obtain _ | _ := subsingleton_or_nontrivial α
@@ -279,7 +293,7 @@ end MonoidWithZero
 
 section CancelMonoidWithZero
 
-variable {a b : M₀}
+variable {a b c : M₀}
 variable [MulZeroOneClass M₀]
 
 theorem mul_right_eq_self₀ [IsLeftCancelMulZero M₀] : a * b = a ↔ b = 1 ∨ a = 0 :=
@@ -400,9 +414,6 @@ theorem zero_div (a : G₀) : 0 / a = 0 := by rw [div_eq_mul_inv, zero_mul]
 
 @[simp]
 theorem div_zero (a : G₀) : a / 0 = 0 := by rw [div_eq_mul_inv, inv_zero, mul_zero]
-
-@[simp]
-protected theorem IsSelfInv.zero : IsSelfInv (0 : G₀) := inv_zero
 
 /-- Multiplying `a` by itself and then by its inverse results in `a`
 (whether or not `a` is zero). -/

@@ -94,6 +94,14 @@ theorem IsLowerSet.div_left {α : Type*} [CommGroup α] [PartialOrder α] [IsOrd
 @[to_additive]
 theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) := hs.toDual.div_right
 
+@[to_additive]
+theorem IsUpperSet.ppow (hs : IsUpperSet s) (n : ℕ+) : IsUpperSet (s ^ n) :=
+  Semigroup.ppow_induction s n hs fun _ _ ↦ hs.mul_left
+
+@[to_additive]
+theorem IsLowerSet.ppow (hs : IsLowerSet s) (n : ℕ+) : IsLowerSet (s ^ n) :=
+  Semigroup.ppow_induction s n hs fun _ _ ↦ hs.mul_left
+
 namespace UpperSet
 
 @[to_additive]
@@ -112,6 +120,10 @@ instance : Div (UpperSet α) :=
 instance : SMul α (UpperSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
+@[to_additive]
+instance : Pow (UpperSet α) ℕ+ :=
+  ⟨fun s n ↦ ⟨s ^ n, s.2.ppow _⟩⟩
+
 omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
@@ -125,6 +137,10 @@ theorem coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
 theorem coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_ppow (s : UpperSet α) (n : ℕ+) : (↑(s ^ n) : Set α) = s ^ n :=
+  rfl
+
 omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp)]
 theorem Ici_one : Ici (1 : α) = 1 :=
@@ -136,7 +152,7 @@ instance : MulAction α (UpperSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (UpperSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul coe_ppow : CommSemigroup (UpperSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
@@ -173,12 +189,20 @@ instance : Div (LowerSet α) :=
 instance : SMul α (LowerSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
+@[to_additive]
+instance : Pow (LowerSet α) ℕ+ :=
+  ⟨fun s n ↦ ⟨s ^ n, s.2.ppow _⟩⟩
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_ppow (s : LowerSet α) (n : ℕ+) : (↑(s ^ n) : Set α) = s ^ n :=
   rfl
 
 omit [IsOrderedMonoid α] in
@@ -192,7 +216,7 @@ instance : MulAction α (LowerSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (LowerSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul coe_ppow : CommSemigroup (LowerSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=

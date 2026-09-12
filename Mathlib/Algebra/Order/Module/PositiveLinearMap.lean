@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Data.FunLike.Group
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Positive linear maps
@@ -67,14 +66,12 @@ namespace PositiveLinearMap
 
 section general
 
-variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
+variable {R E₁ E₂ E₃ : Type*} [Semiring R]
     [AddCommMonoid E₁] [PartialOrder E₁]
     [AddCommMonoid E₂] [PartialOrder E₂]
     [AddCommMonoid E₃] [PartialOrder E₃]
-    [AddCommMonoid E₄] [PartialOrder E₄]
-    [Module R E₁] [Module R E₂] [Module R E₃] [Module R E₄]
+    [Module R E₁] [Module R E₂] [Module R E₃]
 
-@[macro_inline]
 instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -106,10 +103,6 @@ def comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) : E₁ →ₚ[R] E�
 
 @[simp] lemma toOrderHom_comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
     (g.comp f).toOrderHom = g.toOrderHom.comp f.toOrderHom :=
-  rfl
-
-lemma comp_assoc (h : E₃ →ₚ[R] E₄) (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
-    h.comp (g.comp f) = (h.comp g).comp f :=
   rfl
 
 @[simp] lemma comp_id (f : E₁ →ₚ[R] E₂) : f.comp (.id R E₁) = f := rfl
@@ -150,14 +143,9 @@ instance : Zero (E₁ →ₚ[R] E₂) where
 lemma toLinearMap_zero : (0 : E₁ →ₚ[R] E₂).toLinearMap = 0 :=
   rfl
 
-instance : IsZeroApply (E₁ →ₚ[R] E₂) E₁ E₂ where
-  zero_apply _ := rfl
-
-@[deprecated zero_apply (since := "2026-07-29")]
-protected lemma zero_apply (x : E₁) : (0 : E₁ →ₚ[R] E₂) x = 0 := rfl
-
-@[simp] lemma zero_comp (f : E₁ →ₚ[R] E₂) : (0 : E₂ →ₚ[R] E₃).comp f = 0 := rfl
-@[simp] lemma comp_zero (f : E₂ →ₚ[R] E₃) : f.comp (0 : E₁ →ₚ[R] E₂) = 0 := by ext; simp
+@[simp]
+lemma zero_apply (x : E₁) : (0 : E₁ →ₚ[R] E₂) x = 0 :=
+  rfl
 
 variable [IsOrderedAddMonoid E₂]
 
@@ -170,11 +158,26 @@ lemma toLinearMap_add (f g : E₁ →ₚ[R] E₂) :
     (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := by
   rfl
 
-instance : IsAddApply (E₁ →ₚ[R] E₂) E₁ E₂ where
-  add_apply _ _ _ := rfl
+@[simp]
+lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) :
+    (f + g) x = f x + g x := by
+  rfl
 
-@[deprecated add_apply (since := "2026-07-29")]
-protected lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) : (f + g) x = f x + g x := rfl
+instance : SMul ℕ+ (E₁ →ₚ[R] E₂) where
+  smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by
+    induction n using AddSemigroup.psmul_induction f.toLinearMap with
+    | h1 => exact OrderHomClass.mono f h
+    | hsucc n IH => exact add_le_add IH (OrderHomClass.mono f h)
+
+@[simp]
+lemma toLinearMap_psmul (f : E₁ →ₚ[R] E₂) (n : ℕ+) :
+    (n • f).toLinearMap = n • f.toLinearMap :=
+  rfl
+
+@[simp]
+lemma psmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ+) (x : E₁) :
+    (n • f) x = n • (f x) :=
+  rfl
 
 instance : SMul ℕ (E₁ →ₚ[R] E₂) where
   smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by
@@ -187,13 +190,14 @@ lemma toLinearMap_nsmul (f : E₁ →ₚ[R] E₂) (n : ℕ) :
     (n • f).toLinearMap = n • f.toLinearMap :=
   rfl
 
-instance : IsSMulApply ℕ (E₁ →ₚ[R] E₂) E₁ E₂ where
-  smul_apply _ _ _ := rfl
+@[simp]
+lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) :
+    (n • f) x = n • (f x) :=
+  rfl
 
-@[deprecated smul_apply (since := "2026-07-29")]
-protected lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) : (n • f) x = n • f x := rfl
-
-instance : AddCommMonoid (E₁ →ₚ[R] E₂) := fast_instance% FunLike.addCommMonoid
+instance : AddCommMonoid (E₁ →ₚ[R] E₂) :=
+  toLinearMap_injective.addCommMonoid _ toLinearMap_zero toLinearMap_add
+    toLinearMap_psmul toLinearMap_nsmul
 
 end general
 

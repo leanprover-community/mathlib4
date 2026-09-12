@@ -36,6 +36,11 @@ instance : Zero (M ⟶ N) where
 
 @[simp] lemma hom_zero : (0 : M ⟶ N).hom = 0 := rfl
 
+instance : SMul ℕ+ (M ⟶ N) where
+  smul n f := ofHom (n • f.hom)
+
+@[simp] lemma hom_psmul (n : ℕ+) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+
 instance : SMul ℕ (M ⟶ N) where
   smul n f := ofHom (n • f.hom)
 
@@ -59,6 +64,7 @@ instance : SMul ℤ (M ⟶ N) where
 instance (P Q : AddCommGrpCat) : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (Hom.hom) ConcreteCategory.hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl)
 
 instance : Preadditive AddCommGrpCat where
 

@@ -6,7 +6,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
@@ -678,6 +678,19 @@ protected theorem MonoidHom.map_one [MulOne M] [MulOne N] (f : M →* N) : f 1 =
 @[to_additive]
 protected theorem MulHom.map_mul [Mul M] [Mul N] (f : M →ₙ* N) (a b : M) : f (a * b) = f a * f b :=
   f.map_mul' a b
+
+@[to_additive (reorder := a n)]
+protected theorem MulHom.map_ppow {M N : Type*} [Semigroup M] [Semigroup N] (f : M →ₙ* N) (a : M)
+    (n : ℕ+) : f (a ^ n) = f a ^ n := by
+  induction n using Semigroup.ppow_induction a
+  · simp
+  · simp [ppow_succ, *]
+
+-- not marked as `simp` because in a monoid we probably prefer powers with type `ℕ`
+@[to_additive (reorder := x n)]
+lemma map_ppow {F M N : Type _} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F M N]
+    (f : F) (x : M) (n : ℕ+) : f (x ^ n) = f x ^ n :=
+  MulHom.map_ppow (MulHomClass.toMulHom f) _ _
 
 /-- If `f` is a monoid homomorphism then `f (a * b) = f a * f b`. -/
 @[to_additive /-- If `f` is an additive monoid homomorphism then `f (a + b) = f a + f b`. -/]

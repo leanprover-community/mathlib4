@@ -414,6 +414,19 @@ instance : IsSMulApply S (QuadraticMap R M N) M N where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_smul := FunLike.coe_smul
 
+instance : SMul ℕ+ (QuadraticMap R M N) :=
+  ⟨fun a Q =>
+    { toFun := a • ⇑Q
+      toFun_smul := fun b x => by
+        rw [Pi.smul_apply, Q.map_smul, Pi.smul_apply, smul_comm]
+      exists_companion' :=
+        let ⟨B, h⟩ := Q.exists_companion
+        letI := SMulCommClass.symm S R N
+        ⟨a • B, by simp [h]⟩ }⟩
+
+instance : IsSMulApply ℕ+ (QuadraticMap R M N) M N where
+  smul_apply _ _ _ := rfl
+
 @[deprecated (since := "2026-07-27")] protected alias smul_apply := smul_apply
 
 instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticMap R M N) :=
@@ -629,9 +642,7 @@ theorem linMulLin_comp (f g : M →ₗ[R] A) (h : N' →ₗ[R] M) :
 variable {n : Type*}
 
 /-- `sq` is the quadratic map sending the vector `x : A` to `x * x` -/
-@[simps!]
-def sq : QuadraticMap R A A :=
-  linMulLin LinearMap.id LinearMap.id
+@[simps!] def sq : QuadraticMap R A A := linMulLin LinearMap.id LinearMap.id
 
 /-- `proj i j` is the quadratic map sending the vector `x : n → R` to `x i * x j` -/
 def proj (i j : n) : QuadraticMap R (n → A) A :=
@@ -845,8 +856,7 @@ end
 
 section AssociatedHom
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
-variable [AddCommGroup N] [Module R N]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
 
 -- the requirement that multiplication by `2` is invertible on the target module `N`
@@ -1357,8 +1367,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   let B' := B.domRestrict₁₂ ((K ∙ x).orthogonalBilin B) ((K ∙ x).orthogonalBilin B)
   obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
-  let b :=
-    Basis.mkFinCons x v'
+  let b := Basis.mkFinCons x v'
       (by
         rintro c y hy hc
         rw [add_eq_zero_iff_neg_eq] at hc

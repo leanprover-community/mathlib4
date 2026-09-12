@@ -195,10 +195,10 @@ theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
 
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
-  toMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  toMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
-  toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousMultilinearMap` at a vector as an `AddMonoidHom`. -/
 def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ M₂ where
@@ -495,7 +495,7 @@ instance : IsSubApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M�
 
 instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 theorem neg_prod_neg [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃]
     [IsTopologicalAddGroup M₃] (f : ContinuousMultilinearMap R M₁ M₂)

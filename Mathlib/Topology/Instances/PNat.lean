@@ -21,16 +21,22 @@ open Metric
 
 namespace PNat
 
-instance : MetricSpace ℕ+ := inferInstanceAs (MetricSpace { n : ℕ // 0 < n })
+instance : MetricSpace ℕ+ :=
+  MetricSpace.replaceTopology (inferInstanceAs (MetricSpace { n : ℕ // 0 < n })) <| by
+    ext s
+    simp only [isOpen_discrete, true_iff]
+    rw [isOpen_mk]
+    exact ⟨val '' s, by simp⟩
 
 theorem dist_eq (x y : ℕ+) : dist x y = |(↑x : ℝ) - ↑y| := rfl
 
 @[simp, norm_cast]
 theorem dist_coe (x y : ℕ+) : dist (↑x : ℕ) (↑y : ℕ) = dist x y := rfl
 
-theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : ℕ+ → ℕ) := isUniformEmbedding_subtype_val
-
-instance : DiscreteTopology ℕ+ := inferInstanceAs (DiscreteTopology { n : ℕ // 0 < n })
+theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : ℕ+ → ℕ) := by
+  convert isUniformEmbedding_subtype_val (p := (fun n => 0 < n))
+  · rfl
+  · exact UniformSpace.ext rfl
 
 instance : ProperSpace ℕ+ where
   isCompact_closedBall n r := by

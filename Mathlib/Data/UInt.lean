@@ -44,6 +44,20 @@ run_cmd
           nsmul_eq_mul, BitVec.natCast_eq_ofNat]
         rfl
 
+      instance : SMul ℕ+ $typeName := ⟨fun n a ↦ n.val • a⟩
+
+      open $typeName (toBitVec_nsmul) in
+      protected theorem toBitVec_psmul (n : ℕ+) (a : $typeName) :
+          (n • a).toBitVec = n • a.toBitVec :=
+        toBitVec_nsmul n.val a
+
+      instance : Pow $typeName ℕ+ := ⟨fun a n ↦ a ^ n.val⟩
+
+      open $typeName (toBitVec_pow) in
+      protected theorem toBitVec_ppow (a : $typeName) (n : ℕ+) :
+          (a ^ n).toBitVec = a.toBitVec ^ n :=
+        toBitVec_pow a n.val
+
       attribute [local instance] natCast intCast
 
       @[simp, int_toBitVec]
@@ -88,33 +102,35 @@ run_cmd
       open $typeName (eq_of_toBitVec_eq) in
       lemma toBitVec_injective : Function.Injective toBitVec := @eq_of_toBitVec_eq
 
-      open $typeName (toBitVec_one toBitVec_mul toBitVec_pow) in
+      open $typeName (toBitVec_one toBitVec_mul toBitVec_ppow toBitVec_pow) in
       instance instCommMonoid : CommMonoid $typeName :=
         Function.Injective.commMonoid toBitVec toBitVec_injective
-          toBitVec_one (fun _ _ => toBitVec_mul) (fun _ _ => toBitVec_pow _ _)
+          toBitVec_one (fun _ _ => toBitVec_mul) (fun _ _ => toBitVec_ppow _ _)
+            (fun _ _ => toBitVec_pow _ _)
 
       open $typeName (
-        toBitVec_zero toBitVec_add toBitVec_mul toBitVec_neg toBitVec_sub toBitVec_nsmul
-        toBitVec_zsmul) in
+        toBitVec_zero toBitVec_add toBitVec_mul toBitVec_neg toBitVec_sub
+        toBitVec_psmul toBitVec_nsmul toBitVec_zsmul toBitVec_ppow) in
       instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
         Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
           toBitVec_zero (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul) (fun _ => toBitVec_neg)
-          (fun _ _ => toBitVec_sub)
+          (fun _ _ => toBitVec_sub) (fun _ _ => toBitVec_psmul _ _)
           (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
+          (fun _ _ => toBitVec_ppow _ _)
 
       attribute [local instance] intCast natCast
 
       open $typeName (
-        toBitVec_zero toBitVec_one toBitVec_add toBitVec_mul toBitVec_neg
-        toBitVec_sub toBitVec_nsmul toBitVec_zsmul toBitVec_pow
+        toBitVec_zero toBitVec_one toBitVec_add toBitVec_mul toBitVec_neg toBitVec_sub
+        toBitVec_psmul toBitVec_nsmul toBitVec_zsmul toBitVec_ppow toBitVec_pow
         toBitVec_natCast toBitVec_intCast) in
       -- `noncomputable` should not be necessary but triggers some codegen assertion
       noncomputable local instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing toBitVec toBitVec_injective
           toBitVec_zero toBitVec_one (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul)
-          (fun _ => toBitVec_neg) (fun _ _ => toBitVec_sub)
+          (fun _ => toBitVec_neg) (fun _ _ => toBitVec_sub) (fun _ _ => toBitVec_psmul _ _)
           (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
-          (fun _ _ => toBitVec_pow _ _)
+          (fun _ _ => toBitVec_ppow _ _) (fun _ _ => toBitVec_pow _ _)
           toBitVec_natCast toBitVec_intCast
 
       namespace CommRing

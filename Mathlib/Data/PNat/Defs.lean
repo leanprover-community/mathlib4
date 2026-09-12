@@ -23,18 +23,7 @@ Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more import
 
 deriving instance LinearOrder for PNat
 
-instance : One ℕ+ :=
-  ⟨⟨1, Nat.zero_lt_one⟩⟩
-
-instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
-  ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
-
 namespace PNat
-
--- Note: similar to Subtype.coe_mk
-@[simp]
-theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
-  rfl
 
 /-- Predecessor of a `ℕ+`, as a `ℕ`. -/
 def natPred (i : ℕ+) : ℕ :=
@@ -90,78 +79,12 @@ namespace PNat
 
 open Nat
 
-/-- We now define a long list of structures on ℕ+ induced by
-similar structures on ℕ. Most of these behave in a completely
-obvious way, but there are a few things to be said about
-subtraction, division and powers.
--/
-theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := by simp
-
-theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := by simp
-
-@[simp, norm_cast]
-theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
-  Iff.rfl
-
-@[simp, norm_cast]
-theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
-  Iff.rfl
-
-@[simp]
-theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
-  n.2
-
-theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
-  Subtype.ext
-
-theorem coe_injective : Function.Injective PNat.val :=
-  Subtype.coe_injective
-
-@[simp]
-theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
-  n.2.ne'
-
-instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
-  ⟨a.ne_zero⟩
-
 theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
   succ_pred_eq_of_pos
 
 @[simp]
 theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
   eq (toPNat'_coe n.pos)
-
-@[deprecated "use `one_le`" (since := "2026-05-07")]
-protected theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
-  n.2
-
-@[deprecated "use `not_lt_one`" (since := "2026-05-07")]
-protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_ge n.2
-
-instance : Inhabited ℕ+ :=
-  ⟨1⟩
-
--- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
-@[simp]
-theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
-  rfl
-
-@[norm_cast]
-theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
-  rfl
-
-@[simp, norm_cast]
-theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
-  Subtype.coe_injective.eq_iff' one_coe
-
-instance : WellFoundedRelation ℕ+ :=
-  measure (fun (a : ℕ+) => (a : ℕ))
-
-/-- Strong induction on `ℕ+`. -/
-def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
-  | IH => IH _ fun a _ => strongInductionOn a IH
-termination_by n.1
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
   except that when `m = n * k` we take `m % k = k` and
@@ -223,6 +146,9 @@ theorem div_coe (m k : ℕ+) :
 /-- If `h : k | m`, then `k * (div_exact m k) = m`. Note that this is not equal to `m / k`. -/
 def divExact (m k : ℕ+) : ℕ+ :=
   ⟨(div m k).succ, Nat.succ_pos _⟩
+
+instance : Add ℕ+ :=
+  ⟨fun m n => ⟨(m : ℕ) + (n : ℕ), Nat.add_lt_add m.2 n.2⟩⟩
 
 end PNat
 

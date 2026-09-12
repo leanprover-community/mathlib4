@@ -30,6 +30,7 @@ variable (e : α ≃ β)
 protected abbrev semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α := by
   let mul := e.mul
   let zero := e.zero
+  let ppow := e.pow ℕ+
   apply e.injective.semigroupWithZero _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `MulZeroClass` across an `Equiv` -/
@@ -48,6 +49,7 @@ protected abbrev mulZeroOneClass [MulZeroOneClass β] : MulZeroOneClass α := by
 /-- Transfer `MonoidWithZero` across an `Equiv` -/
 protected abbrev monoidWithZero [MonoidWithZero β] : MonoidWithZero α := by
   let _ := e.mulZeroOneClass
+  let _ := e.pow ℕ+
   let _ := e.pow ℕ
   apply e.injective.monoidWithZero _ <;> intros <;> exact e.apply_symm_apply _
 

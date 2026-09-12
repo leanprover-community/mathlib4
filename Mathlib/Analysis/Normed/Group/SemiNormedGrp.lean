@@ -187,23 +187,30 @@ instance Hom.sub {M N : SemiNormedGrp} : Sub (M ⟶ N) where
 theorem hom_sub {V W : SemiNormedGrp} (f g : V ⟶ W) : (f - g).hom = f.hom - g.hom :=
   rfl
 
+instance Hom.psmul {M N : SemiNormedGrp} : SMul ℕ+ (M ⟶ N) where
+  smul n f := ofHom (n • f.hom)
+
+@[simp]
+theorem hom_psmul {V W : SemiNormedGrp} (n : ℕ+) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
+  rfl
+
 instance Hom.nsmul {M N : SemiNormedGrp} : SMul ℕ (M ⟶ N) where
   smul n f := ofHom (n • f.hom)
 
 @[simp]
-theorem hom_nsum {V W : SemiNormedGrp} (n : ℕ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
+theorem hom_nsmul {V W : SemiNormedGrp} (n : ℕ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
   rfl
 
 instance Hom.zsmul {M N : SemiNormedGrp} : SMul ℤ (M ⟶ N) where
   smul n f := ofHom (n • f.hom)
 
 @[simp]
-theorem hom_zsum {V W : SemiNormedGrp} (n : ℤ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
+theorem hom_zsmul {V W : SemiNormedGrp} (n : ℤ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
   rfl
 
 instance Hom.addCommGroup {V W : SemiNormedGrp} : AddCommGroup (V ⟶ W) :=
   Function.Injective.addCommGroup _ ConcreteCategory.hom_injective rfl (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 end SemiNormedGrp
 

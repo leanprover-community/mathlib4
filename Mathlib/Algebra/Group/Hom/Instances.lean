@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Tactic.FastInstance
 
 /-!
@@ -33,10 +34,23 @@ universe uM uN uP uQ
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
 @[to_additive]
-instance OneHom.instPow [One M] [Monoid N] : Pow (OneHom M N) ℕ where
+instance OneHom.instPPow [One M] [Monoid N] : Pow (OneHom M N) ℕ+ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp }
+
+@[to_additive]
+instance OneHom.instPow [One M] [Monoid N] : Pow (OneHom M N) ℕ where
+  pow f n :=
+    { toFun := f ^ n
+      map_one' := by simp}
+
+@[to_additive]
+instance MonoidHom.instPPow [MulOneClass M] [CommMonoid N] : Pow (M →* N) ℕ+ where
+  pow f n :=
+    { toFun := f ^ n
+      map_one' := by simp
+      map_mul' x y := by simp [mul_ppow] }
 
 @[to_additive]
 instance MonoidHom.instPow [MulOneClass M] [CommMonoid N] : Pow (M →* N) ℕ where
@@ -60,18 +74,21 @@ lemma MonoidHom.pow_apply [MulOneClass M] [CommMonoid N] (f : M →* N) (n : ℕ
 instance OneHom.instMonoid [One M] [Monoid N] : Monoid (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.monoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+      fun _ _ => rfl
 
 /-- `OneHom M N` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive /-- `ZeroHom M N` is an `AddCommMonoid` if `N` is commutative. -/]
 instance OneHom.instCommMonoid [One M] [CommMonoid N] : CommMonoid (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+      fun _ _ => rfl
 
 /-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive /-- `(M →+ N)` is an `AddCommMonoid` if `N` is commutative. -/]
 instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] : CommMonoid (M →* N) :=
   fast_instance%
     DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+      fun _ _ => rfl
 
 @[to_additive]
 instance OneHom.instZPow [One M] [Group N] : Pow (OneHom M N) ℤ where
@@ -102,6 +119,7 @@ instance OneHom.instGroup [One M] [Group N] : Group (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.group DFunLike.coe
       rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      (fun _ _ => rfl)
 
 /-- If `G` is a commutative group, then so is `OneHom M G`. -/
 @[to_additive /-- If `G` is an additive commutative group, then so is `ZeroHom M G`. -/]
@@ -109,6 +127,7 @@ instance OneHom.instCommGroup [One M] [CommGroup N] : CommGroup (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.commGroup DFunLike.coe
       rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      (fun _ _ => rfl)
 
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive /-- If `G` is an additive commutative group, then `M →+ G` is an additive commutative
@@ -117,6 +136,7 @@ instance MonoidHom.instCommGroup [MulOneClass M] [CommGroup N] : CommGroup (M �
   fast_instance%
     DFunLike.coe_injective.commGroup DFunLike.coe
       rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      (fun _ _ => rfl)
 
 @[to_additive]
 instance [One M] [MulOneClass N] [IsLeftCancelMul N] : IsLeftCancelMul (OneHom M N) :=

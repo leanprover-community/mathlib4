@@ -69,6 +69,11 @@ attribute [to_additive] SMulMemClass
 attribute [aesop 90% (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
+lemma AddMemClass.psmulMemClass {S M : Type*} [AddSemigroup M] [SetLike S M]
+    [AddMemClass S M] : SMulMemClass S ℕ+ M where
+  smul_mem n _x hx := psmul_mem hx n
+
+/-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] : SMulMemClass S ℕ M where
   smul_mem n _x hx := nsmul_mem hx n
