@@ -259,12 +259,16 @@ lemma extMk_comp_mk₀ (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
 open CochainComplex.HomComplex in
 lemma extClass_comp_extMk
     {S : ShortComplex C} (hS : S.ShortExact) (f₁ : S.X₁ ⟶ R.cocomplex.X n)
+    (f₂ : S.X₂ ⟶ R.cocomplex.X n) (hf₂ : S.f ≫ f₂ = f₁)
     (m : ℕ) (hm : n + 1 = m)
-    (f₂ : S.X₂ ⟶ R.cocomplex.X n) (hf₂ : Int.negOnePow m • S.f ≫ f₂ = f₁)
-    (f₃ : S.X₃ ⟶ R.cocomplex.X m) (hf₃ : S.g ≫ f₃ = f₂ ≫ R.cocomplex.d n m)
+    (f₃ : S.X₃ ⟶ R.cocomplex.X m) (hf₃ : Int.negOnePow m • S.g ≫ f₃ = f₂ ≫ R.cocomplex.d n m)
     (m' : ℕ) (hm' : m + 1 = m') :
     hS.extClass.comp (R.extMk f₁ m hm (by simp [← reassoc_of% hf₂, ← hf₃])) (by lia) =
-    R.extMk f₃ m' hm' (by have := hS.epi_g; simp [← cancel_epi S.g, reassoc_of% hf₃]) := by
+    R.extMk f₃ m' hm' (by
+      have := hS.epi_g
+      rw [← smul_left_cancel_iff (Int.negOnePow m), smul_smul,
+        Int.units_mul_self, one_smul] at hf₃
+      simp [← cancel_epi S.g, reassoc_of% hf₃]) := by
   have := HasDerivedCategory.standard C
   ext
   simp only [Ext.comp_hom, ShortComplex.ShortExact.extClass_hom, extMk_hom,
@@ -286,7 +290,7 @@ lemma extClass_comp_extMk
   symm
   rw [← sub_eq_zero, ← CohomologyClass.mk_sub, CohomologyClass.mk_eq_zero_iff,
     mem_coboundaries_iff _ n (by lia)]
-  refine ⟨(mappingCone.snd _).comp ((Cochain.fromSingleEquiv (zero_add _)).symm
+  refine ⟨Int.negOnePow m • (mappingCone.snd _).comp ((Cochain.fromSingleEquiv (zero_add _)).symm
     (f₂ ≫ (R.cochainComplexXIso n n rfl).inv)) (zero_add _), ?_⟩
   dsimp
   simp only [Cocycle.comp_coe, Cocycle.fromSingleMk_coe]
@@ -306,7 +310,7 @@ lemma extClass_comp_extMk
           (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 1 0 (by lia),
         dsimp% mappingCone.inr_f_descShortComplex_f_assoc
           (S.map (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) 0,
-        HomologicalComplex.single_map_f_self_assoc, reassoc_of% hf₃]
+        HomologicalComplex.single_map_f_self_assoc, ← reassoc_of% hf₃, smul_smul]
     · obtain rfl : q = n := by lia
       simp [mappingCone.ext_from_iff _ _ _ (neg_add_cancel 1),
         δ_v n m (by lia) _ (-1) n (by lia) (n - 1) 0 (by lia) (by lia),
@@ -316,11 +320,12 @@ lemma extClass_comp_extMk
         Cochain.comp_v (n₁ := 1) (n₂ := n) (n₁₂ := m) _ _ (by lia) (-1) 0 n (by lia) (by lia),
         Cochain.rightUnshift_v _ _ (zero_add 1) (-1) 0 (by lia) (-1) (by lia),
         mappingCone.inl_v_d_assoc _ 0 (-1) 1 (by lia) (by lia),
-        HomologicalComplex.single_map_f_self_assoc, ← hf₂]
+        HomologicalComplex.single_map_f_self_assoc, ← hf₂, smul_smul]
   · apply IsZero.eq_of_src
     rw [mappingCone.isZero_X_iff]
     constructor
     all_goals exact HomologicalComplex.isZero_single_obj_X _ _ _ _ (by lia)
+
 
 lemma δ_extMk
     {S : ShortComplex C} (hS : S.ShortExact) (f₁ : S.X₁ ⟶ R.cocomplex.X n)
@@ -330,9 +335,10 @@ lemma δ_extMk
     (m' : ℕ) (hm' : m + 1 = m') :
     Ext.δ hS n m hm (R.extMk f₁ m hm (by simp [← reassoc_of% hf₂, ← hf₃])) =
     R.extMk f₃ m' hm' (by have := hS.epi_g; simp [← cancel_epi S.g, reassoc_of% hf₃]) := by
-  have hf₁ : f₁ ≫ R.cocomplex.d n m = 0 := by simp [← hf₂, ← hf₃]
-  rw [← R.extClass_comp_extMk hS (Int.negOnePow m • f₁) m hm f₂ (by simp [hf₂]) f₃ hf₃ m' hm',
-    Ext.δ_apply]
-  obtain h | h := Int.units_eq_one_or (Int.negOnePow m) <;> simp [h, ← neg_extMk _ _ _ _ hf₁]
+  have hf₃' : f₃ ≫ R.cocomplex.d m m' = 0 := by
+    have := hS.epi_g; simp [← cancel_epi S.g, reassoc_of% hf₃]
+  rw [Ext.δ_apply,
+    R.extClass_comp_extMk hS f₁ f₂ hf₂ m hm (Int.negOnePow m • f₃) (by simpa [smul_smul]) m' hm']
+  obtain h | h := Int.units_eq_one_or (Int.negOnePow m) <;> simp [h, ← neg_extMk _ _ _ _ hf₃']
 
 end CategoryTheory.InjectiveResolution
