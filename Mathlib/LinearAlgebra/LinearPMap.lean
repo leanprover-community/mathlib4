@@ -25,8 +25,8 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
 
 Moreover, we define
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
-TODO: This should be also generalized to semilinear maps, but one has to define a new type where `R`
-acts on `E` normally while `R` acts on `F` through `σ`.
+  TODO: This should be also generalized to semilinear maps, but one has to define a new type where `R`
+  acts on `E` normally while `R` acts on `F` through `σ`.
 
 Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach theorem
 and its variations. Namely, `LinearPMap.sSup` implies that every chain of `LinearPMap`s

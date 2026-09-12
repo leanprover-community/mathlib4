@@ -15,9 +15,9 @@ public import Mathlib.Order.UpperLower.Closure
 
 This file proves two facts which together are commonly referred to as "Birkhoff representation":
 1. Any nonempty finite partial order is isomorphic to the partial order of sup-irreducible elements
-  in its lattice of lower sets.
+   in its lattice of lower sets.
 2. Any nonempty finite distributive lattice is isomorphic to the lattice of lower sets of its
-  partial order of sup-irreducible elements.
+   partial order of sup-irreducible elements.
 
 ## Main declarations
 

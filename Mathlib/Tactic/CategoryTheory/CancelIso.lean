@@ -57,7 +57,7 @@ composable morphisms `f : x ⟶ y` and `g : y ⟶ z` in a category `C`,
 check if `g` is equal to the inverse of `f` by
 1. first checking the objects match (i.e x = z).
 2. Checking that `f` is an isomorphism by looking for an `IsIso` instance,
-  allowing us to write `inv f`.
+   allowing us to write `inv f`.
 3. running `push inv` on both `inv f` and `g`, and checking that the results are equal.
 
 If they are inverse, return a proof of `inv f = g`.

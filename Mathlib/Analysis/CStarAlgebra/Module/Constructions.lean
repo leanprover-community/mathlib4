@@ -20,9 +20,9 @@ decision below.
 
 1. `A` as a `CStarModule` over itself.
 2. `C⋆ᵐᵒᵈ(A, E × F)` as a `CStarModule` over `A`, when `E` and `F` are themselves `CStarModule`s
-  over `A`.
+   over `A`.
 3. `C⋆ᵐᵒᵈ (A, Π i : ι, E i)` as a `CStarModule` over `A`, when each `E i` is a `CStarModule` over
-  `A` and `ι` is a `Fintype`.
+   `A` and `ι` is a `Fintype`.
 4. `E` as a `CStarModule` over `ℂ`, when `E` is an `InnerProductSpace` over `ℂ`.
 
 For `E × F` and `Π i : ι, E i`, we are required to declare the instance on a type synonym rather
