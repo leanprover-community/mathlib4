@@ -21,6 +21,11 @@ This file contains the definition of the sinc function and some of its propertie
 ## Main statements
 
 * `continuous_sinc`: the sinc function is continuous.
+* `cos_le_sinc`: `cos x ≤ sinc x` for `|x| < π / 2`; together with `sinc_le_one` this is the
+  classical squeeze behind the limit of `sin x / x` at `0`.
+* `sinc_pos`: `sinc` is positive on `(-π, π)`.
+* `tendsto_sin_div_nhdsNE_zero`, `tendsto_tan_div_nhdsNE_zero`,
+  `tendsto_one_sub_cos_div_nhdsNE_zero`: the classical trigonometric limits at `0`.
 
 -/
 
@@ -89,5 +94,42 @@ lemma continuous_sinc : Continuous sinc := by
   · simp [hx]
   · rw [continuousAt_dslope_of_ne hx]
     fun_prop
+
+/-- Squeeze bound for `sinc`. For `|x| < π / 2` we have `cos x ≤ sinc x`, together with
+`sinc_le_one` this is the classical squeeze `cos x ≤ sin x / x ≤ 1`. -/
+lemma cos_le_sinc (hx : |x| < π / 2) : cos x ≤ sinc x := by
+  wlog hx₀ : 0 ≤ x generalizing x
+  · simpa using this (x := -x) (by simpa using hx) (by linarith [not_le.mp hx₀])
+  obtain rfl | hx₀ := hx₀.eq_or_lt
+  · simp
+  have hx' := (abs_lt.mp hx).2
+  have hc : 0 < cos x := cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], hx'⟩
+  rw [sinc_of_ne_zero hx₀.ne', le_div_iff₀ hx₀, ← tan_mul_cos hc.ne', mul_comm]
+  exact mul_le_mul_of_nonneg_right (le_tan hx₀.le hx') hc.le
+
+/-- The function `sinc` is positive on `(-π, π)`. -/
+lemma sinc_pos (hx : |x| < π) : 0 < sinc x := by
+  wlog hx₀ : 0 ≤ x generalizing x
+  · simpa using this (x := -x) (by simpa using hx) (by linarith [not_le.mp hx₀])
+  obtain rfl | hx₀ := hx₀.eq_or_lt
+  · simp
+  rw [sinc_of_ne_zero hx₀.ne']
+  exact div_pos (sin_pos_of_pos_of_lt_pi hx₀ (abs_lt.mp hx).2) hx₀
+
+/-- The classical limit `lim_{x → 0} (sin x) / x = 1`. -/
+theorem tendsto_sin_div_nhdsNE_zero : Filter.Tendsto (fun x ↦ sin x / x) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_sin (0 : ℝ))).congr
+    fun _ ↦ by simp [slope_def_field]
+
+/-- The classical limit `lim_{x → 0} (tan x) / x = 1`. -/
+theorem tendsto_tan_div_nhdsNE_zero : Filter.Tendsto (fun x ↦ tan x / x) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_tan (x := 0) (by simp))).congr
+    fun _ ↦ by simp [slope_def_field]
+
+/-- The classical limit `lim_{x → 0} (1 - cos x) / x = 0`. -/
+theorem tendsto_one_sub_cos_div_nhdsNE_zero :
+    Filter.Tendsto (fun x ↦ (1 - cos x) / x) (𝓝[≠] 0) (𝓝 0) := by
+  have hd : HasDerivAt cos 0 0 := by simpa using hasDerivAt_cos (0 : ℝ)
+  simpa [slope_def_field, ← neg_div, neg_sub] using (hasDerivAt_iff_tendsto_slope.mp hd).neg
 
 end Real
