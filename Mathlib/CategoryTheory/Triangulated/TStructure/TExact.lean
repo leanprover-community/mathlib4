@@ -56,7 +56,7 @@ class TExact : Prop where
 attribute [instance] TExact.rightTExact TExact.leftTExact
 
 /-- Constructor for `LeftTExact`. -/
-lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
+lemma LeftTExact.mk' (isGE_obj_zero : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
     F.LeftTExact t₁ t₂ where
   isGE_obj X n _ :=
     have := t₁.isGE_shift X n n 0 (add_zero n)
