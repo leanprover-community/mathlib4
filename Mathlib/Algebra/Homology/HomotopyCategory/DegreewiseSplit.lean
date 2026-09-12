@@ -39,6 +39,7 @@ variable (S : ShortComplex (CochainComplex C ℤ))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
+@[simps! -isSimp]
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
     (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by lia) (by
@@ -71,7 +72,7 @@ lemma homOfDegreewiseSplit_f (n : ℤ) :
 
 /-- The triangle in `CochainComplex C ℤ` attached to a degreewise split short exact sequence
 of cochain complexes. -/
-@[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃]
+@[implicit_reducible, simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃]
 def triangleOfDegreewiseSplit : Triangle (CochainComplex C ℤ) :=
   Triangle.mk S.f S.g (homOfDegreewiseSplit S σ)
 

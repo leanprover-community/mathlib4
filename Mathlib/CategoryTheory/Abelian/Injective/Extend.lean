@@ -37,7 +37,7 @@ variable [HasZeroObject C] [Preadditive C] {X : C}
 
 /-- If `R : InjectiveResolution X`, this is the cochain complex indexed by `ℤ`
 obtained by extending by zero the cochain complex `R.cocomplex` indexed by `ℕ`. -/
-noncomputable def cochainComplex : CochainComplex C ℤ :=
+noncomputable abbrev cochainComplex : CochainComplex C ℤ :=
   R.cocomplex.extend ComplexShape.embeddingUpNat
 
 instance : R.cochainComplex.IsStrictlyGE 0 := by
@@ -56,9 +56,7 @@ lemma cochainComplex_d (n₁ n₂ : ℤ) (k₁ k₂ : ℕ) (h₁ : k₁ = n₁) 
       R.cocomplex.d k₁ k₂ ≫ (cochainComplexXIso _ _ _ h₂).inv :=
   HomologicalComplex.extend_d_eq _ _ h₁ h₂
 
-instance : R.cochainComplex.IsStrictlyGE 0 := by
-  dsimp [cochainComplex]
-  infer_instance
+example : R.cochainComplex.IsStrictlyGE 0 := by infer_instance
 
 instance (n : ℤ) : Injective (R.cochainComplex.X n) := by
   by_cases hn : 0 ≤ n
@@ -72,8 +70,6 @@ noncomputable def ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainCo
   (HomologicalComplex.extendSingleIso _ _ _ _ (by simp)).inv ≫
     (ComplexShape.embeddingUpNat.extendFunctor C).map R.ι
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι'_f_zero :
     R.ι'.f 0 = (HomologicalComplex.singleObjXSelf (.up ℤ) 0 X).hom ≫ R.ι.f 0 ≫
@@ -87,8 +83,6 @@ end
 
 variable [Abelian C] {X : C} (R : InjectiveResolution X)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso R.ι' := by dsimp [ι']; infer_instance
 
 instance : R.cochainComplex.IsLE 0 := by
@@ -105,7 +99,6 @@ an (heterogeneous) morphism of injective resolutions. -/
 noncomputable def hom' : R.cochainComplex ⟶ R'.cochainComplex :=
   HomologicalComplex.extendMap φ.hom _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     φ.hom'.f n =
@@ -114,7 +107,6 @@ lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     HomologicalComplex.extendMap_f _ ComplexShape.embeddingUpNat (i := m) (i' := n) (by simpa),
     cochainComplexXIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι'_comp_hom' :
     R.ι' ≫ φ.hom' = (CochainComplex.singleFunctor C 0).map f ≫ R'.ι' :=
