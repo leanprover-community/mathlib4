@@ -6,7 +6,9 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
+public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Edge Connectivity
@@ -105,6 +107,10 @@ lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
   obtain ⟨v, hv⟩ := exists_ne u
   exact (h u v).le_degree hv.symm
 
+theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+    (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=
+  le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
+
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
   refine ⟨fun h e s hk ↦ ?_, fun h s hs ↦ ?_⟩
@@ -167,6 +173,59 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     contrapose h'
     refine (Set.subsingleton_iff_singleton h').mp ?_
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
+
+/--
+The edge reachability number of a graph `G` and two vertices `u`,`v` is the largest `k` for which
+`u`,`v` are `k`-edge-reachable
+-/
+noncomputable def edgeReachability (G : SimpleGraph V) (u v : V) : ℕ∞ :=
+  ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), k
+
+/--
+The edge connectivity number of a graph `G` is the largest `k` such that `G` is `k`-edge-connected.
+-/
+noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
+  ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
+
+theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
+    k ≤ G.edgeReachability u v :=
+  le_iSup₂ (α := ℕ∞) k h
+
+theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
+  simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
+
+theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
+  le_iSup₂ (α := ℕ∞) k h
+
+@[simp]
+theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
+  simpa [edgeConnectivity, IsEdgeConnected, IsEdgeReachable] using ENat.iSup_natCast
+
+@[simp]
+theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
+  simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos, ENat.iSup_natCast]
+
+@[simp]
+theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeReachability u v = ⊤ := by
+  simp [Subsingleton.elim u v]
+
+theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
+  simp only [isEdgeReachable_comm, edgeReachability]
+
+theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
+  iSup₂_le fun _ hi ↦ IsEdgeReachable.le_edgeReachability (hi u v)
+
+theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] (huv : u ≠ v) :
+    G.edgeReachability u v ≤ G.degree u :=
+  iSup₂_le fun _ hk ↦ mod_cast hk.le_degree huv
+
+theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] (huv : u ≠ v) :
+    G.edgeReachability u v ≤ G.degree v := by
+  rw [edgeReachability_comm]
+  exact edgeReachability_le_degree_left huv.symm
+
+theorem edgeConnectivity_le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj] :
+    G.edgeConnectivity ≤ G.minDegree := iSup₂_le fun _ h ↦ mod_cast h.le_minDegree
 
 /-!
 ### 2-reachability
