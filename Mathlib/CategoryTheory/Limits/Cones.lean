@@ -299,9 +299,7 @@ namespace Cone
 
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := simps) extInv
-/-- To give an isomorphism between cocones, it suffices to give an
-isomorphism between their vertices which commutes with the cone maps. -/]
+@[simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -309,14 +307,22 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     { hom := φ.inv
       w := fun j => φ.inv_comp_eq.mpr (w j) }
 
-/-- To give an isomorphism between cones, it suffices to give an
-isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := reducible, simps! -isSimp) ext
 /-- To give an isomorphism between cocones, it suffices to give an
-isomorphism between their vertices which commutes with the cocone maps. -/]
-def extInv {c c' : Cone F} (φ : c.pt ≅ c'.pt)
-    (w : ∀ j, φ.inv ≫ c.π.app j = c'.π.app j := by cat_disch) : c ≅ c' :=
-  ext φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+isomorphism between their vertices which commutes with the cocone maps. -/
+@[simps]
+def _root_.CategoryTheory.Limits.Cocone.ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
+    (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where
+  hom := { hom := φ.hom }
+  inv :=
+    { hom := φ.inv
+      w := fun j => φ.comp_inv_eq.mpr (w j).symm }
+
+to_dual_for ext := Cocone.ext φ
+to_dual_for ext_hom_hom := Cocone.ext_inv_hom φ
+to_dual_for ext_inv_hom := Cocone.ext_hom_hom φ
+to_dual_for Cocone.ext := Cone.ext φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+to_dual_for Cocone.ext_hom_hom := ext_inv_hom φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
+to_dual_for Cocone.ext_inv_hom := ext_hom_hom φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
 
 attribute [aesop apply safe (rule_sets := [CategoryTheory])] Limits.Cone.ext Limits.Cocone.ext
 
