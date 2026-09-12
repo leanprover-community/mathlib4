@@ -32,15 +32,15 @@ variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive 
   [Pretriangulated C] [Pretriangulated D]
 
 /-- A triangulated functor `F` is left `t`-exact if `X ≥ n` implies `F.obj X ≥ n`.
-(It suffices to test this for `n := 0`, see `LeftExact.mk'`.) -/
+(It suffices to test this for `n := 0`, see `LeftExact.mk`.) -/
 class LeftTExact (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
-    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where private mk'::
+    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where private mk' ::
   isGE_obj (F t₁ t₂) (X : C) (n : ℤ) [t₁.IsGE X n] : t₂.IsGE (F.obj X) n
 
 /-- A triangulated functor `F` is right `t`-exact if `X ≤ n` implies `F.obj X ≤ n`.
- (It suffices to test this for `n := 0`, see `RightExact.mk'`.) -/
+ (It suffices to test this for `n := 0`, see `RightExact.mk`.) -/
 class RightTExact (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
-    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where
+    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where private mk' ::
   isLE_obj (F t₁ t₂) (X : C) (n : ℤ) [t₁.IsLE X n] : t₂.IsLE (F.obj X) n
 
 export LeftTExact (isGE_obj)
@@ -56,20 +56,20 @@ class TExact : Prop where
 attribute [instance] TExact.rightTExact TExact.leftTExact
 
 /-- Constructor for `LeftTExact`. -/
-lemma LeftTExact.mk' (isGE_obj_zero : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
+lemma LeftTExact.mk (isGE_obj_zero : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
     F.LeftTExact t₁ t₂ where
   isGE_obj X n _ :=
     have := t₁.isGE_shift X n n 0 (add_zero n)
-    have : t₂.IsGE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
+    have : t₂.IsGE ((shiftFunctor C n ⋙ F).obj X) 0 := isGE_obj_zero (X⟦n⟧)
     have : t₂.IsGE ((F.obj X)⟦n⟧) 0 := t₂.isGE_of_iso ((F.commShiftIso n).app X) 0
     t₂.isGE_of_shift (F.obj X) n n 0 (add_zero n)
 
 /-- Constructor for `RightTExact`. -/
-lemma RightTExact.mk' (isLE_obj_zero : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
+lemma RightTExact.mk (isLE_obj_zero : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
     F.RightTExact t₁ t₂ where
   isLE_obj X n _ :=
     have := t₁.isLE_shift X n n 0 (add_zero n)
-    have : t₂.IsLE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
+    have : t₂.IsLE ((shiftFunctor C n ⋙ F).obj X) 0 := isLE_obj_zero (X⟦n⟧)
     have : t₂.IsLE ((F.obj X)⟦n⟧) 0 := t₂.isLE_of_iso ((F.commShiftIso n).app X) 0
     t₂.isLE_of_shift (F.obj X) n n 0 (add_zero n)
 
