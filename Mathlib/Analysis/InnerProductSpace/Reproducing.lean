@@ -72,6 +72,7 @@ variable [RKHS 𝕜 H X V]
 /--
 Each element of a reproducing kernel Hilbert space may be coerced into a function.
 -/
+@[macro_inline]
 instance instFunLike : FunLike H X V where
   coe f := coeCLM 𝕜 f
   coe_injective := coeCLM_injective

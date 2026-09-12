@@ -50,6 +50,7 @@ section Basic
 
 variable [Zero R] [Add R] [LE R] (d : PseudoMetric X R)
 
+@[macro_inline]
 instance : FunLike (PseudoMetric X R) X (X → R) where
   coe := PseudoMetric.toFun
   coe_injective _ := by aesop

@@ -5,7 +5,7 @@ Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
 module
 
-public meta import Lean.Meta.Tactic.Rfl
+public import Mathlib.Tactic.Relation.Rfl
 public import Mathlib.Tactic.TermCongr
 
 /-!
@@ -77,7 +77,7 @@ elab_rules : tactic
     trace[Tactic.congrm] "pattern: {pattern}"
     -- Chain together transformations as needed to convert the goal to an Eq if possible.
     liftMetaTactic fun g => do
-      return [← (← g.iffOfEq).liftReflToEq]
+      return [← liftReflToEq (← g.iffOfEq)]
     -- Apply `congr(...)`
     withMainContext do
       let gStx ← Term.exprToSyntax (← getMainTarget)

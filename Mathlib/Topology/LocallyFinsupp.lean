@@ -124,6 +124,7 @@ namespace Function.locallyFinsuppWithin
 Functions with locally finite support within `U` are `FunLike`: the coercion to functions is
 injective.
 -/
+@[macro_inline]
 instance [Zero Y] : FunLike (locallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
   coe_injective := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
@@ -317,9 +318,6 @@ Assign a function with locally finite support within `U` to a function in the su
 def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
-
-instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
 
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
@@ -637,7 +635,7 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
@@ -654,7 +652,7 @@ noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : S
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V

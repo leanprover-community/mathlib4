@@ -44,6 +44,7 @@ variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
 lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
+@[macro_inline]
 instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
     EquivLike (G ≃+c[a, b] H) G H where
   coe f := f.toEquiv

@@ -45,6 +45,7 @@ notation:25 Q₁ " →qᵢ " Q₂:0 => Isometry Q₁ Q₂
 variable {Q₁ : QuadraticMap R M₁ N} {Q₂ : QuadraticMap R M₂ N}
 variable {Q₃ : QuadraticMap R M₃ N} {Q₄ : QuadraticMap R M₄ N}
 
+@[macro_inline]
 instance instFunLike : FunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h

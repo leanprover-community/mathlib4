@@ -58,6 +58,7 @@ section Measurable
 
 variable [MeasurableSpace α]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →ₛ β) α β where
   coe := toFun
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl

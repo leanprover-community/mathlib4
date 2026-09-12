@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Metrizable.Basic
 
@@ -48,7 +48,7 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
 
 /-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
 theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact ℝ) := by
-  apply (castAddHom ℝ).tendsto_coe_cofinite_of_discrete cast_injective
+  apply (castAddHom ℝ).tendsto_coe_cofinite_of_isDiscrete cast_injective
   rw [range_castAddHom, SetLike.isDiscrete_iff_discreteTopology]
   infer_instance
 
@@ -56,7 +56,7 @@ theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
-  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete <| smul_left_injective ℤ ha
+  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_isDiscrete <| smul_left_injective ℤ ha
   rw [AddSubgroup.range_zmultiplesHom, SetLike.isDiscrete_iff_discreteTopology]
   infer_instance
 
@@ -68,7 +68,7 @@ namespace AddSubgroup
 intersection with compact sets is finite. -/
 theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
     Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) := by
-  refine (zmultiples a).tendsto_coe_cofinite_of_discrete ?_
+  refine (zmultiples a).tendsto_coe_cofinite_of_isDiscrete ?_
   rw [SetLike.isDiscrete_iff_discreteTopology]
   infer_instance
 
