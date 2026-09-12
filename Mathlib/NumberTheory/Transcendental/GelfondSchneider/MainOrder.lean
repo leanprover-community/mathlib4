@@ -108,9 +108,8 @@ lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
 open Differentiable Complex
 
 /-- The auxiliary exponential function `R x = ∑ t, σ (η t) * exp (ρ t * x)`. -/
-abbrev R : ℂ → ℂ := fun x ↦ ∑ t, (canonicalEmbedding K)
-  ((algebraMap (𝓞 K) K) ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t)) σ *
-    exp (ρ α β q t * x)
+abbrev R : ℂ → ℂ := fun x ↦ ∑ t, σ ((algebraMap (𝓞 K) K)
+  ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t)) * exp (ρ α β q t * x)
 
 /-!
 We introduce the integral function
@@ -280,37 +279,27 @@ first nonzero derivative at an integer ℓ₀.
 
 where r is the smallest integer such that `R⁽ʳ⁾(ℓ₀) ≠ 0`.-/
 
-lemma exists_min_analyticOrderAt :
-  let s : Finset (Fin (m K)) := Finset.univ
-  ∃ l₀' ∈ s, (∃ y,
-    (analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l₀' + 1)) = y ∧
-  (∀ (l' : Fin (m K)), l' ∈ s → y ≤
-    (analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l' + 1)))) := by
-  intro s
-  obtain ⟨x, hx, hmin⟩ := Finset.exists_min_image s
-   (fun x ↦ analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (x + 1))
-   ⟨⟨0, one_le_m K⟩, Finset.mem_univ _⟩
-  exact ⟨x, hx, _, rfl, hmin⟩
+lemma exists_min_analyticOrderAt : ∃ l₀ : Fin (m K), ∀ l' : Fin (m K),
+    analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ((l₀ : ℕ) + 1 : ℂ) ≤
+      analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ((l' : ℕ) + 1 : ℂ) := by
+  obtain ⟨x, -, hmin⟩ := Finset.exists_min_image (Finset.univ : Finset (Fin (m K)))
+    (fun x ↦ analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ((x : ℕ) + 1 : ℂ))
+    ⟨⟨0, one_le_m K⟩, Finset.mem_univ _⟩
+  exact ⟨x, fun l' ↦ hmin l' (Finset.mem_univ _)⟩
 
 /-- A point of `Fin m` at which `R` vanishes to minimal order. -/
 abbrev l₀' : Fin (m K) :=
   (exists_min_analyticOrderAt α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
 
-/-- The defining property of `l₀'`: the order of `R` at `l₀' + 1` is minimal among
-`1, …, m`. -/
-abbrev l₀Prop :=
-  (exists_min_analyticOrderAt α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec.2
-
 /-- The order of vanishing of `R` at `l₀' + 1`, as an element of `ℕ∞`. -/
-abbrev r' := (l₀Prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose
+abbrev r' : ℕ∞ :=
+  analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+    ((l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq : ℕ) + 1 : ℂ)
 
-lemma r'_spec :
-    let s : Finset (Fin (m K)) := Finset.univ
-    analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-        ↑↑(l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1 : ℂ) =
-      r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq ∧
-    ∀ l' ∈ s, r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≤
-      analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (↑↑l' + 1) :=
-  (l₀Prop α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec
+/-- The defining property of `l₀'`: the order of `R` at `l₀' + 1` is minimal among `1, …, m`. -/
+lemma r'_spec (l' : Fin (m K)) :
+    r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≤
+      analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) ((l' : ℕ) + 1 : ℂ) :=
+  (exists_min_analyticOrderAt α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec l'
 
 end GelfondSchneider
