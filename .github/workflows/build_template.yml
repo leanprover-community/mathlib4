@@ -49,6 +49,7 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_DEVELOPER_BASE_URL: ${{ vars.MATHLIB_CACHE_DEVELOPER_BASE_URL }}
 
 jobs:
   build:
@@ -617,8 +618,8 @@ jobs:
     if: ${{ always() && needs.build.outputs.cache-staging-has-files == 'true' }}
     steps:
       # Build the write-side cache tool (and load the trust-dispatch action below)
-      # from the branch under test, so a PR's `--container`-aware tool is what
-      # writes the cache. This job only runs in trusted in-repo contexts (bors,
+      # from the branch under test, so the PR's own `--container`-aware `put`
+      # is what writes the cache. This job only runs in trusted in-repo contexts (bors,
       # dev branches, the nightly-testing repo) — fork PRs run master's
       # `build_template` via `pull_request_target`, never this one — so
       # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.
@@ -633,6 +634,7 @@ jobs:
       # ref in the contexts where this job runs), which is what the OIDC token's
       # container scoping is keyed to.
       - name: Compute cache trust dispatch
+        id: trust-dispatch
         uses: ./.github/actions/cache-trust-dispatch
         with:
           repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -656,6 +658,18 @@ jobs:
             exit 1
           fi
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
+          # Whether the cache tool built from this tools checkout can sign S3
+          # uploads: the developer-bucket leg below keys on it, so a pre-S3
+          # tool skips that leg honestly instead of re-putting to Azure and
+          # reporting a green bucket write. The probe asks the binary itself
+          # (`cache capabilities`, answered without a Lake workspace), so it
+          # survives any source reorganization; a tool that predates the
+          # subcommand prints no matching token and reads as not capable.
+          if "$CACHE_BIN" capabilities 2>/dev/null | grep -qx "s3-put"; then
+            echo "CACHE_TOOL_S3_CAPABLE=true" >> "$GITHUB_ENV"
+          else
+            echo "::notice::the cache tool is not S3-capable; the developer-bucket upload leg will be skipped"
+          fi
 
       - name: Download cache staging artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -669,6 +683,109 @@ jobs:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
+      # Developer-cache uploads dual-publish during the transition: the Azure
+      # upload below always runs, and a second upload targets the developer
+      # bucket with the credentials this step mints. The mint exchanges this
+      # job's OIDC token at the cache broker for short-lived credentials
+      # scoped to the container's namespace and points the cache tool's put
+      # base at the bucket. The broker pins the token's `sub` to this job's deployment
+      # environment (the same claim the Azure federation pins), so only a job
+      # that passed the environment's branch policy can mint.
+      #
+      # If the mint fails, this step warns and exports nothing: the bucket leg
+      # is skipped and the Azure upload alone carries the run, so a broker
+      # outage never loses the cache.
+      #
+      # Gated on the repository variables, so a repository without the
+      # developer bucket configured (or with the variables cleared to roll
+      # back) keeps the Azure-only flow. The public-service container
+      # (`master`) never takes this path: its R2 publish is a separate
+      # workflow (#43160), and this job must not hold a public-bucket
+      # credential.
+      - name: Mint developer cache credentials from the cache broker
+        if: >-
+          vars.MATHLIB_CACHE_BROKER_URL != '' &&
+          vars.MATHLIB_CACHE_DEVELOPER_PUT_BASE_URL != '' &&
+          inputs.cache_environment != '' &&
+          steps.trust-dispatch.outputs.service == 'developer'
+        shell: bash
+        env:
+          BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+          DEVELOPER_PUT_BASE_URL: ${{ vars.MATHLIB_CACHE_DEVELOPER_PUT_BASE_URL }}
+        run: |
+          set -euo pipefail
+          warn_and_skip() {
+            echo "::warning::$1; falling back to the Azure upload"
+            exit 0
+          }
+          # Every failure before the final export block warns and exits 0, so
+          # a broken mint degrades to the Azure upload instead of losing the
+          # cache. The unbound-variable guard below keeps that promise even if
+          # a permissions change ever removes the id-token grant.
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ] || [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            warn_and_skip "the job has no OIDC token endpoint (id-token: write missing?)"
+          fi
+          # The audience must be the one the broker expects, so a token
+          # minted for another service is useless here and vice versa. The
+          # requests are idempotent, so retrying transport-level failures
+          # (--retry-all-errors) is safe and avoids spurious Azure fallbacks.
+          oidc_token="$(curl -sSf --retry 3 --retry-all-errors \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mathlib-cache-broker" \
+            | jq -r '.value // empty')" \
+            || warn_and_skip "could not obtain the GitHub OIDC token"
+          [ -n "${oidc_token}" ] || warn_and_skip "the OIDC token response carried no value"
+          creds="$(curl -sSf --retry 3 --retry-all-errors -X POST \
+            -H "Authorization: Bearer ${oidc_token}" \
+            "${BROKER_URL}/r2-credentials")" \
+            || warn_and_skip "the cache broker did not answer with credentials"
+          # A 200 with a malformed body must also warn-and-skip: an unguarded
+          # jq parse error inside a $(...) assignment would fail the step
+          # under set -e, and the whole point of this step is that no broker
+          # fault can cost the run its upload.
+          jq -e . >/dev/null 2>&1 <<<"${creds}" \
+            || warn_and_skip "the broker answer was not JSON"
+          access_key_id="$(jq -r '.accessKeyId // empty' <<<"${creds}")"
+          secret_access_key="$(jq -r '.secretAccessKey // empty' <<<"${creds}")"
+          session_token="$(jq -r '.sessionToken // empty' <<<"${creds}")"
+          # Defense in depth against a compromised broker answer: each value
+          # must be a single token from a strict charset before it reaches
+          # ::add-mask:: (which masks only one line) or GITHUB_ENV (where an
+          # embedded newline could define arbitrary variables). The check
+          # deliberately requires a non-empty session token, which the broker
+          # always mints; a static-keypair grant would need this relaxed.
+          for value in "${access_key_id}" "${secret_access_key}" "${session_token}"; do
+            if ! [[ "${value}" =~ ^[A-Za-z0-9+/=._-]+$ ]]; then
+              warn_and_skip "the broker answer carried no well-formed credential"
+            fi
+          done
+          echo "::add-mask::${access_key_id}"
+          echo "::add-mask::${secret_access_key}"
+          echo "::add-mask::${session_token}"
+          # One atomic block, with the put base last: the tool routes the
+          # write to the bucket only on MATHLIB_CACHE_PUT_BASE_URL, so even a
+          # truncated write leaves the S3 credentials aimed at Azure — a loud
+          # 4xx — never an Azure credential aimed at the bucket.
+          # MINTED is the non-secret sentinel the developer-bucket leg gates
+          # on; testing a masked credential's presence in an `if:` works but
+          # reads poorly.
+          {
+            echo "MATHLIB_CACHE_S3_ACCESS_KEY_ID=${access_key_id}"
+            echo "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY=${secret_access_key}"
+            echo "MATHLIB_CACHE_S3_SESSION_TOKEN=${session_token}"
+            echo "MATHLIB_CACHE_PUT_BASE_URL=${DEVELOPER_PUT_BASE_URL}"
+            echo "MATHLIB_CACHE_DEVELOPER_MINTED=true"
+          } >> "$GITHUB_ENV"
+          echo "developer cache credentials minted (grant: $(jq -r '.grant // "?"' <<<"${creds}"))"
+
+      # First leg of the dual upload: Azure, the established primary. It runs
+      # unconditionally, so a broker outage, a bucket fault, or an old cache
+      # tool never costs the run its cache, and pre-split readers (older
+      # binaries reading Azure directly) keep seeing fresh artifacts through
+      # the transition. Retiring this step cuts the Azure write traffic; the
+      # mint's fallback posture, the capability gate's skip semantics, and
+      # the Azure credential plumbing in the callers retire with it (the
+      # infrastructure design document carries the cutover checklist).
       - name: Upload staged cache to Azure
         shell: bash
         env:
@@ -679,8 +796,43 @@ jobs:
           # branch) → container mapping for both this job and the read-side
           # jobs (build, post_steps). Each job writes only into its own trust-level
           # container.
+          # The mint step may have exported S3 credentials to the job
+          # environment; drop them here so this leg takes the Azure bearer
+          # path whatever else is configured.
+          unset MATHLIB_CACHE_S3_ACCESS_KEY_ID MATHLIB_CACHE_S3_SECRET_ACCESS_KEY \
+            MATHLIB_CACHE_S3_SESSION_TOKEN MATHLIB_CACHE_PUT_BASE_URL
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
+
+      # Second leg of the dual upload: the developer bucket, routed by
+      # the S3 credentials and put base the mint step exported. Non-fatal
+      # (continue-on-error) but loud: the Azure leg above already secured the
+      # cache, so a bucket fault must not fail the run — while the warning
+      # keeps a stalling migration visible.
+      #
+      # Gated on the tool's S3 capability (detected in the build step): a
+      # pre-S3 cache tool ignores the credentials and would re-put to Azure
+      # here, reading as a green bucket write to anyone watching the
+      # migration; skipping is honest.
+      #
+      # A skipped or failed leg leaves this run's delta out of the bucket for
+      # good (no later run re-stages it), while later runs still write their
+      # own markers there. Bucket markers therefore do NOT assert a complete
+      # transitive closure during the dual-upload window; before any read
+      # cutover the bucket needs a backfill-and-verify pass, not a marker
+      # check.
+      - name: Upload staged cache to the developer bucket
+        if: env.MATHLIB_CACHE_DEVELOPER_MINTED == 'true' && env.CACHE_TOOL_S3_CAPABLE == 'true'
+        continue-on-error: true
+        shell: bash
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        run: |
+          echo "Uploading cache to the developer bucket (container: $MATHLIB_CACHE_PRIMARY, put base: $MATHLIB_CACHE_PUT_BASE_URL)..."
+          if ! lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"; then
+            echo "::warning::the developer bucket upload failed; the Azure upload succeeded, so the cache is intact but the bucket lags this run"
+            exit 1
+          fi
 
   post_steps:
     name: Post-Build Step

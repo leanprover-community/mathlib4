@@ -44,8 +44,10 @@ Returns `true` if any of these hold:
    fork commits and trusts whoever built each of them
 1. `MATHLIB_CACHE_REPO_SCOPE` is set in the environment (any non-empty value)
    and differs from the checked-out HEAD (see `scopeIsHead`)
-2. `--cache-from` was passed and widens the lookup chain beyond `defaultContainersForRepo` for the resolved repo
-3. `--repo` was passed and does not match the git remote (`detectedRepo?`)
+2. `--cache-from` was passed and widens the lookup chain beyond
+   `defaultContainersFor` for the usage context and resolved repo
+3. `--repo` was passed and does not match the git remote (`detectedRepo?`), or
+   names a non-canonical repo with no detectable remote to compare against
 
 `detectedRepo?` is the repo reported by the git remote (from `resolveRepo`,
 probed once per command); it is `none` if it could not be determined.
@@ -64,10 +66,11 @@ def shouldWarnNonDefaultScope (repoExplicit? detectedRepo? : Option String)
   if (← getRepoScope).isSome then
     unless (← scopeIsHead) do return true
 
-  -- Condition 2: --cache-from CLI override widens the lookup chain
+  -- Condition 2: --cache-from CLI override widens the lookup chain beyond the
+  -- context's default (per-repo in developer use, public-only downstream).
   match cliCacheFromOverride? with
   | some cliOverride =>
-    let defaultContainers := defaultContainersForRepo resolvedRepo
+    let defaultContainers := defaultContainersFor (← usageContext.get) resolvedRepo
     unless cliOverride == defaultContainers do
       return true
   | none => pure ()
@@ -79,8 +82,14 @@ def shouldWarnNonDefaultScope (repoExplicit? detectedRepo? : Option String)
   | some explicitRepo, some detected =>
     unless explicitRepo == detected do
       return true
-  -- No --repo override, or the remote couldn't be determined: don't warn.
-  | _, _ => pure ()
+  | some explicitRepo, none =>
+    -- No remote to compare against (a dependency fetched as an archive, or a
+    -- git failure). A non-canonical --repo then reads that fork's container on
+    -- nothing but the flag, so the choice still warrants the notice.
+    unless isCanonicalRepo explicitRepo do
+      return true
+  -- No --repo override: don't warn.
+  | none, _ => pure ()
 
   return false
 
@@ -135,17 +144,22 @@ def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
 
   -- Condition 2: --cache-from override
   if let some cliOverride := cliCacheFromOverride? then
-    let defaultContainers := defaultContainersForRepo resolvedRepo
+    let defaultContainers := defaultContainersFor (← usageContext.get) resolvedRepo
     if cliOverride != defaultContainers then
       let overrideStr := ", ".intercalate (cliOverride.map Container.name)
       return s!"--cache-from={overrideStr} (explicit container override)"
 
   -- Condition 3: --repo was explicitly passed AND doesn't match the git remote
+  -- (or there is no remote to compare a non-canonical --repo against)
   match repoExplicit?, detectedRepo? with
   | some explicitRepo, some detected =>
     if explicitRepo != detected then
       return s!"--repo={explicitRepo} (overrides detected git remote: {detected})"
-  | _, _ => pure ()
+  | some explicitRepo, none =>
+    if !isCanonicalRepo explicitRepo then
+      return s!"--repo={explicitRepo} (no git remote to compare against; \
+        reads that fork's cache)"
+  | none, _ => pure ()
 
   return "unknown reason"
 

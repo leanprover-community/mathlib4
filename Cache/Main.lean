@@ -7,14 +7,19 @@ Authors: Arthur Paulino, Jon Eugster, Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
+import Cache.Upload
 import Cache.Query
 import Cache.Warning
+
+/-- The known container names, interpolated into the help text so the list
+cannot drift from the model. -/
+def knownContainersLine : String :=
+  ", ".intercalate (Cache.Requests.Container.all.map Cache.Requests.Container.name)
 
 def help : String := "Mathlib4 caching CLI
 Usage: cache [OPTIONS] [COMMAND]
 
 Commands:
-  # No privilege required
   get  [ARGS]    Download linked files missing on the local cache and decompress
   get! [ARGS]    Download all linked files and decompress
   get- [ARGS]    Download linked files missing to the local cache, but do not decompress
@@ -27,36 +32,54 @@ Commands:
   lookup [ARGS]  Show information about cache files for the given Lean files
   query [REF]    Without REF: find most recent cached commit on this branch.
                  With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
+  capabilities   Print this tool's upload capability tokens, one per line.
+                 For CI probes; works without a Lake workspace.
 
-  # Privilege required
-  put          Run 'pack' then upload linked files missing on the server
-  put!         Run 'pack' then upload all linked files
-  commit       Write a commit on the server
-  commit!      Overwrite a commit on the server
-
-  # Intended for CI use
-  unstage      Copy *.ltar files from the staging directory to the local cache
-  unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
+  # Staging and upload (CI, and external cache operators)
   stage        Move files not already 'pack'ed to an output directory
   stage!       Move all linked cache files to an output directory
-  put-staged   Upload *.ltar files from the staging directory (privilege required)
-  put-unpacked Run 'put' only for files not already 'pack'ed (privilege required)
+  unstage      Copy *.ltar files from the staging directory to the local cache
+  unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
+  put          Run 'pack', then upload the files this build links, straight
+               from the local cache: the build graph scopes the upload, so
+               nothing else in the shared cache directory leaves the machine.
+               Uploads to the --container of choice with the same path
+               contract 'get' reads (a scope adds the per-commit namespace
+               and its marker). Needs an upload credential; see below.
+  put!         Same as 'put', overwriting files the server already holds.
+  put-staged   Bulk-upload the *.ltar files in the staging directory to the
+               --container of choice, under the same path contract. The
+               CI upload path, and the engine-flexible one: the upload hook
+               and MATHLIB_CACHE_UPLOADER apply here.
+
+Uploading needs a writer credential that only CI normally holds. Anyone
+operating their own cache endpoint does not need 'put': 'stage' the
+artifacts, upload the staging directory under the endpoint's `f/` path with
+any storage client, and serve it to readers via MATHLIB_CACHE_GET_URL (see
+Cache/README.md for the recipe).
 
 Options:
-  --repo=OWNER/REPO  Override the repository to fetch/push cache from
-  --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
+  --repo=OWNER/REPO  Override the repository to fetch (or upload) cache for
+  --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage',
+                     'unstage!' and 'put-staged': staging directory.
+  --container=NAME   For 'put', 'put!' and 'put-staged': target container.
+                     Known containers:
+                     " ++ knownContainersLine ++ ". Pass this
+                     explicitly; with neither it nor MATHLIB_CACHE_PUT_URL
+                     set, the upload falls back to `legacy` and warns.
   --cache-from=LIST  Comma-separated, trust-ordered list of containers to read from
                      (e.g. `--cache-from=master,forks`). Overrides the per-repo default.
-                     Known containers: master, forks, nightly-testing,
-                     pr-toolchain-tests, legacy.
-  --scope=REF        Read the fork SHA-scoped namespace at the given commit ref
-                     (any git ref `git rev-parse` accepts: HEAD, branch, tag, SHA)
-                     instead of the default, the checked-out HEAD. Use the SHA
-                     reported by `cache query`. Wins over the
-                     MATHLIB_CACHE_REPO_SCOPE env var. Reading another commit's
-                     scope means trusting the artifacts produced at that commit;
-                     `cache get` prints a security notice when the scope differs
-                     from HEAD.
+                     Known containers: " ++ knownContainersLine ++ ".
+  --scope=REF        The per-commit namespace (any git ref `git rev-parse`
+                     accepts: HEAD, branch, tag, SHA). For reads: the fork
+                     SHA-scoped namespace to read instead of the default, the
+                     checked-out HEAD. Use the SHA reported by `cache query`.
+                     Reading another commit's scope means trusting the
+                     artifacts produced at that commit; `cache get` prints a
+                     security notice when the scope differs from HEAD. For
+                     'put': the namespace to upload under, followed by its
+                     completeness marker. Wins over the
+                     MATHLIB_CACHE_REPO_SCOPE env var.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
                      this branch's history and try the most recent cached fork
                      commits as scopes, in order, until the cache is satisfied.
@@ -64,14 +87,10 @@ Options:
                      exclusive with --scope; always prints a security notice.
   --unsafe-window=N  Number of cached fork commits --unsafe will try (default
                      1). Implies --unsafe.
-  --container=NAME   Target container for upload commands (put/put!/put-unpacked/
-                     put-staged/commit/commit!). Known containers: master, forks,
-                     nightly-testing, pr-toolchain-tests, legacy. Pass this
-                     explicitly; with neither it nor MATHLIB_CACHE_PUT_URL set,
-                     the upload falls back to `legacy` and warns.
 
 * Linked files refer to local cache files with corresponding Lean sources
-* Commands ending with '!' should be used manually, when hot-fixes are needed
+* Commands ending with '!' skip nothing: use them manually when a hot-fix needs
+  to force re-downloading, re-packing, or overwriting
 
 # The arguments for 'get', 'get!', 'get-' and 'lookup'
 
@@ -90,38 +109,97 @@ Valid arguments are:
   'Mathlib/**/Order/*.lean'. However, one would need to write `Mathlib.Data.\\*`
   to prevent glob expansion.
 
+# Read endpoints
+
+Reads are split across two services. The public service (containers master,
+legacy) serves the master-built cache at https://cache.mathlib.org. The
+developer cache (containers forks, nightly-testing, pr-toolchain-tests)
+serves work-in-progress artifacts at https://devcache.mathlib.org.
+On a mathlib checkout (canonical or fork) reads follow the per-repo trust
+chain across both services. In a downstream project they default to the
+public service; only a dependency pinned to the nightly-testing repo also
+reads that repo's own container, and a fork remote on the dependency
+checkout is ignored (pass --repo to opt in).
+
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
 * MATHLIB_CACHE_DEBUG_USE_LEGACY
                           Set to 1 or true to read from the Azure storage
-                          account instead of https://cache.mathlib.org.
+                          account instead of the cache endpoints.
                           For troubleshooting only.
+* MATHLIB_CACHE_BASE_URL  Read base URL override for both services: a host
+                          that mirrors the whole /{container}/{key} namespace.
+* MATHLIB_CACHE_DEVELOPER_BASE_URL
+                          Read base URL override for the developer cache only;
+                          wins over MATHLIB_CACHE_BASE_URL for its containers.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
-* MATHLIB_CACHE_PUT_URL   Upload artifacts to this URL as a flat namespace.
-                          Allows third parties to upload to their own cache endpoint.
 * MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
                           --cache-from. Used by mathlib CI to widen reads per job;
                           --cache-from takes precedence when both are set.
+* MATHLIB_CACHE_REPO_SCOPE
+                          Per-commit namespace for reads and 'put' (see --scope).
 
-An empty value means unset for MATHLIB_CACHE_GET_URL and MATHLIB_CACHE_FROM.
+Upload credentials for 'put' (most specific wins; the S3 pair must be set
+together):
+
+* MATHLIB_CACHE_S3_ACCESS_KEY_ID, MATHLIB_CACHE_S3_SECRET_ACCESS_KEY,
+  MATHLIB_CACHE_S3_SESSION_TOKEN
+                          S3 credentials (SigV4), e.g. minted by the cache
+                          broker for CI. The session token is optional.
+* MATHLIB_CACHE_AZURE_BEARER_TOKEN
+                          Azure OIDC bearer token.
+* MATHLIB_CACHE_SAS       Azure SAS token.
+
+Upload destination overrides for 'put':
+
+* MATHLIB_CACHE_PUT_BASE_URL
+                          Rebases the --container write under this base
+                          ({base}/{container}/{key}), keeping the container
+                          path policy. CI uses it to select the upload storage.
+* MATHLIB_CACHE_PUT_URL   Upload to this single URL as a flat namespace. Any
+                          set value counts, an empty one included.
+* MATHLIB_CACHE_UPLOAD_HOOK
+                          External uploader for 'put-staged': the tool resolves the
+                          destination and runs
+                            HOOK <local> <relative-dest> <absolute-dest>
+                          once for the staged *.ltar files and once for the
+                          marker (when a scope and a container apply),
+                          instead of uploading with curl. The hook
+                          copies into the destination prefix, preserving base
+                          names, with its own transport and credentials (e.g.
+                          a script around rclone). See Cache/README.md.
+* MATHLIB_CACHE_UPLOADER  Transfer engine for 'put-staged' when no hook is
+                          set:
+                          'curl' (the default), 'rclone' (a system rclone,
+                          required), or 'auto' (rclone when available and the
+                          credentials are the S3 pair; curl otherwise). The
+                          tool passes rclone the S3 credentials through its
+                          environment. See Cache/README.md.
+
+An empty value means unset for the URL, container-list, and credential
+variables above, except MATHLIB_CACHE_PUT_URL, where any set value counts.
 
 See Cache/README.md for more details.
 "
 
-/-- Commands which (potentially) call `curl` for downloading files -/
+/-- Commands which (potentially) call `curl`. `put-staged` validates curl in
+its own early dispatch. -/
 def curlArgs : List String :=
-  ["get", "get!", "get-", "put", "put!", "put-unpacked", "put-staged", "commit", "commit!"]
+  ["get", "get!", "get-", "put", "put!"]
 
-/-- Commands which (potentially) call `leantar` for compressing or decompressing files -/
-def leanTarArgs : List String :=
-  ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup", "stage", "stage!"]
 
 open Cache Cli IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if args.isEmpty || parseFlagOpt "help" args then
     println help
+    Process.exit 0
+  -- `capabilities` answers before `CacheM.run`, which needs a Lake-provided
+  -- search path: CI probes the bare binary for its upload capabilities, and
+  -- the probe must work without a workspace.
+  if args == ["capabilities"] then
+    Requests.capabilities.forM println
     Process.exit 0
   CacheM.run do
 
@@ -139,6 +217,11 @@ def main (args : List String) : IO Unit := do
   useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
 
   let repo? ← parseNamedOpt "repo" options
+
+  -- Resolve the usage context once, before anything resolves a repo or a
+  -- lookup chain: a mathlib checkout (or an explicit --repo) is the inner
+  -- loop, everything else is a downstream project reading the public cache.
+  usageContext.set (UsageContext.resolve (← IO.isMathlibRoot) repo?)
   let stagingDir? ← parseNamedOpt "staging-dir" options
   let cacheFromStr? ← parseNamedOpt "cache-from" options
   let containerStr? ← parseNamedOpt "container" options
@@ -185,8 +268,8 @@ def main (args : List String) : IO Unit := do
       Process.exit 1
     | some cs => cacheFromOverride.set (some cs)
 
-  -- Parse `--container=NAME`. Validation is unconditional; the upload commands
-  -- enforce that the flag is set (via `effectiveUploadURL`).
+  -- Parse `--container=NAME`. Validation is unconditional; `put` enforces that
+  -- the flag is set (via `stagedUploadDest`).
   let container? ← match containerStr? with
     | none => pure none
     | some s => match Container.parse? s with
@@ -211,6 +294,58 @@ def main (args : List String) : IO Unit := do
     return
   | "query" :: _ =>
     IO.eprintln "Usage: cache query [REF]"
+    Process.exit 1
+  -- `put-staged` uploads the staging directory: it needs no
+  -- hash memo, so it dispatches here, with `query`, before the expensive
+  -- build below. Sharing this binary with `get` is deliberate — the upload
+  -- writes with the same URL construction the reads use, so the two sides
+  -- cannot drift apart.
+  | ["put-staged"] =>
+    let some stagingDir := stagingDir? | do
+      IO.eprintln "put-staged requires --staging-dir= (it uploads a staged set; \
+        produce one with `cache pack` and `cache stage --staging-dir=DIR`, \
+        or pack-and-upload in one step with `cache put`)"
+      Process.exit 1
+    let stagingDir : FilePath := stagingDir
+    if !(← stagingDir.isDir) then
+      IO.eprintln "--staging-dir must be a directory"
+      Process.exit 1
+    let repo := repo?.getD MATHLIBREPO
+    -- One destination resolution feeds every upload: the artifact puts, the
+    -- per-SHA marker, and the hook all address {base}/{prefix}/{name}.
+    let dest ← stagedUploadDest container? repo
+    -- The marker is written when the upload is SHA-scoped into a container:
+    -- it lets `cache query` discover cached commits with a cheap HEAD probe.
+    let markerSha? ← if container?.isSome then getRepoScope else pure none
+    -- MATHLIB_CACHE_UPLOAD_HOOK hands the transfers to an external uploader
+    -- (rclone, say): the tool resolves the destination contract, the hook
+    -- moves the bytes with its own transport and credentials. Without it,
+    -- the built-in curl path uploads with the credentials in the environment.
+    if let some hook ← getEnvNonEmpty "MATHLIB_CACHE_UPLOAD_HOOK" then
+      putStagedViaHook hook dest markerSha? stagingDir
+      return
+    let auth ← getUploadAuth
+    -- MATHLIB_CACHE_UPLOADER selects the transfer engine. The rclone engine
+    -- exists only for the S3 pair (`resolveUploadEngine` enforces it); every
+    -- other combination takes the curl engine below.
+    match ← resolveUploadEngine auth, auth with
+    | .rclone, .s3 keyId secret sessionToken? =>
+      putStagedViaRclone dest keyId secret sessionToken? markerSha? stagingDir
+    | _, _ =>
+      discard validateCurl
+      let fileSet ← getFilesWithExtension stagingDir "ltar"
+      putFilesAbsolute dest (container?.map Container.name |>.getD "(env override)")
+        fileSet (tempConfigFilePath := stagingDir / "curl.config") (overwrite := false) auth
+      if let some sha := markerSha? then
+        uploadMarker dest sha auth
+    return
+  | "put-staged" :: _ =>
+    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] [--repo=OWNER/REPO]"
+    Process.exit 1
+  | "put-unpacked" :: _ | "commit" :: _ | "commit!" :: _ =>
+    IO.eprintln "This command is retired: `put` packs and uploads the files this \
+      build links (`put!` overwrites), and `put-staged` uploads a staging \
+      directory produced by `cache stage`."
     Process.exit 1
   | _ => pure ()
 
@@ -253,32 +388,35 @@ def main (args : List String) : IO Unit := do
     getFiles resolvedRepo hashMap force force goodCurl decompress (unsafeScopes := unsafeScopes)
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
-  let put (overwrite unpackedOnly := false) := do
+  -- `pack`-and-upload: the hash memo scopes the file list to what this
+  -- checkout's build links, so nothing else in the shared per-user cache
+  -- directory leaves the machine. It shares `put-staged`'s destination and
+  -- credential resolution and uploads with the built-in curl engine — the
+  -- upload hook and MATHLIB_CACHE_UPLOADER apply to `put-staged`, whose
+  -- staged set is what those transports copy.
+  let put (overwrite := false) := do
     let repo := repo?.getD MATHLIBREPO
+    let dest ← stagedUploadDest container? repo
+    if (← getEnvNonEmpty "MATHLIB_CACHE_UPLOAD_HOOK").isSome
+        || (← getEnvNonEmpty "MATHLIB_CACHE_UPLOADER").isSome then
+      IO.println "note: put uploads its build-scoped file list with the built-in \
+        engine; MATHLIB_CACHE_UPLOAD_HOOK and MATHLIB_CACHE_UPLOADER apply to \
+        `put-staged`"
+    -- Credentials resolve before the pack, so a missing credential fails
+    -- fast instead of after the expensive packing pass.
     let auth ← getUploadAuth
-    putFiles repo container? (← pack overwrite (verbose := true) unpackedOnly) overwrite auth
-    if let some sha ← getRepoScope then
-      if let some c := container? then
-        uploadMarker c repo sha auth
+    let fileNames ← pack overwrite (verbose := true)
+    let files := fileNames.map (fun (f : String) => IO.CACHEDIR / f)
+    putFilesAbsolute dest (container?.map Container.name |>.getD "(env override)")
+      files IO.CURLCFG overwrite auth
+    if container?.isSome then
+      if let some sha ← getRepoScope then
+        uploadMarker dest sha auth
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do
     if stagingDir?.isNone then IO.println "unstage requires --staging-dir=" return else
       unstageFiles stagingDir?.get! overwrite
-  let putStaged (stagingDir : FilePath) := do
-    let repo := repo?.getD MATHLIBREPO
-    if !(← stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
-    else
-      let fileSet ← getFilesWithExtension stagingDir "ltar"
-      let auth ← getUploadAuth
-      putFilesAbsolute repo container? fileSet (tempConfigFilePath := stagingDir / "curl.config")
-        (overwrite := false) auth
-      -- After artifacts upload, write the per-SHA marker if the upload is
-      -- SHA-scoped. The marker lets `cache query` discover cached commits
-      -- with a cheap HEAD probe.
-      if let some sha ← getRepoScope then
-        if let some c := container? then
-          uploadMarker c repo sha auth
 
   match args with
   | "get"  :: args => get args
@@ -288,27 +426,18 @@ def main (args : List String) : IO Unit := do
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
   | ["unpack!"] => unpackCache hashMap true
+  -- We allow arguments for `put*` so they can be added to the roots.
+  | "put" :: _ => put
+  | "put!" :: _ => put (overwrite := true)
   | ["unstage"] => unstage
   | ["unstage!"] => unstage (overwrite := true)
   | ["clean"] =>
     cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
-  -- We allow arguments for `put*` so they can be added to the `roots`.
-  | "put" :: _ => put
-  | "put!" :: _ => put (overwrite := true)
-  | "put-unpacked" :: _ => put (unpackedOnly := true)
   | "stage" :: _ => if (stagingDir?.isNone) then IO.println "stage requires --staging-dir=" return else
     stage stagingDir?.get!
   | "stage!" :: _ => if (stagingDir?.isNone) then IO.println "stage! requires --staging-dir=" return else
     stage stagingDir?.get! (unpackedOnly := false)
-  | "put-staged" :: _ => if (stagingDir?.isNone) then IO.println "put-staged requires --staging-dir=" return else
-    putStaged stagingDir?.get!
-  | ["commit"] =>
-    if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit container? hashMap false (← getUploadAuth)
-  | ["commit!"] =>
-    if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit container? hashMap true (← getUploadAuth)
   | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMap roots.keys
   | [] => println help -- unreachable: options are already partitioned out
