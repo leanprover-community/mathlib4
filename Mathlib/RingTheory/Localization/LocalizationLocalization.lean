@@ -119,7 +119,7 @@ include M in
 localization is a localization.
 -/
 theorem localization_localization_isLocalization_of_has_all_units [IsLocalization N T]
-    (H : ∀ x : S, IsUnit x → x ∈ N) : IsLocalization (N.comap (algebraMap R S)) T := by
+    (H : ∀ x : S, IsUnit x → x ∈ N) : IsLocalization (N.comap (algebraMap R S).toMonoidHom) T := by
   convert! localization_localization_isLocalization M N T using 1
   dsimp [localizationLocalizationSubmodule]
   congr
@@ -193,7 +193,7 @@ instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
 /-- If `M ≤ N` are submonoids of `R`, then `N⁻¹S` is also the localization of `M⁻¹S` at `N`. -/
 theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLocalization M S]
     [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] :
-    IsLocalization (N.map (algebraMap R S)) T where
+    IsLocalization (N.map (algebraMap R S).toMonoidHom) T where
   map_units := by
     rintro ⟨_, ⟨y, hy, rfl⟩⟩
     convert! IsLocalization.map_units T ⟨y, hy⟩

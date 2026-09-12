@@ -618,13 +618,6 @@ protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
   EmbeddingLike.map_ne_one_iff
 
-theorem coe_monoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
-  rfl
-
-@[simp]
-theorem coe_addMonoidHom_refl : (RingEquiv.refl R : R →+ R) = AddMonoidHom.id R :=
-  rfl
-
 /-! `RingEquiv.coe_mulEquiv_refl` and `RingEquiv.coe_addEquiv_refl` are proved above
 in higher generality -/
 
@@ -634,12 +627,12 @@ theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
 
 @[simp]
-theorem coe_monoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →* S') = (e₂ : S →* S').comp ↑e₁ :=
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_trans [NonUnitalNonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toAddMonoidHom_trans [NonUnitalNonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+ S') = (e₂ : S →+ S').comp ↑e₁ :=
   rfl
 
@@ -807,6 +800,14 @@ theorem toMonoidHom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
 
 @[simp]
 theorem toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
+  rfl
+
+@[simp]
+theorem toMonoidHom_refl' : MonoidHom.ofClass (RingEquiv.refl R) = MonoidHom.id R := by simp
+
+@[simp]
+theorem toAddMonoidHom_refl' : AddMonoidHom.ofClass (RingEquiv.refl R) =
+    AddMonoidHom.id R :=
   rfl
 
 theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :

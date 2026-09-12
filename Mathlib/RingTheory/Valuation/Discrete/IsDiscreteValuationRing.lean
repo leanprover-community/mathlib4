@@ -104,15 +104,15 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
     exact hπ.ne_zero
 
 lemma mker_valuation_eq_isUnitSubmonoid :
-    MonoidHom.mker ((IsDiscreteValuationRing.maximalIdeal A).valuation K) =
-    (IsUnit.submonoid A).map (algebraMap A K) := by
+    ((IsDiscreteValuationRing.maximalIdeal A).valuation K).toMonoidHom.mker =
+      (IsUnit.submonoid A).map (algebraMap A K).toMonoidHom := by
   ext a
   simp only [MonoidHom.mem_mker, Submonoid.mem_map]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨b, rfl⟩ := IsDiscreteValuationRing.exists_lift_of_le_one h.le
-    rw [valuation_eq_one_iff_notMem] at h
-    simp only [IsDiscreteValuationRing.maximalIdeal, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-      not_not] at h
+  refine ⟨?_, fun h ↦ ?_⟩
+  · simp_intro h
+    obtain ⟨b, rfl⟩ := IsDiscreteValuationRing.exists_lift_of_le_one h.le
+    simp only [valuation_eq_one_iff_notMem, IsDiscreteValuationRing.maximalIdeal,
+      IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at h
     use b, h
   · obtain ⟨x, h, rfl⟩ := h
     simpa [IsDiscreteValuationRing.maximalIdeal] using! h
@@ -125,11 +125,12 @@ theorem associated_of_valuation_eq (x y : K)
     simp_all
   by_cases hy : y = 0
   · simp_all
-  have : (y / x) ∈ MonoidHom.mker (((maximalIdeal A).valuation K)) := by simp_all
+  have : (y / x) ∈ ((maximalIdeal A).valuation K).toMonoidHom.mker := by simp_all
   rw [mker_valuation_eq_isUnitSubmonoid] at this
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1
-  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1, h.2]
+  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1,
+    MonoidHom.coe_ofClass (algebraMap A K) ▸ h.2]
   field_simp
 
 theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =

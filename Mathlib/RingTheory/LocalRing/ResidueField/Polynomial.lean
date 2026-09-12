@@ -140,7 +140,8 @@ theorem _root_.Ideal.exists_mem_span_singleton_map_residueField_eq
     rw [Ideal.map_map, RingHom.algebraMap_toAlgebra, mapRingHom_comp,
       ← IsScalarTower.algebraMap_eq, hp]
     exact Ideal.mem_span_singleton_self _
-  obtain ⟨⟨⟨r, hr⟩, s⟩, e⟩ := (IsLocalization.mem_map_algebraMap_iff ((R ⧸ P)⁰.map C) _).mp this
+  obtain ⟨⟨⟨r, hr⟩, s⟩, e⟩ :=
+    (IsLocalization.mem_map_algebraMap_iff ((R ⧸ P)⁰.map C.toMonoidHom) _).mp this
   obtain ⟨r, hr', rfl⟩ := (Ideal.mem_map_iff_of_surjective _
     (Polynomial.map_surjective _ Ideal.Quotient.mk_surjective)).mp hr
   simp only [algebraMap_def, coe_mapRingHom,

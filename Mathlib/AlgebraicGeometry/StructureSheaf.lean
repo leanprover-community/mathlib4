@@ -403,7 +403,7 @@ def toBasicOpenₗ (f : R) :
     LocalizedModule.Away f M →ₗ[R] Γ(M, PrimeSpectrum.basicOpen f) :=
   IsLocalizedModule.lift (.powers f) (LocalizedModule.mkLinearMap ..) (toOpenₗ R M _) <| by
     simp only [Subtype.forall]
-    exact Submonoid.powers_le (P := (IsUnit.submonoid _).comap (algebraMap R _)).mpr
+    exact Submonoid.powers_le (P := (IsUnit.submonoid _).comap (algebraMap R _).toMonoidHom).mpr
       (isUnit_basicOpen_end ..)
 
 @[simp]

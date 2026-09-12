@@ -130,7 +130,7 @@ def toHom :
       ((HomotopyCategory.quotient C _).obj K ⟶ (HomotopyCategory.quotient C _).obj (L⟦n⟧)) :=
   descAddMonoidHom ((Functor.mapAddHom _).comp Cocycle.equivHomShift.symm.toAddMonoidHom) (by
     rintro ⟨x, _⟩ ⟨m, hm, β, rfl⟩
-    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
+    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_comp, AddMonoidHom.coe_ofClass,
       AddEquiv.toAddMonoidHom_eq_coe, Function.comp_apply, Cocycle.equivHomShift_symm_apply,
       Functor.mapAddHom_apply, HomotopyCategory.quotient_map_eq_zero_iff]
     exact ⟨(Cochain.equivHomotopy _ _).symm ⟨n.negOnePow • β.rightShift _ _ (by lia),

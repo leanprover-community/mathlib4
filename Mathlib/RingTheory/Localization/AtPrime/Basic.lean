@@ -659,7 +659,8 @@ lemma under_map_eq_map : (Ideal.map (algebraMap R Sₚ) p).under S = pS := by
     obtain ⟨c, hc⟩ := hy
     obtain ⟨α, hα, e⟩ := (c * s).prop
     refine ⟨α, hα, ?_⟩
-    rw [Algebra.smul_def, e, Submonoid.coe_mul, mul_assoc, mul_comm _ x, hc]
+    simp only [MonoidHom.coe_ofClass, Submonoid.coe_mul] at e
+    rw [Algebra.smul_def, e, mul_assoc, mul_comm _ x, hc]
     exact Ideal.mul_mem_left _ _ y.prop
   obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ β * α = 1 + γ := by
     obtain ⟨β, hβ⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p α)⁻¹
@@ -713,7 +714,7 @@ noncomputable def equivQuotientMapMaximalIdeal : S ⧸ pS ≃+* Sₚ ⧸ pSₚ :
     · rw [Algebra.smul_def]
       apply Ideal.mul_mem_right
       exact Ideal.mem_map_of_mem _ hγ
-    simp only
+    simp only [MonoidHom.coe_ofClass] at e ⊢
     rw [mul_comm, mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul,
       IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]

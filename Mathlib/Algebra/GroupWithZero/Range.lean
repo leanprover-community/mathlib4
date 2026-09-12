@@ -56,12 +56,10 @@ section mrange
 
 variable {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H] (f : G →*₀ H)
 
-lemma mrange_nontrivial :
-    Nontrivial (MonoidHom.mrange f) :=
+lemma mrange_nontrivial : Nontrivial f.toMonoidHom.mrange :=
   ⟨1, 0, by simp [Subtype.ext_iff]⟩
 
-lemma range_nontrivial :
-    (Set.range f).Nontrivial :=
+lemma range_nontrivial : (Set.range f).Nontrivial :=
   Set.nontrivial_coe_sort.mp f.mrange_nontrivial
 
 end mrange
@@ -127,8 +125,7 @@ hom `f : A →*₀ B` into the codomain `B`. -/
 @[simps! -isSimp]
 def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
   letI : DecidablePred fun b : B ↦ b = 0 := Classical.decPred fun b ↦ b = 0
-  comp (.ofClass WithZero.withZeroUnitsEquiv)
-    <| WithZero.map' (valueGroup f).subtype
+  comp (WithZero.withZeroUnitsEquiv (G := B)) <| WithZero.map' (valueGroup f).subtype
 
 variable (f) in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/

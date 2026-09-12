@@ -172,15 +172,14 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
   -- This `change` line will become unnecessary once `MonoidHom.mrange` accepts `MonoidHom`
   -- directly instead of a `MonoidHomClass` instance.
-  change Nonempty (LocallyFiniteOrder (MonoidHom.mrange
-      (MonoidWithZeroHom.ofClass (Valued.v (R := K))))ˣ)
+  change Nonempty (LocallyFiniteOrder (MonoidHom.mrange Valued.v)ˣ)
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor
   refine LocallyFiniteOrder.ofFiniteIcc ?_
   -- We only need to show that we can construct a finite set for some set between
   -- a non-zero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
-  suffices ∀ z : (MonoidHom.mrange (MonoidWithZeroHom.ofClass (Valued.v (R := K))))ˣ,
+  suffices ∀ z : (MonoidHom.mrange Valued.v)ˣ,
       (Set.Icc z 1).Finite by
     rintro x y
     rcases lt_trichotomy y x with hxy | rfl | hxy
@@ -212,9 +211,8 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · rw [Set.Icc_eq_empty_of_lt]
     · exact Set.finite_empty
     · simp [hz1]
-  have z0' : 0 < (z : MonoidHom.mrange (MonoidWithZeroHom.ofClass (Valued.v (R := K)))) := by simp
-  have z0 : 0 < ((z : MonoidHom.mrange (MonoidWithZeroHom.ofClass (Valued.v (R := K)))) : Γ₀) :=
-    Subtype.coe_lt_coe.mpr z0'
+  have z0' : 0 < (z : MonoidHom.mrange (Valued.v (R := K))) := by simp
+  have z0 : 0 < ((z : MonoidHom.mrange (Valued.v (R := K))) : Γ₀) := Subtype.coe_lt_coe.mpr z0'
   have a0 : 0 < v a := by simpa [← ha] using z0
   -- Construct our cover, which has an inner closed ball, and spheres for each element
   -- outside of the closed ball. These are all open sets by the nonarchimedean property.
@@ -228,7 +226,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     split_ifs with hw
     · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
       rw [← hb] at z0 ⊢
-      simp only [MonoidWithZeroHom.coe_ofClass, ← v.restrict_le_iff]
+      simp only [← v.restrict_le_iff]
       refine Valued.isOpen_closedBall _ ?_
       rw [ne_eq, ← map_zero v.restrict, v.restrict_inj, map_zero]
       exact z0.ne'
@@ -262,7 +260,6 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     obtain ⟨j, hj, hj'⟩ := hj
     use j, hj
     -- and this `c` is either less than or greater than (or equal to) the threshold element
-    simp only [MonoidWithZeroHom.coe_ofClass] at hc
     split_ifs at hj' with hcj
     · simp only [Set.mem_ofPred_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]
@@ -271,7 +268,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       simp [← hj', hc]
 
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
-    MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
+    MulArchimedean (Valued.v : Valuation K Γ₀).toMonoidHom.mrange := by
   rw [← Units.mulArchimedean_iff]
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   exact MulArchimedean.of_locallyFiniteOrder
@@ -290,7 +287,7 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   -- is a PIR iff the value group is not densely ordered.
   refine hi.isPrincipalIdealRing_iff_not_denselyOrdered_mrange.mpr fun _ ↦ ?_
   -- since we are densely ordered, we necessarily are nontrivial
-  exact not_subsingleton (MonoidHom.mrange (v : Valuation K Γ₀))ˣ
+  exact not_subsingleton ((v : Valuation K Γ₀).toMonoidHom.mrange)ˣ
     (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)
 
 theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]

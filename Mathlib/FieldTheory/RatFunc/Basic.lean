@@ -323,10 +323,11 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     RatFunc.liftOn f
       (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
       fun {p q p' q'} hq hq' h => by
-      simp only [Submonoid.mem_comap.mp (hφ hq), Submonoid.mem_comap.mp (hφ hq'),
-        dite_eq_left, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
-      refine Localization.r_of_eq ?_
-      simpa only [map_mul] using congr_arg φ h
+        rw [← MonoidHom.coe_ofClass]
+        simp only [Submonoid.mem_comap.mp (hφ hq), Submonoid.mem_comap.mp (hφ hq'),
+          dite_eq_left, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
+        refine Localization.r_of_eq ?_
+        simpa [map_mul] using congr_arg φ h
   map_one' := by
     simp_rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk,
       OneMemClass.coe_one, map_one, OneMemClass.one_mem, dite_true, ofFractionRing.injEq,
@@ -348,8 +349,8 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) (n : R[X]) (d : R[X]⁰) :
     map φ hφ (ofFractionRing (Localization.mk n d)) =
       ofFractionRing (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
-  simp only [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
-    Submonoid.mem_comap.mp (hφ d.2), ↓reduceDIte]
+  simp [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
+    MonoidHom.coe_ofClass φ ▸ Submonoid.mem_comap.mp (hφ d.2)]
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
@@ -446,8 +447,7 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯
       obtain ⟨p, q⟩ := pq
       obtain ⟨p', q'⟩ := p'q'
       rw [← ofFractionRing_add, Localization.add_mk]
-      simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-        liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+      simp only [RingHom.coe_toMonoidWithZeroHom, liftMonoidWithZeroHom_apply_ofFractionRing_mk]
       rw [div_add_div, div_eq_div_iff]
       · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
         simp only [map_add, map_mul, Submonoid.coe_mul]

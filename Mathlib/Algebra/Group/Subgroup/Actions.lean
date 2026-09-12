@@ -79,4 +79,4 @@ end Subgroup
 open MonoidHom in
 lemma MonoidWithZeroHom.comap_mker {M N P : Type*} [MulZeroOneClass M] [MulZeroOneClass N]
     [MulZeroOneClass P] (g : N →*₀ P) (f : M →*₀ N) :
-    Submonoid.comap f (mker g) = mker (g.comp f) := rfl
+    Submonoid.comap f g.toMonoidHom.mker = (g.comp f).toMonoidHom.mker := rfl

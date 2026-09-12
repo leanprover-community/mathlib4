@@ -135,11 +135,7 @@ def localization (P : Extension.{w} R S) : Extension R S' where
       (g := (algebraMap S S').comp (algebraMap P.Ring S))
       (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
   isScalarTower := by
-    let : Algebra (Localization (M.comap (algebraMap P.Ring S))) S' :=
-      (IsLocalization.lift (M := (M.comap (algebraMap P.Ring S)))
-        (g := (algebraMap S S').comp (algebraMap P.Ring S))
-        (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
-    apply IsScalarTower.of_algebraMap_eq'
+    apply +allowSynthFailures IsScalarTower.of_algebraMap_eq'
     rw [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_eq R P.Ring (Localization _),
       ← RingHom.comp_assoc, IsLocalization.lift_comp, RingHom.comp_assoc,
       ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]

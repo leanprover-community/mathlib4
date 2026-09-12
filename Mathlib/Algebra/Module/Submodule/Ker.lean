@@ -72,7 +72,7 @@ theorem ker_id : ker (LinearMap.id : M →ₗ[R] M) = ⊥ :=
 theorem map_coe_ker (f : M →ₛₗ[τ₁₂] M₂) (x : ker f) : f x = 0 :=
   mem_ker.1 x.2
 
-theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmonoid = (AddMonoidHom.mker f) :=
+theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmonoid = f.toAddMonoidHom.mker :=
   rfl
 
 theorem le_ker_iff_comp_subtype_eq_zero {N : Submodule R M} {f : M →ₛₗ[τ₁₂] M₂} :

@@ -51,7 +51,7 @@ variable [RingHomSurjective σ₁₂]
 
 /-- The pushforward of a submodule `p ⊆ M` by `f : M → M₂` -/
 def map (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) : Submodule R₂ M₂ :=
-  { p.toAddSubmonoid.map f with
+  { p.toAddSubmonoid.map f.toAddMonoidHom with
     carrier := f '' p
     smul_mem' := by
       rintro c x ⟨y, hy, rfl⟩
@@ -170,7 +170,7 @@ theorem map_equivMapOfInjective_symm_apply (f : M →ₛₗ[σ₁₂] M₂) (i :
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
 @[implicit_reducible]
 def comap (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : Submodule R M :=
-  { p.toAddSubmonoid.comap f with
+  { p.toAddSubmonoid.comap f.toAddMonoidHom with
     carrier := f ⁻¹' p
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 added `map_smulₛₗ _`
     smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }

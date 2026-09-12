@@ -673,8 +673,7 @@ lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
   · simp only [t, Set.finite_insert]
     exact s.finite_toSet.image (fun x ↦ r ^ m x * x)
   · rintro a (rfl | ⟨x, hx, rfl⟩); exacts [hr, hm _]
-  refine ⟨r', hrp,
-    IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective, ?_⟩
+  refine ⟨r', hrp, IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective, ?_⟩
   have : (IsScalarTower.toAlgHom R S _).range ≤
       (Localization.awayMapₐ (Algebra.adjoin R t).val r').range := by
     rw [← Algebra.map_top, ← hs, Subalgebra.map_le, Algebra.adjoin_le_iff]

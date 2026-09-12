@@ -476,7 +476,7 @@ variable {R A Rₘ Sₘ : Type*} [CommRing R] [CommRing A] [CommRing Rₘ] [Comm
 variable (M : Submonoid R)
 variable [Algebra R A] [Algebra R Sₘ] [Algebra A Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R A Sₘ]
-variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R A)) Sₘ]
+variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R A).toMonoidHom) Sₘ]
 include M
 
 theorem of_isLocalization : FormallySmooth R Rₘ := by
@@ -520,7 +520,8 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   simp [f]
 
 theorem localization_map [FormallySmooth R A] : FormallySmooth Rₘ Sₘ := by
-  have : FormallySmooth A Sₘ := FormallySmooth.of_isLocalization (M.map (algebraMap R A))
+  have : FormallySmooth A Sₘ :=
+    FormallySmooth.of_isLocalization (M.map (algebraMap R A).toMonoidHom)
   have : FormallySmooth R Sₘ := FormallySmooth.comp R A Sₘ
   exact FormallySmooth.localization_base M
 
