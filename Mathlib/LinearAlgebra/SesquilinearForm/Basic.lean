@@ -678,17 +678,36 @@ theorem separatingLeft_iff_ker_eq_bot : B.SeparatingLeft ↔ LinearMap.ker B = �
 theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 
+/-- If a bilinear map is left-separating then it has a trivial kernel. -/
+@[simp]
+theorem SeparatingLeft.ker_eq_bot [inst : Fact B.SeparatingLeft] : ker B = ⊥ := by
+  simpa [separatingLeft_iff_ker_eq_bot] using inst.elim
+
+instance [inst : Fact B.Nondegenerate] : Fact B.SeparatingLeft := ⟨inst.elim.1⟩
+
+instance [inst : Fact B.Nondegenerate] : Fact B.SeparatingRight := ⟨inst.elim.2⟩
+
+instance [inst : Fact B.SeparatingLeft] : Fact B.flip.SeparatingRight :=
+  ⟨flip_separatingLeft.mp inst.elim⟩
+
+instance [inst : Fact B.SeparatingRight] : Fact B.flip.SeparatingLeft :=
+  ⟨flip_separatingRight.mp inst.elim⟩
+
 /-- The identity pairing is left-separating. -/
 protected theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
   separatingLeft_iff_ker_eq_bot.mpr ker_id
 
 alias id_separatingLeft := SeparatingLeft.id
 
+instance : Fact (SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id) := ⟨.id⟩
+
 /-- The pairing `Dual.eval` is right-separating. -/
 protected theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight :=
   id_separatingLeft
 
 alias eval_separatingRight := SeparatingRight.eval
+
+instance : Fact (Dual.eval R M).SeparatingRight := ⟨.eval⟩
 
 end CommSemiring
 
