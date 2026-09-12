@@ -31,9 +31,10 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
     rintro a ha b c hbc
     gcongr
 
+-- TODO: This should be removed after `MonoidHom.ofClass`
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
-    LinearOrderedCommGroupWithZero v.toMonoidHom.mrange :=
-  inferInstanceAs (LinearOrderedCommGroupWithZero v.toMonoidHom.mrange)
+    LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
+  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (v : F →*₀ Γ₀)))
 
 namespace Valuation.Integers
 
