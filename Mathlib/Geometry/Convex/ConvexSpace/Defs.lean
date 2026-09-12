@@ -8,6 +8,8 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Util.Qq
 
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Positivity.Basic
@@ -63,7 +65,7 @@ structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) 
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-attribute [simp] StdSimplex.total
+attribute [simp] StdSimplex.total StdSimplex.nonneg
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
@@ -77,6 +79,9 @@ variable {R : Type u} [PartialOrder R] [Semiring R] {w : StdSimplex R X} {x : X}
 
 @[simp] lemma weights_ne_zero [Nontrivial R] : ∀ w : StdSimplex R X, w.weights ≠ 0 := by
   rintro ⟨_, -, total⟩ rfl; simp at total
+
+@[simp] lemma weights_pos [Nontrivial R] (w : StdSimplex R X) : 0 < w.weights :=
+  w.nonneg.lt_of_ne w.weights_ne_zero.symm
 
 lemma support_weights_nonempty [Nontrivial R] (w : StdSimplex R X) :
     w.weights.support.Nonempty := by simp
@@ -797,3 +802,61 @@ lemma isAffineMap_convexCombPair (m : X) :
 end CommSemiring
 
 end Convexity
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Convexity
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative
+(in the sense ),
+and even positive (in the sense of `0 < w.weights`, not `∀ i, 0 < w.weights i`) when `R` is
+nontrivial. -/
+@[positivity StdSimplex.weights _]
+meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  let some ⟨_uX, _uR, _X, R, _instZero, _hu, _hα⟩ ← matchFinsupp α | throwError "not a `Finsupp`"
+  let _semiringR ← synthInstanceQ q(Semiring $R)
+  let _partialOrderR ← synthInstanceQ q(PartialOrder $R)
+  assertInstancesCommute
+  let ~q(StdSimplex.weights $w) := q($e) | throwError "Not a match"
+  assumeInstancesCommute
+  -- `StdSimplex.weights_pos` needs `Nontrivial R`, so fall back to nonnegativity without it.
+  match ← trySynthInstanceQ q(Nontrivial $R) with
+  | .some _instNontrivial => pure <| .positive q(StdSimplex.weights_pos $w)
+  | _ => pure <| .nonnegative q(StdSimplex.nonneg $w)
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative.
+
+This handles `w.weights i`; see `evalStdSimplexWeights` for the unapplied `w.weights`. -/
+@[positivity StdSimplex.weights _ _]
+meta def evalStdSimplexWeightsApply : PositivityExt where eval {_u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  let _instPartialOrder ← synthInstanceQ q(PartialOrder $α)
+  let _instSemiring ← synthInstanceQ q(Semiring $α)
+  let uX ← mkFreshLevelMVar
+  let X ← mkFreshExprMVarQ q(Type uX)
+  let w' ← mkFreshExprMVarQ q(StdSimplex $α $X)
+  let i' ← mkFreshExprMVarQ q($X)
+  assumeInstancesCommute
+  let .defEq _ ← isDefEqQ e q(($w').weights $i') | throwError "not `StdSimplex.weights`"
+  let ⟨w, _⟩ ← instantiateMVarsQ' w'
+  let ⟨i, _⟩ ← instantiateMVarsQ' i'
+  pure (.nonnegative q(StdSimplex.weights_nonneg (w := $w) $i))
+
+end Mathlib.Meta.Positivity
+
+/- ## `Convexity.StdSimplex.weights` -/
+
+example {R M : Type*} [PartialOrder R] [Semiring R] (w : Convexity.StdSimplex R M) :
+    0 ≤ w.weights := by positivity
+
+example {R M : Type*} [PartialOrder R] [Semiring R] [Nontrivial R]
+    (w : Convexity.StdSimplex R M) : 0 < w.weights := by positivity
+
+example {R M : Type*} [PartialOrder R] [Semiring R] [Nontrivial R]
+    (w : Convexity.StdSimplex R M) : w.weights ≠ 0 := by positivity
+
+example {R M : Type*} [PartialOrder R] [Semiring R] (w : Convexity.StdSimplex R M) (i : M) :
+    0 ≤ w.weights i := by positivity
+
+example {R M : Type*} [PartialOrder R] [Semiring R] [IsOrderedRing R]
+    (w : Convexity.StdSimplex R M) (i j : M) : 0 ≤ w.weights i * w.weights j := by positivity
