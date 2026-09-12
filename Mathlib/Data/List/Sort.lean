@@ -775,6 +775,52 @@ end LinearOrder
 
 end Sorted
 
+/-! ### Nondecreasing lists -/
+
+section PairwiseLE
+
+variable {α : Type*} [Preorder α] {s : List α}
+
+/-- In a nondecreasing list, every entry is at most the last one. -/
+theorem le_getLast_of_pairwise_le (hs : s.Pairwise (· ≤ ·)) {z : α}
+    (hz : s.getLast? = some z) {a : α} (ha : a ∈ s) : a ≤ z := by
+  induction s with
+  | nil => simp at ha
+  | cons b s ih =>
+    rw [pairwise_cons] at hs
+    cases s with
+    | nil =>
+      rw [getLast?_singleton, Option.some.injEq] at hz
+      rw [mem_singleton] at ha
+      subst ha
+      exact le_of_eq hz
+    | cons c s =>
+      rw [getLast?_cons_cons] at hz
+      rcases mem_cons.1 ha with rfl | ha'
+      · exact hs.1 z (mem_of_getLast? hz)
+      · exact ih hs.2 hz ha'
+
+/-- Monotonicity of a nondecreasing list, in terms of `getElem?`. -/
+theorem pairwise_le_getElem?_mono (hs : s.Pairwise (· ≤ ·)) {i j : ℕ} (hij : i ≤ j) {a b : α}
+    (hi : s[i]? = some a) (hj : s[j]? = some b) : a ≤ b := by
+  rcases Nat.lt_or_eq_of_le hij with h | rfl
+  · obtain ⟨hi', rfl⟩ := getElem?_eq_some_iff.1 hi
+    obtain ⟨hj', rfl⟩ := getElem?_eq_some_iff.1 hj
+    exact pairwise_iff_getElem.1 hs i j hi' hj' h
+  · rw [hi] at hj; exact le_of_eq (Option.some.inj hj)
+
+/-- A list that is both nondecreasing and strictly decreasing has at most one entry. -/
+theorem length_le_one_of_pairwise (h₁ : s.Pairwise (· ≤ ·)) (h₂ : s.Pairwise (· > ·)) :
+    s.length ≤ 1 := by
+  match s with
+  | [] => simp
+  | [a] => simp
+  | a :: b :: t =>
+    simp only [pairwise_cons, mem_cons] at h₁ h₂
+    exact absurd (lt_of_le_of_lt (h₁.1 b (Or.inl rfl)) (h₂.1 b (Or.inl rfl))) (lt_irrefl a)
+
+end PairwiseLE
+
 end List
 
 namespace RelEmbedding

@@ -431,4 +431,13 @@ theorem range_bind_sublistsLen_perm (l : List α) :
       ← flatMap_cons (f := fun n => sublistsLen n tl), ← range_succ_eq_map]
     exact l_ih
 
+
+/-- The sublists of a three element list. -/
+theorem sublist_three_cases {S : List α} {a b c : α} (h : S.Sublist [a, b, c]) :
+    S = [] ∨ S = [a] ∨ S = [b] ∨ S = [c] ∨ S = [a, b] ∨ S = [a, c] ∨ S = [b, c] ∨
+      S = [a, b, c] := by
+  have h2 := mem_sublists'.2 h
+  simp [sublists'] at h2
+  tauto
+
 end List

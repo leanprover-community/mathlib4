@@ -1191,4 +1191,81 @@ lemma left_le_of_mem_range' {a b s x : ℕ} (hx : x ∈ List.range' a b s) : a �
 
 end range'
 
+/-! ### Lists split into three pieces -/
+
+section AppendMid
+
+variable (p m s : List α) {i j : ℕ}
+
+theorem length_append_mid : (p ++ m ++ s).length = p.length + m.length + s.length := by
+  simp [Nat.add_assoc]
+
+theorem getElem_mid_left (hi : i < p.length) :
+    (p ++ m ++ s)[i]'(by simp; omega) = p[i] := by
+  rw [getElem_append_left (by simp; omega), getElem_append_left hi]
+
+theorem getElem_mid_mid (hj : j < m.length) :
+    (p ++ m ++ s)[p.length + j]'(by simp; omega) = m[j] := by
+  rw [getElem_append_left (by simp; omega), getElem_append_right (by omega)]
+  simp
+
+theorem getElem_mid_right (hi : i < s.length) :
+    (p ++ m ++ s)[p.length + m.length + i]'(by simp; omega) = s[i] := by
+  rw [getElem_append_right (by simp)]
+  congr 1
+  simp
+
+theorem getElem_mid_left' (hi : i < p.length) (h : i < (p ++ m ++ s).length) :
+    (p ++ m ++ s)[i] = p[i] := getElem_mid_left p m s hi
+
+theorem getElem_mid_mid' (hj : j < m.length) (hij : i = p.length + j)
+    (h : i < (p ++ m ++ s).length) : (p ++ m ++ s)[i] = m[j] := by
+  subst hij; exact getElem_mid_mid p m s hj
+
+theorem getElem_mid_right' (hj : j < s.length) (hij : i = p.length + m.length + j)
+    (h : i < (p ++ m ++ s).length) : (p ++ m ++ s)[i] = s[j] := by
+  subst hij; exact getElem_mid_right p m s hj
+
+end AppendMid
+
+/-! ### Setting an entry of a list split as `l ++ x :: m` -/
+
+section SetAppendCons
+
+variable {x y : α} {l m : List α} {i k : ℕ}
+
+theorem set_append_cons_left (h : i < l.length) :
+    (l ++ x :: m).set i y = l.set i y ++ x :: m := by
+  rw [set_append, ite_eq_left h]
+
+theorem set_append_cons_right :
+    (l ++ x :: m).set (l.length + 1 + k) y = l ++ x :: m.set k y := by
+  rw [set_append, ite_eq_right (by omega)]
+  have : l.length + 1 + k - l.length = k + 1 := by omega
+  rw [this, set_cons_succ]
+
+theorem set_append_cons_self : (l ++ x :: m).set l.length y = l ++ y :: m := by
+  rw [set_append, ite_eq_right (by omega), Nat.sub_self, set_cons_zero]
+
+end SetAppendCons
+
+/-- The index of an element appended to a list in which it does not occur. -/
+theorem idxOf_append_singleton [DecidableEq α] {L : List α} {v : α} (h : v ∉ L) :
+    (L ++ [v]).idxOf v = L.length := by
+  induction L with
+  | nil => simp
+  | cons a L ih =>
+    have ha : a ≠ v := fun he => h (by simp [he])
+    have hL : v ∉ L := fun hc => h (by simp [hc])
+    simp [ha, ih hL]
+
+/-- A sublist of `w ++ [l]` either is a sublist of `w`, or is obtained from a sublist of
+`w` by appending `l`. -/
+theorem sublist_concat_cases {s w : List α} {l : α} (h : s.Sublist (w ++ [l])) :
+    s.Sublist w ∨ ∃ s', s = s' ++ [l] ∧ s'.Sublist w := by
+  obtain ⟨l₁, l₂, rfl, h₁, h₂⟩ := sublist_append_iff.1 h
+  rcases sublist_singleton.1 h₂ with rfl | rfl
+  · exact Or.inl (by simpa using h₁)
+  · exact Or.inr ⟨l₁, rfl, h₁⟩
+
 end List

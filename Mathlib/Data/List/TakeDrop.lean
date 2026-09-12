@@ -6,6 +6,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Data.List.Defs
+public import Mathlib.Data.List.GetD
 public import Mathlib.Tactic.Common
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Attr.Core
@@ -191,5 +192,23 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     (dropSlice i j xs).length < xs.length := by grind
+
+
+/-! ### Splitting a list at three consecutive positions -/
+
+theorem split_three_getElem (L : List α) (k : ℕ) (h : k + 3 ≤ L.length) :
+    L = L.take k ++ L[k]'(by omega) :: L[k + 1]'(by omega) :: L[k + 2]'(by omega) ::
+      L.drop (k + 3) := by
+  conv_lhs => rw [← take_append_drop k L]
+  congr 1
+  rw [drop_eq_getElem_cons (by omega), drop_eq_getElem_cons (by omega),
+    drop_eq_getElem_cons (by omega)]
+
+theorem split_three_getD (L : List α) (k : ℕ) (d : α) (h : k + 3 ≤ L.length) :
+    L = L.take k ++ L.getD k d :: L.getD (k + 1) d :: L.getD (k + 2) d :: L.drop (k + 3) := by
+  rw [getD_eq_getElem _ _ (show k < L.length by omega),
+    getD_eq_getElem _ _ (show k + 1 < L.length by omega),
+    getD_eq_getElem _ _ (show k + 2 < L.length by omega)]
+  exact split_three_getElem L k h
 
 end List

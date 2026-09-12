@@ -46,6 +46,9 @@ theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   grind
 
+theorem getD_tail : l.tail.getD n d = l.getD (n + 1) d := by
+  cases l <;> simp
+
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by
   grind
@@ -126,5 +129,76 @@ theorem getI_eq_getElem?_getD (n : ℕ) : l.getI n = (l[n]?).getD default := by
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
 end getI
+
+/-! ### Further lemmas on `getD` -/
+
+section
+
+variable {α : Type*} {d d' : α}
+
+/-- The last entry of a nonempty list, as a `getD`. -/
+theorem getLastD_eq_getD {l : List α} (h : l ≠ []) : l.getLastD d = l.getD (l.length - 1) d' := by
+  induction l generalizing d with
+  | nil => simp at h
+  | cons a s ih =>
+    cases s with
+    | nil => simp
+    | cons b t =>
+      rw [List.getLastD_cons, ih (d := a) (by simp)]
+      simp
+
+/-- The first entry of a list, as a `getD`. -/
+theorem getD_zero_eq_headD (l : List α) : l.getD 0 d = l.headD d := by cases l <;> rfl
+
+/-- Two lists of the same length with the same entries are equal. -/
+theorem eq_of_length_eq_of_getD_eq {l l' : List α} (hl : l.length = l'.length)
+    (h : ∀ i, l.getD i d = l'.getD i d) : l = l' := by
+  refine List.ext_getElem hl fun i h1 h2 => ?_
+  have := h i
+  rwa [List.getD_eq_getElem _ _ h1, List.getD_eq_getElem _ _ h2] at this
+
+/-- Two lists whose entries are all different from the default value, and which have the same
+entries, are equal. -/
+theorem eq_of_getD_eq {l l' : List α} (hl : ∀ i < l.length, l.getD i d ≠ d)
+    (hl' : ∀ i < l'.length, l'.getD i d ≠ d) (h : ∀ i, l.getD i d = l'.getD i d) : l = l' := by
+  have hlen : l.length = l'.length :=
+    Nat.le_antisymm
+      (Nat.not_lt.1 fun hlt =>
+        hl l'.length hlt (by rw [h, List.getD_eq_default _ _ (Nat.le_refl _)]))
+      (Nat.not_lt.1 fun hlt =>
+        hl' l.length hlt (by rw [← h, List.getD_eq_default _ _ (Nat.le_refl _)]))
+  exact eq_of_length_eq_of_getD_eq hlen h
+
+variable {x : α} {i k : ℕ} {l m : List α}
+
+theorem getD_append_cons_left (h : i < l.length) : (l ++ x :: m).getD i d = l.getD i d :=
+  List.getD_append _ _ _ _ h
+
+theorem getD_append_cons_self : (l ++ x :: m).getD l.length d = x := by
+  rw [List.getD_append_right _ _ _ _ (Nat.le_refl _), Nat.sub_self, List.getD_cons_zero]
+
+theorem getD_append_cons_right : (l ++ x :: m).getD (l.length + 1 + k) d = m.getD k d := by
+  have hk : l.length + 1 + k = l.length + (k + 1) := by
+    rw [Nat.add_assoc, Nat.add_comm 1 k]
+  rw [hk, List.getD_append_right _ _ _ _ (Nat.le_add_right _ _), Nat.add_sub_cancel_left,
+    List.getD_cons_succ]
+
+end
+
+/-! ### `getD` and `flatten` -/
+
+theorem mem_flatten_of_mem_getD {P : List (List α)} {x : α} {i : ℕ}
+    (hx : x ∈ P.getD i []) : x ∈ P.flatten := by
+  rcases Nat.lt_or_ge i P.length with hi | hi
+  · rw [getD_eq_getElem _ _ hi] at hx
+    exact mem_flatten.2 ⟨P[i], getElem_mem hi, hx⟩
+  · rw [getD_eq_default _ _ hi] at hx
+    simp at hx
+
+theorem mem_getD_of_mem_flatten {P : List (List α)} {x : α} (hx : x ∈ P.flatten) :
+    ∃ j, x ∈ P.getD j [] := by
+  obtain ⟨t, ht, hxt⟩ := mem_flatten.1 hx
+  obtain ⟨j, hj, rfl⟩ := getElem_of_mem ht
+  exact ⟨j, by rwa [getD_eq_getElem _ _ hj]⟩
 
 end List

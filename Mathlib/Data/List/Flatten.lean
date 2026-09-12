@@ -72,4 +72,17 @@ theorem getLast_flatten_eq_getLast_getLast {l : List (List α)}
     l.flatten.getLast hl = (l.getLast (by grind)).getLast hl' :=
   (getLast_getLast_eq_getLast_flatten ..).symm
 
+
+/-- The list of the heads of a list of lists is a sublist of its flattening. -/
+theorem filterMap_head?_sublist_flatten (L : List (List α)) :
+    (L.filterMap head?).Sublist L.flatten := by
+  induction L with
+  | nil => simp
+  | cons r L ih =>
+    cases r with
+    | nil => simpa [filterMap_cons] using ih
+    | cons a r =>
+      simp only [filterMap_cons, head?_cons, flatten_cons, cons_append]
+      exact Sublist.cons_cons a (ih.trans (sublist_append_right r L.flatten))
+
 end List

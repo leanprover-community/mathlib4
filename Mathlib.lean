@@ -76,6 +76,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.GetD
 public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
@@ -4103,6 +4104,7 @@ public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Fintype.Fiber
 public import Mathlib.Data.Fintype.Fin
 public import Mathlib.Data.Fintype.Inv
 public import Mathlib.Data.Fintype.Lattice
@@ -4216,6 +4218,7 @@ public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Permutation
+public import Mathlib.Data.List.Permuted
 public import Mathlib.Data.List.Pi
 public import Mathlib.Data.List.Prime
 public import Mathlib.Data.List.ProdSigma
@@ -4224,6 +4227,7 @@ public import Mathlib.Data.List.ReduceOption
 public import Mathlib.Data.List.Rotate
 public import Mathlib.Data.List.Sections
 public import Mathlib.Data.List.Shortlex
+public import Mathlib.Data.List.Shuffle
 public import Mathlib.Data.List.Sigma
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.List.SplitBy
@@ -6276,6 +6280,7 @@ public import Mathlib.Order.Fin.InsertNth
 public import Mathlib.Order.Fin.Prod
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Finite.Lattice
 public import Mathlib.Order.FixedPoints
 public import Mathlib.Order.GaloisConnection.Basic
 public import Mathlib.Order.GaloisConnection.Defs
