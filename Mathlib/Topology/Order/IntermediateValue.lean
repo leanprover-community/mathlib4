@@ -32,8 +32,11 @@ on intervals.
 * `IsClosed.Icc_subset_of_forall_mem_nhdsWithin` : “Continuous induction” principle;
   if `s ∩ [a, b]` is closed, `a ∈ s`, and for each `x ∈ [a, b) ∩ s` some of its right neighborhoods
   is included in `s`, then `[a, b] ⊆ s`.
-* `IsClosed.Icc_subset_of_forall_exists_gt`, `IsClosed.mem_of_ge_of_forall_exists_gt` : two
-  other versions of the “continuous induction” principle.
+* `IsClosed.Icc_subset_of_forall_exists_gt`, `IsClosed.mem_of_ge_of_forall_exists_gt`,
+  `IsClosed.isGreatest_inter_Icc_of_forall_exists_gt` : other versions of the “continuous
+  induction” principle.
+* `isGreatest_inter_Icc_of_csSup_mem_of_forall_exists_gt`, `mem_of_csSup_mem_of_forall_exists_gt` :
+  purely order-theoretic versions, where closedness is weakened to membership of the supremum.
 * `ContinuousOn.StrictMonoOn_of_InjOn_Ioo` :
   Every continuous injective `f : (a, b) → δ` is strictly monotone
   or antitone (increasing or decreasing).
@@ -311,28 +314,44 @@ conditionally complete linear order is preconnected.
 omit [TopologicalSpace α] [OrderTopology α] in
 /-- A version of the continuous induction principle `IsClosed.mem_of_ge_of_forall_exists_gt` where
 closedness is weakened to membership of the supremum: if `a ∈ s`, the supremum of `s ∩ [a, b]`
-belongs to `s`, and `s ∩ [a, b)` has no maximal point, then `b ∈ s`. -/
-theorem mem_of_csSup_mem_of_forall_exists_gt {a b : α} {s : Set α} (hs : sSup (s ∩ Icc a b) ∈ s)
-    (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s := by
+belongs to `s`, and `s ∩ [a, b)` has no maximal point, then `b` is the greatest element of
+`s ∩ [a, b]`. -/
+theorem isGreatest_inter_Icc_of_csSup_mem_of_forall_exists_gt {a b : α} {s : Set α}
+    (hs : sSup (s ∩ Icc a b) ∈ s) (ha : a ∈ s) (hab : a ≤ b)
+    (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : IsGreatest (s ∩ Icc a b) b := by
   set S := s ∩ Icc a b
   replace ha : a ∈ S := ⟨ha, left_mem_Icc.2 hab⟩
-  have hbd : b ∈ upperBounds S := fun _ hx ↦ hx.2.2
-  have Sbd : BddAbove S := ⟨b, hbd⟩
-  let c := sSup S
-  have hac : a ≤ c := le_csSup Sbd ha
-  have c_mem : c ∈ S := ⟨hs, hac, csSup_le ⟨a, ha⟩ hbd⟩
-  obtain hc | hc := c_mem.2.2.eq_or_lt
-  · exact hc ▸ c_mem.1
-  exfalso
-  rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
-  exact not_lt_of_ge (le_csSup Sbd ⟨xs, hac.trans cx.le, xb⟩) cx
+  have hbd : BddAbove S := bddAbove_Icc.mono inter_subset_right
+  replace hs : IsGreatest S (sSup S) :=
+    (isLUB_csSup ⟨a, ha⟩ hbd).isGreatest
+      ⟨hs, le_csSup hbd ha, csSup_le ⟨a, ha⟩ fun _ hx ↦ hx.2.2⟩
+  obtain h | h := hs.1.2.2.eq_or_lt
+  · rwa [← h]
+  obtain ⟨_, hxs, hx, hxb⟩ := hgt _ ⟨hs.1.1, hs.1.2.1, h⟩
+  exact absurd (hs.2 ⟨hxs, hs.1.2.1.trans hx.le, hxb⟩) hx.not_ge
+
+omit [TopologicalSpace α] [OrderTopology α] in
+/-- A version of the continuous induction principle `IsClosed.mem_of_ge_of_forall_exists_gt` where
+closedness is weakened to membership of the supremum: if `a ∈ s`, the supremum of `s ∩ [a, b]`
+belongs to `s`, and `s ∩ [a, b)` has no maximal point, then `b ∈ s`. -/
+theorem mem_of_csSup_mem_of_forall_exists_gt {a b : α} {s : Set α} (hs : sSup (s ∩ Icc a b) ∈ s)
+    (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s :=
+  (isGreatest_inter_Icc_of_csSup_mem_of_forall_exists_gt hs ha hab hgt).1.1
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `a`, and the set `s ∩ [a, b)` has no maximal point, then `b` is the
+greatest element of `s ∩ [a, b]`. -/
+theorem IsClosed.isGreatest_inter_Icc_of_forall_exists_gt {a b : α} {s : Set α}
+    (hs : IsClosed (s ∩ Icc a b)) (ha : a ∈ s) (hab : a ≤ b)
+    (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : IsGreatest (s ∩ Icc a b) b :=
+  isGreatest_inter_Icc_of_csSup_mem_of_forall_exists_gt
+    (hs.csSup_mem ⟨_, ha, left_mem_Icc.2 hab⟩ ⟨b, fun _ hx ↦ hx.2.2⟩).1 ha hab hgt
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and the set `s ∩ [a, b)` has no maximal point, then `b ∈ s`. -/
 theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s :=
-  mem_of_csSup_mem_of_forall_exists_gt
-    (hs.csSup_mem ⟨_, ha, left_mem_Icc.2 hab⟩ ⟨b, fun _ hx ↦ hx.2.2⟩).1 ha hab hgt
+  (hs.isGreatest_inter_Icc_of_forall_exists_gt ha hab hgt).1.1
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `a ≤ x < y ≤ b`, `x ∈ s`, the set `s ∩ (x, y]`
