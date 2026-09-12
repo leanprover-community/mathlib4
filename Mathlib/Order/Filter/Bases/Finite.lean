@@ -85,6 +85,26 @@ protected theorem HasBasis.iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Fi
     cases hI.nonempty_fintype
     exact iInter_mem.2 fun i => mem_iInf_of_mem ↑i <| (hl i).mem_of_mem <| hf _
 
+/-- When the indexing type is finite, `⨅ i, l i` has a basis consisting of intersections of sets
+from bases of each `l i`. -/
+theorem HasBasis.iInf_of_finite {ι : Type*} {ι' : ι → Type*} [Finite ι]
+    {l : ι → Filter α} {p : ∀ i, ι' i → Prop} {s : ∀ i, ι' i → Set α}
+    (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
+    (⨅ i, l i).HasBasis (fun f : ∀ i, ι' i ↦ ∀ i, p i (f i)) fun f ↦ ⋂ i, s i (f i) := by
+  refine ⟨fun t ↦ ⟨fun ht ↦ ?_, fun ⟨f, hf, hsub⟩ ↦ ?_⟩⟩
+  · obtain ⟨u, hu, rfl⟩ := (mem_iInf_of_finite t).1 ht
+    choose f hf hsub using fun i ↦ (hl i).mem_iff.1 (hu i)
+    exact ⟨f, hf, iInter_mono hsub⟩
+  · exact mem_of_superset (iInter_mem.2 fun i ↦ mem_iInf_of_mem i <| (hl i).mem_of_mem (hf i)) hsub
+
+theorem HasBasis.biInf_of_finset {ι : Type*} {ι' : ι → Type*} (I : Finset ι)
+    {l : ι → Filter α} {p : ∀ i, ι' i → Prop} {s : ∀ i, ι' i → Set α}
+    (hl : ∀ i ∈ I, (l i).HasBasis (p i) (s i)) :
+    (⨅ i ∈ I, l i).HasBasis (fun f : ∀ i : I, ι' i ↦ ∀ i : I, p i (f i))
+      fun f ↦ ⋂ i : I, s i (f i) := by
+  rw [iInf_subtype']
+  exact HasBasis.iInf_of_finite fun i : I ↦ hl i i.2
+
 open scoped Function in -- required for scoped `on` notation
 theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
     {ι : I → Sort*} {p : ∀ i, ι i → Prop} {s : ∀ i, ι i → Set α} (hd : Pairwise (Disjoint on l))
