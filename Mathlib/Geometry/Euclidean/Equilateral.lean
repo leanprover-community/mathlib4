@@ -53,8 +53,9 @@ lemma mem_perpBisector (h : s.Equilateral) (hij : i ≠ j) (hik : i ≠ k) :
 
 section Center
 
-lemma dist_centroid_sq_eq (h : s.Equilateral) (hjk : j ≠ k) : dist (s.points i) s.centroid ^ 2 =
-    (n * dist (s.points j) (s.points k) ^ 2 - ∑ k, dist (s.points k) s.centroid ^ 2) / (n + 1) := by
+private lemma dist_centroid_sq_eq' (h : s.Equilateral) (hjk : j ≠ k) :
+    dist (s.points i) s.centroid ^ 2 =
+    (n * dist (s.points j) (s.points k) ^ 2 - ∑ l, dist (s.points l) s.centroid ^ 2) / (n + 1) := by
   obtain ⟨r, hr⟩ := h
   have h l (hl : l ∈ Finset.univ.erase i) :
       2 * inner ℝ (s.points i -ᵥ s.centroid) (s.points l -ᵥ s.centroid) =
@@ -70,7 +71,16 @@ lemma dist_centroid_eq (h : s.Equilateral) :
     dist (s.points i) s.centroid = dist (s.points j) s.centroid := by
   by_cases hij : i = j
   · rw [hij]
-  · rw [← sq_eq_sq₀ dist_nonneg dist_nonneg, h.dist_centroid_sq_eq hij, h.dist_centroid_sq_eq hij]
+  · rw [← sq_eq_sq₀ dist_nonneg dist_nonneg, h.dist_centroid_sq_eq' hij, h.dist_centroid_sq_eq' hij]
+
+lemma dist_centroid_sq_eq (h : s.Equilateral) (hjk : j ≠ k) :
+    dist (s.points i) s.centroid ^ 2 = n / (2 * n + 2) * dist (s.points j) (s.points k) ^ 2 := by
+  have : dist (s.points i) s.centroid ^ 2 =
+      n / (n + 1) * dist (s.points j) (s.points k) ^ 2 - dist (s.points i) s.centroid ^ 2 := by
+    nth_rw 1 [h.dist_centroid_sq_eq' hjk]
+    simp [h.dist_centroid_eq (j := 0)]
+    grind
+  grind
 
 /-- The centroid is the circumcenter. -/
 lemma centroid_eq_circumcenter (h : s.Equilateral) : s.centroid = s.circumcenter :=
