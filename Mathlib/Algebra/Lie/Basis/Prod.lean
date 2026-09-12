@@ -132,7 +132,7 @@ lemma basisProd_aux :
         Subtype.val ⁻¹' ( {(b₁.h i, b₂.h (eι i)) | i : ι₁} ∪
                           {(b₁.e i, b₂.e (eι i)) | i : ι₁} ∪
                           {(b₁.f i, b₂.f (eι i)) | i : ι₁} ) := by
-      ext; simp [Subtype.ext_iff]
+      ext; push _ ∈ _; simp [Subtype.ext_iff]
     rw [this, hr]
     exact lieSpan_lieSpan_coe_preimage
   simp only [union_assoc]

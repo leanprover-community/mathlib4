@@ -198,7 +198,7 @@ lemma IsBasis'.contract_isBasis'_sdiff_sdiff_of_subset (hIX : M.IsBasis' I X) (h
     simpa +contextual [IsBasis', (hIX.indep.subset hJI).contract_indep_iff,
       subset_sdiff, maximal_subset_iff, disjoint_sdiff_left,
       union_eq_self_of_subset_right hJI, hIX.indep, sdiff_subset.trans hIX.subset,
-      sdiff_subset_iff, subset_antisymm_iff, union_comm J]
+      subset_antisymm_iff (a := I \ J), union_comm J]
   exact fun K hJK hKJi hKX hIJK ↦ by
     simp [hIX.eq_of_subset_indep hKJi hIJK (union_subset hKX (hJI.trans hIX.subset))]
 

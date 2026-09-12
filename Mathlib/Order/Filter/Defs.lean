@@ -137,7 +137,7 @@ def comk (p : Set α → Prop) (he : p ∅) (hmono : ∀ t, p t → ∀ s ⊆ t,
   sets := {t | p tᶜ}
   univ_sets := by simpa
   sets_of_superset := fun ht₁ ht => hmono _ ht₁ _ (compl_subset_compl.2 ht)
-  inter_sets := fun ht₁ ht₂ => by simp [compl_inter, hunion _ ht₁ _ ht₂]
+  inter_sets := fun ht₁ ht₂ => by simp [hunion _ ht₁ _ ht₂]
 
 @[simp]
 lemma mem_comk {p : Set α → Prop} {he hmono hunion s} :

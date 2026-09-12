@@ -157,7 +157,7 @@ private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
     apply (pairwise_disjoint_on _).2 (fun m n hmn ↦ ?_)
     have : Disjoint (u m) (s (m + 1)) := by simp [u, disjoint_sdiff_left]
     apply this.mono_right
-    simp only [sdiff_le_iff, sup_eq_union, u]
+    simp only [sdiff_le_iff, u]
     exact Subset.trans (s_anti (by grind)) subset_union_right
   have : HasSum (fun i => μ (u i)) (μ (⋃ i, u i)) :=
     hasSum_of_disjoint_iUnion (fun n ↦ (hs n).1.diff (hs (n + 1)).1) u_disj

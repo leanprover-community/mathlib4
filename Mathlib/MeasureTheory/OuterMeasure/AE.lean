@@ -216,8 +216,7 @@ theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ
   h.union h'
 
 theorem union_ae_eq_right : s ∪ t =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
-  simp [eventuallySubset_antisymm_iff, ae_le_set, union_sdiff_right,
-    sdiff_eq_empty.2 Set.subset_union_right]
+  simp [eventuallySubset_antisymm_iff, ae_le_set, sdiff_eq_empty.2 Set.subset_union_right]
 
 theorem sdiff_ae_eq_self : s \ t =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallySubset_antisymm_iff, ae_le_set]

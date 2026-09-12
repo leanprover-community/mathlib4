@@ -85,31 +85,28 @@ private meta def linearOrderToMin (u : Level) : Q((a : Type u) → $(linearOrder
   .const `LinearOrder.toMin [u]
 
 /--
-Return `true` if `LinearOrder` is imported and `inst` comes from a `LinearOrder e` instance.
+Return `true` if `inst` comes from a `LinearOrder e` instance.
 
 We use a `try catch` block to make sure there are no surprising errors during delaboration.
 -/
 private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type u))
     (toCls : Q((α : Type u) → $(linearOrderExpr u) α → $cls α)) (inst : Q($cls $α)) :
     MetaM Bool := do
-  try
-    withNewMCtxDepth do
-    -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
-    -- In Lean 4.19 the pretty printer clears local instances, so we re-add them here.
-    -- TODO(Jovan): remove
-    withLocalInstances (← getLCtx).decls.toList.reduceOption do
-      let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
-      let inst' : Q($cls $α) := q($toCls $α $mvar)
-      isDefEq inst inst'
-  catch _ =>
-    -- For instance, if `LinearOrder` is not yet imported.
-    return false
+  withNewMCtxDepth do
+  -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
+  -- In Lean 4.19 the pretty printer clears local instances, so we re-add them here.
+  -- TODO(Jovan): remove
+  withLocalInstances (← getLCtx).decls.toList.reduceOption do
+    let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
+    let inst' : Q($cls $α) := q($toCls $α $mvar)
+    isDefEq inst inst'
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
 meta def delabSup : Delab :=
   whenNotPPOption getPPExplicit <|
-  whenPPOption getPPNotation <|
+  whenPPOption getPPNotation do
+  unless (← getEnv).contains `LinearOrder do failure
   withOverApp 4 do
     let_expr f@Max.max α inst _ _ := ← getExpr | failure
     have u := f.constLevels![0]!
@@ -124,7 +121,8 @@ meta def delabSup : Delab :=
 @[delab app.Min.min]
 meta def delabInf : Delab :=
   whenNotPPOption getPPExplicit <|
-  whenPPOption getPPNotation <|
+  whenPPOption getPPNotation do
+  unless (← getEnv).contains `LinearOrder do failure
   withOverApp 4 do
     let_expr f@Min.min α inst _ _ := ← getExpr | failure
     have u := f.constLevels![0]!

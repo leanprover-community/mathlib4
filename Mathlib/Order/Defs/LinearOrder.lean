@@ -147,7 +147,7 @@ theorem max_ind {motive : α → Prop} (ha : b ≤ a → motive a) (hb : a ≤ b
 theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   max_ind (iff_self_and.mpr <| le_trans ·) (iff_and_self.mpr <| le_trans ·)
 
-@[to_dual (attr := simp) le_max_iff]
+@[to_dual (attr := simp low) le_max_iff]
 theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
   min_ind (iff_self_or.mpr <| le_trans ·) (iff_or_self.mpr <| le_trans ·)
 
