@@ -66,6 +66,7 @@ variable {α : Type u} {β : Type v}
 /-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
+@[wikidata Q29018101]
 class SemilatticeSup (α : Type u) extends PartialOrder α where
   /-- The binary supremum, used to derive `Max α` -/
   sup : α → α → α
@@ -79,7 +80,7 @@ class SemilatticeSup (α : Type u) extends PartialOrder α where
 /-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
-@[to_dual]
+@[wikidata Q29018102, to_dual]
 class SemilatticeInf (α : Type u) extends PartialOrder α where
   /-- The binary infimum, used to derive `Min α` -/
   inf : α → α → α
@@ -359,6 +360,7 @@ end SemilatticeSup
 
 
 /-- A lattice is a join-semilattice which is also a meet-semilattice. -/
+@[wikidata Q595364]
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
 attribute [to_dual existing] Lattice.toSemilatticeInf
@@ -499,6 +501,7 @@ A classic example of a distributive lattice
 is the lattice of subsets of a set, and in fact this example is
 generic in the sense that every distributive lattice is realizable
 as a sublattice of a powerset lattice. -/
+@[wikidata Q2363730]
 class DistribLattice (α) extends Lattice α where
   /-- The infimum distributes over the supremum -/
   protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z

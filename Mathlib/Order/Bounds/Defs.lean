@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.ToDual
 
 /-!
@@ -34,6 +35,9 @@ variable {α : Type*} [LE α]
 def upperBounds (s : Set α) : Set α :=
   { x | ∀ ⦃a⦄, a ∈ s → a ≤ x }
 
+attribute [wikidata Q42866132] upperBounds
+attribute [wikidata Q12254923] lowerBounds
+
 /-- A set is bounded above if there exists an upper bound. -/
 @[to_dual /-- A set is bounded below if there exists a lower bound. -/]
 def BddAbove (s : Set α) :=
@@ -45,11 +49,17 @@ def BddAbove (s : Set α) :=
 def IsLeast (s : Set α) (a : α) : Prop :=
   a ∈ s ∧ a ∈ lowerBounds s
 
+attribute [wikidata Q11091744] IsLeast
+attribute [wikidata Q79674627] IsGreatest
+
 /-- `a` is a least upper bound of a set `s`; for a partial order, it is unique if exists. -/
 @[to_dual
 /-- `a` is a greatest lower bound of a set `s`; for a partial order, it is unique if exists. -/]
 def IsLUB (s : Set α) : α → Prop :=
   IsLeast (upperBounds s)
+
+attribute [wikidata Q215071] IsLUB
+attribute [wikidata Q1199948] IsGLB
 
 /-- A set `s` is said to be cofinal for a set `t` if, for all `a ∈ s` there exists `b ∈ t`
 such that `a ≤ b`. -/
@@ -61,3 +71,5 @@ def IsCofinalFor (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, a ≤ b
 @[to_dual /-- A set is coinitial when for every `x : α` there exists `y ∈ s` with `y ≤ x`. -/]
 def IsCofinal (s : Set α) : Prop :=
   ∀ x, ∃ y ∈ s, x ≤ y
+
+attribute [wikidata Q5141045] IsCofinal

@@ -134,6 +134,7 @@ instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒ
   isLUB_sSup := isGLB_sInf (α := α)
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
+@[wikidata Q2362924]
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
     CompleteSemilatticeInf α, BoundedOrder α
 
