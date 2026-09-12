@@ -465,11 +465,11 @@ lemma LinearOrder.toPartialOrder_injective : Function.Injective (@LinearOrder.to
   | { le := A_le, lt := A_lt,
       toDecidableLE := A_decidableLE, toDecidableEq := A_decidableEq, toDecidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
-      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
+      compare := A_compare, compare_eq_cmpLE := A_compare_canonical, .. },
     { le := B_le, lt := B_lt,
       toDecidableLE := B_decidableLE, toDecidableEq := B_decidableEq, toDecidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
-      compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
+      compare := B_compare, compare_eq_cmpLE := B_compare_canonical, .. } => by
     rintro ⟨⟩
     obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
     obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
@@ -706,9 +706,9 @@ abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] 
   le_total _ _ := by simp only [← le, le_total]
   min_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← min_def, min]
   max_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← max_def, max]
-  compare_eq_compareOfLessAndEq _ _ := by
-    simp_rw [← compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, ← lt,
-      hf.eq_iff]
+  compare_eq_cmpLE _ _ := by
+    simp_rw [← compare, LinearOrder.compare_eq_cmpLE, cmpLE]
+    congr! <;> exact le
 
 /-!
 ### Lifts of order instances
@@ -743,7 +743,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
     compare (f a) (f b) =
       @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
-  have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
+  have h := compare_eq_compareOfLessAndEq (f a) (f b)
   simp only [h, compareOfLessAndEq]
   split_ifs <;> try (first | rfl | contradiction)
   · have : ¬ f a = f b := by rename_i h; exact inj.ne h
