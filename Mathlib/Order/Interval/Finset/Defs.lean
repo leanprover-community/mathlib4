@@ -123,15 +123,7 @@ class LocallyFiniteOrder (α : Type*) [Preorder α] where
   /-- `x ∈ finsetIoo a b ↔ a < x ∧ x < b` -/
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 
-/-- `LocallyFiniteOrder.mk'` is the dual of `LocallyFiniteOrder.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
-    (finsetIcc finsetIco finsetIoc finsetIoo : α → α → Finset α)
-    (finset_mem_Icc : ∀ (a b x : α), x ∈ finsetIcc a b ↔ x ≤ a ∧ b ≤ x)
-    (finset_mem_Ico : ∀ (a b x : α), x ∈ finsetIco a b ↔ x ≤ a ∧ b < x)
-    (finset_mem_Ioc : ∀ (a b x : α), x ∈ finsetIoc a b ↔ x < a ∧ b ≤ x)
-    (finset_mem_Ioo : ∀ (a b x : α), x ∈ finsetIoo a b ↔ x < a ∧ b < x) : LocallyFiniteOrder α where
+to_dual_for LocallyFiniteOrder.mk := {
   finsetIcc := swap finsetIcc
   finsetIco := swap finsetIoc
   finsetIoc := swap finsetIco
@@ -140,6 +132,7 @@ abbrev LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
   finset_mem_Ico := by grind
   finset_mem_Ioc := by grind
   finset_mem_Ioo := by grind
+}
 
 /-- This mixin class describes an order where all intervals bounded below are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/

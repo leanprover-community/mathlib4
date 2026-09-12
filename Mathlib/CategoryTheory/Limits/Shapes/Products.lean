@@ -168,14 +168,9 @@ lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ᶜ
   limit.hom_ext (fun ⟨j⟩ => h j)
 
 /-- The fan constructed of the projections from the product is limiting. -/
+@[to_dual]
 def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
   IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cone.ext (Iso.refl _))
-
-/-- The cofan constructed of the inclusions from the coproduct is colimiting. -/
--- We use `existing` because `to_dual` translates `Cone.ext` to `Cocone.ext_inv`, not `Cocone.ext`.
-@[to_dual existing]
-def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
-  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocone.ext (Iso.refl _))
 
 -- TODO?: simp can prove this using `eqToHom_naturality`
 -- but `eqToHom_naturality` applies less easily than this lemma
@@ -211,16 +206,23 @@ theorem Pi.lift_comp_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p :
 @[deprecated (since := "2026-08-17")] alias Sigma.ι_desc_assoc := Sigma.ι_comp_desc_assoc
 
 /-- A version of `Cone.ext` for `Fan`s. -/
-@[to_dual (attr := simps!) extInv /-- A version of `Cocone.ext` for `Cofan`s. -/]
+@[simps!]
 def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
   Cone.ext e (fun ⟨j⟩ => w j)
 
-/-- A version of `Cone.ext` for `Fan`s. -/
-@[to_dual (attr := reducible, simps! -isSimp) ext /-- A version of `Cocone.ext` for `Cofan`s. -/]
-def Fan.extInv {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
-    (w : ∀ (b : β), e.inv ≫ c₁.proj b = c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
-  Cone.extInv e (fun ⟨j⟩ => w j)
+/-- A version of `Cocone.ext` for `Cofan`s. -/
+@[simps!]
+def Cofan.ext {f : β → C} {c₁ c₂ : Cofan f} (e : c₁.pt ≅ c₂.pt)
+    (w : ∀ (b : β), c₁.inj b ≫ e.hom = c₂.inj b := by cat_disch) : c₁ ≅ c₂ :=
+  Cocone.ext e (fun ⟨j⟩ => w j)
+
+to_dual_for Fan.ext := Cofan.ext e
+to_dual_for Fan.ext_hom_hom := Cofan.ext_inv_hom e
+to_dual_for Fan.ext_inv_hom := Cofan.ext_hom_hom e
+to_dual_for Cofan.ext := Fan.ext e fun j ↦ (Iso.inv_comp_eq e).mp (w j)
+to_dual_for Cofan.ext_hom_hom := Fan.ext_inv_hom e fun j ↦ (Iso.inv_comp_eq e).mp (w j)
+to_dual_for Cofan.ext_inv_hom := Fan.ext_hom_hom e fun j ↦ (Iso.inv_comp_eq e).mp (w j)
 
 /-- A fan `c` on `f` such that the induced map `c.pt ⟶ ∏ f` is an iso, is a product. -/
 @[to_dual isColimitOfIsIsoSigmaDesc

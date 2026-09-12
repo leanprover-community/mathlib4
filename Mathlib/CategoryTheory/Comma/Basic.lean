@@ -96,19 +96,8 @@ structure CommaMorphism (X Y : Comma L R) where
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
-@[to_dual existing w]
-theorem CommaMorphism.w' {X Y : Comma R L} (self : CommaMorphism Y X) :
-    Y.hom ≫ L.map self.right = R.map self.left ≫ X.hom :=
-  self.w.symm
-
-/-- `CommaMorphism.mk'` is the dual of `CommaMorphism.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev CommaMorphism.mk' {X Y : Comma R L}
-    (right : Y.right ⟶ X.right) (left : Y.left ⟶ X.left)
-    (w : Y.hom ≫ L.map right = R.map left ≫ X.hom) :
-    CommaMorphism Y X where
-  left; right; w := w.symm
+to_dual_for CommaMorphism.w := self.w.symm
+to_dual_for CommaMorphism.mk := { left := right, right := left, w := w.symm }
 
 -- Satisfying the inhabited linter
 instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
