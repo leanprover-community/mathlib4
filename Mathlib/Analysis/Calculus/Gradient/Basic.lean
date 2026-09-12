@@ -138,6 +138,17 @@ lemma toDual_comp_gradientWithin :
 lemma toDual_comp_gradient : (toDual 𝕜 F) ∘ ∇ f = fderiv 𝕜 f :=
   funext fun _ => toDual_gradient
 
+/-- The Riesz isomorphism preserves Lipschitz constants. -/
+theorem lipschitzWith_fderiv_iff_lipschitzWith_gradient {K : NNReal} :
+    LipschitzWith K (fderiv 𝕜 f) ↔ LipschitzWith K (∇ f) :=
+  toDual_comp_gradient (𝕜 := 𝕜) (f := f) ▸ (toDual 𝕜 F).isometry.lipschitzWith_iff K
+
+/-- Setwise version of `lipschitzWith_fderiv_iff_lipschitzWith_gradient`. -/
+theorem lipschitzOnWith_fderivWithin_iff_lipschitzOnWith_gradientWithin {K : NNReal} :
+    LipschitzOnWith K (fderivWithin 𝕜 f s) s ↔ LipschitzOnWith K (gradientWithin f s) s := by
+  simp only [lipschitzOnWith_iff_dist_le_mul, ← toDual_gradientWithin,
+    (toDual 𝕜 F).isometry.dist_eq]
+
 theorem HasGradientAt.unique {gradf gradg : F}
     (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
     gradf = gradg :=
