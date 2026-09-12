@@ -13,7 +13,7 @@ public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlg
 
 This file collects the elementary arithmetic facts relating the parameters `m = 2h + 2`,
 `n = q² / (2m)` and the free parameter `q`, under the divisibility hypothesis `2m ∣ q²`.
-They are used when bounding the order of vanishing of the auxiliary function.
+They are used in the analytic size estimates for the auxiliary function.
 
 ## Main results
 
@@ -26,25 +26,23 @@ They are used when bounding the order of vanishing of the auxiliary function.
 
 @[expose] public section
 
-open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
-   Matrix Set Polynomial Finset IntermediateField Complex AnalyticAt
+open NumberField
 
 noncomputable section
 
 namespace GelfondSchneider
 
-variable {K : Type*} [Field K] [NumberField K] (q : ℕ) (hq0 : 0 < q) (h2mq : 2 * m K ∣ q ^ 2)
+variable {K : Type*} [Field K] [NumberField K] (q : ℕ) (h2mq : 2 * m K ∣ q ^ 2)
 
 include h2mq in
 lemma q_sq_eq_two_mn : q ^ 2 = 2 * m K * n K q :=
   ((mul_assoc 2 (m K) (n K q)).trans (two_mul_m_mul_n_eq_sq q h2mq)).symm
 
 include h2mq in
-lemma q_sq_le_two_mn : q ^ 2 ≤ 2 * m K * n K q := by
-  simpa using le_of_eq (q_sq_eq_two_mn q h2mq)
+lemma q_sq_le_two_mn : q ^ 2 ≤ 2 * m K * n K q := (q_sq_eq_two_mn q h2mq).le
 
 include h2mq in
 lemma q_le_two_mn : q ≤ 2 * m K * n K q :=
-  le_trans (Nat.le_pow Nat.zero_lt_two) (by simpa using le_of_eq (q_sq_eq_two_mn q h2mq))
+  (Nat.le_pow Nat.zero_lt_two).trans (q_sq_le_two_mn q h2mq)
 
 end GelfondSchneider

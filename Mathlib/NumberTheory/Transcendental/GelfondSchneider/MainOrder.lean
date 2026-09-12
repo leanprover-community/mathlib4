@@ -154,10 +154,9 @@ theorem iteratedDeriv_R (k' : ℕ) :
     · intros i hi
       apply mul (by fun_prop) (differentiable_const (ρ α β q i ^ k))
 
-lemma iteratedDeriv_R_eq_zero (hR : R α β σ α' β' γ' hirr htriv habc q hq0 h2mq = 0) (z : ℂ)
-    (k' : ℕ) :
-    deriv^[k'] (fun z ↦ R α β σ α' β' γ' hirr htriv habc q hq0 h2mq z) z = 0 := by
-  rw [hR, ← iteratedDeriv_eq_iterate, iteratedDeriv]
+private lemma iterate_deriv_eq_zero {f : ℂ → ℂ} (hf : f = 0) (z : ℂ) (k' : ℕ) :
+    deriv^[k'] f z = 0 := by
+  rw [hf, ← iteratedDeriv_eq_iterate]
   simp
 
 lemma vecMul_V_eq_zero (hR : R α β σ α' β' γ' hirr htriv habc q hq0 h2mq = 0) :
@@ -165,7 +164,7 @@ lemma vecMul_V_eq_zero (hR : R α β σ α' β' γ' hirr htriv habc q hq0 h2mq =
       (fun t ↦ σ ((η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq) t)) = 0 := by
   ext k
   have hk : deriv^[k] (fun x ↦ R α β σ α' β' γ' hirr htriv habc q hq0 h2mq x) 0 = 0 :=
-    iteratedDeriv_R_eq_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq (hR := hR) _ _
+    iterate_deriv_eq_zero hR _ _
   rw [iteratedDeriv_R α β σ α' β' γ' hirr htriv habc q hq0 h2mq k] at hk
   simpa [V, vecMul, dotProduct, vandermonde_apply, of_apply] using hk
 
@@ -176,22 +175,15 @@ lemma ηvec_eq_zero (hVecMulEq0 : (V α β q).vecMul
   apply eq_zero_of_vecMul_eq_zero
     (vandermonde_det_ne_zero α β hirr htriv q) hVecMulEq0
 
-lemma hbound_sigma : η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 :=
-  (house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
-    (A_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq))
-    ((mul_assoc 2 _ _).symm ▸ lt_mul_of_one_lt_left
-      (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)) Nat.one_lt_two
-      |>.trans_eq ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
-    (fun u t ↦ house_matrixA_le α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq)
-    (Fintype.card_fin _)).choose_spec.1
+lemma η_ne_zero : η (K := K) α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 :=
+  (exists_eta α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec.1
 
 include hirr htriv in
 lemma R_ne_zero : R α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ 0 := by
   intro H
   have HC := ηvec_eq_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
     (vecMul_V_eq_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq H)
-  apply hbound_sigma α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+  apply η_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq
   ext t
   simpa [η, FaithfulSMul.algebraMap_eq_zero_iff] using congr_fun HC t
 
