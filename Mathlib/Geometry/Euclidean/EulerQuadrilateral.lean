@@ -50,11 +50,9 @@ theorem dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_f
     (a b c d : P) :
     dist a b ^ 2 + dist b c ^ 2 + dist c d ^ 2 + dist d a ^ 2
       = dist a c ^ 2 + dist b d ^ 2 + 4 * dist (midpoint ℝ a c) (midpoint ℝ b d) ^ 2 := by
-  have key : ∀ u v w : V, ‖u‖ ^ 2 + ‖v‖ ^ 2 + ‖w‖ ^ 2 + ‖u + (v + w)‖ ^ 2
+  have key (u v w : V) : ‖u‖ ^ 2 + ‖v‖ ^ 2 + ‖w‖ ^ 2 + ‖u + (v + w)‖ ^ 2
       = ‖u + v‖ ^ 2 + ‖v + w‖ ^ 2 + ‖u + w‖ ^ 2 := by
-    intro u v w
-    simp only [← real_inner_self_eq_norm_sq, inner_add_left, inner_add_right,
-      real_inner_comm u v, real_inner_comm u w, real_inner_comm v w]
+    simp only [norm_add_sq_real, inner_add_right]
     ring
   have hm : (4 : ℝ) * dist (midpoint ℝ a c) (midpoint ℝ b d) ^ 2
       = ‖(a -ᵥ b : V) + (c -ᵥ d)‖ ^ 2 := by
@@ -62,9 +60,9 @@ theorem dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_f
       invOf_eq_inv, Real.norm_eq_abs]
     ring
   rw [hm, dist_eq_norm_vsub V a b, dist_eq_norm_vsub V b c, dist_eq_norm_vsub V c d,
-    dist_eq_norm_vsub V d a, dist_eq_norm_vsub V a c, dist_eq_norm_vsub V b d,
-    ← neg_vsub_eq_vsub_rev a d, norm_neg, ← vsub_add_vsub_cancel a b d,
-    ← vsub_add_vsub_cancel b c d, ← vsub_add_vsub_cancel a b c]
+    dist_eq_norm_vsub' V d a, dist_eq_norm_vsub V a c, dist_eq_norm_vsub V b d,
+    ← vsub_add_vsub_cancel a b d, ← vsub_add_vsub_cancel b c d,
+    ← vsub_add_vsub_cancel a b c]
   exact key _ _ _
 
 /-- The sum of the squares of the four sides of the quadrilateral `a b c d` equals the sum of the
@@ -76,6 +74,6 @@ theorem dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_iff_m
     dist a b ^ 2 + dist b c ^ 2 + dist c d ^ 2 + dist d a ^ 2 = dist a c ^ 2 + dist b d ^ 2
       ↔ midpoint ℝ a c = midpoint ℝ b d := by
   rw [dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_four_mul_dist_sq,
-    add_eq_left, mul_eq_zero_iff_left four_ne_zero, pow_eq_zero_iff two_ne_zero, dist_eq_zero]
+    add_eq_left, mul_eq_zero_iff_left four_ne_zero, sq_eq_zero_iff, dist_eq_zero]
 
 end EuclideanGeometry
