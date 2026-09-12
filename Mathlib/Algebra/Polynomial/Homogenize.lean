@@ -25,7 +25,7 @@ but not about homogeneous bivariate polynomials encoded as `R[X][Y]`.
 
 @[expose] public section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 namespace Polynomial
 
@@ -87,7 +87,7 @@ lemma homogenize_monomial_of_lt {m n : ℕ} (h : n < m) (r : R) :
     homogenize (monomial m r) n = 0 := by
   rw [homogenize]
   apply Finset.sum_eq_zero
-  aesop (add simp coeff_monomial)
+  aesop (add simp Finsupp.single_apply)
 
 @[simp]
 lemma homogenize_X_pow {m n : ℕ} (h : m ≤ n) :
@@ -118,7 +118,7 @@ lemma coeff_homogenize (p : R[X]) (n : ℕ) (m : Fin 2 →₀ ℕ) :
     · rw [homogenize_monomial hkn, coeff_monomial, MvPolynomial.coeff_monomial]
       have : (fun₀ | 0 => m 0 | 1 => m 1) = m := by ext i; fin_cases i <;> simp
       aesop
-    · aesop (add simp homogenize_monomial_of_lt) (add simp coeff_monomial)
+    · aesop (add simp homogenize_monomial_of_lt) (add simp Finsupp.single_apply)
 
 lemma eq_zero_of_homogenize_eq_zero {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n)
     (h : p.homogenize n = 0) :

@@ -30,7 +30,7 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 public section
 
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Multiset
 
@@ -299,7 +299,7 @@ lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f :
     rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
-      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+      rw [coeff_smul_apply, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
     intro H
     exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 
@@ -319,7 +319,7 @@ lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {
     rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
-      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+      rw [coeff_smul_apply, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
     intro H
     exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 

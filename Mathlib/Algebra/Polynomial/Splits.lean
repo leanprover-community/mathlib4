@@ -26,6 +26,8 @@ A polynomial `f : R[X]` splits if it is a product of constant and monic linear p
 
 variable {R : Type*}
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 
 section Semiring
@@ -240,7 +242,7 @@ variable [Ring R]
 
 @[simp, aesop safe apply]
 theorem Splits.X_sub_C (a : R) : Splits (X - C a) := by
-  simpa using! Splits.X_add_C (-a)
+  simpa [sub_eq_add_neg, C_neg] using! Splits.X_add_C (-a)
 
 @[aesop safe apply]
 protected theorem Splits.neg {f : R[X]} (hf : Splits f) : Splits (-f) := by
@@ -269,7 +271,7 @@ variable [CommRing R] {f g : R[X]} {A B : Type*} [CommRing A] [CommRing B]
 theorem splits_iff_exists_multiset :
     Splits f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X - C ·)).prod := by
   refine splits_iff_exists_multiset'.trans ⟨?_, ?_⟩ <;>
-    rintro ⟨m, hm⟩ <;> exact ⟨m.map (- ·), by simpa⟩
+    rintro ⟨m, hm⟩ <;> exact ⟨m.map (- ·), by simpa [← sub_eq_add_neg]⟩
 
 theorem Splits.exists_eval_eq_zero (hf : Splits f) (hf0 : degree f ≠ 0) :
     ∃ a, eval a f = 0 := by

@@ -54,7 +54,8 @@ local notation "ε" => (X : ℤ[ε])
 namespace IntWithEpsilon
 
 instance linearOrder : LinearOrder ℤ[ε] :=
-  LinearOrder.lift' (fun x ↦ toLex ⇑x.coeff) <| DFunLike.coe_injective.comp coeff_injective
+  LinearOrder.lift' (fun x ↦ toLex ⇑x.coeff) <|
+    DFunLike.coe_injective.comp AddMonoidAlgebra.coeff_injective
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
   Function.Injective.isOrderedAddMonoid
@@ -95,9 +96,9 @@ instance : FloorRing ℤ[ε] :=
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where
-  toFun p := coeff p 0
+  toFun p := p.coeff 0
   map_zero' := coeff_zero _
-  map_one' := coeff_one_zero
+  map_one' := AddMonoidAlgebra.coeff_one_zero
   map_add' _ _ := coeff_add _ _ _
   map_mul' := mul_coeff_zero
   monotone' := monotone_iff_forall_lt.2 (by
@@ -107,7 +108,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
     · exact (hn.1 _ n.zero_lt_succ).le)
 
 @[simp]
-theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
+theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = p.coeff 0 :=
   rfl
 
 /-- The floor of `n - ε` is `n - 1` but its image under `forgetEpsilons` is `n`, whose floor is

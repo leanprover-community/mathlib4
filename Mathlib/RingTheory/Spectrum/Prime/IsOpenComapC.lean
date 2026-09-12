@@ -19,7 +19,7 @@ https://stacks.math.columbia.edu/tag/00FB
 @[expose] public section
 
 
-open Ideal Polynomial PrimeSpectrum Set
+open AddMonoidAlgebra Ideal Polynomial PrimeSpectrum Set
 
 namespace AlgebraicGeometry
 
