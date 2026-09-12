@@ -5,7 +5,9 @@ Authors: Eric Rodriguez
 -/
 module
 
+public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Module.Normalize
 public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
@@ -20,7 +22,9 @@ the usual way this is considered.
   have the same argument.
 * `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
-
+* `Complex.exists_nonneg_mul_of_sameRay`: the `*` form of `SameRay.exists_nonneg_right`.
+* `Complex.sameRay_ofReal_mul`, `Complex.normalize_ofReal_mul`: nonnegative real scaling
+  preserves `SameRay`, and positive real scaling preserves the phase.
 -/
 
 public section
@@ -60,5 +64,27 @@ theorem norm_add_eq (h : x.arg = y.arg) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
 
 theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ :=
   (sameRay_of_arg_eq h).norm_sub
+
+variable {z w : ℂ} {c : ℝ}
+
+/-- A nonnegative real multiple of `w` lies on the same closed ray as `w`. -/
+lemma sameRay_ofReal_mul (hc : 0 ≤ c) : SameRay ℝ ((c : ℂ) * w) w := by
+  rw [← real_smul]
+  exact SameRay.sameRay_nonneg_smul_left w hc
+
+/-- A complex number on the same ray as a nonzero `w` is a nonnegative real multiple of `w`. -/
+lemma exists_nonneg_mul_of_sameRay (h : SameRay ℝ z w) (hw : w ≠ 0) :
+    ∃ k : ℝ, 0 ≤ k ∧ z = (k : ℂ) * w := by
+  obtain ⟨k, hk, hz⟩ := h.exists_nonneg_right hw
+  exact ⟨k, hk, by rwa [real_smul] at hz⟩
+
+/-- A positive real multiple of `w` has the same phase as `w`. -/
+lemma normalize_ofReal_mul (hc : 0 < c) (w : ℂ) :
+    NormedSpace.normalize ((c : ℂ) * w) = NormedSpace.normalize w := by
+  rw [← real_smul, NormedSpace.normalize_smul_of_pos hc]
+
+lemma normalize_mul_star (z : ℂ) : NormedSpace.normalize z * star z = ‖z‖ := by
+  rw [NormedSpace.normalize, real_smul, ofReal_inv, mul_assoc, ← div_eq_inv_mul, star_def,
+    mul_conj, normSq_eq_norm_sq, ofReal_pow, pow_two, mul_self_div_self]
 
 end Complex
