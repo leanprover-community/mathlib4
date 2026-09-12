@@ -37,9 +37,9 @@ or as a dual number with quaternion coefficients.
 See also `Matrix.dualNumberEquiv` for a similar result. -/
 def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion R) where
   toFun q :=
-    (⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩)
+    ⟨⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩⟩
   invFun d :=
-    ⟨(d.fst.re, d.snd.re), (d.fst.imI, d.snd.imI), (d.fst.imJ, d.snd.imJ), (d.fst.imK, d.snd.imK)⟩
+    ⟨⟨d.fst.re, d.snd.re⟩, ⟨d.fst.imI, d.snd.imI⟩, ⟨d.fst.imJ, d.snd.imJ⟩, ⟨d.fst.imK, d.snd.imK⟩⟩
   map_mul' _ _ := by
     ext1; · rfl
     refine .trans ?_ (DualNumber.snd_mul _ _).symm

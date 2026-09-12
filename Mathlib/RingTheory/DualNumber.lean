@@ -98,7 +98,7 @@ variable {K : Type*}
 instance [DivisionRing K] : IsLocalRing K[ε] where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rw [add_comm, ← eq_sub_iff_add_eq] at h
-    rcases eq_or_ne (fst a) 0 with ha | ha <;>
+    rcases eq_or_ne a.fst 0 with ha | ha <;>
     simp [isUnit_iff_isUnit_fst, h, ha]
 
 lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
@@ -113,9 +113,9 @@ lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
   have hd' : ∀ x ∈ I, x ≠ 0 → ∃ r, ε = r * x := by
     intro x hxI hx0
     obtain ⟨r, rfl⟩ := hd _ hxI
-    have : ε * r = (fst r) • ε := by ext <;> simp
+    have : ε * r = r.fst • ε := by ext <;> simp
     rw [this] at hxI hx0 ⊢
-    have hr : fst r ≠ 0 := by
+    have hr : r.fst ≠ 0 := by
       contrapose hx0
       simp [hx0]
     refine ⟨r⁻¹, ?_⟩
@@ -160,12 +160,12 @@ lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
   rw [isNilpotent_iff_eps_dvd] at ha hb
   obtain ⟨x, rfl⟩ := ha
   obtain ⟨y, rfl⟩ := hb
-  suffices ∃ c, fst x * fst c = fst y ∨ fst y * fst c = fst x by
+  suffices ∃ c : K[ε], x.fst * c.fst = y.fst ∨ y.fst * c.fst = x.fst by
     simpa [TrivSqZeroExt.ext_iff] using this
-  rcases eq_or_ne (fst x) 0 with hx | hx
+  rcases eq_or_ne x.fst 0 with hx | hx
   · refine ⟨ε, Or.inr ?_⟩
     simp [hx]
-  refine ⟨inl ((fst x)⁻¹ * fst y), ?_⟩
+  refine ⟨inl (x.fst⁻¹ * y.fst), ?_⟩
   simp [← mul_assoc, mul_inv_cancel₀ hx]
 
 end Field
