@@ -23,13 +23,11 @@ define the space of modular forms, cusp forms and prove that the product of two 
 modular form.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open Complex UpperHalfPlane Matrix.SpecialLinearGroup
 
 open scoped Topology Manifold MatrixGroups ComplexConjugate
-
-noncomputable section
 
 section ModularForm
 
@@ -648,48 +646,6 @@ end GradedRing
 
 end ModularForm
 
-section translate
-
-open ModularForm OnePoint
-
-variable {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} {F : Type*} [FunLike F ℍ ℂ] (f : F)
-
-open ConjAct Pointwise in
-/-- Translating a `ModularForm` by `GL(2, ℝ)`, to obtain a new `ModularForm`. -/
-noncomputable def ModularForm.translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    ModularForm (toConjAct g⁻¹ • Γ) k where
-  __ := SlashInvariantForm.translate f g
-  bdd_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, SlashInvariantForm.coe_translate,
-      ← SlashAction.slash_mul, ← isBoundedAt_infty_iff, ← OnePoint.IsBoundedAt.smul_iff]
-    apply ModularFormClass.bdd_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-  holo' := (ModularFormClass.holo f).slash k g
-
-@[simp]
-lemma ModularForm.coe_translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-open ConjAct Pointwise in
-/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`. -/
-noncomputable def CuspForm.translate [CuspFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    CuspForm (toConjAct g⁻¹ • Γ) k where
-  __ := ModularForm.translate f g
-  zero_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, ModularForm.toSlashInvariantForm_coe,
-      ModularForm.coe_translate, ← SlashAction.slash_mul, ← isZeroAt_infty_iff,
-      ← OnePoint.IsZeroAt.smul_iff]
-    apply CuspFormClass.zero_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-
-@[simp]
-lemma CuspForm.coe_translate [CuspFormClass F Γ k] (g : SL(2, ℤ)) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-end translate
-
 section SL2Z
 
 open ModularForm OnePoint
@@ -725,3 +681,5 @@ lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k] :
   exact ⟨g, by simp [mapGL]⟩
 
 end SL2Z
+
+end
