@@ -241,7 +241,7 @@ def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
 instance instSMul : SMul R (VectorMeasure α M) :=
   ⟨smul⟩
 
-instance : IsSMulApply R (VectorMeasure α M) (Set α) M where
+instance : IsSMulApply R (VectorMeasure α M) where
   smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_smul := FunLike.coe_smul
@@ -257,7 +257,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 instance instZero : Zero (VectorMeasure α M) :=
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
 
-instance : IsZeroApply (VectorMeasure α M) (Set α) M where
+instance : IsZeroApply (VectorMeasure α M) where
   zero_apply _ := rfl
 
 instance instInhabited : Inhabited (VectorMeasure α M) :=
@@ -290,7 +290,7 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
 instance instAdd : Add (VectorMeasure α M) :=
   ⟨add⟩
 
-instance : IsAddApply (VectorMeasure α M) (Set α) M where
+instance : IsAddApply (VectorMeasure α M) where
   add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_add := FunLike.coe_add
@@ -322,7 +322,7 @@ def neg (v : VectorMeasure α M) : VectorMeasure α M where
 instance instNeg : Neg (VectorMeasure α M) :=
   ⟨neg⟩
 
-instance : IsNegApply (VectorMeasure α M) (Set α) M where
+instance : IsNegApply (VectorMeasure α M) where
   neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_neg := FunLike.coe_neg
@@ -339,7 +339,7 @@ def sub (v w : VectorMeasure α M) : VectorMeasure α M where
 instance instSub : Sub (VectorMeasure α M) :=
   ⟨sub⟩
 
-instance : IsSubApply (VectorMeasure α M) (Set α) M where
+instance : IsSubApply (VectorMeasure α M) where
   sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_sub := FunLike.coe_sub

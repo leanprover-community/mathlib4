@@ -23,7 +23,7 @@ variable {F α : Type*}
 section MonoidWithZero
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Zero α]
-  [IsZeroApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
+  [IsZeroApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
   [ZeroHomClass F α α]
 
 /-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `MonoidWithZero`
@@ -40,8 +40,8 @@ end MonoidWithZero
 section Semiring
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
-  [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
-  [SMul ℕ F] [IsSMulApply ℕ F α α] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApply F α]
+  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+  [SMul ℕ F] [IsSMulApply ℕ F] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApply F]
 
 /-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `Semiring` if `α`
 is a `Semiring`. -/
@@ -59,11 +59,11 @@ section Ring
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
   [AddCommGroup α]
-  [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
-  [IsNegApply F α α] [IsSubApply F α α]
-  [SMul ℕ F] [IsSMulApply ℕ F α α]
-  [SMul ℤ F] [IsSMulApply ℤ F α α] [AddMonoidHomClass F α α]
-  [NatCast F] [IsNatCastApply F α] [IntCast F] [IsIntCastApply F α]
+  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+  [IsNegApply F] [IsSubApply F]
+  [SMul ℕ F] [IsSMulApply ℕ F]
+  [SMul ℤ F] [IsSMulApply ℤ F] [AddMonoidHomClass F α α]
+  [NatCast F] [IsNatCastApply F] [IntCast F] [IsIntCastApply F]
 
 /-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `Ring` if `α` is a
 `Ring`. -/
