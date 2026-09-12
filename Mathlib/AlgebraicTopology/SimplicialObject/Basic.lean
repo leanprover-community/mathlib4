@@ -955,9 +955,6 @@ def simplicialToCosimplicialAugmented :
       right := NatTrans.rightOp f.unop.left
       w := by
         ext x
-        dsimp
-        simp_rw [← op_comp]
-        congr 1
         exact (congr_app f.unop.w (op x)).symm }
 
 set_option backward.isDefEq.respectTransparency.types false in
