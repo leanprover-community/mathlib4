@@ -101,6 +101,17 @@ instance : CommMonoid (WithConv <| C →ₐ[R] A) := fast_instance%
 end AlgHom
 
 namespace BialgHom
+
+section AlgebraCoalgebra
+variable [Semiring A] [Algebra R A] [Coalgebra R A] [Semiring C] [Algebra R C] [Coalgebra R C]
+  (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
+
+lemma convCompLeft_eq_convCompRight (h : Function.Semiconj f g' g) :
+    f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
+  WithConv.ext <| LinearMap.ext fun a ↦ by simpa [BialgHom.toCoalgHom_apply] using (h a).symm
+
+end AlgebraCoalgebra
+
 variable [CommSemiring A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
 
 instance : One (WithConv <| C →ₐc[R] A) where
