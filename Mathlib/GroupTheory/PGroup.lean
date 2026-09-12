@@ -479,6 +479,35 @@ end P2comm
 
 end IsPGroup
 
+namespace Subgroup
+
+variable (p G) in
+/-- The `p`-core of a group `G` is the largest normal `p`-subgroup of `G`. -/
+@[no_expose] def pCore : Subgroup G :=
+  ⨆ N : Subgroup G, ⨆ _ : N.Normal, ⨆ _ : IsPGroup p N, N
+
+variable (p G) in
+theorem pCore_eq_iSup : pCore p G = ⨆ N : Subgroup G, ⨆ _ : N.Normal, ⨆ _ : IsPGroup p N, N := by
+  rfl
+
+variable (p G) in
+instance normal_pCore : pCore p G |>.Normal := by
+  simp_rw [pCore_eq_iSup, iSup_and']
+  exact biSup_normal _ _ fun _ ↦ And.left
+
+theorem _root_.IsPGroup.le_pCore {N : Subgroup G} [N.Normal] (h : IsPGroup p N) :
+    N ≤ pCore p G := by
+  rw [pCore_eq_iSup]
+  exact le_iSup_of_le N <| le_iSup₂ (f := fun _ _ ↦ N) ‹_› h
+
+theorem _root_.IsPGroup.pCore_eq_top (h : IsPGroup p G) : pCore p G = ⊤ :=
+  top_unique <| h.to_subgroup ⊤ |>.le_pCore
+
+theorem pCore_le_of_dvd {q : ℕ} (hpq : p ∣ q) : pCore p G ≤ pCore q G :=
+  iSup₂_mono fun _ _ ↦ iSup_const_mono <| .mono hpq
+
+end Subgroup
+
 namespace ZModModule
 variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
 
