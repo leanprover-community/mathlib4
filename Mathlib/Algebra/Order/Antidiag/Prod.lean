@@ -283,6 +283,20 @@ lemma mem_mulAntidiagonal_ofAdd_iff_toAdd_mem_antidiagonal {a : A}
 
 end Multiplicative
 
+variable {A : Type*}
+
+section Prod
+
+variable {B : Type*} [Mul A] [Mul B] [HasMulAntidiagonal A] [HasMulAntidiagonal B]
+
+@[to_additive]
+instance [DecidableEq A] [DecidableEq B] : HasMulAntidiagonal (A × B) where
+  mulAntidiagonal a :=
+    (mulAntidiagonal a.1 ×ˢ mulAntidiagonal a.2).image fun (x, y) ↦ ((x.1, y.1), (x.2, y.2))
+  mem_mulAntidiagonal := by simp
+
+end Prod
+
 end HasMulAntidiagonal
 
 end Finset
