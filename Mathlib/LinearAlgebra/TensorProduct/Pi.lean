@@ -65,7 +65,7 @@ variable [Fintype ι] [DecidableEq ι]
 
 /-- (Implementation): Inverse for `TensorProduct.piRight`. -/
 def piRightInv : (∀ i, N ⊗[R] M i) →ₗ[S] N ⊗[R] ∀ i, M i :=
-  LinearMap.lsum S (fun i ↦ N ⊗[R] M i) S <| fun i ↦
+  LinearMap.lsum S (fun i ↦ N ⊗[R] M i) S fun i ↦
     AlgebraTensorModule.map LinearMap.id (single R M i)
 
 @[simp]
@@ -146,7 +146,7 @@ variable [Fintype ι] [DecidableEq ι]
 
 /-- (Implementation): Inverse for `TensorProduct.piScalarRight`. -/
 def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
-  LinearMap.lsum S (fun _ ↦ N) S <| fun i ↦ {
+  LinearMap.lsum S (fun _ ↦ N) S fun i ↦ {
     toFun := fun n ↦ n ⊗ₜ Pi.single i 1
     map_add' := fun x y ↦ by simp [add_tmul]
     map_smul' := fun _ _ ↦ rfl

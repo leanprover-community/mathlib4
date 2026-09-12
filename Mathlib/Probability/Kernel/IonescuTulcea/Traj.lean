@@ -307,7 +307,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     simp_rw [f_eq, lmarginalPartialTraj]
     exact tendsto_lintegral_of_dominated_convergence (fun _ ↦ bound)
       (fun n ↦ (measurable_lmarginalPartialTraj _ _ (mf n)).comp measurable_updateFinset)
-      (fun n ↦ Eventually.of_forall <| fun y ↦ F_le n _)
+      (fun n ↦ Eventually.of_forall fun y ↦ F_le n _)
       (by simp [fin_bound]) (Eventually.of_forall (fun _ ↦ tendstoF _))
   -- By hypothesis, we have `ε ≤ lmarginalPartialTraj κ k (k + 1) (F n) (updateFinset x _ y)`,
   -- so this is also true for `l`.
@@ -319,7 +319,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   obtain ⟨x, hx⟩ : ∃ x, ε ≤ l (update (updateFinset x_ _ y) (k + 1) x) := by
     have : ∫⁻ x, l (update (updateFinset x_ _ y) (k + 1) x) ∂(κ k y) ≠ ∞ :=
       ne_top_of_le_ne_top fin_bound <| lintegral_le_const <| ae_of_all _
-        fun y ↦ le_of_tendsto' (tendstoF _) <| fun _ ↦ F_le _ _
+        fun y ↦ le_of_tendsto' (tendstoF _) fun _ ↦ F_le _ _
     obtain ⟨x, hx⟩ := exists_lintegral_le this
     refine ⟨x, (ε_le_lint x_).trans ?_⟩
     rwa [lmarginalPartialTraj_succ, frestrictLe_updateFinset]

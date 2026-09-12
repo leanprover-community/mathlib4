@@ -80,7 +80,7 @@ lemma _root_.Set.nonempty_finiteExhaustion_iff {s : Set α} :
     Nonempty s.FiniteExhaustion ↔ s.Countable := by
   refine ⟨fun ⟨K⟩ ↦ ?_, fun h ↦ ⟨h.finiteExhaustion⟩⟩
   rw [← K.iUnion_eq]
-  exact countable_iUnion <| fun i ↦ (K.finite i).countable
+  exact countable_iUnion fun i ↦ (K.finite i).countable
 
 set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]

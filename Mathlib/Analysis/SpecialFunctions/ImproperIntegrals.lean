@@ -153,7 +153,7 @@ theorem integrableAtFilter_rpow_atTop_iff {s : ℝ} :
     ⟨Set.Ioi 1, Ioi_mem_atTop 1, (integrableOn_Ioi_rpow_iff zero_lt_one).mpr h⟩⟩
   obtain ⟨a, ha⟩ := mem_atTop_sets.mp ht
   refine (integrableOn_Ioi_rpow_iff (zero_lt_one.trans_le (le_max_right a 1))).mp ?_
-  exact hint.mono_set <| fun x hx ↦ ha _ <| (le_max_left a 1).trans hx.le
+  exact hint.mono_set fun x hx ↦ ha _ <| (le_max_left a 1).trans hx.le
 
 /-- The real power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by

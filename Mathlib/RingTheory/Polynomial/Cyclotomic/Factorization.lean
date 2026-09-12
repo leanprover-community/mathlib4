@@ -107,7 +107,7 @@ theorem irreducible_of_dvd_cyclotomic_of_natDegree (hP : P ∣ cyclotomic n K)
   classical
   have hP0 : P ≠ 0 := ne_zero_of_dvd_ne_zero (cyclotomic_ne_zero n K) hP
   obtain ⟨Q, HQ⟩ := exists_mem_normalizedFactors hP0 <| not_isUnit_of_natDegree_pos _ <|
-    pos_of_ne_zero <| fun h ↦ orderOf_eq_zero_iff.mp (h ▸ hPdeg.symm) <| isOfFinOrder_of_finite ..
+    pos_of_ne_zero fun h ↦ orderOf_eq_zero_iff.mp (h ▸ hPdeg.symm) <| isOfFinOrder_of_finite ..
   refine (associated_of_dvd_of_natDegree_le (dvd_of_mem_normalizedFactors HQ) hP0 ?_).irreducible
     (irreducible_of_normalized_factor Q HQ)
   rw [hPdeg, ← natDegree_of_dvd_cyclotomic_of_irreducible hK hn ?_

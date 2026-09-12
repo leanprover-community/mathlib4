@@ -39,7 +39,7 @@ instance subcanonical_over (J : GrothendieckTopology C) [J.Subcanonical] (X : C)
   refine ⟨?_, ?_, fun y hty ↦ ?_⟩
   · refine Over.homMk a ?_
     refine (Subcanonical.isSheaf_of_isRepresentable <| CategoryTheory.yoneda.obj X)
-      (.ofArrows _ <| fun i ↦ (g i).left) hR |>.isSeparatedFor.ext ?_
+      (.ofArrows _ fun i ↦ (g i).left) hR |>.isSeparatedFor.ext ?_
     rintro W u ⟨V, v, _, ⟨i⟩, rfl⟩
     have := ha _ (Sieve.ofArrows_mk _ _ i)
     dsimp at this

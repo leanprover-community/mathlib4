@@ -213,7 +213,7 @@ lemma IsStableUnderComposition.ind_of_preIndSpreads
           simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp] at h2
           simp [h2, D'] }
     obtain ⟨j₃, v, hcomp', hq⟩ := IsFinitelyPresentable.exists_hom_of_isColimit_under
-        hc' p s' q <| fun k ↦ by
+        hc' p s' q fun k ↦ by
       simp [c', s', hcomp, reassoc_of% (h₁ k.right).right]
     refine ⟨D'.obj j₃, v, c'.ι.app j₃ ≫ t₂.app j₂, ?_, ?_⟩
     · rwa [reassoc_of% hq]

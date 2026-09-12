@@ -162,7 +162,7 @@ into the sheaf category.
 -/
 @[simps! obj_obj map_hom, implicit_reducible]
 def yoneda [J.Subcanonical] : C ⥤ Sheaf J (Type v) :=
-  ObjectProperty.lift _ CategoryTheory.yoneda <| fun X ↦ by
+  ObjectProperty.lift _ CategoryTheory.yoneda fun X ↦ by
     rw [isSheaf_iff_isSheaf_of_type]
     apply Subcanonical.isSheaf_of_isRepresentable
 

@@ -86,7 +86,7 @@ lemma basicOpen_eq_bot_iff_forall_evaluation_eq_zero (f : X.presheaf.obj (op U))
     X.toRingedSpace.basicOpen f = ⊥ ↔ ∀ (x : U), X.evaluation x f = 0 := by
   simp only [evaluation_eq_zero_iff_notMem_basicOpen, Subtype.forall]
   exact ⟨fun h ↦ h ▸ fun a _ hc ↦ hc,
-    fun h ↦ eq_bot_iff.mpr <| fun a ha ↦ h a (X.toRingedSpace.basicOpen_le f ha) ha⟩
+    fun h ↦ eq_bot_iff.mpr fun a ha ↦ h a (X.toRingedSpace.basicOpen_le f ha) ha⟩
 
 @[simp]
 lemma Γevaluation_eq_zero_iff_notMem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :

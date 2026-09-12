@@ -185,7 +185,7 @@ def map (f : α → β) : Language α →+* Language β where
   map_zero' := image_empty _
   map_one' := image_singleton
   map_add' := image_union _
-  map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
+  map_mul' _ _ := image_image2_distrib fun _ _ => map_append
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

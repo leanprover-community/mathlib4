@@ -578,7 +578,7 @@ lemma tendsto_measure_smul_sdiff_isCompact_isClosed [LocallyCompactSpace G]
     [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (hk : IsCompact k) (h'k : IsClosed k) :
     Tendsto (fun g : G ↦ μ (g • k \ k)) (𝓝 1) (𝓝 0) :=
-  ENNReal.nhds_zero_basis.tendsto_right_iff.mpr <| fun _ h ↦
+  ENNReal.nhds_zero_basis.tendsto_right_iff.mpr fun _ h ↦
     eventually_nhds_one_measure_smul_sdiff_lt hk h'k h.ne'
 
 @[deprecated (since := "2026-06-03")]

@@ -315,7 +315,7 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
 
 theorem adjoint_innerSL_apply (x : E) :
     adjoint (innerSL 𝕜 x) = toSpanSingleton 𝕜 x :=
-  ext_ring <| ext_inner_left 𝕜 <| fun _ => by simp [adjoint_inner_right]
+  ext_ring <| ext_inner_left 𝕜 fun _ => by simp [adjoint_inner_right]
 
 theorem adjoint_toSpanSingleton (x : E) :
     adjoint (toSpanSingleton 𝕜 x) = innerSL 𝕜 x := by

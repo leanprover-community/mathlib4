@@ -133,7 +133,7 @@ def ofSurjective (val : ι → S) (h : Function.Surjective (aeval (R := R) val))
 /-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
 noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
     Generators R S PEmpty.{w + 1} :=
-  ofSurjective PEmpty.elim <| fun s ↦ by
+  ofSurjective PEmpty.elim fun s ↦ by
     use C (h s).choose
     simp [(h s).choose_spec]
 

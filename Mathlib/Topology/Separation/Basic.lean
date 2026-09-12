@@ -938,7 +938,7 @@ export R1Space (specializes_or_disjoint_nhds)
 variable [R1Space X] {x y : X}
 
 instance (priority := 100) : R0Space X where
-  specializes_symm.symm _ _ h := (specializes_or_disjoint_nhds _ _).resolve_right <| fun hd ↦
+  specializes_symm.symm _ _ h := (specializes_or_disjoint_nhds _ _).resolve_right fun hd ↦
     h.not_disjoint hd.symm
 
 theorem disjoint_nhds_nhds_iff_not_specializes : Disjoint (𝓝 x) (𝓝 y) ↔ ¬x ⤳ y :=

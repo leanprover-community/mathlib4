@@ -742,7 +742,7 @@ noncomputable section
 
 /-- Equivalence between representations induced from `TensorProduct.comm`. -/
 def comm : (tprod ρ σ).Equiv (tprod σ ρ) :=
-  .mk (_root_.TensorProduct.comm A V W) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.comm A V W) fun g ↦ by ext; simp
 
 @[simp]
 lemma toLinearMap_comm : (comm ρ σ).toLinearMap = _root_.TensorProduct.comm A V W := rfl
@@ -760,7 +760,7 @@ lemma comm_symm : (comm σ ρ).symm = comm ρ σ := by rfl
 
 /-- The `Equiv` between representations induced from `TensorProduct.assoc`. -/
 def assoc : (tprod (tprod ρ σ) τ).Equiv (tprod ρ (tprod σ τ)) :=
-  .mk (_root_.TensorProduct.assoc A V W U) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.assoc A V W U) fun g ↦ by ext; simp
 
 @[simp]
 lemma toLinearMap_assoc : (assoc ρ σ τ).toLinearMap = _root_.TensorProduct.assoc A V W U := rfl
@@ -775,7 +775,7 @@ lemma assoc_apply (v : V) (w : W) (u : U) : assoc ρ σ τ ((v ⊗ₜ w) ⊗ₜ 
 variable (A) in
 /-- The `Equiv` between representations induced from `TensorProduct.rid`. -/
 def rid : (σ.tprod (trivial A G A)).Equiv σ :=
-  .mk (_root_.TensorProduct.rid A W) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.rid A W) fun g ↦ by ext; simp
 
 @[simp]
 lemma toLinearMap_rid : (rid A σ).toLinearMap = _root_.TensorProduct.rid A W := rfl
@@ -789,7 +789,7 @@ lemma rid_symm_apply (w : W) : (rid A σ).symm w = w ⊗ₜ 1 := rfl
 variable (A) in
 /-- The `Equiv` between representations induced from `TensorProduct.lid`. -/
 def lid : ((trivial A G A).tprod σ).Equiv σ :=
-  .mk (_root_.TensorProduct.lid A W) <| fun g ↦ by ext; simp
+  .mk (_root_.TensorProduct.lid A W) fun g ↦ by ext; simp
 
 @[simp]
 lemma toLinearMap_lid : (lid A σ).toLinearMap = _root_.TensorProduct.lid A W := rfl

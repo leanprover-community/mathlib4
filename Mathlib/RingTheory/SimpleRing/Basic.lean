@@ -50,7 +50,7 @@ lemma of_eq_bot_or_eq_top [Nontrivial R] (h : ∀ I : TwoSidedIdeal R, I = ⊥ �
   simple.eq_bot_or_eq_top := h
 
 instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpleRing A :=
-  .of_eq_bot_or_eq_top <| fun I ↦ by
+  .of_eq_bot_or_eq_top fun I ↦ by
     rw [or_iff_not_imp_left, ← I.one_mem_iff]
     intro H
     obtain ⟨x, hx1, hx2 : x ≠ 0⟩ := SetLike.exists_of_lt (bot_lt_iff_ne_bot.mpr H : ⊥ < I)

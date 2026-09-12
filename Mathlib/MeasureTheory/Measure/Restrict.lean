@@ -1134,7 +1134,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
-        _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
+        _ ≤ C.card := card_mono fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_natCast hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by

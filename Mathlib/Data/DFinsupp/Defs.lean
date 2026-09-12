@@ -880,7 +880,7 @@ theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
   ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp +contextual⟩
 
 instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β i) : Decidable (f = 0) :=
-  f.support'.recOnSubsingleton <| fun s =>
+  f.support'.recOnSubsingleton fun s =>
     decidable_of_iff (∀ i ∈ s.val, f i = 0) <| by
       constructor
       case mpr => rintro rfl _ _; rfl

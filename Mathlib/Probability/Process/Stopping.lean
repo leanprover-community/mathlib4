@@ -336,7 +336,7 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [DenselyOrdered ι
     {τ : Ω → WithTop ι} [f.IsRightContinuous] (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω < i}) :
     IsStoppingTime f τ :=
   isStoppingTime_of_measurableSet_lt_of_isRightContinuous' hτ
-    <| fun _ hi ↦ absurd hi (NeBot.ne inferInstance)
+    fun _ hi ↦ absurd hi (NeBot.ne inferInstance)
 
 end IsRightContinuous
 
@@ -374,7 +374,7 @@ protected lemma biInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace
   refine isStoppingTime_of_measurableSet_lt_of_isRightContinuous <|
     fun i ↦ MeasurableSet.of_compl ?_
   rw [(_ : {ω | ⨅ n ∈ s, τ n ω < i}ᶜ = ⋂ n ∈ s, {ω | i ≤ τ n ω})]
-  · exact MeasurableSet.biInter hs <| fun n hn ↦ (hτ n hn).measurableSet_ge i
+  · exact MeasurableSet.biInter hs fun n hn ↦ (hτ n hn).measurableSet_ge i
   · ext ω
     simp
 

@@ -871,7 +871,7 @@ set `t` then `f` is continuous on `s ∪ t`. -/
 lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
     (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
     ContinuousOn f (s ∪ t) :=
-  continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
+  continuousOn_of_forall_continuousAt fun _ hx => hx.elim
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
 

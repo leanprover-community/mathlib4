@@ -347,7 +347,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
     ExteriorAlgebra.ιMulti R n (v ∘ α) ∈ span R (range (ExteriorAlgebra.ιMulti_family R n v)) := by
   by_cases α_inj : Injective α; swap
   · suffices ExteriorAlgebra.ιMulti R n (v ∘ α) = 0 by simp [this]
-    exact AlternatingMap.map_eq_zero_of_not_injective _ _ <| fun h ↦ α_inj (Injective.of_comp h)
+    exact AlternatingMap.map_eq_zero_of_not_injective _ _ fun h ↦ α_inj (Injective.of_comp h)
   suffices ∃ σ : Equiv.Perm (Fin n), (ExteriorAlgebra.ιMulti R n ((v ∘ α) ∘ σ)) ∈
       Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) by
     obtain ⟨σ, hσ⟩ := this

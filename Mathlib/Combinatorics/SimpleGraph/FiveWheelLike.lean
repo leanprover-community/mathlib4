@@ -102,7 +102,7 @@ private lemma IsNClique.insert_insert (h1 : G.IsNClique r (insert a s))
   apply h1.insert (fun b hb ↦ ?_)
   obtain (rfl | h) := mem_insert.1 hb
   · exact ha.symm
-  · exact h2.1 (mem_insert_self _ s) (mem_insert_of_mem h) <| fun h' ↦ (h3 (h' ▸ h)).elim
+  · exact h2.1 (mem_insert_self _ s) (mem_insert_of_mem h) fun h' ↦ (h3 (h' ▸ h)).elim
 
 private lemma IsNClique.insert_insert_erase (hs : G.IsNClique r (insert a s)) (hc : c ∈ s)
     (ha : a ∉ s) (hd : ∀ w ∈ insert a s, w ≠ c → G.Adj w b) :

@@ -137,7 +137,7 @@ def wedge : Wedge F := Wedge.mk (end_ F) (end_.π F) (by intros; apply end_.cond
 
 /-- The wedge corresponding to the explicit end in `Type` is limiting. -/
 def wedgeIsLimit : IsLimit (wedge F) where
-  lift s := TypeCat.ofHom <| fun x ↦
+  lift s := TypeCat.ofHom fun x ↦
     (⟨fun j : J ↦ Multifork.ι s j x, fun _ _ f ↦ by
       exact ConcreteCategory.congr_hom (Wedge.condition s f) x⟩ : end_ F)
   fac s := by rintro (_ | _) <;> cat_disch

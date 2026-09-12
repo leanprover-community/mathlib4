@@ -279,7 +279,7 @@ lemma le_of_le_subset (h' : K ≤ G) (hsu : V(K) ⊆ V(H)) (h : H ≤i G) : K �
   exact h.2 (huv.mono h') (hsu huv.left_mem) (hsu huv.right_mem) |>.edge_mem
 
 lemma ext_of_vertexSet (hV : V(H) = V(G)) (h : H ≤i G) : H = G :=
-  h.compatible.ext hV <| antisymm h.edgeSet_mono <| fun e he ↦ by
+  h.compatible.ext hV <| antisymm h.edgeSet_mono fun e he ↦ by
     obtain ⟨_, _, hxy⟩ := G.exists_isLink_of_mem_edgeSet he
     exact h.isLink_of_mem_mem hxy (hV ▸ hxy.left_mem) (hV ▸ hxy.right_mem) |>.edge_mem
 

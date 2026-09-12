@@ -189,7 +189,7 @@ alias ⟨_, ContinuousAt.upperHemicontinuousAt⟩ := upperHemicontinuousAt_singl
 @[simp]
 lemma upperHemicontinuousOn_singleton_iff :
     UpperHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
-  forall₂_congr <| fun _ _ ↦ upperHemicontinuousWithinAt_singleton_iff
+  forall₂_congr fun _ _ ↦ upperHemicontinuousWithinAt_singleton_iff
 
 alias ⟨_, ContinuousOn.upperHemicontinuousOn⟩ := upperHemicontinuousOn_singleton_iff
 
@@ -227,7 +227,7 @@ alias ⟨_, ContinuousAt.lowerHemicontinuousAt⟩ := lowerHemicontinuousAt_singl
 
 @[simp]
 lemma lowerHemicontinuousOn_singleton_iff : LowerHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
-  forall₂_congr <| fun _ _ ↦ lowerHemicontinuousWithinAt_singleton_iff
+  forall₂_congr fun _ _ ↦ lowerHemicontinuousWithinAt_singleton_iff
 
 alias ⟨_, ContinuousOn.lowerHemicontinuousOn⟩ := lowerHemicontinuousOn_singleton_iff
 

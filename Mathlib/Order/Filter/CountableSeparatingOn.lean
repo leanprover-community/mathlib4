@@ -131,7 +131,7 @@ theorem HasCountableSeparatingOn.subtype_iff {α : Type*} {p : Set α → Prop} 
     HasCountableSeparatingOn t (fun u ↦ ∃ v, p v ∧ (↑) ⁻¹' v = u) univ ↔
     HasCountableSeparatingOn α p t := by
   constructor <;> intro h
-  · exact h.of_subtype <| fun s ↦ id
+  · exact h.of_subtype fun s ↦ id
   rcases h with ⟨S, Sct, Sp, hS⟩
   use {Subtype.val ⁻¹' s | s ∈ S}, Sct.image _, ?_, ?_
   · rintro u ⟨t, tS, rfl⟩

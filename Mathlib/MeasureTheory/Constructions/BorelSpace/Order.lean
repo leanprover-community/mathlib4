@@ -69,7 +69,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
           refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
           simpa [CovBy, htU, subset_def] using hcovBy
         simp only [this, ← compl_Iio]
-        exact .biUnion htc <| fun _ _ ↦ (H _).compl
+        exact .biUnion htc fun _ _ ↦ (H _).compl
     · apply H
   · rw [forall_mem_range]
     intro a

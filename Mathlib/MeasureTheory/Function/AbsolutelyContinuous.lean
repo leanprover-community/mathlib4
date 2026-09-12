@@ -278,7 +278,7 @@ theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
   unfold AbsolutelyContinuousOnInterval at hf hg
   apply squeeze_zero' ?_ ?_
     (by simpa using (hg.const_mul C).add (hf.const_mul D))
-  · exact Filter.Eventually.of_forall <| fun _ ↦ Finset.sum_nonneg (fun i hi ↦ dist_nonneg)
+  · exact Filter.Eventually.of_forall fun _ ↦ Finset.sum_nonneg (fun i hi ↦ dist_nonneg)
   rw [eventually_inf_principal]
   filter_upwards with (n, I) hnI
   simp only [Finset.mul_sum, ← Finset.sum_add_distrib]

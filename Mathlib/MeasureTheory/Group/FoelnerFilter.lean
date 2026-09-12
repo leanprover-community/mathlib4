@@ -177,7 +177,7 @@ theorem mean_smul_eq_mean_smul [SMulInvariantMeasure G X μ]
     (hfoel.tendsto_nhds_mean (g • s))
     (hfoel.tendsto_nhds_mean (h • s) |>.add <| hfoel.tendsto_meas_smul_symmDiff_smul g⁻¹ h⁻¹) ?_
   filter_upwards [hfoel.eventually_meas_ne_zero] with i hi
-  rw [← tsub_le_iff_left, ← ENNReal.sub_div <| fun _ _ ↦ hi]
+  rw [← tsub_le_iff_left, ← ENNReal.sub_div fun _ _ ↦ hi]
   refine ENNReal.div_le_div_right (le_trans ?_ (measure_mono <| @inter_subset_right _ s _)) _
   simpa [inter_symmDiff_distrib_left, ← measure_inter_inv_smul] using le_measure_symmDiff
 

@@ -701,7 +701,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
   · -- nonempty case
     apply symm
     apply Nat.div_eq_of_eq_mul_left
-    · have : 0 < m.prod := Multiset.prod_pos <| fun a ha => zero_lt_two.trans_le (hm.2 a ha)
+    · have : 0 < m.prod := Multiset.prod_pos fun a ha => zero_lt_two.trans_le (hm.2 a ha)
       positivity
     rw [card_of_cycleType_mul_eq, ite_eq_left hm]
   · -- empty case

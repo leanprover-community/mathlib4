@@ -961,7 +961,7 @@ def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap �
           map_update_add' := by simp
           map_update_smul' := by simp }
       map_add' x y := by ext1; simp
-      map_smul' c x := by ext1; simp } ‖f‖ <| fun x m ↦ by
+      map_smul' c x := by ext1; simp } ‖f‖ fun x m ↦ by
     rw [LinearMap.coe_mk, AddHom.coe_mk, MultilinearMap.coe_mk, mul_right_comm]
     apply ((f m).le_opNorm x).trans
     gcongr

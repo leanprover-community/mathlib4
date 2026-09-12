@@ -304,8 +304,8 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
       rw [hg]
       let e := arrowIsoΓSpecOfIsAffine (CommRingCat.ofHom <| algebraMap S.R S.K)
       let P : MorphismProperty CommRingCat :=
-        RingHom.toMorphismProperty <| fun f ↦ Function.Injective f
-      have : (RingHom.toMorphismProperty <| fun f ↦ Function.Injective f).RespectsIso :=
+        RingHom.toMorphismProperty fun f ↦ Function.Injective f
+      have : (RingHom.toMorphismProperty fun f ↦ Function.Injective f).RespectsIso :=
         RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.injective_respectsIso
       change P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]

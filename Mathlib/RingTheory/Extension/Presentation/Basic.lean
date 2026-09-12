@@ -85,7 +85,7 @@ protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 
 /-- `P.Quotient` is `P.Ring`-isomorphic to `S` and in particular `R`-isomorphic to `S`. -/
 noncomputable def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
-  Ideal.quotientKerAlgEquivOfRightInverse (f := Algebra.ofId P.Ring S) (g := P.σ) <| fun x ↦ by
+  Ideal.quotientKerAlgEquivOfRightInverse (f := Algebra.ofId P.Ring S) (g := P.σ) fun x ↦ by
     rw [Algebra.ofId_apply, P.algebraMap_apply, P.aeval_val_σ]
 
 @[simp]

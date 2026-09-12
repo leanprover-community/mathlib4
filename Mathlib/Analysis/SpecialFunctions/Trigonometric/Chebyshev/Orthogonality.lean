@@ -84,7 +84,7 @@ theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :
   _ = ∫ θ in (arccos 1)..(arccos (-1)), f (cos θ) := by
     rw [← integral_comp_mul_deriv_of_deriv_nonpos (f' := fun x => -(1 / √(1 - x ^ 2)))]
     · simp_rw [Function.comp_apply]
-      exact integral_congr <| fun x hx => by simp [cos_arccos (x := x) (by aesop) (by aesop)]
+      exact integral_congr fun x hx => by simp [cos_arccos (x := x) (by aesop) (by aesop)]
     · fun_prop
     · exact fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop))
     · simp
@@ -106,7 +106,7 @@ theorem integral_eval_T_real_measureT_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
     rwa [integral_comp_mul_left _ (Int.cast_ne_zero.mpr hn), smul_eq_zero_iff_right (by aesop),
       mul_zero]
   trans ∫ θ in 0..n * π, (deriv sin) θ
-  · refine integral_congr <| fun x hx => (congrFun deriv_sin x).symm
+  · refine integral_congr fun x hx => (congrFun deriv_sin x).symm
   by_cases! 0 ≤ n
   case pos => rw [integral_deriv_of_contDiffOn_Icc contDiff_sin.contDiffOn (by positivity)]; simp
   case neg hn =>

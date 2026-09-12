@@ -149,9 +149,9 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 
 lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
-    (finMulAntidiag 2 n).image (piFinTwoEquiv <| fun _ => ℕ) = divisorsAntidiagonal n := by
+    (finMulAntidiag 2 n).image (piFinTwoEquiv fun _ => ℕ) = divisorsAntidiagonal n := by
   ext x
-  simp [(piFinTwoEquiv <| fun _ => ℕ).symm.surjective.exists]
+  simp [(piFinTwoEquiv fun _ => ℕ).symm.surjective.exists]
 
 lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiag d n) :

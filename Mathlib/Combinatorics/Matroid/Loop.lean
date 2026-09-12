@@ -564,7 +564,7 @@ lemma IsColoop.notMem_isCircuit (he : M.IsColoop e) (hC : M.IsCircuit C) : e ∉
   fun h ↦ (hC.isCocircuit.isNonloop_of_mem h).not_isLoop he
 
 lemma IsCircuit.disjoint_coloops (hC : M.IsCircuit C) : Disjoint C M.coloops :=
-  disjoint_right.2 <| fun _ he ↦ IsColoop.notMem_isCircuit he hC
+  disjoint_right.2 fun _ he ↦ IsColoop.notMem_isCircuit he hC
 
 lemma isColoop_iff_forall_notMem_isCircuit (he : e ∈ M.E := by aesop_mat) :
     M.IsColoop e ↔ ∀ ⦃C⦄, M.IsCircuit C → e ∉ C := by
