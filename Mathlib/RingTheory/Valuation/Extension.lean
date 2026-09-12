@@ -98,6 +98,18 @@ instance id : vR.HasExtension vR where
   val_isEquiv_comap := by
     simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
 
+theorem comp {A B ΓR ΓA ΓB : Type*} [CommRing A] [Ring B]
+    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
+    [LinearOrderedCommMonoidWithZero ΓB] [Algebra R A] [Algebra A B] [Algebra R B]
+    [IsScalarTower R A B]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA) (vB : Valuation B ΓB)
+    [vR.HasExtension vA] [vA.HasExtension vB] : vR.HasExtension vB where
+  val_isEquiv_comap := by
+    rw [IsScalarTower.algebraMap_eq R A B, comap_comp]
+    have hRA : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+    have hAB : vA.IsEquiv (vB.comap (algebraMap A B)) := HasExtension.val_isEquiv_comap
+    exact hRA.trans (hAB.comap (algebraMap R A))
+
 section integer
 
 variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK : Type*}
@@ -211,6 +223,99 @@ lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
   rfl
 
 end AlgebraInstances
+
+section ValueGroup₀
+
+variable {ΓR ΓA : Type*}
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
+
+open MonoidWithZeroHom in
+/-- The map of valuation groups induced by a valuation extension. -/
+noncomputable def mapValueGroup₀ :
+    (ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
+      (ValueGroup₀ (.ofClass vA : A →*₀ ΓA)) := by
+  have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+  refine (WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom
+  intro r hr
+  rw [mem_valueGroup_iff_of_comm] at hr ⊢
+  obtain ⟨a, ha0, x, hr⟩ := hr
+  exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
+
+theorem mapValueGroup₀_strictMono : StrictMono (mapValueGroup₀ vR vA) := by
+  have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+  refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso.toOrderIso.strictMono
+  intro a b hab
+  simpa [← Subtype.coe_lt_coe] using hab
+
+theorem mapValueGroup₀_monotone : Monotone (mapValueGroup₀ vR vA) :=
+  (mapValueGroup₀_strictMono vR vA).monotone
+
+theorem restrict_map_mapValueGroup₀ :
+    vR.restrict.map (mapValueGroup₀ vR vA) (mapValueGroup₀_monotone vR vA) =
+      vA.restrict.comap (algebraMap R A) := by
+  ext x
+  have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+  unfold mapValueGroup₀
+  simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply,
+    MonoidWithZeroHom.comp_apply, comap_apply]
+  rw [MulEquiv.toMonoidWithZeroHom_apply, OrderMonoidIso.coe_mulEquiv, h.orderMonoidIso_spec x]
+  generalize hc : (vA.comap (algebraMap R A)).restrict x = c
+  cases c using WithZero.cases_on with
+  | zero =>
+    rw [restrict_eq_zero_iff, comap_apply, ← restrict_eq_zero_iff] at hc
+    rw [hc]
+    apply WithZero.map'_zero
+  | coe c =>
+    rw [← MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.injective.eq_iff,
+      Valuation.embedding_restrict] at hc ⊢
+    rw [← comap_apply, hc]
+    rfl
+
+theorem mapValueGroup₀_apply_restrict (x : R) :
+    mapValueGroup₀ vR vA (vR.restrict x) = vA.restrict (algebraMap R A x) :=
+  congrFun (congrArg DFunLike.coe (restrict_map_mapValueGroup₀ vR vA)) x
+
+theorem mapValueGroup₀_uniq (m : type_of% (mapValueGroup₀ vR vA))
+    (hm : ∀ x, m (vR.restrict x) = vA.restrict (algebraMap R A x)) :
+    mapValueGroup₀ vR vA = m := by
+  refine DFunLike.ext _ _ fun x => ?_
+  obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x
+  · simp
+  obtain ⟨r, s, hr, hs, hrs⟩ := exists_div_eq_of_unit vR x
+  rw [← hrs, map_div₀, map_div₀, hm, hm,
+    mapValueGroup₀_apply_restrict, mapValueGroup₀_apply_restrict]
+
+@[simp]
+theorem mapValueGroup₀_self : mapValueGroup₀ vR vR = .id .. := by
+  apply mapValueGroup₀_uniq
+  simp
+
+section tower
+variable {A B ΓR ΓA ΓB : Type*}
+    [CommRing A] [Ring B] [Algebra R A] [Algebra A B] [Algebra R B]
+    [IsScalarTower R A B]
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    [LinearOrderedCommGroupWithZero ΓB]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA) (vB : Valuation B ΓB)
+    [vR.HasExtension vA] [vA.HasExtension vB]
+
+theorem mapValueGroup₀_comp_mapValueGroup₀ :
+    haveI := HasExtension.comp vR vA vB
+    (mapValueGroup₀ vA vB).comp (mapValueGroup₀ vR vA) = mapValueGroup₀ vR vB := by
+  have := HasExtension.comp vR vA vB
+  symm
+  apply mapValueGroup₀_uniq
+  simp [mapValueGroup₀_apply_restrict, ← IsScalarTower.algebraMap_apply]
+
+theorem mapValueGroup₀_mapValueGroup₀ (x) :
+    haveI := HasExtension.comp vR vA vB
+    (mapValueGroup₀ vA vB) (mapValueGroup₀ vR vA x) = mapValueGroup₀ vR vB x :=
+  congrFun (congrArg DFunLike.coe (mapValueGroup₀_comp_mapValueGroup₀ vR vA vB)) x
+
+end tower
+
+end ValueGroup₀
 
 end HasExtension
 
