@@ -4744,6 +4744,7 @@ public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.BritishFlag
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
+public import Mathlib.Geometry.Euclidean.Equilateral
 public import Mathlib.Geometry.Euclidean.Incenter
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.Inversion.Calculus
