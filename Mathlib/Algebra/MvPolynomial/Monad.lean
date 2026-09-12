@@ -328,6 +328,44 @@ theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R)
   classical
   simpa only [exists_prop, Finset.mem_biUnion, mem_support_iff, Ne] using vars_bind₁ f φ h
 
+theorem degreeOf_bind₁_update_self_eq_zero [DecidableEq σ] (φ : MvPolynomial σ R) (i : σ) (r : R) :
+    (bind₁ (Function.update X i (C r)) φ).degreeOf i = 0 := by
+  induction φ using MvPolynomial.induction_on with
+  | C a => simp [degreeOf_C]
+  | add p q hp hq =>
+    have h := degreeOf_add_le i (bind₁ (Function.update X i (C r)) p)
+      (bind₁ (Function.update X i (C r)) q)
+    rw [hp, hq] at h
+    simpa using h
+  | mul_X p n hp =>
+    rw [map_mul, bind₁_X_right]
+    by_cases hn : n = i
+    · subst hn
+      rw [Function.update_self]
+      refine Nat.le_zero.mp ((degreeOf_mul_le _ _ _).trans ?_)
+      simp [hp, degreeOf_C]
+    · rw [Function.update_of_ne hn, degreeOf_mul_X_of_ne _ (Ne.symm hn)]
+      exact hp
+
+theorem X_sub_C_dvd_sub_bind₁_update {R : Type*} [CommRing R] [DecidableEq σ]
+    (φ : MvPolynomial σ R) (i : σ) (r : R) :
+    (X i - C r) ∣ φ - bind₁ (Function.update X i (C r)) φ := by
+  induction φ using MvPolynomial.induction_on with
+  | C a => simp
+  | add _ _ h₁ h₂ => simpa only [map_add, sub_add_sub_comm] using h₁.add h₂
+  | mul_X p n hp =>
+    have key : p * X n - bind₁ (Function.update X i (C r)) (p * X n)
+      = (p - bind₁ (Function.update X i (C r)) p) * X n
+        + bind₁ (Function.update X i (C r)) p * (X n - Function.update X i (C r) n) := by
+      rw [map_mul, bind₁_X_right, sub_mul, mul_sub, sub_add_sub_cancel]
+    refine key ▸ dvd_add (hp.mul_right _) ?_
+    by_cases hn : n = i
+    · subst hn
+      rw [Function.update_self]
+      exact dvd_mul_left _ _
+    · rw [Function.update_of_ne hn, sub_self, mul_zero]
+      exact dvd_zero _
+
 instance monad : Monad fun σ => MvPolynomial σ R where
   map f p := rename f p
   pure := X
