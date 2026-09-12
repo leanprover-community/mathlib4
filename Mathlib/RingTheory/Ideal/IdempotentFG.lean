@@ -10,7 +10,7 @@ public import Mathlib.Order.Basic
 public import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
-## Lemmas on idempotent finitely generated ideals
+# Lemmas on idempotent finitely generated ideals
 -/
 
 public section

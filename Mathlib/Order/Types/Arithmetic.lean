@@ -10,6 +10,7 @@ public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
+# Arithmetic of order types
 
 ## Main definitions
 
