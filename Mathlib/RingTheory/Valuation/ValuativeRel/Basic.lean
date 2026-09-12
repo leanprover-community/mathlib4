@@ -945,9 +945,38 @@ lemma isNontrivial_iff_nontrivial_units :
     · exact ⟨s.val, by simp, by simpa using h.symm⟩
     · exact ⟨r.val, by simp, by simpa using hr⟩
 
+/-- The action of `O` on `R` never increases the valuation, i.e. `∀ o : O, ∀ r : R, o • r ≤ᵥ r`. -/
+class IsIntegerSMul (O R : Type*) [Semiring R] [ValuativeRel R] [SMul O R] : Prop where
+  smul_vle (o : O) (r : R) : o • r ≤ᵥ r
+
+lemma smul_vle {O : Type*} [SMul O R] [IsIntegerSMul O R] (o : O) (r : R) : o • r ≤ᵥ r :=
+  IsIntegerSMul.smul_vle o r
+
+/-- A ring with a valuative relation is its own ring of integers, i.e. all of its elements have
+relative valuation at most one. -/
+abbrev IsIntegerRing (R : Type*) [Semiring R] [ValuativeRel R] : Prop := IsIntegerSMul R R
+
+variable (R) in
+lemma vle_one_of_isIntegerRing [IsIntegerRing R] (x : R) : x ≤ᵥ 1 := by
+  simpa using smul_vle x (1 : R)
+
+/-- To check that a ring acts by integers it suffices to check it on `1`. -/
+lemma IsIntegerSMul.of_forall_smul_one_vle_one {O : Type*} [SMul O R] [IsScalarTower O R R]
+    (h : ∀ o : O, o • (1 : R) ≤ᵥ 1) : IsIntegerSMul O R where
+  smul_vle o x := by
+    rw [← one_mul x, ← smul_mul_assoc]
+    exact mul_vle_mul_left (h o) _
+
 section Valuation
 
 variable {R : Type*} [Ring R] [ValuativeRel R]
+
+lemma valuation_smul_le {O : Type*} [SMul O R] [IsIntegerSMul O R] (o : O) (x : R) :
+    valuation R (o • x) ≤ valuation R x :=
+  (Valuation.vle_iff_le _).mp (smul_vle o x)
+
+lemma valuation_le_one [IsIntegerRing R] (x : R) : valuation R x ≤ 1 :=
+  (Valuation.vle_one_iff _).mp (vle_one_of_isIntegerRing R x)
 
 lemma isNontrivial_iff_isNontrivial
     {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible] :
@@ -1259,6 +1288,11 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
     by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, vlt_iff_vlt] using ha⟩
   map_one' := by simp
   map_mul' := by simp
+
+instance [ValuativeRel.IsIntegerRing A] : IsIntegerSMul A B :=
+  .of_forall_smul_one_vle_one fun a ↦ by
+    simpa [Algebra.smul_def] using
+      (vle_iff_vle (B := B) a 1).mpr (vle_one_of_isIntegerRing A a)
 
 end Semiring
 
