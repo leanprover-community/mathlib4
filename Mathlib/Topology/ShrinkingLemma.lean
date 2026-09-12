@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Reid Barton
 module
 
 public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # The shrinking lemma
@@ -34,8 +33,6 @@ normal space, shrinking lemma
 open Set Function
 
 noncomputable section
-
-universe u
 
 variable {ι X : Type*} [TopologicalSpace X]
 
@@ -209,7 +206,7 @@ end ShrinkingLemma
 
 section NormalSpace
 
-open ShrinkingLemma TopologicalSpace
+open ShrinkingLemma
 
 variable {u : ι → Set X} {s : Set X} [NormalSpace X]
 
@@ -261,34 +258,39 @@ theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, {
 
 /-- A finite family of closed sets with empty intersection in a normal space has open
 neighborhoods whose closures still have empty intersection. -/
-lemma existsOpen_superset_closure_biInter_eq_empty
-    {X : Type*} [TopologicalSpace X] [NormalSpace X] {ι : Type*} {s : Finset ι} {K : ι → Set X}
-    (hKclosed : ∀ i ∈ s, IsClosed (K i)) (hKempty : ⋂ i ∈ s, K i = ∅) :
-    ∃ U : ι → Opens X, (∀ i, K i ⊆ U i) ∧ ⋂ i ∈ s, closure (U i : Set X) = ∅ := by
+lemma exists_isOpen_superset_closure_biInter_eq_empty
+    {X : Type*} [TopologicalSpace X] [NormalSpace X] {ι : Type*} {s : Set ι} {K : ι → Set X}
+    (hs : s.Finite) (hKclosed : ∀ i ∈ s, IsClosed (K i)) (hKempty : ⋂ i ∈ s, K i = ∅) :
+    ∃ U : ι → Set X, (∀ i, IsOpen (U i)) ∧ (∀ i, K i ⊆ U i) ∧
+      ⋂ i ∈ s, closure (U i) = ∅ := by
+  let _ := hs.to_subtype
   obtain ⟨V, hVcover, hVopen, hV⟩ := exists_iUnion_eq_closure_subset
     (fun i : s ↦ (hKclosed i i.2).isOpen_compl) (fun _ ↦ Set.toFinite _)
     (by simp only [← compl_iInter, iInter_subtype, hKempty, compl_empty])
-  refine ⟨fun i ↦ ⟨⋂ h : i ∈ s, (closure (V ⟨i, h⟩))ᶜ,
-    isOpen_iInter_of_finite fun _ ↦ isClosed_closure.isOpen_compl⟩,
+  refine ⟨fun i ↦ ⋂ h : i ∈ s, (closure (V ⟨i, h⟩))ᶜ,
+    fun _ ↦ isOpen_iInter_of_finite fun _ ↦ isClosed_closure.isOpen_compl,
     fun i ↦ subset_iInter fun h ↦ subset_compl_comm.mp (hV ⟨i, h⟩), ?_⟩
   apply subset_eq_empty ?_ (by simpa [compl_iUnion] using congrArg compl hVcover)
-  refine subset_iInter fun i ↦ (iInter₂_subset i.1 i.2).trans ?_
-  simpa [closure_compl] using compl_subset_compl.mpr (hVopen i).subset_interior_closure
+  refine subset_iInter fun i ↦ subset_iInter fun hi ↦ (iInter₂_subset i hi).trans ?_
+  simpa [hi, closure_compl] using
+    compl_subset_compl.mpr (hVopen ⟨i, hi⟩).subset_interior_closure
 
 /-- A finite family of closed sets in a normal space has open neighborhoods with closures
 inside prescribed open supersets, preserving every empty finite intersection. -/
-lemma existsOpenSwelling_preservingFiniteIntersections
+lemma exists_isOpen_superset_closure_subset_biInter_eq_empty
     {X : Type*} [TopologicalSpace X] [NormalSpace X] {ι : Type*} [Finite ι]
-    {K : ι → Set X} {A : ι → Opens X} (hKclosed : ∀ i, IsClosed (K i)) (hKA : ∀ i, K i ⊆ A i) :
-    ∃ E : ι → Opens X, (∀ i, K i ⊆ E i) ∧ (∀ i, closure (E i : Set X) ⊆ A i) ∧
-      ∀ s : Finset ι, (⋂ i ∈ s, K i = ∅) → ⋂ i ∈ s, closure (E i : Set X) = ∅ := by
+    {K A : ι → Set X} (hKclosed : ∀ i, IsClosed (K i)) (hAopen : ∀ i, IsOpen (A i))
+    (hKA : ∀ i, K i ⊆ A i) :
+    ∃ E : ι → Set X, (∀ i, IsOpen (E i)) ∧ (∀ i, K i ⊆ E i) ∧
+      (∀ i, closure (E i) ⊆ A i) ∧
+        ∀ s : Finset ι, (⋂ i ∈ s, K i = ∅) → ⋂ i ∈ s, closure (E i) = ∅ := by
   let _ := Fintype.ofFinite ι
-  choose U hKU hUempty using fun s : {s : Finset ι // ⋂ i ∈ s, K i = ∅} ↦
-    existsOpen_superset_closure_biInter_eq_empty (fun i _ ↦ hKclosed i) s.2
+  choose U hUopen hKU hUempty using fun s : {s : Finset ι // ⋂ i ∈ s, K i = ∅} ↦
+    exists_isOpen_superset_closure_biInter_eq_empty s.1.finite_toSet (fun i _ ↦ hKclosed i) s.2
   choose E hEopen hKE hEclosure using fun i ↦ normal_exists_closure_subset (hKclosed i)
-    ((A i).isOpen.inter (isOpen_iInter_of_finite fun s ↦ (U s i).isOpen))
+    ((hAopen i).inter (isOpen_iInter_of_finite fun s ↦ hUopen s i))
       (subset_inter (hKA i) (subset_iInter fun s ↦ hKU s i))
-  refine ⟨fun i ↦ ⟨E i, hEopen i⟩, hKE,
+  refine ⟨E, hEopen, hKE,
     fun i ↦ (hEclosure i).trans inter_subset_left, fun s hs ↦ ?_⟩
   exact subset_eq_empty (iInter₂_mono fun i _ x hx ↦
     subset_closure (mem_iInter.mp (hEclosure i hx).2 ⟨s, hs⟩)) (hUempty ⟨s, hs⟩)
