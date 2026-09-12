@@ -129,8 +129,7 @@ theorem norm_sum_eq_iff_exists_smul :
   · rintro ⟨c, hvc⟩
     rw [norm_sum_eq_iff_pairwise_sameRay]
     intro i hi j hj _
-    change SameRay ℝ (v i) (v j)
-    rw [hvc i hi, hvc j hj]
+    rw [Function.onFun, hvc i hi, hvc j hj]
     exact (SameRay.sameRay_nonneg_smul_left c (norm_nonneg _)).nonneg_smul_right (norm_nonneg _)
 
 end Normed
