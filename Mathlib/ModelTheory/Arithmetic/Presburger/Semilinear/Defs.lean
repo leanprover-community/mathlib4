@@ -411,15 +411,10 @@ theorem Nat.isSemilinearSet_iff_ultimately_periodic {s : Set ℕ} :
       · have hb : b ≠ 0 := by simpa [ne_comm] using ht.zero_notMem_image
         rw [Nat.ne_zero_iff_zero_lt] at hb
         refine ⟨a, b, hb, fun x hx => ?_⟩
-        simp only [Finset.coe_singleton, mem_vadd_set, SetLike.mem_coe,
-          AddSubmonoid.mem_closure_singleton, smul_eq_mul, vadd_eq_add, exists_exists_eq_and]
-        constructor
-        · rintro ⟨x, rfl⟩
-          exact ⟨x + 1, by grind⟩
-        · rintro ⟨y, heq⟩
-          cases y with
-          | zero => exact ⟨0, by grind⟩
-          | succ y => exact ⟨y, by grind⟩
+        obtain ⟨x, rfl⟩ := Nat.exists_eq_add_of_le hx
+        simp only [add_assoc, add_mem_vadd_set, SetLike.mem_coe, Finset.coe_singleton,
+          mem_closure_singleton, smul_eq_mul]
+        exact ⟨fun ⟨c, hc⟩ => ⟨c + 1, by lia⟩, fun | ⟨0, hc⟩ => by lia | ⟨c + 1, hc⟩ => ⟨c, by lia⟩⟩
     choose! k p hS hS' using hS
     refine ⟨S.sup k, S.lcm p, ?_, fun x hx => ?_⟩
     · grind [Finset.lcm_eq_zero_iff]
