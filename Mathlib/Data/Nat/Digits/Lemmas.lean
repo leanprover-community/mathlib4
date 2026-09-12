@@ -52,7 +52,7 @@ This section contains various lemmas of properties relating to `digits` and `ofD
 
 theorem length_digits (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) :
     (b.digits n).length = b.log n + 1 := by
-  induction n using Nat.strong_induction_on with | _ n IH
+  induction n using Nat.strong_induction_on with | ind n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
   · simp [h]
