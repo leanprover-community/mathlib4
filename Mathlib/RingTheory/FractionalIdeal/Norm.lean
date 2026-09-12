@@ -39,8 +39,7 @@ namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
--- A nontrivial free `ℤ`-module is infinite; local to this file to supply `Infinite R`.
-local instance : Infinite R := Module.Free.infinite ℤ R
+attribute [local instance] Module.Free.infinite_int Ring.HasFiniteQuotients.of_module_finite_int
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :

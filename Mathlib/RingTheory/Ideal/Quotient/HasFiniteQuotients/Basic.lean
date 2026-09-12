@@ -103,4 +103,10 @@ instance : HasFiniteQuotients ℤ where
     have : NeZero n := ⟨by simpa using hI⟩
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
+/-- A domain that is finite over `ℤ` has finite quotients. This is not a global instance since it
+would apply to every `HasFiniteQuotients` goal. -/
+theorem of_module_finite_int (S : Type*) [CommRing S] [IsDomain S] [Module.Finite ℤ S] :
+    HasFiniteQuotients S :=
+  of_module_finite ℤ S
+
 end Ring.HasFiniteQuotients
