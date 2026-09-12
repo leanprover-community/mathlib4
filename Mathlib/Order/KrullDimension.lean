@@ -934,6 +934,48 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
 
 instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
 
+lemma krullDimLE_iff_orderDual {n : ℕ} {α : Type*} [Preorder α] :
+    Order.KrullDimLE n α ↔ Order.KrullDimLE n αᵒᵈ := by
+  rw [Order.krullDimLE_iff, Order.krullDimLE_iff, krullDim_orderDual]
+
+lemma krullDimLE_iff_coheight_le_isMin {X : Type*} [Preorder X] {n : ℕ} :
+    Order.KrullDimLE n X ↔ (∀ x : X, n ≤ coheight x → IsMin x) := by
+  rw [Order.krullDimLE_iff]
+  refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ?_⟩
+  · by_contra hxy
+    have h2 : ((n + 1 : ℕ) : ℕ∞) ≤ coheight y := by
+      push_cast
+      exact (by gcongr : (n : ℕ∞) + 1 ≤ coheight x + 1).trans
+        (coheight_add_one_le (lt_of_le_not_ge hy hxy))
+    have h3 : ((n + 1 : ℕ) : WithBot ℕ∞) ≤ (n : WithBot ℕ∞) :=
+      le_trans (le_trans (by exact_mod_cast h2) (coheight_le_krullDim y)) h
+    exact absurd (by exact_mod_cast h3 : n + 1 ≤ n) (by omega)
+  · by_contra hcon
+    rw [not_le] at hcon
+    obtain ⟨l, hl⟩ := le_krullDim_iff.mp (show ((n + 1 : ℕ) : WithBot ℕ∞) ≤ krullDim X by
+      push_cast
+      exact ENat.WithBot.add_one_le_iff.mpr hcon)
+    have hidx : 1 < l.length + 1 := by omega
+    have hcoh := rev_index_le_coheight l ⟨1, hidx⟩
+    rw [show ((⟨1, hidx⟩ : Fin (l.length + 1)).rev : ℕ) = n by simp [Fin.val_rev]; omega] at hcoh
+    have h0lt : l ⟨0, by omega⟩ < l ⟨1, hidx⟩ := l.strictMono (by simp [Fin.lt_def])
+    exact h0lt.not_ge (h _ (by exact_mod_cast hcoh) h0lt.le)
+
+lemma krullDimLE_iff_height_le_isMax {X : Type*} [Preorder X] {n : ℕ} :
+    Order.KrullDimLE n X ↔ (∀ x : X, n ≤ height x → IsMax x) := by
+  have : Order.KrullDimLE n X ↔ Order.KrullDimLE n Xᵒᵈ := by
+    rw [Order.krullDimLE_iff, Order.krullDimLE_iff, krullDim_orderDual]
+  rw [this]
+  exact krullDimLE_iff_coheight_le_isMin
+
+lemma KrullDimLE.isMin_of_le_coheight {X : Type*} [Preorder X] {n : ℕ}
+    [Order.KrullDimLE n X] {x : X} (hx : n ≤ coheight x) : IsMin x :=
+  krullDimLE_iff_coheight_le_isMin.mp ‹_› x hx
+
+lemma KrullDimLE.isMax_of_le_height {X : Type*} [Preorder X] {n : ℕ}
+    [Order.KrullDimLE n X] {x : X} (hx : n ≤ height x) : IsMax x :=
+  krullDimLE_iff_height_le_isMax.mp ‹_› x hx
+
 end typeclass
 
 /-!
