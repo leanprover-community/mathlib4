@@ -73,14 +73,19 @@ theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a �
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice β]
+variable [ConditionallyCompleteLattice β] {f : α → β}
 
 @[to_dual]
-theorem Set.Finite.map_sSup_of_monotone {f : α → β} (hmono : Monotone f)
-    {s : Set α} (hne : s.Nonempty) (hfin : s.Finite) :
-    f (sSup s) = sSup (f '' s) :=
+theorem Set.Finite.map_sSup_of_monotone (hmono : Monotone f) {s : Set α} (hne : s.Nonempty)
+    (hfin : s.Finite) : f (sSup s) = sSup (f '' s) :=
   le_antisymm (hmono.le_csSup_image (hne.csSup_mem hfin) hfin.bddAbove)
     (hmono.csSup_image_le_map_csSup hne hfin.bddAbove)
+
+@[to_dual]
+theorem Set.Finite.map_sInf_of_antitone (hf : Antitone f) {s : Set α} (hne : s.Nonempty)
+    (hfin : s.Finite) : f (sInf s) = sSup (f '' s) :=
+  le_antisymm (hf.le_csSup_image (hne.csInf_mem hfin) hfin.bddBelow)
+    (hf.csSup_image_le_map_csInf hne hfin.bddBelow)
 
 end ConditionallyCompleteLattice
 
