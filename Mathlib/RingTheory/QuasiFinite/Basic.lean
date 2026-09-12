@@ -90,6 +90,11 @@ lemma finite_primesOver [QuasiFinite R S] (I : Ideal R) : (I.primesOver S).Finit
     obtain ⟨J, h₁, ⟨rfl⟩⟩ := this
     exact h inferInstance
 
+lemma primesOver_ncard_ne_zero [QuasiFinite R S] [Algebra.IsIntegral R S] [FaithfulSMul R S]
+    (I : Ideal R) [I.IsPrime] : (I.primesOver S).ncard ≠ 0 := by
+  obtain ⟨P, hP, hPI⟩ := Ideal.exists_prime_ideal_liesOver_of_isIntegral (S := S) I
+  exact Set.ncard_ne_zero_of_mem ⟨hP, hPI⟩ (finite_primesOver I)
+
 open Ideal in
 instance (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime] [QuasiFinite R S] :
     IsArtinianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q))) := by

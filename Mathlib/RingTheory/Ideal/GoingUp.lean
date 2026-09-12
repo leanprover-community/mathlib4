@@ -367,12 +367,18 @@ theorem exists_ideal_over_maximal_of_isIntegral [Algebra.IsIntegral R S]
   obtain ⟨Q, -, Q_prime, hQ⟩ := exists_ideal_over_prime_of_isIntegral P ⊥ hP
   exact ⟨Q, isMaximal_of_isIntegral_of_isMaximal_under _ (hQ.symm ▸ P_max), hQ⟩
 
+theorem exists_prime_ideal_liesOver_of_isIntegral [Algebra.IsIntegral R S] [FaithfulSMul R S]
+    (P : Ideal R) [P.IsPrime] :
+    ∃ (Q : Ideal S), Q.IsPrime ∧ Q.LiesOver P := by
+  obtain ⟨Q, -, hQ, hQP⟩ :=
+    exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by rw [under_bot]; exact bot_le)
+  exact ⟨Q, hQ, ⟨hQP.symm⟩⟩
+
 theorem exists_maximal_ideal_liesOver_of_isIntegral [Algebra.IsIntegral R S] [FaithfulSMul R S]
     (P : Ideal R) [P.IsMaximal] :
     ∃ (Q : Ideal S), Q.IsMaximal ∧ Q.LiesOver P := by
-  simp_rw [liesOver_iff, eq_comm (a := P)]
-  exact exists_ideal_over_maximal_of_isIntegral P (by
-    simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective R S)])
+  obtain ⟨Q, hQ, hQP⟩ := exists_prime_ideal_liesOver_of_isIntegral (S := S) P
+  exact ⟨Q, isMaximal_of_isIntegral_of_isMaximal_under _ (hQP.over ▸ ‹P.IsMaximal›), hQP⟩
 
 lemma map_eq_top_iff_of_ker_le {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : RingHom.ker f ≤ I) (hf₂ : f.IsIntegral) :
