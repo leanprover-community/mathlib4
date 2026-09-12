@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 
 ## Main definitions
 
-Let `C` be a category, `P : ObjectProperty C` be a property of objects in `C`.
+Let `C` be a category, `P : ObjectProperty C` be a property of objects of `C`.
 
 * `CategoryTheory.ObjectProperty.hasFiniteResolutionOfLength`:
   We say that `X : C` has a `P`-resolution of length `n` if there exists an
@@ -43,7 +43,7 @@ open Limits
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
-/-- Let `C` be a category, `P : ObjectProperty C` be a property of objectsin `C`.
+/-- Let `C` be a category, `P : ObjectProperty C` be a property of objects of `C`.
 We say that `X : C` has a `P`-resolution of length `n` if there exists an
 exact sequence `0 ⟶ Eₙ ⟶ ⋯ ⟶ E₀ ⟶ X ⟶ 0` such that each `Eᵢ : C` satisfies `P`.
 
@@ -115,7 +115,7 @@ end hasFiniteResolutionOfLength
 
 namespace hasFiniteResolution
 
-theorem of_property (hX : P X) : P.hasFiniteResolution X :=
+theorem le : P ≤ P.hasFiniteResolution := fun X hX ↦
   hasFiniteResolutionOfLength.le_hasFiniteResolution X (.zero X hX)
 
 instance [P.Is X] : P.hasFiniteResolution.Is X := ⟨of_property (P.prop_of_is X)⟩
@@ -123,16 +123,18 @@ instance [P.Is X] : P.hasFiniteResolution.Is X := ⟨of_property (P.prop_of_is X
 theorem monotone (hPQ : P ≤ Q) : P.hasFiniteResolution ≤ Q.hasFiniteResolution :=
   iSup_mono fun _ ↦ hasFiniteResolutionOfLength.monotone hPQ
 
-theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] :
-    P.hasFiniteResolution ≤ P :=
-  iSup_le fun _ ↦ hasFiniteResolutionOfLength.property_of_isClosedUnderQuotients
+theorem eq_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] :
+    P.hasFiniteResolution = P := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ hasFiniteResolutionOfLength.property_of_isClosedUnderQuotients
+  · conv_lhs => rw [hasFiniteResolutionOfLength.property (P := P)]
+    exact le_iSup _ _
 
 instance [P.IsClosedUnderIsomorphisms] : P.hasFiniteResolution.IsClosedUnderIsomorphisms :=
   inferInstanceAs (⨆ n : ℕ, P.hasFiniteResolutionOfLength n).IsClosedUnderIsomorphisms
 
-theorem of_iso [P.IsClosedUnderIsomorphisms] {Y : C} (e : X ≅ Y)
-    (hX : P.hasFiniteResolution X) : P.hasFiniteResolution Y :=
-  P.hasFiniteResolution.prop_of_iso e hX
+instance [P.IsClosedUnderIsomorphisms] : P.hasFiniteResolution.IsClosedUnderIsomorphisms :=
+  ⟨fun {_ _} e hX => P.hasFiniteResolution.prop_of_iso e hX⟩
 
 theorem of_shortExact {S : ShortComplex C} (hS : S.ShortExact) (h₂ : P S.X₂)
     (h₁ : P.hasFiniteResolution S.X₁) : P.hasFiniteResolution S.X₃ := by
