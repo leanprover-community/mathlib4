@@ -7,6 +7,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.ModularForms.OrderAtInfty
+public import Mathlib.NumberTheory.ModularForms.NormTrace
 
 /-!
 # Order at a cusp
@@ -201,10 +202,11 @@ lemma orderAtCusp_nonneg {c : OnePoint ℝ} (hc : IsCusp c G)
     inv_smul_eq_iff.mpr (cuspScalingMatrix_smul c).symm
   have : Fact (IsCusp OnePoint.infty
       (ConjAct.toConjAct (cuspScalingMatrix c)⁻¹ • G)) :=
-    ⟨by simpa only [hsc] using hc.smul (cuspScalingMatrix c)⁻¹⟩
-  exact mul_nonneg (EReal.coe_nonneg.mpr (Subgroup.widthInfty_nonneg _))
-    (ModularFormClass.bdd_at_infty
+    ⟨by simpa [hsc] using hc.smul (cuspScalingMatrix c)⁻¹⟩
+  have : 0 ≤ orderAtInfty (⇑f ∣[k] cuspScalingMatrix c) := by
+    simpa only [ModularForm.coe_translate] using (ModularFormClass.bdd_at_infty
       (ModularForm.translate f (cuspScalingMatrix c))).orderAtInfty_nonneg
+  exact mul_nonneg (mod_cast Subgroup.widthInfty_nonneg _) this
 
 /-- A modular form has nonnegative order at every cusp orbit. -/
 lemma orderAtCuspOrbit_nonneg [DiscreteTopology G] (c : CuspOrbits G) (f : F) :
