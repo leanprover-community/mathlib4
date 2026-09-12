@@ -508,18 +508,51 @@ This constructor is primarily intended to be used within proofs since it creates
 equalities. -/
 noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
-/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
-injective. -/
+/-- An additive monoid is torsion-free if `n • a = n • b` implies `a = b` for all non-zero `n : ℕ`
+and all `a b : M` which commute.
+
+In an additive commutative monoid, this is equivalent to scalar multiplication by every non-zero
+`n : ℕ` being injective, see `isAddTorsionFree_iff_nsmul_right_injective`.
+In an additive group, this is equivalent to having no non-zero element of finite order, see
+`isAddTorsionFree_iff_not_isOfFinAddOrder`.
+
+It is not clear what the correct definition is for non-commutative additive monoids. -/
 @[mk_iff]
 class IsAddTorsionFree (M : Type*) [AddMonoid M] where
-  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+  eq_of_nsmul_eq_nsmul_of_addCommute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : a + b = b + a)
+    (habn : n • a = n • b) : a = b
 
-/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
+/-- A monoid is torsion-free if `a ^ n = b ^ n` implies `a = b` for all non-zero `n : ℕ` and all
+`a b : M` which commute.
+
+In a commutative monoid, this is equivalent to power by every non-zero `n : ℕ` being injective,
+see `isMulTorsionFree_iff_pow_left_injective`.
+In a group, this is equivalent to having no non-trivial element of finite order, see
+`isMulTorsionFree_iff_not_isOfFinOrder`.
+
+It is not clear what the correct definition is for non-commutative monoids. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
-  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+  -- `Commute` is not available yet, so we unfold it.
+  eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : a * b = b * a)
+    (habn : a ^ n = b ^ n) : a = b
+
+export IsAddTorsionFree (eq_of_nsmul_eq_nsmul_of_addCommute)
+export IsMulTorsionFree (eq_of_pow_eq_pow_of_commute)
 
 attribute [to_additive existing] isMulTorsionFree_iff
+
+/-- A monoid in which power by every non-zero `n : ℕ` is injective is torsion-free.
+
+The converse holds in commutative monoids, see `pow_left_injective`. -/
+@[to_additive IsAddTorsionFree.of_nsmul_right_injective
+/-- An additive monoid in which scalar multiplication by every non-zero `n : ℕ` is injective is
+torsion-free.
+
+The converse holds in additive commutative monoids, see `nsmul_right_injective`. -/]
+lemma IsMulTorsionFree.of_pow_left_injective {M : Type*} [Monoid M]
+    (h : ∀ ⦃n : ℕ⦄, n ≠ 0 → Injective fun a : M ↦ a ^ n) : IsMulTorsionFree M where
+  eq_of_pow_eq_pow_of_commute _n hn _a _b _ habn := h hn habn
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type*) extends AddMonoid M, AddCommSemigroup M

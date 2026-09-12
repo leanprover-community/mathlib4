@@ -125,7 +125,7 @@ lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
     ¬ IsOfFinOrder a := by
   rw [isOfFinOrder_iff_pow_eq_one]
   rintro ⟨n, hn, han⟩
-  exact ha <| pow_left_injective hn.ne' <| by simpa using han
+  exact ha <| (pow_eq_one_iff_left hn.ne').1 han
 
 @[to_additive]
 lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
@@ -902,6 +902,21 @@ lemma pow_finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (a : Subgroup.zpowers
   simpa only [finEquivZPowers_apply] using
     congr_arg Subtype.val ((finEquivZPowers hx).apply_symm_apply a)
 
+@[to_additive]
+lemma isMulTorsionFree_iff_not_isOfFinOrder :
+    IsMulTorsionFree G ↔ ∀ ⦃a : G⦄, a ≠ 1 → ¬ IsOfFinOrder a where
+  mp _ _ := not_isOfFinOrder_of_isMulTorsionFree
+  mpr hG := .of_eq_one_of_pow_eq_one fun n hn a han ↦
+    of_not_not fun ha ↦ hG ha <| isOfFinOrder_iff_pow_eq_one.2 ⟨n, n.pos_of_ne_zero hn, han⟩
+
+@[to_additive]
+alias ⟨_, IsMulTorsionFree.of_not_isOfFinOrder⟩ := isMulTorsionFree_iff_not_isOfFinOrder
+
+@[to_additive]
+lemma not_isMulTorsionFree_iff_isOfFinOrder :
+    ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
+  simp [isMulTorsionFree_iff_not_isOfFinOrder]
+
 end Group
 
 section CommMonoid
@@ -917,24 +932,6 @@ end CommMonoid
 
 section CommGroup
 variable [CommGroup G]
-
-@[to_additive]
-lemma isMulTorsionFree_iff_not_isOfFinOrder :
-    IsMulTorsionFree G ↔ ∀ ⦃a : G⦄, a ≠ 1 → ¬ IsOfFinOrder a where
-  mp _ _ := not_isOfFinOrder_of_isMulTorsionFree
-  mpr hG := by
-    refine ⟨fun n hn a b hab ↦ ?_⟩
-    rw [← div_eq_one] at hab ⊢
-    simp only [← div_pow, isOfFinOrder_iff_pow_eq_one] at hab hG
-    exact of_not_not fun hab' ↦ hG hab' ⟨n, hn.bot_lt, hab⟩
-
-@[to_additive]
-alias ⟨_, IsMulTorsionFree.of_not_isOfFinOrder⟩ := isMulTorsionFree_iff_not_isOfFinOrder
-
-@[to_additive]
-lemma not_isMulTorsionFree_iff_isOfFinOrder :
-    ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
-  simp [isMulTorsionFree_iff_not_isOfFinOrder]
 
 @[to_additive (attr := simp)]
 lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by

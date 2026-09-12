@@ -106,8 +106,9 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
 @[to_additive]
 instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
-  pow_left_injective n hn a b hab := by
-    ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
+  eq_of_pow_eq_pow_of_commute _n hn _a _b hab habn := Prod.ext
+    (eq_of_pow_eq_pow_of_commute hn congr(($hab).1) congr(($habn).1))
+    (eq_of_pow_eq_pow_of_commute hn congr(($hab).2) congr(($habn).2))
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
