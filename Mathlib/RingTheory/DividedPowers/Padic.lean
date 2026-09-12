@@ -91,8 +91,8 @@ private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
   · rw [hx0]
     simp [inverse_eq_inv', coe_zero, ne_eq, hn, not_false_eq_true, zero_pow, mul_zero,
       norm_zero, inv_nonneg, cast_nonneg]
-  · have hlt : (padicValNat p n.factorial : ℤ) < n := by
-      exact_mod_cast padicValNat_factorial_lt_of_ne_zero p hn
+  · have hlt : (multiplicity p n.factorial : ℤ) < n := by
+      exact_mod_cast multiplicity_factorial_lt_of_ne_zero p hn
     have hnorm : 0 < ‖(n ! : ℚ_[p])‖ := by
       simp only [norm_pos_iff, ne_eq, cast_eq_zero]
       exact factorial_ne_zero n
