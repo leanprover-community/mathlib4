@@ -89,6 +89,9 @@ theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 
+instance [T0Space X] : IsPartialOrder X Specializes where
+  antisymm _ _ := (·.antisymm · |>.eq)
+
 /-- A topology inducing map from a T₀ space is injective. -/
 protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
     (hf : IsInducing f) : Injective f := fun _ _ h =>
@@ -302,6 +305,9 @@ theorem Specializes.symm (h : x ⤳ y) : y ⤳ x :=
 
 /-- In an R₀ space, the `Specializes` relation is symmetric, `Iff` version. -/
 theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
+
+instance : IsEquiv X Specializes where
+  toSymm := specializes_symm
 
 /-- In an R₀ space, `Specializes` is equivalent to `Inseparable`. -/
 theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
