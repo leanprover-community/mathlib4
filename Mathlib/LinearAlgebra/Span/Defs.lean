@@ -653,6 +653,26 @@ lemma span_range_update_sub_smul (hij : i ≠ j) (v : ι → M) (r : R) :
     span R (Set.range (Function.update v j (v j - r • v i))) = span R (Set.range v) := by
   rw [sub_eq_add_neg, ← neg_smul, span_range_update_add_smul hij]
 
+-- The lattice of submodules is modular but is not distributive in general, so that
+-- `Disjoint.assoc_of_disjoint_left` doesn't apply. However :
+theorem disjoint_assoc_of_disjoint_left {a b c : Submodule R M}
+    (hab : Disjoint a b) (h : Disjoint (a ⊔ b) c) : Disjoint a (b ⊔ c) := by
+  simp only [Submodule.disjoint_def, Submodule.mem_sup]
+  rintro x hxa ⟨y, hy, z, hz, rfl⟩
+  suffices z = 0 by
+    apply disjoint_def.mp hab _ hxa
+    rw [this, add_zero]
+    exact hy
+  apply disjoint_def.mp h _ _ hz
+  rw [mem_sup]
+  exact ⟨y + z, hxa, -y , neg_mem hy, by simp only [add_neg_cancel_comm]⟩
+
+theorem isCompl_assoc_of_disjoint_left {a b c : Submodule R M}
+    (hab : Disjoint a b) (h : IsCompl (a ⊔ b) c) : IsCompl a (b ⊔ c) := by
+  rcases h with ⟨hc, hd⟩
+  exact ⟨Submodule.disjoint_assoc_of_disjoint_left hab hc,
+    codisjoint_assoc.mp hd⟩
+
 end AddCommGroup
 
 end Submodule
