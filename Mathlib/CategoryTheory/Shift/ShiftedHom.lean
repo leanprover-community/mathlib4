@@ -106,6 +106,32 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {a : M}
   rw [← comp_assoc, mk₀_comp_mk₀]
   all_goals simp
 
+/-- The bijection `ShiftedHom Y Z a ≃ ShiftedHom X Z a` induced by an
+isomorphism `X ≅ Y`. -/
+@[simps, implicit_reducible]
+noncomputable def precompIsoEquiv (e : X ≅ Y) {a : M} :
+    ShiftedHom Y Z a ≃ ShiftedHom X Z a where
+  toFun x := (mk₀ 0 rfl e.hom).comp x (add_zero a)
+  invFun x := (mk₀ 0 rfl e.inv).comp x (add_zero a)
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+/-- The bijection `ShiftedHom X Y a ≃ ShiftedHom X Z a` induced by an
+isomorphism `Y ≅ Z`. -/
+@[simps, implicit_reducible]
+noncomputable def postcompIsoEquiv (e : Y ≅ Z) {a : M} :
+    ShiftedHom X Y a ≃ ShiftedHom X Z a where
+  toFun x := x.comp (mk₀ 0 rfl e.hom) (zero_add a)
+  invFun x := x.comp (mk₀ 0 rfl e.inv) (zero_add a)
+  left_inv _ := by
+    dsimp
+    rw [comp_assoc _ _ _ (by simp) (add_zero 0) (by simp)]
+    simp
+  right_inv _ := by
+    dsimp
+    rw [comp_assoc _ _ _ (by simp) (add_zero 0) (by simp)]
+    simp
+
 section Preadditive
 
 variable [Preadditive C]
@@ -176,7 +202,6 @@ lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.Com
 lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
   simp [map]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
   simp [map, Functor.commShiftIso_comp_hom_app]
@@ -204,7 +229,6 @@ lemma map_naturality_2
       (mk₀ 0 rfl (e.inv.app Y)) (zero_add _)) (add_zero _) = f.map F :=
   map_naturality_1 f e.symm
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
     (h : b + a = c) (F : C ⥤ D) [F.CommShift M] :
     (f.comp g h).map F = (f.map F).comp (g.map F) h := by
