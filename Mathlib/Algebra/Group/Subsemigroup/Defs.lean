@@ -352,15 +352,15 @@ lemma setLike_mul_comm {s : S} [IsMulCommutative s] ⦃a b : M⦄ (ha : a ∈ s)
 
 /-- Commutativity of multiplication passes to smaller subobjects. -/
 @[to_additive /-- Commutativity of addition passes to smaller subobjects. -/ ]
-lemma isMulCommutative_anti [LE S] [IsConcreteLE S M] {s t : S} (h : s ≤ t) [IsMulCommutative t] :
+lemma isMulCommutative_anti [LE S] [IsConcreteLE S] {s t : S} (h : s ≤ t) [IsMulCommutative t] :
     IsMulCommutative s :=
   .of_setLike_mul_comm fun _ ha _ hb ↦
     setLike_mul_comm (mem_of_le_of_mem h ha) (mem_of_le_of_mem h hb)
 
-instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative t] :
+instance [SemilatticeInf S] [IsConcreteLE S] {s t : S} [IsMulCommutative t] :
     IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_right
 
-instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative s] :
+instance [SemilatticeInf S] [IsConcreteLE S] {s t : S} [IsMulCommutative s] :
     IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_left
 
 end IsMulCommutative
