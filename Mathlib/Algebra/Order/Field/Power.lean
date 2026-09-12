@@ -124,7 +124,7 @@ open Lean Meta Qq
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
 meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
-  let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
+  let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← whnf e | throwError "not ^"
   match (dependent := true) pα? with
   | none =>
     match ← core zα pα? a with
@@ -140,7 +140,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
       let _a ← synthInstanceQ q(LinearOrder $α)
       let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
       assumeInstancesCommute
-      match ← whnfR b with
+      match ← whnf b with
       | .app (.app (.app (.const `OfNat.ofNat _) _) (.lit (Literal.natVal n))) _ =>
         guard (n % 2 = 0)
         have m : Q(ℕ) := mkRawNatLit (n / 2)
@@ -148,7 +148,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
         haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
       | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
-        let b' ← whnfR b'
+        let b' ← whnf b'
         let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
         let some n := (b'.getRevArg! 1).rawNatLit? | throwError "not a ^ -n where n is a literal"
         guard (n % 2 = 0)
