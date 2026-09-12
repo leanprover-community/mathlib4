@@ -45,6 +45,8 @@ lemma residue_surjective :
     Function.Surjective (IsLocalRing.residue R) :=
   Ideal.Quotient.mk_surjective
 
+instance : RingHomSurjective (residue R) := ⟨residue_surjective⟩
+
 variable (R)
 
 instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
