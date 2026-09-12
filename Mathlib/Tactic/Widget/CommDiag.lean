@@ -11,8 +11,12 @@ public meta import Mathlib.Tactic.ToDual
 public import ProofWidgets.Component.PenroseDiagram
 public import ProofWidgets.Presentation.Expr
 
-/-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
-infoview. -/
+/-!
+# Commutative diagram widgets
+
+This module defines tactic/meta infrastructure for displaying commutative diagrams in the
+infoview.
+-/
 
 public meta section
 

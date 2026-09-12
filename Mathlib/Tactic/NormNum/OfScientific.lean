@@ -11,7 +11,7 @@ public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.SetLike
 
 /-!
-## `norm_num` plugin for scientific notation.
+# `norm_num` plugin for scientific notation
 -/
 
 public meta section

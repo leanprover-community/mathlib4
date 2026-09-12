@@ -9,7 +9,7 @@ public meta import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.FunProp.Theorems
 
 /-!
-## `funProp` attribute
+# `funProp` attribute
 -/
 
 public meta section
