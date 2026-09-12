@@ -167,7 +167,10 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) 
     IsAdmissible m <| simplicialInsert j L := by
   induction L generalizing j m with
   | nil => exact IsAdmissible.singleton hj
-  | cons a L h_rec => cases L <;> grind
+  | cons a L h_rec =>
+    cases L
+    · grind
+    · grind only [simplicialInsert, = isAdmissible_cons_cons_iff]
 
 end AdmissibleLists
 
@@ -224,8 +227,9 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
   induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
-  induction L <;> grind [Monotone]
+  induction L <;> grind only [Monotone, simplicialEvalσ]
 
 variable {m}
 
