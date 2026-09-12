@@ -363,4 +363,31 @@ theorem isNoetherian_Spec {R : CommRingCat} :
 theorem finite_irreducibleComponents_of_isNoetherian [IsNoetherian X] :
     (irreducibleComponents X).Finite := NoetherianSpace.finite_irreducibleComponents
 
+
+open Set Topology Order in
+/--
+In an irreducible, locally Noetherian scheme, the points of coheight one lying in a set `Z` that
+is not dense are locally finite
+-/
+theorem exists_mem_nhds_finite_coheight_one_of_closure_ne_univ [IrreducibleSpace X]
+    [IsLocallyNoetherian X] {Z : Set X} (hZ : closure Z ≠ univ) (z : X) :
+    ∃ W ∈ 𝓝 z, (W ∩ {x | x ∈ Z ∧ coheight x = 1}).Finite := by
+  obtain ⟨W, hWa, hzW, -⟩ := exists_isAffineOpen_mem_and_subset (x := z) (U := ⊤) (by simp)
+  have : IsNoetherianRing Γ(X, W) := IsLocallyNoetherian.component_noetherian ⟨W, hWa⟩
+  have : NoetherianSpace (W : Set X) := noetherianSpace_of_isAffineOpen W hWa
+  have : QuasiSober (W : Set X) := W.isOpenEmbedding'.quasiSober
+  have : QuasiSober ((W : Set X) ∩ closure Z : Set X) :=
+    QuasiSober.inter_of_isClosed_of_quasiSober_left _ isClosed_closure
+  have : NoetherianSpace ((W : Set X) ∩ closure Z : Set X) := NoetherianSpace.inter_of_left _ _
+  have hsub : closure ((W : Set X) ∩ closure Z) ⊆ closure Z :=
+    (closure_mono inter_subset_right).trans isClosed_closure.closure_eq.le
+  have hne : closure ((W : Set X) ∩ closure Z) ≠ univ := by
+    intro h
+    rw [h] at hsub
+    exact hZ (univ_subset_iff.mp hsub)
+  refine ⟨W, W.2.mem_nhds hzW,
+    (NoetherianSpace.finite_coheight_one_of_closure_ne_univ hne).subset ?_⟩
+  rintro x ⟨hxW, hxZ, hx1⟩
+  exact ⟨⟨hxW, subset_closure hxZ⟩, hx1⟩
+
 end AlgebraicGeometry
