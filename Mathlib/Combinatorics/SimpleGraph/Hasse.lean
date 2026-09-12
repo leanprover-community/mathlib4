@@ -35,7 +35,7 @@ variable (α β : Type*)
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
@@ -57,6 +57,18 @@ theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
 
 @[simp]
 theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
+  rfl
+
+/-- Lift an order embedding with an `OrdConnected` range to a graph embedding
+between Hasse diagrams -/
+@[simps toEmbedding]
+protected def Embedding.hasse (f : α ↪o β) (hf : (Set.range f).OrdConnected) :
+    hasse α ↪g hasse β where
+  toEmbedding := f.toEmbedding
+  map_rel_iff' := by simp [hf.apply_covBy_apply_iff]
+
+@[simp]
+theorem Embedding.coe_hasse (f : α ↪o β) (hf) : ⇑(Embedding.hasse f hf) = f :=
   rfl
 
 /-- The Hasse diagram of a preorder is triangle-free. This is the graph-theoretic formulation of
@@ -120,6 +132,18 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
+
+theorem pathGraph_isContained_iff {n m : ℕ} : pathGraph n ⊑ pathGraph m ↔ n ≤ m := by
+  refine ⟨(Fin.nonempty_embedding_iff.mp ⟨·.some.toEmbedding⟩), fun h ↦ ?_⟩
+  refine Embedding.hasse (Fin.castLEOrderEmb h) ?_ |>.isContained
+  simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
+  exact Set.ordConnected_Iio.preimage_mono Fin.val_strictMono.monotone
+
+theorem pathGraph_isIndContained_iff {n m : ℕ} : pathGraph n ⊴ pathGraph m ↔ n ≤ m := by
+  refine ⟨(Fin.nonempty_embedding_iff.mp ⟨·.some.toEmbedding⟩), fun h ↦ ?_⟩
+  refine Embedding.hasse (Fin.castLEOrderEmb h) ?_ |>.isIndContained
+  simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
+  exact Set.ordConnected_Iio.preimage_mono Fin.val_strictMono.monotone
 
 namespace Walk
 
