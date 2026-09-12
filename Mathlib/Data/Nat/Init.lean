@@ -55,7 +55,7 @@ The relevant files are:
 assert_not_exists Monoid
 
 namespace Nat
-variable {a b m n k : ℕ} {p : ℕ → Prop}
+variable {a b c m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 
@@ -378,6 +378,13 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 
 /-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
+
+/-- Alias of `Nat.dvd_div_of_mul_dvd`, to specify which factor is divided out,
+so that `Nat.dvd_div_of_mul_dvd_right` can have a symmetrical name. -/
+alias dvd_div_of_mul_dvd_left := dvd_div_of_mul_dvd
+
+lemma dvd_div_of_mul_dvd_right (h : a * b ∣ c) : a ∣ c / b :=
+  dvd_div_of_mul_dvd_left (by rwa [Nat.mul_comm])
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
