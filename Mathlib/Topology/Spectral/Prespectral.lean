@@ -161,6 +161,18 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
       have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
       exact this
 
+lemma Topology.IsEmbedding.exists_of_isOpen_isCompact [PrespectralSpace Y]
+    {f : X → Y} (hf : IsEmbedding f) {s : Set X} (hs1 : IsOpen s) (hs2 : IsCompact s) :
+    ∃ o : Set Y, IsOpen o ∧ IsCompact o ∧ s = f ⁻¹' o := by
+  obtain ⟨S, hS⟩ := eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _ (hf.eq_induced ▸
+    IsTopologicalBasis.induced f (PrespectralSpace.isTopologicalBasis (X := Y))) s hs2 hs1
+  have : ∀ s ∈ S, ∃ o : Set Y, IsOpen o ∧ IsCompact o ∧ s = f ⁻¹' o :=
+    fun ⟨s, o, ⟨ho1, ho2⟩, hfos⟩ hsS => ⟨o, ho1, ho2, hfos.symm⟩
+  choose! U hU1 hU2 hU3 using this
+  refine ⟨⋃ s ∈ S, U s, isOpen_biUnion hU1, Finset.isCompact_biUnion S hU2, ?_⟩
+  · exact (Set.sUnion_image _ _ ▸ hS) ▸ Set.biUnion_eq_iUnion _ _ ▸ Set.biUnion_eq_iUnion _ _ ▸
+      Set.preimage_iUnion.symm ▸ Set.iUnion_congr fun ⟨t, ht⟩ => hU3 t ht
+
 lemma PrespectralSpace.exists_isCompact_and_isOpen_between [PrespectralSpace X] {K U : Set X}
     (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
     ∃ (W : Set X), IsCompact W ∧ IsOpen W ∧ K ⊆ W ∧ W ⊆ U := by
