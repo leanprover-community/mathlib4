@@ -88,6 +88,24 @@ theorem map_toAlgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
       Algebra.TensorProduct.map (f : A →ₐ[S] C) (g : B →ₐ[R] D) :=
   rfl
 
+/-- Isomorphic bialgebras have isomorphic tensor products. -/
+@[expose] def congr (e₁ : A ≃ₐc[S] C) (e₂ : B ≃ₐc[R] D) : A ⊗[R] B ≃ₐc[S] C ⊗[R] D :=
+  .ofBialgHom (map e₁ e₂) (map e₁.symm e₂.symm)
+    (by ext x; induction x using TensorProduct.induction_on <;> simp_all)
+    (by ext x; induction x using TensorProduct.induction_on <;> simp_all)
+
+@[simp]
+lemma congr_tmul (e₁ : A ≃ₐc[S] C) (e₂ : B ≃ₐc[R] D) (a : A) (b : B) :
+    congr e₁ e₂ (a ⊗ₜ b) = e₁ a ⊗ₜ e₂ b := rfl
+
+@[simp]
+lemma congr_symm (e₁ : A ≃ₐc[S] C) (e₂ : B ≃ₐc[R] D) :
+    (congr e₁ e₂).symm = congr e₁.symm e₂.symm := rfl
+
+@[simp]
+lemma congr_toBialgHom (e₁ : A ≃ₐc[S] C) (e₂ : B ≃ₐc[R] D) :
+    (congr e₁ e₂ : A ⊗[R] B →ₐc[S] C ⊗[R] D) = map e₁ e₂ := rfl
+
 variable (R S A C D) in
 /-- The associator for tensor products of R-bialgebras, as a bialgebra equivalence. -/
 @[expose] protected def assoc : (A ⊗[S] C) ⊗[R] D ≃ₐc[S] A ⊗[S] (C ⊗[R] D) :=

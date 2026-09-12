@@ -140,6 +140,10 @@ theorem linearIndependent_iff_injective_fintypeLinearCombination [Fintype ι] :
 alias ⟨LinearIndependent.fintypeLinearCombination_injective, _⟩ :=
   linearIndependent_iff_injective_fintypeLinearCombination
 
+lemma LinearIndependent.eq_zero_of_finsuppLinearCombination (hv : LinearIndependent R v)
+    {w : ι →₀ R} (hw : Finsupp.linearCombination R v w = 0) : w = 0 :=
+  hv (a₂ := 0) (by simpa using hw)
+
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
   simpa [comp_def]
     using Injective.comp hv (Finsupp.single_left_injective one_ne_zero)
