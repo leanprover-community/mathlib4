@@ -605,7 +605,7 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
     ext r
     simp only [AlgHom.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, coe_comp, coe_coe,
-      AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes]
+      AlgEquiv.coe_toRingEquiv, Function.comp_apply, AlgEquiv.commutes]
   rw [h_eq]
   apply RingHom.IsIntegral.trans
   · apply RingHom.IsIntegral.trans
