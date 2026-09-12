@@ -8380,6 +8380,8 @@ public import Mathlib.Topology.Path
 public import Mathlib.Topology.Perfect
 public import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.PreorderRestrict
+public import Mathlib.Topology.PrimitiveLink
+public import Mathlib.Topology.PrimitivePath
 public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
