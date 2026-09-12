@@ -179,6 +179,11 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
   rw [isSubwalk_iff_support_isInfix] at h₁ h₂
   exact ext_support <| List.infix_antisymm h₁ h₂
 
+instance : IsPartialOrder (G.Walk u v) IsSubwalk where
+  refl := isSubwalk_rfl
+  trans _ _ _ := .trans
+  antisymm _ _ := isSubwalk_antisymm
+
 @[simp]
 theorem IsSubwalk.support_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) : p₂.support ⊆ p₁.support :=
