@@ -189,7 +189,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
 
 @[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
-instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u}
 
 instance small_coe (x : ZFSet.{u}) : Small.{u} x :=
   Quotient.inductionOn x fun a => by
