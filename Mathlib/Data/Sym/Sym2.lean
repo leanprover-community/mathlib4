@@ -405,6 +405,8 @@ theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ 
   cases z
   aesop
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 @[congr]
 theorem map_congr {f g : α → β} {s : Sym2 α} (h : ∀ x ∈ s, f x = g x) : map f s = map g s := by
   ext y

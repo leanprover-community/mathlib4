@@ -343,6 +343,8 @@ lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero]
       exact fun hf ↦ h0 (hfg (quasispectrum.zero_mem R a) ▸ hf)
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 /-- A version of `cfcₙ_congr` suitable for `@[congr]`. -/
 @[congr]
 lemma cfcₙ_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ σₙ R a, f x = g x) :
