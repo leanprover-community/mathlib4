@@ -73,8 +73,8 @@ theorem eq_iff_subset {s t : Set.powersetCard α n} : s = t ↔ (s : Finset α) 
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
-    rwa [← (Set.encard_add_encard_compl {b}).trans (Set.encard_univ α), Set.encard_singleton,
-      add_comm, ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
+    rwa [← encard_add_encard_compl, encard_singleton, add_comm,
+      ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
   have : Set.Finite s := Set.finite_of_encard_eq_coe hs
