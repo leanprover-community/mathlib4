@@ -187,6 +187,7 @@ variable [Algebra R A] [Monoid M]
 
 variable (R M A) in
 /-- `MonoidAlgebra.lift` as a `MulEquiv`. -/
+@[expose, simps!]
 def liftMulEquiv : (M →* A) ≃* WithConv (R[M] →ₐ[R] A) where
   toEquiv := (lift R A M).trans (WithConv.equiv _).symm
   map_mul' f g := by ext; simp [AlgHom.convMul_apply]
@@ -381,6 +382,7 @@ variable [CommSemiring A] [Algebra R A] [AddMonoid M]
 
 variable (R M A) in
 /-- `AddMonoidAlgebra.lift` as a `MulEquiv`. -/
+@[expose, simps!]
 def liftMulEquiv : (Multiplicative M →* A) ≃* WithConv (R[M] →ₐ[R] A) where
   toEquiv := (lift R A M).trans (WithConv.equiv _).symm
   map_mul' f g := by ext; simp [AlgHom.convMul_apply]
