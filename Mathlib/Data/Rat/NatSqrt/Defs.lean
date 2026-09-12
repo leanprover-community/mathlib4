@@ -9,6 +9,8 @@ public import Mathlib.Tactic.Positivity
 public import Mathlib.Algebra.Order.Field.Basic
 
 /-!
+# Rational approximations to square roots of naturals
+
 Rational approximation of the square root of a natural number.
 
 See also `Mathlib.Analysis.Rat.NatSqrt.Real` for comparisons with the real square root.

@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Vector.Basic
 
 /-!
+# Appending to the back of a vector
+
   This file establishes a `snoc : Vector α n → α → Vector α (n+1)` operation, that appends a single
   element to the back of a vector.
 

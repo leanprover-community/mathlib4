@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Set.Image
 
 /-!
-### Recursion on the natural numbers and `Set.range`
+# Recursion on the natural numbers and `Set.range`
 -/
 
 public section

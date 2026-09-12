@@ -9,7 +9,7 @@ public import Mathlib.Order.Basic
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Set
 
-/-! ### List.takeWhile and List.dropWhile -/
+/-! # `List.takeWhile` and `List.dropWhile` -/
 
 public section
 
