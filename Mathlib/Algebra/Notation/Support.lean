@@ -14,6 +14,9 @@ public import Mathlib.Data.Set.Image
 
 In this file we define `Function.support f = {x | f x ≠ 0}` and prove its basic properties.
 We also define `Function.mulSupport f = {x | f x ≠ 1}`.
+
+We also define `Set.NowhereVanishing` which is used to state the non-unital
+Stone-Weierstrass theorem.
 -/
 
 @[expose] public section
@@ -241,3 +244,21 @@ lemma mulSupport_mulSingle_disjoint (ha : a ≠ 1) (hb : b ≠ 1) :
   rw [mulSupport_mulSingle_of_ne ha, mulSupport_mulSingle_of_ne hb, disjoint_singleton]
 
 end Pi
+
+namespace Set
+variable {F α M : Type*} [Zero M] [FunLike F α M]
+
+/-- A set `s` of functions is *nowhere vanishing* if for each point `x`
+there is some `f ∈ s` with `f x ≠ 0`; equivalently, the supports of functions in `s` cover the
+domain.
+
+This is stated for `FunLike` instead of actual functions because its use case is the
+Stone–Weierstrass theorem, in which `s` is the coercion to `Set` of a non-unital subalgebra
+of functions. -/
+def NowhereVanishing (s : Set F) : Prop := ∀ x : α, ∃ f ∈ s, f x ≠ 0
+
+theorem NowhereVanishing.mono {s t : Set F} (hst : s ⊆ t) (hs : s.NowhereVanishing) :
+    t.NowhereVanishing :=
+  fun x ↦ (hs x).imp <| by grind
+
+end Set

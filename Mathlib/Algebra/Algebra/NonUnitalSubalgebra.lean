@@ -1286,3 +1286,19 @@ theorem mem_nonUnitalSubalgebraOfNonUnitalSubring {x : R} {S : NonUnitalSubring 
   Iff.rfl
 
 end Int
+
+section SeparatesPoints
+
+variable {R A α M : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable [FunLike A α M]
+
+/-- A version of `Set.SeparatesPoints` for non-unital subalgebras of a type of functions,
+used for stating the non-unital Stone-Weierstrass theorem. -/
+abbrev NonUnitalSubalgebra.SeparatesPoints (s : NonUnitalSubalgebra R A) : Prop :=
+  Set.SeparatesPoints ((⇑) '' (s : Set A))
+
+theorem NonUnitalSubalgebra.SeparatesPoints.mono {s t : NonUnitalSubalgebra R A} (hst : s ≤ t)
+    (hs : s.SeparatesPoints) : t.SeparatesPoints :=
+  Set.separatesPoints_mono (Set.image_mono hst) hs
+
+end SeparatesPoints
