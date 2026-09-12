@@ -77,13 +77,11 @@ variable {z : ℂ} {l₀ : ℝ} (hz : (z : ℂ) ∈ Metric.sphere 0 ((m K) * (1 
     htriv habc) q hq0 h2mq / q))))
   (hl0 : (l₀ : ℝ) < ((m K) : ℝ) * (1 + (r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq / q))
 
-include α β σ α' β' γ' hirr htriv habc in
-@[nolint unusedArguments]
-lemma norm_hz (hz : z ∈ Metric.sphere 0 (((m K) : ℝ) * (1 + ((r α β σ α' β' γ' hirr htriv habc) q
-    hq0 h2mq : ℝ) / (q : ℝ)))) :
-    ‖z‖ ≤ ‖((m K) : ℝ)‖ * ‖1 + ((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ) / (q: ℝ)‖ := by
-  simp only [mem_sphere_iff_norm, sub_zero] at hz
-  rw [hz, ← norm_mul, Real.norm_eq_abs]
+/-- A point on the sphere of radius `a * b` has norm at most `‖a‖ * ‖b‖`. -/
+lemma norm_le_of_mem_sphere_mul {w : ℂ} {a b : ℝ} (hw : w ∈ Metric.sphere 0 (a * b)) :
+    ‖w‖ ≤ ‖a‖ * ‖b‖ := by
+  simp only [mem_sphere_iff_norm, sub_zero] at hw
+  rw [hw, ← norm_mul, Real.norm_eq_abs]
   exact le_abs_self _
 
 
@@ -162,7 +160,7 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
         · simp only [le_refl]
         · gcongr
           · exact le_abs_self (1 + ‖β‖)
-          · exact (norm_hz α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hz
+          · exact norm_le_of_mem_sphere_mul hz
         · positivity
         · simp only [Int.norm_natCast, Nat.cast_nonneg]
       simp only [Real.norm_eq_abs]
@@ -412,8 +410,10 @@ lemma norm_z_minus_km_lower_bound_on_sphere (km : Fin ((m K))) :
       simp only [neg_add_rev, neg_neg, add_neg_cancel_comm_assoc, RCLike.norm_natCast]
       exact_mod_cast Fin.isLt _
 
-lemma prod_bound {ι} (f : ι → ℝ) (s : Finset ι) (C : ℝ) (hC : ∀ x ∈ s, 0 ≤ f x)
-   (h : ∀ x ∈ s, f x ≤ C) :  ∏ x ∈ s, f x ≤ C ^ s.card := by
+/-- A product over a `Finset` of terms bounded by `C` is at most `C ^ #s`. -/
+lemma prod_bound {ι M : Type*} [CommMonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
+    [ZeroLEOneClass M] (f : ι → M) (s : Finset ι) (C : M) (hC : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ x ∈ s, f x ≤ C) : ∏ x ∈ s, f x ≤ C ^ s.card := by
   rw [← Finset.prod_const]
   exact Finset.prod_le_prod₀ hC h
 
@@ -634,13 +634,8 @@ lemma one_le_c₁₂ : 1 ≤ (c₁₂ α β α' β' γ') := by
     · apply one_le_mul_of_one_le_of_one_le (by aesop) ?_
       · simp only [Nat.one_le_cast]; exact (one_le_m K)
 
-include α β α' β' γ' in
-@[nolint unusedArguments]
-lemma c₁₂_nonneg : 0 ≤ (c₁₂ α β α' β' γ') := by
-  simpa [c₁₂] using
-    mul_nonneg (mul_nonneg
-        (by positivity) (c₁₀_nonneg α β α' β' γ'))
-        (c₁₁_nonneg)
+lemma c₁₂_nonneg : 0 ≤ (c₁₂ α β α' β' γ') :=
+  le_trans zero_le_one (one_le_c₁₂ α β α' β' γ')
 
 
 
