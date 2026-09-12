@@ -5,9 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.SetLike
-public import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -264,6 +265,8 @@ theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := b
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 
+grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
+
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simpa [← coe_subset_coe] using! Set.not_subset
 
@@ -317,5 +320,82 @@ attribute [local instance] instSubtypeSet instSubtype
 end
 
 end PartialOrder
+
+section SemilatticeSup
+
+variable [SemilatticeSup A] [IsConcreteLE A B] {p q : A}
+
+lemma mem_sup_left {x : B} (h : x ∈ p) : x ∈ p ⊔ q :=
+  mem_of_le_of_mem le_sup_left h
+
+lemma mem_sup_right {x : B} (h : x ∈ q) : x ∈ p ⊔ q :=
+  mem_of_le_of_mem le_sup_right h
+
+@[membership .]
+lemma mem_sup {x : B} (h : x ∈ p ∨ x ∈ q) : x ∈ p ⊔ q :=
+  h.elim (mem_sup_left ·) (mem_sup_right ·)
+
+end SemilatticeSup
+
+section OrderBot
+
+variable [LE A] [OrderBot A] [IsConcreteLE A B] {p q : A}
+
+lemma mem_bot_of_mem {x : B} (h : x ∈ (⊥ : A)) : x ∈ p :=
+  mem_of_le_of_mem bot_le h
+
+grind_pattern [membership] mem_bot_of_mem => x ∈ p, x ∈ ⊥ where p =/= ⊥
+
+end OrderBot
+
+-- TODO : replace with `IsConcreteInf`
+section SemilatticeInf
+
+variable [SemilatticeInf A] [IsConcreteLE A B] {p q : A}
+
+lemma mem_of_mem_inf_left {x : B} (h : x ∈ p ⊓ q) : x ∈ p :=
+  mem_of_le_of_mem inf_le_left h
+
+lemma mem_of_mem_inf_right {x : B} (h : x ∈ p ⊓ q) : x ∈ q :=
+  mem_of_le_of_mem inf_le_right h
+
+lemma mem_and_mem_of_mem_inf {x : B} (h : x ∈ p ⊓ q) : x ∈ p ∧ x ∈ q :=
+  ⟨mem_of_mem_inf_left h, mem_of_mem_inf_right h⟩
+
+grind_pattern [membership] mem_and_mem_of_mem_inf => x ∈ p ⊓ q
+
+end SemilatticeInf
+
+-- TODO : replace with `IsConcreteTop`
+section OrderTop
+
+variable [LE A] [OrderTop A] [IsConcreteLE A B] {p q : A}
+
+lemma mem_top_of_mem {x : B} (h : x ∈ p) : x ∈ (⊤ : A) :=
+  mem_of_le_of_mem le_top h
+
+grind_pattern [membership] mem_top_of_mem => x ∈ p, x ∈ ⊤ where p =/= ⊤
+
+end OrderTop
+
+/-
+-- TODO : put in Data.SetLike.Lattice file, with `IsConcreteSInf`
+section CompleteLattice
+
+variable [CompleteLattice A] [IsConcreteLE A B] {s : Set A}
+
+lemma mem_sSup_of_mem {x : B} {p : A} (hp : p ∈ s) (hx : x ∈ p) : x ∈ sSup s :=
+  mem_of_le_of_mem (le_sSup hp) hx
+
+lemma mem_sSup_of_exists {x : B} (h : ∃ p ∈ s, x ∈ p) : x ∈ sSup s := by
+  rcases h with ⟨_, hp, hx⟩
+  exact mem_sSup_of_mem hp hx
+
+grind_pattern [membership] mem_sSup_of_exists => x ∈ sSup s
+
+-- TODO : sInf (or replace with concrete sInf)
+
+end CompleteLattice
+-/
 
 end SetLike
