@@ -53,6 +53,10 @@ class QuasiSeparated (f : X ⟶ Y) : Prop where
 
 attribute [instance] QuasiSeparated.quasiCompact_diagonal
 
+theorem IsAffineOpen.isCompact_inf [QuasiSeparatedSpace X] {U V : X.Opens} (hU : IsAffineOpen U)
+    (hV : IsAffineOpen V) : IsCompact (X := X) ↑(U ⊓ V) :=
+  hU.isCompact.inter_of_isOpen hV.isCompact U.2 V.2
+
 theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]
