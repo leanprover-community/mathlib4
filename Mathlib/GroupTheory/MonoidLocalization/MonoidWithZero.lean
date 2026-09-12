@@ -91,7 +91,7 @@ noncomputable def lift₀ (f : LocalizationMap S N) (g : M →*₀ P)
   { @LocalizationMap.lift _ _ _ _ _ _ _ f g.toMonoidHom hg with
     map_zero' := by
       dsimp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
-      rw [LocalizationMap.lift_spec f hg 0 0, mul_zero, ← map_zero g, ← g.toMonoidHom_coe]
+      rw [LocalizationMap.lift_spec f hg 0 0, mul_zero, ← map_zero g, ← g.coe_toMonoidHom ]
       refine f.eq_of_eq hg ?_
       rw [LocalizationMap.sec_zero_fst]
       exact (map_zero f).symm }

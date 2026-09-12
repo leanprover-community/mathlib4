@@ -163,7 +163,7 @@ lemma isPushout_of_isLocalization {R S Rₘ Sₘ : Type u}
     [CommRing R] [CommRing Rₘ] [Algebra R Rₘ] [CommRing S] [CommRing Sₘ] [Algebra S Sₘ]
     (f : R →+* S) (fₘ : Rₘ →+* Sₘ) (H : fₘ.comp (algebraMap _ _) = (algebraMap _ _).comp f)
     (M : Submonoid R) [IsLocalization M Rₘ]
-    [IsLocalization (M.map (MonoidHomClass.toMonoidHom f)) Sₘ] :
+    [IsLocalization (M.map (MonoidHom.ofClass f)) Sₘ] :
     IsPushout (CommRingCat.ofHom f) (CommRingCat.ofHom (algebraMap R Rₘ))
       (CommRingCat.ofHom (algebraMap S Sₘ)) (CommRingCat.ofHom fₘ) := by
   algebraize [f, fₘ, fₘ.comp (algebraMap R Rₘ)]

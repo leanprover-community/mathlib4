@@ -99,7 +99,7 @@ variable [Algebra Rₚ Aₚ] [Algebra Rₚ Bₚ] [IsScalarTower R Rₚ Aₚ] [Is
 namespace IsLocalization
 
 instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
-    IsLocalization ((algebraMapSubmonoid A M).map (MonoidHomClass.toMonoidHom f)) Bₚ := by
+    IsLocalization ((algebraMapSubmonoid A M).map (MonoidHom.ofClass f)) Bₚ := by
   rw [algebraMapSubmonoid_map_eq M f]
   infer_instance
 
@@ -116,7 +116,7 @@ lemma mapₐ_coe (f : A →ₐ[R] B) :
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :
     Function.Injective (mapₐ M Rₚ Aₚ Bₚ f) :=
-  have : IsLocalization (Submonoid.map (MonoidHomClass.toMonoidHom f.toRingHom)
+  have : IsLocalization (Submonoid.map (MonoidHom.ofClass f.toRingHom)
     (algebraMapSubmonoid A M)) Bₚ := by
     simp only [AlgHom.toRingHom_eq_coe, AlgHom.toRingHom_toMonoidHom]
     infer_instance
@@ -124,7 +124,7 @@ lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective
 
 lemma mapₐ_surjective_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f) :
     Function.Surjective (mapₐ M Rₚ Aₚ Bₚ f) :=
-  have : IsLocalization (Submonoid.map (MonoidHomClass.toMonoidHom f.toRingHom)
+  have : IsLocalization (Submonoid.map (MonoidHom.ofClass f.toRingHom)
     (algebraMapSubmonoid A M)) Bₚ := by
     simp only [AlgHom.toRingHom_eq_coe, AlgHom.toRingHom_toMonoidHom]
     infer_instance

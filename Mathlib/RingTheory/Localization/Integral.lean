@@ -165,7 +165,7 @@ theorem is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval 
             (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
           Rₘ →+* _).IsIntegralElem
       (algebraMap S Sₘ x) :=
-  haveI : IsLocalization (Submonoid.map (MonoidHomClass.toMonoidHom (algebraMap R S)) M) Sₘ :=
+  haveI : IsLocalization (Submonoid.map (MonoidHom.ofClass (algebraMap R S)) M) Sₘ :=
     inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
   (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
 

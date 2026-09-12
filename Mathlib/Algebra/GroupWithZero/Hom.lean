@@ -126,7 +126,7 @@ initialize_simps_projections MonoidWithZeroHom (toFun → apply)
 
 @[simp] lemma toZeroHom_coe (f : α →*₀ β) : (f.toZeroHom : α → β) = f := rfl
 
-lemma toMonoidHom_coe (f : α →*₀ β) : f.toMonoidHom.toFun = f := rfl
+@[simp] lemma coe_toMonoidHom (f : α →*₀ β) : ⇑(f : α →* β) = f := rfl
 
 @[ext] lemma ext ⦃f g : α →*₀ β⦄ (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 

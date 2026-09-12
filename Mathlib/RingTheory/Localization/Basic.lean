@@ -85,12 +85,12 @@ variable {i : ι} (S : Submonoid (R i))
 
 /-- `IsLocalization.map` applied to a projection homomorphism from a product ring. -/
 noncomputable abbrev mapPiEvalRingHom :
-    Localization (S.comap (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i))) →+* Localization S :=
+    Localization (S.comap (MonoidHom.ofClass (Pi.evalRingHom R i))) →+* Localization S :=
   map (T := S) _ (Pi.evalRingHom R i) le_rfl
 
 open Function in
 theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
-  let T := S.comap (MonoidHomClass.toMonoidHom (Pi.evalRingHom R i))
+  let T := S.comap (MonoidHom.ofClass (Pi.evalRingHom R i))
   classical
   refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
   · obtain ⟨r₁, s₁, rfl⟩ := exists_mk'_eq T x₁
@@ -330,7 +330,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     IsLocalization M P := by
   constructor; constructor
   · intro y
-    convert! (IsLocalization.map_units S y).map (MonoidHomClass.toMonoidHom h)
+    convert! (IsLocalization.map_units S y).map (MonoidHom.ofClass h)
     exact (h.commutes y).symm
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)
@@ -621,7 +621,7 @@ theorem localizationAlgebraMap_def :
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  have : IsLocalization (M.map (MonoidHomClass.toMonoidHom (algebraMap R S))) Sₘ := i
+  have : IsLocalization (M.map (MonoidHom.ofClass (algebraMap R S))) Sₘ := i
   IsLocalization.map_injective_of_injective _ _ _ hRS
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid R M) Rₘ := by

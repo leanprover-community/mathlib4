@@ -415,11 +415,23 @@ theorem ofClass_eq_toMonoidHom (f : α →+* β) : (.ofClass f : α →* β) = f
   rfl
 
 @[simp]
+theorem toMonoidHom_toMonoidWithZeroHom (f : α →+* β) : ((f : α →*₀ β) : α →* β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toMonoidHom (f : α →+* β) : ⇑(f : α →* β) = f :=
+  rfl
+
+@[simp]
 theorem toMonoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
 
 @[simp]
 theorem ofClass_eq_toAddMonoidHom (f : α →+* β) : (.ofClass f : α →+ β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toAddMonoidHom (f : α →+* β) : ⇑(f : α →+ β) = f :=
   rfl
 
 @[simp]
