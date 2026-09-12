@@ -123,7 +123,7 @@ lemma mem_shadow_iterate_iff_exists_card :
   induction k generalizing t with
   | zero => simp
   | succ k ih =>
-    simp only [mem_shadow_iff_insert_mem, ih, Function.iterate_succ_apply', card_eq_succ]
+    simp only [mem_shadow_iff_insert_mem, ih, Function.iterate_succ_apply', card_eq_add_one]
     aesop
 
 /-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
@@ -234,7 +234,7 @@ lemma mem_upShadow_iterate_iff_exists_card :
   induction k generalizing t with
   | zero => simp
   | succ k ih =>
-    simp only [mem_upShadow_iff_erase_mem, ih, Function.iterate_succ_apply', card_eq_succ,
+    simp only [mem_upShadow_iff_erase_mem, ih, Function.iterate_succ_apply', card_eq_add_one,
       subset_erase, erase_sdiff_comm, ← sdiff_insert]
     constructor
     · rintro ⟨a, hat, u, rfl, ⟨hut, hau⟩, htu⟩
