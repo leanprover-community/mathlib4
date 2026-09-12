@@ -254,16 +254,24 @@ include htriv habc in
 lemma coeffs_mul_deriv_eq_zero : σ (cCoeffs α' β' γ' q) * ((Complex.log α)^ (-(k q u) : ℤ) *
     deriv^[k q u] (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l q u)) = 0 := by
   rw [coeffs_mulVec_A_eq]
-  have hMt0 := (house.exists_ne_zero_int_vec_house_le K (A α' β' γ' q)
-    (A_ne_zero α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
-    (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq))
-    ((mul_assoc 2 _ _).symm ▸ lt_mul_of_one_lt_left
-      (Nat.mul_pos (one_le_m K) (one_le_n q hq0 h2mq)) Nat.one_lt_two
-      |>.trans_eq ((Nat.mul_div_cancel' h2mq).trans (pow_two q))) (Fintype.card_fin _)
-    (fun u t ↦ house_matrixA_le α β σ α' β' γ' hirr htriv habc q hq0 u t h2mq)
-    (Fintype.card_fin _)).choose_spec.2.1
+  have hMt0 := (exists_eta α β σ α' β' γ' hirr htriv habc q hq0 h2mq).choose_spec.2.1
   simp [η, FaithfulSMul.algebraMap_eq_zero_iff]
   aesop
+
+include htriv habc in
+/-- The Siegel vanishing condition, with the denominator-clearing factors cancelled off:
+`R⁽ᵏ⁾(l) = 0`. -/
+lemma iteratedDeriv_R_eq_zero :
+    deriv^[k q u] (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l q u) = 0 := by
+  have hlog : Complex.log α ≠ 0 :=
+    mt (fun h ↦ by simpa [exp_log htriv.1, exp_zero] using congrArg exp h) htriv.2
+  have hc : σ (cCoeffs α' β' γ' q) ≠ 0 := by simp [cCoeffs, c₁_ne_zero α' β' γ']
+  rcases mul_eq_zero.1
+      (coeffs_mul_deriv_eq_zero α β σ α' β' γ' hirr htriv habc q hq0 u h2mq) with h | h
+  · exact absurd h hc
+  · rcases mul_eq_zero.1 h with h | h
+    · exact absurd h (zpow_ne_zero _ hlog)
+    · exact h
 
 /-!After defining the auxiliary function R we consider the
 first nonzero derivative at an integer ℓ₀.
