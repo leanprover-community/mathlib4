@@ -12,6 +12,43 @@ public import Mathlib.Data.PFunctor.Univariate.Basic
 
 M types are potentially infinite tree-like structures. They are defined
 as the greatest fixpoint of a polynomial functor.
+
+Example usage:
+```
+/-- Shape type for the polynomial functor of lists and streams.
+More generally, polynomial functors use a shape type to determine the manner in which terms of its fixpoints will branch;
+terms of the shape type may be thought of as nodes of a tree. -/
+inductive ListA (α : Type u)
+| nil
+| cons : α -> ListA α
+deriving DecidableEq, Repr
+
+/-- Polynomial functor for lists. Its smallest fixpoint, `(PFunctor.W ·)`, produces the usual inductive type for lists;
+its greatest fixpoint, `(PFunctor.M ·)`, produces the coinductive type of streams. The defined branching structure, `ListPFunctor.B` states:
+on a `ListA.nil` node, a term does not branch anymore. On a `ListA.cons ..` node, a term branches once. -/
+def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
+  A := ListA α
+  B
+  | .nil => PEmpty
+  | .cons _ => PUnit
+
+/-- A stream whose ith value is the ith natural number. -/
+def range : (ListPFunctor Nat).M :=
+  PFunctor.M.corec
+    (fun n => .mk (.cons n) fun .unit => n.succ)
+    0
+
+/-- info: [ListA.cons 0, ListA.cons 1, ListA.cons 2, ListA.cons 3, ListA.cons 4] -/
+#guard_msgs in
+#eval List.iterate
+  (fun x =>
+    match h : x.head with
+    | .nil => .mk ⟨.nil, nofun⟩ -- not reached in this example
+    | .cons _ => x.children (h ▸ .unit))
+  range
+  5
+  |>.map (·.head)
+```
 -/
 
 @[expose] public section
