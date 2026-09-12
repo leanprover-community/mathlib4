@@ -50,7 +50,6 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 
 variable (α β : Weight K H L)
 
-set_option backward.privateInPublic true in
 private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     ∃ n : ℕ, n • x = ⁅coroot α, x⁆ := by
   by_cases hx' : x = 0
@@ -64,13 +63,11 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
   obtain ⟨μ, hμ⟩ := this.exists_nat
   exact ⟨μ, by rw [← Nat.cast_smul_eq_nsmul K, ← hμ, lie_eq_smul_of_mem_rootSpace hx]⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The length of the `α`-chain through `β`. See `chainBotCoeff_add_chainTopCoeff`. -/
 def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
   if hα : α.IsZero then 0 else
-    (chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1).choose
+    (private chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1 :).choose
 
 lemma chainLength_of_isZero (hα : α.IsZero) : chainLength α β = 0 := dite_eq_left hα
 

@@ -496,7 +496,7 @@ private def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
     let ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
-  match (motive := ∀ o, good p o → { a // p a }) _, Nat.find_spec this with
+  match decode _, Nat.find_spec this with
   | some a, h => ⟨a, h⟩
 
 /-- Constructive choice function for a decidable predicate over an encodable type. -/
