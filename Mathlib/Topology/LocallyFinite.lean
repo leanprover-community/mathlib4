@@ -42,7 +42,7 @@ theorem point_finite (hf : LocallyFinite f) (x : X) : { b | x ∈ f b }.Finite :
 
 protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : LocallyFinite g := fun a =>
   let ⟨t, ht₁, ht₂⟩ := hf a
-  ⟨t, ht₁, ht₂.subset fun i hi => hi.mono <| inter_subset_inter (hg i) Subset.rfl⟩
+  ⟨t, ht₁, by grw [hg]; exact ht₂⟩
 
 theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (f (g i)).Nonempty }) :
     LocallyFinite (f ∘ g) := fun x => by
@@ -64,8 +64,7 @@ theorem on_range (hf : LocallyFinite f) : LocallyFinite ((↑) : range f → Set
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
-    eventually_smallSets' fun _s _t hst ht =>
-      ht.subset fun _i hi => hi.mono <| inter_subset_inter_right _ hst
+    eventually_smallSets' fun _s _t hst ht => by grw [hst]; exact ht
 
 protected theorem eventually_smallSets (hf : LocallyFinite f) (x : X) :
     ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
