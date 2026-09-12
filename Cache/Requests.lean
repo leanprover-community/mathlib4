@@ -166,7 +166,6 @@ private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo)
 
     -- Check if we're on a branch that should use nightly-testing remote
     let shouldUseNightlyTesting := branchName == "nightly-testing".toSlice ||
-                                  branchName.startsWith "lean-pr-testing-" ||
                                   branchName.startsWith "batteries-pr-testing-" ||
                                   branchName.startsWith "bump/" ||
                                   isDetachedAtNightlyTesting
