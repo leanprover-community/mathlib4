@@ -5,10 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
-public import Mathlib.Order.Filter.AtTopBot.Finite
-public import Mathlib.Order.Filter.AtTopBot.Prod
-public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Convergence of subadditive sequences
@@ -31,10 +28,12 @@ open Set Filter
 
 open scoped Topology
 
-/-- A real-valued sequence is subadditive if it satisfies the inequality `u (m + n) ≤ u m + u n`
+/-- A sequence is submultiplicative if it satisfies the inequality `u (m + n) ≤ u m * u n`
 for all `m, n`. -/
-def Subadditive (u : ℕ → ℝ) : Prop :=
-  ∀ m n, u (m + n) ≤ u m + u n
+@[to_additive Subadditive /-- A sequence is subadditive if it satisfies the inequality
+`u (m + n) ≤ u m + u n` for all `m, n`. -/]
+def Submultiplicative {α β : Type*} [Add α] [Mul β] [LE β] (u : α → β) : Prop :=
+  ∀ m n, u (m + n) ≤ u m * u n
 
 namespace Subadditive
 
@@ -98,4 +97,70 @@ theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
       exact ⟨n, zero_lt_one.trans_le hn, xL⟩
     exact h.eventually_div_lt_of_div_lt npos.ne' hn
 
+include h in
+theorem tendsto_atBot (hbdd : ¬ BddBelow (range fun n ↦ u n / n)) :
+    Tendsto (fun n ↦ u n / n) atTop atBot := by
+  simp_rw [tendsto_atTop_atBot, ← eventually_atTop]
+  intro L
+  obtain ⟨-, ⟨n, rfl⟩, hn⟩ := not_bddBelow_iff.mp hbdd (min L 0)
+  by_cases hn0 : n = 0
+  · simp [hn0] at hn
+  · exact (eventually_div_lt_of_div_lt h hn0 hn).mono (by grind)
+
 end Subadditive
+
+namespace Submultiplicative
+
+variable {u : ℕ → ℝ} (h : Submultiplicative u)
+
+/-- The limit of the nth roots of a submultiplicative sequence. The fact that the nth roots indeed
+converge to this limit is given in `Submultiplicative.tendsto_lim`. -/
+protected def lim (_h : Submultiplicative u) :=
+  sInf ((fun n : ℕ ↦ u n ^ (n : ℝ)⁻¹) '' Ici 1)
+
+/-- Fekete's lemma for nonnegative submultiplicative sequences:
+The nth roots of a submultiplicative sequence converge. -/
+theorem tendsto_lim (hbdd : ∀ n, 0 ≤ u n) : Tendsto (fun n ↦ u n ^ (n : ℝ)⁻¹) atTop (𝓝 h.lim) := by
+  by_cases! hu : ∃ n, u n ≤ 0
+  · obtain ⟨n, hu⟩ := hu
+    replace hu m (hm : m ≥ n) : u m = 0 := by grind [le_antisymm, h n (m - n)]
+    have h0 : n + 1 ≠ (0 : ℝ) := by grind
+    have h1 : h.lim = 0 := by
+      rw [Submultiplicative.lim]
+      refine csInf_eq_of_forall_ge_of_forall_gt_exists_lt ⟨0, n + 1, by simp, by simp [hu, h0]⟩ ?_
+        fun _ _ ↦ ⟨u (n + 1) ^ (n + 1 : ℝ)⁻¹, ⟨n + 1, by simp⟩, by simpa [hu, h0]⟩
+      rintro - ⟨n, hn, rfl⟩
+      positivity [hbdd n]
+    apply tendsto_nhds_of_eventually_eq
+    rw [eventually_atTop, h1]
+    refine ⟨n + 1, fun m hm ↦ ?_⟩
+    simp [hu m (by grind), show m ≠ 0 by grind]
+  · have key : Subadditive fun n ↦ (u n).log :=
+      fun a b ↦ (Real.log_le_log (hu (a + b)) (h a b)).trans_eq (Real.log_mul (hu a).ne' (hu b).ne')
+    have h0 n : u n ^ (n : ℝ)⁻¹ = ((u n).log / n).exp := by
+      rw [Real.rpow_def_of_pos (hu n), Real.exp_eq_exp, div_eq_mul_inv]
+    simp_rw [h0]
+    by_cases h' : BddBelow (range fun n ↦ (u n).log / n)
+    · suffices h.lim = key.lim.exp by
+        rw [this]
+        exact Real.continuous_exp.continuousAt.tendsto.comp (key.tendsto_lim h')
+      let : Inhabited (Ioi (0 : ℝ)) := ⟨1, by simp⟩
+      let : ConditionallyCompleteLinearOrder (Ioi (0 : ℝ)) :=
+        ordConnectedSubsetConditionallyCompleteLinearOrder (Ioi (0 : ℝ))
+      simp_rw [Subadditive.lim, Submultiplicative.lim, h0]
+      rw [Real.exp_monotone.map_csInf_of_continuousAt Real.continuous_exp.continuousAt
+        Nonempty.of_subtype (h'.mono (image_subset_range _ _)), Set.image_image]
+    · suffices h.lim = 0 by
+        rw [this]
+        exact Real.tendsto_exp_atBot.comp (key.tendsto_atBot h')
+      simp_rw [Submultiplicative.lim, h0]
+      apply csInf_eq_of_forall_ge_of_forall_gt_exists_lt Nonempty.of_subtype
+      · rintro - ⟨n, hn, rfl⟩
+        positivity
+      · intro ε hε
+        obtain ⟨-, ⟨n, rfl⟩, hn⟩ := (not_bddBelow_iff.mp h') (min 0 ε.log)
+        refine exists_mem_image.mpr ⟨n, (lt_inf_iff.mp hn).imp ?_ (Real.lt_log_iff_exp_lt hε).mp⟩
+        contrapose!
+        simp +contextual
+
+end Submultiplicative
