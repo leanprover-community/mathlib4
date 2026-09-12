@@ -42,6 +42,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 `Archive` and `Counterexamples`. -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
+    ⟨`linter.unusedVariables, false⟩,
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
     ⟨`weak.linter.unreachableTactic, false⟩, -- superseded by the unused tactic linter
