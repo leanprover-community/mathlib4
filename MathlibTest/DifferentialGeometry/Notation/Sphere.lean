@@ -32,7 +32,7 @@ variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : Model
 
 variable {g : Circle → N} {h : E'' → Circle} {k : Circle → ℝ} {y : Circle}
 
-/-- info: ContMDiff (𝓡 1) J 2 g : Prop -/
+/-- info: CMDiff 2 g : Prop -/
 #guard_msgs in
 #check CMDiff 2 g
 
@@ -124,22 +124,22 @@ end
 variable {f : (Metric.sphere (0 : E'') 1) → ℝ} {g : M → (Metric.sphere (0 : E'') 1)}
 
 variable [Fact (Module.finrank ℝ E'' = n + 1)] in
-/-- info: ContMDiff (𝓡 n) 𝓘(ℝ, ℝ) 2 f : Prop -/
+/-- info: CMDiff 2 f : Prop -/
 #guard_msgs in
 #check ContMDiff (𝓡 n) 𝓘(ℝ) 2 f
 
 variable [Fact (Module.finrank ℝ E'' = n + 1)] in
-/-- info: ContMDiff (𝓡 n) 𝓘(ℝ, ℝ) 2 f : Prop -/
+/-- info: CMDiff 2 f : Prop -/
 #guard_msgs in
 #check CMDiff 2 f
 
 variable [Fact (Module.finrank ℝ E'' = 2 * n + 1)] in
-/-- info: ContMDiff I (𝓡 2 * n) 2 g : Prop -/
+/-- info: CMDiff 2 g : Prop -/
 #guard_msgs in
 #check ContMDiff I (𝓡 (2 * n)) 2 g
 
 variable [Fact (Module.finrank ℝ E'' = 2 * n + 1)] in
-/-- info: ContMDiff I (𝓡 2 * n) 2 g : Prop -/
+/-- info: CMDiff 2 g : Prop -/
 #guard_msgs in
 #check CMDiff 2 g
 
@@ -147,11 +147,11 @@ variable [Fact (Module.finrank ℝ E'' = 2 * n + 1)] in
 section
 variable [Fact (Module.finrank ℝ E'' = n + 2 * n + 3)]
 
-/-- info: ContMDiff (𝓡 n + 2 * n + 2) 𝓘(ℝ, ℝ) ω f : Prop -/
+/-- info: CMDiff ω f : Prop -/
 #guard_msgs in
 #check CMDiff ω f
 
-/-- info: ContMDiff I (𝓡 n + 2 * n + 2) ∞ g : Prop -/
+/-- info: CMDiff ∞ g : Prop -/
 #guard_msgs in
 #check CMDiff ∞ g
 end
@@ -161,12 +161,12 @@ section
 -- Note: 3 and 2 + 1 are treated the same \o/
 -- (since our implementation uses qq matching, which does unification).
 variable [Fact (Module.finrank ℝ E'' = 3)] in
-/-- info: ContMDiff I (𝓡 2) ∞ g : Prop -/
+/-- info: CMDiff ∞ g : Prop -/
 #guard_msgs in
 #check CMDiff ∞ g
 
 variable [Fact (Module.finrank ℝ E'' = 2 + 1)] in
-/-- info: ContMDiff I (𝓡 2) ∞ g : Prop -/
+/-- info: CMDiff ∞ g : Prop -/
 #guard_msgs in
 #check CMDiff ∞ g
 
