@@ -91,13 +91,13 @@ def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ
     (μ : Measure α := by volume_tac) : AddSubgroup (α →ₘ[μ] E) where
   carrier := { f | eLpNorm f p μ < ∞ }
   zero_mem' := by
-    rw [Set.mem_ofPred_eq, eLpNorm_congr_ae AEEqFun.coeFn_zero, eLpNorm_zero]
+    rw [Set.mem_ofPred, eLpNorm_congr_ae AEEqFun.coeFn_zero, eLpNorm_zero]
     exact ENNReal.zero_lt_top
   add_mem' {f g} hf hg := by
     rw [Set.mem_ofPred, eLpNorm_congr_ae (AEEqFun.coeFn_add f g)]
     exact eLpNorm_add_lt_top hf hg
   neg_mem' {f} hf := by
-    rwa [Set.mem_ofPred_eq, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
+    rwa [Set.mem_ofPred, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
 
 /-- `α →₁[μ] E` is the type of `L¹` or integrable functions from `α` to `E`. -/
 scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ
