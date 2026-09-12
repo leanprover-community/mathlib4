@@ -129,8 +129,8 @@ lemma toMvPolynomial_add (M N : Matrix m n R) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
-    (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
-  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
+    (M * N).toMvPolynomial i = aeval N.toMvPolynomial (M.toMvPolynomial i) := by
+  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), aeval,
     AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.algebraMap_self,
     RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
     monomial_mul_monomial, zero_add]
@@ -207,7 +207,7 @@ variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis �
 
 lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i : ι₃) :
     (g ∘ₗ f).toMvPolynomial b₁ b₃ i =
-      bind₁ (f.toMvPolynomial b₁ b₂) (g.toMvPolynomial b₂ b₃ i) := by
+      aeval (f.toMvPolynomial b₁ b₂) (g.toMvPolynomial b₂ b₃ i) := by
   simp only [toMvPolynomial, toMatrix_comp b₁ b₂ b₃, Matrix.toMvPolynomial_mul]
   rfl
 
@@ -238,7 +238,8 @@ This definition does not depend on the choice of `bₘ`
 (see `LinearMap.polyCharpolyAux_basisIndep`). -/
 noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
-  (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
+  (charpoly.univ R ιM).map <|
+    (RingHomClass.toRingHom <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end))
 
 set_option backward.defeqAttrib.useBackward true in
 open Algebra.TensorProduct MvPolynomial in
@@ -251,13 +252,14 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   congr 1
   apply MvPolynomial.ringHom_ext
   · intro r
-    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_C, bind₁_C_right]
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      map_C, aeval_C, algebraMap_eq]
   · rintro ij
-    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, aeval_X]
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
     suffices toMvPolynomial (M₂ := (Module.End A (TensorProduct R A M)))
         (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
-      rw [this, bind₁_X_right]
+      rw [this, aeval_X]
     simp only [toMvPolynomial, Matrix.toMvPolynomial]
     suffices ∀ kl,
         (toMatrix (basis A bₘ.end) (basis A bₘ).end) (tensorProduct R A M M) ij kl =
@@ -277,7 +279,7 @@ open LinearMap in
 lemma polyCharpolyAux_map_eq_toMatrix_charpoly (x : L) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) =
       (toMatrix bₘ bₘ (φ x)).charpoly := by
-  rw [polyCharpolyAux, Polynomial.map_map, ← MvPolynomial.eval₂Hom_C_eq_bind₁,
+  rw [polyCharpolyAux, Polynomial.map_map, MvPolynomial.coe_aeval_eq_eval₂Hom,
     MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
   congr
   ext
@@ -364,8 +366,8 @@ def polyCharpoly : Polynomial (MvPolynomial ι R) :=
   φ.polyCharpolyAux b (Module.Free.chooseBasis R M)
 
 lemma polyCharpoly_eq_of_basis [DecidableEq ιM] (bₘ : Basis ιM R M) :
-    polyCharpoly φ b =
-    (charpoly.univ R ιM).map (MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)) := by
+    polyCharpoly φ b = (charpoly.univ R ιM).map
+      (RingHomClass.toRingHom <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end)) := by
   rw [polyCharpoly, φ.polyCharpolyAux_basisIndep b (Module.Free.chooseBasis R M) bₘ,
     polyCharpolyAux]
 
@@ -413,10 +415,10 @@ lemma polyCharpoly_coeff_eq_zero_of_basis (b : Basis ι R L) (b' : Basis ι' R L
   rw [polyCharpoly, polyCharpolyAux, Polynomial.coeff_map] at H ⊢
   set B := (Module.Free.chooseBasis R M).end
   set g := toMvPolynomial b' b LinearMap.id
-  apply_fun (MvPolynomial.bind₁ g) at H
-  have : toMvPolynomial b' B φ = fun i ↦ (MvPolynomial.bind₁ g) (toMvPolynomial b B φ i) :=
+  apply_fun (MvPolynomial.aeval g) at H
+  have : toMvPolynomial b' B φ = fun i ↦ (MvPolynomial.aeval g) (toMvPolynomial b B φ i) :=
     funext <| toMvPolynomial_comp b' b B φ LinearMap.id
-  rwa [map_zero, RingHom.coe_coe, MvPolynomial.bind₁_bind₁, ← this] at H
+  rwa [map_zero, RingHom.coe_coe, MvPolynomial.comp_aeval_apply, ← this] at H
 
 lemma polyCharpoly_coeff_eq_zero_iff_of_basis (b : Basis ι R L) (b' : Basis ι' R L) (k : ℕ) :
     (polyCharpoly φ b).coeff k = 0 ↔ (polyCharpoly φ b').coeff k = 0 := by
