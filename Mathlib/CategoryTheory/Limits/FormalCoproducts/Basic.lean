@@ -372,7 +372,7 @@ of formal coproducts. -/
   obj F :=
     { obj X := ∐ fun (i : X.I) ↦ F.obj (X.obj i)
       map {X Y} f := Sigma.desc fun i ↦ F.map (f.φ i) ≫ Sigma.ι (F.obj ∘ Y.obj) (f.f i)
-      map_comp _ _ := Sigma.hom_ext _ _ (fun _ ↦ by simp [Sigma.ι_desc]) }
+      map_comp _ _ := Sigma.hom_ext _ _ (fun _ ↦ by simp [Sigma.ι_comp_desc]) }
   map α := { app f := Sigma.map fun i ↦ α.app (f.obj i) }
 
 set_option backward.defeqAttrib.useBackward true in
@@ -382,7 +382,7 @@ set_option backward.isDefEq.respectTransparency false in
     eval C A ⋙ (whiskeringLeft _ _ A).obj (incl C) ≅ Functor.id (C ⥤ A) :=
   NatIso.ofComponents fun F ↦ NatIso.ofComponents
     (fun x ↦ ⟨Sigma.desc fun _ ↦ 𝟙 _, Sigma.ι (fun _ ↦ F.obj x) PUnit.unit, by aesop, by simp⟩)
-    (fun f ↦ Sigma.hom_ext _ _ (by simp [Sigma.ι_desc]))
+    (fun f ↦ Sigma.hom_ext _ _ (by simp [Sigma.ι_comp_desc]))
 
 variable {C A}
 
