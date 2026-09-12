@@ -168,7 +168,8 @@ theorem strictMono_filtration : StrictMono (E⟮<·⟯) :=
     fun incl ↦ (isLeast_leastExt i).1 (incl <| subset_adjoin _ _ ⟨i, h, rfl⟩)⟩
 
 theorem filtration_succ (i : ι) : E⟮<i⁺⟯ = E⟮<i⟯⟮b (φ i)⟯.restrictScalars F := by
-  rw [Iio_succ, ← Iio_insert, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
+  rw [Iio_succ_eq_Iic, ← Iio_insert, image_insert_eq, ← union_singleton, adjoin_adjoin_left]
+  rfl
 
 local notation "X" i => Field.Emb (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯
 

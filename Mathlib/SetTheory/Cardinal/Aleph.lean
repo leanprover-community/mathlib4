@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández P
 module
 
 public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Order.Interval.Set.SuccPred
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
@@ -609,7 +610,7 @@ theorem preBeth_zero : preBeth 0 = 0 := by
 
 @[simp]
 theorem preBeth_add_one (o : Ordinal) : preBeth (o + 1) = 2 ^ preBeth o := by
-  rw [preBeth, ← succ_eq_add_one, Iio_succ]
+  rw [preBeth, ← succ_eq_add_one, Iio_succ_eq_Iic]
   exact ciSup_Iic o fun x y h ↦ power_le_power_left two_ne_zero (preBeth_mono h)
 
 @[deprecated preBeth_add_one (since := "2026-05-26")]
