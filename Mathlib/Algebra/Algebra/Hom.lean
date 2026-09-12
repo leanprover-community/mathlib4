@@ -24,11 +24,9 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 @[expose] public section
 
-universe u v w u₁ v₁
-
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
-structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
+structure AlgHom (R : Type*) [CommSemiring R] (A B : Type*) [Semiring A]
+    [Semiring B] [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
@@ -42,8 +40,8 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
-class AlgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
+class AlgHomClass (F : Type*) (R : outParam Type*) [CommSemiring R] (A B : outParam Type*)
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
     extends RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
@@ -54,7 +52,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace AlgHomClass
 
-variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {F R : Type*} [CommSemiring R] {A B : Type*} [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
@@ -66,8 +64,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def _root_.AlgHom.ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    A →ₐ[R] B where
+def _root_.AlgHom.ofClass [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
   __ := (f : A →+* B)
   toFun := f
   commutes' := AlgHomClass.commutes f
@@ -78,11 +75,10 @@ end AlgHomClass
 
 namespace AlgHom
 
-variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
-
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable {R : Type*} [CommSemiring R] {A B : Type*} [Semiring A] [Semiring B]
+variable {C D : Type*} [Semiring C] [Semiring D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 @[macro_inline]
@@ -108,8 +104,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 _root_.AlgHomClass.toLinearMap_toAlgHom := AlgHomClass.linearMapOfClass_ofClass
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
-    [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
+def Simps.apply (f : A →ₐ[R] B) : A → B := f
 
 initialize_simps_projections AlgHom (toFun → apply)
 
@@ -246,40 +241,6 @@ end
 theorem id_apply (p : A) : AlgHom.id R A p = p :=
   rfl
 
-/-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
-domain of `φ₁` equal to the codomain of `φ₂`, then
-`φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
--/
-def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
-  { φ₁.toRingHom.comp ↑φ₂ with
-    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
-
-@[simp]
-theorem coe_comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ :=
-  rfl
-
-theorem comp_apply (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) (p : A) : φ₁.comp φ₂ p = φ₁ (φ₂ p) :=
-  rfl
-
-theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
-    (φ₁.comp φ₂ : A →+* C) = (φ₁ : B →+* C).comp ↑φ₂ :=
-  rfl
-
-@[simp]
-theorem comp_id : φ.comp (AlgHom.id R A) = φ :=
-  rfl
-
-@[simp]
-theorem id_comp : (AlgHom.id R B).comp φ = φ :=
-  rfl
-
-theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A →ₐ[R] B) :
-    (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
-  rfl
-
-instance {φ₁ : B →ₐ[R] C} {φ₂ : A →ₐ[R] B} :
-    RingHomCompTriple φ₂.toRingHom φ₁.toRingHom (φ₁.comp φ₂).toRingHom := ⟨rfl⟩
-
 /-- R-Alg ⥤ R-Mod -/
 def toLinearMap : A →ₗ[R] B where
   toFun := φ
@@ -299,11 +260,6 @@ lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 theorem toLinearMap_injective :
     Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
   ext <| LinearMap.congr_fun h
-
-@[simp]
-theorem comp_toLinearMap (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
-    (g.comp f).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
-  rfl
 
 @[simp]
 theorem toLinearMap_id : toLinearMap (AlgHom.id R A) = LinearMap.id :=
@@ -341,6 +297,60 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
+section comp
+
+variable {C : Type*} [Semiring C] [Algebra R C]
+variable {D : Type*} [Semiring D] [Algebra R D]
+
+/-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
+domain of `φ₁` equal to the codomain of `φ₂`, then
+`φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
+-/
+def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
+  { φ₁.toRingHom.comp ↑φ₂ with
+    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
+
+@[simp]
+theorem coe_comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ :=
+  rfl
+
+theorem comp_apply (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) (p : A) : φ₁.comp φ₂ p = φ₁ (φ₂ p) :=
+  rfl
+
+theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
+    (φ₁.comp φ₂ : A →+* C) = (φ₁ : B →+* C).comp ↑φ₂ :=
+  rfl
+
+@[simp]
+theorem comp_id : φ.comp (AlgHom.id R A) = φ :=
+  rfl
+
+@[simp]
+theorem id_comp : (AlgHom.id R B).comp φ = φ :=
+  rfl
+
+theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A →ₐ[R] B) :
+    (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
+  rfl
+
+instance {φ₁ : B →ₐ[R] C} {φ₂ : A →ₐ[R] B} :
+    RingHomCompTriple φ₂.toRingHom φ₁.toRingHom (φ₁.comp φ₂).toRingHom := ⟨rfl⟩
+
+@[simp]
+theorem comp_toLinearMap (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
+    (g.comp f).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
+  rfl
+
+lemma cancel_right {g₁ g₂ : B →ₐ[R] C} {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
+  ⟨fun h => AlgHom.ext <| hf.forall.2 (AlgHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+
+lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function.Injective f) :
+    f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
+  ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
+
+end comp
+
 @[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
@@ -363,14 +373,6 @@ theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
   h ▸ (f.commutes _).symm
-
-lemma cancel_right {g₁ g₂ : B →ₐ[R] C} {f : A →ₐ[R] B} (hf : Function.Surjective f) :
-    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => AlgHom.ext <| hf.forall.2 (AlgHom.ext_iff.1 h), fun h => h ▸ rfl⟩
-
-lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function.Injective f) :
-    f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
 
 /-- `AlgHom.toLinearMap` as a `MonoidHom`. -/
 @[simps] def toEnd : (A →ₐ[R] A) →* Module.End R A where
@@ -470,8 +472,8 @@ end RingHom
 
 namespace Algebra
 
-variable (R : Type u) (A : Type v) (B : Type w)
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable (R : Type*) [CommSemiring R] (A B : Type*)
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
@@ -513,7 +515,7 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
 
 end MulDistribMulAction
 
-variable (M : Submonoid R) {B : Type w} [Semiring B] [Algebra R B] {A}
+variable (M : Submonoid R) {B : Type*} [Semiring B] [Algebra R B] {A}
 
 lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
