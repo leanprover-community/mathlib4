@@ -36,11 +36,11 @@ theorem padicValRat_two_harmonic (n : ℕ) : padicValRat 2 (harmonic n) = -Nat.l
     rw [harmonic_succ]
     have key : padicValRat 2 (harmonic n) ≠ padicValRat 2 (↑(n + 1))⁻¹ := by
       rw [ih, padicValRat.inv, padicValRat.of_nat, Ne, neg_inj, Nat.cast_inj]
-      exact Nat.log_ne_padicValNat_succ hn
+      exact Nat.log_ne_multiplicity_succ hn
     rw [padicValRat.add_eq_min (harmonic_succ n ▸ (harmonic_pos n.succ_ne_zero).ne')
         (harmonic_pos hn).ne' (inv_ne_zero (Nat.cast_ne_zero.mpr n.succ_ne_zero)) key, ih,
         padicValRat.inv, padicValRat.of_nat, min_neg_neg, neg_inj, ← Nat.cast_max, Nat.cast_inj]
-    exact Nat.max_log_padicValNat_succ_eq_log_succ n
+    exact Nat.max_log_multiplicity_succ_eq_log_succ n
 
 /-- The 2-adic norm of the n-th harmonic number is 2 raised to the logarithm of n in base 2. -/
 lemma padicNorm_two_harmonic {n : ℕ} (hn : n ≠ 0) :
