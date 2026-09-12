@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -586,6 +587,47 @@ instance [NonUnitalCommRing R] (idem : IsIdempotentElem e) : CommRing idem.Corne
   __ : Ring idem.Corner := inferInstance
   __ : NonUnitalCommRing idem.Corner :=
     inferInstanceAs <| NonUnitalCommRing (NonUnitalRing.corner e)
+
+instance {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    {e : S} (he : IsIdempotentElem e) : Algebra R he.Corner where
+  smul r x := ⟨r • x.1, by
+    simp [he, Subsemigroup.mem_corner_iff, (Subsemigroup.mem_corner_iff he).mp x.2]⟩
+  algebraMap :=
+  { toFun r := ⟨r • e, by simp [he, Subsemigroup.mem_corner_iff, he.eq]⟩
+    map_one' := by simp; rfl
+    map_mul' a b := Subtype.ext <| show (a * b) • e = (a • e) * (b • e) by
+      simp [he.eq, ← mul_smul, mul_comm]
+    map_zero' := by simp; rfl
+    map_add' a b := Subtype.ext (add_smul _ _ _) }
+  commutes' r x := Subtype.ext (show r • e * x.1 = x.1 * r • e by
+    simp [(Subsemigroup.mem_corner_iff he).mp x.2])
+  smul_def' r x := Subtype.ext (show r • x.1 = (r • e) * x.1 by
+    simp [(Subsemigroup.mem_corner_iff he).mp x.2])
+
+instance {R R' S : Type*} [CommSemiring R] [CommSemiring R'] [Semiring S] [Algebra R S]
+    [Algebra R R'] [Algebra R' S] [IsScalarTower R R' S]
+    {e : S} (he : IsIdempotentElem e) : IsScalarTower R R' he.Corner :=
+  .of_algebraMap_eq fun _ ↦ Subtype.ext (IsScalarTower.algebraMap_smul _ _ _).symm
+
+@[simp]
+lemma IsIdempotentElem.algebraMap_corner_apply
+    {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    {e : S} (he : IsIdempotentElem e) (x : R) :
+    (algebraMap R he.Corner x).1 = x • e := rfl
+
+lemma IsIdempotentElem.algebraMap_corner_surjective [CommSemiring R]
+    {e : R} (he : IsIdempotentElem e) :
+    Function.Surjective (algebraMap R he.Corner) :=
+  fun x ↦ ⟨x.1, Subtype.ext ((Subsemigroup.mem_corner_iff he).mp x.2).2⟩
+
+lemma IsIdempotentElem.ker_algebraMap_corner [CommRing R] {e : R} (he : IsIdempotentElem e) :
+    RingHom.ker (algebraMap R he.Corner) = Ideal.span {1 - e} := by
+  apply le_antisymm
+  · intro x hx
+    refine Ideal.mem_span_singleton.mpr ⟨x, ?_⟩
+    simp [show x * e = 0 from congr($(hx).1), sub_mul, mul_comm e]
+  · simpa [Ideal.span_le, sub_eq_zero, -FaithfulSMul.ker_algebraMap_eq_bot] using!
+      Subtype.ext he.eq.symm
 
 variable {I : Type*} [Fintype I] {e : I → R}
 
