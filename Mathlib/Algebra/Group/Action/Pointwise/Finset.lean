@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Pointwise actions of finsets
@@ -140,15 +141,83 @@ theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Fins
 
 end Semigroup
 
+section SMul
+variable [SMul α β] [DecidableEq β] {s t : Finset β} {a : α}
+
+/-- If `a` is regular on `β`, it is regular on `Finset β`. -/
+theorem _root_.IsSMulRegular.finset (h : IsSMulRegular β a) : IsSMulRegular (Finset β) a :=
+  Finset.image_injective h
+
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_finset_subset_smul_finset_iff (h : IsSMulRegular β a) :
+    a • s ⊆ a • t ↔ s ⊆ t := image_subset_image_iff h
+
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_finset_inter (h : IsSMulRegular β a) :
+    a • (s ∩ t) = a • s ∩ a • t := image_inter _ _ h
+
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_finset_sdiff (h : IsSMulRegular β a) :
+    a • (s \ t) = a • s \ a • t := image_sdiff _ _ h
+
+open scoped symmDiff in
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_finset_symmDiff (h : IsSMulRegular β a) :
+    a • s ∆ t = (a • s) ∆ (a • t) := image_symmDiff _ _ h
+
+@[to_additive]
+theorem _root_.IsSMulRegular.card_smul_finset (h : IsSMulRegular β a) (s : Finset β) :
+    (a • s).card = s.card := card_image_of_injective _ h
+
+end SMul
+
 section IsLeftCancelSMul
-variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β]
+variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β] {s t : Finset β} {a : α}
+
+@[to_additive]
+instance : IsLeftCancelSMul α (Finset β) where
+  left_cancel' a := Finset.image_injective (IsSMulRegular.all a)
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :
     s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
+@[to_additive (attr := simp)]
+theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
+  IsSMulRegular.smul_finset_subset_smul_finset_iff (.all a)
+
+@[to_additive]
+theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
+  IsSMulRegular.smul_finset_inter (.all a)
+
+@[to_additive]
+theorem smul_finset_sdiff : a • (s \ t) = a • s \ a • t :=
+  IsSMulRegular.smul_finset_sdiff (.all a)
+
+open scoped symmDiff in
+@[to_additive]
+theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
+  IsSMulRegular.smul_finset_symmDiff (.all a)
+
+@[to_additive (attr := simp)]
+theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
+  IsSMulRegular.card_smul_finset (.all a) s
+
+@[to_additive (attr := simp)]
+theorem smul_mem_smul_finset_iff (a : α) {b : β} : a • b ∈ a • s ↔ b ∈ s :=
+  Function.Injective.mem_finset_image (IsSMulRegular.all a)
+
 end IsLeftCancelSMul
+
+section Mul
+variable [Mul α] [IsLeftCancelMul α] [DecidableEq α]
+
+@[to_additive (attr := simp)]
+lemma mul_mem_smul_finset_iff (a : α) {b : α} {s : Finset α} :
+    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
+
+end Mul
 
 @[to_additive]
 theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]
@@ -159,14 +228,6 @@ section Group
 
 variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α} {b : β}
 
-@[to_additive (attr := simp)]
-theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
-  (MulAction.injective _).mem_finset_image
-
-@[to_additive (attr := simp)]
-lemma mul_mem_smul_finset_iff [DecidableEq α] (a : α) {b : α} {s : Finset α} :
-    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
-
 @[to_additive]
 theorem inv_smul_mem_iff : a⁻¹ • b ∈ s ↔ b ∈ a • s := by
   rw [← smul_mem_smul_finset_iff a, smul_inv_smul]
@@ -174,10 +235,6 @@ theorem inv_smul_mem_iff : a⁻¹ • b ∈ s ↔ b ∈ a • s := by
 @[to_additive]
 theorem mem_inv_smul_finset_iff : b ∈ a⁻¹ • s ↔ a • b ∈ s := by
   rw [← smul_mem_smul_finset_iff a, smul_inv_smul]
-
-@[to_additive (attr := simp)]
-theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
-  image_subset_image_iff <| MulAction.injective _
 
 @[to_additive]
 theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t := by
@@ -190,19 +247,6 @@ theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
   simp_rw [← coe_subset]
   push_cast
   exact Set.subset_smul_set_iff
-
-@[to_additive]
-theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter _ _ <| MulAction.injective a
-
-@[to_additive]
-theorem smul_finset_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_sdiff _ _ <| MulAction.injective a
-
-open scoped symmDiff in
-@[to_additive]
-theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff _ _ <| MulAction.injective a
 
 @[to_additive (attr := simp)]
 theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
@@ -217,10 +261,6 @@ theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ :
   coe_injective <| by
     push_cast
     exact Set.smul_univ hs
-
-@[to_additive (attr := simp)]
-theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
-  card_image_of_injective _ <| MulAction.injective _
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/
