@@ -589,7 +589,7 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  simp only [SetLike.le_def, mem_comap, mem_inf, LinearMap.add_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, mem_inf, LinearMap.add_apply]
   exact fun _ h ↦ add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
@@ -609,7 +609,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
 theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
-  simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
 
 theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :

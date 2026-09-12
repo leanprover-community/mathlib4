@@ -67,7 +67,7 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     exact ⟨y • x, le_antisymm (step1 y y.2) hyI⟩
   -- if not, then for every `y ∈ K`, there exists an `f y ∈ colon N {y • x}` with `f y ∉ I`
   by_contra! h'
-  simp only [SetLike.not_le_iff_exists] at h'
+  simp only [IsConcreteLE.not_le_iff_exists] at h'
   choose f g h using h'
   -- let `s` be a finite generating set for `K`
   obtain ⟨s, hs⟩ : (⊤ : Submodule R K).FG := Module.Finite.fg_top

@@ -354,7 +354,7 @@ lemma mem_stabilizer_mk_iff (φ : K →+* ℂ) (σ : Gal(K/k)) :
     (AlgEquiv.ext (g := AlgEquiv.refl) fun x ↦ φ.injective (RingHom.congr_fun H x))
 
 lemma IsUnramified.stabilizer_eq_bot (h : IsUnramified k w) : Stab w = ⊥ := by
-  rw [eq_bot_iff, ← mk_embedding w, SetLike.le_def]
+  rw [eq_bot_iff, ← mk_embedding w, IsConcreteLE.le_iff]
   simp only [mem_stabilizer_mk_iff, Subgroup.mem_bot, forall_eq_or_imp, true_and]
   exact fun σ hσ ↦ hσ.isUnramified_mk_iff.mp ((mk_embedding w).symm ▸ h)
 
@@ -386,7 +386,7 @@ variable {k w}
 
 lemma isUnramified_iff_stabilizer_eq_bot [IsGalois k K] : IsUnramified k w ↔ Stab w = ⊥ := by
   rw [← mk_embedding w, isUnramified_mk_iff_forall_isConj]
-  simp only [eq_bot_iff, SetLike.le_def, mem_stabilizer_mk_iff,
+  simp only [eq_bot_iff, IsConcreteLE.le_iff, mem_stabilizer_mk_iff,
     Subgroup.mem_bot, forall_eq_or_imp, true_and]
 
 lemma isUnramified_iff_card_stabilizer_eq_one [IsGalois k K] :

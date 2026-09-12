@@ -199,7 +199,7 @@ lemma Localization.localRingHom_bijective_of_not_conductor_le
     {P : Ideal S} [P.IsPrime] (hx : ¬ conductor R x ≤ P) {s : Subalgebra R S}
     (hs : s = R<x>) (p : Ideal s) [p.IsPrime] [P.LiesOver p] :
     Function.Bijective (Localization.localRingHom _ _ _ (P.over_def p)) := by
-  obtain ⟨a, ha, haP⟩ := SetLike.not_le_iff_exists.mp hx
+  obtain ⟨a, ha, haP⟩ := IsConcreteLE.not_le_iff_exists.mp hx
   replace ha (b : _) : a * b ∈ s := by simpa [hs] using ha b
   exact Localization.localRingHom_bijective_of_saturated_inf_eq_top _
     (top_le_iff.mp fun y _ ↦ ⟨a, ⟨haP, by simpa using ha 1⟩, ha _⟩) _

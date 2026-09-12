@@ -62,7 +62,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     · exact isPrime_bot
     · exact (maximalIdeal.isMaximal ℕ).isPrime
     · rwa [span_singleton_prime (by simp [hp.ne_zero]), ← Nat.prime_iff]
-  rw [← le_bot_iff, SetLike.not_le_iff_exists] at h0
+  rw [← le_bot_iff, IsConcreteLE.not_le_iff_exists] at h0
   classical
   let p := Nat.find h0
   have ⟨(hp : p ∈ P), (hp0 : p ≠ 0)⟩ := Nat.find_spec h0
@@ -71,7 +71,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     fun ⟨m, n, hm, hn, eq⟩ ↦ have := mul_ne_zero_iff.mp (eq ▸ hp0)
     (h.mem_or_mem (eq ▸ hp)).elim (Nat.find_min h0 hm ⟨·, this.1⟩) (Nat.find_min h0 hn ⟨·, this.2⟩)
   push Not at hsp
-  have ⟨q, hq, hqp⟩ := SetLike.exists_of_lt
+  have ⟨q, hq, hqp⟩ := IsConcreteLE.exists_of_lt
     ((P.span_singleton_le_iff_mem.mpr hp).lt_of_ne (hsp p prime).symm)
   obtain rfl | hn1 := eq_or_ne n 0
   · exact Ideal.zero_mem _
@@ -110,5 +110,5 @@ theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
     fin_cases i
     · exact bot_lt_iff_ne_bot.mpr (Ideal.span_singleton_eq_bot.not.mpr two_ne_zero)
     · simp_rw [Nat.maximalIdeal_eq_span_two_three]
-      exact SetLike.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
+      exact IsConcreteLE.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
         3, Ideal.subset_span (by simp), Ideal.mem_span_singleton.not.mpr <| by simp⟩
