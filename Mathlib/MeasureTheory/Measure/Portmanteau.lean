@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.Topology.Semicontinuity.Basic
 
 import Mathlib.MeasureTheory.Integral.Layercake
 
@@ -28,13 +29,19 @@ weak convergence of measures (probability measures or finite measures). Given me
 and μ on a topological space Ω, the conditions that will be proven equivalent (under quite
 general hypotheses) are:
 
-  (T) The measures μs tend to the measure μ weakly.
-  (C) For any closed set F, the limsup of the measures of F under μs is at most
+* (T) The measures μs tend to the measure μ weakly.
+* (C) For any closed set F, the limsup of the measures of F under μs is at most
       the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
-  (O) For any open set G, the liminf of the measures of G under μs is at least
+* (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
-  (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
+* (B) For any Borel set B whose boundary carries no mass under μ, i.e. μ(∂B) = 0,
       the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
+* (LSC-nonneg) For any lower semicontinuous ENNReal-valued function f,
+      ∫⁻ x, f x ∂μ ≤ liminfᵢ ∫⁻ x, f x ∂μsᵢ.
+* (LSC) For any lower semicontinuous real-valued function f bounded from below,
+      ∫ x, f x ∂μ ≤ liminfᵢ ∫ x, f x ∂μsᵢ.
+* (USC) For any upper semicontinuous real-valued function f bounded from above,
+      limsupᵢ ∫ x, f x ∂μsᵢ ≤ ∫ x, f x ∂μ.
 
 The separate implications are:
 * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (T) → (C).
@@ -44,6 +51,20 @@ The separate implications are:
 * `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
     any sequence of Borel probability measures.
 * `MeasureTheory.tendsto_of_limsup_measure_closed_le` gives the implication (C) → (T).
+* The lower-semicontinuous layer-cake theorem gives
+    (O) → the nonnegative lower semicontinuous `lintegral` inequality.
+* `MeasureTheory.ProbabilityMeasure.integral_le_liminf_integral_of_tendsto_of_lowerSemicontinuous`
+    gives (T) → (LSC), in the integrable real-valued formulation with the needed real-liminf
+    boundedness hypothesis.
+* `MeasureTheory.ProbabilityMeasure.limsup_integral_le_integral_of_tendsto_of_upperSemicontinuous`
+    gives (T) → (USC), in the integrable real-valued formulation with the needed real-limsup
+    boundedness hypothesis.
+* `MeasureTheory.integral_lowerSemicontinuous_liminf_iff_integral_upperSemicontinuous_limsup`
+    gives the real-valued (LSC) ↔ (USC) duality under the same boundedness bookkeeping.
+* `MeasureTheory.ProbabilityMeasure.tendsto_of_forall_integral_lowerSemicontinuous_le_liminf`
+    gives (LSC) → (T).
+* `MeasureTheory.ProbabilityMeasure.tendsto_of_forall_limsup_integral_upperSemicontinuous_le`
+    gives (USC) → (T).
 
 We also deduce a practical convergence criterion for probability measures, in
 `IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem`.
@@ -496,14 +517,15 @@ implies
 
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
-lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
-    {μ : Measure Ω} {μs : ℕ → Measure Ω} {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)
-    (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
-    ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i)) := by
+lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure {ι : Type*}
+    {L : Filter ι} [IsCountablyGenerated L] {μ : Measure Ω} {μs : ι → Measure Ω} {f : Ω → ℝ}
+    (f_cont : Continuous f) (f_nn : 0 ≤ f)
+    (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)) :
+    ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ L.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i)) := by
   simp_rw [lintegral_eq_lintegral_meas_lt _ (Eventually.of_forall f_nn) f_cont.aemeasurable]
   calc ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a}
-      ≤ ∫⁻ (t : ℝ) in Set.Ioi 0, atTop.liminf (fun i ↦ (μs i) {a | t < f a}) := ?_ -- (i)
-    _ ≤ atTop.liminf (fun i ↦ ∫⁻ (t : ℝ) in Set.Ioi 0, (μs i) {a | t < f a}) := ?_ -- (ii)
+      ≤ ∫⁻ (t : ℝ) in Set.Ioi 0, L.liminf (fun i ↦ (μs i) {a | t < f a}) := ?_ -- (i)
+    _ ≤ L.liminf (fun i ↦ ∫⁻ (t : ℝ) in Set.Ioi 0, (μs i) {a | t < f a}) := ?_ -- (ii)
   · -- (i)
     exact (lintegral_mono (fun t ↦ h_opens _ (continuous_def.mp f_cont _ isOpen_Ioi))).trans
             (le_refl _)
@@ -863,4 +885,4 @@ lemma _root_.IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem
 
 end convergenceCriterion
 
-end MeasureTheory --namespace
+end MeasureTheory
