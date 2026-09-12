@@ -34,7 +34,7 @@ variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive 
 /-- A triangulated functor `F` is left `t`-exact if `X ≥ n` implies `F.obj X ≥ n`.
 (It suffices to test this for `n := 0`, see `LeftExact.mk'`.) -/
 class LeftTExact (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
-    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where
+    (t₁ : TStructure C) (t₂ : TStructure D) : Prop where private mk'::
   isGE_obj (F t₁ t₂) (X : C) (n : ℤ) [t₁.IsGE X n] : t₂.IsGE (F.obj X) n
 
 /-- A triangulated functor `F` is right `t`-exact if `X ≤ n` implies `F.obj X ≤ n`.
