@@ -13,6 +13,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Lift
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 
+import all Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
@@ -176,7 +177,7 @@ def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
     invFun x := ⟨.ofCoeff x.1, x.2⟩
     left_inv _ := rfl
     right_inv _ := rfl
-    map_add' _ _ := rfl
+    map_add' _ _ := by exact rfl
     map_smul' _ _ := rfl }
    ≪≫ₗ Finsupp.supportedEquivFinsupp s
 
