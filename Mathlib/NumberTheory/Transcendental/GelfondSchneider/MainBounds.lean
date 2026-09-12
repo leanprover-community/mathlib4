@@ -114,7 +114,6 @@ lemma abs_Rb : norm (((R α β σ α' β' γ' hirr htriv habc) q hq0 h2mq) z) �
            ((((r α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℝ ) + 1) / 2)) * ((c₉ α β K)) ^ ((r α
                β σ α' β' γ' hirr htriv habc) q hq0 h2mq + q : ℝ)) := ?_
   · unfold R
-    simp only [canonicalEmbedding.apply_at]
     trans
     · apply norm_sum_le
     simp only [Complex.norm_mul]
