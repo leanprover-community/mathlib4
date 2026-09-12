@@ -4607,6 +4607,7 @@ public import Mathlib.Dynamics.FixedPoints.Prufer
 public import Mathlib.Dynamics.FixedPoints.Support
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Dynamics.Flow
+public import Mathlib.Dynamics.GaussMap
 public import Mathlib.Dynamics.Minimal
 public import Mathlib.Dynamics.Newton
 public import Mathlib.Dynamics.OmegaLimit
