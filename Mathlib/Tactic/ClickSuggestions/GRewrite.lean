@@ -178,7 +178,6 @@ private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemm
 
 /-- Generate the suggestion for rewriting with `lem`. -/
 def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwKey) := do
-  withNewMCtxDepth do
   let mctx ← getMCtx
   (·.getDM do throwError "no suitable `grw` relation was found") =<< i.gpos.findSomeM? fun pos ↦ do
   unless lem.relName == pos.relName && pos.symm?.all (· == lem.symm) do return none

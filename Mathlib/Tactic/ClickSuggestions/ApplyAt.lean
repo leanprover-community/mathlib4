@@ -58,8 +58,7 @@ private def tacticSyntax (lem : ApplyAtLemma) : ClickSuggestionsM (TSyntax `tact
   `(tactic| apply $(mkIdent (← lem.name.unresolveName)) at $(← getHypIdent!))
 
 /-- Generate the suggestion for applying `lem`. -/
-def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey) :=
-  withNewMCtxDepth do
+def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey) := do
   let (_proof, mvars, binderInfos, replacement) ← lem.name.forallMetaTelescopeReducing
   let mvar := mvars.back!
   let mvars := mvars.pop

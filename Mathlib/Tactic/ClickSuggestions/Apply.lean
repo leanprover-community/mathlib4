@@ -73,8 +73,7 @@ where
     return !info.paramInfo.any (·.binderInfo.isExplicit)
 
 /-- Generate the suggestion for applying `lem`. -/
-def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) :=
-  withNewMCtxDepth do
+def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) := do
   let (proof, mvars, binderInfos, e) ← lem.name.forallMetaTelescopeReducing
   let target ← (← read).goal.getType
   unless ← isDefEq e target do throwError "{e} does not unify with {target}"

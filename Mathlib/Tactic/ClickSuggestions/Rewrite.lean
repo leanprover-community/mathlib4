@@ -82,8 +82,7 @@ private def tacticSyntax (lem : RwLemma) (rwKind : RwKind) (hyp? : Option Ident)
   mkRewrite rwKind lem.symm proof hyp?
 
 /-- Generate the suggestion for rewriting with `lem`. -/
-def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) :=
-  withNewMCtxDepth do
+def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) := do
   let e := i.subExpr
   let (proof, mvars, binderInfos, eqn) ← lem.name.forallMetaTelescopeReducing
   let mkApp2 _ lhs rhs ← whnf eqn | throwError "Exected an equality or iff, not {eqn}"
