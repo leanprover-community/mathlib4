@@ -32,7 +32,8 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
   the tensor product of a polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra
 
-## TODO :
+## TODO
+
 * `MvPolynomial.rTensor` could be phrased in terms of `AddMonoidAlgebra`, and
   `MvPolynomial.rTensor` then has `smul` by the polynomial algebra.
 * `MvPolynomial.rTensorAlgHom` and `MvPolynomial.scalarRTensorAlgEquiv`

@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
-The matrix ring over a simple ring is simple
+# The matrix ring over a simple ring is simple
 -/
 
 public section
