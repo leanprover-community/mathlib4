@@ -150,7 +150,7 @@ lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
   refine ⟨fun H ↦ map_one f ▸ H.nhds_le 1, fun h ↦ IsOpenMap.of_nhds_le fun x ↦ ?_⟩
   have : Filter.map (f x * ·) (𝓝 1) = 𝓝 (f x) := by
     simpa [-Homeomorph.map_nhds_eq, Units.smul_def] using!
-      (Homeomorph.smul ((toUnits x).map (MonoidHomClass.ofClass f))).map_nhds_eq (1 : H)
+      (Homeomorph.smul ((toUnits x).map (MonoidHom.ofClass f))).map_nhds_eq (1 : H)
   rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
   refine (Filter.map_mono h).trans ?_
   simp [Function.comp_def]

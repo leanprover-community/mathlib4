@@ -272,7 +272,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
       use a
       simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
   · simpa [tprod_bot hL] using
-      (MonoidHomClass.ofClass g).map_finprod_of_injective hge.injective _
+      (MonoidHom.ofClass g).map_finprod_of_injective hge.injective _
 
 /-- Special case of `Topology.IsClosedEmbedding.map_tprod`, logically weaker but possibly easier
 to apply in practice. -/

@@ -399,15 +399,16 @@ instance MonoidHom.instMonoidHomClass : MonoidHomClass (M →* N) M N where
 variable [FunLike F M N]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
-`MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
+`MonoidHom`. -/
 @[to_additive
 /-- Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
-actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. -/]
+actual `MonoidHom`. -/]
 def MonoidHom.ofClass [MonoidHomClass F M N] (f : F) : M →* N :=
   { (f : M →ₙ* N), (f : OneHom M N) with }
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.coe_ofClass [MonoidHomClass F M N] (f : F) : ((.ofClass f : M →* N) : M → N) = f := rfl
+theorem MonoidHom.coe_ofClass [MonoidHomClass F M N] (f : F) :
+    ((.ofClass f : M →* N) : M → N) = f := rfl
 
 @[to_additive]
 theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :
