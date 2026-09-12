@@ -1026,6 +1026,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.GroupWithZero.Lex
+public import Mathlib.Algebra.Order.GroupWithZero.NegLog
 public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.GroupWithZero.Range
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
@@ -7306,6 +7307,7 @@ public import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.Unramified.LocalStructure
 public import Mathlib.RingTheory.Unramified.Locus
 public import Mathlib.RingTheory.Unramified.Pi
+public import Mathlib.RingTheory.Valuation.AddValuation.Basic
 public import Mathlib.RingTheory.Valuation.AlgebraInstances
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.RingTheory.Valuation.Basic
