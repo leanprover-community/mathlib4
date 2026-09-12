@@ -78,7 +78,7 @@ lemma volume_eq_lintegral (s : Set ℍ) :
     volume s = ∫⁻ z : ℂ in (↑) '' s, ↑((1 / ‖z.im‖₊) ^ 2 : NNReal) := by
   have : MeasurePreserving UpperHalfPlane.coe (volume.comap UpperHalfPlane.coe)
       (volume.restrict (.range UpperHalfPlane.coe)) :=
-    ⟨measurable_coe, by rw [measurableEmbedding_coe.map_comap]⟩
+    ⟨measurable_coe.aemeasurable, by rw [measurableEmbedding_coe.map_comap]⟩
   rw [volume_def, withDensity_apply',
     ← Set.inter_eq_self_of_subset_left (Set.image_subset_range _ _),
     ← Measure.restrict_restrict', ← this.setLIntegral_comp_emb measurableEmbedding_coe]

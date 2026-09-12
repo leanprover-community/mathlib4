@@ -64,7 +64,7 @@ lemma symm_symmMeasurableEquiv : symmMeasurableEquiv.symm = symmMeasurableEquiv 
 lemma coe_symmMeasurableEquiv : symmMeasurableEquiv = σ := rfl
 
 lemma measurePreserving_symm : MeasurePreserving symm volume volume where
-  measurable := measurable_symm
+  aemeasurable := measurable_symm.aemeasurable
   map_eq := by
     ext s hs
     apply symmMeasurableEquiv.map_apply _ |>.trans

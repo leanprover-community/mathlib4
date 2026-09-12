@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
@@ -43,22 +44,23 @@ variable {μa : Measure α} {μb : Measure β} {μc : Measure γ}
 and `map f μa = μb`. -/
 structure MeasurePreserving (f : α → β)
   (μa : Measure α := by volume_tac) (μb : Measure β := by volume_tac) : Prop where
-  protected measurable : Measurable f
+  protected aemeasurable : AEMeasurable f μa
   protected map_eq : map f μa = μb
+
+protected theorem _root_.AEMeasurable.measurePreserving
+    {f : α → β} {μa : Measure α} (h : AEMeasurable f μa) : MeasurePreserving f μa (map f μa) :=
+  ⟨h, rfl⟩
 
 protected theorem _root_.Measurable.measurePreserving
     {f : α → β} (h : Measurable f) (μa : Measure α) : MeasurePreserving f μa (map f μa) :=
-  ⟨h, rfl⟩
+  h.aemeasurable.measurePreserving
 
 namespace MeasurePreserving
 
 protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
-  ⟨measurable_id, map_id⟩
+  ⟨aemeasurable_id, map_id⟩
 
-protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
-
-protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : AEMeasurable f' μa)
     (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
   refine ⟨hf', ?_⟩
   rw [Measure.map_congr h.symm]
@@ -67,21 +69,21 @@ protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (h
 @[nontriviality]
 theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
     MeasurePreserving f μa μb :=
-  ⟨measurable_of_subsingleton_codomain _, Subsingleton.elim _ _⟩
+  ⟨aemeasurable_of_subsingleton_codomain, Subsingleton.elim _ _⟩
 
 theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
-  ⟨e.symm.measurable, by
+  ⟨e.symm.measurable.aemeasurable, by
     rw [← h.map_eq, map_map e.symm.measurable e.measurable, e.symm_comp_self, map_id]⟩
 
 theorem restrict_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : MeasurableSet s) : MeasurePreserving f (μa.restrict (f ⁻¹' s)) (μb.restrict s) :=
-  ⟨hf.measurable, by rw [← hf.map_eq, restrict_map hf.measurable hs]⟩
+  ⟨hf.aemeasurable.restrict, by rw [← hf.map_eq, restrict_map_of_aemeasurable hf.aemeasurable hs]⟩
 
 theorem restrict_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (h₂ : MeasurableEmbedding f) (s : Set β) :
     MeasurePreserving f (μa.restrict (f ⁻¹' s)) (μb.restrict s) :=
-  ⟨hf.measurable, by rw [← hf.map_eq, h₂.restrict_map]⟩
+  ⟨hf.aemeasurable.restrict, by rw [← hf.map_eq, h₂.restrict_map]⟩
 
 theorem restrict_image_emb {f : α → β} (hf : MeasurePreserving f μa μb) (h₂ : MeasurableEmbedding f)
     (s : Set α) : MeasurePreserving f (μa.restrict s) (μb.restrict (f '' s)) := by
@@ -97,17 +99,19 @@ protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
-  ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
+  have hg' : AEMeasurable g (μa.map f) := hf.map_eq ▸ hg.aemeasurable
+  ⟨hg'.comp_aemeasurable hf.aemeasurable, by
+    rw [← hg'.map_map_of_aemeasurable hf.aemeasurable, hf.map_eq, hg.map_eq]⟩
 
 protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
-    (hg : Measurable g) (hf : Measurable f) :
+    (hg : AEMeasurable g (μa.map f)) (hf : AEMeasurable f μa) :
     MeasurePreserving g (μa.map f) μc :=
-  ⟨hg, (map_map hg hf).trans hgf.map_eq⟩
+  ⟨hg, (hg.map_map_of_aemeasurable hf).trans hgf.map_eq⟩
 
 protected theorem of_semiconj {f : α → β} {ga : α → α} {gb : β → β}
     (hfm : MeasurePreserving f μa μb) (hga : MeasurePreserving ga μa μa) (hf : Semiconj f ga gb)
-    (hgb : Measurable gb) : MeasurePreserving gb μb μb := by
-  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp hgb hfm.measurable
+    (hgb : AEMeasurable gb μb) : MeasurePreserving gb μb μb := by
+  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp (hfm.map_eq ▸ hgb) hfm.aemeasurable
   rwa [hfm.map_eq] at this
 
 /-- An alias of `MeasureTheory.MeasurePreserving.comp` with a convenient defeq and argument order
@@ -142,7 +146,7 @@ protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SF
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
-  rw [map_apply₀ hf.1.aemeasurable hs]
+  rw [map_apply₀ hf.aemeasurable hs]
 
 theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
@@ -179,12 +183,12 @@ theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s :
 
 theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
     (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where
-  measurable := hf.measurable
-  map_eq := by rw [Measure.map_add _ _ hf.measurable, hf.map_eq, hf'.map_eq]
+  aemeasurable := hf.aemeasurable.add_measure hf'.aemeasurable
+  map_eq := by rw [hf.aemeasurable.map_add₀ hf'.aemeasurable, hf.map_eq, hf'.map_eq]
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
     (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
-  measurable := hf.measurable
+  aemeasurable := hf.aemeasurable.smul_measure c
   map_eq := by rw [Measure.map_smul _ hf.aemeasurable, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
@@ -238,7 +242,7 @@ end MeasurePreserving
 
 lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
     MeasurePreserving (Subtype.val : s → α) (μa.comap Subtype.val) (μa.restrict s) where
-  measurable := measurable_subtype_coe
+  aemeasurable := measurable_subtype_coe.aemeasurable
   map_eq := map_comap_subtype_coe hs _
 
 namespace MeasurableEquiv
