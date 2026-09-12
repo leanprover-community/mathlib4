@@ -311,7 +311,7 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
 isomorphism between their vertices which commutes with the cocone maps. -/
 @[simps]
 def _root_.CategoryTheory.Limits.Cocone.ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
-    (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where
+    (w : ∀ j, dsimp% c.ι.app j ≫ φ.hom = c'.ι.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
