@@ -118,7 +118,7 @@ namespace hasFiniteResolution
 theorem le : P ≤ P.hasFiniteResolution := fun X hX ↦
   hasFiniteResolutionOfLength.le_hasFiniteResolution X (.zero X hX)
 
-instance [P.Is X] : P.hasFiniteResolution.Is X := ⟨of_property (P.prop_of_is X)⟩
+instance [P.Is X] : P.hasFiniteResolution.Is X := ⟨le X (P.prop_of_is X)⟩
 
 theorem monotone (hPQ : P ≤ Q) : P.hasFiniteResolution ≤ Q.hasFiniteResolution :=
   iSup_mono fun _ ↦ hasFiniteResolutionOfLength.monotone hPQ
