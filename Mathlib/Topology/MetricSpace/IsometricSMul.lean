@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -243,58 +244,6 @@ end Metric
 
 end EMetric
 
-namespace EMetric
-open Metric
-
-@[deprecated (since := "2026-01-24")]
-alias vadd_ball := vadd_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias smul_ball := smul_eball
-
-@[deprecated (since := "2026-01-24")] alias preimage_vadd_ball := preimage_vadd_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_smul_ball := preimage_smul_eball
-
-@[deprecated (since := "2026-01-24")]
-alias vadd_closedBall := vadd_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias smul_closedBall := smul_closedEBall
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_vadd_closedBall := preimage_vadd_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_smul_closedBall := preimage_smul_closedEBall
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_left_ball := preimage_add_left_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_left_ball := preimage_mul_left_eball
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_right_ball := preimage_add_right_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_right_ball := preimage_mul_right_eball
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_left_closedBall := preimage_add_left_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_left_closedBall := preimage_mul_left_closedEBall
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_right_closedBall := preimage_add_right_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_right_closedBall := preimage_mul_right_closedEBall
-
-end EMetric
-
 @[to_additive (attr := simp)]
 theorem dist_smul [PseudoMetricSpace X] [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
     dist (c • x) (c • y) = dist x y :=
@@ -366,7 +315,7 @@ normed spaces. -/
 `X` under translation by `c : G` is bounded. -/]
 theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsIsometricSMul G X] {s : Set X}
     (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
-  (isometry_smul X c).lipschitz.isBounded_image hs
+  (isometry_smul X c).lipschitzWith.isBounded_image hs
 
 namespace Metric
 

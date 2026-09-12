@@ -89,7 +89,7 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
 @[expose] public section
 
 
-open MvPolynomial Set
+open MvPolynomial
 
 open Finset (range)
 

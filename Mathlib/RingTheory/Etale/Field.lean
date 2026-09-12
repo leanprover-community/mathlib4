@@ -123,7 +123,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     · rfl
     apply AlgHom.ext
     rw [← AlgHom.comp_assoc, hg₁, AlgHom.comp_assoc]
-    simp
+    simp -implicitDefEqProofs
   have H : ∀ x y : L, ∃ α : L, x ∈ K⟮α⟯ ∧ y ∈ K⟮α⟯ := by
     intro x y
     have : FiniteDimensional K K⟮x, y⟯ := by

@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Category.Grp.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
+# Projective objects
+
 An object is projective iff the preadditive coyoneda functor on it preserves epimorphisms.
 -/
 

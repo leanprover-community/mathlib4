@@ -5,10 +5,9 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Gauss norm for multivariate power series
@@ -89,7 +88,6 @@ lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
   calc
   0 < v (f.coeff n) * ∏ i ∈ n.support, (c i) ^ (n i) := by
     apply mul_pos _ (by exact Finset.prod_pos fun i a ↦ (fun i ↦ pow_pos (hc i) (n i)) i)
-    specialize h_eq_zero (f.coeff n)
     grind
   _ ≤ _ := le_gaussNorm v c f hbd n
 
@@ -143,8 +141,8 @@ lemma gaussNorm_mul_le (f g : MvPowerSeries σ R) (hc : 0 ≤ c) (vNonneg : ∀ 
   classical
   refine Real.iSup_le ?_ ?_
   · intro t
-    obtain ⟨k, hk, hsum⟩ := IsNonarchimedean.finset_image_add vZero vNonneg vna
-      (fun a ↦ coeff a.1 f * coeff a.2 g) (Finset.antidiagonal t)
+    obtain ⟨k, hk, hsum⟩ := vna.finset_image_add _ (Finset.antidiagonal t)
+      (fun x ↦ vZero.le.trans (vNonneg x))
     have hk' : k.1 + k.2 = t := by
       simpa [Finset.mem_antidiagonal] using hk (Finset.nonempty_def.mpr ⟨(t, 0), by simp⟩)
     have hprod : t.prod (c · ^ ·) = k.1.prod (c · ^ ·) * k.2.prod (c · ^ ·) := by
@@ -215,8 +213,8 @@ lemma antidiagonal_dominant (i j : σ →₀ ℕ) (vna : IsNonarchimedean v)
       v (coeff p.1 f * coeff p.2 g) < v (coeff i f) * v (coeff j g)) :
     v (coeff (i + j) (f * g))  = v (coeff i f * coeff j g) := by
   rw [← vMulEq] at hdom
-  rw [coeff_mul, IsNonarchimedean.apply_sum_eq_of_lt vna (by grind) (k := (i, j))
-    (s := Finset.antidiagonal (i + j)) (Finset.mem_antidiagonal.mpr rfl) hdom]
+  rw [coeff_mul, vna.apply_sum_eq_of_lt _ (by grind) (s := Finset.antidiagonal (i + j))
+    (Finset.mem_antidiagonal.mpr rfl) hdom]
 
 lemma gaussNorm_le_mul (vMulEq : ∀ a b, v (a * b) = v a * v b)
     (vna : IsNonarchimedean v) (vNeg : ∀ a, v a = v (-a))

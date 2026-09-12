@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
 module
 
+public import Batteries.Tactic.Alias
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.TypeTags
 
@@ -33,8 +34,10 @@ theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) 
   rfl
 
 @[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
+theorem recTopCoe_natCast {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-17")] alias recTopCoe_coe := recTopCoe_natCast
 
 end ENat

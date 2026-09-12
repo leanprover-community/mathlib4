@@ -211,7 +211,7 @@ theorem isWF_empty : IsWF (∅ : Set α) :=
 theorem IsWF.mono (h : IsWF t) (st : s ⊆ t) : IsWF s := h.subset st
 
 theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFoundedLT α := by
-  simp [IsWF, wellFoundedOn_iff, isWellFounded_iff]
+  simp [IsWF, wellFoundedOn_iff]
 
 theorem IsWF.of_wellFoundedLT [h : WellFoundedLT α] (s : Set α) : s.IsWF :=
   (Set.isWF_univ_iff.2 h).mono s.subset_univ
@@ -220,7 +220,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] {s t : Set α} {a : α}
+variable [Preorder α] {s t : Set α}
 
 protected nonrec theorem IsWF.union (hs : IsWF s) (ht : IsWF t) : IsWF (s ∪ t) := hs.union ht
 
@@ -230,7 +230,7 @@ end Preorder
 
 section Preorder
 
-variable [Preorder α] {s t : Set α} {a : α}
+variable [Preorder α] {s : Set α}
 
 theorem isWF_iff_no_descending_seq :
     IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
@@ -562,7 +562,7 @@ lemma WellFoundedOn.mapsTo {α β : Type*} {r : α → α → Prop} (f : β → 
 @[to_dual]
 theorem WellFoundedOn.exists_minimal {α : Type*} [Preorder α] {s : Set α}
     (h : s.WellFoundedOn (· < ·)) (nonempty : s.Nonempty) : ∃ a, Minimal (· ∈ s) a :=
-  have ⟨m, hm⟩ := WellFoundedLT.exists_minimal ⟨h⟩ univ <| nonempty.elim (⟨⟨·, ·⟩, trivial⟩)
+  have ⟨m, hm⟩ := WellFoundedLT.exists_minimal h univ <| nonempty.elim (⟨⟨·, ·⟩, trivial⟩)
   ⟨m, m.property, fun y hy ↦ hm.right (y := ⟨y, hy⟩) trivial⟩
 
 end WellFoundedOn
@@ -574,7 +574,7 @@ variable [LinearOrder α] {s : Set α}
 /-- In a linear order, the predicates `Set.IsPWO` and `Set.IsWF` are equivalent. -/
 theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF := by
   change WellQuasiOrdered (· ≤ ·) ↔ WellFounded (· < ·)
-  rw [← wellQuasiOrderedLE_def, ← isWellFounded_iff, wellQuasiOrderedLE_iff_wellFoundedLT]
+  rw [← wellQuasiOrderedLE_def, wellQuasiOrderedLE_iff_wellFoundedLT]
 
 alias ⟨_, IsWF.isPWO⟩ := isPWO_iff_isWF
 
@@ -846,9 +846,9 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
   obtain ⟨g, hg⟩ := h.exists_monotone_subseq fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
-      (fun m hm => (if_pos hm).symm) ?_
+      (fun m hm => (ite_eq_left hm).symm) ?_
   swap
-  · simp only [if_neg (lt_irrefl (g 0)), Nat.sub_self]
+  · simp only [ite_eq_right (lt_irrefl (g 0)), Nat.sub_self]
     rw [List.length_tail, ← Nat.pred_eq_sub_one]
     exact Nat.pred_lt fun con => hnil _ (List.length_eq_zero_iff.1 con)
   rw [IsBadSeq] at hf'
@@ -858,9 +858,9 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
     exacts [hf1.1 _ _ hx, hf1.1 _ _ (List.tail_subset _ hx)]
   by_cases hn : n < g 0
   · apply hf1.2 m n mn
-    rwa [if_pos hn, if_pos (mn.trans hn)] at hmn
+    rwa [ite_eq_left hn, ite_eq_left (mn.trans hn)] at hmn
   · obtain ⟨n', rfl⟩ := Nat.exists_eq_add_of_le (not_lt.1 hn)
-    rw [if_neg hn, add_comm (g 0) n', Nat.add_sub_cancel_right] at hmn
+    rw [ite_eq_right hn, add_comm (g 0) n', Nat.add_sub_cancel_right] at hmn
     split_ifs at hmn with hm
     · apply hf1.2 m (g n') (lt_of_lt_of_le hm (g.monotone n'.zero_le))
       exact _root_.trans hmn (List.tail_sublistForall₂_self _)

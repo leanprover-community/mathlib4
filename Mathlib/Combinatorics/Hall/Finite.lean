@@ -50,7 +50,6 @@ section Fintype
 
 variable [Fintype ι]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t))
     (s' : Finset { x' : ι | x' ≠ x }) : #s' ≤ #(s'.biUnion fun x' => (t x').erase a) := by
@@ -72,7 +71,6 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   · subst s'
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- First case of the inductive step: assuming that
 `∀ (s : Finset ι), s.Nonempty → s ≠ univ → #s < #(s.biUnion t)`
 and that the statement of **Hall's Marriage Theorem** is true for all

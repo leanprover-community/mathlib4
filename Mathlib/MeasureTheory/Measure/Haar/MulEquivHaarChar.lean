@@ -56,7 +56,7 @@ lemma mulEquivHaarChar_eq (μ : Measure G) [IsHaarMeasure μ]
   conv =>
     enter [1, 2, 2]
     rw [smul]
-  simp_rw [MeasureTheory.Measure.map_smul]
+  rw! [MeasureTheory.Measure.map_smul _ (by fun_prop)]
   exact haarScalarFactor_smul_smul _ _ (haarScalarFactor_pos_of_isHaarMeasure haar μ).ne'
 
 @[to_additive addEquivAddHaarChar_smul_map]

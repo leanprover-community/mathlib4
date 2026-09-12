@@ -69,6 +69,9 @@ theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, sta
     A.IsHermitian ↔ A.IsSymm := by
   simp [IsHermitian.ext_iff, IsSymm.ext_iff]
 
+lemma IsHermitian.isSymm [TrivialStar α] {A : Matrix n n α} (hA : A.IsHermitian) : A.IsSymm :=
+  isHermitian_iff_isSymm.mp hA
+
 @[simp]
 theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
     (hf : Function.Semiconj f star star) : (A.map f).IsHermitian := by
@@ -301,6 +304,11 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
 lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
+
+lemma IsHermitian.star_dotProduct_mulVec_comm [Fintype n] {A : Matrix n n α}
+    (hA : A.IsHermitian) (x y : n → α) :
+    star (star x ⬝ᵥ A *ᵥ y) = star y ⬝ᵥ A *ᵥ x := by
+  rw [star_dotProduct, star_star, star_mulVec, hA.eq, ← dotProduct_mulVec]
 
 end NonUnitalSemiring
 

@@ -33,10 +33,10 @@ generated. -/
 ideal is finitely generated. -/]
 theorem fg_of_wellQuasiOrderedLE (I : SemigroupIdeal M) : I.FG := by
   have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ I }
-  refine ⟨_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
-    (hpwo.mono (setOf_minimal_subset _)), ?_⟩
+  refine ⟨_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
+    (hpwo.mono (setOfPred_minimal_subset _)), ?_⟩
   ext x
-  simp only [mem_closure'', SetLike.setOf_mem_eq, SetLike.mem_coe, Set.mem_setOf_eq]
+  simp only [mem_closure'', SetLike.setOfPred_mem_eq, SetLike.mem_coe, Set.mem_ofPred_eq]
   constructor
   · intro hx
     rcases hpwo.exists_le_minimal hx with ⟨z, hz, hz'⟩

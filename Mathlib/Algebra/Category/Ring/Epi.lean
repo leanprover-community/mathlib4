@@ -40,9 +40,6 @@ lemma CommRingCat.epi_iff_epi {R S : Type u} [CommRing R] [CommRing S] [Algebra 
     ext s
     simpa using! congr(Algebra.TensorProduct.lift f' g' (fun _ _ ↦ .all _ _) $(H s))
 
-@[deprecated (since := "2026-01-13")]
-alias CommRingCat.epi_iff_tmul_eq_tmul := CommRingCat.epi_iff_epi
-
 lemma RingHom.surjective_of_epi_of_finite {R S : CommRingCat} (f : R ⟶ S) [Epi f]
     (h₂ : RingHom.Finite f.hom) : Function.Surjective f := by
   algebraize [f.hom]

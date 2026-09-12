@@ -39,7 +39,6 @@ instance : (monomorphisms (Type u)).IsStableUnderCobaseChange where
     exact Limits.Types.pushoutCocone_inr_mono_of_isColimit sq.flip.isColimit
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'}
     (monomorphisms (Type u)) where
   isStableUnderColimitsOfShape J _ _ := ⟨fun F₁ F₂ c₁ c₂ hc₁ hc₂ f hf φ hφ ↦ by

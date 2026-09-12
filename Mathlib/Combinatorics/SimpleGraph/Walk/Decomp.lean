@@ -117,7 +117,7 @@ lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
   | @cons a _ _ _ p ih =>
     by_cases! h' : w = a
     · subst h'
-      simp [dropUntil_first, drop_support_eq_support_drop_min]
+      simp [dropUntil_first]
     · rw [drop_cons_eq _ _ _ (by grind), support_copy, dropUntil]
       grind
 

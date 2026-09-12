@@ -94,7 +94,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
 
 theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
-  simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
+  simp only [idealOfSet, Submodule.coe_set_mk, Set.ofPred_forall]
   exact isClosed_iInter fun x => isClosed_iInter fun _ =>
     isClosed_eq (continuous_eval_const x) continuous_const
 
@@ -114,14 +114,14 @@ def setOfIdeal (I : Ideal C(X, R)) : Set X :=
 
 theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∉ setOfIdeal I ↔ ∀ ⦃f : C(X, R)⦄, f ∈ I → f x = 0 := by
-  rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_setOf]
+  rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_ofPred]
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
-  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push Not; rfl
+  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_ofPred]; push Not; rfl
 
 theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
-  simp only [setOfIdeal, Set.setOf_forall, isOpen_compl_iff]
+  simp only [setOfIdeal, Set.ofPred_forall, isOpen_compl_iff]
   exact
     isClosed_iInter fun f =>
       isClosed_iInter fun _ => isClosed_eq (map_continuous f) continuous_const
@@ -176,7 +176,7 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
     (inv_mul_le_iff₀ (hc.trans_le le_sup_right)).mpr ((mul_one (f x ⊔ c)).symm ▸ le_sup_left),
     fun x hx => by
     simpa only [coe_const, mul_apply, coe_mk, Pi.inv_apply, Pi.sup_apply,
-      Function.const_apply, sup_eq_left.mpr (Set.mem_setOf.mp hx), ne_eq, Pi.one_apply]
+      Function.const_apply, sup_eq_left.mpr (Set.mem_ofPred.mp hx), ne_eq, Pi.one_apply]
       using inv_mul_cancel₀ (hc.trans_le hx).ne' ⟩
 
 variable [CompactSpace X] [T2Space X]
@@ -200,7 +200,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine Set.subset_compl_iff_disjoint_left.mp fun x hx => ?_
-    simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using!
+    simpa only [t, Set.mem_ofPred, Set.mem_compl_iff, not_le] using!
       (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
   /- It suffices to produce `g : C(X, ℝ≥0)` which takes values in `[0,1]` and is constantly `1` on
     `t` such that when composed with the natural embedding of `ℝ≥0` into `𝕜` lies in the ideal `I`.

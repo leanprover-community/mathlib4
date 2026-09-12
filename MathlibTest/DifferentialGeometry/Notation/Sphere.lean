@@ -1,7 +1,7 @@
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Notation
 
-/-! ## Tests for the differential geometry elaborators for spheres in metric spaces
+/-! # Tests for the differential geometry elaborators for spheres in metric spaces
 
 **Note.**
 This file also acts as a test for the delaborators corresponding to the custom elaborators,

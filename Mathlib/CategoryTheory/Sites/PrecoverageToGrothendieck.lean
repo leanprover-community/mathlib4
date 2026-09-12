@@ -59,7 +59,7 @@ It is defined *inductively* as follows:
 4. Add all sieves required by the *local character* axiom of a Grothendieck topology.
 -/
 def toGrothendieck (J : Precoverage C) : GrothendieckTopology C where
-  sieves X := setOf (J.Saturate X)
+  sieves X := Set.ofPred (J.Saturate X)
   top_mem' := .top
   pullback_stable' _ _ _ _ hS := .pullback _ _ hS _ _
   transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
@@ -240,7 +240,6 @@ open Limits
 variable {D : Type*} [Category* D]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (P : Dᵒᵖ ⥤ Type*)
     {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
     [F.PreservesPairwisePullbacks R] :

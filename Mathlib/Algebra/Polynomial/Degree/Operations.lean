@@ -30,11 +30,11 @@ namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {S : Type v} {a b c : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] [Semiring S] {p q r : R[X]}
+variable [Semiring R] [Semiring S] {p q : R[X]}
 
 theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
   max_eq_sup_coe
@@ -130,7 +130,7 @@ end Ring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p q : R[X]}
 
 theorem coeff_natDegree_eq_zero_of_degree_lt (h : degree p < degree q) :
     coeff p (natDegree q) = 0 :=
@@ -163,7 +163,7 @@ theorem natDegree_lt_natDegree_iff (hp : p ≠ 0) : natDegree p < natDegree q �
 theorem eq_C_of_degree_le_zero (h : degree p ≤ 0) : p = C (coeff p 0) := by
   ext (_ | n)
   · simp
-  rw [coeff_C, if_neg (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
+  rw [coeff_C, ite_eq_right (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
   exact h.trans_lt (WithBot.coe_lt_coe.2 n.succ_pos)
 
 theorem eq_C_of_degree_eq_zero (h : degree p = 0) : p = C (coeff p 0) :=
@@ -210,6 +210,10 @@ theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
 
 @[simp] theorem natDegree_C_add {a : R} : (C a + p).natDegree = p.natDegree := by
   simp [add_comm _ p]
+
+@[simp] theorem natDegree_add_one : (p + 1).natDegree = p.natDegree := natDegree_add_C
+
+@[simp] theorem natDegree_one_add : (1 + p).natDegree = p.natDegree := natDegree_C_add
 
 theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
     degree (p + q) = max p.degree q.degree :=
@@ -509,7 +513,7 @@ end Semiring
 
 section NontrivialSemiring
 
-variable [Semiring R] [Nontrivial R] {p q : R[X]} (n : ℕ)
+variable [Semiring R] [Nontrivial R] {p : R[X]} (n : ℕ)
 
 @[simp] lemma natDegree_mul_X (hp : p ≠ 0) : natDegree (p * X) = natDegree p + 1 := by
   rw [natDegree_mul' (by simpa), natDegree_X]
@@ -653,7 +657,7 @@ theorem leadingCoeff_X_pow_add_C {n : ℕ} (hn : 0 < n) {r : R} :
     (X ^ n + C r).leadingCoeff = 1 := by
   nontriviality R
   rw [leadingCoeff, natDegree_X_pow_add_C, coeff_add, coeff_X_pow_self, coeff_C,
-    if_neg (pos_iff_ne_zero.mp hn), add_zero]
+    ite_eq_right (pos_iff_ne_zero.mp hn), add_zero]
 
 @[simp]
 theorem leadingCoeff_X_add_C [Semiring S] (r : S) : (X + C r).leadingCoeff = 1 := by
@@ -726,7 +730,7 @@ lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q)
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] {a p : R[X]} (hp : p.Monic)
+variable [CommSemiring R] {p : R[X]} (hp : p.Monic)
 include hp
 
 lemma Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=

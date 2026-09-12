@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.ULift
 
 /-!
@@ -103,5 +103,12 @@ lemma Finite.exists_subset_finite_image_eq {f : α → β} {s : Set α} {u : Set
   choose g hg hg' using hsu
   let g' (x : u) : α := g x.property
   exact ⟨range g', fun a ha ↦ by aesop, finite_range _, by aesop⟩
+
+lemma _root_.Function.Injective.range_eq_range_iff_subset [Finite α]
+    {f g : α → γ} (hf : Function.Injective f) :
+    range f = range g ↔ range f ⊆ range g := by
+  classical
+  have := Fintype.ofFinite α
+  grind [eq_of_subset_of_card_le, card_range_of_injective, Fintype.card_range_le]
 
 end Set

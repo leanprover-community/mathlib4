@@ -73,22 +73,25 @@ lemma pairingDual_ιMulti_ιMulti {n : ℕ} (f : (_ : Fin n) → Module.Dual R M
       Matrix.det (n := Fin n) (.of (fun i j ↦ f j (v i))) := by
   simp [pairingDual]
 
-
-section
+section Deprecated
 
 /-! If an `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
 such that `f i (x j)` is `1` or `0` depending on `i = j` or `i ≠ j`, then if `ι` has
 a linear order, then a similar property regarding `pairingDual R M n`
 applies to the family of vectors indexed
 by `Fin n ↪o ι` in `⋀[R]^n M` and in `⋀[R]^n (Module.Dual R M)` that are obtained
-by taking exterior products of the `x i` and the `f j`. (This shall be used in order
-to construct a basis of `⋀[R]^n M` when `M` is a free module.) -/
+by taking exterior products of the `x i` and the `f j`.
+
+These results were added with the intention of using them to prove that exterior powers of a free
+modules are free. However this result has since been established by other means (see
+`Module.Basis.exteriorPower`) and so this work is now deprecated. -/
 
 variable {R M} {ι : Type*} [LinearOrder ι]
   (x : ι → M) (f : ι → Module.Dual R M)
   (h₁ : ∀ i, f i (x i) = 1) (h₀ : ∀ ⦃i j⦄, i ≠ j → f i (x j) = 0) (n : ℕ)
 
 include h₁ h₀ in
+@[deprecated "no replacement" (since := "2026-08-23")]
 lemma pairingDual_apply_apply_eq_one (a : Fin n ↪o ι) :
     pairingDual R M n (ιMulti _ _ (f ∘ a)) (ιMulti _ _ (x ∘ a)) = 1 := by
   simp only [pairingDual_ιMulti_ιMulti, Function.comp_apply]
@@ -102,6 +105,7 @@ lemma pairingDual_apply_apply_eq_one (a : Fin n ↪o ι) :
   · rw [h₀ (by simpa using Ne.symm hij), Matrix.one_apply_ne hij]
 
 include h₀ in
+@[deprecated "no replacement" (since := "2026-08-23")]
 lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
     pairingDual R M n (ιMulti _ _ (f ∘ a)) (ιMulti _ _ (x ∘ b)) = 0 := by
   simp only [pairingDual_ιMulti_ιMulti, Function.comp_apply, Matrix.det_apply]
@@ -131,6 +135,6 @@ lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
   ext
   apply congr_fun this
 
-end
+end Deprecated
 
 end exteriorPower

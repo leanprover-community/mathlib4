@@ -59,7 +59,6 @@ theorem expand_C (r : R) : expand R p (C r) = C r :=
 theorem expand_X : expand R p X = X ^ p :=
   eval₂_X _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem expand_monomial (r : R) : expand R p (monomial q r) = monomial (q * p) r := by
   simp_rw [← smul_X_eq_monomial, map_smul, map_pow, expand_X, mul_comm, pow_mul]
@@ -94,9 +93,9 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
   simp only [expand_eq_sum]
   simp_rw [coeff_sum, ← pow_mul, C_mul_X_pow_eq_monomial, coeff_monomial, sum]
   split_ifs with h
-  · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, if_pos rfl]
+  · rw [Finset.sum_eq_single (n / p), Nat.mul_div_cancel' h, ite_eq_left rfl]
     · intro b _ hb2
-      rw [if_neg]
+      rw [ite_eq_right]
       intro hb3
       apply hb2
       rw [← hb3, Nat.mul_div_cancel_left b hp]
@@ -105,13 +104,13 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
       split_ifs <;> rfl
   · rw [Finset.sum_eq_zero]
     intro k _
-    rw [if_neg]
+    rw [ite_eq_right]
     exact fun hkn => h ⟨k, hkn.symm⟩
 
 @[simp]
 theorem coeff_expand_mul {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
     (expand R p f).coeff (n * p) = f.coeff n := by
-  rw [coeff_expand hp, if_pos (dvd_mul_left _ _), Nat.mul_div_cancel _ hp]
+  rw [coeff_expand hp, ite_eq_left (dvd_mul_left _ _), Nat.mul_div_cancel _ hp]
 
 @[simp]
 theorem coeff_expand_mul' {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
@@ -228,7 +227,7 @@ theorem contract_mul_expand {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
     obtain ⟨y, rfl⟩ := h
     refine (nex ⟨⟨x, y⟩, (Nat.mul_right_cancel_iff hp.bot_lt).mp ?_, by simp_rw [mul_comm]⟩).elim
     rw [← eq, mul_comm, mul_add]
-  · rw [coeff_expand hp.bot_lt, if_neg h, mul_zero]
+  · rw [coeff_expand hp.bot_lt, ite_eq_right h, mul_zero]
 
 @[simp] theorem isCoprime_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
     IsCoprime (expand R p f) (expand R p g) ↔ IsCoprime f g :=
@@ -308,7 +307,7 @@ variable (R : Type u) [CommRing R] [IsDomain R]
 theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   refine ⟨fun f hf1 => ?_⟩
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)
-  rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
+  rw [coeff_expand hp, ite_eq_left (dvd_zero _), p.zero_div] at hf2
   rw [hf2, isUnit_C] at hf1; rw [expand_eq_C hp] at hf2; rwa [hf2, isUnit_C]
 
 variable {R}

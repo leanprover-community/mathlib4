@@ -159,6 +159,12 @@ open Polynomial NNReal
 
 variable {F K : Type*} [CommRing F] [NormedField K]
 
+/-- Nonzero polynomials are nonzero away from a codiscrete set. -/
+lemma eventually_eval_ne_zero_codiscrete [IsDomain F] [TopologicalSpace F] [T1Space F]
+    {g : F[X]} (hg : g ≠ 0) :
+    ∀ᶠ z in codiscrete F, g.eval z ≠ 0 :=
+  (eventually_eval_ne_zero_cofinite hg).filter_mono codiscrete_le_cofinite
+
 open Multiset
 
 theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1 : p.Monic)

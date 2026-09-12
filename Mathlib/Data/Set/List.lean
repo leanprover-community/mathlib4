@@ -39,7 +39,7 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
 @[simp]
 theorem range_list_get : range l.get = { x | x ∈ l } := by
   ext x
-  rw [mem_setOf_eq, mem_iff_get, mem_range]
+  rw [mem_ofPred_eq, mem_iff_get, mem_range]
 
 theorem range_list_getElem? :
     range (l[·]? : ℕ → Option α) = insert none (some '' { x | x ∈ l }) := by
@@ -56,8 +56,7 @@ theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert 
     (range fun n => l[n]?.getD d) = (fun o : Option α => o.getD d) '' range (l[·]?) := by
       simp only [← range_comp, Function.comp_def]
       rfl
-    _ = insert d { x | x ∈ l } := by
-      simp only [Option.getD, range_list_getElem?, image_insert_eq, image_image, image_id']
+    _ = insert d { x | x ∈ l } := by simp [range_list_getElem?, image_image]
 
 @[simp]
 theorem range_list_getI [Inhabited α] (l : List α) :

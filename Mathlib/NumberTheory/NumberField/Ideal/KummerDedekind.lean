@@ -7,8 +7,9 @@ module
 
 public import Mathlib.NumberTheory.KummerDedekind
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 # Kummer-Dedekind criterion for the splitting of prime numbers
@@ -168,7 +169,7 @@ with the monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
     primesOver (span {(p : ℤ)}) (𝓞 K) ≃ monicFactorsMod θ p :=
   have h : span {(p : ℤ)} ≠ ⊥ := by simp [NeZero.ne p]
-  ((Equiv.setCongr (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
+  ((Set.equivOfEq (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
     (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
     (Int.ideal_span_isMaximal_of_prime p) h
       (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans <|
@@ -183,7 +184,6 @@ theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ
           rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
           exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).prop⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
 `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned by `p` and `Q(θ)`.

@@ -87,9 +87,9 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
     exists fun y => if H : y ∈ t1 then g y H else 0
     intro y H
     constructor
-    · simp only [dif_pos H]
+    · simp only [dite_eq_left H]
       apply hg1
-    · simp only [dif_pos H]
+    · simp only [dite_eq_left H]
       apply hg2
   obtain ⟨g, hg⟩ := this
   clear this

@@ -34,7 +34,7 @@ namespace StarSubalgebra
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
-variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
+variable {R A B C : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
 variable [Semiring B] [StarRing B] [Algebra R B] [StarModule R B]
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
@@ -342,9 +342,8 @@ namespace Subalgebra
 
 open scoped Pointwise
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 /-- The pointwise `star` of a subalgebra is a subalgebra. -/
 instance involutiveStar : InvolutiveStar (Subalgebra R A) where
@@ -424,9 +423,8 @@ namespace StarAlgebra
 
 open StarSubalgebra
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 variable (R)
 
 /-- The minimal star subalgebra that contains `s`. -/
@@ -561,7 +559,7 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
   | star _ _ h => exact star_right _ _ _ _ h
 
-/-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
+/-- The difference with `StarAlgebra.adjoin_induction` is that this acts on the subtype. -/
 @[elab_as_elim]
 theorem adjoin_induction_subtype {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (mem : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (algebraMap : ∀ r, p (algebraMap R _ r))
@@ -584,58 +582,59 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
   rw [StarMemClass.star_coe_eq]
   simp
 
-/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
-is commutative. -/
-theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x)
-    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
+/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
+`star` of elements in this set, then `StarAlgebra.adjoin R s` is commutative. -/
+theorem isMulCommutative_adjoin {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
+    (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
     IsMulCommutative (adjoin R s) := by
   have := adjoin_le_centralizer_centralizer R s
   refine .of_setLike_mul_comm fun _ h₁ _ h₂ ↦ ?_
-  have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
-    Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
-      (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
   apply this at h₁
   apply this at h₂
   rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
-  exact Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂
+  exact Set.centralizer_centralizer_comm_of_comm
+    (Set.Pairwise.commute_union_star_self_iff.mpr ⟨hcomm, hcomm_star, hnormal⟩) _ h₁ _ h₂
 
 open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
-`star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
+/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
+`star` of elements in this set, then `StarAlgebra.adjoin R s` is a commutative semiring.
+
+See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinCommSemiringOfComm {s : Set A}
-    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
-    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
+abbrev adjoinCommSemiringOfComm {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
+    (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
     CommSemiring (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm hcomm_star
+  have := isMulCommutative_adjoin R hnormal hcomm hcomm_star
   inferInstance
 
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] [StarMemClass S A]
     (s : S) [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R
-    (fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂)
-    (fun _ h₁ _ h₂ => setLike_mul_comm h₁ (star_mem h₂))
+    (fun _ h ↦ ⟨setLike_mul_comm (star_mem h) h⟩)
+    (fun _ h₁ _ h₂ _ ↦ setLike_mul_comm h₁ h₂)
+    (fun _ h₁ _ h₂ _ ↦ setLike_mul_comm h₁ (star_mem h₂))
 
 open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
-`star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
+/-- If all elements of `s : Set A` are normal, commute pairwise, and commute pairwise with the
+`star` of elements in this set, then `StarAlgebra.adjoin R s` is a commutative ring.
+
+See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
 abbrev adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A]
-    [Algebra R A] [StarRing A] [StarModule R A] {s : Set A}
-    (hcomm : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * b = b * a)
-    (hcomm_star : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * star b = star b * a) :
+    [Algebra R A] [StarRing A] [StarModule R A] {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
+    (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
     CommRing (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm hcomm_star
+  have := isMulCommutative_adjoin R hnormal hcomm hcomm_star
   inferInstance
 
-/-- The star subalgebra `StarSubalgebra.adjoin R {x}` generated by a single `x : A` is commutative
+/-- The star subalgebra `StarAlgebra.adjoin R {x}` generated by a single `x : A` is commutative
 if `x` is normal. -/
 instance isMulCommutative_adjoin_singleton (x : A) [IsStarNormal x] :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
-  isMulCommutative_adjoin R (by grind) (by grind)
+  isMulCommutative_adjoin R (by simpa) (by simp) (by simp)
 
 open scoped IsMulCommutative in
-/-- The star subalgebra `StarSubalgebra.adjoin R {x}` generated by a single `x : A` is commutative
+/-- The star subalgebra `StarAlgebra.adjoin R {x}` generated by a single `x : A` is commutative
 if `x` is normal. -/
 @[deprecated isMulCommutative_adjoin_singleton (since := "2026-03-11")]
 instance adjoinCommSemiringOfIsStarNormal (x : A) [IsStarNormal x] :
@@ -644,7 +643,7 @@ instance adjoinCommSemiringOfIsStarNormal (x : A) [IsStarNormal x] :
   inferInstance
 
 open scoped IsMulCommutative in
-/-- The star subalgebra `StarSubalgebra.adjoin R {x}` generated by a single `x : A` is commutative
+/-- The star subalgebra `StarAlgebra.adjoin R {x}` generated by a single `x : A` is commutative
 if `x` is normal. -/
 @[deprecated isMulCommutative_adjoin_singleton (since := "2026-03-11")]
 instance adjoinCommRingOfIsStarNormal (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A]
@@ -659,7 +658,7 @@ end StarAlgebra
 
 namespace StarSubalgebra
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -795,11 +794,11 @@ theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
           Subtype.ext <| Set.mem_singleton_iff.mp hx).symm ▸
       h
 
-variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
+variable (f g : A →⋆ₐ[R] B)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+  toSubalgebra := AlgHom.equalizer (StarAlgHom.ofClass f : A →ₐ[R] B) (StarAlgHom.ofClass g)
   star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using! congrArg star ha
 
 @[simp]
@@ -809,9 +808,11 @@ theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=
 theorem adjoin_le_equalizer {s : Set A} (h : s.EqOn f g) : adjoin R s ≤ StarAlgHom.equalizer f g :=
   adjoin_le h
 
-theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) : f = g :=
-  DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
-
+theorem ext_of_adjoin_eq_top [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B]
+    {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) :
+    f = g :=
+  DFunLike.ext f g fun _x ↦
+    StarAlgHom.adjoin_le_equalizer (ofClass f) (ofClass g) hs <| h.symm ▸ trivial
 
 variable [StarModule R B]
 

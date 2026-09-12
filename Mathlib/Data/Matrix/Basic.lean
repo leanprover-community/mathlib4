@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.BigOperators.RingEquiv
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.GroupTheory.DedekindFinite
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Matrices
@@ -37,7 +37,7 @@ assert_not_exists TrivialStar
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
+variable {l m n : Type*}
 variable {R S T A α β γ : Type*}
 
 namespace Matrix
@@ -652,7 +652,6 @@ def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (M
 
 end RingEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
   isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
     ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)

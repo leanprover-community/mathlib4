@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Types
-public import Mathlib.CategoryTheory.Sites.CartesianClosed
-public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.Condensed.Light.Basic
-public import Mathlib.Condensed.Light.Instances
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.MetricSpace.Bounded
 
 deprecated_module (since := "2026-04-08")

@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 
-import Mathlib.Data.Set.Lattice
 
 /-! # Basic results on conditionally complete partial orders
 
@@ -24,9 +23,9 @@ public section
 -- Guard against import creep
 assert_not_exists Multiset
 
-open Function OrderDual Set
+open OrderDual Set
 
-variable {α β γ : Type*} {ι : Sort*}
+variable {α : Type*}
 
 namespace OrderDual
 
@@ -155,7 +154,7 @@ end ConditionallyCompletePartialOrderSup
 
 section ConditionallyCompletePartialOrder
 
-variable [ConditionallyCompletePartialOrder α] {s t : Set α} {a b : α}
+variable [ConditionallyCompletePartialOrder α] {s : Set α} {a : α}
 
 protected theorem DirectedOn.subset_Icc_csInf_csSup (hdb : DirectedOn (· ≥ ·) s)
     (hda : DirectedOn (· ≤ ·) s) (hb : BddBelow s) (ha : BddAbove s) :

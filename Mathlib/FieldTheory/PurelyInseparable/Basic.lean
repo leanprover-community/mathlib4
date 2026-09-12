@@ -379,7 +379,7 @@ theorem injective_comp_algebraMap [CommRing L] [IsReduced L] :
   exact iterateFrobenius_inj L q n heq
 
 theorem injective_restrictDomain [CommRing L] [IsReduced L] [Algebra R L] [IsScalarTower R F E] :
-    Function.Injective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
+    Function.Injective (AlgHom.domRestrict (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
   AlgHom.coe_ringHom_injective <| injective_comp_algebraMap F E L <| congr_arg AlgHom.toRingHom eq
 
 instance [Field L] [PerfectField L] [Algebra F L] : Nonempty (E →ₐ[F] L) :=
@@ -395,7 +395,7 @@ theorem bijective_comp_algebraMap [Field L] [PerfectField L] :
     ⟨_, (Classical.arbitrary <| E →ₐ[F] L).comp_algebraMap⟩⟩
 
 theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsScalarTower R F E] :
-    Function.Bijective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) :=
+    Function.Bijective (AlgHom.domRestrict (A := R) F (C := E) (D := L)) :=
   ⟨injective_restrictDomain F E R L, fun g ↦ let _ := g.toAlgebra
     let f := Classical.arbitrary (E →ₐ[F] L)
     ⟨f.restrictScalars R, AlgHom.coe_ringHom_injective f.comp_algebraMap⟩⟩
@@ -672,7 +672,6 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
   nontriviality (R ⊗[k] K)
   obtain (hq | hq) := expChar_is_prime_or_one k q
   induction x with
-  | zero => exact ⟨0, 0, by simp⟩
   | add x y h h' =>
     have : ExpChar (R ⊗[k] K) q := expChar_of_injective_ringHom (algebraMap k _).injective q
     simp_rw [RingHom.mem_range, ← RingHom.mem_rangeS, ← Subalgebra.mem_perfectClosure_iff] at h h' ⊢

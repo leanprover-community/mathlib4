@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Measure.EverywherePos
 public import Mathlib.Topology.Metrizable.Urysohn
 public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -66,7 +67,7 @@ the measures but discarding the assumption that they are finite on compact sets.
 
 @[expose] public section
 
-open Filter Set TopologicalSpace Function MeasureTheory Measure
+open Filter Set TopologicalSpace Function MeasureTheory
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
 namespace MeasureTheory
@@ -741,7 +742,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
     · simp only [iUnion_subset_iff]
       intro a ac x hx
-      simp only [A, subset_def, mem_setOf_eq] at cA
+      simp only [A, subset_def, mem_ofPred_eq] at cA
       exact (cA _ ac).1 x hx
     · rintro x hx y hy hxy
       simp only [mem_iUnion, exists_prop] at hx hy
@@ -984,7 +985,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
   let c : ℝ≥0∞ := haarScalarFactor μ.inv μ
   have hc : μ.inv = c • μ := isMulLeftInvariant_eq_smul_of_regular μ.inv μ
   have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
-    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
+    rw [← inv_def μ, hc, Measure.map_smul _ (by fun_prop), ← inv_def μ, hc, smul_smul, pow_two]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
@@ -1010,7 +1011,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
   let c : ℝ≥0∞ := haarScalarFactor μ.inv μ
   have hc : μ.inv = c • μ := isMulLeftInvariant_eq_smul_of_innerRegular μ.inv μ
   have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
-    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
+    rw [← inv_def μ, hc, Measure.map_smul _ (by fun_prop), ← inv_def μ, hc, smul_smul, pow_two]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]

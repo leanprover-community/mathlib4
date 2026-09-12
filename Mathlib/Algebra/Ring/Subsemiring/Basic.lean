@@ -302,6 +302,19 @@ theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * 
 instance decidableMemCenter {R} [Semiring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
+theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+  Set.image_center_subset hf
+
+theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
+@[simp]
+theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    map f (center R) = center S :=
+  SetLike.coe_injective (Set.image_center_eq f)
+
 @[simp]
 theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
@@ -855,7 +868,7 @@ variable {s t : Subsemiring R}
 /-- Makes the identity isomorphism from a proof two subsemirings of a multiplicative
 monoid are equal. -/
 def subsemiringCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| congr_arg _ h with
+  { Set.equivOfEq <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -1020,7 +1033,7 @@ lemma closure_le_centralizer_centralizer (s : Set R') :
   closure_le.mpr Set.subset_centralizer_centralizer
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
-theorem isMulCommutative_closure {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+theorem isMulCommutative_closure {s : Set R'} (hcomm : s.Pairwise Commute) :
     IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -1029,14 +1042,14 @@ theorem isMulCommutative_closure {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s,
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
 @[deprecated isMulCommutative_closure (since := "2026-03-11")]
-abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : s.Pairwise Commute) :
     CommSemiring (closure s) :=
   have := isMulCommutative_closure hcomm
   inferInstance
 
 instance instIsMulCommutative_closure {S : Type*} [SetLike S R'] [MulMemClass S R'] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R')) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 end Subsemiring
 

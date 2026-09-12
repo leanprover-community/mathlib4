@@ -38,7 +38,7 @@ the restriction of scalars. -/
 noncomputable def CommRingCat.moduleCatRestrictScalarsPseudofunctor :
     Pseudofunctor (LocallyDiscrete CommRingCat.{u}ᵒᵖ) Cat :=
   LocallyDiscrete.mkPseudofunctor
-    (fun R ↦ Cat.of (ModuleCat.{v} R.unop))
+    (fun R ↦ ↧(ModuleCat.{v} R.unop))
     (fun f ↦ (restrictScalars f.unop.hom).toCatHom)
     (fun R ↦ Cat.Hom.isoMk (restrictScalarsId R.unop))
     (fun f g ↦ Cat.Hom.isoMk <| restrictScalarsComp g.unop.hom f.unop.hom)
@@ -49,7 +49,7 @@ to its category of modules. The functoriality is given by the restriction of sca
 noncomputable def RingCat.moduleCatRestrictScalarsPseudofunctor :
     Pseudofunctor (LocallyDiscrete RingCat.{u}ᵒᵖ) Cat :=
   LocallyDiscrete.mkPseudofunctor
-    (fun R ↦ Cat.of (ModuleCat.{v} R.unop))
+    (fun R ↦ ↧(ModuleCat.{v} R.unop))
     (fun f ↦ (restrictScalars f.unop.hom).toCatHom)
     (fun R ↦ Cat.Hom.isoMk <| restrictScalarsId R.unop)
     (fun f g ↦ Cat.Hom.isoMk <| restrictScalarsComp g.unop.hom f.unop.hom)
@@ -61,7 +61,7 @@ the extension of scalars. -/
 noncomputable def CommRingCat.moduleCatExtendScalarsPseudofunctor :
     Pseudofunctor (LocallyDiscrete CommRingCat.{u}) Cat := by
   refine LocallyDiscrete.mkPseudofunctor
-    (fun R ↦ Cat.of (ModuleCat.{u} R))
+    (fun R ↦ ↧(ModuleCat.{u} R))
     (fun f ↦ (extendScalars f.hom).toCatHom)
     (fun R ↦ Cat.Hom.isoMk <| extendScalarsId R)
     (fun f g ↦ Cat.Hom.isoMk <| extendScalarsComp f.hom g.hom) ?_ ?_ ?_

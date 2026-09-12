@@ -324,12 +324,12 @@ for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. 
   if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
 
 theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
-  rw [LpAddConst, if_neg]
+  rw [LpAddConst, ite_eq_right]
   intro h
   exact lt_irrefl _ (h.2.trans_le hp)
 
 theorem LpAddConst_zero : LpAddConst 0 = 1 := by
-  rw [LpAddConst, if_neg]
+  rw [LpAddConst, ite_eq_right]
   intro h
   exact lt_irrefl _ h.1
 
@@ -340,6 +340,11 @@ theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
     rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
+
+theorem LpAddConst_ne_zero (p : ℝ≥0∞) : LpAddConst p ≠ 0 := by
+  intro h
+  unfold LpAddConst at h
+  split_ifs at h <;> simp at h
 
 /-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow` using `LpAddConst` as the constant,
 valid for all `0 ≤ p` (not just `1 ≤ p`). -/
@@ -352,7 +357,7 @@ theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 
       · rwa [ENNReal.inv_lt_one, one_lt_ofReal]
     rw [show LpAddConst (ENNReal.ofReal p)⁻¹ =
         (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) by
-      rw [LpAddConst, if_pos hmem]]
+      rw [LpAddConst, ite_eq_left hmem]]
     simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
     rw [ENNReal.toReal_ofReal hp]
     exact rpow_add_le_mul_rpow_add_rpow _ _ h.le

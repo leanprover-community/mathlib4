@@ -36,7 +36,7 @@ universe u w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
-variable {J : Type w} [SmallCategory J] {K : J ⥤ C}
+variable {J : Type w} [SmallCategory J]
 
 /-- A functor is said to preserve finite limits, if it preserves all limits of shape `J`,
 where `J : Type` is a finite category.
@@ -84,7 +84,7 @@ lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
         exact preservesLimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
 /-- The composition of two left exact functors is left exact. -/
-lemma comp_preservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
+instance comp_preservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 
@@ -240,7 +240,7 @@ lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
         exact preservesColimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
 /-- The composition of two right exact functors is right exact. -/
-lemma comp_preservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
+instance comp_preservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 

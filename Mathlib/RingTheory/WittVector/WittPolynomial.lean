@@ -101,7 +101,7 @@ set_option quotPrecheck false in
 @[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
-open Witt
+open scoped Witt
 
 /-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
@@ -124,7 +124,7 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   simp only [wittPolynomial, map_sum, constantCoeff_monomial]
   rw [sum_eq_zero]
   rintro i _
-  rw [if_neg]
+  rw [ite_eq_right]
   rw [Finsupp.single_eq_zero]
   exact ne_of_gt (pow_pos hp.1.pos _)
 

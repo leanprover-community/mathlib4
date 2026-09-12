@@ -151,7 +151,6 @@ def closedCounit (X : ∀ i, C i) : ihom X ⋙ tensorLeft X ⟶ 𝟭 (∀ i, C i
   app Y := fun i ↦ (ihom.ev (X i)).app (Y i)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Equips the product of a family of closed monoidal categories with
 a pointwise closed monoidal structure. -/
 @[simps]
@@ -195,7 +194,6 @@ instance opLaxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
   oplax_left_unitality X := by ext; simp
   oplax_right_unitality X := by ext; simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance monoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
@@ -235,7 +233,6 @@ instance opLaxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
   oplax_left_unitality X := by ext; simp
   oplax_right_unitality X := by ext; simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance monoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
@@ -265,7 +262,6 @@ instance {D : Type*} [Category* D] [MonoidalCategory D]
   unit := by ext i; simpa using NatTrans.IsMonoidal.unit (τ := τ i)
   tensor X Y := by ext i; simpa using NatTrans.IsMonoidal.tensor _ _ (τ := τ i)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)]

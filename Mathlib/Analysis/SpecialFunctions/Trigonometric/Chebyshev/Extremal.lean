@@ -257,11 +257,11 @@ private theorem negOnePow_mul_iterateDerivativeC_nonneg
     {n k i : ℕ} (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
     0 ≤ (-1) ^ i * iterateDerivativeC n k x i := by
   rw [iterateDerivativeC, ← mul_assoc]
-  refine mul_nonneg ?_ (Finset.sum_nonneg' ?_)
+  refine mul_nonneg ?_ (Finset.sum_nonneg fun t _ => ?_)
   · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
     exact le_of_lt <| mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k)
       (negOnePow_mul_leadingCoeffC_pos hi)
-  · exact fun t => Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
+  · exact Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
 
 private theorem negOnePow_mul_iterateDerivativeC_pos
     {n k i : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :

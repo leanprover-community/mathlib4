@@ -164,7 +164,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   have : IsReflexive L N := .of_isPerfPair p.flip
   obtain ⟨v, hv₁, hv₂, hv₃⟩ := exists_linearIndependent L (M' : Set M)
   rw [hM] at hv₂
-  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
   have : Fintype v := Set.Finite.fintype <| Module.Finite.finite_basis b
   set v' : v → M' := fun i ↦ ⟨i, hv₁ (Subtype.coe_prop i)⟩
   have hv' : LinearIndependent K v' := by
@@ -184,7 +184,8 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   refine le_antisymm (Submodule.span_le.mpr hv₁) fun m hm ↦ ?_
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := exists_linearIndependent L (N' : Set N)
   rw [hN] at hw₂
-  let bN : Basis _ L N := Basis.mk hw₃ <| by rw [← hw₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  let bN : Basis _ L N := Basis.mk hw₃ <| by
+    rw [← hw₂, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
   have : Fintype w := Set.Finite.fintype <| Module.Finite.finite_basis bN
   have e : v ≃ w := Fintype.equivOfCardEq <| by rw [← Module.finrank_eq_card_basis b,
     ← Module.finrank_eq_card_basis bN, Module.finrank_of_isPerfPair p]

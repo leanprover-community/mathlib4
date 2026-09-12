@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 # If an `Lp` space is complete, so is the target space
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal Topology
 open Filter ContinuousLinearMap
@@ -90,7 +90,7 @@ lemma completeSpace_of_completeSpace_Lp [hp : Fact (1 ≤ p)]
   let m : E →L[ℝ] Lp E p μ := ((ContinuousLinearMap.lsmul ℝ ℝ).flip.compLpL₂ p μ).flip f
   apply Metric.complete_of_cauchySeq_tendsto (fun u hu ↦ ?_)
   obtain ⟨g, hg⟩ : ∃ g, Tendsto (m ∘ u) atTop (𝓝 g) :=
-    cauchySeq_tendsto_of_complete (m.lipschitz.cauchySeq_comp hu)
+    cauchySeq_tendsto_of_complete (m.lipschitzWith.cauchySeq_comp hu)
   let f' : ℕ → (α → E) := fun n ↦ (m ∘ u) n
   obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧
       ∀ᵐ x ∂μ, Tendsto (fun i ↦ f' (ns i) x) atTop (𝓝 (g x)) :=

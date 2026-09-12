@@ -20,10 +20,10 @@ public section
 
 open Finset hiding card
 open Fintype (card)
-open Function RCLike
+open RCLike
 open scoped BigOperators ComplexConjugate DirectSum
 
-variable {G H R : Type*}
+variable {G R : Type*}
 
 namespace AddChar
 section AddGroup

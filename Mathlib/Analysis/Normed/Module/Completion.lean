@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.Algebra.LinearMapCompletion
 public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.Algebra.UniformField
 
@@ -44,22 +45,14 @@ variable [Semiring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [UniformCont
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
 def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
-  { toCompl with
-    toFun := (↑)
-    map_smul' := coe_smul
-    norm_map' := norm_coe }
+  { toComplL with norm_map' := norm_coe }
 
 @[simp]
 theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) = ((↑) : E → Completion E) :=
   rfl
 
-/-- Embedding of a normed space to its completion as a continuous linear map. -/
-def toComplL : E →L[𝕜] Completion E :=
-  toComplₗᵢ.toContinuousLinearMap
-
-@[simp]
-theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E → Completion E) :=
-  rfl
+@[simp] lemma toContinuousLinearMap_toComplₗᵢ :
+    (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).toContinuousLinearMap = toComplL := rfl
 
 @[simp]
 theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]

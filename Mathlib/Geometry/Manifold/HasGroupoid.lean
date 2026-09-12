@@ -21,7 +21,9 @@ universe u
 
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
-open Set OpenPartialHomeomorph Manifold
+open Set OpenPartialHomeomorph
+
+open scoped Manifold
 
 section HasGroupoid
 
@@ -235,7 +237,9 @@ theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ)
 whole space `α`, then the induced charted space structure on `α` is `HasGroupoid G` for any
 structure groupoid `G` which is closed under restrictions. -/
 theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H)
-    [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ (e.singletonChartedSpace h) G :=
+    [ClosedUnderRestriction G] :
+    letI := e.singletonChartedSpace h
+    HasGroupoid α G :=
   { __ := e.singletonChartedSpace h
     compatible := by
       intro e' e'' he' he''

@@ -56,11 +56,11 @@ lemma gammaPDF_eq (a r x : ℝ) :
   rfl
 
 lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
-  simp only [gammaPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
+  simp only [gammaPDF_eq, ite_eq_right (not_le.mpr hx), ENNReal.ofReal_zero]
 
 lemma gammaPDF_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
     gammaPDF a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x))) := by
-  simp only [gammaPDF_eq, if_pos hx]
+  simp only [gammaPDF_eq, ite_eq_left hx]
 
 /-- The Lebesgue integral of the gamma pdf over nonpositive reals equals 0 -/
 lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
@@ -69,7 +69,7 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
   · intro a (_ : a < _)
     simp only [gammaPDF_eq, ENNReal.ofReal_eq_zero]
-    rw [if_neg (by linarith)]
+    rw [ite_eq_right (by linarith)]
 
 /-- The gamma pdf is measurable. -/
 @[fun_prop]
@@ -86,7 +86,7 @@ lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
 /-- The gamma pdf is positive for all positive reals -/
 lemma gammaPDFReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
     0 < gammaPDFReal a r x := by
-  simp only [gammaPDFReal, if_pos hx.le]
+  simp only [gammaPDFReal, ite_eq_left hx.le]
   positivity
 
 /-- The gamma pdf is nonnegative -/

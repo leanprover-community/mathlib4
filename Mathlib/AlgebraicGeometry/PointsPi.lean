@@ -100,7 +100,6 @@ noncomputable
 def pointsPi : (Spec (.of <| Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
   fun f i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i)) ≫ f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by
   rintro f g e
   have := isIso_of_comp_eq_sigmaSpec R (V := equalizer f g)
@@ -144,6 +143,6 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     (Pi.evalRingHom _ ⟨i, rfl⟩).comp (Pi.evalRingHom (R' ·) (j i)) := rfl
   rw [pointsPi, ← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, this, CommRingCat.ofHom_comp,
     Spec.map_comp_assoc, ← ι_sigmaSpec R', Category.assoc, IsIso.hom_inv_id_assoc,
-    Sigma.ι_desc, ← Category.assoc, hg, IsOpenImmersion.lift_fac]
+    Sigma.ι_comp_desc, ← Category.assoc, hg, IsOpenImmersion.lift_fac]
 
 end AlgebraicGeometry

@@ -68,8 +68,8 @@ lemma turanGraph_adj {v w} : (turanGraph n r).Adj v w ↔ v % r ≠ w % r :=
 instance : DecidableRel (turanGraph n r).Adj :=
   inferInstanceAs (DecidableRel fun v w : Fin n ↦ v % r ≠ w % r)
 
-@[simp]
-lemma turanGraph_zero : turanGraph n 0 = ⊤ := by simp [turanGraph, Fin.val_inj, Top.top]
+@[simp] lemma turanGraph_zero : turanGraph n 0 = ⊤ := by simp [turanGraph, Fin.val_inj, Top.top]
+@[simp] lemma turanGraph_one : turanGraph n 1 = ⊥ := by simp [turanGraph, Nat.mod_one, Bot.bot]
 
 @[simp]
 theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
@@ -83,7 +83,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
     · rw [Nat.mod_eq_of_lt (a.2.trans_le h), Nat.mod_eq_of_lt (b.2.trans_le h), Fin.val_inj]
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
-  rw [cliqueFree_iff]
+  rw [cliqueFree_iff_isEmpty_copy_top_fin]
   by_contra! ⟨f⟩
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
@@ -299,7 +299,7 @@ variable {α : Type*} [Fintype α] [Nontrivial α]
 lemma isExtremal_top_free_iff_isTuranMaximal :
     G.IsExtremal (⊤ : SimpleGraph α).Free ↔ G.IsTuranMaximal (card α - 1) := by
   simp_rw [IsTuranMaximal, IsExtremal,
-    Nat.sub_one_add_one Fintype.card_ne_zero, cliqueFree_iff_top_free]
+    Nat.sub_one_add_one Fintype.card_ne_zero, cliqueFree_card_iff_free_top]
 
 lemma isExtremal_top_free_turanGraph :
     (turanGraph n (card α - 1)).IsExtremal (⊤ : SimpleGraph α).Free := by
@@ -326,6 +326,9 @@ theorem card_edgeFinset_eq_extremalNumber_top_iff_nonempty_iso_turanGraph :
 
 /-! ### Number of edges in the Turán graph -/
 
+/-- The number of edges in `turanGraph n r`. -/
+abbrev turanNumber (n r : ℕ) : ℕ := #(turanGraph n r).edgeFinset
+
 private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     ∑ w ∈ range r, (if c % r ≠ (n + w) % r then 1 else 0) = r - 1 := by
   rcases r.eq_zero_or_pos with rfl | hr; · simp
@@ -346,9 +349,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
       Nat.mul_add_mod_self_left]
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma card_edgeFinset_turanGraph_add :
-    #(turanGraph (n + r) r).edgeFinset =
-    #(turanGraph n r).edgeFinset + n * (r - 1) + r.choose 2 := by
+lemma turanNumber_add : turanNumber (n + r) r = turanNumber n r + n * (r - 1) + r.choose 2 := by
   rw [← mul_right_inj' two_ne_zero]
   simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges,
     degree, neighborFinset_eq_filter, turanGraph, card_filter]
@@ -369,9 +370,8 @@ lemma card_edgeFinset_turanGraph_add :
     congr!; exact sum_ne_add_mod_eq_sub_one
 
 /-- The exact formula for the number of edges in `turanGraph n r`. -/
-theorem card_edgeFinset_turanGraph {n r : ℕ} :
-    #(turanGraph n r).edgeFinset =
-    (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
+theorem turanNumber_eq {n r : ℕ} :
+    turanNumber n r = (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
   rcases r.eq_zero_or_pos with rfl | hr
   · rw [Nat.mod_zero, tsub_self, zero_mul, Nat.zero_div, zero_add]
     have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
@@ -389,7 +389,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [turanGraph_eq_top]; exact .inr h.le
     · let n' := n - r
       have n'r : n = n' + r := by lia
-      rw [n'r, card_edgeFinset_turanGraph_add, card_edgeFinset_turanGraph, ring₁, ring₁,
+      rw [n'r, turanNumber_add, turanNumber_eq, ring₁, ring₁,
         add_rotate, ← add_assoc, Nat.add_mod_right, Nat.add_div_right _ hr]
       congr 1
       have rd : 2 ∣ r * (r - 1) := (Nat.even_mul_pred_self _).two_dvd
@@ -403,11 +403,22 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
         ← add_rotate, add_comm _ (_ * _)]; congr 1
       rw [← mul_rotate, ← add_mul, add_comm, mul_comm _ r, Nat.div_add_mod n' r]
 
-/-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in
-`turanGraph n r`. -/
-theorem mul_card_edgeFinset_turanGraph_le :
-    2 * r * #(turanGraph n r).edgeFinset ≤ (r - 1) * n ^ 2 := by
-  grw [card_edgeFinset_turanGraph, mul_add, Nat.mul_div_le]
+lemma turanNumber_two : turanNumber n 2 = n ^ 2 / 4 := by
+  rw [turanNumber_eq]
+  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := n.even_or_odd
+  · simp [← two_mul]
+  · simp; lia
+
+lemma turanNumber_three : turanNumber n 3 = n ^ 2 / 3 := by
+  rw [turanNumber_eq]
+  obtain hn | hn | hn : n % 3 = 0 ∨ n % 3 = 1 ∨ n % 3 = 2 := by lia
+  all_goals
+    nth_rw 1 [← n.mod_add_div 3]
+    grind
+
+/-- A looser, but simpler than `turanNumber_eq`, bound on `turanNumber n r`. -/
+theorem mul_turanNumber_le : 2 * r * turanNumber n r ≤ (r - 1) * n ^ 2 := by
+  grw [turanNumber_eq, mul_add, Nat.mul_div_le]
   rw [tsub_mul, ← Nat.sub_add_comm]; swap
   · grw [Nat.mod_le]
     exact Nat.zero_le _
@@ -420,15 +431,29 @@ theorem mul_card_edgeFinset_turanGraph_le :
   exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _
 
 theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
-    let n := Fintype.card V;
-    #G.edgeFinset ≤ (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
+    #G.edgeFinset ≤ turanNumber (Fintype.card V) r := by
   rcases r.eq_zero_or_pos with rfl | hr
   · rw [cliqueFree_one, ← Fintype.card_eq_zero_iff] at cf
-    simp_rw [zero_tsub, mul_zero, Nat.mod_zero, Nat.div_zero, zero_add]
-    exact card_edgeFinset_le_card_choose_two
+    simp [turanNumber_eq, card_edgeFinset_le_card_choose_two]
   · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
     convert! maxH.2 cf
-    rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq,
-      card_edgeFinset_turanGraph]
+    rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq]
+
+lemma strictMonoOn_turanNumber : StrictMonoOn (turanNumber n) (Set.Icc 1 n) := by
+  rintro a ⟨lba, -⟩ b ⟨lbb, ubb⟩ hab
+  by_contra! ht
+  have itm : (turanGraph n a).IsTuranMaximal b :=
+    ⟨(turanGraph_cliqueFree lba).mono (by lia),
+      fun G' _ hG' ↦ ((isTuranMaximal_turanGraph lbb).2 hG').trans ht⟩
+  obtain ⟨f⟩ : Nonempty (turanGraph n a ≃g turanGraph n b) := by
+    convert itm.nonempty_iso_turanGraph <;> simp
+  apply absurd ((turanGraph_cliqueFree lba).comap ⟨f.symm.toCopy⟩)
+  have key := not_cliqueFree_of_isTuranMaximal (by simp [ubb]) (@isTuranMaximal_turanGraph n _ lbb)
+  contrapose key
+  exact key.mono hab
+
+@[deprecated (since := "2026-07-25")] alias card_edgeFinset_turanGraph_add := turanNumber_add
+@[deprecated (since := "2026-07-25")] alias card_edgeFinset_turanGraph := turanNumber_eq
+@[deprecated (since := "2026-07-25")] alias mul_card_edgeFinset_turanGraph_le := mul_turanNumber_le
 
 end SimpleGraph

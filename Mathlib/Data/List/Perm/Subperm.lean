@@ -27,8 +27,6 @@ open Nat
 namespace List
 variable {α : Type*} {l l₁ l₂ : List α} {a : α}
 
-open Perm
-
 section Subperm
 
 attribute [trans] Subperm.trans

@@ -1,7 +1,7 @@
 module
 
+import Mathlib.Basic.Countable.Basic
 import Mathlib.Tactic.DeriveCountable
-import Mathlib.Data.Countable.Basic
 
 /-!
 # Regression test: `deriving Countable` under the module system

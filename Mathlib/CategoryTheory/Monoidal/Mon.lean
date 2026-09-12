@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # The category of monoids in a monoidal category.
@@ -146,7 +145,7 @@ open scoped MonObj
 
 namespace Mathlib.Tactic.MonTauto
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
-  {M W X X₁ X₂ X₃ Y Y₁ Y₂ Y₃ Z Z₁ Z₂ : C} [MonObj M]
+  {M W X X₁ X₂ Y Y₁ Y₂ Z Z₁ Z₂ : C} [MonObj M]
 
 attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   id_tensorHom_id tensorμ tensorδ
@@ -1006,7 +1005,7 @@ variable [BraidedCategory C] [BraidedCategory D] (F)
 open scoped Obj
 
 attribute [-simp] IsMonHom.one_hom_assoc in
-attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp ←] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
 attribute [local simp] tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc MonObj.tensorObj.one_def
   MonObj.tensorObj.mul_def in
 @[to_additive instIsAddMonHomμ]
@@ -1026,7 +1025,7 @@ instance [F.LaxBraided] : F.mapMon.LaxMonoidal where
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
-attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp ←] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
 attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
   MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 @[to_additive]
@@ -1077,7 +1076,6 @@ end Adjunction
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
 @[to_additive (attr := simps)

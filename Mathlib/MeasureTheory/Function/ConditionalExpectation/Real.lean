@@ -5,12 +5,12 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 
@@ -32,9 +32,9 @@ public section
 
 noncomputable section
 
-open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
+open ENNReal Filter
 
-open scoped NNReal ENNReal Topology MeasureTheory
+open scoped NNReal
 
 namespace MeasureTheory
 
@@ -169,7 +169,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     exact (abs_nonneg _).trans hx
   by_contra h
   change μ _ ≠ 0 at h
-  simp only [← pos_iff_ne_zero, Set.compl_def, Set.mem_setOf_eq, not_le] at h
+  simp only [← pos_iff_ne_zero, Set.compl_def, Set.mem_ofPred_eq, not_le] at h
   suffices μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R < μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R by
     exact this.ne rfl
   refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne') ?_
@@ -184,7 +184,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
   refine setLIntegral_mono
     (stronglyMeasurable_condExp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
-  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
+  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)
 
 end HasSolidNorm
@@ -257,13 +257,13 @@ theorem MemLp.lpNorm_condExp_le_lpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 �
     by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
     · simp [condExp_of_not_sigmaFinite hm hsig]
     · by_cases! hpt : p ≠ ⊤
-      · rw [lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt hf.1,
+      · rw [lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt hf.aestronglyMeasurable,
           lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt integrable_condExp.1]
         gcongr ?_ ^ ?_
         have : 1 ≤ p.toReal := by
-          rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hpt]
+          rwa [← toReal_one, toReal_le_toReal one_ne_top hpt]
         exact integral_norm_condExp_rpow_le this <|
-          (integrable_norm_rpow_iff hf.1 hp'.ne.symm hpt).2 hf
+          (integrable_norm_rpow_iff hf.aestronglyMeasurable hp'.ne.symm hpt).2 hf
       · by_cases! h : MemLp μ[f | m] ⊤ μ
         · simp_all only [lpNorm_exponent_top_eq_essSup]
           exact hf.essSup_norm_condExp_le_essSup_norm
@@ -276,9 +276,9 @@ theorem MemLp.condExp {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hf : MemLp
   by_cases! hpt : p ≠ ⊤
   · rw [← integrable_norm_rpow_iff integrable_condExp.1 hp'.ne.symm hpt]
     have hp : 1 ≤ p.toReal := by
-      rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hpt]
+      rwa [← toReal_one, toReal_le_toReal one_ne_top hpt]
     have := Integrable.norm_condExp_rpow_le (m := m) hp <|
-      (integrable_norm_rpow_iff hf.1 hp'.ne.symm hpt).2 hf
+      (integrable_norm_rpow_iff hf.aestronglyMeasurable hp'.ne.symm hpt).2 hf
     refine Integrable.mono_nonneg integrable_condExp ?_ ?_ this
     · fun_prop (discharger := simp)
     · filter_upwards with a; positivity
@@ -289,11 +289,9 @@ theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p
     eLpNorm (μ[f | m]) p μ ≤ eLpNorm f p μ := by
   by_cases! hf : MemLp f p μ
   · rw [← ofReal_lpNorm hf, ← ofReal_lpNorm (hf.condExp hp)]
-    exact ENNReal.ofReal_le_ofReal (hf.lpNorm_condExp_le_lpNorm hp)
-  · simp only [MemLp, not_and, not_lt, top_le_iff] at hf
-    by_cases! ha : AEStronglyMeasurable f μ
-    · simp [hf ha]
-    · simp [condExp_of_not_integrable (fun h => ha h.aestronglyMeasurable)]
+    exact ofReal_le_ofReal (hf.lpNorm_condExp_le_lpNorm hp)
+  · simp only [MemLp, not_lt, top_le_iff] at hf
+    simp [hf]
 
 @[deprecated eLpNorm_condExp_le_eLpNorm (since := "2026-07-01")]
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ :=
@@ -310,38 +308,41 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   have hmeas : ∀ n, ∀ C, MeasurableSet {x | C ≤ ‖(μ[g|ℱ n]) x‖₊} := fun n C =>
     measurableSet_le measurable_const (stronglyMeasurable_condExp.mono (hℱ n)).measurable.nnnorm
   have hg : MemLp g 1 μ := memLp_one_iff_integrable.2 hint
-  refine uniformIntegrable_of le_rfl ENNReal.one_ne_top
+  refine uniformIntegrable_of le_rfl one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable) fun ε hε => ?_
   by_cases hne : eLpNorm g 1 μ = 0
-  · rw [eLpNorm_eq_zero_iff hg.1 one_ne_zero] at hne
+  · rw [eLpNorm_eq_zero_iff one_ne_zero] at hne
     refine ⟨0, fun n => (le_of_eq <|
-      (eLpNorm_eq_zero_iff ((stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable.indicator
-        (hmeas n 0)) one_ne_zero).2 ?_).trans zero_le⟩
+      (eLpNorm_eq_zero_iff one_ne_zero).2 ?_).trans zero_le⟩
     filter_upwards [condExp_congr_ae (m := ℱ n) hne] with x hx
     simp [hx]
-  obtain ⟨δ, hδ, h⟩ := hg.eLpNorm_indicator_le le_rfl ENNReal.one_ne_top hε
-  set C : ℝ≥0 := (.mk δ hδ.le)⁻¹ * (eLpNorm g 1 μ).toNNReal with hC
-  have hCpos : 0 < C := mul_pos (inv_pos.2 hδ) (ENNReal.toNNReal_pos hne hg.eLpNorm_lt_top.ne)
-  have : ∀ n, μ {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} ≤ ENNReal.ofReal δ := by
+  obtain ⟨δ, hδ, h⟩ := hg.eLpNorm_indicator_le le_rfl one_ne_top hε
+  rcases eq_top_or_lt_top δ with rfl | hδ_top
+  · refine ⟨0, fun i ↦ ?_⟩
+    specialize h .univ
+    simp only [zero_le, Set.ofPred_true, Set.indicator_univ, MeasurableSet.univ, le_top,
+      forall_const] at h ⊢
+    exact (eLpNorm_condExp_le_eLpNorm g le_rfl).trans h
+  set C : ℝ≥0 := δ⁻¹.toNNReal * (eLpNorm g 1 μ).toNNReal with hC
+  have hCpos : 0 < C := _root_.mul_pos (toNNReal_pos (ENNReal.inv_ne_zero.2 hδ_top.ne)
+    (inv_ne_top.2 hδ.ne')) (toNNReal_pos hne hg.ne)
+  have : ∀ n, μ {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} ≤ δ := by
     intro n
     have : C ^ ENNReal.toReal 1 * μ {x | ENNReal.ofNNReal C ≤ ‖μ[g|ℱ n] x‖₊} ≤
         eLpNorm μ[g | ℱ n] 1 μ ^ ENNReal.toReal 1 := by
-      rw [ENNReal.toReal_one, ENNReal.rpow_one]
+      rw [toReal_one, rpow_one]
       convert!
-        mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top
-          (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable C
+        mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top C
       · rw [ENNReal.toReal_one, ENNReal.rpow_one, enorm_eq_nnnorm]
-    rw [ENNReal.toReal_one, ENNReal.rpow_one, mul_comm, ←
-      ENNReal.le_div_iff_mul_le (Or.inl (ENNReal.coe_ne_zero.2 hCpos.ne'))
-        (Or.inl ENNReal.coe_lt_top.ne)] at this
-    simp_rw [ENNReal.coe_le_coe] at this
+    rw [toReal_one, rpow_one, mul_comm,
+      ← ENNReal.le_div_iff_mul_le (Or.inl (coe_ne_zero.2 hCpos.ne'))
+        (Or.inl coe_lt_top.ne)] at this
+    simp_rw [coe_le_coe] at this
     refine this.trans ?_
-    rw [ENNReal.div_le_iff_le_mul (Or.inl (ENNReal.coe_ne_zero.2 hCpos.ne'))
-        (Or.inl ENNReal.coe_lt_top.ne),
-      hC, NNReal.inv_mk, ENNReal.coe_mul, ENNReal.coe_toNNReal hg.eLpNorm_lt_top.ne, ← mul_assoc, ←
-      ENNReal.ofReal_eq_coe_nnreal, ← ENNReal.ofReal_mul hδ.le, mul_inv_cancel₀ hδ.ne',
-      ENNReal.ofReal_one, one_mul, ENNReal.rpow_one]
-    exact eLpNorm_condExp_le_eLpNorm _ le_rfl
+    rw [ENNReal.div_le_iff_le_mul (.inl (coe_ne_zero.2 hCpos.ne')) (.inl coe_lt_top.ne),
+      hC, ← toNNReal_mul, coe_toNNReal (mul_ne_top (inv_ne_top.2 hδ.ne') hg.ne),
+      ← mul_assoc, ENNReal.mul_inv_cancel hδ.ne' hδ_top.ne, one_mul, rpow_one]
+    exact eLpNorm_condExp_le_eLpNorm g (le_refl 1)
   refine ⟨C, fun n => le_trans ?_ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C) (this n))⟩
   have hmeasℱ : MeasurableSet[ℱ n] {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} :=
     @measurableSet_le _ _ _ _ _ (ℱ n) _ _ _ _ _ measurable_const

@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 -/
 
-@[expose] public section
+public section
 
 variable (R : Type*) [CommRing R]
 

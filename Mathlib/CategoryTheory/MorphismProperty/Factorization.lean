@@ -208,7 +208,6 @@ section
 
 variable (J : Type*) [Category* J]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]

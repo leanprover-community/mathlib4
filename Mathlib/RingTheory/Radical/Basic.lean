@@ -361,7 +361,7 @@ open UniqueFactorizationMonoid
 namespace UniqueFactorizationDomain
 
 variable {R : Type*} [CommRing R] [NormalizationMonoid R]
-  [UniqueFactorizationMonoid R] {a b : R}
+  [UniqueFactorizationMonoid R] {a : R}
 
 @[simp]
 theorem radical_neg : radical (-a) = radical a :=
@@ -371,7 +371,6 @@ theorem radical_neg_one : radical (-1 : R) = 1 := by simp
 
 end UniqueFactorizationDomain
 
-open UniqueFactorizationDomain
 namespace EuclideanDomain
 
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]

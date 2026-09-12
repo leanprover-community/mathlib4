@@ -135,7 +135,6 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
     refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
@@ -182,7 +181,7 @@ theorem projective_iff_injective_op {P : C} : Projective P ↔ Injective (op P) 
 theorem injective_iff_preservesEpimorphisms_yoneda_obj (J : C) :
     Injective J ↔ (yoneda.obj J).PreservesEpimorphisms := by
   rw [injective_iff_projective_op, Projective.projective_iff_preservesEpimorphisms_coyoneda_obj]
-  exact Functor.preservesEpimorphisms.iso_iff (Coyoneda.objOpOp _)
+  exact Functor.PreservesEpimorphisms.iso_iff (Coyoneda.objOpOp _)
 
 section Adjunction
 

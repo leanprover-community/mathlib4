@@ -16,7 +16,7 @@ public import Mathlib.Data.Finset.Image
 public section
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 namespace Finset
 

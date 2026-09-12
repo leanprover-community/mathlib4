@@ -207,7 +207,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
       · cases h₁
       · obtain - | ⟨h₀, h₁⟩ := h₀
         simp only [getElem?_cons_succ, zip_cons_cons, applyId_cons] at h₂ ⊢
-        rw [if_neg]
+        rw [ite_eq_right]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
         · apply h₀; apply List.mem_of_getElem? h₂
 
@@ -268,7 +268,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
     rw [← hx, ← hy]; congr
-    apply (List.getElem?_inj _ (h₁.nodup_iff.1 h₀)).mp
+    apply (List.Nodup.getElem?_inj _ (h₁.nodup_iff.1 h₀)).mp
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
@@ -284,8 +284,6 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
   · rwa [List.applyId_eq_self, List.applyId_eq_self] at h <;> assumption
 
 open TotalFunction (List.toFinmap')
-
-open SampleableExt
 
 /-- Remove a slice of length `m` at index `n` in a list and a permutation, maintaining the property
 that it is a permutation.

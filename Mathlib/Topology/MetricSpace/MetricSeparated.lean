@@ -5,8 +5,7 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Rel.Separated
-public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Basic.Rel.Separated
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
@@ -25,7 +24,7 @@ constant.
 
 @[expose] public section
 
-open EMetric Set
+open Set
 open scoped NNReal ENNReal
 
 noncomputable section

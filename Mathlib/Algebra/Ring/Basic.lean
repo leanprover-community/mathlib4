@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Defs
@@ -28,8 +29,6 @@ For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 assert_not_exists Nat.cast_sub
 
 variable {R S : Type*}
-
-open Function
 
 namespace AddHom
 
@@ -200,7 +199,7 @@ lemma noZeroDivisors_tfae : List.TFAE
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
 lemma isCancelMulZero_iff_noZeroDivisors : IsCancelMulZero R ↔ NoZeroDivisors R :=
-  noZeroDivisors_tfae.out 3 0
+  noZeroDivisors_tfae.out 4 1
 
 variable (R) in
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
@@ -288,5 +287,17 @@ lemma div_neg_eq_neg_div' (a : R) : a / -b = -a / b := neg_div b a ▸ div_neg _
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
 
 lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
+
+@[simp]
+lemma isSelfInv_neg_iff : IsSelfInv (-a) ↔ IsSelfInv a := by
+  rw [isSelfInv_iff, isSelfInv_iff, inv_neg, neg_inj]
+
+protected alias ⟨_, IsSelfInv.neg⟩ := isSelfInv_neg_iff
+
+@[simp]
+lemma isSelfNeg_inv_iff : IsSelfNeg a⁻¹ ↔ IsSelfNeg a := by
+  rw [isSelfNeg_iff, isSelfNeg_iff, neg_inv, inv_inj]
+
+protected alias ⟨_, IsSelfNeg.inv⟩ := isSelfNeg_inv_iff
 
 end DivisionMonoid

@@ -40,7 +40,7 @@ open Finset Set Function
 @[simp]
 theorem mem_iff {s : Finset α} :
     s ∈ powersetCard α n ↔ s.card = n := by
-  rw [powersetCard, Set.mem_setOf_eq]
+  rw [powersetCard, Set.mem_ofPred_eq]
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 
@@ -74,12 +74,12 @@ theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (ha
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
     rwa [← (Set.encard_add_encard_compl {b}).trans (Set.encard_univ α), Set.encard_singleton,
-      add_comm, ENat.lt_add_one_iff' (ENat.coe_ne_top n)] at hα
+      add_comm, ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
   have : Set.Finite s := Set.finite_of_encard_eq_coe hs
   exact ⟨⟨Set.Finite.toFinset this, by
-    rwa [mem_iff, ← ENat.coe_inj, ← this.encard_eq_coe_toFinset_card]⟩,
+    rwa [mem_iff, ← ENat.natCast_inj, ← this.encard_eq_coe_toFinset_card]⟩,
       by simpa using has, by simpa using has'⟩
 
 theorem exists_mem_notMem_iff_ne (s t : Set.powersetCard α n) : s ≠ t ↔ ∃ a ∈ s, a ∉ t := by

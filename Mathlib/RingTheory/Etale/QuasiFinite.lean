@@ -45,7 +45,6 @@ def Ideal.fiberIsoOfBijectiveResidueField
   (PrimeSpectrum.primesOverOrderIsoFiber ..).trans <|
     (PrimeSpectrum.comapEquiv e.toRingEquiv).trans (PrimeSpectrum.primesOverOrderIsoFiber ..).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Ideal.comap_fiberIsoOfBijectiveResidueField_symm
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
     (Q : p.primesOver S) :
@@ -318,7 +317,6 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     apply Localization.awayMap_awayMap_surjective
     refine Localization.awayMap_surjective_iff.mpr fun a ↦ ?_
     induction a with
-    | zero => use 0; simp
     | tmul a b =>
       obtain ⟨b', m, e : _ = _⟩ := Localization.awayMap_surjective_iff.mp hg b
       refine ⟨e₀ ^ m * a ⊗ₜ b', m, ?_⟩
@@ -363,7 +361,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   convert! equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
   dsimp [-AlgEquiv.symm_toRingEquiv,
-    ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
+    ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_ofClass]
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--
@@ -515,7 +513,6 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
   · rw [← hP'φ] at heP'; simpa [he'0]
   · simpa
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A less universe polymorphic version of
 `exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq`. Use that instead. -/
 private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq'

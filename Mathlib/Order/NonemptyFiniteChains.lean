@@ -90,5 +90,5 @@ open PartialOrder in
 to `NonemptyFiniteChains X`. -/
 @[simps]
 noncomputable def PartOrd.nonemptyFiniteChainsFunctor : PartOrd.{u} ⥤ PartOrd.{u} where
-  obj X := .of (NonemptyFiniteChains X)
+  obj X := ↧(NonemptyFiniteChains X)
   map f := PartOrd.ofHom (NonemptyFiniteChains.orderHomMap f.hom)

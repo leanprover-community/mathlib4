@@ -42,7 +42,7 @@ theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] {x : R} :
 
 section CommSemiring
 
-variable [CommSemiring R] {x y : R}
+variable [CommSemiring R] {x : R}
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/
 def nilradical (R : Type*) [CommSemiring R] : Ideal R :=

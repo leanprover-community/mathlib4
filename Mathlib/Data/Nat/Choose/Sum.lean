@@ -198,7 +198,7 @@ theorem Int.alternating_sum_range_choose {n : ℕ} :
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = 0 := by
-  rw [Int.alternating_sum_range_choose, if_neg h0]
+  rw [Int.alternating_sum_range_choose, ite_eq_right h0]
 
 namespace Finset
 
@@ -224,7 +224,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = 0 := by
   classical
   rw [sum_powerset_neg_one_pow_card]
-  exact if_neg (nonempty_iff_ne_empty.mp h0)
+  exact ite_eq_right (nonempty_iff_ne_empty.mp h0)
 
 variable [NonAssocSemiring R]
 

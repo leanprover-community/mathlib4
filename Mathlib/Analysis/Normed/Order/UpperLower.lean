@@ -32,7 +32,7 @@ situations.
 
 public section
 
-open Bornology Function Metric Set
+open Function Metric Set
 open scoped Pointwise
 
 variable {α ι : Type*}

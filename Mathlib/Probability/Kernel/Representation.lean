@@ -34,7 +34,9 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
 
 public section
 
-open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
+open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Function
+
+open scoped Topology
 
 variable {X Y : Type*} {mX : MeasurableSpace X} [Nonempty Y] {mY : MeasurableSpace Y}
     [StandardBorelSpace Y]
@@ -52,7 +54,7 @@ private lemma exists_measurable_map_eq_unitInterval_aux (κ : Kernel X I) [IsMar
     have sSup_eq_iUnion_rat : {x : X × I | a < f x.1 x.2} =
         ⋃ (q : ℚ) (hqI : ↑q ∈ I) (_ : a < (q : ℝ)), {e | (κ e.1).real (Icc 0 ⟨q, hqI⟩) < e.2} := by
       ext e
-      simp_all only [lt_sSup_iff, mem_setOf_eq, Subtype.exists, mem_Icc, Rat.cast_nonneg,
+      simp_all only [lt_sSup_iff, mem_ofPred_eq, Subtype.exists, mem_Icc, Rat.cast_nonneg,
         mem_iUnion, exists_prop, exists_and_left, f]
       constructor
       · rintro ⟨y, hyI, y_mem, (hy : a.1 < y)⟩

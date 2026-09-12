@@ -47,7 +47,6 @@ lemma ExtremalEpi.subobject_eq_top [ExtremalEpi f]
   rw [← Subobject.isIso_arrow_iff_eq_top]
   exact isIso f (Subobject.factorThru A f hA) _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ExtremalEpi.mk_of_hasEqualizers [HasEqualizers C]
     (hf : ∀ ⦃Z : C⦄ (p : X ⟶ Z) (i : Z ⟶ Y) (_ : p ≫ i = f) [Mono i], IsIso i) :
     ExtremalEpi f where

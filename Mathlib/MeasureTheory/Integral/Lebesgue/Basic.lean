@@ -28,7 +28,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 @[expose] public section
 
-assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
+assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving
 
 open Set hiding restrict restrict_apply
 
@@ -188,7 +188,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
   simp_rw [lt_iSup_iff, iSup_lt_iff, iSup_le_iff] at this
   rcases this with ⟨φ, hle : ∀ x, ↑(φ x) ≤ f x, b, hbφ, hb⟩
   refine ⟨φ, hle, fun ψ hψ => ?_⟩
-  have : (map (↑) φ).lintegral μ ≠ ∞ := ne_top_of_le_ne_top h (by exact le_iSup₂ (α := ℝ≥0∞) φ hle)
+  have : (map (↑) φ).lintegral μ ≠ ∞ := ne_top_of_le_ne_top h (by grw [← le_iSup₂ φ hle])
   rw [← ENNReal.add_lt_add_iff_left this, ← add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
   refine (hb _ fun x => le_trans ?_ (max_le (hle x) (hψ x))).trans_lt hbφ
   simp only [SimpleFunc.add_apply, SimpleFunc.sub_apply, add_tsub_eq_max]
@@ -322,7 +322,7 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
   have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
     ext x
-    rw [mem_iUnion, mem_setOf_eq, ← pos_iff_ne_zero]
+    rw [mem_iUnion, mem_ofPred_eq, ← pos_iff_ne_zero]
     rw [ENNReal.tendsto_atTop_zero] at tu
     constructor <;> intro h'
     · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl
@@ -654,7 +654,7 @@ theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measur
       ∫⁻ x in { x | f x ≤ g x }, g x ∂μ + ∫⁻ x in { x | g x < f x }, f x ∂μ := by
   have hm : MeasurableSet { x | f x ≤ g x } := measurableSet_le hf hg
   rw [← lintegral_add_compl (fun x => max (f x) (g x)) hm]
-  simp only [← compl_setOf, ← not_le]
+  simp only [← compl_ofPred, ← not_le]
   refine congr_arg₂ (· + ·) (setLIntegral_congr_fun hm ?_) (setLIntegral_congr_fun hm.compl ?_)
   exacts [fun x => max_eq_right (a := f x) (b := g x),
     fun x (hx : ¬ f x ≤ g x) => max_eq_left (not_le.1 hx).le]

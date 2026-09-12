@@ -34,6 +34,20 @@ def commented_pattern(option: str, value: str = "false") -> re.Pattern:
     return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s+--")
 
 
+def is_annotated(lines: list[str], idx: int) -> bool:
+    """Check whether line `idx` is immediately preceded by a `--` comment
+    or by a (possibly multi-line) `/-- ... -/` doc comment or `/- ... -/` block comment.
+    """
+    if idx == 0:
+        return False
+    prev = lines[idx - 1]
+    if re.search(r"^\s*--", prev):
+        return True
+    if re.search(r"-/\s*$", prev):
+        return True
+    return False
+
+
 def lakefile_pattern(option: str, value: str = "false") -> re.Pattern:
     """Match lakefile entries for an option."""
     escaped = re.escape(option)

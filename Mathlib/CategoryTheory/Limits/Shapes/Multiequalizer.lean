@@ -628,14 +628,12 @@ lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
   · dsimp
     rw [app_right_eq_ι_comp_fst, reassoc_of% h]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for morphisms to the point of a limit multifork. -/
 def IsLimit.lift (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
     (hk : ∀ b, k (J.fst b) ≫ I.fst b = k (J.snd b) ≫ I.snd b) :
     T ⟶ K.pt :=
   hK.lift (Multifork.ofι _ _ k hk)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
     (hk : ∀ b, k (J.fst b) ≫ I.fst b = k (J.snd b) ≫ I.snd b) (a : J.L) :
@@ -764,7 +762,6 @@ def multiforkEquivPiForkOfIsLimit :
 
 variable [HasProduct I.left] [HasProduct I.right]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The category of multiforks is equivalent to the category of forks over `∏ᶜ I.left ⇉ ∏ᶜ I.right`.
 It then follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `reflects`) that it
 preserves and reflects limit cones.
@@ -800,7 +797,6 @@ def multiforkOfParallelHomsEquivFork (J : MulticospanShape) [Unique J.L] [Unique
       Category.comp_id, sndPiMapOfIsLimit_proj]
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma multiforkOfParallelHomsEquivFork_functor_obj_ι (J : MulticospanShape) [Unique J.L]
     [Unique J.R] {X Y : C} (f g : X ⟶ Y) (c : Multifork (ofParallelHoms J f g)) :
@@ -866,7 +862,6 @@ def ofπ {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
 theorem condition (a) : I.fst a ≫ K.π (J.fst a) = I.snd a ≫ K.π (J.snd a) := by
   rw [← K.snd_app_right, ← K.fst_app_right]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This definition provides a convenient way to show that a multicofork is a colimit. -/
 @[simps]
 def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
@@ -1028,7 +1023,6 @@ noncomputable def multicoforkEquivSigmaCoforkOfIsColimit :
 
 variable [HasCoproduct I.left] [HasCoproduct I.right]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
 It then follows from `CategoryTheory.IsColimit.ofPreservesCoconeInitial` (or `reflects`) that
@@ -1110,7 +1104,6 @@ variable [HasProduct I.left] [HasProduct I.right]
 instance : HasEqualizer I.fstPiMap I.sndPiMap :=
   ⟨⟨⟨_, IsLimit.ofPreservesConeTerminal I.multiforkEquivPiFork.functor (limit.isLimit _)⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The multiequalizer is isomorphic to the equalizer of `∏ᶜ I.left ⇉ ∏ᶜ I.right`. -/
 def isoEqualizer : multiequalizer I ≅ equalizer I.fstPiMap I.sndPiMap :=
   limit.isoLimitCone
@@ -1191,7 +1184,6 @@ instance : HasCoequalizer I.fstSigmaMap I.sndSigmaMap :=
       IsColimit.ofPreservesCoconeInitial
         I.multicoforkEquivSigmaCofork.functor (colimit.isColimit _)⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The multicoequalizer is isomorphic to the coequalizer of `∐ I.left ⇉ ∐ I.right`. -/
 def isoCoequalizer : multicoequalizer I ≅ coequalizer I.fstSigmaMap I.sndSigmaMap :=
   colimit.isoColimitCocone

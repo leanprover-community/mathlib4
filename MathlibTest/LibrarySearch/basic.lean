@@ -1,8 +1,8 @@
-import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Quot
+import Mathlib.Basic.Real.Basic
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Real.Basic
+import Mathlib.Data.Quot
+import Mathlib.Util.AssertNoSorry
 
 set_option autoImplicit true
 

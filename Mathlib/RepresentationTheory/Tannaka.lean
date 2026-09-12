@@ -50,7 +50,6 @@ def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
 @[simp] lemma forget_map (X Y : FDRep k G) (f : X ⟶ Y) : (forget k G).map f = f.hom := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
 def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
@@ -126,7 +125,7 @@ def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   comm := by
     intro
     ext u
-    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
+    refine TensorProduct.inductionOn u (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
     simp only [map_add, hx, hy]
 
 /-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
@@ -215,7 +214,6 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
       congr($hs (leftRegular t⁻¹ (single u 1)))
     _ = _ := by by_cases u = t * s <;> simp_all
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
   intro η
   obtain ⟨s, h⟩ := toRightFDRepComp_in_rightRegular η

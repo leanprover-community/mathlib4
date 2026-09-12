@@ -39,7 +39,7 @@ open CategoryTheory Matrix.Module
   `Matrix.matrixModule`. -/
 @[simps]
 def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
-  obj M := ModuleCat.of (Matrix ι ι R) (ι → M)
+  obj M := ↧(ι → M)
   map f := ModuleCat.ofHom <| f.hom.mapMatrixModule ι
   map_id _ := ModuleCat.hom_ext <| LinearMap.mapMatrixModule_id
   map_comp f g := ModuleCat.hom_ext (LinearMap.mapMatrixModule_comp f.hom g.hom)
@@ -101,7 +101,7 @@ lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
 def MatrixModCat.toModuleCat (i : ι) : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
   haveI := MatrixModCat.isScalarTower_toModuleCat
-  { obj M := ModuleCat.of R (MatrixModCat.toModuleCatObj R M i)
+  { obj M := ↧(MatrixModCat.toModuleCatObj R M i)
     map f := ModuleCat.ofHom <| fromMatrixLinear i f.hom
     map_id _ := rfl
     map_comp _ _ := rfl }
@@ -111,7 +111,7 @@ open MatrixModCat Matrix
 /-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = Eᵢᵢ • Mⁿ`. -/
 def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
     (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
-    (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i).obj (.of R M) ≃ₗ[R]
+    (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i).obj ↧M ≃ₗ[R]
     MatrixModCat.toModuleCatObj R (ι → M) i where
   __ := AddEquiv.refl _
   map_smul' _ _ := Subtype.ext <| scalar_smul _ _

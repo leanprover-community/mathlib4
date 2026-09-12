@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Tactic.Common
 public import Batteries.Tactic.SeqFocus
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Divisibility
@@ -163,7 +164,7 @@ theorem mul_rightDvd_mul_iff_left : b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
 end RightCancelSemigroup
 
 section Monoid
-variable [Monoid α] {a b c : α} {m n : ℕ}
+variable [Monoid α] {a b : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -171,8 +172,8 @@ theorem dvd_refl (a : α) : a ∣ a :=
 
 theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 
-instance : @Std.Refl α (· ∣ ·) :=
-  ⟨dvd_refl⟩
+instance : IsPreorder α (· ∣ ·) where
+  refl := dvd_refl
 
 theorem one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)

@@ -30,11 +30,11 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 
 @[expose] public section
 
-open Filter Topology Set ContinuousLinearMap Bornology
+open Filter Set ContinuousLinearMap Bornology
 
 section Definition
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
   [TopologicalSpace E]
 
@@ -62,7 +62,7 @@ section Normed
 
 namespace MontelSpace
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
   [hM : MontelSpace 𝕜 E]
 

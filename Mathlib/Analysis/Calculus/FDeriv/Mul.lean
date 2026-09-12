@@ -24,15 +24,15 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 public section
 
-open scoped Ring
-open Asymptotics ContinuousLinearMap Topology
+open Asymptotics ContinuousLinearMap
+
+open scoped Ring Topology
 
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
 variable {x : E}

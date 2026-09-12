@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Sub.Defs
-public import Mathlib.Data.Multiset.Fold
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Multisets form an ordered monoid

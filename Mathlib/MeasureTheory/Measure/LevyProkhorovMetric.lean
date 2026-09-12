@@ -528,7 +528,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
     · exact ε_pos.ne.symm
   filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
       (show P.toMeasure G - ε < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G)) from aux)] with Q hQ
-  simp only [preimage_setOf_eq, mem_setOf_eq] at hQ
+  simp only [preimage_ofPred_eq, mem_ofPred_eq] at hQ
   convert! ENNReal.add_lt_add_right ε_top hQ
   exact (tsub_add_cancel_of_le easy).symm
 
@@ -609,7 +609,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- we have `P (Gs J) < Q (Gs J) + ε/3`.
   filter_upwards [(Finset.iInter_mem_sets Js_finite.toFinset).mpr <|
                     fun J _ ↦ mem_nhds_P _ (Gs_open J)] with Q hQ
-  simp only [Finite.mem_toFinset, mem_setOf_eq, thickening_iUnion, mem_iInter] at hQ
+  simp only [Finite.mem_toFinset, mem_ofPred_eq, thickening_iUnion, mem_iInter] at hQ
   -- Note that in order to show that the Lévy-Prokhorov distance between `P` and `Q` is small
   -- (`≤ 2*ε/3`), it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is
   -- bounded above up to a small error by the `Q`-measure of a small thickening of `B`.
@@ -639,7 +639,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]
     by_cases i_small : i ∈ Iio N
     · refine Or.inl ⟨i, ?_, self_subset_thickening third_ε_pos _ hi⟩
-      simp only [mem_Iio, mem_setOf_eq, JB]
+      simp only [mem_Iio, mem_ofPred_eq, JB]
       exact ⟨Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
     · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
   have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by

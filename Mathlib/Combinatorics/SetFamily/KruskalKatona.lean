@@ -131,7 +131,7 @@ the set is being "shifted down" as `max U < max V`. -/
 lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' U hU < max' V hV)
     (hA : compress U V s ≠ s) : toColex (compress U V s) < toColex s := by
   rw [compress, ite_ne_right_iff] at hA
-  rw [compress, if_pos hA.1, lt_iff_exists_filter_lt]
+  rw [compress, ite_eq_left hA.1, lt_iff_exists_filter_lt]
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
   refine ⟨_, hA.1.2 <| max'_mem _ hV, notMem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
   have : a ∉ V := fun H ↦ ha.not_ge (le_max' _ _ H)

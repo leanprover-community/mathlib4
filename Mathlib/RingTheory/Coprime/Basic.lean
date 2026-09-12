@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Logic.Basic
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Ring
 
@@ -54,6 +54,9 @@ theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
 
 theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
   ⟨IsCoprime.symm, IsCoprime.symm⟩
+
+instance : @Std.Symm R IsCoprime where
+  symm _ _ := .symm
 
 theorem isCoprime_self : IsCoprime x x ↔ IsUnit x :=
   ⟨fun ⟨a, b, h⟩ => .of_mul_eq_one (a + b) <| by rwa [mul_comm, add_mul], fun h =>
@@ -103,6 +106,12 @@ theorem IsCoprime.dvd_of_dvd_mul_left (H1 : IsCoprime x y) (H2 : x ∣ y * z) : 
   let ⟨a, b, H⟩ := H1
   rw [← one_mul z, ← H, add_mul, mul_right_comm, mul_assoc b]
   exact dvd_add (dvd_mul_left _ _) (H2.mul_left _)
+
+theorem IsCoprime.dvd_mul_right_iff (H : IsCoprime x z) : x ∣ y * z ↔ x ∣ y :=
+  ⟨H.dvd_of_dvd_mul_right, fun h ↦ h.mul_right z⟩
+
+theorem IsCoprime.dvd_mul_left_iff (H : IsCoprime x y) : x ∣ y * z ↔ x ∣ z :=
+  ⟨H.dvd_of_dvd_mul_left, fun h ↦ h.mul_left y⟩
 
 theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime (x * y) z :=
   let ⟨a, b, h1⟩ := H1
@@ -423,6 +432,10 @@ lemma sub_one_right_of_dvd {x y : R} (h : x ∣ y) : IsCoprime x (y - 1) :=
 
 lemma add_one_sub_one_of_two_dvd {x : R} (h : 2 ∣ x) : IsCoprime (x + 1) (x - 1) := by
   simpa [show 2 + (x - 1) = x + 1 by ring] using add_mul_left_left (sub_one_right_of_dvd h) 1
+
+theorem _root_.Odd.isCoprime_two {x : R} (h : Odd x) : IsCoprime x 2 := by
+  obtain ⟨m, rfl⟩ := h
+  exact add_one_left_of_dvd ⟨m, rfl⟩
 
 section abs
 

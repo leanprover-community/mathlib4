@@ -191,9 +191,7 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
   rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
-  rw [congr_symm_tmul]
-  dsimp
-  simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
+  simp [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
 
 /-- A special case for when `b₁` has grade 0. -/
 theorem tmul_zero_coe_mul_coe_tmul {i₂ : ι} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :

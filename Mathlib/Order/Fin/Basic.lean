@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Fin.Embedding
 public import Mathlib.Data.Fin.Rev
+public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Hom.Basic
 
 /-!
@@ -388,8 +389,6 @@ lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
   aesop
 
 /-! ### Uniqueness of order isomorphisms -/
-
-variable {α : Type*} [Preorder α]
 
 /-- If `e` is an `orderIso` between `Fin n` and `Fin m`, then `n = m` and `e` is the identity
 map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i : ℕ)`. -/

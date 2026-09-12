@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
@@ -136,7 +135,6 @@ open Bundle
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
   [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [FiberBundle F Z]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
     (hs : UniqueMDiffAt[s] p.proj) (h's : s ⊆ (trivializationAt F Z p.proj).baseSet) :
     UniqueMDiffAt[π F Z ⁻¹' s] p := by

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import Mathlib.RepresentationTheory.Coinduced
-public import Mathlib.RepresentationTheory.Induced
 
 /-!
 # Shapiro's lemma for group cohomology
@@ -36,7 +35,7 @@ universe u
 
 namespace groupCohomology
 
-open CategoryTheory Finsupp TensorProduct Rep
+open CategoryTheory Rep
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G} (A : Rep k S)
 

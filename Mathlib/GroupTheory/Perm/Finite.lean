@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Logic.Equiv.Fintype
@@ -169,13 +169,13 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
   have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
   have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
   refine isConj_of_support_equiv ?_ ?_
-  · refine ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans <|
+  · refine ((Set.equivOfEq hd1').trans (Equiv.Set.union hd1'')).trans <|
       (Equiv.sumCongr (subtypeEquiv f fun a => ?_) <| subtypeEquiv g fun a => ?_).trans
-        ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm <;>
+        ((Set.equivOfEq hd2').trans (Equiv.Set.union hd2'')).symm <;>
       simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
         apply_eq_iff_eq]
   intro x hx
-  simp only [trans_apply, symm_trans_apply, Equiv.setCongr_apply, Equiv.setCongr_symm_apply,
+  simp only [trans_apply, symm_trans_apply, Set.equivOfEq_apply, Set.equivOfEq_symm_apply,
     Equiv.sumCongr_apply]
   rw [hd1', Set.mem_union] at hx
   rcases hx with hxσ | hxτ
@@ -277,10 +277,10 @@ lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
   exact h
 
 theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p] {g : Perm α} :
-    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ setOf p := by
+    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ Set.ofPred p := by
   constructor
   · rintro ⟨k, rfl⟩ x
-    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_setOf_eq]
+    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_ofPred_eq]
     exact fun ⟨hx, _⟩ ↦ hx
   · intro hg
     refine ⟨g.subtypePerm fun x ↦ ?_, ofSubtype_subtypePerm _ fun x hx ↦ hg (mem_support.mpr hx)⟩

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Logic.Basic
+public import Mathlib.Basic.Logic.Basic
 
 /-!
 # Irreducible elements in a monoid
@@ -34,7 +34,7 @@ structure AddIrreducible [AddMonoid M] (p : M) : Prop where
   isAddUnit_or_isAddUnit ⦃a b⦄ : p = a + b → IsAddUnit a ∨ IsAddUnit b
 
 section Monoid
-variable [Monoid M] {p q a b : M}
+variable [Monoid M] {p a b : M}
 
 /-- `Irreducible p` states that `p` is non-unit and only factors into units.
 

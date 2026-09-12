@@ -80,7 +80,7 @@ $$ -/
 theorem hasProd_powerSeriesMk_card_countRestricted {m : ℕ} (hm : 0 < m) :
     HasProd (fun i ↦ ∑ j ∈ range m, X ^ ((i + 1) * j))
     (PowerSeries.mk fun n ↦ (#(countRestricted n m) : R)) := by
-  nontriviality R using Subsingleton.eq_one
+  nontriviality R using Subsingleton.eq_one (α := R⟦X⟧)
   convert! hasProd_genFun (fun i c ↦ if c < m then (1 : R) else 0) using 1
   · ext1 i
     rw [sum_range_eq_add_Ico _ hm, sum_Ico_eq_sum_range]

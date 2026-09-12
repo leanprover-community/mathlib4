@@ -212,7 +212,6 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.
 
@@ -289,8 +288,8 @@ theorem Γ_map_op {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) : Γ.map f.op = f
 
 /-- The empty locally ringed space. -/
 def empty : LocallyRingedSpace.{u} where
-  carrier := TopCat.of PEmpty
-  presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
+  carrier := ↧PEmpty
+  presheaf := (CategoryTheory.Functor.const _).obj ↧PUnit
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
   isLocalRing x := PEmpty.elim x
 
@@ -315,7 +314,7 @@ def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.I
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_ofPred_eq,
     Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
   intro hx
@@ -386,7 +385,6 @@ lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X) (hxx' : x = x') :
     f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
@@ -402,7 +400,6 @@ lemma stalkMap_congr_hom (f g : X ⟶ Y) (hfg : f = g) (x : X) :
   subst hfg
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma stalkMap_congr_point {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x x' : X) (hxx' : x = x') :
     f.stalkMap x ≫ X.presheaf.stalkSpecializes (specializes_of_eq hxx'.symm) =
@@ -410,7 +407,6 @@ lemma stalkMap_congr_point {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x x' : 
   subst hxx'
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
     e.hom.stalkMap (e.inv.base y) ≫ e.inv.stalkMap y =
@@ -418,14 +414,12 @@ lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
   rw [← stalkMap_comp, LocallyRingedSpace.stalkMap_congr_hom (e.inv ≫ e.hom) (𝟙 _) (by simp)]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
     e.inv.stalkMap y (e.hom.stalkMap (e.inv.base y) z) =
       Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) z :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
     e.inv.stalkMap (e.hom.base x) ≫ e.hom.stalkMap x =
@@ -433,7 +427,6 @@ lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
   rw [← stalkMap_comp, LocallyRingedSpace.stalkMap_congr_hom (e.hom ≫ e.inv) (𝟙 _) (by simp)]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
     e.hom.stalkMap x (e.inv.stalkMap (e.hom.base x) y) =

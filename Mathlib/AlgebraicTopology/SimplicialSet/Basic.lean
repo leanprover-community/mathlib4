@@ -28,7 +28,7 @@ universe v u
 
 open CategoryTheory Limits Functor ConcreteCategory
 
-open Simplicial
+open scoped Simplicial
 
 /-- The category of simplicial sets.
 This is the category of contravariant functors from

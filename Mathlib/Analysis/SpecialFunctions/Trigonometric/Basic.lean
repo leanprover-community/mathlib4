@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.NegOnePow
 public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
@@ -48,7 +49,9 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Topology Filter Set
+open Filter Set
+
+open scoped Topology
 
 namespace Complex
 
@@ -83,8 +86,6 @@ theorem continuous_cosh : Continuous cosh := by
 end Complex
 
 namespace Real
-
-variable {x y z : ℝ}
 
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=
@@ -169,6 +170,8 @@ theorem pi_div_two_pos : 0 < π / 2 :=
   half_pos pi_pos
 
 theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
+
+@[simp] theorem abs_pi : |π| = π := abs_of_pos pi_pos
 
 end Real
 
@@ -862,7 +865,7 @@ end CosDivSq
 
 /-- `Real.sin` as an `OrderIso` between `[-(π / 2), π / 2]` and `[-1, 1]`. -/
 def sinOrderIso : Icc (-(π / 2)) (π / 2) ≃o Icc (-1 : ℝ) 1 :=
-  (strictMonoOn_sin.orderIso _ _).trans <| OrderIso.setCongr _ _ bijOn_sin.image_eq
+  (strictMonoOn_sin.orderIso _ _).trans <| Set.orderIsoOfEq _ _ bijOn_sin.image_eq
 
 @[simp]
 theorem coe_sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : (sinOrderIso x : ℝ) = sin x :=

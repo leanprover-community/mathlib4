@@ -96,7 +96,7 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 def limitCone : Cone F where
-  pt := AlgCat.of R (Types.Small.limitCone (F ⋙ forget _)).pt
+  pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ ofHom <| limitπAlgHom F j
       naturality := fun _ _ f => by

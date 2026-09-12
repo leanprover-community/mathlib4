@@ -41,7 +41,7 @@ theorem isCyclic_iff_exists_zpowers_eq_top [Group α] : IsCyclic α ↔ ∃ g : 
 protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Subgroup α) :
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
-  simp_rw [← map_subtype_inj, ← MonoidHom.range_eq_map,
+  simp_rw [← map_subtype_inj, Subgroup.map_top,
     H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coe_subtype, exists_prop]
   exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 

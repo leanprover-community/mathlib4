@@ -73,9 +73,7 @@ There are two workarounds:
   `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
 
-open Function
-
-variable {ι F α β γ δ : Type*}
+variable {F α β : Type*}
 
 /-! ### Basics -/
 
@@ -123,6 +121,12 @@ export NonarchimedeanHomClass (map_add_le_max)
 attribute [simp] apply_nonneg
 
 variable [FunLike F α β]
+
+/-- The value at zero of a zero-preserving nonnegative homomorphism is a minimum. -/
+theorem map_zero_le [Zero α] [Zero β] [LE β] [ZeroHomClass F α β] [NonnegHomClass F α β] (f : F)
+    (a : α) : f 0 ≤ f a := by
+  rw [map_zero]
+  exact apply_nonneg f a
 
 @[to_additive]
 theorem le_map_mul_map_div [Group α] [CommMagma β] [LE β] [SubmultiplicativeHomClass F α β]
