@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 module
 
 public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Topology.Defs.Filter
 
 /-!
@@ -202,11 +202,6 @@ theorem isClosed_iUnion_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsC
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact isOpen_iInter_of_finite h
 
-lemma IsClosed.iUnion_of_finite_nonempty {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsClosed (s i))
-    (hs_nonempty : {i | (s i).Nonempty}.Finite) : IsClosed (⋃ i, s i) := by
-  simpa using hs_nonempty.isClosed_biUnion (f := s) fun _ _ ↦ hs _
-
-@[closedness .]
 theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
     IsClosed { x | p x → q x } := by
   simpa only [imp_iff_not_or] using! hp.isClosed_compl.union hq
