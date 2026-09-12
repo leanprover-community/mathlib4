@@ -3,9 +3,11 @@ Copyright (c) 2026 Tobias Weiss. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tobias Weiss
 -/
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Set.Basic
-import Mathlib.Topology.Algebra.Ring.Real
+module
+
+public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # The Gauss map and its inverse branches
@@ -34,6 +36,8 @@ zeta function.
 * `gaussInverseBranch_partition`: the closed branch images cover `(0, 1]`
 * `gaussInverseBranch_disjoint`: distinct open branch images are disjoint
 -/
+
+@[expose] public section
 
 open Set
 
