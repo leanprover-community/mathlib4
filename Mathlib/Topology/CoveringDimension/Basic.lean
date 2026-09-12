@@ -186,7 +186,6 @@ theorem mono {X : Type u} [TopologicalSpace X] {n m : ℕ}
 
 end HasCoveringDimensionLE
 
-@[simp]
 theorem hasCoveringDimensionLT_zero_iff (X : Type u) [TopologicalSpace X] :
     HasCoveringDimensionLT X 0 ↔ IsEmpty X := by
   rfl
