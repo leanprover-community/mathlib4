@@ -36,7 +36,8 @@ variable {a b c : α} {l l₁ l₂ : List α} {p q : α → α → α → Prop} 
 
 @[grind =]
 lemma triplewise_cons : (a :: l).Triplewise p ↔ l.Pairwise (p a) ∧ l.Triplewise p := by
-  grind [triplewise_iff]
+  rw [triplewise_iff]
+  grind
 
 variable (a b p)
 
