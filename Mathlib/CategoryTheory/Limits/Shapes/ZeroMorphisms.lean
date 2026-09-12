@@ -43,8 +43,6 @@ namespace CategoryTheory.Limits
 variable (C : Type u) [Category.{v} C]
 variable (D : Type u') [Category.{v'} D]
 
--- to_dual_name_hint To From
-
 /-- A category "has zero morphisms" if there is a designated "zero morphism" in each morphism space,
 and compositions of zero morphisms with anything give the zero morphism. -/
 class HasZeroMorphisms where
