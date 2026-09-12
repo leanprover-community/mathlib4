@@ -5,15 +5,36 @@ Authors: Chris Hughes, Thomas Browning, Snir Broshi
 -/
 module
 
+public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # p-groups
 
-This file contains a proof that if `G` is a `p`-group acting on a finite set `α`,
-then the number of fixed points of the action is congruent mod `p` to the cardinality of `α`.
-It also contains proofs of some corollaries of this lemma about existence of fixed points.
+A p-group is a group in which the order of every element is a power of `p`.
+
+## Main definitions
+
+* `IsPGroup p G`: the predicate that every element of `G` has order a power of `p`.
+
+## Main results
+
+* `IsPGroup.card_modEq_card_fixedPoints`: if a p-group acts on a finite set `α`, the number of
+  fixed points is congruent to the cardinality of `α` modulo `p`;
+* `IsPGroup.nonempty_fixed_point_of_prime_not_dvd_card` and
+  `IsPGroup.exists_fixed_point_of_prime_dvd_card_of_fixed_point`: existence of fixed points;
+* `IsPGroup.center_nontrivial`: the center of a nontrivial finite p-group is nontrivial;
+* `IsPGroup.isMulCommutative_of_card_eq_prime_sq`: a group of order `p ^ 2` is commutative;
+* `IsPGroup.isSimpleGroup_iff_card_eq`: a finite p-group is simple iff it has cardinality `p`;
+* `IsPGroup.isCoatom_iff_index_eq_prime`: in an abelian p-group, a subgroup is maximal iff it has
+  index `p`;
+* `IsPGroup.not_isCyclic_iff_exists_ne_index_eq_prime`: a finite abelian p-group is non-cyclic iff
+  it has two distinct subgroups of index `p`.
+
+Being a p-group is also shown to pass to subgroups, quotients, images and joins, and p-groups for
+distinct primes are shown to be disjoint.
 -/
 
 @[expose] public section
@@ -320,6 +341,15 @@ theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
   exact
       bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 
+/-- A p-group is simple iff it has cardinality `p`. -/
+theorem isSimpleGroup_iff_card_eq [Finite G] : IsSimpleGroup G ↔ Nat.card G = p := by
+  refine ⟨fun h ↦ ?_, fun h ↦ isSimpleGroup_of_prime_card h⟩
+  have : IsMulCommutative G := Subgroup.center_eq_top_iff.mp <|
+    (h.eq_bot_or_eq_top_of_normal (Subgroup.center G) inferInstance).resolve_left <|
+      ne_bot_of_gt <| bot_lt_center hG
+  replace h := Group.is_simple_iff_prime_card.mp h
+  exact ((Nat.prime_dvd_prime_iff_eq Fact.out h).mp (hG.card_eq_or_dvd.resolve_left h.ne_one)).symm
+
 end GIsPGroup
 
 theorem to_le {H K : Subgroup G} (hK : IsPGroup p K) (hHK : H ≤ K) : IsPGroup p H :=
@@ -464,8 +494,8 @@ theorem isMulCommutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : IsMulCo
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
   isMulCommutative_of_isCyclic_quotient_center_self G
 
-/-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commutative_of_card_eq_prime_sq`
-for just the proof that `∀ a b, a * b = b * a` -/
+/-- A group of order `p ^ 2` is commutative. See also
+`IsPGroup.isMulCommutative_of_card_eq_prime_sq` for just the proof that `G` is commutative. -/
 @[instance_reducible]
 def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
@@ -476,6 +506,31 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
   isMulCommutative_of_card_eq_prime_sq hG |>.is_comm.comm
 
 end P2comm
+
+section CommGroup
+
+variable {A : Type*} [CommGroup A] [hp : Fact p.Prime]
+
+/-- In an abelian p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
+theorem isCoatom_iff_index_eq_prime (hA : IsPGroup p A) (M : Subgroup A) :
+    IsCoatom M ↔ M.index = p := by
+  rw [← CommGroup.isSimpleGroup_iff_isCoatom, CommGroup.is_simple_iff_prime_card,
+    Subgroup.index_eq_card]
+  refine ⟨fun h ↦ ((Nat.prime_dvd_prime_iff_eq hp.out h).mp ?_).symm, fun h ↦ h ▸ hp.out⟩
+  exact (card_eq_or_dvd (hA.to_quotient M)).resolve_left h.ne_one
+
+/-- A finite abelian p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
+theorem not_isCyclic_iff_exists_ne_index_eq_prime [Finite A] (hA : IsPGroup p A) :
+    ¬ IsCyclic A ↔ ∃ H₁ H₂ : Subgroup A, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by
+  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, hne, h₁, h₂⟩ _ ↦ hne ?_⟩
+  · by_contra! h
+    refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ by_contra fun hne ↦ ?_)
+    exact h M₁ M₂ hne ((hA.isCoatom_iff_index_eq_prime M₁).mp hM₁)
+      ((hA.isCoatom_iff_index_eq_prime M₂).mp hM₂)
+  · rw [IsCyclic.subgroup_eq_iff_card_eq, ← mul_right_inj' (a := H₁.index)
+      Subgroup.index_ne_zero_of_finite, Subgroup.index_mul_card, h₁, ← h₂, Subgroup.index_mul_card]
+
+end CommGroup
 
 end IsPGroup
 
