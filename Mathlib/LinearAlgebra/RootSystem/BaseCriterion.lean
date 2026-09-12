@@ -8,10 +8,10 @@ module
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
-# Criterion for bases of root systems
+# Criterion for bases of finite root systems
 
-Given a root pairing $P$, sufficient conditions for a subset of linearly indpendent roots $r_i$,
-$i ∈ s$ to be a base for a finite root pairing are:
+Given a finite root pairing $P$, sufficient conditions for a subset of linearly indpendent roots
+$r_i$, $i ∈ s$ to be a base for $P$ are:
  1. $⟨c_j, r_i⟩ ≤ 0$ for all $i ≠ j$, where $c_j$ is the coroot corresponding to the root $r_j$.
  2. Every root $α$ can be written as $α = w • r_i$ for some $i ∈ s$ and $w$ is a product of
     reflections corresponding to elements of $s$.
@@ -63,23 +63,21 @@ lemma exists_root_eq_smul_root_iff (P : RootPairing ι R M N) (s : Set ι) (i j 
 
 variable [Finite ι] [CharZero R] [IsDomain R] (P : RootPairing ι R M N) [P.IsCrystallographic]
 
-lemma exists_mul_diagonal_posDef (s : Finset ι) [DecidableEq ι]
-    (h₀ : LinearIndepOn R P.root s) :
-    ∃ d : s → ℤ, (∀ k, 0 < d k) ∧
-      ((Matrix.of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d).PosDef := by
+lemma exists_mul_diagonal_posDef (s : Finset ι) [DecidableEq ι] (h : LinearIndepOn R P.root s) :
+    ∃ d : s → ℤ, (∀ k, 0 < d k) ∧ ((of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d).PosDef := by
   have _i : Fintype ι := Fintype.ofFinite ι
   set B := P.posRootForm ℤ with hB
   set v : s → P.rootSpan ℤ := fun k ↦ P.rootSpanMem ℤ k with hv
   set d : s → ℤ := fun k ↦ B.rootLength k with hd
-  set A : Matrix s s ℤ := (Matrix.of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d with hA
+  set A : Matrix s s ℤ := (of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d with hA
   have hli : LinearIndependent ℤ v := by
     refine LinearIndependent.of_comp (P.rootSpan ℤ).subtype ?_
     have aux : (P.rootSpan ℤ).subtype ∘ v = fun k : s ↦ P.root k := rfl
     rw [aux]
-    exact h₀.linearIndependent.restrict_scalars' ℤ
+    exact h.linearIndependent.restrict_scalars' ℤ
   have key (k l : s) : A k l = 2 * B.posForm (v k) (v l) := by
     rw [hA, mul_diagonal]
-    simp only [Matrix.of_apply, hd, hv]
+    simp only [of_apply, hd, hv]
     apply FaithfulSMul.algebraMap_injective ℤ R
     rw [map_mul, map_mul, algebraMap_pairingIn, B.algebraMap_rootLength, map_ofNat,
       B.algebraMap_posForm]
@@ -107,11 +105,10 @@ lemma exists_mul_diagonal_posDef (s : Finset ι) [DecidableEq ι]
   rw [← hB] at this
   positivity
 
-open CartanMatrix in
 lemma isFiniteCartan_pairingIn (s : Finset ι) [DecidableEq ι]
-    (h₀' : LinearIndepOn R P.coroot s)
+    (h₀ : LinearIndepOn R P.coroot s)
     (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0) :
-    (Matrix.of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan where
+    (of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan where
   diag k := P.pairingIn_same ℤ k
   offDiag_nonpos k l hkl := h₁ k.2 l.2 (by simpa using hkl)
   zero_comm k l := by
@@ -121,21 +118,18 @@ lemma isFiniteCartan_pairingIn (s : Finset ι) [DecidableEq ι]
     have hflip (k l : ι) : P.flip.pairingIn ℤ k l = P.pairingIn ℤ l k := by
       apply FaithfulSMul.algebraMap_injective ℤ R
       rw [algebraMap_pairingIn, algebraMap_pairingIn, pairing_flip]
-    obtain ⟨d, hd, hd'⟩ := P.flip.exists_mul_diagonal_posDef s h₀'
+    obtain ⟨d, hd, hd'⟩ := P.flip.exists_mul_diagonal_posDef s h₀
     refine ⟨d, hd, ?_⟩
-    have heq : Matrix.diagonal d * (Matrix.of fun k l : s ↦ P.pairingIn ℤ k l) =
-        ((Matrix.of fun k l : s ↦ P.flip.pairingIn ℤ k l) * Matrix.diagonal d)ᵀ := by
+    have heq : Matrix.diagonal d * (of fun k l : s ↦ P.pairingIn ℤ k l) =
+        ((of fun k l : s ↦ P.flip.pairingIn ℤ k l) * Matrix.diagonal d)ᵀ := by
       ext k l
       simp [Matrix.diagonal_mul, Matrix.mul_diagonal, Matrix.transpose_apply, hflip, mul_comm]
     rw [heq, Matrix.PosDef.transpose_iff]
     exact hd'
 
 omit [Finite ι] [CharZero R] [IsDomain R] in
-/-- If every index is obtained from an index in `s` by applying reflections in `s`, then every root
-is an integral combination of the roots indexed by `s`. -/
 lemma root_mem_span_int_image (s : Finset ι)
-    (h : ∀ i, ∃ σ ∈ Subgroup.closure (P.reflectionPerm '' s), ∃ j ∈ s, i = σ j)
-    (i : ι) :
+    (h : ∀ i, ∃ σ ∈ Subgroup.closure (P.reflectionPerm '' s), ∃ j ∈ s, i = σ j) (i : ι) :
     P.root i ∈ Submodule.span ℤ (P.root '' s) := by
   set Q := Submodule.span ℤ (P.root '' s)
   let G : Subgroup (Equiv.Perm ι) :=
@@ -161,8 +155,6 @@ lemma root_mem_span_int_image (s : Finset ι)
   exact (hle hσ j).mpr (Submodule.subset_span ⟨j, hj, rfl⟩)
 
 omit [Finite ι] [IsDomain R] in
-/-- The pairing of a root with a simple coroot, expressed in terms of the coefficients of the
-root relative to the simple roots and the Cartan matrix. -/
 private lemma pairingIn_eq_sum (s : Finset ι) {i : ι} {c : s → ℤ}
     (hc : P.root i = ∑ k, c k • P.root k) (l : s) :
     P.pairingIn ℤ i (l : ι) = ∑ j, c j * P.pairingIn ℤ (j : ι) (l : ι) := by
@@ -171,10 +163,8 @@ private lemma pairingIn_eq_sum (s : Finset ι) {i : ι} {c : s → ℤ}
   simpa [map_sum, ← P.algebraMap_pairingIn ℤ, Int.cast_smul_eq_zsmul] using h
 
 omit [Finite ι] [IsDomain R] in
-/-- Since the Cartan matrix of `s` is non-singular, the roots indexed by `s` are linearly
-independent over `ℤ`. -/
 private lemma eq_zero_of_sum_smul_root_eq_zero (s : Finset ι) [DecidableEq ι]
-    (hA : (Matrix.of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan)
+    (hA : (of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan)
     {c : s → ℤ} (hc : ∑ k, c k • P.root k = 0) :
     c = 0 := by
   have hpair (l : s) : ∑ k, c k * P.pairingIn ℤ (k : ι) (l : ι) = 0 := by
@@ -183,9 +173,9 @@ private lemma eq_zero_of_sum_smul_root_eq_zero (s : Finset ι) [DecidableEq ι]
     simpa [map_sum, ← P.algebraMap_pairingIn ℤ, Int.cast_smul_eq_zsmul] using h
   obtain ⟨d, hd, hS⟩ := hA.transpose.exists_posDef
   by_contra hc'
-  have key : (diagonal d * (Matrix.of fun k l : s ↦ P.pairingIn ℤ k l)ᵀ) *ᵥ c = 0 := by
+  have key : (diagonal d * (of fun k l : s ↦ P.pairingIn ℤ k l)ᵀ) *ᵥ c = 0 := by
     ext k
-    simp only [mulVec, dotProduct, diagonal_mul, transpose_apply, Matrix.of_apply, Pi.zero_apply]
+    simp only [mulVec, dotProduct, diagonal_mul, transpose_apply, of_apply, Pi.zero_apply]
     simp_rw [show ∀ x : s, d k * P.pairingIn ℤ (x : ι) (k : ι) * c x
         = (c x * P.pairingIn ℤ (x : ι) (k : ι)) * d k from fun x ↦ by ring,
       ← Finset.sum_mul, hpair k, zero_mul]
@@ -203,11 +193,6 @@ private lemma sum_smul_root_mem_closure (s : Finset ι) {c : s → ℤ} (hc : 0 
   rw [h2]
   exact nsmul_mem (AddSubmonoid.subset_closure (Set.mem_image_of_mem _ k.2)) _
 
-/-- If `αₖ`, `αₗ` are distinct simple roots then `αₖ - αₗ` is not a root.
-
-Indeed if it were a root `β`, then `⟨β, αₖ^∨⟩ = 2 - ⟨αₗ, αₖ^∨⟩ ≥ 2` and so `⟨αₖ, β^∨⟩ = 1`.
-Reflecting in `β` thus carries `αₖ` to `αₗ` and so `αₗ^∨ = αₖ^∨ - ⟨β, αₖ^∨⟩ β^∨`, which is
-incompatible with the linear independence of the simple coroots. -/
 private lemma root_sub_root_notMem_range (s : Finset ι)
     (hcs : ∀ i, P.coroot i ∈ Submodule.span ℤ (P.coroot '' s))
     (h₀' : LinearIndepOn R P.coroot s)
@@ -261,17 +246,6 @@ private lemma root_sub_root_notMem_range (s : Finset ι)
   have hu2 : 2 ≤ P.pairingIn ℤ m k := by omega
   rcases le_or_gt (e ⟨k, hk⟩) 0 with h | h <;> nlinarith
 
-/- Auxiliary result for `RootPairing.bar`, carrying an induction on the `ℓ¹` norm `∑ i, |cᵢ|` of
-the coefficient vector, together with a choice of positive-definite symmetrisation
-`S = A * diagonal d` of the Cartan matrix `A`.
-
-The key facts used are that `(S *ᵥ c) i = ⟨β, αᵢ^∨⟩ * dᵢ` for a root `β = ∑ cᵢ αᵢ`, together with
-the fact that `β - αₖ` is a root whenever `⟨β, αₖ^∨⟩ > 0` and `β ≠ αₖ`. Since `0 < c ⬝ᵥ S *ᵥ c`,
-there is some `k` such that `cₖ` and `⟨β, αₖ^∨⟩` have the same (non-zero) sign; replacing `β` by
-`-β` we may assume both are positive. Applying the inductive hypothesis to `β - αₖ` we may assume
-that `cₖ = 1` and that `cⱼ ≤ 0` for `j ≠ k`. A second application of positive definiteness then
-provides `l` such that `c l < 0` and `⟨β, αₗ^∨⟩ < 0`, and applying the inductive hypothesis to
-`β + αₗ` we find that `β = αₖ - αₗ`, which is impossible. -/
 private lemma nonneg_or_nonpos_aux (s : Finset ι) [DecidableEq ι] {A : Matrix s s ℤ}
     (hAdiag : ∀ k, A k k = 2)
     (hAoff : ∀ k l, k ≠ l → A k l ≤ 0)
@@ -486,15 +460,17 @@ private lemma nonneg_or_nonpos_aux (s : Finset ι) [DecidableEq ι] {A : Matrix 
 
 variable (s : Finset ι)
   (h₀ : LinearIndepOn R P.root s)
-  (h₀' : LinearIndepOn R P.coroot s)
   (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0)
   (h₂ : ∀ i, ∃ᵉ (w ∈ Subgroup.closure (Equiv.reflection P '' s)) (j ∈ s), P.root i = w • P.root j)
-include h₀' h₁ h₂
+include h₀ h₁ h₂
 
 lemma bar (i : ι) :
      P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
     -P.root i ∈ AddSubmonoid.closure (P.root '' s) := by
   classical
+  have h₀' : LinearIndepOn R P.coroot s := by
+    have : Fintype ι := Fintype.ofFinite ι
+    rwa [P.linearIndepOn_coroot_iff]
   have h₂' : ∀ i, ∃ σ ∈ Subgroup.closure (P.reflectionPerm '' s),
       ∃ j ∈ s, i = σ j := by
     intro i
@@ -504,10 +480,10 @@ lemma bar (i : ι) :
   have hrs := P.root_mem_span_int_image s h₂'
   have hcs : ∀ i, P.coroot i ∈ Submodule.span ℤ (P.coroot '' s) :=
     P.flip.root_mem_span_int_image s h₂'
-  have hA : (Matrix.of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan :=
+  have hA : (of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan :=
     P.isFiniteCartan_pairingIn s h₀' h₁
   obtain ⟨d, hd, hS⟩ := hA.transpose.exists_posDef
-  have hS' : ((Matrix.of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d).PosDef := by
+  have hS' : ((of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d).PosDef := by
     rw [← Matrix.PosDef.transpose_iff]; simpa using hS
   have huniq : ∀ c c' : s → ℤ,
       ∑ k, c k • P.root k = ∑ k, c' k • P.root k → c = c' := by
@@ -541,20 +517,22 @@ public def Base.mk'' :
     P.Base where
   support := s
   linearIndepOn_root := h₀
-  linearIndepOn_coroot := h₀'
-  root_mem_or_neg_mem := P.bar s h₀' h₁ h₂
+  linearIndepOn_coroot := by
+    have : Fintype ι := Fintype.ofFinite ι
+    rwa [P.linearIndepOn_coroot_iff]
+  root_mem_or_neg_mem := P.bar s h₀ h₁ h₂
   coroot_mem_or_neg_mem i := by
-    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-    apply P.flip.bar s h₀ (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm)
-    intro j
+    replace h₀ : LinearIndepOn R P.coroot s := by
+      have : Fintype ι := Fintype.ofFinite ι
+      rwa [P.linearIndepOn_coroot_iff]
+    refine P.flip.bar s h₀ (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm) (fun j ↦ ?_) ?_
     obtain ⟨w, hw, k, hk, hjk⟩ := h₂ j
     obtain ⟨σ, hσ, hσ'⟩ := (P.exists_root_eq_smul_root_iff s j k).mp ⟨w, hw, hjk⟩
     obtain ⟨w', hw', hw''⟩ := (P.flip.exists_root_eq_smul_root_iff s j k).mpr ⟨σ, hσ, hσ'⟩
     exact ⟨w', hw', k, hk, hw''⟩
 
 @[simp] lemma Base.mk''_support :
-    (Base.mk'' P s h₀ h₀' h₁ h₂).support = s := by
+    (Base.mk'' P s h₀ h₁ h₂).support = s := by
   rfl
 
 end RootPairing

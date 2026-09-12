@@ -261,6 +261,60 @@ lemma rootForm_nondegenerate [P.IsRootSystem] :
   simpa [(rootForm_symmetric P).isRefl.nondegenerate_iff_separatingLeft,
     LinearMap.separatingLeft_iff_ker_eq_bot] using P.disjoint_rootSpan_ker_rootForm
 
+private lemma linearIndepOn_coroot_iff_aux [NeZero (2 : R)]
+    (s : Set ι) (h : LinearIndepOn R P.root s) :
+    LinearIndepOn R P.coroot s := by
+  -- TODO Rewrite the absurd Claude proof below into something suitable for Mathlib.
+  classical
+  rw [← linearIndependent_restrict_iff, Fintype.linearIndependent_iff] at h ⊢
+  simp only [Set.domRestrict_apply] at h ⊢
+  intro c hc k
+  set n : (↑s : Set ι) → R := fun i ↦ P.RootForm (P.root i) (P.root i) with hn
+  have hn0 : ∀ i, n i ≠ 0 := fun i ↦ IsAnisotropic.rootForm_root_ne_zero (i : ι)
+  set m : (↑s : Set ι) → R := fun i ↦ ∏ j ∈ Finset.univ.erase i, n j with hm
+  have hm0 : ∀ i, m i ≠ 0 := fun i ↦ Finset.prod_ne_zero_iff.mpr fun j _ ↦ hn0 j
+  have hnm : ∀ i, n i * m i = ∏ j, n j := fun i ↦ Finset.mul_prod_erase _ _ (Finset.mem_univ i)
+  have hpol : ∀ i : (↑s : Set ι),
+      n i • P.coroot (i : ι) = (2 : R) • P.Polarization (P.root (i : ι)) := by
+    intro i
+    rw [hn, P.rootForm_self_smul_coroot, ← Nat.cast_smul_eq_nsmul R]
+    norm_num
+  set v : M := ∑ i, (2 * (c i * m i)) • P.root (i : ι) with hv
+  have hterm : ∀ i : (↑s : Set ι), P.Polarization ((2 * (c i * m i)) • P.root (i : ι))
+      = (∏ j, n j) • (c i • P.coroot (i : ι)) := by
+    intro i
+    rw [map_smul]
+    have h1 : (∏ j, n j) • (c i • P.coroot (i : ι)) = (m i * c i) • (n i • P.coroot (i : ι)) := by
+      rw [smul_smul, smul_smul, ← hnm i]
+      congr 1
+      ring
+    rw [h1, hpol i, smul_smul]
+    congr 1
+    ring
+  have key : P.Polarization v = 0 := by
+    rw [hv, map_sum]
+    calc ∑ i, P.Polarization ((2 * (c i * m i)) • P.root (i : ι))
+        = ∑ i, (∏ j, n j) • (c i • P.coroot (i : ι)) := Finset.sum_congr rfl fun i _ ↦ hterm i
+      _ = (∏ j, n j) • ∑ i, c i • P.coroot (i : ι) := (Finset.smul_sum ..).symm
+      _ = 0 := by rw [hc, smul_zero]
+  have hmem : v ∈ P.rootSpan R :=
+    Submodule.sum_mem _ fun i _ ↦
+      Submodule.smul_mem _ _ (Submodule.subset_span (mem_range_self (i : ι)))
+  have hzero : v = 0 := by
+    have hdisj := P.disjoint_rootSpan_ker_rootForm (R := R)
+    rw [← P.ker_polarization_eq_ker_rootForm] at hdisj
+    exact Submodule.disjoint_def.mp hdisj v hmem key
+  have hck := h (fun i ↦ 2 * (c i * m i)) hzero k
+  rcases mul_eq_zero.mp hck with h | h
+  · exact absurd h two_ne_zero
+  · rcases mul_eq_zero.mp h with h' | h'
+    · exact h'
+    · exact absurd h' (hm0 k)
+
+@[simp] lemma linearIndepOn_coroot_iff [NeZero (2 : R)] (s : Set ι) :
+    LinearIndepOn R P.coroot s ↔ LinearIndepOn R P.root s :=
+  ⟨P.flip.linearIndepOn_coroot_iff_aux s, P.linearIndepOn_coroot_iff_aux s⟩
+
 end IsDomain
 
 section Field
@@ -378,24 +432,6 @@ lemma coroot_eq_polarizationEquiv_apply_root (i : ι) :
 lemma polarizationEquiv_symm_apply_coroot {i : ι} :
     P.PolarizationEquiv.symm (P.coroot i) = (2 / P.RootForm (P.root i) (P.root i)) • P.root i := by
   simp [coroot_eq_polarizationEquiv_apply_root]
-
-variable [NeZero (2 : R)]
-
-private lemma linearIndepOn_coroot_iff_aux {s : Set ι} (h : LinearIndepOn R P.root s) :
-    LinearIndepOn R P.coroot s := by
-  obtain ⟨f, hf⟩ : ∃ f : s → Rˣ, ∀ i : s, P.coroot i = f i • P.PolarizationEquiv (P.root i) :=
-    ⟨fun i ↦ Units.mk0 (2 / P.RootForm (P.root i) (P.root i))
-      (by simp [two_ne_zero, IsAnisotropic.rootForm_root_ne_zero]),
-     fun i ↦ by simp [coroot_eq_polarizationEquiv_apply_root]⟩
-  have : s.domRestrict P.coroot = P.PolarizationEquiv.toLinearMap ∘ (f • s.domRestrict P.root) := by
-    ext; simp [hf, polarizationEquiv_apply]
-  rw [← linearIndependent_restrict_iff, this,
-    LinearMap.linearIndependent_iff_of_injOn _ P.PolarizationEquiv.injective.injOn]
-  simpa
-
-@[simp] lemma linearIndepOn_coroot_iff {s : Set ι} :
-    LinearIndepOn R P.coroot s ↔ LinearIndepOn R P.root s :=
-  ⟨P.flip.linearIndepOn_coroot_iff_aux, P.linearIndepOn_coroot_iff_aux⟩
 
 end IsRootSystem
 
