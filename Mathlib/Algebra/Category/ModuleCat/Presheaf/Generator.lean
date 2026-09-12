@@ -164,7 +164,7 @@ noncomputable def freeYonedaCoproductMk (m : M.Elements) :
 @[reassoc (attr := simp)]
 lemma ι_fromFreeYonedaCoproduct (m : M.Elements) :
     M.ιFreeYonedaCoproduct m ≫ M.fromFreeYonedaCoproduct = m.fromFreeYoneda := by
-  apply Sigma.ι_desc
+  apply Sigma.ι_comp_desc
 
 lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.freeYoneda.obj X) :
     M.fromFreeYonedaCoproduct.app X ((M.ιFreeYonedaCoproduct m).app X x) =
