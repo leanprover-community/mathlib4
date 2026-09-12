@@ -312,7 +312,6 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   case inj =>
     intro a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
-    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_ge h'))
     rw [dart_edge_eq_iff] at h
     obtain (h | h) := h
     · exact (congrArg (·.fst) h)

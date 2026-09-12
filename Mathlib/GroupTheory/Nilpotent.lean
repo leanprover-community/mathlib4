@@ -992,7 +992,6 @@ lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a ≠ b) (ac : a ≤
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     upperCentralSeries G a = upperCentralSeries G c := by
   wlog ab : a < b
-  · grind
   refine eq_ge_of_eq_succ ac (le_antisymm ?_ ?_)
   · exact upperCentralSeries_mono _ <| Nat.le_succ ..
   · rw [hn]

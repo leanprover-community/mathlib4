@@ -23,6 +23,11 @@ The new goal will be placed at the top of the goal stack.
 
 -/
 
+/-
+1. does it work in a significant number of cases?
+2. what's the performance impact?
+-/
+
 public meta section
 
 namespace Mathlib.Tactic
@@ -116,9 +121,27 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     easyGoal.assign HApp
   return ⟨reductionGoal, (HFVarId, negHyp), hGoal, hFVar, revertedFVars⟩
 
+syntax "try_grind" tacticSeq : tactic
+
+elab_rules : tactic
+| `(tactic|try_grind%$tk $tacs) => do
+  let s ← saveState
+  try
+    evalTactic <|← `(tactic| grind -verbose)
+    let some l := (← getFileMap).lspRangeOfStx? tk | throwError "No syntax position!"
+    let start : String.Pos.Raw := ⟨((← getFileMap).lineStart (l.start.line + 1) |>.byteIdx) - 1⟩
+    let some ⟨_, stop⟩ := tacs.raw.getRange? | throwError "tactic sequence bad"
+    TryThis.addSuggestion (.ofRange ⟨start, stop⟩) ""
+  catch _ =>
+    s.restore
+    let some range := tk.getRangeWithTrailing? | throwError "No syntax position (failure)"
+    TryThis.addSuggestion (.ofRange range) ""
+    evalTacticSeq tacs
+
 /-- The implementation of `wlog` and `wlog!` -/
 def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `ident))
-    (H : Option (TSyntax `ident)) (pushConfig : Option (TSyntax ``optConfig) := none) :
+    (H : Option (TSyntax `ident)) (pushConfig : Option (TSyntax ``optConfig) := none)
+    (discharger : Option Syntax := none) :
     TacticM Unit := do
   withMainContext do
   let H := H.map (·.getId)
@@ -134,14 +157,36 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
       let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
         (ifUnchanged := .error)
+  if let some disch := discharger then
+    let s ← saveState
+    try
+      focusAndDone <| evalTacticSeq disch
+    catch _ => s.restore (restoreInfo := true)
+
+/-- A discharger, e.g. `(disch := <tactic sequence>)`. The default discharger may be prevented from
+running by writing `(disch := none)`. -/
+syntax nullableDischarger := atomic(" (" patternIgnore(&"discharger" <|> &"disch")) " := "
+  &"none" <|> withoutPosition(tacticSeq) ")"
+
+/-- Gets the tactic sequence of the nullable discharger, or `none` if `(disch := none)` is used. -/
+def getNullableDischarger : TSyntax ``nullableDischarger → Option (TSyntax ``tacticSeq)
+  | `(nullableDischarger| ($_ := $disch:tacticSeq)) => disch
+  | `(nullableDischarger| ($_ := none)) => none
+  | _ => none
 
 /-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
 requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
-(typically by symmetry). The side goal will be at the top of the stack. In this side goal,
-there will be two additional assumptions:
+(typically by symmetry).
+
+By default, `wlog` will attempt to discharge the side goal with `grind`. If it is not discharged,
+the side goal will be at the top of the stack. In this side goal, there will be two additional
+assumptions:
 - `h : ¬ P`: the assumption that `P` does not hold
 - `this`: which is the statement that in the old context `P` suffices to prove the goal.
   By default, the entire context is reverted to produce `this`.
+
+To provide a different discharger, use `wlog (disch := <custom tactic seqeuence>)`, or disable the
+discharger with `wlog (disch := none)`.
 
 * `wlog h : P with H` gives the name `H` to the statement that `P` proves the goal.
 * `wlog h : P generalizing x y ...` reverts certain parts of the context before creating the new
@@ -152,20 +197,26 @@ there will be two additional assumptions:
 * `wlog! +distrib h : P` also calls `push +distrib Not` at the generated hypothesis `h`.
   `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `¬P ∨ ¬Q`.
 -/
-syntax (name := wlog) "wlog " binderIdent " : " term
+syntax (name := wlog) "wlog " (nullableDischarger)? binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 elab_rules : tactic
-| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
-  wlogCore h P xs H
+| `(tactic| wlog%$tk $[$disch?:nullableDischarger]? $h:binderIdent : $P:term
+    $[ generalizing $xs*]? $[ with $H:ident]?) => do
+  let disch? ← if let some disch := disch? then pure <| getNullableDischarger disch else
+    withRef tk `(tacticSeq| grind -verbose)
+  wlogCore h P xs H (discharger := disch?)
 
 @[tactic_alt wlog]
-syntax (name := wlog!) "wlog! " optConfig binderIdent " : " term
+syntax (name := wlog!) "wlog! " optConfig (nullableDischarger)? binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 elab_rules : tactic
 | `(tactic|
-    wlog! $cfg:optConfig $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
-  wlogCore h P xs H cfg
+    wlog!%$tk $cfg:optConfig $[$disch?:nullableDischarger]? $h:binderIdent : $P:term
+      $[ generalizing $xs*]? $[ with $H:ident]?) => do
+  let disch? ← if let some disch := disch? then pure <| getNullableDischarger disch else
+    withRef tk `(tacticSeq| grind -verbose)
+  wlogCore h P xs H cfg (discharger := disch?)
 
 end Mathlib.Tactic

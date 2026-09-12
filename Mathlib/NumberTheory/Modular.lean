@@ -660,8 +660,7 @@ private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g 
   · rw [← this (g := g⁻¹) hg (by simpa using hz) (by simpa using le_of_not_ge hden)]
     simp
   wlog hc : 0 ≤ g 1 0
-  · -- TODO: `wlog` leaves junk copies of variables in scope
-    simpa using @this (-g) z (-g) z hz (by simpa using hg)
+  · simpa using @this (-g) z (-g) z hz (by simpa using hg)
       (by simpa using hden) (by simpa using (not_le.mp hc).le)
   rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos _ z.im_ne_zero),
     mul_le_iff_le_one_right z.im_pos, normSq_eq_norm_sq, sq_le_one_iff₀ (norm_nonneg _)] at hden

@@ -180,7 +180,6 @@ theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
   intro j hj j' hj' hjj'
   rw [mem_Iio] at hj hj'
   wlog hij' : j < j' generalizing j j'
-  · exact (this hj' hj hjj'.symm (by omega)).symm
   rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
   suffices (F.intervalGapsWithin h a b j).2 ≤ (F.intervalGapsWithin h a b j').1 by grind
   have hj'₀ : j' - 1 + 1 = j' := by omega

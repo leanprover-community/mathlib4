@@ -309,7 +309,6 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
   · apply this ha₀ ha₁ (inv_ne_zero hb₀) (by simpa) (by simpa) ha
     simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le hb⟩
   wlog! h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
-  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne h_lt h_ne.symm
   have hwa := h.one_lt_iff.1 ha
   have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,

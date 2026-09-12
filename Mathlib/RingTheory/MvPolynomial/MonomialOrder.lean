@@ -831,7 +831,6 @@ lemma degree_lt_of_left_ne_zero_of_degree_mul_lt [NoZeroDivisors R] {p p' q : Mv
     (hp : p ≠ 0) (h : m.degree (p * q) ≺[m] m.degree (p' * q)) :
     m.degree p ≺[m] m.degree p' := by
   wlog! hq : q ≠ 0
-  · simp [hq] at h
   apply lt_of_le_of_lt' m.degree_mul_le at h
   simpa [m.degree_mul hp hq] using h
 
