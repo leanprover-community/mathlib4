@@ -189,24 +189,24 @@ section SMul
 variable [SMul α β] {s t : Set β} {a : α}
 
 /-- If `a` is regular on `β`, it is regular on `Set β`. -/
-theorem IsSMulRegular.set (h : IsSMulRegular β a) : IsSMulRegular (Set β) a :=
+theorem _root_.IsSMulRegular.set (h : IsSMulRegular β a) : IsSMulRegular (Set β) a :=
   Set.image_injective.mpr h
 
 @[to_additive]
-theorem IsSMulRegular.smul_set_subset_smul_set_iff (h : IsSMulRegular β a) :
+theorem _root_.IsSMulRegular.smul_set_subset_smul_set_iff (h : IsSMulRegular β a) :
     a • s ⊆ a • t ↔ s ⊆ t := image_subset_image_iff h
 
 @[to_additive]
-theorem IsSMulRegular.smul_set_inter (h : IsSMulRegular β a) :
+theorem _root_.IsSMulRegular.smul_set_inter (h : IsSMulRegular β a) :
     a • (s ∩ t) = a • s ∩ a • t := image_inter h
 
 @[to_additive]
-theorem IsSMulRegular.smul_set_sdiff (h : IsSMulRegular β a) :
+theorem _root_.IsSMulRegular.smul_set_sdiff (h : IsSMulRegular β a) :
     a • (s \ t) = a • s \ a • t := image_sdiff h _ _
 
 open scoped symmDiff in
 @[to_additive]
-theorem IsSMulRegular.smul_set_symmDiff (h : IsSMulRegular β a) :
+theorem _root_.IsSMulRegular.smul_set_symmDiff (h : IsSMulRegular β a) :
     a • s ∆ t = (a • s) ∆ (a • t) := image_symmDiff h _ _
 
 end SMul
