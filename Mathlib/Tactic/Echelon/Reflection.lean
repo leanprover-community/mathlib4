@@ -8,6 +8,8 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.Tactic.Matrix.OfLists
 
+import Mathlib.Data.List.GetD
+
 /-!
 # Reflection lemmas for the echelon certificate
 
@@ -23,21 +25,16 @@ namespace Mathlib.Tactic.Echelon
 
 variable {α : Type*}
 
-theorem getD_eq_zero_of_forall_eq_zero [Zero α] {l : List α} (h : ∀ x ∈ l, x = 0) (i : ℕ) :
-    l.getD i 0 = 0 := by
-  grind [List.eq_replicate_of_mem h]
-
-theorem getD_succ (l : List α) (i : ℕ) (d : α) : l.getD (i + 1) d = l.tail.getD i d := by
-  simp [List.getD_eq_getElem?_getD]
+/-! ### Lower triangularity and nonzero diagonal of `L` -/
 
 /-- The first `c` rows from row `k` on, each with a nonzero entry at its diagonal position `k`
-followed by zeros to width `n`; a missing row reads as zero and fails. -/
+followed by zeros to width `n`. -/
 def IsLowerTriangularDiag [Zero α] (n k : ℕ) : ℕ → List (List α) → Prop
   | 0, _ => True
-  | c + 1, rows =>
-    ((rows.headD []).drop k).headD 0 ≠ 0 ∧
-      ((rows.headD []).drop k).tail = List.replicate (n - (k + 1)) 0 ∧
-      IsLowerTriangularDiag n (k + 1) c rows.tail
+  | _ + 1, [] => False
+  | c + 1, row :: rows =>
+    (row.drop k).headD 0 ≠ 0 ∧ (row.drop k).tail = List.replicate (n - (k + 1)) 0 ∧
+      IsLowerTriangularDiag n (k + 1) c rows
 
 theorem getD_of_isLowerTriangularDiag [Zero α] {n k c i : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiag n k c rows) (hi : i < c) :
@@ -45,17 +42,19 @@ theorem getD_of_isLowerTriangularDiag [Zero α] {n k c i : ℕ} {rows : List (Li
   induction c generalizing k i rows with
   | zero => simp at hi
   | succ c ih =>
-    obtain ⟨hd, hz, hrest⟩ := h
-    cases i with
-    | zero =>
-      rw [← List.headD_eq_getD]
-      refine ⟨by simpa using hd, fun j hj ↦ ?_⟩
-      have := getD_eq_zero_of_forall_eq_zero (List.eq_replicate_iff.mp hz).2 (j - (k + 1))
-      rwa [List.tail_drop, List.getD_eq_getElem?_getD, List.getElem?_drop,
-        Nat.add_sub_cancel' (by lia : k + 1 ≤ j), ← List.getD_eq_getElem?_getD] at this
-    | succ i =>
-      rw [getD_succ, ← Nat.add_assoc, Nat.add_right_comm]
-      exact ih hrest (by lia)
+    cases rows with
+    | nil => exact False.elim h
+    | cons row rows =>
+      obtain ⟨hd, hz, hrest⟩ := h
+      cases i with
+      | zero =>
+        rw [List.getD_cons_zero]
+        refine ⟨by simpa using hd, fun j hj ↦ ?_⟩
+        rw [List.getD_eq_getElem?_getD, ← Nat.add_sub_cancel' (by lia : k + 1 ≤ j),
+          ← List.getElem?_drop, ← List.tail_drop, hz, List.getElem?_getD_replicate_default_eq]
+      | succ i =>
+        rw [List.getD_cons_succ, ← Nat.add_assoc, Nat.add_right_comm]
+        exact ih hrest (by lia)
 
 theorem isLowerTriangular_ofLists [Zero α] {m : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiag m 0 m rows) : (ofLists m m rows).IsLowerTriangular := by
@@ -67,6 +66,8 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiag m 0 m rows) (i : Fin m) : (ofLists m m rows).diag i ≠ 0 := by
   rw [Matrix.diag_apply, ofLists_apply, ofList_apply]
   simpa using (getD_of_isLowerTriangularDiag h i.isLt).1
+
+/-! ### Pivots of `U` -/
 
 variable {n : ℕ}
 
@@ -120,9 +121,9 @@ theorem strictMonoOn_pivotOfList_of_isStrictlyIncreasing {m : ℕ} {cols : List 
 beyond the pivot list, all zero. -/
 def IsPivotedList [Zero α] (n : ℕ) : List (Fin n) → List (List α) → Prop
   | [], rows => rows = List.replicate rows.length (List.replicate n 0)
-  | p :: ps, rows =>
-    (rows.headD []).getD p 0 ≠ 0 ∧ (rows.headD []).take p = List.replicate p 0 ∧
-      IsPivotedList n ps rows.tail
+  | _ :: _, [] => False
+  | p :: ps, row :: rows =>
+    row.getD p 0 ≠ 0 ∧ row.take p = List.replicate p 0 ∧ IsPivotedList n ps rows
 
 theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
     (h : IsPivotedList n cols rows) (i : ℕ) :
@@ -136,20 +137,23 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
     cases hr : rows[i]? with
     | none => rfl
     | some row =>
-      rw [Option.getD_some, (List.eq_replicate_iff.mp h).2 row (List.mem_of_getElem? hr)]
-      exact getD_eq_zero_of_forall_eq_zero (fun x hx ↦ (List.mem_replicate.mp hx).2) j
+      rw [Option.getD_some, (List.eq_replicate_iff.mp h).2 row (List.mem_of_getElem? hr),
+        List.getD_eq_getElem?_getD, List.getElem?_getD_replicate_default_eq]
   | cons p ps ih =>
-    obtain ⟨hd, hz, hrest⟩ := h
-    cases i with
-    | zero =>
-      rw [← List.headD_eq_getD]
-      simp only [List.getElem?_cons_zero, Option.elim_some, WithTop.coe_lt_coe, WithTop.coe_eq_coe]
-      refine ⟨fun j hj ↦ ?_, fun c hc ↦ hc ▸ hd⟩
-      rw [List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj, ← List.getD_eq_getElem?_getD]
-      exact getD_eq_zero_of_forall_eq_zero (List.eq_replicate_iff.mp hz).2 j
-    | succ i =>
-      rw [getD_succ]
-      exact ih hrest i
+    cases rows with
+    | nil => exact False.elim h
+    | cons row rows =>
+      obtain ⟨hd, hz, hrest⟩ := h
+      cases i with
+      | zero =>
+        simp only [List.getD_cons_zero, List.getElem?_cons_zero, Option.elim_some,
+          WithTop.coe_lt_coe, WithTop.coe_eq_coe]
+        refine ⟨fun j hj ↦ ?_, fun c hc ↦ hc ▸ hd⟩
+        rw [List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj, hz,
+          List.getElem?_getD_replicate_default_eq]
+      | succ i =>
+        rw [List.getD_cons_succ]
+        exact ih hrest i
 
 theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
     (hinc : isStrictlyIncreasing cols = true) (h : IsPivotedList n cols rows) :
