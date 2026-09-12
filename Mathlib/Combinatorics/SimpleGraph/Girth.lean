@@ -91,6 +91,26 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
   grw [this.egirth_le_length]
   simp [hw]
 
+lemma Walk.three_le_length_of_length_eq_egirth {a} {w : G.Walk a a} (hwg : w.length = G.egirth) :
+    3 ≤ w.length := by
+  simpa [← hwg] using G.three_le_egirth
+
+lemma Walk.not_nil_of_length_eq_egirth {a} {w : G.Walk a a} (hwg : w.length = G.egirth) :
+    ¬ w.Nil := by
+  grind [three_le_length_of_length_eq_egirth]
+
+lemma Walk.IsCircuit.isCycle_of_length_le_egirth {a} {w : G.Walk a a} (hw : w.IsCircuit)
+    (hwg : w.length ≤ G.egirth) : w.IsCycle := by
+  classical
+  refine hw.cycleBypass_eq_self_iff_isCycle_or_nil.mp ?_ |>.resolve_right hw.not_nil
+  rw [w.cycleBypass_eq_self_iff_length_le.mpr]
+  simpa using hwg.trans hw.isCycle_cycleBypass.egirth_le_length
+
+lemma Walk.IsTrail.isCycle_of_length_eq_egirth {a} {w : G.Walk a a} (hw : w.IsTrail)
+    (hwg : w.length = G.egirth) : w.IsCycle :=
+  have hw' : w.IsCircuit := ⟨hw, eq_nil_iff_nil.not.mpr (not_nil_of_length_eq_egirth hwg)⟩
+  hw'.isCycle_of_length_le_egirth hwg.le
+
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
   by_cases hacyc : G.IsAcyclic
@@ -147,6 +167,14 @@ lemma exists_girth_eq_length :
 
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
+
+lemma Walk.length_eq_girth_iff {a} {w : G.Walk a a} (hw : ¬w.Nil) :
+    w.length = G.girth ↔ w.length = G.egirth := by
+  simp [girth, Eq.comm, ENat.toNat_eq_iff (length_eq_zero_iff.not.mpr hw)]
+
+lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
+    (hwg : w.length = G.girth) : w.IsCycle :=
+  hw.isTrail.isCycle_of_length_eq_egirth ((length_eq_girth_iff hw.not_nil).mp hwg)
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
