@@ -5,8 +5,7 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Order.SupIndep
+public import Mathlib.Order.Partition.Finpartition
 
 /-!
 # Partitions
@@ -55,7 +54,6 @@ proved separately.
 
 ## TODO
 
-* Link this to `Finpartition`.
 * Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
 
 -/
@@ -555,3 +553,51 @@ lemma nonempty (P : Partition u) : ∃ f, IsRepFun P f := by
 
 end IsRepFun
 end Partition.IsRepFun
+
+namespace Finpartition
+
+section CompleteLattice
+
+variable [CompleteLattice α]
+
+/-- Converts a `Finpartition` into a `Partition`. -/
+def toPartition : Finpartition x ↪o Partition x where
+  toFun P :=
+    { parts := P.parts
+      sSupIndep' := P.supIndep.sSupIndep
+      bot_notMem' := P.bot_notMem
+      sSup_eq' := by rw [← Finset.sup_id_eq_sSup, P.sup_parts] }
+  inj' :=
+    .of_comp (f := SetLike.coe) <| (SetLike.coe_injective (A := Finset α)).comp <|
+      fun _ _ => Finpartition.ext
+  map_rel_iff' := .rfl
+
+@[simp]
+theorem coe_toPartition (P : Finpartition x) : (P.toPartition : Set α) = P.parts :=
+  rfl
+
+@[simp]
+theorem mem_toPartition (P : Finpartition x) {y : α} : y ∈ P.toPartition ↔ y ∈ P.parts :=
+  .rfl
+
+instance : CanLift (Partition x) (Finpartition x) toPartition (fun P => (P : Set α).Finite) where
+  prf := by
+    rintro ⟨s, hs₁, hs₂, rfl⟩ h
+    lift s to Finset α using h
+    exact ⟨⟨s, hs₁.supIndep, s.sup_id_eq_sSup, hs₂⟩, rfl⟩
+
+@[simp]
+theorem toPartition_top [Decidable (x = ⊥)] : (⊤ : Finpartition x).toPartition = ⊤ := by
+  ext
+  rw [mem_toPartition, mem_parts_top, Partition.mem_top_iff]
+
+end CompleteLattice
+
+theorem toPartition_inf [Order.Frame α] [DecidableEq α] {x : α} {P Q : Finpartition x} :
+    (P ⊓ Q).toPartition = P.toPartition ⊓ Q.toPartition := by
+  ext b
+  simp_rw [Partition.mem_inf_iff, mem_toPartition, parts_inf, Finset.mem_erase, Finset.mem_image,
+    Finset.mem_product, Prod.exists]
+  grind only
+
+end Finpartition
