@@ -41,6 +41,9 @@ theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zer
 @[simp]
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
 
+@[simp]
+theorem nnnorm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖₊ = ‖R‖₊ := by simp [circleMap]
+
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
 
