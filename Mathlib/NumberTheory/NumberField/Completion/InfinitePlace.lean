@@ -84,6 +84,17 @@ structure Completion where
   /-- The underlying element of `v.1.Completion`. -/
   toCompletion : v.1.Completion
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- Prevents `ofCompletion v x` being printed as `{ toCompletion := x }`
+by `delabStructureInstance`. -/
+@[app_delab Completion.ofCompletion]
+meta def Completion.delabOfCompletion : Delab := delabApp
+
+end Notation
+
 namespace Completion
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
