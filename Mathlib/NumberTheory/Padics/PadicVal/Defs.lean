@@ -57,6 +57,9 @@ theorem multiplicity_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 
     multiplicity p n = emultiplicity p n :=
   multiplicity_eq_emultiplicity_of_ne_one hp.out.ne_one hn
 
+@[deprecated (since := "2026-09-12")] alias padicValNat_eq_emultiplicity :=
+  multiplicity_eq_emultiplicity
+
 namespace padicValNat
 
 @[deprecated (since := "2026-03-15")]

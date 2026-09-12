@@ -801,7 +801,7 @@ theorem sub_one_mul_multiplicity_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact
   convert! @sub_one_mul_multiplicity_choose_eq_sub_sum_digits' _ _ _ ‹_›
   all_goals lia
 
-@[deprecated (since := "2026-09-11")] alias sub_one_mul_mpadicValNat_choose_eq_sub_sum_digits :=
+@[deprecated (since := "2026-09-11")] alias sub_one_mul_padicValNat_choose_eq_sub_sum_digits :=
   sub_one_mul_multiplicity_choose_eq_sub_sum_digits
 
 end multiplicity
