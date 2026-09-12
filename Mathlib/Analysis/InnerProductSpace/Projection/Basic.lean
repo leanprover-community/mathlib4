@@ -230,6 +230,32 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
   rw [starProjection_apply, U.norm_eq_iInf_iff_inner_eq_zero (Submodule.coe_mem _)]
   exact starProjection_inner_eq_zero _
 
+/-- The distance from `y` to its orthogonal projection onto `U` is `Metric.infDist y U`. -/
+theorem dist_starProjection_eq_infDist
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
+    dist y (U.starProjection y) = Metric.infDist y U := by
+  simp [Metric.infDist_eq_iInf, U.starProjection_minimal, dist_eq_norm]
+
+/-- The nonnegative distance from `y` to its orthogonal projection onto `U` is
+`Metric.infNndist y U`. -/
+theorem nndist_starProjection_eq_infNndist
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
+    nndist y (U.starProjection y) = Metric.infNndist y U := by
+  ext; simp [dist_starProjection_eq_infDist, ← Metric.coe_infNndist]
+
+/-- The norm of the orthogonal projection of `y` onto `U` is `Metric.infDist y Uᗮ`. -/
+theorem norm_starProjection_eq_infDist
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
+    ‖U.starProjection y‖ = Metric.infDist y Uᗮ := by
+  simp [← Uᗮ.dist_starProjection_eq_infDist y]
+
+/-- The nonnegative norm of the orthogonal projection of `y` onto `U` is
+`Metric.infNndist y Uᗮ`. -/
+theorem nnnorm_starProjection_eq_infNndist
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
+    ‖U.starProjection y‖₊ = Metric.infNndist y Uᗮ := by
+  simp [← nndist_starProjection_eq_infNndist, nndist_eq_nnnorm]
+
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
 theorem orthogonalProjectionOnto_mem_subspace_eq_self (v : K) :
