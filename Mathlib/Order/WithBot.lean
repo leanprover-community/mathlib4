@@ -679,7 +679,7 @@ lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
 end PartialOrder
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
-  sup
+  max
     -- note this is `Option.merge`, but with the right defeq when unfolding
     | ⊥, ⊥ => ⊥
     | (a : α), ⊥ => a
@@ -691,7 +691,7 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
 
 @[to_dual existing]
 instance _root_.WithTop.semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
-  inf
+  min
     -- note this is `Option.merge`, but with the right defeq when unfolding
     | ⊤, ⊤ => ⊤
     | (a : α), ⊤ => a
@@ -702,14 +702,14 @@ instance _root_.WithTop.semilatticeInf [SemilatticeInf α] : SemilatticeInf (Wit
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) where
-  inf := .map₂ (· ⊓ ·)
+  min := .map₂ (· ⊓ ·)
   inf_le_left x y := by cases x <;> cases y <;> simp
   inf_le_right x y := by cases x <;> cases y <;> simp
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
 
 @[to_dual existing]
 instance _root_.WithTop.semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) where
-  sup := .map₂ (· ⊔ ·)
+  max := .map₂ (· ⊔ ·)
   le_sup_left x y := by cases x <;> cases y <;> simp
   le_sup_right x y := by cases x <;> cases y <;> simp
   sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le

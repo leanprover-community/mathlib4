@@ -733,13 +733,11 @@ theorem const_inf [Min β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l �
   rfl
 
 instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) where
-  sup := max
   le_sup_left f g := inductionOn₂ f g fun _f _g => Eventually.of_forall fun _x ↦ le_sup_left
   le_sup_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ le_sup_right
   sup_le f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ sup_le
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) where
-  inf := min
   inf_le_left f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_left
   inf_le_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_right
   le_inf f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ le_inf

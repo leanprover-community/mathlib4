@@ -44,8 +44,8 @@ def MyPred (α : Type) := α → Prop
 noncomputable instance myPredDistribLattice : DistribLattice (MyPred ℕ) where
   __ : DistribLattice (ℕ → Prop) := inferInstance
   le s t := ∀ x, s x → t x
-  inf s t x := s x ∧ t x
-  sup s t x := s x ∨ t x
+  min s t x := s x ∧ t x
+  max s t x := s x ∨ t x
 
 noncomputable instance myPredBoundedOrder : BoundedOrder (MyPred ℕ) where
   __ : BoundedOrder (ℕ → Prop) := inferInstance
