@@ -16,6 +16,11 @@ the monoidal category structure on the category of presheaves of modules
 `PresheafOfModulesOfCommRing R`. The tensor product `M₁ ⊗ M₂` is defined
 as the presheaf of modules which sends `X : Cᵒᵖ` to `M₁.obj X ⊗ M₂.obj X`.
 
+The universal property of this tensor product is given by
+`PresheafOfModulesOfCommRing.tensorLift`: a family of bilinear maps compatible with
+restriction induces a morphism from the tensor product. The lemma
+`PresheafOfModulesOfCommRing.tensor_ext` gives uniqueness by testing on pure tensors.
+
 ## Notes
 
 This contribution was created as part of the AIM workshop
@@ -225,6 +230,47 @@ lemma braiding_inv_app (X : Cᵒᵖ) :
       (braiding (M₁.obj X) (M₂.obj X)).inv := rfl
 
 end
+
+section TensorLift
+
+variable {M₁ M₂ M₃ : PresheafOfModulesOfCommRing.{u} R}
+
+/-- Morphisms out of a tensor product of presheaves of modules are determined by their
+values on pure tensors. -/
+lemma tensor_ext {f g : M₁ ⊗ M₂ ⟶ M₃}
+    (h : ∀ (X : Cᵒᵖ) (m₁ : M₁.obj X) (m₂ : M₂.obj X),
+      f.app X (m₁ ⊗ₜ[R.obj X] m₂) = g.app X (m₁ ⊗ₜ[R.obj X] m₂)) : f = g := by
+  ext1 X
+  exact ModuleCat.MonoidalCategory.tensor_ext (h X)
+
+variable (f : ∀ (X : Cᵒᵖ), M₁.obj X → M₂.obj X → M₃.obj X)
+  (hadd₁ : ∀ X m₁ m₁' m₂, f X (m₁ + m₁') m₂ = f X m₁ m₂ + f X m₁' m₂)
+  (hsmul₁ : ∀ X (a : R.obj X) m₁ m₂, f X (a • m₁) m₂ = a • f X m₁ m₂)
+  (hadd₂ : ∀ X m₁ m₂ m₂', f X m₁ (m₂ + m₂') = f X m₁ m₂ + f X m₁ m₂')
+  (hsmul₂ : ∀ X (a : R.obj X) m₁ m₂, f X m₁ (a • m₂) = a • f X m₁ m₂)
+  (hnat : ∀ {X Y : Cᵒᵖ} (g : X ⟶ Y) m₁ m₂,
+    f Y (M₁.map g m₁) (M₂.map g m₂) = M₃.map g (f X m₁ m₂))
+
+/-- A family of bilinear maps compatible with restriction induces a morphism out of the
+tensor product of two presheaves of modules. -/
+noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
+  homMk (fun X ↦ ModuleCat.MonoidalCategory.tensorLift (f X)
+    (hadd₁ X) (hsmul₁ X) (hadd₂ X) (hsmul₂ X)) (fun g ↦
+      ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₂ ↦ hnat g m₁ m₂))
+
+@[simp]
+lemma tensorLift_app_tmul (X : Cᵒᵖ) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
+    (tensorLift f hadd₁ hsmul₁ hadd₂ hsmul₂ hnat).app X (m₁ ⊗ₜ[R.obj X] m₂) =
+      f X m₁ m₂ := rfl
+
+/-- The morphism induced by a compatible family of bilinear maps is unique. -/
+lemma tensorLift_unique (g : M₁ ⊗ M₂ ⟶ M₃)
+    (h : ∀ (X : Cᵒᵖ) (m₁ : M₁.obj X) (m₂ : M₂.obj X),
+      g.app X (m₁ ⊗ₜ[R.obj X] m₂) = f X m₁ m₂) :
+    g = tensorLift f hadd₁ hsmul₁ hadd₂ hsmul₂ hnat :=
+  tensor_ext h
+
+end TensorLift
 
 instance (F : PresheafOfModulesOfCommRing.{u} R) :
     PreservesColimitsOfSize.{u, u} (tensorLeft F) where
