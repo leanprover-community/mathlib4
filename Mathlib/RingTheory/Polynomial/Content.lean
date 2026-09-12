@@ -78,6 +78,13 @@ theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
 theorem isPrimitive_iff_ne_zero {F : Type*} [Field F] (p : F[X]) : p.IsPrimitive ↔ p ≠ 0 :=
   ⟨IsPrimitive.ne_zero, fun h _ hrp ↦ .mk0 _ fun hr ↦ ne_zero_of_dvd_ne_zero h hrp <| hr ▸ C_0⟩
 
+theorem isPrimitive_iff_isUnit_of_natDegree_eq_zero {p : R[X]} (hdeg : p.natDegree = 0) :
+    IsPrimitive p ↔ IsUnit p := by
+  refine ⟨?_, fun hp ↦ isPrimitive_of_dvd isPrimitive_one (isUnit_iff_dvd_one.mp hp)⟩
+  intro hp
+  rw [eq_C_of_natDegree_eq_zero hdeg] at hp ⊢
+  exact isUnit_C.mpr (hp _ dvd_rfl)
+
 end Primitive
 
 variable {R : Type*} [CommRing R]
@@ -384,6 +391,13 @@ theorem associated_primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
     p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart, mul_mul_mul_comm, ← C_mul]
   gcongr
   exact (associated_content_mul ..).symm.map _
+
+theorem associated_primPart_C_mul {r : R} (p : R[X]) (hr : r ≠ 0) :
+    Associated (C r * p).primPart p.primPart := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  · exact (associated_primPart_mul (mul_ne_zero (C_ne_zero.mpr hr) hp)).trans
+      (associated_unit_mul_left _ _ (isUnit_primPart_C r))
 
 @[simp]
 theorem primPart_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] {p q : R[X]} (h0 : p * q ≠ 0) :
