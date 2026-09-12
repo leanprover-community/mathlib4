@@ -873,7 +873,7 @@ def nonemptyTheory : L.Theory :=
 /-- A theory indicating that each of a set of constants is distinct. -/
 def distinctConstantsTheory (s : Set α) : L[[α]].Theory :=
   (fun ab : α × α => ((L.con ab.1).term.equal (L.con ab.2).term).not) ''
-  (s ×ˢ s ∩ (Set.diagonal α)ᶜ)
+  (s ×ˢ s ∩ (Set.diagonalUniv α)ᶜ)
 
 variable {L}
 

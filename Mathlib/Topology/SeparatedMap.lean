@@ -43,7 +43,8 @@ open Topology
 
 variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
 
-protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
+protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) :
+    IsEmbedding (toPullbackDiag f) :=
   .mk' _ (injective_toPullbackDiag f) fun x ↦ by
     simp [nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod, Function.comp_def,
       Filter.comap_id']

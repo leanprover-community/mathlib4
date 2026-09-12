@@ -58,8 +58,9 @@ theorem mem_prod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     exact mem_inf_of_inter (preimage_mem_comap ht₁) (preimage_mem_comap ht₂) h
 
 @[simp]
-theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : (diagonal α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
-  simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonal_iff_disjoint]
+theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} :
+    (diagonalUniv α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
+  simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonalUniv_iff_disjoint]
 
 @[simp]
 theorem prod_mem_prod_iff [f.NeBot] [g.NeBot] : s ×ˢ t ∈ f ×ˢ g ↔ s ∈ f ∧ t ∈ g :=
@@ -203,7 +204,7 @@ theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α ×
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
   exact (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 
-theorem tendsto_diag : Tendsto Function.diag f (f ×ˢ f) :=
+theorem tendsto_diag : Tendsto Function.diagonal f (f ×ˢ f) :=
   tendsto_iff_eventually.mpr fun _ hpr => hpr.diag_of_prod
 
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :

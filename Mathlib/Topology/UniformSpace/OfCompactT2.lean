@@ -43,14 +43,14 @@ variable {γ : Type*}
 /-- The unique uniform structure inducing a given compact topological structure. -/
 @[instance_reducible]
 def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ] : UniformSpace γ where
-  uniformity := 𝓝ˢ (diagonal γ)
+  uniformity := 𝓝ˢ (diagonalUniv γ)
   symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
   comp := by
       /-
         This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
       -/
-    set 𝓝Δ := 𝓝ˢ (diagonal γ)
+    set 𝓝Δ := 𝓝ˢ (diagonalUniv γ)
     -- The filter of neighborhoods of Δ
     set F := 𝓝Δ.lift' fun s : Set (γ × γ) => s ○ s
     -- Compositions of neighborhoods of Δ
@@ -70,7 +70,7 @@ def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ]
         closure_compl] at clV
       apply clV
       rw [mem_interior_iff_mem_nhds]
-      exact nhds_le_nhdsSet (mem_diagonal y) V_in
+      exact nhds_le_nhdsSet (mem_diagonalUniv y) V_in
     -- Since γ is compact and Hausdorff, it is T₄, hence T₃.
     -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
     -- disjoint open neighborhoods U₁ and U₂.

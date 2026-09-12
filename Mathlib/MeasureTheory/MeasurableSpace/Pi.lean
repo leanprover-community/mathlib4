@@ -37,7 +37,7 @@ lemma MeasurableSpace.pi_eq_generateFrom_projections {mα : ∀ i, MeasurableSpa
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
     IsPiSystem (pi univ '' pi univ C) := by
   rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
-  rw [← pi_inter_distrib] at hst ⊢; rw [univ_pi_nonempty_iff] at hst
+  rw [← pi_inter_distrib] at hst ⊢; rw [univ_pi_nonempty] at hst
   exact mem_image_of_mem _ fun i _ => hC i _ (hs₁ i (mem_univ i)) _ (hs₂ i (mem_univ i)) (hst i)
 
 /-- Boxes form a π-system. -/

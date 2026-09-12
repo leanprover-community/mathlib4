@@ -186,9 +186,9 @@ theorem t0Space_iff_uniformity' :
     T0Space α ↔ Pairwise fun x y ↦ ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
   simp [t0Space_iff_not_inseparable, inseparable_iff_ker_uniformity]
 
-theorem t0Space_iff_ker_uniformity : T0Space α ↔ (𝓤 α).ker = diagonal α := by
-  simp_rw [t0Space_iff_uniformity, subset_antisymm_iff, diagonal_subset_iff, subset_def,
-    Prod.forall, Filter.mem_ker, mem_diagonal_iff, iff_self_and]
+theorem t0Space_iff_ker_uniformity : T0Space α ↔ (𝓤 α).ker = diagonalUniv α := by
+  simp_rw [t0Space_iff_uniformity, subset_antisymm_iff, diagonalUniv_subset_iff, subset_def,
+    Prod.forall, Filter.mem_ker, mem_diagonalUniv_iff, iff_self_and]
   exact fun _ x s hs ↦ refl_mem_uniformity hs
 
 theorem eq_of_uniformity {α : Type*} [UniformSpace α] [T0Space α] {x y : α}

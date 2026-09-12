@@ -314,7 +314,7 @@ theorem Definable.singleton_of_mem {a : M} {A : Set M} (ha : a ∈ A) :
 
 /-- The 2-dimensional diagonal is definable independent from parameters. -/
 theorem Definable.diagonal (A : Set M) :
-    A.Definable₂ L (diagonal M) := by
+    A.Definable₂ L (diagonalUniv M) := by
   exists (Term.var 0).equal (Term.var 1)
 
 end Set
