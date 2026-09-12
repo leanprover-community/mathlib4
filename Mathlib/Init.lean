@@ -43,6 +43,7 @@ public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.MinImports
 -- This import makes the binder plicity code action available globally
 public import Mathlib.Util.CodeActions
+public import Mathlib.Util.PrivateProof
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
