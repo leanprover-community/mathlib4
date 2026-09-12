@@ -46,37 +46,8 @@ variable [DecidableEq (K →+* ℂ)]
 include α β σ α' β' γ' hirr htriv habc in
 lemma iteratedkDeriv_R_eq_zero (k' : Fin (n K q)) (l' : Fin (m K)) :
     deriv^[k'] (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l' + 1) = 0 := by
-  let u : Fin (m K * n K q) := (finProdFinEquiv.toFun ⟨l',k'⟩)
-  have h1 := coeffs_mul_deriv_eq_zero α β σ α' β' γ' hirr htriv habc q hq0 u h2mq
-  unfold k at *
-  unfold l at *
-  unfold u at *
-  simp only [Equiv.toFun_as_coe,
-    Equiv.symm_apply_apply] at *
-  have : (σ (cCoeffs α' β' γ' q) *
-   (Complex.log α)^(-k' : ℤ)) * deriv^[k'] (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l'+1) =
-    (σ (cCoeffs α' β' γ' q) *
-    (Complex.log α)^(-k' :
-        ℤ)) * 0 → deriv^[k'] (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l' + 1) = 0 := by
-      apply mul_left_cancel₀
-      by_contra H
-      simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow,
-        map_intCast, zpow_neg, zpow_natCast,
-        mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq, not_or, inv_eq_zero] at H
-      rcases H with ⟨h1, h2⟩
-      · apply c₁_ne_zero α' β' γ'; assumption
-      ·  apply c₁_ne_zero α' β' γ'; rename_i h2; exact h2.1
-      · apply c₁_ne_zero α' β' γ'; rename_i h2; exact h2.1
-      · have : Complex.log α ≠ 0 :=
-         mt (fun h ↦ by simpa [exp_log htriv.1, exp_zero] using congrArg exp h) htriv.2
-        apply this; rename_i h2; exact h2.1
-  rw [this]
-  rw [mul_zero]
-  rw [mul_assoc]
-  simp only [mul_assoc] at *
-  rw [← h1]
-  simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow, map_intCast, zpow_neg, zpow_natCast,
-    Nat.cast_add, Nat.cast_one]
+  simpa [k, l] using iteratedDeriv_R_eq_zero α β σ α' β' γ' hirr htriv habc q hq0
+    (finProdFinEquiv ⟨l', k'⟩) h2mq
 
 open AnalyticOnNhd
 
