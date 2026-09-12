@@ -8,10 +8,10 @@ module
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
-# Criterion for bases of root systems
+# Criterion for bases of finite root systems
 
-Given a root pairing $P$, sufficient conditions for a subset of linearly indpendent roots $r_i$,
-$i ∈ s$ to be a base for a finite root pairing are:
+Given a finite root pairing $P$, sufficient conditions for a subset of linearly indpendent roots
+$r_i$, $i ∈ s$ to be a base for $P$ are:
  1. $⟨c_j, r_i⟩ ≤ 0$ for all $i ≠ j$, where $c_j$ is the coroot corresponding to the root $r_j$.
  2. Every root $α$ can be written as $α = w • r_i$ for some $i ∈ s$ and $w$ is a product of
     reflections corresponding to elements of $s$.
@@ -27,6 +27,63 @@ open Function Set Matrix
 -- TODO Rewrite the absurd Claude proof below into something suitable for Mathlib.
 
 namespace RootPairing
+
+private lemma linearIndepOn_coroot_iff_aux' [Fintype ι] [IsDomain R] [NeZero (2 : R)]
+    (P : RootPairing ι R M N) [P.IsAnisotropic]
+    (s : Finset ι) (h : LinearIndepOn R P.root s) :
+    LinearIndepOn R P.coroot s := by
+  classical
+  rw [← linearIndependent_restrict_iff, Fintype.linearIndependent_iff] at h ⊢
+  simp only [Set.domRestrict_apply] at h ⊢
+  intro c hc k
+  set n : (↑s : Set ι) → R := fun i ↦ P.RootForm (P.root i) (P.root i) with hn
+  have hn0 : ∀ i, n i ≠ 0 := fun i ↦ IsAnisotropic.rootForm_root_ne_zero (i : ι)
+  set m : (↑s : Set ι) → R := fun i ↦ ∏ j ∈ Finset.univ.erase i, n j with hm
+  have hm0 : ∀ i, m i ≠ 0 := fun i ↦ Finset.prod_ne_zero_iff.mpr fun j _ ↦ hn0 j
+  have hnm : ∀ i, n i * m i = ∏ j, n j := fun i ↦ Finset.mul_prod_erase _ _ (Finset.mem_univ i)
+  have hpol : ∀ i : (↑s : Set ι),
+      n i • P.coroot (i : ι) = (2 : R) • P.Polarization (P.root (i : ι)) := by
+    intro i
+    rw [hn, P.rootForm_self_smul_coroot, ← Nat.cast_smul_eq_nsmul R]
+    norm_num
+  set v : M := ∑ i, (2 * (c i * m i)) • P.root (i : ι) with hv
+  have hterm : ∀ i : (↑s : Set ι), P.Polarization ((2 * (c i * m i)) • P.root (i : ι))
+      = (∏ j, n j) • (c i • P.coroot (i : ι)) := by
+    intro i
+    rw [map_smul]
+    have h1 : (∏ j, n j) • (c i • P.coroot (i : ι)) = (m i * c i) • (n i • P.coroot (i : ι)) := by
+      rw [smul_smul, smul_smul, ← hnm i]
+      congr 1
+      ring
+    rw [h1, hpol i, smul_smul]
+    congr 1
+    ring
+  have key : P.Polarization v = 0 := by
+    rw [hv, map_sum]
+    calc ∑ i, P.Polarization ((2 * (c i * m i)) • P.root (i : ι))
+        = ∑ i, (∏ j, n j) • (c i • P.coroot (i : ι)) := Finset.sum_congr rfl fun i _ ↦ hterm i
+      _ = (∏ j, n j) • ∑ i, c i • P.coroot (i : ι) := (Finset.smul_sum ..).symm
+      _ = 0 := by rw [hc, smul_zero]
+  have hmem : v ∈ P.rootSpan R :=
+    Submodule.sum_mem _ fun i _ ↦
+      Submodule.smul_mem _ _ (Submodule.subset_span (mem_range_self (i : ι)))
+  have hzero : v = 0 := by
+    have hdisj := P.disjoint_rootSpan_ker_rootForm (R := R)
+    rw [← P.ker_polarization_eq_ker_rootForm] at hdisj
+    exact Submodule.disjoint_def.mp hdisj v hmem key
+  have hck := h (fun i ↦ 2 * (c i * m i)) hzero k
+  rcases mul_eq_zero.mp hck with h | h
+  · exact absurd h two_ne_zero
+  · rcases mul_eq_zero.mp h with h' | h'
+    · exact h'
+    · exact absurd h' (hm0 k)
+
+-- TODO Move and use to replace `linearIndepOn_coroot_iff`
+lemma linearIndepOn_coroot_iff' [Fintype ι] [IsDomain R] [NeZero (2 : R)]
+    (P : RootPairing ι R M N) [P.IsAnisotropic]
+    (s : Finset ι) :
+    LinearIndepOn R P.coroot s ↔ LinearIndepOn R P.root s :=
+  ⟨P.flip.linearIndepOn_coroot_iff_aux' s, P.linearIndepOn_coroot_iff_aux' s⟩
 
 lemma exists_root_eq_smul_root_iff (P : RootPairing ι R M N) (s : Set ι) (i j : ι) :
     (∃ w ∈ Subgroup.closure (Equiv.reflection P '' s), P.root i = w • P.root j) ↔
@@ -486,15 +543,17 @@ private lemma nonneg_or_nonpos_aux (s : Finset ι) [DecidableEq ι] {A : Matrix 
 
 variable (s : Finset ι)
   (h₀ : LinearIndepOn R P.root s)
-  (h₀' : LinearIndepOn R P.coroot s)
   (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0)
   (h₂ : ∀ i, ∃ᵉ (w ∈ Subgroup.closure (Equiv.reflection P '' s)) (j ∈ s), P.root i = w • P.root j)
-include h₀' h₁ h₂
+include h₀ h₁ h₂
 
 lemma bar (i : ι) :
      P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
     -P.root i ∈ AddSubmonoid.closure (P.root '' s) := by
   classical
+  have h₀' : LinearIndepOn R P.coroot s := by
+    have : Fintype ι := Fintype.ofFinite ι
+    rwa [P.linearIndepOn_coroot_iff']
   have h₂' : ∀ i, ∃ σ ∈ Subgroup.closure (P.reflectionPerm '' s),
       ∃ j ∈ s, i = σ j := by
     intro i
@@ -541,20 +600,22 @@ public def Base.mk'' :
     P.Base where
   support := s
   linearIndepOn_root := h₀
-  linearIndepOn_coroot := h₀'
-  root_mem_or_neg_mem := P.bar s h₀' h₁ h₂
+  linearIndepOn_coroot := by
+    have : Fintype ι := Fintype.ofFinite ι
+    rwa [P.linearIndepOn_coroot_iff']
+  root_mem_or_neg_mem := P.bar s h₀ h₁ h₂
   coroot_mem_or_neg_mem i := by
-    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-    apply P.flip.bar s h₀ (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm)
-    intro j
+    replace h₀ : LinearIndepOn R P.coroot s := by
+      have : Fintype ι := Fintype.ofFinite ι
+      rwa [P.linearIndepOn_coroot_iff']
+    refine P.flip.bar s h₀ (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm) (fun j ↦ ?_) ?_
     obtain ⟨w, hw, k, hk, hjk⟩ := h₂ j
     obtain ⟨σ, hσ, hσ'⟩ := (P.exists_root_eq_smul_root_iff s j k).mp ⟨w, hw, hjk⟩
     obtain ⟨w', hw', hw''⟩ := (P.flip.exists_root_eq_smul_root_iff s j k).mpr ⟨σ, hσ, hσ'⟩
     exact ⟨w', hw', k, hk, hw''⟩
 
 @[simp] lemma Base.mk''_support :
-    (Base.mk'' P s h₀ h₀' h₁ h₂).support = s := by
+    (Base.mk'' P s h₀ h₁ h₂).support = s := by
   rfl
 
 end RootPairing
