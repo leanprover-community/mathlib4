@@ -946,7 +946,7 @@ lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy 
     rw [← map_univ_equiv (Equiv.mulRight y⁻¹), filter_map, card_map]
   congr 2 with g
   simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
-  let f' := MonoidHomClass.toMonoidHom f
+  let f' := MonoidHom.ofClass f
   change f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
   rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 
