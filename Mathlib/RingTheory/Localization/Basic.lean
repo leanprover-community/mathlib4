@@ -384,12 +384,12 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     IsLocalization (Algebra.algebraMapSubmonoid S₁ M₂) T where
   map_units := by
     rintro ⟨m, ⟨a, ha, rfl⟩⟩
-    simp only [MonoidHom.coe_coe]
+    simp only [MonoidHom.coe_ofClass]
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
     exact IsUnit.map _ (IsLocalization.map_units _ ⟨a, ha⟩)
   surj a := by
     obtain ⟨⟨y, -, m, hm, rfl⟩, hy⟩ := surj (M := Algebra.algebraMapSubmonoid S₂ M₁) a
-    simp only [MonoidHom.coe_coe] at hy
+    simp only [MonoidHom.coe_ofClass] at hy
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₁ T] at hy
     obtain ⟨⟨z, n, hn⟩, hz⟩ := IsLocalization.surj (M := M₂) y
     have hunit : IsUnit (algebraMap R S₁ m) := map_units _ ⟨m, hm⟩
@@ -408,7 +408,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     simp_rw [← map_mul, hr, hs, ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R S₂ T] at hxy
     obtain ⟨⟨-, c, hmc, rfl⟩, hc⟩ := exists_of_eq (M := Algebra.algebraMapSubmonoid S₂ M₁) hxy
-    simp only [MonoidHom.coe_coe] at hc
+    simp only [MonoidHom.coe_ofClass] at hc
     simp_rw [← map_mul] at hc
     obtain ⟨a, ha⟩ := IsLocalization.exists_of_eq (M := M₂) hc
     use ⟨algebraMap R S₁ a, a, a.property, rfl⟩

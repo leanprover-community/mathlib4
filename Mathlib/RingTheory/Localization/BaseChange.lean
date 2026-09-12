@@ -433,7 +433,7 @@ def IsLocalization.Away.tensorProductEquivTMulRight (g : A) (B : Type*) [CommSem
       ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom)
       (Localization.Away ((1 : S) ⊗ₜ[R] g)) := by
     simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
-      Submonoid.map_powers, MonoidHom.coe_coe, Algebra.TensorProduct.includeRight_apply]
+      Submonoid.map_powers, MonoidHom.coe_ofClass, Algebra.TensorProduct.includeRight_apply]
     infer_instance
   IsLocalization.tensorProductEquivOfMapIncludeRight _ _ (.powers g) _ _
 
@@ -447,7 +447,7 @@ lemma IsLocalization.Away.tensorProductEquivTMulRight_tmul (g : A) (B : Type*) [
       ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom)
       (Localization.Away ((1 : S) ⊗ₜ[R] g)) := by
     simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
-      Submonoid.map_powers, MonoidHom.coe_coe, Algebra.TensorProduct.includeRight_apply]
+      Submonoid.map_powers, MonoidHom.coe_ofClass, Algebra.TensorProduct.includeRight_apply]
     infer_instance
   IsLocalization.tensorProductEquivOfMapIncludeRight_tmul _ _ _ _ _ _
 

@@ -323,7 +323,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     RatFunc.liftOn f
       (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
       fun {p q p' q'} hq hq' h => by
-        rw [← MonoidHom.coe_coe]
+        rw [← MonoidHom.coe_ofClass]
         simp only [Submonoid.mem_comap.mp (hφ hq), Submonoid.mem_comap.mp (hφ hq'),
           dite_eq_left, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
         refine Localization.r_of_eq ?_
@@ -350,7 +350,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     map φ hφ (ofFractionRing (Localization.mk n d)) =
       ofFractionRing (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
   simp [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
-    MonoidHom.coe_coe φ ▸ Submonoid.mem_comap.mp (hφ d.2)]
+    MonoidHom.coe_ofClass φ ▸ Submonoid.mem_comap.mp (hφ d.2)]
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by

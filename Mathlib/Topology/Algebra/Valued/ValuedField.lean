@@ -518,11 +518,11 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
         fun γ : (ValueGroup₀ (.ofClass hv.v))ˣ ↦ { x | extensionValuation x <
           (Units.map (ValueGroup₀.embedding (f := (.ofClass hv.v))) γ).1 } by
       rw [this.mem_iff]
-      simp only [extensionValuation_toFun, Units.coe_map, MonoidHom.coe_coe, true_and]
+      simp only [extensionValuation_toFun, Units.coe_map, MonoidHom.coe_ofClass, true_and]
       have (x : hat K) (γ : (ValueGroup₀ (.ofClass hv.v))ˣ) : extensionValuation.restrict x <
           ((Units.map valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
           embedding (extension x) < embedding γ.1 := by
-        simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe]
+        simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_ofClass]
         rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
         by_cases hx0 : x = 0
         · simp only [hx0]

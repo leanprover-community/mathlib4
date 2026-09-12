@@ -221,7 +221,7 @@ protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
   ext
   simp only [map,
-    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
+    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_ofClass]
   exact Eq.symm (RingHom.map_det f g.1)
 
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
