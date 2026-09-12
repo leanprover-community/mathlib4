@@ -85,7 +85,7 @@ lemma sum_ne_zero_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ o
 /-- **Triangle equality** for a finite sum: the norm of the sum equals the sum of the norms
 exactly when the summands pairwise lie on a common closed ray. -/
 theorem norm_sum_eq_iff_pairwise_sameRay :
-        ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ (s : Set ι).Pairwise (SameRay ℝ on v) := by
+    ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ (s : Set ι).Pairwise (SameRay ℝ on v) := by
   refine ⟨?_, norm_sum_eq_of_pairwise_sameRay⟩
   induction s using Finset.cons_induction with
   | empty => simp
