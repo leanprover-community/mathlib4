@@ -78,6 +78,9 @@ theorem factorization_le_multiplicity {n p : ℕ} : n.factorization p ≤ multip
   · exact (factorization_def n pp).le
   · simp [n.factorization.notMem_support_iff.mp (mt prime_of_mem_primeFactors pp)]
 
+@[deprecated (since := "2026-09-12")] alias padicValNat_le_multiplicity :=
+  factorization_le_multiplicity
+
 theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
     n.factorization = Multiset.toFinsupp (n.primeFactorsList : Multiset ℕ) :=
   rfl

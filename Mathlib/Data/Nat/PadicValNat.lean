@@ -54,7 +54,7 @@ theorem maxPowDvdDiv_of_not_dvd {p n : ℕ} (h : ¬p ∣ n) : maxPowDvdDiv p n =
 theorem maxPowDvdDiv_one_right (p : ℕ) : maxPowDvdDiv p 1 = (0, 1) := by
   rcases eq_or_ne p 1 with rfl | hp <;> simp [maxPowDvdDiv_of_not_dvd, *]
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_one_right := multiplicity_one_right
+@[deprecated (since := "2026-09-11")] alias _root_.padicValNat_one_right := multiplicity_one_right
 
 @[simp]
 theorem divMaxPow_one_left (p : ℕ) : divMaxPow 1 p = 1 := by simp [divMaxPow]
@@ -189,7 +189,7 @@ theorem maxPowDvdDiv_self {p : ℕ} (hp : 1 < p) : p.maxPowDvdDiv p = (1, 1) := 
 theorem _root_.multiplicity_base {p : ℕ} (hp : 1 < p) : multiplicity p p = 1 := by
   simpa using multiplicity_base_pow hp 1
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_base := multiplicity_base
+@[deprecated (since := "2026-09-11")] alias _root_.padicValNat_base := multiplicity_base
 
 @[simp]
 theorem divMaxPow_self {p : ℕ} (hp : p ≠ 0) : p.divMaxPow p = 1 := by

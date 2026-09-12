@@ -25,8 +25,8 @@ We first plug in `a = b = n` to get the basic constraint `∀ n, f n ∣ n ^ n`.
 unless `f` is the identity, every odd prime must satisfy `f p = 1`. From here, any odd prime divisor
 of `f n` is ruled out by taking `a = n, b = p`, so `f n` is always a power of `2`.
 Finally, evaluating `a = n, b = 3` gives `f n ∣ 3 ^ n - 1`, and according to the LTE lemma, we have
-`padicValNat 2 (3 ^ n - 1) = padicValNat 2 n + 2` for `Even n`. Therefore,
-`f(n) ≤ 2 ^ (padicValNat 2 n + 2) ≤ 4 * n`, so `c=4` works.
+`multiplicity 2 (3 ^ n - 1) = multiplicity 2 n + 2` for `Even n`. Therefore,
+`f(n) ≤ 2 ^ (multiplicity 2 n + 2) ≤ 4 * n`, so `c=4` works.
 
 A matching construction is `f n = 1` for `Odd n`, `f 4 = 16`, and `f n = 2` for other `Even n`,
 which attains the bound, showing the optimal answer is `c = 4`.
@@ -133,22 +133,22 @@ end IsBonza
 def fExample : ℕ → ℕ := fun x ↦
   if ¬ 2 ∣ x then 1
   else if x = 2 then 4
-  else 2 ^ (padicValNat 2 x + 2)
+  else 2 ^ (multiplicity 2 x + 2)
 
 namespace fExample
 
 lemma dvd_pow_sub {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (hx : 2 ∣ x) :
-    2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
+    2 ^ (multiplicity 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (multiplicity 2 a + 2) := by
   refine dvd_sub ?_ ?_
-  · exact (pow_dvd_pow 2 (padicValNat_add_le_self (hp := fact_prime_two) (by lia))).trans
+  · exact (pow_dvd_pow 2 (multiplicity_add_le_self (hp := fact_prime_two) (by lia))).trans
       (pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hb) a)
   · calc
-    _ ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by
+    _ ∣ (2 : ℤ) ^ 2 ^ (multiplicity 2 a + 2) := by
       refine pow_dvd_pow 2 ?_
       calc
-      _ < 2 ^ (padicValNat 2 a + 1) := Nat.lt_two_pow_self
+      _ < 2 ^ (multiplicity 2 a + 1) := Nat.lt_two_pow_self
       _ ≤ _ := by simp [Nat.pow_le_pow_iff_right le.refl]
-    _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
+    _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (multiplicity 2 a + 2))
 
 /-- To verify the example is a bonza function -/
 lemma isBonza : IsBonza fExample := by
@@ -166,15 +166,15 @@ lemma isBonza : IsBonza fExample := by
       · refine dvd_sub ?_ ?_
         · have : 2 ∣ (b : ℤ) := by grind
           simpa using pow_dvd_pow_of_dvd this 2
-        · exact Dvd.dvd.pow ⟨2 ^ padicValNat 2 b, by ring⟩ (zero_ne_add_one 3).symm
+        · exact Dvd.dvd.pow ⟨2 ^ multiplicity 2 b, by ring⟩ (zero_ne_add_one 3).symm
     · simp only [fExample, ch1, ↓reduceIte, ch2, Nat.cast_pow, Nat.cast_ofNat, Nat.two_dvd_ne_zero,
         Nat.cast_ite, Nat.cast_one, ite_pow, one_pow]
       split_ifs with hb1 hb2
       · by_cases lt : b = 1
         · simp [lt]
-        have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
+        have : (multiplicity 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
           rw [← Int.natCast_pow_pred b a hb]
-          exact padicValNat.pow_two_sub_one_ge (by lia) (two_dvd_ne_zero.mpr hb1) (by lia)
+          exact multiplicity.pow_two_sub_one_ge (by lia) (two_dvd_ne_zero.mpr hb1) (by lia)
             (even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
       · grind [dvd_pow_sub]
@@ -195,16 +195,16 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
         rwa [Nat.cast_ofNat, eq1, Nat.cast_one, one_pow, eq2, ofNat_dvd] at this
       rw [hk] at apply_dvd_three_pow_sub_one
       calc
-        _ ≤ 2 ^ padicValNat 2 (3 ^ n - 1) := by
-          rwa [hk, Nat.pow_le_pow_iff_right le.refl, ← padicValNat_dvd_iff_le
+        _ ≤ 2 ^ multiplicity 2 (3 ^ n - 1) := by
+          rwa [hk, Nat.pow_le_pow_iff_right le.refl, ← multiplicity_dvd_iff_le
             (by grind [one_lt_pow])]
-        _ = 4 * 2 ^ padicValNat 2 n := by
-          have : padicValNat 2 (3 ^ n - 1) + 1 = 3 + padicValNat 2 n := by
+        _ = 4 * 2 ^ multiplicity 2 n := by
+          have : multiplicity 2 (3 ^ n - 1) + 1 = 3 + multiplicity 2 n := by
             simpa [← factorization_def _ prime_two, ← primeFactorsList_count_eq] using
-              padicValNat.pow_two_sub_one (show 1 < 3 by simp) (by simp) (by lia) ch
-          have : padicValNat 2 (3 ^ n - 1) = 2 + padicValNat 2 n := by lia
+              multiplicity.pow_two_sub_one (show 1 < 3 by simp) (by simp) (by lia) ch
+          have : multiplicity 2 (3 ^ n - 1) = 2 + multiplicity 2 n := by lia
           rw [congrArg (HPow.hPow 2) this, Nat.pow_add]
-        _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_padicValNat_dvd)
+        _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_multiplicity_dvd)
     · have : k = 0 := by
         by_contra! nh
         have : Odd (f n) := ch.pow.of_dvd_nat (hf.apply_dvd_pow hn)
