@@ -362,7 +362,7 @@ section Finset
 variable [DecidableEq α]
 variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
-@[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
+@[simp] lemma powerset_sups (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
   simp only [mem_sups, mem_powerset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
@@ -370,19 +370,25 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact union_subset_union hv hw
 
-@[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
+@[deprecated powerset_sups (since := "2026-08-07")]
+alias powerset_union := powerset_sups
+
+lemma powerset_infs (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
   ext u
   simp only [mem_infs, mem_powerset, inf_eq_inter]
-  refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
-  · rwa [← inter_inter_distrib_right, inter_eq_right]
-  · rintro ⟨v, hv, w, hw, rfl⟩
-    exact inter_subset_inter hv hw
+  refine ⟨fun h ↦ ⟨u, h.trans inter_subset_left, u, h.trans inter_subset_right, inter_self u⟩, ?_⟩
+  rintro ⟨v, hv, w, hw, rfl⟩
+  exact inter_subset_inter hv hw
+
+@[simp] lemma powerset_infs_powerset (s t : Finset α) :
+    s.powerset ⊼ t.powerset = (s ∩ t).powerset :=
+  (powerset_infs s t).symm
 
 @[simp] lemma powerset_sups_powerset_self (s : Finset α) :
-    s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_union]
+    s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_sups]
 
-@[simp] lemma powerset_infs_powerset_self (s : Finset α) :
-    s.powerset ⊼ s.powerset = s.powerset := by simp [← powerset_inter]
+lemma powerset_infs_powerset_self (s : Finset α) :
+    s.powerset ⊼ s.powerset = s.powerset := by simp
 
 lemma union_mem_sups : s ∈ 𝒜 → t ∈ ℬ → s ∪ t ∈ 𝒜 ⊻ ℬ := sup_mem_sups
 lemma inter_mem_infs : s ∈ 𝒜 → t ∈ ℬ → s ∩ t ∈ 𝒜 ⊼ ℬ := inf_mem_infs
