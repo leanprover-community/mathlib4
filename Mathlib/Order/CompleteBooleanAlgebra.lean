@@ -477,6 +477,54 @@ instance Pi.instFrame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : F
   __ := instCompleteLattice
   __ := instHeytingAlgebra
 
+section bihimp
+
+variable {f : ι → α}
+open scoped symmDiff
+
+/-- The bihimp of two `iInf`s is at least the `iInf` of the bihimps. -/
+@[to_dual iSup_symmDiff_iSup_le
+/-- The symmetric difference of two `iSup`s is at most the `iSup` of the symmetric differences. -/]
+theorem le_iInf_bihimp_iInf {g : ι → α} : ⨅ i, ((f i) ⇔ (g i)) ≤ (⨅ i, f i) ⇔ (⨅ i, g i) := by
+  simp_rw [le_bihimp_iff, ← iInf_inf_eq, left_inf_bihimp, right_inf_bihimp]
+  exact ⟨iInf_mono fun i => inf_le_left, iInf_mono fun i => inf_le_right⟩
+
+@[to_dual iSup_symmDiff_le]
+theorem le_iInf_bihimp [Nonempty ι] {a : α} : ⨅ i, f i ⇔ a ≤ (⨅ i, f i) ⇔ a := by
+  simpa [iInf_const] using le_iInf_bihimp_iInf (g := fun _ : ι ↦ a)
+
+@[to_dual symmDiff_iSup_le]
+theorem le_bihimp_iInf [Nonempty ι] {a : α} : ⨅ i, a ⇔ f i ≤ a ⇔ (⨅ i, f i) := by
+  simpa [bihimp_comm] using le_iInf_bihimp (a := a)
+
+@[to_dual sSup_symmDiff_le]
+theorem le_sInf_bihimp (hs : s.Nonempty) {a : α} : sInf ((· ⇔ a) '' s) ≤ sInf s ⇔ a := by
+  rw [sInf_image', sInf_eq_iInf']
+  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
+  exact le_iInf_bihimp
+
+@[to_dual symmDiff_sSup_le]
+theorem le_bihimp_sInf (hs : s.Nonempty) {a : α} : sInf ((a ⇔ ·) '' s) ≤ a ⇔ sInf s := by
+  simpa [bihimp_comm] using le_sInf_bihimp (a := a) hs
+
+@[to_dual sSup_symmDiff_sSup_le]
+theorem le_sInf_bihimp_sInf {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty) :
+    sInf (image2 (· ⇔ ·) s t) ≤ sInf s ⇔ sInf t := by
+  rw [sInf_image2]
+  calc
+  _ ≤ ⨅ a ∈ s, a ⇔ sInf t :=
+    iInf₂_mono fun a _ ↦ by simpa [sInf_image] using le_bihimp_sInf ht
+  _ ≤ _ := by simpa [sInf_image] using le_sInf_bihimp hs
+
+/-- A `biInf` version of `le_sInf_bihimp_sInf`. -/
+@[to_dual biSup_symmDiff_biSup_le /-- A `biSup` version of `iSup_symmDiff_iSup_le`. -/]
+theorem le_biInf_bihimp_biInf {p : ι → Prop} {f g : (i : ι) → p i → α} :
+    ⨅ i, ⨅ (h : p i), ((f i h) ⇔ (g i h)) ≤
+    (⨅ i, ⨅ (h : p i), f i h) ⇔ (⨅ i, ⨅ (h : p i), g i h) :=
+  le_trans (iInf_mono fun _ ↦ le_iInf_bihimp_iInf) le_iInf_bihimp_iInf
+
+end bihimp
+
 end Frame
 
 section Coframe
@@ -600,45 +648,6 @@ theorem compl_sInf' : (sInf s)ᶜ = sSup (Compl.compl '' s) :=
 
 theorem compl_sSup' : (sSup s)ᶜ = sInf (Compl.compl '' s) :=
   compl_sSup.trans sInf_image.symm
-
-section symmDiff
-
-open scoped symmDiff
-
-/-- The symmetric difference of two `iSup`s is at most the `iSup` of the symmetric differences. -/
-theorem iSup_symmDiff_iSup_le {g : ι → α} : (⨆ i, f i) ∆ (⨆ i, g i) ≤ ⨆ i, ((f i) ∆ (g i)) := by
-  simp_rw [symmDiff_le_iff, ← iSup_sup_eq]
-  exact ⟨iSup_mono fun i ↦ sup_comm (g i) _ ▸ le_symmDiff_sup_right ..,
-    iSup_mono fun i ↦ sup_comm (f i) _ ▸ symmDiff_comm (f i) _ ▸ le_symmDiff_sup_right ..⟩
-
-theorem iSup_symmDiff_le [Nonempty ι] {a : α} : (⨆ i, f i) ∆ a ≤ ⨆ i, f i ∆ a := by
-  simpa [iSup_const] using iSup_symmDiff_iSup_le (g := fun _ : ι ↦ a)
-
-theorem symmDiff_iSup_le [Nonempty ι] {a : α} : a ∆ (⨆ i, f i) ≤ ⨆ i, a ∆ f i := by
-  simpa [symmDiff_comm] using iSup_symmDiff_le (a := a)
-
-theorem sSup_symmDiff_le (hs : s.Nonempty) {a : α} : sSup s ∆ a ≤ sSup ((· ∆ a) '' s) := by
-  rw [sSup_image', sSup_eq_iSup']
-  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
-  exact iSup_symmDiff_le
-
-theorem symmDiff_sSup_le (hs : s.Nonempty) {a : α} : a ∆ sSup s ≤ sSup ((a ∆ ·) '' s) := by
-  simpa [symmDiff_comm] using sSup_symmDiff_le (a := a) hs
-
-theorem sSup_symmDiff_sSup_le {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty) :
-    sSup s ∆ sSup t ≤ sSup (image2 (· ∆ ·) s t) := by
-  rw [sSup_image2]
-  calc
-  _ ≤ ⨆ a ∈ s, a ∆ sSup t := by simpa [sSup_image] using sSup_symmDiff_le hs
-  _ ≤ _ := iSup_mono fun a ↦ iSup_mono fun _ ↦ by simpa [sSup_image] using symmDiff_sSup_le ht
-
-/-- A `biSup` version of `iSup_symmDiff_iSup_le`. -/
-theorem biSup_symmDiff_biSup_le {p : ι → Prop} {f g : (i : ι) → p i → α} :
-    (⨆ i, ⨆ (h : p i), f i h) ∆ (⨆ i, ⨆ (h : p i), g i h) ≤
-    ⨆ i, ⨆ (h : p i), ((f i h) ∆ (g i h)) :=
-  le_trans iSup_symmDiff_iSup_le <| iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
-
-end symmDiff
 
 end CompleteBooleanAlgebra
 
