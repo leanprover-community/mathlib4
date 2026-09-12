@@ -103,7 +103,7 @@ lemma isClosedEmbedding_precomp_of_surjective
   constructor
   · rintro ⟨g, rfl⟩ a ha; simp [ha]
   · exact fun H ↦ ⟨CommRingCat.ofHom (RingHom.liftOfSurjective f.hom hf ⟨x.hom, H⟩),
-      by ext; simp [RingHom.liftOfRightInverse_comp_apply]⟩
+      by ext; simp⟩
 
 /-- `Hom(A[Xᵢ], R)` is homeomorphic to `Hom(A, R) × Rⁱ`. -/
 @[simps! apply_fst apply_snd symm_apply_hom]
