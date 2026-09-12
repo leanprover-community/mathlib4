@@ -101,8 +101,7 @@ include α β σ α' β' γ' hirr htriv habc in
 lemma r_exists : ∃ r, r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq = some r := by
   have H := order_neq_top_min_one α β σ α' β' γ' hirr htriv habc q hq0 h2mq (l₀' α β σ α' β' γ' hirr
       htriv habc q hq0 h2mq + 1)
-  have : r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ ⊤ := by
-    rw [(r'_spec α β σ α' β' γ' hirr htriv habc q hq0 h2mq).1] at H; exact H
+  have : r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≠ ⊤ := H
   revert this
   cases r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq with
   | top => grind
@@ -121,14 +120,13 @@ abbrev rSpec : r' α β σ α' β' γ' hirr htriv habc q hq0 h2mq = ↑(r α β 
 include α β σ α' β' γ' hirr htriv habc in
 /-- The defining properties of `r`: it is the order of `R` at `l₀' + 1`, and it is minimal. -/
 abbrev rProp :
-  let s : Finset (Fin (m K)) := Finset.univ
-  analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (l₀' α β σ α' β' γ' hirr htriv habc
-      q hq0 h2mq + 1) = r α β σ α' β' γ' hirr htriv habc q hq0 h2mq ∧
-  ∀ l' ∈ s, r α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≤ analyticOrderAt (R α β σ α' β' γ' hirr
-      htriv habc q hq0 h2mq) (↑↑l' + 1) := by
-  intros s
+  analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq)
+      (l₀' α β σ α' β' γ' hirr htriv habc q hq0 h2mq + 1) =
+    r α β σ α' β' γ' hirr htriv habc q hq0 h2mq ∧
+  ∀ l' : Fin (m K), r α β σ α' β' γ' hirr htriv habc q hq0 h2mq ≤
+    analyticOrderAt (R α β σ α' β' γ' hirr htriv habc q hq0 h2mq) (↑↑l' + 1) := by
   rw [← rSpec α β σ α' β' γ' hirr htriv habc q hq0 h2mq]
-  apply r'_spec α β σ α' β' γ' hirr htriv habc q hq0 h2mq
+  exact ⟨rfl, r'_spec α β σ α' β' γ' hirr htriv habc q hq0 h2mq⟩
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma r_div_q_geq_0 : 0 ≤ (r α β σ α' β' γ' hirr htriv habc q hq0 h2mq) / q := by
