@@ -5,8 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.SuccPred.Relation
@@ -41,11 +40,14 @@ variable [Preorder α]
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
 
-variable {α β} {a b : α}
+variable {α} {a b : α}
 
 @[simp]
 theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
   Iff.rfl
+
+instance [Fintype α] [DecidableLT α] : DecidableRel (hasse α).Adj :=
+  fun _ _ ↦ decidable_of_iff' _ hasse_adj
 
 /-- `αᵒᵈ` and `α` have the same Hasse diagram. -/
 def hasseDualIso : hasse αᵒᵈ ≃g hasse α :=
@@ -88,19 +90,60 @@ section LinearOrder
 
 variable [LinearOrder α]
 
-theorem hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hasse α).Preconnected :=
+/-- A discrete form of the intemediate value theorem – a walk in a linear graph visits all of
+the vertices between its endpoints. -/
+theorem mem_support_hasse_of_ge_of_le {u v : α} (w : (hasse α).Walk u v) {x : α}
+    (hu : u ≤ x) (hv : x ≤ v) : x ∈ w.support := by
+  by_cases hx : x = v
+  · rw [hx]; exact w.end_mem_support
+  · have ⟨d, hd, _⟩ := w.exists_boundary_dart {y | y ≤ x} hu (hx <| le_antisymm hv ·)
+    rw [show x = d.fst by grind [not_le, d.adj, hasse, CovBy]]
+    exact w.dart_fst_mem_support_of_mem_darts hd
+
+/-- A discrete form of the intemediate value theorem – a walk in a linear graph visits all of
+the darts between its endpoints, oriented from the walk's start to its end. -/
+theorem mem_darts_hasse_of_ge_of_le_of_le {u v : α} (w : (hasse α).Walk u v) {d : (hasse α).Dart}
+    (hu : u ≤ d.fst) (hd : d.fst ≤ d.snd) (hv : d.snd ≤ v) : d ∈ w.darts := by
+  replace hd := lt_of_le_of_ne hd d.fst_ne_snd
+  have ⟨e, he, _⟩ :=
+    w.exists_boundary_dart {x | x ≤ d.fst} hu
+      (lt_irrefl v <| lt_of_le_of_lt · <| lt_of_lt_of_le hd hv)
+  convert he
+  ext <;> grind [d.adj, e.adj, hasse, CovBy, covBy_iff_lt_iff_le_left]
+
+theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] :
+  (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen]
   exact
     reflTransGen_of_succ _ (fun c hc => Or.inl <| covBy_succ_of_not_isMax hc.2.not_isMax)
       fun c hc => Or.inr <| covBy_succ_of_not_isMax hc.2.not_isMax
 
-theorem hasse_preconnected_of_pred [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
+@[deprecated (since := "2026-06-19")]
+alias hasse_preconnected_of_succ := preconnected_hasse_of_succOrder
+
+theorem preconnected_hasse_of_predOrder [PredOrder α] [IsPredArchimedean α] :
+  (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
   exact
     reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
       fun c hc => Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin
+
+@[deprecated (since := "2026-06-19")]
+alias hasse_preconnected_of_pred := preconnected_hasse_of_predOrder
+
+theorem isAcyclic_hasse_of_linearOrder : (hasse α).IsAcyclic := by
+  refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
+  wlog hle : u < v with h
+  · rw [Sym2.eq_swap]
+    exact h _ _ _ huv.symm <| lt_of_le_of_ne (le_of_not_gt hle) (ne_of_adj _ huv.symm)
+  rw [isBridge_iff]
+  intro ⟨w⟩
+  have ⟨d, _⟩ := w.exists_boundary_dart {x | x < v} hle (lt_irrefl v)
+  have hadj := d.adj
+  rw [deleteEdges_adj] at hadj
+  grind [hasse, CovBy, covBy_iff_lt_iff_le_left]
 
 end LinearOrder
 
@@ -111,15 +154,31 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
 theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
     (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by simp [pathGraph, hasse]
 
-theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
-  hasse_preconnected_of_succ _
+theorem preconnected_pathGraph (n : ℕ) : (pathGraph n).Preconnected :=
+  preconnected_hasse_of_succOrder _
 
-theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
-  ⟨pathGraph_preconnected _⟩
+@[deprecated (since := "2026-06-19")] alias pathGraph_preconnected := preconnected_pathGraph
+
+theorem connected_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).Connected :=
+  ⟨preconnected_pathGraph _⟩
+
+@[deprecated (since := "2026-06-19")] alias pathGraph_connected := connected_pathGraph_add_one
+
+theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
+
+theorem isTree_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).IsTree :=
+  ⟨connected_pathGraph_add_one n, isAcyclic_pathGraph (n + 1)⟩
+
+theorem isTree_pathGraph {n : ℕ} : (pathGraph n).IsTree ↔ n ≠ 0 :=
+  ⟨fun h h0 ↦ not_nonempty_iff.mpr Fin.isEmpty (h0 ▸ h.nonempty),
+   fun h0 ↦ Nat.sub_one_add_one h0 ▸ isTree_pathGraph_add_one (n - 1)⟩
 
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
+
+instance (n : ℕ) : DecidableRel (pathGraph n).Adj :=
+  inferInstanceAs <| DecidableRel (hasse _).Adj
 
 namespace Walk
 
