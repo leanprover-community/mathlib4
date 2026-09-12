@@ -50,21 +50,13 @@ lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq
     (hdg : 0 < g.det.val) (hdh : 0 < h.det.val) :
     (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
       (ConjAct.toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
-  let t := g⁻¹ * h
-  have ht : t 1 0 = 0 := by
-    apply OnePoint.smul_infty_eq_self_iff.mp
-    simp only [t, mul_smul, ← hcg, inv_smul_smul]
-  have hd : 0 < t.det.val := by
-    simpa only [t, map_mul, map_inv, Units.val_mul, Units.val_inv_eq_inv_val] using
-      mul_pos (inv_pos.mpr hdg) hdh
-  have ha : 0 < t 0 0 / t 1 1 := by
-    rw [Matrix.GeneralLinearGroup.val_det_apply, Matrix.det_fin_two, ht, mul_zero,
-      sub_zero] at hd
-    exact div_pos_iff.mpr (mul_pos_iff.mp hd)
-  have heq := width_mul_orderAtInfty_slash_of_upperTriangular
-    (ConjAct.toConjAct g⁻¹ • G) hw (f ∣[k] g) k t ht ha
-  simpa only [t, mul_inv_rev, inv_inv, ← ConjAct.toConjAct_mul, ← mul_smul,
-    mul_inv_cancel_right, ← SlashAction.slash_mul, mul_inv_cancel_left] using heq.symm
+  obtain ⟨t, rfl⟩ : ∃ t, h = g * t := ⟨g⁻¹ * h, (mul_inv_cancel_left g h).symm⟩
+  have ht : t 1 0 = 0 := smul_infty_eq_self_iff.mp <| by simpa [mul_smul] using hcg.symm
+  have hd : 0 < t.det.val := pos_of_mul_pos_right (by simpa using hdh) hdg.le
+  have ha : 0 < t 0 0 / t 1 1 :=
+    div_pos_iff.mpr <| mul_pos_iff.mp <| by simpa [Matrix.det_fin_two, ht] using hd
+  rw [mul_inv_rev, ConjAct.toConjAct_mul, mul_smul, SlashAction.slash_mul]
+  exact (width_mul_orderAtInfty_slash_of_upperTriangular _ hw _ k t ht ha).symm
 
 section Cusps
 

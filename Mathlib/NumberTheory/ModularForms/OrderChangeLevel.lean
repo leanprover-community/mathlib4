@@ -75,24 +75,12 @@ private lemma minimalPeriod_translation {K H : Subgroup (GL (Fin 2) ℝ)} [H.IsA
     (hw : (ConjAct.toConjAct (r : GL (Fin 2) ℝ) • K).strictWidthInfty =
       n * H.strictWidthInfty) :
     Function.minimalPeriod (fun q : H ⧸ K.subgroupOf H ↦ translation H 1 • q) ⟦r⟧ = n := by
-  have hiff (m : ℕ) : Function.IsPeriodicPt
-      (fun q : H ⧸ K.subgroupOf H ↦ translation H 1 • q) m ⟦r⟧ ↔ n ∣ m := by
-    rw [translation_isPeriodicPt_iff]
-    simp only [translation, Int.cast_natCast]
-    rw [← mem_strictPeriods_iff, strictPeriods_eq_zmultiples_strictWidthInfty, hw]
-    constructor
-    · rintro ⟨a, ha⟩
-      simp only [zsmul_eq_mul] at ha
-      have ha' : (a : ℝ) * n = m := by
-        apply mul_right_cancel₀ H.strictWidthInfty_pos.ne'
-        simpa only [mul_assoc] using ha
-      have hint : (m : ℤ) = (n : ℤ) * a := mod_cast (by linarith : (m : ℝ) = n * a)
-      exact Int.natCast_dvd_natCast.mp ⟨a, hint⟩
-    · rintro ⟨a, rfl⟩
-      exact ⟨a, by grind [Int.cast_natCast]⟩
-  exact Nat.dvd_antisymm
-    (Function.isPeriodicPt_iff_minimalPeriod_dvd.mp ((hiff n).mpr dvd_rfl))
-    ((hiff _).mp (Function.isPeriodicPt_minimalPeriod _ _))
+  refine Nat.dvd_right_iff_eq.mp fun m ↦ ?_
+  rw [← Function.isPeriodicPt_iff_minimalPeriod_dvd, translation_isPeriodicPt_iff, translation,
+    ← mem_strictPeriods_iff, strictPeriods_eq_zmultiples_strictWidthInfty, hw]
+  refine ⟨fun ⟨a, ha⟩ ↦ ?_, fun ⟨a, ha⟩ ↦ ha ▸ ⟨a, by grind [Int.cast_natCast]⟩⟩
+  simp only [zsmul_eq_mul, ← mul_assoc, mul_left_inj' H.strictWidthInfty_pos.ne'] at ha
+  exact Int.natCast_dvd_natCast.mp (Dvd.intro_left a (by exact_mod_cast ha))
 
 /-- The cycles of the translation by the strict width of the larger group. -/
 private abbrev translationCycles (K H : Subgroup (GL (Fin 2) ℝ)) :=
@@ -106,28 +94,14 @@ private lemma sum_strictWidthInfty_translationCycles {K H : Subgroup (GL (Fin 2)
     ∑ c : translationCycles K H,
         (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).strictWidthInfty =
       K.relIndex H * H.strictWidthInfty := by
-  let := Fintype.ofFinite (translationCycles K H)
-  dsimp only
-  have hc (c : translationCycles K H) :
-      (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).strictWidthInfty =
-        Function.minimalPeriod (fun q : H ⧸ K.subgroupOf H ↦ translation H 1 • q) c.out *
-          H.strictWidthInfty := by
-    have : (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).IsArithmetic :=
-      isArithmetic_conj_of_mem c.out.out.property
-    have hle : ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K ≤ H := by
-      simpa only [conjAct_pointwise_smul_eq_self (H.le_normalizer c.out.out.property)] using
-        (pointwise_smul_le_pointwise_smul_iff
-          (a := ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ))).mpr hKH
-    obtain ⟨n, hn, hw⟩ : ∃ n : ℕ, 0 < n ∧
-        (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).strictWidthInfty =
-          n * H.strictWidthInfty := strictWidthInfty_eq_nat_mul hle
-    have hp : Function.minimalPeriod
-        (fun q : H ⧸ K.subgroupOf H ↦ translation H 1 • q) c.out = n := by
-      simpa only [Quotient.out_eq] using minimalPeriod_translation c.out.out hw
-    rw [hp, hw]
-  simp only [hc, ← Finset.sum_mul, ← Nat.cast_sum,
-    ← index_eq_sum_minimalPeriod (K.subgroupOf H) (translation H 1)]
-  rfl
+  intro
+  rw [relIndex, index_eq_sum_minimalPeriod _ (translation H 1), Nat.cast_sum, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun c _ ↦ ?_
+  have := isArithmetic_conj_of_mem (K := K) c.out.out.property
+  obtain ⟨n, -, hw⟩ := strictWidthInfty_eq_nat_mul <|
+    (pointwise_smul_le_pointwise_smul_iff.mpr hKH).trans
+      (conjAct_pointwise_smul_eq_self (H.le_normalizer c.out.out.property)).le
+  rw [hw, ← minimalPeriod_translation c.out.out hw, Quotient.out_eq]
 
 private lemma translation_zpow (H : Subgroup (GL (Fin 2) ℝ)) (m : ℤ) :
     translation H 1 ^ m = translation H m := by
@@ -254,19 +228,7 @@ private lemma quotientFunc_translation_order {G H : Subgroup (GL (Fin 2) ℝ)}
     {k : ℤ} (f : ModularForm G k) (m : ℤ) :
     orderAtInfty (SlashInvariantForm.quotientFunc f
       (⟦translation H m⟧ : H ⧸ G.subgroupOf H)) = orderAtInfty f := by
-  rw [SlashInvariantForm.quotientFunc_mk]
-  have heq : (f : ℍ → ℂ) ∣[k] (translation H m : GL (Fin 2) ℝ)⁻¹ =
-      fun τ ↦ f (-(m * H.strictWidthInfty) +ᵥ τ) := by
-    dsimp only [translation]
-    rw [← AddChar.map_neg_eq_inv]
-    ext τ
-    have ha : Matrix.GeneralLinearGroup.upperRightHom (-(m * H.strictWidthInfty)) • τ =
-        -(m * H.strictWidthInfty) +ᵥ τ := by
-      ext
-      simp [σ, num, denom, coe_vadd, coe_smul, add_comm]
-    rw [ModularForm.slash_apply, ha]
-    simp [σ, denom]
-  rw [heq, orderAtInfty_vadd]
+  simp [translation, orderAtInfty_slash_of_upperTriangular]
 
 /-- Every translation cycle lies over the cusp at infinity of the larger group. -/
 private lemma translationCycleCusp_map {K H : Subgroup (GL (Fin 2) ℝ)}
@@ -408,14 +370,10 @@ lemma cuspOrderFiber_translate {G H : Subgroup (GL (Fin 2) ℝ)}
     cuspOrderFiber ((pointwise_smul_le_pointwise_smul_iff
       (a := ConjAct.toConjAct g⁻¹)).mpr hGH)
       (ModularForm.translate f g) (CuspOrbits.conj H g⁻¹ c) = cuspOrderFiber hGH f c := by
-  classical
-  let := Fintype.ofFinite (CuspOrbits G)
-  let := Fintype.ofFinite (CuspOrbits (ConjAct.toConjAct g⁻¹ • G))
-  simp only [cuspOrderFiber, Finset.sum_filter]
-  refine (Fintype.sum_bijective _ (CuspOrbits.conj_bijective G g⁻¹) _ _ fun d ↦ ?_).symm
-  rw [CuspOrbits.map_conj hGH g⁻¹ d]
-  simp only [(CuspOrbits.conj_bijective H g⁻¹).injective.eq_iff,
-    orderAtCuspOrbit_translate]
+  exact (Finset.sum_bijective _ (CuspOrbits.conj_bijective G g⁻¹)
+    (by simp only [Finset.mem_filter, Finset.mem_univ, true_and, CuspOrbits.map_conj hGH g⁻¹,
+      (CuspOrbits.conj_bijective H g⁻¹).injective.eq_iff, implies_true])
+    fun d _ ↦ (orderAtCuspOrbit_translate G k d f g).symm).symm
 
 /-- Restriction contributes the full relative index in each cusp fiber, when the smaller
 level contains `-1`. -/
@@ -488,51 +446,39 @@ lemma cuspOrderFiber_infty_eq_sum_quotientFunc
     let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
     cuspOrderFiber hGH f ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧ = H.widthInfty *
       ∑ q : H ⧸ G.subgroupOf H, orderAtInfty (SlashInvariantForm.quotientFunc f q) := by
+  intro
   classical
   let := Fintype.ofFinite (CuspOrbits G)
   let := Fintype.ofFinite (translationCycles G H)
-  let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
   let e : translationCycles G H ↪ CuspOrbits G :=
     ⟨translationCycleCusp G H, translationCycleCusp_injective hGH hneg⟩
   have hsets : Finset.univ.map e = Finset.univ.filter
-      (fun c ↦ CuspOrbits.map hGH c = ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧) := by
-    ext c
+      (fun c ↦ CuspOrbits.map hGH c = ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧) := Finset.ext fun c ↦ by
     simp only [Finset.mem_map, Finset.mem_univ, true_and, Finset.mem_filter]
     exact ⟨fun ⟨d, hd⟩ ↦ hd ▸ translationCycleCusp_map hGH d,
       translationCycleCusp_surjective_fiber hGH c⟩
-  have horder (c : translationCycles G H) : orderAtCuspOrbit G k (e c) f =
-      (H.widthInfty : EReal) *
-        ((Function.minimalPeriod (fun q : H ⧸ G.subgroupOf H ↦ translation H 1 • q) c.out : EReal) *
-          orderAtInfty (SlashInvariantForm.quotientFunc f c.out)) := by
+  have horder (c : translationCycles G H) : orderAtCuspOrbit G k (e c) f = (H.widthInfty : EReal) *
+      ((Function.minimalPeriod (fun q : H ⧸ G.subgroupOf H ↦ translation H 1 • q) c.out : EReal) *
+        orderAtInfty (SlashInvariantForm.quotientFunc f c.out)) := by
     let r := c.out.out
-    let K := ConjAct.toConjAct (r : GL (Fin 2) ℝ) • G
-    have : K.IsArithmetic := isArithmetic_conj_of_mem r.property
-    have hle : K ≤ H := by
-      simpa only [conjAct_pointwise_smul_eq_self (H.le_normalizer r.property)] using
-        (pointwise_smul_le_pointwise_smul_iff (a := ConjAct.toConjAct (r : GL (Fin 2) ℝ))).mpr hGH
-    obtain ⟨n, hn, hw⟩ := strictWidthInfty_eq_nat_mul hle
+    have := isArithmetic_conj_of_mem (K := G) r.property
+    obtain ⟨n, -, hw⟩ := strictWidthInfty_eq_nat_mul <|
+      (pointwise_smul_le_pointwise_smul_iff.mpr hGH).trans
+        (conjAct_pointwise_smul_eq_self (H.le_normalizer r.property)).le
     have hp : Function.minimalPeriod
         (fun q : H ⧸ G.subgroupOf H ↦ translation H 1 • q) c.out = n := by
       simpa only [r, Quotient.out_eq] using minimalPeriod_translation r hw
-    have hw' : K.widthInfty = n * H.widthInfty := by
-      simpa only [widthInfty, K, adjoinNegOne_conj, adjoinNegOne_eq_self_iff.mpr hneg,
-        adjoinNegOne_eq_self_iff.mpr (hGH hneg)] using hw
+    have hw' : (ConjAct.toConjAct (r : GL (Fin 2) ℝ) • G).widthInfty = H.widthInfty * n := by
+      simpa only [widthInfty, adjoinNegOne_conj, adjoinNegOne_eq_self_iff.mpr hneg,
+        adjoinNegOne_eq_self_iff.mpr (hGH hneg), mul_comm] using hw
     have hc : IsCusp ((r : GL (Fin 2) ℝ)⁻¹ • ∞) G :=
       ((show IsCusp ∞ H from Fact.out).smul_of_mem (H.inv_mem r.property)).of_isFiniteRelIndex
-    have hq : SlashInvariantForm.quotientFunc f c.out = (f : ℍ → ℂ) ∣[k] (r : GL (Fin 2) ℝ)⁻¹ :=
-      congr(SlashInvariantForm.quotientFunc f $(Quotient.out_eq c.out)).symm
-    rw [show e c = ⟦⟨(r : GL (Fin 2) ℝ)⁻¹ • ∞, hc⟩⟧ from rfl,
-      orderAtCuspOrbit_mk, orderAtCusp_eq G k hc f (r : GL (Fin 2) ℝ)⁻¹ rfl, inv_inv,
-      show (ConjAct.toConjAct (r : GL (Fin 2) ℝ) • G).widthInfty = n * H.widthInfty from hw',
-      hp, hq, EReal.coe_mul, EReal.coe_natCast]
-    ac_rfl
-  rw [cuspOrderFiber, ← hsets, Finset.sum_map]
-  simp_rw [horder]
-  rw [← coe_mul_sum _ H.widthInfty_nonneg]
-  congr 1
-  exact sum_translationCycles (G := G) (H := H)
-    (fun q ↦ orderAtInfty (SlashInvariantForm.quotientFunc f q))
-    (quotientFunc_translationCycle_order f)
+    rw [orderAtCuspOrbit_eq G k (e c) ⟨_, hc⟩ rfl, orderAtCusp_eq G k hc f (r : GL (Fin 2) ℝ)⁻¹ rfl,
+      inv_inv, hw', hp, congr(SlashInvariantForm.quotientFunc f $(Quotient.out_eq c.out)).symm,
+      SlashInvariantForm.quotientFunc_mk, EReal.coe_mul, EReal.coe_natCast, mul_assoc]
+  rw [cuspOrderFiber, ← hsets, Finset.sum_map, Finset.sum_congr rfl fun c _ ↦ horder c,
+    ← coe_mul_sum _ H.widthInfty_nonneg, sum_translationCycles (fun q ↦
+      orderAtInfty (SlashInvariantForm.quotientFunc f q)) (quotientFunc_translationCycle_order f)]
 
 /-- Conjugation identifies the two coset spaces used in a norm. -/
 private noncomputable def conjugateCosets (G H : Subgroup (GL (Fin 2) ℝ)) (s : GL (Fin 2) ℝ) :
@@ -595,42 +541,26 @@ lemma sum_orderAtInfty_slash_quotientFunc_eq_norm
     let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
     ∑ q : H ⧸ G.subgroupOf H, orderAtInfty (SlashInvariantForm.quotientFunc f q ∣[k] mapGL ℝ g) =
       orderAtInfty ((ModularForm.norm H f : ℍ → ℂ) ∣[k * G.relIndex H] mapGL ℝ g) := by
-  let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
-  dsimp only
-  have hprod : ((ModularForm.norm H f : ℍ → ℂ) ∣[k * G.relIndex H] mapGL ℝ g) =
+  intro _
+  have hprod : (ModularForm.norm H f : ℍ → ℂ) ∣[k * G.relIndex H] mapGL ℝ g =
       ∏ q : H ⧸ G.subgroupOf H, SlashInvariantForm.quotientFunc f q ∣[k] mapGL ℝ g := by
-    rw [ModularForm.coe_norm]
-    have hcard : G.relIndex H = Fintype.card (H ⧸ G.subgroupOf H) := Nat.card_eq_fintype_card
-    rw [hcard, ← Finset.card_univ, ModularForm.prod_slash]
-    simp
-  rw [hprod]
+    simp [ModularForm.coe_norm, show G.relIndex H = Fintype.card (H ⧸ G.subgroupOf H) from
+      Nat.card_eq_fintype_card, ← Finset.card_univ, ModularForm.prod_slash]
+  have hq (q : H ⧸ G.subgroupOf H) : SlashInvariantForm.quotientFunc f q =
+      (f : ℍ → ℂ) ∣[k] (q.out : GL (Fin 2) ℝ)⁻¹ := by
+    rw [← SlashInvariantForm.quotientFunc_mk f q.out, Quotient.out_eq]
+  simp only [hprod, hq]
   let K (q : H ⧸ G.subgroupOf H) := ConjAct.toConjAct (mapGL ℝ g)⁻¹ •
     (ConjAct.toConjAct (q.out : GL (Fin 2) ℝ) • G)
-  have hK (q : H ⧸ G.subgroupOf H) : (K q).IsArithmetic := by
-    let _ : (ConjAct.toConjAct (q.out : GL (Fin 2) ℝ) • G).IsArithmetic :=
-      isArithmetic_conj_of_mem q.out.property
-    exact isArithmetic_conj_of_mem
-      (show (mapGL ℝ g)⁻¹ ∈ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)) by exact ⟨g⁻¹, by simp⟩)
+  have hK (q : H ⧸ G.subgroupOf H) : (K q).IsArithmetic :=
+    have := isArithmetic_conj_of_mem (K := G) q.out.property
+    isArithmetic_conj_of_mem <| (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).inv_mem ⟨g, rfl⟩
   let F (q : H ⧸ G.subgroupOf H) : ModularForm (K q) k :=
-    letI := hK q
     ModularForm.translate (ModularForm.translate f (q.out : GL (Fin 2) ℝ)⁻¹) (mapGL ℝ g)
-  have hF (q : H ⧸ G.subgroupOf H) :
-      SlashInvariantForm.quotientFunc f q ∣[k] mapGL ℝ g = (F q : ℍ → ℂ) := by
-    have hq : SlashInvariantForm.quotientFunc f q =
-        (f : ℍ → ℂ) ∣[k] (q.out : GL (Fin 2) ℝ)⁻¹ := by
-      calc
-        _ = SlashInvariantForm.quotientFunc f ⟦q.out⟧ :=
-          congrArg (SlashInvariantForm.quotientFunc f) (Quotient.out_eq q).symm
-        _ = _ := SlashInvariantForm.quotientFunc_mk f q.out
-    rw [hq]
-    change _ = ((ModularForm.translate
-      (ModularForm.translate f (q.out : GL (Fin 2) ℝ)⁻¹) (mapGL ℝ g)) : ℍ → ℂ)
-    rfl
-  refine (orderAtInfty_prod_of_holo (fun q _ ↦ strictWidthInfty_pos (K q)) ?_ ?_ ?_).symm
-  · exact fun q _ ↦ hF q ▸ SlashInvariantFormClass.periodic_comp_ofComplex (F q)
-      (K q).strictWidthInfty_mem_strictPeriods
-  · exact fun q _ ↦ hF q ▸ (F q).holo'
-  · exact fun q _ ↦ hF q ▸ ModularFormClass.bdd_at_infty (F q)
+  exact (orderAtInfty_prod_of_holo (fun q _ ↦ strictWidthInfty_pos (K q))
+    (fun q _ ↦ SlashInvariantFormClass.periodic_comp_ofComplex (F q)
+      (K q).strictWidthInfty_mem_strictPeriods) (fun q _ ↦ (F q).holo')
+    fun q _ ↦ ModularFormClass.bdd_at_infty (F q)).symm
 
 /-- The order of a norm at a target cusp is the sum over the source cusp fiber. -/
 lemma cuspOrderFiber_eq_orderAtCuspOrbit_norm {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
@@ -638,42 +568,27 @@ lemma cuspOrderFiber_eq_orderAtCuspOrbit_norm {G H : Subgroup (GL (Fin 2) ℝ)} 
     {k : ℤ} (f : ModularForm G k) (c : CuspOrbits H) :
     cuspOrderFiber hGH f c = orderAtCuspOrbit H (k * Nat.card (H ⧸ G.subgroupOf H)) c
       (ModularForm.norm H f) := by
-  obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp
-    ((IsArithmetic.isCusp_iff_isCusp_SL2Z H).mp c.out.property)
+  induction c using Quotient.inductionOn with | h d =>
+  obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp ((IsArithmetic.isCusp_iff_isCusp_SL2Z H).mp d.property)
   let s := mapGL ℝ g
-  have hs : s • ∞ = (c.out : OnePoint ℝ) := hg.symm
   let G' := ConjAct.toConjAct s⁻¹ • G
   let H' := ConjAct.toConjAct s⁻¹ • H
-  have : G'.IsArithmetic := isArithmetic_conj_of_mem
-    ((𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).inv_mem ⟨g, rfl⟩)
-  have : H'.IsArithmetic := isArithmetic_conj_of_mem
-    ((𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).inv_mem ⟨g, rfl⟩)
-  have hle : G' ≤ H' := (pointwise_smul_le_pointwise_smul_iff
-    (a := ConjAct.toConjAct s⁻¹)).mpr hGH
-  have hneg' : (-1 : GL (Fin 2) ℝ) ∈ G' := by
-    simpa only [G', mem_pointwise_smul_iff_inv_smul_mem, ConjAct.smul_def,
-      ConjAct.ofConjAct_inv, ConjAct.ofConjAct_toConjAct, inv_inv,
-      mul_neg, mul_one, neg_mul, mul_inv_cancel] using hneg
-  have hc : CuspOrbits.conj H s⁻¹ c = ⟦⟨∞, (Fact.out : IsCusp ∞ H')⟩⟧ := by
-    rw [← Quotient.out_eq c, CuspOrbits.conj_mk]
-    have heq : s⁻¹ • (c.out : OnePoint ℝ) = ∞ := inv_smul_eq_iff.mpr hs.symm
-    simp only [heq]
+  have hsm := (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).inv_mem ⟨g, rfl⟩
+  have : G'.IsArithmetic := isArithmetic_conj_of_mem hsm
+  have : H'.IsArithmetic := isArithmetic_conj_of_mem hsm
+  have hle : G' ≤ H' := pointwise_smul_le_pointwise_smul_iff.mpr hGH
+  have hneg' : -1 ∈ G' := by
+    simpa [G', mem_pointwise_smul_iff_inv_smul_mem, ConjAct.smul_def] using hneg
+  have hc : CuspOrbits.conj H s⁻¹ ⟦d⟧ = ⟦⟨∞, (Fact.out : IsCusp ∞ H')⟩⟧ := by
+    simp only [CuspOrbits.conj_mk, show s⁻¹ • (d : OnePoint ℝ) = ∞ from inv_smul_eq_iff.mpr hg]
   let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
   let := Fintype.ofFinite (H' ⧸ G'.subgroupOf H')
-  have hsum : (∑ q : H' ⧸ G'.subgroupOf H',
-      orderAtInfty (SlashInvariantForm.quotientFunc (ModularForm.translate f s) q)) =
-        ∑ q : H ⧸ G.subgroupOf H, orderAtInfty (SlashInvariantForm.quotientFunc f q ∣[k] s) := by
-    simpa only [quotientFunc_conjugateCosets] using
-      ((conjugateCosets G H s).sum_comp
-        (fun q ↦ orderAtInfty (SlashInvariantForm.quotientFunc (ModularForm.translate f s) q))).symm
-  have hcount : cuspOrderFiber hGH f c = H'.widthInfty *
-      ∑ q : H ⧸ G.subgroupOf H, orderAtInfty (SlashInvariantForm.quotientFunc f q ∣[k] s) := by
-    rw [← cuspOrderFiber_translate hGH f c s, hc,
-      cuspOrderFiber_infty_eq_sum_quotientFunc hle hneg' (ModularForm.translate f s), hsum]
-  rw [hcount, orderAtCuspOrbit_eq H _ c c.out (Quotient.out_eq c) (ModularForm.norm H f),
-    orderAtCusp_eq H _ c.out.property _ s hs]
-  exact congrArg (fun x : EReal ↦ H'.widthInfty * x)
-    (sum_orderAtInfty_slash_quotientFunc_eq_norm (H := H) f g)
+  rw [← cuspOrderFiber_translate hGH f ⟦d⟧ s, hc,
+    cuspOrderFiber_infty_eq_sum_quotientFunc hle hneg' (ModularForm.translate f s),
+    ← (conjugateCosets G H s).sum_comp _, orderAtCuspOrbit_mk,
+    orderAtCusp_eq H _ d.property _ s hg.symm]
+  simp only [quotientFunc_conjugateCosets f s]
+  exact congrArg _ (sum_orderAtInfty_slash_quotientFunc_eq_norm f g)
 
 /-- Norm preserves total cusp order when the smaller level contains `-1`. -/
 lemma totalCuspOrder_eq_norm {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [H.IsArithmetic]
@@ -694,47 +609,28 @@ lemma relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne
         (ModularForm.norm G.adjoinNegOne f) := by
   let := Fintype.ofFinite (CuspOrbits G)
   let := Fintype.ofFinite (CuspOrbits G.adjoinNegOne)
-  let := Fintype.ofFinite (G.adjoinNegOne ⧸ G.subgroupOf G.adjoinNegOne)
-  have hlocal (c : CuspOrbits G) : (G.relIndex G.adjoinNegOne : EReal) *
-      orderAtCuspOrbit G k c f ≤ orderAtCuspOrbit G.adjoinNegOne
-        (k * Nat.card (G.adjoinNegOne ⧸ G.subgroupOf G.adjoinNegOne))
-        (CuspOrbits.map G.le_adjoinNegOne c)
-          (ModularForm.norm G.adjoinNegOne f) := by
-    obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp
-      ((IsArithmetic.isCusp_iff_isCusp_SL2Z G).mp c.out.property)
-    have hr : mapGL ℝ g • ∞ = (c.out : OnePoint ℝ) := hg.symm
-    have hq (q : G.adjoinNegOne ⧸ G.subgroupOf G.adjoinNegOne) :
-        orderAtInfty (SlashInvariantForm.quotientFunc f q ∣[k] mapGL ℝ g) =
-          orderAtInfty ((f : ℍ → ℂ) ∣[k] mapGL ℝ g) := by
-      induction q using Quotient.inductionOn with | h r =>
-      rw [SlashInvariantForm.quotientFunc_mk]
-      rcases G.adjoinNegOne.inv_mem r.property with h | h
-      · rw [SlashInvariantFormClass.slash_action_eq f _ h]
-      · rw [← neg_neg ((r : GL (Fin 2) ℝ)⁻¹), ← SlashAction.slash_mul,
-          neg_mul, orderAtInfty_slash_neg, SlashAction.slash_mul,
-          SlashInvariantFormClass.slash_action_eq f _ h]
-    have hnorm := sum_orderAtInfty_slash_quotientFunc_eq_norm (H := G.adjoinNegOne) f g
-    simp only [hq, Finset.sum_const, Finset.card_univ, EReal.nsmul_eq_mul] at hnorm
-    rw [← Nat.card_eq_fintype_card] at hnorm
-    have hw : (ConjAct.toConjAct (mapGL ℝ g)⁻¹ • G.adjoinNegOne).widthInfty =
-        (ConjAct.toConjAct (mapGL ℝ g)⁻¹ • G).widthInfty := by
-      simp [widthInfty, adjoinNegOne_conj, adjoinNegOne_eq_self_iff.mpr G.negOne_mem_adjoinNegOne]
-    have hmap : (⟦⟨c.out.val, c.out.property.mono G.le_adjoinNegOne⟩⟧ :
-        CuspOrbits G.adjoinNegOne) = CuspOrbits.map G.le_adjoinNegOne c :=
-      congr(CuspOrbits.map G.le_adjoinNegOne $(Quotient.out_eq c))
-    rw [orderAtCuspOrbit_eq G k c c.out (Quotient.out_eq c) f,
-      orderAtCuspOrbit_eq G.adjoinNegOne _ _ _ hmap (ModularForm.norm G.adjoinNegOne f),
-      orderAtCusp_eq G k c.out.property f (mapGL ℝ g) hr,
-      orderAtCusp_eq G.adjoinNegOne _ (c.out.property.mono G.le_adjoinNegOne) _ (mapGL ℝ g) hr,
-      hw, ← mul_assoc, mul_comm (G.relIndex G.adjoinNegOne : EReal), mul_assoc]
-    exact mul_le_mul_of_nonneg_left hnorm.le (EReal.coe_nonneg.mpr (widthInfty_nonneg _))
-  rw [totalCuspOrder, ← EReal.coe_natCast (n := G.relIndex G.adjoinNegOne),
-    coe_mul_sum _ (by positivity)]
-  refine Finset.sum_le_sum (s := Finset.univ) (fun c _ ↦ hlocal c) |>.trans_eq ?_
-  exact Fintype.sum_bijective _ (CuspOrbits.map_adjoinNegOne_bijective G)
-    (fun c ↦ orderAtCuspOrbit G.adjoinNegOne _ (CuspOrbits.map G.le_adjoinNegOne c)
-      (ModularForm.norm G.adjoinNegOne f))
-    (fun c ↦ orderAtCuspOrbit G.adjoinNegOne _ c (ModularForm.norm G.adjoinNegOne f))
-    (fun _ ↦ rfl)
+  rw [totalCuspOrder, ← EReal.coe_natCast, coe_mul_sum _ (by positivity)]
+  refine (Finset.sum_le_sum fun c _ ↦ ?_).trans_eq <|
+    Fintype.sum_bijective _ (CuspOrbits.map_adjoinNegOne_bijective G) _ _ fun _ ↦ rfl
+  induction c using Quotient.inductionOn with | h d =>
+  obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp ((IsArithmetic.isCusp_iff_isCusp_SL2Z G).mp d.property)
+  have hq (q : G.adjoinNegOne ⧸ G.subgroupOf G.adjoinNegOne) :
+      orderAtInfty (SlashInvariantForm.quotientFunc f q ∣[k] mapGL ℝ g) =
+        orderAtInfty ((f : ℍ → ℂ) ∣[k] mapGL ℝ g) := by
+    induction q using Quotient.inductionOn with | h r =>
+    rw [SlashInvariantForm.quotientFunc_mk]
+    rcases G.adjoinNegOne.inv_mem r.property with h | h
+    · rw [SlashInvariantFormClass.slash_action_eq f _ h]
+    · rw [← neg_neg ((r : GL (Fin 2) ℝ)⁻¹), ← SlashAction.slash_mul, neg_mul,
+        orderAtInfty_slash_neg, SlashAction.slash_mul,
+        SlashInvariantFormClass.slash_action_eq f _ h]
+  have hnorm := sum_orderAtInfty_slash_quotientFunc_eq_norm (H := G.adjoinNegOne) f g
+  simp only [hq, Finset.sum_const, Finset.card_univ, EReal.nsmul_eq_mul,
+    ← Nat.card_eq_fintype_card] at hnorm
+  rw [orderAtCuspOrbit_mk, CuspOrbits.map_mk, orderAtCuspOrbit_mk,
+    orderAtCusp_eq G k d.property f _ hg.symm,
+    orderAtCusp_eq G.adjoinNegOne _ (d.property.mono G.le_adjoinNegOne) _ _ hg.symm, mul_left_comm]
+  simp only [widthInfty, adjoinNegOne_conj, adjoinNegOne_eq_self_iff.mpr G.negOne_mem_adjoinNegOne]
+  exact mul_le_mul_of_nonneg_left hnorm.le (EReal.coe_nonneg.mpr (strictWidthInfty_nonneg _))
 
 end UpperHalfPlane
