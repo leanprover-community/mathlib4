@@ -111,7 +111,7 @@ into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` 
 `AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
-  { MonoidHomClass.toMonoidHom f with
+  { MonoidHomClass.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
