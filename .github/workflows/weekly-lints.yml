@@ -75,16 +75,22 @@ jobs:
       id: build
       continue-on-error: true
       run: |
+        # The default step shell is `bash -e` without `pipefail`, so the status of
+        # `lake build | tee` would be tee's. Make the pipeline report lake's instead.
+        set -o pipefail
         # Use a temporary file to ensure we don't overflow max variable size.
         lean_outfile=$(mktemp)
         # Show the stdout in the GitHub build logs, while we process it from the file.
-        (lake build || true) | tee "${lean_outfile}"
+        build_status=0
+        lake build | tee "${lean_outfile}" || build_status=$?
+        if [ "${build_status}" -eq 0 ]; then build_success=true; else build_success=false; fi
 
         # Process output for posting to Zulip
         SHA=${{ github.sha }} \
         REPO=${{ github.repository }} \
         RUN_ID=${{ github.run_id }} \
         INFO=true \
+        SUCCESS="${build_success}" \
           "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
