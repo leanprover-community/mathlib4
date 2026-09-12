@@ -29,25 +29,32 @@ where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing s
 
 ## Implementation notes
 
-Mathematicians seem to use "Tate-Shafarevich group" in two distinct contexts. They have in common
-the set-up that `K` is a global field, `A` is a discrete `G_K`-module, `V` is the set of places of
-`K`, and `Kᵥ` is the completion of `K` at `v : V`.
+Mathematicians seem to use "Tate–Shafarevich group" in at least two distinct contexts. They have in
+common the set-up that `K` is a global field, `A` is a discrete `G_K`-module, `V` is the set of
+places of `K`, and `Kᵥ` is the completion of `K` at a place `v` in `V`.
 
 The first context is when `A` is finite. This is used, for example, in the statement of global
-Poitou-Tate duality. In this theorem, the Tate-Shafarevich group is defined exactly as in this file.
+Poitou-Tate duality. In this theorem, the Tate–Shafarevich group is defined exactly as in this file.
 It agrees with Definition 8.6.2 of [Neukirch–Schmidt–Wingberg].
 
 The second context is when `A` is the `Kˢ`-valued points of a group scheme `A` such as an abelian
-variety. Then the Tate-Shafarevich group is usually defined as the intersection of the kernels of
+variety. Then the Tate–Shafarevich group is usually defined as the intersection of the kernels of
 the maps `H¹(K, A(Kˢ)) → H¹(Kᵥ, A(Kᵥˢ))`. Note that in particular the module changes as well as the
 group, so technically this is not quite what is happening in this definition. However the inclusion
 `H¹(Kᵥ, A(Kᵥˢ)) → H¹(Kᵥ, A(Kˢ))` is an isomorphism by the Greenberg approximation theorem, so the
-definition in this file is still mathematically correct.
+definition in this file is still mathematically correct. See Remark I.3.10 of [Milne].
+
+This definition is different but related to the "Tate–Shafarevich group" in the context of `p`-adic
+representations, where `A` is the quotient of a `p`-adic `G_K`-module by a `G_K`-invariant lattice.
+See Section 1 of [Flach]. For instance, when `A` is the quotient of the `p`-adic rational Tate module
+of an abelian variety by its integral sublattice, its associated Tate–Shafarevich group will be a
+quotient of the one in this file by its divisible part, which will be finite by definition.
 
 ## References
 
-* [Milne, *Arithmetic Duality Theorems*](https://www.jmilne.org/math/Books/ADTnot.pdf)
 * [Neukirch–Schmidt–Wingberg, *Cohomology of Number Fields*](https://link.springer.com/book/10.1007/978-3-540-37889-1)
+* [Milne, *Arithmetic Duality Theorems*](https://www.jmilne.org/math/Books/ADTnot.pdf)
+* [Flach, *A finiteness theorem for the symmetric square of an elliptic curve*](https://link.springer.com/article/10.1007/BF01232029)
 -/
 
 @[expose] public section
