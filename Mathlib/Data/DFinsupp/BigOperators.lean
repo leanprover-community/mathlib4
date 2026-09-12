@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Kenny Lau
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Data.DFinsupp.Ext
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Data.DFinsupp.Ext
+public import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Dependent functions with finite support
@@ -571,5 +572,28 @@ theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZer
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
 
 end AddEquiv
+
+/-
+section ConGen
+
+variable {M} {r : M → M → Prop}
+
+@[to_additive] theorem ConGen.Rel.prod [CommMonoid M]
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
+    ConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) :=
+  Con.prod' (conGen r) fun x hx ↦ of (f x) (g x) (hf x hx)
+
+theorem RingConGen.Rel.sum [Semiring M]
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
+    RingConGen.Rel r (∑ x ∈ s, f x) (∑ x ∈ s, g x) :=
+  AddCon.sum' (ringConGen r).toAddCon fun x hx ↦ of (f x) (g x) (hf x hx)
+
+theorem RingConGen.Rel.prod [CommSemiring M]
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, r (f x) (g x)) :
+    RingConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) :=
+  Con.prod' (ringConGen r).toCon fun x hx ↦ of (f x) (g x) (hf x hx)
+
+end ConGen
+-/
 
 end
