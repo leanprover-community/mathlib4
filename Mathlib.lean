@@ -5593,6 +5593,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
+public import Mathlib.MeasureTheory.Function.LusinContinuous
 public import Mathlib.MeasureTheory.Function.Piecewise
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
@@ -5606,6 +5607,7 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.InnerRegular
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 public import Mathlib.MeasureTheory.Function.UnifTight
@@ -8154,6 +8156,7 @@ public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Defs.Ultrafilter
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.DerivedSet
+public import Mathlib.Topology.DiscreteFamily
 public import Mathlib.Topology.DiscreteQuotient
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.EMetricSpace.Basic
