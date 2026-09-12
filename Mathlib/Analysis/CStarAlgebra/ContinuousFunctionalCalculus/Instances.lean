@@ -56,7 +56,6 @@ variable [ClosedEmbeddingContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) 
 
 open scoped ContinuousMapZero
 
-
 open Unitization in
 /--
 This is an auxiliary definition used for constructing an instance of the non-unital continuous
@@ -74,8 +73,9 @@ and so we may restrict it to `A` to get the necessary homomorphism for the non-u
 functional calculus.
 -/
 noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
-  (cfcHom (R := 𝕜) (hp₁.mpr ha) : C(σ 𝕜 (a : A⁺¹), 𝕜) →⋆ₙₐ[𝕜] A⁺¹) |>.comp
-    (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <| (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm)
+  (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
+      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
+        (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
     |>.comp ContinuousMapZero.toContinuousMapHom
 
 lemma cfcₙAux_id : cfcₙAux hp₁ a ha (.id _) = a := cfcHom_id (hp₁.mpr ha)
@@ -91,7 +91,7 @@ lemma cfcₙAux_injective : Function.Injective (cfcₙAux hp₁ a ha) :=
 
 lemma spec_cfcₙAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (cfcₙAux hp₁ a ha f) = Set.range f := by
   rw [cfcₙAux, NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply]
-  simp only [NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_coe]
+  simp only [NonUnitalStarAlgHom.comp_apply, StarAlgHom.coe_toNonUnitalStarAlgHom]
   rw [cfcHom_map_spectrum (hp₁.mpr ha) (R := 𝕜) _]
   simp
 
@@ -131,7 +131,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     rw [← hp₁, Unitization.inr_zero 𝕜]
     exact cfc_predicate_zero 𝕜
   exists_cfc_of_predicate a ha := by
-    let ψ : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A := comp (inrRangeEquiv 𝕜 A).symm <|
+    let ψ : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A := comp (inrRangeEquiv 𝕜 A).symm.toNonUnitalStarAlgHom <|
       codRestrict (cfcₙAux hp₁ a ha) _ (cfcₙAux_mem_range_inr hp₁ a ha)
     have coe_ψ (f : C(σₙ 𝕜 a, 𝕜)₀) : ψ f = cfcₙAux hp₁ a ha f :=
       congr_arg Subtype.val <| (inrRangeEquiv 𝕜 A).apply_symm_apply
@@ -140,14 +140,14 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     case continuous =>
       rw [isometry_inr (𝕜 := 𝕜) |>.isEmbedding.continuous_iff]
       have := continuous_cfcₙAux hp₁ a ha
-      simp only [coe_comp, NonUnitalStarAlgHom.coe_coe, Function.comp_def,
+      simp only [coe_comp, StarAlgEquiv.toNonUnitalStarAlgHom_apply, Function.comp_def,
         inrRangeEquiv_symm_apply, coe_codRestrict, ψ]
       fun_prop
     case injective =>
       have h₁ : Function.Injective ⇑(codRestrict (cfcₙAux hp₁ a ha) _
           (cfcₙAux_mem_range_inr hp₁ a ha)) :=
         (Set.injective_codRestrict _).mpr (cfcₙAux_injective hp₁ a ha)
-      simpa [ψ] using (inrRangeEquiv 𝕜 A).symm.injective.comp h₁
+      simpa only [ψ] using! (inrRangeEquiv 𝕜 A).symm.injective.comp h₁
     case map_id => exact inr_injective (R := 𝕜) <| coe_ψ _ ▸ cfcₙAux_id hp₁ a ha
     case map_spec =>
       exact quasispectrum_eq_spectrum_inr' 𝕜 𝕜 (ψ f) ▸ coe_ψ _ ▸ spec_cfcₙAux hp₁ a ha f

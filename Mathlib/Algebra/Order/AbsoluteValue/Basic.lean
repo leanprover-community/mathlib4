@@ -52,6 +52,7 @@ section Semiring
 
 variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 
+@[macro_inline]
 instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr

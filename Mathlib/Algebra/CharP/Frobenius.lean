@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.CharP.Lemmas
 
 /-!
-### The Frobenius endomorphism
+# The Frobenius endomorphism
 
 ## Tags
 

@@ -105,6 +105,7 @@ namespace UniformConvergenceCLM
 def ofFun [TopologicalSpace F] (𝔖 : Set (Set E)) : (E →SL[σ] F) ≃ (E →SLᵤ[σ, 𝔖] F) :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
+@[macro_inline]
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (E →SLᵤ[σ, 𝔖] F) E F :=
   inferInstanceAs <| FunLike (E →SL[σ] F) E F

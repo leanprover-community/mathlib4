@@ -111,6 +111,7 @@ variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
   [StarOrderedRing A₂]
 
+@[macro_inline]
 instance : FunLike (A₁ →CP A₂) A₁ A₂ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -150,7 +151,7 @@ open CStarMatrix CFC in
 /-- Non-unital star algebra homomorphisms are completely positive. -/
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
   map_cstarMatrix_nonneg' φ k M hM := by
-    change 0 ≤ (mapₙₐ (φ : A₁ →⋆ₙₐ[ℂ] A₂)) M
+    change 0 ≤ mapₙₐ (.ofClass φ) M
     exact map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass

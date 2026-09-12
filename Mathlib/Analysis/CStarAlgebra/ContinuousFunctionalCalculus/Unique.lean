@@ -413,7 +413,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)
     (hφa : q (φ a) := by cfc_tac) : φ (cfcₙ f a) = cfcₙ f (φ a) := by
-  let ψ : A →⋆ₙₐ[R] B := (φ : A →⋆ₙₐ[S] B).restrictScalars R
+  let ψ : A →⋆ₙₐ[R] B := (.ofClass φ : A →⋆ₙₐ[S] B).restrictScalars R
   have : Continuous ψ := hφ
   have h_spec := NonUnitalAlgHom.quasispectrum_apply_subset' (R := R) S φ a
   have hψa : q (ψ a) := hφa
@@ -463,7 +463,7 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac) (hφa : q (φ a) := by cfc_tac) :
     φ (cfc f a) = cfc f (φ a) := by
-  let ψ : A →⋆ₐ[R] B := (φ : A →⋆ₐ[S] B).restrictScalars R
+  let ψ : A →⋆ₐ[R] B := (.ofClass φ : A →⋆ₐ[S] B).restrictScalars R
   have : Continuous ψ := hφ
   have h_spec := AlgHom.spectrum_apply_subset ψ a
   have hψa : q (ψ a) := hφa
