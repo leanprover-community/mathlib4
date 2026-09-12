@@ -1155,6 +1155,55 @@ theorem infinite [Mi : Infinite M] (h : M ≅[L] N) : Infinite N :=
 
 end ElementarilyEquivalent
 
+section Nonempty
+
+/-- `IsNonemptyTheory T` means `T` has no empty models. -/
+class IsNonemptyTheory (T : Theory L) : Prop where
+  not_models' (T) (M : Type) [IsEmpty M] [L.Structure M] : ¬M ⊨ T
+
+variable (M) (T) in
+-- not an instance because `T` can't be inferred
+theorem IsNonemptyTheory.nonempty [IsNonemptyTheory T] [M ⊨ T] : Nonempty M :=
+  not_isEmpty_iff.1 fun _ =>
+    have e : M ≃ Shrink.{0} M := equivShrink.{0} M
+    let : L.Structure (Shrink.{0} M) := e.inducedStructure
+    have := e.symm.isEmpty
+    IsNonemptyTheory.not_models' T (Shrink M)
+      (StrongHomClass.elementarilyEquivalent e.inducedStructureEquiv).theory_model
+
+theorem isNonemptyTheory_of_cardGe_mem {n : Nat} [NeZero n] (h : Sentence.cardGe L n ∈ T) :
+    IsNonemptyTheory T where
+  not_models' _ empty _ model :=
+    not_nonempty_iff.2 empty <| mk_ne_zero_iff.1
+      ((Nat.cast_pos'.2 (Nat.pos_of_neZero n)).trans_le
+        ((Sentence.realize_cardGe L n).1 (model.realize_of_mem _ h))).ne'
+
+theorem IsNonemptyTheory.mono {T' : L.Theory} [IsNonemptyTheory T] (h : T ⊆ T') :
+    IsNonemptyTheory T' where
+  not_models' M empty _ model :=
+    have : M ⊨ T := model.mono h
+    not_nonempty_iff.2 empty (IsNonemptyTheory.nonempty M T)
+
+variable (T) in
+instance isNonemptyTheory_of_nonempty_constants [Nonempty L.Constants] : IsNonemptyTheory T where
+  not_models' M empty := (not_nonempty_iff.2 empty (nonempty_of_nonempty_constants L M)).elim
+
+variable (L) in
+instance : IsNonemptyTheory (nonemptyTheory L) :=
+  isNonemptyTheory_of_cardGe_mem (Set.mem_singleton _)
+
+variable (L) in
+instance : IsNonemptyTheory (infiniteTheory L) :=
+  isNonemptyTheory_of_cardGe_mem (Set.mem_range_self 1)
+
+variable (L M) in
+instance [Nonempty M] : IsNonemptyTheory (completeTheory L M) :=
+  isNonemptyTheory_of_cardGe_mem (mem_completeTheory.2
+    ((Sentence.realize_cardGe L 1).2 (Nat.cast_one.trans_le
+      (Cardinal.one_le_iff_ne_zero.2 (mk_ne_zero M)))))
+
+end Nonempty
+
 end Language
 
 end FirstOrder
