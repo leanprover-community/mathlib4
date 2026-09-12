@@ -695,6 +695,7 @@ theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
 theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
   toEquiv := Equiv.prodAssoc X Y Z
@@ -702,6 +703,7 @@ def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
 @[simp]
 lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
 def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
   toEquiv := Equiv.prodProdProdComm X Y W Z
@@ -710,6 +712,7 @@ def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
 theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `X × {*}` is homeomorphic to `X`. -/
 @[simps! -fullyApplied apply]
 def prodPUnit : X × PUnit ≃ₜ X where
@@ -908,6 +911,7 @@ theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpac
 
 variable (W X Y Z)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
 def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
   toEquiv := Equiv.sumComm X Y
@@ -946,6 +950,7 @@ lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSum
 @[simp]
 lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
 
+set_option fun_prop.projDefaultTransparency true in
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
 @[simps! -fullyApplied apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
