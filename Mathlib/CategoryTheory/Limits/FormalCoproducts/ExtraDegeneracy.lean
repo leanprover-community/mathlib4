@@ -56,13 +56,13 @@ noncomputable def cechIsoCechNerveApp (n : SimplexCategoryᵒᵖ) :
 @[reassoc (attr := simp)]
 lemma cechIsoCechNerveApp_hom_π (n : SimplexCategoryᵒᵖ) (i : ToType n.unop) :
     (U.cechIsoCechNerveApp hT n).hom ≫
-      WidePullback.π (fun _ ↦ (isTerminalIncl T hT).from U) i = U.powerπ i :=
+      widePullback.π (fun _ ↦ (isTerminalIncl T hT).from U) i = U.powerπ i :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
 
 @[reassoc (attr := simp)]
 lemma cechIsoCechNerveApp_inv_π (n : SimplexCategoryᵒᵖ) (i : ToType n.unop) :
     (U.cechIsoCechNerveApp hT n).inv ≫ U.powerπ i =
-      WidePullback.π (fun _ ↦ (isTerminalIncl T hT).from U) i := by
+      widePullback.π (fun _ ↦ (isTerminalIncl T hT).from U) i := by
   rw [← U.cechIsoCechNerveApp_hom_π hT, Iso.inv_hom_id_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -74,7 +74,7 @@ to the terminal object. -/
 noncomputable def cechIsoCechNerve :
     U.cech ≅ Arrow.cechNerve (Arrow.mk ((isTerminalIncl _ hT).from U)) :=
   NatIso.ofComponents (fun _ ↦ cechIsoCechNerveApp _ _ _)
-    (fun f ↦ WidePullback.hom_ext _ _ _ (by simp) ((isTerminalIncl _ hT).hom_ext _ _))
+    (fun f ↦ widePullback.hom_ext _ _ _ (by simp) ((isTerminalIncl _ hT).hom_ext _ _))
 
 /-- The Cech construction for `FormalCoproduct` is isomorphic
 to the general `Arrow.augmentedCechNerve` construction applied to the morphism
