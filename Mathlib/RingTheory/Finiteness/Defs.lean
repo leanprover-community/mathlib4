@@ -48,14 +48,14 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
   have := h.exists_finset_coe
   tauto
 
-theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure]⟩,
-    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
+theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG := by
+  simp_rw [fg_def, ← toAddSubmonoid_inj, span_nat_eq_addSubmonoidClosure,
+    AddSubmonoid.isAddFG_iff_finite]
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
-    P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure]⟩,
-    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
+    P.FG ↔ P.toAddSubgroup.FG := by
+  simp_rw [fg_def, ← toAddSubgroup_inj, span_int_eq_addSubgroupClosure,
+    AddSubgroup.isAddFG_iff_finite]
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by
