@@ -151,8 +151,8 @@ def opOp : C ⥤ Cᵒᵖᵒᵖ where
 def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   functor := unopUnop C
   inverse := opOp C
-  unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
-  counitIso := Iso.refl (opOp C ⋙ unopUnop C)
+  unitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
+  counitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
 
 instance : (opOp C).IsEquivalence :=
   (opOpEquivalence C).isEquivalence_inverse
@@ -344,6 +344,13 @@ def rightOpComp {E : Type*} [Category* E] (F : Cᵒᵖ ⥤ D) (G : D ⥤ E) :
 @[simps!]
 def leftOpComp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ Eᵒᵖ) :
     (F ⋙ G).leftOp ≅ F.op ⋙ G.leftOp :=
+  Iso.refl _
+
+/-- Compatibility of `Functor.leftOp` with respect to composition with the opposite of a
+functor. -/
+@[simps!]
+def leftOpCompOp {E : Type*} [Category* E] (F : C ⥤ Dᵒᵖ) (G : D ⥤ E) :
+    (F ⋙ G.op).leftOp ≅ F.leftOp ⋙ G :=
   Iso.refl _
 
 section

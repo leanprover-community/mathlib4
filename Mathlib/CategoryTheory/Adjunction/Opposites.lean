@@ -36,33 +36,50 @@ attribute [local simp] homEquiv_unit homEquiv_counit
 /-- If `G` is adjoint to `F` then `F.unop` is adjoint to `G.unop`. -/
 @[simps]
 def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.unop ⊣ G.unop where
-  unit := NatTrans.unop h.counit
-  counit := NatTrans.unop h.unit
+  unit :=
+    { app := fun X ↦ (h.counit.app (Opposite.op X)).unop
+      naturality := fun _ _ f ↦ Quiver.Hom.op_inj (by simp) }
+  counit :=
+    { app := fun X ↦ (h.unit.app (Opposite.op X)).unop
+      naturality := fun _ _ f ↦ Quiver.Hom.op_inj (by simp) }
   left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
   right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps]
 def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
-  unit := NatTrans.op h.counit
-  counit := NatTrans.op h.unit
+  unit :=
+    { app := fun X ↦ (h.counit.app X.unop).op
+      naturality := fun _ _ f ↦ Quiver.Hom.unop_inj (by simp) }
+  counit :=
+    { app := fun X ↦ (h.unit.app X.unop).op
+      naturality := fun _ _ f ↦ Quiver.Hom.unop_inj (by simp) }
   left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
   right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
 
 /-- If `F` is adjoint to `G.leftOp` then `G` is adjoint to `F.leftOp`. -/
 @[simps]
 def leftOp {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) : G ⊣ F.leftOp where
-  unit := NatTrans.unop a.counit
-  counit := NatTrans.op a.unit
+  unit :=
+    { app := fun X ↦ (a.counit.app (Opposite.op X)).unop
+      naturality := fun _ _ f ↦ Quiver.Hom.op_inj (by simpa using (a.counit.naturality f.op).symm) }
+  counit :=
+    { app := fun X ↦ (a.unit.app X.unop).op
+      naturality := fun _ _ f ↦
+        Quiver.Hom.unop_inj (by simpa using (a.unit.naturality f.unop).symm) }
   left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
   right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
 /-- If `F.rightOp` is adjoint to `G` then `G.rightOp` is adjoint to `F`. -/
 @[simps]
 def rightOp {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) : G.rightOp ⊣ F where
-  unit := NatTrans.unop a.counit
-  counit := NatTrans.op a.unit
+  unit :=
+    { app := fun X ↦ (a.counit.app (Opposite.op X)).unop
+      naturality := fun _ _ f ↦ Quiver.Hom.op_inj (by simpa using (a.counit.naturality f.op).symm) }
+  counit :=
+    { app := fun X ↦ (a.unit.app X.unop).op
+      naturality := fun _ _ f ↦
+        Quiver.Hom.unop_inj (by simpa using (a.unit.naturality f.unop).symm) }
   left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
   right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
