@@ -474,32 +474,15 @@ lemma S_eq_restricted_of_mem_compl {z : ℂ} :
     exact (hz ((mem_evaluationPoints_iff) |>.mpr H1)).elim
   · rfl
 
-lemma dist_nat_cast_lt_one (n m : ℕ) : dist (n : ℂ) (m : ℂ) < 1 ↔ n = m := by
-  apply Iff.intro
-  · rw [Complex.dist_eq]
-    by_cases H : m ≤ n
-    · have : norm (((n : ℂ)) - (m : ℂ)) = (n - m : ℕ) := by
-       norm_cast
-      rw [this]
-      simp only [Nat.cast_lt_one]
-      intros H'
-      grind
-    · have : norm (((n : ℂ)) - (m : ℂ)) = norm ((m : ℂ) - (n : ℂ)) := by
-        calc _ = norm (-((m : ℂ) - (n : ℂ))) := ?_
-             _ = norm (((m : ℂ)) - (n : ℂ)) := ?_
-        · simp only [neg_sub]
-        · symm
-          rw [← norm_neg]
-      rw [this]
-      have : norm (((m : ℂ)) - (n : ℂ)) = (m - n : ℕ) := by
-       simp only [not_le] at H
-       have : n ≤ m := by grind
-       norm_cast
-      rw [this]
-      simp only [Nat.cast_lt_one]
-      intros H'
-      grind
-  · aesop
+theorem dist_natCast_lt_one (n m : ℕ) : dist (n : ℂ) (m : ℂ) < 1 ↔ n = m := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  by_contra hne
+  have hz : ((n : ℤ) - (m : ℤ)) ≠ 0 := sub_ne_zero.mpr (by exact_mod_cast hne)
+  have : (1 : ℝ) ≤ dist (n : ℂ) (m : ℂ) := by
+    rw [Complex.dist_eq, show ((n : ℂ) - (m : ℂ)) = (((n : ℤ) - (m : ℤ) : ℤ) : ℂ) by
+      push_cast; ring, Complex.norm_intCast, ← Int.cast_abs]
+    exact_mod_cast Int.one_le_abs hz
+  exact absurd h (not_lt.mpr this)
 
 
 --SR_analytic_S.U follow this for srl0 too
@@ -534,7 +517,7 @@ lemma SRl_is_analytic_at_ball_of_radius_one (l' : Fin ((m K))) (hl : l' ≠ (l�
             symm
             aesop
           rw [← dist_pos] at this
-          have Hdist := ( dist_nat_cast_lt_one (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))
+          have Hdist := ( dist_natCast_lt_one (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq))
               ↑↑l').1
           have Hdist := Hdist hz
           rw [Hdist] at this
@@ -554,7 +537,7 @@ lemma SRl_is_analytic_at_ball_of_radius_one (l' : Fin ((m K))) (hl : l' ≠ (l�
           rw [HC] at hx
           simp only [dist_add_right] at hx
           rw [← ne_eq] at *
-          have Hdist := ( dist_nat_cast_lt_one u ↑↑l').1
+          have Hdist := ( dist_natCast_lt_one u ↑↑l').1
           have Hdist := Hdist hx
           rw [Hdist] at hx
           simp only [dist_self, zero_lt_one] at hx
@@ -586,14 +569,12 @@ lemma SRl0_is_analytic_at_ball_of_radius_one :
     have hz0 : dist (u : ℂ) ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) < 1 := by
       simpa [dist_add_right] using hz1
     have hu' : u = ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) :=
-      (dist_nat_cast_lt_one u ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ)).1 hz0
+      (dist_natCast_lt_one u ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ)).1 hz0
     exact hu.2 hu'
 
-lemma AnalyticAtEq (f g : ℂ → ℂ) (U : Set ℂ) (z : ℂ) :
-  (hU : U ∈ nhds z) → z ∈ U → (∀ z ∈ U, f z = g z) →
-     AnalyticAt ℂ f z → AnalyticAt ℂ g z := by
-    intros hU _ hfg hf
-    exact hf.congr (Filter.eventually_of_mem hU hfg)
+lemma AnalyticAtEq (f g : ℂ → ℂ) (U : Set ℂ) (z : ℂ) (hU : U ∈ nhds z)
+    (hfg : ∀ w ∈ U, f w = g w) (hf : AnalyticAt ℂ f z) : AnalyticAt ℂ g z :=
+  hf.congr (Filter.eventually_of_mem hU hfg)
 
 include α β σ α' β' γ' hirr htriv habc in
 lemma holS :
@@ -607,11 +588,9 @@ lemma holS :
         (g := (S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
         (U := Metric.ball (((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1) 1)
         (z := z)
-        ?_ ?_ ?_ ?_
+        ?_ ?_ ?_
       · rw [Hzl0]
         exact Metric.ball_mem_nhds _ zero_lt_one
-      · rw [Hzl0]
-        simp [Metric.mem_ball]
       · intro w hw
         by_cases hw0 : w = ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℂ) + 1
         · unfold S
@@ -628,7 +607,7 @@ lemma holS :
                 simpa [Metric.mem_ball] using hw
               simpa [dist_add_right] using this
             have hk : (k : ℕ) = ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq : ℕ) :=
-              (dist_nat_cast_lt_one (k : ℕ) ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
+              (dist_natCast_lt_one (k : ℕ) ((l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq :
                   ℕ)).1 hdist
             exact hw0 (by simp [hk])
           exact ((SR_eq_SRl0 α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hwCompl).trans
@@ -649,11 +628,9 @@ lemma holS :
         (g := (S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
         (U := Metric.ball ((l' : ℂ) + 1) 1)
         (z := z)
-        ?_ ?_ ?_ ?_
+        ?_ ?_ ?_
       · rw [hl']
         exact Metric.ball_mem_nhds _ zero_lt_one
-      · rw [hl']
-        simp [Metric.mem_ball]
       · intro w hw
         by_cases hw1 : w = (l' : ℂ) + 1
         · unfold S
@@ -684,7 +661,7 @@ lemma holS :
                 simpa [Metric.mem_ball] using hw
               simpa [dist_add_right] using this
             have hk : (k : ℕ) = (l' : ℕ) :=
-              (dist_nat_cast_lt_one (k : ℕ) (l' : ℕ)).1 hdist
+              (dist_natCast_lt_one (k : ℕ) (l' : ℕ)).1 hdist
             exact hw1 (by simp [hk])
           have hl_ne : l' ≠ (l₀' α β σ α' β' γ' hirr htriv habc) q hq0 h2mq := by
             intro hEq
@@ -709,9 +686,8 @@ lemma holS :
       (g := (S α β σ α' β' γ' hirr htriv habc) q hq0 h2mq)
       (U := evaluationPointsCompl K)
       (z := z)
-      ?_ ?_ ?_ ?_
+      ?_ ?_ ?_
     · exact S.U_nhds z hzCompl
-    · exact hzCompl
     · intro w hw
       exact (S_eq_restricted_of_mem_compl α β σ α' β' γ' hirr htriv habc) q hq0 h2mq hw
     · exact (SR_AnalyticAt α β σ α' β' γ' hirr htriv habc) q hq0 h2mq z hzCompl

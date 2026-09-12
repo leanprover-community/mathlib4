@@ -54,10 +54,7 @@ lemma c₉_pos : 0 < (c₉ α β K) := Real.exp_pos _
 
 omit [DecidableEq (K →+* ℂ)] in
 @[nolint unusedArguments]
-lemma c₉_nonneg : 0 ≤ (c₉ α β K) := by
-  rw [le_iff_lt_or_eq]
-  left
-  exact Real.exp_pos _
+lemma c₉_nonneg : 0 ≤ (c₉ α β K) := (c₉_pos α β).le
 
 omit [DecidableEq (K →+* ℂ)] in
 @[nolint unusedArguments]
