@@ -454,4 +454,23 @@ instance valuationSubring_isDiscreteValuationRing [IsCyclic (valueGroup (.ofClas
 
 end Field
 
+section IsEquiv
+
+variable {R Γ' : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ'] {v : Valuation R Γ}
+  {w : Valuation R Γ'}
+
+theorem isRankOneDiscrete_of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v] :
+    IsRankOneDiscrete w := by
+  have : w.IsNontrivial := (IsEquiv.isNontrivial_iff h).mp (by infer_instance)
+  have : IsCyclic (valueGroup (ofClass w)) := by
+    rw [← MulEquiv.isCyclic h.orderMonoidIso'.toMulEquiv]
+    infer_instance
+  exact Valuation.IsRankOneDiscrete.mk' w
+
+theorem IsEquiv.isRankOneDiscrete_iff (h : v.IsEquiv w) :
+    v.IsRankOneDiscrete ↔ w.IsRankOneDiscrete :=
+  ⟨fun _ ↦ isRankOneDiscrete_of_isEquiv h, fun _ ↦ isRankOneDiscrete_of_isEquiv h.symm⟩
+
+end IsEquiv
+
 end Valuation
