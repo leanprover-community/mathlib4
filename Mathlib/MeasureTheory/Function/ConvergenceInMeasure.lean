@@ -193,6 +193,36 @@ theorem congr_right (h : g =ᵐ[μ] g') (h_tendsto : TendstoInMeasure μ f l g) 
 
 end TendstoInMeasure
 
+section AETendsto
+
+variable [PseudoMetricSpace E] {f : ℕ → α → E} {g : α → E}
+
+/-- `f n x` tends to `g x` for almost every `x` if and only if, for every `ε > 0`, the set of
+points `x` with `ε ≤ dist (f n x) (g x)` for infinitely many `n` is a null set. -/
+theorem ae_tendsto_iff_forall_measure_frequently_eq_zero :
+    (∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) ↔
+      ∀ ε : ℝ, 0 < ε → μ {x | ∃ᶠ n in atTop, ε ≤ dist (f n x) (g x)} = 0 := by
+  constructor
+  · intro hfg ε hε
+    refine measure_mono_null ?_ (ae_iff.1 hfg)
+    rintro x (hx : ∃ᶠ n in atTop, ε ≤ dist (f n x) (g x)) hxg
+    obtain ⟨n, hn, hn'⟩ :=
+      (hx.and_eventually (hxg.eventually (Metric.ball_mem_nhds (g x) hε))).exists
+    exact absurd hn (not_le.2 (Metric.mem_ball.1 hn'))
+  intro h
+  have H : ∀ k : ℕ, ∀ᵐ x ∂μ, ∀ᶠ n in atTop, dist (f n x) (g x) < 1 / (k + 1) := by
+    intro k
+    have hk : 0 < 1 / (k + 1 : ℝ) := by positivity
+    filter_upwards [measure_eq_zero_iff_ae_notMem.mp (h _ hk)] with x hx
+    simpa [not_frequently, not_le, Set.mem_ofPred_eq] using hx
+  filter_upwards [ae_all_iff.mpr H] with x hx
+  refine Metric.tendsto_atTop.mpr fun ε hε ↦ ?_
+  obtain ⟨k, hk⟩ := exists_nat_one_div_lt hε
+  obtain ⟨N, hN⟩ := eventually_atTop.mp (hx k)
+  exact ⟨N, fun n hn ↦ (hN n hn).trans (by exact_mod_cast hk)⟩
+
+end AETendsto
+
 section ExistsSeqTendstoAe
 
 variable [PseudoEMetricSpace E]
