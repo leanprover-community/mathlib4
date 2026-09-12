@@ -164,6 +164,35 @@ lemma lieBracket_smul_left {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
   rw [lieBracket_swap, lieBracket_smul_right hf hV, lieBracket_swap, add_comm]
   simp
 
+/--
+The Lie bracket acts as a derivation on functions: for a function `f` with derivative `f'`
+and vector fields `V`, `W`, we have `[V, W] f = V (W f) - W (V f)`, i.e.
+`D(f' W) V - D(f' V) W = f' [V, W]`.
+
+The two second-derivative terms cancel by symmetry of the second derivative, and what
+survives is exactly the bracket.
+-/
+lemma lieBracket_apply_fun [IsRCLikeNormedField 𝕜]
+    {f : E → F} {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {V' W' : E →L[𝕜] E}
+    (hf : ∀ y, HasFDerivAt f (f' y) y) (hf' : HasFDerivAt f' f'' x)
+    (hV : HasFDerivAt V V' x) (hW : HasFDerivAt W W' x) :
+    (fderiv 𝕜 (fun y ↦ f' y (W y)) x) (V x) - (fderiv 𝕜 (fun y ↦ f' y (V y)) x) (W x)
+      = f' x (lieBracket 𝕜 V W x) := by
+  have h1 : HasFDerivAt (fun y ↦ f' y (W y)) ((f' x).comp W' + f''.flip (W x)) x :=
+    hf'.clm_apply hW
+  have h2 : HasFDerivAt (fun y ↦ f' y (V y)) ((f' x).comp V' + f''.flip (V x)) x :=
+    hf'.clm_apply hV
+  have hsymm : f'' (V x) (W x) = f'' (W x) (V x) :=
+    second_derivative_symmetric hf hf' (V x) (W x)
+  rw [h1.fderiv, h2.fderiv, lieBracket_eq]
+  dsimp only
+  rw [hV.fderiv, hW.fderiv]
+  simp only [add_apply, ContinuousLinearMap.comp_apply,
+    ContinuousLinearMap.flip_apply, map_sub]
+  rw [hsymm]
+  abel
+
+
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (V + V₁) W s x =
