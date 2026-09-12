@@ -322,6 +322,21 @@ theorem smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
 theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] : g • P = P := by
   simp only [smul_eq_iff_mem_normalizer, ← P.coe_coe, P.normalizer_eq_top, mem_top]
 
+/-- The intersection of all Sylow `p`-subgroups of `G` is normal: conjugation permutes the Sylow
+`p`-subgroups, so it fixes their intersection. -/
+theorem normal_iInf : (⨅ P : Sylow p G, (P : Subgroup G)).Normal where
+  conj_mem n hn g := by
+    simp only [Subgroup.mem_iInf] at hn ⊢
+    intro P
+    have h := hn (g⁻¹ • P)
+    rw [Sylow.coe_subgroup_smul, Subgroup.mem_pointwise_smul_iff_inv_smul_mem] at h
+    simpa using h
+
+/-- The intersection of all Sylow `p`-subgroups of `G` is a `p`-group, being contained in one of
+them. -/
+theorem isPGroup_iInf : IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) :=
+  (Classical.arbitrary (Sylow p G)).2.to_le (iInf_le _ _)
+
 end Sylow
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
