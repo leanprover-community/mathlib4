@@ -755,7 +755,7 @@ theorem liftOn₂_mk' {p : Sort*} (f : M → S → M → S → p) (H) (a c : M) 
 @[to_additive /-- The localization of a torsion-free monoid is torsion-free. -/]
 instance instIsMulTorsionFree [IsMulTorsionFree M] : IsMulTorsionFree <| Localization S where
   pow_left_injective n hn := by
-    rintro ⟨a⟩ ⟨b⟩ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
+    rintro ⟨a⟩ ⟨b⟩ _ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
     change mk a.1 a.2 = mk b.1 b.2
     simp only [mk_pow, mk_eq_mk_iff, r_iff_exists, SubmonoidClass.coe_pow, Subtype.exists,
       exists_prop] at hab ⊢
