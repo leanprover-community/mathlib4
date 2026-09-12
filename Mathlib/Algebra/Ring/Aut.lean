@@ -33,17 +33,28 @@ abbrev RingAut := RingEquiv R R
 
 namespace RingAut
 
+instance : One (RingAut R) where one := RingEquiv.refl R
+instance : Mul (RingAut R) where mul g h := RingEquiv.trans h g
+instance : Inv (RingAut R) where inv := RingEquiv.symm
+instance : Pow (RingAut R) Nat where
+  pow f n :=
+    { __ := n • f.toAddEquiv
+      __ := f.toMulEquiv ^ n }
+instance : Pow (RingAut R) Int where
+  pow f n :=
+    { __ := n • f.toAddEquiv
+      __ := f.toMulEquiv ^ n }
+
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`. -/
 instance : Group (RingAut R) where
-  mul g h := RingEquiv.trans h g
-  one := RingEquiv.refl R
-  inv := RingEquiv.symm
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
   inv_mul_cancel := RingEquiv.self_trans_symm
+  npow n f := f ^ n
+  zpow n f := f ^ n
 
 instance : Inhabited (RingAut R) :=
   ⟨1⟩
