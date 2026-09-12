@@ -134,7 +134,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
     [HasProductsOfShape α C] :
     U.mapPower (id : α → α) = 𝟙 _ := by
-  cat_disch
+  ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

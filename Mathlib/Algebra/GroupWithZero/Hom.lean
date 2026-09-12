@@ -86,6 +86,7 @@ namespace MonoidWithZeroHom
 attribute [nolint docBlame] toMonoidHom
 attribute [nolint docBlame] toZeroHom
 
+@[macro_inline]
 instance funLike : FunLike (α →*₀ β) α β where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr

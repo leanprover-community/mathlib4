@@ -67,6 +67,7 @@ instance : Category TopCommRingCat.{u} where
       dsimp
       fun_prop⟩
 
+@[macro_inline]
 instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } R S where
   coe f := f.val
   coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)

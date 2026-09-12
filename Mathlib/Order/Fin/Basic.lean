@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Fin.Embedding
 public import Mathlib.Data.Fin.Rev
+public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Hom.Basic
 
 /-!

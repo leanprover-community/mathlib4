@@ -23,6 +23,7 @@ namespace MyIso
 
 variable (A B : Type*) [MyClass A] [MyClass B]
 
+@[macro_inline]
 instance instEquivLike : EquivLike (MyIso A B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -96,6 +97,7 @@ namespace CoolerIso
 
 variable {A B : Type*} [CoolClass A] [CoolClass B]
 
+@[macro_inline]
 instance : EquivLike (CoolerIso A B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -158,6 +160,7 @@ variable {E F α β γ : Sort*} [EquivLike E α β] [EquivLike F β γ]
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
 
+@[macro_inline]
 instance (priority := 100) toFunLike : FunLike E α β where
   coe := (coe : E → α → β)
   coe_injective e g h :=

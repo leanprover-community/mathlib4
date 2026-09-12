@@ -151,7 +151,7 @@ variable {W Z} in
 @[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
-  Sigma.ι_desc _ _
+  Sigma.ι_comp_desc _ _
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 

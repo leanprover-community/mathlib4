@@ -26,6 +26,8 @@ This file defines convex spaces as an algebraic structure supporting finite conv
   `Convexity.sConvexComb : StdSimplex R X → X` satisfying monadic laws.
 * `Convexity.iConvexComb`: Indexed convex combination operator.
 * `Convexity.convexCombPair`: Binary convex combinations of two points.
+* `Convexity.IsConvexCombComm R S X`: A typeclass for the `R`-convex and `S`-convex space
+  structures on `X` to commute.
 
 ## Design
 
@@ -573,26 +575,64 @@ lemma iConvexComb_assoc {J : Type*} (s : StdSimplex R I) (f : I → StdSimplex R
   rw [← map_map, ← sConvexComb_sConvexComb]
   simp [map_sConvexComb, map_map]
 
-variable {R X I J : Type*} [PartialOrder R] [CommSemiring R] [IsStrictOrderedRing R]
-  [ConvexSpace R X] in
-lemma iConvexComb_comm (f : StdSimplex R I) (g : StdSimplex R J)
+section IsConvexCombComm
+variable {R S X I J : Type*} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] [PartialOrder S]
+  [Semiring S] [IsStrictOrderedRing S] [ConvexSpace R X] [ConvexSpace S X]
+
+variable (R S X) in
+/-- `IsConvexCombComm R S X` indicates that the `R`-convex and `S`-convex space structures on `X`
+commute, namely for `R`-convex combinations to be `S`-affine.
+
+This is the convex space analogue of `SMulCommClass`. -/
+class IsConvexCombComm : Prop where
+  /-- `R`-convex combinations commute with `S`-convex combinations of `Fin n`-indexed families.
+
+  This is stated for `Fin n` so that the class does not depend on an extra universe parameter.
+  Use `Convexity.iConvexComb_comm` instead, which works for arbitrary index types. -/
+  protected iConvexComb_comm' {n : ℕ} (f : StdSimplex R (Fin n → X)) (g : StdSimplex S (Fin n)) :
+    f.iConvexComb (fun e ↦ g.iConvexComb e) = g.iConvexComb (fun i ↦ f.iConvexComb (· i))
+
+/-- `R`-convex combinations commute with `S`-convex combinations. -/
+lemma iConvexComb_comm [IsConvexCombComm R S X] (f : StdSimplex R I) (g : StdSimplex S J)
     (e : I → J → X) :
     f.iConvexComb (fun i ↦ g.iConvexComb (e i)) =
       g.iConvexComb fun j ↦ f.iConvexComb fun i ↦ e i j := by
-  rw [iConvexComb_assoc', iConvexComb_assoc', iConvexComb_reindex _ (.prodComm ..)]
-  congr
-  suffices (f.map fun x ↦ g.map (Prod.mk · x)).sConvexComb =
-      (g.map (f.map ∘ Prod.mk)).sConvexComb by
-    simpa [iConvexComb, map_sConvexComb, map_map, Function.comp_def]
-  ext1
-  simp [mapDomain, sum_sum_index, add_smul, smul_sum, mul_comm, sum_comm f.weights g.weights]
+  obtain ⟨n, b, g, rfl⟩ : ∃ (n : ℕ) (b : Fin n → J) (g' : StdSimplex S (Fin n)), g'.map b = g := by
+    refine ⟨_, fun i ↦ g.weights.support.equivFin.symm i, ?_⟩
+    rw [← Set.mem_range, mem_range_map_iff]
+    intro x hx
+    rw [← Finsupp.notMem_support_iff]
+    exact fun hx' ↦ hx ⟨g.weights.support.equivFin ⟨x, hx'⟩, by simp⟩
+  simpa [map_map] using IsConvexCombComm.iConvexComb_comm' (f.map fun i j ↦ e i (b j)) g
+
+variable (R S X) in
+/-- Commutativity of convex combinations is a symmetric relation.
+
+This is not an instance as it would cause loops. -/
+protected lemma IsConvexCombComm.symm [IsConvexCombComm R S X] : IsConvexCombComm S R X where
+  iConvexComb_comm' f g := (iConvexComb_comm g f fun i e ↦ e i).symm
+
+end IsConvexCombComm
+
+variable {R X I J : Type*} [PartialOrder R] [CommSemiring R] [IsStrictOrderedRing R]
+  [ConvexSpace R X] in
+/-- When `R` is commutative, so are its convex combinations. -/
+instance IsConvexCombComm.instSelf : IsConvexCombComm R R X where
+  iConvexComb_comm' f g := by
+    change f.iConvexComb (fun e ↦ g.iConvexComb e) = g.iConvexComb fun i ↦ f.iConvexComb (· i)
+    rw [iConvexComb_assoc', iConvexComb_assoc', iConvexComb_reindex _ (.prodComm ..)]
+    congr
+    suffices (f.map fun x ↦ g.map (Prod.mk · x)).sConvexComb =
+        (g.map (f.map ∘ Prod.mk)).sConvexComb by
+      simpa [iConvexComb, map_sConvexComb, map_map, Function.comp_def]
+    ext1
+    simp [mapDomain, sum_sum_index, add_smul, smul_sum, mul_comm, sum_comm f.weights g.weights]
 
 lemma IsAffineMap.map_iConvexComb {f : X → Y} (hf : IsAffineMap R f)
     (s : StdSimplex R I) (g : I → X) : f (s.iConvexComb g) = s.iConvexComb (f ∘ g) := by
   simp [iConvexComb, hf.map_sConvexComb, map_comp]
 
-lemma map_iConvexComb {f : J → K}
-    (s : StdSimplex R I) (g : I → StdSimplex R J) :
+lemma map_iConvexComb {f : J → K} (s : StdSimplex R I) (g : I → StdSimplex R J) :
     (s.iConvexComb g).map f = s.iConvexComb (map f ∘ g) :=
   (isAffineMap_map R f).map_iConvexComb s g
 

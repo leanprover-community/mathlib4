@@ -242,7 +242,6 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     simp only [Set.mem_iInter, Set.mem_ofPred_eq] at hmem
     obtain ⟨N, hN⟩ := hTop (T n)
     specialize hN N le_rfl
-    specialize hmem N
     grind
   rw [measure_iInter_of_ae_antitone, le_iInf_iff]
   · exact fun k ↦ (hn k).le

@@ -85,6 +85,7 @@ variable {f g : NormedAddGroupHom V₁ V₂}
 def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : NormedAddGroupHom V₁ V₂ :=
   f.mkNormedAddGroupHom K fun x ↦ by simpa only [map_zero, dist_zero_right] using h.dist_le_mul x 0
 
+@[macro_inline]
 instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr

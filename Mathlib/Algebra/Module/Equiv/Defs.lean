@@ -160,6 +160,7 @@ theorem toLinearMap_injective : Injective (toLinearMap : (M ≃ₛₗ[σ] M₂) 
 theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
   toLinearMap_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   coe e := e.toFun
   inv := LinearEquiv.invFun

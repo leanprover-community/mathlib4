@@ -86,6 +86,7 @@ instance : Inhabited (AddContent G C) :=
     empty' := by simp
     sUnion' := by simp }⟩
 
+@[macro_inline]
 instance : FunLike (AddContent G C) (Set α) G where
   coe m s := m.toFun s
   coe_injective m m' _ := by

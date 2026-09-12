@@ -88,6 +88,7 @@ variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Star C]
 variable [NonUnitalNonAssocSemiring D] [Star D]
 
+@[macro_inline]
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
@@ -285,6 +286,7 @@ section Basic
 
 variable {A B C : Type*} [Add A] [Add B] [Mul A] [Mul B] [Star A] [Star B] [Add C] [Mul C] [Star C]
 
+@[macro_inline]
 instance : EquivLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -303,6 +305,7 @@ instance : StarRingEquivClass (A ≃⋆+* B) A B where
   map_star := map_star'
 
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
+@[macro_inline]
 instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
