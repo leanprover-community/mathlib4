@@ -34,10 +34,10 @@ lemma exists_mem_ball_avoiding_small_affineSpans
     apply measure_iUnion_null
     intro u
     exact Measure.addHaar_affineSubspace μ _ <| by
-      simpa only [Finset.coe_image, Set.encard_coe_eq_coe_finsetCard,
-        finrank_euclideanSpace_fin, ENat.natCast_le_natCast] using
-        affineSpan_image_ne_top_of_encard_le_finrank ℝ u.1.finite_toSet
-          (Finset.mem_filter.mp u.2).2 z
+      simpa only [Finset.coe_image] using
+        affineSpan_image_ne_top_of_encard_le_finrank (p := z) ℝ u.1.finite_toSet
+          (by simpa only [Set.encard_coe_eq_coe_finsetCard, finrank_euclideanSpace_fin,
+            ENat.natCast_le_natCast] using (Finset.mem_filter.mp u.2).2)
   -- A positive-measure ball cannot be contained in the null forbidden union.
   have hnot_subset : ¬ Metric.ball c ε ⊆ forbidden := by
     intro hsubset
