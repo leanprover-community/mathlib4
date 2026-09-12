@@ -267,6 +267,29 @@ lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx
   | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
   | cons => grind [cons_append, takeUntil]
 
+theorem takeUntil_append_of_notMem_left {x : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hx : x ∈ (p.append q).support) (hx' : x ∉ p.support.dropLast) :
+    (p.append q).takeUntil x hx =
+      p.append (q.takeUntil x <| by grind [support_append_eq_support_dropLast_append]) := by
+  induction p with
+  | nil => simp
+  | cons => simp! only; grind [List.dropLast_cons_of_ne_nil, support_ne_nil]
+
+lemma dropUntil_append_of_mem_left {x : V} {p : G.Walk u v} {q : G.Walk v w} (hx : x ∈ p.support) :
+    (p.append q).dropUntil x (p.support_subset_support_append_left q hx) =
+      (p.dropUntil x hx).append q := by
+  induction p with
+  | nil => grind [mem_support_nil_iff, dropUntil_first]
+  | cons => simp! only; split_ifs <;> subst_vars <;> grind [cons_append]
+
+theorem dropUntil_append_of_notMem_left {x : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hx : x ∈ (p.append q).support) (hx' : x ∉ p.support.dropLast) :
+    (p.append q).dropUntil x hx =
+      q.dropUntil x (by grind [support_append_eq_support_dropLast_append]) := by
+  induction p with
+  | nil => simp
+  | cons => simp! only; grind [List.dropLast_cons_of_ne_nil, support_ne_nil]
+
 lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
   conv_rhs => rw [← take_spec p hw, getVert_append]
@@ -316,18 +339,42 @@ lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
       p.takeUntil x (p.support_takeUntil_subset_support hw hx) := by
   simp_rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx, take_spec]
 
+theorem dropUntil_dropUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support) (hx : x ∈ p.support)
+    (hx' : x ∉ (p.takeUntil w hw).support.dropLast) :
+    (p.dropUntil w hw).dropUntil x
+      (by grind [support_append_eq_support_dropLast_append, take_spec]) = p.dropUntil x hx := by
+  simp_rw [← dropUntil_append_of_notMem_left (p.take_spec hw ▸ hx) hx', take_spec]
+
+/-- An `a` appears before the first `b` in `p` iff the first `a` appears before any `b` in `p`,
+stated using `takeUntil` and `dropUntil`. -/
+theorem notMem_dropLast_support_takeUntil_iff_mem_support_takeUntil {p : G.Walk u v} {a b : V}
+    (ha : a ∈ p.support) (hb : b ∈ p.support) :
+    a ∈ (p.takeUntil b hb).support ↔ b ∉ (p.takeUntil a ha).support.dropLast := by
+  grind [takeUntil_eq_take, support_take, support_copy, List.mem_take_iff_idxOf_lt,
+    List.dropLast_eq_take]
+
+/-- If an `a` appears before the first `b` in `p` then the first `a` appears before any `b` in `p`,
+stated using `takeUntil` and `dropUntil`. This is the forward direction of
+`notMem_dropLast_support_takeUntil_iff_mem_support_takeUntil` without a redundant hypothesis. -/
+theorem notMem_dropLast_support_takeUntil_of_mem_support_takeUntil {p : G.Walk u v} {a b : V}
+    (hb : b ∈ p.support) (ha : a ∈ (p.takeUntil b hb).support) :
+    b ∉ (p.takeUntil a (p.support_takeUntil_subset_support hb ha)).support.dropLast :=
+  notMem_dropLast_support_takeUntil_iff_mem_support_takeUntil _ hb |>.mp ha
+
+/-- If an `x` appears before the first `w` in `p` and `x ≠ w` then the first `x` appears strictly
+before any `w` in `p`, stated using `takeUntil` and `dropUntil`. -/
 lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
     w ∉ (p.takeUntil x (p.support_takeUntil_subset_support hw hx)).support := by
-  rw [← takeUntil_takeUntil p hw hx]
-  intro hw'
-  have h1 : (((p.takeUntil w hw).takeUntil x hx).takeUntil w hw').length
-      < ((p.takeUntil w hw).takeUntil x hx).length := by
-    exact length_takeUntil_lt_length _ h.symm
-  have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := by
-    exact length_takeUntil_lt_length _ h
-  simp only [takeUntil_takeUntil] at h1 h2
-  lia
+  grind [dropLast_support_concat, notMem_dropLast_support_takeUntil_of_mem_support_takeUntil]
+
+/-- If an `a` appears before the first `b` in `p` then the first `a` appears before some `b` in `p`,
+stated using `takeUntil` and `dropUntil`. -/
+theorem mem_support_takeUntil_of_mem_support_dropUntil {p : G.Walk u v} {a b : V}
+    (hb : b ∈ p.support) (ha : a ∈ (p.takeUntil b hb).support) :
+    b ∈ (p.dropUntil a (p.support_takeUntil_subset_support hb ha)).support := by
+  grind [take_spec, support_append_eq_support_dropLast_append,
+    notMem_dropLast_support_takeUntil_of_mem_support_takeUntil]
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate (c : G.Walk v v) (u : V) (h : u ∈ c.support) : G.Walk u u :=
