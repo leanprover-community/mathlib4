@@ -92,6 +92,32 @@ theorem coe_iInf {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
     ((⨅ i, f i : α →o β) : α → β) = ⨅ i, (f i : α → β) := by
   funext x; simp [iInf_apply]
 
+section OrderSup
+
+/- TODO(blocked #38328): replace with a LawfulSupSet -/
+class OrderSupSet (α : Type*) [LE α] extends SupSet α where
+  (isLUB_sSup_of_isLUB : ∀ s : Set α, ∀ a : α, IsLUB s a → IsLUB s (sSup s))
+
+theorem sSup_le₁ [OrderSupSet α] {s : Set α} {a : α} (h : ∀ b ∈ s, b ≤ a) : sSup s ≤ a := by
+  sorry
+
+theorem iSup_le₁ {ι : Sort*} [OrderSupSet α] {a : α} {f : ι → α} (h : ∀ i, f i ≤ a) : iSup f ≤ a :=
+  sSup_le₁ fun _ ⟨i, Eq⟩ => Eq ▸ h i
+
+-- TODO doc
+--@[to_dual (attr := gcongr)]
+theorem iSup_mono₁ {ι : Sort*} [OrderSupSet α] (f g : ι → α) (h : ∀ i, f i ≤ g i) :
+    iSup f ≤ iSup g :=
+  iSup_le₁ fun i => sorry
+
+instance [Preorder β] [OrderSupSet β] : SupSet (α →o β) where
+  sSup s := ⟨fun x => ⨆ f ∈ s, (f :) x, fun a₁ a₂ h => by
+    refine iSup_mono₁ _ _ (fun f => iSup_mono₁ (fun _ ↦ f a₁) (fun _ ↦ f a₂) ?_)
+    exact fun hf => apply_mono (Preorder.le_refl f) h
+  ⟩
+
+end OrderSup
+
 instance [CompleteLattice β] : SupSet (α →o β) where
   sSup s := ⟨fun x => ⨆ f ∈ s, (f :) x, fun _ _ h => iSup₂_mono fun f _ => f.mono h⟩
 
