@@ -692,12 +692,15 @@ theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
 theorem Exists.snd {b : Prop} {p : b → Prop} : ∀ h : Exists p, p h.fst
   | ⟨_, h⟩ => h
 
-theorem Prop.exists_iff {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
+theorem Prop.exists {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
   ⟨fun ⟨h₁, h₂⟩ ↦ by_cases (fun H : h₁ ↦ .inr <| by simpa only [H] using h₂)
     (fun H ↦ .inl <| by simpa only [H] using h₂), fun h ↦ h.elim (.intro _) (.intro _)⟩
 
-theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
+theorem Prop.forall {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
   ⟨fun H ↦ ⟨H _, H _⟩, fun ⟨h₁, h₂⟩ h ↦ by by_cases H : h <;> simpa only [H]⟩
+
+@[deprecated (since := "2026-09-02")] alias Prop.exists_iff := Prop.exists
+@[deprecated (since := "2026-09-02")] alias Prop.forall_iff := Prop.forall
 
 theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃ h, q h) ↔ p :=
   ⟨Exists.fst, fun H ↦ ⟨H, h H⟩⟩
