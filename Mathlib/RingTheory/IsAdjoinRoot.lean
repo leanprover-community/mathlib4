@@ -131,6 +131,25 @@ theorem adjoin_root_eq_top : Algebra.adjoin R {h.root} = ⊤ := by
   rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top, aeval_root_eq_map]
   exact h.map_surjective
 
+theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R h.root :=
+  ⟨f, hf, h.aeval_root_self⟩
+
+theorem isAlgebraic {S : Type*} [CommRing S] [Algebra R S] (h : IsAdjoinRoot S f)
+    [NoZeroDivisors R] (hf : f ≠ 0) : Algebra.IsAlgebraic R S :=
+  Algebra.isAlgebraic_iff.mpr <| by simpa only [h.adjoin_root_eq_top] using
+    Algebra.isAlgebraic_adjoin_singleton_iff.mpr (h.isAlgebraic_root hf)
+
+theorem isIntegral_root (hf : f.Monic) : IsIntegral R h.root :=
+  ⟨f, hf, h.aeval_root_self⟩
+
+theorem isIntegral {S : Type*} [CommRing S] [Algebra R S] (h : IsAdjoinRoot S f)
+    (hf : f.Monic) : Algebra.IsIntegral R S :=
+  Subalgebra.topEquiv.isIntegral_iff.mp <| by
+    rw [← h.adjoin_root_eq_top]
+    refine .adjoin ?_
+    rintro x rfl
+    exact h.isIntegral_root hf
+
 /-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
 for extensionality of the ring elements. -/
 theorem ext_map (h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h' := by
@@ -331,8 +350,6 @@ theorem eq_liftHom (g : S →ₐ[R] T) (hroot : g h.root = x) : g = h.liftHom x 
   AlgHom.ext (h.apply_eq_lift hx' g g.commutes hroot)
 
 end lift
-
-theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R h.root := ⟨f, by simp [hf]⟩
 
 end IsAdjoinRoot
 
@@ -729,3 +746,43 @@ abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
 end IsAdjoinRoot
 
 end Field
+
+namespace AdjoinRoot
+
+open scoped nonZeroDivisors
+open Ideal
+
+variable {R K : Type*} [CommRing R] [CommRing K] [Algebra R K] {p : R[X]}
+
+attribute [local instance] Polynomial.algebra
+
+/-- If `f : R → K` is an algebra map, then `K[X] / f(p)` is an algebra over `R[X] / p`. -/
+abbrev algebra : Algebra (AdjoinRoot p) (AdjoinRoot (p.map (algebraMap R K))) :=
+  Quotient.algebraQuotientOfLEComap <| le_comap_of_map_le <| by simp [map_span]
+
+attribute [local instance] AdjoinRoot.algebra
+
+instance : IsScalarTower R (AdjoinRoot p) (AdjoinRoot (p.map (algebraMap R K))) :=
+  .of_algebraMap_eq fun r ↦ (IsScalarTower.algebraMap_apply R K ..).trans <|
+    .symm <| quotientMap_mk.trans <| by simp; rfl
+
+variable [NoZeroDivisors R]
+
+lemma faithfulSMul (hp : p.degree ≠ 0) : FaithfulSMul R (AdjoinRoot p) :=
+  .of_injective (Algebra.ofId R _) (of.injective_of_degree_ne_zero hp)
+
+/-- If `f : R → K` is the canonical map from a domain `R` to its fraction ring `K`, and `p` is a
+non-constant prime polynomial over `R`, then `K[X] / f(p)` is a fraction ring of `R[X] / p`. -/
+theorem isFractionRing [IsFractionRing R K] (prime : Prime p) (degree : p.degree ≠ 0) :
+    IsFractionRing (AdjoinRoot p) (AdjoinRoot (p.map (algebraMap R K))) := by
+  have : IsDomain (AdjoinRoot p) := isDomain_of_prime prime
+  have : Algebra.IsAlgebraic R (AdjoinRoot p) := (AdjoinRoot.isAdjoinRoot p).isAlgebraic prime.1
+  have : FaithfulSMul R (AdjoinRoot p) := faithfulSMul degree
+  rw [← Algebra.IsAlgebraic.isLocalization_iff_isFractionRing R]
+  convert IsLocalization.of_surjective (R⁰.map C) K[X] _ mk_surjective _ mk_surjective _ fun _ h ↦ _
+  · ext; simp [Algebra.algebraMapSubmonoid]
+  · rfl
+  rcases mem_span_singleton'.mp <| Quotient.eq_zero_iff_mem.mp h with ⟨_, rfl⟩
+  exact mul_mem_left _ _ <| mem_map_of_mem _ <| Quotient.mk_singleton_self p
+
+end AdjoinRoot
