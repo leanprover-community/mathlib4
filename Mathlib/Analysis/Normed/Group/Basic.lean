@@ -869,6 +869,10 @@ theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r :
 theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
   rw [mem_closedBall', dist_eq_norm_div]
 
+@[to_additive mem_closedBall_iff_nnnorm]
+theorem mem_closedBall_iff_nnnorm'' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖b / a‖₊ ≤ r :=
+  mem_closedBall_iff_norm''
+
 /-- A scaled closed ball is a closed ball. -/
 @[to_additive setOf_sub_mem_closedBall_eq_closedBall
   /-- A translated closed ball is a closed ball. -/]
