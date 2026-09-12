@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
@@ -156,8 +157,7 @@ lemma Bundle.Trivialization.contMDiffAt_symmL [ContMDiffVectorBundle n F₁ E₁
     (trivializationAt F₁ E₁ x).open_baseSet.mem_nhds hx'] with b hb hb'
   ext v
   simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-    coordChangeL_apply' e _ ⟨hb, hb'⟩, coe_linearMapAt_of_mem _ hb',
-    e.symmL_apply hb, e.mk_symm hb]
+    coordChangeL_apply' e _ ⟨hb, hb'⟩, hb, hb', e.mk_symm hb]
 
 /-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
 defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
@@ -338,6 +338,107 @@ lemma ContMDiff.clm_bundle_apply
     CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
+/-- Specialization of `ContMDiffAt.clm_bundle_apply` to the trivial bundle on the source. -/
+lemma ContMDiffAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
+    (hψ : CMDiffAt n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)) x)
+    {w : M → F₁} (hb : CMDiffAt n b x) (hw : CMDiffAt n w x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
+  apply ContMDiffAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁) hψ
+  simp [contMDiffAt_totalSpace, hb, hw]
+
+/-- Applying a trivialization of a `C^n` vector bundle to a constant vector yields a `C^n`
+function into the total space. Version for differentiability at a point. -/
+lemma Bundle.Trivialization.contMDiffAt_symm_const
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x := by
+  apply ContMDiffAt.clm_bundle_apply_trivial_source
+  · exact contMDiffAt_symmL e hx
+  · exact contMDiffAt_id
+  · exact contMDiffAt_const
+
+/-- Applying a trivialization `t` of a `C^n` vector bundle to a constant vector yields a function
+into the total space which is `C^n` on `t.baseSet`. -/
+lemma Bundle.Trivialization.contMDiffOn_symm_const
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    (u : F₁) :
+    CMDiff[e.baseSet] n (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) :=
+  fun _x hx ↦ (e.contMDiffAt_symm_const hx _).contMDiffWithinAt
+
+lemma Bundle.Trivialization.contMDiffWithinAt_apply [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    {x : B} (hx : x ∈ e.baseSet) {s : Set B} {σ : Π b, E₁ b} (hσ : CMDiffAt[s] n (T% σ) x) :
+    CMDiffAt[s] n (fun b ↦ e.continuousLinearMapAt 𝕜 b (σ b)) x := by
+  apply (contMDiffWithinAt_section s hx).mp hσ |>.congr_of_eventuallyEq
+  · apply mem_nhdsWithin_of_mem_nhds
+    filter_upwards [e.open_baseSet.mem_nhds hx] with x' hx'
+    simp [hx']
+  · simp [hx]
+
+variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁]
+  {φ : Π x : B, E₁ x →L[𝕜] E₂ x} {s : Set B} {x : B}
+
+-- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffWithinAt k (T% σ) b` is almost
+-- equivalent to `CMDiffWithinAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
+lemma ContMDiffWithinAt.clm_bundle_of_apply
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt[s] n (T% σ) b) → CMDiffAt[s] n (T% (fun x ↦ φ x (σ x))) x) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
+      (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) s x := by
+  refine (contMDiffWithinAt_hom_bundle fun x ↦ ⟨x, φ x⟩).mpr ⟨contMDiffWithinAt_id, ?_⟩
+  rw [contMDiffWithinAt_iff_source, contMDiffWithinAt_iff_contDiffWithinAt]
+  set t₁ := trivializationAt F₁ E₁ x
+  set t₂ := trivializationAt F₂ E₂ x
+  apply contDiffWithinAt_clm_apply.mpr
+  set ψ := extChartAt IB x
+  intro u
+  have C₀ : CMDiffAt[s] n (fun b ↦ t₂.continuousLinearMapAt 𝕜 b (φ b (t₁.symmL 𝕜 b u)))
+      (ψ.symm (ψ x)) := by
+    rw [extChartAt_to_inv x]
+    apply t₂.contMDiffWithinAt_apply (FiberBundle.mem_baseSet_trivializationAt' x)
+    apply h
+    filter_upwards [t₁.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)] with
+      x' hx'
+    exact (t₁.contMDiffAt_symm_const hx' _).contMDiffWithinAt
+  have := C₀.comp' (ψ x) (contMDiffWithinAt_extChartAt_symm_range_self x)
+  simpa [inter_comm, t₁, t₂, contMDiffWithinAt_iff_contDiffWithinAt, inCoordinates]
+
+-- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffAt k (T% σ) b` is almost equivalent
+-- to `CMDiffAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
+lemma ContMDiffAt.clm_bundle_of_apply
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ b in 𝓝 x, CMDiffAt n (T% σ) b) → CMDiffAt n (T% (fun x ↦ φ x (σ x))) x) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
+    x := by
+  simp_rw [← contMDiffWithinAt_univ] at h ⊢
+  exact ContMDiffWithinAt.clm_bundle_of_apply (fun σ hσ ↦ h σ hσ)
+
+lemma ContMDiffOn.clm_bundle_of_apply
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ x ∈ s, (∀ᶠ b in 𝓝 x, CMDiffAt[s] n (T% σ) b) → CMDiffAt[s] n (T% (fun x ↦ φ x (σ x))) x)) :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x))
+    s :=
+  fun x hx ↦ ContMDiffWithinAt.clm_bundle_of_apply (fun σ hσ ↦ h σ x hx hσ)
+
+lemma ContMDiff.clm_bundle_of_apply
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ x, (∀ᶠ b in 𝓝 x, CMDiffAt n (T% σ) b) → CMDiffAt n (T% (fun x ↦ φ x (σ x))) x)) :
+    ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
+  fun x ↦ ContMDiffAt.clm_bundle_of_apply fun σ ↦ h σ x
+
 end OneVariable
 
 section OneVariable'
@@ -391,6 +492,39 @@ lemma MDifferentiable.clm_bundle_apply
     (hv : MDiff (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
+
+/-- Specialization of `MDifferentiableAt.clm_bundle_apply` to the trivial bundle on the source. -/
+lemma MDifferentiableAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
+    (hψ : MDiffAt
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)) x)
+    {w : M → F₁} (hb : MDiffAt b x) (hw : MDiffAt w x) :
+    MDiffAt (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
+  apply MDifferentiableAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁) hψ
+  simp [mdifferentiableAt_totalSpace, hb, hw]
+
+/-- Applying a trivialization of a `C¹` vector bundle to a constant vector yields a
+differentiable function into the total space. Version for differentiability at a point. -/
+lemma Bundle.Trivialization.mdifferentiableAt_symm_const
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    {x : B} (hx : x ∈ e.baseSet) (u : F₁) :
+    MDiffAt (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) x :=
+  e.contMDiffAt_symm_const hx _ |>.mdifferentiableAt one_ne_zero
+
+/-- Applying a trivialization `t` of a `C¹` vector bundle to a constant vector yields a function
+into the total space which is differentiable on `t.baseSet`. -/
+lemma Bundle.Trivialization.mdifferentiableOn_symm_const
+    [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+    [ContMDiffVectorBundle 1 F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    (u : F₁) :
+    MDiff[e.baseSet] (fun m ↦ TotalSpace.mk' F₁ m (Trivialization.symmL 𝕜 e m u)) :=
+  fun _x hx ↦ (e.mdifferentiableAt_symm_const hx _).mdifferentiableWithinAt
+
+-- TODO: add differentiable analogous of `ContMDiffWithinAt.clm_bundle_of_apply` and friends
+-- This requires API lemmas `mdifferentiableWithinAt_iff_source`,
+-- `mdifferentiableWithinAt_extChartAt_symm_range_self` and possibly more.
 
 end OneVariable'
 
