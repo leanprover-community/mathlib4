@@ -166,7 +166,7 @@ theorem universalHom_commutes {r : R} : universalHom f fS hf (numeratorHom r) = 
 
 theorem universalHom_unique (φ : R[S⁻¹] →+* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalHom f fS hf :=
-  RingHom.coe_monoidHom_injective <| universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
+  RingHom.toMonoidHom_injective <| universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
 
 end UMP
 

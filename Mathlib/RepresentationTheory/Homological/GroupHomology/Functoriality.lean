@@ -199,10 +199,10 @@ noncomputable def mapIso (e : G ≃* H) (e' : A.V ≃ₗ[k] B.V)
     simp [he, LinearMap.comp_assoc]⟩) n
   hom_inv_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    exact groupHomology.map_congr e.coe_monoidHom_symm_comp_coe_monoidHom e'.symm_comp n
+    exact groupHomology.map_congr e.toMonoidHom_symm_comp_toMonoidHom e'.symm_comp n
   inv_hom_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    exact groupHomology.map_congr e.coe_monoidHom_comp_coe_monoidHom_symm e'.comp_symm n
+    exact groupHomology.map_congr e.toMonoidHom_comp_toMonoidHom_symm e'.comp_symm n
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·gᵢ : G →₀ A` to `∑ φ(aᵢ)·f(gᵢ) : H →₀ B`. -/

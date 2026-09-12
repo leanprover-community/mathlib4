@@ -171,7 +171,7 @@ theorem linearMapOfClass_injective : Function.Injective ((↑) : (A →ₗc[R] B
 
 @[deprecated (since := "2026-09-09")] alias coe_linearMap_injective := linearMapOfClass_injective
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
   LinearMap.toAddMonoidHom_injective.comp linearMapOfClass_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₗc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
