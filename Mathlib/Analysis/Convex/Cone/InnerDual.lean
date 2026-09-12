@@ -117,12 +117,12 @@ theorem relative_hyperplane_separation {C : ProperCone ℝ E} {f : E →L[ℝ] F
   mp := by
     -- suppose `b ∈ C.map f`
     simp only [map, ClosedSubmodule.map, Submodule.closure, Submodule.topologicalClosure,
-      AddSubmonoid.topologicalClosure, Submodule.coe_toAddSubmonoid, Submodule.map_coe,
-      ContinuousLinearMap.coe_coe,
-      ContinuousLinearMap.coe_restrictScalars', ClosedSubmodule.coe_toSubmodule,
-      ClosedSubmodule.mem_mk, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
-      mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, Classical.skolem, forall_and,
-      mem_innerDual, ContinuousLinearMap.adjoint_inner_right, forall_exists_index, and_imp]
+      AddSubmonoid.topologicalClosure, ClosureOperator.mk₂_apply, Submodule.coe_toAddSubmonoid,
+      ContinuousLinearMap.coe_restrictScalars, Submodule.map_coe, coe_restrictScalars,
+      ContinuousLinearMap.coe_coe, ClosedSubmodule.coe_toSubmodule, ClosedSubmodule.mem_mk,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, mem_closure_iff_seq_limit,
+      mem_image, SetLike.mem_coe, Classical.skolem, forall_and, mem_innerDual,
+      ContinuousLinearMap.adjoint_inner_right, forall_exists_index, and_imp]
           -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
     rintro x seq hmem hx htends y hinner
     obtain rfl : f ∘ seq = x := funext hx
