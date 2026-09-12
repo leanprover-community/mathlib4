@@ -10,7 +10,7 @@ public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
-## Weakly and strongly connected components
+# Weakly and strongly connected components
 
 For a quiver `V`, define the type `WeaklyConnectedComponent V` as the quotient of `V` by
 the relation which identifies `a` with `b` if there is a path from `a` to `b` in `Symmetrify V`.
