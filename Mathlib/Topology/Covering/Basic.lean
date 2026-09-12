@@ -440,12 +440,13 @@ Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
     {ι} [Nonempty ι] [TopologicalSpace ι] [DiscreteTopology ι] (U : ι → Set E) (V : Set X)
     (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))
     (inj : ∀ i, (U i).InjOn f) (surj : ∀ i, (U i).SurjOn f V)
-    (disjoint : Pairwise (Disjoint on U)) (exhaustive : f ⁻¹' V ⊆ ⋃ i, U i) :
+    (disjoint : Pairwise' (Disjoint on U)) (exhaustive : f ⁻¹' V ⊆ ⋃ i, U i) :
     Trivialization ι f := by
   have exhaustive' := exhaustive
   simp_rw [Set.subset_def, Set.mem_iUnion] at exhaustive
   choose idx idx_U using exhaustive
   choose inv inv_U f_inv using surj
+  rw [pairwise'_iff] at disjoint
   classical
   let F : PartialEquiv E (X × ι) :=
   { toFun e := (f e, if he : f e ∈ V then idx e he else Classical.arbitrary ι),
@@ -538,7 +539,7 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
   refine .of_trivialization (t := hU'.trivializationDiscrete _ _
     (fun e s hs ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩) (fun e ↦ ?_)
     (fun e ↦ .mono subset_rfl (hUV e) (surjOn_image f _))
-    (pairwise_disjoint_mono disj.subtype fun e ↦ inter_subset_left)
+    (pairwise'_disjoint_mono disj.subtype fun e ↦ inter_subset_left)
     ((preimage_mono (inter_subset_left.trans hUW)).trans hWV))
     ⟨hxU, Set.mem_iInter.mpr fun e ↦ ⟨e, ⟨(hV e).1, (hφ e).1⟩, e.2⟩⟩
   · convert! ((φ e).isOpen_inter_preimage h).inter (hV e).2 using 1

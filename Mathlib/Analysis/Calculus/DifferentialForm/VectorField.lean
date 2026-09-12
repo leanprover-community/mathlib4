@@ -164,7 +164,7 @@ theorem extDerivWithin_apply_vectorField_of_pairwise_commute
     {ω : E → E [⋀^Fin n]→L[𝕜] F} {V : Fin (n + 1) → E → E}
     (hω : DifferentiableWithinAt 𝕜 ω s x) (hV : ∀ i, DifferentiableWithinAt 𝕜 (V i) s x)
     (hsx : UniqueDiffWithinAt 𝕜 s x)
-    (hcomm : Pairwise fun i j ↦ lieBracketWithin 𝕜 (V i) (V j) s x = 0) :
+    (hcomm : Pairwise' fun i j ↦ lieBracketWithin 𝕜 (V i) (V j) s x = 0) :
     extDerivWithin ω s x (V · x) =
       (∑ i, (-1) ^ i.val • fderivWithin 𝕜 (fun x ↦ ω x (i.removeNth (V · x))) s x (V i x)) := by
   cases n with
@@ -173,6 +173,7 @@ theorem extDerivWithin_apply_vectorField_of_pairwise_commute
       fderivWithin_continuousAlternatingMap_apply_apply, *]
   | succ n =>
     rw [extDerivWithin_apply_vectorField hω hV hsx, sub_eq_self]
+    rw [pairwise'_iff] at hcomm
     refine Fintype.sum_eq_zero _ fun i ↦ sum_eq_zero fun j hj ↦ ?_
     rw [hcomm (ne_of_lt <| by simpa using hj), (ω x).map_coord_zero 0] <;>
       simp
@@ -188,7 +189,7 @@ $$
 theorem extDeriv_apply_vectorField_of_pairwise_commute
     {ω : E → E [⋀^Fin n]→L[𝕜] F} {V : Fin (n + 1) → E → E}
     (hω : DifferentiableAt 𝕜 ω x) (hV : ∀ i, DifferentiableAt 𝕜 (V i) x)
-    (hcomm : Pairwise fun i j ↦ lieBracket 𝕜 (V i) (V j) x = 0) :
+    (hcomm : Pairwise' fun i j ↦ lieBracket 𝕜 (V i) (V j) x = 0) :
     extDeriv ω x (V · x) =
       (∑ i, (-1) ^ i.val • fderiv 𝕜 (fun x ↦ ω x (i.removeNth (V · x))) x (V i x)) := by
   simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ, ← extDerivWithin_univ,

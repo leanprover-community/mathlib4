@@ -493,8 +493,8 @@ lemma uniformSpace_eq_bot {u : UniformSpace α} : u = ⊥ ↔ SetRel.id ∈ 𝓤
 
 protected lemma _root_.Filter.HasBasis.uniformSpace_eq_bot {ι p} {s : ι → SetRel α α}
     {u : UniformSpace α} (h : 𝓤[u].HasBasis p s) :
-    u = ⊥ ↔ ∃ i, p i ∧ Pairwise fun x y : α ↦ (x, y) ∉ s i := by
-  simp [uniformSpace_eq_bot, h.mem_iff, subset_def, Pairwise, not_imp_not]
+    u = ⊥ ↔ ∃ i, p i ∧ Pairwise' fun x y : α ↦ (x, y) ∉ s i := by
+  simp [uniformSpace_eq_bot, h.mem_iff, subset_def, pairwise'_iff, not_imp_not]
 
 theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ := rfl
 

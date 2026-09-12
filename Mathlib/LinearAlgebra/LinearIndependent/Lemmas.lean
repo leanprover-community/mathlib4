@@ -527,10 +527,11 @@ lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
 /-- If `v : ι → M` is a family of vectors and there exists a family of linear forms
 `f : ι → Dual R M` such that `f i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
 `v` is linearly independent. -/
-theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι → Dual R M)
-    (h1 : Pairwise fun i j ↦ f i (v j) = 0)
+theorem LinearIndependent.of_pairwise'_dual_eq_zero_one (v : ι → M) (f : ι → Dual R M)
+    (h1 : Pairwise' fun i j ↦ f i (v j) = 0)
     (h2 : ∀ i, (f i) (v i) = 1) :
     LinearIndependent R v := by
+  rw [pairwise'_iff] at h1
   refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
   have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
   simpa [s.sum_eq_single i aux (by lia), h2 i] using congr_arg (f i) hrel

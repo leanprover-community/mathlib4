@@ -76,7 +76,8 @@ private lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   simpa only [coprimes] using lt_of_lt_of_le h₁ h₂
 
 open scoped Function in -- required for scoped `on` notation
-private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
+private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise' (Coprime on coprimes a) := by
+  rw [pairwise'_iff]
   intro i j hij
   wlog! ltij : i < j
   · exact (this a hij.symm (lt_of_le_of_ne ltij hij.symm)).symm
@@ -95,7 +96,7 @@ to prove that it is arithmetically definable. -/
 @[no_expose] def unbeta (l : List ℕ) : ℕ :=
   (chineseRemainderOfFinset (ι := Fin l.length) (l[·]) (coprimes (l[·])) Finset.univ
     (by simp [coprimes])
-    (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair
+    (by simpa using Set.pairwise'_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair
   (supOfSeq (m := l.length) (l[·]))!
 
 /-- **Gödel's Beta Function Lemma** -/
@@ -103,7 +104,7 @@ lemma beta_unbeta_coe (l : List ℕ) (i : Fin l.length) : beta (unbeta l) i = l[
   simpa [beta, unbeta, coprimes] using mod_eq_of_modEq
     ((chineseRemainderOfFinset (l[·]) (coprimes (l[·])) Finset.univ
       (by simp [coprimes])
-      (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _))).prop i (by simp))
+      (by simpa using Set.pairwise'_univ.mpr (pairwise_coprime_coprimes _))).prop i (by simp))
     (coprimes_lt _ _)
 
 end Nat

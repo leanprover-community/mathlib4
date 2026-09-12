@@ -86,10 +86,10 @@ protected theorem HasBasis.iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Fi
     exact iInter_mem.2 fun i => mem_iInf_of_mem ↑i <| (hl i).mem_of_mem <| hf _
 
 open scoped Function in -- required for scoped `on` notation
-theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
-    {ι : I → Sort*} {p : ∀ i, ι i → Prop} {s : ∀ i, ι i → Set α} (hd : Pairwise (Disjoint on l))
+theorem _root_.Pairwise'.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
+    {ι : I → Sort*} {p : ∀ i, ι i → Prop} {s : ∀ i, ι i → Set α} (hd : Pairwise' (Disjoint on l))
     (h : ∀ i, (l i).HasBasis (p i) (s i)) :
-    ∃ ind : ∀ i, ι i, (∀ i, p i (ind i)) ∧ Pairwise (Disjoint on fun i => s i (ind i)) := by
+    ∃ ind : ∀ i, ι i, (∀ i, p i (ind i)) ∧ Pairwise' (Disjoint on fun i => s i (ind i)) := by
   rcases hd.exists_mem_filter_of_disjoint with ⟨t, htl, hd⟩
   choose ind hp ht using fun i => (h i).mem_iff.1 (htl i)
   exact ⟨ind, hp, hd.mono fun i j hij => hij.mono (ht _) (ht _)⟩

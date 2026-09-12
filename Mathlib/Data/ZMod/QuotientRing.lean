@@ -76,9 +76,10 @@ open scoped Function in -- required for scoped `on` notation
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib/Data/ZMod/Basic.lean` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
-    (coprime : Pairwise (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
-  have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
-    fun _i _j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime h).cast (R := ℤ))
+    (coprime : Pairwise' (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
+  have : Pairwise' fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
+    fun _i _ _j _ h ↦ (isCoprime_span_singleton_iff _ _).mpr ((pairwise'_apply
+      coprime h).cast (R := ℤ))
   Int.quotientSpanNatEquivZMod _ |>.symm.trans <|
   quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|
   quotientInfRingEquivPiQuotient _ this |>.trans <|
@@ -87,7 +88,7 @@ def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
 open Finset Function in
 @[simp]
 theorem ZMod.prodEquivPi_apply {ι : Type*} [Fintype ι] (a : ι → ℕ)
-    (coprime : Pairwise (Nat.Coprime on a)) (b : ZMod (∏ i, a i)) (i : ι) :
+    (coprime : Pairwise' (Nat.Coprime on a)) (b : ZMod (∏ i, a i)) (i : ι) :
     prodEquivPi a coprime b i = castHom (dvd_prod_of_mem a (mem_univ i)) _ b :=
   RingHom.congr_fun (Subsingleton.elim ((Pi.evalRingHom (fun _ ↦ ZMod _) i).comp
     (prodEquivPi a coprime).toRingHom) _) b

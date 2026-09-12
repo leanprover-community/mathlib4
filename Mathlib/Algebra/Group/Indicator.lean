@@ -205,11 +205,11 @@ section One
 
 @[to_additive]
 lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ → Set α} (f : α → β)
-  (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
+  (hs : Pairwise' (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
     (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
   suffices ∀ j', j' ≠ j → {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
   intro j' h hj hj' hi
-  simp only [Pairwise, Disjoint, Set.subset_inter_iff] at hs
+  simp only [pairwise'_iff, Disjoint, Set.subset_inter_iff] at hs
   simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
 
 end One

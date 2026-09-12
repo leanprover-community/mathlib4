@@ -203,9 +203,10 @@ theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
         (IsCoprime.prod_right fun i his => h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
 
 open scoped Function in -- required for scoped `on` notation
-theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
-    (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable :=
-  separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x
+theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise' (IsCoprime on f))
+    (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable := by
+  rw [pairwise'_iff] at h1
+  exact separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x
 
 theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R} {s : Finset ι}
     (hfs : (∏ i ∈ s, (X - C (f i))).Separable) {x y : ι} (hx : x ∈ s) (hy : y ∈ s)
@@ -319,12 +320,13 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
     (∏ i ∈ s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
   ⟨fun hfs _ hx _ hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
     rw [← prod_attach]
-    exact
-      separable_prod'
-        (fun x _hx y _hy hxy =>
-          @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x => f x)
-            (fun x y hxy => Subtype.ext <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
-        fun _ _ => separable_X_sub_C⟩
+    refine separable_prod' ?_ (by simp [separable_X_sub_C])
+    · have := pairwise'_coprime_X_sub_C (I := { x // x ∈ s }) (s := fun x => f x) (by
+        intro ⟨x, hx⟩ ⟨y, hy⟩ he
+        grind)
+      simpa [pairwise'_iff]⟩
+
+
 
 theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
     (∏ i, (X - C (f i))).Separable ↔ Function.Injective f :=

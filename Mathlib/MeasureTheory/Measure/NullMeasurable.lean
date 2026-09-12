@@ -226,10 +226,10 @@ open scoped Function -- required for scoped `on` notation
 exists a subordinate family `tᵢ ⊆ sᵢ` of measurable pairwise disjoint sets such that
 `tᵢ =ᵐ[μ] sᵢ`. -/
 theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
-    (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s)) :
+    (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise' (AEDisjoint μ on s)) :
     ∃ t : ι → Set α,
       (∀ i, t i ⊆ s i) ∧
-        (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
+        (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise' (Disjoint on t) := by
   choose t ht_sub htm ht_eq using fun i => exists_measurable_subset_ae_eq (h i)
   rcases exists_null_pairwise_disjoint_sdiff hd with ⟨u, hum, hu₀, hud⟩
   exact
@@ -239,7 +239,7 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
         h.mono (sdiff_subset_sdiff_left (ht_sub i)) (sdiff_subset_sdiff_left (ht_sub j))⟩
 
 theorem measure_iUnion {m0 : MeasurableSpace α} {μ : Measure α} [Countable ι] {f : ι → Set α}
-    (hn : Pairwise (Disjoint on f)) (h : ∀ i, MeasurableSet (f i)) :
+    (hn : Pairwise' (Disjoint on f)) (h : ∀ i, MeasurableSet (f i)) :
     μ (⋃ i, f i) = ∑' i, μ (f i) := by
   rw [measure_eq_extend (MeasurableSet.iUnion h),
     extend_iUnion MeasurableSet.empty _ MeasurableSet.iUnion _ hn h]
@@ -247,7 +247,7 @@ theorem measure_iUnion {m0 : MeasurableSpace α} {μ : Measure α} [Countable ι
   · exact μ.empty
   · exact μ.m_iUnion
 
-theorem measure_iUnion₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AEDisjoint μ on f))
+theorem measure_iUnion₀ [Countable ι] {f : ι → Set α} (hd : Pairwise' (AEDisjoint μ on f))
     (h : ∀ i, NullMeasurableSet (f i) μ) : μ (⋃ i, f i) = ∑' i, μ (f i) := by
   rcases exists_subordinate_pairwise_disjoint h hd with ⟨t, _ht_sub, ht_eq, htm, htd⟩
   calc
@@ -258,7 +258,7 @@ theorem measure_iUnion₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AED
 theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hd : AEDisjoint μ s t) : μ (s ∪ t) = μ s + μ t := by
   rw [union_eq_iUnion, measure_iUnion₀, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts [pairwise_on_bool.mpr hd, fun b ↦ Bool.casesOn b ht hs]
+  exacts [pairwise'_on_bool.mpr hd, fun b ↦ Bool.casesOn b ht hs]
 
 /-- A null measurable set `t` is Carathéodory measurable: for any `s`, we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
@@ -362,13 +362,13 @@ variable [MeasurableSingletonClass α] {mβ : MeasurableSpace β} [MeasurableSin
 
 lemma measure_preimage_fst_singleton_eq_tsum [Countable β] (μ : Measure (α × β)) (x : α) :
     μ (Prod.fst ⁻¹' {x}) = ∑' y, μ {(x, y)} := by
-  rw [← measure_iUnion (by simp [Pairwise]) fun _ ↦ .singleton _, iUnion_singleton_eq_range,
+  rw [← measure_iUnion (by simp [pairwise'_iff]) fun _ ↦ .singleton _, iUnion_singleton_eq_range,
     preimage_fst_singleton_eq_range]
 
 lemma measure_preimage_snd_singleton_eq_tsum [Countable α] (μ : Measure (α × β)) (y : β) :
     μ (Prod.snd ⁻¹' {y}) = ∑' x, μ {(x, y)} := by
   have : Prod.snd ⁻¹' {y} = ⋃ x : α, {(x, y)} := by ext y; simp [Prod.ext_iff, eq_comm]
-  rw [this, measure_iUnion] <;> simp [Pairwise]
+  rw [this, measure_iUnion] <;> simp [pairwise'_iff]
 
 lemma measure_preimage_fst_singleton_eq_sum [Fintype β] (μ : Measure (α × β)) (x : α) :
     μ (Prod.fst ⁻¹' {x}) = ∑ y, μ {(x, y)} := by

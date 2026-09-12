@@ -257,7 +257,7 @@ set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 private lemma isOpenImmersion_sigmaDesc_aux
     {X : Scheme.{u}} (α : ∀ i, f i ⟶ X) [∀ i, IsOpenImmersion (α i)]
-    (hα : Pairwise (Disjoint on (Set.range <| α ·))) :
+    (hα : Pairwise' (Disjoint on (Set.range <| α ·))) :
     IsOpenImmersion (Sigma.desc α) := by
   rw [IsOpenImmersion.iff_isIso_stalkMap]
   constructor
@@ -270,6 +270,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
         simpa [← Scheme.Hom.comp_apply] using e
       obtain rfl : ix = iy := by
         by_contra h
+        rw [pairwise'_iff] at hα
         exact Set.disjoint_iff_forall_ne.mp (hα h) ⟨x, rfl⟩ ⟨y, this.symm⟩ rfl
       rw [(α ix).isOpenEmbedding.injective this]
     · rw [isOpenMap_sigma]
@@ -287,7 +288,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
 open scoped Function in
 lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     {X : Scheme.{u}} (α : ∀ i, g i ⟶ X) [∀ i, IsOpenImmersion (α i)]
-    (hα : Pairwise (Disjoint on (Set.range <| α ·))) :
+    (hα : Pairwise' (Disjoint on (Set.range <| α ·))) :
     IsOpenImmersion (Sigma.desc α) := by
   obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
   convert! IsOpenImmersion.comp ((Sigma.reindex e.symm g).inv) (Sigma.desc fun i ↦ α _)
@@ -295,6 +296,7 @@ lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     obtain ⟨i, rfl⟩ := e.symm.surjective i
     simp
   · apply isOpenImmersion_sigmaDesc_aux
+    rw [pairwise'_iff] at *
     intro i j hij
     exact hα (fun h ↦ hij (e.symm.injective h))
 
@@ -304,10 +306,11 @@ open scoped Function in
 of `S`. -/
 lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
     {X : σ → Scheme.{u}} {S : Scheme.{u}} (f : ∀ i, X i ⟶ S) [∀ i, IsOpenImmersion (f i)]
-    (hcov : ⨆ i, (f i).opensRange = ⊤) (hdisj : Pairwise (Disjoint on (f · |>.opensRange))) :
+    (hcov : ⨆ i, (f i).opensRange = ⊤) (hdisj : Pairwise' (Disjoint on (f · |>.opensRange))) :
     Nonempty (IsColimit <| Cofan.mk S f) := by
   have : IsOpenImmersion (Sigma.desc f) := by
-    refine isOpenImmersion_sigmaDesc _ _ (fun i j hij ↦ ?_)
+    refine isOpenImmersion_sigmaDesc _ _ (fun i _ j _ hij ↦ ?_)
+    rw [pairwise'_iff] at hdisj
     simpa [Function.onFun_apply, disjoint_iff, Opens.ext_iff] using hdisj hij
   simp only [Cofan.nonempty_isColimit_iff_isIso_sigmaDesc (Cofan.mk S f), cofan_mk_inj, Cofan.mk_pt]
   apply isIso_of_isOpenImmersion_of_opensRange_eq_top
@@ -416,7 +419,7 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
   · intro i
     cases i <;> (simp only [fi]; infer_instance)
   · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff] using hf.2
-  · intro i j hij
+  · intro i _ j _ hij
     match i, j with
     | .left, .right => simpa [fi] using hf.1
     | .right, .left => simpa [fi] using hf.1.symm
@@ -617,7 +620,7 @@ instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
 instance (R : ι → CommRingCat.{u}) : IsOpenImmersion (sigmaSpec R) := by
   classical
   apply isOpenImmersion_sigmaDesc
-  intro ix iy h
+  intro ix _ iy _ h
   refine Set.disjoint_iff_forall_ne.mpr ?_
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ e
   have : DFinsupp.single (β := (R ·)) iy 1 iy ∈ y.asIdeal :=
@@ -649,10 +652,11 @@ instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
 open scoped Function in
 /-- A version with more restrictive universes. See `IsAffineOpen.iSup_of_disjoint`. -/
 private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}
-    (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise (Disjoint on U)) :
+    (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise' (Disjoint on U)) :
     IsAffineOpen (iSup U) := by
+  rw [pairwise'_iff] at hU'
   have := isOpenImmersion_sigmaDesc _ (fun i ↦ (U i).ι)
-    (fun i j e ↦ by convert hU' e; simp [← Opens.coe_disjoint])
+    (fun i _ j _ e ↦ by convert hU' e; simp [← Opens.coe_disjoint])
   convert! isAffineOpen_opensRange (Sigma.desc fun i ↦ (U i).ι)
   · ext
     simp [(sigmaMk _).symm.exists_congr_left, ← Scheme.Hom.comp_apply, Scheme.Opens.exists_toScheme]
@@ -661,12 +665,13 @@ private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}
 
 open scoped Function in
 lemma IsAffineOpen.iSup_of_disjoint [Finite σ] {U : σ → X.Opens}
-    (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise (Disjoint on U)) :
+    (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise' (Disjoint on U)) :
     IsAffineOpen (iSup U) := by
+  rw [pairwise'_iff] at hU'
   obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small.{u} (α := σ)
   have : Finite ι := e.finite_iff.mp ‹_›
   rw [← e.symm.iSup_congr fun _ ↦ rfl]
-  exact .iSup_of_disjoint_aux (by simp [*]) fun i j h ↦ hU' (e.symm.injective.ne h)
+  exact .iSup_of_disjoint_aux (by simp [*]) fun i _ j _ h ↦ hU' (e.symm.injective.ne h)
 
 open scoped Function in
 lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
@@ -674,20 +679,20 @@ lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
     IsAffineOpen (⨆ i ∈ s, U i) := by
   rw [← iSup_subtype'']
   have := hs.to_subtype
-  exact .iSup_of_disjoint (by simpa) fun i j e ↦ hU' i.2 j.2 (by aesop)
+  exact .iSup_of_disjoint (by simpa) fun i _ j _ e ↦ hU' i.2 j.2 (by aesop)
 
 lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
     (H : Disjoint U V) :
     IsAffineOpen (U ⊔ V) := by
   convert!
     iSup_of_disjoint (U := fun i : Unit ⊕ Unit ↦ i.elim (fun _ ↦ U) (fun _ ↦ V)) (by simp_all)
-      (by simp_all [_root_.Pairwise, Unique.forall_iff, ← Opens.coe_disjoint, disjoint_comm])
+      (by simp_all [pairwise'_iff, Unique.forall_iff, ← Opens.coe_disjoint, disjoint_comm])
   aesop
 
 instance (priority := low) [Finite X] [DiscreteTopology X] : IsAffine X :=
   have : IsAffineOpen (⨆ (x : X), (⟨{x}, isOpen_discrete _⟩ : X.Opens)) :=
     .iSup_of_disjoint (fun i ↦ .of_subsingleton Set.subsingleton_singleton)
-      fun i j e ↦ by simpa [← TopologicalSpace.Opens.coe_disjoint]
+      fun i _ j _ e ↦ by simpa [← TopologicalSpace.Opens.coe_disjoint]
   have : IsAffine (⊤ : X.Opens).toScheme := show IsAffineOpen _ by convert! this; ext; simp
   .of_isIso X.topIso.inv
 

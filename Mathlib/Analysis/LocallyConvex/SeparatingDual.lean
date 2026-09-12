@@ -76,7 +76,7 @@ theorem exists_separating_of_ne {x y : V} (h : x ≠ y) :
   exact ⟨f, by simpa [sub_ne_zero] using hf⟩
 
 protected theorem t1Space [T1Space R] : T1Space V := by
-  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
+  apply t1Space_iff_exists_open.2 (fun x _ y _ hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact ⟨f ⁻¹' {f y}ᶜ, isOpen_compl_singleton.preimage f.continuous, hf, by simp⟩
 

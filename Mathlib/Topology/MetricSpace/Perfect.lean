@@ -114,7 +114,7 @@ theorem Perfect.exists_nat_bool_injection
     convert! (h1 _ _ _).2.2.2
     rw [PiNat.res_length]
   have hdisj' : CantorScheme.Disjoint D := by
-    rintro l (a | a) (b | b) hab <;> try contradiction
+    rintro l (a | a) _ (b | b) _ hab <;> try contradiction
     · exact hdisj _ _ _
     exact (hdisj _ _ _).symm
   have hdom : ∀ {x : ℕ → Bool}, x ∈ (inducedMap D).1 := fun {x} => by

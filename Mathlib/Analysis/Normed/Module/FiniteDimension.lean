@@ -445,7 +445,7 @@ bounded by `R` and at distance at least `1`. For a version not assuming `c` and 
 `exists_seq_norm_le_one_le_norm_sub`. -/
 theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) :
-    ∃ f : ℕ → E, (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
+    ∃ f : ℕ → E, (∀ n, ‖f n‖ ≤ R) ∧ Pairwise' fun m n => 1 ≤ ‖f m - f n‖ := by
   have : Std.Symm fun x y : E => 1 ≤ ‖x - y‖ := by
     constructor
     intro x y hxy
@@ -457,7 +457,7 @@ theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : �
   exact exists_norm_le_le_norm_sub_of_finset hc hR h s
 
 theorem exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
-    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
+    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ Pairwise' fun m n => 1 ≤ ‖f m - f n‖ := by
   obtain ⟨c, hc⟩ : ∃ c : 𝕜, 1 < ‖c‖ := NormedField.exists_one_lt_norm 𝕜
   have A : ‖c‖ < ‖c‖ + 1 := by linarith
   rcases exists_seq_norm_le_one_le_norm_sub' hc A h with ⟨f, hf⟩

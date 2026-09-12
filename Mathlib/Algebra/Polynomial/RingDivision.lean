@@ -299,9 +299,9 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     exact h.val_inv_mul⟩
 
 open scoped Function in -- required for scoped `on` notation
-theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
-    Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
-  isCoprime_X_sub_C_of_isUnit_sub (sub_ne_zero_of_ne <| H.ne hij).isUnit
+theorem pairwise'_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K}
+    (H : Function.Injective s) : Pairwise' (IsCoprime on fun i : I => X - C (s i)) :=
+  fun _ _ _ _ hij => isCoprime_X_sub_C_of_isUnit_sub (sub_ne_zero_of_ne <| H.ne hij).isUnit
 
 theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
     rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by

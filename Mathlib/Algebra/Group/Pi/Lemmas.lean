@@ -329,7 +329,8 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 
   For injections of commuting elements at the same index, see `AddCommute.map` -/]
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
-    Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
+    Pairwise' fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
+  simp only [pairwise'_iff]
   intro i j hij x y; ext k
   by_cases i = k <;> simp_all
 
@@ -339,7 +340,7 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
     Commute (mulSingle i (x i)) (mulSingle j (x j)) := by
   obtain rfl | hij := Decidable.eq_or_ne i j
   · rfl
-  · exact Pi.mulSingle_commute hij _ _
+  · exact Pi.mulSingle_commute (Set.mem_univ i) (Set.mem_univ j) hij _ _
 
 @[to_additive]
 theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :

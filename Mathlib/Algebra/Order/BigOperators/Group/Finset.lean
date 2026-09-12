@@ -815,8 +815,9 @@ theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
     (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetCard k) = x.powerset := by
   convert bind_powerset_len x
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
-  exact
-    Eq.symm (finsetSum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
+  rw [← finsetSum_eq_sup_iff_disjoint.mpr]
+  rintro i _ j _ hne
+  exact pairwise_disjoint_powersetCard x (Set.mem_univ i) (Set.mem_univ j) hne
 
 theorem card_le_card_toFinset_add_one_iff [DecidableEq α] {m : Multiset α} :
     m.card ≤ m.toFinset.card + 1 ↔

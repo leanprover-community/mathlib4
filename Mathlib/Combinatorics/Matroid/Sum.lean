@@ -197,7 +197,7 @@ variable {α ι : Type*} {M : ι → Matroid α}
 
 /-- The sum of an indexed collection of matroids on `α` with pairwise disjoint ground sets,
 as a matroid on `α` -/
-protected def disjointSigma (M : ι → Matroid α) (h : Pairwise (Disjoint on fun i ↦ (M i).E)) :
+protected def disjointSigma (M : ι → Matroid α) (h : Pairwise' (Disjoint on fun i ↦ (M i).E)) :
     Matroid α :=
   (Matroid.sigma (fun i ↦ (M i).restrictSubtype (M i).E)).mapEmbedding
     (Function.Embedding.sigmaSet h)

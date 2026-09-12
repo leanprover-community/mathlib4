@@ -46,7 +46,7 @@ theorem dist_eq_norm_inv_mul' (a b : E) : dist a b = ‖b⁻¹ * a‖ := by
 @[to_additive of_forall_le_norm]
 lemma DiscreteTopology.of_forall_le_norm' (hpos : 0 < r) (hr : ∀ x : E, x ≠ 1 → r ≤ ‖x‖) :
     DiscreteTopology E :=
-  .of_forall_le_dist hpos fun x y hne ↦ by
+  .of_forall_le_dist hpos fun x _ y _ hne ↦ by
     simp only [dist_eq_norm_inv_mul]
     exact hr _ (by simpa [inv_mul_eq_one] using hne)
 

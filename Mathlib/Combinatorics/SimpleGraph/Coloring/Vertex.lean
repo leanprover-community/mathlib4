@@ -80,8 +80,8 @@ theorem Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
   C.map_rel h
 
 lemma Coloring.injective_comp_of_pairwise_adj (C : G.Coloring α) (f : ι → V)
-    (hf : Pairwise fun i j ↦ G.Adj (f i) (f j)) : (C ∘ f).Injective :=
-  Function.injective_iff_pairwise_ne.2 <| hf.mono fun _ _ ↦ C.valid
+    (hf : Pairwise' fun i j ↦ G.Adj (f i) (f j)) : (C ∘ f).Injective :=
+  Function.injective_iff_pairwise'_ne.2 <| hf.mono fun _ _ ↦ C.valid
 
 /-- Construct a term of `SimpleGraph.Coloring` using a function that
 assigns vertices to colors and a proof that it is as proper coloring.
@@ -196,7 +196,7 @@ theorem Colorable.map (f : V ↪ β) [NeZero n] (hc : G.Colorable n) : (G.map f)
   exact C.valid hadj
 
 lemma Colorable.card_le_of_pairwise_adj (hG : G.Colorable n) (f : ι → V)
-    (hf : Pairwise fun i j ↦ G.Adj (f i) (f j)) : Nat.card ι ≤ n := by
+    (hf : Pairwise' fun i j ↦ G.Adj (f i) (f j)) : Nat.card ι ≤ n := by
   obtain ⟨C⟩ := hG
   simpa using Nat.card_le_card_of_injective _ (C.injective_comp_of_pairwise_adj f hf)
 
@@ -219,7 +219,7 @@ lemma le_chromaticNumber_iff_coloring :
   simp [le_chromaticNumber_iff_colorable, Colorable]
 
 lemma le_chromaticNumber_of_pairwise_adj (hn : n ≤ Nat.card ι) (f : ι → V)
-    (hf : Pairwise fun i j ↦ G.Adj (f i) (f j)) : n ≤ G.chromaticNumber :=
+    (hf : Pairwise' fun i j ↦ G.Adj (f i) (f j)) : n ≤ G.chromaticNumber :=
   le_chromaticNumber_iff_colorable.2 fun _m hm ↦ hn.trans <| hm.card_le_of_pairwise_adj f hf
 
 variable (G) in
@@ -543,14 +543,15 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
 
 theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) (hc : G.Colorable n) :
     s.card ≤ n := by
-  simpa using! hc.card_le_of_pairwise_adj (Subtype.val : s → V) <| by simpa [Pairwise] using! h
+  simpa using! hc.card_le_of_pairwise_adj (Subtype.val : s → V) <| by simpa [pairwise'_iff] using! h
 
 theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
     (C : G.Coloring α) : s.card ≤ Fintype.card α := h.card_le_of_colorable C.colorable
 
 theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber :=
-  le_chromaticNumber_of_pairwise_adj (by simp) (Subtype.val : s → V) <| by simpa [Pairwise] using! h
+  le_chromaticNumber_of_pairwise_adj (by simp) (Subtype.val : s → V) <| by
+      simpa [pairwise'_iff] using! h
 
 theorem cliqueNum_le_chromaticNumber : G.cliqueNum ≤ G.chromaticNumber := by
   have ⟨s, hs⟩ := G.exists_isNClique_cliqueNum
