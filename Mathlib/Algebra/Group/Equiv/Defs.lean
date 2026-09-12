@@ -456,6 +456,18 @@ protected def cast {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] {i j : ι}
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
+-- #check MulEquivClass.toMonoidHomClass
+
+-- @[coe]
+-- def toMonoidHom
+
+-- instance
+
+-- /-- The `simp`-normal form to turn something into a `MonoidHom` is via `MulEquiv.toMonoidHom`. -/
+-- @[to_additive (attr := simp)]
+-- theorem toMulHom_eq_coe (f : M ≃* N) : f.toMonoidHom = ↑f :=
+--   rfl
+
 @[to_additive (attr := simp)]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
