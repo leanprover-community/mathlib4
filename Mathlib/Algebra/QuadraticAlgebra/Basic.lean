@@ -28,6 +28,8 @@ Let `R` be a commutative ring. We define:
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
 
+* `QuadraticAlgebra.mapRingHom`: the ring homomorphism induced by a ring homomorphism `R →+* S`
+
 * `QuadraticAlgebra.baseChange`: the `R`-algebra homomorphism induced by a base change `R → S`
 
 We prove:
@@ -486,50 +488,86 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 
 end changeGenerator
 
-section baseChange
+section mapRingHom
 
-variable {R S : Type*} (S)
+variable {R S T : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R] [CommRing S] [Algebra R S] (a b : R)
+variable [CommSemiring R] [CommSemiring S] (f : R →+* S) (a b : R)
 
-/-- The `R`-algebra map between quadratic algebras induced by the base change `R → S`,
+/-- The ring homomorphism between quadratic algebras induced by a ring homomorphism `f : R →+* S`,
 sending `ω` to `ω`. -/
 @[simps!]
-def baseChange :
-    QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
-  lift ⟨omega, by ext <;> simp [Algebra.algebraMap_eq_smul_one]⟩
+def mapRingHom : QuadraticAlgebra R a b →+* QuadraticAlgebra S (f a) (f b) where
+  toFun z := ⟨f z.re, f z.im⟩
+  map_one' := by ext <;> simp
+  map_mul' _ _ := by ext <;> simp
+  map_zero' := by ext <;> simp
+  map_add' _ _ := by ext <;> simp
 
 @[simp]
-theorem baseChange_omega :
-    baseChange S a b ω = ω := by
+theorem mapRingHom_omega : mapRingHom f a b ω = ω := by
   ext <;> simp
 
-theorem baseChange_injective [FaithfulSMul R S] :
-    Function.Injective (baseChange S a b) := by
-  intro _ _ h
-  simp only [QuadraticAlgebra.ext_iff, re_baseChange_apply, ← Algebra.algebraMap_eq_smul_one,
-    algebraMap.coe_inj, im_baseChange_apply] at h
-  exact QuadraticAlgebra.ext_iff.mpr h
+theorem mapRingHom_injective (hf : Function.Injective f) :
+    Function.Injective (mapRingHom f a b) := fun _ _ h ↦ by
+  ext
+  · exact hf (congr_arg re h)
+  · exact hf (congr_arg im h)
+
+theorem mapRingHom_surjective (hf : Function.Surjective f) :
+    Function.Surjective (mapRingHom f a b) := fun z ↦ by
+  obtain ⟨x, hx⟩ := hf z.re
+  obtain ⟨y, hy⟩ := hf z.im
+  exact ⟨⟨x, y⟩, by ext <;> simp [hx, hy]⟩
+
+@[simp]
+theorem mapRingHom_id : mapRingHom (.id R) a b = .id (QuadraticAlgebra R a b) := rfl
+
+theorem mapRingHom_comp [CommSemiring T] (g : S →+* T) :
+    (mapRingHom g (f a) (f b)).comp (mapRingHom f a b) = mapRingHom (g.comp f) a b := rfl
 
 end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [CommRing S] [Algebra R S] (a b : R)
+variable [CommRing R] [CommRing S] (f : R →+* S) (a b : R) (x : QuadraticAlgebra R a b)
 
 @[simp]
-theorem norm_baseChange (x : QuadraticAlgebra R a b) :
-    norm (baseChange S a b x) = algebraMap R S (norm x) := by
-  simp [norm_def, Algebra.smul_def]
+theorem norm_mapRingHom : norm (mapRingHom f a b x) = f (norm x) := by
+  simp [norm_def]
 
 @[simp]
-theorem trace_baseChange (x : QuadraticAlgebra R a b) :
-    trace (baseChange S a b x) = algebraMap R S (trace x) := by
-  simp [trace_def, Algebra.smul_def, map_ofNat]
+theorem trace_mapRingHom : trace (mapRingHom f a b x) = f (trace x) := by
+  simp [trace_def, map_ofNat]
+
+@[simp]
+theorem mapRingHom_star : mapRingHom f a b (star x) = star (mapRingHom f a b x) := by
+  ext <;> simp
 
 end CommRing
+
+end mapRingHom
+
+section baseChange
+
+variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] (a b : R)
+
+/-- The `R`-algebra homomorphism between quadratic algebras induced by the base change `R → S`,
+sending `ω` to `ω`. -/
+def baseChange :
+    QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
+  { mapRingHom (algebraMap R S) a b with
+    commutes' _ := by ext <;> simp [Algebra.algebraMap_eq_smul_one] }
+
+@[simp]
+theorem coe_baseChange :
+    baseChange S a b = mapRingHom (algebraMap R S) a b := rfl
+
+theorem baseChange_injective [FaithfulSMul R S] :
+    Function.Injective (baseChange S a b) :=
+  mapRingHom_injective _ a b (FaithfulSMul.algebraMap_injective R S)
 
 end baseChange
 
