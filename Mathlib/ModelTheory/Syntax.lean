@@ -22,6 +22,8 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   variables indexed by `α`.
 - A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
   free variables indexed by `α`.
+- `FirstOrder.Language.Formula.iExsAtLeast`, `iExsAtMost`, and `iExsExactly` express finite
+  cardinality bounds on the set of realizations of a formula.
 - A `FirstOrder.Language.Sentence` is a formula with no free variables.
 - A `FirstOrder.Language.Theory` is a set of sentences.
 - The variables of terms and formulas can be relabelled with `FirstOrder.Language.Term.relabel`,
@@ -808,6 +810,32 @@ Note that this is an arbitrary formula defined using the axiom of choice. It is 
 to equivalence of formulas. -/
 noncomputable def iInf [Finite α] (f : α → L.Formula β) : L.Formula β :=
   BoundedFormula.iInf f
+
+variable (β) in
+/-- Asserts that `φ` has at least `n` pairwise distinct realizations as assignments to the
+`β`-variables. -/
+noncomputable def iExsAtLeast [Finite β] (n : ℕ) (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let realizeAt (i : Fin n) : L.Formula (α ⊕ (Fin n × β)) :=
+    φ.relabel (Sum.map id fun b ↦ (i, b))
+  let tupleNe (i j : Fin n) : L.Formula (α ⊕ (Fin n × β)) :=
+    (iInf fun b : β ↦
+      (Term.var (Sum.inr (i, b))).equal (Term.var (Sum.inr (j, b)))).not
+  let NePair := {ij : Fin n × Fin n // ij.1 ≠ ij.2}
+  let witnessesRealize : L.Formula (α ⊕ (Fin n × β)) :=
+    iInf fun i : Fin n ↦ realizeAt i
+  let witnessesDistinct : L.Formula (α ⊕ (Fin n × β)) :=
+    iInf fun ij : NePair ↦ tupleNe ij.1.1 ij.1.2
+  (witnessesRealize ⊓ witnessesDistinct).iExs (Fin n × β)
+
+variable (β) in
+/-- Asserts that `φ` has at most `n` realizations as assignments to the `β`-variables. -/
+noncomputable def iExsAtMost [Finite β] (n : ℕ) (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  (φ.iExsAtLeast β (n + 1)).not
+
+variable (β) in
+/-- Asserts that `φ` has exactly `n` realizations as assignments to the `β`-variables. -/
+noncomputable def iExsExactly [Finite β] (n : ℕ) (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  φ.iExsAtLeast β n ⊓ φ.iExsAtMost β n
 
 /-- A bijection sending formulas to sentences with constants. -/
 def equivSentence : L.Formula α ≃ L[[α]].Sentence :=
