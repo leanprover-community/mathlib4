@@ -7,7 +7,6 @@ module
 
 public meta import Lean.Elab.Tactic.Classical
 public meta import Mathlib.Lean.Meta
-public meta import Qq
 
 public import Mathlib.Basic.Logic.Basic  -- shake: keep (dependency of tactic output)
 public import Mathlib.Tactic.CasesM

@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Fourier.LpSpace
 
-/-! # Sobolev spaces (Bessel potential spaces)
+/-! # Sobolev tempered distributions
 
 In this file we define Sobolev spaces on normed vector spaces via the Fourier transform.
 These spaces are also known as Bessel potential spaces. The Bessel potential operator
@@ -21,11 +21,13 @@ Note that the Bessel potential is the operator `(1 - (2 * π) ^ (-2) • Δ) ^ (
 `(1 - Δ) ^ (s / 2)` due to the convention of the Fourier transform. This obviously does not impact
 the definition of the Sobolev spaces.
 
+The bundled variant of `TemperedDistribution.MemSobolev` is called `BesselPotentialSpace`.
+
 ## Main definitions
 
 * `TemperedDistribution.besselPotential`: The Bessel potential operator is the Fourier multiplier
   with the function `(1 + ‖x‖ ^ 2) ^ (s / 2)`.
-* `TemperedDistribution.memSobolev`: A tempered distribution lies in the Sobolev space of order `s`
+* `TemperedDistribution.MemSobolev`: A tempered distribution lies in the Sobolev space of order `s`
   and `p` if `besselPotential E F s u ∈ Lp`.
 
 ## Main statements
@@ -145,7 +147,9 @@ section normed
 variable [NormedSpace ℂ F] [CompleteSpace F]
 
 /-- A tempered distribution `f` is a Sobolev function of order `s` if there exists an `Lp` function
-`f'` such that `𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f = f'`. -/
+`f'` such that `𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f = f'`.
+
+The bundled variant of these variant of Sobolev functions is called `BesselPotentialSpace`. -/
 def MemSobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (f : 𝓢'(E, F)) : Prop :=
   ∃ (f' : Lp F p (volume : Measure E)),
     besselPotential E F s f = f'
@@ -242,24 +246,24 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
     (hf : MemSobolev s 2 f) :
     ∃ (v : Lp F 1 (volume : Measure E)), 𝓕 f = (v : 𝓢'(E, F)) := by
   obtain ⟨u, hu⟩ := memSobolev_iff_exists_smulLeftCLM_fourier.mp hf
+  have htemp : (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)).HasTemperateGrowth := by
+    fun_prop
+  have hmeas : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) :=
+    htemp.1.continuous.aestronglyMeasurable
   have : MemLp (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) 2 := by
-    constructor
-    · have : (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)).HasTemperateGrowth := by
-        fun_prop
-      exact this.1.continuous.aestronglyMeasurable
-    · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)]
-      suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ from by
-        norm_cast
-        simp_rw [ofReal_norm] at h
-        simp_rw [← enorm_pow]
-        convert h
-        rw [← Real.rpow_mul_natCast (by positivity)]
-        simp
-      apply ((integrable_rpow_neg_one_add_norm_sq hs).congr _).lintegral_lt_top
-      filter_upwards with x
-      rw [Real.norm_eq_abs, abs_eq_self.mpr (by positivity)]
-      congr
-      ring
+    rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num) hmeas]
+    suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ by
+      norm_cast
+      simp_rw [ofReal_norm] at h
+      simp_rw [← enorm_pow]
+      convert h
+      rw [← Real.rpow_mul_natCast (by positivity)]
+      simp
+    apply ((integrable_rpow_neg_one_add_norm_sq hs).congr _).lintegral_lt_top
+    filter_upwards with x
+    rw [Real.norm_eq_abs, abs_eq_self.mpr (by positivity)]
+    congr
+    ring
   have : MemLp (fun x : E ↦ Complex.ofReal ((1 + ‖x‖ ^ 2) ^ (-s / 2) : ℝ)) 2 := this.ofReal
   use this.toLp • u
   rw [MeasureTheory.Lp.toTemperedDistribution_smul_eq]
