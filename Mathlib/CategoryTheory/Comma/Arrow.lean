@@ -168,12 +168,8 @@ def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
   right := v
   w := w
 
-/-- `homMk''` is the dual of `homMk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing homMk]
-abbrev homMk'' {f g : Arrow T} (u : g.right ⟶ f.right) (v : g.left ⟶ f.left)
-    (w : g.hom ≫ u = v ≫ f.hom := by cat_disch) : g ⟶ f :=
-  homMk v u
+to_dual_for homMk := homMk v u
+
 attribute [to_dual none] homMk_left homMk_right
 
 /-- We can also build a morphism in the arrow category out of any commutative square in `T`. -/
@@ -185,13 +181,9 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y 
   right := v
   w := w
 
-/-- `homMk'''` is the dual of `homMk'`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing homMk']
-abbrev homMk''' {X Y : T} {f : Y ⟶ X} {P Q : T} {g : Q ⟶ P} (u : P ⟶ X) (v : Q ⟶ Y)
-    (w : g ≫ u = v ≫ f := by cat_disch) : mk g ⟶ mk f :=
-  homMk' v u
-attribute [to_dual none] homMk'_left
+to_dual_for homMk' := homMk' v u
+
+attribute [to_dual none] homMk'_left homMk'_right
 
 set_option backward.defeqAttrib.useBackward true in
 @[to_dual none, reassoc]
