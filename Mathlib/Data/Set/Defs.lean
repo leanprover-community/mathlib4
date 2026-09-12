@@ -7,6 +7,7 @@ module
 
 public import Batteries.Tactic.Alias
 public import Batteries.Util.ExtendedBinder
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.SetNotationForOrder
 
 public import Mathlib.Tactic.ToDual
@@ -47,7 +48,7 @@ Although `Set` is defined as `α → Prop`, this is an implementation detail whi
 relied on. Instead, `Set.ofPred` (also written `{x | p x}`) and membership of a set (`∈`) should be
 used to convert between sets and predicates.
 -/
-@[use_set_notation_for_order]
+@[use_set_notation_for_order, wikidata Q36161]
 def Set (α : Type u) := α → Prop
 
 /-
