@@ -217,7 +217,8 @@ lemma conj_bijective (G : Subgroup (GL (Fin 2) ℝ)) (g : GL (Fin 2) ℝ) :
   refine Function.bijective_iff_has_inverse.mpr ⟨map (by simp) ∘ conj _ g⁻¹, ?_, ?_⟩ <;>
     exact Quotient.ind fun _ ↦ congrArg _ <| Subtype.ext <| by simp
 
-@[simp] lemma map_conj (hGH : G ≤ H) (g : GL (Fin 2) ℝ) (c : CuspOrbits G) :
+-- this cannot be `@[simp]` because it will never match on the LHS
+lemma map_conj (hGH : G ≤ H) (g : GL (Fin 2) ℝ) (c : CuspOrbits G) :
     map (by simpa) (conj G g c) = conj H g (map hGH c) := by
   induction c using Quotient.inductionOn
   rfl
