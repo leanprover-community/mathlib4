@@ -3696,6 +3696,8 @@ public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.Combinatorics.Hindman
 public import Mathlib.Combinatorics.Hypergraph.Basic
+public import Mathlib.Combinatorics.HypergraphLike.Basic
+public import Mathlib.Combinatorics.HypergraphLike.Parallel
 public import Mathlib.Combinatorics.KatonaCircle
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Combinatorics.Matroid.Circuit
