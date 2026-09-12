@@ -634,7 +634,7 @@ of their languages on `U`. -/
 lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
     LanguageOn (X ∪ Y) U = LanguageOn X U ∪ LanguageOn Y U := by
   ext p
-  simp only [LanguageOn, mem_union, mem_ofPred_eq]
+  simp only [LanguageOn, mem_union, mem_ofPred]
   grind
 
 /-- The language of an intersection is contained in the intersection of the languages.

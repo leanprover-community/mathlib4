@@ -472,7 +472,7 @@ theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J
   refine ((l.hasBasis_toFilterDistortioniUnion I c ⊤).tendsto_iff
     (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => ?_
   refine ⟨r, hr, fun π hπ => ?_⟩
-  rw [mem_ofPred_eq, Prepartition.iUnion_top] at hπ
+  rw [mem_ofPred, Prepartition.iUnion_top] at hπ
   refine ⟨⟨hπ.1.1, hπ.1.2, fun hD => le_trans (hπ.1.3 hD) (le_max_left _ _), fun _ => ?_⟩, ?_⟩
   · refine ⟨_, π₀.iUnion_compl.trans ?_, le_max_right _ _⟩
     congr 1

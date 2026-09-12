@@ -455,7 +455,7 @@ theorem Ideal.homogeneousCore'_eq_sSup :
   have coe_mono : Monotone (toIdeal : HomogeneousIdeal 𝒜 → Ideal A) := fun x y => id
   convert! coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
   ext x
-  rw [mem_image, mem_ofPred_eq]
+  rw [mem_image, mem_ofPred]
   refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact ⟨x.isHomogeneous, hx⟩
@@ -517,7 +517,7 @@ theorem Ideal.toIdeal_homogeneousHull_eq_iSup :
   rw [← Ideal.span_iUnion]
   apply congr_arg Ideal.span _
   ext1
-  simp only [Set.mem_iUnion, Set.mem_image, mem_ofPred_eq, GradedRing.proj_apply, SetLike.exists,
+  simp only [Set.mem_iUnion, Set.mem_image, mem_ofPred, GradedRing.proj_apply, SetLike.exists,
     exists_prop, SetLike.mem_coe]
 
 theorem Ideal.homogeneousHull_eq_iSup :

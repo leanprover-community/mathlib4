@@ -95,7 +95,7 @@ lemma residueClass_le (n : ℕ) : residueClass a n ≤ vonMangoldt n :=
 
 @[simp]
 lemma residueClass_apply_zero : residueClass a 0 = 0 := by
-  simp only [Set.indicator_apply_eq_zero, Set.mem_ofPred_eq, Nat.cast_zero, map_zero,
+  simp only [Set.indicator_apply_eq_zero, Set.mem_ofPred, Nat.cast_zero, map_zero,
     implies_true]
 
 lemma abscissaOfAbsConv_residueClass_le_one :
@@ -106,9 +106,9 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   convert! this.indicator {n : ℕ | (n : ZMod q) = a}
   ext1 n
   by_cases hn : (n : ZMod q) = a
-  · simp +contextual only [term, Set.indicator, Set.mem_ofPred_eq, hn, ↓reduceIte, apply_ite,
+  · simp +contextual only [term, Set.indicator, Set.mem_ofPred, hn, ↓reduceIte, apply_ite,
       ite_self]
-  · simp +contextual only [term, Set.mem_ofPred_eq, hn, not_false_eq_true, Set.indicator_of_notMem,
+  · simp +contextual only [term, Set.mem_ofPred, hn, not_false_eq_true, Set.indicator_of_notMem,
       ofReal_zero, zero_div, ite_self]
 
 /-- The set we are interested in (prime numbers in the residue class `a`) is the same as the support
@@ -118,9 +118,9 @@ lemma support_residueClass_prime_div :
     Function.support (fun n : ℕ ↦ (if n.Prime then residueClass a n else 0) / n) =
       {p : ℕ | p.Prime ∧ (p : ZMod q) = a} := by
   simp only [Function.support, ne_eq, div_eq_zero_iff, ite_eq_right_iff,
-    Set.indicator_apply_eq_zero, Set.mem_ofPred_eq, Nat.cast_eq_zero, not_or, Classical.not_imp]
+    Set.indicator_apply_eq_zero, Set.mem_ofPred, Nat.cast_eq_zero, not_or, Classical.not_imp]
   ext1 p
-  simp only [Set.mem_ofPred_eq]
+  simp only [Set.mem_ofPred]
   exact ⟨fun H ↦ ⟨H.1.1, H.1.2.1⟩,
     fun H ↦ ⟨⟨H.1, H.2, vonMangoldt_ne_zero_iff.mpr H.1.isPrimePow⟩, H.1.ne_zero⟩⟩
 
@@ -218,7 +218,7 @@ lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     residueClass a n =
       (q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ * χ n * vonMangoldt n := by
   rw [eq_inv_mul_iff_mul_eq₀ <| mod_cast (Nat.totient_pos.mpr q.pos_of_neZero).ne']
-  simp +contextual only [residueClass, Set.indicator_apply, Set.mem_ofPred_eq, apply_ite,
+  simp +contextual only [residueClass, Set.indicator_apply, Set.mem_ofPred, apply_ite,
     ofReal_zero, mul_zero, ← Finset.sum_mul, sum_char_inv_mul_char_eq ℂ ha n, eq_comm (a := a),
     ite_mul, zero_mul, ↓reduceIte, ite_self]
 
@@ -269,15 +269,15 @@ lemma continuousOn_LFunctionResidueClassAux' :
   simp only [LFunctionResidueClassAux, sub_eq_add_neg]
   refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
-    simp only [ne_eq, Set.mem_ofPred_eq] at hs
+    simp only [ne_eq, Set.mem_ofPred] at hs
     tauto
   · simp only [← Finset.sum_neg_distrib, mul_div_assoc, ← mul_neg, ← neg_div]
     refine continuousOn_finsetSum _ fun χ hχ ↦ continuousOn_const.mul ?_
     replace hχ : χ ≠ 1 := by simpa only [ne_eq, Finset.mem_compl, Finset.mem_singleton] using hχ
     refine (continuousOn_neg_logDeriv_LFunction_of_nontriv hχ).mono fun s hs ↦ ?_
-    simp only [ne_eq, Set.mem_ofPred_eq] at hs
+    simp only [ne_eq, Set.mem_ofPred] at hs
     rcases hs with rfl | hs
-    · simp only [ne_eq, Set.mem_ofPred_eq, one_re, le_refl,
+    · simp only [ne_eq, Set.mem_ofPred, one_re, le_refl,
         LFunction_ne_zero_of_one_le_re χ (.inl hχ), not_false_eq_true]
     · exact hs χ
 
@@ -289,8 +289,8 @@ lemma continuousOn_LFunctionResidueClassAux :
     ContinuousOn (LFunctionResidueClassAux a) {s | 1 ≤ s.re} := by
   refine (continuousOn_LFunctionResidueClassAux' a).mono fun s hs ↦ ?_
   rcases eq_or_ne s 1 with rfl | hs₁
-  · simp only [ne_eq, Set.mem_ofPred_eq, true_or]
-  · simp only [ne_eq, Set.mem_ofPred_eq, hs₁, false_or]
+  · simp only [ne_eq, Set.mem_ofPred, true_or]
+  · simp only [ne_eq, Set.mem_ofPred, hs₁, false_or]
     exact fun χ ↦ LFunction_ne_zero_of_one_le_re χ (.inr hs₁) <| Set.mem_ofPred.mp hs
 
 variable {a}
@@ -363,7 +363,7 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
   have : ContinuousOn (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) (Set.Icc 1 2) :=
     continuous_re.continuousOn.comp (t := Set.univ) (continuousOn_LFunctionResidueClassAux a)
       (fun ⦃x⦄ a ↦ trivial) |>.comp continuous_ofReal.continuousOn fun x hx ↦ by
-        simpa only [Set.mem_ofPred_eq, ofReal_re] using hx.1
+        simpa only [Set.mem_ofPred, ofReal_re] using hx.1
   obtain ⟨C, hC⟩ := bddBelow_def.mp <| IsCompact.bddBelow_image isCompact_Icc this
   replace hC {x : ℝ} (hx : x ∈ Set.Icc 1 2) : C ≤ (LFunctionResidueClassAux a x).re :=
     hC (LFunctionResidueClassAux a x).re <|

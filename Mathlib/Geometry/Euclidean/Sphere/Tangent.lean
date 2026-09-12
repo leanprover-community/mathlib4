@@ -315,7 +315,7 @@ lemma tangentsFrom_eq_empty_of_dist_lt_radius {s : Sphere P} {p : P}
     (hp : dist p s.center < s.radius) : s.tangentsFrom p = ∅ := by
   ext as
   rw [tangentsFrom, tangentSet]
-  simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_ofPred_eq, Set.mem_empty_iff_false,
+  simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_ofPred, Set.mem_empty_iff_false,
     iff_false, not_and, forall_exists_index, and_imp]
   rintro p' hp' rfl hpm
   exact (isTangent_orthRadius_iff_mem.2 hp').radius_le_dist_center hpm |>.not_gt hp

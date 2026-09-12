@@ -95,7 +95,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
       refine Set.Finite.isClosed_biUnion ?_ (fun _ _ ↦ isClosed_closure)
       exact (finite_setOfPred_isMin R).subset fun x h ↦ h.1
     ext p
-    simp only [Set.mem_singleton_iff, ne_eq, Set.mem_ofPred_eq, Set.compl_iUnion, Set.mem_iInter,
+    simp only [Set.mem_singleton_iff, ne_eq, Set.mem_ofPred, Set.compl_iUnion, Set.mem_iInter,
       Set.mem_compl_iff, and_imp, ← specializes_iff_mem_closure, ← le_iff_specializes,
       not_imp_not]
     constructor

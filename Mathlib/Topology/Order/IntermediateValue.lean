@@ -521,7 +521,7 @@ theorem setOfPred_isPreconnected_eq_of_ordered :
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   refine Subset.antisymm setOfPred_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_ofPred_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
+    mem_ofPred, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]

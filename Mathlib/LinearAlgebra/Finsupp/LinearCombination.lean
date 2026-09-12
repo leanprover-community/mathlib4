@@ -512,7 +512,7 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
     (Submodule.span R s : Set M) = ⋃ (n : ℕ),
       (fun (f : Fin n → (R × M)) ↦ ∑ i, (f i).1 • (f i).2) '' ({f | ∀ i, (f i).2 ∈ s}) := by
   ext m
-  simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_ofPred_eq, mem_span_set']
+  simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_ofPred, mem_span_set']
   refine exists_congr (fun n ↦ ⟨?_, ?_⟩)
   · rintro ⟨f, g, rfl⟩
     exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩

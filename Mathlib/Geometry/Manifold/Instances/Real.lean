@@ -150,7 +150,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_sdiff, mem_ofPred_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_ofPred, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -302,11 +302,11 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
   map_source' := by simp
   map_target' := by
-    simp only [min_lt_iff, mem_ofPred_eq]; intro z hz; left
+    simp only [min_lt_iff, mem_ofPred]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
@@ -381,11 +381,11 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
   map_source' := by simp
   map_target' := by
-    simp only [lt_max_iff, mem_ofPred_eq]; intro z hz; left
+    simp only [lt_max_iff, mem_ofPred]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
       add_neg_cancel_comm_assoc, hz, sup_of_le_left]
   right_inv' := by

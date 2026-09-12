@@ -86,7 +86,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
   use projectiveSeminorm
-  simp only [mem_upperBounds, Set.mem_ofPred_eq, forall_exists_index]
+  simp only [mem_upperBounds, Set.mem_ofPred, forall_exists_index]
   intro p G _ _ hp x
   simpa [hp] using! toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
@@ -98,7 +98,7 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
-  simpa only [injectiveSeminorm, Set.coe_ofPred, Set.mem_ofPred_eq]
+  simpa only [injectiveSeminorm, Set.coe_ofPred, Set.mem_ofPred]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
 attribute [-instance] instSeminormedAddCommGroup in
@@ -166,14 +166,14 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
   rw [injectiveSeminorm]
   refine csSup_le ?_ ?_
   · existsi 0
-    simp only [Set.mem_ofPred_eq]
+    simp only [Set.mem_ofPred]
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
     rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
       norm_zero]
   · intro p hp
-    simp only [Set.mem_ofPred_eq] at hp
+    simp only [Set.mem_ofPred] at hp
     obtain ⟨G, _, _, h⟩ := hp
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
     exact toDualContinuousMultilinearMap_le_projectiveSeminorm _

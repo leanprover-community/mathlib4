@@ -46,7 +46,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
   have hp1 : (p : ℝ)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
   rw [Filter.HasBasis.isUniformInducing_iff (Valued.hasBasis_uniformity _ _)
     (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
-  simp only [Set.mem_ofPred_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
+  simp only [Set.mem_ofPred, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
     RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor

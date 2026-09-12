@@ -28,7 +28,7 @@ theorem isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosed
     [PartialOrder A] [StarOrderedRing A] {e : A} :
     IsStarProjection e ↔ e ∈ extremePoints ℝ ({x : A | 0 ≤ x} ∩ closedBall 0 1) := by
   simp only [mem_closedBall_zero_iff, mem_extremePoints_iff_left, mem_inter_iff,
-    mem_ofPred_eq, and_imp]
+    mem_ofPred, and_imp]
   refine ⟨fun he ↦ ⟨⟨he.nonneg, he.norm_le⟩,
     fun a ha ha1 b hb hb1 ⟨t, s, h0t, h0s, hts, hlin⟩ ↦ ?_⟩, fun ⟨⟨h1, h2⟩, h3⟩ ↦ ?_⟩
   · /- Suppose `e` is a star projection, and `a` and `b` are in the nonnegative closed unit ball

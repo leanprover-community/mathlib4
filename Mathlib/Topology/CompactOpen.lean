@@ -81,8 +81,8 @@ lemma eventually_range_subset [CompactSpace X] {f : C(X, Y)} (hU : IsOpen U) (h 
 lemma nhds_compactOpen (f : C(X, Y)) :
     𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
       𝓟 {g : C(X, Y) | MapsTo g K U} := by
-  simp_rw +instances [compactOpen_eq, nhds_generateFrom, mem_ofPred_eq, @and_comm (f ∈ _), iInf_and,
-    ← image_prod, iInf_image, biInf_prod, mem_ofPred_eq]
+  simp_rw +instances [compactOpen_eq, nhds_generateFrom, mem_ofPred, @and_comm (f ∈ _), iInf_and,
+    ← image_prod, iInf_image, biInf_prod, mem_ofPred]
 
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
     Tendsto f l (𝓝 g) ↔

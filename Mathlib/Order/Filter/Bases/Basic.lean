@@ -485,7 +485,7 @@ theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :
 theorem HasBasis.inf_principal (hl : l.HasBasis p s) (s' : Set α) :
     (l ⊓ 𝓟 s').HasBasis p fun i => s i ∩ s' :=
   ⟨fun t => by
-    simp only [mem_inf_principal, hl.mem_iff, subset_def, mem_ofPred_eq, mem_inter_iff, and_imp]⟩
+    simp only [mem_inf_principal, hl.mem_iff, subset_def, mem_ofPred, mem_inter_iff, and_imp]⟩
 
 theorem HasBasis.principal_inf (hl : l.HasBasis p s) (s' : Set α) :
     (𝓟 s' ⊓ l).HasBasis p fun i => s' ∩ s i := by
@@ -744,7 +744,7 @@ theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ 
 
 lemma eventually_prod_self_iff {r : α → α → Prop} :
     (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
-  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_ofPred_eq]
+  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_ofPred]
 
 /-- A version of `eventually_prod_self_iff` that is more suitable for forward rewriting. -/
 lemma eventually_prod_self_iff' {r : α × α → Prop} :

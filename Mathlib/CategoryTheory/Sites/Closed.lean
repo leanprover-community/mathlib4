@@ -276,11 +276,11 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
   sieves X := { S | c X S = ⊤ }
   top_mem' X := top_unique ((c X).le_closure _)
   pullback_stable' X Y S f hS := by
-    rw [Set.mem_ofPred_eq] at hS
-    rw [Set.mem_ofPred_eq, hc, hS, Sieve.pullback_top]
+    rw [Set.mem_ofPred] at hS
+    rw [Set.mem_ofPred, hc, hS, Sieve.pullback_top]
   transitive' X S hS R hR := by
-    rw [Set.mem_ofPred_eq] at hS
-    rw [Set.mem_ofPred_eq, ← (c X).idempotent, eq_top_iff, ← hS]
+    rw [Set.mem_ofPred] at hS
+    rw [Set.mem_ofPred, ← (c X).idempotent, eq_top_iff, ← hS]
     apply (c X).monotone fun Y f hf => _
     intro Y f hf
     rw [Sieve.mem_iff_pullback_eq_top, ← hc]

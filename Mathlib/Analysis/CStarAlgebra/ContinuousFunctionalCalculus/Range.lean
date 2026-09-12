@@ -258,7 +258,7 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
     ← range_cfcₙ _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfcₙ_nonneg)) ?_
   rintro _ ⟨f, hf, rfl⟩
-  simp only [Set.preimage_ofPred_eq, Set.mem_ofPred_eq, Set.mem_image] at hf ⊢
+  simp only [Set.preimage_ofPred_eq, Set.mem_ofPred, Set.mem_image] at hf ⊢
   obtain (⟨h₁, h₂, h₃⟩ | h | h | h) := by
     simpa only [not_and_or] using
       em (ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a)

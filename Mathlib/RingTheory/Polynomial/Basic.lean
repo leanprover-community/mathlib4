@@ -663,7 +663,7 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
   dsimp
   have : C (coeff f n) ∈ p := by
     apply subset_span
-    rw [mem_ofPred_eq]
+    rw [mem_ofPred]
     use n
   have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
   convert! this using 1

@@ -157,7 +157,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rw [mem_closure_singleton] at ha
     obtain ⟨n, rfl⟩ := ha
     have := h.left
-    simp only [mem_closure_singleton, mem_ofPred_eq] at this
+    simp only [mem_closure_singleton, mem_ofPred] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
       rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
@@ -174,7 +174,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     refine ⟨?_, ?_⟩
     · simp [h]
     · intro x
-      simp only [mem_closure_singleton, mem_ofPred_eq, and_imp, forall_exists_index]
+      simp only [mem_closure_singleton, mem_ofPred, and_imp, forall_exists_index]
       rintro k rfl hk
       rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff_right h, ← zero_add 1,
           ← Int.lt_iff_add_one_le]
@@ -433,7 +433,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_le_lt_iff_nonempty_
   · simp [Function.onFun]
   · exact fun x ↦ if h : x = 0 then 1 else Units.mk0 x h
   · simp +contextual [← Units.val_le_val, MapsTo]
-  · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, Function.onFun, and_imp]
+  · simp only [mem_sdiff, mem_ofPred, mem_singleton_iff, Function.onFun, and_imp]
     intro _ _ ha0 _ _ hb0 h
     simp [ha0, hb0, ← Units.val_lt_val, h]
 
@@ -451,22 +451,22 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_
   · intro x
     rcases eq_or_ne x 0 with rfl | hx
     · simp [hg]
-    simp only [mem_ofPred_eq, mem_sdiff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
+    simp only [mem_ofPred, mem_sdiff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
       and_true]
     refine (inv_le_comm₀ ?_ ?_).mp <;>
     simp [zero_lt_iff, hg, hx]
-  · simp only [mem_ofPred_eq, Function.onFun, gt_iff_lt]
+  · simp only [mem_ofPred, Function.onFun, gt_iff_lt]
     intro a ha b _
     refine inv_strictAnti₀ ?_
     contrapose! ha
     simp only [le_zero_iff] at ha
     simp [zero_lt_iff, ha, hg]
   · intro x
-    simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, and_imp]
+    simp only [mem_sdiff, mem_ofPred, mem_singleton_iff, and_imp]
     intro hxg hx
     refine inv_anti₀ ?_ hxg
     simp [zero_lt_iff, hx]
-  · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
+  · simp only [mem_sdiff, mem_ofPred, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]

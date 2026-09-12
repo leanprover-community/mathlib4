@@ -327,7 +327,7 @@ theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0�
     le_of_tendsto_of_tendsto (mkMetric'.tendsto_pre _ s)
       (ENNReal.Tendsto.const_mul (mkMetric'.tendsto_pre _ s) (Or.inr hc))
       (mem_of_superset (Ioo_mem_nhdsGT hr0) fun r' hr' => ?_)
-  simp only [mem_ofPred_eq, mkMetric'.pre]
+  simp only [mem_ofPred, mkMetric'.pre]
   rw [← smul_eq_mul, ← smul_apply, smul_boundedBy hc]
   refine le_boundedBy.2 (fun t => (boundedBy_le _).trans ?_) _
   simp only [smul_eq_mul, Pi.smul_apply, extend, iInf_eq_if]

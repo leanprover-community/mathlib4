@@ -534,7 +534,7 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
     convert! this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
-    simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_inter_iff, Set.mem_range,
+    simp only [Set.mem_image, Set.mem_ofPred, Set.mem_inter_iff, Set.mem_range,
       ← exists_and_left]
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]

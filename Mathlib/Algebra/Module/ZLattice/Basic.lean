@@ -342,7 +342,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
     exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico
   · ext
-    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_ofPred_eq, LinearEquiv.coe_coe,
+    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_ofPred, LinearEquiv.coe_coe,
       Set.mem_preimage, Basis.equivFun_apply, Set.mem_pi, Set.mem_univ, forall_true_left]
 
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
@@ -409,7 +409,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
-  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_ofPred_eq,
+  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_ofPred,
     mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
   obtain ⟨i, hi⟩ := hx.2
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
