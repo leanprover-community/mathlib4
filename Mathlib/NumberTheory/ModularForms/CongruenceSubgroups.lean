@@ -151,10 +151,20 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     refine ⟨(⟨(⟨A, hA⟩ : Gamma0 N), HA⟩ : (Gamma1' N : Subgroup (Gamma0 N))), ?_⟩
     simp
 
-theorem Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
+theorem Gamma1_le_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
   intro x HA
-  simp only [Gamma0_mem, Gamma1_mem] at *
+  simp only [Gamma0_mem, Gamma1_mem] at HA ⊢
   exact HA.2.2
+
+@[deprecated (since := "2026-08-31")] alias Gamma1_in_Gamma0 := Gamma1_le_Gamma0
+
+theorem Gamma_le_Gamma1 (N : ℕ) : Gamma N ≤ Gamma1 N := by
+  intro x HA
+  simp only [Gamma_mem, Gamma1_mem] at HA ⊢
+  tauto
+
+theorem Gamma_le_Gamma0 (N : ℕ) : Gamma N ≤ Gamma0 N :=
+  (Gamma_le_Gamma1 N).trans (Gamma1_le_Gamma0 N)
 
 section CongruenceSubgroups
 
@@ -176,7 +186,7 @@ theorem Gamma1_is_congruence (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma1
   simp_all [Gamma1_mem, Gamma_mem]
 
 theorem Gamma0_is_congruence (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma0 N) :=
-  isCongruenceSubgroup_trans _ _ (Gamma1_in_Gamma0 N) (Gamma1_is_congruence N)
+  isCongruenceSubgroup_trans _ _ (Gamma1_le_Gamma0 N) (Gamma1_is_congruence N)
 
 lemma IsCongruenceSubgroup.finiteIndex {Γ : Subgroup SL(2, ℤ)}
     (h : IsCongruenceSubgroup Γ) : Γ.FiniteIndex := by
