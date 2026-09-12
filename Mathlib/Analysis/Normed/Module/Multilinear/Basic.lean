@@ -918,7 +918,7 @@ end MultilinearMap
 namespace ContinuousLinearMap
 
 theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : ContinuousMultilinearMap 𝕜 E G) :
-    ‖g.compContinuousMultilinearMap f‖ ≤ ‖g‖ * ‖f‖ :=
+    ‖g ∘ᶠ f‖ ≤ ‖g‖ * ‖f‖ :=
   ContinuousMultilinearMap.opNorm_le_bound (by positivity) fun m ↦
     calc
       ‖g (f m)‖ ≤ ‖g‖ * (‖f‖ * ∏ i, ‖m i‖) := g.le_opNorm_of_le <| f.le_opNorm _
@@ -1013,9 +1013,8 @@ end ContinuousLinearMap
 
 theorem LinearIsometry.norm_compContinuousMultilinearMap (g : G →ₗᵢ[𝕜] G')
     (f : ContinuousMultilinearMap 𝕜 E G) :
-    ‖g.toContinuousLinearMap.compContinuousMultilinearMap f‖ = ‖f‖ := by
-  simp only [ContinuousLinearMap.compContinuousMultilinearMap_coe,
-    LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.norm_map,
+    ‖g.toContinuousLinearMap ∘ᶠ f‖ = ‖f‖ := by
+  simp only [FunLike.coe_comp, LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.norm_map,
     ContinuousMultilinearMap.norm_def, Function.comp_apply]
 
 namespace ContinuousMultilinearMap
@@ -1135,9 +1134,8 @@ The derivative with respect to `f` is given by `compContinuousLinearMapL`. -/
 noncomputable def fderivCompContinuousLinearMap [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i) :
     (∀ i, E i →L[𝕜] E₁ i) →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
-  ContinuousLinearMap.apply _ _ f
-    |>.compContinuousMultilinearMap (compContinuousLinearMapContinuousMultilinear 𝕜 _ _ _)
-    |>.linearDeriv g
+  ContinuousLinearMap.apply 𝕜 (ContinuousMultilinearMap 𝕜 E G) f ∘L
+    (compContinuousLinearMapContinuousMultilinear 𝕜 E _ G).linearDeriv g
 
 @[simp]
 lemma fderivCompContinuousLinearMap_apply [DecidableEq ι]

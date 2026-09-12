@@ -66,7 +66,6 @@ theorem ContinuousMultilinearMap.hasStrictFDerivAt_compContinuousLinearMap
       fg := by
   have := (compContinuousLinearMapContinuousMultilinear 𝕜 F G H).hasStrictFDerivAt fg.2
   convert! this.comp fg hasStrictFDerivAt_snd |>.clm_apply hasStrictFDerivAt_fst
-  ext <;> simp [fderivCompContinuousLinearMap]
 
 theorem HasStrictFDerivAt.continuousMultilinearMapCompContinuousLinearMap
     (hf : HasStrictFDerivAt f f' x) (hg : ∀ i, HasStrictFDerivAt (g i) (g' i) x) :
