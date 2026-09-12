@@ -199,6 +199,23 @@ theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
   case h_lim =>
     exact .of_forall fun x hx ↦ h_lim.tendsto_at <| uIoc_subset_uIcc hx
 
+/-- If a family of functions tends to zero uniformly on `[[a, b]]`, then the corresponding
+interval integrals tend to zero. Due to default values for the integral, this
+does not
+require additional hypotheses as does `TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn`
+-/
+theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_nhds_zero {l : Filter ι}
+    {F : ι → ℝ → E} (h : TendstoUniformlyOn F 0 l [[a, b]]) :
+    Tendsto (fun i ↦ ∫ x in a..b, F i x) l (𝓝 0) := by
+  rw [NormedAddGroup.tendsto_nhds_zero]
+  rw [tendstoUniformlyOn_iff] at h
+  intro ε hε
+  filter_upwards [h (ε / (|b - a| + 1)) (by positivity)] with i hi
+  calc ‖∫ x in a..b, F i x‖
+    _ ≤ ε / (|b - a| + 1) * |b - a| :=
+      norm_integral_le_of_norm_le_const fun x hx ↦ by simpa using (hi x (uIoc_subset_uIcc hx)).le
+    _ < ε := by field_simp; bound
+
 /-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
     (bound : ι → ℝ → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
