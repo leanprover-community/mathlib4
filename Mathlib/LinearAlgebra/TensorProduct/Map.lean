@@ -91,6 +91,15 @@ lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
     LinearMap.range (mapIncl p q) = .map₂ (mk R _ _) p q := by
   simp_rw [mapIncl, range_map, Submodule.range_subtype]
 
+/-- The corestriction of `mapIncl` to a submodule `s` containing its range: `p ⊗ q → s`. -/
+def mapInclOfLE {p : Submodule R P} {q : Submodule R Q} {s : Submodule R (P ⊗[R] Q)}
+    (h : Submodule.map₂ (mk R P Q) p q ≤ s) : p ⊗[R] q →ₗ[R] s :=
+  (mapIncl p q).codRestrict s fun c ↦ (range_mapIncl p q).trans_le h ⟨c, rfl⟩
+
+@[simp] lemma mapInclOfLE_tmul {p : Submodule R P} {q : Submodule R Q}
+    {s : Submodule R (P ⊗[R] Q)} (h : Submodule.map₂ (mk R P Q) p q ≤ s) (x : p) (y : q) :
+    (mapInclOfLE h (x ⊗ₜ[R] y) : P ⊗[R] Q) = (x : P) ⊗ₜ[R] (y : Q) := rfl
+
 theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
     (p : Submodule R P) (q : Submodule R Q) :
     Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
