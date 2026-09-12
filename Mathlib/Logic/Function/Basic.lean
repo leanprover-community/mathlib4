@@ -13,6 +13,7 @@ public import Mathlib.Data.Set.Defs
 public import Mathlib.Logic.Function.Defs
 public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
+public import Mathlib.Tactic.FunProp
 
 
 /-!
