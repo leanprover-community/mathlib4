@@ -213,13 +213,13 @@ variable (X) in
 /-- The pullback of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
 def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
-  SheafOfModules.pullbackId _
+  (pullbackPushforwardAdjunction (𝟙 X)).leftAdjointIdIso (pushforwardId X)
 
 variable (X) in
 lemma conjugateEquiv_pullbackId_hom :
     conjugateEquiv .id (pullbackPushforwardAdjunction (𝟙 X)) (pullbackId X).hom =
       (pushforwardId X).inv :=
-  SheafOfModules.conjugateEquiv_pullbackId_hom _
+  Adjunction.conjugateEquiv_leftAdjointIdIso_hom _ _
 
 /-- The composition of two pushforward functors for sheaves of modules on schemes
 identify to the pushforward for the composition. -/
@@ -235,7 +235,9 @@ set_option backward.isDefEq.respectTransparency.types false in
 identify to the pullback for the composition. -/
 def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
-  SheafOfModules.pullbackComp _ _
+  Adjunction.leftAdjointCompIso (pullbackPushforwardAdjunction g)
+    (pullbackPushforwardAdjunction f) (pullbackPushforwardAdjunction (f ≫ g))
+    (pushforwardComp f g)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Pushforwards along equal morphisms are isomorphic. -/
@@ -258,52 +260,120 @@ lemma conjugateEquiv_pullbackComp_inv :
     conjugateEquiv ((pullbackPushforwardAdjunction g).comp (pullbackPushforwardAdjunction f))
       (pullbackPushforwardAdjunction (f ≫ g)) (pullbackComp f g).inv =
     (pushforwardComp f g).hom :=
-  SheafOfModules.conjugateEquiv_pullbackComp_inv _ _
+  Adjunction.conjugateEquiv_leftAdjointCompIso_inv _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
+/-- Associativity of the identification `Scheme.Modules.pushforwardComp`. -/
+lemma pushforward_assoc :
+    Functor.isoWhiskerLeft (pushforward f) (pushforwardComp g h) ≪≫ pushforwardComp f (g ≫ h) =
+      (Functor.associator (pushforward f) (pushforward g) (pushforward h)).symm ≪≫
+        Functor.isoWhiskerRight (pushforwardComp f g) (pushforward h) ≪≫
+          pushforwardComp (f ≫ g) h ≪≫ pushforwardCongr (Category.assoc f g h) := by
+  ext M U : 4
+  simp only [Functor.comp_obj, pushforward_obj_obj, Hom.comp_base, Opens.map_comp_obj,
+    Iso.trans_hom, Functor.isoWhiskerLeft_hom, NatTrans.comp_app, Functor.whiskerLeft_app,
+    Hom.comp_app, pushforwardComp_hom_app_app, Category.comp_id, Iso.symm_hom,
+    Functor.isoWhiskerRight_hom, Functor.associator_inv_app, Functor.whiskerRight_app,
+    Category.id_comp, pushforward_map_app, pushforwardCongr_hom_app_app]
+  exact (M.presheaf.map_id _).symm
+
+/-- Left unitality of the identification `Scheme.Modules.pushforwardComp`. -/
+lemma pushforward_id_comp :
+    pushforwardComp (𝟙 X) f ≪≫ pushforwardCongr (Category.id_comp f) =
+      Functor.isoWhiskerRight (pushforwardId X) (pushforward f) ≪≫ Functor.leftUnitor _ := by
+  ext M U : 4
+  simp only [Functor.comp_obj, pushforward_obj_obj, Hom.id_base, Iso.trans_hom, NatTrans.comp_app,
+    Hom.comp_app, Hom.comp_base, Opens.map_comp_obj, pushforwardComp_hom_app_app,
+    pushforwardCongr_hom_app_app, Category.id_comp, Functor.isoWhiskerRight_hom, Functor.id_obj,
+    Functor.whiskerRight_app, Functor.leftUnitor_hom_app, Category.comp_id, pushforward_map_app,
+    pushforwardId_hom_app_app]
+  exact M.presheaf.map_id _
+
+/-- Right unitality of the identification `Scheme.Modules.pushforwardComp`. -/
+lemma pushforward_comp_id :
+    pushforwardComp f (𝟙 Y) ≪≫ pushforwardCongr (Category.comp_id f) =
+      Functor.isoWhiskerLeft (pushforward f) (pushforwardId Y) ≪≫ Functor.rightUnitor _ := by
+  ext M U : 4
+  simp only [Functor.comp_obj, pushforward_obj_obj, Hom.id_base, Iso.trans_hom, NatTrans.comp_app,
+    Hom.comp_app, Hom.comp_base, Opens.map_comp_obj, pushforwardComp_hom_app_app,
+    pushforwardCongr_hom_app_app, Category.id_comp, Functor.isoWhiskerLeft_hom, Functor.id_obj,
+    Functor.whiskerLeft_app, Functor.rightUnitor_hom_app, Category.comp_id,
+    pushforwardId_hom_app_app]
+  exact M.presheaf.map_id _
+
+@[simp] lemma pushforwardCongr_refl : pushforwardCongr (rfl : f = f) = Iso.refl _ := by
+  ext M U : 4
+  simp
+
+/-- The transport of pullback functors along an equality of morphisms of schemes is the
+conjugate of the corresponding transport of pushforward functors. -/
+lemma conjugateIsoEquiv_symm_pushforwardCongr {f g : X ⟶ Y} (hf : f = g) :
+    (conjugateIsoEquiv (pullbackPushforwardAdjunction g)
+        (pullbackPushforwardAdjunction f)).symm (pushforwardCongr hf).symm =
+      pullbackCongr hf := by
+  subst hf
+  ext : 1
+  simp [pullbackCongr]
+
+/-- Associativity of the identification `Scheme.Modules.pullbackComp`. -/
+lemma pullback_assoc :
+    Functor.isoWhiskerLeft (pullback h) (pullbackComp f g) ≪≫
+        pullbackComp (f ≫ g) h ≪≫ pullbackCongr (Category.assoc f g h) =
+      (Functor.associator (pullback h) (pullback g) (pullback f)).symm ≪≫
+        Functor.isoWhiskerRight (pullbackComp g h) (pullback f) ≪≫ pullbackComp f (g ≫ h) := by
+  rw [pullbackComp, pullbackComp, pullbackComp, ← conjugateIsoEquiv_symm_pushforwardCongr,
+    ← Adjunction.leftAdjointCompIso_trans]
+  exact Adjunction.leftAdjointCompIso_assoc _ _ _ _ _ _ _ _ _ _ (pushforward_assoc f g h)
+
+/-- Left unitality of the identification `Scheme.Modules.pullbackComp`. -/
+lemma pullback_id_comp :
+    pullbackComp (𝟙 X) f ≪≫ pullbackCongr (Category.id_comp f) =
+      Functor.isoWhiskerLeft (pullback f) (pullbackId X) ≪≫ Functor.rightUnitor _ := by
+  rw [pullbackComp, ← conjugateIsoEquiv_symm_pushforwardCongr,
+    ← Adjunction.leftAdjointCompIso_trans]
+  exact Adjunction.leftAdjointCompIso_comp_id _ _ _ _ (pushforward_id_comp f)
+
+/-- Right unitality of the identification `Scheme.Modules.pullbackComp`. -/
+lemma pullback_comp_id :
+    pullbackComp f (𝟙 Y) ≪≫ pullbackCongr (Category.comp_id f) =
+      Functor.isoWhiskerRight (pullbackId Y) (pullback f) ≪≫ Functor.leftUnitor _ := by
+  rw [pullbackComp, ← conjugateIsoEquiv_symm_pushforwardCongr,
+    ← Adjunction.leftAdjointCompIso_trans]
+  exact Adjunction.leftAdjointCompIso_id_comp _ _ _ _ (pushforward_comp_id f)
+
 @[reassoc]
 lemma pseudofunctor_associativity :
     (pullbackComp f (g ≫ h)).inv ≫
       Functor.whiskerRight (pullbackComp g h).inv _ ≫ (Functor.associator _ _ _).hom ≫
         Functor.whiskerLeft _ (pullbackComp f g).hom ≫ (pullbackComp (f ≫ g) h).hom =
     eqToHom (by simp) := by
-  let e₁ := pullbackComp f (g ≫ h)
-  let e₂ := Functor.isoWhiskerRight (pullbackComp g h) (pullback f)
-  let e₃ := Functor.isoWhiskerLeft (pullback h) (pullbackComp f g)
-  let e₄ := pullbackComp (f ≫ g) h
-  change e₁.inv ≫ e₂.inv ≫ (Functor.associator _ _ _).hom ≫ e₃.hom ≫ e₄.hom = _
-  have : e₃.hom ≫ e₄.hom = (Functor.associator _ _ _).inv ≫ e₂.hom ≫ e₁.hom :=
-    congr_arg Iso.hom (SheafOfModules.pullback_assoc.{u}
-      h.toRingCatSheafHom g.toRingCatSheafHom f.toRingCatSheafHom)
-  simp [this]
+  have h₁ := congr_arg Iso.hom (pullback_assoc f g h)
+  simp only [Iso.trans_hom, Iso.symm_hom, Functor.isoWhiskerLeft_hom,
+    Functor.isoWhiskerRight_hom, pullbackCongr, eqToIso.hom] at h₁
+  rw [← cancel_mono (pullbackCongr (Category.assoc f g h)).hom]
+  simp only [Category.assoc, h₁, pullbackCongr, eqToIso.hom, eqToHom_trans, eqToHom_refl,
+    Iso.hom_inv_id_assoc]
+  rw [← Functor.whiskerRight_comp_assoc, Iso.inv_hom_id, Functor.whiskerRight_id',
+    Category.id_comp, Iso.inv_hom_id]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pseudofunctor_left_unitality :
     (pullbackComp f (𝟙 Y)).inv ≫
       Functor.whiskerRight (pullbackId Y).hom (pullback f) ≫ (Functor.leftUnitor _).hom =
         eqToHom (by simp) := by
-  let e₁ := pullbackComp f (𝟙 _)
-  let e₂ := Functor.isoWhiskerRight (pullbackId Y) (pullback f)
-  let e₃ := (pullback f).leftUnitor
-  change e₁.inv ≫ e₂.hom ≫ e₃.hom = _
-  have : e₁.hom = e₂.hom ≫ e₃.hom :=
-    congr_arg Iso.hom (SheafOfModules.pullback_id_comp.{u} f.toRingCatSheafHom)
-  simp [← this]
+  have h₁ := congr_arg Iso.hom (pullback_comp_id f)
+  simp only [Iso.trans_hom, Functor.isoWhiskerRight_hom] at h₁
+  rw [← h₁]
+  simp [pullbackCongr]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pseudofunctor_right_unitality :
     (pullbackComp (𝟙 X) f).inv ≫
       Functor.whiskerLeft (pullback f) (pullbackId X).hom ≫ (Functor.rightUnitor _).hom =
         eqToHom (by simp) := by
-  let e₁ := pullbackComp (𝟙 _) f
-  let e₂ := Functor.isoWhiskerLeft (pullback f) (pullbackId _)
-  let e₃ := (pullback f).rightUnitor
-  change e₁.inv ≫ e₂.hom ≫ e₃.hom = _
-  have : e₁.hom = e₂.hom ≫ e₃.hom :=
-    congr_arg Iso.hom (SheafOfModules.pullback_comp_id.{u} f.toRingCatSheafHom)
-  simp [← this]
+  have h₁ := congr_arg Iso.hom (pullback_id_comp f)
+  simp only [Iso.trans_hom, Functor.isoWhiskerLeft_hom] at h₁
+  rw [← h₁]
+  simp [pullbackCongr]
 
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
@@ -598,7 +668,7 @@ def overFunctorEquiv {X : Scheme.{u}} (U : X.Opens) :
       (Opens.grothendieckTopology ↥U) (Opens.grothendieckTopology ↥X) :=
     Functor.isContinuous_comp _ _ _ (.over (Opens.grothendieckTopology _) U) _
   refine SheafOfModules.pushforwardComp _ _ ≪≫ SheafOfModules.pushforwardCongr ?_
-  simp only [CategoryTheory.Functor.map_id, Opposite.op_unop, Opens.ι_appIso, Iso.refl_inv]
+  simp only [Opposite.op_unop, Opens.ι_appIso, Iso.refl_inv]
   rfl
 
 end AlgebraicGeometry.Scheme.Modules

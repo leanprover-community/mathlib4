@@ -130,14 +130,14 @@ end
 end
 
 
-instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
+instance : (pushforward.{v} (pushforwardIdHom S)).IsRightAdjoint :=
   Functor.isRightAdjoint_of_iso (pushforwardId S).symm
 
 variable (S) in
 /-- The pullback by the identity morphism identifies to the identity functor of the
 category of sheaves of modules. -/
-noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
-  ((pullbackPushforwardAdjunction.{v} (F := 𝟭 C) (𝟙 S))).leftAdjointIdIso (pushforwardId S)
+noncomputable def pullbackId : pullback.{v} (pushforwardIdHom S) ≅ 𝟭 _ :=
+  ((pullbackPushforwardAdjunction.{v} (pushforwardIdHom S))).leftAdjointIdIso (pushforwardId S)
 
 variable (S) in
 @[simp]
@@ -150,6 +150,22 @@ variable [(pushforward.{v} φ).IsRightAdjoint]
 
 section
 
+variable {F' : C ⥤ D} [Functor.IsContinuous F' J K]
+  {φ' : S ⟶ (F'.sheafPushforwardContinuous RingCat.{u} J K).obj R}
+  [(pushforward.{v} φ').IsRightAdjoint]
+
+/-- Transport of the pullback functor along an isomorphism `F' ≅ F` of functors,
+see `SheafOfModules.pushforwardCongr₂`. -/
+noncomputable def pullbackCongr₂ (e : F' ≅ F)
+    (he : φ ≫ (Functor.sheafPushforwardContinuousNatTrans e.hom _ _ _).app R = φ') :
+    pullback.{v} φ ≅ pullback.{v} φ' :=
+  (conjugateIsoEquiv (pullbackPushforwardAdjunction.{v} φ')
+    (pullbackPushforwardAdjunction.{v} φ)).symm (pushforwardCongr₂ φ e he).symm
+
+end
+
+section
+
 variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
   [Functor.IsContinuous G K K']
@@ -158,19 +174,16 @@ variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
 
 variable [(pushforward.{v} ψ).IsRightAdjoint]
 
-instance : (pushforward.{v} (F := F ⋙ G)
-    (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ)).IsRightAdjoint :=
+instance : (pushforward.{v} (pushforwardCompHom φ ψ)).IsRightAdjoint :=
   Functor.isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ)
 
 /-- The composition of two pullback functors on sheaves of modules identifies
 to the pullback for the composition. -/
 noncomputable def pullbackComp :
-    pullback.{v} φ ⋙ pullback.{v} ψ ≅
-      pullback.{v} (F := F ⋙ G) (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ) :=
+    pullback.{v} φ ⋙ pullback.{v} ψ ≅ pullback.{v} (pushforwardCompHom φ ψ) :=
   Adjunction.leftAdjointCompIso
     (pullbackPushforwardAdjunction.{v} φ) (pullbackPushforwardAdjunction.{v} ψ)
-    (pullbackPushforwardAdjunction.{v} (F := F ⋙ G)
-      (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ))
+    (pullbackPushforwardAdjunction.{v} (pushforwardCompHom φ ψ))
     (pushforwardComp φ ψ)
 
 @[simp]
@@ -192,23 +205,28 @@ variable [(pushforward.{v} ψ').IsRightAdjoint]
 
 lemma pullback_assoc :
     isoWhiskerLeft _ (pullbackComp.{v} ψ ψ') ≪≫
-      pullbackComp.{v} (G := G ⋙ G') φ
-        (ψ ≫ (G.sheafPushforwardContinuous RingCat.{u} K K').map ψ') =
+      pullbackComp.{v} φ (pushforwardCompHom ψ ψ') =
     (associator _ _ _).symm ≪≫ isoWhiskerRight (pullbackComp.{v} φ ψ) _ ≪≫
-      pullbackComp.{v} (F := F ⋙ G)
-        (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ) ψ' :=
-  Adjunction.leftAdjointCompIso_assoc _ _ _ _ _ _ _ _ _ _ (pushforward_assoc φ ψ ψ')
+      pullbackComp.{v} (pushforwardCompHom φ ψ) ψ' ≪≫
+        pullbackCongr₂ _ (associator F G G').symm (pushforwardCompHom_assoc φ ψ ψ') := by
+  rw [pullbackCongr₂, pullbackComp, pullbackComp, pullbackComp, pullbackComp,
+    ← Adjunction.leftAdjointCompIso_trans]
+  exact Adjunction.leftAdjointCompIso_assoc _ _ _ _ _ _ _ _ _ _ (pushforward_assoc φ ψ ψ')
 
 end
 
 lemma pullback_id_comp :
-    pullbackComp.{v} (F := 𝟭 C) (𝟙 S) φ =
-      isoWhiskerRight (pullbackId S) (pullback φ) ≪≫ Functor.leftUnitor _ :=
-  Adjunction.leftAdjointCompIso_id_comp _ _ _ _ (pushforward_comp_id φ)
+    pullbackComp.{v} (F := 𝟭 C) (pushforwardIdHom S) φ ≪≫
+      pullbackCongr₂ _ (leftUnitor F).symm (pushforwardCompHom_pushforwardIdHom_left φ) =
+    isoWhiskerRight (pullbackId S) (pullback φ) ≪≫ Functor.leftUnitor _ := by
+  rw [pullbackCongr₂, pullbackComp, ← Adjunction.leftAdjointCompIso_trans]
+  exact Adjunction.leftAdjointCompIso_id_comp _ _ _ _ (pushforward_comp_id φ)
 
 lemma pullback_comp_id :
-    pullbackComp.{v} (G := 𝟭 _) φ (𝟙 R) =
-      isoWhiskerLeft _ (pullbackId R) ≪≫ Functor.rightUnitor _ :=
-  Adjunction.leftAdjointCompIso_comp_id _ _ _ _ (pushforward_id_comp φ)
+    pullbackComp.{v} (G := 𝟭 D) φ (pushforwardIdHom R) ≪≫
+      pullbackCongr₂ _ (rightUnitor F).symm (pushforwardCompHom_pushforwardIdHom_right φ) =
+    isoWhiskerLeft _ (pullbackId R) ≪≫ Functor.rightUnitor _ := by
+  rw [pullbackCongr₂, pullbackComp, ← Adjunction.leftAdjointCompIso_trans]
+  exact Adjunction.leftAdjointCompIso_comp_id _ _ _ _ (pushforward_id_comp φ)
 
 end SheafOfModules
