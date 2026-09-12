@@ -42,7 +42,7 @@ continuous for all `f`).
 
 end Weak
 
-variable [CompactSpace X] [NontriviallyNormedField R] [NormedAddCommGroup E] [NormedSpace R E]
+variable [CompactSpace X] [NormedField R] [NormedAddCommGroup E] [Module R E]
 
 /-- The strong topology on `AbstractMeasure G R E` (the topology induced by the norm). -/
 @[reducible] def StrongTopology : TopologicalSpace (AbstractMeasure X R E) :=

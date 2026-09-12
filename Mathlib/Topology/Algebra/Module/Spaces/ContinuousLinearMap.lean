@@ -382,7 +382,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 section UniformSpace
 
 variable [UniformSpace F] [IsUniformAddGroup F] [Module 𝕜 F]
-  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [Module 𝕜' 𝕜] [NormSMulClass 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -399,7 +399,7 @@ theorem uniformContinuous_restrictScalars :
 end UniformSpace
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
-  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [Module 𝕜' 𝕜] [NormSMulClass 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isEmbedding_restrictScalars :
