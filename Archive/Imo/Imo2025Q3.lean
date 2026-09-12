@@ -130,7 +130,7 @@ lemma not_id_two_pow (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
 end IsBonza
 
 /-- An example of a bonza function achieving the maximum number of values of `c`. -/
-def fExample : ℕ → ℕ := fun x ↦
+noncomputable def fExample : ℕ → ℕ := fun x ↦
   if ¬ 2 ∣ x then 1
   else if x = 2 then 4
   else 2 ^ (multiplicity 2 x + 2)
@@ -204,7 +204,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
               multiplicity.pow_two_sub_one (show 1 < 3 by simp) (by simp) (by lia) ch
           have : multiplicity 2 (3 ^ n - 1) = 2 + multiplicity 2 n := by lia
           rw [congrArg (HPow.hPow 2) this, Nat.pow_add]
-        _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_multiplicity_dvd)
+        _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn (pow_multiplicity_dvd 2 n))
     · have : k = 0 := by
         by_contra! nh
         have : Odd (f n) := ch.pow.of_dvd_nat (hf.apply_dvd_pow hn)
