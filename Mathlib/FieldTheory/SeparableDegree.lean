@@ -728,13 +728,14 @@ namespace Field
 /-- The separable degree of any field extension `E / F` divides the degree of `E / F`. -/
 theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
-  · rw [← finSepDegree_top F, ← finrank_top F E]
-    refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K ∣ finrank F K)
-      (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]) (fun L x h ↦ ?_) ⊤
-    have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
-    set M := L⟮x⟯
-    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
-      Module.finrank_mul_finrank F L M] at hdvd
+  · rw [← finSepDegree_top F, ← finrank_top']
+    induction (⊤ : IntermediateField F E) using induction_on_adjoin with
+    | bot => simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]
+    | adjoin_simple L x h =>
+      have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
+      set M := L⟮x⟯
+      rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
+        Module.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
   exact dvd_zero _
 
@@ -756,15 +757,16 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     by_cases hd' : finSepDegree L E = 0
     · rw [← hd, hd', mul_zero]
     linarith only [h', hd, Nat.le_mul_of_pos_right (finrank F L) (Nat.pos_of_ne_zero hd')]
-  rw [← finSepDegree_top F, ← finrank_top F E]
-  refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K = finrank F K)
-    (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ ?_) ⊤
-  have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
-    (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
-  set M := L⟮x⟯
-  rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
-    Module.finrank_mul_finrank F L M] at heq
+  rw [← finSepDegree_top F, ← finrank_top']
+  induction (⊤ : IntermediateField F E) using induction_on_adjoin with
+  | bot => simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]
+  | adjoin_simple L x h =>
+    have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
+      (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
+        IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
+    set M := L⟮x⟯
+    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
+      Module.finrank_mul_finrank F L M] at heq
 
 alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
 
