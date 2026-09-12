@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # A linear map which is locally an embedding is an embedding
@@ -18,7 +19,7 @@ such that the restriction `V → F` is an embedding, then `f` itself is an embed
 Note that this result is false for topological groups, as shown by the following counterexamples:
 * first, in the group setting, there are local embeddings (even local homeomorphisms) which
   are not globally injective; an example is the quotient map `ℝ → 𝕋 := ℝ ⧸ ℤ`;
-* even if assume that `f` is globally injective, the theorem still fails. Consider for example
+* even if we assume that `f` is globally injective, the theorem still fails. Consider for example
   `f : ℝ → 𝕋 × 𝕋` given by `x ↦ ([x], [α * x])`, with `α` irrational. `f` is injective, and locally
   an embedding by the inverse function theorem, yet it is not globally an embedding: any
   neighborhood of `f(0) = (0, 0)` contains infinitely many points `f(n)`, `n ∈ ℤ`, since
@@ -35,12 +36,9 @@ Note that this result is false for topological groups, as shown by the following
 * `LinearMap.isEmbedding_of_restrict_nhds_zero`: consider a linear map `f : E → F`, and assume
   there is a neighborhood of 0 `V` in `E` such that `V.domRestrict f : V → F` is a topological
   embedding. Then `f` is a topological embedding.
-
-## TODO
-
-We will also need the fact that if the restriction `V → F` is a *closed* embedding, then
-`f : E → F` is a *closed* embedding. This will follow from the fact that a subgroup which is
-locally closed at `0` is in fact closed, which we don't have yet
+* `LinearMap.isClosedEmbedding_of_restrict_nhds_zero`: consider a linear map `f : E → F`, and assume
+  there is a neighborhood of 0 `V` in `E` such that `V.domRestrict f : V → F` is a closed
+  topological embedding. Then `f` is a closed topological embedding.
 
 ## Implementation details
 
@@ -164,3 +162,14 @@ lemma LinearMap.isEmbedding_of_restrict_nhds_zero {V : Set E}
     |>.eventually_nhdsNE_zero x |>.and eventually_mem_nhdsWithin |>.exists
   rw [← smul_eq_zero_iff_right c_ne, ← f_injOn.eq_iff hc (mem_of_mem_nhds V_mem), map_zero,
     map_smulₛₗ, hx, smul_zero]
+
+lemma LinearMap.isClosedEmbedding_of_restrict_nhds_zero {V : Set E}
+    (V_mem : V ∈ 𝓝 0) (H : IsClosedEmbedding (Set.domRestrict V f)) : IsClosedEmbedding f := by
+  have f_emb : IsEmbedding f := isEmbedding_of_restrict_nhds_zero V_mem H.isEmbedding
+  suffices IsLocallyClosedAt (Set.range f) 0 from
+    ⟨f_emb, f.toAddMonoidHom.range.isClosed_of_isLocallyClosedAt (zero_mem _) this⟩
+  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet]
+  refine ⟨Set.range (V.domRestrict f), H.isClosed_range,
+    EventuallySubset.antisymm ?_ <| .of_subset <| by simp⟩
+  have : f '' V ∈ map f (𝓝 0) := image_mem_map V_mem
+  simpa [eventuallySubset_iff_mem_inf_principal, f_emb.map_nhds_eq, nhdsWithin] using this
