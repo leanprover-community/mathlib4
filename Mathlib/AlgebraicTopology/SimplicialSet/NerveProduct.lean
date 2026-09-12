@@ -1,0 +1,41 @@
+/-
+Copyright (c) 2026 Dennis Sweeney. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dennis Sweeney
+-/
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+
+/-!
+# The nerve of a product category
+
+The nerve of a product category can be identified with the product of the nerves.
+-/
+
+@[expose] public section
+
+open CategoryTheory MonoidalCategory
+
+universe v u
+
+namespace CategoryTheory.nerve
+
+/-- `nerve` preserves products. -/
+def nerveProdIso (C₁ C₂ : Type u) [Category.{v} C₁] [Category.{v} C₂] :
+    nerve (C₁ × C₂) ≅ nerve C₁ ⊗ nerve C₂ :=
+  NatIso.ofComponents (fun n ↦ (ComposableArrows.prodEquiv C₁ C₂ n.unop.len).toIso)
+
+instance : Functor.Monoidal nerveFunctor where
+  δ C₁ C₂ := (nerveProdIso C₁ C₂).hom
+  μ C₁ C₂ := (nerveProdIso C₁ C₂).inv
+  η := SemiCartesianMonoidalCategory.toUnit _
+  ε.app _ := TypeCat.ofHom fun _ ↦
+    { obj _ := ⟨⟨⟨⟩⟩⟩
+      map _ := ⟨⟨⟨rfl⟩⟩⟩ }
+
+end CategoryTheory.nerve
