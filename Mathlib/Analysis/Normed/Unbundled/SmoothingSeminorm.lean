@@ -79,7 +79,7 @@ private theorem smoothingSeminormSeq_tendsto_aux {L : ℝ} (hL : 0 ≤ L) {ε : 
       exact Tendsto.neg h_exp
     rw [← rpow_zero (L + ε)]
     apply Tendsto.rpow tendsto_const_nhds h0
-    rw [ne_eq, add_eq_zero_iff_of_nonneg hL (le_of_lt hε)]
+    rw [ne_eq, add_eq_zero_iff_of_nonneg_left hL (le_of_lt hε)]
     exact Or.inl (not_and_of_not_right _ (ne_of_gt hε))
   · simp_rw [mul_one, ← rpow_natCast, ← rpow_mul (apply_nonneg μ x), ← mul_div_assoc, mul_one,
       ← rpow_zero (μ x)]
