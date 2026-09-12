@@ -23,9 +23,12 @@ It also contains several examples:
 - `encodingNatBool`  : a binary encoding of `ℕ` in a simple alphabet.
 - `encodingNatΓ'`    : a binary encoding of `ℕ` in the alphabet used for TM's.
 - `unaryEncodingNat` : a unary encoding of `ℕ`
+- `unaryPrefixEncodingNat` : a self-delimiting unary encoding of `ℕ`
 - `encodingBoolBool` : an encoding of `Bool`.
 - `encodingList`     : an encoding of `List α` in the alphabet `α`.
 - `encodingProd`     : an encoding of `α × β` from encodings of `α` and `β`.
+- `encodingProdBool` : a self-delimiting encoding of `α × β` in the alphabet `Bool`.
+- `encodingListBool` : a self-delimiting encoding of `List α` in the alphabet `Bool`.
 -/
 
 @[expose] public section
@@ -158,6 +161,101 @@ def unaryEncodingNat : Encoding ℕ Bool where
   encode := unaryEncodeNat
   decode n := some (unaryDecodeNat n)
   decode_encode n := congr_arg _ (unary_decode_encode_nat n)
+
+/-! ### Unary Prefix Coding -/
+
+namespace UnaryPrefix
+
+/--
+A self-delimiting unary prefix encoding of `ℕ` in `Bool`.
+Encodes `n` as `n` `true`s followed by a `false`.
+-/
+def encode (n : ℕ) : List Bool :=
+  List.replicate n true ++ [false]
+
+@[simp]
+lemma length_encode (n : ℕ) : (encode n).length = n + 1 := by
+  simp [encode]
+
+@[simp]
+lemma length_takeWhile_encode (n : ℕ) (p : List Bool) :
+    ((encode n ++ p).takeWhile id).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => exact congrArg Nat.succ ih
+
+/--
+Encodes a pair of boolean lists by prefixing the length of the first component.
+The second component is the remaining suffix.
+-/
+def pair (x y : List Bool) : List Bool :=
+  encode x.length ++ x ++ y
+
+/-- Splits a boolean list using the first component length encoded by `encode`. -/
+def unpair (x : List Bool) : List Bool × List Bool :=
+  let n := (x.takeWhile id).length
+  let l := x.drop (n + 1)
+  (l.take n, l.drop n)
+
+@[simp]
+theorem unpair_pair (x y : List Bool) : unpair (pair x y) = (x, y) := by
+  simp [unpair, pair]
+
+end UnaryPrefix
+
+/-- A self-delimiting unary `Encoding` of `ℕ` in `Bool`. -/
+def unaryPrefixEncodingNat : Encoding ℕ Bool where
+  encode := UnaryPrefix.encode
+  decode l := some ((l.takeWhile id).length)
+  decode_encode n := by
+    simpa using UnaryPrefix.length_takeWhile_encode n []
+
+/--
+A self-delimiting encoding of a product type in the alphabet `Bool`, built from
+encodings of the two factors in `Bool`.
+-/
+def encodingProdBool {α β : Type*} (ea : Encoding α Bool) (eb : Encoding β Bool) :
+    Encoding (α × β) Bool where
+  encode x := UnaryPrefix.pair (ea.encode x.1) (eb.encode x.2)
+  decode x :=
+    let p := UnaryPrefix.unpair x
+    Option.map₂ Prod.mk (ea.decode p.1) (eb.decode p.2)
+  decode_encode x := by
+    simp [UnaryPrefix.unpair, UnaryPrefix.pair]
+
+namespace EncodingListBool
+
+/-- Auxiliary encoder for `encodingListBool`, without the outer list-length prefix. -/
+def encodeAux {α : Type*} (e : Encoding α Bool) : List α → List Bool
+  | [] => []
+  | x :: xs => UnaryPrefix.pair (e.encode x) (encodeAux e xs)
+
+/-- Auxiliary decoder for `encodingListBool`, reading the given number of entries. -/
+def decodeAux {α : Type*} (e : Encoding α Bool) : ℕ → List Bool → Option (List α)
+  | 0, _ => some []
+  | n + 1, xs =>
+    let p := UnaryPrefix.unpair xs
+    Option.map₂ List.cons (e.decode p.1) (decodeAux e n p.2)
+
+@[simp]
+theorem decodeAux_encodeAux {α : Type*} (e : Encoding α Bool) :
+    ∀ xs : List α, decodeAux e xs.length (encodeAux e xs) = some xs := by
+  intro xs
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    simp [encodeAux, decodeAux, UnaryPrefix.unpair, UnaryPrefix.pair, ih]
+
+end EncodingListBool
+
+/-- A self-delimiting encoding of lists in the alphabet `Bool`. -/
+def encodingListBool {α : Type*} (e : Encoding α Bool) : Encoding (List α) Bool where
+  encode xs := UnaryPrefix.encode xs.length ++ EncodingListBool.encodeAux e xs
+  decode xs :=
+    let n := (xs.takeWhile id).length
+    EncodingListBool.decodeAux e n (xs.drop (n + 1))
+  decode_encode xs := by
+    simp [EncodingListBool.decodeAux_encodeAux]
 
 /-- An encoding function of `Bool` in `Bool`. -/
 def encodeBool : Bool → List Bool := pure
