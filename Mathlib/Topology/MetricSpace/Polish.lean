@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Justin Palumbo
 -/
 module
 
+public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Sets.Opens
@@ -20,9 +21,10 @@ In this file, we establish the basic properties of Polish spaces.
 
 * `PolishSpace α` is a mixin typeclass on a topological space, requiring that the topology is
   second-countable and compatible with a complete metric. To endow the space with such a metric,
-  use in a proof `letI := upgradeIsCompletelyMetrizable α`.
+  use in a proof `let := upgradeIsCompletelyMetrizable α`.
 * `IsClosed.polishSpace`: a closed subset of a Polish space is Polish.
 * `IsOpen.polishSpace`: an open subset of a Polish space is Polish.
+* `IsGδ.polishSpace`: a countable intersection of open subsets of a Polish space is Polish.
 * `exists_nat_nat_continuous_surjective`: any nonempty Polish space is the continuous image
   of the fundamental Polish space `ℕ → ℕ`.
 
@@ -251,6 +253,119 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
 end CompleteCopy
 
 end TopologicalSpace.Opens
+
+/-!
+### A Gδ subset of a Polish space is Polish
+
+To prove this fact, we follow a proof attributed to A. Bernshteyn. We homeomorphically map a Gδ
+subset of α to a subset of α × (ℕ → ℝ), which is closed and thus Polish.
+
+This result is a generalization of the fact that open subsets of a Polish space are open,
+and could be used to separately derive the open case, which was proved separately above by
+directly constructing a complete compatible metric.
+-/
+
+namespace GδEmbedding
+
+variable [MetricSpace α] {U : ℕ → Set α}
+
+/-- The map `x ↦ (x, fun n ↦ d(x, U nᶜ)⁻¹)` from `⋂ n, U n` into `X × (ℕ → ℝ)`. When the `U n`
+are open, this is a closed embedding: the `n`-th coordinate of the second component blows up as
+`x` approaches the boundary of `U n`, so that the boundary is sent "to infinity". This guarantees
+limit points will have their first coordinates within all of the `U n` -/
+def gδEmbedding (U : ℕ → Set α) (x : ↥(⋂ n, U n)) : α × (ℕ → ℝ) :=
+  (x.1, fun n : ℕ ↦ (infDist x.1 (U n)ᶜ)⁻¹)
+
+/-- A point of `⋂ n, U n` is at positive distance from each `U nᶜ`, as long as the latter is a
+nonempty closed set. -/
+theorem infDist_compl_pos (hUo : ∀ n, IsOpen (U n)) (hUne : ∀ n, ((U n)ᶜ).Nonempty)
+    (x : ↥(⋂ n, U n)) (n : ℕ) : 0 < infDist x.1 (U n)ᶜ :=
+  ((hUo n).isClosed_compl.notMem_iff_infDist_pos (hUne n)).1 (not_not.2 (mem_iInter.1 x.2 n))
+
+theorem continuous_gδEmbedding (hUo : ∀ n, IsOpen (U n)) : Continuous (gδEmbedding U) := by
+  refine continuous_subtype_val.prodMk (continuous_pi fun n ↦ ?_)
+  refine continuous_iff_continuousAt.2 fun x : ⋂ n, U n ↦ ?_
+  refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtype_val.continuousAt
+  rw [(hUo n).isClosed_compl.closure_eq, mem_compl_iff, not_not]
+  exact mem_iInter.1 x.2 n
+
+/-- `gδEmbedding U` is an embedding: a) it is inducing because composing it with `Prod.fst`
+gives the inclusion `⋂ n, U n → X` and b) it is injective because its projection to the
+first coordinate is. -/
+theorem isEmbedding_gδEmbedding (hUo : ∀ n, IsOpen (U n)) : IsEmbedding (gδEmbedding U) :=
+  ⟨IsInducing.of_comp (continuous_gδEmbedding hUo) continuous_fst IsInducing.subtypeVal,
+   fun (x y : ⋂ n, U n) (hxy : (gδEmbedding U x = gδEmbedding U y))
+     ↦ Subtype.ext (congrArg Prod.fst hxy)⟩
+
+/-- The range of `gδEmbedding U` is definable as the set of pairs `x` `r` satisfying the countably
+many equations `r n * d(x, U nᶜ) = 1`. This is because such an equation forces `d(x, U nᶜ) ≠ 0`,
+i.e. `x ∈ U n`, and at the same time determines `r n`. -/
+theorem range_gδEmbedding (hUo : ∀ n, IsOpen (U n)) (hUne : ∀ n, ((U n)ᶜ).Nonempty) :
+    range (gδEmbedding U) = {q : α × (ℕ → ℝ) | ∀ n, q.2 n * infDist q.1 (U n)ᶜ = 1} := by
+  ext q
+  simp only [mem_range, mem_ofPred_eq]
+  constructor
+  · rintro ⟨y, rfl⟩ n
+    exact inv_mul_cancel₀ (infDist_compl_pos hUo hUne y n).ne'
+  · intro h
+    have hne : ∀ n, infDist q.1 (U n)ᶜ ≠ 0 := by
+      intro n h0
+      have : q.2 n * infDist q.1 (U n)ᶜ = 1 := h n
+      rw [h0, mul_zero] at this
+      exact zero_ne_one this
+    have hmem : q.1 ∈ ⋂ n, U n := mem_iInter.2 fun n ↦ by
+      have : q.1 ∉ (U n)ᶜ :=
+        ((hUo n).isClosed_compl.notMem_iff_infDist_pos (hUne n)).2
+          (infDist_nonneg.lt_of_ne' (hne n))
+      exact not_not.1 this
+    refine ⟨⟨q.1, hmem⟩, ?_ ⟩
+    refine Prod.ext rfl ?_
+    funext n
+    exact inv_eq_of_mul_eq_one_left (h n)
+
+theorem isClosed_range_gδEmbedding (hUo : ∀ n, IsOpen (U n)) (hUne : ∀ n, ((U n)ᶜ).Nonempty) :
+    IsClosed (range (gδEmbedding U)) := by
+  rw [range_gδEmbedding hUo hUne, ofPred_forall]
+  refine isClosed_iInter fun n ↦ isClosed_eq ?_ continuous_const
+  exact ((continuous_apply n).comp continuous_snd).mul
+    ((continuous_infDist_pt (U n)ᶜ).comp continuous_fst)
+
+/-- If `U n` is a sequence of open sets, none of which is all of `X`, then `⋂ n, U n` is
+homeomorphic to a closed subset of `X × (ℕ → ℝ)` via `gδEmbedding U`. -/
+theorem isClosedEmbedding_gδEmbedding (hUo : ∀ n, IsOpen (U n)) (hUne : ∀ n, ((U n)ᶜ).Nonempty) :
+    IsClosedEmbedding (gδEmbedding U) :=
+  ⟨isEmbedding_gδEmbedding hUo, isClosed_range_gδEmbedding hUo hUne⟩
+
+/-- A countable intersection of proper open subsets of a Polish space is Polish. -/
+theorem polishSpace_iInter_of_isOpen
+    [CompleteSpace α] [SecondCountableTopology α] (hUo : ∀ n, IsOpen (U n))
+    (hUne : ∀ n, ((U n)ᶜ).Nonempty) : PolishSpace (⋂ n, U n) :=
+  (isClosedEmbedding_gδEmbedding hUo hUne).polishSpace
+
+/-- A Gδ subset of a Polish space is also Polish. -/
+theorem _root_.IsGδ.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
+    (hs : IsGδ s) : PolishSpace s := by
+  let := upgradeIsCompletelyMetrizable α
+  obtain ⟨V, V_open, rfl⟩ := hs.eq_iInter_nat
+  -- dispose of the case `s = univ` so we may assume nonempty complements
+  rcases eq_or_ne (⋂ n, V n) univ with h | h
+  · rw [h]
+    exact isClosed_univ.polishSpace
+  -- otherwise pick `x₀ ∉ ⋂ n, V n`, say `x₀ ∉ V m`, and shrink every `V n` by intersecting
+  -- with `V m`; this changes neither the intersection nor its openness, but now no member of
+  -- the family is equal to `univ`
+  obtain ⟨x₀, hx₀⟩ := nonempty_compl.2 h
+  simp only [mem_compl_iff, mem_iInter, not_forall] at hx₀
+  obtain ⟨m, hm⟩ := hx₀
+  have hVeq : (⋂ n, V n ∩ V m) = ⋂ n, V n := by
+    ext x
+    simp only [mem_iInter, mem_inter_iff]
+    exact ⟨fun hx n ↦ (hx n).1, fun hx n ↦ ⟨hx n, hx m⟩⟩
+  rw [← hVeq]
+  exact polishSpace_iInter_of_isOpen (fun n ↦ (V_open n).inter (V_open m))
+    fun n ↦ ⟨x₀, fun hc ↦ hm hc.2⟩
+
+end GδEmbedding
 
 namespace PolishSpace
 
