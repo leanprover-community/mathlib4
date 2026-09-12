@@ -85,6 +85,8 @@ theorem dvd_of_ne_zero {n : ℕ} (h : multiplicity p n ≠ 0) : p ∣ n :=
 
 end multiplicity
 
+@[deprecated (since := "2026-09-12")] alias padicValNat.self := multiplicity.self
+
 @[deprecated (since := "2026-09-11")] alias padicValNat.eq_zero_of_not_dvd :=
   multiplicity.eq_zero_of_not_dvd
 
