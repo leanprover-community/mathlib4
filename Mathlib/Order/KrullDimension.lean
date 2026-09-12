@@ -700,7 +700,7 @@ lemma krullDim_le_one_iff_of_boundedOrder [BoundedOrder α] :
 
 end PartialOrder
 
-lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
+lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] [Nonempty α] :
     krullDim α = (LTSeries.longestOf α).length :=
   le_antisymm
     (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
@@ -776,7 +776,7 @@ lemma coheight_le_krullDim (a : α) : coheight a ≤ krullDim α := by
   simpa using! height_le_krullDim (α := αᵒᵈ) a
 
 @[simp]
-lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
+lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] [Nonempty α] :
     height (LTSeries.longestOf α).last = krullDim α := by
   refine le_antisymm (height_le_krullDim _) ?_
   rw [krullDim_eq_length_of_finiteDimensionalOrder, height]
@@ -901,18 +901,20 @@ section finiteDimensional
 variable {α : Type*} [Preorder α]
 
 lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
-    FiniteDimensionalOrder α ↔ krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤ := by
+    Nonempty α ∧ FiniteDimensionalOrder α ↔ krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤ := by
   by_cases h : Nonempty α
-  · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
-  · constructor
-    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalOrder α)))
-    · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
+  · simp_rw [krullDim_ne_bot_iff, ne_eq, krullDim_eq_top_iff, not_infiniteDimensionalOrder_iff]
+  · refine ⟨fun ⟨hne, _⟩ ↦ absurd hne h, ?_⟩
+    exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
 
-lemma krullDim_ne_bot_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊥ :=
-  (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).1
+lemma krullDim_ne_bot_of_nonempty [Nonempty α] : krullDim α ≠ ⊥ :=
+  krullDim_ne_bot_iff.mpr ‹_›
 
-lemma krullDim_ne_top_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊤ :=
-  (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
+@[deprecated (since := "2026-08-21")]
+alias krullDim_ne_bot_of_finiteDimensionalOrder := krullDim_ne_bot_of_nonempty
+
+lemma krullDim_ne_top_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊤ := by
+  rwa [ne_eq, krullDim_eq_top_iff, not_infiniteDimensionalOrder_iff]
 
 lemma coheight_lt_top [FiniteDimensionalOrder α] (x : α) : coheight x < ⊤ := by
   rw [← WithBot.coe_lt_coe]
