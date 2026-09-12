@@ -66,8 +66,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
 /-- A discrete valuation has rank one. -/
 @[instance_reducible]
 noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
-  hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp
-      (.ofClass (valueGroup₀_equiv_withZeroMulInt v))
+  hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp (valueGroup₀_equiv_withZeroMulInt v)
   strictMono' := (toNNReal_strictMono he).comp (valueGroup₀_equiv_withZeroMulInt_strictMono v)
   exists_val_nontrivial := IsNontrivial.exists_val_nontrivial
 
@@ -82,7 +81,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
   simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,
     valueGroup₀_equiv_withZeroMulInt_apply]
   split_ifs with h0 <;>
-  simp only [MonoidWithZeroHom.coe_ofClass] at h0
+  simp only [coe_toMonoidWithZeroHom] at h0
   · simp [h0]
   · rw [WithZero.map'_coe, ← coe_unzero h0, WithZero.coe_inj,
     ← (MulEquiv.injective (intEquivOfZPowersEqTop _
