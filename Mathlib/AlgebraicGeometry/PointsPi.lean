@@ -143,6 +143,6 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     (Pi.evalRingHom _ ⟨i, rfl⟩).comp (Pi.evalRingHom (R' ·) (j i)) := rfl
   rw [pointsPi, ← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, this, CommRingCat.ofHom_comp,
     Spec.map_comp_assoc, ← ι_sigmaSpec R', Category.assoc, IsIso.hom_inv_id_assoc,
-    Sigma.ι_desc, ← Category.assoc, hg, IsOpenImmersion.lift_fac]
+    Sigma.ι_comp_desc, ← Category.assoc, hg, IsOpenImmersion.lift_fac]
 
 end AlgebraicGeometry

@@ -100,6 +100,7 @@ instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
 instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
   TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
+@[macro_inline]
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
   coe a := a.1
   coe_injective _ _ := Subtype.ext
