@@ -134,6 +134,15 @@ theorem nhds_toMul (x : Additive X) : 𝓝 x.toMul = map toMul (𝓝 x) := rfl
 
 theorem nhds_toAdd (x : Multiplicative X) : 𝓝 x.toAdd = map toAdd (𝓝 x) := rfl
 
+/-- `Multiplicative.ofAdd` bundled as a homeomorphism. -/
+@[simps apply symm_apply] def Homeomorph.ofAdd : X ≃ₜ Multiplicative X where
+    toFun := Multiplicative.ofAdd
+    invFun := Multiplicative.toAdd
+    left_inv _ := by simp
+    right_inv _ := by simp
+    continuous_toFun := continuous_ofAdd
+    continuous_invFun := continuous_toAdd
+
 end
 
 /-!
