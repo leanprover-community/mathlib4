@@ -52,7 +52,7 @@ section
 
 variable [Algebra K L] [Algebra (AlgebraicClosure K) (AlgebraicClosure L)]
   [IsScalarTower K (AlgebraicClosure K) (AlgebraicClosure L)]
-
+-- set_option pp.rawOnError true
 open IntermediateField in
 /-- A commuting square of two fields and their algebraic closures induces a continuous homomorphism
 of their absolute Galois groups. -/
@@ -65,10 +65,11 @@ noncomputable def absoluteGaloisGroup.mapOfAlgebra : G_K L →ₜ* G_K K :=
       let f := IsScalarTower.toAlgHom K (AlgebraicClosure K) (AlgebraicClosure L)
       apply continuous_of_continuousAt_one F
       rw [ContinuousAt, map_one]
-      refine ((galGroupBasis L (AlgebraicClosure L)).nhds_one_hasBasis.tendsto_iff
-        (galGroupBasis K (AlgebraicClosure K)).nhds_one_hasBasis).mpr ?_
-      rintro _ ⟨_, ⟨F, hF : FiniteDimensional _ _, rfl⟩, rfl⟩
-      refine ⟨_, ⟨_, ⟨adjoin L (F.map f), ?_, rfl⟩, rfl⟩, fun σ hσ x ↦ ?_⟩
+      intro U hU
+      rw [Filter.mem_map]
+      erw [krullTopology_mem_nhds_one_iff] at hU ⊢
+      obtain ⟨F, fd, hF⟩ := hU
+      refine ⟨adjoin L (F.map f), ?_, fun σ hσ => hF fun x => ?_⟩
       · suffices Algebra.EssFiniteType L (adjoin L (F.map f : Set (AlgebraicClosure L))) by
           apply Algebra.finite_of_essFiniteType_of_isAlgebraic
         replace hF : Algebra.EssFiniteType K F := inferInstance
