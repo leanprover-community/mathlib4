@@ -19,29 +19,28 @@ public import Mathlib.Tactic.SetLike
 Parsers matching `!![…]` matrix literal expressions into their dimensions, element type,
 and entry expressions, for tactics evaluating functions of a concrete matrix.
 
-TODO: `!![…]` still elaborates to `Matrix.of` applied to `Matrix.vecCons` chains; but there is
-a wip draft PR that switches it to the merged `Matrix.ofArray`.
-
-This files needs a corresponding adaptation if that is merged -- but in the best case, the entirety
-of this file can be gone.
+TODO: `!![…]` elaborates to `Matrix.of` applied to `Matrix.vecCons` chains, which is the shape
+matched here. Once it elaborates through `Matrix.ofArray` instead, adapt this parser, or remove
+it if the array form can be read directly.
 
 ## Main definitions
 
-- `matchMatrixLit?`: match a closed matrix literal.
+- `matchMatrixLit?`: match a matrix literal, closed by default.
 -/
 
 public meta section
 
 open Lean Meta
 
-namespace Mathlib.Tactic.Echelon
+namespace Mathlib.Tactic.Matrix
 
-/-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
-entries. -/
-def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
-  -- closedness: a literal with free variables (hypothesis- or let-bound) or metavariables
-  -- is not evaluable here; unfold or substitute such variables before calling the tactic
-  if A.hasFVar || A.hasMVar then return none
+/-- Match a `Fin`-indexed matrix literal: its dimensions, element type, and rows of entries;
+with `closed`, only a literal without free variables or metavariables. -/
+def matchMatrixLit? (A : Expr) (closed := true) :
+    MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
+  -- a literal with free variables (hypothesis- or let-bound) or metavariables is not evaluable
+  -- by a tactic computing with its entries; unfold or substitute such variables before calling it
+  if closed && (A.hasFVar || A.hasMVar) then return none
   let_expr Matrix finM finN R := ← inferType A | return none
   let_expr Fin mE := finM | return none
   let_expr Fin nE := finN | return none
@@ -57,4 +56,4 @@ def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Arr
   unless entries.all (·.size == n) do return none
   return some (m, n, R, entries)
 
-end Mathlib.Tactic.Echelon
+end Mathlib.Tactic.Matrix

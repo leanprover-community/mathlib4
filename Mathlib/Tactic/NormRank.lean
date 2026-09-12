@@ -6,7 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Tactic.Echelon.Bareiss
-public import Mathlib.Tactic.Echelon.Parsing
+public import Mathlib.Tactic.Matrix.Parsing
 public meta import Mathlib.Tactic.Echelon.Bareiss
 
 /-!
@@ -14,7 +14,7 @@ public meta import Mathlib.Tactic.Echelon.Bareiss
 
 This module defines the `eval_rank` tactic and the `norm_rank` simproc, which compute
 the rank of a matrix literal with non-symbolic entries through an
-`Echelon.Decomposition` certificate checked by the kernel.
+`Echelon.Decomposition` certificate.
 -/
 
 public meta section
@@ -38,7 +38,7 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
 def normRankCore : Simp.Simproc := fun e => do
   let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
   let A ← instantiateMVars A
-  let some (m, n, R, entries) ← matchMatrixLit? A
+  let some (m, n, R, entries) ← Matrix.matchMatrixLit? A
     | trace[Tactic.evalRank] "not a closed matrix literal{indentExpr A}"
       return .continue
   match ← checkBareissApplicable R with
@@ -62,7 +62,7 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
 /--
 `eval_rank` evaluates the rank of matrices with non-symbolic entries.
 
-The element type must be a commutative domain with kernel-decidable equality.
+The element type must be a commutative domain.
 Terms skipped can be viewed by using `set_option trace.Tactic.evalRank true`.
 -/
 elab (name := evalRank) "eval_rank" : tactic => do
