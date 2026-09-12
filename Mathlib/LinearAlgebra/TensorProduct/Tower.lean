@@ -68,8 +68,8 @@ variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P] [Module A P]
 variable [IsScalarTower R A P]
 variable [AddCommMonoid Q] [Module R Q]
-variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
-variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
+variable [AddCommMonoid P'] [Module R P'] [Module A P']
+variable [IsScalarTower R A P']
 variable [AddCommMonoid Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
