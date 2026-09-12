@@ -9,11 +9,10 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
-import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
-public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps

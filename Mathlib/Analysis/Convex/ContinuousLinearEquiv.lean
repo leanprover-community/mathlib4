@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Strict
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # (Pre)images of strict convex sets under continuous linear equivalences
