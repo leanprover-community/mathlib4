@@ -534,8 +534,9 @@ theorem ball_infDist_compl_subset : ball x (infDist x sᶜ) ⊆ s :=
   ball_infDist_subset_compl.trans_eq (compl_compl s)
 
 theorem disjoint_closedBall_of_lt_infDist {r : ℝ} (h : r < infDist x s) :
-    Disjoint (closedBall x r) s :=
-  disjoint_ball_infDist.mono_left <| closedBall_subset_ball h
+    Disjoint (closedBall x r) s := by
+  grw [h]
+  exact disjoint_ball_infDist
 
 theorem dist_le_infDist_add_diam (hs : IsBounded s) (hy : y ∈ s) :
     dist x y ≤ infDist x s + diam s := by

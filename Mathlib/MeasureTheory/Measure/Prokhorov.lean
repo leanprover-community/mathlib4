@@ -691,13 +691,8 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     have ⟨δ_inv, hδ_inv⟩ : ∃ x, u x < δ := (Tendsto.eventually_lt_const δpos hu).exists
     refine ⟨D '' .Iic (km (δ_inv + 1)), (Set.finite_Iic _).image _, ?_⟩
     -- t should be image under D of the set of numbers less than km of δ_inv
-    simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, bigK]
-    calc
-        ⋂ m, ⋃ i ≤ km (m + 1), closure (ball (D i) (u m))
-    _ ⊆ ⋃ i ≤ km (δ_inv + 1), closure (ball (D i) (u δ_inv)) := iInter_subset ..
-    _ ⊆ ⋃ i ≤ km (δ_inv + 1), ball (D i) δ := by
-        gcongr
-        exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball <| hδ_inv
+    simp only [mem_image, mem_Iic, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, bigK]
+    grw [iInter_subset _ δ_inv, closure_ball_subset_closedBall, hδ_inv]
   -- Closedness
   · simp_rw [bigK, ← Set.mem_Iic]
     exact isClosed_iInter fun n =>

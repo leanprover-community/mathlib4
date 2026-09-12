@@ -77,13 +77,12 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
       fun_prop (disch := positivity)
     rw [mem_ball_iff_norm] at hz
     filter_upwards [Ioo_mem_nhdsLT hz] with r ⟨hzr, hrR₁⟩
-    apply this
-    · exact hd.mono <| by gcongr
-    · exact h_maps.mono_left <| by gcongr
+    specialize @this r
+    grw [hrR₁] at this
+    apply this hd h_maps
     · rwa [mem_ball_iff_norm]
     · exact (norm_nonneg _).trans_lt hzr
-    · exact ⟨hd.mono <| closedBall_subset_ball hrR₁, h_maps.mono_left <|
-        closedBall_subset_ball hrR₁⟩
+    · exact ⟨hd, h_maps⟩
   -- Cleanup, discard the case `z = c`.
   clear hd h_maps
   rcases hd' with ⟨hd, h_maps⟩
