@@ -5737,6 +5737,7 @@ public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 public import Mathlib.MeasureTheory.Measure.FiniteMeasurePi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
+public import Mathlib.MeasureTheory.Measure.FrostmanMassBound
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
