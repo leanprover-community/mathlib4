@@ -51,15 +51,6 @@ open Finset
 
 variable {ι : Type*} {s : Finset ι} {i : ι}
 
-variable {R M : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
-  [AddCommMonoid M] [Module R M]
-
-instance : Std.Refl (SameRay R (M := M)) where
-  refl := .refl
-
-instance : Std.Symm (SameRay R (M := M)) where
-  symm _ _ := .symm
-
 section Seminormed
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {v : ι → E}
