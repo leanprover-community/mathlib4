@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
-## Continuous representations
+# Continuous representations
 
 This file defines continuous representations of a monoid `G` on a `R`-module `V` and
 related basic results.
