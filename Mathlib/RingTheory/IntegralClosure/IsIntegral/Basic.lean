@@ -6,6 +6,8 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.Algebra.Algebra.IsSimpleRing
+public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Finiteness.Subalgebra
@@ -197,6 +199,12 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
 theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A} [FaithfulSMul A B] :
     IsIntegral R (algebraMap A B x) ↔ IsIntegral R x :=
   isIntegral_algHom_iff (IsScalarTower.toAlgHom R A B) (FaithfulSMul.algebraMap_injective A B)
+
+theorem isIntegral_ratCast_iff {K : Type*} [DivisionRing K] [CharZero K] [Algebra R ℚ] [Algebra R K]
+    [IsScalarTower R ℚ K] {q : ℚ} : IsIntegral R (q : K) ↔ IsIntegral R q :=
+  isIntegral_algebraMap_iff (A := ℚ)
+
+@[deprecated (since := "2026-07-14")] alias IsIntegral.ratCast_iff := isIntegral_ratCast_iff
 
 theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
     IsIntegral R r ↔ ∃ s : Set R, s.Finite ∧ IsIntegral (Subring.closure s) r := by
