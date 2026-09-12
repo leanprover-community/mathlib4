@@ -187,6 +187,12 @@ theorem smul_of_tower_def (r : M) (x : s) :
 
 end OfTower
 
+section AddCommGroup
+variable {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G]
+
+instance : SMulMemClass S ℤ G where smul_mem _n _x hx := zsmul_mem hx _
+
+end AddCommGroup
 end SetLike
 
 /-- A SubAddAction is a set which is closed under scalar multiplication. -/
