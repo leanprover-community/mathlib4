@@ -215,6 +215,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackFree
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Skyscraper
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Submodule
 public import Mathlib.Algebra.Category.ModuleCat.Simple
 public import Mathlib.Algebra.Category.ModuleCat.Stalk
