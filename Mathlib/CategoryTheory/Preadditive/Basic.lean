@@ -78,6 +78,13 @@ attribute [reassoc] Preadditive.comp_add
 
 attribute [simp] Preadditive.comp_add
 
+namespace End
+
+@[simps!]
+instance [Preadditive C] (X : C) : AddCommGroup (End X) := (End.homEquiv (X := X)).addCommGroup
+
+end End
+
 end CategoryTheory
 
 open CategoryTheory
@@ -122,9 +129,6 @@ instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory 
       __ := InducedCategory.homEquiv.addCommGroup }
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
-
-instance (X : C) : AddCommGroup (End X) :=
-  inferInstanceAs <| AddCommGroup (X ⟶ X)
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
@@ -210,13 +214,14 @@ lemma hasZeroObject_of_hasCoproduct [HasCoproduct (PEmpty.elim : PEmpty.{w + 1} 
     rw [IsZero.iff_id_eq_zero]
     cat_disch⟩
 
+attribute [local simp] End.mul_asHom in
 /-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
-    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
-    mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
-    left_distrib := fun f g h => Preadditive.add_comp X X X g h f
-    right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
+    zero_mul := by cat_disch
+    mul_zero := by cat_disch
+    left_distrib := by cat_disch
+    right_distrib := by cat_disch }
 
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
