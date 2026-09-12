@@ -57,9 +57,10 @@ trivial model with corners on a product `E × F` and the product of the trivial 
 
 ## `T%`
 
-Secondly, this file adds an elaborator `T%` to ease working with sections in a fibre bundle,
-which converts a section `s : Π x : M, V x` to a non-dependent function into the total space of the
-bundle.
+Secondly, this file adds an elaborator `T%` to ease working with sections in a fibre bundle.
+which converts a section `s : Π x : M, V (b x)` to a non-dependent function into the total space of
+the bundle.
+
 ```lean
 -- omitted: let `V` be a fibre bundle over `M`
 
@@ -72,6 +73,19 @@ variable {σ : (x : E) → Trivial E E' x} in
 
 variable {s : E → E'} in
 #check T% s -- `(fun a ↦ TotalSpace.mk' E' a (s a)) : E → TotalSpace E' (Trivial E E')`
+
+-- omitted: let `E₁`, `E₂` be fibre bundles over `B` with model fibers `F₁`, `F₂`
+-- omitted: let `b : M → B`
+
+-- Pullback bundle (base space differs from the bundle's native base)
+variable {v : Π x : M, E₁ (b x)} in
+#check T% v -- `(fun x ↦ TotalSpace.mk' F₁ (b x) (v x)) : M → TotalSpace F₁ E₁`
+
+-- Hom-bundle (continuous linear maps between fibers over the same base point)
+variable {ϕ : ∀ x : M, (E₁ (b x) →L[𝕜] E₂ (b x))} in
+#check T% ϕ
+-- `(fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ x)) :
+-- M → TotalSpace (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x)`
 ```
 
 ---
@@ -133,6 +147,9 @@ by searching in local context for either a `FiberBundle F E` or
 We could try a more systematic search of `TotalSpace F E` anywhere in the local context,
 but the current heuristic is faster and sufficient so far. -/
 private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
+  -- Intercept TangentSpace directly to bypass typeclass search
+  if V.isAppOf ``TangentSpace && V.getAppNumArgs >= 3 then
+    return some V.getAppArgs[2]!
   withTraceNode `Elab.DiffGeo.TotalSpaceMk
     (fun _ ↦ do return m!"Searching for a model fiber for {← ppExpr V}") do
   trace[Elab.DiffGeo.TotalSpaceMk] "Searching for relevant `FiberBundle` instance in context"
@@ -161,12 +178,13 @@ private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
         else return none
       | _ => return none
 /--
-Utility for sections in a fibre bundle: if an expression `e` is a section
-`s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
+Utility for sections in a fibre bundle: if an expression `e` is a section `s : Π x : M, V (b x)`
+as a dependent function, convert it to a non-dependent function into the total
 space. This handles the cases of
 - sections of a trivial bundle
 - vector fields on a manifold (i.e., sections of the tangent bundle)
-- sections of an explicit fibre bundle
+- sections of an explicit fibre bundle (including pullback bundles over `b x`)
+- sections of a Hom-bundle (i.e., `ContinuousLinearMap` between bundle fibers)
 - turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
 This searches the local context for suitable hypotheses for the above cases by matching
@@ -198,13 +216,37 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
       trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, (e.app x).headBeta]
       mkLambdaFVars #[x] body
-    | _ => match (← instantiateMVars tgt).cleanupAnnotations with
-      | .app V _ =>
+    | _ =>
+      let tgt_c := (← instantiateMVars tgt).cleanupAnnotations
+      -- 1. Try Hom-bundle intercept
+      if tgt_c.isAppOf ``ContinuousLinearMap && tgt_c.getAppNumArgs >= 9 then
+        let args := tgt_c.getAppArgs
+        let σ := args[4]!
+        let M₁ := args[5]!.headBeta
+        let M₂ := args[8]!.headBeta
+        if let (.app V₁ arg₁, .app V₂ arg₂) := (M₁, M₂) then
+          if ← isDefEq arg₁ arg₂ then
+            let F₁? ← findModelFiber? V₁
+            let F₂? ← findModelFiber? V₂
+            if let (some F₁, some F₂) := (F₁?, F₂?) then
+              trace[Elab.DiffGeo.TotalSpaceMk] "Section of a Hom-bundle"
+              let F_hom_base ← mkAppM ``ContinuousLinearMap #[σ, F₁, F₂]
+              let (mvars, _, _) ← forallMetaTelescope (← inferType F_hom_base)
+              let insts ← mvars.mapM fun mvar ↦ do synthInstance (← inferType mvar)
+              let F_hom := mkAppN F_hom_base insts
+              let B ← inferType arg₁
+              let E_body ← kabstract tgt_c arg₁
+              let E := Expr.lam `x B E_body default
+              let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[B, E, F_hom, arg₁, (e.app x).headBeta]
+              return (← mkLambdaFVars #[x] body).headBeta
+      -- 2. Generic bundle logic
+      match tgt_c with
+      | .app V arg =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
         match ← findModelFiber? V with
         | some F =>
-              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, (e.app x).headBeta]
-              return (← mkLambdaFVars #[x] body).headBeta
+          let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, arg, (e.app x).headBeta]
+          return (← mkLambdaFVars #[x] body).headBeta
         | none =>
           -- future: special-case `Bundle.TotalSpace` for V;
           -- if so, say "there is no need to apply T% twice"
@@ -229,12 +271,13 @@ end Elab
 
 open Elab in
 /--
-Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
+Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V (b x)` as a dependent
 function to a non-dependent function into the total space. This handles the cases of
 - sections of a trivial bundle
 - vector fields on a manifold (i.e., sections of the tangent bundle)
-- sections of an explicit fibre bundle
+- sections of an explicit fibre bundle (including pullback bundles)
 - turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
+- sections of a Hom-bundle (i.e., `ContinuousLinearMap` between bundle fibers)
 
 This elaborator searches the local context for suitable hypotheses for the above cases by matching
 on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
