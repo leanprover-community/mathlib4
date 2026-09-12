@@ -816,6 +816,26 @@ lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injecti
     (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
   (gciMapComap hf).u_l_eq _
 
+theorem _root_.AffineMap.vectorSpan_preimage_le (f : P₁ →ᵃ[k] P₂) (s : Set P₂) :
+    vectorSpan k (f ⁻¹' s) ≤ (vectorSpan k s).comap f.linear := by
+  rw [vectorSpan, Submodule.span_le, Set.vsub_subset_iff]
+  simp_rw [SetLike.mem_coe, Submodule.mem_comap, f.linearMap_vsub]
+  exact fun _ h₁ _ h₂ => vsub_mem_vectorSpan k h₁ h₂
+
+theorem direction_comap_le (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) :
+    (s.comap f).direction ≤ s.direction.comap f.linear :=
+  f.vectorSpan_preimage_le _
+
+theorem direction_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₂} (h : s.comap f ≠ ⊥) :
+    (s.comap f).direction = s.direction.comap f.linear := by
+  refine le_antisymm (direction_comap_le f s) ?_
+  intro v hv
+  obtain ⟨p, hp⟩ := (nonempty_iff_ne_bot _).mpr h
+  rw [← vadd_vsub v p]
+  refine vsub_mem_direction ?_ hp
+  rw [mem_comap, f.map_vadd]
+  exact vadd_mem_of_mem_direction hv hp
+
 end AffineSubspace
 
 end MapComap
