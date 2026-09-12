@@ -45,6 +45,11 @@ variable [DecidableEq α] {s s₁ s₂ t : Finset α} {a b : α}
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 
+omit [DecidableEq α] in
+theorem disjoint_coe_iff : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  classical
+  rw [disjoint_iff_inter_eq_empty, Set.disjoint_iff_inter_eq_empty, ← coe_inter, coe_eq_empty]
+
 /-! #### union -/
 
 @[simp]

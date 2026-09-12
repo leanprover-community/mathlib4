@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Topology.UnitInterval
 
 /-!
 # Bernoulli distribution
@@ -140,6 +139,15 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
     Ber(x, y, p).real s = 0 := by
   classical
   simp_all [bernoulliMeasure_real_apply]
+
+@[simp]
+lemma bernoulliMeasure_real_apply_singleton_left [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p).real {x} = p :=
+  bernoulliMeasure_real_apply_of_mem_of_notMem p (by simp) (by simp) (by grind)
+
+lemma bernoulliMeasure_real_apply_singleton_right [MeasurableSingletonClass X] (p : I) (h : x ≠ y) :
+    Ber(x, y, p).real {y} = 1 - p := by
+  simp [h]
 
 instance : IsProbabilityMeasure Ber(x, y, p) where
   measure_univ := by simp [bernoulliMeasure_def]

@@ -253,6 +253,16 @@ lemma indepFun_iff_hasLaw_prodMk_prod [IsFiniteMeasure P] {𝓨 : Type*} {m𝓨 
 
 alias ⟨IndepFun.hasLaw_prod, _⟩ := indepFun_iff_hasLaw_prodMk_prod
 
+lemma HasLaw.fst {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧 × 𝓨} {ν : Measure 𝓨}
+    [IsProbabilityMeasure ν] (hX : HasLaw X (μ.prod ν) P) :
+    HasLaw (fun ω ↦ (X ω).1) μ P :=
+  measurePreserving_fst.comp_hasLaw hX
+
+lemma HasLaw.snd {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧 × 𝓨} {ν : Measure 𝓨}
+    [SFinite ν] [IsProbabilityMeasure μ] (hX : HasLaw X (μ.prod ν) P) :
+    HasLaw (fun ω ↦ (X ω).2) ν P :=
+  measurePreserving_snd.comp_hasLaw hX
+
 lemma iIndepFun.hasLaw_pi {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)}
     {μ : (i : ι) → Measure (𝓧 i)} {X : (i : ι) → Ω → 𝓧 i} (hX : ∀ i, HasLaw (X i) (μ i) P)
     (h : iIndepFun X P) :
