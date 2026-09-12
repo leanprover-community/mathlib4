@@ -56,28 +56,12 @@ lemma ratProjIndex_coe (Γ : Subgroup SL(2, ℤ)) :
 private lemma ratProjIndex_eq_relIndex_mul {G H : Subgroup (GL (Fin 2) ℝ)}
     [G.IsArithmetic] [H.IsArithmetic] (hGH : G ≤ H) (hG : -1 ∈ G) (hH : -1 ∈ H) :
     G.ratProjIndex = G.relIndex H * H.ratProjIndex := by
-  have h₁ : G.relIndex (H ⊓ 𝒮ℒ) * H.relIndex 𝒮ℒ = (G ⊓ H).relIndex 𝒮ℒ :=
-    relIndex_inf_mul_relIndex G H 𝒮ℒ
-  rw [inf_of_le_left hGH] at h₁
-  have h₂ : G.relIndex (𝒮ℒ ⊓ H) * (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex H =
-      (G ⊓ 𝒮ℒ).relIndex H := relIndex_inf_mul_relIndex G 𝒮ℒ H
-  rw [inf_comm 𝒮ℒ H, ← relIndex_mul_relIndex (G ⊓ 𝒮ℒ) G H inf_le_left hGH,
-    inf_relIndex_left] at h₂
-  have hn : G.relIndex (H ⊓ 𝒮ℒ) ≠ 0 := G.relIndex_ne_zero
-  have hGn : (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex G ≠ 0 :=
-    (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex_ne_zero
-  have hHn : (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex H ≠ 0 :=
-    (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex_ne_zero
-  simp only [ratProjIndex, adjoinNegOne_eq_self_iff.mpr hG,
-    adjoinNegOne_eq_self_iff.mpr hH]
-  have h₁' : (G.relIndex (H ⊓ 𝒮ℒ) : ℚ) * H.relIndex 𝒮ℒ = G.relIndex 𝒮ℒ := mod_cast h₁
-  have h₂' : (G.relIndex (H ⊓ 𝒮ℒ) : ℚ) * (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex H =
-      (𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex G * G.relIndex H := mod_cast h₂
-  have hn' : (G.relIndex (H ⊓ 𝒮ℒ) : ℚ) ≠ 0 := mod_cast hn
-  field_simp [hGn, hHn]
-  apply mul_left_cancel₀ hn'
-  linear_combination (G.relIndex 𝒮ℒ : ℚ) * h₂' -
-    ((𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).relIndex G : ℚ) * (G.relIndex H : ℚ) * h₁'
+  have h := relIndex_inf_mul_relIndex G 𝒮ℒ H
+  rw [inf_comm 𝒮ℒ H, ← relIndex_mul_relIndex (G ⊓ 𝒮ℒ) G H inf_le_left hGH, inf_relIndex_left] at h
+  simp only [ratProjIndex, adjoinNegOne_eq_self_iff.mpr hG, adjoinNegOne_eq_self_iff.mpr hH,
+    ← inf_of_le_left hGH ▸ relIndex_inf_mul_relIndex G H 𝒮ℒ, Nat.cast_mul]
+  field_simp [relIndex_ne_zero]
+  exact_mod_cast h
 
 /-- Adjoining `-1` does not change the projective index. -/
 private lemma ratProjIndex_adjoinNegOne (G : Subgroup (GL (Fin 2) ℝ)) :
@@ -158,27 +142,19 @@ namespace ModularForm
 lemma totalCuspOrder_le_sturmBound
     {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [G.HasDetOne] {k : ℤ}
     (f : ModularForm G k) (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
-  have hn : ModularForm.norm G.adjoinNegOne f ≠ 0 :=
-    ModularForm.norm_ne_zero G.adjoinNegOne (by simpa using hf)
-  have hbound : totalCuspOrder G.adjoinNegOne
-      (k * Nat.card (G.adjoinNegOne ⧸ G.subgroupOf G.adjoinNegOne))
-      (ModularForm.norm G.adjoinNegOne f) ≤
-      G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) :=
-    Subgroup.totalCuspOrder_le_sturmBound_of_negOne_mem
-    G.adjoinNegOne G.negOne_mem_adjoinNegOne (ModularForm.norm G.adjoinNegOne f) hn
   have hsum : (G.relIndex G.adjoinNegOne : EReal) * totalCuspOrder G k f ≤
       G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) :=
-    (relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne f).trans hbound
-  have hpos : (0 : EReal) < G.relIndex G.adjoinNegOne :=
-    mod_cast Nat.pos_of_ne_zero G.relIndex_ne_zero
-  rw [mul_comm, ← EReal.le_div_iff_mul_le hpos (EReal.natCast_ne_top _)] at hsum
+    (relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne f).trans <|
+      Subgroup.totalCuspOrder_le_sturmBound_of_negOne_mem _ G.negOne_mem_adjoinNegOne _ <|
+        ModularForm.norm_ne_zero _ (by simpa using hf)
   have hbudget : (G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) : EReal) /
       G.relIndex G.adjoinNegOne = G.sturmBound k := by
     rw [← EReal.coe_natCast, ← EReal.coe_div, EReal.coe_eq_coe_iff]
     simp only [Subgroup.sturmBound, Subgroup.ratProjIndex_adjoinNegOne,
       Int.cast_mul, Int.cast_natCast]
     field_simp [G.relIndex_ne_zero]
-  exact hsum.trans_eq hbudget
+  rwa [← hbudget, EReal.le_div_iff_mul_le (mod_cast Nat.pos_of_ne_zero G.relIndex_ne_zero)
+    (EReal.natCast_ne_top _), mul_comm]
 
 /-- A form vanishes if its total cusp order exceeds the Sturm bound. -/
 lemma eq_zero_of_totalCuspOrder_gt_sturmBound
@@ -211,24 +187,14 @@ private noncomputable def qExpansionCoeffMap {G : Subgroup (GL (Fin 2) ℝ)} [G.
 private lemma qExpansionCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
     [G.HasDetOne] {k : ℤ} {N : ℕ} (hN : G.regularityFactorInfty * G.sturmBound k < N) :
     Function.Injective (qExpansionCoeffMap k N : ModularForm G k → Fin N → ℂ) := by
-  apply (LinearMap.ker_eq_bot).mp
-  rw [LinearMap.ker_eq_bot']
-  intro f hf
-  by_contra hne
-  have horder : (N : ℕ∞) ≤ (qExpansion G.strictWidthInfty f).order :=
-    PowerSeries.nat_le_order _ _ fun i hi ↦ congrFun hf ⟨i, hi⟩
-  have horder' : (N : EReal) ≤ (qExpansion G.strictWidthInfty f).order := by
-    have he : ((N : ℕ∞).toENNReal : EReal) ≤
-        ((qExpansion G.strictWidthInfty f).order.toENNReal : EReal) :=
-      EReal.coe_ennreal_le_coe_ennreal_iff.mpr (ENat.toENNReal_le.mpr horder)
+  refine (injective_iff_map_eq_zero _).mpr fun f hf ↦ of_not_not fun hne ↦ ?_
+  have horder : (N : EReal) ≤ (qExpansion G.strictWidthInfty f).order := by
     simpa only [ENat.toENNReal_coe, ← ENNReal.coe_natCast, EReal.coe_nnreal_eq_coe_real,
-      NNReal.coe_natCast, EReal.coe_natCast] using he
-  have hbound : (qExpansion G.strictWidthInfty f).order ≤
-      (G.regularityFactorInfty : EReal) * (G.sturmBound k : EReal) :=
-    (qExpansion_order_le_totalCuspOrder G k f).trans
-    (mul_le_mul_of_nonneg_left (totalCuspOrder_le_sturmBound f hne) (by positivity))
+      NNReal.coe_natCast, EReal.coe_natCast] using EReal.coe_ennreal_le_coe_ennreal_iff.mpr
+      (ENat.toENNReal_le.mpr (PowerSeries.nat_le_order _ _ fun i hi ↦ congrFun hf ⟨i, hi⟩))
   have hN' : (G.regularityFactorInfty : EReal) * (G.sturmBound k : EReal) < N := mod_cast hN
-  grind
+  exact hN'.not_ge (horder.trans ((qExpansion_order_le_totalCuspOrder G k f).trans
+    (mul_le_mul_of_nonneg_left (totalCuspOrder_le_sturmBound f hne) (by positivity))))
 
 open scoped Classical in
 private noncomputable def sturmCoeffIndex (G : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) (n : ℕ) : ℕ :=
@@ -248,46 +214,17 @@ private lemma sturmCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArith
     [G.HasDetOne] {k : ℤ} {N : ℕ} (hN : G.sturmBound k < N) :
     Function.Injective (sturmCoeffMap k N : ModularForm G k → Fin N → ℂ) := by
   by_cases hreg : G.IsRegularAtInfty
-  · have heq : sturmCoeffMap (G := G) k N = qExpansionCoeffMap (G := G) k N := by
-      ext f i
-      simp [sturmCoeffMap, sturmCoeffIndex, hreg, qExpansionCoeffMap]
-    rw [heq]
-    exact qExpansionCoeffMap_injective (G := G) (by simpa [hreg] using hN)
-  apply (LinearMap.ker_eq_bot).mp
-  rw [LinearMap.ker_eq_bot']
-  intro f hf
-  apply qExpansionCoeffMap_injective (N := 2 * N) (by
-    simpa [G.regularityFactorInfty_of_not_isRegularAtInfty hreg, Nat.cast_mul] using
-      mul_lt_mul_of_pos_left hN (by norm_num : (0 : ℝ) < 2))
-  funext i
-  simp only [qExpansionCoeffMap, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [show ((0 : ModularForm G k) : ℍ → ℂ) = 0 by rfl, UpperHalfPlane.qExpansion_zero]
-  simp only [map_zero]
-  by_cases hi : Odd (k + (i.val : ℤ))
-  · exact qExpansion_coeff_eq_zero_of_not_isRegularAtInfty f hreg i.val hi
-  have hi' : Even (k + (i.val : ℤ)) := Int.not_odd_iff_even.mp hi
-  by_cases hk : Even k
-  · have hii : Even (i.val : ℤ) := by
-      rcases hi' with ⟨a, ha⟩
-      rcases hk with ⟨b, hb⟩
-      exact ⟨a - b, by omega⟩
-    have hij : 2 * (i.val / 2) = i.val := by
-      rcases hii with ⟨j, hj⟩
-      omega
-    have hjN : i.val / 2 < N := by omega
-    simpa [sturmCoeffMap, sturmCoeffIndex, hreg, hk, hij] using
-      congrFun hf ⟨i.val / 2, hjN⟩
-  · have hk' : Odd k := Int.not_even_iff_odd.mp hk
-    have hii : Odd (i.val : ℤ) := by
-      rcases hi' with ⟨a, ha⟩
-      rcases hk' with ⟨b, hb⟩
-      exact ⟨a - b - 1, by omega⟩
-    have hij : 2 * (i.val / 2) + 1 = i.val := by
-      rcases hii with ⟨j, hj⟩
-      omega
-    have hjN : i.val / 2 < N := by omega
-    simpa [sturmCoeffMap, sturmCoeffIndex, hreg, hk, hij] using
-      congrFun hf ⟨i.val / 2, hjN⟩
+  · simpa [sturmCoeffMap, sturmCoeffIndex, hreg, qExpansionCoeffMap] using
+      qExpansionCoeffMap_injective (G := G) (N := N) (by simpa [hreg] using hN)
+  refine (injective_iff_map_eq_zero _).mpr fun f hf ↦ (injective_iff_map_eq_zero _).mp
+    (qExpansionCoeffMap_injective (N := 2 * N) (by simpa [hreg] using hN)) f (funext fun i ↦ ?_)
+  simp only [qExpansionCoeffMap, LinearMap.coe_mk, AddHom.coe_mk, Pi.zero_apply]
+  by_cases hi : Even (k + (i.val : ℤ))
+  · have hidx : sturmCoeffIndex G k (i.val / 2) = i.val := by
+      simp only [sturmCoeffIndex, ite_eq_right hreg, Int.even_iff] at hi ⊢
+      split_ifs with hk <;> omega
+    simpa [sturmCoeffMap, hidx] using congrFun hf ⟨i.val / 2, by omega⟩
+  exact qExpansion_coeff_eq_zero_of_not_isRegularAtInfty f hreg i.val (Int.not_even_iff_odd.mp hi)
 
 /-- Finitely many Fourier coefficients determine a modular form. -/
 instance finiteDimensional_complex (G : Subgroup (GL (Fin 2) ℝ))
@@ -309,12 +246,9 @@ lemma finrank_complex_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] [G.Has
 /-- Modular forms at any arithmetic level form a finite-dimensional real vector space.
 Restriction to the determinant-one part also covers determinant `-1`. -/
 instance finiteDimensional_real (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ) :
-    FiniteDimensional ℝ (ModularForm G k) := by
-  let L : ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k :=
-    { toFun := ModularForm.restrict G.detOnePart_le
-      map_add' f g := by ext z; rfl
-      map_smul' c f := by ext z; rfl }
-  exact FiniteDimensional.of_injective L (ModularForm.restrict_injective G.detOnePart_le)
+    FiniteDimensional ℝ (ModularForm G k) :=
+  .of_injective (⟨⟨restrict G.detOnePart_le, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ :
+    ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k) (restrict_injective G.detOnePart_le)
 
 /-- If `G` contains an element of determinant `-1`, restriction to its determinant-one part takes
 real-linearly independent families to complex-linearly independent families. -/
@@ -328,100 +262,41 @@ lemma linearIndependent_restrict_detOnePart
   intro l hl
   have hl_fun : (∑ i ∈ l.support, l i • (f i : ℍ → ℂ)) = 0 := by
     ext z
-    simpa [Finsupp.linearCombination_apply, Finsupp.sum] using congr_fun
-      (congr_arg (fun F : ModularForm G.detOnePart k ↦ (F : ℍ → ℂ)) hl) z
-  have hdet' : γ.det.val = -1 := by
-    simpa using congr_arg Units.val hdet
-  have hsigma : σ γ = Complex.conjCAE := by
-    simp only [σ]
-    split_ifs with h
-    · rw [hdet'] at h
-      norm_num at h
-    · rfl
+    simpa [Finsupp.linearCombination_apply, Finsupp.sum] using DFunLike.congr_fun hl z
+  -- slashing by `γ` conjugates the coefficients, since `σ γ` is complex conjugation
+  have hsigma : σ γ = Complex.conjCAE := by simp [σ, hdet]
   have hl_conj : (∑ i ∈ l.support, conj (l i) • (f i : ℍ → ℂ)) = 0 := by
-    have hs := congr_arg (fun F : ℍ → ℂ ↦ F ∣[k] γ) hl_fun
-    simp_rw [SlashAction.sum_slash, smul_slash,
-      SlashInvariantForm.slash_action_eqn (f _) γ hγ] at hs
-    rw [hsigma] at hs
-    simpa using hs
-  have hl_re : (∑ i ∈ l.support, (l i).re • (f i : ℍ → ℂ)) = 0 := by
-    ext z
-    have h1 := congr_fun hl_fun z
-    have h2 := congr_fun hl_conj z
-    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Pi.zero_apply] at h1 h2 ⊢
-    have htwice :
-        2 * ∑ i ∈ l.support, (l i).re • (f i) z =
-          (∑ i ∈ l.support, l i * (f i) z) +
-            ∑ i ∈ l.support, conj (l i) * (f i) z := by
-      rw [Finset.mul_sum, ← Finset.sum_add_distrib]
-      apply Finset.sum_congr rfl
-      intro i hi
-      rw [Complex.real_smul, Complex.re_eq_add_conj]
-      ring
-    rw [h1, h2, add_zero] at htwice
-    exact (mul_eq_zero.mp htwice).resolve_left (by norm_num)
-  have hl_im : (∑ i ∈ l.support, (l i).im • (f i : ℍ → ℂ)) = 0 := by
-    ext z
-    have h1 := congr_fun hl_fun z
-    have h2 := congr_fun hl_conj z
-    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Pi.zero_apply] at h1 h2 ⊢
-    have htwice :
-        (2 * Complex.I) * ∑ i ∈ l.support, (l i).im • (f i) z =
-          (∑ i ∈ l.support, l i * (f i) z) -
-            ∑ i ∈ l.support, conj (l i) * (f i) z := by
-      rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
-      apply Finset.sum_congr rfl
-      intro i hi
-      rw [Complex.real_smul, Complex.im_eq_sub_conj]
-      field_simp
-    rw [h1, h2, sub_zero] at htwice
-    exact (mul_eq_zero.mp htwice).resolve_left (by norm_num)
-  have hl_re' : ∑ i ∈ l.support, (l i).re • f i = 0 := by
-    apply DFunLike.coe_injective
-    rw [FunLike.coe_sum]
-    simp_rw [FunLike.coe_smul]
-    exact hl_re
-  have hl_im' : ∑ i ∈ l.support, (l i).im • f i = 0 := by
-    apply DFunLike.coe_injective
-    rw [FunLike.coe_sum]
-    simp_rw [FunLike.coe_smul]
-    exact hl_im
-  ext i
-  by_cases hi : i ∈ l.support
-  · apply Complex.ext
-    · exact linearIndependent_iff'.mp hf l.support (fun j ↦ (l j).re) hl_re' i hi
-    · exact linearIndependent_iff'.mp hf l.support (fun j ↦ (l j).im) hl_im' i hi
-  · simpa only [Finsupp.zero_apply] using
-      (not_ne_iff.mp ((Finsupp.mem_support_iff).not.mp hi))
+    simpa [SlashAction.sum_slash, smul_slash, hsigma,
+      SlashInvariantForm.slash_action_eqn (f _) γ hγ] using
+      congr_arg (fun F : ℍ → ℂ ↦ F ∣[k] γ) hl_fun
+  -- so the real and the imaginary part of `l` are each a real relation among the `f i`
+  have key : ∀ c : ι → ℝ, (∑ i ∈ l.support, (c i : ℂ) • (f i : ℍ → ℂ)) = 0 →
+      ∀ i ∈ l.support, c i = 0 := fun c hc ↦
+    linearIndependent_iff'.mp hf l.support c <| DFunLike.coe_injective <| by
+      simpa [FunLike.coe_sum, FunLike.coe_smul, Complex.coe_smul] using hc
+  have hre : (∑ i ∈ l.support, ((l i).re : ℂ) • (f i : ℍ → ℂ)) = 0 := by
+    simp_rw [Complex.re_eq_add_conj, div_eq_inv_mul, mul_smul, add_smul, smul_add,
+      Finset.sum_add_distrib, ← Finset.smul_sum, hl_fun, hl_conj, smul_zero, add_zero]
+  have him : (∑ i ∈ l.support, ((l i).im : ℂ) • (f i : ℍ → ℂ)) = 0 := by
+    simp_rw [Complex.im_eq_sub_conj, div_eq_inv_mul, mul_smul, sub_smul, smul_sub,
+      Finset.sum_sub_distrib, ← Finset.smul_sum, hl_fun, hl_conj, smul_zero, sub_zero]
+  exact Finsupp.ext fun i ↦ (em (i ∈ l.support)).elim
+    (fun hi ↦ Complex.ext (key _ hre i hi) (key _ him i hi)) Finsupp.notMem_support_iff.mp
 
 /-- Complex base extension followed by restriction to the determinant-one part. -/
 noncomputable def restrictBaseChange
     {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ) :
     TensorProduct ℝ ℂ (ModularForm G k) →ₗ[ℂ] ModularForm G.detOnePart k :=
-  TensorProduct.AlgebraTensorModule.lift
-    { toFun c :=
-        { toFun f := c • ModularForm.restrict G.detOnePart_le f
-          map_add' f g := by
-            ext z
-            exact mul_add c (f z) (g z)
-          map_smul' r f := by
-            rw [show ModularForm.restrict G.detOnePart_le (r • f) =
-              r • ModularForm.restrict G.detOnePart_le f by rfl]
-            ext z
-            simp only [smul_apply, RingHom.id_apply, smul_eq_mul, Complex.real_smul]
-            ring }
-      map_add' c d := by
-        ext f z
-        exact add_mul c d (f z)
-      map_smul' c d := by
-        ext f z
-        exact mul_assoc c d (f z) }
+  LinearMap.liftBaseChange ℂ
+    { toFun := ModularForm.restrict G.detOnePart_le
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
 
 @[simp]
 lemma restrictBaseChange_tmul {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
     (c : ℂ) (f : ModularForm G k) :
     restrictBaseChange k (c ⊗ₜ[ℝ] f) = c • ModularForm.restrict G.detOnePart_le f :=
-  by simp [restrictBaseChange]
+  rfl
 
 /-- If `G` contains an element of determinant `-1`, complex base extension followed by restriction
 to the determinant-one part is injective. -/
@@ -431,30 +306,19 @@ lemma restrictBaseChange_injective
     Function.Injective (restrictBaseChange k :
       TensorProduct ℝ ℂ (ModularForm G k) → ModularForm G.detOnePart k) := by
   let b := Module.Free.chooseBasis ℝ (ModularForm G k)
-  apply (restrictBaseChange k).injective_of_linearIndependent
-    (Module.Basis.baseChange ℂ b).span_eq
-  have hli : LinearIndependent ℂ (fun i ↦ (ModularForm.restrict G.detOnePart_le (b i) :
-      ModularForm G.detOnePart k)) :=
+  apply (restrictBaseChange k).injective_of_linearIndependent (Module.Basis.baseChange ℂ b).span_eq
+  simpa [Function.comp_def] using
     linearIndependent_restrict_detOnePart b b.linearIndependent hγ hdet
-  rw [show (⇑(restrictBaseChange k) ∘ ⇑(Module.Basis.baseChange ℂ b)) =
-    fun i ↦ ModularForm.restrict G.detOnePart_le (b i) by
-      funext i
-      rw [Function.comp_apply, Module.Basis.baseChange_apply, restrictBaseChange_tmul, one_smul]]
-  exact hli
 
 /-- The real dimension at an arbitrary arithmetic level is bounded using restriction to its
 determinant-one subgroup. -/
 lemma finrank_real_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ) :
     Module.finrank ℝ (ModularForm G k) ≤ 2 *
       (⌊G.detOnePart.sturmBound k⌋₊ + 1) := by
-  let L : ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k :=
-    { toFun := ModularForm.restrict G.detOnePart_le
-      map_add' f g := by ext z; rfl
-      map_smul' c f := by ext z; rfl }
-  refine (L.finrank_le_finrank_of_injective
-    (ModularForm.restrict_injective G.detOnePart_le)).trans ?_
-  rw [← Module.finrank_mul_finrank ℝ ℂ (ModularForm G.detOnePart k),
-    Complex.finrank_real_complex]
+  refine ((⟨⟨restrict G.detOnePart_le, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ :
+    ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k).finrank_le_finrank_of_injective
+      (restrict_injective G.detOnePart_le)).trans ?_
+  rw [finrank_real_of_complex]
   exact Nat.mul_le_mul_left 2 (finrank_complex_le G.detOnePart k)
 
 /-- If an arithmetic subgroup contains an element of determinant `-1`, its real dimension is
