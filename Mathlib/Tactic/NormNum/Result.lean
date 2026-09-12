@@ -25,7 +25,7 @@ or is either `true` or `false`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable {α : Type u}
@@ -40,11 +40,11 @@ variable {u : Level}
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
-@[instance_reducible]
+@[expose, instance_reducible]
 def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
-@[instance_reducible]
+@[expose, instance_reducible]
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
@@ -143,7 +143,7 @@ A "raw nat cast" is an expression of the form `(Nat.rawCast lit : α)` where `li
 natural number literal. These expressions are used by tactics like `ring` to decrease the number
 of typeclass arguments required in each use of a number literal at type `α`.
 -/
-@[simp] def _root_.Nat.rawCast {α : Type u} [AddMonoidWithOne α] (n : ℕ) : α := n
+@[expose, simp] def _root_.Nat.rawCast {α : Type u} [AddMonoidWithOne α] (n : ℕ) : α := n
 
 theorem IsNat.to_eq {α : Type u} [AddMonoidWithOne α] {n} : {a a' : α} → IsNat a n → n = a' → a = a'
   | _, _, ⟨rfl⟩, rfl => rfl
@@ -172,7 +172,7 @@ A "raw int cast" is an expression of the form:
 tactics like `ring` to decrease the number of typeclass arguments required in each use of a number
 literal at type `α`.
 -/
-@[simp] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
+@[expose, simp] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
 
 theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
@@ -220,7 +220,7 @@ A "raw nnrat cast" is an expression of the form:
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
 -/
-@[simp]
+@[expose, simp]
 def _root_.NNRat.rawCast [DivisionSemiring α] (n : ℕ) (d : ℕ) : α := n / d
 
 /--
@@ -236,7 +236,7 @@ A "raw rat cast" is an expression of the form:
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.
 -/
-@[simp]
+@[expose, simp]
 def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 
 theorem IsNNRat.to_isNat {α} [Semiring α] : ∀ {a : α} {n}, IsNNRat a (n) (nat_lit 1) → IsNat a n
@@ -306,7 +306,7 @@ inductive Result' where
   | isNegNNRat (inst : Expr) (q : Rat) (n d proof : Expr)
   deriving Inhabited
 
-section
+@[expose] section
 set_option linter.unusedVariables false
 
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
