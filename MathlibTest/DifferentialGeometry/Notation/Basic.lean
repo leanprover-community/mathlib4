@@ -1461,6 +1461,9 @@ variable {f : Unit → Unit}
 error: Could not find a model with corners for `Unit`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `Unit` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.
