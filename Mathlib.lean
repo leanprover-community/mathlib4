@@ -3855,6 +3855,7 @@ public import Mathlib.Computability.PartrecBasis
 public import Mathlib.Computability.PartrecCode
 public import Mathlib.Computability.Primrec.Basic
 public import Mathlib.Computability.Primrec.List
+public import Mathlib.Computability.Primrec.Nat
 public import Mathlib.Computability.RE
 public import Mathlib.Computability.RecursiveIn
 public import Mathlib.Computability.Reduce
