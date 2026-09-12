@@ -203,6 +203,10 @@ theorem map_comap_le : (K.comap f).map f ≤ K :=
   (gc_map_comap f).l_u_le _
 
 @[simp]
+theorem map_comap_bot : ((⊥ : Ideal S).comap f).map f = ⊥ :=
+  le_bot_iff.mp map_comap_le
+
+@[simp]
 theorem comap_top : (⊤ : Ideal S).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
