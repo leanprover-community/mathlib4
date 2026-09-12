@@ -15,10 +15,9 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 `tsirelson_inequality` (in `Mathlib/Algebra/Star/CHSH.lean`) shows that for any CHSH tuple
 `A₀ A₁ B₀ B₁` in an ordered `ℝ`-algebra,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • 1`.
-This file shows that the constant `√2 ^ 3 = 2 * √2` is optimal, completing the "Future work"
-item in that file: we construct an explicit CHSH tuple in the \*-algebra of 4-by-4 real
-matrices whose CHSH operator has `√2 ^ 3` as an eigenvalue, so that no smaller constant can
-bound it in the Loewner order.
+This file shows that the constant `√2 ^ 3 = 2 * √2` is optimal. We construct an explicit
+CHSH tuple in the \*-algebra of 4-by-4 real matrices whose CHSH operator has `√2 ^ 3` as an
+eigenvalue, so that no smaller constant can bound it in the Loewner order.
 
 Concretely, viewing `Matrix (Fin 4) (Fin 4) ℝ` as `M₂(ℝ) ⊗ M₂(ℝ)` with the computational
 basis `|00⟩, |01⟩, |10⟩, |11⟩`, we take the real Pauli matrices `X = !![0, 1; 1, 0]` and
