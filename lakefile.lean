@@ -18,6 +18,8 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
+require HexRealRoots from git "https://github.com/leanprover/hex-real-roots.git" @ "v0.5.0"
+
 
 /-!
 ## Options for building mathlib
@@ -127,9 +129,19 @@ any labels online.
 lean_exe autolabel where
   srcDir := "scripts"
 
+/-- External Lean modules that `cache get` leaves to Lake. -/
+target cacheDeps pkg : Unit := do
+  let mut job := Job.nil s!"{pkg.baseName}/cacheDeps"
+  for name in #[`HexRealRoots.Chain, `HexPoly.Euclid.DivGcd, `HexPolyZ.IntegerPolynomial] do
+    let some mod ← findModule? name
+      | error s!"module {name} not found"
+    job := job.mix (← mod.leanArts.fetch)
+  return job
+
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
+  needs := #[cacheDeps]
 
 /-- `lake exe cache-test` runs the cache tool's unit tests (container URL
 construction, per-repo trust-ordered allowlist, `--cache-from` parsing).

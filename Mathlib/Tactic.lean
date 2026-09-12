@@ -158,6 +158,7 @@ public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.HexPolyZ.Parse
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
@@ -306,6 +307,7 @@ public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.RSuffices
+public import Mathlib.Tactic.RealRootCount
 public import Mathlib.Tactic.Recall
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.ReduceModChar
