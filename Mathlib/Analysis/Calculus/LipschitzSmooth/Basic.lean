@@ -108,8 +108,6 @@ derivative: variation along a chord and, for real-valued functions, the upper an
 bounds usually called the descent lemma and, sometimes, the ascent lemma.
 -/
 
-namespace LipschitzSmoothWith
-
 section NormedField
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
@@ -117,23 +115,34 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {K : NNReal} {f : E → F}
 
-/-- Two-sided bound on the variation of the Fréchet derivative along `y - x`. -/
-theorem fderiv_apply_sub_norm_le (h : LipschitzSmoothWith 𝕜 K f) (x y : E) :
-    ‖fderiv 𝕜 f y (y - x) - fderiv 𝕜 f x (y - x)‖ ≤ K * dist x y ^ 2 := by
+/-- Two-sided bound on the variation of the Fréchet derivative within `s` along `y - x`. -/
+theorem LipschitzSmoothOnWith.fderivWithin_apply_sub_norm_le {s : Set E}
+    (h : LipschitzSmoothOnWith 𝕜 K f s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
+    ‖fderivWithin 𝕜 f s y (y - x) - fderivWithin 𝕜 f s x (y - x)‖ ≤
+      K * dist x y ^ 2 := by
   calc
-    ‖fderiv 𝕜 f y (y - x) - fderiv 𝕜 f x (y - x)‖ =
-        ‖(f x - f y - fderiv 𝕜 f y (x - y)) +
-          (f y - f x - fderiv 𝕜 f x (y - x))‖ := by
+    ‖fderivWithin 𝕜 f s y (y - x) - fderivWithin 𝕜 f s x (y - x)‖ =
+        ‖(f x - f y - fderivWithin 𝕜 f s y (x - y)) +
+          (f y - f x - fderivWithin 𝕜 f s x (y - x))‖ := by
       rw [← neg_sub y x, map_neg]
       congr 1
       abel
-    _ ≤ ‖f x - f y - fderiv 𝕜 f y (x - y)‖ +
-        ‖f y - f x - fderiv 𝕜 f x (y - x)‖ := norm_add_le _ _
+    _ ≤ ‖f x - f y - fderivWithin 𝕜 f s y (x - y)‖ +
+        ‖f y - f x - fderivWithin 𝕜 f s x (y - x)‖ := norm_add_le _ _
     _ ≤ K / 2 * dist y x ^ 2 + K / 2 * dist x y ^ 2 :=
-      add_le_add (h.fderiv_norm_le y x) (h.fderiv_norm_le x y)
+      add_le_add (h.fderivWithin_norm_le y hy x hx) (h.fderivWithin_norm_le x hx y hy)
     _ = K * dist x y ^ 2 := by rw [dist_comm y x]; ring
 
+/-- Two-sided bound on the variation of the Fréchet derivative along `y - x`. -/
+theorem LipschitzSmoothWith.fderiv_apply_sub_norm_le (h : LipschitzSmoothWith 𝕜 K f) (x y : E) :
+    ‖fderiv 𝕜 f y (y - x) - fderiv 𝕜 f x (y - x)‖ ≤ K * dist x y ^ 2 := by
+  simpa only [fderivWithin_univ] using
+    (lipschitzSmoothOnWith_univ.mpr h).fderivWithin_apply_sub_norm_le
+      (Set.mem_univ x) (Set.mem_univ y)
+
 end NormedField
+
+namespace LipschitzSmoothWith
 
 /-! ### Real-valued functions -/
 
@@ -183,6 +192,21 @@ theorem lipschitzSmoothWith_iff_deriv :
   constructor <;>
     exact fun ⟨hf, hbound⟩ ↦ ⟨hf, by
       simpa only [fderiv_eq_smul_deriv, dist_eq_norm, norm_sub_rev] using hbound⟩
+
+theorem LipschitzSmoothOnWith.lipschitzOnWith_derivWithin {s : Set 𝕜}
+    (h : LipschitzSmoothOnWith 𝕜 K f s) : LipschitzOnWith K (derivWithin f s) s := by
+  refine LipschitzOnWith.of_dist_le_mul fun x hx y hy ↦ ?_
+  obtain rfl | hxy := eq_or_ne x y
+  · simp
+  · apply (mul_le_mul_iff_right₀ (dist_pos.mpr hxy)).mp
+    simpa only [← toSpanSingleton_derivWithin, ContinuousLinearMap.toSpanSingleton_apply,
+      ← smul_sub, norm_smul, dist_eq_norm', pow_two, mul_left_comm] using
+      h.fderivWithin_apply_sub_norm_le hx hy
+
+theorem LipschitzSmoothWith.lipschitzWith_deriv (h : LipschitzSmoothWith 𝕜 K f) :
+    LipschitzWith K (deriv f) := by
+  simpa only [derivWithin_univ, lipschitzOnWith_univ] using
+    (lipschitzSmoothOnWith_univ.mpr h).lipschitzOnWith_derivWithin
 
 end Deriv
 
