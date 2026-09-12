@@ -58,7 +58,8 @@ def γ : D ⋙ T.forget ⋙ ↑T ⟶ D ⋙ T.forget where app j := (D.obj j).a
 @[simps! π_app]
 def newCone : Cone (D ⋙ forget T) where
   pt := T.obj c.pt
-  π := (Functor.constComp _ _ (T : C ⥤ C)).inv ≫ whiskerRight c.π (T : C ⥤ C) ≫ γ D
+  π := (Functor.constComp _ _ (T : C ⥤ C)).inv ≫ whiskerRight c.π (T : C ⥤ C) ≫
+    (Functor.associator _ _ _).hom ≫ γ D
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The algebra structure which will be the apex of the new limit cone for `D`. -/
@@ -406,7 +407,8 @@ def γ : D ⋙ T.forget ⟶ D ⋙ T.forget ⋙ ↑T where app j := (D.obj j).a
 @[simps! ι_app]
 def newCocone : Cocone (D ⋙ forget T) where
   pt := T.obj c.pt
-  ι := γ D ≫ whiskerRight c.ι (T : C ⥤ C) ≫ (Functor.constComp J _ (T : C ⥤ C)).hom
+  ι := γ D ≫ (Functor.associator _ _ _).inv ≫ whiskerRight c.ι (T : C ⥤ C) ≫
+    (Functor.constComp J _ (T : C ⥤ C)).hom
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The coalgebra structure which will be the point of the new colimit cone for `D`. -/

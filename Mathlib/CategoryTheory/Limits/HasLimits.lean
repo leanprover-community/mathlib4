@@ -458,11 +458,16 @@ theorem limit.lift_pre (c : Cone F) :
 variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K)
 
+/-- Precomposing with `E` and then with `D` is precomposing with `D ⋙ E`, up to the canonical
+isomorphism between the chosen limits of `(D ⋙ E) ⋙ F` and `D ⋙ E ⋙ F`. -/
 @[to_dual (attr := simp)]
-theorem limit.pre_pre [h : HasLimit (D ⋙ E ⋙ F)] : haveI : HasLimit ((D ⋙ E) ⋙ F) := h
-    limit.pre F E ≫ limit.pre (E ⋙ F) D = limit.pre F (D ⋙ E) := by
-  have : HasLimit ((D ⋙ E) ⋙ F) := h
-  ext j; erw [assoc, limit.pre_π, limit.pre_π, limit.pre_π]; rfl
+theorem limit.pre_pre [HasLimit (D ⋙ E ⋙ F)] :
+    letI : HasLimit ((D ⋙ E) ⋙ F) := hasLimit_of_iso (Functor.associator D E F).symm
+    limit.pre F E ≫ limit.pre (E ⋙ F) D =
+      limit.pre F (D ⋙ E) ≫ (HasLimit.isoOfNatIso (Functor.associator D E F)).hom := by
+  let _ : HasLimit ((D ⋙ E) ⋙ F) := hasLimit_of_iso (Functor.associator D E F).symm
+  ext j
+  simp
 
 variable {E F}
 
@@ -499,27 +504,33 @@ theorem limit.lift_post (c : Cone F) :
   rw [assoc, limit.post_π, ← G.map_comp, limit.lift_π, limit.lift_π]
   rfl
 
+/-- Postcomposing with `G` and then with `H` is postcomposing with `G ⋙ H`, up to the canonical
+isomorphism between the chosen limits of `(F ⋙ G) ⋙ H` and `F ⋙ G ⋙ H`. -/
 @[to_dual (attr := simp)]
-theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [h : HasLimit ((F ⋙ G) ⋙ H)] :
-    -- H G (limit F) ⟶ H (limit (F ⋙ G)) ⟶ limit ((F ⋙ G) ⋙ H) equals
-    -- H G (limit F) ⟶ limit (F ⋙ (G ⋙ H))
-    haveI : HasLimit (F ⋙ G ⋙ H) := h
-    H.map (limit.post F G) ≫ limit.post (F ⋙ G) H = limit.post F (G ⋙ H) := by
-  have : HasLimit (F ⋙ G ⋙ H) := h
-  ext; erw [assoc, limit.post_π, ← H.map_comp, limit.post_π, limit.post_π]; rfl
+theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E)
+    [HasLimit ((F ⋙ G) ⋙ H)] :
+    letI : HasLimit (F ⋙ G ⋙ H) := hasLimit_of_iso (Functor.associator F G H)
+    H.map (limit.post F G) ≫ limit.post (F ⋙ G) H =
+      limit.post F (G ⋙ H) ≫ (HasLimit.isoOfNatIso (Functor.associator F G H)).inv := by
+  let _ : HasLimit (F ⋙ G ⋙ H) := hasLimit_of_iso (Functor.associator F G H)
+  ext
+  simp [← H.map_comp]
 
 end Post
 
+/-- Precomposition and postcomposition commute, up to the canonical isomorphism between the
+chosen limits of `(E ⋙ F) ⋙ G` and `E ⋙ F ⋙ G`. -/
 @[to_dual]
 theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
-    [h : HasLimit ((E ⋙ F) ⋙ G)] :
-    -- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
-    -- G (limit F) ⟶ limit F ⋙ G ⟶ limit (E ⋙ (F ⋙ G)) or
-    haveI : HasLimit (E ⋙ F ⋙ G) := h
-    G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
-  have : HasLimit (E ⋙ F ⋙ G) := h
-  ext; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
+    [HasLimit ((E ⋙ F) ⋙ G)] :
+    letI : HasLimit (E ⋙ F ⋙ G) := hasLimit_of_iso (Functor.associator E F G)
+    G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G =
+      limit.post F G ≫ limit.pre (F ⋙ G) E ≫
+        (HasLimit.isoOfNatIso (Functor.associator E F G)).inv := by
+  let _ : HasLimit (E ⋙ F ⋙ G) := hasLimit_of_iso (Functor.associator E F G)
+  ext j
+  simp [← G.map_comp]
 
 @[to_dual]
 instance hasLimit_equivalence_comp (e : K ≌ J) [HasLimit F] : HasLimit (e.functor ⋙ F) :=

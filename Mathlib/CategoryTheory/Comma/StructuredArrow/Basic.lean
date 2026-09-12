@@ -438,18 +438,19 @@ end
 set_option backward.defeqAttrib.useBackward true in
 /-- `StructuredArrow.post` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
 def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
-    post S F G ≅ map₂ (F := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
+    post S F G ≅ map₂ (F := 𝟭 _) (𝟙 _) (F ⋙ G).leftUnitor.inv :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `StructuredArrow.map` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
-def mapIsoMap₂ {S S' : D} (f : S ⟶ S') : map (T := T) f ≅ map₂ (F := 𝟭 _) (G := 𝟭 _) f (𝟙 T) :=
+def mapIsoMap₂ {S S' : D} (f : S ⟶ S') :
+    map (T := T) f ≅ map₂ (F := 𝟭 _) (G := 𝟭 _) f (T.rightUnitor.hom ≫ T.leftUnitor.inv) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `StructuredArrow.pre` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
 def preIsoMap₂ (S : D) (F : B ⥤ C) (G : C ⥤ D) :
-    pre S F G ≅ map₂ (G := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
+    pre S F G ≅ map₂ (G := 𝟭 _) (𝟙 _) (F ⋙ G).rightUnitor.hom :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A structured arrow is called universal if it is initial. -/
@@ -898,7 +899,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- `CostructuredArrow.post` is a special case of `CostructuredArrow.map₂` up to natural
 isomorphism. -/
 def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
-    post F G S ≅ map₂ (F := 𝟭 _) (𝟙 (F ⋙ G)) (𝟙 _) :=
+    post F G S ≅ map₂ (F := 𝟭 _) (F ⋙ G).leftUnitor.hom (𝟙 _) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A costructured arrow is called universal if it is terminal. -/
@@ -1132,13 +1133,13 @@ def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-/-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
-induces via `StructuredArrow.map₂` can be expressed up to isomorphism by
+/-- The functor `StructuredArrow d T ⥤ StructuredArrow e T'` that `u : e ⟶ S.obj d` and
+`β : T ⋙ S ⟶ 𝟭 C ⋙ T'` induce via `StructuredArrow.map₂` can be expressed up to isomorphism by
 `StructuredArrow.preEquivalence` and `StructuredArrow.proj`. -/
 def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj {T : C ⥤ D} {S : D ⥤ E} {T' : C ⥤ E}
-    (d : D) (e : E) (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') :
-    map₂ (F := 𝟭 _) u α ≅ (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) ⋙
-      map₂ (F := 𝟭 _) (G := 𝟭 _) (𝟙 _) α :=
+    (d : D) (e : E) (u : e ⟶ S.obj d) (β : T ⋙ S ⟶ 𝟭 C ⋙ T') :
+    map₂ (F := 𝟭 _) u β ≅ (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) ⋙
+      map₂ (F := 𝟭 _) (G := 𝟭 _) (𝟙 _) ((T ⋙ S).rightUnitor.hom ≫ β) :=
   NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -1181,7 +1182,7 @@ induces via `CostructuredArrow.map₂` can be expressed up to isomorphism by
 `CostructuredArrow.preEquivalence` and `CostructuredArrow.proj`. -/
 def CostructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
     (u : S.obj d ⟶ e) :
-    map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u ≅
+    map₂ (F := 𝟭 _) (U := T ⋙ S) (T ⋙ S).leftUnitor.hom u ≅
       (preEquivalence T (mk u)).inverse ⋙ proj (pre T S _) (mk u) :=
   NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 

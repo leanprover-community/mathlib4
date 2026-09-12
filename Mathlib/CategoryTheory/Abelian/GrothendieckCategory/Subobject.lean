@@ -101,11 +101,12 @@ noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
   haveI := mono_of_isColimit_monoOver F (colimit.isColimit _) f (by simp [f])
   have := subobjectMk_of_isColimit_eq_iSup F (colimit.isColimit _) f (by simp [f])
   rw [← h] at this
-  refine IsColimit.ofIsoColimit (colimit.isColimit _)
+  refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv (Functor.associator _ _ _) _).symm
+    (colimit.isColimit (F ⋙ MonoOver.forget X ⋙ Over.forget X)))
     (Cocone.ext (Subobject.isoOfMkEqMk _ _ this) (fun j ↦ ?_))
   rw [← cancel_mono (c.pt.hom)]
   dsimp
-  rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
+  rw [Category.id_comp, Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
   apply colimit.ι_desc
 
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
