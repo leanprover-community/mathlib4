@@ -85,6 +85,17 @@ lemma conjugateEquiv_leftAdjointCompIso_inv (e₀₁₂ : G₂₁ ⋙ G₁₀ �
   dsimp only [leftAdjointCompIso]
   simp
 
+/-- Composing the isomorphism `G₂₁ ⋙ G₁₀ ≅ G₂₀` with an isomorphism `G₂₀ ≅ G₂₀'` of right
+adjoints amounts to composing `leftAdjointCompIso` with the conjugate isomorphism
+of left adjoints. -/
+lemma leftAdjointCompIso_trans {F₀₂' : C₀ ⥤ C₂} {G₂₀' : C₂ ⥤ C₀} (adj₀₂' : F₀₂' ⊣ G₂₀')
+    (e₀₁₂ : G₂₁ ⋙ G₁₀ ≅ G₂₀) (e : G₂₀ ≅ G₂₀') :
+    leftAdjointCompIso adj₀₁ adj₁₂ adj₀₂' (e₀₁₂ ≪≫ e) =
+      leftAdjointCompIso adj₀₁ adj₁₂ adj₀₂ e₀₁₂ ≪≫
+        (conjugateIsoEquiv adj₀₂' adj₀₂).symm e.symm := by
+  ext : 1
+  simp [leftAdjointCompIso]
+
 end
 
 set_option backward.defeqAttrib.useBackward true in
