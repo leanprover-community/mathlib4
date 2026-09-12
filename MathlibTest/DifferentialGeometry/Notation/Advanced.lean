@@ -1,3 +1,4 @@
+import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
@@ -366,6 +367,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `ContinuousLinearMap id' E'' E'''` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a set of units, in particular not of a complete normed algebra
@@ -468,6 +472,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `ContinuousLinearMap σ E'' E''''` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a set of units, in particular not of a complete normed algebra
@@ -672,6 +679,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a set of units, in particular not of a complete normed algebra
@@ -803,7 +813,7 @@ info: ContMDiff ((modelWithCornersEuclideanHalfSpace 2).prod (modelWithCornersEu
 
 end EuclideanSpace
 
-/-! Inferring a model with corners when the model is a variable in the local context, but
+/-! Inferring a model with corners when the model is a not variable in the local context, but
 a specific model: basic versions (such as `𝓘(𝕜, E)`) are tested in `Basic.lean`; this also works
 for Euclidean space, half-space or quadrants.
 -/
@@ -837,6 +847,29 @@ variable [ChartedSpace ℝ X] [ChartedSpace (EuclideanQuadrant n) Y] in
 info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersEuclideanQuadrant n) f : Prop
 -/
 #guard_msgs in
+#check MDiff f
+
+-- TODO: the `[ChartedSpace ℂ Y]` is necessary for TC synthesis, but not the elaborators
+variable [ChartedSpace ℂ X] [ChartedSpace (UpperHalfPlane) Y] [ChartedSpace ℂ Y] in
+/--
+info: MDifferentiable (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) f : Prop
+-/
+#guard_msgs in
+#check MDiff f
+
+-- TODO: the `[ChartedSpace ℂ Y]` is necessary for TC synthesis, but not the elaborators
+variable [ChartedSpace ℂ X] [ChartedSpace (Complex.UnitDisc) Y] [ChartedSpace ℂ Y] in
+/--
+info: MDifferentiable (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) f : Prop
+-/
+#guard_msgs in
+#check MDiff f
+
+-- TODO: the last `ChartedSpace` hypothesis is necessary for TC synthesis (but not the elaborators)
+set_option trace.Elab.DiffGeo.MDiff true in
+variable [ChartedSpace ℝ X] [ChartedSpace Circle Y] [ChartedSpace (EuclideanSpace Real (Fin 1)) Y] in
+/-- `Circle` is the complex unit circle -/
+#guard_msgs (substring := true) in
 #check MDiff f
 
 end
@@ -877,6 +910,58 @@ info: MDifferentiableAt (modelWithCornersSelf Complex Complex) (modelWithCorners
 #check MDiffAt k y
 
 end UpperHalfPlane
+
+section ComplexUnitDisc
+
+-- Make a new complex manifold N with model J.
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : ModelWithCorners ℂ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+open Complex
+open scoped Complex.UnitDisc
+
+-- TODO: upstream the next four declarations! added just so the test is more meaningful
+lemma Complex.UnitDisc.range_coe : Set.range UnitDisc.coe = Metric.ball (0 : ℂ) 1 := by
+  ext x
+  sorry
+
+theorem isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : 𝔻 → ℂ) := by
+  refine ⟨UnitDisc.isEmbedding_coe, ?_⟩
+  rw [Complex.UnitDisc.range_coe]
+  exact Metric.isOpen_ball
+
+noncomputable instance : ChartedSpace ℂ UnitDisc :=
+  isOpenEmbedding_coe.singletonChartedSpace
+
+open scoped ContDiff
+instance : IsManifold 𝓘(ℝ, ℂ) ω 𝔻 :=
+  isOpenEmbedding_coe.isManifold_singleton
+
+variable {g : UnitDisc → N} {h : E'' → UnitDisc} {k : UnitDisc → ℂ} {y : UnitDisc}
+
+/-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
+#guard_msgs in
+variable {g : UnitDisc → M} in
+#check CMDiff 2 g
+
+/-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/--
+info: MDifferentiableAt (modelWithCornersSelf Complex E'') (modelWithCornersSelf Complex Complex) h : E'' → Prop
+-/
+#guard_msgs in
+#check MDiffAt h
+
+/--
+info: MDifferentiableAt (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) k y : Prop
+-/
+#guard_msgs in
+#check MDiffAt k y
+
+end ComplexUnitDisc
 
 section units
 
