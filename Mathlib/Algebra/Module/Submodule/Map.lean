@@ -270,11 +270,27 @@ theorem le_comap_map [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M�
 
 section submoduleOf
 
-/-- For any `R` submodules `p` and `q`, `p ⊓ q` as a submodule of `q`. -/
+/-- For any `R` submodules `p` and `q`, `q ⊓ p` as a submodule of `q`. -/
 def submoduleOf (p q : Submodule R M) : Submodule R q :=
   Submodule.comap q.subtype p
 
-/-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
+@[simp]
+theorem map_subtype_submoduleOf (p q : Submodule R M) :
+    map q.subtype (p.submoduleOf q) = q ⊓ p := by
+  ext; simpa [submoduleOf] using And.comm
+
+/-- `p` as a submodule of `q` is isomorphic to `q ⊓ p`. -/
+def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (q ⊓ p :) where
+  toFun m := ⟨m.1, coe_mem m.1, m.2⟩
+  invFun m := ⟨⟨m.1, m.2.1⟩, m.2.2⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+-- TODO: we would like to implement this by casting `submoduleOfEquivInf p q`
+-- using `LinearEquiv.ofEq`, but currently that's not possible due to import cycles.
+-- We can change to this once that's earlier in the import hierarchy:
+--   := submoduleOfEquivInf p q |>.trans <| .ofEq _ _ (by simp)
+/-- If `p ≤ q`, then `p` as a submodule of `q` is isomorphic to `p`. -/
 def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
   toFun m := ⟨m.1, m.2⟩
   invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
@@ -457,7 +473,7 @@ theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : M →ₛₗ[�
 
 @[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
-  ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
+  map_subtype_submoduleOf ..
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
   | ⟨b', hb⟩ => Subtype.ext <| show b' = 0 from (mem_bot R).1 hb
@@ -532,6 +548,8 @@ section Module
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
+-- NOTE: this is identical to `submoduleOfEquivOfLe` above, but using
+-- it directly creates bad `simps!` lemmas because of the defeq abuse
 /-- If `s ≤ t`, then we can view `s` as a submodule of `t` by taking the comap
 of `t.subtype`. -/
 @[simps apply_coe symm_apply]
