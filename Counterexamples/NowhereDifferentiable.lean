@@ -3,8 +3,10 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+module
+
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 /-!
 # Weierstrass function: a function that is continuous everywhere but differentiable nowhere
@@ -29,6 +31,8 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 
 -/
 
+@[expose] public section
+
 namespace NowhereDifferentiable
 open Real Topology Filter
 
@@ -39,8 +43,7 @@ For real parameter $a$ and $b$, define the Weierstrass function as
 $$f(x) = \sum_{n=0}^\infty a^n \cos (b^n\pi x)$$
 -/
 
-noncomputable
-def weierstrass (a b x : ℝ) := ∑' n, a ^ n * cos (b ^ n * π * x)
+noncomputable def weierstrass (a b x : ℝ) := ∑' n, a ^ n * cos (b ^ n * π * x)
 
 /-!
 ### Continuity
@@ -254,8 +257,9 @@ theorem not_differentiableAt_weierstrass
   have hb0' : (0 : ℝ) < b := by simpa using Nat.pos_of_ne_zero hb0
   have hb1 : (1 : ℝ) < b := by
     contrapose! hab with hb1
-    apply (mul_le_one₀ (ha.2.le) hb0'.le hb1).trans
-    simp [pi_nonneg]
+    calc
+      a * b ≤ 1 := by bound [ha.2]
+      1 ≤ 3 / 2 * π + 1 := by simp [pi_nonneg]
   have hab' : 1 < a * b := lt_trans (lt_add_of_pos_left _ (mul_pos (by norm_num) pi_pos)) hab
   by_contra!
   obtain ⟨f', h⟩ := this

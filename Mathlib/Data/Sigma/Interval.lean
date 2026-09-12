@@ -78,19 +78,19 @@ variable (i : ι) (a b : α i)
 
 @[simp]
 theorem Icc_mk_mk : Icc (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Icc a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem Ico_mk_mk : Ico (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ico a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem Ioc_mk_mk : Ioc (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioc a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem Ioo_mk_mk : Ioo (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioo a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 end LocallyFiniteOrder
 

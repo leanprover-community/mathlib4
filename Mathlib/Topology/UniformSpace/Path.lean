@@ -79,6 +79,6 @@ theorem uniformContinuous_trans :
 is a complete uniform space. -/
 instance instCompleteSpace [CompleteSpace X] : CompleteSpace (Path x y) :=
   isUniformEmbedding_coe.completeSpace <| by simpa [Set.EqOn, range_coe]
-    using ContinuousMap.isComplete_setOf_eqOn (Function.update (fun _ : I ↦ y) 0 x) {0, 1}
+    using ContinuousMap.isComplete_setOfPred_eqOn (Function.update (fun _ : I ↦ y) 0 x) {0, 1}
 
 end Path

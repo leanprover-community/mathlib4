@@ -107,13 +107,13 @@ theorem coeff_update_apply [DecidableEq α] :
 @[deprecated Finsupp.update_apply (since := "2026-07-04")]
 theorem coeff_update_same : (f.update a b).coeff a = b := by
   classical
-  rw [f.coeff_update_apply, if_pos rfl]
+  rw [f.coeff_update_apply, ite_eq_left rfl]
 
 variable {a a'} in
 @[deprecated Finsupp.update_apply (since := "2026-07-04")]
 theorem coeff_update_ne (h : a' ≠ a) : (f.update a b).coeff a' = f.coeff a' := by
   classical
-  rw [f.coeff_update_apply, if_neg h]
+  rw [f.coeff_update_apply, ite_eq_right h]
 
 theorem update_eq_erase_add_single : f.update a b = f.erase a + single a b := by
   classical ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)

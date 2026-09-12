@@ -52,7 +52,6 @@ theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
     Algebra.discr_reindex, eq_ratCast]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ComplexConjugate ComplexOrder in
 theorem sign_discr :
     (discr K).sign = (-1) ^ nrComplexPlaces K := by
@@ -95,7 +94,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
   let M := (mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (integralBasis K ∘ f.symm)
-    RingHom.equivRatAlgHom
+    (RingHom.equivRatAlgHom K ℂ)
   suffices M.map ofRealHom = matrixToStdBasis K *
       (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
     calc volume (fundamentalDomain (latticeBasis K))
@@ -393,7 +392,6 @@ theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
 
 variable (N)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -442,7 +440,6 @@ theorem finite_of_discr_bdd_of_isReal :
     _ = 1 * B := by rw [one_mul]
     _ ≤ convexBodyLTFactor K * B := by gcongr; exact mod_cast one_le_convexBodyLTFactor K
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop

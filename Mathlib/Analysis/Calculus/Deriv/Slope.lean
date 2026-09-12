@@ -241,8 +241,6 @@ end Real
 
 section RealSpace
 
-open Metric
-
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {f' : E} {s : Set ℝ}
   {x r : ℝ}
 

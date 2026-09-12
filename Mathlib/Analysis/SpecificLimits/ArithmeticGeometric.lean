@@ -32,7 +32,9 @@ An arithmetic-geometric sequence is a sequence defined by the recurrence relatio
 
 @[expose] public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 variable {R : Type*} {a b u₀ : R}
 

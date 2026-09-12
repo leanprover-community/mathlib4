@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
+# The associator equivalence for products of categories
+
 The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse form an equivalence.
 -/
 

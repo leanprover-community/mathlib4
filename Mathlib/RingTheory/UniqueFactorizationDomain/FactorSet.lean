@@ -118,13 +118,13 @@ def count (p : Associates α) : FactorSet α → ℕ :=
 @[simp]
 theorem count_some (hp : Irreducible p) (s : Multiset _) :
     count p (WithTop.some s) = s.count ⟨p, hp⟩ := by
-  simp only [count, dif_pos hp, bcount]
+  simp only [count, dite_eq_left hp, bcount]
 
 @[simp]
 theorem count_zero (hp : Irreducible p) : count p (0 : FactorSet α) = 0 := by
-  simp only [count, dif_pos hp, bcount, Multiset.count_zero]
+  simp only [count, dite_eq_left hp, bcount, Multiset.count_zero]
 
-theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dif_neg hp
+theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dite_eq_right hp
 
 end count
 
@@ -160,7 +160,7 @@ theorem mem_factorSet_some {p : Associates α} {hp : Irreducible p}
 
 theorem reducible_notMem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
     p ∉ s := fun h ↦ by
-  rwa [← factorSetMem_eq_mem, FactorSetMem, dif_neg hp] at h
+  rwa [← factorSetMem_eq_mem, FactorSetMem, dite_eq_right hp] at h
 
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=
@@ -221,12 +221,12 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
 
 @[simp]
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
-  apply dif_neg
+  apply dite_eq_right
   apply mt mk_eq_zero.1 h
 
 @[simp]
@@ -412,7 +412,7 @@ theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     Associates.mk a ⊓ Associates.mk b = 1 ↔ ∀ {d : α}, d ∣ a → d ∣ b → ¬Prime d := by
   constructor
   · intro hg p ha hb hp
-    refine (Associates.prime_mk.mpr hp).not_unit (isUnit_of_dvd_one ?_)
+    refine (Associates.prime_mk.mpr hp).not_isUnit (isUnit_of_dvd_one ?_)
     rw [← hg]
     exact le_inf (mk_le_mk_of_dvd ha) (mk_le_mk_of_dvd hb)
   · contrapose
@@ -458,7 +458,7 @@ variable [DecidableEq (Associates α)] [∀ p : Associates α, Decidable (Irredu
 
 theorem prime_pow_dvd_iff_le {m p : Associates α} (h₁ : m ≠ 0) (h₂ : Irreducible p) {k : ℕ} :
     p ^ k ≤ m ↔ k ≤ count p m.factors := by
-  rw [count, dif_pos h₂, prime_pow_le_iff_le_bcount h₁]
+  rw [count, dite_eq_left h₂, prime_pow_le_iff_le_bcount h₁]
 
 theorem le_of_count_ne_zero {m p : Associates α} (h0 : m ≠ 0) (hp : Irreducible p) :
     count p m.factors ≠ 0 → p ≤ m := by

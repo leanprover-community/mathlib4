@@ -69,6 +69,7 @@ theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P₁ ≃ᴬ[k] P�
   rintro ⟨e, econt, einv_cont⟩ ⟨e', e'cont, e'inv_cont⟩ H
   congr
 
+@[macro_inline]
 instance instEquivLike : EquivLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -85,6 +86,7 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
   coe_injective _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
@@ -199,9 +201,6 @@ theorem apply_symm_apply (e : P₁ ≃ᴬ[k] P₂) (p : P₂) : e (e.symm p) = p
 theorem symm_apply_apply (e : P₁ ≃ᴬ[k] P₂) (p : P₁) : e.symm (e p) = p :=
   e.toEquiv.symm_apply_apply p
 
-theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᴬ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
 theorem apply_eq_iff_eq (e : P₁ ≃ᴬ[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ :=
   e.toEquiv.apply_eq_iff_eq
 
@@ -219,6 +218,10 @@ theorem symm_apply_eq (e : P₁ ≃ᴬ[k] P₂) {x y} : e.symm x = y ↔ x = e y
 
 theorem eq_symm_apply (e : P₁ ≃ᴬ[k] P₂) {x y} : y = e.symm x ↔ e y = x :=
   e.toAffineEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᴬ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
+  e.eq_symm_apply.symm
 
 @[simp]
 theorem image_symm (f : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : f.symm '' s = f ⁻¹' s :=

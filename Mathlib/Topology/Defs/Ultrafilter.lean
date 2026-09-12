@@ -5,9 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Filter.Ultrafilter.Defs
-public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
 
 /-!

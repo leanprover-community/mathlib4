@@ -134,7 +134,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
     [HasProductsOfShape α C] :
     U.mapPower (id : α → α) = 𝟙 _ := by
-  cat_disch
+  ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -186,7 +186,7 @@ variable [HasFiniteProducts C]
 
 /-- Given `U : FormalCoproduct C`, this is the simplicial object
 in `FormalCoproduct C` which sends `⦋n⦌` to `U.power (Fin (n + 1))`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def cech (U : FormalCoproduct.{w} C) :
     SimplicialObject (FormalCoproduct.{w} C) where
   obj n := U.power (ToType n.unop)

@@ -35,7 +35,7 @@ open NNReal
 
 section Uniformity
 
-open Uniformity
+open scoped Uniformity
 
 variable {α β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 variable {K₁ K₂ : ℝ≥0} {f : α → β}

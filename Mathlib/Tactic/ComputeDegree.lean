@@ -241,7 +241,12 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
   let (ndeg_or_deg_or_coeff, pol, and?) ← match lhs.getAppFnArgs with
     | (na@``Polynomial.natDegree, #[_, _, pol])     => (na, pol, [rhs.isMVar])
     | (na@``Polynomial.degree,    #[_, _, pol])     => (na, pol, [rhs.isMVar])
-    | (na@``Polynomial.coeff,     #[_, _, pol, c])  => (na, pol, [rhs.isMVar, c.isMVar])
+    -- Since `Polynomial.coeff` returns a `Finsupp`, `coeff p n` is the `DFunLike.coe` of the
+    -- `Finsupp` `coeff p` applied to `n`.
+    | (``DFunLike.coe, #[_, _, _, _, cf, c]) =>
+      match cf.getAppFnArgs with
+        | (``Polynomial.coeff, #[_, _, pol]) => (``Polynomial.coeff, pol, [rhs.isMVar, c.isMVar])
+        | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
     | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
   let head := match pol.numeral? with
     -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?

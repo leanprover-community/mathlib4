@@ -36,7 +36,7 @@ open scoped Pointwise
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {V : Type*} {V₂ : Type*}
 
 /-! ### Properties of linear maps -/
@@ -163,6 +163,11 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
     obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
     rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, map_zero]
+
+lemma ker_submoduleMap {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁]
+    (f : M →ₛₗ[τ₁₂] M₂) (p : Submodule R M) :
+    (f.submoduleMap p).ker = f.ker.comap p.subtype := by
+  ext; simp [Subtype.ext_iff]
 
 end AddCommMonoid
 

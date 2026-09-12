@@ -146,7 +146,7 @@ lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ(A, E × F)) : max ‖x.1‖ ‖x.2‖ 
     Real.sqrt_le_sqrt_iff]
   constructor
   all_goals
-    refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (A := A) ?_ ?_
+    refine CStarAlgebra.norm_le_norm_of_le_of_nonneg (A := A) ?_ ?_
     all_goals
       aesop (add safe apply CStarModule.inner_self_nonneg)
 
@@ -168,7 +168,9 @@ noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A
 
 attribute [local instance] normedAddCommGroupProdAux
 
-open Filter Uniformity Bornology
+open Filter Bornology
+
+open scoped Uniformity
 
 private lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv A (E × F)) :=
   AddMonoidHomClass.antilipschitz_of_bound (linearEquiv ℂ A (E × F)) fun x ↦ by
@@ -272,7 +274,7 @@ lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ(A, Π i, E i)) (i : ι) : ‖x i‖ 
   let _ : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddCommGroup A
   refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
   rw [pi_norm_sq, norm_sq_eq A]
-  refine CStarAlgebra.norm_le_norm_of_nonneg_of_le inner_self_nonneg ?_
+  refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_ inner_self_nonneg
   exact Finset.single_le_sum (fun j _ ↦ inner_self_nonneg (A := A) (x := x j)) (Finset.mem_univ i)
 
 open Finset in
@@ -296,7 +298,9 @@ noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, 
 
 attribute [local instance] normedAddCommGroupPiAux
 
-open Uniformity Bornology
+open Bornology
+
+open scoped Uniformity
 
 private lemma antilipschitzWith_card_equiv_pi_aux :
     AntilipschitzWith (Fintype.card ι) (equiv A (Π i, E i)) :=

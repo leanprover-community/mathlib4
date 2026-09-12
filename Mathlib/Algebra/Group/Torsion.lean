@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Patrick Luo
 module
 
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -91,5 +92,7 @@ lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 
 @[to_additive] lemma inv_eq_self : a⁻¹ = a ↔ a = 1 := by rw [eq_comm, self_eq_inv]
 @[to_additive] lemma self_ne_inv : a ≠ a⁻¹ ↔ a ≠ 1 := self_eq_inv.ne
 @[to_additive] lemma inv_ne_self : a⁻¹ ≠ a ↔ a ≠ 1 := inv_eq_self.ne
+
+@[to_additive] lemma isSelfInv_iff_eq_one : IsSelfInv a ↔ a = 1 := inv_eq_self
 
 end Group

@@ -40,8 +40,10 @@ variable {α : Type*} {l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 section Disjoint
 
-@[symm]
-theorem Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ => d i₁ i₂
+@[symm] alias Disjoint.symm := disjoint_symm
+
+instance : Std.Symm (α := List α) Disjoint where
+  symm _ _ := .symm
 
 end Disjoint
 

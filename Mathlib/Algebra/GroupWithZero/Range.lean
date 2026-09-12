@@ -176,7 +176,8 @@ noncomputable section GroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] {f : A →*₀ B}
 
-/- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
+/--
+When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide. -/
 lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
   rw [valueGroup_def, Subgroup.closure_toSubmonoid, Eq.comm]
   apply Submonoid.closure_eq_of_le

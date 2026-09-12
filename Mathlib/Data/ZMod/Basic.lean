@@ -519,6 +519,10 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 theorem natCast_eq_zero_iff (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
 
+lemma neg_one_eq_one_iff {n : ℕ} : (-1 : ZMod n) = 1 ↔ n = 1 ∨ n = 2 := by
+  rw [neg_eq_iff_add_eq_zero, one_add_one_eq_two, ← Nat.cast_ofNat, natCast_eq_zero_iff,
+    Nat.dvd_prime Nat.prime_two]
+
 set_option backward.isDefEq.respectTransparency false in
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
@@ -562,7 +566,7 @@ theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
     · dsimp [ZMod, ZMod.cast]
       rw [Int.cast_sub, Int.cast_one]
     · dsimp [ZMod, ZMod.cast, ZMod.val]
-      rw [Fin.coe_sub_one, if_neg]
+      rw [Fin.coe_sub_one, ite_eq_right]
       · rw [Nat.cast_sub, Nat.cast_one]
         rwa [Fin.ext_iff, Fin.val_zero, ← Ne, ← Nat.one_le_iff_ne_zero] at hk
       · exact hk
@@ -910,7 +914,7 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         intro x
         dsimp only [to_fun, inv_fun, ZMod.castHom_apply]
         conv_rhs => rw [← ZMod.natCast_zmod_val x]
-        rw [if_neg hmn0, ZMod.natCast_eq_natCast_iff, ← Nat.modEq_and_modEq_iff_modEq_mul h,
+        rw [ite_eq_right hmn0, ZMod.natCast_eq_natCast_iff, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]
         refine
           ⟨(Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.left.trans ?_,
@@ -1026,8 +1030,8 @@ theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n 
 
 theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 else n - a.val := by
   rw [neg_val']
-  by_cases h : a = 0; · rw [if_pos h, h, val_zero, tsub_zero, Nat.mod_self]
-  rw [if_neg h]
+  by_cases h : a = 0; · rw [ite_eq_left h, h, val_zero, tsub_zero, Nat.mod_self]
+  rw [ite_eq_right h]
   apply Nat.mod_eq_of_lt
   exact Nat.sub_lt (NeZero.pos n) (val_pos.mpr h)
 
@@ -1283,7 +1287,7 @@ residue class of `k` mod `m`. -/
 lemma Nat.range_mul_add (m k : ℕ) :
     Set.range (fun n : ℕ ↦ m * n + k) = {n : ℕ | (n : ZMod m) = k ∧ k ≤ n} := by
   ext n
-  simp only [Set.mem_range, Set.mem_setOf_eq]
+  simp only [Set.mem_range, Set.mem_ofPred_eq]
   conv => enter [1, 1, y]; rw [add_comm, eq_comm]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
   · simpa using congr_arg ((↑) : ℕ → ZMod m) ha

@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Quotient.Operations

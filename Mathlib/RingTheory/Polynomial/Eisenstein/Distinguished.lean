@@ -66,8 +66,8 @@ lemma degree_eq_coe_lift_order_map (distinguish : g.IsDistinguishedAt I)
       (order_finite_iff_ne_zero.2 (distinguish.map_ne_zero_of_eq_mul f h notMem eq)) := by
   have : Nontrivial R := _root_.nontrivial_iff.mpr
     ⟨0, PowerSeries.constantCoeff h, ne_of_mem_of_not_mem I.zero_mem notMem⟩
-  rw [Polynomial.degree_eq_natDegree distinguish.monic.ne_zero, Nat.cast_inj, ← ENat.coe_inj,
-    ENat.coe_lift, Eq.comm, PowerSeries.order_eq_nat]
+  rw [Polynomial.degree_eq_natDegree distinguish.monic.ne_zero, Nat.cast_inj, ← ENat.natCast_inj,
+    ENat.natCast_lift, Eq.comm, PowerSeries.order_eq_nat]
   have mapf : f.map (Ideal.Quotient.mk I) = (Polynomial.X ^ g.natDegree : (R ⧸ I)[X]) *
       h.map (Ideal.Quotient.mk I) := by
     simp [← map_eq_X_pow distinguish, eq]
@@ -80,7 +80,7 @@ lemma coe_natDegree_eq_order_map (distinguish : g.IsDistinguishedAt I)
     (notMem : PowerSeries.constantCoeff h ∉ I) (eq : f = g * h) :
     g.natDegree = (f.map (Ideal.Quotient.mk I)).order := by
   rw [natDegree, distinguish.degree_eq_coe_lift_order_map f h notMem eq]
-  exact ENat.coe_lift _ <| order_finite_iff_ne_zero.2 <|
+  exact ENat.natCast_lift _ <| order_finite_iff_ne_zero.2 <|
     distinguish.map_ne_zero_of_eq_mul f h notMem eq
 
 end degree_eq_order_map

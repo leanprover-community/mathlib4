@@ -212,7 +212,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
     hpu (IsLocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
   · have : Algebra.IsIntegral (Localization.AtPrime p) Sₚ := ⟨isIntegral_localization⟩
-    exact mt (Ideal.eq_bot_of_comap_eq_bot) hP0
+    exact mt (Ideal.eq_bot_of_under_eq_bot) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
   · exact (IsLocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
@@ -232,7 +232,7 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
       (Set.Finite.ofFinset
         {P ∈ {⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset | P.IsPrime}
         fun P => ?_)
-  rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
+  rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_ofPred,
     Multiset.mem_toFinset]
   exact
     and_iff_right_of_imp fun hP =>

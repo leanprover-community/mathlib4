@@ -23,8 +23,8 @@ in `F` are also in `F`.
 ## Implementation notes
 
 * We do not use `IsExtreme` as a definition because this is an affine notion and does not allow the
-  flexibility necessary to deal wth cones over general rings. E.g. the cone of positive integers has
-  no proper subset that are extreme. We prove that every face is an extreme set of its cone.
+  flexibility necessary to deal with cones over general rings. E.g. the cone of positive integers
+  has no proper subset that are extreme. We prove that every face is an extreme set of its cone.
 * Most results proven over a division ring hold more generally over an Archimedean ring. In
   particular, `iff_mem_of_add_mem_left` holds whenever for every `x ∈ R` there is a `y ∈ R` with
   `1 ≤ x * y`.
@@ -61,8 +61,8 @@ theorem mem_of_smul_add_smul_mem_left {x y : M} {a b : R} (hF : F.IsFaceOf C) (h
   hF.2 hx (smul_mem _ hb.le hy) ha h
 
 theorem mem_of_smul_add_smul_mem_right {x y : M} {a b : R} (hF : F.IsFaceOf C) (hx : x ∈ C)
-    (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : y ∈ F :=
-  by apply hF.2 hy (smul_mem _ ha.le hx) hb; rwa [add_comm]
+    (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : y ∈ F := by
+  apply hF.2 hy (smul_mem _ ha.le hx) hb; rwa [add_comm]
 
 /-- A pointed cone `C` is a face of itself. -/
 @[refl, simp]

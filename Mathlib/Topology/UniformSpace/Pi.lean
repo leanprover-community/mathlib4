@@ -80,14 +80,14 @@ lemma Pi.uniformSpace_comap_precomp (φ : ι' → ι) :
   uniformSpace_comap_precomp' (fun _ ↦ β) φ
 
 lemma Pi.uniformContinuous_restrict (S : Set ι) :
-    UniformContinuous (S.restrict : (∀ i : ι, α i) → (∀ i : S, α i)) :=
+    UniformContinuous (S.domRestrict : (∀ i : ι, α i) → (∀ i : S, α i)) :=
   Pi.uniformContinuous_precomp' _ ((↑) : S → ι)
 
 lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
-    UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
+    UniformSpace.comap (S.domRestrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
     ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
   simp +unfoldPartialApp
-    [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
+    [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.domRestrict]
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
@@ -111,8 +111,8 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
     rwa [nhds_pi, le_pi]
 
 lemma Pi.uniformSpace_comap_restrict_sUnion (𝔖 : Set (Set ι)) :
-    UniformSpace.comap (⋃₀ 𝔖).restrict (Pi.uniformSpace (fun i : (⋃₀ 𝔖) ↦ α i)) =
-    ⨅ S ∈ 𝔖, UniformSpace.comap S.restrict (Pi.uniformSpace (fun i : S ↦ α i)) := by
+    UniformSpace.comap (⋃₀ 𝔖).domRestrict (Pi.uniformSpace (fun i : (⋃₀ 𝔖) ↦ α i)) =
+    ⨅ S ∈ 𝔖, UniformSpace.comap S.domRestrict (Pi.uniformSpace (fun i : S ↦ α i)) := by
   simp_rw [Pi.uniformSpace_comap_restrict α, iInf_sUnion]
 
 /-- An infimum of complete uniformities is complete,
@@ -130,7 +130,7 @@ protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
       Filter.comap_comap, comp_def, const, Prod.eta, comap_id']
   -- Hence, it suffices to show that its range, the diagonal, is closed in `Π i, (X, u i)`.
   simp_rw [@completeSpace_iff_isComplete_range _ _ (_) (_) _ this, range_const_eq_diagonal,
-    setOf_forall]
+    ofPred_forall]
   -- The separation of `t` ensures that this is the case in `Π i, (X, t)`, hence the result
   -- since the topology associated to each `u i` is finer than `t`.
   have : Pi.topologicalSpace (t₂ := fun i ↦ (u i).toTopologicalSpace) ≤

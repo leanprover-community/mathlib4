@@ -168,7 +168,7 @@ a module $M$ is flat if and only if every relation $\sum_i f_i x_i = 0$ in $M$ i
 @[stacks 00HK]
 theorem iff_forall_isTrivialRelation : Flat R M ↔ ∀ {l : ℕ} {f : Fin l → R} {x : Fin l → M},
     ∑ i, f i • x i = 0 → IsTrivialRelation f x :=
-  (tfae_equational_criterion R M).out 0 3
+  (tfae_equational_criterion R M).out 1 4
 
 /-- **Equational criterion for flatness**, forward direction.
 
@@ -197,7 +197,7 @@ $y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 theorem iff_forall_exists_factorization : Flat R M ↔
     ∀ {l : ℕ} {f : Fin l →₀ R} {x : (Fin l →₀ R) →ₗ[R] M}, x f = 0 →
       ∃ (k : ℕ) (a : (Fin l →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
-        x = y ∘ₗ a ∧ a f = 0 := (tfae_equational_criterion R M).out 0 4
+        x = y ∘ₗ a ∧ a f = 0 := (tfae_equational_criterion R M).out 1 5
 
 /-- **Equational criterion for flatness**, backward direction, alternate form.
 

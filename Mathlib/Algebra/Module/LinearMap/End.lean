@@ -253,8 +253,6 @@ def DistribMulAction.toModuleEnd [DistribMulAction S M] [SMulCommClass S R M] :
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
 
-@[deprecated (since := "2026-01-07")] alias DistribMulAction.toLinearMap := DistribSMul.toLinearMap
-
 end
 
 section Module

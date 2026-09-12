@@ -62,6 +62,7 @@ instance : LargeCategory MeasCat where
   id X := ⟨id, measurable_id⟩
   comp f g := ⟨g.1 ∘ f.1, g.2.comp f.2⟩
 
+@[macro_inline]
 instance (X Y : MeasCat) : FunLike ({ f : X → Y // Measurable f }) X Y where
   coe f := f
   coe_injective _ _ := Subtype.ext
@@ -71,7 +72,7 @@ instance : ConcreteCategory MeasCat ({ f : · → · // Measurable f }) where
   ofHom f := f
 
 instance : Inhabited MeasCat :=
-  ⟨MeasCat.of Empty⟩
+  ⟨↧Empty⟩
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
 weakest measurable space, s.t. `fun μ ↦ μ s` is measurable for all measurable sets `s` in `X`. An
@@ -105,7 +106,7 @@ def Giry : CategoryTheory.Monad MeasCat where
 /-- An example of an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
 def Integral : Giry.Algebra where
-  A := MeasCat.of ℝ≥0∞
+  A := ↧ℝ≥0∞
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
   unit := Subtype.ext <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
   assoc := Subtype.ext <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) ↦
@@ -122,3 +123,13 @@ instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} where
 /-- The Borel functor, the canonical embedding of topological spaces into measurable spaces. -/
 abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=
   forget₂ TopCat.{u} MeasCat.{u}
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `MeasCat.of X` as `↧X`. -/
+@[app_delab MeasCat.of]
+meta def MeasCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

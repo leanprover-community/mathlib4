@@ -9,7 +9,7 @@ public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Sets closed under directed suprema

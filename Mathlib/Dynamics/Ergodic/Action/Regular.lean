@@ -26,7 +26,7 @@ variable {G : Type*} [Group G] [MeasurableSpace G] [MeasurableMul₂ G] [Measura
 instance [μ.IsMulLeftInvariant] : ErgodicSMul G G μ := by
   refine ⟨fun {s} hsm hs ↦ ?_⟩
   suffices (∃ᵐ x ∂μ, x ∈ s) → ∀ᵐ x ∂μ, x ∈ s by
-    simp only [eventuallyConst_set, ← not_frequently]
+    simp only [eventuallyEmptyOrUniv_iff, ← not_frequently]
     exact or_not_of_imp this
   intro hμs
   obtain ⟨a, has, ha⟩ : ∃ a ∈ s, ∀ᵐ b ∂μ, (b * a ∈ s ↔ a ∈ s) := by
@@ -41,7 +41,7 @@ instance [μ.IsMulLeftInvariant] : ErgodicSMul G G μ := by
 instance [μ.IsMulRightInvariant] : ErgodicSMul Gᵐᵒᵖ G μ := by
   refine ⟨fun {s} hsm hs ↦ ?_⟩
   suffices (∃ᵐ x ∂μ, x ∈ s) → ∀ᵐ x ∂μ, x ∈ s by
-    simp only [eventuallyConst_set, ← not_frequently]
+    simp only [eventuallyEmptyOrUniv_iff, ← not_frequently]
     exact or_not_of_imp this
   intro hμs
   obtain ⟨a, has, ha⟩ : ∃ a ∈ s, ∀ᵐ b ∂μ, (a * b ∈ s ↔ a ∈ s) := by

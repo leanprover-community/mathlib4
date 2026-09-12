@@ -20,7 +20,9 @@ In particular the notion of cluster point of a sequence `u` is `MapClusterPt x a
 
 public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v w
 
@@ -246,9 +248,11 @@ theorem clusterPt_principal {x : X} {C : Set X} :
 
 /-- The set of cluster points of a filter is closed. In particular, the set of limit points
 of a sequence is closed. -/
-theorem isClosed_setOf_clusterPt {f : Filter X} : IsClosed { x | ClusterPt x f } := by
-  simp only [clusterPt_iff_forall_mem_closure, setOf_forall]
+theorem isClosed_setOfPred_clusterPt {f : Filter X} : IsClosed { x | ClusterPt x f } := by
+  simp only [clusterPt_iff_forall_mem_closure, ofPred_forall]
   exact isClosed_biInter fun _ _ ↦ isClosed_closure
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_clusterPt := isClosed_setOfPred_clusterPt
 
 theorem mem_closure_iff_clusterPt : x ∈ closure s ↔ ClusterPt x (𝓟 s) :=
   mem_closure_iff_frequently.trans clusterPt_principal_iff_frequently.symm

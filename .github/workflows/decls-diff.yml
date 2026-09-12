@@ -58,7 +58,7 @@ jobs:
           } | tee -a "$GITHUB_OUTPUT"
 
       - name: Checkout new commit
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ steps.meta.outputs.new-sha }}
           fetch-depth: 0
@@ -139,7 +139,7 @@ jobs:
       # Tooling is checked out unconditionally: the patcher (from CI_SCRIPTS_DIR)
       # is needed on the cache-miss path too, to post the warning notice.
       - name: Checkout local actions
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -181,6 +181,9 @@ jobs:
           PR_NUMBER:      ${{ steps.pr.outputs.pr-number }}
           MODE:           warning
           DEFAULT_BRANCH: master
+          # If a real diff is already shown, keep it (relabelled) rather than
+          # blanking it to "unavailable" and give an actionable remedy.
+          NEW_HEADING:    '#### Declarations diff (Lean -- stale; merge master and push to refresh)'
         run: |
           # Record the cache miss in the step summary first, so a later patcher
           # error (e.g. a transient GitHub failure) still leaves this run-local

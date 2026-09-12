@@ -70,7 +70,6 @@ theorem projectSubobject_factors [HasFiniteLimits C] [PreservesFiniteLimits T]
   Subobject.ind _ fun P f hf =>
     ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by simp [← T.map_comp]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subobject of the underlying object of a structured arrow can be lifted to a subobject of
     the structured arrow, provided that there is a morphism making the subobject into a structured
     arrow. -/
@@ -157,7 +156,6 @@ theorem projectQuotient_factors [HasFiniteColimits C] [PreservesFiniteColimits S
       rw [← Category.assoc, ← S.map_comp, ← unop_comp]
       simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A quotient of the underlying object of a costructured arrow can be lifted to a quotient of
     the costructured arrow, provided that there is a morphism making the quotient into a
     costructured arrow. -/

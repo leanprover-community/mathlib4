@@ -42,13 +42,6 @@ public register_option linter.style.whitespace : Bool := {
   descr := "enable the whitespace linter"
 }
 
-/-- Deprecated in favour of `linter.style.whitespace` -/
-public register_option linter.style.commandStart : Bool := {
-  defValue := false
-  descr := "deprecated: use the `linter.style.whitespace` option instead"
-  deprecation? := some { since := "2026-01-07", text? := "use the `linter.style.whitespace` option instead" }
-}
-
 /-- If the `linter.style.whitespace.verbose` option is `true`, the `whitespace` linter
 reports some helpful diagnostic information. -/
 public register_option linter.style.whitespace.verbose : Bool := {

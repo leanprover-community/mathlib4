@@ -269,14 +269,14 @@ def LinearOrder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : Linear
     toDecidableLT := args.decidableLT
     toMin := args.min
     toMax := args.max
-    min_def _ _ := Std.min_eq_if
+    min_def _ _ := Std.min_eq_ite
     max_def a b := by
-      rw [Std.max_eq_if]
+      rw [Std.max_eq_ite]
       split
       · split
         · exact Std.le_antisymm ‹_› ‹_›
         · rfl
-      case _ h => rw [if_pos (Std.le_of_lt (Std.not_le.mp h))]
+      case _ h => rw [ite_eq_left (Std.le_of_lt (Std.not_le.mp h))]
     toOrd := args.ord
     compare_eq_compareOfLessAndEq a b := by
       let := args.ord

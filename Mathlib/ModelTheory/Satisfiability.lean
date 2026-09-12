@@ -411,7 +411,7 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
 theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
     {φ | T ⊨ᵇ φ} = L.completeTheory M := by
   ext φ
-  simp only [Set.mem_setOf_eq, L.mem_completeTheory]
+  simp only [Set.mem_ofPred_eq, L.mem_completeTheory]
   refine ⟨fun h_models => h_models.realize_sentence M, fun h_realize => ?_⟩
   cases h.2 φ with
   | inl hT => exact hT
@@ -480,7 +480,7 @@ theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=
   Theory.Model.isSatisfiable M
 
 theorem mem_or_not_mem (φ : L.Sentence) : φ ∈ L.completeTheory M ∨ φ.not ∈ L.completeTheory M := by
-  simp_rw [completeTheory, Set.mem_setOf_eq, Sentence.Realize, Formula.realize_not, or_not]
+  simp_rw [completeTheory, Set.mem_ofPred_eq, Sentence.Realize, Formula.realize_not, or_not]
 
 theorem isMaximal [Nonempty M] : (L.completeTheory M).IsMaximal :=
   ⟨isSatisfiable L M, mem_or_not_mem L M⟩

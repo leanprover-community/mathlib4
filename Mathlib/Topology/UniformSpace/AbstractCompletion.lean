@@ -124,7 +124,7 @@ protected def extend (f : α → β) : hatα → β :=
 variable {f : α → β}
 
 theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.isDenseInducing.extend f :=
-  if_pos hf
+  ite_eq_left hf
 
 theorem inseparable_extend_coe (hf : UniformContinuous f) (x : α) :
     Inseparable (pkg.extend f (ι x)) (f x) := by
@@ -143,7 +143,7 @@ theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   · rw [pkg.extend_def hf]
     exact uniformContinuous_uniformly_extend pkg.isUniformInducing pkg.dense hf
   · unfold AbstractCompletion.extend
-    rw [if_neg hf]
+    rw [ite_eq_right hf]
     exact uniformContinuous_of_const fun a b => by congr 1
 
 theorem continuous_extend : Continuous (pkg.extend f) :=

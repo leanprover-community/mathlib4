@@ -95,7 +95,6 @@ instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoid
 
 end IsMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     [F.LaxMonoidal] [G.LaxMonoidal] [IsMonoidal α]
     [H.LaxMonoidal] [K.LaxMonoidal] [IsMonoidal β] :

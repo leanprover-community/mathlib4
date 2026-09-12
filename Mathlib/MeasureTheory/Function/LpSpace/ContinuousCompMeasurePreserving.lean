@@ -52,7 +52,8 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
       compMeasurePreserving gf.2.1 gf.2.2 gf.1 := by
   have hp₀ : p ≠ 0 := (one_pos.trans_le Fact.out).ne'
   refine continuous_prod_of_dense_continuous_lipschitzWith _ 1
-    (MeasureTheory.Lp.simpleFunc.dense hp) ?_ fun f ↦ (isometry_compMeasurePreserving f.2).lipschitz
+    (MeasureTheory.Lp.simpleFunc.dense hp) ?_ fun f ↦
+      (isometry_compMeasurePreserving f.2).lipschitzWith
   intro f hf
   lift f to Lp.simpleFunc E p ν using hf
   induction f using Lp.simpleFunc.induction hp₀ hp with

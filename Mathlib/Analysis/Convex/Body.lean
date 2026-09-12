@@ -180,9 +180,6 @@ theorem hausdorffEDist_ne_top {K L : ConvexBody V} : Metric.hausdorffEDist (K : 
   apply_rules [Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
 
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_ne_top := hausdorffEDist_ne_top
-
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
 noncomputable instance : PseudoMetricSpace (ConvexBody V) where
@@ -199,9 +196,6 @@ theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
 theorem hausdorffEDist_coe : Metric.hausdorffEDist (K : Set V) L = edist K L := by
   rw [edist_dist]
   exact (ENNReal.ofReal_toReal hausdorffEDist_ne_top).symm
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_coe := hausdorffEDist_coe
 
 open Filter
 

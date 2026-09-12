@@ -36,7 +36,9 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Function Complex SlashInvariantForm MatrixGroups Filter
+open Function Complex SlashInvariantForm Filter
+
+open scoped MatrixGroups
 
 open UpperHalfPlane hiding I
 
@@ -74,7 +76,7 @@ lemma logDeriv_eta_comp_div_eq (z : ℍ) :
 open EisensteinSeries in
 lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
     logDeriv (η ∘ (-1 / ·)) z = logDeriv (sqrt * η) z := by
-  rw [logDeriv_eta_comp_div_eq z, Pi.mul_def,
+  rw [logDeriv_eta_comp_div_eq z,
       logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.2)
       (differentiableAt_sqrt (mem_slitPlane z))
       (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2), logDeriv_apply sqrt]

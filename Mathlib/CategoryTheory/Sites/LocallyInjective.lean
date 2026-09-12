@@ -30,7 +30,7 @@ universe w v' v u' u
 
 namespace CategoryTheory
 
-open Opposite Limits
+open Opposite
 
 variable {C : Type u} [Category.{v} C]
   {D : Type u'} [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}

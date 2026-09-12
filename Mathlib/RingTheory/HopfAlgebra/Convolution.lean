@@ -95,6 +95,23 @@ variable [Semiring C] [HopfAlgebra R C]
 
 end LinearMap
 
+namespace HopfAlgebra
+variable [Semiring A] [HopfAlgebra R A] {f : A →ₗ[R] A}
+
+/-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `f`
+with `f * id = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_convMul_id_eq_one (h : toConv f * toConv LinearMap.id = 1) :
+    f = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h LinearMap.id_mul_antipode)
+
+/-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `f`
+with `id * f = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_id_convMul_eq_one (h : toConv LinearMap.id * toConv f = 1) :
+    f = antipode R :=
+  toConv_injective (left_inv_eq_right_inv LinearMap.antipode_mul_id h).symm
+
+end HopfAlgebra
+
 namespace LinearMap
 variable [Semiring C] [HopfAlgebra R C]
 

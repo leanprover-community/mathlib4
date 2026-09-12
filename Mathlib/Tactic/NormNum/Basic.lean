@@ -529,7 +529,7 @@ def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
   | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
     -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
     -- so would still need to be in `MetaM`.
-    ratArm (←synthInstanceQ q(DivisionRing $α))
+    ratArm (← synthInstanceQ q(DivisionRing $α))
   | .isNNRat dsα .., _ | _, .isNNRat dsα .. =>
     nnratArm dsα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα

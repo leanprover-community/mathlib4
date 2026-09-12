@@ -117,7 +117,6 @@ lemma hom'_comp_π' :
     φ.hom' ≫ R'.π' = R.π' ≫ (CochainComplex.singleFunctor C 0).map f :=
   HomologicalComplex.to_single_hom_ext (by
     simp [hom'_f _ 0 0 rfl, π'_f_zero, CochainComplex.singleFunctor,
-      CochainComplex.singleFunctors,
       HomologicalComplex.single, HomologicalComplex.singleObjXSelf,
       HomologicalComplex.singleObjXIsoOfEq])
 

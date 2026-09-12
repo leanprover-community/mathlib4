@@ -123,7 +123,7 @@ lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
   nontriviality R
-  rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
+  rw [CoordinateRing.basis, Or.by_cases, dite_eq_right <| not_subsingleton R, Basis.reindex_apply,
     PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
 
 @[simp]
@@ -138,6 +138,17 @@ lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1,
   ext n
   fin_cases n
   exacts [basis_zero, basis_one]
+
+instance : Module.Free R[X] W'.CoordinateRing := .of_basis (CoordinateRing.basis W')
+
+instance : Module.Free R W'.CoordinateRing := .trans (S := R[X])
+
+instance [Nontrivial R] : Nontrivial W'.CoordinateRing :=
+  ⟨_, _, (CoordinateRing.basis W').ne_zero 0⟩
+
+instance : FaithfulSMul R[X] W'.CoordinateRing := by nontriviality R; infer_instance
+
+instance : FaithfulSMul R W'.CoordinateRing := .trans R R[X] _
 
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
@@ -271,8 +282,6 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
@@ -401,7 +410,7 @@ lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.Coordinate
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W', Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
-    Basis.repr_self_apply, if_pos, one_ne_zero, if_false, smul_eq_mul]
+    Basis.repr_self_apply, ite_eq_left, one_ne_zero, ite_false, smul_eq_mul]
   ring1
 
 lemma coe_norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • 1 + q • mk W' Y) =
@@ -666,12 +675,12 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
     {h₂ : W.Nonsingular x₂ y₂} :
     some _ _ h₁ + some _ _ h₂ = some _ _ (nonsingular_add h₁ h₂ hxy) := by
-  simp only [add_def, add, dif_neg hxy]
+  simp only [add_def, add, dite_eq_right hxy]
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some _ _ h₁ + some _ _ h₂ = 0 := by
-  simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
+  simpa only [add_def, add] using dite_eq_left ⟨hx, hy⟩
 
 -- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :
@@ -708,6 +717,33 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     (hx : x₁ ≠ x₂) :
     some _ _ h₁ + some _ _ h₂ = -some _ _ (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
+
+/-- A nonzero affine `2`-torsion point `some x y h` of `W` (that is, `P + P = 0`) has `X`-coordinate
+a root of `W.twoTorsionPolynomial`. -/
+theorem isRoot_twoTorsionPolynomial_of_add_self {x y : F} (h : W.Nonsingular x y)
+    (hP : some x y h + some x y h = 0) : W.twoTorsionPolynomial.toPoly.IsRoot x := by
+  rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆]
+  have hy : y = W.negY x y := by
+    by_contra hne
+    rw [add_self_of_Y_ne hne] at hP
+    exact some_ne_zero _ hP
+  grind [h.left, negY, equation_iff]
+
+/-- `x` is a root of the `2`-torsion polynomial of a Weierstrass curve of characteristic
+different from `2` with nonzero discriminant if and only if it is the `X`-coordinate of a nonzero
+affine `2`-torsion point. -/
+theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0) (x : F) :
+    W.twoTorsionPolynomial.toPoly.IsRoot x ↔
+      ∃ y, ∃ h : W.Nonsingular x y, some x y h + some x y h = 0 := by
+  constructor
+  · intro hroot
+    rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆] at hroot
+    set y := (-W.a₁ * x - W.a₃) / 2
+    have heq : W.Equation x y := by grind [NeZero.out, equation_iff]
+    refine ⟨y, (equation_iff_nonsingular_of_Δ_ne_zero hΔ).mp heq, add_self_of_Y_eq ?_⟩
+    grind [negY]
+  · rintro ⟨y, hns, hP⟩
+    exact isRoot_twoTorsionPolynomial_of_add_self hns hP
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
@@ -883,7 +919,56 @@ lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q :=
   refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
   rcases H with rfl | rfl <;> simp
 
+variable [DecidableEq F]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `2*P ≠ 0`. -/
+lemma xRep_add_self_of_Y_ne {x y : F} (h : W.Nonsingular x y) (hn : y ≠ W.negY x y) :
+    (some x y h + some x y h).xRep =
+      ![(x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆), 1] := by
+  simp only [add_self_of_Y_ne hn, ← addX_self_of_Y_ne h.1 hn, xRep_some]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `P ≠ 0` and `2*P = 0`. -/
+lemma xRep_add_self_of_Y_eq {x y : F} (h : W.Nonsingular x y) (hn : y = W.negY x y) :
+    (some x y h + some x y h).xRep = ![1, 0] := by
+  simp only [add_self_of_Y_eq hn, xRep_zero]
+
+/-- We give an explicit expression for `xRep` of `P + Q` when `P ≠ ±Q`. -/
+lemma xRep_add_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP + some xQ yQ hQ).xRep =
+      ![((yP - yQ) ^ 2 + W.a₁ * (yP - yQ) * (xP - xQ) - (W.a₂ + xP + xQ) * (xP - xQ) ^2) /
+         (xP - xQ) ^ 2, 1] := by
+  simp only [add_of_X_ne (h₁ := hP) (h₂ := hQ) hn, xRep_some, addX_of_X_ne hn]
+
+/-- We give an explicit expression for `xRep` of `P - Q` when `P ≠ ±Q`. -/
+lemma xRep_sub_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP - some xQ yQ hQ).xRep =
+      ![((yP + yQ + W.a₁ * xQ + W.a₃) ^ 2 + W.a₁ * (yP + yQ + W.a₁ * xQ + W.a₃) * (xP - xQ)
+           - (W.a₂ + xP + xQ) * (xP - xQ) ^2) / (xP - xQ) ^ 2, 1] := by
+  simp only [sub_eq_add_neg (some ..), neg_some hQ,
+    add_of_X_ne (h₁ := hP) (h₂ := (nonsingular_neg ..).mpr hQ) hn, xRep_some,
+    addX_of_X_ne hn]
+  grind only [negY]
+
 end Point
+
+lemma finite_preimage_xRep (x : F) : {P : W.Point | P.xRep = ![x, 1]}.Finite := by
+  rcases Set.eq_empty_or_nonempty {P : W.Point | P.xRep = ![x, 1]} with h | h
+  · exact h ▸ Set.finite_empty
+  choose Q hQ using h
+  simp only [Set.mem_ofPred_eq] at hQ
+  rw [show {P | P.xRep = ![x, 1]} = {Q, -Q} by ext : 1; simp [← hQ, Point.xRep_eq_xRep_iff]]
+  simp
+
+lemma finite_preimage_xRep0 (x : F) : {P : W.Point | P.xRep 0 = x}.Finite := by
+  have : {P : W.Point | P.xRep 0 = x} ⊆ {P | P.xRep = ![x, 1]} ∪ {0} := by
+    intro P hP
+    match P with
+    | 0 => simp
+    | .some x' y h => simp_all [Point.xRep_some]
+  exact (finite_preimage_xRep x).union (Set.finite_singleton 0) |>.subset this
 
 end Affine
 

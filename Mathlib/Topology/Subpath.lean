@@ -157,7 +157,6 @@ lemma concat_succ (p : Fin (n + 2) → X) (F) :
   rw [concat, dfoldl_succ_last]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Concatenating the constant path at `x` with itself just yields the constant path at `x`. -/
 @[simp]
 theorem concat_refl (n : ℕ) (x : X) :
@@ -223,6 +222,20 @@ theorem concat_subpath (γ : Path a b) (t : Fin (n + 1) → I) :
       (concat (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
       (γ.subpath (t 0) (t (last n))) :=
   ⟨Homotopy.concatSubpath γ t⟩
+
+/-- Two consecutive subpaths are homotopic to the subpath between their outer endpoints. -/
+@[simp]
+theorem subpath_trans_subpath (γ : Path a b) (s t u : I) :
+    Homotopic ((γ.subpath s t).trans (γ.subpath t u)) (γ.subpath s u) :=
+  ⟨Homotopy.subpathTransSubpath γ s t u⟩
+
+/-- Composition of consecutive subpath classes is the class of the subpath between their outer
+endpoints. -/
+@[simp]
+theorem mk_subpath_trans_mk_subpath (γ : Path a b) (s t u : I) :
+    (Quotient.mk (γ.subpath s t)).trans (.mk (γ.subpath t u)) = .mk (γ.subpath s u) := by
+  rw [← Quotient.mk_trans]
+  exact Quotient.eq.mpr (Path.Homotopic.subpath_trans_subpath γ s t u)
 
 end Path.Homotopic
 

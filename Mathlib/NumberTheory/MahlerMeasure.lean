@@ -68,9 +68,6 @@ theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈
   · norm_cast
     grind [Pi.card_Icc, card_Icc]
 
-@[deprecated (since := "2026-02-02")]
-alias card_eq_of_natDegree_le_of_coeff_le := ncard_boxPoly
-
 open NNReal
 
 private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :

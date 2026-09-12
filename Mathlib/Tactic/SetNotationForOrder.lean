@@ -5,7 +5,6 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Batteries.Lean.NameMapAttribute
 public meta import Lean.Elab.App
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Tactic.Translate.GuessName
@@ -26,7 +25,7 @@ tagged with `@[use_set_notation_for_order]`.
 This tag is used for `Set`, `Finset`, `PSet` and `ZFSet`. It is not used for `Multiset` and `List`,
 since they have both `≤` and `⊆` defined on them, with different meanings.
 
-TODO: Unify more order operations suh as `∪`/`⊔` and `∩`/`⊓`.
+TODO: Unify more order operations such as `∪`/`⊔` and `∩`/`⊓`.
 -/
 
 /-- `UsesSetNotationForOrder` is used to track whether a type is tagged with

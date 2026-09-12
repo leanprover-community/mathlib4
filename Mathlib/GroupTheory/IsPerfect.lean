@@ -29,12 +29,12 @@ Among the basic results, we show that
   homomorphism is perfect.
 -/
 
-@[expose] public section
+public section
 
 namespace Group
 open Subgroup
 
-variable {G G' : Type*} [Group G] [Group G'] {H K : Subgroup G} (f : G →* G')
+variable {G G' : Type*} [Group G] [Group G'] {H : Subgroup G} (f : G →* G')
 
 variable (G) in
 /-- A group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
@@ -49,7 +49,7 @@ lemma isPerfect_def : IsPerfect G ↔ commutator G = ⊤ :=
 
 lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
   rw [Group.isPerfect_def, ← map_subtype_inj,
-    map_subtype_commutator, ← MonoidHom.range_eq_map, range_subtype]
+    map_subtype_commutator, Subgroup.map_top, range_subtype]
 
 lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
   isPerfect_iff.mp hH
@@ -65,7 +65,7 @@ instance [Subsingleton G] : IsPerfect G where
 
 theorem top_iff : IsPerfect (⊤ : Subgroup G) ↔ IsPerfect G := by
   rw [isPerfect_def, isPerfect_def, ← map_subtype_inj,
-    map_subtype_commutator, ← MonoidHom.range_eq_map, subtype_range, commutator_def]
+    map_subtype_commutator, Subgroup.map_top, subtype_range, commutator_def]
 
 instance [IsPerfect G] : IsPerfect (⊤ : Subgroup G) :=
   top_iff.mpr inferInstance
@@ -82,7 +82,7 @@ lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
 open scoped IsMulCommutative in
 variable (G) in
 lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G :=
-  fun _ ↦ (not_isSolvable G) CommGroup.isSolvable
+  fun _ ↦ (not_isSolvable G) inferInstance
 
 instance subsingleton_of_isMulCommutative
     [hG : IsPerfect G] [h_comm : IsMulCommutative G] : Subsingleton G := by

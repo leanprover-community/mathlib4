@@ -34,7 +34,7 @@ instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
-  obj A := CommGrpCat.of A.X
+  obj A := ↧A.X
   map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/

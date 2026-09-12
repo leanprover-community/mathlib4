@@ -28,8 +28,10 @@ when `X` has dimension `< d`.
 
 universe w v u
 
-open CategoryTheory Limits HomologicalComplex Simplicial
+open CategoryTheory Limits HomologicalComplex
   AlgebraicTopology.DoldKan
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -128,7 +130,6 @@ lemma ιNormalizedChainComplex_fromNormalizedChainComplex_f (x : X _⦋n⦌) :
   dsimp [ιNormalizedChainComplex]
   rw [Category.assoc, toNormalizedChainComplex_f_fromNormalizedChainComplex_f]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate n) :
     X.ιNormalizedChainComplex (R := R) x = 0 := by
   rw [← cancel_mono ((X.fromNormalizedChainComplex R).f n), zero_comp,
@@ -190,7 +191,6 @@ section
 
 variable {X Y}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma chainComplexMap_PInfty :
     chainComplexMap f R ≫ PInfty = PInfty ≫ chainComplexMap f R :=
@@ -202,7 +202,6 @@ noncomputable def normalizedChainComplexMap :
     X.normalizedChainComplex R ⟶ Y.normalizedChainComplex R :=
   X.fromNormalizedChainComplex R ≫ chainComplexMap f R ≫ Y.toNormalizedChainComplex R
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalizedChainComplex_normalizedChainComplexMap :
     X.toNormalizedChainComplex R ≫ normalizedChainComplexMap f R =

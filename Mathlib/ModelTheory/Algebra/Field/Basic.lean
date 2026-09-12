@@ -122,8 +122,8 @@ noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
     mulComm.toProp_of_model
     oneMul.toProp_of_model
     (fun x hx0 => show x * (dite _ _ _) = _ from
-        (dif_neg hx0).symm ▸ Classical.choose_spec (existsInv.toProp_of_model x hx0))
-    (dif_pos rfl)
+        (dite_eq_right hx0).symm ▸ Classical.choose_spec (existsInv.toProp_of_model x hx0))
+    (dite_eq_left rfl)
     leftDistrib.toProp_of_model
     existsPairNE.toProp_of_model
 

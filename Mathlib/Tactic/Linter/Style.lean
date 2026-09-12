@@ -6,13 +6,13 @@ Authors: Michael Rothgang
 module
 
 public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
+public import Lean.Parser.Module
 
 /-!
 ## Style linters
@@ -554,12 +554,15 @@ such names violate the naming convention. -/
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isDefinition && !(← isAutoDecl declName) do return none
+    unless ((← getEnv).find? declName).get!.isDefinition &&
+        -- TODO: lint private definitions with underscores for readability.
+        !(← isPrivateOrAutoDecl declName) do
+      return none
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
     if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
     if isBadNameWithUnderscore declName then
-      return m!"The definition `{declName}` contains an underscore. \
+      return m!"The definition `{.ofConstName declName true}` contains an underscore. \
         This almost surely violates mathlib's naming convention; \
         use lowerCamelCase or UpperCamelCase instead."
     else return none
@@ -628,35 +631,30 @@ public register_option linter.style.show : Bool := {
   descr := "enable the show linter"
 }
 
-namespace Style.show
+namespace Style
 
-@[inherit_doc Mathlib.Linter.linter.style.show]
-def showLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.style.show (← getLinterOptions) do
-      return
-    if (← get).messages.hasErrors then
-      return
-    for tree in (← getInfoTrees) do
-      tree.foldInfoM (init := ()) fun ci i _ => do
-        let .ofTacticInfo tac := i | return
-        unless tac.stx.isOfKind ``Lean.Parser.Tactic.show do return
-        let some _ := tac.stx.getRange? true | return
-        let (goal :: goals) := tac.goalsBefore | return
-        let (goal' :: goals') := tac.goalsAfter | return
-        if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
-        -- Even if `goal == goal'`, the tactic may have assigned metavariables.
-        let diff ← ci.runCoreM do
-          let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
-          let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }
-          return before != after
-        if diff then
-          logLint linter.style.show tac.stx m!"\
-          The `show` tactic should only be used to indicate intermediate goal states for \
-          readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
-          instead for these purposes."
+open Tactic
 
-initialize addLinter showLinter
+/-- Run the `show` tactic, with a linter warning when one should use `change` instead. -/
+def elabShow (newType : Term) : TacticM Unit := do
+  let goal :: goals ← getGoals | throwNoGoalsToBeSolved
+  let before ← instantiateMVars (← goal.getType)
+  evalTactic (← `(tactic| show $newType))
+  if getLinterValue linter.style.show (← getLinterOptions) then
+    let goal' :: goals' ← getGoals | return
+    if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
+    let after ← instantiateMVars (← goal'.getType)
+    if before != after then
+      logLint linter.style.show (← getRef) m!"\
+        The `show` tactic should only be used to indicate intermediate goal states for \
+        readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
+        instead for these purposes."
 
-end Style.show
+-- `(priority := high)` ensures we avoid producing choice nodes, and thereby avoid unexpected
+-- behavior arising from choice node elaboration
+@[tactic_alt Tactic.show]
+elab (name := «show») (priority := high) "show " newType:term : tactic => elabShow newType
+
+end Style
 
 end Mathlib.Linter

@@ -153,7 +153,7 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
     exact (graphEquiv₂ f).strictMono
   · have := Subsingleton.elim (graphEquiv₂ f) (h.orderIsoOfSurjective _ <| Equiv.surjective _)
     ext1 x
-    exact (graphEquiv₁ f).apply_eq_iff_eq_symm_apply.1 (DFunLike.congr_fun this x).symm
+    exact (graphEquiv₁ f).eq_symm_apply.2 (DFunLike.congr_fun this x).symm
 
 /-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
 and `f (σ i) = f (σ j)`, then `σ i < σ j`. This means that `sort f` is the lexicographically

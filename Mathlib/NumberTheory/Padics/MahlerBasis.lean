@@ -386,4 +386,33 @@ lemma mahlerEquiv_symm_apply (a : C₀(ℕ, E)) : (mahlerEquiv E).symm a = (mahl
 
 end mahler_coeff
 
+section DenseSpan
+
+open Submodule
+/-!
+### Continuous linear functionals are determined by their values on the Mahler basis
+-/
+variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
+  [IsBoundedSMul ℤ_[p] R]
+
+theorem dense_span_mahler : Dense (span R
+      (.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
+  refine fun f ↦ mem_closure_of_tendsto (PadicInt.hasSum_mahler _) ?_
+  refine .of_forall fun s ↦ Submodule.sum_mem _ fun c _ ↦ ?_
+  simp only [span_range_eq_iSup]
+  apply mem_iSup_of_mem (i := c)
+  rw [mem_span_singleton]
+  use (fwdDiff 1)^[c] f 0
+  ext x
+  simp [PadicInt.mahlerTerm]
+
+lemma ext_mahler {μ : C(ℤ_[p], R) →L[R] R}
+    (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) : μ = 0 := by
+  apply ContinuousLinearMap.ext_on dense_span_mahler
+  rintro _ ⟨n, rfl⟩
+  simpa using hμ n
+
+end DenseSpan
+
+
 end PadicInt

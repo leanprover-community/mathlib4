@@ -16,7 +16,7 @@ In this file we prove 2 versions of Bolzano-Weierstrass theorem for proper metri
 
 public section
 
-open Filter Bornology Metric
+open Filter Bornology
 open scoped Topology
 
 variable {X : Type*} [PseudoMetricSpace X]

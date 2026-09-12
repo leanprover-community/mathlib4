@@ -263,8 +263,8 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
   /- First rewrite things in a simplified form, without any real change. -/
   suffices ∫ x, g x • fderiv ℝ f x y ∂μ = ∫ x, (2 * ↑π * I * L y w * g x) • f x ∂μ by
     rw [fourierIntegral_continuousLinearMap_apply' hf']
-    simpa only [fourierIntegral, ContinuousLinearMap.toLinearMap₁₂_apply, fourierSMulRight_apply,
-      neg_apply, ContinuousLinearMap.flip_apply, ← integral_smul, neg_smul,
+    simpa only [fourierIntegral, ContinuousLinearMap.toLinearMap₁₂_apply_apply_apply,
+      fourierSMulRight_apply, neg_apply, ContinuousLinearMap.flip_apply, ← integral_smul, neg_smul,
       smul_neg, ← smul_smul, coe_smul, neg_neg]
   -- Key step: integrate by parts with respect to `y` to switch the derivative from `f` to `g`.
   have A x : fderiv ℝ g x y = - 2 * ↑π * I * L y w * g x :=
@@ -329,7 +329,7 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   calc
   ‖fourierPowSMulRight L f v n m‖
     = (2 * π) ^ n * ((∏ x : Fin n, |(L v) (m x)|) * ‖f v‖) := by
-      simp [abs_of_nonneg pi_nonneg, norm_smul]
+      simp [norm_smul]
   _ ≤ (2 * π) ^ n * ((∏ x : Fin n, ‖L‖ * ‖v‖ * ‖m x‖) * ‖f v‖) := by
       gcongr with i _hi
       exact L.le_opNorm₂ v (m i)
@@ -392,7 +392,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk) (hf.of_le hk)).contDiffAt),
     norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]
   simp only [mul_assoc, norm_pow, norm_neg, Complex.norm_mul, Complex.norm_ofNat, norm_real,
-    Real.norm_eq_abs, abs_of_nonneg pi_nonneg, norm_I, mul_one, smulRightL_apply, ge_iff_le]
+    Real.norm_eq_abs, abs_pi, norm_I, mul_one, smulRightL_apply, ge_iff_le]
   gcongr
   -- third step: argue that the scalar multiplication is bilinear to bound the iterated derivatives
   -- of `v ↦ (∏ i, L v (m i)) • f v` in terms of those of `v ↦ (∏ i, L v (m i))` and of `f`.
@@ -417,7 +417,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     · norm_cast
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
       _ ≤ (n + 1) ^ i := by gcongr; lia
-      _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
+      _ ≤ (n + 1) ^ k := by gcongr; exact Finset.mem_range_succ_iff.mp hi
     · exact hv _ (by lia) _ (by lia)
   _ = (2 * n + 2) ^ k * (‖L‖ ^ n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
@@ -649,7 +649,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₁₂ f)) w n (fun _ ↦ v)‖ := by
-    simp [norm_smul, abs_of_nonneg pi_nonneg]
+    simp [norm_smul]
   _ ≤ ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₁₂ f)) w n‖ * ∏ _ : Fin n, ‖v‖ :=
     le_opNorm _ _
@@ -723,8 +723,6 @@ theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
   rw [← flip_innerSL_real V]
   exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
 
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- simp followed by positivity
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourier_le
@@ -745,13 +743,13 @@ lemma pow_mul_norm_iteratedFDeriv_fourier_le
     rwa [pow_two, mul_pow, mul_assoc] at this
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, one_mul, mul_one, zero_add, Finset.range_one, Finset.product_singleton,
-      Finset.sum_map, Function.Embedding.coeFn_mk, norm_iteratedFDeriv_zero] at Z ⊢
+      Finset.sum_map, Function.Embedding.sectL_apply] at Z ⊢
     apply Z.trans
     conv_rhs => rw [← mul_one π]
     gcongr
     exact norm_innerSL_le _
   rcases eq_or_ne w 0 with rfl | hw
-  · simp [hn]
+  · rw [norm_zero, zero_pow hn, zero_mul]
     positivity
   rw [mul_le_mul_iff_right₀ (pow_pos (by simp [hw]) n)] at Z
   apply Z.trans
@@ -786,7 +784,6 @@ theorem deriv_fourier
   ext x
   exact (hasDerivAt_fourier hf hf' x).deriv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `2πI x`. -/
 theorem fourier_deriv
@@ -802,7 +799,6 @@ theorem fourier_deriv
   simp only [fourierSMulRight_apply, neg_apply, innerSL_apply_apply ℝ, smul_smul,
     RCLike.inner_apply', conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_fourier {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x ^ n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
@@ -819,7 +815,6 @@ theorem iteratedDeriv_fourier {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     simpa [innerSL_apply_apply _]
   simp only [← neg_mul, ← coe_smul, smul_smul, mul_pow, ofReal_pow, mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContDiff ℝ N f)
     (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedDeriv n f)) (hn : n ≤ N) :
     𝓕 (iteratedDeriv n f) = fun (x : ℝ) ↦ (2 * π * I * x) ^ n • (𝓕 f x) := by

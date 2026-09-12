@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 public import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -31,7 +32,7 @@ assert_not_exists Ideal TwoSidedIdeal
 open QuotientAddGroup Set ZMod
 open scoped IsMulCommutative
 
-variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
+variable (n : ℕ) {A : Type*} [AddGroup A]
 
 namespace Int
 
@@ -47,6 +48,14 @@ def quotientZMultiplesEquivZMod (a : ℤ) : ℤ ⧸ AddSubgroup.zmultiples a ≃
 @[simp]
 lemma index_zmultiples (a : ℤ) : (AddSubgroup.zmultiples a).index = a.natAbs := by
   rw [AddSubgroup.index, Nat.card_congr (quotientZMultiplesEquivZMod a).toEquiv, Nat.card_zmod]
+
+open AddSubgroup in
+/-- The relative index of `zmultiples a` in `zmultiples b` (as subgroups of `ℤ`, `a b : ℕ`),
+multiplied by `gcd a b`, is `a`. -/
+lemma relIndex_zmultiples_mul (a b : ℕ) :
+    (zmultiples (a : ℤ)).relIndex (zmultiples (b : ℤ)) * a.gcd b = a := by
+  rw [show a.gcd b = (zmultiples (a : ℤ) ⊔ zmultiples (b : ℤ)).index by simp [Int.zmultiples_sup],
+    ← relIndex_sup_left, relIndex_mul_index le_sup_left, index_zmultiples, Int.natAbs_natCast]
 
 end Int
 
@@ -165,12 +174,13 @@ theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
 variable {a}
 
 @[to_additive (attr := simp)]
-lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
-  simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
-    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, OneMemClass.coe_nonempty, true_and]
+lemma finite_zpowers : Finite (zpowers a) ↔ IsOfFinOrder a := by
+  simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, Nat.card_pos_iff]
+  exact (and_iff_right ⟨⟨1, one_mem _⟩⟩).symm
 
 @[to_additive (attr := simp)]
-lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not
+lemma infinite_zpowers : Infinite (zpowers a) ↔ ¬IsOfFinOrder a := by
+  rw [← not_finite_iff_infinite, finite_zpowers]
 
 @[to_additive]
 protected alias ⟨_, IsOfFinOrder.finite_zpowers⟩ := finite_zpowers
@@ -194,10 +204,9 @@ lemma quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G �
 
 lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
     quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
-  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
+  rw [← eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sum of minimal periods over all orbits equals the index `[G:H]`. -/
 lemma index_eq_sum_minimalPeriod (g : G) [Finite (G ⧸ H)]
     [Fintype (Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)))] :

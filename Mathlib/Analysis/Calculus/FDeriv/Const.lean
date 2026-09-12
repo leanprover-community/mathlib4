@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
 # Fréchet derivative of constant functions
@@ -22,7 +23,7 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Asymptotics Function Filter Set Metric
+open Asymptotics Function Filter Set
 open scoped Topology NNReal ENNReal
 
 noncomputable section
@@ -183,7 +184,7 @@ theorem differentiableWithinAt_ofNat (n : ℕ) [OfNat F n] :
     DifferentiableWithinAt 𝕜 (ofNat(n) : E → F) s x := differentiableWithinAt_const _
 
 theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 0 := by
-  rw [fderivWithin, if_pos]
+  rw [fderivWithin, ite_eq_left]
   apply hasFDerivWithinAt_const
 
 @[simp]

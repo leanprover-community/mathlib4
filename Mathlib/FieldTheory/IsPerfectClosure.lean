@@ -64,7 +64,7 @@ perfect ring, perfect closure, purely inseparable
 
 @[expose] public section
 
-open Module Polynomial IntermediateField Field
+open Field
 
 noncomputable section
 
@@ -77,14 +77,14 @@ def pNilradical (R : Type*) [CommSemiring R] (p : ℕ) : Ideal R := if 1 < p the
 theorem pNilradical_le_nilradical {R : Type*} [CommSemiring R] {p : ℕ} :
     pNilradical R p ≤ nilradical R := by
   by_cases hp : 1 < p
-  · rw [pNilradical, if_pos hp]
-  simp_rw [pNilradical, if_neg hp, bot_le]
+  · rw [pNilradical, ite_eq_left hp]
+  simp_rw [pNilradical, ite_eq_right hp, bot_le]
 
 theorem pNilradical_eq_nilradical {R : Type*} [CommSemiring R] {p : ℕ} (hp : 1 < p) :
-    pNilradical R p = nilradical R := by rw [pNilradical, if_pos hp]
+    pNilradical R p = nilradical R := by rw [pNilradical, ite_eq_left hp]
 
 theorem pNilradical_eq_bot {R : Type*} [CommSemiring R] {p : ℕ} (hp : ¬ 1 < p) :
-    pNilradical R p = ⊥ := by rw [pNilradical, if_neg hp]
+    pNilradical R p = ⊥ := by rw [pNilradical, ite_eq_right hp]
 
 theorem pNilradical_eq_bot' {R : Type*} [CommSemiring R] {p : ℕ} (hp : p ≤ 1) :
     pNilradical R p = ⊥ := pNilradical_eq_bot (not_lt.2 hp)

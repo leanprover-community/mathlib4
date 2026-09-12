@@ -297,7 +297,6 @@ noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The "projection" morphism in the factorization given by
 the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=

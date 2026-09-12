@@ -461,7 +461,7 @@ theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional 
     rw [← lift_inj, lift_top, lift_sup, lift_restrict le_sup_left, lift_restrict le_sup_right]
   have h₂ : A' ⊓ B' = ⊥ := by
     rw [← lift_inj, lift_bot, lift_inf, lift_restrict le_sup_left, lift_restrict le_sup_right, h]
-  have : IsGalois F A' := IsGalois.of_algEquiv <| restrict_algEquiv ..
+  have : IsGalois F A' := IsGalois.of_algEquiv <| restrictAlgEquiv ..
   exact of_inf_eq_bot_aux h₁ h₂
 
 @[simp]

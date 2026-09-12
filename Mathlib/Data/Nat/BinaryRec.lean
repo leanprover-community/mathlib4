@@ -96,7 +96,8 @@ decreasing_by
   obtain _ | n := n; · exact (n0 rfl).elim
   obtain _ | n := n; · simp
   have : (n + 1 + 1) >>> 1 ≠ 0 := Nat.div_ne_zero_iff.mpr ⟨by decide, le_add_left ..⟩
-  simpa only [if_neg n0, if_neg this, log2_eq_succ_log2_shiftRight this] using lt_succ_self _
+  simpa only [ite_eq_right n0, ite_eq_right this,
+    log2_eq_succ_log2_shiftRight this] using lt_succ_self _
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true` -/
@@ -172,7 +173,7 @@ theorem binaryRec_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit 
     unfold binaryRec
     exact h.symm
   case neg =>
-    rw [binaryRec, dif_neg h']
+    rw [binaryRec, dite_eq_right h']
     change congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one ▸ bit _ _ _ = _
     generalize congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
@@ -186,13 +187,13 @@ theorem binaryRec_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit 
 @[simp] theorem binaryRec'_one (zero : motive 0)
     (bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)) :
     binaryRec' (motive := motive) zero bit 1 = bit true 0 (by simp) zero := by
-  rw [binaryRec', binaryRec_one, dif_pos]
+  rw [binaryRec', binaryRec_one, dite_eq_left]
 
 theorem binaryRec'_eq {zero : motive 0}
     {bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)}
     (b n) (h : n = 0 → b = true) :
     binaryRec' zero bit (n.bit b) = bit b n h (binaryRec' zero bit n) := by
-  rw [binaryRec', binaryRec_eq _ _ (by simp), dif_pos h, binaryRec']
+  rw [binaryRec', binaryRec_eq _ _ (by simp), dite_eq_left h, binaryRec']
 
 @[simp] theorem binaryRecFromOne_zero (zero : motive 0) (one : motive 1)
     (bit : (b : Bool) → (n : Nat) → n ≠ 0 → motive n → motive (n.bit b)) :
@@ -202,13 +203,13 @@ theorem binaryRec'_eq {zero : motive 0}
 @[simp] theorem binaryRecFromOne_one {zero : motive 0} {one : motive 1}
     (bit : (b : Bool) → (n : Nat) → n ≠ 0 → motive n → motive (n.bit b)) :
     binaryRecFromOne zero one bit 1 = one := by
-  rw [binaryRecFromOne, binaryRec'_one, dif_pos rfl]
+  rw [binaryRecFromOne, binaryRec'_one, dite_eq_left rfl]
 
 theorem binaryRecFromOne_eq {zero : motive 0} {one : motive 1}
     {bit : (b : Bool) → (n : Nat) → n ≠ 0 → motive n → motive (n.bit b)}
     (b n) (h) :
     binaryRecFromOne zero one bit (Nat.bit b n) =
       bit b n h (binaryRecFromOne zero one bit n) := by
-  rw [binaryRecFromOne, binaryRec'_eq _ _ (by simp [h]), dif_neg h, binaryRecFromOne]
+  rw [binaryRecFromOne, binaryRec'_eq _ _ (by simp [h]), dite_eq_right h, binaryRecFromOne]
 
 end Nat

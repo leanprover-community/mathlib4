@@ -51,7 +51,7 @@ weak dual, seminorm
 
 variable {𝕜 E F : Type*}
 
-open Topology
+open scoped Topology
 
 section BilinForm
 
@@ -95,8 +95,9 @@ lemma dualEmbedding_injective_of_separatingRight (B : E →ₗ[𝕜] F →ₗ[�
 
 variable {ι 𝕜 E F : Type*}
 
-open Topology TopologicalSpace
-open scoped NNReal
+open TopologicalSpace
+
+open scoped Topology NNReal
 
 section
 
@@ -146,9 +147,9 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
       iSup_subtype]
     rw [Submodule.mem_iSup_iff_exists_finset]
   have t₁_group : @IsTopologicalAddGroup E t₁ _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+    isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
   have t₂_group (s : Finset ι) : @IsTopologicalAddGroup E (t₂ s) _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+    isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
   have t₁_smul : @ContinuousSMul 𝕜 E _ _ t₁ :=
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
@@ -165,7 +166,8 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
       c • (s.sup fun i ↦ (f i).toSeminorm) := by
   let t𝕜 : TopologicalSpace 𝕜 := inferInstance
   let t := ⨅ i, induced (f i) t𝕜
-  have : IsTopologicalAddGroup E := topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  have : IsTopologicalAddGroup E := isTopologicalAddGroup_iInf fun _ ↦
+    isTopologicalAddGroup_induced _
   have : WithSeminorms (fun i ↦ (f i).toSeminorm) := by
     simp_rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, nhds_iInf, nhds_induced, map_zero,
       ← comap_norm_nhds_zero (E := 𝕜), Filter.comap_comap]

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-! # Submodules of normed groups -/
 
@@ -24,16 +25,14 @@ instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module �
 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/
-@[simp]
+@[deprecated "use `norm_coe`" (since := "2026-08-25")]
 theorem coe_norm [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
     (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `E` is equal to its
-norm in `s`.
-
-This is a reversed version of the `simp` lemma `Submodule.coe_norm` for use by `norm_cast`. -/
-@[norm_cast]
+norm in `s`. -/
+@[simp ←, norm_cast]
 theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
     (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
@@ -45,6 +44,29 @@ instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Submodule
+
+namespace ClosedSubmodule
+
+/-- A closed submodule of a seminormed group is also a seminormed group, with the restriction of the
+norm. -/
+instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E]
+    (s : ClosedSubmodule 𝕜 E) : SeminormedAddCommGroup s :=
+  fast_instance% s.toSubmodule.seminormedAddCommGroup
+
+/-- If `x` is an element of a closed submodule `s` of a normed group `E`, its norm in `s` is equal
+to its norm in `E`. -/
+@[simp ←, norm_cast]
+theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : ClosedSubmodule 𝕜 E}
+    (x : s) : ‖(x : E)‖ = ‖x‖ :=
+  rfl
+
+/-- A closed submodule of a normed group is also a normed group, with the restriction of the norm.
+-/
+instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
+    (s : ClosedSubmodule 𝕜 E) : NormedAddCommGroup s :=
+  fast_instance% s.toSubmodule.normedAddCommGroup
+
+end ClosedSubmodule
 
 @[continuity, fun_prop]
 theorem LinearMap.continuous_domRestrict {R R' M M' : Type*} [Semiring R] [Semiring R']

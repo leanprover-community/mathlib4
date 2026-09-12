@@ -149,11 +149,11 @@ lemma r_eq_some {i : ι} {i' : ι'} (hi : e.f i = i') :
   have h : ∃ (i : ι), e.f i = i' := ⟨i, hi⟩
   have : h.choose = i := e.injective_f (h.choose_spec.trans (hi.symm))
   dsimp [r]
-  rw [dif_pos ⟨i, hi⟩, this]
+  rw [dite_eq_left ⟨i, hi⟩, this]
 
 lemma r_eq_none (i' : ι') (hi : ∀ i, e.f i ≠ i') :
     e.r i' = none :=
-  dif_neg (by
+  dite_eq_right (by
     rintro ⟨i, hi'⟩
     exact hi i hi')
 

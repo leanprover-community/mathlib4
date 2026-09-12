@@ -103,10 +103,10 @@ theorem mconv_zero (μ : Measure M) : μ ∗ₘ (0 : Measure M) = (0 : Measure M
 -- `mconv_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
 @[to_additive conv_smul_left]
-theorem mconv_smul_left (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+theorem mconv_smul_left [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
     (s • μ) ∗ₘ ν = s • (μ ∗ₘ ν) := by
   unfold mconv
-  rw [← Measure.map_smul, Measure.prod_smul_left]
+  rw [← Measure.map_smul _ (by fun_prop), Measure.prod_smul_left]
 
 @[to_additive]
 theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
@@ -158,9 +158,10 @@ theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
 
 @[to_additive]
 instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : Measure M)
-    [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
-    IsProbabilityMeasure (μ ∗ₘ ν) :=
-  isProbabilityMeasure_map (by fun_prop)
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    IsProbabilityMeasure (μ ∗ₘ ν) := by
+  rw [mconv]
+  infer_instance
 
 @[to_additive]
 theorem mconv_absolutelyContinuous [MeasurableMul₂ M] {μ ν ρ : Measure M}

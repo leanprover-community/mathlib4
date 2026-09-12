@@ -22,7 +22,9 @@ This file proves a dominated convergence theorem for infinite products of terms 
   `∏' k, (1 + f n k) → ∏' k, (1 + g k)`.
 -/
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 variable {α R β : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] {g : β → R}
   {bound : β → ℝ}
@@ -46,7 +48,7 @@ public theorem tendsto_tprod_one_add_of_dominated_convergence {𝓕 : Filter α}
       (fun i ↦ (norm_nonneg (g i)).trans (h_bound_g i)) h_sum)
       (tendsto_finsetProd · fun i _ ↦ hab i)
       (h_bound.mono fun n hn s ↦ (Finset.norm_prod_le s (f n)).trans
-      (Finset.prod_le_prod (by grind) (by grind)))
+      (Finset.prod_le_prod₀ (by grind) (by grind)))
   apply this.congr' (h_bound.mono fun n hn ↦ ?_)
   rw [tprod_one_add]
   exact summable_finsetProd_of_summable_norm <| h_sum.of_nonneg_of_le (by grind) hn

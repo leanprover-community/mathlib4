@@ -16,8 +16,6 @@ public import Mathlib.Tactic.Monotonicity.Attr
 
 public section
 
-open Function
-
 variable {β G M : Type*}
 
 section Monoid
@@ -157,7 +155,7 @@ section CovariantLESwap
 
 variable [Preorder β] [MulLeftMono M] [MulRightMono M]
 
-@[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
+@[to_additive (attr := mono, gcongr, to_dual self) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
   | k + 1 => by

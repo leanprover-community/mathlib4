@@ -55,13 +55,15 @@ variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 @[coe]
-def toCoalgEquiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
+def _root_.CoalgEquiv.ofClass [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
   { (f : A →ₗc[R] B), (SemilinearEquivClass.semilinearEquiv f : A ≃ₗ[R] B) with }
+
+@[deprecated (since := "2026-09-08")] alias toCoalgEquiv := CoalgEquiv.ofClass
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 instance instCoeToCoalgEquiv
     [EquivLike F A B] [CoalgEquivClass F R A B] : CoeHead F (A ≃ₗc[R] B) where
-  coe f := toCoalgEquiv f
+  coe f := .ofClass f
 
 end CoalgEquivClass
 
@@ -89,6 +91,7 @@ theorem toEquiv_inj {e₁ e₂ : A ≃ₗc[R] B} : e₁.toEquiv = e₂.toEquiv �
 theorem toCoalgHom_injective : Function.Injective (toCoalgHom : (A ≃ₗc[R] B) → A →ₗc[R] B) :=
   fun _ _ H => toEquiv_injective <| Equiv.ext <| CoalgHom.congr_fun H
 
+@[macro_inline]
 instance : EquivLike (A ≃ₗc[R] B) A B where
   coe e := e.toFun
   inv := CoalgEquiv.invFun
@@ -96,6 +99,7 @@ instance : EquivLike (A ≃ₗc[R] B) A B where
   left_inv := CoalgEquiv.left_inv
   right_inv := CoalgEquiv.right_inv
 
+@[macro_inline]
 instance : FunLike (A ≃ₗc[R] B) A B where
   coe := DFunLike.coe
   coe_injective := DFunLike.coe_injective
@@ -126,24 +130,29 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 variable (e e' : A ≃ₗc[R] B)
 
 @[simp, norm_cast]
-theorem coe_coe : ⇑(e : A →ₗc[R] B) = e :=
+theorem coe_ofClass : ⇑(ofClass e) = e := rfl
+
+@[simp, norm_cast]
+theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
   rfl
+
+@[deprecated (since := "2026-09-09")] alias coe_coe := coe_coalgHomOfClass
 
 @[nolint synTaut, deprecated "Now a syntactic tautology" (since := "2026-04-12")]
 theorem toLinearEquiv_eq_coe (f : A ≃ₗc[R] B) : f.toLinearEquiv = f :=
   rfl
 
 @[simp]
-theorem toCoalgHom_eq_coe (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
+theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
   rfl
+
+@[deprecated (since := "2026-09-09")] alias toCoalgHom_eq_coe := toCoalgHom_eq_ofClass
 
 @[simp]
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
-@[simp]
-theorem coe_toCoalgHom : ⇑(e : A →ₗc[R] B) = e :=
-  rfl
+@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := coe_coalgHomOfClass
 
 theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
   rfl
@@ -173,8 +182,8 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
       change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
-      simp only [TensorProduct.congr, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
-        LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
+      simp only [TensorProduct.congr, toCoalgHom_eq_ofClass, CoalgHom.toLinearMap_eq_ofClass,
+        LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
       rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
 /-- See Note [custom simps projection] -/
@@ -311,9 +320,9 @@ structure on `B`. -/
       ← LinearMap.comp_assoc]
     congr 1
     ext x
-    simpa only [toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp,
+    simpa only [toCoalgHom_eq_ofClass, CoalgHom.toLinearMap_eq_ofClass, LinearMap.coe_comp,
       LinearEquiv.coe_coe, Function.comp_apply, ← (ℛ R _).eq, map_sum, TensorProduct.map_tmul,
-      LinearMap.coe_coe, CoalgHom.coe_coe, LinearMap.rTensor_tmul, coe_symm_toLinearEquiv,
+      LinearMap.coe_ofClass, CoalgHom.coe_ofClass, LinearMap.rTensor_tmul, coe_symm_toLinearEquiv,
       symm_apply_apply, LinearMap.lTensor_comp_map, TensorProduct.sum_tmul,
       TensorProduct.assoc_tmul, TensorProduct.tmul_sum] using (sum_map_tmul_tmul_eq f f f x).symm
   rTensor_counit_comp_comul := by

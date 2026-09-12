@@ -20,7 +20,7 @@ with all a.e. equalities replaced with equalities in the quotient space.
 
 public section
 
-open Function Set Filter MeasureTheory Topology TopologicalSpace
+open Function Set Filter MeasureTheory TopologicalSpace
 
 variable {α X : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 

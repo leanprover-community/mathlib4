@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
@@ -106,9 +107,8 @@ open scoped NNReal Topology ContDiff
 universe u uE uF uG uX
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] {X : Type uX} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-  {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F} {m n : ℕ∞ω}
+  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {s s₁ t u : Set E} {f f₁ : E → F} {x : E} {m n : ℕ∞ω}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Smooth functions within a set around a point -/
@@ -303,7 +303,7 @@ theorem ContDiffWithinAt.congr_mono
 
 theorem ContDiffWithinAt.congr_set (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
     (hst : s =ᶠ[𝓝 x] t) : ContDiffWithinAt 𝕜 n f t x := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet] at hst
   apply h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
 
 theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
@@ -312,7 +312,7 @@ theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
 
 theorem contDiffWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContDiffWithinAt 𝕜 n f (s ∩ t) x ↔ ContDiffWithinAt 𝕜 n f s x :=
-  contDiffWithinAt_congr_set (mem_nhdsWithin_iff_eventuallyEq.1 h).symm
+  contDiffWithinAt_congr_set (mem_nhdsWithin_iff_eventuallyEqSet.1 h).symm
 
 theorem contDiffWithinAt_inter (h : t ∈ 𝓝 x) :
     ContDiffWithinAt 𝕜 n f (s ∩ t) x ↔ ContDiffWithinAt 𝕜 n f s x :=
@@ -794,7 +794,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     with ⟨u, uo, xu, hu⟩
   set t := insert x s ∩ u
   have A : t =ᶠ[𝓝[≠] x] s := by
-    simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']
+    simp only [eventuallyEqSet_iff_inf_principal, ← nhdsWithin_inter']
     rw [← inter_assoc, nhdsWithin_inter_of_mem', ← sdiff_eq_compl_inter, insert_sdiff_of_mem,
       sdiff_eq_compl_inter]
     exacts [rfl, mem_nhdsWithin_of_mem_nhds (uo.mem_nhds xu)]
@@ -1173,7 +1173,7 @@ theorem contDiff_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiff 𝕜 (n + 1) f ↔
       ∃ f' : E → E →L[𝕜] F, ContDiff 𝕜 n f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
   simp only [← contDiffOn_univ, ← hasFDerivWithinAt_univ, Set.mem_univ, forall_true_left,
-    contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn uniqueDiffOn_univ,
+    contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn, uniqueDiffOn_univ,
     WithTop.natCast_ne_top, analyticOn_univ, false_implies, true_and]
 
 theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
@@ -1221,7 +1221,7 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
         ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
   simp [contDiffOn_univ.symm, continuousOn_univ, differentiableOn_univ.symm,
-    iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
+    iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn, uniqueDiffOn_univ]
 
 theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
     ContDiff 𝕜 n f ↔
@@ -1257,7 +1257,7 @@ theorem contDiff_succ_iff_fderiv :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧ (n = ω → AnalyticOnNhd 𝕜 f univ) ∧
       ContDiff 𝕜 n (fderiv 𝕜 f) := by
   simp only [← contDiffOn_univ, ← differentiableOn_univ, ← fderivWithin_univ,
-    contDiffOn_succ_iff_fderivWithin uniqueDiffOn_univ, analyticOn_univ]
+    contDiffOn_succ_iff_fderivWithin, uniqueDiffOn_univ, analyticOn_univ]
 
 theorem contDiff_one_iff_fderiv :
     ContDiff 𝕜 1 f ↔ Differentiable 𝕜 f ∧ Continuous (fderiv 𝕜 f) := by

@@ -23,7 +23,6 @@ pointwise subtraction
 
 assert_not_exists MulAction IsOrderedMonoid Field
 
-open Function
 open scoped Pointwise
 
 variable {α : Type*}

@@ -43,24 +43,22 @@ variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableS
 
 lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : X =ᵐ[P] Y) :
     HasGaussianLaw Y P where
+  aemeasurable := hX.aemeasurable.congr h
   isGaussian_map := by
     rw [← Measure.map_congr h]
     exact hX.isGaussian_map
 
-lemma IsGaussian.hasGaussianLaw [IsGaussian (P.map X)] : HasGaussianLaw X P where
+lemma IsGaussian.hasGaussianLaw [IsGaussian (P.map X)] (hX : AEMeasurable X P) :
+    HasGaussianLaw X P where
   isGaussian_map := inferInstance
 
 variable {mE} in
 lemma IsGaussian.hasGaussianLaw_id {μ : Measure E} [IsGaussian μ] : HasGaussianLaw id μ where
   isGaussian_map := by rwa [Measure.map_id]
 
-@[fun_prop]
-lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P :=
-  AEMeasurable.of_map_ne_zero hX.isGaussian_map.toIsProbabilityMeasure.ne_zero
-
 lemma HasGaussianLaw.isProbabilityMeasure (hX : HasGaussianLaw X P) : IsProbabilityMeasure P :=
     haveI := hX.isGaussian_map
-    P.isProbabilityMeasure_of_map X
+    P.isProbabilityMeasure_of_map hX.aemeasurable
 
 variable {mE} in
 lemma HasLaw.hasGaussianLaw {μ : Measure E} (hX : HasLaw X μ P) [IsGaussian μ] :
@@ -91,9 +89,7 @@ variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E
 
 lemma of_subsingleton [NormedSpace ℝ E] [Subsingleton E] [IsProbabilityMeasure P] :
     HasGaussianLaw X P where
-  isGaussian_map := by
-    have : IsProbabilityMeasure (P.map X) := P.isProbabilityMeasure_map (by fun_prop)
-    exact .of_subsingleton
+  isGaussian_map := .of_subsingleton
 
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
     charFun (P.map X) t = exp ((P[fun ω ↦ ⟪t, X ω⟫] : ℝ) * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
@@ -106,7 +102,7 @@ lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFun_map_eq [CompleteSpace 
     charFun (P.map X) t = exp ((P[fun ω ↦ ⟪t, X ω⟫] : ℝ) * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) where
   mp h := h.charFun_map_eq
   mpr h := by
-    refine ⟨isGaussian_iff_charFun_eq.2 fun t ↦ ?_⟩
+    refine ⟨hX, isGaussian_iff_charFun_eq.2 fun t ↦ ?_⟩
     rw [h, integral_map, variance_map, integral_complex_ofReal, Function.comp_def]
     all_goals fun_prop
 
@@ -123,7 +119,7 @@ lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFunDual_map_eq
     charFunDual (P.map X) L = exp ((P[L ∘ X] : ℝ) * I - Var[L ∘ X; P] / 2) where
   mp h := h.charFunDual_map_eq
   mpr h := by
-    refine ⟨isGaussian_iff_charFunDual_eq.2 fun t ↦ ?_⟩
+    refine ⟨hX, isGaussian_iff_charFunDual_eq.2 fun t ↦ ?_⟩
     rw [h, integral_map, variance_map, integral_complex_ofReal, Function.comp_def]
     all_goals fun_prop
 

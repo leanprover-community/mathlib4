@@ -120,7 +120,7 @@ lemma Cotangent.exact :
     obtain ⟨y, hy, e⟩ := hx
     rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
-    let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
+    let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_right hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
@@ -251,7 +251,7 @@ lemma δAux_mul (x y) :
   | monomial n r =>
     induction y using MvPolynomial.induction_on' with
     | monomial m s =>
-      simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
+      simp only [monomial_mul_monomial, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
         smul_tmul', Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
       rw [mul_comm (m.prod _) (n.prod _)]
       simp only [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']
@@ -485,7 +485,6 @@ private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
       ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
         (Q.comp P).toExtension.cotangentComplex.ker := by
   induction z with
-  | zero => simp
   | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
@@ -510,7 +509,6 @@ theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
       P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
   rcases x_in with ⟨x, rfl⟩
   use x; induction x with
-  | zero => ext; simp
   | tmul x y => ext; simp
   | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
 

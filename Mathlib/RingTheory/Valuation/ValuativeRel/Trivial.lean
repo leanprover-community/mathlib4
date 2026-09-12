@@ -28,8 +28,6 @@ namespace ValuativeRel
 variable {R Γ : Type} [Ring R] [DecidableEq R] [IsDomain R]
   [LinearOrderedCommGroupWithZero Γ]
 
-open WithZero
-
 /-- The trivial valuative relation on a domain `R`, such that all non-zero elements are related.
 The domain condition is necessary so that the relation is closed when multiplying.
 -/

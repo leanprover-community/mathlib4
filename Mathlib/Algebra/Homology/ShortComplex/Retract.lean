@@ -27,7 +27,6 @@ variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   {f₁ : S₁ ⟶ T₁} {f₂ : S₂ ⟶ T₂}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_of_retract (h : RetractArrow f₁ f₂) [hf₂ : QuasiIso f₂] :
     QuasiIso f₁ := by
   rw [quasiIso_iff] at hf₂ ⊢

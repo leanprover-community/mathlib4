@@ -96,7 +96,7 @@ lemma closure_le_centralizer_centralizer (s : Set M) :
 @[to_additive
 /-- If all the elements of a set `s` commute, then `closure s` forms an additive
 commutative monoid. -/]
-theorem isMulCommutative_closure {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+theorem isMulCommutative_closure {s : Set M} (hcomm : s.Pairwise Commute) :
     IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -107,7 +107,7 @@ open scoped IsMulCommutative
 @[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-09"))
 /-- If all the elements of a set `s` commute, then `closure s` forms an additive
 commutative monoid. -/]
-abbrev closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+abbrev closureCommMonoidOfComm {s : Set M} (hcomm : s.Pairwise Commute) :
     CommMonoid (closure s) :=
   haveI := isMulCommutative_closure _ hcomm
   inferInstance
@@ -115,7 +115,7 @@ abbrev closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
 @[to_additive]
 instance instIsMulCommutative_closure {S : Type*} [SetLike S M] [MulMemClass S M] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set M)) :=
-  isMulCommutative_closure _ fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure _ fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 end
 

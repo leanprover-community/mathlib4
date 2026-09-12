@@ -17,7 +17,9 @@ they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 @[expose] public section
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SimplexCategory
 
@@ -124,14 +126,14 @@ def σ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by lia) : ⦋m⦌ ⟶ ⦋
 lemma σ₀Iter_coe_eq_of_lt (i : ℕ) {n m : ℕ}
     (j : Fin (m + 1)) (hi : n + i = m := by lia) (hj : j.val < i := by grind) :
     dsimp% (σ₀Iter i hi j).val = 0 := by
-  simp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom, if_pos hj]
+  simp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom, ite_eq_left hj]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma σ₀Iter_coe_eq_of_ge (i : ℕ) {n m : ℕ}
     (j : Fin (m + 1)) (hi : n + i = m := by lia) (hj : i ≤ j.val := by grind) :
     dsimp% (σ₀Iter i hi j).val = j.val - i := by
   dsimp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom]
-  rw [if_neg (by lia)]
+  rw [ite_eq_right (by lia)]
 
 lemma σ₀Iter_coe_eq_of_le (i : ℕ) {n m : ℕ}
     (j : Fin (m + 1)) (hi : n + i = m := by lia) (hj : j.val ≤ i := by grind) :

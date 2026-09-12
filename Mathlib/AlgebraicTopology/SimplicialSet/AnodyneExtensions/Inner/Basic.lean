@@ -29,7 +29,9 @@ public section
 
 universe u
 
-open CategoryTheory HomotopicalAlgebra Simplicial
+open CategoryTheory HomotopicalAlgebra
+
+open scoped Simplicial
 
 namespace SSet
 

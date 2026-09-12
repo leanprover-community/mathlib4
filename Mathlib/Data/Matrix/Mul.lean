@@ -57,8 +57,8 @@ assert_not_exists Algebra Field TrivialStar
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {l m n o : Type*}
+variable {R : Type*} {S : Type*} {α : Type v} {β : Type w}
 
 open Matrix
 
@@ -158,7 +158,7 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalNonAssocSemiringDecidable
 
-variable [DecidableEq m] [NonUnitalNonAssocSemiring α] (u v w : m → α)
+variable [DecidableEq m] [NonUnitalNonAssocSemiring α] (v w : m → α)
 
 @[simp]
 theorem diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
@@ -862,6 +862,16 @@ theorem single_vecMul_diagonal [Fintype n] [DecidableEq n] [NonUnitalNonAssocSem
   ext i
   rw [vecMul_diagonal]
   exact Pi.apply_single (fun i x => x * v i) (fun i => zero_mul _) j x i
+
+theorem col_mul_eq_mulVec_col [NonUnitalNonAssocSemiring R] [Fintype m]
+    {M : Matrix l m R} {N : Matrix m n R} {i : n} :
+    (M * N).col i = M *ᵥ N.col i :=
+  rfl
+
+theorem row_mul_eq_vecMul_row [NonUnitalNonAssocSemiring R] [Fintype m]
+    {M : Matrix l m R} {N : Matrix m n R} {i : l} :
+    (M * N).row i = M.row i ᵥ* N :=
+  rfl
 
 end NonUnitalNonAssocSemiring
 

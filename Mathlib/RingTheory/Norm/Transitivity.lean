@@ -49,28 +49,31 @@ def auxMat : Matrix m m S :=
 /-- `aux M k` is lower triangular. -/
 lemma auxMat_blockTriangular : (auxMat M k).BlockTriangular (· ≠ k) :=
   fun i j lt ↦ by
+    let := Prop.linearOrder
     simp_rw [lt_iff_not_ge, le_Prop_eq, Classical.not_imp, not_not] at lt
-    rw [auxMat, of_apply, if_pos lt.2, if_neg lt.1]
+    rw [auxMat, of_apply, ite_eq_left lt.2, ite_eq_right lt.1]
 
 lemma auxMat_toSquareBlock_ne : (auxMat M k).toSquareBlock (· ≠ k) True = M k k • 1 := by
   ext i j
-  simp [auxMat, toSquareBlock_def, if_neg (of_eq_true i.2), if_neg (of_eq_true j.2),
+  simp [auxMat, toSquareBlock_def, ite_eq_right (of_eq_true i.2), ite_eq_right (of_eq_true j.2),
     Matrix.one_apply, Subtype.ext_iff]
 
 lemma auxMat_toSquareBlock_eq : (auxMat M k).toSquareBlock (· ≠ k) False = 1 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [eq_iff_iff, iff_false, not_not] at hi hj
-  simp [auxMat, toSquareBlock_def, if_pos hi, if_pos hj, Matrix.one_apply, if_pos (hj ▸ hi)]
+  simp [auxMat, toSquareBlock_def, ite_eq_left hi, ite_eq_left hj, Matrix.one_apply,
+    ite_eq_left (hj ▸ hi)]
 
 variable [Fintype m]
 
 /-- `M * aux M k` is upper triangular. -/
 lemma mul_auxMat_blockTriangular : (M * auxMat M k).BlockTriangular (· = k) :=
   fun i j lt ↦ by
+    let := Prop.linearOrder
     simp_rw [lt_iff_not_ge, le_Prop_eq, Classical.not_imp] at lt
-    simp_rw [Matrix.mul_apply, auxMat, of_apply, if_neg lt.2, mul_ite, mul_neg, mul_zero]
-    rw [Finset.sum_ite, Finset.filter_eq', if_pos (Finset.mem_univ _), Finset.sum_singleton,
-      Finset.sum_ite_eq', if_pos, lt.1, mul_comm, neg_add_cancel]
+    simp_rw [Matrix.mul_apply, auxMat, of_apply, ite_eq_right lt.2, mul_ite, mul_neg, mul_zero]
+    rw [Finset.sum_ite, Finset.filter_eq', ite_eq_left (Finset.mem_univ _), Finset.sum_singleton,
+      Finset.sum_ite_eq', ite_eq_left, lt.1, mul_comm, neg_add_cancel]
     exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, lt.2⟩
 
 /-- The lower-right corner of `M * aux M k` is the same as the corner of `M`. -/
@@ -88,6 +91,7 @@ scoped notation "mulAuxMatBlock" => (M * auxMat M k).toSquareBlock (· = k) Fals
 
 lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by
+  let := Prop.linearOrder
   trans (M * auxMat M k).det
   · simp [det_mul, (auxMat_blockTriangular M k).det_fintype,
       auxMat_toSquareBlock_ne, auxMat_toSquareBlock_eq]
@@ -128,6 +132,7 @@ lemma eval_zero_comp_det :
 theorem comp_det_mul_pow :
     ((M.map f).comp m m n n R).det * (f (M k k)).det ^ (Fintype.card m - 1) =
       (f (M k k)).det * (((mulAuxMatBlock).map f).comp _ _ n n R).det := by
+  let := Prop.linearOrder
   trans (((M * auxMat M k).map f).comp m m n n R).det
   · simp_rw [← f.mapMatrix_apply, ← compRingEquiv_apply, map_mul, det_mul, f.mapMatrix_apply,
       compRingEquiv_apply, ((auxMat_blockTriangular M k).map f).comp.det_fintype, Fintype.prod_Prop,
@@ -219,7 +224,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L
   rw [← norm_norm (S := F), ← coe_gen K x, ← IntermediateField.algebraMap_apply,
     norm_algebraMap_of_basis (Module.Free.chooseBasis F L) (gen K x), map_pow]
   apply IsIntegral.pow
-  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure F)).injective,
+  rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure K),
     norm_gen_eq_prod_roots _ (IsAlgClosed.splits _)]
   refine IsIntegral.multiset_prod (fun y hy ↦ ⟨minpoly R x, minpoly.monic hx, ?_⟩)
   suffices (aeval y) ((minpoly R x).map (algebraMap R K)) = 0 by simpa

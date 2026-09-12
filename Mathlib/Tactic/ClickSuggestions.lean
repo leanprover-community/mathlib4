@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
-public import Mathlib.Tactic.Widget.Conv
 public meta import Mathlib.Lean.Meta.KAbstractPositions
 public meta import Lean.Server.FileWorker.RequestHandling
+public import Lean.Widget.InteractiveGoal
+public meta import Mathlib.Lean.GoalsLocation
+public import ProofWidgets.Component.OfRpcMethod
 
 /-!
 # Point & click suggestions

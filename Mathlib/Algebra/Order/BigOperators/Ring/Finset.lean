@@ -80,11 +80,23 @@ theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [CommMonoid M]
 
 end OrderedCommSemiring
 
-theorem sum_mul_self_eq_zero_iff [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
-    [ExistsAddOfLE R] (s : Finset ι)
-    (f : ι → R) : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+section StrictOrderedRing
+
+variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
+    (s : Finset ι) (f : ι → R)
+
+theorem sum_mul_self_eq_zero_iff : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
   rw [sum_eq_zero_iff_of_nonneg fun _ _ ↦ mul_self_nonneg _]
   simp
+
+theorem sum_sq_eq_zero_iff : ∑ i ∈ s, f i ^ 2 = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  grind [sq_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
+
+theorem sum_pow_eq_zero_iff_of_even {n : ℕ} (hn : n ≠ 0) (heven : Even n) :
+    ∑ i ∈ s, f i ^ n = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  grind [Even.pow_nonneg, Finset.sum_eq_zero_iff_of_nonneg, pow_eq_zero_iff]
+
+end StrictOrderedRing
 
 lemma abs_prod [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=

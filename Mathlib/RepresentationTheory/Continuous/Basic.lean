@@ -5,9 +5,10 @@ Authors: Edison Xie
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 ## Continuous representations
@@ -55,6 +56,7 @@ structure ContRepresentation where
   /-- The underlying monoid homomorphism of a continuous representation. -/
   toMonoidHom : G →* V →L[R] V
 
+@[macro_inline]
 instance : FunLike (ContRepresentation R G V) G (V →L[R] V) where
   coe π := π.toMonoidHom
   coe_injective π₁ π₂ _ := by cases π₁; cases π₂; simp_all
@@ -124,6 +126,7 @@ lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresenta
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toFun := fun f g h ↦ by
   ext x; exact congr_fun h x
 
+@[macro_inline]
 instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     FunLike (π₁ →ⁱL π₂) V W where
   coe f := f.toFun
@@ -320,6 +323,7 @@ lemma toContinuousLinearEquiv_inj (φ ψ : σ.Equiv ρ) :
     φ.toContinuousLinearEquiv = ψ.toContinuousLinearEquiv ↔ φ = ψ :=
   toContinuousLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (Equiv ρ σ) V W where
   coe φ := φ.toContinuousLinearEquiv
   inv φ := φ.invFun

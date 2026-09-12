@@ -28,7 +28,7 @@ We provide the complete lattice structure and the basic functoriality properties
 
 universe w v u
 
-open Opposite CategoryTheory ConcreteCategory
+open CategoryTheory
 
 namespace CategoryTheory
 
@@ -54,7 +54,7 @@ lemma map_le {U V : C} (f : U ⟶ V) : (S.obj U).map (M.map f).hom ≤ S.obj V :
 /-- The functor of monoids associated to a functor of submonoids. -/
 @[simps obj map]
 def toFunctor : C ⥤ MonCat.{w} where
-  obj _ := MonCat.of (S.obj _)
+  obj _ := ↧(S.obj _)
   map i :=
     MonCat.ofHom <| ((M.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
 

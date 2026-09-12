@@ -21,12 +21,11 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
   minimal degree version of the **Erdős-Stone theorem** for simple graphs.
 -/
 
-open Filter Finset Fintype Real Topology
+open Filter Finset Fintype Real
 
 namespace SimpleGraph
 
 variable {n : ℕ} {G : SimpleGraph (Fin n)} [DecidableRel G.Adj]
-  {W : Type*} [Fintype W] {H : SimpleGraph W}
 
 section ErdosStone
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Map₂ Lemmas
@@ -30,15 +31,13 @@ assert_not_exists Prod.swap_eq_iff_eq_swap
 assert_not_exists Ring
 assert_not_exists Set.range
 
-open Function
-
 open Nat hiding one_pos
 
 namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-! ### map₂Left' -/
 

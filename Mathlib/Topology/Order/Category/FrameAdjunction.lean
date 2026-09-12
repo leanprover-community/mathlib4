@@ -41,7 +41,7 @@ topological space, frame, locale, Stone duality, adjunction, points
 
 @[expose] public section
 
-open CategoryTheory Order Set Topology TopologicalSpace
+open CategoryTheory Order Set TopologicalSpace
 
 namespace Locale
 
@@ -59,7 +59,7 @@ points of `L`. -/
 @[simps]
 def openOfElementHom : FrameHom L (Set (PT L)) where
   toFun u := {x | x u}
-  map_inf' a b := by simp [Set.setOf_and]
+  map_inf' a b := by simp [Set.ofPred_and]
   map_top' := by simp
   map_sSup' S := by ext; simp [Prop.exists_iff]
 
@@ -73,7 +73,7 @@ instance instTopologicalSpace : TopologicalSpace (PT L) where
   isOpen_sUnion S hS := by
     choose f hf using hS
     use ⨆ t, ⨆ ht, f t ht
-    simp_rw [map_iSup, iSup_Prop_eq, setOf_exists, hf, sUnion_eq_biUnion]
+    simp_rw [map_iSup, iSup_Prop_eq, ofPred_exists, hf, sUnion_eq_biUnion]
 
 /-- Characterization of when a subset of the space of points is open. -/
 lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff.rfl
@@ -85,7 +85,7 @@ topological spaces, which sends a locale `L` to the topological space `PT L` of 
 from `L` to `Prop` and a locale homomorphism `f` to a continuous function between the spaces
 of points. -/
 def pt : Locale ⥤ TopCat where
-  obj L := .of (PT L.unop)
+  obj L := ↧(PT L.unop)
   map f := TopCat.ofHom ⟨fun p ↦ p.comp f.unop.hom,
     continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
 

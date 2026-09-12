@@ -29,7 +29,7 @@ def liouville : ArithmeticFunction ℤ where
   map_zero' := by simp
 
 theorem liouville_apply {n : ℕ} (h : n ≠ 0) : liouville n = (-1) ^ cardFactors n :=
-  if_neg h
+  ite_eq_right h
 
 theorem liouville_ne_zero {n : ℕ} (h : n ≠ 0) : liouville n ≠ 0 := by
   simp [liouville_apply h]
