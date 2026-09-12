@@ -1063,6 +1063,7 @@ abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder �
   le_total _ _ := .inl trivial
   lt_iff_le_not_ge _ _ := by simp
   toDecidableLE _ _ := instDecidableTrue
+  toDecidableLT _ _ := instDecidableFalse
 
 instance : LinearOrder Empty := .ofSubsingleton
 instance : LinearOrder PEmpty := .ofSubsingleton

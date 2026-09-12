@@ -218,6 +218,8 @@ noncomputable instance : LinearOrder (DedekindCut α) where
   max_def x y := congrFun₂ sup_eq_maxDefault x y
   le_total := total_of _
   toDecidableLE := inferInstance
+  toDecidableEq := decidableEqOfDecidableLE
+  toDecidableLT := decidableLTOfDecidableLE
 
 /-- Use `DedekindCut.lt_iff_exists'` for a version with `<` and `≤` swapped -/
 theorem lt_iff_exists {a b : DedekindCut α} :

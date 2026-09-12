@@ -223,6 +223,8 @@ def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChai
   le_total :=
     fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ eq_or_ne a b |>.elim (by simp [·]) (hs ha hb · |>.imp (·.le) (·.le))
   toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
+  toDecidableEq := decidableEqOfDecidableLE
+  toDecidableLT := decidableLTOfDecidableLE
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
