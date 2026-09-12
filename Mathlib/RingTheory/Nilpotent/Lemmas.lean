@@ -77,9 +77,9 @@ lemma Ideal.radical_span_singleton_eq_span_radical [UniqueFactorizationMonoid R]
   apply le_antisymm
   · rw [Ideal.IsRadical.radical_le_iff]
     · rw [Ideal.span_singleton_le_span_singleton]
-      exact UniqueFactorizationMonoid.radical_dvd_self
+      exact radical_dvd_self
     · rw [← isRadical_iff_span_singleton]
-      exact UniqueFactorizationMonoid.isRadical_radical
+      exact isRadical_radical
   · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
     exact exists_dvd_radical_self_pow h
 
