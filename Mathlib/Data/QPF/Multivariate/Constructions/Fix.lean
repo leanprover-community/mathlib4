@@ -68,7 +68,7 @@ theorem recF_eq {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (a
 
 set_option backward.isDefEq.respectTransparency false in
 theorem recF_eq' {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (x : q.P.W α) :
-    recF g x = g (abs (appendFun id (recF g) <$$> q.P.wDest' x)) := by
+    recF g x = g (abs (MvPFunctor.map _ (appendFun id (recF g)) (q.P.wDest' x))) := by
   induction x using q.P.wCases
   case ih a f' f =>
     rw [recF_eq, q.P.wDest'_wMk, MvPFunctor.map_eq, appendFun_comp_splitFun, TypeVec.id_comp]
@@ -123,21 +123,23 @@ def wrepr {α : TypeVec n} : q.P.W α → q.P.W α :=
 theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
     (f : q.P.last.B a → q.P.W α) :
     wrepr (q.P.wMk a f' f) =
-      q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) := by
+      q.P.wMk' (repr (abs
+        (MvPFunctor.map _ (appendFun id wrepr) ⟨a, q.P.appendContents f' f⟩))) := by
   rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
   induction x using q.P.wInd
   case ih a f' f ih =>
-    apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
+    apply WEquiv.trans _ (q.P.wMk'
+      (MvPFunctor.map _ (appendFun id wrepr) ⟨a, q.P.appendContents f' f⟩))
     · apply wEquiv.abs'
       rw [wrepr_wMk, q.P.wDest'_wMk', q.P.wDest'_wMk', abs_repr]
     rw [q.P.map_eq, MvPFunctor.wMk', appendFun_comp_splitFun, id_comp]
     apply WEquiv.ind; exact ih
 
 theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
-    WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
+    WEquiv x y → WEquiv (MvPFunctor.map _ g x) (MvPFunctor.map _ g y) := by
   intro h; induction h with
   | ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
   | abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
@@ -187,7 +189,7 @@ def fixToW : Fix F α → q.P.W α :=
 
 /-- Constructor for `Fix F` -/
 def Fix.mk (x : F (append1 α (Fix F α))) : Fix F α :=
-  Quot.mk _ (q.P.wMk' (appendFun id fixToW <$$> repr x))
+  Quot.mk _ (q.P.wMk' (MvPFunctor.map _ (appendFun id fixToW) (repr x)))
 
 /-- Destructor for `Fix F` -/
 def Fix.dest : Fix F α → F (append1 α (Fix F α)) :=
