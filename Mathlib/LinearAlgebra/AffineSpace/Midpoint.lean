@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Daniel Liao
 -/
 module
 
@@ -24,7 +24,8 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 * `midpoint_unique`: `midpoint R x y` does not depend on `R`;
 * `midpoint x y` is linear both in `x` and `y`;
 * `pointReflection_midpoint_left`, `pointReflection_midpoint_right`:
-  `Equiv.pointReflection (midpoint R x y)` swaps `x` and `y`.
+  `Equiv.pointReflection (midpoint R x y)` swaps `x` and `y`;
+* `midpoint_midpoint_midpoint_rotate`: **Varignon's theorem**.
 
 We do not mark most lemmas as `@[simp]` because it is hard to tell which side is simpler.
 
@@ -225,6 +226,22 @@ theorem midpoint_vsub_midpoint_same_left (p₁ p₂ p₃ : P) :
 theorem midpoint_vsub_midpoint_same_right (p₁ p₂ p₃ : P) :
     midpoint R p₁ p₃ -ᵥ midpoint R p₂ p₃ = (⅟2 : R) • (p₁ -ᵥ p₂) := by
   rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, add_zero]
+
+/-- The shared point `p₂` is the right argument of the first midpoint and the left argument of
+the second. The vector from `midpoint R p₂ p₃` to `midpoint R p₁ p₂` is half the vector from
+`p₃` to `p₁`. -/
+theorem midpoint_vsub_midpoint_same_middle (p₁ p₂ p₃ : P) :
+    midpoint R p₁ p₂ -ᵥ midpoint R p₂ p₃ = (⅟2 : R) • (p₁ -ᵥ p₃) := by
+  rw [midpoint_vsub_midpoint, midpoint_eq_smul_add, vsub_add_vsub_cancel]
+
+/-- **Varignon's theorem**: the midpoints of the sides of the quadrilateral `p₁ p₂ p₃ p₄` form a
+parallelogram. The statement says that the two diagonals of this parallelogram have the same
+midpoint. See <https://en.wikipedia.org/wiki/Varignon%27s_theorem>. -/
+theorem midpoint_midpoint_midpoint_rotate (p₁ p₂ p₃ p₄ : P) :
+    midpoint R (midpoint R p₁ p₂) (midpoint R p₃ p₄) =
+      midpoint R (midpoint R p₂ p₃) (midpoint R p₄ p₁) := by
+  rw [midpoint_eq_midpoint_iff_vsub_eq_vsub, midpoint_vsub_midpoint_same_middle,
+    midpoint_comm p₃ p₄, midpoint_vsub_midpoint_same_left]
 
 end
 
