@@ -287,6 +287,81 @@ end InnerProductSpace
 
 end BesselPotentialSpace
 
+namespace SchwartzMap
+
+section NormedSpace
+
+variable [NormedSpace ℂ F]
+
+open scoped BesselPotentialSpace
+
+variable {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+
+variable (E F s p) in
+/-- The embedding of Schwartz functions into the Sobolev space. -/
+def toBesselPotentialSpace : 𝓢(E, F) →L[ℂ] H^{s, p}(E, F) :=
+  (BesselPotentialSpace.toLpₗᵢ E F s p).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
+  toLpCLM ℂ F p (volume : Measure E) ∘L
+  SchwartzMap.fourierMultiplierCLM F (fun x ↦ Complex.ofReal ((1 + ‖x‖ ^ 2) ^ (s / 2)))
+
+theorem toBesselPotentialSpace_apply (f : 𝓢(E, F)) :
+  f.toBesselPotentialSpace E F s p = BesselPotentialSpace.ofLp s
+    ((f.fourierMultiplierCLM F (fun x ↦ Complex.ofReal ((1 + ‖x‖ ^ 2) ^ (s / 2)))).toLp p) := by rfl
+
+@[simp]
+theorem toDistr_toBesselPotentialSpace (f : 𝓢(E, F)) :
+    (f.toBesselPotentialSpace E F s p).toDistr = f := by
+  rw [toBesselPotentialSpace_apply, BesselPotentialSpace.toDistr_ofLp,
+    Lp.toTemperedDistribution_toLp_eq, ← fourierMultiplierCLM_toTemperedDistributionCLM_eq
+    (by fun_prop), ← besselPotential]
+  simp
+
+theorem toLp_toBesselPotentialSpace_eq_toLp_of_eq_zero (f : 𝓢(E, F)) (hs : s = 0) :
+    (f.toBesselPotentialSpace E F s p).toLp = f.toLp p := by
+  simp [toBesselPotentialSpace_apply, hs]
+
+theorem norm_toBesselPotentialSpace (f : 𝓢(E, F)) :
+    ‖f.toBesselPotentialSpace E F s p‖ = ‖f.fourierMultiplierCLM F
+    (fun x ↦ Complex.ofReal ((1 + ‖x‖ ^ 2) ^ (s / 2))) |>.toLp p‖ := by
+  simp [toBesselPotentialSpace_apply, ← BesselPotentialSpace.norm_toLp_eq]
+
+variable (E F s) in
+theorem denseRange_toBesselPotentialSpace (hp : p ≠ ⊤) :
+    DenseRange (toBesselPotentialSpace E F s p) := by
+  simp only [toBesselPotentialSpace, LinearIsometryEquiv.toContinuousLinearEquiv_symm,
+    ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv]
+  apply (BesselPotentialSpace.toLpₗᵢ E F s p).symm.surjective.denseRange.comp _ (by fun_prop)
+  apply (denseRange_toLpCLM hp).comp _ (by fun_prop)
+  apply Function.Surjective.denseRange
+  intro f
+  use f.fourierMultiplierCLM F (fun x ↦ Complex.ofReal ((1 + ‖x‖ ^ 2) ^ (-s / 2) : ℝ))
+  rw [fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
+  convert DFunLike.ext_iff.mp (fourierMultiplierCLM_const (1 : ℂ)) f
+  · rw [Pi.mul_apply]
+    norm_cast
+    rw [← Real.rpow_add (by positivity)]
+    ring_nf
+    simp
+  · simp
+
+end NormedSpace
+
+section InnerProductSpace
+
+variable [InnerProductSpace ℂ F]
+
+variable {s : ℝ}
+
+/-- The Sobolev norm is given by `‖(1 + |x| ^ 2) ^ (s / 2) • 𝓕 f ξ‖`. -/
+theorem norm_toSobolev_eq_smulLeftCLM_fourier (f : 𝓢(E, F)) : ‖f.toBesselPotentialSpace E F s 2‖ =
+    ‖(𝓕 f).smulLeftCLM F (fun x ↦ Complex.ofReal ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ)) |>.toLp 2‖ := by
+  rw [norm_toBesselPotentialSpace, fourierMultiplierCLM_apply, norm_fourierInv_toL2_eq]
+
+end InnerProductSpace
+
+end SchwartzMap
+
 namespace TemperedDistribution
 
 open scoped BesselPotentialSpace
