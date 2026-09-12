@@ -4233,6 +4233,7 @@ public import Mathlib.Data.List.Sym
 public import Mathlib.Data.List.TFAE
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.TakeWhile
+public import Mathlib.Data.List.ToChunks
 public import Mathlib.Data.List.ToFinsupp
 public import Mathlib.Data.List.Triplewise
 public import Mathlib.Data.List.Zip
