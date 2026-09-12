@@ -174,7 +174,7 @@ lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [NonAssocSemiring L
 
 section
 
-variable (K L : Type*) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
+variable (K L : Type*) [Field K] [Semiring L] [Nontrivial L] [Algebra K L]
 
 protected theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p

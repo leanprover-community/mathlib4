@@ -125,7 +125,7 @@ instance : Nontrivial (ValueGroup A K) where
     dsimp at hd
     simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd⟩
 
-variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
+variable [IsDomain A] [PreValuationRing A] [IsFractionRing A K]
 
 protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
   rcases a with ⟨a⟩; rcases b with ⟨b⟩

@@ -189,7 +189,7 @@ end LocalizationLocalization
 section FractionRing
 
 variable (R K : Type*) [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
-variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
+variable {V : Type*} [AddCommMonoid V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=

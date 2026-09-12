@@ -22,7 +22,7 @@ variable {α : Type u} {β : Type v} {X : Type*}
 
 open scoped Uniformity Topology NNReal ENNReal Pointwise
 
-variable [TopologicalSpace α] [WeakPseudoEMetricSpace α]
+variable [EDist α]
 
 open EMetric
 

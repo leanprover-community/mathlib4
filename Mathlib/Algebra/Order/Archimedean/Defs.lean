@@ -53,7 +53,7 @@ theorem exists_lt_pow {a : R} (ha : 1 < a) (b : R) : ∃ n : ℕ, b < a ^ n :=
 end OrderedMonoid
 
 section OrderedGroup
-variable [CommGroup R] [LinearOrder R] [IsOrderedMonoid R] [MulArchimedean R]
+variable [CommGroup R] [PartialOrder R] [IsOrderedMonoid R] [MulArchimedean R]
 
 @[to_additive]
 theorem exists_pow_lt {a : R} (ha : a < 1) (b : R) : ∃ n : ℕ, a ^ n < b :=

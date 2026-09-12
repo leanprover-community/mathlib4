@@ -29,7 +29,7 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
 ```
-variable (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
+variable (R S P Q : Type*) [CommRing R] [CommSemiring S] [CommRing P] [CommRing Q]
 variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 ```
 
@@ -630,7 +630,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
+variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommSemiring S]
 
 namespace IsLocalization
 

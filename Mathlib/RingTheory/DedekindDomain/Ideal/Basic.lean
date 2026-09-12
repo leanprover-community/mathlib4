@@ -47,7 +47,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (R A K : Type*) [CommSemiring R] [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
