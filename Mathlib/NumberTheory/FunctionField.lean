@@ -232,13 +232,6 @@ lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
   let x := algebraMap _ K (X : F⟮X⟯)
   let Fyx := restrictScalars F F⟮y⟯⟮x⟯
   let Fxy := restrictScalars F F⟮x⟯⟮y⟯
-  -- Recalling instance to speed up search
-  let : Algebra F⟮y⟯ Fyx := F⟮y⟯⟮x⟯.algebra
-  let : Module F⟮y⟯ Fyx := Algebra.toModule
-  let : SMul F⟮y⟯ Fyx := Algebra.toSMul
-  let : Algebra F⟮x⟯ Fxy := F⟮x⟯⟮y⟯.algebra
-  let : Module F⟮x⟯ Fxy := Algebra.toModule
-  let : SMul F⟮x⟯ Fxy := Algebra.toSMul
   have : FiniteDimensional F⟮y⟯ Fyx :=
     adjoin.finiteDimensional
       (isAlgebraic_iff_isIntegral.mp (isAlgebraic_X_over_adjoin_transcendental hy))
@@ -246,9 +239,7 @@ lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
     have := FiniteDimensional.adjoin_algebraMap_X (F := F) (K := K)
     unfold Fyx
     rw [adjoin_simple_comm]
-    have : IsScalarTower F⟮x⟯ Fxy K := isScalarTower_mid' F⟮x⟯⟮y⟯
     exact .right F⟮x⟯ Fxy K
-  have : IsScalarTower F⟮y⟯ Fyx K := isScalarTower_mid' F⟮y⟯⟮x⟯
   .trans F⟮y⟯ Fyx K
 
 end AdjoinTranscendental
