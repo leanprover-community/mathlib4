@@ -214,33 +214,25 @@ lemma orderAtInfty_norm [SeminormedAddCommGroup E] (f : ℍ → E) :
 lemma orderAtInfty_comp_equiv [Norm E] (f : ℍ → E) (e : ℍ ≃ ℍ) {a : ℝ} (ha : 0 < a)
     (he : ∀ τ, (e τ).im = a * τ.im) :
     orderAtInfty (f ∘ e) = (a : EReal) * orderAtInfty f := by
+  have hmap {b : ℝ} (hb : 0 < b) {g : ℍ → ℍ} (hg : ∀ τ, (g τ).im = b * τ.im) :
+      Filter.Tendsto g atImInfty atImInfty := by
+    simpa only [atImInfty, Filter.tendsto_comap_iff, Function.comp_def, hg] using
+      (Filter.tendsto_comap : Filter.Tendsto im atImInfty Filter.atTop).const_mul_atTop hb
   have he' (τ : ℍ) : (e.symm τ).im = a⁻¹ * τ.im := by
-    rw [← e.apply_symm_apply τ, he]
-    simp [ha.ne']
-  have hmap : Filter.Tendsto e atImInfty atImInfty := by
-    simpa only [atImInfty, Filter.tendsto_comap_iff, Function.comp_def, he] using
-      (Filter.tendsto_comap : Filter.Tendsto im atImInfty Filter.atTop).const_mul_atTop ha
-  have hmap' : Filter.Tendsto e.symm atImInfty atImInfty := by
-    simpa only [atImInfty, Filter.tendsto_comap_iff, Function.comp_def, he'] using
-      (Filter.tendsto_comap : Filter.Tendsto im atImInfty Filter.atTop).const_mul_atTop
-        (inv_pos.mpr ha)
+    rw [← e.apply_symm_apply τ, he, inv_mul_cancel_left₀ ha.ne', e.symm_apply_apply]
   have hbigO (t : ℝ) : (f ∘ e) =O[atImInfty] (fun τ ↦ exp (-2 * π * τ.im * t)) ↔
       f =O[atImInfty] (fun τ ↦ exp (-2 * π * τ.im * (t / a))) := by
     constructor <;> intro h
-    · convert h.comp_tendsto hmap' using 1 <;>
+    · convert h.comp_tendsto (hmap (inv_pos.mpr ha) he') using 1 <;> grind
+    · convert h.comp_tendsto (hmap ha he) using 1
       grind
-    · convert h.comp_tendsto hmap using 1
-      grind
-  have hiff (t : ℝ) : t < orderAtInfty (f ∘ e) ↔ t < (a : EReal) * orderAtInfty f := by
-    rw [mul_comm (a : EReal), ← EReal.div_lt_iff (EReal.coe_pos.mpr ha) (EReal.coe_ne_top _),
-      ← EReal.coe_div]
-    simp only [lt_orderAtInfty_iff, hbigO]
-    constructor
-    · exact fun ⟨s, hts, hs⟩ ↦ ⟨s / a, (div_lt_div_iff_of_pos_right ha).mpr hts, hs⟩
-    · exact fun ⟨s, hts, hs⟩ ↦ ⟨s * a, (div_lt_iff₀ ha).mp hts, by grind⟩
-  apply le_antisymm <;>
-  · by_contra! h
-    grind [EReal.lt_iff_exists_real_btwn]
+  refine le_antisymm (iSup_le fun t ↦ ?_) ?_
+  · rw [← EReal.div_le_iff_le_mul (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_div]
+    exact le_orderAtInfty_of_isBigO ((hbigO t).mp t.2)
+  · rw [EReal.mul_comm, ← EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a)]
+    refine iSup_le fun ⟨s, hs⟩ ↦ ?_
+    rw [EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_mul]
+    exact le_orderAtInfty_of_isBigO ((hbigO _).mpr (by rwa [mul_div_cancel_right₀ _ ha.ne']))
 
 /-- Scalar multiplication by a nonzero constant preserves the order. -/
 lemma orderAtInfty_const_mul [NormedRing E] [NormMulClass E] (c : E) (hc : c ≠ 0)
@@ -304,14 +296,9 @@ variable {h : ℝ} {f g : ℍ → ℂ}
 lemma analyticOrderAt_cuspFunction_ne_top (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) (hfne : f ≠ 0) :
     analyticOrderAt (cuspFunction h f) 0 ≠ ⊤ := by
-  refine fun htop ↦ hfne (funext fun τ ↦ ?_)
-  rw [← eq_cuspFunction τ hh.ne' hfper]
-  have han : AnalyticOnNhd ℂ (cuspFunction h f) (Metric.ball 0 1) :=
-    (differentiableOn_cuspFunction_ball hh hfper hfhol hfbdd).analyticOnNhd Metric.isOpen_ball
-  have hzero : Set.EqOn (cuspFunction h f) 0 (Metric.ball 0 1) :=
-    han.eqOn_zero_of_preconnected_of_eventuallyEq_zero (convex_ball 0 1).isPreconnected (by simp)
-      (analyticOrderAt_eq_top.mp htop)
-  exact hzero (mem_ball_zero_iff.mpr (Periodic.norm_qParam_lt_one hh τ.im_pos))
+  refine fun htop ↦ hfne <| (qExpansion_eq_zero_iff hh hfper hfhol hfbdd).mp ?_
+  ext m
+  simp [qExpansion_coeff, Filter.EventuallyEq.iteratedDeriv_eq m (analyticOrderAt_eq_top.mp htop)]
 
 /-- The asymptotic behaviour of a nonzero periodic function holomorphic on `ℍ ∪ ∞` is determined
 by the order of vanishing of its cusp function at zero. -/
@@ -319,22 +306,17 @@ theorem isTheta_analyticOrderAt (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex)
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) (hfne : f ≠ 0) :
     f =Θ[atImInfty] fun τ ↦ exp (-2 * π * τ.im *
       analyticOrderNatAt (cuspFunction h f) 0 / h) := by
-  have han := analyticAt_cuspFunction_zero hh hfper hfhol hfbdd
-  have hfinite := analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne
-  obtain ⟨g, hg, hg0, hfg⟩ := han.analyticOrderAt_eq_natCast.mp
-    (Nat.cast_analyticOrderNatAt hfinite).symm
-  let n := analyticOrderNatAt (cuspFunction h f) 0
+  obtain ⟨g, hg, hg0, hfg⟩ := (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd
+    |>.analyticOrderAt_ne_top).mp (analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne)
+  set n := analyticOrderNatAt (cuspFunction h f) 0
   have hlim : Filter.Tendsto (fun τ : ℍ ↦ f τ / Periodic.qParam h τ ^ n)
       atImInfty (nhds (g 0)) := by
     apply (hg.continuousAt.tendsto.comp (qParam_tendsto_atImInfty hh)).congr'
     filter_upwards [(qParam_tendsto_atImInfty hh).eventually hfg] with τ hτ
-    rw [eq_cuspFunction τ hh.ne' hfper, sub_zero, smul_eq_mul] at hτ
-    simp [hτ, n, Periodic.qParam_ne_zero]
+    simp [← eq_cuspFunction τ hh.ne' hfper, hτ, Periodic.qParam_ne_zero]
   -- The nonvanishing analytic factor gives matching upper and lower bounds for `q ^ n`.
-  convert! (Asymptotics.isTheta_of_div_tendsto_nhds_ne_zero hlim hg0).symm.norm_right using 1
-  ext τ
-  rw [norm_pow, Periodic.norm_qParam, ← exp_nat_mul, exp_eq_exp]
-  simp only [neg_mul, coe_im, n, field]
+  convert! (Asymptotics.isTheta_of_div_tendsto_nhds_ne_zero hlim hg0).symm.norm_right using 2
+  simp [Periodic.norm_qParam, ← exp_nat_mul, field]
 
 /-- The order at infinity is the order of the cusp function divided by the period. -/
 lemma orderAtInfty_eq_analyticOrderAt_div (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
