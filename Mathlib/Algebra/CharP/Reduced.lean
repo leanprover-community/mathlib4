@@ -22,6 +22,7 @@ theorem iterateFrobenius_inj : Function.Injective (iterateFrobenius R p n) := fu
   simp_rw [iterateFrobenius_def, ← sub_pow_expChar_pow] at H
   exact IsReduced.eq_zero _ ⟨_, H⟩
 
+@[grind inj]
 theorem frobenius_inj : Function.Injective (frobenius R p) :=
   iterateFrobenius_one (R := R) p ▸ iterateFrobenius_inj R p 1
 
