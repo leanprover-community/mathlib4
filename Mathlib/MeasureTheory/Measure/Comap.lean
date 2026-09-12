@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Map
+public import Mathlib.MeasureTheory.Measure.Filter
 
 /-!
 # Pullback of a measure

@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Data.Option.NAry
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Adjoining a zero to a group

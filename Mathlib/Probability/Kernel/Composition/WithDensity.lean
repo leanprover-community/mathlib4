@@ -8,7 +8,7 @@ module
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.WithDensity
 
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Composition of kernels and measures with density

@@ -19,7 +19,7 @@ This file proves properties about
 * `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
 * `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
-* `List.tails`: The list of prefixes of a list.
+* `List.tails`: The list of suffixes of a list.
 * `insert` on lists
 
 All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.

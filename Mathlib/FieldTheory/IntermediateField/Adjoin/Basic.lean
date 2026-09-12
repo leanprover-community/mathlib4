@@ -225,7 +225,7 @@ instance : IsCompactlyGenerated (IntermediateField F E) :=
 
 theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset ι, x ∈ ⨆ i ∈ s, f i := by
-  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup (IntermediateField F E) f
+  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup f
   simp only [adjoin_simple_le_iff] at this
   exact this hx
 

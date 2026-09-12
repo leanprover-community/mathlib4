@@ -473,13 +473,15 @@ theorem ContMDiffOn.mdifferentiableOn (hf : CMDiff[s] n f) (hn : n ≠ 0) : MDif
 theorem ContMDiff.mdifferentiable (hf : CMDiff n f) (hn : n ≠ 0) : MDiff f :=
   fun x => (hf x).mdifferentiableAt hn
 
+/-! ### Deriving continuity from differentiability on manifolds -/
+
+@[fun_prop]
 theorem MDifferentiableOn.continuousOn (h : MDiff[s] f) : ContinuousOn f s :=
   fun x hx => (h x hx).continuousWithinAt
 
+@[fun_prop]
 theorem MDifferentiable.continuous (h : MDiff f) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (h x).continuousAt
-
-/-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
     writtenInExtChartAt I I'' x (g ∘ f)

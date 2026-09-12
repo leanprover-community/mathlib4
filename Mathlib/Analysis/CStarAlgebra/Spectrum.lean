@@ -117,11 +117,8 @@ local notation "↑ₐ" => algebraMap ℂ A
 theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
-  refine tendsto_nhds_unique ?_ hconst
-  convert!
-    (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
-      (tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
-  refine funext fun n => ?_
+  refine tendsto_nhds_unique_of_forall ((pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a).comp
+      (tendsto_pow_atTop_atTop_of_one_lt one_lt_two)) hconst fun n ↦ ?_
   rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
 
@@ -279,7 +276,8 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
       rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
     exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
-  simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
+  simpa [nnnorm_inr] using
+    h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (ofClass φ : A →⋆ₙₐ[ℂ] B))) a
 
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
@@ -303,7 +301,8 @@ variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
-    simpa using! NonUnitalStarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
+    simpa using! NonUnitalStarAlgHom.nnnorm_apply_le
+      (symm (ofClass φ : A ≃⋆ₐ[ℂ] B)) ((ofClass φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
   congr_arg NNReal.toReal (nnnorm_map φ a)

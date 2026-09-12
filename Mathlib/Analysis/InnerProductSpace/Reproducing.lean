@@ -72,6 +72,7 @@ variable [RKHS 𝕜 H X V]
 /--
 Each element of a reproducing kernel Hilbert space may be coerced into a function.
 -/
+@[macro_inline]
 instance instFunLike : FunLike H X V where
   coe f := coeCLM 𝕜 f
   coe_injective := coeCLM_injective
@@ -226,8 +227,7 @@ private lemma isSelfAdjoint_finsuppSum (h : K.IsHermitian) (f : X →₀ V →L[
 theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X × V →₀ 𝕜),
     0 ≤ RCLike.re (f.sum fun xv z ↦ f.sum fun xv' w ↦ conj z * w * ⟪K xv'.1 xv.1 xv.2, xv'.2⟫_𝕜),
     K.IsHermitian ∧ ∀ (vv : X →₀ V),
-    0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜),
-    ] := by
+    0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜)] := by
   have {h p1 p2 p3 : Prop} (htfae : h → List.TFAE [p1, p2, p3]) :
       List.TFAE [h ∧ p1, h ∧ p2, h ∧ p3] := by
     tfae_have 1 → 2 := fun ⟨h, t⟩ ↦ ⟨h, ((htfae h).out 1 2).mp t⟩

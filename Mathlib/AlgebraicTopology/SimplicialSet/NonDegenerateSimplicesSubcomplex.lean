@@ -44,7 +44,7 @@ lemma mk'_surjective (s : A.N) :
 
 /-- Constructor for the type of nondegenerate simplices which
 do not belong to a given subcomplex of a simplicial set. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def mk {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n)
     (hx' : x ∉ A.obj _) : A.N where
   simplex := x
@@ -112,7 +112,7 @@ unif_hint {X : SSet.{u}} {A : X.Subcomplex} (s : A.N) (d : ℕ)
   ⊢ (s.cast hd).dim ≟ d
 
 /-- The bijection `A.op.N ≃ A.N` for a subcomplex `A` of a simplicial set.. -/
-@[simps -isSimp apply symm_apply]
+@[implicit_reducible, simps -isSimp apply symm_apply]
 def opEquiv : A.op.N ≃o A.N where
   toFun x := N.mk' (SSet.N.opEquiv x.toN) x.notMem
   invFun y := N.mk' (SSet.N.opEquiv.symm y.toN) y.notMem
@@ -123,7 +123,7 @@ def opEquiv : A.op.N ≃o A.N where
 /-- The bijection `A.N ≃ B.N` on nondegenerate simplices not belonging
 to a certain subcomplex that is induced by an isomorphism `X ≅ Y` of
 simplicial sets which maps `A : X.Subcomplex` to `B : Y.Subcomplex`. -/
-@[simps -isSimp apply symm_apply]
+@[implicit_reducible, simps -isSimp apply symm_apply]
 def orderIsoOfIso {Y : SSet.{u}} {B : Y.Subcomplex} (e : X ≅ Y)
     (hA : B.preimage e.hom = A) : A.N ≃o B.N where
   toFun x := N.mk' (SSet.N.orderIsoOfIso e x.toN) (by subst hA; exact x.notMem)

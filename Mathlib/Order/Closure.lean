@@ -71,6 +71,7 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
+@[macro_inline]
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all

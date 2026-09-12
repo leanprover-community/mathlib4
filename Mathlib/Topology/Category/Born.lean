@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.Topology.Bornology.Hom
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # The category of bornologies

@@ -112,6 +112,7 @@ section SMul
 
 variable [SMul 𝕜 E]
 
+@[macro_inline]
 instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by

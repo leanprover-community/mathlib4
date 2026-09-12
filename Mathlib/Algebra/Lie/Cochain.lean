@@ -53,6 +53,7 @@ section
 
 variable {R L M}
 
+@[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
   coe_injective _ _ h := by

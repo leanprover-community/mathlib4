@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 In this file, we define the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
 where `F` is an exact functor between abelian categories.
 
-# Main Definition and results
+## Main definitions and results
 
 * `CategoryTheory.Abelian.Ext.mapExactFunctor` : The map between `Ext` induced by
   `CategoryTheory.LocalizerMorphism.smallShiftedHomMap`.

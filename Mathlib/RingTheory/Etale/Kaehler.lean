@@ -167,12 +167,10 @@ def tensorCotangentInvFun
       LinearEquiv.symm_apply_apply, f']
     clear hx ha
     induction x with
-    | zero => simp only [map_zero, ZeroMemClass.coe_zero, zero_smul]
     | add x y _ _ =>
       simp only [map_add, Submodule.coe_add, add_smul, zero_add, *]
     | tmul a b =>
       induction y with
-      | zero => simp only [map_zero, smul_zero]
       | add x y hx hy => simp only [LinearMap.map_add, smul_add, hx, hy, zero_add]
       | tmul c d =>
         simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
@@ -210,7 +208,6 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       induction x with
-      | zero => simp only [map_zero]
       | add x y _ _ => simp only [map_add, *]
       | tmul a b =>
         obtain ⟨b, rfl⟩ := Cotangent.mk_surjective b
@@ -224,7 +221,6 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
       obtain ⟨x, rfl⟩ := H.surjective x
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       induction x with
-      | zero => simp only [map_zero]
       | add x y _ _ => simp only [map_add, *]
       | tmul a b =>
         simp only [LinearMap.liftBaseChange_tmul, map_smul]

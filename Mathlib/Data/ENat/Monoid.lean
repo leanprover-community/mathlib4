@@ -67,43 +67,12 @@ def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
 
 lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 
-@[simp]
-theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
-  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_natCast]) n
-
-@[deprecated (since := "2026-07-17")] alias coe_toNat_eq_self := natCast_toNat_eq_self
-
-alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
-
-@[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
-
-@[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
-    n.toNat = m ↔ n = m := by
-  cases n
-  · simpa using NeZero.ne' m
-  · simp
-
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
   · simp only [toNat_natCast]; rw [← natCast_mul, toNat_natCast]
-
-theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
-  induction m <;> simp [hn.symm]
-
-lemma toNat_le_of_le_natCast {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
-  lift m to ℕ using ne_top_of_le_ne_top (natCast_ne_top n) h
-  simpa using h
-
-@[deprecated (since := "2026-07-17")] alias toNat_le_of_le_coe := toNat_le_of_le_natCast
-
-@[gcongr]
-lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
-  toNat_le_of_le_natCast <| h.trans_eq (natCast_toNat hn).symm
-
-@[deprecated (since := "2026-07-17")] alias toNat_eq_iff_eq_coe := toNat_eq_iff_eq_natCast
 
 @[deprecated add_pos_of_right (since := "2026-05-25")]
 lemma add_one_pos : 0 < n + 1 :=

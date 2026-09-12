@@ -370,6 +370,7 @@ theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
 @[simp] theorem toEquiv_inj {e₁ e₂ : α ≃ᵢ β} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
   toEquiv_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (α ≃ᵢ β) α β where
   coe e := e.toEquiv
   inv e := e.toEquiv.symm

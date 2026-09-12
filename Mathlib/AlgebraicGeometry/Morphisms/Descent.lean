@@ -53,7 +53,7 @@ lemma Scheme.exists_hom_isAffine_of_isZariskiLocalAtSource (X : Scheme.{u}) [Com
   refine ⟨_, p, ⟨fun x ↦ ?_⟩, ?_, inferInstance⟩
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
     use Sigma.ι X.affineCover.finiteSubcover.X i x
-    rw [← Scheme.Hom.comp_apply, Sigma.ι_desc]
+    rw [← Scheme.Hom.comp_apply, Sigma.ι_comp_desc]
   · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
     exact fun i ↦ by simpa [p] using IsZariskiLocalAtSource.of_isOpenImmersion _
 

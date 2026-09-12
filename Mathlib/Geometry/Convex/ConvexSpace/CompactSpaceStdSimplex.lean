@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
-public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # The standard simplex is compact

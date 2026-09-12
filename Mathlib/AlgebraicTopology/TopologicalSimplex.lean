@@ -54,7 +54,6 @@ noncomputable instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Uniqu
 noncomputable instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp; infer_instance
 
 instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=

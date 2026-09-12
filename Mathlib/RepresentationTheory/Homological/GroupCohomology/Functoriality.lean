@@ -23,8 +23,9 @@ We also provide extra API for these maps in degrees 0, 1, 2.
   induced by a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
 * `groupCohomology.map f φ n` is the map `Hⁿ(H, A) ⟶ Hⁿ(G, B)` induced by a group
   homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
-* `groupCohomology.H1InfRes A S` is the short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` for
-  a normal subgroup `S ≤ G` and a `G`-representation `A`.
+* `groupCohomology.HInfRes A S` is the short complex `Hⁿ(G ⧸ S, A^S) ⟶ Hⁿ(G, A) ⟶ Hⁿ(S, A)` for
+  a normal subgroup `S ≤ G` and a `G`-representation `A`. In case `n := 1`, it is
+  exact (see `groupCohomology.H1InfRes_exact`).
 
 -/
 
@@ -170,6 +171,17 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
   rw [map, cochainsMap_id_comp, HomologicalComplex.homologyMap_comp]
+
+/-- Let `A` be a representation of `H`, `B` be a representation of `G`,
+`f : G →* H` and `φ : res f A ⟶ B`. If `f` is the trivial morphism,
+the induced morphism is zero in group cohomology in nonzero degrees. -/
+lemma map_eq_zero (n : ℕ) [NeZero n] (hf : f = 1) : map f φ n = 0 := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne n)
+  obtain rfl : f = (1 : PUnit.{u + 1} →* H).comp (1 : G →* PUnit.{u + 1}) := by simpa using hf
+  have : map (1 : G →* PUnit.{u + 1}) (A := res 1 A) φ (n + 1) = 0 :=
+    (isZero_groupCohomology_succ_of_subsingleton _ _).eq_of_src ..
+  rw [show φ = (resFunctor (1 : G →* PUnit.{u + 1})).map (𝟙 (res 1 A)) ≫ φ from rfl,
+    map_comp, this, Limits.comp_zero]
 
 /-- The isomorphism between cohomology groups induced by a group isomorphism `e : G ≃* H` and a
 isomorphism between representations (restricted by `e`). -/
@@ -353,49 +365,47 @@ lemma H1π_comp_map :
 
 @[simp]
 theorem map₁_one (φ : res 1 A ⟶ B) :
-    map 1 φ 1 = 0 := by
-  simp [← cancel_epi (H1π _)]
+    map 1 φ 1 = 0 :=
+  map_eq_zero _ _ _ rfl
 
 section InfRes
 
 variable (A : Rep k G) (S : Subgroup G) [S.Normal]
 
-/-- The short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)`. -/
-@[simps X₁ X₂ X₃ f g]
-noncomputable def H1InfRes :
+/-- The short complex `Hⁿ(G ⧸ S, A^S) ⟶ Hⁿ(G, A) ⟶ Hⁿ(S, A)`. -/
+@[implicit_reducible, simps]
+noncomputable def HInfRes (n : ℕ) [NeZero n] :
     ShortComplex (ModuleCat k) where
-  X₁ := groupCohomology (A.quotientToInvariants S) 1
-  X₂ := groupCohomology A 1
-  X₃ := groupCohomology (res S.subtype A) 1
-  f := map (QuotientGroup.mk' S) (ofHom <| A.ρ.quotientToInvariants_lift S) 1
-  g := map S.subtype (𝟙 _) 1
-  zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
-    (fun f φ => map f φ 1), map₁_one]
+  X₁ := groupCohomology (A.quotientToInvariants S) n
+  X₂ := groupCohomology A n
+  X₃ := groupCohomology (res S.subtype A) n
+  f := map (QuotientGroup.mk' S) (ofHom <| A.ρ.quotientToInvariants_lift S) n
+  g := map S.subtype (𝟙 _) n
+  zero := by rw [← map_comp, map_eq_zero _ _ _ (by simp)]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+/-- The short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)`. -/
+noncomputable abbrev H1InfRes : ShortComplex (ModuleCat k) := HInfRes A S 1
+
 /-- The inflation map `H¹(G ⧸ S, A^S) ⟶ H¹(G, A)` is a monomorphism. -/
 instance : Mono (H1InfRes A S).f := by
   rw [ModuleCat.mono_iff_injective, injective_iff_map_eq_zero]
   intro x hx
   induction x using H1_induction_on with | @h x =>
-  simp_all only [H1InfRes_X₂, H1InfRes_X₁, H1InfRes_f, H1π_comp_map_apply (QuotientGroup.mk' S)]
+  simp_all only [HInfRes_X₂, HInfRes_X₁, HInfRes_f, H1π_comp_map_apply (QuotientGroup.mk' S)]
   rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
   refine (H1π_eq_zero_iff _).2 ⟨⟨y, fun s => ?_⟩, funext fun g => QuotientGroup.induction_on g
     fun g => Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using! congr_fun hy g⟩
   simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.1).2 s.2] using!
     congr_fun hy s.1
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
 lemma H1InfRes_exact : (H1InfRes A S).Exact := by
   rw [moduleCat_exact_iff_ker_sub_range]
   intro x hx
   induction x using H1_induction_on with | @h x =>
-  simp_all only [H1InfRes_X₂, H1InfRes_X₃, H1InfRes_g, H1InfRes_X₁, LinearMap.mem_ker,
-    H1π_comp_map_apply S.subtype, H1InfRes_f]
+  simp_all only [HInfRes_X₂, HInfRes_X₃, HInfRes_g, HInfRes_X₁, LinearMap.mem_ker,
+    H1π_comp_map_apply S.subtype, HInfRes_f]
   rcases (H1π_eq_zero_iff _).1 hx with ⟨(y : A), hy⟩
   have h1 := (mem_cocycles₁_iff x).1 x.2
   have h2 : ∀ s ∈ S, x s = A.ρ s y - y :=

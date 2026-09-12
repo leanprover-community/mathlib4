@@ -67,19 +67,8 @@ namespace prodStdSimplex
 variable {m : ℕ} {k : Fin (m + 1)} {n : ℕ}
   (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N) {d : ℕ}
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
-@[simp]
-lemma objEquiv_apply_fst' (hd : x.dim = d) (i : Fin (d + 1)) :
-    dsimp% ((objEquiv (x.cast hd).simplex) i).1 = (x.cast hd).simplex.1 i := rfl
-
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
-@[simp]
-lemma objEquiv_apply_snd' (hd : x.dim = d) (i : Fin (d + 1)) :
-    dsimp% ((objEquiv (x.cast hd).simplex) i).2 = (x.cast hd).simplex.2 i := rfl
+@[deprecated (since := "2026-08-23")] alias objEquiv_apply_fst' := objEquiv_apply_fst
+@[deprecated (since := "2026-08-23")] alias objEquiv_apply_snd' := objEquiv_apply_snd
 
 namespace pairingCore
 
@@ -146,14 +135,12 @@ does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. This is
 the smallest `l : Fin (d + 1)` such that `x l` is of the form `(k.succ, _)`. -/
 noncomputable def min : Fin (d + 1) := (finset x hd).min' (nonempty_finset x hd)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma simplex_fst_min : dsimp% (x.cast hd).simplex.1 (min x hd) = k.succ := by
   rw [← mem_finset_iff]
   apply Finset.min'_mem
 
-set_option backward.isDefEq.respectTransparency false in
 lemma simplex_fst_le_castSucc_iff (i : Fin (d + 1)) :
-    dsimp% (x.cast hd).simplex.1 i ≤ k.castSucc ↔ i < min x hd := by
+    (x.cast hd).simplex.1 i ≤ k.castSucc ↔ i < min x hd := by
   contrapose!
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [Fin.castSucc_lt_iff_succ_le] at h
@@ -228,7 +215,7 @@ noncomputable abbrev δ :
   simplex := (Δ[m + 1] ⊗ Δ[n]).δ l.castSucc (x.cast hd).simplex
   nonDegenerate := nonDegenerate_δ (x.cast hd).nonDegenerate _
   notMem := by
-    dsimp
+    simp only [Monoidal.tensorObj_obj]
     -- `simp? [Subcomplex.mem_unionProd_iff, mem_boundary_iff_notMem_range,
     --   mem_horn_iff_notMem_range,stdSimplex.δ_apply]` says:
     simp only [Subcomplex.mem_unionProd_iff, prod_δ_snd, mem_boundary_iff_notMem_range,
@@ -240,7 +227,6 @@ noncomputable abbrev δ :
       obtain rfl | ⟨i, rfl⟩ := Fin.eq_self_or_eq_succAbove l.castSucc i
       · refine ⟨l, ?_⟩
         rw [Fin.succAbove_castSucc_self, ← hi, ← hl.simplex_snd_succ]
-        rfl
       · exact ⟨_, hi⟩
     · obtain ⟨i, hi⟩ := mem_range_left x hd j hj
       dsimp at hi
@@ -338,7 +324,6 @@ lemma φ_of_gt (i : Fin (d + 2)) (hi : (min x hd).castSucc < i) :
   rw [φ_of_ne _ _ _ hi.ne', Fin.predAbove_of_castSucc_lt _ _ hi]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma φ_succ_snd : (φ x hd (min x hd).succ).2 = (φ x hd (min x hd).castSucc).2 := by
   have := φ_succAbove x hd (min x hd)
@@ -418,10 +403,8 @@ lemma notMem_simplex :
   exact (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).map
     (SimplexCategory.δ (min x hd).castSucc).op h
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The type (I) simplex reconstructed from a type (II) simplex. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def type₁ : Type₁ k n where
   x :=
     Subcomplex.N.mk (hx.simplex hd) (hx.simplex_mem_nonDegenerate hd)
@@ -439,23 +422,20 @@ variable {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
 
 include hl
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma min_δ : min (d := d) hl.δ rfl = l := by
   refine le_antisymm (Finset.min'_le _ _ ?_)
     (Finset.le_min' _ _ _ (fun y hy ↦ ?_))
   · simp only [mem_finset_iff]
-    simp only [Monoidal.tensorObj_obj, S.cast_dim, S.cast_simplex_rfl, prod_δ_fst,
+    simp only [Monoidal.tensorObj_obj, S.cast_simplex_rfl, prod_δ_fst,
       stdSimplex.δ_apply, Fin.succAbove_castSucc_self]
     exact hl.simplex_fst_succ
-  · simp only [mem_finset_iff, Monoidal.tensorObj_obj, S.cast_dim,
+  · simp only [mem_finset_iff, Monoidal.tensorObj_obj,
       S.cast_simplex_rfl, prod_δ_fst, stdSimplex.δ_apply] at hy
     by_contra!
     rw [Fin.succAbove_of_castSucc_lt _ _ (by grind)] at hy
     grind [(hl.succ_le_simplex_fst_iff y.castSucc).1 hy.symm.le]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma isType₂_δ : IsType₂ hl.δ := by
   intro _ rfl t ht
   dsimp at t ht
@@ -467,8 +447,6 @@ lemma isType₂_δ : IsType₂ hl.δ := by
   dsimp [stdSimplex.δ_apply] at hl ht ⊢
   aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 variable {x} in
 lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
     (hu : IsType₂ u) (i : Fin (d + 2))
@@ -481,7 +459,7 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
     refine (hu _ rfl l.succ ?_).elim
     simp [isIndex_succ, S.cast_simplex_rfl, hu', stdSimplex.δ_apply,
       Fin.succAbove_of_lt_succ i l.castSucc hi,
-      Fin.succAbove_of_lt_succ i l.succ (by grind), dsimp% hl.simplex_fst_succ,
+      Fin.succAbove_of_lt_succ i l.succ (by grind), hl.simplex_fst_succ,
       dsimp% hl.simplex_snd_succ, dsimp% hl.simplex_fst_castSucc]
   · exact Or.inl rfl
   · obtain rfl | hi := (Fin.castSucc_lt_iff_succ_le.1 hi).eq_or_lt
@@ -491,12 +469,11 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
       simp [isIndex_succ, hu', stdSimplex.δ_apply,
         Fin.succAbove_of_castSucc_lt i l.castSucc (by grind),
         Fin.succAbove_of_castSucc_lt i l.succ (by grind),
-        dsimp% hl.simplex_fst_castSucc, dsimp% hl.simplex_snd_succ,
-        dsimp% hl.simplex_fst_succ]
+        hl.simplex_fst_castSucc, hl.simplex_snd_succ,
+        hl.simplex_fst_succ]
 
 end IsIndex
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma IsType₂.type₁_eq_of_δ_eq
     {t : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
     (ht : IsType₂ t) (s : Type₁.{u} k n) (hst : s.δ = t) {d : ℕ} (hd : t.dim = d) :
@@ -525,7 +502,7 @@ lemma IsType₂.type₁_eq_of_δ_eq
       (s.index.castSucc.succAbove ((min s.δ rfl).predAbove i)) = _
     congr 1
     rw [← s.isIndex.min_δ]
-    exact Fin.succAbove_predAbove hi -- `simp [hi]` should work but doesn't
+    simp [hi]
 
 lemma Type₁.isType₂_δ (s : Type₁.{u} k n) : IsType₂ s.δ :=
   s.isIndex.isType₂_δ
@@ -671,7 +648,6 @@ instance {m : ℕ} (k : Fin m) (n : ℕ) :
     dsimp [pairingCore]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A regular pairing for `Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]`
 when `k : Fin (m + 1)` and `n : ℕ`. -/
 noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :

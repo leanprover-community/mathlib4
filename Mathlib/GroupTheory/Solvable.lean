@@ -154,7 +154,7 @@ alias _root_.IsSolvable := Group.IsSolvable
 alias _root_.isSolvable_def := Group.isSolvable_def
 
 @[to_additive]
-instance (priority := 100) {G : Type*} [CommGroup G] : IsSolvable G :=
+instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
 @[to_additive]
@@ -228,6 +228,11 @@ theorem isSolvable_iff_subgroup_quotient (H : Subgroup G) [H.Normal] :
     isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H) (by simp)⟩
 
 @[to_additive]
+theorem isSolvable_of_subgroup_quotient (H : Subgroup G) [H.Normal]
+    [IsSolvable H] [IsSolvable (G ⧸ H)] : IsSolvable G :=
+  (isSolvable_iff_subgroup_quotient H).mpr ⟨‹_›, ‹_›⟩
+
+@[to_additive]
 instance {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   isSolvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
@@ -282,6 +287,9 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_iff_commutator_lt := Group.isSolvable_iff_commutator_lt
+
+theorem isSolvable_commutator_iff : IsSolvable (commutator G) ↔ IsSolvable G :=
+  ⟨fun _ ↦ isSolvable_of_subgroup_quotient (commutator G), fun _ ↦ inferInstance⟩
 
 end Group
 

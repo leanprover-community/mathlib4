@@ -401,13 +401,13 @@ section
 variable (F : C ⥤ D) [F.Monoidal]
 
 /-- The isomorphism `𝟙_ D ≅ F.obj (𝟙_ C)` when `F` is a monoidal functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def εIso : 𝟙_ D ≅ F.obj (𝟙_ C) where
   hom := ε F
   inv := η F
 
 /-- The isomorphism `F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y)` when `F` is a monoidal functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def μIso (X Y : C) : F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y) where
   hom := μ F X Y
   inv := δ F X Y

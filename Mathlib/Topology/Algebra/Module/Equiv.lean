@@ -163,6 +163,7 @@ instance : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ ≃ₛₗ[σ₁₂] M₂) where
 @[simp] lemma toLinearMap_toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) :
     e.toContinuousLinearMap.toLinearMap = e.toLinearEquiv.toLinearMap := rfl
 
+@[macro_inline]
 instance equivLike :
     EquivLike (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toFun
@@ -1234,5 +1235,30 @@ theorem _root_.LinearEquiv.isHomeomorph_iff (e : M ≃ₛₗ[σ] M₁) :
     IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := e.toEquiv.isHomeomorph_iff
 
 end IsHomeomorph
+
+@[simp]
+lemma toLinearEquiv_inv (f : V ≃L[R] V) :
+    (f⁻¹).toLinearEquiv = f.toLinearEquiv⁻¹ := rfl
+
+@[simp]
+lemma toLinearEquiv_mul (f g : V ≃L[R] V) :
+    (f * g).toLinearEquiv = f.toLinearEquiv * g.toLinearEquiv := rfl
+
+/-- `ContinuousLinearEquiv.toLinearEquiv` as a multiplicative monoid homomorphism `MonoidHom`. -/
+@[simps]
+def toLinearEquivMonoidHom : (V ≃L[R] V) →* (V ≃ₗ[R] V) where
+  toFun := ContinuousLinearEquiv.toLinearEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+@[simp]
+lemma toLinearEquiv_pow (f : V ≃L[R] V) (n : ℕ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_pow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
+
+@[simp]
+lemma toLinearEquiv_zpow (f : V ≃L[R] V) (n : ℤ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
 
 end ContinuousLinearEquiv

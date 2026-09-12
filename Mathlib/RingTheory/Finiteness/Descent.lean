@@ -62,7 +62,6 @@ lemma Ideal.FG.of_FG_map_of_faithfullyFlat [Module.FaithfullyFlat R S] {I : Idea
       simp [f, Algebra.smul_def]
     · rintro - ⟨x, rfl⟩
       induction x with
-      | zero => simp
       | add _ _ _ _ => simp_all [Ideal.add_mem]
       | tmul s x =>
         have : f (s ⊗ₜ[R] x) = s • f (1 ⊗ₜ x) := by simp [f]

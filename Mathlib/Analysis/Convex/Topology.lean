@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.Topology.Algebra.Affine
-public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets

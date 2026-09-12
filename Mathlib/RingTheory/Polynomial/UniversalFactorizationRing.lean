@@ -364,7 +364,6 @@ lemma finite_universalFactorizationMap :
     simpa [← Polynomial.eval₂_map, F] using! hp'
   intro x
   induction x with
-  | zero => exact RingHom.isIntegralElem_zero _
   | add x y _ _ => exact RingHom.IsIntegralElem.add _ ‹_› ‹_›
   | tmul x y =>
     suffices (universalFactorizationMap R n m k hn).IsIntegralElem (x ⊗ₜ 1 * 1 ⊗ₜ y) by simpa

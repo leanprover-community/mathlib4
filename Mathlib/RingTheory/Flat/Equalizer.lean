@@ -260,7 +260,6 @@ private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) 
     (AlgHom.tensorEqualizerAux S T f g x : T ⊗[R] A) =
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x := by
   induction x with
-  | zero => rfl
   | tmul => rfl
   | add x y hx hy => simp [hx, hy]
 
@@ -327,15 +326,12 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
     { __ := e₄'.symm, map_smul' r' x := by
         dsimp
         induction x with
-        | zero => simp only [smul_zero, LinearEquiv.map_zero]
         | add x y _ _ => simp only [smul_add, LinearEquiv.map_add, *]
         | tmul x y =>
         induction x with
-        | zero => simp only [zero_tmul, smul_zero, LinearEquiv.map_zero]
         | add x y _ _ => simp only [smul_add, add_tmul, LinearEquiv.map_add, *]
         | tmul x z =>
         induction r' with
-        | zero => simp only [zero_smul, LinearEquiv.map_zero]
         | add x y _ _ => simp only [add_smul, LinearEquiv.map_add, *]
         | tmul r s =>
         rw [smul_tmul']
