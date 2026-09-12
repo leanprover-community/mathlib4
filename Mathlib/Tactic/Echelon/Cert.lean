@@ -88,7 +88,7 @@ def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(C
     have c : Q(ℕ) := mkNatLit (m - (k + 1))
     let hz : Q(List.replicate $c (0 : $α) = List.replicate $c 0) := q(Eq.refl _)
     mkAppM ``And.intro #[← certifier q($entry ≠ 0), ← mkAppM ``And.intro #[hz, rest]]
-  have h : Q(IsLowerTriangularDiag $m 0 $m $rows) := chain
+  have h : Q(IsLowerTriangularDiag 0 $m $rows) := chain
   return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
     mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
 
@@ -99,10 +99,10 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   have rows : Q(List (List $α)) := U.lit
   have hinc : Q(isStrictlyIncreasing $cols = true) :=
     mkExpectedPropHint q(Eq.refl true) q(isStrictlyIncreasing $cols = true)
-  -- the rows beyond the pivots are zero rows
-  have r : Q(ℕ) := mkNatLit (m - pivots.size)
-  let zeroRows : Expr := q(Eq.refl (List.replicate $r (List.replicate $n (0 : $α))))
-  -- one cell per pivot row: the nonzero pivot entry, then the `Eq.refl` of the zeros before it
+  -- one cell per row: the `Eq.refl` of a zero row beyond the pivots, or the nonzero pivot entry
+  -- and the `Eq.refl` of the zeros before it
+  let zeroRows : Expr ← (U.entries.drop pivots.size).foldrM (init := q(True.intro))
+    fun _ rest => mkAppM ``And.intro #[q(Eq.refl (List.replicate $n (0 : $α))), rest]
   let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (p, i) rest => do
     have entry : Q($α) := (U.entries[i]!)[p]!
     have pQ : Q(ℕ) := mkNatLit p
