@@ -135,8 +135,7 @@ private lemma totalCuspOrder_le_sturmBound_of_negOne_mem
   have hnegG : (-1 : GL (Fin 2) ℝ) ∈ G :=
     ⟨hneg, ⟨-1, by ext i j; simp [mapGL_coe_matrix]⟩⟩
   have hbound : totalCuspOrder G k (ModularForm.restrict inf_le_left f) ≤ G.sturmBound k :=
-    totalCuspOrder_le_sturmBound_of_le inf_le_right hnegG _
-      ((ModularForm.restrict_eq_zero_iff inf_le_left f).not.mpr hf)
+    totalCuspOrder_le_sturmBound_of_le inf_le_right hnegG _ <| by aesop
   have hsum : (G.relIndex H : EReal) * totalCuspOrder H k f ≤ G.sturmBound k :=
     (relIndex_mul_totalCuspOrder_eq_restrict inf_le_left hnegG f).le.trans hbound
   have hrat : (G.ratProjIndex : ℝ) = G.relIndex H * (H.ratProjIndex : ℝ) :=
@@ -419,11 +418,10 @@ noncomputable def restrictBaseChange
         exact mul_assoc c d (f z) }
 
 @[simp]
-lemma restrictBaseChange_tmul
-    {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
+lemma restrictBaseChange_tmul {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
     (c : ℂ) (f : ModularForm G k) :
     restrictBaseChange k (c ⊗ₜ[ℝ] f) = c • ModularForm.restrict G.detOnePart_le f :=
-  rfl
+  by simp [restrictBaseChange]
 
 /-- If `G` contains an element of determinant `-1`, complex base extension followed by restriction
 to the determinant-one part is injective. -/

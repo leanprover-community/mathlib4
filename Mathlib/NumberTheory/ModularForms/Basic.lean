@@ -726,9 +726,35 @@ lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k] :
 
 end SL2Z
 
-namespace ModularForm
+section Restrict
 
 variable {G H : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
+
+namespace SlashInvariantForm
+
+/-- Regard a modular form as a form for a subgroup of its level. -/
+def restrict (hGH : G ≤ H) (f : SlashInvariantForm H k) : SlashInvariantForm G k where
+  toFun := f
+  slash_action_eq' g hg := f.slash_action_eq' g (hGH hg)
+
+@[simp] lemma coe_restrict (hGH : G ≤ H) {f : SlashInvariantForm H k} :
+    ⇑(restrict hGH f) = f :=
+  rfl
+
+lemma restrict_injective (hGH : G ≤ H) : Function.Injective (restrict (k := k) hGH) :=
+  fun _ _ hfg ↦ ext fun τ ↦ congr($hfg τ)
+
+@[simp] lemma restrict_eq_zero_iff (hGH : G ≤ H) {f : SlashInvariantForm H k} :
+    restrict hGH f = 0 ↔ f = 0 := by
+  rw [← (restrict_injective hGH).eq_iff, show restrict hGH 0 = 0 by rfl]
+
+@[simp] lemma restrict_translate (hGH : G ≤ H) {f : SlashInvariantForm H k} (g) :
+    restrict (by simpa using hGH) (translate f g) = translate (restrict hGH f) g :=
+  rfl
+
+end SlashInvariantForm
+
+namespace ModularForm
 
 /-- Regard a modular form as a form for a subgroup of its level. -/
 def restrict (hGH : G ≤ H) (f : ModularForm H k) : ModularForm G k where
@@ -737,14 +763,47 @@ def restrict (hGH : G ≤ H) (f : ModularForm H k) : ModularForm G k where
   holo' := f.holo'
   bdd_at_cusps' hc := f.bdd_at_cusps' (hc.mono hGH)
 
-@[simp] lemma coe_restrict (hGH : G ≤ H) (f : ModularForm H k) :
-    ⇑(restrict hGH f) = f := rfl
+@[simp] lemma coe_restrict (hGH : G ≤ H) {f : ModularForm H k} :
+    ⇑(restrict hGH f) = f :=
+  rfl
 
 lemma restrict_injective (hGH : G ≤ H) : Function.Injective (restrict (k := k) hGH) :=
   fun _ _ hfg ↦ ext fun τ ↦ congr($hfg τ)
 
-@[simp] lemma restrict_eq_zero_iff (hGH : G ≤ H) (f : ModularForm H k) :
+@[simp] lemma restrict_eq_zero_iff (hGH : G ≤ H) {f : ModularForm H k} :
     restrict hGH f = 0 ↔ f = 0 := by
   rw [← (restrict_injective hGH).eq_iff, show restrict hGH 0 = 0 by rfl]
 
+@[simp] lemma restrict_translate (hGH : G ≤ H) {f : ModularForm H k} (g) :
+    restrict (by simpa using hGH) (translate f g) = translate (restrict hGH f) g :=
+  rfl
+
 end ModularForm
+
+namespace CuspForm
+
+/-- Regard a modular form as a form for a subgroup of its level. -/
+def restrict (hGH : G ≤ H) (f : CuspForm H k) : CuspForm G k where
+  toFun := f
+  slash_action_eq' g hg := f.slash_action_eq' g (hGH hg)
+  holo' := f.holo'
+  zero_at_cusps' hc := f.zero_at_cusps' (hc.mono hGH)
+
+@[simp] lemma coe_restrict (hGH : G ≤ H) {f : CuspForm H k} :
+    ⇑(restrict hGH f) = f :=
+  rfl
+
+lemma restrict_injective (hGH : G ≤ H) : Function.Injective (restrict (k := k) hGH) :=
+  fun _ _ hfg ↦ ext fun τ ↦ congr($hfg τ)
+
+@[simp] lemma restrict_eq_zero_iff (hGH : G ≤ H) {f : CuspForm H k} :
+    restrict hGH f = 0 ↔ f = 0 := by
+  rw [← (restrict_injective hGH).eq_iff, show restrict hGH 0 = 0 by rfl]
+
+@[simp] lemma restrict_translate (hGH : G ≤ H) {f : CuspForm H k} (g) :
+    restrict (by simpa using hGH) (translate f g) = translate (restrict hGH f) g :=
+  rfl
+
+end CuspForm
+
+end Restrict

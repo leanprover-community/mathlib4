@@ -435,8 +435,7 @@ lemma relIndex_mul_orderAtCuspOrbit_eq_cuspOrderFiber_restrict
     ((𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).inv_mem ⟨g, rfl⟩)
   have : H'.IsArithmetic := isArithmetic_conj_of_mem
     ((𝒮ℒ : Subgroup (GL (Fin 2) ℝ)).inv_mem ⟨g, rfl⟩)
-  have hle : G' ≤ H' := (pointwise_smul_le_pointwise_smul_iff
-    (a := ConjAct.toConjAct s⁻¹)).mpr hGH
+  have hle : G' ≤ H' := by simpa [G', H']
   have hneg' : (-1 : GL (Fin 2) ℝ) ∈ G' := by
     simpa only [G', mem_pointwise_smul_iff_inv_smul_mem, ConjAct.smul_def,
       ConjAct.ofConjAct_inv, ConjAct.ofConjAct_toConjAct, inv_inv,
@@ -449,7 +448,7 @@ lemma relIndex_mul_orderAtCuspOrbit_eq_cuspOrderFiber_restrict
       orderAtCuspOrbit H k c f := by
     simpa only [hc, orderAtCuspOrbit_mk] using orderAtCuspOrbit_translate H k c f s
   have hre : ModularForm.restrict hle (ModularForm.translate f s) =
-      ModularForm.translate (ModularForm.restrict hGH f) s := by ext; rfl
+      ModularForm.translate (ModularForm.restrict hGH f) s := by simp [hGH]
   have hlocal : (G'.relIndex H' : EReal) *
       orderAtCusp H' k ∞ (ModularForm.translate f s) =
         cuspOrderFiber hle (ModularForm.restrict hle (ModularForm.translate f s))
