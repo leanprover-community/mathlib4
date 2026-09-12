@@ -224,7 +224,26 @@ explanations on this pattern.
 
 For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
 on each coefficient (using the `ℕ`-action on `R` that comes from the fact that `R` is
-an `AddMonoid`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
+an `AddMonoid`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq. This can
+be tested by writing
+```
+example : (inferInstance : AddMonoid (Polynomial ℕ)).toNSMul =
+    @NSMul.ofSMul (Polynomial ℕ) Polynomial.smulZeroClass.toSMul := by
+  with_implicit rfl
+```
+The comparison here is made using `with_implicit`, since instances are compared at implicit
+transparency. For other types, `Polynomial.smulZeroClass.toSMul` should be replaced by the generic
+`SMul` instance that gives `SMul ℕ` as a special case.
+
+When `inferInstanceAs` is used for defining the instances of a type, the `AddMonoid` instance should
+be defined after the `SMul` instance, otherwise, the two `SMul ℕ` instances will not be defeq at
+implicit transparency. In particular, when a `Module` instance is defined using `inferInstanceAs`, a
+`SMul` instance should be defined first, then `AddCommMonoid` (which extends `AddMonoid`), then
+finally the `Module` instance.
+
+Note that `@[no_expose]` should not be used for the `AddMonoid` instance of a type when there is a
+generic `SMul` instance, as the defeq between the two `SMul ℕ` instances coming from them will not
+hold in downstream modules, even if it holds in the module defining these instances.
 
 The tactic `to_additive` transfers definitions and results from multiplicative monoids to additive
 monoids. To work, it has to map fields to fields. This means that we should also add corresponding
