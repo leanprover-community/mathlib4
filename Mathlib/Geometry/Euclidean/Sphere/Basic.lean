@@ -143,6 +143,14 @@ lemma Sphere.ne_center_of_mem_of_mem_of_ne {s : Sphere P} {p q : P}
     (hp : p ∈ s) (hq : q ∈ s) (hpq : p ≠ q) : p ≠ s.center := by
   grind [dist_eq_zero, mem_sphere']
 
+/-- If a sphere contains two distinct points, then its radius is nonzero. -/
+lemma Sphere.radius_ne_zero_of_mem_of_mem_of_ne {s : Sphere P} {p q : P}
+    (hp : p ∈ s) (hq : q ∈ s) (hne : p ≠ q) : s.radius ≠ 0 := by
+  intro hr
+  apply hne
+  exact (dist_eq_zero.mp ((mem_sphere.mp hp).trans hr)).trans
+    (dist_eq_zero.mp ((mem_sphere.mp hq).trans hr)).symm
+
 /-- A set of points is cospherical if they are equidistant from some
 point. In two dimensions, this is the same thing as being
 concyclic. -/
@@ -254,6 +262,12 @@ theorem concyclic_pair (p₁ p₂ : P) : Concyclic ({p₁, p₂} : Set P) :=
   ⟨cospherical_pair p₁ p₂, coplanar_pair ℝ p₁ p₂⟩
 
 namespace Sphere
+
+/-- The point reflection of a point of a sphere in its center is also on the sphere. -/
+lemma pointReflection_center_mem {s : Sphere P} {m : P} (hm : m ∈ s) :
+    AffineEquiv.pointReflection ℝ s.center m ∈ s := by
+  rw [mem_sphere] at hm ⊢
+  rw [AffineEquiv.pointReflection_apply, dist_vadd_left, ← dist_eq_norm_vsub', ← hm]
 
 /-- `s.IsDiameter p₁ p₂` says that `p₁` and `p₂` are the two endpoints of a diameter of `s`. -/
 structure IsDiameter (s : Sphere P) (p₁ p₂ : P) : Prop where
