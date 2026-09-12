@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: basic theory
@@ -368,7 +369,7 @@ section NNNorm
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
   ⟨fun a => .mk ‖a‖ (norm_nonneg' a)⟩
 
-@[to_additive (attr := simp, norm_cast) coe_nnnorm]
+@[to_additive (attr := simp, norm_cast, basify_op) coe_nnnorm, basify_op]
 theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 
 @[to_additive (attr := simp) coe_comp_nnnorm]

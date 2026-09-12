@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Tactic.Group
 public import Mathlib.Topology.MetricSpace.Defs
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: definitions
@@ -86,6 +87,7 @@ variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
 
 instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
 
+@[basify_op]
 lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
 @[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
