@@ -9,6 +9,7 @@ public import Mathlib.Data.Bool.Basic
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
+public import Mathlib.Tactic.GrindAttrs
 
 import Mathlib.Tactic.GRewrite
 
@@ -194,6 +195,11 @@ alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 attribute [to_dual (attr := simp)] sup_of_le_left sup_of_le_right
 attribute [to_dual le_of_inf_eq'] le_of_sup_eq
 attribute [to_dual le_of_inf_eq] le_of_sup_eq'
+
+grind_pattern sup_of_le_left => a ⊔ b, b ≤ a
+grind_pattern sup_of_le_right => a ⊔ b, a ≤ b
+grind_pattern inf_of_le_left => a ⊓ b, a ≤ b
+grind_pattern inf_of_le_right => a ⊓ b, b ≤ a
 
 @[to_dual (attr := simp) inf_lt_left]
 theorem left_lt_sup : a < a ⊔ b ↔ ¬b ≤ a :=
