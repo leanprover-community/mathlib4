@@ -574,17 +574,19 @@ On a finite type every injective self-map is instead surjective, by
 theorem exists_injective_not_surjective (α : Type*) [Infinite α] :
     ∃ f : α → α, Injective f ∧ ¬ Surjective f := by
   classical
-  let e : ℕ ↪ α := natEmbedding α
-  let g : α ≃ ℕ ⊕ ↥(Set.range e)ᶜ :=
+  -- write α as equivalent to ℕ plus other stuff, the equivalence doesn't matter so we use `have`
+  have e : ℕ ↪ α := natEmbedding α
+  have g : α ≃ ℕ ⊕ ↥(Set.range e)ᶜ :=
     (Equiv.Set.sumCompl (Set.range e)).symm.trans
       ((Equiv.ofInjective e e.injective).symm.sumCongr (Equiv.refl _))
+  -- now our map will be +1 on the ℕ portion, leaving the rest unchanged
   refine ⟨g.symm ∘ Sum.map Nat.succ id ∘ g,
     g.symm.injective.comp ((Nat.succ_injective.sumMap injective_id).comp g.injective),
-    fun hsurj => ?_⟩
+    fun hsurj ↦ ?_⟩
+  -- and (the copy of) 0 is never hit, so the map is not surjective
   obtain ⟨x, hx⟩ := hsurj (g.symm (Sum.inl 0))
-  simp only [Function.comp_apply] at hx
-  have hx2 := g.symm.injective hx
-  rcases hgx : g x with n | b <;> rw [hgx] at hx2 <;> simp [Sum.map] at hx2
+  rcases hgx : g x <;>
+  grind [g.symm.injective]
 
 /-- An infinite type is equivalent to a proper subset of itself.
 
