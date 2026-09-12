@@ -5,6 +5,7 @@ Authors: Johan Commelin, Eric Wieser
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -194,6 +195,20 @@ theorem rank_mul_le_right [CommSemiring R] [StrongRankCondition R] (A : Matrix m
 theorem rank_mul_le [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
     (A * B).rank ≤ min A.rank B.rank :=
   le_min (rank_mul_le_left _ _) (rank_mul_le_right _ _)
+
+theorem rank_mul_ge [CommRing R] [IsDomain R] (A : Matrix m n R) (B : Matrix n o R) :
+    A.rank + B.rank ≤ (A * B).rank + Fintype.card n := by
+  have hker : finrank R (A.mulVecLin.comp B.mulVecLin).ker ≤
+      finrank R A.mulVecLin.ker + finrank R B.mulVecLin.ker := by
+    have H := B.mulVecLin.lift_rank_comap_le A.mulVecLin.ker
+    simp only [← Submodule.finrank_eq_rank, Cardinal.lift_natCast] at H
+    exact_mod_cast H
+  have hf := A.mulVecLin.finrank_range_add_finrank_ker
+  have hg := B.mulVecLin.finrank_range_add_finrank_ker
+  have hfg := (A.mulVecLin.comp B.mulVecLin).finrank_range_add_finrank_ker
+  simp only [Module.finrank_fintype_fun_eq_card] at hf hg hfg
+  rw [rank, rank, rank, mulVecLin_mul]
+  lia
 
 theorem rank_vecMulVec_le [CommSemiring R] [StrongRankCondition R] (w : m → R) (v : n → R) :
     (Matrix.vecMulVec w v).rank ≤ 1 := by
