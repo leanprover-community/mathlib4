@@ -67,10 +67,10 @@ lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
 /-- Constructor for `RightTExact`. -/
 lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
     F.RightTExact t₁ t₂ where
-  isLE_obj X n _ := by
+  isLE_obj X n _ :=
     have := t₁.isLE_shift X n n 0 (add_zero n)
     have : t₂.IsLE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
     have : t₂.IsLE ((F.obj X)⟦n⟧) 0 := t₂.isLE_of_iso ((F.commShiftIso n).app X) 0
-    exact t₂.isLE_of_shift (F.obj X) n n 0 (add_zero n)
+    t₂.isLE_of_shift (F.obj X) n n 0 (add_zero n)
 
 end CategoryTheory.Functor
