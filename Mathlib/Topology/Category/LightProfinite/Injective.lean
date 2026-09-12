@@ -162,6 +162,7 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] :
     find `k (n+1) : Y ⟶ S' (n+1)` making both diagrams commute. That is:
       - `h_up (n+1) : k (n+1) ≫ p n = k n`
       - `h_down n+1 : f ≫ k (n+1) = g' (n+1)`
+
     Construction of `k (n+1)` through extension lemma requires as input:
       - `h_comm n : g' (n+1) ≫ p n = f ≫ k n`, which can be obtained from h_down n. -/
     have h_comm (n : ℕ) (k : Y ⟶ lightToProfinite.obj (S.component n)) (h_down :

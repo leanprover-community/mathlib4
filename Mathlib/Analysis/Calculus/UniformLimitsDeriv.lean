@@ -24,6 +24,7 @@ _uniformly_. The formal statement appears as `hasFDerivAt_of_tendstoLocallyUnifo
        `f' : ℕ → E → (E →L[𝕜] G)` on a neighborhood of `x`,
     2. the functions `f` converge at `x`, and
     3. the derivatives `f'` form a Cauchy sequence uniformly on a neighborhood of `x`,
+
   then the `f` form a Cauchy sequence _uniformly_ on a neighborhood of `x`
 * `hasFDerivAt_of_tendstoUniformlyOnFilter` : Suppose (1), (2), and (3) above are true. Let
   `g` (resp. `g'`) be the limiting function of the `f` (resp. `g'`). Then `f'` is the derivative of
