@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # Category of categories
