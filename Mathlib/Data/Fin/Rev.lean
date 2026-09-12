@@ -6,6 +6,8 @@ Authors: Eric Rodriguez, Joel Riou, Yury Kudryashov
 module
 
 public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Equiv.Basic
+
 /-!
 # Reverse on `Fin n`
 

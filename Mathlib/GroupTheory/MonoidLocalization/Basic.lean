@@ -415,7 +415,7 @@ abbrev toMonoidHom (f : LocalizationMap S N) : M →* N where
 theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
   fun f g ↦ by cases f; congr! with eq; ext; exact congr($eq _)
 
-@[to_additive] instance : FunLike (LocalizationMap S N) M N where
+@[to_additive (attr := macro_inline)] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
   coe_injective := DFunLike.coe_injective.comp toMonoidHom_injective
 

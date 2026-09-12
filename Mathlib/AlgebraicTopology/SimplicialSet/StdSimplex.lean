@@ -73,6 +73,7 @@ instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
   fun a b ↦ decidable_of_iff (stdSimplex.objEquiv a = stdSimplex.objEquiv b) (by simp)
 
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
+@[macro_inline]
 instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
   coe_injective _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)

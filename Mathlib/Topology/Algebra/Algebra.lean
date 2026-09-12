@@ -141,6 +141,7 @@ variable [TopologicalSpace A]
 
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
+@[macro_inline]
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
   coe_injective f g h := by

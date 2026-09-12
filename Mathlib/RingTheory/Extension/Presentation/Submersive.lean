@@ -202,7 +202,7 @@ lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} 
   rw [jacobian_eq_jacobiMatrix_det, jacobian_eq_jacobiMatrix_det]
   simp only [ofAlgEquiv_toPresentation, Presentation.ofAlgEquiv_toGenerators,
     jacobiMatrix_ofAlgEquiv, Generators.algebraMap_apply, Generators.ofAlgEquiv_val,
-    ← AlgHom.coe_coe e, MvPolynomial.comp_aeval_apply]
+    ← AlgHom.coe_ofClass e, MvPolynomial.comp_aeval_apply]
   simp [Function.comp_def]
 
 /-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive

@@ -352,6 +352,11 @@ theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
 theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
   rw [mul_comm, card_mul_index]
 
+/-- The index of a finite subgroup is the quotient of the cardinalities. -/
+@[to_additive /-- The index of a finite additive subgroup is the quotient of the cardinalities. -/]
+theorem index_eq_card_div [Finite H] : H.index = Nat.card G / Nat.card H := by
+  rw [← card_mul_index H, Nat.mul_div_cancel_left _ Nat.card_pos]
+
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
@@ -785,6 +790,18 @@ instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
   ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relIndex_eq_zero h⟩
 
 @[to_additive]
+instance (H' : Subgroup G') [H'.FiniteIndex] : (H'.comap f).FiniteIndex where
+  index_ne_zero := by
+    rw [index_comap]
+    exact FiniteIndex.index_ne_zero
+
+variable (H) in
+@[to_additive]
+theorem FiniteIndex.map_of_surjective [H.FiniteIndex] (hf : Function.Surjective f) :
+    (H.map f).FiniteIndex where
+  index_ne_zero := ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (H.index_map_dvd hf)
+
+@[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
@@ -929,7 +946,7 @@ lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy 
     rw [← map_univ_equiv (Equiv.mulRight y⁻¹), filter_map, card_map]
   congr 2 with g
   simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
-  let f' := MonoidHomClass.toMonoidHom f
+  let f' := MonoidHomClass.ofClass f
   change f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
   rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 

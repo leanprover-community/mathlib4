@@ -598,18 +598,14 @@ theorem differentiableWithinAt_finCons :
   rw [differentiableWithinAt_pi, Fin.forall_fin_succ, differentiableWithinAt_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 
-/-- A variant of `differentiableWithinAt_finCons` where the derivative variables are free on the RHS
-instead. -/
-theorem differentiableWithinAt_finCons' :
-    DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x ↔
-      DifferentiableWithinAt 𝕜 φ s x ∧ DifferentiableWithinAt 𝕜 φs s x :=
-  differentiableWithinAt_finCons
+@[deprecated (since := "2026-08-08")]
+alias differentiableWithinAt_finCons' := differentiableWithinAt_finCons
 
 @[fun_prop]
 theorem DifferentiableWithinAt.finCons
     (h : DifferentiableWithinAt 𝕜 φ s x) (hs : DifferentiableWithinAt 𝕜 φs s x) :
     DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x :=
-  differentiableWithinAt_finCons'.mpr ⟨h, hs⟩
+  differentiableWithinAt_finCons.mpr ⟨h, hs⟩
 
 theorem differentiableAt_finCons :
     DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
@@ -617,18 +613,14 @@ theorem differentiableAt_finCons :
   rw [differentiableAt_pi, Fin.forall_fin_succ, differentiableAt_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 
-/-- A variant of `differentiableAt_finCons` where the derivative variables are free on the RHS
-instead. -/
-theorem differentiableAt_finCons' :
-    DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
-      DifferentiableAt 𝕜 φ x ∧ DifferentiableAt 𝕜 φs x :=
-  differentiableAt_finCons
+@[deprecated (since := "2026-08-08")]
+alias differentiableAt_finCons' := differentiableAt_finCons
 
 @[fun_prop]
 theorem DifferentiableAt.finCons
     (h : DifferentiableAt 𝕜 φ x) (hs : DifferentiableAt 𝕜 φs x) :
     DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x :=
-  differentiableAt_finCons'.mpr ⟨h, hs⟩
+  differentiableAt_finCons.mpr ⟨h, hs⟩
 
 theorem differentiableOn_finCons :
     DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
@@ -636,18 +628,14 @@ theorem differentiableOn_finCons :
   rw [differentiableOn_pi, Fin.forall_fin_succ, differentiableOn_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 
-/-- A variant of `differentiableOn_finCons` where the derivative variables are free on the RHS
-instead. -/
-theorem differentiableOn_finCons' :
-    DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
-      DifferentiableOn 𝕜 φ s ∧ DifferentiableOn 𝕜 φs s :=
-  differentiableOn_finCons
+@[deprecated (since := "2026-08-08")]
+alias differentiableOn_finCons' := differentiableOn_finCons
 
 @[fun_prop]
 theorem DifferentiableOn.finCons
     (h : DifferentiableOn 𝕜 φ s) (hs : DifferentiableOn 𝕜 φs s) :
     DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s :=
-  differentiableOn_finCons'.mpr ⟨h, hs⟩
+  differentiableOn_finCons.mpr ⟨h, hs⟩
 
 theorem differentiable_finCons :
     Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
@@ -655,18 +643,14 @@ theorem differentiable_finCons :
   rw [differentiable_pi, Fin.forall_fin_succ, differentiable_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 
-/-- A variant of `differentiable_finCons` where the derivative variables are free on the RHS
-instead. -/
-theorem differentiable_finCons' :
-    Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
-      Differentiable 𝕜 φ ∧ Differentiable 𝕜 φs :=
-  differentiable_finCons
+@[deprecated (since := "2026-08-08")]
+alias differentiable_finCons' := differentiable_finCons
 
 @[fun_prop]
 theorem Differentiable.finCons
     (h : Differentiable 𝕜 φ) (hs : Differentiable 𝕜 φs) :
     Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) :=
-  differentiable_finCons'.mpr ⟨h, hs⟩
+  differentiable_finCons.mpr ⟨h, hs⟩
 
 -- TODO: write the `Fin.cons` versions of `fderivWithin_pi` and `fderiv_pi`
 

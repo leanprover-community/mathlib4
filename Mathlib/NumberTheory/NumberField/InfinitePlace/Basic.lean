@@ -77,6 +77,7 @@ lemma isInfinitePlace_iff (v : AbsoluteValue K ℝ) :
 
 namespace InfinitePlace
 
+@[macro_inline]
 instance : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)

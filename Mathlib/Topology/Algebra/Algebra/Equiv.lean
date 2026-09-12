@@ -78,6 +78,7 @@ def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
 instance : CoeOut (A ≃A[R] B) (A →A[R] B) where coe := toContinuousAlgHom
 instance : CoeOut (A ≃A[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
+@[macro_inline]
 instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun

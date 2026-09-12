@@ -5,6 +5,7 @@ Authors: Brendan Murphy
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.Regular
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic

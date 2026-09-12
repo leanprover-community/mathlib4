@@ -252,8 +252,7 @@ noncomputable def Sylow.mulEquivIteratedWreathProduct (p : ℕ) [hp : Fact (Nat.
   let g := (MonoidHom.ofInjective hf).symm
   let P' : Sylow p (Equiv.Perm α) := Sylow.ofCard (MonoidHom.range f) (by
     rw [Nat.card_congr g.toEquiv, IteratedWreathProduct.card, hG, Nat.card_perm, hα,
-        ← Nat.multiplicity_eq_factorization hp.out (p ^ n).factorial_ne_zero,
-        Nat.Prime.multiplicity_factorial_pow hp.out])
+        ← Nat.multiplicity_eq_factorization hp.out, Nat.Prime.multiplicity_factorial_pow hp.out])
   exact (P.equiv P').trans g
 
 end iterated

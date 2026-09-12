@@ -25,6 +25,7 @@ namespace MyEmbedding
 
 variable (A B : Type*) [MyClass A] [MyClass B]
 
+@[macro_inline]
 instance : FunLike (MyEmbedding A B) A B where
   coe := MyEmbedding.toFun
   coe_injective := fun f g h ↦ by cases f; cases g; congr
@@ -102,6 +103,7 @@ lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B]
 
 variable {A B : Type*} [CoolClass A] [CoolClass B]
 
+@[macro_inline]
 instance : FunLike (CoolerEmbedding A B) A B where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr; apply DFunLike.coe_injective; congr

@@ -56,7 +56,7 @@ open ContinuousMap WeakDual in
 /-- In a commutative C⋆-algebra, the positive part map `fun a ↦ a⁺` is monotone. -/
 protected lemma posPart_mono : Monotone (fun a : A ↦ a⁺) := by
   let φ : A →⋆ₙₐ[ℂ] C(characterSpace ℂ A⁺¹, ℂ) :=
-    .comp (gelfandStarTransform A⁺¹) (Unitization.inrNonUnitalStarAlgHom ℂ A)
+    .comp (gelfandStarTransform A⁺¹).toNonUnitalStarAlgHom (Unitization.inrNonUnitalStarAlgHom ℂ A)
   have hφ : Isometry φ :=
     StarAlgEquiv.isometry (gelfandStarTransform (A⁺¹)) |>.comp <| Unitization.isometry_inr
   intro a b hab

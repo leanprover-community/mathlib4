@@ -77,7 +77,7 @@ infixr:25 " →ₜ* " => ContinuousMonoidHom
 
 variable {A B C D E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance instFunLike : FunLike (A →ₜ* B) A B where
   coe f := f.toFun
   coe_injective f g h := by
@@ -111,7 +111,7 @@ into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` 
 `AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
-  { MonoidHomClass.toMonoidHom f with
+  { MonoidHomClass.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
@@ -329,7 +329,7 @@ variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Mul M] [Mul N]
 
 section coe
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (M ≃ₜ* N) M N where
   coe f := f.toFun
   inv f := f.invFun
