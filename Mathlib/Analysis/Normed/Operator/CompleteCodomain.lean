@@ -44,7 +44,7 @@ lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[
   have : Tendsto (fun n ↦ g n v) atTop (𝓝 (a v)) := by
     have : Continuous (fun (i : E →L[𝕜] F) ↦ i v) := by fun_prop
     exact (this.tendsto _).comp ha
-  simpa [g, ContinuousLinearMap.smulRightL, hφ]
+  simpa [g, hφ]
 
 lemma completeSpace_continuousLinearMap_iff :
     CompleteSpace (E →L[𝕜] F) ↔ CompleteSpace F :=
