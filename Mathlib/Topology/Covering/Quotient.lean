@@ -73,7 +73,8 @@ include hf
   hf.apply_eq_iff_mem_orbit.mpr ⟨g, rfl⟩
 
 /-- The group action on the domain of a quotient covering map is free. -/
-@[to_additive] theorem isCancelSMul : IsCancelSMul G E where
+@[to_additive /-- The additive group action on the domain of a quotient covering map is free. -/]
+theorem isCancelSMul : IsCancelSMul G E where
   right_cancel' g g' e eq := by
     have ⟨U, heU, hU⟩ := hf.disjoint e
     simpa [inv_mul_eq_one, eq_comm] using hU (g'⁻¹ * g)
