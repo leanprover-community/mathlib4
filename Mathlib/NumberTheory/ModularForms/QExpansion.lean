@@ -43,7 +43,16 @@ and bounded at infinity.
   determined.
 * There are also more specialized versions of some of these lemmas in the `ModularFormClass`
   namespace.
+
+## See also
+
+* Lemmas relating q-expansion coefficents to Fourier series, such as
+  `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
+  the present file does not import Fourier theory.
+
 -/
+
+assert_not_exists fourierCoeffOn -- guard against import creep
 
 @[expose] public noncomputable section
 
