@@ -371,6 +371,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
       have h_end : ∀ a ∈ v, ⟪a, e⟫ = 0 := by
         intro a ha
         exact he' a (Submodule.subset_span ha)
+      rw [pairwise'_iff]
       rintro ⟨a, ha'⟩
       rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · rintro ⟨b, hb'⟩ hab'
@@ -384,7 +385,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
         intro hab''
         apply hab'
         simpa using hab''
-      exact hv.2 this
+      exact pairwise'_apply hv.2 this
   · -- ** direction 2: empty orthogonal complement implies maximal
     simp only [Subset.antisymm_iff]
     rintro h u (huv : v ⊆ u) hu
