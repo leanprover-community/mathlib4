@@ -30,6 +30,12 @@ To add a round of analysis called `roundName`, declare an option `linter.tacticA
 make a definition of type `Mathlib.TacticAnalysis.Config` and give the `Config` declaration the
 `@[tacticAnalysis linter.tacticAnalysis.roundName]` attribute. Don't forget to enable the option.
 
+Passes report their findings by logging messages, e.g. with `logWarningAt` or `logInfoAt`.
+The framework tags these messages with the pass's option name, the way `Lean.Linter.logLint`
+does, so that `lake lint` and CI reports can group them by pass. Unlike core linters, passes also
+report at `info` severity; such messages are tagged too, so a lint driver without a severity
+filter (such as Lake's builtin one) counts them as lint failures.
+
 ## Warning
 
 The `ComplexConfig` interface doesn't feel quite intuitive and flexible yet and should be changed
@@ -83,7 +89,7 @@ This provides the low-level interface into the tactic analysis framework.
 structure Config where
   /-- The function that runs this pass. Takes an array of infotree nodes corresponding
   to a sequence of tactics from the source file. Should do all reporting itself,
-  for example by `Lean.Linter.logLint`.
+  for example by `logWarningAt`; the framework tags the messages with the pass's option name.
   -/
   run : Array TacticNode → CommandElabM Unit
 
@@ -220,19 +226,46 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
         return (none, childSequences))
   return (out.map Prod.snd).getD #[]
 
+/-- Tag `msg` as a finding of the pass enabled by `opt`, copying the shape of
+`Lean.Linter.logLint` (core has no `MessageData`-level helper for this, so keep the two in sync):
+the kind becomes `opt.name`, `Lean.Linter.linterMessageTag` sits directly inside it, and a note
+on how to disable the pass is appended.
+
+Errors, and messages that are already linter messages, are returned unchanged. -/
+def tagLintMessage (opt : Lean.Option Bool) (msg : Message) : Message :=
+  if msg.severity == .error || msg.data.isLinterMessage then
+    msg
+  else
+    let disable :=
+      MessageData.note m!"This linter can be disabled with `set_option {opt.name} false`"
+    { msg with data := .tagged opt.name <| .tagged linterMessageTag m!"{msg.data}{disable}" }
+
+/-- Run `x` with an empty message log, then tag every message it logged with
+`tagLintMessage opt` and append them to the messages logged before. -/
+def withLintTagging {α : Type} (opt : Lean.Option Bool) (x : CommandElabM α) :
+    CommandElabM α := do
+  let saved ← modifyGet fun s => (s.messages, { s with messages := {} })
+  try
+    x
+  finally
+    -- `x` started from an empty log, so none of its messages have been reported yet.
+    modify fun s => { s with
+      messages := saved ++ { s.messages with
+        unreported := s.messages.unreported.map (tagLintMessage opt) } }
+
 /-- Run the tactic analysis passes from `configs` on the tactic sequences in `stx`,
 using `trees` to get the infotrees. -/
 def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : CommandElabM Unit := do
   let opts ← getLinterOptions
-  let enabledConfigs := configs.filter fun config =>
+  let enabledConfigs := configs.filterMap fun config =>
     -- This can be `none` in the file where the option is declared.
-    if let some opt := config.opt then getLinterValue opt opts else false
+    config.opt.filter (getLinterValue · opts) |>.map ((·, config))
   if enabledConfigs.isEmpty then
     return
   for i in trees do
     for seq in (← findTacticSeqs i) do
-      for config in enabledConfigs do
-        config.run seq
+      for (opt, config) in enabledConfigs do
+        withLintTagging opt <| config.run seq
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
