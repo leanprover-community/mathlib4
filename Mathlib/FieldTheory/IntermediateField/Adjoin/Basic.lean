@@ -220,7 +220,7 @@ instance : IsCompactlyGenerated (IntermediateField F E) :=
   ⟨fun s =>
     ⟨(fun x => F⟮x⟯) '' s,
       ⟨by rintro t ⟨x, _, rfl⟩; exact adjoin_simple_isCompactElement x,
-        sSup_image.trans <| (biSup_adjoin_simple _).trans <|
+        isLUB_iff_sSup_eq.mpr <| sSup_image.trans <| (biSup_adjoin_simple _).trans <|
           le_antisymm (adjoin_le_iff.mpr le_rfl) <| subset_adjoin F (s : Set E)⟩⟩⟩
 
 theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E} {x : E}
