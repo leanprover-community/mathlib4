@@ -78,6 +78,22 @@ theorem deterministic_congr {f g : α → β} {hf : Measurable f} (h : f = g) :
     deterministic f hf = deterministic g (h ▸ hf) := by
   grind
 
+/-- A kernel that takes values in the Dirac measures is equal to `deterministic f hf` for
+a measurable function `f`. -/
+theorem exists_eq_deterministic_of_forall_eq_dirac
+    {κ : Kernel α β} (hκ : ∀ a, ∃ b, κ a = Measure.dirac b) :
+    ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf := by
+  choose f hf using hκ
+  refine ⟨f, ?_, ?_⟩
+  · intro s hs
+    suffices f ⁻¹' s = (fun a => κ a s) ⁻¹' {1} by
+      rw [this]
+      exact κ.measurable_coe hs (measurableSet_singleton 1)
+    ext x
+    simp [hf, hs, Set.indicator_eq_one_iff_mem]
+  · ext a : 1
+    exact hf a
+
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
   ⟨fun a => by rw [deterministic_apply hf]; infer_instance⟩
