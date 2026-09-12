@@ -63,7 +63,7 @@ structure Hom (S₁ S₂ : ShortComplex C) where
   /-- the right commutative square of a morphism in `ShortComplex` -/
   comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃ := by cat_disch
 
-attribute [reassoc] Hom.comm₁₂ Hom.comm₂₃
+attribute [map (attr := reassoc)] Hom.comm₁₂ Hom.comm₂₃
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃ Hom.comm₁₂_assoc Hom.comm₂₃_assoc
 
 variable (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
