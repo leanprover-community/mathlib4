@@ -88,7 +88,7 @@ def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(C
     have c : Q(ℕ) := mkNatLit (m - (k + 1))
     let hz : Q(List.replicate $c (0 : $α) = List.replicate $c 0) := q(Eq.refl _)
     mkAppM ``And.intro #[← certifier q($entry ≠ 0), ← mkAppM ``And.intro #[hz, rest]]
-  have h : Q(IsLowerTriangularDiag 0 $m $rows) := chain
+  have h : Q(IsLowerTriangularDiagList 0 $m $rows) := chain
   return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
     mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
 
