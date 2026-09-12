@@ -219,12 +219,6 @@ lemma lt_def : x < y ↔ x ⊂ y := .rfl
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
 
-instance : @Std.Refl ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ => id⟩
-
-instance : IsTrans ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ _ hxy hyz _ ha => hyz (hxy ha)⟩
-
 @[simp]
 theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
   | ⟨_, A⟩, ⟨_, _⟩ =>
@@ -234,12 +228,6 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         ⟨b, za.trans ab⟩⟩
 
 lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := SetLike.coe_subset_coe
-
-instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
-  ⟨@le_antisymm ZFSet _⟩
-
-instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
