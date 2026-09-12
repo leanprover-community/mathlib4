@@ -221,4 +221,3 @@ theorem cramerRao (p dp : α → ℝ) (T : α → ℝ)
   rwa [div_le_iff₀ hI]
 
 end FisherRao
-
