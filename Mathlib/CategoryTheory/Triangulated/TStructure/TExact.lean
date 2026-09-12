@@ -65,7 +65,7 @@ lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
     t₂.isGE_of_shift (F.obj X) n n 0 (add_zero n)
 
 /-- Constructor for `RightTExact`. -/
-lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
+lemma RightTExact.mk' (isLE_obj_zero : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
     F.RightTExact t₁ t₂ where
   isLE_obj X n _ :=
     have := t₁.isLE_shift X n n 0 (add_zero n)
