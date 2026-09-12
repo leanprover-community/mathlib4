@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.AdjoinRoot.Basic
 public import Mathlib.RingTheory.Norm.Defs
 
 /-!

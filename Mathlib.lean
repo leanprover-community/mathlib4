@@ -5042,6 +5042,7 @@ public import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
+public import Mathlib.Instances.IsReduced.Polynomial
 public import Mathlib.Lean.ContextInfo
 public import Mathlib.Lean.CoreM
 public import Mathlib.Lean.Elab.InfoTree
@@ -6646,7 +6647,8 @@ public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 public import Mathlib.RingTheory.Adjoin.PowerBasis
 public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.Adjoin.Tower
-public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.AdjoinRoot.Basic
+public import Mathlib.RingTheory.AdjoinRoot.Instances
 public import Mathlib.RingTheory.AlgebraTower
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Algebraic.Cardinality

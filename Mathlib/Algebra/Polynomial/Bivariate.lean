@@ -5,7 +5,7 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.AdjoinRoot.Basic
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 
