@@ -508,6 +508,35 @@ This constructor is primarily intended to be used within proofs since it creates
 equalities. -/
 noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
+/-- A predicate on an additive monoid saying that every element is its own negation, i.e.
+`a + a = 0` for all `a`. The name describes the elements, not the monoid: see `IsSelfNeg` and
+`isSelfNegAddMonoid_iff_forall_isSelfNeg`. Equivalently, the exponent of the monoid divides two;
+see `isSelfNegAddMonoid_iff_exponent_dvd_two`.
+
+Such a monoid is automatically a commutative group in which negation is the identity
+(`IsSelfNegAddMonoid.toAddCommGroup`), and is then the same thing as an `𝔽₂`-vector space, i.e. a
+module over `ZMod 2`, also called an elementary abelian 2-group
+(`IsSelfNegAddMonoid.toZModModule`, `ZModModule.toIsSelfNegAddMonoid`).
+
+For a semiring the property says exactly that `(2 : M) = 0`, which is characteristic two except in
+the trivial semiring, whose characteristic is one. -/
+class IsSelfNegAddMonoid (M : Type*) [AddZero M] : Prop where
+  protected add_self (a : M) : a + a = 0
+
+/-- A predicate on a monoid saying that every element is its own inverse, i.e. `a * a = 1` for all
+`a`. The name describes the elements, not the monoid: see `IsSelfInv` and
+`isSelfInvMonoid_iff_forall_isSelfInv`. Equivalently, the exponent of the monoid divides two; see
+`isSelfInvMonoid_iff_exponent_dvd_two`.
+
+Such a monoid is automatically a commutative group in which inversion is the identity
+(`IsSelfInvMonoid.toCommGroup`). A *group* with this property is also called an *elementary abelian
+2-group*, a *Boolean group*, or a *group of exponent dividing two*. -/
+@[to_additive (attr := mk_iff)]
+class IsSelfInvMonoid (M : Type*) [MulOne M] : Prop where
+  protected mul_self (a : M) : a * a = 1
+
+attribute [to_additive existing] isSelfInvMonoid_iff
+
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
 injective. -/
 @[mk_iff]
