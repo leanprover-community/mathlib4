@@ -29,16 +29,17 @@ we do not have a `posreal` type.
 open Bornology Filter Set Topology
 open scoped NNReal ENNReal Uniformity
 
-variable {α β γ : Type*}
+variable {α β γ δ τ ζ : Type*}
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
 `edist x y ≤ K * edist (f x) (f y)`. This can also be used as a predicate for bounded below
 linear operators, see `antilipschitzWith_iff_exists_mul_le_norm`. -/
-def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
+def AntilipschitzWith [EDist α] [EDist β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist x y ≤ K * edist (f x) (f y)
 
-protected lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
-    {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y < ⊤ :=
+protected lemma AntilipschitzWith.edist_lt_top [EDist α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
+    (h : AntilipschitzWith K f) (x y : α) :
+    edist x y < ⊤ :=
   (h x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top (edist_lt_top _ _)
 
 theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
@@ -80,8 +81,10 @@ end Metric
 
 namespace AntilipschitzWith
 
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {K : ℝ≥0} {f : α → β}
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α]
+  [TopologicalSpace β] [WeakPseudoEMetricSpace β] [TopologicalSpace γ] [WeakPseudoEMetricSpace γ]
+  [PseudoEMetricSpace δ] [PseudoEMetricSpace τ] [PseudoEMetricSpace ζ]
+variable {K : ℝ≥0} {f : α → β} {g : δ → τ}
 
 open Metric
 
@@ -141,37 +144,37 @@ theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Funct
   have := hf (g x) (g y)
   rwa [hg x, hg y] at this
 
-theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
+theorem comap_uniformity_le (hg : AntilipschitzWith K g) : (𝓤 τ).comap (Prod.map g g) ≤ 𝓤 δ := by
   refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => ?_
   refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', ?_⟩
-  refine fun x hx => (hf x.1 x.2).trans_lt ?_
+  refine fun x hx => (hg x.1 x.2).trans_lt ?_
   rw [mul_comm, ← div_eq_mul_inv] at hx
   rw [mul_comm]
   exact ENNReal.mul_lt_of_lt_div hx
 
-theorem isUniformInducing (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
-    IsUniformInducing f :=
-  ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
+theorem isUniformInducing (hg : AntilipschitzWith K g) (hgc : UniformContinuous g) :
+    IsUniformInducing g :=
+  ⟨le_antisymm hg.comap_uniformity_le hgc.le_comap⟩
 
 lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.isUniformInducing hfc, hf.injective⟩
 
-theorem comap_nhds_le (hf : AntilipschitzWith K f) (x : α) : (𝓝 (f x)).comap f ≤ 𝓝 x := by
+theorem comap_nhds_le (hg : AntilipschitzWith K g) (x : δ) : (𝓝 (g x)).comap g ≤ 𝓝 x := by
   simp only [nhds_eq_comap_uniformity]
-  grw [← hf.comap_uniformity_le]
+  grw [← hg.comap_uniformity_le]
   simp [comap_comap, Function.comp_def]
 
-theorem isInducing (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsInducing f :=
-  isInducing_iff_nhds.mpr fun x ↦ le_antisymm (hfc.tendsto x).le_comap <| hf.comap_nhds_le _
+theorem isInducing (hg : AntilipschitzWith K g) (hgc : Continuous g) : IsInducing g :=
+  isInducing_iff_nhds.mpr fun x ↦ le_antisymm (hgc.tendsto x).le_comap <| hg.comap_nhds_le _
 
 lemma isEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsEmbedding f :=
   hf.isInducing hfc |>.isEmbedding
 
-theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
-    (hfc : UniformContinuous f) : IsComplete (range f) :=
-  (hf.isUniformInducing hfc).isComplete_range
+theorem isComplete_range [CompleteSpace δ] (hg : AntilipschitzWith K g)
+    (hgc : UniformContinuous g) : IsComplete (range g) :=
+  (hg.isUniformInducing hgc).isComplete_range
 
 theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
     {f : α → β} {K : ℝ≥0} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
@@ -191,12 +194,12 @@ theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f 
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 
 /-- If `f : α → β` is `0`-antilipschitz, then `α` is a `subsingleton`. -/
-protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
+protected theorem subsingleton {α β} [TopologicalSpace α] [WeakEMetricSpace α] [EDist β] {f : α → β}
     (h : AntilipschitzWith 0 f) : Subsingleton α :=
   ⟨fun x y => edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
 
 /-- If `f : α → β` is `K`-antilipschitz and `α` is nontrivial, `K` is positive. -/
-protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
+protected theorem pos {α} [TopologicalSpace α] [WeakEMetricSpace α] [Nontrivial α] {f : α → β}
     (hf : AntilipschitzWith K f) : 0 < K := by
   by_contra! h₀
   obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
@@ -250,6 +253,6 @@ theorem isBounded_of_image2_right {f : α → β → γ} {K₂ : ℝ≥0} (hf : 
 
 end AntilipschitzWith
 
-theorem LipschitzWith.to_rightInverse [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
+theorem LipschitzWith.to_rightInverse [EDist α] [EDist β] {K : ℝ≥0}
     {f : α → β} (hf : LipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     AntilipschitzWith K g := fun x y => by simpa only [hg _] using hf (g x) (g y)
