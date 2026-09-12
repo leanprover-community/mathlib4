@@ -49,25 +49,15 @@ open scoped ArithmeticFunction.Moebius ArithmeticFunction.zeta
 namespace ArithmeticFunction
 
 /-- The Mertens function `M n = ∑ k ∈ Icc 1 n, μ k`, the summatory function of the Möbius
-function. -/
-def mertens (n : ℕ) : ℤ := ∑ k ∈ Icc 1 n, (μ k : ℤ)
+function, as an arithmetic function. -/
+def mertens : ArithmeticFunction ℤ := ⟨fun n => ∑ k ∈ Icc 1 n, (μ k : ℤ), by simp⟩
 
-@[simp] theorem mertens_zero : mertens 0 = 0 := by simp [mertens]
+theorem mertens_apply (n : ℕ) : mertens n = ∑ k ∈ Icc 1 n, (μ k : ℤ) := rfl
 
-@[simp] theorem mertens_one : mertens 1 = 1 := by simp [mertens]
+@[simp] theorem mertens_one : mertens 1 = 1 := by simp [mertens_apply]
 
-theorem mertens_succ (n : ℕ) : mertens (n + 1) = mertens n + μ (n + 1) := by
-  unfold mertens
-  rw [sum_Icc_succ_top (by omega)]
-
-/-- `∑ d ∈ k.divisors, μ d` is `1` for `k = 1` and `0` otherwise: the Möbius function is the
-Dirichlet inverse of `ζ`, in summation form. -/
-theorem sum_divisors_moebius (k : ℕ) :
-    (∑ d ∈ k.divisors, (μ d : ℤ)) = if k = 1 then 1 else 0 := by
-  have h : ((μ * ζ : ArithmeticFunction ℤ)) k = ∑ d ∈ k.divisors, (μ d : ℤ) :=
-    coe_mul_zeta_apply
-  rw [moebius_mul_coe_zeta] at h
-  rw [← h]; simp [one_apply]
+theorem mertens_add_one (n : ℕ) : mertens (n + 1) = mertens n + μ (n + 1) := by
+  rw [mertens_apply, mertens_apply, sum_Icc_succ_top (by omega)]
 
 /-- `∑ i ∈ range n, μ (i + 2) = mertens (n + 1) - 1`: the Mertens function without its first
 term `μ 1 = 1`. -/
@@ -75,7 +65,7 @@ theorem sum_range_moebius_add_two (n : ℕ) :
     (∑ i ∈ range n, (μ (i + 1 + 1) : ℤ)) = mertens (n + 1) - 1 := by
   induction n with
   | zero => simp
-  | succ m ih => rw [sum_range_succ, ih, mertens_succ (m + 1)]; ring
+  | succ m ih => rw [sum_range_succ, ih, mertens_add_one (m + 1)]; ring
 
 /-- The same sum written over `range (n + 1)` with the term for `0` set to zero. -/
 theorem sum_range_ite_moebius (n : ℕ) :
