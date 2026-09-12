@@ -1355,13 +1355,13 @@ end
 
 /-- Given a constant `src`, add a translation for it, given by expression `tgt`. -/
 def addTranslationFor (t : TranslateData) (ref : Syntax) (src : Name) (tgt : Term)
-    (dontTranslate : List Nat) (givenRelevantArg? : Option RelevantArg) :
+    (dontTranslate : List Nat) (relevantArg? : Option RelevantArg) :
     TermElabM Unit := do
   withExporting (isExporting := !isPrivateName src) do withDeclNameForAuxNaming src do
   let cinfo ← getConstInfo src
   let isTheorem ← isProp cinfo.type
-  let (type, relevantArg?) ← applyReplacementForall t dontTranslate cinfo.type
-  let relevantArg ← getRelevantArg t relevantArg? givenRelevantArg? ref src
+  let (type, inferredRelevantArg?) ← applyReplacementForall t dontTranslate cinfo.type
+  let relevantArg ← getRelevantArg t inferredRelevantArg? relevantArg? ref src
   let name ← mkAuxDeclName (t.attrName.appendBefore "_")
   -- The new body should be exposed whenever `src` is not a theorem
   withExporting (isExporting := !isPrivateName src && !isTheorem) do
