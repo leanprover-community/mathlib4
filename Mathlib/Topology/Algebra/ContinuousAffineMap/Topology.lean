@@ -21,13 +21,14 @@ spaces. This is the coarsest topology satisfying the following two properties:
 
 namespace ContinuousAffineMap
 
-variable {R V W P Q : Type*} [NormedField R]
+variable {R V W W₂ P Q Q₂ : Type*} [NormedField R]
   [AddCommGroup V] [Module R V] [TopologicalSpace V] [AddTorsor V P] [TopologicalSpace P]
   [AddCommGroup W] [Module R W] [TopologicalSpace W] [AddTorsor W Q] [TopologicalSpace Q]
+  [AddCommGroup W₂] [Module R W₂] [TopologicalSpace W₂] [AddTorsor W₂ Q₂] [TopologicalSpace Q₂]
 
 section Affine
 
-variable [IsTopologicalAddTorsor P] [IsTopologicalAddTorsor Q]
+variable [IsTopologicalAddTorsor P] [IsTopologicalAddTorsor Q] [IsTopologicalAddTorsor Q₂]
 
 instance : TopologicalSpace (P →ᴬ[R] Q) :=
   haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
@@ -80,6 +81,23 @@ instance [T0Space W] : T0Space (P →ᴬ[R] Q) :=
 instance : RegularSpace (P →ᴬ[R] Q) :=
   have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
   inferInstance
+
+@[fun_prop]
+theorem continuous_precomp (g : P →ᴬ[R] Q) [ContinuousConstSMul R W₂] :
+    Continuous (fun f : Q →ᴬ[R] Q₂ => f.comp g) :=
+  have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W₂ Q₂
+  continuous_rng
+    (fun _ => continuous_eval_const _)
+    ((g.contLinear.precomp W₂).continuous.comp continuous_contLinear)
+
+@[fun_prop]
+theorem continuous_postcomp (f : Q →ᴬ[R] Q₂) [ContinuousConstSMul R W] [ContinuousConstSMul R W₂] :
+    Continuous (fun g : P →ᴬ[R] Q => f.comp g) :=
+  have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+  have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W₂ Q₂
+  continuous_rng
+    (fun _ => (map_continuous f).comp (continuous_eval_const _))
+    ((f.contLinear.postcomp V).continuous.comp continuous_contLinear)
 
 end Affine
 
