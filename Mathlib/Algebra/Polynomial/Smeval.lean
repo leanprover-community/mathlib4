@@ -132,6 +132,11 @@ def smeval.linearMap : R[X] →ₗ[R] S where
 @[simp]
 theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
+/-- `smeval` distributes over finite sums when applied to an element. -/
+theorem smeval_finset_sum_apply {ι : Type*} (g : ι → R[X]) (t : Finset ι) :
+    (∑ i ∈ t, g i).smeval x = ∑ i ∈ t, (g i).smeval x :=
+  map_sum (smeval.linearMap R x) g t
+
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
   ext
