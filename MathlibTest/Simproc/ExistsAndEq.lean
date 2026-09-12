@@ -94,3 +94,44 @@ example : ∃ (β : Type) (f : Nat → β), ∃ b, f 0 = b := by
   simp only [existsAndEq]
   · exact Nat
   · exact id
+
+-- # Equations in binder types of dependent quantifiers
+
+example (a' : α) (P : (a : α) → a = a' → Prop) :
+    (∃ a : α, ∃ (h : a = a'), P a h) ↔ ∃ (h : a' = a'), P a' h := by
+  simp only [existsAndEq]
+
+example (a' : α) (Q : α → Prop) (P : (a : α) → a = a' ∧ Q a → Prop) :
+    (∃ a : α, ∃ (h : a = a' ∧ Q a), P a h) ↔ ∃ (h : a' = a' ∧ Q a'), P a' h := by
+  simp only [existsAndEq]
+
+example (a' : α) (Q R : α → Prop) (P : (a : α) → Q a ∧ a = a' ∧ R a → Prop) :
+    (∃ a : α, ∃ (h : Q a ∧ a = a' ∧ R a), P a h) ↔
+      ∃ (h : Q a' ∧ a' = a' ∧ R a'), P a' h := by
+  simp only [existsAndEq]
+
+example (f : β → α) (Q : β → Prop) (P : (a : α) → (∃ b : β, Q b ∧ a = f b) → Prop) :
+    (∃ a : α, ∃ (h : ∃ b : β, Q b ∧ a = f b), P a h) ↔
+      ∃ b : β, ∃ (h : Q b ∧ f b = f b), P (f b) ⟨b, h⟩ := by
+  simp only [existsAndEq]
+
+example (a' : α) (R Q : α → Prop) (S : (a : α) → a = a' ∧ Q a → Prop) :
+    (∃ a : α, R a ∧ ∃ (h : a = a' ∧ Q a), S a h) ↔
+      R a' ∧ ∃ (h : a' = a' ∧ Q a'), S a' h := by
+  simp only [existsAndEq]
+
+example (a' : α) (Q : α → Prop) (S : (a : α) → a = a' ∧ Q a → Prop)
+    (P : (a : α) → (∃ h : a = a' ∧ Q a, S a h) → Prop) :
+    (∃ a : α, ∃ (h : ∃ h' : a = a' ∧ Q a, S a h'), P a h) ↔
+      ∃ (h : ∃ h' : a' = a' ∧ Q a', S a' h'), P a' h := by
+  simp only [existsAndEq]
+
+-- From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/potential.20simp_procs/near/617574483
+example (f : Nat → Nat) (hf : ∀ x, f x < 5)
+    (g : (n : Nat) → n < 5 → Nat)
+    (hfg : ∀ x, g (f x) (hf x) = x)
+    (c : Nat) (s : Nat → Prop) :
+    (∃ x, ∃ h : ∃ y, s y ∧ f y = x, g x (by grind) = c) ↔ s c := by
+  simp only [existsAndEq]
+  guard_target = (∃ y, ∃ _ : s y ∧ True, g (f y) (hf y) = c) ↔ s c
+  grind
