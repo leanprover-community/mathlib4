@@ -9,9 +9,9 @@ import Mathlib
 /-!
 # Export cross-reference data as JSON
 
-Elaborating this file writes a JSON file listing every Mathlib declaration tagged with
-`@[wikidata ...]`, `@[stacks ...]`, `@[kerodon ...]`, `@[lmfdb ...]`, or `@[dlmf ...]` together
-with its source file, line number, and the referenced identifiers.
+Elaborating this file writes a JSON file listing every Mathlib declaration with a `CrossRef.Tag`
+attribute (eg: `@[stacks ...]`), with its source file, line number, referenced identifier and
+resolved reference url.
 
 The cross-references are read from the ambient environment (like the `#stacks_tags` command), so
 the file must be run with the full `Mathlib` import elaborated:
@@ -51,7 +51,8 @@ def buildEntries (env : Environment) : Array Json := Id.run do
     let tags := tags.qsort fun a b =>
       (compare a.database b.database).then (compare a.tag b.tag) |>.isLT
     let refs : Array Json := tags.map fun t =>
-      json% { db : $(t.database.shortName), id : $(t.tag), comment : $(t.comment) }
+      json% { db : $(t.database.shortName), id : $(t.tag), comment : $(t.comment),
+              url : $(t.database.url t.tag) }
     let (mod, line) := declLocation env decl |>.getD ("", 0)
     json% { decl : $(decl.toString), module : $(mod), line : $(line), refs : $(refs) }
 
