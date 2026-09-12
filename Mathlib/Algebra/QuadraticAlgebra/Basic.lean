@@ -528,6 +528,12 @@ theorem mapRingHom_id : mapRingHom (.id R) a b = .id (QuadraticAlgebra R a b) :=
 theorem mapRingHom_comp [CommSemiring T] (g : S →+* T) :
     (mapRingHom g (f a) (f b)).comp (mapRingHom f a b) = mapRingHom (g.comp f) a b := rfl
 
+/-- The `QuadraticAlgebra R a b`-algebra structure on `QuadraticAlgebra S (f a) (f b)` induced by
+`f`. This is not an instance, since for `R = S` it clashes with `Algebra.id`. -/
+@[instance_reducible]
+def algebra : Algebra (QuadraticAlgebra R a b) (QuadraticAlgebra S (f a) (f b)) :=
+  (mapRingHom f a b).toAlgebra
+
 end CommSemiring
 
 section CommRing
