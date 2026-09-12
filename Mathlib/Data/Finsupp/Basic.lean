@@ -340,6 +340,10 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
   · rintro ⟨a, ha, rfl⟩
     simpa [f.injective]
 
+lemma mapDomain_eq_single_add_mapDomain_erase (f : α → β) (a : α) :
+    v.mapDomain f = single (f a) (v a) + (v.erase a).mapDomain f := by
+  rw [← mapDomain_single, ← mapDomain_add, single_add_erase]
+
 /-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
 @[simps]
 def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M where
