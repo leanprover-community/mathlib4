@@ -10,21 +10,51 @@ public import Mathlib.FieldTheory.AbsoluteGaloisGroup
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
 
 /-!
-# The Tate-Shafarevich group of a continuous representation
+# The Tate–Shafarevich group of a Galois module
 
-This file defines a general notion of a Tate--Shafarevich group for a continuous representation `A`
-over a field `K`, as the intersection of the kernels of the maps `Hⁿ(K, A) → Hⁿ(Kᵥ, Aᵥ)`.
+This file defines a general notion of a *Tate–Shafarevich group* of a Galois module (i.e. an abelian
+group `A` equipped with a continuous action of the absolute Galois group `G_K` of a field `K`), as
+the intersection of the kernels of the maps `Hⁿ(K, A) → Hⁿ(Kᵥ, A)`, induced by the map `G_Kᵥ → G_K`,
+where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing set `V`.
 
-Here `Kᵥ` is a `K`-algebra for each place `v` in an arbitrary indexing set `V`,
-which induces maps between absolute Galois groups and hence maps between cohomology groups.
+## Main definitions
 
-When `V` is the set of places of a global field `K`, `A` is the set of rational points of an abelian
-variety over K, and `n = 1`, this recovers the classical definition of the Tate-Shafarevich group.
+* `ContinuousCohomology.tateShafarevich`: the Tate–Shafarevich group of a Galois module.
+
+## TODOs
+
+* Add a notation for `ContinuousCohomology.tateShafarevich`.
+* Prove that `ContinuousCohomology.tateShafarevich` of a discrete Galois module is torsion.
+* Define the classical Tate–Shafarevich group in `Mathlib/AlgebraicGeometry/EllipticCurve`.
+
+## Implementation notes
+
+Mathematicians seem to use "Tate–Shafarevich group" in at least two distinct contexts. They have in
+common the set-up that `K` is a global field, `A` is a discrete `G_K`-module, `V` is the set of
+places of `K`, and `Kᵥ` is the completion of `K` at a place `v` in `V`.
+
+The first context is when `A` is finite. This is used, for example, in the statement of global
+Poitou-Tate duality. In this theorem, the Tate–Shafarevich group is defined exactly as in this file.
+It agrees with Definition 8.6.2 of [Neukirch–Schmidt–Wingberg].
+
+The second context is when `A` is the `Kˢ`-valued points of a group scheme `A` such as an abelian
+variety. Then the Tate–Shafarevich group is usually defined as the intersection of the kernels of
+the maps `H¹(K, A(Kˢ)) → H¹(Kᵥ, A(Kᵥˢ))`. Note that in particular the module changes as well as the
+group, so technically this is not quite what is happening in this definition. However the inclusion
+`H¹(Kᵥ, A(Kᵥˢ)) → H¹(Kᵥ, A(Kˢ))` is an isomorphism by the Greenberg approximation theorem, so the
+definition in this file is still mathematically correct. See Remark I.3.10 of [Milne].
+
+This definition is different but related to the "Tate–Shafarevich group" in the context of `p`-adic
+representations, where `A` is the quotient of a `p`-adic `G_K`-module by a `G_K`-invariant lattice.
+See Section 1 of [Flach]. For instance, when `A` is the quotient of the `p`-adic rational Tate
+module of an abelian variety by its integral sublattice, its associated Tate–Shafarevich group will
+be a quotient of the one in this file by its divisible part, which will be finite by definition.
 
 ## References
 
-* [Wikipedia, *Tate–Shafarevich group*](https://en.wikipedia.org/wiki/Tate%E2%80%93Shafarevich_group)
-
+* [Neukirch–Schmidt–Wingberg, *Cohomology of Number Fields*](https://link.springer.com/book/10.1007/978-3-540-37889-1)
+* [Milne, *Arithmetic Duality Theorems*](https://www.jmilne.org/math/Books/ADTnot.pdf)
+* [Flach, *A finiteness theorem for the symmetric square of an elliptic curve*](https://link.springer.com/article/10.1007/BF01232029)
 -/
 
 @[expose] public section
@@ -38,24 +68,24 @@ open CategoryTheory
 
 namespace ContinuousCohomology
 
-/-- The Tate-Shafarevich group of an abelian additive group with a galois action. -/
+/-- The Tate–Shafarevich group of a Galois module. -/
 @[simps!]
-noncomputable def tateSha : AddSubgroup (continuousCohomology n A) :=
+noncomputable def tateShafarevich : AddSubgroup (continuousCohomology n A) :=
   ⨅ v, (map (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker
 
-lemma tateSha_eq_iInf :
-    tateSha f A n = ⨅ v : V, (ContinuousCohomology.map
+lemma tateShafarevich_eq_iInf : tateShafarevich f A n =
+    ⨅ v : V, (ContinuousCohomology.map
       (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker := rfl
 
-lemma tateSha_eq_ker_pi :
-    tateSha f A n = (AddMonoidHom.pi fun v : V ↦ (ContinuousCohomology.map
+lemma tateShafarevich_eq_ker_pi : tateShafarevich f A n =
+    (AddMonoidHom.pi fun v : V ↦ (ContinuousCohomology.map
       (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom).ker := by
-  ext; simp [tateSha_eq_iInf, funext_iff]
+  ext; simp [tateShafarevich_eq_iInf, funext_iff]
 
 @[simp]
-lemma mem_tateSha (x : continuousCohomology n A) : x ∈ tateSha f A n ↔
+lemma mem_tateShafarevich (x : continuousCohomology n A) : x ∈ tateShafarevich f A n ↔
     ∀ v : V, (ContinuousCohomology.map
       (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom x = 0 := by
-  simp [tateSha_eq_iInf]
+  simp [tateShafarevich_eq_iInf]
 
 end ContinuousCohomology
