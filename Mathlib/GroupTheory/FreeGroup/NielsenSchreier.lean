@@ -194,15 +194,16 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Any hom in `G` can be made into a loop, by conjugating with `treeHom`s. -/
 def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
-  treeHom T a ≫ p ≫ inv (treeHom T b)
+  .of (treeHom T a ≫ p ≫ inv (treeHom T b))
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
-    loopOfHom T (of e) = 𝟙 (root' T) := by
-  rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
+    loopOfHom T (of e) = 1 := by
+  ext : 1
+  rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, End.one_asHom, Category.id_comp]
   rcases H with H | H
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
     rfl
@@ -221,11 +222,13 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
   map_id := by
     intro a
     dsimp only [loopOfHom]
-    rw [Category.id_comp, IsIso.hom_inv_id, ← End.one_def, f.map_one, id_as_one]
+    rw [Category.id_comp, IsIso.hom_inv_id, ← End.one_asHom, f.map_one, id_as_one]
   map_comp := by
     intros
     rw [comp_as_mul, ← f.map_mul]
-    simp only [IsIso.inv_hom_id_assoc, loopOfHom, End.mul_def, Category.assoc]
+    congr 1
+    ext : 1
+    simp [loopOfHom]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
