@@ -67,7 +67,7 @@ nat and int actions.
 
 open Function MulOpposite
 
-variable {F α β γ : Type*}
+variable {F α β : Type*}
 
 namespace Set
 
@@ -156,7 +156,7 @@ open scoped Pointwise
 
 section Inv
 
-variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
+variable [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
 theorem inv_ofPred (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
@@ -289,7 +289,7 @@ open scoped Pointwise
 
 section Mul
 
-variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 scope `Pointwise`. -/
@@ -431,7 +431,7 @@ end Mul
 
 section Div
 
-variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
@@ -752,7 +752,7 @@ lemma Nontrivial.mul_right : s.Nontrivial → t.Nonempty → (s * t).Nontrivial 
 end IsRightCancelMul
 
 section CancelMonoid
-variable [CancelMonoid α] {s t : Set α} {a : α} {n : ℕ}
+variable [CancelMonoid α] {s : Set α} {a : α} {n : ℕ}
 
 @[to_additive]
 lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivial

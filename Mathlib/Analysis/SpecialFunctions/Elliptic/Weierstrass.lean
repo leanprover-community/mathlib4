@@ -113,7 +113,7 @@ lemma lattice_eq_span_range_basis :
     L.lattice = Submodule.span ℤ (Set.range L.basis) := by
   have : Finset.univ (α := Fin 2) = {0, 1} := rfl
   rw [lattice, ← Set.image_univ, ← Finset.coe_univ, this]
-  simp [Set.image_insert_eq]
+  simp
 
 instance : DiscreteTopology L.lattice := L.lattice_eq_span_range_basis ▸ inferInstance
 
@@ -122,7 +122,7 @@ instance : IsZLattice ℝ L.lattice := by
   infer_instance
 
 lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
-  @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
+  @AddSubgroup.isClosed_of_discreteTopology _ _ _ _ _ L.lattice.toAddSubgroup
     (inferInstanceAs (DiscreteTopology L.lattice))
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by

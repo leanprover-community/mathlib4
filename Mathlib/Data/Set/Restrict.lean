@@ -18,7 +18,7 @@ public import Mathlib.Data.Set.Image
 
 @[expose] public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv.Perm Function
 
@@ -142,6 +142,23 @@ lemma _root_.Function.Injective.extend_injOn {f : α → β} {g : α → γ} {j 
     (range f).InjOn (extend f g j) :=
   (hf.factorsThrough g).extend_injOn hg
 
+/-- If `f`, `g` and `j` are injective and `g` and `j` have disjoint ranges,
+then `extend f g j` is injective. -/
+lemma _root_.Function.Injective.extend_of_disjoint {f : α → β} {g : α → γ} {j : β → γ}
+    (hf : f.Injective) (hg : g.Injective) (hj : j.Injective)
+    (hd : Disjoint (range g) (range j)) :
+    Injective (extend f g j) := by
+  intro x y h
+  obtain ⟨a, rfl⟩ | hx := em (∃ a, f a = x) <;> obtain ⟨b, rfl⟩ | hy := em (∃ a, f a = y)
+  · rw [hf.extend_apply, hf.extend_apply] at h
+    rw [hg h]
+  · rw [hf.extend_apply, extend_apply' _ _ _ hy] at h
+    exact absurd ⟨y, h.symm⟩ (disjoint_left.1 hd (mem_range_self a))
+  · rw [extend_apply' _ _ _ hx, hf.extend_apply] at h
+    exact absurd ⟨x, h⟩ (disjoint_left.1 hd (mem_range_self b))
+  · rw [extend_apply' _ _ _ hx, extend_apply' _ _ _ hy] at h
+    exact hj h
+
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
 has codomain `↥s` instead of `Subtype s`. -/
 def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x => ⟨f x, h x⟩
@@ -212,8 +229,7 @@ alias restrict_eq_restrict_iff := domRestrict_eq_domRestrict_iff
 
 end domRestrict
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ}
-  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
+variable {s : Set α} {t : Set β} {p : Set γ} {f : α → β} {g : β → γ} {a : α} {b : β}
 
 section MapsTo
 

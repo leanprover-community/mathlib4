@@ -191,7 +191,6 @@ lemma tendsto_defaultRatCDF_atBot : Tendsto defaultRatCDF atBot (𝓝 0) := by
   refine ⟨-1, fun q hq => (ite_eq_left (hq.trans_lt ?_)).symm⟩
   linarith
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
     ⨅ r : Ioi t, defaultRatCDF r = defaultRatCDF t := by
   simp only [defaultRatCDF]
@@ -205,8 +204,7 @@ lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
   · refine le_antisymm ?_ (le_ciInf fun x ↦ ?_)
     · obtain ⟨q, htq, hq_neg⟩ : ∃ q, t < q ∧ q < 0 := ⟨t / 2, by linarith, by linarith⟩
       refine (ciInf_le h_bdd ⟨q, htq⟩).trans ?_
-      rw [ite_eq_left]
-      rwa [Subtype.coe_mk]
+      exact (ite_eq_left hq_neg).le
     · split_ifs
       exacts [le_rfl, zero_le_one]
   · refine le_antisymm ?_ ?_

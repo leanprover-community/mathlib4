@@ -5,9 +5,7 @@ Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
-public meta import Batteries.Data.String.Matcher
 public meta import Lake.Util.Casing
-public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
@@ -599,7 +597,7 @@ or `'` (causes shell escaping issues in scripts).
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
 public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
-  unless getLinterValue linter.modulesUpperCamelCase opts do return 0
+  unless getLinterValue linter.modulesForbiddenWindows opts do return 0
   let forbiddenNames := [
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
     "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",

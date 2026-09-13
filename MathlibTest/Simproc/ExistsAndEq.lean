@@ -68,3 +68,29 @@ example (P Q : α × β → Prop) (a : α × β) :
 example (P Q : α × β → Prop) (a : α × β) :
     (∃ b : (α × β), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
   simp
+
+-- # Metavariables in goals
+
+-- The simproc must return a closed proof even when the goal contains metavariables, which is what
+-- `aesop` presents to it: here the goal is `∃ a : Nat, a = Nat.succ ?b ∧ 0 < ?b`.
+open Lean Meta Qq in
+#eval show MetaM Unit from do
+  let b : Q(Nat) ← mkFreshExprMVarQ q(Nat)
+  let e : Q(Prop) := q(∃ a : Nat, a = Nat.succ $b ∧ 0 < $b)
+  let simprocs ← ({} : Simprocs).add ``ExistsAndEq.existsAndEq (post := false)
+  let (r, _) ← Simp.main e (← Simp.mkContext) (methods := Simp.mkDefaultMethodsCore #[simprocs])
+  let some pf := r.proof? | throwError "the simproc did not fire"
+  let pf ← instantiateMVars pf
+  let leftover := (← getMVars pf).filter (· != b.mvarId!)
+  unless leftover.isEmpty do
+    throwError "metavariables left in the proof: {leftover.map mkMVar}\n{pf}"
+
+-- Metavariables may depend on each other: here `?f : Nat → ?β`, and `?β` occurs in the goal too
+-- (as it arises when `simpa using` simplifies the type of a term whose implicit arguments are not
+-- determined yet). They have to be handled consistently.
+example : ∃ (β : Type) (f : Nat → β), ∃ b, f 0 = b := by
+  refine ⟨?_, ?_, ?_⟩
+  rotate_left 2
+  simp only [existsAndEq]
+  · exact Nat
+  · exact id

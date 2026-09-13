@@ -519,13 +519,10 @@ variable (R L M)
     map_rel_iff' := Iff.rfl }
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
-  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
+  RelHomClass.wellFounded' (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
 
-theorem wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
-  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding
-
-instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
-  isAtomic_of_orderBot_wellFounded_lt <| (wellFoundedLT_of_isArtinian R L M).wf
+instance wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
+  RelHomClass.wellFounded' (toSubmodule_orderEmbedding R L M).ltEmbedding
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
@@ -687,7 +684,7 @@ theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
 
 lemma isCompactElement_lieSpan_singleton (m : M) :
     IsCompactElement (lieSpan R L {m}) := by
-  rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
+  rw [isCompactElement_iff_le_of_directed_sSup_le]
   intro s hne hdir hsup
   replace hsup : m ∈ (↑(sSup s) : Set M) := (SetLike.le_def.mp hsup) (subset_lieSpan rfl)
   suffices (↑(sSup s) : Set M) = ⋃ N ∈ s, ↑N by simp_all
@@ -716,8 +713,8 @@ end LieSubmodule
 
 section LieSubmoduleMapAndComap
 
-variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
-variable [CommRing R] [LieRing L] [LieRing L'] [LieAlgebra R L']
+variable {R : Type u} {L : Type v} {M : Type w} {M' : Type w₁}
+variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable [AddCommGroup M'] [Module R M'] [LieRingModule L M']
 

@@ -117,7 +117,7 @@ def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
 
 @[inherit_doc]
 scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
-open InnerProduct
+open scoped InnerProduct
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪(A†) y, x⟫ = ⟪y, A x⟫ :=
@@ -339,6 +339,12 @@ lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGrou
     (x : E) (y : F) (f : G →L[𝕜] F) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
+
+theorem lipschitzWith_adjoint_apply (f : E) :
+    LipschitzWith ‖f‖₊ (fun T : F →L[𝕜] E ↦ T.adjoint f) :=
+  .of_dist_le_mul fun x y ↦ by
+    simp only [dist_eq_norm, coe_nnnorm, ← sub_apply, ← map_sub]
+    grw [le_opNorm, mul_comm, LinearIsometryEquiv.norm_map]
 
 end
 

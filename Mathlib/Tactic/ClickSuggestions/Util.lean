@@ -14,6 +14,7 @@ public import Mathlib.Tactic.DepRewrite
 public import Batteries.Tactic.PermuteGoals
 public meta import Mathlib.Data.String.Defs
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public import Lean.Server.Utils
 
 /-!
 # Various utilities used in `#click_suggestions`
