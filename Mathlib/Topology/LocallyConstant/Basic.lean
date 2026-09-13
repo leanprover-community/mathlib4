@@ -85,6 +85,8 @@ theorem iff_forall_eventuallyConst {f : X → Y} :
     IsLocallyConstant f ↔ ∀ x, EventuallyConst f (𝓝 x) :=
   IsLocallyConstant.tfae f |>.out 1 3
 
+alias ⟨eventuallyConst, _⟩ := iff_forall_eventuallyConst
+
 theorem exists_open {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
   (iff_exists_open f).1 hf x
