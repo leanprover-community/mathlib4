@@ -112,9 +112,6 @@ lemma coequifibered_normalizationDiagramMap :
     (integralClosure Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r)) := .of_algebraMap_eq' rfl
   exact IsLocalization.Away.integralClosure r
 
-@[deprecated (since := "2026-02-01")]
-alias preservesLocalization_normalizationDiagramMap := coequifibered_normalizationDiagramMap
-
 /-- The diagram of affine schemes that we glue to form the normalization. -/
 def normalizationGlueData := relativeGluingData f.coequifibered_normalizationDiagramMap
 

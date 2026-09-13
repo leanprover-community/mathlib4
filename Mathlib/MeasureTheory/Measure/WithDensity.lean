@@ -187,7 +187,7 @@ theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0�
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
   change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
-  exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact lintegral_congr fun x => Pi.tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     μ.withDensity (s.indicator f) = (μ.restrict s).withDensity f := by
@@ -761,10 +761,11 @@ variable {M : Type*} [Monoid M] [MeasurableSpace M]
 -- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
 -- which we prove the instance that gives `SFinite (c • ν)`.
 @[to_additive conv_smul_right]
-theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+theorem Measure.mconv_smul_right [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) [SFinite ν]
+    (s : ℝ≥0∞) :
     μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
   unfold mconv
-  rw [Measure.prod_smul_right, Measure.map_smul]
+  rw [Measure.prod_smul_right, Measure.map_smul _ (by fun_prop)]
 
 variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]

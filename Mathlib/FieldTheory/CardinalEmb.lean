@@ -142,7 +142,7 @@ local notation "E⟮<" i "⟯" => adjoin F (b ∘ φ '' Iio i)
 
 theorem isLeast_leastExt (i : ι) : IsLeast {k | b k ∉ E⟮<i⟯} (φ i) := by
   rw [image_eq_range, leastExt, wellFounded_lt.fix_eq]
-  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (wellFounded_lt.min_le ·)⟩
+  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (WellFoundedLT.min_le ·)⟩
 
 theorem strictMono_leastExt : StrictMono φ := fun i j h ↦ by
   have least := isLeast_leastExt (F := F) (E := E)
@@ -236,7 +236,9 @@ private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i)
 
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/
 def equivSucc (i : WithTop ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē) × factor i :=
-  i.recTopCoe (((equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <| .symm <| .prodPUnit _)
+  i.recTopCoe
+    (((IntermediateField.equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <|
+      .symm <| .prodPUnit _)
     (succEquiv ·)
 
 theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ i) f := by

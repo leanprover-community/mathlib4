@@ -5,14 +5,14 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Basic.Countable.Small
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Products.Bifunctor
-public import Mathlib.Data.Countable.Small
 
 /-!
 # Filtered colimits commute with finite limits.

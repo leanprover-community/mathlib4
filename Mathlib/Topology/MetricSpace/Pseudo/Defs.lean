@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Basic.ENNReal.Real
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
@@ -13,7 +13,7 @@ public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 This file defines pseudo-metric spaces: these differ from metric spaces by not imposing the
 condition `dist x y = 0 → x = y`.

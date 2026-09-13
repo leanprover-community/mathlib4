@@ -30,7 +30,7 @@ In this file we define `MonoidAlgebra R M` and `AddMonoidAlgebra R M` as one-fie
 When the domain is additive, this is used to define polynomials:
 ```
 Polynomial R := AddMonoidAlgebra R ℕ
-MvPolynomial σ α := AddMonoidAlgebra R (σ →₀ ℕ)
+MvPolynomial σ R := AddMonoidAlgebra R (σ →₀ ℕ)
 ```
 
 When the domain is multiplicative, e.g. a group, this will be used to define the group ring.

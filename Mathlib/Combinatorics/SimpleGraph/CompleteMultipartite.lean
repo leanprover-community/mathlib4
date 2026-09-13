@@ -66,8 +66,17 @@ variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop := IsTrans α (¬ G.Adj · ·)
 
-theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite :=
+theorem IsCompleteMultipartite.top : (⊤ : SimpleGraph α).IsCompleteMultipartite :=
   ⟨by simp⟩
+
+theorem IsCompleteMultipartite.bot : (⊥ : SimpleGraph α).IsCompleteMultipartite :=
+  ⟨by simp⟩
+
+@[deprecated (since := "2026-09-07")] alias bot_isCompleteMultipartite := IsCompleteMultipartite.bot
+
+theorem IsCompleteMultipartite.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsCompleteMultipartite := by
+  grind [IsCompleteMultipartite, isTrans_def]
 
 protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
     (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
@@ -277,7 +286,7 @@ theorem completeEquipartiteGraph.isCompleteMultipartite :
     (completeEquipartiteGraph r t).IsCompleteMultipartite := by
   rcases t.eq_zero_or_pos with ht_eq0 | ht_pos
   · rw [completeEquipartiteGraph_eq_bot_iff.mpr (Or.inr ht_eq0)]
-    exact bot_isCompleteMultipartite
+    exact .bot
   · rw [isCompleteMultipartite_iff]
     use (Fin r), const (Fin r) (Fin t)
     simp_rw [const_apply, exists_prop]
