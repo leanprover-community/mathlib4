@@ -129,6 +129,20 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   ext
   simp
 
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R M)) = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using induction with
+  | algebraMap => exact algebraMap_mem _ _
+  | ι x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+  | mul x y hx hy => exact mul_mem hx hy
+  | add x y hx hy => exact add_mem hx hy
+
+@[simp]
+theorem range_lift : (lift f).range = Algebra.adjoin R (Set.range f) := by
+  simp_rw [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    Function.comp_def, lift_ι_apply]
+
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
   lift (0 : M →ₗ[R] R)
