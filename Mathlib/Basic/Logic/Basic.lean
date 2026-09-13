@@ -101,6 +101,7 @@ end CommSimproc
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as was done in the mathlib3 tactics `elide` and `unelide`. -/
+@[deprecated "use the builtin  pretty-printer elision (`⋯`, see `pp.deepTerms`) instead" (since := "2026-09-13")]
 abbrev hidden {α : Sort*} {a : α} := a
 
 variable {α : Sort*}
