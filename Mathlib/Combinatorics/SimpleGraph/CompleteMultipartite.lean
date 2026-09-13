@@ -397,7 +397,7 @@ theorem card_verts : #K.verts = r * t := by
 noncomputable def toCopy : Copy (completeEquipartiteGraph r t) G := by
   by_cases ht : t = 0
   · rw [completeEquipartiteGraph_eq_bot_iff.mpr <| .inr ht]
-    have : IsEmpty (Fin r × Fin t) := by simp [ht, Fin.isEmpty]
+    have : IsEmpty (Fin r × Fin t) := by simp [ht]
     exact Copy.bot .ofIsEmpty
   · have : Nonempty (Fin r ↪ K.parts) := by
       rw [Embedding.nonempty_iff_card_le,
@@ -470,7 +470,7 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
         #s = t ∧ ∀ p ∈ K.parts, G.IsCompleteBetween p s := by
   classical
   by_cases ht : t = 0
-  · have (r' : ℕ) : IsEmpty (Fin r' × Fin t) := by simp [ht, Fin.isEmpty]
+  · have (r' : ℕ) : IsEmpty (Fin r' × Fin t) := by simp [ht]
     have h_bot (r' : ℕ) : completeEquipartiteGraph r' t = ⊥ :=
       completeEquipartiteGraph_eq_bot_iff.mpr <| .inr ht
     simp_rw [h_bot (r + 1), ht, Finset.card_eq_zero, exists_eq_left, IsCompleteBetween, mem_coe,
