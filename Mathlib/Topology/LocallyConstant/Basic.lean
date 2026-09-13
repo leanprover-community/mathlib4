@@ -26,7 +26,7 @@ This file sets up the theory of locally constant function from a topological spa
 
 @[expose] public section
 
-variable {X Y Z α : Type*} [TopologicalSpace X] {f : X → Y}
+variable {X Y Z α : Type*} [TopologicalSpace X]
 
 open Set Filter
 open scoped Topology
@@ -81,7 +81,8 @@ theorem iff_exists_open (f : X → Y) :
 theorem iff_eventually_eq (f : X → Y) : IsLocallyConstant f ↔ ∀ x, ∀ᶠ y in 𝓝 x, f y = f x :=
   (IsLocallyConstant.tfae f).out 1 2
 
-theorem iff_forall_eventuallyConst : IsLocallyConstant f ↔ ∀ x, EventuallyConst f (𝓝 x) :=
+theorem iff_forall_eventuallyConst {f : X → Y} :
+    IsLocallyConstant f ↔ ∀ x, EventuallyConst f (𝓝 x) :=
   IsLocallyConstant.tfae f |>.out 1 3
 
 theorem exists_open {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
