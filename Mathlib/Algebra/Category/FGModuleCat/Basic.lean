@@ -172,11 +172,12 @@ instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Additive where
 instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Linear R where
 
 theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
-    Iso.conj i f = FGModuleCat.ofHom (LinearEquiv.conj (isoToLinearEquiv i) f.hom.hom) :=
+    Iso.conj i f =
+      .of (FGModuleCat.ofHom (LinearEquiv.conj (isoToLinearEquiv i) f.asHom.hom.hom)) :=
   rfl
 
 theorem Iso.conj_hom_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
-    (Iso.conj i f).hom.hom = (LinearEquiv.conj (isoToLinearEquiv i) f.hom.hom) :=
+    (Iso.conj i f).asHom.hom.hom = (LinearEquiv.conj (isoToLinearEquiv i) f.asHom.hom.hom) :=
   rfl
 
 end CommRing
