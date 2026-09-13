@@ -178,14 +178,12 @@ lemma mem_verts_of_mem_vertexFiber (hi : i ∈ vertexFiber G v) : v ∈ V(G) := 
   obtain ⟨j, rfl, _⟩ := hi
   exact (toVert G j).property
 
-lemma pairwise_disjoint_edgeFiber (G : Gr) : Pairwise (Disjoint on edgeFiber G) := by
-  intro e f hef
-  exact (disjoint_image_iff Subtype.val_injective).mpr
+lemma pairwise_disjoint_edgeFiber (G : Gr) : Pairwise (Disjoint on edgeFiber G) :=
+  fun _ _ hef ↦ (disjoint_image_iff Subtype.val_injective).mpr
     (pairwise_disjoint_fiber (fun i : I(G) ↦ (toEdge G i : E)) hef)
 
-lemma pairwise_disjoint_vertexFiber (G : Gr) : Pairwise (Disjoint on vertexFiber G) := by
-  intro v w hvw
-  exact (disjoint_image_iff Subtype.val_injective).mpr
+lemma pairwise_disjoint_vertexFiber (G : Gr) : Pairwise (Disjoint on vertexFiber G) :=
+  fun _ _ hvw ↦ (disjoint_image_iff Subtype.val_injective).mpr
     (pairwise_disjoint_fiber (fun i : I(G) ↦ (toVert G i : V)) hvw)
 
 @[simp]
@@ -210,11 +208,6 @@ lemma biUnion_vertexFiber (G : Gr) : ⋃ v ∈ V(G), vertexFiber G v = I(G) := b
 
 /-! ### Links and adjacency -/
 
-lemma adj_iff : Adj G u v ↔ ∃ e i j, i ≠ j ∧ IsSource G i.val ∧ IsTarget G j.val ∧
-    (toEdge G i).val = e ∧ (toVert G i).val = u ∧ (toEdge G j).val = e ∧
-    (toVert G j).val = v := by
-  simp only [adj_iff', isLink_iff]
-
 @[grind →]
 lemma IsLink.edge_mem (h : IsLink G e u v) : e ∈ E(G) := by
   obtain ⟨i, _, _, _, _, rfl, _⟩ := isLink_iff.mp h
@@ -234,14 +227,12 @@ lemma IsLink.right_mem (h : IsLink G e u v) : v ∈ V(G) := by
 lemma IsLink.adj (h : IsLink G e u v) : Adj G u v := adj_iff'.mpr ⟨e, h⟩
 
 @[grind →]
-lemma Adj.left_mem (h : Adj G u v) : u ∈ V(G) := by
-  obtain ⟨_, h⟩ := adj_iff'.mp h
-  exact h.left_mem
+lemma Adj.left_mem (h : Adj G u v) : u ∈ V(G) :=
+  (adj_iff'.mp h).elim fun _ h ↦ h.left_mem
 
 @[grind →]
-lemma Adj.right_mem (h : Adj G u v) : v ∈ V(G) := by
-  obtain ⟨_, h⟩ := adj_iff'.mp h
-  exact h.right_mem
+lemma Adj.right_mem (h : Adj G u v) : v ∈ V(G) :=
+  (adj_iff'.mp h).elim fun _ h ↦ h.right_mem
 
 @[simp]
 lemma not_isLink_of_notMem_edges (he : e ∉ E(G)) : ¬ IsLink G e u v := mt IsLink.edge_mem he
@@ -298,8 +289,7 @@ lemma mem_incVerts_iff_exists_incidence [Nonempty V] [Nonempty E] :
 
 lemma mem_incEdges_iff_exists_incidence [Nonempty V] [Nonempty E] :
     e ∈ incEdges G v ↔ ∃ i, i ∈ I(G) ∧ attach G i = v ∧ edgeMap G i = e := by
-  rw [incEdges_eq_image]
-  simp only [mem_image, mem_vertexFiber, and_assoc]
+  simp only [incEdges_eq_image, mem_image, mem_vertexFiber, and_assoc]
 
 lemma incVerts_subset_verts : incVerts G e ⊆ V(G) := by
   rintro v ⟨i, _, rfl⟩
@@ -309,9 +299,11 @@ lemma incEdges_subset_edges : incEdges G v ⊆ E(G) := by
   rintro e ⟨i, _, rfl⟩
   exact (toEdge G i).property
 
+@[grind →]
 lemma mem_edges_of_mem_incVerts (h : v ∈ incVerts G e) : e ∈ E(G) :=
   incEdges_subset_edges (mem_incEdges.mpr h)
 
+@[grind →]
 lemma mem_verts_of_mem_incEdges (h : e ∈ incEdges G v) : v ∈ V(G) :=
   incVerts_subset_verts (mem_incEdges.mp h)
 
@@ -354,7 +346,7 @@ lemma IsLink.right_mem_incVerts (h : IsLink G e u v) : v ∈ incVerts G e := by
   exact ⟨j, he, hv⟩
 
 lemma IsLink.pair_subset_incVerts (h : IsLink G e u v) : {u, v} ⊆ incVerts G e :=
-  Set.pair_subset_iff.mpr ⟨h.left_mem_incVerts, h.right_mem_incVerts⟩
+  pair_subset_iff.mpr ⟨h.left_mem_incVerts, h.right_mem_incVerts⟩
 
 @[grind →]
 lemma IsLink.mem_incEdges_left (h : IsLink G e u v) : e ∈ incEdges G u :=
@@ -382,7 +374,7 @@ lemma degree_eq_zero [Nonempty V] : degree G v = 0 ↔ ∀ i ∈ I(G), attach G 
   simp [degree_eq_encard_vertexFiber, eq_empty_iff_forall_notMem]
 
 lemma degree_pos [Nonempty V] : 0 < degree G v ↔ ∃ i ∈ I(G), attach G i = v := by
-  simp [degree_eq_encard_vertexFiber, Set.Nonempty]
+  simp [degree_eq_encard_vertexFiber, nonempty_def]
 
 lemma degree_eq_zero_iff_incEdges_eq_empty : degree G v = 0 ↔ incEdges G v = ∅ := by
   simp [degree_eq_encard_vertexFiber, incEdges_eq_empty]
@@ -397,9 +389,8 @@ lemma degree_of_notMem_verts (hv : v ∉ V(G)) : degree G v = 0 :=
 lemma degree_attach_pos [Nonempty V] (hi : i ∈ I(G)) : 0 < degree G (attach G i) :=
   degree_pos.mpr ⟨i, hi, rfl⟩
 
-lemma mem_verts_of_degree_pos (h : 0 < degree G v) : v ∈ V(G) := by
-  obtain ⟨e, he⟩ := degree_pos_iff_nonempty_incEdges.mp h
-  exact mem_verts_of_mem_incEdges he
+lemma mem_verts_of_degree_pos (h : 0 < degree G v) : v ∈ V(G) :=
+  (degree_pos_iff_nonempty_incEdges.mp h).elim fun _ he ↦ mem_verts_of_mem_incEdges he
 
 lemma degree_le_encard_incs : degree G v ≤ I(G).encard :=
   (degree_eq_encard_vertexFiber G).trans_le (encard_mono vertexFiber_subset_incs)
@@ -412,6 +403,24 @@ lemma degree_eq_top_iff : degree G v = ⊤ ↔ (vertexFiber G v).Infinite := by
 
 lemma degree_lt_top_of_finite (hI : I(G).Finite) : degree G v < ⊤ :=
   degree_lt_top_iff.mpr (hI.subset vertexFiber_subset_incs)
+
+/-- Every active vertex has positive degree exactly when `attach` maps the active incidences
+onto the active vertices. -/
+lemma attach_surjOn_iff [Nonempty V] :
+    SurjOn (attach G) I(G) V(G) ↔ ∀ v ∈ V(G), 0 < degree G v := by
+  simp only [SurjOn, subset_def, mem_image, degree_pos]
+
+@[simp]
+lemma attach_image_incs_of_degree_pos [Nonempty V] (h : ∀ v ∈ V(G), 0 < degree G v) :
+    attach G '' I(G) = V(G) :=
+  (image_subset_iff.mpr fun _ hi ↦ attach_mem hi).antisymm (attach_surjOn_iff.mpr h)
+
+lemma attach_preimage_singleton_injOn [Nonempty V] (h : ∀ v ∈ V(G), degree G v ≠ 0) :
+    InjOn (fun v ↦ attach G ⁻¹' {v}) V(G) := by
+  intro v hv w hw hvw
+  obtain ⟨i, hi⟩ := encard_ne_zero.mp (degree_eq_encard_vertexFiber G ▸ h v hv)
+  have hi := (mem_vertexFiber.mp hi).2
+  exact hi.symm.trans ((congrArg (fun s : Set I ↦ i ∈ s) hvw).mp hi)
 
 lemma order_eq_zero : order G e = 0 ↔ incVerts G e = ∅ := by
   simp [order_eq_encard_edgeFiber, incVerts_eq_empty]
@@ -427,9 +436,8 @@ lemma order_edgeMap_pos [Nonempty E] (hi : i ∈ I(G)) : 0 < order G (edgeMap G 
   rw [order_eq_encard_edgeFiber, encard_pos]
   exact ⟨i, mem_edgeFiber.mpr ⟨hi, rfl⟩⟩
 
-lemma mem_edges_of_order_pos (h : 0 < order G e) : e ∈ E(G) := by
-  obtain ⟨v, hv⟩ := order_pos.mp h
-  exact mem_edges_of_mem_incVerts hv
+lemma mem_edges_of_order_pos (h : 0 < order G e) : e ∈ E(G) :=
+  (order_pos.mp h).elim fun _ hv ↦ mem_edges_of_mem_incVerts hv
 
 lemma order_le_encard_incs : order G e ≤ I(G).encard :=
   (order_eq_encard_edgeFiber G).trans_le (encard_mono edgeFiber_subset_incs)
@@ -443,12 +451,64 @@ lemma order_eq_top_iff : order G e = ⊤ ↔ (edgeFiber G e).Infinite := by
 lemma order_lt_top_of_finite (hI : I(G).Finite) : order G e < ⊤ :=
   order_lt_top_iff.mpr (hI.subset edgeFiber_subset_incs)
 
+/-- Every active edge has positive order exactly when `edgeMap` maps the active incidences
+onto the active edges. -/
+lemma edgeMap_surjOn_iff [Nonempty E] :
+    SurjOn (edgeMap G) I(G) E(G) ↔ ∀ e ∈ E(G), 0 < order G e := by
+  simp only [SurjOn, subset_def, mem_image, order_eq_encard_edgeFiber, encard_pos, nonempty_def,
+    mem_edgeFiber]
+
+lemma edgeMap_image_incs_of_order_pos [Nonempty E] (h : ∀ e ∈ E(G), 0 < order G e) :
+    edgeMap G '' I(G) = E(G) :=
+  (image_subset_iff.mpr fun _ hi ↦ edgeMap_mem hi).antisymm (edgeMap_surjOn_iff.mpr h)
+
+lemma edgeMap_range_of_order_pos [Nonempty E] (h : ∀ e ∈ E(G), 0 < order G e) :
+    range (fun i : I(G) ↦ edgeMap G (i : I)) = E(G) := by
+  rw [← edgeMap_image_incs_of_order_pos h]
+  ext e
+  simp only [mem_image, mem_range, Subtype.exists, exists_prop]
+
+lemma edgeMap_preimage_singleton_injOn [Nonempty E] (h : ∀ e ∈ E(G), order G e ≠ 0) :
+    InjOn (fun e ↦ edgeMap G ⁻¹' {e}) E(G) := by
+  intro e he f hf hef
+  obtain ⟨i, hi⟩ := encard_ne_zero.mp (order_eq_encard_edgeFiber G ▸ h e he)
+  have hi := (mem_edgeFiber.mp hi).2
+  exact hi.symm.trans ((congrArg (fun s : Set I ↦ i ∈ s) hef).mp hi)
+
+lemma IsLink.one_lt_order (h : IsLink G e u v) : 1 < order G e := by
+  obtain ⟨i, j, hij, _, _, hi, _, hj, _⟩ := isLink_iff.mp h
+  exact one_lt_encard_iff.mpr ⟨i, j, hi, hj, hij⟩
+
+/-- A linked edge of order two has precisely the two linked vertices in its support. -/
+lemma IsLink.incVerts_eq_of_order_eq_two (h : IsLink G e u v) (ho : order G e = 2) :
+    incVerts G e = {u, v} := by
+  obtain ⟨a, b, hab, hf⟩ := encard_eq_two.mp ho
+  have hm (k : I(G)) (hk : (toEdge G k : E) = e) : k = a ∨ k = b := by
+    simpa using (show k ∈ ({a, b} : Set I(G)) from hf ▸ hk)
+  refine subset_antisymm ?_ h.pair_subset_incVerts
+  obtain ⟨i, j, hij, _, _, hi, hu, hj, hv⟩ := isLink_iff.mp h
+  rintro w ⟨k, hk, rfl⟩
+  (obtain rfl | rfl : k = i ∨ k = j := by grind) <;> simp [hu, hv]
+
+lemma IsLink.eq_or_eq_of_isLink_of_order_eq_two (h : IsLink G e u v) (h' : IsLink G e u' v')
+    (ho : order G e = 2) : u = u' ∧ v = v' ∨ u = v' ∧ v = u' :=
+  pair_eq_pair_iff.mp ((h.incVerts_eq_of_order_eq_two ho).symm.trans
+    (h'.incVerts_eq_of_order_eq_two ho))
+
+lemma IsLink.right_unique_of_order_eq_two (h : IsLink G e u v) (h' : IsLink G e u w)
+    (ho : order G e = 2) : v = w := by
+  grind [h.eq_or_eq_of_isLink_of_order_eq_two h' ho]
+
+lemma IsLink.left_unique_of_order_eq_two (h : IsLink G e u w) (h' : IsLink G e v w)
+    (ho : order G e = 2) : u = v := by
+  grind [h.eq_or_eq_of_isLink_of_order_eq_two h' ho]
+
 lemma encard_incVerts_le_order : (incVerts G e).encard ≤ order G e := encard_image_le _ _
 
 lemma encard_incEdges_le_degree : (incEdges G v).encard ≤ degree G v := encard_image_le _ _
 
 lemma degree_pos_iff_exists_mem_incVerts : 0 < degree G v ↔ ∃ e, v ∈ incVerts G e := by
-  simp only [degree_pos_iff_nonempty_incEdges, Set.Nonempty, mem_incEdges]
+  simp only [degree_pos_iff_nonempty_incEdges, nonempty_def, mem_incEdges]
 
 lemma degree_eq_zero_iff_forall_notMem_incVerts : degree G v = 0 ↔ ∀ e, v ∉ incVerts G e := by
   simp only [degree_eq_zero_iff_incEdges_eq_empty, eq_empty_iff_forall_notMem, mem_incEdges]
@@ -494,14 +554,10 @@ def IsRegular (G : Gr) (k : ℕ∞) : Prop := ∀ {v}, v ∈ V(G) → degree G v
 variable {k l : ℕ∞}
 
 lemma IsUniform.eq_of_nonempty (hk : IsUniform G k) (hl : IsUniform G l) (hE : E(G).Nonempty) :
-    k = l := by
-  obtain ⟨e, he⟩ := hE
-  exact (hk he).symm.trans (hl he)
+    k = l := hE.elim fun _ he ↦ (hk he).symm.trans (hl he)
 
 lemma IsRegular.eq_of_nonempty (hk : IsRegular G k) (hl : IsRegular G l) (hV : V(G).Nonempty) :
-    k = l := by
-  obtain ⟨v, hv⟩ := hV
-  exact (hk hv).symm.trans (hl hv)
+    k = l := hV.elim fun _ hv ↦ (hk hv).symm.trans (hl hv)
 
 lemma isUniform_of_edges_eq_empty (hE : E(G) = ∅) : IsUniform G k := by
   simp [IsUniform, hE]
@@ -518,17 +574,6 @@ lemma isUniform_zero : IsUniform G 0 ↔ I(G) = ∅ := by
 lemma isRegular_zero : IsRegular G 0 ↔ I(G) = ∅ := by
   simp only [IsRegular, degree_eq_encard_vertexFiber, encard_eq_zero, ← iUnion_eq_empty,
     biUnion_vertexFiber]
-
-lemma IsLink.one_lt_order (h : IsLink G e u v) : 1 < order G e := by
-  obtain ⟨i, j, hij, _, _, hi, _, hj, _⟩ := isLink_iff.mp h
-  exact one_lt_encard_iff.mpr ⟨i, j, hi, hj, hij⟩
-
-lemma edgeMap_preimage_singleton_injOn [Nonempty E] (h : ∀ e ∈ E(G), order G e ≠ 0) :
-    InjOn (fun e ↦ edgeMap G ⁻¹' {e}) E(G) := by
-  intro e he f hf hef
-  obtain ⟨i, hi⟩ := encard_ne_zero.mp (order_eq_encard_edgeFiber G ▸ h e he)
-  have hi := (mem_edgeFiber.mp hi).2
-  exact hi.symm.trans ((Set.ext_iff.mp hef i).mp hi)
 
 end HyperGraphLike
 
