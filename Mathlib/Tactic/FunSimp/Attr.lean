@@ -42,6 +42,9 @@ initialize registerTraceClass `fun_simp.attr
 def removeArgs (type proof : Expr) : MetaM (Option (Expr × Expr)) := do
   let mut proof := proof
   let mut (_, lhs, rhs) := type.eq?.get!
+  /- The head constant on the LHS may reduce to a lambda, preventing `simp` from rewriting with
+  the preprocessed form, so we must reduce it before removing any arguments. -/
+  lhs ← whnfR lhs
   let mut argRemoved := false
   let mut ctx := (← getLCtx).getFVars
   repeat

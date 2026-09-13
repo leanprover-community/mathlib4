@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.FunSimp.Attr
-public import Mathlib.Tactic.FunSimp.Simproc
 
 /-!
 # The `fun_simp` tactic
