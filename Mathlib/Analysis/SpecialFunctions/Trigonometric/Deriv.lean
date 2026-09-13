@@ -133,12 +133,12 @@ theorem deriv_cos {x : ℂ} : deriv cos x = -sin x :=
 theorem deriv_cos' : deriv cos = fun x => -sin x :=
   funext fun _ => deriv_cos
 
-/-- The classical limit `lim_{z → 0} (sin z) / z = 1`, for the complex sine. -/
+/-- The limit `lim_{z → 0} (sin z) / z = 1`, for the complex sine. -/
 theorem tendsto_sin_div_nhdsNE_zero : Filter.Tendsto (fun z : ℂ ↦ sin z / z) (𝓝[≠] 0) (𝓝 1) :=
   (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_sin 0)).congr
     fun _ ↦ by simp [slope_def_field]
 
-/-- The classical limit `lim_{z → 0} (1 - cos z) / z = 0`, for the complex cosine. -/
+/-- The limit `lim_{z → 0} (1 - cos z) / z = 0`, for the complex cosine. -/
 theorem tendsto_one_sub_cos_div_nhdsNE_zero :
     Filter.Tendsto (fun z : ℂ ↦ (1 - cos z) / z) (𝓝[≠] 0) (𝓝 0) := by
   have hd : HasDerivAt cos 0 0 := by simpa using hasDerivAt_cos 0
@@ -410,12 +410,12 @@ theorem deriv_cos : deriv cos x = -sin x :=
 theorem deriv_cos' : deriv cos = fun x => -sin x :=
   funext fun _ => deriv_cos
 
-/-- The classical limit `lim_{x → 0} (sin x) / x = 1`. -/
+/-- The limit `lim_{x → 0} (sin x) / x = 1`. -/
 theorem tendsto_sin_div_nhdsNE_zero : Filter.Tendsto (fun x : ℝ ↦ sin x / x) (𝓝[≠] 0) (𝓝 1) :=
   (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_sin 0)).congr
     fun _ ↦ by simp [slope_def_field]
 
-/-- The classical limit `lim_{x → 0} (1 - cos x) / x = 0`. -/
+/-- The limit `lim_{x → 0} (1 - cos x) / x = 0`. -/
 theorem tendsto_one_sub_cos_div_nhdsNE_zero :
     Filter.Tendsto (fun x : ℝ ↦ (1 - cos x) / x) (𝓝[≠] 0) (𝓝 0) := by
   have hd : HasDerivAt cos 0 0 := by simpa using hasDerivAt_cos 0
