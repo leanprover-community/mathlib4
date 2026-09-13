@@ -58,7 +58,7 @@ section TotallySeparated
 instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y  _ hxy
-    have := T2Space.t2 (X:=X)
+    have := T2Space.t2 (X := X)
     rw [pairwise'_iff] at this
     obtain ⟨U, V, hUV⟩ := this hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,

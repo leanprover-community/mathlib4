@@ -233,7 +233,7 @@ lemma orthogonal_closure' (K : Submodule 𝕜 E) (x : E) :
 
 theorem orthogonalFamily_self :
     OrthogonalFamily 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ
-  | true, _, true, _ => by exact absurd rfl
+  | true, _, true, _ => absurd rfl
   | true, _, false, _  => fun _ x y => inner_right_of_mem_orthogonal x.prop y.prop
   | false, _, true, _ => fun _ x y => inner_left_of_mem_orthogonal y.prop x.prop
   | false, _, false, _ => absurd rfl
