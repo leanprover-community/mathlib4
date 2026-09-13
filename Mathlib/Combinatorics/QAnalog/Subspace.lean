@@ -134,9 +134,9 @@ theorem card_submodule_finrank_eq_qBinomial (k : ℕ) :
     Nat.card {W : Submodule K V // finrank K W = k}
       = qBinomial (Fintype.card K) (finrank K V) k := by
   classical
-  letI : Finite (Submodule K V) :=
+  let : Finite (Submodule K V) :=
     Finite.of_injective (fun W : Submodule K V => (W : Set V)) SetLike.coe_injective
-  letI : Fintype {W : Submodule K V // finrank K W = k} := Fintype.ofFinite _
+  let : Fintype {W : Submodule K V // finrank K W = k} := Fintype.ofFinite _
   rcases le_or_gt k (finrank K V) with hk | hk
   · have hQ : 1 < Fintype.card K := Fintype.one_lt_card
     have hpos : 0 < ∏ i ∈ range k, (Fintype.card K ^ k - Fintype.card K ^ i) :=
