@@ -315,7 +315,6 @@ protected theorem AffineIndependent.subtype {p : ι → P} (ha : AffineIndepende
     AffineIndependent k fun i : s => p i :=
   ha.comp_embedding (Embedding.subtype _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If an indexed family of points is affinely independent, so is the
 corresponding set of points. -/
 protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent k p) :
@@ -325,7 +324,7 @@ protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
   convert! ha.comp_embedding fe
   ext
-  simp [fe, hf]
+  simp [fe, hf, Embedding.coeFn_mk f (fun _ _ _ ↦ by grind)]
 
 theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
     AffineIndependent k (p ∘ e) ↔ AffineIndependent k p := by
@@ -725,7 +724,6 @@ section DivisionRing
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An affinely independent set of points can be extended to such a
 set that spans the whole space. -/
 theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
@@ -744,18 +742,16 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     exact
       ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
         affineSpan_singleton_union_vadd_eq_top_of_span_eq_top p₁ hsvt⟩
-  · rw [affineIndependent_set_iff_linearIndependent_vsub k hp₁] at h
+  · rw [affineIndependent_set_iff_linearIndependent_vsub k hp₁, linearIndependent_subtype_iff] at h
     let bsv := Basis.extend h
     have hsvi := bsv.linearIndependent
     have hsvt := bsv.span_eq
     rw [Basis.coe_extend] at hsvi hsvt
-    rw [linearIndependent_subtype_iff] at hsvi h
     have hsv := h.subset_extend (Set.subset_univ _)
     have h0 : ∀ v : V, v ∈ h.extend (Set.subset_univ _) → v ≠ 0 := by
       intro v hv
       simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
-    rw [← linearIndependent_subtype_iff,
-      linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
+    rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
     · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_mono hsv))
       simp [Set.image_image]
