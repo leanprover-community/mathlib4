@@ -63,8 +63,7 @@ theorem mapClusterPt_atTop_pow_tfae (x y : G) :
       MapClusterPt x atTop (y ^ · : ℕ → G),
       MapClusterPt x atTop (y ^ · : ℤ → G),
       x ∈ closure (range (y ^ · : ℕ → G)),
-      x ∈ closure (range (y ^ · : ℤ → G)),
-    ] := by
+      x ∈ closure (range (y ^ · : ℤ → G))] := by
   tfae_have 2 ↔ 1 := mapClusterPt_atTop_zpow_iff_pow
   tfae_have 3 → 4 := by
     refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h

@@ -181,6 +181,24 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
   refine le_trans (Filter.map_mono ?_) hf
   gcongr; exact disjWithin_mono habcd
 
+theorem congr (hf : AbsolutelyContinuousOnInterval f a b)
+    (hfg : Set.EqOn f g (uIcc a b)) : AbsolutelyContinuousOnInterval g a b := by
+  apply hf.congr'
+  rw [eventuallyEq_inf_principal_iff]
+  filter_upwards with (n, I) hnI
+  exact Finset.sum_congr rfl fun i hi ↦ by rw [hfg (hnI.1 i hi).1, hfg (hnI.1 i hi).2]
+
+@[refl, simp]
+protected theorem refl (f : ℝ → X) (a : ℝ) : AbsolutelyContinuousOnInterval f a a := by
+  apply tendsto_nhds_of_eventually_eq
+  rw [eventually_inf_principal]
+  filter_upwards with (n, I) hnI
+  refine Finset.sum_eq_zero fun i hi ↦ ?_
+  obtain ⟨h₁, h₂⟩ := hnI.1 i hi
+  simp_all
+
+protected theorem rfl : AbsolutelyContinuousOnInterval f a a := .refl f a
+
 variable {f g : ℝ → F}
 
 @[to_fun]
@@ -237,9 +255,6 @@ theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
       forall_eq, mem_ofPred_eq, mem_prod]
     simp
   · simp [totalLengthFilter, comap_comap, Function.comp_def]
-
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuousOn :=
-  uniformContinuousOn
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :

@@ -211,24 +211,18 @@ The iterated derivative of the sum of two functions is the sum of the iterated d
   have hft : ContDiffOn 𝕜 i f (s ∩ t) := fun a ha ↦ (h (by simp_all)).1.mono inter_subset_left
   have hgt : ContDiffOn 𝕜 i g (s ∩ t) := fun a ha ↦ (h (by simp_all)).2.mono inter_subset_left
   have hut : UniqueDiffOn 𝕜 (s ∩ t) := hu.inter ht
-  have H : ↑(s ∩ t) =ᶠ[𝓝 x] s :=
-    inter_eventuallyEq_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
+  have H : s ∩ t =ᶠ[𝓝 x] s :=
+    inter_eventuallyEqSet_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
   rw [← iteratedFDerivWithin_congr_set H, ← iteratedFDerivWithin_congr_set H,
     ← iteratedFDerivWithin_congr_set H]
   exact .symm (((hft.ftaylorSeriesWithin hut).add
       (hgt.ftaylorSeriesWithin hut)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hut ⟨hx, hxt⟩)
-
-@[deprecated (since := "2026-02-13")]
-alias iteratedFDerivWithin_add_apply' := fun_iteratedFDerivWithin_add_apply
 
 @[to_fun] theorem iteratedFDeriv_add_apply {i : ℕ} {f g : E → F}
     (hf : ContDiffAt 𝕜 i f x) (hg : ContDiffAt 𝕜 i g x) :
     iteratedFDeriv 𝕜 i (f + g) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x := by
   simp_rw [← iteratedFDerivWithin_univ]
   exact iteratedFDerivWithin_add_apply hf hg uniqueDiffOn_univ (Set.mem_univ _)
-
-@[deprecated (since := "2026-02-13")]
-alias iteratedFDeriv_add_apply' := fun_iteratedFDeriv_add_apply
 
 @[to_fun] theorem iteratedFDeriv_add {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f)
     (hg : ContDiff 𝕜 i g) :

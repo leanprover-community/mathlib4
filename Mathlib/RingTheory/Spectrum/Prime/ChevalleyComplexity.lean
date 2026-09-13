@@ -272,10 +272,6 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
--- TODO: fix non-terminal simp (large simp set)
-set_option backward.isDefEq.respectTransparency.types false in
-set_option linter.flexible false in
-open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
 `induction_structure`. -/
@@ -320,10 +316,11 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         (span R₀ ({c} ∪ ⋃ i, coeff(e i)) ^ e₁.powBound).map q₁.toLinearMap := by
     unfold coeffSubmodule
     rw [Submodule.map_pow, map_span, invOf_pow, ← smul_pow, ← span_smul]
-    simp [Set.smul_set_insert, Set.image_iUnion, Set.smul_set_iUnion, q₁, e₁]
+    simp only [Set.singleton_union, AlgHom.toLinearMap_apply, Set.image_insert_eq,
+      Set.smul_set_insert, Set.image_iUnion, Set.smul_set_iUnion, e₁, smul_eq_mul, invOf_mul_self']
     congr! with i
     change _ = IsLocalization.Away.invSelf c • _
-    simp [← Set.range_comp, Set.smul_set_range]
+    simp only [← Set.range_comp, Set.smul_set_range]
     ext
     simp
   replace hT₁span x hx i :=
@@ -331,7 +328,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
   simp only [he₁span, smul_invOf_smul, smul_eq_mul] at hT₁span
   choose! g₁ hg₁ hq₁g₁ using hT₁span
   -- Lift the constants of `T₁` from `Away c` to `R`
-  choose! n₁ f₁ hf₁ using Away.surj (S := Away c) c
+  choose! n₁ f₁ hf₁ using IsLocalization.Away.surj (S := Away c) c
   change (∀ _, _ * q₁ _ ^ _ = q₁ _) at hf₁
   -- Lift the tuples of `T₂` from `R ⧸ Ideal.span {c}` to `R`
   rw [coeffSubmodule_mapRingHom_comp, ← Submodule.map_pow] at hT₂span

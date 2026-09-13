@@ -644,9 +644,8 @@ abbrev GCongrM := ReaderT Context <| StateRefT State MetaM
 def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax `rintroPat) := [])
     (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
-    MetaM (α × Array MVarId) := do
-  let (a, s) ← (x { mainGoalDischarger, sideGoalDischarger }).run { patterns }
-  return (a, s.newGoals)
+    MetaM (α × State) :=
+  (x { mainGoalDischarger, sideGoalDischarger }).run { patterns }
 
 /-- Add an unsolved goal to the `newGoals` array in the state. -/
 def pushNewGoal (g : MVarId) : GCongrM Unit :=
@@ -874,17 +873,17 @@ example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆
 syntax (name := gcongr) "gcongr" (ppSpace colGt term)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
-elab_rules : tactic
-| `(tactic| gcongr $[$template]? $[with $ps?*]?) => do
-  let g ← getMainGoal
+/-- Run the `gcongr` tactic. -/
+def runGCongr (g : MVarId) (template : Option Term) (patterns? : Option (TSyntaxArray `rintroPat)) :
+    TermElabM State := do
   g.withContext do
   let type ← withReducible g.getType'
   let some (_rel, lhs, _rhs) := getRel type
     | throwError "gcongr failed, not a relation"
   -- The patterns from the `with x y z` list
-  let patterns := (ps?.getD #[]).toList
+  let patterns := (patterns?.getD #[]).toList
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, unsolvedGoals) ← do
+  let (progress, s) ← do
     let some e := template | g.gcongr none |>.run patterns
     if let some depth := e.raw.isNatLit? then
       g.gcongr none depth |>.run patterns
@@ -902,10 +901,78 @@ elab_rules : tactic
       let patt ← instantiateMVars patt
       let g ← g.replaceTargetDefEq (updateRel type patt true)
       g.gcongr true |>.run patterns
-  if progress then
-    replaceMainGoal unsolvedGoals.toList
-  else
-    throwError "gcongr did not make progress"
+  unless progress do
+    throwError "`gcongr` did not make progress.\n\n{g}"
+  return s
+
+elab_rules : tactic
+| `(tactic| gcongr $[$template]? $[with $ps?*]?) => do
+  let s ← runGCongr (← getMainGoal) template ps?
+  replaceMainGoal s.newGoals.toList
+
+/--
+`gconvert e`, where the term `e` is inferred to have type `t`, replaces the main goal `⊢ t'` with
+new goals for proving the implication `t → t'` using generalized congruence.
+The goals are created like `gcongr` would.
+Like `gcongr`, `gconvert` introduces variables while applying generalized congruence rules.
+Additionally, if a resulting goal is an implication, the hypothesis is introduced
+using `this` as the default name for the new hypothesis.
+These variables can be pattern-matched, like `rintro` would, using the `with` keyword.
+
+`gconvert` can be used to peel matching quantifiers off of a given term and the goal and
+introduce the relevant variables.
+
+`gconvert` is a generalized version of `convert`, in the same way that `gcongr` and `grw` are
+generalized versions of `congr`/`congr!` and `rw`.
+
+* `gconvert e with x y ... z` names the variables that are introduced.
+* `gconvert e using n` where `n` is a natural number literal, limits the depth of `gcongr`.
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+* `gconvert e using t`, where `t` is a term with `?_` holes, makes `gcongr` perform congruence
+  up to the holes in `t`.
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+
+Example:
+```
+example (h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε) :
+             ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) ≤ ε := by
+  gconvert h with ε hε N n hn
+  /-
+  h : ∀ ε > 0, ∃ N, ∀ n ≥ N, 1 / (↑n + 1) < ε
+  ε : ℝ
+  hε : ε > 0
+  N n : ℕ
+  hn : n ≥ N
+  this : 1 / (↑n + 1) < ε
+  ⊢ 1 / (↑n + 1) ≤ ε
+  -/
+  exact this.le
+```
+-/
+syntax (name := gconvert) "gconvert" ppSpace term (" using " colGt term)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
+
+elab_rules : tactic
+| `(tactic| gconvert $e $[using $template]? $[with $ps?*]?) => withMainContext do
+  let e ← elabTerm e none
+  let goal ← getMainGoal
+  -- If the goal is `⊢ P` and the tactic is `gconvert Q`, then we construct the goal `⊢ Q → P`.
+  let impGoal ← mkFreshExprSyntheticOpaqueMVar <|
+    .forallE `_a (← inferType e) (← goal.getType) .default
+  goal.assign (impGoal.app e)
+  let ({ newGoals, patterns }) ← runGCongr impGoal.mvarId! template ps?
+  -- For each of the unsolved goals that are implications,
+  -- we run `rintro`, using the provided variable names/patterns
+  let mut patterns := patterns
+  let mut finalGoals := #[]
+  for g in newGoals do
+    if (← g.getType).isForall then
+      let name := patterns.head?.getD (mkIdent `this)
+      patterns := patterns.tail
+      finalGoals := finalGoals ++ (← RCases.rintro #[name] none g)
+    else
+      finalGoals := finalGoals.push g
+  replaceMainGoal finalGoals.toList
 
 /-- `rel [h₁, ..., hₙ]` uses "generalized congruence" rules to solve a goal of form
 `⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` by substituting with the terms `hᵢ : Rᵢ aᵢ bᵢ`. The relations
@@ -946,7 +1013,8 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, unsolvedGoals) ← g.gcongr none |>.run [] assum
+    let (_, s) ← g.gcongr none |>.run [] assum
+    let unsolvedGoals := s.newGoals
     match unsolvedGoals.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()

@@ -142,6 +142,12 @@ theorem pairwise_union_of_symm [Std.Symm r] :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
   pairwise_union.trans <| by simp only [Std.Symm.iff, and_self_iff]
 
+theorem pairwise_union_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
+    (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, r a b := by
+  rw [pairwise_union_of_symm]
+  congr! with a
+  grind [refl (r := r) a]
+
 @[deprecated (since := "2026-06-10")] alias pairwise_union_of_symmetric := pairwise_union_of_symm
 
 theorem pairwise_insert :
@@ -165,6 +171,11 @@ theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
   simp only [pairwise_insert, Std.Symm.iff a, and_self_iff]
 
+theorem pairwise_insert_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
+    (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
+  simp only [pairwise_insert, Std.Symm.iff a, and_self_iff]
+  grind [refl a]
+
 @[deprecated (since := "2026-06-10")] alias pairwise_insert_of_symmetric := pairwise_insert_of_symm
 
 theorem pairwise_insert_of_symm_of_notMem [Std.Symm r] (ha : a ∉ s) :
@@ -178,12 +189,20 @@ theorem Pairwise.insert_of_symm [Std.Symm r] (hs : s.Pairwise r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   pairwise_insert_of_symm.mpr ⟨hs, h⟩
 
+theorem Pairwise.insert_of_symm_of_refl [Std.Symm r] [Std.Refl r] (hs : s.Pairwise r)
+    (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
+  pairwise_insert_of_symm_of_refl.mpr ⟨hs, h⟩
+
 @[deprecated (since := "2026-06-10")] alias Pairwise.insert_of_symmetric := Pairwise.insert_of_symm
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 
 theorem pairwise_pair_of_symm [Std.Symm r] : Set.Pairwise {a, b} r ↔ a ≠ b → r a b := by
   simp [pairwise_insert_of_symm]
+
+theorem pairwise_pair_of_symm_of_refl [Std.Symm r] [Std.Refl r] :
+    Set.Pairwise {a, b} r ↔ r a b := by
+  simp [pairwise_insert_of_symm_of_refl]
 
 @[deprecated (since := "2026-06-10")] alias pairwise_pair_of_symmetric := pairwise_pair_of_symm
 

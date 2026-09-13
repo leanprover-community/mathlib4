@@ -168,9 +168,11 @@ end DecEq
 
 section absNorm
 
+-- The assumption `Module.Free ℤ` has been replaced by `Infinite`: it should hold
+-- automatically in all cases; if not, the corresponding instance should be added.
 @[deprecated "Use `Ideal.absNorm_pow_inertiaDeg` instead." (since := "2026-08-14")]
 lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
-    [Module.Free ℤ S] [IsDedekindDomain R] [Module.Free ℤ R] [Algebra S R] [Module.Finite S R]
+    [Infinite S] [IsDedekindDomain R] [Infinite R] [Algebra S R] [Module.Finite S R]
     (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
     absNorm P = absNorm p ^ (p.inertiaDeg' P) := by
   have : p.IsMaximal := hp.isMaximal hp_ne_bot
@@ -182,8 +184,10 @@ lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekin
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg' P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
+-- The assumption `Module.Free ℤ` has been replaced by `Infinite`: it should hold
+-- automatically in all cases; if not, the corresponding instance should be added.
 @[deprecated "Use `Ideal.natAbs_pow_inertiaDeg` instead." (since := "2026-08-14")]
-lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
+lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Infinite R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg' P) := by
   simpa using absNorm_eq_pow_inertiaDeg'_of_liesOver P (span {p})
@@ -192,8 +196,10 @@ lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg' P)`.
 See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
+-- The assumption `Module.Free ℤ` has been replaced by `Infinite`: it should hold
+-- automatically in all cases; if not, the corresponding instance should be added.
 @[deprecated "Use `Ideal.natAbs_pow_inertiaDeg` instead." (since := "2026-08-14")]
-lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
+lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Infinite R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg' P) :=
   absNorm_eq_pow_inertiaDeg P (Nat.prime_iff_prime_int.mp hp)
