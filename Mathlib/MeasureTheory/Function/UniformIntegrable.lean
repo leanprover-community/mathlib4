@@ -159,11 +159,10 @@ protected theorem neg (hf : UnifIntegrable f p μ) : UnifIntegrable (-f) p μ :=
   filter_upwards [ENNReal.tendsto_nhds_zero.1 hf ε hε] with s hs
   simpa only [Pi.neg_apply, eLpNorm_neg]
 
-protected theorem sub (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ)
-    (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
+protected theorem sub (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) :
     UnifIntegrable (f - g) p μ := by
   rw [sub_eq_add_neg]
-  exact hf.add hg.neg hf_meas fun i => (hg_meas i).neg
+  exact hf.add hg.neg
 
 protected theorem ae_mono (hg : UnifIntegrable g p μ) (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
     UnifIntegrable f p μ := by
@@ -177,9 +176,12 @@ protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] 
   hf.ae_mono fun i ↦ ((hfg i).symm.fun_comp _).le
 
 /-- Uniform integrability is preserved by restriction of the functions to a set. -/
-protected theorem indicator (hf : UnifIntegrable f p μ) (s : Set α) :
-    UnifIntegrable (fun i ↦ s.indicator (f i)) p μ :=
-  hf.ae_mono fun i ↦ Eventually.of_forall fun x ↦ enorm_indicator_le_enorm_self (f i) x
+protected theorem indicator (hf : UnifIntegrable f p μ) (s : Set α) (hs : MeasurableSet s) :
+    UnifIntegrable (fun i ↦ s.indicator (f i)) p μ := by
+  refine tendsto_nhds_bot_mono hf (Eventually.of_forall fun ε ↦ ?_)
+  simp only
+  gcongr
+  exact eLpNorm_indicator_le _ hs
 
 /-- Uniform integrability is preserved by restriction of the measure to a set. -/
 protected theorem restrict (hf : UnifIntegrable f p μ) (s : Set α) :
@@ -664,15 +666,19 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
     {f : ℕ → α → β} {g : α → β} (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : MemLp g p μ)
     (hui : UnifIntegrable f p μ) (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
-  have : ∀ n, eLpNorm (f n - g) p μ = eLpNorm ((hf n).mk (f n) - hg.1.mk g) p μ :=
-    fun n => eLpNorm_congr_ae ((hf n).ae_eq_mk.sub hg.1.ae_eq_mk)
+  have : ∀ n, eLpNorm (f n - g) p μ =
+      eLpNorm ((hf n).mk (f n) - hg.aestronglyMeasurable.mk g) p μ :=
+    fun n => eLpNorm_congr_ae ((hf n).ae_eq_mk.sub hg.aestronglyMeasurable.ae_eq_mk)
   simp_rw [this]
   refine tendsto_Lp_finite_of_tendsto_ae_of_meas hp hp' (fun n => (hf n).stronglyMeasurable_mk)
-    hg.1.stronglyMeasurable_mk (hg.ae_eq hg.1.ae_eq_mk) (hui.ae_eq fun n => (hf n).ae_eq_mk) ?_
+    hg.aestronglyMeasurable.stronglyMeasurable_mk
+      (hg.ae_eq hg.aestronglyMeasurable.ae_eq_mk)
+      (hui.ae_eq fun n => (hf n).ae_eq_mk) ?_
   have h_ae_forall_eq : ∀ᵐ x ∂μ, ∀ n, f n x = (hf n).mk (f n) x := by
     rw [ae_all_iff]
     exact fun n => (hf n).ae_eq_mk
-  filter_upwards [hfg, h_ae_forall_eq, hg.1.ae_eq_mk] with x hx_tendsto hxf_eq hxg_eq
+  filter_upwards [hfg, h_ae_forall_eq, hg.aestronglyMeasurable.ae_eq_mk]
+    with x hx_tendsto hxf_eq hxg_eq
   rw [← hxg_eq]
   convert! hx_tendsto using 1
   ext1 n
@@ -699,8 +705,7 @@ theorem unifIntegrable_of_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞) (hf : ∀ 
     UnifIntegrable f p μ := by
   have : f = (fun _ => g) + fun n => f n - g := by ext1 n; simp
   rw [this]
-  refine UnifIntegrable.add ?_ ?_ (fun _ ↦ hg.aestronglyMeasurable)
-      fun n => (hf n).1.sub hg.aestronglyMeasurable
+  refine UnifIntegrable.add ?_ ?_
   · exact unifIntegrable_const hp hp' hg
   · exact unifIntegrable_of_tendsto_Lp_zero hp hp' (fun n => (hf n).sub hg) hfg
 
@@ -720,9 +725,9 @@ theorem tendstoInMeasure_iff_tendsto_Lp_finite [IsFiniteMeasure μ] (hp : 1 ≤ 
     (hf : ∀ n, MemLp (f n) p μ) (hg : MemLp g p μ) :
     TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ↔
       Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) :=
-  ⟨fun h => tendsto_Lp_finite_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2 h.1, fun h =>
-    ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne'
-        (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
+  ⟨fun h => tendsto_Lp_finite_of_tendstoInMeasure hp hp'
+      (fun n => (hf n).aestronglyMeasurable) hg h.2 h.1, fun h =>
+    ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne' h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h⟩⟩
 
 /-- This lemma is superseded by `unifIntegrable_of` which do not require `C` to be positive. -/
@@ -824,6 +829,8 @@ lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter
   refine unifIntegrable_iff'.2 fun ε hε ↦ ?_
   obtain ⟨δ, hδ, hδ'⟩ := (unifIntegrable_iff.1 hUI) ε hε
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' ↦ ?_⟩
+  have hfm : AEStronglyMeasurable f μ :=
+    hs.aestronglyMeasurable fun n ↦ hfn (s n)
   rw [← eLpNorm_indicator_eq_eLpNorm_restrict ht]
   apply eLpNorm_le_of_tendstoInMeasure _ (hs.indicator t) (fun n ↦ (hfn (s n)).indicator ht)
   apply Eventually.of_forall fun n ↦ ?_
@@ -843,6 +850,7 @@ lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [
   refine Lp.eLpNorm_le_of_ae_tendsto
     (Eventually.of_forall (f := u) fun n ↦ hδ' (s n) t hμt) ?_ ?_
   · exact fun n ↦ (hfn (s n)).mono_measure μ.restrict_le_self
+  · exact (aestronglyMeasurable_of_tendsto_ae u (fun n ↦ hfn (s n)) hs).restrict
   · exact hs.filter_mono ae_restrict_le
 
 end UnifIntegrable

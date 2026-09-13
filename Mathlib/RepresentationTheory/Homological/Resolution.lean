@@ -115,7 +115,7 @@ def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ := by
   refine NatIso.ofComponents (fun _ => Types.productIso _) fun _ => ?_
   ext : 2
-  exact Matrix.ext fun _ _ => Pi.lift_π_apply (f := fun _ ↦ G) _ _ _
+  exact Matrix.ext fun _ _ => Pi.lift_comp_π_apply (f := fun _ ↦ G) _ _ _
 
 variable (k)
 

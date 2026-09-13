@@ -124,7 +124,6 @@ lemma isIso' (X₁ : C₁) [LF.IsLeftDerivedFunctor α W₂] :
   rw [← Φ.isIso_iff_of_isLeftDerivabilityStructure W₁.Q L₂ F G eG.hom LF α]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     LF.IsLeftDerivedFunctor α W₂ := by
   have := h.hasPointwiseLeftDerivedFunctor

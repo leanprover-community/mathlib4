@@ -344,8 +344,8 @@ strongly adapted to the filtration `ℱ`, then for all `n`, `f n` is almost ever
 conditional expectation of its limiting process w.r.t. `ℱ n`. -/
 theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ | ℱ n] :=
-  hf.eq_condExp_of_tendsto_eLpNorm
-    ((memLp_limitProcess_of_eLpNorm_bdd hbdd.aestronglyMeasurable hbdd.bdd).integrable le_rfl)
+  let ⟨_, hR⟩ := hbdd.2.2
+  hf.eq_condExp_of_tendsto_eLpNorm ((memLp_limitProcess_of_eLpNorm_bdd hbdd.1 hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
@@ -360,6 +360,7 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hunif : UniformIntegrable (fun n => μ[g | ℱ n]) 1 μ :=
     hg.uniformIntegrable_condExp_filtration
+  obtain ⟨R, hR⟩ := hunif.2.2
   have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g | ℱ n]) μ) μ :=
     (memLp_limitProcess_of_eLpNorm_bdd hunif.1 hunif.bdd).integrable le_rfl
   suffices g =ᵐ[μ] ℱ.limitProcess (fun n x => (μ[g | ℱ n]) x) μ by
