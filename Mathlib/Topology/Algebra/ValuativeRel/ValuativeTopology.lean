@@ -6,8 +6,8 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
-public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 # The topology on a ring induced by a valuation
@@ -188,7 +188,6 @@ theorem hasBasis_nhds_zero :
       fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦ { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, v.is_topological_valuation]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
 This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
 but it is equivalent to the restriction of `v` to the complement of its support being
@@ -332,7 +331,6 @@ theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is closed in the valuative topology. -/
 theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass v)) :
@@ -351,7 +349,6 @@ theorem isClopen_closedBall {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
     IsClopen {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For any valuation `v` compatible with the valuative relation on `R`, the sphere of radius `r`
 around zero `{x | v.restrict x = r}` is clopen in the valuative topology. -/
 theorem isClopen_sphere {r : ValueGroup₀ (.ofClass v)} (hr : r ≠ 0) :
@@ -425,6 +422,24 @@ end TopologicalSpace
 end Valuation
 
 namespace IsValuativeTopology
+
+/-- The topology on the ring of integers of a ring `R` carrying a valuative topology is linear:
+the open balls `Valuation.ltIdeal (valuation R) γ` form a basis of neighborhoods of zero
+made of ideals. -/
+instance [TopologicalSpace R] [IsValuativeTopology R] :
+    IsLinearTopology (valuation R).integer (valuation R).integer := by
+  refine IsLinearTopology.mk_of_hasBasis _
+    (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True) (s := (valuation R).ltIdeal) ?_
+  rw [nhds_subtype_eq_comap]
+  exact (IsValuativeTopology.hasBasis_nhds_zero R).comap _
+
+/-- The topology on a ring `R` carrying a valuative topology is linear over its ring of integers:
+the open balls `Valuation.ltSubmodule (valuation R) γ` form a basis of neighborhoods of zero
+made of `(valuation R).integer`-submodules. -/
+instance [TopologicalSpace R] [IsValuativeTopology R] :
+    IsLinearTopology (valuation R).integer R :=
+  IsLinearTopology.mk_of_hasBasis _ (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
+    (s := (valuation R).ltSubmodule) (IsValuativeTopology.hasBasis_nhds_zero R)
 
 @[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
 @[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball

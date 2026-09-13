@@ -17,8 +17,6 @@ public section
 
 variable {α : Type*}
 
-open Function
-
 /-- Typeclass for expressing that the `0` of a type is less or equal to its `1`. -/
 class ZeroLEOneClass (α : Type*) [Zero α] [One α] [LE α] : Prop where
   /-- Zero is less than or equal to one. -/

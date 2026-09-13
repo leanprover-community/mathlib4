@@ -48,7 +48,7 @@ Valuation, Extension of Valuations
 
 -/
 
-@[expose] public section
+public section
 
 open Module
 

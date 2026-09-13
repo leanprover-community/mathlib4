@@ -128,7 +128,7 @@ theorem not_bddAbove_fp_family [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
 /-- The derivative of a family of normal functions is the sequence of their common fixed points.
 
 This is defined for all functions such that `Ordinal.derivFamily_zero`,
-`Ordinal.derivFamily_succ`, and `Ordinal.derivFamily_limit` are satisfied. -/
+`Ordinal.derivFamily_add_one`, and `Ordinal.derivFamily_limit` are satisfied. -/
 def derivFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
   limitRecOn o (nfpFamily f 0) (fun _ IH => nfpFamily f (succ IH))
     fun a _ g => ⨆ b : Set.Iio a, g _ b.2
@@ -143,7 +143,7 @@ theorem derivFamily_add_one (f : ι → Ordinal → Ordinal) (o) :
     derivFamily f (o + 1) = nfpFamily f (derivFamily f o + 1) :=
   limitRecOn_add_one ..
 
--- TODO: deprecate
+@[deprecated derivFamily_add_one (since := "2026-06-17")]
 theorem derivFamily_succ (f : ι → Ordinal → Ordinal) (o) :
     derivFamily f (succ o) = nfpFamily f (succ (derivFamily f o)) :=
   derivFamily_add_one f o
@@ -155,7 +155,7 @@ theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
 theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
     IsNormal (derivFamily f) := by
   refine IsNormal.of_succ_lt (fun o ↦ ?_) @fun o h ↦ ?_
-  · rw [derivFamily_succ, ← succ_le_iff]
+  · rw [succ_eq_add_one, derivFamily_add_one, ← succ_le_iff]
     exact le_nfpFamily _ _
   · rw [derivFamily_limit _ h, Set.image_eq_range]
     have := h.nonempty_Iio.to_subtype
@@ -335,9 +335,9 @@ theorem deriv_zero_right (f) : deriv f 0 = nfp f 0 :=
 
 @[simp]
 theorem deriv_add_one (f o) : deriv f (o + 1) = nfp f (deriv f o + 1) :=
-  derivFamily_succ _ _
+  derivFamily_add_one _ _
 
--- TODO: deprecate
+@[deprecated deriv_add_one (since := "2026-06-17")]
 theorem deriv_succ (f o) : deriv f (succ o) = nfp f (succ (deriv f o)) :=
   deriv_add_one ..
 
@@ -391,7 +391,7 @@ theorem deriv_zero : deriv 0 = id :=
 
 @[deprecated "do not depend on the junk values of `deriv`" (since := "2026-05-13")]
 theorem deriv_zero_left (a) : deriv 0 a = a := by
-  rw [deriv_zero, id_eq]
+  rw [show deriv 0 = id from deriv_eq_id_of_nfp_eq_id nfp_zero, id_eq]
 
 end
 
@@ -508,7 +508,7 @@ theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
     IsNormal.ext_iff (isNormal_deriv _) (isNormal_mul_right (opow_pos ω ha))]
   refine ⟨?_, fun c h => ?_⟩
   · rw [bot_eq_zero, deriv_zero_right, nfp_mul_zero, mul_zero]
-  · rw [deriv_succ, h]
+  · rw [succ_eq_add_one, deriv_add_one, h]
     exact nfp_mul_opow_omega0_add c ha zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))
 
 end Ordinal

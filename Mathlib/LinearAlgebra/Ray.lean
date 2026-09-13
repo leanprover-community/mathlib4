@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
@@ -71,7 +72,6 @@ instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
 variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable (ι : Type*) [DecidableEq ι]
 
 namespace SameRay
 
@@ -176,7 +176,6 @@ theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
     Or.imp (fun hy => by rw [hy, map_zero]) fun ⟨r₁, r₂, hr₁, hr₂, h⟩ =>
       ⟨r₁, r₂, hr₁, hr₂, by rw [← f.map_smul, ← f.map_smul, h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
 theorem _root_.Function.Injective.sameRay_map_iff
@@ -206,7 +205,9 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
   rcases hy.exists_pos hy₀ hz₀ with ⟨ry, rz₂, hry, hrz₂, Hy⟩
   refine Or.inr (Or.inr ⟨rx * ry, ry * rz₁ + rx * rz₂, mul_pos hrx hry, ?_, ?_⟩)
   · positivity
-  · convert! congr(ry • $Hx + rx • $Hy) using 1 <;> module
+  · have h := congr(ry • $Hx + rx • $Hy)
+    module_nf at h ⊢
+    exact h
 
 /-- If `y` and `z` are on the same ray as `x`, then so is `y + z`. -/
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=

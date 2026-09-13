@@ -507,11 +507,11 @@ noncomputable def connectedComponentIn (F : Set α) (x : α) : Set α :=
 
 theorem connectedComponentIn_eq_image {F : Set α} {x : α} (h : x ∈ F) :
     connectedComponentIn F x = (↑) '' connectedComponent (⟨x, h⟩ : F) :=
-  dif_pos h
+  dite_eq_left h
 
 theorem connectedComponentIn_eq_empty {F : Set α} {x : α} (h : x ∉ F) :
     connectedComponentIn F x = ∅ :=
-  dif_neg h
+  dite_eq_right h
 
 theorem mem_connectedComponent {x : α} : x ∈ connectedComponent x :=
   mem_sUnion_of_mem (mem_singleton x) ⟨isPreconnected_singleton, mem_singleton x⟩
@@ -640,6 +640,24 @@ theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α →
     (h : Continuous f) {a : α} (hx : a ∈ s) :
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
   h.continuousOn.mapsTo_connectedComponentIn hx
+
+/-- The connected component of `(x, y)` in the product space is the product of the connected
+components of `x` and `y`. -/
+theorem connectedComponent_prod [TopologicalSpace β] (x : α) (y : β) :
+    connectedComponent (x, y) = connectedComponent x ×ˢ connectedComponent y :=
+  subset_antisymm
+    (fun _ hp ↦ ⟨continuous_fst.mapsTo_connectedComponent (x, y) hp,
+      continuous_snd.mapsTo_connectedComponent (x, y) hp⟩)
+    (isPreconnected_connectedComponent.prod isPreconnected_connectedComponent
+      |>.subset_connectedComponent ⟨mem_connectedComponent, mem_connectedComponent⟩)
+
+/-- The connected component of `x` in a product space is the product of the connected components
+of its coordinates. -/
+theorem connectedComponent_pi [∀ i, TopologicalSpace (X i)] (x : ∀ i, X i) :
+    connectedComponent x = univ.pi fun i ↦ connectedComponent (x i) :=
+  subset_antisymm (fun _ hy i _ ↦ (continuous_apply i).mapsTo_connectedComponent x hy)
+    (isPreconnected_univ_pi (fun _ ↦ isPreconnected_connectedComponent)
+      |>.subset_connectedComponent fun _ _ ↦ mem_connectedComponent)
 
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=

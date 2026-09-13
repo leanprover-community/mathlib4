@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Ramification index and inertia degree
@@ -206,7 +207,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
   let := Classical.propDecidable
   let g' i := if h : i ∈ s then g'' i h else 0
   have hg' : ∀ i ∈ s, algebraMap _ _ (g' i) = a * g i := by
-    intro i hi; exact (congr_arg _ (dif_pos hi)).trans (hg'' i hi)
+    intro i hi; exact (congr_arg _ (dite_eq_left hi)).trans (hg'' i hi)
   -- Because `R/I` is nontrivial, we can lift `g` to a nontrivial linear dependence in `S`.
   have hgI : algebraMap R S (g' j) ≠ 0 := by
     simp only [FractionalIdeal.mem_coeIdeal, not_exists, not_and'] at hgI
@@ -455,9 +456,8 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
   refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => ?_) hi ?_
   · dsimp only [Q]
-    rw [rank_pow_quot_aux p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
+    rwa [rank_pow_quot_aux p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
-    assumption
   · dsimp only [Q]
     rw [Nat.sub_self, zero_nsmul, map_quotient_self]
     exact rank_bot (R ⧸ p) (S ⧸ P ^ e)

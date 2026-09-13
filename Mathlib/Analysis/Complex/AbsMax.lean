@@ -83,7 +83,7 @@ maximum modulus principle, complex analysis
 public section
 
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
+open TopologicalSpace Metric Set Filter Function AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
 
@@ -122,7 +122,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine this.ne ?_
     have A : (∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ) = (2 * π * I : ℂ) • f z :=
       hd.circleIntegral_sub_inv_smul (mem_ball_self hr)
-    simp [A, norm_smul, Real.pi_pos.le]
+    simp [A, norm_smul]
   suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * r * (‖f z‖ / r) by
     rwa [mul_assoc, mul_div_cancel₀ _ hr.ne'] at this
   /- This inequality is true because `‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r` for all `ζ` on the circle and
@@ -177,7 +177,6 @@ If we do not assume that the codomain is a strictly convex space, then we can on
 Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any normed space.
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
 value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball. -/
@@ -399,7 +398,6 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   rw [dist_comm, ← hzw]
   exact ball_infDist_compl_subset.trans interior_subset
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a bounded set `U` and
 `‖f z‖ ≤ C` for any `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
 theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : IsBounded U)

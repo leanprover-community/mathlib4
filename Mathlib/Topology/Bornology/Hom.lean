@@ -77,6 +77,7 @@ namespace LocallyBoundedMap
 
 variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
+@[macro_inline]
 instance : FunLike (LocallyBoundedMap α β) α β where
   coe f := f.toFun
   coe_injective f g h := by

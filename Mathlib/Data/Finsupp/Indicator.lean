@@ -42,10 +42,10 @@ def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
     simp
 
 theorem indicator_of_mem (hi : i ∈ s) (f : ∀ i ∈ s, α) : indicator s f i = f i hi :=
-  @dif_pos _ (id _) hi _ _ _
+  @dite_eq_left _ (id _) hi _ _ _
 
 theorem indicator_of_notMem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s f i = 0 :=
-  @dif_neg _ (id _) hi _ _ _
+  @dite_eq_right _ (id _) hi _ _ _
 
 variable (s i)
 

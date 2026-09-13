@@ -345,7 +345,7 @@ theorem infs_eq_inter {s t : Finset α}
 
 end Infs
 
-open FinsetFamily
+open scoped FinsetFamily
 
 section DistribLattice
 

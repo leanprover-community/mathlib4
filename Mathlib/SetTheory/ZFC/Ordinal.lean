@@ -210,8 +210,6 @@ protected theorem trichotomous (h : x.IsOrdinal) : Std.Trichotomous (Subrel (· 
     intro ⟨a, ha⟩ ⟨b, hb⟩
     simpa using mem_trichotomous (h.mem ha) (h.mem hb)
 
-@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := IsOrdinal.trichotomous
-
 /-- An ordinal is a transitive set, trichotomous under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     x.IsOrdinal ↔ x.IsTransitive ∧ Std.Trichotomous (Subrel (· ∈ ·) (· ∈ x)) where
@@ -224,9 +222,6 @@ theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     · exact hyw
     · cases asymm hyz hzw
     · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
-
-@[deprecated (since := "2026-01-24")]
-alias _root_.ZFSet.isOrdinal_iff_isTrichotomous := _root_.ZFSet.isOrdinal_iff_trichotomous
 
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
@@ -362,10 +357,6 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
 theorem toZFSet_add_one (o : Ordinal) : toZFSet (o + 1) = insert (toZFSet o) (toZFSet o) := by
   aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
-@[deprecated toZFSet_add_one (since := "2026-02-24")]
-theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) :=
-  toZFSet_add_one o
-
 @[simp]
 theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by
   simpa [← coe_toZFSet, cardinalMk_coe_sort, Cardinal.mk_Iio_ordinal, ← lift_card] using
@@ -396,7 +387,6 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where

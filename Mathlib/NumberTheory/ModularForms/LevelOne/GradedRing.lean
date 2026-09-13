@@ -23,7 +23,9 @@ level-1 modular forms, beyond those that fall out of the dimension formula direc
 
 public noncomputable section
 
-open UpperHalfPlane ModularForm ModularFormClass MatrixGroups EisensteinSeries
+open UpperHalfPlane ModularForm ModularFormClass EisensteinSeries
+
+open scoped MatrixGroups
 
 namespace ModularForm
 
