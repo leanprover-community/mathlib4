@@ -41,7 +41,7 @@ open List in
 protected theorem tfae (f : X → Y) :
     TFAE [IsLocallyConstant f,
       ∀ x, ∀ᶠ x' in 𝓝 x, f x' = f x,
-      ∀ x, (𝓝 x).EventuallyConst f,
+      ∀ x, EventuallyConst f (𝓝 x),
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
@@ -81,7 +81,7 @@ theorem iff_exists_open (f : X → Y) :
 theorem iff_eventually_eq (f : X → Y) : IsLocallyConstant f ↔ ∀ x, ∀ᶠ y in 𝓝 x, f y = f x :=
   (IsLocallyConstant.tfae f).out 1 2
 
-theorem iff_forall_eventuallyConst : IsLocallyConstant f ↔ ∀ x, (𝓝 x).EventuallyConst f :=
+theorem iff_forall_eventuallyConst : IsLocallyConstant f ↔ ∀ x, EventuallyConst f (𝓝 x) :=
   IsLocallyConstant.tfae f |>.out 1 3
 
 theorem exists_open {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
