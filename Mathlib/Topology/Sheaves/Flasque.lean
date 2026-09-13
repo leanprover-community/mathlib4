@@ -201,7 +201,7 @@ private abbrev freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ 
   (presheafToSheaf _ _).map (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
 
 /-- Morphisms out of `freeAbSheaf U` are in correspondance with the sections `I.obj.obj (op U)` -/
-private def freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
+private abbrev freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
     (freeAbSheaf U ⟶ I) ≃ I.obj.obj (op U) :=
   ((sheafificationAdjunction _ _).homEquiv (yoneda.obj U ⋙ AddCommGrpCat.free) I).trans <|
     ((AddCommGrpCat.adj.whiskerRight _).homEquiv (yoneda.obj U)
@@ -242,29 +242,30 @@ set_option backward.isDefEq.respectTransparency false in
 `Subsingleton (H F (n + 1))` which can be proven by `TopCat.Sheaf.IsFlasque.subsingleton_H` -/
 theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     IsZero (AddCommGrpCat.of (H F (n+1))) := by
+  let : HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{u} := inferInstance
   induction n generalizing F with
   | zero =>
     obtain ⟨I, _, f, hf⟩ := EnoughInjectives.presentation F
-    obtain ⟨pres⟩ := EnoughInjectives.presentation F
-    let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
+    let S := ShortComplex.mk f (cokernel.π f) (cokernel.condition f)
     have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    have hLS := Sheaf.H.longSequence_exact hS 0 1 rfl
-    refine ShortComplex.Exact.isZero_of_both_zeros (hLS.exact 2) ?_
-      (zero_of_target_iso_zero _ (IsZero.isoZero (AddCommGrpCat.isZero_of_subsingleton
-      (AddCommGrpCat.of (H I 1)))))
-    rw[← ShortComplex.Exact.epi_f_iff (hLS.exact 1), AddCommGrpCat.epi_iff_surjective,
-      ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
-    change Function.Surjective ((H.map S.g 0) ∘ (H.equiv₀ I).symm.toEquiv)
-    conv => right; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ S.g.hom.app (op ⊤)
-      => ext x; exact Sheaf.H.equiv₀_symm_naturality Limits.isTerminalTop S.g x
-    rw [Equiv.comp_surjective, ← AddCommGrpCat.epi_iff_surjective]
-    exact epi_of_shortExact hS
+    have hg : Epi (AddCommGrpCat.ofHom (H.map S.g 0)) := by
+      rw [AddCommGrpCat.epi_iff_surjective]
+      intro x
+      obtain ⟨s, hs⟩ := (AddCommGrpCat.epi_iff_surjective _).mp
+        (epi_of_shortExact (U := ⊤) hS) ((H.equiv₀ S.X₃) x)
+      refine ⟨(H.equiv₀ I).symm s, ?_⟩
+      dsimp
+      rw [Sheaf.H.equiv₀_symm_naturality Limits.isTerminalTop S.g, hs,
+        (H.equiv₀ S.X₃).symm_apply_apply x]
+    exact ShortComplex.Exact.isZero_of_both_zeros (Sheaf.H.longSequence_exact₁' hS 0 1 rfl)
+      ((Sheaf.H.longSequence_exact₃' hS 0 1 rfl).epi_f_iff.mp hg)
+      ((AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I 1))).eq_zero_of_tgt _)
   | succ n hn =>
     obtain ⟨I, _, f, hf⟩ := EnoughInjectives.presentation F
     have hS := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
     have := of_shortExact_of_isFlasque₁₂ hS
     exact ShortComplex.Exact.isZero_of_both_isZero
-      ((Sheaf.H.longSequence_exact hS (n+1) (n+2) rfl).exact 2) (hn _)
+      (Sheaf.H.longSequence_exact₁' hS (n+1) (n+2) rfl) (hn _)
       (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
 
 instance subsingleton_H {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) :
