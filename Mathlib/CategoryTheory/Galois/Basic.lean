@@ -191,17 +191,17 @@ variable {C : Type u₁} [Category.{u₂, u₁} C]
 
 /-- The canonical action of `Aut F` on the fiber of each object. -/
 instance (X : C) : MulAction (Aut F) (F.obj X) where
-  smul σ x := σ.hom.app X x
+  smul σ x := σ.asIso.hom.app X x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
 lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
-    σ • x = σ.hom.app X x :=
+    σ • x = σ.asIso.hom.app X x :=
   rfl
 
 lemma mulAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
     σ • F.map f x = F.map f (σ • x) :=
-  NatTrans.naturality_apply σ.hom f x
+  NatTrans.naturality_apply σ.asIso.hom f x
 
 /-- An object that is neither initial or connected has a non-trivial subobject. -/
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
@@ -313,11 +313,8 @@ lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A
 
 /-- The evaluation map on automorphisms is injective for connected objects. -/
 lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj A) :
-    Function.Injective (fun f : Aut A ↦ F.map (f.hom) a) := by
-  change Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
-  apply Function.Injective.comp
-  · exact evaluation_injective_of_isConnected F A A a
-  · exact @Aut.ext _ _ A
+    Function.Injective (fun f : Aut A ↦ F.map (f.asIso.hom) a) :=
+  (evaluation_injective_of_isConnected F A A a).comp (by cat_disch)
 
 /-- A morphism from an object `X` with non-empty fiber to a connected object `A` is an
 epimorphism. -/
@@ -444,8 +441,7 @@ instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
 instance (A : C) [IsConnected A] : Finite (Aut A) := by
   let F := getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
-  apply Finite.of_injective (fun f ↦ F.map f.hom a)
-  exact evaluation_aut_injective_of_isConnected F A a
+  exact Finite.of_injective _ (evaluation_aut_injective_of_isConnected F A a)
 
 /-- Coproduct inclusions are monic in Galois categories. -/
 instance : MonoCoprod C := by
