@@ -5,6 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
+public meta import Mathlib.Tactic.Inclusion.Extension.Core.Init  -- shake: keep (registers `core`)
 public import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 
 /-!
