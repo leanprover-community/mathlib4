@@ -48,7 +48,7 @@ This definition is different but related to the "Tate–Shafarevich group" in th
 representations, where `A` is the quotient of a `p`-adic `G_K`-module by a `G_K`-invariant lattice.
 See Section 1 of [Flach]. For instance, when `A` is the quotient of the `p`-adic rational Tate
 module of an abelian variety by its integral sublattice, its associated Tate–Shafarevich group will
-be a quotient of the one in this file by its divisible part, which will be finite by definition.
+be a quotient of the one in this file by its divisible part.
 
 ## References
 
