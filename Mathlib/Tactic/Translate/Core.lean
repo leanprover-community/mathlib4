@@ -309,7 +309,7 @@ where
           `{info'.translation}` instead of `{info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
-    trace[translate] "Added translation {src} ↦ {tgt}\
+    trace[translate] "Adding translation {src} ↦ {tgt}\
       {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})"} \
       (relevant_arg := {info.relevantArg})"
 
@@ -633,7 +633,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
-  trace[translate] "Value before translation:{indentExpr value}"
+  trace[translate_detail] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
   value ← reorderLambda reorder value'
   if let some b := unfoldBoundaries? then
@@ -668,7 +668,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
       let declAttempt ← updateDecl t tgt srcDecl reorder dont none rename
       try
         addDecl declAttempt.1.toDeclaration!
-        trace[translate] "generating\n{tgt} : {declAttempt.1.type} :=\
+        trace[translate_detail] "generating\n{tgt} : {declAttempt.1.type} :=\
           {indentExpr <| declAttempt.1.value! (allowOpaque := true)}"
         return declAttempt -- early return
       catch _ =>
@@ -676,7 +676,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
         updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState env) rename
     else
       updateDecl t tgt srcDecl reorder dont none rename
-  trace[translate] "generating\n{tgt} : {decl.1.type} :=\
+  trace[translate_detail] "generating\n{tgt} : {decl.1.type} :=\
     {indentExpr <| decl.1.value! (allowOpaque := true)}"
   try
     addDecl decl.1.toDeclaration!
