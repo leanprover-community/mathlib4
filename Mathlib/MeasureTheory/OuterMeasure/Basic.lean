@@ -167,7 +167,7 @@ end OuterMeasureClass
 
 namespace OuterMeasure
 
-variable {α β : Type*} {m : OuterMeasure α}
+variable {α : Type*} {m : OuterMeasure α}
 
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
 some nontrivial filter (usually `atTop` on `ι = ℕ`), then `m S = ⨆ n, m (s n)`. -/
@@ -183,7 +183,8 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   classical
   refine measure_iUnion_of_tendsto_zero m atTop ?_
   refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
-  refine (m.mono ?_).trans (measure_iUnion_le _)
+  grw [← measure_iUnion_le]
+  gcongr
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
   simp only [sdiff_subset_iff, iUnion_subset_iff]

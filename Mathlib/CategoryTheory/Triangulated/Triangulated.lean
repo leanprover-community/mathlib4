@@ -319,7 +319,6 @@ variable {C}
   (IsTriangulated.octahedron_axiom comm h₁₂ h₂₃ h₁₃).some
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A choice of octahedron' given by the octahedron axiom. -/
 @[no_expose] def Triangulated.someOctahedron' [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}

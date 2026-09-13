@@ -152,25 +152,18 @@ open Metric
 
 namespace EMetric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
+variable {x y : α} {ε : ℝ≥0∞} {s t : Set α}
 
 theorem inseparable_iff {x y : γ} : Inseparable x y ↔ edist x y = 0 := by
   simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_gt_iff_le]
 
 alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 
-theorem nontrivial_iff_nontrivialTopology {α} [EMetricSpace α] :
-    Nontrivial α ↔ NontrivialTopology α := by
-  simp_rw [nontrivial_iff, TopologicalSpace.nontrivial_iff_exists_not_inseparable,
-    EMetric.inseparable_iff, edist_eq_zero]
+@[deprecated (since := "2026-07-31")]
+alias nontrivial_iff_nontrivialTopology := nontrivial_iff_nontrivialTopology
 
-theorem subsingleton_iff_indiscreteTopology {α} [EMetricSpace α] :
-    Subsingleton α ↔ IndiscreteTopology α := by
-  simpa [not_nontrivial_iff_subsingleton] using nontrivial_iff_nontrivialTopology (α := α).not
-
-/-- In an (e)metric space, every nontrivial type has a nontrivial topology. -/
-instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTopology α :=
-  nontrivial_iff_nontrivialTopology.1 ‹_›
+@[deprecated (since := "2026-07-31")]
+alias subsingleton_iff_indiscreteTopology := subsingleton_iff_indiscreteTopology
 
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
 the pseudoedistance between its elements is arbitrarily small -/

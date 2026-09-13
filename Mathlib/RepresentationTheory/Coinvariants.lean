@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RepresentationTheory.Rep.Res
-public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Coinvariants of a group representation
@@ -348,7 +347,7 @@ variable (k G) [Monoid G] (A B : Rep.{w} k G)
 /-- The functor sending a representation to its coinvariants. -/
 @[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
-  obj A := ModuleCat.of k A.ρ.Coinvariants
+  obj A := ↧A.ρ.Coinvariants
   map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
   map_id _ := by simp
   map_comp _ _ := by ext; simp
@@ -372,15 +371,15 @@ lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor 
 /-- The linear map underlying a `G`-representation morphism `A ⟶ B`, where `B` has the trivial
 representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
-    (coinvariantsFunctor k G).obj A ⟶ ModuleCat.of k B.V :=
-  ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by simp [f.hom.2]
+    (coinvariantsFunctor k G).obj A ⟶ ↧B.V :=
+  ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by
+    simp [f.hom.2, isTrivial_def]
 
 variable (k G)
 
 instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
 @[simps]
@@ -395,7 +394,6 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
     ((coinvariantsMk k G).app X ≫ f).hom := by
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
     (f : X ⟶ (trivialFunctor k G).obj Y) :

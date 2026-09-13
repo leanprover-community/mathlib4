@@ -310,15 +310,8 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom := (prod.lift coprod.inl.unop coprod.inr.unop).op
   inv := coprod.desc prod.fst.op prod.snd.op
   hom_inv_id := by
-    apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only
-      apply Quiver.Hom.op_inj
-      simp
-  inv_hom_id := by
-    ext <;>
-    · simp only [colimit.ι_desc_assoc]
-      apply Quiver.Hom.unop_inj
+    · apply Quiver.Hom.op_inj
       simp
 
 @[reassoc (attr := simp)]
@@ -337,12 +330,10 @@ lemma inl_opProdIsoCoprod_inv : coprod.inl ≫ (opProdIsoCoprod A B).inv = prod.
 lemma inr_opProdIsoCoprod_inv : coprod.inr ≫ (opProdIsoCoprod A B).inv = prod.snd.op := by
   rw [Iso.comp_inv_eq, snd_opProdIsoCoprod_hom]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opProdIsoCoprod_hom_fst : (opProdIsoCoprod A B).hom.unop ≫ prod.fst = coprod.inl.unop := by
   simp [opProdIsoCoprod]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opProdIsoCoprod_hom_snd : (opProdIsoCoprod A B).hom.unop ≫ prod.snd = coprod.inr.unop := by
   simp [opProdIsoCoprod]

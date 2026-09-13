@@ -7,14 +7,15 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Monoid.NatCast
-public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.List.Chain
+public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # List of Booleans
 
 In this file we prove lemmas about the number of `false`s and `true`s in a list of Booleans. First
-we prove that the number of `false`s plus the number of `true` equals the length of the list. Then
+we prove that the number of `false`s plus the number of `true`s equals the length of the list. Then
 we prove that in a list with alternating `true`s and `false`s, the number of `true`s differs from
 the number of `false`s by at most one. We provide several versions of these statements.
 -/

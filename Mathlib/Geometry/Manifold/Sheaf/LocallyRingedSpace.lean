@@ -49,7 +49,9 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {HP : Type*} [TopologicalSpace HP] (IP : ModelWithCorners 𝕜 EP HP)
   {P : Type u} [TopologicalSpace P] [ChartedSpace HP P]
 
-open AlgebraicGeometry Manifold TopologicalSpace Topology
+open AlgebraicGeometry TopologicalSpace Topology
+
+open scoped Manifold
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered as a
@@ -133,7 +135,7 @@ variable (M)
 /-- A smooth manifold can be considered as a locally ringed space. -/
 @[implicit_reducible]
 def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
-  carrier := TopCat.of M
+  carrier := ↧M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
