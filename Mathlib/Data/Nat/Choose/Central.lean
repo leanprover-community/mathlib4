@@ -128,7 +128,7 @@ theorem four_pow_le_two_mul_add_one_mul_centralBinom (n : ℕ) :
     gcongr
     exact le_add_right (2 * n) 1
 
-@[deprecated four_pow_le_two_mul_add_one_mul_centralBinom (since := "2026-08-11")]
+@[deprecated four_pow_le_two_mul_add_one_mul_centralBinom (since := "2026-09-13")]
 theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
   four_pow_le_two_mul_add_one_mul_centralBinom n
