@@ -11,9 +11,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 # Complex trigonometric functions
 
-Basic facts and derivatives for the complex trigonometric functions. We also record the classical
-limit `tan z / z → 1` as `z → 0` (`Complex.tendsto_tan_div_nhdsNE_zero`); its real counterpart
-`Real.tendsto_tan_div_nhdsNE_zero` is in the file `ArctanDeriv.lean`.
+Basic facts and derivatives for the complex trigonometric functions.
 -/
 
 public section
