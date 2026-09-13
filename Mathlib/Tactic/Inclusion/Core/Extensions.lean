@@ -64,7 +64,12 @@ abbrev InclusionFamilies := Std.HashMap Name InclusionFamily
 /-- The registry of inclusion families. -/
 initialize inclusionFamiliesRef : IO.Ref InclusionFamilies ← IO.mkRef {}
 
-/-- Register an inclusion family. -/
+/-- Register an inclusion family.
+
+`ref` must name the declaration whose initializer runs the registration: it is what
+`getInclusionFamily?` records, so that a module naming the family acquires a dependency on the
+module registering it. The `decl_name%` default is correct for the usual
+`initialize _ : InclusionFamily ← registerInclusionFamily ..` idiom. -/
 def registerInclusionFamily (name : Name) (ref : Name := by exact decl_name%) :
     IO InclusionFamily := do
   if (← inclusionFamiliesRef.get).contains name then
