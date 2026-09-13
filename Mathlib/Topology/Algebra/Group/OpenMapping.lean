@@ -47,7 +47,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   so does `V • x`. Its interior contains a point `g' x` with `g' ∈ V`. Then `g'⁻¹ • V • x` contains
   a neighborhood of `x`, and it is included in `V⁻¹ • V • x`, which is itself contained in `U • x`
   if `V` is small enough. -/
-  obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U :=
+  obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ IsSelfInv V ∧ V * V ⊆ U :=
     exists_closed_nhds_one_inv_eq_mul_subset hU
   obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ :=
     countable_cover_nhds_of_sigmaCompact fun _ ↦ by simpa
@@ -84,7 +84,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   have : (g'⁻¹ • V) • {x} ⊆ U • ({x} : Set X) := by
     apply smul_subset_smul_right
     apply Subset.trans (smul_set_subset_smul (inv_mem_inv.2 hg')) ?_
-    rw [V_symm]
+    rw [V_symm.inv_eq]
     exact VU
   exact Filter.mem_of_superset J this
 

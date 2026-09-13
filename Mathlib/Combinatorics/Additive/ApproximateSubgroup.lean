@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Finset.SelfInv
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Combinatorics.Additive.CovBySMul
 public import Mathlib.Combinatorics.Additive.RuzsaCovering
@@ -50,7 +51,7 @@ In practice, we will take `K` fixed and `A` large but finite.
 -/
 structure IsApproximateAddSubgroup {G : Type*} [AddGroup G] (K : ℝ) (A : Set G) : Prop where
   zero_mem : 0 ∈ A
-  neg_eq_self : -A = A
+  isSelfNeg : IsSelfNeg A
   two_nsmul_covByVAdd : CovByVAdd G K (2 • A) A
 
 /--
@@ -62,7 +63,7 @@ In practice, we will take `K` fixed and `A` large but finite.
 @[to_additive]
 structure IsApproximateSubgroup (K : ℝ) (A : Set G) : Prop where
   one_mem : 1 ∈ A
-  inv_eq_self : A⁻¹ = A
+  isSelfInv : IsSelfInv A
   sq_covBySMul : CovBySMul G K (A ^ 2) A
 
 namespace IsApproximateSubgroup
@@ -79,7 +80,7 @@ lemma one_le (hA : IsApproximateSubgroup K A) : 1 ≤ K := by
 @[to_additive]
 lemma mono (hKL : K ≤ L) (hA : IsApproximateSubgroup K A) : IsApproximateSubgroup L A where
   one_mem := hA.one_mem
-  inv_eq_self := hA.inv_eq_self
+  isSelfInv := hA.isSelfInv
   sq_covBySMul := hA.sq_covBySMul.mono hKL
 
 @[to_additive]
@@ -104,7 +105,7 @@ lemma card_mul_self_le [DecidableEq G] {A : Finset G} (hA : IsApproximateSubgrou
 lemma image {F H : Type*} [Group H] [FunLike F G H] [MonoidHomClass F G H] (f : F)
     (hA : IsApproximateSubgroup K A) : IsApproximateSubgroup K (f '' A) where
   one_mem := ⟨1, hA.one_mem, map_one _⟩
-  inv_eq_self := by simp [← Set.image_inv, hA.inv_eq_self]
+  isSelfInv := hA.isSelfInv.image f
   sq_covBySMul := by
     classical
     obtain ⟨F, hF, hAF⟩ := hA.sq_covBySMul
@@ -119,22 +120,23 @@ lemma image {F H : Type*} [Group H] [FunLike F G H] [MonoidHomClass F G H] (f : 
 lemma subgroup {S : Type*} [SetLike S G] [SubgroupClass S G] {H : S} :
     IsApproximateSubgroup 1 (H : Set G) where
   one_mem := OneMemClass.one_mem H
-  inv_eq_self := inv_coe_set
+  isSelfInv := inv_coe_set
   sq_covBySMul := ⟨{1}, by simp⟩
 
 open Finset in
 @[to_additive]
-lemma of_small_tripling [DecidableEq G] {A : Finset G} (hA₁ : 1 ∈ A) (hAsymm : A⁻¹ = A)
+lemma of_small_tripling [DecidableEq G] {A : Finset G} (hA₁ : 1 ∈ A) (hAsymm : IsSelfInv A)
     (hA : #(A ^ 3) ≤ K * #A) : IsApproximateSubgroup (K ^ 3) (A ^ 2 : Set G) where
   one_mem := by rw [sq, ← one_mul 1]; exact Set.mul_mem_mul hA₁ hA₁
-  inv_eq_self := by simp [← inv_pow, hAsymm, ← coe_inv]
+  isSelfInv := (Finset.isSelfInv_coe_iff.2 hAsymm).pow 2
   sq_covBySMul := by
     replace hA := calc (#(A ^ 4 * A) : ℝ)
       _ = #(A ^ 5) := by rw [← pow_succ]
       _ ≤ K ^ 3 * #A := small_pow_of_small_tripling (by lia) hA hAsymm
     have hA₀ : A.Nonempty := ⟨1, hA₁⟩
     obtain ⟨F, -, hF, hAF⟩ := ruzsa_covering_mul hA₀ hA
-    exact ⟨F, hF, by norm_cast; simpa [div_eq_mul_inv, pow_succ, mul_assoc, hAsymm] using hAF⟩
+    exact ⟨F, hF, by norm_cast; simpa [div_eq_mul_inv, pow_succ, mul_assoc, hAsymm.inv_eq]
+      using hAF⟩
 
 open Set in
 @[to_additive]
@@ -160,7 +162,7 @@ lemma pow_inter_pow_covBySMul_sq_inter_sq
       _ ⊆ ⋃ (a ∈ F₁ ^ (m - 1)) (b ∈ F₂ ^ (n - 1)), f a b • (A⁻¹ * A ∩ (B⁻¹ * B)) := by
         gcongr; exact hf ..
       _ = (Finset.image₂ f (F₁ ^ (m - 1)) (F₂ ^ (n - 1))) * (A ^ 2 ∩ B ^ 2) := by
-        simp_rw [hA.inv_eq_self, hB.inv_eq_self, ← sq]
+        simp_rw [hA.isSelfInv.inv_eq, hB.isSelfInv.inv_eq, ← sq]
         rw [Finset.coe_image₂, ← smul_eq_mul, ← iUnion_smul_set, biUnion_image2]
         simp_rw [Finset.mem_coe]
 
@@ -170,7 +172,7 @@ lemma pow_inter_pow (hA : IsApproximateSubgroup K A) (hB : IsApproximateSubgroup
     (hn : 2 ≤ n) :
     IsApproximateSubgroup (K ^ (2 * m - 1) * L ^ (2 * n - 1)) (A ^ m ∩ B ^ n) where
   one_mem := ⟨Set.one_mem_pow hA.one_mem, Set.one_mem_pow hB.one_mem⟩
-  inv_eq_self := by simp_rw [inter_inv, ← inv_pow, hA.inv_eq_self, hB.inv_eq_self]
+  isSelfInv := (hA.isSelfInv.pow m).inter (hB.isSelfInv.pow n)
   sq_covBySMul := by
     refine (hA.pow_inter_pow_covBySMul_sq_inter_sq hB (by lia) (by lia)).subset ?_
       (by gcongr; exacts [hA.one_mem, hB.one_mem])
@@ -191,7 +193,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
       let H : Subgroup G :=
         { carrier := A
           one_mem' := hA.one_mem
-          inv_mem' hx := by rwa [← hA.inv_eq_self, inv_mem_inv]
+          inv_mem' := hA.isSelfInv.inv_mem
           mul_mem' hx hy := this (mul_mem_mul hx hy) }
       ⟨H, rfl⟩
     obtain ⟨x, hx⟩ : ∃ x : G, A * A ⊆ x • A := by
@@ -206,7 +208,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
     have hx_inv : x⁻¹ ∈ A := by
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hA.one_mem hA.one_mem))
     have hx_sq : x * x ∈ A := by
-      rw [← hA.inv_eq_self]
+      rw [← hA.isSelfInv.inv_eq]
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hx_inv hA.one_mem))
     calc A * A ⊆ x • A := by assumption
       _ = x⁻¹ • (x * x) • A := by simp [smul_smul]
