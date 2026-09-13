@@ -40,7 +40,6 @@ namespace Action
 instance : HasForget₂ (Action V G) TopCat :=
   HasForget₂.trans (Action V G) V TopCat
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
   smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
   one_smul x := by
@@ -69,9 +68,13 @@ end Action
 
 open Action
 
+/-- When we have `HasForget₂ V TopCat`, this is the property of the objects
+in `Action V G` where the induced action is continuous. -/
+abbrev Action.isContinuous : ObjectProperty (Action V G) := IsContinuous
+
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
-abbrev ContAction : Type _ := ObjectProperty.FullSubcategory (IsContinuous (V := V) (G := G))
+abbrev ContAction : Type _ := ObjectProperty.FullSubcategory (isContinuous V G)
 
 namespace ContAction
 

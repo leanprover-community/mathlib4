@@ -133,26 +133,26 @@ section Hom
 
 namespace NonUnitalSubring
 
-variable {F : Type w} {R : Type u} {S : Type v} {T : Type*}
+variable {R : Type u} {S : Type v} {T : Type*}
   [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
-  [FunLike F R S] [NonUnitalRingHomClass F R S] (s : NonUnitalSubring R)
+  (s : NonUnitalSubring R)
 
 /-! ## comap -/
 
 
 /-- The preimage of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
-def comap {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-    [FunLike F R S] [NonUnitalRingHomClass F R S] (f : F) (s : NonUnitalSubring S) :
+def comap {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    (f : R →ₙ+* S) (s : NonUnitalSubring S) :
     NonUnitalSubring R :=
   { s.toSubsemigroup.comap (f : R →ₙ* S), s.toAddSubgroup.comap (f : R →+ S) with
     carrier := f ⁻¹' s.carrier }
 
 @[simp]
-theorem coe_comap (s : NonUnitalSubring S) (f : F) : (s.comap f : Set R) = f ⁻¹' s :=
+theorem coe_comap (s : NonUnitalSubring S) (f : R →ₙ+* S) : (s.comap f : Set R) = f ⁻¹' s :=
   rfl
 
 @[simp]
-theorem mem_comap {s : NonUnitalSubring S} {f : F} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
+theorem mem_comap {s : NonUnitalSubring S} {f : R →ₙ+* S} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 
 theorem comap_comap (s : NonUnitalSubring T) (g : S →ₙ+* T) (f : R →ₙ+* S) :
@@ -162,18 +162,18 @@ theorem comap_comap (s : NonUnitalSubring T) (g : S →ₙ+* T) (f : R →ₙ+* 
 /-! ## map -/
 
 /-- The image of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
-def map {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-    [FunLike F R S] [NonUnitalRingHomClass F R S] (f : F) (s : NonUnitalSubring R) :
+def map {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    (f : R →ₙ+* S) (s : NonUnitalSubring R) :
     NonUnitalSubring S :=
   { s.toSubsemigroup.map (f : R →ₙ* S), s.toAddSubgroup.map (f : R →+ S) with
     carrier := f '' s.carrier }
 
 @[simp]
-theorem coe_map (f : F) (s : NonUnitalSubring R) : (s.map f : Set S) = f '' s :=
+theorem coe_map (f : R →ₙ+* S) (s : NonUnitalSubring R) : (s.map f : Set S) = f '' s :=
   rfl
 
 @[simp]
-theorem mem_map {f : F} {s : NonUnitalSubring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
+theorem mem_map {f : R →ₙ+* S} {s : NonUnitalSubring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
   Set.mem_image _ _ _
 
 @[simp]
@@ -183,25 +183,23 @@ theorem map_id : s.map (NonUnitalRingHom.id R) = s :=
 theorem map_map (g : S →ₙ+* T) (f : R →ₙ+* S) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
-theorem map_le_iff_le_comap {f : F} {s : NonUnitalSubring R} {t : NonUnitalSubring S} :
+theorem map_le_iff_le_comap {f : R →ₙ+* S} {s : NonUnitalSubring R} {t : NonUnitalSubring S} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f : F) :
+theorem gc_map_comap (f : R →ₙ+* S) :
     GaloisConnection (map f : NonUnitalSubring R → NonUnitalSubring S) (comap f) := fun _S _T =>
   map_le_iff_le_comap
 
 /-- A `NonUnitalSubring` is isomorphic to its image under an injective function -/
-noncomputable def equivMapOfInjective (f : F) (hf : Function.Injective (f : R → S)) :
+noncomputable def equivMapOfInjective (f : R →ₙ+* S) (hf : Function.Injective (f : R → S)) :
     s ≃+* s.map f :=
-  {
-    Equiv.Set.image f s
-      hf with
-    map_mul' := fun _ _ => Subtype.ext (map_mul f _ _)
-    map_add' := fun _ _ => Subtype.ext (map_add f _ _) }
+  { Equiv.Set.image f s hf with
+    map_mul' _ _ := Subtype.ext (map_mul f _ _)
+    map_add' _ _ := Subtype.ext (map_add f _ _) }
 
 @[simp]
-theorem coe_equivMapOfInjective_apply (f : F) (hf : Function.Injective f) (x : s) :
+theorem coe_equivMapOfInjective_apply (f : R →ₙ+* S) (hf : Function.Injective f) (x : s) :
     (equivMapOfInjective s f hf x : S) = f x :=
   rfl
 
@@ -387,17 +385,16 @@ theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subs
 instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
   decidable_of_iff' _ mem_center_iff
 
-theorem map_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
-    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+theorem map_center_le_center {f : R →ₙ+* S} (hf : Function.Surjective f) :
+    map f (center R) ≤ center S :=
   Set.image_center_subset hf
 
-theorem comap_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
-    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+theorem comap_center_le_center {f : R →ₙ+* S} (hf : Function.Injective f) :
+    comap f (center S) ≤ center R :=
   Set.preimage_center_subset hf
 
 @[simp]
-theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
-    map f (center R) = center S :=
+theorem map_center_eq (f : R ≃+* S) : map f (center R) = center S :=
   SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
@@ -451,9 +448,7 @@ end Center
 
 /-! ## `NonUnitalSubring` closure of a subset -/
 
-variable {F : Type w} {R : Type u} {S : Type v}
-  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-  [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
 
 /-- The `NonUnitalSubring` generated by a set. -/
 def closure (s : Set R) : NonUnitalSubring R :=
@@ -564,7 +559,7 @@ lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalRing R] (s : Set 
 /-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
 semiring. -/
 theorem isMulCommutative_closure {R : Type*} [NonUnitalRing R] {s : Set R}
-    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : IsMulCommutative (closure s) :=
+    (hcomm : s.Pairwise Commute) : IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
@@ -574,14 +569,14 @@ open scoped IsMulCommutative in
 ring. -/
 @[deprecated isMulCommutative_closure (since := "2026-03-11")]
 abbrev closureNonUnitalCommRingOfComm {R : Type*} [NonUnitalRing R] {s : Set R}
-    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : NonUnitalCommRing (closure s) :=
+    (hcomm : s.Pairwise Commute) : NonUnitalCommRing (closure s) :=
   have := isMulCommutative_closure hcomm
   inferInstance
 
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalRing R]
     [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set R)) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
@@ -613,25 +608,26 @@ theorem closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, c
 theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (NonUnitalSubring.gi R).gc.l_sSup
 
-theorem map_sup (s t : NonUnitalSubring R) (f : F) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
+theorem map_sup (s t : NonUnitalSubring R) (f : R →ₙ+* S) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
   (gc_map_comap f).l_sup
 
-theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubring R) :
+theorem map_iSup {ι : Sort*} (f : R →ₙ+* S) (s : ι → NonUnitalSubring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 
-theorem map_inf (s t : NonUnitalSubring R) (f : F) (hf : Function.Injective f) :
+theorem map_inf (s t : NonUnitalSubring R) (f : R →ₙ+* S) (hf : Function.Injective f) :
     (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
 
-theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →ₙ+* S) (hf : Function.Injective f)
     (s : ι → NonUnitalSubring R) : (iInf s).map f = ⨅ i, (s i).map f := by
   apply SetLike.coe_injective
   simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
-theorem comap_inf (s t : NonUnitalSubring S) (f : F) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
+theorem comap_inf (s t : NonUnitalSubring S) (f : R →ₙ+* S) :
+    (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
 
-theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubring S) :
+theorem comap_iInf {ι : Sort*} (f : R →ₙ+* S) (s : ι → NonUnitalSubring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
@@ -744,8 +740,7 @@ end NonUnitalSubring
 
 namespace NonUnitalRingHom
 
-variable {R : Type u} {S : Type v}
-  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+variable {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
 
 open NonUnitalSubring
 
@@ -812,8 +807,7 @@ end NonUnitalRingHom
 
 namespace NonUnitalSubring
 
-variable {R : Type u} {S : Type v}
-  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+variable {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
 
 open NonUnitalRingHom
 
@@ -865,16 +859,7 @@ theorem ofLeftInverse'_symm_apply {g : S → R} {f : R →ₙ+* S} (h : Function
 
 end RingEquiv
 
-namespace NonUnitalSubring
-
-variable {F : Type w} {R : Type u} {S : Type v}
-  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-  [FunLike F R S] [NonUnitalRingHomClass F R S]
-
-theorem closure_preimage_le (f : F) (s : Set S) :
-    closure ((f : R → S) ⁻¹' s) ≤ (closure s).comap f :=
-  closure_le.2 fun _x hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
-
-end NonUnitalSubring
+@[deprecated (since := "2026-09-10")]
+alias NonUnitalSubring.closure_preimage_le := NonUnitalRingHom.closure_preimage_le
 
 end Hom
