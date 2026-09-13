@@ -76,7 +76,7 @@ variable (G R)
 protected lemma linearIndependent [Finite G] : LinearIndependent R ((⇑) : AddChar G R → G → R) := by
   cases nonempty_fintype G
   exact linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero coe_ne_zero
-    fun ψ₁ ψ₂ ↦ wInner_cWeight_eq_zero_iff_ne.2
+    fun ψ₁ _ ψ₂ _ ↦ wInner_cWeight_eq_zero_iff_ne.2
 
 noncomputable instance instFintype [Finite G] : Fintype (AddChar G R) :=
   @Fintype.ofFinite _ (AddChar.linearIndependent G R).finite
