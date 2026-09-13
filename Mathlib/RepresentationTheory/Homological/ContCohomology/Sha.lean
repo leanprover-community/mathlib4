@@ -29,8 +29,8 @@ where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing s
 
 ## Implementation notes
 
-Mathematicians seem to use "Tate–Shafarevich group" in at least three distinct contexts. They have in
-common the set-up that `K` is a global field, `A` is a discrete `G_K`-module, `V` is the set of
+Mathematicians seem to use "Tate–Shafarevich group" in at least three distinct contexts. They have
+in common the set-up that `K` is a global field, `A` is a discrete `G_K`-module, `V` is the set of
 places of `K`, and `Kᵥ` is the completion of `K` at a place `v` in `V`.
 
 The first context is when `A` is finite. This is used, for example, in the statement of global
