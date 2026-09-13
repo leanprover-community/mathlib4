@@ -174,7 +174,7 @@ theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : Measure
 
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
-    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
+    (ae μa).EventuallyEmptyOrUniv (f ⁻¹' s) ↔ (ae μb).EventuallyEmptyOrUniv s :=
   aeconst_comp hf hs.mem
 
 theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
@@ -185,7 +185,7 @@ theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
     (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
   measurable := hf.measurable
-  map_eq := by rw [Measure.map_smul, hf.map_eq]
+  map_eq := by rw [Measure.map_smul _ hf.aemeasurable, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 

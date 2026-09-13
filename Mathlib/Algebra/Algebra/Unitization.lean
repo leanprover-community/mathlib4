@@ -790,8 +790,8 @@ variable [Semiring C] [Algebra R C] [StarRing C]
 /-- See note [partially-applied ext lemmas] -/
 @[ext]
 theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
-    (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
-      (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
+    (h : φ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A) =
+      ψ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A)) :
     φ = ψ :=
   Unitization.algHom_ext'' <| DFunLike.congr_fun h
 
