@@ -23,25 +23,33 @@ open Filter Topology Set
 
 variable {x : ℝ}
 
+theorem tendsto_sin_nhdsGT_zero : Tendsto sin (𝓝[>] 0) (𝓝[>] 0) := by
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
+  · simpa using continuous_sin.tendsto 0 |>.mono_left nhdsWithin_le_nhds
+  · filter_upwards [Ioo_mem_nhdsGT pi_pos] with x hx using sin_pos_of_pos_of_lt_pi hx.1 hx.2
+
+theorem tendsto_sin_nhdsLT_pi : Tendsto sin (𝓝[<] π) (𝓝[>] 0) := by
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
+  · simpa using continuous_sin.tendsto π |>.mono_left nhdsWithin_le_nhds
+  · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using sin_pos_of_pos_of_lt_pi hx.1 hx.2
+
+theorem tendsto_cos_nhdsLT_pi : Tendsto cos (𝓝[<] π) (𝓝[>] (-1)) := by
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
+  · simpa using continuous_cos.tendsto π |>.mono_left nhdsWithin_le_nhds
+  · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using
+      mem_Ioi.mpr <| cos_pi ▸ strictAntiOn_cos
+        ⟨hx.left.le, hx.right.le⟩ ⟨pi_pos.le, le_rfl⟩ hx.right
+
 private theorem existsUnique_mem_Ioc (x : ℝ) :
     ∃! k : ℤ, x ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) := by
   simpa [mul_comm, mul_two, mul_sub, mul_add, add_comm, sub_lt_iff_lt_add] using
-    existsUnique_sub_zsmul_mem_Ioc (a := 2 * π) two_pi_pos x (-π)
+    existsUnique_sub_zsmul_mem_Ioc two_pi_pos x (-π)
 
-private theorem add_sin_mem_Ioo_of_mem_Ioo :
+theorem add_sin_mem_Ioo_of_mem_Ioo :
     ∀ ⦃x : ℝ⦄, x ∈ Ioo (-π) π -> x + x.sin ∈ Ioo (-π) π := by
   suffices ∀ x ∈ Ioo (-π) π, x + x.sin < π from fun x ⟨hxl, hxr⟩ =>
     ⟨by grind [this (-x) ⟨neg_lt_neg_iff.mpr hxr, neg_lt.mp hxl⟩, sin_neg x], this x ⟨hxl, hxr⟩⟩
   exact fun x hx => by grind [sin_lt <| sub_pos_of_lt hx.right, sin_pi_sub x]
-
--- private theorem exists_mem_Ioc_log_sub_eq_of_le_one (hx : x ≤ -1) :
---     ∃ t ∈ Ioc 0 1, log t - t = x := by
---   have hcont : ContinuousOn (fun t => log t - t) (Icc (rexp x) 1) :=
---     continuousOn_log.mono (fun x hx => by grind [hx.1, exp_pos]) |>.sub continuousOn_id
---   obtain ⟨t, ht, hteq⟩ : ∃ t ∈ Icc (rexp x) 1, log t - t = x :=
---     intermediate_value_Icc (by grind [exp_le_one_iff]) hcont ⟨by grind [exp_pos x, log_exp x],
---       show x ≤ log 1 - 1 by grind [log_one]⟩
---   exact ⟨t, ⟨by grind [ht.1, exp_pos], ht.2⟩, hteq⟩
 
 private theorem existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
     ∃! t ∈ Ico (-1) 0, t * rexp t = x := by
@@ -52,8 +60,9 @@ private theorem existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(re
 
 private theorem existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
     ∃! t ∈ Iic (-1), t * rexp t = x := by
-  obtain ⟨S, hS⟩ := (tendsto_pow_mul_exp_neg_atTop_nhds_zero 1 |>.eventually <|
-    eventually_lt_nhds <| neg_pos_of_neg hx.right).exists_forall_of_atTop
+  obtain ⟨S, hS⟩ : ∃ S, ∀ b ≥ S, b ^ 1 * rexp (-b) < -x :=
+    (tendsto_pow_mul_exp_neg_atTop_nhds_zero 1 |>.eventually <|
+      eventually_lt_nhds <| neg_pos_of_neg hx.right).exists_forall_of_atTop
   obtain ⟨t, ht, hteq⟩ : ∃ t ∈ Icc (-(S ⊔ 1)) (-1), t * rexp t = x :=
     intermediate_value_Icc' (by simp) (by fun_prop)
       ⟨by grind [exp_neg], by grind [hS (S ⊔ 1), pow_one, exp_neg]⟩
@@ -72,11 +81,7 @@ private theorem existsUnique_add_log_eq (x : ℝ) : ∃! t > 0, t + log t = x :=
   by_contra hne
   rcases lt_or_gt_of_ne hne with h | h <;> [grind [log_lt_log ht h]; grind [log_lt_log hu h]]
 
--- private theorem eq_of_log_add_self_eq {t₁ t₂ : ℝ} (h₁ : 0 < t₁) (h₂ : 0 < t₂)
---     (h : Real.log t₁ + t₁ = Real.log t₂ + t₂) : t₁ = t₂ :=
---   (strictMonoOn_log.add strictMonoOn_id).injOn h₁ h₂ h
-
-private theorem neg_exp_one_inv_le_mul_exp : -(rexp 1)⁻¹ ≤ x * rexp x := by
+theorem neg_exp_one_inv_le_mul_exp : -(rexp 1)⁻¹ ≤ x * rexp x := by
   grind [mul_exp_neg_le_exp_neg_one (-x), exp_neg]
 
 end Real
@@ -87,37 +92,17 @@ open Real Set
 
 open scoped ComplexConjugate
 
-variable {x y w z : ℂ} {i : ℤ}
-
-theorem arg_neg_ofReal_of_pos {x : ℝ} (hx : 0 < x) : (-x : ℂ).arg = π := by
-  rw [← ofReal_neg, arg_ofReal_of_neg <| neg_neg_iff_pos.mpr hx]
+variable {x y z w : ℂ} {i : ℤ}
 
 private theorem arg_add_im_eq_pi_of_arg_eq_pi (h : x.arg = π) : x.arg + x.im = π := by
   simpa [(arg_eq_pi_iff.1 h).2]
 
-private theorem im_eq_zero_of_arg_add_im_eq_zero (hx : x.arg + x.im = 0) : x.im = 0 := by
-  grind [arg_neg_iff]
-
-theorem exists_arg_mul_eq_add_arg (hx : x ≠ 0) (hy : y ≠ 0) :
-    ∃ k : ℤ, (x * y).arg = x.arg + y.arg + k * (2 * π):= by
-  have h : ((x * y).arg : Real.Angle) = ((x.arg + y.arg : ℝ) : Real.Angle) := by
-    rw [arg_mul_coe_angle hx hy, Angle.coe_add]
-  obtain ⟨k, hk⟩ := Real.Angle.angle_eq_iff_two_pi_dvd_sub.1 h
-  exact ⟨k, by linarith⟩
-
-private theorem arg_add_im_eq_arg_add_of_eq (hz : z ≠ 0) (hwz : w * cexp w = z) :
-    ∃ k : ℤ, w.arg + w.im = z.arg + k * (2 * π) := by
-  have hw : w ≠ 0 := by grind
-  rw [← exp_log (show w * cexp w ≠ 0 from hwz ▸ hz), ← exp_log hz] at hwz
-  rw [exp_eq_exp_iff_exists_int] at hwz
-  obtain ⟨m, hm⟩ := hwz
-  obtain ⟨n, hn⟩ := exists_arg_mul_eq_add_arg hw (exp_ne_zero w)
-  apply congrArg im at hm
-  replace hm : w.arg + toIocMod two_pi_pos (-π) w.im + n * (2 * π) = z.arg + m * (2 * π) := by
-    simpa [log_im, hn, arg_exp] using hm
-  unfold toIocMod at hm
-  use m - n + toIocDiv two_pi_pos (-π) w.im
-  grind
+-- theorem exists_arg_mul_eq_add_arg (hx : x ≠ 0) (hy : y ≠ 0) :
+--     ∃ k : ℤ, (x * y).arg = x.arg + y.arg + k * (2 * π):= by
+--   have h : ((x * y).arg : Real.Angle) = ((x.arg + y.arg : ℝ) : Real.Angle) := by
+--     rw [arg_mul_coe_angle hx hy, Angle.coe_add]
+--   obtain ⟨k, hk⟩ := Real.Angle.angle_eq_iff_two_pi_dvd_sub.1 h
+--   exact ⟨k, by linarith⟩
 
 private theorem arg_pos_of_arg_add_im_pos (h : 0 < w.arg + w.im) : 0 < w.arg := by
   rcases lt_trichotomy w.arg 0 with h | h | h
@@ -138,70 +123,35 @@ private theorem sin_arg_ne_zero_of_arg_add_im_pos
   obtain ⟨h0, h1⟩ := arg_mem_Ioo_of_arg_add_im_pos hw harg hA
   exact (Real.sin_pos_of_pos_of_lt_pi h0 <| h1.trans_le <| min_le_right _ _).ne'
 
-private theorem exp_add_log_of_ne_zero (hx : x ≠ 0) : cexp (x + x.log) = x * cexp x := by
-  rw [exp_add, exp_log hx, mul_comm]
-
 private theorem add_log_im : (x + x.log).im = x.arg + x.im := by
   simp [log, add_comm]
 
-private theorem exists_add_log_eq_add_log (hx : x ≠ 0) (hy : y ≠ 0)
-    (h : x * cexp x = y * cexp y) :
-    ∃ i : ℤ, x + x.log = y + y.log + i * (2 * π * I) := by
-  rw [← exp_add_log_of_ne_zero hx, ← exp_add_log_of_ne_zero hy] at h
-  exact exp_eq_exp_iff_exists_int.mp h
-
-private theorem add_log_eq_of_add_log_eq
-    (h : x + log x = y + log y + i * (2 * π * I)) :
-    x.arg + x.im = y.arg + y.im + i * (2 * π) := by
-  have := congrArg im h
-  nth_rw 2 [add_im] at this
-  simp only [add_log_im] at this
-  simp at this
-  linarith
-
-private theorem add_log_eq_of_mul_exp_eq_of_lt (hx : x ≠ 0) (hy : y ≠ 0)
-    (h : x * cexp x = y * cexp y) (hlt : |(x.arg + x.im) - (y.arg + y.im)| < 2 * π) :
-    x + log x = y + log y := by
-  obtain ⟨m, hm⟩ := exists_add_log_eq_add_log hx hy h
-  rw [add_log_eq_of_add_log_eq hm, add_sub_cancel_left, abs_mul, abs_mul, abs_of_pos pi_pos,
-    abs_of_pos (a := 2) zero_lt_two, mul_lt_iff_lt_one_left two_pi_pos] at hlt
-  simp_all only [Int.abs_lt_one_iff.mp <| mod_cast hlt, Int.cast_zero, zero_mul, add_zero]
-
-private theorem arg_add_im_eq_of_mul_exp_eq_mem (hx : x ≠ 0) (hy : y ≠ 0)
-    (h : x * cexp x = y * cexp y) (hx' : x.arg + x.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π))
-      (hy' : y.arg + y.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π)) :
-    x.arg + x.im = y.arg + y.im := by
-  have := add_log_eq_of_mul_exp_eq_of_lt hx hy h (by apply abs_sub_lt_iff.mpr ⟨?_, ?_⟩ <;> grind)
-  apply congrArg im at this
-  simpa [log_im, add_comm] using this
-
-private theorem arg_mul_exp_eq_of_mem {x : ℂ} {i : ℤ} (hx : x ≠ 0)
+private theorem arg_mul_exp_eq_of_mem (hx : x ≠ 0)
     (h : x.arg + x.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π)) :
     (x * cexp x).arg = x.arg + x.im - i * (2 * π) := by
   rw [← exp_log hx, ← exp_add, mul_comm, arg_exp, add_im, log_im, toIocMod_eq_iff, exp_log hx]
   exact ⟨by grind [h.left, h.right, Real.pi_pos], i, by ring⟩
 
-private theorem mul_exp_mem_of_arg_add_im_eq {w : ℂ} {i : ℤ}
+private theorem mul_exp_mem_of_arg_add_im_eq
     (hw : w.arg + w.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π))
     (hz : w * cexp w ∈ Iio 0 ×ℂ {0}) : w.arg + w.im = (2 * i + 1) * π := by
   grind [arg_mul_exp_eq_of_mem (fun nh => by simp [nh, mem_reProdIm] at hz) hw,
     arg_eq_pi_iff.mpr hz]
 
-private theorem exp_add_log (hw : w ≠ 0) : exp (w + log w) = w * exp w := by
-  rw [add_comm, exp_add, exp_log hw]
+private theorem arg_add_im_eq_of_mul_exp_eq (hx : x ≠ 0) (hy : y ≠ 0)
+    (h : x * cexp x = y * cexp y) (hx' : x.arg + x.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π))
+    (hy' : y.arg + y.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π)) :
+    x.arg + x.im = y.arg + y.im := by
+  grind [arg_mul_exp_eq_of_mem hx hx', arg_mul_exp_eq_of_mem hy hy']
 
 private theorem mul_exp_eq_of_arg_add_im_eq (hx : x ≠ 0) (h : x.arg + x.im = (2 * i + 1) * π) :
     x * cexp x = -rexp (x + log x).re := by
-  rw [← exp_add_log hx]
+  nth_rw 1 [← exp_log hx, ← exp_add, ← add_comm]
   apply Complex.ext
-  · rw [exp_re, add_log_im, h, show (2 * i + 1) * π = i * (2 * π) + π by ring,
-      Real.cos_int_mul_two_pi_add_pi i, neg_re, ofReal_re, mul_neg_one]
-  · rw [exp_im, add_log_im, h, show (2 * i + 1) * π = (2 * i + 1 : ℤ) * π by norm_cast,
-      Real.sin_int_mul_pi _, mul_zero, neg_im, ofReal_im, neg_zero]
-
-private theorem mul_exp_mem_of_im_eq_zero (hw : w.im = 0) :
-    w * cexp w ∈ Ici (-(rexp 1)⁻¹) ×ℂ {0} := by
-  simpa [mem_reProdIm, exp_im, exp_re, hw] using neg_exp_one_inv_le_mul_exp
+  · rw [exp_re, add_log_im, h, add_mul, one_mul, mul_comm (2 : ℝ), mul_assoc]
+    rw_mod_cast [Real.cos_int_mul_two_pi_add_pi i]
+    rw [mul_neg_one]
+  · rw_mod_cast [exp_im, add_log_im, h, Real.sin_int_mul_pi (2 * i + 1), mul_zero]
 
 --  this needs annotation
 private theorem im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem {w : ℂ}
@@ -222,7 +172,7 @@ private theorem im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem {w : ℂ}
     grind [Real.sin_sub_two_pi]
   have hbc : w.im * Real.cos w.im < Real.sin w.im := by
     rcases lt_or_ge w.im (π / 2) with h | h
-    · have hc : 0 < Real.cos w.im := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], h⟩
+    · have hc : 0 < Real.cos w.im := Real.cos_pos_of_mem_Ioo ⟨by linarith [ pi_pos], h⟩
       simpa [Real.tan_eq_sin_div_cos, hc.ne'] using mul_lt_mul_of_pos_right (Real.lt_tan nh h) hc
     · nlinarith [Real.cos_nonpos_of_pi_div_two_le_of_le h (by linarith [himpi]), hsin]
   have hcore : -1 < (w + log w).re := by
@@ -233,7 +183,7 @@ private theorem im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem {w : ℂ}
     ← Real.exp_neg] at hzge
   linarith [Real.exp_le_exp.mp <| neg_le_neg_iff.mp hzge]
 
-private theorem im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem {w : ℂ}
+private theorem im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem
     (hw1 : w.arg + w.im = -π) (hw2 : w * cexp w ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
     w.im = 0 := by
   rw [← neg_eq_zero, ← conj_im]
@@ -250,103 +200,201 @@ section Solve
 
 open Real Complex ComplexConjugate Set Filter Topology
 
-variable {ρ θ : ℝ}
+variable {ρ θ ϕ : ℝ}
 
 namespace Real
 
-def LambertW.solutionArgAux (θ : ℝ) : ℝ -> ℝ := fun ϕ => (θ - ϕ) / sin ϕ
+theorem tendsto_const_sub_nhdsLT (θ : ℝ) :
+    Tendsto (fun ϕ : ℝ => θ - ϕ) (𝓝[<] θ) (𝓝[>] 0) := by
+  rw [tendsto_nhdsWithin_iff, ← sub_self θ]
+  refine ⟨tendsto_const_nhds.sub tendsto_id |>.mono_left nhdsWithin_le_nhds, ?_⟩
+  filter_upwards [self_mem_nhdsWithin] with x hx using sub_lt_sub_left (mem_Iio.mp hx) θ
 
-def LambertW.solutionNormAux (θ : ℝ) : ℝ -> ℝ := fun ϕ =>
+private theorem LambertW.tendsto_self_div_sin_nhdsGT_zero :
+    Tendsto (fun u : ℝ => u / sin u) (𝓝[>] 0) (𝓝 1) := by
+  have h1 : Tendsto (fun u : ℝ => sin u / u) (𝓝[>] 0) (𝓝 1) := by
+    simpa [slope_fun_def_field, cos_zero] using
+      (hasDerivAt_iff_tendsto_slope.mp (hasDerivAt_sin 0)).mono_left (nhdsGT_le_nhdsNE 0)
+  simpa [inv_div] using h1.inv₀ one_ne_zero
+
+private theorem tendsto_mul_exp_neg_div_two_atTop :
+    Tendsto (fun r ↦ r * rexp (-r / 2)) atTop (𝓝 0) := by
+  convert! (tendsto_pow_mul_exp_neg_atTop_nhds_zero 1 |>.comp <|
+    tendsto_id.atTop_div_const zero_lt_two).const_mul 2 using 2
+  · simp [field]
+  · rw [mul_zero]
+
+private def LambertW.solutionArgAux (θ : ℝ) : ℝ -> ℝ := fun ϕ => (θ - ϕ) / sin ϕ
+
+private def LambertW.solutionNormAux (θ : ℝ) : ℝ -> ℝ := fun ϕ =>
   solutionArgAux θ ϕ * rexp (solutionArgAux θ ϕ * cos ϕ)
 
-theorem LambertW.continuousOn_solutionArgAux {s : Set ℝ} (hs : ∀ x ∈ s, sin x ≠ 0) :
+private theorem LambertW.sin_pos_of_mem_Ioo_inf_pi (hϕ : ϕ ∈ Ioo 0 (θ ⊓ π)) : 0 < sin ϕ :=
+  sin_pos_of_pos_of_lt_pi hϕ.1 <| hϕ.2.trans_le inf_le_right
+
+private theorem LambertW.continuousOn_solutionArgAux {s : Set ℝ} (hs : ∀ x ∈ s, sin x ≠ 0) :
     ContinuousOn (solutionArgAux θ) s :=
   continuous_const.sub continuous_id |>.continuousOn |>.div continuous_sin.continuousOn hs
 
-theorem LambertW.continuousOn_solutionNormAux {s : Set ℝ} (hs : ∀ x ∈ s, sin x ≠ 0) :
+private theorem LambertW.continuousOn_solutionNormAux {s : Set ℝ} (hs : ∀ x ∈ s, sin x ≠ 0) :
     ContinuousOn (solutionNormAux θ) s :=
   letI h1 := continuousOn_solutionArgAux hs
   h1.mul (h1.mul continuous_cos.continuousOn).rexp
 
-theorem LambertW.hasDerivAt_solutionArgAux {ϕ : ℝ} (hs : sin ϕ ≠ 0) :
+private theorem LambertW.hasDerivAt_solutionArgAux (θ : ℝ) (hs : sin ϕ ≠ 0) :
     HasDerivAt (solutionArgAux θ) (-(sin ϕ + (θ - ϕ) * cos ϕ) / sin ϕ ^ 2) ϕ := by
-  have hfun : solutionArgAux θ = (fun x : ℝ => θ - x) / sin := rfl
-  have h : HasDerivAt ((fun x : ℝ => θ - x) / sin)
-      (-(sin ϕ + (θ - ϕ) * cos ϕ) / sin ϕ ^ 2) ϕ := by
-    refine ((hasDerivAt_id (x := ϕ)).const_sub θ |>.div (hasDerivAt_sin ϕ) hs).congr_deriv ?_
-    simp only [id_eq]
-    ring
-  rwa [hfun]
+  refine hasDerivAt_id ϕ |>.const_sub θ |>.div (hasDerivAt_sin ϕ) hs |>.congr_deriv ?_
+  simp only [id_eq, field, neg_add, SubNegMonoid.sub_eq_add_neg]
 
-theorem LambertW.deriv_solutionArgAux {ϕ : ℝ} (hs : sin ϕ ≠ 0) :
+private theorem LambertW.deriv_solutionArgAux {ϕ : ℝ} (hs : sin ϕ ≠ 0) :
     deriv (solutionArgAux θ) ϕ = -(sin ϕ + (θ - ϕ) * cos ϕ) / sin ϕ ^ 2 :=
-  (hasDerivAt_solutionArgAux (θ := θ) hs).deriv
+  hasDerivAt_solutionArgAux θ hs |>.deriv
 
-theorem LambertW.deriv_solutionNormAux_neg {ϕ : ℝ} (hϕ : ϕ ∈ Ioo 0 (θ ⊓ π)) :
+private theorem LambertW.deriv_solutionNormAux_neg {ϕ : ℝ} (hϕ : ϕ ∈ Ioo 0 (θ ⊓ π)) :
     deriv (solutionNormAux θ) ϕ < 0 := by
-  sorry
+  have hs₀ : 0 < sin ϕ := sin_pos_of_mem_Ioo_inf_pi hϕ
+  have := (hasDerivAt_solutionArgAux θ hs₀.ne').differentiableAt
+  calc deriv (solutionNormAux θ) ϕ = -rexp (solutionArgAux θ ϕ * cos ϕ) *
+      ((sin ϕ + (θ - ϕ) * cos ϕ) ^ 2 / sin ϕ ^ 3 + (θ - ϕ) ^ 2 / sin ϕ) := by
+        unfold solutionNormAux
+        rw [deriv_fun_mul this (by fun_prop), _root_.deriv_exp (by fun_prop),
+          deriv_fun_mul (by fun_prop) differentiableAt_cos, deriv_cos,
+          deriv_solutionArgAux hs₀.ne',
+          ← div_mul_cancel₀ (solutionArgAux θ ϕ) hs₀.ne', solutionArgAux]
+        field_simp
+        ring
+      _ < 0 := by
+        simp only [neg_mul, Left.neg_neg_iff]
+        positivity [hϕ.right.trans_le inf_le_left]
 
-theorem LambertW.strictAntiOn_solutionNormAux :
-    StrictAntiOn (solutionNormAux θ) (Ioo 0 (θ ⊓ π)) := by
-  sorry
+private theorem LambertW.strictAntiOn_solutionNormAux :
+    StrictAntiOn (solutionNormAux θ) (Ioo 0 (θ ⊓ π)) :=
+  strictAntiOn_of_deriv_neg (convex_Ioo 0 (θ ⊓ π))
+    (continuousOn_solutionNormAux fun _ hx => sin_pos_of_mem_Ioo_inf_pi hx |>.ne')
+    fun _ hϕ => deriv_solutionNormAux_neg (by rwa [interior_Ioo] at hϕ)
 
-theorem LambertW.injOn_solutionNormAux : InjOn (solutionNormAux θ) (Ioo 0 (θ ⊓ π)) :=
+private theorem LambertW.injOn_solutionNormAux : InjOn (solutionNormAux θ) (Ioo 0 (θ ⊓ π)) :=
   strictAntiOn_solutionNormAux.injOn
 
-theorem LambertW.tendsto_solutionArgAux_nhdsGT_zero (hθ : 0 < θ) :
+private theorem LambertW.tendsto_solutionArgAux_nhdsGT_zero (hθ : 0 < θ) :
     Tendsto (solutionArgAux θ) (𝓝[>] 0) atTop := by
-  sorry
+  unfold solutionArgAux
+  simpa [div_eq_mul_inv] using continuous_const.sub continuous_id |>.tendsto 0 |>.mono_left
+    nhdsWithin_le_nhds |>.pos_mul_atTop (sub_pos.mpr hθ) <|
+    tendsto_inv_nhdsGT_zero.comp tendsto_sin_nhdsGT_zero
 
-theorem LambertW.tendsto_solutionNormAux_nhdsGT_zero (hθ : 0 < θ) :
-    Tendsto (solutionNormAux θ) (𝓝[>] 0) atTop := by
-  sorry
+-- private theorem LambertW.tendsto_solutionArgAux_nhdsLT_self (hθ1 : 0 < θ) (hθ2 : θ < π) :
+--     Tendsto (solutionArgAux θ) (𝓝[<] θ) (𝓝 0) := by
+--   change Tendsto ((fun ϕ : ℝ => θ - ϕ) / sin) (𝓝[<] θ) (𝓝 0)
+--   simpa using ((tendsto_const_sub_nhdsLT θ).mono_right nhdsWithin_le_nhds).div
+--     ((continuous_sin.tendsto θ).mono_left nhdsWithin_le_nhds)
+--     (sin_pos_of_pos_of_lt_pi hθ1 hθ2).ne'
 
-theorem LambertW.tendsto_solutionArgAux_nhdsLT_pi (hθ : π < θ) :
-    Tendsto (solutionArgAux θ) (𝓝[<] π) atTop := by
-  sorry
+private theorem LambertW.tendsto_solutionArgAux_nhdsLT_pi (hθ : π < θ) :
+    Tendsto (solutionArgAux θ) (𝓝[<] π) atTop :=
+  continuous_const.sub continuous_id |>.tendsto π |>.mono_left
+    nhdsWithin_le_nhds |>.pos_mul_atTop (sub_pos.mpr hθ) <|
+      tendsto_inv_nhdsGT_zero.comp tendsto_sin_nhdsLT_pi
 
-theorem LambertW.tendsto_solutionNormAux_nhdsLT_pi (hθ : π < θ) :
-    Tendsto (solutionNormAux θ) (𝓝[<] π) (𝓝 0) := by
-  sorry
-
-theorem LambertW.tendsto_solutionArgAux_pi_nhdsLT_pi :
+private theorem LambertW.tendsto_solutionArgAux_pi_nhdsLT_pi :
     Tendsto (solutionArgAux π) (𝓝[<] π) (𝓝 1) := by
-  sorry
+  unfold solutionArgAux
+  simpa [Function.comp_def] using tendsto_self_div_sin_nhdsGT_zero.comp (tendsto_const_sub_nhdsLT π)
 
-theorem LambertW.tendsto_solutionNormAux_pi_nhdsLT_pi :
-    Tendsto (solutionNormAux π) (𝓝[<] π) (𝓝 (rexp (-1))) := by
-  sorry
+private theorem LambertW.tendsto_solutionNormAux_nhdsGT_zero (hθ : 0 < θ) :
+    Tendsto (solutionNormAux θ) (𝓝[>] 0) atTop := by
+  refine tendsto_atTop_mono' (𝓝[>] 0) ?_ <| tendsto_solutionArgAux_nhdsGT_zero hθ
+  filter_upwards [Ioo_mem_nhdsGT (a := θ ⊓ (π / 2)) (by grind [pi_pos])] with ϕ hϕ
+  nth_rw 1 [← mul_one (solutionArgAux θ ϕ)]
+  have hrϕ : 0 ≤ solutionArgAux θ ϕ := div_nonneg (by grind) (by grind [sin_pos_of_pos_of_lt_pi])
+  apply mul_le_mul_of_nonneg_left (one_le_exp (mul_nonneg hrϕ ?_)) hrϕ
+  grind [cos_pos_of_mem_Ioo]
 
-theorem LambertW.existsUnique_solutionNormAux_pi (hρ : (rexp 1)⁻¹ < ρ) :
-    ∃! φ ∈ Ioo 0 π, solutionNormAux π φ = ρ := by
-  sorry
+private theorem LambertW.tendsto_solutionNormAux_nhdsLT_self (hθ1 : 0 < θ) (hθ2 : θ < π) :
+    Tendsto (solutionNormAux θ) (𝓝[<] θ) (𝓝 0) := by
+  have : ContinuousAt (solutionArgAux θ) θ :=
+    ContinuousAt.div (by fun_prop) (by fun_prop) <| sin_pos_of_pos_of_lt_pi hθ1 hθ2 |>.ne'
+  replace this : ContinuousAt (solutionNormAux θ) θ :=
+    this.mul <| this.mul continuous_cos.continuousAt |>.rexp
+  convert! this.tendsto.mono_left nhdsWithin_le_nhds using 2
+  simp [solutionNormAux, solutionArgAux]
 
-theorem LambertW.existsUnique_solutionNormAux (hθ1 : θ ≠ π) (hθ2 : 0 < θ) (hρ : 0 < ρ) :
-    ∃! φ ∈ Ioo 0 (θ ⊓ π), solutionNormAux θ φ = ρ := by
-  sorry
+private theorem LambertW.tendsto_solutionNormAux_nhdsLT_pi (hθ : π < θ) :
+    Tendsto (solutionNormAux θ) (𝓝[<] π) (𝓝 0) := by
+  apply squeeze_zero' (g := fun ϕ => solutionArgAux θ ϕ * rexp (-(solutionArgAux θ ϕ) / 2))
+  · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using
+      mul_nonneg (div_nonneg (by grind) (by grind [sin_pos_of_pos_of_lt_pi])) (exp_nonneg _)
+  · filter_upwards [Ioo_mem_nhdsLT (a := π - π / 3) (by grind [pi_pos])] with ϕ hϕ
+    have hr : 0 ≤ solutionArgAux θ ϕ := div_nonneg (by grind [hϕ.right]) <| le_of_lt <|
+      sin_pos_of_pos_of_lt_pi (by grind [pi_pos, hϕ.left]) hϕ.right
+    have hcos : cos ϕ ≤ -(1 / 2) := by
+      grw [cos_le_cos_of_nonneg_of_le_pi (by grind) hϕ.right.le hϕ.left.le,
+        cos_pi_sub, cos_pi_div_three]
+    exact mul_le_mul_of_nonneg_left (exp_le_exp.mpr (by nlinarith)) hr
+  · apply Filter.Tendsto.comp (g := fun r => r * rexp (-r / 2)) (y := atTop)
+      tendsto_mul_exp_neg_div_two_atTop (tendsto_solutionArgAux_nhdsLT_pi hθ)
+
+private theorem LambertW.tendsto_solutionNormAux_nhdsLT_inf_pi (hθ1 : θ ≠ π) (hθ2 : 0 < θ) :
+    Tendsto (solutionNormAux θ) (𝓝[<] (θ ⊓ π)) (𝓝 0) := by
+  rcases le_or_gt π θ with hθ' | hθ'
+  · rw [min_eq_right hθ']
+    exact tendsto_solutionNormAux_nhdsLT_pi <| lt_of_le_of_ne hθ' <| Ne.symm hθ1
+  · rw [min_eq_left_of_lt hθ']
+    exact tendsto_solutionNormAux_nhdsLT_self hθ2 hθ'
+
+private theorem LambertW.tendsto_solutionNormAux_pi_nhdsLT_pi :
+    Tendsto (solutionNormAux π) (𝓝[<] π) (𝓝 (rexp 1)⁻¹) := by
+  unfold solutionNormAux
+  simpa [exp_neg] using tendsto_solutionArgAux_pi_nhdsLT_pi.mul <|
+    continuous_exp.tendsto (1 * -1) |>.comp <| tendsto_solutionArgAux_pi_nhdsLT_pi.mul <|
+      tendsto_nhds_of_tendsto_nhdsWithin tendsto_cos_nhdsLT_pi
+
+private theorem LambertW.existsUnique_solutionNormAux_pi (hρ : (rexp 1)⁻¹ < ρ) :
+    ∃! ϕ ∈ Ioo 0 π, solutionNormAux π ϕ = ρ := by
+  obtain ⟨φ, hφ, hφρ⟩ :=
+    isPreconnected_Ioo.intermediate_value_Ioi
+      (le_principal_iff.mpr (Ioo_mem_nhdsLT pi_pos))
+        (le_principal_iff.mpr (Ioo_mem_nhdsGT pi_pos))
+          (continuousOn_solutionNormAux fun x hx => sin_pos_of_mem_Ioo hx |>.ne')
+            tendsto_solutionNormAux_pi_nhdsLT_pi
+              (tendsto_solutionNormAux_nhdsGT_zero pi_pos) hρ
+  exact ⟨φ, ⟨hφ, hφρ⟩, fun φ' hφ' => (min_self π ▸ injOn_solutionNormAux (θ := π))
+    hφ'.1 hφ (hφ'.2.trans hφρ.symm)⟩
+
+private theorem LambertW.existsUnique_solutionNormAux (hθ1 : θ ≠ π) (hθ2 : 0 < θ) (hρ : 0 < ρ) :
+    ∃! ϕ ∈ Ioo 0 (θ ⊓ π), solutionNormAux θ ϕ = ρ := by
+  obtain ⟨ϕ, hϕ⟩ : ∃ ϕ ∈ Ioo 0 (min θ π), solutionNormAux θ ϕ = ρ :=
+    isPreconnected_Ioo.intermediate_value_Ioi
+      (le_principal_iff.mpr <| Ioo_mem_nhdsLT <| lt_min hθ2 pi_pos)
+        (le_principal_iff.mpr <| Ioo_mem_nhdsGT <| lt_min hθ2 pi_pos)
+          (continuousOn_solutionNormAux fun x hx => sin_pos_of_mem_Ioo_inf_pi hx |>.ne')
+            (tendsto_solutionNormAux_nhdsLT_inf_pi hθ1 hθ2)
+              (tendsto_solutionNormAux_nhdsGT_zero hθ2) hρ
+  exact ⟨ϕ, hϕ, fun _ hϕ' => Eq.symm <|
+    injOn_solutionNormAux hϕ.left hϕ'.left <| hϕ.right ▸ hϕ'.right.symm⟩
 
 private theorem LambertW.existsUnique_mem_Ioo_pi (hρ : (rexp 1)⁻¹ < ρ) :
-    ∃! φ ∈ Ioo 0 π, (π - φ) / sin φ * rexp ((π - φ) / sin φ * cos φ) = ρ := by
-  simpa only [solutionNormAux, solutionArgAux] using existsUnique_solutionNormAux_pi hρ
+    ∃! ϕ ∈ Ioo 0 π, (π - ϕ) / sin ϕ * rexp ((π - ϕ) / sin ϕ * cos ϕ) = ρ :=
+  existsUnique_solutionNormAux_pi hρ
 
---  this needs annotations
+--  these need annotations
 private theorem LambertW.existsUnique_mem_Ioo (hθ1 : θ ≠ π) (hθ2 : 0 < θ) (hρ : 0 < ρ) :
     ∃! ϕ ∈ Ioo 0 (θ ⊓ π),
-      (θ - ϕ) / sin ϕ * rexp ((θ - ϕ) / sin ϕ * cos ϕ) = ρ := by
-  simpa only [solutionNormAux, solutionArgAux] using existsUnique_solutionNormAux hθ1 hθ2 hρ
+      (θ - ϕ) / sin ϕ * rexp ((θ - ϕ) / sin ϕ * cos ϕ) = ρ :=
+  existsUnique_solutionNormAux hθ1 hθ2 hρ
 
 end Real
 
 namespace Complex
 
---  this needs annotations
+--  these need annotations
 private theorem LambertW.existsUnique_arg_add_im_eq_of_pos (hθ1 : θ ≠ π) (hθ2 : 0 < θ)
     (hρ : 0 < ρ) : ∃! w : ℂ, w.arg + w.im = θ ∧ w * cexp w = ρ * cexp (θ * I) := by
   set r : ℝ -> ℝ := fun ϕ => (θ - ϕ) / ϕ.sin
-  obtain ⟨ϕ, ⟨hϕ, hrρ⟩, H⟩ := Real.LambertW.existsUnique_mem_Ioo hθ1 hθ2 hρ
+  obtain ⟨ϕ, ⟨hϕ, hrρ⟩, H⟩ := LambertW.existsUnique_mem_Ioo hθ1 hθ2 hρ
   change r ϕ * rexp (r ϕ * ϕ.cos) = ρ at hrρ
   have hsϕ : 0 < ϕ.sin :=
-    Real.sin_pos_of_pos_of_lt_pi hϕ.left <| hϕ.right.trans_le <| min_le_right θ π
+    sin_pos_of_pos_of_lt_pi hϕ.left <| hϕ.right.trans_le <| min_le_right θ π
   have hr : 0 < r ϕ := by
     unfold r
     refine div_pos_iff_of_pos_left ?_ |>.mpr hsϕ
@@ -369,7 +417,7 @@ private theorem LambertW.existsUnique_arg_add_im_eq_of_pos (hθ1 : θ ≠ π) (h
     have hθ'2 : 0 < w'.arg + w'.im := hw'ϕ ▸ hθ2
     have hw'r : ‖w'‖ = r (w'.arg) := by
       grind [eq_div_iff <| sin_arg_ne_zero_of_arg_add_im_pos hw'₀ hw'ϕ_ne_pi hθ'2, norm_mul_sin_arg]
-    have hρ' : r (w'.arg) * rexp (r (w'.arg) * Real.cos w'.arg) = ρ := by
+    have hρ' : r (w'.arg) * rexp (r (w'.arg) * w'.arg.cos) = ρ := by
       have hc : ‖w' * cexp w'‖ = ‖ρ * cexp (θ * I)‖ := congrArg norm hw'ρ
       rw [norm_mul, norm_exp, ← norm_mul_cos_arg, hw'r] at hc
       simpa [norm_exp, norm_real, abs_of_pos hρ] using hc
@@ -438,7 +486,7 @@ private theorem LambertW.existsUnique_arg_add_im_eq (hθ1 : θ ≠ π) (hθ2 : �
     ∃! w : ℂ, w.arg + w.im = θ ∧ w * cexp w = ρ * cexp (θ * I) := by
   rcases lt_trichotomy θ 0 with hθ' | rfl | hθ'
   · obtain ⟨w, ⟨hw1, hw2⟩, H⟩ : ∃! w : ℂ, w.arg + w.im = -θ ∧ w * cexp w = ρ * cexp (↑(-θ) * I) :=
-      LambertW.existsUnique_arg_add_im_eq_of_pos (θ := -θ) (by grind) (by linarith) hρ
+      existsUnique_arg_add_im_eq_of_pos (θ := -θ) (by grind) (by linarith) hρ
     refine ⟨conj w, ⟨?_, ?_⟩, ?_⟩
     · simp [arg_conj, show w.arg ≠ π by grind [arg_eq_pi_iff], ← neg_add, hw1]
     · rw [exp_conj, ← map_mul, hw2, map_mul, conj_ofReal,
@@ -459,8 +507,7 @@ private theorem LambertW.existsUnique_arg_add_im_eq (hθ1 : θ ≠ π) (hθ2 : �
         rw [← Real.exp_log hρ, ← hx.right, Real.exp_add, Real.exp_log hx.left, mul_comm]
       · simp
     · intro x' ⟨hx'1, hx'2⟩
-      have him : x'.im = 0 := im_eq_zero_of_arg_add_im_eq_zero hx'1
-      have harg : x'.arg = 0 := by grind
+      have him : x'.im = 0 := by grind [arg_neg_iff]
       rw [Complex.ext (z := x') (w := x'.re) rfl him] at hx'2 ⊢
       replace hx'2 := congrArg re hx'2
       simp only [mul_re, ofReal_re, exp_ofReal_re, ofReal_im, exp_ofReal_im, mul_zero,
@@ -470,7 +517,7 @@ private theorem LambertW.existsUnique_arg_add_im_eq (hθ1 : θ ≠ π) (hθ2 : �
       rw [Real.log_mul this.ne' (Real.exp_ne_zero x'.re), Real.log_exp, add_comm] at hx'2
       specialize H x'.re ⟨this, hx'2⟩
       rw [← H]
-  · exact LambertW.existsUnique_arg_add_im_eq_of_pos hθ1 hθ' hρ
+  · exact existsUnique_arg_add_im_eq_of_pos hθ1 hθ' hρ
 
 end Complex
 
@@ -537,13 +584,11 @@ def LambertW.range (k : ℤ) : Set ℂ := match k with
   | 0 => {w | w.arg + w.im ∈ Ioc (-π) π} \ Iio (-1) ×ℂ {0}
   | -1 => {w | w.arg + w.im ∈ Ioc (-3 * π) (-π)} ∪ Iic (-1) ×ℂ {0}
   | _ => {w | w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π)}
-  -- {w | LambertW.StrictAboveBoundary k w ∧ LambertW.BelowBondary k w} ∪ {w | w = -1 ∧ k = 0}
 
 /-- TODO doc -/
 def LambertW.openRange (k : ℤ) : Set ℂ :=
   if k = 0 then {w | w.arg + w.im ∈ Ioo (-π) π} ∪ Ioo (-1) 0 ×ℂ {0} else
     {w | w.arg + w.im ∈ Ioo ((2 * k - 1) * π) ((2 * k + 1) * π)}
-  -- {w | LambertW.StrictAboveBoundary k w ∧ LambertW.StrictBelowBondary k w}
 
 @[simp]
 theorem LambertW.openRange_zero :
@@ -613,8 +658,8 @@ theorem LambertW.mem_range_iff_of_mem (hw : w ∈ Iic (-1) ×ℂ {0}) :
   · intro h
     rcases (show k = 0 ∨ k = -1 ∨ (k ≠ 0 ∧ k ≠ -1) by tauto) with rfl | rfl | ⟨hk, hk'⟩
     · refine Or.inr ⟨rfl, le_antisymm hw.left ?_⟩
-      by_contra nh
-      exact mem_range_zero_iff.mp h |>.right ⟨not_le.mp nh, hw.right⟩
+      by_contra! nh
+      exact mem_range_zero_iff.mp h |>.right ⟨nh, hw.right⟩
     · exact Or.inl rfl
     · rw [mem_range_iff_of_ne hk hk', arg_add_im_of_mem hw] at h
       simp [field] at h
@@ -645,38 +690,83 @@ theorem LambertW.mem_openRange_iff_of_ne (hk : k ≠ 0) :
     w ∈ openRange k ↔ w.arg + w.im ∈ Ioo ((2 * (k : ℝ) - 1) * π) ((2 * (k : ℝ) + 1) * π) := by
   simp [openRange_of_ne_zero hk]
 
+private theorem LambertW.arg_add_im_mem_Ioo_of_mem_range_zero_of_mul_exp_mem
+    (hw : w ∈ range 0) (hz : w * cexp w ∈ Complex.slitPlane) :
+    w.arg + w.im ∈ Ioo (-π) π := by
+  refine ⟨hw.left.left, lt_of_le_of_ne hw.left.right
+    fun nh => mem_slitPlane_iff_arg.mp hz |>.left ?_⟩
+  have := arg_mul_exp_eq_of_mem (x := w) (i := 0)
+    (fun nh => by simp [nh] at hz) (by simpa using hw.left)
+  rwa [nh, Int.cast_zero, zero_mul, sub_zero] at this
+
+private theorem LambertW.arg_add_im_eq_pi_of_mem_range_zero
+    (hw1 : w ∈ range 0) (hz : w * cexp w ∈ Iio 0 ×ℂ {0}) :
+    w.arg + w.im = π := by
+  grind [mul_exp_mem_of_arg_add_im_eq (w := w) (i := 0) (by simpa using hw1.left)]
+
+private theorem LambertW.im_pos_of_arg_add_im_eq_pi_of_mul_exp_mem
+    (hw2 : w.arg + w.im = π) (hz : w * cexp w ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
+    0 < w.im := by
+  apply lt_of_le_of_ne <| arg_nonneg_iff.mp <| (arg_pos_of_arg_add_im_pos <| hw2 ▸ pi_pos).le
+  intro nh
+  rw [← nh, add_zero, arg_eq_pi_iff] at hw2
+  simp only [mem_reProdIm, mem_Iio, mem_singleton_iff] at hz
+  apply hz.left.not_ge
+  simpa [nh.symm, exp_re] using neg_exp_one_inv_le_mul_exp
+
+private theorem LambertW.mem_of_mem_range_zero_of_mul_exp_mem
+    (hw1 : w ∈ range 0) (hw2 : w.arg + w.im = π) (hz : w * cexp w ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
+    w ∈ Ico (-1) 0 ×ℂ {0} := by
+  have := im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem hw2 hz
+  rw [this, add_zero, arg_eq_pi_iff] at hw2
+  refine ⟨⟨?_, hw2.left⟩, this⟩
+  simpa [hw2, mem_reProdIm] using hw1.right
+
+private theorem LambertW.arg_add_im_mem_Ioo_of_mem_range_neg_one_of_mul_exp_notMem
+    (hw : w ∈ range (-1)) (hz : w * cexp w ∉ Iio 0 ×ℂ {0}) :
+    w.arg + w.im ∈ Ioo (-3 * π) (-π) := by
+  replace hw : w.arg + w.im ∈ Ioc (-3 * π) (-π) := by
+    apply mem_range_neg_one_iff.mp hw |>.resolve_right fun nh => hz ?_
+    simp [mem_reProdIm, exp_re, exp_im, nh.right, mul_neg_iff, Real.exp_pos w.re, LT.lt.not_gt]
+    grind
+  refine ⟨hw.left, lt_of_le_of_ne hw.right fun nh => ?_⟩
+  have := arg_mul_exp_eq_of_mem (x := w) (i := -1)
+    (fun nh => by simp [nh, pi_pos.not_ge] at hw) (by simp [nh, field]; norm_num)
+  rw [nh] at this
+  conv_rhs at this => ring_nf
+  exact hz <| arg_eq_pi_iff.mp this
+
+private theorem LambertW.arg_add_im_mem_Ioc_of_mem_range_neg_one_of_mul_exp_mem
+    (hw : w ∈ range (-1)) (hz : w * cexp w ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
+    w.arg + w.im ∈ Ioc (-3 * π) (-π) := mem_range_neg_one_iff.mp hw |>.resolve_right <| fun nh => by
+  absurd hz.left
+  simp [exp_im, exp_re, nh, neg_exp_one_inv_le_mul_exp]
+
+private theorem LambertW.mem_Iic_of_mem_range_neg_one_of_mul_exp_mem
+    (hw : w ∈ range (-1)) (hz : w * cexp w ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
+    w ∈ Iic (-1) ×ℂ {0} := mem_range_neg_one_iff.mp hw |>.resolve_left <| fun nh => by
+  have := arg_mul_exp_eq_of_mem (x := w) (i := -1)
+    (fun nh => by simp [mem_reProdIm, nh] at hz) (by grind)
+  rw [arg_eq_pi_iff (z := w * cexp w) |>.mpr (by grind [mem_reProdIm.mp hz])] at this
+  replace := im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem (by grind) hz
+  grind [arg_mem_Ioc]
+
 private theorem LambertW.existsUnique_eq_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     ∃! w : ℂ, w.arg + w.im = π ∧ w * cexp w = z ∧ w.im > 0 := by
   set θ := π with hθ
   set ρ := ‖z‖
-  have hz₀ : z ≠ 0 := fun nh => by simp [nh, mem_reProdIm, Real.exp_pos 1 |>.not_gt] at hz
   have hρ : (rexp 1)⁻¹ < ‖z‖ := by
     rw [norm_eq_sqrt_sq_add_sq, hz.right, zero_pow (by omega), add_zero, sqrt_sq_eq_abs,
       abs_of_neg, lt_neg]
     · exact hz.left
     · apply hz.left.trans
       simp [exp_pos]
-  have hargz : z.arg = π := arg_eq_pi_iff.mpr ⟨hz.left.trans (by simp [Real.exp_pos]), hz.right⟩
-  have hθz : cexp (θ * I) = cexp (z.arg * I) := by rw [hargz]
-  have hz' : z = ρ * cexp (θ * I) := by rw [← norm_mul_exp_arg_mul_I z, hθz]
-  obtain ⟨w, ⟨hw, hwz⟩, H⟩ := LambertW.existsUnique_arg_add_im_eq_pi hρ
-  refine ⟨w, ⟨hw, hz' ▸ hwz⟩, ?_⟩
-  intro w' ⟨hw', hw'z, hw'im⟩
-  refine H w' ⟨?_, ?_, hw'im⟩
-  · have hw'₀ : w' ≠ 0 := by grind
-    nth_rw 1 [← exp_log hz₀, ← exp_log hw'₀, ← exp_add, add_comm] at hw'z
-    rw [exp_eq_exp_iff_exists_int] at hw'z
-    obtain ⟨k', hk'⟩ := hw'z
-    apply congrArg im at hk'
-    rw [add_im, log_im, add_im, log_im, add_comm] at hk'
-    simp only [mul_im, intCast_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero,
-      sub_zero, I_im, mul_one, zero_mul, add_zero, I_re, intCast_im, sub_self] at hk'
-    suffices k' = 0 by grind
-    rw [hk', hargz] at hw'
-    clear * - hw'
-    simpa [θ] using hw'
-  · rw [← norm_mul_exp_arg_mul_I z] at hw'z
-    rw [hw'z, hθz]
+  have hz' : z = ρ * cexp (θ * I) := by
+    rw [← norm_mul_exp_arg_mul_I z,
+      arg_eq_pi_iff.mpr ⟨hz.left.trans (by simp [Real.exp_pos]), hz.right⟩]
+  obtain ⟨w, ⟨hw, hwz⟩, H⟩ := existsUnique_arg_add_im_eq_pi hρ
+  exact ⟨w, ⟨hw, hz' ▸ hwz⟩, fun w' ⟨hw', hw'z, hw'im⟩ =>
+    H w' ⟨hw', by grind [norm_mul_exp_arg_mul_I], hw'im⟩⟩
 
 private theorem LambertW.existsUnique_mem_Ico_exp_eq (hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
     ∃! w : ℂ, w ∈ Ico (-1) 0 ×ℂ {0} ∧ w * cexp w = z := by
@@ -698,7 +788,7 @@ private theorem LambertW.existsUnique_mem_Iic_exp_eq (hz : z ∈ Ico (-(rexp 1)�
 
 private theorem LambertW.existsUnique_eq_neg_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     ∃! w : ℂ, w.arg + w.im = -π ∧ w * cexp w = z := by
-  obtain ⟨w, ⟨hw, hwz, hwim⟩, H⟩ := LambertW.existsUnique_eq_pi_mul_exp_eq hz
+  obtain ⟨w, ⟨hw, hwz, hwim⟩, H⟩ := existsUnique_eq_pi_mul_exp_eq hz
   refine ⟨conj w, ⟨?_, ?_⟩, ?_⟩
   · rw [arg_conj, conj_im, ite_eq_right, ← hw, neg_add]
     grind
@@ -728,27 +818,8 @@ private theorem LambertW.existsUnique_eq_mul_exp_eq
   have hθ2 : θ ≠ -π := by
     rcases (show k ≤ -2 ∨ k ≥ 1 by omega) with hk | hk <;> [apply ne_of_lt; apply ne_of_gt]
       <;> grw [hθ, hk] <;> grind [pi_pos]
-  obtain ⟨w, ⟨hw, hwz⟩, H⟩ := LambertW.existsUnique_arg_add_im_eq hθ1 hθ2 <| norm_pos_iff.mpr hz₀
-  refine ⟨w, ⟨hw, hz' ▸ hwz⟩, ?_⟩
-  intro w' ⟨hw', hw'z⟩
-  refine H w' ⟨?_, ?_⟩
-  · have hw'₀ : w' ≠ 0 := by grind
-    nth_rw 1 [← exp_log hz₀, ← exp_log hw'₀, ← exp_add, add_comm]  at hw'z
-    rw [exp_eq_exp_iff_exists_int] at hw'z
-    obtain ⟨k', hk'⟩ := hw'z
-    apply congrArg im at hk'
-    rw [add_im, log_im, add_im, log_im, add_comm] at hk'
-    simp only [mul_im, intCast_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero,
-      sub_zero, I_im, mul_one, zero_mul, add_zero, I_re, intCast_im, sub_self] at hk'
-    suffices k' = k by grind
-    rw [hk', hargz] at hw'
-    clear * - hw'
-    rcases lt_trichotomy k' k with nh | rfl | nh
-    · nlinarith [show 1 ≤ (k : ℝ) - (k' : ℝ) from mod_cast by omega, pi_pos]
-    · rfl
-    · nlinarith [show 1 ≤ (k' : ℝ) - (k : ℝ) from mod_cast by omega, pi_pos]
-  · rw [← norm_mul_exp_arg_mul_I z] at hw'z
-    rw [hw'z, hθz]
+  obtain ⟨w, ⟨hw, hwz⟩, H⟩ := existsUnique_arg_add_im_eq hθ1 hθ2 <| norm_pos_iff.mpr hz₀
+  exact ⟨w, ⟨hw, hz' ▸ hwz⟩, fun w' ⟨hw', hw'z⟩ => H w' ⟨hw', by grind [norm_mul_exp_arg_mul_I]⟩⟩
 
 private theorem LambertW.existsUnique_mem_Ioo_mul_exp_eq (k : ℤ) (hz : z ∈ Complex.slitPlane) :
     ∃! w : ℂ, w.arg + w.im ∈ Ioo ((2 * k - 1) * π) ((2 * k + 1) * π) ∧ w * cexp w = z := by
@@ -757,8 +828,7 @@ private theorem LambertW.existsUnique_mem_Ioo_mul_exp_eq (k : ℤ) (hz : z ∈ C
   have hθz : cexp (θ * I) = cexp (z.arg * I) := by
     rw [hθ, ofReal_add, add_mul, ofReal_mul, ofReal_intCast, ofReal_mul, ofReal_ofNat,
       mul_assoc, exp_periodic.int_mul k]
-  have hz' : z = ρ * cexp (θ * I) := by
-    rw [← norm_mul_exp_arg_mul_I z, hθz]
+  have hz' : z = ρ * cexp (θ * I) := by rw [← norm_mul_exp_arg_mul_I z, hθz]
   have hθ' : z.arg ∈ Ioo (-π) π :=
     ⟨arg_mem_Ioc z |>.left, lt_of_le_of_ne (arg_mem_Ioc z |>.right) <| slitPlane_arg_ne_pi hz⟩
   have hθ1 : θ ≠ π := by
@@ -767,35 +837,16 @@ private theorem LambertW.existsUnique_mem_Ioo_mul_exp_eq (k : ℤ) (hz : z ∈ C
   have hθ2 : θ ≠ -π := by
     rcases (show k ≤ -1 ∨ k ≥ 0 by omega) with hk | hk <;> [apply ne_of_lt; apply ne_of_gt]
       <;> grw [hθ, hk] <;> grind
-  obtain ⟨w, ⟨hw, hwz⟩, H⟩ := LambertW.existsUnique_arg_add_im_eq hθ1 hθ2
+  obtain ⟨w, ⟨hw, hwz⟩, H⟩ := existsUnique_arg_add_im_eq hθ1 hθ2
     (norm_pos_iff.mpr <| slitPlane_ne_zero hz)
-  refine ⟨w, by grind, ?_⟩
-  intro w' ⟨hw', hw'z⟩
-  refine H w' ⟨?_, ?_⟩
-  · have hz₀ : z ≠ 0 := slitPlane_ne_zero hz
-    have hw'₀ : w' ≠ 0 := by grind
-    nth_rw 1 [← exp_log hz₀, ← exp_log hw'₀, ← exp_add, add_comm]  at hw'z
-    rw [exp_eq_exp_iff_exists_int] at hw'z
-    obtain ⟨k', hk'⟩ := hw'z
-    apply congrArg im at hk'
-    rw [add_im, log_im, add_im, log_im, add_comm] at hk'
-    simp only [mul_im, intCast_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero,
-      sub_zero, I_im, mul_one, zero_mul, add_zero, I_re, intCast_im, sub_self] at hk'
-    suffices k' = k by grind
-    rw [hk', add_mem_Ioo_iff_left] at hw'
-    clear * - hw' hθ'
-    simp only [mem_Ioo] at hθ' hw'
-    rcases lt_trichotomy k' k with nh | rfl | nh
-    · nlinarith [show 1 ≤ (k : ℝ) - (k' : ℝ) from mod_cast by omega]
-    · rfl
-    · nlinarith [show 1 ≤ (k' : ℝ) - (k : ℝ) from mod_cast by omega]
-  · rw [← norm_mul_exp_arg_mul_I z] at hw'z
-    rw [hw'z, hθz]
+  refine ⟨w, by grind, fun w' ⟨hw', hw'z⟩ => H w' ⟨?_, ?_⟩⟩
+  · grind [arg_mul_exp_eq_of_mem (by grind [slitPlane_ne_zero]) ⟨hw'.left, hw'.right.le⟩]
+  · grind [norm_mul_exp_arg_mul_I]
 
 theorem LambertW.image_mul_exp_range_zero : (fun w => w * cexp w) '' range 0 = univ := by
   refine eq_univ_iff_forall.mpr fun z => ?_
   by_cases hz : z = 0
-  · use 0; simp [hz]
+  · exact ⟨0, by simp [hz]⟩
   by_cases hz' : z ∈ Iio 0 ×ℂ {0}
   case neg =>
     replace hz : z ∈ Complex.slitPlane := by
@@ -807,8 +858,7 @@ theorem LambertW.image_mul_exp_range_zero : (fun w => w * cexp w) '' range 0 = u
     have hw' : w ∉ Iio (-1) ×ℂ {0} := by
       simp only [mem_reProdIm, mem_Iio, mem_singleton_iff, not_and]
       rintro hre him
-      rw [arg_eq_pi_iff.mpr ⟨by linarith, him⟩, him, add_zero, lt_self_iff_false] at hwr
-      exact hwr.elim
+      grind [arg_eq_pi_iff.mpr ⟨by linarith, him⟩]
     use w, ⟨⟨hwl, hwr.le⟩, hw'⟩, hwz
   rcases lt_or_ge z.re (-(rexp 1)⁻¹) with hz'' | hz''
   · replace hz'' : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0} := by
@@ -820,7 +870,7 @@ theorem LambertW.image_mul_exp_range_zero : (fun w => w * cexp w) '' range 0 = u
   · replace hz'' : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0} := by
       simp [mem_reProdIm] at hz' ⊢
       tauto
-    obtain ⟨w, ⟨hw, hwz⟩, -⟩ := LambertW.existsUnique_mem_Ico_exp_eq hz''
+    obtain ⟨w, ⟨hw, hwz⟩, -⟩ := existsUnique_mem_Ico_exp_eq hz''
     simp [mem_reProdIm] at hw
     have hw' : w.arg + w.im = π :=
       arg_add_im_eq_pi_of_arg_eq_pi <| arg_eq_pi_iff.mpr ⟨hw.left.right, hw.right⟩
@@ -832,7 +882,7 @@ theorem LambertW.image_mul_exp_range_neg_one : (fun w => w * cexp w) '' range (-
   · rintro _ ⟨w, hw, rfl⟩
     simp only [mem_compl_iff, mem_singleton_iff, mul_eq_zero, exp_ne_zero, or_false]
     rintro rfl
-    simp_all
+    simp at hw
   intro z hz
   by_cases hz' : z ∈ Iio 0 ×ℂ {0}
   case neg =>
@@ -842,7 +892,7 @@ theorem LambertW.image_mul_exp_range_neg_one : (fun w => w * cexp w) '' range (-
     obtain ⟨w, ⟨⟨hwl, hwr⟩, hwz⟩, -⟩ := existsUnique_mem_Ioo_mul_exp_eq (-1) hz
     simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, mul_neg, mul_one, mem_image,
       mem_range_neg_one_iff, neg_mul, mem_Ioc] at hwl hwr ⊢
-    use w, Or.inl ⟨by linarith, by linarith⟩, hwz
+    use w, Or.inl ⟨by grind, by grind⟩, hwz
   rcases le_or_gt (-(rexp 1)⁻¹) z.re with hz'' | hz''
   · replace hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0} := by
       simp [mem_reProdIm] at hz' ⊢
@@ -850,13 +900,13 @@ theorem LambertW.image_mul_exp_range_neg_one : (fun w => w * cexp w) '' range (-
     obtain ⟨w, ⟨hw, hwz⟩, -⟩ := existsUnique_mem_Iic_exp_eq hz
     simp only [Int.reduceNeg, mem_image, mem_range_neg_one_iff, neg_mul, mem_Ioc]
     simp only [mem_reProdIm, mem_singleton_iff] at hw
-    use w, Or.inr ⟨hw.left, hw.right⟩, hwz
+    use w, Or.inr hw, hwz
   · replace hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0} := by
       simp [mem_reProdIm] at hz' ⊢
       tauto
     obtain ⟨w, ⟨hw, hwz⟩, -⟩ := existsUnique_eq_neg_pi_mul_exp_eq hz
     simp only [Int.reduceNeg, mem_image, mem_range_neg_one_iff, neg_mul, mem_Ioc]
-    use w, Or.inl ⟨by rw [hw]; linarith [pi_pos], hw.le⟩, hwz
+    use w, Or.inl ⟨by grind [pi_pos], hw.le⟩, hwz
 
 theorem LambertW.image_mul_exp_range_of_ne_zero (hk : k ≠ 0) (hk' : k ≠ -1) :
     (fun w => w * cexp w) '' range k = {0}ᶜ := by
@@ -867,12 +917,12 @@ theorem LambertW.image_mul_exp_range_of_ne_zero (hk : k ≠ 0) (hk' : k ≠ -1) 
     simp_all
   intro z hz
   suffices ∃ w : ℂ, w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) ∧ w * cexp w = z by
-    obtain ⟨w, ⟨hwl, hwr⟩, hwz⟩ := this
-    simp only [mem_image, mem_range_iff_of_ne hk hk', mem_Ioc]
+    obtain ⟨w, hw, hwz⟩ := this
+    simp only [mem_image, mem_range_iff_of_ne hk hk']
     use w
   by_cases hz' : z ∈ Iio 0 ×ℂ {0}
   · obtain ⟨w, ⟨hw, hwz⟩, -⟩ := existsUnique_eq_mul_exp_eq hk hk' hz'
-    use w, ⟨by rw [hw]; linarith [pi_pos], hw.le⟩, hwz
+    use w, ⟨by grind [pi_pos], hw.le⟩, hwz
   · replace hz : z ∈ Complex.slitPlane := by
       simp [Complex.ext_iff, mem_reProdIm, mem_slitPlane_iff] at hz hz' ⊢
       grind
@@ -914,81 +964,29 @@ private theorem LambertW.injOn_mul_exp_range_zero :
       grind
     obtain ⟨w, -, hw⟩ := existsUnique_mem_Ioo_mul_exp_eq 0 hz
     simp only [Int.cast_zero, mul_zero, zero_sub, neg_mul, one_mul, zero_add] at hw
-    have hw₁' : w₁.arg + w₁.im < π := by
-      apply lt_of_le_of_ne hw₁.left.right
-      intro nh
-      obtain ⟨k, hk⟩ := arg_add_im_eq_arg_add_of_eq (slitPlane_ne_zero hz) hz₁.symm
-      rw [hk] at nh
-      have hz'' := arg_mem_Ioc z
-      obtain rfl : k = 0 := by
-        rcases (show k ≤ -1 ∨ k = 0 ∨ k ≥ 1 by omega) with hk | rfl | hk
-        · nlinarith [show k ≤ (-1 : ℝ) from mod_cast hk, pi_pos, hz''.right]
-        · rfl
-        · nlinarith [show k ≥ (1 : ℝ) from mod_cast hk, pi_pos, hz''.left]
-      simp only [Int.cast_zero, zero_mul, add_zero, arg_eq_pi_iff_lt_zero] at nh
-      exact hz' nh
-    have hw₂' : w₂.arg + w₂.im < π := by
-      apply lt_of_le_of_ne hw₂.left.right
-      intro nh
-      obtain ⟨k, hk⟩ := arg_add_im_eq_arg_add_of_eq (slitPlane_ne_zero hz) hz₂.symm
-      rw [hk] at nh
-      have hz'' := arg_mem_Ioc z
-      obtain rfl : k = 0 := by
-        rcases (show k ≤ -1 ∨ k = 0 ∨ k ≥ 1 by omega) with hk | rfl | hk
-        · nlinarith [show k ≤ (-1 : ℝ) from mod_cast hk, pi_pos, hz''.right]
-        · rfl
-        · nlinarith [show k ≥ (1 : ℝ) from mod_cast hk, pi_pos, hz''.left]
-      simp only [Int.cast_zero, zero_mul, add_zero, arg_eq_pi_iff_lt_zero] at nh
-      exact hz' nh
-    have Hw₁ := hw w₁ ⟨⟨hw₁.left.left, hw₁'⟩, hz₁.symm⟩
-    have Hw₂ := hw w₂ ⟨⟨hw₂.left.left, hw₂'⟩, hz₂.symm⟩
-    exact Hw₂ ▸ Hw₁
-  have hw₁' : w₁.arg + w₁.im = π := by grind [mul_exp_mem_of_arg_add_im_eq (w := w₁) (i := 0)]
+    rw [hw w₁ ⟨arg_add_im_mem_Ioo_of_mem_range_zero_of_mul_exp_mem hw₁ hz, hz₁.symm⟩,
+      hw w₂ ⟨arg_add_im_mem_Ioo_of_mem_range_zero_of_mul_exp_mem hw₂ (hz₂ ▸ hz), hz₂.symm⟩]
+  have hw₁' : w₁.arg + w₁.im = π := arg_add_im_eq_pi_of_mem_range_zero hw₁ hz'
   have hw₂' : w₂.arg + w₂.im = π := by grind [mul_exp_mem_of_arg_add_im_eq (w := w₂) (i := 0)]
   rcases lt_or_ge z.re (-(rexp 1)⁻¹) with hz'' | hz''
-  · replace hz'' : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0} := by
+  · replace hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0} := by
       simp [mem_reProdIm] at hz' ⊢
       tauto
-    obtain ⟨w, -, hw⟩ := existsUnique_eq_pi_mul_exp_eq hz''
-    have hw₁im : w₁.im > 0 := by
-      apply lt_of_le_of_ne <| arg_nonneg_iff.mp <| (arg_pos_of_arg_add_im_pos <| hw₁' ▸ pi_pos).le
-      intro nh
-      rw [← nh, add_zero, arg_eq_pi_iff] at hw₁'
-      exact hz''.left.not_ge <| mem_reProdIm.mp (hz₁ ▸ mul_exp_mem_of_im_eq_zero hw₁'.right) |>.left
-    have hw₂im : w₂.im > 0 := by
-      apply lt_of_le_of_ne <| arg_nonneg_iff.mp <| (arg_pos_of_arg_add_im_pos <| hw₂' ▸ pi_pos).le
-      intro nh
-      rw [← nh, add_zero, arg_eq_pi_iff] at hw₂'
-      exact hz''.left.not_ge <| mem_reProdIm.mp (hz₂ ▸ mul_exp_mem_of_im_eq_zero hw₂'.right) |>.left
-    have Hw₁ := hw w₁ ⟨hw₁', rfl, hw₁im⟩
-    have Hw₂ := hw w₂ ⟨hw₂', hz₂ ▸ rfl, hw₂im⟩
-    exact Hw₂ ▸ Hw₁
-  · replace hz'' : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0} := by
+    obtain ⟨w, -, hw⟩ := existsUnique_eq_pi_mul_exp_eq hz
+    rw [hw w₁ ⟨hw₁', hz₁.symm, im_pos_of_arg_add_im_eq_pi_of_mul_exp_mem hw₁' hz⟩,
+      hw w₂ ⟨hw₂', hz₂.symm, im_pos_of_arg_add_im_eq_pi_of_mul_exp_mem hw₂' (hz₂ ▸ hz)⟩]
+  · replace hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0} := by
       simp [mem_reProdIm] at hz' ⊢
       tauto
-    obtain ⟨w, -, hw⟩ := LambertW.existsUnique_mem_Ico_exp_eq hz''
-    replace hw₁ : w₁ ∈ Ico (-1) 0 ×ℂ {0} := by
-      suffices w₁.im = 0 by
-        rw [this, add_zero, arg_eq_pi_iff] at hw₁'
-        refine ⟨⟨?_, hw₁'.left⟩, this⟩
-        simpa [hw₁'] using hw₁.right
-      exact im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem hw₁' (hz₁ ▸ hz'')
-    replace hw₂ : w₂ ∈ Ico (-1) 0 ×ℂ {0} := by
-      suffices w₂.im = 0 by
-        rw [this, add_zero, arg_eq_pi_iff] at hw₂'
-        refine ⟨⟨?_, hw₂'.left⟩, this⟩
-        simpa [hw₂'] using hw₂.right
-      exact im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem hw₂' (hz₂ ▸ hz'')
-    have Hw₁ := hw w₁ ⟨hw₁, hz₁.symm⟩
-    have Hw₂ := hw w₂ ⟨hw₂, hz₂.symm⟩
-    exact Hw₂ ▸ Hw₁
+    obtain ⟨w, -, hw⟩ := existsUnique_mem_Ico_exp_eq hz
+    rw [hw w₁ ⟨mem_of_mem_range_zero_of_mul_exp_mem hw₁ hw₁' hz, hz₁.symm⟩,
+      hw w₂ ⟨mem_of_mem_range_zero_of_mul_exp_mem hw₂ hw₂' (hz₂ ▸ hz), hz₂.symm⟩]
 
 private theorem LambertW.injOn_mul_exp_range_neg_one :
     InjOn (fun w => w * cexp w) (range (-1)) := by
   intro w₁ hw₁ w₂ hw₂ (h : w₁ * cexp w₁ = w₂ * cexp w₂)
-  rw [mem_range_neg_one_iff] at hw₁ hw₂
   set z := w₁ * cexp w₁ with hz₁
-  have hz₂ : z = w₂ * cexp w₂ := h ▸ hz₁
+  rename z = w₂ * cexp w₂ => hz₂
   by_cases hz : z = 0
   · simp_all
   by_cases hz' : z ∈ Iio 0 ×ℂ {0}
@@ -997,94 +995,48 @@ private theorem LambertW.injOn_mul_exp_range_neg_one :
       simp [Complex.ext_iff, mem_reProdIm, mem_slitPlane_iff] at hz hz' ⊢
       grind
     obtain ⟨w, -, hw⟩ := existsUnique_mem_Ioo_mul_exp_eq (-1) hz
-    simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, mul_neg, mul_one, mem_Ioo, fieldLt,
-      fieldEq, and_imp] at hw
-    replace hw₁ : w₁.arg + w₁.im ∈ Ioc (-3 * π) (-π) := by
-      apply Or.resolve_right hw₁ fun nh => hz' ?_
-      simp [mem_reProdIm, hz₁, exp_re, exp_im, nh, mul_neg_iff, Real.exp_pos w₁.re, LT.lt.not_gt]
-      grind
-    replace hw₂ : w₂.arg + w₂.im ∈ Ioc (-3 * π) (-π) := by
-      apply Or.resolve_right hw₂ fun nh => hz' ?_
-      simp [mem_reProdIm, hz₂, exp_re, exp_im, nh, mul_neg_iff, Real.exp_pos w₂.re, LT.lt.not_gt]
-      grind
-    replace hw₁ : w₁.arg + w₁.im ∈ Ioo (-3 * π) (-π) := by
-      refine ⟨hw₁.left, lt_of_le_of_ne hw₁.right fun nh => ?_⟩
-      have := arg_mul_exp_eq_of_mem (x := w₁) (i := -1) (by grind [slitPlane_ne_zero hz]) (by grind)
-      rw [nh, ← hz₁] at this
-      conv_rhs at this => ring_nf
-      rw [arg_eq_pi_iff] at this
-      exact hz' this
-    replace hw₂ : w₂.arg + w₂.im ∈ Ioo (-3 * π) (-π) := by
-      refine ⟨hw₂.left, lt_of_le_of_ne hw₂.right fun nh => ?_⟩
-      have := arg_mul_exp_eq_of_mem (x := w₂) (i := -1) (by grind [slitPlane_ne_zero hz]) (by grind)
-      rw [nh, ← hz₂] at this
-      conv_rhs at this => ring_nf
-      rw [arg_eq_pi_iff] at this
-      exact hz' this
-    have Hw₁ := hw w₁ (by grind) (by grind) rfl
-    have Hw₂ := hw w₂ (by grind) (by grind) h.symm
-    exact Hw₂ ▸ Hw₁
+    have := arg_add_im_mem_Ioo_of_mem_range_neg_one_of_mul_exp_notMem hw₁ hz'
+    have := arg_add_im_mem_Ioo_of_mem_range_neg_one_of_mul_exp_notMem hw₂ (hz₂ ▸ hz')
+    rw [hw w₁ ⟨by grind, hz₁.symm⟩, hw w₂ ⟨by grind, hz₂.symm⟩]
   rcases lt_or_ge z.re (-(rexp 1)⁻¹) with hz'' | hz''
-  · replace hz'' : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0} := by
+  · replace hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0} := by
       simp [mem_reProdIm] at hz' ⊢
       tauto
-    obtain ⟨w, -, hw⟩ := existsUnique_eq_neg_pi_mul_exp_eq hz''
-    replace hw₁ := hw₁.resolve_right <| fun nh => by
-      absurd hz''.left
-      simp [hz₁, exp_im, exp_re, nh, neg_exp_one_inv_le_mul_exp]
-    replace hw₂ := hw₂.resolve_right <| fun nh => by
-      absurd hz''.left
-      simp [hz₂, exp_im, exp_re, nh, neg_exp_one_inv_le_mul_exp]
-    have Hw₁ := hw w₁ ⟨by grind [mul_exp_mem_of_arg_add_im_eq (w := w₁) (i := -1)], rfl⟩
-    have Hw₂ := hw w₂ ⟨by grind [mul_exp_mem_of_arg_add_im_eq (w := w₂) (i := -1)], hz₂.symm⟩
-    exact Hw₂ ▸ Hw₁
-  · replace hz'' : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0} := by
-      simp [mem_reProdIm] at hz' ⊢
+    obtain ⟨w, -, hw⟩ := existsUnique_eq_neg_pi_mul_exp_eq hz
+    have := arg_add_im_mem_Ioc_of_mem_range_neg_one_of_mul_exp_mem hw₁ hz
+    have := arg_add_im_mem_Ioc_of_mem_range_neg_one_of_mul_exp_mem hw₂ (hz₂ ▸ hz)
+    rw [hw w₁ ⟨by grind [mul_exp_mem_of_arg_add_im_eq (w := w₁) (i := -1)], hz₁.symm⟩,
+      hw w₂ ⟨by grind [mul_exp_mem_of_arg_add_im_eq (w := w₂) (i := -1)], hz₂.symm⟩]
+  · replace hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0} := by
+      simp only [mem_reProdIm, mem_Iio, mem_singleton_iff, mem_Ico] at hz' ⊢
       tauto
-    obtain ⟨w, -, hw⟩ := existsUnique_mem_Iic_exp_eq hz''
-    replace hw₁ := hw₁.resolve_left <| fun nh => by
-      have := hz₁ ▸ arg_mul_exp_eq_of_mem (x := w₁) (i := -1) (by grind) (by grind)
-      rw [arg_eq_pi_iff.mpr hz'] at this
-      replace := im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem (by grind) hz''
-      grind [arg_mem_Ioc]
-    replace hw₂ := hw₂.resolve_left <| fun nh => by
-      have := hz₂ ▸ arg_mul_exp_eq_of_mem (x := w₂) (i := -1) (by grind) (by grind)
-      rw [arg_eq_pi_iff.mpr hz'] at this
-      replace := im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem (by grind) (hz₂ ▸ hz'')
-      grind [arg_mem_Ioc]
-    have Hw₁ := hw w₁ ⟨hw₁, rfl⟩
-    have Hw₂ := hw w₂ ⟨hw₂, hz₂.symm⟩
-    exact Hw₂ ▸ Hw₁
+    obtain ⟨w, -, hw⟩ := existsUnique_mem_Iic_exp_eq hz
+    rw [hw w₁ ⟨mem_Iic_of_mem_range_neg_one_of_mul_exp_mem hw₁ hz, hz₁.symm⟩,
+      hw w₂ ⟨mem_Iic_of_mem_range_neg_one_of_mul_exp_mem hw₂ (hz₂ ▸ hz), hz₂.symm⟩]
 
 private theorem LambertW.injOn_mul_exp_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) :
     InjOn (fun w => w * cexp w) (range k) := by
   intro w₁ hw₁ w₂ hw₂ (h : w₁ * cexp w₁ = w₂ * cexp w₂)
   rw [mem_range_iff_of_ne hk hk'] at hw₁ hw₂
   have hw₁' : w₁ ≠ 0 := fun nh => by
-    simp [nh] at hw₁
-    rcases (show k ≤ -2 ∨ k ≥ 1 by omega) with hk | hk
-    · nlinarith [show k ≤ (-2 : ℝ) from mod_cast hk, pi_pos]
-    · nlinarith [show k ≥ (1 : ℝ) from mod_cast hk, pi_pos]
+    simp [nh, mul_neg_iff, pi_pos, pi_nonneg.not_gt] at hw₁
+    norm_cast at hw₁
+    omega
   have hw₂' : w₂ ≠ 0 := fun nh => by simp_all
-  have hw₁w₂ : w₁.arg + w₁.im = w₂.arg + w₂.im :=
-    arg_add_im_eq_of_mul_exp_eq_mem hw₁' hw₂' h hw₁ hw₂
+  have hw₁w₂ : w₁.arg + w₁.im = w₂.arg + w₂.im := arg_add_im_eq_of_mul_exp_eq hw₁' hw₂' h hw₁ hw₂
   by_cases h_eq : w₁.arg + w₁.im = (2 * k + 1) * π
   · clear hw₁ hw₂
-    have hz : w₁ * cexp w₁ ∈ Iio 0 ×ℂ {0} := by
-      have : (w₁ * cexp w₁).arg = π := by
-        rw [mul_exp_eq_of_arg_add_im_eq hw₁' h_eq, arg_neg_ofReal_of_pos <| Real.exp_pos _]
-      rwa [arg_eq_pi_iff] at this
+    have hz : w₁ * cexp w₁ ∈ Iio 0 ×ℂ {0} := arg_eq_pi_iff.mp <| by
+      rw [mul_exp_eq_of_arg_add_im_eq hw₁' h_eq, ← ofReal_neg,
+        arg_ofReal_of_neg <| neg_neg_iff_pos.mpr <| Real.exp_pos _]
     obtain ⟨w, -, hw⟩ := existsUnique_eq_mul_exp_eq hk hk' (z := w₁ * cexp w₁) hz
-    have Hw₁ := hw w₁ ⟨h_eq, rfl⟩
-    have Hw₂ := hw w₂ ⟨hw₁w₂ ▸ h_eq, h.symm⟩
-    exact Hw₂ ▸ Hw₁
+    rw [hw w₁ ⟨h_eq, rfl⟩, hw w₂ ⟨hw₁w₂ ▸ h_eq, h.symm⟩]
   · have hz : w₁ * cexp w₁ ∈ Complex.slitPlane := by
-      refine mem_slitPlane_iff_arg.mpr ⟨?_, by simp [hw₁']⟩
+      apply mem_slitPlane_iff_arg.mpr ⟨?_, by simp [hw₁']⟩
       grind [arg_mul_exp_eq_of_mem hw₁' hw₁]
     obtain ⟨w, -, hw⟩ := existsUnique_mem_Ioo_mul_exp_eq k (z := w₁ * cexp w₁) hz
-    have Hw₁ := hw w₁ ⟨⟨hw₁.left, lt_of_le_of_ne hw₁.right h_eq⟩, rfl⟩
-    have Hw₂ := hw w₂ ⟨⟨hw₂.left, lt_of_le_of_ne hw₂.right (hw₁w₂ ▸ h_eq)⟩, h.symm⟩
-    exact Hw₂ ▸ Hw₁
+    rw [hw w₁ ⟨⟨hw₁.left, lt_of_le_of_ne hw₁.right h_eq⟩, rfl⟩,
+      hw w₂ ⟨⟨hw₂.left, lt_of_le_of_ne hw₂.right (hw₁w₂ ▸ h_eq)⟩, h.symm⟩]
 
 theorem LambertW.injOn_mul_exp_range :
     InjOn (fun w => w * cexp w) (range k) := by
@@ -1107,12 +1059,10 @@ theorem LambertW.iUnion_range : ⋃ k, range k = univ := by
   · use -1, Or.inr hw
   · obtain ⟨k, hk, -⟩ : ∃! k : ℤ, w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) :=
       Real.existsUnique_mem_Ioc (w.arg + w.im)
-    use k
-    rwa [mem_range_iff_of_notMem hw]
+    use k, mem_range_iff_of_notMem hw |>.mpr hk
 
 theorem LambertW.neg_one_notMem_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) : -1 ∉ range k := by
-  rw [mem_range_iff_of_ne hk hk']
-  simp [field, pi_pos]
+  simp [mem_range_iff_of_ne hk hk', field]
   norm_cast
   omega
 
