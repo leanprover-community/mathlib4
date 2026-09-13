@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved.
+Copyright (c) 2026 Alessandro Iraci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alessandro Iraci, Aristotle (Harmonic)
+Authors: Alessandro Iraci
 -/
 module
 
@@ -11,37 +11,45 @@ public import Mathlib.Tactic.Ring
 /-!
 # Shuffles of two words
 
-A Lean 4 port of `theories/Combi/shuffle.v` from
-[Coq-Combi](https://github.com/math-comp/Coq-Combi).
-
 The *shuffle* of two words `u` and `v` is the list of all the words obtained by
 interleaving `u` and `v`, keeping the letters of `u` and the letters of `v` in
-their relative order.  As in the Coq development the shuffle is a *list* of
+their relative order. The shuffle is a *list* of
 words, listing every interleaving pattern separately: repetitions do occur when
 `u` and `v` share letters, and the total number of entries is the binomial
 coefficient `(|u| + |v|).choose |u|`.
 
 ## Main definitions
 
-* `List.shuffle u v` : the list of the shuffles of `u` and `v` (Coq `shuffle`).
+* `List.shuffle u v` : the list of the shuffles of `u` and `v`.
 * `List.IsShuffle u v w` : `w` is an interleaving of `u` and `v`.
 
 ## Main results
 
-* `List.mem_shuffle_iff` : membership in `shuffle u v` is exactly `IsShuffle u v w`
-  (Coq `mem_shuffle`).
-* `List.length_shuffle` : `shuffle u v` has `(|u| + |v|).choose |u|` entries
-  (Coq `size_shuffle`).
+* `List.mem_shuffle_iff` : membership in `shuffle u v` is exactly `IsShuffle u v w`.
+* `List.length_shuffle` : `shuffle u v` has `(|u| + |v|).choose |u|` entries.
 * `List.shuffle_perm_comm` : `shuffle u v` and `shuffle v u` are permutations of
-  each other (Coq `perm_eq_shuffle`).
+  each other.
 * `List.perm_append_of_mem_shuffle` : a shuffle of `u` and `v` is a permutation of
-  `u ++ v` (Coq `perm_eq_shuffle_append`).
+  `u ++ v`.
 * `List.sublist_left_of_mem_shuffle`, `List.sublist_right_of_mem_shuffle` : both
   `u` and `v` are subwords of any of their shuffles.
 * `List.isShuffle_filter`, `List.IsShuffle.filter_eq_left`,
   `List.IsShuffle.filter_eq_right` : a word is the shuffle of the subword of the letters
   satisfying a predicate and of the subword of the other letters, and this decomposition
   is the only one of this form.
+
+## Implementation details
+
+This file is based on Aristotle's Lean port of the `theories/Combi/shuffle.v` file from
+[Coq-Combi](https://github.com/math-comp/Coq-Combi).
+
+The definitions and results correspond to the following declarations in the Coq development:
+
+* `List.shuffle u v` : `shuffle`.
+* `List.mem_shuffle_iff` : `mem_shuffle`.
+* `List.length_shuffle` : `size_shuffle`.
+* `List.shuffle_perm_comm` : `perm_eq_shuffle`.
+* `List.perm_append_of_mem_shuffle` : `perm_eq_shuffle_append`.
 -/
 
 @[expose] public section
@@ -54,7 +62,7 @@ variable {T : Type*}
 
 /-! ### The shuffle of two words -/
 
-/-- The list of all the interleavings of the words `u` and `v` (Coq `shuffle`). -/
+/-- The list of all the interleavings of the words `u` and `v`. -/
 def shuffle : List T → List T → List (List T)
   | [], v => [v]
   | u@(_ :: _), [] => [u]
@@ -111,7 +119,7 @@ lemma isShuffle_nil_right (u : List T) : IsShuffle u [] u := by
     cases h with
     | left h => rw [ih h]
 
-/-- Membership in `shuffle u v` is described by `IsShuffle` (Coq `mem_shuffle`). -/
+/-- Membership in `shuffle u v` is described by `IsShuffle`. -/
 theorem mem_shuffle_iff : ∀ (u v w : List T), w ∈ shuffle u v ↔ IsShuffle u v w
   | [], v, w => by simp
   | a :: u, [], w => by simp
@@ -130,7 +138,7 @@ theorem mem_shuffle_iff : ∀ (u v w : List T), w ∈ shuffle u v ↔ IsShuffle 
 
 /-! ### Counting the shuffles -/
 
-/-- There are `(|u| + |v|).choose |u|` shuffles of `u` and `v` (Coq `size_shuffle`). -/
+/-- There are `(|u| + |v|).choose |u|` shuffles of `u` and `v`. -/
 theorem length_shuffle : ∀ u v : List T,
     (shuffle u v).length = (u.length + v.length).choose u.length
   | [], v => by simp
@@ -195,8 +203,7 @@ theorem IsShuffle.symm {u v w : List T} (h : IsShuffle u v w) : IsShuffle v u w 
   | left _ ih => exact ih.right
   | right _ ih => exact ih.left
 
-/-- `shuffle u v` and `shuffle v u` list the same words, with the same multiplicities
-(Coq `perm_eq_shuffle`). -/
+/-- `shuffle u v` and `shuffle v u` list the same words, with the same multiplicities. -/
 theorem shuffle_perm_comm : ∀ u v : List T, (shuffle u v).Perm (shuffle v u)
   | [], v => by simp
   | a :: u, [] => by simp
