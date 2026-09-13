@@ -200,7 +200,7 @@ theorem le_iSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
 theorem Order.IsSuccPrelimit.sSup_lt_iff (h : IsSuccPrelimit x) :
     sSup s < x ↔ ∃ a < x, ∀ b ∈ s, b < a := by
   simp_rw [_root_.sSup_lt_iff, mem_upperBounds]
-  grind [lt_iff_exists_lt]
+  grind [lt_iff_nonempty_Ioo, nonempty_def]
 
 /-- Similar to `iSup_lt_iff` but with a stronger RHS, as it requires a strict inequality. -/
 @[to_dual lt_iInf_iff
