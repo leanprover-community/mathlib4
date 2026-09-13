@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.Ring.Real
@@ -39,7 +39,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Filter Metric Set TopologicalSpace Topology
+open Filter Set TopologicalSpace Topology
 
 variable {ι : Sort*} {n : ℕ}
 

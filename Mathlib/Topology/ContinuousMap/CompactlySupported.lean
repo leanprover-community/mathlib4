@@ -50,7 +50,7 @@ scoped[CompactlySupported] notation (priority := 2000)
 @[inherit_doc]
 scoped[CompactlySupported] notation α " →C_c " β => CompactlySupportedContinuousMap α β
 
-open CompactlySupported
+open scoped CompactlySupported
 
 section
 
@@ -72,6 +72,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β]
 
+@[macro_inline]
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -794,7 +795,6 @@ end toNNRealLinear
 
 section toRealPositiveLinear
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a positive linear functional `Λ : C_c(α, ℝ≥0) → ℝ≥0`, define a positive `ℝ`-linear map. -/
 noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : C_c(α, ℝ) →ₚ[ℝ] ℝ :=
   PositiveLinearMap.mk₀

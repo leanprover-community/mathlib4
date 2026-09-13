@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
 # Fréchet derivative of constant functions
@@ -22,7 +23,7 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Asymptotics Function Filter Set Metric
+open Asymptotics Function Filter Set
 open scoped Topology NNReal ENNReal
 
 noncomputable section

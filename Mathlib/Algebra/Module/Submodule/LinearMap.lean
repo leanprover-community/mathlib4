@@ -37,7 +37,7 @@ universe u'' u' u v w
 
 section
 
-variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
+variable {R : Type u} {M : Type v} {ι : Type w}
 
 namespace SMulMemClass
 
@@ -74,8 +74,8 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-variable {p q : Submodule R M}
-variable {r : R} {x y : M}
+variable {p : Submodule R M}
+variable {x y : M}
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
@@ -106,7 +106,7 @@ theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i �
 
 section AddAction
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
 instance [AddAction M α] : AddAction p α :=
@@ -122,8 +122,8 @@ end
 
 section
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {ι : Type*}
 
 namespace LinearMap
@@ -131,8 +131,8 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [Module R M] [Module R M₁] [Module R₂ M₂] [Module R₃ M₃]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
 
@@ -185,7 +185,6 @@ section
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
   (p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
 `p : M₂' → M₂` admits a unique lift to a linear map `M → M₂'`. -/
 noncomputable def codLift :

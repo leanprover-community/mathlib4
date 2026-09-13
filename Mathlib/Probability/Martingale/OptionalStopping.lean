@@ -35,9 +35,8 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 namespace MeasureTheory
 
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {𝒢 : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
-  {τ π : Ω → ℕ∞}
+  {τ π : Ω → WithTop ℕ}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a submartingale `f` and bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 expectation of `stoppedValue f τ` is less than or equal to the expectation of `stoppedValue f π`.
 This is the forward direction of the optional stopping theorem. -/
@@ -48,12 +47,9 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
     {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) : μ[stoppedValue f τ] ≤ μ[stoppedValue f π] := by
   rw [← sub_nonneg, ← integral_sub', stoppedValue_sub_eq_sum' hle hbdd]
   · simp only [Finset.sum_apply]
-    have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
-      intro i
-      refine (hτ i).inter ?_
-      convert! (hπ i).compl using 1
-      ext x
-      simp; rfl
+    have this i : MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
+      simp_rw [Set.ofPred_and, ← not_le, ← Set.compl_ofPred]
+      exact (hτ i).inter (hπ i).compl
     rw [integral_finsetSum]
     · refine Finset.sum_nonneg fun i _ => ?_
       rw [integral_indicator (𝒢.le _ _ (this _)), integral_sub', sub_nonneg]
@@ -66,40 +62,35 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
   · exact hf.integrable_stoppedValue hπ hbdd
   · exact hf.integrable_stoppedValue hτ fun ω => le_trans (hle ω) (hbdd ω)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The converse direction of the optional stopping theorem, i.e. a strongly adapted integrable
 process `f` is a submartingale if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
 theorem submartingale_of_expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
     (hadp : StronglyAdapted 𝒢 f)
-    (hint : ∀ i, Integrable (f i) μ) (hf : ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
+    (hint : ∀ i, Integrable (f i) μ)
+    (hf : ∀ τ π : Ω → WithTop ℕ, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ ω, π ω ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π]) :
     Submartingale f 𝒢 μ := by
   refine submartingale_of_setIntegral_le hadp hint fun i j hij s hs => ?_
   classical
-  specialize hf (s.piecewise (fun _ => i) fun _ => j) _ (isStoppingTime_piecewise_const hij hs)
-    (isStoppingTime_const 𝒢 j) ?_
+  specialize hf (s.piecewise (fun _ ↦ WithTop.some i) fun _ ↦ WithTop.some j) _
+    (isStoppingTime_piecewise_const hij hs) (isStoppingTime_const 𝒢 j)
+    (Set.piecewise_le (fun _ _ ↦ WithTop.coe_le_coe.mpr hij) fun _ _ ↦ le_rfl)
     ⟨j, fun _ => le_rfl⟩
-  · intro ω
-    simp only [Set.piecewise, ENat.some_eq_natCast]
-    split_ifs with hω
-    · exact mod_cast hij
-    · norm_cast
-  · rwa [stoppedValue_const, ← ENat.some_eq_natCast, stoppedValue_piecewise_const,
-      integral_piecewise (𝒢.le _ _ hs) (hint _).integrableOn (hint _).integrableOn, ←
-      integral_add_compl (𝒢.le _ _ hs) (hint j), add_le_add_iff_right] at hf
+  rwa [stoppedValue_const, stoppedValue_piecewise_const,
+    integral_piecewise (𝒢.le _ _ hs) (hint _).integrableOn (hint _).integrableOn, ←
+    integral_add_compl (𝒢.le _ _ hs) (hint j), add_le_add_iff_right] at hf
 
 /-- **The optional stopping theorem** (fair game theorem): a strongly adapted integrable process `f`
 is a submartingale if and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
 theorem submartingale_iff_expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
     (hadp : StronglyAdapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ) :
-    Submartingale f 𝒢 μ ↔ ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
+    Submartingale f 𝒢 μ ↔ ∀ τ π : Ω → WithTop ℕ, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ x, π x ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π] :=
   ⟨fun hf _ _ hτ hπ hle ⟨_, hN⟩ => hf.expected_stoppedValue_mono hτ hπ hle hN,
     submartingale_of_expected_stoppedValue_mono hadp hint⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The stopped process of a submartingale with respect to a stopping time is a submartingale. -/
 protected theorem Submartingale.stoppedProcess [SigmaFiniteFiltration μ 𝒢]
     (h : Submartingale f 𝒢 μ) (hτ : IsStoppingTime 𝒢 τ) :
@@ -121,7 +112,6 @@ section Maximal
 
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) {ε : ℝ≥0}
     (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω} ≤
     ENNReal.ofReal
@@ -146,7 +136,6 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
   · exact le_trans (mul_nonneg ε.coe_nonneg ENNReal.toReal_nonneg) h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Doob's maximal inequality**: Given a non-negative submartingale `f`, for all `ε : ℝ≥0`,
 we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f* n ω = max_{k ≤ n}, f k ω`.
 
@@ -191,7 +180,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · exact smul_le_stoppedValue_hittingBtwn hsub n
       · exact (hsub.integrable n).integrableOn
       · refine Integrable.integrableOn ?_
-        refine hsub.integrable_stoppedValue ?_ (fun ω ↦ mod_cast hittingBtwn_le ω)
+        refine hsub.integrable_stoppedValue ?_ (mod_cast hittingBtwn_le)
         exact hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici
       · exact nullMeasurableSet_lt (measurable_range_sup'' fun n _ ↦
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
@@ -217,17 +206,17 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-          (fun ω ↦ mod_cast hittingBtwn_le ω))
+          (mod_cast hittingBtwn_le))
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-          (fun ω ↦ mod_cast hittingBtwn_le ω))
+          (mod_cast hittingBtwn_le))
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine ENNReal.ofReal_le_ofReal ?_
       rw [← stoppedValue_const f n]
       refine hsub.expected_stoppedValue_mono
         (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-        (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ => mod_cast le_rfl)
+        (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ ↦ le_rfl)
       simp [hittingBtwn_le]
 
 end Maximal

@@ -21,7 +21,7 @@ This file contains results on the interaction of `Polynomial.eval` and `Polynomi
 
 noncomputable section
 
-open Finset AddMonoidAlgebra
+open Finset
 
 open Polynomial
 
@@ -29,7 +29,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {a b : R} {m n : ℕ}
 
 section Semiring
 
@@ -216,7 +216,7 @@ end
 
 section
 
-variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
+variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S]
 
 @[simp]
 theorem iterate_comp_eval :

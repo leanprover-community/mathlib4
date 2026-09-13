@@ -19,7 +19,7 @@ averages over suitable weighted functions.
 
 public section
 
-open Complex Filter Function Metric Real Set Topology
+open Complex Metric Real Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
@@ -113,4 +113,3 @@ theorem DiffContOnCl.circleAverage (hf : DiffContOnCl ℂ f (ball c |R|)) :
     apply circleAverage_congr_sphere fun z hz ↦ ?_
     have : z - c ≠ 0 := by grind [ne_of_mem_sphere]
     simp_all
-

@@ -145,12 +145,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α]
-
-section SuccOrder
-variable [SuccOrder α]
-
-variable [IsSuccArchimedean α] {a b : α}
+variable [LinearOrder α] [SuccOrder α] [IsSuccArchimedean α] {a b : α}
 
 @[to_dual]
 theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b = a :=
@@ -159,8 +154,6 @@ theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b =
 @[to_dual Pred.rec_linear]
 theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a b : α) : p a ↔ p b :=
   (le_total a b).elim (Succ.rec_iff hsucc) fun h => (Succ.rec_iff hsucc h).symm
-
-end SuccOrder
 
 end LinearOrder
 
@@ -189,7 +182,7 @@ lemma StrictAnti.not_bddAbove_range_of_isSuccArchimedean [NoMinOrder α] [SuccOr
 
 end bdd_range
 
-section IsWellFounded
+section WellFounded
 
 variable [PartialOrder α]
 
@@ -197,9 +190,8 @@ variable [PartialOrder α]
 instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT α]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
-    refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
-      h.wf ?_ b
-    intro b ih hab
+    induction b using WellFoundedLT.induction with | ind b ih
+    intro hab
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
@@ -215,7 +207,7 @@ instance (priority := 100) WellFoundedGT.toIsSuccArchimedean [h : WellFoundedGT 
   let h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
 
-end IsWellFounded
+end WellFounded
 
 section OrderBot
 

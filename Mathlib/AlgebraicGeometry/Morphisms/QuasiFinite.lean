@@ -255,10 +255,6 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
   · exact asIso (Spec.map (Spec.residueFieldIso _ x).inv)
   · simp [Hom.fiberToSpecResidueField]
 
-@[deprecated (since := "2026-02-15")]
-alias LocallyQuasiFinite.of_isFinite_fiberToSpecResidueField :=
-  LocallyQuasiFinite.of_fiberToSpecResidueField
-
 lemma locallyQuasiFinite_iff_isFinite_fiber {f : X ⟶ Y} [QuasiCompact f] :
     LocallyQuasiFinite f ↔ ∀ x, IsFinite (f.fiberToSpecResidueField x) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ .of_fiberToSpecResidueField f fun _ ↦ inferInstance⟩

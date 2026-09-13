@@ -14,7 +14,9 @@ public import Mathlib.Topology.Order.DenselyOrdered
 
 public section
 
-open Filter Set Topology
+open Filter Set
+
+open scoped Topology
 
 variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α] [OrderTopology α]
   [TopologicalSpace β] {f : α → β} {a b : α} {la lb : β}

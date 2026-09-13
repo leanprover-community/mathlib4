@@ -5,11 +5,12 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
@@ -33,7 +34,7 @@ namespace Padic
 
 variable {p : ℕ} [Fact p.Prime]
 
-open NNReal WithZero UniformSpace
+open WithZero UniformSpace
 
 set_option backward.isDefEq.respectTransparency.types false in
 open MonoidWithZeroHom.ValueGroup₀ in

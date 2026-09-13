@@ -572,13 +572,11 @@ end
 
 variable (R : Type) [Ring R]
 
-open Opposite
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `CategoryTheory.Mat.equivalenceSingleObj`. -/
 @[simps]
 def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
-  obj X := FintypeCat.of X.ι
+  obj X := ↧X.ι
   map f i j := MulOpposite.unop (f i j)
   map_id X := by
     ext

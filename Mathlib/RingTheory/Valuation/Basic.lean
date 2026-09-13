@@ -119,6 +119,7 @@ lemma toMonoidWithZeroHom_injective :
     (toMonoidWithZeroHom : Valuation R Γ₀ → R →*₀ Γ₀).Injective := by
   rintro ⟨f, _⟩ g hfg; congr!
 
+@[macro_inline]
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toMonoidWithZeroHom
   coe_injective := DFunLike.coe_injective.comp toMonoidWithZeroHom_injective
@@ -1041,7 +1042,7 @@ theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
   Iff.rfl
 
 /-- The support of a valuation is a prime ideal. -/
-instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
+instance [Nontrivial Γ₀] : Ideal.IsPrime (supp v) :=
   ⟨fun h =>
     one_ne_zero (α := Γ₀) <|
       calc
@@ -1090,6 +1091,7 @@ section Monoid
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
 
+@[macro_inline]
 instance : FunLike (AddValuation R Γ₀) R Γ₀ :=
   inferInstanceAs <| FunLike (Valuation R <| Multiplicative Γ₀ᵒᵈ) R <| Multiplicative Γ₀ᵒᵈ
 

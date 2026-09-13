@@ -44,7 +44,7 @@ These definitions are for sums over a `Finset`; versions for a
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 namespace Finset
 
@@ -580,7 +580,6 @@ theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
   simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd, map_smulₛₗ,
     AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The value of `affineCombination`, where the given points take only two values. -/
 lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p : ι → P)
     (p₁ p₂ : P) (s' : Finset ι) (h : ∑ i ∈ s, w i = 1) (hp₂ : ∀ i ∈ s ∩ s', p i = p₂)
@@ -594,7 +593,6 @@ lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p 
     simp [hp₁ i hi]
   · exact (hp₂ i hi).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying `AffineMap.lineMap` on two `Finset.affineCombination` over the same set of points
 is equivalent to applying `AffineMap.lineMap` to the weights. -/
 theorem lineMap_affineCombination (w₁ : ι → k) (w₂ : ι → k) (r : k) (p : ι → P) :
@@ -707,7 +705,6 @@ theorem weightedVSub_weightedVSubVSubWeights [DecidableEq ι] (p : ι → P) {i 
 
 variable {k}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An affine combination with `affineCombinationLineMapWeights` gives the result of
 `line_map`. -/
 @[simp]
@@ -719,7 +716,6 @@ theorem affineCombination_affineCombinationLineMapWeights [DecidableEq ι] (p : 
     weightedVSub_const_smul, s.affineCombination_piSingle k p hi,
     s.weightedVSub_weightedVSubVSubWeights k p hj hi, AffineMap.lineMap_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying `AffineMap.homothety` on `Finset.affineCombination` towards one of the weighted points
   is equivalent to moving the weights towards `Finset.affineCombinationSingleWeights`. -/
 -- Redeclaring all variables because `AffineMap.homothety` requires `[CommRing k]`
@@ -953,7 +949,6 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
 
 variable {k V}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a set of points, together with a chosen base point in this set, if we affinely transport
 all other members of the set along the line joining them to this base point, the affine span is
 unchanged. -/

@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.Support
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 
 /-!
 # Trailing degree of univariate polynomials
@@ -26,7 +26,7 @@ end of a polynomial
 
 noncomputable section
 
-open Function Polynomial Finsupp Finset
+open Function Polynomial Finset
 
 open scoped Polynomial
 

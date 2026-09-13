@@ -49,6 +49,7 @@ namespace StarMonoidHom
 
 variable [Monoid A] [Star A] [Monoid B] [Star B]
 
+@[macro_inline]
 instance : FunLike (A →⋆* B) A B where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; simp_all
@@ -184,6 +185,7 @@ section Basic
 variable [Mul A] [Mul B] [Mul C] [Mul D]
 variable [Star A] [Star B] [Star C] [Star D]
 
+@[macro_inline]
 instance : EquivLike (A ≃⋆* B) A B where
   coe e := e.toFun
   inv e := e.invFun

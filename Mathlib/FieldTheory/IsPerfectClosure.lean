@@ -64,7 +64,7 @@ perfect ring, perfect closure, purely inseparable
 
 @[expose] public section
 
-open Module Polynomial IntermediateField Field
+open Field
 
 noncomputable section
 
