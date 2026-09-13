@@ -1,9 +1,8 @@
 /-
-Copyright (c) 2026 Eugenio Cainelli, Alessandro Iraci, Lorenzo Luccioli, Giovanni Paolini,
-Aristotle contributors. All rights reserved.
+Copyright (c) 2026 Eugenio Cainelli, Alessandro Iraci, Lorenzo Luccioli, Giovanni Paolini.
+All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eugenio Cainelli, Alessandro Iraci, Lorenzo Luccioli, Giovanni Paolini,
-Aristotle (Harmonic)
+Authors: Eugenio Cainelli, Alessandro Iraci, Lorenzo Luccioli, Giovanni Paolini
 -/
 module
 
