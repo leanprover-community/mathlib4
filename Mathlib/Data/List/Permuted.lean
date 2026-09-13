@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved.
+Copyright (c) 2026 Alessandro Iraci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alessandro Iraci, Aristotle (Harmonic)
+Authors: Alessandro Iraci
 -/
 module
 
@@ -11,26 +11,29 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 /-!
 # Rearrangements of a word and the multinomial coefficient
 
-This is a port of `theories/Combi/permuted.v` of
-[Coq-Combi](https://github.com/math-comp/Coq-Combi): the rearrangements of a word `w`, that
-is the words having the same letters with the same multiplicities, are counted by a
-multinomial coefficient (Coq `card_permuted_multinomial`).
+The rearrangements of a word `w`, that is the words having the same letters with the same
+multiplicities, are counted by a multinomial coefficient.
 
 The finset of the rearrangements of a multiset `m` of letters is `List.rearrangements m`;
 its cardinality times the product of the factorials of the multiplicities is `(m.card)!`.
 
 ## Main definitions and results
 
-* `List.rearrangements m` : the finset of the words whose multiset of letters is `m` (Coq
-  `permuted`).
+* `List.rearrangements m` : the finset of the words whose multiset of letters is `m`.
 * `List.card_rearrangements_mul_prod_factorial` : `|rearrangements m| * ∏ (count a)! =
   (m.card)!`.
-* `List.card_rearrangements` : `|rearrangements m| = m.multinomial`, the Coq statement
-  `card_permuted_multinomial`.
+* `List.card_rearrangements` : `|rearrangements m| = m.multinomial`.
 * `List.card_permutations_toFinset` : the number of distinct rearrangements of a word.
 
-On the way we record the factorial identity for the multiplicity function as a
-`Nat.multinomial` (`Multiset.prod_factorial_count_mul_multinomial`).
+## Implementation details
+
+This file is based on Aristotle's Lean port of `theories/Combi/permuted.v` from
+[Coq-Combi](https://github.com/math-comp/Coq-Combi).
+
+The definitions and results correspond to the following declarations in the Coq development:
+
+* `List.rearrangements m` : `permuted`.
+* `List.card_rearrangements` : `card_permuted_multinomial`.
 -/
 
 @[expose] public section
@@ -55,7 +58,7 @@ namespace List
 variable {α : Type*} [DecidableEq α]
 
 /-- The finset of the words whose multiset of letters is `m`, that is the rearrangements of
-any word with letters `m` (Coq `permuted`). -/
+any word with letters `m`. -/
 def rearrangements (m : Multiset α) : Finset (List α) := m.lists.toFinset
 
 @[simp] lemma mem_rearrangements {m : Multiset α} {l : List α} :

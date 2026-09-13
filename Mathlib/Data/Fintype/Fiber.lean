@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved.
+Copyright (c) 2026 Alessandro Iraci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alessandro Iraci, Aristotle (Harmonic)
+Authors: Alessandro Iraci
 -/
 module
 
@@ -14,16 +14,22 @@ A *fibered set* is a finite set `S` equipped with a map `f : S → I`; the *fibe
 the preimage of `i`.  Two fibered sets whose fibers all have the same cardinality are in
 bijection *fiberwise*, that is by a bijection commuting with the two maps.
 
-This file ports `theories/Combi/fibered_set.v` of
-[Coq-Combi](https://github.com/math-comp/Coq-Combi).
-
 ## Main results
 
 * `Fintype.exists_equiv_of_card_fiber_eq` : two finite types equipped with maps to a common
   type having fibers of equal cardinality are in bijection by a map commuting with the two
   maps.
 * `Fintype.exists_bijOn_of_card_fiber_eq` : the same statement for two finite subsets of two
-  types, in the form of a `Set.BijOn` (Coq `fbbijP`).
+  types, in the form of a `Set.BijOn`.
+
+## Implementation details
+
+This file is based on Aristotle's Lean port of `theories/Combi/fibered_set.v` from
+[Coq-Combi](https://github.com/math-comp/Coq-Combi).
+
+The definitions and results correspond to the following declarations in the Coq development:
+
+* `Fintype.exists_bijOn_of_card_fiber_eq` : `fbbijP`.
 -/
 
 @[expose] public section
@@ -52,7 +58,7 @@ def fiberSubtypeEquiv [DecidableEq I] (s : Finset α) (f : α → I) (i : I) :
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- **Fiberwise bijection between fibered sets** (Coq `fbbijP`): if two finite subsets `s`
+/-- **Fiberwise bijection between fibered sets**: if two finite subsets `s`
 and `t` of two types are equipped with maps `f` and `g` to a common type whose fibers have
 the same cardinality, then there is a map from the first type to the second which is a
 bijection from `s` onto `t` and which commutes with `f` and `g`. -/

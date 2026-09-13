@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved.
+Copyright (c) 2026 Alessandro Iraci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alessandro Iraci, Aristotle (Harmonic)
+Authors: Alessandro Iraci
 -/
 module
 
@@ -25,6 +25,15 @@ is the cardinality of the corresponding subset of `Finset.range`.
 * `List.sum_take_eq_sum_range` : the same for the partial sums of `l`.
 * `List.countP_eq_card_filter_range` : `l.countP p` counts the indices `i` with `p (l.getD i 0)`.
 * `List.length_eq_sum_count` : the length of a list of letters `< M`, counted letter by letter.
+
+## Implementation details
+
+This file is based on Aristotle's Lean port of the list-sum constructions from
+[Coq-Combi](https://github.com/math-comp/Coq-Combi).
+
+The definitions and results correspond to the following declarations in the Coq development:
+
+* `List.headD_le_sum` : `leq_head_sumn`.
 -/
 
 @[expose] public section
@@ -33,7 +42,7 @@ namespace List
 
 /-! ### Bounds -/
 
-/-- Coq `leq_head_sumn`. -/
+/-- An entry of a list of natural numbers is at most the sum of the list. -/
 lemma headD_le_sum (l : List ℕ) : l.headD 0 ≤ l.sum := by
   cases l with
   | nil => simp

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Alessandro Iraci, Aristotle contributors. All rights reserved.
+Copyright (c) 2026 Alessandro Iraci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alessandro Iraci, Aristotle (Harmonic)
+Authors: Alessandro Iraci
 -/
 module
 
@@ -15,13 +15,18 @@ In a finite meet-semilattice with a greatest element, any two elements have a le
 bound, namely the infimum of their common upper bounds, of which there is at least one.
 We record this as `Finite.toLattice`, and the dual statement as `Finite.toLatticeOfSup`.
 
-It is used to build the join of the refinement order on set partitions, which Coq-Combi
-provides as part of the lattice structure of `setpart` in `theories/Combi/setpartition.v`.
+It is used to build the join of the refinement order on set partitions.
 
 ## Main definitions
 
 * `Finite.toLattice` : a finite meet-semilattice with a top element is a lattice.
 * `Finite.toLatticeOfSup` : a finite join-semilattice with a bottom element is a lattice.
+
+## Implementation details
+
+This file is based on Aristotle's Lean port of the finite-lattice construction from
+[Coq-Combi](https://github.com/math-comp/Coq-Combi), where the construction appears as part
+of the lattice structure of `setpart` in `theories/Combi/setpartition.v`.
 -/
 
 @[expose] public section
