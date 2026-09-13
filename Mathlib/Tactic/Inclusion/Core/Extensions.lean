@@ -49,6 +49,9 @@ structure HypothesisExt where
 
 /-- A family of inclusion and hypothesis extensions. -/
 structure InclusionFamily where
+  /-- The declaration the family was registered in. Recorded so that modules referring to the
+  family by name still depend on the module registering it. -/
+  ref : Name
   /-- The `DiscrTree`-indexed collection of inclusion extensions. -/
   inclusionExt : EnvExt InclusionExt
   /-- The `DiscrTree`-indexed collection of hypothesis extensions. -/
@@ -68,7 +71,7 @@ def registerInclusionFamily (name : Name) (ref : Name := by exact decl_name%) :
     throw <| IO.userError s!"Inclusion family `{name}` is already registered"
   let inclusionExt ← initializeEnvExt ``InclusionExt (ref.str "inclusionExt")
   let hypothesisExt ← initializeEnvExt ``HypothesisExt (ref.str "hypothesisExt")
-  let family := { inclusionExt, hypothesisExt }
+  let family := { ref, inclusionExt, hypothesisExt }
   inclusionFamiliesRef.modify (·.insert name family)
   return family
 
@@ -77,7 +80,7 @@ otherwise return `none`. -/
 def getInclusionFamily? (name : Name) : CoreM (Option InclusionFamily) := do
   let family? := (← inclusionFamiliesRef.get)[name]?
   if let some family := family? then
-    recordExtraModUseFromDecl (isMeta := true) family.inclusionExt.ext.name
+    recordExtraModUseFromDecl (isMeta := true) family.ref
   return family?
 
 /-- Return the registered inclusion family named `name`, or fail if it is not registered. -/
