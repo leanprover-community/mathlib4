@@ -31,5 +31,10 @@ attribute [gcongr] mt Or.imp and_mono imp_mono forall_imp Exists.imp
   List.Perm.cons List.Perm.append List.Perm.map
   List.cons_subset_cons
   Nat.sub_le_sub_left Nat.sub_le_sub_right Nat.sub_lt_sub_left Nat.sub_lt_sub_right
+  Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div
+
+-- `Nat.pow_le_pow_right` has side condition `0 < n`, which `gcongr` discharges automatically via
+-- `positivity`, unlike the `1 ≤ a` side condition of the more general `pow_le_pow_right₀`.
+attribute [gcongr high] Nat.pow_le_pow_right
 
 end Mathlib.Tactic.GCongr

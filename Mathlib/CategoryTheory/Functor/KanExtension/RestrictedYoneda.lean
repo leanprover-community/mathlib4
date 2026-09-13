@@ -35,11 +35,11 @@ open Functor.Elements in
 @[no_expose]
 noncomputable def isPointwiseLeftKanExtensionAlongShrinkYoneda [IsIso α]
     [∀ (P : Cᵒᵖ ⥤ Type w),
-      PreservesColimit ((CategoryOfElements.π P).leftOp ⋙ shrinkYoneda.{w}) L] :
+      PreservesColimit ((π P).leftOp ⋙ shrinkYoneda.{w}) L] :
     (Functor.LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
   fun P ↦ by
     let c (s : Cocone (CostructuredArrow.proj shrinkYoneda.{w} P ⋙ A)) :
-      Cocone (((CategoryOfElements.π P).leftOp ⋙ shrinkYoneda.{w, v₁, u₁}) ⋙ L) :=
+      Cocone (((π P).leftOp ⋙ shrinkYoneda.{w, v₁, u₁}) ⋙ L) :=
       { pt := s.pt
         ι.app x :=
           inv (α.app x.unop.1.unop) ≫ s.ι.app (CostructuredArrow.mk

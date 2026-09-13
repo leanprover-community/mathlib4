@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.BigOperators.RingEquiv
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.GroupTheory.DedekindFinite
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Matrices

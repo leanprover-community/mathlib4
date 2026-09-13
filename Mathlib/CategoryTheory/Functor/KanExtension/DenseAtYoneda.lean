@@ -47,18 +47,18 @@ def congrElements : P.Elements ≌ (e.functor ⋙ P).Elements where
   functor.obj x :=
     Functor.elementsMk _ (e.inverse.obj x.1) (P.map (e.counitIso.inv.app x.1) x.2)
   functor.map f :=
-    CategoryOfElements.homMk _ _ (e.inverse.map f.1) (by
+    Functor.Elements.homMk (e.inverse.map f.1) (by
       simp only [← f.2, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
         fun_inv_map, Functor.comp_obj, Functor.id_obj, Iso.inv_hom_id_app_assoc,
         Functor.comp_map])
   inverse.obj x := Functor.elementsMk _ (e.functor.obj x.1) x.2
-  inverse.map f := CategoryOfElements.homMk _ _ (e.functor.map f.1) f.2
+  inverse.map f := Functor.Elements.homMk (e.functor.map f.1) f.2
   unitIso :=
     NatIso.ofComponents
-      (fun x ↦ CategoryOfElements.isoMk _ _ (e.counitIso.symm.app x.1) (by cat_disch))
+      (fun x ↦ Functor.Elements.isoMk (e.counitIso.symm.app x.1) (by cat_disch))
   counitIso :=
     NatIso.ofComponents
-      (fun x ↦ CategoryOfElements.isoMk _ _ (e.unitIso.symm.app x.1) (by
+      (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.1) (by
         simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
 
 end Equivalence
@@ -95,9 +95,9 @@ as a colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
 (defined using `shrinkYoneda`). -/
 @[implicit_reducible, simps]
 noncomputable def shrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
-    Cocone ((CategoryOfElements.π P).leftOp ⋙ shrinkYoneda.{w}) where
+    Cocone ((π P).leftOp ⋙ shrinkYoneda.{w}) where
   pt := P
-  ι.app x := shrinkYonedaEquiv.symm x.unop.snd
+  ι.app x := shrinkYonedaEquiv.symm x.unop.val
   ι.naturality x y f := by simp [← shrinkYonedaEquiv_symm_map.{w}]
 
 @[no_expose]
@@ -109,15 +109,14 @@ noncomputable def isColimitShrinkYonedaCoconeObj
     refine ⟨⟨fun y₁ y₂ hy ↦ ?_, fun x ↦ ?_⟩⟩
     · obtain ⟨⟨Y₁⟩, y₁, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y₁
       obtain ⟨⟨Y₂⟩, y₂, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y₂
-      have (Y : P.Elements) (y : (shrinkYoneda.{w}.obj (Y.fst.unop)).obj X) :
-          (((CategoryOfElements.π P).leftOp ⋙ shrinkYoneda.{w}) ⋙
+      have (Y : P.Elements) (y : (shrinkYoneda.{w}.obj (Y.obj.unop)).obj X) :
+          (((π P).leftOp ⋙ shrinkYoneda.{w}) ⋙
             (evaluation _ _).obj X).ιColimitType (op Y) y =
           Functor.ιColimitType _
-            (op (elementsMk _ _ (P.map (shrinkYonedaObjObjEquiv y).op Y.snd)))
+            (op (elementsMk _ _ (P.map (shrinkYonedaObjObjEquiv y).op Y.val)))
               (by exact shrinkYonedaObjObjEquiv.symm (𝟙 _)) :=
         Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _)
-          ((CategoryOfElements.homMk _ _
-            ((shrinkYonedaObjObjEquiv y).op) (by simp)).op) (by
+          ((homMk ((shrinkYonedaObjObjEquiv y).op) (by simp)).op) (by
               simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
       rw [this Y₁ y₁, this Y₂ y₂]
       congr 3
@@ -137,9 +136,9 @@ as a colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
 (defined using `yoneda`). -/
 @[implicit_reducible, simps]
 def yonedaCocone (P : Cᵒᵖ ⥤ Type v) :
-    Cocone ((CategoryOfElements.π P).leftOp ⋙ yoneda) where
+    Cocone ((π P).leftOp ⋙ CategoryTheory.yoneda) where
   pt := P
-  ι.app x := yonedaEquiv.symm x.unop.snd
+  ι.app x := yonedaEquiv.symm x.unop.val
   ι.naturality x y f := by simp [yonedaEquiv_symm_naturality_left f.unop.1.unop]
 
 @[no_expose]
@@ -164,9 +163,9 @@ as a colimit (indexed by `P.Elementsᵒᵖ`) of representable presheaves
 (defined using `uliftYoneda`). -/
 @[implicit_reducible, simps]
 def uliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
-    Cocone ((CategoryOfElements.π P).leftOp ⋙ uliftYoneda.{w}) where
+    Cocone ((π P).leftOp ⋙ uliftYoneda.{w}) where
   pt := P
-  ι.app x := uliftYonedaEquiv.symm x.unop.snd
+  ι.app x := uliftYonedaEquiv.symm x.unop.val
   ι.naturality x y f := by simp [uliftYonedaEquiv_symm_naturality_left f.unop.1.unop]
 
 attribute [local implicit_reducible] Equiv.ulift in
@@ -194,7 +193,7 @@ end Functor.Elements
 instance [LocallySmall.{w} C] : (shrinkYoneda.{w} (C := C)).IsDense where
   isDenseAt P :=
     ⟨(IsColimit.whiskerEquivalenceEquiv
-      (CategoryOfElements.costructuredArrowShrinkYonedaEquivalence P)).2
+      (Functor.Elements.costructuredArrowShrinkYonedaEquivalence P)).2
         (Functor.Elements.isColimitShrinkYonedaCocone.{w} P)⟩
 
 instance : (uliftYoneda.{w} (C := C)).IsDense :=
@@ -257,7 +256,7 @@ variable [LocallySmall.{w} C] (P : C ⥤ Type w)
 
 @[implicit_reducible, simps]
 noncomputable def shrinkCoyonedaCocone :
-    Cocone ((CategoryOfElements.π P).op ⋙ shrinkCoyoneda.{w}) where
+    Cocone ((π P).op ⋙ shrinkCoyoneda.{w}) where
   pt := P
   ι.app x := shrinkCoyonedaEquiv.symm x.unop.2
   ι.naturality x y f := by
@@ -280,7 +279,7 @@ noncomputable def isColimitShrinkCoyonedaCoconeObj (X : C) :
       shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
   · refine Cocone.ext (Iso.refl _) (fun ⟨j⟩ ↦ ?_)
     ext f
-    obtain ⟨f : j.fst ⟶ X, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+    obtain ⟨f : j.obj ⟶ X, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
     simp [shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm.{w},
       dsimp% shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm j.2 f.op]
 
@@ -295,14 +294,14 @@ variable [HasColimitsOfShape P.Elementsᵒᵖ (Type w)]
 `shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
 @[no_expose]
 noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso :
-    shrinkYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π P).op ⋙
+    shrinkYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj (π P).op ⋙
       colim ≅ P :=
   (colim.isColimitCoconeCompFlip _ _).coconePointUniqueUpToIso
     (isColimitShrinkCoyonedaCocone P)
 
 lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply (u : P.Elements) :
-      (shrinkYonedaCompWhiskeringLeftObjπCompColimIso P).inv.app _ u.snd =
-      (colimit.ι ((CategoryOfElements.π P).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u)
+      (shrinkYonedaCompWhiskeringLeftObjπCompColimIso P).inv.app _ u.val =
+      (colimit.ι ((π P).op ⋙ shrinkYoneda.{w}.obj u.obj) (op u)
         (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by
   have := ConcreteCategory.congr_hom (NatTrans.congr_app
     ((colim.isColimitCoconeCompFlip _ _).comp_coconePointUniqueUpToIso_inv
