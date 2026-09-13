@@ -76,6 +76,11 @@ typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
 abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `ModuleCat.of R X` as `↧X`. -/
+@[app_delab ModuleCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
   rfl
 
@@ -195,7 +200,7 @@ In the inverse direction, data (such as the negation operation) is created which
 diamonds when applied to semi-modules that already have an existing additive group structure. -/
 def equivalenceSemimoduleCat : ModuleCat.{v} R ≌ SemimoduleCat.{v} R where
   functor :=
-  { obj M := .of R M
+  { obj M := ↧M
     map f := SemimoduleCat.ofHom f.hom' }
   inverse := letI := Module.addCommMonoidToAddCommGroup
   { obj M := of R M
@@ -216,16 +221,16 @@ lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrpCat where
   forget₂ :=
-    { obj := fun M => AddCommGrpCat.of M
+    { obj := fun M => ↧M
       map := fun f => AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : ModuleCat R) :
-    (forget₂ (ModuleCat R) AddCommGrpCat).obj X = AddCommGrpCat.of X :=
+    (forget₂ (ModuleCat R) AddCommGrpCat).obj X = ↧X :=
   rfl
 
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
-    (forget₂ (ModuleCat R) AddCommGrpCat).obj (of R X) = AddCommGrpCat.of X :=
+    (forget₂ (ModuleCat R) AddCommGrpCat).obj (of R X) = ↧X :=
   rfl
 
 @[simp]
