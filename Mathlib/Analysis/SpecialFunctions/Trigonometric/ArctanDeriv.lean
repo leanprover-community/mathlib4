@@ -11,8 +11,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 /-!
 # Derivatives of the `tan` and `arctan` functions.
 
-Continuity and derivatives of the tangent and arctangent functions. We also record the classical
-limit `tan x / x → 1` as `x → 0` (`Real.tendsto_tan_div_nhdsNE_zero`).
+Continuity and derivatives of the tangent and arctangent functions.
 -/
 
 public section
