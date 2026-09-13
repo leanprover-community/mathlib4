@@ -71,7 +71,7 @@ theorem differentiableAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : �
     DifferentiableAt ℝ tan x :=
   (hasDerivAt_tan_of_mem_Ioo h).differentiableAt
 
-/-- The classical limit `lim_{x → 0} (tan x) / x = 1`. -/
+/-- The limit `lim_{x → 0} (tan x) / x = 1`. -/
 theorem tendsto_tan_div_nhdsNE_zero : Tendsto (fun x : ℝ ↦ tan x / x) (𝓝[≠] 0) (𝓝 1) :=
   (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_tan (x := 0) (by simp))).congr
     fun _ ↦ by simp [slope_def_field]
