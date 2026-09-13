@@ -12,8 +12,8 @@ public import Mathlib.Tactic.ToAdditive
 # Walking pairs
 
 We define a category `WalkingPair`, which is the index category for a binary (co)product diagram.
-A convenience method `pair X Y`, for `X, Y` objects of some category `C`, constructs the constructs
-the functor from the walking pair, hitting the given objects.
+A convenience method `pair X Y`, for `X, Y` objects of some category `C`, constructs the
+functor from the walking pair, hitting the given objects.
 
 ## References
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
@@ -29,6 +29,7 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 /-- The type of objects for the diagram indexing a binary (co)product. -/
+@[to_dual_do_translate]
 inductive WalkingPair : Type
   | left
   | right
