@@ -237,23 +237,23 @@ def adjoinNegOne (𝒢 : Subgroup G) : Subgroup G where
 lemma le_adjoinNegOne (𝒢 : Subgroup G) : 𝒢 ≤ 𝒢.adjoinNegOne :=
   fun _ hg ↦ .inl hg
 
-lemma negOne_mem_adjoinNegOne (𝒢 : Subgroup G) : -1 ∈ 𝒢.adjoinNegOne := by simp
+lemma neg_one_mem_adjoinNegOne (𝒢 : Subgroup G) : -1 ∈ 𝒢.adjoinNegOne := by simp
 
 @[simp] lemma adjoinNegOne_eq_self_iff {𝒢 : Subgroup G} :
     𝒢.adjoinNegOne = 𝒢 ↔ -1 ∈ 𝒢 :=
-  ⟨fun h ↦ h ▸ negOne_mem_adjoinNegOne 𝒢, fun hG ↦ 𝒢.le_adjoinNegOne.antisymm'
+  ⟨fun h ↦ h ▸ neg_one_mem_adjoinNegOne 𝒢, fun hG ↦ 𝒢.le_adjoinNegOne.antisymm'
     fun g hg ↦ hg.elim id (fun h ↦ by simpa using mul_mem hG h)⟩
 
-lemma relindex_adjoinNegOne_eq_two {𝒢 : Subgroup G} (h𝒢 : -1 ∉ 𝒢) :
+lemma relIndex_adjoinNegOne_eq_two {𝒢 : Subgroup G} (h𝒢 : -1 ∉ 𝒢) :
     𝒢.relIndex 𝒢.adjoinNegOne = 2 := by
-  refine relIndex_eq_two_iff_exists_notMem_and.mpr ⟨_, 𝒢.negOne_mem_adjoinNegOne, h𝒢, ?_⟩
+  refine relIndex_eq_two_iff_exists_notMem_and.mpr ⟨_, 𝒢.neg_one_mem_adjoinNegOne, h𝒢, ?_⟩
   simp [mem_adjoinNegOne_iff, or_comm]
 
 lemma relIndex_adjoinNegOne_ne_zero (𝒢 : Subgroup G) :
     𝒢.relIndex 𝒢.adjoinNegOne ≠ 0 := by
   by_cases hG : -1 ∈ 𝒢
   · simp [adjoinNegOne_eq_self_iff.mpr hG]
-  · simp [𝒢.relindex_adjoinNegOne_eq_two hG]
+  · simp [𝒢.relIndex_adjoinNegOne_eq_two hG]
 
 instance (𝒢 : Subgroup G) : IsFiniteRelIndex 𝒢 𝒢.adjoinNegOne :=
   ⟨𝒢.relIndex_adjoinNegOne_ne_zero⟩
