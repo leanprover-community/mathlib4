@@ -20,6 +20,9 @@ The solutions are the translations `f x = x + c`, where `c ≥ 0`.
 
 ## Solution
 
+For an informal version of the iteration argument below, see the iterated solution in Section 2.2
+of [Evan Chen's IMO 2026 solution notes](https://web.evanchen.cc/exams/IMO-2026-notes.pdf).
+
 Write `d x = f x - x` for the displacement of `x`. Squaring the upper inequality bounds
 `(f x + y) ^ 2 - (x + f y) ^ 2` by `(x - f y) ^ 2`, while squaring the lower inequality gives
 the same bound for its negation. Factoring the difference of squares gives the key estimate
