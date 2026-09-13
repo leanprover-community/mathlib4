@@ -66,7 +66,7 @@ private lemma ratProjIndex_eq_relIndex_mul {G H : Subgroup (GL (Fin 2) ℝ)}
 /-- Adjoining `-1` does not change the projective index. -/
 private lemma ratProjIndex_adjoinNegOne (G : Subgroup (GL (Fin 2) ℝ)) :
     G.adjoinNegOne.ratProjIndex = G.ratProjIndex := by
-  simp only [ratProjIndex, adjoinNegOne_eq_self_iff.mpr G.negOne_mem_adjoinNegOne]
+  simp only [ratProjIndex, adjoinNegOne_eq_self_iff.mpr G.neg_one_mem_adjoinNegOne]
 
 /-- The Sturm bound on the total cusp order of modular forms of level `G` and weight `k`. -/
 noncomputable def sturmBound (G : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) : ℝ :=
@@ -78,7 +78,7 @@ lemma sturmBoundSL2Z (k : ℤ) : sturmBound 𝒮ℒ k = k / 12 := by
   rw [← MonoidHom.range_eq_map, adjoinNegOne_eq_self_iff.mpr (by simp), index_top] at hindex
   simp [sturmBound, hindex]
 
-private lemma eq_zero_of_orderAtInfty_gt_sturmBound_SL2Z {k : ℤ}
+private lemma eq_zero_of_sturmBound_lt_orderAtInfty_SL2Z {k : ℤ}
     (f : ModularForm 𝒮ℒ k) (hf : (sturmBound 𝒮ℒ k : EReal) < orderAtInfty f) : f = 0 := by
   rw [sturmBoundSL2Z, orderAtInfty_eq_qExpansion_order one_pos
     (SlashInvariantFormClass.periodic_comp_ofComplex f one_mem_strictPeriods_SL)
@@ -100,7 +100,7 @@ private lemma totalCuspOrder_le_sturmBound_of_le
     {k : ℤ} (f : ModularForm G k) (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
   have hn : ModularForm.norm 𝒮ℒ f ≠ 0 := ModularForm.norm_ne_zero 𝒮ℒ (by simpa using hf)
   have hbound : orderAtInfty (ModularForm.norm 𝒮ℒ f) ≤ sturmBound 𝒮ℒ (k * G.relIndex 𝒮ℒ) :=
-    le_of_not_gt fun h ↦ hn (eq_zero_of_orderAtInfty_gt_sturmBound_SL2Z _ h)
+    le_of_not_gt fun h ↦ hn (eq_zero_of_sturmBound_lt_orderAtInfty_SL2Z _ h)
   have hrat : G.ratProjIndex = (G.relIndex 𝒮ℒ : ℚ) := by
     simp [ratProjIndex, adjoinNegOne_eq_self_iff.mpr hneg, relIndex_eq_one.mpr hG]
   rw [sturmBoundSL2Z] at hbound
@@ -145,7 +145,7 @@ lemma totalCuspOrder_le_sturmBound
   have hsum : (G.relIndex G.adjoinNegOne : EReal) * totalCuspOrder G k f ≤
       G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) :=
     (relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne f).trans <|
-      Subgroup.totalCuspOrder_le_sturmBound_of_negOne_mem _ G.negOne_mem_adjoinNegOne _ <|
+      Subgroup.totalCuspOrder_le_sturmBound_of_negOne_mem _ G.neg_one_mem_adjoinNegOne _ <|
         ModularForm.norm_ne_zero _ (by simpa using hf)
   have hbudget : (G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) : EReal) /
       G.relIndex G.adjoinNegOne = G.sturmBound k := by
@@ -163,7 +163,7 @@ lemma eq_zero_of_totalCuspOrder_gt_sturmBound
   grind [totalCuspOrder_le_sturmBound]
 
 /-- A form vanishes if its width-weighted order at infinity exceeds the Sturm bound. -/
-lemma eq_zero_of_orderAtInfty_gt_sturmBound
+lemma eq_zero_of_sturmBound_lt_orderAtInfty
     {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [G.HasDetOne] {k : ℤ}
     (f : ModularForm G k) (hf : (G.sturmBound k : EReal) < G.widthInfty * orderAtInfty f) :
     f = 0 := by
@@ -247,8 +247,7 @@ lemma finrank_complex_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] [G.Has
 Restriction to the determinant-one part also covers determinant `-1`. -/
 instance finiteDimensional_real (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ) :
     FiniteDimensional ℝ (ModularForm G k) :=
-  .of_injective (⟨⟨restrict G.detOnePart_le, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ :
-    ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k) (restrict_injective G.detOnePart_le)
+  .of_injective _ (restrictₗ_injective k ℝ G.detOnePart_le)
 
 /-- If `G` contains an element of determinant `-1`, restriction to its determinant-one part takes
 real-linearly independent families to complex-linearly independent families. -/
@@ -287,10 +286,7 @@ lemma linearIndependent_restrict_detOnePart
 noncomputable def restrictBaseChange
     {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ) :
     TensorProduct ℝ ℂ (ModularForm G k) →ₗ[ℂ] ModularForm G.detOnePart k :=
-  LinearMap.liftBaseChange ℂ
-    { toFun := ModularForm.restrict G.detOnePart_le
-      map_add' _ _ := rfl
-      map_smul' _ _ := rfl }
+  (restrictₗ k ℝ G.detOnePart_le).liftBaseChange ℂ
 
 @[simp]
 lemma restrictBaseChange_tmul {G : Subgroup (GL (Fin 2) ℝ)} (k : ℤ)
@@ -313,11 +309,8 @@ lemma restrictBaseChange_injective
 /-- The real dimension at an arbitrary arithmetic level is bounded using restriction to its
 determinant-one subgroup. -/
 lemma finrank_real_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ) :
-    Module.finrank ℝ (ModularForm G k) ≤ 2 *
-      (⌊G.detOnePart.sturmBound k⌋₊ + 1) := by
-  refine ((⟨⟨restrict G.detOnePart_le, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ :
-    ModularForm G k →ₗ[ℝ] ModularForm G.detOnePart k).finrank_le_finrank_of_injective
-      (restrict_injective G.detOnePart_le)).trans ?_
+    Module.finrank ℝ (ModularForm G k) ≤ 2 * (⌊G.detOnePart.sturmBound k⌋₊ + 1) := by
+  apply (LinearMap.finrank_le_finrank_of_injective (restrictₗ_injective k ℝ G.detOnePart_le)).trans
   rw [finrank_real_of_complex]
   exact Nat.mul_le_mul_left 2 (finrank_complex_le G.detOnePart k)
 
@@ -328,7 +321,7 @@ lemma finrank_real_le_of_exists_det_eq_neg_one
     (hdet : ∃ γ ∈ G, γ.det = -1) :
     Module.finrank ℝ (ModularForm G k) ≤ ⌊G.detOnePart.sturmBound k⌋₊ + 1 := by
   obtain ⟨γ, hγ, hγdet⟩ := hdet
-  rw [← Module.finrank_baseChange (R := ℂ) (S := ℝ)]
+  rw [← Module.finrank_baseChange (R := ℂ)]
   exact ((restrictBaseChange k).finrank_le_finrank_of_injective
     (restrictBaseChange_injective hγ hγdet)).trans (finrank_complex_le G.detOnePart k)
 

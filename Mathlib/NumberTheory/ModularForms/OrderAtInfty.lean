@@ -26,7 +26,7 @@ vanishing of its `q`-expansion (divided by the period).
 
 * `UpperHalfPlane.le_orderAtInfty_iff`: the order is at least `t` iff there is an exponential
   bound at every rate `s < t`.
-* `UpperHalfPlane.orderAtInfty_mul`: the order of a product is at least the sum of the orders.
+* `UpperHalfPlane.le_orderAtInfty_mul`: the order of a product is at least the sum of the orders.
 
 ### Main statements (periodic holomorphic functions)
 
@@ -145,7 +145,7 @@ section SeminormedRing
 variable [SeminormedCommRing E]
 -- commutativity is not needed, but it shortens the proof, and we only really need `E = ℂ` anyway
 
-lemma orderAtInfty_mul : orderAtInfty f + orderAtInfty g ≤ orderAtInfty (f * g) := by
+lemma le_orderAtInfty_mul : orderAtInfty f + orderAtInfty g ≤ orderAtInfty (f * g) := by
   wlog! hfg : orderAtInfty g ≤ orderAtInfty f
   · simpa [add_comm, mul_comm] using this hfg.le
   have aux {a b c : ℝ} {f g : ℍ → E} (hf : f =O[atImInfty] fun τ ↦ exp (-2 * π * τ.im * a))
@@ -184,7 +184,7 @@ lemma orderAtInfty_mul : orderAtInfty f + orderAtInfty g ≤ orderAtInfty (f * g
       grind
 
 /-- The order of a finite product is at least the sum of the orders of its factors. -/
-lemma orderAtInfty_prod {ι : Type*} (s : Finset ι) (F : ι → ℍ → E) :
+lemma le_orderAtInfty_prod {ι : Type*} (s : Finset ι) (F : ι → ℍ → E) :
     ∑ i ∈ s, orderAtInfty (F i) ≤ orderAtInfty (∏ i ∈ s, F i) := by
   classical
   induction s using Finset.induction_on with
@@ -193,7 +193,7 @@ lemma orderAtInfty_prod {ι : Type*} (s : Finset ι) (F : ι → ℍ → E) :
       (Filter.const_boundedAtFilter atImInfty (1 : E))
   | @insert i s hi ih =>
     rw [Finset.sum_insert hi, Finset.prod_insert hi]
-    exact (add_le_add le_rfl ih).trans (orderAtInfty_mul (f := F i) (g := ∏ j ∈ s, F j))
+    exact (add_le_add le_rfl ih).trans (le_orderAtInfty_mul (f := F i) (g := ∏ j ∈ s, F j))
 
 end SeminormedRing
 

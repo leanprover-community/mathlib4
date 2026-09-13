@@ -319,11 +319,11 @@ open scoped Classical in
 noncomputable def regularityFactorInfty : ℕ :=
   if 𝒢.IsRegularAtInfty then 1 else 2
 
-@[simp] lemma regularityFactorInfty_of_isRegularAtInfty (h : 𝒢.IsRegularAtInfty) :
+@[simp] lemma regularityFactorInfty_eq_one_of_isRegularAtInfty (h : 𝒢.IsRegularAtInfty) :
     𝒢.regularityFactorInfty = 1 := by
   simp [regularityFactorInfty, h]
 
-@[simp] lemma regularityFactorInfty_of_not_isRegularAtInfty (h : ¬ 𝒢.IsRegularAtInfty) :
+@[simp] lemma regularityFactorInfty_eq_two_of_not_isRegularAtInfty (h : ¬ 𝒢.IsRegularAtInfty) :
     𝒢.regularityFactorInfty = 2 := by
   simp [regularityFactorInfty, h]
 
@@ -346,7 +346,7 @@ lemma relIndex_strictPeriods_eq_regularityFactorInfty :
     𝒢.strictPeriods.relIndex 𝒢.periods = 𝒢.regularityFactorInfty := by
   by_cases h : 𝒢.IsRegularAtInfty
   · simp [h.eq, regularityFactorInfty, h]
-  · rw [𝒢.regularityFactorInfty_of_not_isRegularAtInfty h]
+  · rw [𝒢.regularityFactorInfty_eq_two_of_not_isRegularAtInfty h]
     exact 𝒢.relIndex_strictPeriods.resolve_left fun hi ↦
       h (𝒢.strictPeriods_le_periods.antisymm (AddSubgroup.relIndex_eq_one.mp hi))
 

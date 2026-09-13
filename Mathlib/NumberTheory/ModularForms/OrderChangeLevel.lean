@@ -83,15 +83,15 @@ private lemma minimalPeriod_translation {K H : Subgroup (GL (Fin 2) ℝ)} [H.IsA
   exact Int.natCast_dvd_natCast.mp (Dvd.intro_left a (by exact_mod_cast ha))
 
 /-- The cycles of the translation by the strict width of the larger group. -/
-private abbrev translationCycles (K H : Subgroup (GL (Fin 2) ℝ)) :=
+private abbrev TranslationCycles (K H : Subgroup (GL (Fin 2) ℝ)) :=
   MulAction.orbitRel.Quotient (zpowers (translation H 1)) (H ⧸ K.subgroupOf H)
 
 /-- The class formula for the translation action gives the sum of cusp widths in the fiber.
 The orbit representatives are read as inverse scaling matrices. -/
 private lemma sum_strictWidthInfty_translationCycles {K H : Subgroup (GL (Fin 2) ℝ)}
     [K.IsArithmetic] [H.IsArithmetic] (hKH : K ≤ H) :
-    let := Fintype.ofFinite (translationCycles K H)
-    ∑ c : translationCycles K H,
+    let := Fintype.ofFinite (TranslationCycles K H)
+    ∑ c : TranslationCycles K H,
         (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).strictWidthInfty =
       K.relIndex H * H.strictWidthInfty := by
   intro
@@ -163,7 +163,7 @@ private lemma cosetCusp_translation (G H : Subgroup (GL (Fin 2) ℝ))
 
 /-- The cusp belonging to a translation cycle of the finite coset space. -/
 private noncomputable def translationCycleCusp (K H : Subgroup (GL (Fin 2) ℝ))
-    [K.IsArithmetic] [H.IsArithmetic] (c : translationCycles K H) : CuspOrbits K :=
+    [K.IsArithmetic] [H.IsArithmetic] (c : TranslationCycles K H) : CuspOrbits K :=
   ⟦⟨(c.out.out : GL (Fin 2) ℝ)⁻¹ • ∞,
     ((show IsCusp ∞ H from Fact.out).smul_of_mem
       (H.inv_mem c.out.out.property)).of_isFiniteRelIndex⟩⟧
@@ -171,7 +171,7 @@ private noncomputable def translationCycleCusp (K H : Subgroup (GL (Fin 2) ℝ))
 private lemma translationCycleCusp_mk {K H : Subgroup (GL (Fin 2) ℝ)}
     [K.IsArithmetic] [H.IsArithmetic] (r : H) :
     translationCycleCusp K H ⟦(⟦r⟧ : H ⧸ K.subgroupOf H)⟧ = cosetCusp K H ⟦r⟧ := by
-  let c : translationCycles K H := ⟦(⟦r⟧ : H ⧸ K.subgroupOf H)⟧
+  let c : TranslationCycles K H := ⟦(⟦r⟧ : H ⧸ K.subgroupOf H)⟧
   have hout : translationCycleCusp K H c = cosetCusp K H c.out :=
     congr(cosetCusp K H $(Quotient.out_eq c.out))
   obtain ⟨t, ht⟩ := Quotient.eq.mp (Quotient.out_eq c)
@@ -180,7 +180,7 @@ private lemma translationCycleCusp_mk {K H : Subgroup (GL (Fin 2) ℝ)}
 private lemma translationCycleCusp_surjective_fiber {K H : Subgroup (GL (Fin 2) ℝ)}
     [K.IsArithmetic] [H.IsArithmetic] (hKH : K ≤ H) (c : CuspOrbits K)
     (hc : CuspOrbits.map hKH c = ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧) :
-    ∃ d : translationCycles K H, translationCycleCusp K H d = c := by
+    ∃ d : TranslationCycles K H, translationCycleCusp K H d = c := by
   induction c using Quotient.inductionOn with | h c =>
   obtain ⟨r, hr⟩ := Quotient.eq.mp hc
   have hr' : (r : GL (Fin 2) ℝ) • ∞ = c.val := congr(Subtype.val $hr)
@@ -232,7 +232,7 @@ private lemma quotientFunc_translation_order {G H : Subgroup (GL (Fin 2) ℝ)}
 
 /-- Every translation cycle lies over the cusp at infinity of the larger group. -/
 private lemma translationCycleCusp_map {K H : Subgroup (GL (Fin 2) ℝ)}
-    [K.IsArithmetic] [H.IsArithmetic] (hKH : K ≤ H) (c : translationCycles K H) :
+    [K.IsArithmetic] [H.IsArithmetic] (hKH : K ≤ H) (c : TranslationCycles K H) :
     CuspOrbits.map hKH (translationCycleCusp K H c) =
       ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧ := by
   refine Quotient.eq.mpr ⟨c.out.out⁻¹, ?_⟩
@@ -261,8 +261,8 @@ lemma relIndex_mul_orderAtCusp_infty_eq_sum_fiber_restrict
       ∑ c with CuspOrbits.map hKH c = ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧,
         orderAtCuspOrbit K k c (ModularForm.restrict hKH f) := by
   let := Fintype.ofFinite (CuspOrbits K)
-  let := Fintype.ofFinite (translationCycles K H)
-  let e : translationCycles K H ↪ CuspOrbits K :=
+  let := Fintype.ofFinite (TranslationCycles K H)
+  let e : TranslationCycles K H ↪ CuspOrbits K :=
     ⟨translationCycleCusp K H, translationCycleCusp_injective hKH hnegK⟩
   have hsubset : Finset.univ.map e ⊆ Finset.univ.filter
       (fun c ↦ CuspOrbits.map hKH c = ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧) := by
@@ -278,7 +278,7 @@ lemma relIndex_mul_orderAtCusp_infty_eq_sum_fiber_restrict
       ∑ c with CuspOrbits.map hKH c = ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧,
         orderAtCuspOrbit K k c (ModularForm.restrict hKH f) := by
     rw [hsets]
-  have horder (c : translationCycles K H) :
+  have horder (c : TranslationCycles K H) :
       orderAtCuspOrbit K k (e c) (ModularForm.restrict hKH f) =
         (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).widthInfty * orderAtInfty f := by
     have hc : IsCusp ((c.out.out : GL (Fin 2) ℝ)⁻¹ • ∞) K :=
@@ -293,7 +293,7 @@ lemma relIndex_mul_orderAtCusp_infty_eq_sum_fiber_restrict
   rw [Finset.sum_map] at hsum
   simp_rw [horder] at hsum
   rw [sum_coe_mul _ _ (fun c _ ↦ widthInfty_nonneg _) (orderAtInfty f)] at hsum
-  have hwidth : ∑ c : translationCycles K H,
+  have hwidth : ∑ c : TranslationCycles K H,
       (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).widthInfty =
         K.relIndex H * H.widthInfty := by
     simpa only [widthInfty, adjoinNegOne_conj, adjoinNegOne_eq_self_iff.mpr hnegK,
@@ -304,20 +304,20 @@ lemma relIndex_mul_orderAtCusp_infty_eq_sum_fiber_restrict
 private lemma sum_translationCycles {G H : Subgroup (GL (Fin 2) ℝ)}
     [G.IsArithmetic] [H.IsArithmetic] (b : (H ⧸ G.subgroupOf H) → EReal)
     (hb : ∀ (t : zpowers (translation H 1)) q, b (t • q) = b q) :
-    let := Fintype.ofFinite (translationCycles G H)
+    let := Fintype.ofFinite (TranslationCycles G H)
     let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
-    ∑ c : translationCycles G H,
+    ∑ c : TranslationCycles G H,
       (Function.minimalPeriod (fun q : H ⧸ G.subgroupOf H ↦ translation H 1 • q) c.out : EReal) *
         b c.out = ∑ q : H ⧸ G.subgroupOf H, b q := by
-  let := Fintype.ofFinite (translationCycles G H)
+  let := Fintype.ofFinite (TranslationCycles G H)
   let := Fintype.ofFinite (H ⧸ G.subgroupOf H)
-  let (c : translationCycles G H) :=
+  let (c : TranslationCycles G H) :=
     Fintype.ofFinite (MulAction.orbit (zpowers (translation H 1)) c.out)
-  have hval (c : translationCycles G H) (q : MulAction.orbit (zpowers (translation H 1)) c.out) :
+  have hval (c : TranslationCycles G H) (q : MulAction.orbit (zpowers (translation H 1)) c.out) :
       b q.val = b c.out := by
     obtain ⟨t, ht⟩ := q.property
     rw [← ht, hb]
-  have heval (c : translationCycles G H)
+  have heval (c : TranslationCycles G H)
       (q : MulAction.orbit (zpowers (translation H 1)) c.out) :
       (MulAction.selfEquivSigmaOrbits (zpowers (translation H 1)) (H ⧸ G.subgroupOf H)).symm
         ⟨c, q⟩ = q.val := rfl
@@ -449,15 +449,15 @@ lemma cuspOrderFiber_infty_eq_sum_quotientFunc
   intro
   classical
   let := Fintype.ofFinite (CuspOrbits G)
-  let := Fintype.ofFinite (translationCycles G H)
-  let e : translationCycles G H ↪ CuspOrbits G :=
+  let := Fintype.ofFinite (TranslationCycles G H)
+  let e : TranslationCycles G H ↪ CuspOrbits G :=
     ⟨translationCycleCusp G H, translationCycleCusp_injective hGH hneg⟩
   have hsets : Finset.univ.map e = Finset.univ.filter
       (fun c ↦ CuspOrbits.map hGH c = ⟦⟨∞, (Fact.out : IsCusp ∞ H)⟩⟧) := Finset.ext fun c ↦ by
     simp only [Finset.mem_map, Finset.mem_univ, true_and, Finset.mem_filter]
     exact ⟨fun ⟨d, hd⟩ ↦ hd ▸ translationCycleCusp_map hGH d,
       translationCycleCusp_surjective_fiber hGH c⟩
-  have horder (c : translationCycles G H) : orderAtCuspOrbit G k (e c) f = (H.widthInfty : EReal) *
+  have horder (c : TranslationCycles G H) : orderAtCuspOrbit G k (e c) f = (H.widthInfty : EReal) *
       ((Function.minimalPeriod (fun q : H ⧸ G.subgroupOf H ↦ translation H 1 • q) c.out : EReal) *
         orderAtInfty (SlashInvariantForm.quotientFunc f c.out)) := by
     let r := c.out.out
@@ -630,7 +630,7 @@ lemma relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne
   rw [orderAtCuspOrbit_mk, CuspOrbits.map_mk, orderAtCuspOrbit_mk,
     orderAtCusp_eq G k d.property f _ hg.symm,
     orderAtCusp_eq G.adjoinNegOne _ (d.property.mono G.le_adjoinNegOne) _ _ hg.symm, mul_left_comm]
-  simp only [widthInfty, adjoinNegOne_conj, adjoinNegOne_eq_self_iff.mpr G.negOne_mem_adjoinNegOne]
+  simp only [widthInfty, adjoinNegOne_conj, adjoinNegOne_eq_self_iff.mpr G.neg_one_mem_adjoinNegOne]
   exact mul_le_mul_of_nonneg_left hnorm.le (EReal.coe_nonneg.mpr (strictWidthInfty_nonneg _))
 
 end UpperHalfPlane
