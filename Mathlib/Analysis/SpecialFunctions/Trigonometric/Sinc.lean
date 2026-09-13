@@ -93,8 +93,8 @@ lemma continuous_sinc : Continuous sinc := by
   · rw [continuousAt_dslope_of_ne hx]
     fun_prop
 
-/-- Squeeze bound for `sinc`. For `|x| < π / 2` we have `cos x ≤ sinc x`, together with
-`sinc_le_one` they give the squeeze `cos x ≤ sin x / x ≤ 1`. -/
+/-- For `|x| < π / 2` we have `cos x ≤ sinc x`, and together with
+`sinc_le_one` this gives the squeeze `cos x ≤ sin x / x ≤ 1`. -/
 lemma cos_le_sinc (hx : |x| < π / 2) : cos x ≤ sinc x := by
   wlog hx₀ : 0 ≤ x generalizing x
   · simpa using this (x := -x) (by simpa using hx) (by linarith [not_le.mp hx₀])
