@@ -30,10 +30,6 @@ is the cardinality of the corresponding subset of `Finset.range`.
 
 This file is based on Aristotle's Lean port of the list-sum constructions from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
-
-The definitions and results correspond to the following declarations in the Coq development:
-
-* `List.headD_le_sum` : `leq_head_sumn`.
 -/
 
 @[expose] public section
@@ -51,14 +47,13 @@ lemma headD_le_sum (l : List ℕ) : l.headD 0 ≤ l.sum := by
 /-- An entry of a list of natural numbers is at most the sum of the list. -/
 lemma getD_le_sum (l : List ℕ) (i : ℕ) : l.getD i 0 ≤ l.sum := by
   rcases lt_or_ge i l.length with h | h
-  · exact List.single_le_sum (fun _ _ => Nat.zero_le _) _ (by
-      rw [List.getD_eq_getElem l 0 h]; exact List.getElem_mem h)
+  · rw [List.getD_eq_getElem l 0 h]
+    exact List.single_le_sum (fun _ _ => Nat.zero_le _) _ (List.getElem_mem h)
   · rw [List.getD_eq_default _ _ h]
     exact Nat.zero_le _
 
-lemma sum_take_le_sum (l : List ℕ) (i : ℕ) : (l.take i).sum ≤ l.sum := by
-  have h := List.sum_take_add_sum_drop l i
-  omega
+lemma sum_take_le_sum (l : List ℕ) (i : ℕ) : (l.take i).sum ≤ l.sum :=
+  Nat.le.intro (List.sum_take_add_sum_drop l i)
 
 /-! ### Partial sums -/
 
@@ -69,12 +64,14 @@ lemma sum_take_succ_getD (l : List ℕ) (i : ℕ) :
   | cons a s ih =>
     cases i with
     | zero => simp
-    | succ j => simp only [List.take_succ_cons, List.sum_cons, ih j, List.getD_cons_succ]; omega
+    | succ j =>
+      simp only [List.take_succ_cons, List.sum_cons, ih j, List.getD_cons_succ]
+      exact Eq.symm (Nat.add_assoc a (take j s).sum (s.getD j 0))
 
 lemma sum_tail_add_getD_zero (l : List ℕ) : l.tail.sum + l.getD 0 0 = l.sum := by
   cases l with
   | nil => simp
-  | cons a s => simp [List.sum_cons]; omega
+  | cons a s => simp [List.sum_cons, Nat.add_comm s.sum a]
 
 lemma sum_set_add_getElem (l : List ℕ) {j : ℕ} (h : j < l.length) (a : ℕ) :
     (l.set j a).sum + l[j] = l.sum + a := by
@@ -103,7 +100,7 @@ lemma sum_eq_sum_range_getD_length (l : List ℕ) :
   | nil => simp
   | cons a t ih =>
     rw [List.sum_cons, ih, List.length_cons, Finset.sum_range_succ']
-    simp [Nat.add_comm]
+    exact Nat.add_comm a (∑ i ∈ Finset.range t.length, t.getD i 0)
 
 lemma sum_eq_sum_range_getD (l : List ℕ) {k : ℕ} (hk : l.length ≤ k) :
     l.sum = ∑ i ∈ Finset.range k, l.getD i 0 := by
@@ -118,10 +115,7 @@ lemma countP_eq_card_filter_range (l : List ℕ) (p : ℕ → Bool) :
     l.countP p = ((Finset.range l.length).filter (fun i ↦ p (l.getD i 0))).card := by
   induction l with
   | nil => simp
-  | cons a t ih =>
-    rw [List.countP_cons, ih, List.length_cons, Finset.card_filter, Finset.card_filter,
-      Finset.sum_range_succ']
-    simp only [List.getD_cons_succ, List.getD_cons_zero]
+  | cons a t ih => simp [List.countP_cons, ih, Finset.card_filter, Finset.sum_range_succ']
 
 /-- The length of a list of letters `< M`, counted letter by letter. -/
 lemma length_eq_sum_count {l : List ℕ} {M : ℕ} (h : ∀ x ∈ l, x < M) :
@@ -129,14 +123,11 @@ lemma length_eq_sum_count {l : List ℕ} {M : ℕ} (h : ∀ x ∈ l, x < M) :
   induction l with
   | nil => simp
   | cons a l ih =>
-    have ha : a < M := h a (by simp)
-    have hl : ∀ x ∈ l, x < M := fun x hx => h x (by simp [hx])
     have hcount : ∀ i, (a :: l).count i = l.count i + if a = i then 1 else 0 := by
-      intro i
-      rw [List.count_cons]
-      by_cases hai : a = i <;> simp [hai]
-    simp only [List.length_cons, ih hl]
+      intro i; by_cases hai : a = i <;> simp [hai]
+    simp only [List.length_cons, ih fun x hx => h x (mem_cons_of_mem a hx)]
     rw [Finset.sum_congr rfl (fun i _ => hcount i), Finset.sum_add_distrib,
-      Finset.sum_ite_eq (Finset.range M) a (fun _ => 1), ite_eq_left (Finset.mem_range.2 ha)]
+      Finset.sum_ite_eq (Finset.range M) a (fun _ => 1),
+      ite_eq_left (Finset.mem_range.2 (h a mem_cons_self))]
 
 end List

@@ -26,10 +26,6 @@ bijection *fiberwise*, that is by a bijection commuting with the two maps.
 
 This file is based on Aristotle's Lean port of `theories/Combi/fibered_set.v` from
 [Coq-Combi](https://github.com/math-comp/Coq-Combi).
-
-The definitions and results correspond to the following declarations in the Coq development:
-
-* `Fintype.exists_bijOn_of_card_fiber_eq` : `fbbijP`.
 -/
 
 @[expose] public section
