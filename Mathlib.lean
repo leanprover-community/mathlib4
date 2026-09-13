@@ -4225,6 +4225,7 @@ public import Mathlib.Data.List.Rotate
 public import Mathlib.Data.List.Sections
 public import Mathlib.Data.List.Shortlex
 public import Mathlib.Data.List.Sigma
+public import Mathlib.Data.List.SignVariations
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.List.SplitBy
 public import Mathlib.Data.List.SplitLengths
