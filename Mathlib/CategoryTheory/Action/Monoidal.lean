@@ -48,13 +48,11 @@ instance instMonoidalCategory : MonoidalCategory (Action V G) where
   __ := Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
-theorem tensorUnit_ρ {g : G} :
-    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
-  rfl
+theorem tensorUnit_ρ {g : G} : dsimp% (𝟙_ (Action V G)).ρ g = 1 := rfl
 
 @[simp]
 theorem tensor_ρ {X Y : Action V G} {g : G} :
-    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ₘ Y.ρ g :=
+    dsimp% ((X ⊗ Y).ρ g).asHom = (X.ρ g).asHom ⊗ₘ (Y.ρ g).asHom := by
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -193,10 +191,10 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
-theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
+theorem rightDual_ρ [RightRigidCategory V] (h : H) : (Xᘁ.ρ h).asHom = (X.ρ (h⁻¹ : H)).asHomᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
-theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
+theorem leftDual_ρ [LeftRigidCategory V] (h : H) : ((ᘁX).ρ h).asHom = ᘁ(X.ρ (h⁻¹ : H)).asHom := by
   rw [← SingleObj.inv_as_inv]; rfl
 
 end
