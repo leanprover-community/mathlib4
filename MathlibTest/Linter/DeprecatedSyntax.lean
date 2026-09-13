@@ -253,3 +253,47 @@ Note: This linter can be disabled with `set_option linter.style.maxHeartbeats fa
 set_option maxHeartbeats 10 in
 /-- Doc-strings for the following command do not silence the linter. -/
 example : True := trivial
+
+end
+end
+end
+end
+end
+end
+
+section
+set_option linter.style.pipe true
+
+/--
+warning: The pipe operator `<|` can be omitted.
+
+Note: This linter can be disabled with `set_option linter.style.pipe false`
+-/
+#guard_msgs in
+example : (Nat.succ <| (0)) = 1 := rfl
+
+/--
+warning: The pipe operator `<|` can be omitted.
+
+Note: This linter can be disabled with `set_option linter.style.pipe false`
+-/
+#guard_msgs in
+example : (Nat.succ <| 0) = 1 := rfl
+
+/--
+warning: The pipe operator `<|` can be omitted.
+
+Note: This linter can be disabled with `set_option linter.style.pipe false`
+-/
+#guard_msgs in
+example : (List.cons 0 <| [1]) = [0,1] := rfl
+
+/--
+warning: The pipe operator `<|` can be omitted.
+
+Note: This linter can be disabled with `set_option linter.style.pipe false`
+-/
+#guard_msgs in
+example : ([0,1].foldl (init := 0) <| fun a b ↦ a + b) = 1 := rfl
+
+end

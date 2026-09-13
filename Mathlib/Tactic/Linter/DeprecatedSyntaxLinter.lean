@@ -111,6 +111,12 @@ public register_option linter.style.maxHeartbeats : Bool := {
   descr := "enable the maxHeartbeats linter"
 }
 
+/-- The option `linter.style.pipe` flags usages of `f <| a` that are redundant. -/
+public register_option linter.style.pipe : Bool := {
+  defValue := false
+  descr := "enable the `<|` linter"
+}
+
 /-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
 where `<option>` contains `maxHeartbeats`, then it returns
 * the `<option>`, as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
@@ -144,6 +150,40 @@ def usesNativeConfig : Syntax → Bool
     t.getElems.any fun
       | `(Parser.Term.structInstField| native := true) => true
       | _ => false
+  | _ => false
+
+/-- Return `true` for some common syntaxes that parse at `max` precedence. -/
+partial def hasMaxPrec : Syntax → Bool
+  | .ident .. | .atom .. => true
+  | .node _ kind args => match kind with
+    | `choice => args.any hasMaxPrec
+    -- literals
+    | `num | `scientific | `str | `char | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName
+    -- universes
+    | ``Parser.Term.type | ``Parser.Term.sort | ``Parser.Term.prop
+    -- brackets
+    | ``Parser.Term.paren | ``Parser.Term.typeAscription
+    -- miscelaneous: `·`, `@x`, `x.1`, `.x`, `x.{u}`
+    | ``Parser.Term.cdot | ``Parser.Term.explicit
+    | ``Parser.Term.proj | ``Parser.Term.dotIdent | ``Parser.Term.explicitUniv
+    -- getElem notation
+    | ``«term__[_]» | ``«term__[_]'_» | ``«term__[_]_!» | ``«term__[_]_?»
+    -- tuples/lists
+    | ``Parser.Term.tuple | ``Parser.Term.anonymousCtor | ``Parser.Term.structInst
+    | ``«term[_]» | ``«term#[_,]» | ``Vector.«term#v[_,]»
+    -- atomic notation
+    | ``«term∅» | `«term⊤» | `«term⊥»
+    | `termℕ | `termℤ | `termℚ | `termℝ | `termℂ
+    -- infix/prefix notation
+    | ``«term_⁻¹» | ``«term¬_» | ``term!_
+    -- lambda
+    | ``Parser.Term.fun | ``Parser.Term.nofun => true
+    | _ => false
+  | _ => false
+
+/-- Return `true` for some common syntaxes that parse at `arg` precedence. -/
+def hasArgPrec : Syntax → Bool
+  | .node _ kind _ => (kind matches ``Parser.Term.do)
   | _ => false
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
@@ -193,6 +233,14 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
               as in\nset_option {opt} {n} in\n-- reason for change\n...")
         else
           rargs
+    | ``«term_<|_» =>
+      if let some arg := args[2]? then
+        if hasMaxPrec arg || hasArgPrec arg then
+          rargs.push (kind, stx, "The pipe operator `<|` can be omitted.")
+        else
+          rargs
+      else
+        rargs
     | _ => rargs
   | _ => default
 
@@ -211,14 +259,16 @@ replacement syntax. For each individual case, linting can be turned on or off se
   (controlled by `linter.style.maxHeartbeats`)
 -/
 def deprecatedSyntaxLinter : Linter where run stx := do
-  unless getLinterValue linter.style.refine (← getLinterOptions) ||
-      getLinterValue linter.style.cases (← getLinterOptions) ||
-      getLinterValue linter.style.induction (← getLinterOptions) ||
-      getLinterValue linter.style.admit (← getLinterOptions) ||
-      getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
-      getLinterValue linter.style.native (← getLinterOptions) ||
+  let opts ← getLinterOptions
+  unless getLinterValue linter.style.refine opts ||
+      getLinterValue linter.style.cases opts ||
+      getLinterValue linter.style.induction opts ||
+      getLinterValue linter.style.admit opts ||
+      getLinterValue linter.style.maxHeartbeats opts ||
+      getLinterValue linter.style.native opts ||
       -- TODO: Remove this line with `linter.style.nativeDecide`.
-      getLinterValue linter.style.nativeDecide (← getLinterOptions) do
+      getLinterValue linter.style.nativeDecide opts ||
+      getLinterValue linter.style.pipe opts do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -245,6 +295,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
         else if getLinterValue linter.style.nativeDecide options then
           Linter.logLint linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
+      | ``«term_<|_» => Linter.logLintIf linter.style.pipe stx' msg
       | _ => continue) stx
 
 initialize addLinter deprecatedSyntaxLinter

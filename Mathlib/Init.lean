@@ -99,13 +99,14 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.emptyLine
   linter.style.header
   linter.style.lambdaSyntax
-  linter.style.longLine
   linter.style.longFile
+  linter.style.longLine
+  linter.style.maxHeartbeats
+  linter.style.missingEnd
   linter.style.multiGoal
   linter.style.native
   linter.style.openClassical
-  linter.style.maxHeartbeats
-  linter.style.missingEnd
+  linter.style.pipe
   linter.style.setOption
   linter.style.show
   linter.style.whitespace
