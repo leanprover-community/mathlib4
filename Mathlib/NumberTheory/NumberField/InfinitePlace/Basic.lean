@@ -623,6 +623,6 @@ topology coming from the infinite place `v`.
 theorem denseRange_algebraMap_pi [NumberField K] :
     DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
   AbsoluteValue.denseRange_algebraMap_pi (fun v ↦ v.isNontrivial)
-    fun _ _ h ↦ (eq_iff_isEquiv (K := K)).not.mp h
+    fun _ _ _ _ h ↦ (eq_iff_isEquiv (K := K)).not.mp h
 
 end NumberField.InfinitePlace

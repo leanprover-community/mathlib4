@@ -220,14 +220,14 @@ lemma nnnorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b�
   NNReal.eq <| norm_sub_eq_max h
 
 open scoped Function in
-lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
+lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise' ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
   induction s using Finset.induction with
   | empty => simp
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by simp_all [nnnorm_add_eq_max this]
-    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ pairwise'_apply h0 (by grind)
 
 end CommCStarAlgebra
 
@@ -290,7 +290,7 @@ lemma nnnorm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a *
 
 open scoped Function in
 lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
-    (h : ∀ i ∈ s, IsSelfAdjoint (f i)) (h0 : Pairwise ((· * · = 0) on f)) :
+    (h : ∀ i ∈ s, IsSelfAdjoint (f i)) (h0 : Pairwise' ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
   induction s using Finset.induction with
@@ -298,7 +298,7 @@ lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by
       simp_all [(h j (by simp)).nnnorm_add_eq_max (by cfc_tac) this]
-    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ pairwise'_apply h0 (by grind)
 
 end IsSelfAdjoint
 
