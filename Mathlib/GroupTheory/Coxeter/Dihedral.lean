@@ -60,24 +60,22 @@ def toDihedral (m : ℕ) :
         (CoxeterMatrix.I m).simple (1 : Fin 2)) = r 1 := by
   simp
 
+private abbrev IGroup (m : ℕ) := (CoxeterMatrix.I m).Group
+
+private abbrev c0 (m : ℕ) : IGroup m := (CoxeterMatrix.I m).simple (0 : Fin 2)
+private abbrev c1 (m : ℕ) : IGroup m := (CoxeterMatrix.I m).simple (1 : Fin 2)
+
 /-- The canonical homomorphism onto the concrete dihedral group is surjective. -/
 theorem toDihedral_surjective (m : ℕ) : Function.Surjective (toDihedral m) := by
   intro d
   cases d with
   | r i =>
-      refine ⟨(((CoxeterMatrix.I m).simple (0 : Fin 2) *
-        (CoxeterMatrix.I m).simple (1 : Fin 2)) ^ i.val), ?_⟩
+      refine ⟨((c0 m * c1 m) ^ i.val), ?_⟩
       simp
   | sr i =>
-      refine ⟨((CoxeterMatrix.I m).simple (0 : Fin 2) *
-        (((CoxeterMatrix.I m).simple (0 : Fin 2) *
-          (CoxeterMatrix.I m).simple (1 : Fin 2)) ^ i.val)), ?_⟩
+      refine ⟨(c0 m * (c0 m * c1 m) ^ i.val), ?_⟩
       simp
 
-private abbrev IGroup (m : ℕ) := (CoxeterMatrix.I m).Group
-
-private def c0 (m : ℕ) : IGroup m := (CoxeterMatrix.I m).simple (0 : Fin 2)
-private def c1 (m : ℕ) : IGroup m := (CoxeterMatrix.I m).simple (1 : Fin 2)
 private def rot (m : ℕ) : IGroup m := c0 m * c1 m
 
 @[simp] private theorem c0_sq (m : ℕ) : c0 m * c0 m = 1 := by
@@ -102,11 +100,7 @@ private theorem rot_pow_order (m : ℕ) : (rot m) ^ (m + 2) = 1 := by
       (0 : Fin 2) (1 : Fin 2)
 
 private theorem c1_eq_c0_mul_rot (m : ℕ) : c1 m = c0 m * rot m := by
-  calc
-    c1 m = 1 * c1 m := by simp
-    _ = (c0 m * c0 m) * c1 m := by rw [c0_sq]
-    _ = c0 m * (c0 m * c1 m) := by simp only [mul_assoc]
-    _ = c0 m * rot m := by rfl
+  rw [← one_mul (c1 m), ← c0_sq, rot, mul_assoc]
 
 @[simp] private theorem c0_mul_rot_mul_c0 (m : ℕ) :
     c0 m * rot m * c0 m = (rot m)⁻¹ := by
