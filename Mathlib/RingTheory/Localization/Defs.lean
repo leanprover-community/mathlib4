@@ -543,7 +543,7 @@ theorem monoidHom_ext {P : Type*} [Monoid P] ⦃j k : S →* P⦄
 theorem ringHom_ext {P : Type*} [Semiring P] ⦃j k : S →+* P⦄
     (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
-  RingHom.toMonoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
+  RingHom.coe_monoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
 
 /-- To show `j` and `k` agree on the whole localization, it suffices to show they agree
 on the image of the base ring, if they preserve `1` and `*`. -/

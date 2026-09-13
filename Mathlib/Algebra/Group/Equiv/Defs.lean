@@ -457,18 +457,18 @@ section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
 @[to_additive (attr := simp)]
-theorem toMonoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
+theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
 @[to_additive (attr := simp)]
-lemma toMonoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
+lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
     (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
 
 @[to_additive (attr := simp)]
-lemma toMonoidHom_comp_toMonoidHom_symm (e : M ≃* N) :
+lemma coe_monoidHom_comp_coe_monoidHom_symm (e : M ≃* N) :
     (e : M →* N).comp e.symm = MonoidHom.id _ := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma toMonoidHom_symm_comp_toMonoidHom (e : M ≃* N) :
+lemma coe_monoidHom_symm_comp_coe_monoidHom (e : M ≃* N) :
     (e.symm : N →* M).comp e = MonoidHom.id _ := by ext; simp
 
 @[to_additive]
