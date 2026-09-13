@@ -21,10 +21,8 @@ This file contains the definition of the sinc function and some of its propertie
 ## Main statements
 
 * `continuous_sinc`: the sinc function is continuous.
-* `cos_le_sinc`: `cos x ≤ sinc x` for `|x| < π / 2`; together with `sinc_le_one` this is the
-  classical squeeze behind the limit of `sin x / x` at `0`
-  (`Real.tendsto_sin_div_nhdsNE_zero`, proved in
-  `Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean`).
+* `cos_le_sinc`: `cos x ≤ sinc x` for `|x| < π / 2`, together with `sinc_le_one` this is the
+  classical squeeze behind the limit of `sin x / x` at `0`.
 * `sinc_pos`: `sinc` is positive on `(-π, π)`.
 
 -/
