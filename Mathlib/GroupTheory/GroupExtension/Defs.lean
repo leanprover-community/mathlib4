@@ -305,7 +305,7 @@ theorem rightHom_splitting (g : G) : S.rightHom (s g) = g := s.rightInverse_righ
 @[to_additive (attr := simp)]
 theorem rightHom_comp_splitting : S.rightHom.comp s = MonoidHom.id G := by
   ext g
-  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_coe, rightHom_splitting]
+  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_ofClass, rightHom_splitting]
 
 end Splitting
 

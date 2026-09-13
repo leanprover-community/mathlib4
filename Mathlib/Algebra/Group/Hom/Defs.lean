@@ -414,7 +414,7 @@ instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨MonoidHom.ofClass⟩
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
+theorem MonoidHom.coe_ofClass [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
 
 @[to_additive]
 theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :
