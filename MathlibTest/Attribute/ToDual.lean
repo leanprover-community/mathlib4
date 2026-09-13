@@ -336,13 +336,10 @@ inductive WithBot.LE : WithBot α → WithBot α → Prop where
   | bot_le (x : WithBot α) : WithBot.LE .bot x
   | coe_le_coe {a b : α} : a ≤ b → WithBot.LE (.coe a) (.coe b)
 
-set_option linter.translate.warnInvalid false in
 @[to_dual existing (reorder := 3 4)]
 inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
-
-attribute [to_dual existing bot_le] WithTop.LE.le_top
 
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
@@ -399,7 +396,8 @@ def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β
 -- Due to the reordering of arguments, the equation theorem of the dual has a different shape,
 -- so we get this warning.
 /--
-warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to `universeTest1''._to_dual_1.eq_1`. Please silence this warning and add a translation manually. Error:
+warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to any of `[universeTest1''._to_dual_1.eq_1]`.
+Please silence this warning and add a translation manually. Errors:
 
 `to_dual` validation failed: expected
   universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α

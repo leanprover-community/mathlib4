@@ -93,10 +93,16 @@ Valid arguments are:
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-* MATHLIB_CACHE_GET_URL   Download from this single URL, bypassing the containers
-* MATHLIB_CACHE_PUT_URL   Upload to this single URL, bypassing the containers
+* MATHLIB_CACHE_DEBUG_USE_LEGACY
+                          Set to 1 or true to read from the Azure storage
+                          account instead of https://cache.mathlib.org.
+                          For troubleshooting only.
+* MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
+                          Allows third parties to use their own cache endpoint.
+* MATHLIB_CACHE_PUT_URL   Upload artifacts to this URL as a flat namespace.
+                          Allows third parties to upload to their own cache endpoint.
 * MATHLIB_CACHE_FROM      Comma-separated container list for reads, same shape as
-                          --cache-from. Used by CI to widen reads per job;
+                          --cache-from. Used by mathlib CI to widen reads per job;
                           --cache-from takes precedence when both are set.
 
 An empty value means unset for MATHLIB_CACHE_GET_URL and MATHLIB_CACHE_FROM.
@@ -128,6 +134,9 @@ def main (args : List String) : IO Unit := do
       IO.eprintln s!"Unknown option '{opt}'"
       IO.eprintln help
       Process.exit 1
+
+  -- Resolve the legacy switch once, before anything builds a read URL.
+  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
 
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options

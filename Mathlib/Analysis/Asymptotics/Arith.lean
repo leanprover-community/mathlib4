@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Basic
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Arithmetic operations on asymptotic relations

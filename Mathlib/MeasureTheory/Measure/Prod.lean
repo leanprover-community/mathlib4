@@ -450,6 +450,15 @@ theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
   measure_prod_null hs.compl
 
+/-- Version of `prod_apply` for a null measurable set. -/
+theorem prod_apply₀ {s : Set (α × β)} (hs : NullMeasurableSet s (μ.prod ν)) :
+    μ.prod ν s = ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
+  obtain ⟨t, htm, hst⟩ := hs
+  rw [measure_congr hst, prod_apply htm]
+  refine lintegral_congr_ae ?_
+  filter_upwards [ae_ae_of_ae_prod hst] with x hx
+  exact (measure_congr hx).symm
+
 @[fun_prop]
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
   refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
