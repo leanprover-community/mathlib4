@@ -118,7 +118,6 @@ theorem choose_middle_le_pow (n : ℕ) : (2 * n + 1).choose n ≤ 4 ^ n := by
     single_le_sum (fun x _ ↦ by lia) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 
-
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
   rcases lt_or_ge n k with h | h
