@@ -51,18 +51,19 @@ namespace Action
 
 variable {V}
 
-theorem ρ_one {G : Type*} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by simp
+theorem ρ_one {G : Type*} [Monoid G] (A : Action V G) : A.ρ 1 = 1 := by simp
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
 def ρAut {G : Type*} [Group G] (A : Action V G) : G →* Aut A.V where
   toFun g :=
-    { hom := A.ρ g
-      inv := A.ρ (g⁻¹ : G)
-      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
-      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
-  map_one' := Aut.ext A.ρ.map_one
-  map_mul' x y := Aut.ext (A.ρ.map_mul x y)
+    .of
+      { hom := (A.ρ g).asHom
+        inv := (A.ρ g⁻¹).asHom
+        hom_inv_id := by simp [← End.mul_asHom, ← map_mul]
+        inv_hom_id := by simp [← End.mul_asHom, ← map_mul] }
+  map_one' := by cat_disch--Aut.ext A.ρ.map_one
+  map_mul' x y := by cat_disch
 
 variable (G : Type*) [Monoid G]
 
@@ -89,7 +90,7 @@ commuting with the action of `G`.
 structure Hom (M N : Action V G) where
   /-- The morphism between the underlying objects of this action -/
   hom : M.V ⟶ N.V
-  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by cat_disch
+  comm : ∀ g : G, (M.ρ g).asHom ≫ hom = hom ≫ (N.ρ g).asHom := by cat_disch
 
 namespace Hom
 
@@ -150,7 +151,7 @@ from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
-    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by cat_disch) : M ≅ N where
+    (comm : ∀ g : G, (M.ρ g).asHom ≫ f.hom = f.hom ≫ (N.ρ g).asHom := by cat_disch) : M ≅ N where
   hom :=
     { hom := f.hom
       comm := comm }
@@ -177,10 +178,10 @@ namespace FunctorCategoryEquivalence
 @[simps]
 def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
-    { obj := fun _ => M.V
-      map := fun g => M.ρ g
-      map_id := fun _ => M.ρ.map_one
-      map_comp := fun g h => M.ρ.map_mul h g }
+    { obj _ := M.V
+      map g := (M.ρ g).asHom
+      map_id _ := by simp [SingleObj.id_as_one]
+      map_comp _ _ := by simp [SingleObj.comp_as_mul] }
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ g => f.comm g }
@@ -191,9 +192,15 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
     { V := F.obj PUnit.unit
       ρ :=
-        { toFun := fun g => F.map g
-          map_one' := F.map_id PUnit.unit
-          map_mul' := fun g h => F.map_comp h g } }
+        { toFun g := .of (F.map g)
+          map_one' := by
+            ext
+            dsimp
+            rw [← SingleObj.id_as_one, F.map_id]
+          map_mul' g h := by
+            ext
+            dsimp
+            rw [← SingleObj.comp_as_mul, F.map_comp] } }
   map f :=
     { hom := f.app PUnit.unit
       comm := fun g => f.naturality g }
@@ -258,7 +265,7 @@ instance : (forget V G).Faithful where map_injective w := Hom.ext w
 abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :=
   { f : FV M.V N.V // ∀ g : G,
-      f ∘ ConcreteCategory.hom (M.ρ g) = ConcreteCategory.hom (N.ρ g) ∘ f }
+      f ∘ ConcreteCategory.hom (M.ρ g).asHom = ConcreteCategory.hom (N.ρ g).asHom ∘ f }
 
 @[macro_inline]
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
@@ -301,7 +308,8 @@ end Forget
 
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
-      rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
+  ext
+  rw [Iso.conj_apply_asHom, Iso.eq_inv_comp]; simp [f.hom.comm]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
@@ -312,9 +320,9 @@ def actionPUnitEquivalence : Action V PUnit ≌ V where
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, Functor.comp_obj,
+      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_asHom, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
-      exact ρ_one X
+      exact congr($(ρ_one X).asHom)
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 variable (V)
@@ -410,11 +418,9 @@ def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G w
   obj M :=
     { V := F.obj M.V
       ρ :=
-        { toFun := fun g => F.map (M.ρ g)
-          map_one' := by simp
-          map_mul' := fun g h => by
-            dsimp
-            rw [map_mul, End.mul_def, F.map_comp] } }
+        { toFun g := .of (F.map (M.ρ g).asHom)
+          map_one' := by cat_disch
+          map_mul' := by cat_disch } }
   map f :=
     { hom := F.map f.hom
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
