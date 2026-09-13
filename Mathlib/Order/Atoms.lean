@@ -5,14 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
-public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Nontriviality
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+public import Mathlib.Tactic.Nontriviality.Core
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -502,12 +498,12 @@ instance [WellFoundedGT α] : IsStronglyCoatomic α :=
 @[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
-  have : WellFoundedLT α := ⟨h⟩; inferInstance
+  inferInstance
 
 @[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
-  have : WellFoundedGT α := ⟨h⟩; inferInstance
+  inferInstance
 
 @[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]

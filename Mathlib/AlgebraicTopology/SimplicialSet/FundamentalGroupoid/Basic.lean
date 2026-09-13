@@ -28,7 +28,6 @@ this allows to obtain the equality
 `(mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x)`
 by `with_implicit rfl`.
 
-
 -/
 
 @[expose] public section
@@ -54,7 +53,7 @@ lemma mk_surjective : Function.Surjective (mk (X := X)) :=
 
 /-- The bijection `FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory` that is
 used to define the category structure on `FundamentalGroupoid X`
-when `X` is a`2`-truncated simplicial set. -/
+when `X` is a `2`-truncated simplicial set. -/
 def equivFreeGroupoid : FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory where
   toFun x := FreeGroupoid.mk (HomotopyCategory.mk x.pt)
   invFun x := mk x.as.as.as.as
@@ -94,7 +93,7 @@ lemma homMk_id (x : X _⦋0⦌₂) : homMk (Edge.id x) = 𝟙 (mk x) :=
 of a `2`-truncated simplicial set: in order to prove a property
 of all morphisms, it suffices to do it for morphisms induced
 by edges and show that the property is stable by inverses and
-by composition; -/
+by composition. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma hom_rec {motive : ∀ ⦃x y : FundamentalGroupoid X⦄, (x ⟶ y) → Prop}
     (homMk : ∀ ⦃x y : X _⦋0⦌₂⦄ (e : Edge x y), motive (homMk e))
@@ -228,23 +227,31 @@ variable {X Y : SSet.{u}}
 
 variable (X) in
 /-- The fundamental groupoid of a simplicial set `X`. -/
-abbrev FundamentalGroupoid : Type u :=
+@[implicit_reducible]
+def FundamentalGroupoid : Type u :=
   ((truncation 2).obj X).FundamentalGroupoid
+deriving Groupoid
 
 namespace FundamentalGroupoid
 
 /-- Constructor for objects of the fundamental groupoid of a simplicial set `X`. -/
-abbrev mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
+@[implicit_reducible]
+def mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   Truncated.FundamentalGroupoid.mk_surjective
 
 /-- Induction principle for the objects of the fundamental groupoid of a simplicial set. -/
-@[elab_as_elim, cases_eliminator, induction_eliminator]
+@[implicit_reducible, elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : FundamentalGroupoid X → Sort*}
     (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : FundamentalGroupoid X) :
     motive x :=
   mk _
+
+@[simp]
+lemma rec_mk {motive : FundamentalGroupoid X → Sort*}
+    (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : X _⦋0⦌) :
+    FundamentalGroupoid.rec (motive := motive) mk (.mk x) = mk x := rfl
 
 /-- Constructor for morphisms in the fundamental groupoid of a simplicial set `X`. -/
 def homMk {x y : X _⦋0⦌} (e : Edge x y) : mk x ⟶ mk y :=
@@ -280,7 +287,6 @@ variable {D : Type*} [Groupoid D]
 @[implicit_reducible]
 def desc : FundamentalGroupoid X ⥤ D :=
   Truncated.FundamentalGroupoid.desc obj map map_comp
-
 
 @[simp]
 lemma desc_obj_mk (x : X _⦋0⦌) :
@@ -323,7 +329,7 @@ lemma mapFundamentalGroupoid_obj_mk (f : X ⟶ Y) (x : X _⦋0⦌) :
 
 @[simp]
 lemma mapFundamentalGroupoid_map_homMk (f : X ⟶ Y) {x y : X _⦋0⦌} (e : Edge x y) :
-    (mapFundamentalGroupoid f).map (homMk e) = homMk (e.map f) := by rfl
+    (mapFundamentalGroupoid f).map (homMk e) = homMk (e.map f) := (rfl)
 
 example (f : X ⟶ Y) (x : X _⦋0⦌) :
     (mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x) := by
@@ -332,14 +338,15 @@ example (f : X ⟶ Y) (x : X _⦋0⦌) :
 /-- The isomorphism of fundamental groupoids that is induced
 by a morphism of simplicial sets which induces an isomorphism
 on the `2`-truncations. -/
-noncomputable def isoCatMapFundamentalGroupoid (f : X ⟶ Y)
+lemma isIso_mapFundamentalGroupoid_of_isIso (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
-    IsoCat (FundamentalGroupoid X) (FundamentalGroupoid Y) :=
-  Truncated.mapIsoFundamentalGroupoid (asIso ((truncation 2).map f))
+    (mapFundamentalGroupoid f).IsIso :=
+  Truncated.mapIsoFundamentalGroupoid (asIso ((truncation 2).map f))|>.isIso_functor
 
 lemma isEquivalence_mapFundamentalGroupoid (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
-    (mapFundamentalGroupoid f).IsEquivalence :=
-  (isoCatMapFundamentalGroupoid f).toEquivalence.isEquivalence_functor
+    (mapFundamentalGroupoid f).IsEquivalence := by
+  have := isIso_mapFundamentalGroupoid_of_isIso f
+  infer_instance
 
 end SSet
