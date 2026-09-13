@@ -190,3 +190,9 @@ example : True := by
   · click_test h "" => "rw [← true_eq_false_of_false h] at h"
     trivial
   · trivial
+
+example (h₁ : n ≤ m) (h₂ : m ≤ k) : n ≤ k := by
+  apply Nat.le_trans
+  click_test => "exact h₁"
+  exact h₁
+  exact h₂

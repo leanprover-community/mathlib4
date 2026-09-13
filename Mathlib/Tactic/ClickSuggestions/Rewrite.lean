@@ -82,7 +82,8 @@ private def tacticSyntax (lem : RwLemma) (rwKind : RwKind) (hyp? : Option Ident)
   mkRewrite rwKind lem.symm proof hyp?
 
 /-- Generate the suggestion for rewriting with `lem`. -/
-def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) := do
+def RwLemma.try (i : RwInfo) (lem : RwLemma) (assignableMVars : Array Expr) :
+    ClickSuggestionsM (Result RwKey) := do
   let e := i.subExpr
   let (proof, mvars, binderInfos, eqn) ← lem.name.forallMetaTelescopeReducing
   let mkApp2 _ lhs rhs ← whnf eqn | throwError "Exected an equality or iff, not {eqn}"
@@ -96,20 +97,20 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) 
   if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
     throwError "{lhs} and {e} do not match according to the head-constant indexing"
   synthAppInstances `click_suggestions default mvars binderInfos false false
+  let mvars ← mvars.map (·.mvarId!) |>.filterM (not <$> ·.isAssigned)
   let mut extraGoals := #[]
   let mut justLemmaName := true
   let mut rwKind := i.rwKind
-  for mvar in mvars do
-    unless ← mvar.mvarId!.isAssigned do
-      if ← pure (rwKind matches .valid ..) <&&> isProof mvar <&&> mvar.mvarId!.assumptionCore then
-        justLemmaName := false
-      else
-        extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar))
+  for mvarId in mvars do
+    let type ← instantiateMVars (← mvarId.getType)
+    if ← pure (rwKind matches .valid ..) <&&> isProp type <&&>
+        withNewMCtxDepth mvarId.assumptionCore then
+      justLemmaName := false
+    else
+      extraGoals := extraGoals.push type
 
   let replacement ← instantiateMVars rhs
-  let makesNewMVars :=
-    (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    extraGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
+  let unhelpfulMVars ← hasUnhelpfulMVars mvars assignableMVars (extraGoals.push replacement)
   let proof ← instantiateMVars proof
   let isRefl ← isExplicitEq e replacement
   if let .valid tpCorrect _ := rwKind then
@@ -140,10 +141,10 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) 
   for goal in extraGoals do
     htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
-    if !isRefl && !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-    else
+    if isRefl || unhelpfulMVars then
       pure none
+    else
+      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   htmls := htmls.push (<div> {← lem.name.toHtml} </div>)
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← do

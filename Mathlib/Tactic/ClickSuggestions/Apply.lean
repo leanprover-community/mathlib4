@@ -8,6 +8,8 @@ module
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Mathlib.Tactic.ClickSuggestions.Util
 
+import all Lean.Meta.Tactic.Apply
+
 /-!
 # Support for `apply` suggestions in `#click_suggestions`
 -/
@@ -73,22 +75,25 @@ where
     return !info.paramInfo.any (·.binderInfo.isExplicit)
 
 /-- Generate the suggestion for applying `lem`. -/
-def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) := do
+def ApplyLemma.try (lem : ApplyLemma) (assignableMVars : Array Expr) :
+    ClickSuggestionsM (Result ApplyKey) := do
   let (proof, mvars, binderInfos, e) ← lem.name.forallMetaTelescopeReducing
   let target ← (← read).goal.getType
   unless ← isDefEq e target do throwError "{e} does not unify with {target}"
   synthAppInstances `click_suggestions default mvars binderInfos false false
+  let mvars ← mvars.filterM (not <$> ·.mvarId!.isAssigned)
+  -- Reorder the goals as `apply` would.
+  let mvars ← reorderGoals mvars .nonDependentFirst
   let mut newGoals := #[]
   let mut justLemmaName := true
-  for mvar in mvars do
-    unless ← mvar.mvarId!.isAssigned do
-      if ← isProof mvar <&&> mvar.mvarId!.assumptionCore then
-        justLemmaName := false
-      else
-        newGoals := newGoals.push (← instantiateMVars (← inferType mvar))
+  for mvarId in mvars do
+    let type ← instantiateMVars <| ← mvarId.getType
+    if ← isProp type <&&> withNewMCtxDepth mvarId.assumptionCore then
+      justLemmaName := false
+    else
+      newGoals := newGoals.push type
   let isClosing := newGoals.isEmpty
-  let makesNewMVars := newGoals.any fun goal =>
-    (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
+  let unhelpfulMVars ← hasUnhelpfulMVars mvars.toArray assignableMVars newGoals
   let proof ← instantiateMVars proof
   let key := {
     numGoals := newGoals.size
@@ -106,10 +111,10 @@ def ApplyLemma.try (lem : ApplyLemma) : ClickSuggestionsM (Result ApplyKey) := d
     htmls := #[.text "Goal accomplished! 🎉️"]
     addSolvedSuggestion tactic
   let filtered ←
-    if !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-    else
+    if unhelpfulMVars then
       pure none
+    else
+      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← do
