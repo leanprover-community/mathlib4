@@ -50,7 +50,10 @@ theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSep
   · simp only [ShortComplex.map_f]
     infer_instance
   · suffices φ.map.Surjective by simpa [AddCommGrpCat.epi_iff_surjective, Functor.coe_mapAddHom]
-    exact fun f => ⟨f (𝟙 G), by cat_disch⟩
+    exact fun f => ⟨f (𝟙 G), by
+      ext x
+      convert! (f.hom.map_smul (.op (.of x)) (𝟙 G)).symm
+      exact (Category.comp_id _).symm⟩
   · simp [AddCommGrpCat.mono_iff_injective, Functor.coe_mapAddHom, Functor.map_injective]
 
 end

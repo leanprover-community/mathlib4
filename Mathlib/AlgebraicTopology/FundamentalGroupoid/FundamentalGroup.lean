@@ -41,9 +41,9 @@ namespace FundamentalGroup
 
 variable {x : X} {p q : FundamentalGroup X x}
 
-theorem one_def : (1 : FundamentalGroup X x) = .refl x := rfl
-theorem mul_def : p * q = q.trans p := rfl
-theorem inv_def : p⁻¹ = p.symm := rfl
+theorem one_def : (1 : FundamentalGroup X x) = .of (.refl x) := rfl
+theorem mul_def : p * q = .of (q.asHom.trans p.asHom) := rfl
+theorem inv_def : p⁻¹ = .of p.asHom.symm := rfl
 
 /-- Get an isomorphism between the fundamental groups at two points given a path -/
 def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
@@ -60,7 +60,7 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
 abbrev toArrow {x : X} (p : FundamentalGroup X x) :
     FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
-  p
+  p.asHom
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
 abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
@@ -70,7 +70,7 @@ abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :
 abbrev fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
     FundamentalGroup X x :=
-  p
+  .of p
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
 abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
@@ -87,7 +87,8 @@ def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
   (eqToIso <| congr_arg FundamentalGroupoid.mk h).conj.toMonoidHom.comp (map f x)
 
 theorem mapOfEq_apply (p : FundamentalGroup X x) :
-    mapOfEq f h p = (Path.Homotopic.Quotient.map p f).cast h.symm h.symm :=
-  FundamentalGroupoid.conj_eqToHom ..
+    mapOfEq f h p = .of ((Path.Homotopic.Quotient.map p.asHom f).cast h.symm h.symm) := by
+  ext
+  apply FundamentalGroupoid.conj_eqToHom
 
 end FundamentalGroup

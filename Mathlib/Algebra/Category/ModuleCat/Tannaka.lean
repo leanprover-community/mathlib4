@@ -32,15 +32,15 @@ the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 def ringEquivEndForget₂ (R : Type u) [Ring R] :
     R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u})) where
   toFun r :=
-    ObjectProperty.homMk
+    .of (ObjectProperty.homMk
       { app M := @AddCommGrpCat.ofHom M.carrier M.carrier _ _
-          (DistribSMul.toAddMonoidHom M r) }
-  invFun φ := φ.hom.app ↧R (1 : R)
+          (DistribSMul.toAddMonoidHom M r) })
+  invFun φ := φ.asHom.hom.app ↧R (1 : R)
   left_inv _ := by simp
   right_inv φ := by
     ext M (x : M)
     have w := CategoryTheory.congr_fun
-      (φ.hom.naturality (ModuleCat.ofHom (LinearMap.toSpanSingleton R M x))) (1 : R)
-    exact w.symm.trans (congr_arg (φ.hom.app M) (one_smul R x))
+      (φ.asHom.hom.naturality (ModuleCat.ofHom (LinearMap.toSpanSingleton R M x))) (1 : R)
+    exact w.symm.trans (congr_arg (φ.asHom.hom.app M) (one_smul R x))
   map_add' := by cat_disch
   map_mul' := by cat_disch
