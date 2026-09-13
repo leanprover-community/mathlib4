@@ -255,22 +255,11 @@ lemma qExpansion_order_le_totalCuspOrder [G.IsArithmetic] (f : F) :
   exact orderAtCuspOrbit_le_totalCuspOrder G k
     ⟦⟨OnePoint.infty, (Fact.out : IsCusp OnePoint.infty G)⟩⟧ f
 
-omit [G.HasDetPlusMinusOne] [FunLike F ℍ ℂ] [ModularFormClass F G k] in
-/-- At level one there is a single cusp, of width one. -/
+/-- At level one there is a single cusp `∞`, of width one, so the total cusp order is equal to the
+order at `∞`. -/
 lemma totalCuspOrder_SL2Z {k : ℤ} (f : ModularForm 𝒮ℒ k) :
     totalCuspOrder 𝒮ℒ k f = orderAtInfty f := by
-  classical
-  let c : CuspOrbits 𝒮ℒ := ⟦⟨OnePoint.infty, (Fact.out : IsCusp OnePoint.infty 𝒮ℒ)⟩⟧
-  have hc (d : CuspOrbits 𝒮ℒ) : d = c := by
-    induction d using Quotient.inductionOn with | h d =>
-    obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp d.property
-    exact Quotient.eq.mpr ⟨⟨Matrix.SpecialLinearGroup.mapGL ℝ g, ⟨g, rfl⟩⟩,
-      Subtype.ext hg.symm⟩
-  let : Unique (CuspOrbits 𝒮ℒ) := ⟨⟨c⟩, hc⟩
-  have hneg : (-1 : GL (Fin 2) ℝ) ∈ 𝒮ℒ :=
-    ⟨-1, by ext i j; simp [Matrix.SpecialLinearGroup.mapGL_coe_matrix]⟩
-  simp only [totalCuspOrder, Finset.univ_unique, Finset.sum_singleton, hc default]
-  simp [c, orderAtCusp_infty _ _ Fact.out, Subgroup.widthInfty,
-    Subgroup.adjoinNegOne_eq_self_iff.mpr hneg, Subgroup.strictWidthInfty_SL2Z]
+  simp [-Finset.univ_unique, totalCuspOrder, Fintype.sum_subsingleton _ cuspOrbitInfty,
+    orderAtCusp_infty _ _ Fact.out]
 
 end UpperHalfPlane

@@ -652,10 +652,6 @@ open ModularForm OnePoint
 
 variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
 
-instance [Γ.IsArithmetic] : Fact (IsCusp ∞ Γ) :=
-  ⟨by simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
-    using ⟨_, OnePoint.map_infty _⟩⟩
-
 lemma ModularFormClass.bdd_at_infty [ModularFormClass F Γ k] [Fact (IsCusp ∞ Γ)] :
     IsBoundedAtImInfty f :=
   isBoundedAt_infty_iff.mp <| bdd_at_cusps f Fact.out

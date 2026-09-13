@@ -147,6 +147,10 @@ lemma Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) 
     {c : OnePoint ℝ} : IsCusp c 𝒢 ↔ IsCusp c 𝒮ℒ :=
   is_commensurable.isCusp_iff
 
+instance {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] : Fact (IsCusp ∞ Γ) :=
+  ⟨by simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
+    using ⟨_, OnePoint.map_infty _⟩⟩
+
 end IsCusp
 
 section CuspOrbits
@@ -269,6 +273,18 @@ lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAri
 /-- An arithmetic subgroup has finitely many cusp orbits. -/
 instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] : Finite (CuspOrbits 𝒢) :=
   .of_surjective _ (surjective_cosetToCuspOrbit 𝒢)
+
+/-- The cusp `∞`. (The `Fact` hypothesis is automatically supplied for arithmetic groups.) -/
+noncomputable abbrev cuspOrbitInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)} [Fact (IsCusp OnePoint.infty 𝒢)] :
+    CuspOrbits 𝒢 :=
+  ⟦⟨OnePoint.infty, mem_cuspsSubMulAction.mpr Fact.out⟩⟧
+
+noncomputable instance : Unique (CuspOrbits 𝒮ℒ) where
+  default := cuspOrbitInfty
+  uniq c := by
+    induction c using Quotient.inductionOn with | h c =>
+    obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp (mem_cuspsSubMulAction.mp c.property)
+    exact Quotient.eq.mpr ⟨⟨_, ⟨g, rfl⟩⟩, Subtype.ext hg.symm⟩
 
 end CuspOrbits
 
@@ -440,8 +456,12 @@ lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : Modular
     at hsp
   grind [strictWidthInfty_nonneg]
 
-lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
+@[simp] lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
   simpa [MonoidHom.range_eq_map] using strictWidthInfty_eq_one_of_T_mem (mem_top _)
+
+@[simp] lemma widthInfty_SL2Z : widthInfty 𝒮ℒ = 1 := by
+  rw [widthInfty, adjoinNegOne_eq_self_iff.mpr, strictWidthInfty_SL2Z]
+  exact ⟨-1, by ext; simp⟩
 
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
