@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Extensions
+public import Mathlib.Tactic.Inclusion.Core.Extensions
 
 /-!
 # Core extension family for the `inclusion` tactic

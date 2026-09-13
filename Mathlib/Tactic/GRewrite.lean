@@ -5,8 +5,8 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GRewrite.Elab
+public import Mathlib.Tactic.Basic
 
 /-!
 
