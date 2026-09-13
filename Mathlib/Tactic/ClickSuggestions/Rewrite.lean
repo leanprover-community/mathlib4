@@ -103,11 +103,13 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) (assignableMVars : Array Expr) :
   let mut rwKind := i.rwKind
   for mvarId in mvars do
     let type ← instantiateMVars (← mvarId.getType)
-    if ← pure (rwKind matches .valid ..) <&&> isProp type <&&>
-        withNewMCtxDepth mvarId.assumptionCore then
-      justLemmaName := false
-    else
-      extraGoals := extraGoals.push type
+    if rwKind matches .valid .. then
+      if ← isProp type then
+        if let some fvarId ← withNewMCtxDepth <| findLocalDeclWithType? type then
+          mvarId.assign (.fvar fvarId)
+          justLemmaName := false
+          continue
+    extraGoals := extraGoals.push type
 
   let replacement ← instantiateMVars rhs
   let unhelpfulMVars ← hasUnhelpfulMVars mvars assignableMVars (extraGoals.push replacement)

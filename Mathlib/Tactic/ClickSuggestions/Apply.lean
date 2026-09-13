@@ -88,10 +88,12 @@ def ApplyLemma.try (lem : ApplyLemma) (assignableMVars : Array Expr) :
   let mut justLemmaName := true
   for mvarId in mvars do
     let type ← instantiateMVars <| ← mvarId.getType
-    if ← isProp type <&&> withNewMCtxDepth mvarId.assumptionCore then
-      justLemmaName := false
-    else
-      newGoals := newGoals.push type
+    if ← isProp type then
+      if let some fvarId ← withNewMCtxDepth <| findLocalDeclWithType? type then
+        mvarId.assign (.fvar fvarId)
+        justLemmaName := false
+        continue
+    newGoals := newGoals.push type
   let isClosing := newGoals.isEmpty
   let unhelpfulMVars ← hasUnhelpfulMVars mvars.toArray assignableMVars newGoals
   let proof ← instantiateMVars proof
