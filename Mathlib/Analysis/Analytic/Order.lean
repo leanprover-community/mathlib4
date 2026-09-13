@@ -186,7 +186,7 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
 theorem analyticOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
     analyticOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else 0 := by
   split_ifs with he
-  · exact  analyticOrderAt_eq_top.mpr (by simp [he])
+  · exact analyticOrderAt_eq_top.mpr (by simp [he])
   · exact analyticAt_const.analyticOrderAt_eq_natCast.mpr ⟨(fun _ ↦ e), (by fun_prop), (by simpa)⟩
 
 theorem analyticOrderNatAt_const (z₀ : 𝕜) (e : E) :
@@ -272,7 +272,7 @@ lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg
       ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; module), h₂t.inter h₂s, h₃t, h₃s⟩
 
 lemma analyticOrderAt_smul_const {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (e : E) [Decidable (e = 0)] :
-    analyticOrderAt (f • fun _ ↦ e) z₀ = if (e = 0) then ⊤ else analyticOrderAt f z₀ := by
+    analyticOrderAt (f • fun _ ↦ e) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
   rw [analyticOrderAt_smul hf (by fun_prop), analyticOrderAt_const]
   split_ifs with he <;> simp
 
@@ -532,7 +532,7 @@ theorem analyticOrderAt_mul_const (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Deci
   analyticOrderAt_smul_const hf e
 
 theorem analyticOrderAt_const_mul (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Decidable (e = 0)] :
-    analyticOrderAt ((fun _ ↦ e) *f) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
+    analyticOrderAt ((fun _ ↦ e) * f) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
   simp_rw [mul_comm]
   exact analyticOrderAt_mul_const hf e
 
