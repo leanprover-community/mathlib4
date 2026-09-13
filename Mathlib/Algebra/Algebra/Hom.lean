@@ -186,11 +186,11 @@ theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔
 theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
   coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
 
-theorem coe_monoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
-  RingHom.coe_monoidHom_injective.comp coe_ringHom_injective
+theorem toMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
+  RingHom.toMonoidHom_injective.comp coe_ringHom_injective
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+ B) :=
-  RingHom.coe_addMonoidHom_injective.comp coe_ringHom_injective
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+ B) :=
+  RingHom.toAddMonoidHom_injective.comp coe_ringHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐ[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
   DFunLike.congr_fun H x

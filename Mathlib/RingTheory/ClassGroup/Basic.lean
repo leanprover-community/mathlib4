@@ -116,7 +116,7 @@ lemma ClassGroup.mk_def (I : (FractionalIdeal R⁰ K)ˣ) :
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk (FractionRing R) I := by
-  rw [ClassGroup.mk_def, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
+  rw [ClassGroup.mk_def, canonicalEquiv_self, RingEquiv.toMonoidHom_refl, Units.map_id,
     MonoidHom.id_apply, QuotientGroup.mk'_apply]
   rfl
 
@@ -125,7 +125,7 @@ theorem ClassGroup.mk_eq_mk {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ} :
     ClassGroup.mk (FractionRing R) I = ClassGroup.mk (FractionRing R) J ↔
       ∃ x : (FractionRing R)ˣ, I * toPrincipalIdeal R (FractionRing R) x = J := by
   rw [mk_def, mk_def, QuotientGroup.mk'_eq_mk']
-  simp [RingEquiv.coe_monoidHom_refl, MonoidHom.mem_range, -toPrincipalIdeal_eq_iff]
+  simp [RingEquiv.toMonoidHom_refl, MonoidHom.mem_range, -toPrincipalIdeal_eq_iff]
 
 theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
     {I' J' : Ideal R} (hI : (I : FractionalIdeal R⁰ <| FractionRing R) = I')
@@ -223,7 +223,7 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
     ClassGroup.mk K' (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk K I := by
   rw [ClassGroup.mk_def, ClassGroup.mk_def, ← MonoidHom.comp_apply (Units.map _),
-      ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
+      ← Units.map_comp, ← RingEquiv.toMonoidHom_trans,
       FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
 
 set_option linter.overlappingInstances false

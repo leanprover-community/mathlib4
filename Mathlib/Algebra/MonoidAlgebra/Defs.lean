@@ -696,7 +696,7 @@ then they are equal. -/]
 lemma ringHom_ext [Semiring S] {f g : R[M] →+* S}
     (h₁ : ∀ r, f (single 1 r) = g (single 1 r)) (h_of : ∀ m, f (single m 1) = g (single m 1)) :
     f = g :=
-  RingHom.coe_addMonoidHom_injective <| addMonoidHom_ext fun m r ↦ by
+  RingHom.toAddMonoidHom_injective <| addMonoidHom_ext fun m r ↦ by
     simpa [← map_mul] using! congr($(h₁ r) * $(h_of m))
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
