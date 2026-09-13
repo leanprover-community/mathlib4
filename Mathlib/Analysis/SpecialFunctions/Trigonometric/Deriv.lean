@@ -14,11 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 ## Main statements
 
 The differentiability of the usual trigonometric functions is proved, and their derivatives are
-computed. As a consequence, we also record the classical limits at `0`
-
-* `Real.tendsto_sin_div_nhdsNE_zero`, `Complex.tendsto_sin_div_nhdsNE_zero`: `sin x / x → 1`;
-* `Real.tendsto_one_sub_cos_div_nhdsNE_zero`, `Complex.tendsto_one_sub_cos_div_nhdsNE_zero`:
-  `(1 - cos x) / x → 0`.
+computed.
 
 ## Tags
 
