@@ -271,12 +271,10 @@ lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg
     exact eventually_nhds_iff.2
       ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; module), h₂t.inter h₂s, h₃t, h₃s⟩
 
-lemma analyticOrderAt_smul_const {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Decidable (e = 0)] :
+lemma analyticOrderAt_smul_const {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (e : E) [Decidable (e = 0)] :
     analyticOrderAt (f • fun _ ↦ e) z₀ = if (e = 0) then ⊤ else analyticOrderAt f z₀ := by
   rw [analyticOrderAt_smul hf (by fun_prop), analyticOrderAt_const]
-  by_cases h : analyticOrderAt f z₀ = ⊤
-  · simp [h]
-  · split_ifs with he <;> simp
+  split_ifs with he <;> simp
 
 theorem AnalyticAt.analyticOrderAt_deriv_add_one {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
     [CompleteSpace E] [CharZero 𝕜] :
@@ -544,19 +542,15 @@ theorem analyticOrderNatAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt �
     analyticOrderNatAt (f * g) z₀ = analyticOrderNatAt f z₀ + analyticOrderNatAt g z₀ := by
   simp [analyticOrderNatAt, analyticOrderAt_mul, ENat.toNat_add, *]
 
-theorem analyticOrderNatAt_mul_const (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0)
-    (hf' : analyticOrderAt f z₀ ≠ ⊤) :
+theorem analyticOrderNatAt_mul_const (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0) :
     analyticOrderNatAt (f * fun _ ↦ e) z₀ = analyticOrderNatAt f z₀ := by
   classical
-  rw [analyticOrderNatAt_mul hf (by fun_prop) hf', analyticOrderNatAt_const, add_zero]
-  rw [analyticOrderAt_const]
-  simpa
+  simp [analyticOrderNatAt, analyticOrderAt_mul_const hf, he]
 
-theorem analyticOrderNatAt_const_mul (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0)
-    (hf' : analyticOrderAt f z₀ ≠ ⊤) :
+theorem analyticOrderNatAt_const_mul (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0) :
     analyticOrderNatAt ((fun _ ↦ e) * f) z₀ = analyticOrderNatAt f z₀ := by
-  simp_rw [mul_comm]
-  exact analyticOrderNatAt_mul_const hf he hf'
+  rw [mul_comm]
+  exact analyticOrderNatAt_mul_const hf he
 
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem analyticOrderAt_pow (hf : AnalyticAt 𝕜 f z₀) :
