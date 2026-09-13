@@ -330,6 +330,7 @@ Some common uses:
   `initialize_simps_projections` after defining the `DFunLike` instance (or instance that implies
   a `DFunLike` instance).
   ```
+    @[macro_inline]
     instance {mM : Mul M} {mN : Mul N} : FunLike (MulHom M N) M N := ...
     initialize_simps_projections MulHom (toFun → apply)
   ```
