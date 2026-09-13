@@ -243,13 +243,13 @@ theorem curry_injective :
 theorem ext_threefold {F} [Module R₂ M] [SMulCommClass R R₂ M]
     [FunLike F (M ⊗[R] N ⊗[R₂] M₂) P₃] [AddHomClass F (M ⊗[R] N ⊗[R₂] M₂) P₃]
     {g h : F} (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h :=
-  ext' fun xy z ↦ xy.induction_on (by simp_rw [zero_tmul, map_zero]) (H · · z) fun x y ihx ihy ↦ by
+  ext' fun xy z ↦ xy.induction_on (H · · z) fun x y ihx ihy ↦ by
     simp_rw [add_tmul, map_add, ihx, ihy]
 
 theorem ext_threefold' {F} [Module R₂ N] [SMulCommClass R₂ R N]
     [FunLike F (M ⊗[R] (N ⊗[R₂] M₂)) P₃] [AddHomClass F (M ⊗[R] (N ⊗[R₂] M₂)) P₃]
     {g h : F} (H : ∀ x y z, g (x ⊗ₜ (y ⊗ₜ z)) = h (x ⊗ₜ (y ⊗ₜ z))) : g = h :=
-  ext' fun x yz ↦ yz.induction_on (by simp_rw [tmul_zero, map_zero]) (H x) fun y z ihy ihz ↦ by
+  ext' fun x yz ↦ yz.induction_on (H x) fun y z ihy ihz ↦ by
     simp_rw [tmul_add, map_add, ihy, ihz]
 
 -- We'll need this one for checking the pentagon identity!
