@@ -66,16 +66,17 @@ open FormalMultilinearSeries
 
 section TopologicalAlgebra
 
-variable (𝕂 𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
-
 /-- `logSeries 𝕂 𝔸` is the `FormalMultilinearSeries` whose `n`-th term is the map
 `(xᵢ) : 𝔸ⁿ ↦ ((-1) ^ (n + 1) / n : 𝕂) • ∏ xᵢ`; its `0`-th term is `0` since `1 / 0 = 0`.
 The corresponding sum evaluated at `x - 1` is the logarithm `NormedSpace.log x`. -/
-def logSeries : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
+def logSeries (𝕂 𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸]
+    [IsTopologicalRing 𝔸] : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
   ((-1) ^ (n + 1) / n : 𝕂) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
 
-theorem logSeries_eq_ofScalars : logSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ ((-1) ^ (n + 1) / n : 𝕂) := by
-  simp_rw [FormalMultilinearSeries.ext_iff, logSeries, ofScalars, implies_true]
+variable (𝕂 𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
+
+theorem logSeries_eq_ofScalars : logSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ ((-1) ^ (n + 1) / n : 𝕂) :=
+  rfl
 
 variable {𝕂 𝔸}
 
@@ -121,7 +122,7 @@ theorem logSeries_sum_eq_rat [Algebra ℚ 𝔸] : (logSeries 𝕂 𝔸).sum = (l
   ext; simp_rw [logSeries_sum_eq, neg_one_pow_div_natCast_smul_eq 𝕂 ℚ]
 
 theorem logSeries_eq_logSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
-    ⇑(logSeries 𝕂 𝔸 n) = logSeries ℚ 𝔸 n := by
+    (⇑(logSeries 𝕂 𝔸 n) : (Fin n → 𝔸) → 𝔸) = logSeries ℚ 𝔸 n := by
   ext c
   simp [logSeries, neg_one_pow_div_natCast_smul_eq 𝕂 ℚ]
 
@@ -133,22 +134,17 @@ theorem log_eq_logSeries_sum [CharZero 𝕂] : log = fun x : 𝔸 ↦ (logSeries
 variable (𝕂) in
 theorem log_eq_tsum [CharZero 𝕂] :
     log = fun x : 𝔸 ↦ ∑' n : ℕ, ((-1) ^ (n + 1) / n : 𝕂) • (x - 1) ^ n := by
-  rw [log_eq_logSeries_sum 𝕂]
-  ext x
-  exact logSeries_sum_eq (x - 1)
+  simp_rw [log_eq_logSeries_sum 𝕂, logSeries_sum_eq]
 
 theorem logSeries_apply_zero (n : ℕ) : logSeries 𝕂 𝔸 n (fun _ ↦ (0 : 𝔸)) = 0 := by
   rw [logSeries_apply_eq]
-  rcases n with - | n
+  rcases n
   · simp
-  · rw [zero_pow (Nat.succ_ne_zero _), smul_zero]
+  · grind [smul_zero]
 
 @[simp]
 theorem log_one : log (1 : 𝔸) = 0 := by
-  rw [log]
-  split_ifs
-  · simp_rw [sub_self, logSeries_sum_eq, ← logSeries_apply_eq, logSeries_apply_zero, tsum_zero]
-  · rfl
+  simp [log, logSeries_sum_eq, ← logSeries_apply_eq, logSeries_apply_zero, tsum_zero]
 
 @[simp]
 theorem log_op [T2Space 𝔸] (x : 𝔸) : log (MulOpposite.op x) = MulOpposite.op (log x) := by
@@ -163,7 +159,7 @@ theorem star_log [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
     star (log x) = log (star x) := by
   obtain _ | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
   · simp
-  · simp_rw [log_eq_tsum ℚ, tsum_star, star_rat_smul, star_pow, star_sub, star_one]
+  · simp [log_eq_tsum ℚ, tsum_star]
 
 /-- A subring of `𝔸` that is closed topologically and under `ℚ`-scaling is closed under `log`. -/
 theorem log_mem
