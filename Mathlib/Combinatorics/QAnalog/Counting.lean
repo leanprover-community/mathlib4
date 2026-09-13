@@ -32,6 +32,8 @@ where an inversion of `T` is a pair `s < t` with `t ∈ T` and `s ∉ T`.  Since
 * `QAnalog.sum_pow_sum_eq_qBinomial`: the second identity above.
 -/
 
+@[expose] public section
+
 open Finset
 
 variable {R : Type*} [Semiring R]
@@ -48,7 +50,7 @@ def inversions (T : Finset ℕ) : ℕ := ∑ t ∈ T, #{s ∈ range t | s ∉ T}
 /-! ### Splitting subsets of `range (n + 1)` according to whether they contain `0` -/
 
 /-- The shift `n ↦ n + 1`, as an embedding. -/
-private def succEmb : ℕ ↪ ℕ := ⟨fun n => n + 1, fun _ _ h => by simpa using h⟩
+def succEmb : ℕ ↪ ℕ := ⟨fun n => n + 1, fun _ _ h => by simpa using h⟩
 
 @[simp] private lemma succEmb_apply (n : ℕ) : succEmb n = n + 1 := rfl
 

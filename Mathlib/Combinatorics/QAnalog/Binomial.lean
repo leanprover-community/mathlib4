@@ -39,6 +39,8 @@ The `q`-binomial theorem involves a second element `x`, and is proved under the 
   `Commute.qPochhammer_eq_sum_qBinomial` (in terms of the `q`-Pochhammer symbol).
 -/
 
+@[expose] public section
+
 open Finset Nat
 
 variable {R S : Type*}
@@ -302,7 +304,8 @@ theorem Commute.list_prod_one_add_pow_mul {q x : R} (h : Commute q x) (n : ℕ) 
               rw [hc, ← mul_assoc, ← pow_add, he]
       rw [qBinomial_succ_succ' q n k, mul_add, add_mul, hterm]
     have hsplit : ∑ k ∈ range (n + 1), q ^ (k.choose 2) * qBinomial q n k * x ^ k
-        = 1 + ∑ k ∈ range (n + 1), q ^ ((k + 1).choose 2) * qBinomial q n (k + 1) * x ^ (k + 1) := by
+        = 1 + ∑ k ∈ range (n + 1), q ^ ((k + 1).choose 2) * qBinomial q n (k + 1) * x ^ (k + 1)
+        := by
       rw [sum_range_succ (fun k => q ^ ((k + 1).choose 2) * qBinomial q n (k + 1) * x ^ (k + 1)) n,
         qBinomial_eq_zero_of_lt q (Nat.lt_succ_self n), mul_zero, zero_mul, add_zero,
         sum_range_succ' (fun k => q ^ (k.choose 2) * qBinomial q n k * x ^ k) n]

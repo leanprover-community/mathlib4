@@ -41,6 +41,8 @@ The scoped notations `[n]_q`, `[n]_q !` and `[a; q]_n` for `qNat q n`, `qFactori
 `qPochhammer q a n` are available in the `QAnalog` scope.
 -/
 
+@[expose] public section
+
 open Finset Nat
 
 variable {R S : Type*}

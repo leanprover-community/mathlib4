@@ -23,6 +23,8 @@ coefficient `[n choose k]_q`.
   `[n choose k]_q`.
 -/
 
+@[expose] public section
+
 open Finset Module
 
 namespace QAnalog
