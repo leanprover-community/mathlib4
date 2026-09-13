@@ -335,6 +335,14 @@ theorem infs_right_comm : s ⊼ t ⊼ u = s ⊼ u ⊼ t :=
 theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image₂_image₂_image₂_comm inf_inf_inf_comm
 
+theorem infs_eq_inter {s t : Finset α}
+    (hs : IsLowerSet (s : Set α)) (ht : IsLowerSet (t : Set α)) :
+    s ⊼ t = s ∩ t := by
+  ext u
+  simp only [mem_infs, mem_inter]
+  exact ⟨fun ⟨a, ha, b, hb, h⟩ ↦ ⟨hs (h ▸ inf_le_left) ha, ht (h ▸ inf_le_right) hb⟩,
+    fun ⟨hu_s, hu_t⟩ ↦ ⟨u, hu_s, u, hu_t, inf_idem u⟩⟩
+
 end Infs
 
 open FinsetFamily
@@ -362,7 +370,7 @@ section Finset
 variable [DecidableEq α]
 variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
-@[simp] lemma powerset_sups (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
+@[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
   simp only [mem_sups, mem_powerset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
@@ -370,24 +378,26 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact union_subset_union hv hw
 
-@[deprecated powerset_sups (since := "2026-08-07")]
-alias powerset_union := powerset_sups
+omit [DecidableEq α] in
+theorem isLowerSet_coe_powerset (s : Finset α) :
+    IsLowerSet (s.powerset : Set (Finset α)) :=
+  fun _a _b hab hb ↦ mem_powerset.mpr (hab.trans (mem_powerset.mp hb))
 
-@[simp] lemma powerset_infs (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
+@[simp] lemma powerset_inter_eq_inter (s t : Finset α) :
+    (s ∩ t).powerset = s.powerset ∩ t.powerset := by
   ext u
-  simp only [mem_infs, mem_powerset, inf_eq_inter]
-  refine ⟨fun h ↦ ⟨u, h.trans inter_subset_left, u, h.trans inter_subset_right, inter_self u⟩, ?_⟩
-  rintro ⟨v, hv, w, hw, rfl⟩
-  exact inter_subset_inter hv hw
+  simp [mem_powerset, subset_inter_iff]
 
-@[deprecated powerset_infs (since := "2026-08-07")]
-alias powerset_inter := powerset_infs
+@[deprecated powerset_inter_eq_inter (since := "2026-09-11")]
+lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
+  simp [infs_eq_inter (isLowerSet_coe_powerset s) (isLowerSet_coe_powerset t)]
 
 @[simp] lemma powerset_sups_powerset_self (s : Finset α) :
-    s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_sups]
+    s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_union]
 
 @[simp] lemma powerset_infs_powerset_self (s : Finset α) :
-    s.powerset ⊼ s.powerset = s.powerset := by simp [← powerset_infs]
+    s.powerset ⊼ s.powerset = s.powerset := by
+  simp [infs_eq_inter (isLowerSet_coe_powerset s) (isLowerSet_coe_powerset s)]
 
 lemma union_mem_sups : s ∈ 𝒜 → t ∈ ℬ → s ∪ t ∈ 𝒜 ⊻ ℬ := sup_mem_sups
 lemma inter_mem_infs : s ∈ 𝒜 → t ∈ ℬ → s ∩ t ∈ 𝒜 ⊼ ℬ := inf_mem_infs
