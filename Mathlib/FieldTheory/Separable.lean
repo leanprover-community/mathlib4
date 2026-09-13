@@ -326,8 +326,6 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
         grind)
       simpa [pairwise'_iff]⟩
 
-
-
 theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
     (∏ i, (X - C (f i))).Separable ↔ Function.Injective f :=
   separable_prod_X_sub_C_iff'.trans <| by simp_rw [mem_univ, true_imp_iff, Function.Injective]
