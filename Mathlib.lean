@@ -3539,6 +3539,7 @@ public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Cech
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.MayerVietoris
 public import Mathlib.CategoryTheory.Sites.SheafHom
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
@@ -3982,6 +3983,7 @@ public import Mathlib.Data.Erased
 public import Mathlib.Data.FP.Basic
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Fin.EquivOfInjective
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.Data.Fin.Init
@@ -4359,6 +4361,7 @@ public import Mathlib.Data.Nat.Nth
 public import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Data.Nat.Order.Lemmas
 public import Mathlib.Data.Nat.PSub
+public import Mathlib.Data.Nat.PadicValNat
 public import Mathlib.Data.Nat.Pairing
 public import Mathlib.Data.Nat.Periodic
 public import Mathlib.Data.Nat.Prime.Basic
@@ -4702,6 +4705,8 @@ public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.FieldTheory.Tower
 public import Mathlib.FieldTheory.TranscendentalSeparable
+public import Mathlib.Geometry.Convex.AffineMap.Defs
+public import Mathlib.Geometry.Convex.AffineMap.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.DualFinite
@@ -5013,6 +5018,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 public import Mathlib.GroupTheory.SpecificGroups.Quaternion
+public import Mathlib.GroupTheory.SpecificGroups.VirtuallyCyclic
 public import Mathlib.GroupTheory.SpecificGroups.ZGroup
 public import Mathlib.GroupTheory.Subgroup.Center
 public import Mathlib.GroupTheory.Subgroup.Centralizer
@@ -5244,6 +5250,7 @@ public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
+public import Mathlib.LinearAlgebra.Matrix.Cartan.Realisation
 public import Mathlib.LinearAlgebra.Matrix.CharP
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
@@ -5448,6 +5455,7 @@ public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.Transvection
 public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Transvection.Generation
+public import Mathlib.LinearAlgebra.Unimodular
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.Logic.Embedding.Basic
@@ -8264,6 +8272,7 @@ public import Mathlib.Topology.MetricSpace.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Gluing
 public import Mathlib.Topology.MetricSpace.GromovHausdorff
 public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
+public import Mathlib.Topology.MetricSpace.GromovProduct
 public import Mathlib.Topology.MetricSpace.HausdorffAlexandroff
 public import Mathlib.Topology.MetricSpace.HausdorffDimension
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
