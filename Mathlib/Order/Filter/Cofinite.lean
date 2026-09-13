@@ -6,13 +6,13 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Order.Filter.Ker
 public import Mathlib.Order.Filter.Pi
 public import Mathlib.Order.Filter.Prod
-public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Heyting.Boundary
 
 /-!

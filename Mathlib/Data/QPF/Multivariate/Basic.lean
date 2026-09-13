@@ -22,7 +22,7 @@ inductive ListShape (a b : Type)
   | cons : a -> b -> ListShape
 ```
 
-This shape can itself be decomposed as a sum of product which are themselves
+This shape can itself be decomposed as a sum of products which are themselves
 QPFs. It follows that the shape is a QPF and we can take its fixed point
 and create the list itself:
 
@@ -68,7 +68,7 @@ matched because they preserve the properties of QPF. The latter example,
   * Prj
   * Const
 
-each proves that some operations on functors preserves the QPF structure
+each proves that some operations on functors preserve the QPF structure
 -/
 
 @[expose] public section
