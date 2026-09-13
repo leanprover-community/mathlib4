@@ -533,7 +533,7 @@ theorem analyticOrderAt_mul_const (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Deci
 
 theorem analyticOrderAt_const_mul (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Decidable (e = 0)] :
     analyticOrderAt ((fun _ ↦ e) * f) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
-  simp_rw [mul_comm]
+  rw [mul_comm]
   exact analyticOrderAt_mul_const hf e
 
 /-- The order is additive when multiplying analytic functions. -/
