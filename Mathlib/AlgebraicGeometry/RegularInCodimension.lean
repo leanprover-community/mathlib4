@@ -85,8 +85,9 @@ lemma isRegularLocalRing_stalk (x : X) [Ring.KrullDimLE n (X.presheaf.stalk x)]
   isRegularInCodimensionLE_iff_ringKrullDim.mp ‹_› x Order.KrullDimLE.krullDim_le
 
 lemma IsRegularInCodimensionLE.anti {m n : ℕ} (h : m ≤ n) (X : Scheme.{u})
-    [IsRegularInCodimensionLE n X] : IsRegularInCodimensionLE m X :=
-  ⟨fun x hx ↦ isRegularLocalRing_stalk_of_coheight_le x <| hx.trans (by exact_mod_cast h)⟩
+    [IsRegularInCodimensionLE n X] : IsRegularInCodimensionLE m X where
+  isRegularLocalRing_stalk_of_coheight_le x hx :=
+    isRegularLocalRing_stalk_of_coheight_le x <| hx.trans (Nat.cast_le.mpr h)
 
 /--
 TODO: Remove the `IsDomain (X.presheaf.stalk x)` hypothesis once Mathlib knows that regular local
