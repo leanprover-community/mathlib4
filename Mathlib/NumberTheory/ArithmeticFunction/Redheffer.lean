@@ -59,15 +59,12 @@ theorem mertens_apply (n : ℕ) : mertens n = ∑ k ∈ Icc 1 n, (μ k : ℤ) :=
 theorem mertens_add_one (n : ℕ) : mertens (n + 1) = mertens n + μ (n + 1) := by
   rw [mertens_apply, mertens_apply, sum_Icc_succ_top (by omega)]
 
-/-- `∑ i ∈ range n, μ (i + 2) = mertens (n + 1) - 1`: the Mertens function without its first
-term `μ 1 = 1`. -/
 theorem sum_range_moebius_add_two (n : ℕ) :
     (∑ i ∈ range n, (μ (i + 1 + 1) : ℤ)) = mertens (n + 1) - 1 := by
   induction n with
   | zero => simp
   | succ m ih => rw [sum_range_succ, ih, mertens_add_one (m + 1)]; ring
 
-/-- The same sum written over `range (n + 1)` with the term for `0` set to zero. -/
 theorem sum_range_ite_moebius (n : ℕ) :
     (∑ k ∈ range (n + 1), if k = 0 then (0 : ℤ) else μ (k + 1)) = mertens (n + 1) - 1 := by
   rw [sum_range_succ', ← sum_range_moebius_add_two n]
@@ -94,7 +91,6 @@ theorem zetaMatrix_apply (n : ℕ) (i j : Fin n) :
 theorem redheffer_apply (n : ℕ) (i j : Fin n) :
     redheffer n i j = if (j : ℕ) = 0 ∨ (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0 := rfl
 
-/-- The zeta matrix is upper triangular: `i + 1 ∣ j + 1` forces `i ≤ j`. -/
 theorem zetaMatrix_isUpperTriangular (n : ℕ) : (zetaMatrix n).IsUpperTriangular := by
   intro i j hij
   simp only [id] at hij
@@ -103,12 +99,10 @@ theorem zetaMatrix_isUpperTriangular (n : ℕ) : (zetaMatrix n).IsUpperTriangula
     omega
   simp [zetaMatrix_apply, this]
 
-/-- The zeta matrix has determinant `1`. -/
 @[simp] theorem det_zetaMatrix (n : ℕ) : (zetaMatrix n).det = 1 := by
   rw [det_of_isUpperTriangular (zetaMatrix_isUpperTriangular n)]
   simp [zetaMatrix_apply]
 
-/-- The first column of the zeta matrix is the first standard basis vector. -/
 theorem zetaMatrix_apply_zero (n : ℕ) (i : Fin (n + 1)) :
     zetaMatrix (n + 1) i 0 = if i = 0 then 1 else 0 := by
   rw [zetaMatrix_apply]
@@ -116,7 +110,6 @@ theorem zetaMatrix_apply_zero (n : ℕ) (i : Fin (n + 1)) :
   · subst h; simp
   · simp [h]
 
-/-- The Redheffer matrix is the zeta matrix with its first column set to ones. -/
 theorem redheffer_eq_updateCol (n : ℕ) :
     redheffer (n + 1) = (zetaMatrix (n + 1)).updateCol 0 (fun _ => 1) := by
   ext i j
@@ -125,8 +118,6 @@ theorem redheffer_eq_updateCol (n : ℕ) :
   · have hj0 : (j : ℕ) ≠ 0 := fun hh => hj (Fin.ext (by simpa using hh))
     simp [hj, hj0, redheffer_apply, zetaMatrix_apply]
 
-/-- Linearity of the determinant in the first column: `det (redheffer (n + 1))` is `1` plus the
-determinant of the zeta matrix with first column `(0, 1, …, 1)`. -/
 theorem det_redheffer_eq_one_add (n : ℕ) :
     (redheffer (n + 1)).det
       = 1 + ((zetaMatrix (n + 1)).updateCol 0 (fun i => if i = 0 then 0 else 1)).det := by
@@ -148,8 +139,6 @@ theorem det_redheffer_eq_one_add (n : ℕ) :
 /-- The row vector `(μ 1, μ 2, …, μ n)`. -/
 def moebiusRow (n : ℕ) : Fin n → ℤ := fun i => (μ ((i : ℕ) + 1) : ℤ)
 
-/-- A sum over `Fin n` with a divisibility indicator equals the sum over the divisors of `m`,
-provided `1 ≤ m ≤ n` so that no divisor is out of range. -/
 theorem sum_fin_dvd_eq_sum_divisors (n m : ℕ) (hm1 : 1 ≤ m) (hmn : m ≤ n) :
     (∑ x : Fin n, if (x : ℕ) + 1 ∣ m then (μ ((x : ℕ) + 1) : ℤ) else 0)
       = ∑ d ∈ m.divisors, (μ d : ℤ) := by
@@ -178,8 +167,6 @@ theorem sum_fin_dvd_eq_sum_divisors (n m : ℕ) (hm1 : 1 ≤ m) (hmn : m ≤ n) 
     simp only at hab
     omega
 
-/-- `μ * ζ = 1` as a row-vector identity: `(μ 1, …, μ (n + 1)) ᵥ* zetaMatrix (n + 1)` is the
-first standard basis vector. -/
 theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
     (moebiusRow (n + 1)) ᵥ* zetaMatrix (n + 1) = fun k => if k = 0 then (1 : ℤ) else 0 := by
   funext k
@@ -194,7 +181,6 @@ theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
   · subst hk; simp
   · simp [hk]
 
-/-- The first row of the inverse of the zeta matrix is `(μ 1, …, μ (n + 1))`. -/
 theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
     moebiusRow (n + 1)
       = (fun k => if k = (0 : Fin (n + 1)) then (1 : ℤ) else 0) ᵥ* (zetaMatrix (n + 1))⁻¹ := by
@@ -202,8 +188,6 @@ theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
   have step := congrArg (· ᵥ* (zetaMatrix (n + 1))⁻¹) (vecMul_moebiusRow_zetaMatrix n)
   simpa [vecMul_vecMul, mul_nonsing_inv _ hunit] using step
 
-/-- Cramer's rule for the zeta matrix: replacing its first column by `u` gives determinant
-`∑ j, μ (j + 1) * u j`. -/
 theorem det_zetaMatrix_updateCol (n : ℕ) (u : Fin (n + 1) → ℤ) :
     ((zetaMatrix (n + 1)).updateCol 0 u).det = ∑ j, moebiusRow (n + 1) j * u j := by
   rw [← cramer_apply]
@@ -213,8 +197,6 @@ theorem det_zetaMatrix_updateCol (n : ℕ) (u : Fin (n + 1) → ℤ) :
   rw [← hc, moebiusRow_eq_vecMul_inv n]
   simp [mulVec, dotProduct, vecMul]
 
-/-- `μ 2 + ⋯ + μ (n + 1) = mertens (n + 1) - 1`, written as a sum over `Fin (n + 1)` that skips
-the index `0`. -/
 theorem sum_moebiusRow_succ (n : ℕ) :
     (∑ j : Fin (n + 1), if j = 0 then (0 : ℤ) else moebiusRow (n + 1) j)
       = mertens (n + 1) - 1 := by
