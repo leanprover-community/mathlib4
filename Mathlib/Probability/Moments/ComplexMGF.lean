@@ -59,13 +59,13 @@ properties of the mgf from those of the characteristic function).
 @[expose] public section
 
 
-open MeasureTheory Filter Finset Real Complex
+open MeasureTheory Filter Real Complex
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ} {z ε : ℂ}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u : ℝ} {z ε : ℂ}
 
 /-- Complex extension of the moment-generating function. -/
 noncomputable
@@ -313,7 +313,6 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If the complex moment-generating functions of two random variables `X` and `Y` with respect to
 the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
 complex moment-generating functions separate the distributions of random variables. -/
@@ -323,8 +322,9 @@ theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     μ.map X = μ'.map Y := by
   have inner_ne_zero (x : ℝ) (h : x ≠ 0) : innerₗ ℝ x ≠ 0 :=
     DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
+  have h_cont : Continuous fun p : ℝ × ℝ ↦ innerₗ ℝ p.1 p.2 := continuous_inner
   apply MeasureTheory.ext_of_integral_char_eq continuous_probChar probChar_ne_one inner_ne_zero
-    continuous_inner (fun w ↦ ?_)
+    h_cont (fun w ↦ ?_)
   rw [funext_iff] at h
   specialize h (Multiplicative.toAdd w * I)
   simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h

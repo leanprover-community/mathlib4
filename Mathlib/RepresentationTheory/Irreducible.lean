@@ -41,9 +41,6 @@ theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Mo
   rw [isSimpleModule_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.submoduleSubrepresentationOrderIso
 
-@[deprecated (since := "2026-02-09")]
-alias is_simple_module_iff_irreducible_ofModule := isSimpleModule_iff_irreducible_ofModule
-
 namespace IsIrreducible
 
 variable {ρ σ} (f : IntertwiningMap ρ σ) [IsIrreducible ρ]
@@ -56,6 +53,10 @@ open Function IntertwiningMap
 theorem injective_or_eq_zero : Injective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.injective_or_eq_zero (equivLinearMapAsModule ρ σ f)
+
+theorem surjective_or_eq_zero (g : IntertwiningMap σ ρ) : Surjective g ∨ g = 0 := by
+  rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule σ ρ)]
+  exact LinearMap.surjective_or_eq_zero (equivLinearMapAsModule σ ρ g)
 
 theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]

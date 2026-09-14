@@ -127,7 +127,8 @@ lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
 set_option linter.docPrime false in
 /-- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
   modified version of some `range_mk`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- Note: `range_mk'` is a lemma about the primed constructor
+  `QuotientAddGroup.mk'`, not a modified version of some `range_mk`. -/]
 theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
 

@@ -104,7 +104,7 @@ isomorphism `⨂[R] i, R ≃ R` given by multiplication (`constantBaseRingEquiv`
 @[simps!]
 noncomputable def dualDistribEquivOfBasis [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) : (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (⨂[R] i, M i) :=
-  LinearEquiv.ofLinear dualDistrib (dualDistribInvOfBasis b)
+  LinearEquiv.ofLinearMap dualDistrib (dualDistribInvOfBasis b)
     (dualDistrib_dualDistribInvOfBasis_left_inverse _)
     (dualDistrib_dualDistribInvOfBasis_right_inverse _)
 

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.Separation.Basic
@@ -164,6 +165,7 @@ theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
   simp only [t2Space_iff_disjoint_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds, Prod.forall,
     nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff, Pairwise]
 
+@[closedness ., grind .]
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 
@@ -192,6 +194,10 @@ theorem tendsto_nhds_unique_of_frequently_eq [T2Space X] {f g : Y → X} {l : Fi
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : ∃ᶠ x in l, f x = g x) : a = b :=
   have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prodMk_nhds hb).frequently hfg
   not_not.1 fun hne => this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
+
+theorem tendsto_nhds_unique_of_forall [T2Space X] {f g : Y → X} {l : Filter Y} {a b : X}
+    [NeBot l] (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : ∀ y, f y = g y) : a = b :=
+  tendsto_nhds_unique_of_eventuallyEq ha hb (Eventually.of_forall hfg)
 
 /-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
 is the infimum of set neighborhoods filters for `s` and `t`.
@@ -490,6 +496,7 @@ theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Contin
 
 /-- If functions `f` and `g` are continuous on a closed set `s`,
 then the set of points `x ∈ s` such that `f x = g x` is a closed set. -/
+@[closedness .]
 protected theorem IsClosed.isClosed_eq [T2Space Y] {f g : X → Y} {s : Set X} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed {x ∈ s | f x = g x} :=
   (hf.prodMk hg).preimage_isClosed_of_isClosed hs isClosed_diagonal
@@ -497,6 +504,10 @@ protected theorem IsClosed.isClosed_eq [T2Space Y] {f g : X → Y} {s : Set X} (
 theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { y : Y | f y ≠ g y } :=
   isOpen_compl_iff.mpr <| isClosed_eq hf hg
+
+/-- The graph of a continuous function into a Hausdorff space is closed. -/
+theorem Continuous.isClosed_graph [T2Space X] {f : Y → X} (hf : Continuous f) : IsClosed f.graph :=
+  isClosed_eq (hf.comp continuous_fst) continuous_snd
 
 /-- If two continuous maps are equal on `s`, then they are equal on the closure of `s`. See also
 `Set.EqOn.of_subset_closure` for a more general version. -/
@@ -586,12 +597,13 @@ theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h 
 end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
-@[aesop 50% apply, grind ←]
+@[aesop 50% apply, grind ←, closedness .]
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
   isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
     let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs
     mem_of_eq_of_mem (eq_of_nhds_neBot (hfy.mono hfx).neBot).symm hy
 
+@[compactness .]
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
   (hs.isClosed.preimage hf).isCompact
@@ -614,12 +626,13 @@ don't need to assume each `V i` closed because it follows from compactness since
 assumed to be Hausdorff. -/
 theorem exists_subset_nhds_of_isCompact [T2Space X] {ι : Type*} [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) {U : Set X}
-    (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
+    (hU : U ∈ 𝓝ˢ (⋂ i, V i)) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV hV_cpct (fun i => (hV_cpct i).isClosed) hU
 
 theorem CompactExhaustion.isClosed [T2Space X] (K : CompactExhaustion X) (n : ℕ) : IsClosed (K n) :=
   (K.isCompact n).isClosed
 
+@[compactness .]
 theorem IsCompact.inter [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ∩ t) :=
   hs.inter_right <| ht.isClosed

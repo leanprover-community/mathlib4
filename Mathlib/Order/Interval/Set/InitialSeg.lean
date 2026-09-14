@@ -22,7 +22,7 @@ variable {α : Type*} [Preorder α] {i j : α}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `Iic j` is an initial segment. -/
-@[simps]
+@[implicit_reducible, simps]
 def initialSegIic (j : α) : Iic j ≤i α where
   toFun j := j
   inj' _ _ _ := by aesop
@@ -30,7 +30,7 @@ def initialSegIic (j : α) : Iic j ≤i α where
   mem_range_of_rel' x k h := by simpa using h.le.trans x.2
 
 /-- `Iio j` is a principal segment. -/
-@[simps]
+@[implicit_reducible, simps]
 def principalSegIio (j : α) : Iio j <i α where
   top := j
   toFun j := j
@@ -73,7 +73,6 @@ alias principalSegIioIicOfLE_toRelEmbedding := principalSegIioIicOfLE_apply
 
 end Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : α <i β` is a principal segment, this is the induced order
 isomorphism `α ≃o Iio f.top`. -/
 @[simps! apply_coe]
