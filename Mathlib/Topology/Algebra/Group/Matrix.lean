@@ -150,7 +150,7 @@ the topology on `SL n A` coincides with the subspace topology from `GL n A`. -/
 lemma isEmbedding_toGL : IsEmbedding (toGL : SL n R → GL n R) :=
   ⟨isInducing_toGL, toGL_injective⟩
 
-@[deprecated " use range_toGL_eq_ker_det instead " (since := "2026-09-14")]
+@[deprecated "Use range_toGL_eq_ker_det instead" (since := "2026-09-14")]
 theorem range_toGL {A : Type*} [CommRing A] :
     Set.range (toGL : SL n A → GL n A) = GeneralLinearGroup.det ⁻¹' {1} := by
   ext x
