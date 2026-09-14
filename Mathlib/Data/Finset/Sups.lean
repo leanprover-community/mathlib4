@@ -335,13 +335,11 @@ theorem infs_right_comm : s ⊼ t ⊼ u = s ⊼ u ⊼ t :=
 theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image₂_image₂_image₂_comm inf_inf_inf_comm
 
+@[simp]
 theorem infs_eq_inter {s t : Finset α}
     (hs : IsLowerSet (s : Set α)) (ht : IsLowerSet (t : Set α)) :
     s ⊼ t = s ∩ t := by
-  ext u
-  simp only [mem_infs, mem_inter]
-  exact ⟨fun ⟨a, ha, b, hb, h⟩ ↦ ⟨hs (h ▸ inf_le_left) ha, ht (h ▸ inf_le_right) hb⟩,
-    fun ⟨hu_s, hu_t⟩ ↦ ⟨u, hu_s, u, hu_t, inf_idem u⟩⟩
+  simp [← coe_inj, Set.infs_eq_inter hs ht]
 
 end Infs
 
