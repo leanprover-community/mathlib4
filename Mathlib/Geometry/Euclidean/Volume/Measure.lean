@@ -226,15 +226,14 @@ theorem euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
   isometry_subtype_coe.euclideanHausdorffMeasure_image _
 
+theorem euclideanHausdorffMeasure_preimage_coe (d : ℕ) {s : AffineSubspace ℝ P} {t : Set P} :
+    μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] (t ∩ s) := by
+  rw [isometry_subtype_coe.euclideanHausdorffMeasure_preimage, Subtype.range_coe]
+
 theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSubspace ℝ P}
     {t : Set P} (ht : t ⊆ s) :
     μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] t := by
-  by_cases! hs : s = ⊥
-  · simp_all
-  have : Nonempty s := (s.nonempty_iff_ne_bot.mpr hs).to_subtype
-  rw [← s.coe_subtype, ← s.coe_subtypeₐᵢ, s.subtypeₐᵢ.isometry.euclideanHausdorffMeasure_preimage,
-    Set.inter_eq_left.mpr]
-  simpa using ht
+  rw [euclideanHausdorffMeasure_preimage_coe, Set.inter_eq_left.mpr ht]
 
 end AffineSubspace
 
