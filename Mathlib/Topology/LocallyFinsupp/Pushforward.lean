@@ -6,7 +6,7 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.Topology.LocallyFinsupp
-public import Mathlib.Topology.Spectral.Basic
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Pushforward of functions with locally finite support
@@ -30,15 +30,23 @@ specialized to the degree of the residue field extension
 
 @[expose] public section
 
-open Set Order Topology TopologicalSpace
+open Set TopologicalSpace
 
 variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → Y} (hf : IsSpectralMap f) (w : X → R)
 
 namespace Function.locallyFinsupp
 
-variable [Semiring R] {W : Set Y} (hW : IsOpen W) (c : Function.locallyFinsupp X R)
+variable [Semiring R] (c : Function.locallyFinsupp X R)
   [PrespectralSpace Y]
+
+/-- The fibre of a spectral map over a point meets the support of `c` in a finite set. -/
+lemma finite_preimage_singleton_inter_support (hf : IsSpectralMap f) (y : Y) :
+    (f ⁻¹' {y} ∩ c.support).Finite := by
+  obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
+    (by simp : y ∈ ⊤) (by simp)
+  exact (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf.2 hU.1.1 hU.1.2).subset
+    (inter_subset_inter_left _ (preimage_mono (singleton_subset_iff.2 hU.2.1)))
 
 variable (f) in
 /--
@@ -46,22 +54,35 @@ The pushforward of a function `c` of locally finite support by a spectral map wi
 weight function `w`.
 -/
 noncomputable
-def map (hf : IsSpectralMap f) (c : locallyFinsupp X R) : Function.locallyFinsupp Y R where
-  toFun z := ∑ᶠ x ∈ f ⁻¹' {z}, c x * w x
-  supportWithinDomain' := by simp
-  supportLocallyFiniteWithinDomain' y _ := by
-    obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
-      (by simp : y ∈ ⊤) (by simp)
-    refine ⟨U, IsOpen.mem_nhds hU.1.1 hU.2.1, ?_⟩
-    suffices h : (U ∩ {z | (f ⁻¹' {z} ∩ support ⇑c).Nonempty}).Finite by
-      refine h.subset (inter_subset_inter_right U fun y hy ↦ ?_)
-      obtain ⟨x, (hx : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
-      use x
-      grind [mem_support]
-    suffices (f ⁻¹' (U ∩ {z | (f ⁻¹' {z} ∩ c.support).Nonempty}) ∩ c.support).Finite from
-      (this.image f).subset (fun a ha ↦ by grind [Set.Nonempty])
-    exact (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf.2 hU.1.1 hU.1.2).subset
-      (by simp; grind)
+def map (hf : IsSpectralMap f) : locallyFinsupp X R →+ locallyFinsupp Y R where
+  toFun c :=
+    { toFun z := ∑ᶠ x ∈ f ⁻¹' {z}, c x * w x
+      supportWithinDomain' := by simp
+      supportLocallyFiniteWithinDomain' y _ := by
+        obtain ⟨U, hU⟩ :=
+          (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
+            (by simp : y ∈ ⊤) (by simp)
+        refine ⟨U, IsOpen.mem_nhds hU.1.1 hU.2.1, ?_⟩
+        suffices h : (U ∩ {z | (f ⁻¹' {z} ∩ support ⇑c).Nonempty}).Finite by
+          refine h.subset (inter_subset_inter_right U fun y hy ↦ ?_)
+          obtain ⟨x, (hx : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
+          use x
+          grind [mem_support]
+        suffices (f ⁻¹' (U ∩ {z | (f ⁻¹' {z} ∩ c.support).Nonempty}) ∩ c.support).Finite from
+          (this.image f).subset (fun a ha ↦ by grind [Set.Nonempty])
+        exact (c.locallyFiniteSupport.finite_inter_support_of_isCompact <|
+          hf.2 hU.1.1 hU.1.2).subset (by simp; grind) }
+  map_zero' := by
+    ext
+    simp
+  map_add' D D' := by
+    ext y
+    simp only [locallyFinsuppWithin.coe_add, Pi.add_apply, add_mul]
+    exact finsum_mem_add_distrib'
+      ((D.finite_preimage_singleton_inter_support hf y).subset
+        (inter_subset_inter_right _ fun x hx h ↦ hx (by simp [h])))
+      ((D'.finite_preimage_singleton_inter_support hf y).subset
+        (inter_subset_inter_right _ fun x hx h ↦ hx (by simp [h])))
 
 @[simp]
 lemma map_apply (hf : IsSpectralMap f) (c : locallyFinsupp X R) (y : Y) :
@@ -74,9 +95,14 @@ lemma support_map_subset_of_forall_mem (s : Set X) (t : Set Y) (hc : c.support �
   grind [mem_support]
 
 @[simp]
-lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
+lemma map_id_apply [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
     map id w isSpectralMap_id c = c := by
   ext
-  simp [map, hw]
+  simp [hw]
+
+lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
+    map id w isSpectralMap_id = AddMonoidHom.id (locallyFinsupp X R) := by
+  ext1 c
+  exact map_id_apply w c hw
 
 end Function.locallyFinsupp
