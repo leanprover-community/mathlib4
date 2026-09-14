@@ -56,7 +56,6 @@ Note: This linter can be disabled with `set_option linter.style.deprecationDate 
 @[deprecated target (since := "v4.16.0")]
 def versionString : Nat := 0
 
--- The linter also covers `@[deprecated_arg]`.
 /--
 warning: '2026-15-03' is not a valid date; `(since := ...)` must have the form `YYYY-MM-DD`.
 
@@ -66,7 +65,6 @@ Note: This linter can be disabled with `set_option linter.style.deprecationDate 
 @[deprecated_arg old new (since := "2026-15-03")]
 def withDeprecatedArg (new : Nat) : Nat := new
 
--- ... and `deprecated_syntax`.
 syntax (name := myOldTactic) "myOldTactic" : tactic
 
 /--
