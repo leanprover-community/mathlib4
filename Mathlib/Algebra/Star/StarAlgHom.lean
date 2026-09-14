@@ -96,6 +96,7 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [Star C]
 variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
+@[macro_inline]
 instance : FunLike (A →⋆ₙₐ[R] B) A B where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
@@ -318,6 +319,7 @@ namespace StarAlgHom
 variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C] [Semiring D] [Algebra R D] [Star D]
 
+@[macro_inline]
 instance : FunLike (A →⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
@@ -677,6 +679,7 @@ section Basic
 variable {F R A B C : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B] [Star A]
   [Star B] [Add C] [Mul C] [SMul R C] [Star C]
 
+@[macro_inline]
 instance : EquivLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -696,6 +699,7 @@ instance : StarRingEquivClass (A ≃⋆ₐ[R] B) A B where
   map_star f := f.map_star'
 
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
+@[macro_inline]
 instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective

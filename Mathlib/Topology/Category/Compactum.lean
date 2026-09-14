@@ -110,6 +110,7 @@ instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
+@[macro_inline]
 instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
   coe f := f.f
   coe_injective _ _ h := (Monad.forget_faithful β).map_injective (by aesop)

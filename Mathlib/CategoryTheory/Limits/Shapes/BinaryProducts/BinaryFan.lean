@@ -147,7 +147,7 @@ def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y whe
   π := { app := fun | { as := j } => match j with | left => π₁ | right => π₂ }
 
 /-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and `ι₂ : Y ⟶ P`. -/
-@[simps pt]
+@[simps pt, implicit_reducible]
 def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
   pt := P
   ι := { app := fun | { as := j } => match j with | left => ι₁ | right => ι₂ }
