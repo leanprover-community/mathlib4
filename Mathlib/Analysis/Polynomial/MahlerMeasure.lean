@@ -477,10 +477,10 @@ lemma mapMahlerMeasure_one : (1 : A[X]).mapMahlerMeasure v = 1 := by
 
 variable {A : Type*} [NormedRing A] (p : A[X]) (v : A →+* ℂ)
 
-lemma mapMahlerMeasure_const (hv : Isometry v) (z : A) : (C z).mapMahlerMeasure v = ‖z‖ := by
+lemma mapMahlerMeasure_const (hv : Isometric v) (z : A) : (C z).mapMahlerMeasure v = ‖z‖ := by
   simp [mapMahlerMeasure, hv.norm_map_of_map_zero (map_zero _)]
 
-lemma leadingCoeff_le_mapMahlerMeasure (hv : Isometry v) :
+lemma leadingCoeff_le_mapMahlerMeasure (hv : Isometric v) :
     ‖p.leadingCoeff‖ ≤ p.mapMahlerMeasure v := by
   by_cases hp : p.leadingCoeff = 0
   · simp [hp, mapMahlerMeasure_nonneg]
@@ -491,23 +491,23 @@ lemma leadingCoeff_le_mapMahlerMeasure (hv : Isometry v) :
       leadingCoeff_le_mahlerMeasure, mapMahlerMeasure]
 
 variable {p} in
-lemma Monic.one_le_mapMahlerMeasure [NormOneClass A] (hv : Isometry v) (hp : p.Monic) :
+lemma Monic.one_le_mapMahlerMeasure [NormOneClass A] (hv : Isometric v) (hp : p.Monic) :
     1 ≤ p.mapMahlerMeasure v := by
   grw [← p.leadingCoeff_le_mapMahlerMeasure v hv, hp.leadingCoeff, norm_one]
 
 variable {p} in
-theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometry v) (hp : p ≠ 0) :
+theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometric v) (hp : p ≠ 0) :
     0 < p.mapMahlerMeasure v :=
   mahlerMeasure_pos_of_ne_zero <| (Polynomial.map_eq_zero_iff hv.injective).not.mpr hp
 
-theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometry v) :
+theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometric v) :
     p.mapMahlerMeasure v ≤ p.sum fun _ a ↦ ‖a‖ := by
   apply mahlerMeasure_le_sum_norm_coeff _ |>.trans_eq
   rw [sum_def, sum_def, support_map_of_injective _ hv.injective]
   exact Finset.sum_congr rfl fun x _ ↦ by
     simp [hv.norm_map_of_map_zero (map_zero _)]
 
-theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometry v) (n : ℕ) (p : A[X]) :
+theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometric v) (n : ℕ) (p : A[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mapMahlerMeasure v := by
   have hv_norm : ‖p.coeff n‖ = ‖v (p.coeff n)‖ :=
     (hv.norm_map_of_map_zero (map_zero _) _).symm

@@ -104,18 +104,18 @@ lemma index_map (h : v₁ ≅ v₂) (f : ι' → ι) : (v₁ ∘ f) ≅ (v₂ �
 lemma of_subsingleton_index [Subsingleton ι] : v₁ ≅ v₂ :=
   fun i j => by simp [Subsingleton.elim i j]
 
-lemma comp_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : f ∘ v₁ ≅ v₂ :=
+lemma comp_left {f : P₁ → P₃} (hf : Isometric f) (h : v₁ ≅ v₂) : f ∘ v₁ ≅ v₂ :=
   .trans (fun _ _ ↦ hf _ _) h
 
-lemma comp_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : v₁ ≅ f ∘ v₂ :=
+lemma comp_right {f : P₂ → P₃} (hf : Isometric f) (h : v₁ ≅ v₂) : v₁ ≅ f ∘ v₂ :=
   .trans h (.symm <| fun _ _ ↦ hf _ _)
 
 @[simp]
-lemma comp_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ≅ v₂ ↔ v₁ ≅ v₂ :=
+lemma comp_left_iff {f : P₁ → P₃} (hf : Isometric f) : f ∘ v₁ ≅ v₂ ↔ v₁ ≅ v₂ :=
   ⟨.trans <| .comp_right hf (.refl _), .comp_left hf⟩
 
 @[simp]
-lemma comp_right_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ≅ f ∘ v₂ ↔ v₁ ≅ v₂ := by
+lemma comp_right_iff {f : P₂ → P₃} (hf : Isometric f) : v₁ ≅ f ∘ v₂ ↔ v₁ ≅ v₂ := by
   rw [congruent_comm, comp_left_iff hf, congruent_comm]
 
 /-- Two sets of vertices remain congruent under a dilation if the dilations have equal ratios. -/

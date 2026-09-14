@@ -42,7 +42,7 @@ needed.
 ## TODO
 
 - Introduce dilation equivs.
-- Refactor the `Isometry` API to match the `*HomClass` API below.
+- Refactor the `Isometric` API to match the `*HomClass` API below.
 
 ## References
 
@@ -242,16 +242,25 @@ variable (f : F)
 
 /-- Every isometry is a dilation of ratio `1`. -/
 @[simps]
-def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β where
+def _root_.Isometric.toDilation (f : α → β) (hf : Isometric f) : α →ᵈ β where
   toFun := f
   edist_eq' := ⟨1, one_ne_zero, by simpa using! hf⟩
 
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.toDilation :=
+  _root_.Isometric.toDilation
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.toDilation_toFun :=
+  _root_.Isometric.toDilation_toFun
+
 @[simp]
-lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by
+lemma _root_.Isometric.toDilation_ratio {f : α → β} {hf : Isometric f} :
+    ratio hf.toDilation = 1 := by
   by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤
   · exact ratio_of_trivial hf.toDilation h
   · obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
+
+@[deprecated (since := "2026-09-10")] alias _root_.Isometry.toDilation_ratio :=
+  _root_.Isometric.toDilation_ratio
 
 theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
 

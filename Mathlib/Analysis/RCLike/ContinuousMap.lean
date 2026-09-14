@@ -65,8 +65,10 @@ variable (X) in
   realToRCLikeOrderEmbedding X 𝕜 |>.lt_iff_lt
 
 variable (X) in
-@[simp] theorem isometry_realToRCLike [CompactSpace X] : Isometry (realToRCLike 𝕜 (X := X)) :=
+@[simp] theorem isometric_realToRCLike [CompactSpace X] : Isometric (realToRCLike 𝕜 (X := X)) :=
   .of_dist_eq fun f g ↦ by simp [dist_eq_norm, norm_eq_iSup_norm, ← map_sub]
+
+@[deprecated (since := "2026-09-09")] alias isometry_realToRCLike := isometric_realToRCLike
 
 variable (X) in
 @[simp, fun_prop] lemma continuous_realToRCLike : Continuous (realToRCLike 𝕜 (X := X)) :=

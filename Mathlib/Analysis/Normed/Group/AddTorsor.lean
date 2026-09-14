@@ -47,7 +47,7 @@ variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [
   [SeminormedAddCommGroup W] [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
-  ⟨fun c => Isometry.of_dist_eq fun x y => by
+  ⟨fun c => Isometric.of_dist_eq fun x y => by
     simp [NormedAddTorsor.dist_eq_norm']⟩
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
@@ -120,12 +120,12 @@ theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [
 theorem nndist_vadd_right (v : V) (x : P) : nndist x (v +ᵥ x) = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_right _ _
 
-/-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
-addition/subtraction of `x : P`. -/
+/-- Isometry equivalence between the tangent space `V` of a (semi)normed add torsor `P` and `P`
+given by addition/subtraction of `x : P`. -/
 @[simps!]
 def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P where
   toEquiv := Equiv.vaddConst x
-  isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vadd_cancel_right _ _ _
+  isometry_toFun := Isometric.of_dist_eq fun _ _ => dist_vadd_cancel_right _ _ _
 
 @[simp]
 theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y z := by
@@ -135,12 +135,12 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
 theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
 
-/-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
-subtraction from `x : P`. -/
+/-- Isometry equivalence between the tangent space `V` of a (semi)normed add torsor `P` and `P`
+given by subtraction from `x : P`. -/
 @[simps!]
 def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V where
   toEquiv := Equiv.constVSub x
-  isometry_toFun := Isometry.of_dist_eq fun _ _ => dist_vsub_cancel_left _ _ _
+  isometry_toFun := Isometric.of_dist_eq fun _ _ => dist_vsub_cancel_left _ _ _
 
 @[simp]
 theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x y :=

@@ -40,7 +40,7 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
 theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
   symm
   exact AntilipschitzWith.isBounded_of_image2_left _
-    (fun x => (isometry_mul_left x).antilipschitzWith)
+    (fun x => (isometric_mul_left x).antilipschitzWith)
     (by rwa [image2_swap])
 
 @[to_additive]
@@ -64,7 +64,7 @@ open EMetric
 
 @[to_additive (attr := simp)]
 theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist x s := by
-  rw [← image_inv_eq_inv, infEDist_image isometry_inv]
+  rw [← image_inv_eq_inv, infEDist_image isometric_inv]
 
 @[to_additive]
 theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
@@ -73,8 +73,8 @@ theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
-        (fun _ _ => (isometry_mul_right _).lipschitzWith.lipschitzOnWith) fun _ _ =>
-        (isometry_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
+        (fun _ _ => (isometric_mul_right _).lipschitzWith.lipschitzOnWith) fun _ _ =>
+        (isometric_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 
 end EMetric

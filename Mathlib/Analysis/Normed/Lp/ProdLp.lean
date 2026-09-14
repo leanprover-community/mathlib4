@@ -662,13 +662,15 @@ lemma prod_lipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@toLp p (α × β)) :=
   (prod_antilipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
 
-lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
-    Isometry (@ofLp ∞ (α × β)) :=
+lemma prod_isometric_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    Isometric (@ofLp ∞ (α × β)) :=
   fun x y =>
   le_antisymm (by simpa only [ENNReal.coe_one, one_mul] using prod_lipschitzWith_ofLp ∞ α β x y)
     (by
       simpa only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero, ENNReal.coe_one,
         one_mul] using prod_antilipschitzWith_ofLp ∞ α β x y)
+
+@[deprecated (since := "2026-09-09")] alias prod_isometry_ofLp_infty := prod_isometric_ofLp_infty
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
@@ -1092,20 +1094,22 @@ end WithLp
 
 variable (γ : Type*) {α' β' : Type*}
 
-section Isometry
+section Isometric
 
 variable [hp : Fact (1 ≤ p)] [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
   [PseudoEMetricSpace α'] [PseudoEMetricSpace β']
 
 variable {α β} in
 /-- The `L^p` product of two isometries is an isometry. -/
-theorem Isometry.withLpProdMap {f : α → α'} (hf : Isometry f) {g : β → β'} (hg : Isometry g) :
-    Isometry (WithLp.map p (Prod.map f g)) := by
+theorem Isometric.withLpProdMap {f : α → α'} (hf : Isometric f) {g : β → β'} (hg : Isometric g) :
+    Isometric (WithLp.map p (Prod.map f g)) := by
   intro _ _
   rcases p.trichotomy with rfl | rfl | hp
   · absurd hp.elim; simp
   · simp [WithLp.prod_edist_eq_sup, hf.edist_eq, hg.edist_eq]
   · simp [WithLp.prod_edist_eq_add hp, hf.edist_eq, hg.edist_eq]
+
+@[deprecated (since := "2026-09-10")] alias Isometry.withLpProdMap := Isometric.withLpProdMap
 
 namespace IsometryEquiv
 
@@ -1114,7 +1118,7 @@ variable {α β} in
 @[simps! apply symm_apply]
 def withLpProdCongr (f : α ≃ᵢ α') (g : β ≃ᵢ β') : WithLp p (α × β) ≃ᵢ WithLp p (α' × β') where
   __ := WithLp.congr p (f.toEquiv.prodCongr g.toEquiv)
-  isometry_toFun := f.isometry.withLpProdMap p g.isometry
+  isometry_toFun := f.isometric.withLpProdMap p g.isometric
 
 /-- Commutativity of the `L^p` product as an isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ᵢ WithLp p (β × α) where
@@ -1169,7 +1173,7 @@ theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p α β) = WithL
 
 end IsometryEquiv
 
-end Isometry
+end Isometric
 
 section Linear
 
@@ -1186,7 +1190,7 @@ variable {𝕜 α β} in
 def LinearIsometry.withLpProdMap (f : α →ₗᵢ[𝕜] α') (g : β →ₗᵢ[𝕜] β') :
     WithLp p (α × β) →ₗᵢ[𝕜] WithLp p (α' × β') where
   __ := (f.toLinearMap.prodMap g.toLinearMap).withLpMap p
-  norm_map' := (f.isometry.withLpProdMap p g.isometry).norm_map_of_map_zero
+  norm_map' := (f.isometric.withLpProdMap p g.isometric).norm_map_of_map_zero
     ((f.toLinearMap.prodMap g.toLinearMap).withLpMap p).map_zero
 
 namespace LinearIsometryEquiv
@@ -1202,7 +1206,7 @@ def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
 /-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where
   __ := (LinearEquiv.prodComm 𝕜 α β).withLpCongr p
-  norm_map' := (IsometryEquiv.withLpProdComm p α β).isometry.norm_map_of_map_zero rfl
+  norm_map' := (IsometryEquiv.withLpProdComm p α β).isometric.norm_map_of_map_zero rfl
 
 @[simp]
 theorem withLpProdComm_apply (x : WithLp p (α × β)) :
@@ -1219,13 +1223,13 @@ def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ₗᵢ[𝕜] WithL
   __ := (IsometryEquiv.withLpProdAssoc p α β γ).toEquiv
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  norm_map' := (IsometryEquiv.withLpProdAssoc p α β γ).isometry.norm_map_of_map_zero rfl
+  norm_map' := (IsometryEquiv.withLpProdAssoc p α β γ).isometric.norm_map_of_map_zero rfl
 
 /-- Right identity of the `L^p` product as a linear isometric equivalence. -/
 @[simps! apply symm_apply]
 def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ₗᵢ[𝕜] α where
   __ := (WithLp.linearEquiv _ _ _).trans LinearEquiv.prodUnique
-  norm_map' := (IsometryEquiv.withLpProdUnique _ _ _).isometry.norm_map_of_map_zero rfl
+  norm_map' := (IsometryEquiv.withLpProdUnique _ _ _).isometric.norm_map_of_map_zero rfl
 
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = WithLp.fst :=
   rfl

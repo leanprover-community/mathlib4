@@ -124,7 +124,9 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
 lemma nnnorm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_map φ hφ a
 
-lemma isometry (φ : F) (hφ : Function.Injective φ) : Isometry φ :=
-  AddMonoidHomClass.isometry_of_norm φ (norm_map φ hφ)
+lemma isometric (φ : F) (hφ : Function.Injective φ) : Isometric φ :=
+  AddMonoidHomClass.isometric_of_norm φ (norm_map φ hφ)
+
+@[deprecated (since := "2026-09-09")] alias isometry := isometric
 
 end NonUnitalStarAlgHom

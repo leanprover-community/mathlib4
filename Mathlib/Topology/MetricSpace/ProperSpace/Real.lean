@@ -47,7 +47,7 @@ instance : SecondCountableTopology ℝ≥0 :=
 
 instance instProperSpace : ProperSpace ℝ≥0 where
   isCompact_closedBall x r := by
-    have emb : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.isClosedEmbedding fun _ ↦ congrFun rfl
+    have emb : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometric.isClosedEmbedding fun _ ↦ congrFun rfl
     exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal

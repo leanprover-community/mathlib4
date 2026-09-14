@@ -48,7 +48,7 @@ properties of Hausdorff dimension.
   `HolderOnWith`, and locally Hölder maps, as well as for `Set.image` and `Set.range`.
 * `LipschitzWith.dimH_image_le` etc: Lipschitz continuous maps do not increase the Hausdorff
   dimension of sets.
-* for a map that is known to be both Lipschitz and antilipschitz (e.g., for an `Isometry` or
+* for a map that is known to be both Lipschitz and antilipschitz (e.g., for an isometry or
   a `ContinuousLinearEquiv`) we also prove `dimH (f '' s) = dimH s`.
 
 ### Hausdorff measure in `ℝⁿ`
@@ -392,14 +392,16 @@ end AntilipschitzWith
 -/
 
 
-theorem Isometry.dimH_image (hf : Isometry f) (s : Set X) : dimH (f '' s) = dimH s :=
+theorem Isometric.dimH_image (hf : Isometric f) (s : Set X) : dimH (f '' s) = dimH s :=
   le_antisymm (hf.lipschitzWith.dimH_image_le _) (hf.antilipschitzWith.le_dimH_image _)
+
+@[deprecated (since := "2026-09-10")] alias Isometry.dimH_image := Isometric.dimH_image
 
 namespace IsometryEquiv
 
 @[simp]
 theorem dimH_image (e : X ≃ᵢ Y) (s : Set X) : dimH (e '' s) = dimH s :=
-  e.isometry.dimH_image s
+  e.isometric.dimH_image s
 
 @[simp]
 theorem dimH_preimage (e : X ≃ᵢ Y) (s : Set Y) : dimH (e ⁻¹' s) = dimH s := by
@@ -482,7 +484,7 @@ theorem Convex.dimH_eq_finrank_vectorSpan {s : Set E} (hcvx : Convex ℝ s) (hne
     (⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩ : affineSpan ℝ s)
   have hs_eq : s = (↑) '' ((↑) ⁻¹' s : Set (affineSpan ℝ s)) :=
     (image_preimage_eq_of_subset <| (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm
-  rw [hs_eq, isometry_subtype_coe.dimH_image, ← φ.isometry.dimH_image,
+  rw [hs_eq, isometric_subtype_coe.dimH_image, ← φ.isometric.dimH_image,
       Real.dimH_of_nonempty_interior, direction_affineSpan ℝ s, ← hs_eq]
   simp_rw [← AffineIsometryEquiv.coe_toHomeomorph, ← φ.toHomeomorph.image_interior, image_nonempty]
   simpa [intrinsicInterior] using (intrinsicInterior_nonempty hcvx).mpr hne

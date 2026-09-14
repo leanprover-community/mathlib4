@@ -63,7 +63,7 @@ instance LinearIsometry.strictConvexSpace_range [StrictConvexSpace 𝕜 E] (e : 
 lemma LinearIsometry.strictConvexSpace [StrictConvexSpace 𝕜 F] (f : E →ₗᵢ[𝕜] F) :
     StrictConvexSpace 𝕜 E where
   strictConvex_closedBall r hr := by
-    rw [← f.isometry.preimage_closedBall]
+    rw [← f.isometric.preimage_closedBall]
     exact (strictConvex_closedBall _ _ _).linearIsometry_preimage _
 
 /-- A vector subspace of a strict convex space is a strict convex space.

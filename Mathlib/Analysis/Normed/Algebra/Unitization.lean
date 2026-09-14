@@ -16,7 +16,7 @@ Given a not-necessarily-unital normed `𝕜`-algebra `A`, it is frequently of in
 two properties:
 
 - `‖1‖ = 1` (i.e., `NormOneClass`)
-- The embedding of `A` in `Unitization 𝕜 A` is an isometry. (i.e., `Isometry Unitization.inr`)
+- The embedding of `A` in `Unitization 𝕜 A` is an isometry. (i.e., `Isometric Unitization.inr`)
 
 One way to do this is to pull back the norm from `WithLp 1 (𝕜 × A)`, that is,
 `‖(k, a)‖ = ‖k‖ + ‖a‖` using `Unitization.addEquiv` (i.e., the identity map).
@@ -46,7 +46,7 @@ is then also a C⋆-norm.
 - `Unitization.instNormedRing`, `Unitization.instNormedAlgebra`, `Unitization.instNormOneClass`,
   `Unitization.instCompleteSpace`: when `A` is a non-unital Banach `𝕜`-algebra with a regular norm,
   then `Unitization 𝕜 A` is a unital Banach `𝕜`-algebra with `‖1‖ = 1`.
-- `Unitization.norm_inr`, `Unitization.isometry_inr`: the natural inclusion `A → Unitization 𝕜 A`
+- `Unitization.norm_inr`, `Unitization.isometric_inr`: the natural inclusion `A → Unitization 𝕜 A`
   is an isometry, or in mathematical parlance, the norm on `A` extends to a norm on
   `Unitization 𝕜 A`.
 
@@ -109,7 +109,7 @@ variable (𝕜 A)
 /-- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective.
 We will use this to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
 theorem splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
-  splitMul_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
+  splitMul_injective_of_clm_mul_injective (isometric_mul 𝕜 A).injective
 
 variable {𝕜 A}
 
@@ -161,7 +161,7 @@ theorem lipschitzWith_addEquiv :
     rw [two_mul]
     calc
       ‖x.snd‖ = ‖mul 𝕜 A x.snd‖ :=
-        .symm <| (isometry_mul 𝕜 A).norm_map_of_map_zero (map_zero _) _
+        .symm <| (isometric_mul 𝕜 A).norm_map_of_map_zero (map_zero _) _
       _ ≤ ‖algebraMap 𝕜 _ x.fst + mul 𝕜 A x.snd‖ + ‖x.fst‖ := by
         simpa only [add_comm _ (mul 𝕜 A x.snd), norm_algebraMap'] using
           norm_le_add_norm_add (mul 𝕜 A x.snd) (algebraMap 𝕜 _ x.fst)
@@ -179,7 +179,8 @@ theorem antilipschitzWith_addEquiv :
       ‖algebraMap 𝕜 _ x.fst + mul 𝕜 A x.snd‖ ≤ ‖algebraMap 𝕜 _ x.fst‖ + ‖mul 𝕜 A x.snd‖ :=
         norm_add_le _ _
       _ = ‖x.fst‖ + ‖x.snd‖ := by
-        rw [norm_algebraMap', (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 A)).mp (isometry_mul 𝕜 A)]
+        rw [norm_algebraMap',
+          (AddMonoidHomClass.isometric_iff_norm (mul 𝕜 A)).mp (isometric_mul 𝕜 A)]
       _ ≤ _ := (add_le_add (le_max_left _ _) (le_max_right _ _)).trans_eq (two_mul _).symm
 
 open Bornology Filter
@@ -253,18 +254,20 @@ lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
 lemma nnnorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inr a
 
-lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
-  AddMonoidHomClass.isometry_of_norm (inrNonUnitalAlgHom 𝕜 A) norm_inr
+lemma isometric_inr : Isometric ((↑) : A → Unitization 𝕜 A) :=
+  AddMonoidHomClass.isometric_of_norm (inrNonUnitalAlgHom 𝕜 A) norm_inr
+
+@[deprecated (since := "2026-09-09")] alias isometry_inr := isometric_inr
 
 @[fun_prop]
 theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
-  isometry_inr.continuous
+  isometric_inr.continuous
 
 lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = dist a b :=
-  isometry_inr.dist_eq a b
+  isometric_inr.dist_eq a b
 
 lemma nndist_inr (a b : A) : nndist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = nndist a b :=
-  isometry_inr.nndist_eq a b
+  isometric_inr.nndist_eq a b
 
 /-! These examples verify that the bornology and uniformity (hence also the topology) are the
 correct ones. -/

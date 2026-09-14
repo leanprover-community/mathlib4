@@ -365,7 +365,7 @@ lemma dist_iterate_next_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L
     (hx : x ∈ closedBall x₀ r) (α β : FunSpace t₀ x₀ r L) (n : ℕ) :
     dist ((next hf hx)^[n] α) ((next hf hx)^[n] β) ≤
       (K * max (tmax - t₀) (t₀ - tmin)) ^ n / n ! * dist α β := by
-  rw [← MetricSpace.isometry_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
+  rw [← MetricSpace.isometric_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
     |>.dist_eq, ContinuousMap.dist_le]
   · intro t
     apply le_trans <| dist_iterate_next_apply_le hf hx α β n t
@@ -408,7 +408,7 @@ lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ clo
     (hy : y ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) :
     dist (next hf hx α) (next hf hy α) = dist x y := by
   have : Nonempty (Icc tmin tmax) := ⟨t₀⟩ -- needed for `ciSup_const`
-  rw [← MetricSpace.isometry_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
+  rw [← MetricSpace.isometric_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
     |>.dist_eq, dist_eq_norm, ContinuousMap.norm_eq_iSup_norm]
   simp [add_sub_add_right_eq_sub, dist_eq_norm]
 

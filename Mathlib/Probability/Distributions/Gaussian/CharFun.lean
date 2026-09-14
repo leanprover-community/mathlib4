@@ -94,7 +94,7 @@ lemma gaussian_charFunDual_congr [IsFiniteMeasure μ] {m : E}
     field_simp
     ring
   have : Continuous n := by
-    rw [← Complex.isometry_intCast.comp_continuous_iff]
+    rw [← Complex.isometric_intCast.comp_continuous_iff]
     change Continuous (fun L ↦ (n L : ℂ))
     simp_rw [h]
     fun_prop

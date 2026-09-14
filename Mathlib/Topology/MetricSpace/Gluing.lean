@@ -21,7 +21,7 @@ Gluing two metric spaces along a common subset. Formally, we are given
   v
   Y
 ```
-where `hΦ : Isometry Φ` and `hΨ : Isometry Ψ`.
+where `hΦ : Isometric Φ` and `hΨ : Isometric Ψ`.
 We want to complete the square by a space `GlueSpace hΦ hΨ` and two isometries
 `toGlueL hΦ hΨ` and `toGlueR hΦ hΨ` that make the square commute.
 We start by defining a predistance on the disjoint union `X ⊕ Y`, for which
@@ -295,12 +295,16 @@ attribute [local instance] metricSpaceSum
 theorem Sum.dist_eq {x y : X ⊕ Y} : dist x y = Sum.dist x y := rfl
 
 /-- The left injection of a space in a disjoint union is an isometry -/
-theorem isometry_inl : Isometry (Sum.inl : X → X ⊕ Y) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+theorem isometric_inl : Isometric (Sum.inl : X → X ⊕ Y) :=
+  Isometric.of_dist_eq fun _ _ => rfl
+
+@[deprecated (since := "2026-09-09")] alias isometry_inl := isometric_inl
 
 /-- The right injection of a space in a disjoint union is an isometry -/
-theorem isometry_inr : Isometry (Sum.inr : Y → X ⊕ Y) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+theorem isometric_inr : Isometric (Sum.inr : Y → X ⊕ Y) :=
+  Isometric.of_dist_eq fun _ _ => rfl
+
+@[deprecated (since := "2026-09-09")] alias isometry_inr := isometric_inr
 
 end Sum
 
@@ -437,8 +441,10 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
 attribute [local instance] Sigma.metricSpace
 
 /-- The injection of a space in a disjoint union is an isometry -/
-theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
-  Isometry.of_dist_eq fun x y => by simp
+theorem isometric_mk (i : ι) : Isometric (Sigma.mk i : E i → Σ k, E k) :=
+  Isometric.of_dist_eq fun x y => by simp
+
+@[deprecated (since := "2026-09-09")] alias isometry_mk := isometric_mk
 
 /-- A disjoint union of complete metric spaces is complete. -/
 protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ i, E i) := by
@@ -446,7 +452,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   set U := { p : (Σ k, E k) × Σ k, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
     simp only [s, ← range_sigmaMk]
-    exact (isometry_mk i).isUniformInducing.isComplete_range
+    exact (isometric_mk i).isUniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine completeSpace_of_isComplete_univ ?_
@@ -466,7 +472,7 @@ set_option backward.privateInPublic.warn false in
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudometric space
 structure on `X ⊕ Y` by declaring that `Φ x` and `Ψ x` are at distance `0`. -/
 @[instance_reducible]
-def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X ⊕ Y) where
+def gluePremetric (hΦ : Isometric Φ) (hΨ : Isometric Ψ) : PseudoMetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ 0
   dist_self := glueDist_self Φ Ψ 0
   dist_comm := glueDist_comm Φ Ψ 0
@@ -474,30 +480,30 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
 space `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
-def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
+def GlueSpace (hΦ : Isometric Φ) (hΨ : Isometric Ψ) : Type _ :=
   @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
-instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
+instance (hΦ : Isometric Φ) (hΨ : Isometric Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
     @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
 /-- The canonical map from `X` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
-def toGlueL (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (x : X) : GlueSpace hΦ hΨ :=
+def toGlueL (hΦ : Isometric Φ) (hΨ : Isometric Ψ) (x : X) : GlueSpace hΦ hΨ :=
   Quotient.mk'' (.inl x)
 
 /-- The canonical map from `Y` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
-def toGlueR (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (y : Y) : GlueSpace hΦ hΨ :=
+def toGlueR (hΦ : Isometric Φ) (hΨ : Isometric Ψ) (y : Y) : GlueSpace hΦ hΨ :=
   Quotient.mk'' (.inr y)
 
-instance inhabitedLeft (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited X] :
+instance inhabitedLeft (hΦ : Isometric Φ) (hΨ : Isometric Ψ) [Inhabited X] :
     Inhabited (GlueSpace hΦ hΨ) :=
   ⟨toGlueL _ _ default⟩
 
-instance inhabitedRight (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited Y] :
+instance inhabitedRight (hΦ : Isometric Φ) (hΨ : Isometric Ψ) [Inhabited Y] :
     Inhabited (GlueSpace hΦ hΨ) :=
   ⟨toGlueR _ _ default⟩
 
-theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
+theorem toGlue_commute (hΦ : Isometric Φ) (hΨ : Isometric Ψ) :
     toGlueL hΦ hΨ ∘ Φ = toGlueR hΦ hΨ ∘ Ψ := by
   let i : PseudoMetricSpace (X ⊕ Y) := gluePremetric hΦ hΨ
   let _ := i.toUniformSpace.toTopologicalSpace
@@ -506,11 +512,15 @@ theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
   refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
   exact glueDist_glued_points Φ Ψ 0 _
 
-theorem toGlueL_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueL hΦ hΨ) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+theorem toGlueL_isometric (hΦ : Isometric Φ) (hΨ : Isometric Ψ) : Isometric (toGlueL hΦ hΨ) :=
+  Isometric.of_dist_eq fun _ _ => rfl
 
-theorem toGlueR_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueR hΦ hΨ) :=
-  Isometry.of_dist_eq fun _ _ => rfl
+@[deprecated (since := "2026-09-09")] alias toGlueL_isometry := toGlueL_isometric
+
+theorem toGlueR_isometric (hΦ : Isometric Φ) (hΨ : Isometric Ψ) : Isometric (toGlueR hΦ hΨ) :=
+  Isometric.of_dist_eq fun _ _ => rfl
+
+@[deprecated (since := "2026-09-09")] alias toGlueR_isometry := toGlueR_isometric
 
 end Gluing --section
 
@@ -544,7 +554,7 @@ def inductiveLimitDist (f : ∀ n, X n → X (n + 1)) (x y : Σ n, X n) : ℝ :=
 
 /-- The predistance on the disjoint union `Σ n, X n` can be computed in any `X k` for large
 enough `k`. -/
-theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σ n, X n) :
+theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometric (f n)) (x y : Σ n, X n) :
     ∀ m (hx : x.1 ≤ m) (hy : y.1 ≤ m), inductiveLimitDist f x y =
       dist (leRecOn hx (f _) x.2 : X m) (leRecOn hy (f _) y.2 : X m)
   | 0, hx, hy => by
@@ -566,7 +576,7 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σ n, X n)
 
 /-- Premetric space structure on `Σ n, X n`. -/
 @[instance_reducible]
-def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σ n, X n) where
+def inductivePremetric (I : ∀ n, Isometric (f n)) : PseudoMetricSpace (Σ n, X n) where
   dist := inductiveLimitDist f
   dist_self x := by simp [inductiveLimitDist]
   dist_comm x y := by
@@ -590,30 +600,32 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σ n, X 
         rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y z m hy hz]
 
 /-- The type giving the inductive limit in a metric space context. -/
-def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
+def InductiveLimit (I : ∀ n, Isometric (f n)) : Type _ :=
   @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
-instance {I : ∀ (n : ℕ), Isometry (f n)} : MetricSpace (InductiveLimit (f := f) I) :=
+instance {I : ∀ (n : ℕ), Isometric (f n)} : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
 /-- Mapping each `X n` to the inductive limit. -/
-def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.InductiveLimit I :=
+def toInductiveLimit (I : ∀ n, Isometric (f n)) (n : ℕ) (x : X n) : Metric.InductiveLimit I :=
   Quotient.mk'' (Sigma.mk n x)
 
-instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
+instance (I : ∀ n, Isometric (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
   ⟨toInductiveLimit _ 0 default⟩
 
 /-- The map `toInductiveLimit n` mapping `X n` to the inductive limit is an isometry. -/
-theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
-    Isometry (toInductiveLimit I n) :=
-  Isometry.of_dist_eq fun x y => by
+theorem toInductiveLimit_isometric (I : ∀ n, Isometric (f n)) (n : ℕ) :
+    Isometric (toInductiveLimit I n) :=
+  Isometric.of_dist_eq fun x y => by
     change inductiveLimitDist f ⟨n, x⟩ ⟨n, y⟩ = dist x y
     rw [inductiveLimitDist_eq_dist I ⟨n, x⟩ ⟨n, y⟩ n (le_refl n) (le_refl n), leRecOn_self,
       leRecOn_self]
 
+@[deprecated (since := "2026-09-09")] alias toInductiveLimit_isometry := toInductiveLimit_isometric
+
 /-- The maps `toInductiveLimit n` are compatible with the maps `f n`. -/
-theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
+theorem toInductiveLimit_commute (I : ∀ n, Isometric (f n)) (n : ℕ) :
     toInductiveLimit I n.succ ∘ f n = toInductiveLimit I n := by
   let h := inductivePremetric I
   let _ := h.toUniformSpace.toTopologicalSpace
@@ -630,7 +642,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
 theorem dense_iUnion_range_toInductiveLimit
     {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
     {f : (n : ℕ) → X n → X (n + 1)}
-    (I : ∀ (n : ℕ), Isometry (f n)) :
+    (I : ∀ (n : ℕ), Isometric (f n)) :
     Dense (⋃ i, range (toInductiveLimit I i)) := by
   refine dense_univ.mono ?_
   rintro ⟨n, x⟩ _
@@ -639,7 +651,7 @@ theorem dense_iUnion_range_toInductiveLimit
 theorem separableSpaceInductiveLimit_of_separableSpace
     {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
     [hs : (n : ℕ) → TopologicalSpace.SeparableSpace (X n)] {f : (n : ℕ) → X n → X (n + 1)}
-    (I : ∀ (n : ℕ), Isometry (f n)) :
+    (I : ∀ (n : ℕ), Isometric (f n)) :
     TopologicalSpace.SeparableSpace (Metric.InductiveLimit I) := by
   choose hsX hcX hdX using (fun n ↦ TopologicalSpace.exists_countable_dense (X n))
   let s := ⋃ (i : ℕ), (toInductiveLimit I i '' (hsX i))
@@ -647,7 +659,7 @@ theorem separableSpaceInductiveLimit_of_separableSpace
   refine .of_closure <| (dense_iUnion_range_toInductiveLimit I).mono <| iUnion_subset fun i ↦ ?_
   calc
     range (toInductiveLimit I i) ⊆ closure (toInductiveLimit I i '' (hsX i)) :=
-      (toInductiveLimit_isometry I i |>.continuous).range_subset_closure_image_dense (hdX i)
+      (toInductiveLimit_isometric I i |>.continuous).range_subset_closure_image_dense (hdX i)
     _ ⊆ closure s := closure_mono <| subset_iUnion (fun j ↦ toInductiveLimit I j '' hsX j) i
 
 end InductiveLimit --section

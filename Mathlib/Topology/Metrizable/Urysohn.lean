@@ -49,7 +49,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
   have : DiscreteTopology s := ⟨rfl⟩
   rsuffices ⟨f, hf⟩ : ∃ f : X → s →ᵇ ℝ, IsInducing f
   · exact ⟨fun x => (f x).extend (Encodable.encode' s) 0,
-      (BoundedContinuousFunction.isometry_extend (Encodable.encode' s)
+      (BoundedContinuousFunction.isometric_extend (Encodable.encode' s)
         (0 : ℕ →ᵇ ℝ)).isEmbedding.isInducing.comp hf⟩
   have hd : ∀ UV : s, Disjoint (closure UV.1.1) UV.1.2ᶜ :=
     fun UV => disjoint_compl_right.mono_right (compl_subset_compl.2 UV.2.2)

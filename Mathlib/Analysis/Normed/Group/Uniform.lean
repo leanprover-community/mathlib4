@@ -29,16 +29,21 @@ variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul : IsIsometricSMul E E :=
-  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_inv_mul]⟩
+  ⟨fun a => Isometric.of_dist_eq fun b c => by simp [dist_eq_norm_inv_mul]⟩
 
 @[to_additive]
-theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
+theorem Isometric.norm_map_of_map_one {f : E → F} (hi : Isometric f) (h₁ : f 1 = 1) (x : E) :
     ‖f x‖ = ‖x‖ := by rw [← dist_one_right, ← h₁, hi.dist_eq, dist_one_right]
+
+@[deprecated (since := "2026-09-10")] alias Isometry.norm_map_of_map_one :=
+  Isometric.norm_map_of_map_one
+@[deprecated (since := "2026-09-10")] alias Isometry.norm_map_of_map_zero :=
+  Isometric.norm_map_of_map_zero
 
 @[to_additive (attr := simp) norm_map]
 theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖ = ‖x‖ :=
-  (IsometryClass.isometry f).norm_map_of_map_one (map_one f) x
+  (IsometryClass.isometric f).norm_map_of_map_one (map_one f) x
 
 @[to_additive (attr := simp) nnnorm_map]
 theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
@@ -112,15 +117,25 @@ theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕 E F] (f :
   (MonoidHomClass.lipschitz_of_bound f C h).uniformContinuous
 
 @[to_additive]
-theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
-    Isometry f ↔ ∀ x, ‖f x‖ = ‖x‖ := by
-  simp only [isometry_iff_dist_eq, dist_eq_norm_inv_mul, ← map_inv, ← map_mul]
+theorem MonoidHomClass.isometric_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+    Isometric f ↔ ∀ x, ‖f x‖ = ‖x‖ := by
+  simp only [isometric_iff_dist_eq, dist_eq_norm_inv_mul, ← map_inv, ← map_mul]
   refine ⟨fun h x => ?_, fun h x y => h _⟩
   simpa using h x 1
 
-alias ⟨_, MonoidHomClass.isometry_of_norm⟩ := MonoidHomClass.isometry_iff_norm
+@[deprecated (since := "2026-09-10")] alias MonoidHomClass.isometry_iff_norm :=
+  MonoidHomClass.isometric_iff_norm
+@[deprecated (since := "2026-09-10")] alias AddMonoidHomClass.isometry_iff_norm :=
+  AddMonoidHomClass.isometric_iff_norm
 
-attribute [to_additive] MonoidHomClass.isometry_of_norm
+alias ⟨_, MonoidHomClass.isometric_of_norm⟩ := MonoidHomClass.isometric_iff_norm
+
+attribute [to_additive] MonoidHomClass.isometric_of_norm
+
+@[deprecated (since := "2026-09-10")] alias MonoidHomClass.isometry_of_norm :=
+  MonoidHomClass.isometric_of_norm
+@[deprecated (since := "2026-09-10")] alias AddMonoidHomClass.isometry_of_norm :=
+  AddMonoidHomClass.isometric_of_norm
 
 section NNNorm
 
@@ -169,9 +184,14 @@ theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K 
   h.le_mul_nnnorm' (map_one f) x
 
 @[to_additive]
-theorem Isometry.nnnorm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
+theorem Isometric.nnnorm_map_of_map_one {f : E → F} (hi : Isometric f) (h₁ : f 1 = 1) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   Subtype.ext <| hi.norm_map_of_map_one h₁ x
+
+@[deprecated (since := "2026-09-10")] alias Isometry.nnnorm_map_of_map_one :=
+  Isometric.nnnorm_map_of_map_one
+@[deprecated (since := "2026-09-10")] alias Isometry.nnnorm_map_of_map_zero :=
+  Isometric.nnnorm_map_of_map_zero
 
 end NNNorm
 
@@ -199,7 +219,7 @@ variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : 
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul_right : IsIsometricSMul Eᵐᵒᵖ E :=
-  ⟨fun a => Isometry.of_dist_eq fun b c => by simp⟩
+  ⟨fun a => Isometric.of_dist_eq fun b c => by simp⟩
 
 @[to_additive (attr := simp)]
 theorem dist_mul_self_right (a b : E) : dist a (b * a) = ‖b‖ := by
@@ -474,11 +494,13 @@ end SeminormedCommGroup
 namespace Real
 open Topology
 
-theorem isometry_intCast : Isometry ((↑) : ℤ → ℝ) :=
-  Isometry.of_dist_eq <| by tauto
+theorem isometric_intCast : Isometric ((↑) : ℤ → ℝ) :=
+  Isometric.of_dist_eq <| by tauto
+
+@[deprecated (since := "2026-09-10")] alias isometry_intCast := isometric_intCast
 
 theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
-  isometry_intCast.isClosedEmbedding
+  isometric_intCast.isClosedEmbedding
 
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℝ)) :=
   isClosedEmbedding_intCast.isClosed_range

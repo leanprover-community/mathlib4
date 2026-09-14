@@ -953,7 +953,7 @@ has Fréchet derivative `L ∘ f'` at `σ x`. -/
 lemma HasDerivAt.comp_semilinear (hf : HasDerivAt f f' x) :
     HasDerivAt (L ∘ f ∘ σ') (L f') (σ x) := by
   have : RingHomIsometric σ' := .inv σ
-  let R : 𝕜 →SL[σ'] 𝕜 := ⟨σ'.toSemilinearMap, σ'.isometry.continuous⟩
+  let R : 𝕜 →SL[σ'] 𝕜 := ⟨σ'.toSemilinearMap, σ'.isometric.continuous⟩
   have hR (k : 𝕜) : R k = σ' k := rfl
   rw [hasDerivAt_iff_hasFDerivAt]
   convert! HasFDerivAt.comp_semilinear L R (f' := toSpanSingleton 𝕜 f') ?_
@@ -972,7 +972,7 @@ variable (σ) {f : 𝕜 → 𝕜} {f' : 𝕜}
 /-- If `f` has derivative `f'` at `x`, and `σ, σ'` are mutually inverse normed-ring automorphisms,
 then `σ ∘ f ∘ σ'` has derivative `σ f'` at `σ x`. -/
 lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ f') (σ x) :=
-  hf.comp_semilinear σ' ⟨σ.toSemilinearMap, σ.isometry.continuous⟩
+  hf.comp_semilinear σ' ⟨σ.toSemilinearMap, σ.isometric.continuous⟩
 
 /-- If `f` is differentiable at `x`, and `L` is `σ`-semilinear, then `L ∘ f ∘ σ⁻¹` is
 differentiable at `σ x`. -/

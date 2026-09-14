@@ -30,7 +30,7 @@ variable [w.LiesOver v]
 lies over `v`. -/
 noncomputable def completionMap : v.Completion →+* w.Completion :=
   ((Completion.equiv w).symm.toRingHom.comp <|
-    UniformSpace.Completion.mapRingHom _ (LiesOver.isometry_algebraMap w v).continuous).comp <|
+    UniformSpace.Completion.mapRingHom _ (LiesOver.isometric_algebraMap w v).continuous).comp <|
     (Completion.equiv v).toRingHom
 
 theorem continuous_completionMap : Continuous (completionMap (v := v) (w := w)) :=
