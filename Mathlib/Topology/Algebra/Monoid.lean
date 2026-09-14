@@ -102,13 +102,6 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
   simp only [Function.comp_def, map_mul]
   fun_prop
 
-@[deprecated (since := "2026-02-20")] alias continuous_add_left := continuous_const_add
-@[deprecated (since := "2026-02-20")] alias continuous_add_right := continuous_add_const
-@[to_additive existing, deprecated (since := "2026-02-20")]
-alias continuous_mul_left := continuous_const_mul
-@[to_additive existing, deprecated (since := "2026-02-20")]
-alias continuous_mul_right := continuous_mul_const
-
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
   continuous_iff_continuousAt.mp ContinuousMul.continuous_mul (a, b)
@@ -869,18 +862,24 @@ theorem ContinuousAt.pow {f : X → M} {x : X} (hf : ContinuousAt f x) (n : ℕ)
 theorem ContinuousOn.pow {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
     ContinuousOn (f ^ n) s := fun x hx => (hf x hx).pow n
 
+@[to_additive]
+theorem IsScalarTower.continuousConstSMul (R S M : Type*) [Monoid S] [MulAction S M] [SMul R M]
+    [SMul R S] [IsScalarTower R S M] [TopologicalSpace M] [ContinuousConstSMul S M] :
+    ContinuousConstSMul R M where
+  continuous_const_smul q := by
+    simp +singlePass only [← smul_one_smul S]
+    fun_prop
+
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.
 
 Notably, this instance applies when `R = A`, or when `[Algebra R A]` is available. -/
 @[to_additive /-- If `R` acts on `A` via `A`, then continuous addition implies
 continuous affine addition by constants. -/]
-instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
+instance (priority := 100) IsScalarTower.continuousConstSMul' {R A : Type*} [Monoid A] [SMul R A]
     [IsScalarTower R A A] [TopologicalSpace A] [SeparatelyContinuousMul A] :
-    ContinuousConstSMul R A where
-  continuous_const_smul q := by
-    simp +singlePass only [← smul_one_mul q (_ : A)]
-    fun_prop
+    ContinuousConstSMul R A :=
+  IsScalarTower.continuousConstSMul R A A
 
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
