@@ -168,13 +168,19 @@ theorem isHamiltonian_iff_finite_and_isPath_and_length_eq :
   simp [isHamiltonian_iff_isPath_and_length_eq, hfin]
 
 @[simp]
-theorem isHamiltonian_copy {a' b' : α} {p : G.Walk a b} {ha : a = a'} {hb : b = b'} :
+theorem isHamiltonian_copy {a' b' : α} {ha : a = a'} {hb : b = b'} :
     (p.copy ha hb).IsHamiltonian ↔ p.IsHamiltonian := by
   simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
+
+theorem IsHamiltonian.copy {a' b' : α} (ha : a = a') (hb : b = b') (h : p.IsHamiltonian) :
+    (p.copy ha hb).IsHamiltonian :=
+  isHamiltonian_copy.mpr h
 
 @[simp]
 theorem isHamiltonian_reverse : p.reverse.IsHamiltonian ↔ p.IsHamiltonian := by
   simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
+
+alias ⟨_, IsHamiltonian.reverse⟩ := isHamiltonian_reverse
 
 @[simp]
 theorem isHamiltonian_transfer [Finite α] {H : SimpleGraph α} (h) :
@@ -273,9 +279,13 @@ theorem isHamiltonianCycle_iff_isCycle_and_length_eq_natCard :
   simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
 
 @[simp]
-theorem isHamiltonianCycle_copy {p : G.Walk a a} (h : a = b) :
+theorem isHamiltonianCycle_copy {p : G.Walk a a} {h : a = b} :
     (p.copy h h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
   simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
+
+theorem IsHamiltonianCycle.copy {p : G.Walk a a} (ha : a = b) (h : p.IsHamiltonianCycle) :
+    (p.copy ha ha).IsHamiltonianCycle :=
+  isHamiltonianCycle_copy.mpr h
 
 @[simp]
 lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
