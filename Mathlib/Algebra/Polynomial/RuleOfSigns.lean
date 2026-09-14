@@ -45,8 +45,8 @@ namespace Polynomial
 section Semiring
 variable {R : Type*} [Semiring R] [LinearOrder R] (P : Polynomial R)
 
-/-- Counts the number of times that the coefficients in a polynomial change sign, with
-the convention that 0 can count as either sign. -/
+/-- Counts the number of times that the coefficients in a polynomial change sign, ignoring
+zero coefficients. -/
 def signVariations : ℕ := P.coeffList.signVariations
 
 variable (R) in
@@ -59,7 +59,7 @@ theorem signVariations_zero : signVariations (0 : R[X]) = 0 := by
 theorem signVariations_monomial (d : ℕ) (c : R) : signVariations (monomial d c) = 0 := by
   by_cases hcz : c = 0
   · simp [hcz]
-  · simp [hcz, signVariations, List.signVariations]
+  · simp [hcz, signVariations]
 
 /-- If the first two signs are the same, then `signVariations` is unchanged by `eraseLead` -/
 theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.sign P.nextCoeff) :
@@ -83,12 +83,11 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
   · simp [he, hl]
   · obtain ⟨ls, hls⟩ := coeffList_eq_cons_leadingCoeff he
     have hl' : SignType.sign P.eraseLead.leadingCoeff ≠ 0 := by simp [he]
-    rw [hls, List.signVariations_cons_cons_of_ne_zero _ _ _ (leadingCoeff_ne_zero.mpr h)
-      (leadingCoeff_ne_zero.mpr he), add_comm]
+    rw [hls, List.signVariations_cons_cons_of_ne_zero _ (leadingCoeff_ne_zero.mpr h)
+      (leadingCoeff_ne_zero.mpr he)]
     congr 1
-    cases hs : SignType.sign P.leadingCoeff
-    <;> cases ht : SignType.sign P.eraseLead.leadingCoeff
-    <;> first | exact absurd hs hl | decide | exact absurd ht hl'
+    revert hl hl'
+    cases SignType.sign P.leadingCoeff <;> cases SignType.sign P.eraseLead.leadingCoeff <;> decide
 
 /-- We can only lose, not gain, sign changes if we drop the leading coefficient. -/
 theorem signVariations_eraseLead_le : signVariations P.eraseLead ≤ signVariations P := by
@@ -162,7 +161,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
   suffices eraseLead (eraseLead ((X - C η) * P)) = eraseLead ((X - C η) * P.eraseLead) by
     suffices (coeffList (eraseLead ((X - C η) * P))).map SignType.sign =
       (coeffList ((X - C η) * P.eraseLead)).map SignType.sign by
-        rw [signVariations, signVariations, List.signVariations, List.signVariations, this]
+        exact List.signVariations_congr this
     grind [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, leadingCoeff_eraseLead_eq_nextCoeff,
       LT.lt.ne, sign_neg, coeffList_eraseLead, ne_zero_of_natDegree_gt,
       nextCoeff_eq_zero_of_eraseLead_eq_zero]

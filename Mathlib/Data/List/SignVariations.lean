@@ -58,9 +58,15 @@ lemma signVariations_singleton (a : α) : signVariations [a] = 0 := by
 
 /-- A leading zero entry does not change the sign variations. -/
 @[simp]
-lemma signVariations_zero_cons (b : α) (as : List α) :
-    signVariations (0 :: b :: as) = signVariations (b :: as) := by
-  simp [signVariations]
+lemma signVariations_zero_cons (l : List α) :
+    signVariations (0 :: l) = signVariations l := by
+  cases l <;> simp [signVariations]
+
+/-- Zero entries do not contribute to the sign variations. -/
+@[simp]
+lemma signVariations_filter_ne_zero (l : List α) :
+    signVariations (l.filter (· ≠ 0)) = signVariations l := by
+  simp [signVariations, filter_map, Function.comp_def, sign_eq_zero_iff]
 
 /-- A zero entry in second position does not change the sign variations. -/
 @[simp]
@@ -70,11 +76,9 @@ lemma signVariations_cons_zero_cons (a : α) (as : List α) :
 
 /-- Prepending a nonzero entry `a` to a list starting with a nonzero entry `b` adds one sign
 variation exactly when `a` and `b` have opposite signs. -/
-lemma signVariations_cons_cons_of_ne_zero (a b : α) (as : List α) :
-    a ≠ 0 → b ≠ 0 →
-      signVariations (a :: b :: as) =
-        (if sign a = sign b then 0 else 1) + signVariations (b :: as) := by
-  intros ha hb
+lemma signVariations_cons_cons_of_ne_zero {a b : α} (as : List α) (ha : a ≠ 0) (hb : b ≠ 0) :
+    signVariations (a :: b :: as) =
+      signVariations (b :: as) + (if sign a = sign b then 0 else 1) := by
   have ha' : sign a ≠ 0 := by rwa [ne_eq, sign_eq_zero_iff]
   have hb' : sign b ≠ 0 := by rwa [ne_eq, sign_eq_zero_iff]
   have hf1 :
@@ -88,19 +92,24 @@ lemma signVariations_cons_cons_of_ne_zero (a b : α) (as : List α) :
     simp
   simp only [signVariations, hf1, hf2, destutter_cons_cons, ← destutter_cons']
   by_cases h : sign a = sign b
-  · rw [ite_eq_right (not_not.mpr h), ite_eq_left h, h, zero_add]
+  · rw [ite_eq_right (not_not.mpr h), ite_eq_left h, h, add_zero]
   · rw [ite_eq_left h, ite_eq_right h, length_cons]
     omega
 
-/-- `signVariations` only depends on the signs of the entries, so it is invariant under any
-map that preserves signs (e.g. casts, or `sign` itself). -/
+/-- `signVariations` only depends on the signs of the entries. -/
+lemma signVariations_congr {β : Type*} [Zero β] [LinearOrder β] {l₁ : List α} {l₂ : List β}
+    (h : l₁.map sign = l₂.map sign) : signVariations l₁ = signVariations l₂ := by
+  simp only [signVariations, h]
+
+/-- `signVariations` is invariant under any map that preserves signs (e.g. casts). -/
 lemma signVariations_map {β : Type*} [Zero β] [LinearOrder β] {f : α → β}
     (hf : ∀ x, sign (f x) = sign x) (l : List α) :
-    signVariations (l.map f) = signVariations l := by
-  have : (l.map f).map sign = l.map sign := by
-    rw [map_map]
-    exact map_congr_left fun x _ => hf x
-  simp only [signVariations, this]
+    signVariations (l.map f) = signVariations l :=
+  signVariations_congr (by rw [map_map]; exact map_congr_left fun x _ => hf x)
+
+@[simp]
+lemma signVariations_map_sign (l : List α) : signVariations (l.map sign) = signVariations l :=
+  signVariations_map (fun x => by cases sign x <;> decide) l
 
 /-- A run of zero entries after the head does not change the sign variations. -/
 @[simp]
@@ -109,6 +118,12 @@ lemma signVariations_cons_replicate_zero_append (a : α) (n : ℕ) (l : List α)
   have h : ((replicate n (0 : α) ++ l).map sign).filter (· ≠ 0) = (l.map sign).filter (· ≠ 0) := by
     simp [filter_append]
   simp only [signVariations, map_cons, filter_cons, h]
+
+/-- A list whose only nonzero entry is the head has no sign variations. -/
+@[simp]
+lemma signVariations_cons_replicate_zero (a : α) (n : ℕ) :
+    signVariations (a :: replicate n 0) = 0 := by
+  simpa using signVariations_cons_replicate_zero_append a n []
 
 /-- `signVariations` is invariant under any map that negates signs (e.g. negation). -/
 lemma signVariations_map_of_sign_eq_neg {β : Type*} [Zero β] [LinearOrder β] {f : α → β}
