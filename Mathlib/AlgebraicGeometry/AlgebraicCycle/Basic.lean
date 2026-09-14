@@ -83,6 +83,7 @@ variable {R : Type*}
 /--
 A Weil divisor is an algebraic cycle supported purely in codimension one
 -/
+@[stacks 0BE2]
 def IsWeilDivisor [Zero R] (D : AlgebraicCycle X R) : Prop :=
   D.support ⊆ {x | Order.coheight x = 1}
 
@@ -103,6 +104,7 @@ variable (X R) in
 /--
 The Weil divisors on `X`, as a subgroup of the algebraic cycles
 -/
+@[stacks 0BE2]
 def weilDivisors [AddGroup R] : AddSubgroup (AlgebraicCycle X R) :=
   Function.locallyFinsuppWithin.supported R Set.univ {x : X | Order.coheight x = 1}
 
