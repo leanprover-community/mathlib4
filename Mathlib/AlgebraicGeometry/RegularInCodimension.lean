@@ -52,7 +52,7 @@ This condition is normally only considered for locally Noetherian schemes. Note 
 `IsRegularLocalRing` already requires the local rings in question to be Noetherian, so no such
 assumption appears here.
 -/
-@[stacks 033Q]
+@[mk_iff, stacks 033Q "(1)"]
 class IsRegularInCodimensionLE (n : ℕ) (X : Scheme.{u}) : Prop where
   isRegularLocalRing_stalk_of_coheight_le (x : X) (hx : coheight x ≤ n) :
     IsRegularLocalRing (X.presheaf.stalk x)
