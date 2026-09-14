@@ -217,8 +217,8 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
   refine eq_sq_add_sq_iff_eq_sq_mul.trans ⟨fun ⟨a, b, h₁, h₂⟩ q hq h ↦ ?_, fun H ↦ ?_⟩
   · have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
     have : q ∣ b → q ∈ b.primeFactors := by grind
-    grind (splits := 10) [multiplicity.mul, multiplicity.pow,
-      multiplicity.eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
+    grind (splits := 10) [multiplicity_mul, multiplicity_pow,
+      multiplicity_eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := sq_mul_squarefree_of_pos hn₀
     refine ⟨a, b, hab.symm, ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hb
       |>.mpr fun q hq hq4 ↦ ?_⟩
@@ -226,7 +226,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     have := Nat.primeFactors_mono <| Dvd.intro_left _ hab
     have : b.factorization q = 1 := by grind [Squarefree.natFactorization_le_one,
       Prime.dvd_iff_one_le_factorization, prime_of_mem_primeFactors, dvd_of_mem_primeFactors]
-    grind [factorization_def, prime_of_mem_primeFactors, multiplicity.mul, multiplicity.pow]
+    grind [factorization_def, prime_of_mem_primeFactors, multiplicity_mul, multiplicity_pow]
 
 end Main
 

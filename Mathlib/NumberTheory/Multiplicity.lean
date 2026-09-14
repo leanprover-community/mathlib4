@@ -367,7 +367,7 @@ lemma multiplicity_pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠
     simp [← Nat.pow_two_sub_pow_two x 1]
     grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := multiplicity_pow_two_sub_one h1x hx hn hneven
-  grind [← multiplicity.mul]
+  grind [← multiplicity_mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
