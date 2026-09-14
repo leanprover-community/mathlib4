@@ -300,23 +300,17 @@ lemma range_toGL_eq_ker_det :
     (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
   ext A
   simp only [MonoidHom.mem_range, MonoidHom.mem_ker]
-  refine ⟨fun ⟨g, hg⟩ ↦ by simp [← hg], fun hA ↦ ⟨⟨A, ?_⟩, Units.ext rfl⟩⟩
+  refine ⟨fun ⟨g, hg⟩ ↦ by simp [← hg], fun hA ↦ ⟨⟨A, ?_⟩, by ext; rfl⟩⟩
   rw [← GeneralLinearGroup.val_det_apply, hA, Units.val_one]
 
 /-- `Matrix.SpecialLinearGroup` is isomorphic to `GeneralLinearGroup.det.ker`. -/
+@[simps]
 def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
   toFun g := ⟨toGL g, coeToGL_det g⟩
   invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.2⟩
   left_inv _ := rfl
-  right_inv _ := Subtype.ext (Units.ext rfl)
-  map_mul' _ _ := Subtype.ext (Units.ext rfl)
-
-@[simp]
-lemma coe_toGLKerEquiv_apply {g : SpecialLinearGroup n R} : toGLKerEquiv g = toGL g := rfl
-
-@[simp]
-lemma coe_toGLKerEquiv_symm_apply {g : (GeneralLinearGroup.det : GL n R →* Rˣ).ker} :
-  toGLKerEquiv.symm g = g.val.val := rfl
+  right_inv _ := by ext; rfl
+  map_mul' _ _ := by ext; rfl
 
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over
