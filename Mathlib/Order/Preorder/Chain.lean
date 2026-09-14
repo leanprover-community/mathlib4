@@ -213,17 +213,21 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
+/-- A chain in a preorder is a partial order. -/
+@[implicit_reducible]
+def IsChain.partialOrder [Preorder α] {s : Set α} (hs : IsChain (· < ·) s) : PartialOrder s where
+  le_antisymm := fun ⟨_, ha⟩ ⟨_, hb⟩ hab hba ↦
+    Subtype.ext <| by_contra (hs ha hb · |>.elim hba.not_gt hab.not_gt)
+
 /-- A chain in a preorder is a linear order. -/
 @[implicit_reducible]
 def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChain (· < ·) s) :
     LinearOrder s where
-  le_antisymm :=
-    fun ⟨a, ha⟩ ⟨b, hb⟩ hab hba ↦
-      Subtype.ext <| not_not.mp (hs ha hb · |>.elim hba.not_gt hab.not_gt)
+  le_antisymm := hs.partialOrder.le_antisymm
   le_total :=
     fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ eq_or_ne a b |>.elim (by simp [·]) (hs ha hb · |>.imp (·.le) (·.le))
   toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
-  toDecidableEq := decidableEqOfDecidableLE
+  toDecidableEq := let := hs.partialOrder; decidableEqOfDecidableLE
   toDecidableLT := decidableLTOfDecidableLE
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
