@@ -59,11 +59,12 @@ theorem toLex_le_toLex [LT α] [LE β] {x y : α × β} :
     toLex x ≤ toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 ≤ y.2 :=
   Prod.lex_def
 
+to_dual_for toLex_le_toLex := by rw [eq_comm, toLex_le_toLex]
+
 theorem toLex_lt_toLex [LT α] [LT β] {x y : α × β} :
     toLex x < toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 < y.2 :=
   Prod.lex_def
 
-to_dual_for toLex_le_toLex := by rw [eq_comm, toLex_le_toLex]
 to_dual_for toLex_lt_toLex := by rw [eq_comm, toLex_lt_toLex]
 
 @[to_dual none]

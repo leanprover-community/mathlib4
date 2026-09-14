@@ -244,6 +244,8 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
 attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
 attribute [simp, grind _=_] Category.assoc
 
+to_dual_for Category.assoc := (self.assoc h g f).symm
+
 initialize_simps_projections Category (-Hom)
 
 to_dual_for Category.mk := {}
@@ -264,10 +266,6 @@ abbrev SmallCategory (C : Type u) : Type (u + 1) := Category.{u} C
 section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
-
-@[to_dual existing assoc]
-lemma Category.assoc' {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
-    h ≫ g ≫ f = (h ≫ g) ≫ f := (Category.assoc h g f).symm
 
 /-- Postcompose an equation between morphisms by another morphism -/
 @[to_dual (reorder := w h) whisker_eq
