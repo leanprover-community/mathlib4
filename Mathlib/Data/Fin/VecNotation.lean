@@ -501,7 +501,7 @@ end swap
 
 /-- Any function out of `Fin 0` is injective. It is useful to have this special case for `Fin 0` for
 `simp` so it doesn't do a TC search for `Subsingleton`. -/
-@[simp] theorem vecEmpty_injective (f : Fin 0 → α) : Function.Injective f :=
+@[simp] theorem injective_of_fin_zero (f : Fin 0 → α) : Function.Injective f :=
   Function.injective_of_subsingleton _
 
 /-- `vecCons x₀ x` is injective iff `x₀` is not in the range of `x` and `x` is injective. It is useful
