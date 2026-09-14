@@ -97,7 +97,7 @@ theorem HasBasis.iInf_of_finite {ι : Type*} {ι' : ι → Type*} [Finite ι]
     exact ⟨f, hf, iInter_mono hsub⟩
   · exact mem_of_superset (iInter_mem.2 fun i ↦ mem_iInf_of_mem i <| (hl i).mem_of_mem (hf i)) hsub
 
-theorem HasBasis.biInf_of_finset {ι : Type*} {ι' : ι → Type*} (I : Finset ι)
+theorem HasBasis.biInf_finset {ι : Type*} {ι' : ι → Type*} (I : Finset ι)
     {l : ι → Filter α} {p : ∀ i, ι' i → Prop} {s : ∀ i, ι' i → Set α}
     (hl : ∀ i ∈ I, (l i).HasBasis (p i) (s i)) :
     (⨅ i ∈ I, l i).HasBasis (fun f : ∀ i : I, ι' i ↦ ∀ i : I, p i (f i))
