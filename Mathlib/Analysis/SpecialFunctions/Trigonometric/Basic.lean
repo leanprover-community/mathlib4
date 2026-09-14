@@ -171,6 +171,8 @@ theorem pi_div_two_pos : 0 < π / 2 :=
 
 theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
 
+@[simp] theorem abs_pi : |π| = π := abs_of_pos pi_pos
+
 end Real
 
 namespace Mathlib.Meta.Positivity
