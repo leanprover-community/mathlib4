@@ -80,7 +80,7 @@ instance : DenselyOrdered (Fill α) where
       Lex.forall, Prod.forall]
     rintro x q ⟨hx₁, hx₂⟩ y r ⟨hy₁, hy₂⟩ (h | ⟨rfl, h⟩)
     · by_cases hx : IsPredPrelimit x
-      · obtain ⟨z, hz, hz'⟩ := hx.lt_iff_exists_lt.1 h
+      · obtain ⟨z, hz, hz'⟩ := hx.nonempty_Ioo_of_lt h
         use some z
         simp [some, Prod.Lex.lt_iff, hz', hz]
       obtain ⟨s, hs⟩ := exists_gt (max 0 q)
