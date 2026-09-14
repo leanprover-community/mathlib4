@@ -294,7 +294,7 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
   inj' := map.injective f.injective
 
 @[simp]
-theorem Function.Embedding.coe_sym2Map (f : α ↪ β) : f.sym2Map = map f :=
+theorem _root_.Function.Embedding.coe_sym2Map (f : α ↪ β) : f.sym2Map = map f :=
   rfl
 
 /-- `Sym2.map` as an equivalence. -/
@@ -305,15 +305,15 @@ def _root_.Equiv.sym2Map (f : α ≃ β) : Sym2 α ≃ Sym2 β where
   right_inv := Sym2.ind <| by simp
 
 @[simp]
-theorem Equiv.coe_sym2Map (f : α ≃ β) : f.sym2Map = map f :=
+theorem _root_.Equiv.coe_sym2Map (f : α ≃ β) : f.sym2Map = map f :=
   rfl
 
 @[simp]
-theorem Equiv.symm_sym2Map (f : α ≃ β) : f.sym2Map.symm = f.symm.sym2Map :=
+theorem _root_.Equiv.symm_sym2Map (f : α ≃ β) : f.sym2Map.symm = f.symm.sym2Map :=
   rfl
 
 @[simp]
-theorem Equiv.toEmbedding_sym2Map (f : α ≃ β) : f.sym2Map.toEmbedding = f.toEmbedding.sym2Map :=
+theorem _root_.Equiv.toEmbedding_sym2Map (f : α ≃ β) : f.sym2Map.toEmbedding = f.toEmbedding.sym2Map :=
   rfl
 
 lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
