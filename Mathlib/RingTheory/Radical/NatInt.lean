@@ -29,7 +29,7 @@ public import Mathlib.RingTheory.Radical.Basic
 - `Int.radical_eq_prod_primeFactors`: The radical is computable for integers.
 -/
 
-@[expose] public section
+public section
 
 open UniqueFactorizationMonoid
 

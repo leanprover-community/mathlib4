@@ -30,7 +30,7 @@ Besson–Courtois–Gallot–Sambusetti.
   (requires ends of groups, not yet in Mathlib).
 -/
 
-@[expose] public section
+public section
 
 namespace Group
 

@@ -16,7 +16,7 @@ measure. It first proves approximation results using integrable simple functions
 measures.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
