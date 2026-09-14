@@ -26,7 +26,7 @@ the height bounds on `A` and on the solution vector `η` that Siegel's lemma ret
 
 ## Main results
 
-- `exists_common_field_of_isAlgebraic`: a number field `K` containing `α`, `β` and `γ`.
+- `NumberField.of_adjoin`: a finite set of algebraic numbers generates a number field.
 - `house_matrixA_le`: an upper bound on the house of the entries of the Siegel matrix `A`.
 - `house_eta_le_c₄_pow`: the resulting bound on the house of the solution vector `η`.
 
@@ -47,26 +47,12 @@ noncomputable section
 Suppose that `α, β, γ` lie in an algebraic field `K` with degree `h`.
 -/
 
-lemma isNumberField_adjoin_of_isAlgebraic (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
-    (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
-    NumberField (adjoin ℚ {α, β, γ}) :=
-  have : FiniteDimensional ℚ (adjoin ℚ {α, β, γ}) := finiteDimensional_adjoin fun _ hx ↦ by
-    rcases hx with rfl | rfl | rfl
-    exacts [isAlgebraic_iff_isIntegral.1 hα, isAlgebraic_iff_isIntegral.1 hβ,
-      isAlgebraic_iff_isIntegral.1 hγ]
+/-- The field generated over `ℚ` by a finite set of algebraic numbers is a number field. -/
+theorem NumberField.of_adjoin {L : Type*} [Field L] [CharZero L] {S : Set L} [Finite S]
+    (hS : ∀ x ∈ S, IsAlgebraic ℚ x) : NumberField (adjoin ℚ S) :=
+  have : FiniteDimensional ℚ (adjoin ℚ S) :=
+    finiteDimensional_adjoin fun x hx ↦ (hS x hx).isIntegral
   NumberField.of_module_finite (K := ℚ) _
-
-lemma exists_common_field_of_isAlgebraic (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
-    (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
-    ∃ (K : Type) (_ : Field K) (_ : NumberField K) (σ : K →+* ℂ)
-      (_ : DecidableEq (K →+* ℂ)),
-      ∃ α' β' γ' : K, α = σ α' ∧ β = σ β' ∧ γ = σ γ' := by
-  classical
-  refine ⟨ℚ⟮α, β, γ⟯, _,
-    isNumberField_adjoin_of_isAlgebraic α β γ hα hβ hγ,
-    IntermediateField.val _ |>.toRingHom, inferInstance, ?_⟩
-  exact ⟨⟨α, subset_adjoin _ _ (by simp)⟩, ⟨β, subset_adjoin _ _ (by simp)⟩,
-    ⟨γ, subset_adjoin _ _ (by simp)⟩, by simp⟩
 
 namespace GelfondSchneider
 
@@ -95,20 +81,19 @@ lemma alpha'_beta'_gamma'_ne_zero : α' ≠ 0 ∧ β' ≠ 0 ∧ γ' ≠ 0 :=
 
 variable [NumberField K]
 
-/-- The integer denominator of `α`, given by `Algebra.natDenominator`. -/
-abbrev intDenom (α : K) : ℤ := (Algebra.natDenominator α).cast
-
-lemma intDenom_ne_zero (α : K) : intDenom α ≠ 0 :=
-  Int.natCast_ne_zero.mpr <| IsAlgebraic.natDenominator_ne_zero <|
-    IsFractionRing.isAlgebraic_iff ℤ ℚ K |>.mpr (.of_finite ℚ α)
+lemma natDenominator_ne_zero (x : K) : Algebra.natDenominator x ≠ 0 :=
+  IsAlgebraic.natDenominator_ne_zero <|
+    IsFractionRing.isAlgebraic_iff ℤ ℚ K |>.mpr (.of_finite ℚ x)
 
 /-- `c₁` is a positive integer such that `c₁ • α'`, `c₁ • β'`, and `c₁ • γ'`
 are algebraic integers. -/
-def c₁ : ℤ := abs (intDenom α' * intDenom β' * intDenom γ')
+def c₁ : ℤ :=
+  (Algebra.natDenominator α' * Algebra.natDenominator β' * Algebra.natDenominator γ' : ℕ)
 
 include α' β' γ' in
-lemma one_le_c₁ : 1 ≤ c₁ α' β' γ' := Int.one_le_abs <|
-  mul_ne_zero (mul_ne_zero (intDenom_ne_zero _) (intDenom_ne_zero _)) (intDenom_ne_zero _)
+lemma one_le_c₁ : 1 ≤ c₁ α' β' γ' :=
+  Nat.one_le_cast.mpr <| Nat.one_le_iff_ne_zero.mpr <| by
+    simp [natDenominator_ne_zero]
 
 lemma c₁_ne_zero : c₁ α' β' γ' ≠ 0 := (Int.zero_lt_one.trans_le (one_le_c₁ _ _ _)).ne'
 
@@ -122,23 +107,24 @@ private lemma isIntegral_zsmul_of_dvd {c d : ℤ} {x : K} (h : IsIntegral ℤ (d
   exact h.zsmul e
 
 omit [NumberField K] in
-private lemma isIntegral_intDenom_smul (x : K) : IsIntegral ℤ (intDenom x • x) := by
-  simpa [intDenom, zsmul_eq_mul] using Algebra.isIntegral_natDenominator_smul x
+private lemma isIntegral_natDenominator_zsmul (x : K) :
+    IsIntegral ℤ ((Algebra.natDenominator x : ℤ) • x) := by
+  simpa using Algebra.isIntegral_natDenominator_smul x
 
 omit [NumberField K] in
 lemma isIntegral_c₁α : IsIntegral ℤ (c₁ α' β' γ' • α') :=
-  isIntegral_zsmul_of_dvd (isIntegral_intDenom_smul α')
-    ((dvd_abs _ _).mpr ((dvd_mul_right _ _).mul_right _))
+  isIntegral_zsmul_of_dvd (isIntegral_natDenominator_zsmul α')
+    (Int.natCast_dvd_natCast.mpr ((dvd_mul_right _ _).mul_right _))
 
 omit [NumberField K] in
 lemma isIntegral_c₁β : IsIntegral ℤ (c₁ α' β' γ' • β') :=
-  isIntegral_zsmul_of_dvd (isIntegral_intDenom_smul β')
-    ((dvd_abs _ _).mpr ((dvd_mul_left _ _).mul_right _))
+  isIntegral_zsmul_of_dvd (isIntegral_natDenominator_zsmul β')
+    (Int.natCast_dvd_natCast.mpr ((dvd_mul_left _ _).mul_right _))
 
 omit [NumberField K] in
 lemma isIntegral_c₁γ : IsIntegral ℤ (c₁ α' β' γ' • γ') :=
-  isIntegral_zsmul_of_dvd (isIntegral_intDenom_smul γ') ((dvd_abs _ _).mpr (dvd_mul_left _ _))
-
+  isIntegral_zsmul_of_dvd (isIntegral_natDenominator_zsmul γ')
+    (Int.natCast_dvd_natCast.mpr (dvd_mul_left _ _))
 
 /-!
 Let `m = 2h + 2` and `n = q² / (2m)`, where `q²` is a perfect square divisible by `2m`.
