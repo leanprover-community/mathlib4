@@ -240,10 +240,10 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
 /-- If a polynomial starts with two positive coefficients, then the sign changes in the product
-`(X - η) * P` is the same as `(X - η) * P.eraseLead`. This lemma lets us do induction on the
-degree of P when P starts with matching coefficient signs. Of course this is also true when the
-first two coefficients of P are *negative*, but we just prove the case where they're positive
-since it's cleaner and sufficient for the later use. -/
+`(X - η) * P` is at least the sign changes of `(X - η) * P.eraseLead`. This lemma lets us do
+induction on the degree of P when P starts with matching coefficient signs. Of course this is
+also true when the first two coefficients of P are *negative*, but we just prove the case where
+they're positive since it's cleaner and sufficient for the later use. -/
 lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0 < P.nextCoeff) :
     signVariations ((X - C η) * P.eraseLead) ≤ signVariations ((X - C η) * P) := by
   obtain ⟨c₀, cs, ⟨hcs, hecs⟩⟩ := exists_cons_of_leadingCoeff_pos η h h₂.ne'
