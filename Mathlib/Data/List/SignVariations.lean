@@ -65,7 +65,7 @@ lemma signVariations_zero_cons (l : List α) :
 /-- Zero entries do not contribute to the sign variations. -/
 @[simp]
 lemma signVariations_filter_ne_zero (l : List α) :
-    signVariations (l.filter (· ≠ 0)) = signVariations l := by
+    signVariations (l.filter (fun x => !decide (x = 0))) = signVariations l := by
   simp [signVariations, filter_map, Function.comp_def, sign_eq_zero_iff]
 
 /-- A zero entry in second position does not change the sign variations. -/
