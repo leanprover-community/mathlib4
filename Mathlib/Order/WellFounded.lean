@@ -16,8 +16,8 @@ implies `P x`. Well-founded relations can be used for induction and recursion, i
 construction of fixed points in the space of dependent functions `Π x : α, β x`.
 
 The predicate `WellFounded` is defined in the core library. In this file we prove some extra lemmas
-and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
-and an induction principle `WellFounded.induction_bot`.
+and provide a few new definitions: `WellFounded.min`, `Function.argmin`, and an induction principle
+`WellFounded.induction_bot`.
 -/
 
 @[expose] public section
