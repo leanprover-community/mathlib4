@@ -224,7 +224,7 @@ variable {W X Y Z : Set V} {k : K} {C : EdgeLabeling G K}
 
 theorem monochromaticOf_iff_pairwise :
     C.MonochromaticOf X k ↔ X.Pairwise fun x y ↦ ∀ h : G.Adj x y, C.get x y h = k := by
-  grind [MonochromaticOf, MonochromaticBetween, Set.Pairwise, Adj.ne]
+  grind [MonochromaticOf, MonochromaticBetween, Set.Pairwise]
 
 lemma _root_.SimpleGraph.TopEdgeLabeling.monochromaticOf_iff_ne_imp_get_eq
     {C : TopEdgeLabeling V K} :
@@ -302,7 +302,7 @@ theorem monochromaticBetween_self : C.MonochromaticBetween X X k ↔ C.Monochrom
 
 theorem monochromaticBetween_compRight_iff_of_injective (e : K → K') (he : Function.Injective e) :
     (C.compRight e).MonochromaticBetween X Y (e k) ↔ C.MonochromaticBetween X Y k := by
-  simp_rw [EdgeLabeling.compRight, MonochromaticBetween, get_eq, Function.comp_apply, he.eq_iff]
+  simp_rw [EdgeLabeling.compRight, MonochromaticBetween, get_eq, get, Function.comp, he.eq_iff]
 
 namespace MonochromaticOf
 
