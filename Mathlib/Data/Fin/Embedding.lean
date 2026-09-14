@@ -89,7 +89,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   | zero => exact m.zero_le
   | succ n ihn =>
     obtain ⟨e⟩ := h
-    rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
+    rcases exists_eq_succ_of_ne_zero (Nat.ne_of_gt (pos_iff_nonempty.2 ⟨e 0⟩))
       with ⟨m, rfl⟩
     refine Nat.succ_le_succ <| ihn ⟨?_⟩
     refine ⟨fun i ↦ (e.setValue 0 0 i.succ).pred (mt e.setValue_eq_iff.1 i.succ_ne_zero),
@@ -97,7 +97,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
     simpa only [pred_inj, EmbeddingLike.apply_eq_iff_eq, succ_inj] using h
 
 lemma equiv_iff_eq : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
-  ⟨fun ⟨e⟩ ↦ le_antisymm (nonempty_embedding_iff.1 ⟨e⟩) (nonempty_embedding_iff.1 ⟨e.symm⟩),
+  ⟨fun ⟨e⟩ ↦ Nat.le_antisymm (nonempty_embedding_iff.1 ⟨e⟩) (nonempty_embedding_iff.1 ⟨e.symm⟩),
     fun h ↦ h ▸ ⟨.refl _⟩⟩
 
 /-- `Fin.castAdd` as an `Embedding`, `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`.

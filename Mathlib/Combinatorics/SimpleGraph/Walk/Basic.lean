@@ -432,6 +432,9 @@ lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
   | nil => Nil.nil
   | cons h w => Unique.eq_default G ▸ h |>.elim
 
+theorem nil_of_bot (p : Walk ⊥ u v) : p.Nil := by
+  cases p <;> [simp; simpa]
+
 @[simp]
 theorem exists_nil_iff {u v : V} : (∃ p : G.Walk u v, p.Nil) ↔ u = v :=
   ⟨fun ⟨_, h⟩ ↦ h.eq, (· ▸ ⟨nil, .nil⟩)⟩

@@ -39,7 +39,18 @@ class IsOrderedMonoid (α : Type*) [CommMonoid α] [Preorder α] where
 attribute [to_dual self] IsOrderedMonoid.mk IsOrderedAddMonoid.mk
 
 section IsOrderedMonoid
-variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
+variable [CommMonoid α] [Preorder α]
+
+@[to_additive]
+lemma IsOrderedMonoid.of_mulLeftMono [MulLeftMono α] : IsOrderedMonoid α where
+  mul_le_mul_left _ _ h c := mul_le_mul_left h c
+  mul_le_mul_right _ _ h c := mul_le_mul_right h c
+
+@[to_additive]
+lemma IsOrderedMonoid.of_mulRightMono [MulRightMono α] : IsOrderedMonoid α where
+  mul_le_mul_left _ _ h c := mul_le_mul_left h c
+
+variable [IsOrderedMonoid α]
 
 @[to_additive]
 instance (priority := 900) IsOrderedMonoid.toMulLeftMono : MulLeftMono α where
