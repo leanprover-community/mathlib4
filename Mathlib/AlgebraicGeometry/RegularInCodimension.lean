@@ -59,11 +59,6 @@ class IsRegularInCodimensionLE (n : ℕ) (X : Scheme.{u}) : Prop where
 
 variable {n : ℕ} {X : Scheme.{u}}
 
-lemma isRegularInCodimensionLE_iff :
-    IsRegularInCodimensionLE n X ↔
-      ∀ x : X, coheight x ≤ n → IsRegularLocalRing (X.presheaf.stalk x) :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-
 /--
 An equivalent form of `IsRegularInCodimensionLE`, using `ringKrullDim` instead of `Order.coheight`.
 -/
@@ -81,7 +76,7 @@ lemma isRegularInCodimensionLE_iff_ringKrullDimLE :
   simp [isRegularInCodimensionLE_iff_ringKrullDim, Ring.krullDimLE_iff]
 
 lemma isRegularLocalRing_stalk (x : X) [Ring.KrullDimLE n (X.presheaf.stalk x)]
-    [IsRegularInCodimensionLE n X] : IsRegularLocalRing (X.presheaf.stalk x) := by
+    [IsRegularInCodimensionLE n X] : IsRegularLocalRing (X.presheaf.stalk x) :=
   isRegularInCodimensionLE_iff_ringKrullDim.mp ‹_› x Order.KrullDimLE.krullDim_le
 
 lemma IsRegularInCodimensionLE.anti {m n : ℕ} (h : m ≤ n) (X : Scheme.{u})
@@ -89,7 +84,7 @@ lemma IsRegularInCodimensionLE.anti {m n : ℕ} (h : m ≤ n) (X : Scheme.{u})
   isRegularLocalRing_stalk_of_coheight_le x hx :=
     isRegularLocalRing_stalk_of_coheight_le x <| hx.trans (Nat.cast_le.mpr h)
 
-/--
+/-
 TODO: Remove the `IsDomain (X.presheaf.stalk x)` hypothesis once Mathlib knows that regular local
 rings are domains.
 -/
