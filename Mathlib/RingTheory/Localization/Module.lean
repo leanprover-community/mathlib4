@@ -236,7 +236,7 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
 /-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 @[simps!]
 def LinearEquiv.extendScalarsOfIsLocalization (f : M ≃ₗ[R] N) : M ≃ₗ[A] N :=
-  .ofLinear (LinearMap.extendScalarsOfIsLocalization S A f)
+  .ofLinearMap (LinearMap.extendScalarsOfIsLocalization S A f)
     (LinearMap.extendScalarsOfIsLocalization S A f.symm)
     (by ext; simp) (by ext; simp)
 
@@ -274,7 +274,7 @@ def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
 @[simps!]
 noncomputable
 def mapEquiv (e : M ≃ₗ[R] N) : M' ≃ₗ[Rₛ] N' :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (IsLocalizedModule.mapExtendScalars S f g Rₛ e)
     (IsLocalizedModule.mapExtendScalars S g f Rₛ e.symm)
     (by

@@ -184,7 +184,7 @@ elements of `S`. -/
 @[to_additive /-- The equivalence between the additive subgroup of additive units of
 `S` and the additive submonoid of additive unit elements of `S`. -/]
 noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsUnit.submonoid S :=
-S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
+  S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 
 end Units
 

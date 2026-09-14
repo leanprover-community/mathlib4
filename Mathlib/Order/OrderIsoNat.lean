@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Denumerable
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lattice.Nat
@@ -21,6 +21,10 @@ defines the limit value of an eventually-constant sequence.
 
 * `natLT`/`natGT`: Make an order embedding `Nat ↪ α` from
   an increasing/decreasing function `Nat → α`.
+* `Infinite.exists_strictMono_or_strictAnti`: Every infinite linear order contains a strictly
+  increasing or strictly decreasing sequence indexed by `ℕ`.
+* `Finite.of_wellFoundedLT_wellFoundedGT`: A linear order that is well-founded in both directions
+  is finite.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
@@ -117,6 +121,7 @@ theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
     orderEmbeddingOfSet s n = Subtype.ofNat s n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
@@ -163,7 +168,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
         have h := hm _ (Nat.le_add_left m n)
-        simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
+        simp only [bad, exists_prop, not_not, Set.mem_ofPred_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
         convert! hn2
@@ -189,6 +194,37 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
       exact ih (lt_of_lt_of_le m.lt_succ_self (Nat.le_add_right _ _))
   · exact ⟨g, Or.intro_right _ hnr⟩
 
+/-- Every infinite linear order contains either a strictly increasing or a strictly decreasing
+sequence indexed by `ℕ`. -/
+theorem Infinite.exists_strictMono_or_strictAnti (α : Type*) [LinearOrder α] [Infinite α] :
+    ∃ f : ℕ → α, StrictMono f ∨ StrictAnti f := by
+  let f := Infinite.natEmbedding α
+  obtain ⟨g, hg⟩ := exists_increasing_or_nonincreasing_subseq (· < ·) f
+  refine ⟨f ∘ g, ?_⟩
+  rcases hg with hIncreasing | hNonincreasing
+  · exact Or.inl hIncreasing
+  · refine Or.inr <| fun m n hmn ↦ lt_of_le_of_ne ?_ ((f.injective.comp g.injective).ne ?_)
+    · grind
+    · grind
+
+/-- A linear order that is well-founded in both directions is finite. -/
+theorem Finite.of_wellFoundedLT_of_wellFoundedGT (α : Type*) [LinearOrder α] [WellFoundedLT α]
+    [WellFoundedGT α] : Finite α := by
+  apply Finite.of_not_infinite
+  intro
+  obtain ⟨f, hStrictMono | hStrictAnti⟩ := Infinite.exists_strictMono_or_strictAnti α
+  · exact not_strictMono_of_wellFoundedGT f hStrictMono
+  · exact not_strictAnti_of_wellFoundedLT f hStrictAnti
+
+@[deprecated (since := "2026-08-11")]
+alias Finite.of_wellFoundedLT_wellFoundedGT := Finite.of_wellFoundedLT_of_wellFoundedGT
+
+theorem IsChain.finite_of_wellFoundedLT_of_wellFoundedGT [Preorder α] [WellFoundedLT α]
+    [WellFoundedGT α] {s : Set α} (h : IsChain (· < ·) s) : s.Finite := by
+  classical
+  let := h.linearOrder
+  exact Finite.of_wellFoundedLT_of_wellFoundedGT s
+
 /-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.
 
@@ -196,9 +232,9 @@ See `wellFoundedGT_iff_monotone_chain_condition` for a stronger version on parti
 theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
   refine ⟨fun h a => ?_, fun h => ?_⟩
-  · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.wf.has_min _ (Set.range_nonempty a)
+  · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ (Set.range_nonempty a)
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
-  · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+  · rw [WellFoundedGT, RelEmbedding.wellFounded_iff_isEmpty]
     refine ⟨fun a => ?_⟩
     obtain ⟨n, hn⟩ := h (a.swap : _ →r _).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
@@ -264,15 +300,15 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   choose next hnext using exists_covBy_of_wellFoundedLT (α := α)
   have hα := Set.nonempty_iff_univ_nonempty.mp ‹_›
   classical
-  let a : ℕ → α := Nat.rec (wfl.wf.min _ hα) fun _n a ↦ if ha : IsMax a then a else next ha
-  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ (Set.mem_univ _), ?_⟩
+  let a : ℕ → α := Nat.rec (wfl.min _ hα) fun _n a ↦ if ha : IsMax a then a else next ha
+  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.not_lt_min _ (Set.mem_univ _), ?_⟩
   have cov n (hn : ¬ IsMax (a n)) : a n ⋖ a (n + 1) := by
     change a n ⋖ if ha : IsMax (a n) then a n else _
-    rw [dif_neg hn]
+    rw [dite_eq_right hn]
     exact hnext hn
   have H : ∃ n, IsMax (a n) := by
     by_contra!
-    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg.wf
+    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg
   exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ (wellFounded_lt.not_lt_min _ · h)⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]

@@ -384,6 +384,7 @@ lemma ofFixingSubgroup_of_inclusion_injective {hst : t ⊆ s} :
   rw [← SetLike.coe_eq_coe] at hxy ⊢
   exact hxy
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The equivariant map between `SubMulAction.ofStabilizer M a`
 and `ofFixingSubgroup M {a}`. -/

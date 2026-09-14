@@ -40,7 +40,7 @@ universe u v w
 
 open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -74,13 +74,6 @@ theorem HasDerivAtFilter.scomp (hg : HasDerivAtFilter g₁ g₁' L')
     (hh : HasDerivAtFilter h h' L) (hL : Tendsto (Prod.map h h) L L') :
     HasDerivAtFilter (g₁ ∘ h) (h' • g₁') L := by
   simpa using ((hg.hasFDerivAtFilter.restrictScalars 𝕜).comp hh hL).hasDerivAtFilter
-
-@[deprecated HasDerivAtFilter.scomp (since := "2026-02-17")]
-theorem HasDerivAtFilter.scomp_of_eq {L : Filter 𝕜} {L' : Filter 𝕜'}
-    (hg : HasDerivAtFilter g₁ g₁' (L' ×ˢ pure y)) (hh : HasDerivAtFilter h h' (L ×ˢ pure x))
-    (hy : y = h x) (hL : Tendsto h L L') :
-    HasDerivAtFilter (g₁ ∘ h) (h' • g₁') (L ×ˢ pure x) :=
-  hg.scomp hh <| .prodMap hL <| by simp [hy]
 
 theorem HasDerivWithinAt.scomp_hasDerivAt (hg : HasDerivWithinAt g₁ g₁' s' (h x))
     (hh : HasDerivAt h h' x) (hs : ∀ x, h x ∈ s') : HasDerivAt (g₁ ∘ h) (h' • g₁') x :=
@@ -164,14 +157,6 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
   convert! (hh₂.restrictScalars 𝕜).comp hf hL
   ext x
   simp [mul_comm]
-
-@[deprecated HasDerivAtFilter.comp_hasFDerivAtFilter (since := "2026-02-17")]
-theorem HasDerivAtFilter.comp_hasFDerivAtFilter_of_eq
-    {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x) {L' : Filter 𝕜'} {L'' : Filter E}
-    (hh₂ : HasDerivAtFilter h₂ h₂' (L' ×ˢ pure y)) (hf : HasFDerivAtFilter f f' (L'' ×ˢ pure x))
-    (hL : Tendsto f L'' L') (hy : y = f x) :
-    HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') (L'' ×ˢ pure x) :=
-  hh₂.comp_hasFDerivAtFilter hf <| hL.prodMap <| by simp [hy]
 
 theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} (x)
     (hh : HasStrictDerivAt h₂ h₂' (f x)) (hf : HasStrictFDerivAt f f' x) :

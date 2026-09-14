@@ -33,7 +33,7 @@ variable {R ι : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
 /-- The `ι`-ary tensor product distributes over `κ i`-ary finitely supported functions. -/
 def ofDFinsuppEquiv :
     (⨂[R] i, (Π₀ j : κ i, M i j)) ≃ₗ[R] Π₀ p : Π i, κ i, ⨂[R] i, M i (p i) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| MultilinearMap.fromDFinsuppEquiv κ R
       fun p ↦ (DFinsupp.lsingle p).compMultilinearMap (tprod R))
     (DFinsupp.lsum R fun p ↦ lift <|

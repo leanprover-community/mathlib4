@@ -11,6 +11,8 @@ public import Mathlib.Tactic.ClickSuggestions.Apply
 public import Mathlib.Tactic.ClickSuggestions.ApplyAt
 public meta import Mathlib.Lean.FoldEnvironment
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Lean.FoldEnvironment
+public import Mathlib.Lean.Meta.RefinedDiscrTree
 
 /-!
 # Generating a shortlist of candidate lemmas for suggestions
@@ -269,7 +271,7 @@ public def computeModuleDiscrTrees (choice : Choice) (parentDecl? : Option Name)
   return .append {} pre
 
 /-- Compute the discrimination trees for the local variables in `lctx`.
-We restrict to the varaibles in `lctx` to avoid using introduced bound variables. -/
+We restrict to the variables in `lctx` to avoid using introduced bound variables. -/
 public def computeLCtxDiscrTrees (choice : Choice) (lctx : LocalContext) (fvarId? : Option FVarId) :
     MetaM PreDiscrTrees := do
   let mut entries : Entries := {}
@@ -284,7 +286,7 @@ public def getImportMatches {α} (ref : IO.Ref (Option (RefinedDiscrTree α)))
   let some tree ← ref.get |
     throwError "Internal click_suggestions error: discrimination tree was not computed."
   let (result, newTree) ← withConfig (fun _ ↦ librarySearchIndexConfig) do
-    getMatch tree e false false
+    getMatch tree e (unify := true) (matchRootStar := false)
   Core.checkInterrupted
   ref.set newTree
   return result
@@ -292,6 +294,6 @@ public def getImportMatches {α} (ref : IO.Ref (Option (RefinedDiscrTree α)))
 /-- Get the discrimination tree matches from `tree`. -/
 public def getMatches {α} (tree : RefinedDiscrTree α) (e : Expr) : MetaM (MatchResult α) := do
   withConfig (fun _ ↦ librarySearchIndexConfig) do
-    return (← getMatch tree e false false).1
+    return (← getMatch tree e (unify := true) (matchRootStar := false)).1
 
 end Mathlib.Tactic.ClickSuggestions

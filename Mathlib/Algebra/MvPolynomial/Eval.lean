@@ -195,6 +195,11 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
   rw [← comp_eval₂Hom]
   rfl
 
+theorem hom_eval₂ [CommSemiring S₂] (p : MvPolynomial σ R) (f : R →+* S₁)
+    (φ : S₁ →+* S₂) (g : σ → S₁) :
+    φ (p.eval₂ f g) = p.eval₂ (φ.comp f) (fun i => φ (g i)) :=
+  map_eval₂Hom f g φ p
+
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
   simp only [coe_eval₂Hom, eval₂_monomial]
@@ -219,7 +224,7 @@ theorem eval₂_eta (p : MvPolynomial σ R) : eval₂ C X p = p := by
     simp +contextual [eval₂_add, eval₂_mul]
 
 theorem eval₂_congr (g₁ g₂ : σ → S₁)
-    (h : ∀ {i : σ} {c : σ →₀ ℕ}, i ∈ c.support → coeff c p ≠ 0 → g₁ i = g₂ i) :
+    (h : ∀ {i : σ} {c : σ →₀ ℕ}, i ∈ c.support → p.coeff c ≠ 0 → g₁ i = g₂ i) :
     p.eval₂ f g₁ = p.eval₂ f g₂ := by
   apply Finset.sum_congr rfl
   intro C hc; dsimp; congr 1
@@ -376,13 +381,13 @@ lemma map_eval {S₂ : Type*} [CommSemiring S₂] (q : S₁ →+* S₂) (g : σ 
     q (eval g p) = eval (q ∘ g) (map q p) := by
   rw [← eval₂_eq_eval_map, ← eval₂_id, eval₂_comp_right, map_id]
 
-theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map f p) = f (coeff m p) := by
+theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, (map f p).coeff m = f (p.coeff m) := by
   classical
   apply MvPolynomial.induction_on p <;> clear p
   · intro r m
     simp_rw [map_C, coeff_C, apply_ite f, f.map_zero]
   · intro p q hp hq m
-    simp only [hp, hq, (map f).map_add, coeff_add, f.map_add]
+    simp only [hp, hq, (map f).map_add, coeff_add, Finsupp.add_apply, f.map_add]
   · intro p i hp m
     simp only [(map f).map_mul, map_X, hp, coeff_mul_X', f.map_zero, apply_ite f]
 
@@ -410,7 +415,7 @@ theorem map_surjective (hf : Function.Surjective f) :
     exact ⟨a + b, map_add _ _ _⟩
 
 theorem map_surjective_iff : Function.Surjective (map (σ := σ) f) ↔ Function.Surjective f :=
-  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(coeff 0 $h)⟩,
+  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(($h).coeff 0)⟩,
     map_surjective f⟩
 
 /-- If `f` is a left-inverse of `g` then `map f` is a left-inverse of `map g`. -/
@@ -471,11 +476,11 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
 theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q r' = 0 ↔ r ∣ r')
     (φ : MvPolynomial σ R) : C r ∣ φ ↔ map q φ = 0 := by
   rw [C_dvd_iff_dvd_coeff, MvPolynomial.ext_iff]
-  simp only [coeff_map, coeff_zero, hr]
+  simp only [coeff_map, coeff_zero, Finsupp.zero_apply, hr]
 
 theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
     map f (.ofCoeff <| Finsupp.mapRange g hg <| AddMonoidAlgebra.coeff φ) = φ ↔
-      ∀ d, f (g (coeff d φ)) = coeff d φ := by
+      ∀ d, f (g (φ.coeff d)) = φ.coeff d := by
   simp_rw [MvPolynomial.ext_iff, coeff_map]; rfl
 
 lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
@@ -522,28 +527,6 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
       obtain ⟨q, hq⟩ := ih hx.1
       obtain ⟨u, hu⟩ := hp hx.2
       exact ⟨q + u, by simp [hq, hu]⟩
-
-section Algebra
-
-variable [Algebra R S₁] (g : σ → S₁)
-
-variable (R) in
-/-- `MvPolynomial.eval₂ (algebraMap R S) g` as an `R`-algebra homomorphism. -/
-def eval₂AlgHom : MvPolynomial σ R →ₐ[R] S₁ :=
-  { eval₂Hom (algebraMap R S₁) g with
-    commutes' r := by simp }
-
-theorem eval₂AlgHom_apply (P : MvPolynomial σ R) :
-    eval₂AlgHom R g P = eval₂Hom (algebraMap R S₁) g P := rfl
-
-@[simp]
-theorem coe_eval₂AlgHom : ⇑(eval₂AlgHom R g) = eval₂ (algebraMap R S₁) g := rfl
-
-@[simp]
-theorem eval₂AlgHom_X (i : σ) :
-    eval₂AlgHom R g (X i : MvPolynomial σ R) = g i := eval₂_X (algebraMap R S₁) g i
-
-end Algebra
 
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
@@ -733,10 +716,34 @@ theorem _root_.Algebra.adjoin_eq_range (s : Set S₁) :
 
 end Aeval
 
+section Algebra
+
+variable [Algebra R S₁] (g : σ → S₁)
+
+variable (R) in
+/-- `MvPolynomial.eval₂ (algebraMap R S) g` as an `R`-algebra homomorphism. -/
+@[deprecated aeval (since := "2026-07-22")]
+def eval₂AlgHom : MvPolynomial σ R →ₐ[R] S₁ :=
+  { eval₂Hom (algebraMap R S₁) g with
+    commutes' r := by simp }
+
+@[deprecated aeval_def (since := "2026-07-22")]
+theorem eval₂AlgHom_apply (P : MvPolynomial σ R) :
+    eval₂AlgHom R g P = eval₂Hom (algebraMap R S₁) g P := rfl
+
+@[simp, deprecated aeval_eq_eval₂Hom (since := "2026-07-22")]
+theorem coe_eval₂AlgHom : ⇑(eval₂AlgHom R g) = eval₂ (algebraMap R S₁) g := rfl
+
+@[simp, deprecated aeval_X (since := "2026-07-22")]
+theorem eval₂AlgHom_X (i : σ) :
+    eval₂AlgHom R g (X i : MvPolynomial σ R) = g i := eval₂_X (algebraMap R S₁) g i
+
+end Algebra
+
 section AevalTower
 
-variable {S A B : Type*} [CommSemiring S] [CommSemiring A] [CommSemiring B]
-variable [Algebra S R] [Algebra S A] [Algebra S B]
+variable {S A : Type*} [CommSemiring S] [CommSemiring A]
+variable [Algebra S R] [Algebra S A]
 
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
   than `R`. -/
@@ -816,7 +823,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
     · simpa [MvPolynomial.notMem_support_iff.1 ha] using hs a
     have := hs i
-    rw [coeff_add, coeff_monomial] at this
+    rw [coeff_add, Finsupp.add_apply, coeff_monomial] at this
     split_ifs at this with h
     · subst h
       rw [MvPolynomial.notMem_support_iff.1 ha, map_zero]

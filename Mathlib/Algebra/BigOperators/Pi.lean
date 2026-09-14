@@ -183,7 +183,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
   right_inv φ := by
     ext i m
     simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.finsetProd_apply, evalMonoidHom_apply, ]
+      MonoidHom.finsetProd_apply, evalMonoidHom_apply]
     let φ' i : M i → M' := ⇑(φ i)
     conv =>
       enter [1, 2, j]
@@ -237,9 +237,9 @@ section FunLike
 variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
   [IsOneApply F α β] [IsMulApply F α β]
 
-open Classical in
 @[to_additive (attr := simp, grind =)]
 theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  classical
   induction s using Finset.induction_on with
   | empty => simp
   | insert i s his h => simp [his, h]

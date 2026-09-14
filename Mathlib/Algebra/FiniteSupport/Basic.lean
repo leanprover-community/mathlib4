@@ -181,7 +181,7 @@ lemma HasFiniteMulSupport.fun_comp_of_injective (hg : Injective g) (hf : f.HasFi
 lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport) (h : f 1 = 1)
     (hf : Injective f) :
     g.HasFiniteMulSupport := by
-  refine Set.Finite.subset hfg fun _ ha ↦ Set.mem_setOf.mpr fun H ↦ Set.mem_setOf.mp ha ?_
+  refine Set.Finite.subset hfg fun _ ha ↦ Set.mem_ofPred.mpr fun H ↦ Set.mem_ofPred.mp ha ?_
   grind
 
 -- The additive version is a special case of `Function.HasFiniteSupport.smul_left`.
@@ -190,6 +190,12 @@ lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M : Type*} [Monoid M] (f : �
     (hg : g.HasFiniteSupport) :
     (fun a : α ↦ f a ^ g a).HasFiniteMulSupport :=
   Set.Finite.subset hg fun a ha ↦ by contrapose! ha; simp_all
+
+@[to_additive]
+lemma HasFiniteMulSupport.of_eq_one_iff {N : Type*} [One N] {f : α → M} {g : α → N}
+    (hf : Function.HasFiniteMulSupport f) (hfg : ∀ a, f a = 1 ↔ g a = 1) :
+    g.HasFiniteMulSupport := by
+  simpa only [Function.HasFiniteMulSupport, Function.mulSupport, ne_eq, ← hfg] using hf
 
 section MulZeroClass
 

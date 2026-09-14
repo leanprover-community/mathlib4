@@ -5,7 +5,6 @@ variable {R M A} [Semiring R] [Monoid M] [AddMonoid A]
 section Notation
 open scoped MonoidAlgebra AddMonoidAlgebra
 
-set_option pp.mvars.anonymous false
 -- TODO: could resolve ambiguity based on Monoid / AddMonoid
 /--
 error: Ambiguous term

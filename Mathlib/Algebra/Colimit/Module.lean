@@ -36,8 +36,6 @@ noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
-open Submodule
-
 namespace Module
 
 alias DirectedSystem.map_self := DirectedSystem.map_self'
@@ -211,7 +209,7 @@ family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` in
 -/
 def congr (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) :
     DirectLimit G f ≃ₗ[R] DirectLimit G' f' :=
-  LinearEquiv.ofLinear (map (e ·) he)
+  LinearEquiv.ofLinearMap (map (e ·) he)
     (map (fun i ↦ (e i).symm) fun i j h ↦ by
       rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
         refl_toLinearMap, comp_id])
@@ -242,7 +240,7 @@ open _root_.DirectLimit
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
 the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
-  .ofLinear
+  .ofLinearMap
     (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
     (by ext; simp)
@@ -408,6 +406,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
       DirectLimit G f →+ DirectLimit G'' f'') := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
