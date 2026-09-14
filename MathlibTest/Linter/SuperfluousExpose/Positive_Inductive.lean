@@ -8,23 +8,22 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: the file contains a class, a `local instance`, and a
-theorem. The linter classifies each declaration at the command that creates
-it, while the instance is still active, so `Lean.Meta.isInstanceCore`
-identifies the local instance. No declaration benefits from exposure. The
-linter must fire. -/
+/-! Positive case: the file contains an `inductive` that is not a structure.
+An inductive type, its constructors and its recursors follow the visibility
+of the declaration, so the section modifier does not reach them. Downstream
+pattern matching works without `@[expose]`. The linter must fire. -/
 
 @[expose] public section
 
-namespace SuperfluousExposeTest.LocalInstance
+namespace SuperfluousExposeTest.Inductive
 
-class Tagged (α : Type) where dummy : Unit
+inductive Tree (α : Type)
+  | leaf
+  | node : Tree α → α → Tree α → Tree α
 
-local instance instTaggedNat : Tagged Nat := ⟨()⟩
+theorem leaf_eq : (Tree.leaf : Tree Nat) = Tree.leaf := rfl
 
-theorem trivial_proof : True := trivial
-
-end SuperfluousExposeTest.LocalInstance
+end SuperfluousExposeTest.Inductive
 
 -- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
 -- can capture the warning. The linter option is off at the real end of the

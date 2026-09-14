@@ -24,7 +24,7 @@ set_option linter.superfluousExpose true
 theorem first_section : 1 = 1 := rfl
 
 /--
-warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only affects `def` and `inductive` bodies, and no declaration here needs exposure (only theorems, instances, classes, structures, abbrevs, notation, or auto-generated declarations).
+warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/
@@ -43,7 +43,7 @@ end
 theorem third_section : 2 = 2 := rfl
 
 /--
-warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only affects `def` and `inductive` bodies, and no declaration here needs exposure (only theorems, instances, classes, structures, abbrevs, notation, or auto-generated declarations).
+warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/

@@ -7,8 +7,6 @@ module
 
 public meta import Lean.Elab.Command
 public import Lean.Environment
-public import Lean.Class
-public import Lean.Structure
 public import Lean.Meta.Instances
 public import Lean.ReducibilityAttrs
 public import Lean.ProjFns
@@ -24,21 +22,40 @@ public import Mathlib.Init  -- shake: keep
 
 This linter is the dual of `privateModule`. It reports each `@[expose] public
 section` that contains no declaration whose body must be visible downstream.
-It suggests that you remove the `@[expose]` modifier. The removal changes the
-section default from exposed bodies to hidden bodies, and it does not change
-downstream typechecking.
+It suggests that you remove the `@[expose]` modifier. The removal hides the
+bodies of the section and leaves downstream typechecking unchanged.
 
-A declaration benefits from exposure when its body matters to downstream
-proofs or elaboration. These benefit: plain `def`, plain `inductive`,
-`@[match_pattern]` def, `@[irreducible]` def (downstream `rw` and `unfold`
-still need the body), `@[reducible]` def (a hidden body breaks even
-same-file public `rfl` proofs; only `abbrev` carries its own exposure), and
-`@[to_additive]` def. These do not benefit:
-theorems, abbrevs, classes, structures, instances, `unsafe` and `partial`
-defs, projections, matchers, and parser entries that come from notation. The
-linter uses `Batteries.Tactic.Lint.isAutoDecl` to identify compiler-generated
-declarations, such as recursors, no-confusion lemmas, and equation lemmas,
-and skips them.
+## What the section modifier controls
+
+The `@[expose]` modifier of a section reaches the bodies of `def`
+declarations only. Lean decides the rest on its own:
+
+* Lean exposes the body of an `abbrev` and the body of an `instance` of
+  non-propositional type in every public section.
+* Lean keeps the body of a theorem, of an `opaque` declaration, of a `partial
+  def`, and of an `instance` of propositional type out of the public
+  interface of every public section.
+* An inductive type, a structure, a class, and the constructors,
+  projections, recursors, matchers and other declarations that Lean
+  generates for them follow the visibility of their declaration, which the
+  section modifier does not change.
+
+## Which defs need their body downstream
+
+A `def` benefits from exposure when downstream typechecking or elaboration
+reads its body. These benefit: a plain `def`, an `unsafe def` (downstream
+`unsafe` code can still prove `rfl` facts about it), an `@[irreducible]` def
+(downstream code can still apply `rw` and `unfold`), a `@[reducible]` def (a
+hidden body breaks even the public `rfl` proofs of the same file), and a
+`@[match_pattern]` def (pattern elaboration reads the body).
+
+A parser entry that `notation`, `infix`, `syntax`, or `macro` generates does
+not benefit. Lean reads such a descriptor through its compiled code, which
+stays outside the exposed part of the module.
+
+The linter uses `Lean.Environment.isAutoDecl` to identify the declarations
+that Lean generates, such as recursors, no-confusion lemmas and equation
+lemmas, and skips them.
 
 ## Implementation notes
 
@@ -55,19 +72,22 @@ command for a section that the end of the file closes.
 After each command inside a region, the linter classifies the declarations
 that appeared in the environment since the previous command, and it folds the
 verdicts into one flag: does some declaration of the region benefit from
-exposure? The classification runs while the scopes of the command are still
-active. Thus `Lean.Meta.isInstanceCore` also identifies `scoped instance` and
-`local instance` declarations, which an end-of-file check would misclassify
-as plain defs.
+exposure? One declaration that benefits settles the verdict, so the linter
+stops the scan for the rest of the region.
+
+The classification runs while the scopes of the command are still active.
+Thus `Lean.Meta.isInstanceCore` also identifies `scoped instance` and `local
+instance` declarations, which an end-of-file check would misclassify as plain
+defs.
 
 When a region closes and no declaration in it benefits from exposure, the
 linter logs its warning at the recorded position of the section header. A
 file with several expose sections gets one verdict per section.
 
 The linter tracks regions and classifies declarations unconditionally; the
-`linter.superfluousExpose` option gates only the report. The tracking cost is
-one pass over the local constants per command inside a region, and the
-classification of each constant runs once.
+`linter.superfluousExpose` option gates only the report. A region that holds
+a def with an exposed body costs one scan of the local constants. A region
+that holds none scans them once per command, until the region closes.
 
 The scope inspection is semantic, not syntactic. The linter detects an
 `@[expose] section` nested inside a `public section` in the same way as a
@@ -87,11 +107,13 @@ causes a false positive. The known cases are:
 * Nested expose sections. An `@[expose] public section` inside another one
   extends the same region. The linter gives one verdict for the combined
   region and cannot report the inner, redundant modifier separately.
+* `@[no_expose]` defs and `meta` defs. Lean keeps the body of either out of
+  the public interface, but the linter still counts them as defs that
+  benefit.
 * Late attribute changes. The linter classifies a declaration at the command
   that creates it. A later `attribute` command, for example
-  `attribute [reducible] foo`, does not change the recorded verdict. The
-  early verdict errs toward "benefits from exposure", so the linter stays
-  silent.
+  `attribute [instance] foo`, does not change the recorded verdict. The early
+  verdict errs toward "benefits from exposure", so the linter stays silent.
 * Macro-generated abbrevs. The abbrev exemption requires a visible `abbrev`
   command. An `abbrev` that a macro produces counts as a reducible def that
   benefits from exposure, so its section gets no warning.
@@ -143,32 +165,36 @@ private def looksLikeNotationDecl (info : ConstantInfo) (name : Name) : Bool :=
     returnTypeHeadIs info ``Lean.Macro
   nameMatches && typeMatches
 
-/-- Returns `true` when the command visibly declares an `abbrev`. Only such
-commands qualify for the abbrev exemption in `benefitsFromExposure`; an
-abbrev hidden behind a macro counts as a reducible def, which is the
-conservative direction. -/
-private def isAbbrevCommand (stx : Syntax) : Bool :=
-  stx.isOfKind ``Parser.Command.declaration &&
-    stx[1].getKind == ``Parser.Command.abbrev
+/-- The kind of the declaration that the command `stx` writes, for example
+``Parser.Command.definition`` or ``Parser.Command.abbrev``. Returns
+`Name.anonymous` for a command that writes no declaration, and for a
+declaration that a macro produces. -/
+private def declarationKind (stx : Syntax) : Name :=
+  if stx.isOfKind ``Parser.Command.declaration then stx[1].getKind else .anonymous
 
 /-- Returns `true` when the body of the constant is relevant to downstream
-typechecking or to same-file public proofs. `fromAbbrev` states whether the
-command that created the constant is an `abbrev`. Callers must filter out
-`Batteries.Tactic.Lint.isAutoDecl` names first.
+typechecking or to same-file public proofs. `declKind` is the kind of the
+declaration command that created the constant, as `declarationKind` reports
+it. Callers must filter out `Lean.Environment.isAutoDecl` names first.
 
 Callers must apply this check while the scopes of the declaring command are
 still active: `Lean.Meta.isInstanceCore` sees a `scoped instance` or a
 `local instance` only while its scope is active. -/
 private def benefitsFromExposure (env : Environment) (name : Name)
-    (info : ConstantInfo) (fromAbbrev : Bool) : Bool :=
+    (info : ConstantInfo) (declKind : Name) : Bool :=
   if isPrivateName name then false else
   if looksLikeNotationDecl info name then false else
   if (env.getProjectionFnInfo? name).isSome then false else
   if Lean.Meta.isMatcherCore env name then false else
   match info with
-  | .defnInfo dv =>
-      if Lean.Meta.isInstanceCore env name then false
-      else if dv.safety != .safe then false   -- `unsafe def` or `partial def`
+  | .defnInfo _ =>
+      -- Lean exposes the body of an `instance` of non-propositional type in
+      -- every public section, and it keeps the body of one of propositional
+      -- type out of every public section, so the section modifier reaches
+      -- neither. A `def` that carries `@[instance]` keeps the exposure rules
+      -- of a `def`, so the command kind guards this exemption.
+      if declKind != ``Parser.Command.definition && Lean.Meta.isInstanceCore env name then
+        false
       -- `@[match_pattern]` needs the body for pattern-match elaboration,
       -- even when the def is `@[reducible]`. Example:
       --   @[match_pattern, reducible] def myPat : α ⊕ β := Sum.inl _
@@ -176,18 +202,15 @@ private def benefitsFromExposure (env : Environment) (name : Name)
       else if Lean.hasMatchPatternAttribute env name then true
       else
         match Lean.getReducibilityStatusCore env name with
-        -- An `abbrev` carries its own exposure, with or without `@[expose]`.
-        -- A hand-written `@[reducible] def` does not: hiding its body breaks
-        -- even same-file public `rfl` proofs.
-        | .reducible => !fromAbbrev
-        -- Plain `def`, `@[irreducible] def`, `irreducible_def`, and
-        -- `@[implicit_reducible]` all need the body downstream: even for
-        -- `@[irreducible]`, downstream code can apply `rw` or `unfold` explicitly.
+        -- Lean exposes the body of an `abbrev` in every public section. A
+        -- hand-written `@[reducible] def` gets no such treatment: hiding its
+        -- body breaks even same-file public `rfl` proofs.
+        | .reducible => declKind != ``Parser.Command.abbrev
+        -- A plain `def`, an `unsafe def`, an `@[irreducible] def`, an
+        -- `irreducible_def`, and an `@[implicit_reducible]` def all need the
+        -- body downstream: even for `@[irreducible]`, downstream code can
+        -- apply `rw` or `unfold` explicitly.
         | _ => true
-  | .inductInfo _ =>
-      -- A plain inductive benefits: it serves pattern matching and recursor
-      -- calls. Structures and classes go through auto-generated projections.
-      !Lean.isStructure env name
   | _ => false
 
 /-- Returns `true` when the attribute instance is `expose`. `elabSection`
@@ -211,7 +234,9 @@ public structure ExposeRegion where
 classified so far, and the open region, if any. -/
 public structure ExposeSectionState where
   /-- Constants of the module that the linter has classified, or that existed
-  when the current region opened. -/
+  when the current region opened. The linter state is shared between
+  commands, so this must be a persistent set: an insert into a hash set
+  would copy the whole table. -/
   seen : NameSet := {}
   /-- The open exposed region, if any. Regions cannot nest: an expose section
   inside an active region extends the same region. -/
@@ -229,9 +254,8 @@ private def reportRegion (r : ExposeRegion) : CommandElabM Unit := do
   logLint linter.superfluousExpose ref
     "This `@[expose] public section` contains no declaration that benefits \
     from body exposure. You can safely remove the `@[expose]` modifier: it \
-    only affects `def` and `inductive` bodies, and no declaration here needs \
-    exposure (only theorems, instances, classes, structures, abbrevs, \
-    notation, or auto-generated declarations)."
+    only changes the bodies of `def` declarations, and no `def` here needs \
+    its body downstream."
 
 /--
 The `superfluousExpose` linter detects each `@[expose] public section` where
@@ -251,17 +275,20 @@ public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
       -- Only module files can contain `public section`s.
       if !env.header.isModule then return self
       -- Classify the declarations that appeared since the previous command.
+      -- One declaration that benefits settles the verdict of the region, so
+      -- the scan stops for the rest of the region.
       let mut st := self
       if let some r := st.region? then
-        let fromAbbrev := isAbbrevCommand stx
-        let mut seen := st.seen
-        let mut benefits := r.someDeclBenefits
-        for (n, info) in env.constants.map₂ do
-          unless seen.contains n do
-            seen := seen.insert n
-            unless benefits || (← liftCoreM (Batteries.Tactic.Lint.isAutoDecl n)) do
-              benefits := benefitsFromExposure env n info fromAbbrev
-        st := { seen, region? := some { r with someDeclBenefits := benefits } }
+        unless r.someDeclBenefits do
+          let declKind := declarationKind stx
+          let mut seen := st.seen
+          let mut benefits := false
+          for (n, info) in env.constants.map₂ do
+            unless seen.contains n do
+              seen := seen.insert n
+              unless benefits || env.isAutoDecl n do
+                benefits := benefitsFromExposure env n info declKind
+          st := { seen, region? := some { r with someDeclBenefits := benefits } }
       if Parser.isTerminalCommand stx then
         -- The end of the file closes an open section.
         if let some r := st.region? then reportRegion r
