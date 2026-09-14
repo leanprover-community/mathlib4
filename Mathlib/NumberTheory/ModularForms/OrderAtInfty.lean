@@ -346,7 +346,7 @@ lemma orderAtInfty_eq_top_iff_eq_zero (hh : 0 < h) (hfper : Periodic (f ∘ ofCo
     have hfinite := analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne
     rw [orderAtInfty_eq_analyticOrderAt_div hh hfper hfhol hfbdd,
       ← Nat.cast_analyticOrderNatAt hfinite] at htop
-    exact EReal.coe_ne_top _ htop
+    simp [EReal.div_eq_top_iff] at htop
   · rintro rfl
     exact orderAtInfty_eq_top_iff.mpr fun t ↦ Asymptotics.isBigO_zero _ _
 

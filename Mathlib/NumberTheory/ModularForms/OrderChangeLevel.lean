@@ -5,6 +5,8 @@ Authors: David Loeffler
 -/
 module
 
+import Mathlib.Data.EReal.BigOperators
+
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.OrderAtCusp
@@ -238,18 +240,6 @@ private lemma translationCycleCusp_map {K H : Subgroup (GL (Fin 2) ℝ)}
   refine Quotient.eq.mpr ⟨c.out.out⁻¹, ?_⟩
   exact Subtype.ext rfl
 
-private lemma sum_coe_mul {ι : Type*} (s : Finset ι) (a : ι → ℝ)
-    (ha : ∀ i ∈ s, 0 ≤ a i) (b : EReal) :
-    ∑ i ∈ s, (a i : EReal) * b = (∑ i ∈ s, a i : ℝ) * b := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert i s hi ih =>
-    rw [Finset.sum_insert hi, Finset.sum_insert hi, EReal.coe_add,
-      EReal.right_distrib_of_nonneg (EReal.coe_nonneg.mpr (ha i (by simp)))
-        (EReal.coe_nonneg.mpr (Finset.sum_nonneg fun j hj ↦ ha j (by simp [hj]))),
-      ih (fun j hj ↦ ha j (by simp [hj]))]
-
 open scoped Classical in
 /-- Restriction counts the full degree in the fiber above infinity. -/
 lemma relIndex_mul_orderAtCusp_infty_eq_sum_fiber_restrict
@@ -292,7 +282,8 @@ lemma relIndex_mul_orderAtCusp_infty_eq_sum_fiber_restrict
       SlashInvariantFormClass.slash_action_eq f _ (H.inv_mem c.out.out.property)]
   rw [Finset.sum_map] at hsum
   simp_rw [horder] at hsum
-  rw [sum_coe_mul _ _ (fun c _ ↦ widthInfty_nonneg _) (orderAtInfty f)] at hsum
+  rw [← EReal.sum_mul_of_nonneg (fun c _ ↦ EReal.coe_nonneg.mpr (widthInfty_nonneg _)),
+    ← EReal.coe_finsetSum] at hsum
   have hwidth : ∑ c : TranslationCycles K H,
       (ConjAct.toConjAct (c.out.out : GL (Fin 2) ℝ) • K).widthInfty =
         K.relIndex H * H.widthInfty := by
@@ -415,15 +406,6 @@ lemma relIndex_mul_orderAtCuspOrbit_eq_cuspOrderFiber_restrict
   rw [hre, ← hc, cuspOrderFiber_translate hGH (ModularForm.restrict hGH f) c s] at hlocal
   simpa only [G', H', relIndex_pointwise_smul, hcoord] using hlocal
 
-private lemma coe_mul_sum {ι : Type*} (s : Finset ι) {a : ℝ} (ha : 0 ≤ a)
-    (b : ι → EReal) : (a : EReal) * ∑ i ∈ s, b i = ∑ i ∈ s, (a : EReal) * b i := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert i s hi ih =>
-    rw [Finset.sum_insert hi, Finset.sum_insert hi,
-      EReal.left_distrib_of_nonneg_of_ne_top (EReal.coe_nonneg.mpr ha) (EReal.coe_ne_top _), ih]
-
 /-- Restriction multiplies total cusp order by the relative index when `-1`
 belongs to the smaller level. -/
 lemma relIndex_mul_totalCuspOrder_eq_restrict {G H : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
@@ -433,8 +415,8 @@ lemma relIndex_mul_totalCuspOrder_eq_restrict {G H : Subgroup (GL (Fin 2) ℝ)} 
       totalCuspOrder G k (ModularForm.restrict hGH f) := by
   classical
   let := Fintype.ofFinite (CuspOrbits H)
-  rw [← sum_cuspOrderFiber hGH, totalCuspOrder,
-    ← EReal.coe_natCast (n := G.relIndex H), coe_mul_sum _ (by positivity)]
+  rw [← sum_cuspOrderFiber hGH, totalCuspOrder, ← EReal.coe_natCast (n := G.relIndex H),
+    EReal.mul_sum_of_nonneg_of_ne_top (by positivity) (by simp)]
   exact Finset.sum_congr rfl fun c _ ↦
     relIndex_mul_orderAtCuspOrbit_eq_cuspOrderFiber_restrict hGH hneg f c
 
@@ -477,7 +459,8 @@ lemma cuspOrderFiber_infty_eq_sum_quotientFunc
       inv_inv, hw', hp, congr(SlashInvariantForm.quotientFunc f $(Quotient.out_eq c.out)).symm,
       SlashInvariantForm.quotientFunc_mk, EReal.coe_mul, EReal.coe_natCast, mul_assoc]
   rw [cuspOrderFiber, ← hsets, Finset.sum_map, Finset.sum_congr rfl fun c _ ↦ horder c,
-    ← coe_mul_sum _ H.widthInfty_nonneg, sum_translationCycles (fun q ↦
+    ← EReal.mul_sum_of_nonneg_of_ne_top (EReal.coe_nonneg.mpr H.widthInfty_nonneg) (by simp),
+    sum_translationCycles (fun q ↦
       orderAtInfty (SlashInvariantForm.quotientFunc f q)) (quotientFunc_translationCycle_order f)]
 
 /-- Conjugation identifies the two coset spaces used in a norm. -/
@@ -609,7 +592,8 @@ lemma relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne
         (ModularForm.norm G.adjoinNegOne f) := by
   let := Fintype.ofFinite (CuspOrbits G)
   let := Fintype.ofFinite (CuspOrbits G.adjoinNegOne)
-  rw [totalCuspOrder, ← EReal.coe_natCast, coe_mul_sum _ (by positivity)]
+  rw [totalCuspOrder, ← EReal.coe_natCast,
+    EReal.mul_sum_of_nonneg_of_ne_top (by positivity) (by simp)]
   refine (Finset.sum_le_sum fun c _ ↦ ?_).trans_eq <|
     Fintype.sum_bijective _ (CuspOrbits.map_adjoinNegOne_bijective G) _ _ fun _ ↦ rfl
   induction c using Quotient.inductionOn with | h d =>
