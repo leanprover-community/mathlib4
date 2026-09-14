@@ -114,6 +114,11 @@ lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     rw [this, hW]
     simp +instances
 
+lemma mlieBracket_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
+    mlieBracket I V W x = 0 := by
+  rw [← mlieBracketWithin_univ]
+  exact mlieBracketWithin_eq_zero_of_eq_zero hV hW
+
 set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_swap_apply :
     mlieBracketWithin I V W s x = - mlieBracketWithin I W V s x := by
