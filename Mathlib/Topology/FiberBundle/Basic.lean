@@ -272,7 +272,6 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrary homeomorphism between any fiber and the model fiber.
 This is useful to transfer topological properties of the model fiber. -/
 noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
@@ -304,8 +303,6 @@ theorem trivializationAt_proj_fst {x : TotalSpace F E} :
   Trivialization.coe_fst' _ <| mem_baseSet_trivializationAt F E x.proj
 
 variable (F)
-
-open Trivialization
 
 /-- Characterization of continuous functions (at a point, within a set) into a fiber bundle. -/
 theorem continuousWithinAt_totalSpace (f : X → TotalSpace F E) {s : Set X} {x₀ : X} :

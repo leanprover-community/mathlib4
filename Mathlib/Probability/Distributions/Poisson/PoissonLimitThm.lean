@@ -8,9 +8,7 @@ module
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.Distributions.Binomial
 
-import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Choose
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 
 /-!
 # Poisson limit of binomial probabilities
@@ -40,7 +38,9 @@ namespace ProbabilityTheory
 
 open scoped NNReal
 
-open Filter Topology ENNReal
+open Filter ENNReal
+
+open scoped Topology
 
 variable {p : ℕ → ℝ} {r : ℝ} (k : ℕ)
 

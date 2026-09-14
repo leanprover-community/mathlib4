@@ -437,7 +437,7 @@ lemma LowerHemicontinuousAt.exists_seq_tendsto {x₀ : α} (hf : LowerHemicontin
   -- Define `y n` to be some element of `f (x n) ∩ U (g n)` (or be arbitrary)
   let y : ℕ → β := fun n ↦ if h : (f (x n) ∩ U (g n)).Nonempty then h.some else y₀
   have hy (n) (h : (f (x n) ∩ U (g n)).Nonempty) : y n ∈ f (x n) ∩ U (g n) := by
-    simpa only [y, dif_pos h] using h.some_mem
+    simpa only [y, dite_eq_left h] using h.some_mem
   refine ⟨y, (hev 0).mono (by grind), ?_⟩
   -- Have to show for all `k`, eventually, all `y n ∈ U k`.
   rw [hUbasis.tendsto_right_iff]
@@ -462,8 +462,6 @@ lemma LowerHemicontinuousAt.exists_subseq_tendsto {ι : Type*} {l : Filter ι} [
   obtain ⟨u, hu⟩ := Filter.exists_seq_tendsto l
   obtain ⟨y, hy_mem, hy_lim⟩ := hf.exists_seq_tendsto (hx.comp hu) hy₀
   exact ⟨u, y, hu, hy_mem, hy_lim⟩
-
-
 
 end facts
 

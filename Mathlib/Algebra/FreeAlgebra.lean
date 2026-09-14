@@ -501,9 +501,9 @@ theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgeb
   by_contradiction <| by
     classical exact fun hxy : x ≠ y ↦
         let f : FreeAlgebra R X →ₐ[R] R := lift R fun z ↦ if x = z then (1 : R) else 0
-        have hfx1 : f (ι R x) = 1 := (lift_ι_apply _ _).trans <| if_pos rfl
+        have hfx1 : f (ι R x) = 1 := (lift_ι_apply _ _).trans <| ite_eq_left rfl
         have hfy1 : f (ι R y) = 1 := hoxy ▸ hfx1
-        have hfy0 : f (ι R y) = 0 := (lift_ι_apply _ _).trans <| if_neg hxy
+        have hfy0 : f (ι R y) = 0 := (lift_ι_apply _ _).trans <| ite_eq_right hxy
         one_ne_zero <| hfy1.symm.trans hfy0
 
 @[simp]
@@ -536,7 +536,6 @@ end FreeAlgebra
 `CoeSort` below. Closing it and reopening it fixes it... -/
 namespace FreeAlgebra
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is

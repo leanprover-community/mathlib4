@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Real.Star
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.

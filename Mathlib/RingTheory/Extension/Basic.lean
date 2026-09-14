@@ -293,6 +293,7 @@ noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
 
 end
 
+@[macro_inline]
 instance {P P' : Extension R S} : FunLike (P.Hom P') P.Ring P'.Ring where
   coe f := f.toRingHom
   coe_injective _ _ h := Extension.Hom.ext (DFunLike.coe_fn_eq.mp h)
@@ -392,12 +393,10 @@ instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R
   change algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
   rw [Algebra.smul_def, map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The action of `R₀` on `P.Cotangent` for an extension `P → S`, if `S` is an `R₀` algebra. -/
 lemma Cotangent.val_smul''' {R₀} [CommRing R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
     (r • x).val = P.σ (algebraMap R₀ S r) • x.val := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The action of `S` on `P.Cotangent` for an extension `P → S`. -/
 @[simp]
 lemma Cotangent.val_smul (r : S) (x : P.Cotangent) : (r • x).val = P.σ r • x.val := rfl

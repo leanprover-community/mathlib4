@@ -19,7 +19,7 @@ This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 
 public section
 
-open Module Polynomial
+open Module
 
 namespace IntermediateField
 
@@ -140,7 +140,7 @@ variable (α : E)
 @[simp]
 theorem AdjoinSimple.isIntegral_gen : IsIntegral F (AdjoinSimple.gen F α) ↔ IsIntegral F α := by
   conv_rhs => rw [← AdjoinSimple.algebraMap_gen F α]
-  rw [isIntegral_algebraMap_iff (algebraMap F⟮α⟯ E).injective]
+  rw [isIntegral_algebraMap_iff]
 
 variable {F} {α}
 

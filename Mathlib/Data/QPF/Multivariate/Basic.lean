@@ -22,7 +22,7 @@ inductive ListShape (a b : Type)
   | cons : a -> b -> ListShape
 ```
 
-This shape can itself be decomposed as a sum of product which are themselves
+This shape can itself be decomposed as a sum of products which are themselves
 QPFs. It follows that the shape is a QPF and we can take its fixed point
 and create the list itself:
 
@@ -68,7 +68,7 @@ matched because they preserve the properties of QPF. The latter example,
   * Prj
   * Const
 
-each proves that some operations on functors preserves the QPF structure
+each proves that some operations on functors preserve the QPF structure
 -/
 
 @[expose] public section
@@ -171,7 +171,6 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
     supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     (∀ p, LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u) ↔
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by

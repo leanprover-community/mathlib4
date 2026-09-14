@@ -5,9 +5,9 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Basic.ENNReal.Inv
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.EReal.Operations
-public import Mathlib.Data.Sign.Basic
 public import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
@@ -548,7 +548,7 @@ end EReal
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]

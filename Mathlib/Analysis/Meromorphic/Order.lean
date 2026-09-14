@@ -55,7 +55,7 @@ noncomputable def meromorphicOrderAt (f : 𝕜 → E) (x : 𝕜) : WithTop ℤ :
 @[simp]
 lemma meromorphicOrderAt_of_not_meromorphicAt (hf : ¬ MeromorphicAt f x) :
     meromorphicOrderAt f x = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 lemma meromorphicAt_of_meromorphicOrderAt_ne_zero (hf : meromorphicOrderAt f x ≠ 0) :
     MeromorphicAt f x := by
@@ -146,6 +146,13 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
       ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
+
+/-- The order of a meromorphic function `f` at `z₀` is finite iff `f` has multiplicative inverse
+in a sufficiently small neighborhood of `z₀`. -/
+theorem meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) :
+    meromorphicOrderAt f x ≠ ⊤ ↔ f * f⁻¹ =ᶠ[𝓝[≠] x] 1 := by
+  rw [meromorphicOrderAt_ne_top_iff_eventually_ne_zero hf]
+  exact eventually_congr (.of_forall (by aesop))
 
 /--
 A function meromorphic on `U`, with meromorphic order nowhere `⊤`, is nonvanishing away from a
@@ -787,6 +794,29 @@ theorem meromorphicOrderAt_ne_top_of_isPreconnected (hf : MeromorphicOn f U) {y 
   (hf.exists_meromorphicOrderAt_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1
     (by use ⟨x, h₁x⟩) ⟨y, hy⟩
 
+theorem meromorphicOrderAt_eq_top_of_isPreconnected (hf : MeromorphicOn f U) {y : 𝕜}
+    (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U) (h₂x : meromorphicOrderAt f x = ⊤) :
+    meromorphicOrderAt f y = ⊤ := by
+  contrapose h₂x with h
+  exact hf.meromorphicOrderAt_ne_top_of_isPreconnected hU hy h₁x h
+
+/-- On a preconnected set, a meromorphic function that is not constantly zero has a
+multiplicative inverse.
+
+A version of `meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq` where we relax the
+equality to `=ᶠ[codiscreteWithin U]`. -/
+theorem mul_inv_eventuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicOn f U) (hU : IsPreconnected U)
+    (h0 : ¬f =ᶠ[codiscreteWithin U] 0) :
+    f * f⁻¹ =ᶠ[codiscreteWithin U] 1 := by
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE,
+    union_comm _ Uᶜ, ← mem_inf_principal'] at ⊢ h0
+  intro x hx
+  refine mem_inf_of_left <| (meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq (hf x hx)).mp ?_
+  contrapose h0
+  intro y hy
+  refine mem_inf_of_left <| meromorphicOrderAt_eq_top_iff.mp ?_
+  exact hf.meromorphicOrderAt_eq_top_of_isPreconnected hU hx hy h0
+
 /-- If a function is meromorphic on a set `U`, then for each point in `U`, it is analytic at nearby
 points in `U`. When the target space is complete, this can be strengthened to analyticity at all
 nearby points, see `MeromorphicAt.eventually_analyticAt`. -/
@@ -947,6 +977,16 @@ lemma meromorphicOrderAt_smul_of_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : g x �
 lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
     meromorphicOrderAt (g * f) x = meromorphicOrderAt f x :=
   meromorphicOrderAt_smul_of_ne_zero hg hg'
+
+/-- meromorphicOrderAt is invariant under scaling. -/
+@[to_fun (attr := simp) meromorphicOrderAt_fun_const_smul_eq_meromorphicOrderAt]
+theorem meromorphicOrderAt_const_smul_eq_meromorphicOrderAt {f : 𝕜 → E} {s : 𝕜}
+    (hs : s ≠ 0) :
+    meromorphicOrderAt (s • f) x = meromorphicOrderAt f x := by
+  by_cases hf : MeromorphicAt f x
+  · rw [(by aesop : s • f = (fun (_ : 𝕜) ↦ s) • f),
+      meromorphicOrderAt_smul_of_ne_zero (by fun_prop) hs]
+  simp_all
 
 end smul
 
