@@ -298,14 +298,6 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
--- #41717
-set_option warn.sorry false in set_option linter.style.longLine false in
-omit [Fintype α] in
-@[simp] theorem Walk.isHamiltonian_transfer {G H : SimpleGraph α} {u v : α} {p : G.Walk u v} {h} : (p.transfer H h).IsHamiltonian ↔ p.IsHamiltonian := sorry
-set_option warn.sorry false in set_option linter.style.longLine false in
-omit [Fintype α] in
-@[simp] theorem Walk.isHamiltonianCycle_transfer {G H : SimpleGraph α} {v : α} {p : G.Walk v v} {h} : (p.transfer H h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := sorry
-
 -- #41435
 set_option warn.sorry false in set_option linter.style.longLine false in
 omit [Fintype α] in
