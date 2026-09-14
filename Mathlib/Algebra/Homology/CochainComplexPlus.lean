@@ -212,7 +212,14 @@ lemma mapCochainComplexPlus_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
     (τ ≫ τ').mapCochainComplexPlus =
       τ.mapCochainComplexPlus ≫ τ'.mapCochainComplexPlus := by cat_disch
 
-instance (τ : F₁ ⟶ F₂) : τ.mapCochainComplexPlus.CommShift ℤ := sorry
+instance (τ : F₁ ⟶ F₂) : τ.mapCochainComplexPlus.CommShift ℤ :=
+  NatTrans.CommShift.of_comp_faithful (ObjectProperty.ι _) (by
+    have :
+        Functor.whiskerRight τ.mapCochainComplexPlus (CochainComplex.Plus.ι D) =
+          F₁.mapCochainComplexPlusCompι.hom ≫ Functor.whiskerLeft _ (τ.mapHomologicalComplex _) ≫
+            F₂.mapCochainComplexPlusCompι.inv := by cat_disch
+    rw [this]
+    infer_instance)
 
 end NatTrans
 
