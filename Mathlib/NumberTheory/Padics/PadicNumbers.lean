@@ -909,7 +909,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
-        multiplicity.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
+        Nat.multiplicity_eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one_of_one_le₀
       norm_cast
       apply one_le_pow
@@ -1089,7 +1089,7 @@ lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
 
 -- not @[simp], since simp can prove it
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by
-  rw [valuation_natCast, Nat.multiplicity_self, cast_one]
+  rw [valuation_natCast, Nat.Prime.multiplicity_self, cast_one]
 
 theorem le_valuation_add {x y : ℚ_[p]} (hxy : x + y ≠ 0) :
     min x.valuation y.valuation ≤ (x + y).valuation := by
