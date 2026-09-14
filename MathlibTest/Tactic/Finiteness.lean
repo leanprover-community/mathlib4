@@ -1,5 +1,5 @@
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Data.ENNReal.Inv
+import Mathlib.Basic.ENNReal.Inv
 import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 import Mathlib.Tactic.Finiteness
 

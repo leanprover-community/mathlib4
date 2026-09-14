@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.Sites.Coverage
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 
 /-!
 # 1-hypercovers
@@ -279,7 +279,6 @@ def trivial (S : C) : PreOneHypercover.{w} S where
   p₂ _ _ _ := 𝟙 _
   w _ _ _ := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma sieve₀_trivial (S : C) : (trivial S).sieve₀ = ⊤ := by
   rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀]
   simp
@@ -290,7 +289,6 @@ set_option backward.defeqAttrib.useBackward true in
 lemma sieve₁_trivial {S : C} {W : C} {p : W ⟶ S} :
     (trivial S).sieve₁ (i₁ := ⟨⟩) (i₂ := ⟨⟩) p p = ⊤ := by ext; simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : Nonempty (PreOneHypercover.{w} S) := ⟨trivial S⟩
 
 section
@@ -403,7 +401,6 @@ instance : Category (PreOneHypercover S) where
   id E := Hom.id E
   comp f g := f.comp g
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from pre-`1`-hypercovers to pre-`0`-hypercovers. -/
 @[simps]
 def oneToZero : PreOneHypercover.{w} S ⥤ PreZeroHypercover.{w} S where
@@ -711,45 +708,38 @@ section
 
 variable {S : C} {E F : PreOneHypercover.{w} S} (e : E ≅ F)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma hom_inv_s₀_apply (i : E.I₀) : e.inv.s₀ (e.hom.s₀ i) = i :=
   congr($(e.hom_inv_id).s₀ i)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma inv_hom_s₀_apply (i : F.I₀) : e.hom.s₀ (e.inv.s₀ i) = i :=
   congr($(e.inv_hom_id).s₀ i)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma hom_inv_s₁_apply {i j : E.I₀} (k : E.I₁ i j) :
     e.inv.s₁ (e.hom.s₁ k) = E.congrIndexOneOfEq (by simp) (by simp) k := by
   obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.hom_inv_id
   simpa using! hs₁ i j k
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma inv_hom_s₁_apply {i j : F.I₀} (k : F.I₁ i j) :
     e.hom.s₁ (e.inv.s₁ k) = F.congrIndexOneOfEq (by simp) (by simp) k := by
   obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.inv_hom_id
   simpa using! hs₁ i j k
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma hom_inv_h₀ (i : E.I₀) : e.hom.h₀ i ≫ e.inv.h₀ (e.hom.s₀ i) = eqToHom (by simp) := by
   obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.hom_inv_id
   simpa using hh i
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_h₀ (i : F.I₀) : e.inv.h₀ i ≫ e.hom.h₀ (e.inv.s₀ i) = eqToHom (by simp) := by
   obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.inv_hom_id
   simpa using hh i
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma hom_inv_h₁ {i j : E.I₀} (k : E.I₁ i j) :
@@ -759,7 +749,6 @@ lemma hom_inv_h₁ {i j : E.I₀} (k : E.I₁ i j) :
   obtain ⟨hs, _, _, hh⟩ := Hom.ext'_iff.mp e.hom_inv_id
   simpa using hh i j k
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_h₁ {i j : F.I₀} (k : F.I₁ i j) :
@@ -769,18 +758,15 @@ lemma inv_hom_h₁ {i j : F.I₀} (k : F.I₁ i j) :
   obtain ⟨hs, _, _, hh⟩ := Hom.ext'_iff.mp e.inv_hom_id
   simpa using hh i j k
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (i : E.I₀) : IsIso (e.hom.h₀ i) := by
   use e.inv.h₀ (e.hom.s₀ i) ≫ eqToHom (by simp)
   rw [PreOneHypercover.hom_inv_h₀_assoc, eqToHom_trans, eqToHom_refl, Category.assoc,
     ← eqToHom_naturality _ (by simp), PreOneHypercover.inv_hom_h₀_assoc]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (i : F.I₀) : IsIso (e.inv.h₀ i) :=
   .of_isIso_fac_right (PreOneHypercover.inv_hom_h₀ e i)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {i j : E.I₀} (k : E.I₁ i j) : IsIso (e.hom.h₁ k) := by
   use e.inv.h₁ _ ≫ eqToHom (by congr 1; simp) ≫ (E.congrIndexOneOfEqIso (by simp) (by simp) k).hom
   simp only [PreOneHypercover.hom_inv_h₁_assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp,
@@ -788,7 +774,6 @@ instance {i j : E.I₀} (k : E.I₁ i j) : IsIso (e.hom.h₁ k) := by
   rw [← eqToHom_naturality_assoc _ (by simp)]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {i j : F.I₀} (k : F.I₁ i j) : IsIso (e.inv.h₁ k) :=
   .of_isIso_fac_right (PreOneHypercover.inv_hom_h₁ e k)
 
@@ -975,7 +960,6 @@ lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.obj.map (E.f i�
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `E : J.OneHypercover S` and `F : Sheaf J A`, then `F.obj (op S)` is
 a multiequalizer of suitable maps `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`
 induced by `E.p₁ j` and `E.p₂ j`. -/
@@ -1049,7 +1033,6 @@ instance : Category (J.OneHypercover S) where
   id E := PreOneHypercover.Hom.id E.toPreOneHypercover
   comp f g := f.comp g
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An isomorphism of `1`-hypercovers is an isomorphism of pre-`1`-hypercovers. -/
 @[simps]
 def isoMk {E F : J.OneHypercover S} (f : E.toPreOneHypercover ≅ F.toPreOneHypercover) :

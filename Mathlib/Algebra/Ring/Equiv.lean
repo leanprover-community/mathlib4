@@ -127,6 +127,7 @@ variable [Mul R] [Mul S] [Add R] [Add S] [Mul S'] [Add S']
 
 section coe
 
+@[macro_inline]
 instance : EquivLike (R ≃+* S) R S where
   coe f := f.toFun
   inv f := f.invFun

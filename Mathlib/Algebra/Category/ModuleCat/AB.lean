@@ -22,7 +22,7 @@ public section
 
 universe u v
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (R : Type u) [Ring R]
 
@@ -47,6 +47,6 @@ lemma ModuleCat.isSeparator [Small.{v} R] : IsSeparator (ModuleCat.of.{v} R (Shr
     (Shrink.linearEquiv R R : Shrink R →ₗ[R] R))) 1
 
 instance [Small.{v} R] : HasSeparator (ModuleCat.{v} R) where
-  hasSeparator := ⟨ModuleCat.of R (Shrink.{v} R), ModuleCat.isSeparator R⟩
+  hasSeparator := ⟨↧(Shrink.{v} R), ModuleCat.isSeparator R⟩
 
 instance : IsGrothendieckAbelian.{u} (ModuleCat.{u} R) where

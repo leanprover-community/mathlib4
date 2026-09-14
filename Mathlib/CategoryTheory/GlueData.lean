@@ -381,7 +381,7 @@ open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.f` from a `GlueData'`. -/
 abbrev GlueData'.f' (D : GlueData' C) (i j : D.J) :
     (if h : i = j then D.U i else D.V i j h) ⟶ D.U i :=
-  if h : i = j then eqToHom (dif_pos h) else eqToHom (dif_neg h) ≫ D.f i j h
+  if h : i = j then eqToHom (dite_eq_left h) else eqToHom (dite_eq_right h) ≫ D.f i j h
 
 instance (D : GlueData' C) (i j : D.J) :
     Mono (D.f' i j) := by dsimp [GlueData'.f']; split_ifs <;> infer_instance
@@ -393,11 +393,11 @@ instance (D : GlueData' C) (i j k : D.J) :
     HasPullback (D.f' i j) (D.f' i k) := by
   if hij : i = j then
     apply +allowSynthFailures hasPullback_of_left_iso
-    simp only [GlueData'.f', dif_pos hij]
+    simp only [GlueData'.f', dite_eq_left hij]
     infer_instance
   else if hik : i = k then
     apply +allowSynthFailures hasPullback_of_right_iso
-    simp only [GlueData'.f', dif_pos hik]
+    simp only [GlueData'.f', dite_eq_left hik]
     infer_instance
   else
     have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : eqToHom e ≫ f ≍ f := by subst e; simp
@@ -414,18 +414,18 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
   else if hik : i = k then
     have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
       subst hik; infer_instance
-    pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
-      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
+    pullback.fst _ _ ≫ eqToHom (dite_eq_right hij) ≫ D.t _ _ _ ≫
+      eqToHom (dite_eq_right (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else if hjk : j = k then
     have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
       apply +allowSynthFailures pullback_snd_iso_of_left_iso
       simp only [hjk, GlueData'.f', ↓reduceDIte]
       infer_instance
-    pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
-      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
+    pullback.fst _ _ ≫ eqToHom (dite_eq_right hij) ≫ D.t _ _ _ ≫
+      eqToHom (dite_eq_right (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else
     haveI := Ne.symm hij
-    pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dif_neg hik]))
+    pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dite_eq_right hik]))
         (eqToHom (by simp)) (by delta f'; aesop) (by delta f'; aesop) ≫
       D.t' i j k hij hik hjk ≫
       pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
@@ -444,7 +444,7 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
   f i j := D.f' i j
   f_id i := by simp only [↓reduceDIte, GlueData'.f']; infer_instance
   t i j := if h : i = j then eqToHom (by simp [h]) else
-    eqToHom (dif_neg h) ≫ D.t i j h ≫ eqToHom (dif_neg (Ne.symm h)).symm
+    eqToHom (dite_eq_right h) ≫ D.t i j h ≫ eqToHom (dite_eq_right (Ne.symm h)).symm
   t_id i := by simp
   t' := D.t''
   t_fac i j k := by

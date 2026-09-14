@@ -11,3 +11,7 @@ The convex cone topics currently covered are:
 * Convex cones
 * Pointed cones
 * Dual cone along a bilinear pairing
+* Duals of finitely generated cones
+* Faces of pointed cones
+* Simplicial cones
+* Tensor products of cones
