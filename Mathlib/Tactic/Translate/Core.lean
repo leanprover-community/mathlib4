@@ -309,7 +309,7 @@ where
           `{info'.translation}` instead of `{info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
-    trace[translate] "Adding translation {src} ↦ {tgt}\
+    trace[translate] "Adding `{.ofConstName src}` ↦ `{.ofConstName tgt}`\
       {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})"} \
       (relevant_arg := {info.relevantArg})"
 
