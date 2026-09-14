@@ -976,6 +976,13 @@ theorem IsCyclic.subgroup_le_iff_card_dvd [h : Finite H] :
     rw [subgroup_le_iff_index_dvd, H.index_eq_card_div, K.index_eq_card_div,
       Nat.div_dvd_div_iff_left Nat.card_pos K.card_subgroup_dvd_card H.card_subgroup_dvd_card]
 
+/-- In a cyclic group, `H = K` iff `H.index = K.index`. -/
+@[to_additive /-- In an additive cyclic group, `H = K` iff `H.index = K.index`. -/]
+theorem IsCyclic.subgroup_eq_iff_index_eq :
+    H = K ↔ H.index = K.index := by
+  rw [le_antisymm_iff, IsCyclic.subgroup_le_iff_index_dvd, IsCyclic.subgroup_le_iff_index_dvd,
+    and_comm, Nat.dvd_antisymm_iff]
+
 /-- In a cyclic group, if `H` and `K` are finite then `H = K` iff `Nat.card H = Nat.card K`. -/
 @[to_additive
 /-- In an additive cyclic group, if `H` and `K` are finite then `H = K` iff
