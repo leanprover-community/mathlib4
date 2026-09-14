@@ -304,18 +304,15 @@ lemma analyticOrderAt_cuspFunction_ne_top (hh : 0 < h) (hfper : Periodic (f ∘ 
 by the order of vanishing of its cusp function at zero. -/
 theorem isTheta_analyticOrderAt (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) (hfne : f ≠ 0) :
-    f =Θ[atImInfty] fun τ ↦ exp (-2 * π * τ.im *
-      analyticOrderNatAt (cuspFunction h f) 0 / h) := by
-  obtain ⟨g, hg, hg0, hfg⟩ := (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd
-    |>.analyticOrderAt_ne_top).mp (analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne)
-  set n := analyticOrderNatAt (cuspFunction h f) 0
-  have hlim : Filter.Tendsto (fun τ : ℍ ↦ f τ / Periodic.qParam h τ ^ n)
-      atImInfty (nhds (g 0)) := by
-    apply (hg.continuousAt.tendsto.comp (qParam_tendsto_atImInfty hh)).congr'
-    filter_upwards [(qParam_tendsto_atImInfty hh).eventually hfg] with τ hτ
-    simp [← eq_cuspFunction τ hh.ne' hfper, hτ, Periodic.qParam_ne_zero]
-  -- The nonvanishing analytic factor gives matching upper and lower bounds for `q ^ n`.
-  convert! (Asymptotics.isTheta_of_div_tendsto_nhds_ne_zero hlim hg0).symm.norm_right using 2
+    f =Θ[atImInfty] fun τ ↦ exp (-2 * π * τ.im * analyticOrderNatAt (cuspFunction h f) 0 / h) := by
+  have htheta : f =Θ[atImInfty] fun τ ↦
+      (Periodic.qParam h τ - 0) ^ analyticOrderNatAt (cuspFunction h f) 0 := by
+    have heq : f =ᶠ[atImInfty] fun τ ↦ cuspFunction h f (Periodic.qParam h τ) :=
+      .of_forall fun τ ↦ (eq_cuspFunction τ hh.ne' hfper).symm
+    exact heq.trans_isTheta <| (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd).isTheta_pow_sub
+        (analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne) |>.comp_tendsto
+          (qParam_tendsto_atImInfty hh)
+  convert! htheta.norm_right using 2
   simp [Periodic.norm_qParam, ← exp_nat_mul, field]
 
 /-- The order at infinity is the order of the cusp function divided by the period. -/
