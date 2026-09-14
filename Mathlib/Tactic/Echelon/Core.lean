@@ -169,7 +169,7 @@ certifier its certificate conditions are built with. -/
 structure Model where
   /-- Run the elimination on the entries of a matrix literal. -/
   producer : Producer
-  /-- Prove a proposition about a single entry, or `none` when `decide` proves them all. -/
+  /-- The entry certifier, or `none` to close the entry propositions by `decide`. -/
   entryCertifier? : Option EntryCertifier := none
 
 /-- An extension of the Bareiss ring computation model. -/

@@ -28,8 +28,8 @@ individual entries supplied by an entry certifier.
 
 ## Implementation notes
 
-The elimination records its echelon form `U`, making the product a certificate obligation
-of its own, `L * A_σ = U`, decided separately from the pivot condition on `U`.
+The elimination records its echelon form `U`, making the product `L * A_σ = U` a certificate
+obligation of its own.
 
 The product is proved on the row lists of the literals: `ListMatrix.mul` on them is expanded
 to the sums of products of the entries, which the certifier proves equal to the recorded

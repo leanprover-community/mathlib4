@@ -66,8 +66,7 @@ def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
 /-- Select the computation model for the element type `α`: the first registered
 `bareiss_ext` extension that handles it, or the rational fallback. The fallback serves
 many rings, so it also probes for its entry certifier: none where `decide` settles
-equality, so every certificate condition is decided outright, and `norm_num`
-otherwise. -/
+equality, and `norm_num` otherwise. -/
 def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
   for (name, ext) in bareissExt.getState (← getEnv) do
     if let some m ← ext.model? α then

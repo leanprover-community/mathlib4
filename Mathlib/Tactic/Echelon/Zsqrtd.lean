@@ -64,7 +64,7 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
   mkProducer ops prepare mkEntry
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`, whose
-equality `decide` settles, so the certificate conditions carry no entry certifier. -/
+equality `decide` settles, so the model needs no entry certifier. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   model? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching
