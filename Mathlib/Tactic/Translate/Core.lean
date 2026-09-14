@@ -295,6 +295,9 @@ def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
     (relevantArg : RelevantArg) (ref : Syntax) (allowDuplicate := false) :
     CoreM Unit := do
   insertTranslationAux src { translation := tgt, reorder, relevantArg }
+  trace[translate] "Adding `{.ofConstName src}` {ite t.isDual "↔" "↦"} `{.ofConstName tgt}`\
+    {if reorder.reorder.isEmpty then "" else s!" (reorder := {reorder.reorder})"} \
+    (relevant_arg := {relevantArg})"
   if t.isDual && src != tgt then
     /- In practice, `relevantArg` does not overlap with `reorder` for dual translations,
     so we don't bother applying the permutation to `relevantArg`. -/
@@ -309,9 +312,6 @@ where
           `{info'.translation}` instead of `{info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
-    trace[translate] "Adding `{.ofConstName src}` ↦ `{.ofConstName tgt}`\
-      {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})"} \
-      (relevant_arg := {info.relevantArg})"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
