@@ -61,8 +61,9 @@ meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e :=
   | _, _, _ => throwError "not Finset.dens"
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The `positivity` extension which proves that `∑ i ∈ s, f i` is nonnegative if `f` is, and
-positive if each `f i` is and `s` is nonempty.
+/-- The `positivity` extension which proves that `∑ a ∈ s, f a` is nonnegative if `f` is, and
+positive if either each `f i` is and `s` is nonempty, or some `f a` is where `a ∈ s` is an
+assumption.
 
 TODO: The following example does not work
 ```
@@ -88,17 +89,38 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
       pure <| some q(@sum_pos $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
         (fun i _ ↦ $pr i) $ps)
-    -- Try to show that the sum is positive
+    -- Try to show that the sum is positive because all summands are
     if let some p_pos := p_pos then
       return .positive p_pos
+    let pbody ← rbody.toNonneg
+    let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+    -- Else try to show that the sum is positive because one summand is. We look for the witness
+    -- among the assumptions of the form `a ∈ s`, since we have no other way of getting hold of an
+    -- element of `s` at which `f` might be positive.
+    let p_pos' : Option Q(0 < $e) ← do
+      let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
+      let mut res : Option Q(0 < $e) := none
+      for ldecl in ← getLCtx do
+        if res.isSome then break
+        if ldecl.isImplementationDetail then continue
+        let_expr Membership.mem _ _ _ s' a := ldecl.type | continue
+        unless ← withNewMCtxDepth (isDefEq s' s) do continue
+        have a : Q($ι) := a
+        have hmem : Q($a ∈ $s) := ldecl.toExpr
+        have fa : Q($α) := .betaRev f #[a]
+        let .positive pa ← catchNone (core zα pα fa) | continue
+        have pa : Q(0 < $f $a) := pa
+        assertInstancesCommute
+        res := some q(@sum_pos' $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
+          (fun i _ ↦ $pr i) ⟨$a, $hmem, $pa⟩)
+      pure res
+    if let some p_pos' := p_pos' then
+      return .positive p_pos'
     -- Fall back to showing that the sum is nonnegative
-    else
-      let pbody ← rbody.toNonneg
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let pα' ← synthInstanceQ q(AddLeftMono $α)
-      assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $instα (@PartialOrder.toPreorder _ $pα) $f $s $pα'
-        fun i _ ↦ $pr i)
+    let pα' ← synthInstanceQ q(AddLeftMono $α)
+    assertInstancesCommute
+    return .nonnegative q(@sum_nonneg $ι $α $instα (@PartialOrder.toPreorder _ $pα) $f $s $pα'
+      fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 variable {α : Type*} {s : Finset α}
@@ -116,6 +138,19 @@ example [Nonempty α] : 0 < #(univ : Finset α) := by positivity
 example [Nonempty α] : 0 < Fintype.card α := by positivity
 example [Nonempty α] : 0 < dens (univ : Finset α) := by positivity
 example [Nonempty α] : dens (univ : Finset α) ≠ 0 := by positivity
+
+example {f : α → ℕ} : 0 ≤ ∑ a ∈ s, f a := by positivity
+example {f : α → ℕ} (hs : s.Nonempty) : 0 < ∑ i ∈ s, (f i + 1) := by positivity
+example {f : α → ℕ} {a : α} (ha : a ∈ s) (hfa : 0 < f a) : 0 < ∑ a ∈ s, f a := by positivity
+example {f : α → ℕ} {a : α} (ha : a ∈ s) (hfa : f a ≠ 0) : ∑ a ∈ s, f a ≠ 0 := by positivity
+-- `f` need not be positive at the witness `a`, in which case we only get nonnegativity
+example {f : α → ℕ} {a : α} (_ha : a ∈ s) : 0 ≤ ∑ a ∈ s, f a := by positivity
+
+-- Extra `_ ∈ s` assumptions do not throw off `positivity`
+example {f : α → ℕ} {a b : α} (_ha : a ∈ s) (hb : b ∈ s) (hb : 0 < f b) : 0 < ∑ a ∈ s, f a := by
+  positivity
+example {f : α → ℕ} {a b : α} (ha : a ∈ s) (_hb : b ∈ s) (hfa : 0 < f a) : 0 < ∑ a ∈ s, f a := by
+  positivity
 
 example {G : Type*} {A : Finset G} :
     let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ #A := by

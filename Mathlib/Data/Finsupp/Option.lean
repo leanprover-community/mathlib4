@@ -26,6 +26,8 @@ We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for compar
   function on `α`.
 * `Finsupp.optionElim`: extend a finitely supported function on `α`
   to a finitely supported function on `Option α`, provided a default value for `none`.
+* `Finsupp.withTopSome`/`Finsupp.withBotSome`: `Finsupp.some` stated for `WithTop`/`WithBot` rather
+  than for `Option`, so that the two are duals of each other under `@[to_dual]`.
 
 ## Implementation notes
 
@@ -95,6 +97,21 @@ theorem some_single_some (a : α) (m : M) :
 @[simp]
 theorem embDomain_some_some (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by
   simp [← Function.Embedding.some_apply]
+
+@[simp]
+lemma embDomain_some_of_none_eq_zero {f : Option α →₀ M} (hf : f none = 0) :
+    f.some.embDomain .some = f := by
+  ext a
+  cases a with
+  | none => rw [embDomain_some_none, hf]
+  | some a => rw [embDomain_some_some, some_apply]
+
+@[to_additive]
+lemma prod_some [CommMonoid N] {f : Option α →₀ M} (hf : f none = 0) (g : Option α → M → N) :
+    (f.some.prod fun a ↦ g (Option.some a)) = f.prod g := by
+  conv_rhs => rw [← embDomain_some_of_none_eq_zero hf]
+  rw [prod_embDomain]
+  rfl
 
 @[simp]
 theorem some_update_none (f : Option α →₀ M) (a : M) :
@@ -217,5 +234,37 @@ lemma optionElim_add [AddZeroClass M] (a b : α →₀ M) (i j : M) :
   ext x; cases x <;> simp
 
 end Option
+
+section WithTop
+variable [Zero M]
+
+/-- Restrict a finitely supported function on `WithTop α` to a finitely supported function on `α`.
+
+This is the analogue of `Finsupp.some` for `WithTop`. -/
+@[to_dual
+/-- Restrict a finitely supported function on `WithBot α` to a finitely supported function on `α`.
+
+This is the analogue of `Finsupp.some` for `WithBot`. -/]
+def withTopSome (f : WithTop α →₀ M) : α →₀ M := f.comapDomain (↑) WithTop.coe_injective.injOn
+
+@[to_dual (attr := simp)]
+lemma withTopSome_apply (f : WithTop α →₀ M) (a : α) : f.withTopSome a = f a := rfl
+
+@[to_additive (attr := to_dual)]
+lemma prod_withTopSome_mul [CommMonoid N] {g : WithTop α → M → N} (hg : g ⊤ 0 = 1)
+    (f : WithTop α →₀ M) : f.withTopSome.prod (fun a ↦ g a) * g ⊤ (f ⊤) = f.prod g := by
+  classical
+  have hsupp : f.support.preimage ((↑) : α → WithTop α) WithTop.coe_injective.injOn
+      = (f.support.erase ⊤).preimage ((↑) : α → WithTop α) WithTop.coe_injective.injOn := by
+    ext a; simp
+  rw [Finsupp.prod, Finsupp.prod, withTopSome, comapDomain_support, hsupp,
+    ← Finset.prod_insert_of_eq_one_if_notMem (a := ⊤) (s := f.support)
+      fun h ↦ by rw [notMem_support_iff.1 h, hg],
+    ← Finset.prod_erase_mul _ _ (Finset.mem_insert_self ⊤ f.support), Finset.erase_insert_eq_erase]
+  congr 1
+  exact Finset.prod_preimage _ _ _ (fun b ↦ g b (f b)) fun b hb hb' ↦
+    absurd (WithTop.ne_top_iff_exists.1 (Finset.ne_of_mem_erase hb)) (by simpa using hb')
+
+end WithTop
 
 end Finsupp
