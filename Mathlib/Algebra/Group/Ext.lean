@@ -74,10 +74,19 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
+  have h_toOne : m₁.toOne = m₂.toOne := congrArg (fun s : MulOneClass M => s.toOne) (this)
+  have h_toMul : m₁.toMul = m₂.toMul := congrArg (fun s : MulOneClass M => s.toMul) (this)
+  have h_toPPow : @Semigroup.toPPow M m₁.toSemigroup = @Semigroup.toPPow M m₂.toSemigroup :=
+    congrArg (fun s : Semigroup M => @Semigroup.toPPow M s) h₂
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩, _, _, ⟨_⟩⟩
+  have npow_ext : ∀ {n₁ n₂ : NPow M}, n₁.npow = n₂.npow → n₁ = n₂ := by
+    rintro ⟨_⟩ ⟨_⟩ h
+    congr
+  have h_toNPow : m₁.toNPow = m₂.toNPow := npow_ext (this)
+  cases m₁
+  cases m₂
   congr
 
 @[to_additive]
