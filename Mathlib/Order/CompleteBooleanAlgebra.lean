@@ -482,7 +482,7 @@ section bihimp
 variable {f : ι → α}
 open scoped symmDiff
 
-/-- The bihimp of two `iInf`s is at least the `iInf` of the bihimps. -/
+/-- The bi-implication of two `iInf`s is at least the `iInf` of the bi-implications. -/
 @[to_dual iSup_symmDiff_iSup_le
 /-- The symmetric difference of two `iSup`s is at most the `iSup` of the symmetric differences. -/]
 theorem le_iInf_bihimp_iInf {g : ι → α} : ⨅ i, ((f i) ⇔ (g i)) ≤ (⨅ i, f i) ⇔ (⨅ i, g i) := by
