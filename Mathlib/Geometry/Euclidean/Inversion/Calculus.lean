@@ -116,19 +116,24 @@ theorem not_continuousAt_inversion_center [Nontrivial F] (hR : R ≠ 0) :
     (tendsto_inversion_nhdsNE_center_cobounded (c := c) (R := R) hR)
     nhdsWithin_le_nhds (Metric.disjoint_nhds_cobounded _)
 
-/-- The Fréchet derivative of inversion at its center is zero. -/
-theorem fderiv_inversion_center [Nontrivial F] (hR : R ≠ 0) :
-    fderiv ℝ (inversion c R) c = 0 :=
-  fderiv_zero_of_not_differentiableAt <| mt DifferentiableAt.continuousAt
-    (not_continuousAt_inversion_center (c := c) (R := R) hR)
+/-- The value of `fderiv` for inversion at its center is zero. For nonzero radius in a nontrivial
+space, this is the value assigned by `fderiv` at a point where the map is not differentiable. -/
+@[simp]
+theorem fderiv_inversion_center : fderiv ℝ (inversion c R) c = 0 := by
+  cases subsingleton_or_nontrivial F
+  · exact Subsingleton.elim _ _
+  · obtain rfl | hR := eq_or_ne R 0
+    · simp +unfoldPartialApp [inversion]
+    · exact fderiv_zero_of_not_differentiableAt <| mt DifferentiableAt.continuousAt
+        (not_continuousAt_inversion_center (c := c) (R := R) hR)
 
 /-- Formula for the Fréchet derivative of inversion, valid at every point. -/
-theorem fderiv_inversion [Nontrivial F] (hR : R ≠ 0) (x : F) :
+theorem fderiv_inversion (x : F) :
     fderiv ℝ (inversion c R) x =
       (R / dist x c) ^ 2 • ((ℝ ∙ (x - c))ᗮ.reflection : F →L[ℝ] F) := by
   by_cases hx : x = c
   · subst x
-    simp [fderiv_inversion_center (c := c) (R := R) hR]
+    simp
   · simpa using (hasFDerivAt_inversion (c := c) (R := R) (x := x) hx).fderiv
 
 end EuclideanGeometry
