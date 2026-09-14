@@ -86,8 +86,8 @@ def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(C
   let chain : Expr ← L.entries.zipIdx.foldrM (init := q(True.intro)) fun (row, k) rest => do
     have entry : Q($α) := row[k]!
     have c : Q(ℕ) := mkNatLit (m - (k + 1))
-    let hz : Q(List.replicate $c (0 : $α) = List.replicate $c 0) := q(Eq.refl _)
-    mkAppM ``And.intro #[← certifier q($entry ≠ 0), ← mkAppM ``And.intro #[hz, rest]]
+    mkAppM ``And.intro #[← certifier q($entry ≠ 0),
+      ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $c (0 : $α))), rest]]
   have h : Q(IsLowerTriangularDiagList 0 $m $rows) := chain
   return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
     mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
@@ -97,8 +97,7 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (U : MatrixViews u m n α) (cols : Q(List (Fin $n))) (pivots : Array Nat)
     (certifier : EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols)) := do
   have rows : Q(List (List $α)) := U.lit
-  have hinc : Q(isStrictlyIncreasing $cols = true) :=
-    mkExpectedPropHint q(Eq.refl true) q(isStrictlyIncreasing $cols = true)
+  let hinc ← mkDecideProofQ q(($cols).SortedLT)
   -- one cell per row: the `Eq.refl` of a zero row beyond the pivots, or the nonzero pivot entry
   -- and the `Eq.refl` of the zeros before it
   let zeroRows : Expr ← (U.entries.drop pivots.size).foldrM (init := q(True.intro))
@@ -106,9 +105,9 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (p, i) rest => do
     have entry : Q($α) := (U.entries[i]!)[p]!
     have pQ : Q(ℕ) := mkNatLit p
-    let hz : Q(List.replicate $pQ (0 : $α) = List.replicate $pQ 0) := q(Eq.refl _)
-    mkAppM ``And.intro #[← certifier q($entry ≠ 0), ← mkAppM ``And.intro #[hz, rest]]
-  have h : Q(IsPivotedList $n $cols $rows) := chain
+    mkAppM ``And.intro #[← certifier q($entry ≠ 0),
+      ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $pQ (0 : $α))), rest]]
+  have h : Q(IsPivotedList $cols $rows) := chain
   return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hinc $h)
     q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols))
 
