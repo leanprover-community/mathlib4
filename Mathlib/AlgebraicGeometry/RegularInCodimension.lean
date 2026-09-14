@@ -65,8 +65,7 @@ lemma isRegularInCodimensionLE_iff :
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 /--
-Serre's condition is stated in terms of the dimension of the local rings of `X`; this is the
-same as the condition on codimensions of points used to define `IsRegularInCodimensionLE`.
+An equivalent form of `IsRegularInCodimensionLE`, using `ringKrullDim` instead of `Order.coheight`.
 -/
 lemma isRegularInCodimensionLE_iff_ringKrullDim :
     IsRegularInCodimensionLE n X ↔
