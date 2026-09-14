@@ -174,7 +174,7 @@ lemma isBonza : IsBonza fExample := by
         · simp [lt]
         have : (multiplicity 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
           rw [← Int.natCast_pow_pred b a hb]
-          exact multiplicity.pow_two_sub_one_ge (by lia) (two_dvd_ne_zero.mpr hb1) (by lia)
+          exact multiplicity_pow_two_sub_one_ge (by lia) (two_dvd_ne_zero.mpr hb1) (by lia)
             (even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
       · grind [dvd_pow_sub]
@@ -201,7 +201,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
         _ = 4 * 2 ^ multiplicity 2 n := by
           have : multiplicity 2 (3 ^ n - 1) + 1 = 3 + multiplicity 2 n := by
             simpa [← factorization_def _ prime_two, ← primeFactorsList_count_eq] using
-              multiplicity.pow_two_sub_one (show 1 < 3 by simp) (by simp) (by lia) ch
+              multiplicity_pow_two_sub_one (show 1 < 3 by simp) (by simp) (by lia) ch
           have : multiplicity 2 (3 ^ n - 1) = 2 + multiplicity 2 n := by lia
           rw [congrArg (HPow.hPow 2) this, Nat.pow_add]
         _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn (pow_multiplicity_dvd 2 n))
