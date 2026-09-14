@@ -179,7 +179,7 @@ dominance**: `w₁ ≤ w₂` iff on each upper set the mass of `w₁` is at most
 
 Equivalently, `w₁ ≤ w₂` iff `w₂` puts at most as much mass as `w₁` on each down-set
 (`StdSimplex.le_iff_forall_isLowerSet`), which makes stochastic dominance self-dual. -/
-noncomputable instance instPartialOrder : PartialOrder (StdSimplex R X) where
+instance instPartialOrder : PartialOrder (StdSimplex R X) where
   le w₁ w₂ := ∀ ⦃s : Set X⦄, IsUpperSet s → w₁.mass s ≤ w₂.mass s
   le_refl w s _ := le_rfl
   le_trans w₁ w₂ w₃ h₁₂ h₂₃ s hs := (h₁₂ hs).trans (h₂₃ hs)
