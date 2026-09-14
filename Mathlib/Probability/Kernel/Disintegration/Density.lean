@@ -375,7 +375,7 @@ lemma tendsto_densityProcess_limitProcess (hκν : fst κ ≤ ν)
       (fun n x ↦ densityProcess κ ν n a x s) (ν a) x)) := by
   apply Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
   apply (measure_ne_top (ν a) univ).lt_top.trans_le'
-  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a s
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a hs
 
 lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -383,7 +383,7 @@ lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel 
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
   apply Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
   apply (measure_ne_top (ν a) univ).lt_top.trans_le'
-  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a s
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a hs
 
 lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :

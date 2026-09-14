@@ -472,9 +472,8 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {p : ℝ≥0∞} {F : Type*} [NormedAd
       StronglyMeasurable.aestronglyMeasurable
         ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _))
     rw [memLp_iff]
-    refine lt_of_le_of_lt
-      (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ hlim (Classical.choose_spec h).2)
-      (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))
+    apply (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ hlim (Classical.choose_spec h).2).trans_lt
+    refine lt_of_le_of_lt ?_ hbdd
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans (le_iSup (fun b ↦ eLpNorm (f b) p  μ) a)
   · exact MemLp.zero

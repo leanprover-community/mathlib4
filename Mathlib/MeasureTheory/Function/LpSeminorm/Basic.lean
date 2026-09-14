@@ -1034,44 +1034,44 @@ end MapMeasure
 
 section Liminf
 
-theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α → E}
-    (hfmeas : ∀ n, Measurable (f n)) (hbdd : ⨆ n, eLpNorm (f n) p μ < ∞) :
-    ∀ᵐ x ∂μ, liminf (fun n => ((‖f n x‖ₑ) ^ p.toReal : ℝ≥0∞)) atTop < ∞ := by
+theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {f : ℕ → α → E}
+    (hbdd : ⨆ n, eLpNorm (f n) p μ < ∞) :
+    ∀ᵐ x ∂μ, liminf (fun n ↦ (‖f n x‖ₑ ^ p.toReal : ℝ≥0∞)) atTop < ∞ := by
+  have hfae n : AEStronglyMeasurable (f n) μ :=
+    aestronglyMeasurable_of_eLpNorm_ne_top ((le_iSup _ n).trans_lt hbdd).ne
   by_cases hp0 : p.toReal = 0
-  · simp only [hp0, ENNReal.rpow_zero]
-    filter_upwards with _
-    rw [liminf_const (1 : ℝ≥0∞)]
-    exact ENNReal.one_lt_top
+  · simp [hp0]
   have hp : p ≠ 0 := fun h => by simp [h] at hp0
   have hp' : p ≠ ∞ := fun h => by simp [h] at hp0
-  refine
-    ae_lt_top (.liminf fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
-      (lt_of_le_of_lt
-          (lintegral_liminf_le fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
-          (lt_of_le_of_lt ?_ (by finiteness : (⨆ n, eLpNorm (f n) p μ) ^ p.toReal < ∞))).ne
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp', one_div] at hbdd
+  refine ae_lt_top' ?_ (LT.lt.ne ?_)
+  · exact .liminf fun n ↦ (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const p.toReal
+  apply (lintegral_liminf_le' fun n ↦ (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const
+    p.toReal).trans_lt
+  apply lt_of_le_of_lt (b := (⨆ n, eLpNorm (f n) p μ) ^ p.toReal) ?_ (by finiteness)
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' (hfae _), one_div] at hbdd
   simp_rw [liminf_eq, eventually_atTop]
   refine sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans ?_
   apply (ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp')).1
-  simp only [← enorm_eq_nnnorm, ← one_div, ← eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp']
+  simp only [← enorm_eq_nnnorm, ← one_div, ← eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' (hfae _)]
   exact le_iSup (fun b ↦ eLpNorm (f b) p μ) a
 
-theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : ℕ → α → E}
-    (hfmeas : ∀ n, Measurable (f n)) (hbdd : ⨆ n, eLpNorm (f n) p μ < ∞) :
+theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd (hp : p ≠ 0) {f : ℕ → α → E}
+    (hbdd : ⨆ n, eLpNorm (f n) p μ < ∞) :
     ∀ᵐ x ∂μ, liminf (fun n => (‖f n x‖ₑ)) atTop < ∞ := by
-  by_cases hp' : p = ∞
-  · subst hp'
-    simp_rw [eLpNorm_exponent_top] at hbdd
-    have : ∀ n, ∀ᵐ x ∂μ, (‖f n x‖ₑ) < (⨆ n, eLpNorm (f n) ∞ μ) + 1 := fun n =>
-      ae_lt_of_essSup_lt
-        (lt_of_le_of_lt (le_iSup (fun b ↦ eLpNorm (f b) ∞ μ) n)
-          <| ENNReal.lt_add_right hbdd.ne one_ne_zero)
+  have hfae n : AEStronglyMeasurable (f n) μ :=
+    aestronglyMeasurable_of_eLpNorm_ne_top ((le_iSup _ n).trans_lt hbdd).ne
+  rcases eq_top_or_lt_top p with rfl | hp'
+  · have : ∀ n, ∀ᵐ x ∂μ, ‖f n x‖ₑ < (⨆ n, eLpNorm (f n) ∞ μ) + 1 := by
+      refine fun n ↦ ae_lt_of_essSup_lt ?_
+      apply (ENNReal.lt_add_right hbdd.ne one_ne_zero).trans_le'
+      simp only [eLpNorm_exponent_top (hfae _), eLpNormEssSup]
+      exact le_iSup (fun k ↦ essSup (fun x ↦ ‖f k x‖ₑ) μ) n
     rw [← ae_all_iff] at this
     filter_upwards [this] with x hx using lt_of_le_of_lt
-        (liminf_le_of_frequently_le' <| Frequently.of_forall fun n => (hx n).le)
-        (ENNReal.add_lt_top.2 ⟨hbdd.lt_top, ENNReal.one_lt_top⟩)
-  filter_upwards [ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd hfmeas hbdd] with x hx
-  have hppos : 0 < p.toReal := ENNReal.toReal_pos hp hp'
+      (liminf_le_of_frequently_le' <| Frequently.of_forall fun n => (hx n).le)
+      (ENNReal.add_lt_top.2 ⟨hbdd.lt_top, ENNReal.one_lt_top⟩)
+  filter_upwards [ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd hbdd] with x hx
+  have hppos : 0 < p.toReal := ENNReal.toReal_pos hp hp'.ne
   have :
     liminf (fun n => (‖f n x‖ₑ) ^ p.toReal) atTop =
       liminf (fun n => (‖f n x‖ₑ)) atTop ^ p.toReal := by
