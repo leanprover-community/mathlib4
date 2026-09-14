@@ -381,6 +381,11 @@ protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
   ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
 
+@[simp] protected theorem star_iff
+    {R : Type*} [TopologicalSpace R] [InvolutiveStar R] [ContinuousStar R] {f : α → R} :
+    AEStronglyMeasurable (star f) μ ↔ AEStronglyMeasurable f μ :=
+  ⟨fun h ↦ by simpa using h.star, fun h ↦ h.star⟩
+
 end Star
 
 section Order
@@ -758,6 +763,13 @@ theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     simpa [hxs]
   · filter_upwards [hg.ae_eq_mk, ae_restrict_mem₀ hs.compl] with x hxg hxs
     simpa [notMem_of_mem_compl hxs]
+
+theorem piecewise_iff {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+    AEStronglyMeasurable (s.piecewise f g) μ ↔
+      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable g (μ.restrict sᶜ) := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.piecewise hs hg⟩
+  · exact h.restrict.congr (piecewise_ae_eq_restrict hs)
+  · exact h.restrict.congr (piecewise_ae_eq_restrict_compl hs)
 
 @[fun_prop]
 theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι → Measure α}

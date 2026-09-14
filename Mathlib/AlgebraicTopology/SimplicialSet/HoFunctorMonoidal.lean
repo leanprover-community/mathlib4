@@ -110,7 +110,7 @@ instance {n : ℕ} (d : (SimplexCategory.Truncated n)ᵒᵖ) :
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 this is the isomorphism `Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal` in `Cat`. -/
 def isoTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
-    Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal :=
+    ↧X.HomotopyCategory ≅ Cat.chosenTerminal :=
   IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
 
 namespace BinaryProduct

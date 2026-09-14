@@ -200,16 +200,22 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     rw [h.aestronglyMeasurable_iff] at hf
     rw [integral_non_aestronglyMeasurable hf]
 
-theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
+theorem eLpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (p : ℝ≥0∞) : eLpNorm f p μ = eLpNorm g p ν := by
+  by_cases hf : AEStronglyMeasurable f μ
+  swap
+  · have hg : ¬ AEStronglyMeasurable g ν := by simpa [h.aestronglyMeasurable_iff] using hf
+    simp [eLpNorm, hf, hg]
+  have hg : AEStronglyMeasurable g ν := h.aestronglyMeasurable_iff.mp hf
   by_cases h0 : p = 0
-  · simp [h0]
+  · simp [h0, hf, hg]
   by_cases h_top : p = ∞
-  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, ite_true,
-      ite_false]
+  · simp only [h_top, eLpNorm_exponent_top hf, eLpNorm_exponent_top hg,
+      eLpNormEssSup]
     apply essSup_eq
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
-  simp only [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', one_div]
+  simp only [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg,
+    eLpNorm', one_div]
   congr 1
   apply lintegral_eq
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
@@ -217,9 +223,9 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentD
 
 theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : MemLp f p μ) : MemLp g p ν := by
-  refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
+  rw [memLp_iff]
   rw [← h.eLpNorm_eq]
-  exact hf.2
+  exact hf
 
 theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=

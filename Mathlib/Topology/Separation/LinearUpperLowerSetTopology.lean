@@ -35,4 +35,5 @@ instance (priority := low) {α : Type*}
   inferInstanceAs (CompletelyNormalSpace αᵒᵈ)
 
 instance : CompletelyNormalSpace Prop :=
+  let := Prop.linearOrder
   inferInstance

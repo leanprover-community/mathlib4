@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Logic.Pairwise
 
@@ -50,6 +51,10 @@ variable {α β : Type*} [Preorder α] [Preorder β]
 @[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
 
 end Pi
+
+@[to_additive]
+protected theorem Pi.isSelfInv_iff {ι : Type*} {G : ι → Type*} [∀ i, Inv (G i)] {x : ∀ i, G i} :
+    IsSelfInv x ↔ ∀ i, IsSelfInv (x i) := funext_iff
 
 namespace MulHom
 
