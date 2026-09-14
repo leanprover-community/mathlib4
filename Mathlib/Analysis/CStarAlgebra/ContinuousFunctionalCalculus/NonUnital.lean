@@ -810,8 +810,7 @@ noncomputable def cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : 
   let f : C(spectrum R a, quasispectrum R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
   let ψ := ContinuousMap.compStarAlgHom' R R f
-  (cfcHom ha (R := R) : C(spectrum R a, R) →⋆ₙₐ[R] A).comp <|
-    (ψ : C(σₙ R a, R) →⋆ₙₐ[R] C(spectrum R a, R)).comp e
+  (cfcHom ha (R := R)).toNonUnitalStarAlgHom.comp <| ψ.toNonUnitalStarAlgHom.comp e
 
 lemma continuous_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : A} (ha : p a) :
     Continuous (cfcₙHom_of_cfcHom R ha) :=
@@ -832,7 +831,7 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum [ContinuousFunctionalCalculus R A p]
   intro f
   simp only [cfcₙHom_of_cfcHom]
   rw [quasispectrum_eq_spectrum_union_zero]
-  simp only [NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_coe]
+  simp only [NonUnitalStarAlgHom.comp_apply, StarAlgHom.coe_toNonUnitalStarAlgHom]
   rw [cfcHom_map_spectrum ha]
   ext x
   constructor
@@ -903,7 +902,8 @@ lemma cfcₙ_eq_cfc [ContinuousFunctionalCalculus R A p] [ContinuousMapZero.Uniq
   · have hf' := hf.mono <| spectrum_subset_quasispectrum R a
     rw [cfc_apply f a ha hf', cfcₙ_apply f a hf, cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
     dsimp only [NonUnitalStarAlgHom.comp_apply,
-      NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
+      NonUnitalStarAlgHom.coe_ofClass, compStarAlgHom'_apply,
+      StarAlgHom.coe_toNonUnitalStarAlgHom]
     congr
   · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]
 

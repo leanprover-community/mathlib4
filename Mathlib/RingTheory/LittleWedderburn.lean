@@ -5,9 +5,12 @@ Authors: Johan Commelin, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Center
-public import Mathlib.GroupTheory.ClassEquation
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Basic.Finite.Defs
+
+import Mathlib.Algebra.GroupWithZero.Action.Center
+import Mathlib.GroupTheory.ClassEquation
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Wedderburn's Little Theorem
@@ -36,8 +39,6 @@ below proof is free, then the proof works nearly verbatim.
 
 -/
 
-@[expose] public section
-
 open scoped Polynomial
 open Fintype
 
@@ -46,7 +47,7 @@ namespace LittleWedderburn
 
 variable (D : Type*) [DivisionRing D]
 
-private def InductionHyp : Prop :=
+def InductionHyp : Prop :=
   ∀ {R : Subring D}, R < ⊤ → ∀ ⦃x y⦄, x ∈ R → y ∈ R → x * y = y * x
 
 namespace InductionHyp
@@ -56,7 +57,7 @@ open Module Polynomial
 variable {D}
 
 @[instance_reducible]
-private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
+def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
@@ -64,7 +65,7 @@ private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
-private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
+theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   set Z := Subring.center D
@@ -141,7 +142,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
 
 end InductionHyp
 
-private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
+theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   induction hn : Fintype.card D using Nat.strong_induction_on generalizing D with | _ n IH
@@ -157,6 +158,8 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   convert! Set.card_lt_card hR
 
 end LittleWedderburn
+
+public section
 
 open LittleWedderburn
 
@@ -175,3 +178,5 @@ theorem Finite.isDomain_to_isField (D : Type*) [Finite D] [Ring D] [IsDomain D] 
   cases nonempty_fintype D
   let _ := Fintype.divisionRingOfIsDomain D
   exact Field.toIsField D
+
+end

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 
-import Mathlib.Tactic.ApplyFun
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
