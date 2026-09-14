@@ -33,6 +33,12 @@ finitely-generated modules.
 * `Group.FG M`, `AddGroup.FG M` : A typeclass indicating a type `M` is finitely generated as a
   group.
 
+## TODO
+
+The declarations `Group.FG`, `Subgroup.FG`, `Monoid.FG` and `Submonoid.FG` are all special cases
+of the newly added `IsMulFG`. The plan is to deprecate all four of these definitions in favor of
+the more general `IsMulFG`.
+
 -/
 
 @[expose] public section
