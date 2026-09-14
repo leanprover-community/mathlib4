@@ -160,9 +160,6 @@ theorem continuous_re : Continuous re :=
 lemma uniformContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
 
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_re :=
-  uniformContinuous_re
-
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
   rfl
@@ -182,9 +179,6 @@ theorem continuous_im : Continuous im :=
 @[fun_prop]
 lemma uniformContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
-
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_im :=
-  uniformContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=

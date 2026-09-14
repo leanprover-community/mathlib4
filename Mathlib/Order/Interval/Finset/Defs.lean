@@ -545,8 +545,6 @@ instance fintypeUIcc : Fintype (uIcc a b) :=
 
 @[simp] lemma finite_uIcc : (uIcc a b).Finite := (uIcc _ _).toFinite
 
-@[deprecated (since := "2026-02-03")] alias finite_interval := finite_uIcc
-
 end Lattice
 
 end Set
