@@ -191,10 +191,12 @@ theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬
 open Set
 
 /-- The supremum of a bounded, well-founded order -/
+@[deprecated "write down the definition explicitly" (since := "2026-09-14")]
 protected noncomputable def sup {r : α → α → Prop} (wf : WellFounded r) (s : Set α)
     (h : Bounded r s) : α :=
   wf.min { x | ∀ a ∈ s, r a x } h
 
+@[deprecated "WellFounded.sup is deprecated" (since := "2026-09-14")]
 protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set α} (h : Bounded r s) {x}
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
