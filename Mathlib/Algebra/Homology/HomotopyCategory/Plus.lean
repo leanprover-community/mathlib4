@@ -362,7 +362,6 @@ lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
     mapCochainComplexPlusCompι_inv_app, HomotopyCategory.Plus.quotientCompιIso_inv_app,
     Category.comp_id, Category.id_comp, comp_obj,
     (F.mapHomotopyCategory (.up ℤ)).map_id ((HomotopyCategory.quotient C (.up ℤ)).obj K.obj),
-    (HomotopyCategory.quotient D (.up ℤ)).map_id (F.mapCochainComplexPlus.obj K).obj,
     Functor.mapHomotopyCategoryFactors_hom_app]
   simp [mapHomotopyCategoryPlus, HomotopyCategory.Plus.quotient]
   rfl
@@ -384,5 +383,47 @@ def mapHomotopyCategoryPlusCompIso {E : Type*} [Category* E] [Preadditive E]
       (mapHomotopyCategoryCompIso e (.up ℤ)))
 
 end Functor
+
+namespace NatTrans
+
+variable {C D} {F₁ F₂ F₃ : C ⥤ D} [F₁.Additive] [F₂.Additive] [F₃.Additive]
+
+def mapHomotopyCategoryPlus (τ : F₁ ⟶ F₂) :
+    F₁.mapHomotopyCategoryPlus ⟶ F₂.mapHomotopyCategoryPlus where
+  app K := ObjectProperty.homMk ((NatTrans.mapHomotopyCategory τ _).app _)
+  naturality {K₁ K₂} f := by
+    ext : 1
+    exact (NatTrans.mapHomotopyCategory τ _).naturality f.hom
+
+@[reassoc]
+lemma mapHomotopyCategoryPlus_app_quotient_obj (τ : F₁ ⟶ F₂) (K : CochainComplex.Plus C) :
+    τ.mapHomotopyCategoryPlus.app ((HomotopyCategory.Plus.quotient C).obj K) =
+      F₁.quotientCompMapHomotopyCategoryPlusIso.hom.app K ≫
+          (HomotopyCategory.Plus.quotient D).map (τ.mapCochainComplexPlus.app K) ≫
+        F₂.quotientCompMapHomotopyCategoryPlusIso.inv.app K := by
+  ext : 1
+  dsimp
+  rw [Functor.quotientCompMapHomotopyCategoryPlusIso_hom_app_hom,
+    Functor.quotientCompMapHomotopyCategoryPlusIso_inv_app_hom]
+  change _ = 𝟙 _ ≫ _ ≫ 𝟙 _
+  cat_disch
+
+variable (F₁) in
+@[simp]
+lemma mapHomotopyCategoryPlus_id :
+    NatTrans.mapHomotopyCategoryPlus (𝟙 F₁) = 𝟙 _ := by
+  ext K
+  obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
+  simp [mapHomotopyCategoryPlus_app_quotient_obj]
+
+@[reassoc]
+lemma mapHomotopyCategoryPlus_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
+    (τ ≫ τ').mapHomotopyCategoryPlus =
+      τ.mapHomotopyCategoryPlus ≫ τ'.mapHomotopyCategoryPlus := by
+  ext K
+  obtain ⟨K, rfl⟩ := K.quotient_obj_surjective
+  simp [mapHomotopyCategoryPlus_app_quotient_obj]
+
+end NatTrans
 
 end CategoryTheory

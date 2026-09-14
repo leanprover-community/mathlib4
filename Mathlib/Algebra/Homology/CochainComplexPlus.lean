@@ -140,7 +140,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
 /-- The functor on categories of bounded below cochain complexes that
 is induced by a functor (which preserves zero morphisms). -/
-@[implicit_reducible, simps!]
+@[implicit_reducible, simps! obj_obj map_hom]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
     obtain ⟨i, hi⟩ := K.2
@@ -177,5 +177,28 @@ lemma homotopyEquivalences_mapCochainComplexPlus_map {K L : CochainComplex.Plus 
 end
 
 end Functor
+
+namespace NatTrans
+
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
+    {F₁ F₂ F₃ : C ⥤ D} [F₁.Additive] [F₂.Additive] [F₃.Additive]
+
+@[simps! app_hom]
+def mapCochainComplexPlus (τ : F₁ ⟶ F₂) :
+    F₁.mapCochainComplexPlus ⟶ F₂.mapCochainComplexPlus where
+  app K := ObjectProperty.homMk ((NatTrans.mapHomologicalComplex τ _).app _)
+
+variable (F₁) in
+@[simp]
+lemma mapCochainComplexPlus_id :
+    NatTrans.mapCochainComplexPlus (𝟙 F₁) = 𝟙 _ := by cat_disch
+
+@[reassoc]
+lemma mapCochainComplexPlus_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
+    (τ ≫ τ').mapCochainComplexPlus =
+      τ.mapCochainComplexPlus ≫ τ'.mapCochainComplexPlus := by cat_disch
+
+end NatTrans
+
 
 end CategoryTheory
