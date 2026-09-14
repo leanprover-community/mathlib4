@@ -516,7 +516,7 @@ avoids simplifying things like `x 0`. -/
   Fin.cons_injective_iff
 
 /-- `![x, y]` is injective iff its two entries are distinct. -/
-@[simp] theorem injective_pair_iff_ne {α : Type*} {x y : α} :
+theorem injective_pair_iff_ne {α : Type*} {x y : α} :
     Function.Injective ![x, y] ↔ x ≠ y := by
   simp
 
