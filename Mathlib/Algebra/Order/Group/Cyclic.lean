@@ -103,3 +103,42 @@ lemma genLTOne_unique {g : G} (hg : g < 1) (htop : Subgroup.zpowers g = ⊤) : g
 end IsCyclic
 
 end LinearOrderedCommGroup
+
+/-- The order preserving isomorphism from the top subgroup to the group. -/
+def Subgroup.topOrderMonoidIso (G : Type*) [Group G] [Preorder G] :
+    (⊤ : Subgroup G) ≃*o G where
+  __ := (Subgroup.topEquiv (G := G))
+  map_le_map_iff' := by simp
+
+namespace OrderMonoidIso
+
+open LinearOrderedCommGroup.Subgroup
+
+variable {A B : Type*} [LinearOrder A] [CommGroup A] [IsOrderedMonoid A] [Nontrivial A] [IsCyclic A]
+  [LinearOrder B] [CommGroup B] [IsOrderedMonoid B] [Nontrivial B] [IsCyclic B] (f : A ≃*o B)
+
+theorem map_genLTOne : f (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) =
+      (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) := by
+  apply genLTOne_unique
+  · rw [← map_one f, map_lt_map_iff]
+    exact genLTOne_lt_one ⊤
+  · rw [Subgroup.eq_top_iff']
+    intro y
+    obtain ⟨x, hx⟩ := EquivLike.surjective f y
+    obtain ⟨k, hk⟩ : x ∈ Subgroup.zpowers (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) := by
+      simp [genLTOne_zpowers_eq_top]
+    exact ⟨k, by simp [← hx, ← hk]⟩
+
+theorem map_genLTOne' : f (LinearOrderedCommGroup.genLTOne A) =
+      (LinearOrderedCommGroup.genLTOne B) := by
+  apply LinearOrderedCommGroup.genLTOne_unique
+  · rw [← map_one f, map_lt_map_iff]
+    exact LinearOrderedCommGroup.Subgroup.genLTOne_lt_one ⊤
+  · rw [Subgroup.eq_top_iff']
+    intro y
+    obtain ⟨x, hx⟩ := EquivLike.surjective f y
+    obtain ⟨k, hk⟩ : x ∈ Subgroup.zpowers (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) := by
+      simp [genLTOne_zpowers_eq_top]
+    exact ⟨k, by simp [← hx, ← hk]⟩
+
+end OrderMonoidIso
