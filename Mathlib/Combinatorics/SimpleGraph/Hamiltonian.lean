@@ -183,10 +183,9 @@ theorem isHamiltonian_reverse : p.reverse.IsHamiltonian ↔ p.IsHamiltonian := b
 alias ⟨_, IsHamiltonian.reverse⟩ := isHamiltonian_reverse
 
 @[simp]
-theorem isHamiltonian_transfer [Finite α] {H : SimpleGraph α} (h) :
+theorem isHamiltonian_transfer {H : SimpleGraph α} (h) :
     (p.transfer H h).IsHamiltonian ↔ p.IsHamiltonian := by
-  cases nonempty_fintype α
-  simp [isHamiltonian_iff_isPath_and_length_eq]
+  simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
 
 alias ⟨_, IsHamiltonian.transfer⟩ := isHamiltonian_transfer
 
@@ -301,10 +300,9 @@ theorem isHamiltonianCycle_reverse : p.reverse.IsHamiltonianCycle ↔ p.IsHamilt
 protected alias ⟨_, IsHamiltonianCycle.reverse⟩ := isHamiltonianCycle_reverse
 
 @[simp]
-theorem isHamiltonianCycle_transfer [Finite α] {H : SimpleGraph α} {p : G.Walk v v} (h) :
+theorem isHamiltonianCycle_transfer {H : SimpleGraph α} {p : G.Walk v v} (h) :
     (p.transfer H h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
-  cases nonempty_fintype α
-  simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
 
 alias ⟨_, IsHamiltonianCycle.transfer⟩ := isHamiltonianCycle_transfer
 
