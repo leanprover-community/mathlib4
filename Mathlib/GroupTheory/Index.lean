@@ -15,6 +15,8 @@ public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.SetTheory.Cardinal.NatCard
 
+import Mathlib.Algebra.Group.Subgroup.Finite
+
 /-!
 # Index of a Subgroup
 
@@ -352,6 +354,10 @@ theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
 theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
   rw [mul_comm, card_mul_index]
 
+@[to_additive relIndex_mul_card]
+theorem relIndex_mul_card : H.relIndex K * Nat.card (H ⊓ K :) = Nat.card K := by
+  rw [← subgroupOf_map_subtype, card_subtype, relIndex, (H.subgroupOf K).index_mul_card]
+
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
@@ -421,12 +427,19 @@ lemma relIndex_inter_ne_zero {J K : Subgroup G} (hJK : J.relIndex K ≠ 0) (L : 
   exact relIndex_comap_ne_zero _ hJK
 
 @[to_additive]
+theorem relIndex_inf : (H ⊓ K).relIndex L = H.relIndex (K ⊓ L) * K.relIndex L := by
+  rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
+    inf_relIndex_right, inf_relIndex_right]
+
+@[to_additive]
 theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L := by
   by_cases h : H.relIndex L = 0
   · simp [relIndex_eq_zero_of_le_left inf_le_left h]
-  rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
-    inf_relIndex_right, inf_relIndex_right]
-  grw [relIndex_le_of_le_right inf_le_right h]
+  grw [relIndex_inf, relIndex_le_of_le_right inf_le_right h]
+
+@[to_additive]
+theorem index_inf : (H ⊓ K).index = H.relIndex K * K.index := by
+  rw [← inf_relIndex_right, relIndex_mul_index inf_le_right]
 
 @[to_additive]
 theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
