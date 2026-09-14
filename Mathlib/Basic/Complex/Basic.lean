@@ -324,6 +324,8 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 end SMul
 
 instance addCommGroup : AddCommGroup ℂ where
+  psmul_one := by intros; ext <;> simp [smul_re, smul_im]
+  psmul_succ := by intros; ext <;> simp [smul_re, smul_im, AddSemigroup.psmul_succ]
   zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
