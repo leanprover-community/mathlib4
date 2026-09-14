@@ -170,7 +170,7 @@ variable {H : SimpleGraph V}
 theorem transfer_eq_mapLe (hp) (GH : G ≤ H) : p.transfer H hp = p.mapLe GH := by
   induction p <;> simp [*]
 
-@[deprecated (since := "2026-07-14")] alias transfer_eq_map_ofLE := transfer_eq_mapLe
+@[deprecated (since := "2026-09-14")] alias transfer_eq_map_ofLE := transfer_eq_mapLe
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -282,7 +282,7 @@ theorem mapLe_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
   rw [← transfer_eq_mapLe, transfer_transfer, transfer_self]
   apply edges_transfer _ _ ▸ p.edges_subset_edgeSet
 
-@[deprecated (since := "2026-07-14")] alias map_toDeleteEdges_eq := mapLe_toDeleteEdges_eq
+@[deprecated (since := "2026-09-14")] alias map_toDeleteEdges_eq := mapLe_toDeleteEdges_eq
 
 end Walk
 
