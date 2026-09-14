@@ -69,8 +69,7 @@ An equivalent form of `IsRegularInCodimensionLE`, using `ringKrullDim` instead o
 -/
 lemma isRegularInCodimensionLE_iff_ringKrullDim :
     IsRegularInCodimensionLE n X ↔
-      ∀ x : X, ringKrullDim (X.presheaf.stalk x) ≤ n →
-        IsRegularLocalRing (X.presheaf.stalk x) := by
+      ∀ x, ringKrullDim (X.presheaf.stalk x) ≤ n → IsRegularLocalRing (X.presheaf.stalk x) := by
   rw [isRegularInCodimensionLE_iff]
   refine forall_congr' fun x ↦ ?_
   rw [ringKrullDim_stalk_eq_coheight]
