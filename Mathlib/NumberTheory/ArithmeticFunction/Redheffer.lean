@@ -37,8 +37,7 @@ of the zeta matrix with `(0, 1, …, 1)`, and that row is `(μ 1, …, μ (n + 1
 
 ## References
 
-* R. M. Redheffer, *Eine explizit lösbare Optimierungsaufgabe*, Numerische Methoden bei
-  Optimierungsaufgaben, Band 3, ISNM 36, Birkhäuser (1977), 213–216.
+* [R. M. Redheffer, *Eine explizit lösbare Optimierungsaufgabe*][redheffer1977]
 -/
 
 @[expose] public section
