@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 This file specialises `IsSelfInv` to sets equipped with the pointwise inversion.
 
-See also `Algebra/Group/Pointwise/Finset/SelfInv.lean` for the finset version.
+See also `Mathlib/Algebra/Group/Pointwise/Finset/SelfInv.lean` for the finset version.
 
 -/
 
