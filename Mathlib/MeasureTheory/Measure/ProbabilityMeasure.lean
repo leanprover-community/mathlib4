@@ -146,6 +146,7 @@ theorem toProbabilityMeasure_coe (ν : ProbabilityMeasure Ω) :
 theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω → Measure Ω) :=
   Subtype.coe_injective
 
+@[macro_inline]
 instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
   coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
