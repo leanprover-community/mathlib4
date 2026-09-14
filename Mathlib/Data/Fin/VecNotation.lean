@@ -504,9 +504,9 @@ end swap
 @[simp] theorem injective_of_fin_zero (f : Fin 0 → α) : Function.Injective f :=
   Function.injective_of_subsingleton _
 
-/-- `vecCons x₀ x` is injective iff `x₀` is not in the range of `x` and `x` is injective. It is useful
-to have this special case of `Fin.cons_injective_iff` so that it syntactically matches vector notation
-and avoids simplifying things like `x 0`. -/
+/-- `vecCons x₀ x` is injective iff `x₀` is not in the range of `x` and `x` is injective.
+It is useful to have this special case of `Fin.cons_injective_iff` so that it
+syntactically matches vector notation and avoids simplifying things like `x 0`. -/
 @[simp] theorem vecCons_injective_iff {x₀ : α} {x : Fin n → α} :
     Function.Injective (vecCons x₀ x) ↔ x₀ ∉ Set.range x ∧ Function.Injective x :=
   Fin.cons_injective_iff
