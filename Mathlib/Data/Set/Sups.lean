@@ -343,6 +343,9 @@ theorem infs_sups_subset_right : (t ⊻ u) ⊼ s ⊆ t ⊼ s ⊻ u ⊼ s :=
 
 end DistribLattice
 
+@[simp]
+theorem isLowerSet_powerset (s : Set α) : IsLowerSet (𝒫 s) := fun _t _u htu hu ↦ htu.trans hu
+
 end Set
 
 open SetFamily
