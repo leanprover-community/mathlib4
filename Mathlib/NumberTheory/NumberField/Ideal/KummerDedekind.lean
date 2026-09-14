@@ -151,7 +151,7 @@ private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
     (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset :=
   (normalizedFactorsEquiv (f := (mapEquiv (Int.quotientSpanNatEquivZMod p)).toMulEquiv)
     (by simp) (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)).trans
-      (Equiv.subtypeEquivRight (fun _ ↦ by simp [Polynomial.map_map]))
+      (Equiv.subtypeEquivRight (fun _ ↦ by simp [Polynomial.map_map, mem_primeFactors]))
 
 private theorem primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q : (ZMod p)[X]}
     (hQ : Q ∈ (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset) :

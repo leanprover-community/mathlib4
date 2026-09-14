@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 
-/-! ### Induction principles for lists -/
+/-! # Induction principles for lists -/
 
 @[expose] public section
 

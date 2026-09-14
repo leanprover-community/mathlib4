@@ -117,7 +117,6 @@ instance preservesPullbackInl' :
     HasPullback f coprod.inl :=
   hasPullback_symmetry _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasPullbackInr' :
     HasPullback f coprod.inr := by
   have : IsPullback (𝟙 _) (f ≫ (coprod.braiding X Y).hom) f (coprod.braiding Y X).hom :=
@@ -148,7 +147,6 @@ instance preservesPullbackInl' :
     PreservesLimit (cospan f coprod.inl) F :=
   preservesPullback_symmetry _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance preservesPullbackInr' :
     PreservesLimit (cospan f coprod.inr) F := by
@@ -402,7 +400,6 @@ instance {C} [Category* C] {D} [Category* D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso g] : PreservesLimit (cospan f g) F :=
   preservesPullback_symmetry _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExtensive D]
     [HasFiniteCoproducts C] [HasPullbacksOfInclusions C]
     [PreservesPullbacksOfInclusions F]

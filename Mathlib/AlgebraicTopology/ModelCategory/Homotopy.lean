@@ -69,7 +69,6 @@ namespace RightHomotopyRel
 
 variable {f g : X ⟶ Y} [IsFibrant Y]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When two morphisms `X ⟶ Y` with `Y` fibrant are related by a right homotopy,
 this is a choice of a left homotopy relative to any good cylinder object for `X`. -/
 noncomputable def leftHomotopy (h : RightHomotopyRel f g) (Q : Cylinder X) [Q.IsGood] :
@@ -124,7 +123,6 @@ namespace LeftHomotopyClass
 
 variable (X)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma postcomp_bijective_of_fibration_of_weakEquivalence
     [IsCofibrant X] (g : Y ⟶ Z) [Fibration g] [WeakEquivalence g] :
     Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp g) := by
