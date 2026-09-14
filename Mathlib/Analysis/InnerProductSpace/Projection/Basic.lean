@@ -230,27 +230,29 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
   rw [starProjection_apply, U.norm_eq_iInf_iff_inner_eq_zero (Submodule.coe_mem _)]
   exact starProjection_inner_eq_zero _
 
-/-- The distance from `y` to its orthogonal projection onto `U` is `Metric.infDist y U`. -/
+/-- The distance from `y` to its orthogonal projection onto `U` equals the distance to that
+subspace as given by `Metric.infDist`. -/
 theorem dist_starProjection_eq_infDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     dist y (U.starProjection y) = Metric.infDist y U := by
   simp [Metric.infDist_eq_iInf, U.starProjection_minimal, dist_eq_norm]
 
-/-- The nonnegative distance from `y` to its orthogonal projection onto `U` is
-`Metric.infNndist y U`. -/
+/-- The nonnegative distance from `y` to its orthogonal projection onto `U` equals the
+nonnegative distance to that subspace as given by `Metric.infNndist`. -/
 theorem nndist_starProjection_eq_infNndist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     nndist y (U.starProjection y) = Metric.infNndist y U := by
   ext; simp [dist_starProjection_eq_infDist, ← Metric.coe_infNndist]
 
-/-- The norm of the orthogonal projection of `y` onto `U` is `Metric.infDist y Uᗮ`. -/
+/-- The norm of the orthogonal projection of `y` onto `U` equals the distance to the orthogonal
+complement of `U` as given by `Metric.infDist`. -/
 theorem norm_starProjection_eq_infDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     ‖U.starProjection y‖ = Metric.infDist y Uᗮ := by
   simp [← Uᗮ.dist_starProjection_eq_infDist y]
 
-/-- The nonnegative norm of the orthogonal projection of `y` onto `U` is
-`Metric.infNndist y Uᗮ`. -/
+/-- The nonnegative norm of the orthogonal projection of `y` onto `U` equals the nonnegative
+distance to the orthogonal complement of `U` as given by `Metric.infNndist`. -/
 theorem nnnorm_starProjection_eq_infNndist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     ‖U.starProjection y‖₊ = Metric.infNndist y Uᗮ := by
