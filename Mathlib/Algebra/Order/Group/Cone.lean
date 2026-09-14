@@ -103,7 +103,7 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le_antisymm a b nab nba := by
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G]
     [GroupConeClass S G] {C : S} {a b : G} :
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
@@ -113,7 +113,7 @@ lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G
 abbrev LinearOrder.mkOfGroupCone
     [GroupConeClass S G] [HasMemOrInvMem C] [DecidablePred (· ∈ C)] : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
-  le_total a b := by simpa using mem_or_inv_mem C (b / a)
+  le_total a b := by simpa [PartialOrder.mkOfGroupCone_le_iff] using mem_or_inv_mem C (b / a)
   toDecidableEq := decidableEqOfDecidableLE
   toDecidableLT := decidableLTOfDecidableLE
 

@@ -58,7 +58,7 @@ theorem basisAux_tmul (a : A) (m : M) :
   simp [basisAux, ← Algebra.commutes, Algebra.smul_def]
 
 theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a • basisAux A b x :=
-  TensorProduct.induction_on x (by simp)
+  TensorProduct.inductionOn x
     (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
     fun x y hx hy => by simp [hx, hy]
 
