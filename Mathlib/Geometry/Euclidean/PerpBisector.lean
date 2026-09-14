@@ -200,8 +200,7 @@ theorem le_perpBisector_reflection' (s : AffineSubspace ℝ P) [Nonempty s]
   perpBisector_comm (reflection s a) a ▸ le_perpBisector_reflection s a
 
 @[simp]
-theorem reflection_perpBisector (a b : P)
-    [(perpBisector a b).direction.HasOrthogonalProjection] :
+theorem reflection_perpBisector (a b : P) [(perpBisector a b).direction.HasOrthogonalProjection] :
     haveI : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
     reflection (perpBisector a b) a = b := by
   have : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
@@ -212,8 +211,7 @@ theorem reflection_perpBisector (a b : P)
   simp
 
 @[simp]
-theorem reflection_perpBisector' (a b : P)
-    [(perpBisector b a).direction.HasOrthogonalProjection] :
+theorem reflection_perpBisector' (a b : P) [(perpBisector b a).direction.HasOrthogonalProjection] :
     haveI : Nonempty (perpBisector b a) := perpBisector_nonempty.to_subtype
     reflection (perpBisector b a) a = b := by
   have : (perpBisector a b).direction.HasOrthogonalProjection :=
