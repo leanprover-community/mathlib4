@@ -756,7 +756,8 @@ theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α
     (hf : ContinuousOn f s) (hs : MeasurableSet s) : AEMeasurable f (μ.restrict s) := by
   classical
   nontriviality α; inhabit α
-  have : (Set.piecewise s f fun _ => f default) =ᵐ[μ.restrict s] f := piecewise_ae_eq_restrict hs
+  have : (Set.piecewise s f fun _ => f default) =ᵐ[μ.restrict s] f :=
+    piecewise_ae_eq_restrict hs.nullMeasurableSet
   refine ⟨Set.piecewise s f fun _ => f default, ?_, this.symm⟩
   apply measurable_of_isOpen
   intro t ht

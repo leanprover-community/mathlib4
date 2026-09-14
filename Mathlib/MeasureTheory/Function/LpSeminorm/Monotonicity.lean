@@ -223,7 +223,9 @@ end Monotonicity
 theorem le_eLpNorm_of_bddBelow' (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0∞) {s : Set α}
     (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖ₑ) :
     C * μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp',
+  by_cases hmeas : AEStronglyMeasurable f μ; swap
+  · rw [eLpNorm_of_not_aestronglyMeasurable hmeas]; exact le_top
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' hmeas,
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
     inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const]

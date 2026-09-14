@@ -989,14 +989,14 @@ section Piecewise
 
 variable [MeasurableSpace α] {μ : Measure α} {s t : Set α} {f g : α → β}
 
-theorem piecewise_ae_eq_restrict [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+theorem piecewise_ae_eq_restrict [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ) :
     piecewise s f g =ᵐ[μ.restrict s] f := by
-  rw [ae_restrict_eq hs]
+  rw [ae_restrict_eq₀ hs]
   exact (piecewise_eqOn s f g).eventuallyEq.filter_mono inf_le_right
 
-theorem piecewise_ae_eq_restrict_compl [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+theorem piecewise_ae_eq_restrict_compl [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ) :
     piecewise s f g =ᵐ[μ.restrict sᶜ] g := by
-  rw [ae_restrict_eq hs.compl]
+  rw [ae_restrict_eq₀ hs.compl]
   exact (piecewise_eqOn_compl s f g).eventuallyEq.filter_mono inf_le_right
 
 theorem piecewise_ae_eq_of_ae_eq_set [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
@@ -1039,10 +1039,11 @@ theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
 
 variable [Zero β]
 
-theorem indicator_ae_eq_restrict (hs : MeasurableSet s) : indicator s f =ᵐ[μ.restrict s] f := by
+theorem indicator_ae_eq_restrict (hs : NullMeasurableSet s μ) :
+    indicator s f =ᵐ[μ.restrict s] f := by
   classical exact piecewise_ae_eq_restrict hs
 
-theorem indicator_ae_eq_restrict_compl (hs : MeasurableSet s) :
+theorem indicator_ae_eq_restrict_compl (hs : NullMeasurableSet s μ) :
     indicator s f =ᵐ[μ.restrict sᶜ] 0 := by
   classical exact piecewise_ae_eq_restrict_compl hs
 

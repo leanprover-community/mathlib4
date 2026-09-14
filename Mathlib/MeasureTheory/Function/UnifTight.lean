@@ -194,11 +194,11 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     refine ⟨s ∪ S, (by finiteness), fun i => ?_⟩
     by_cases! hi : i.val < n
     · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
-      apply (eLpNorm_indicator_le _ hms.compl).trans
+      apply (eLpNorm_indicator_le _ hms.compl.nullMeasurableSet).trans
       exact hFε (Fin.castLT i hi)
     · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm i.is_le hi)
       rw [compl_union, inter_comm, ← indicator_indicator]
-      exact (eLpNorm_indicator_le _ hmS.compl).trans hfε.le
+      exact (eLpNorm_indicator_le _ hmS.compl.nullMeasurableSet).trans hfε.le
 
 /-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
@@ -235,7 +235,7 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemL
   refine ⟨s, hμs.ne, fun n => ?_⟩
   by_cases! hn : n < N
   · exact hFε ⟨n, hn⟩
-  · exact (eLpNorm_indicator_le _ hms.compl).trans (hNε n hn)
+  · exact (eLpNorm_indicator_le _ hms.compl.nullMeasurableSet).trans (hNε n hn)
 
 /-- Convergence in Lp implies uniform tightness. -/
 private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
@@ -253,13 +253,22 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f 
   · exact unifTight_of_tendsto_Lp_zero hp' (fun n => (hf n).sub hg) hfg
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-/- Next we deal with the forward direction. The `MemLp` and `TendstoInMeasure` hypotheses
-are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
-and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses. -/
+/- Next we deal with the forward direction. -/
 
-/-- Bulk of the proof under strengthened hypotheses. Invoked from `tendsto_Lp_of_tendsto_ae`. -/
-private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
+@[deprecated "Lemma formerly used in `tendsto_Lp_of_tendsto_ae`." (since := "2026-09-15")]
+private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}
+    (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
+    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
+    ∀ᵐ x ∂μ, Tendsto (fun n => f' n x) atTop (𝓝 (g' x)) := by
+  have hff'' := eventually_countable_forall.mpr hff'
+  filter_upwards [hff'', hgg', hfg] with x hff'x hgg'x hfgx
+  apply Tendsto.congr hff'x
+  rw [← hgg'x]; exact hfgx
+
+/-- Forward direction of Vitali's convergence theorem, with a.e. instead of `InMeasure`
+convergence -/
+theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
+    {f : ℕ → α → β} {g : α → β} (haef : ∀ n, AEStronglyMeasurable (f n) μ)
     (hg' : MemLp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
@@ -285,35 +294,35 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   -- It is enough to have in the context a term of `Fact (μ E < ∞)`, which is our `ffmE` below,
   -- which is automatically fed into `Restrict.isFiniteInstance`.
   have ffmE := Fact.mk hfmE
-  have hInner := tendsto_Lp_finite_of_tendsto_ae_of_meas hp hp' hf hg hgE' huiE hfgE
+  have hInner := tendsto_Lp_finite_of_tendsto_ae hp hp' (fun i ↦ (haef i).restrict)
+    (hg'.restrict E) huiE hfgE
   rw [ENNReal.tendsto_atTop_zero] at hInner
   -- get a sufficiently large N for given ε, and consider any n ≥ N
   obtain ⟨N, hfngε⟩ := hInner (ε / 3) hε'
   use N; intro n hn
   -- get interior estimates
-  have hmfngE : AEStronglyMeasurable _ μ := (((hf n).sub hg).indicator hmE).aestronglyMeasurable
+  have hmfngE := ((haef n).sub hg'.aestronglyMeasurable).indicator hmE
   have hfngEε := calc
     eLpNorm (E.indicator (f n - g)) p μ
       = eLpNorm (f n - g) p (μ.restrict E) :=
       eLpNorm_indicator_eq_eLpNorm_restrict hmE.nullMeasurableSet
     _ ≤ ε / 3                              := hfngε n hn
   -- get exterior estimates
-  have hmgEc : AEStronglyMeasurable _ μ := (hg.indicator hmE.compl).aestronglyMeasurable
+  have hmgEc : AEStronglyMeasurable _ μ := hg'.aestronglyMeasurable.indicator hmE.compl
   have hgEcε := calc
     eLpNorm (Eᶜ.indicator g) p μ
       ≤ eLpNorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
         unfold E; rw [compl_union, ← indicator_indicator]
-    _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _ hmEf.compl
+    _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _ hmEf.compl.nullMeasurableSet
     _ ≤ ε / 3 := hgε.le
-  have hmfnEc : AEStronglyMeasurable _ μ := ((hf n).indicator hmE.compl).aestronglyMeasurable
+  have hmfnEc : AEStronglyMeasurable _ μ := (haef n).indicator hmE.compl
   have hfnEcε : eLpNorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
     eLpNorm (Eᶜ.indicator (f n)) p μ
       ≤ eLpNorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ := by
         unfold E; rw [compl_union, inter_comm, ← indicator_indicator]
-    _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _ hmEg.compl
+    _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _ hmEg.compl.nullMeasurableSet
     _ ≤ ε / 3 := hfε n
-  have hmfngEc : AEStronglyMeasurable _ μ :=
-    (((hf n).sub hg).indicator hmE.compl).aestronglyMeasurable
+  have hmfngEc := ((haef n).sub hg'.aestronglyMeasurable).indicator hmE.compl
   have hfngEcε := calc
     eLpNorm (Eᶜ.indicator (f n - g)) p μ
       = eLpNorm (Eᶜ.indicator (f n) - Eᶜ.indicator g) p μ := by
@@ -331,38 +340,13 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
     _ = ε := by simp only [add_thirds]
 
-/-- Lemma used in `tendsto_Lp_of_tendsto_ae`. -/
-private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}
-    (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
-    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
-    ∀ᵐ x ∂μ, Tendsto (fun n => f' n x) atTop (𝓝 (g' x)) := by
-  have hff'' := eventually_countable_forall.mpr hff'
-  filter_upwards [hff'', hgg', hfg] with x hff'x hgg'x hfgx
-  apply Tendsto.congr hff'x
-  rw [← hgg'x]; exact hfgx
-
-/-- Forward direction of Vitali's convergence theorem, with a.e. instead of `InMeasure`
-convergence -/
-theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    {f : ℕ → α → β} {g : α → β} (haef : ∀ n, AEStronglyMeasurable (f n) μ)
+@[deprecated "Formerly invoked in the proof of `tendsto_Lp_of_tendsto_ae`." (since := "2026-09-15")]
+private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
+    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (_hg : StronglyMeasurable g)
     (hg' : MemLp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
-    Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
-  -- come up with an a.e. equal strongly measurable replacement `f` for `g`
-  have hf := fun n => (haef n).stronglyMeasurable_mk
-  have hff' := fun n => (haef n).ae_eq_mk (μ := μ)
-  have hui' := hui.ae_eq hff'
-  have hut' := hut.aeeq hff'
-  have hg := hg'.aestronglyMeasurable.stronglyMeasurable_mk
-  have hgg' := hg'.aestronglyMeasurable.ae_eq_mk (μ := μ)
-  have hg'' := hg'.ae_eq hgg'
-  have haefg' := ae_tendsto_ae_congr hff' hgg' hfg
-  set f' := fun n => (haef n).mk (μ := μ)
-  set g' := hg'.aestronglyMeasurable.mk (μ := μ)
-  have haefg (n : ℕ) : f n - g =ᵐ[μ] f' n - g' := (hff' n).sub hgg'
-  have hsnfg (n : ℕ) := eLpNorm_congr_ae (p := p) (haefg n)
-  apply Filter.Tendsto.congr (fun n => (hsnfg n).symm)
-  exact tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hg'' hui' hut' haefg'
+    Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) :=
+  tendsto_Lp_of_tendsto_ae hp hp' (fun n ↦ (hf n).aestronglyMeasurable) hg' hui hut hfg
 
 /-- Forward direction of Vitali's convergence theorem:
 if `f` is a sequence of uniformly integrable, uniformly tight functions that converge in

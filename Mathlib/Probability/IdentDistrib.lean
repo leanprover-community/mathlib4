@@ -312,7 +312,10 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
   have : {x | C.toNNReal ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
     simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
-  rw [this, ← eLpNorm_norm, ← eLpNorm_norm (Set.indicator _ _)]
+  rw [this, ← eLpNorm_norm _ <| (hmeas i).indicator₀
+      (nullMeasurableSet_le aemeasurable_const (hmeas i).norm.aemeasurable),
+    ← eLpNorm_norm (Set.indicator _ _) <| (hmeas j).indicator₀
+      (nullMeasurableSet_le aemeasurable_const (hmeas j).nnnorm.aemeasurable.coe_nnreal_real)]
   simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
   let F : E → ℝ := (fun x : E ↦ if C.toNNReal ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by
@@ -325,8 +328,8 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 
-@[deprecated "This lemma is superseded by `MemLp.uniformIntegrable_of_identDistrib` which only
-requires `AEStronglyMeasurable`." (since := "2026-08-19")]
+@[deprecated "This lemma is superseded by `MemLp.uniformIntegrable_of_identDistrib`."
+(since := "2026-08-19")]
 theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (_hfmeas : ∀ i, StronglyMeasurable (f i))
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ :=
