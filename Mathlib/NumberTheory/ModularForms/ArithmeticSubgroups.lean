@@ -239,6 +239,9 @@ lemma le_adjoinNegOne (𝒢 : Subgroup G) : 𝒢 ≤ 𝒢.adjoinNegOne :=
 
 lemma neg_one_mem_adjoinNegOne (𝒢 : Subgroup G) : -1 ∈ 𝒢.adjoinNegOne := by simp
 
+@[deprecated (since := "2026-09-14")]
+alias negOne_mem_adjoinNegOne := neg_one_mem_adjoinNegOne
+
 @[simp] lemma adjoinNegOne_eq_self_iff {𝒢 : Subgroup G} :
     𝒢.adjoinNegOne = 𝒢 ↔ -1 ∈ 𝒢 :=
   ⟨fun h ↦ h ▸ neg_one_mem_adjoinNegOne 𝒢, fun hG ↦ 𝒢.le_adjoinNegOne.antisymm'
@@ -248,6 +251,9 @@ lemma relIndex_adjoinNegOne_eq_two {𝒢 : Subgroup G} (h𝒢 : -1 ∉ 𝒢) :
     𝒢.relIndex 𝒢.adjoinNegOne = 2 := by
   refine relIndex_eq_two_iff_exists_notMem_and.mpr ⟨_, 𝒢.neg_one_mem_adjoinNegOne, h𝒢, ?_⟩
   simp [mem_adjoinNegOne_iff, or_comm]
+
+@[deprecated (since := "2026-09-14")]
+alias relindex_adjoinNegOne_eq_two := relIndex_adjoinNegOne_eq_two
 
 lemma relIndex_adjoinNegOne_ne_zero (𝒢 : Subgroup G) :
     𝒢.relIndex 𝒢.adjoinNegOne ≠ 0 := by
