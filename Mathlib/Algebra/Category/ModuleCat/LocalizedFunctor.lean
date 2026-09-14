@@ -12,7 +12,7 @@ public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Tactic.Algebraize
 
 /-!
-## Functors of Localized Rings
+# Functors of Localized Rings
 
 Given a functor `R : C ⥤ CommRingCat` and a functor of `R`-submonoids `S`,
 we define the functor `C ⥤ CommRingCat` that assigns `U ↦ S(U)⁻¹R(U)` and
