@@ -417,7 +417,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     · norm_cast
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
       _ ≤ (n + 1) ^ i := by gcongr; lia
-      _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
+      _ ≤ (n + 1) ^ k := by gcongr; exact Finset.mem_range_succ_iff.mp hi
     · exact hv _ (by lia) _ (by lia)
   _ = (2 * n + 2) ^ k * (‖L‖ ^ n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
