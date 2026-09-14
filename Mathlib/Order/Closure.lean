@@ -417,7 +417,6 @@ theorem closed_eq_range_close : l.closed = Set.range (u ∘ l) :=
 def toClosed (x : α) : l.closed :=
   ⟨u (l x), l.closure_is_closed x⟩
 
-@[simp]
 theorem closure_le_closed_iff_le (x : α) {y : α} (hy : y ∈ l.closed) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 

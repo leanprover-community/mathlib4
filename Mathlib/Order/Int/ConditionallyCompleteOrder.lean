@@ -9,7 +9,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.Int.LeastGreatest
 
 /-!
-## `ℤ` forms a conditionally complete linear order
+# `ℤ` forms a conditionally complete linear order
 
 The integers form a conditionally complete linear order.
 -/
