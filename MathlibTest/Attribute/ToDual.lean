@@ -470,3 +470,24 @@ fun {α} [PartialOrder α] x1 x2 => Eq.refl (x1 ≤ x2)
 -/
 #guard_msgs in
 #print MyLE_le
+
+class SomeClass (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+structure SomeStructure (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+-- `SomeClass` is translated to itself with `(relevant_arg := 0)`, while `SomeStructure` is not.
+attribute [to_dual self] SomeClass.x SomeStructure.x
+
+run_meta
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``SomeClass | failure
+  guard <| findTranslation? (← getEnv) data ``SomeStructure |>.isNone
+
+run_meta
+  -- `GE.ge` gets `(relevant_arg := α)` because `α` appears in `LE`
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``GE.ge | failure
+  -- `WithBot` gets `(relevant_arg := α)` because `WithBot` is a type
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``WithBot | failure
