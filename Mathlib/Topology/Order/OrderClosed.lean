@@ -192,6 +192,7 @@ theorem not_tendsto_atBot_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendst
 
 end NoBotOrder
 
+@[to_dual]
 theorem iSup_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [Filter.NeBot F]
     [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIicTopology α]
     {a : α} {f : ι → α} (hle : ∀ i, f i ≤ a) (hlim : Filter.Tendsto f F (𝓝 a)) :
@@ -199,6 +200,7 @@ theorem iSup_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [Filter.NeB
   have := F.nonempty_of_neBot
   (IsLUB.range_of_tendsto hle hlim).ciSup_eq
 
+@[to_dual]
 theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIicTopology α]
     {a : α} {f : ι → α} (hlt : ∀ i, f i < a) (hlim : Tendsto f F (𝓝 a)) :
@@ -400,22 +402,6 @@ end LinearOrder
 end ClosedIicTopology
 
 section ClosedIciTopology
-
--- TODO: we're missing some to_dual tags for conditionally complete lattices
-
-@[to_dual existing]
-theorem iInf_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
-    [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIciTopology α]
-    {a : α} {f : ι → α} (hle : ∀ i, a ≤ f i) (hlim : Tendsto f F (𝓝 a)) :
-    ⨅ i, f i = a :=
-  iSup_eq_of_forall_le_of_tendsto (α := αᵒᵈ) hle hlim
-
-@[to_dual existing]
-theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
-    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIciTopology α]
-    {a : α} {f : ι → α} (hlt : ∀ i, a < f i) (hlim : Tendsto f F (𝓝 a)) :
-    ⋃ i : ι, Ici (f i) = Ioi a :=
-  iUnion_Iic_eq_Iio_of_lt_of_tendsto (α := αᵒᵈ) hlt hlim
 
 section OrderClosedTopology
 

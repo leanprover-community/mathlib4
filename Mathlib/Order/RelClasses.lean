@@ -626,10 +626,9 @@ instance instReflLe [Preorder α] : @Std.Refl α (· ≤ ·) :=
 /-- A version of `Std.le_refl` that works with `Std.Refl (· ≥ ·)`.
 This is needed for `to_dual` translations because `Std.le_refl` requires `Std.Refl (· ≤ ·)`,
 but after translation `instReflLe` becomes `instReflGe : Std.Refl (· ≥ ·)`. -/
+@[to_dual existing le_refl]
 theorem Std.ge_refl {α : Type*} [LE α] [inst : @Std.Refl α (· ≥ ·)] (a : α) : a ≤ a :=
   @Std.Refl.refl α (· ≥ ·) inst a
-
-attribute [to_dual existing Std.ge_refl] Std.le_refl
 
 @[to_dual instIsTransGe]
 instance [Preorder α] : IsTrans α (· ≤ ·) :=

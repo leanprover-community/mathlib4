@@ -167,22 +167,17 @@ namespace GaloisConnection
 variable [Preorder α] [Preorder β] {f : α → β} {g : β → α}
 
 /-- A left adjoint in a Galois connection is left-continuous in the order-theoretic sense. -/
+@[to_dual
+/-- A right adjoint in a Galois connection is right-continuous in the order-theoretic sense. -/]
 lemma leftOrdContinuous (gc : GaloisConnection f g) : LeftOrdContinuous f :=
   fun _ _ _ ↦ gc.isLUB_l_image
-
-/-- A right adjoint in a Galois connection is right-continuous in the order-theoretic sense. -/
-lemma rightOrdContinuous (gc : GaloisConnection f g) : RightOrdContinuous g :=
-  fun _ _ _ ↦ gc.isGLB_u_image
 
 end GaloisConnection
 
 namespace OrderIso
 variable [Preorder α] [Preorder β] (e : α ≃o β)
 
+@[to_dual]
 protected lemma leftOrdContinuous : LeftOrdContinuous e := e.to_galoisConnection.leftOrdContinuous
-
-@[to_dual existing]
-protected lemma rightOrdContinuous : RightOrdContinuous e :=
-  e.symm.to_galoisConnection.rightOrdContinuous
 
 end OrderIso

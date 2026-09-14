@@ -788,6 +788,9 @@ variable {f : X → Y} {x : X}
 
 /-- An order-theoretically left-continuous function is topologically left-continuous, assuming
 the function is between conditionally complete linear orders with order topologies. -/
+@[to_dual
+/-- An order-theoretically right-continuous function is topologically right-continuous, assuming
+the function is between conditionally complete linear orders with order topologies. -/]
 lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
     ContinuousWithinAt f (Iic x) x := by
   rw [ContinuousWithinAt, OrderTopology.topology_eq_generate_intervals (α := Y)]
@@ -807,12 +810,6 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
     exact ⟨f ⁻¹' Ioi z, u_eq ▸ isOpen_Ioi, hxz, fun _ h ↦ h.1⟩
   -- The case `V = Iio z`.
   · exact ⟨univ, isOpen_univ, trivial, fun a ha ↦ (hf.mono ha.2).trans_lt hxz⟩
-
-/-- An order-theoretically right-continuous function is topologically right-continuous, assuming
-the function is between conditionally complete linear orders with order topologies. -/
-@[to_dual existing]
-lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
-    ContinuousWithinAt f (Ici x) x := hf.dual.continuousWithinAt_Iic
 
 /-- A function that is order-theoretically both left- and right-continuous is continuous, assuming
 the function is between conditionally complete linear orders with order topologies. -/

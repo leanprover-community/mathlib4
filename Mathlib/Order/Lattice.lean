@@ -363,6 +363,10 @@ class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
 attribute [to_dual existing] Lattice.toSemilatticeInf
 
+to_dual_for Lattice.inf := by rename_i a b; exact self.sup a b
+to_dual_for Lattice.le_inf := by apply self.sup_le <;> assumption
+to_dual_for Lattice.inf_le_right := self.le_sup_right _ _
+to_dual_for Lattice.inf_le_left := self.le_sup_left _ _
 to_dual_for Lattice.mk := {
   sup := inf
   le_sup_left := inf_le_left

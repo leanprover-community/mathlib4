@@ -678,6 +678,7 @@ lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
 
 end PartialOrder
 
+@[to_dual]
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   sup
     -- note this is `Option.merge`, but with the right defeq when unfolding
@@ -689,30 +690,12 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   le_sup_right x y := by cases x <;> cases y <;> simp
   sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
 
-@[to_dual existing]
-instance _root_.WithTop.semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
-  inf
-    -- note this is `Option.merge`, but with the right defeq when unfolding
-    | ⊤, ⊤ => ⊤
-    | (a : α), ⊤ => a
-    | ⊤, (b : α) => b
-    | (a : α), (b : α) => ↑(a ⊓ b)
-  inf_le_left x y := by cases x <;> cases y <;> simp
-  inf_le_right x y := by cases x <;> cases y <;> simp
-  le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
-
+@[to_dual]
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) where
   inf := .map₂ (· ⊓ ·)
   inf_le_left x y := by cases x <;> cases y <;> simp
   inf_le_right x y := by cases x <;> cases y <;> simp
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
-
-@[to_dual existing]
-instance _root_.WithTop.semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) where
-  sup := .map₂ (· ⊔ ·)
-  le_sup_left x y := by cases x <;> cases y <;> simp
-  le_sup_right x y := by cases x <;> cases y <;> simp
-  sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_sup [SemilatticeSup α] (a b : α) :
@@ -722,20 +705,13 @@ theorem coe_sup [SemilatticeSup α] (a b : α) :
 theorem coe_inf [SemilatticeInf α] (a b : α) :
     ((a ⊓ b : α) : WithBot α) = (a : WithBot α) ⊓ b := rfl
 
+@[to_dual]
 instance lattice [Lattice α] : Lattice (WithBot α) where
 
-@[to_dual existing]
-instance _root_.WithTop.lattice [Lattice α] : Lattice (WithTop α) where
-
+@[to_dual]
 instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
   le_sup_inf x y z := by
     cases x <;> cases y <;> cases z <;> simp [← coe_inf, ← coe_sup]
-    simpa [← coe_inf, ← coe_sup] using le_sup_inf
-
-@[to_dual existing]
-instance _root_.WithTop.distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
-  le_sup_inf x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← WithTop.coe_inf, ← WithTop.coe_sup]
     simpa [← coe_inf, ← coe_sup] using le_sup_inf
 
 @[to_dual]
@@ -783,6 +759,7 @@ instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot �
     | (a : α) => acc_some a
     | ⊥ => ⟨_, by simpa [WithBot.forall]⟩
 
+@[to_dual]
 lemma denselyOrdered_iff [LT α] [NoMinOrder α] :
     DenselyOrdered (WithBot α) ↔ DenselyOrdered α := by
   constructor <;> intro h <;> constructor
@@ -792,17 +769,6 @@ lemma denselyOrdered_iff [LT α] [NoMinOrder α] :
     | bot => simp at hc
     | coe c => exact ⟨c, by simpa using hc⟩
   · simpa [WithBot.exists, WithBot.forall, exists_lt] using DenselyOrdered.dense
-
-@[to_dual existing]
-lemma _root_.WithTop.denselyOrdered_iff [LT α] [NoMaxOrder α] :
-    DenselyOrdered (WithTop α) ↔ DenselyOrdered α := by
-  constructor <;> intro h <;> constructor
-  · intro a b hab
-    obtain ⟨c, hc⟩ := exists_between (WithTop.coe_lt_coe.mpr hab)
-    induction c with
-    | top => simp at hc
-    | coe c => exact ⟨c, by simpa using hc⟩
-  · simpa [WithTop.exists, WithTop.forall, exists_gt] using DenselyOrdered.dense
 
 @[to_dual]
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] :

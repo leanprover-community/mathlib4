@@ -361,13 +361,8 @@ abbrev liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : Semil
 
 -- See note [reducible non-instances]
 /-- Lift the suprema and infima along a Galois insertion -/
+@[to_dual /-- Lift the suprema and infima along a Galois coinsertion -/]
 abbrev liftLattice [Lattice α] (gi : GaloisInsertion l u) : Lattice β :=
-  { gi.liftSemilatticeSup, gi.liftSemilatticeInf with }
-
--- See note [reducible non-instances]
-/-- Lift the suprema and infima along a Galois coinsertion -/
-@[to_dual existing]
-abbrev _root_.GaloisCoinsertion.liftLattice [Lattice α] (gi : GaloisCoinsertion u l) : Lattice β :=
   { gi.liftSemilatticeSup, gi.liftSemilatticeInf with }
 
 -- See note [reducible non-instances]

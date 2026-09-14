@@ -256,23 +256,14 @@ def ofRightAdjoint {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} {left : Con
 /-- Given two functors which have equivalent categories of cones, we can transport a limiting cone
 across the equivalence.
 -/
+@[to_dual
+/-- Given two functors which have equivalent categories of cocones,
+we can transport a colimiting cocone across the equivalence.
+-/]
 def ofConeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F) {c : Cone G} :
     IsLimit (h.functor.obj c) ≃ IsLimit c where
   toFun P := ofIsoLimit (ofRightAdjoint h.toAdjunction P) (h.unitIso.symm.app c)
   invFun := ofRightAdjoint h.symm.toAdjunction
-  left_inv := by cat_disch
-  right_inv := by cat_disch
-
-/-- Given two functors which have equivalent categories of cocones,
-we can transport a colimiting cocone across the equivalence.
--/
-@[to_dual existing]
-def _root_.CategoryTheory.Limits.IsColimit.ofCoconeEquiv {D : Type u₄} [Category.{v₄} D]
-    {G : K ⥤ D} (h : Cocone G ≌ Cocone F) {c : Cocone G} :
-    IsColimit (h.functor.obj c) ≃ IsColimit c where
-  toFun P := IsColimit.ofIsoColimit (IsColimit.ofLeftAdjoint h.symm.toAdjunction P)
-    (h.unitIso.symm.app c)
-  invFun := IsColimit.ofLeftAdjoint h.toAdjunction
   left_inv := by cat_disch
   right_inv := by cat_disch
 
@@ -369,26 +360,17 @@ section Equivalence
 open CategoryTheory.Equivalence
 
 /-- If `s : Cone F` is a limit cone, so is `s` whiskered by an equivalence `e`. -/
+@[to_dual
+/-- If `s : Cocone F` is a colimit cocone, so is `s` whiskered by an equivalence `e`. -/]
 def whiskerEquivalence {s : Cone F} (P : IsLimit s) (e : K ≌ J) : IsLimit (s.whisker e.functor) :=
   ofRightAdjoint (Cone.whiskeringEquivalence e).symm.toAdjunction P
 
-/-- If `s : Cocone F` is a colimit cocone, so is `s` whiskered by an equivalence `e`. -/
-@[to_dual existing]
-def _root_.CategoryTheory.Limits.IsColimit.whiskerEquivalence {s : Cocone F}
-    (P : IsColimit s) (e : K ≌ J) : IsColimit (s.whisker e.functor) :=
-  IsColimit.ofLeftAdjoint (Cocone.whiskeringEquivalence e).toAdjunction P
-
 /-- If `s : Cone F` whiskered by an equivalence `e` is a limit cone, so is `s`. -/
+@[to_dual
+/-- If `s : Cocone F` whiskered by an equivalence `e` is a colimit cocone, so is `s`. -/]
 def ofWhiskerEquivalence {s : Cone F} (e : K ≌ J) (P : IsLimit (s.whisker e.functor)) : IsLimit s :=
   equivIsoLimit ((Cone.whiskeringEquivalence e).unitIso.app s).symm
     (ofRightAdjoint (Cone.whiskeringEquivalence e).toAdjunction P)
-
-/-- If `s : Cocone F` whiskered by an equivalence `e` is a colimit cocone, so is `s`. -/
-@[to_dual existing]
-def _root_.CategoryTheory.Limits.IsColimit.ofWhiskerEquivalence {s : Cocone F} (e : K ≌ J)
-    (P : IsColimit (s.whisker e.functor)) : IsColimit s :=
-  IsColimit.equivIsoColimit ((Cocone.whiskeringEquivalence e).unitIso.app s).symm
-    (IsColimit.ofLeftAdjoint (Cocone.whiskeringEquivalence e).symm.toAdjunction P)
 
 /-- Given an equivalence of diagrams `e`, `s` is a limit cone iff `s.whisker e.functor` is. -/
 @[to_dual

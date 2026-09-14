@@ -259,11 +259,9 @@ theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
 
 end IsIso
 
+@[to_dual isIso_inv]
 instance Iso.isIso_hom (e : X ≅ Y) : IsIso e.hom :=
   ⟨e.inv, by simp only [hom_inv_id], by simp⟩
-
-@[to_dual existing isIso_hom]
-instance Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
 
 open IsIso
 
