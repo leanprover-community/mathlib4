@@ -23,7 +23,6 @@ insert_to_additive_translation Set.IsSelfInv Set.IsSelfNeg
 namespace Set
 
 open Set
-
 open scoped Pointwise
 
 variable {α β : Type*}
