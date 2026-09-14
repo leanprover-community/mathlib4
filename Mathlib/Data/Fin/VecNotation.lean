@@ -503,11 +503,14 @@ end Matrix
 
 open Matrix
 
-/-- The empty vector is an injective function. -/
+/-- The empty vector is an injective function. It is useful to have this special case for `Fin 0` for
+`simp` so it doesn't do a TC search for `Subsingleton`. -/
 @[simp] theorem injective_vecEmpty {α : Type*} : Function.Injective (![] : Fin 0 → α) :=
   Function.injective_of_subsingleton _
 
-/-- `vecCons x₀ x` is injective iff `x₀` is not in the range of `x` and `x` is injective. -/
+/-- `vecCons x₀ x` is injective iff `x₀` is not in the range of `x` and `x` is injective. It is useful to have
+this special case of `Fin.cons_injective_iff` so that it syntactically matches vector notation and
+avoids simplifying things like `x 0`. -/
 @[simp] theorem injective_vecCons_iff {α : Type*} {n : ℕ} {x₀ : α} {x : Fin n → α} :
     Function.Injective (vecCons x₀ x) ↔ x₀ ∉ Set.range x ∧ Function.Injective x :=
   Fin.cons_injective_iff
@@ -518,7 +521,7 @@ open Matrix
   simp
 
 /-- A three-element vector is injective iff its entries are pairwise distinct. -/
-theorem injective_vecCons_three_iff {α : Type*} {x y z : α} :
+theorem injective_triple_iff_ne {α : Type*} {x y z : α} :
     Function.Injective ![x, y, z] ↔ x ≠ y ∧ x ≠ z ∧ y ≠ z := by
   simp [not_or]
   grind
