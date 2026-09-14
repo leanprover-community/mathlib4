@@ -5,14 +5,13 @@ Authors: Marcelo Lynch
 -/
 module
 
-import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Three expose sections in one file, to show that each section gets its
-own verdict. Sections one and three hold only theorems and must each get a
-warning. Section two holds a def and must stay silent. -/
-
 set_option linter.superfluousExpose true
+
+/-! Three expose sections in one file, to show that each section gets its own verdict. Sections
+one and three hold only theorems and must each get a warning. Section two holds a def and must
+stay silent. -/
 
 @[expose] public section
 

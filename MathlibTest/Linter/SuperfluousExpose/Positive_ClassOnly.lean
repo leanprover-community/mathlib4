@@ -5,12 +5,12 @@ Authors: Marcelo Lynch
 -/
 module
 
-import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: a class and an instance. The projections of the class
-follow the visibility of the class, and Lean settles the exposure of an
-`instance` without the modifier. The linter must fire. -/
+set_option linter.superfluousExpose true
+
+/-! Positive case: a class and an instance. The projection of the class is a theorem, and Lean
+exposes the body of an `instance` in every public section. The linter must fire. -/
 
 @[expose] public section
 
@@ -25,13 +25,10 @@ theorem use_foo [Foo Nat] : True := trivial
 
 end SuperfluousExposeTest.ClassOnly
 
-set_option linter.superfluousExpose true in
 /--
-warning: using 'exit' to interrupt Lean
----
 warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/
 #guard_msgs in
-#exit
+end

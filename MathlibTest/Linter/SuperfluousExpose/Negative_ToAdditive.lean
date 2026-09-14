@@ -5,8 +5,8 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Mathlib.Tactic.Linter.SuperfluousExpose
-public import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Tactic.Linter.SuperfluousExpose
+import Mathlib.Tactic.Translate.ToAdditive
 
 set_option linter.superfluousExpose true
 

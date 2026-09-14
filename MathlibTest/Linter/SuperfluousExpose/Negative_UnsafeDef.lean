@@ -5,7 +5,7 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Mathlib.Tactic.Linter.SuperfluousExpose
+import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 

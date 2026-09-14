@@ -5,27 +5,21 @@ Authors: Marcelo Lynch
 -/
 module
 
-import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: a class, a `local instance`, and a theorem. The linter
-classifies a declaration at the command that creates it, while the instance
-is still active, so `Lean.Meta.isInstanceCore` identifies the local
-instance. The linter must fire. -/
+set_option linter.superfluousExpose true
+
+/-! Positive case: only theorems, in a section that the end of the file closes. `#exit` is a
+terminal command, so the linter settles the open section there. The linter must fire. -/
 
 @[expose] public section
 
-namespace SuperfluousExposeTest.LocalInstance
+namespace SuperfluousExposeTest.FileEndClose
 
-class Tagged (α : Type) where dummy : Unit
+theorem one_eq_one : 1 = 1 := rfl
 
-local instance instTaggedNat : Tagged Nat := ⟨()⟩
+end SuperfluousExposeTest.FileEndClose
 
-theorem trivial_proof : True := trivial
-
-end SuperfluousExposeTest.LocalInstance
-
-set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean
 ---

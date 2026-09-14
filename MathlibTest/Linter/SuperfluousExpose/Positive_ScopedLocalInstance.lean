@@ -9,22 +9,23 @@ import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Positive case: only `abbrev` declarations, one of them behind `open … in`. Lean exposes the
-body of an `abbrev` in every public section. The linter must fire. -/
+/-! Positive case: a class, a `scoped instance`, a `local instance`, and a theorem. The linter
+classifies a constant at the command that creates it, while the instance is active, so
+`Lean.Meta.isInstanceCore` identifies both instances. The linter must fire. -/
 
 @[expose] public section
 
-namespace SuperfluousExposeTest.AbbrevOnly
+namespace SuperfluousExposeTest.ScopedLocalInstance
 
-abbrev MyNat := Nat
-abbrev double (n : Nat) : Nat := n + n
+class Tagged (α : Type) where dummy : Unit
 
-open Nat in
-abbrev triple (n : Nat) : Nat := n + n + n
+scoped instance instTaggedNat : Tagged Nat := ⟨()⟩
 
-theorem double_zero : double 0 = 0 := rfl
+local instance instTaggedInt : Tagged Int := ⟨()⟩
 
-end SuperfluousExposeTest.AbbrevOnly
+theorem trivial_proof : True := trivial
+
+end SuperfluousExposeTest.ScopedLocalInstance
 
 /--
 warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.

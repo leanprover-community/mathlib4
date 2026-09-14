@@ -5,33 +5,30 @@ Authors: Marcelo Lynch
 -/
 module
 
-import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: a class, a `scoped instance`, and a theorem. The linter
-classifies a declaration at the command that creates it, while the instance
-is still active, so `Lean.Meta.isInstanceCore` identifies the scoped
-instance. The linter must fire. -/
+set_option linter.superfluousExpose true
 
-@[expose] public section
+/-! Positive case: an `@[expose] section` nested inside a `public section`. The inner scope
+inherits `isPublic`, so the linter treats the inner section as an exposed region and points the
+warning at its header. The linter must fire. -/
 
-namespace SuperfluousExposeTest.ScopedInstance
+public section
 
-class Foo (α : Type) where dummy : Unit
+@[expose] section
 
-scoped instance instFooNat : Foo Nat := ⟨()⟩
+namespace SuperfluousExposeTest.NestedExposeSection
 
 theorem trivial_proof : True := trivial
 
-end SuperfluousExposeTest.ScopedInstance
+end SuperfluousExposeTest.NestedExposeSection
 
-set_option linter.superfluousExpose true in
 /--
-warning: using 'exit' to interrupt Lean
----
 warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/
 #guard_msgs in
-#exit
+end
+
+end

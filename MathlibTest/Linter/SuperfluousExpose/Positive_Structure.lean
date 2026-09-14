@@ -5,16 +5,17 @@ Authors: Marcelo Lynch
 -/
 module
 
-import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: only a structure. It produces `.rec`, `.recOn` and
-`.casesOn` constants and projection defs, and all of them follow the
-visibility of the structure. The linter must fire. -/
+set_option linter.superfluousExpose true
+
+/-! Positive case: only a structure. Lean exposes the bodies of its projections in every public
+section, its recursors have no body, and its other generated constants are auto-declarations.
+The linter must fire. -/
 
 @[expose] public section
 
-namespace SuperfluousExposeTest.Recursors
+namespace SuperfluousExposeTest.Structure
 
 structure Point where
   x : Nat
@@ -22,15 +23,12 @@ structure Point where
 
 theorem point_zero_zero : (⟨0, 0⟩ : Point).x = 0 := rfl
 
-end SuperfluousExposeTest.Recursors
+end SuperfluousExposeTest.Structure
 
-set_option linter.superfluousExpose true in
 /--
-warning: using 'exit' to interrupt Lean
----
 warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/
 #guard_msgs in
-#exit
+end
