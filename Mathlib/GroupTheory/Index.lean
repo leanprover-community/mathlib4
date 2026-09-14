@@ -358,6 +358,11 @@ theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
 theorem relIndex_mul_card : H.relIndex K * Nat.card (H ⊓ K :) = Nat.card K := by
   rw [← subgroupOf_map_subtype, card_subtype, relIndex, (H.subgroupOf K).index_mul_card]
 
+/-- The index of a finite subgroup is the quotient of the cardinalities. -/
+@[to_additive /-- The index of a finite additive subgroup is the quotient of the cardinalities. -/]
+theorem index_eq_card_div [Finite H] : H.index = Nat.card G / Nat.card H := by
+  rw [← card_mul_index H, Nat.mul_div_cancel_left _ Nat.card_pos]
+
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
@@ -796,6 +801,18 @@ theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
 instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
     (H.subgroupOf K).FiniteIndex :=
   ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relIndex_eq_zero h⟩
+
+@[to_additive]
+instance (H' : Subgroup G') [H'.FiniteIndex] : (H'.comap f).FiniteIndex where
+  index_ne_zero := by
+    rw [index_comap]
+    exact FiniteIndex.index_ne_zero
+
+variable (H) in
+@[to_additive]
+theorem FiniteIndex.map_of_surjective [H.FiniteIndex] (hf : Function.Surjective f) :
+    (H.map f).FiniteIndex where
+  index_ne_zero := ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (H.index_map_dvd hf)
 
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=

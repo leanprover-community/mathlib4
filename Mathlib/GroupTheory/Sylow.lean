@@ -737,7 +737,7 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
   | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa using hcard⟩
   | succ n ih =>
     have h : ∃ T ≤ H, Nat.card T ∣ p ^ (n + 1) ∧ ∀ K ∈ s, K ≤ T := by
-      let : LinearOrder s := hchain.linearOrder
+      let : LinearOrder s := hchain.lt_of_le.linearOrder
       by_cases! h : Nonempty s
       · obtain ⟨⟨t, hts⟩, ht⟩ := Finite.exists_max (fun x : s ↦ x)
         exact ⟨t, hle t hts, hcard t hts, fun g hg ↦ ht ⟨g, hg⟩⟩
