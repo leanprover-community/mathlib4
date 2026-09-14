@@ -88,10 +88,10 @@ set_option backward.privateInPublic.warn false in
 /-- If `G` acts naturally on `F.obj X` for each `X : C`, this is the canonical
 group homomorphism into the automorphism group of `F`. -/
 def toAut : G →* Aut F where
-  toFun g := NatIso.ofComponents (isoOnObj F g) <| by
+  toFun g := .of (NatIso.ofComponents (isoOnObj F g) <| by
     intro X Y f
     ext
-    exact (IsNaturalSMul.naturality _ _ _).symm
+    exact (IsNaturalSMul.naturality _ _ _).symm)
   map_one' := by
     ext
     dsimp [isoOnObj]
@@ -103,7 +103,7 @@ def toAut : G →* Aut F where
 
 variable {G} in
 @[simp]
-lemma toAut_hom_app_apply (g : G) {X : C} (x : F.obj X) : (toAut F G g).hom.app X x = g • x :=
+lemma toAut_hom_app_apply (g : G) {X : C} (x : F.obj X) : (toAut F G g).asIso.hom.app X x = g • x :=
   rfl
 
 /-- `toAut` is injective, if only the identity acts trivially on every fiber. -/
@@ -112,7 +112,7 @@ lemma toAut_injective_of_non_trivial (h : ∀ (g : G), (∀ (X : C) (x : F.obj X
   rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
   intro g (hg : toAut F G g = 1)
   refine h g (fun X x ↦ ?_)
-  have : (toAut F G g).hom.app X = 𝟙 (F.obj X) := by
+  have : (toAut F G g).asIso.hom.app X = 𝟙 (F.obj X) := by
     rw [hg]
     rfl
   rw [← toAut_hom_app_apply, this, FintypeCat.id_apply]
@@ -135,9 +135,9 @@ variable {G}
 set_option backward.isDefEq.respectTransparency.types false in
 lemma action_ext_of_isGalois {t : F ⟶ F} {X : C} [IsGalois X] {g : G} (x : F.obj X)
     (hg : g • x = t.app X x) (y : F.obj X) : g • y = t.app X y := by
-  obtain ⟨φ, (rfl : F.map φ.hom y = x)⟩ := MulAction.exists_smul_eq (Aut X) y x
-  have : Function.Injective (F.map φ.hom) :=
-    ConcreteCategory.injective_of_mono_of_preservesPullback (F.map φ.hom)
+  obtain ⟨φ, (rfl : F.map φ.asIso.hom y = x)⟩ := MulAction.exists_smul_eq (Aut X) y x
+  have : Function.Injective (F.map φ.asIso.hom) :=
+    ConcreteCategory.injective_of_mono_of_preservesPullback (F.map φ.asIso.hom)
   apply this
   rw [IsNaturalSMul.naturality, hg, FunctorToFintypeCat.naturality]
 
@@ -145,14 +145,14 @@ variable (G)
 
 lemma toAut_surjective_isGalois (t : Aut F) (X : C) [IsGalois X]
     [MulAction.IsPretransitive G (F.obj X)] :
-    ∃ (g : G), ∀ (x : F.obj X), g • x = t.hom.app X x := by
+    ∃ (g : G), ∀ (x : F.obj X), g • x = t.asIso.hom.app X x := by
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F X
-  obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G a (t.hom.app X a)
+  obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G a (t.asIso.hom.app X a)
   exact ⟨g, action_ext_of_isGalois F _ hg⟩
 
 lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite ι] (X : ι → C)
     [∀ i, IsGalois (X i)] (h : ∀ (X : C) [IsGalois X], MulAction.IsPretransitive G (F.obj X)) :
-    ∃ (g : G), ∀ (i : ι) (x : F.obj (X i)), g • x = t.hom.app (X i) x := by
+    ∃ (g : G), ∀ (i : ι) (x : F.obj (X i)), g • x = t.asIso.hom.app (X i) x := by
   let x (i : ι) : F.obj (X i) := (nonempty_fiber_of_isConnected F (X i)).some
   let P : C := ∏ᶜ X
   let is₁ : F.obj P ≅ ∏ᶜ fun i ↦ (F.obj (X i)) := PreservesProduct.iso F X
@@ -199,7 +199,9 @@ lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [IsTopologicalGro
       rw [mem_leftCoset_iff, SetLike.mem_coe, MulAction.mem_stabilizer_iff, mul_smul,
         hgs ⟨X, hXmem⟩, ← hgi X, inv_smul_smul]
   obtain ⟨g, hg⟩ := hne
-  refine ⟨g, Iso.ext <| natTrans_ext_of_isGalois _ <| fun X _ ↦ ?_⟩
+  refine ⟨g, ?_⟩
+  ext : 2
+  refine natTrans_ext_of_isGalois F (fun X _ ↦ ?_)
   ext x
   simp only [toAut_hom_app_apply]
   have : g ∈ (gi ⟨X, x, inferInstance⟩ • MulAction.stabilizer G x : Set G) := by
@@ -250,7 +252,7 @@ variable [FiberFunctor F]
 
 /-- `Aut F` is a fundamental group for `F`. -/
 instance : IsFundamentalGroup F (Aut F) where
-  naturality g _ _ f x := (FunctorToFintypeCat.naturality F F g.hom f x).symm
+  naturality g _ _ f x := (FunctorToFintypeCat.naturality F F g.asIso.hom f x).symm
   transitive_of_isGalois X := FiberFunctor.isPretransitive_of_isConnected F X
   continuous_smul X := continuousSMul_aut_fiber F X
   non_trivial' g h := by

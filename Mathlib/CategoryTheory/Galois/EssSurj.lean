@@ -79,8 +79,8 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
   have (i : ι) : ContinuousSMul G (f i).V := ContinuousSMul.mk <| by
     let r : f i ⟶ X := Sigma.ι f i ≫ u.hom
     let r'' (p : G × (f i).V) : G × X.V := (p.1, r.hom p.2)
-    let q (p : G × X.V) : X.V := (X.ρ p.1).hom p.2
-    let q' (p : G × (f i).V) : (f i).V := ((f i).ρ p.1).hom p.2
+    let q (p : G × X.V) : X.V := (X.ρ p.1).asHom.hom p.2
+    let q' (p : G × (f i).V) : (f i).V := ((f i).ρ p.1).asHom.hom p.2
     have heq : q ∘ r'' = r.hom ∘ q' := by
       ext (p : G × (f i).V)
       exact (ConcreteCategory.congr_hom (r.comm p.1) p.2).symm
@@ -139,9 +139,9 @@ private def quotientToEndObjectHom :
 private lemma functorToAction_map_quotientToEndObjectHom
     (m : SingleObj.star (V ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup) ⟶
       SingleObj.star (V ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup)) :
-    (functorToAction F).map (quotientToEndObjectHom V h u m) =
-      u.hom ≫ quotientToEndHom V.toSubgroup U.toSubgroup m ≫ u.inv := by
-  simp [← cancel_epi u.inv, ← cancel_mono u.hom, ← Iso.conj_apply, quotientToEndObjectHom]
+    (functorToAction F).map (quotientToEndObjectHom V h u m).asHom =
+      u.hom ≫ (quotientToEndHom V.toSubgroup U.toSubgroup m).asHom ≫ u.inv := by
+  simp [quotientToEndObjectHom]
 
 @[simps!]
 private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) ⥤ C :=
@@ -180,21 +180,22 @@ private def coconeQuotientDiagDesc
     (Quotient.lift (fun σ ↦ (u.inv ≫ s.ι.app (SingleObj.star _)).hom ⟦σ⟧) <| fun σ τ hst ↦ by
       let J' := quotientDiag V h u ⋙ functorToAction F
       let m : End (SingleObj.star (V.toSubgroup ⧸ Subgroup.subgroupOf U V)) :=
-        ⟦⟨σ⁻¹ * τ, (QuotientGroup.leftRel_apply).mp hst⟩⟧
-      have h1 : J'.map m ≫ s.ι.app (SingleObj.star _) = s.ι.app (SingleObj.star _) :=
-        s.ι.naturality m
+        .of ⟦⟨σ⁻¹ * τ, (QuotientGroup.leftRel_apply).mp hst⟩⟧
+      have h1 : J'.map m.asHom ≫ s.ι.app (SingleObj.star _) = s.ι.app (SingleObj.star _) :=
+        s.ι.naturality m.asHom
       conv_rhs => rw [← h1]
-      have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
-        simp [J', functorToAction_map_quotientToEndObjectHom V h u m, ← comp_apply, m]
+      have h2 : (J'.map m.asHom).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
+        simp [J', functorToAction_map_quotientToEndObjectHom V h u m.asHom, ← comp_apply, m]
       simp [← h2, J'])
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)
     induction x using Quotient.inductionOn with | _ σ
     simp only [const_obj_obj]
-    change (((Aut F ⧸ₐ U.toSubgroup).ρ g ≫ u.inv.hom) ≫ (s.ι.app (SingleObj.star _)).hom) ⟦σ⟧ =
-      ((s.ι.app (SingleObj.star _)).hom ≫ s.pt.ρ g) (u.inv.hom ⟦σ⟧)
-    have : ((functorToAction F).obj A).ρ g ≫ (s.ι.app (SingleObj.star _)).hom =
-        (s.ι.app (SingleObj.star _)).hom ≫ s.pt.ρ g :=
+    change ((((Aut F ⧸ₐ U.toSubgroup).ρ g).asHom ≫ u.inv.hom) ≫
+      (s.ι.app (SingleObj.star _)).hom) ⟦σ⟧ =
+      ((s.ι.app (SingleObj.star _)).hom ≫ (s.pt.ρ g).asHom) (u.inv.hom ⟦σ⟧)
+    have : (((functorToAction F).obj A).ρ g).asHom ≫ (s.ι.app (SingleObj.star _)).hom =
+        (s.ι.app (SingleObj.star _)).hom ≫ (s.pt.ρ g).asHom :=
       (s.ι.app (SingleObj.star _)).comm g
     rw [← this, u.inv.comm g]
     rfl
@@ -234,8 +235,9 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
   let U : OpenSubgroup (Aut F) := ⟨MulAction.stabilizer (Aut F) a, stabilizer_isOpen (Aut F) a⟩
   let u := fiberIsoQuotientStabilizer A a
   have hUnormal : U.toSubgroup.Normal := stabilizer_normal_of_isGalois F A a
-  have h1 (σ : Aut F) (σinU : σ ∈ U) : σ.hom.app A = 𝟙 (F.obj A) := by
-    have hi : (Aut F ⧸ₐ MulAction.stabilizer (Aut F) a).ρ σ = 𝟙 _ := by
+  have h1 (σ : Aut F) (σinU : σ ∈ U) : σ.asIso.hom.app A = 𝟙 (F.obj A) := by
+    have hi : (Aut F ⧸ₐ MulAction.stabilizer (Aut F) a).ρ σ = 1 := by
+      ext : 1
       refine FintypeCat.hom_ext _ _ (fun x ↦ ?_)
       induction x using Quotient.inductionOn with | _ τ
       change ⟦σ * τ⟧ = ⟦τ⟧
@@ -243,8 +245,8 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
       apply (QuotientGroup.leftRel_apply).mpr
       simp only [mul_inv_rev]
       exact Subgroup.Normal.conj_mem hUnormal _ (Subgroup.inv_mem U.toSubgroup σinU) _
-    simp [← cancel_mono u.hom.hom, show σ.hom.app A ≫ u.hom.hom = _ from u.hom.comm σ, hi]
-  have h2 (σ : Aut F) (σinU : σ ∈ U) : ∀ X : I, σ.hom.app X = 𝟙 (F.obj X) := by
+    simp [← cancel_mono u.hom.hom, show σ.asIso.hom.app A ≫ u.hom.hom = _ from u.hom.comm σ, hi]
+  have h2 (σ : Aut F) (σinU : σ ∈ U) : ∀ X : I, σ.asIso.hom.app X = 𝟙 (F.obj X) := by
     intro ⟨X, hX⟩
     ext (x : F.obj X)
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
