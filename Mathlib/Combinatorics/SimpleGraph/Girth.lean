@@ -92,7 +92,7 @@ lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.
   have half_g_le_edist : w.length / 2 ≤ G.dist u (w.getVert (w.length / 2)) := by
     by_contra! hlt
     have := hp.exists_isCycle_length_le_add_of_ne (hw.isPath_take (by lia)) (by grind [take_length])
-    grind [ENat.natCast_le_natCast, take_length, IsCycle.egirth_le_length]
+    grind [ENat.natCast_le_natCast, take_length, egirth_le_length]
   have h2 : (w.length : ℕ∞) ≤ 2 * (w.length / 2 :) + 1 := by norm_cast; lia
   grw [hwl, h2, half_g_le_edist, natCast_dist_le_edist, edist_le_ediam]
 
