@@ -1012,7 +1012,6 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   if (env.find? declName).isSome then -- diverging behavior from Lean 3
     throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n\
       to the environment, but it already exists."
-  trace[simps] "Adding `{.ofConstName declName}` :{indentExpr declType}"
   Mathlib.Tactic.warnIfImplicitIllTyped ref declName declType
   prependError "Failed to add projection lemma {declName}:" do
     addDecl <| .thmDecl {
@@ -1020,6 +1019,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       levelParams := univs
       type := declType
       value := declValue }
+  trace[simps] "Adding `{.ofConstName declName}` :{indentExpr declType}"
   inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
