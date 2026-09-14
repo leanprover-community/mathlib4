@@ -11,7 +11,7 @@ The trust model behind the containers and the write credentials is in [`SECURITY
 
 | Command     | Description                                                          |
 |-------------|----------------------------------------------------------------------|
-| `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory is uploaded. A `--scope` adds the per-commit namespace and, on a container write, its completeness marker. |
+| `put`       | Run `pack`, then upload the files this build links from the local cache. The build graph scopes the upload: nothing else in the shared per-user cache directory is uploaded. A `--scope` adds the per-commit namespace and its completeness marker. |
 | `put!`      | Same as `put`, overwriting files the server already holds             |
 | `put-staged`| Upload the `*.ltar` files in `--staging-dir` to the selected `--container`. CI uploads with this command; `--backend` selects the storage backend. |
 
@@ -22,7 +22,7 @@ The trust model behind the containers and the write credentials is in [`SECURITY
 | `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`. An upload targets exactly one container; required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `--backend=NAME`    | The storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
 | `--staging-dir=DIR` | For `put-staged`: the staging directory to upload.   |
-| `--scope=REF`       | The per-commit namespace to upload under. A container write also gets its completeness marker; a flat `MATHLIB_CACHE_PUT_URL` upload does not. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. The read-side use of `--scope` is documented in the README. |
+| `--scope=REF`       | The per-commit namespace to upload under, and its completeness marker. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. The read-side use of `--scope` is documented in the README. |
 
 ## Backends and transfer tools
 
