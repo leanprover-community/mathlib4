@@ -62,10 +62,6 @@ def addVal (v : Valuation R Mᵐ⁰) : AddValuation R (WithTop M) :=
 @[simp]
 lemma addVal_apply (v : Valuation R Mᵐ⁰) (x : R) : v.addVal x = negLog (v x) := rfl
 
-@[simp]
-lemma addVal_eq_top {v : Valuation R Mᵐ⁰} {x : R} : v.addVal x = ⊤ ↔ v x = 0 := by
-  simp
-
 lemma addVal_eq_coe {v : Valuation R Mᵐ⁰} {x : R} {m : M} :
     v.addVal x = (m : WithTop M) ↔ v x = exp (-m) :=
   negLog_eq_coe
