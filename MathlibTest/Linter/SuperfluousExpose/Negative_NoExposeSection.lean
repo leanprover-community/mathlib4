@@ -9,11 +9,9 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: the content of the file would otherwise trigger the
-linter, because it has only theorems and no def or inductive that benefits
-from exposure. But the file contains no `@[expose] section`. The suggestion
-to remove the `@[expose]` modifier does not apply, so the linter must stay
-silent. -/
+/-! Negative case: only theorems, so the content alone would trigger the
+linter. The file opens a plain `public section` and carries no `@[expose]`
+modifier to remove, so the linter must not fire. -/
 
 public section
 
@@ -22,4 +20,3 @@ namespace SuperfluousExposeTest.NoExposeSection
 theorem trivial_proof : True := trivial
 
 end SuperfluousExposeTest.NoExposeSection
--- Expected: no linter warning. The file has no `@[expose] section`.

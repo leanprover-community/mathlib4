@@ -8,7 +8,8 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: the file contains only theorems. The linter must fire. -/
+/-! Positive case: only theorems. Lean keeps a proof out of the public
+interface of every public section. The linter must fire. -/
 
 @[expose] public section
 
@@ -20,14 +21,11 @@ theorem three_pos : 0 < 3 := by decide
 
 end SuperfluousExposeTest.TheoremOnly
 
--- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
--- can capture the warning. The linter option is off at the real end of the
--- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
+warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/

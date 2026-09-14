@@ -8,14 +8,9 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! One file with three expose sections. Sections one and three contain only
-theorems, and each must get its own warning. Section two contains a def and
-must stay silent. The whole-file check of an end-of-file design stays silent
-on this file, because the def in section two masks the other sections.
-
-A region closes at its `end` command, so a `#guard_msgs` around each `end`
-captures the verdict of the section that the `end` closes. An empty
-expectation asserts silence for section two. -/
+/-! Three expose sections in one file, to show that each section gets its
+own verdict. Sections one and three hold only theorems and must each get a
+warning. Section two holds a def and must stay silent. -/
 
 set_option linter.superfluousExpose true
 
@@ -24,7 +19,7 @@ set_option linter.superfluousExpose true
 theorem first_section : 1 = 1 := rfl
 
 /--
-warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
+warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/
@@ -43,7 +38,7 @@ end
 theorem third_section : 2 = 2 := rfl
 
 /--
-warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
+warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/

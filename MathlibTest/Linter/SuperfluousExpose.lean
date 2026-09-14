@@ -32,29 +32,49 @@ public import MathlibTest.Linter.SuperfluousExpose.Negative_TermPrefixedDef
 /-! # Tests for the `superfluousExpose` linter
 
 The linter reports each `@[expose] public section` that contains no
-declaration that benefits from `@[expose]` exposure. The warning fires when
+declaration whose body must be visible downstream. The warning fires when
 the section closes: at its `end` command, or at the terminal command for a
-section that the end of the file closes.
+section that the end of the file closes. One case gets one file.
 
-Positive cases, where the linter must fire:
+## How a test captures the warning
+
+A positive file states its expectation with `#guard_msgs`. Two shapes appear,
+one per kind of close:
+
+* `#guard_msgs in end` captures the verdict of the section that the `end`
+  closes. `Positive_MultiSection.lean` uses this shape, and an empty
+  expectation there asserts silence for one section of the file.
+* `set_option linter.superfluousExpose true in #guard_msgs in #exit`
+  captures the verdict of a section that the end of the file closes. `#exit`
+  is a terminal command, so the linter settles the section there and clears
+  it. The expected block starts with `warning: using 'exit' to interrupt
+  Lean`.
+
+A negative file needs no `#guard_msgs`. It turns the option on at the top and
+produces no output. CI runs `lake --iofail test`, so a warning from any of
+these files fails the build.
+
+## Positive cases, where the linter must fire
+
 * `Positive_TheoremOnly.lean`: only theorems.
 * `Positive_ClassOnly.lean`: a class and an instance.
-* `Positive_AbbrevOnly.lean`: only abbrevs, whose bodies are exposed by default.
-* `Positive_Inductive.lean`: an inductive, whose constructors are exposed by default.
-* `Positive_PartialDef.lean`: only a `partial def`, which is opaque to the kernel.
+* `Positive_AbbrevOnly.lean`: only abbrevs, which carry their own exposure.
+* `Positive_Inductive.lean`: an inductive, which the modifier does not reach.
+* `Positive_PartialDef.lean`: a `partial def`, which is opaque to the kernel.
 * `Positive_Notation.lean`: only `notation`.
-* `Positive_Recursors.lean`: a structure, which yields only auto-generated constants.
+* `Positive_Recursors.lean`: a structure, which yields only generated constants.
 * `Positive_LocalInstance.lean`: a `local instance`, classified while it is active.
 * `Positive_ScopedInstance.lean`: a `scoped instance`, classified while it is active.
-* `Positive_MultiSection.lean`: three sections; each gets its own verdict.
+* `Positive_MultiSection.lean`: three sections, each with its own verdict.
 
-Negative cases, where the linter must not fire:
+## Negative cases, where the linter must stay silent
+
 * `Negative_PlainDef.lean`: a plain `def`.
-* `Negative_UnsafeDef.lean`: an `unsafe def`; downstream `unsafe` code can still use `rfl`.
-* `Negative_IrreducibleDef.lean`: `@[irreducible] def`; downstream code can still use `rw`.
+* `Negative_UnsafeDef.lean`: an `unsafe def`; downstream `unsafe` code uses `rfl`.
+* `Negative_IrreducibleDef.lean`: `@[irreducible] def`; downstream code uses `rw`.
 * `Negative_ReducibleDef.lean`: `@[reducible] def`; only `abbrev` carries its own exposure.
-* `Negative_MatchPattern.lean`: a `@[match_pattern]` def; pattern elaboration needs the body.
-* `Negative_ToAdditive.lean`: a `@[to_additive]` def; the source and the twin are real defs.
+* `Negative_MatchPattern.lean`: a `@[match_pattern]` def; pattern elaboration reads the body.
+* `Negative_ToAdditive.lean`: a `@[to_additive]` def; the source and the twin are both defs.
 * `Negative_NoExposeSection.lean`: no `@[expose] section` in the file.
 * `Negative_ExposeInBlockComment.lean`: `@[expose] public section` only inside a comment.
 * `Negative_ExposeOnNonPublicSection.lean`: `@[expose] section` without `public`.

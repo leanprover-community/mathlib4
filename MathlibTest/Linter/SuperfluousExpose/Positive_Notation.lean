@@ -8,9 +8,9 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: the file contains only a `notation` declaration. A notation
-declaration creates a `term…` def in the environment. Its body is a syntax
-tree, and downstream code never unfolds it. The linter must fire. -/
+/-! Positive case: only a `notation` declaration. It creates a `term…` def
+whose body is a parser descriptor, and Lean reads that descriptor through
+its compiled code. The linter must fire. -/
 
 @[expose] public section
 
@@ -24,14 +24,11 @@ theorem op_eq (a : Nat) [Op Nat] : OP[a, a] = Op.op a a := rfl
 
 end SuperfluousExposeTest.Notation
 
--- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
--- can capture the warning. The linter option is off at the real end of the
--- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
+warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/

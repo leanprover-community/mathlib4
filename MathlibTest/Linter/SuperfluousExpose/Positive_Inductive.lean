@@ -8,10 +8,10 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: the file contains an `inductive` that is not a structure.
-An inductive type, its constructors and its recursors follow the visibility
-of the declaration, so the section modifier does not reach them. Downstream
-pattern matching works without `@[expose]`. The linter must fire. -/
+/-! Positive case: an `inductive` that is not a structure. The type, its
+constructors and its recursors follow the visibility of the declaration, so
+downstream pattern matching works without the modifier. The linter must
+fire. -/
 
 @[expose] public section
 
@@ -25,14 +25,11 @@ theorem leaf_eq : (Tree.leaf : Tree Nat) = Tree.leaf := rfl
 
 end SuperfluousExposeTest.Inductive
 
--- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
--- can capture the warning. The linter option is off at the real end of the
--- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This `@[expose] public section` contains no declaration that benefits from body exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
+warning: This `@[expose] public section` contains no declaration that benefits from exposure. You can safely remove the `@[expose]` modifier: it only changes the bodies of `def` declarations, and no `def` here needs its body downstream.
 
 Note: This linter can be disabled with `set_option linter.superfluousExpose false`
 -/

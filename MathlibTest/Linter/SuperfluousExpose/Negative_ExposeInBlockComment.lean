@@ -9,11 +9,13 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
+/-! Negative case: the text `@[expose] public section` appears on its own
+line inside the block comment below, and the file opens a plain
+`public section`. The linter reads the elaborated scope, not the source
+text, so it must not fire. -/
+
 /-
-This block comment contains, on its own line:
 @[expose] public section
-This text must not trigger the linter. Only an elaborated section scope
-counts.
 -/
 
 public section
@@ -25,5 +27,3 @@ theorem trivial_proof : True := trivial
 end SuperfluousExposeTest.ExposeInBlockComment
 
 end
--- Expected: no linter warning. The `@[expose] public section` text appears
--- only inside a block comment, not as a real header.

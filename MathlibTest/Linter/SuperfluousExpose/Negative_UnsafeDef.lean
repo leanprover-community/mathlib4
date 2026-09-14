@@ -9,10 +9,9 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: the file contains an `unsafe def`. Lean treats it as a
-`def` for exposure, so the section modifier controls its body. Downstream
-`unsafe` code can still prove `rfl` facts about it, and a hidden body breaks
-those proofs. The linter must not fire. -/
+/-! Negative case: an `unsafe def`. Lean treats it as a `def` for exposure,
+so the section modifier controls its body, and downstream `unsafe` code
+proves `rfl` facts that read that body. The linter must not fire. -/
 
 @[expose] public section
 
@@ -23,4 +22,3 @@ unsafe def unsafeOp : Nat → Nat := fun n => n + 1
 theorem trivial_proof : True := trivial
 
 end SuperfluousExposeTest.UnsafeDef
--- Expected: no linter warning.

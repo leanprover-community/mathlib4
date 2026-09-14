@@ -21,14 +21,14 @@ public import Mathlib.Init  -- shake: keep
 # Superfluous-expose linter
 
 This linter is the dual of `privateModule`. It reports each `@[expose] public
-section` that contains no declaration whose body must be visible downstream.
-It suggests that you remove the `@[expose]` modifier. The removal hides the
-bodies of the section and leaves downstream typechecking unchanged.
+section` where no declaration benefits from exposure. It suggests that you
+remove the `@[expose]` modifier. The removal hides the bodies of the section
+and leaves downstream typechecking unchanged.
 
 ## What the section modifier controls
 
 The `@[expose]` modifier of a section reaches the bodies of `def`
-declarations only. Lean decides the rest on its own:
+declarations only. Lean decides the rest:
 
 * Lean exposes the body of an `abbrev` and the body of an `instance` of
   non-propositional type in every public section.
@@ -37,17 +37,17 @@ declarations only. Lean decides the rest on its own:
   interface of every public section.
 * An inductive type, a structure, a class, and the constructors,
   projections, recursors, matchers and other declarations that Lean
-  generates for them follow the visibility of their declaration, which the
-  section modifier does not change.
+  generates for them, all follow the visibility of their declaration.
 
 ## Which defs need their body downstream
 
 A `def` benefits from exposure when downstream typechecking or elaboration
 reads its body. These benefit: a plain `def`, an `unsafe def` (downstream
-`unsafe` code can still prove `rfl` facts about it), an `@[irreducible]` def
-(downstream code can still apply `rw` and `unfold`), a `@[reducible]` def (a
-hidden body breaks even the public `rfl` proofs of the same file), and a
-`@[match_pattern]` def (pattern elaboration reads the body).
+`unsafe` code proves `rfl` facts that read it), an `@[irreducible]` def
+(downstream code applies `rw` and `unfold`, which read the body), a
+`@[reducible]` def (a hidden body breaks even the public `rfl` proofs of the
+same file), and a `@[match_pattern]` def (pattern elaboration reads the
+body).
 
 A parser entry that `notation`, `infix`, `syntax`, or `macro` generates does
 not benefit. Lean reads such a descriptor through its compiled code, which
@@ -70,35 +70,36 @@ when the predicate becomes false (an `end` command), or at the terminal
 command for a section that the end of the file closes.
 
 After each command inside a region, the linter classifies the declarations
-that appeared in the environment since the previous command, and it folds the
-verdicts into one flag: does some declaration of the region benefit from
-exposure? One declaration that benefits settles the verdict, so the linter
-stops the scan for the rest of the region.
+that the environment gained since the previous command. One declaration that
+benefits from exposure settles the verdict of the region, and the scan stops
+there.
 
 The classification runs while the scopes of the command are still active.
-Thus `Lean.Meta.isInstanceCore` also identifies `scoped instance` and `local
-instance` declarations, which an end-of-file check would misclassify as plain
-defs.
+`Lean.Meta.isInstanceCore` identifies a `scoped instance` or a `local
+instance` only while its scope is active, so the classification must run here
+rather than at the end of the file.
 
 When a region closes and no declaration in it benefits from exposure, the
 linter logs its warning at the recorded position of the section header. A
 file with several expose sections gets one verdict per section.
 
-The linter tracks regions and classifies declarations unconditionally; the
-`linter.superfluousExpose` option gates only the report. A region that holds
-a def with an exposed body costs one scan of the local constants. A region
-that holds none scans them once per command, until the region closes.
+The linter tracks regions and classifies declarations unconditionally. The
+`linter.superfluousExpose` option gates only the report. Once a region holds
+a def that benefits, it costs one scan of the local constants. A region
+without such a def scans them once per command, until it closes.
 
-The scope inspection is semantic, not syntactic. The linter detects an
-`@[expose] section` nested inside a `public section` in the same way as a
-literal `@[expose] public section` header, because exposure applies to the
-declarations of the inner section. The linter does not detect a non-public
-`@[expose] section`: `@[expose]` only affects downstream visibility, and only
-a `public section` has downstream visibility.
+The scope inspection is semantic, not syntactic. An `@[expose] section`
+nested inside a `public section` reads the same as a literal
+`@[expose] public section` header, because exposure reaches the declarations
+of the inner section. A non-public `@[expose] section` reads as no region at
+all: `@[expose]` acts on downstream visibility, and only a `public section`
+has downstream visibility.
 
-The linter is conservative. Each known limitation causes a false negative:
-the linter stays silent on a section where the warning applies. No limitation
-causes a false positive. The known cases are:
+The linter is conservative. Every case below classifies a declaration as
+one that benefits from exposure. Each therefore causes a false negative: the
+linter stays silent on a section where the warning applies. That one
+direction holds the guarantee that a reported section is safe to change. The
+known cases are:
 
 * Tactic-implementation defs. Declarations that come from `simproc_decl`,
   `elab`, `macro_rules`, or `scoped macro` count as ordinary defs that
@@ -126,8 +127,8 @@ open Lean Elab Command Linter
 namespace Mathlib.Linter
 
 /-- The `superfluousExpose` linter detects each `@[expose] public section`
-where no declaration needs its body visible downstream. It suggests that you
-remove the `@[expose]` modifier. -/
+where no declaration benefits from exposure, that is, where no body must be
+visible downstream. It suggests that you remove the `@[expose]` modifier. -/
 public register_option linter.superfluousExpose : Bool := {
   defValue := false
   descr := "Enable the `superfluousExpose` linter, which detects sections \
@@ -143,17 +144,17 @@ private def returnTypeHeadIs (info : ConstantInfo) (name : Name) : Bool :=
   | _ => false
 
 /-- Returns `true` when the def looks like a parser entry that `notation`,
-`infix`, `syntax`, or `macro` generates. Two conditions must both hold: the
+`infix`, `syntax`, or `macro` generates. Two conditions hold together: the
 leaf name starts with `term`, `binder`, `stx`, or `tactic`, and the return
-type is one of the parser and macro descriptor types of Lean. The conjunction
-avoids false positives on user defs that share the prefix.
+type is one of the parser and macro descriptor types of Lean. A user def
+that shares the prefix fails the second condition.
 
 The prefix check is permissive: it tests for `term`, not `term_`, because the
 shape of the leaf name depends on the syntax of the notation. The infix
 `notation:65 a " ⋄ " b` generates `«term_⋄_»`, with an underscore for the
 leading argument. The function-like `notation "F(" a ")"` generates
-`«termF(_)»`, without an underscore separator. The return-type check does the
-real classification. The prefix is only a cheap filter. -/
+`«termF(_)»`, without an underscore separator. The return-type check does
+the classification, and the prefix is only a cheap filter. -/
 private def looksLikeNotationDecl (info : ConstantInfo) (name : Name) : Bool :=
   let nameMatches := match name with
     | .str _ s => s.startsWith "term" || s.startsWith "binder" ||
@@ -173,9 +174,9 @@ private def declarationKind (stx : Syntax) : Name :=
   if stx.isOfKind ``Parser.Command.declaration then stx[1].getKind else .anonymous
 
 /-- Returns `true` when the body of the constant is relevant to downstream
-typechecking or to same-file public proofs. `declKind` is the kind of the
-declaration command that created the constant, as `declarationKind` reports
-it. Callers must filter out `Lean.Environment.isAutoDecl` names first.
+typechecking or to same-file public proofs. `declKind` is the kind that
+`declarationKind` reports for the command that created the constant. Callers
+must filter out `Lean.Environment.isAutoDecl` names first.
 
 Callers must apply this check while the scopes of the declaring command are
 still active: `Lean.Meta.isInstanceCore` sees a `scoped instance` or a
@@ -188,28 +189,29 @@ private def benefitsFromExposure (env : Environment) (name : Name)
   if Lean.Meta.isMatcherCore env name then false else
   match info with
   | .defnInfo _ =>
-      -- Lean exposes the body of an `instance` of non-propositional type in
-      -- every public section, and it keeps the body of one of propositional
-      -- type out of every public section, so the section modifier reaches
-      -- neither. A `def` that carries `@[instance]` keeps the exposure rules
-      -- of a `def`, so the command kind guards this exemption.
+      -- Lean settles the exposure of an `instance` declaration in every
+      -- public section: it exposes the body of one of non-propositional type
+      -- and hides the body of one of propositional type. A `def` that carries
+      -- `@[instance]` keeps the exposure rules of a `def`, so the command
+      -- kind guards this exemption.
       if declKind != ``Parser.Command.definition && Lean.Meta.isInstanceCore env name then
         false
-      -- `@[match_pattern]` needs the body for pattern-match elaboration,
-      -- even when the def is `@[reducible]`. Example:
+      -- Pattern-match elaboration reads the body of a `@[match_pattern]`
+      -- def, even when the def is also `@[reducible]`. Example:
       --   @[match_pattern, reducible] def myPat : α ⊕ β := Sum.inl _
       --   -- Downstream, `match x with | myPat a => …` needs the body of `myPat`.
       else if Lean.hasMatchPatternAttribute env name then true
       else
         match Lean.getReducibilityStatusCore env name with
-        -- Lean exposes the body of an `abbrev` in every public section. A
-        -- hand-written `@[reducible] def` gets no such treatment: hiding its
-        -- body breaks even same-file public `rfl` proofs.
+        -- Lean exposes the body of an `abbrev` in every public section. The
+        -- section modifier does control the body of a hand-written
+        -- `@[reducible] def`: hiding it breaks even same-file public `rfl`
+        -- proofs.
         | .reducible => declKind != ``Parser.Command.abbrev
         -- A plain `def`, an `unsafe def`, an `@[irreducible] def`, an
         -- `irreducible_def`, and an `@[implicit_reducible]` def all need the
-        -- body downstream: even for `@[irreducible]`, downstream code can
-        -- apply `rw` or `unfold` explicitly.
+        -- body downstream. Even for `@[irreducible]`, downstream code applies
+        -- `rw` or `unfold` to it.
         | _ => true
   | _ => false
 
@@ -244,29 +246,28 @@ public structure ExposeSectionState where
 
 instance : Inhabited ExposeSectionState := ⟨{}⟩
 
-/-- Reports a closed region: logs the lint warning at the position of the
-section header, unless some declaration of the region benefits from exposure
-or the `linter.superfluousExpose` option is off. -/
+/-- Logs the warning for a closed region, at the position of its section
+header. Stays silent when a declaration of the region benefits from
+exposure, or when the `linter.superfluousExpose` option is off. -/
 private def reportRegion (r : ExposeRegion) : CommandElabM Unit := do
   if r.someDeclBenefits then return
   unless getLinterValue linter.superfluousExpose (← getLinterOptions) do return
   let ref := Syntax.atom (.synthetic r.pos r.pos) ""
   logLint linter.superfluousExpose ref
     "This `@[expose] public section` contains no declaration that benefits \
-    from body exposure. You can safely remove the `@[expose]` modifier: it \
+    from exposure. You can safely remove the `@[expose]` modifier: it \
     only changes the bodies of `def` declarations, and no `def` here needs \
     its body downstream."
 
 /--
 The `superfluousExpose` linter detects each `@[expose] public section` where
-no declaration needs its body exposed downstream. It suggests that you remove
-the `@[expose]` modifier.
+no declaration benefits from exposure.
 
 After each command, the linter tracks the current exposed region and
-classifies the declarations that the command created. When a region closes —
-at its `end` command, or at the terminal command for a section that the end
-of the file closes — the linter reports the region if no declaration in it
-benefits from exposure. The warning points at the section header.
+classifies the declarations that the command created. A region closes at its
+`end` command, or at the terminal command for a section that the end of the
+file closes. The linter then reports the region if no declaration in it
+benefits from exposure, and points the warning at the section header.
 -/
 public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
   registerStatefulLinter {}
@@ -275,8 +276,8 @@ public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
       -- Only module files can contain `public section`s.
       if !env.header.isModule then return self
       -- Classify the declarations that appeared since the previous command.
-      -- One declaration that benefits settles the verdict of the region, so
-      -- the scan stops for the rest of the region.
+      -- The verdict of a region cannot change once one declaration benefits,
+      -- so the scan stops there.
       let mut st := self
       if let some r := st.region? then
         unless r.someDeclBenefits do

@@ -9,13 +9,13 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: regular `def`s whose names start with `term`, with or
-without a trailing underscore, and that do not come from notation. The
-leaf-name check alone would match them. The type check prevents the false
-positive: the return type must be `Lean.ParserDescr`, `TrailingParserDescr`,
-or `Macro`. We test both the `term_<snake>` shape and the `term<Camel>`
-shape, because notation generates either shape, dependent on the syntax of
-the operator. See the implementation notes in `SuperfluousExpose.lean`. -/
+/-! Negative case: plain `def`s whose names start with `term` and that do
+not come from notation. The linter treats a def as a parser entry only when
+the leaf name matches and the return type is `Lean.ParserDescr`,
+`TrailingParserDescr` or `Macro`, so the type check keeps these two defs
+classified as defs. Notation generates both the `term_<snake>` and the
+`term<Camel>` shape, so both appear here. The implementation notes in
+`SuperfluousExpose.lean` cover the prefix. -/
 
 @[expose] public section
 
@@ -34,4 +34,3 @@ def termHelperCamel : Nat := 7
 theorem term_helper_camel_eq : termHelperCamel = 7 := rfl
 
 end SuperfluousExposeTest.TermPrefixedDef
--- Expected: no linter warning.
