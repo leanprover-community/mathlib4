@@ -71,6 +71,9 @@ variable [HasZeroMorphisms C]
 /-!
 ### Interaction of the left and right orthogonal
 
+The left and right orthogonal form a Galois connection, and the lemmas below are the
+specializations of the general `GaloisConnection` API to it.
+
 Everything in this section only needs `C` to have zero morphisms. The two instances for closure
 under extensions, further down, additionally need `Preadditive C` and `Balanced C`.
 -/
@@ -93,28 +96,26 @@ lemma le_leftOrthogonal_iff_le_rightOrthogonal :
   (gc_rightOrthogonal_leftOrthogonal P (OrderDual.toDual Q)).symm
 
 lemma le_rightOrthogonal_leftOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal :=
-  fun _ hX _ f hY ↦ hY f hX
+  gc_rightOrthogonal_leftOrthogonal.le_u_l P
 
 lemma le_leftOrthogonal_rightOrthogonal : P ≤ P.leftOrthogonal.rightOrthogonal :=
-  fun _ hY _ f hX ↦ hX f hY
+  gc_rightOrthogonal_leftOrthogonal.dual.le_u_l P
 
 lemma antitone_rightOrthogonal : Antitone (rightOrthogonal (C := C)) :=
-  fun _ _ h _ hY _ f hX ↦ hY f (h _ hX)
+  gc_rightOrthogonal_leftOrthogonal.monotone_l
 
 lemma antitone_leftOrthogonal : Antitone (leftOrthogonal (C := C)) :=
-  fun _ _ h _ hX _ f hY ↦ hX f (h _ hY)
+  gc_rightOrthogonal_leftOrthogonal.dual.monotone_l
 
 @[simp]
 lemma leftOrthogonal_rightOrthogonal_leftOrthogonal :
     P.leftOrthogonal.rightOrthogonal.leftOrthogonal = P.leftOrthogonal :=
-  le_antisymm (antitone_leftOrthogonal (le_leftOrthogonal_rightOrthogonal P))
-    (le_rightOrthogonal_leftOrthogonal P.leftOrthogonal)
+  gc_rightOrthogonal_leftOrthogonal.dual.l_u_l_eq_l P
 
 @[simp]
 lemma rightOrthogonal_leftOrthogonal_rightOrthogonal :
     P.rightOrthogonal.leftOrthogonal.rightOrthogonal = P.rightOrthogonal :=
-  le_antisymm (antitone_rightOrthogonal (le_rightOrthogonal_leftOrthogonal P))
-    (le_leftOrthogonal_rightOrthogonal P.rightOrthogonal)
+  gc_rightOrthogonal_leftOrthogonal.l_u_l_eq_l P
 
 lemma rightOrthogonal_op : P.op.rightOrthogonal = P.leftOrthogonal.op := by
   ext X
