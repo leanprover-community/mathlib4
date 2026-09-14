@@ -254,6 +254,10 @@ class HasPairSequence where
   exact_fst (X : TopPair) (i : ι) :
       (ComposableArrows.mk₂ ((HP.H i).map X.map) ((HP.iso i).hom.app _
       ≫ (HP.Hₚ i).map X.j)).Exact
+  /-- The boundary map out of homology with final index (i.e. an index with no successors in the
+  `ComplexShape`) is an epi. -/
+  epi_map_of_not_rel (X : TopPair) (i : ι) (hi : ∀ (j : ι), ¬ c.Rel i j) :
+    Epi ((HP.Hₚ i).map X.j)
 
 export HasPairSequence (exact_pair exact_snd exact_fst)
 
