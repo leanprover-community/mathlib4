@@ -247,6 +247,23 @@ def _root_.Coalgebra.Repr.mul {b : A} (ℛ₁ : Coalgebra.Repr R a ι) (ℛ₂ :
 
 end Semiring
 
+@[simp]
+lemma counitAlgHom_comp_includeRight [CommSemiring A] [Semiring B] [Algebra R A] [Bialgebra R B] :
+    ((counitAlgHom A (A ⊗[R] B)).restrictScalars R).comp Algebra.TensorProduct.includeRight =
+      (Algebra.ofId R A).comp (counitAlgHom R B) := by
+  ext; simp [Algebra.algebraMap_eq_smul_one]
+
+lemma comul_includeRight [CommSemiring A] [CommSemiring B] [Bialgebra R B] [Algebra R A] :
+    (RingHomClass.toRingHom (Bialgebra.comulAlgHom A (A ⊗[R] B))).comp
+      (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
+      (Algebra.TensorProduct.mapRingHom (algebraMap R A)
+        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
+        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
+        (by simp [← IsScalarTower.algebraMap_eq])
+        (by simp [← IsScalarTower.algebraMap_eq])).comp
+        (RingHomClass.toRingHom (Bialgebra.comulAlgHom R B)) := by
+  ext x; simp [← (ℛ R x).eq, TensorProduct.tmul_sum]
+
 section CommSemiring
 variable [CommSemiring A] [Bialgebra R A]
 
