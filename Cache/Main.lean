@@ -7,6 +7,7 @@ Authors: Arthur Paulino, Jon Eugster, Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
+import Cache.Native
 import Cache.Query
 import Cache.Warning
 
@@ -137,6 +138,9 @@ def main (args : List String) : IO Unit := do
 
   -- Resolve the legacy switch once, before anything builds a read URL.
   useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
+
+  if Cache.Native.shouldPrefetch args then
+    Cache.Native.prefetchDependencies
 
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
