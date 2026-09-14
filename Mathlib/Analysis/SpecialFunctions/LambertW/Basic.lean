@@ -23,22 +23,6 @@ open Filter Topology Set
 
 variable {x : ℝ}
 
-theorem tendsto_sin_nhdsGT_zero : Tendsto sin (𝓝[>] 0) (𝓝[>] 0) := by
-  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · simpa using continuous_sin.tendsto 0 |>.mono_left nhdsWithin_le_nhds
-  · filter_upwards [Ioo_mem_nhdsGT pi_pos] with x hx using sin_pos_of_pos_of_lt_pi hx.left hx.right
-
-theorem tendsto_sin_nhdsLT_pi : Tendsto sin (𝓝[<] π) (𝓝[>] 0) := by
-  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · simpa using continuous_sin.tendsto π |>.mono_left nhdsWithin_le_nhds
-  · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using sin_pos_of_pos_of_lt_pi hx.left hx.right
-
-theorem tendsto_cos_nhdsLT_pi : Tendsto cos (𝓝[<] π) (𝓝[>] (-1)) := by
-  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · simpa using continuous_cos.tendsto π |>.mono_left nhdsWithin_le_nhds
-  · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using mem_Ioi.mpr <| cos_pi ▸ strictAntiOn_cos
-      ⟨hx.left.le, hx.right.le⟩ ⟨pi_pos.le, le_rfl⟩ hx.right
-
 private theorem existsUnique_mem_Ioc (x : ℝ) :
     ∃! k : ℤ, x ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) := by
   simpa [mul_comm, mul_two, mul_sub, mul_add, add_comm, sub_lt_iff_lt_add] using
@@ -71,9 +55,6 @@ private theorem existsUnique_nonneg_mul_exp_eq_of_nonneg (hx : 0 ≤ x) :
   exact ⟨t, ⟨ht.1, hteq⟩, fun u hu => exp_injective (mul_log_strictMonoOn.injOn
     (exp_le_exp.mpr (by linarith [hu.1])) (exp_le_exp.mpr (by linarith [ht.1]))
     (by rw [log_exp, log_exp, mul_comm (exp u) u, hu.2, mul_comm (exp t) t, ← hteq]))⟩
-
-theorem neg_exp_one_inv_le_mul_exp : -(rexp 1)⁻¹ ≤ x * rexp x := by
-  grind [mul_exp_neg_le_exp_neg_one (-x), exp_neg]
 
 end Real
 
@@ -187,12 +168,6 @@ variable {ρ θ ϕ : ℝ}
 
 namespace Real
 
-theorem tendsto_const_sub_nhdsLT (θ : ℝ) :
-    Tendsto (fun ϕ : ℝ => θ - ϕ) (𝓝[<] θ) (𝓝[>] 0) := by
-  rw [tendsto_nhdsWithin_iff, ← sub_self θ]
-  refine ⟨tendsto_const_nhds.sub tendsto_id |>.mono_left nhdsWithin_le_nhds, ?_⟩
-  filter_upwards [self_mem_nhdsWithin] with x hx using sub_lt_sub_left (mem_Iio.mp hx) θ
-
 private theorem tendsto_div_sin_nhdsGT_zero :
     Tendsto (fun u : ℝ => u / sin u) (𝓝[>] 0) (𝓝 1) := by
   have : Tendsto (slope sin 0) (𝓝[>] 0) (𝓝 (cos 0)) :=
@@ -273,7 +248,9 @@ private theorem LambertW.tendsto_solutionNormWAux_nhdsLT_pi (hθ : π < θ) :
 private theorem LambertW.tendsto_solutionNormWAux_pi_nhdsLT_pi :
     Tendsto (solutionNormWAux π) (𝓝[<] π) (𝓝 1) := by
   unfold solutionNormWAux
-  simpa [Function.comp_def] using tendsto_div_sin_nhdsGT_zero.comp (tendsto_const_sub_nhdsLT π)
+  have : Tendsto (fun ϕ : ℝ => π - ϕ) (𝓝[<] π) (𝓝[>] 0) :=
+    sub_self π ▸ le_of_eq (Filter.map_subLeft_nhdsLT (c := π) (a := π))
+  simpa [Function.comp_def] using tendsto_div_sin_nhdsGT_zero.comp this
 
 private theorem LambertW.tendsto_solutionNormZAux_nhdsGT_zero (hθ : 0 < θ) :
     Tendsto (solutionNormZAux θ) (𝓝[>] 0) atTop := by
@@ -570,7 +547,7 @@ private theorem LambertW.im_pos_of_arg_add_im_eq_pi_of_mul_exp_mem
   intro nh
   rw [← nh, add_zero, arg_eq_pi_iff] at hw2
   simp only [mem_reProdIm, mem_Iio, mem_singleton_iff] at hz
-  exact hz.left.not_ge (by simpa [nh.symm, exp_re] using neg_exp_one_inv_le_mul_exp)
+  exact hz.left.not_ge (by simpa [nh.symm, exp_re] using neg_exp_one_inv_le_mul_exp w.re)
 
 private theorem LambertW.mem_of_mem_range_zero_of_mul_exp_mem
     (hw1 : w ∈ range 0) (hw2 : w.arg + w.im = π) (hz : w * cexp w ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
