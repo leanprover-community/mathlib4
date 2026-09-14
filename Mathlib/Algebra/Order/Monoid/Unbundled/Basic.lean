@@ -247,6 +247,12 @@ alias mul_right_cancel'' := mul_right_cancel
   mp ha := by grw [← mul_le_mul_iff_left, hab, ha]
   mpr hb := by grw [← mul_le_mul_iff_right, hab, hb]
 
+@[to_additive] lemma lt_iff_gt_of_mul_eq_mul [MulLeftStrictMono α] [MulLeftReflectLT α]
+    [MulRightStrictMono α] [MulRightReflectLT α] {a₁ a₂ b₁ b₂ : α} (hab : a₁ * b₁ = a₂ * b₂) :
+    a₁ < a₂ ↔ b₂ < b₁ where
+  mp ha := by grw [← mul_lt_mul_iff_left, hab, ha]
+  mpr hb := by grw [← mul_lt_mul_iff_right, hab, hb]
+
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
     a₂ * b₂ ≤ a₁ * b₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
