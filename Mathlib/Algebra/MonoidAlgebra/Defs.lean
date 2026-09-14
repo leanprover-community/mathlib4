@@ -478,16 +478,13 @@ end One
 section Mul
 variable [Mul M]
 
-/-- The multiplication in an additive monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.AddMonoidAlgebra.mul' [Add M] (x y : AddMonoidAlgebra R M) : AddMonoidAlgebra R M :=
-  x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ .single (m₁ + m₂) (r₁ * r₂)
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[to_additive existing mul', no_expose]
+@[no_expose, to_additive (dont_translate := R) mul'
+/-- The multiplication in an additive monoid algebra.
+
+We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/]
 def mul' (x y : R[M]) : R[M] :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 

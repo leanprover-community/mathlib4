@@ -164,18 +164,13 @@ class IsVAddApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [VAdd
 class IsSMulApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [SMul M β] [SMul M F] where
   smul_apply (f : F) (r : M) (x : α) : (r • f) x = r • f x
 
-@[to_additive (attr := simp, grind =)] alias smul_apply := IsSMulApply.smul_apply
-
 /-- `IsPowApply M F α β` states for all `f : F`, `n : M` and `x : α`, `(f ^ n) x = (f x) ^ n`. -/
 @[to_additive IsSMulApply]
 class IsPowApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [Pow β M] [Pow F M] where
   pow_apply (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n
 
--- Note that `smul_apply` is defined already, so we create an alias using `to_additive`,
--- but we do not declare it a `simp` lemma
-@[to_additive existing smul_apply] alias pow_apply := IsPowApply.pow_apply
-
-attribute [simp, grind =] pow_apply
+@[to_additive (attr := simp, grind =, to_additive) smul_apply]
+alias pow_apply := IsPowApply.pow_apply
 
 end SMul
 
@@ -228,17 +223,12 @@ theorem coe_div [Div F] [Div β] [IsDivApply F α β] (f g : F) : ↑(f / g) = (
 theorem coe_inv [Inv F] [Inv β] [IsInvApply F α β] (f : F) : ↑(f⁻¹) = (f : α → β)⁻¹ := by
   ext; simp
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_smul [SMul M F] [SMul M β] [IsSMulApply M F α β] (n : M) (f : F) :
-    ↑(n • f) = n • (f : α → β) := by
-  ext; simp
-
-@[deprecated (since := "2026-07-23")] alias coe_smul' := coe_smul
-
-@[simp, norm_cast, to_additive existing coe_smul]
+@[to_additive (attr := simp, norm_cast, to_additive) coe_smul]
 theorem coe_pow [Pow F M] [Pow β M] [IsPowApply M F α β] (f : F) (n : M) :
     ↑(f ^ n) = (f : α → β) ^ n := by
   ext; simp
+
+@[deprecated (since := "2026-07-23")] alias coe_smul' := coe_smul
 
 @[simp, norm_cast]
 theorem coe_one_eq_id [One F'] [IsOneApplyEqSelf F' α] : ↑(1 : F') = id := by
