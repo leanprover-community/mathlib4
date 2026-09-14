@@ -149,6 +149,8 @@ open CategoryTheory.Functor
 variable [EnoughInjectives C] {F₁ F₂ F₃ : C ⥤ D}
   [F₁.Additive] [F₂.Additive] [F₃.Additive]
 
+/-- The natural transformation `F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus`
+induced by a natural transformation `F₁ ⟶ F₂`. -/
 @[no_expose]
 noncomputable def rightDerivedFunctorPlus (τ : F₁ ⟶ F₂) :
     F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus :=
@@ -190,6 +192,36 @@ lemma rightDerivedFunctorPlus_fac (τ : F₁ ⟶ F₂) :
       whiskerLeft DerivedCategory.Plus.Q τ.rightDerivedFunctorPlus =
     whiskerRight (τ.mapCochainComplexPlus) _ ≫ F₂.rightDerivedFunctorPlusUnit := by
   cat_disch
+
+/-- The additive map from `F₁ ⟶ F₂` to `F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus`
+that is given by `NatTrans.rightDerivedFunctorPlus`. -/
+@[implicit_reducible, simps!]
+noncomputable def rightDerivedFunctorPlusAddMonoidHom :
+    (F₁ ⟶ F₂) →+ (F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus) :=
+  AddMonoidHom.mk' rightDerivedFunctorPlus
+    (fun τ τ' ↦ rightDerived_ext _ (F₁.rightDerivedFunctorPlusUnit)
+      (CochainComplex.Plus.quasiIso C) _ _ _ (by cat_disch))
+
+@[simp]
+lemma rightDerivedFunctorPlus_add (τ τ' : F₁ ⟶ F₂) :
+    (τ + τ').rightDerivedFunctorPlus = τ.rightDerivedFunctorPlus + τ'.rightDerivedFunctorPlus :=
+  rightDerivedFunctorPlusAddMonoidHom.map_add τ τ'
+
+@[simp]
+lemma rightDerivedFunctorPlus_sub (τ τ' : F₁ ⟶ F₂) :
+    (τ - τ').rightDerivedFunctorPlus = τ.rightDerivedFunctorPlus - τ'.rightDerivedFunctorPlus :=
+  rightDerivedFunctorPlusAddMonoidHom.map_sub τ τ'
+
+@[simp]
+lemma rightDerivedFunctorPlus_neg (τ : F₁ ⟶ F₂) :
+    (-τ).rightDerivedFunctorPlus = -τ.rightDerivedFunctorPlus :=
+  rightDerivedFunctorPlusAddMonoidHom.map_neg τ
+
+variable (F₁ F₂) in
+@[simp]
+lemma rightDerivedFunctorPlus_zero :
+    (0 : F₁ ⟶ F₂).rightDerivedFunctorPlus = 0 :=
+  rightDerivedFunctorPlusAddMonoidHom.map_zero
 
 variable (F₁) in
 @[simp]

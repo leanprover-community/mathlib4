@@ -197,10 +197,16 @@ namespace NatTrans
 variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
     {F₁ F₂ F₃ : C ⥤ D} [F₁.Additive] [F₂.Additive] [F₃.Additive]
 
+/-- The natural transformation `F₁.mapCochainComplexPlus ⟶ F₂.mapCochainComplexPlus`
+induced by a natural transformation `F₁ ⟶ F₂`. -/
 @[simps! app_hom]
 def mapCochainComplexPlus (τ : F₁ ⟶ F₂) :
     F₁.mapCochainComplexPlus ⟶ F₂.mapCochainComplexPlus where
   app K := ObjectProperty.homMk ((NatTrans.mapHomologicalComplex τ _).app _)
+
+@[simp]
+lemma mapCochainComplexPlus_add (τ τ' : F₁ ⟶ F₂) :
+    (τ + τ').mapCochainComplexPlus = τ.mapCochainComplexPlus + τ'.mapCochainComplexPlus := rfl
 
 variable (F₁) in
 @[simp]
@@ -222,6 +228,5 @@ instance (τ : F₁ ⟶ F₂) : τ.mapCochainComplexPlus.CommShift ℤ :=
     infer_instance)
 
 end NatTrans
-
 
 end CategoryTheory

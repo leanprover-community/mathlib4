@@ -388,6 +388,8 @@ namespace NatTrans
 
 variable {C D} {F₁ F₂ F₃ : C ⥤ D} [F₁.Additive] [F₂.Additive] [F₃.Additive]
 
+/-- The natural transformation `F₁.mapHomotopyCategoryPlus ⟶ F₂.mapHomotopyCategoryPlus`
+induced by a natural transformation `F₁ ⟶ F₂`. -/
 def mapHomotopyCategoryPlus (τ : F₁ ⟶ F₂) :
     F₁.mapHomotopyCategoryPlus ⟶ F₂.mapHomotopyCategoryPlus where
   app K := ObjectProperty.homMk ((NatTrans.mapHomotopyCategory τ _).app _)
