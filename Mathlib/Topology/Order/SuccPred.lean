@@ -5,6 +5,7 @@ Authors: Jireh Loreaux, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.Interval.Set.SuccPred
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
 

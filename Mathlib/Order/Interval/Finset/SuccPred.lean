@@ -48,8 +48,7 @@ variable [SuccOrder α] {a b : α}
 ##### Equalities of intervals
 -/
 
-lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b :=
-  coe_injective <| by simpa using Set.Ico_succ_left_eq_Ioo _ _
+lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b := coe_injective <| by simp
 
 lemma Icc_succ_left_eq_Ioc_of_not_isMax (ha : ¬ IsMax a) (b : α) : Icc (succ a) b = Ioc a b :=
   coe_injective <| by simpa using Set.Icc_succ_left_eq_Ioc_of_not_isMax ha _
@@ -118,8 +117,7 @@ variable [PredOrder α] {a b : α}
 ##### Equalities of intervals
 -/
 
-lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b :=
-  coe_injective <| by simpa using Set.Ioc_pred_right_eq_Ioo _ _
+lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b := coe_injective <| by simp
 
 lemma Icc_pred_right_eq_Ico_of_not_isMin (hb : ¬ IsMin b) (a : α) : Icc a (pred b) = Ico a b :=
   coe_injective <| by simpa using Set.Icc_pred_right_eq_Ico_of_not_isMin hb _
@@ -241,7 +239,7 @@ lemma Ici_succ_eq_Ioi (a : α) : Ici (succ a) = Ioi a := coe_injective <| by sim
 end SuccOrder
 
 section PredOrder
-variable [PredOrder α] {a a : α}
+variable [PredOrder α] {a : α}
 
 lemma Ioi_pred_eq_Ici_of_not_isMin (ha : ¬ IsMin a) : Ioi (pred a) = Ici a :=
   coe_injective <| by simpa using Set.Ioi_pred_eq_Ici_of_not_isMin ha
