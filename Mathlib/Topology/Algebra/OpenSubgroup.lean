@@ -566,6 +566,9 @@ structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop whe
   isOpen : IsOpen T
   mul : W * T ⊆ W
 
+@[to_additive, deprecated (since := "2026-09-14")]
+alias IsTopologicalGroup.mulInvClosureNhd.inv := IsTopologicalGroup.mulInvClosureNhd.isSelfInv
+
 namespace IsTopologicalGroup
 
 variable [Group G] [IsTopologicalGroup G] [CompactSpace G]

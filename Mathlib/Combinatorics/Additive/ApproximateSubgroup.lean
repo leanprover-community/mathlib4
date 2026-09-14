@@ -180,6 +180,9 @@ lemma pow_inter_pow (hA : IsApproximateSubgroup K A) (hB : IsApproximateSubgroup
       (A ^ m ∩ B ^ n) ^ 2 ⊆ (A ^ m) ^ 2 ∩ (B ^ n) ^ 2 := Set.inter_pow_subset
       _ = A ^ (2 * m) ∩ B ^ (2 * n) := by simp [pow_mul']
 
+@[to_additive, deprecated (since := "2026-09-14")]
+alias inv_eq_self := isSelfInv
+
 end IsApproximateSubgroup
 
 open Set in

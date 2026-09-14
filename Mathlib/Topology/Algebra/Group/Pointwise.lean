@@ -181,6 +181,22 @@ theorem closure_subset_of_mem_nhds_one_of_isSelfInv_mul_right_subset {s s' t : S
     closure s ⊆ t :=
   closure_subset_mul_right_of_mem_nhds_one_of_isSelfInv s hs'₀ h_symm |>.trans hs
 
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_mul_left_of_mem_nhds_one_of_inv :=
+  closure_subset_mul_left_of_mem_nhds_one_of_isSelfInv
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_mul_right_of_mem_nhds_one_of_inv :=
+  closure_subset_mul_right_of_mem_nhds_one_of_isSelfInv
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_of_mem_nhds_one_of_inv_mul_left_subset :=
+  closure_subset_of_mem_nhds_one_of_isSelfInv_mul_left_subset
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_of_mem_nhds_one_of_inv_mul_right_subset :=
+  closure_subset_of_mem_nhds_one_of_isSelfInv_mul_right_subset
+
 end SeparatelyContinuousMul
 
 section IsTopologicalGroup
@@ -429,6 +445,9 @@ theorem exists_closed_nhds_one_isSelfInv_eq_mul_subset {U : Set G} (hU : U ∈ �
     ⊆ W * W := mul_subset_mul inter_subset_left inter_subset_left
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias exists_closed_nhds_one_inv_eq_mul_subset := exists_closed_nhds_one_isSelfInv_eq_mul_subset
 
 @[to_additive] lemma IsDiscrete.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
     (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
