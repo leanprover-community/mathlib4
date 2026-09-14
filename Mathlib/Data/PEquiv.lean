@@ -70,6 +70,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Function Option
 
+@[macro_inline]
 instance : FunLike (α ≃. β) α (Option β) :=
   { coe := toFun
     coe_injective := by

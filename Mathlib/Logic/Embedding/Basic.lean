@@ -32,6 +32,7 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
+@[macro_inline]
 instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
   coe_injective f g h := by { cases f; cases g; congr }

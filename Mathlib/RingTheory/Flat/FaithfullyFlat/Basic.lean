@@ -632,7 +632,7 @@ def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
 
 theorem IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
     (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
-  rw [isNoetherian_iff'] at h ⊢
+  rw [isNoetherian_iff] at h ⊢
   exact (baseChangeOrderEmbedding R M A).wellFoundedGT
 
 theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
@@ -640,3 +640,17 @@ theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
   (baseChangeOrderEmbedding R M A).wellFoundedLT
 
 end Submodule
+
+/-- In a nonzero algebra that is free as a module, the coordinates of `1` in any basis generate
+the unit ideal. Equivalently, `1` is unimodular: see `Module.Free.isUnimodular_one`. -/
+theorem Module.Basis.span_repr_one_eq_top {R : Type*} [CommRing R] {A ι : Type*} [Ring A]
+    [Nontrivial A] [Algebra R A] (e : Basis ι R A) :
+    Ideal.span (Set.range (e.repr 1)) = ⊤ := by
+  nontriviality R
+  have : Module.Free R A := .of_basis e
+  by_contra h
+  obtain ⟨𝔪, h𝔪, hle⟩ := Ideal.exists_le_maximal _ h
+  refine Module.FaithfullyFlat.submodule_ne_top h𝔪 (Submodule.eq_top_iff'.mpr fun a : A ↦ ?_)
+  rw [← mul_one a, ← e.linearCombination_repr 1, Finsupp.linearCombination_apply, Finsupp.mul_sum]
+  exact Submodule.sum_mem _ fun i _ ↦ by
+    simpa using Submodule.smul_mem_smul (hle (Ideal.subset_span ⟨i, rfl⟩)) Submodule.mem_top
