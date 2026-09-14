@@ -20,6 +20,15 @@ open Order Set
 
 variable {ι : Sort*} {α : Type*}
 
+section ConditionallyCompleteLattice
+variable [ConditionallyCompleteLattice α] {x : α}
+
+@[to_dual]
+theorem Order.IsSuccLimit.sSup_Iio (h : IsSuccLimit x) : sSup (Iio x) = x :=
+  h.isLUB_Iio.csSup_eq <| Set.Iio_nonempty.mpr h.not_isMin
+
+end ConditionallyCompleteLattice
+
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
 
@@ -119,9 +128,6 @@ theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x 
 theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.1 = x := by
   rw [← sSup_eq_iSup', h.sSup_Iio]
 
-theorem Order.IsSuccLimit.sSup_Iio (h : IsSuccLimit x) : sSup (Iio x) = x :=
-  h.isSuccPrelimit.sSup_Iio
-
 theorem Order.IsSuccLimit.iSup_Iio (h : IsSuccLimit x) : ⨆ a : Iio x, a.1 = x :=
   h.isSuccPrelimit.iSup_Iio
 
@@ -195,7 +201,7 @@ theorem le_iSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
 theorem Order.IsSuccPrelimit.sSup_lt_iff (h : IsSuccPrelimit x) :
     sSup s < x ↔ ∃ a < x, ∀ b ∈ s, b < a := by
   simp_rw [_root_.sSup_lt_iff, mem_upperBounds]
-  grind [lt_iff_exists_lt]
+  grind [lt_iff_nonempty_Ioo, nonempty_def]
 
 /-- Similar to `iSup_lt_iff` but with a stronger RHS, as it requires a strict inequality. -/
 @[to_dual lt_iInf_iff

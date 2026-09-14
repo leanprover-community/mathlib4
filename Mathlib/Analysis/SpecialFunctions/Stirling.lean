@@ -134,7 +134,7 @@ theorem log_stirlingSeq_sdiff_le (n : ℕ) :
   have hr1 : r < 1 := by grw [hr, ← n.zero_le]; norm_num
   suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1))) by
     refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_sdiff_hasSum n) this
-    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
+    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by grind
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
 @[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le
