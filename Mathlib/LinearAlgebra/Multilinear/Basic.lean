@@ -75,6 +75,8 @@ and so the equality can just be substituted.
 
 @[expose] public section
 
+set_option linter.style.longFile 1600
+
 open Fin Function Finset Set
 
 universe uR uS uι u v
