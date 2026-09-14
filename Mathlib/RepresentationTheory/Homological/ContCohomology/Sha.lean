@@ -44,11 +44,8 @@ group, so technically this is not quite what is happening in this definition. Ho
 `H¹(Kᵥ, A(Kᵥˢ)) → H¹(Kᵥ, A(Kˢ))` is an isomorphism by the Greenberg approximation theorem, so the
 definition in this file is still mathematically correct. See Remark I.3.10 of [Milne].
 
-This definition is different but related to the "Tate–Shafarevich group" in the context of `p`-adic
-representations, where `A` is the quotient of a `p`-adic `G_K`-module by a `G_K`-invariant lattice.
-See Section 1 of [Flach]. For instance, when `A` is the quotient of the `p`-adic rational Tate
-module of an abelian variety by its integral sublattice, its associated Tate–Shafarevich group will
-be a quotient of the one in this file by its divisible part.
+The third context is when `A` is the quotient of a `p`-adic `G_K`-module by a `G_K`-invariant
+lattice, which is different from the definition in this PR. See Section 1 of [Flach].
 
 ## References
 
