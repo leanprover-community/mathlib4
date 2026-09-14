@@ -124,6 +124,20 @@ instance [Preadditive C] : (CochainComplex.plus C).IsStableUnderShift ℤ where
   isStableUnderShiftBy n :=
     ⟨fun K ⟨k, hk⟩ ↦ ⟨k - n, K.isStrictlyGE_shift k n _ (by lia)⟩⟩
 
+instance [Preadditive C] [CategoryWithHomology C] :
+    (HomologicalComplex.quasiIso C (.up ℤ)).IsCompatibleWithShift ℤ := inferInstance
+
+instance [Preadditive C] [CategoryWithHomology C] :
+    (CochainComplex.Plus.quasiIso C).IsCompatibleWithShift ℤ where
+  condition a := by
+    ext K L f
+    have := MorphismProperty.IsCompatibleWithShift.iff (HomologicalComplex.quasiIso _ _) f.hom a
+    simp only [HomologicalComplex.mem_quasiIso_iff,
+      MorphismProperty.inverseImage_iff, quasiIso_iff] at this ⊢
+    rw [← this]
+    exact quasiIso_iff_of_arrow_mk_iso _ _
+      (((Functor.mapArrowFunctor _ _).mapIso ((Plus.ι C).commShiftIso a)).app (Arrow.mk f))
+
 end Plus
 
 end CochainComplex
@@ -197,6 +211,8 @@ lemma mapCochainComplexPlus_id :
 lemma mapCochainComplexPlus_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
     (τ ≫ τ').mapCochainComplexPlus =
       τ.mapCochainComplexPlus ≫ τ'.mapCochainComplexPlus := by cat_disch
+
+instance (τ : F₁ ⟶ F₂) : τ.mapCochainComplexPlus.CommShift ℤ := sorry
 
 end NatTrans
 

@@ -180,8 +180,9 @@ lemma rightDerivedFunctorPlus_fac_app (τ : F₁ ⟶ F₂) (K : CochainComplex.P
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app_assoc,
     NatTrans.mapHomotopyCategoryPlus_app_quotient_obj]
 
-instance (τ : F₁ ⟶ F₂) : τ.rightDerivedFunctorPlus.CommShift ℤ := by
-  sorry
+instance (τ : F₁ ⟶ F₂) : τ.rightDerivedFunctorPlus.CommShift ℤ :=
+  .of_isRightDerivedFunctor F₁.rightDerivedFunctorPlusUnit F₂.rightDerivedFunctorPlusUnit
+    (Functor.whiskerRight τ.mapCochainComplexPlus _) (CochainComplex.Plus.quasiIso C)
 
 @[reassoc (attr := simp)]
 lemma rightDerivedFunctorPlus_fac (τ : F₁ ⟶ F₂) :
