@@ -9,9 +9,99 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 /-!
-# The complex `LambertW` function
+# The complex Lambert W function
 
-TODO: add doc, add local notation doc, add tag
+This file defines the branches of the standard Lambert W function, i.e. the multivalued inverse of
+`w => w * exp w`, and proves `W_ k` is a bijection from `domain k` onto `range k`.
+
+If `w = W_ k z`, then `z = w * cexp w`. We follow standard usage and say that `z` is in the z-plane
+and `w` is in the w-plane.
+
+The boundary of the range of the Lambert W function is described by
+`{ w | w.arg + w.im = (2 * k ± 1) * π }`,
+with the special case that, when `k = ±1`, the part of the negative real axis `(-∞, -1]`
+is also part of the boundary.
+So we defines the range using corrected version of `{ w | w.arg + w.im ∈ Ioc (2 * k ± 1) * π }`
+
+## Main definitions
+
+* `Complex.LambertW.domain k`: the domain of the `k`-th branch in the z-plane.
+* `Complex.LambertW.range k`: the range of the `k`-th branch in the w-plane.
+* `Complex.lambertW k`: the `k`-th branch `W_ k` of the Lambert W function.
+
+## Main results
+
+* `Complex.LambertW.existsUnique_mem_range_mul_exp_eq`: every point in the domain of a branch has a
+  unique preimage in its range.
+* `Complex.LambertW.bijOn_mul_exp_range_domain`:
+  `w => w * exp w` is a bijection from `range k` to `domain k`.
+* `Complex.LambertW.lambertW_mul_exp_of_mem_range`:
+  `W_ k (w * exp w) = w` for `w ∈ range k`
+* `Complex.LambertW.lambertW_mul_exp_lambertW_of_mem_domain`:
+  `W_ k z * cexp (W_ k z) = z` for `z ∈ domain k`
+* `Complex.eq_mul_exp_iff_exists_eq_lambertW`: `z = w * exp w` if and only if `w = W_ k z` for
+  some branch `k` with `z ∈ domain k`.
+* `Complex.existsUnique_eq_lambertW_of_ne_neg_one`: the branch in the previous statement is
+  unique whenever `w ≠ -1`.
+
+## Notation
+
+The following notation is localized in `ComplexLambertW`:
+
+* `W_ k` is `Complex.lambertW k`.
+* `W₀` is the principal branch `W_ 0`.
+* `W₋₁` is `W_ (-1)`.
+
+Use `open scoped ComplexLambertW` to use these.
+
+## Implementation notes
+
+To describe the range of the Lambert W function, `Set.Ioc` is not sufficient, since `w.arg + w.im`
+takes the value `π` on the entire negative real axis. Therefore, we use a special-case definition
+for the range.
+
+To prove the bijectivity of the `w => w * exp w`, we first handle seven basic cases and then
+combine them to obtain the cases `k = 0`, `k = -1`, and `k ≠ 0, -1`,
+from which the general result follows.
+
+The seven basic cases are:
+* `w = 0` ↔ `z = 0`, the trivial case
+* `w ∈ [-1, 0)` ↔ `z ∈ [-1 / e, 0)`, `W₀` on ℝ
+* `w.arg + w.im = π ∧ w.im > 0`, where `z ∈ (-∞, -1 / e)`, the upper boundary of range of `W₀`
+* `w ∈ (-∞, -1]` ↔ `z ∈ [-1 / e, 0)`, `W₋₁` on ℝ
+* `w.arg + w.im = -π`, where `z ∈ (-∞, -1 / e)`, the lower boundary of range of `W₀`
+* `w.arg + w.im = (2 * k + 1) * π ∧ k ≠ 0, -1` ↔ `z ∈ (-∞, 0)`, with `w` on the
+  boundary of the range
+* `w.arg + w.im ∈ Ioo ((2 * k - 1) * π) ((2 * k + 1) * π) ∧ w ≠ 0 ∧ k ≠ 0, -1` ↔
+  `z ∈ Complex.slitPlane`, with `w` in the interior of range
+
+For the last two cases, to prove the existence and uniqueness of w, we solve the polar equations.
+We have `w * exp w = z` ↔ `w + log w = log z + k * (2 * π) * I`.
+Let `w = ρ * exp (ϕ * I)`. Taking real and imaginary parts gives
+`ρ * exp (ρ * cos ϕ) = ‖z‖` and `ϕ + ρ * sin ϕ = z.arg + k * (2 * π)`.
+We therefore define the two auxiliary functions `solutionNormWAux` and `solutionNormZAux`
+and prove that `solutionNormZAux` is strictly antitone with the limits needed for
+the intermediate value theorem.
+
+## References
+
+* [R. M. Corless, G. H. Gonnet, D. E. G. Hare, D. J. Jeffrey and D. E. Knuth, *On the Lambert W
+  function*][corless1996]
+* <https://en.wikipedia.org/wiki/Lambert_W_function>
+* <https://dlmf.nist.gov/4.13>
+
+## TODO
+
++ Define the Lambert W function on ℝ
++ Prove some identities and some special values
++ Prove continuity, differentiability, smoothness
++ Prove asymptotic expansion and series expansion
++ Prove tree counting and combinatorics
++ Prove indefinite integral formulas
+
+## Tags
+
+Lambert W, inverse function, bijective
 -/
 
 noncomputable section
@@ -24,8 +114,7 @@ open Filter Topology Set
 
 variable {x : ℝ}
 
-theorem existsUnique_mem_Ioc (x : ℝ) :
-    ∃! k : ℤ, x ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) := by
+theorem existsUnique_mem_Ioc (x : ℝ) : ∃! k : ℤ, x ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) := by
   simpa [mul_comm, mul_two, mul_sub, mul_add, add_comm, sub_lt_iff_lt_add] using
     existsUnique_sub_zsmul_mem_Ioc two_pi_pos x (-π)
 
@@ -38,6 +127,8 @@ theorem existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻
 
 public theorem existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
     ∃! t ∈ Iic (-1), t * rexp t = x := by
+  -- `Iic (-1)` is unbounded, so first pick `S` with `t * rexp t < x` for all `t ≥ S`,
+  -- then apply the IVT on `[-(S ⊔ 1), -1]`
   obtain ⟨S, hS⟩ : ∃ S, ∀ b ≥ S, b ^ 1 * rexp (-b) < -x :=
     (tendsto_pow_mul_exp_neg_atTop_nhds_zero 1 |>.eventually <|
       eventually_lt_nhds <| neg_pos_of_neg hx.right).exists_forall_of_atTop
@@ -116,12 +207,16 @@ theorem mul_exp_eq_of_arg_add_im_eq (hx : x ≠ 0) (h : x.arg + x.im = (2 * i + 
     rw [mul_neg_one]
   · rw_mod_cast [exp_im, add_log_im, h, Real.sin_int_mul_pi (2 * i + 1), mul_zero]
 
---  this needs annotation
+/-- If `w.arg + w.im = π` and `w * exp w ∈ [-(exp 1)⁻¹, 0)`, then `w` is real. -/
 theorem im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem {w : ℂ}
     (hw1 : w.arg + w.im = π) (hw2 : w * cexp w ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) : w.im = 0 := by
   obtain ⟨hzre1, hzre2⟩ : (w * cexp w).re ∈ Ico (-(rexp 1)⁻¹) 0 := hw2.left
   have hw₀ : w ≠ 0 := fun hw => by simp [hw] at hzre2
   by_contra nh
+  -- if `w.im ≠ 0`, we can get `0 < w.im < π` and calculating the norm of
+  -- `z` gives `‖w * cexp w‖ = w.im / sin w.im * rexp (-w.im * cot w.im)`
+  -- which is strictly greater than `(rexp 1)⁻¹`, contradicting `hw2`.
+  -- the proof below shows `- w.im * cot w.im + log (w.im / sin w.im) > -1 + 0` instead.
   obtain ⟨nh, harg⟩ : 0 < w.im ∧ w.im = π - w.arg := by grind [arg_le_pi w]
   have hnormsin : ‖w‖ * Real.sin w.im = w.im := by simp [norm_mul_sin_arg, harg]
   have hsin : 0 < Real.sin w.im := by nlinarith [hnormsin, norm_pos_iff.mpr hw₀]
@@ -176,14 +271,14 @@ theorem tendsto_div_sin_nhdsGT_zero :
   simpa [slope_fun_def_field, cos_zero, inv_div] using this.inv₀ (by simp)
 
 theorem tendsto_mul_exp_neg_div_two_atTop :
-    Tendsto (fun r ↦ r * rexp (-r / 2)) atTop (𝓝 0) := by
+    Tendsto (fun r : ℝ => r * rexp (-r / 2)) atTop (𝓝 0) := by
   convert (tendsto_pow_mul_exp_neg_atTop_nhds_zero 1 |>.comp <|
     tendsto_id.atTop_div_const zero_lt_two).const_mul 2 using 2 <;> simp [field]
 
-/-- TODO doc -/
+/-- The aux function to solve polar equation; its output represents the norm of `w`. -/
 def LambertW.solutionNormWAux (θ : ℝ) : ℝ -> ℝ := fun ϕ => (θ - ϕ) / sin ϕ
 
-/-- TODO doc -/
+/-- The aux function to solve polar equation; its output represents the norm of `z`. -/
 def LambertW.solutionNormZAux (θ : ℝ) : ℝ -> ℝ := fun ϕ =>
   solutionNormWAux θ ϕ * rexp (solutionNormWAux θ ϕ * cos ϕ)
 
@@ -273,7 +368,9 @@ theorem LambertW.tendsto_solutionNormZAux_nhdsLT_pi (hθ : π < θ) :
   apply squeeze_zero' (g := fun ϕ => solutionNormWAux θ ϕ * rexp (-(solutionNormWAux θ ϕ) / 2))
   · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using
       mul_nonneg (div_nonneg (by grind) (by grind [sin_pos_of_pos_of_lt_pi])) (exp_nonneg _)
-  · filter_upwards [Ioo_mem_nhdsLT (a := π - π / 3) (by grind [pi_pos])] with ϕ hϕ
+  · -- On `(π - π / 3, π)` we have `cos ϕ ≤ cos (π - π / 3) = -(1 / 2)`;
+    -- the point is written as `π - π / 3` (not `2 / 3 * π`) so that `cos_pi_sub` applies.
+    filter_upwards [Ioo_mem_nhdsLT (a := π - π / 3) (by grind [pi_pos])] with ϕ hϕ
     have hr : 0 ≤ solutionNormWAux θ ϕ := div_nonneg (by grind [hϕ.right]) <| le_of_lt <|
       sin_pos_of_pos_of_lt_pi (by grind [pi_pos, hϕ.left]) hϕ.right
     have hcos : cos ϕ ≤ -(1 / 2) := by
@@ -413,25 +510,42 @@ open Real Set Filter Topology
 
 open scoped ComplexConjugate
 
-variable {α : Type*} {k : ℤ} {z w : ℂ}
+variable {k : ℤ} {z w : ℂ}
+
+namespace LambertW
 
 section LambertWRangeDomain
 
 section Definition
 
-/-- TODO doc -/
+/-- The domain of the `k`-th branch of the Lambert W function: the whole plane for the principal
+branch `k = 0`, and the punctured plane for other branch. -/
 @[expose]
-public def LambertW.domain (k : ℤ) : Set ℂ :=
+public def domain (k : ℤ) : Set ℂ :=
   if k = 0 then univ else {0}ᶜ
 
 @[simp]
-public theorem LambertW.domain_zero : domain 0 = univ := rfl
+public theorem domain_zero : domain 0 = univ := rfl
 
-public theorem LambertW.domain_of_ne_zero (hk : k ≠ 0) : domain k = {0}ᶜ := ite_eq_right hk
+public theorem domain_of_ne_zero (hk : k ≠ 0) : domain k = {0}ᶜ := ite_eq_right hk
 
-/-- TODO doc -/
+/-- The range of the `k`-th branch of the Lambert W function, i.e., the set of points `w` in
+the w-plane whose image `w * exp w` in the z-plane lies in the domain of this branch.
+
+For `k ≠ 0, -1` it consists of the `w` with
+`w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π)`.
+The two exceptional branches are corrected on the negative real axis:
+`range 0` omits `Iio (-1) ×ℂ {0}` while
+`range (-1)` adds `Iic (-1) ×ℂ {0}`.
+
+To visualize this, one can use
+```
+ContourPlot[y + Arg[x + y I], {x, -20, 20}, {y, -20, 20},
+ Contours -> Function[{min, max}, Range[Floor[min / (2 * Pi)] * 2 * Pi - Pi, max + Pi, 2 * Pi]],
+ ContourLabels -> Function[{x, y, z}, Text[Framed[Floor[z / Pi]], {x, y}, Background -> White]]]
+``` -/
 @[expose]
-public def LambertW.range (k : ℤ) : Set ℂ := match k with
+public def range (k : ℤ) : Set ℂ := match k with
   | 0 => {w | w.arg + w.im ∈ Ioc (-π) π} \ Iio (-1) ×ℂ {0}
   | -1 => {w | w.arg + w.im ∈ Ioc (-3 * π) (-π)} ∪ Iic (-1) ×ℂ {0}
   | _ => {w | w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π)}
@@ -441,29 +555,29 @@ end Definition
 section RangeAndDomain
 
 @[simp]
-public theorem LambertW.mem_domain_zero : z ∈ domain 0 := trivial
+public theorem mem_domain_zero : z ∈ domain 0 := trivial
 
-public theorem LambertW.mem_domain_of_ne_zero (hz : z ≠ 0) : z ∈ domain k :=
+public theorem mem_domain_of_ne_zero (hz : z ≠ 0) : z ∈ domain k :=
   em (k = 0) |>.elim (fun hk => hk ▸ trivial) (fun hk => domain_of_ne_zero hk ▸ hz)
 
-public theorem LambertW.mem_range_zero_iff :
+public theorem mem_range_zero_iff :
     w ∈ range 0 ↔ w.arg + w.im ∈ Ioc (-π) π ∧ ¬(w.re < -1 ∧ w.im = 0) := by
   simp [range, mem_reProdIm]
 
-public theorem LambertW.mem_range_neg_one_iff :
+public theorem mem_range_neg_one_iff :
     w ∈ range (-1) ↔ w.arg + w.im ∈ Ioc (-3 * π) (-π) ∨ (w.re ≤ -1 ∧ w.im = 0) := by
   simp [range, mem_reProdIm]
 
-public theorem LambertW.mem_range_iff_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) :
+public theorem mem_range_iff_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) :
     w ∈ range k ↔ w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) := by
   simp [range]
 
-public theorem LambertW.zero_mem_range_zero : 0 ∈ range 0 := by
+public theorem zero_mem_range_zero : 0 ∈ range 0 := by
   simp [mem_range_zero_iff, pi_pos, pi_nonneg]
 
-public theorem LambertW.zero_notMem_range_neg_one : 0 ∉ range (-1) := by simp [range, mem_reProdIm]
+public theorem zero_notMem_range_neg_one : 0 ∉ range (-1) := by simp [range, mem_reProdIm]
 
-public theorem LambertW.zero_notMem_range (hk : k ≠ 0) : 0 ∉ range k := by
+public theorem zero_notMem_range (hk : k ≠ 0) : 0 ∉ range k := by
   by_cases hk' : k = -1
   · exact hk' ▸ zero_notMem_range_neg_one
   rw [mem_range_iff_of_ne hk hk', arg_zero, zero_im, add_zero, ← zero_mul π]
@@ -471,22 +585,22 @@ public theorem LambertW.zero_notMem_range (hk : k ≠ 0) : 0 ∉ range k := by
   norm_cast
   omega
 
-public theorem LambertW.ne_zero_of_mem_range (hk : k ≠ 0) (hz : z ∈ range k) : z ≠ 0 := fun nh =>
+public theorem ne_zero_of_mem_range (hk : k ≠ 0) (hz : z ∈ range k) : z ≠ 0 := fun nh =>
   False.elim <| zero_notMem_range hk <| nh ▸ hz
 
 @[simp]
-public theorem LambertW.zero_mem_range_iff : 0 ∈ range k ↔ k = 0 := by
+public theorem zero_mem_range_iff : 0 ∈ range k ↔ k = 0 := by
   grind [zero_notMem_range, zero_mem_range_zero]
 
 @[simp]
-public theorem LambertW.neg_one_mem_range_neg_one : -1 ∈ range (-1) := by
+public theorem neg_one_mem_range_neg_one : -1 ∈ range (-1) := by
   simp [mem_range_neg_one_iff]
 
 @[simp]
-public theorem LambertW.neg_one_mem_range_zero : -1 ∈ range 0 := by
+public theorem neg_one_mem_range_zero : -1 ∈ range 0 := by
   simp [mem_range_zero_iff, pi_pos]
 
-theorem LambertW.mem_range_iff_of_mem (hw : w ∈ Iic (-1) ×ℂ {0}) :
+theorem mem_range_iff_of_mem (hw : w ∈ Iic (-1) ×ℂ {0}) :
     w ∈ range k ↔ k = -1 ∨ (k = 0 ∧ w.re = -1) := by
   simp only [mem_reProdIm, mem_Iic, mem_singleton_iff] at hw
   constructor
@@ -502,14 +616,14 @@ theorem LambertW.mem_range_iff_of_mem (hw : w ∈ Iic (-1) ×ℂ {0}) :
     · exact mem_range_neg_one_iff.mpr (Or.inr ⟨hw.1, hw.2⟩)
     · exact mem_range_zero_iff.mpr <| by grind [arg_add_im_of_mem hw, pi_pos]
 
-theorem LambertW.mem_range_iff_of_notMem (hw : w ∉ Iic (-1) ×ℂ {0}) :
+theorem mem_range_iff_of_notMem (hw : w ∉ Iic (-1) ×ℂ {0}) :
     w ∈ range k ↔ w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) := by
   rcases (show k = 0 ∨ k = -1 ∨ (k ≠ 0 ∧ k ≠ -1) by tauto) with rfl | rfl | ⟨hk, hk'⟩
   · grind [mem_reProdIm, mem_range_zero_iff]
   · grind [mem_reProdIm, mem_range_neg_one_iff]
   · exact mem_range_iff_of_ne hk hk'
 
-public theorem LambertW.iUnion_range : ⋃ k, range k = univ := by
+public theorem iUnion_range : ⋃ k, range k = univ := by
   refine eq_univ_iff_forall.mpr fun w => mem_iUnion.mpr ?_
   by_cases hw : w ∈ Iic (-1) ×ℂ {0}
   · use -1, Or.inr hw
@@ -517,7 +631,7 @@ public theorem LambertW.iUnion_range : ⋃ k, range k = univ := by
       Real.existsUnique_mem_Ioc (w.arg + w.im)
     use k, mem_range_iff_of_notMem hw |>.mpr hk
 
-theorem LambertW.eq_of_mem_range_of_mem_range {i j : ℤ}
+theorem eq_of_mem_range_of_mem_range {i j : ℤ}
     (hi : w ∈ range i) (hj : w ∈ range j) (hw : w ≠ -1) : i = j := by
   by_cases hw' : w ∈ Iic (-1) ×ℂ {0}
   · have hre : w.re ≠ -1 := fun hre => hw (Complex.ext hre (by simpa using hw'.right))
@@ -526,26 +640,26 @@ theorem LambertW.eq_of_mem_range_of_mem_range {i j : ℤ}
       Real.existsUnique_mem_Ioc (w.arg + w.im)
     grind [mem_range_iff_of_notMem hw' |>.mp hi, mem_range_iff_of_notMem hw' |>.mp hj]
 
-public theorem LambertW.existsUnique_mem_range_of_ne_neg_one (hw : w ≠ -1) :
+public theorem existsUnique_mem_range_of_ne_neg_one (hw : w ≠ -1) :
     ∃! k : ℤ, w ∈ range k := by
   obtain ⟨k, hk⟩ : ∃ k, w ∈ range k := mem_iUnion.mp <| eq_univ_iff_forall.mp iUnion_range w
   exact ⟨k, hk, fun k' hk' => eq_of_mem_range_of_mem_range hk' hk hw⟩
 
 end RangeAndDomain
 
-theorem LambertW.arg_add_im_mem_Ioo_of_mem_range_zero_of_mul_exp_mem
+theorem arg_add_im_mem_Ioo_of_mem_range_zero_of_mul_exp_mem
     (hw : w ∈ range 0) (hz : w * cexp w ∈ Complex.slitPlane) :
     w.arg + w.im ∈ Ioo (-π) π := by
   refine ⟨hw.left.left, lt_of_le_of_ne hw.left.right
     fun nh => mem_slitPlane_iff_arg.mp hz |>.left ?_⟩
   grind [arg_mul_exp_eq_of_mem (x := w) (i := 0) (by aesop) (by simpa using hw.left)]
 
-theorem LambertW.arg_add_im_eq_pi_of_mem_range_zero
+theorem arg_add_im_eq_pi_of_mem_range_zero
     (hw1 : w ∈ range 0) (hz : w * cexp w ∈ Iio 0 ×ℂ {0}) :
     w.arg + w.im = π := by
   grind [mul_exp_mem_of_arg_add_im_eq (w := w) (i := 0) (by simpa using hw1.left)]
 
-theorem LambertW.im_pos_of_arg_add_im_eq_pi_of_mul_exp_mem
+theorem im_pos_of_arg_add_im_eq_pi_of_mul_exp_mem
     (hw2 : w.arg + w.im = π) (hz : w * cexp w ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     0 < w.im := by
   apply lt_of_le_of_ne <| arg_nonneg_iff.mp <| le_of_lt <| arg_pos_of_arg_add_im_pos <| hw2 ▸ pi_pos
@@ -554,14 +668,14 @@ theorem LambertW.im_pos_of_arg_add_im_eq_pi_of_mul_exp_mem
   simp only [mem_reProdIm, mem_Iio, mem_singleton_iff] at hz
   exact hz.left.not_ge (by simpa [nh.symm, exp_re] using neg_exp_one_inv_le_mul_exp w.re)
 
-theorem LambertW.mem_of_mem_range_zero_of_mul_exp_mem
+theorem mem_of_mem_range_zero_of_mul_exp_mem
     (hw1 : w ∈ range 0) (hw2 : w.arg + w.im = π) (hz : w * cexp w ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
     w ∈ Ico (-1) 0 ×ℂ {0} := by
   have : w.im = 0 := im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem hw2 hz
   rw [this, add_zero, arg_eq_pi_iff] at hw2
   exact ⟨⟨by simpa [hw2, mem_reProdIm] using hw1.right, hw2.left⟩, this⟩
 
-theorem LambertW.arg_add_im_mem_Ioo_of_mem_range_neg_one_of_mul_exp_notMem
+theorem arg_add_im_mem_Ioo_of_mem_range_neg_one_of_mul_exp_notMem
     (hw : w ∈ range (-1)) (hz : w * cexp w ∉ Iio 0 ×ℂ {0}) :
     w.arg + w.im ∈ Ioo (-3 * π) (-π) := by
   replace hw : w.arg + w.im ∈ Ioc (-3 * π) (-π) := by
@@ -576,13 +690,13 @@ theorem LambertW.arg_add_im_mem_Ioo_of_mem_range_neg_one_of_mul_exp_notMem
   conv_rhs at this => ring_nf
   exact hz <| arg_eq_pi_iff.mp this
 
-theorem LambertW.arg_add_im_mem_Ioc_of_mem_range_neg_one_of_mul_exp_mem
+theorem arg_add_im_mem_Ioc_of_mem_range_neg_one_of_mul_exp_mem
     (hw : w ∈ range (-1)) (hz : w * cexp w ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     w.arg + w.im ∈ Ioc (-3 * π) (-π) :=
   mem_range_neg_one_iff.mp hw |>.resolve_right fun nh => absurd hz.left <|
     by simp [exp_im, exp_re, nh, neg_exp_one_inv_le_mul_exp]
 
-theorem LambertW.mem_Iic_of_mem_range_neg_one_of_mul_exp_mem
+theorem mem_Iic_of_mem_range_neg_one_of_mul_exp_mem
     (hw : w ∈ range (-1)) (hz : w * cexp w ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
     w ∈ Iic (-1) ×ℂ {0} := mem_range_neg_one_iff.mp hw |>.resolve_left fun nh => by
   have : (w * cexp w).arg = w.arg + w.im - ↑(-1 : ℤ) * (2 * π) :=
@@ -592,7 +706,7 @@ theorem LambertW.mem_Iic_of_mem_range_neg_one_of_mul_exp_mem
   replace : w.im = 0 := im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem (by grind) hz
   grind [arg_mem_Ioc]
 
-theorem LambertW.existsUnique_eq_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
+theorem existsUnique_eq_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     ∃! w : ℂ, w.arg + w.im = π ∧ w * cexp w = z ∧ w.im > 0 := by
   have hzre : z.re < 0 := hz.left.trans <| neg_lt_zero.mpr <| by positivity
   have hρ : (rexp 1)⁻¹ < ‖z‖ := by
@@ -604,7 +718,7 @@ theorem LambertW.existsUnique_eq_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) 
       w * cexp w = ↑‖z‖ * cexp (↑π * I) ∧ w.im > 0 := existsUnique_arg_add_im_eq_pi hρ
   exact ⟨w, ⟨hw, hz' ▸ hwz⟩, fun w' ⟨hw', hw'z, hw'im⟩ => H w' ⟨hw', hw'z.trans hz', hw'im⟩⟩
 
-theorem LambertW.existsUnique_mem_reProdIm_exp_eq {s : Set ℝ}
+theorem existsUnique_mem_reProdIm_exp_eq {s : Set ℝ}
     (hz : z.im = 0) (H : ∃! t ∈ s, t * rexp t = z.re) :
     ∃! w : ℂ, w ∈ s ×ℂ {0} ∧ w * cexp w = z := by
   obtain ⟨x, ⟨hx1, hx2⟩, H⟩ : ∃! t ∈ s, t * rexp t = z.re := H
@@ -613,15 +727,15 @@ theorem LambertW.existsUnique_mem_reProdIm_exp_eq {s : Set ℝ}
   · apply Complex.ext (z := w') (w := x) (H w'.re ⟨hw'1.left, ?_⟩) hw'1.right
     simp [← hw'2, exp_re, mem_singleton_iff.mp <| mem_reProdIm.mp hw'1 |>.right]
 
-theorem LambertW.existsUnique_mem_Ico_exp_eq (hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
+theorem existsUnique_mem_Ico_exp_eq (hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
     ∃! w : ℂ, w ∈ Ico (-1) 0 ×ℂ {0} ∧ w * cexp w = z :=
   existsUnique_mem_reProdIm_exp_eq hz.right <| existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico hz.left
 
-theorem LambertW.existsUnique_mem_Iic_exp_eq (hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
+theorem existsUnique_mem_Iic_exp_eq (hz : z ∈ Ico (-(rexp 1)⁻¹) 0 ×ℂ {0}) :
     ∃! w : ℂ, w ∈ Iic (-1) ×ℂ {0} ∧ w * cexp w = z :=
   existsUnique_mem_reProdIm_exp_eq hz.right <| existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico hz.left
 
-theorem LambertW.existsUnique_eq_neg_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
+theorem existsUnique_eq_neg_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     ∃! w : ℂ, w.arg + w.im = -π ∧ w * cexp w = z := by
   obtain ⟨w, ⟨hw, hwz, hwim⟩, H⟩ : ∃! w : ℂ, w.arg + w.im = π ∧ w * cexp w = z ∧ w.im > 0 :=
     existsUnique_eq_pi_mul_exp_eq hz
@@ -634,8 +748,7 @@ theorem LambertW.existsUnique_eq_neg_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻
     · rw [exp_conj, ← map_mul, hw'z, conj_eq_iff_im, hz.right]
     · grind [arg_mem_Ioc w', pi_pos, conj_im]
 
-theorem LambertW.existsUnique_eq_mul_exp_eq
-    (hk : k ≠ 0) (hk' : k ≠ -1) (hz : z ∈ Iio 0 ×ℂ {0}) :
+theorem existsUnique_eq_mul_exp_eq (hk : k ≠ 0) (hk' : k ≠ -1) (hz : z ∈ Iio 0 ×ℂ {0}) :
     ∃! w : ℂ, w.arg + w.im = (2 * k + 1) * π ∧ w * cexp w = z := by
   set θ := (2 * k + 1) * π with hθ
   have hθ1 : θ ≠ π := fun nh => hk (by exact_mod_cast (show (k : ℝ) = 0 by grind [pi_pos]))
@@ -651,7 +764,7 @@ theorem LambertW.existsUnique_eq_mul_exp_eq
     existsUnique_arg_add_im_eq hθ1 hθ2 <| norm_pos_iff.mpr fun h => by simp [h, mem_reProdIm] at hz
   exact ⟨w, ⟨hw, hz' ▸ hwz⟩, fun w' ⟨hw', hw'z⟩ => H w' ⟨hw', by rw [hw'z, hz']⟩⟩
 
-theorem LambertW.existsUnique_mem_Ioo_mul_exp_eq (k : ℤ) (hz : z ∈ Complex.slitPlane) :
+theorem existsUnique_mem_Ioo_mul_exp_eq (k : ℤ) (hz : z ∈ Complex.slitPlane) :
     ∃! w : ℂ, w.arg + w.im ∈ Ioo ((2 * k - 1) * π) ((2 * k + 1) * π) ∧ w * cexp w = z := by
   set θ := z.arg + k * (2 * π) with hθ
   have hθ' : z.arg ∈ Ioo (-π) π :=
@@ -673,7 +786,7 @@ theorem LambertW.existsUnique_mem_Ioo_mul_exp_eq (k : ℤ) (hz : z ∈ Complex.s
   · grind [arg_mul_exp_eq_of_mem (by grind [slitPlane_ne_zero]) ⟨hw'.left, hw'.right.le⟩]
   · exact hw'z.trans hz'
 
-theorem LambertW.existsUnique_mem_range_zero (z : ℂ) :
+theorem existsUnique_mem_range_zero (z : ℂ) :
     ∃! w : ℂ, w ∈ range 0 ∧ w * cexp w = z := by
   by_cases hz : z = 0
   · exact ⟨0, ⟨zero_mem_range_zero, by simp [hz]⟩, fun w hw => by simpa [hz] using hw.right⟩
@@ -693,7 +806,7 @@ theorem LambertW.existsUnique_mem_range_zero (z : ℂ) :
     · grind [mem_range_zero_iff, arg_eq_pi_iff]
     · exact ⟨by simpa using arg_add_im_mem_Ioo_of_mem_range_zero_of_mul_exp_mem hw (hwz ▸ hz), hwz⟩
 
-theorem LambertW.existsUnique_mem_range_neg_one (hz : z ≠ 0) :
+theorem existsUnique_mem_range_neg_one (hz : z ≠ 0) :
     ∃! w : ℂ, w ∈ range (-1) ∧ w * cexp w = z := by
   by_cases hz' : z ∈ Iio 0 ×ℂ {0}
   · rcases lt_or_ge z.re (-(rexp 1)⁻¹) with hz'' | hz''
@@ -718,7 +831,7 @@ theorem LambertW.existsUnique_mem_range_neg_one (hz : z ≠ 0) :
     · simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, mul_neg, mul_one] at hwl hwr
       exact ⟨mem_range_neg_one_iff.mpr <| Or.inl ⟨by grind, by grind⟩, hwz⟩
 
-theorem LambertW.existsUnique_mem_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) (hz : z ≠ 0) :
+theorem existsUnique_mem_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) (hz : z ≠ 0) :
     ∃! w : ℂ, w ∈ range k ∧ w * cexp w = z := by
   by_cases hz' : z ∈ Iio 0 ×ℂ {0}
   · refine existsUnique_congr (fun w => ⟨fun ⟨hw, hwz⟩ => ?_, fun ⟨hw, hwz⟩ => ?_⟩) |>.mp <|
@@ -735,46 +848,57 @@ theorem LambertW.existsUnique_mem_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) (h
       rw [mul_exp_eq_of_arg_add_im_eq (ne_zero_of_mem_range hk hw) h_eq, ← ofReal_neg,
         arg_ofReal_of_neg <| neg_neg_iff_pos.mpr <| Real.exp_pos _]
 
-theorem LambertW.existsUnique_mem_range_mul_exp_eq (hz : z ∈ domain k) :
+public theorem existsUnique_mem_range_mul_exp_eq (hz : z ∈ domain k) :
     ∃! w : ℂ, w ∈ range k ∧ w * cexp w = z := by
   rcases (show k = 0 ∨ k = -1 ∨ (k ≠ 0 ∧ k ≠ -1) by tauto) with rfl | rfl | ⟨hk, hk'⟩
   · exact existsUnique_mem_range_zero z
   · exact existsUnique_mem_range_neg_one (by rwa [domain_of_ne_zero (by decide)] at hz)
   · exact existsUnique_mem_range_of_ne hk hk' (by rwa [domain_of_ne_zero hk] at hz)
 
-public theorem LambertW.mul_exp_mem_domain (hw : w ∈ range k) : w * cexp w ∈ domain k := by
+public theorem mul_exp_mem_domain (hw : w ∈ range k) : w * cexp w ∈ domain k := by
   grind [domain, ne_zero_of_mem_range, exp_ne_zero]
 
-public theorem LambertW.image_mul_exp_range :
+public theorem image_mul_exp_range :
     (fun w => w * cexp w) '' range k = domain k :=
   eq_of_subset_of_subset (image_subset_iff.mpr fun _ hw => mul_exp_mem_domain hw)
     fun _ hz => (existsUnique_mem_range_mul_exp_eq hz).exists
 
-public theorem LambertW.mapsTo_mul_exp_range :
+public theorem mapsTo_mul_exp_range :
     MapsTo (fun w => w * cexp w) (range k) (domain k) := fun _ hw => mul_exp_mem_domain hw
 
-public theorem LambertW.injOn_mul_exp_range :
+public theorem injOn_mul_exp_range :
     InjOn (fun w => w * cexp w) (range k) := by
   intro w₁ hw₁ w₂ hw₂ (h : w₁ * cexp w₁ = w₂ * cexp w₂)
   exact (existsUnique_mem_range_mul_exp_eq (mul_exp_mem_domain hw₁)).unique ⟨hw₁, rfl⟩ ⟨hw₂, h.symm⟩
 
-public theorem LambertW.surjOn_mul_exp_range :
+public theorem surjOn_mul_exp_range :
     SurjOn (fun w => w * cexp w) (range k) (domain k) := by
   simpa only [← image_mul_exp_range] using surjOn_image _ _
 
-/-- TODO doc -/
-public theorem LambertW.bijOn_mul_exp_range_domain :
+/-- `w => w * exp w` is a bijection from `range k` onto `domain k`. -/
+public theorem bijOn_mul_exp_range_domain :
     BijOn (fun w => w * cexp w) (range k) (domain k) :=
   ⟨mapsTo_mul_exp_range, injOn_mul_exp_range, surjOn_mul_exp_range⟩
 
 end LambertWRangeDomain
 
+end LambertW
+
 section LambertW
 
 open LambertW
 
-/-- TODO doc -/
-@[pp_nodot, expose]
+/-- The `k`-th branch `W_ k` of the standard Lambert W function, i.e. the inverse
+of `w => w * exp w` on `Complex.LambertW.range k`.
+
+For `k = 0`, the principal branch `W₀` is a total function on `ℂ`.
+For `k ≠ 0`, `W_ k 0` is the junk value from `Function.invFunOn`.
+
+The branch cut of `W₀` is `(-∞, -1 / e]`, while the branch cut for other branches is `(-∞, 0]`.
+The boundary choice for the range of `W_ k` follows the standard
+choice given by the rule of *counter-clockwise continuity*.
+-/
+@[pp_nodot, expose, wikidata Q429331, dlmf 4.13]
 public def lambertW (k : ℤ) : ℂ -> ℂ :=
   Function.invFunOn (fun w => w * cexp w) (LambertW.range k)
 
@@ -783,26 +907,37 @@ recommended_spelling "lambertW" for "W_" in [lambertW, ComplexLambertW.«termW_�
 
 open scoped ComplexLambertW
 
-/-- TODO doc -/
+/-- The principal branch `W₀` of the Lambert W function. -/
 scoped[ComplexLambertW] notation "W₀" => W_ 0
 recommended_spelling "lambertW_zero" for "W₀" in [ComplexLambertW.«termW₀»]
 
-/-- TODO doc -/
+/-- Notation for the branch `W₋₁` of the Lambert W function. -/
 scoped[ComplexLambertW] notation "W₋₁" => W_ (-1)
 recommended_spelling "lambertW_neg_one" for "W₋₁" in [ComplexLambertW.«termW₋₁»]
 
+public theorem invOn_lambertW_mul_exp_range_domain :
+    InvOn (W_ k) (fun w => w * cexp w) (LambertW.range k) (domain k) :=
+  bijOn_mul_exp_range_domain.invOn_invFunOn
+
+public theorem invOn_mul_exp_lambertW_domain_range :
+    InvOn (fun w => w * cexp w) (W_ k) (domain k) (LambertW.range k) :=
+  invOn_lambertW_mul_exp_range_domain.symm
+
+public theorem bijOn_lambertW_domain_range :
+    BijOn (W_ k) (domain k) (LambertW.range k) :=
+  bijOn_mul_exp_range_domain.symm invOn_mul_exp_lambertW_domain_range
+
 public theorem lambertW_mem_range_of_mem_domain (hz : z ∈ domain k) : W_ k z ∈ range k :=
-  Function.invFunOn_mem (by rwa [← mem_image, bijOn_mul_exp_range_domain.image_eq])
+  bijOn_lambertW_domain_range.mapsTo hz
 
-/-- TODO doc -/
+/-- `W_ k` is a left inverse of `w => w * exp w` on its range. -/
 public theorem lambertW_mul_exp_of_mem_range (hw : w ∈ range k) : W_ k (w * exp w) = w :=
-  bijOn_mul_exp_range_domain.invOn_invFunOn.left hw
+  invOn_lambertW_mul_exp_range_domain.left hw
 
-/-- TODO doc -/
+/-- `W_ k` is a right inverse of `w => w * exp w` on its domain. -/
 public theorem lambertW_mul_exp_lambertW_of_mem_domain (hz : z ∈ domain k) :
-    W_ k z * cexp (W_ k z) = z := by
-  apply Function.invFunOn_eq (f := fun w => w * exp w)
-  rwa [← mem_image, bijOn_mul_exp_range_domain.image_eq]
+    W_ k z * cexp (W_ k z) = z :=
+  invOn_mul_exp_lambertW_domain_range.left hz
 
 @[simp]
 public theorem lambertW_zero_mul_exp_lambertW_zero : W₀ z * cexp (W₀ z) = z :=
@@ -818,13 +953,14 @@ public theorem exists_eq_lambertW_of_eq_mul_exp (hw : z = w * cexp w) :
   · simp [hk]
   · simpa [domain_of_ne_zero hk]
 
-/-- TODO doc -/
+/-- For the equation `z = w * exp w`, holds if and only if
+`w = W_ k z` for some `k` with `z ∈ domain k`. -/
 public theorem eq_mul_exp_iff_exists_eq_lambertW :
     z = w * cexp w ↔ ∃ k : ℤ, w = W_ k z ∧ z ∈ domain k := by
   refine ⟨exists_eq_lambertW_of_eq_mul_exp, fun ⟨k, hk, hz⟩ => ?_⟩
   rw [hk, lambertW_mul_exp_lambertW_of_mem_domain hz]
 
-/-- TODO doc -/
+/-- If `z = w * exp w` and `w ≠ -1`, there is a unique `k` s.t. `W_ k z = w`. -/
 public theorem existsUnique_eq_lambertW_of_ne_neg_one
     (hw : z = w * cexp w) (hw' : w ≠ -1) : ∃! k : ℤ, w = W_ k z ∧ z ∈ domain k := by
   obtain ⟨k, hk, Hk⟩ : ∃! k : ℤ, w ∈ range k := existsUnique_mem_range_of_ne_neg_one hw'
