@@ -271,6 +271,15 @@ theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) :
   refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
   simp [hinj.eq_iff]
 
+theorem map.surjective {f : α → β} (h : Surjective f) : Surjective (map f) := by
+  refine Sym2.ind fun a b ↦ ?_
+  rcases h a with ⟨a, rfl⟩
+  rcases h b with ⟨b, rfl⟩
+  exact ⟨s(a, b), rfl⟩
+
+theorem map.bijective {f : α → β} (h : Bijective f) : Bijective (map f) :=
+  ⟨map.injective h.injective, map.surjective h.surjective⟩
+
 /-- `mk a` as an embedding. This is the symmetric version of `Function.Embedding.sectL`. -/
 @[simps]
 def mkEmbedding (a : α) : α ↪ Sym2 α where
@@ -280,10 +289,32 @@ def mkEmbedding (a : α) : α ↪ Sym2 α where
     obtain rfl | ⟨rfl, rfl⟩ := h <;> rfl
 
 /-- `Sym2.map` as an embedding. -/
-@[simps]
 def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β where
   toFun := map f
   inj' := map.injective f.injective
+
+@[simp]
+theorem Function.Embedding.coe_sym2Map (f : α ↪ β) : f.sym2Map = map f :=
+  rfl
+
+/-- `Sym2.map` as an equivalence. -/
+def _root_.Equiv.sym2Map (f : α ≃ β) : Sym2 α ≃ Sym2 β where
+  toFun := map f
+  invFun := map f.symm
+  left_inv := Sym2.ind <| by simp
+  right_inv := Sym2.ind <| by simp
+
+@[simp]
+theorem Equiv.coe_sym2Map (f : α ≃ β) : f.sym2Map = map f :=
+  rfl
+
+@[simp]
+theorem Equiv.symm_sym2Map (f : α ≃ β) : f.sym2Map.symm = f.symm.sym2Map :=
+  rfl
+
+@[simp]
+theorem Equiv.toEmbedding_sym2Map (f : α ≃ β) : f.sym2Map.toEmbedding = f.toEmbedding.sym2Map :=
+  rfl
 
 lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
     lift f ∘ map g = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ :=
@@ -1036,6 +1067,11 @@ lemma sym2_preimage {f : α → β} {s : Set β} : (f ⁻¹' s).sym2 = Sym2.map 
 
 lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.sym2 := by
   simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, uncurry, Sym2.map_mk]
+
+theorem range_map (f : α → β) : Set.range (Sym2.map f) = (Set.range f).sym2 := by
+  refine Set.ext <| Sym2.ind fun a b ↦ ?_
+  simp [Sym2.exists]
+  grind only
 
 lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
   preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
