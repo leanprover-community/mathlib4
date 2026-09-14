@@ -297,6 +297,11 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
 theorem _root_.Function.Embedding.coe_sym2Map (f : α ↪ β) : f.sym2Map = map f :=
   rfl
 
+@[deprecated Function.Embedding.coe_sym2Map (since := "2026-09-14")]
+theorem _root_.Function.Embedding.sym2Map_apply (f : α ↪ β) (z : Sym2 α) :
+    f.sym2Map z = Sym2.map f z :=
+  rfl
+
 /-- `Sym2.map` as an equivalence. -/
 def _root_.Equiv.sym2Map (f : α ≃ β) : Sym2 α ≃ Sym2 β where
   toFun := map f
