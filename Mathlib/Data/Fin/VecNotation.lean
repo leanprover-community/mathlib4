@@ -503,9 +503,9 @@ end Matrix
 
 open Matrix
 
-/-- The empty vector is an injective function. It is useful to have this special case for `Fin 0` for
+/-- Any function out of `Fin 0` is injective. It is useful to have this special case for `Fin 0` for
 `simp` so it doesn't do a TC search for `Subsingleton`. -/
-@[simp] theorem injective_vecEmpty {α : Type*} : Function.Injective (![] : Fin 0 → α) :=
+@[simp] theorem injective_vecEmpty {α : Type*} (f : Fin 0 → α) : Function.Injective f :=
   Function.injective_of_subsingleton _
 
 /-- `vecCons x₀ x` is injective iff `x₀` is not in the range of `x` and `x` is injective. It is useful to have
