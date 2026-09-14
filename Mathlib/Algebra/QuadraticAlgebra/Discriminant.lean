@@ -42,6 +42,12 @@ def discr [CommSemiring R] (a b : R) : R := b ^ 2 + 4 * a
 
 theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := rfl
 
+/-- The discriminant commutes with a base change `R → S`. -/
+@[simp]
+theorem discr_algebraMap {S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] (a b : R) :
+    discr (algebraMap R S a) (algebraMap R S b) = algebraMap R S (discr a b) := by
+  simp [discr_def, map_ofNat]
+
 /-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.changeGenerator`), the
 discriminant is multiplied by `u ^ 2`. -/
 theorem discr_changeGenerator [CommRing R] (a b u k : R) :
