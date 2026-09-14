@@ -1145,6 +1145,7 @@ def _root_.LinearEquiv.multilinearMapCongrRightₛₗ {σ₃₂ : R₃ →+* R�
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
+@[simp]
 lemma _root_.LinearEquiv.toLinearMap_multilinearMapCongrRightₛₗ
     {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
     [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂] (g : N₂ ≃ₛₗ[σ₂₃] N₃) :
