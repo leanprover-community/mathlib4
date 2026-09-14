@@ -22,6 +22,7 @@ permissions:
 
 env:
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_DEVELOPER_BASE_URL: ${{ vars.MATHLIB_CACHE_DEVELOPER_BASE_URL }}
 
 jobs:
   report:
