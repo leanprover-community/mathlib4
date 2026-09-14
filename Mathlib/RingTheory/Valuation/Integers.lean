@@ -12,6 +12,8 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 The elements with valuation less than or equal to 1.
 
+The characteristic predicate of `Valuation.integer` is `Valuation.Integers`.
+
 -/
 
 @[expose] public section
