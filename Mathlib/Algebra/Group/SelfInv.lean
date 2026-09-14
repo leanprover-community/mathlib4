@@ -13,10 +13,12 @@ public import Mathlib.Algebra.Group.Basic
 This file defines self-inverse elements of a type with an inversion, i.e. elements `a` satisfying
 `a⁻¹ = a`.
 
-The purpose of `IsSelfInv` is mainly to have a canonical way of saying that a
-`Set` (or something `SetLike`) is closed under inversion/negation. See also
-`Mathlib/Algebra/Group/Pointwise/Set/SelfInv.lean` for lemmas about self-inverse
-sets.
+Bundling `a⁻¹ = a` into a predicate lets its many equivalent phrasings (`a⁻¹ ≤ a`, `a ≤ a⁻¹`,
+and for cones `C = span R C`) share one name and one dot-notation API. Unlike `InvMemClass`,
+`IsSelfInv` needs no underlying set, so it also covers abstract convexity, where the lattice of
+convex sets is replaced by an arbitrary lattice with an involutive negation.
+
+See also `Mathlib/Algebra/Group/Pointwise/Set/SelfInv.lean` for lemmas about self-inverse sets.
 
 ## Main declarations
 
