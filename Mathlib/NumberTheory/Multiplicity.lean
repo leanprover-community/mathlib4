@@ -339,12 +339,12 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left' hyx n), emultiplicity_zero_right,
       top_add, add_top]
 
-namespace multiplicity
+namespace Nat
 
 variable {x y : ℕ}
 
-theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : n ≠ 0)
-    (hneven : Even n) :
+theorem multiplicity_pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ}
+    (hn : n ≠ 0) (hneven : Even n) :
     multiplicity 2 (x ^ n - y ^ n) + 1 =
       multiplicity 2 (x + y) + multiplicity 2 (x - y) + multiplicity 2 n := by
   simp only [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
@@ -355,25 +355,25 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · lia
   · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
-theorem pow_two_sub_one {x n : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
-    multiplicity 2 (x ^ n - 1) + 1 = multiplicity 2 (x + 1) +
-    multiplicity 2 (x - 1) + multiplicity 2 n := by
-  simpa using pow_two_sub_pow h1x (by grind) hx hn hneven
+theorem multiplicity_pow_two_sub_one {x n : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0)
+    (hneven : Even n) : multiplicity 2 (x ^ n - 1) + 1 =
+      multiplicity 2 (x + 1) + multiplicity 2 (x - 1) + multiplicity 2 n := by
+  simpa using multiplicity_pow_two_sub_pow h1x (by grind) hx hn hneven
 
-lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
+lemma multiplicity_pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
     multiplicity 2 n + 2 ≤ multiplicity 2 (x ^ n - 1) := by
   have : multiplicity 2 ((x + 1) * (x - 1)) ≥ 3 := by
     refine (multiplicity_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
     simp [← Nat.pow_two_sub_pow_two x 1]
     grind [Nat.eight_dvd_sq_sub_one_of_odd]
-  have := pow_two_sub_one h1x hx hn hneven
+  have := multiplicity_pow_two_sub_one h1x hx hn hneven
   grind [← multiplicity.mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
-theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
-    multiplicity p (x ^ n - y ^ n) = multiplicity p (x - y) + multiplicity p n := by
+theorem multiplicity_pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
+    (hn : n ≠ 0) : multiplicity p (x ^ n - y ^ n) = multiplicity p (x - y) + multiplicity p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [multiplicity_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_sub_pow hp.out hp1 hxy hx n
@@ -381,7 +381,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   · exact Nat.sub_ne_zero_of_lt hyx
   · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
-theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
+theorem multiplicity_pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     multiplicity p (x ^ n + y ^ n) = multiplicity p (x + y) + multiplicity p n := by
   rcases y with - | y
   · contradiction
@@ -392,17 +392,17 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   · simp
   · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
-end multiplicity
+end Nat
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.pow_two_sub_pow :=
-  multiplicity.pow_two_sub_pow
+  Nat.multiplicity_pow_two_sub_pow
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.pow_two_sub_one :=
-  multiplicity.pow_two_sub_one
+  Nat.multiplicity_pow_two_sub_one
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.pow_two_sub_one_ge :=
-  multiplicity.pow_two_sub_one_ge
+  Nat.multiplicity_pow_two_sub_one_ge
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow_sub_pow := multiplicity.pow_sub_pow
+@[deprecated (since := "2026-09-11")] alias padicValNat.pow_sub_pow := Nat.multiplicity_pow_sub_pow
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow_add_pow := multiplicity.pow_add_pow
+@[deprecated (since := "2026-09-11")] alias padicValNat.pow_add_pow := Nat.multiplicity_pow_add_pow

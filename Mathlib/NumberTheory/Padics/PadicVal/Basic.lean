@@ -70,28 +70,28 @@ universe u
 open Nat Rat
 open scoped Finset
 
-namespace multiplicity
+namespace Nat
 
 variable {p : ℕ}
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `multiplicity p p` is `1`. -/
-alias self := multiplicity_base
+alias multiplicity_self := multiplicity_base
 
-theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : multiplicity p n = 0 :=
+theorem multiplicity_eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : multiplicity p n = 0 :=
   multiplicity_eq_zero_iff.2 <| Or.inr <| Or.inr h
 
-theorem dvd_of_ne_zero {n : ℕ} (h : multiplicity p n ≠ 0) : p ∣ n :=
-  not_not.mp (mt multiplicity.eq_zero_of_not_dvd h)
+theorem multiplicity_dvd_of_ne_zero {n : ℕ} (h : multiplicity p n ≠ 0) : p ∣ n :=
+  not_not.mp (mt multiplicity_eq_zero_of_not_dvd h)
 
-end multiplicity
+end Nat
 
-@[deprecated (since := "2026-09-12")] alias padicValNat.self := multiplicity.self
+@[deprecated (since := "2026-09-12")] alias padicValNat.self := Nat.multiplicity_self
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.eq_zero_of_not_dvd :=
-  multiplicity.eq_zero_of_not_dvd
+  Nat.multiplicity_eq_zero_of_not_dvd
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.dvd_of_ne_zero :=
-  multiplicity.dvd_of_ne_zero
+  Nat.multiplicity_dvd_of_ne_zero
 
 /-- For `p ≠ 1`, the `p`-adic valuation of an integer `z ≠ 0` is the largest natural number `k` such
 that `p^k` divides `z`. If `x = 0` or `p = 1`, then `padicValInt p q` defaults to `0`. -/
@@ -120,7 +120,7 @@ protected theorem one : padicValInt p 1 = 0 := by simp [padicValInt]
 theorem of_nat {n : ℕ} : padicValInt p n = multiplicity p n := by simp [padicValInt]
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValInt p p` is `1`. -/
-theorem self (hp : 1 < p) : padicValInt p p = 1 := by simp [multiplicity.self hp]
+theorem self (hp : 1 < p) : padicValInt p p = 1 := by simp [multiplicity_self hp]
 
 @[simp]
 theorem eq_zero_iff {z : ℤ} : padicValInt p z = 0 ↔ p = 1 ∨ z = 0 ∨ ¬(p : ℤ) ∣ z := by
@@ -190,10 +190,10 @@ theorem zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
 theorem padicValRat_of_nat (n : ℕ) : ↑(multiplicity p n) = padicValRat p n := by simp
 
 @[simp]
-theorem Nat.multiplicity_self [Fact p.Prime] : multiplicity p p = 1 :=
-  multiplicity.self Fact.out
+theorem Nat.Prime.multiplicity_self [Fact p.Prime] : multiplicity p p = 1 :=
+  Nat.multiplicity_self Fact.out
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_self := Nat.multiplicity_self
+@[deprecated (since := "2026-09-11")] alias padicValNat_self := Nat.Prime.multiplicity_self
 
 theorem one_le_multiplicity_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (div : p ∣ n) :
     1 ≤ multiplicity p n := by
@@ -205,7 +205,7 @@ theorem one_le_multiplicity_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) 
 theorem dvd_iff_multiplicity_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ multiplicity p n ≠ 0 :=
   ⟨fun h => one_le_iff_ne_zero.mp (one_le_multiplicity_of_dvd hn0 h), fun h =>
-    Classical.not_not.1 (mt multiplicity.eq_zero_of_not_dvd h)⟩
+    Classical.not_not.1 (mt Nat.multiplicity_eq_zero_of_not_dvd h)⟩
 
 @[deprecated (since := "2026-09-11")] alias dvd_iff_padicValNat_ne_zero :=
   dvd_iff_multiplicity_ne_zero
@@ -397,7 +397,7 @@ theorem num_or_den_zero_padicVal (a : ℚ) {p : ℕ} (hp : p.Prime) :
   have h := a.reduced
   contrapose! h
   apply not_coprime_of_dvd_of_dvd hp.one_lt <;>
-    grind [multiplicity.dvd_of_ne_zero h.1, multiplicity.dvd_of_ne_zero h.2]
+    grind [Nat.multiplicity_dvd_of_ne_zero h.1, Nat.multiplicity_dvd_of_ne_zero h.2]
 
 /-- The numerator and denominator of a rational number with even `p`-adic valuation
 also have even `p`-adic valuation. -/
@@ -429,53 +429,53 @@ theorem isSquare_iff_even_factorization {a : ℚ} :
 
 end Rat
 
-namespace multiplicity
+namespace Nat
 
 variable {p a b : ℕ} [hp : Fact p.Prime]
 
 /-- A rewrite lemma for `multiplicity p (a * b)` with conditions `a ≠ 0`, `b ≠ 0`. -/
-protected theorem mul :
+theorem multiplicity_mul :
     a ≠ 0 → b ≠ 0 → multiplicity p (a * b) = multiplicity p a + multiplicity p b :=
   mod_cast padicValRat.mul (p := p) (q := a) (r := b)
 
-protected theorem div_of_dvd (h : b ∣ a) :
+theorem multiplicity_div_of_dvd (h : b ∣ a) :
     multiplicity p (a / b) = multiplicity p a - multiplicity p b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
   obtain ⟨k, rfl⟩ := h
   obtain ⟨hb, hk⟩ := mul_ne_zero_iff.mp ha
-  rw [mul_comm, k.mul_div_cancel hb.bot_lt, multiplicity.mul hk hb, Nat.add_sub_cancel]
+  rw [mul_comm, k.mul_div_cancel hb.bot_lt, multiplicity_mul hk hb, Nat.add_sub_cancel]
 
 /-- Dividing out by a prime factor reduces the `multiplicity` by `1`. -/
-protected theorem div (dvd : p ∣ b) : multiplicity p (b / p) = multiplicity p b - 1 := by
-  rw [multiplicity.div_of_dvd dvd, Nat.multiplicity_self]
+theorem multiplicity_div (dvd : p ∣ b) : multiplicity p (b / p) = multiplicity p b - 1 := by
+  rw [Nat.multiplicity_div_of_dvd dvd, Nat.Prime.multiplicity_self]
 
 /-- A version of `padicValRat.pow` for `multiplicity`. -/
 @[simp]
-protected theorem pow (a n : ℕ) : multiplicity p (a ^ n) = n * multiplicity p a := by
+theorem multiplicity_pow (a n : ℕ) : multiplicity p (a ^ n) = n * multiplicity p a := by
   simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow a
 
-protected theorem prime_pow (n : ℕ) : multiplicity p (p ^ n) = n := by
-  rw [multiplicity.pow p, Nat.multiplicity_self, mul_one]
+theorem multiplicity_prime_pow (n : ℕ) : multiplicity p (p ^ n) = n := by
+  rw [multiplicity_pow p, Nat.Prime.multiplicity_self, mul_one]
 
-protected theorem div_pow (dvd : p ^ a ∣ b) :
+theorem multiplicity_div_pow (dvd : p ^ a ∣ b) :
     multiplicity p (b / p ^ a) = multiplicity p b - a := by
-  rw [multiplicity.div_of_dvd dvd, multiplicity.prime_pow]
+  rw [multiplicity_div_of_dvd dvd, multiplicity_prime_pow]
 
-protected theorem div' {m : ℕ} (cpm : Coprime p m) {b : ℕ} (dvd : m ∣ b) :
+theorem multiplicity_div' {m : ℕ} (cpm : Coprime p m) {b : ℕ} (dvd : m ∣ b) :
     multiplicity p (b / m) = multiplicity p b := by
-  rw [multiplicity.div_of_dvd dvd, eq_zero_of_not_dvd (hp.out.coprime_iff_not_dvd.mp cpm),
-    Nat.sub_zero]
+  rw [multiplicity_div_of_dvd dvd,
+    multiplicity_eq_zero_of_not_dvd (hp.out.coprime_iff_not_dvd.mp cpm), Nat.sub_zero]
 
-end multiplicity
+end Nat
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.mul := multiplicity.mul
-@[deprecated (since := "2026-09-11")] alias padicValNat.div_of_dvd := multiplicity.div_of_dvd
-@[deprecated (since := "2026-09-11")] alias padicValNat.div := multiplicity.div
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow := multiplicity.pow
-@[deprecated (since := "2026-09-11")] alias padicValNat.prime_pow := multiplicity.prime_pow
-@[deprecated (since := "2026-09-11")] alias padicValNat.div_pow := multiplicity.div_pow
-@[deprecated (since := "2026-09-11")] alias padicValNat.div' := multiplicity.div'
+@[deprecated (since := "2026-09-11")] alias padicValNat.mul := Nat.multiplicity_mul
+@[deprecated (since := "2026-09-11")] alias padicValNat.div_of_dvd := Nat.multiplicity_div_of_dvd
+@[deprecated (since := "2026-09-11")] alias padicValNat.div := Nat.multiplicity_div
+@[deprecated (since := "2026-09-11")] alias padicValNat.pow := Nat.multiplicity_pow
+@[deprecated (since := "2026-09-11")] alias padicValNat.prime_pow := Nat.multiplicity_prime_pow
+@[deprecated (since := "2026-09-11")] alias padicValNat.div_pow := Nat.multiplicity_div_pow
+@[deprecated (since := "2026-09-11")] alias padicValNat.div' := Nat.multiplicity_div'
 
 section multiplicity
 
@@ -483,7 +483,7 @@ variable {p : ℕ}
 
 theorem dvd_of_one_le_multiplicity {n : ℕ} (hp : 1 ≤ multiplicity p n) : p ∣ n := by
   by_contra h
-  rw [multiplicity.eq_zero_of_not_dvd h] at hp
+  rw [Nat.multiplicity_eq_zero_of_not_dvd h] at hp
   exact lt_irrefl 0 (lt_of_lt_of_le zero_lt_one hp)
 
 @[deprecated (since := "2026-09-11")] alias dvd_of_one_le_padicValNat :=
@@ -528,22 +528,22 @@ theorem pow_succ_multiplicity_not_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 
 
 theorem multiplicity_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne : p ≠ q) :
     multiplicity p q = 0 :=
-  @multiplicity.eq_zero_of_not_dvd p q <|
+  @Nat.multiplicity_eq_zero_of_not_dvd p q <|
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp ne
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_primes := multiplicity_primes
 
 theorem multiplicity_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n : ℕ) (ne : p ≠ q) : multiplicity p (q ^ n) = 0 := by
-  rw [multiplicity.pow _, multiplicity_primes ne, mul_zero]
+  rw [Nat.multiplicity_pow _, multiplicity_primes ne, mul_zero]
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_prime_prime_pow :=
   multiplicity_prime_prime_pow
 
 theorem multiplicity_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (ne : p ≠ q) : multiplicity p (p ^ n * q ^ m) = n := by
-  rw [multiplicity.mul (NeZero.ne' (p ^ n)).symm (NeZero.ne' (q ^ m)).symm,
-    multiplicity.prime_pow, multiplicity_prime_prime_pow m ne, add_zero]
+  rw [Nat.multiplicity_mul (NeZero.ne' (p ^ n)).symm (NeZero.ne' (q ^ m)).symm,
+    Nat.multiplicity_prime_pow, multiplicity_prime_prime_pow m ne, add_zero]
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_mul_pow_left :=
   multiplicity_mul_pow_left
@@ -574,11 +574,11 @@ lemma multiplicity_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
     have : multiplicity p k < k := by calc
       _ ≤ log p k := multiplicity_le_nat_log k
       _ < _ := log_lt_self p (by lia)
-    rw [hk, multiplicity.mul (by lia) (by lia), Nat.multiplicity_self]
+    rw [hk, Nat.multiplicity_mul (by lia) (by lia), Nat.Prime.multiplicity_self]
     calc
       _ ≤ p + k := by lia
       _ ≤ _ := Nat.add_le_mul hp.out.two_le (by lia)
-  · rw [multiplicity.eq_zero_of_not_dvd dvd]
+  · rw [Nat.multiplicity_eq_zero_of_not_dvd dvd]
     lia
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_add_le_self := multiplicity_add_le_self
@@ -615,7 +615,7 @@ lemma Nat.max_log_multiplicity_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
   intro h
   replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt hp.out.one_lt h))
     (pow_log_le_self p n.succ_ne_zero)
-  rw [h, multiplicity.prime_pow, ← h]
+  rw [h, Nat.multiplicity_prime_pow, ← h]
 
 @[deprecated (since := "2026-09-11")] alias Nat.max_log_padicValNat_succ_eq_log_succ :=
   Nat.max_log_multiplicity_succ_eq_log_succ
@@ -660,7 +660,7 @@ theorem multiplicity_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
 some `k`. -/
 theorem multiplicity_eq_zero_of_mem_Ioo {m k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : multiplicity p m = 0 :=
-  multiplicity.eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
+  Nat.multiplicity_eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_eq_zero_of_mem_Ioo :=
   multiplicity_eq_zero_of_mem_Ioo
@@ -671,7 +671,7 @@ theorem multiplicity_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (
   | zero => rw [add_zero]
   | succ n hn =>
     rw [add_succ, factorial_succ,
-      multiplicity.mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
+      Nat.multiplicity_mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
       hn <| lt_of_succ_lt h, ← add_succ,
       multiplicity_eq_zero_of_mem_Ioo ⟨(Nat.lt_add_of_pos_right <| succ_pos n),
         (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩,
@@ -780,8 +780,8 @@ theorem sub_one_mul_multiplicity_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fac
     (p.digits k).sum + (p.digits n).sum - (p.digits (n + k)).sum := by
   have h : k ≤ n + k := by exact Nat.le_add_left k n
   simp only [Nat.choose_eq_factorial_div_factorial h]
-  rw [multiplicity.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
-      multiplicity.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
+  rw [multiplicity_div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
+      Nat.multiplicity_mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
   simp only [sub_one_mul_multiplicity_factorial]
   rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
       digit_sum_le p n, Nat.sub_sub (k + n), ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
@@ -831,11 +831,11 @@ theorem padicValInt_self [hp : Fact p.Prime] : padicValInt p p = 1 :=
 theorem padicValInt.mul [hp : Fact p.Prime] {a b : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) :
     padicValInt p (a * b) = padicValInt p a + padicValInt p b := by
   simp_rw [padicValInt]
-  rw [Int.natAbs_mul, multiplicity.mul] <;> rwa [Int.natAbs_ne_zero]
+  rw [Int.natAbs_mul, Nat.multiplicity_mul] <;> rwa [Int.natAbs_ne_zero]
 
 theorem padicValInt_mul_eq_succ [hp : Fact p.Prime] (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
-  simp only [padicValInt.of_nat, Nat.multiplicity_self]
+  simp only [padicValInt.of_nat, Nat.Prime.multiplicity_self]
 
 end padicValInt
