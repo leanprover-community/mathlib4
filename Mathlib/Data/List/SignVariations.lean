@@ -11,13 +11,14 @@ public import Mathlib.Basic.Sign.Basic
 /-!
 # Sign variations of a list
 
-This files defines `List.signVariations`, for counting the number of changes of sign in a list
+This file defines `List.signVariations`, for counting the number of changes of sign in a list
 after all zeroes were removed. For example, `[1, 0, -2, 3, 3]` has two sign variations, and so
 does `[1, -2, 3]`.
 
 This is the counting device behind Descartes' rule of signs (applied to the list of coefficients
 of the polynomial) and Sturm's theorem (applied to the values of a Sturm sequence at a
-point, or to its leading coefficients for the count at infinity).
+point, or to the signs of its leading coefficients, adjusted by degree parity at `-∞`, for the
+count at infinity).
 
 ## Main definitions
 
@@ -44,39 +45,36 @@ variable {α : Type*} [Zero α] [LinearOrder α]
 /-- The number of sign variations of a list: the number of adjacent pairs of opposite sign once
 all zero entries have been removed. -/
 def signVariations (l : List α) : ℕ :=
-  letI signs := l.map SignType.sign
-  letI nonzero_signs := signs.filter (· ≠ 0)
-  (nonzero_signs.destutter (· ≠ ·)).length - 1
+  (((l.map sign).filter (· ≠ 0)).destutter (· ≠ ·)).length - 1
+
+example : signVariations [1, 0, -2, 3, 3] = 2 := by decide
 
 @[simp]
-lemma signVariations_nil :
-    signVariations ([] : List α) = 0 := by
-  trivial
+lemma signVariations_nil : signVariations ([] : List α) = 0 := rfl
 
 @[simp]
-lemma signVariations_singleton : ∀ (a : α), signVariations [a] = 0 := by
-  intro a
+lemma signVariations_singleton (a : α) : signVariations [a] = 0 := by
   rcases eq_or_ne a 0 with ha | ha <;> simp [signVariations, ha]
 
 /-- A leading zero entry does not change the sign variations. -/
 @[simp]
-lemma signVariations_zero_cons : ∀ (b : α) (as : List α),
+lemma signVariations_zero_cons (b : α) (as : List α) :
     signVariations (0 :: b :: as) = signVariations (b :: as) := by
   simp [signVariations]
 
 /-- A zero entry in second position does not change the sign variations. -/
 @[simp]
-lemma signVariations_cons_zero_cons : ∀ (a : α) (as : List α),
+lemma signVariations_cons_zero_cons (a : α) (as : List α) :
     signVariations (a :: 0 :: as) = signVariations (a :: as) := by
   simp [signVariations, filter]
 
 /-- Prepending a nonzero entry `a` to a list starting with a nonzero entry `b` adds one sign
 variation exactly when `a` and `b` have opposite signs. -/
-lemma signVariations_cons_cons_of_ne_zero : ∀ (a b : α) (as : List α),
+lemma signVariations_cons_cons_of_ne_zero (a b : α) (as : List α) :
     a ≠ 0 → b ≠ 0 →
       signVariations (a :: b :: as) =
         (if sign a = sign b then 0 else 1) + signVariations (b :: as) := by
-  intros a b as ha hb
+  intros ha hb
   have ha' : sign a ≠ 0 := by rwa [ne_eq, sign_eq_zero_iff]
   have hb' : sign b ≠ 0 := by rwa [ne_eq, sign_eq_zero_iff]
   have hf1 :
