@@ -24,7 +24,7 @@ homotopy categories. We take advantage of this definition in order to
 show that `F.rightDerivedFunctorPlus` is a triangulated functor.
 We also show that `F.rightDerivedFunctorPlus` may also be thought of
 as a derived functor of the functor `F.mapCochainComplexPlus`
-that `F` induces on the category of bounded below cochain complexes.
+that `F` induces on the categories of bounded below cochain complexes.
 
 -/
 
@@ -151,9 +151,9 @@ section
 
 open DerivedCategory.Plus.TStructure
 
-instance : F.rightDerivedFunctorPlus.LeftTExact t t where
-  isGE_obj X n hX := by
-    obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.Plus.exists_injective_nonempty_iso X n
+instance : F.rightDerivedFunctorPlus.LeftTExact t t :=
+  Functor.LeftTExact.mk (fun X _ ↦ by
+    obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.Plus.exists_injective_nonempty_iso X 0
     let iso :
         DerivedCategory.Plus.Q.obj
           ((InjectiveObject.ι C ⋙ F).mapCochainComplexPlus.obj L) ≅
@@ -164,7 +164,7 @@ instance : F.rightDerivedFunctorPlus.LeftTExact t t where
     rw [← t.isGE_iff_of_iso (F.rightDerivedFunctorPlus.mapIso e), ← t.isGE_iff_of_iso iso]
     simp only [← DerivedCategory.Plus.isGE_ι_obj_iff]
     dsimp [DerivedCategory.Plus.Q]
-    infer_instance
+    infer_instance)
 
 instance (K : DerivedCategory.Plus C) (n : ℤ) [K.IsGE n] :
     (F.rightDerivedFunctorPlus.obj K).IsGE n :=

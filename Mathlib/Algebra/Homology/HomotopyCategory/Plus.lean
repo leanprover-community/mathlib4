@@ -290,9 +290,9 @@ variable {C D}
 variable (F : C ⥤ D) [F.Additive]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor between bounded below homotopy categories that is induced
 by an additive functor. -/
+@[implicit_reducible]
 def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=
   (HomotopyCategory.plus D).lift
     (HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
@@ -342,7 +342,8 @@ is induced by `F.mapCochainComplexPlus`. -/
 @[simps! -isSimp]
 def quotientCompMapHomotopyCategoryPlusIso :
     HomotopyCategory.Plus.quotient C ⋙ F.mapHomotopyCategoryPlus ≅
-    F.mapCochainComplexPlus ⋙ HomotopyCategory.Plus.quotient D := Iso.refl _
+    F.mapCochainComplexPlus ⋙ HomotopyCategory.Plus.quotient D :=
+  Iso.refl _
 
 @[reassoc]
 lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
@@ -360,11 +361,9 @@ lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
     mapHomotopyCategoryPlusCompι_hom_app, HomotopyCategory.Plus.quotientCompιIso_hom_app,
     mapCochainComplexPlusCompι_inv_app, HomotopyCategory.Plus.quotientCompιIso_inv_app,
     Category.comp_id, Category.id_comp, comp_obj,
-    mapCochainComplexPlus_obj_obj,
-    (F.mapHomotopyCategory (.up ℤ)).map_id ((HomotopyCategory.quotient C (.up ℤ)).obj K.obj),
     Functor.mapHomotopyCategoryFactors_hom_app]
-  change 𝟙 _ = 𝟙 _ ≫ 𝟙 _ ≫ 𝟙 _
-  simp
+  simp [mapHomotopyCategoryPlus, HomotopyCategory.Plus.quotient]
+  rfl
 
 instance : NatTrans.CommShift F.quotientCompMapHomotopyCategoryPlusIso.hom ℤ :=
   NatTrans.CommShift.of_comp_faithful (HomotopyCategory.Plus.ι _) (by
