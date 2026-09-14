@@ -49,6 +49,7 @@ namespace PresheafOfModules
 variable {R R' : Cᵒᵖ ⥤ RingCat.{u}} (α : R ⟶ R')
   {M₁ M₂ : PresheafOfModules.{v} R'}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `PresheafOfModules.restrictScalars α` induces bijections on
 morphisms if `α` is locally surjective and the target presheaf is a sheaf. -/
 noncomputable def restrictHomEquivOfIsLocallySurjective

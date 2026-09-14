@@ -269,7 +269,7 @@ theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
       exact hf.surjOn_uIcc left_mem_uIcc (Ioo_subset_Icc_self hx)
     have h3g : StronglyMeasurableAtFilter g (𝓝[J] f x) :=
       hg_cont.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc (f x)
-    haveI : Fact (f x ∈ J) := ⟨h2x⟩
+    have : Fact (f x ∈ J) := ⟨h2x⟩
     have : HasDerivWithinAt (fun u ↦ ∫ x in f a..u, g x) (g (f x)) J (f x) :=
       intervalIntegral.integral_hasDerivWithinAt_right h2g h3g (hg_cont (f x) h2x)
     refine (this.scomp x ((hff' x hx).Ioo_of_Ioi hd.1) ?_).Ioi_of_Ioo hd.1

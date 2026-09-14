@@ -499,9 +499,9 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
   | zero => assumption
   | succ f ih =>
     if hx : n / b = 0 then
-      simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+      simp only [hx, ite_true, List.length, congrArg (fun l ↦ l + 1) hlen]
     else
-      simp only [hx, if_false]
+      simp only [hx, ite_false]
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
       exact ih trivial

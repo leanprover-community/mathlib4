@@ -124,7 +124,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     min (minOrder α) ↑(#x.1 + #x.2 - 1) ≤ #(x.1 * x.2)) ⟨hs, ht⟩ ?_
   clear! x
   rintro ⟨s, t⟩ ⟨hs, ht⟩ ih
-  simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_setOf_eq, and_imp,
+  simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_ofPred_eq, and_imp,
     Nat.cast_le] at *
   -- If `#t < #s`, we're done by the induction hypothesis on `(t⁻¹, s⁻¹)`.
   obtain hts | hst := lt_or_ge #t #s

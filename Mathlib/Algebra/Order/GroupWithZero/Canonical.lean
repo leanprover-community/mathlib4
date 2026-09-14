@@ -103,15 +103,13 @@ instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
   top_add' a := by ext; simp; simp [bot_eq_zero (α := α)]
   isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero, IsRegular.of_ne_zero]
 
-variable [NoZeroDivisors α]
-
 lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by
   simp_rw [pos_iff_ne_zero, pow_ne_zero_iff hn]
 
 end LinearOrderedCommMonoidWithZero
 
 section LinearOrderedCommGroupWithZero
-variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
+variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {n : ℕ}
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
@@ -193,18 +191,6 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     simpa [← ofAdd_add, ← toDual_add]
       using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
 
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
-
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
-
-@[deprecated bot_eq_zero (since := "2025-11-17")]
-theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
-    Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
-
 @[simp]
 theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
     OrderDual.ofDual (0 : Multiplicative αᵒᵈ).toAdd = ⊤ := rfl
@@ -221,7 +207,7 @@ section Bot
 instance instBot : Bot (WithZero α) :=
   ⟨none⟩
 
-@[simp← ]
+@[simp ←]
 lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 end Bot
@@ -536,25 +522,38 @@ variable {G : Type*} [Preorder G] {a b : G}
 
 @[simp] lemma exp_pos : 0 < exp a := by simp [exp]
 
+section AddMonoid
+variable [AddMonoid G]
+
+@[simp] lemma exp_le_one_iff : exp a ≤ 1 ↔ a ≤ 0 := by rw [← exp_zero (M := G), exp_le_exp]
+
+@[simp] lemma exp_lt_one_iff : exp a < 1 ↔ a < 0 := by rw [← exp_zero (M := G), exp_lt_exp]
+
+@[simp] lemma one_le_exp_iff : 1 ≤ exp a ↔ 0 ≤ a := by rw [← exp_zero (M := G), exp_le_exp]
+
+@[simp] lemma one_lt_exp_iff : 1 < exp a ↔ 0 < a := by rw [← exp_zero (M := G), exp_lt_exp]
+
+end AddMonoid
+
 variable [AddGroup G] {x y : Gᵐ⁰}
 
-@[simp] lemma log_le_log (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
-  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; simp [log]
-
-@[simp] lemma log_lt_log (hx : x ≠ 0) (hy : y ≠ 0) : log x < log y ↔ x < y := by
-  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; simp [log]
-
 lemma log_le_iff_le_exp (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← toAdd_unzero_eq_log hx, ← le_ofAdd_iff hx, exp]
 
 lemma log_lt_iff_lt_exp (hx : x ≠ 0) : log x < a ↔ x < exp a := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← toAdd_unzero_eq_log hx, ← lt_ofAdd_iff hx, exp]
+
+@[simp] lemma log_le_log (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
+  rw [log_le_iff_le_exp hx, exp_log hy]
+
+@[simp] lemma log_lt_log (hx : x ≠ 0) (hy : y ≠ 0) : log x < log y ↔ x < y := by
+  rw [log_lt_iff_lt_exp hx, exp_log hy]
 
 lemma le_log_iff_exp_le (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← log_le_log exp_ne_zero hx, log_exp]
 
 lemma lt_log_iff_exp_lt (hx : x ≠ 0) : a < log x ↔ exp a < x := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← log_lt_log exp_ne_zero hx, log_exp]
 
 lemma le_exp_of_log_le (hxa : log x ≤ a) : x ≤ exp a := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [← log_le_iff_le_exp, *]
@@ -625,7 +624,7 @@ end LE
 
 section LT
 
-variable [LT α] {x y : WithZero α} {a b : α}
+variable [LT α] {x : WithZero α} {a b : α}
 
 lemma lt_unzeroD_iff (hx : x ≠ 0) : b < x.unzeroD a ↔ b < x := by
   lift x to α using hx; simp
@@ -637,7 +636,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] {x y : WithZero α} {a b : α}
+variable [Preorder α] {x : WithZero α} {b : α}
 
 theorem le_coe_unzeroD (x : WithZero α) (b : α) : x ≤ x.unzeroD b := by cases x <;> simp
 
@@ -645,7 +644,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] {x y : WithZero α} {a b : α}
+variable [PartialOrder α] {y : WithZero α} {a b : α}
 
 lemma le_unzeroD (hy : b ≤ y) : b ≤ y.unzeroD a := by
   have hne : y ≠ 0 := ne_bot_of_le_ne_bot WithZero.coe_ne_zero hy

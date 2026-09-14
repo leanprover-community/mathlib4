@@ -398,7 +398,7 @@ theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae
         ((∫ x in va t..vb t, f x ∂μ) - ∫ x in ua t..ub t, f x ∂μ) -
           ((∫ _ in ub t..vb t, cb ∂μ) - ∫ _ in ua t..va t, ca ∂μ)) =o[lt]
       fun t => ‖∫ _ in ua t..va t, (1 : ℝ) ∂μ‖ + ‖∫ _ in ub t..vb t, (1 : ℝ) ∂μ‖ := by
-  haveI := FTCFilter.meas_gen la; haveI := FTCFilter.meas_gen lb
+  have := FTCFilter.meas_gen la; have := FTCFilter.meas_gen lb
   refine
     ((measure_integral_sub_linear_isLittleO_of_tendsto_ae hmeas_a ha_lim hua hva).neg_left.add_add
           (measure_integral_sub_linear_isLittleO_of_tendsto_ae hmeas_b hb_lim hub hvb)).congr'
@@ -993,7 +993,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- with `t < b` admits another point in `s` slightly to its right
     -- (this is a sort of real induction).
     refine s_closed.Icc_subset_of_forall_exists_gt
-      (by simp only [integral_same, mem_setOf_eq, sub_self, le_rfl]) fun t ht v t_lt_v => ?_
+      (by simp only [integral_same, mem_ofPred_eq, sub_self, le_rfl]) fun t ht v t_lt_v => ?_
     obtain ⟨y, g'_lt_y', y_lt_G'⟩ : ∃ y : ℝ, (g' t : EReal) < y ∧ (y : EReal) < G' t :=
       EReal.lt_iff_exists_real_btwn.1 ((EReal.coe_le_coe_iff.2 (hφg t ht.2)).trans_lt (f_lt_G' t))
     -- bound from below the increase of `∫ x in a..u, G' x` on the right of `t`, using the lower

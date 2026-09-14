@@ -21,7 +21,7 @@ public section
 
 variable {𝓕 E F : Type*}
 
-open Filter Function Metric Bornology
+open Filter
 open scoped ENNReal NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
@@ -56,8 +56,6 @@ theorem dist_self_mul_right (a b : E) : dist b (b * a) = ‖a‖ := by
 @[to_additive (attr := simp)]
 theorem dist_self_mul_left (a b : E) : dist (b * a) b = ‖a‖ := by
   rw [dist_comm, dist_self_mul_right]
-
-open Finset
 
 variable [FunLike 𝓕 E F]
 
@@ -347,7 +345,7 @@ namespace AntilipschitzWith
 @[to_additive]
 theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g) (hK : Kg < Kf⁻¹) :
     AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x => f x * g x := by
-  letI : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
+  let : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
   rw [le_div_iff₀ (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]

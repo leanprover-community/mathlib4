@@ -114,7 +114,7 @@ because:
   different types. So we would have to generalise `CovariantClass`/`ContravariantClass` to three
   types and two relations.
 * Very minor, but the constructors let you work with `a : α`, `h : 0 ≤ a` instead of
-  `a : {a : α // 0 ≤ a}`. This actually makes some instances surprisingly cleaner to prove.
+  `a : Nonneg α`. This actually makes some instances surprisingly cleaner to prove.
 * The `CovariantClass`/`ContravariantClass` framework is only useful to automate very simple logic
   anyway. It is easily copied over.
 
@@ -1110,7 +1110,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 variable [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulMono α β]
-  {a : α} {b b₁ b₂ : β}
+  {a : α} {b₁ b₂ : β}
 
 lemma smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
   (antitone_smul_left ha : Antitone (_ : β → β)).map_max

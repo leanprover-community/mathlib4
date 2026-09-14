@@ -284,7 +284,6 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     mul_assoc, ← mul_assoc, ← map_mul, ← hu, map_mul, mul_assoc, mul_assoc, ←
     mul_assoc (C (u : R))] at h1
   have h0 : a ≠ 0 ∧ b ≠ 0 := by
-    classical
     rw [Ne, Ne, ← not_or, ← mul_eq_zero, ← hab]
     intro con
     apply hp.ne_zero (map_injective (algebraMap R K) (IsFractionRing.injective _ _) _)

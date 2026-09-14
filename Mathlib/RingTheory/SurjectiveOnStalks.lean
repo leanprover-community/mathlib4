@@ -137,9 +137,6 @@ lemma SurjectiveOnStalks.exists_mul_eq_tmul
     ∃ (t : T) (r : R) (a : S), (r • t ∉ J) ∧
       (1 : S) ⊗ₜ[R] (r • t) * x = a ⊗ₜ[R] t := by
   induction x with
-  | zero =>
-    exact ⟨1, 1, 0, by rw [one_smul]; exact J.primeCompl.one_mem,
-      by rw [mul_zero, TensorProduct.zero_tmul]⟩
   | tmul x₁ x₂ =>
     obtain ⟨y, s, c, hs, hc, e⟩ := (surjective_localRingHom_iff _).mp (hf₂ J hJ) x₂
     simp_rw [Algebra.smul_def]
@@ -200,7 +197,7 @@ private lemma SurjectiveOnStalks.tensorProductMap_id
     {S' : Type*} [CommRing S'] [Algebra R S] [Algebra R T] [Algebra R S']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).SurjectiveOnStalks := by
-  letI := f.toRingHom.toAlgebra
+  let := f.toRingHom.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).SurjectiveOnStalks
   convert_to ((Algebra.TensorProduct.cancelBaseChange R S S S' T).toAlgHom.comp

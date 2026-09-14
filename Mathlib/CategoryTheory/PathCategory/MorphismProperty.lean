@@ -59,6 +59,7 @@ section
 
 variable {C : Type*} [Category* C] {V : Type u₁} [Quiver.{v₁} V]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A natural transformation between `F G : Paths V ⥤ C` is defined by its components and
 its unary naturality squares. -/
 @[simps]
@@ -169,11 +170,13 @@ lemma paths_le_inverseImage (W : MorphismProperty C) [W.IsMultiplicative] :
     W.paths ≤ W.inverseImage (pathComposition C) :=
   fun _ _ _ ↦ W.composePath_mem
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (W : MorphismProperty C) : IsMultiplicative (W.paths.strictMap (pathComposition C)) where
   id_mem X := W.paths.map_mem_strictMap (pathComposition C) _ (W.paths.id_mem X)
   comp_mem := fun _ _ ⟨hp⟩ ⟨hq⟩ ↦ by
     simpa using! W.paths.map_mem_strictMap (pathComposition C) _ <| W.paths.comp_mem _ _ hp hq
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma multiplicativeClosure_eq_strictMap_paths (W : MorphismProperty C) :
     W.multiplicativeClosure = W.paths.strictMap (pathComposition C) := by
   refine le_antisymm ?_ fun _ _ _ ⟨h⟩ ↦ ?_
