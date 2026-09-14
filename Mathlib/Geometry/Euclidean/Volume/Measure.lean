@@ -46,7 +46,7 @@ TODO: show the scaling factor equals to the ratio between the volume of `d`-dime
 Hausdorff measure, measure, metric measure, volume, area
 -/
 
-open MeasureTheory Measure Module
+open MeasureTheory Measure Module AffineSubspace
 
 public section
 
@@ -219,10 +219,24 @@ open EuclideanGeometry
 ### `μHE[d]` is preserved through subspace inclusion
 -/
 
-omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
-theorem AffineSubspace.euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
+namespace AffineSubspace
+omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+
+theorem euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
   isometry_subtype_coe.euclideanHausdorffMeasure_image _
+
+theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSubspace ℝ P}
+    {t : Set P} (ht : t ⊆ s) :
+    μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] t := by
+  by_cases! hs : s = ⊥
+  · simp_all
+  have : Nonempty s := (s.nonempty_iff_ne_bot.mpr hs).to_subtype
+  rw [← s.coe_subtype, ← s.coe_subtypeₐᵢ, s.subtypeₐᵢ.isometry.euclideanHausdorffMeasure_preimage,
+    Set.inter_eq_left.mpr]
+  simpa using ht
+
+end AffineSubspace
 
 /-!
 ### `μHE[d]` is translation invariant
@@ -354,34 +368,21 @@ to be contained in a subspace of the measure dimension. -/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral_of_subset (p : P) {v : V}
     (hv : v ≠ 0) {t : Set P} (ht : MeasurableSet t) {s : AffineSubspace ℝ P} (hvs : v ∈ s.direction)
     (hts : t ⊆ s) [FiniteDimensional ℝ s.direction] :
-    μHE[finrank ℝ s.direction] t = ‖v‖ₑ * ∫⁻ (x : ℝ),
-      μHE[finrank ℝ s.direction - 1] (t ∩ AffineSubspace.mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) := by
-  open AffineSubspace in
-  by_cases! hs : s = ⊥
-  · simp_all
-  have : Nonempty s := (s.nonempty_iff_ne_bot.mpr hs).to_subtype
+    μHE[finrank ℝ s.direction] t =
+      ‖v‖ₑ * ∫⁻ (x : ℝ), μHE[finrank ℝ s.direction - 1] (t ∩ mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) := by
+  have : Nonempty s := (s.nonempty_iff_ne_bot.mpr fun h ↦ hv (by simpa [h] using hvs)).to_subtype
   let v' : s.direction := ⟨v, hvs⟩
-  convert euclideanHausdorffMeasure_eq_lintegral (orthogonalProjection s p)
-    (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage s.subtypeA.continuous.measurable) with x
-  · rw [← s.euclideanHausdorffMeasure_coe_image, coe_subtypeA,
-      Set.image_preimage_eq_of_subset (by simpa using hts)]
-  · rfl
-  · have h1 : x • v +ᵥ (orthogonalProjection s p).val ∈ mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ := by
-      rw [mem_mk', vadd_vsub_vadd_cancel_left]
-      refine SetLike.mem_of_subset ?_ (orthogonalProjection_vsub_mem_direction_orthogonal s _)
-      exact Submodule.orthogonal_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hvs)
-    have h2 : x • v +ᵥ (orthogonalProjection s p).val ∈ s :=
-      vadd_mem_of_mem_direction (Submodule.smul_mem _ _ hvs) (orthogonalProjection s p).prop
-    have h : (mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ).map s.subtype
-        = mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ ⊓ s := by
-      rw [map_mk']
-      apply ext_of_direction_eq
-      · ext u
-        simp [direction_inf_of_mem h1 h2, v', Submodule.mem_orthogonal_singleton_iff_inner_right]
-      · exact ⟨x • v +ᵥ (orthogonalProjection s p).val, self_mem_mk' _ _, h1, h2⟩
-    have h : Subtype.val '' (mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ : Set s) =
-        (mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ : Set P) ∩ (s : Set P) := by
-      simpa using congr(SetLike.coe $h)
-    rw [← s.euclideanHausdorffMeasure_coe_image, Set.image_inter Subtype.val_injective,
-      coe_subtypeA, Set.image_preimage_eq_of_subset (by simpa using hts), h, ← Set.inter_assoc,
-      Set.inter_right_comm, Set.inter_eq_left.mpr hts]
+  rw [← s.euclideanHausdorffMeasure_preimage_coe_of_subset _ hts,
+    euclideanHausdorffMeasure_eq_lintegral (orthogonalProjection s p)
+      (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage measurable_subtype_coe)]
+  congrm ‖v'‖ₑ * ∫⁻ (x : ℝ), ?_
+  suffices mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ =
+      comap s.subtype (mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) from by
+    simp [this, ← Set.preimage_inter,
+      s.euclideanHausdorffMeasure_preimage_coe_of_subset _ (Set.inter_subset_left.trans hts)]
+  rw [comap_subtype_mk' s _
+    (Submodule.orthogonal_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hvs))]
+  congr 1
+  · exact (orthogonalProjection_vadd s (x • v') p).symm
+  · ext w
+    simp [Submodule.mem_orthogonal_singleton_iff_inner_right, v']
