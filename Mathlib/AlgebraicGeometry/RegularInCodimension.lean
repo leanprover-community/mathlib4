@@ -78,8 +78,7 @@ lemma isRegularInCodimensionLE_iff_ringKrullDim :
 
 lemma isRegularInCodimensionLE_iff_ringKrullDimLE :
     IsRegularInCodimensionLE n X ↔
-      ∀ x : X, Ring.KrullDimLE n (X.presheaf.stalk x) →
-        IsRegularLocalRing (X.presheaf.stalk x) := by
+      ∀ x, Ring.KrullDimLE n (X.presheaf.stalk x) → IsRegularLocalRing (X.presheaf.stalk x) := by
   simp [isRegularInCodimensionLE_iff_ringKrullDim, Ring.krullDimLE_iff]
 
 lemma isRegularLocalRing_stalk (x : X) [Ring.KrullDimLE n (X.presheaf.stalk x)]
