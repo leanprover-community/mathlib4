@@ -9,10 +9,9 @@ import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: only `@[irreducible] def`s. The attribute stops the
-elaborator from unfolding the def on its own, and downstream code can still
-write `rw [opaqueZero]` or `unfold opaqueZero`, which read the body. The
-linter must not fire. -/
+/-! Negative case: only `@[irreducible] def`s. The attribute stops the elaborator from unfolding
+the def on its own, but downstream code writes `rw [opaqueZero]` or `unfold opaqueZero`, which
+read the body. The linter must not fire. -/
 
 @[expose] public section
 

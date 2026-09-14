@@ -18,20 +18,21 @@ public import Mathlib.Init  -- shake: keep
 # Superfluous-expose linter
 
 This linter is the dual of `privateModule`. It reports each `@[expose] public section` where no
-declaration benefits from exposure, and it suggests that you remove the `@[expose]` modifier. The
-removal hides no body that downstream code reads.
+declaration benefits from exposure, and it suggests that you remove the `@[expose]` modifier.
+Downstream code typechecks the same after the removal. When the section holds an `@[no_expose]`
+def, Lean reports that attribute as redundant after the removal, so remove it as well.
 
 ## What the section modifier controls
 
-The `@[expose]` modifier of a section exposes the bodies of the `def` declarations of the section,
-and nothing else. Lean settles the exposure of every other body without the modifier:
+The `@[expose]` modifier of a section exposes the bodies of the `def` declarations of the section.
+Lean settles the exposure of every other body without the modifier:
 
 * Lean exposes the body of an `abbrev`, of an `instance` of non-propositional type, and of a
   structure projection in every public section.
-* Lean hides the body of a theorem, of an `opaque` or `partial def`, of an `@[no_expose] def`, of
-  a `meta def` outside a `meta` section, of a private declaration, of an `instance` of
-  propositional type, and of the parser descriptor that `notation` or `syntax` generates, in every
-  public section.
+* Lean hides the body of a theorem, of an `opaque` or `partial def`, of a private declaration, and
+  of an `instance` of propositional type in every public section.
+* Lean also hides the body of an `@[no_expose] def`, of a `meta def` outside a `meta` section, and
+  of the parser descriptor that `notation` or `syntax` generates.
 * An inductive type, its constructors and its recursors have no body.
 
 A `def` that carries the `@[instance]` attribute is a `def`: the modifier controls its body.
@@ -44,33 +45,30 @@ section modifier. The second condition fails for an `abbrev`, for an `instance`,
 structure projection. The linter also skips the declarations that Lean generates
 (`Lean.Environment.isAutoDecl`), such as recursors, matchers and equation lemmas.
 
-Every other exposed `def` counts as one that benefits. This is the conservative direction: the
-linter stays silent when in doubt, so a reported section is safe to change. A wrong report means
-that one exemption in `benefitsFromExposure`, or the auto-declaration filter, is too broad.
+Every other exposed `def` counts as one that benefits. The linter stays silent when in doubt, so
+a reported section is safe to change. A wrong report means that one exemption in
+`benefitsFromExposure`, or the auto-declaration filter, is too broad.
 
 ## Implementation notes
 
 The linter is a stateful linter (`Lean.Elab.Command.registerStatefulLinter`) and keeps state
 across the commands of a module. It tracks regions: a region is a maximal run of commands whose
 scope is public and carries the `expose` attribute. Nested scopes inherit `Scope.isPublic` and
-`Scope.attrs`, so one check of the top scope after each command finds these regions. A region
-opens at the command that makes the predicate true, which is the section header. It closes at the
-command that makes the predicate false, which is an `end`, or at the terminal command when the
-end of the file closes the section.
+`Scope.attrs`, so one check of the top scope after each command finds these regions, including
+an `@[expose] section` nested inside a `public section`. A region opens at the command that makes
+the predicate true, which is the section header. It closes at the command that makes the
+predicate false, which is an `end`, or at the terminal command when the end of the file closes
+the section.
 
 After each command inside a region, the linter classifies the constants that the command added to
 the environment. The classification runs while the scopes of the command are active, because
 `Lean.Meta.isInstanceCore` sees a `scoped instance` or a `local instance` only then. It also reads
-the kind of the command: the `abbrev` exemption needs an `abbrev` command, and the `instance`
-exemption needs a command that declares instances through the `instance` elaborator. One constant
-that benefits settles the verdict of the region, and the scan stops.
+the kind of the command, for the `abbrev` and `instance` exemptions. One constant that benefits
+settles the verdict of the region, and the scan stops.
 
 When a region closes and no constant in it benefits, the linter reports the region at its section
 header. A file with several expose sections gets one verdict per section. The
 `linter.superfluousExpose` option gates the report only.
-
-The scope inspection is semantic, not syntactic. An `@[expose] section` nested inside a
-`public section` is a region, and a non-public `@[expose] section` is not.
 
 ## Known false negatives
 
@@ -111,21 +109,20 @@ private partial def commandKind (stx : Syntax) : Name :=
   else stx.getKind
 
 /-- The commands that declare instances through the `instance` elaborator: the `instance` command,
-the `deriving instance` command, and the inductive type and structure declarations, whose
-`deriving` clauses produce instances. Lean exposes the body of such an instance in every public
-section. -/
+the `deriving instance` command, and the `inductive`, `class inductive` and `structure`
+declarations, whose `deriving` clauses produce instances. Lean exposes the body of such an
+instance in every public section. -/
 private def instanceCommandKinds : List Name :=
   [``Parser.Command.instance, ``Parser.Command.deriving, ``Parser.Command.inductive,
     ``Parser.Command.classInductive, ``Parser.Command.structure]
 
 /-- Returns `true` when the body of the constant `name` is exposed and Lean would hide it without
 the section modifier. `cmdKind` is the kind that `commandKind` reports for the command that created
-the constant. Callers filter out `Lean.Environment.isAutoDecl` names first, and call this while
-the scopes of the creating command are active, because `Lean.Meta.isInstanceCore` sees a
-`scoped instance` or a `local instance` only then.
+the constant. Callers filter out `Lean.Environment.isAutoDecl` names first, and apply this while
+the scopes of the creating command are active.
 
-Each conjunct after the first two names one way in which Lean exposes a body in every public
-section, with or without the modifier. -/
+The conjuncts after the first two each cover one case in which Lean exposes a body in every
+public section, with or without the modifier. -/
 private def benefitsFromExposure (env : Environment) (name : Name) (info : ConstantInfo)
     (cmdKind : Name) : Bool :=
   -- Only a `def` has a body that the modifier can expose.
@@ -134,8 +131,8 @@ private def benefitsFromExposure (env : Environment) (name : Name) (info : Const
   && env.hasExposedBody name
   -- An `abbrev`.
   && cmdKind != ``Parser.Command.abbrev
-  -- An `instance`. A `def` that carries `@[instance]` keeps the rules of a `def`, so the command
-  -- kind must confirm that the `instance` elaborator declared the constant.
+  -- An `instance`. `Lean.Meta.isInstanceCore` also accepts a `def` that carries `@[instance]`,
+  -- whose body the modifier controls, so the command kind must confirm an `instance` declaration.
   && !(cmdKind ∈ instanceCommandKinds && Lean.Meta.isInstanceCore env name)
   -- A structure projection.
   && (env.getProjectionFnInfo? name).isNone
@@ -146,9 +143,9 @@ public structure ExposeRegion where
   /-- The command that opened the region, that is, the section header. The warning points at it. -/
   ref : Syntax
   /-- The constants that existed when the region opened, plus the constants classified since. The
-  constants outside this set are the ones that the current command added. This must be a
-  persistent set: the linter framework keeps the previous state, so an insert into a hash set
-  would copy the whole table. -/
+  constants outside this set are the ones that the current command added. This is a persistent
+  set because the linter framework keeps the previous state alive, so every insert must share
+  structure with it. -/
   seen : NameSet
   /-- `true` once a constant of the region benefits from exposure. The verdict is then settled,
   and the linter stops classifying. -/
@@ -186,13 +183,8 @@ private def ExposeRegion.report (r : ExposeRegion) : CommandElabM Unit := do
 
 /--
 The `superfluousExpose` linter detects each `@[expose] public section` where no declaration
-benefits from exposure.
-
-After each command, the linter classifies the constants that the command created inside the open
-region, and it opens or closes the region as the scope changes. A region closes at its `end`
-command, or at the terminal command when the end of the file closes the section. The linter then
-reports the region if no constant in it benefits from exposure, and points the warning at the
-section header.
+benefits from exposure. It tracks the open exposed region across commands and reports it at its
+section header when the region closes. The module docstring describes the classification.
 -/
 public initialize superfluousExpose : StatefulLinter (Option ExposeRegion) Unit ←
   registerStatefulLinter none

@@ -32,13 +32,13 @@ public import MathlibTest.Linter.SuperfluousExpose.Negative_ExposeOnNonPublicSec
 
 The linter reports each `@[expose] public section` where no declaration benefits from exposure.
 The warning fires when the section closes: at its `end` command, or at the terminal command when
-the end of the file closes the section. One file holds one case, and every file turns the option
+the end of the file closes the section. Each file tests one case, and every file turns the option
 on at the top.
 
 A `Positive_*` file states the expected warning with `#guard_msgs in end`, which captures the
 verdict of the section that the `end` closes. An empty expectation there asserts silence for one
-section of the file. `Positive_FileEndClose.lean` uses `#guard_msgs in #exit` instead: `#exit` is
-a terminal command, so the linter settles the open section there, and the expectation starts with
+section of the file. `Positive_FileEndClose.lean` uses `#guard_msgs in #exit`: `#exit` is a
+terminal command, so the linter settles the open section there, and the expectation starts with
 `warning: using 'exit' to interrupt Lean`.
 
 A `Negative_*` file produces no output. CI runs `lake --iofail test`, so a warning from such a

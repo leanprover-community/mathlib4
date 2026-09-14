@@ -13,7 +13,7 @@ set_option warn.classDefReducibility false
 /-! Negative case: a `def` that carries `@[instance]`, once plain and once behind `open … in`.
 Lean exposes the body of an `instance` in every public section, but a `def` keeps the exposure
 rules of a `def` whatever attribute it carries: the section modifier controls its body, and the
-`rfl` proofs below read it. Each section holds one such def, so each classification runs. The
+`rfl` proofs below read it. Each def sits in its own section, so the linter classifies both. The
 linter must not fire. -/
 
 namespace SuperfluousExposeTest.InstanceAttrDef

@@ -9,10 +9,9 @@ import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: a `@[reducible] def`. Only an `abbrev` carries its own
-exposure, so the `@[expose]` of the section controls this body: the `rfl`
-proof below needs it, in the public scope of this same file. The linter must
-not fire. -/
+/-! Negative case: a `@[reducible] def`. Lean exposes the body of an `abbrev` in every public
+section, but the section modifier controls the body of a `@[reducible] def`, and the public `rfl`
+proof below reads it. The linter must not fire. -/
 
 @[expose] public section
 
