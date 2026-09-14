@@ -67,12 +67,17 @@ in terms of the coefficients of `x`.
 These polynomials actually have integral coefficients,
 see `frobeniusPoly` and `map_frobeniusPoly`. -/
 def frobeniusPolyRat (n : ℕ) : MvPolynomial ℕ ℚ :=
-  bind₁ (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
+  aeval (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
 
-theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
-    bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) := by
+theorem aeval_frobeniusPolyRat_wittPolynomial (n : ℕ) :
+    aeval (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) := by
   delta frobeniusPolyRat
-  rw [← bind₁_bind₁, bind₁_xInTermsOfW_wittPolynomial, bind₁_X_right, Function.comp_apply]
+  rw [← comp_aeval_apply, aeval_xInTermsOfW_wittPolynomial, aeval_X, Function.comp_apply]
+
+@[deprecated aeval_frobeniusPolyRat_wittPolynomial (since := "2026-09-09")]
+theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
+    bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) :=
+  aeval_frobeniusPolyRat_wittPolynomial p n
 
 local notation "v" => multiplicity
 
@@ -137,9 +142,9 @@ theorem map_frobeniusPoly (n : ℕ) :
   refine Nat.strong_induction_on n ?_; clear n
   intro n IH
   rw [xInTermsOfW_eq]
-  simp only [map_sum, map_sub, map_mul, map_pow (bind₁ _), bind₁_C_right]
+  simp only [map_sum, map_sub, map_mul, map_pow (aeval _), aeval_C, algebraMap_eq]
   have h1 : (p : ℚ) ^ n * ⅟(p : ℚ) ^ n = 1 := by rw [← mul_pow, mul_invOf_self, one_pow]
-  rw [bind₁_X_right, Function.comp_apply, wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ,
+  rw [aeval_X, Function.comp_apply, wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ,
     sum_range_succ, tsub_self, add_tsub_cancel_left, pow_zero, pow_one, pow_one, sub_mul, add_mul,
     add_mul, mul_right_comm, mul_right_comm (C ((p : ℚ) ^ (n + 1))), ← C_mul, ← C_mul, pow_succ',
     mul_assoc (p : ℚ) ((p : ℚ) ^ n), h1, mul_one, C_1, one_mul, add_comm _ (X n ^ p), add_assoc,
@@ -180,11 +185,16 @@ theorem frobeniusPoly_zmod (n : ℕ) :
   simp only [Int.cast_natCast, add_zero, eq_intCast, ZMod.natCast_self, zero_mul, C_0]
 
 @[simp]
-theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
-    bind₁ (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) := by
+theorem aeval_frobeniusPoly_wittPolynomial (n : ℕ) :
+    aeval (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [map_bind₁, map_frobeniusPoly, bind₁_frobeniusPolyRat_wittPolynomial,
+  simp only [map_aeval_eq_aeval_map_map, map_frobeniusPoly, aeval_frobeniusPolyRat_wittPolynomial,
     map_wittPolynomial]
+
+@[deprecated aeval_frobeniusPoly_wittPolynomial (since := "2026-09-09")]
+theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
+    bind₁ (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) :=
+  aeval_frobeniusPoly_wittPolynomial p n
 
 variable {p}
 
@@ -208,8 +218,8 @@ instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobeniusFun x) = ghostComponent (n + 1) x := by
-  simp only [ghostComponent_apply, frobeniusFun, coeff_mk, ← bind₁_frobeniusPoly_wittPolynomial,
-    aeval_bind₁]
+  simp only [ghostComponent_apply, frobeniusFun, coeff_mk, ← aeval_frobeniusPoly_wittPolynomial,
+    comp_aeval_apply]
 
 /-- If `R` has characteristic `p`, then there is a ring endomorphism
 that raises `r : R` to the power `p`.

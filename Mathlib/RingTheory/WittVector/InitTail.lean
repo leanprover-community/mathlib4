@@ -91,13 +91,13 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   intro n
   simp only [map_add]
   suffices
-    (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
-        (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
+    (aeval (selectPoly P)) (wittPolynomial p ℤ n) +
+        (aeval (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
       wittPolynomial p ℤ n by
     apply_fun aeval x.coeff at this
-    simpa only [map_add, aeval_bind₁, ← coeff_select]
+    simpa only [map_add, comp_aeval_apply, ← coeff_select]
   simp only [wittPolynomial_eq_sum_C_mul_X_pow, selectPoly, map_sum, map_pow, map_mul,
-    bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
+    aeval_X, aeval_C, algebraMap_eq, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
   refine fun m _ => mul_eq_mul_left_iff.mpr (Or.inl ?_)
   rw [ite_pow, zero_pow (pow_ne_zero _ hp.out.ne_zero)]

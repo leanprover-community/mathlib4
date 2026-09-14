@@ -134,7 +134,7 @@ private lemma leadingCoeff_finSuccEquiv_t :
     have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := fun j ↦ by
       by_cases h : j = 0
       · simp [h, finSuccEquiv_apply]
-      · simp only [aeval_eq_bind₁, bind₁_X_right, ite_eq_right h, one_smul, map_add, map_pow]
+      · simp only [MvPolynomial.aeval_X, ite_eq_right h, one_smul, map_add, map_pow]
         obtain ⟨i, rfl⟩ := Fin.exists_succ_eq.mpr h
         simp [finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
     simp only [this, one_pow, Finset.prod_const_one, mul_one]

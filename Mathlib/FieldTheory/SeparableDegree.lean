@@ -271,7 +271,8 @@ instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infin
           fun i : ι ↦ (Polynomial.transcendental_X F).pow n.succ_pos
   refine Infinite.of_injective f fun m n h ↦ ?_
   replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
-    simpa [f, -map_pow] using congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
+    simpa [f, MvPolynomial.comp_aeval, -map_pow] using
+      congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
   simpa using congr(MvPolynomial.totalDegree $h)
 
 /-- If the field extension `E / F` is transcendental, then `Field.finSepDegree F E = 0`, which
