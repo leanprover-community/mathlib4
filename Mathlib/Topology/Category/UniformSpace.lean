@@ -56,6 +56,7 @@ instance : LargeCategory.{u} UniformSpaceCat.{u} where
   comp_id := by intros; apply Hom.ext; simp
   assoc := by intros; apply Hom.ext; ext; simp
 
+@[macro_inline]
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
@@ -164,6 +165,7 @@ instance : Inhabited CpltSepUniformSpace :=
 instance category : LargeCategory CpltSepUniformSpace :=
   inferInstanceAs <| Category (InducedCategory _ toUniformSpace)
 
+@[macro_inline]
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val

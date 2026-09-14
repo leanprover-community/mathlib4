@@ -597,7 +597,7 @@ lemma closure_le_centralizer_centralizer {R} [Ring R] (s : Set R) :
 
 /-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
 theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
-    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    (hcomm : s.Pairwise Commute) :
     IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -606,14 +606,14 @@ theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
 @[deprecated isMulCommutative_closure (since := "2026-03-11")]
-abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : s.Pairwise Commute) :
     CommRing (closure s) :=
   have := isMulCommutative_closure hcomm
   inferInstance
 
 instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S R] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R)) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 theorem exists_list_of_mem_closure {R} [Ring R] {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
@@ -1057,8 +1057,7 @@ protected theorem InClosure.recOn {R} [Ring R] {s : Set R}
         Or.inr <| by rw [List.prod_cons, List.prod_cons, HP, neg_mul_eq_mul_neg]⟩
   · exact ⟨L, HL', Or.inl <| by rw [List.prod_cons, hhd, HP, neg_one_mul, neg_neg]⟩
 
-theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
-  closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
+@[deprecated (since := "2026-09-10")] alias closure_preimage_le := RingHom.closure_preimage_le
 
 end Subring
 
