@@ -86,6 +86,12 @@ instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
 lemma _root_.CategoryTheory.End.smul_asHom [Semiring R] [Linear R C] {X : C} (r : R) (e : End X) :
     (r • e).asHom = r • e.asHom := rfl
 
+@[implicit_reducible, simps]
+def _root_.CategoryTheory.End.linearEquiv [Semiring R] [Linear R C] {X : C} :
+    End X ≃ₗ[R] (X ⟶ X) where
+  toAddEquiv := End.addEquiv
+  map_smul' := by simp
+
 instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
   Algebra.ofModule (by cat_disch) (by cat_disch)
 

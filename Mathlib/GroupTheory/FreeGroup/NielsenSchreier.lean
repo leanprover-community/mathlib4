@@ -245,11 +245,14 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       let f' : Labelling (Generators G) X := fun a b e =>
         if h : e ∈ wideSubquiverSymmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
       rcases unique_lift f' with ⟨F', hF', uF'⟩
-      sorry /-refine ⟨F'.mapEnd _, ?_, ?_⟩
-      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
+      refine ⟨(SingleObj.toEnd X).symm.toMonoidHom.comp (F'.mapEnd _), ?_, ?_⟩
+      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q).asHom = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          simp only [Functor.mapEnd, DFunLike.coe, this, hF']
-          exact dite_eq_right h
+          dsimp
+          rw [toEnd_symm_apply]
+          erw [F'.mapEnd_apply_asHom]
+          rw [this, hF']
+          apply dite_eq_right h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
@@ -266,7 +269,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
             exact dite_eq_left (Or.inr eT)
       · intro E hE
         ext x
-        suffices (functorOfMonoidHom T E).map x = F'.map x by
+        suffices (functorOfMonoidHom T E).map x.asHom = F'.map x.asHom by
           simpa only [loopOfHom, functorOfMonoidHom, IsIso.inv_id, treeHom_root,
             Category.id_comp, Category.comp_id] using! this
         congr
@@ -274,8 +277,8 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
         intro a b e
         change E (loopOfHom T _) = dite _ _ _
         split_ifs with h
-        · rw [loopOfHom_eq_id T e h, ← End.one_def, E.map_one]
-        · exact hE ⟨⟨a, b, e⟩, h⟩-/)
+        · simp [loopOfHom_eq_id T e h]
+        · exact hE ⟨⟨a, b, e⟩, h⟩)
 
 end SpanningTree
 

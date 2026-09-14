@@ -106,18 +106,20 @@ If `X ⟶ X` is finite dimensional, and every nonzero endomorphism is invertible
 then `X ⟶ X` is 1-dimensional.
 -/
 theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
-    [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
+    [FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
   refine finrank_eq_one (𝟙 X) id_nonzero ?_
   intro f
-  sorry /-
-  have : Nontrivial (End X) := nontrivial_of_ne _ _ id_nonzero
-  have : FiniteDimensional 𝕜 (End X) := I
+  have : Nontrivial (X ⟶ X) := nontrivial_of_ne _ _ id_nonzero
+  have : Nontrivial (End X) := (End.homEquiv (X := X)).nontrivial
+  have : FiniteDimensional 𝕜 (End X) :=
+    End.linearEquiv.symm.finiteDimensional
   obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
   use c
   rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne,
-    Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
-  exact nu.symm-/
+    Classical.not_not, Algebra.algebraMap_eq_smul_one,
+    End.sub_asHom, End.smul_asHom, End.one_asHom, sub_eq_zero] at nu
+  rw [← nu]
 
 variable [HasKernels C]
 

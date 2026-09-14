@@ -196,13 +196,14 @@ namespace Functor
 variable {D : Type u'} [Category.{v'} D] (f : C ⥤ D)
 
 /-- `f.map` as a monoid hom between endomorphism monoids. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapEnd : End X →* End (f.obj X) where
   toFun e := .of (f.map e.asHom)
   map_mul' := by cat_disch
   map_one' := by cat_disch
 
 /-- `f.mapIso` as a group hom between automorphism groups. -/
+@[simps, implicit_reducible]
 def mapAut : Aut X →* Aut (f.obj X) where
   toFun e := .of (f.mapIso e.asIso)
   map_mul' := by cat_disch
