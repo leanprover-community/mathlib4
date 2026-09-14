@@ -863,22 +863,22 @@ variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
-def norm : End A := Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A.ρ,
-    fun g ↦ by ext; simp⟩
+def norm : End A :=
+  .of (Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A.ρ,
+    fun g ↦ by ext; simp⟩)
 
 @[simp]
-lemma norm_apply {x : A} : (norm A).hom x = A.ρ.norm x := rfl
+lemma norm_apply {x : A} : (norm A).asHom.hom x = A.ρ.norm x := rfl
 
 @[reassoc, elementwise]
-lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ (norm B).asHom = (norm A).asHom ≫ f := by
   ext; simp [Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
 `x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
 @[simps]
-def normNatTrans : End (𝟭 (Rep k G)) where
-  app := norm
-  naturality _ _ := norm_comm
+def normNatTrans : End (𝟭 (Rep k G)) :=
+  .of { app A := (norm A).asHom, naturality _ _ := norm_comm }
 
 end
 

@@ -68,7 +68,7 @@ variable (k G) in
 @[simps]
 def equivHom : G →* Aut (forget k G) where
   toFun g :=
-    LaxMonoidalFunctor.isoOfComponents (equivApp g) (fun f ↦ (f.comm g).symm) rfl (by intros; rfl)
+    .of (LaxMonoidalFunctor.isoOfComponents (equivApp g) (fun f ↦ (f.comm g).symm))
   map_one' := by ext; simp; rfl
   map_mul' _ _ := by ext; simp; rfl
 
@@ -116,7 +116,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := by
   intro s t h
   classical
-  apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
+  apply_fun (fun x ↦ (x.asIso.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
@@ -130,11 +130,12 @@ def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
 
 /-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
 lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
-    let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom.hom
+    let α : (G → k) →ₗ[k] (G → k) := (η.asIso.hom.hom.app rightFDRep).hom.hom
     α (f * g) = (α f) * (α g) := by
-  have nat := η.hom.hom.naturality mulRepHom
-  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ₘ η.hom.hom.app Y) :=
-    η.hom.isMonoidal.tensor X Y
+  have nat := η.asIso.hom.hom.naturality mulRepHom
+  have tensor (X Y) :
+      η.asIso.hom.hom.app (X ⊗ Y) = (η.asIso.hom.hom.app X ⊗ₘ η.asIso.hom.hom.app Y) :=
+    η.asIso.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
   exact ConcreteCategory.congr_hom ((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
 
@@ -142,13 +143,13 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
 an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
 def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
-  let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom.hom
-  let α_inv : (G → k) →ₗ[k] (G → k) := (η.inv.hom.app rightFDRep).hom.hom
+  let α : (G → k) →ₗ[k] (G → k) := (η.asIso.hom.hom.app rightFDRep).hom.hom
+  let α_inv : (G → k) →ₗ[k] (G → k) := (η.asIso.inv.hom.app rightFDRep).hom.hom
   refine AlgHom.ofLinearMap α ?_ (map_mul_toRightFDRepComp η)
   suffices α (α_inv 1) = (1 : G → k) by
     have h := this
     rwa [← one_mul (α_inv 1), map_mul_toRightFDRepComp, h, mul_one] at this
-  have := η.inv_hom_id
+  have := η.asIso.inv_hom_id
   apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
   exact this
 
@@ -179,36 +180,37 @@ def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
-    (h : η₁.hom.hom.app rightFDRep = η₂.hom.hom.app rightFDRep) : η₁ = η₂ := by
+    (h : η₁.asIso.hom.hom.app rightFDRep = η₂.asIso.hom.hom.app rightFDRep) : η₁ = η₂ := by
   have := Fintype.ofFinite G
   classical
   ext X v
-  have h1 := η₁.hom.hom.naturality (ofRightFDRep X v)
-  have h2 := η₂.hom.hom.naturality (ofRightFDRep X v)
+  have h1 := η₁.asIso.hom.hom.naturality (ofRightFDRep X v)
+  have h2 := η₂.asIso.hom.hom.naturality (ofRightFDRep X v)
   rw [h, ← h2] at h1
   simpa using congr(($h1).hom (single 1 1))
 
 /-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
-def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
-  hom := InducedCategory.homMk (ofHom (leftRegular s))
-  comm _ := by
-    ext f
-    funext _
-    apply congrArg f
-    exact mul_assoc ..
+def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) :=
+  .of
+    { hom := InducedCategory.homMk (ofHom (leftRegular s))
+      comm _ := by
+        ext f
+        funext _
+        apply congrArg f
+        exact mul_assoc .. }
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
-    ∃ (s : G), (η.hom.hom.app rightFDRep).hom.hom = rightRegular s := by
+    ∃ (s : G), (η.asIso.hom.hom.app rightFDRep).hom.hom = rightRegular s := by
   classical
   obtain ⟨s, hs⟩ := ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η)).eq_piEvalAlgHom
   refine ⟨s, (basisFun k G).ext fun u ↦ ?_⟩
   simp only [rightFDRep, forget_obj]
   ext t
-  have nat := η.hom.hom.naturality (leftRegularFDRepHom t⁻¹)
+  have nat := η.asIso.hom.hom.naturality (leftRegularFDRepHom t⁻¹).asHom
   calc
-    _ = leftRegular t⁻¹ ((η.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
-    _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
+    _ = leftRegular t⁻¹ ((η.asIso.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
+    _ = (η.asIso.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
       congrFun congr(($nat.symm).hom (single u 1)) 1
     _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
       congr($hs (leftRegular t⁻¹ (single u 1)))

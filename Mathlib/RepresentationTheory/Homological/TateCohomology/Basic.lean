@@ -61,7 +61,7 @@ open CategoryTheory groupCohomology groupHomology
 /-- This is the map from the coinvariants of `M : Rep R G` to the invariants, induced by the map
 `m ↦ ∑ g : G, M.ρ g m`. -/
 def Rep.tateNorm : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
-  (chainsIso₀ M).hom ≫ M.norm.toModuleCatHom ≫ (cochainsIso₀ M).inv
+  (chainsIso₀ M).hom ≫ M.norm.asHom.toModuleCatHom ≫ (cochainsIso₀ M).inv
 
 lemma Rep.tateNorm_eq :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
@@ -69,7 +69,7 @@ lemma Rep.tateNorm_eq :
   simp_all [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
 
 @[reassoc (attr := simp), elementwise]
-lemma Rep.norm_comp_d_eq_zero : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
+lemma Rep.norm_comp_d_eq_zero : M.norm.asHom.toModuleCatHom ≫ d₀₁ M = 0 := by
   ext
   simp [Pi.zero_apply _]
 
@@ -77,7 +77,7 @@ lemma Rep.tateNorm_comp_d : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 :
   simp [tateNorm, eq_d₀₁_comp_inv M]
 
 @[simp]
-lemma Rep.comp_eq_zero : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
+lemma Rep.comp_eq_zero : d₁₀ M ≫ M.norm.asHom.toModuleCatHom = 0 := by
   ext
   simp [d₁₀_single M]
 

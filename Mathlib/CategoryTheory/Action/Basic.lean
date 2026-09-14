@@ -413,7 +413,7 @@ variable {V} {W : Type*} [Category* W]
 
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/
-@[simps]
+@[implicit_reducible, simps]
 def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V

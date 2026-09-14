@@ -297,24 +297,18 @@ variable {W : Type*} [Category* W] [MonoidalCategory V] [MonoidalCategory W]
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
   ε :=
     { hom := ε F
-      comm := fun g => by
-        dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [Category.id_comp, F.map_id, Category.comp_id] }
+      comm := by simp [F.mapAction_obj_ρ_apply_asHom] }
   μ X Y :=
     { hom := μ F X.V Y.V
-      comm := fun g => μ_natural F (X.ρ g) (Y.ρ g) }
-  μ_natural_left _ _ := by ext; simp
-  μ_natural_right _ _ := by ext; simp
-  associativity _ _ _ := by ext; simp
-  left_unitality _ := by ext; simp
-  right_unitality _ := by ext; simp
+      comm g := by
+        dsimp
+        rw [tensor_ρ]
+        simp [F.mapAction_obj_ρ_apply_asHom] }
 
 @[simp]
 lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
@@ -323,21 +317,18 @@ lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
 lemma mapAction_μ_hom [F.LaxMonoidal] (X Y : Action V G) :
     (μ (F.mapAction G) X Y).hom = μ F X.V Y.V := rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An oplax monoidal functor induces an oplax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where
   η :=
     { hom := η F
-      comm := fun g => by
-        dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [map_id, Category.id_comp, Category.comp_id] }
+      comm _ := by simp [F.mapAction_obj_ρ_apply_asHom] }
   δ X Y :=
     { hom := δ F X.V Y.V
-      comm := fun g => (δ_natural F (X.ρ g) (Y.ρ g)).symm }
-  δ_natural_left _ _ := by ext; simp
-  δ_natural_right _ _ := by ext; simp
+      comm _ := by
+        dsimp
+        rw [tensor_ρ]
+        simp [F.mapAction_obj_ρ_apply_asHom] }
   oplax_associativity _ _ _ := by ext; simp
   oplax_left_unitality _ := by ext; simp
   oplax_right_unitality _ := by ext; simp
@@ -349,13 +340,8 @@ lemma mapAction_η_hom [F.OplaxMonoidal] : (η (F.mapAction G)).hom = η F := rf
 lemma mapAction_δ_hom [F.OplaxMonoidal] (X Y : Action V G) :
     (δ (F.mapAction G) X Y).hom = δ F X.V Y.V := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.Monoidal] : (F.mapAction G).Monoidal where
-  η_ε := by ext; dsimp; rw [η_ε]
-  ε_η := by ext; dsimp; rw [ε_η]
-  μ_δ _ _ := by ext; dsimp; rw [μ_δ]
-  δ_μ _ _ := by ext; dsimp; rw [δ_μ]
 
 end CategoryTheory.Functor

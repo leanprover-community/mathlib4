@@ -101,7 +101,7 @@ lemma endRingEquiv_comp_ρ (V : FDRep R G) :
   rfl
 
 @[simp]
-lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom.hom = (ρ V g) := rfl
+lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).asHom.hom.hom = (ρ V g) := rfl
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
@@ -111,7 +111,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   rw [FDRep.isoToLinearEquiv, ← hom_hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj,
-    Iso.conj_apply, ← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff]
+    Iso.conj_apply_asHom, ← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff]
   dsimp only [Action.forget_map, Functor.mapIso_hom]
   rw [i.hom.comm g]
   cat_disch

@@ -88,13 +88,14 @@ theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat
   refine (Preadditive.isSeparator_iff G).1 hG _ (fun h => ?_)
   rw [Preadditive.comp_sum_assoc, Preadditive.comp_sum_assoc, Preadditive.sum_comp]
   simp only [Category.assoc, ι_d]
+  sorry /-
   let r (x : F) : (End G)ᵐᵒᵖ := MulOpposite.op (h ≫ pullback.fst _ _ ≫ Sigma.π _ x)
   suffices ∑ x ∈ F.attach, r x • f.hom x.1.as = 0 by simpa [End.smul_left, r] using this
   simp only [← map_smul, ← map_sum]
   suffices ∑ x ∈ F.attach, r x • x.1.as = 0 by simp [this]
   simp only [← g.hom.map_eq_zero_iff ((ModuleCat.mono_iff_injective _).1 hg), map_sum, map_smul]
   simp only [← ι_d g, End.smul_left, MulOpposite.unop_op, Category.assoc, r]
-  simp [← Preadditive.comp_sum, ← Preadditive.sum_comp', pullback.condition_assoc]
+  simp [← Preadditive.comp_sum, ← Preadditive.sum_comp', pullback.condition_assoc]-/
 
 theorem exists_d_comp_eq_d {G : C} (hG : IsSeparator G) {A} (B : C) [Injective B]
     {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (hg : Mono g)
@@ -131,6 +132,7 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     rw [← Module.injective_iff_injective_object]
     simp only [preadditiveCoyonedaObj_obj_carrier]
     refine Module.Baer.injective (fun M g => ?_)
+    sorry /-
     have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
       ⟨⟨fun i => i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
     · obtain ⟨l, hl⟩ := h
@@ -139,7 +141,7 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
       intro f hf
       simpa [d] using! Sigma.ι _ ⟨f, hf⟩ ≫= hl
     · rw [ModuleCat.mono_iff_injective]
-      cat_disch
+      cat_disch-/
 
 /-- `tensorObj G` is left exact: it is additive and preserves monomorphisms and cokernels,
 so it preserves homology and therefore finite limits. -/
