@@ -103,32 +103,21 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
 @[inherit_doc Equivalence]
 infixr:10 " ≌ " => Equivalence
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+to_dual_for Equivalence.functor_unitIso_comp := by
+  simpa [Equivalence.functor_unitIso_comp] using Iso.inv_eq_inv
+    (self.functor.mapIso (self.unitIso.app X) ≪≫ self.counitIso.app (self.functor.obj X))
+    (Iso.refl _)
 
-namespace Equivalence
-
-@[to_dual existing functor_unitIso_comp]
-theorem counitIso_functor_comp (e : C ≌ D) (X : C) :
-    dsimp% e.counitIso.inv.app (e.functor.obj X) ≫ e.functor.map (e.unitIso.inv.app X) =
-      𝟙 (e.functor.obj X) := by
-  simpa [functor_unitIso_comp] using Iso.inv_eq_inv
-    (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X)) (Iso.refl _)
-
-/-- `Equivalence.mk'` is the dual of `Equivalence.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk']
-abbrev mk''
-    {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
-    (functor : C ⥤ D) (inverse : D ⥤ C)
-    (unitIso : 𝟭 C ≅ functor ⋙ inverse) (counitIso : inverse ⋙ functor ≅ 𝟭 D)
-    (functor_unitIso_comp : dsimp% ∀ (X : C),
-      counitIso.inv.app (functor.obj X) ≫ functor.map (unitIso.inv.app X) = 𝟙 (functor.obj X)) :
-    Equivalence C D where
-  functor; inverse; unitIso; counitIso
+to_dual_for Equivalence.mk' := {
+  functor, inverse, unitIso, counitIso
   functor_unitIso_comp X := by
     simpa [functor_unitIso_comp] using Iso.inv_eq_inv
       (functor.mapIso (unitIso.app X) ≪≫ counitIso.app (functor.obj X)) (Iso.refl _)
+}
 
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+namespace Equivalence
 
 /-- The unit of an equivalence of categories. -/
 @[to_dual unitInv /-- The inverse of the unit of an equivalence of categories. -/]
