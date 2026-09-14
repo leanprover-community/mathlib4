@@ -90,6 +90,8 @@ def Strictness.toNonzero {e pα?} : Strictness zα e pα? → Option Q($e ≠ 0)
 
 /-- An extension for `positivity`. -/
 structure PositivityExt where
+  /-- Name for debug information. -/
+  name : Name := by exact decl_name%
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
   eval {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα? : Option Q(PartialOrder $α)) (e : Q($α)) :
     MetaM (Strictness zα e pα?)
@@ -436,21 +438,34 @@ def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : MetaM (Str
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
 def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) := do
-  let mut result := .none
-  trace[Tactic.positivity] "trying to prove positivity of {e}"
+  withTraceNode `Tactic.positivity
+    (fun
+      | .ok .none =>
+        return m!"{crossEmoji}: unable to show anything about {e}"
+      | .ok r =>
+        return m!"{checkEmoji}: proved positivity of {e} as {r.toString}"
+      | .error err =>
+        return m!"{bombEmoji}: proving positivity of {e}:{indentD err.toMessageData}") do
+  let mut result : Strictness zα e pα? := .none
   for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
-    try
-      result ← orElse result <| ext.eval zα pα? e
-    catch err =>
-      trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
+    result ← withTraceNode `Tactic.positivity (fun _ => return m!"{.ofConstName ext.name}") <|
+      try
+        orElse result <| ext.eval zα pα? e
+      catch err =>
+        trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
+        pure result
   trace[Tactic.positivity] "current result from positivity extensions: {result.toString}"
   match h : pα?, result with
   | some pα, res =>
     trace[Tactic.positivity] "{α} has some {pα}"
-    let mut res ← orElse res <| normNumPositivity zα pα e
-    trace[Tactic.positivity] "current result from normNum: {res.toString}"
-    res ← orElse res <| positivityCanon zα pα e
-    trace[Tactic.positivity] "current result from canonicity: {res.toString}"
+    let mut res ← orElse res <|
+      withTraceNode `Tactic.positivity
+        (fun _ => return m!"{.ofConstName ``normNumPositivity}") <|
+        normNumPositivity zα pα e
+    res ← orElse res <|
+      withTraceNode `Tactic.positivity
+        (fun _ => return m!"{.ofConstName ``positivityCanon}") <|
+        positivityCanon zα pα e
     if let .positive _ := res then
       trace[Tactic.positivity] "{e} => {res.toString}"
       return h ▸ res
@@ -466,7 +481,10 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
       return result
     for ldecl in ← getLCtx do
       if !ldecl.isImplementationDetail then
-        result ← orElse result <| compareHypNonzero zα e ldecl
+        result ← orElse result <|
+          withTraceNode `Tactic.positivity
+            (fun _ => return m!"{.ofConstName ``compareHypNonzero}") <|
+            compareHypNonzero zα e ldecl
     trace[Tactic.positivity] "{e} => {result.toString}"
     throwNone (pure result)
 
