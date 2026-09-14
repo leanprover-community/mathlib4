@@ -79,7 +79,11 @@ lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R)
 end map
 section degree
 
-variable {Y : Scheme.{u}} (f : X ⟶ Y)
+variable (f : X ⟶ Y) [CompactSpace X]
+
+section AddCommMonoid
+
+variable [AddCommMonoid R]
 
 /--
 The degree of a zero-cycle `D` with respect to a morphism `f : X ⟶ Y`.
@@ -88,49 +92,43 @@ In applications, typically `f` is proper (so the pushforward respects rational e
 is `Spec k` for some field `k`.
 -/
 @[stacks 0AZ2]
-noncomputable def degree {R : Type*} [AddCommMonoid R] (D : AlgebraicCycle X R) : R :=
-    ∑ᶠ (x : X), (f.residueDegree x) • (D x)
+noncomputable def degree : AlgebraicCycle X R →+ R where
+  toFun D := ∑ᶠ x, f.residueDegree x • D x
+  map_zero' := by simp
+  map_add' D D' := by
+    simp only [Function.locallyFinsuppWithin.coe_add, Pi.add_apply, smul_add]
+    exact finsum_add_distrib (D.finite_support.subset fun x hx h ↦ hx (by simp [h]))
+      (D'.finite_support.subset fun x hx h ↦ hx (by simp [h]))
 
-section AddCommMonoid
-
-variable [AddCommMonoid R]
-
-@[simp]
-lemma degree_zero : degree f (0 : AlgebraicCycle X R) = 0 := by
-  simp [degree]
-
-@[simp]
-lemma degree_add [CompactSpace X] (D D' : AlgebraicCycle X R) :
-    degree f (D + D') = degree f D + degree f D' := by
-  simp only [degree, Function.locallyFinsuppWithin.coe_add, Pi.add_apply, smul_add]
-  rw [finsum_add_distrib]
-  · apply D.finite_support.subset
-    aesop
-  · apply D'.finite_support.subset
-    aesop
+lemma degree_apply (D : AlgebraicCycle X R) :
+    degree f D = ∑ᶠ x, f.residueDegree x • D x :=
+  rfl
 
 open Function.locallyFinsuppWithin in
 @[simp]
-lemma degree_single [DecidableEq X] (p : X) (r : R) : degree f (single p r) =
-    (f.residueDegree p) • r := by
-  simp [degree, finsum_eq_finsetSum_of_support_subset (s := {p})]
+lemma degree_single [DecidableEq X] (p : X) (r : R) :
+    degree f (single p r) = f.residueDegree p • r := by
+  simp [degree_apply, finsum_eq_finsetSum_of_support_subset (s := {p})]
 
 end AddCommMonoid
 
-section AddCommGroup
+section pushforward
 
-variable [AddCommGroup R]
+variable [QuasiCompact f] [Semiring R] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
 
-@[simp]
-lemma degree_neg (D : AlgebraicCycle X R) : degree f (-D) = - degree f D :=
-    by simp [degree, finsum_neg_distrib]
+lemma degree_eq_map_of_unique [Unique Y] (D : AlgebraicCycle X R)
+    (hw : ∀ x, D x ≠ 0 → f.residueDegree x ≠ 0 → wx x = wy (f.base x)) :
+    degree f D = map f wx wy D default := by
+  have : f.base ⁻¹' {default} = Set.univ := Set.eq_univ_of_forall fun _ ↦ Unique.eq_default _
+  simp only [degree_apply, map, Function.locallyFinsupp.map_apply, this, finsum_mem_univ]
+  refine finsum_congr fun x ↦ ?_
+  by_cases hD : D x = 0
+  · simp [hD]
+  by_cases hr : f.residueDegree x = 0
+  · simp [hr, mapCoeff]
+  simp [mapCoeff, hw x hD hr, nsmul_eq_mul, (Nat.cast_commute _ (D x)).eq]
 
-@[simp]
-lemma degree_sub [CompactSpace X] (D D' : AlgebraicCycle X R) :
-    degree f (D - D') = degree f D - degree f D' := by
-  simp [sub_eq_add_neg]
-
-end AddCommGroup
+end pushforward
 
 end degree
 
