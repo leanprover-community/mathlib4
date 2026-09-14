@@ -539,11 +539,12 @@ The two exceptional branches are corrected on the negative real axis:
 `range (-1)` adds `Iic (-1) ×ℂ {0}`.
 
 To visualize this, one can use
-```
+```mathematica
 ContourPlot[y + Arg[x + y I], {x, -20, 20}, {y, -20, 20},
  Contours -> Function[{min, max}, Range[Floor[min / (2 * Pi)] * 2 * Pi - Pi, max + Pi, 2 * Pi]],
  ContourLabels -> Function[{x, y, z}, Text[Framed[Floor[z / Pi]], {x, y}, Background -> White]]]
-``` -/
+```
+-/
 @[expose]
 public def range (k : ℤ) : Set ℂ := match k with
   | 0 => {w | w.arg + w.im ∈ Ioc (-π) π} \ Iio (-1) ×ℂ {0}
