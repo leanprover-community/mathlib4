@@ -196,7 +196,6 @@ theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ)
 /-- If `p` is an odd prime, then `(ZMod (p ^ n))ˣ` is cyclic for all n -/
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     IsCyclic (ZMod (p ^ n))ˣ := by
-  have _ : NeZero (p ^ n) := ⟨pow_ne_zero n hp.ne_zero⟩
   have := Fact.mk hp
   rcases n with _ | n
   · rw [pow_zero]; infer_instance
@@ -284,7 +283,6 @@ theorem isCyclic_units_two_mul_iff_of_odd (n : ℕ) (hn : Odd n) :
 theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
     (hm : Odd m) (hm1 : m ≠ 1) (hn : Odd n) (hn1 : n ≠ 1) (hmn : m.Coprime n) :
     ¬ IsCyclic (ZMod (m * n))ˣ := by
-  classical
   have _ : NeZero m := ⟨Nat.ne_of_odd_add hm⟩
   have _ : NeZero n := ⟨Nat.ne_of_odd_add hn⟩
   let e := (Units.mapEquiv (chineseRemainder hmn).toMulEquiv).trans .prodUnits

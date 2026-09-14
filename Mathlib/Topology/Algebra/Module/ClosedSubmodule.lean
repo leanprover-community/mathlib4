@@ -23,7 +23,7 @@ Actually provide the `Order.Frame (ClosedSubmodule R M)` instance.
 
 @[expose] public section
 
-open Function Order TopologicalSpace
+open Function TopologicalSpace
 
 variable {ι : Sort*} {R M N O : Type*} [Semiring R]
   [AddCommMonoid M] [TopologicalSpace M] [Module R M]

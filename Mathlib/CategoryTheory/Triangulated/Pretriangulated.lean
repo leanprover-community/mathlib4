@@ -169,8 +169,8 @@ lemma distinguished_cocone_triangle₁ {Y Z : C} (g : Y ⟶ Z) :
   obtain ⟨X', f', g', mem⟩ := distinguished_cocone_triangle g
   exact ⟨_, _, _, inv_rot_of_distTriang _ mem⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Any morphism `Z ⟶ X⟦1⟧` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
     ∃ (Y : C) (f : X ⟶ Y) (g : Y ⟶ Z), Triangle.mk f g h ∈ distTriang C := by
@@ -182,6 +182,7 @@ lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
     (by cat_disch) (by cat_disch)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A commutative square involving the morphisms `mor₂` of two distinguished triangles
 can be extended as morphism of triangles -/
@@ -227,7 +228,6 @@ lemma contractible_distinguished₁ (X : C) :
     (by simp) (by simp) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Obvious triangles `X ⟶ 0 ⟶ X⟦1⟧ ⟶ X⟦1⟧` are distinguished -/
 lemma contractible_distinguished₂ (X : C) :
     Triangle.mk (0 : X ⟶ 0) 0 (𝟙 (X⟦1⟧)) ∈ distTriang C := by
@@ -242,7 +242,6 @@ namespace Triangle
 variable (T : Triangle C) (hT : T ∈ distTriang C)
 include hT
 
-set_option backward.defeqAttrib.useBackward true in
 lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
     ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
   obtain ⟨g, ⟨hg₁, _⟩⟩ := complete_distinguished_triangle_morphism T _ hT
@@ -253,6 +252,7 @@ lemma yoneda_exact₃ {X : C} (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) :
     ∃ (g : T.obj₁⟦(1 : ℤ)⟧ ⟶ X), f = T.mor₃ ≫ g :=
   yoneda_exact₂ _ (rot_of_distTriang _ hT) f hf
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
     ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
@@ -554,8 +554,6 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
         inr_snd := inr_snd }
       isBilimit := isBinaryBilimitOfTotal _ total }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
   obtain ⟨X₂, inl, snd, mem⟩ := distinguished_cocone_triangle₂ (0 : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
   obtain ⟨inr : X₃ ⟶ X₂, inr_snd : 𝟙 _ = inr ≫ snd⟩ :=
@@ -689,7 +687,6 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     exact ⟨_, this⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e : Arrow.mk T₁.mor₁ ≅ Arrow.mk T₂.mor₁) :
     ∃ (e' : T₁ ≅ T₂), e'.hom.hom₁ = e.hom.left ∧ e'.hom.hom₂ = e.hom.right := by

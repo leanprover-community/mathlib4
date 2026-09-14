@@ -16,7 +16,9 @@ public import Mathlib.Topology.IndicatorConstPointwise
 
 public section
 
-open Filter MeasureTheory TopologicalSpace Topology NNReal ENNReal MeasureTheory
+open Filter MeasureTheory TopologicalSpace NNReal ENNReal MeasureTheory
+
+open scoped Topology
 
 variable {α β : Type*} [MeasurableSpace α]
 
@@ -31,7 +33,7 @@ measurable. -/
 theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α → β} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
-  letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
+  let : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
   apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by

@@ -45,6 +45,7 @@ variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 namespace PiTensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two dependent pairs of tensor products are equal if their index is equal and the contents
 are equal after a canonical reindexing. -/
 @[ext (iff := false)]
@@ -234,6 +235,7 @@ instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
 
 example : Semiring (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor powers form a graded algebra.
 
 Note that this instance implies `Algebra R (⨁ n : ℕ, ⨂[R]^n M)` via `DirectSum.Algebra`. -/

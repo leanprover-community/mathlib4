@@ -102,6 +102,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
+@[macro_inline]
 instance instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
   coe_injective f g h := by
@@ -246,6 +247,7 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
       · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
         rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
   ext ⟨t, _⟩
@@ -392,6 +394,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
+@[macro_inline]
 instance instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
   coe_injective

@@ -67,6 +67,7 @@ def Cocone.tensor : Cocone (F₁ ⊗ F₂) where
   pt := c₁.pt ⊗ c₂.pt
   ι.app j := c₁.ι.app j ⊗ₘ c₂.ι.app j
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] tensorHom_def in
 /-- The tensor product of colimit cocones for functors `F₁ : J ⥤ C`

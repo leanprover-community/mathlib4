@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum
@@ -27,7 +27,7 @@ implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 
 public section
 
-open Fin MulOpposite
+open Fin
 open List hiding tail
 open scoped Pointwise
 

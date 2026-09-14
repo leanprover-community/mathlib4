@@ -112,7 +112,7 @@ section Preorder
 
 variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {f : β → α} {a b : α} {s : Set α}
 
-@[to_dual]
+@[to_dual (attr := closedness .)]
 theorem isClosed_Iic : IsClosed (Iic a) :=
   ClosedIicTopology.isClosed_Iic a
 
@@ -120,7 +120,7 @@ theorem isClosed_Iic : IsClosed (Iic a) :=
 instance : ClosedIciTopology αᵒᵈ where
   isClosed_Ici _ := isClosed_Iic (α := α)
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, closedness =)]
 theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
   isClosed_Iic.closure_eq
 
@@ -130,12 +130,12 @@ theorem le_of_tendsto_of_frequently {x : Filter β} (lim : Tendsto f x (𝓝 a))
   isClosed_Iic.mem_of_frequently_of_tendsto h lim
 
 @[to_dual ge_of_tendsto]
-theorem le_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto {x : Filter β} [hx : NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
   isClosed_Iic.mem_of_tendsto lim h
 
 @[to_dual ge_of_tendsto']
-theorem le_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto' {x : Filter β} [hx : NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, f c ≤ b) : a ≤ b :=
   le_of_tendsto lim (Eventually.of_forall h)
 
@@ -427,7 +427,7 @@ namespace Subtype
 
 -- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
-  have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
+  have : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prodMap continuous_subtype_val
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
@@ -435,10 +435,11 @@ end Subtype
 
 -- The binder info on both theorems is slightly different, see
 -- https://github.com/leanprover/lean4/issues/9727
+@[closedness .]
 theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
   t.isClosed_le'
 
-@[to_dual existing isClosed_le_prod]
+@[to_dual existing isClosed_le_prod, closedness .]
 theorem isClosed_le_prod' : IsClosed { p : α × α | p.2 ≤ p.1 } :=
   (isClosed_le_prod (α := α)).preimage continuous_swap
 
@@ -454,11 +455,11 @@ instance : ClosedIicTopology α where
 instance : OrderClosedTopology αᵒᵈ :=
   ⟨isClosed_le_prod' (α := α)⟩
 
-@[to_dual self]
+@[to_dual self, closedness .]
 theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
   IsClosed.inter isClosed_Ici isClosed_Iic
 
-@[to_dual self, simp]
+@[to_dual self, simp, closedness =]
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 
@@ -468,7 +469,7 @@ theorem le_of_tendsto_of_tendsto_of_frequently {f g : β → α} {b : Filter β}
   t.isClosed_le'.mem_of_frequently_of_tendsto h (hf.prodMk_nhds hg)
 
 @[to_dual self (reorder := f g, a₁ a₂, hf hg)]
-theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
+theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [hb : NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto_of_frequently hf hg <| Eventually.frequently h
 
@@ -476,7 +477,7 @@ theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
 @[to_dual self (reorder := f g, a₁ a₂, hf hg)]
-theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
+theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [hb : NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto hf hg (Eventually.of_forall h)
 
@@ -661,7 +662,7 @@ theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=
 @[to_dual (reorder := f g, hf hg) frontier_gt_subset_eq]
 theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b < g b } ⊆ { b | f b = g b } := by
-  simpa only [← not_lt, ← compl_setOf, frontier_compl, eq_comm] using frontier_le_subset_eq hg hf
+  simpa only [← not_lt, ← compl_ofPred, frontier_compl, eq_comm] using frontier_le_subset_eq hg hf
 
 @[to_dual none]
 theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
@@ -755,7 +756,7 @@ instance [Preorder α] [TopologicalSpace α] [OrderClosedTopology α] [Preorder 
 instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, OrderClosedTopology (α i)] : OrderClosedTopology (∀ i, α i) := by
   constructor
-  simp only [Pi.le_def, setOf_forall]
+  simp only [Pi.le_def, ofPred_forall]
   exact isClosed_iInter fun i => isClosed_le (continuous_apply i).fst' (continuous_apply i).snd'
 
 instance Pi.orderClosedTopology' [Preorder β] [TopologicalSpace β] [OrderClosedTopology β] :
