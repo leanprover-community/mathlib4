@@ -70,7 +70,7 @@ theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := (ho
 
 theorem house_pow_le_pow {α : K} (hα : 1 ≤ house α) {i j : ℕ} (hij : i ≤ j) :
     house (α ^ i) ≤ house α ^ j :=
-  (house_pow_le _ _).trans (pow_le_pow_right₀ hα hij)
+  (house_pow _ _).trans_le (pow_le_pow_right₀ hα hij)
 
 theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
