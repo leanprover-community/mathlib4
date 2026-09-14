@@ -1143,6 +1143,12 @@ def _root_.LinearEquiv.multilinearMapCongrRightₛₗ {σ₃₂ : R₃ →+* R�
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
+lemma _root_.LinearEquiv.toLinearMap_multilinearMapCongrRightₛₗ
+    {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
+    [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂] (g : N₂ ≃ₛₗ[σ₂₃] N₃) :
+    g.multilinearMapCongrRightₛₗ.toLinearMap =
+      (g.compMultilinearMapₛₗ : MultilinearMap σ₁₂ M₁ N₂ →ₛₗ[σ₂₃] MultilinearMap σ₁₃ M₁ N₃) := rfl
+
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
 `f₁, ..., fₙ`. -/
