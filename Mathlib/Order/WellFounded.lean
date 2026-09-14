@@ -209,7 +209,7 @@ theorem WellFoundedLT.min_le [WellFoundedLT β] {x : β} {s : Set β} (hx : x �
     WellFoundedLT.min s ⟨x, hx⟩ ≤ x :=
   not_lt.mp <| WellFounded.not_lt_min _ s hx
 
-@[deprecated WellFoundedLT.min_le +typeChanged (since := "2026-08-16")]
+@[deprecated WellFoundedLT.min_le (since := "2026-08-16")]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β}
     (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
   WellFoundedLT.min_le hx

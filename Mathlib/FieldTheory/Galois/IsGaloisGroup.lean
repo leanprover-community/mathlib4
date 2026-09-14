@@ -202,6 +202,15 @@ instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
   have := hGKL.isGalois
   .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
+#adaptation_note
+/-- Before nightly-2026-09-11 this elaborated within the default `synthInstance.maxHeartbeats`.
+Synthesizing the `Algebra K ↑(IsScalarTower.toAlgHom K F L).fieldRange` instance needed by the
+`rw [← IsScalarTower.toAlgHom_fieldRange K F L]` step now exceeds it. The responsible Lean change
+has not been pinned down; it lies between nightly-2026-09-09 and nightly-2026-09-11. The proof
+itself is unchanged, so the original is restored by deleting the `set_option` line below. -/
+set_option synthInstance.maxHeartbeats 80000 in
+-- Synthesizing `Algebra K ↑(IsScalarTower.toAlgHom K F L).fieldRange` needs more than the
+-- default limit; see adaptation note above.
 attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` is a finite Galois group for `B / R` and `R ⊆ A ⊆ B` is a tower of commutative domains
 with `A` integrally closed, then the fixing subgroup of the image of `A` in `B` is a Galois group

@@ -154,7 +154,7 @@ instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f)
 attribute [class] WellFounded
 
 /-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
-@[deprecated WellFounded (since := "2026-09-07"), mk_iff]
+@[deprecated WellFounded +typeChanged (since := "2026-09-07"), mk_iff]
 class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r

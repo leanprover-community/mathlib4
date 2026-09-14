@@ -64,7 +64,7 @@ theorem house_pow (α : K) (i : ℕ) : house (α ^ i) = house α ^ i := by
     ← Finset.apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ (pow_left_mono (M := NNReal) i).map_max,
     NNReal.coe_pow]
 
-@[deprecated house_pow (since := "2026-08-28")]
+@[deprecated house_pow +typeChanged (since := "2026-08-28")]
 theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := (house_pow α i).le
 
 theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by

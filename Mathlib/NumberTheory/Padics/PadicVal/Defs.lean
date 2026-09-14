@@ -68,7 +68,7 @@ namespace padicValNat
 alias maxPowDiv_eq_emultiplicity := padicValNat_eq_emultiplicity
 
 @[deprecated (since := "2026-03-15")]
-alias maxPowDiv_eq_multiplicity := padicValNat_def'
+alias maxPowDiv_eq_multiplicity := padicValNat_def
 
 @[deprecated padicValNat_zero_right (since := "2026-03-15")]
 protected theorem zero : padicValNat p 0 = 0 := padicValNat_zero_right p

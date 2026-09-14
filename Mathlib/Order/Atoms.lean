@@ -495,7 +495,7 @@ instance [WellFoundedLT α] : IsStronglyAtomic α where
 instance [WellFoundedGT α] : IsStronglyCoatomic α :=
   isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| inferInstanceAs (IsStronglyAtomic (αᵒᵈ))
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
   inferInstance

@@ -48,20 +48,19 @@ variable {m n : ℕ}
 
 /-! ### Instances -/
 
-instance : Max (Fin n) where max x y := ⟨max x y, max_rec' (· < n) x.2 y.2⟩
-instance : Min (Fin n) where min x y := ⟨min x y, min_rec' (· < n) x.2 y.2⟩
+attribute [norm_cast] Fin.val_max Fin.val_min
 
-@[simp, norm_cast]
+@[deprecated Fin.val_max (since := "2026-09-09")]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
 
-@[simp, norm_cast]
+@[deprecated Fin.val_min (since := "2026-09-09")]
 theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
 
 theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
 
 instance instLinearOrder : LinearOrder (Fin n) :=
   Fin.val_injective.linearOrder _
-    Fin.le_iff_val_le_val Fin.lt_def coe_min coe_max compare_eq_compare_val
+    Fin.le_iff_val_le_val Fin.lt_def val_min val_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
