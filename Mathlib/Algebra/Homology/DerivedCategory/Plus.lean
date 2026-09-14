@@ -238,9 +238,9 @@ noncomputable def QCompιIso :
     DerivedCategory.Plus.Q ⋙ Plus.ι ≅ CochainComplex.Plus.ι C ⋙ DerivedCategory.Q :=
   ObjectProperty.liftCompιIso ..
 
-instance : (Q (C := C)).Additive := by
+instance : (Q (C := C)).Additive :=
   have := Functor.additive_of_iso (QCompιIso C).symm
-  exact Functor.additive_of_comp_faithful _ Plus.ι
+  Functor.additive_of_comp_faithful _ Plus.ι
 
 instance : NatTrans.CommShift (QCompιIso C).hom ℤ :=
   ObjectProperty.commShift_liftCompιIso_hom ..
