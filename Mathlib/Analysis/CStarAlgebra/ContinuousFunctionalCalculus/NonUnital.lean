@@ -343,11 +343,13 @@ lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero]
       exact fun hf ↦ h0 (hfg (quasispectrum.zero_mem R a) ▸ hf)
 
-/-- A version of `cfcₙ_congr` suitable for `@[congr]`. -/
+/-- A version of `cfcₙ_congr` suitable for `@[congr]`. The `a = b` argument is necessary to ensure
+that `norm_cast` visits both the function and the element. -/
 @[congr]
-lemma cfcₙ_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ σₙ R a, f x = g x) :
-    cfcₙ f a = cfcₙ g a :=
-  cfcₙ_congr hfg
+lemma cfcₙ_congr' {f g : R → R} {a b : A} (hab : a = b) (hfg : ∀ x ∈ σₙ R b, f x = g x) :
+    cfcₙ f a = cfcₙ g b := by
+  subst hab
+  exact cfcₙ_congr hfg
 
 lemma eqOn_of_cfcₙ_eq_cfcₙ {f g : R → R} {a : A} (h : cfcₙ f a = cfcₙ g a) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
