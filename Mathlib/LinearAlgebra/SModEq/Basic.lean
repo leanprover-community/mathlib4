@@ -69,9 +69,6 @@ protected theorem refl (x : M) : x ≡ x [SMOD U] :=
 protected theorem rfl : x ≡ x [SMOD U] :=
   SModEq.refl _
 
-instance : Std.Refl (SModEq U) :=
-  ⟨SModEq.refl⟩
-
 @[symm]
 nonrec theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
   hxy.symm
@@ -82,8 +79,10 @@ theorem comm : x ≡ y [SMOD U] ↔ y ≡ x [SMOD U] := ⟨symm, symm⟩
 nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
   hxy.trans hyz
 
-instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
-  trans := trans
+instance : IsEquiv M (SModEq U) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 @[gcongr]
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
