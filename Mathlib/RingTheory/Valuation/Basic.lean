@@ -43,7 +43,8 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
   is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
 * `Valuation.supp`, the support of a valuation
-* `orderMonoidIso` is the ordered isomorphism between the value groups of two equivalent valuations.
+* `orderMonoidIso` is the ordered isomorphism between the `ValueGroup₀`'s of two
+  equivalent valuations.
 
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
@@ -917,6 +918,19 @@ theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
   · simp
   · simp [orderMonoidIso, valueGroup₀Fun_spec h, valueGroup₀Fun_spec h',
       valueGroup₀Fun_spec (trans h h')]
+
+/-- The order preserving isomorphism between the `valueGroup`s of the underlying
+`MonoidWithZeroHom`s of two equivalent valuations. -/
+def orderMonoidIso' (h : v.IsEquiv w) : valueGroup (ofClass v) ≃*o valueGroup (ofClass w) where
+  toFun x     := (h.orderMonoidIso x).unzero (not_eq_of_beq_eq_false rfl)
+  invFun x    := (h.symm.orderMonoidIso x).unzero (not_eq_of_beq_eq_false rfl)
+  left_inv x  := WithZero.coe_inj.mp (h.orderMonoidIso.left_inv x)
+  right_inv x := WithZero.coe_inj.mp (h.orderMonoidIso.right_inv x)
+  map_mul'    := by simp [← WithZero.coe_inj, map_mul]
+  map_le_map_iff' {x y} := by rw [← WithZero.coe_le_coe]; simp
+
+lemma orderMonoidIso'_eq (h : v.IsEquiv w) (x : valueGroup (.ofClass v)) :
+    h.orderMonoidIso' x = h.orderMonoidIso x := rfl
 
 end IsEquiv
 
