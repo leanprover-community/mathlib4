@@ -148,7 +148,7 @@ lemma measurableSet_tendsto {_ : MeasurableSpace β} [MeasurableSpace γ]
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   rcases (Filter.hasBasis_self.mpr hl'.exists_measurable_subset).exists_antitone_subbasis with
     ⟨v, v_meas, hv⟩
-  simp only [hu.tendsto_iff hv.toHasBasis, true_imp_iff, true_and, setOf_forall, setOf_exists]
+  simp only [hu.tendsto_iff hv.toHasBasis, true_imp_iff, true_and, ofPred_forall, ofPred_exists]
   exact .iInter fun n ↦ .iUnion fun _ ↦ .biInter (to_countable _) fun i _ ↦
     (v_meas n).2.preimage (hf i)
 

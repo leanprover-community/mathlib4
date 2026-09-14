@@ -6,8 +6,7 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.Field.ULift
-public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Localization.Cardinality

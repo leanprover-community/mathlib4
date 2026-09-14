@@ -555,7 +555,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   have : iSup K = ⨆ i : PLift ι, ⨆ (_ : True), K i.down := by simp [iSup_plift_down]
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
-  · simp only [setOf_true]
+  · simp only [ofPred_true]
     rw [directedOn_onFun_iff, Set.image_univ, directedOn_range]
     -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i

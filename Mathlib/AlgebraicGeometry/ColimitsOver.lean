@@ -78,7 +78,6 @@ def transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) :
   (isColimitOfPreserves (Over.map ⊤ (d.prop_trans hij)) (d.isColimit i)).desc
     (d.transitionCocone hij)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cocone_ι_transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) (a : J) :
     (Over.map ⊤ (d.prop_trans hij)).map ((d.cocone i).ι.app a) ≫
@@ -86,7 +85,6 @@ lemma cocone_ι_transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) (a : J) :
   simp [transitionMap, ← Functor.mapCocone_ι_app, transitionCocone]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma transitionMap_id (i : 𝒰.I₀) :
     d.transitionMap (𝟙 i) = ((Over.mapId _ _ _).hom.app <| (d.cocone i).pt) := by

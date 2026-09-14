@@ -92,7 +92,6 @@ lemma _root_.algebraMap.coe_logDeriv {F K : Type*} [Field F] [Field K] [Differen
 
 variable {F : Type*} [Field F] [Differential F] [CharZero F]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     Differential (AdjoinRoot p) where
   deriv := Derivation.liftOfSurjective (f := (AdjoinRoot.mk p).toIntAlgHom) AdjoinRoot.mk_surjective

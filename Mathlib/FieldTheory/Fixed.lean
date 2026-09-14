@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Ring.Action.Invariant
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.RingTheory.Polynomial.Subring
 

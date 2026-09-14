@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 ## Polynomials over finite fields
@@ -50,7 +50,7 @@ namespace MvPolynomial
 
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Submodule
 
 variable {K : Type*} {σ : Type*}
 
@@ -116,7 +116,6 @@ section
 
 variable (K σ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.eval` as a `K`-linear map. -/
 @[simps]
 def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
@@ -175,7 +174,7 @@ noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
 open scoped Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
-  simp only [Set.mem_setOf_eq]; infer_instance
+  simp only [Set.mem_ofPred_eq]; infer_instance
 
 variable [Field K]
 

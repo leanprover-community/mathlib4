@@ -25,7 +25,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 assert_not_exists Field
 
-variable {R R₂ K M M₂ V S : Type*}
+variable {R M M₂ V S : Type*}
 
 namespace Submodule
 
@@ -37,9 +37,7 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 variable {x : M} (p p' : Submodule R M)
-variable [Semiring R₂] {σ₁₂ : R →+* R₂}
-variable [AddCommMonoid M₂] [Module R₂ M₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable [AddCommMonoid M₂]
 
 section
 
@@ -214,9 +212,11 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
       (fun _ _ _ ↦ smul_mem _ _) hx'
 
 @[simp]
-lemma span_setOf_mem_eq_top :
+lemma span_setOfPred_mem_eq_top :
     span R {x : span R s | (x : M) ∈ s} = ⊤ :=
   span_span_coe_preimage
+
+@[deprecated (since := "2026-07-09")] alias span_setOf_mem_eq_top := span_setOfPred_mem_eq_top
 
 theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by
@@ -679,7 +679,6 @@ theorem Module.isPrincipal_submodule_iff {p : Submodule R M} :
     have ⟨r, hr⟩ := mem_span_singleton.mp (ha.le x.2)
     exact mem_span_singleton.mpr ⟨r, Subtype.ext hr⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Module.IsPrincipal.of_surjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f)
     [IsPrincipal R M] : IsPrincipal R M₂ where
   principal := by

@@ -5,11 +5,8 @@ Authors: Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Primitive Element Theorem

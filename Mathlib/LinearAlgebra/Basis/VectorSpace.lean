@@ -64,12 +64,14 @@ theorem coe_extend (hs : LinearIndepOn K id s) : ⇑(Basis.extend hs) = ((↑) :
 
 theorem range_extend (hs : LinearIndepOn K id s) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
-  rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_extend, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
 The specific value of this definition should be considered an implementation detail. -/
-def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
   LinearIndepOn.extend hs.linearIndepOn_id (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
@@ -107,7 +109,7 @@ theorem coe_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ s
 
 theorem range_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     range (Basis.extendLe hs hst ht) = hs.extend hst := by
-  rw [coe_extendLe, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_extendLe, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 theorem subset_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     s ⊆ range (Basis.extendLe hs hst ht) :=
@@ -133,7 +135,7 @@ theorem coe_ofSpan (hs : ⊤ ≤ span K s) : ⇑(ofSpan hs) = ((↑) : _ → _) 
 
 theorem range_ofSpan (hs : ⊤ ≤ span K s) :
     range (ofSpan hs) = (linearIndepOn_empty K id).extend (empty_subset s) := by
-  rw [coe_ofSpan, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_ofSpan, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 theorem ofSpan_subset (hs : ⊤ ≤ span K s) : range (ofSpan hs) ⊆ s :=
   extendLe_subset (linearIndependent_empty K V) (empty_subset s) hs
@@ -248,7 +250,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
   have Vinh : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.domRestrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _

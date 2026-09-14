@@ -180,7 +180,7 @@ theorem range_preOmega : range preOmega = {x | IsInitial x} :=
   range_enumOrd not_bddAbove_isInitial
 
 theorem mem_range_preOmega_iff {x : Ordinal} : x ∈ range preOmega ↔ IsInitial x := by
-  rw [range_preOmega, mem_setOf]
+  rw [range_preOmega, mem_ofPred]
 
 alias ⟨_, IsInitial.mem_range_preOmega⟩ := mem_range_preOmega_iff
 
@@ -269,7 +269,7 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
     rw [omega_eq_preOmega, Ordinal.add_sub_cancel_of_le ha']
 
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
-  rw [range_omega, mem_setOf]
+  rw [range_omega, mem_ofPred]
 
 theorem preOmega_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
   rw [← opow_natCast] at ho
@@ -554,6 +554,13 @@ theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #
 
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
+
+theorem countable_toType_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : Countable (ToType o) := by
+  rwa [← mk_le_aleph0_iff, mk_toType, card_le_iff, succ_aleph0, ord_aleph]
+
+theorem countable_Iio_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : (Iio o).Countable := by
+  rw [← countable_coe_iff, ToType.mk.toEquiv.countable_iff]
+  exact countable_toType_of_lt_omega_one h
 
 end Cardinal
 

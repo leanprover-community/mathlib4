@@ -5,15 +5,11 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-public import Mathlib.FieldTheory.Separable
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
-
 
 /-!
 
@@ -603,7 +599,7 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
     Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).2 hI.natDegree_pos.ne'
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
   have hF := finiteMultiplicity_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
-  have hne := (multiplicity_pos_of_dvd hf).ne'
+  have hne := (multiplicity_pos_of_dvd hf hF).ne'
   refine ⟨_, n, y, hne, H, ?_⟩
   obtain ⟨c, hf, H⟩ := hF.exists_eq_pow_mul_and_not_dvd
   rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|

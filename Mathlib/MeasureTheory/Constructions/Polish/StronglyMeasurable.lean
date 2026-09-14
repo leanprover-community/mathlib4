@@ -102,7 +102,7 @@ theorem StronglyMeasurable.tprod {f : ι → X → E} (h : ∀ i : ι, StronglyM
     StronglyMeasurable (fun x => ∏'[L] i : ι, f i x) := by
   let E := { x | Multipliable (f · x) L }
   have hE : MeasurableSet E := StronglyMeasurable.measurableSet_exists_tendsto (by fun_prop)
-  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+  have h0 : (Eᶜ.domRestrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
     funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
   refine stronglyMeasurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ stronglyMeasurable_const)
   refine stronglyMeasurable_of_tendsto L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)

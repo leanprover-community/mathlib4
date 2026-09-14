@@ -146,10 +146,10 @@ lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
   Iff.rfl
 
 lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℤ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 1
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 2
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 3
 
 /--
 A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific

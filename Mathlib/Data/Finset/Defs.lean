@@ -67,7 +67,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
@@ -127,8 +127,10 @@ theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Fin
   Iff.rfl
 
 @[simp]
-theorem setOf_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
+theorem setOfPred_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem := setOfPred_mem
 
 theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
   x.2
@@ -284,7 +286,7 @@ theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Finset α} (hs₁s₂ : s
 theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x ∈ s₂, x ∉ s₁ :=
   Set.exists_of_ssubset h
 
-instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
+instance isWellFounded_ssubset : @WellFounded (Finset α) (· ⊂ ·) :=
   Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2
 
 instance wellFoundedLT : WellFoundedLT (Finset α) :=
@@ -315,7 +317,6 @@ section DecidablePiExists
 
 variable {s : Finset α}
 
-set_option backward.isDefEq.respectTransparency false in
 instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∀ (a) (h : a ∈ s), p a h) :=
   Multiset.decidableDforallMultiset
@@ -332,7 +333,6 @@ instance instDecidableLE [DecidableEq α] : DecidableLE (Finset α) :=
 instance instDecidableLT [DecidableEq α] : DecidableLT (Finset α) :=
   instDecidableRelSSubset
 
-set_option backward.isDefEq.respectTransparency false in
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset
@@ -355,7 +355,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))

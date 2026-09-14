@@ -138,7 +138,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   apply Set.Finite.measure_zero _ MeasureTheory.volume
   simp only [Classical.not_imp]
   apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
-    (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono (fun _ h ↦ h.1)
+    (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp)).mono (fun _ h ↦ h.1)
   apply (p * q).roots.finite_toSet.subset
   rintro _ ⟨_, ⟨_, h⟩, _⟩
   contrapose h
@@ -244,9 +244,6 @@ lemma leadingCoeff_le_mahlerMeasure (p : ℂ[X]) : ‖p.leadingCoeff‖ ≤ p.ma
   gcongr
   exact one_le_prod_max_one_norm_roots p
 
-@[deprecated (since := "2026-01-02")] alias leading_coeff_le_mahlerMeasure :=
-  leadingCoeff_le_mahlerMeasure
-
 lemma prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff {p : ℂ[X]}
     (hlc : 1 ≤ ‖p.leadingCoeff‖) : (p.roots.map (fun a ↦ max 1 ‖a‖)).prod ≤ p.mahlerMeasure := by
   rw [← one_mul (Multiset.prod _), mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
@@ -279,8 +276,8 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
   constructor
   · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
     apply (Finite.of_sdiff _ <| finite_singleton (2 * π)).measure_zero
-    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_sdiff_assoc, Icc_sdiff_right]
-    rw [setOf_inter_eq_sep]
+    simp only [ne_eq, mem_ofPred_eq, Decidable.not_not, inter_sdiff_assoc, Icc_sdiff_right]
+    rw [ofPred_inter_eq_sep]
     apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
       <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
     simp [hp]
@@ -305,18 +302,18 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
   -- Proof: Jensen's inequality (twice) + Parseval's identity
   have : IsFiniteMeasure (volume.restrict (uIoc 0 (2 * π))) := by
     rw [uIoc_of_le (by positivity)]; infer_instance
-  have : NeZero (volume (uIoc 0 (2 * π))) := ⟨by simp⟩
+  have : NeZero (volume (uIoc 0 (2 * π))) := ⟨by simp [pi_pos]⟩
   by_cases! hp : p = 0
   · simp [hp]
   have : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)), 0 < ‖p.eval (circleMap 0 1 θ)‖ := by
     rw [ae_restrict_iff' measurableSet_uIoc]
     refine Set.Finite.measure_zero ?_ _
-    simp only [norm_pos_iff, ne_eq, compl_setOf, Classical.not_imp, Decidable.not_not]
+    simp only [norm_pos_iff, ne_eq, compl_ofPred, Classical.not_imp, Decidable.not_not]
     refine Finite.of_finite_image (f := circleMap 0 1) (p.roots.finite_toSet.subset ?_) ?_
     · rintro z ⟨θ, ⟨_, heval⟩, rfl⟩
       exact (mem_roots hp).mpr heval
-    · grw [setOf_and, inter_subset_left]
-      exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [abs_of_pos pi_pos])
+    · grw [ofPred_and, inter_subset_left]
+      exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp)
   have hlogAe : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)),
       exp (log ‖p.eval (circleMap 0 1 θ)‖) = ‖p.eval (circleMap 0 1 θ)‖ := by
     filter_upwards [this] with θ hθ
@@ -385,7 +382,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z x := by
       simp_rw [← coe_nnnorm]
       norm_cast
-      exact Finset.prod_le_prod_of_subset_of_one_le' (toFinset_subset.mpr (subset_of_le hx.1))
+      exact Finset.prod_le_prod_of_subset_of_one_le (toFinset_subset.mpr (subset_of_le hx.1))
         (fun a _ _ ↦ one_le_pow₀ (le_max_left 1 ‖a‖))
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z p.roots := by
       gcongr with a
