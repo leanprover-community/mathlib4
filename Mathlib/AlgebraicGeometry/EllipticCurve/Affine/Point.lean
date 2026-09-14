@@ -958,7 +958,7 @@ lemma finite_preimage_xRep (x : F) : {P : W.Point | P.xRep = ![x, 1]}.Finite := 
   rcases Set.eq_empty_or_nonempty {P : W.Point | P.xRep = ![x, 1]} with h | h
   · exact h ▸ Set.finite_empty
   choose Q hQ using h
-  simp only [Set.mem_ofPred_eq] at hQ
+  simp only [Set.mem_ofPred] at hQ
   rw [show {P | P.xRep = ![x, 1]} = {Q, -Q} by ext : 1; simp [← hQ, Point.xRep_eq_xRep_iff]]
   simp
 

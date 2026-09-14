@@ -32,10 +32,10 @@ variable (v : Valuation R Γ₀)
 def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
-  mul_mem' {x y} hx hy := by simp only [Set.mem_ofPred_eq, map_mul, mul_le_one' hx hy]
+  mul_mem' {x y} hx hy := by simp only [Set.mem_ofPred, map_mul, mul_le_one' hx hy]
   zero_mem' := by simp
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
-  neg_mem' {x} hx := by simp only [Set.mem_ofPred_eq] at hx; simpa only [Set.mem_ofPred_eq, map_neg]
+  neg_mem' {x} hx := by simp only [Set.mem_ofPred] at hx; simpa only [Set.mem_ofPred, map_neg]
 
 lemma mem_integer_iff (r : R) : r ∈ v.integer ↔ v r ≤ 1 := by rfl
 
@@ -241,7 +241,7 @@ lemma isPrincipal_iff_exists_eq_setOfPred_valuation_le (hv : Integers v O) {I : 
   · obtain ⟨a, ha, rfl⟩ : ∃ a ∈ I, (v ∘ algebraMap O F) a = x := by simpa using hx.left
     refine ⟨a, ?_⟩
     ext b
-    simp only [SetLike.mem_coe, mem_ofPred_eq]
+    simp only [SetLike.mem_coe, mem_ofPred]
     constructor <;> intro h
     · exact hx.right (Set.mem_image_of_mem _ h)
     · rw [le_iff_dvd hv] at h

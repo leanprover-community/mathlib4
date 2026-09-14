@@ -396,7 +396,7 @@ lemma UpperHemicontinuousAt.mem_of_tendsto {ι : Type*} [RegularSpace β] {x₀ 
     exact hst.notMem_of_mem_left hyn hn
   apply hy.mp
   filter_upwards [hx (hf s hs)] with n hn hyn
-  simp only [← subset_interior_iff_mem_nhdsSet, preimage_ofPred_eq, mem_ofPred_eq] at hn
+  simp only [← subset_interior_iff_mem_nhdsSet, preimage_ofPred_eq, mem_ofPred] at hn
   exact interior_subset <| hn hyn
 
 /-- **Sequential characterization of lower hemicontinuity**:

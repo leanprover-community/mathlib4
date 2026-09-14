@@ -521,7 +521,7 @@ theorem countable_ne (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ)
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
     intro x hx
     dsimp at hx
-    simp only [exists_prop, mem_iUnion, mem_ofPred_eq]
+    simp only [exists_prop, mem_iUnion, mem_ofPred]
     exact hx
   apply Countable.mono (Subset.trans A B)
   exact Countable.biUnion (countable_discreteSupport _) fun a _ => countable_spf_mem Hcont a
@@ -532,7 +532,7 @@ theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ 
   apply ae_restrict_of_ae
   refine measure_mono_null ?_ ((countable_ne Hcont φ).measure_zero _)
   intro x
-  simp only [imp_self, mem_ofPred_eq, mem_compl_iff]
+  simp only [imp_self, mem_ofPred, mem_compl_iff]
 
 theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by

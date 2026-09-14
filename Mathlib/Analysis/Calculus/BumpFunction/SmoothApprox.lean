@@ -56,7 +56,7 @@ theorem ContinuousMap.dense_setOfPred_contDiff : Dense {f : C(E, F) | ContDiff �
   intro f
   rw [mem_closure_iff_nhds_basis
     (nhds_basis_uniformity uniformity_basis_dist.compactConvergenceUniformity)]
-  simp only [Prod.forall, mem_ofPred_eq, and_imp]
+  simp only [Prod.forall, mem_ofPred, and_imp]
   intro K ε hK hε
   have : UniformContinuousOn f (cthickening 1 K) :=
     hK.cthickening.uniformContinuousOn_of_continuous <| by fun_prop

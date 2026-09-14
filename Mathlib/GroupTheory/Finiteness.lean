@@ -598,7 +598,7 @@ theorem Submonoid.fg_of_divisive {P : Submonoid M} (hP : ∀ x ∈ P, ∀ y, x *
     by_cases hx₂ : x = 1
     · simp [hx₂]
     refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
-    simp only [Set.mem_ofPred_eq, and_imp] at ih
+    simp only [Set.mem_ofPred, and_imp] at ih
     by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 1 }) y
     · exact mem_closure_of_mem hy₃
     rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩

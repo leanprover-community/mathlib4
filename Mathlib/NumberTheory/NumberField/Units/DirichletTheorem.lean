@@ -311,7 +311,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
         exact seq_decreasing K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem (t := {I : Ideal (𝓞 K) | Ideal.absNorm I ≤ B})
     (fun n ↦ ?_) (Ideal.finite_setOfPred_absNorm_le B)
-  rw [Set.mem_ofPred_eq, Ideal.absNorm_span_singleton]
+  rw [Set.mem_ofPred, Ideal.absNorm_span_singleton]
   exact seq_norm_le K w₁ hB n
 
 set_option backward.isDefEq.respectTransparency.types false in

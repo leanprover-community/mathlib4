@@ -874,7 +874,7 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
     range (Subtype.map f h) = (↑) ⁻¹' f '' { x | p x } := by
   ext ⟨x, hx⟩
   simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
-  simp only [Subtype.mk.injEq, exists_prop, mem_ofPred_eq]
+  simp only [Subtype.mk.injEq, exists_prop, mem_ofPred]
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=
   image_eq_preimage_of_inverse Prod.swap_leftInverse Prod.swap_rightInverse

@@ -54,14 +54,14 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
   classical
   refine ⟨fun h ↦ (h.mapsTo Subtype.val ?_).mono' (by simp), fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩
   · rintro ⟨_, x, rfl⟩
-    simp only [← Subtype.coe_le_coe, OneMemClass.coe_one, Set.mem_ofPred_eq, Set.mem_range,
+    simp only [← Subtype.coe_le_coe, OneMemClass.coe_one, Set.mem_ofPred, Set.mem_range,
       Function.comp_apply]
     intro hx
     obtain ⟨y, rfl⟩ := hv.exists_of_le_one hx
     exact ⟨y, by simp⟩
   · exact fun x ↦ if hx : x ∈ MonoidHom.mrange v then ⟨x, hx⟩ else 1
   · intro
-    simp only [Set.mem_range, Function.comp_apply, MonoidHom.mem_mrange, Set.mem_ofPred_eq,
+    simp only [Set.mem_range, Function.comp_apply, MonoidHom.mem_mrange, Set.mem_ofPred,
       forall_exists_index]
     rintro x rfl
     simp [← Subtype.coe_le_coe, hv.map_le_one]

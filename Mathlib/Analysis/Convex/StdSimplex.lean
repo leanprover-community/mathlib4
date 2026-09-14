@@ -42,7 +42,7 @@ def stdSimplex : Set (ι → 𝕜) :=
 @[deprecated StdSimplex.range_toFun_comp_weights (since := "2026-08-29")]
 theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | ∑ x, f x = 1 } := by
   ext f
-  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred]
 
 @[deprecated StdSimplex.instConvexSpace (since := "2026-08-29")]
 theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι) := by

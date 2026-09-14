@@ -240,7 +240,7 @@ lemma schnirelmannDensity_setOfPred_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   apply le_antisymm (schnirelmannDensity_le_of_le m hm'.ne' _) _
   · rw [← one_div, ← @Nat.cast_one ℝ]
     gcongr
-    simp only [Set.mem_ofPred_eq, card_le_one_iff_subset_singleton, subset_iff,
+    simp only [Set.mem_ofPred, card_le_one_iff_subset_singleton, subset_iff,
       mem_filter, mem_Ioc, mem_singleton, and_imp]
     use 1
     intro x _ hxm h
@@ -249,7 +249,7 @@ lemma schnirelmannDensity_setOfPred_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     rwa [Nat.mod_eq_of_lt hxm'] at h
   rw [le_schnirelmannDensity_iff]
   intro n hn
-  simp only [Set.mem_ofPred_eq]
+  simp only [Set.mem_ofPred]
   have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ {x ∈ Ioc 0 n | x % m = 1} := by
     simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
     rintro _ y _ hy' rfl

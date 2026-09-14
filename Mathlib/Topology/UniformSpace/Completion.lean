@@ -173,7 +173,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
           ht'₂ <| SetRel.prodMk_mem_comp (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
-    Set.inter_comm _ (range pureCauchy), mem_ofPred_eq]
+    Set.inter_comm _ (range pureCauchy), mem_ofPred]
   refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
   · exact monotone_const.inter monotone_preimage
   · let ⟨y, hy⟩ := h_ex s hs

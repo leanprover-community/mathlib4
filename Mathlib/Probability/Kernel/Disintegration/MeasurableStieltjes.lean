@@ -107,7 +107,7 @@ lemma measurableSet_isRatStieltjesPoint [MeasurableSpace α] (hf : Measurable f)
     rw [this]
     exact (((h1.inter h2).inter h3).inter h4)
   ext a
-  simp only [mem_ofPred_eq, mem_inter_iff]
+  simp only [mem_ofPred, mem_inter_iff]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact ⟨⟨⟨h.mono, h.tendsto_atTop_one⟩, h.tendsto_atBot_zero⟩, h.iInf_rat_gt_eq⟩
   · exact ⟨h.1.1.1, h.1.1.2, h.1.2, h.2⟩

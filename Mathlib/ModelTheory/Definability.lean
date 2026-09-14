@@ -63,7 +63,7 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
   obtain ⟨ψ, rfl⟩ := h
   refine ⟨(φ.addConstants A).onFormula ψ, ?_⟩
   ext x
-  simp only [mem_ofPred_eq, LHom.realize_onFormula]
+  simp only [mem_ofPred, LHom.realize_onFormula]
 
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
@@ -71,7 +71,7 @@ theorem definable_iff_exists_formula_sum :
   refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    mem_ofPred_eq, Formula.Realize]
+    mem_ofPred, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
@@ -121,7 +121,7 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
   rcases hg with ⟨θ, hθ⟩
   refine ⟨φ ⊔ θ, ?_⟩
   ext
-  rw [hφ, hθ, mem_ofPred_eq, Formula.realize_sup, mem_union, mem_ofPred_eq, mem_ofPred_eq]
+  rw [hφ, hθ, mem_ofPred, Formula.realize_sup, mem_union, mem_ofPred, mem_ofPred]
 
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
@@ -179,7 +179,7 @@ theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Defi
   obtain ⟨φ, rfl⟩ := h
   refine ⟨φ.relabel f, ?_⟩
   ext
-  simp only [Set.preimage_ofPred_eq, mem_ofPred_eq, Formula.realize_relabel]
+  simp only [Set.preimage_ofPred_eq, mem_ofPred, Formula.realize_relabel]
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
     A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
@@ -203,7 +203,7 @@ theorem definable_iff_finitely_definable :
     refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
         (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
     ext
-    simp only [Formula.Realize, mem_ofPred_eq, Finset.coe_sort_coe]
+    simp only [Formula.Realize, mem_ofPred, Finset.coe_sort_coe]
     exact iff_comm.1 <| BoundedFormula.realize_restrictFreeVar _ (by simp)
   · rintro ⟨A0, hA0, hd⟩
     exact Definable.mono hd hA0
@@ -214,7 +214,7 @@ theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M
   obtain ⟨φ, rfl⟩ := h
   refine ⟨(BoundedFormula.relabel id φ).exs, ?_⟩
   ext x
-  simp only [Set.mem_image, mem_ofPred_eq, BoundedFormula.realize_exs,
+  simp only [Set.mem_image, mem_ofPred, BoundedFormula.realize_exs,
     BoundedFormula.realize_relabel, Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -260,7 +260,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
-      mem_ofPred_eq]
+      mem_ofPred]
     constructor
     · rintro ⟨⟨y, ys, hy⟩, hx⟩
       refine ⟨y, ys, ?_⟩

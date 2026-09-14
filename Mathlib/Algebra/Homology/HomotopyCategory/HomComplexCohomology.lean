@@ -143,7 +143,7 @@ lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
-      AddSubsemigroup.mem_mk, Set.mem_ofPred_eq]
+      AddSubsemigroup.mem_mk, Set.mem_ofPred]
     rw [toHom_mk, HomotopyCategory.quotient_map_eq_zero_iff] at h
     obtain ⟨γ, h⟩ := Cochain.equivHomotopy _ _ h.some
     simp only [Cochain.ofHom_zero, add_zero, Cocycle.equivHomShift_symm_apply,

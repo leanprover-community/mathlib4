@@ -728,14 +728,14 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     conv =>
       arg 1; intro; left; right; arg 1; intro
       rw [meromorphicOrderAt_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff]
-    simp only [mem_ofPred_eq] at hz
+    simp only [mem_ofPred] at hz
     rw [meromorphicOrderAt_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff] at hz
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
     simp only [mem_compl_iff, mem_singleton_iff, isOpen_induced h₂t', mem_preimage,
       h₃t', and_self, and_true]
     intro w hw
-    simp only [mem_ofPred_eq]
+    simp only [mem_ofPred]
     -- Trivial case: w = z
     by_cases h₁w : w = z
     · rw [h₁w]
@@ -868,7 +868,7 @@ theorem codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top (hf : Meromorphic
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
     exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_sdiff_of_mem h₃t hax⟩
   · filter_upwards [hf.eventually_analyticAt_or_mem_compl hx, h₁f] with a h₁a h'₁a
-    simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_ofPred_eq, Subtype.exists,
+    simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_ofPred, Subtype.exists,
       exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
     rcases h₁a with h' | h'
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
