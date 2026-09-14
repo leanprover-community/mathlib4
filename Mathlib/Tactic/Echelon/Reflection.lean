@@ -5,6 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.Data.List.Sort
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.Tactic.Matrix.OfLists
 
@@ -91,30 +92,16 @@ theorem pivotOfList_eq_top_iff {m : ℕ} {cols : List (Fin n)} {i : Fin m} :
     pivotOfList m cols i = ⊤ ↔ cols.length ≤ i := by
   cases h : cols[(i : ℕ)]? <;> simp [pivotOfList, h] <;> grind
 
-/-- `true` when the list is strictly increasing. -/
-def isStrictlyIncreasing : List (Fin n) → Bool
-  | a :: b :: l => Nat.blt a b && isStrictlyIncreasing (b :: l)
-  | _ => true
-
-theorem isStrictlyIncreasing_iff_isChain :
-    ∀ {l : List (Fin n)}, isStrictlyIncreasing l = true ↔ l.IsChain (· < ·)
-  | [] => by simp [isStrictlyIncreasing]
-  | [_] => by simp [isStrictlyIncreasing]
-  | _ :: b :: l => by
-    simp [isStrictlyIncreasing, List.isChain_cons_cons, Nat.blt_eq,
-      isStrictlyIncreasing_iff_isChain (l := b :: l)]
-
-theorem pivotOfList_lt_pivotOfList {m : ℕ} {cols : List (Fin n)}
-    (h : isStrictlyIncreasing cols = true) {i j : Fin m} (hij : i < j)
-    (hj : (j : ℕ) < cols.length) : pivotOfList m cols i < pivotOfList m cols j := by
-  rw [isStrictlyIncreasing_iff_isChain, List.isChain_iff_pairwise, List.pairwise_iff_getElem] at h
+theorem pivotOfList_lt_pivotOfList {m : ℕ} {cols : List (Fin n)} (h : cols.SortedLT)
+    {i j : Fin m} (hij : i < j) (hj : (j : ℕ) < cols.length) :
+    pivotOfList m cols i < pivotOfList m cols j := by
   have hi : (i : ℕ) < cols.length := lt_trans hij hj
   simp only [pivotOfList, List.getElem?_eq_getElem hi, List.getElem?_eq_getElem hj,
     Option.elim_some]
-  exact WithTop.coe_lt_coe.mpr (h i j hi hj hij)
+  exact WithTop.coe_lt_coe.mpr (h.getElem_lt_getElem_of_lt hij)
 
-theorem monotone_pivotOfList_of_isStrictlyIncreasing {m : ℕ} {cols : List (Fin n)}
-    (h : isStrictlyIncreasing cols = true) : Monotone (pivotOfList m cols) := by
+theorem monotone_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)}
+    (h : cols.SortedLT) : Monotone (pivotOfList m cols) := by
   intro i j hij
   rcases hij.lt_or_eq with hlt | rfl
   · by_cases hj : (j : ℕ) < cols.length
@@ -123,23 +110,23 @@ theorem monotone_pivotOfList_of_isStrictlyIncreasing {m : ℕ} {cols : List (Fin
       exact le_top
   · exact le_rfl
 
-theorem strictMonoOn_pivotOfList_of_isStrictlyIncreasing {m : ℕ} {cols : List (Fin n)}
-    (h : isStrictlyIncreasing cols = true) :
+theorem strictMonoOn_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)}
+    (h : cols.SortedLT) :
     StrictMonoOn (pivotOfList m cols) {i | pivotOfList m cols i ≠ ⊤} :=
   fun _ _ _ hj hij ↦
     pivotOfList_lt_pivotOfList h hij (lt_of_not_ge (mt pivotOfList_eq_top_iff.mpr hj))
 
 /-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
 beyond the pivot list, all zero. -/
-def IsPivotedList [Zero α] (n : ℕ) : (cols : List (Fin n)) → (rows : List (List α)) → Prop
+def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) → Prop
   | [], [] => True
-  | [], row :: rows => row = List.replicate n 0 ∧ IsPivotedList n [] rows
+  | [], row :: rows => row = List.replicate n 0 ∧ IsPivotedList [] rows
   | _ :: _, [] => False
   | p :: ps, row :: rows =>
-    row.getD p 0 ≠ 0 ∧ row.take p = List.replicate p 0 ∧ IsPivotedList n ps rows
+    row.getD p 0 ≠ 0 ∧ row.take p = List.replicate p 0 ∧ IsPivotedList ps rows
 
 theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
-    (h : IsPivotedList n cols rows) (i : ℕ) :
+    (h : IsPivotedList cols rows) (i : ℕ) :
     (∀ j : Fin n, (j : WithTop (Fin n)) < (cols[i]?).elim ⊤ (↑) → (rows.getD i []).getD j 0 = 0) ∧
       ∀ c : Fin n, (cols[i]?).elim ⊤ (↑) = (c : WithTop (Fin n)) →
         (rows.getD i []).getD c 0 ≠ 0 := by
@@ -151,9 +138,7 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
     | cons row rows ih =>
       obtain ⟨hrow, hrest⟩ := h
       cases i with
-      | zero =>
-        rw [List.getD_cons_zero, hrow, List.getD_eq_getElem?_getD,
-          List.getElem?_getD_replicate_default_eq]
+      | zero => grind
       | succ i =>
         rw [List.getD_cons_succ]
         exact ih hrest i (by simp)
@@ -167,17 +152,17 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
         simp only [List.getD_cons_zero, List.getElem?_cons_zero, Option.elim_some,
           WithTop.coe_lt_coe, WithTop.coe_eq_coe]
         refine ⟨fun j hj ↦ ?_, fun c hc ↦ hc ▸ hd⟩
-        rw [List.getD_eq_getElem?_getD, ← List.getElem?_take_of_lt hj, hz,
-          List.getElem?_getD_replicate_default_eq]
+        have := List.getElem?_take_of_lt (l := row) hj
+        grind
       | succ i =>
         rw [List.getD_cons_succ]
         exact ih hrest i
 
 theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
-    (hinc : isStrictlyIncreasing cols = true) (h : IsPivotedList n cols rows) :
+    (hsorted : cols.SortedLT) (h : IsPivotedList cols rows) :
     (ofLists m n rows).IsPivotedBy (pivotOfList m cols) := by
-  refine Matrix.isPivotedBy_iff.mpr ⟨monotone_pivotOfList_of_isStrictlyIncreasing hinc,
-    strictMonoOn_pivotOfList_of_isStrictlyIncreasing hinc, fun i ↦ ?_⟩
+  refine Matrix.isPivotedBy_iff.mpr ⟨monotone_pivotOfList_of_sortedLT hsorted,
+    strictMonoOn_pivotOfList_of_sortedLT hsorted, fun i ↦ ?_⟩
   simp only [ofLists_apply, ofList_apply, pivotOfList]
   exact getD_of_isPivotedList h i
 
