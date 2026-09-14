@@ -112,6 +112,7 @@ section Lsum
 variable (S)
 variable [DecidableEq ι]
 
+@[macro_inline]
 instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
@@ -247,7 +248,6 @@ def mapRange.linearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) : (Π₀ i, β₁ 
     toFun := mapRange (fun i x => f i x) fun i => (f i).map_zero
     map_smul' := fun r => mapRange_smul _ (fun i => (f i).map_zero) _ fun i => (f i).map_smul r }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapRange.linearMap_id :
     (mapRange.linearMap fun i => (LinearMap.id : β₂ i →ₗ[R] _)) = LinearMap.id := by
@@ -680,8 +680,6 @@ variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable {σ₁₂ : R →+* R₂}
 variable [Module R M] [Module R₂ M₂]
-
-open Submodule
 
 section DFinsupp
 

@@ -123,10 +123,6 @@ theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colo
 theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c :=
   fun _ hv _ hw _ ↦ C.not_adj_of_mem_colorClass hv hw
 
-@[deprecated isIndepSet_colorClass (since := "2026-02-07")]
-theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
-  C.isIndepSet_colorClass c
-
 /-- Coloring induced from a homomorphism to a colored graph. -/
 abbrev Coloring.comap {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
     (f : G →g G') : G.Coloring α :=
@@ -170,9 +166,6 @@ def Colorable (n : ℕ) : Prop := Nonempty (G.Coloring (Fin n))
 def Coloring.ofIsEmpty [IsEmpty V] : G.Coloring α := .mk isEmptyElim fun {v} => isEmptyElim v
 
 theorem Colorable.of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n := ⟨.ofIsEmpty⟩
-
-@[deprecated (since := "2026-01-03")] alias coloringOfIsEmpty := Coloring.ofIsEmpty
-@[deprecated (since := "2026-01-03")] alias colorableOfIsEmpty := Colorable.of_isEmpty
 
 @[simp]
 lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
@@ -314,10 +307,13 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
       simp only [Fin.mk_eq_mk, Ne]
       exact C.valid hvw
 
-theorem colorable_iff_forall_connectedComponents {n : ℕ} :
+theorem colorable_iff_forall_connectedComponent {n : ℕ} :
     G.Colorable n ↔ ∀ c : G.ConnectedComponent, (c.toSimpleGraph).Colorable n :=
   ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
    fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
+
+@[deprecated (since := "2026-07-12")]
+alias colorable_iff_forall_connectedComponents := colorable_iff_forall_connectedComponent
 
 theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
     { n : ℕ | G.Colorable n }.Nonempty :=

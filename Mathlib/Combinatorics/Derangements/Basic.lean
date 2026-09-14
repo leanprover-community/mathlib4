@@ -5,11 +5,11 @@ Authors: Henry Swanson
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Derangements on types
@@ -49,7 +49,6 @@ def Equiv.derangementsCongr (e : α ≃ β) : derangements α ≃ derangements �
 
 namespace derangements
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Derangements on a subtype are equivalent to permutations on the original type where points are
 fixed iff they are not in the subtype. -/
 protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
@@ -116,7 +115,6 @@ variable [DecidableEq α]
 def RemoveNone.fiber (a : Option α) : Set (Perm α) :=
   { f : Perm α | (a, f) ∈ Equiv.Perm.decomposeOption '' derangements (Option α) }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
     f ∈ RemoveNone.fiber a ↔
       ∃ F : Perm (Option α), F ∈ derangements (Option α) ∧ F none = a ∧ removeNone F = f := by

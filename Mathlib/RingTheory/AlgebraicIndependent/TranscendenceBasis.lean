@@ -451,7 +451,7 @@ theorem Polynomial.trdeg_of_isDomain [IsDomain R] : trdeg R (Polynomial R) = 1 :
   simpa using (IsTranscendenceBasis.polynomial Unit R).lift_cardinalMk_eq_trdeg.symm
 
 -- TODO: generalize to Nontrivial S
-theorem trdeg_lt_aleph0 [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
+theorem trdeg_lt_aleph0_of_finiteType [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
   have ⟨n, f, surj⟩ := FiniteType.iff_quotient_mvPolynomial''.mp fin
   lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by simp
 
@@ -578,7 +578,7 @@ lemma of_isAlgebraic_adjoin_insert_sdiff (hj : j ∈ insert i s)
       H₁.comp_equiv <|
         .symm <|
           ((Equiv.swap j i).image s).trans <|
-            .setCongr <| Equiv.image_swap_of_mem_of_notMem hj hi with
+            Set.equivOfEq <| Equiv.image_swap_of_mem_of_notMem hj hi with
       ⟨x, rfl | hxi, hxj⟩
     · simp [eq]
     · simp [Equiv.swap_apply_of_ne_of_ne hxj (ne_of_mem_of_not_mem hxi hi)]
