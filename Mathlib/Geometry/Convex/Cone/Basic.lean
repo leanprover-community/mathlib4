@@ -90,7 +90,7 @@ instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M) M
 theorem ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
 variable (C) in
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 protected lemma smul_mem (hc : 0 < c) (hx : x ∈ C) : c • x ∈ C := C.smul_mem' hc hx
 
 variable (C) in
