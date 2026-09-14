@@ -66,7 +66,6 @@ theorem cycleType_eq' {σ : Perm α} (s : Finset (Perm α)) (h1 : ∀ f : Perm �
   rw [cycleFactorsFinset_eq_finset]
   exact ⟨h1, h2, h0⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) :
     σ.cycleType = l.map (Finset.card ∘ support) := by
@@ -75,23 +74,20 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simp [List.dedup_eq_self.mpr hl, Function.comp_def]
   · simpa using h1
   · simpa [hl] using h2
-  · simp [hl, h0]
+  · rw [Finset.noncommProd_toFinset (hl := hl)]; simp [h0]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
     σ.cycleType.count n =
       Fintype.card {c : σ.cycleFactorsFinset // #(c : Perm α).support = n } := by
   -- work on the LHS
   rw [cycleType, Multiset.count_eq_card_filter_eq]
   -- rewrite the `Fintype.card` as a `Finset.card`
-  rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
-    Finset.card_map, Finset.card_attach]
-  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
-    Multiset.filter_map, Multiset.card_map]
+  simp_rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach', Finset.card_map,
+    Finset.card_attach, Multiset.filter_map, Multiset.card_map, Finset.card, Function.comp_apply,
+    Finset.card_val]
   congr 1
   apply Multiset.filter_congr
-  intro d h
-  simp only [eq_comm, Finset.mem_val.mp h, exists_const]
+  tauto
 
 @[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
@@ -492,7 +488,6 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
@@ -525,8 +520,9 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
-  · rw [Subtype.ext_iff, Subtype.ext_iff, hg, hg', v.1.2]
-    simp only [v₀, List.Vector.replicate]
+  · change (v : List.Vector G p).toList = _ at hg
+    rw [Subtype.ext_iff, ← List.Vector.toList_injective.eq_iff, hg, hg', v.1.2]
+    rfl
 
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of

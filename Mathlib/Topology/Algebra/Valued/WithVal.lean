@@ -409,8 +409,8 @@ and the valuation `v`. -/
 @[simps! apply symm_apply]
 def valueGroupEquiv :
     valueGroup (.ofClass (Valued.v (R := WithVal v))) ≃* valueGroup (.ofClass v) where
-  __ := Equiv.Set.congr (by simp [valueGroup_eq v])
-  map_mul' := by simp [Equiv.Set.congr, Equiv.subtypeEquivProp]
+  __ := Set.equivOfEq (by simp [valueGroup_eq v])
+  map_mul' := by simp [Set.equivOfEq, Equiv.subtypeEquivProp]
 
 theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
   fun _ _ _ ↦ by simpa
@@ -478,7 +478,7 @@ abbrev Completion := UniformSpace.Completion (WithVal v)
 
 -- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
 instance (priority := 99) : Coe R v.Completion where
-  coe r := (WithVal.equiv v).symm r
+  coe r := toVal v r
 
 section Equivalence
 
