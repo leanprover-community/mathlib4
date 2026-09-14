@@ -39,6 +39,9 @@ The declarations `Group.FG`, `Subgroup.FG`, `Monoid.FG` and `Submonoid.FG` are a
 of the newly added `IsMulFG`. The plan is to deprecate all four of these definitions in favor of
 the more general `IsMulFG`.
 
+Previously the subobject predicates `Submonoid.FG` and `Subgroup.FG` were used to define the more
+general `Monoid.FG` and `Group.FG`, but the new `IsMulFG` defines the general predicate directly.
+
 -/
 
 @[expose] public section
