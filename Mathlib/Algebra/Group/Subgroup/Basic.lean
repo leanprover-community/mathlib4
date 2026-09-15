@@ -546,11 +546,15 @@ theorem iInf_normalizer_le_normalizer_iInf {ι : Sort*} (H : ι → Subgroup G) 
 
 variable (G) in
 /-- Every proper subgroup `H` of `G` is a proper normal subgroup of the normalizer of `H` in `G`. -/
+@[to_additive AddNormalizerCondition /-- Every proper additive subgroup `H` of `G` is a proper
+normal additive subgroup of the normalizer of `H` in `G`. -/]
 def _root_.NormalizerCondition :=
   ∀ H : Subgroup G, H < ⊤ → H < normalizer H
 
 /-- Alternative phrasing of the normalizer condition: Only the full group is self-normalizing.
 This may be easier to work with, as it avoids inequalities and negations. -/
+@[to_additive /-- Alternative phrasing of the normalizer condition: Only the full additive group is
+self-normalizing. This may be easier to work with, as it avoids inequalities and negations. -/]
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, normalizer H = H → H = ⊤ := by
   apply forall_congr'; intro H
