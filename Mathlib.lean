@@ -4718,6 +4718,7 @@ public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
+public import Mathlib.Geometry.Convex.ConvexSpace.AffineMapCone
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
@@ -4726,6 +4727,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.ConvexSpace.ToSSet
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Set
