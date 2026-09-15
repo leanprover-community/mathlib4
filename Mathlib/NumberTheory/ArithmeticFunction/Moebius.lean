@@ -178,6 +178,13 @@ theorem coe_moebius_mul_coe_zeta [Ring R] : (μ * ζ : ArithmeticFunction R) = 1
 theorem coe_zeta_mul_coe_moebius [Ring R] : (ζ * μ : ArithmeticFunction R) = 1 := by
   rw [← coe_coe, ← intCoe_mul, coe_zeta_mul_moebius, intCoe_one]
 
+theorem sum_divisors_moebius (k : ℕ) :
+    (∑ d ∈ k.divisors, (μ d : ℤ)) = if k = 1 then 1 else 0 := by
+  have h : ((μ * ζ : ArithmeticFunction ℤ)) k = ∑ d ∈ k.divisors, (μ d : ℤ) :=
+    coe_mul_zeta_apply
+  rw [moebius_mul_coe_zeta] at h
+  rw [← h]; simp [one_apply]
+
 section CommRing
 
 variable [CommRing R]
