@@ -246,8 +246,6 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable
   simp only [enorm_eq_nnnorm]
   exact_mod_cast hx
 
-#check eLpNorm_const_smul
-
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos_ennreal (p : ℝ≥0∞) (b : ε → ε' → ε'') (c : ℝ≥0∞)
     {f : α → ε} {g : α → ε'}
     (hb : AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
@@ -265,22 +263,21 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos_ennreal (p : ℝ≥0∞) (b : 
     _ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ := ?_
   have hprod : AEStronglyMeasurable (fun i ↦ ‖f i‖ₑ * ‖g i‖ₑ) μ :=
     (hf.enorm.mul hg.enorm).aestronglyMeasurable
-  simp only [smul_mul_assoc, ← Pi.smul_def, eLpNorm_const_smul]
-  rw [Real.enorm_eq_ofReal c.coe_nonneg, ENNReal.ofReal_coe_nnreal, mul_assoc]
+  simp only [mul_assoc]
+  rw [eLpNorm_const_mul_ennreal (by exact (hf.enorm.mul hg.enorm).aestronglyMeasurable)]
   gcongr
   obtain (rfl | rfl | hp) := ENNReal.trichotomy p
   · simp [hf, hg, hprod]
-  · rw [← eLpNorm_norm f hf, ← eLpNorm_norm g hg]
-    rw [eLpNorm_exponent_top hprod, eLpNorm_exponent_top hf.norm,
-      eLpNorm_exponent_top hg.norm]
-    simp only [eLpNormEssSup_eq_essSup_enorm, enorm_mul, enorm_norm]
+  · rw [eLpNorm_exponent_top hprod, eLpNorm_exponent_top hf,
+      eLpNorm_exponent_top hg]
+    simp only [eLpNormEssSup_eq_essSup_enorm]
     exact ENNReal.essSup_mul_le (‖f ·‖ₑ) (‖g ·‖ₑ)
   obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne hprod,
     eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne hg,
     eLpNorm_exponent_top hf]
   simp_rw [
-    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
+    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, enorm]
   rw [ENNReal.mul_rpow_of_nonneg (hz := hp.le), ENNReal.rpow_inv_rpow hp.ne',
     ← lintegral_const_mul'' _ (by fun_prop)]
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
@@ -288,47 +285,18 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos_ennreal (p : ℝ≥0∞) (b : 
   filter_upwards [h, enorm_ae_le_eLpNormEssSup f μ] with x hb hf
   gcongr
   exact hf
-
-#exit
 
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos (p : ℝ≥0∞) (b : E → F → G) (c : ℝ≥0)
-    (hb : AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
-      AEStronglyMeasurable (fun x ↦ b (f x) (g x)) μ)
+    (hb : Continuous b.uncurry)
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hp : 0 < p) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ := by
-  by_cases hfg : AEStronglyMeasurable f μ ∧ AEStronglyMeasurable g μ; swap
-  · apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable ∞ p p b c h hfg
-      top_ne_zero hp.ne'
-  rcases hfg with ⟨hf, hg⟩
-  have hbf : AEStronglyMeasurable (fun x => b (f x) (g x)) μ := hb hf hg
-  calc
-    eLpNorm (fun x => b (f x) (g x)) p μ ≤ eLpNorm (fun x => (c : ℝ) • ‖f x‖ * ‖g x‖) p μ :=
-      eLpNorm_mono_ae_real hbf h
-    _ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ := ?_
-  have hprod : AEStronglyMeasurable (fun i ↦ ‖f i‖ * ‖g i‖) μ := hf.norm.mul hg.norm
-  simp only [smul_mul_assoc, ← Pi.smul_def, eLpNorm_const_smul]
-  rw [Real.enorm_eq_ofReal c.coe_nonneg, ENNReal.ofReal_coe_nnreal, mul_assoc]
-  gcongr
-  obtain (rfl | rfl | hp) := ENNReal.trichotomy p
-  · simp [hf, hg, hprod]
-  · rw [← eLpNorm_norm f hf, ← eLpNorm_norm g hg]
-    rw [eLpNorm_exponent_top hprod, eLpNorm_exponent_top hf.norm,
-      eLpNorm_exponent_top hg.norm]
-    simp only [eLpNormEssSup_eq_essSup_enorm, enorm_mul, enorm_norm]
-    exact ENNReal.essSup_mul_le (‖f ·‖ₑ) (‖g ·‖ₑ)
-  obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne hprod,
-    eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne hg,
-    eLpNorm_exponent_top hf]
-  simp_rw [
-    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
-  rw [ENNReal.mul_rpow_of_nonneg (hz := hp.le), ENNReal.rpow_inv_rpow hp.ne',
-    ← lintegral_const_mul'' _ (by fun_prop)]
-  simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
-  apply lintegral_mono_ae
-  filter_upwards [h, enorm_ae_le_eLpNormEssSup f μ] with x hb hf
-  gcongr
-  exact hf
+  apply eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos_ennreal p b c hb.comp_aestronglyMeasurable₂ ?_ hp
+  filter_upwards [h] with x hx
+  simp only [enorm_eq_nnnorm]
+  exact_mod_cast hx
+
+
+#exit
 
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (b : E → F → G) (c : ℝ≥0)
     (hb : AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
