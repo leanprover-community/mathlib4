@@ -16,7 +16,7 @@ In this file we provide lemmas linking equivalences to sets.
 Some notable definitions are:
 
 * `Equiv.ofInjective`: an injective function is (noncomputably) equivalent to its range.
-* `Equiv.setCongr`: two equal sets are equivalent as types.
+* `Set.equivOfEq`: two equal sets are equivalent as types.
 * `Equiv.Set.union`: a disjoint union of sets is equivalent to their `Sum`.
 
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
@@ -40,6 +40,25 @@ theorem range_eq_univ {α : Type*} {β : Type*} {E : Type*} [EquivLike E α β] 
   eq_univ_of_forall (EquivLike.toEquiv e).surjective
 
 end EquivLike
+
+namespace Set
+variable {α : Type*} {s t : Set α}
+
+/-- The subtypes corresponding to equal sets are equivalent.
+
+See also `Finset.equivOfEq`. -/
+@[simps! apply symm_apply]
+def equivOfEq (h : s = t) : s ≃ t := Equiv.subtypeEquivProp <| h ▸ rfl
+
+lemma strictMono_equivOfEq [Preorder α] (h : s = t) : StrictMono (equivOfEq h) := fun _ _ ↦ id
+
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Set.congr := equivOfEq
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Set.congr_apply := equivOfEq_apply
+@[deprecated (since := "2026-08-29")]
+alias _root_.Equiv.Set.congr_symm_apply := equivOfEq_symm_apply
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.strictMono_setCongr := strictMono_equivOfEq
+
+end Set
 
 namespace Equiv
 variable {α β : Type*}
@@ -152,12 +171,12 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   toFun x := ⟨x.1.1, x.1.2, by simp⟩
   invFun x := ⟨(x.1, x.2.1), x.2.2⟩
 
-/-- The subtypes corresponding to equal sets are equivalent.
+/-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`.
 
 See also `Equiv.finsetCongr`. -/
-@[simps! apply symm_apply]
-def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
-  subtypeEquivProp <| h ▸ rfl
+@[simps]
+def setCongr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
+  ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
 
 -- We could construct this using `Equiv.Set.image e s e.injective`,
 -- but this definition provides an explicit inverse.
@@ -251,17 +270,15 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 
-lemma _root_.Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
-    StrictMono (setCongr h) := fun _ _ ↦ id
-
 set_option linter.dupNamespace false in
-@[deprecated (since := "2026-05-24")] alias Equiv.strictMono_setCongr := Equiv.strictMono_setCongr
+@[deprecated (since := "2026-05-24")]
+alias Equiv.strictMono_setCongr := _root_.Set.strictMono_equivOfEq
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     (insert a s : Set α) ≃ s ⊕ PUnit.{u + 1} :=
   calc
-    (insert a s : Set α) ≃ ↥(s ∪ {a}) := Equiv.setCongr (by simp)
+    (insert a s : Set α) ≃ ↥(s ∪ {a}) := Set.equivOfEq (by simp)
     _ ≃ s ⊕ ({a} : Set α) := Equiv.Set.union <| by simpa
     _ ≃ s ⊕ PUnit.{u + 1} := sumCongr (Equiv.refl _) (Equiv.Set.singleton _)
 
@@ -326,7 +343,7 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
   calc
     s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union disjoint_sdiff_self_right).symm
-    _ ≃ t := Equiv.setCongr (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
+    _ ≃ t := Set.equivOfEq (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
 
 @[simp]
 theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] (x : s) :
@@ -439,13 +456,6 @@ theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Se
   ext x
   obtain ⟨y, rfl⟩ := (Set.image f s hf).surjective x
   simp [hf.mem_set_image]
-
-/-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`.
-
-See also `Equiv.Finset.congr`. -/
-@[simps]
-protected def congr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
-  ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
 
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :

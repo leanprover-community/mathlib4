@@ -143,9 +143,6 @@ lemma iff_of_equiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
     Module.Free R M ↔ Module.Free R' M' :=
   ⟨fun _ ↦ of_equiv e₂, fun _ ↦ of_equiv e₂.symm⟩
 
-@[deprecated (since := "2026-02-14")] alias of_ringEquiv := of_equiv
-@[deprecated (since := "2026-02-14")] alias iff_of_ringEquiv := iff_of_equiv
-
 instance shrink [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
   Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 

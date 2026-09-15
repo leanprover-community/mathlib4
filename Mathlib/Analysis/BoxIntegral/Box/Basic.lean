@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Topology.MetricSpace.Basic

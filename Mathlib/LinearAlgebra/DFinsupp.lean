@@ -112,6 +112,7 @@ section Lsum
 variable (S)
 variable [DecidableEq ι]
 
+@[macro_inline]
 instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
@@ -587,7 +588,7 @@ theorem iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
     apply h _ _ (hv i hi)
     rw [← s.add_sum_erase _ hi, add_eq_zero_iff_neg_eq] at hv0
     rw [← Submodule.neg_mem_iff, hv0]
-    exact SetLike.le_def.mp (biSup_mono <| by grind) (Submodule.sum_mem_biSup <| by grind)
+    exact mem_of_le_of_mem (biSup_mono <| by grind) (Submodule.sum_mem_biSup <| by grind)
   · intro h i x hx hsup
     obtain ⟨f, hf, rfl⟩ := (Submodule.mem_iSup_iff_exists_finsupp ..).mp hsup
     contrapose! h

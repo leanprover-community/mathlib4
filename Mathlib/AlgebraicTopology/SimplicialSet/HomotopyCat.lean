@@ -81,7 +81,7 @@ end OneTruncation₂
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
 @[simps]
 def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
-  obj S := ReflQuiv.of (OneTruncation₂ S)
+  obj S := ↧(OneTruncation₂ S)
   map f := OneTruncation₂.map f
 
 namespace OneTruncation₂
@@ -513,7 +513,7 @@ end
 
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
 def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u, u} where
-  obj V := Cat.of V.HomotopyCategory
+  obj V := ↧V.HomotopyCategory
   map F := (mapHomotopyCategory F).toCatHom
   map_id _ := by ext1; exact HomotopyCategory.functor_ext (by simp) (by cat_disch)
   map_comp _ _ := by ext1; exact HomotopyCategory.functor_ext (by simp) (by cat_disch)
@@ -611,7 +611,7 @@ lemma mapHomotopyCategory_map_homMk {X Y : SSet.{u}} (f : X ⟶ Y) {x y : X _⦋
 2-truncation. -/
 @[implicit_reducible, simps]
 def hoFunctor : SSet.{u} ⥤ Cat.{u, u} where
-  obj X := Cat.of X.HomotopyCategory
+  obj X := ↧X.HomotopyCategory
   map f := (mapHomotopyCategory f).toCatHom
   map_id _ := Truncated.hoFunctor₂.map_id _
   map_comp f g := Truncated.hoFunctor₂.map_comp ((truncation 2).map f) ((truncation 2).map g)

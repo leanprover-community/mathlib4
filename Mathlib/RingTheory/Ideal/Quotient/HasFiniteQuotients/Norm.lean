@@ -25,7 +25,7 @@ variable {R : Type*} [CommRing R] [HasFiniteQuotients R]
 instance : Northcott fun p : Ideal R ↦ p.cardQuot :=
   ⟨Ring.HasFiniteQuotients.finite_cardQuot_le⟩
 
-instance [IsDedekindDomain R] [Module.Free ℤ R] :
+instance [IsDedekindDomain R] [Infinite R] :
     Northcott fun p : IsDedekindDomain.HeightOneSpectrum R ↦ p.asIdeal.absNorm :=
   ⟨Ring.HasFiniteQuotients.finite_absNorm_heightOneSpectrum_le⟩
 
