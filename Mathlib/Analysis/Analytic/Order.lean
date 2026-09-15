@@ -77,6 +77,10 @@ lemma analyticOrderAt_eq_top : analyticOrderAt f z₀ = ⊤ ↔ ∀ᶠ z in 𝓝
   mp hf := by unfold analyticOrderAt at hf; split_ifs at hf with h <;> simp [*] at *
   mpr hf := by unfold analyticOrderAt; simp [hf, analyticAt_congr hf, analyticAt_const]
 
+@[simp]
+lemma analyticOrderAt_zero : analyticOrderAt (0 : 𝕜 → E) z₀ = ⊤ := by
+  simp [analyticOrderAt_eq_top]
+
 lemma eventuallyConst_iff_analyticOrderAt_sub_eq_top :
     EventuallyConst f (𝓝 z₀) ↔ analyticOrderAt (f · - f z₀) z₀ = ⊤ := by
   simpa [eventuallyConst_iff_exists_eventuallyEq, analyticOrderAt_eq_top, sub_eq_zero]

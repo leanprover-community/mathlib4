@@ -191,7 +191,8 @@ private lemma qExpansionCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.Is
   have horder : (N : EReal) ≤ (qExpansion G.strictWidthInfty f).order := by
     simpa only [ENat.toENNReal_coe, ← ENNReal.coe_natCast, EReal.coe_nnreal_eq_coe_real,
       NNReal.coe_natCast, EReal.coe_natCast] using EReal.coe_ennreal_le_coe_ennreal_iff.mpr
-      (ENat.toENNReal_le.mpr (PowerSeries.nat_le_order _ _ fun i hi ↦ congrFun hf ⟨i, hi⟩))
+      (ENat.toENNReal_le.mpr
+        ((PowerSeries.nat_le_order_iff _ _).mpr fun i hi ↦ congrFun hf ⟨i, hi⟩))
   have hN' : (G.regularityFactorInfty : EReal) * (G.sturmBound k : EReal) < N := mod_cast hN
   exact hN'.not_ge (horder.trans ((qExpansion_order_le_totalCuspOrder G k f).trans
     (mul_le_mul_of_nonneg_left (totalCuspOrder_le_sturmBound f hne) (by positivity))))
@@ -302,7 +303,7 @@ lemma restrictBaseChange_injective
     Function.Injective (restrictBaseChange k :
       TensorProduct ℝ ℂ (ModularForm G k) → ModularForm G.detOnePart k) := by
   let b := Module.Free.chooseBasis ℝ (ModularForm G k)
-  apply (restrictBaseChange k).injective_of_linearIndependent (Module.Basis.baseChange ℂ b).span_eq
+  rw [restrictBaseChange, LinearMap.liftBaseChange_injective_iff _ b]
   simpa [Function.comp_def] using
     linearIndependent_restrict_detOnePart b b.linearIndependent hγ hdet
 

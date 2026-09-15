@@ -5442,6 +5442,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Free
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
+public import Mathlib.LinearAlgebra.TensorProduct.Lift
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite

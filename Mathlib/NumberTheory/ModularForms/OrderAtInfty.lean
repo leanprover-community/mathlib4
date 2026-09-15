@@ -320,13 +320,9 @@ lemma orderAtInfty_eq_analyticOrderAt_div (hh : 0 < h) (hfper : Periodic (f ∘ 
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
     orderAtInfty f = analyticOrderAt (cuspFunction h f) 0 / h := by
   rcases eq_or_ne f 0 with rfl | hfne
-  · have hcusp : cuspFunction h (0 : ℍ → ℂ) = 0 := by
-      simp only [cuspFunction, Periodic.cuspFunction, Function.comp_def, Pi.zero_apply]
-      rw [tendsto_const_nhds.limUnder_eq]
-      apply update_eq_self
-    have horder : analyticOrderAt (0 : ℂ → ℂ) 0 = ⊤ :=
-      analyticOrderAt_eq_top.mpr (Filter.Eventually.of_forall fun _ ↦ rfl)
-    rw [hcusp, horder, ENat.toENNReal_top, EReal.coe_ennreal_top,
+  · rw [cuspFunction, show (0 : ℍ → ℂ) ∘ ofComplex = 0 by rfl,
+      Function.Periodic.cuspFunction_zero, analyticOrderAt_zero, ENat.toENNReal_top,
+      EReal.coe_ennreal_top,
       EReal.top_div_of_pos_ne_top (EReal.coe_pos.mpr hh) (EReal.coe_ne_top h)]
     exact orderAtInfty_eq_top_iff.mpr fun t ↦ Asymptotics.isBigO_zero _ _
   -- For a nonzero function, the analytic order is finite and the theta estimate is exact.
