@@ -198,7 +198,7 @@ Simplifier lemma: Functions with locally finite support within `U` evaluate to z
 @[simp]
 lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
-    D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+    D z = 0 := by grind [D.supportWithinDomain]
 
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within
@@ -781,6 +781,9 @@ theorem mapRange_apply {f : Y → Z} {hf : f 0 = 0} {g : locallyFinsuppWithin U 
     mapRange f hf g a = f (g a) :=
   rfl
 
+theorem support_mapRange_subset (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsuppWithin U Y) :
+    (g.mapRange f hf).support ⊆ g.support := support_comp_subset hf g
+
 end MapRange
 
 
@@ -863,16 +866,8 @@ lemma truncate₁_idempotent [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithi
 
 /-- Truncation does not change the support. -/
 lemma support_truncate (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 < y) :
-    (D.truncate y hy.le).support = D.support := by
-  ext z
-  simp only [Function.mem_support, ne_eq, truncate_apply]
-  constructor <;> intro h₁ h₂
-  · apply h₁
-    rw [h₂]
-    exact min_eq_left hy.le
-  · rcases min_eq_iff.1 h₂ with ⟨h₂, _⟩ | ⟨h₂, _⟩
-    · exact h₁ h₂
-    · simp_all
+    (D.truncate y hy.le).support = D.support :=
+  le_antisymm (D.support_mapRange_subset _ _) <| by grind
 
 /-- Truncation does not change the support. -/
 lemma support_truncate₁ [One Y] [ZeroLEOneClass Y] [NeZero (1 : Y)] (D : locallyFinsuppWithin U Y) :
