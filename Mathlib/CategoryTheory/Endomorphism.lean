@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Groupoid
 
 Definition and basic properties of endomorphisms and automorphisms of an object in a category.
 
-For each `X : C`, we define a monoid `CategoryTheory.End X` which a `1`-field structure
+For each `X : C`, we define a monoid `CategoryTheory.End X` which is a `1`-field structure
 that is equipped with a bijection with `X ⟶ X`. Similarly, we define the
 group `CategoryTheory.Aut X`, which is equipped with a bijection with `X ≅ X`.
 
