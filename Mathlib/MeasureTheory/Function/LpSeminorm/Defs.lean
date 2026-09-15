@@ -88,7 +88,7 @@ def eLpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   open scoped Classical in
   if AEStronglyMeasurable f μ then
-  if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
+  if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f p.toReal μ
   else ∞
 
 variable {μ : Measure α}
@@ -105,7 +105,7 @@ theorem aestronglyMeasurable_of_eLpNorm_ne_top [TopologicalSpace ε]
 
 theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
-    eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top, hf]
+    eLpNorm f p μ = eLpNorm' f p.toReal μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top, hf]
 
 lemma eLpNorm_nnreal_eq_eLpNorm' [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
@@ -180,5 +180,79 @@ noncomputable def lpNorm (f : α → E) (p : ℝ≥0∞) (μ : Measure α) : ℝ
   (eLpNorm f p μ).toReal
 
 end Lp
+
+section Inhomogeneous
+
+/-- An inhomogeneous version of the `eLpNorm`;
+agreeing with it on `1 ≤ p`, equal to `∫ ‖f a‖^p ∂μ` for `0 < p ≤ 1`
+and  `μ (Function.support fun x ↦ ‖f x‖ₑ)` for `p = 0`.
+
+Under this modification, the triangle inequality holds for all `p` and
+is thus somethimes more convenient. -/
+def inhmgELpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
+    (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
+  open scoped Classical in
+  if AEStronglyMeasurable f μ then
+    if p = 0 then μ (Function.support fun x ↦ ‖f x‖ₑ)
+    else if p < 1 then ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ
+    else eLpNorm f p μ
+  else ∞
+
+variable {μ : Measure α}
+
+theorem inhmgELpNorm_of_not_aestronglyMeasurable [TopologicalSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (h : ¬ AEStronglyMeasurable f μ) :
+    inhmgELpNorm f p μ = ∞ := by
+  simp [inhmgELpNorm, h]
+
+theorem aestronglyMeasurable_of_inhmgELpNorm_ne_top [TopologicalSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (h : inhmgELpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
+  contrapose! h
+  exact inhmgELpNorm_of_not_aestronglyMeasurable h
+
+theorem inhmgELpNorm_eq_eLpNorm [TopologicalSpace ε]
+    (hp : 1 ≤ p) {f : α → ε} :
+    inhmgELpNorm f p μ = eLpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · have p0 : p ≠ 0 := fun _ ↦ by simp_all
+    simp [inhmgELpNorm, hf, not_lt.mpr hp, p0]
+  · rw [inhmgELpNorm_of_not_aestronglyMeasurable hf, eLpNorm_of_not_aestronglyMeasurable hf]
+
+theorem inhmgELpNorm_exponent_zero [TopologicalSpace ε] {f : α → ε}
+    (hf : AEStronglyMeasurable f μ) :
+    inhmgELpNorm f 0 μ = μ (Function.support fun x ↦ ‖f x‖ₑ) := by
+  simp [inhmgELpNorm, hf]
+
+theorem _root_.Function.support_enorm {α ε : Type*}
+    [TopologicalSpace ε] [ENormedAddMonoid ε] {f : α → ε} :
+    Function.support (fun x ↦ ‖f x‖ₑ) = Function.support f := by
+  ext
+  simp
+
+theorem inhmgELpNorm_pow_eq_eLpNorm [TopologicalSpace ε]
+    (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
+    inhmgELpNorm f p μ ^ p.toReal⁻¹ = eLpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · rcases eq_or_ne p 1 with rfl | hp''
+    · simp [inhmgELpNorm, hf]
+    rw [eLpNorm_eq_eLpNorm' (by grind) (fun _ ↦ by simp_all) hf]
+    simp [inhmgELpNorm, hf, lt_of_le_of_ne hp hp'', hp', eLpNorm']
+  · simp [inhmgELpNorm_of_not_aestronglyMeasurable hf, eLpNorm_of_not_aestronglyMeasurable hf,
+      ENNReal.toReal_pos hp' (fun _ ↦ by simp_all)]
+
+theorem inhmgELpNorm_eq_eLpNorm_pow [TopologicalSpace ε]
+    (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
+    inhmgELpNorm f p μ = eLpNorm f p μ ^ p.toReal:= by
+  rw [← inhmgELpNorm_pow_eq_eLpNorm hp hp', ENNReal.rpow_inv_rpow ?_ (inhmgELpNorm f p μ)]
+  exact ENNReal.toReal_ne_zero.mpr ⟨hp', fun _ ↦ by simp_all⟩
+
+theorem inhmgELpNorm_eq_lintegral [TopologicalSpace ε]
+    (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    inhmgELpNorm f p μ = ∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ := by
+  rw [inhmgELpNorm_eq_eLpNorm_pow hp hp', lintegral_rpow_enorm_eq_rpow_eLpNorm'
+    (ENNReal.toReal_pos hp' (fun _ ↦ by simp_all)),
+    eLpNorm_eq_eLpNorm' hp' (fun _ ↦ by simp_all) hf]
+
+end Inhomogeneous
 
 end MeasureTheory
