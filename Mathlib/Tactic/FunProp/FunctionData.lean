@@ -11,7 +11,7 @@ public import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
-## `funProp` data structure holding information about a function
+# `funProp` data structure holding information about a function
 
 `FunctionData` holds data about function in the form `fun x ↦ f x₁ ... xₙ`.
 -/

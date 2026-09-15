@@ -12,6 +12,8 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Exception
 
 /-!
+# Environment extension for the unused tactic linter
+
 This file defines the environment extension to keep track of which tactics are allowed to leave
 the tactic state unchanged and not trigger the unused tactic linter.
 -/
