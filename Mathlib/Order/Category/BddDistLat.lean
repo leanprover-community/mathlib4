@@ -53,38 +53,11 @@ meta def delabOf : Delab := CategoryTheory.delabOf
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
-/-- The type of morphisms in `BddDistLat R`. -/
-@[ext]
-structure Hom (X Y : BddDistLat.{u}) where
-  _mkInternal ::
-  /-- The underlying `BoundedLatticeHom`. -/
-  hom' : BoundedLatticeHom X Y
-
-instance : Category BddDistLat.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨BoundedLatticeHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `BddDistLat` back into a `BoundedLatticeHom`. -/
-abbrev Hom.hom {X Y : BddDistLat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := BddDistLat) f
-
-/-- Typecheck a `BoundedLatticeHom` as a morphism in `BddDistLat`. -/
-abbrev ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y] [BoundedOrder Y]
-    (f : BoundedLatticeHom X Y) :
-    of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := BddDistLat) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : BddDistLat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category BddDistLat.{u} (BoundedLatticeHom · ·)
+  (fun (X : BddDistLat) ↦ BoundedLatticeHom.id X)
+  BoundedLatticeHom.comp
+  with_of_hom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y]
+  [BoundedOrder Y] hom_type (BoundedLatticeHom X Y) from (of X) to (of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -104,16 +77,9 @@ lemma forget_map {X Y : BddDistLat} (f : X ⟶ Y) :
 lemma ext {X Y : BddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   ConcreteCategory.hom_ext _ _ w
 
-@[simp]
-lemma hom_id {X : BddDistLat} : (𝟙 X : X ⟶ X).hom = BoundedLatticeHom.id _ := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (X : BddDistLat) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : BddDistLat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : BddDistLat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -122,16 +88,6 @@ lemma comp_apply {X Y Z : BddDistLat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[ext]
 lemma hom_ext {X Y : BddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y]
-    [BoundedOrder Y] (f : BoundedLatticeHom X Y) :
-    (ofHom f).hom = f :=
-  rfl
-
-@[simp]
-lemma ofHom_hom {X Y : BddDistLat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [DistribLattice X] [BoundedOrder X] :
