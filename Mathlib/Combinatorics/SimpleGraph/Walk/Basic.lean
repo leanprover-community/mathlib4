@@ -352,6 +352,9 @@ def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
 @[simp]
 lemma mem_edgeSet {u v : V} {p : G.Walk u v} {e : Sym2 V} : e ∈ p.edgeSet ↔ e ∈ p.edges := Iff.rfl
 
+theorem edgeSet_subset_edgeSet (p : G.Walk u v) : p.edgeSet ⊆ G.edgeSet :=
+  p.edges_subset_edgeSet
+
 @[simp]
 lemma edgeSet_nil (u : V) : (nil : G.Walk u u).edgeSet = ∅ := by ext; simp
 
