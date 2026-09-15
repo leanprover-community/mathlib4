@@ -110,6 +110,9 @@ theorem norm_def (x : 𝔸ᶠ[R, K]) : ‖x‖ = ∏' v, ‖x v‖ := rfl
 theorem norm_eq_finprod_of_unit (x : 𝔸ᶠ[R, K]ˣ) : ‖(x : 𝔸ᶠ[R, K])‖ = ∏ᶠ v, ‖(x : 𝔸ᶠ[R, K]) v‖ :=
   tprod_norm_eq_finprod_of_unit x
 
+theorem norm_eq_finprod_of_isUnit {x : 𝔸ᶠ[R, K]} (hx : IsUnit x) :
+    ‖x‖ = ∏ᶠ v, ‖x v‖ := norm_eq_finprod_of_unit hx.unit
+
 theorem norm_eq_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
   tprod_eq_zero_of_not_isUnit hx
 
