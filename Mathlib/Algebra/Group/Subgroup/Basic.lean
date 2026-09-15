@@ -215,11 +215,8 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
 end Pi
 
 @[to_additive]
-instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
-  pow_left_injective n hn a b := by
-    have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
-    dsimp at *
-    norm_cast at this
+instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H :=
+  Subtype.val_injective.isMulTorsionFree H.subtype
 
 end Subgroup
 

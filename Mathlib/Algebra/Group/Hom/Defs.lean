@@ -507,8 +507,9 @@ then so is the domain. -/
 then so is the domain. -/]
 theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
     (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
-  pow_left_injective n hn x y hxy := hf <| IsMulTorsionFree.pow_left_injective hn <| by
-    simpa using congrArg f hxy
+  eq_of_pow_eq_pow_of_commute _n hn _x _y hxy hxyn :=
+    hf <| eq_of_pow_eq_pow_of_commute hn (by simpa using congrArg f hxy) <| by
+      simpa using congrArg f hxyn
 
 -- completely uninteresting lemmas about coercion to function, that all homs need
 section Coes

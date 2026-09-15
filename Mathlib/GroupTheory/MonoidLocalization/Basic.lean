@@ -753,17 +753,17 @@ theorem liftOn₂_mk' {p : Sort*} (f : M → S → M → S → p) (H) (a c : M) 
 
 /-- The localization of a torsion-free monoid is torsion-free. -/
 @[to_additive /-- The localization of a torsion-free monoid is torsion-free. -/]
-instance instIsMulTorsionFree [IsMulTorsionFree M] : IsMulTorsionFree <| Localization S where
-  pow_left_injective n hn := by
-    rintro ⟨a⟩ ⟨b⟩ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
-    change mk a.1 a.2 = mk b.1 b.2
-    simp only [mk_pow, mk_eq_mk_iff, r_iff_exists, SubmonoidClass.coe_pow, Subtype.exists,
-      exists_prop] at hab ⊢
-    obtain ⟨c, hc, hab⟩ := hab
-    refine ⟨c, hc, pow_left_injective hn ?_⟩
-    obtain _ | n := n
-    · simp
-    · simp [mul_pow, pow_succ c, mul_assoc, hab]
+instance instIsMulTorsionFree [IsMulTorsionFree M] : IsMulTorsionFree <| Localization S := by
+  refine .of_pow_left_injective fun n hn ↦ ?_
+  rintro ⟨a⟩ ⟨b⟩ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
+  change mk a.1 a.2 = mk b.1 b.2
+  simp only [mk_pow, mk_eq_mk_iff, r_iff_exists, SubmonoidClass.coe_pow, Subtype.exists,
+    exists_prop] at hab ⊢
+  obtain ⟨c, hc, hab⟩ := hab
+  refine ⟨c, hc, pow_left_injective hn ?_⟩
+  obtain _ | n := n
+  · simp
+  · simp [mul_pow, pow_succ c, mul_assoc, hab]
 
 end Localization
 

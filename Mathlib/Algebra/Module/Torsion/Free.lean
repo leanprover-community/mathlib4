@@ -122,8 +122,8 @@ variable [CharZero R]
 
 variable (R M) in
 include R in
-lemma IsAddTorsionFree.of_isTorsionFree : IsAddTorsionFree M where
-  nsmul_right_injective n hn := by
+lemma IsAddTorsionFree.of_isTorsionFree : IsAddTorsionFree M :=
+  .of_nsmul_right_injective fun n hn ↦ by
     simp_rw [← Nat.cast_smul_eq_nsmul R]; apply smul_right_injective; simpa
 
 /-- A characteristic zero domain is torsion-free. -/

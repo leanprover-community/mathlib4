@@ -90,8 +90,8 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
   bot_le _ := le.1 <| bot ▸ bot_le
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsMulTorsionFree :
-    IsMulTorsionFree α where
-  pow_left_injective n hn := by simpa using (pow_left_strictMonoOn₀ (M₀ := α) hn).injOn
+    IsMulTorsionFree α :=
+  .of_pow_left_injective fun n hn ↦ by simpa using (pow_left_strictMonoOn₀ (M₀ := α) hn).injOn
 
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) where

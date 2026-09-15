@@ -301,7 +301,10 @@ instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
-instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=
-  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
+instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ where
+  eq_of_pow_eq_pow_of_commute _n hn _a _b hab habn := MulOpposite.unop_injective <|
+    eq_of_pow_eq_pow_of_commute hn
+      (by simpa using congrArg MulOpposite.unop hab.symm)
+      (by simpa using congrArg MulOpposite.unop habn)
 
 end AddOpposite
