@@ -54,10 +54,10 @@ namespace ActionCategory
 /-- The projection from the action category to the monoid, mapping a morphism to its
   label. -/
 def π : ActionCategory M X ⥤ SingleObj M :=
-  CategoryOfElements.π _
+  Functor.Elements.π _
 
 @[simp]
-theorem π_map (p q : ActionCategory M X) (f : p ⟶ q) : (π M X).map f = f.val :=
+theorem π_map (p q : ActionCategory M X) (f : p ⟶ q) : (π M X).map f = f.hom :=
   rfl
 
 @[simp]
@@ -68,10 +68,10 @@ variable {M X}
 
 /-- The canonical map `ActionCategory M X → X`. It is given by `fun x => x.snd`, but
   has a more explicit type. -/
-protected def back : ActionCategory M X → X := fun x => x.snd
+protected def back : ActionCategory M X → X := fun x => x.val
 
 instance : CoeTC X (ActionCategory M X) :=
-  ⟨fun x => ⟨(), x⟩⟩
+  ⟨fun x => (actionAsFunctor M X).elementsMk () x⟩
 
 @[simp]
 theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
@@ -89,9 +89,6 @@ def objEquiv : X ≃ ActionCategory M X where
   left_inv := coe_back
   right_inv := back_coe
 
-theorem hom_as_subtype (p q : ActionCategory M X) : (p ⟶ q) = { m : M // m • p.back = q.back } :=
-  rfl
-
 instance [Inhabited X] : Inhabited (ActionCategory M X) :=
   ⟨show X from default⟩
 
@@ -103,41 +100,49 @@ variable {X} (x : X)
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/
-def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x :=
-  MulEquiv.refl _
+def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x where
+  toFun f := Functor.Elements.homMk f
+  invFun f := ⟨f.hom, f.map_val⟩
+  map_mul' _ _ := rfl
 
 @[simp]
 theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
-    (stabilizerIsoEnd M x) f = f :=
+    ((stabilizerIsoEnd M x) f).hom = f :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp 1100]
-theorem stabilizerIsoEnd_symm_apply (f : End _) : (stabilizerIsoEnd M x).symm f = f :=
+theorem stabilizerIsoEnd_symm_apply (f : End _) :
+    (stabilizerIsoEnd M x).symm f = ⟨f.hom, f.map_val⟩ :=
   rfl
 
 variable {M}
 
 @[simp]
-protected theorem id_val (x : ActionCategory M X) : Subtype.val (𝟙 x) = 1 :=
+protected theorem id_hom (x : ActionCategory M X) : Functor.Elements.Hom.hom (𝟙 x) = 1 :=
   rfl
 
 @[simp]
-protected theorem comp_val {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶ z) :
-    (f ≫ g).val = g.val * f.val :=
+protected theorem comp_hom {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶ z) :
+    (f ≫ g).hom = g.hom * f.hom :=
   rfl
+
+@[deprecated (since := "2026-08-30")] alias id_val := ActionCategory.id_hom
+@[deprecated (since := "2026-08-30")] alias comp_val := ActionCategory.comp_hom
 
 instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) :=
   zigzag_isConnected fun x y =>
     Relation.ReflTransGen.single <|
-      Or.inl <| nonempty_subtype.mpr (show _ from exists_smul_eq M x.back y.back)
+      Or.inl (by
+        obtain ⟨m, hm⟩ := exists_smul_eq M x.back y.back
+        exact ⟨Functor.Elements.homMk m hm⟩)
 
 section Group
 
 variable {G : Type*} [Group G] [MulAction G X]
 
 instance : Groupoid (ActionCategory G X) :=
-  CategoryTheory.groupoidOfElements _
+  Functor.Elements.groupoid _
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Any subgroup of `G` is a vertex group in its action groupoid. -/
@@ -146,21 +151,26 @@ def endMulEquivSubgroup (H : Subgroup G) : End (objEquiv G (G ⧸ H) ↑(1 : G))
     (MulEquiv.subgroupCongr <| stabilizer_quotient H)
 
 /-- A target vertex `t` and a scalar `g` determine a morphism in the action groupoid. -/
-def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t :) t :=
-  Subtype.mk g (smul_inv_smul g t)
+def homOfPair (t : X) (g : G) :
+    Quiver.Hom (V := ActionCategory G X) (g⁻¹ • t :) t :=
+  Functor.Elements.homMk g (smul_inv_smul g t)
 
 @[simp]
-theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
+theorem homOfPair_hom (t : X) (g : G) : (homOfPair t g).hom = g :=
   rfl
+
+@[deprecated (since := "2026-08-30")] alias homOfPair.val := homOfPair_hom
 
 /-- Any morphism in the action groupoid is given by some pair. -/
 protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*}
     (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
-  refine cast ?_ (hyp b.back f.val)
-  rcases a with ⟨⟨⟩, a : X⟩
-  rcases b with ⟨⟨⟩, b : X⟩
-  rcases f with ⟨g : G, h : g • a = b⟩
-  cases inv_smul_eq_iff.mpr h.symm
+  refine cast ?_ (hyp b.back f.hom)
+  induction a with | mk a
+  induction b with | mk b
+  induction f with | mk f hf
+  change X at a b
+  change G at f
+  cases (inv_smul_eq_iff (α := X)).mpr (show b = f • a from hf.symm)
   rfl
 
 variable {H : Type*} [Group H]
@@ -170,13 +180,11 @@ set_option backward.defeqAttrib.useBackward true in
 can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
 @[simps]
 def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAutArrow] G :=
-  have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.val) : H) := by
+  have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.hom) : H) := by
     apply ActionCategory.cases
-    intros
-    rfl
+    simp
   { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
     map_one' := by
-      dsimp
       ext1
       · ext b
         exact F_map_eq.symm.trans (F.map_id b)
@@ -194,7 +202,7 @@ a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all
 def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right = g) :
     ActionCategory G X ⥤ SingleObj H where
   obj _ := ()
-  map {_ b} f := (F f.val).left b.back
+  map {_ b} f := (F f.hom).left b.back
   map_id x := by
     dsimp
     rw [F.map_one]

@@ -99,8 +99,6 @@ theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
-attribute [to_dual existing] inf'_eq_csInf_image
-
 @[to_dual]
 theorem trop_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S) (f : S → WithTop R) :
     trop (sInf (f '' s)) = ∑ i ∈ s, trop (f i) := by

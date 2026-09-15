@@ -62,6 +62,7 @@ section Zero
 
 variable [Zero R]
 
+@[macro_inline]
 instance : FunLike (ArithmeticFunction R) ℕ R :=
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
 

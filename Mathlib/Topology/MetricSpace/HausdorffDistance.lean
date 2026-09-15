@@ -295,7 +295,7 @@ theorem hausdorffEDist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y
 theorem infEDist_le_hausdorffEDist_of_mem (h : x ∈ s) : infEDist x t ≤ hausdorffEDist s t := by
   rw [hausdorffEDist_def]
   refine le_trans ?_ le_sup_left
-  exact le_iSup₂ (α := ℝ≥0∞) x h
+  grw [← le_iSup₂ x h]
 
 /-- If the Hausdorff distance is `< r`, then any point in one of the sets has
 a corresponding point at distance `< r` in the other set. -/

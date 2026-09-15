@@ -488,7 +488,7 @@ coincides with the lower central series of `H` viewed as its own additive group,
 to `G`. -/]
 theorem top_subtype_lowerCentralSeries (H : Subgroup G) (n : ℕ) :
     (lowerCentralSeries ⊤ n).map H.subtype = H.lowerCentralSeries n := by
-  rw [map_lowerCentralSeries, ← MonoidHom.range_eq_map, subtype_range]
+  rw [map_lowerCentralSeries, Subgroup.map_top, subtype_range]
 
 /-- A subgroup is nilpotent iff its lower central series (computed in the ambient group) eventually
 vanishes. -/
@@ -1186,18 +1186,26 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
 
+/-- A simple nilpotent group is commutative. -/
+@[to_additive /-- A simple nilpotent additive group is commutative. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
-  ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
+  Group.commGroupOfCenterEqTop <|
+    (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G) inferInstance).resolve_left
+      (Group.IsNilpotent.center_ne_bot G)
 
+/-- A simple nilpotent group is cyclic. -/
+@[to_additive /-- A simple nilpotent additive group is cyclic. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
   inferInstance
 
 namespace Group
 
+@[to_additive AddGroup.nilpotencyClass_le_one_of_isSimple_of_isNilpotent]
 lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [IsSimpleGroup G] [IsNilpotent G] :
     nilpotencyClass G ≤ 1 :=
   CommGroup.nilpotencyClass_le_one
 
+@[to_additive]
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition
   rw [normalizerCondition_iff_only_full_group_self_normalizing]
