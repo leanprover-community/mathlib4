@@ -20,10 +20,11 @@ the namespace `Complex` for these functions.
 
 ## `Complex.besselJ a x`: Bessel function of the first kind $J_a(x)$
 
-An equation for $J_a(x)$ is
+The Bessel function $J_a(x)$ has the representation
 $$
 J_a(x) = (x / 2)^a \frac{₀F₁(-; a + 1; -(x/2)^2)} {Γ(a + 1)}
 $$
+where $₀F₁$ is the hypergeometric function.
 Based on this, we define `Complex.besselJ a x` using `Complex.regularizedHGFun` for the fraction
 part which removes the singularity for negative integer $a$.
 
@@ -47,14 +48,15 @@ open Nat FormalMultilinearSeries
 
 namespace Complex
 
-local notation "F₀₁(" a ")" => regularizedHGFun 0 {(a : ℂ) + 1}
+local notation "F₀₁(" a ")" => regularizedHGFun 0 {(a : ℂ)}
 
 /-- Bessel function of the first kind $J_a(x)$. -/
-noncomputable def besselJ (a x : ℂ) := (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2)
+@[pp_nodot]
+noncomputable def besselJ (a x : ℂ) := (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2)
 
 local notation "J" => besselJ
 
-theorem besselJ_def : J = fun a x ↦ (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2) := rfl
+theorem besselJ_def : J = fun a x ↦ (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2) := rfl
 
 /-- `J a` is even or odd when $a$ is even or odd, respectively. -/
 theorem besselJ_int_neg (a : ℤ) (x : ℂ) : J a (-x) = (-1) ^ a * J a x := by
@@ -106,7 +108,7 @@ theorem analyticAt_besselJ_int (a : ℤ) (x : ℂ) : AnalyticAt ℂ (J a) x := b
     have ha' : (-1 : ℂ) ^ a ≠ 0 := by grind [zpow_ne_zero]
     simpa [besselJ_neg_int, ← mul_assoc, inv_mul_cancel₀ ha']
   obtain ⟨a, rfl⟩ := Int.eq_ofNat_of_zero_le ha
-  have : AnalyticAt ℂ (fun x ↦ (x / 2) ^ a * F₀₁(a) (- (x / 2) ^ 2)) x := by fun_prop
+  have : AnalyticAt ℂ (fun x ↦ (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2)) x := by fun_prop
   simpa [besselJ_def]
 
 @[fun_prop]
