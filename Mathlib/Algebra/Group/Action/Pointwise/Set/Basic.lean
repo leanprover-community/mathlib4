@@ -357,6 +357,11 @@ variable [Monoid α] [MulAction α β] {s : Set β} {a : α} {b : β}
 @[simp] lemma mem_invOf_smul_set [Invertible a] : b ∈ ⅟a • s ↔ a • b ∈ s :=
   mem_inv_smul_set_iff (a := unitOfInvertible a)
 
+@[to_additive (attr := simp)]
+lemma mul_mem_smul_set [IsLeftCancelMul α] {a b : α} {s : Set α} :
+    a * b ∈ a • s ↔ b ∈ s :=
+  (mul_right_injective _).mem_set_image
+
 end Monoid
 
 section Group
