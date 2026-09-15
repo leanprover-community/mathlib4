@@ -150,7 +150,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
   have := prod_cyclotomic_eq_geom_sum hn' ℤ
   apply_fun eval 1 at this
   rw [eval_geom_sum, one_geom_sum, eval_prod, eq_comm, ←
-    Finset.prod_sdiff <| @range_pow_padicValNat_subset_divisors' p _ _, Finset.prod_image] at this
+    Finset.prod_sdiff <| @range_pow_multiplicity_subset_divisors' p _ _, Finset.prod_image] at this
   · simp_rw [eval_one_cyclotomic_prime_pow, Finset.prod_const, Finset.card_range, mul_comm] at this
     rw [← Finset.prod_sdiff (s₁ := {n})] at this
     swap
@@ -160,10 +160,10 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     rw [← Int.natAbs_natCast p, Int.natAbs_dvd_natAbs] at hpe
     obtain ⟨t, ht⟩ := hpe
     rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
-    have : (p : ℤ) ^ padicValNat p n * p ∣ n := ⟨_, this⟩
+    have : (p : ℤ) ^ multiplicity p n * p ∣ n := ⟨_, this⟩
     simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_natCast,
       Int.natAbs_pow] at this
-    exact pow_succ_padicValNat_not_dvd hn'.ne' this
+    exact pow_succ_multiplicity_not_dvd hn'.ne' this
   · rintro x - y - hxy
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
