@@ -66,6 +66,15 @@ section PowerBasis
 
 open Algebra
 
+/-- Cayley–Hamilton: an algebra element is a root of the characteristic polynomial of its
+matrix of left multiplication in any basis. -/
+theorem Algebra.aeval_leftMulMatrix_charpoly {S : Type*} [Semiring S] [Algebra R S] {ι : Type*}
+    [Fintype ι] [DecidableEq ι] (b : Basis ι R S) (a : S) :
+    aeval a (leftMulMatrix b a).charpoly = 0 := by
+  apply leftMulMatrix_injective b
+  rw [map_zero, ← aeval_algHom_apply]
+  exact aeval_self_charpoly _
+
 /-- The characteristic polynomial of the map `fun x => a * x` is the minimal polynomial of `a`.
 
 In combination with `det_eq_sign_charpoly_coeff` or `trace_eq_neg_charpoly_coeff`
@@ -76,9 +85,7 @@ theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasi
     (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · subsingleton
   apply minpoly.unique' R h.gen (charpoly_monic _)
-  · apply (injective_iff_map_eq_zero (G := S) (leftMulMatrix _)).mp
-      (leftMulMatrix_injective h.basis)
-    rw [← Polynomial.aeval_algHom_apply, aeval_self_charpoly]
+  · exact aeval_leftMulMatrix_charpoly h.basis h.gen
   refine fun q hq => or_iff_not_imp_left.2 fun h0 => ?_
   rw [Matrix.charpoly_degree_eq_dim, Fintype.card_fin] at hq
   contrapose! hq; exact h.dim_le_degree_of_root h0 hq
