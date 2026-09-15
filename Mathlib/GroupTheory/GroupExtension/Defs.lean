@@ -294,8 +294,11 @@ variable {S}
 theorem coe_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) : (mk s hs : G → E) = s := rfl
 
 @[to_additive (attr := simp)]
-theorem ofClass_monoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
+theorem toMonoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
     (mk s hs : G →* E) = s := rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_monoidHom_mk := toMonoidHom_mk
 
 variable (s : S.Splitting)
 

@@ -311,8 +311,11 @@ def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
 @[to_additive (attr := simp)]
-theorem ofClass_monoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
+theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_monoidHom := coe_toMonoidHom
 
 @[to_additive (attr := simp)]
 theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
@@ -372,9 +375,12 @@ theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a =
   rfl
 
 @[to_additive]
-theorem ofClass_monoidHom_comp (f : β →*o γ) (g : α →*o β) :
+theorem toMonoidHom_comp (f : β →*o γ) (g : α →*o β) :
     (f.comp g : α →* γ) = (f : β →* γ).comp g :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_comp_monoidHom := toMonoidHom_comp
 
 @[to_additive]
 theorem coe_comp_orderHom (f : β →*o γ) (g : α →*o β) :

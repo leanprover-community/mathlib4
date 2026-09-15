@@ -126,11 +126,17 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R]
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
   AlgHom.coe_ringHom_injective.comp coe_toAlgHom_injective
 
-theorem ofClass_monoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
-  AlgHom.ofClass_monoidHom_injective.comp coe_toAlgHom_injective
+theorem toMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
+  AlgHom.toMonoidHom_injective.comp coe_toAlgHom_injective
 
-theorem ofClass_addMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
-  AlgHom.ofClass_addMonoidHom_injective.comp coe_toAlgHom_injective
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_injective := toMonoidHom_injective
+
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
+  AlgHom.toAddMonoidHom_injective.comp coe_toAlgHom_injective
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 /-- Consider using `congr($H x)` instead. -/
 protected theorem congr_fun {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : f₁ = f₂) (x : A) : f₁ x = f₂ x :=

@@ -188,9 +188,12 @@ theorem comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
   rfl
 
 @[simp, norm_cast]
-theorem ofClass_addMonoidHom_comp (g f : CentroidHom α) :
+theorem toAddMonoidHom_comp (g f : CentroidHom α) :
     (g.comp f : α →+ α) = (g : α →+ α).comp f :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_comp_addMonoidHom := toAddMonoidHom_comp
 
 @[simp]
 theorem comp_assoc (h g f : CentroidHom α) : (h.comp g).comp f = h.comp (g.comp f) :=
