@@ -387,8 +387,10 @@ end Preorder
 end MulOneClass
 
 section MulZero
+variable [Mul M₀] [Zero M₀]
 
-variable [Mul M₀] [Zero M₀] [Preorder M₀] [Preorder α] {f g : α → M₀}
+section Preorder
+variable [Preorder M₀] [Preorder α] {a : M₀} {f g : α → M₀}
 
 lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
     (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
@@ -399,6 +401,27 @@ lemma MonotoneOn.mul [PosMulMono M₀] [MulPosMono M₀] {s : Set α} (hf : Mono
     MonotoneOn (f * g) s :=
   fun _ ha _ hb h ↦ mul_le_mul (hf ha hb h) (hg ha hb h) (hg₀ _ ha) (hf₀ _ hb)
 
+lemma strictMono_mul_left_of_pos [PosMulStrictMono M₀] (ha : 0 < a) :
+    StrictMono fun x ↦ a * x := fun _ _ b_lt_c ↦ mul_lt_mul_of_pos_left b_lt_c ha
+
+lemma strictMono_mul_right_of_pos [MulPosStrictMono M₀] (ha : 0 < a) :
+    StrictMono fun x ↦ x * a := fun _ _ b_lt_c ↦ mul_lt_mul_of_pos_right b_lt_c ha
+
+end Preorder
+
+section LinearOrder
+variable [LinearOrder M₀] {a : M₀}
+
+lemma IsLeftRegular.of_pos [PosMulStrictMono M₀] (ha : 0 < a) : IsLeftRegular a :=
+  (strictMono_mul_left_of_pos ha).injective
+
+lemma IsRightRegular.of_pos [MulPosStrictMono M₀] (ha : 0 < a) : IsRightRegular a :=
+  (strictMono_mul_right_of_pos ha).injective
+
+lemma IsRegular.of_pos [PosMulStrictMono M₀] [MulPosStrictMono M₀] (ha : 0 < a) : IsRegular a :=
+  ⟨.of_pos ha, .of_pos ha⟩
+
+end LinearOrder
 end MulZero
 
 section MonoidWithZero
@@ -643,12 +666,6 @@ end strict_mono
 
 variable [Preorder α] {f g : α → M₀}
 
-lemma strictMono_mul_left_of_pos [PosMulStrictMono M₀] (ha : 0 < a) :
-    StrictMono fun x ↦ a * x := fun _ _ b_lt_c ↦ mul_lt_mul_of_pos_left b_lt_c ha
-
-lemma strictMono_mul_right_of_pos [MulPosStrictMono M₀] (ha : 0 < a) :
-    StrictMono fun x ↦ x * a := fun _ _ b_lt_c ↦ mul_lt_mul_of_pos_right b_lt_c ha
-
 lemma StrictMono.mul_const [MulPosStrictMono M₀] (hf : StrictMono f) (ha : 0 < a) :
     StrictMono fun x ↦ f x * a := (strictMono_mul_right_of_pos ha).comp hf
 
@@ -676,8 +693,7 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}
-  {m n : ℕ}
+variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀} {m n : ℕ}
 
 lemma pow_le_pow_iff_left₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
     a ^ n ≤ b ^ n ↔ a ≤ b :=
