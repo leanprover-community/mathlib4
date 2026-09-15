@@ -68,13 +68,17 @@ theorem le_eqLocus {f g : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     S ≤ eqLocus f g ↔ Set.EqOn f g S :=
   Iff.rfl
 
+theorem eqOn_eqLocus {f g : M →ₛₗ[τ₁₂] M₂} :
+    Set.EqOn f g (eqLocus f g) :=
+  fun _ h ↦ h
+
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 include τ₁₂ in
 theorem eqOn_sup {f g : F} {S T : Submodule R M}
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
-  rw [← LinearMap.coe_coe (f := f), ← LinearMap.coe_coe (f := g), ← le_eqLocus] at hS hT ⊢
+  rw [← LinearMap.coe_ofClass (f := f), ← LinearMap.coe_ofClass (f := g), ← le_eqLocus] at hS hT ⊢
   exact sup_le hS hT
 
 include τ₁₂ in

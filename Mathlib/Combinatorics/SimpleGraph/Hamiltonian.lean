@@ -5,8 +5,6 @@ Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer, Yue Sun, Snir Broshi
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Nat
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.SetTheory.Cardinal.Finite
 
@@ -71,7 +69,7 @@ theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
   rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
 
 /-- If a path `p` is Hamiltonian then the graph has finitely many vertices. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
   complete x := List.mem_toFinset.mpr (mem_support hp x)
@@ -94,8 +92,11 @@ lemma IsHamiltonian.toFinset_support (hp : p.IsHamiltonian) : p.support.toFinset
 alias IsHamiltonian.support_toFinset := IsHamiltonian.toFinset_support
 
 omit [Fintype α] in
-theorem IsHamiltonian.setOf_support (hp : p.IsHamiltonian) : {v | v ∈ p.support} = Set.univ :=
+theorem IsHamiltonian.setOfPred_support (hp : p.IsHamiltonian) : {v | v ∈ p.support} = Set.univ :=
   Set.eq_univ_iff_forall.mpr hp.mem_support
+
+@[deprecated (since := "2026-07-09")]
+alias IsHamiltonian.setOf_support := IsHamiltonian.setOfPred_support
 
 /-- The length of a Hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
@@ -135,7 +136,7 @@ theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surj
 omit [DecidableEq β] in
 theorem IsHamiltonian.injective_of_isPath_map (hp : p.IsHamiltonian) (h : (p.map f).IsPath) :
     Function.Injective f := by
-  rw [← Set.injOn_univ, ← hp.setOf_support]
+  rw [← Set.injOn_univ, ← hp.setOfPred_support]
   exact h.injOn_support_of_isPath_map
 
 lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
@@ -147,6 +148,14 @@ lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
   refine isHamiltonian_iff_support_get_bijective.mpr ⟨this, this.surjective_of_finite ?_⟩
   refine (Fintype.equivFinOfCardEq ?_).symm
   simp_rw [length_support, h, Nat.sub_one_add_one Fintype.card_ne_zero]
+
+@[simp]
+theorem isHamiltonian_transfer [Finite α] {H : SimpleGraph α} (h) :
+    (p.transfer H h).IsHamiltonian ↔ p.IsHamiltonian := by
+  cases nonempty_fintype α
+  simp [isHamiltonian_iff_isPath_and_length_eq]
+
+alias ⟨_, IsHamiltonian.transfer⟩ := isHamiltonian_transfer
 
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
@@ -228,6 +237,14 @@ lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
 
 protected alias ⟨IsHamiltonianCycle.of_rotate, IsHamiltonianCycle.rotate⟩ :=
   isHamiltonianCycle_rotate
+
+@[simp]
+theorem isHamiltonianCycle_transfer [Finite α] {H : SimpleGraph α} {p : G.Walk v v} (h) :
+    (p.transfer H h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  cases nonempty_fintype α
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
+
+alias ⟨_, IsHamiltonianCycle.transfer⟩ := isHamiltonianCycle_transfer
 
 theorem isHamiltonianCycle_iff_isHamiltonian_tail_and_le_card {p : G.Walk v v} :
     p.IsHamiltonianCycle ↔ p.tail.IsHamiltonian ∧ 3 ≤ Nat.card α := by

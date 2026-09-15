@@ -60,6 +60,7 @@ instance : Preadditive (HomotopyCategory V c) :=
   inferInstanceAs <| Preadditive (CategoryTheory.Quotient (homotopic V c))
 
 /-- The quotient functor from complexes to the homotopy category. -/
+@[implicit_reducible]
 def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 
@@ -199,7 +200,6 @@ section
 
 variable [CategoryWithHomology V]
 
-open Classical in
 /-- The `i`-th homology, as a functor from the homotopy category. -/
 noncomputable def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
   CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor V c i) (by
@@ -229,7 +229,7 @@ namespace CategoryTheory
 variable {V} {W : Type*} [Category* W] [Preadditive W]
 
 /-- An additive functor induces a functor between homotopy categories. -/
-@[simps! obj]
+@[implicit_reducible, simps! obj]
 def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     HomotopyCategory V c ⥤ HomotopyCategory W c :=
   CategoryTheory.Quotient.lift _ (F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c)
@@ -250,6 +250,10 @@ def Functor.mapHomotopyCategoryFactors (F : V ⥤ W) [F.Additive] (c : ComplexSh
     HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c ≅
       F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c :=
   CategoryTheory.Quotient.lift.isLift _ _ _
+
+lemma Functor.mapHomotopyCategoryFactors_hom_app (F : V ⥤ W) [F.Additive] {c : ComplexShape ι}
+    (K : HomologicalComplex V c) :
+    (F.mapHomotopyCategoryFactors c).hom.app K = 𝟙 _ := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 -- TODO develop lifting of natural transformations for general quotient categories so that
@@ -297,7 +301,6 @@ def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W
 
 variable {c} in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The preimage by a fully faithful functor of a homotopy between morphisms
 of homological complexes. -/
 def Functor.preimageHomotopy

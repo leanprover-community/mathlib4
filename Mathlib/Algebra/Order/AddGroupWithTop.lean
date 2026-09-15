@@ -109,8 +109,6 @@ variable [LinearOrderedAddCommGroupWithTop α] {a b c : α}
 
 attribute [simp] neg_top
 
-@[deprecated (since := "2025-12-14")] protected alias add_neg_cancel := add_neg_cancel_of_ne_top
-
 /-! Note: The following lemmas are special cases of the corresponding `IsAddUnit` lemmas. -/
 
 lemma neg_add_cancel_of_ne_top (ha : a ≠ ⊤) : -a + a = 0 := by
@@ -175,12 +173,6 @@ instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
     have ha : a ≠ ⊤ := by rintro rfl; simp at h
     exact left_neg_eq_right_neg (a := a) (by simp [neg_add_cancel_of_ne_top, *]) h
 
-@[deprecated (since := "2025-12-27")]
-alias injective_add_left_of_ne_top := add_left_injective_of_ne_top
-
-@[deprecated (since := "2025-12-27")]
-alias injective_add_right_of_ne_top := add_right_injective_of_ne_top
-
 lemma sub_left_injective_of_ne_top (h : b ≠ ⊤) : Function.Injective fun x ↦ x - b := by
   simpa [sub_eq_add_neg] using add_left_injective_of_ne_top (-b) (by simpa)
 
@@ -194,12 +186,6 @@ lemma sub_left_inj_of_ne_top (h : a ≠ ⊤) : b - a = c - a ↔ b = c :=
 @[simp]
 lemma sub_right_inj_of_ne_top (h : a ≠ ⊤) : a - b = a - c ↔ b = c :=
   (sub_right_injective_of_ne_top h).eq_iff
-
-@[deprecated (since := "2025-12-27")]
-alias strictMono_add_left_of_ne_top := add_left_strictMono_of_ne_top
-
-@[deprecated (since := "2025-12-27")]
-alias strictMono_add_right_of_ne_top := add_right_strictMono_of_ne_top
 
 lemma sub_left_strictMono_of_ne_top (h : b ≠ ⊤) : StrictMono fun x ↦ x - b := by
   simpa [sub_eq_add_neg] using add_left_strictMono_of_ne_top (b := -b) (by simpa)

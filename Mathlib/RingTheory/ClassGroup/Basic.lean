@@ -6,6 +6,7 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The ideal class group
@@ -85,6 +86,7 @@ variable [IsDomain R]
 
 /-- The ideal class group of `R` is the group of invertible fractional ideals
 modulo the principal ideals. -/
+@[wikidata Q912083]
 def ClassGroup :=
   (FractionalIdeal R⁰ (FractionRing R))ˣ ⧸ (toPrincipalIdeal R (FractionRing R)).range
 deriving CommGroup, Inhabited
@@ -365,6 +367,19 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
   · intro x_eq; apply Units.ne_zero I; simp [hx', x_eq]
   · simp [hx']
 
+/-- A fractional ideal is principal if a power coprime to the class number is principal. -/
+theorem FractionalIdeal.isPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
+    [Fintype (ClassGroup R)] {n : ℕ} (hn : n.Coprime (Fintype.card (ClassGroup R)))
+    (I : FractionalIdeal R⁰ K) (hI : ((I ^ n : FractionalIdeal R⁰ K) : Submodule R K).IsPrincipal) :
+    (I : Submodule R K).IsPrincipal := by
+  obtain (rfl | ⟨u, rfl⟩) := GroupWithZero.eq_zero_or_unit I
+  · simp [bot_isPrincipal]
+  rw [← ClassGroup.mk_eq_one_iff, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn,
+    Nat.dvd_gcd_iff]
+  refine ⟨?_, orderOf_dvd_card⟩
+  rw [orderOf_dvd_iff_pow_eq_one, ← map_pow, ClassGroup.mk_eq_one_iff]
+  exact_mod_cast hI
+
 /-- If the class group is trivial, any unit fractional ideal is principal. -/
 theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup R)]
     (I : FractionalIdeal R⁰ K) (hI : IsUnit I) :
@@ -386,6 +401,18 @@ theorem ClassGroup.isPrincipal_of_isUnit_coeIdeal [Subsingleton (ClassGroup R)]
 theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈ (Ideal R)⁰) :
     ClassGroup.mk0 ⟨I, hI⟩ = 1 ↔ I.IsPrincipal :=
   ClassGroup.mk_eq_one_iff.trans (coeSubmodule_isPrincipal R _)
+
+/-- An ideal is principal if a power coprime to the class number is principal. -/
+theorem Ideal.IsPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
+    [Fintype (ClassGroup R)] {n : ℕ} (hn : n.Coprime (Fintype.card (ClassGroup R)))
+    {I : Ideal R} (hI : (I ^ n).IsPrincipal) : I.IsPrincipal := by
+  by_cases hI0 : I = 0
+  · simp [hI0, bot_isPrincipal]
+  rw [← ClassGroup.mk0_eq_one_iff (pow_mem (mem_nonZeroDivisors_of_ne_zero hI0) n)] at hI
+  rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero hI0), ← orderOf_eq_one_iff,
+    ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
+  refine ⟨?_, orderOf_dvd_card⟩
+  rwa [orderOf_dvd_iff_pow_eq_one, ← map_pow, SubmonoidClass.mk_pow]
 
 theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ ↔
@@ -455,6 +482,9 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
         ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
       rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
 @[simps!]
 noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :

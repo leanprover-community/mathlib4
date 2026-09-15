@@ -74,7 +74,7 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simp [List.dedup_eq_self.mpr hl, Function.comp_def]
   · simpa using h1
   · simpa [hl] using h2
-  · simp [hl, h0]
+  · rw [Finset.noncommProd_toFinset (hl := hl)]; simp [h0]
 
 theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
     σ.cycleType.count n =
@@ -82,14 +82,12 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
   -- work on the LHS
   rw [cycleType, Multiset.count_eq_card_filter_eq]
   -- rewrite the `Fintype.card` as a `Finset.card`
-  rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
-    Finset.card_map, Finset.card_attach]
-  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
-    Multiset.filter_map, Multiset.card_map]
+  simp_rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach', Finset.card_map,
+    Finset.card_attach, Multiset.filter_map, Multiset.card_map, Finset.card, Function.comp_apply,
+    Finset.card_val]
   congr 1
   apply Multiset.filter_congr
-  intro d h
-  simp only [eq_comm, Finset.mem_val.mp h, exists_const]
+  tauto
 
 @[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
@@ -345,16 +343,16 @@ theorem sign_of_cycleType_eq_replicate {σ : Perm α} {n : ℕ} (hn : 0 < n)
       (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / n) := by
   rw [sign_of_cycleType', hσ, Multiset.map_replicate, Multiset.prod_replicate]
   obtain h | h := Nat.even_or_odd n
-  · rw [if_neg (Nat.not_odd_iff_even.mpr h), h.neg_one_pow, σ.card_fixedPoints,
+  · rw [ite_eq_right (Nat.not_odd_iff_even.mpr h), h.neg_one_pow, σ.card_fixedPoints,
       Nat.sub_sub_self σ.sum_cycleType_le,
       show σ.cycleType.sum = σ.cycleType.card * n by rw [hσ]; simp,
         Nat.mul_div_cancel _ hn]
-  · rw [if_pos h, h.neg_one_pow, neg_neg, one_pow]
+  · rw [ite_eq_left h, h.neg_one_pow, neg_neg, one_pow]
 
 theorem sign_of_pow_two_eq_one {σ : Perm α} (hσ : σ ^ 2 = 1) :
     sign σ = (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / 2) := by
   rw [sign_of_cycleType_eq_replicate zero_lt_two (cycleType_of_pow_prime_eq_one hσ),
-    if_neg (Nat.not_odd_iff.mpr rfl)]
+    ite_eq_right (Nat.not_odd_iff.mpr rfl)]
 
 end CycleType
 
@@ -368,6 +366,7 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
     exact dvd_pow_self _ fun h => (one_lt_of_mem_cycleType hk).ne <| by rw [h, pow_zero]
   · exact Finset.card_le_univ _
 
+set_option backward.isDefEq.respectTransparency false in
 open Function in
 /-- The number of fixed points of a `p ^ n`-th root of the identity function over a finite set
 and the set's cardinality have the same residue modulo `p`, where `p` is a prime. -/
@@ -471,7 +470,7 @@ instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=
 theorem card [Fintype G] : Fintype.card (vectorsProdEqOne G n) = Fintype.card G ^ (n - 1) :=
   (Fintype.card_congr (equivVector G n)).trans (card_vector (n - 1))
 
-variable {G n} {g : G}
+variable {G n}
 variable (v : vectorsProdEqOne G n) (j k : ℕ)
 
 /-- Rotate a vector whose product is 1. -/
@@ -489,7 +488,6 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
@@ -522,8 +520,9 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
-  · rw [Subtype.ext_iff, Subtype.ext_iff, hg, hg', v.1.2]
-    simp only [v₀, List.Vector.replicate]
+  · change (v : List.Vector G p).toList = _ at hg
+    rw [Subtype.ext_iff, ← List.Vector.toList_injective.eq_iff, hg, hg', v.1.2]
+    rfl
 
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
@@ -537,7 +536,8 @@ attribute [to_additive existing] exists_prime_orderOf_dvd_card
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
-@[to_additive]
+@[to_additive /-- For every prime `p` dividing the order of a finite additive group `G` there exists
+an element of order `p` in `G`. This is the additive version of Cauchy's theorem. -/]
 theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Nat.card G) : ∃ x : G, orderOf x = p := by
   have := Fintype.ofFinite G
@@ -549,7 +549,7 @@ end Cauchy
 theorem subgroup_eq_top_of_swap_mem [DecidableEq α] {H : Subgroup (Perm α)}
     [d : DecidablePred (· ∈ H)] {τ : Perm α} (h0 : (Fintype.card α).Prime)
     (h1 : Fintype.card α ∣ Fintype.card H) (h2 : τ ∈ H) (h3 : IsSwap τ) : H = ⊤ := by
-  haveI : Fact (Fintype.card α).Prime := ⟨h0⟩
+  have : Fact (Fintype.card α).Prime := ⟨h0⟩
   obtain ⟨σ, hσ⟩ := exists_prime_orderOf_dvd_card (Fintype.card α) h1
   have hσ1 : orderOf (σ : Perm α) = Fintype.card α := (Subgroup.orderOf_coe σ).trans hσ
   have hσ2 : IsCycle ↑σ := isCycle_of_prime_order'' h0 hσ1
@@ -703,8 +703,8 @@ theorem IsThreeCycle.support_eq_iff_mem_support
       simpa only [Finset.singleton_subset_iff, Perm.apply_mem_support]
     · rw [hg3.card_support]
       simp only [mem_support, ne_eq] at ha
-      rw [Finset.card_insert_eq_ite, if_neg]
-      · rw [Finset.card_insert_eq_ite, if_neg]
+      rw [Finset.card_insert_eq_ite, ite_eq_right]
+      · rw [Finset.card_insert_eq_ite, ite_eq_right]
         · simp
         · simpa using Ne.symm ha
       · simp only [Finset.mem_insert, Finset.mem_singleton]

@@ -112,7 +112,7 @@ section Pushout
 
 variable [HasPushouts C]
   {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-  (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C}
+  (h : Y ⟶ W) {Q : C}
 
 @[reassoc]
 lemma Limits.pushout.whiskerLeft_condition :

@@ -120,7 +120,7 @@ lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
   simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
   obtain ⟨i, x, rfl⟩ := H x
   use Limits.Sigma.ι Y i x
-  rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_desc]
+  rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_comp_desc]
 
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
     Surjective (Limits.Sigma.desc fun i ↦ 𝒰.f i) :=
@@ -239,6 +239,7 @@ lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
 lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance IsDominant.respectsIso : MorphismProperty.RespectsIso @IsDominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 

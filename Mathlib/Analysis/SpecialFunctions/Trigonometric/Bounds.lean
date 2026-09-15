@@ -20,8 +20,9 @@ the ranges of these functions, and their monotonicity in suitable intervals.
 Here we prove the following:
 
 * `sin_lt`: for `x > 0` we have `sin x < x`.
-* `sin_gt_sub_cube`: For `0 < x ≤ 1` we have `x - x ^ 3 / 4 < sin x`.
+* `sin_gt_sub_cube`: For `0 < x` we have `x - x ^ 3 / 6 < sin x`.
 * `lt_tan`: for `0 < x < π/2` we have `x < tan x`.
+* `arctan_lt_self`: for `x > 0` we have `arctan x < x`.
 * `cos_le_one_div_sqrt_sq_add_one` and `cos_lt_one_div_sqrt_sq_add_one`: for
   `-3 * π / 2 ≤ x ≤ 3 * π / 2`, we have `cos x ≤ 1 / sqrt (x ^ 2 + 1)`, with strict inequality if
   `x ≠ 0`. (This bound is not quite optimal, but not far off)
@@ -143,21 +144,33 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   ring_nf at this ⊢
   linarith
 
-/-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
+/-- For 0 < x we have x - x ^ 3 / 6 < sin x.
 
-This is also true for x > 1, but it's nontrivial for x just above 1. This inequality is not
-tight; the tighter inequality is sin x > x - x ^ 3 / 6 for all x > 0, but this inequality has
-a simpler proof. -/
-theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < sin x := by
-  have hx : |x| = x := abs_of_nonneg h.le
-  have := neg_le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
-  rw [le_sub_iff_add_le, hx] at this
-  refine lt_of_lt_of_le ?_ this
-  have : x ^ 3 / ↑4 - x ^ 3 / ↑6 = x ^ 3 * 12⁻¹ := by norm_num [div_eq_mul_inv, ← mul_sub]
-  rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
-  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
-  apply pow_le_pow_of_le_one h.le h'
-  simp
+This inequality is tight, in that the constant 6 is best possible. -/
+theorem sin_gt_sub_cube {x : ℝ} (hx : 0 < x) : x - x ^ 3 / 6 < Real.sin x := by
+  let f (t : ℝ) : ℝ := Real.sin t - (t - t ^ 3 / 6)
+  have hderiv (t : ℝ) : deriv f t = cos t - 1 + t ^ 2 / 2 := by
+    simp (disch := fun_prop) [f]
+    ring
+  have hmono : StrictMonoOn f (Set.Ici 0) := by
+    apply strictMonoOn_of_deriv_pos (convex_Ici 0) (by fun_prop)
+    grind [one_sub_sq_div_two_lt_cos, interior_Ici]
+  have h0 : f 0 < f x := hmono (by simp) hx.le hx
+  grind [Real.sin_zero]
+
+/-- For 0 ≤ x we have x - x ^ 3 / 6 ≤ sin x.
+
+This inequality is tight, in that the constant 6 is best possible. -/
+theorem sin_ge_sub_cube {x : ℝ} (hx : 0 ≤ x) : x - x ^ 3 / 6 ≤ Real.sin x := by
+  obtain rfl | hx := hx.eq_or_lt
+  · simp
+  exact (sin_gt_sub_cube hx).le
+
+/-- `|x - sin x| ≤ |x|³ / 6` for every real `x`. -/
+theorem abs_sub_sin_le (x : ℝ) : |x - Real.sin x| ≤ |x| ^ 3 / 6 := by
+  wlog hx : 0 ≤ x
+  · grind [sin_neg]
+  · grind [Real.sin_le, abs_of_nonneg, sin_ge_sub_cube]
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
 theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
@@ -180,7 +193,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   have tan_cts_U : ContinuousOn tan U := by
     apply ContinuousOn.mono continuousOn_tan
     intro z hz
-    simp only [mem_setOf_eq]
+    simp only [mem_ofPred_eq]
     exact (cos_pos hz).ne'
   have tan_minus_id_cts : ContinuousOn (fun y : ℝ => tan y - y) U := tan_cts_U.sub continuousOn_id
   have deriv_pos (y : ℝ) (hy : y ∈ interior U) : 0 < deriv (fun y' : ℝ => tan y' - y') y := by
@@ -203,6 +216,30 @@ theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
   rcases eq_or_lt_of_le h1 with (rfl | h1')
   · rw [tan_zero]
   · exact le_of_lt (lt_tan h1' h2)
+
+/-- For `0 < x` we have `arctan x < x`.
+
+This is `lt_tan` reflected in the diagonal: `tan` lies above the identity on `(0, π / 2)`, hence
+its inverse lies below it. -/
+theorem arctan_lt_self (h : 0 < x) : arctan x < x := by
+  simpa using lt_tan (arctan_pos.2 h) (arctan_lt_pi_div_two x)
+
+theorem arctan_le_self (h : 0 ≤ x) : arctan x ≤ x := by
+  obtain rfl | h := h.eq_or_lt
+  · simp
+  · exact (arctan_lt_self h).le
+
+theorem self_lt_arctan (h : x < 0) : x < arctan x := by
+  simpa using arctan_lt_self <| neg_pos.2 h
+
+theorem self_le_arctan (h : x ≤ 0) : x ≤ arctan x := by
+  simpa using arctan_le_self <| neg_nonneg.2 h
+
+theorem abs_arctan_lt_abs (h : x ≠ 0) : |arctan x| < |x| := by
+  grind [arctan_lt_self, self_lt_arctan, arctan_pos, arctan_lt_zero]
+
+theorem abs_arctan_le_abs : |arctan x| ≤ |x| := by
+  grind [abs_arctan_lt_abs, arctan_zero]
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
     (hx3 : x ≠ 0) : cos x < (1 / √(x ^ 2 + 1) : ℝ) := by

@@ -22,7 +22,7 @@ the displacement (`dist (f a) (f b)`) is at most the integral of `‖deriv f‖`
 
 public section
 
-open Filter Set MeasureTheory Measure Metric
+open Filter Set MeasureTheory Metric
 open scoped Topology
 
 variable {E F : Type*}
@@ -53,8 +53,8 @@ lemma norm_sub_le_integral_of_norm_deriv_le_of_le {B : ℝ → ℝ} (hab : a ≤
       UniformSpace.Completion.toComplL.differentiable.comp_differentiableOn hfd
     have hdg t (ht : t ∈ Ioo a b) : deriv g t = deriv f t := by
       have : HasFDerivAt (𝕜 := ℝ) (↑) UniformSpace.Completion.toComplL (f t) := by
-        rw [← UniformSpace.Completion.coe_toComplL (𝕜 := ℝ)]
-        exact (UniformSpace.Completion.toComplL (E := E) (𝕜 := ℝ)).hasFDerivAt
+        rw [← UniformSpace.Completion.coe_toComplL (S := ℝ)]
+        exact (UniformSpace.Completion.toComplL (α := E) (S := ℝ)).hasFDerivAt
       have hdft : HasDerivAt f (deriv f t) t := hfd.hasDerivAt <| Ioo_mem_nhds ht.1 ht.2
       rw [hg, (this.comp_hasDerivAt t hdft).deriv, UniformSpace.Completion.coe_toComplL]
     have hgn : ∀ᵐ t, t ∈ Ioo a b → ‖deriv g t‖ ≤ B t :=
@@ -104,7 +104,7 @@ lemma norm_sub_le_mul_volume_of_norm_deriv_le_of_le {C : ℝ} (hab : a ≤ b)
         setIntegral_const, smul_eq_mul, mul_comm]
       simp only [s, Measure.real,
         Measure.measure_toMeasurable_inter_of_sFinite measurableSet_Ioo]
-      simp only [inter_def, mem_setOf_eq, and_comm]
+      simp only [inter_def, mem_ofPred_eq, and_comm]
 
 end Line
 

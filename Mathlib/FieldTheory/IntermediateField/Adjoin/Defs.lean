@@ -360,6 +360,9 @@ theorem adjoin_univ (F E : Type*) [Field F] [Field E] [Algebra F E] :
     adjoin F (Set.univ : Set E) = ⊤ :=
   eq_top_iff.mpr <| subset_adjoin _ _
 
+theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
+  gc.l_sup
+
 /-- If `K` is a field with `F ⊆ K` and `S ⊆ K` then `adjoin F S ≤ K`. -/
 theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆ K) (HS : S ⊆ K) :
     (adjoin F S).toSubfield ≤ K := by
@@ -385,15 +388,18 @@ theorem adjoin_adjoin_left (T : Set E) :
       (fun x hx ↦ Subfield.subset_closure <| .inl ⟨⟨x, Subfield.subset_closure (.inr hx)⟩, rfl⟩)
       (fun x hx ↦ Subfield.subset_closure <| .inr hx)
 
+/-- Adjoining is idempotent: adjoining an adjoin is the same as a single adjoin. -/
+@[simp]
+lemma adjoin_adjoin_right {K : Type*} [Field K] [Algebra K F] [Algebra K E] [IsScalarTower K F E] :
+    adjoin F (adjoin K S) = adjoin F S := by
+  refine le_antisymm ?_ (adjoin.mono F S (adjoin K S) (subset_adjoin K S))
+  rw [adjoin_le_iff, ← (adjoin F S).coe_restrictScalars K, SetLike.coe_subset_coe]
+  simp
+
 @[simp]
 theorem adjoin_insert_adjoin (x : E) :
-    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
-  le_antisymm
-    (adjoin_le_iff.mpr
-      (Set.insert_subset_iff.mpr
-        ⟨subset_adjoin _ _ (Set.mem_insert _ _),
-          adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
-    (by grw [← subset_adjoin])
+    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) := by
+  simp_rw [← Set.singleton_union, adjoin_union, adjoin_adjoin_right]
 
 /-- `F[S][T] = F[T][S]` -/
 theorem adjoin_adjoin_comm (T : Set E) :
@@ -445,9 +451,6 @@ theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ 
   rw [extendScalars_restrictScalars, restrictScalars_adjoin]
   exact le_antisymm (adjoin.mono F S _ Set.subset_union_right) <| adjoin_le_iff.2 <|
     Set.union_subset h (subset_adjoin F S)
-
-theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
-  gc.l_sup
 
 theorem restrictScalars_adjoin_eq_sup (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = K ⊔ adjoin F S := by

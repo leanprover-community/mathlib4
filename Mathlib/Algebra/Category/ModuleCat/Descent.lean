@@ -34,7 +34,7 @@ open CategoryTheory Comonad ModuleCat Limits MonoidalCategory
 variable {A B : Type u} [CommRing A] [CommRing B] {f : A →+* B}
 
 lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_ringHomFlat (hf : f.Flat) :
-    PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) := by
+    PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj ↧B) := by
   algebraize [f]
   change PreservesFiniteLimits <| tensorLeft (ModuleCat.of A B)
   infer_instance
@@ -55,7 +55,7 @@ lemma ModuleCat.reflectsIsomorphisms_extendScalars_of_faithfullyFlat
   rwa [Module.FaithfullyFlat.lTensor_bijective_iff_bijective] at h
 
 /-- Extension of scalars by a faithfully flat ring map is comonadic. -/
-@[implicit_reducible]
+@[instance_reducible]
 def comonadicExtendScalars (hf : f.FaithfullyFlat) :
     ComonadicLeftAdjoint (extendScalars f) := by
   have := preservesFiniteLimits_extendScalars_of_flat hf.flat

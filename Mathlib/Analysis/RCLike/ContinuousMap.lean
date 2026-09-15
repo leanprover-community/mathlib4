@@ -32,6 +32,7 @@ variable {X : Type*} (𝕜 : Type*) [TopologicalSpace X] [RCLike 𝕜]
 
 open ComplexOrder
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 /-- `ContinuousMap.realToRCLike` as an order embedding. -/
 @[simps] def realToRCLikeOrderEmbedding : C(X, ℝ) ↪o C(X, 𝕜) where

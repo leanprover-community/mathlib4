@@ -61,7 +61,7 @@ namespace Finset
 using `Option.some` and then insert `Option.none`. -/
 def insertNone : Finset α ↪o Finset (Option α) :=
   (OrderEmbedding.ofMapLEIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
-    rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
+    rw [cons_subset_cons, map_subset_map]
 
 @[simp]
 theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s ↔ ∀ a ∈ o, a ∈ s
