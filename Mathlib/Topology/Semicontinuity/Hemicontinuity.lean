@@ -535,13 +535,13 @@ theorem TendstoUniformlyOn.lowerHemicontinuousOn (htendsto : TendstoUniformlyOn 
     ((mem_hausdorffEntourage U (f x₀) (F N x₀)).mp (hN x₀ hx₀s)).1 hy₀f
   -- By lower hemicontinuity, a ball around z₀ intersects all x in a neighborhood of x₀
   obtain ⟨U', ⟨hU'mem, hU'open⟩, hU'sub⟩ := uniformity_hasBasis_open.mem_iff.mp hU
-  have hmeet₀ : (F N x₀ ∩ ball z₀ U').Nonempty := ⟨z₀, hz₀FN, mem_ball_self z₀ hU'mem⟩
-  have hSmeet : ∀ᶠ x in 𝓝[s] x₀, (F N x ∩ ball z₀ U').Nonempty :=
+  have hmeet₀ : (F N x₀ ∩ U'.ball z₀).Nonempty := ⟨z₀, hz₀FN, refl_mem_uniformity hU'mem⟩
+  have hSmeet : ∀ᶠ x in 𝓝[s] x₀, (F N x ∩ U'.ball z₀).Nonempty :=
     lowerHemicontinuousWithinAt_iff.mp (hF _ _ hx₀s) _ (isOpen_ball _ hU'open) hmeet₀
   filter_upwards [hSmeet, self_mem_nhdsWithin] with x ⟨w, hwFN, hwball⟩ hx_s
   obtain ⟨v, hvf, hvw⟩ := ((mem_hausdorffEntourage U (f x) (F N x)).mp (hN x hx_s)).2 hwFN
   exact ⟨v, hvf, hWsub <| hU₁comp
-    ⟨w, hUcomp ⟨z₀, hz₀y₀, hU'sub hwball⟩, hU_le_U₁ (hUsym.symm _ _ hvw)⟩⟩
+    ⟨w, hU_le_U₁ hvw, hUcomp ⟨z₀, hU'sub hwball, hUsym.symm _ _ hz₀y₀⟩⟩⟩
 
 /-- If a net of upper hemicontinuous set-valued functions converges uniformly
 (along a filter `l`) in the Hausdorff uniformity to a set-valued function `f` with
@@ -574,7 +574,7 @@ theorem TendstoUniformlyOn.upperHemicontinuousOn (htendsto : TendstoUniformlyOn 
   obtain ⟨z, hzFN, hyz⟩ := ((mem_hausdorffEntourage U (f x) (F N x)).mp (hN x hx_s)).1 hy
   obtain ⟨y₀, hy₀f, hy₀z⟩ := hFNx hzFN
   -- then use that `U ○ U.symm ⊆ u` to conclude
-  exact hWu y₀ hy₀f (hVcomp ⟨z, hUsub hy₀z, hVsym.symm _ _ (hUsub hyz)⟩)
+  exact hWu y₀ hy₀f (hVcomp ⟨z, hUsub hyz, hVsym.symm _ _ (hUsub hy₀z)⟩)
 
 /-- A net of lower hemicontinuous set-valued functions converging uniformly (along a
 filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit -/
