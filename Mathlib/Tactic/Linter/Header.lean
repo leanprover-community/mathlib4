@@ -6,11 +6,9 @@ Authors: Michael Rothgang, Damiano Testa, Thomas R. Murrills
 module
 
 public meta import Lean.Elab.Command
-public meta import Std.Sync.Mutex
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public meta import Lean.Linter.Basic
-public import Std.Sync.Mutex
 
 /-!
 # The "header" linter
@@ -43,6 +41,12 @@ The linter checks if it is linting the first command or not by (quickly) parsing
 checking whether the end position of the header is the same as the start position of the current
 command. If so, it re-parses the header more slowly and checks that the current (first) command is
 a module doc-string (unless the command is exempted for some reason).
+
+The linter is a stateful linter (`Lean.Elab.Command.registerStatefulLinter`). Its state records
+a verdict for the module: the header checks ran, or the module is exempt. Every later command
+takes a fast path that does no parsing at all. The state also stores the parsed module header.
+Other linters, such as `minImports` and `longLine`, read the parsed header from the state
+instead of a re-parse of the file.
 -/
 
 meta section
@@ -191,15 +195,16 @@ def isInLibraryRoot (modName : Name) : IO Bool := do
     return res.imports.any (·.module == modName)
   else return false
 
-/-- `inLibraryRootMutex` caches whether the current file is imported in the library root file
-(e.g. `Mathlib.lean`), as computed by `isInLibraryRoot`. It is
-* `none` at initialization time;
-* `some true` if the `header` linter has already discovered that the current file
-  is imported in the library root file;
-* `some false` if the `header` linter has already discovered that the current file
-  is *not* imported in the library root file.
--/
-initialize inLibraryRootMutex : Std.Mutex (Option Bool) ← Std.Mutex.new none
+/-- `HeaderState` is the persistent state of the `header` linter. -/
+public structure HeaderState where
+  /-- `true` after the linter reaches a verdict for the module: the header checks ran, or the
+  module is exempt from the checks. Every later command takes a fast path. -/
+  settled : Bool := false
+  /-- The syntax of the module header: the copyright comment and the `import` commands, with
+  source positions in the current file. The value is `.missing` when the header checks did not
+  run. Other linters read this field to avoid a re-parse of the header. -/
+  headerSyntax : Syntax := .missing
+  deriving Inhabited
 
 /--
 The "header" style linter checks that a file starts with
@@ -284,6 +289,7 @@ def headerTestFiles : NameSet := .ofList [
   `MathlibTest.Linter.Header.Basic,
   `MathlibTest.Linter.Header.Fail,
   `MathlibTest.Linter.Header.Verso,
+  `MathlibTest.Linter.Header.MinImportsPayload,
   `MathlibTest.DirectoryDependencyLinter.Test]
 
 /-- Check the `Syntax` `imports` for broad imports:
@@ -332,47 +338,40 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
       importsSoFar := importsSoFar.insert imp.toImport
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
-def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def headerPost (stx : Syntax) (self : HeaderState) : CommandElabM HeaderState := do
   unless getLinterValue linter.style.header (← getLinterOptions) do
-    return
+    return self
   if (← get).messages.hasErrors then
-    return
+    return self
   let map ← getFileMap
   -- This is essentially the same as calling `parseImports'`, but we need access to `s.pos`.
   let s := ParseImports.main map.source (ParseImports.whitespace map.source {})
   unless (← read).cmdPos == s.pos do
-    return
+    -- Only a command that starts at the end of the header can be the first command of the
+    -- module. Later commands start further down, so the linter has no work left in this module.
+    return { self with settled := true }
   let mainModule ← getMainModule
   if Parser.isTerminalCommand stx ||
     -- Deprecated module files are exempt from all header style checks (copyright, doc-string,
     -- directory dependency, etc.) since they are just import-redirect stubs.
     stx.isOfKind ``Parser.Command.deprecated_module ||
     -- Skip linting the library root file itself.
-    -- In practice, the `inLibraryRoot?` check above already covers this (a well-formed
+    -- In practice, the `isInLibraryRoot` check below already covers this (a well-formed
     -- `<root>.lean` does not import itself), but a root module could appear in `headerTestFiles`.
     mainModule matches .str .anonymous _libroot
-  then return
+  then return { self with settled := true }
   unless stx.isOfKind ``Parser.Command.moduleDoc do
     Linter.logLint linter.style.header stx
       m!"The module doc-string for a file should be the first command after the imports.\n\
         Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\
         {.hint' m!"Type `m(odule docstring) + [tab]` to insert a template via snippet."}"
-  let inLibraryRoot? ← inLibraryRootMutex.atomically do
-    match ← get with
-    | some d => return d
-    | none =>
-      let val ← isInLibraryRoot mainModule
-      -- We cache the answer to avoid recomputing it on every command. The fill runs under the mutex
-      -- so that concurrent (async) linter runs don't all miss the cache and each redundantly parse
-      -- the library root file; `mainModule` is fixed for the duration of the elaboration.
-      set (some val)
-      return val
   -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
   -- linting "scratch files". It is however active in the test files for the linter itself.
-  unless inLibraryRoot? || headerTestFiles.contains mainModule do return
+  unless (← isInLibraryRoot mainModule) || headerTestFiles.contains mainModule do
+    return { self with settled := true }
   -- Re-parse the header slowly, to get the leading whitespace and nice source locations for imports
-  let (headerStx, s, log) ← Parser.parseHeader (Parser.mkInputContext map.source (← getFileName))
-  if log.hasErrors then return
+  let (headerStx, _, log) ← Parser.parseHeader (Parser.mkInputContext map.source (← getFileName))
+  if log.hasErrors then return { self with settled := true }
   let importRefs := headerToImportRefs headerStx
   -- Report on broad or duplicate imports.
   broadImportsCheck importRefs mainModule
@@ -389,8 +388,17 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | _ => ""
     for (stx, m) in copyrightHeaderChecks copyright expectedLicense do
       Linter.logLint linter.style.header stx m!"* `{stx.getAtomVal}`:\n{m}\n"
+  return { self with settled := true, headerSyntax := headerStx.raw }
 
-initialize addLinter headerLinter
+/--
+The typed handle of the `header` linter. Other stateful linters can read the previous
+`HeaderState` of the linter through this handle.
+-/
+public initialize headerLinter : StatefulLinter HeaderState Unit ←
+  registerStatefulLinter {}
+    (post := fun stx self _ _ _ => do
+      if self.settled then return self
+      withSetOptionIn (headerPost · self) stx)
 
 end Style.Header
 
