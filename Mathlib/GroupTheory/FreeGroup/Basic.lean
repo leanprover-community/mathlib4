@@ -993,6 +993,16 @@ instance [Unique α] : IsAddCyclic (FreeAddGroup α) :=
   ⟨FreeAddGroup.of default, fun x =>
   ⟨_root_.FreeAddGroup.addEquivIntOfUnique x, _root_.FreeAddGroup.addEquivIntOfUnique.left_inv x⟩⟩
 
+/-- Multiplicative free groups are isomorphic to `Multiplicative` additive free groups. -/
+def freeGroupEquivMultiplicative : FreeGroup α ≃* Multiplicative (FreeAddGroup α) :=
+  MonoidHom.toMulEquiv (FreeGroup.lift (Multiplicative.ofAdd .of))
+    (FreeAddGroup.lift (Additive.ofMul .of)).toMultiplicativeLeft (by ext; rfl) (by ext; rfl)
+
+/-- Additive free groups are isomorphic to `Additive` multiplicative free groups. -/
+def _root_.FreeAddGroup.freeAddGroupEquivAdditive : FreeAddGroup α ≃+ Additive (FreeGroup α) :=
+  AddMonoidHom.toAddEquiv (FreeAddGroup.lift (Additive.ofMul .of))
+    (FreeGroup.lift (Multiplicative.ofAdd .of)).toAdditiveLeft (by ext; rfl) (by ext; rfl)
+
 section Category
 
 variable {β : Type u}
