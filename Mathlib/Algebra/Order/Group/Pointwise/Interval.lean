@@ -175,6 +175,10 @@ lemma inv_Ioc (a b : α) : (Ioc a b)⁻¹ = Ico b⁻¹ a⁻¹ := by
 @[to_additive (attr := simp)]
 lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Ioi_inter_Iio, inter_comm]
 
+@[to_additive Icc_sub_Icc_subset]
+lemma Icc_div_Icc_subset' (a b c d : α) : Icc a b / Icc c d ⊆ Icc (a / d) (b / c) := by
+  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc_subset']
+
 /-!
 ### Preimages under `x ↦ a * x`
 -/
