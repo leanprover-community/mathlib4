@@ -257,7 +257,6 @@ nicely. -/
 def PairwiseDisjoint (s : Set ι) (f : ι → α) : Prop :=
   s.Pairwise (Disjoint on f)
 
-/-- Two distinct elements of a pairwise disjoint set have disjoint images under `f`. -/
 @[grind .]
 theorem PairwiseDisjoint.disjoint_of_ne (h : s.PairwiseDisjoint f) {i j : ι}
     (hi : i ∈ s) (hj : j ∈ s) (hij : i ≠ j) : Disjoint (f i) (f j) :=
