@@ -29,10 +29,12 @@ set_option backward.isDefEq.respectTransparency false in
 def sheafOfModulesEquivOver :
     SheafOfModules.{w} (R.over U) ≌ SheafOfModules.{w} (U.sheafRestrict.obj R) := by
   refine SheafOfModules.pushforwardPushforwardEquivalence (eqv := U.overEquivalence.symm)
-    (U.overPullbackSheafEquivOver.app _).inv (U.sheafRestrictSheafEquivOver.app _).inv rfl ?_
-  ext : 2
-  simp [overPullbackSheafEquivOver, sheafRestrictSheafEquivOver, eqToHom_map, overEquivalence,
-    IsOpenMap.functor]
+    (U.overPullbackSheafEquivOver.app _).inv (U.sheafRestrictSheafEquivOver.app _).inv ?_ ?_
+  · ext : 3
+    simp [overPullbackSheafEquivOver, sheafRestrictSheafEquivOver, overEquivalence,
+      IsOpenMap.functor]
+  · ext : 3
+    simp [overPullbackSheafEquivOver, sheafRestrictSheafEquivOver, eqToHom_map, overEquivalence]
 
 /-- `sheafOfModulesEquivOver` takes `R.over U` to `R |_ U`. -/
 def sheafOfModulesEquivOverUnit (R : X.Sheaf RingCat.{u}) :
