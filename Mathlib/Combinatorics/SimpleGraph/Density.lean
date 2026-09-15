@@ -367,15 +367,12 @@ theorem edgeDensity_empty_right (s : Finset α) : G.edgeDensity s ∅ = 0 :=
 
 @[simp]
 theorem swap_mem_interedges_iff {x : α × α} : x.swap ∈ G.interedges s t ↔ x ∈ G.interedges t s :=
-  have := G.symm
   Rel.swap_mem_interedges_iff
 
 theorem mk_mem_interedges_comm : (a, b) ∈ G.interedges s t ↔ (b, a) ∈ G.interedges t s :=
-  have := G.symm
   Rel.mk_mem_interedges_comm
 
 theorem edgeDensity_comm (s t : Finset α) : G.edgeDensity s t = G.edgeDensity t s :=
-  have := G.symm
   Rel.edgeDensity_comm s t
 
 end SimpleGraph
