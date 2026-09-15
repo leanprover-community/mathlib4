@@ -367,6 +367,8 @@
   "Mathlib.RingTheory.Ideal.Norm.AbsNorm":
   ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
   "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Data.Finsupp.Defs"],
+  "Mathlib.RingTheory.DedekindDomain.SUnit":
+  ["Mathlib.NumberTheory.NumberField.ClassNumber"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
