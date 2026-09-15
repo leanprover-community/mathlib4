@@ -134,3 +134,12 @@ theorem segment_image_Ioc {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ioc 0 
   convert! image_affine_Ioc (sub_pos_of_lt h) x 0 1 using 2 <;> ring
 
 end Real
+
+namespace unitInterval
+
+/-- Every nonempty open subinterval of the unit interval is path-connected. -/
+lemma isPathConnected_Ioo {a b : I} (hab : a < b) : IsPathConnected (Ioo a b) := by
+  rw [Topology.IsInducing.subtypeVal.isPathConnected_iff, image_subtype_val_Ioo]
+  exact (convex_Ioo _ _).isPathConnected (nonempty_Ioo.mpr hab)
+
+end unitInterval
