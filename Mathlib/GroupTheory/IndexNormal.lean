@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Nat.Prime.Factorial
 public import Mathlib.GroupTheory.Index
+public import Mathlib.Order.Atoms
 
 /-! # Subgroups of small index are normal
 
@@ -16,6 +17,8 @@ public import Mathlib.GroupTheory.Index
 
 * `Subgroup.normal_of_index_two`: in a group `G`, a subgroup of index 2 is normal
   (This does not require `G` to be finite.)
+
+* `Subgroup.isCoatom_of_index_prime`: a subgroup of prime index is maximal.
 
 -/
 
@@ -28,6 +31,15 @@ open MulAction MonoidHom Nat
 variable {G : Type*} [Group G] {H : Subgroup G}
 
 namespace Subgroup
+
+/-- A subgroup of prime index is maximal. -/
+@[to_additive]
+theorem isCoatom_of_index_prime (hH : H.index.Prime) : IsCoatom H := by
+  refine ⟨fun hM ↦ Nat.prime_one_false <| (hM ▸ index_top) ▸ hH, fun K hK ↦ ?_⟩
+  refine index_eq_one.mp <|
+    (hH.eq_one_or_self_of_dvd _ (index_dvd_of_le hK.le)).resolve_right fun h' ↦ ?_
+  have : H.FiniteIndex := ⟨hH.ne_zero⟩
+  exact (index_strictAnti hK).ne h'
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
