@@ -211,7 +211,7 @@ variable [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
 lemma similar_iff_exists_nndist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
       r * nndist (v₂ i₁) (v₂ i₂))) :=
-  exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
+  exists_congr fun _ => and_congr Iff.rfl <| forall₂_congr <|
   fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
 
 /-- Similarity holds if and only if all non-negative distances between points with different
@@ -227,7 +227,7 @@ lemma similar_iff_exists_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) :=
   similar_iff_exists_nndist_eq.trans
-  (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
+  (exists_congr fun _ => and_congr Iff.rfl <| forall₂_congr <|
     fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
 
 /-- Similarity holds if and only if all distances between points with different indices are

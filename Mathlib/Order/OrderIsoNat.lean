@@ -203,7 +203,7 @@ theorem Infinite.exists_strictMono_or_strictAnti (α : Type*) [LinearOrder α] [
   refine ⟨f ∘ g, ?_⟩
   rcases hg with hIncreasing | hNonincreasing
   · exact Or.inl hIncreasing
-  · refine Or.inr <| fun m n hmn ↦ lt_of_le_of_ne ?_ ((f.injective.comp g.injective).ne ?_)
+  · refine Or.inr fun m n hmn ↦ lt_of_le_of_ne ?_ ((f.injective.comp g.injective).ne ?_)
     · grind
     · grind
 

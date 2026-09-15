@@ -216,7 +216,7 @@ variable (hf : f = RingHom.id R)
 identity functor. -/
 @[simps! hom_app inv_app]
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ :=
-    NatIso.ofComponents <| fun M ↦ restrictScalarsId'App f hf M
+    NatIso.ofComponents fun M ↦ restrictScalarsId'App f hf M
 
 @[reassoc]
 lemma restrictScalarsId'App_hom_naturality {M N : ModuleCat R} (φ : M ⟶ N) :
@@ -269,7 +269,7 @@ composition of the restriction of scalars functors. -/
 def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
       ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f :=
-  NatIso.ofComponents <| fun M ↦ restrictScalarsComp'App f g gf hgf M
+  NatIso.ofComponents fun M ↦ restrictScalarsComp'App f g gf hgf M
 
 @[reassoc]
 lemma restrictScalarsComp'App_hom_naturality {M N : ModuleCat R₃} (φ : M ⟶ N) :

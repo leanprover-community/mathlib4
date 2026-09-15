@@ -180,7 +180,7 @@ def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x)
 
 theorem domCongrAlg_toAlgHom {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
     (domCongrAlg k A he).toAlgHom = mapDomainAlgHom k A he :=
-  AlgHom.ext <| fun _ ↦ equivMapDomain_eq_mapDomain _ _
+  AlgHom.ext fun _ ↦ equivMapDomain_eq_mapDomain _ _
 
 @[simp] theorem domCongrAlg_apply {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x)
     (f : SkewMonoidAlgebra A G) (h : H) : (domCongrAlg k A he f).coeff h = f.coeff (e.symm h) :=

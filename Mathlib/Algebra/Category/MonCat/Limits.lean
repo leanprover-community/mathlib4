@@ -237,7 +237,7 @@ noncomputable instance forget₂CreatesLimit : CreatesLimit F (forget₂ CommMon
         { pt := ↧(Types.Small.limitCone (F ⋙ forget CommMonCat)).pt
           π :=
             { app j := ofHom (MonCat.limitπMonoidHom (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}) j)
-              naturality _ _ j := ext <| fun x => ConcreteCategory.congr_hom
+              naturality _ _ j := ext fun x => ConcreteCategory.congr_hom
                 ((MonCat.HasLimits.limitCone
                   (F ⋙ forget₂ CommMonCat MonCat.{u})).π.naturality j) x } }
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit _) t

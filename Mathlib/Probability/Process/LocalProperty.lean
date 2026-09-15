@@ -123,7 +123,7 @@ lemma mono [Zero E] (hpq : ∀ X, p X → q X) (hpX : Locally p 𝓕 X P) :
 
 lemma of_and [Zero E] (hX : Locally (fun Y ↦ p Y ∧ q Y) 𝓕 X P) :
     Locally p 𝓕 X P ∧ Locally q 𝓕 X P :=
-  ⟨hX.mono <| fun _ ↦ And.left, hX.mono <| fun _ ↦ And.right⟩
+  ⟨hX.mono fun _ ↦ And.left, hX.mono fun _ ↦ And.right⟩
 
 lemma left [Zero E] (hX : Locally (fun Y ↦ p Y ∧ q Y) 𝓕 X P) :
     Locally p 𝓕 X P :=
@@ -193,7 +193,7 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
   isStoppingTime n := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
     (fun j _ ↦ hτ.isStoppingTime j)
-  mono := ae_of_all _ <| fun ω n m hnm ↦ iInf_le_iInf_of_subset <| fun k hk ↦ hnm.trans hk
+  mono := ae_of_all _ fun ω n m hnm ↦ iInf_le_iInf_of_subset fun k hk ↦ hnm.trans hk
   tendsto_top := by
     filter_upwards [hτ.tendsto_top] with ω hω
     replace hω := hω.liminf_eq
@@ -264,7 +264,7 @@ private def mkStrictMonoAux (x : ℕ → ℕ) : ℕ → ℕ
   | n + 1 => max (x (n + 1)) (mkStrictMonoAux x n) + 1
 
 private lemma mkStrictMonoAux_strictMono (x : ℕ → ℕ) : StrictMono (mkStrictMonoAux x) :=
-  strictMono_nat_of_lt_succ <| fun n ↦ by grind [mkStrictMonoAux]
+  strictMono_nat_of_lt_succ fun n ↦ by grind [mkStrictMonoAux]
 
 private lemma le_mkStrictMonoAux (x : ℕ → ℕ) : ∀ n, x n ≤ mkStrictMonoAux x n
   | 0 => by simp [mkStrictMonoAux]
@@ -309,7 +309,7 @@ lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 
   choose τ hτ₁ hτ₂ using hL.stoppedProcess_localSeq
   obtain ⟨nk, hnk, hpre⟩ :=
     hL.isLocalizingSequence_localSeq.isPrelocalizingSequence_inf_extraction hτ₁
-  refine locally_of_isPreLocalizingSequence hp hpre <| fun n ↦ ?_
+  refine locally_of_isPreLocalizingSequence hp hpre fun n ↦ ?_
   convert! hτ₂ n (nk n) using 1 with
   ext i ω
   rw [stoppedProcess_indicator_comm', stoppedProcess_indicator_comm',

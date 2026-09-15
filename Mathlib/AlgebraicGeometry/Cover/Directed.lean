@@ -217,7 +217,7 @@ def glueMorphismsOfLocallyDirected (𝒰 : X.OpenCover) [Category* 𝒰.I₀] [�
     {Y : Scheme.{u}}
     (g : ∀ i, 𝒰.X i ⟶ Y) (h : ∀ {i j : 𝒰.I₀} (hij : i ⟶ j), 𝒰.trans hij ≫ g j = g i) :
     X ⟶ Y :=
-  𝒰.glueMorphisms g <| fun i j ↦ by
+  𝒰.glueMorphisms g fun i j ↦ by
     apply (𝒰.intersectionOfLocallyDirected i j).hom_ext
     intro k
     simp [h]
@@ -265,7 +265,7 @@ of `X`, `𝒰` is directed by the ordering of subset inclusion of the images. -/
 @[instance_reducible]
 def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
     (hle : ∀ {i j : 𝒰.I₀}, i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange)
-    (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.f i).opensRange)) :
+    (H : TopologicalSpace.Opens.IsBasis (Set.range fun i ↦ (𝒰.f i).opensRange)) :
     𝒰.LocallyDirected where
   trans {i j} hij := IsOpenImmersion.lift (𝒰.f j) (𝒰.f i) (hle.mp (leOfHom hij))
   trans_id i := by rw [← cancel_mono (𝒰.f i)]; simp
@@ -288,7 +288,7 @@ section
 
 variable {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
   (hle : ∀ {i j : 𝒰.I₀}, i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange)
-  (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.f i).opensRange))
+  (H : TopologicalSpace.Opens.IsBasis (Set.range fun i ↦ (𝒰.f i).opensRange))
 
 include hle in
 lemma Cover.LocallyDirected.ofIsBasisOpensRange_le_iff (i j : 𝒰.I₀) :

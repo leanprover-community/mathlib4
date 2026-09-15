@@ -463,7 +463,7 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     obtain ⟨g', (hg' : g'.hom.app X x' = y')⟩ := MulAction.exists_smul_eq (Aut F') x' y'
     let gapp (Y : C) : F.obj Y ≅ F.obj Y := FintypeCat.equivEquivIso <|
       (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.app Y)).trans (e Y)
-    let g : F ≅ F := NatIso.ofComponents gapp <| fun {X Y} f ↦ by
+    let g : F ≅ F := NatIso.ofComponents gapp fun {X Y} f ↦ by
       ext x
       dsimp [gapp, e]
       erw [FintypeCat.uSwitchEquiv_naturality (F.map f)]

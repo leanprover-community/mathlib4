@@ -193,7 +193,7 @@ lemma isRkFinite_set (M : Matroid α) [RankFinite M] (X : Set α) : M.IsRkFinite
 lemma IsRkFinite.iUnion {ι : Type*} [Finite ι] {Xs : ι → Set α} (h : ∀ i, M.IsRkFinite (Xs i)) :
     M.IsRkFinite (⋃ i, Xs i) := by
   choose Is hIs using fun i ↦ M.exists_isBasis' (Xs i)
-  have hfin : (⋃ i, Is i).Finite := finite_iUnion <| fun i ↦ (h i).finite_of_isBasis' (hIs i)
+  have hfin : (⋃ i, Is i).Finite := finite_iUnion fun i ↦ (h i).finite_of_isBasis' (hIs i)
   refine isRkFinite_inter_ground_iff.1 <| (M.isRkFinite_of_finite hfin).closure.subset ?_
   rw [iUnion_inter, iUnion_subset_iff]
   exact fun i ↦ (hIs i).isBasis_inter_ground.subset_closure.trans <| M.closure_subset_closure <|

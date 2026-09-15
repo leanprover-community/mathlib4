@@ -216,7 +216,7 @@ and the converse is only true if the domain is locally compact. -/]
 lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, MultipliableUniformlyOn f t) :
     MultipliableLocallyUniformlyOn f s :=
-  (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
+  (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds fun x hx ↦ match h x hx with
   | ⟨t, ht, htr⟩ => ⟨t, ht, htr.hasProdUniformlyOn⟩).multipliableLocallyUniformlyOn
 
 lemma MultipliableLocallyUniformlyOn.multipliableUniformlyOn_of_isCompact

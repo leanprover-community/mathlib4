@@ -397,7 +397,7 @@ noncomputable def selfEquivOrbitsQuotientProd'
     (h : ∀ b : X, MulAction.stabilizer G b = ⊥) :
     X ≃ Quotient (MulAction.orbitRel G X) × G :=
   (MulAction.selfEquivSigmaOrbitsQuotientStabilizer' G X hφ).trans <|
-    (Equiv.sigmaCongrRight <| fun _ ↦
+    (Equiv.sigmaCongrRight fun _ ↦
       (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf G)).trans <|
     Equiv.sigmaEquivProd _ _
 

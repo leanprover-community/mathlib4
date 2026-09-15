@@ -346,7 +346,7 @@ This version is stated in terms of `HasProd`. -/
 theorem eulerProduct_completely_multiplicative_hasProd {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     HasProd (fun p : Primes ↦ (1 - f p)⁻¹) (∑' n, f n) := by
   have H : (fun p : Primes ↦ (1 - f p)⁻¹) = fun p : Primes ↦ ∑' (e : ℕ), f (p ^ e) :=
-    funext <| fun p ↦ one_sub_inv_eq_geometric_of_summable_norm p.prop hsum
+    funext fun p ↦ one_sub_inv_eq_geometric_of_summable_norm p.prop hsum
   simpa only [map_pow, H]
     using eulerProduct_hasProd f.map_one (fun {m n} _ ↦ f.map_mul m n) hsum f.map_zero
 

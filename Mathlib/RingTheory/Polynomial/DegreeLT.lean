@@ -173,7 +173,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
 
 @[simp] lemma taylorLinearEquiv_symm (r : R) :
     (taylorLinearEquiv r n).symm = taylorLinearEquiv (-r) n :=
-  LinearEquiv.ext <| fun _ ↦ rfl
+  LinearEquiv.ext fun _ ↦ rfl
 
 @[simp] theorem det_taylorLinearEquiv_toLinearMap :
     (taylorLinearEquiv r n).toLinearMap.det = 1 := by

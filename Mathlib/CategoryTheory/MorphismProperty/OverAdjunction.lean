@@ -40,7 +40,7 @@ variable {P} [P.IsStableUnderComposition]
 this is the functor `P.Over Q X ⥤ P.Over Q Y` given by composing with `f`. -/
 @[simps! obj_left obj_hom map_left]
 def Over.map {f : X ⟶ Y} (hPf : P f) : P.Over Q X ⥤ P.Over Q Y :=
-  Comma.mapRight _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ X.prop hPf
+  Comma.mapRight _ (Discrete.natTrans fun _ ↦ f) fun X ↦ P.comp_mem _ _ X.prop hPf
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -223,7 +223,7 @@ variable {P} [P.IsStableUnderComposition]
 this is the functor `P.Under Q Y ⥤ P.Under Q X` given by composing with `f`. -/
 @[simps! obj_right obj_hom map_right]
 def Under.map {f : X ⟶ Y} (hPf : P f) : P.Under Q Y ⥤ P.Under Q X :=
-  Comma.mapLeft _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ hPf X.prop
+  Comma.mapLeft _ (Discrete.natTrans fun _ ↦ f) fun X ↦ P.comp_mem _ _ hPf X.prop
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

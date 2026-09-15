@@ -167,7 +167,7 @@ noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
     (Equiv.Set.univ X.V).symm.trans <|
       (Set.equivOfEq ((MulAction.orbit_eq_univ G x).symm)).trans <|
       MulAction.orbitEquivQuotientStabilizer G x
-  Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
+  Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) fun σ : G ↦ by
     ext (a : G ⧸ MulAction.stabilizer G x)
     obtain ⟨τ, rfl⟩ := Quotient.exists_rep a
     exact mul_smul σ τ x

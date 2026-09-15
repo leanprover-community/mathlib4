@@ -49,7 +49,7 @@ set_option backward.isDefEq.respectTransparency false in
 points, then the fan constructed from `combPairHoms` is a limit cone. -/
 def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
   Fan.IsLimit.mk _
-    (fun s ↦ Fan.IsLimit.lift h <| fun i ↦ by
+    (fun s ↦ Fan.IsLimit.lift h fun i ↦ by
       cases i
       · exact Fan.IsLimit.lift h₁ (fun a ↦ s.proj (.inl a))
       · exact Fan.IsLimit.lift h₂ (fun a ↦ s.proj (.inr a)))
@@ -58,7 +58,7 @@ def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
       · simp only [fan_mk_proj, combPairHoms]
         erw [← Category.assoc, h.fac]
         simp only [pair_obj_left, mk_π_app, IsLimit.fac])
-    (fun s m hm ↦ Fan.IsLimit.hom_ext h _ _ <| fun w ↦ by
+    (fun s m hm ↦ Fan.IsLimit.hom_ext h _ _ fun w ↦ by
       cases w
       · refine Fan.IsLimit.hom_ext h₁ _ _ (fun a ↦ by aesop)
       · refine Fan.IsLimit.hom_ext h₂ _ _ (fun a ↦ by aesop))
@@ -85,7 +85,7 @@ set_option backward.isDefEq.respectTransparency false in
 points, then the cofan constructed from `combPairHoms` is a colimit cocone. -/
 def combPairIsColimit : IsColimit (Cofan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
   Cofan.IsColimit.mk _
-    (fun s ↦ Cofan.IsColimit.desc h <| fun i ↦ by
+    (fun s ↦ Cofan.IsColimit.desc h fun i ↦ by
       cases i
       · exact Cofan.IsColimit.desc h₁ (fun a ↦ s.inj (.inl a))
       · exact Cofan.IsColimit.desc h₂ (fun a ↦ s.inj (.inr a)))
@@ -94,7 +94,7 @@ def combPairIsColimit : IsColimit (Cofan.mk bc.pt (combPairHoms c₁ c₂ bc)) :
       · simp only [cofan_mk_inj, combPairHoms, Category.assoc]
         erw [h.fac]
         simp only [Cofan.mk_ι_app, Cofan.IsColimit.fac])
-    (fun s m hm ↦ Cofan.IsColimit.hom_ext h _ _ <| fun w ↦ by
+    (fun s m hm ↦ Cofan.IsColimit.hom_ext h _ _ fun w ↦ by
       cases w
       · refine Cofan.IsColimit.hom_ext h₁ _ _ (fun a ↦ by aesop)
       · refine Cofan.IsColimit.hom_ext h₂ _ _ (fun a ↦ by aesop))

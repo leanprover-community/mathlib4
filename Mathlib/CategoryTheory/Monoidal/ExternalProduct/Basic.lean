@@ -90,8 +90,8 @@ def externalProductFlip [BraidedCategory C] :
     (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj
       (externalProductBifunctorCurried J₁ J₂ C) ≅
     (externalProductBifunctorCurried J₂ J₁ C).flip :=
-  NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <|
-    fun _ ↦ NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _)
+  NatIso.ofComponents fun _ ↦ NatIso.ofComponents <|
+    fun _ ↦ NatIso.ofComponents fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _)
 
 section Composition
 

@@ -183,7 +183,7 @@ theorem isSubDPIdeal_sup {J K : Ideal A} (hJ : IsSubDPIdeal hI J) (hK : IsSubDPI
 
 theorem isSubDPIdeal_iSup {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDPIdeal hI (J i)) :
     IsSubDPIdeal hI (iSup J) := by
-  rw [iSup_eq_span, span_isSubDPIdeal_iff (Set.iUnion_subset_iff.mpr <| fun i ↦ (hJ i).1)]
+  rw [iSup_eq_span, span_isSubDPIdeal_iff (Set.iUnion_subset_iff.mpr fun i ↦ (hJ i).1)]
   simp_rw [Set.mem_iUnion]
   rintro n hn a ⟨i, ha⟩
   exact span_mono (Set.subset_iUnion _ i) (subset_span ((hJ i).2 n hn ha))

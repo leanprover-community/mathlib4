@@ -216,7 +216,7 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   choose s hs₂ hs₃ using h'
   refine Measure.MutuallySingular.mk (t := (⋃ n, s n)ᶜ) (measure_iUnion_null hs₂) ?_ ?_
   · rw [compl_iUnion]
-    refine eq_zero_of_le_mul_pow (ε := 1) (by simp : (1 / 2 : ℝ≥0∞) < 1) <| fun n ↦ ?_
+    refine eq_zero_of_le_mul_pow (ε := 1) (by simp : (1 / 2 : ℝ≥0∞) < 1) fun n ↦ ?_
     rw [ENNReal.coe_one, one_mul]
     exact (measure_mono <| iInter_subset_of_subset n fun _ ht ↦ ht).trans (hs₃ n)
   · rw [union_compl_self]

@@ -154,7 +154,7 @@ namespace RationalMap
 /-- Composition of rational maps. Requires `f` to be dominant, so that we may choose
 a dominant representative. -/
 noncomputable def comp (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) : X ⤏ Z :=
-  Quotient.liftOn g (PartialMap.toRationalMap ∘ f.representative.comp) <| fun _ _ h ↦ by
+  Quotient.liftOn g (PartialMap.toRationalMap ∘ f.representative.comp) fun _ _ h ↦ by
     rw [Function.comp_apply, Function.comp_apply, PartialMap.toRationalMap_eq_iff]
     exact PartialMap.comp_equiv_of_equiv_right _ h
 

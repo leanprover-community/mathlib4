@@ -157,7 +157,7 @@ theorem toFun_unique' (g : L ≃+* L) (c : ZMod (Nat.card (rootsOfUnity n L)))
   toFun_unique n g c (fun ⟨_, ht⟩ ↦ hc _ ht)
 
 lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
-  refine (toFun_unique n (RingEquiv.refl L) 1 <| fun t ↦ ?_).symm
+  refine (toFun_unique n (RingEquiv.refl L) 1 fun t ↦ ?_).symm
   have : 1 ≤ Nat.card { x // x ∈ rootsOfUnity n L } := Nat.card_pos
   obtain (h | h) := this.lt_or_eq
   · have := Fact.mk h
@@ -168,7 +168,7 @@ lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
 
 lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     χ₀ n g * χ₀ n h := by
-  refine (toFun_unique n (g * h) _ <| fun ζ ↦ ?_).symm
+  refine (toFun_unique n (g * h) _ fun ζ ↦ ?_).symm
   change g (h (ζ : Lˣ)) = _
   rw [toFun_spec, ← Subgroup.coe_pow, toFun_spec, mul_comm, Subgroup.coe_pow, ← pow_mul,
     ← Subgroup.coe_pow]

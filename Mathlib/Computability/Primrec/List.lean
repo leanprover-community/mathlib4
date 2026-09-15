@@ -330,7 +330,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
   have : Primrec (fun b => (graph b (m b + 1))[0]?.map Prod.snd) :=
     option_map (list_getElem?.comp (graph_primrec.comp Primrec.id (succ.comp hm)) (const 0))
       (snd.comp₂ Primrec₂.right)
-  exact option_some_iff.mp <| this.of_eq <| fun b ↦ by
+  exact option_some_iff.mp <| this.of_eq fun b ↦ by
     have graph_eq_map_bindList (i : ℕ) (hi : i ≤ m b + 1) :
         graph b i = (bindList b (m b + 1 - i)).map fun x ↦ (x, f x) := by
       have bindList_eq_nil : bindList b (m b + 1) = [] :=
@@ -341,7 +341,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
         List.eq_nil_iff_forall_not_mem.mpr
           (by intro b' ha'; by_contra; simpa using bindList_m_lt (m b + 1) b' ha')
       have mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
-          mapGraph (bs.map <| fun x => (x, f x)) bs' = bs'.map f := by
+          mapGraph (bs.map fun x => (x, f x)) bs' = bs'.map f := by
         induction bs' with
         | nil => simp [mapGraph]
         | cons b bs' ih =>

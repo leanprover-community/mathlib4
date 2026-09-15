@@ -32,7 +32,7 @@ variable [Zero α]
 and zeroes elsewhere.
 -/
 def single (i : m) (j : n) (a : α) : Matrix m n α :=
-  of <| fun i' j' => if i = i' ∧ j = j' then a else 0
+  of fun i' j' => if i = i' ∧ j = j' then a else 0
 
 section
 variable (i : m) (j : n) (c : α) (i' : m) (j' : n)
@@ -401,7 +401,7 @@ theorem mem_range_scalar_iff_commute_single {M : Matrix n n α} :
 theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (single i j 1) M := by
   refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
-    fun hM => mem_range_scalar_iff_commute_single.mpr <| fun i j _ => hM i j⟩
+    fun hM => mem_range_scalar_iff_commute_single.mpr fun i j _ => hM i j⟩
   rw [scalar_commute_iff]
   simp
 

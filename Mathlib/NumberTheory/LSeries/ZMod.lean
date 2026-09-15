@@ -500,7 +500,7 @@ theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
     exact ht.2.imp_right (fun h ↦ by simp only [← dft_apply_zero, dft_dft, neg_zero, h, smul_zero])
   -- set where we know equality
   have hV : {z | 1 < re z} ∈ 𝓝 2 := (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by simp)
-  have hFG : F =ᶠ[𝓝 2] G := eventually_of_mem hV <| fun t ht ↦ by
+  have hFG : F =ᶠ[𝓝 2] G := eventually_of_mem hV fun t ht ↦ by
     simpa only [F, G, pow_zero, mul_one] using completedLFunction_one_sub_of_one_lt_even hΦ ht
   -- now apply the big hammer to finish
   exact hF.eqOn_of_preconnected_of_eventuallyEq hG hUp h2U hFG hsU
