@@ -267,6 +267,10 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
+@[deprecated assoc +typeChanged (since := "2026-09-15")]
+lemma Category.assoc' {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
+    h ≫ g ≫ f = (h ≫ g) ≫ f := (Category.assoc h g f).symm
+
 /-- Postcompose an equation between morphisms by another morphism -/
 @[to_dual (reorder := w h) whisker_eq
 /-- Precompose an equation between morphisms by another morphism -/]
