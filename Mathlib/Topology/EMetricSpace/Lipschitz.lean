@@ -80,9 +80,11 @@ theorem lipschitzOnWith_empty (K : ℝ≥0) (f : α → β) : LipschitzOnWith K 
 @[simp] lemma locallyLipschitzOn_empty (f : α → β) : LocallyLipschitzOn ∅ f := fun _ ↦ False.elim
 
 /-- Being Lipschitz on a set is monotone w.r.t. that set. -/
+@[gcongr]
 theorem LipschitzOnWith.mono (hf : LipschitzOnWith K f t) (h : s ⊆ t) : LipschitzOnWith K f s :=
   fun _x x_in _y y_in => hf (h x_in) (h y_in)
 
+@[gcongr]
 lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : LocallyLipschitzOn s f :=
   fun x hx ↦ by obtain ⟨K, u, hu, hfu⟩ := hf (h hx); exact ⟨K, u, nhdsWithin_mono _ h hu, hfu⟩
 

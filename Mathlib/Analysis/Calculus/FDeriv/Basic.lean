@@ -200,6 +200,7 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     HasFDerivWithinAt f f' s x :=
   h.mono <| prod_mono_left _ (nhdsWithin_le_iff.mpr hst)
 
+@[gcongr]
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
   h.mono <| by gcongr
@@ -429,6 +430,7 @@ protected theorem HasFDerivWithinAt.fderivWithin
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
   (hxs.eq h h.differentiableWithinAt.hasFDerivWithinAt).symm
 
+@[gcongr]
 theorem DifferentiableWithinAt.mono (h : DifferentiableWithinAt 𝕜 f t x) (st : s ⊆ t) :
     DifferentiableWithinAt 𝕜 f s x := by
   rcases h with ⟨f', hf'⟩
@@ -485,6 +487,7 @@ protected theorem DifferentiableAt.fderivWithin
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
   h.hasFDerivAt.hasFDerivWithinAt.fderivWithin hxs
 
+@[gcongr]
 theorem DifferentiableOn.mono (h : DifferentiableOn 𝕜 f t) (st : s ⊆ t) : DifferentiableOn 𝕜 f s :=
   fun x hx => (h x (st hx)).mono st
 

@@ -76,7 +76,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     use C ^ n
     filter_upwards [eventually_mem_nhdsWithin, this n] with ε hε₀ hε x t ht
     rw [mem_Ioi] at hε₀
-    grw [ht, hn, ENNReal.coe_pow]
+    grw [ht, hn.le, ENNReal.coe_pow]
     exact hε x
   intro n
   induction n with

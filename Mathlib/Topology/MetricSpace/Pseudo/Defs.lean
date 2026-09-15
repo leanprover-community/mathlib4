@@ -554,6 +554,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
+@[gcongr strict]
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
   fun y (yh : dist y x ≤ ε₁) => lt_of_le_of_lt yh h
 
