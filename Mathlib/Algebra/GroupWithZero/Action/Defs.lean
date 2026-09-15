@@ -426,7 +426,7 @@ end DistribMulAction
 section MonoidWithZero
 variable [Group α] [MonoidWithZero β] [MulDistribMulAction α β]
 
-instance MulDistribMulAction.instSMulZeroClass : SMulZeroClass α β where
+instance : SMulZeroClass α β where
   smul_zero g := by
     have h : g • (0 : β) = (g • (0 : β)) * 0 := by
       conv_lhs => rw [show (0 : β) = 0 * (g⁻¹ • (0 : β)) from (zero_mul _).symm]

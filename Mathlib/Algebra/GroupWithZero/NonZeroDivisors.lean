@@ -450,18 +450,18 @@ theorem smul_mem_nonZeroDivisors (g : G) {m : M₀} (hm : m ∈ nonZeroDivisors 
   mem_nonZeroDivisors_iff'.mpr
     ⟨smul_mem_nonZeroDivisorsLeft g hm.1, smul_mem_nonZeroDivisorsRight g hm.2⟩
 
-instance instSMulNonZeroDivisors : SMul G M₀⁰ where
+instance : SMul G M₀⁰ where
   smul g m := ⟨g • m, smul_mem_nonZeroDivisors g m.prop⟩
 
 @[simp]
 theorem nonZeroDivisors.val_smul (g : G) (m : M₀⁰) :
     (g • m : M₀⁰).val = g • m.val := rfl
 
-instance instMulActionNonZeroDivisors : MulAction G M₀⁰ where
+instance : MulAction G M₀⁰ where
   one_smul m := Subtype.val_injective (by simp)
   mul_smul g h m := Subtype.val_injective (by simp [mul_smul])
 
-instance instMulDistribMulActionNonZeroDivisors : MulDistribMulAction G M₀⁰ where
+instance : MulDistribMulAction G M₀⁰ where
   smul_one g := Subtype.val_injective (by simp [MulDistribMulAction.smul_one])
   smul_mul g m n := Subtype.val_injective (by simp [smul_mul'])
 
