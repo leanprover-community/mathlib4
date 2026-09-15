@@ -9,17 +9,17 @@ public import Mathlib.Algebra.Category.ModuleCat.Simple
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
+# Simple modules over division rings
 
-## Simple modules over division rings
 This file contains some results about simple modules over division rings.
 
-# Main results
+## Main results
 
-* `DivisionRing.nonempty_linearEquiv_of_isSimpleModule` : There is an unique simple module over
+* `DivisionRing.nonempty_linearEquiv_of_isSimpleModule` : There is a unique simple module over
   a division ring, up to isomorphism.
 * `isSimpleModule_iff_eq_zero_or_injective` : A module is simple if and only if it is nontrivial
-  and every linear map from it is either zero or injective, this is the module analogue of
-  `RingHom.injective`
+  and every linear map from it is either zero or injective; this is the module analogue of
+  `RingHom.injective`.
 * `IsSimpleModule.obj_of_isEquivalence` : If `M` is a simple module over a ring `R`, and
   `e : ModuleCat R ⥤ ModuleCat S` is an equivalence of categories,
   then `e(M)` is a simple module over `S`.
@@ -35,7 +35,7 @@ universe u v
 
 open CategoryTheory
 
-variable (R S : Type*) [DivisionRing R] [DivisionRing S] (e : ModuleCat R ≌ ModuleCat S)
+variable (S : Type*) [DivisionRing S]
 
 lemma DivisionRing.nonempty_linearEquiv_of_isSimpleModule (N : Type*) [AddCommGroup N]
     [Module S N] [IsSimpleModule S N] : Nonempty (N ≃ₗ[S] S) := by
@@ -45,8 +45,7 @@ lemma DivisionRing.nonempty_linearEquiv_of_isSimpleModule (N : Type*) [AddCommGr
 lemma isSimpleModule_iff_eq_zero_or_injective (R : Type u) (M : Type v) [Ring R] [AddCommGroup M]
     [Module R M] : IsSimpleModule R M ↔ (Nontrivial M ∧ ∀ (N : Type v) [AddCommGroup N]
     [Module R N] (f : M →ₗ[R] N), f = 0 ∨ Function.Injective f) :=
-  ⟨fun hM ↦ ⟨Submodule.nontrivial_iff _|>.1 hM.1.1, fun N _ _ f ↦ hM.1.2 (LinearMap.ker f)|>.elim
-    (fun h ↦ Or.inr <| by rwa [LinearMap.ker_eq_bot] at h) (fun h ↦ Or.inl <|by simp_all)⟩,
+  ⟨fun _ ↦ ⟨IsSimpleModule.nontrivial R M, fun _ _ _ f ↦ f.injective_or_eq_zero.symm⟩,
   fun ⟨hM1, hM2⟩ ↦ isSimpleModule_iff R M|>.2 ⟨fun p ↦ (hM2 (M ⧸ p) p.mkQ).elim
   (fun h ↦ Or.inr <| by simpa [Submodule.ext_iff, LinearMap.ext_iff] using h)
   (fun h ↦ Or.inl <| eq_bot_iff.2 fun x hx ↦ h (by simp [hx]))⟩⟩
@@ -56,4 +55,4 @@ lemma IsSimpleModule.obj_of_isEquivalence
     [e.IsEquivalence] (M : ModuleCat R) [IsSimpleModule R M] :
     IsSimpleModule S (e.obj M) := by
   rw [← simple_iff_isSimpleModule'] at *
-  exact simple_obj e M
+  exact e.simple_obj M
