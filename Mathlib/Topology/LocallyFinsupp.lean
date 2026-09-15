@@ -809,18 +809,10 @@ noncomputable abbrev truncate₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppW
 @[simp] lemma truncate_apply (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) (z : X) :
     D.truncate y hy z = min (D z) y := by simp
 
-/-- Evaluation of the truncation. -/
-@[simp] lemma truncate₁_apply [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) (z : X) :
-    D.truncate₁ z = min (D z) 1 := D.truncate_apply 1 zero_le_one z
-
 /-- Truncation of the zero function. -/
 @[simp] lemma truncate_zero {hy : 0 ≤ y} : (0 : locallyFinsuppWithin U Y).truncate y hy = 0 := by
   ext z
   exact min_eq_left hy
-
-/-- Truncation of the zero function. -/
-lemma truncate₁_zero [One Y] [ZeroLEOneClass Y] :
-    (0 : locallyFinsuppWithin U Y).truncate₁ = 0 := by simp
 
 /-- Truncation decreases functions. -/
 lemma truncate_le (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) : D.truncate y hy ≤ D :=
@@ -831,6 +823,7 @@ lemma truncate₁_le [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
   D.truncate_le 1 zero_le_one
 
 /-- Truncation is monotone. -/
+@[gcongr]
 lemma truncate_mono {D₁ D₂ : locallyFinsuppWithin U Y} (y : Y) (hy : 0 ≤ y) (h : D₁ ≤ D₂) :
     D₁.truncate y hy ≤ D₂.truncate y hy := by
   intro z
@@ -850,16 +843,23 @@ lemma truncate_nonneg {D : locallyFinsuppWithin U Y} (y : Y) (hy : 0 ≤ y) (h :
 lemma truncate₁_nonneg [One Y] [ZeroLEOneClass Y] {D : locallyFinsuppWithin U Y} (h : 0 ≤ D) :
     0 ≤ D.truncate₁ := truncate_nonneg 1 zero_le_one h
 
+/-- Repeated truncation is truncation at minimum. -/
+@[simp] lemma truncate_truncate (D : locallyFinsuppWithin U Y) (y₁ y₂ : Y) (hy₁ : 0 ≤ y₁)
+    (hy₂ : 0 ≤ y₂) :
+    (D.truncate y₁ hy₁).truncate y₂ hy₂ = D.truncate (min y₁ y₂) (le_min hy₁ hy₂) := by
+  ext z
+  simp [min_assoc]
+
 /-- Truncation is idempotent. -/
-@[simp] lemma truncate_truncate (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
+@[simp] lemma truncate_idempotent (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
     (D.truncate y hy).truncate y hy = D.truncate y hy := by
   ext z
   simp only [truncate_apply, min_assoc, min_self]
 
 /-- Truncation is idempotent. -/
-lemma truncate₁_truncate₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
+lemma truncate₁_idempotent [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
     D.truncate₁.truncate₁ = D.truncate₁ :=
-  truncate_truncate D 1 zero_le_one
+  truncate_idempotent D 1 zero_le_one
 
 /-- Truncation does not change the support. -/
 lemma support_truncate (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 < y) :
