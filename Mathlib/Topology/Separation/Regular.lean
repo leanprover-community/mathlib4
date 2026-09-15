@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
@@ -819,16 +820,82 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [connectedComponent_eq_iInter_isClopen b] at h
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set X) (V : Set (ConnectedComponents X)),
-    IsClopen U ∧ Disjoint (connectedComponent a) U ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
-    have h :=
+      IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
+    obtain ⟨fin_a, ha⟩ :=
       (isClosed_connectedComponent (α := X)).isCompact.elim_finite_subfamily_closed
         _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.1) h
-    obtain ⟨fin_a, ha⟩ := h
     -- This clopen and its complement will separate the connected components of `a` and `b`
     set U : Set X := ⋂ (i : { s // IsClopen s ∧ b ∈ s }) (_ : i ∈ fin_a), i
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1
-    exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
+    exact ⟨U, (↑) '' U, hU, ha.inter_eq,
+      subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
   rw [ConnectedComponents.isQuotientMap_coe.isClopen_preimage] at hU
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
-  exact fun h ↦ Set.disjoint_left.mp ha mem_connectedComponent h
+  exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
+
+-- A more general instance is provided below.
+private local instance [T2Space X] [TotallyDisconnectedSpace X] [CompactSpace X] :
+    ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
+  refine fun x ↦ ⟨fun U ↦ ⟨fun hU ↦ ?_, fun ⟨V, ⟨hxV, V_op⟩, hUV⟩ ↦ ?_⟩⟩
+  · have hx : connectedComponent x = {x} :=
+      totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
+    rw [connectedComponent_eq_iInter_isClopen] at hx
+    let N := { s // IsClopen s ∧ x ∈ s }
+    have : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
+    have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
+    have hdir : Directed (· ≥ ·) fun s : N => s.val := by
+      rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
+      exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
+    have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := by grind
+    obtain ⟨⟨s, hs, hs'⟩, hs''⟩ := exists_subset_nhds_of_compactSpace hdir hNcl
+      (mem_nhdsSet_iff_forall.mpr h_nhds)
+    exact ⟨s, ⟨hs, hs'⟩, hs''⟩
+  · rw [mem_nhds_iff]
+    exact ⟨V, hUV, hxV.isOpen, V_op⟩
+
+instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] :
+    ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
+  obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
+  let u : Set s := ((↑) : s → X) ⁻¹' interior s
+  have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
+  lift x to s using interior_subset xs
+  have : CompactSpace s := isCompact_iff_compactSpace.1 comp
+  obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := exists_isClopen_mem_of_isOpen u_open_in_s xs
+  have VisClopen' : IsClopen (((↑) : s → X) '' V) := by
+    refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.isClosed_iff_image_isClosed.1 VisClopen.1,
+      ?_⟩
+    let v : Set u := ((↑) : u → s) ⁻¹' V
+    have : ((↑) : u → X) = ((↑) : s → X) ∘ ((↑) : u → s) := rfl
+    have f0 : IsEmbedding ((↑) : u → X) := IsEmbedding.subtypeVal.comp IsEmbedding.subtypeVal
+    have f1 : IsOpenEmbedding ((↑) : u → X) := by
+      refine ⟨f0, ?_⟩
+      · have : Set.range ((↑) : u → X) = interior s := by
+          rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
+          apply Set.inter_eq_self_of_subset_right interior_subset
+        rw [this]
+        apply isOpen_interior
+    have f2 : IsOpen v := VisClopen.2.preimage continuous_subtype_val
+    have f3 : ((↑) : s → X) '' V = ((↑) : u → X) '' v := by
+      rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_right V_sub]
+    rw [f3]
+    apply f1.isOpenMap v f2
+  use (↑) '' V, VisClopen', by simp [Vx], Subset.trans (by simp) sU
+
+@[deprecated instZeroDimensionalSpaceOfT2SpaceOfTotallyDisconnectedSpaceOfWeaklyLocallyCompactSpace
+(since := "2026-08-28")]
+theorem loc_compact_Haus_tot_disc_of_zero_dim [T2Space X] [TotallyDisconnectedSpace X]
+    [WeaklyLocallyCompactSpace X] : IsTopologicalBasis {s : Set X | IsClopen s} := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis]
+  infer_instance
+
+theorem totallyDisconnectedSpace_iff_totallySeparatedSpace
+    [T2Space X] [WeaklyLocallyCompactSpace X] :
+    TotallyDisconnectedSpace X ↔ TotallySeparatedSpace X :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+@[deprecated (since := "2026-08-28")]
+alias loc_compact_t2_tot_disc_iff_tot_sep := totallyDisconnectedSpace_iff_totallySeparatedSpace
