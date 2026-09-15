@@ -321,7 +321,7 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
 
-@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G) G
+@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G)
 
 initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)

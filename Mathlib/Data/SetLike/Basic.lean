@@ -30,7 +30,7 @@ and various extensionality and simp lemmas. The order induced by set inclusion i
 called `PartialOrder.ofSetlike`: this is not an instance for flexibility in choosing orders.
 The class `IsConcreteLE` abstractly states the order is equal to that induced by set inclusion;
 an instance is automatically available when defining a `PartialOrder` as
-`.ofSetLike (MySubobject X) X`.
+`ofSetLike (MySubobject X)`.
 
 A typical subobject should be declared as:
 ```
@@ -45,7 +45,7 @@ variable {X : Type*} [ObjectTypeclass X] {x : X}
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
 
-instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X) X
+instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X)
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 
@@ -222,7 +222,7 @@ class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
 
 section default
 
-variable (A B : Type*) [SetLike A B]
+variable (A : Type*) {B : Type*} [SetLike A B]
 
 /-- The order induced from a `SetLike` instance by inclusion.
 
@@ -232,8 +232,8 @@ of `IsConcreteLE`.
 @[reducible] def LE.ofSetLike : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
 
-instance : letI := LE.ofSetLike A B; IsConcreteLE A B :=
-  letI := LE.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
+instance : letI := LE.ofSetLike A; IsConcreteLE A B :=
+  letI := LE.ofSetLike A; { coe_subset_coe' := Iff.rfl }
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
 
@@ -241,8 +241,8 @@ A partial order defined as `.ofSetLike` will automatically make available an ins
 of `IsConcreteLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike : PartialOrder A where
-  __ := LE.ofSetLike A B
-  lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
+  __ := LE.ofSetLike A
+  lt s t := letI := LE.ofSetLike A; s ≤ t ∧ ¬t ≤ s
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
 end default
