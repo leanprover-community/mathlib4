@@ -870,6 +870,24 @@ theorem comap_comap (A : ValuationSubring J) (g : L →+* J) (f : K →+* L) :
 
 end
 
+section IsTrivialOn
+
+variable {k : Type*} [Field k] [Algebra k K]
+
+theorem algebraMap_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (a : k) :
+    algebraMap k K a ∈ A :=
+  (A.valuation_le_one_iff _).mp (Valuation.IsTrivialOn.valuation_algebraMap_le_one A.valuation a)
+
+/-- If `A.valuation` is trivial on `k`, then the image of `k` under `algebraMap k K` lies in `A`,
+turning `A` into a `k`-algebra. -/
+instance algebraOfIsTrivialOn [A.valuation.IsTrivialOn k] : Algebra k A :=
+  ((algebraMap k K).codRestrict A (A.algebraMap_mem_of_isTrivialOn)).toAlgebra
+
+instance isScalarTowerOfIsTrivialOn [A.valuation.IsTrivialOn k] : IsScalarTower k A K :=
+  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+end IsTrivialOn
+
 end ValuationSubring
 
 namespace Valuation
@@ -882,5 +900,11 @@ theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
 theorem mem_maximalIdeal_iff {a : v.valuationSubring} :
     a ∈ IsLocalRing.maximalIdeal (v.valuationSubring) ↔ v a < 1 :=
   Integer.not_isUnit_iff_valuation_lt_one
+
+/-- If `v : Valuation K Γ` is trivial on `A`, then so is the valuation of its valuation subring. -/
+instance isTrivialOn_valuationSubring_valuation (A : Type*) [CommSemiring A] [Algebra A K]
+    (v : Valuation K Γ) [IsTrivialOn A v] :
+    IsTrivialOn A v.valuationSubring.valuation :=
+  v.isEquiv_valuation_valuationSubring.isTrivialOn inferInstance
 
 end Valuation
