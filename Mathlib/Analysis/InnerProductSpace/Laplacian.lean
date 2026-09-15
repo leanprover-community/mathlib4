@@ -365,6 +365,12 @@ theorem laplacian_smul_nhds (v : 𝕜) (h : ContDiffAt ℝ 2 f x) :
   filter_upwards [h.eventually (by simp)] with a ha
   simp [laplacian_smul v ha]
 
+/-- The Laplacian of `f ∘ (c • ·)`: each of the two derivatives contributes a factor `c`. -/
+theorem laplacian_comp_smul (c : ℝ) (hf : ContDiff ℝ 2 f) :
+    Δ (f <| c • ·) x = c ^ 2 • Δ f (c • x) := by
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_comp_const_smul c hf,
+    Finset.smul_sum]
+
 /-!
 ## Commutativity of Δ with Linear Operators
 

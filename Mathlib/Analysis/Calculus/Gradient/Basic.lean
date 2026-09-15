@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
@@ -303,6 +304,19 @@ lemma inner_gradient_right : ⟪x, ∇ f y⟫ = conj (fderiv 𝕜 f y x) := by
   rw [← inner_conj_symm, inner_gradient_left]
 
 end Inner
+
+section Comp
+
+/-! ### Composition with a dilation -/
+
+/-- The gradient of `f ∘ (c • ·)`. The derivative picks up a factor `c`
+(`fderiv_comp_smul`), and the Riesz isomorphism is conjugate linear, so the gradient
+picks up `conj c`. No differentiability is assumed: for `c = 0` both sides vanish. -/
+theorem gradient_comp_smul (c : 𝕜) : ∇ (f <| c • ·) x = conj c • ∇ f (c • x) := by
+  have h : fderiv 𝕜 (f <| c • ·) x = c • fderiv 𝕜 f (c • x) := fderiv_comp_smul c
+  rw [gradient, gradient, h, map_smulₛₗ]
+
+end Comp
 
 section congr
 
