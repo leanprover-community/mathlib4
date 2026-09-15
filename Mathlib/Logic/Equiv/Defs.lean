@@ -5,10 +5,10 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Unique
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
-public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Simps
 
 
@@ -98,6 +98,7 @@ abbrev Equiv.Perm (α : Sort*) :=
 
 namespace Equiv
 
+@[macro_inline]
 instance : EquivLike (α ≃ β) α β where
   coe := Equiv.toFun
   inv := Equiv.invFun

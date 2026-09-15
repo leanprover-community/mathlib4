@@ -28,7 +28,7 @@ namespace GrpCat
 -/
 @[simps]
 def toAddGrp : GrpCat ⥤ AddGrpCat where
-  obj X := AddGrpCat.of (Additive X)
+  obj X := ↧(Additive X)
   map {_} {_} f := AddGrpCat.ofHom f.hom.toAdditive
 
 end GrpCat
@@ -39,7 +39,7 @@ namespace CommGrpCat
 -/
 @[simps]
 def toAddCommGrp : CommGrpCat ⥤ AddCommGrpCat where
-  obj X := AddCommGrpCat.of (Additive X)
+  obj X := ↧(Additive X)
   map {_} {_} f := AddCommGrpCat.ofHom f.hom.toAdditive
 
 end CommGrpCat
@@ -50,7 +50,7 @@ namespace AddGrpCat
 -/
 @[simps]
 def toGrp : AddGrpCat ⥤ GrpCat where
-  obj X := GrpCat.of (Multiplicative X)
+  obj X := ↧(Multiplicative X)
   map {_} {_} f := GrpCat.ofHom f.hom.toMultiplicative
 
 end AddGrpCat
@@ -61,7 +61,7 @@ namespace AddCommGrpCat
 -/
 @[simps]
 def toCommGrp : AddCommGrpCat ⥤ CommGrpCat where
-  obj X := CommGrpCat.of (Multiplicative X)
+  obj X := ↧(Multiplicative X)
   map {_} {_} f := CommGrpCat.ofHom f.hom.toMultiplicative
 
 end AddCommGrpCat

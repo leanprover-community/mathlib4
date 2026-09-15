@@ -453,7 +453,7 @@ variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
 
 theorem interior_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     interior s =ᵐ[μ] s :=
-  interior_subset.eventuallyLE.antisymm <| subset_closure.eventuallyLE.trans (ae_le_set.2 h)
+  interior_subset.eventuallySubset.antisymm <| subset_closure.eventuallySubset.trans (ae_le_set.2 h)
 
 theorem measure_interior_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (interior s) = μ s :=
@@ -465,7 +465,8 @@ theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : �
 
 theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     closure s =ᵐ[μ] s :=
-  ((ae_le_set.2 h).trans interior_subset.eventuallyLE).antisymm <| subset_closure.eventuallyLE
+  ((ae_le_set.2 h).trans interior_subset.eventuallySubset).antisymm <|
+    subset_closure.eventuallySubset
 
 theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (closure s) = μ s :=

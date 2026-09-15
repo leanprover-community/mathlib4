@@ -503,7 +503,12 @@ structure Prefunctor (C : Type u) [CategoryStruct C] (D : Type v) [CategoryStruc
   /-- The action of a (pre)functor on edges/arrows/morphisms. -/
   map : ∀ {X Y : C}, (X ⟶ Y) → (obj X ⟶ obj Y)
 
-@[simps]
+/--
+trace: [simps] Adding `IdentityPreunctor_obj` :
+      ∀ (x : Type u), IdentityPreunctor.obj x = 5
+-/
+#guard_msgs in
+@[simps?]
 def IdentityPreunctor : Prefunctor (Type u) Nat where
   obj _ := 5
   map _ := ⟨⟨rfl⟩⟩
