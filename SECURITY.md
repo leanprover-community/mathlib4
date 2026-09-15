@@ -6,7 +6,7 @@ Thank you for doing your part to keep mathlib secure by reporting issues in a re
 
 If you believe you have found a security vulnerability in mathlib, please report it using GitHub's [private vulnerability reporting](https://github.com/leanprover-community/mathlib4/security/advisories/new). If you do not have a GitHub account, you may also send an email to <security@mathlib.org>.
 Please do not report security issues in public settings, e.g. GitHub or Zulip.
-If you have questions about this policy, please ask on Zulip. **edit in specific thread after announcement**
+If you have questions about this policy, please ask in [this Zulip thread](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Security.20policy/with/624357023).
 
 Please include sufficient information to help us to understand the issue, including (as much as you can provide of) the following:
 
