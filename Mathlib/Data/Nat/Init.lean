@@ -234,8 +234,7 @@ lemma leRecOn_succ_left {motive : ℕ → Sort*} {n m}
 @[deprecated (since := "2026-03-05")] alias strongRecOn'_beta := Nat.strongRec_eq
 
 /-- Induction principle starting at a non-zero number.
-To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
-for `induction'`).
+To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction`.
 
 This is an alias of `Nat.leRec`, specialized to `Prop`. -/
 @[elab_as_elim]
