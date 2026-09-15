@@ -21,7 +21,7 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 public section
 
-open Nat Set Filter Topology
+open MeasureTheory Nat Set Filter Topology
 
 local notation "γ" => Real.eulerMascheroniConstant
 
@@ -92,6 +92,16 @@ lemma hasDerivAt_Gamma_nat (n : ℕ) :
 lemma eulerMascheroniConstant_eq_neg_deriv : γ = -deriv Gamma 1 := by
   rw [show (1 : ℝ) = ↑(0 : ℕ) + 1 by simp, deriv_Gamma_nat 0]
   simp
+
+/-- The Euler–Mascheroni constant as an integral: `γ = -∫₀^∞ log t · e^{-t} dt`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log :
+    γ = -∫ t in Ioi 0, log t * exp (-t) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log]
+
+/-- An integral representation of the Euler–Mascheroni constant, valid for any `s > 1`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log_log {s : ℝ} (hs : 1 < s) :
+    γ = -((s - 1) * (∫ t in Ioi 1, log (log t) * t ^ (-s)) + log (s - 1)) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log_log hs]
 
 lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
