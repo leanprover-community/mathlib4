@@ -134,6 +134,15 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
       let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
         (ifUnchanged := .error)
+  let s ← saveState
+  try
+    evalTactic <|← `(tactic| grind)
+    s.restore (restoreInfo := true)
+    logInfo m!"[wlog 1] grind succeeded"
+  catch _ =>
+    s.restore (restoreInfo := true)
+    logInfo m!"[wlog 0] grind failed"
+
 
 /-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
 requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
