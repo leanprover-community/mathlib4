@@ -201,6 +201,14 @@ theorem MeromorphicOn.circleIntegrable_posLog_norm (hf : MeromorphicOn f (sphere
   · apply hf.circleIntegrable_log_norm.const_mul
   · apply hf.circleIntegrable_log_norm.abs.const_mul
 
+/--
+If `f` is meromorphic, then `log⁺ ‖f ·‖` is circle integrable over every circle.
+-/
+@[fun_prop]
+theorem Meromorphic.circleIntegrable_posLog_norm {f : ℂ → E} (hf : Meromorphic f) {c : ℂ} {R : ℝ} :
+    CircleIntegrable (log⁺ ‖f ·‖) c R :=
+  hf.meromorphicOn.circleIntegrable_posLog_norm
+
 @[deprecated (since := "2026-03-28")]
 alias circleIntegrable_posLog_norm_meromorphicOn := MeromorphicOn.circleIntegrable_posLog_norm
 
