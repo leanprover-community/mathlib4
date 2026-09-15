@@ -428,6 +428,17 @@ theorem sin_add_le_sin_add_sin {x y : ℝ} (hx : 0 ≤ sin x) (hy : 0 ≤ sin y)
     sin (x + y) ≤ sin x + sin y := by
   grw [sin_add, cos_le_one, cos_le_one, mul_one, one_mul]
 
+theorem abs_sin_add_le (x y : ℝ) : |sin (x + y)| ≤ |sin x| + |sin y| := by
+  grw [sin_add, abs_add_le, abs_mul, abs_mul, abs_cos_le_one, abs_cos_le_one, mul_one, one_mul]
+
+theorem abs_sin_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℝ) :
+    |sin (∑ i ∈ s, f i)| ≤ ∑ i ∈ s, |sin (f i)| := by
+  classical
+  induction s using Finset.induction_on' with
+  | empty => simp
+  | insert i _ hi ht hit h =>
+    grw [Finset.sum_insert hit, abs_sin_add_le, h, Finset.sum_insert hit]
+
 theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : sin x < 0 :=
   neg_pos.1 <| sin_neg x ▸ sin_pos_of_pos_of_lt_pi (neg_pos.2 hx0) (neg_lt.1 hpx)
 
