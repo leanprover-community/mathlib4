@@ -93,6 +93,31 @@ lemma sum_smul_dirac_singleton [MeasurableSingletonClass α] {f : α → ℝ≥0
     sum (fun b : α ↦ f b • dirac b) {a} = f a := by
   simp +contextual [tsum_eq_single a]
 
+/-- The real mass of a singleton in a sum of weighted Dirac measures is its weight. -/
+lemma sum_smul_dirac_real_singleton [MeasurableSingletonClass α] {p : α → ℝ≥0} {a : α} :
+    (sum fun b ↦ p b • dirac b).real {a} = p a := by
+  simp only [measureReal_def, ← coe_nnreal_smul, sum_smul_dirac_singleton, ENNReal.coe_toReal]
+
+/-- The real total mass of a sum of weighted Dirac measures over a finite type is the sum of
+its weights. -/
+lemma sum_smul_dirac_real_univ [Fintype α] {p : α → ℝ≥0} :
+    (sum fun a ↦ p a • dirac a).real univ = ∑ a, (p a : ℝ) := by
+  simp [measureReal_def, ENNReal.toReal_sum]
+
+/-- Absolute continuity of sums of weighted Dirac measures holds exactly when `p` vanishes
+wherever `q` does. -/
+lemma absolutelyContinuous_sum_smul_dirac_iff [MeasurableSingletonClass α] {p q : α → ℝ≥0∞} :
+    (sum fun x ↦ p x • dirac x) ≪ (sum fun x ↦ q x • dirac x) ↔
+      ∀ x, q x = 0 → p x = 0 := by
+  constructor
+  · intro h x
+    simpa only [sum_smul_dirac_singleton] using (h (s := {x}))
+  · intro hpq
+    refine absolutelyContinuous_sum_left fun x ↦ absolutelyContinuous_sum_right x ?_
+    by_cases hq : q x = 0
+    · simp [hpq x hq]
+    · exact (AbsolutelyContinuous.rfl.smul_left (p x)).smul_right hq
+
 /-- A measure on a countable type is a sum of Dirac measures.
 If `α` has measurable singletons, `sum_smul_dirac` gives a simpler sum. -/
 lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
