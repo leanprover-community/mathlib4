@@ -72,7 +72,7 @@ theorem congr_app {α β : F ⟶ G} (h : α = β) (X : C) : α.app X = β.app X 
 @[simp, grind =]
 theorem id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
 
-@[simp, grind _=_, to_dual self, reassoc]
+@[simp, grind _=_, to_dual self, map (attr := reassoc)]
 theorem comp_app {F G H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 

@@ -133,7 +133,7 @@ lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
     (pullback φ).map (freeMap f) ≫ (pullbackObjFreeIso φ J).hom =
       (pullbackObjFreeIso φ I).hom ≫ freeMap f :=
   Cofan.IsColimit.hom_ext (isColimitCofanMkObjOfIsColimit (pullback φ) _ _
-    (isColimitFreeCofan (R := S) I)) _ _ (fun i ↦ by simp [← Functor.map_comp_assoc])
+    (isColimitFreeCofan (R := S) I)) _ _ (fun i ↦ by simp)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `freeFunctor ⋙ pullback φ ≅ freeFunctor` for a
