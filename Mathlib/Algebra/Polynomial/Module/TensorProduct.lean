@@ -6,7 +6,7 @@ Authors: George McNinch
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Lift
 
 /-!
 # PolynomialModule is isomorphic to a tensor product
