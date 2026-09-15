@@ -218,18 +218,17 @@ theorem factorial_mul_ascPochhammer (S : Type*) [Semiring S] (r n : ℕ) :
     (r ! : S) * (ascPochhammer S n).eval (r + 1 : S) = (r + n)! := by
   rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
-theorem ascPochhammer_nat_eval_succ (r : ℕ) :
-    ∀ n : ℕ, n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n
-  | 0 => by
-    by_cases h : r = 0
-    · simp only [h, zero_mul, zero_add]
-    · simp only [ascPochhammer_eval_zero, zero_mul, ite_eq_right h, mul_zero]
-  | k + 1 => by simp only [ascPochhammer_nat_eq_ascFactorial, Nat.succ_ascFactorial, add_right_comm]
+variable {S} in
+theorem ascPochhammer_eval_succ (r : ℕ) (n : S) :
+    n * (ascPochhammer S r).eval (n + 1) = (ascPochhammer S r).eval n * (n + r) := by
+  induction r with
+  | zero => simp
+  | succ r ih => grind [ascPochhammer_succ_eval]
 
-theorem ascPochhammer_eval_succ (r n : ℕ) :
-    (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
-    (n + r) * (ascPochhammer S r).eval (n : S) :=
-  mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
+@[deprecated ascPochhammer_eval_succ (since := "2026-08-16")]
+theorem ascPochhammer_nat_eval_succ (r : ℕ) (n : ℕ) :
+    n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n := by
+  simp [ascPochhammer_eval_succ, mul_comm]
 
 namespace Nat
 variable (a b : ℕ)
