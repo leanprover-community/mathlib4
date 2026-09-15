@@ -3720,6 +3720,10 @@ public import Mathlib.Combinatorics.Matroid.Sum
 public import Mathlib.Combinatorics.Nullstellensatz
 public import Mathlib.Combinatorics.Optimization.ValuedCSP
 public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.Combinatorics.QAnalog.Basic
+public import Mathlib.Combinatorics.QAnalog.Binomial
+public import Mathlib.Combinatorics.QAnalog.Counting
+public import Mathlib.Combinatorics.QAnalog.Subspace
 public import Mathlib.Combinatorics.Quiver.Arborescence
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Cast
