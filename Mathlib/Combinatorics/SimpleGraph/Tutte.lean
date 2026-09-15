@@ -60,7 +60,7 @@ variable [Finite V]
 lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u) :
     G.IsTutteViolator u := by
   simp only [IsTutteViolator] at *
-  have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
+  have := ncard_oddComponents_mono (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `lia` closed this goal.
@@ -138,7 +138,7 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
 
 theorem IsTutteViolator.empty (hodd : Odd (Nat.card V)) : G.IsTutteViolator ∅ := by
   rw [IsTutteViolator, Set.ncard_empty]
-  exact ((odd_ncard_oddComponents _).mpr <| by simpa using hodd).pos
+  exact (odd_ncard_oddComponents.mpr <| by simpa using hodd).pos
 
 /-- Proves the necessity part of Tutte's theorem -/
 lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfectMatching)
