@@ -37,8 +37,8 @@ lemma minpolyDiv_spec :
   delta minpolyDiv
   rw [mul_comm, mul_divByMonic_eq_iff_isRoot, IsRoot, eval_map_algebraMap, minpoly.aeval]
 
-lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
-    algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
+lemma coeff_minpolyDiv (i) : (minpolyDiv R x).coeff i =
+    algebraMap R S ((minpoly R x).coeff (i + 1)) + (minpolyDiv R x).coeff (i + 1) * x := by
   rw [← coeff_map, ← minpolyDiv_spec R x]; simp [mul_sub]
 
 variable {R x}
@@ -82,9 +82,9 @@ lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
 
 
 lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
-    coeff (minpolyDiv R x) i ∈ R[x] := by
+    (minpolyDiv R x).coeff i ∈ R[x] := by
   by_contra H
-  have : ∀ j, coeff (minpolyDiv R x) (i + j) ∉ R[x] := by
+  have : ∀ j, (minpolyDiv R x).coeff (i + j) ∉ R[x] := by
     intro j; induction j with
     | zero => exact H
     | succ j IH =>
@@ -133,7 +133,7 @@ lemma minpolyDiv_eq_of_isIntegrallyClosed [IsDomain R] [IsIntegrallyClosed R] [I
     ← minpoly.isIntegrallyClosed_eq_field_fractions' _ hx]
 
 lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R x)) :
-    coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) - x ^ i ∈
+    (minpolyDiv R x).coeff (natDegree (minpolyDiv R x) - i) - x ^ i ∈
       Submodule.span R ((x ^ ·) '' Set.Iio i) := by
   induction i with
   | zero => simp [(minpolyDiv_monic hx).leadingCoeff]
@@ -154,7 +154,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
       exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ x j⟩
 
 lemma span_coeff_minpolyDiv :
-    Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
+    Submodule.span R (Set.range (minpolyDiv R x).coeff) =
       Subalgebra.toSubmodule (R[x]) := by
   nontriviality S
   apply le_antisymm
@@ -167,8 +167,8 @@ lemma span_coeff_minpolyDiv :
     intro i
     induction i using Nat.strongRecOn with | ind i hi => ?_
     intro hi'
-    have : coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) ∈
-        Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
+    have : (minpolyDiv R x).coeff (natDegree (minpolyDiv R x) - i) ∈
+        Submodule.span R (Set.range (minpolyDiv R x).coeff) :=
       Submodule.subset_span (Set.mem_range_self _)
     rw [Set.mem_preimage, SetLike.mem_coe, ← Submodule.sub_mem_iff_right _ this]
     refine SetLike.le_def.mp ?_ (coeff_minpolyDiv_sub_pow_mem_span hx ?_)

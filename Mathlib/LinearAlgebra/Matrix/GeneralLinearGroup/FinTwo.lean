@@ -235,9 +235,9 @@ lemma fixpointPolynomial_eq_zero_iff {g : GL (Fin 2) R} :
   rw [fixpointPolynomial]
   constructor
   · refine fun hP ↦ ⟨g 0 0, ?_⟩
-    have hb : g 0 1 = 0 := by simpa using congr_arg (coeff · 0) hP
-    have hc : g 1 0 = 0 := by simpa using congr_arg (coeff · 2) hP
-    have hd : g 1 1 = g 0 0 := by simpa [sub_eq_zero] using congr_arg (coeff · 1) hP
+    have hb : g 0 1 = 0 := by simpa using congr_arg (·.coeff 0) hP
+    have hc : g 1 0 = 0 := by simpa using congr_arg (·.coeff 2) hP
+    have hd : g 1 1 = g 0 0 := by simpa [sub_eq_zero] using congr_arg (·.coeff 1) hP
     ext i j
     fin_cases i <;>
     fin_cases j <;>

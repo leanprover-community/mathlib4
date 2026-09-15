@@ -25,6 +25,8 @@ This file is a place for results related to nilpotency in (single-variable) poly
 
 public section
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 
 variable {R : Type*} {r : R}
@@ -138,7 +140,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
   constructor
   · refine .of_mul_eq_one (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
-    rwa [hQ, coeff_one_zero] at h
+    rwa [hQ, AddMonoidAlgebra.coeff_one_zero] at h
   · intro n hn
     rw [nilpotent_iff_mem_prime]
     intro I hI
@@ -190,9 +192,6 @@ theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
 
 instance : IsLocalHom (C : _ →+* Polynomial R) where
   map_nonunit := by simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
-
-instance : IsLocalHom (algebraMap R (Polynomial R)) :=
-  inferInstanceAs (IsLocalHom C)
 
 end CommRing
 

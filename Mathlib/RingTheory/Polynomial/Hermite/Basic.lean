@@ -40,7 +40,7 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 

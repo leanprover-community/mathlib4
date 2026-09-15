@@ -49,12 +49,12 @@ def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
       | monomial m b => ext; simp [Polynomial.monomial_mul_monomial, add_comm]
 
 @[simp]
-lemma mapCoeffs_apply (p : A[X]) (i) : (d.mapCoeffs p).coeff i = d (coeff p i) := rfl
+lemma mapCoeffs_apply (p : A[X]) (i) : (d.mapCoeffs p).coeff i = d (p.coeff i) := rfl
 
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
     d.mapCoeffs (monomial n x) = .single A n (d x) := by
-  ext; simp [coeff_monomial, apply_ite d, Finsupp.single_apply]
+  ext; simp [apply_ite d, Finsupp.single_apply]
 
 @[simp]
 lemma mapCoeffs_X : d.mapCoeffs (X : A[X]) = 0 := by
@@ -105,7 +105,7 @@ def mapCoeffs : Derivation ℤ A[X] A[X] :=
 
 @[simp]
 lemma coeff_mapCoeffs (p : A[X]) (i) :
-    coeff (mapCoeffs p) i = (coeff p i)′ := rfl
+    (mapCoeffs p).coeff i = (p.coeff i)′ := rfl
 
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
