@@ -49,7 +49,7 @@ is contained in `ℝ≥0`. Note that this class includes the data
 of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`. -/
 class RankLeOne (v : Valuation R Γ₀) where
   /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
-  hom' (v) : ValueGroup₀ (.ofClass v) →*₀ ℝ≥0
+  hom' (v) : v.ValueGroup₀ →*₀ ℝ≥0
   strictMono' : StrictMono hom'
 
 /-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
@@ -59,15 +59,15 @@ class RankOne (v : Valuation R Γ₀) extends RankLeOne v, Valuation.IsNontrivia
 open WithZero
 
 lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
-    Nonempty v.RankOne ↔ MulArchimedean (ValueGroup₀ (.ofClass v)) := by
+    Nonempty v.RankOne ↔ MulArchimedean v.ValueGroup₀ := by
   constructor
   · intro h
     obtain hv := Nonempty.some h
     exact MulArchimedean.comap hv.hom'.toMonoidHom hv.strictMono'
   · intro _
     obtain ⟨f, hf⟩ :=
-      Archimedean.exists_orderAddMonoidHom_real_injective (Additive (ValueGroup₀ (.ofClass v))ˣ)
-    let e := AddMonoidHom.toMultiplicativeRight (α := (ValueGroup₀ (.ofClass v))ˣ) (β := ℝ) f
+      Archimedean.exists_orderAddMonoidHom_real_injective (Additive v.ValueGroup₀ˣ)
+    let e := AddMonoidHom.toMultiplicativeRight (α := v.ValueGroup₀ˣ) (β := ℝ) f
     have he : StrictMono e := by
       simp only [AddMonoidHom.coe_toMultiplicativeRight, AddMonoidHom.coe_coe, e]
       -- toAdd_strictMono is already in an applied form, do defeq abuse instead
@@ -103,7 +103,7 @@ lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := IsNontrivial.exists_val
 
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
   `x = 0`. -/
-theorem zero_of_hom_zero {x : ValueGroup₀ (.ofClass v)} (hx : hom v x = 0) : x = 0 := by
+theorem zero_of_hom_zero {x : v.ValueGroup₀} (hx : hom v x = 0) : x = 0 := by
   refine (eq_of_le_of_not_lt (zero_le (a := x)) fun h_lt ↦ ?_).symm
   have hs := strictMono v h_lt
   rw [map_zero, hx] at hs
@@ -111,7 +111,7 @@ theorem zero_of_hom_zero {x : ValueGroup₀ (.ofClass v)} (hx : hom v x = 0) : x
 
 /-- If `v` is a rank one valuation, then `x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
-theorem hom_eq_zero_iff {x : ValueGroup₀ (.ofClass v)} : hom v x = 0 ↔ x = 0 :=
+theorem hom_eq_zero_iff {x : v.ValueGroup₀} : hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
 
 /-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : Valuation R Γ₀`. -/
@@ -149,7 +149,7 @@ theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom
   obtain ⟨x, h⟩ := NNReal.exists_lt_of_strictMono (RankOne.strictMono v.restrict) hγ_pos
   obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
   refine ⟨k, ?_, ?_⟩
-  · simp only [restrict₀_apply, MonoidWithZeroHom.coe_ofClass, restrict_def, map_eq_zero] at hk
+  · simp only [restrict₀_apply, map_eq_zero] at hk
     by_contra h0
     rw [dite_eq_left (by simp [h0]), eq_comm] at hk
     simp at hk
@@ -178,7 +178,7 @@ def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
 @[instance_reducible]
-def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ (.ofClass v))ˣ) : RankOne v where
+def rankOne_of_nontrivial (H : Nontrivial v.ValueGroup₀ˣ) : RankOne v where
   exists_val_nontrivial := by
     by_contra! H'
     rw [nontrivial_iff_exists_ne 1] at H
@@ -186,20 +186,20 @@ def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ (.ofClass v))ˣ) : Rank
     obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
     have h0 : v k ≠ 0 := by
       apply_fun embedding at hk
-      simp only [embedding_restrict₀, MonoidWithZeroHom.coe_ofClass] at hk
+      simp only [embedding_restrict₀, coe_toMonoidWithZeroHom] at hk
       simp [hk]
     have h1 : v k ≠ 1 := by
       apply_fun embedding at hk
-      simp only [embedding_restrict₀, MonoidWithZeroHom.coe_ofClass] at hk
+      simp only [embedding_restrict₀, coe_toMonoidWithZeroHom] at hk
       apply_fun Units.val at hx using
-          Units.val_injective (α := (MonoidWithZeroHom.ofClass v).ValueGroup₀)
+          Units.val_injective (α := v.ValueGroup₀)
       intro h
-      apply_fun embedding at hx using embedding_injective (f := .ofClass v)
+      apply_fun embedding at hx using embedding_injective (f := (v : K →*₀ Γ₀))
       simp [← hk, h] at hx
     exact h1 (H' k h0)
 
 theorem exists_val_lt {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v] :
-    Subsingleton ((ValueGroup₀ (.ofClass v))ˣ) ∨
+    Subsingleton (v.ValueGroup₀ˣ) ∨
       ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom' v) (v.restrict x) < γ := by
   simp only [ne_eq, or_iff_not_imp_left, not_subsingleton_iff_nontrivial]
   exact fun H ↦ (rankOne_of_nontrivial v H).exists_val_lt
@@ -249,7 +249,7 @@ lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
   · intro h
     by_cases H : IsNontrivial R
     · rw [isNontrivial_iff_isNontrivial (valuation R)] at H
-      have h' : MulArchimedean (ValueGroup₀ (.ofClass (valuation R))) :=
+      have h' : MulArchimedean (valuation R).ValueGroup₀ :=
         MulArchimedean.comap embedding.toMonoidHom embedding_strictMono
       rw [← (valuation R).nonempty_rankOne_iff_mulArchimedean] at h'
       obtain ⟨f⟩ := h'
