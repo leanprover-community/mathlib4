@@ -80,6 +80,20 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
 
 variable {n : ℕ}
 
+/-- `l` split at `k` in one pass instead of 2.
+Core defines this function as the `go` of `List.splitRevAt` for merge sort and does not export it.
+`List.splitAt` is optimised for compilation and tail-recursive, but requires a reverse and therefore
+two traversals as well. -/
+def splitRevAt : List α → ℕ → List α → List α × List α
+  | x :: xs, k + 1, acc => splitRevAt xs k (x :: acc)
+  | xs, _, acc => (acc, xs)
+
+theorem splitRevAt_eq (l : List α) (k : ℕ) (acc : List α) :
+    splitRevAt l k acc = ((l.take k).reverse ++ acc, l.drop k) := by
+  induction l generalizing k acc with
+  | nil => simp [splitRevAt]
+  | cons x xs ih => cases k <;> simp [splitRevAt, ih]
+
 /-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
 beyond the pivot list (all 0). -/
 def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) → Prop
@@ -87,7 +101,9 @@ def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) 
   | [], row :: rows => row = List.replicate n 0 ∧ IsPivotedList [] rows
   | _ :: _, [] => False
   | k :: ks, row :: rows =>
-    row.getD k 0 ≠ 0 ∧ row.take k = List.replicate k 0 ∧ IsPivotedList ks rows
+    match splitRevAt row k [] with
+    | (_, []) => False
+    | (zs, d :: _) => d ≠ 0 ∧ zs = List.replicate k 0 ∧ IsPivotedList ks rows
 
 theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
     (h : IsPivotedList cols rows) (i : ℕ) :
@@ -107,14 +123,14 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
     cases rows with
     | nil => simp [IsPivotedList] at h
     | cons row rows =>
-      obtain ⟨hd, hz, hrest⟩ := h
       cases i with
       | zero =>
         rw [List.getD_cons_zero]
-        refine ⟨fun j hj ↦ ?_, by grind⟩
+        have := List.getElem?_drop (xs := row) (i := k) (j := 0)
+        refine ⟨fun j hj ↦ ?_, by grind [IsPivotedList, splitRevAt_eq]⟩
         have := List.getElem?_take_of_lt (l := row) (hj k (by simp))
-        grind
-      | succ i => grind [List.getD_cons_succ]
+        grind [IsPivotedList, splitRevAt_eq, List.reverse_eq_iff, List.reverse_replicate]
+      | succ i => grind [IsPivotedList, splitRevAt_eq, List.getD_cons_succ]
 
 /-- The pivot function of the list of pivot columns: the column of row `i`, and `⊤` for a row
 beyond the list. -/
