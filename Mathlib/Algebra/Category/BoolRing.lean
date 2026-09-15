@@ -55,19 +55,15 @@ variable {R} in
 /-- The type of morphisms in `BoolRing`. -/
 @[ext]
 structure Hom (R S : BoolRing) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category BoolRing where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BoolRing (· →+* ·) where
   hom f := f.hom'
   ofHom f := ⟨f⟩
@@ -86,11 +82,9 @@ lemma hom_ext {R S : BoolRing} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
 
 instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
   forget₂ :=
-    { obj := fun R ↦ CommRingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ CommRingCat.ofHom f.hom }
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where
@@ -115,12 +109,12 @@ instance {R : Type u} [BooleanRing R] :
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
-  forget₂.obj X := .of (AsBoolAlg X)
+  forget₂.obj X := ↧(AsBoolAlg X)
   forget₂.map f := BoolAlg.ofHom f.hom.asBoolAlg
 
 @[simps]
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
-  forget₂.obj X := .of (AsBoolRing X)
+  forget₂.obj X := ↧(AsBoolRing X)
   forget₂.map f := BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f.hom
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/
@@ -132,3 +126,13 @@ def boolRingCatEquivBoolAlg : BoolRing ≌ BoolAlg where
     (RingEquiv.asBoolRingAsBoolAlg X).symm) fun {_ _} _ => rfl
   counitIso := NatIso.ofComponents (fun X => BoolAlg.Iso.mk <|
     OrderIso.asBoolAlgAsBoolRing X) fun {_ _} _ => rfl
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `BoolRing.of X` as `↧X`. -/
+@[app_delab BoolRing.of]
+meta def BoolRing.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

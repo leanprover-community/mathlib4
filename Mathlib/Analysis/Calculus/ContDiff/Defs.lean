@@ -1173,7 +1173,7 @@ theorem contDiff_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiff 𝕜 (n + 1) f ↔
       ∃ f' : E → E →L[𝕜] F, ContDiff 𝕜 n f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
   simp only [← contDiffOn_univ, ← hasFDerivWithinAt_univ, Set.mem_univ, forall_true_left,
-    contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn uniqueDiffOn_univ,
+    contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn, uniqueDiffOn_univ,
     WithTop.natCast_ne_top, analyticOn_univ, false_implies, true_and]
 
 theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
@@ -1221,7 +1221,7 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
         ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
   simp [contDiffOn_univ.symm, continuousOn_univ, differentiableOn_univ.symm,
-    iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
+    iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn, uniqueDiffOn_univ]
 
 theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
     ContDiff 𝕜 n f ↔
@@ -1257,7 +1257,7 @@ theorem contDiff_succ_iff_fderiv :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧ (n = ω → AnalyticOnNhd 𝕜 f univ) ∧
       ContDiff 𝕜 n (fderiv 𝕜 f) := by
   simp only [← contDiffOn_univ, ← differentiableOn_univ, ← fderivWithin_univ,
-    contDiffOn_succ_iff_fderivWithin uniqueDiffOn_univ, analyticOn_univ]
+    contDiffOn_succ_iff_fderivWithin, uniqueDiffOn_univ, analyticOn_univ]
 
 theorem contDiff_one_iff_fderiv :
     ContDiff 𝕜 1 f ↔ Differentiable 𝕜 f ∧ Continuous (fderiv 𝕜 f) := by

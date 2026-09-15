@@ -217,6 +217,28 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     tsub_le_iff_right, ← hc]
   apply Finset.card_image_le
 
+lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι} (hsfin : s.Finite)
+    (hs : s.encard ≤ finrank k V) (p : ι → P) : affineSpan k (p '' s) ≠ ⊤ := by
+  obtain rfl | ⟨i, hi⟩ := s.eq_empty_or_nonempty
+  · simp
+  set t := (· -ᵥ p i) '' p '' (s \ {i})
+  have : Fintype t := ((hsfin.sdiff.image p).image _).fintype
+  have hcard : t.toFinset.card < finrank k V := by
+    rw [← ENat.natCast_lt_natCast, ← Set.encard_eq_coe_toFinset_card]
+    calc
+    _ ≤ (s \ {i}).encard := by grind [Set.encard_image_le]
+    _ < _ := (hsfin.sdiff.encard_lt_encard (by grind)).trans_le hs
+  intro htop
+  apply (span_lt_top_of_card_lt_finrank hcard).ne
+  rw [← vectorSpan_image_eq_span_vsub_set_right_ne k p hi,
+    ← direction_affineSpan, htop, direction_top]
+
+lemma affineSpan_range_ne_top_of_card_le_finrank (hι : ENat.card ι ≤ finrank k V) (p : ι → P) :
+    affineSpan k (Set.range p) ≠ ⊤ := by
+  have : Finite ι := ENat.card_lt_top.mp <| hι.trans_lt <| ENat.natCast_lt_top _
+  simpa using
+    affineSpan_image_ne_top_of_encard_le_finrank k Set.finite_univ (by simpa) p
+
 /-- The `vectorSpan` of an indexed family of `n + 1` points has
 dimension at most `n`. -/
 theorem finrank_vectorSpan_range_le [Fintype ι] (p : ι → P) {n : ℕ} (hc : Fintype.card ι = n + 1) :
@@ -385,10 +407,13 @@ theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteD
     rw [← finrank_top, ← direction_top k V P] at hc
     exact hi.affineSpan_eq_of_le_of_card_eq_finrank_add_one le_top hc
 
-theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k V n)
+theorem Affine.Simplex.affineSpan_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k P n)
     (hrank : finrank k V = n) : affineSpan k (Set.range T.points) = ⊤ := by
   rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.independent,
     Fintype.card_fin, hrank]
+
+@[deprecated (since := "2026-09-07")] alias Affine.Simplex.span_eq_top :=
+  Affine.Simplex.affineSpan_eq_top
 
 /-- The `vectorSpan` of adding a point to a finite-dimensional subspace is finite-dimensional. -/
 instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
@@ -508,7 +533,7 @@ theorem collinear_iff_of_mem {s : Set P} {p₀ : P} (h : p₀ ∈ s) :
       rcases hp₀v p hp with ⟨r, rfl⟩
       use r
       simp
-    have hw' := SetLike.le_def.1 hs hw
+    have hw' := mem_of_le_of_mem hs hw
     rwa [Submodule.mem_span_singleton] at hw'
 
 /-- A set of points is collinear if and only if they can all be

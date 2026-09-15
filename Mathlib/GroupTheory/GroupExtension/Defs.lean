@@ -164,7 +164,7 @@ namespace Equiv
 variable {S}
 variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (S.Equiv S') E E' where
   coe equiv := equiv.toMulEquiv
   inv equiv := equiv.toMulEquiv.symm
@@ -246,7 +246,7 @@ structure Section where
 
 namespace Section
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike S.Section G E where
   coe := toFun
   coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ ↦ by congr
@@ -275,7 +275,7 @@ add_decl_doc Splitting.toSection
 
 namespace Splitting
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike S.Splitting G E where
   coe s := s.toFun
   coe_injective := by
@@ -294,8 +294,11 @@ variable {S}
 theorem coe_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) : (mk s hs : G → E) = s := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_monoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
+theorem toMonoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
     (mk s hs : G →* E) = s := rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_monoidHom_mk := toMonoidHom_mk
 
 variable (s : S.Splitting)
 
@@ -305,7 +308,7 @@ theorem rightHom_splitting (g : G) : S.rightHom (s g) = g := s.rightInverse_righ
 @[to_additive (attr := simp)]
 theorem rightHom_comp_splitting : S.rightHom.comp s = MonoidHom.id G := by
   ext g
-  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_coe, rightHom_splitting]
+  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_ofClass, rightHom_splitting]
 
 end Splitting
 
