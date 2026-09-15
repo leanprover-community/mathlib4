@@ -107,7 +107,7 @@ meta def evalSMul : PositivityExt where eval {_u α} zα pα? (e : Q($α)) :=
   match pα? with | none => pure .none | some pα => do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
-          (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
+          (a : Q($β))) (b : Q($α)) ← whnf e | throwError "failed to match hSMul"
   let zM : Q(Zero $β) ← synthInstanceQ q(Zero $β)
   let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
