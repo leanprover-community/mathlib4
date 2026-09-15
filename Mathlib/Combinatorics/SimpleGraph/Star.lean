@@ -115,7 +115,7 @@ theorem maxDegree_starGraph [Fintype V] [DecidableEq V] (r : V) :
 def starGraphIsoOfEquiv [DecidableEq W] (e : V ≃ W) (v : V) (w : W) :
     starGraph v ≃g starGraph w where
   __ := e.trans <| .swap w (e v)
-  map_rel_iff' := by grind [starGraph_adj, e.injective]
+  map_rel_iff' := by grind [e.injective]
 
 @[simp]
 theorem toEquiv_starGraphIsoOfEquiv [DecidableEq W] (e : V ≃ W) (v : V) (w : W) :
@@ -160,7 +160,7 @@ def starGraphCopyNeighborSet (v : V) : Copy (starGraph (none : Option (G.neighbo
   toHom.toFun
   | none => v
   | some u => u
-  toHom.map_rel' := by grind [starGraph_adj, mem_neighborSet, adj_symm]
+  toHom.map_rel' := by grind [mem_neighborSet, adj_symm]
   injective' _ := by grind [RelHom.coeFn_mk, notMem_neighborSet_self]
 
 @[simp]
@@ -174,7 +174,7 @@ theorem starGraph_fin_degree_add_one_isContained (v : V) [Fintype (G.neighborSet
   let f := (Fintype.equivFinOfCardEq <| G.card_neighborSet_eq_degree v).symm
   refine ⟨⟨Fin.cons v ((↑) ∘ f), fun {a b} ↦ ?_⟩, by simp [Fin.cons_injective_iff, f.injective]⟩
   cases a using Fin.cases <;> cases b using Fin.cases <;>
-    grind [starGraph_adj, Fin.cons, mem_neighborSet, adj_symm]
+    grind [Fin.cons, mem_neighborSet, adj_symm]
 
 variable {G} in
 theorem starGraph_fin_add_one_isContained_iff_le_maxDegree [Nonempty V] [Fintype V]
