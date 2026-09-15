@@ -71,15 +71,11 @@ section Normed
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E] {v : ι → E}
 
-omit [NormedSpace ℝ E] [StrictConvexSpace ℝ E] in
-lemma eq_zero_of_sum_norm_eq_zero (h : ∑ j ∈ s, ‖v j‖ = 0) (hi : i ∈ s) : v i = 0 :=
-  norm_eq_zero.1 <| (sum_eq_zero_iff_of_nonneg fun j _ ↦ norm_nonneg (v j)).1 h i hi
-
 omit [StrictConvexSpace ℝ E] in
 lemma sum_ne_zero_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ on v)) (hi : i ∈ s)
-    (hvi : v i ≠ 0) : ∑ j ∈ s, v j ≠ 0 := fun h0 ↦
-  hvi <| eq_zero_of_sum_norm_eq_zero
-    (by rw [← norm_sum_eq_of_pairwise_sameRay hp , h0, norm_zero] ) hi
+    (hvi : v i ≠ 0) : ∑ j ∈ s, v j ≠ 0 := by
+  rw [← norm_pos_iff, norm_sum_eq_of_pairwise_sameRay hp]
+  exact (norm_pos_iff.2 hvi).trans_le (single_le_sum (fun j _ ↦ norm_nonneg (v j)) hi)
 
 /-- **Triangle equality** for a finite sum: the norm of the sum equals the sum of the norms
 exactly when the summands pairwise lie on a common closed ray. -/
@@ -95,8 +91,8 @@ theorem norm_sum_eq_iff_pairwise_sameRay :
       le_antisymm (norm_sum_le _ _) (by linarith [norm_add_le (v a) (∑ j ∈ t, v j)])
     refine ⟨ih ht, ?_⟩
     have hat : SameRay ℝ (v a) (∑ j ∈ t, v j) := sameRay_iff_norm_add.2 (by rw [h, ht])
-    exact fun j hj ↦ hat.trans (sameRay_sum_right_of_pairwise (ih ht) hj).symm
-      fun h ↦ Or.inr <| eq_zero_of_sum_norm_eq_zero (by simpa [h] using ht.symm) hj
+    exact fun j hj ↦ hat.trans (sameRay_sum_right_of_pairwise (ih ht) hj).symm fun h0 ↦
+      Or.inr <| not_imp_not.1 (sum_ne_zero_of_pairwise_sameRay (ih ht) hj) h0
 
 omit [StrictConvexSpace ℝ E] in
 /-- If the summands pairwise lie on a common closed ray and one of them is nonzero, then it has
