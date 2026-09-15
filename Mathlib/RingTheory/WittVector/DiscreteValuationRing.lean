@@ -59,7 +59,7 @@ noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.
 -/
 def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
-  Units.mkOfMulEqOne A (@WittVector.mk' p _ (inverseCoeff a A)) (by
+  Units.mkOfMulEqOne A (WittVector.mk p (inverseCoeff a A)) (by
     ext n
     induction n with
     | zero => simp [WittVector.mul_coeff_zero, inverseCoeff, hA]

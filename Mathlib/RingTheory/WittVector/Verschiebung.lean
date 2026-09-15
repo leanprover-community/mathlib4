@@ -38,7 +38,7 @@ by inserting 0 as the 0th coefficient.
 `verschiebungFun` is the underlying function of the additive monoid hom `WittVector.verschiebung`.
 -/
 def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
-  @mk' p _ fun n => if n = 0 then 0 else x.coeff (n - 1)
+  mk p fun n => if n = 0 then 0 else x.coeff (n - 1)
 
 theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
