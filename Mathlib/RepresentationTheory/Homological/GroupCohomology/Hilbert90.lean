@@ -181,6 +181,7 @@ lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers 
   obtain ⟨a, b, h⟩ := IsLocalization.exists_mk'_eq (Algebra.algebraMapSubmonoid B A⁰) ε.1
   obtain ⟨t, ht, ht'⟩ := b.prop
   have : t • IsLocalization.mk' L a b = algebraMap _ _ a := by
+    simp only [MonoidHom.coe_coe] at ht'
     rw [Algebra.smul_def, IsScalarTower.algebraMap_apply A B L, ht', IsLocalization.mk'_spec']
   refine ⟨a, ?_, ?_⟩
   · rintro rfl

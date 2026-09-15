@@ -209,12 +209,12 @@ lemma coe_span_singleton_eq_setOfPred_le_v_algebraMap (hv : Integers v O) (x : O
 alias coe_span_singleton_eq_setOf_le_v_algebraMap := coe_span_singleton_eq_setOfPred_le_v_algebraMap
 
 lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
-    [Subsingleton (MonoidHom.mrange v)ˣ] :
+    [Subsingleton (v.toMonoidHom.mrange)ˣ] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
   rcases eq_or_ne x 0 with rfl | hx
   · simp
-  · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
+  · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v.toMonoidHom)ˣ)
       ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le
 
 lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :

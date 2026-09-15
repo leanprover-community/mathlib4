@@ -412,7 +412,7 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
   have := IsLocalization.Away.mul S' (Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)))
     (AdjoinRoot.mk P.f P.g) (.mk _ p)
   rw [← map_mul] at this
-  have H : Submonoid.map e.symm.toRingEquiv.toMonoidHom (.powers
+  have H : Submonoid.map (MonoidHomClass.toMonoidHom e.symm) (.powers
       (algebraMap _ S' (AdjoinRoot.mk P.f p))) = .powers (aeval P.x p) := by
     have : ((e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R _ S')).comp (AdjoinRoot.mkₐ P.f)) =
       aeval P.x := by ext; simp [e, StandardEtalePair.equivAwayAdjoinRoot]

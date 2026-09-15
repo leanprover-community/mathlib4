@@ -117,7 +117,7 @@ lemma freeLocus_localization (S : Submonoid R) :
   have : IsLocalization.AtPrime Rₚ p.asIdeal := by
     have := IsLocalization.isLocalization_of_submonoid_le (Localization S) Rₚ _ _ hp'
     apply IsLocalization.isLocalization_of_is_exists_mul_mem _
-      (Submonoid.map (algebraMap R (Localization S)) p'.primeCompl)
+      (Submonoid.map (algebraMap R (Localization S)).toMonoidHom p'.primeCompl)
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
       obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x

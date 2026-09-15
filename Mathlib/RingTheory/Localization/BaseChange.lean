@@ -374,7 +374,8 @@ lemma IsLocalization.tensorProduct_tensorProduct_right (M : Submonoid A)
     [Algebra (S ⊗[R] A) (S ⊗[R] B)] [IsScalarTower S (S ⊗[R] A) (S ⊗[R] B)]
     (H : (algebraMap (S ⊗[R] A) (S ⊗[R] B)).comp Algebra.TensorProduct.includeRight.toRingHom =
       Algebra.TensorProduct.includeRight.toRingHom.comp (algebraMap A B)) :
-    IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) (S ⊗[R] B) := by
+    IsLocalization
+      (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom) (S ⊗[R] B) := by
   change IsLocalization (Algebra.algebraMapSubmonoid _ M) (S ⊗[R] B)
   let : Algebra A (S ⊗[R] B) := .compHom _ (algebraMap A B)
   have : IsScalarTower A (S ⊗[R] A) (S ⊗[R] B) := .of_algebraMap_eq' H.symm
@@ -395,9 +396,10 @@ def IsLocalization.tensorProductEquivOfMapIncludeRight (M : Submonoid A)
     (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
     [IsLocalization M B]
     (C : Type*) [CommSemiring C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
-    [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) C] :
+    [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom) C] :
     S ⊗[R] B ≃ₐ[S] C :=
-  letI M' : Submonoid (S ⊗[R] A) := M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))
+  letI M' : Submonoid (S ⊗[R] A) :=
+    M.map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom
   letI : Algebra (S ⊗[R] A) (S ⊗[R] B) :=
     (Algebra.TensorProduct.map (AlgHom.id R S) (IsScalarTower.toAlgHom R _ _)).toAlgebra
   haveI : IsScalarTower S (S ⊗[R] A) (S ⊗[R] B) :=
@@ -412,7 +414,7 @@ lemma IsLocalization.tensorProductEquivOfMapIncludeRight_tmul (M : Submonoid A)
     (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] [IsLocalization M B]
     (C : Type*) [CommSemiring C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
-    [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) C]
+    [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom) C]
     (x : S) (a : A) :
     IsLocalization.tensorProductEquivOfMapIncludeRight R S M B C (x ⊗ₜ algebraMap A B a) =
       algebraMap _ _ (x ⊗ₜ[R] a) := by
@@ -428,9 +430,10 @@ def IsLocalization.Away.tensorProductEquivTMulRight (g : A) (B : Type*) [CommSem
     [Algebra R B] [Algebra A B] [IsScalarTower R A B] [IsLocalization.Away g B] :
     S ⊗[R] B ≃ₐ[S] Localization.Away ((1 : S) ⊗ₜ[R] g) :=
   haveI : IsLocalization
-      ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)))
+      ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom)
       (Localization.Away ((1 : S) ⊗ₜ[R] g)) := by
-    simp only [Submonoid.map_powers, Algebra.TensorProduct.includeRight_apply]
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
+      Submonoid.map_powers, MonoidHom.coe_coe, Algebra.TensorProduct.includeRight_apply]
     infer_instance
   IsLocalization.tensorProductEquivOfMapIncludeRight _ _ (.powers g) _ _
 
@@ -441,9 +444,10 @@ lemma IsLocalization.Away.tensorProductEquivTMulRight_tmul (g : A) (B : Type*) [
     IsLocalization.Away.tensorProductEquivTMulRight R S g B (x ⊗ₜ algebraMap _ _ a) =
       algebraMap _ _ (x ⊗ₜ[R] a) :=
   haveI : IsLocalization
-      ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)))
+      ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)).toMonoidHom)
       (Localization.Away ((1 : S) ⊗ₜ[R] g)) := by
-    simp only [Submonoid.map_powers, Algebra.TensorProduct.includeRight_apply]
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
+      Submonoid.map_powers, MonoidHom.coe_coe, Algebra.TensorProduct.includeRight_apply]
     infer_instance
   IsLocalization.tensorProductEquivOfMapIncludeRight_tmul _ _ _ _ _ _
 

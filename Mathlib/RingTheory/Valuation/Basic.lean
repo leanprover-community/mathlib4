@@ -1406,16 +1406,16 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
 
-instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange (.ofClass v : R →*₀ _)) :=
-  inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (MonoidWithZeroHom.ofClass v)))
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHomClass.toMonoidHom v).mrange :=
+  inferInstanceAs (CommMonoidWithZero v.toMonoidHom.mrange)
 
 @[simp]
 lemma val_mrange_zero (v : Valuation R Γ₀) :
-    ((0 : MonoidHom.mrange (.ofClass v : R →*₀ _)) : Γ₀) = 0 :=
+    ((0 : (MonoidHomClass.toMonoidHom v).mrange) : Γ₀) = 0 :=
   rfl
 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
-    CommGroupWithZero (MonoidHom.mrange (.ofClass v : K →*₀ _)) :=
-  inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (MonoidWithZeroHom.ofClass v)))
+    CommGroupWithZero (MonoidHomClass.toMonoidHom v : K →* _).mrange :=
+  inferInstanceAs (CommGroupWithZero v.toMonoidHom.mrange)
 
 end Valuation

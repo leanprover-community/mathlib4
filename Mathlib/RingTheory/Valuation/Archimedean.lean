@@ -21,7 +21,7 @@ variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
   [CommRing O] [Algebra O F] {v : Valuation F Γ₀}
 
 instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*₀ Γ₀) :
-    LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
+    LinearOrderedCommGroupWithZero v.toMonoidHom.mrange where
   bot := ⟨⊥, by simp [bot_eq_zero]⟩
   bot_le a := by simp [bot_eq_zero, ← Subtype.coe_le_coe]
   isBot_zero a := by simp [← Subtype.coe_le_coe]
@@ -32,8 +32,8 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
     gcongr
 
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
-    LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (.ofClass v : F →*₀ Γ₀)))
+    LinearOrderedCommGroupWithZero v.toMonoidHom.mrange :=
+  inferInstanceAs (LinearOrderedCommGroupWithZero v.toMonoidHom.mrange)
 
 namespace Valuation.Integers
 
@@ -44,10 +44,10 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
 open scoped Function WithZero in
-lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
+lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (v.toMonoidHom.mrange)ˣ]
     (hv : Integers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
-      Nonempty (MonoidHom.mrange v ≃*o ℤᵐ⁰) := by
+      Nonempty (v.toMonoidHom.mrange ≃*o ℤᵐ⁰) := by
   rw [←
     LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
     one_ne_zero, ← Set.wellFoundedOn_range]
@@ -59,7 +59,7 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     intro hx
     obtain ⟨y, rfl⟩ := hv.exists_of_le_one hx
     exact ⟨y, by simp⟩
-  · exact fun x ↦ if hx : x ∈ MonoidHom.mrange v then ⟨x, hx⟩ else 1
+  · exact fun x ↦ if hx : x ∈ v.toMonoidHom.mrange then ⟨x, hx⟩ else 1
   · intro
     simp only [Set.mem_range, Function.comp_apply, MonoidHom.mem_mrange, Set.mem_ofPred_eq,
       forall_exists_index]
@@ -67,11 +67,11 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     simp [← Subtype.coe_le_coe, hv.map_le_one]
   · simp [Function.onFun]
 
-lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
+lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean v.toMonoidHom.mrange]
     (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
-  rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs | _
+  rcases subsingleton_or_nontrivial (v.toMonoidHom.mrange)ˣ with hs | _
   · have := bijective_algebraMap_of_subsingleton_units_mrange hv
     exact .of_surjective _ (RingEquiv.ofBijective _ this).symm.surjective
   have : IsDomain O := hv.hom_inj.isDomain
@@ -81,9 +81,9 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mra
     LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
   exact H
 
-lemma isPrincipalIdealRing_iff_not_denselyOrdered_mrange [MulArchimedean (MonoidHom.mrange v)]
+lemma isPrincipalIdealRing_iff_not_denselyOrdered_mrange [MulArchimedean v.toMonoidHom.mrange]
     (hv : Integers v O) :
-    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (MonoidHom.mrange v) :=
+    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered v.toMonoidHom.mrange :=
   isPrincipalIdealRing_iff_not_denselyOrdered hv
 
 end Valuation.Integers

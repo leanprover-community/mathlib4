@@ -197,7 +197,7 @@ lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
   simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
 
 lemma mker_ordFrac_eq_isUnitSubmonoid :
-    MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
+    (ordFrac R).toMonoidHom.mker = (IsUnit.submonoid R).map (algebraMap R K).toMonoidHom := by
   rw [ordFrac_eq_inverse_comp_valuation, ← MonoidWithZeroHom.comap_mker,
       MonoidWithZeroHom.mker_inverse]
   exact IsDiscreteValuationRing.mker_valuation_eq_isUnitSubmonoid

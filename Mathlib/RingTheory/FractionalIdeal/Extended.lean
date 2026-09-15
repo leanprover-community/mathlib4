@@ -227,7 +227,7 @@ theorem extendedHom'_comp {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
     (extendedHom' (A := B) (K := L) W hg).comp
       (extendedHom' (A := A) (K := K) L hf) =
         extendedHom' (A := A) (B := C) (f := g.comp f) (K := K) W
-          (hf.trans (Submonoid.monotone_comap (f := f) hg)) := by
+          (hf.trans (Submonoid.monotone_comap (f := f.toMonoidHom) hg)) := by
   apply RingHom.ext
   intro I
   exact extended_extended (A := A) (B := B) (f := f) (K := K) (M := M) (L := L)
