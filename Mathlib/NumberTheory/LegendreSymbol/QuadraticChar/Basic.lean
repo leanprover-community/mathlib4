@@ -241,6 +241,37 @@ theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticCha
 
 end quadraticChar
 
+/-- In a finite field, a product of two nonzero elements is a square iff the factors are
+both squares or both nonsquares. -/
+theorem FiniteField.isSquare_mul_iff {F : Type*} [Field F] [Finite F] {a b : F}
+    (ha : a ≠ 0) (hb : b ≠ 0) : IsSquare (a * b) ↔ (IsSquare a ↔ IsSquare b) := by
+  cases nonempty_fintype F
+  classical
+  rw [← quadraticChar_one_iff_isSquare ha, ← quadraticChar_one_iff_isSquare hb,
+    ← quadraticChar_one_iff_isSquare (mul_ne_zero ha hb), map_mul]
+  rcases quadraticChar_dichotomy ha with h1 | h1 <;>
+    rcases quadraticChar_dichotomy hb with h2 | h2 <;>
+      rw [h1, h2] <;> norm_num
+
+/-- In a finite field, the product of a nonzero square and a nonsquare is a nonsquare. -/
+theorem FiniteField.not_isSquare_mul_of_isSquare_of_not_isSquare {F : Type*} [Field F] [Finite F]
+    {a b : F} (ha : a ≠ 0) (ha' : IsSquare a) (hb : ¬IsSquare b) : ¬IsSquare (a * b) := by
+  have hb₀ : b ≠ 0 := fun h ↦ hb (h ▸ IsSquare.zero)
+  exact fun h ↦ hb (((isSquare_mul_iff ha hb₀).mp h).mp ha')
+
+/-- In a finite field, the product of a nonsquare and a nonzero square is a nonsquare. -/
+theorem FiniteField.not_isSquare_mul_of_not_isSquare_of_isSquare {F : Type*} [Field F] [Finite F]
+    {a b : F} (hb : b ≠ 0) (ha : ¬IsSquare a) (hb' : IsSquare b) : ¬IsSquare (a * b) := by
+  have ha₀ : a ≠ 0 := fun h ↦ ha (h ▸ IsSquare.zero)
+  exact fun h ↦ ha (((isSquare_mul_iff ha₀ hb).mp h).mpr hb')
+
+/-- In a finite field, the product of two nonsquares is a square. -/
+theorem FiniteField.isSquare_mul_of_not_isSquare_of_not_isSquare {F : Type*} [Field F] [Finite F]
+    {a b : F} (ha : ¬IsSquare a) (hb : ¬IsSquare b) : IsSquare (a * b) := by
+  have ha₀ : a ≠ 0 := fun h ↦ ha (h ▸ IsSquare.zero)
+  have hb₀ : b ≠ 0 := fun h ↦ hb (h ▸ IsSquare.zero)
+  exact (isSquare_mul_iff ha₀ hb₀).mpr (iff_of_false ha hb)
+
 /-!
 ### Special values of the quadratic character
 
