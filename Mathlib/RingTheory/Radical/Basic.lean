@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.RingTheory.Ideal.Operations
-public import Mathlib.Algebra.IsPrimePow
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
