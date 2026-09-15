@@ -142,6 +142,9 @@ theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 @[simp]
 theorem coe_toMonoidWithZeroHom (v : Valuation R Γ₀) : ⇑(v : R →*₀ Γ₀) = v := rfl
 
+@[deprecated (since := "2026-09-15")]
+alias toMonoidWithZeroHom_coe_eq_coe := coe_toMonoidWithZeroHom
+
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   DFunLike.ext _ _ h
@@ -150,6 +153,9 @@ variable (v : Valuation R Γ₀)
 
 @[simp]
 theorem ofClass_eq_coe : (MonoidWithZeroHom.ofClass v) = v := rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_ofClass := ofClass_eq_coe
 
 protected theorem map_zero : v 0 = 0 :=
   v.map_zero'

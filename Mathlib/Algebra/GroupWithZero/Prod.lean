@@ -60,6 +60,9 @@ lemma WithZero.coe_withZeroUnitsEquiv [GroupWithZero M₀] [DecidablePred fun x 
     WithZero.withZeroUnitsEquiv (G := M₀) = WithZero.lift' (Units.coeHom M₀) :=
   rfl
 
+@[deprecated (since := "2026-09-15")]
+alias WithZero.ofClass_withZeroUnitsEquiv := WithZero.coe_withZeroUnitsEquiv
+
 /-! ### Multiplication and division as homomorphisms -/
 
 section BundledMulDiv
