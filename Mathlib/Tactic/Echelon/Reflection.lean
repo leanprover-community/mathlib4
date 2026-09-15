@@ -80,7 +80,7 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
 
 variable {n : ℕ}
 
-/-- `l` split at `k` in one pass instead of 2.
+/-- `l` split at `k` in one traversal instead of two.
 Core defines this function as the `go` of `List.splitRevAt` for merge sort and does not export it.
 `List.splitAt` is optimised for compilation and tail-recursive, but requires a reverse and therefore
 two traversals as well. -/
@@ -97,8 +97,7 @@ theorem splitRevAt_eq (l : List α) (k : ℕ) (acc : List α) :
 /-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
 beyond the pivot list (all 0). -/
 def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) → Prop
-  | [], [] => True
-  | [], row :: rows => row = List.replicate n 0 ∧ IsPivotedList [] rows
+  | [], rows => rows = List.replicate rows.length (List.replicate n 0)
   | _ :: _, [] => False
   | k :: ks, row :: rows =>
     match splitRevAt row k [] with
@@ -110,15 +109,7 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
     (∀ j, (∀ k ∈ cols[i]?, j < (k : ℕ)) → (rows.getD i []).getD j 0 = 0) ∧
       ∀ k ∈ cols[i]?, (rows.getD i []).getD k 0 ≠ 0 := by
   induction cols generalizing rows i with
-  | nil =>
-    refine ⟨fun j _ ↦ ?_, by simp⟩
-    induction rows generalizing i with
-    | nil => simp
-    | cons row rows ih =>
-      obtain ⟨hrow, hrest⟩ := h
-      cases i with
-      | zero => grind
-      | succ i => grind [List.getD_cons_succ]
+  | nil => grind [IsPivotedList]
   | cons k ks ih =>
     cases rows with
     | nil => simp [IsPivotedList] at h
