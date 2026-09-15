@@ -99,7 +99,7 @@ def equiv : V ≃ SchreierGraph V ι where
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance [DecidableEq V] : DecidableEq (SchreierGraph V ι) :=
+instance instDecidableEq [DecidableEq V] : DecidableEq (SchreierGraph V ι) :=
   Equiv.decidableEq (equiv V ι).symm
 
 /-- Transport the scalar multiplication to the Schreier graph vertices. -/
@@ -383,10 +383,8 @@ lemma cayleyGraph_symmetrify_neighbor_subset (g : CayleyGraph ι) :
     have h_eq : (ι s • h : CayleyGraph ι) = g := hs
     rw [← h_eq, inv_smul_smul]
 
-/-- A Cayley graph is nonempty when the group is nonempty. -/
-instance [Nonempty M] : Nonempty (CayleyGraph ι) := by
-  obtain ⟨m⟩ := ‹Nonempty M›
-  exact ⟨⟨QuotientGroup.mk m⟩⟩
+/-- A Cayley graph is inhabited by the coset of the identity. -/
+instance instInhabitedCayleyGraph : Inhabited (CayleyGraph ι) := ⟨⟨1⟩⟩
 
 @[simp]
 lemma quotientBot_smul (g : M) (q : M ⧸ (⊥ : Subgroup M)) :
@@ -441,17 +439,13 @@ theorem cayley_subsingleton_weaklyConnectedComponent
     | h y =>
       exact Quotient.sound (cayley_preconnected ι hgen x y)
 
-/-- A Cayley graph of a nonempty group is connected: it has exactly one weakly connected
-component, when the generators generate the entire group. -/
+/-- A Cayley graph is connected: it has exactly one weakly connected component, when the
+generators generate the entire group. -/
 @[instance_reducible]
-noncomputable def cayley_connected [Nonempty M]
-    (hgen : Subgroup.closure (Set.range ι) = ⊤) :
-    Unique (WeaklyConnectedComponent (CayleyGraph ι)) :=
-  haveI : Nonempty (WeaklyConnectedComponent (CayleyGraph ι)) :=
-    Nonempty.map WeaklyConnectedComponent.mk inferInstance
-  haveI := Classical.inhabited_of_nonempty this
-  haveI := cayley_subsingleton_weaklyConnectedComponent ι hgen
-  Unique.mk' _
+def cayley_connected (hgen : Subgroup.closure (Set.range ι) = ⊤) :
+    Unique (WeaklyConnectedComponent (CayleyGraph ι)) where
+  default := .mk default
+  uniq _ := (cayley_subsingleton_weaklyConnectedComponent ι hgen).elim _ _
 
 end CayleyGraph
 
@@ -461,13 +455,13 @@ variable {V : Type*} {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
 
 /-- When `S` is finite and equality on `V` is decidable, the set of outgoing arrows from `x` to `y`
 in a Schreier graph is finite. -/
-instance [Fintype S] [DecidableEq V] (x y : SchreierGraph V ι) :
+instance instFintypeHom [Fintype S] [DecidableEq V] (x y : SchreierGraph V ι) :
     Fintype (x ⟶ y) :=
   Subtype.fintype _
 
 /-- When `S` is finite, the star (set of all outgoing arrows) from any vertex in a Schreier graph
 is finite. -/
-noncomputable instance [Fintype S] (x : SchreierGraph V ι) :
+noncomputable instance instFintypeStar [Fintype S] (x : SchreierGraph V ι) :
     Fintype (Σ y, x ⟶ y) := by
   classical
   let f : S → Σ y, x ⟶ y := fun s ↦ ⟨ι s • x, s, rfl⟩
@@ -476,7 +470,7 @@ noncomputable instance [Fintype S] (x : SchreierGraph V ι) :
 
 /-- When `S` is finite, the Cayley graph is locally finite (each vertex has finitely many
 outgoing arrows). -/
-noncomputable instance [Group M] [Fintype S] (g : CayleyGraph ι) :
+noncomputable instance instFintypeCayleyStar [Group M] [Fintype S] (g : CayleyGraph ι) :
     Fintype (Σ h, g ⟶ h) :=
   inferInstance
 
@@ -518,14 +512,13 @@ def SchreierCosetGraph.asAutom (g : M) :
 
 /-- Right multiplication by the identity is the identity prefunctor. -/
 theorem SchreierCosetGraph.asAutom_one :
-    SchreierCosetGraph.asAutom ι N 1 = Prefunctor.id (SchreierCosetGraph ι N) := by
+    SchreierCosetGraph.asAutom ι N 1 = .id (SchreierCosetGraph ι N) := by
   have h_obj : ∀ X : SchreierCosetGraph ι N, (SchreierCosetGraph.asAutom ι N 1).obj X = X := by
     rintro ⟨x⟩
-    apply SchreierGraph.ext
-    dsimp [SchreierCosetGraph.asAutom]
     induction x using QuotientGroup.induction_on with
     | H m =>
-      change QuotientGroup.mk (m * 1⁻¹) = QuotientGroup.mk m
+      apply SchreierGraph.ext
+      dsimp [SchreierCosetGraph.asAutom]
       rw [inv_one, mul_one]
   refine Prefunctor.ext' h_obj (fun X Y ⟨s, hs⟩ ↦ ?_)
   exact Subtype.ext (by rw [SchreierGraph.homOfEq_val]; rfl)
