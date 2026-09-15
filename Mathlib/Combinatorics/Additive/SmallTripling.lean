@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 public import Mathlib.Data.Fin.VecNotation
@@ -174,10 +175,10 @@ in the sense that `|m • A|` is at most `|A|` times a constant exponential in `
 
 See also `Finset.small_alternating_nsmul_of_small_tripling` for a version with a weaker constant but
 which encompasses non-symmetric sets. -/]
-lemma small_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ K * #A) (hAsymm : A⁻¹ = A) :
+lemma small_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ K * #A) (hAsymm : IsSelfInv A) :
     #(A ^ m) ≤ K ^ (m - 2) * #A := by
   have (ε : ℤ) (hε : |ε| = 1) : A ^ ε = A := by
-    obtain rfl | rfl := eq_or_eq_neg_of_abs_eq hε <;> simp [hAsymm]
+    obtain rfl | rfl := eq_or_eq_neg_of_abs_eq hε <;> simp [hAsymm.inv_eq]
   calc
     (#(A ^ m) : ℝ) = #((finRange m).map fun i ↦ A ^ 1).prod := by simp
     _ ≤ K ^ (m - 2) * #A :=
