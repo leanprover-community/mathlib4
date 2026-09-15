@@ -122,7 +122,8 @@ lemma homogeneousCochains.d_eq (X : TopRep k G) (i : ℕ) :
 
 lemma homogeneousCochains.d_apply (X : TopRep k G) (i : ℕ)
     (σ : (homogeneousCochains X).X i) :
-    ((homogeneousCochains X).d i (i + 1)).hom σ = (d X (i + 1)).hom σ := by
+    (((homogeneousCochains X).d i (i + 1)).hom σ : X.resolution'.X (i + 1)) =
+      (d X (i + 1)).hom σ.1 := by
   rw [homogeneousCochains.d_eq]
   dsimp [ContIntertwiningMap.mapInvariants_apply]
 

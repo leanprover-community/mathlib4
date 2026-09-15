@@ -105,8 +105,13 @@ theorem d_eq :
       (freeLiftLEquiv k G (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftLEquiv k G (Fin (n + 1) → G) A).toModuleIso.hom := by
-  ext
-  simp [d_hom_apply, map_add, barComplex.d_single (k := k), homEquiv]
+  ext x y
+  -- try to remove `ChainComplex.of_X`, if removing it need erw `barComplex.d_single`
+  -- which needs `(barComplex k G) n = free k G (Fin n → G)`
+  -- the equality works with `with_implicit rfl`, but not `with_reducible_and_instances rfl`
+  -- attempts: setting `ChainComplex.of` instance reducible won't work,
+  -- only setting reducible would help
+  simp [d_hom_apply, homEquiv, Linear.leftComp, ChainComplex.of_X, barComplex.d_single (k := k) n y]
 
 end inhomogeneousCochains
 
@@ -140,7 +145,7 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
 set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
-  simpa [CochainComplex.of.d] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
+  simpa [CochainComplex.of_d'] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic

@@ -57,7 +57,7 @@ noncomputable def cochainsMap :
   comm' i j (hij : _ = _) := by
     subst hij
     ext
-    simpa [inhomogeneousCochains.d_hom_apply, Fin.comp_contractNth, CochainComplex.of.d]
+    simpa [inhomogeneousCochains.d_hom_apply, Fin.comp_contractNth, CochainComplex.of_d]
       using! (hom_comm_apply φ _ _).symm
 
 @[simp]

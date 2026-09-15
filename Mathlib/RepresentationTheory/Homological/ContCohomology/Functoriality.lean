@@ -99,7 +99,7 @@ lemma resolutionMap_comp_d (φ : H →ₜ* G) (f : res φ X ⟶ Y) (i : ℕ) :
 /-- The cochain map `homogeneousCochains X ⟶ homogeneousCochains Y` induced by a continuous
 group homomorphism `φ : H →ₜ* G` and a morphism of topological `H`-representations
 `f : res φ X ⟶ Y`, sending an invariant function `σ : C(G, C(G, ⋯))` to `f ∘ σ ∘ φ`. -/
-@[simps! -isSimp f f_hom]
+@[implicit_reducible, simps! -isSimp f f_hom]
 def cochainsMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     homogeneousCochains X ⟶ homogeneousCochains Y where
   f i := invariantsResMap φ (resolutionMap φ f (i + 1))
@@ -121,8 +121,9 @@ lemma cochainsMap_id (X : TopRep k G) :
 lemma cochainsMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X ⟶ Y) (g : res ψ Y ⟶ Z) :
     cochainsMap (φ.comp ψ) (X := X) ((resFunctor (ψ : K →* H)).map f ≫ g) =
       cochainsMap φ f ≫ cochainsMap ψ g := by
-  ext i v x
-  exact congr($(resolutionMap_comp φ ψ f g (i + 1)).hom v.1 x)
+  ext i x
+  simp only [CochainComplex.of_X, cochainsMap, resolutionMap_comp φ ψ f g (i + 1)]
+  rfl
 
 /-- The map `Zⁿ(G, X) ⟶ Zⁿ(H, Y)` on cocycles induced by a continuous group homomorphism
 `φ : H →ₜ* G` and a morphism of topological `H`-representations `f : res φ X ⟶ Y`. -/

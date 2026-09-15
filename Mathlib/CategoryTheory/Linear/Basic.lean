@@ -120,7 +120,7 @@ instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcateg
 variable (R)
 
 /-- Composition by a fixed left argument as an `R`-linear map. -/
-@[simps]
+@[implicit_reducible, simps]
 def leftComp {X Y : C} (Z : C) (f : X ⟶ Y) : (Y ⟶ Z) →ₗ[R] X ⟶ Z where
   toFun g := f ≫ g
   map_add' := by simp
