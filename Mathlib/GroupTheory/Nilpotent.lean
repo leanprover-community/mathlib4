@@ -1304,7 +1304,7 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
 /-- A finite nilpotent group has normal subgroups of every possible index. -/
 theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k : ℕ}
     (hdvd : k ∣ Nat.card G) : ∃ H : Subgroup G, H.index = k ∧ H.Normal := by
-  induction hm : Nat.card G using Nat.strong_induction_on generalizing k G with | h m ih =>
+  induction hm : Nat.card G using Nat.strong_induction_on generalizing k G with | ind m ih
   have ⟨m', hmul⟩ := hdvd
   by_cases hm1 : m' = 1
   · refine ⟨⊥, by simp [hmul, hm1], normal_bot⟩
