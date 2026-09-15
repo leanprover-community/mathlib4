@@ -29,19 +29,19 @@ variable {α β : Type*}
 
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a specified
 well-ordering. -/
-@[deprecated enum (since := "2026-04-06")]
+@[deprecated enum +typeChanged (since := "2026-04-06")]
 def bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
     ∀ a < type r, α := fun a ha => f (enum r ⟨a, ha⟩)
 
 /-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a well-ordering
 given by the axiom of choice. -/
-@[deprecated enum (since := "2026-04-06")]
+@[deprecated enum +typeChanged (since := "2026-04-06")]
 def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingRel ι), α :=
   bfamilyOfFamily' WellOrderingRel
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a specified
 well-ordering. -/
-@[deprecated typein (since := "2026-04-06")]
+@[deprecated typein +typeChanged (since := "2026-04-06")]
 def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
     (f : ∀ a < o, α) : ι → α := fun i =>
   f (typein r i)
@@ -51,7 +51,7 @@ def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
-@[deprecated typein (since := "2026-04-06")]
+@[deprecated typein +typeChanged (since := "2026-04-06")]
 def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.ToType → α :=
   familyOfBFamily' (· < ·) (type_toType o) f
 
@@ -79,15 +79,15 @@ theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
   familyOfBFamily'_enum _ (type_toType o) f _ _
 
 /-- The range of a family indexed by ordinals. -/
-@[deprecated range (since := "2026-04-06")]
+@[deprecated range +typeChanged (since := "2026-04-06")]
 def brange (o : Ordinal) (f : ∀ a < o, α) : Set α :=
   { a | ∃ i hi, f i hi = a }
 
-@[deprecated mem_range (since := "2026-04-06")]
+@[deprecated mem_range +typeChanged (since := "2026-04-06")]
 theorem mem_brange {o : Ordinal} {f : ∀ a < o, α} {a} : a ∈ brange o f ↔ ∃ i hi, f i hi = a :=
   Iff.rfl
 
-@[deprecated mem_range_self (since := "2026-04-06")]
+@[deprecated mem_range_self +typeChanged (since := "2026-04-06")]
 theorem mem_brange_self {o} (f : ∀ a < o, α) (i hi) : f i hi ∈ brange o f :=
   ⟨i, hi, rfl⟩
 
@@ -150,7 +150,7 @@ theorem bddAbove_of_small {s : Set Ordinal.{u}} [Small.{u} s] : BddAbove s := by
   refine ⟨a.ord, fun b hb ↦ le_of_lt ?_⟩
   simpa [lt_ord] using ha (mem_image_of_mem _ hb)
 
-@[deprecated bddAbove_of_small (since := "2026-04-04")]
+@[deprecated bddAbove_of_small +typeChanged (since := "2026-04-04")]
 theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
   bddAbove_of_small
 
@@ -219,7 +219,7 @@ theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
   rw [← nonpos_iff_eq_zero, ← h]
   exact Ordinal.le_iSup f i
 
-@[deprecated congrArg (since := "2026-03-27")]
+@[deprecated congrArg +typeChanged (since := "2026-03-27")]
 theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
@@ -394,7 +394,7 @@ theorem lt_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {a} :
     a < bsup.{_, v} o f ↔ ∃ i hi, a < f i hi := by
   simpa only [not_forall, not_le] using not_congr (@bsup_le_iff.{_, v} _ f a)
 
-@[deprecated IsNormal.map_iSup (since := "2026-04-05")]
+@[deprecated IsNormal.map_iSup +typeChanged (since := "2026-04-05")]
 theorem IsNormal.bsup {f : Ordinal → Ordinal} (H : IsNormal f) {o : Ordinal} :
     ∀ (g : ∀ a < o, Ordinal), o ≠ 0 → f (bsup o g) = bsup o fun a h => f (g a h) :=
   inductionOn o fun α r _ g h => by
@@ -604,14 +604,14 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.ToType) (· < �
       have h := h.trans_eq (type_toType o).symm
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
-@[deprecated IsSuccPrelimit.sSup_Iio (since := "2026-03-27")]
+@[deprecated IsSuccPrelimit.sSup_Iio +typeChanged (since := "2026-03-27")]
 theorem iSup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
     iSup (typein ((· < ·) : o.ToType → o.ToType → Prop)) = o := by
   replace ho : IsSuccPrelimit o := by rwa [isSuccPrelimit_iff_succ_lt]
   rw [iSup, PrincipalSeg.range_eq]
   simpa [Iio_def] using ho.sSup_Iio
 
-@[deprecated csSup_Iic (since := "2026-03-27")]
+@[deprecated csSup_Iic +typeChanged (since := "2026-03-27")]
 theorem iSup_typein_succ {o : Ordinal} :
     iSup (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) = o := by
   rw [← csSup_Iic (a := o), iSup, PrincipalSeg.range_eq]
@@ -782,15 +782,15 @@ theorem blsub_one (f : ∀ a < (1 : Ordinal), Ordinal) : blsub 1 f = succ (f 0 z
 theorem blsub_id : ∀ o, (blsub.{u, u} o fun x _ => x) = o :=
   lsub_typein
 
-@[deprecated IsSuccPrelimit.sSup_Iio (since := "2026-03-23")]
+@[deprecated IsSuccPrelimit.sSup_Iio +typeChanged (since := "2026-03-23")]
 theorem bsup_id_limit {o : Ordinal} : (∀ a < o, succ a < o) → (bsup.{u, u} o fun x _ => x) = o :=
   iSup_typein_limit
 
-@[deprecated csSup_Iic (since := "2026-03-23")]
+@[deprecated csSup_Iic +typeChanged (since := "2026-03-23")]
 theorem bsup_id_add_one (o) : (bsup.{u, u} (o + 1) fun x _ => x) = o :=
   iSup_typein_succ
 
-@[deprecated csSup_Iic (since := "2026-03-23")]
+@[deprecated csSup_Iic +typeChanged (since := "2026-03-23")]
 theorem bsup_id_succ (o) : (bsup.{u, u} (succ o) fun x _ => x) = o :=
   iSup_typein_succ
 
@@ -827,18 +827,18 @@ theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w
   @bsup_comp.{u, v, w} o _ (fun a ha => succ (f a ha))
     (fun {_ _} _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
 
-@[deprecated IsNormal.apply_of_isSuccLimit (since := "2026-03-23")]
+@[deprecated IsNormal.apply_of_isSuccLimit +typeChanged (since := "2026-03-23")]
 theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup.{u, u, v} H (fun x _ => x) h.ne_bot, bsup_id_limit fun _ ↦ h.succ_lt]
 
-@[deprecated IsNormal.apply_of_isSuccLimit (since := "2026-03-23")]
+@[deprecated IsNormal.apply_of_isSuccLimit +typeChanged (since := "2026-03-23")]
 theorem IsNormal.blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
     (h : IsSuccLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup_eq.{u, v} H h, bsup_eq_blsub_of_lt_succ_limit h]
   exact fun a _ => H.strictMono (lt_succ a)
 
-@[deprecated isNormal_iff (since := "2026-03-23")]
+@[deprecated isNormal_iff +typeChanged (since := "2026-03-23")]
 theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
       ∀ o, IsSuccLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
@@ -847,7 +847,7 @@ theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}}
       rw [← h₂ _ ho]
       simpa [IsLUB, upperBounds, lowerBounds, IsLeast, bsup_le_iff] using le_bsup _⟩
 
-@[deprecated isNormal_iff (since := "2026-03-23")]
+@[deprecated isNormal_iff +typeChanged (since := "2026-03-23")]
 theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
       ∀ o, IsSuccLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by

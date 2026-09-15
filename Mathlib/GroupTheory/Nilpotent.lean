@@ -1399,9 +1399,11 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
   lowerCentralSeries_nilpotencyClass
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
   lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
   lowerCentralSeries_map_subtype_le
 @[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries.map := lowerCentralSeries.map
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ_eq_bot :=
   lowerCentralSeries_succ_eq_bot

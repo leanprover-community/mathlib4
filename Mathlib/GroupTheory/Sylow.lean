@@ -206,7 +206,8 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
                 ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
           refine Exists.imp (fun k hk => ?_) (hc1 S.2 ⟨g, hg⟩)
-          rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM _ hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
+          rw [Subtype.ext_iff, coe_pow] at hk ⊢
+          assumption, fun M hM _ hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
     fun {Q} h => ⟨⟨Q, h.2.prop, h.2.eq_of_ge⟩, h.1⟩
 
