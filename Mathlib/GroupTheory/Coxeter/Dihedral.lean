@@ -201,4 +201,3 @@ noncomputable def groupEquivDihedralGroup (m : ℕ) :
   exact toDihedral_simple_one m
 
 end CoxeterMatrix.I
-
