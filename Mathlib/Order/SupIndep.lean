@@ -538,6 +538,15 @@ lemma iSupIndep.disjoint_biSup_biSup' [IsModularLattice α]
     rw [s₀.iSup_insert j f, disjoint_comm, sup_comm]
     exact disjoint_sup_right_of_disjoint_sup_right ih this
 
+theorem sSupIndep.disjoint_sSup_sSup' [IsModularLattice α] {s t u : Set α} (hs : sSupIndep s)
+    (hts : t ⊆ s) (hus : u ⊆ s) (ht : t.Finite) (hdisj : Disjoint t u) :
+    Disjoint (sSup t) (sSup u) := by
+  have hsub {v : Set α} (hvs : v ⊆ s) : v ⊆ Set.range (Subtype.val (p := (· ∈ s))) :=
+    fun x hx => ⟨⟨x, hvs hx⟩, rfl⟩
+  rw [← biSup_preimage (hsub hts), ← biSup_preimage (hsub hus)]
+  exact (sSupIndep_iff s |>.mp hs).disjoint_biSup_biSup' (hdisj.preimage _)
+      (ht.preimage Set.injOn_subtype_val)
+
 lemma iSupIndep.mem_of_biSup_eq_top {f : ι → α} {s : Set ι}
     (h₁ : iSupIndep f) (h₂ : ⨆ i ∈ s, f i = ⊤) {i : ι} (hi : f i ≠ ⊥) :
     i ∈ s := by
