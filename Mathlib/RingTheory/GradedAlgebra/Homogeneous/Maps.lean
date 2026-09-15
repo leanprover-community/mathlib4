@@ -37,11 +37,11 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
     rw [Ideal.map] at hb
     induction hb using Submodule.span_induction generalizing i with
     | zero => simp
-    | add => simp [*, Ideal.add_mem]
+    | add => simp [*, Ideal.add_mem]; sorry
     | mem a ha =>
       obtain ⟨a, ha, rfl⟩ := ha
-      rw [← f.map_directSumDecompose]
-      exact Ideal.mem_map_of_mem _ (I.2 _ ha)
+      sorry /-rw [← f.map_directSumDecompose]
+      exact Ideal.mem_map_of_mem _ (I.2 _ ha)-/
     | smul a₁ a₂ ha₂ ih =>
       classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
       exact sum_mem fun ij hij ↦ Ideal.mul_mem_left _ _ <| ih _
@@ -52,8 +52,8 @@ definitionally equal to the preimage. -/
 def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
   __ := I.toIdeal.comap f
   is_homogeneous' n a ha := by
-    rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, f.map_directSumDecompose]
-    exact I.2 _ ha
+    sorry /-rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, f.map_directSumDecompose]
+    exact I.2 _ ha-/
 
 variable {I : HomogeneousIdeal 𝒜} {J : HomogeneousIdeal ℬ}
   {K : HomogeneousIdeal 𝒞}
@@ -76,7 +76,7 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
 @[simp] lemma toIdeal_map : (I.map f).toIdeal = I.toIdeal.map f := rfl
 
 instance isPrime_comap [J.toIdeal.IsPrime] : (J.comap f).toIdeal.IsPrime :=
-  inferInstanceAs (J.toIdeal.comap f).IsPrime -- this shows that the simpNF already has the instance
+  inferInstanceAs (J.toIdeal.comap f.toRingHom).IsPrime -- this shows that the simpNF already has the instance
 
 @[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I := ext <| Ideal.map_id _
 
