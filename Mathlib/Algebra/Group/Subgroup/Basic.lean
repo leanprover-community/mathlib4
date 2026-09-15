@@ -1200,4 +1200,14 @@ variable {G} in
 lemma inertia_map_subtype (H : Subgroup G) : (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
 
+variable {I} in
+@[simp]
+lemma inertia_bot [FaithfulSMul G M] : (⊥ : AddSubgroup M).inertia G = ⊥ := by
+  simpa [Subgroup.eq_bot_iff_forall, sub_eq_zero] using faithfulSMul_iff.mp ‹_›
+
+variable {I} in
+@[simp]
+lemma inertia_top : (⊤ : AddSubgroup M).inertia G = ⊤ := by
+  simp [Subgroup.eq_top_iff']
+
 end AddSubgroup
