@@ -85,6 +85,10 @@ theorem symm_zero : σ 0 = 1 :=
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
 
+@[grind =]
+theorem symm_half : σ ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) = ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) := by
+  norm_num [symm]
+
 @[simp, grind =]
 theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
@@ -126,6 +130,10 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
+theorem symm_image_Icc (a b : I) (h : a ≤ b) : σ '' Icc a b = Icc (σ b) (σ a) :=
+  ContinuousOn.image_Icc_of_antitoneOn h
+    (continuous_symm.continuousOn : ContinuousOn σ (Icc a b))
+    (strictAnti_symm.antitone.antitoneOn (Icc a b))
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
