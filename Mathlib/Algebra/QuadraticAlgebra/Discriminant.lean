@@ -87,13 +87,6 @@ theorem discr_eq_im_sq_mul_discr (hf : Function.Injective f) :
     discr a b = (f ω).im ^ 2 * discr a' b' := by
   grind [im_sq_mul_discr, trace_algHom_omega, norm_algHom_omega, discr]
 
-/-- `discr_eq_im_sq_mul_discr` for an `R`-algebra isomorphism `e`, for which `(e ω).im` is
-automatically a unit (`isUnit_im_omega_of_algEquiv`). -/
-theorem discr_eq_im_sq_mul_discr' (e : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b') :
-    discr a b = (e ω).im ^ 2 * discr a' b' := by
-  rw [discr_eq_im_sq_mul_discr e.toAlgHom, AlgEquiv.toAlgHom_apply]
-  exact e.injective
-
 /-- If `2` is a unit, `QuadraticAlgebra R a b` is isomorphic to the standard form
 `QuadraticAlgebra R (discr a b) 0`. -/
 def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :

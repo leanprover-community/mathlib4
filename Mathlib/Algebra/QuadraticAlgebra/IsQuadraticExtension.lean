@@ -18,7 +18,7 @@ conversely every commutative quadratic extension is isomorphic to a `QuadraticAl
 
 ## Main results
 
-* `QuadraticAlgebra.instIsQuadraticExtension`: a `QuadraticAlgebra` is a quadratic extension;
+* a `QuadraticAlgebra` is a quadratic extension, as an instance;
 * `Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra`: every commutative quadratic
   extension is isomorphic to some `QuadraticAlgebra R a b`.
 -/
@@ -30,7 +30,7 @@ namespace QuadraticAlgebra
 variable {R : Type*} [CommSemiring R] {a b : R}
 
 /-- A quadratic algebra is a quadratic extension. -/
-instance instIsQuadraticExtension [StrongRankCondition R] :
+instance [StrongRankCondition R] :
     Algebra.IsQuadraticExtension R (QuadraticAlgebra R a b) where
   finrank_eq_two' := finrank_eq_two a b
 
