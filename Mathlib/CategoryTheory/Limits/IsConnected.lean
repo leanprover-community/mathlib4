@@ -97,7 +97,7 @@ theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
   induction h with
   | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
   | refl _ => exact Zigzag.refl _
-  | symm _ _ _ ih => exact zigzag_symmetric ih
+  | symm _ _ _ ih => exact ih.symm
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
@@ -149,7 +149,7 @@ variable (C : Type*) [Category* C]
 
 /-- Prove that a category is connected by supplying an explicit initial object. -/
 lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
-  letI : Nonempty C := ⟨x⟩
+  let : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]
@@ -159,7 +159,7 @@ lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C 
 
 /-- Prove that a category is connected by supplying an explicit terminal object. -/
 lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected C := by
-  letI : Nonempty C := ⟨x⟩
+  let : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]

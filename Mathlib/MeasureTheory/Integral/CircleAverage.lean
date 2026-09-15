@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.IntervalAverage
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Circle Averages
@@ -31,7 +30,9 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 
 @[expose] public section
 
-open Complex Filter Metric Real Set Topology
+open Complex Filter Metric Real Set
+
+open scoped Topology
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -202,10 +203,10 @@ theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
     (hf : ContinuousOn f {z : ℂ | ‖z - c‖ ∈ s})
     (hs : ∀ r ∈ s, 0 ≤ r) :
     ContinuousOn (circleAverage f c) s := by
-  rw [continuousOn_iff_continuous_restrict] at *
+  rw [continuousOn_iff_continuous_domRestrict] at *
   apply (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' _ _ _).const_smul
-  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} :=
-    by simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
+  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} := by
+    simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
   apply hf.comp (f := (fun x ↦ ⟨circleMap c x.1 x.2, this x⟩))
   fun_prop
 
@@ -231,8 +232,8 @@ lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
     rw [nhdsWithin_le_iff, mem_nhdsLT_iff_exists_Ioo_subset]
     use r
     simp_all [Ioo_subset_Ioc_self]
-  apply tendsto_nhds_unique this (tendsto_const_nhds.congr' _)
-  apply Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) (fun _ hx ↦ (h₂f hx).symm)
+  refine tendsto_nhds_unique_of_eventuallyEq this tendsto_const_nhds ?_
+  exact Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) h₂f
 
 /-!
 ## Constant Functions

@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Dinatural transformations
+
 Dinatural transformations are special kinds of transformations between
 functors `F G : Cᵒᵖ ⥤ C ⥤ D` which depend both covariantly and contravariantly
 on the same category (also known as difunctors).

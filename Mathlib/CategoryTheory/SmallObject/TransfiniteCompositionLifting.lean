@@ -54,7 +54,7 @@ This is constructed by transfinite induction on `j`:
 
 @[expose] public section
 
-universe w v u
+universe t w v u
 
 namespace CategoryTheory
 
@@ -103,7 +103,6 @@ attribute [reassoc (attr := simp)] w₁ w₂
 
 variable {c p f g} {j : J} (sq' : SqStruct c p f g j)
 
-set_option backward.isDefEq.respectTransparency false in
 include sq' in
 @[reassoc]
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
@@ -169,6 +168,7 @@ lemma liftHom_fac (i : J) (hi : i < j) :
     F.map (homOfLE hi.le) ≫ liftHom hj s = (s.1 ⟨⟨i, hi⟩⟩).f' :=
   (F.isColimitOfIsWellOrderContinuous j hj).fac _ ⟨i, hi⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 @[simps]
@@ -259,7 +259,6 @@ namespace MorphismProperty
 variable (W : MorphismProperty C)
   (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
-set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderTransfiniteCompositionOfShape_llp :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]
@@ -279,11 +278,11 @@ lemma transfiniteCompositionsOfShape_le_llp_rlp :
   exact le_trans (transfiniteCompositionsOfShape_monotone J W.le_llp_rlp) this
 
 lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
-    (coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
-  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{w} W).pushouts J
+    (coproducts.{t} W).pushouts.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
+  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{t} W).pushouts J
 
 lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
-    ((coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J).retracts ≤ W.rlp.llp := by
+    ((coproducts.{t} W).pushouts.transfiniteCompositionsOfShape J).retracts ≤ W.rlp.llp := by
   rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
   apply transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp
 

@@ -144,7 +144,7 @@ lemma toSubsemigroup_inj {s t : Submonoid M} : s.toSubsemigroup = t.toSubsemigro
 @[to_additive]
 instance : SetLike (Submonoid M) M where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toSubsemigroup_injective
+  coe_injective := SetLike.coe_injective.comp toSubsemigroup_injective
 
 @[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
 
@@ -317,7 +317,7 @@ open Submonoid
 @[to_additive /-- The additive submonoid of elements `x : M` such that `f x = g x` -/]
 def eqLocusM (f g : M →* N) : Submonoid M where
   carrier := { x | f x = g x }
-  one_mem' := by rw [Set.mem_setOf_eq, f.map_one, g.map_one]
+  one_mem' := by rw [Set.mem_ofPred_eq, f.map_one, g.map_one]
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 
 @[to_additive (attr := simp)]
@@ -385,7 +385,7 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
   /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
-instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
+instance toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
@@ -395,14 +395,14 @@ instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
-instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
+instance toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
-instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
+instance toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 

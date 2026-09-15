@@ -20,7 +20,7 @@ with all a.e. equalities replaced with equalities in the quotient space.
 
 public section
 
-open Function Set Filter MeasureTheory Topology TopologicalSpace
+open Function Set Filter MeasureTheory TopologicalSpace
 
 variable {α X : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 
@@ -82,7 +82,7 @@ theorem ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : QuasiErgodic f μ)
     (hgm : AEStronglyMeasurable g μ) (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c := by
   borelize X
   rcases hgm.isSeparable_ae_range with ⟨t, ht, hgt⟩
-  haveI := ht.secondCountableTopology
+  have := ht.secondCountableTopology
   exact h.ae_eq_const_of_ae_eq_comp_of_ae_range₀ hgt hgm.aemeasurable.nullMeasurable hg_eq
 
 theorem eq_const_of_compQuasiMeasurePreserving_eq (h : QuasiErgodic f μ) {g : α →ₘ[μ] X}

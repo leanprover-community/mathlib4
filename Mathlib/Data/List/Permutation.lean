@@ -12,8 +12,9 @@ public import Mathlib.Data.List.InsertIdx
 public import Mathlib.Data.List.Induction
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Permutations of a list
@@ -313,6 +314,17 @@ theorem mem_permutationsAux_of_perm :
 @[simp]
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
+
+/-- A list is a permutation of the pair `[a, b]` if and only if it is equal to `[a, b]` or to
+`[b, a]`. -/
+theorem perm_pair {a b : α} {l : List α} : l ~ [a, b] ↔ l = [a, b] ∨ l = [b, a] := by
+  have : [a, b].permutations = [[a, b], [b, a]] := by cbv
+  grind [=_ mem_permutations]
+
+/-- The pair `[a, b]` is a permutation of a list if and only if that list is equal to `[a, b]` or
+to `[b, a]`. -/
+theorem pair_perm {a b : α} {l : List α} : [a, b] ~ l ↔ l = [a, b] ∨ l = [b, a] :=
+  perm_comm.trans perm_pair
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).flatMap (permutations'Aux b) ~

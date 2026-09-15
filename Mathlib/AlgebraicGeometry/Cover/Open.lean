@@ -44,6 +44,10 @@ variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 
 instance (i : 𝒰.I₀) : IsOpenImmersion (𝒰.f i) := 𝒰.map_prop i
 
+instance {𝒱 : OpenCover X} (f : 𝒰 ⟶ 𝒱) (i : 𝒰.I₀) : IsOpenImmersion (f.h₀ i) :=
+  have : IsOpenImmersion (f.h₀ i ≫ 𝒱.f (f.s₀ i)) := by rw [f.w₀]; infer_instance
+  .of_comp _ (𝒱.f _)
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The affine cover of a scheme. -/
 def affineCover (X : Scheme.{u}) : OpenCover X := by
@@ -193,7 +197,7 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
   simp only [Cover.pullbackHom, pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv,
     Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π,
     PullbackCone.mk_π_app, Category.comp_id]
-  convert pullbackSymmetry_inv_comp_fst ((𝒰.X i.1).affineCover.f i.2) (pullback.fst _ _)
+  convert! pullbackSymmetry_inv_comp_fst ((𝒰.X i.1).affineCover.f i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 
 /-- A family of elements spanning the unit ideal of `R` gives an affine open cover of `Spec R`. -/
@@ -202,7 +206,7 @@ noncomputable
 def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
     (hs : Ideal.span (Set.range s) = ⊤) : (Spec R).AffineOpenCover where
   I₀ := ι
-  X i := .of (Localization.Away (s i))
+  X i := ↧(Localization.Away (s i))
   f i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
   idx x := by
     have : ∃ i, s i ∉ x.asIdeal := by
@@ -279,7 +283,7 @@ def affineBasisCover (X : Scheme.{u}) : OpenCover X :=
 
 /-- The coordinate ring of a component in the `affine_basis_cover`. -/
 def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.I₀) : CommRingCat :=
-  CommRingCat.of <| @Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2
+  ↧(@Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2)
 
 theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.I₀) :
     X.affineBasisCover.X i = Spec (X.affineBasisCoverRing i) :=
@@ -296,6 +300,7 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
   congr
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     TopologicalSpace.IsTopologicalBasis
       {x : Set X |

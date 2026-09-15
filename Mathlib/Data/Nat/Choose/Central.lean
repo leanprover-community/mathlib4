@@ -56,6 +56,9 @@ theorem choose_le_centralBinom (r n : ℕ) : choose (2 * n) r ≤ centralBinom n
     (2 * n).choose r ≤ (2 * n).choose (2 * n / 2) := choose_le_middle r (2 * n)
     _ = (2 * n).choose n := by rw [Nat.mul_div_cancel_left n zero_lt_two]
 
+theorem centralBinom_strictMono : StrictMono centralBinom :=
+  strictMono_nat_of_lt_succ (by grind [Nat.choose_pos, centralBinom])
+
 theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
   calc
     2 ≤ 2 * n := Nat.le_mul_of_pos_right _ n_pos
@@ -116,6 +119,19 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
         (four_pow_lt_mul_centralBinom _ le_add_self).le
       _ ≤ 2 * (n + 4) * centralBinom (n + 4) := by
         rw [mul_assoc]; refine Nat.le_mul_of_pos_left _ zero_lt_two
+
+theorem four_pow_le_two_mul_add_one_mul_centralBinom (n : ℕ) :
+    4 ^ n ≤ (2 * n + 1) * centralBinom n := by
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp [centralBinom]
+  · refine (four_pow_le_two_mul_self_mul_centralBinom n hn).trans ?_
+    gcongr
+    exact le_add_right (2 * n) 1
+
+@[deprecated four_pow_le_two_mul_add_one_mul_centralBinom (since := "2026-09-13")]
+theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
+    4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
+  four_pow_le_two_mul_add_one_mul_centralBinom n
 
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n

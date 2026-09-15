@@ -91,7 +91,7 @@ theorem trace_eq_matrix_trace [DecidableEq ι] (b : Basis ι R S) (s : S) :
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`. -/
 theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
     trace R S (algebraMap R S x) = Fintype.card ι • x := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert! Finset.sum_const x
   simp [-coe_lmul_eq_mul]
@@ -118,8 +118,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Finite κ] (b : Basis ι R S) (c : Basis κ S T) (x : T) :
     trace R S (trace S T x) = trace R T x := by
-  haveI := Classical.decEq ι
-  haveI := Classical.decEq κ
+  have := Classical.decEq ι
+  have := Classical.decEq κ
   cases nonempty_fintype ι
   cases nonempty_fintype κ
   rw [trace_eq_matrix_trace (b.smulTower c), trace_eq_matrix_trace b, trace_eq_matrix_trace c,

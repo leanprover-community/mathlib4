@@ -6,14 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.PNat.Basic
-public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extra lemmas about periodic points
@@ -24,7 +20,7 @@ public section
 open Nat Set
 
 namespace Function
-variable {α : Type*} {f : α → α} {x y : α}
+variable {α : Type*} {f : α → α} {x : α}
 
 open Function (Commute)
 
@@ -120,7 +116,7 @@ namespace Function
 
 section Prod
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {m n : ℕ}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=

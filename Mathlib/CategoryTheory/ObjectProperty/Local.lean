@@ -77,7 +77,6 @@ instance : W.isColocal.IsClosedUnderIsomorphisms where
     aesop
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (J : Type u') [Category.{v'} J] :
     W.isLocal.IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
@@ -91,7 +90,6 @@ instance (J : Type u') [Category.{v'} J] :
       p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (J : Type u') [Category.{v'} J] :
     W.isColocal.IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := fun X ⟨p⟩ Y Z g hg ↦ by

@@ -42,26 +42,26 @@ theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ 
     rcases eq_or_ne z c with (rfl | hne)
     exacts [hc, (hRs ⟨hz, hne⟩).continuousAt]
   exact (hasFPowerSeriesOnBall_of_differentiable_off_countable (countable_singleton c) hc
-    (fun z hz => hRs (diff_subset_diff_left ball_subset_closedBall hz)) hR0).analyticAt
+    (fun z hz => hRs (sdiff_subset_sdiff_left ball_subset_closedBall hz)) hR0).analyticAt
 
 theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s : Set ℂ} {c : ℂ}
     (hs : s ∈ 𝓝 c) :
     DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔ DifferentiableOn ℂ f s := by
-  refine ⟨?_, fun hd => ⟨hd.mono diff_subset, (hd.differentiableAt hs).continuousAt⟩⟩
+  refine ⟨?_, fun hd => ⟨hd.mono sdiff_subset, (hd.differentiableAt hs).continuousAt⟩⟩
   rintro ⟨hd, hc⟩ x hx
   rcases eq_or_ne x c with (rfl | hne)
   · refine (analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
       ?_ hc).differentiableAt.differentiableWithinAt
     refine eventually_nhdsWithin_iff.2 ((eventually_mem_nhds_iff.2 hs).mono fun z hz hzx => ?_)
     exact hd.differentiableAt (inter_mem hz (isOpen_ne.mem_nhds hzx))
-  · simpa only [DifferentiableWithinAt, HasFDerivWithinAt, hne.nhdsWithin_diff_singleton] using
+  · simpa only [DifferentiableWithinAt, HasFDerivWithinAt, hne.nhdsWithin_sdiff_singleton] using
       hd x ⟨hx, hne⟩
 
 theorem differentiableOn_dslope {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c) :
     DifferentiableOn ℂ (dslope f c) s ↔ DifferentiableOn ℂ f s :=
   ⟨fun h => h.of_dslope, fun h =>
     (differentiableOn_compl_singleton_and_continuousAt_iff hc).mp <|
-      ⟨Iff.mpr (differentiableOn_dslope_of_notMem fun h => h.2 rfl) (h.mono diff_subset),
+      ⟨Iff.mpr (differentiableOn_dslope_of_notMem fun h => h.2 rfl) (h.mono sdiff_subset),
         continuousAt_dslope_same.2 <| h.differentiableAt hc⟩⟩
 
 /-- **Removable singularity** theorem: if `s` is a neighborhood of `c : ℂ`, a function `f : ℂ → E`

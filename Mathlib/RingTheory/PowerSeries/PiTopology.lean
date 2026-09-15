@@ -317,7 +317,7 @@ section Summable
 
 variable [Semiring R] [TopologicalSpace R]
 
-open WithPiTopology MvPowerSeries.WithPiTopology
+open MvPowerSeries.WithPiTopology
 
 variable {R}
 
@@ -326,7 +326,7 @@ variable {R}
 theorem hasSum_of_monomials_self (f : PowerSeries R) :
     HasSum (fun d : ℕ => monomial d (coeff d f)) f := by
   rw [← (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.hasSum_iff]
-  convert MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
+  convert! MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
   simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff]
   congr
   all_goals { ext; simp }

@@ -29,7 +29,7 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-@[expose] public section
+public section
 
 open List (Vector)
 open Encodable Denumerable Part
@@ -42,12 +42,10 @@ section Rfind
 
 variable (p : ℕ →. Bool)
 
-set_option backward.privateInPublic true in
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, false ∈ p k
 
-set_option backward.privateInPublic true in
-private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFounded (lbp p) :=
+private theorem wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFounded (lbp p) :=
   ⟨by
     let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc (lbp p) k by exact fun a => this _ _ (Nat.le_add_left _ _)
@@ -58,8 +56,6 @@ private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFoun
 
 variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
 Returns a subtype. -/
 def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
@@ -131,6 +127,7 @@ theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = P
 
 /-- Find the smallest `n` satisfying `f n`, where all `f k` for `k < n` are defined as false.
 Returns a `Part`. -/
+@[expose]
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
   (rfind fun n => (f n).isSome).bind fun n => f n
 
@@ -178,6 +175,7 @@ theorem of_eq_tot {f : ℕ →. ℕ} {g : ℕ → ℕ} (hf : Nat.Partrec f) (H :
     Nat.Partrec g :=
   hf.of_eq fun n => eq_some_iff.2 (H n)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Nat.Partrec f := by
   induction hf with
   | zero => exact zero
@@ -201,6 +199,7 @@ theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Nat.Partrec f := by
 protected theorem some : Nat.Partrec some :=
   of_primrec Primrec.id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem none : Nat.Partrec fun _ => none :=
   (of_primrec (Nat.Primrec.const 1)).rfind.of_eq fun _ =>
     eq_none_iff.2 fun _ ⟨h, _⟩ => by simp at h
@@ -211,6 +210,7 @@ theorem prec' {f g h} (hf : Nat.Partrec f) (hg : Nat.Partrec g) (hh : Nat.Partre
   ((prec hg hh).comp (pair Partrec.some hf)).of_eq fun a =>
     ext fun s => by simp [Seq.seq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ppred : Nat.Partrec fun n => ppred n :=
   have : Primrec₂ fun n m => if n = Nat.succ m then 0 else 1 :=
     (Primrec.ite
@@ -227,19 +227,23 @@ end Partrec
 end Nat
 
 /-- Partially recursive partial functions `α → σ` between `Primcodable` types -/
+@[expose]
 def Partrec {α σ} [Primcodable α] [Primcodable σ] (f : α →. σ) :=
   Nat.Partrec fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
 
 /-- Partially recursive partial functions `α → β → σ` between `Primcodable` types -/
+@[expose]
 def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β →. σ) :=
   Partrec fun p : α × β => f p.1 p.2
 
 /-- Computable functions `α → σ` between `Primcodable` types:
   a function is computable if and only if it is partially recursive (as a partial function) -/
+@[expose, wikidata Q1148456]
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 
 /-- Computable functions `α → β → σ` between `Primcodable` types -/
+@[expose]
 def Computable₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Computable fun p : α × β => f p.1 p.2
 
@@ -397,6 +401,7 @@ theorem const' (s : Part σ) : Partrec fun _ : α => s :=
   haveI := Classical.dec s.Dom
   Decidable.Partrec.const' s
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem bind {f : α →. β} {g : α → β →. σ} (hf : Partrec f) (hg : Partrec₂ g) :
     Partrec fun a => (f a).bind (g a) :=
   (hg.comp (Nat.Partrec.some.pair hf)).of_eq fun n => by
@@ -490,6 +495,7 @@ variable {α : Type*} {σ : Type*} [Primcodable α] [Primcodable σ]
 
 open Computable
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => Nat.rfind (p a) :=
   (Nat.Partrec.rfind <|
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
@@ -551,6 +557,7 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 theorem option_some_iff {f : α → σ} : (Computable fun a => Option.some (f a)) ↔ Computable f :=
   ⟨fun h => encode_iff.1 <| Primrec.pred.to_comp.comp <| encode_iff.2 h, option_some.comp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bind_decode_iff {f : α → β → Option σ} :
     (Computable₂ fun a n => (decode (α := β) n).bind (f a)) ↔ Computable₂ f :=
   ⟨fun hf =>
@@ -676,6 +683,7 @@ theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.so
   ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by simp [Part.bind_assoc, bind_some_eq_map],
     fun hf => hf.map (option_some.comp snd).to₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem optionCasesOn_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
     (hf : Computable f) (hg : Partrec₂ g) :
     @Partrec _ σ _ _ fun a => Option.casesOn (o a) (Part.some (f a)) (g a) :=
@@ -757,6 +765,7 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       clear_value F
       grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := by
   let F : α → ℕ →. σ ⊕ α := fun a n =>
     n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f

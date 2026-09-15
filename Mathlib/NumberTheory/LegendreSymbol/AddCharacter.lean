@@ -173,7 +173,7 @@ theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine fun a ha hf => ?_
+  intro a ha hf
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h

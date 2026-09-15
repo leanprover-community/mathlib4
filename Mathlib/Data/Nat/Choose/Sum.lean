@@ -124,14 +124,6 @@ theorem choose_middle_le_pow (n : ℕ) : (2 * n + 1).choose n ≤ 4 ^ n := by
     single_le_sum (fun x _ ↦ by lia) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 
-theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
-    4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
-  calc
-    4 ^ n = (1 + 1) ^ (2 * n) := by simp [pow_mul]
-    _ = ∑ m ∈ range (2 * n + 1), (2 * n).choose m := by simp [-Nat.reduceAdd, add_pow]
-    _ ≤ ∑ _ ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
-    _ = (2 * n + 1) * choose (2 * n) n := by simp
-
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
   rcases lt_or_ge n k with h | h
@@ -204,7 +196,7 @@ theorem Int.alternating_sum_range_choose {n : ℕ} :
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = 0 := by
-  rw [Int.alternating_sum_range_choose, if_neg h0]
+  rw [Int.alternating_sum_range_choose, ite_eq_right h0]
 
 namespace Finset
 
@@ -230,7 +222,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = 0 := by
   classical
   rw [sum_powerset_neg_one_pow_card]
-  exact if_neg (nonempty_iff_ne_empty.mp h0)
+  exact ite_eq_right (nonempty_iff_ne_empty.mp h0)
 
 variable [NonAssocSemiring R]
 

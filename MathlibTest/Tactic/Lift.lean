@@ -243,3 +243,16 @@ def foo (n : Int) (hn : 0 ≤ n) : Int := n
 example (n : Int) (hn : 0 ≤ n) : foo n hn = n := by
   lift n to Nat using hn
   rfl
+
+-- Regression test for https://github.com/leanprover-community/mathlib4/issues/15865.
+abbrev MyNat := ℕ
+
+namespace MyNat
+
+theorem isTrue (_ : MyNat) : True := trivial
+
+end MyNat
+
+example (n : ℤ) (hn : n ≥ 0) : True := by
+  lift n to MyNat using hn
+  exact n.isTrue

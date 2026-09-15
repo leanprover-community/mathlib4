@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Batteries.Tactic.Alias
+public import Batteries.Data.Nat.Lemmas
 public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
@@ -54,10 +54,8 @@ The relevant files are:
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
 
-open Function
-
 namespace Nat
-variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
+variable {a b m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 
@@ -157,7 +155,7 @@ lemma leRec_self {n} {motive : (m : ℕ) → n ≤ m → Sort*}
     (le_succ_of_le : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h)) :
     (leRec (motive := motive) refl le_succ_of_le (Nat.le_refl _) :
     motive n (Nat.le_refl _)) = refl := by
-  cases n <;> simp [leRec, Or.by_cases, dif_neg]
+  cases n <;> simp [leRec, Or.by_cases, dite_eq_right]
 
 @[simp]
 lemma leRec_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
@@ -168,7 +166,7 @@ lemma leRec_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
       le_succ_of_le h1 (leRec (motive := motive) refl le_succ_of_le h1) := by
   conv =>
     lhs
-    rw [leRec, Or.by_cases, dif_pos h1]
+    rw [leRec, Or.by_cases, dite_eq_left h1]
 
 lemma leRec_succ' {n} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_succ_of_le) :
     (leRec (motive := motive) refl le_succ_of_le (le_succ _)) = le_succ_of_le _ refl := by
@@ -221,44 +219,10 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
-set_option backward.privateInPublic true in
-private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
-    ∀ n : ℕ, ∀ m < n, p m
-  | 0, _, h => by simp at h
-  | n + 1, m, hmn => H _ fun l hlm ↦
-      strongRecAux H n l (Nat.lt_of_lt_of_le hlm <| le_of_lt_succ hmn)
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-/-- Recursion principle based on `<`. -/
-@[elab_as_elim]
-protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) : p n :=
-  H n <| strongRecAux H n
-
-set_option backward.privateInPublic true in
-private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) :
-    ∀ m (lt : m < n), strongRecAux H n m lt = H m (strongRecAux H m) :=
-  n.strongRec' fun n ih m hmn ↦ by
-    obtain _ | n := n
-    · cases hmn
-    refine congrArg (H _) ?_
-    ext l hlm
-    exact (ih _ n.lt_succ_self _ _).trans (ih _ hmn _ _).symm
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
-    n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
-  congrArg (H n) <| by ext m lt; apply strongRecAux_spec
-
-/-- Recursion principle based on `<` applied to some natural number. -/
-@[elab_as_elim]
-def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m < n, P m) → P n) : P n :=
-  Nat.strongRec' h n
-
-lemma strongRecOn'_beta {P : ℕ → Sort*} {h} :
-    (strongRecOn' n h : P n) = h n fun m _ ↦ (strongRecOn' m h : P m) :=
-  strongRec'_spec _
+@[deprecated (since := "2026-03-05")] alias strongRec' := Nat.strongRec
+@[deprecated (since := "2026-03-05")] alias strongRec'_spec := Nat.strongRec_eq
+@[deprecated (since := "2026-03-05")] alias strongRecOn' := Nat.strongRec
+@[deprecated (since := "2026-03-05")] alias strongRecOn'_beta := Nat.strongRec_eq
 
 /-- Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
@@ -392,7 +356,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   | 0, _ + 1, _ => hb _
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
-    · have this : a + 1 = b ∨ a + 1 < b := by lia
+    · have : a + 1 = b ∨ a + 1 < b := by lia
       rcases this with (rfl | h)
       · exact ha _
       apply diag_induction P ha hb hd (a + 1) b h

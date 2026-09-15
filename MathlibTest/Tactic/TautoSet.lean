@@ -87,7 +87,7 @@ example (hA : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by tauto_set
 -- elem_notin_set_minus_singleton
 example (a : α) : a ∉ A \ {a} := by tauto_set
 
--- sub_union_diff_sub_union
+-- sub_union_sdiff_sub_union
 example (hA : A ⊆ B \ C) : A ⊆ B := by tauto_set
 
 -- singleton_inter_subset_left
@@ -96,7 +96,7 @@ example (hAB : A ∩ B = {a}) : {a} ⊆ A := by tauto_set
 -- singleton_inter_subset_right
 example (hAB : A ∩ B = {a}) : {a} ⊆ B := by tauto_set
 
--- diff_subset_parent
+-- sdiff_subset_parent
 example (hAB : A ⊆ C) : A \ B ⊆ C := by tauto_set
 
 -- inter_subset_parent_left
@@ -108,7 +108,7 @@ example (hBC : B ⊆ C) : A ∩ B ⊆ C := by tauto_set
 -- inter_subset_union
 example : A ∩ B ⊆ A ∪ B := by tauto_set
 
--- subset_diff_empty_eq
+-- subset_sdiff_empty_eq
 example (hAB : A ⊆ B) (hBA : B \ A = ∅) : A = B := by tauto_set
 
 -- Disjoint.ni_of_in

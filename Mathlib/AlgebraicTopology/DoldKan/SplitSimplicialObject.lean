@@ -53,7 +53,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : (s.cofan Δ).inj A ≫ s.πSummand B = 0 := by
   dsimp [πSummand]
-  rw [ι_desc, dif_neg h.symm]
+  rw [ι_desc, dite_eq_right h.symm]
 
 variable [Preadditive C]
 
@@ -121,7 +121,6 @@ theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
       rw [assoc, reassoc_of% h, zero_comp]
     · simp only [assoc, s.cofan_inj_comp_PInfty_eq_zero A hA, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInfty_comp_πSummand_id (n : ℕ) :
     PInfty.f n ≫ s.πSummand (IndexSet.id (op ⦋n⦌)) = s.πSummand (IndexSet.id (op ⦋n⦌)) := by
@@ -253,7 +252,7 @@ noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
 this is the split monomormphism from the chain complex `s.nondegComplex` to
-the alternating face map complex fo `X`. -/
+the alternating face map complex of `X`. -/
 @[no_expose]
 noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
   (fullyFaithfulToKaroubi _).preimage
@@ -276,6 +275,7 @@ lemma toNondegComplex_f (n : ℕ) :
     s.toNondegComplex.f n = PInfty.f n ≫ s.toKaroubiNondegComplexIsoN₁.inv.f.f n := by
   simp [toNondegComplex, fullyFaithfulToKaroubi]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma fromNondegComplex_f (n : ℕ) :
