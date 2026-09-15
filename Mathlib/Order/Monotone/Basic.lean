@@ -225,11 +225,11 @@ variable [Preorder α] [Preorder β] {f : α → β}
 
 @[to_dual]
 theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α :=
-  Subrelation.isWellFounded (InvImage (· < ·) f) hf.imp
+  .anti (r := InvImage (· < ·) f) @hf.imp
 
 @[to_dual]
 theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
-  Subrelation.isWellFounded (InvImage (· > ·) f) hf.imp
+  .anti (r := InvImage (· > ·) f) @hf.imp
 
 end WellFounded
 
