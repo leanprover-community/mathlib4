@@ -8,8 +8,8 @@ module
 public import Mathlib.Init
 public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Meta.Tactic.TryThis
-/-!
 
+/-!
 # Tactic `change? term`
 
 This tactic is used to suggest a replacement of the goal by a definitionally equal term.
@@ -21,6 +21,8 @@ This is helpful after tactics like `dsimp`, which can then be deleted.
 -/
 
 public meta section
+
+namespace Mathlib.Tactic
 
 /-- `change? term` unifies `term` with the current goal, then suggests explicit `change` syntax
 that uses the resulting unified term.
@@ -50,3 +52,5 @@ elab_rules : tactic
       instantiateMVars ex
   let dstx ← delabToRefinableSyntax expr
   addSuggestion tk (← `(tactic| change $dstx)) (origSpan? := stx)
+
+end Mathlib.Tactic
