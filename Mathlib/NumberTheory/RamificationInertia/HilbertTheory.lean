@@ -225,7 +225,8 @@ theorem IsInertiaField.rank_decompositionField [IsGalois K L] [Algebra K D] [Alg
   have := Module.finrank_mul_finrank K D E
   rwa [IsInertiaField.rank_right A K L p P E, IsDecompositionField.rank_right A K L p P D,
     mul_right_inj'] at this
-  exact Algebra.QuasiFinite.primesOver_ncard_ne_zero p
+  obtain ⟨⟨Q, hQ⟩⟩ : Nonempty (p.primesOver B) := inferInstance
+  exact Set.ncard_ne_zero_of_mem hQ (Algebra.QuasiFinite.finite_primesOver p)
 
 end rank
 
