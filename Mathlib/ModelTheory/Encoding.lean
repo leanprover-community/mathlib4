@@ -25,6 +25,10 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 - `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
   `Σ n, L.BoundedFormula α n` is at most
   `max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
+- `FirstOrder.Language.Formula.card_le` gives the same bound for `L.Formula α`.
+- `FirstOrder.Language.BoundedFormula.card_le_withConstants` and
+  `FirstOrder.Language.Formula.card_le_withConstants` make the contribution from parameters
+  explicit.
 
 ## TODO
 
@@ -297,6 +301,35 @@ theorem card_le : #(Σ n, L.BoundedFormula α n) ≤
   simp only [lift_add, lift_lift, lift_aleph0]
   rw [← add_assoc, add_comm, ← add_assoc, ← add_assoc, aleph0_add_aleph0, add_assoc,
     add_eq_max le_rfl, add_assoc, card, Symbols, mk_sum, lift_add, lift_lift, lift_lift]
+
+theorem card_le_withConstants {β : Type w} : #(Σ n, L[[α]].BoundedFormula β n) ≤
+    max ℵ₀
+      (Cardinal.lift.{max (max u u') v} #β +
+        (Cardinal.lift.{max w u'} L.card + Cardinal.lift.{max (max u v) w} #α)) := by
+  simpa only [card_withConstants, lift_add, lift_lift] using
+    card_le (L := L[[α]]) (α := β)
+
+end BoundedFormula
+
+namespace Formula
+
+theorem card_le : #(L.Formula α) ≤
+    max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) :=
+  (Cardinal.mk_le_of_injective
+    (f := fun φ ↦ (⟨0, φ⟩ : Σ n, L.BoundedFormula α n)) sigma_mk_injective).trans
+      BoundedFormula.card_le
+
+theorem card_le_withConstants {β : Type w} : #(L[[α]].Formula β) ≤
+    max ℵ₀
+      (Cardinal.lift.{max (max u u') v} #β +
+        (Cardinal.lift.{max w u'} L.card + Cardinal.lift.{max (max u v) w} #α)) :=
+  (Cardinal.mk_le_of_injective
+    (f := fun φ ↦ (⟨0, φ⟩ : Σ n, L[[α]].BoundedFormula β n)) sigma_mk_injective).trans
+    BoundedFormula.card_le_withConstants
+
+end Formula
+
+namespace BoundedFormula
 
 section Countable
 
