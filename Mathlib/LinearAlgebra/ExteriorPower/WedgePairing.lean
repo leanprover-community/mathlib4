@@ -43,13 +43,51 @@ abbrev wedgePairing :
     ⋀[R]^k M →ₗ[R] ⋀[R]^l M →ₗ[R] R :=
   (wedge R M k l).compr₂ (hkl ▸ vol)
 
+/-- An auxiliary lemma for `exteriorPower.wedgePairing_eq_apply_topVector_smul`. -/
+private lemma apply_eqRec {N : Type*} [AddCommGroup N] [Module R N]
+    (h : k = l) (f : ⋀[R]^l M →ₗ[R] N)
+    {x : ⋀[R]^k M} {y : ⋀[R]^l M} (hxy : (x : ExteriorAlgebra R M) = y) :
+    (h ▸ f) x = f y := by
+  subst h
+  exact congrArg f (Subtype.ext hxy)
+
 section Basis
 
-variable [Nontrivial R] {ι : Type*} [Fintype ι] [LinearOrder ι] (b : Basis ι R M)
+variable {ι : Type*} [LinearOrder ι] (b : Basis ι R M)
+
+lemma wedge_apply_of_not_disjoint
+    {I : powersetCard ι k} {J : powersetCard ι l} (h : ¬ Disjoint I.val J.val) :
+    wedge R M k l (b.exteriorPower k I) (b.exteriorPower l J) = 0 := by
+  ext
+  simp_rw [DirectSum.gMulLHom_apply_apply, SetLike.coe_gMul, ← ExteriorAlgebra.basis_eq_coe_basis,
+    ZeroMemClass.coe_zero, ExteriorAlgebra.basis_mul_of_not_disjoint b I J h]
+
+variable [Fintype ι]
+
+lemma wedge_apply_of_disjoint (hkl : k + l = Fintype.card ι)
+    {I : powersetCard ι k} {J : powersetCard ι l} (h : Disjoint I.val J.val) :
+    wedge R M k l (b.exteriorPower k I) (b.exteriorPower l J) =
+      powersetCard.sign I • b.ExteriorAlgebra (I.val ∪ J.val) := by
+  simp_rw [DirectSum.gMulLHom_apply_apply, SetLike.coe_gMul, ← ExteriorAlgebra.basis_eq_coe_basis,
+    ExteriorAlgebra.basis_mul_of_disjoint b I J h, powersetCard.coe_disjUnion,
+      Finset.disjUnion_eq_union, powersetCard.sign_eq_permOfDisjoint_sign hkl I J h]
+
+variable [Nontrivial R]
 
 /-- The wedge product of all the elements of the basis `b`, in increasing order. -/
 def _root_.Module.Basis.topVector : ⋀[R]^(finrank R M) M :=
   b.exteriorPower (finrank R M) ⟨Finset.univ, by simp [finrank_eq_card_basis b]⟩
+
+@[simp]
+lemma _root_.Module.Basis.coe_topVector :
+    (b.topVector : ExteriorAlgebra R M) = b.ExteriorAlgebra .univ :=
+  (ExteriorAlgebra.basis_eq_coe_basis b ⟨Finset.univ, by simp [finrank_eq_card_basis b]⟩).symm
+
+@[simp]
+lemma _root_.Module.Basis.topVector_eq_exteriorPower (s : powersetCard ι (finrank R M)) :
+    b.exteriorPower (finrank R M) s = b.topVector := by
+  have : (s : Finset ι) = .univ := Finset.eq_univ_of_card _ <| by simp [finrank_eq_card_basis b]
+  simp_rw [Module.Basis.topVector, ← this]
 
 lemma isUnit_apply_topVector : IsUnit (vol b.topVector) := by
   have : Unique (powersetCard ι (finrank R M)) :=
@@ -60,46 +98,31 @@ lemma isUnit_apply_topVector : IsUnit (vol b.topVector) := by
     IsUnit.of_mul_eq_one_right _ this
   suffices (b.exteriorPower (finrank R M)).repr x default • b.topVector = x by
     rw [← smul_eq_mul, ← map_smul, ← hx, this]
-  have : b.exteriorPower (finrank R M) default = b.topVector := by
-    congr; exact Subsingleton.elim _ _
-  simpa only [Fintype.sum_unique, this] using (b.exteriorPower <| finrank R M).sum_repr x
+  simpa using (b.exteriorPower _).sum_repr x
 
 lemma wedgePairing_eq_apply_topVector_smul :
-    haveI hkl' : k + l = Fintype.card ι := by rw [hkl, Module.finrank_eq_card_basis b]
+    haveI hkl' : k + l = Fintype.card ι := by rw [hkl, finrank_eq_card_basis b]
     letI bk : Basis (powersetCard ι k) R (⋀[R]^k M) := b.exteriorPower k
     letI bl : Basis (powersetCard ι k) R (Dual R (⋀[R]^l M)) :=
       (b.exteriorPower l).dualBasis.reindex (powersetCard.compl hkl') |>.groupSMul powersetCard.sign
     wedgePairing vol hkl = vol b.topVector • (bk.repr.trans bl.repr.symm) := by
-  classical
-  have hcard : k + l = Fintype.card ι := by rw [hkl, finrank_eq_card_basis b]
-  have htopVector : (hkl ▸ vol : ⋀[R]^(k + l) M →ₗ[R] R)
-      (b.exteriorPower (k + l) ⟨Finset.univ, by simp [hcard]⟩) = vol b.topVector := by
-    generalize k + l = degree at hcard hkl ⊢
-    subst hkl
-    rfl
-  refine (b.exteriorPower k).ext fun leftSet ↦ (b.exteriorPower l).ext fun rightSet ↦ ?_
-  simp only [LinearMap.smul_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
-    Basis.repr_self, Basis.repr_symm_single_one, Basis.groupSMul_apply, Pi.smul_apply',
-    Basis.reindex_apply, Basis.dualBasis_apply_self]
-  simp only [Equiv.eq_symm_apply, eq_comm (a := powersetCard.compl hcard rightSet),
-    ← powersetCard.disjoint_iff_eq_compl]
-  by_cases hdisjoint : Disjoint leftSet.val rightSet.val
-  · have hcompl := (powersetCard.disjoint_iff_eq_compl hcard).mp hdisjoint
-    have hwedge : wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) =
-        powersetCard.sign leftSet •
-          b.exteriorPower (k + l) ⟨Finset.univ, by simp [hcard]⟩ := by
-      apply Subtype.ext
-      rw [powersetCard.sign_eq_permOfDisjoint_sign hcard leftSet rightSet hdisjoint]
-      simpa [-coe_basis, ← ExteriorAlgebra.basis_eq_coe_basis, hcompl,
-        Finset.disjUnion_eq_union, Finset.union_comm] using
-        ExteriorAlgebra.basis_mul_of_disjoint b leftSet rightSet hdisjoint
-    rw [wedgePairing, LinearMap.compr₂_apply, hwedge, map_zsmul_unit, htopVector]
-    simp [hdisjoint]
-  · have hwedge : wedge R M k l (b.exteriorPower k leftSet) (b.exteriorPower l rightSet) = 0 := by
-      apply Subtype.ext
-      simpa [-coe_basis, ← ExteriorAlgebra.basis_eq_coe_basis] using
-        ExteriorAlgebra.basis_mul_of_not_disjoint b leftSet rightSet hdisjoint
-    rw [wedgePairing, LinearMap.compr₂_apply, hwedge, map_zero]
+  have hkl' : k + l = Fintype.card ι := by rw [hkl, finrank_eq_card_basis b]
+  suffices ∀ (I : powersetCard ι k) (J : powersetCard ι l),
+      (wedgePairing vol hkl) (b.exteriorPower k I) (b.exteriorPower l J) =
+        powersetCard.sign I • vol b.topVector • if Disjoint I.val J.val then 1 else 0 by
+    refine (b.exteriorPower k).ext fun I ↦ (b.exteriorPower l).ext fun J ↦ ?_
+    simp [-Basis.coe_dualBasis, -coe_basis, Basis.groupSMul_apply, Basis.dualBasis_apply_self,
+      Equiv.eq_symm_apply, eq_comm (b := I), powersetCard.disjoint_iff_eq_compl hkl', this I J]
+  intro I J
+  by_cases hdisjoint : Disjoint I.val J.val
+  · have hIJ : (I : Finset ι) ∪ (J : Finset ι) = Finset.univ :=
+      Finset.eq_univ_of_card _ <| by simp [hdisjoint, hkl']
+    have : (wedge R M k l (b.exteriorPower k I) (b.exteriorPower l J) : ExteriorAlgebra R M) =
+        (powersetCard.sign I • b.topVector : ⋀[R]^(finrank R M) M) := by
+      rw [wedge_apply_of_disjoint b hkl' hdisjoint, hIJ, SetLike.val_smul_of_tower, b.coe_topVector]
+    simp_rw [wedgePairing, LinearMap.compr₂_apply, apply_eqRec hkl _ this, map_zsmul_unit,
+      LinearEquiv.coe_coe, hdisjoint, reduceIte, smul_eq_mul, mul_one]
+  · rw [wedgePairing, LinearMap.compr₂_apply, wedge_apply_of_not_disjoint b hdisjoint, map_zero]
     simp [hdisjoint]
 
 end Basis
