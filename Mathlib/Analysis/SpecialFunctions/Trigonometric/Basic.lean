@@ -973,6 +973,22 @@ theorem tan_nat_mul_pi_sub (x : ℝ) (n : ℕ) : tan (n * π - x) = -tan x :=
 theorem tan_int_mul_pi_sub (x : ℝ) (n : ℤ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.int_mul_sub_eq n
 
+theorem tendsto_sin_nhdsGT_zero : Tendsto sin (𝓝[>] 0) (𝓝[>] 0) := by
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
+  · simpa using continuous_sin.tendsto 0 |>.mono_left nhdsWithin_le_nhds
+  · filter_upwards [Ioo_mem_nhdsGT pi_pos] with x hx using sin_pos_of_pos_of_lt_pi hx.left hx.right
+
+theorem tendsto_sin_nhdsLT_pi : Tendsto sin (𝓝[<] π) (𝓝[>] 0) := by
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
+  · simpa using continuous_sin.tendsto π |>.mono_left nhdsWithin_le_nhds
+  · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using sin_pos_of_pos_of_lt_pi hx.left hx.right
+
+theorem tendsto_cos_nhdsLT_pi : Tendsto cos (𝓝[<] π) (𝓝[>] (-1)) := by
+  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
+  · simpa using continuous_cos.tendsto π |>.mono_left nhdsWithin_le_nhds
+  · filter_upwards [Ioo_mem_nhdsLT pi_pos] with x hx using mem_Ioi.mpr <| cos_pi ▸ strictAntiOn_cos
+      ⟨hx.left.le, hx.right.le⟩ ⟨pi_pos.le, le_rfl⟩ hx.right
+
 theorem tendsto_sin_pi_div_two : Tendsto sin (𝓝[<] (π / 2)) (𝓝 1) := by
   convert! continuous_sin.continuousWithinAt.tendsto
   simp
