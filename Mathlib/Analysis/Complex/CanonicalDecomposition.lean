@@ -168,6 +168,29 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
   rw [← ofReal_pow, ← normSq_eq_norm_sq, normSq_eq_conj_mul_self, ← sub_mul, mul_comm _ z]
   simp [← map_sub]
 
+private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f : β → α)
+    (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
+  simp only [mulSupport_subset_iff, ne_eq, mem_support]
+  intro
+  contrapose!
+  simp +contextual
+
+/--
+Finite Blaschke products, i.e., products of powers of canonical factors `canonicalFactor R u` with
+`u ∈ ball 0 R`, take values of norm one on `sphere 0 R`.
+-/
+theorem norm_finprod_canonicalFactor_zpow_eq_one {F : ℂ → ℤ} (hF : F.support ⊆ ball 0 R) {z : ℂ}
+    (hz : z ∈ sphere 0 R) :
+    ‖(∏ᶠ u, (canonicalFactor R u) ^ (F u)) z‖ = 1 := by
+  by_cases h : (mulSupport fun u ↦ (canonicalFactor R u) ^ (F u)).Finite
+  · rw [finprod_eq_prod_of_mulSupport_subset (s := h.toFinset) _ (by simp)]
+    simp only [Finset.prod_apply, Pi.pow_apply, norm_prod, norm_zpow]
+    apply Finset.prod_eq_one
+    intro b hb
+    rw [norm_canonicalFactor_eval_circle_eq_one
+      (hF (mulSupport_pow_subset_support _ _ (h.mem_toFinset.1 hb))) hz, one_zpow]
+  · simp [finprod_of_infinite_mulSupport h]
+
 /-!
 ### Orders and Divisors
 -/
@@ -512,13 +535,6 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
       simp_all [← smul_assoc]
     }
 
-private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f : β → α)
-    (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
-  simp only [mulSupport_subset_iff, ne_eq, mem_support]
-  intro
-  contrapose!
-  simp +contextual
-
 /--
 Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
 decomposition, write the function `h` entirely in terms of `f`.
@@ -667,5 +683,38 @@ lemma ECanonicalDecomp.log_norm_eq
       case η₀ | η₁ => intro _ _; simp_all [S₀R, B₀R]
       rw [sub_eq_add_neg, ← Finset.sum_neg_distrib]
       congr! 3 with i hi i hi <;> simp
+
+/--
+Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
+decomposition, the function `log ‖f‖` agrees on the circle `sphere 0 R`, up to modification over a
+discrete set, with `∑ᶠ u, (divisor f (sphere 0 R) u * log ‖· - u‖) + log ‖h ·‖`. The canonical
+factors do not contribute because they have norm one on the circle.
+-/
+lemma ECanonicalDecomp.log_norm_eventuallyEq {f h : ℂ → E} (D : ECanonicalDecomp f h R) :
+    (Real.log ‖f ·‖) =ᶠ[codiscreteWithin (sphere 0 R)]
+      ∑ᶠ u, (divisor f (sphere 0 R) u * Real.log ‖· - u‖) + (Real.log ‖h ·‖) := by
+  -- The Blaschke product has norm one on the circle
+  have h₀ {u : ℂ} (hu : u ∈ sphere 0 R) :
+      ‖(∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) u‖ = 1 :=
+    norm_finprod_canonicalFactor_zpow_eq_one
+      (fun _ hu ↦ (divisor f (ball 0 R)).supportWithinDomain (by simpa using hu)) hu
+  -- Rewrite the extended canonical decomposition as an instance of the setting of
+  -- `MeromorphicOn.extract_zeros_poles_log`, with the Blaschke product absorbed into `h`.
+  have h₁ : f =ᶠ[codiscreteWithin (sphere 0 R)] (∏ᶠ v, (· - v) ^ (divisor f (sphere 0 R)) v) •
+      ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) • h) := by
+    filter_upwards [D.eventuallyEq.filter_mono (codiscreteWithin_mono sphere_subset_closedBall)]
+      with a ha
+    rw [ha, Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.mul_apply, mul_comm, mul_smul]
+  have h₂ : ∀ u : sphere (0 : ℂ) R,
+      ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) • h) u ≠ 0 := by
+    intro ⟨u, hu⟩
+    rw [Pi.smul_apply']
+    apply smul_ne_zero _ (D.ne_zero u (sphere_subset_closedBall hu))
+    rw [← norm_ne_zero_iff, h₀ hu]
+    exact one_ne_zero
+  filter_upwards [MeromorphicOn.extract_zeros_poles_log h₂ h₁, self_mem_codiscreteWithin _]
+    with a ha h₂a
+  rw [ha]
+  simp only [Pi.add_apply, Pi.smul_apply', norm_smul, h₀ h₂a, one_mul]
 
 end Complex
