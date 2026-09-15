@@ -1365,7 +1365,7 @@ def addTranslationFor (t : TranslateData) (ref : Syntax) (src : Name) (tgt : Ter
   let name ← mkAuxDeclName (t.attrName.appendBefore "_")
   -- The new body should be exposed whenever `src` is not a theorem
   withExporting (isExporting := !isPrivateName src && !isTheorem) do
-    let value ← forallTelescope type fun xs type ↦ do
+    let value ← forallBoundedTelescope type (numNiceForall type) fun xs type ↦ do
       mkLambdaFVars xs <| ← instantiateMVars <| ←
         Term.elabTermEnsuringType tgt type <* Term.synthesizeSyntheticMVarsNoPostponing
     addDecl <| ←
@@ -1374,5 +1374,12 @@ def addTranslationFor (t : TranslateData) (ref : Syntax) (src : Name) (tgt : Ter
       else
         .defnDecl <$> mkDefinitionValInferringUnsafe name cinfo.levelParams type value .opaque
   insertTranslation t src name {} relevantArg ref (unfold := !isTheorem)
+where
+  /-- Return how many variables can be introduced without introducing one with an
+  inaccessible username. -/
+  numNiceForall : Expr → Nat
+    | .forallE n _ b bi =>
+      if bi.isInstImplicit || !n.hasMacroScopes then numNiceForall b + 1 else 0
+    | _ => 0
 
 end Mathlib.Tactic.Translate
