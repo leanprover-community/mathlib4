@@ -626,6 +626,8 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.LinearAlgebra.SesquilinearForm, `Mathlib.Topology), -- for links with positive semidefinite matrices
   (`Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap, `Mathlib.Topology),
   (`Mathlib.ModelTheory.Topology, `Mathlib.Topology), -- For e.g. topology on complete types.
+  (`Mathlib.Order.Category.PartOrd, `Mathlib.AlgebraicTopology),
+  (`Mathlib.Order.Category.Preord, `Mathlib.AlgebraicTopology),
   (`Mathlib.LinearAlgebra.RootSystem.IsValuedIn, `Mathlib.Topology),
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
   (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold),
