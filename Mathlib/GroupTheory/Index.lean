@@ -432,15 +432,10 @@ lemma relIndex_inter_ne_zero {J K : Subgroup G} (hJK : J.relIndex K ≠ 0) (L : 
   exact relIndex_comap_ne_zero _ hJK
 
 @[to_additive]
-theorem relIndex_inf : (H ⊓ K).relIndex L = H.relIndex (K ⊓ L) * K.relIndex L := by
-  rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
-    inf_relIndex_right, inf_relIndex_right]
-
-@[to_additive]
 theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L := by
   by_cases h : H.relIndex L = 0
   · simp [relIndex_eq_zero_of_le_left inf_le_left h]
-  grw [relIndex_inf, relIndex_le_of_le_right inf_le_right h]
+  grw [← relIndex_inf_mul_relIndex, relIndex_le_of_le_right inf_le_right h]
 
 @[to_additive]
 theorem index_inf : (H ⊓ K).index = H.relIndex K * K.index := by
