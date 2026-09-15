@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Insert
 /-!
+# Fibers of a function
 
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
 to work with and construct terms of this type.
