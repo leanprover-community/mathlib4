@@ -11,6 +11,8 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.GroupWithZero.Pi
+public import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 
 /-!
@@ -426,3 +428,41 @@ lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
   rfl
 
 end CommMonoidWithZero
+
+section Pi
+variable {ι : Type*} {M₀ : ι → Type*} [∀ i, MonoidWithZero (M₀ i)] {x : ∀ i, M₀ i}
+
+/-- An element of a product of monoids with zero is a non-zero-divisor iff each of its coordinates
+is a non-zero-divisor. -/
+lemma Pi.mem_nonZeroDivisors_iff :
+    x ∈ nonZeroDivisors (∀ i, M₀ i) ↔ ∀ i, x i ∈ nonZeroDivisors (M₀ i) := by
+  classical
+  refine ⟨fun hx i ↦ ⟨fun y hy ↦ ?_, fun y hy ↦ ?_⟩, fun hx ↦
+    ⟨fun _ h ↦ funext fun i ↦ (hx i).1 _ (congrFun h i),
+      fun _ h ↦ funext fun i ↦ (hx i).2 _ (congrFun h i)⟩⟩
+  · have h := hx.1 (Function.update 0 i y) (funext fun j ↦ ?_)
+    · simpa using congrFun h i
+    · rcases eq_or_ne j i with rfl | hj <;> simp [Function.update_of_ne, *]
+  · have h := hx.2 (Function.update 0 i y) (funext fun j ↦ ?_)
+    · simpa using congrFun h i
+    · rcases eq_or_ne j i with rfl | hj <;> simp [Function.update_of_ne, *]
+
+end Pi
+
+section Prod
+variable {M₀ N₀ : Type*} [MonoidWithZero M₀] [MonoidWithZero N₀] {x : M₀ × N₀}
+
+/-- An element of a binary product of monoids with zero is a non-zero-divisor iff each of its
+coordinates is a non-zero-divisor. -/
+lemma Prod.mem_nonZeroDivisors_iff :
+    x ∈ nonZeroDivisors (M₀ × N₀) ↔ x.1 ∈ nonZeroDivisors M₀ ∧ x.2 ∈ nonZeroDivisors N₀ := by
+  refine ⟨fun hx ↦ ⟨⟨fun y hy ↦ ?_, fun y hy ↦ ?_⟩, ⟨fun y hy ↦ ?_, fun y hy ↦ ?_⟩⟩,
+    fun ⟨h₁, h₂⟩ ↦
+      ⟨fun _ h ↦ Prod.ext (h₁.1 _ (congrArg Prod.fst h)) (h₂.1 _ (congrArg Prod.snd h)),
+        fun _ h ↦ Prod.ext (h₁.2 _ (congrArg Prod.fst h)) (h₂.2 _ (congrArg Prod.snd h))⟩⟩
+  · simpa using congrArg Prod.fst (hx.1 (y, 0) (Prod.ext (by simpa using hy) (by simp)))
+  · simpa using congrArg Prod.fst (hx.2 (y, 0) (Prod.ext (by simpa using hy) (by simp)))
+  · simpa using congrArg Prod.snd (hx.1 (0, y) (Prod.ext (by simp) (by simpa using hy)))
+  · simpa using congrArg Prod.snd (hx.2 (0, y) (Prod.ext (by simp) (by simpa using hy)))
+
+end Prod
