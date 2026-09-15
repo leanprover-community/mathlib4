@@ -5,17 +5,21 @@ Authors: Sven Manthe
 -/
 module
 
+public import Mathlib.Data.List.OfFn
 public import Mathlib.Order.CompleteLattice.SetLike
 
 /-!
 # Trees in the sense of descriptive set theory
 
 This file defines trees of depth `ω` in the sense of descriptive set theory as sets of finite
-sequences that are stable under taking prefixes.
+sequences that are stable under taking prefixes, together with their infinite branches and bodies.
 
 ## Main declarations
 
 * `tree A`: a (possibly infinite) tree of depth at most `ω` with nodes in `A`
+* `Tree.initialSegment`: the finite initial segment of an infinite sequence
+* `Tree.IsBranch`: the predicate that a sequence is an infinite branch through a tree
+* `Tree.body`: the set of infinite branches through a tree
 -/
 
 @[expose] public section
@@ -67,6 +71,43 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 
 @[simp] lemma take_eq_take {x : T} {m n : ℕ} :
     take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
+
+-- ### Infinite branches
+
+/-- The list of the first `n` values of an infinite sequence. -/
+def initialSegment (x : ℕ → A) (n : ℕ) : List A :=
+  List.ofFn fun i : Fin n ↦ x i
+
+@[simp] lemma initialSegment_zero (x : ℕ → A) : initialSegment x 0 = [] := by
+  rfl
+
+@[simp] lemma length_initialSegment (x : ℕ → A) (n : ℕ) : (initialSegment x n).length = n := by
+  simp [initialSegment]
+
+/-- Passing from length `n` to length `n + 1` appends the next coordinate. -/
+lemma initialSegment_succ (x : ℕ → A) (n : ℕ) :
+    initialSegment x (n + 1) = initialSegment x n ++ [x n] := by
+  simpa [initialSegment] using List.ofFn_succ' (fun i : Fin (n + 1) ↦ x i)
+
+/-- An infinite sequence is a branch when every finite initial segment belongs to the tree. -/
+def IsBranch (T : tree A) (x : ℕ → A) : Prop :=
+  ∀ n, initialSegment x n ∈ T
+
+/-- The body of a tree is the set of all its infinite branches. -/
+def body (T : tree A) : Set (ℕ → A) :=
+  {x | IsBranch T x}
+
+@[simp] lemma mem_body {x : ℕ → A} : x ∈ body T ↔ ∀ n, initialSegment x n ∈ T :=
+  Iff.rfl
+
+/-- A branch forces the root to belong to the tree. -/
+lemma nil_mem_of_isBranch {x : ℕ → A} (hx : IsBranch T x) : [] ∈ T := by
+  simpa using hx 0
+
+/-- Inclusion of trees induces inclusion of their bodies. -/
+@[gcongr] lemma body_mono (h : S ≤ T) : body S ⊆ body T := by
+  intro x hx n
+  exact h (hx n)
 
 -- ### `subAt`
 
