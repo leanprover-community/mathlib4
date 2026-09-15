@@ -143,4 +143,47 @@ end IsRightDerivedFunctor
 
 end Functor
 
+namespace NatTrans
+
+variable {C D H : Type*} [Category* C] [Category* D] [Category* H]
+  {RF₁ RF₂ : H ⥤ D} {F₁ F₂ : C ⥤ D} {L : C ⥤ H}
+  (α₁ : F₁ ⟶ L ⋙ RF₁) (α₂ : F₂ ⟶ L ⋙ RF₂)
+  (τ : F₁ ⟶ F₂)
+  (W : MorphismProperty C) [L.IsLocalization W]
+  [RF₁.IsRightDerivedFunctor α₁ W]
+  {A : Type*} [AddGroup A] [HasShift C A] [HasShift D A] [HasShift H A]
+  [W.IsCompatibleWithShift A] [L.CommShift A] [F₁.CommShift A] [F₂.CommShift A]
+  [RF₁.CommShift A] [RF₂.CommShift A]
+  [NatTrans.CommShift α₁ A] [NatTrans.CommShift α₂ A]
+
+include W in
+open Functor.IsRightDerivedFunctor in
+lemma CommShift.of_isRightDerivedFunctor [τ.CommShift A] {τ' : RF₁ ⟶ RF₂}
+    (h : α₁ ≫ Functor.whiskerLeft _ τ' = τ ≫ α₂ := by cat_disch) :
+    τ'.CommShift A where
+  shift_comm a :=
+    Functor.rightDerived_ext _ (precomposeShiftNatTrans RF₁ α₁ _) W _ _ _ (by
+      ext X
+      replace h := NatTrans.congr_app h
+      dsimp at h
+      simp only [Functor.comp_obj, Functor.whiskerLeft_comp, comp_app, precomposeShiftNatTrans_app,
+        Functor.whiskerLeft_app, Functor.whiskerRight_app, Category.assoc,
+        Functor.whiskerLeft_twice, Functor.associator_inv_app, Functor.associator_hom_app,
+        Category.id_comp, naturality_assoc]
+      calc
+        _ = (F₁.commShiftIso a).hom.app X ≫ (τ.app X)⟦a⟧' ≫ (α₂.app X)⟦a⟧' := by
+          simp [NatTrans.app_shift_assoc α₁, h,
+            Functor.commShiftIso_comp_inv_app, ← Functor.map_comp_assoc, ← Functor.map_comp]
+        _ = τ.app (X⟦a⟧) ≫ (F₂.commShiftIso a).hom.app X ≫ (α₂.app X)⟦a⟧' := by
+          simp [τ.shift_app a]
+        _ = _ := by
+          simp [reassoc_of% h, NatTrans.app_shift_assoc α₂, Functor.commShiftIso_comp_inv_app,
+            ← Functor.map_comp_assoc])
+
+instance CommShift.rightDerivedNatTrans [τ.CommShift A] :
+    (Functor.rightDerivedNatTrans RF₁ RF₂ α₁ α₂ W τ).CommShift A :=
+  CommShift.of_isRightDerivedFunctor α₁ α₂ τ W (by simp)
+
+end NatTrans
+
 end CategoryTheory
