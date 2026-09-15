@@ -74,7 +74,7 @@ theorem hasBasis_nhds_zero :
       (embedding_strictMono (f := .ofClass (valuation (K := K)))) hε
     exact ⟨γ, trivial, fun x hx ↦ mem_ball_zero_iff.2 (by simpa using hγ _ hx)⟩
   · refine ⟨(embedding γ.1 : ℝ≥0), ?_, fun x hx ↦ ?_⟩
-    · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr γ.zero_lt
+    · simpa using embedding_strictMono.lt_iff_lt.mpr γ.zero_lt
     · simpa [restrict_lt_iff_lt_embedding] using! mem_ball_zero_iff.1 hx
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
@@ -83,7 +83,7 @@ def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     (inferInstance : IsUniformAddGroup K) with
     v := valuation
-    is_topological_valuation := fun s ↦ by simpa only [true_and] using hasBasis_nhds_zero.mem_iff }
+    is_topological_valuation _ := by simpa using hasBasis_nhds_zero.mem_iff }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
