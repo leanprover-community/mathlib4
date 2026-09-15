@@ -49,6 +49,8 @@ def filter (s : Multiset α) : Multiset α :=
 theorem filter_zero : filter p 0 = 0 :=
   rfl
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 @[congr]
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
