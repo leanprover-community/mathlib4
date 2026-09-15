@@ -153,7 +153,7 @@ instance : One F :=
   ⟨F.one⟩
 
 /-- A tactic to prove trivial goals by enumeration. -/
-macro "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
+local macro "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
 
 /-- `val` maps `0 1 : F` to their counterparts in `ℕ`.
 We use it to lift the linear order on `ℕ`. -/
