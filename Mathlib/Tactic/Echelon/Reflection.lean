@@ -9,8 +9,6 @@ public import Mathlib.Data.List.Sort
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.Tactic.Matrix.OfLists
 
-import Mathlib.Data.List.GetD
-
 /-!
 # Reflection certificates for the echelon decomposition
 
@@ -32,8 +30,8 @@ Both conditions read the same suffix of each row, so they are certified together
 cell for row `k` holds the nonzero diagonal entry and the equation of the zeros after it, which
 the kernel checks in one pass over the rows as one term. -/
 
-/-- The first `c` rows from row `k` on, each with a nonzero entry at its diagonal position `k`
-followed by `c` zeros. -/
+/-- `c` rows starting at row `k`, each with a nonzero entry at its diagonal position and zeros
+after it to the end of the row. -/
 def IsLowerTriangularDiagList [Zero α] : (k c : ℕ) → (rows : List (List α)) → Prop
   | _, 0, _ => True
   | _, _ + 1, [] => False
@@ -117,10 +115,10 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
       cases i with
       | zero =>
         rw [List.getD_cons_zero]
-        refine ⟨fun j hj ↦ ?_, fun q hq ↦ ?_⟩
+        refine ⟨fun j hj ↦ ?_, fun c hc ↦ ?_⟩
         · have := List.getElem?_take_of_lt (l := row) (hj k (by simp))
           grind
-        · have : k = q := by simpa using hq
+        · have : k = c := by simpa using hc
           exact this ▸ hd
       | succ i =>
         rw [List.getD_cons_succ]
@@ -134,28 +132,29 @@ def pivotOfList (m : ℕ) (cols : List (Fin n)) : Fin m → WithTop (Fin n) :=
 theorem pivotOfList_eq_coe {m : ℕ} {cols : List (Fin n)} {i : Fin m} {c : Fin n}
     (hc : cols[(i : ℕ)]? = some c) : pivotOfList m cols i = (c : WithTop (Fin n)) := hc
 
-theorem pivotOfList_lt_pivotOfList {m : ℕ} {cols : List (Fin n)} (hs : cols.SortedLT) {i j : Fin m}
-    (hij : i < j) (hj : pivotOfList m cols j ≠ ⊤) :
+theorem pivotOfList_lt_pivotOfList {m : ℕ} {cols : List (Fin n)} (hsorted : cols.SortedLT)
+    {i j : Fin m} (hij : i < j) (hj : pivotOfList m cols j ≠ ⊤) :
     pivotOfList m cols i < pivotOfList m cols j := by
   obtain ⟨c, hc⟩ := Option.ne_none_iff_exists'.mp hj
   obtain ⟨hjl, rfl⟩ := List.getElem?_eq_some_iff.mp hc
   have hil : (i : ℕ) < cols.length := lt_trans hij hjl
   rw [pivotOfList_eq_coe (List.getElem?_eq_getElem hil), pivotOfList_eq_coe hc]
-  exact WithTop.coe_lt_coe.mpr (hs.getElem_lt_getElem_of_lt hij)
+  exact WithTop.coe_lt_coe.mpr (hsorted.getElem_lt_getElem_of_lt hij)
 
-theorem monotone_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)} (hs : cols.SortedLT) :
-    Monotone (pivotOfList m cols) := by
+theorem monotone_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)}
+    (hsorted : cols.SortedLT) : Monotone (pivotOfList m cols) := by
   intro i j hij
   rcases hij.lt_or_eq with hlt | rfl
   · by_cases hj : pivotOfList m cols j = ⊤
     · rw [hj]
       exact le_top
-    · exact (pivotOfList_lt_pivotOfList hs hlt hj).le
+    · exact (pivotOfList_lt_pivotOfList hsorted hlt hj).le
   · exact le_rfl
 
-theorem strictMonoOn_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)} (hs : cols.SortedLT) :
+theorem strictMonoOn_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)}
+    (hsorted : cols.SortedLT) :
     StrictMonoOn (pivotOfList m cols) {i | pivotOfList m cols i ≠ ⊤} :=
-  fun _ _ _ hj hij ↦ pivotOfList_lt_pivotOfList hs hij hj
+  fun _ _ _ hj hij ↦ pivotOfList_lt_pivotOfList hsorted hij hj
 
 theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
     (hsorted : cols.SortedLT) (h : IsPivotedList cols rows) :

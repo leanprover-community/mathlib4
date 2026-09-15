@@ -101,18 +101,18 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     (certifier : EntryCertifier) :
     MetaM Q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols)) := do
   have rows : Q(List (List $α)) := U.lit
-  let hinc ← mkDecideProofQ q(($cols).SortedLT)
+  let hsorted ← mkDecideProofQ q(($cols).SortedLT)
   -- one cell per row: the `Eq.refl` of a zero row beyond the pivots, or the nonzero pivot entry
   -- and the `Eq.refl` of the zeros before it
   let zeroRows : Expr ← (U.entries.drop pivots.size).foldrM (init := q(True.intro))
     fun _ rest => mkAppM ``And.intro #[q(Eq.refl (List.replicate $n (0 : $α))), rest]
-  let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (p, i) rest => do
-    have entry : Q($α) := (U.entries[i]!)[p]!
-    have pQ : Q(ℕ) := mkNatLit p
+  let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (k, i) rest => do
+    have entry : Q($α) := (U.entries[i]!)[k]!
+    have kQ : Q(ℕ) := mkNatLit k
     mkAppM ``And.intro #[← certifier q($entry ≠ 0),
-      ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $pQ (0 : $α))), rest]]
+      ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $kQ (0 : $α))), rest]]
   have h : Q(IsPivotedList $cols $rows) := chain
-  return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hinc $h)
+  return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hsorted $h)
     q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols))
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ`. -/
