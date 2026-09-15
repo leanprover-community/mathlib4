@@ -175,6 +175,11 @@ variable [Monoid α]
 
 @[to_additive (attr := simp)] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
 
+@[to_additive]
+instance instMulTorsionFree [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ where
+  pow_left_injective n hn a b h hab := unop_injective <| IsMulTorsionFree.pow_left_injective hn
+    (by simpa using congrArg unop h.symm) (by simpa using congrArg unop hab)
+
 end Monoid
 
 section DivInvMonoid
@@ -299,9 +304,5 @@ instance instGroup [Group α] : Group αᵃᵒᵖ :=
 instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
-
-@[to_additive]
-instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=
-  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
 
 end AddOpposite
