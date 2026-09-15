@@ -336,17 +336,46 @@ theorem comap_injective {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F
     Function.Injective (comap · f) :=
   .of_comp (f := toCon) <| (Con.comap_injective f hf <| map_mul f).comp toCon_injective
 
+omit [Mul R] [Mul R'] in
+private theorem equivLike_inv_map_add {F} [EquivLike F R' R] [AddHomClass F R' R]
+ (f : F) : (∀ x y, (EquivLike.inv f) (x + y) = (EquivLike.inv f) x + (EquivLike.inv f) y) := by
+  intro x y
+  apply EquivLike.injective f
+  simp
+
+omit [Add R] [Add R'] in
+private theorem equivLike_inv_map_mul {F} [EquivLike F R' R] [MulHomClass F R' R]
+ (f : F) : (∀ x y, (EquivLike.inv f) (x * y) = (EquivLike.inv f) x * (EquivLike.inv f) y) := by
+  intro x y
+  apply EquivLike.injective f
+  simp
+
+theorem comap_ringConGen_equiv
+    {F} [EquivLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R]
+    (r : R → R → Prop) (f : F) :
+    (ringConGen r).comap f = ringConGen (r on f) := by
+  refine le_antisymm ?_ (le_comap_ringConGen _ _)
+  let r' : RingCon R := {
+    __ := (ringConGen (r on (⇑f))).toCon.comap (EquivLike.inv f) (equivLike_inv_map_mul f)
+    __ := (ringConGen (r on (⇑f))).toAddCon.comap (EquivLike.inv f) (equivLike_inv_map_add f)
+  }
+  calc
+    (ringConGen r).comap f ≤ r'.comap f := by
+      apply comap_mono
+      apply ringConGen_le.2
+      intro x y hxy
+      apply le_ringConGen
+      simpa [r', Function.onFun] using hxy
+    _ = ringConGen (r on f) := by
+      apply toCon_injective
+      change r'.toCon.comap f (map_mul f) = _
+      ext x y
+      simp [r']
+
 theorem comap_ringConGen_ringEquiv {R R'} [NonAssocSemiring R] [NonAssocSemiring R']
     (r : R' → R' → Prop) (f : R ≃+* R') :
     (ringConGen r).comap f = ringConGen (r on f) := by
-  refine le_antisymm ?_ (le_comap_ringConGen _ _)
-  trans (ringConGen (r on ⇑f) |>.comap f.symm.toNonUnitalRingHom).comap f.toNonUnitalRingHom
-  · apply comap_mono
-    grw [← le_comap_ringConGen]
-    gcongr
-    simp [Function.onFun, RingEquiv.coe_toNonUnitalRingHom']
-  · rw [← comap_nonUnitalRingHomComp]
-    simp
+  apply comap_ringConGen_equiv
 
 end Lattice
 
