@@ -84,12 +84,12 @@ theorem isEulerian_iff (p : G.Walk u v) :
   mp h := ⟨h.isTrail, fun _ ↦ h.mem_edges_iff.mpr⟩
   mpr := fun ⟨h, hl⟩ ↦ h.isEulerian_of_forall_mem hl
 
-theorem isEulerian_iff_isTrail_and_edgeSet_eq {u v : V} {p : G.Walk u v} :
+theorem isEulerian_iff_isTrail_and_edgeSet_eq :
     p.IsEulerian ↔ p.IsTrail ∧ p.edgeSet = G.edgeSet := by
   rw [isEulerian_iff, and_congr_right_iff]
   exact fun _ ↦ ⟨Set.Subset.antisymm p.edges_subset_edgeSet, fun h ↦ by simp [← h]⟩
 
-theorem isEulerian_iff_isTrail_and_length_eq_encard {u v : V} {p : G.Walk u v} :
+theorem isEulerian_iff_isTrail_and_length_eq_encard :
     p.IsEulerian ↔ p.IsTrail ∧ p.length = G.edgeSet.encard := by
   rw [isEulerian_iff_isTrail_and_edgeSet_eq, and_congr_right_iff, ← length_edges]
   intro hp
@@ -104,12 +104,10 @@ theorem IsTrail.isEulerian_iff (hp : p.IsTrail) : p.IsEulerian ↔ p.edgeSet = G
 theorem IsEulerian.edgeSet_eq (h : p.IsEulerian) : p.edgeSet = G.edgeSet := by
   rwa [← h.isTrail.isEulerian_iff]
 
-theorem IsEulerian.finite_edgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
-    G.edgeSet.Finite :=
+theorem IsEulerian.finite_edgeSet (h : p.IsEulerian) : G.edgeSet.Finite :=
   h.edgeSet_eq ▸ p.edges.finite_toSet
 
-theorem IsEulerian.length_eq_ncard_edgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
-    p.length = G.edgeSet.ncard := by
+theorem IsEulerian.length_eq_ncard_edgeSet (h : p.IsEulerian) : p.length = G.edgeSet.ncard := by
   rw [← h.isTrail.ncard_edgeSet, h.edgeSet_eq]
 
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] (h : p.IsEulerian) :
@@ -117,8 +115,8 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] (h : p.IsEulerian) :
   ext e
   simp [h.mem_edges_iff]
 
-theorem IsEulerian.length_eq_card_edgeFinset [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
-    (h : p.IsEulerian) : p.length = G.edgeFinset.card := by
+theorem IsEulerian.length_eq_card_edgeFinset [Fintype G.edgeSet] (h : p.IsEulerian) :
+    p.length = G.edgeFinset.card := by
   simp [← h.edgesFinset_eq]
 
 theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
