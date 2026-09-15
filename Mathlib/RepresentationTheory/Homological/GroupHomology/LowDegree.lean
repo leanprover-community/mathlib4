@@ -61,22 +61,22 @@ section Chains
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ ModuleCat.of k A.V :=
+def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ ↧A.V :=
   (uniqueLinearEquiv _ _ default).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G →₀ A` as a `k`-module. -/
-def chainsIso₁ : (inhomogeneousChains A).X 1 ≅ ModuleCat.of k (G →₀ A) :=
+def chainsIso₁ : (inhomogeneousChains A).X 1 ≅ ↧(G →₀ A) :=
   (Finsupp.domLCongr (Equiv.funUnique (Fin 1) G)).toModuleIso
 
 /-- The 2nd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G² →₀ A` as a `k`-module. -/
-def chainsIso₂ : (inhomogeneousChains A).X 2 ≅ ModuleCat.of k (G × G →₀ A) :=
+def chainsIso₂ : (inhomogeneousChains A).X 2 ≅ ↧(G × G →₀ A) :=
   (Finsupp.domLCongr (piFinTwoEquiv fun _ => G)).toModuleIso
 
 /-- The 3rd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G³ → A` as a `k`-module. -/
-def chainsIso₃ : (inhomogeneousChains A).X 3 ≅ ModuleCat.of k (G × G × G →₀ A) :=
+def chainsIso₃ : (inhomogeneousChains A).X 3 ≅ ↧(G × G × G →₀ A) :=
   (Finsupp.domLCongr ((Fin.consEquiv _).symm.trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso
 
@@ -114,7 +114,6 @@ theorem range_d₁₀_eq_coinvariantsKer :
       simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
         using! Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma d₁₀_comp_coinvariantsMk : d₁₀ A ≫ (coinvariantsMk k G).app A = 0 := by
@@ -138,7 +137,7 @@ lemma chains₁ToCoinvariantsKer_surjective :
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
   ext
-  simp [d₁₀]
+  simp [d₁₀, isTrivial_apply]
 
 /-- The 1st differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G² →₀ A) → (G →₀ A)`. It is defined by
@@ -695,7 +694,7 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rfl
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
-def cyclesIso₀ : cycles A 0 ≅ ModuleCat.of k A.V :=
+def cyclesIso₀ : cycles A 0 ≅ ↧A.V :=
   (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp [ChainComplex.of.d]) ≪≫ chainsIso₀ A
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -750,7 +749,7 @@ def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
 
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
-def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
+def isoCycles₁ : cycles A 1 ≅ ↧(cycles₁ A) :=
     cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
       (shortComplexH1 A).moduleCatLeftHomologyData
 
@@ -802,7 +801,7 @@ def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
 
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
-def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
+def isoCycles₂ : cycles A 2 ≅ ↧(cycles₂ A) :=
     cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
       (shortComplexH2 A).moduleCatLeftHomologyData
 
@@ -854,7 +853,7 @@ def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
   (ChainComplex.isoHomologyι₀ _) ≪≫ opcyclesIso₀ A
 
 /-- The quotient map from `A` to `H₀(G, A)`. -/
-def H0π : ModuleCat.of k A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
+def H0π : ↧A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
@@ -891,10 +890,10 @@ variable [A.IsTrivial]
 
 /-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial :
-    H0 A ≅ ModuleCat.of k A.V :=
+    H0 A ≅ ↧A.V :=
   ((inhomogeneousChains A).isoHomologyπ 1 0 (by simp) <| by
     ext; simp [inhomogeneousChains.d_single (G := G), ChainComplex.of.d,
-       Unique.eq_default (α := Fin 0 → G)]).symm ≪≫ cyclesIso₀ A
+       Unique.eq_default (α := Fin 0 → G), isTrivial_apply]).symm ≪≫ cyclesIso₀ A
 
 @[simp]
 theorem H0IsoOfIsTrivial_inv_eq_π :
@@ -917,7 +916,7 @@ defined as the 1st homology of the complex of inhomogeneous chains of `A`. -/
 abbrev H1 := groupHomology A 1
 
 /-- The quotient map from the 1-cycles of `A`, as a submodule of `G →₀ A`, to `H₁(G, A)`. -/
-def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
+def H1π : ↧(cycles₁ A) ⟶ H1 A :=
   (isoCycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
@@ -985,7 +984,7 @@ def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A
     map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
       simpa [← map_add] using ((H1π_eq_iff _ _).2 ⟨single (g, h) a, by
         simp [cycles₁IsoOfIsTrivial, sub_add_eq_add_sub, add_comm (single h a),
-          d₂₁_single (A := A)]⟩).symm }
+          d₂₁_single (A := A), isTrivial_apply]⟩).symm }
 
 variable {A} in
 @[simp]
@@ -1001,7 +1000,8 @@ def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[
     (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
       (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
       simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
-        shortComplexH1]).comp <| AddMonoidHomClass.toAddMonoidHom (H1Iso A).hom.hom).toIntLinearMap
+        shortComplexH1, isTrivial_apply]).comp <|
+          AddMonoidHomClass.toAddMonoidHom (H1Iso A).hom.hom).toIntLinearMap
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -1022,7 +1022,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps! -isSimp]
 def H1AddEquivOfIsTrivial :
     H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
-  LinearEquiv.toAddEquiv <| LinearEquiv.ofLinear
+  LinearEquiv.toAddEquiv <| LinearEquiv.ofLinearMap
     (H1ToTensorOfIsTrivial A) (lift <| mkH1OfIsTrivial A)
     (ext <| LinearMap.toAddMonoidHom_injective <| by
       ext g a
@@ -1063,7 +1063,7 @@ defined as the 2nd homology of the complex of inhomogeneous chains of `A`. -/
 abbrev H2 := groupHomology A 2
 
 /-- The quotient map from the 2-cycles of `A`, as a submodule of `G × G →₀ A`, to `H₂(G, A)`. -/
-def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
+def H2π : ↧(cycles₂ A) ⟶ H2 A :=
   (isoCycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in

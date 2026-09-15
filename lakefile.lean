@@ -44,6 +44,7 @@ abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
+    ⟨`weak.linter.unreachableTactic, false⟩, -- superseded by the unused tactic linter
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
@@ -57,6 +58,8 @@ package mathlib where
   testDriver := "MathlibTest"
   lintDriver := "batteries/runLinter"
   lintDriverArgs := #["Mathlib"]
+  -- Run the builtin linting steps in addition to the `lintDriver` set above.
+  builtinLint := true
   -- A version of Mathlib only supports the toolchain it is built with.
   fixedToolchain := true
   -- Mathlib oleans are built on Linux CI and used across platforms.
@@ -92,6 +95,19 @@ lean_lib Archive where
 
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
+
+/-- Wanted statements: `Wanted/X/Y/Z.lean` contains the `proof_wanted` statements
+corresponding to `Mathlib/X/Y/Z.lean`. Each file carries a copyright header naming the
+author of the original statements, but beyond that contains only imports, context setup
+(`open`/`namespace`/`variable`) and `proof_wanted` statements; in particular there are no
+module docstrings, so the header style linter is disabled.
+`proof_wanted` elaborates to a `private` placeholder declaration, so every module here
+consists solely of private declarations; the `privateModule` linter is disabled accordingly
+(neither `@[expose] public section` nor a `public` modifier suppresses it, since the
+placeholder is unconditionally `private`). -/
+lean_lib Wanted where
+  leanOptions := mathlibLeanOptions.push ⟨`weak.linter.style.header, false⟩
+    |>.push ⟨`weak.linter.privateModule, false⟩
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where

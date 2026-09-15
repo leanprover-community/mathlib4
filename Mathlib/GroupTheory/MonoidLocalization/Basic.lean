@@ -349,7 +349,7 @@ lemma mkHom_surjective : Surjective (mkHom (S := S)) := by rintro ⟨x, y⟩; ex
 
 section Scalar
 
-variable {R R₁ R₂ : Type*}
+variable {R : Type*}
 
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
     c • (mk a b : Localization S) = mk (c • a) b := by
@@ -415,7 +415,7 @@ abbrev toMonoidHom (f : LocalizationMap S N) : M →* N where
 theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N → M →* N) :=
   fun f g ↦ by cases f; congr! with eq; ext; exact congr($eq _)
 
-@[to_additive] instance : FunLike (LocalizationMap S N) M N where
+@[to_additive (attr := macro_inline)] instance : FunLike (LocalizationMap S N) M N where
   coe f := f.toMonoidHom
   coe_injective := DFunLike.coe_injective.comp toMonoidHom_injective
 

@@ -26,7 +26,9 @@ lemmas about preimages and images of all intervals. We also prove a few lemmas a
 public section
 
 
-open Interval Pointwise
+open Pointwise
+
+open scoped Interval
 
 variable {α : Type*}
 

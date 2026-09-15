@@ -216,7 +216,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     · exact (aeval_iterate_derivative_of_ge A p q h).choose_spec.1
     · rw [natDegree_zero]; exact Nat.zero_le _
   have hc (k) (hk : q ≤ k) : ∀ (r : A), aeval r (derivative^[k] p) = q ! • aeval r (c k) := by
-    simp_rw [c, dif_pos hk]
+    simp_rw [c, dite_eq_left hk]
     exact (aeval_iterate_derivative_of_ge A p q hk).choose_spec.2
   refine ⟨∑ x ∈ Ico q (p.natDegree + 1), c x, ?_, ?_⟩
   · refine (natDegree_sum_le _ _).trans ?_

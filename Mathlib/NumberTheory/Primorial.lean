@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.NumberTheory.PrimeCounting
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Squarefree
 
@@ -59,7 +58,7 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
 lemma primorial_ne_zero (n : ℕ) : n# ≠ 0 := (primorial_pos n).ne'
 
 theorem primorial_mono {m n : ℕ} (h : m ≤ n) : m# ≤ n# :=
-  prod_le_prod_of_subset_of_one_le' (by gcongr) (by grind)
+  prod_le_prod_of_subset_of_one_le (by gcongr) (by grind)
 
 theorem primorial_monotone : Monotone primorial := fun _ _ ↦ primorial_mono
 
@@ -68,7 +67,7 @@ theorem primorial_dvd_primorial {m n : ℕ} (h : m ≤ n) : m# ∣ n# :=
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
-  rw [range_add_one, filter_insert, if_neg fun h ↦ not_even_iff_odd.2 hn _]
+  rw [range_add_one, filter_insert, ite_eq_right fun h ↦ not_even_iff_odd.2 hn _]
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
 
 theorem primorial_add (m n : ℕ) :
@@ -106,7 +105,7 @@ lemma Squarefree.dvd_primorial {n : ℕ} (hn : Squarefree n) : n ∣ n# := by
   rwa [Nat.prod_primeFactors_of_squarefree hn] at this
 
 lemma lt_primorial_self {n : ℕ} (hn : 2 < n) : n < n# := by
-  have : 3 ≤ n# := single_le_prod' (f := id) (by grind [→ Prime.pos]) (by grind [prime_three])
+  have : 3 ≤ n# := single_le_prod (f := id) (by grind [→ Prime.pos]) (by grind [prime_three])
   let q := (n# - 1).minFac
   have : n < q := by
     by_contra! h1
