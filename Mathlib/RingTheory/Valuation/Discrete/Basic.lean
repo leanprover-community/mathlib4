@@ -263,7 +263,7 @@ section CommRing
 variable {R : Type*} [CommRing R] {v : Valuation R Γ} [hv : IsRankOneDiscrete v]
 
 theorem IsUniformizer.not_isUnit {π : v.integer} (hπ : IsUniformizer v π) : ¬ IsUnit π :=
-  fun h ↦ ne_of_gt hπ.val_lt_one (Integers.one_of_isUnit (integer.integers v) h).symm
+  fun h ↦ ne_of_gt hπ.val_lt_one (IsIntegers.one_of_isUnit (integer.integers v) h).symm
 
 end CommRing
 
@@ -321,7 +321,8 @@ variable {v} [hv : v.IsRankOneDiscrete]
 theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (H : Associated π₁ π₂) : IsUniformizer v π₂ := by
   obtain ⟨u, hu⟩ := H
-  have : v (u.1 : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
+  have : v (u.1 : K) = 1 :=
+    (IsIntegers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
   rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, map_mul, this, mul_one, ← IsUniformizer.iff]
 
 /-- If two elements of `K₀` are uniformizers, then they are associated. -/
@@ -330,7 +331,7 @@ theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v �
   have hval : v ((π₁ : K)⁻¹ * π₂) = 1 := by
     simp [IsUniformizer.iff.mp h1, IsUniformizer.iff.mp h2]
   set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
-  use ((Integers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
+  use ((IsIntegers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
   apply_fun ((↑) : K₀ → K) using Subtype.val_injective
   simp [hp, ← mul_assoc, mul_inv_cancel₀ h1.ne_zero]
 
@@ -362,7 +363,7 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     rw [hn, zpow_natCast, pow_eq_zero_iff', not_and_or]
     exact Or.inl π.ne_zero
   have h_unit_a : IsUnit a :=
-    Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
+    IsIntegers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
   use h_unit_a.unit
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
     mul_inv_cancel₀ (pow_ne_zero _ π.ne_zero), one_mul]

@@ -466,7 +466,7 @@ theorem isNontrivial_valuation_valuationSubring_iff :
     v.valuationSubring.valuation.IsNontrivial ↔ v.IsNontrivial :=
   (isEquiv_valuation_valuationSubring v).isNontrivial_iff.symm
 
-lemma valuationSubring.integers : v.Integers v.valuationSubring :=
+lemma valuationSubring.integers : v.IsIntegers v.valuationSubring :=
   Valuation.integer.integers _
 
 @[simp]

@@ -280,7 +280,7 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- The strategy to show that we have a PIR is by contradiction,
   -- assuming that the range of the valuation is densely ordered.
-  have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
+  have hi : Valuation.IsIntegers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
   have hc : IsCompact (X := K) 𝒪[K] := isCompact_iff_compactSpace.mpr hc
   -- We can also construct that it has a locally finite order, by compactness
   -- which leads to a contradiction.

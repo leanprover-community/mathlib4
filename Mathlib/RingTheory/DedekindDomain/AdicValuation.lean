@@ -996,7 +996,7 @@ instance : FaithfulSMul (v.adicCompletionIntegers K) (v.adicCompletion K) :=
   Subsemiring.faithfulSMul _
 
 theorem adicCompletionIntegers.integers :
-    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).Integers ↥(adicCompletionIntegers K v) where
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).IsIntegers ↥(adicCompletionIntegers K v) where
   hom_inj := FaithfulSMul.algebraMap_injective _ _
   map_le_one := by simp [mem_adicCompletionIntegers]
   exists_of_le_one := by simp [mem_adicCompletionIntegers]
@@ -1005,7 +1005,7 @@ variable {K v}
 
 theorem adicCompletionIntegers.isUnit_iff_valued_eq_one {a : v.adicCompletionIntegers K} :
     IsUnit a ↔ Valued.v a.1 = 1 := by
-  simp [Valuation.Integers.isUnit_iff_valuation_eq_one (integers K v)]
+  simp [Valuation.IsIntegers.isUnit_iff_valuation_eq_one (integers K v)]
 
 theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletion K)ˣ} :
     a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.1 = 1 := by

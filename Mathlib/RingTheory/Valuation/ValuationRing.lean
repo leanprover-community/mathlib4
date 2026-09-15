@@ -257,7 +257,7 @@ theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A
 theorem range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
   ext; exact mem_integer_iff _ _ _
 
-theorem integers : (valuation A K).Integers A where
+theorem integers : (valuation A K).IsIntegers A where
   hom_inj := IsFractionRing.injective A K
   map_le_one a := (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩
   exists_of_le_one _ h := (mem_integer_iff _ _ _).mp h
@@ -456,17 +456,20 @@ lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_inje
     | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
     | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
 
-lemma _root_.Valuation.Integers.isFractionRing {v : Valuation K Γ} (hv : v.Integers 𝒪) :
+lemma _root_.Valuation.IsIntegers.isFractionRing {v : Valuation K Γ} (hv : v.IsIntegers 𝒪) :
     IsFractionRing 𝒪 K :=
   isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective
     hv.eq_algebraMap_or_inv_eq_algebraMap hv.hom_inj
+
+@[deprecated (since := "2026-09-15")]
+alias _root_.Valuation.Integers.isFractionRing := _root_.Valuation.IsIntegers.isFractionRing
 
 instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
   (Valuation.integer.integers v).isFractionRing
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/
-theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
+theorem of_integers (v : Valuation K Γ) (hh : v.IsIntegers 𝒪) :
     haveI := hh.hom_inj.isDomain
     ValuationRing 𝒪 := by
   have := hh.hom_inj.isDomain
@@ -474,9 +477,9 @@ theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
   constructor
   intro a b
   rcases le_total (v (algebraMap 𝒪 K a)) (v (algebraMap 𝒪 K b)) with h | h
-  · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
+  · obtain ⟨c, hc⟩ := Valuation.IsIntegers.dvd_of_le hh h
     use c; exact Or.inr hc.symm
-  · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
+  · obtain ⟨c, hc⟩ := Valuation.IsIntegers.dvd_of_le hh h
     use c; exact Or.inl hc.symm
 
 instance instValuationRingInteger (v : Valuation K Γ) : ValuationRing v.integer :=

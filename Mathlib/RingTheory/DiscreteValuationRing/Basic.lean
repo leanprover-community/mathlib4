@@ -655,10 +655,10 @@ instance (priority := 100) of_isDiscreteValuationRing : ValuationRing A := infer
 
 end
 
-namespace Valuation.Integers
+namespace Valuation.IsIntegers
 
 variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [CommRing O]
-    [Algebra O K] {v : Valuation K Γ₀} (hv : v.Integers O)
+    [Algebra O K] {v : Valuation K Γ₀} (hv : v.IsIntegers O)
 include hv
 
 lemma maximalIdeal_eq_setOfPred_le_v_algebraMap :
@@ -688,7 +688,17 @@ lemma maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow :
 alias maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :=
   maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow
 
-end Valuation.Integers
+end Valuation.IsIntegers
+
+/-! ### Deprecated aliases -/
+
+@[deprecated (since := "2026-09-15")]
+alias Valuation.Integers.maximalIdeal_eq_setOfPred_le_v_algebraMap :=
+  Valuation.IsIntegers.maximalIdeal_eq_setOfPred_le_v_algebraMap
+
+@[deprecated (since := "2026-09-15")]
+alias Valuation.Integers.maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow :=
+  Valuation.IsIntegers.maximalIdeal_pow_eq_setOfPred_le_v_algebraMap_pow
 
 section Valuation.integer
 
