@@ -288,12 +288,14 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
       elabCommand <| ← (set_option hygiene false in
         `(command| attribute [simp] $decl:ident))
 
+  -- Binding the category once in the hom type forces its source and target universes to agree,
+  -- even when `cat` omits universe annotations and `FC` permits heterogeneous universes.
   elabCommand <| ← (set_option hygiene false in `(command|
     /-- The type of morphisms in this concrete category. -/
     structure Hom (X Y : $cat) where
       _mkInternal ::
       /-- The underlying bundled morphism. -/
-      hom' : ($FC : $cat → $cat → Type _) X Y))
+      hom' : ($FC : let C := $cat; C → C → Type _) X Y))
   match addHom? with
   | some addHom =>
       elabCommand <| ← (set_option hygiene false in

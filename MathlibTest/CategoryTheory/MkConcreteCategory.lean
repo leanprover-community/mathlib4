@@ -435,7 +435,7 @@ info: AdditiveTestCat.morphism_hom.{u_1} (X : AdditiveTestCat) : Hom.hom X.morph
 
 end AdditiveTestCat
 
--- Resolve qualified category names inside their enclosing namespace.
+-- Resolve qualified category names inside their enclosing namespace and infer their universes.
 namespace Nested
 
 structure PlainAddCat where
@@ -459,8 +459,8 @@ abbrev of (M : Type u) [Monoid M] : PlainMulCat := ⟨M⟩
 
 end PlainMulCat
 
-mk_concrete_category Nested.PlainMulCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
-  to_additive _root_.Nested.PlainAddCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+mk_concrete_category Nested.PlainMulCat (· →* ·) MonoidHom.id MonoidHom.comp
+  to_additive _root_.Nested.PlainAddCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
 
 namespace PlainMulCat
 
@@ -525,9 +525,9 @@ example {X Y : CustomMulMulCat.{u}} (f : X →* Y) :
 example {X Y : CustomMulAddCat.{u}} (f : X →+ Y) :
     (CustomMulAddCat.ofHom f).hom = f := CustomMulAddCat.hom_ofHom f
 
--- Check paired declarations with independently optional `with_of_hom` clauses.
 end Nested
 
+-- Check paired declarations with independently optional `with_of_hom` clauses.
 structure CustomAddAddCat where
   carrier : Type u
   [str : AddMonoid carrier]
@@ -571,3 +571,38 @@ example {X Y : CustomAddMulCat.{u}} (f : X →* Y) :
 
 example {X Y : CustomAddAddCat.{u}} (f : X →+ Y) :
     (CustomAddAddCat.ofHom f).hom = f := CustomAddAddCat.hom_ofHom f
+
+-- `MonoidHom` permits different source and target universes, but categorical homs must not.
+structure InferredUniverseCat where
+  carrier : Type u
+  [str : Monoid carrier]
+
+attribute [instance] InferredUniverseCat.str
+
+namespace InferredUniverseCat
+
+instance : CoeSort InferredUniverseCat (Type u) := ⟨InferredUniverseCat.carrier⟩
+
+mk_concrete_category InferredUniverseCat (· →* ·) MonoidHom.id (MonoidHom.comp · ·)
+
+/-- info: InferredUniverseCat.Hom.{u_1} (X Y : InferredUniverseCat) : Type u_1 -/
+#guard_msgs in
+#check Hom
+
+example : Category InferredUniverseCat.{u} := inferInstance
+
+example : ConcreteCategory InferredUniverseCat.{u} (fun X Y => X →* Y) := inferInstance
+
+example {X Y Z : InferredUniverseCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := by dsimp
+
+@[simps! hom]
+def morphism (X : InferredUniverseCat.{u}) : X ⟶ X := ofHom (MonoidHom.id _)
+
+/--
+info: InferredUniverseCat.morphism_hom.{u} (X : InferredUniverseCat) : Hom.hom X.morphism = MonoidHom.id X.carrier
+-/
+#guard_msgs in
+#check morphism_hom
+
+end InferredUniverseCat
