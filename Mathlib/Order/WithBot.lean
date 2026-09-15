@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Lift
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Order.Lattice
-public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # `WithBot`, `WithTop`

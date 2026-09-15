@@ -519,7 +519,7 @@ theorem isBase_compl_iff_maximal_disjoint_isBase (hB : B ⊆ M.E := by aesop_mat
     rw [subset_sdiff, and_iff_right hB'.subset_ground, disjoint_comm]
     exact disjoint_of_subset_left hBI hIB'
   rw [h sdiff_subset B' ⟨hB', disjoint_sdiff_left⟩]
-  · simpa [hB'.subset_ground]
+  · simpa [hB'.subset_ground, inf_of_le_right]
   simp [subset_sdiff, hB, hBB']
 
 end IsBase

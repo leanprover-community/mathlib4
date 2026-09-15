@@ -64,10 +64,10 @@ theorem projIci_of_le (hx : x ≤ a) : projIci a x = ⟨a, le_rfl⟩ := Subtype.
 theorem projIic_of_le (hx : b ≤ x) : projIic b x = ⟨b, le_rfl⟩ := Subtype.ext <| min_eq_left hx
 
 theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc.2 h⟩ := by
-  simp [projIcc, hx, hx.trans h]
+  grind [projIcc]
 
 theorem projIcc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
-  simp [projIcc, hx, h]
+  grind [projIcc]
 
 @[simp]
 theorem projIci_self (a : α) : projIci a a = ⟨a, le_rfl⟩ := projIci_of_le le_rfl
@@ -91,7 +91,7 @@ theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mp
   simp [projIcc, Subtype.ext_iff, h.not_ge]
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
-  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_ge]
+  grind [projIcc]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
@@ -100,7 +100,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem projIic_of_mem (hx : x ∈ Iic b) : projIic b x = ⟨x, hx⟩ := by simpa [projIic]
 
 theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
-  simp [projIcc, hx.1, hx.2]
+  grind [projIcc]
 
 @[simp]
 theorem projIci_coe (x : Ici a) : projIci a x = x := by cases x; apply projIci_of_mem

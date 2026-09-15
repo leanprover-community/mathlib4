@@ -58,7 +58,7 @@ theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   suffices #α = #(FractionRing (MvPolynomial α <| ULift.{u} ℚ)) from
     (Cardinal.eq.1 this).map (·.field)
-  simp
+  simp [sup_of_le_right]
 
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
 theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by

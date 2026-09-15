@@ -212,7 +212,7 @@ lemma le_analyticOrderAt_sub :
 lemma analyticOrderAt_add_eq_left_of_lt (hfg : analyticOrderAt f z₀ < analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = analyticOrderAt f z₀ :=
   le_antisymm (by simpa [hfg.not_ge] using le_analyticOrderAt_sub (f := f + g) (g := g) (z₀ := z₀))
-    (by simpa [hfg.le] using le_analyticOrderAt_add (f := f) (g := g) (z₀ := z₀))
+    (by grw [← le_analyticOrderAt_add, ← hfg, min_self])
 
 lemma analyticOrderAt_add_eq_right_of_lt (hgf : analyticOrderAt g z₀ < analyticOrderAt f z₀) :
     analyticOrderAt (f + g) z₀ = analyticOrderAt g z₀ := by
@@ -223,8 +223,8 @@ of the orders of the summands. -/
 lemma analyticOrderAt_add_of_ne (hfg : analyticOrderAt f z₀ ≠ analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = min (analyticOrderAt f z₀) (analyticOrderAt g z₀) := by
   obtain hfg | hgf := hfg.lt_or_gt
-  · simpa [hfg.le] using analyticOrderAt_add_eq_left_of_lt hfg
-  · simpa [hgf.le] using analyticOrderAt_add_eq_right_of_lt hgf
+  · rw [analyticOrderAt_add_eq_left_of_lt hfg, inf_of_le_left hfg.le]
+  · rw [analyticOrderAt_add_eq_right_of_lt hgf, inf_of_le_right hgf.le]
 
 lemma analyticOrderAt_smul_eq_top_of_left {f : 𝕜 → 𝕜} (hf : analyticOrderAt f z₀ = ⊤) :
      analyticOrderAt (f • g) z₀ = ⊤ := by

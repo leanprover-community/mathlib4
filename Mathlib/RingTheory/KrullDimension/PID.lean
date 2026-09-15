@@ -31,8 +31,8 @@ instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R]
     exact hlt.not_ge
   have := Ideal.comap_isMaximal_of_surjective (Ideal.Quotient.mk P) Ideal.Quotient.mk_surjective
     (K := I.map (Ideal.Quotient.mk P))
-  simpa [Ideal.comap_map_of_surjective' (Ideal.Quotient.mk P) Ideal.Quotient.mk_surjective,
-    hlt.le] using this
+  rw [Ideal.comap_map_of_surjective' (Ideal.Quotient.mk P) Ideal.Quotient.mk_surjective] at this
+  simpa [sup_of_le_left hlt.le] using this
 
 theorem IsPrincipalIdealRing.ringKrullDim_eq_one (R : Type*) [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] (h : ¬ IsField R) : ringKrullDim R = 1 := by

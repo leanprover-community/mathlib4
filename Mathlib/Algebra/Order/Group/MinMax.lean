@@ -22,7 +22,7 @@ variable {α : Type*} [Group α] [LinearOrder α] [MulLeftMono α]
 -- TODO: This duplicates `oneLePart_div_leOnePart`
 @[to_additive (attr := simp)]
 theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a := by
-  rcases le_total a 1 with (h | h) <;> simp [h]
+  rcases le_total a 1 with (h | h) <;> simp [h, sup_of_le_left, sup_of_le_right]
 
 alias max_zero_sub_eq_self := max_zero_sub_max_neg_zero_eq_self
 
@@ -37,7 +37,7 @@ section Inv
 variable {G₀ : Type*} [Inv G₀] [LinearOrder G₀] {x y : G₀}
 
 lemma min_inv_inv_le : min x⁻¹ y⁻¹ ≤ (max x y)⁻¹ := by
-  cases le_total x y <;> simp_all
+  rcases le_total x y with (h | h) <;> simp [h, sup_of_le_left, sup_of_le_right]
 
 end Inv
 

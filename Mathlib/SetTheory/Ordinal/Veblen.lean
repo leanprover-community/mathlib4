@@ -737,8 +737,9 @@ theorem card_epsilon (o : Ordinal) : (ε_ o).card = max ℵ₀ o.card := by
 
 @[simp]
 theorem card_gamma (o : Ordinal) : (Γ_ o).card = max ℵ₀ o.card := by
-  apply le_antisymm (card_deriv_le_of_forall_le (by simpa [Or.comm] using card_veblen_le · 0))
+  refine le_antisymm (card_deriv_le_of_forall_le fun x ↦ ?_)
     (max_le ?_ ?_)
+  · grw [card_veblen_le, sup_of_le_left (card_le_card zero_le), max_comm]
   · exact aleph0_le_card.mpr <| omega0_lt_gamma o |>.le
   · exact card_le_card isNormal_gamma.strictMono.le_apply
 

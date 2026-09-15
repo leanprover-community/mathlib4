@@ -245,7 +245,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict
     quotientQuotientEquivQuotient N A inf_le_left |>.symm.finiteDimensional
   have v_ker : Disjoint v.ker B := by
     simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
-      map_inf_eq_map_inf_comap, comap_map_mkQ, N, inf_comm]
+      map_inf_eq_map_inf_comap, comap_map_mkQ, N, sup_of_le_right, inf_comm]
   -- Because `A` contains `N`, we have `A = comap π B`. In particular, `B` is closed.
   have comap_B : comap π.toLinearMap B = A := by simp [B, N, π]
   have A_mapsTo_B : MapsTo π A B := fun _ ↦ by simp [← comap_B]

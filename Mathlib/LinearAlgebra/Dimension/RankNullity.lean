@@ -104,7 +104,7 @@ theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
     exact rank_mono fun x hx ↦ by aesop (add simp Subtype.ext_iff)
   have hr : Module.rank R f'.range ≤ Module.rank R p := by grw [Submodule.rank_le f'.range]
   rw [← f'.lift_rank_range_add_rank_ker]
-  gcongr <;> rwa [lift_le]
+  grw [hr, hk]
 
 omit [HasRankNullity.{u} R] in
 lemma LinearMap.rank_quot_submodule_map_eq [HasRankNullity.{v} R]

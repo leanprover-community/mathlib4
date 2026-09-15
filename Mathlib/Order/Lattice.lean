@@ -191,7 +191,7 @@ alias ⟨le_of_sup_eq', sup_of_le_left⟩ := sup_eq_left
 
 alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 
-attribute [to_dual (attr := simp)] sup_of_le_left sup_of_le_right
+attribute [to_dual] sup_of_le_left sup_of_le_right
 attribute [to_dual le_of_inf_eq'] le_of_sup_eq
 attribute [to_dual le_of_inf_eq] le_of_sup_eq'
 
@@ -230,7 +230,7 @@ theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
 theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem sup_idem (a : α) : a ⊔ a = a := by simp
 
 @[to_dual]
@@ -253,10 +253,10 @@ instance : Std.Associative (α := α) (· ⊔ ·) := ⟨sup_assoc⟩
 theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, sup_comm a, sup_assoc]
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem sup_left_idem (a b : α) : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem sup_right_idem (a b : α) : a ⊔ b ⊔ b = a ⊔ b := by simp
 
 @[to_dual]

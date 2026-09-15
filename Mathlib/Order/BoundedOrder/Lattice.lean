@@ -32,8 +32,8 @@ section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α]
 
-@[to_dual] theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ := sup_of_le_left le_top
-@[to_dual] theorem sup_top_eq (a : α) : a ⊔ ⊤ = ⊤ := sup_of_le_right le_top
+@[to_dual (attr := simp)] theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ := sup_of_le_left le_top
+@[to_dual (attr := simp)] theorem sup_top_eq (a : α) : a ⊔ ⊤ = ⊤ := sup_of_le_right le_top
 
 end SemilatticeSupTop
 
@@ -41,8 +41,8 @@ section SemilatticeSupBot
 
 variable [SemilatticeSup α] [OrderBot α] {a b : α}
 
-@[to_dual] theorem bot_sup_eq (a : α) : ⊥ ⊔ a = a := sup_of_le_right bot_le
-@[to_dual] theorem sup_bot_eq (a : α) : a ⊔ ⊥ = a := sup_of_le_left bot_le
+@[to_dual (attr := simp)] theorem bot_sup_eq (a : α) : ⊥ ⊔ a = a := sup_of_le_right bot_le
+@[to_dual (attr := simp)] theorem sup_bot_eq (a : α) : a ⊔ ⊥ = a := sup_of_le_left bot_le
 
 @[to_dual (attr := simp, grind =)]
 theorem sup_eq_bot_iff : a ⊔ b = ⊥ ↔ a = ⊥ ∧ b = ⊥ := by rw [eq_bot_iff, sup_le_iff]; simp

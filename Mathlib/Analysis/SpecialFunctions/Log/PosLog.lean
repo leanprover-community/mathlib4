@@ -52,15 +52,13 @@ theorem posLog_def : log⁺ = max 0 (log ·) := rfl
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv : log⁺ x - log⁺ x⁻¹ = log x := by
   rw [posLog_apply, posLog_apply, log_inv]
-  by_cases! h : 0 ≤ log x
-  · simp [h]
-  · simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
+  grind
 
 /-- Presentation of `log⁺` in terms of `log`. -/
 theorem half_mul_log_add_log_abs : 2⁻¹ * (log x + |log x|) = log⁺ x := by
   by_cases! hr : 0 ≤ log x
-  · simp [posLog, hr, abs_of_nonneg]
-    ring
+  · simp [posLog]
+    grind
   · simp [posLog, hr.le, abs_of_nonpos]
 
 @[simp] lemma posLog_zero : log⁺ 0 = 0 := by simp [posLog]
