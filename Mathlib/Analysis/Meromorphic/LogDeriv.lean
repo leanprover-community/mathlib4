@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Meromorphic.Order
 # Meromorphic API for the Logarithmic Derivative
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Set Topology
 

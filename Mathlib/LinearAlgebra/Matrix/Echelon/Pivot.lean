@@ -31,7 +31,7 @@ public import Mathlib.Order.WithBot
 matrix, echelon form, pivot
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 
