@@ -69,12 +69,8 @@ private abbrev c1 (m : ℕ) : IGroup m := (CoxeterMatrix.I m).simple (1 : Fin 2)
 theorem toDihedral_surjective (m : ℕ) : Function.Surjective (toDihedral m) := by
   intro d
   cases d with
-  | r i =>
-      refine ⟨((c0 m * c1 m) ^ i.val), ?_⟩
-      simp
-  | sr i =>
-      refine ⟨(c0 m * (c0 m * c1 m) ^ i.val), ?_⟩
-      simp
+  | r i => exact ⟨((c0 m * c1 m) ^ i.val), by simp⟩
+  | sr i => exact ⟨(c0 m * (c0 m * c1 m) ^ i.val), by simp⟩
 
 private def rot (m : ℕ) : IGroup m := c0 m * c1 m
 
@@ -104,12 +100,8 @@ private theorem c1_eq_c0_mul_rot (m : ℕ) : c1 m = c0 m * rot m := by
 
 @[simp] private theorem c0_mul_rot_mul_c0 (m : ℕ) :
     c0 m * rot m * c0 m = (rot m)⁻¹ := by
-  rw [rot]
-  calc
-    c0 m * (c0 m * c1 m) * c0 m
-        = (c0 m * c0 m) * c1 m * c0 m := by simp only [mul_assoc]
-    _ = c1 m * c0 m := by simp
-    _ = (c0 m * c1 m)⁻¹ := by simp [mul_inv_rev]
+  rw [rot, ← one_mul (c1 m * c0 m), ← c0_sq, mul_assoc, mul_assoc, mul_inv_rev,
+    c0_inv, c1_inv]
 
 private theorem c0_mul_rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
     c0 m * (rot m) ^ k * c0 m = (rot m) ^ (-k) := by
@@ -123,12 +115,8 @@ private theorem c0_mul_rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
 
 private theorem rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
     (rot m) ^ k * c0 m = c0 m * (rot m) ^ (-k) := by
-  calc
-    (rot m) ^ k * c0 m
-        = 1 * ((rot m) ^ k * c0 m) := by simp
-    _ = (c0 m * c0 m) * ((rot m) ^ k * c0 m) := by rw [c0_sq]
-    _ = c0 m * (c0 m * (rot m) ^ k * c0 m) := by simp only [mul_assoc]
-    _ = c0 m * (rot m) ^ (-k) := by rw [c0_mul_rot_zpow_mul_c0]
+  rw [← one_mul ((rot m) ^ k * c0 m), ← c0_sq, mul_assoc, mul_assoc,
+    c0_mul_rot_zpow_mul_c0]
 
 private theorem rot_zpow_mul_c1 (m : ℕ) (k : ℤ) :
     (rot m) ^ k * c1 m = c0 m * (rot m) ^ (-k + 1) := by
@@ -213,3 +201,4 @@ noncomputable def groupEquivDihedralGroup (m : ℕ) :
   exact toDihedral_simple_one m
 
 end CoxeterMatrix.I
+
