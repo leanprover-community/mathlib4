@@ -62,16 +62,39 @@ theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
 theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ := by grind
 
 instance : GeneralizedBooleanAlgebra (Finset α) where
-  sup_inf_sdiff := by grind
-  inf_inf_sdiff := by grind
+  sup_inf_sdiff := by
+    intro s t; ext a
+    simp only [inf_eq_inter', sup_eq_union', mem_union, mem_inter, mem_sdiff]
+    constructor
+    · rintro (⟨h, -⟩ | ⟨h, -⟩) <;> exact h
+    · intro h
+      rcases (inferInstance : Decidable (a ∈ t)) with ht | ht
+      · right; exact ⟨h, ht⟩
+      · left; exact ⟨h, ht⟩
+  inf_inf_sdiff := by
+    intro s t
+    refine ext fun a ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · rw [inf_eq_inter', mem_inter, mem_inter, mem_sdiff] at h
+      exact (h.2.2 h.1.2).elim
+    · simp at h
 
 theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by grind
 
 theorem notMem_sdiff_of_notMem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
 
-theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t := by grind
+theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t := by
+  ext a
+  simp only [mem_union, mem_sdiff]
+  refine ⟨?_, fun ha ↦ ?_⟩
+  · rintro (ha | ⟨ha, -⟩)
+    · exact h ha
+    · exact ha
+  · by_cases has : a ∈ s
+    · exact Or.inl has
+    · exact Or.inr ⟨ha, has⟩
 
-theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ := by grind
+theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ := by
+  rw [union_comm, union_sdiff_of_subset h]
 
 /-- See also `Finset.sdiff_inter_right_comm`. -/
 lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := inf_sdiff_assoc ..

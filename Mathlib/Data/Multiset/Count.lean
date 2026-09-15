@@ -171,11 +171,12 @@ theorem one_le_count_iff_mem {a : α} {s : Multiset α} : 1 ≤ count a s ↔ a 
 
 @[simp]
 theorem count_eq_zero_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
-  by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
+  Nat.eq_zero_of_not_pos (fun h1 ↦ h <| count_pos.mp h1)
 
 lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 
-@[simp] lemma count_eq_zero {a : α} : count a s = 0 ↔ a ∉ s := count_ne_zero.not_right
+@[simp] lemma count_eq_zero {a : α} : count a s = 0 ↔ a ∉ s :=
+  ⟨fun h h1 ↦ by simp [← count_pos, h] at h1, fun h ↦ count_eq_zero_of_notMem h⟩
 
 theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x := by
   simp [countP_eq_card, count, @eq_comm _ a]
