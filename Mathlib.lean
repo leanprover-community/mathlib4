@@ -7662,6 +7662,8 @@ public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.Hessenberg.CharPoly
+public import Mathlib.Tactic.Hessenberg.Coeffs
+public import Mathlib.Tactic.Hessenberg.Lemmas
 public import Mathlib.Tactic.Hessenberg.Recurrence
 public import Mathlib.Tactic.Hessenberg.Reduce
 public import Mathlib.Tactic.HigherOrder
