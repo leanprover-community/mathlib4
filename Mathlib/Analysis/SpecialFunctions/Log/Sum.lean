@@ -19,7 +19,8 @@ number theory (for instance in the proof of Mertens' theorems).
 
 ## Main statements
 
-* `sum_log_eq_log_factorial`: `∑ n ∈ Ioc 0 N, log n = log N !`.
+* `sum_log_eq_log_factorial`: `∑ n ∈ Ioc 0 N, log n = log N !`, and its `Finset.range` restatement
+  `sum_log_add_one_eq_log_factorial`: `∑ n ∈ range N, log (n + 1) = log N !`.
 * `sum_log_le` / `le_sum_log`: two-sided bounds on `∑ n ∈ Ioc 0 ⌊x⌋₊, log n`.
 * `le_sum_log_nat`: a sharper lower bound `N * log N - N ≤ ∑ n ∈ Ioc 0 N, log n` via Stirling.
 -/
@@ -38,6 +39,12 @@ theorem sum_log_eq_log_factorial : ∑ n ∈ Ioc 0 N, log n = log N.factorial :=
   rw [← prod_Ico_id_eq_factorial, ← log_prod (by intros; simp; grind), prod_natCast]
   rfl
 
+/-- The partial sum of the logarithm, in `Finset.range` form: `∑ n ∈ range N, log (n + 1)`. -/
+theorem sum_log_add_one_eq_log_factorial : ∑ n ∈ range N, log (n + 1) = log N.factorial := by
+  rw [Nat.factorial_eq_prod_range_add_one, prod_natCast, log_prod (fun i _ ↦ by positivity)]
+  push_cast
+  rfl
+
 /-- A crude upper bound on the partial sum of the logarithm. -/
 theorem sum_log_le (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x - x + log x + 1 := by
   have : ⌊x⌋₊ ≤ x := floor_le (by linarith)
@@ -50,7 +57,7 @@ theorem sum_log_le (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * lo
     _ ≤ (∫ t in 1..x, log t) + log x := by
       norm_cast; gcongr
       exact integral_mono_interval (by rfl) (mod_cast ‹_›) ‹_›
-        (ae_restrict_of_forall_mem (by measurability) fun _ _ ↦ (log_pos (by grind)).le)
+        (ae_restrict_of_forall_mem measurableSet_Ioc fun _ _ ↦ (log_pos (by grind)).le)
         intervalIntegrable_log'
     _ = _ := by simp; ring
 
