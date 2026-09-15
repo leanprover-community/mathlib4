@@ -86,6 +86,8 @@ instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
 lemma _root_.CategoryTheory.End.smul_asHom [Semiring R] [Linear R C] {X : C} (r : R) (e : End X) :
     (r • e).asHom = r • e.asHom := rfl
 
+/-- The linear equivalence `End X ≃ₗ[R] (X ⟶ X)` when `X` is
+an object of a `R`-linear category. -/
 @[implicit_reducible, simps]
 def _root_.CategoryTheory.End.linearEquiv [Semiring R] [Linear R C] {X : C} :
     End X ≃ₗ[R] (X ⟶ X) where
