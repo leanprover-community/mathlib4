@@ -48,7 +48,7 @@ structure NormedAddGroupHom (V W : Type*) [SeminormedAddCommGroup V]
 namespace AddMonoidHom
 
 variable {V W : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-  {f g : NormedAddGroupHom V W}
+  {f : NormedAddGroupHom V W}
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 
@@ -85,6 +85,7 @@ variable {f g : NormedAddGroupHom V₁ V₂}
 def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : NormedAddGroupHom V₁ V₂ :=
   f.mkNormedAddGroupHom K fun x ↦ by simpa only [map_zero, dist_zero_right] using h.dist_le_mul x 0
 
+@[macro_inline]
 instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -696,7 +697,7 @@ theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
 
 @[simp]
 theorem range_comp_incl_top : (f.comp (incl (⊤ : AddSubgroup V₁))).range = f.range := by
-  simp [comp_range, incl_range, ← AddMonoidHom.range_eq_map]; rfl
+  simp [comp_range, incl_range, AddSubgroup.map_top]; rfl
 
 end Range
 

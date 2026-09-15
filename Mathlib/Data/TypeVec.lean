@@ -53,7 +53,7 @@ def Arrow (α : TypeVec.{u} n) (β : TypeVec.{v} n) :=
   ∀ i : Fin2 n, α i → β i
 
 @[inherit_doc] scoped[MvFunctor] infixl:40 " ⟹ " => TypeVec.Arrow
-open MvFunctor
+open scoped MvFunctor
 
 variable {α : TypeVec.{u} n} {β : TypeVec.{v} n} {γ : TypeVec.{w} n} {δ : TypeVec.{x} n} in
 section
@@ -137,7 +137,8 @@ def splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (g : last α 
   | Fin2.fs i => f i
   | Fin2.fz => g
 
-/-- append an arrow and a function as well as their respective source and target types / typevecs -/
+/-- Append an arrow and a function as well as their respective source and target types /
+type vectors. -/
 def appendFun {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β → β') :
     append1 α β ⟹ append1 α' β' :=
   splitFun f g

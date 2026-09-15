@@ -179,7 +179,7 @@ lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
 def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (ofTensorProduct I (ι → R))
     (ofTensorProductInvOfPiFintype I ι)
     (ofTensorProduct_comp_ofTensorProductInvOfPiFintype I ι)

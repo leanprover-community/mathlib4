@@ -40,7 +40,7 @@ noncomputable section
 
 section LieGroup
 
-open Bundle Filter Function Set
+open Bundle Function
 open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
