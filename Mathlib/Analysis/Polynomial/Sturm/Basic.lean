@@ -42,7 +42,7 @@ namespace Sturm
 
 /-- A local sign-pattern relation between two real lists: they agree entry by
 entry except that a nonzero entry flanked by two opposite-sign neighbours may
-collapse to `0`. Such a collapse is variation-neutral, so `signVariations` and
+collapse to `0`. Such a collapse is variation-neutral, so `List.signVariations` and
 the leading sign are preserved (`SignRelation.signVariations_eq`). -/
 private inductive SignRelation : List ℝ → List ℝ → Prop
   | nil : SignRelation [] []
@@ -63,7 +63,7 @@ private theorem sign_changes_of_opposite (u v w : SignType) (huw : u * w = -1) (
 
 /-- Lists related by `SignRelation` have equal sign variations and equal leading signs. -/
 private theorem SignRelation.signVariations_eq {L M : List ℝ} (h : SignRelation L M) :
-    signVariations L = signVariations M ∧ firstSign L = firstSign M := by
+    List.signVariations L = List.signVariations M ∧ firstSign L = firstSign M := by
   induction h with
   | nil => exact ⟨rfl, rfl⟩
   | @same x y l m hx hy hs h ih =>
@@ -76,13 +76,12 @@ private theorem SignRelation.signVariations_eq {L M : List ℝ} (h : SignRelatio
     have hx' : x' ≠ 0 := by
       intro hx0; rw [hx0, sign_zero] at hsx; exact hx (sign_eq_zero_iff.mp hsx)
     refine ⟨?_, ?_⟩
-    · -- signVariations L
-      rw [signVariations_cons (X :: y :: l) hx,
+    · rw [signVariations_cons (X :: y :: l) hx,
         firstSign_cons_ne (y :: l) hX, signVariations_cons (y :: l) hX,
         firstSign_cons_ne l hy]
       rw [signVariations_cons (0 :: y' :: m) hx',
         firstSign_cons_zero (y' :: m), firstSign_cons_ne m hy',
-        signVariations_cons_zero]
+        List.signVariations_zero_cons]
       rw [← add_assoc, ih.1]
       congr 1
       rw [← hsx, ← hsy, ite_eq_left hopp]
@@ -184,11 +183,11 @@ theorem sturmVar_const_of_no_zero
     (a b : ℝ) (hab : a ≤ b)
     (hz : ∀ q ∈ chain, ∀ x ∈ Set.Icc a b, q.eval x ≠ 0) :
     sturmVar chain a = sturmVar chain b := by
-  change signVariations (chain.map (Polynomial.eval a))
-    = signVariations (chain.map (Polynomial.eval b))
-  apply signVariations_congr
-  rw [List.forall₂_map_left_iff, List.forall₂_map_right_iff, List.forall₂_same]
-  intro q hq
+  change List.signVariations (chain.map (Polynomial.eval a))
+    = List.signVariations (chain.map (Polynomial.eval b))
+  apply List.signVariations_congr
+  simp only [List.map_map]
+  refine List.map_congr_left fun q hq => ?_
   exact eval_sign_eq_of_no_zero hab (fun x hx => hz q hq x hx)
 
 /-- Crossing a zero of an interior entry preserves the variation count. -/
@@ -208,16 +207,16 @@ theorem sturmVar_interior_cross (hchain : IsSturmChain p chain) (r : ℝ)
       q0.eval r ≠ 0 ∧ q2.eval r ≠ 0 ∧ q0.eval r * q2.eval r < 0 :=
     fun i q0 q1 q2 h0 h1 h2 hz => hchain.interior_alternates i r q0 q1 q2 h0 h1 h2 hz
   constructor
-  · change signVariations (chain.map (Polynomial.eval a))
-      = signVariations (chain.map (Polynomial.eval r))
+  · change List.signVariations (chain.map (Polynomial.eval a))
+      = List.signVariations (chain.map (Polynomial.eval r))
     refine (signRelation_eval a r chain (fun q hq => hz q hq a ⟨le_refl a, hab⟩ (ne_of_lt har))
       hfront hlast halt (fun q hq hqr => ?_)).signVariations_eq.1
     exact eval_sign_eq_of_no_zero har.le (fun x hx => by
       by_cases hxr : x = r
       · rw [hxr]; exact hqr
       · exact hz q hq x ⟨hx.1, hx.2.trans hrb.le⟩ hxr)
-  · change signVariations (chain.map (Polynomial.eval r))
-      = signVariations (chain.map (Polynomial.eval b))
+  · change List.signVariations (chain.map (Polynomial.eval r))
+      = List.signVariations (chain.map (Polynomial.eval b))
     refine ((signRelation_eval b r chain
       (fun q hq => hz q hq b ⟨hab, le_refl b⟩ (ne_of_lt hrb).symm)
       hfront hlast halt (fun q hq hqr => ?_)).signVariations_eq.1).symm
@@ -316,21 +315,21 @@ theorem sturmVar_root_cross (hchain : IsSturmChain p chain) (r : ℝ) (hr : p.Is
       hfront_rest hlast_rest halt_rest hsame_b).signVariations_eq.1
   -- Head-pair bookkeeping at each point.
   have hSVa : sturmVar (p :: q :: tail) a = 1 + sturmVar (q :: tail) a := by
-    change signVariations (p.eval a :: (q :: tail).map (Polynomial.eval a))
-      = 1 + signVariations ((q :: tail).map (Polynomial.eval a))
+    change List.signVariations (p.eval a :: (q :: tail).map (Polynomial.eval a))
+      = 1 + List.signVariations ((q :: tail).map (Polynomial.eval a))
     rw [signVariations_cons _ hpa]
     simp only [List.map_cons]
     rw [firstSign_cons_ne _ hqa, ite_eq_left hsignA]
   have hSVb : sturmVar (p :: q :: tail) b = sturmVar (q :: tail) b := by
-    change signVariations (p.eval b :: (q :: tail).map (Polynomial.eval b))
-      = signVariations ((q :: tail).map (Polynomial.eval b))
+    change List.signVariations (p.eval b :: (q :: tail).map (Polynomial.eval b))
+      = List.signVariations ((q :: tail).map (Polynomial.eval b))
     rw [signVariations_cons _ hpb]
     simp only [List.map_cons]
     rw [firstSign_cons_ne _ hqb, ite_eq_right hsignB, zero_add]
   have hSVr : sturmVar (p :: q :: tail) r = sturmVar (q :: tail) r := by
-    change signVariations (p.eval r :: (q :: tail).map (Polynomial.eval r))
-      = signVariations ((q :: tail).map (Polynomial.eval r))
-    rw [hpr0]; exact signVariations_cons_zero _
+    change List.signVariations (p.eval r :: (q :: tail).map (Polynomial.eval r))
+      = List.signVariations ((q :: tail).map (Polynomial.eval r))
+    rw [hpr0]; exact List.signVariations_zero_cons _
   refine ⟨?_, ?_⟩
   · rw [hSVa, hSVb, hEqA, hEqB]; omega
   · rw [hSVr, hSVb]; exact hEqB.symm
@@ -593,17 +592,17 @@ theorem IsSturmChain.sturm (hchain : IsSturmChain p chain) (hnod : p.roots.Nodup
     have hya := hM y hyz; rw [abs_lt] at hya; exact hya.1
   -- Hence `sturmVar` at `±M` equals the `±∞` counts.
   have hMposEq : sturmVar chain M = sturmVarPosInf chain := by
-    change signVariations (chain.map (Polynomial.eval M))
-      = signVariations (chain.map Polynomial.leadingCoeff)
-    apply signVariations_congr
-    rw [List.forall₂_map_left_iff, List.forall₂_map_right_iff, List.forall₂_same]
-    exact hpos
+    change List.signVariations (chain.map (Polynomial.eval M))
+      = List.signVariations (chain.map Polynomial.leadingCoeff)
+    apply List.signVariations_congr
+    simp only [List.map_map]
+    exact List.map_congr_left hpos
   have hMnegEq : sturmVar chain (-M) = sturmVarNegInf chain := by
-    change signVariations (chain.map (Polynomial.eval (-M)))
-      = signVariations (chain.map (fun q => q.leadingCoeff * (-1) ^ q.natDegree))
-    apply signVariations_congr
-    rw [List.forall₂_map_left_iff, List.forall₂_map_right_iff, List.forall₂_same]
-    exact hneg
+    change List.signVariations (chain.map (Polynomial.eval (-M)))
+      = List.signVariations (chain.map (fun q => q.leadingCoeff * (-1) ^ q.natDegree))
+    apply List.signVariations_congr
+    simp only [List.map_map]
+    exact List.map_congr_left hneg
   -- Apply the half-open form on `(-M, M]`, which catches every root.
   have hkey := hchain.sturm_Ioc hnod (a := -M) (b := M) (by linarith)
   have hfilter : p.roots.filter (fun r => r ∈ Set.Ioc (-M) M) = p.roots := by

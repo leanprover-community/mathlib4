@@ -16,18 +16,18 @@ private theorem linearChain : IsSturmChain (X : ℝ[X]) [X, 1] := by
 
 -- A root at the right endpoint is counted.
 example : ((X : ℝ[X]).roots.filter (fun r => r ∈ Set.Ioc (-1) 0)).card = 1 := by
-  simpa [sturmVar, signVariations, countSignChanges] using
+  simpa [sturmVar, List.signVariations_cons_cons_of_ne_zero, sign_apply] using
     linearChain.sturm_Ioc (by simp) (show (-1 : ℝ) ≤ 0 by norm_num)
 
 -- A root at the left endpoint is excluded.
 example : ((X : ℝ[X]).roots.filter (fun r => r ∈ Set.Ioc 0 1)).card = 0 := by
   convert linearChain.sturm_Ioc (by simp) (show (0 : ℝ) ≤ 1 by norm_num) using 1 <;>
-    norm_num [sturmVar, signVariations, countSignChanges]
+    norm_num [sturmVar, List.signVariations_cons_cons_of_ne_zero, sign_apply]
 
 -- Equal endpoints are permitted, including when that endpoint is a root.
 example : ((X : ℝ[X]).roots.filter (fun r => r ∈ Set.Ioc 0 0)).card = 0 := by
   convert linearChain.sturm_Ioc (by simp) (le_refl (0 : ℝ)) using 1 <;>
-    norm_num [sturmVar, signVariations, countSignChanges]
+    norm_num [sturmVar, List.signVariations_cons_cons_of_ne_zero, sign_apply]
 
 -- The single-entry chain of a nonzero constant is a valid Sturm chain.
 private theorem constantChain : IsSturmChain (1 : ℝ[X]) [1] where
@@ -41,4 +41,4 @@ private theorem constantChain : IsSturmChain (1 : ℝ[X]) [1] where
 
 example : (1 : ℝ[X]).roots.card = 0 := by
   convert constantChain.sturm (by simp) using 1 <;>
-    norm_num [sturmVarNegInf, sturmVarPosInf, signVariations, countSignChanges]
+    norm_num [sturmVarNegInf, sturmVarPosInf, List.signVariations_cons_cons_of_ne_zero, sign_apply]

@@ -11,6 +11,7 @@ public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.HexPolyZ.Parse
 public meta import Mathlib.Tactic.HexPolyZ.Parse
+public meta import Mathlib.Data.List.SignVariations
 public meta import HexRealRoots.Chain
 public meta import HexPoly.Euclid.DivGcd
 
@@ -65,15 +66,6 @@ private def remainderIdentity (p q r : Array Int) : RemainderIdentity := Id.run 
   return ⟨left, quotient.coeffs.map (fun c => (c * (left : Rat)).num),
     (right * (left : Rat)).num⟩
 
-private def variations (xs : Array Int) : Nat := Id.run do
-  let mut last := 0
-  let mut n := 0
-  for x in xs do
-    if x != 0 then
-      if last * x < 0 then n := n + 1
-      last := x
-  return n
-
 private def emit (pStx : TSyntax `term) (p : Hex.ZPoly)
     (unfolds : Array (TSyntax ``Parser.Tactic.simpLemma)) : TermElabM (TSyntax `term) := do
   let _ : Inhabited Hex.ZPoly := ⟨Hex.DensePoly.C 0⟩
@@ -123,8 +115,8 @@ private def emit (pStx : TSyntax `term) (p : Hex.ZPoly)
       (show (0 : ℝ) < $a by norm_num) (show (0 : ℝ) < $b by norm_num)
       (by norm_num [map_ofNat] <;> ring))
   let a ← intTerm ((p.coeff (p.size - 1) * (p.size - 1 : Nat)) / cs[1]!.back!)
-  let pos := variations (cs.map Array.back!)
-  let neg := variations (cs.map fun c => c.back! * (-1) ^ (c.size - 1))
+  let pos := (cs.map Array.back!).toList.signVariations
+  let neg := (cs.map fun c => c.back! * (-1) ^ (c.size - 1)).toList.signVariations
   let n := Syntax.mkNumLit (toString (neg - pos))
   `(by
     $facts:tactic*
@@ -135,7 +127,7 @@ private def emit (pStx : TSyntax `term) (p : Hex.ZPoly)
       (by norm_num [map_ofNat, $unfolds,*] <;> ring)
       (by simp only [Sturm.sturmVarNegInf, Sturm.sturmVarPosInf,
             List.map_cons, List.map_nil, *]
-          norm_num [Sturm.signVariations, Sturm.countSignChanges]))
+          norm_num [List.signVariations_cons_cons_of_ne_zero, sign_apply]))
 
 /-- Compute and certify the number of distinct real roots of a closed squarefree
 integer-coefficient polynomial over `ℚ` of positive degree. -/

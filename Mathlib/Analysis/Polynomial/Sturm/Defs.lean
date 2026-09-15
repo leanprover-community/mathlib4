@@ -6,7 +6,7 @@ Authors: Kim Morrison
 
 module
 
-public import Mathlib.Basic.Sign.Basic
+public import Mathlib.Data.List.SignVariations
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Topology.Instances.Real.Lemmas
@@ -24,7 +24,7 @@ Sturm's theorem. The chain need not be produced by Euclidean division.
 
 ## Main definitions
 
-* `Sturm.signVariations`: sign variations with zero entries removed.
+* `List.signVariations`: sign variations with zero entries removed.
 * `Sturm.sturmVar`: sign variations of polynomial evaluations at a real point.
 * `Sturm.sturmVarPosInf` and `Sturm.sturmVarNegInf`: sign variations at infinity.
 * `Sturm.IsSturmChain`: the local sign conditions for a generalized Sturm chain.
@@ -36,52 +36,11 @@ open Filter Topology
 
 namespace Sturm
 
-/-- Count the sign changes of a real list: the number of adjacent pairs
-whose product is negative. Callers first drop the zero entries (see
-`Sturm.signVariations`), so on a zero-free list this is exactly the number
-of adjacent opposite-sign pairs. -/
-@[expose]
-noncomputable def countSignChanges : List ℝ → ℕ
-  | a :: b :: rest => (if a * b < 0 then 1 else 0) + countSignChanges (b :: rest)
-  | _ => 0
-
-@[simp] theorem countSignChanges_nil : countSignChanges [] = 0 := rfl
-
-@[simp] theorem countSignChanges_singleton (a : ℝ) : countSignChanges [a] = 0 := rfl
-
-theorem countSignChanges_cons_cons (a b : ℝ) (rest : List ℝ) :
-    countSignChanges (a :: b :: rest) =
-      (if a * b < 0 then 1 else 0) + countSignChanges (b :: rest) := rfl
-
-/-- Zero-skipping sign variations of a real list: drop the zeros, then count
-the adjacent opposite-sign pairs. This is the variation count that both the
-pointwise chain evaluations and the leading-coefficient signs at `±∞` feed
-into. -/
-@[expose]
-noncomputable def signVariations (l : List ℝ) : ℕ :=
-  countSignChanges (l.filter (fun v => decide (v ≠ 0)))
-
-@[simp] theorem signVariations_nil : signVariations [] = 0 := rfl
-
-@[simp] theorem signVariations_singleton (a : ℝ) : signVariations [a] = 0 := by
-  by_cases ha : a = 0 <;> simp [signVariations, ha]
-
-/-- Prepending a zero entry does not change the sign variations. -/
-@[simp] theorem signVariations_cons_zero (l : List ℝ) :
-    signVariations (0 :: l) = signVariations l := by
-  simp [signVariations]
-
-/-- A nonzero first entry survives removal of zero entries. -/
-theorem signVariations_cons_ne (a : ℝ) (l : List ℝ) (ha : a ≠ 0) :
-    signVariations (a :: l) =
-      countSignChanges (a :: l.filter (fun v => decide (v ≠ 0))) := by
-  simp [signVariations, ha]
-
 /-- Zero-skipping sign variations of the chain `chain` evaluated at `x`:
 the sign variations of the list of evaluations `chain.map (·.eval x)`. -/
 @[expose]
 noncomputable def sturmVar (chain : List (Polynomial ℝ)) (x : ℝ) : ℕ :=
-  signVariations (chain.map (Polynomial.eval x))
+  List.signVariations (chain.map (Polynomial.eval x))
 
 @[simp] theorem sturmVar_nil (x : ℝ) : sturmVar [] x = 0 := rfl
 
@@ -90,46 +49,7 @@ noncomputable def sturmVar (chain : List (Polynomial ℝ)) (x : ℝ) : ℕ :=
 theorem sturmVar_cons_zero {q : Polynomial ℝ} {x : ℝ} (h : q.eval x = 0)
     (chain : List (Polynomial ℝ)) :
     sturmVar (q :: chain) x = sturmVar chain x := by
-  simp [sturmVar, List.map_cons, signVariations, h]
-
-/-- Two real lists whose entries have pointwise equal signs have equal
-`countSignChanges`: the sign-change count reads only the signs of the entries. -/
-theorem countSignChanges_congr {l₁ l₂ : List ℝ}
-    (h : List.Forall₂ (fun u v => SignType.sign u = SignType.sign v) l₁ l₂) :
-    countSignChanges l₁ = countSignChanges l₂ := by
-  induction h with
-  | nil => rfl
-  | @cons a b l₁' l₂' hab htail ih =>
-    cases htail with
-    | nil => rfl
-    | @cons c d l₁'' l₂'' hcd _ =>
-      rw [countSignChanges_cons_cons, countSignChanges_cons_cons]
-      have hiff : (a * c < 0) ↔ (b * d < 0) := by
-        rw [← sign_eq_neg_one_iff, ← sign_eq_neg_one_iff, sign_mul, sign_mul, hab, hcd]
-      simp only [hiff, ih]
-
-/-- Dropping the zero entries commutes with a pointwise sign-equal
-correspondence: the filtered lists remain pointwise sign-equal. -/
-private theorem filter_ne_zero_congr {l₁ l₂ : List ℝ}
-    (h : List.Forall₂ (fun u v => SignType.sign u = SignType.sign v) l₁ l₂) :
-    List.Forall₂ (fun u v => SignType.sign u = SignType.sign v)
-      (l₁.filter (fun v => decide (v ≠ 0))) (l₂.filter (fun v => decide (v ≠ 0))) := by
-  induction h with
-  | nil => exact List.Forall₂.nil
-  | @cons a b l₁' l₂' hab htail ih =>
-    have hzero : (a = 0) ↔ (b = 0) := by
-      rw [← sign_eq_zero_iff (a := a), ← sign_eq_zero_iff (a := b), hab]
-    by_cases ha : a = 0
-    · simpa [ha, hzero.mp ha] using ih
-    · simpa [ha, mt hzero.mpr ha] using
-        List.Forall₂.cons (R := fun u v : ℝ => SignType.sign u = SignType.sign v) hab ih
-
-/-- `signVariations` reads only the signs of the entries: two real lists whose
-entries are pointwise sign-equal have equal sign variations. -/
-theorem signVariations_congr {l₁ l₂ : List ℝ}
-    (h : List.Forall₂ (fun u v => SignType.sign u = SignType.sign v) l₁ l₂) :
-    signVariations l₁ = signVariations l₂ :=
-  countSignChanges_congr (filter_ne_zero_congr h)
+  simp [sturmVar, h]
 
 /-- The sign of the first nonzero entry of a real list, or `0` if every entry is zero. -/
 @[expose]
@@ -145,29 +65,26 @@ noncomputable def firstSign (l : List ℝ) : SignType :=
     firstSign (a :: l) = SignType.sign a := by
   simp [firstSign, ha]
 
-private theorem sign_mul_eq_neg_one {a b : ℝ} :
-    (SignType.sign a * SignType.sign b = -1) ↔ a * b < 0 := by
-  rw [← sign_mul, sign_eq_neg_one_iff]
-
 /-- Prepending a nonzero entry `a` adds one variation exactly when its sign is
 opposite the sign of the next surviving entry. -/
 theorem signVariations_cons {a : ℝ} (l : List ℝ) (ha : a ≠ 0) :
-    signVariations (a :: l) =
-      (if SignType.sign a * firstSign l = -1 then 1 else 0) + signVariations l := by
+    List.signVariations (a :: l) =
+      (if SignType.sign a * firstSign l = -1 then 1 else 0) + List.signVariations l := by
   induction l with
-  | nil => rw [signVariations_cons_ne a [] ha]; simp [firstSign]
-  | cons b l' ih =>
+  | nil => simp [firstSign]
+  | cons b l ih =>
     by_cases hb : b = 0
-    · subst hb
-      rw [firstSign_cons_zero l', signVariations_cons_zero l',
-        signVariations_cons_ne a (0 :: l') ha, List.filter_cons_of_neg (by simp),
-        ← signVariations_cons_ne a l' ha]
-      exact ih
-    · rw [firstSign_cons_ne l' hb, signVariations_cons_ne a (b :: l') ha,
-        List.filter_cons_of_pos (by simp [hb]), countSignChanges_cons_cons,
-        ← signVariations_cons_ne b l' hb]
-      congr 1
-      simp only [sign_mul_eq_neg_one]
+    · subst b
+      simpa only [List.signVariations_cons_zero_cons, List.signVariations_zero_cons,
+        firstSign_cons_zero] using ih
+    · rw [firstSign_cons_ne l hb, List.signVariations_cons_cons_of_ne_zero l ha hb]
+      have ha' : SignType.sign a ≠ 0 := by simpa using ha
+      have hb' : SignType.sign b ≠ 0 := by simpa using hb
+      have h : (if SignType.sign a = SignType.sign b then (0 : ℕ) else 1) =
+          (if SignType.sign a * SignType.sign b = -1 then 1 else 0) := by
+        revert ha' hb'
+        cases SignType.sign a <;> cases SignType.sign b <;> decide
+      rw [h, Nat.add_comm]
 
 /-- Sign variations of the chain at `+∞`: the sign of each element there is the
 sign of its leading coefficient, so this is the zero-skipping variation count
@@ -175,14 +92,14 @@ of the leading coefficients. The zero polynomial contributes leading
 coefficient `0`, which the zero-skipping convention drops. -/
 @[expose]
 noncomputable def sturmVarPosInf (chain : List (Polynomial ℝ)) : ℕ :=
-  signVariations (chain.map Polynomial.leadingCoeff)
+  List.signVariations (chain.map Polynomial.leadingCoeff)
 
 /-- Sign variations of the chain at `−∞`: the sign of an element there is the
 sign of its leading coefficient times `(-1) ^ degree`, so this is the
 zero-skipping variation count of `leadingCoeff · (-1) ^ natDegree`. -/
 @[expose]
 noncomputable def sturmVarNegInf (chain : List (Polynomial ℝ)) : ℕ :=
-  signVariations (chain.map (fun q => q.leadingCoeff * (-1) ^ q.natDegree))
+  List.signVariations (chain.map (fun q => q.leadingCoeff * (-1) ^ q.natDegree))
 
 /-- A generalized Sturm chain for a real polynomial.
 
