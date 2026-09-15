@@ -546,7 +546,15 @@ theorem Submonoid.FG.map {M' : Type*} [Monoid M'] {P : Submonoid M} (h : P.FG) (
 @[to_additive]
 theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e : M →* M')
     (he : Function.Injective e) (h : (P.map e).FG) : P.FG := by
-  exact (isMulFG_congr (P.equivMapOfInjective e he)).mpr h
+  rw [FG, isMulFG_iff] at h ⊢
+  obtain ⟨s, hs⟩ := h
+  use s.preimage e he.injOn
+  apply Submonoid.map_injective_of_injective he
+  rw [← hs, MonoidHom.map_mclosure e, Finset.coe_preimage]
+  congr
+  rw [Set.image_preimage_eq_iff, ← MonoidHom.coe_mrange e, ← Submonoid.closure_le, hs,
+      MonoidHom.mrange_eq_map e]
+  exact Submonoid.monotone_map le_top
 
 @[to_additive (attr := simp)]
 theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
