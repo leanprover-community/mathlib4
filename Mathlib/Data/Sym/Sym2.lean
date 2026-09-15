@@ -318,7 +318,8 @@ theorem _root_.Equiv.symm_sym2Map (f : α ≃ β) : f.sym2Map.symm = f.symm.sym2
   rfl
 
 @[simp]
-theorem _root_.Equiv.toEmbedding_sym2Map (f : α ≃ β) : f.sym2Map.toEmbedding = f.toEmbedding.sym2Map :=
+theorem _root_.Equiv.toEmbedding_sym2Map (f : α ≃ β) :
+    f.sym2Map.toEmbedding = f.toEmbedding.sym2Map :=
   rfl
 
 lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
