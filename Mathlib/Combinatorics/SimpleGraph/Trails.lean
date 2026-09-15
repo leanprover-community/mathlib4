@@ -128,19 +128,19 @@ theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
   nonempty := ⟨u⟩
 
 /-- In an Eulerian graph there exists an Eulerian circuit from any non-isolated vertex. -/
-theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support
-    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) {v : V} (hv : ¬G.IsIsolated v) :
-    ∃ p : G.Walk v v, p.IsEulerian :=
+theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support (hv : ¬G.IsIsolated v)
+    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) : ∃ p : G.Walk v v, p.IsEulerian :=
   have ⟨_, _, hp⟩ := hp
   ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
 
+variable (v) in
 /-- In a preconnected Eulerian graph there exists an Eulerian circuit from any vertex. -/
 theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected)
-    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) (v : V) :
+    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) :
     ∃ p : G.Walk v v, p.IsEulerian := by
   cases subsingleton_or_nontrivial V
   · exact ⟨nil, Sym2.ind fun a b hadj ↦ absurd (Subsingleton.elim a b) hadj.ne⟩
-  exact exists_isEulerian_of_mem_support hp <| h.not_isIsolated v
+  exact exists_isEulerian_of_mem_support (h.not_isIsolated v) hp
 
 theorem IsEulerian.even_degree_iff (ht : p.IsEulerian) [Fintype V] [DecidableRel G.Adj] :
     Even (G.degree w) ↔ u ≠ v → w ≠ u ∧ w ≠ v := by
