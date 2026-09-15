@@ -37,8 +37,6 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
 * `SchreierCosetGraph ι H` - The Schreier graph of the action of `M` on cosets `M ⧸ H`.
 * `CayleyGraph ι` - The Cayley graph of a group with generators, defined as the Schreier
   coset graph with trivial subgroup `H = ⊥`.
-* `Quiver.Iso` (`≃q`) - Isomorphisms between quivers.
-* `Quiver.CoveringIso` (`≃qc`) - Isomorphisms between coverings of quivers.
 
 ## Main results
 
@@ -56,10 +54,11 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
   the entire group.
 * `Quiver.cayley_connected` - A Cayley graph is connected (has a unique weakly connected
   component) when the generators generate the entire group.
-* `Quiver.schreierCosetGraph_asAutom_coveringIso` - Right multiplication by `g⁻¹` induces an
-  automorphism of the Schreier coset graph preserving labels.
-* `Quiver.cayleyGraph_asAutom_coveringIso` - Right multiplication is an automorphism of the
-  Cayley graph, establishing vertex-transitivity.
+* `Quiver.SchreierCosetGraph.asAutom_labelling` - Right multiplication by `g⁻¹` induces an
+  endomorphism of the Schreier coset graph preserving labels.
+* `Quiver.SchreierCosetGraph.exists_asAutom_obj_eq` - These endomorphisms act transitively on
+  the vertices: any coset can be carried to any other.
+* `Quiver.CayleyGraph.exists_asAutom_obj_eq` - Vertex-transitivity of Cayley graphs.
 
 ## Implementation notes
 
@@ -468,74 +467,6 @@ noncomputable instance [Group M] [Fintype S] (g : CayleyGraph ι) :
   inferInstance
 
 end Finiteness
-
-section QuiverIso
-
-/-- An isomorphism of quivers is given by a pair of prefunctors whose composites are identities. -/
-structure Iso (U V : Type*) [Quiver U] [Quiver V] where
-  /-- The forward prefunctor. -/
-  toPrefunctor : U ⥤q V
-  /-- The inverse prefunctor. -/
-  invPrefunctor : V ⥤q U
-  /-- Left inverse property: going forward then back is identity. -/
-  left_inv : toPrefunctor ⋙q invPrefunctor = Prefunctor.id U
-  /-- Right inverse property: going back then forward is identity. -/
-  right_inv : invPrefunctor ⋙q toPrefunctor = Prefunctor.id V
-
-@[inherit_doc] infixl:50 " ≃q " => Iso
-
-variable {U V W : Type*} [Quiver U] [Quiver V] [Quiver W]
-
-/-- The identity isomorphism. -/
-@[simps] def Iso.refl (U : Type*) [Quiver U] : U ≃q U where
-  toPrefunctor := Prefunctor.id U
-  invPrefunctor := Prefunctor.id U
-  left_inv := Prefunctor.comp_id _
-  right_inv := Prefunctor.comp_id _
-
-/-- The inverse of an isomorphism. -/
-@[simps] def Iso.symm (φ : U ≃q V) : V ≃q U where
-  toPrefunctor := φ.invPrefunctor
-  invPrefunctor := φ.toPrefunctor
-  left_inv := φ.right_inv
-  right_inv := φ.left_inv
-
-/-- Composition of isomorphisms. -/
-@[simps] def Iso.trans (φ : U ≃q V) (ψ : V ≃q W) : U ≃q W where
-  toPrefunctor := φ.toPrefunctor ⋙q ψ.toPrefunctor
-  invPrefunctor := ψ.invPrefunctor ⋙q φ.invPrefunctor
-  left_inv := by
-    have h1 := ψ.left_inv
-    have h2 := φ.left_inv
-    calc φ.toPrefunctor ⋙q ψ.toPrefunctor ⋙q (ψ.invPrefunctor ⋙q φ.invPrefunctor)
-        = φ.toPrefunctor ⋙q (ψ.toPrefunctor ⋙q ψ.invPrefunctor) ⋙q φ.invPrefunctor := by
-          simp only [Prefunctor.comp_assoc]
-      _ = φ.toPrefunctor ⋙q Prefunctor.id V ⋙q φ.invPrefunctor := by rw [h1]
-      _ = φ.toPrefunctor ⋙q φ.invPrefunctor := by simp only [Prefunctor.comp_id]
-      _ = Prefunctor.id U := h2
-  right_inv := by
-    have h1 := φ.right_inv
-    have h2 := ψ.right_inv
-    calc ψ.invPrefunctor ⋙q φ.invPrefunctor ⋙q (φ.toPrefunctor ⋙q ψ.toPrefunctor)
-        = ψ.invPrefunctor ⋙q (φ.invPrefunctor ⋙q φ.toPrefunctor) ⋙q ψ.toPrefunctor := by
-          simp only [Prefunctor.comp_assoc]
-      _ = ψ.invPrefunctor ⋙q Prefunctor.id V ⋙q ψ.toPrefunctor := by rw [h1]
-      _ = ψ.invPrefunctor ⋙q ψ.toPrefunctor := by simp only [Prefunctor.comp_id]
-      _ = Prefunctor.id W := h2
-
-/-- An isomorphism of coverings is an isomorphism of the covering quivers that commutes with
-the covering maps. -/
-structure CoveringIso {U V W : Type*} [Quiver U] [Quiver V] [Quiver W]
-    (φ : U ⥤q W) (ψ : V ⥤q W) extends U ≃q V where
-  /-- The forward prefunctor commutes with the covering maps. -/
-  commute_left : toPrefunctor ⋙q ψ = φ
-  /-- The inverse prefunctor commutes with the covering maps. -/
-  commute_right : invPrefunctor ⋙q φ = ψ
-
-@[inherit_doc] infixl:50 " ≃qc " => CoveringIso
-
-end QuiverIso
-
 section Automorphisms
 
 variable {M : Type*} [Group M] {S : Type*} (ι : S → M)
@@ -558,7 +489,7 @@ theorem quotientRightMul_mk (g m : M) :
 
 /-- The prefunctor on a Schreier coset graph induced by right multiplication by `g⁻¹`.
 This maps each coset `xN` to `xg⁻¹N`. -/
-def schreierCosetGraph_asAutom (g : M) :
+def SchreierCosetGraph.asAutom (g : M) :
     SchreierCosetGraph ι N ⥤q SchreierCosetGraph ι N where
   obj x := ⟨quotientRightMul N g x.toVertex⟩
   map := fun {x y} ⟨s, hs⟩ ↦ ⟨s, by
@@ -572,12 +503,12 @@ def schreierCosetGraph_asAutom (g : M) :
       simp only [SchreierGraph.smul_toVertex, MulAction.Quotient.smul_mk, smul_eq_mul, mul_assoc]⟩
 
 /-- Right multiplication by the identity is the identity prefunctor. -/
-theorem schreierCosetGraph_asAutom_one :
-    schreierCosetGraph_asAutom ι N 1 = Prefunctor.id (SchreierCosetGraph ι N) := by
-  have h_obj : ∀ X : SchreierCosetGraph ι N, (schreierCosetGraph_asAutom ι N 1).obj X = X := by
+theorem SchreierCosetGraph.asAutom_one :
+    SchreierCosetGraph.asAutom ι N 1 = Prefunctor.id (SchreierCosetGraph ι N) := by
+  have h_obj : ∀ X : SchreierCosetGraph ι N, (SchreierCosetGraph.asAutom ι N 1).obj X = X := by
     rintro ⟨x⟩
     apply SchreierGraph.ext
-    dsimp [schreierCosetGraph_asAutom]
+    dsimp [SchreierCosetGraph.asAutom]
     induction x using QuotientGroup.induction_on with
     | H m =>
       change QuotientGroup.mk (m * 1⁻¹) = QuotientGroup.mk m
@@ -585,16 +516,19 @@ theorem schreierCosetGraph_asAutom_one :
   refine Prefunctor.ext' h_obj (fun X Y ⟨s, hs⟩ ↦ ?_)
   exact Subtype.ext (by rw [SchreierGraph.homOfEq_val]; rfl)
 
-/-- Right multiplication by a product is the composition of right multiplications. -/
-theorem schreierCosetGraph_asAutom_mul (g h : M) :
-    schreierCosetGraph_asAutom ι N (g * h) =
-    schreierCosetGraph_asAutom ι N h ⋙q schreierCosetGraph_asAutom ι N g := by
+/-- Right multiplication by a product is the composition of right multiplications.
+Together with `SchreierCosetGraph.asAutom_one`, this exhibits `g ↦ asAutom ι N g` as a monoid
+homomorphism to endomorphisms of the coset graph under composition. The factors appear in the
+opposite order because `⋙q` composes diagrammatically. -/
+theorem SchreierCosetGraph.asAutom_mul (g h : M) :
+    SchreierCosetGraph.asAutom ι N (g * h) =
+    SchreierCosetGraph.asAutom ι N h ⋙q SchreierCosetGraph.asAutom ι N g := by
   have h_obj : ∀ X : SchreierCosetGraph ι N,
-      (schreierCosetGraph_asAutom ι N (g * h)).obj X =
-      (schreierCosetGraph_asAutom ι N h ⋙q schreierCosetGraph_asAutom ι N g).obj X := by
+      (SchreierCosetGraph.asAutom ι N (g * h)).obj X =
+      (SchreierCosetGraph.asAutom ι N h ⋙q SchreierCosetGraph.asAutom ι N g).obj X := by
     rintro ⟨x⟩
     apply SchreierGraph.ext
-    dsimp [schreierCosetGraph_asAutom]
+    dsimp [SchreierCosetGraph.asAutom]
     induction x using QuotientGroup.induction_on with
     | H m =>
       change QuotientGroup.mk (m * (g * h)⁻¹) = QuotientGroup.mk (m * h⁻¹ * g⁻¹)
@@ -604,8 +538,8 @@ theorem schreierCosetGraph_asAutom_mul (g h : M) :
   exact Subtype.ext (by rw [SchreierGraph.homOfEq_val]; rfl)
 
 /-- Right multiplication preserves the edge labelling of the Schreier coset graph. -/
-theorem schreierCosetGraph_asAutom_labelling (g : M) :
-    schreierCosetGraph_asAutom ι N g ⋙q SchreierCosetGraph.labelling ι N =
+theorem SchreierCosetGraph.asAutom_labelling (g : M) :
+    SchreierCosetGraph.asAutom ι N g ⋙q SchreierCosetGraph.labelling ι N =
     SchreierCosetGraph.labelling ι N := by
   fapply Prefunctor.ext
   · rintro ⟨x⟩
@@ -613,26 +547,26 @@ theorem schreierCosetGraph_asAutom_labelling (g : M) :
   · intro x y ⟨s, hs⟩
     rfl
 
-/-- Right multiplication by `g⁻¹` is an automorphism of the Schreier coset graph that
-preserves the labelling. This captures vertex-transitivity of the graph. -/
-def schreierCosetGraph_asAutom_coveringIso (g : M) :
-    SchreierCosetGraph.labelling ι N ≃qc SchreierCosetGraph.labelling ι N where
-  toPrefunctor := schreierCosetGraph_asAutom ι N g
-  invPrefunctor := schreierCosetGraph_asAutom ι N g⁻¹
-  left_inv := by
-    rw [← schreierCosetGraph_asAutom_mul, inv_mul_cancel]
-    exact schreierCosetGraph_asAutom_one ι N
-  right_inv := by
-    rw [← schreierCosetGraph_asAutom_mul, mul_inv_cancel]
-    exact schreierCosetGraph_asAutom_one ι N
-  commute_left := schreierCosetGraph_asAutom_labelling ι N g
-  commute_right := schreierCosetGraph_asAutom_labelling ι N g⁻¹
+/-- The automorphisms given by right multiplication act transitively on the vertices of a
+Schreier coset graph: any coset can be carried to any other. This is vertex-transitivity. -/
+theorem SchreierCosetGraph.exists_asAutom_obj_eq (x y : SchreierCosetGraph ι N) :
+    ∃ g : M, (SchreierCosetGraph.asAutom ι N g).obj x = y := by
+  obtain ⟨x⟩ := x
+  obtain ⟨y⟩ := y
+  induction x using QuotientGroup.induction_on with
+  | H a =>
+    induction y using QuotientGroup.induction_on with
+    | H b =>
+      refine ⟨b⁻¹ * a, ?_⟩
+      apply SchreierGraph.ext
+      dsimp [SchreierCosetGraph.asAutom]
+      group
 
-/-- For Cayley graphs (where `N = ⊥`), right multiplication is an automorphism.
-This is the vertex-transitivity property of Cayley graphs. -/
-def cayleyGraph_asAutom_coveringIso (g : M) :
-    CayleyGraph.labelling ι ≃qc CayleyGraph.labelling ι :=
-  schreierCosetGraph_asAutom_coveringIso ι ⊥ g
+/-- Vertex-transitivity of Cayley graphs: right multiplication carries any vertex to any
+other. This is the special case `N = ⊥` of `SchreierCosetGraph.exists_asAutom_obj_eq`. -/
+theorem CayleyGraph.exists_asAutom_obj_eq (x y : CayleyGraph ι) :
+    ∃ g : M, (SchreierCosetGraph.asAutom ι (⊥ : Subgroup M) g).obj x = y :=
+  SchreierCosetGraph.exists_asAutom_obj_eq ι ⊥ x y
 
 end Automorphisms
 
