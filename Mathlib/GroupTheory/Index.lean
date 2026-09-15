@@ -352,6 +352,10 @@ theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
 theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
   rw [mul_comm, card_mul_index]
 
+@[to_additive relIndex_mul_card]
+theorem relIndex_mul_card : H.relIndex K * Nat.card (H ⊓ K :) = Nat.card K := by
+  simpa [mul_comm] using relIndex_inf_mul_relIndex ⊥ H K
+
 /-- The index of a finite subgroup is the quotient of the cardinalities. -/
 @[to_additive /-- The index of a finite additive subgroup is the quotient of the cardinalities. -/]
 theorem index_eq_card_div [Finite H] : H.index = Nat.card G / Nat.card H := by
@@ -406,10 +410,8 @@ theorem relIndex_ne_zero_trans (hHK : H.relIndex K ≠ 0) (hKL : K.relIndex L �
 @[to_additive]
 theorem relIndex_inf_ne_zero (hH : H.relIndex L ≠ 0) (hK : K.relIndex L ≠ 0) :
     (H ⊓ K).relIndex L ≠ 0 := by
-  replace hH : H.relIndex (K ⊓ L) ≠ 0 := mt (relIndex_eq_zero_of_le_right inf_le_right) hH
-  rw [← inf_relIndex_right] at hH hK ⊢
-  rw [inf_assoc]
-  exact relIndex_ne_zero_trans hH hK
+  rw [← relIndex_inf_mul_relIndex, mul_ne_zero_iff_right hK]
+  exact mt (relIndex_eq_zero_of_le_right inf_le_right) hH
 
 @[to_additive]
 theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).index ≠ 0 := by
@@ -429,9 +431,11 @@ lemma relIndex_inter_ne_zero {J K : Subgroup G} (hJK : J.relIndex K ≠ 0) (L : 
 theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L := by
   by_cases h : H.relIndex L = 0
   · simp [relIndex_eq_zero_of_le_left inf_le_left h]
-  rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
-    inf_relIndex_right, inf_relIndex_right]
-  grw [relIndex_le_of_le_right inf_le_right h]
+  grw [← relIndex_inf_mul_relIndex, relIndex_le_of_le_right inf_le_right h]
+
+@[to_additive]
+theorem index_inf : (H ⊓ K).index = H.relIndex K * K.index := by
+  rw [← inf_relIndex_right, relIndex_mul_index inf_le_right]
 
 @[to_additive]
 theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
