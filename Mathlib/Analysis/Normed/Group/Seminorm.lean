@@ -567,8 +567,8 @@ namespace GroupSeminorm
 
 variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
-@[to_additive toOne]
-instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
+@[to_additive instOne]
+instance instOne [DecidableEq E] : One (GroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
       map_one' := ite_eq_left rfl
       mul_le' := fun x y => by
@@ -771,8 +771,8 @@ namespace GroupNorm
 
 variable [Group E] [DecidableEq E]
 
-@[to_additive toOne]
-instance toOne : One (GroupNorm E) :=
+@[to_additive instOne]
+instance : One (GroupNorm E) :=
   ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
 @[to_additive (attr := simp) apply_one]
