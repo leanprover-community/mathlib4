@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Init
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!
 # Notation for bundling a type into a concrete category

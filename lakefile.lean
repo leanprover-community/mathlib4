@@ -58,6 +58,8 @@ package mathlib where
   testDriver := "MathlibTest"
   lintDriver := "batteries/runLinter"
   lintDriverArgs := #["Mathlib"]
+  -- Run the builtin linting steps in addition to the `lintDriver` set above.
+  builtinLint := true
   -- A version of Mathlib only supports the toolchain it is built with.
   fixedToolchain := true
   -- Mathlib oleans are built on Linux CI and used across platforms.
