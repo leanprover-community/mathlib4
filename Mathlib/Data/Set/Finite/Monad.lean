@@ -52,8 +52,9 @@ instance fintypeBind' {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α 
 
 end monad
 
-instance fintypePure : ∀ a : α, Fintype (pure a : Set α) :=
-  Set.fintypeSingleton
+instance (a : α) : Unique (pure a : Set α) := inferInstanceAs <| Unique ({a} : Set α)
+
+example (a : α) : Fintype (pure a : Set α) := inferInstance
 
 instance fintypeSeq [DecidableEq β] (f : Set (α → β)) (s : Set α) [Fintype f] [Fintype s] :
     Fintype (f.seq s) := by
