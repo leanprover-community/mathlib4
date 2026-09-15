@@ -236,8 +236,6 @@ theorem proximity_smul_top_le [NormedSpace ℂ E] {f₁ : ℂ → ℂ} {f₂ : �
         exact MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x)
     _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
 
-@[deprecated (since := "2026-09-15")] alias proximity_mul_top_le := proximity_smul_top_le
-
 /--
 The proximity function `f * g` at `⊤` is less than or equal to the sum of the proximity functions of
 `f` and `g`, respectively.
