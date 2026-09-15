@@ -36,23 +36,7 @@ parallelogram law in point form, together with its converse.
 
 public section
 
-namespace InnerProductGeometry
-
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-
-/-- The identity underlying Euler's quadrilateral theorem, for the quadrilateral with vertices
-`0`, `u`, `u + v` and `u + v + w`, vector form. -/
-theorem norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq (u v w : V) :
-    ‖u‖ ^ 2 + ‖v‖ ^ 2 + ‖w‖ ^ 2 + ‖u + v + w‖ ^ 2
-      = ‖u + v‖ ^ 2 + ‖v + w‖ ^ 2 + ‖u + w‖ ^ 2 := by
-  simp only [norm_add_sq_real, inner_add_left]
-  ring
-
-end InnerProductGeometry
-
 namespace EuclideanGeometry
-
-open InnerProductGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -73,7 +57,7 @@ theorem dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_f
     dist_eq_norm_vsub' V d a, dist_eq_norm_vsub V a c, dist_eq_norm_vsub V b d,
     ← vsub_add_vsub_cancel a c d, ← vsub_add_vsub_cancel b c d,
     ← vsub_add_vsub_cancel a b c]
-  exact norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq _ _ _
+  exact norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq ℝ _ _ _
 
 /-- The sum of the squares of the four sides of the quadrilateral `a b c d` equals the sum of the
 squares of the two diagonals if and only if the two diagonals have the same midpoint. The
