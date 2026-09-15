@@ -851,10 +851,8 @@ lemma truncate₁_nonneg [One Y] [ZeroLEOneClass Y] {D : locallyFinsuppWithin U 
   simp [min_assoc]
 
 /-- Truncation is idempotent. -/
-@[simp] lemma truncate_idempotent (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
-    (D.truncate y hy).truncate y hy = D.truncate y hy := by
-  ext z
-  simp only [truncate_apply, min_assoc, min_self]
+lemma truncate_idempotent (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
+    (D.truncate y hy).truncate y hy = D.truncate y hy := by simp
 
 /-- Truncation is idempotent. -/
 lemma truncate₁_idempotent [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
