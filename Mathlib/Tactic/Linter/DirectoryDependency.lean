@@ -633,6 +633,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.Basic, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
+  (`Mathlib.SetTheory.Cardinal.ContinuumHypothesis, `Mathlib.Analysis.Real.Cardinality),
   (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
   (`Mathlib.RepresentationTheory.Homological.ContCohomology, `Mathlib.Topology),  -- For continuous cohomology
   -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
