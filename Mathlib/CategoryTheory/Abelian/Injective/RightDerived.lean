@@ -34,7 +34,7 @@ noncomputable def DerivedCategory.Plus.singleFunctorIso (n : ℤ) :
 
 namespace CategoryTheory.ShortComplex.ShortExact
 
-variable {S : ShortComplex C} (hS : S.ShortExact)
+variable {S S' : ShortComplex C} (φ : S ⟶ S') (hS : S.ShortExact) (hS' : S'.ShortExact)
 
 /-- The (distinguished) triangle in the bounded below derived category of `C` given by a
 short exact short complex in `C`. -/
@@ -45,6 +45,22 @@ noncomputable abbrev singleTrianglePlus : Triangle (DerivedCategory.Plus C) :=
 lemma singleTrianglePlus_distinguished :
     hS.singleTrianglePlus ∈ distTriang (DerivedCategory.Plus C) :=
   ObjectProperty.liftTriangle_distinguished _ _ _ _ _ hS.singleTriangle_distinguished
+
+@[simps, implicit_reducible]
+noncomputable def singleTrianglePlus.map : hS.singleTrianglePlus ⟶ hS'.singleTrianglePlus where
+  hom₁ := ObjectProperty.homMk ((DerivedCategory.singleFunctor C 0).map φ.τ₁)
+  hom₂ := ObjectProperty.homMk ((DerivedCategory.singleFunctor C 0).map φ.τ₂)
+  hom₃ := ObjectProperty.homMk ((DerivedCategory.singleFunctor C 0).map φ.τ₃)
+  comm₁ := by ext; simp [← Functor.map_comp, φ.comm₁₂]
+  comm₂ := by ext; simp [← Functor.map_comp, φ.comm₂₃]
+  comm₃ := by
+    ext
+    dsimp
+    rw [Category.assoc, ← dsimp% (singleTriangle.map hS hS' φ).comm₃_assoc]
+    congr 1
+    symm
+    apply DerivedCategory.Plus.ι.commShiftIso_inv_naturality
+      ((DerivedCategory.Plus.singleFunctor _ 0).map φ.τ₁)
 
 end CategoryTheory.ShortComplex.ShortExact
 
@@ -101,7 +117,7 @@ variable {S : ShortComplex C} (hS : S.ShortExact)
 noncomputable def rightDerivedδ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
     (F.rightDerived n₀).obj S.X₃ ⟶ (F.rightDerived n₁).obj S.X₁ :=
   (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ
-    (F.rightDerivedFunctorPlus.mapTriangle.obj (hS.singleTrianglePlus)) n₀ n₁ (by lia)
+    (F.rightDerivedFunctorPlus.mapTriangle.obj hS.singleTrianglePlus) n₀ n₁ (by lia)
 
 include hS in
 lemma mono_rightDerived_map_f :
@@ -155,7 +171,10 @@ end
 lemma rightDerivedδ_naturality {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
     (F.rightDerived n₀).map φ.τ₃ ≫ F.rightDerivedδ hS₂ n₀ n₁ h  =
-      F.rightDerivedδ hS₁ n₀ n₁ h ≫ (F.rightDerived n₁).map φ.τ₁ := sorry
+      F.rightDerivedδ hS₁ n₀ n₁ h ≫ (F.rightDerived n₁).map φ.τ₁ :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ_naturality
+    (F.rightDerivedFunctorPlus.mapTriangle.map
+      (ShortComplex.ShortExact.singleTrianglePlus.map φ hS₁ hS₂)) n₀ n₁ (by lia)
 
 instance : (F.rightDerived 0).PreservesMonomorphisms where
   preserves f _ := by
@@ -237,7 +256,14 @@ lemma rightDerived_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) (n : ℕ) :
 lemma toRightDerived₀_app_rightDerived_app (τ : F₁ ⟶ F₂) (X : C) :
     F₁.toRightDerived₀.app X ≫ (τ.rightDerived 0).app X =
       τ.app X ≫ F₂.toRightDerived₀.app X := by
-  sorry
+  dsimp [Functor.toRightDerived₀]
+  simp only [DerivedCategory.Plus.singleFunctorIso_inv_app, Category.comp_id, Functor.map_id,
+    DerivedCategory.Plus.singleFunctorIso_hom_app, Category.id_comp, ← Functor.map_comp,
+    ← Functor.map_comp_assoc, Category.assoc, rightDerived_app, Int.cast_ofNat_Int,
+    DerivedCategory.Plus.singleFunctor_obj, DerivedCategory.Plus.singleFunctor_map,
+    τ.rightDerivedFunctorPlus_fac_app ((CochainComplex.Plus.singleFunctor C 0).obj X),
+    dsimp% (DerivedCategory.Plus.singleFunctorCompHomologyFunctorIso D 0).inv.naturality_assoc,
+    τ.mapCochainComplexPlus_app_singleFunctor_obj, Iso.inv_hom_id_app_assoc]
 
 @[reassoc (attr := simp)]
 lemma toRightDerived₀_rightDerived (τ : F₁ ⟶ F₂) :
@@ -248,9 +274,9 @@ lemma toRightDerived₀_rightDerived (τ : F₁ ⟶ F₂) :
 lemma rightDerivedδ_naturality
     (τ : F₁ ⟶ F₂) {S : ShortComplex C} (hS : S.ShortExact) (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
     (τ.rightDerived n₀).app S.X₃ ≫ F₂.rightDerivedδ hS n₀ n₁ =
-      F₁.rightDerivedδ hS n₀ n₁ ≫ (τ.rightDerived n₁).app S.X₁ := by
-  simp [Functor.rightDerivedδ]
-  sorry
+      F₁.rightDerivedδ hS n₀ n₁ ≫ (τ.rightDerived n₁).app S.X₁ :=
+  (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ_naturality
+    (τ.rightDerivedFunctorPlus.mapTriangle.app hS.singleTrianglePlus) n₀ n₁ (by lia)
 
 end NatTrans
 

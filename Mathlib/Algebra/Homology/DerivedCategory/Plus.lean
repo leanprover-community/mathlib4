@@ -288,6 +288,14 @@ example : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
 instance : Q.IsLocalization (CochainComplex.Plus.quasiIso C) :=
   Functor.IsLocalization.of_iso _ (quotientCompQhIso C)
 
+lemma singleFunctor_obj (X : C) (n : ℤ) :
+    (singleFunctor C n).obj X =
+      DerivedCategory.Plus.Q.obj ((CochainComplex.Plus.singleFunctor C n).obj X) := rfl
+
+lemma singleFunctor_map {X Y : C} (f : X ⟶ Y) (n : ℤ) :
+    (singleFunctor C n).map f =
+      DerivedCategory.Plus.Q.map ((CochainComplex.Plus.singleFunctor C n).map f) := rfl
+
 end Plus
 
 end DerivedCategory

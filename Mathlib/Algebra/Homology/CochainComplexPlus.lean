@@ -224,6 +224,16 @@ def mapCochainComplexPlus (τ : F₁ ⟶ F₂) :
     F₁.mapCochainComplexPlus ⟶ F₂.mapCochainComplexPlus where
   app K := ObjectProperty.homMk ((NatTrans.mapHomologicalComplex τ _).app _)
 
+@[reassoc]
+lemma mapCochainComplexPlus_app_singleFunctor_obj
+    [HasZeroObject C] [HasZeroObject D] (τ : F₁ ⟶ F₂) (X : C) (n : ℤ) :
+    τ.mapCochainComplexPlus.app ((CochainComplex.Plus.singleFunctor C n).obj X) =
+      (F₁.singleMapCochainComplexPlus n).hom.app X ≫
+        (CochainComplex.Plus.singleFunctor D n).map (τ.app X) ≫
+        (F₂.singleMapCochainComplexPlus n).inv.app X := by
+  ext : 1
+  apply HomologicalComplex.natTransMapHomologicalComplex_app_single_obj
+
 @[simp]
 lemma mapCochainComplexPlus_add (τ τ' : F₁ ⟶ F₂) :
     (τ + τ').mapCochainComplexPlus = τ.mapCochainComplexPlus + τ'.mapCochainComplexPlus := rfl
