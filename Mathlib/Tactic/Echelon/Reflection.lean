@@ -122,8 +122,8 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
         have := List.getElem?_drop (xs := row) (i := k) (j := 0)
         refine ⟨fun j hj ↦ ?_, by grind [IsPivotedList, splitRevAt_eq]⟩
         have := List.getElem?_take_of_lt (l := row) (hj k (by simp))
-        grind [IsPivotedList, splitRevAt_eq, List.reverse_eq_iff, List.reverse_replicate]
-      | succ i => grind [IsPivotedList, splitRevAt_eq, List.getD_cons_succ]
+        grind [IsPivotedList, splitRevAt_eq, List.reverse_replicate]
+      | succ i => grind [IsPivotedList, splitRevAt_eq]
 
 /-- The pivot function of the list of pivot columns: the column of row `i`, and `⊤` for a row
 beyond the list. -/
