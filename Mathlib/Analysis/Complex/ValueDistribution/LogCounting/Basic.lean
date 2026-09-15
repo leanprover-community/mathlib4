@@ -351,33 +351,22 @@ If `f : 𝕜 → E` is meromorphic and `a : WithTop E` is any value, this is a l
 measure of the number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`,
 taking multiplicities into account.  In the special case where `a = ⊤`, it counts the poles of `f`.
 -/
-noncomputable def logCounting : ℝ → ℝ := by
-  by_cases h : a = ⊤
-  · exact (divisor f univ)⁻.logCounting
-  · exact (divisor (f · - a.untop₀) univ)⁺.logCounting
+noncomputable def logCounting : ℝ → ℝ :=
+  a.recTopCoe (divisor f univ)⁻.logCounting fun a₀ ↦ (divisor (f · - a₀) univ)⁺.logCounting
 
 /--
-Relation between `ValueDistribution.logCounting` and `locallyFinsuppWithin.logCounting`.
+The logarithmic counting function `logCounting f ⊤` is the logarithmic counting function associated
+with the pole-divisor of `f`.
 -/
-lemma _root_.locallyFinsuppWithin.logCounting_divisor {f : ℂ → ℂ} :
-    locallyFinsuppWithin.logCounting (divisor f univ) = logCounting f 0 - logCounting f ⊤ := by
-  simp [logCounting, ← locallyFinsuppWithin.logCounting.map_sub]
+lemma logCounting_top :
+    logCounting f ⊤ = (divisor f univ)⁻.logCounting := rfl
 
 /--
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is the logarithmic
 counting function for the zeros of `f - a₀`.
 -/
 lemma logCounting_coe :
-    logCounting f a₀ = (divisor (f · - a₀) univ)⁺.logCounting := by
-  simp [logCounting]
-
-/--
-For finite values `a₀`, the logarithmic counting function `logCounting f a₀` equals the logarithmic
-counting function for the zeros of `f - a₀`.
--/
-lemma logCounting_coe_eq_logCounting_sub_const_zero :
-    logCounting f a₀ = logCounting (f - fun _ ↦ a₀) 0 := by
-  simp [logCounting]
+    logCounting f a₀ = (divisor (f · - a₀) univ)⁺.logCounting := rfl
 
 /--
 The logarithmic counting function `logCounting f 0` is the logarithmic counting function associated
@@ -385,22 +374,30 @@ with the zero-divisor of `f`.
 -/
 lemma logCounting_zero :
     logCounting f 0 = (divisor f univ)⁺.logCounting := by
-  simp [logCounting]
+  simpa using logCounting_coe (f := f) (a₀ := 0)
 
 /--
-The logarithmic counting function `logCounting f ⊤` is the logarithmic counting function associated
-with the pole-divisor of `f`.
+For finite values `a₀`, the logarithmic counting function `logCounting f a₀` equals the logarithmic
+counting function for the zeros of `f - a₀`.
 -/
-lemma logCounting_top :
-    logCounting f ⊤ = (divisor f univ)⁻.logCounting := by
-  simp [logCounting]
+lemma logCounting_coe_eq_logCounting_sub_const_zero :
+    logCounting f a₀ = logCounting (f - fun _ ↦ a₀) 0 := by
+  rw [logCounting_coe, logCounting_zero]
+  rfl
+
+/--
+Relation between `ValueDistribution.logCounting` and `locallyFinsuppWithin.logCounting`.
+-/
+lemma _root_.locallyFinsuppWithin.logCounting_divisor {f : ℂ → ℂ} :
+    locallyFinsuppWithin.logCounting (divisor f univ) = logCounting f 0 - logCounting f ⊤ := by
+  rw [logCounting_zero, logCounting_top, ← map_sub, posPart_sub_negPart]
 
 /--
 Evaluation of the logarithmic counting function at zero yields zero.
 -/
 @[simp] lemma logCounting_eval_zero :
     logCounting f a 0 = 0 := by
-  by_cases h : a = ⊤ <;> simp [logCounting, h]
+  cases a <;> simp [logCounting_top, logCounting_coe]
 
 /--
 The logarithmic counting function associated with the divisor of `f` is the difference between
@@ -415,7 +412,7 @@ The logarithmic counting function of a constant function is zero.
 -/
 @[simp] theorem logCounting_const {c : E} {e : WithTop E} :
     logCounting (fun _ ↦ c : 𝕜 → E) e = 0 := by
-  simp [logCounting]
+  cases e <;> simp [logCounting_top, logCounting_coe]
 
 /--
 The logarithmic counting function of the constant function zero is zero.
@@ -429,26 +426,33 @@ The logarithmic counting function is even.
 theorem logCounting_even {f : 𝕜 → E} {e : WithTop E} :
     (logCounting f e).Even := by
   intro r
-  by_cases h : e = ⊤ <;> simp [logCounting, h, locallyFinsuppWithin.logCounting_even _ r]
+  cases e <;> simp [logCounting_top, logCounting_coe, locallyFinsuppWithin.logCounting_even _ r]
 
 /--
 The logarithmic counting function is monotonous.
 -/
 theorem logCounting_monotoneOn {f : 𝕜 → E} {e : WithTop E} :
     MonotoneOn (logCounting f e) (Ioi 0) := by
-  by_cases h : e = ⊤ <;>
-    simpa [logCounting, h] using locallyFinsuppWithin.logCounting_mono (by positivity)
+  cases e with
+  | top =>
+    rw [logCounting_top]
+    exact locallyFinsuppWithin.logCounting_mono (negPart_nonneg _)
+  | coe a₀ =>
+    rw [logCounting_coe]
+    exact locallyFinsuppWithin.logCounting_mono (posPart_nonneg _)
 
 /--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
 -/
 theorem logCounting_nonneg {r : ℝ} {f : 𝕜 → E} {e : WithTop E} (hr : 1 ≤ r) :
     0 ≤ logCounting f e r := by
-  by_cases h : e = ⊤
-  · simp [logCounting, h, locallyFinsuppWithin.logCounting_nonneg
-      (negPart_nonneg (divisor f univ)) hr]
-  · simp [logCounting, h, locallyFinsuppWithin.logCounting_nonneg
-      (posPart_nonneg (divisor (f · - e.untop₀) univ)) hr]
+  cases e with
+  | top =>
+    rw [logCounting_top]
+    exact locallyFinsuppWithin.logCounting_nonneg (negPart_nonneg _) hr
+  | coe a₀ =>
+    rw [logCounting_coe]
+    exact locallyFinsuppWithin.logCounting_nonneg (posPart_nonneg _) hr
 
 /--
 The logarithmic counting function is asymptotically non-negative.
@@ -468,11 +472,11 @@ functions agree.
 theorem logCounting_congr_codiscrete [NormedSpace ℂ E] {f g : ℂ → E} (hfg : f =ᶠ[codiscrete ℂ] g) :
     logCounting f = logCounting g := by
   ext a : 1
-  by_cases h : a = ⊤
-  · simp only [logCounting, h, ↓reduceDIte]
-    congr 2
-    exact divisor_congr_codiscreteWithin hfg isOpen_univ
-  · simp only [logCounting, h, ↓reduceDIte]
+  cases a with
+  | top =>
+    rw [logCounting_top, logCounting_top, divisor_congr_codiscreteWithin hfg isOpen_univ]
+  | coe a₀ =>
+    rw [logCounting_coe, logCounting_coe]
     congr 2
     apply divisor_congr_codiscreteWithin _ isOpen_univ
     filter_upwards [hfg] using by simp
@@ -489,7 +493,7 @@ Adding an analytic function does not change the logarithmic counting function fo
 -/
 theorem logCounting_add_analyticOn (hf : Meromorphic f) (hg : AnalyticOn 𝕜 g univ) :
     logCounting (f + g) ⊤ = logCounting f ⊤ := by
-  simp only [logCounting, ↓reduceDIte]
+  simp only [logCounting_top]
   rw [hf.meromorphicOn.negPart_divisor_add_of_analyticNhdOn_right
     (isOpen_univ.analyticOn_iff_analyticOnNhd.1 hg)]
 
@@ -520,7 +524,7 @@ sum of the logarithmic counting functions for the poles of `f` and `g`, respecti
 theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : Meromorphic f₁)
     (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
     logCounting (f₁ + f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
-  simp only [logCounting, ↓reduceDIte]
+  simp only [logCounting_top]
   rw [← locallyFinsuppWithin.logCounting.map_add]
   exact locallyFinsuppWithin.logCounting_le
     (negPart_divisor_add_le_add h₁f₁.meromorphicOn h₁f₂.meromorphicOn) hr
@@ -583,7 +587,7 @@ theorem logCounting_mul_zero_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 �
     (h₁f₁ : Meromorphic f₁) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : Meromorphic f₂) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     logCounting (f₁ * f₂) 0 r ≤ (logCounting f₁ 0 + logCounting f₂ 0) r := by
-  simp only [logCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
+  simp only [logCounting_zero]
   rw [divisor_mul h₁f₁.meromorphicOn h₁f₂.meromorphicOn (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
     ← locallyFinsuppWithin.logCounting.map_add]
   apply locallyFinsuppWithin.logCounting_le _ hr
@@ -608,7 +612,7 @@ theorem logCounting_mul_top_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤
     (h₁f₁ : Meromorphic f₁) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : Meromorphic f₂) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     logCounting (f₁ * f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
-  simp only [logCounting, reduceDIte]
+  simp only [logCounting_top]
   rw [divisor_mul h₁f₁.meromorphicOn h₁f₂.meromorphicOn (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
     ← locallyFinsuppWithin.logCounting.map_add]
   apply locallyFinsuppWithin.logCounting_le _ hr
@@ -631,7 +635,7 @@ times the logarithmic counting function for the zeros of `f`.
 -/
 @[simp] theorem logCounting_pow_zero {f : 𝕜 → 𝕜} {n : ℕ} (hf : Meromorphic f) :
     logCounting (f ^ n) 0 = n • logCounting f 0 := by
-  simp [logCounting, divisor_fun_pow hf.meromorphicOn n]
+  simp [logCounting_zero, divisor_pow hf.meromorphicOn n]
 
 /--
 For natural numbers `n`, the logarithmic counting function for the poles of `f ^ n` equals `n` times
@@ -639,7 +643,7 @@ the logarithmic counting function for the poles of `f`.
 -/
 @[simp] theorem logCounting_pow_top {f : 𝕜 → 𝕜} {n : ℕ} (hf : Meromorphic f) :
     logCounting (f ^ n) ⊤ = n • logCounting f ⊤ := by
-  simp [logCounting, divisor_pow hf.meromorphicOn n]
+  simp [logCounting_top, divisor_pow hf.meromorphicOn n]
 
 end ValueDistribution
 
