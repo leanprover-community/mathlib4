@@ -90,19 +90,6 @@ instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsRightCancelAdd α] 
 instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsCancelAdd α] :
     IsCancelAdd (Nonneg α) where
 
-instance psmul [AddMonoid α] [Preorder α] [AddLeftMono α] : PSMul (Nonneg α) :=
-  ⟨fun n x => ⟨n • (x : α), psmul_nonneg x.prop n⟩⟩
-
-@[simp]
-theorem psmul_mk [AddMonoid α] [Preorder α] [AddLeftMono α] (n : ℕ+) {x : α}
-    (hx : 0 ≤ x) : (n • (⟨x, hx⟩ : Nonneg α)) = ⟨n • x, psmul_nonneg hx n⟩ :=
-  rfl
-
-@[simp, norm_cast]
-protected theorem coe_psmul [AddMonoid α] [Preorder α] [AddLeftMono α]
-    (n : ℕ+) (a : Nonneg α) : ((n • a : Nonneg α) : α) = n • (a : α) :=
-  rfl
-
 instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ (Nonneg α) :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
 
@@ -158,8 +145,7 @@ section AddMonoid
 variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid (Nonneg α) :=
-  fast_instance% Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion `Nonneg α → α` as an `AddMonoidHom`. -/
 @[simps]
@@ -182,7 +168,6 @@ variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 instance addCommMonoid : AddCommMonoid (Nonneg α) :=
   fast_instance%
     Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
-      (fun _ _ => rfl)
 
 end AddCommMonoid
 
@@ -192,7 +177,6 @@ variable [AddCancelCommMonoid α] [Preorder α] [AddLeftMono α]
 instance addCancelCommMonoid : AddCancelCommMonoid (Nonneg α) :=
   fast_instance%
     Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
-      (fun _ _ => rfl)
 
 end AddCancelCommMonoid
 
@@ -218,25 +202,6 @@ instance addMonoidWithOne : AddMonoidWithOne (Nonneg α) :=
     natCast_succ := fun _ => by ext; simp }
 
 end AddMonoidWithOne
-
-section PPow
-
-variable [SemigroupWithZero α] [Preorder α] [PosMulMono α]
-
-instance ppow : PPow (Nonneg α) where
-  ppow n x := ⟨(x : α) ^ n, ppow_nonneg x.2 _⟩
-
-@[simp, norm_cast]
-protected theorem coe_ppow (a : Nonneg α) (n : ℕ+) :
-    (↑(a ^ n) : α) = (a : α) ^ n :=
-  rfl
-
-@[simp]
-theorem mk_ppow {x : α} (hx : 0 ≤ x) (n : ℕ+) :
-    (⟨x, hx⟩ : Nonneg α) ^ n = ⟨x ^ n, ppow_nonneg hx _⟩ :=
-  rfl
-
-end PPow
 
 section Pow
 
@@ -265,7 +230,6 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
 instance semiring : Semiring (Nonneg α) :=
   fast_instance% Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
 instance monoidWithZero : MonoidWithZero (Nonneg α) := by infer_instance
@@ -288,7 +252,6 @@ variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
 instance commSemiring : CommSemiring (Nonneg α) :=
   fast_instance% Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
 instance commMonoidWithZero : CommMonoidWithZero (Nonneg α) := inferInstance
