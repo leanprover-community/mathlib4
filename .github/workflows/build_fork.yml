@@ -13,13 +13,6 @@ on:
       # the PR, so PR changes under these dirs can't affect the run — triggering is wasteful.
       - '.github/**'
 
-concurrency:
-  # label each workflow run; only the latest with each label will run
-  # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  # cancel any running workflow with the same label
-  cancel-in-progress: true
-
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
@@ -29,9 +22,70 @@ permissions:
   # All other permissions are implicitly 'none'
 
 jobs:
+  guard:
+    name: Supersede older runs
+    if: ${{ github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing' }}
+    runs-on: ubuntu-latest
+    # Overrides the workflow-level block for this job only; the `build` job below still gets
+    # the workflow-level permissions.
+    permissions:
+      actions: write       # cancel superseded runs of this workflow
+      pull-requests: read  # read the PR's current head sha
+    outputs:
+      is_head: ${{ steps.check.outputs.is_head }}
+    steps:
+      - name: Skip if superseded, and cancel any run this one supersedes
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MY_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          set -uo pipefail
+
+          # Fail open: if the API cannot be reached, trigger a build.
+          is_head=true
+
+          if ! head_sha="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.head.sha')"; then
+            echo "::warning::Could not read PR #${PR_NUMBER}; building anyway."
+          elif [ "${head_sha}" != "${MY_SHA}" ]; then
+            echo "PR #${PR_NUMBER} is at ${head_sha}; this run is for ${MY_SHA}. Skipping."
+            is_head=false
+          else
+            # This run is the head, so every other in-flight run for this branch is stale.
+            # Matched on head sha rather than PR number because the runs API reports no PR
+            # number for `pull_request_target` runs. Runs for *this* sha are left alone, so a
+            # second PR sharing this fork branch keeps its own run.
+            if stale="$(gh api -X GET "repos/${REPO}/actions/workflows/build_fork.yml/runs" \
+                          -f "branch=${HEAD_BRANCH}" -f per_page=50 |
+                        jq -r --arg r "${HEAD_REPO}" --arg s "${MY_SHA}" --arg me "${RUN_ID}" \
+                          '.workflow_runs[]
+                           | select(.head_repository.full_name == $r
+                                    and .status != "completed"
+                                    and .head_sha != $s
+                                    and (.id | tostring) != $me)
+                           | .id')"; then
+              for id in ${stale}; do
+                echo "Cancelling run ${id}, superseded by ${MY_SHA}."
+                gh api -X POST "repos/${REPO}/actions/runs/${id}/cancel" \
+                  || echo "::warning::Could not cancel run ${id}."
+              done
+            else
+              echo "::warning::Could not list runs for ${HEAD_REPO}:${HEAD_BRANCH}."
+            fi
+          fi
+
+          echo "is_head=${is_head}" >> "$GITHUB_OUTPUT"
+
   build:
     name: ci (fork)
-    if: ${{ github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing' }}
+    # `guard` carries the fork/repository condition; a skipped `guard` skips this job too.
+    needs: guard
+    if: ${{ needs.guard.outputs.is_head == 'true' }}
     uses: ./.github/workflows/build_template.yml
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
