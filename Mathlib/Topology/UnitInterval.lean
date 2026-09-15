@@ -246,6 +246,12 @@ lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
   rw [preimage_subtype_val_Ioi]
   exact Ioc_top.symm
 
+lemma mem_Ioo_iff {t : I} : t ∈ Ioo (0 : I) 1 ↔ t ≠ 0 ∧ t ≠ 1 := by
+  rw [mem_Ioo, pos_iff_ne_zero, unitInterval.lt_one_iff_ne_one]
+
+lemma eq_zero_or_eq_one_or_mem_Ioo (t : I) : t = 0 ∨ t = 1 ∨ t ∈ Ioo (0 : I) 1 :=
+  Set.eq_endpoints_or_mem_Ioo_of_mem_Icc ⟨t.2.1, t.2.2⟩
+
 end unitInterval
 
 section partition
