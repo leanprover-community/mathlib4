@@ -63,8 +63,6 @@ open Module Polynomial
 
 noncomputable section
 
-universe u v
-
 -- This class doesn't really make sense on a predicate
 /-- `IsAdjoinRoot S f` states that the ring `S` can be constructed by adjoining a specified root
 of the polynomial `f : R[X]` to `R`.
@@ -75,8 +73,8 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
-structure IsAdjoinRoot {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
-    (f : R[X]) : Type max u v where
+structure IsAdjoinRoot {R : Type*} (S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
+    (f : R[X]) where
   map : R[X] →ₐ[R] S
   map_surjective : Function.Surjective map
   ker_map : RingHom.ker map = Ideal.span {f}
@@ -92,13 +90,13 @@ we have `IsAdjoinRootMonic.powerBasis`.
 Bundling `Monic` into this structure is very useful when working with explicit `f`s such as
 `X^2 - C a * X - C b` since it saves you carrying around the proofs of monicity.
 -/
-structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
+structure IsAdjoinRootMonic {R : Type*} (S : Type*) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) extends IsAdjoinRoot S f where
   monic : Monic f
 
 section Ring
 
-variable {R : Type u} {S : Type v} [CommRing R] [Ring S] {f : R[X]} [Algebra R S]
+variable {R S : Type*} [CommRing R] [Ring S] {f : R[X]} [Algebra R S]
 
 namespace IsAdjoinRoot
 
@@ -142,6 +140,13 @@ for extensionality of the ring elements. -/
 @[ext]
 theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
   h.ext_map h' (fun x => by rw [← h.aeval_root_eq_map, ← h'.aeval_root_eq_map, eq])
+
+/-- Two `R`-algebra homomorphisms out of `S` agreeing on the root are equal. -/
+theorem algHom_eq_of_root {T : Type*} [CommRing T] [Algebra R T] {g₁ g₂ : S →ₐ[R] T}
+    (hg : g₁ h.root = g₂ h.root) : g₁ = g₂ := by
+  ext x
+  obtain ⟨p, rfl⟩ := h.map_surjective x
+  rw [← h.aeval_root_eq_map, ← aeval_algHom_apply, ← aeval_algHom_apply, hg]
 
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.
 
@@ -570,7 +575,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {f : R[X]}
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {f : R[X]}
 
 namespace IsAdjoinRoot
 
