@@ -1085,7 +1085,7 @@ theorem isOpen_pi_iff {s : Set (∀ a, A a)} :
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => ?_, ?_⟩
     · simp_rw [eval_image_pi (Finset.mem_coe.mpr hi)
-          (pi_nonempty_iff.mpr fun i => ⟨_, fun _ => (h1 i).choose_spec.2.2⟩)]
+          (pi_nonempty.mpr fun i => ⟨_, fun _ => (h1 i).choose_spec.2.2⟩)]
       exact (h1 i).choose_spec.2
     · exact Subset.trans
         (pi_mono fun i hi => (eval_image_pi_subset hi).trans (h1 i).choose_spec.1) h2

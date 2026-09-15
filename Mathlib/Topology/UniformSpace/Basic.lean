@@ -180,7 +180,7 @@ theorem iSup_nhds_le_uniformity : ⨆ x : α, 𝓝 (x, x) ≤ 𝓤 α :=
   iSup_le nhds_le_uniformity
 
 /-- Entourages are neighborhoods of the diagonal. -/
-theorem nhdsSet_diagonal_le_uniformity : 𝓝ˢ (diagonal α) ≤ 𝓤 α :=
+theorem nhdsSet_diagonal_le_uniformity : 𝓝ˢ (diagonalUniv α) ≤ 𝓤 α :=
   (nhdsSet_diagonal α).trans_le iSup_nhds_le_uniformity
 
 section
@@ -401,7 +401,7 @@ instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
 
 instance [Subsingleton α] : Unique (UniformSpace α) where
   uniq u := bot_unique <| le_principal_iff.2 <| by
-    rw [SetRel.id, ← diagonal, diagonal_eq_univ]; exact univ_mem
+    rw [SetRel.id, ← diagonalUniv, diagonal_eq_univ]; exact univ_mem
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
   is the inverse image in the filter sense of the induced function `α × α → β × β`.

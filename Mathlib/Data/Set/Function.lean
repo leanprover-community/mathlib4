@@ -117,8 +117,8 @@ theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
 
 theorem mapsTo_iff_subset_preimage : MapsTo f s t ↔ s ⊆ f ⁻¹' t := Iff.rfl
 
-theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
-  mapsTo_iff_subset_preimage.mpr <| diagonal_subset_iff.2 fun _ => rfl
+theorem mapsTo_prodMap_diagonalUniv : MapsTo (Prod.map f f) (diagonalUniv α) (diagonalUniv β) :=
+  mapsTo_iff_subset_preimage.mpr <| diagonalUniv_subset_iff.2 fun _ => rfl
 
 @[simp]
 theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=

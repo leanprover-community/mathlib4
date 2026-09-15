@@ -92,7 +92,7 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
   Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 
-instance fintypeOffDiag (s : Set α) [Fintype s] : Fintype s.offDiag :=
+instance fintypeOffDiag (s : Set α) [Fintype s] : Fintype s.offDiagonal :=
   Fintype.ofFinset s.toFinset.offDiag <| by simp
 
 /-- `image2 f s t` is `Fintype` if `s` and `t` are. -/
@@ -178,8 +178,8 @@ protected theorem infinite_prod :
 theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite ∨ s = ∅) := by
   contrapose! +distrib; exact Set.infinite_prod
 
-protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite :=
-  (hs.prod hs).subset s.offDiag_subset_prod
+protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiagonal.Finite :=
+  (hs.prod hs).subset s.offDiagonal_subset_prod
 
 protected theorem Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
     (image2 f s t).Finite := by
