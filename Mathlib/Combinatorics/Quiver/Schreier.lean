@@ -53,7 +53,7 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
   the entire group.
 * `Quiver.cayley_subsingleton_weaklyConnectedComponent` - A Cayley graph has at most one
   weakly connected component when the generators generate the entire group.
-* `Quiver.cayley_connected` - A Cayley graph of a nonempty group has exactly one weakly
+* `Quiver.cayleyUniqueWeaklyConnectedComponent` - A Cayley graph has exactly one weakly
   connected component when the generators generate the entire group.
 * `Quiver.SchreierCosetGraph.asAutom_labelling` - Right multiplication by `g⁻¹` induces an
   endomorphism of the Schreier coset graph preserving labels.
@@ -326,11 +326,10 @@ section SchreierCosetGraph
 variable {M : Type*} [Group M] {S : Type*} (ι : S → M) (H : Subgroup M)
 
 /-- A Schreier coset graph is the Schreier graph of the action of `M` on the cosets `M ⧸ H`. -/
-abbrev SchreierCosetGraph (ι : S → M) (H : Subgroup M) : Type _ := SchreierGraph (M ⧸ H) ι
+abbrev SchreierCosetGraph : Type _ := SchreierGraph (M ⧸ H) ι
 
 /-- The labelling for Schreier coset graphs. -/
-abbrev SchreierCosetGraph.labelling (ι : S → M) (H : Subgroup M) :
-    SchreierCosetGraph ι H ⥤q SingleObj S :=
+abbrev SchreierCosetGraph.labelling : SchreierCosetGraph ι H ⥤q SingleObj S :=
   SchreierGraph.labelling (M ⧸ H) ι
 
 end SchreierCosetGraph
@@ -341,10 +340,10 @@ variable {M : Type*} [Group M] {S : Type*} (ι : S → M)
 
 /-- The (left) Cayley graph of a group `M` with generators indexed by `S` via `ι : S → M`.
 It is the special case of a Schreier coset graph where the subgroup is trivial. -/
-abbrev CayleyGraph (ι : S → M) : Type _ := SchreierCosetGraph ι (⊥ : Subgroup M)
+abbrev CayleyGraph : Type _ := SchreierCosetGraph ι (⊥ : Subgroup M)
 
 /-- The labelling for Cayley graphs. -/
-abbrev CayleyGraph.labelling (ι : S → M) : CayleyGraph ι ⥤q SingleObj S :=
+abbrev CayleyGraph.labelling : CayleyGraph ι ⥤q SingleObj S :=
   SchreierCosetGraph.labelling ι (⊥ : Subgroup M)
 
 /-- In a Cayley graph, the targets of edges from a vertex `g` are exactly the vertices
@@ -412,8 +411,7 @@ theorem cayley_reachable_iff (x y : CayleyGraph ι) :
 when the generators generate the entire group. -/
 theorem cayley_preconnected (hgen : Subgroup.closure (Set.range ι) = ⊤) (x y : CayleyGraph ι) :
     Reachable (Symmetrify.of.obj x) (Symmetrify.of.obj y) := by
-  rw [cayley_reachable_iff]
-  rw [hgen]
+  rw [cayley_reachable_iff, hgen]
   exact Subgroup.mem_top _
 
 /-- A Cayley graph has at most one weakly connected component when the generators generate
@@ -426,7 +424,7 @@ theorem cayley_subsingleton_weaklyConnectedComponent
 /-- A Cayley graph is connected: it has exactly one weakly connected component, when the
 generators generate the entire group. -/
 @[instance_reducible]
-def cayley_connected (hgen : Subgroup.closure (Set.range ι) = ⊤) :
+def cayleyUniqueWeaklyConnectedComponent (hgen : Subgroup.closure (Set.range ι) = ⊤) :
     Unique (WeaklyConnectedComponent (CayleyGraph ι)) where
   default := .mk default
   uniq _ := (cayley_subsingleton_weaklyConnectedComponent ι hgen).elim _ _
@@ -453,10 +451,10 @@ noncomputable instance [Fintype S] (x : SchreierGraph V ι) :
   exact Fintype.ofSurjective f hf
 
 end Finiteness
+
 section Automorphisms
 
-variable {M : Type*} [Group M] {S : Type*} (ι : S → M)
-variable (N : Subgroup M) [N.Normal]
+variable {M : Type*} [Group M] {S : Type*} (ι : S → M) (N : Subgroup M) [N.Normal]
 
 /-- Right multiplication by `g⁻¹` on the quotient `M ⧸ N`. This is well-defined because
 right multiplication preserves left cosets when `N` is normal. -/
