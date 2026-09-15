@@ -66,14 +66,13 @@ equidimensionality hypotheses cannot be assumed.
 -/
 @[stacks 02R3]
 noncomputable
-def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
-    (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
-  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap c
+def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N) :
+    AlgebraicCycle X R →+ AlgebraicCycle Y R :=
+  Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap
 
 @[simp]
 lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
-    map (𝟙 _) wx wx c = c := by
-  apply Function.locallyFinsupp.map_id
-  simp [mapCoeff]
+    map (𝟙 _) wx wx c = c :=
+  Function.locallyFinsupp.map_id_apply _ c (by simp [mapCoeff])
 
 end AlgebraicGeometry.AlgebraicCycle
