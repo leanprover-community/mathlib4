@@ -5,7 +5,6 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Algebra.Order.WithTop.Untop0
 public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
@@ -47,21 +46,18 @@ logarithmically weighted measure quantifying how well a meromorphic function `f`
 constant function `a` on the circle of radius `R` in the complex plane.  In the special case where
 `a = ⊤`, it quantifies how well `f` approximates infinity.
 -/
-noncomputable def proximity : ℝ → ℝ := by
-  by_cases h : a = ⊤
-  · exact circleAverage (log⁺ ‖f ·‖) 0
-  · exact circleAverage (log⁺ ‖f · - a.untop₀‖⁻¹) 0
+noncomputable def proximity : ℝ → ℝ :=
+  a.recTopCoe (circleAverage (log⁺ ‖f ·‖) 0) fun a₀ ↦ circleAverage (log⁺ ‖f · - a₀‖⁻¹) 0
 
 /-- Expand the definition of `proximity f a₀` in case where `a₀` is finite. -/
 lemma proximity_coe :
-    proximity f a₀ = circleAverage (log⁺ ‖f · - a₀‖⁻¹) 0 := by
-  simp [proximity]
+    proximity f a₀ = circleAverage (log⁺ ‖f · - a₀‖⁻¹) 0 := rfl
 
 /--
 Expand the definition of `proximity f a₀` in case where `a₀` is zero.
 -/
 lemma proximity_zero : proximity f 0 = circleAverage (log⁺ ‖f ·‖⁻¹) 0 := by
-  simp [proximity]
+  simpa using proximity_coe (f := f) (a₀ := 0)
 
 /--
 For complex-valued functions, expand the definition of `proximity f a₀` in case where `a₀` is zero.
@@ -69,13 +65,12 @@ This is a simple variant of `proximity_zero` defined above.
 -/
 lemma proximity_zero_of_complexValued {f : ℂ → ℂ} :
     proximity f 0 = circleAverage (log⁺ ‖f⁻¹ ·‖) 0 := by
-  simp [proximity]
+  simp [proximity_zero]
 
 /--
 Expand the definition of `proximity f a` in case where `a₀ = ⊤`.
 -/
-lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := by
-  simp [proximity]
+lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := rfl
 
 /-!
 ## Elementary Properties of the Proximity Function
@@ -88,9 +83,13 @@ agree, except perhaps at radius 0.
 lemma proximity_congr_codiscreteWithin {f g : ℂ → E} {a : WithTop E} {r : ℝ}
     (hfg : f =ᶠ[codiscreteWithin (sphere 0 |r|)] g) (hr : r ≠ 0) :
     proximity f a r = proximity g a r := by
-  by_cases h : a = ⊤
-  all_goals
-    simp only [proximity, h, ↓reduceDIte]
+  cases a with
+  | top =>
+    rw [proximity_top, proximity_top]
+    apply circleAverage_congr_codiscreteWithin _ hr
+    filter_upwards [hfg] using by aesop
+  | coe a₀ =>
+    rw [proximity_coe, proximity_coe]
     apply circleAverage_congr_codiscreteWithin _ hr
     filter_upwards [hfg] using by aesop
 
@@ -109,7 +108,8 @@ the value zero of the shifted function `f - a₀`.
 -/
 lemma proximity_coe_eq_proximity_sub_const_zero :
     proximity f a₀ = proximity (f - fun _ ↦ a₀) 0 := by
-  simp [proximity]
+  rw [proximity_coe, proximity_zero]
+  rfl
 
 /--
 For complex-valued `f`, establish a simple relation between the proximity functions of `f` and of
@@ -125,7 +125,7 @@ average of `log ‖f ·‖`.
 theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : Meromorphic f) :
     proximity f ⊤ - proximity f⁻¹ ⊤ = circleAverage (log ‖f ·‖) 0 := by
   ext R
-  simp only [proximity, ↓reduceDIte, Pi.inv_apply, norm_inv, Pi.sub_apply]
+  simp only [proximity_top, Pi.inv_apply, norm_inv, Pi.sub_apply]
   rw [← circleAverage_sub]
   · simp_rw [← posLog_sub_posLog_inv, Pi.sub_def]
   · apply h₁f.meromorphicOn.circleIntegrable_posLog_norm
@@ -137,27 +137,30 @@ The proximity function is even.
 -/
 theorem proximity_even : (proximity f a).Even := by
   intro r
-  by_cases h : a = ⊤ <;> simp [proximity, h]
+  cases a <;> simp [proximity_top, proximity_coe]
 
 /--
 The proximity function is non-negative.
 -/
 theorem proximity_nonneg {a : WithTop E} :
     0 ≤ proximity f a := by
-  by_cases h : a = ⊤ <;>
-  · intro r
-    simpa [proximity, h] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
+  intro r
+  cases a with
+  | top =>
+    simpa [proximity_top] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
+  | coe a₀ =>
+    simpa [proximity_coe] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
 
 @[simp] lemma proximity_const {c : E} {r : ℝ} :
     proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
-  simp [proximity, circleAverage_const]
+  simp [proximity_top, circleAverage_const]
 
 /--
 If `f` is continuous, then so is its proximitiy function at `⊤`.
 -/
 @[fun_prop] theorem continuous_proximity_top (hf : Continuous f) :
     Continuous (proximity f ⊤) := by
-  simp only [proximity, reduceDIte]
+  rw [proximity_top]
   fun_prop
 
 /-!
@@ -210,7 +213,7 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
     proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := by
   calc proximity (f₁ * f₂) ⊤
     _ = circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 := by
-      simp [proximity]
+      simp [proximity_top]
     _ ≤ circleAverage (fun x ↦ log⁺ ‖f₁ x‖ + log⁺ ‖f₂ x‖) 0 := by
       intro r
       apply circleAverage_mono
@@ -225,7 +228,7 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
       apply circleAverage_add
       · exact MeromorphicOn.circleIntegrable_posLog_norm h₁f₁.meromorphicOn
       · exact MeromorphicOn.circleIntegrable_posLog_norm h₁f₂.meromorphicOn
-    _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
+    _ = proximity f₁ ⊤ + proximity f₂ ⊤ := rfl
 
 /--
 The proximity function `f * g` at `0` is less than or equal to the sum of the proximity functions of
@@ -247,7 +250,7 @@ function of `f` at `⊤`.
 @[simp] theorem proximity_pow_top {f : ℂ → ℂ} {n : ℕ} :
     proximity (f ^ n) ⊤ = n • (proximity f ⊤) := by
   ext x
-  simp [proximity, ← smul_eq_mul, circleAverage_fun_smul]
+  simp [proximity_top, ← smul_eq_mul, circleAverage_fun_smul]
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `0` equals `n` times the proximity

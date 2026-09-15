@@ -60,26 +60,23 @@ The truncated logarithmic counting function of Value Distribution Theory: like `
 but counting each zero/pole once, regardless of multiplicity.  In the special case where `a = ⊤`, it
 counts the poles of `f`, each with multiplicity one.
 -/
-noncomputable def truncatedLogCounting : ℝ → ℝ := by
-  by_cases h : a = ⊤
-  · exact ((divisor f Set.univ)⁻.truncate₁).logCounting
-  · exact ((divisor (f · - a.untop₀) Set.univ)⁺.truncate₁).logCounting
+noncomputable def truncatedLogCounting : ℝ → ℝ :=
+  a.recTopCoe ((divisor f Set.univ)⁻.truncate₁).logCounting
+    fun a₀ ↦ ((divisor (f · - a₀) Set.univ)⁺.truncate₁).logCounting
 
 /--
 The truncated logarithmic counting function `truncatedLogCounting f ⊤` counts the poles of `f`, each
 with multiplicity one.
 -/
 lemma truncatedLogCounting_top :
-    truncatedLogCounting f ⊤ = ((divisor f Set.univ)⁻.truncate₁).logCounting := by
-  simp [truncatedLogCounting]
+    truncatedLogCounting f ⊤ = ((divisor f Set.univ)⁻.truncate₁).logCounting := rfl
 
 /--
 For finite values `a₀`, the truncated logarithmic counting function `truncatedLogCounting f a₀`
 counts the zeros of `f - a₀`, each with multiplicity one.
 -/
 lemma truncatedLogCounting_coe :
-    truncatedLogCounting f a₀ = ((divisor (f · - a₀) Set.univ)⁺.truncate₁).logCounting := by
-  simp [truncatedLogCounting]
+    truncatedLogCounting f a₀ = ((divisor (f · - a₀) Set.univ)⁺.truncate₁).logCounting := rfl
 
 /--
 The truncated logarithmic counting function `truncatedLogCounting f 0` counts the zeros of `f`, each
@@ -87,12 +84,12 @@ with multiplicity one.
 -/
 lemma truncatedLogCounting_zero :
     truncatedLogCounting f 0 = ((divisor f Set.univ)⁺.truncate₁).logCounting := by
-  simp [truncatedLogCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
+  simpa using truncatedLogCounting_coe (f := f) (a₀ := 0)
 
 /-- Evaluation of the truncated logarithmic counting function at zero yields zero. -/
 @[simp] lemma truncatedLogCounting_eval_zero :
     truncatedLogCounting f a 0 = 0 := by
-  by_cases h : a = ⊤ <;> simp [truncatedLogCounting, h]
+  cases a <;> simp [truncatedLogCounting_top, truncatedLogCounting_coe]
 
 /--
 For `1 ≤ r`, the truncated logarithmic counting function is bounded above by the ordinary
@@ -100,34 +97,34 @@ logarithmic counting function.
 -/
 theorem truncatedLogCounting_le {r : ℝ} (hr : 1 ≤ r) :
     truncatedLogCounting f a r ≤ logCounting f a r := by
-  by_cases h : a = ⊤
-  · subst h
+  cases a with
+  | top =>
     rw [truncatedLogCounting_top, logCounting_top]
     exact locallyFinsuppWithin.logCounting_truncate_le _ hr
-  · lift a to E using h with a₀
+  | coe a₀ =>
     rw [truncatedLogCounting_coe, logCounting_coe]
     exact locallyFinsuppWithin.logCounting_truncate_le _ hr
 
 /-- For `1 ≤ r`, the truncated logarithmic counting function is non-negative. -/
 theorem truncatedLogCounting_nonneg {r : ℝ} (hr : 1 ≤ r) :
     0 ≤ truncatedLogCounting f a r := by
-  by_cases h : a = ⊤
-  · subst h
+  cases a with
+  | top =>
     rw [truncatedLogCounting_top]
     exact locallyFinsuppWithin.logCounting_truncate_nonneg (negPart_nonneg _) hr
-  · lift a to E using h with a₀
+  | coe a₀ =>
     rw [truncatedLogCounting_coe]
     exact locallyFinsuppWithin.logCounting_truncate_nonneg (posPart_nonneg _) hr
 
 /-- The truncated logarithmic counting function is monotonous. -/
 theorem truncatedLogCounting_monotoneOn :
     MonotoneOn (truncatedLogCounting f a) (Set.Ioi 0) := by
-  by_cases h : a = ⊤
-  · subst h
+  cases a with
+  | top =>
     rw [truncatedLogCounting_top]
     exact locallyFinsuppWithin.logCounting_mono
       (locallyFinsuppWithin.truncate₁_nonneg (negPart_nonneg _))
-  · lift a to E using h with a₀
+  | coe a₀ =>
     rw [truncatedLogCounting_coe]
     exact locallyFinsuppWithin.logCounting_mono
       (locallyFinsuppWithin.truncate₁_nonneg (posPart_nonneg _))
@@ -148,11 +145,11 @@ theorem truncatedLogCounting_congr_codiscrete [NormedSpace ℂ E] {f g : ℂ →
     (hfg : f =ᶠ[codiscrete ℂ] g) :
     truncatedLogCounting f = truncatedLogCounting g := by
   ext a : 1
-  by_cases h : a = ⊤
-  · subst h
+  cases a with
+  | top =>
     rw [truncatedLogCounting_top, truncatedLogCounting_top,
       divisor_congr_codiscreteWithin hfg isOpen_univ]
-  · lift a to E using h with a₀
+  | coe a₀ =>
     rw [truncatedLogCounting_coe, truncatedLogCounting_coe]
     congr 3
     exact divisor_congr_codiscreteWithin (by filter_upwards [hfg] using by simp) isOpen_univ
