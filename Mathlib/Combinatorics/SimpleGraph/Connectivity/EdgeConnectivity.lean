@@ -28,8 +28,8 @@ namespace SimpleGraph
 
 variable {V W : Type*} {G H : SimpleGraph V} {G' : SimpleGraph W} {k l : ℕ} {u v w x y : V}
 
--- #43819
 set_option warn.sorry false in
+/-- #43819 -/
 def Copy.deleteEdges (f : Copy G G') (s : Set (Sym2 V)) (t : Set (Sym2 W))
     (h : Sym2.map f ⁻¹' t ⊆ s) : Copy (G.deleteEdges s) (G'.deleteEdges t) where
   toHom.toFun := f
