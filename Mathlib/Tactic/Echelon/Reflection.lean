@@ -97,7 +97,7 @@ theorem splitRevAt_eq (l : List α) (k : ℕ) (acc : List α) :
 /-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
 beyond the pivot list (all 0). -/
 def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) → Prop
-  | [], rows => rows = List.replicate rows.length (List.replicate n 0)
+  | [], rows => rows = rows.map fun _ ↦ List.replicate n 0 -- one traversal of `rows` only
   | _ :: _, [] => False
   | k :: ks, row :: rows =>
     match splitRevAt row k [] with
@@ -109,7 +109,9 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
     (∀ j, (∀ k ∈ cols[i]?, j < (k : ℕ)) → (rows.getD i []).getD j 0 = 0) ∧
       ∀ k ∈ cols[i]?, (rows.getD i []).getD k 0 ≠ 0 := by
   induction cols generalizing rows i with
-  | nil => grind [IsPivotedList]
+  | nil =>
+    simp only [IsPivotedList, List.map_const'] at h
+    grind
   | cons k ks ih =>
     cases rows with
     | nil => simp [IsPivotedList] at h

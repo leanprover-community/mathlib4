@@ -48,6 +48,11 @@ namespace Mathlib.Tactic.Echelon
 def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
   mkNumeral q(Fin $n) i
 
+/-- The suffix of the list literal `l` after its first `k` cells. -/
+def consDrop (l : Expr) : Nat → Expr
+  | 0 => l
+  | k + 1 => consDrop l.appArg! k
+
 /-- Three views of one matrix literal. -/
 structure MatrixViews (u : Level) (m n : ℕ) (α : Q(Type u)) where
   /-- The matrix, the `ofLists` term on `lit`. -/
@@ -104,8 +109,8 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   let hsorted ← mkDecideProofQ q(($cols).SortedLT)
   -- one cell per pivot row, the nonzero pivot entry and the `Eq.refl` of the zeros before it, on
   -- the `Eq.refl` of the zero rows beyond the pivots
-  have zc : Q(ℕ) := mkNatLit (m - pivots.size)
-  let zeroRows : Expr := q(Eq.refl (List.replicate $zc (List.replicate $n (0 : $α))))
+  have tail : Q(List (List $α)) := consDrop U.lit pivots.size
+  let zeroRows : Expr := q(Eq.refl $tail)
   let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (k, i) rest => do
     have entry : Q($α) := (U.entries[i]!)[k]!
     have kQ : Q(ℕ) := mkNatLit k
