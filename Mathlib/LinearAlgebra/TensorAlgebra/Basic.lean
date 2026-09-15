@@ -296,9 +296,9 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
   refine ⟨fun h => ?_, ?_⟩
   · let : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     have : IsCentralScalar R M := ⟨fun r m => rfl⟩
-    have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := lift_ι_apply _ _
+    have hf0 : toTrivSqZeroExt (ι R x) = ⟨0, x⟩ := lift_ι_apply _ _
     rw [h, AlgHom.commutes] at hf0
-    have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
+    have : r = 0 ∧ 0 = x := TrivSqZeroExt.ext_iff.mp hf0
     exact this.symm.imp_left Eq.symm
   · rintro ⟨rfl, rfl⟩
     rw [map_zero, map_zero]
