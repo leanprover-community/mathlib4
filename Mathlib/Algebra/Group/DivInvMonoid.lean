@@ -236,16 +236,10 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
+@[to_additive (attr := simp) negSucc_zsmul]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
-
-theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
-    Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← natCast_zsmul]
-  exact SubNegMonoid.zsmul_neg' n a
-
-attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
