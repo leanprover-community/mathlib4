@@ -123,24 +123,25 @@ theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaO
     ext q
     simpa [-comp_epiDesc] using! Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
   injective_obj {B} hB := by
     rw [← Module.injective_iff_injective_object]
-    simp only [preadditiveCoyonedaObj_obj_carrier]
     refine Module.Baer.injective (fun M g => ?_)
-    sorry /-
-    have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
-      ⟨⟨fun i => i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
-    · obtain ⟨l, hl⟩ := h
-      refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
-        (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩
-      intro f hf
-      simpa [d] using! Sigma.ι _ ⟨f, hf⟩ ≫= hl
-    · rw [ModuleCat.mono_iff_injective]
-      cat_disch-/
+    let φ : M →ₗ[(End G)ᵐᵒᵖ] G ⟶ G :=
+      { toFun i := i.1.unop.asHom
+        map_add' := by simp
+        map_smul' := by cat_disch }
+    have : Mono (ModuleCat.ofHom φ) :=
+      (ModuleCat.mono_iff_injective _).2 (fun _ _ hf ↦ by
+        ext
+        apply MulOpposite.unop_injective
+        ext
+        exact hf)
+    obtain ⟨l, hl⟩ := exists_d_comp_eq_d hG B (ModuleCat.ofHom φ) inferInstance (ModuleCat.ofHom g)
+    exact ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
+      (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap,
+      fun f hf ↦ by simpa [d] using! Sigma.ι _ ⟨f, hf⟩ ≫= hl⟩
 
 /-- `tensorObj G` is left exact: it is additive and preserves monomorphisms and cokernels,
 so it preserves homology and therefore finite limits. -/
