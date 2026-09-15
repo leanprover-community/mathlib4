@@ -566,6 +566,8 @@ theorem toSemiring_toAddMonoidHom (f : ∀ i, A i →+ R) (hone hmul) :
     (toSemiring f hone hmul : (⨁ i, A i) →+ R) = toAddMonoid f :=
   rfl
 
+@[deprecated (since := "2026-09-15")] alias toSemiring_coe_addMonoidHom := toSemiring_toAddMonoidHom
+
 /-- Families of `AddMonoidHom`s preserving `DirectSum.One.one` and `DirectSum.Mul.mul`
 are isomorphic to `RingHom`s on `⨁ i, A i`. This is a stronger version of `DFinsupp.liftAddHom`.
 -/
