@@ -298,7 +298,7 @@ variable [AddCommGroupWithOne R]
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
   intCast n := .C n
   intCast_ofNat n := by norm_cast
-  intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, C_neg]; norm_cast
+  intCast_negSucc n := by ext <;> simp [Int.negSucc_eq]
 
 @[simp, norm_cast]
 theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
@@ -407,7 +407,7 @@ instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
   mul_comm _ _ := by ext <;> simp <;> ring
 
 instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
-  algebraMap.toFun s := ⟨algebraMap S R s, 0⟩
+  algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp
   algebraMap.map_zero' := by ext <;> simp
