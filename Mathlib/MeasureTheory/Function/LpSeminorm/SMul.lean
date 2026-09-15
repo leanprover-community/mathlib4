@@ -154,8 +154,8 @@ lemma eLpNorm_const_smul_nnreal {f : α → ε} {c : ℝ≥0} :
   rcases eq_or_ne c 0 with rfl | hc
   · simp
   by_cases hf : AEStronglyMeasurable f μ; swap
-  · simp only [hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable, ne_eq, glouk, hc,
-      ENNReal.mul_top]
+  · simp only [NNReal.enorm_eq_coe, hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable,
+      ne_eq, ENNReal.coe_eq_zero, hc, ENNReal.mul_top]
     apply eLpNorm_of_not_aestronglyMeasurable
     rwa [aestronglyMeasurable_const_smul_iff₀ hc (f := f)]
   apply le_antisymm
