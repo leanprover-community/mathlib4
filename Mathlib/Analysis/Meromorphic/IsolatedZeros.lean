@@ -78,6 +78,10 @@ theorem _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero (h₁f : Meromor
   have := h₂f x h₂x.1
   simp_all [← h₁x.analyticOrderAt_eq_zero, h₁x.meromorphicOrderAt_eq]
 
+@[deprecated (since := "2026-09-15")]
+alias MeromorphicOn.codiscreteWithin_setOfPred_ne_zero :=
+  _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
+
 @[deprecated (since := "2026-07-09")]
 alias MeromorphicOn.codiscreteWithin_setOf_ne_zero :=
   MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
