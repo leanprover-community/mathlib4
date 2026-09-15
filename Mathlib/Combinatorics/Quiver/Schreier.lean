@@ -396,16 +396,11 @@ theorem cayley_reachable_iff (x y : CayleyGraph ι) :
   rw [SchreierGraph.reachable_iff]
   constructor
   · rintro ⟨g, hg, hg_smul⟩
-    have h_toVertex : g • x.toVertex = y.toVertex := congr_arg SchreierGraph.toVertex hg_smul
-    have h_bot : QuotientGroup.quotientBot (g • x.toVertex) =
-        QuotientGroup.quotientBot y.toVertex :=
-      congr_arg QuotientGroup.quotientBot h_toVertex
-    rw [quotientBot_smul] at h_bot
-    have hg_eq : g = QuotientGroup.quotientBot y.toVertex *
-        (QuotientGroup.quotientBot x.toVertex)⁻¹ := by
-      rw [← h_bot, mul_inv_cancel_right]
-    rw [← hg_eq]
-    exact hg
+    have h_bot : g * QuotientGroup.quotientBot x.toVertex =
+        QuotientGroup.quotientBot y.toVertex := by
+      rw [← quotientBot_smul]
+      exact congr_arg (QuotientGroup.quotientBot ∘ SchreierGraph.toVertex) hg_smul
+    rwa [← h_bot, mul_inv_cancel_right]
   · intro h
     refine ⟨QuotientGroup.quotientBot y.toVertex * (QuotientGroup.quotientBot x.toVertex)⁻¹, h, ?_⟩
     apply SchreierGraph.ext
