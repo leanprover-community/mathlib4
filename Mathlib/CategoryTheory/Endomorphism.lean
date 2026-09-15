@@ -156,7 +156,7 @@ instance : Group (Aut X) where
 @[deprecated (since := "2026-09-12")] alias Aut_mul_def := mul_asIso
 @[deprecated (since := "2026-09-12")] alias Aut_inv_def := inv_asIso
 
-/-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
+/-- The inclusion of `Aut X` in `End X` as a monoid homomorphism. -/
 @[simps!]
 def toEnd {X : C} : Aut X →* End X where
   toFun e := .of e.asIso.hom
