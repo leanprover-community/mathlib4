@@ -39,10 +39,11 @@ It agrees with Definition 8.6.2 of [Neukirch–Schmidt–Wingberg].
 
 The second context is when `A` is the `Kˢ`-valued points of a group scheme `J` such as an abelian
 variety. Then the Tate–Shafarevich group is usually defined as the intersection of the kernels of
-the maps `H¹(G_K, J(Kˢ)) → H¹(G_Kᵥ, J(Kᵥˢ))`. Note that in particular the module changes as well as the
-group, so technically this is not quite what is happening in this definition. However the inclusion
-`H¹(G_Kᵥ, A(Kᵥˢ)) → H¹(G_Kᵥ, A(Kˢ))` is an isomorphism by the Greenberg approximation theorem, so the
-definition in this file is still mathematically correct. See Remark I.3.10 of [Milne].
+the maps `H¹(G_K, J(Kˢ)) → H¹(G_Kᵥ, J(Kᵥˢ))`. Note that in particular the module changes as well as
+the group, so technically this is not quite what is happening in this definition. However the
+inclusion `H¹(G_Kᵥ, A(Kᵥˢ)) → H¹(G_Kᵥ, A(Kˢ))` is an isomorphism by the Greenberg approximation
+theorem, so the definition in this file is still mathematically correct.
+See Remark I.3.10 of [Milne].
 
 The third context is when `A` is the quotient of a `p`-adic `G_K`-module by a `G_K`-invariant
 lattice, which is different from the definition in this PR. See Section 1 of [Flach].
