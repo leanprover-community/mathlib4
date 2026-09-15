@@ -36,16 +36,15 @@ protected abbrev Small (F : C ⥤ Type w') := ∀ (X : C), _root_.Small.{w} (F.o
 
 /-- If a functor `F : C ⥤ Type w'` is `w`-small, this is the functor `C ⥤ Type w`
 obtained by shrinking `F.obj X` for all `X : C`. -/
-@[simps obj map, pp_with_univ]
+@[implicit_reducible, simps obj map, pp_with_univ]
 noncomputable def shrink (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F] :
     C ⥤ Type w where
   obj X := Shrink.{w} (F.obj X)
   map f := ↾(equivShrink.{w} _ ∘ F.map f ∘ (equivShrink.{w} _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `shrink.{w} F ⟶ shrink.{w} G` induces by a natural
 transformation `τ : F ⟶ G` between `w`-small functors to types. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes.Small.{w} F]
     [FunctorToTypes.Small.{w} G] :
     shrink.{w} F ⟶ shrink.{w} G where
@@ -75,7 +74,6 @@ set_option backward.defeqAttrib.useBackward true in
 instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The Yoneda embedding `C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`. -/
 @[simps -isSimp obj map, pp_with_univ]
 noncomputable def shrinkYoneda :
@@ -385,7 +383,8 @@ noncomputable def fullyFaithfulShrinkCoyoneda :
   map_preimage f := by
     obtain ⟨f, rfl⟩ := shrinkCoyonedaEquiv.symm.surjective f
     cat_disch
-  preimage_map f := by simp [shrinkCoyonedaEquiv_shrinkCoyoneda_map]
+  preimage_map f := by
+    simp [shrinkCoyonedaEquiv_shrinkCoyoneda_map f]
 
 instance : (shrinkCoyoneda.{w} (C := C)).Faithful := (fullyFaithfulShrinkCoyoneda C).faithful
 

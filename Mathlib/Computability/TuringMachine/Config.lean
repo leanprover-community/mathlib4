@@ -269,8 +269,6 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
         rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
-set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -294,11 +292,10 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       specialize hf v.tail
       replace hg := fun a b => hg (a ::ᵥ b ::ᵥ v.tail)
       simp only [Vector.cons_val, Vector.tail_val] at hf hg
-      simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, Vector.tail_cons,
-        Vector.head_cons, PFun.coe_val, Vector.tail_val]
+      simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val, Vector.tail_val]
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
-        simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some, Bind.bind]
+      | zero => simp [prec, hf, Bind.bind]
       | succ n _ =>
       suffices ∀ a b, a + b = n →
         (n.succ :: 0 ::
@@ -313,6 +310,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
             (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
         have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
+        simp [prec, Part.bind_assoc, Bind.bind]
         simp_all
       intro a b e
       induction b generalizing a with
@@ -595,7 +593,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   | comp f _g _IHf IHg => apply IHg
   | case f g IHf IHg =>
     rw [stepNormal]
-    simp only []
+    simp only
     cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => apply IHf
   | _ => exact ⟨_, _, rfl⟩
@@ -620,7 +618,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         exact Or.inl (Part.mem_some _)
       · exact Or.inr ⟨_, Part.mem_some _, hv₂⟩
     refine fun c he => evalInduction he fun y h IH => ?_
-    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only [] at h IH
+    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only at h IH
     · have := mem_eval.2 ⟨hr, rfl⟩
       rw [fok, Part.bind_eq_bind, Part.mem_bind_iff] at this
       obtain ⟨v'', h₁, h₂⟩ := this
@@ -639,7 +637,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
         have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
         rw [e₀, Cont.then, Cfg.then] at e₁
-        simp only [] at e₁
+        simp only at e₁
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
           IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)

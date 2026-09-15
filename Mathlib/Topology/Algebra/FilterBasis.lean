@@ -386,7 +386,6 @@ instance (priority := 100) continuousSMul [IsTopologicalRing R] :
     @ContinuousSMul R M _ _ B.topology := by
   let B' := B.toAddGroupFilterBasis
   let _ := B'.topology
-  have _ := B'.isTopologicalAddGroup
   exact ContinuousSMul.of_basis_zero B'.nhds_zero_hasBasis
       (fun {_} => by simpa using! B.smul)
       (by simpa using! B.smul_left) B.smul_right

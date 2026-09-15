@@ -359,7 +359,7 @@ We keep this as a definition (not an instance) to avoid instance search trying t
 `DiscreteTopology` or `Unique` instances.
 -/
 @[instance_reducible]
-def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
+def ChartedSpace.ofDiscreteTopology [TopologicalSpace M] [TopologicalSpace H]
     [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
   atlas :=
     letI f := fun x : M ↦ OpenPartialHomeomorph.const
@@ -369,11 +369,14 @@ def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
   mem_chart_source x := by simp
   chart_mem_atlas x := by simp
 
+@[deprecated (since := "2026-07-26")]
+alias ChartedSpace.of_discreteTopology := ChartedSpace.ofDiscreteTopology
+
 /-- A chart on the discrete space is the constant chart. -/
 @[simp, mfld_simps]
 lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
     [DiscreteTopology M] [h : Unique H] {x : M} :
-    haveI := ChartedSpace.of_discreteTopology (M := M) (H := H)
+    haveI := ChartedSpace.ofDiscreteTopology (M := M) (H := H)
     chartAt H x = OpenPartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) :=
   rfl
 
@@ -496,7 +499,7 @@ variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
 /-- The disjoint union of two charted spaces modelled on a non-empty space `H`
 is a charted space over `H`. -/
 @[instance_reducible]
-def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
+def ChartedSpace.sumOfNonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
   -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
@@ -523,9 +526,12 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
+@[deprecated (since := "2026-07-26")]
+alias ChartedSpace.sum_of_nonempty := ChartedSpace.sumOfNonempty
+
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
   by_cases! h : Nonempty H
-  · exact ChartedSpace.sum_of_nonempty
+  · exact ChartedSpace.sumOfNonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')

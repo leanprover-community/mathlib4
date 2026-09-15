@@ -339,6 +339,11 @@ lemma IsAffineMap.comp {g : N → P} (hg : IsAffineMap R g) {f : M → N} (hf : 
   map_sConvexComb s := by
     simp [StdSimplex.map_comp, hf.map_sConvexComb, hg.map_sConvexComb]
 
+@[fun_prop]
+lemma IsAffineMap.const (x : N) :
+    IsAffineMap R (fun (_ : M) ↦ x) where
+  map_sConvexComb _ := by simp
+
 variable (R) in
 @[fun_prop]
 lemma StdSimplex.isAffineMap_map (f : I → J) : IsAffineMap R (StdSimplex.map (R := R) f) :=

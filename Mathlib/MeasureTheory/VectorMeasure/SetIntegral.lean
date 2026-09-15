@@ -252,7 +252,7 @@ theorem setIntegral_of_variation_apply_eq_zero (f : X → E) {s : Set X}
     rw [variation_restrict h's]
     apply Measure.restrict_eq_zero.2 hs
   have : μ.restrict s = 0 := variation_eq_zero.1 this
-  simpa [integral_eq_setToFun, this] using! setToFun_zero_left
+  simp [this]
 
 theorem setIntegral_dirac' {mX : MeasurableSpace X} [CompleteSpace G] {a : X} {v : F}
     (hf : StronglyMeasurable f) {s : Set X} (hs : MeasurableSet s) [Decidable (a ∈ s)] :

@@ -67,8 +67,9 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   let cr₂ := √(cr * cr + ycc₂ * ycc₂)
   use ⟨cc₂, cr₂⟩
   simp -zeta -proj only
-  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ (orthogonalProjection s p : P) :=
-    by simp
+  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ
+    (orthogonalProjection s p : P) := by
+    simp
   constructor
   · constructor
     · refine vadd_mem_of_mem_direction ?_ (mem_affineSpan ℝ (Set.mem_insert_of_mem _ hcc))

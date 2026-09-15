@@ -65,8 +65,6 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
     simp_rw [biprod.lift_snd]; rfl
 
 set_option backward.isDefEq.respectTransparency false in
--- Porting note: locally disable instance to avoid inferred/synthesized clash
-attribute [-instance] AddCommGroup.toIntModule in
 /-- `x` is not pseudoequal to `y`. -/
 theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   intro h

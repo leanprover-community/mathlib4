@@ -212,12 +212,11 @@ section boundedRange
 /-!
 ## Bounded Range versus `IsBigO` Asymptotics
 
-For a continuous function `f` into a seminormed space, defined on an unbounded linear order whose
-order topology has compact intervals, having bounded range is equivalent to being `O(1)` along both
-`atTop` and `atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a
-single `O(1)` bound along `atTop` already suffices
-(`Continuous.isBounded_range_iff_isBigO_atTop_of_even`), since `Function.Even` transports an `atTop`
-bound to an `atBot` bound (`Function.Even.isBigO_atTop_iff_isBigO_atBot`).
+For a continuous function `f` into a seminormed space, having bounded range is equivalent to being
+`O(1)` along the cocompact filter (`Continuous.isBounded_range_iff_isBigO`). On an unbounded linear
+order whose order topology has compact intervals, this means being `O(1)` along both `atTop` and
+`atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a single `O(1)`
+bound along `atTop` already suffices (`Continuous.isBounded_range_iff_isBigO_atTop_of_even`).
 -/
 
 variable

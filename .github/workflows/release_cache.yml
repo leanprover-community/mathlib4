@@ -1,0 +1,103 @@
+name: publish release cache
+
+# Publishes the Mathlib cache for release tags whose commits are not on
+# `master`.
+#
+# Patch releases (`v4.X.Y` with Y ≥ 1) and patched release candidates (e.g.
+# `v4.32.0-rc1-patch1`) are committed on `bump_to_*` branches that never merge
+# back into `master`, so the master push build never caches them; their branch
+# CI writes only the fork-trust container, which a canonical checkout at the
+# tag never reads. This workflow rebuilds the tagged commit and publishes the
+# result to the `master` container, where every consumer finds it. Tags that
+# point at commits on `master` (plain release candidates and `.0` releases)
+# are already cached by the master push build, so the gate job skips them.
+#
+# Trust model:
+#   - Creating a `v4.*` tag is restricted to release managers by a tag
+#     ruleset, so a tag push is a deliberate release-manager action — and the
+#     tagged tree is what runs here, including this workflow file. Tags cut
+#     from lineages predating this file simply never trigger it.
+#   - The upload job mints its OIDC token under the `cache-upload-master`
+#     environment (inside build_template.yml); the environment's deployment
+#     policy admits only `master`, `staging`, and `v4.*` tag refs.
+#
+# Retry: a spuriously failed run can simply be re-run ("Re-run failed jobs" /
+# `gh run rerun`) — same tag, same tree, no tag re-push involved. The
+# `workflow_dispatch` trigger covers what re-run cannot: a tag push that never
+# produced a run, or a re-run window that has expired. Dispatch it AT the tag
+# ref (`gh workflow run release_cache.yml --ref v4.X.Y`); the run then executes
+# the tag's own tree exactly as a tag push would.
+
+on:
+  push:
+    tags:
+      - 'v4.*'
+  # Manual fallback; see the retry note above. The `tags` filter does not
+  # apply to dispatches — the gate job's ref guards enforce it instead, so a
+  # dispatch on a branch ref skips cleanly.
+  workflow_dispatch:
+
+# `v4.*` tags are immutable (the tag ruleset blocks updates), so this group
+# only ever collides on re-runs of the same tag; keep those queued rather
+# than cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+# Read-only by default; the build job elevates for itself only.
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: skip tags already on master
+    # The ref guards double as the dispatch-path filter; on the push path the
+    # `tags` trigger filter has already enforced them.
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v4.') }}
+    runs-on: ubuntu-latest
+    outputs:
+      off_master: ${{ steps.check.outputs.off_master }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # `merge-base` needs history, so fetch all of it.
+          fetch-depth: 0
+
+      - name: check whether the tagged commit is on master
+        id: check
+        run: |
+          if git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "Tag $GITHUB_REF_NAME points at a commit on master; the master push build covers its cache."
+            echo "off_master=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag $GITHUB_REF_NAME is not on master; rebuilding it to publish its cache."
+            echo "off_master=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: ci
+    needs: gate
+    if: ${{ needs.gate.outputs.off_master == 'true' }}
+    # What build_template.yml needs, granted to this job only — the same set
+    # build.yml grants it on push events. In particular, the OIDC token for
+    # the cache upload can be minted here and nowhere else in this workflow.
+    permissions:
+      contents: read
+      id-token: write
+      actions: read  # Allow get-tools to download the prebuilt tools artifact from master's publish_tools runs
+      pull-requests: write  # Only allow PR comments/labels
+    uses: ./.github/workflows/build_template.yml
+    with:
+      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
+      pr_branch_ref: ${{ github.sha }}
+      # Release tags publish to the `master` container under the master writer
+      # identity; see the trust note above and cache-trust-dispatch, which
+      # routes `v4.*` tag refs to that container.
+      cache_application_id: ${{ vars.CACHE_MASTER_WRITER_AZURE_APP_ID }}
+      cache_environment: cache-upload-master
+      # The cache-snapshot warming artifact exists to seed master and PR
+      # builds, which a release tag's snapshot cannot do.
+      publish_cache: false
+      # Skip the Post-CI job: it grooms PR labels, and a tag run has no PR.
+      run_post_ci: false
+      runs_on: pr
+    secrets: inherit

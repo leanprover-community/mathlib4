@@ -565,7 +565,6 @@ error: Could not find a model with corners for `?_`.
 Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check UniqueMDiffAt[Set.univ] m
 
 variable {s : TopologicalSpace.Opens M}
@@ -589,7 +588,6 @@ in the application
   UniqueMDiffOn I s
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check UniqueMDiffOn I s
 
 end UniqueMDiff

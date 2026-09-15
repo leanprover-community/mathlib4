@@ -124,11 +124,12 @@ theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
   mpr h t _ := measure_inter_null_of_null_left t h
 
 theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
-    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    (hC : IsCountablySpanning C) (hm : ∀ t ∈ C, MeasurableSet t)
+    (ht : ∀ t ∈ C, μ.restrict t s = 0) :
     μ s = 0 := by
   rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
   intro t htc
-  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
+  simpa [← μ.restrict_apply' (hm _ htc)] using ht t htc
 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,

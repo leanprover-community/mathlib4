@@ -21,7 +21,7 @@ and a measurable set `aeSeqSet hf p`, such that
 * `x ∈ aeSeqSet hf p → p x (fun n ↦ f n x)`
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 open MeasureTheory
@@ -38,7 +38,7 @@ def aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Pro
 open scoped Classical in
 /-- A sequence of measurable functions that are equal to `f` and verify property `p` on the
 measurable set `aeSeqSet hf p`. -/
-noncomputable def aeSeq (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : ι → α → β :=
+def aeSeq (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : ι → α → β :=
   fun i x => ite (x ∈ aeSeqSet hf p) ((hf i).mk (f i) x) (⟨f i x⟩ : Nonempty β).some
 
 namespace aeSeq

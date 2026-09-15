@@ -98,7 +98,6 @@ instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 
 set_option linter.translate.warnInvalid false in
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
-set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
   {α : Type _} → {β : Type _} → [self : my_has_scalar β α] → α → β → α
@@ -107,7 +106,6 @@ but 'Test.my_has_scalar.smul' has type
 -/
 #guard_msgs in
 attribute [to_additive existing smul] my_has_pow.pow
-set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
   {β : Type _} → {α : Type _} → [self : my_has_scalar β α] → α → β → α
@@ -594,7 +592,7 @@ lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 /--
 error: `to_additive` validation failed: expected
-  ∀ {α : Type ?u.1} [inst : Zero α], 0 = 0
+  ∀ {α : Type _} [inst : Zero α], 0 = 0
 but 'Eq.trans' has type
   ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
 -/
@@ -693,35 +691,14 @@ warning: `to_additive` did not change the type of theorem `mulTrivial`. Please r
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
 #guard_msgs in
-@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+@[to_additive /-- I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
-/-- info: (via `docComment` syntax) I am an additive docstring! -/
+/-- info: I am an additive docstring! -/
 #guard_msgs in
 run_cmd
   let some doc ← findDocString? (← getEnv) ``addTrivial
-    | throwError "no `docComment` docstring found"
-  logInfo doc
-
-/--
-warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
-
-Update deprecated syntax to:
-  [apply] /-- (via `str` syntax) I am an additive docstring! -/
----
-warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
-
-Note: This linter can be disabled with `set_option linter.translateRedundant false`
--/
-#guard_msgs in
-@[to_additive "(via `str` syntax) I am an additive docstring!"]
-theorem mulTrivial' : True := trivial
-
-/-- info: (via `str` syntax) I am an additive docstring! -/
-#guard_msgs in
-run_cmd
-  let some doc ← findDocString? (← getEnv) ``addTrivial'
-    | throwError "no `str` docstring found"
+    | throwError "no docstring found"
   logInfo doc
 
 /-! Test handling of noncomputability -/

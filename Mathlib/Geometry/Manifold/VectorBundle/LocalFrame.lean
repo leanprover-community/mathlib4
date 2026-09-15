@@ -66,18 +66,18 @@ the model fiber `F`.
 * `e.localFrame b`: the local frame on `V` induced by `e` and `b`.
   Use `e.localFrame b i` to access the i-th section in that frame.
 * `e.contMDiffOn_localFrame_baseSet`: each section `e.localFrame b i` is smooth on `e.baseSet`
-* `e.localFrame_coeff b i` describes the `i`-th coefficient of sections of `V` w.r.t.
+* `e.localFrameCoeff b i` describes the `i`-th coefficient of sections of `V` w.r.t.
   `e.localFrame b`: it is a family of fiberwise linear maps `Π x, V x →ₗ[𝕜] 𝕜`, and the coefficient
-  function of a section `s` is `(LinearMap.piApply (e.localFrame_coeff b i)) s`.
+  function of a section `s` is `(LinearMap.piApply (e.localFrameCoeff b i)) s`.
 * `e.eventually_eq_localFrame_sum_coeff_smul b`: near `x`, we have
-  `s = ∑ i, (LinearMap.piApply (e.localFrame_coeff b i) s) • e.localFrame b i`
-* `e.localFrame_coeff_congr b`: the coefficient `e.localFrame_coeff b i` of `s` in the local frame
+  `s = ∑ i, (LinearMap.piApply (e.localFrameCoeff b i) s) • e.localFrame b i`
+* `e.localFrameCoeff_congr b`: the coefficient `e.localFrameCoeff b i` of `s` in the local frame
   induced by `e` and `b` at `x` only depends on `s` at `x`.
-* `e.contMDiffOn_localFrame_coeff`: if `s` is a `C^k` section, each coefficient
-  `(LinearMap.piApply (e.localFrame_coeff b i) s)` is `C^k` on `e.baseSet`
-* `e.contMDiffAt_iff_localFrame_coeff b`: a section `s` is `C^k` at `x ∈ e.baseSet`
+* `e.contMDiffOn_localFrameCoeff`: if `s` is a `C^k` section, each coefficient
+  `(LinearMap.piApply (e.localFrameCoeff b i) s)` is `C^k` on `e.baseSet`
+* `e.contMDiffAt_iff_localFrameCoeff b`: a section `s` is `C^k` at `x ∈ e.baseSet`
   iff all of its frame coefficients are
-* `e.contMDiffOn_iff_localFrame_coeff b`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
+* `e.contMDiffOn_iff_localFrameCoeff b`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
   iff all of its frame coefficients are
 
 ## Note
@@ -378,48 +378,61 @@ variable (I) in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
 
 If x is outside of `e.baseSet`, this returns the junk value 0. -/
-def localFrame_coeff (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) :=
+def localFrameCoeff (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) :=
   (e.isLocalFrameOn_localFrame_baseSet I 1 b).coeff i
+
+@[deprecated (since := "2026-07-26")] alias localFrame_coeff := localFrameCoeff
 
 variable {e b}
 variable {x x' : M}
 
 variable (e b) in
 @[simp]
-lemma localFrame_coeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (i : ι) :
-    e.localFrame_coeff I b i x = 0 := by
-  simpa [localFrame_coeff] using
+lemma localFrameCoeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (i : ι) :
+    e.localFrameCoeff I b i x = 0 := by
+  simpa [localFrameCoeff] using
     (e.isLocalFrameOn_localFrame_baseSet I 1 b).coeff_apply_of_notMem hx i
+
+@[deprecated (since := "2026-07-26")]
+alias localFrame_coeff_apply_of_notMem_baseSet := localFrameCoeff_apply_of_notMem_baseSet
 
 variable (e b) in
 @[simp]
-lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
-    (localFrame_coeff I e b i x) (s x) = (e.basisAt b hx).repr (s x) i := by
+lemma localFrameCoeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
+    (localFrameCoeff I e b i x) (s x) = (e.basisAt b hx).repr (s x) i := by
   have he := e.isLocalFrameOn_localFrame_baseSet I 1 b
   have hbasis : e.basisAt b hx = he.toBasisAt hx := by
     ext j
     simp [IsLocalFrameOn.toBasisAt, localFrame, basisAt, hx]
-  simp [localFrame_coeff, IsLocalFrameOn.coeff, hx, hbasis]
+  simp [localFrameCoeff, IsLocalFrameOn.coeff, hx, hbasis]
+
+@[deprecated (since := "2026-07-26")]
+alias localFrame_coeff_apply_of_mem_baseSet := localFrameCoeff_apply_of_mem_baseSet
 
 variable {s s' : Π x : M, V x}
 
-lemma eq_sum_localFrame_coeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
-    s x' = ∑ i, e.localFrame_coeff I b i x' (s x') • e.localFrame b i x' :=
+lemma eq_sum_localFrameCoeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
+    s x' = ∑ i, e.localFrameCoeff I b i x' (s x') • e.localFrame b i x' :=
   (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_sum_eq s hx
+
+@[deprecated (since := "2026-07-26")]
+alias eq_sum_localFrame_coeff_smul := eq_sum_localFrameCoeff_smul
 
 variable (e b) in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
 of `V` around `x`, we have
-`s = ∑ i, (LinearMap.piApply (b.localFrame_coeff e i) s) • b.localFrame e i` near `x`. -/
+`s = ∑ i, (LinearMap.piApply (b.localFrameCoeff e i) s) • b.localFrame e i` near `x`. -/
 lemma eventually_eq_localFrame_sum_coeff_smul [Fintype ι] (hxe : x ∈ e.baseSet) :
-    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, e.localFrame_coeff I b i x' (s x') • e.localFrame b i x' :=
-  eventually_nhds_iff.mpr ⟨e.baseSet, fun _ ↦ e.eq_sum_localFrame_coeff_smul, e.open_baseSet, hxe⟩
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, e.localFrameCoeff I b i x' (s x') • e.localFrame b i x' :=
+  eventually_nhds_iff.mpr ⟨e.baseSet, fun _ ↦ e.eq_sum_localFrameCoeff_smul, e.open_baseSet, hxe⟩
 
 variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
-lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
-    e.localFrame_coeff I b i x (s x) = e.localFrame_coeff I b i x (s' x) := by
+lemma localFrameCoeff_congr {i : ι} (hss' : s x = s' x) :
+    e.localFrameCoeff I b i x (s x) = e.localFrameCoeff I b i x (s' x) := by
   simpa using! (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
+
+@[deprecated (since := "2026-07-26")] alias localFrame_coeff_congr := localFrameCoeff_congr
 
 variable {n}
 
@@ -427,9 +440,11 @@ variable (e) in
 /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the coefficient of "`s x` read in the trivialisation `e`" for `b i`. -/
-lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
-    e.localFrame_coeff I b i x (s x) = b.repr (e ((T% s) x)).2 i := by
-  simp [e.localFrame_coeff_apply_of_mem_baseSet b hxe, basisAt]
+lemma localFrameCoeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
+    e.localFrameCoeff I b i x (s x) = b.repr (e ((T% s) x)).2 i := by
+  simp [e.localFrameCoeff_apply_of_mem_baseSet b hxe, basisAt]
+
+@[deprecated (since := "2026-07-26")] alias localFrame_coeff_eq_coeff := localFrameCoeff_eq_coeff
 
 end Bundle.Trivialization
 
@@ -446,10 +461,10 @@ variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
+/-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrameCoeff e i` in the local frame
 near `x` induced by `e` and `b` -/
-lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
-    CMDiffAt k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
+lemma contMDiffAt_localFrameCoeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
+    CMDiffAt k ((LinearMap.piApply (e.localFrameCoeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
   -- step 1: on e.baseSet, we know compute the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
@@ -458,7 +473,7 @@ lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% 
     apply this.congr_of_eventuallyEq ?_
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, e.localFrame_coeff_eq_coeff hy]
+    simp [aux, e.localFrameCoeff_eq_coeff hy]
   simp only [aux]
   -- step 2: `s` read in trivialization `e` is `C^k`
   have h₁ : CMDiffAt k (fun x ↦ (e ((T% s) x)).2) x := by
@@ -472,52 +487,70 @@ lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% 
     contMDiffAt_iff_contDiffAt.mpr <| by fun_prop
   exact this.comp x h₁
 
-/-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
+@[deprecated (since := "2026-07-26")]
+alias contMDiffAt_localFrame_coeff := contMDiffAt_localFrameCoeff
+
+/-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrameCoeff e i`
 in the local frame induced by `e` -/
-lemma contMDiffOn_localFrame_coeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
+lemma contMDiffOn_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : CMDiff[t] k (T% s)) (i : ι) :
-    CMDiff[t] k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) :=
-  fun _ hx ↦ (contMDiffAt_localFrame_coeff b (ht' hx)
+    CMDiff[t] k ((LinearMap.piApply (e.localFrameCoeff I b i)) s) :=
+  fun _ hx ↦ (contMDiffAt_localFrameCoeff b (ht' hx)
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
-/-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
+@[deprecated (since := "2026-07-26")]
+alias contMDiffOn_localFrame_coeff := contMDiffOn_localFrameCoeff
+
+/-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrameCoeff e i`
 in the local frame induced by `e` -/
-lemma contMDiffOn_baseSet_localFrame_coeff (hs : CMDiff[e.baseSet] k (T% s)) (i : ι) :
-    CMDiff[e.baseSet] k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) :=
-  contMDiffOn_localFrame_coeff b e.open_baseSet (subset_refl _) hs _
+lemma contMDiffOn_baseSet_localFrameCoeff (hs : CMDiff[e.baseSet] k (T% s)) (i : ι) :
+    CMDiff[e.baseSet] k ((LinearMap.piApply (e.localFrameCoeff I b i)) s) :=
+  contMDiffOn_localFrameCoeff b e.open_baseSet (subset_refl _) hs _
+
+@[deprecated (since := "2026-07-26")]
+alias contMDiffOn_baseSet_localFrame_coeff := contMDiffOn_baseSet_localFrameCoeff
 
 /-- A section `s` of `V` is `C^k` at `x ∈ e.baseSet` iff each of its
-coefficients `(LinearMap.piApply (b.localFrame_coeff e i) s)` in a local frame near `x` is -/
-lemma contMDiffAt_iff_localFrame_coeff (hx : x' ∈ e.baseSet) :
-    CMDiffAt k (T% s) x' ↔ ∀ i, CMDiffAt k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x' :=
-  ⟨fun h i ↦ contMDiffAt_localFrame_coeff b hx h i,
+coefficients `(LinearMap.piApply (b.localFrameCoeff e i) s)` in a local frame near `x` is -/
+lemma contMDiffAt_iff_localFrameCoeff (hx : x' ∈ e.baseSet) :
+    CMDiffAt k (T% s) x' ↔ ∀ i, CMDiffAt k ((LinearMap.piApply (e.localFrameCoeff I b i)) s) x' :=
+  ⟨fun h i ↦ contMDiffAt_localFrameCoeff b hx h i,
     fun hi ↦ (e.isLocalFrameOn_localFrame_baseSet I k b).contMDiffAt_of_coeff hi
     (e.open_baseSet.mem_nhds hx)⟩
 
+@[deprecated (since := "2026-07-26")]
+alias contMDiffAt_iff_localFrame_coeff := contMDiffAt_iff_localFrameCoeff
+
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
-coefficients `(LinearMap.piApply (b.localFrame_coeff e i) s)` in a local frame near `x` is -/
-lemma contMDiffOn_iff_localFrame_coeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
-    CMDiff[t] k (T% s) ↔ ∀ i, CMDiff[t] k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) := by
-  refine ⟨fun h i ↦ contMDiffOn_localFrame_coeff b ht ht' h _, fun h x hx ↦ ?_⟩
-  exact (contMDiffAt_iff_localFrame_coeff b (ht' hx)).mpr
+coefficients `(LinearMap.piApply (b.localFrameCoeff e i) s)` in a local frame near `x` is -/
+lemma contMDiffOn_iff_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
+    CMDiff[t] k (T% s) ↔ ∀ i, CMDiff[t] k ((LinearMap.piApply (e.localFrameCoeff I b i)) s) := by
+  refine ⟨fun h i ↦ contMDiffOn_localFrameCoeff b ht ht' h _, fun h x hx ↦ ?_⟩
+  exact (contMDiffAt_iff_localFrameCoeff b (ht' hx)).mpr
     (fun i ↦ (h i x hx).contMDiffAt (ht.mem_nhds hx)) |>.contMDiffWithinAt
 
+@[deprecated (since := "2026-07-26")]
+alias contMDiffOn_iff_localFrame_coeff := contMDiffOn_iff_localFrameCoeff
+
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
-coefficients `(LinearMap.piApply (b.localFrame_coeff e i) s)` in a local frame near `x` is -/
-lemma contMDiffOn_baseSet_iff_localFrame_coeff :
+coefficients `(LinearMap.piApply (b.localFrameCoeff e i) s)` in a local frame near `x` is -/
+lemma contMDiffOn_baseSet_iff_localFrameCoeff :
     CMDiff[e.baseSet] k (T% s) ↔
-      ∀ i, CMDiff[e.baseSet] k ((LinearMap.piApply (e.localFrame_coeff I b i)) s) := by
-  rw [contMDiffOn_iff_localFrame_coeff b e.open_baseSet (subset_refl _)]
+      ∀ i, CMDiff[e.baseSet] k ((LinearMap.piApply (e.localFrameCoeff I b i)) s) := by
+  rw [contMDiffOn_iff_localFrameCoeff b e.open_baseSet (subset_refl _)]
+
+@[deprecated (since := "2026-07-26")]
+alias contMDiffOn_baseSet_iff_localFrame_coeff := contMDiffOn_baseSet_iff_localFrameCoeff
 
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `s` is differentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local
+/-- If `s` is differentiable at `x`, so is its coefficient `b.localFrameCoeff e i` in the local
 frame near `x` induced by `e` and `b` -/
-lemma mdifferentiableAt_localFrame_coeff
+lemma mdifferentiableAt_localFrameCoeff
     (hxe : x ∈ e.baseSet) (hs : MDiffAt (T% s) x) (i : ι) :
-    MDiffAt ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by
+    MDiffAt ((LinearMap.piApply (e.localFrameCoeff I b i)) s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
   -- step 1: on `e.baseSet`, we know the coefficient very well
   let aux := fun x ↦ b.repr (e ((T% s) x)).2 i
@@ -526,7 +559,7 @@ lemma mdifferentiableAt_localFrame_coeff
     apply this.congr_of_eventuallyEq
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, e.localFrame_coeff_eq_coeff hy]
+    simp [aux, e.localFrameCoeff_eq_coeff hy]
   simp only [aux]
   -- step 2: `s` read in trivialization `e` is differentiable
   have h₁ : MDiffAt (fun x ↦ (e ((T% s) x)).2) x := by
@@ -540,25 +573,37 @@ lemma mdifferentiableAt_localFrame_coeff
     mdifferentiableAt_iff_differentiableAt.mpr <| by fun_prop
   exact this.comp x h₁
 
-/-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
+@[deprecated (since := "2026-07-26")]
+alias mdifferentiableAt_localFrame_coeff := mdifferentiableAt_localFrameCoeff
+
+/-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrameCoeff e i`
 in the local frame induced by `e` -/
-lemma mdifferentiableOn_localFrame_coeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
-    (hs : MDiff[t] (T% s)) (i : ι) : MDiff[t] ((LinearMap.piApply (e.localFrame_coeff I b i)) s) :=
-  fun _ hx ↦ (mdifferentiableAt_localFrame_coeff b (ht' hx)
+lemma mdifferentiableOn_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
+    (hs : MDiff[t] (T% s)) (i : ι) : MDiff[t] ((LinearMap.piApply (e.localFrameCoeff I b i)) s) :=
+  fun _ hx ↦ (mdifferentiableAt_localFrameCoeff b (ht' hx)
     (hs.mdifferentiableAt (ht.mem_nhds hx)) i).mdifferentiableWithinAt
 
-/-- If `s` is differentiable on `e.baseSet`, so is its coefficient `b.localFrame_coeff e i` in the
+@[deprecated (since := "2026-07-26")]
+alias mdifferentiableOn_localFrame_coeff := mdifferentiableOn_localFrameCoeff
+
+/-- If `s` is differentiable on `e.baseSet`, so is its coefficient `b.localFrameCoeff e i` in the
 local frame induced by `e` -/
-lemma mdifferentiableOn_baseSet_localFrame_coeff (hs : MDiff[e.baseSet] (T% s)) (i : ι) :
-    MDiff[e.baseSet] ((LinearMap.piApply (e.localFrame_coeff I b i)) s) :=
-  mdifferentiableOn_localFrame_coeff b e.open_baseSet (subset_refl _) hs _
+lemma mdifferentiableOn_baseSet_localFrameCoeff (hs : MDiff[e.baseSet] (T% s)) (i : ι) :
+    MDiff[e.baseSet] ((LinearMap.piApply (e.localFrameCoeff I b i)) s) :=
+  mdifferentiableOn_localFrameCoeff b e.open_baseSet (subset_refl _) hs _
+
+@[deprecated (since := "2026-07-26")]
+alias mdifferentiableOn_baseSet_localFrame_coeff := mdifferentiableOn_baseSet_localFrameCoeff
 
 /-- A section `s` of `V` is differentiable at `x ∈ e.baseSet` iff each of its
-coefficients `(LinearMap.piApply (b.localFrame_coeff e i) s)` in a local frame near `x` is -/
-lemma mdifferentiableAt_iff_localFrame_coeff (hx : x' ∈ e.baseSet) :
-    MDiffAt (T% s) x' ↔ ∀ i, MDiffAt ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x' :=
-  ⟨fun h i ↦ mdifferentiableAt_localFrame_coeff b hx h i, fun hi ↦
+coefficients `(LinearMap.piApply (b.localFrameCoeff e i) s)` in a local frame near `x` is -/
+lemma mdifferentiableAt_iff_localFrameCoeff (hx : x' ∈ e.baseSet) :
+    MDiffAt (T% s) x' ↔ ∀ i, MDiffAt ((LinearMap.piApply (e.localFrameCoeff I b i)) s) x' :=
+  ⟨fun h i ↦ mdifferentiableAt_localFrameCoeff b hx h i, fun hi ↦
     (e.isLocalFrameOn_localFrame_baseSet I 1 b).mdifferentiableAt_of_coeff_aux hi e.open_baseSet hx⟩
+
+@[deprecated (since := "2026-07-26")]
+alias mdifferentiableAt_iff_localFrame_coeff := mdifferentiableAt_iff_localFrameCoeff
 
 end MDifferentiable
 

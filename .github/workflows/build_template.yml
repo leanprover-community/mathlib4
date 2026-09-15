@@ -1,4 +1,5 @@
-# Reusable workflow invoked by build.yml, bors.yml, build_fork.yml, and ci_dev.yml.
+# Reusable workflow invoked by build.yml, bors.yml, build_fork.yml, ci_dev.yml,
+# and release_cache.yml.
 
 on:
   workflow_call:

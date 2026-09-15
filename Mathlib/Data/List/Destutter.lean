@@ -105,8 +105,6 @@ theorem destutter'_of_isChain_cons (h : (a :: l).IsChain R) : l.destutter' R a =
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ (a :: l).IsChain R :=
   ⟨fun h => by
-    suffices IsChain R (a::l) by
-      assumption
     rw [← h]
     exact l.isChain_destutter' R a, destutter'_of_isChain_cons _ _⟩
 

@@ -116,6 +116,34 @@ or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i ∈ s, f i ≤ ∑ i ∈ s, g i`. -/
 add_decl_doc sum_le_sum
 
+/-- A finite product of monotone functions is monotone. -/
+@[to_additive finsetSum /-- A finite sum of monotone functions is monotone. -/]
+theorem _root_.Monotone.finsetProd' [MulLeftMono N] {γ : Type*} [Preorder γ]
+    {f : ι → γ → N} (hf : ∀ i ∈ s, Monotone (f i)) :
+    Monotone fun x ↦ ∏ i ∈ s, f i x :=
+  fun _ _ hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi hab
+
+/-- A finite product of functions monotone on `u` is monotone on `u`. -/
+@[to_additive finsetSum /-- A finite sum of functions monotone on `u` is monotone on `u`. -/]
+theorem _root_.MonotoneOn.finsetProd' [MulLeftMono N] {γ : Type*} [Preorder γ] {u : Set γ}
+    {f : ι → γ → N} (hf : ∀ i ∈ s, MonotoneOn (f i) u) :
+    MonotoneOn (fun x ↦ ∏ i ∈ s, f i x) u :=
+  fun _ ha _ hb hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi ha hb hab
+
+/-- A finite product of antitone functions is antitone. -/
+@[to_additive finsetSum /-- A finite sum of antitone functions is antitone. -/]
+theorem _root_.Antitone.finsetProd' [MulLeftMono N] {γ : Type*} [Preorder γ]
+    {f : ι → γ → N} (hf : ∀ i ∈ s, Antitone (f i)) :
+    Antitone fun x ↦ ∏ i ∈ s, f i x :=
+  fun _ _ hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi hab
+
+/-- A finite product of functions antitone on `u` is antitone on `u`. -/
+@[to_additive finsetSum /-- A finite sum of functions antitone on `u` is antitone on `u`. -/]
+theorem _root_.AntitoneOn.finsetProd' [MulLeftMono N] {γ : Type*} [Preorder γ] {u : Set γ}
+    {f : ι → γ → N} (hf : ∀ i ∈ s, AntitoneOn (f i) u) :
+    AntitoneOn (fun x ↦ ∏ i ∈ s, f i x) u :=
+  fun _ ha _ hb hab ↦ Finset.prod_le_prod' fun i hi ↦ hf i hi ha hb hab
+
 @[to_additive sum_nonneg]
 theorem one_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   le_trans (by rw [prod_const_one]) (prod_le_prod' h)
@@ -443,6 +471,36 @@ lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [Canonicall
     {f : ι → M} {s : Finset ι} : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le
+
+/-- In a canonically-ordered monoid, if `S'` is contained in `(S.erase d) ∪ {d'}` and
+`f d' < f d` for some `d ∈ S`, then the product of `f` over `S'` is strictly less than over `S`. -/
+@[to_additive /-- In a canonically-ordered additive monoid, if `S'` is contained in
+`(S.erase d) ∪ {d'}` and `f d' < f d` for some `d ∈ S`, then the sum of `f` over `S'` is
+strictly less than over `S`. -/]
+lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [CommMonoid M]
+    [PartialOrder M] [CanonicallyOrderedMul M] [MulLeftStrictMono M] {S S' : Finset ι} {f : ι → M}
+    {d d' : ι} (hd_mem : d ∈ S) (hS' : S' ⊆ S.erase d ∪ {d'}) (hlt : f d' < f d) :
+    ∏ x ∈ S', f x < ∏ x ∈ S, f x := by
+  have hd_not : d ∉ S' := fun hd ↦ (Finset.mem_union.mp (hS' hd)).elim
+    (fun h ↦ (Finset.mem_erase.mp h).1 rfl)
+    (fun h ↦ hlt.ne' (congrArg f (Finset.mem_singleton.mp h)))
+  by_cases hd'S : d' ∈ S
+  · calc ∏ x ∈ S', f x
+        ≤ ∏ x ∈ S.erase d, f x := Finset.prod_le_prod_of_subset' (fun x hx ↦
+          Finset.mem_erase.mpr ⟨fun h ↦ hd_not (h ▸ hx),
+            match Finset.mem_union.mp (hS' hx) with
+            | .inl h => Finset.mem_of_mem_erase h
+            | .inr h => Finset.mem_singleton.mp h ▸ hd'S⟩)
+      _ < (∏ x ∈ S.erase d, f x) * f d :=
+          lt_mul_of_one_lt_right' _ (one_le.trans_lt hlt)
+      _ = ∏ x ∈ S, f x := Finset.prod_erase_mul S f hd_mem
+  · calc ∏ x ∈ S', f x
+        ≤ ∏ x ∈ S.erase d ∪ {d'}, f x := Finset.prod_le_prod_of_subset' hS'
+      _ = (∏ x ∈ S.erase d, f x) * f d' := by
+          rw [Finset.prod_union (Finset.disjoint_singleton_right.mpr
+            (fun h ↦ hd'S (Finset.mem_of_mem_erase h))), Finset.prod_singleton]
+      _ < (∏ x ∈ S.erase d, f x) * f d := mul_lt_mul_right hlt _
+      _ = ∏ x ∈ S, f x := Finset.prod_erase_mul S f hd_mem
 
 end CanonicallyOrderedMul
 

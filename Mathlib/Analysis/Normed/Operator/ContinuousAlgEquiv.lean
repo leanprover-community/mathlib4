@@ -164,7 +164,8 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   -- Assume nontriviality of `V`.
   by_cases! Subsingleton V
   · by_cases! Subsingleton W
-    · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
+    · use { toLinearEquiv := 0,
+            norm_map' _ := by simp [Subsingleton.eq_zero (α := V), Subsingleton.eq_zero (α := W)] }
       exact ext fun _ ↦ Subsingleton.allEq _ _
     simpa using congr(f $(Subsingleton.allEq 0 1))
   /- By `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`,

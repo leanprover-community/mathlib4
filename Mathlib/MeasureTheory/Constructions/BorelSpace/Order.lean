@@ -1018,7 +1018,7 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
     rw [ofPred_forall]
     exact MeasurableSet.iInter (fun j ↦ (m_meas j).compl)
   refine measurable_const.piecewise mc_meas <| .iSup fun j ↦ ?_
-  let reparam : δ → Subtype p → Subtype p := fun x ↦ liminf_reparam (fun i ↦ f i x) s p
+  let reparam : δ → Subtype p → Subtype p := fun x ↦ liminfReparam (fun i ↦ f i x) s p
   let F0 : Subtype p → δ → α := fun j x ↦ ⨅ (i : s j), f i x
   have F0_meas : ∀ j, Measurable (F0 j) := fun j ↦ .iInf (fun (i : s j) ↦ hf i)
   set F1 : δ → α := fun x ↦ F0 (reparam x j) x with hF1

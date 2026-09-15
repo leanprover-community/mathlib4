@@ -684,20 +684,36 @@ end AddMonoidAlgebra
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
-variable (A M) in
+namespace AddMonoidAlgebra
+variable [AddMonoid M]
+
+variable (R A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
-def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
-    AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) where
-  toRingEquiv := AddMonoidAlgebra.toMultiplicative A M
-  commutes' r := by simp [AddMonoidAlgebra.toMultiplicative]
+@[simps!]
+def toMultiplicativeAlgEquiv : AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) where
+  toRingEquiv := toMultiplicative A M
+  commutes' r := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
-variable (A M) in
+@[simp]
+lemma toMultiplicativeAlgEquiv_single (m : M) (a : A) :
+    toMultiplicativeAlgEquiv R A M (single m a) = .single (.ofAdd m) a := by ext; simp
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable [Monoid M]
+
+variable (R A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
-def MonoidAlgebra.toAdditiveAlgEquiv [Monoid M] :
-    MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) where
-  toRingEquiv := MonoidAlgebra.toAdditive A M
-  commutes' r := by simp [MonoidAlgebra.toAdditive]
+@[simps!]
+def toAdditiveAlgEquiv : MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) where
+  toRingEquiv := toAdditive A M
+  commutes' r := by simp [toAdditive]
+
+@[simp]
+lemma toAdditiveAlgEquiv_single (m : M) (a : A) :
+    toAdditiveAlgEquiv R A M (single m a) = .single (.ofMul m) a := by ext; simp
+
+end MonoidAlgebra

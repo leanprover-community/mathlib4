@@ -266,8 +266,6 @@ theorem eq_modMonomial_single_iff (h : X i ∣ p - r) :
 theorem X_dvd_mul_iff [IsCancelMulZero R] :
     X i ∣ p * q ↔ X i ∣ p ∨ X i ∣ q := by
   nontriviality R
-  have _ : NoZeroDivisors (MvPolynomial σ R) :=
-    IsLeftCancelMulZero.to_noZeroDivisors (MvPolynomial σ R)
   constructor
   · intro h
     suffices (p.modMonomial (Finsupp.single i 1)) * (q.modMonomial (Finsupp.single i 1)) =
