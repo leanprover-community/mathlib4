@@ -23,7 +23,7 @@ topology does not coincide with the lower topology.
 ## Main statements
 
 - `Topology.IsUpperSet.toAlexandrovDiscrete`: The upper set topology is Alexandrov-discrete.
-- `Topology.IsUpperSet.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
+- `Topology.IsUpperSet.isClosed_iff_isLowerSet` - a set is closed if and only if it is a Lower set
 - `Topology.IsUpperSet.closure_eq_lowerClosure` - topological closure coincides with lower closure
 - `Topology.IsUpperSet.monotone_iff_continuous` - the continuous functions are the monotone
   functions
@@ -243,15 +243,17 @@ instance toAlexandrovDiscrete : AlexandrovDiscrete α where
   isOpen_sInter S := by simpa only [isOpen_iff_isUpperSet] using isUpperSet_sInter (α := α)
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
-lemma isClosed_iff_isLower : IsClosed s ↔ IsLowerSet s := by
-  rw [← isOpen_compl_iff, isOpen_iff_isUpperSet,
-    isLowerSet_compl.symm, compl_compl]
+lemma isClosed_iff_isLowerSet : IsClosed s ↔ IsLowerSet s := by
+  rw [← isOpen_compl_iff, isOpen_iff_isUpperSet, isLowerSet_compl.symm, compl_compl]
+
+@[deprecated (since := "2026-09-07")]
+alias isClosed_iff_isLower := isClosed_iff_isLowerSet
 
 lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
   rw [subset_antisymm_iff]
-  refine ⟨?_, lowerClosure_min subset_closure (isClosed_iff_isLower.1 isClosed_closure)⟩
+  refine ⟨?_, lowerClosure_min subset_closure (isClosed_iff_isLowerSet.1 isClosed_closure)⟩
   · apply closure_minimal subset_lowerClosure _
-    rw [isClosed_iff_isLower]
+    rw [isClosed_iff_isLowerSet]
     exact LowerSet.lower (lowerClosure s)
 
 /--
@@ -276,6 +278,18 @@ lemma nhds_eq_principal_Ici (a : α) : 𝓝 a = 𝓟 (Ici a) := by
 
 lemma nhdsSet_eq_principal_upperClosure (s : Set α) : 𝓝ˢ s = 𝓟 ↑(upperClosure s) := by
   rw [← principal_nhdsKer, nhdsKer_eq_upperClosure]
+
+protected theorem IsOpen.Ioi (a : α) : IsOpen (Ioi a) :=
+  isOpen_iff_isUpperSet.mpr <| isUpperSet_Ioi a
+
+protected theorem IsOpen.Ici (a : α) : IsOpen (Ici a) :=
+  isOpen_iff_isUpperSet.mpr <| isUpperSet_Ici a
+
+protected theorem IsClosed.Iio (a : α) : IsClosed (Iio a) :=
+  isClosed_iff_isLowerSet.mpr <| isLowerSet_Iio a
+
+protected theorem IsClosed.Iic (a : α) : IsClosed (Iic a) :=
+  isClosed_iff_isLowerSet.mpr <| isLowerSet_Iic a
 
 end Preorder
 
@@ -344,8 +358,11 @@ lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α
 
 instance toAlexandrovDiscrete : AlexandrovDiscrete α := IsUpperSet.toAlexandrovDiscrete (α := αᵒᵈ)
 
-lemma isClosed_iff_isUpper : IsClosed s ↔ IsUpperSet s := by
+lemma isClosed_iff_isUpperSet : IsClosed s ↔ IsUpperSet s := by
   rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]
+
+@[deprecated (since := "2026-09-07")]
+alias isClosed_iff_isUpper := isClosed_iff_isUpperSet
 
 lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
   IsUpperSet.closure_eq_lowerClosure (α := αᵒᵈ)
@@ -372,6 +389,18 @@ lemma nhds_eq_principal_Iic (a : α) : 𝓝 a = 𝓟 (Iic a) := by
 
 lemma nhdsSet_eq_principal_lowerClosure (s : Set α) : 𝓝ˢ s = 𝓟 ↑(lowerClosure s) := by
   rw [← principal_nhdsKer, nhdsKer_eq_lowerClosure]
+
+protected theorem IsOpen.Iio (a : α) : IsOpen (Iio a) :=
+  isOpen_iff_isLowerSet.mpr <| isLowerSet_Iio a
+
+protected theorem IsOpen.Iic (a : α) : IsOpen (Iic a) :=
+  isOpen_iff_isLowerSet.mpr <| isLowerSet_Iic a
+
+protected theorem IsClosed.Ioi (a : α) : IsClosed (Ioi a) :=
+  isClosed_iff_isUpperSet.mpr <| isUpperSet_Ioi a
+
+protected theorem IsClosed.Ici (a : α) : IsClosed (Ici a) :=
+  isClosed_iff_isUpperSet.mpr <| isUpperSet_Ici a
 
 end Preorder
 

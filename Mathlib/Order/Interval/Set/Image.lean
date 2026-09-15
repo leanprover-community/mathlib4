@@ -359,16 +359,33 @@ end Set
 section Preorder
 variable [Preorder α]
 
-@[to_dual directedOn_ge_Ici]
-lemma directedOn_le_Iic (a : α) : DirectedOn (· ≤ ·) (Iic a) :=
+@[to_dual ge_Ici]
+lemma DirectedOn.le_Iic (a : α) : DirectedOn (· ≤ ·) (Iic a) :=
   fun _x hx _y hy ↦ ⟨a, le_rfl, hx, hy⟩
 
-@[to_dual (reorder := a b) (rename := a ↔ b) directedOn_ge_Icc]
-lemma directedOn_le_Icc (a b : α) : DirectedOn (· ≤ ·) (Icc a b) :=
+@[to_dual (attr := deprecated (since := "2026-09-07")) directedOn_ge_Ici]
+alias directedOn_le_Iic := DirectedOn.le_Iic
+
+@[to_dual (reorder := a b) (rename := a ↔ b) ge_Icc]
+lemma DirectedOn.le_Icc (a b : α) : DirectedOn (· ≤ ·) (Icc a b) :=
   fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 <| hx.1.trans hx.2, hx.2, hy.2⟩
 
-@[to_dual (reorder := a b) (rename := a ↔ b) directedOn_ge_Ico]
-lemma directedOn_le_Ioc (a b : α) : DirectedOn (· ≤ ·) (Ioc a b) :=
+@[to_dual (attr := deprecated (since := "2026-09-07")) directedOn_ge_Icc]
+alias directedOn_le_Icc := DirectedOn.le_Icc
+
+@[to_dual (reorder := a b) (rename := a ↔ b) ge_Ico]
+lemma DirectedOn.le_Ioc (a b : α) : DirectedOn (· ≤ ·) (Ioc a b) :=
   fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 <| hx.1.trans_le hx.2, hx.2, hy.2⟩
+
+@[to_dual (attr := deprecated (since := "2026-09-07")) directedOn_ge_Ico]
+alias directedOn_le_Ioc := DirectedOn.le_Ioc
+
+@[to_dual ge_Iio]
+theorem DirectedOn.le_Ioi [IsDirectedOrder α] (a : α) : DirectedOn (· ≤ ·) (Ioi a) :=
+  fun b hb c _ ↦ exists_ge_ge b c |>.imp fun _ ⟨hb', hc'⟩ ↦ ⟨hb.trans_le hb', hb', hc'⟩
+
+@[to_dual ge_Iic]
+theorem DirectedOn.le_Ici [IsDirectedOrder α] (a : α) : DirectedOn (· ≤ ·) (Ici a) :=
+  fun b hb c _ ↦ exists_ge_ge b c |>.imp fun _ ⟨hb', hc'⟩ ↦ ⟨hb.trans hb', hb', hc'⟩
 
 end Preorder
