@@ -176,20 +176,20 @@ theorem coe_starGraphCopyNeighborSet (v : V) :
   ext u
   cases u <;> rfl
 
-theorem starGraph_fin_degree_add_one_isContained (v : V) [Fintype (G.neighborSet v)] :
-    starGraph (0 : Fin (G.degree v + 1)) ⊑ G := by
-  let f := (Fintype.equivFinOfCardEq <| G.card_neighborSet_eq_degree v).symm
-  refine ⟨⟨Fin.cons v ((↑) ∘ f), fun {a b} ↦ ?_⟩, by simp [Fin.cons_injective_iff, f.injective]⟩
-  cases a using Fin.cases <;> cases b using Fin.cases <;>
-    grind [Fin.cons, mem_neighborSet, adj_symm]
+theorem starGraph_isContained_of_card_le_degree_add_one [Finite W] (r : W) {v : V}
+    [Fintype (G.neighborSet v)] (h : Nat.card W ≤ G.degree v + 1) : starGraph r ⊑ G := by
+  refine (G.starGraphCopyNeighborSet v).isContained.trans' (starGraph_isContained_starGraph.mpr ?_)
+  have := Fintype.ofFinite W
+  exact Function.Embedding.nonempty_of_card_le <| by simpa using h
 
 variable {G} in
-theorem starGraph_fin_add_one_isContained_iff_le_maxDegree [Nonempty V] [Fintype V]
-    [DecidableRel G.Adj] {n : ℕ} : starGraph (0 : Fin (n + 1)) ⊑ G ↔ n ≤ G.maxDegree := by
-  refine ⟨fun h ↦ h.maxDegree_mono.trans_eq' <| by simp, fun h ↦ ?_⟩
+theorem starGraph_isContained_iff_card_le_maxDegree_add_one [Nonempty V] [Fintype V] [Finite W]
+    [DecidableRel G.Adj] {r : W} : starGraph r ⊑ G ↔ Nat.card W ≤ G.maxDegree + 1 := by
   have ⟨v, hv⟩ := G.exists_maximal_degree_vertex
-  refine .trans ?_ <| G.starGraph_fin_degree_add_one_isContained v
-  grw [starGraph_isContained_starGraph, Fin.nonempty_embedding_iff, h, hv]
+  refine ⟨fun h ↦ ?_, (G.starGraph_isContained_of_card_le_degree_add_one r <| hv ▸ ·)⟩
+  classical
+  have := Fintype.ofFinite W
+  grw [Nat.card_eq_fintype_card, ← h.maxDegree_mono, maxDegree_starGraph, ← le_tsub_add]
 
 theorem starGraph_inl_unitMk : starGraph (.inl ()) = completeBipartiteGraph Unit V := by
   grind
