@@ -99,7 +99,6 @@ variable (i₁ i₂) in
 noncomputable def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
   Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) => E.toPullback j)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
     (w : p₁ ≫ E.f i₁ = p₂ ≫ E.f i₂) :
     E.sieve₁ p₁ p₂ = (E.sieve₁' i₁ i₂).pullback (pullback.lift _ _ w) := by
