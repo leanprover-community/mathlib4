@@ -375,12 +375,18 @@ variable (h : IsAdjoinRootMonic S f)
 open IsAdjoinRoot
 
 theorem map_modByMonic (g : R[X]) : h.map (g %ₘ f) = h.map g := by
-  rw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div, sub_right_comm,
+  -- TODO: fix by making RingHom.ker take a concrete morphism instead!
+  erw [← RingHom.sub_mem_ker_iff, mem_ker_map, modByMonic_eq_sub_mul_div, sub_right_comm,
     sub_self, zero_sub, dvd_neg]
   exact ⟨_, rfl⟩
 
 theorem modByMonic_repr_map (g : R[X]) : h.repr (h.map g) %ₘ f = g %ₘ f :=
-  modByMonic_eq_of_dvd_sub h.monic <| by rw [← h.mem_ker_map, RingHom.sub_mem_ker_iff, map_repr]
+  -- TODO: fix by making RingHom.ker take a concrete morphism instead!
+  modByMonic_eq_of_dvd_sub h.monic <| by
+    --rw [← h.mem_ker_map, RingHom.sub_mem_ker_iff, map_repr]
+    rw [← h.mem_ker_map]
+    erw [RingHom.sub_mem_ker_iff h.map.toRingHom (x := h.repr (h.map g)) (y := g), map_repr]
+    rfl
 
 /-- `IsAdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`. -/
 def modByMonicHom : S →ₗ[R] R[X] where
