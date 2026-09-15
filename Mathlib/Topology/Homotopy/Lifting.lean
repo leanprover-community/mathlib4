@@ -519,10 +519,9 @@ theorem existsUnique_continuousMap_lifts_of_range_le
   conv_rhs => rw [← eq.2 ⟨.reflTransSymm _⟩, mk_refl, monodromy_refl]
   rw [Path.map_symm, ← Path.map_trans]
   set pγγ' : Path a₀ a₀ := pγ.trans pγ'.symm
-  obtain ⟨⟨pΓΓ'⟩, eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
-  sorry
-  --rw [mapOfEq_apply, map_apply, ← mk_map] at eq
-  --exact eq ▸ Subtype.ext congr($(cov.monodromy_map <| .mk _))
+  obtain ⟨⟨⟨pΓΓ'⟩⟩, eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
+  rw [End.ext_iff, mapOfEq_apply, map_apply_asHom, ← mk_map] at eq
+  exact eq ▸ Subtype.ext (congr($(cov.monodromy_map <| .mk pΓΓ').val))
 
 end homotopy_lifting
 
