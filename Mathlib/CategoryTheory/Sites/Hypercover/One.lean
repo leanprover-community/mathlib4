@@ -86,11 +86,11 @@ variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma toPullback_fst (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.fst _ _ = E.p₁ k := by
   rw [pullback.lift_fst]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma toPullback_snd (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.snd _ _ = E.p₂ k := by
   rw [pullback.lift_snd]
 
