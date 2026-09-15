@@ -16,7 +16,6 @@ public import Mathlib.Tactic.FastInstance
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.Algebra.Order.Group.Nat
 
-import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Theory of univariate polynomials
@@ -560,13 +559,13 @@ theorem X_pow_mul_monomial (k n : ℕ) (r : R) : X ^ k * monomial n r = monomial
   rw [X_pow_mul, monomial_mul_X_pow]
 
 /-- `coeff p n` (often denoted `p.coeff n`) is the coefficient of `X^n` in `p`. -/
-def coeff : R[X] → ℕ → R
+def coeff : R[X] → ℕ →₀ R
   | ⟨p⟩ => p.coeff
 
 @[simp]
 theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p.coeff := by rw [coeff]
 
-theorem coeff_injective : Injective (coeff : R[X] → ℕ → R) := by rintro ⟨p⟩ ⟨q⟩; simp [coeff]
+theorem coeff_injective : Injective (coeff : R[X] → ℕ →₀ R) := by rintro ⟨p⟩ ⟨q⟩; simp [coeff]
 
 @[simp]
 theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=

@@ -5,8 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Order.Directed
+public import Mathlib.Data.Set.Lattice.Indexed
 
 /-!
 # Union lift

@@ -116,9 +116,6 @@ lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   let := IsBotOneClass.toOrderBot α
   bot_notMem_iff
 
-@[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
-@[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
-
 end PartialOrder
 
 section LinearOrder

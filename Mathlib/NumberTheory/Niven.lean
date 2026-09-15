@@ -25,7 +25,7 @@ public section
 
 namespace IsIntegral
 
-variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
+variable {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
 
 @[simp]
 theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=
@@ -35,8 +35,8 @@ theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = 
   refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
   rintro ⟨q, rfl⟩
   rw [ratCast_iff] at h₁
-  peel IsIntegrallyClosed.algebraMap_eq_of_integral h₁ with h
-  simp [← h]
+  gconvert IsIntegrallyClosed.algebraMap_eq_of_integral h₁
+  simp [← this]
 
 end IsIntegral
 

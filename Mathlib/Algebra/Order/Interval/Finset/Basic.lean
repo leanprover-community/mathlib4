@@ -19,7 +19,7 @@ public section
 
 open Function
 
-variable {ι α : Type*}
+variable {α : Type*}
 
 namespace Finset
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]

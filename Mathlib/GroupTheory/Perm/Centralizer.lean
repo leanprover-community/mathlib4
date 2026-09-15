@@ -210,6 +210,7 @@ structure Basis (g : Equiv.Perm α) where
   /-- For each cycle, the chosen element belongs to the cycle -/
   (mem_support_self' : ∀ (c : g.cycleFactorsFinset), toFun c ∈ c.val.support)
 
+@[macro_inline]
 instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
   coe_injective a a' _ := by cases a; cases a'; congr
@@ -594,7 +595,7 @@ section Sign
 
 open Function
 
-variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
+variable (g : Perm α) (k : Perm (fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
 
 set_option backward.isDefEq.respectTransparency false in

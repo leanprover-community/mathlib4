@@ -71,6 +71,14 @@ theorem convex_eball (a : E) (r : ENNReal) : Convex ℝ (eball a r) := by
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (closedBall a r) := by
   simpa only [closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
 
+/-- A finite convex combination of vectors of norm at most `r` has norm at most `r`. -/
+theorem norm_sum_smul_le {ι : Type*} {t : Finset ι} {w : ι → ℝ} {r : ℝ} {z : ι → E}
+    (h0 : ∀ i ∈ t, 0 ≤ w i) (h1 : ∑ i ∈ t, w i = 1) (hz : ∀ i ∈ t, ‖z i‖ ≤ r) :
+    ‖∑ i ∈ t, w i • z i‖ ≤ r := by
+  rw [← mem_closedBall_zero_iff]
+  exact (convex_closedBall 0 r).sum_mem h0 h1 fun i hi =>
+    mem_closedBall_zero_iff.mpr (hz i hi)
+
 /-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
 `dist x y`. -/
 theorem segment_subset_closedBall_left (x y : E) : segment ℝ x y ⊆ closedBall x (dist x y) :=

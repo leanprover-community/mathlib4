@@ -5,8 +5,9 @@ Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger
 -/
 module
 
-public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.Complex.Poisson
+public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
 /-!
 # Poisson Integral Formula

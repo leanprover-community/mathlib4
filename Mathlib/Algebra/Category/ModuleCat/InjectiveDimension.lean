@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
@@ -106,7 +105,7 @@ private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
       f'.hom.exact_map_mkQ_range injf' (Submodule.mkQ_surjective _)
     let I : ModuleCat.{v} R :=
       let := Module.compHom I' eR.toRingHom
-      ModuleCat.of R I'
+      ↧I'
     let eI : I ≃ₛₗ[RingHomClass.toRingHom eR] I' := {
       __ := AddEquiv.refl I
       map_smul' r i := rfl }

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 public import Mathlib.Order.WithBotTop
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 
 /-!
 # Truncations for a t-structure
@@ -522,7 +522,6 @@ lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
   simp [eTruncLTGEIsoGELT]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open ComposableArrows in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_naturality_app (a b : EInt) (hab : a ≤ b)

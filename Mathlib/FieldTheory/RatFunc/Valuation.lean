@@ -35,7 +35,7 @@ public noncomputable section
 
 namespace RatFunc
 
-variable (F K : Type*) [Field F] [Field K]
+variable (F : Type*) [Field F]
 
 /-! ### The place at infinity on F(t) -/
 

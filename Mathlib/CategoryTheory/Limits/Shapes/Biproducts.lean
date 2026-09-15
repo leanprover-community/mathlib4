@@ -1010,7 +1010,6 @@ end FiniteBiproducts
 
 variable {J : Type w}
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
-variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 instance biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) :=
   (biproduct.bicone f).instIsSplitMonoι b

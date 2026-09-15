@@ -34,8 +34,7 @@ lemma isEpi_iff_forall_one_tmul_eq :
     Algebra.IsEpi R A ↔ ∀ a : A, 1 ⊗ₜ[R] a = a ⊗ₜ[R] 1 := by
   refine ⟨fun h a ↦ IsEpi.injective_lift_mul <| by simp, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
   have h' (x : A ⊗[R] A) : ∃ a : A, x = a ⊗ₜ 1 := by
-    induction x using TensorProduct.induction_on with
-    | zero => exact ⟨0, by simp⟩
+    induction x using TensorProduct.inductionOn with
     | tmul u v =>
       use u * v
       calc u ⊗ₜ[R] v = u ⊗ₜ[R] 1 * 1 ⊗ₜ[R] v := by simp
@@ -85,7 +84,6 @@ lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
   have : Subsingleton ((A ⧸ R') ⊗[R] (A ⧸ R')) := by
     refine subsingleton_of_forall_eq 0 fun y ↦ ?_
     induction y with
-    | zero => rfl
     | add a b e₁ e₂ => rwa [e₁, zero_add]
     | tmul x y =>
       obtain ⟨x, rfl⟩ := R'.mkQ_surjective x

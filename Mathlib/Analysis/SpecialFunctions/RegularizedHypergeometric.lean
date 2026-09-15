@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
 public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-! # Generalized hypergeometric function
 
@@ -55,8 +55,9 @@ Convergence:
 
 namespace Complex
 
-open scoped Nat Real
-open Topology Filter
+open Filter
+
+open scoped Nat Real Topology
 
 variable {p q : ℕ}
 

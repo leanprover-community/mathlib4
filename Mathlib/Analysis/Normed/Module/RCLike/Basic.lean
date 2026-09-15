@@ -57,8 +57,6 @@ theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :
     ‖(‖x‖ : 𝕜) • ContinuousLinearEquiv.coord 𝕜 x h‖ = 1 := by
   simp only [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
 
-@[deprecated (since := "2026-02-01")] alias coord_norm' := ContinuousLinearEquiv.coord_norm'
-
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
   by_cases z_zero : z = 0

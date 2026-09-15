@@ -474,11 +474,9 @@ theorem distribBaseChange_symm_tmul
 lemma cancelBaseChange_self_eq_lid :
     cancelBaseChange R A A A N = TensorProduct.lid A (A ⊗[R] N) := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero => simp only [map_zero]
+  induction x using TensorProduct.inductionOn with
   | tmul b y =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | tmul a m =>
       simp only [cancelBaseChange_tmul, lid_tmul, smul_tmul', smul_eq_mul, mul_comm]
     | add x y hx hy =>
@@ -797,8 +795,8 @@ end Semiring
 
 section Ring
 
-variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {R A M N : Type*} [CommRing R]
+variable [Ring A] [Algebra R A]
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (f g : M →ₗ[R] N)
 

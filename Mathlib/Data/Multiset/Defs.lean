@@ -11,6 +11,7 @@ public import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Multisets
@@ -63,7 +64,7 @@ universe v
 
 open List Subtype Nat
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*} {β : Type v}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed. -/
@@ -242,7 +243,7 @@ lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
-  ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩
+  Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2
 
 @[simp]
 theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
