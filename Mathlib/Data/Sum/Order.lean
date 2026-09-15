@@ -102,6 +102,10 @@ instance [Std.Trichotomous r] [Std.Trichotomous s] : Std.Trichotomous (Lex r s) 
 instance [IsWellOrder α r] [IsWellOrder β s] :
     IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellOrder.wf IsWellOrder.wf
 
+theorem lex_flip_iff (a b : α ⊕ β) : Lex (flip r) (flip s) a b ↔ Lex s r b.swap a.swap := by
+  revert a b
+  simp [Function.flip_def]
+
 end Lex
 
 /-! ### Disjoint sum of two orders -/
@@ -508,6 +512,19 @@ instance denselyOrdered_of_noMinOrder [LT α] [LT β] [DenselyOrdered α] [Dense
     | inr _, inr _, Lex.inr h =>
       let ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inr c), inr_lt_inr_iff.2 ha, inr_lt_inr_iff.2 hb⟩⟩
+
+instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ⊕ₗ β) :=
+  ⟨Sum.lex_wf wellFounded_lt wellFounded_lt⟩
+
+instance [LT α] [LT β] [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α ⊕ₗ β) := by
+  constructor
+  conv =>
+    enter [1, a, b]
+    equals Lex (fun u v => v < u) (fun u v => v < u) (ofLex a).swap (ofLex b).swap =>
+      rw [← Function.flip_def, ← Function.flip_def,
+        Sum.Lex.lt_def, lex_flip_iff, swap_swap, swap_swap]
+  apply InvImage.wf (fun x : α ⊕ₗ β => (ofLex x).swap)
+  exact Sum.lex_wf wellFounded_gt wellFounded_gt
 
 end Lex
 
