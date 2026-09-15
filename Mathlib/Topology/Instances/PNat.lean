@@ -35,8 +35,7 @@ theorem dist_coe (x y : ℕ+) : dist (↑x : ℕ) (↑y : ℕ) = dist x y := rfl
 
 theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : ℕ+ → ℕ) := by
   convert isUniformEmbedding_subtype_val (p := (fun n => 0 < n))
-  · rfl
-  · exact UniformSpace.ext rfl
+  exact UniformSpace.ext rfl
 
 instance : ProperSpace ℕ+ where
   isCompact_closedBall n r := by
