@@ -1,7 +1,7 @@
 # Security policy
 
 mathlib is a library of formalized mathematics, and it contains many supporting tactic metaprograms, scripts for tooling and maintenance as well as CI workflows.
-The maintainers are not experts on security, but are devoted to keeping all of the above free of security issues to protect our contributors and users.
+The maintainers are devoted to keeping all of the above free of security issues to protect our contributors and users.
 Thank you for doing your part to keep mathlib secure by reporting issues in a responsible way.
 
 If you believe you have found a security vulnerability in mathlib, please report it using GitHub's [private vulnerability reporting](https://github.com/leanprover-community/mathlib4/security/advisories/new). If you do not have a GitHub account, you may also send an email to <security@mathlib.org>.
