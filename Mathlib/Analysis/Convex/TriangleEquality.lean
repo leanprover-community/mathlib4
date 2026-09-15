@@ -63,8 +63,7 @@ lemma norm_sum_eq_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ o
   | empty => simp
   | cons a t ha ih =>
     simp only [coe_cons, Set.pairwise_insert_of_symm_of_notMem ha, SetLike.mem_coe] at hp
-    rw [sum_cons, sum_cons, (sum_induction v _ (fun _ _ ↦ SameRay.add_right)
-      (SameRay.zero_right _) hp.2).norm_add, ih hp.1]
+    rw [sum_cons, sum_cons, (SameRay.sum_right hp.2).norm_add, ih hp.1]
 
 end Seminormed
 
