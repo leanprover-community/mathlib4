@@ -256,7 +256,7 @@ lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSub
     [(s₁ ⊔ s₂).direction.HasOrthogonalProjection] :
     (orthogonalProjection (s₁ ⊔ s₂) p : P) = orthogonalProjection s₁ p := by
   rw [coe_orthogonalProjection_eq_iff_mem]
-  refine ⟨SetLike.le_def.1 le_sup_left (orthogonalProjection_mem _), ?_⟩
+  refine ⟨mem_of_le_of_mem le_sup_left (orthogonalProjection_mem _), ?_⟩
   rw [direction_sup_eq_sup_direction (orthogonalProjection_mem p) (h ▸ orthogonalProjection_mem p),
     ← Submodule.inf_orthogonal]
   exact ⟨vsub_orthogonalProjection_mem_direction_orthogonal _ _,
@@ -286,7 +286,7 @@ lemma orthogonalProjection_orthogonalProjection_of_le {s₁ s₂ : AffineSubspac
     (h : s₁ ≤ s₂) (p : P) :
     orthogonalProjection s₁ (orthogonalProjection s₂ p) = orthogonalProjection s₁ p := by
   rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
-  exact SetLike.le_def.1 (Submodule.orthogonal_le (direction_le h))
+  exact mem_of_le_of_mem (Submodule.orthogonal_le (direction_le h))
     (orthogonalProjection_vsub_mem_direction_orthogonal _ _)
 
 /-- The square of the distance from a point in `s` to `p₂` equals the
