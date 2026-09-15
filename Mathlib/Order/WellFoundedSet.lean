@@ -77,18 +77,8 @@ section AnyRel
 variable {f : β → α} {s t : Set α} {x y : α}
 
 theorem wellFoundedOn_iff :
-    s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
-  have f : RelEmbedding (Subrel r (· ∈ s)) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
-    ⟨⟨(↑), Subtype.coe_injective⟩, by simp⟩
-  refine ⟨fun h => ?_, f.wellFounded⟩
-  rw [WellFounded.wellFounded_iff_has_min]
-  intro t ht
-  by_cases hst : (s ∩ t).Nonempty
-  · rw [← Subtype.preimage_coe_nonempty] at hst
-    rcases h.has_min (Subtype.val ⁻¹' t) hst with ⟨⟨m, ms⟩, mt, hm⟩
-    exact ⟨m, mt, fun x xt ⟨xm, xs, _⟩ => hm ⟨x, xs⟩ xt xm⟩
-  · rcases ht with ⟨m, mt⟩
-    exact ⟨m, mt, fun x _ ⟨_, _, ms⟩ => hst ⟨m, ⟨ms, mt⟩⟩⟩
+    s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
+  WellFounded.subtype_iff
 
 @[simp]
 theorem wellFoundedOn_univ : (univ : Set α).WellFoundedOn r ↔ WellFounded r := by
@@ -98,14 +88,8 @@ theorem _root_.WellFounded.wellFoundedOn : WellFounded r → s.WellFoundedOn r :
   InvImage.wf _
 
 @[simp]
-theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f) := by
-  let f' : β → range f := fun c => ⟨f c, c, rfl⟩
-  refine ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨?_⟩⟩
-  rintro ⟨_, c, rfl⟩
-  refine Acc.of_downward_closed f' ?_ _ ?_
-  · rintro _ ⟨_, c', rfl⟩ -
-    exact ⟨c', rfl⟩
-  · exact h.apply _
+theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f) :=
+  (Set.rangeFactorization_surjective.wellFounded_iff (by simp)).symm
 
 @[simp]
 theorem wellFoundedOn_image {s : Set β} : (f '' s).WellFoundedOn r ↔ s.WellFoundedOn (r on f) := by
