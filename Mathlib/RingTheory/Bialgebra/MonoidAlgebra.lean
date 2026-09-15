@@ -8,7 +8,9 @@ module
 public import Mathlib.RingTheory.Bialgebra.Convolution
 public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.GroupLike
+public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
+public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
 /-!
 # The bialgebra structure on monoid algebras
@@ -26,6 +28,7 @@ coalgebra structure.
   `A[T;T⁻¹]` when `A` is an `R`-bialgebra.
 * `(Add)MonoidAlgebra.mapDomainBialgHomEquiv`: isomorphism between `R`-bialgebra homs `A[G] → A[H]`
   and groups homs `G → H` when `G` and `H` are an (add) group and `A` is an `R`-bialgebra.
+* `MonoidAlgebra.tensorBialgEquiv`: the bialgebra isomorphism `R[M] ⊗[R] R[N] ≃ R[M × N]`.
 -/
 
 public noncomputable section
@@ -152,6 +155,24 @@ def bialgEquivOfSubsingleton [Subsingleton M] : R[M] ≃ₐc[R] R where
     ext g : 2
     simp [Subsingleton.elim g 1]
   right_inv := (Bialgebra.counitAlgHom R R[M]).commutes
+
+-- Note: Cannot be additivised automatically because of the use of `Multiplicative`
+-- in `AddMonoidAlgebra.lift`
+variable (R) in
+/-- The tensor product of two monoid algebras is the monoid algebra of their product,
+as bialgebras. -/
+@[expose] def tensorBialgEquiv : R[M] ⊗[R] R[N] ≃ₐc[R] R[M × N] :=
+  .ofAlgEquiv (tensorAlgEquiv R) (by ext <;> simp [one_def]) (by ext <;> simp [one_def])
+
+@[simp]
+lemma tensorBialgEquiv_single_tmul_single (m : M) (r₁ : R) (n : N) (r₂ : R) :
+    tensorBialgEquiv R (single m r₁ ⊗ₜ single n r₂) = single (m, n) (r₁ * r₂) :=
+  tensorEquiv_single_tmul_single ..
+
+@[simp]
+lemma tensorBialgEquiv_toAlgEquiv :
+    (tensorBialgEquiv R (M := M) (N := N) : R[M] ⊗[R] R[N] ≃ₐ[R] R[M × N]) = tensorAlgEquiv R :=
+  rfl
 
 lemma isGroupLikeElem_of (m : M) : IsGroupLikeElem R (of A M m) := isGroupLikeElem_single_one ..
 
