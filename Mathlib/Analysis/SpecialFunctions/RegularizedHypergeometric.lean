@@ -67,6 +67,8 @@ variable {a : Multiset ℂ} {b : Multiset ℂ} {n m : ℕ} {j k : ℂ}
 def regularizedHGFunCoeff (a : Multiset ℂ) (b : Multiset ℂ) (n : ℕ) : ℂ :=
   (a.map (ascPochhammer ℂ n).eval).prod / (n ! * (b.map (Gamma <| · + n)).prod)
 
+local notation "C" => regularizedHGFunCoeff
+
 attribute [grind .] Nat.factorial_ne_zero
 
 @[grind =]
@@ -121,6 +123,31 @@ theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n 
     have h₁ : (b.map (· + (n : ℂ))).prod = 0 := by
       grind [Multiset.prod_eq_zero, Multiset.mem_map]
     simp [regularizedHGFunCoeff_eq_zero_right a b n 0, h₁]
+
+variable (a) in
+theorem mul_regularizedHGFunCoeff_of_mem_right (n : ℕ) {u : ℂ} (h : u ∈ b) :
+    (u - 1 + n) * C a b n = C a ((u - 1) ::ₘ b.erase u) n := by
+  by_cases h0 : u - 1 + n = 0
+  · symm
+    simp [h0, regularizedHGFunCoeff_eq_zero_iff]
+  unfold regularizedHGFunCoeff
+  rw [mul_div, mul_comm, mul_div_assoc]
+  suffices (u - 1 + n) / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) b).prod) =
+      1 / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) ((u - 1) ::ₘ b.erase u)).prod) by
+    rw [this]
+    ring
+  calc
+    _ = (u - 1 + n) / (n ! * (Gamma (u - 1 + n + 1)) *
+        (Multiset.map (fun x ↦ Gamma (x + n)) (b.erase u)).prod) := by
+      rw [← Multiset.prod_map_erase h]
+      ring_nf
+    _ = (u - 1 + n) / ((u - 1 + n) *
+        (n ! * (Gamma (u - 1 + n)) * (Multiset.map (fun x ↦ Gamma (x + n)) (b.erase u)).prod)) := by
+      rw [Complex.Gamma_add_one _ h0]
+      ring
+    _ = 1 / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) ((u - 1) ::ₘ b.erase u)).prod) := by
+      rw [← div_div, div_self h0, Multiset.map_cons, Multiset.prod_cons]
+      ring
 
 @[simp]
 theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
@@ -298,6 +325,59 @@ theorem radius_regularizedHGFunSeries_ge_one (h : a.card = b.card + 1) :
   · obtain ⟨j, hj, k, h'⟩ := h'
     rw [radius_regularizedHGFunSeries_eq_top_of_finite hj h']
     simp
+
+private theorem regularizedHGFun_zero_singleton_eq_mul_add_mul_aux (u : ℂ) (n : ℕ) :
+    u * C 0 {u + 1} (n + 1) + C 0 {u + 2} n = C 0 {u} (n + 1) := by
+  suffices u * ((Gamma (u + 1 + (n + 1)))⁻¹ * ((↑ n !)⁻¹ * (n + 1 : ℂ)⁻¹)) +
+      (Gamma (u + 2 + n))⁻¹ * (↑ n !)⁻¹ = (Gamma (u + (n + 1)))⁻¹ * ((↑ n !)⁻¹ * (n + 1 : ℂ)⁻¹) by
+    simpa [regularizedHGFunCoeff, Nat.factorial_succ]
+  calc
+    _ = u * ((Gamma (u + (n + 1) + 1))⁻¹ * ((↑ n !)⁻¹ * (n + 1 : ℂ)⁻¹)) +
+        (Gamma (u + (n + 1) + 1))⁻¹ * (↑ n !)⁻¹ := by
+      ring_nf
+    _ = (Gamma (u + (n + 1) + 1))⁻¹ * (↑ n !)⁻¹ * (u * (n + 1 : ℂ)⁻¹ + 1) := by
+      ring
+    _ = (Gamma (u + (n + 1)))⁻¹ * ((↑ n !)⁻¹ * (n + 1 : ℂ)⁻¹) := by
+      by_cases h : u + (n + 1) = 0
+      · have h' : u * (n + 1 : ℂ)⁻¹ + 1 = 0 := by
+          rw [eq_neg_iff_add_eq_zero.mpr h, neg_mul, mul_inv_cancel₀ (by norm_cast), neg_add_cancel]
+        simp [h, h']
+      · rw [Gamma_add_one _ h, mul_inv]
+        field
+
+theorem regularizedHGFun_zero_singleton_eq_mul_add_mul (u : ℂ) (z : ℂ) :
+    regularizedHGFun 0 {u} z =
+      u * regularizedHGFun 0 {u + 1} z + z * regularizedHGFun 0 {u + 2} z := by
+  have hsummable1: Summable fun n ↦ z ^ n * C 0 {u + 1} n := by
+    simpa using (regularizedHGFunSeries 0 {u + 1}).summable (by simp)
+  have hsummable2 : Summable fun n ↦ u * (z ^ (n + 1) * C 0 {u + 1} (n + 1)) :=
+    (hsummable1.comp_injective (add_left_injective 1)).mul_left u
+  have hsummable3 : Summable fun n ↦ z * (z ^ n * C 0 {u + 2} n) := by
+    apply Summable.mul_left
+    simpa using (regularizedHGFunSeries 0 {u + 2}).summable (by simp)
+  have hsummable4: Summable fun n ↦ z ^ n * C 0 {u} n := by
+    simpa using (regularizedHGFunSeries 0 {u}).summable (by simp : z ∈ _)
+  symm
+  suffices u * ∑' n, z ^ n * C 0 {u + 1} n + z * ∑' n, z ^ n * C 0 {u + 2} n =
+      ∑' n, z ^ n * C 0 {u} n by
+    simpa [regularizedHGFun, FormalMultilinearSeries.sum]
+  calc
+    _ = u * C 0 {u + 1} 0 + (∑' n, u * (z ^ (n + 1) * C 0 {u + 1} (n + 1)) +
+        ∑' n, z * (z ^ n * C 0 {u + 2} n)) := by
+      rw [hsummable1.tsum_eq_zero_add]
+      simp [tsum_mul_left]
+      ring
+    _ = u * C 0 {u + 1} 0 + ∑' n, (u * (z ^ (n + 1) * C 0 {u + 1} (n + 1)) +
+        z * (z ^ n * C 0 {u + 2} n)) := by
+      rw [Summable.tsum_add hsummable2 hsummable3]
+    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * (u * C 0 {u + 1} (n + 1) + C 0 {u + 2} n) := by
+      congr with n
+      ring
+    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * C 0 {u} (n + 1) := by
+      congrm _ + ∑' n, _ * $(regularizedHGFun_zero_singleton_eq_mul_add_mul_aux u n)
+    _ = ∑' n, z ^ n * C 0 {u} n := by
+      conv_rhs => rw [hsummable4.tsum_eq_zero_add]
+      simpa using mul_regularizedHGFunCoeff_of_mem_right 0 0 (Multiset.mem_singleton_self (u + 1))
 
 theorem analyticOnNhd_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1) :
     AnalyticOnNhd ℂ (regularizedHGFun a b) (Metric.eball 0 1) := by

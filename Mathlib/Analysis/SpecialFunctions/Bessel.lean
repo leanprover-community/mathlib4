@@ -51,7 +51,7 @@ namespace Complex
 local notation "F₀₁(" a ")" => regularizedHGFun 0 {(a : ℂ)}
 
 /-- Bessel function of the first kind $J_a(x)$. -/
-@[pp_nodot]
+@[pp_nodot, dlmf 10.2.E2]
 noncomputable def besselJ (a x : ℂ) := (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2)
 
 local notation "J" => besselJ
@@ -117,5 +117,26 @@ theorem analyticOnNhd_besselJ_int (a : ℤ) : AnalyticOnNhd ℂ (J a) .univ :=
 
 theorem besselJ_zero (a : ℂ) : J a 0 = if a = 0 then 1 else 0 := by
   split_ifs with h <;> simp [besselJ, h, regularizedHGFunCoeff]
+
+theorem two_mul_self_mul_besselJ (a : ℂ) (x : ℂ) :
+    2 * a * J a x = x * J (a - 1) x + x * J (a + 1) x := by
+  by_cases h : x = 0
+  · simp [h, besselJ_zero]
+  have h : x / 2 ≠ 0 := by simp_all
+  unfold besselJ
+  calc
+    _ = 2 * (x / 2) ^ a * (a * F₀₁(a + 1) (-(x / 2) ^ 2)) := by
+      ring
+    _ = 2 * (x / 2) ^ a * F₀₁(a) (-(x / 2) ^ 2) +
+        2 * (x / 2) ^ a * (x / 2) ^ 2 * F₀₁(a + 2) (-(x / 2) ^ 2) := by
+      rw [← sub_eq_iff_eq_add.mpr (regularizedHGFun_zero_singleton_eq_mul_add_mul a (-(x / 2) ^ 2))]
+      ring_nf
+    _ = 2 * ((x / 2) ^ (a - 1) * (x / 2) ^ (1 : ℂ)) * F₀₁(a) (-(x / 2) ^ 2) +
+        2 * (x / 2) ^ (a + 1) * (x / 2) * F₀₁(a + 2) (-(x / 2) ^ 2) := by
+      rw [← cpow_add _ _ h, sub_add_cancel, cpow_add _ _ h, cpow_one]
+      ring
+    _ = _ := by
+      rw [cpow_one]
+      ring_nf
 
 end Complex
