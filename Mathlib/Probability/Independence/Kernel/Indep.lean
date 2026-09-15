@@ -531,7 +531,8 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : Kernel α Ω} {μ :
       rw [← ENNReal.tsum_mul_right]
       congr 1 with i
       rw [Set.inter_comm t2, ha i]
-    · intro i j hij
+    · rw [pairwise'_iff] at *
+      intro i j hij
       rw [Function.onFun, Set.inter_comm t2, Set.inter_comm t2]
       exact Disjoint.inter_left _ (Disjoint.inter_right _ (hf_disj hij))
     · exact fun i ↦ (h2 _ ht2).inter (h1 _ (hf_meas i))

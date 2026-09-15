@@ -117,7 +117,8 @@ theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K 
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
 
 protected theorem pairwise_disjoint :
-    Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by
+    Pairwise' fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by
+  rw [pairwise'_iff]
   rintro C D ne
   rw [Set.disjoint_iff]
   exact fun u ⟨uC, uD⟩ => ne (uC.choose_spec.symm.trans uD.choose_spec)

@@ -610,7 +610,7 @@ instance [T1Space α] : T0Space (Compacts α) :=
   isEmbedding_coe.t0Space
 
 instance [T2Space α] : T2Space (Compacts α) where
-  t2 K₁ K₂ h := by
+  t2 K₁ _ K₂ _ h := by
     wlog h' : ¬(K₁ ≤ K₂) generalizing K₁ K₂
     · grind [Disjoint.symm, le_antisymm]
     rw [SetLike.not_le_iff_exists] at h'

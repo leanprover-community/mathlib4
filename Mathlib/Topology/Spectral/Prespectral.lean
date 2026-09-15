@@ -53,7 +53,7 @@ instance (priority := low) [PrespectralSpace X] : LocallyCompactSpace X where
 
 open PrespectralSpace in
 instance (priority := low) [T2Space X] [PrespectralSpace X] : TotallySeparatedSpace X :=
-  totallySeparatedSpace_iff_exists_isClopen.mpr fun _ _ hxy ↦
+  totallySeparatedSpace_iff_exists_isClopen.mpr fun _ _ _  _ hxy ↦
     have ⟨U, ⟨hU₁, hU₂⟩, hxU, hyU⟩ :=
       isTopologicalBasis.exists_subset_of_mem_open hxy isClosed_singleton.isOpen_compl
     ⟨U, ⟨hU₂.isClosed, hU₁⟩, hxU, fun h ↦ hyU h rfl⟩

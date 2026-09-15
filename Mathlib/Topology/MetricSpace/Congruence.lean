@@ -55,7 +55,8 @@ lemma congruent_iff_edist_eq :
 /-- Congruence holds if and only if all extended distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_edist_eq :
-    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂) := by
+    Congruent v₁ v₂ ↔ Pairwise' fun i₁ i₂ ↦ edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂) := by
+  rw [pairwise'_iff]
   refine ⟨fun h ↦ fun _ _ _ ↦ h _ _, fun h ↦ fun i₁ i₂ ↦ ?_⟩
   by_cases hi : i₁ = i₂
   · simp [hi]
@@ -141,7 +142,7 @@ lemma congruent_iff_nndist_eq :
 /-- Congruence holds if and only if all non-negative distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_nndist_eq :
-    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂) := by
+    Congruent v₁ v₂ ↔ Pairwise' fun i₁ i₂ ↦ nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂) := by
   simp_rw [congruent_iff_pairwise_edist_eq, edist_nndist]
   exact_mod_cast Iff.rfl
 
@@ -154,7 +155,7 @@ lemma congruent_iff_dist_eq :
 /-- Congruence holds if and only if all non-negative distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_dist_eq :
-    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂) := by
+    Congruent v₁ v₂ ↔ Pairwise' fun i₁ i₂ ↦ dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂) := by
   simp_rw [congruent_iff_pairwise_nndist_eq, dist_nndist]
   exact_mod_cast Iff.rfl
 

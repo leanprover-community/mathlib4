@@ -217,7 +217,8 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
 open scoped Function in -- required for scoped `on` notation
-private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
+private theorem restrictNonposSeq_disjoint : Pairwise' (Disjoint on restrictNonposSeq s i) := by
+  rw [pairwise'_iff]
   intro n m h
   rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
   rcases lt_or_gt_of_ne h with (h | h)
@@ -257,10 +258,10 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false]
       exact fun h' => False.elim (h h')
   · intro; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
-  · intro a b hab
+  · intro a _ b _ hab
     refine Set.disjoint_iUnion_left.mpr fun _ => ?_
     refine Set.disjoint_iUnion_right.mpr fun _ => ?_
-    exact restrictNonposSeq_disjoint hab
+    exact pairwise'_apply restrictNonposSeq_disjoint hab
   · apply Set.iUnion_subset
     intro a x
     simp only [and_imp, exists_prop, Set.mem_iUnion]

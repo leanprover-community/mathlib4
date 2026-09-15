@@ -201,7 +201,7 @@ theorem volume_box (ν : ι → ℤ) :
 theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs₂ : volume s ≠ ⊤) :
     Set.Finite {ν : ι → ℤ | ↑(box n ν) ⊆ s} := by
   refine (Measure.finite_const_le_meas_of_disjoint_iUnion₀ volume (ε := 1 / n ^ card ι)
-    (by simp) (As := fun ν : ι → ℤ ↦ (box n ν) ∩ s) (fun ν ↦ ?_) (fun _ _ h ↦ ?_) ?_).subset
+    (by simp) (As := fun ν : ι → ℤ ↦ (box n ν) ∩ s) (fun ν ↦ ?_) (fun _ _ _ _ h ↦ ?_) ?_).subset
       (fun _ hν ↦ ?_)
   · refine NullMeasurableSet.inter ?_ hs₁
     exact (box n ν).measurableSet_coe.nullMeasurableSet

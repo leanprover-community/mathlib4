@@ -80,11 +80,12 @@ open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. -/
 def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) (v : n → M₁) : Prop :=
-  Pairwise ((fun n m => B n m = 0) on v)
+  Pairwise' ((fun n m => B n m = 0) on v)
 
 theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {v : n → M₁} :
-    B.IsOrthoᵢ v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
-  Iff.rfl
+    B.IsOrthoᵢ v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 := by
+  unfold IsOrthoᵢ
+  rw [pairwise'_iff]
 
 theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) {v : n → M₁} :
     B.IsOrthoᵢ v ↔ B.flip.IsOrthoᵢ v := by
@@ -759,7 +760,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   suffices B (v i) (v j) = 0 by rw [this, smul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
-  · exact h hij
+  · exact h (Set.mem_univ i) (Set.mem_univ j) hij
 
 /-- An orthogonal basis with respect to a right-separating bilinear map has no self-orthogonal
 elements. -/
@@ -789,7 +790,7 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M �
     · specialize h i
       contradiction
   · intro j _hj hij
-    replace hij : B (v j) (v i) = 0 := hO hij
+    replace hij : B (v j) (v i) = 0 := hO (Set.mem_univ j) (Set.mem_univ i) hij
     rw [hij, RingHom.id_apply, smul_zero]
   · intro hi
     replace hi : vi i = 0 := Finsupp.notMem_support_iff.mp hi

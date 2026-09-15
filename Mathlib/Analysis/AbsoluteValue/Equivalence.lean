@@ -235,13 +235,13 @@ absolute values, then for any `i` there is some `a : R` such that `1 < v i a` an
 `v j a < 1` for all `j ≠ i`.
 -/
 theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
-    (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
+    (hv : Pairwise' fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
   classical
   have := Fintype.ofFinite ι
   let P (ι : Type _) [Fintype ι] : Prop :=
     ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
-      (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
+      (Pairwise' fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
   -- Use strong induction on the index.
   revert hv h; refine induction_subsingleton_or_nontrivial (P := P) ι (fun ι _ _ v h hv i ↦ ?_)
     (fun ι _ _ ih v h hv i ↦ ?_) v
@@ -251,6 +251,7 @@ theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
   · rcases eq_or_ne (card ι) 2 with (hc | hc)
     · -- If `ι` has two elements this is `exists_one_lt_lt_one_of_not_isEquiv`.
       let ⟨j, hj⟩ := (Nat.card_eq_two_iff' i).1 <| card_eq_nat_card ▸ hc
+      rw [pairwise'_iff] at hv
       let ⟨a, ha⟩ := (v i).exists_one_lt_lt_one_of_not_isEquiv (h i) (h j) (hv hj.1.symm)
       exact ⟨a, ha.1, fun _ h ↦ hj.2 _ h ▸ ha.2⟩
     have hlt : 2 < card ι := Nat.lt_of_le_of_ne (one_lt_card_iff_nontrivial.2 ‹_›) hc.symm
@@ -406,7 +407,7 @@ This is the abstract weak approximation theorem; see
 -/
 theorem denseRange_algebraMap_pi {ι : Type*} [Finite ι] {v : ι → AbsoluteValue F ℝ}
     (h : ∀ i, (v i).IsNontrivial)
-    (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
+    (hv : Pairwise' fun i j ↦ ¬(v i).IsEquiv (v j)) :
     DenseRange <| algebraMap F ((i : ι) → WithAbs (v i)) := by
   classical
   have := Fintype.ofFinite ι

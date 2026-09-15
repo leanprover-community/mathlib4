@@ -659,7 +659,8 @@ lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : �
   exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), hp₁.rotate _⟩
 
 lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
-    G.IsAcyclic ↔ Pairwise (¬G.IsEdgeReachable 2 · ·) := by
+    G.IsAcyclic ↔ Pairwise' (¬G.IsEdgeReachable 2 · ·) := by
+  rw [pairwise'_iff]
   refine ⟨fun h _ _ hne he ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_isCycle_of_two_le_isEdgeReachable hne le_rfl he
     exact h w hw

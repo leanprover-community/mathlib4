@@ -917,7 +917,8 @@ noncomputable def directProductOfNormal [Finite G]
   -- “The” Sylow subgroup for p
   let P : ∀ p, Sylow p G := default
   have : ∀ p, Fintype (P p) := fun p ↦ Fintype.ofFinite (P p)
-  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
+  have hcomm : Pairwise' fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
+    rw [pairwise'_iff]
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     have hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
     have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
@@ -937,6 +938,7 @@ noncomputable def directProductOfNormal [Finite G]
   constructor
   · apply Subgroup.injective_noncommPiCoprod_of_iSupIndep
     apply independent_of_coprime_order hcomm
+    rw [pairwise'_iff]
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     have hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
     have hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)

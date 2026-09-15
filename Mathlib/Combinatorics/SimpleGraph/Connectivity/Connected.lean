@@ -720,8 +720,8 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
 
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
-    Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by
-  simp_rw [Set.disjoint_left]
+    Pairwise' fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by
+  simp_rw [Set.disjoint_left, pairwise'_iff]
   intro _ _ h a hsx hsy
   rw [ConnectedComponent.mem_supp_iff] at hsx hsy
   rw [hsx] at hsy

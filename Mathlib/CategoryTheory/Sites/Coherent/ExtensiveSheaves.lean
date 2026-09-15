@@ -94,7 +94,7 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
         Presieve.preservesProduct_of_isSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
-        (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
+        (pairwise'_mk (FinitaryExtensive.isPullback_initial_to_sigma_ι Z))
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
     · exact preservesLimit_of_iso_diagram F i.symm
     · apply hF

@@ -350,7 +350,7 @@ theorem real_inner_self_pos {x : F} : 0 < ⟪x, x⟫_ℝ ↔ x ≠ 0 := re_inner
 /-- A family of vectors is linearly independent if they are nonzero
 and orthogonal. -/
 theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E} (hz : ∀ i, v i ≠ 0)
-    (ho : Pairwise fun i j => ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
+    (ho : Pairwise' fun i j => ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
   rw [linearIndependent_iff']
   intro s g hg i hi
   have h' : g i * ⟪v i, v i⟫ = ⟪v i, ∑ j ∈ s, g j • v j⟫ := by
@@ -358,7 +358,8 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
     symm
     convert! Finset.sum_eq_single (M := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
-    · intro j _hj hji
+    · rw [pairwise'_iff] at ho
+      intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
     · exact fun h => False.elim (h hi)
   simpa [hg, hz] using h'

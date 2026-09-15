@@ -342,7 +342,7 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
   obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 E
   exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
     (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
-    fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
+    fun x _ y _ hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
 
 variable [ProperSpace 𝕜]
 

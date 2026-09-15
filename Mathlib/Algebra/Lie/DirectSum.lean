@@ -176,7 +176,7 @@ variable {R L ι}
 then this map is a morphism of Lie algebras. -/
 @[simps]
 def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L']
-    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : Pairwise fun i j => ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
+    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : Pairwise' fun i j => ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
     (⨁ i, L i) →ₗ⁅R⁆ L' :=
   { toModule R ι L' fun i => (f i : L i →ₗ[R] L') with
     toFun := toModule R ι L' fun i => (f i : L i →ₗ[R] L')
@@ -206,7 +206,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
       · simp_rw [lie_of_same, toAddMonoid_of, LinearMap.toAddMonoidHom_coe, LieHom.coe_toLinearMap,
           LieHom.map_lie]
       · simp_rw [lie_of_of_ne _ hij.symm, map_zero, LinearMap.toAddMonoidHom_coe,
-          LieHom.coe_toLinearMap, hf hij.symm x y] }
+          LieHom.coe_toLinearMap, pairwise'_apply hf hij.symm x y] }
 
 end Algebras
 

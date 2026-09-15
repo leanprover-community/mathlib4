@@ -26,7 +26,7 @@ section TotallySeparated
 
 /-- A totally separated space is T2. -/
 instance TotallySeparatedSpace.t2Space [TotallySeparatedSpace X] : T2Space X where
-  t2 x y h := by
+  t2 x _ y _ h := by
     obtain ⟨u, v, h₁, h₂, h₃, h₄, _, h₅⟩ := isTotallySeparated_univ trivial trivial h
     exact ⟨u, v, h₁, h₂, h₃, h₄, h₅⟩
 

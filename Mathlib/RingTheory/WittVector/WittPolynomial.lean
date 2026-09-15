@@ -167,7 +167,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
-    intro a b h
+    intro a _ b _ h
     apply disjoint_singleton_left.mpr
     rwa [mem_singleton]
 

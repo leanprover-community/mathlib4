@@ -119,18 +119,18 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   grind [Set.bot_eq_empty (α := α), addContent_empty]
 
 lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
-    (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
+    (h_dis : Pairwise' (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
     m (⋃ i, f i) = ∑ i, m (f i) := by
   convert! addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
   · simp
   · simpa
-  · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
+  · simpa [Set.PairwiseDisjoint, Set.pairwise'_univ]
   · simpa
 
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
-  convert! addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  convert! addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i _ j _ hij ↦ ?_) ?_ using 2
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
@@ -305,7 +305,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
   have h1 : ∀ j, f j ∈ supClosure C :=
     hC.isSetRing_supClosure.disjointed_mem fun j =>
       subset_supClosure <| h_ss <| (J.equivFin.symm j).2
-  have h2 : Pairwise (Disjoint on f) := disjoint_disjointed _
+  have h2 : Pairwise' (Disjoint on f) := disjoint_disjointed _
   have h3 : ⋃ i, f i ∈ supClosure C :=
     supClosed_supClosure.iSup_mem (subset_supClosure hC.empty_mem) h1
   grw [← m.supClosure_apply_of_mem hC ht,
@@ -327,9 +327,9 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hC : IsSetSemiring C)
     -- TODO: `m_subadd` is in fact equivalent to `m.IsSigmaSubadditive`.
     (m_subadd : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : ⋃ i, f i ∈ C)
-      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
+      (_hf_disj : Pairwise' (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
-    (hf_disj : Pairwise (Disjoint on f)) :
+    (hf_disj : Pairwise' (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
   refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
@@ -345,7 +345,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     obtain ⟨i, _, rfl⟩ := hs
     obtain ⟨j, _, rfl⟩ := ht
     have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst; exact hst rfl
-    exact hf_disj hij
+    exact pairwise'_apply hf_disj hij
   · simp only [Finset.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     exact fun i _ ↦ subset_iUnion _ i
 
@@ -353,7 +353,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
 theorem addContent_iUnion_eq_tsum_of_disjoint_of_IsSigmaSubadditive {m : AddContent ℝ≥0∞ C}
     (hC : IsSetSemiring C) (m_subadd : m.IsSigmaSubadditive)
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
-    (hf_disj : Pairwise (Disjoint on f)) :
+    (hf_disj : Pairwise' (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) :=
   addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le hC
     (fun _ hf hf_Union _ ↦ m_subadd hf hf_Union) f hf hf_Union hf_disj
@@ -511,7 +511,7 @@ lemma addContent_biUnion_eq {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     exact fun j hjS ↦ hS.2 j hjS (ne_of_mem_of_not_mem hjS hiS).symm
 
 lemma addContent_accumulate (m : AddContent G C) (hC : IsSetRing C)
-    {s : ℕ → Set α} (hs_disj : Pairwise (Disjoint on s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
+    {s : ℕ → Set α} (hs_disj : Pairwise' (Disjoint on s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
       m (Set.accumulate s n) = ∑ i ∈ Finset.range (n + 1), m (s i) := by
   induction n with
   | zero => simp
@@ -594,7 +594,7 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
     (hm_tendsto : ∀ ⦃s : ℕ → Set α⦄ (_ : ∀ n, s n ∈ C),
       Antitone s → (⋂ n, s n) = ∅ → Tendsto (fun n ↦ m (s n)) atTop (𝓝 0))
     ⦃f : ℕ → Set α⦄ (hf : ∀ i, f i ∈ C) (hUf : (⋃ i, f i) ∈ C)
-    (h_disj : Pairwise (Disjoint on f)) :
+    (h_disj : Pairwise' (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (Set.accumulate f n)`
   let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.accumulate f n
@@ -623,7 +623,7 @@ sets tends to the content of the union. -/
 theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum
     {m : AddContent ℝ≥0∞ C} (hC : IsSetRing C)
     (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
-      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i))
+      (_hf_disj : Pairwise' (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i))
     ⦃f : ℕ → Set α⦄ (hf_mono : Monotone f) (hf : ∀ i, f i ∈ C) (hf_Union : ⋃ i, f i ∈ C) :
     Tendsto (fun n ↦ m (f n)) atTop (𝓝 (m (⋃ i, f i))) := by
   rw [← iUnion_disjointed, m_iUnion _ (hC.disjointed_mem hf) (by rwa [iUnion_disjointed])
@@ -639,7 +639,7 @@ theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum
 /-- If an additive content is σ-additive on a set ring, then it is σ-subadditive. -/
 theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum {m : AddContent ℝ≥0∞ C} (hC : IsSetRing C)
     (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
-      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i)) :
+      (_hf_disj : Pairwise' (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i)) :
     m.IsSigmaSubadditive := by
   intro f hf hf_Union
   have h_tendsto : Tendsto (fun n ↦ m (partialSups f n)) atTop (𝓝 (m (⋃ i, f i))) := by
@@ -658,7 +658,7 @@ theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum {m : AddContent ℝ≥0�
 then it is countably additive on pairwise disjoint sequences. -/
 theorem addContent_iUnion_eq_tsum_of_addContent_iUnion_eq_iSup
     (hC : IsSetRing C) (m : AddContent ℝ≥0∞ C)
-    {s : ℕ → Set α} (hd : Pairwise (Disjoint on s)) (hs : ∀ i, s i ∈ C)
+    {s : ℕ → Set α} (hd : Pairwise' (Disjoint on s)) (hs : ∀ i, s i ∈ C)
     (hm_iSup : ∀ ⦃s : ℕ → Set α⦄, (∀ n, s n ∈ C) → Monotone s → m (⋃ n, s n) = ⨆ n, m (s n)) :
     m (⋃ i, s i) = ∑' i, m (s i) :=
   calc

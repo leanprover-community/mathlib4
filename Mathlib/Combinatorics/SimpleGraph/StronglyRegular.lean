@@ -51,7 +51,7 @@ structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n
   regular : G.IsRegularOfDegree k
   of_adj : ∀ v w, G.Adj v w → Fintype.card (G.commonNeighbors v w) = ℓ
-  of_not_adj : Pairwise fun v w ↦ ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
+  of_not_adj : Pairwise' fun v w ↦ ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
 
 variable {G} {n k ℓ μ : ℕ}
 
@@ -61,7 +61,7 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
   card := rfl
   regular := .bot
   of_adj _ _ h := h.elim
-  of_not_adj v w _ := by
+  of_not_adj v _ w _ _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
     simp
@@ -73,7 +73,7 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
     intro u v
     by_contra! hc
     obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
-    have h := h.of_not_adj hn ha
+    have h := pairwise'_apply h.of_not_adj hn ha
     simp_all
   · by_contra
     have := not_subsingleton V
@@ -88,7 +88,7 @@ theorem IsSRGWith.top :
   card := rfl
   regular := IsRegularOfDegree.top
   of_adj _ _ := card_commonNeighbors_top
-  of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
+  of_not_adj v _ w _ h h' := (h' ((top_adj v w).2 h)).elim
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
@@ -107,7 +107,7 @@ adjacent to either `v` or `w` when `¬G.Adj v w`. So it's the cardinality of
 theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
     (hne : v ≠ w) (ha : ¬G.Adj v w) :
     #(G.neighborFinset v ∪ G.neighborFinset w) = 2 * k - μ := by
-  rw [← h.of_not_adj hne ha]
+  rw [← pairwise'_apply h.of_not_adj hne ha]
   exact h.card_neighborFinset_union_eq
 
 theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
@@ -161,7 +161,7 @@ theorem IsSRGWith.compl (h : G.IsSRGWith n k ℓ μ) :
   card := h.card
   regular := h.compl_is_regular
   of_adj _ _ := h.card_commonNeighbors_eq_of_adj_compl
-  of_not_adj _ _ := h.card_commonNeighbors_eq_of_not_adj_compl
+  of_not_adj _ _ _ _ := h.card_commonNeighbors_eq_of_not_adj_compl
 
 /-- The parameters of a strongly regular graph with at least one vertex satisfy
 `k * (k - ℓ - 1) = (n - k - 1) * μ`. -/
@@ -193,7 +193,7 @@ theorem IsSRGWith.param_eq
     simp_rw [neighborFinset_compl, mem_sdiff, mem_compl, mem_singleton, mem_neighborFinset,
       ← Ne.eq_def] at hw
     simp_rw [bipartiteBelow, adj_comm, ← mem_neighborFinset, filter_mem_eq_inter,
-      neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj hw.2.symm hw.1,
+      neighborFinset_def, ← Set.toFinset_inter, ← pairwise'_apply h.of_not_adj hw.2.symm hw.1,
       ← Set.toFinset_card]
     congr!
 
@@ -217,6 +217,6 @@ theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ 
       simp only [ha, ite_true, ite_false, add_zero, zero_add, nsmul_eq_mul, smul_zero, mul_one,
         not_true_eq_false, not_false_eq_true, and_false, and_self]
     · rw [h.of_adj v w ha]
-    · rw [h.of_not_adj hn ha]
+    · rw [pairwise'_apply h.of_not_adj hn ha]
 
 end SimpleGraph

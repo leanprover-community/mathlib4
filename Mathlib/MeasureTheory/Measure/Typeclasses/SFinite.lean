@@ -221,7 +221,7 @@ theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure
 finitely many members of the union whose measure exceeds any given positive number. -/
 theorem finite_const_le_meas_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] (μ : Measure α)
     {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
-    (As_disj : Pairwise (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    (As_disj : Pairwise' (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Finite { i : ι | ε ≤ μ (As i) } :=
   ENNReal.finite_const_le_of_tsum_ne_top
     (ne_top_of_le_ne_top Union_As_finite (tsum_meas_le_meas_iUnion_of_disjoint₀ μ As_mble As_disj))
@@ -231,10 +231,10 @@ theorem finite_const_le_meas_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace
 finitely many members of the union whose measure exceeds any given positive number. -/
 theorem finite_const_le_meas_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α] (μ : Measure α)
     {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    (As_disj : Pairwise' (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Finite { i : ι | ε ≤ μ (As i) } :=
   finite_const_le_meas_of_disjoint_iUnion₀ μ ε_pos (fun i ↦ (As_mble i).nullMeasurableSet)
-    (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)) Union_As_finite
+    (fun _ _ _ _ h ↦ Disjoint.aedisjoint (pairwise'_apply As_disj h)) Union_As_finite
 
 /-- If all elements of an infinite set have measure uniformly separated from zero,
 then the set has infinite measure. -/
@@ -245,14 +245,14 @@ theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]
     ∞ = ∑' _ : s, ε := (ENNReal.tsum_const_eq_top_of_ne_zero hne).symm
     _ ≤ ∑' x : s, μ {x.1} := ENNReal.tsum_le_tsum fun x ↦ hε x x.2
     _ ≤ μ (⋃ x : s, {x.1}) := tsum_meas_le_meas_iUnion_of_disjoint _
-      (fun _ ↦ MeasurableSet.singleton _) fun x y hne ↦ by simpa [Subtype.val_inj]
+      (fun _ ↦ MeasurableSet.singleton _) fun x y hne ↦ by simp [Subtype.val_inj]
     _ = μ s := by simp
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
 countably many members of the union whose measure is positive. -/
 theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ : MeasurableSpace α}
     (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
-    (As_disj : Pairwise (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    (As_disj : Pairwise' (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
   set posmeas := { i : ι | 0 < μ (As i) } with posmeas_def
   rcases exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1) with
@@ -272,16 +272,16 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ 
 countably many members of the union whose measure is positive. -/
 theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} {_ : MeasurableSpace α}
     (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    (As_disj : Pairwise' (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Countable { i : ι | 0 < μ (As i) } :=
   countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
-    ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))) Union_As_finite
+    ((fun _ _ _ _ h ↦ Disjoint.aedisjoint (pairwise'_apply As_disj h))) Union_As_finite
 
 /-- In an s-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
-    (As_disj : Pairwise (AEDisjoint μ on As)) :
+    (As_disj : Pairwise' (AEDisjoint μ on As)) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
   rw [← sum_sfiniteSeq μ] at As_disj As_mble ⊢
   have obs : { i : ι | 0 < sum (sfiniteSeq μ) (As i) }
@@ -297,25 +297,25 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpa
   refine countable_iUnion fun n ↦ ?_
   apply countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀
   · exact fun i ↦ (As_mble i).mono (le_sum _ _)
-  · exact fun i j hij ↦ AEDisjoint.of_le (As_disj hij) (le_sum _ _)
+  · exact fun i _ j _ hij ↦ AEDisjoint.of_le (pairwise'_apply As_disj hij) (le_sum _ _)
   · exact measure_ne_top _ (⋃ i, As i)
 
 /-- In an s-finite space, among disjoint measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) : Set.Countable { i : ι | 0 < μ (As i) } :=
+    (As_disj : Pairwise' (Disjoint on As)) : Set.Countable { i : ι | 0 < μ (As i) } :=
   countable_meas_pos_of_disjoint_iUnion₀ (fun i ↦ (As_mble i).nullMeasurableSet)
-    ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)))
+    ((fun _ _ _ _ h ↦ Disjoint.aedisjoint (pairwise'_apply As_disj h)))
 
 theorem countable_meas_level_set_pos₀ {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : NullMeasurable g μ) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } := by
-  have level_sets_disjoint : Pairwise (Disjoint on fun t : β => { a : α | g a = t }) :=
-    fun s t hst => Disjoint.preimage g (disjoint_singleton.mpr hst)
+  have level_sets_disjoint : Pairwise' (Disjoint on fun t : β => { a : α | g a = t }) :=
+    fun s _ t _ hst => Disjoint.preimage g (disjoint_singleton.mpr hst)
   exact Measure.countable_meas_pos_of_disjoint_iUnion₀
     (fun b => g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b))
-    ((fun _ _ h ↦ Disjoint.aedisjoint (level_sets_disjoint h)))
+    ((fun _ _ _ _ h ↦ Disjoint.aedisjoint (pairwise'_apply level_sets_disjoint h)))
 
 theorem countable_meas_level_set_pos {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
@@ -734,7 +734,7 @@ theorem FiniteSpanningSetsIn.disjointed_set_eq {μ : Measure α}
 theorem exists_eq_disjoint_finiteSpanningSetsIn (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     ∃ (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s })
       (T : ν.FiniteSpanningSetsIn { s | MeasurableSet s }),
-      S.set = T.set ∧ Pairwise (Disjoint on S.set) :=
+      S.set = T.set ∧ Pairwise' (Disjoint on S.set) :=
   let S := (μ + ν).toFiniteSpanningSetsIn.disjointed
   ⟨S.ofLE (Measure.le_add_right le_rfl), S.ofLE (Measure.le_add_left le_rfl), rfl,
     disjoint_disjointed _⟩

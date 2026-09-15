@@ -597,9 +597,9 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     have h_eq : ∀ a, Prod.mk a ⁻¹' ⋃ i, f' i = ⋃ i, Prod.mk a ⁻¹' f' i := by
       simp only [preimage_iUnion, implies_true]
     simp_rw [h_eq]
-    have h_disj : ∀ a, Pairwise (Disjoint on fun i ↦ Prod.mk a ⁻¹' f' i) := by
-      intro _ _ _ hij
-      exact Disjoint.preimage _ (hf_disj hij)
+    have h_disj : ∀ a, Pairwise' (Disjoint on fun i ↦ Prod.mk a ⁻¹' f' i) := by
+      intro _ _ _ _ _ hij
+      exact Disjoint.preimage _ (pairwise'_apply hf_disj hij)
     calc ∫⁻ b, hf.toKernel f (a, b) (⋃ i, Prod.mk b ⁻¹' f' i) ∂(ν a)
       = ∫⁻ b, ∑' i, hf.toKernel f (a, b) (Prod.mk b ⁻¹' f' i) ∂(ν a) := by
           congr with x : 1

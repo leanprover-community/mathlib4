@@ -402,7 +402,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   /- By Chinese remainder theorem for modules, there exist `n` elements `b i : M` that reduces
     to `b' P i` modulo each maximal ideal `P`. -/
   choose b hb using fun i ↦ pi_tensorProductMk_quotient_surjective M _
-    (fun _ _ ne ↦ isCoprime_of_isMaximal (MaximalSpectrum.ext_iff.ne.mp ne)) (b' · i)
+    (fun _ _ _ _ ne ↦ isCoprime_of_isMaximal (MaximalSpectrum.ext_iff.ne.mp ne)) (b' · i)
   /- It suffices to show the linear map `Rⁿ → M` induced by `b` is bijective, for which
     it suffices to show `Rₚⁿ → Rₚ ⊗[R] M` is bijective for each maximal ideal `P`. -/
   refine ⟨⟨.symm <| .ofBijective (Finsupp.linearCombination R b) <| bijective_of_isLocalized_maximal

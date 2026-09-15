@@ -905,18 +905,18 @@ theorem inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Ideal R)
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`.
 See `IsDedekindDomain.quotientEquivPiOfProdEq` for the version in terms of `Ideal R`. -/
 def HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I : Ideal R)
-    (P : ι → HeightOneSpectrum R) (e : ι → ℕ) (coprime : Pairwise fun i j => P i ≠ P j)
+    (P : ι → HeightOneSpectrum R) (e : ι → ℕ) (coprime : Pairwise' fun i j => P i ≠ P j)
     (prod_eq : ∏ i, (P i).asIdeal ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ (P i).asIdeal ^ e i :=
   (Ideal.quotEquivOfEq
     (by simp [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ,
       ← HeightOneSpectrum.inf_pow_eq_prod _ _ _ (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij =>
-      HeightOneSpectrum.isCoprime_pow_of_ne _ _ (coprime hij) _ _
+    Ideal.quotientInfRingEquivPiQuotient _ fun i _ j _ hij =>
+      HeightOneSpectrum.isCoprime_pow_of_ne _ _ (pairwise'_apply coprime hij) _ _
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
 def quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → Ideal R)
-    (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : Pairwise fun i j => P i ≠ P j)
+    (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : Pairwise' fun i j => P i ≠ P j)
     (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
   HeightOneSpectrum.quotientEquivPiOfProdEq I
     (fun i ↦ ⟨P i, (isPrime_of_prime (prime i)), (prime i).ne_zero⟩) e (by grind) prod_eq
@@ -927,7 +927,7 @@ def quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
     R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (Multiset.count ↑P (factors I)) :=
   quotientEquivPiOfProdEq _ _ _
     (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.prop))
-    (fun _ _ hij => Subtype.coe_injective.ne hij)
+    (fun _ _ _ _ hij => Subtype.coe_injective.ne hij)
     (calc
       (∏ P : (factors I).toFinset, (P : Ideal R) ^ (factors I).count (P : Ideal R)) =
           ∏ P ∈ (factors I).toFinset, P ^ (factors I).count P :=
@@ -952,7 +952,7 @@ def quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
   quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
-    (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
+    (fun i => prime i i.2) (fun i _ j _ h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
     (_root_.trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,

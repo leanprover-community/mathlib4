@@ -169,7 +169,7 @@ lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ]
   exact ENNReal.add_lt_add_of_lt_of_le (by finiteness) h_lt (hμν sᶜ) |>.not_ge h_univ.symm.le
 
 theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
-    (hf₁ : ∀ i : ℕ, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
+    (hf₁ : ∀ i : ℕ, MeasurableSet (f i)) (hf₂ : Pairwise' (Disjoint on f)) :
     Summable fun x => μ.real (f x) := by
   apply ENNReal.summable_toReal
   rw [← MeasureTheory.measure_iUnion hf₂ hf₁]
@@ -190,7 +190,7 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
 lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
     {Es : ℕ → Set X} (Es_mble : ∀ i, NullMeasurableSet (Es i) μ)
-    (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
+    (Es_disj : Pairwise' fun n m ↦ Disjoint (Es n) (Es m)) :
     Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
   have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
     fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
@@ -198,6 +198,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     apply subset_antisymm _ (empty_subset _)
     intro x hx
     simp only [mem_iInter, mem_iUnion, exists_prop] at hx
+    rw [pairwise'_iff] at Es_disj
     obtain ⟨j, _, x_in_Es_j⟩ := hx 0
     obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j + 1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k

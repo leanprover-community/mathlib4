@@ -168,7 +168,7 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
   have (I : Spec) : IsSemisimpleRing (R ⧸ I.1) := let _ := Ideal.Quotient.field I.1; inferInstance
   have : IsSemisimpleRing (R ⧸ Ring.jacobson R) := by
     rw [eq, nilradical_eq_sInf, sInf_eq_iInf']
-    exact (Ideal.quotientInfRingEquivPiQuotient _ fun I J ne ↦
+    exact (Ideal.quotientInfRingEquivPiQuotient _ fun I _ J _ ne ↦
       Ideal.isCoprime_of_isMaximal <| Subtype.coe_ne_coe.mpr ne).symm.isSemisimpleRing
   have : IsSemiprimaryRing R := ⟨this, eq ▸ IsNoetherianRing.isNilpotent_nilradical R⟩
   IsSemiprimaryRing.isNoetherian_iff_isArtinian.mp ‹_›

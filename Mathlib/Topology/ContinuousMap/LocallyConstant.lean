@@ -67,7 +67,7 @@ def toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y
 theorem separatesPoints_range_toContinuousMapAlgHom (R : Type*) [CommSemiring R]
     [TotallySeparatedSpace X] [Semiring Y] [Algebra R Y] [IsTopologicalSemiring Y] [Nontrivial Y] :
     (toContinuousMapAlgHom R : _ →ₐ[R] C(X, Y)).range.SeparatesPoints := fun _ _ hxy ↦
-  have ⟨_, hU, _, _⟩ := exists_isClopen_of_totally_separated hxy
+  have ⟨_, hU, _, _⟩ := pairwise'_apply exists_isClopen_of_totally_separated hxy
   ⟨charFn Y hU, by simp_all [charFn]⟩
 
 end LocallyConstant

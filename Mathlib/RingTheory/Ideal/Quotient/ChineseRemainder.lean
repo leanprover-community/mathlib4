@@ -18,7 +18,7 @@ open Function
 
 variable {R : Type*} [CommRing R] {ι : Type*}
 variable (M : Type*) [AddCommGroup M] [Module R M]
-variable (I : ι → Ideal R) (hI : Pairwise (IsCoprime on I))
+variable (I : ι → Ideal R) (hI : Pairwise' (IsCoprime on I))
 
 namespace Ideal
 

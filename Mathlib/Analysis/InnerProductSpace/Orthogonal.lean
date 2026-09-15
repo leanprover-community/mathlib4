@@ -233,10 +233,10 @@ lemma orthogonal_closure' (K : Submodule 𝕜 E) (x : E) :
 
 theorem orthogonalFamily_self :
     OrthogonalFamily 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ
-  | true, true => absurd rfl
-  | true, false => fun _ x y => inner_right_of_mem_orthogonal x.prop y.prop
-  | false, true => fun _ x y => inner_left_of_mem_orthogonal y.prop x.prop
-  | false, false => absurd rfl
+  | true, _, true, _ => absurd rfl
+  | true, _, false, _  => fun _ x y => inner_right_of_mem_orthogonal x.prop y.prop
+  | false, _, true, _ => fun _ x y => inner_left_of_mem_orthogonal y.prop x.prop
+  | false, _, false, _ => absurd rfl
 
 end Submodule
 
@@ -400,8 +400,9 @@ end Submodule
 
 open scoped Function in -- required for scoped `on` notation
 theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
-    (OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) ↔ Pairwise ((· ⟂ ·) on V) :=
-  forall₃_congr fun _i _j _hij =>
+    (OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) ↔ Pairwise' ((· ⟂ ·) on V) := by
+  simp only [OrthogonalFamily, pairwise'_iff]
+  exact forall₃_congr fun _i _j _hij =>
     Subtype.forall.trans <|
       forall₂_congr fun _x _hx => Subtype.forall.trans <|
         forall₂_congr fun _y _hy => inner_eq_zero_symm
@@ -412,7 +413,7 @@ alias ⟨OrthogonalFamily.pairwise, OrthogonalFamily.of_pairwise⟩ := orthogona
 theorem OrthogonalFamily.isOrtho {ι} {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i j : ι} (hij : i ≠ j) :
     V i ⟂ V j :=
-  hV.pairwise hij
+  pairwise'_apply hV.pairwise hij
 
 namespace ClosedSubmodule
 

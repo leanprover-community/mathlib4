@@ -94,7 +94,7 @@ we have an associated orthogonal family of one-dimensional subspaces of `E`, whi
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
 def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddCommGroup (G i)]
     [∀ i, InnerProductSpace 𝕜 (G i)] (V : ∀ i, G i →ₗᵢ[𝕜] E) : Prop :=
-  Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
+  Pairwise' fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 
 variable {𝕜}
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
@@ -102,7 +102,7 @@ variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProdu
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :
     OrthogonalFamily 𝕜 (fun _i : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
-  fun i j hij a b => by simp [inner_smul_left, inner_smul_right, hv.2 hij]
+  fun i _ j _ hij a b => by simp [inner_smul_left, inner_smul_right, pairwise'_apply hv.2 hij]
 
 section
 variable (hV : OrthogonalFamily 𝕜 G V)
@@ -112,7 +112,7 @@ theorem OrthogonalFamily.eq_ite [DecidableEq ι] {i j : ι} (v : G i) (w : G j) 
     ⟪V i v, V j w⟫ = ite (i = j) ⟪V i v, V j w⟫ 0 := by
   split_ifs with h
   · rfl
-  · exact hV h v w
+  · exact hV (Set.mem_univ i) (Set.mem_univ j) h v w
 
 theorem OrthogonalFamily.inner_right_dfinsupp
     [∀ (i) (x : G i), Decidable (x ≠ 0)] [DecidableEq ι] (l : ⨁ i, G i) (i : ι) (v : G i) :
@@ -163,7 +163,7 @@ theorem OrthogonalFamily.norm_sum (l : ∀ i, G i) (s : Finset ι) :
 orthogonal family. -/
 theorem OrthogonalFamily.comp {γ : Type*} {f : γ → ι} (hf : Function.Injective f) :
     OrthogonalFamily 𝕜 (fun g => G (f g)) fun g => V (f g) :=
-  fun _i _j hij v w => hV (hf.ne hij) v w
+  fun _i _ _j _ hij v w => pairwise'_apply hV (hf.ne hij) v w
 
 theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_family : ∀ i, α i → G i}
     (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
@@ -171,14 +171,14 @@ theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_fa
   constructor
   · rintro ⟨i, v⟩
     simpa only [LinearIsometry.norm_map] using (hv_family i).left v
-  rintro ⟨i, v⟩ ⟨j, w⟩ hvw
+  rintro ⟨i, v⟩ - ⟨j, w⟩ - hvw
   by_cases hij : i = j
   · subst hij
     have : v ≠ w := fun h => by
       subst h
       exact hvw rfl
-    simpa only [LinearIsometry.inner_map_map] using (hv_family i).2 this
-  · exact hV hij (v_family i v) (v_family j w)
+    simpa only [LinearIsometry.inner_map_map] using pairwise'_apply (hv_family i).2 this
+  · exact pairwise'_apply hV hij (v_family i v) (v_family j w)
 
 theorem OrthogonalFamily.norm_sq_sdiff_sum [DecidableEq ι] (f : ∀ i, G i) (s₁ s₂ : Finset ι) :
     ‖(∑ i ∈ s₁, V i (f i)) - ∑ i ∈ s₂, V i (f i)‖ ^ 2 =

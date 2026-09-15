@@ -166,7 +166,7 @@ lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
     (B : LinearMap.BilinForm R M) (hB : B.toQuadraticMap.PosDef)
     (f : Module.Dual R M) (v : ι → M)
     (hp : ∀ i, 0 < f (v i))
-    (hn : Pairwise fun i j ↦ B (v i) (v j) ≤ 0) :
+    (hn : Pairwise' fun i j ↦ B (v i) (v j) ≤ 0) :
     LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s c hc ↦ ?_
   set x := ∑ i ∈ s with 0 < c i, c i • v i with hx
@@ -183,7 +183,7 @@ lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
     suffices 0 ≤ ∑ x ∈ s with c x < 0, ∑ i ∈ s with 0 < c i, c x * (c i * (B (v i)) (v x)) by
       simpa [hx, hy, map_neg, Finset.mul_sum]
     refine Finset.sum_nonneg fun i hi ↦ Finset.sum_nonneg fun j hj ↦ ?_
-    grind [Pairwise, mul_nonneg_iff, mul_nonpos_iff]
+    grind [pairwise'_iff, mul_nonneg_iff, mul_nonpos_iff]
   have H (c : ι → R) (h : ∑ i ∈ s with 0 < c i, c i • v i = 0) (i : ι) (hi : i ∈ s) : c i ≤ 0 := by
     have : ∑ i ∈ s with 0 < c i, c i * f (v i) = 0 := by simpa using (congr(f $h))
     rw [Finset.sum_eq_zero_iff_of_nonneg (by grind [mul_nonneg])] at this

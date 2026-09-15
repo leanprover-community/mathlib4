@@ -106,10 +106,10 @@ theorem HasBasis.biInf_finset {ι : Type*} {ι' : ι → Type*} (I : Finset ι)
   exact HasBasis.iInf_of_finite fun i : I ↦ hl i i.2
 
 open scoped Function in -- required for scoped `on` notation
-theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
-    {ι : I → Sort*} {p : ∀ i, ι i → Prop} {s : ∀ i, ι i → Set α} (hd : Pairwise (Disjoint on l))
+theorem _root_.Pairwise'.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
+    {ι : I → Sort*} {p : ∀ i, ι i → Prop} {s : ∀ i, ι i → Set α} (hd : Pairwise' (Disjoint on l))
     (h : ∀ i, (l i).HasBasis (p i) (s i)) :
-    ∃ ind : ∀ i, ι i, (∀ i, p i (ind i)) ∧ Pairwise (Disjoint on fun i => s i (ind i)) := by
+    ∃ ind : ∀ i, ι i, (∀ i, p i (ind i)) ∧ Pairwise' (Disjoint on fun i => s i (ind i)) := by
   rcases hd.exists_mem_filter_of_disjoint with ⟨t, htl, hd⟩
   choose ind hp ht using fun i => (h i).mem_iff.1 (htl i)
   exact ⟨ind, hp, hd.mono fun i j hij => hij.mono (ht _) (ht _)⟩

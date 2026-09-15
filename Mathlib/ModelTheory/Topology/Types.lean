@@ -59,7 +59,7 @@ public lemma isClopen_typesWith (φ : L[[α]].Sentence) : IsClopen (T.typesWith 
 
 public instance : TotallySeparatedSpace (CompleteType T α) := by
   rw [totallySeparatedSpace_iff_exists_isClopen]
-  intro p q hpq
+  intro p _ q _ hpq
   simp only [ne_eq, SetLike.ext_iff, not_forall, not_iff] at hpq
   obtain ⟨φ, hφ⟩ := hpq
   cases mem_or_not_mem p φ with

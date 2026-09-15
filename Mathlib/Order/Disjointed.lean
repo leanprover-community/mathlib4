@@ -203,14 +203,14 @@ section LinearOrder -- the index type is a linear order
 
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
-theorem disjoint_disjointed (f : ι → α) : Pairwise (Disjoint on disjointed f) :=
-  (pairwise_disjoint_on _).mpr fun _ _ ↦ disjoint_disjointed_of_lt f
+theorem disjoint_disjointed (f : ι → α) : Pairwise' (Disjoint on disjointed f) :=
+  (pairwise'_disjoint_on _).mpr fun _ _ ↦ disjoint_disjointed_of_lt f
 
 /-- `disjointed f` is the unique sequence that is pairwise disjoint and has the same partial sups
 as `f`. -/
-theorem disjointed_unique' {f d : ι → α} (hdisj : Pairwise (Disjoint on d))
+theorem disjointed_unique' {f d : ι → α} (hdisj : Pairwise' (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
-  disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
+  disjointed_unique (fun hij ↦ pairwise'_apply hdisj hij.ne) hsups
 
 set_option backward.isDefEq.respectTransparency false in
 omit [GeneralizedBooleanAlgebra α] in
@@ -278,10 +278,10 @@ end LinearOrder
 bounded above by `f` and having the same supremum. This is non-canonical, depending on an arbitrary
 choice of ordering of `ι`. -/
 lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] (f : ι → α) :
-    ∃ g, g ≤ f ∧ univ.sup g = univ.sup f ∧ Pairwise (Disjoint on g) := by
+    ∃ g, g ≤ f ∧ univ.sup g = univ.sup f ∧ Pairwise' (Disjoint on g) := by
   rcases isEmpty_or_nonempty ι with hι | hι
   ·  -- do `ι = ∅` separately since `⊤ : Fin n` isn't defined for `n = 0`
-    exact ⟨f, le_rfl, rfl, Subsingleton.pairwise⟩
+    exact ⟨f, le_rfl, rfl, Subsingleton.pairwise'⟩
   let R : ι ≃ Fin _ := equivFin ι
   let f' : Fin _ → α := f ∘ R.symm
   have hf' : f = f' ∘ R := by ext; simp only [Function.comp_apply, Equiv.symm_apply_apply, f']
@@ -289,7 +289,7 @@ lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] (f : ι → α) :
   · intro n
     simpa only [hf'] using! disjointed_le f' (R n)
   · simpa only [← sup_image, image_univ_equiv, hf'] using! sup_disjointed f'
-  · exact fun i j hij ↦ disjoint_disjointed f' (R.injective.ne hij)
+  · exact fun i _ j _ hij ↦ pairwise'_apply (disjoint_disjointed f') (by exact R.injective.ne hij)
 
 end GeneralizedBooleanAlgebra
 

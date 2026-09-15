@@ -540,7 +540,7 @@ structure DynkinSystem (α : Type*) where
   has_compl : ∀ {a}, Has a → Has aᶜ
   /-- A Dynkin system is closed under countable union of pairwise disjoint sets. Use a more general
   `MeasurableSpace.DynkinSystem.has_iUnion` instead. -/
-  has_iUnion_nat : ∀ {f : ℕ → Set α}, Pairwise (Disjoint on f) → (∀ i, Has (f i)) → Has (⋃ i, f i)
+  has_iUnion_nat : ∀ {f : ℕ → Set α}, Pairwise' (Disjoint on f) → (∀ i, Has (f i)) → Has (⋃ i, f i)
 
 namespace DynkinSystem
 
@@ -558,7 +558,7 @@ theorem has_compl_iff {a} : d.Has aᶜ ↔ d.Has a :=
 
 theorem has_univ : d.Has univ := by simpa using d.has_compl d.has_empty
 
-theorem has_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise (Disjoint on f))
+theorem has_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise' (Disjoint on f))
     (h : ∀ i, d.Has (f i)) : d.Has (⋃ i, f i) := by
   cases nonempty_encodable β
   rw [← Encodable.iUnion_decode₂]
@@ -569,7 +569,7 @@ theorem has_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise (Disjo
 theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : Disjoint s₁ s₂) :
     d.Has (s₁ ∪ s₂) := by
   rw [union_eq_iUnion]
-  exact d.has_iUnion (pairwise_disjoint_on_bool.2 h) (Bool.forall_bool.2 ⟨h₂, h₁⟩)
+  exact d.has_iUnion (pairwise'_disjoint_on_bool.2 h) (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 
 theorem has_sdiff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
@@ -608,7 +608,7 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
   | empty : GenerateHas s ∅
   | compl : ∀ {a}, GenerateHas s a → GenerateHas s aᶜ
   | iUnion : ∀ {f : ℕ → Set α},
-    Pairwise (Disjoint on f) → (∀ i, GenerateHas s (f i)) → GenerateHas s (⋃ i, f i)
+    Pairwise' (Disjoint on f) → (∀ i, GenerateHas s (f i)) → GenerateHas s (⋃ i, f i)
 
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
   refine ⟨?_, GenerateHas.compl⟩
@@ -714,7 +714,7 @@ theorem induction_on_inter {m : MeasurableSpace α} {C : ∀ s : Set α, Measura
     {s : Set (Set α)} (h_eq : m = generateFrom s) (h_inter : IsPiSystem s)
     (empty : C ∅ .empty) (basic : ∀ t (ht : t ∈ s), C t <| h_eq ▸ .basic t ht)
     (compl : ∀ t (htm : MeasurableSet t), C t htm → C tᶜ htm.compl)
-    (iUnion : ∀ (f : ℕ → Set α), Pairwise (Disjoint on f) → ∀ (hfm : ∀ i, MeasurableSet (f i)),
+    (iUnion : ∀ (f : ℕ → Set α), Pairwise' (Disjoint on f) → ∀ (hfm : ∀ i, MeasurableSet (f i)),
       (∀ i, C (f i) (hfm i)) → C (⋃ i, f i) (.iUnion hfm)) :
     ∀ t (ht : MeasurableSet t), C t ht := by
   have eq : MeasurableSet = DynkinSystem.GenerateHas s := by

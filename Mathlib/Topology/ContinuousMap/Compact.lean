@@ -389,13 +389,14 @@ open scoped Function in
 /-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
 of their sum is the maximum of their norms. -/
 lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → C(α, R)} (s : Finset ι)
-    (h : Pairwise ((· * · = 0) on f)) :
+    (h : Pairwise' ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnnorm_add_eq_max this
+    rw [pairwise'_iff] at h
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
 
 end NormSum

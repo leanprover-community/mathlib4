@@ -136,7 +136,7 @@ lemma isClopen_preimage_val {X : Type*} [TopologicalSpace X] {u v : Set X}
 section disjoint_subsets
 
 variable [PreconnectedSpace α]
-  {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
+  {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise' (Disjoint on s))
 include h_nonempty h_disj
 
 /-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
@@ -147,6 +147,7 @@ lemma subsingleton_of_disjoint_isClopen
   rw [← not_nontrivial_iff_subsingleton]
   by_contra ⟨i, j, h_ne⟩
   replace h_ne : s i ∩ s j = ∅ := by
+    rw [pairwise'_iff] at h_disj
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
   rcases isClopen_iff.mp (h_clopen i) with hi | hi
   · exact (h_nonempty i).ne_empty hi
@@ -163,7 +164,8 @@ lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
   refine isOpen_iUnion (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
-  · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_open j
+  · rw [pairwise'_iff] at h_disj
+    simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_open j
 
 /-- In a preconnected space, any finite disjoint cover by non-empty closed subsets has at most one
 element. -/
@@ -175,7 +177,8 @@ lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
   refine isClosed_iUnion_of_finite (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
-  · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_closed j
+  · rw [pairwise'_iff] at h_disj
+    simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_closed j
 
 end disjoint_subsets
 
@@ -567,7 +570,7 @@ instance subsingleton [PreconnectedSpace α] : Subsingleton (ConnectedComponents
 section
 
 variable {ι : Type*} {U : ι → Set α} (hclopen : ∀ i, IsClopen (U i))
-  (hdisj : Pairwise (Disjoint on U)) (hunion : ⋃ i, U i = Set.univ)
+  (hdisj : Pairwise' (Disjoint on U)) (hunion : ⋃ i, U i = Set.univ)
   (hconn : ∀ i, IsPreconnected (U i))
 
 include hclopen hdisj hunion in
@@ -628,7 +631,7 @@ variable (α) in
 arbitrarily many summands. -/
 lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : ℕ) (hn : 0 < n) :
     ∃ (U : Fin n → Set α), (∀ i, IsClopen (U i)) ∧ (∀ i, (U i).Nonempty) ∧
-      Pairwise (Function.onFun Disjoint U) ∧ ⋃ i, U i = Set.univ := by
+      Pairwise' (Function.onFun Disjoint U) ∧ ⋃ i, U i = Set.univ := by
   cases isEmpty_or_nonempty α
   · exact (not_finite (ConnectedComponents α)).elim
   obtain (_ | n) := n
@@ -649,9 +652,10 @@ lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : �
     refine ⟨Fin.cons a (Fin.cons b U), ?_, ?_, ?_, ?_⟩
     · simpa [Fin.forall_iff_succ, *] using fun x ↦ h₁ (Equiv.swap 0 i (.succ x))
     · simpa [Fin.forall_iff_succ, *] using fun x ↦ h₂ (Equiv.swap 0 i (.succ x))
-    · have h₃' (j : _) : Disjoint (U j) a ∧ Disjoint (U j) b := by
-        simpa [onFun] using h₃ ((Equiv.swap 0 i).injective.ne (Fin.succ_ne_zero j))
-      simpa [Pairwise, Fin.forall_iff_succ, onFun, hab, disjoint_comm (a := a),
+    · simp only [pairwise'_iff]
+      have h₃' (j : _) : Disjoint (U j) a ∧ Disjoint (U j) b := by
+        simpa [onFun] using pairwise'_apply h₃ ((Equiv.swap 0 i).injective.ne (Fin.succ_ne_zero j))
+      simpa [pairwise'_iff, Fin.forall_iff_succ, onFun, hab, disjoint_comm (a := a),
         disjoint_comm (a := b), h₃'] using
         h₃.comp_of_injective ((Equiv.swap 0 i).injective.comp (Fin.succ_injective _))
     · simpa [← union_assoc, (Equiv.surjective _).iUnion_comp] using h₄

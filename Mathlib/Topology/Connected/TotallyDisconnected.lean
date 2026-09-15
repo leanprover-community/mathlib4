@@ -226,16 +226,19 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 
 theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace α] :
-    TotallySeparatedSpace α ↔ Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) := by
-  simp only [totallySeparatedSpace_iff, IsTotallySeparated, Set.Pairwise, mem_univ, true_implies]
-  refine forall₃_congr fun x y _ ↦
-    ⟨fun ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ ↦ ?_, fun ⟨U, hU, Ux, Ucy⟩ ↦ ?_⟩
-  · exact ⟨U, isClopen_of_disjoint_cover_open f hU hV disj,
-      Ux, fun Uy ↦ Set.disjoint_iff.mp disj ⟨Uy, Vy⟩⟩
-  · exact ⟨U, Uᶜ, hU.2, hU.compl.2, Ux, Ucy, (Set.union_compl_self U).ge, disjoint_compl_right⟩
+    TotallySeparatedSpace α ↔ Pairwise' (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) := by
+  simp only [totallySeparatedSpace_iff, IsTotallySeparated, pairwise'_iff, Set.Pairwise]
+  constructor <;> intro h
+  · intro i j hn
+    obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ := h (Set.mem_univ i) (Set.mem_univ j) hn
+    exact ⟨U, ⟨isClopen_of_disjoint_cover_open f hU hV disj, Ux,
+      fun Uy ↦ Set.disjoint_iff.mp disj ⟨Uy, Vy⟩⟩⟩
+  · intro i _ j _ hn
+    obtain ⟨U, hc, hU, hC⟩ := h hn
+    exact ⟨U, Uᶜ, hc.2, hc.compl.2,hU, hC,(Set.union_compl_self U).ge, disjoint_compl_right⟩
 
 theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
-    [TotallySeparatedSpace α] : Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
+    [TotallySeparatedSpace α] : Pairwise' (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
   totallySeparatedSpace_iff_exists_isClopen.mp ‹_›
 
 end TotallySeparated

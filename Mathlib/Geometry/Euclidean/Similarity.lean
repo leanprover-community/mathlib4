@@ -105,7 +105,7 @@ theorem similar_of_side_angle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
   rw [similar_iff_exists_pos_pairwise_dist_eq]
   use k
   refine ⟨k_pos, ?_⟩
-  intro i j hij
+  intro i _ j _ hij
   fin_cases i <;> fin_cases j <;> try {rw [dist_self, dist_self, mul_zero]}
   all_goals simp; grind [dist_comm]
 

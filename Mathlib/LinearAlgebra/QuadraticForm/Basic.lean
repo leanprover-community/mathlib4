@@ -1344,13 +1344,13 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   suffices ∀ d, finrank K V = d → ∃ v : Basis (Fin d) K V, B.IsOrthoᵢ v by exact this _ rfl
   intro d hd
   induction d generalizing V with
-  | zero => exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
+  | zero => exact ⟨basisOfFinrankZero hd, fun _ _ _ _ _ => map_zero _⟩
   | succ d ih =>
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0
   · let b := Module.finBasis K V
     rw [hd] at b
-    exact ⟨b, fun i j _ => rfl⟩
+    exact ⟨b, fun i _ j _ _ => rfl⟩
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_map hx)] at hd
@@ -1375,14 +1375,16 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
           div_mul_cancel₀ _ hx, add_neg_cancel, mul_zero])
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
-  intro j i
+  intro j _ i _
   refine Fin.cases ?_ (fun i => ?_) i <;> refine Fin.cases ?_ (fun j => ?_) j <;> intro hij <;>
     simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
   · exact (hij rfl).elim
   · rw [← hB₂.eq]
     exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
   · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
-  · exact hv₁ (ne_of_apply_ne _ hij)
+  · have := (ne_of_apply_ne _ hij)
+    rw [IsOrthoᵢ, pairwise'_iff] at hv₁
+    exact hv₁ (ne_of_apply_ne _ hij)
 
 end BilinForm
 
@@ -1441,6 +1443,7 @@ theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M
       smul_eq_mul, Module.End.smul_def, half_moduleEnd_apply_eq_half_smul]
     ring_nf
   · intro i _ hij
+    rw [LinearMap.IsOrthoᵢ, pairwise'_iff] at hv₂
     rw [map_smul, LinearMap.map_smul₂, hv₂ hij]
     module
 

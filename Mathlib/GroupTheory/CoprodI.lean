@@ -808,14 +808,14 @@ variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 variable {α : Type*} [MulAction G α]
 variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise (Disjoint on X))
-variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
+variable (hXdisj : Pairwise' (Disjoint on X))
+variable (hpp : Pairwise' fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 include hpp
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
   induction w generalizing k with
-  | singleton x hne_one => simpa using hpp hk _ hne_one
+  | singleton x hne_one => simpa using pairwise'_apply hpp hk _ hne_one
   | @append i j k l w₁ hne w₂ hIw₁ hIw₂ =>
     calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
@@ -830,7 +830,7 @@ theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead :
   intro heq1
   have : X k ⊆ X i := by simpa [heq1] using lift_word_ping_pong f X hpp w hlast.symm
   obtain ⟨x, hx⟩ := hXnonempty k
-  exact (hXdisj hhead).le_bot ⟨hx, this hx⟩
+  exact (pairwise'_apply hXdisj hhead).le_bot ⟨hx, this hx⟩
 
 variable [Nontrivial ι]
 
@@ -952,8 +952,8 @@ variable {G : Type u_1} [Group G] (a : ι → G)
 variable {α : Type*} [MulAction G α]
 variable (X Y : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise (Disjoint on X))
-variable (hYdisj : Pairwise (Disjoint on Y))
+variable (hXdisj : Pairwise' (Disjoint on X))
+variable (hYdisj : Pairwise' (Disjoint on Y))
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
@@ -988,15 +988,17 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   apply lift_injective_of_ping_pong f _ X'
   · show ∀ i, (X' i).Nonempty
     exact fun i => Set.Nonempty.inl (hXnonempty i)
-  · show Pairwise (Disjoint on X')
+  · show Pairwise' (Disjoint on X')
+    rw [pairwise'_iff]
     intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right
-    · exact hXdisj hij
+    · exact pairwise'_apply hXdisj hij
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
-    · exact hYdisj hij
-  · change Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+    · exact pairwise'_apply hYdisj hij
+  · change Pairwise' fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+    rw [pairwise'_iff]
     rintro i j hij
     -- use free_group unit ≃ ℤ
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
@@ -1015,7 +1017,8 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     · have h1n : 1 ≤ n := hlt
       calc
         a i ^ n • X' j ⊆ a i ^ n • (Y i)ᶜ :=
-          smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
+          smul_set_mono ((hXYdisj j i).union_left <|
+            pairwise'_apply hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
           induction n, h1n using Int.leInduction with
@@ -1033,7 +1036,8 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         simpa using hgt
       calc
         a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
-          smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
+          smul_set_mono ((pairwise'_apply hXdisj hij.symm).union_left (hXYdisj
+            i j).symm).subset_compl_right
         _ ⊆ Y i := by
           clear hnne0 hgt
           induction n, h1n using Int.leInductionDown with
