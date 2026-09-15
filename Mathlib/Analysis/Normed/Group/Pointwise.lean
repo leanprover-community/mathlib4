@@ -70,6 +70,10 @@ theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist
 theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
   rw [← infEDist_inv_inv, inv_inv]
 
+@[to_additive (attr := simp)]
+theorem ediam_inv (s : Set E) : ediam s⁻¹ = ediam s := by
+  simpa using isometry_inv.ediam_image s
+
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
@@ -77,7 +81,29 @@ theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
         (isometry_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 
+@[to_additive]
+theorem ediam_div_le (s t : Set E) : ediam (s / t) ≤ ediam s + ediam t := by
+  grw [div_eq_mul_inv, ediam_mul_le, ediam_inv]
+
 end EMetric
+
+@[to_additive (attr := simp)]
+theorem diam_inv (s : Set E) : diam s⁻¹ = diam s := by
+  simp only [diam, ediam_inv]
+
+@[to_additive]
+theorem diam_mul_le {s t : Set E} (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
+    diam (s * t) ≤ diam s + diam t := by
+  have hd_s : ediam s ≠ ⊤ := hs.ediam_ne_top
+  have hd_t : ediam t ≠ ⊤ := ht.ediam_ne_top
+  simp only [diam]
+  rw [← ENNReal.toReal_add hd_s hd_t]
+  exact ENNReal.toReal_mono (ENNReal.add_ne_top.mpr ⟨hd_s, hd_t⟩) (ediam_mul_le s t)
+
+@[to_additive]
+theorem diam_div_le {s t : Set E} (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
+    diam (s / t) ≤ diam s + diam t := by
+  grw [div_eq_mul_inv, diam_mul_le hs ht.inv, diam_inv]
 
 variable (δ s x y)
 
