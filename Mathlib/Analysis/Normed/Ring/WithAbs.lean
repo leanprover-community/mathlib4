@@ -356,8 +356,7 @@ theorem under_liesOver_iff {w : AbsoluteValue L S} {v : AbsoluteValue K S} :
     (w.under M).LiesOver v ↔ w.LiesOver v := by
   rw [liesOver_iff, liesOver_iff, under_under]
 
-theorem LiesOver.trans
-    (v : AbsoluteValue K S) (u : AbsoluteValue M S) (w : AbsoluteValue L S)
+theorem LiesOver.trans (v : AbsoluteValue K S) (u : AbsoluteValue M S) (w : AbsoluteValue L S)
     [w.LiesOver u] [u.LiesOver v] : w.LiesOver v := by
   rwa [← under_liesOver_iff M, ← over_def w u]
 
