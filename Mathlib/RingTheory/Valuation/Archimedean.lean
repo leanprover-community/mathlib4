@@ -35,17 +35,17 @@ instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
   inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (.ofClass v : F →*₀ Γ₀)))
 
-namespace Valuation.Integers
+namespace Valuation.IsIntegers
 
 open scoped Function in
-lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
+lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : IsIntegers v O) :
     WfDvdMonoid O ↔ WellFounded ((· > ·) on (v ∘ algebraMap O F)) := by
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ h.mono ?_⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
 open scoped Function WithZero in
 lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
-    (hv : Integers v O) :
+    (hv : IsIntegers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
       Nonempty (MonoidHom.mrange v ≃*o ℤᵐ⁰) := by
   rw [←
@@ -68,7 +68,7 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
   · simp [Function.onFun]
 
 lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
-    (hv : Integers v O) :
+    (hv : IsIntegers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
   rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs | _
@@ -82,10 +82,28 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mra
   exact H
 
 lemma isPrincipalIdealRing_iff_not_denselyOrdered_mrange [MulArchimedean (MonoidHom.mrange v)]
-    (hv : Integers v O) :
+    (hv : IsIntegers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (MonoidHom.mrange v) :=
   isPrincipalIdealRing_iff_not_denselyOrdered hv
 
-end Valuation.Integers
+end Valuation.IsIntegers
+
+/-! ### Deprecated aliases -/
+
+@[deprecated (since := "2026-09-15")]
+alias Valuation.Integers.wfDvdMonoid_iff_wellFounded_gt_on_v :=
+  Valuation.IsIntegers.wfDvdMonoid_iff_wellFounded_gt_on_v
+
+@[deprecated (since := "2026-09-15")]
+alias Valuation.Integers.wellFounded_gt_on_v_iff_discrete_mrange :=
+  Valuation.IsIntegers.wellFounded_gt_on_v_iff_discrete_mrange
+
+@[deprecated (since := "2026-09-15")]
+alias Valuation.Integers.isPrincipalIdealRing_iff_not_denselyOrdered :=
+  Valuation.IsIntegers.isPrincipalIdealRing_iff_not_denselyOrdered
+
+@[deprecated (since := "2026-09-15")]
+alias Valuation.Integers.isPrincipalIdealRing_iff_not_denselyOrdered_mrange :=
+  Valuation.IsIntegers.isPrincipalIdealRing_iff_not_denselyOrdered_mrange
 
 end Field

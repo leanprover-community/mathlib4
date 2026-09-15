@@ -533,7 +533,7 @@ end ModP
 section Perfectoid
 
 variable (K : Type u₁) [Field K] (v : Valuation K ℝ≥0)
-variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
+variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.IsIntegers O)
 variable (p : ℕ)
 
 namespace ModP

@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 The elements with valuation less than or equal to 1.
 
-`Valuation.Integers` is the characteristic predicate of `Valuation.integer`.
+`Valuation.IsIntegers` is the characteristic predicate of `Valuation.integer`.
 
 -/
 
@@ -50,21 +50,24 @@ variable (O : Type w) [CommRing O] [Algebra O R]
 
 /-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
 if f is injective, and its range is exactly `v.integer`. -/
-structure Integers : Prop where
+structure IsIntegers : Prop where
   hom_inj : Function.Injective (algebraMap O R)
   map_le_one : ∀ x, v (algebraMap O R x) ≤ 1
   exists_of_le_one : ∀ ⦃r⦄, v r ≤ 1 → ∃ x, algebraMap O R x = r
+
+@[deprecated (since := "2026-09-15")]
+alias Integers := IsIntegers
 
 -- typeclass shortcut
 instance : Algebra v.integer R :=
   inferInstance
 
-theorem integer.integers : v.Integers v.integer :=
+theorem integer.integers : v.IsIntegers v.integer :=
   { hom_inj := Subtype.coe_injective
     map_le_one := fun r => r.2
     exists_of_le_one := fun r hr => ⟨⟨r, hr⟩, rfl⟩ }
 
-namespace Integers
+namespace IsIntegers
 
 variable {v O}
 
@@ -75,14 +78,14 @@ theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) 
     grw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul, H (u⁻¹ : Units O)]
 
-theorem one_of_isUnit (hv : Integers v O) {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
+theorem one_of_isUnit (hv : IsIntegers v O) {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   one_of_isUnit' hx hv.map_le_one
 
 /--
 Let `O` be the integers of the valuation `v` on some commutative ring `R`. For every element `x` in
 `O`, `x` is a unit in `O` if and only if the image of `x` in `R` is a unit and has valuation 1.
 -/
-theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x))
+theorem isUnit_of_one (hv : IsIntegers v O) {x : O} (hx : IsUnit (algebraMap O R x))
     (hvx : v (algebraMap O R x) = 1) : IsUnit x :=
   let ⟨u, hu⟩ := hx
   have h1 : v u ≤ 1 := hu.symm ▸ hv.2 x
@@ -94,12 +97,12 @@ theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x
       hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.inv_mul]⟩,
     hv.1 <| hr1.trans hu⟩
 
-theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
+theorem le_of_dvd (hv : IsIntegers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   obtain ⟨z, rfl⟩ := h
   grw [← mul_one (v (algebraMap O R x)), map_mul, v.map_mul, hv.2 z]
 
-lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
+lemma nontrivial_iff (hv : v.IsIntegers O) : Nontrivial O ↔ Nontrivial R := by
   constructor <;> intro h
   · exact hv.hom_inj.nontrivial
   · obtain ⟨o0, ho0⟩ := hv.exists_of_le_one (r := 0) (by simp)
@@ -108,11 +111,11 @@ lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
     rintro rfl
     simp [ho1] at ho0
 
-end Integers
+end IsIntegers
 
 theorem IsTrivialOn.of_le_one {k : Type*} [Field k] [Algebra k R] (v : Valuation R Γ₀)
     (hle : ∀ (x : k), v (algebraMap k R x) ≤ 1) : v.IsTrivialOn k where
-  eq_one a ha := Valuation.Integers.one_of_isUnit' (IsUnit.mk0 a ha) hle
+  eq_one a ha := Valuation.IsIntegers.one_of_isUnit' (IsUnit.mk0 a ha) hle
 
 lemma integers_nontrivial (v : Valuation R Γ₀) :
     Nontrivial v.integer ↔ Nontrivial R :=
@@ -125,9 +128,9 @@ section Field
 variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
 variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F]
 
-namespace Integers
+namespace IsIntegers
 
-theorem dvd_of_le (hv : Integers v O) {x y : O}
+theorem dvd_of_le (hv : IsIntegers v O) {x y : O}
     (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) : y ∣ x :=
   by_cases
     (fun hy : algebraMap O F y = 0 =>
@@ -141,46 +144,47 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
     let ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 
-theorem dvd_iff_le (hv : Integers v O) {x y : O} :
+theorem dvd_iff_le (hv : IsIntegers v O) {x y : O} :
     x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMap O F x) :=
   ⟨hv.le_of_dvd, hv.dvd_of_le⟩
 
-theorem le_iff_dvd (hv : Integers v O) {x y : O} :
+theorem le_iff_dvd (hv : IsIntegers v O) {x y : O} :
     v (algebraMap O F x) ≤ v (algebraMap O F y) ↔ y ∣ x :=
   ⟨hv.dvd_of_le, hv.le_of_dvd⟩
 
 /--
-This is the special case of `Valuation.Integers.isUnit_of_one` when the valuation is defined
+This is the special case of `Valuation.IsIntegers.isUnit_of_one` when the valuation is defined
 over a field. Let `v` be a valuation on some field `F` and `O` be its integers. For every element
 `x` in `O`, `x` is a unit in `O` if and only if the image of `x` in `F` has valuation 1.
 -/
-theorem isUnit_of_one' (hv : Integers v O) {x : O} (hvx : v (algebraMap O F x) = 1) : IsUnit x := by
+theorem isUnit_of_one' (hv : IsIntegers v O) {x : O} (hvx : v (algebraMap O F x) = 1) :
+    IsUnit x := by
   refine isUnit_of_one hv (IsUnit.mk0 _ ?_) hvx
   simp only [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
-lemma isUnit_iff_valuation_eq_one (hv : Integers v O) {x : O} :
+lemma isUnit_iff_valuation_eq_one (hv : IsIntegers v O) {x : O} :
     IsUnit x ↔ v (algebraMap O F x) = 1 :=
   ⟨hv.one_of_isUnit, hv.isUnit_of_one'⟩
 
-lemma valuation_irreducible_lt_one (hv : Integers v O) {ϖ : O} (h : Irreducible ϖ) :
+lemma valuation_irreducible_lt_one (hv : IsIntegers v O) {ϖ : O} (h : Irreducible ϖ) :
     v (algebraMap O F ϖ) < 1 :=
   lt_of_le_of_ne (hv.map_le_one ϖ) (mt hv.isUnit_iff_valuation_eq_one.mpr h.not_isUnit)
 
-lemma valuation_unit (hv : Integers v O) (x : Oˣ) :
+lemma valuation_unit (hv : IsIntegers v O) (x : Oˣ) :
     v (algebraMap O F x) = 1 := by
   simp [← hv.isUnit_iff_valuation_eq_one]
 
-lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
+lemma valuation_pos_iff_ne_zero (hv : IsIntegers v O) {x : O} :
     0 < v (algebraMap O F x) ↔ x ≠ 0 := by
   rw [← not_le]
   refine not_congr ?_
   simp [map_eq_zero_iff _ hv.hom_inj]
 
-lemma valuation_irreducible_pos (hv : Integers v O) {ϖ : O} (h : Irreducible ϖ) :
+lemma valuation_irreducible_pos (hv : IsIntegers v O) {ϖ : O} (h : Irreducible ϖ) :
     0 < v (algebraMap O F ϖ) :=
   hv.valuation_pos_iff_ne_zero.mpr h.ne_zero
 
-theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
+theorem dvdNotUnit_iff_lt (hv : IsIntegers v O) {x y : O} :
     DvdNotUnit x y ↔ v (algebraMap O F y) < v (algebraMap O F x) := by
   rw [lt_iff_le_not_ge, hv.le_iff_dvd, hv.le_iff_dvd]
   refine ⟨?_, And.elim dvdNotUnit_of_dvd_of_not_dvd⟩
@@ -193,13 +197,13 @@ theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
   refine one_le_of_le_mul_left₀ ?_ hdu
   simp [hv.valuation_pos_iff_ne_zero, hx0]
 
-theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
+theorem eq_algebraMap_or_inv_eq_algebraMap (hv : IsIntegers v O) (x : F) :
     ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
   rcases val_le_one_or_val_inv_le_one v x with h | h <;>
   obtain ⟨a, ha⟩ := exists_of_le_one hv h
   exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
-lemma coe_span_singleton_eq_setOfPred_le_v_algebraMap (hv : Integers v O) (x : O) :
+lemma coe_span_singleton_eq_setOfPred_le_v_algebraMap (hv : IsIntegers v O) (x : O) :
     (Ideal.span {x} : Set O) = {y : O | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp [Set.singleton_zero, map_eq_zero_iff _ hv.hom_inj]
@@ -209,7 +213,7 @@ lemma coe_span_singleton_eq_setOfPred_le_v_algebraMap (hv : Integers v O) (x : O
 @[deprecated (since := "2026-07-09")]
 alias coe_span_singleton_eq_setOf_le_v_algebraMap := coe_span_singleton_eq_setOfPred_le_v_algebraMap
 
-lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
+lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : IsIntegers v O)
     [Subsingleton (MonoidHom.mrange v)ˣ] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
@@ -218,7 +222,7 @@ lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
   · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
       ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le
 
-lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
+lemma isPrincipal_iff_exists_isGreatest (hv : IsIntegers v O) {I : Ideal O} :
     I.IsPrincipal ↔ ∃ x, IsGreatest (v ∘ algebraMap O F '' I) x := by
   constructor <;> rintro ⟨x, hx⟩
   · refine ⟨(v ∘ algebraMap O F) x, ?_, ?_⟩
@@ -235,7 +239,7 @@ lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     simp only [Ideal.submodule_span_eq, Ideal.mem_span_singleton]
     exact ⟨fun hb ↦ dvd_of_le hv (hx.2 <| mem_image_of_mem _ hb), fun hb ↦ I.mem_of_dvd hb ha⟩
 
-lemma isPrincipal_iff_exists_eq_setOfPred_valuation_le (hv : Integers v O) {I : Ideal O} :
+lemma isPrincipal_iff_exists_eq_setOfPred_valuation_le (hv : IsIntegers v O) {I : Ideal O} :
     I.IsPrincipal ↔ ∃ x, (I : Set O) = {y | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
   rw [isPrincipal_iff_exists_isGreatest hv]
   constructor <;> rintro ⟨x, hx⟩
@@ -255,7 +259,7 @@ lemma isPrincipal_iff_exists_eq_setOfPred_valuation_le (hv : Integers v O) {I : 
 alias isPrincipal_iff_exists_eq_setOf_valuation_le :=
   isPrincipal_iff_exists_eq_setOfPred_valuation_le
 
-lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : Integers v O) :
+lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : IsIntegers v O) :
     ¬ DenselyOrdered (range v) := by
   intro H
   -- nonunits as an ideal isn't defined here, nor shown to be equivalent to `v x < 1`
@@ -283,9 +287,9 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
   exact hy.not_ge <| hx ⟨hy₁, mem_range_self _⟩
 
-end Integers
+end IsIntegers
 
-open Integers in
+open IsIntegers in
 theorem Integer.not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔ v x < 1 := by
   rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀),
     le_antisymm_iff]
@@ -456,5 +460,83 @@ lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}
   (leIdeal_v_le_of_mem v hx).trans' (ltIdeal_le_leIdeal _ _)
 
 end Ideal
+
+/-! ### Deprecated aliases -/
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.hom_inj := IsIntegers.hom_inj
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.map_le_one := IsIntegers.map_le_one
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.exists_of_le_one := IsIntegers.exists_of_le_one
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.one_of_isUnit' := IsIntegers.one_of_isUnit'
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.one_of_isUnit := IsIntegers.one_of_isUnit
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isUnit_of_one := IsIntegers.isUnit_of_one
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.le_of_dvd := IsIntegers.le_of_dvd
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.nontrivial_iff := IsIntegers.nontrivial_iff
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.dvd_of_le := IsIntegers.dvd_of_le
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.dvd_iff_le := IsIntegers.dvd_iff_le
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.le_iff_dvd := IsIntegers.le_iff_dvd
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isUnit_of_one' := IsIntegers.isUnit_of_one'
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isUnit_iff_valuation_eq_one := IsIntegers.isUnit_iff_valuation_eq_one
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.valuation_irreducible_lt_one := IsIntegers.valuation_irreducible_lt_one
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.valuation_unit := IsIntegers.valuation_unit
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.valuation_pos_iff_ne_zero := IsIntegers.valuation_pos_iff_ne_zero
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.valuation_irreducible_pos := IsIntegers.valuation_irreducible_pos
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.dvdNotUnit_iff_lt := IsIntegers.dvdNotUnit_iff_lt
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.eq_algebraMap_or_inv_eq_algebraMap := IsIntegers.eq_algebraMap_or_inv_eq_algebraMap
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.coe_span_singleton_eq_setOfPred_le_v_algebraMap :=
+  IsIntegers.coe_span_singleton_eq_setOfPred_le_v_algebraMap
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.bijective_algebraMap_of_subsingleton_units_mrange :=
+  IsIntegers.bijective_algebraMap_of_subsingleton_units_mrange
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isPrincipal_iff_exists_isGreatest := IsIntegers.isPrincipal_iff_exists_isGreatest
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isPrincipal_iff_exists_eq_setOfPred_valuation_le :=
+  IsIntegers.isPrincipal_iff_exists_eq_setOfPred_valuation_le
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.not_denselyOrdered_of_isPrincipalIdealRing :=
+  IsIntegers.not_denselyOrdered_of_isPrincipalIdealRing
 
 end Valuation
