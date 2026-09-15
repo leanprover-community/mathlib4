@@ -38,8 +38,6 @@ be derived functors as well.)
 
 namespace CategoryTheory
 
-open Category
-
 namespace Functor
 
 variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]

@@ -39,8 +39,6 @@ transformations commute with these, then this natural transformation
 
 namespace CategoryTheory
 
-open Category
-
 namespace Functor
 
 variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
