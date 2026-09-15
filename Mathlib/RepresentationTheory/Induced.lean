@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston
+Authors: Amelia Livingston, Jiaxi Mo
 -/
 module
 
@@ -61,35 +61,98 @@ abbrev IndV := Coinvariants (V := TensorProduct k k[H] A)
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `H → A →ₗ[k] (k[H] ⊗[k] A)_G` sending `h, a` to `⟦h ⊗ₜ a⟧`. -/
-noncomputable abbrev IndV.mk (h : H) : A →ₗ[k] IndV φ ρ :=
+noncomputable def IndV.mk (h : H) : A →ₗ[k] IndV φ ρ :=
   Coinvariants.mk _ ∘ₗ TensorProduct.mk k _ _ (.single h 1)
 
-@[ext]
+@[ext 10000]
 lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
-    (hfg : ∀ h : H, f ∘ₗ IndV.mk φ ρ h = g ∘ₗ IndV.mk φ ρ h) : f = g :=
+    (hfg : ∀ (h : H), f ∘ₗ (IndV.mk φ ρ h) = g ∘ₗ (IndV.mk φ ρ h)) : f = g :=
   Coinvariants.hom_ext <| TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
     LinearMap.ext_ring <| hfg h
+
+variable {φ ρ} in
+@[elab_as_elim]
+lemma IndV.induction_on {p : IndV φ ρ → Prop} (v : IndV φ ρ) (mk : ∀ h a, p (IndV.mk φ ρ h a))
+    (add : ∀ x y : IndV φ ρ, p x → p y → p (x + y)) : p v := by
+  refine Representation.Coinvariants.induction_on v ?_
+  intro v
+  induction v with
+  | zero => simpa using mk 1 0
+  | tmul m a =>
+      refine MonoidAlgebra.induction_linear m ?_ ?_ ?_
+      · simpa using mk 1 0
+      · intro _ _ hx hy
+        rw [TensorProduct.add_tmul, map_add]
+        exact add _ _ hx hy
+      · intro h r
+        rw [← mul_one r, ← MonoidAlgebra.smul_single', TensorProduct.smul_tmul]
+        exact mk h (r • a)
+  | add _ _ hx hy => simpa [map_add] using add _ _ hx hy
+
+@[simp]
+lemma IndV.mk_map_mul (g : G) (h : H) (a : A) :
+    IndV.mk φ ρ ((φ g) * h) a = IndV.mk φ ρ h (ρ g⁻¹ a) := by
+  simp [IndV.mk]
+
+@[simp]
+lemma IndV.mk_map_inv_mul (g : G) (h : H) (a : A) :
+    IndV.mk φ ρ ((φ g)⁻¹ * h) a = IndV.mk φ ρ h (ρ g a) := by
+  simp [← map_inv]
+
+@[simp]
+lemma IndV.mk_map_eq (g : G) (a : A) :
+    IndV.mk φ ρ (φ g) a = IndV.mk φ ρ 1 (ρ g⁻¹ a) := by
+  simpa using IndV.mk_map_mul φ ρ g 1 a
+
+@[simp]
+lemma IndV.mk_map_inv_eq (g : G) (a : A) :
+    IndV.mk φ ρ (φ g)⁻¹ a = IndV.mk φ ρ 1 (ρ g a) := by
+  simp [← map_inv]
+
+/-- Construct a linear map `IndV φ ρ →ₗ[k] B` from a compatible family of linear maps
+`f : H → A →ₗ[k] B`, whose composition with `IndV.mk φ ρ h : A →ₗ[k] IndV φ ρ` is `f h`. -/
+noncomputable def IndV.lift (f : H → A →ₗ[k] B)
+    (hf : ∀ (g : G) (h : H) (a : A), f (φ g * h) a = f h (ρ g⁻¹ a)) :
+    IndV φ ρ →ₗ[k] B :=
+  Coinvariants.lift _ (TensorProduct.lift <| (Finsupp.lift _ _ _ fun h => f h) ∘ₗ
+    (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) fun g => by ext; simp [hf]
+
+@[simp]
+lemma IndV.lift_apply_mk (f : H → A →ₗ[k] B) (h : H) (a : A)
+    (hf : ∀ (g : G) (h : H) (a : A), f (φ g * h) a = f h (ρ g⁻¹ a)) :
+    IndV.lift φ ρ f hf (IndV.mk φ ρ h a) = f h a := by
+  simp [IndV.lift, IndV.mk]
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
 `(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
-@[simps]
 noncomputable def ind : Representation k H (IndV φ ρ) where
-  toFun h :=
-    Coinvariants.map _ _ ⟨(MonoidAlgebra.mapDomainLinearMap k k fun x => x * h⁻¹).rTensor _,
-    fun _ => by ext; simp [mul_assoc]⟩
+  toFun h := IndV.lift φ ρ (fun x => IndV.mk φ ρ (x * h⁻¹)) (by simp [mul_assoc])
   map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp [IndV, mul_assoc]
+  map_mul' _ _ := by ext; simp [mul_assoc]
 
-lemma ind_mk (h₁ h₂ : H) (a : A) :
+@[simp]
+lemma ind_apply_mk (h₁ h₂ : H) (a : A) :
     ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
+  simp [ind]
+
+lemma ind_conj_map_apply (g : G) (h : H) (a : A) :
+    ind φ ρ (h⁻¹ * (φ g) * h) (IndV.mk _ _ h a) = IndV.mk _ _ h (ρ g a) := by
   simp
+
+variable {ρ} in
+/-- Construct an `IntertwiningMap` starting from an induced representation by lifting an
+`IntertwiningMap` with a `res` representation as target. -/
+noncomputable abbrev ind.lift {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) :
+    (ind φ ρ).IntertwiningMap σ :=
+  ⟨IndV.lift φ ρ (fun h => σ h⁻¹ ∘ₗ f.toLinearMap) fun _ _ _ => by
+    simp [IntertwiningMap.isIntertwining], fun g => by ext; simp⟩
 
 end Representation
 
 namespace Rep
 
-open CategoryTheory Finsupp
+open CategoryTheory Finsupp Representation
 
 variable {k : Type u} {G : Type v} {H : Type v'} [CommRing k] [Group G] [Group H] (φ : G →* H)
   (A : Rep.{w} k G)
@@ -103,10 +166,8 @@ noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 
 /-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
-noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom
-  ⟨Representation.Coinvariants.map _ _ ⟨f.hom.toLinearMap.lTensor _, by
-    simp [LinearMap.lTensor_comp_map, f.hom.2, LinearMap.map_comp_lTensor]⟩,
-    fun g ↦ by ext; simp⟩
+noncomputable abbrev indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom <|
+  ind.lift φ ⟨IndV.mk φ B.ρ 1 ∘ₗ f.hom, fun g => by ext; simp [IntertwiningMap.isIntertwining]⟩
 
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
@@ -115,8 +176,8 @@ to the induced `H`-representation `ind φ A`, with action on maps induced by lef
 noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   obj A := ind φ A
   map f := indMap φ f
-  map_id _ := by ext; rfl
-  map_comp _ _ := by ext; rfl
+  map_id _ := by ext; simp
+  map_comp _ _ := by ext; simp
 
 end Ind
 section Adjunction
@@ -132,21 +193,11 @@ the `G`-representation morphisms `A ⟶ B`. -/
 noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) where
   toFun f := Rep.ofHom ⟨f.hom.toLinearMap ∘ₗ IndV.mk φ A.ρ 1, fun g ↦ by
-    ext x
-    have := (hom_comm_apply f (φ g) (IndV.mk φ A.ρ 1 x)).symm
-    simp_all [← Coinvariants.mk_inv_tmul] ⟩
+    ext; simp [← IntertwiningMap.isIntertwining]⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := Rep.ofHom ⟨Representation.Coinvariants.lift _
-    (TensorProduct.lift <| (Finsupp.lift _ _ _ fun h => B.ρ h⁻¹ ∘ₗ f.hom.toLinearMap) ∘ₗ
-      (MonoidAlgebra.coeffLinearEquiv k).toLinearMap)
-    fun g ↦ by
-      ext h x
-      simp only [LinearMap.coe_comp, Function.comp_apply, MonoidAlgebra.lsingle_apply]
-      simp [ofMulAction_single, mul_inv_rev, hom_comm_apply f g], fun g ↦ by ext; simp⟩
-  left_inv f := by
-    ext h a
-    simpa using (hom_comm_apply f h⁻¹ (IndV.mk φ A.ρ 1 a)).symm
+  invFun f := Rep.ofHom (Representation.ind.lift φ f.hom)
+  left_inv f := by ext; simp [← IntertwiningMap.isIntertwining]
   right_inv _ := by ext; simp
 
 variable (k) in
@@ -156,9 +207,9 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w v' u}
   Adjunction.mkOfHomEquiv {
     homEquiv A B := (indResHomEquiv φ A B).toEquiv
     homEquiv_naturality_left_symm _ _ := by
-      change (indResHomEquiv φ _ _).symm (_ ≫ _) = _
-      ext; simp [indMap, indResHomEquiv]
-    homEquiv_naturality_right := by intros; rfl }
+      rw [Equiv.symm_apply_eq]
+      ext; simp [indResHomEquiv]
+    homEquiv_naturality_right _ _ := by ext; simp}
 
 noncomputable instance : (indFunctor.{max u v' w} k φ).IsLeftAdjoint :=
   (indResAdjunction k φ).isLeftAdjoint
@@ -181,16 +232,11 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable def coinvariantsTensorIndHom :
     ((coinvariantsTensor k H).obj (ind φ A)).obj B ⟶
       ((coinvariantsTensor k G).obj A).obj (res φ B) :=
-  ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <| Coinvariants.lift _
-    (TensorProduct.lift <| (Finsupp.lift _ _ _ <| fun g ↦
-      (coinvariantsTensorMk A (res φ B)).compl₂ (B.ρ g)) ∘ₗ
-      (MonoidAlgebra.coeffLinearEquiv k).toLinearMap)
-      fun g ↦ by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
-        using! Coinvariants.sub_mem_ker _ _) fun _ ↦ by
-    simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V, tensor_ρ, res_obj_ρ,
-      Functor.postcompose₂_obj_obj_obj_obj, coinvariantsFunctor_obj_carrier,
-      tprod_apply, ind_apply]
-    ext; simp
+  ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <| IndV.lift φ A.ρ
+    (fun h => (coinvariantsTensorMk A (res φ B)).compl₂ (B.ρ h)) (fun g h a => by
+      ext; simp [coinvariantsTensorMk])) (fun h => by
+        simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V]
+        ext; simp)
 
 set_option backward.defeqAttrib.useBackward true in
 variable {A B} in
@@ -208,12 +254,10 @@ noncomputable def coinvariantsTensorIndInv :
       ((coinvariantsTensor k H).obj (ind φ A)).obj B :=
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
     (coinvariantsTensorMk (ind (k := k) φ A) B) ∘ₗ IndV.mk _ _ 1) fun s ↦ by
-    simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V, tensor_ρ, tprod_apply,
-      MonoidHom.coe_comp, Function.comp_apply]
-    ext x y
-    simpa [Coinvariants.mk_eq_iff, coinvariantsTensorMk] using
-      Coinvariants.mem_ker_of_eq (φ s) (IndV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _ <| by
-      simp [← Coinvariants.mk_inv_tmul]
+      simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V]
+      ext x y
+      simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff] using Coinvariants.mem_ker_of_eq (φ s)
+        ((IndV.mk φ A.ρ (1 : H) x) ⊗ₜ[k] y) _ (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
 variable {A B} in

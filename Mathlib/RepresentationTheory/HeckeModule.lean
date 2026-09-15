@@ -1,0 +1,948 @@
+/-
+Copyright (c) 2026 Jiaxi Mo. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jiaxi Mo
+-/
+module
+
+public import Mathlib.GroupTheory.DoubleCoset
+public import Mathlib.RepresentationTheory.Invariants
+public import Mathlib.LinearAlgebra.Trace
+
+/-!
+# Hecke Algebras and Hecke Modules
+
+This file defines Hecke algebras and Hecke modules. We construct central elements in the standard
+Hecke algebra from trace of relatively compact representations under `IsHeckeUnimodular` and
+`IsHeckeInvertible` condition. We also TODO prove that such elements are non-zero and idempotent.
+
+-/
+
+@[expose] public section
+
+namespace Representation
+
+variable {k : Type*} [CommRing k]
+variable {G : Type*} [Group G]
+variable {V : Type*} [AddCommGroup V] [Module k V]
+variable {W : Type*} [AddCommGroup W] [Module k W]
+
+noncomputable section Hecke
+
+variable (H : Subgroup G) (σ : Representation k H W) (ρ : Representation k G V)
+
+/-- The module over the opposite standard Hecke algebra associated a representation `ρ` of `G`. -/
+abbrev HeckeModule₁ := (ofMulAction k G (G ⧸ H)).IntertwiningMap ρ
+
+variable (k)
+
+/-- The standard Hecke algebra. -/
+abbrev HeckeAlgebra₁ := MulOpposite (HeckeModule₁ H (ofMulAction k G (G ⧸ H)))
+
+/-- The standard Hecke bimodule. -/
+abbrev HeckeBimodule₁ (H₁ H₂ : Subgroup G) := HeckeModule₁ H₁ (ofMulAction k G (G ⧸ H₂))
+
+variable {k}
+
+section Module₁
+
+open MonoidAlgebra
+
+variable (k) {H} in
+/-- tbd -/
+abbrev cosetVector (x : G ⧸ H) : k[G ⧸ H] := .single x 1
+
+@[simp]
+lemma cosetVector_mem_eq (h : H) :
+    cosetVector k h = cosetVector k ((1 : G) : G ⧸ H) := by
+  congr 1
+  simp [QuotientGroup.eq]
+
+@[ext]
+lemma HeckeModule₁.ext {H : Subgroup G} (f g : HeckeModule₁ H ρ)
+    (h : f (cosetVector k (1 : G)) = g (cosetVector k (1 : G))) : f = g := by
+  ext x
+  simpa [← IntertwiningMap.isIntertwining] using congrArg (ρ x.out) h
+
+/-- Constructing elements in the standard Hecke module from an `H`-invariants by sending `v` to
+`f` satisfying `f (cosetVector k (1 : G)) = v` gives a linear equivalence. -/
+@[simps! symm_apply]
+def HeckeModule₁.invariantsEquiv :
+    invariants (ρ.comp H.subtype) ≃ₗ[k] HeckeModule₁ H ρ where
+  toLinearMap :=
+    { toFun v :=
+        ⟨ Finsupp.lift V k (G ⧸ H)
+          ( fun x => Quotient.liftOn x (fun x => ρ x v) (fun a b hab => by
+              have : ρ (a⁻¹ * b) v = v := by simpa using v.2 ⟨_, QuotientGroup.leftRel_apply.mp hab⟩
+              nth_rw 1 [← this]
+              simp)) ∘ₗ (MonoidAlgebra.coeffLinearEquiv k).toLinearMap,
+          by
+            intro g
+            ext z
+            simpa using Quotient.inductionOn z (by simp [MulAction.Quotient.smul_mk])⟩
+      map_add' _ _ := by ext; simp
+      map_smul' _ _ := by ext; simp}
+  invFun f := ⟨f (cosetVector k (1 : G)), by simp [← IntertwiningMap.isIntertwining]⟩
+  left_inv _ := by simp
+  right_inv _ := by ext; simp
+
+@[simp]
+lemma HeckeModule₁.invariantsEquiv_apply (g : G) (v : invariants (ρ.comp H.subtype)) :
+    invariantsEquiv H ρ v (cosetVector k (g : G)) = ρ g v := by
+  simp [invariantsEquiv]
+
+end Module₁
+
+variable (k) (H₁ : Subgroup G) (g : G) (H₂ : Subgroup G) (g' : G) (H₃ : Subgroup G)
+
+open Pointwise
+
+section Coset
+
+lemma mem_conjAct_pointwise_smul_iff {H : Subgroup G} {g x : G} :
+    x ∈ ConjAct.toConjAct g • H ↔ g⁻¹ * x * g ∈ H := by
+  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv, ConjAct.smul_def,
+    ConjAct.ofConjAct_toConjAct, inv_inv]
+
+lemma DecompQuotient.conjAct_relIndex_eq (x y : G)
+    (hxy : DoubleCoset.mk H₁ H₂ x = DoubleCoset.mk H₁ H₂ y) :
+    (ConjAct.toConjAct x • H₂).relIndex H₁ = (ConjAct.toConjAct y • H₂).relIndex H₁ := by
+  obtain ⟨h₁, hh₁, h₂, hh₂, rfl⟩ := DoubleCoset.rel_iff.mp (Quotient.exact hxy)
+  have hH₁ : ConjAct.toConjAct h₁ • H₁ = H₁ :=
+    Subgroup.conjAct_pointwise_smul_eq_self (Subgroup.le_normalizer hh₁)
+  have hH₂ : ConjAct.toConjAct h₂ • H₂ = H₂ :=
+    Subgroup.conjAct_pointwise_smul_eq_self (Subgroup.le_normalizer hh₂)
+  nth_rewrite 2 [← hH₁]
+  simp [mul_smul, hH₂, Subgroup.relIndex_pointwise_smul]
+
+/-- tbd -/
+abbrev DecompQuotient := H₁ ⧸ ((ConjAct.toConjAct g) • H₂).subgroupOf H₁
+
+/-- tbd -/
+def DecompQuotient.toLeftCoset :
+    DecompQuotient H₁ g H₂ → G ⧸ H₂ :=
+  Quotient.lift (fun x => (x * g : G)) fun _ _ h => by
+    rw [Quotient.eq, QuotientGroup.leftRel_apply]
+    have := (QuotientGroup.leftRel_apply.mp h)
+    simpa [mul_assoc] using mem_conjAct_pointwise_smul_iff.mp this
+
+variable {H₁ g H₂}
+
+lemma DecompQuotient.mk_eq_iff {x x' : H₁} :
+    (x : DecompQuotient H₁ g H₂) = (x' : DecompQuotient H₁ g H₂)
+      ↔ (x.val * g : G ⧸ H₂) = (x'.val * g : G ⧸ H₂):= by
+  simp [QuotientGroup.eq, mul_assoc, Subgroup.mem_subgroupOf, mem_conjAct_pointwise_smul_iff]
+
+@[simp]
+lemma DecompQuotient.toLeftCoset_apply (x : DecompQuotient H₁ g H₂) :
+    DecompQuotient.toLeftCoset H₁ g H₂ x = (x.out.val * g : G ⧸ H₂) := by
+  nth_rw 1 [← Quotient.out_eq x]
+  rfl
+
+lemma DecompQuotient.toLeftCoset.injective (H₁ H₂ : Subgroup G) (g : G) :
+    Function.Injective (DecompQuotient.toLeftCoset H₁ g H₂) := by
+  intro i j hij
+  simp only [DecompQuotient.toLeftCoset_apply] at hij
+  simpa using DecompQuotient.mk_eq_iff.mpr hij
+
+variable {H₃} in
+lemma DecompQuotient.snd_eq_of_fst_eq {g g' d : G} {i : DecompQuotient H₁ g H₂}
+    {j₁ j₂ : DecompQuotient H₂ g' H₃}
+    (h₁ : ((i.out : G) * g * ((j₁.out : G) * g') : G ⧸ H₃) = (d : G ⧸ H₃))
+    (h₂ : ((i.out : G) * g * ((j₂.out : G) * g') : G ⧸ H₃) = (d : G ⧸ H₃)) :
+    j₁ = j₂ := by
+  apply DecompQuotient.toLeftCoset.injective H₂ H₃ g'
+  have h := h₁.trans h₂.symm
+  simp only [toLeftCoset_apply, QuotientGroup.eq] at h ⊢
+  simpa [mul_assoc] using h
+
+variable (H₁ g H₂)
+
+/-- tbd -/
+@[mk_iff] class IsHeckeTriple : Prop where
+  hasFiniteDecompQuotient : (((ConjAct.toConjAct g) • H₂)).relIndex H₁ ≠ 0
+
+instance [h : IsHeckeTriple H₁ g H₂] : Fintype (DecompQuotient H₁ g H₂) :=
+  Subgroup.fintypeOfIndexNeZero h.hasFiniteDecompQuotient
+
+instance instIsHeckeTriple_diag_one (H : Subgroup G) : IsHeckeTriple H 1 H := ⟨by simp⟩
+
+instance instIsHeckeTriple_mulLeft [IsHeckeTriple H₁ g H₂] (h₁ : H₁) :
+    IsHeckeTriple H₁ (h₁ * g) H₂ := by
+  rw [isHeckeTriple_iff]
+  have := (DoubleCoset.eq H₁ H₂ (h₁ * g) g).mpr ⟨h₁⁻¹, H₁.inv_mem h₁.prop, 1, H₂.one_mem, by simp⟩
+  simpa only [← DecompQuotient.conjAct_relIndex_eq H₁ H₂ g (h₁ * g) (by simp [this])] using
+    (isHeckeTriple_iff H₁ g H₂).mp inferInstance
+
+instance instIsHeckeTriple_mulRight [IsHeckeTriple H₁ g H₂] (h₂ : H₂) :
+    IsHeckeTriple H₁ (g * h₂) H₂ := by
+  rw [isHeckeTriple_iff]
+  have := (DoubleCoset.eq H₁ H₂ (g * h₂) g).mpr ⟨1, H₁.one_mem, h₂⁻¹, H₂.inv_mem h₂.prop, by simp⟩
+  simpa only [← DecompQuotient.conjAct_relIndex_eq H₁ H₂ g (g * h₂) (by simp [this])] using
+    (isHeckeTriple_iff H₁ g H₂).mp inferInstance
+
+lemma isHeckeTriple_trans [IsHeckeTriple H₁ g H₂] [IsHeckeTriple H₂ g' H₃] :
+    IsHeckeTriple H₁ (g * g') H₃ := ⟨by
+  have h₁₂ : ((ConjAct.toConjAct g) • H₂).relIndex H₁ ≠ 0 :=
+    (isHeckeTriple_iff H₁ g H₂).mp inferInstance
+  have h₂₃ : ((ConjAct.toConjAct g) • ((ConjAct.toConjAct g') • H₃)).relIndex
+      ((ConjAct.toConjAct g) • H₂) ≠ 0 := by
+    simpa [Subgroup.relIndex_pointwise_smul] using (isHeckeTriple_iff H₂ g' H₃).mp inferInstance
+  simpa [mul_smul] using Subgroup.relIndex_ne_zero_trans h₂₃ h₁₂⟩
+
+instance instIsHeckeTriple_trans [IsHeckeTriple H₁ g H₂]
+    [IsHeckeTriple H₂ g' H₃] (h₂ : H₂) : IsHeckeTriple H₁ (g * h₂ * g') H₃ :=
+  isHeckeTriple_trans H₁ (g * h₂) H₂ g' H₃
+
+instance instIsHeckeTriple_diag_mul (H : Subgroup G) (g g' : G)
+    [IsHeckeTriple H g H] [IsHeckeTriple H g' H] : IsHeckeTriple H (g * g') H := by
+  simpa using isHeckeTriple_trans H g H g' H
+
+/-- tbd -/
+abbrev HeckeSet : Set G := Set.ofPred (fun g => IsHeckeTriple H₁ g H₂)
+
+/-- tbd -/
+abbrev HeckeSet.mk (g : G) [hg : IsHeckeTriple H₁ g H₂] : HeckeSet H₁ H₂ := ⟨g, hg⟩
+
+instance (g : HeckeSet H₁ H₂) : IsHeckeTriple H₁ g.val H₂ := g.prop
+
+/-- tbd -/
+def HeckeSet.setoid : Setoid (HeckeSet H₁ H₂) :=
+  (DoubleCoset.setoid (H₁ : Set G) H₂).comap Subtype.val
+
+/-- tbd -/
+def HeckeCoset := Quotient (HeckeSet.setoid H₁ H₂)
+
+variable {H₁ H₂} in
+lemma HeckeCoset.rel_iff {x y : HeckeSet H₁ H₂} :
+    HeckeSet.setoid H₁ H₂ x y ↔ ∃ h₁ ∈ H₁, ∃ h₂ ∈ H₂, y = h₁ * x * h₂ := by
+  change DoubleCoset.setoid _ _ x.val y.val ↔ _
+  rw [DoubleCoset.rel_iff]
+
+variable {H₁ H₂} in
+/-- tbd -/
+abbrev HeckeCoset.mk (x : HeckeSet H₁ H₂) :
+    HeckeCoset H₁ H₂ := Quotient.mk (HeckeSet.setoid H₁ H₂) x
+
+/-- tbd -/
+abbrev HeckeCoset.mk' (g : G) [IsHeckeTriple H₁ g H₂] :
+    HeckeCoset H₁ H₂ := mk (HeckeSet.mk H₁ H₂ g)
+
+lemma HeckeCoset.mk_mk (g : G) [IsHeckeTriple H₁ g H₂] :
+    mk (HeckeSet.mk H₁ H₂ g) = mk' H₁ H₂ g := rfl
+
+variable {H₁ H₂ H₃}
+
+/-- tbd -/
+abbrev HeckeCoset.rep (x : HeckeCoset H₁ H₂) : HeckeSet H₁ H₂ := x.out
+
+@[simp]
+lemma HeckeCoset.mk_rep (x : HeckeCoset H₁ H₂) : mk x.rep = x := Quotient.out_eq' x
+
+lemma HeckeCoset.mk_eq_iff {x y : HeckeSet H₁ H₂} :
+    mk x = mk y ↔ ∃ (h₁ : H₁) (h₂ : H₂), y.val = h₁ * x.val * h₂ := by
+  have : mk x = mk y ↔ HeckeSet.setoid H₁ H₂ x y := Quotient.eq
+  rw [this, HeckeCoset.rel_iff]
+  simp
+
+lemma HeckeCoset.mk_eq_iff' {x y : HeckeSet H₁ H₂} :
+    mk x = mk y ↔ DoubleCoset.mk H₁ H₂ x.val = DoubleCoset.mk H₁ H₂ y.val := by
+  simp [HeckeCoset.mk_eq_iff, DoubleCoset.eq]
+
+lemma HeckeCoset.rep_leftCoset_ne_if_ne {x y : HeckeCoset H₁ H₂} (hxy : x ≠ y) (h₁ : H₁) :
+    ((h₁ : G) * x.rep.val : G ⧸ H₂) ≠ (y.rep.val : G ⧸ H₂) := by
+  intro h
+  apply hxy
+  rw [← HeckeCoset.mk_rep x, ← HeckeCoset.mk_rep y, HeckeCoset.mk_eq_iff.mpr]
+  exact ⟨h₁, ⟨((h₁ : G) * x.rep)⁻¹ * y.rep, QuotientGroup.eq.mp h⟩, by simp [mul_assoc]⟩
+
+lemma HeckeCoset.rep_mk_leftCoset.injective :
+    Function.Injective (fun x : HeckeCoset H₁ H₂ => (x.rep : G ⧸ H₂)) := by
+  intro x y h
+  rw [← HeckeCoset.mk_rep x, ← HeckeCoset.mk_rep y]
+  exact Quotient.sound <| DoubleCoset.rel_iff.mpr
+    ⟨1, by simp, _, QuotientGroup.leftRel_apply.mp (Quotient.exact h), by simp⟩
+
+/-- tbd -/
+def HeckeCoset.degree (x : HeckeCoset H₁ H₂) :
+    ℕ := (ConjAct.toConjAct x.rep.val • H₂).relIndex H₁
+
+lemma HeckeCoset.degree_ne_zero (x : HeckeCoset H₁ H₂) :
+    x.degree ≠ 0 := by
+  simpa only [degree, ← Subgroup.isFiniteRelIndex_iff_relIndex_ne_zero] using
+    IsHeckeTriple.hasFiniteDecompQuotient
+
+@[simp]
+lemma HeckeCoset.diag_one_rep_mem : (mk' H H 1).rep.val ∈ H := by
+  obtain ⟨a, b, heq⟩ := HeckeCoset.mk_eq_iff.mp (show mk' H H 1 = mk (mk' H H 1).rep from by simp)
+  simp [heq, H.mul_mem a.prop b.prop]
+
+@[simp]
+lemma HeckeCoset.diag_one_degree_eq_one : (mk' H H 1).degree = 1 := by
+  have : ConjAct.toConjAct (mk' H H 1).rep.val • H = H :=
+    Subgroup.conjAct_pointwise_smul_eq_self (Subgroup.le_normalizer (by simp))
+  simp [degree, this]
+
+/-- tbd -/
+def HeckeCoset.mulMap (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃)
+    (p : DecompQuotient H₁ x.rep H₂ × DecompQuotient H₂ y.rep H₃) : HeckeCoset H₁ H₃ :=
+  HeckeCoset.mk' H₁ H₃ (p.1.out * x.rep.val * p.2.out * y.rep)
+
+lemma HeckeCoset.mulMap_eq_of_mk_eq (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃)
+    (z : HeckeCoset H₁ H₃) {p : DecompQuotient H₁ x.rep H₂ × DecompQuotient H₂ y.rep H₃}
+    (h : ((p.1.out * x.rep.val * ((p.2.out : G) * y.rep) : G) : G ⧸ H₃) = (z.rep : G ⧸ H₃)) :
+    x.mulMap y p = z := by
+  rw [← HeckeCoset.mk_rep z]
+  apply HeckeCoset.mk_eq_iff.mpr
+  exact ⟨1,⟨((p.1.out * x.rep.val * p.2.out * y.rep)⁻¹ * z.rep), by
+    simpa [mul_assoc] using QuotientGroup.eq.mp h⟩, by simp [mul_assoc]⟩
+
+/-- tbd -/
+def HeckeCoset.multiplicity (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃) :
+    HeckeCoset H₁ H₃ →₀ ℕ :=
+  Finsupp.ofSupportFinite
+    (fun z => Nat.card {p : DecompQuotient H₁ x.rep H₂ × DecompQuotient H₂ y.rep H₃ |
+      ((p.1.out : G) * x.rep * ((p.2.out : G) * y.rep) : G ⧸ H₃) = (z.rep : G ⧸ H₃)}) <| by
+    classical
+    refine (Finset.univ.image (x.mulMap y)).finite_toSet.subset ?_
+    intro z hz
+    simp only [Function.mem_support, Nat.card_ne_zero] at hz
+    obtain ⟨⟨p, hp⟩, _⟩ := hz
+    exact Finset.mem_image.mpr ⟨p, Finset.mem_univ p, mulMap_eq_of_mk_eq x y z hp⟩
+
+lemma HeckeCoset.multiplicity_apply (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃)
+    (z : HeckeCoset H₁ H₃) :
+    x.multiplicity y z =
+      Nat.card {p : DecompQuotient H₁ x.rep H₂ × DecompQuotient H₂ y.rep H₃ |
+        (p.1.out * x.rep.val * (p.2.out * y.rep.val) : G ⧸ H₃) = (z.rep : G ⧸ H₃)} := rfl
+
+end Coset
+
+open MonoidAlgebra
+
+section Bimodule₁
+
+variable {H₁ H₂}
+
+/-- tbd -/
+def HeckeCosetVector : HeckeCoset H₁ H₂ → k[G ⧸ H₂] :=
+  fun x => ∑ i, cosetVector k (DecompQuotient.toLeftCoset H₁ x.rep H₂ i)
+
+lemma HeckeCosetVector_eq_sum (x : HeckeCoset H₁ H₂) :
+    HeckeCosetVector k x =
+      ∑ (i : DecompQuotient H₁ x.rep H₂), cosetVector k (i.out * x.rep.val : G) := by
+  simp [HeckeCosetVector]
+
+lemma HeckeCosetVector_isInvariant (x : HeckeCoset H₁ H₂) (h₁ : H₁) :
+    ofMulAction k G (G ⧸ H₂) h₁ (HeckeCosetVector k x) = HeckeCosetVector k x := by
+  simp only [HeckeCosetVector_eq_sum, map_sum, ofMulAction_single, MulAction.Quotient.smul_mk,
+    smul_eq_mul]
+  exact Fintype.sum_equiv (MulAction.toPerm h₁) _ _ fun y => by
+    congr 1
+    simp only [← mul_assoc, ← Subgroup.coe_mul, ← DecompQuotient.mk_eq_iff]
+    simp [← MulAction.Quotient.mk_smul_out]
+
+variable {k}
+
+/-- tbd -/
+def HeckeCoset.mk₁ (x : HeckeCoset H₁ H₂) : HeckeBimodule₁ k H₁ H₂ :=
+  HeckeModule₁.invariantsEquiv H₁ _ ⟨HeckeCosetVector k x, HeckeCosetVector_isInvariant k x⟩
+
+@[simp]
+lemma HeckeCoset.mk₁_apply (x : HeckeCoset H₁ H₂) :
+    x.mk₁ (cosetVector k (1 : G)) = HeckeCosetVector k x := by
+  simp [mk₁]
+
+namespace HeckeBimodule₁
+
+/-- tbd -/
+abbrev eval₁ (f : HeckeBimodule₁ k H₁ H₂) : k[G ⧸ H₂] := f (cosetVector k (1 : G))
+
+lemma eval₁_coeff_isInvariant (f : HeckeBimodule₁ k H₁ H₂) (h₁ : H₁) (x : G ⧸ H₂) :
+    f.eval₁.coeff ((h₁ : G) • x) = f.eval₁.coeff x := by
+  have : ofMulAction k G (G ⧸ H₂) h₁ f.eval₁ = f.eval₁ := by
+    simp [← IntertwiningMap.isIntertwining]
+  simpa using congrArg (fun w => w.coeff ((h₁ : G) • x)) this.symm
+
+lemma isHeckeTriple_of_eval₁_coeff_ne_zero (f : HeckeBimodule₁ k H₁ H₂) (y : G)
+    (hy : f.eval₁.coeff (y : G ⧸ H₂) ≠ 0) : IsHeckeTriple H₁ y H₂ := ⟨by
+  apply Subgroup.isFiniteRelIndex_iff_relIndex_ne_zero.mp
+  have : Finite (DecompQuotient H₁ y H₂) :=
+    Finite.of_injective (β := f.eval₁.coeff.support)
+      (fun z => ⟨DecompQuotient.toLeftCoset H₁ y H₂ z, by
+        simpa using (eval₁_coeff_isInvariant f _ _).trans_ne hy⟩)
+      fun _ _ h => DecompQuotient.toLeftCoset.injective H₁ H₂ y (congrArg Subtype.val h)
+  exact Subgroup.isFiniteRelIndex_iff_finiteIndex.mpr Subgroup.finiteIndex_of_finite_quotient⟩
+
+variable (k H₁ H₂)
+
+/-- tbd -/
+def toHeckeCosetModuleMap :
+    HeckeBimodule₁ k H₁ H₂ →ₗ[k] k[HeckeCoset H₁ H₂] where
+  toFun f := comapDomain (fun x => (x.rep : G ⧸ H₂)) (HeckeCoset.rep_mk_leftCoset.injective) f.eval₁
+  map_add' := by simp [eval₁]
+  map_smul' _ _ := by ext; simp [eval₁]
+
+/-- tbd -/
+def toHeckeCosetModuleInv :
+    k[HeckeCoset H₁ H₂] →ₗ[k] HeckeBimodule₁ k H₁ H₂ :=
+  Finsupp.lift _ k _ (fun x => x.mk₁) ∘ₗ (MonoidAlgebra.coeffLinearEquiv k).toLinearMap
+
+private lemma toHeckeCosetModuleMap_apply_mk₁ (x : HeckeCoset H₁ H₂) :
+    (toHeckeCosetModuleMap k H₁ H₂) x.mk₁ = single x 1
+  := by classical
+  ext y
+  simp only [toHeckeCosetModuleMap, LinearMap.coe_mk, AddHom.coe_mk, HeckeCoset.mk₁_apply,
+    HeckeCosetVector_eq_sum, coeff_comapDomain, coeff_sum, coeff_single,
+    Finsupp.comapDomain_apply, Finsupp.coe_finsetSum, Finset.sum_apply]
+  by_cases hxy : x = y
+  · rw [← one_mul y.rep.val, ← H₁.coe_one]
+    simp only [← hxy, Finsupp.single_apply, ← DecompQuotient.mk_eq_iff]
+    simp
+  · simp [hxy, HeckeCoset.rep_leftCoset_ne_if_ne]
+
+private lemma toHeckeCosetModuleInv_apply_single (x : HeckeCoset H₁ H₂) :
+    ((toHeckeCosetModuleInv k H₁ H₂) (single x 1)) = x.mk₁ := by
+  simp [toHeckeCosetModuleInv]
+
+private lemma toHeckeCosetModuleInv_isRightInv (x : k[HeckeCoset H₁ H₂]) :
+    toHeckeCosetModuleMap k H₁ H₂ (toHeckeCosetModuleInv k H₁ H₂ x) = x :=
+  induction_linear x (by simp) (fun _ _ h h' => by nth_rw 2 [← h, ← h']; simp) <| by
+    intro _ r
+    rw [← mul_one r, ← MonoidAlgebra.smul_single', map_smul]
+    simp [toHeckeCosetModuleMap_apply_mk₁, toHeckeCosetModuleInv_apply_single]
+
+private lemma toHeckeCosetModuleMap.injective :
+    Function.Injective (toHeckeCosetModuleMap k H₁ H₂) := by
+  classical
+  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+  intro f hf
+  ext y
+  simp only [IntertwiningMap.coe_zero, Pi.ofNat_apply, coeff_zero, Finsupp.coe_zero]
+  by_contra! hy
+  apply hy
+  have : IsHeckeTriple H₁ y.out H₂ := isHeckeTriple_of_eval₁_coeff_ne_zero f y.out (by simp [hy])
+  obtain ⟨h₁, h₂, heq⟩ := HeckeCoset.mk_eq_iff.mp
+    (show HeckeCoset.mk ((HeckeCoset.mk' H₁ H₂ y.out).rep) = HeckeCoset.mk (HeckeSet.mk H₁ H₂ y.out)
+      from by simp [HeckeCoset.mk_mk])
+  have : y = ((HeckeSet.mk H₁ H₂ y.out : G) : G ⧸ H₂) := by simp
+  rw [this, heq, QuotientGroup.mk_mul_of_mem _ h₂.prop]
+  simp only [← smul_eq_mul, ← MulAction.Quotient.smul_mk, eval₁_coeff_isInvariant]
+  simpa [toHeckeCosetModuleMap] using congrArg (fun f => f.coeff (HeckeCoset.mk' H₁ H₂ y.out)) hf
+
+/-- tbd -/
+def toHeckeCosetModuleEquiv :
+    HeckeBimodule₁ k H₁ H₂ ≃ₗ[k] k[HeckeCoset H₁ H₂] where
+  toLinearMap := toHeckeCosetModuleMap k H₁ H₂
+  invFun := toHeckeCosetModuleInv k H₁ H₂
+  left_inv f := by
+    apply toHeckeCosetModuleMap.injective
+    exact toHeckeCosetModuleInv_isRightInv k H₁ H₂ ((toHeckeCosetModuleMap k H₁ H₂) f)
+  right_inv := by
+    exact toHeckeCosetModuleInv_isRightInv k H₁ H₂
+
+@[simp]
+lemma toHeckeCosetModuleEquiv_apply (x : HeckeCoset H₁ H₂) :
+    (toHeckeCosetModuleEquiv k H₁ H₂) x.mk₁ = single x 1 :=
+  toHeckeCosetModuleMap_apply_mk₁ k H₁ H₂ x
+
+@[simp]
+lemma toHeckeCosetModuleEquiv_symm_apply (x : HeckeCoset H₁ H₂) :
+    ((toHeckeCosetModuleEquiv k H₁ H₂).symm (single x 1)) = x.mk₁ :=
+  toHeckeCosetModuleInv_apply_single k H₁ H₂ x
+
+variable {k H₁ H₂}
+
+/-- tbd -/
+def coeff :
+    HeckeBimodule₁ k H₁ H₂ →ₗ[k] (HeckeCoset H₁ H₂ →₀ k) :=
+  MonoidAlgebra.coeffLinearEquiv (S := k) (R := k) (M := HeckeCoset H₁ H₂) ∘ₗ
+    (toHeckeCosetModuleEquiv k H₁ H₂).toLinearMap
+
+@[simp]
+lemma coeff_apply (x y : HeckeCoset H₁ H₂) [Decidable (x = y)] :
+    x.mk₁.coeff y = if x = y then (1 : k) else 0 := by
+  simp [coeff, Finsupp.single_apply]
+
+@[ext]
+lemma ext (x y : HeckeBimodule₁ k H₁ H₂) (hxy : ∀ z, x.coeff z = y.coeff z) :
+    x = y := by classical
+  apply (toHeckeCosetModuleEquiv k H₁ H₂).injective
+  ext z
+  exact hxy z
+
+lemma induction_on (f : HeckeBimodule₁ k H₁ H₂) {p : HeckeBimodule₁ k H₁ H₂ → Prop}
+    (zero : p 0)
+    (mk : ∀ (g : HeckeCoset H₁ H₂), p (g.mk₁))
+    (smul : ∀ (r : k) (x : HeckeBimodule₁ k H₁ H₂), p x → p (r • x))
+    (add : ∀ x y, p x → p y → p (x + y)) : p f := by
+  let E := toHeckeCosetModuleEquiv k H₁ H₂
+  rw [← E.symm_apply_apply f]
+  refine MonoidAlgebra.induction_linear (E f) ?_ ?_ ?_
+  · simp [zero]
+  · intro x y hx hy
+    simpa using add (E.symm x) (E.symm y) hx hy
+  · intro g r
+    rw [← mul_one r, ← MonoidAlgebra.smul_single', map_smul]
+    simpa [E] using smul r g.mk₁ (mk g)
+
+end HeckeBimodule₁
+
+end Bimodule₁
+
+section Action
+
+variable {k H₁ H₂ H₃ ρ}
+
+/-- tbd -/
+def HeckeAction : HeckeBimodule₁ k H₁ H₂ →ₗ[k] HeckeModule₁ H₂ ρ →ₗ[k] HeckeModule₁ H₁ ρ :=
+  (IntertwiningMap.llcomp (ofMulAction k G (G ⧸ H₁)) (ofMulAction k G (G ⧸ H₂)) ρ).flip
+
+lemma HeckeAction_eq_comp (x : HeckeBimodule₁ k H₁ H₂) (v : HeckeModule₁ H₂ ρ) :
+    HeckeAction x v = v.comp x := by
+  rw [HeckeAction, LinearMap.flip_apply, IntertwiningMap.comp_def]
+
+lemma HeckeAction_assoc (x : HeckeBimodule₁ k H₁ H₂) (y : HeckeBimodule₁ k H₂ H₃)
+    (v : HeckeModule₁ H₃ ρ) :
+    HeckeAction (HeckeAction x y) v = HeckeAction x (HeckeAction y v) := by
+  ext
+  simp [HeckeAction_eq_comp]
+
+lemma HeckeAction.diag_mul_eq (x y : HeckeBimodule₁ k H H) :
+    HeckeAction (y * x) (k := k) (ρ := ρ) = (HeckeAction x) * (HeckeAction y) := by
+  rw [HeckeAction]
+  rfl
+
+lemma HeckeAction_mk₁_apply (x : HeckeCoset H₁ H₂) (v : HeckeModule₁ H₂ ρ) :
+    HeckeAction x.mk₁ v (cosetVector k (1 : G)) =
+      ∑ (i : DecompQuotient H₁ x.rep H₂), ρ (i.out * x.rep) (v (cosetVector k (1 : H₂))) := by
+  simp only [HeckeAction_eq_comp, IntertwiningMap.comp_apply, HeckeCoset.mk₁_apply, map_mul,
+    Module.End.mul_apply]
+  simp [HeckeCosetVector_eq_sum, ← IntertwiningMap.isIntertwining]
+
+theorem HeckeAction_mk₁_mk₁ (x : HeckeCoset H₁ H₂) (y : HeckeCoset H₂ H₃) :
+    HeckeAction x.mk₁ y.mk₁ = (x.multiplicity y).sum fun w n => n • w.mk₁
+    (k := k) := by classical
+  ext z
+  calc
+    _ = ((HeckeAction x.mk₁ y.mk₁) (cosetVector k (1 : G))).coeff (z.rep : G ⧸ H₃) := rfl
+    _ = _ := by
+      have : HeckeAction x.mk₁ y.mk₁ (cosetVector k (1 : G)) =
+          ∑ (p : DecompQuotient H₁ x.rep H₂ × DecompQuotient H₂ y.rep H₃),
+            cosetVector k (p.1.out * x.rep.val * p.2.out * y.rep : G) := by
+        simp only [HeckeAction_mk₁_apply, map_mul, OneMemClass.coe_one, HeckeCoset.mk₁_apply,
+          HeckeCosetVector_eq_sum, map_sum, Module.End.mul_apply, ofMulAction_single,
+          MulAction.Quotient.smul_mk, smul_eq_mul]
+        simp [← Fintype.sum_prod_type', mul_assoc]
+      simpa [this, map_finsuppSum, Finsupp.single_apply, HeckeCoset.multiplicity_apply, mul_assoc]
+        using fun h => by simp [h]
+
+end Action
+
+variable {k H}
+
+section Algebra₁
+
+variable (f : HeckeAlgebra₁ k H) (ρ : Representation k G V)
+
+instance instPrecompSMul (σ : Representation k G W) :
+    SMul (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap σ ρ) where
+  smul f g := g.comp f.unop
+
+instance instPrecompModule (σ : Representation k G W) :
+    Module (MulOpposite (IntertwiningMap σ σ)) (IntertwiningMap σ ρ) :=
+  fast_instance%
+  {one_smul _ := rfl, mul_smul _ _ _ := rfl, smul_zero _ := IntertwiningMap.zero_comp _ _ _ _,
+    smul_add f x y := IntertwiningMap.comp_add _ _ _ x y f.unop,
+    add_smul x y f := IntertwiningMap.add_comp _ _ _ f x.unop y.unop,
+    zero_smul := IntertwiningMap.comp_zero _ _ _}
+
+/-- tbd -/
+def HeckeCoset.diagMk₁ (x : HeckeCoset H H) :
+    HeckeAlgebra₁ k H := MulOpposite.opLinearEquiv k x.mk₁
+
+lemma HeckeCoset.diagMk₁_one :
+    (mk' H H 1).diagMk₁ (k := k) = 1 := by
+  simp only [diagMk₁, MulOpposite.coe_opLinearEquiv, MulOpposite.op_eq_one_iff]
+  apply HeckeModule₁.ext
+  have : Fintype.card (DecompQuotient H (mk' H H 1).rep H) = 1 := by
+    simpa [degree, Subgroup.relIndex, Subgroup.index] using diag_one_degree_eq_one (H := H)
+  simp [HeckeCosetVector_eq_sum, this]
+
+namespace HeckeAlgebra₁
+
+lemma smul_eq_comp (v : HeckeModule₁ H ρ) :
+    f • v = v.comp f.unop :=
+  rfl
+
+lemma smul_eq_mul (g : HeckeAlgebra₁ k H) :
+    f • g = f * g :=
+  rfl
+
+lemma mul_eq_HeckeAction (g : HeckeAlgebra₁ k H) :
+    f * g = MulOpposite.op (HeckeAction f.unop g.unop) :=
+  rfl
+
+lemma diagMk₁_mul_diagMk₁ (x y : HeckeCoset H H) :
+    x.diagMk₁ * y.diagMk₁ (k := k) = (x.multiplicity y).sum fun w n => n • w.diagMk₁ := by
+  simp only [mul_eq_HeckeAction, HeckeCoset.diagMk₁, ← Nat.cast_smul_eq_nsmul k,
+    ← (MulOpposite.opLinearEquiv k).map_smul, ← map_finsuppSum]
+  simp [HeckeAction_mk₁_mk₁, Nat.cast_smul_eq_nsmul k]
+
+variable (k H) in
+/-- tbd -/
+@[simps! symm_apply]
+def toHeckeCosetModuleEquiv :
+    HeckeAlgebra₁ k H ≃ₗ[k] k[HeckeCoset H H] :=
+  (MulOpposite.opLinearEquiv k).symm.trans (HeckeBimodule₁.toHeckeCosetModuleEquiv k H H)
+
+@[simp]
+lemma toHeckeCosetModuleEquiv_apply (x : HeckeCoset H H) :
+    toHeckeCosetModuleEquiv k H x.diagMk₁ = single x (1 : k) := by
+  apply (toHeckeCosetModuleEquiv k H).symm.injective
+  simp [HeckeCoset.diagMk₁]
+
+/-- tbd -/
+def coeff :
+    HeckeAlgebra₁ k H →ₗ[k] (HeckeCoset H H →₀ k) :=
+  MonoidAlgebra.coeffLinearEquiv k (S := k) (M := HeckeCoset H H) ∘ₗ
+    (toHeckeCosetModuleEquiv k H).toLinearMap
+
+@[simp]
+lemma coeff_apply (x y : HeckeCoset H H) [Decidable (x = y)] :
+    x.diagMk₁.coeff y = if x = y then (1 : k) else 0 := by
+  simp [coeff, HeckeAlgebra₁.toHeckeCosetModuleEquiv_apply, Finsupp.single_apply]
+
+@[ext]
+lemma ext (f g : HeckeAlgebra₁ k H) (h : ∀ x, f.coeff x = g.coeff x) :
+    f = g := by
+  apply (toHeckeCosetModuleEquiv k H).injective
+  ext x
+  exact h x
+
+lemma induction_on {p : HeckeAlgebra₁ k H → Prop}
+    (mk : ∀ x : HeckeCoset H H, p (x.diagMk₁))
+    (smul : ∀ (r : k) x , p x → p (r • x))
+    (add : ∀ x y, p x → p y → p (x + y)) :
+    p f := by
+  rw [← MulOpposite.op_unop f]
+  refine HeckeBimodule₁.induction_on f.unop (p := fun x => p (MulOpposite.op x)) ?_ ?_ ?_ ?_
+  · simpa using smul 0 (HeckeCoset.mk' H H 1).diagMk₁ (mk (HeckeCoset.mk' H H 1))
+  · exact fun x => by simpa [HeckeCoset.diagMk₁] using mk x
+  · exact fun r x hx => by simpa using smul r (MulOpposite.op x) hx
+  · exact fun x y hx hy => by simpa using add (MulOpposite.op x) (MulOpposite.op y) hx hy
+
+end HeckeAlgebra₁
+
+end Algebra₁
+
+section Unimodular
+
+/-- tbd -/
+class IsHeckeUnimodular (H : Subgroup G) : Prop where
+  relIndex_eq_inv : ∀ (g : HeckeSet H H),
+    (ConjAct.toConjAct g.val • H).relIndex H = (ConjAct.toConjAct g.val⁻¹ • H).relIndex H
+
+instance [IsHeckeUnimodular H] (g : G) [IsHeckeTriple H g H] :
+    IsHeckeTriple H g⁻¹ H := by
+  rw [isHeckeTriple_iff, ← IsHeckeUnimodular.relIndex_eq_inv (g := HeckeSet.mk H H g)]
+  exact (isHeckeTriple_iff H g H).mp inferInstance
+
+/-- tbd -/
+abbrev HeckeSet.inv (x : HeckeSet H H) [IsHeckeTriple H x⁻¹ H] :
+    HeckeSet H H := HeckeSet.mk H H (x : G)⁻¹
+
+variable [IsHeckeUnimodular H]
+
+/-- tbd -/
+def HeckeCoset.inv (x : HeckeCoset H H) :
+    HeckeCoset H H :=
+  Quotient.liftOn x (fun x ↦ (mk (HeckeSet.inv x))) fun x y hxy => by
+    apply Quotient.sound
+    simp only [HeckeCoset.rel_iff] at hxy ⊢
+    obtain ⟨h₁, hh₁, h₂, hh₂, heq⟩ := hxy
+    exact ⟨h₂⁻¹, H.inv_mem hh₂, h₁⁻¹, H.inv_mem hh₁, by simp [heq, mul_assoc]⟩
+
+lemma HeckeCoset.mk_inv (x : HeckeSet H H) :
+    mk (HeckeSet.inv x) = (mk x).inv := by
+  rfl
+
+lemma HeckeCoset.mk_inv_rep (x : HeckeCoset H H) :
+    mk (HeckeSet.inv x.rep) = x.inv  := by
+  simp [mk_inv]
+
+@[simp]
+lemma HeckeCoset.inv_inv (x : HeckeCoset H H) :
+    x.inv.inv = x :=
+  Quotient.inductionOn x fun x => by
+    simp [← mk_inv, HeckeSet.inv]
+
+lemma HeckeCoset.inv_eq_iff {x y : HeckeCoset H H} :
+    x.inv = y ↔ x = y.inv :=
+  ⟨by intro rfl; simp, by intro rfl; simp⟩
+
+@[simp]
+lemma HeckeCoset.inv_degree_eq_degree (x : HeckeCoset H H) :
+    x.inv.degree = x.degree := by
+  simp only [HeckeCoset.degree, IsHeckeUnimodular.relIndex_eq_inv (g := x.rep), eq_comm]
+  apply DecompQuotient.conjAct_relIndex_eq _ (y := x.inv.rep.val)
+  simpa [← HeckeCoset.mk_eq_iff' (x := HeckeSet.mk H H (x.rep : G)⁻¹)] using mk_inv_rep x
+
+@[simp]
+lemma HeckeCoset.diag_one_inv_eq_self :
+    (mk' H H 1).inv = (mk' H H 1) := by
+  simp [← mk_mk, ← mk_inv, HeckeSet.inv]
+
+lemma HeckeCoset.multiplicity_self_inv_one_eq_degree (x : HeckeCoset H H) :
+    x.multiplicity x.inv (mk' H H 1) = x.degree := by classical
+  simp only  [multiplicity_apply, degree]
+  obtain ⟨h₁, h₂, hinv⟩ := mk_eq_iff.mp
+    (show mk (HeckeSet.inv x.rep) = mk x.inv.rep by simp [mk_inv])
+  let j : DecompQuotient H x.inv.rep H := QuotientGroup.mk h₁⁻¹
+  -- The pain is due to the absence of a "independence of representatives" lemma for `multiplicity`.
+  have hj :
+    ((j.out * x.inv.rep : G) : G ⧸ H) = ((x.rep⁻¹ : G) : G ⧸ H) := by
+    calc
+      _ = ((h₁⁻¹ * x.inv.rep : G) : G ⧸ H):= by
+        rw [← DecompQuotient.mk_eq_iff]; simp [j]
+      _ = _ := by
+        simp [hinv, mul_assoc]
+  have heq (i : DecompQuotient H x.rep H) :
+      (i.out * x.rep.val * (j.out * x.inv.rep.val) : G ⧸ H)
+        = ((mk' H H 1).rep : G ⧸ H) := by
+    calc
+      _ = (i.out : G ⧸ H) := by
+        simpa [MulAction.Quotient.smul_mk, smul_eq_mul, mul_assoc] using
+          congrArg (fun q : G ⧸ H => (i.out * x.rep : G) • q) hj
+      _ = _ := by
+        simpa [QuotientGroup.eq (a := i.out.val)] using H.mul_mem (H.inv_mem i.out.prop) (by simp)
+  let equiv :
+      {p : DecompQuotient H x.rep H × DecompQuotient H x.inv.rep H |
+        ((p.1.out * x.rep * (p.2.out * x.inv.rep) : G) :  G ⧸ H)= ((mk' H H 1).rep.val : G ⧸ H)}
+      ≃ DecompQuotient H x.rep H :=
+    { toFun p := p.1.1
+      invFun i := ⟨(i, j), heq i⟩
+      left_inv p := Subtype.ext (Prod.ext rfl (DecompQuotient.snd_eq_of_fst_eq (heq p.1.1) p.prop))
+      right_inv _ := rfl}
+  simpa [Subgroup.relIndex, Subgroup.index] using Nat.card_congr equiv
+
+lemma HeckeCoset.multiplicity_self_ne_inv_one_eq_zero {x y : HeckeCoset H H} (h : y ≠ x.inv) :
+    x.multiplicity y (mk' H H 1) = 0 := by
+  simp only [multiplicity_apply]
+  by_contra hne
+  obtain ⟨p, hp⟩ := (Nat.card_ne_zero.mp hne).left
+  simp only [Set.mem_ofPred_eq, ← mul_assoc, QuotientGroup.eq, mul_inv_rev] at hp
+  have heq : y = x.inv := by
+    rw [← HeckeCoset.mk_rep y, ← mk_inv_rep]
+    apply mk_eq_iff.mpr
+    have : y.rep.val⁻¹ * p.2.out⁻¹ * x.rep.val⁻¹ ∈ H := by
+      simpa [mul_assoc] using
+        H.mul_mem hp (H.mul_mem (H.inv_mem (HeckeCoset.diag_one_rep_mem H)) p.1.out.prop)
+    use ⟨p.2.out, p.2.out.prop⟩, ⟨(y.rep.val⁻¹ * p.2.out⁻¹ * x.rep.val⁻¹), this⟩
+    simp [mul_assoc]
+  exact h heq
+
+@[simp]
+lemma HeckeCoset.multiplicity_apply_one [DecidableEq (HeckeCoset H H)] {x y : HeckeCoset H H} :
+    x.multiplicity y (mk' H H 1) = if y = x.inv then (x.degree : k) else 0 := by
+  by_cases h : y = x.inv
+  · simp [h, HeckeCoset.multiplicity_self_inv_one_eq_degree]
+  · simp [h, HeckeCoset.multiplicity_self_ne_inv_one_eq_zero]
+
+end Unimodular
+
+section Invertible
+
+variable (k) in
+/-- tbd -/
+class IsHeckeInvertible (H : Subgroup G) where
+  /-- tbd -/
+  degreeInv : HeckeCoset H H → k
+  /-- tbd -/
+  degreeInv_mul_cancel : ∀ x, degreeInv x * x.degree = 1
+
+variable (k) in
+/-- tbd -/
+def HeckeCoset.degreeInv [IsHeckeInvertible k H] (x : HeckeCoset H H) :
+    k := (IsHeckeInvertible.degreeInv x)
+
+@[simp]
+lemma HeckeCoset.degreeInv_mul_cancel [IsHeckeInvertible k H] (x : HeckeCoset H H) :
+    x.degreeInv k * x.degree = 1 :=
+  IsHeckeInvertible.degreeInv_mul_cancel x
+
+@[simp]
+lemma HeckeCoset.mul_degreeInv_cancel [IsHeckeInvertible k H] (x : HeckeCoset H H) :
+    x.degree * x.degreeInv k = 1 := by
+  simpa [mul_comm] using degreeInv_mul_cancel x (k := k)
+
+@[simp]
+lemma HeckeCoset.inv_degreeInv [IsHeckeInvertible k H] [IsHeckeUnimodular H] (x : HeckeCoset H H) :
+    x.inv.degreeInv k = x.degreeInv k := by
+  calc
+    _ = x.inv.degreeInv k * x.inv.degree * x.degreeInv k := by simp [mul_assoc]
+    _ = x.degreeInv k := by rw [HeckeCoset.degreeInv_mul_cancel, one_mul]
+
+instance {k : Type*} [Field k] [CharZero k] : IsHeckeInvertible k H where
+  degreeInv x := (x.degree : k)⁻¹
+  degreeInv_mul_cancel _ := by simp [HeckeCoset.degree_ne_zero]
+
+end Invertible
+
+section coeff₁
+
+variable {ρ : Representation k G V} (f : HeckeAlgebra₁ k H)
+
+/-- tbd -/
+abbrev HeckeAlgebra₁.coeff₁ : k := f.coeff (HeckeCoset.mk' H H 1)
+
+lemma HeckeAlgebra₁.coeff_diagMk₁_mul_diagMk₁ {x y z : HeckeCoset H H} :
+    (x.diagMk₁ * y.diagMk₁).coeff z = (x.multiplicity y z : k) := by classical
+  simp only [diagMk₁_mul_diagMk₁, coeff, map_finsuppSum, ← Nat.cast_smul_eq_nsmul k, map_smul]
+  simpa [Finsupp.single_apply] using fun h => by simp [h]
+
+lemma HeckeAlgebra₁.coeff₁_mul_diagMk₁ [IsHeckeUnimodular H] (f : HeckeAlgebra₁ k H)
+    (x : HeckeCoset H H) :
+    (f * x.diagMk₁).coeff₁ = x.degree • f.coeff x.inv := by classical
+  apply HeckeAlgebra₁.induction_on f
+  · intro y
+    simp only [coeff_diagMk₁_mul_diagMk₁, HeckeCoset.multiplicity_apply_one, coeff_apply, smul_ite,
+      nsmul_eq_mul, mul_one]
+    by_cases h : y = x.inv
+    · simp [h]
+    · simp only [← HeckeCoset.inv_eq_iff, h, ↓reduceIte, mul_zero, ite_eq_right_iff]
+      exact fun h' => by simpa using h h'.symm
+  · exact fun _ _ hx => by simp [coeff₁, hx, ← mul_assoc, mul_comm]
+  · exact fun _ _ hx hy => by simp [coeff₁, add_mul, hx, hy]
+
+theorem HeckeAlgebra₁.coeff₁_isSymmetric {x y : HeckeAlgebra₁ k H} [IsHeckeUnimodular H] :
+    (x * y).coeff₁ = (y * x).coeff₁ := by classical
+  apply HeckeAlgebra₁.induction_on x
+  · intro x
+    apply HeckeAlgebra₁.induction_on y
+    · intro y
+      simp only [coeff₁, diagMk₁_mul_diagMk₁, ← Nat.cast_smul_eq_nsmul k, map_finsuppSum, map_smul,
+        Finsupp.sum_apply, Finsupp.coe_smul, Pi.smul_apply, coeff_apply, _root_.smul_eq_mul,
+        mul_ite, mul_one, mul_zero, Finsupp.sum_ite_eq', Finsupp.mem_support_iff, ne_eq,
+        HeckeCoset.multiplicity_apply_one, ite_not]
+      by_cases h : y = x.inv
+      · have : x = y.inv := by simp [h]
+        rw [h, HeckeCoset.multiplicity_self_inv_one_eq_degree]
+        simp [this, HeckeCoset.multiplicity_self_inv_one_eq_degree, HeckeCoset.degree_ne_zero]
+      · have : x ≠ y.inv := by
+          by_contra heq
+          exact h (HeckeCoset.inv_eq_iff.mpr heq).symm
+        simp [h, this]
+    · exact fun _ _ hx => by simp [coeff₁, hx]
+    · exact fun _ _ hx hy => by simp [coeff₁, mul_add, add_mul, hx, hy]
+  · exact fun _ _ hx => by simp [coeff₁, hx]
+  · exact fun _ _ hx hy => by simp [coeff₁, mul_add, add_mul, hx, hy]
+
+theorem HeckeAlgebra₁.coeff₁_isNondegenerate [IsHeckeUnimodular H] [IsHeckeInvertible k H]
+    {x y : HeckeAlgebra₁ k H}
+    (hxy : ∀ z : HeckeCoset H H, (x * z.diagMk₁).coeff₁ = (y * z.diagMk₁).coeff₁) :
+    x = y := by
+  ext z
+  simpa [coeff₁_mul_diagMk₁, ← mul_assoc] using congrArg (fun x => z.degreeInv k • x) (hxy z.inv)
+
+end coeff₁
+
+section trace
+
+/-- tbd -/
+def HeckeAlgebra₁.trace (ρ : Representation k G V)
+    : HeckeAlgebra₁ k H →ₗ[k] k :=
+  LinearMap.trace k (HeckeModule₁ H ρ) ∘ₗ HeckeAction ∘ₗ
+    (MulOpposite.opLinearEquiv _).symm.toLinearMap
+
+lemma HeckeAlgebra₁.trace_comm (x y : HeckeAlgebra₁ k H) (ρ : Representation k G V) :
+    (x * y).trace ρ = (y * x).trace ρ := by
+  simp only [trace, LinearMap.coe_comp, LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv_symm,
+    Function.comp_apply, MulOpposite.unop_mul, HeckeAction.diag_mul_eq]
+  rw [LinearMap.trace_mul_comm]
+
+variable (H) in
+/-- tbd -/
+abbrev HeckeCoset.traceAverage [IsHeckeInvertible k H] :
+    HeckeCoset H H → k := fun x => x.degreeInv k * x.diagMk₁.trace ρ
+
+variable (H) in
+/-- tbd -/
+class IsRelCompact [IsHeckeInvertible k H] [Module.Finite k (HeckeModule₁ H ρ)] : Prop where
+  hasFiniteSupport : (HeckeCoset.traceAverage H ρ (k := k)).HasFiniteSupport
+
+variable [IsHeckeInvertible k H] [Module.Finite k (HeckeModule₁ H ρ)] [ρ.IsRelCompact H]
+
+/-- tbd -/
+def HeckeAlgebra₁.traceFinsupp :
+    HeckeCoset H H →₀ k :=
+  Finsupp.ofSupportFinite (HeckeCoset.traceAverage H ρ) (IsRelCompact.hasFiniteSupport)
+
+@[simp]
+lemma HeckeAlgebra₁.traceFinsupp_apply (x : HeckeCoset H H) :
+    traceFinsupp ρ x = x.degreeInv k * x.diagMk₁.trace ρ := rfl
+
+variable [IsHeckeUnimodular H]
+
+/-- tbd -/
+def HeckeAlgebra₁.traceMk : HeckeAlgebra₁ k H :=
+    (traceFinsupp ρ).sum fun x r => r • x.inv.diagMk₁
+
+lemma HeckeAlgebra₁.traceMk_coeff (x : HeckeCoset H H) :
+    (traceMk ρ).coeff x = x.degreeInv k * x.inv.diagMk₁.trace ρ := by classical
+  rw [HeckeAlgebra₁.traceMk, coeff, map_finsuppSum, eq_comm]
+  simp [Finsupp.single_apply, HeckeCoset.inv_eq_iff]
+
+lemma HeckeAlgebra₁.coeff₁_traceMk_mul (f : HeckeAlgebra₁ k H) :
+    (traceMk ρ * f).coeff₁ = f.trace ρ := by
+  apply HeckeAlgebra₁.induction_on f
+  · intro x
+    simp [coeff₁_mul_diagMk₁, traceMk_coeff, ← mul_assoc]
+  · exact fun _ _ hx => by simp [coeff₁, hx]
+  · exact fun _ _ hx hy => by simp [coeff₁, mul_add, hx, hy]
+
+lemma HeckeAlgebra₁.traceMk_isCentral (f : HeckeAlgebra₁ k H) :
+    traceMk ρ * f = f * traceMk ρ := by
+  apply HeckeAlgebra₁.coeff₁_isNondegenerate
+  intro z
+  nth_rw 2 [mul_assoc, coeff₁_isSymmetric]
+  simp [mul_assoc, coeff₁_traceMk_mul, trace_comm f z.diagMk₁]
+
+end trace
+
+end Hecke
+
+noncomputable section
+
+namespace Rep
+
+universe u
+variable {G : Type u} [Group G]
+variable {k : Type u} [CommRing k]
+variable (H : Subgroup G)
+variable {W : Type u} [AddCommGroup W] [Module k W] (σ : Representation k H W)
+
+open CategoryTheory
+
+/-- The module over the opposite standard Hecke algebra associated a representation `ρ` of `G`. -/
+abbrev toHecke₁Module (A : Rep k G) : ModuleCat (HeckeAlgebra₁ k H) :=
+  ModuleCat.of (HeckeAlgebra₁ k H) (HeckeModule₁ H A.ρ)
+
+/-- The induced map between Hecke modules over the opposite standard Hecke algebra from a morphism
+between representations. -/
+abbrev toHecke₁ModuleMap {A B : Rep k G} (f : A ⟶ B) : toHecke₁Module H A ⟶ toHecke₁Module H B :=
+  ModuleCat.ofHom {
+    toFun g := f.hom.comp g
+    map_add' x y := by rw [IntertwiningMap.add_comp]
+    map_smul' _ _ := rfl}
+
+/-- The functor sending represenations to Hecke modules over the opposite standard Hecke algbera. -/
+abbrev toHecke₁ModuleFunctor : Rep k G ⥤ ModuleCat (HeckeAlgebra₁ k H) where
+  obj := toHecke₁Module H
+  map := toHecke₁ModuleMap H
+
+end Rep
+
+end
+
+end Representation
