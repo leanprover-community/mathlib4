@@ -130,10 +130,7 @@ theorem hcomp_app {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
     (α ◫ β).app X = β.app (F.obj X) ≫ I.map (α.app X) :=
   (rfl)
 
-@[to_dual existing hcomp_app]
-theorem hcomp_app' {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
-    (α ◫ β).app X = H.map (α.app X) ≫ β.app (G.obj X) := by
-  simp
+to_dual_for hcomp_app := by simp
 
 @[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
