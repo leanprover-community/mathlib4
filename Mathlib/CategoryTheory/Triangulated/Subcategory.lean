@@ -743,6 +743,31 @@ instance {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
   rw [← F.essImage_ι_comp]
   infer_instance
 
+section
+
+variable (T : Triangle C) (h₁ : P T.obj₁) (h₂ : P T.obj₂) (h₃ : P T.obj₃)
+
+@[simps]
+noncomputable abbrev liftTriangle :
+    Triangle P.FullSubcategory where
+  obj₁ := .mk _ h₁
+  obj₂ := .mk _ h₂
+  obj₃ := .mk _ h₃
+  mor₁ := homMk T.mor₁
+  mor₂ := homMk T.mor₂
+  mor₃ := homMk (T.mor₃ ≫ (P.ι.commShiftIso (1 : ℤ)).inv.app (.mk _ h₁))
+
+@[simps!]
+noncomputable def liftTriangleIso : P.ι.mapTriangle.obj (P.liftTriangle T h₁ h₂ h₃) ≅ T :=
+    Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+
+lemma liftTriangle_distinguished (hT : T ∈ distTriang C) :
+    P.liftTriangle T h₁ h₂ h₃ ∈ distTriang P.FullSubcategory := by
+  rw [← P.ι.map_distinguished_iff]
+  exact isomorphic_distinguished _ hT _ (P.liftTriangleIso T h₁ h₂ h₃)
+
+end
+
 end
 
 end ObjectProperty
