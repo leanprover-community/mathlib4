@@ -82,6 +82,7 @@ theorem card_SL [Finite Rˣ] :
     (by simpa [mul_comm] using card_SL_mul_card_units)
 
 end SpecialLinearGroup
+
 /-- The cardinal of a matrix. -/
 theorem card_matrix {m n α} [Finite m] [Finite n] :
     Nat.card (Matrix m n α) = Nat.card α ^ (Nat.card n * Nat.card m) := by
