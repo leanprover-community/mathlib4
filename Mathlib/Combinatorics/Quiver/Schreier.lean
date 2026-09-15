@@ -99,7 +99,7 @@ def equiv : V ≃ SchreierGraph V ι where
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance instDecidableEq [DecidableEq V] : DecidableEq (SchreierGraph V ι) :=
+instance [DecidableEq V] : DecidableEq (SchreierGraph V ι) :=
   Equiv.decidableEq (equiv V ι).symm
 
 /-- Transport the scalar multiplication to the Schreier graph vertices. -/
@@ -352,12 +352,7 @@ of the form `ι s • g` for generators `s : S`. -/
 lemma cayleyGraph_star_eq (g : CayleyGraph ι) :
     {h : CayleyGraph ι | Nonempty (g ⟶ h)} = {h | ∃ s : S, ι s • g = h} := by
   ext h
-  simp only [Set.mem_ofPred_eq]
-  constructor
-  · rintro ⟨⟨s, hs⟩⟩
-    exact ⟨s, hs⟩
-  · rintro ⟨s, hs⟩
-    exact ⟨⟨s, hs⟩⟩
+  exact nonempty_subtype
 
 /-- The set of neighbors (targets of edges) from a vertex in a Cayley graph is contained in
 the orbit under generators `ι s`. -/
@@ -373,19 +368,19 @@ lemma cayleyGraph_symmetrify_neighbor_subset (g : CayleyGraph ι) :
       Nonempty (Symmetrify.of.obj g ⟶ (Symmetrify.of.obj h : Symmetrify (CayleyGraph ι)))} ⊆
     ((fun m ↦ m • g) '' (Set.range ι)) ∪ ((fun m ↦ m⁻¹ • g) '' (Set.range ι)) := by
   rintro h ⟨e | e⟩
-  · left
-    obtain ⟨s, hs⟩ := e
-    exact ⟨ι s, Set.mem_range_self s, hs⟩
-  · right
-    obtain ⟨s, hs⟩ := e
-    refine ⟨ι s, Set.mem_range_self s, ?_⟩
+  · obtain ⟨s, hs⟩ := e
+    exact .inl ⟨ι s, Set.mem_range_self s, hs⟩
+  · obtain ⟨s, hs⟩ := e
+    refine .inr ⟨ι s, Set.mem_range_self s, ?_⟩
     dsimp
+    -- `Symmetrify` does not unfold during `rw`, so retype `hs` at the Cayley graph first
     have h_eq : (ι s • h : CayleyGraph ι) = g := hs
     rw [← h_eq, inv_smul_smul]
 
 /-- A Cayley graph is inhabited by the coset of the identity. -/
-instance instInhabitedCayleyGraph : Inhabited (CayleyGraph ι) := ⟨⟨1⟩⟩
+instance : Inhabited (CayleyGraph ι) := ⟨⟨1⟩⟩
 
+/-- The equivalence `M ⧸ ⊥ ≃ M` intertwines the action of `M` on `M ⧸ ⊥` with multiplication. -/
 @[simp]
 lemma quotientBot_smul (g : M) (q : M ⧸ (⊥ : Subgroup M)) :
     QuotientGroup.quotientBot (g • q) = g * QuotientGroup.quotientBot q := by
@@ -430,14 +425,8 @@ theorem cayley_preconnected (hgen : Subgroup.closure (Set.range ι) = ⊤) (x y 
 the entire group. -/
 theorem cayley_subsingleton_weaklyConnectedComponent
     (hgen : Subgroup.closure (Set.range ι) = ⊤) :
-    Subsingleton (WeaklyConnectedComponent (CayleyGraph ι)) := by
-  constructor
-  intro a b
-  induction a using Quotient.inductionOn with
-  | h x =>
-    induction b using Quotient.inductionOn with
-    | h y =>
-      exact Quotient.sound (cayley_preconnected ι hgen x y)
+    Subsingleton (WeaklyConnectedComponent (CayleyGraph ι)) :=
+  ⟨Quotient.ind₂ fun x y ↦ Quotient.sound (cayley_preconnected ι hgen x y)⟩
 
 /-- A Cayley graph is connected: it has exactly one weakly connected component, when the
 generators generate the entire group. -/
@@ -455,24 +444,18 @@ variable {V : Type*} {M : Type*} [SMul M V] {S : Type*} (ι : S → M)
 
 /-- When `S` is finite and equality on `V` is decidable, the set of outgoing arrows from `x` to `y`
 in a Schreier graph is finite. -/
-instance instFintypeHom [Fintype S] [DecidableEq V] (x y : SchreierGraph V ι) :
+instance [Fintype S] [DecidableEq V] (x y : SchreierGraph V ι) :
     Fintype (x ⟶ y) :=
   Subtype.fintype _
 
 /-- When `S` is finite, the star (set of all outgoing arrows) from any vertex in a Schreier graph
 is finite. -/
-noncomputable instance instFintypeStar [Fintype S] (x : SchreierGraph V ι) :
+noncomputable instance [Fintype S] (x : SchreierGraph V ι) :
     Fintype (Σ y, x ⟶ y) := by
   classical
   let f : S → Σ y, x ⟶ y := fun s ↦ ⟨ι s • x, s, rfl⟩
   have hf : Function.Surjective f := fun ⟨y, ⟨s, hs⟩⟩ ↦ ⟨s, by subst hs; rfl⟩
   exact Fintype.ofSurjective f hf
-
-/-- When `S` is finite, the Cayley graph is locally finite (each vertex has finitely many
-outgoing arrows). -/
-noncomputable instance instFintypeCayleyStar [Group M] [Fintype S] (g : CayleyGraph ι) :
-    Fintype (Σ h, g ⟶ h) :=
-  inferInstance
 
 end Finiteness
 section Automorphisms
