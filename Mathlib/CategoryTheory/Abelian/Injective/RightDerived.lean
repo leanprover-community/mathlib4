@@ -94,6 +94,8 @@ instance (X : C) [Injective X] : IsIso (F.toRightDerived₀.app X) := by
   dsimp [toRightDerived₀]
   infer_instance
 
+section
+
 variable {S : ShortComplex C} (hS : S.ShortExact)
 
 noncomputable def rightDerivedδ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
@@ -146,6 +148,14 @@ lemma rightDerived_exact₃ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
   (DerivedCategory.Plus.homologyFunctor D 0).homologySequence_exact₃ _
     (F.rightDerivedFunctorPlus.map_distinguished _
       hS.singleTrianglePlus_distinguished) _ _ _
+
+end
+
+@[reassoc]
+lemma rightDerivedδ_naturality {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
+    (F.rightDerived n₀).map φ.τ₃ ≫ F.rightDerivedδ hS₂ n₀ n₁ h  =
+      F.rightDerivedδ hS₁ n₀ n₁ h ≫ (F.rightDerived n₁).map φ.τ₁ := sorry
 
 instance : (F.rightDerived 0).PreservesMonomorphisms where
   preserves f _ := by
@@ -201,5 +211,47 @@ lemma isoRightDerived₀_inv_hom_id_app (X : C) :
   F.isoRightDerived₀.inv_hom_id_app X
 
 end Functor
+
+namespace NatTrans
+
+variable {F₁ F₂ F₃ : C ⥤ D} [F₁.Additive] [F₂.Additive] [F₃.Additive]
+
+@[simps! -isSimp app]
+noncomputable def rightDerived (τ : F₁ ⟶ F₂) (n : ℕ) :
+    F₁.rightDerived n ⟶ F₂.rightDerived n :=
+  Functor.whiskerLeft _ (Functor.whiskerRight τ.rightDerivedFunctorPlus _)
+
+attribute [local simp] rightDerived_app in
+variable (F₁) in
+lemma rightDerived_id (n : ℕ) :
+    rightDerived (𝟙 F₁) n = 𝟙 _ := by
+  cat_disch
+
+attribute [local simp] rightDerived_app rightDerivedFunctorPlus_comp in
+@[reassoc]
+lemma rightDerived_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) (n : ℕ) :
+    (τ ≫ τ').rightDerived n = τ.rightDerived n ≫ τ'.rightDerived n := by
+  cat_disch
+
+@[reassoc (attr := simp)]
+lemma toRightDerived₀_app_rightDerived_app (τ : F₁ ⟶ F₂) (X : C) :
+    F₁.toRightDerived₀.app X ≫ (τ.rightDerived 0).app X =
+      τ.app X ≫ F₂.toRightDerived₀.app X := by
+  sorry
+
+@[reassoc (attr := simp)]
+lemma toRightDerived₀_rightDerived (τ : F₁ ⟶ F₂) :
+    F₁.toRightDerived₀ ≫ τ.rightDerived 0 =
+      τ ≫ F₂.toRightDerived₀ := by
+  cat_disch
+
+lemma rightDerivedδ_naturality
+    (τ : F₁ ⟶ F₂) {S : ShortComplex C} (hS : S.ShortExact) (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁ := by lia) :
+    (τ.rightDerived n₀).app S.X₃ ≫ F₂.rightDerivedδ hS n₀ n₁ =
+      F₁.rightDerivedδ hS n₀ n₁ ≫ (τ.rightDerived n₁).app S.X₁ := by
+  simp [Functor.rightDerivedδ]
+  sorry
+
+end NatTrans
 
 end CategoryTheory
