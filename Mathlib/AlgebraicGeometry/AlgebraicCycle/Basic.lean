@@ -44,8 +44,11 @@ but be aware of this if there is ever an instance clash involving algebraic cycl
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
   Function.locallyFinsupp X R
 
-variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
+variable (f : X ⟶ Y)
+
 namespace AlgebraicCycle
+
+variable [Semiring R]
 
 /--
 Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
@@ -66,9 +69,13 @@ equidimensionality hypotheses cannot be assumed.
 -/
 @[stacks 02R3]
 noncomputable
-def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
-    (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
+def map [QuasiCompact f] {N : Type*} [DecidableEq N]
+    (wx : X → N) (wy : Y → N) (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
   Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap c
+
+lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
+    (c : AlgebraicCycle X R) (y : Y) :
+    map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapCoeff f wx wy x) := rfl
 
 @[simp]
 lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :
