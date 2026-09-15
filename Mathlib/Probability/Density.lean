@@ -90,10 +90,15 @@ instance HasPDF.haveLebesgueDecomposition [HasPDF X ℙ μ] : (map X ℙ).HaveLe
 theorem HasPDF.absolutelyContinuous [HasPDF X ℙ μ] : map X ℙ ≪ μ := HasPDF.absolutelyContinuous'
 
 /-- A random variable that `HasPDF` is quasi-measure-preserving. -/
-theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
-    [HasPDF X ℙ μ] (h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
-  { measurable := h
+theorem HasPDF.quasiMeasurePreserving (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E) [HasPDF X ℙ μ] :
+    QuasiMeasurePreserving X ℙ μ :=
+  { aemeasurable := HasPDF.aemeasurable X ℙ μ
     absolutelyContinuous := HasPDF.absolutelyContinuous .. }
+
+@[deprecated HasPDF.quasiMeasurePreserving (since := "2026-09-06")]
+theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
+    [HasPDF X ℙ μ] (_h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
+  HasPDF.quasiMeasurePreserving X ℙ μ
 
 theorem HasPDF.congr (hXY : X =ᵐ[ℙ] Y) [hX : HasPDF X ℙ μ] : HasPDF Y ℙ μ :=
   ⟨(HasPDF.aemeasurable X ℙ μ).congr hXY, ℙ.map_congr hXY ▸ hX.haveLebesgueDecomposition,
@@ -225,8 +230,8 @@ theorem quasiMeasurePreserving_hasPDF (hg : QuasiMeasurePreserving g μ ν)
     (hmap : (map g (map X ℙ)).HaveLebesgueDecomposition ν) : HasPDF (g ∘ X) ℙ ν := by
   have hgm : AEMeasurable g (map X ℙ) := hg.aemeasurable.mono_ac HasPDF.absolutelyContinuous
   rw [hasPDF_iff, ← AEMeasurable.map_map_of_aemeasurable hgm (HasPDF.aemeasurable X ℙ μ)]
-  refine ⟨hg.measurable.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
-  exact (HasPDF.absolutelyContinuous.map hg.1).trans hg.2
+  refine ⟨hgm.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
+  exact (HasPDF.absolutelyContinuous.map_of_aemeasurable hg.1).trans hg.2
 
 theorem quasiMeasurePreserving_hasPDF' [SFinite ℙ] [SigmaFinite ν]
     (hg : QuasiMeasurePreserving g μ ν) : HasPDF (g ∘ X) ℙ ν :=
