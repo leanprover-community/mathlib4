@@ -53,6 +53,11 @@ lemma isEdgeReachable_comm : G.IsEdgeReachable k u v ↔ G.IsEdgeReachable k v u
 lemma IsEdgeReachable.trans (h1 : G.IsEdgeReachable k u v) (h2 : G.IsEdgeReachable k v w) :
     G.IsEdgeReachable k u w := fun _ hk ↦ (h1 hk).trans (h2 hk)
 
+instance : IsEquiv V (G.IsEdgeReachable k) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
 @[gcongr]
 lemma IsEdgeReachable.mono (hGH : G ≤ H) (h : G.IsEdgeReachable k u v) : H.IsEdgeReachable k u v :=
   fun _ hk ↦ h hk |>.mono <| deleteEdges_mono hGH
