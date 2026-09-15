@@ -640,7 +640,7 @@ jobs:
           head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1.6.0
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
@@ -733,7 +733,7 @@ jobs:
           head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1.6.0
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
