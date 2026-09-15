@@ -1,0 +1,73 @@
+name: Bump toolchain
+
+on:
+  schedule:
+    - cron: '0 10/3 * * *'
+    # Run every three hours, starting at 11AM CET/2AM PT.
+    # This should be 3 hours after lean4 starts building its nightly,
+    # and 15 minutes after batteries `nightly-testing` branch bumps its toolchain.
+  workflow_dispatch:
+
+# Serialize runs so an overlapping scheduled run can't race the toolchain commit/push.
+# Never cancel an in-flight run: it may be mid-push of the bump.
+concurrency:
+  group: nightly-bump-toolchain
+  cancel-in-progress: false
+
+jobs:
+  bump-toolchain:
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+    - name: Generate app token
+      id: app-token
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+      with:
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nightly-testing-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+    # This token is masked by the token minting action and will not be logged accidentally.
+
+    - name: Checkout nightly-testing branch
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: nightly-testing
+        token: ${{ steps.app-token.outputs.token }}
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "mathlib-nightly-testing[bot]"
+        git config --global user.email "mathlib-nightly-testing[bot]@users.noreply.github.com"
+
+    - name: Get latest release tag from leanprover/lean4-nightly
+      id: get-latest-release
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: |
+        RELEASE_TAG=$(gh api -X GET repos/leanprover/lean4-nightly/releases \
+          -f per_page=1 --jq '.[0].tag_name')
+        if [ -z "$RELEASE_TAG" ] || [ "$RELEASE_TAG" = "null" ]; then
+          echo "::error::Could not determine latest lean4-nightly release"
+          exit 1
+        fi
+        echo "RELEASE_TAG=$RELEASE_TAG"
+        echo "RELEASE_TAG=$RELEASE_TAG" >> "${GITHUB_ENV}"
+
+    - name: Update lean-toolchain file
+      run: |
+        echo "leanprover/lean4:${RELEASE_TAG}" > lean-toolchain
+
+    - name: Commit and push toolchain bump
+      run: |
+        git add lean-toolchain
+        # Don't fail if there's nothing to commit (toolchain already up to date)
+        if git commit -m "chore: bump to ${RELEASE_TAG}"; then
+          git push origin nightly-testing
+        else
+          echo "Toolchain already at ${RELEASE_TAG}, no bump needed"
+        fi

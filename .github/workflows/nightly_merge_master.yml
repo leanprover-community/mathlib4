@@ -64,7 +64,7 @@ jobs:
           # `lean-toolchain` is the one file where master must never win: whenever master
           # bumps its toolchain, the merge above would replace the nightly with a stable
           # release, and the whole point of `nightly-testing` is to build against a nightly.
-          # (`nightly_bump_and_merge.yml` in the mathlib4-nightly-testing repository puts
+          # (`nightly_bump_toolchain.yml` in the mathlib4-nightly-testing repository puts
           # this back a few hours later, but only after a wasted CI run and a Zulip report.)
           # The merge is `--no-commit`, so `HEAD` is still the tip of `nightly-testing`.
           git checkout HEAD -- lean-toolchain
