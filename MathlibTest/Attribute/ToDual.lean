@@ -474,6 +474,8 @@ fun {α} [PartialOrder α] x1 x2 => Eq.refl (x1 ≤ x2)
 #print MyLE_le
 
 -- `to_dual_for` does not introduce unnamed variables
-def toDualForTest : Nat → Prop := (· = 37)
+def toDualForTest (n : Nat) : Prop := n = 37
+def toDualForTest' : Nat → Prop := (· = 37)
 
-to_dual_for toDualForTest := (· = 42)
+to_dual_for toDualForTest := n = 42
+to_dual_for toDualForTest' := (· = 42)
