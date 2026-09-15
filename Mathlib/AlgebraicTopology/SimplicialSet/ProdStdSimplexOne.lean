@@ -93,8 +93,7 @@ lemma mem_range_objEquiv_nonDegenerateEquiv₀_iff (i x : Fin (p + 1)) :
     dsimp% (x, 0) ∈ Set.range (prodStdSimplex.objEquiv (nonDegenerateEquiv i).val) ↔ x ≤ i := by
   constructor
   · rintro ⟨y, hy⟩
-    have hy₁ := congr_arg Prod.fst hy
-    have hy₂ := congr_arg Prod.snd hy
+    obtain ⟨hy₁, hy₂⟩ := Prod.ext_iff.mp hy
     dsimp at hy₁ hy₂
     rw [stdSimplex.objMk₁_apply_eq_zero_iff, Fin.succ_castSucc,
       Fin.castSucc_lt_castSucc_iff] at hy₂
