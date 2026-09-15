@@ -49,8 +49,8 @@ theorem exists_squarefree_algEquiv (a b : ℚ) (hd : discr a b ≠ 0) :
 theorem nonempty_algEquiv_iff {d₁ d₂ : ℤ} (h₁ : Squarefree d₁) (h₂ : Squarefree d₂) :
     Nonempty (QuadraticAlgebra ℚ (d₁ : ℚ) 0 ≃ₐ[ℚ] QuadraticAlgebra ℚ (d₂ : ℚ) 0) ↔ d₁ = d₂ := by
   refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ⟨h ▸ AlgEquiv.refl⟩⟩
-  have hd := discr_eq_im_sq_mul_discr' e
-  rw [discr_def, discr_def] at hd
+  have hd := discr_eq_im_sq_mul_discr e.toAlgHom e.injective
+  rw [AlgEquiv.toAlgHom_apply, discr_def, discr_def] at hd
   exact Rat.sq_mul_squarefree_unique h₁ h₂ _ (e ω).im one_ne_zero (by grind)
 
 end QuadraticAlgebra.Rat
