@@ -402,19 +402,26 @@ variable [FunLike F M N]
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
 @[to_additive (attr := coe)
 /-- Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
-actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. -/]
-def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
+actual `AddMonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. -/]
+def MonoidHom.ofClass [MonoidHomClass F M N] (f : F) : M →* N :=
   { (f : M →ₙ* N), (f : OneHom M N) with }
 
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias MonoidHomClass.toMonoidHom := MonoidHom.ofClass
+
 /-- Any type satisfying `MonoidHomClass` can be cast into `MonoidHom` via
-`MonoidHomClass.toMonoidHom`. -/
+`MonoidHom.ofClass`. -/
 @[to_additive /-- Any type satisfying `AddMonoidHomClass` can be cast into `AddMonoidHom` via
-`AddMonoidHomClass.toAddMonoidHom`. -/]
+`AddMonoidHom.ofClass`. -/]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
-  ⟨MonoidHomClass.toMonoidHom⟩
+  ⟨MonoidHom.ofClass⟩
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
+theorem MonoidHom.coe_ofClass [MonoidHomClass F M N] (f : F) :
+    ((.ofClass f : M →* N) : M → N) = f := rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias MonoidHom.coe_coe := MonoidHom.coe_ofClass
 
 @[to_additive]
 theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :

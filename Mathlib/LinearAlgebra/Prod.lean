@@ -927,7 +927,7 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
     ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
   obtain ⟨f', hf'⟩ :=
     AddMonoidHom.exists_mrange_eq_mgraph (G := G) (H := H) (I := I) (f := f) hf₁ hf
-  simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_coe,
+  simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_ofClass,
     AddMonoidHom.mem_mgraph] at hf'
   use
   { toFun := f'.toFun
@@ -941,7 +941,7 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
       rw [LinearMap.mem_range, hf'] }
   ext x
   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
-    coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x
+    coe_mk, AddHom.coe_mk, AddMonoidHom.coe_ofClass, Set.mem_range] using hf' x
 
 /-- **Vertical line test** for linear maps.
 
