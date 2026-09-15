@@ -148,7 +148,7 @@ noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
 /-- The isomorphism `shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber`. -/
 noncomputable def shrinkYonedaCompPresheafFiberIso [LocallySmall.{w} C] :
     shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber :=
-  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso _
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso.{w} _
 
 lemma shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber
     [LocallySmall.{w} C] {X : C} (x : Φ.fiber.obj X) :

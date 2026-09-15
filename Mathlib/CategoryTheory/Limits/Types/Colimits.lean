@@ -36,7 +36,7 @@ variable (F : J ⥤ Type u)
 
 /-- If `F : J ⥤ Type u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `Type u` is the same as the data of a cocone (in a categorical sense). -/
-@[simps apply_pt symm_apply_pt apply_ι_app symm_apply_ι]
+@[implicit_reducible, simps apply_pt symm_apply_pt apply_ι_app symm_apply_ι]
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   toFun c :=
     { pt := c.pt
