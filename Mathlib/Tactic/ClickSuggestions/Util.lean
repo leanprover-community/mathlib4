@@ -385,6 +385,21 @@ def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
     {.element "div" #[] (← get).solvedSuggestions}
     </details>
 
+/-- Create a suggestion for inserting `stx` and tactic name `tac`. -/
+def mkTacticSuggestion (stx tac : TSyntax `tactic) (html : Html) : ClickSuggestionsM Html := do
+  mkSuggestion stx <div> <div>{html}</div> <div>{← tacticToHtml tac}</div> </div>
+
+/-- Make a suggestion using a separete thread, allowing it to add entries over time. -/
+@[inline]
+def mkIncrementalSuggestions (name : String)
+    (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) : ClickSuggestionsM Html :=
+  mkRefreshComponentM (.text "") fun token ↦ trackingComputation name do
+    let htmls ← IO.mkRef #[]
+    k fun html ↦ do
+      markProgress
+      htmls.modify (·.push html)
+      token.update (.element "div" #[] (← htmls.get))
+
 end Widget
 
 /-- Return whether `kabstract` uniquely finds pattern `p` in `e` at position `targetPos`. -/
