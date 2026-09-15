@@ -51,7 +51,7 @@ private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator]
       refine ⟨p.toPerfPair (i m), ?_, LinearEquiv.symm_apply_apply _ _⟩
       rintro - ⟨n, rfl⟩
-      simpa using LinearMap.congr_fun hm n
+      simpa using congr($hm n)
     suffices i m ∈ (⊥ : Submodule R M) by simpa [hi] using this
     simpa only [← hij.isCompl_left.inf_eq_bot, Submodule.mem_inf]
       using ⟨LinearMap.mem_range_self i m, hm⟩
@@ -66,7 +66,7 @@ private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
       obtain ⟨g, hg, rfl⟩ := hy
       simpa using hg _ (LinearMap.mem_range_self j n)
     rw [hm, ← LinearEquiv.symm_apply_eq, map_add, LinearEquiv.symm_symm] at hm'
-    simpa [← hF, ← LinearMap.congr_fun hm' (j n)]
+    simpa [← hF, ← congr($hm' (j n))]
 
 /-- The restriction of a perfect pairing to submodules is a perfect pairing. -/
 lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
@@ -99,7 +99,7 @@ private lemma restrictScalars_injective_aux
     induction hn using Submodule.span_induction with
     | mem z hz =>
       obtain ⟨n', rfl⟩ := hz
-      simpa [f] using LinearMap.congr_fun hx n'
+      simpa [f] using congr($hx n')
     | zero => simp
     | add => rw [map_add]; aesop
     | smul => rw [map_smul]; aesop
@@ -121,7 +121,7 @@ private lemma restrictScalars_surjective_aux
   ext n
   apply FaithfulSMul.algebraMap_injective S R
   change Algebra.linearMap S R _ = _
-  simpa using LinearMap.congr_fun hm n
+  simpa using congr($hm n)
 
 /-- Restricting a perfect pairing to a subring of the scalars results in a perfect pairing. -/
 lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)

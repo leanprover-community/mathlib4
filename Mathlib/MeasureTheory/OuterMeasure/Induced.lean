@@ -111,7 +111,7 @@ include PU msU in
 theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
   by_cases! h : ∀ i, P (s i)
-  · rw [extend_eq _ (PU h), congr_arg tsum _]
+  · rw [extend_eq _ (PU h), congr(tsum $(_))]
     · apply msU h
     funext i
     apply extend_eq _ (h i)

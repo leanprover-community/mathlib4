@@ -232,7 +232,7 @@ def map (g : (i : ι) → G i →+* G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
   lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
-      have eq1 := DFunLike.congr_fun (hg i j h) g
+      have eq1 := congr($(hg i j h) g)
       simp only [RingHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
@@ -268,7 +268,7 @@ def congr (e : (i : ι) → G i ≃+* G' i)
   RingEquiv.ofRingHom
     (map (e ·) he)
     (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
-      have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
+      have eq1 := congr($(he i j h) ((e i).symm x))
       simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
         RingEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1])

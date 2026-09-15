@@ -108,7 +108,7 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
     ((whiskeringRight C D E).obj F).Faithful where
   map_injective hαβ := by
     ext X
-    exact F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X
+    exact F.map_injective congr($(hαβ).app X)
 
 /-- If `F : D ⥤ E` is fully faithful, then so is
 `(whiskeringRight C D E).obj F : (C ⥤ D) ⥤ C ⥤ E`. -/

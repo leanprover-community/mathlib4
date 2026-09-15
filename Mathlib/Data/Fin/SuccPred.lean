@@ -88,7 +88,7 @@ theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
 attribute [simp] castSucc_inj
 
 lemma castLE_injective (hmn : m ≤ n) : Injective (castLE hmn) :=
-  fun _ _ hab ↦ Fin.ext (congr_arg val hab :)
+  fun _ _ hab ↦ Fin.ext congr(val $hab)
 
 lemma castAdd_injective (m n : ℕ) : Injective (@Fin.castAdd m n) := castLE_injective _
 
@@ -248,7 +248,7 @@ theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
     if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
       else castAdd (m + 1) ⟨i.1 + 1, Nat.lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by
   split_ifs with h
-  exacts [Fin.ext (congr_arg Fin.val h :), rfl]
+  exacts [Fin.ext congr($(h).val), rfl]
 
 theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 

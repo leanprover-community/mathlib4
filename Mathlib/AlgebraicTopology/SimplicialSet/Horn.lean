@@ -93,7 +93,7 @@ lemma horn_obj_eq_univ {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := b
   obtain ⟨j, hij, hj⟩ : ∃ (j : Fin (n + 1)), j ≠ i ∧ j ∉ Set.range f.toOrderHom := by
     by_contra!
     have : Finset.image f.toOrderHom ⊤ ∪ {i} = ⊤ := by ext k; by_cases k = i <;> aesop
-    have := (congr_arg Finset.card this).symm.le.trans (Finset.card_union_le _ _)
+    have := congr($(this).card).symm.le.trans (Finset.card_union_le _ _)
     simp only [SimplexCategory.len_mk, Finset.top_eq_univ, Finset.card_univ, Fintype.card_fin,
       Finset.card_singleton, add_le_add_iff_right] at this
     have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le

@@ -119,8 +119,8 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
         rw [neg_mul, neg_eq_zero, ← hw] at this
         exact mult_log_place_eq_zero.mp this
       rw [← sum_logEmbedding_component, sum_eq_zero]
-      exact fun w _ ↦ congrFun h w
-    · exact mult_log_place_eq_zero.mp (congrFun h ⟨w, hw⟩)
+      exact fun w _ ↦ congr($h w)
+    · exact mult_log_place_eq_zero.mp congr($h ⟨w, hw⟩)
   · ext w
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
 
@@ -150,7 +150,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     refine mul_le_mul ?_ le_rfl hx ?_
     all_goals { rw [mult]; split_ifs <;> norm_num }
   by_cases hw : w = w₀
-  · have hyp := congr_arg (‖·‖) (sum_logEmbedding_component x).symm
+  · have hyp := congr(‖$((sum_logEmbedding_component x).symm)‖)
     replace hyp := (le_of_eq hyp).trans (norm_sum_le _ _)
     simp_rw [norm_mul, norm_neg, Real.norm_eq_abs, Nat.abs_cast] at hyp
     refine (le_trans ?_ hyp).trans ?_
@@ -229,7 +229,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
-      (by rw [convexBodyLT_volume]; convert! hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
+      (by rw [convexBodyLT_volume]; convert! hB; congrm $h_gprod)
     refine ⟨y, h_ynz, fun w hw ↦ (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
@@ -238,7 +238,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by gcongr with w; exact (h_yle w).le
         _ ≤ (B : ℝ) := by
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
-          exact le_of_eq (congr_arg toReal h_gprod)
+          exact le_of_eq congr(toReal $h_gprod)
     · refine div_lt_self ?_ (by simp)
       exact pos_iff.mpr hx'
   intro _ _
@@ -302,7 +302,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
     refine ⟨hu.choose, fun w hw ↦ Real.log_neg (pos_at_place hu.choose w) ?_⟩
     calc
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
-        rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
+        rw [← congr(algebraMap (𝓞 K) K $hu.choose_spec), mul_comm, map_mul (algebraMap _ _),
           ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
         map_mul _ _ _

@@ -79,7 +79,7 @@ def powerset (s : Multiset α) : Multiset (Multiset α) :=
     (fun _ _ h => Quot.sound (powersetAux_perm h))
 
 theorem powerset_coe (l : List α) : @powerset α l = ((sublists l).map (↑) : List (Multiset α)) :=
-  congr_arg ((↑) : List (Multiset α) → Multiset (Multiset α)) powersetAux_eq_map_coe
+  congr(((↑) : List (Multiset α) → Multiset (Multiset α)) $powersetAux_eq_map_coe)
 
 @[simp]
 theorem powerset_coe' (l : List α) : @powerset α l = ((sublists' l).map (↑) : List (Multiset α)) :=
@@ -247,7 +247,7 @@ theorem powersetCard_coe' (n) (l : List α) : @powersetCard α n l = powersetCar
 
 theorem powersetCard_coe (n) (l : List α) :
     @powersetCard α n l = ((sublistsLen n l).map (↑) : List (Multiset α)) :=
-  congr_arg ((↑) : List (Multiset α) → Multiset (Multiset α)) powersetCardAux_eq_map_coe
+  congr(((↑) : List (Multiset α) → Multiset (Multiset α)) $powersetCardAux_eq_map_coe)
 
 @[simp]
 theorem powersetCard_zero_left (s : Multiset α) : powersetCard 0 s = {0} :=

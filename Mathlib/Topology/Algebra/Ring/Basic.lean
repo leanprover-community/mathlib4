@@ -631,6 +631,6 @@ def AbsoluteValue.comp {R S T : Type*} [Semiring T] [Semiring R] [Semiring S] [P
   toMulHom := v.1.comp f
   nonneg' _ := v.nonneg _
   eq_zero' _ := v.eq_zero.trans (map_eq_zero_iff f hf)
-  add_le' _ _ := (congr_arg v (map_add f _ _)).trans_le (v.add_le _ _)
+  add_le' _ _ := congr(v $(map_add f ..)).trans_le (v.add_le _ _)
 
 end AbsoluteValue

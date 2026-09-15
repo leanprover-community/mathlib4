@@ -40,9 +40,9 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     ext a
     simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuousBounded_apply_apply,
       ofRealAm_coe, AlgHom.compLeftContinuous_apply_apply, algebraMap.coe_inj]
-    exact DFunLike.congr_fun hxg a
+    congrm $hxg a
   · intro ⟨x, hxA, hxg⟩
-    have hg_apply (a : E) := DFunLike.congr_fun hxg a
+    have hg_apply (a : E) := congr($hxg a)
     simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuous_apply_apply,
       ofRealAm_coe] at hg_apply
     have h_comp_eq : (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_ofReal

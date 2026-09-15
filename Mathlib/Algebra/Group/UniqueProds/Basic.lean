@@ -187,7 +187,7 @@ open Finset MulOpposite
 theorem of_mulOpposite
     (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
     UniqueMul A B a0 b0 := fun a b aA bB ab ↦ by
-  simpa [and_comm] using h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (congr_arg op ab)
+  simpa [and_comm] using h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) congr(op $ab)
 
 @[to_additive]
 theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
@@ -457,7 +457,7 @@ open ULift in
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
       (UniqueProds.instForall <| I G H) <;> apply up_injective
-    exacts [congr_fun he false, congr_fun he true]
+    exacts [congr($he false), congr($he true)]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
 end UniqueProds
@@ -547,7 +547,7 @@ instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
       (TwoUniqueProds.instForall <| I G H) <;> apply up_injective
-    exacts [congr_fun he false, congr_fun he true]
+    exacts [congr($he false), congr($he true)]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
 open MulOpposite in

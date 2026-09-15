@@ -152,7 +152,7 @@ instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
+    BiconeMorphism.ext f g <| G.map_injective congr(BiconeMorphism.hom $h)
 
 end Bicones
 
@@ -744,7 +744,7 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
   · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
 
 theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
@@ -760,7 +760,7 @@ theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
   ext
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
 
 @[reassoc (attr := simp)]
 theorem biproduct.toSubtype_π (j : Subtype p) :
@@ -778,7 +778,7 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
   · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
 
 theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
@@ -794,7 +794,7 @@ theorem biproduct.ι_toSubtype_subtype (j : Subtype p) :
   ext
   rw [biproduct.toSubtype, Category.assoc, biproduct.lift_π, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
 
 @[reassoc (attr := simp)]
 theorem biproduct.ι_fromSubtype (j : Subtype p) :

@@ -149,13 +149,13 @@ variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
 
 theorem segment.lift [SMulPosMono R 𝕜] (x y : E) : segment R x y ⊆ segment 𝕜 x y := by
   rintro z ⟨a, b, ha, hb, hab, hxy⟩
-  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($hab • (1 : 𝕜)), by simpa⟩
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
 
 theorem openSegment.lift [Nontrivial 𝕜] [SMulPosStrictMono R 𝕜] (x y : E) :
     openSegment R x y ⊆ openSegment 𝕜 x y := by
   rintro z ⟨a, b, ha, hb, hab, hxy⟩
-  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($hab • (1 : 𝕜)), by simpa⟩
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_lt_smul_of_pos_right ‹_› zero_lt_one
 
 end lift
@@ -628,12 +628,12 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 theorem segment_subset (x y : E × F) : segment 𝕜 x y ⊆ segment 𝕜 x.1 y.1 ×ˢ segment 𝕜 x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
-  exact ⟨⟨a, b, ha, hb, hab, congr_arg Prod.fst hz⟩, a, b, ha, hb, hab, congr_arg Prod.snd hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, congr($(hz).fst)⟩, a, b, ha, hb, hab, congr($(hz).snd)⟩
 
 theorem openSegment_subset (x y : E × F) :
     openSegment 𝕜 x y ⊆ openSegment 𝕜 x.1 y.1 ×ˢ openSegment 𝕜 x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
-  exact ⟨⟨a, b, ha, hb, hab, congr_arg Prod.fst hz⟩, a, b, ha, hb, hab, congr_arg Prod.snd hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, congr($(hz).fst)⟩, a, b, ha, hb, hab, congr($(hz).snd)⟩
 
 theorem image_mk_segment_left (x₁ x₂ : E) (y : F) :
     (fun x => (x, y)) '' [x₁ -[𝕜] x₂] = [(x₁, y) -[𝕜] (x₂, y)] := by
@@ -668,12 +668,12 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [∀ i, AddCommMonoid (M i)] [∀ i
 
 theorem segment_subset (x y : ∀ i, M i) : segment 𝕜 x y ⊆ s.pi fun i => segment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
-  exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
+  exact ⟨a, b, ha, hb, hab, congr($hz i)⟩
 
 theorem openSegment_subset (x y : ∀ i, M i) :
     openSegment 𝕜 x y ⊆ s.pi fun i => openSegment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
-  exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
+  exact ⟨a, b, ha, hb, hab, congr($hz i)⟩
 
 variable [DecidableEq ι]
 

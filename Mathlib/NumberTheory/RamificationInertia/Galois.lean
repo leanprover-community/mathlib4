@@ -248,7 +248,7 @@ theorem ncard_primesOver_mul_ncard_primesOver :
   let f := restrictHom GAC G A B C
   let H := (stabilizer G P).comap f
   have key (Q Q' : Ideal C) [Q.LiesOver P] [Q'.LiesOver P] g (hg : g • Q = Q') : g ∈ H := by
-    simpa [← restrictHom_smul_under GAC G A, ← over_def _ P, H] using congr_arg (under B) hg
+    simpa [← restrictHom_smul_under GAC G A, ← over_def _ P, H] using congr(under B $hg)
   obtain ⟨Q, _, _⟩ := (inferInstance : Nonempty (P.primesOver C))
   have : Q.LiesOver p := .trans Q P p
   have orbit_eq : orbit H Q = P.primesOver C := by

@@ -942,10 +942,10 @@ theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
       exact X.basicOpen_le x
     · simp only [Opens.iSup_def, Set.preimage_iUnion]
       congr! 1
-      · refine congr_arg (Set.iUnion ·) ?_
+      · congrm Set.iUnion ?_
         ext1 x
-        exact congr_arg Opens.carrier (hU.fromSpec_preimage_basicOpen _)
-      · exact congr_arg Opens.carrier hU.fromSpec_preimage_self
+        congrm Opens.carrier $(hU.fromSpec_preimage_basicOpen _)
+      · congrm Opens.carrier $(hU.fromSpec_preimage_self)
   · simp only [Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [← Set.compl_iInter, Set.compl_univ_iff, ← PrimeSpectrum.zeroLocus_iUnion, ←
       PrimeSpectrum.zeroLocus_empty_iff_eq_top, PrimeSpectrum.zeroLocus_span]

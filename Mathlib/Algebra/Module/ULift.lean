@@ -50,7 +50,7 @@ instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] 
   ⟨fun x y z => show up ((x • y) • z.down) = ⟨x • y • z.down⟩ by rw [smul_assoc]⟩
 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
-  ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
+  ⟨fun r m => congr(up $(op_smul_eq_smul r m.down))⟩
 
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
@@ -59,8 +59,8 @@ instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
 
 @[to_additive]
 instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
-  mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
-  one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
+  mul_smul := fun _ _ _ => congr(.up $(mul_smul ..))
+  one_smul := fun _ => congr(up $(one_smul ..))
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M :=
   { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }

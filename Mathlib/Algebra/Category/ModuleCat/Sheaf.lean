@@ -228,7 +228,7 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
           ((PresheafOfModules.toPresheaf R).map ψ)
         simp only [← hφ, Equiv.symm_apply_apply]
         replace hφ : ∀ (Z : Cᵒᵖ) (x : M₁.obj Z), φ.app Z (f.app Z x) = ψ.app Z x :=
-          fun Z x ↦ CategoryTheory.congr_fun (congr_app hφ Z) x
+          fun Z x ↦ congr($(hφ).app Z x)
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)

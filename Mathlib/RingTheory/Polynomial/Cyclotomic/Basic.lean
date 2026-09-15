@@ -343,7 +343,7 @@ theorem prod_cyclotomic_eq_X_pow_sub_one {n : ℕ} (hpos : 0 < n) (R : Type*) [C
       Polynomial.map_one, Polynomial.map_sub]
     exact prod_cyclotomic'_eq_X_pow_sub_one hpos (Complex.isPrimitiveRoot_exp n hpos.ne')
   simpa only [Polynomial.map_prod, map_cyclotomic_int, Polynomial.map_sub, Polynomial.map_one,
-    Polynomial.map_pow, Polynomial.map_X] using congr_arg (map (Int.castRingHom R)) integer
+    Polynomial.map_pow, Polynomial.map_X] using congr(map (Int.castRingHom R) $integer)
 
 theorem cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
     cyclotomic n R ∣ X ^ n - 1 := by
@@ -359,7 +359,7 @@ theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [CommRing R] :
     ∏ i ∈ n.divisors.erase 1, cyclotomic i R = ∑ i ∈ Finset.range n, X ^ i := by
   suffices (∏ i ∈ n.divisors.erase 1, cyclotomic i ℤ) = ∑ i ∈ Finset.range n, X ^ i by
     simpa only [Polynomial.map_prod, map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow,
-      Polynomial.map_X] using congr_arg (map (Int.castRingHom R)) this
+      Polynomial.map_X] using congr(map (Int.castRingHom R) $this)
   rw [← mul_left_inj' (cyclotomic_ne_zero 1 ℤ), prod_erase_mul _ _ (Nat.one_mem_divisors.2 h.ne'),
     cyclotomic_one, geom_sum_mul, prod_cyclotomic_eq_X_pow_sub_one h]
 
@@ -368,7 +368,7 @@ theorem cyclotomic_prime (R : Type*) [Ring R] (p : ℕ) [hp : Fact p.Prime] :
     cyclotomic p R = ∑ i ∈ Finset.range p, X ^ i := by
   suffices cyclotomic p ℤ = ∑ i ∈ range p, X ^ i by
     simpa only [map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow, Polynomial.map_X] using
-      congr_arg (map (Int.castRingHom R)) this
+      congr(map (Int.castRingHom R) $this)
   rw [← prod_cyclotomic_eq_geom_sum hp.out.pos, hp.out.divisors,
     erase_insert (mem_singleton.not.2 hp.out.ne_one.symm), prod_singleton]
 

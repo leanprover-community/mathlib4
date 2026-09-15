@@ -60,7 +60,7 @@ we get an `R`-derivation `P → I` via `x ↦ x - g (f x)`.
 def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 2 = ⊥) (g : S →ₐ[R] P)
     (hg : f.comp g = AlgHom.id R S) : Derivation R P (RingHom.ker f) where
   toFun x := ⟨x - g (f x), by
-    simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (f x)⟩
+    simpa [RingHom.mem_ker, sub_eq_zero] using congr($hg.symm (f x))⟩
   map_add' x y := by simp only [map_add, AddMemClass.mk_add_mk, Subtype.mk.injEq]; ring
   map_smul' x y := by
     ext
@@ -73,8 +73,8 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
     have : (a - g (f a)) * (b - g (f b)) = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]
       apply Ideal.mul_mem_mul
-      · simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (f a)
-      · simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (f b)
+      · simpa [RingHom.mem_ker, sub_eq_zero] using congr($hg.symm (f a))
+      · simpa [RingHom.mem_ker, sub_eq_zero] using congr($hg.symm (f b))
     ext
     rw [← sub_eq_zero]
     conv_rhs => rw [← neg_zero, ← this]
@@ -97,7 +97,7 @@ lemma isScalarTower_of_section_of_ker_sqZero :
   congr 1
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← hf', pow_two, ← sub_mul]
   refine Ideal.mul_mem_mul ?_ m.2
-  simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg (algebraMap P S p)
+  simpa [RingHom.mem_ker, sub_eq_zero] using congr($hg (algebraMap P S p))
 
 /--
 Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
@@ -145,7 +145,7 @@ lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algeb
     x - l (1 ⊗ₜ .D _ _ x) = y - l (1 ⊗ₜ .D _ _ y) := by
   rw [sub_eq_iff_eq_add, sub_add_comm, ← sub_eq_iff_eq_add, ← Submodule.coe_sub,
     ← map_sub, ← tmul_sub, ← map_sub]
-  exact congr_arg Subtype.val (LinearMap.congr_fun hl.symm ⟨x - y, by simp [RingHom.mem_ker, h]⟩)
+  congrm ($hl.symm ⟨x - y, by simp [RingHom.mem_ker, h]⟩).val
 
 variable [Algebra R S] [IsScalarTower R P S]
 variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥)
@@ -348,14 +348,14 @@ def retractionKerCotangentToTensorEquivSection :
   · ext1 x
     rw [H] at hl
     obtain ⟨x, rfl⟩ := e₁.surjective x
-    exact DFunLike.congr_arg e₁ (LinearMap.congr_fun hl x)
+    congrm e₁ ($hl x)
   · ext x
     rw [H]
     apply e₁.injective
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_restrictScalars,
       Function.comp_apply, LinearEquiv.symm_apply_apply, LinearMap.id_coe, id_eq,
       LinearEquiv.apply_symm_apply]
-    exact LinearMap.congr_fun hl (e₁ x)
+    congrm $hl (e₁ x)
   · intro f
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
@@ -412,7 +412,7 @@ lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
   constructor
   · intro x y e
     ext1
-    exact (Cotangent.map_toInfinitesimal_bijective P).1 (congr_arg Subtype.val e)
+    exact (Cotangent.map_toInfinitesimal_bijective P).1 congr($(e).val)
   · intro ⟨x, hx⟩
     obtain ⟨x, rfl⟩ := (Cotangent.map_toInfinitesimal_bijective P).2 x
     refine ⟨⟨x, ?_⟩, rfl⟩

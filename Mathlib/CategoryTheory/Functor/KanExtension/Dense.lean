@@ -105,7 +105,7 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
     (F.denseAt _).hom_ext' (fun X p ↦ by
       simpa using! ULift.up_injective (ConcreteCategory.congr_hom (CC := fun X ↦ X)
-        (NatTrans.congr_app h (op X)) (ULift.up p)))
+        congr($(h).app (op X)) (ULift.up p)))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

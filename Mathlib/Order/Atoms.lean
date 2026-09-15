@@ -1017,10 +1017,9 @@ theorem isAtom_iff [OrderBot α] [IsAtomic α] [OrderBot β] {l : α → β} {u 
     (eq_bot_or_exists_atom_le (u (l a))).resolve_left (hbot ▸ fun h => hla.1 (gi.u_injective h))
   have :=
     (hla.le_iff.mp <| (gi.l_u_eq (l a) ▸ gi.gc.monotone_l hab' : l a' ≤ l a)).resolve_left fun h =>
-      ha'.1 (hbot ▸ h_atom a' ha' ▸ congr_arg u h)
+      ha'.1 (hbot ▸ h_atom a' ha' ▸ congr(u $h))
   have haa' : a = a' :=
-    (ha'.le_iff.mp <|
-          (gi.gc.le_u_l a).trans_eq (h_atom a' ha' ▸ congr_arg u this.symm)).resolve_left
+    (ha'.le_iff.mp <| (gi.gc.le_u_l a).trans_eq (h_atom a' ha' ▸ congr(u $this.symm))).resolve_left
       (mt (congr_arg l) (gi.gc.l_bot.symm ▸ hla.1))
   exact haa'.symm ▸ ha'
 
@@ -1039,10 +1038,10 @@ theorem isCoatom_iff [OrderTop α] [IsCoatomic α] [OrderTop β] {l : α → β}
   refine ⟨fun hb => gi.isCoatom_of_image hb, fun hb => ?_⟩
   obtain ⟨a, ha, hab⟩ :=
     (eq_top_or_exists_le_coatom (u b)).resolve_left fun h =>
-      hb.1 <| (gi.gc.u_top ▸ gi.l_u_eq ⊤ : l ⊤ = ⊤) ▸ gi.l_u_eq b ▸ congr_arg l h
+      hb.1 <| (gi.gc.u_top ▸ gi.l_u_eq ⊤ : l ⊤ = ⊤) ▸ gi.l_u_eq b ▸ congr(l $h)
   have : l a = b :=
     (hb.le_iff.mp (gi.l_u_eq b ▸ gi.gc.monotone_l hab : b ≤ l a)).resolve_left fun hla =>
-      ha.1 (gi.gc.u_top ▸ h_coatom a ha ▸ congr_arg u hla)
+      ha.1 (gi.gc.u_top ▸ h_coatom a ha ▸ congr(u $hla))
   exact this ▸ (h_coatom a ha).symm ▸ ha
 
 end GaloisInsertion

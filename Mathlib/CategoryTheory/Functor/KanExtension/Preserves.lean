@@ -170,7 +170,7 @@ lemma leftKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
       (G.leftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
     (L.leftKanExtensionUnit (F ⋙ G)).app a := by
   simpa [-leftKanExtensionCompIsoOfPreserves_hom_fac] using
-    NatTrans.congr_app (leftKanExtensionCompIsoOfPreserves_hom_fac G F L) a
+    congr($(leftKanExtensionCompIsoOfPreserves_hom_fac G F L).app a)
 
 @[reassoc (attr := simp)]
 lemma leftKanExtensionCompIsoOfPreserves_inv_fac :
@@ -186,7 +186,7 @@ lemma leftKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
       (G.leftKanExtensionCompIsoOfPreserves F L).inv.app (L.obj a) =
     G.map ((L.leftKanExtensionUnit F).app a) := by
   simpa [-leftKanExtensionCompIsoOfPreserves_inv_fac] using
-    NatTrans.congr_app (leftKanExtensionCompIsoOfPreserves_inv_fac G F L) a
+    congr($(leftKanExtensionCompIsoOfPreserves_inv_fac G F L).app a)
 
 end
 
@@ -244,7 +244,7 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
       (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
     (L.pointwiseLeftKanExtensionUnit <| F ⋙ G).app a := by
   simpa [-pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac] using
-    NatTrans.congr_app (pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac G F L) a
+    congr($(pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac G F L).app a)
 
 @[reassoc (attr := simp)]
 lemma pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac :
@@ -260,7 +260,7 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_fac_app (a : A) :
       (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).inv.app (L.obj a) =
     G.map (L.pointwiseLeftKanExtensionUnit F |>.app a) := by
   simpa [-pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac] using
-    NatTrans.congr_app (pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac G F L) a
+    congr($(pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac G F L).app a)
 
 end
 
@@ -441,7 +441,7 @@ lemma rightKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
       G.map (L.rightKanExtensionCounit F |>.app a) =
     (L.rightKanExtensionCounit (F ⋙ G)).app a := by
   simpa [-rightKanExtensionCompIsoOfPreserves_inv_fac] using
-    NatTrans.congr_app (rightKanExtensionCompIsoOfPreserves_inv_fac G F L) a
+    congr($(rightKanExtensionCompIsoOfPreserves_inv_fac G F L).app a)
 
 end
 
@@ -497,7 +497,7 @@ lemma pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
       (L.pointwiseRightKanExtensionCounit <| F ⋙ G).app a =
     G.map (L.pointwiseRightKanExtensionCounit F |>.app a) := by
   simpa [-pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac] using
-    NatTrans.congr_app (pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac G F L) a
+    congr($(pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac G F L).app a)
 
 @[reassoc (attr := simp)]
 lemma pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac :
@@ -513,7 +513,7 @@ lemma pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
       G.map (L.pointwiseRightKanExtensionCounit F |>.app a) =
     (L.pointwiseRightKanExtensionCounit <| F ⋙ G).app a := by
   simpa [-pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac] using
-    NatTrans.congr_app (pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac G F L) a
+    congr($(pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac G F L).app a)
 
 end
 

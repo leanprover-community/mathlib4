@@ -294,8 +294,8 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     ((f₁ ⊗ₘ f₂) ⊗ₘ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ₘ f₂ ⊗ₘ f₃) := by
   have h₁ := (((associator L W ε).hom.app Y₁).app Y₂).naturality f₃
-  have h₂ := NatTrans.congr_app (((associator L W ε).hom.app Y₁).naturality f₂) X₃
-  have h₃ := NatTrans.congr_app (NatTrans.congr_app ((associator L W ε).hom.naturality f₁) X₂) X₃
+  have h₂ := congr($(((associator L W ε).hom.app Y₁).naturality f₂).app X₃)
+  have h₃ := congr(($((associator L W ε).hom.naturality f₁).app X₂).app X₃)
   simp +instances only [monoidalCategoryStruct, Functor.map_comp, assoc]
   dsimp at h₁ h₂ h₃ ⊢
   rw [h₁, assoc, reassoc_of% h₂, reassoc_of% h₃]

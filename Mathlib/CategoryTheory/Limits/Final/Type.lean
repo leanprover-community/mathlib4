@@ -48,7 +48,7 @@ lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
   refine ⟨fun s₁ s₂ h ↦ ?_, fun t ↦ ?_⟩
   · ext Y
     let X : CostructuredArrow F Y := Classical.arbitrary _
-    have := congr_fun (congr_arg Subtype.val h) X.left
+    have := congr($(h).val X.left)
     have h₁ := s₁.property X.hom
     have h₂ := s₂.property X.hom
     dsimp at this h₁ h₂

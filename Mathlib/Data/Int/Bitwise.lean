@@ -162,8 +162,8 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
       rfl
 
 theorem div2_val : ∀ n, div2 n = n / 2
-  | (n : ℕ) => congr_arg ofNat n.div2_val
-  | -[n+1] => congr_arg negSucc n.div2_val
+  | (n : ℕ) => congr(ofNat $n.div2_val)
+  | -[n+1] => congr(negSucc $n.div2_val)
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
@@ -380,8 +380,8 @@ lemma shiftRight_natCast_right (m : ℤ) (n : ℕ) :
 
 theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
-    congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
-  | -[_+1], _, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
+    congr(ofNat $(by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc]))
+  | -[_+1], _, (k : ℕ) => congr(negSucc $(Nat.shiftLeft'_add ..))
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) => by simp [← Nat.shiftLeft_sub _])

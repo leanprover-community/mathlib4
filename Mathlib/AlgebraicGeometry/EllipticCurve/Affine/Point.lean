@@ -236,7 +236,7 @@ lemma C_addPolynomial_slope [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
       -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) :=
-  congr_arg (mk W) <| W.C_addPolynomial_slope h₁ h₂ hxy
+  congr(mk W $(W.C_addPolynomial_slope h₁ h₂ hxy))
 
 variable (W') in
 /-- The ideal `⟨X - x⟩` of `R[W]` for some `x` in `R`. -/
@@ -306,7 +306,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
       C (X - C x) * (C (X ^ 2 + C (x + W.a₂) * X + C (x ^ 2 + W.a₂ * x + W.a₄)) - C (C W.a₁) * Y) =
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
-      congr_arg C (congr_arg C ((equation_iff ..).mp h.left).symm)
+      congr(C (C $(((equation_iff ..).mp h.left).symm)))
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
@@ -366,7 +366,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [y, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
-      -4 * congr_arg C (congr_arg C <| (equation_iff ..).mp h₁)
+      -4 * congr(C (C $((equation_iff ..).mp h₁)))
   · replace hx := sub_ne_zero_of_ne hx
     refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, ?_⟩, map_one _⟩⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]

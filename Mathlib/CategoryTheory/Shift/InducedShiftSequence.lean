@@ -71,7 +71,7 @@ lemma shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
     (shiftIso L G M F' e' n a a' ha').hom.app (L.obj X) =
       (F' a).map ((L.commShiftIso n).inv.app X) ≫
         (e' a).hom.app (X⟦n⟧) ≫ (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X :=
-  (NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X).trans (by simp)
+  congr($(((whiskeringLeft C D A).obj L).map_preimage _).app X).trans (by simp)
 
 attribute [irreducible] isoZero shiftIso
 

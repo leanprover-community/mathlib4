@@ -174,7 +174,7 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
       (hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
-    have h_sum : (a : L) + b = x := congr_arg Subtype.val hab
+    have h_sum : (a : L) + b = x := congr($(hab).val)
     have h_b_eq : (b : L) = x - a := by rw [← h_sum, add_sub_cancel_left]
     rw [h_b_eq]; exact I.toSubmodule.sub_mem hxI haI
   suffices b = 0 by
@@ -188,7 +188,7 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
     · exact hspan_compl_roots_vanish ⟨μ, hμ_root⟩ hμI hb
     · exact I.root_apply_eq_zero_of_notMem_rootSet hbI hμI
   · simp only [Weight.IsNonZero, not_not] at hμ
-    exact LinearMap.mem_ker.mpr (congr_fun hμ b)
+    exact LinearMap.mem_ker.mpr congr($hμ b)
 
 lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
     {α : H.root} (hα_span : (α : Dual K H) ∈ I.rootSpan) :

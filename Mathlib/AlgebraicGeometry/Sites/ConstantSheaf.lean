@@ -78,8 +78,8 @@ lemma isSheaf_fpqcTopology_continuousMapPresheaf :
     refine ⟨?_, ?_, ?_⟩
     · refine Topology.IsQuotientMap.lift this x fun a b hfab ↦ ?_
       obtain ⟨c, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback a b hfab
-      exact congr($(h (pullback.fst (Spec.map f) (Spec.map f))
-        (pullback.snd _ _) pullback.condition).1 c)
+      congrm $(h (pullback.fst (Spec.map f) (Spec.map f))
+       (pullback.snd _ _) pullback.condition).1 c
     · apply Topology.IsQuotientMap.lift_comp
     · intro y hy
       rwa [← ContinuousMap.cancel_right (Spec.map f).surjective, Topology.IsQuotientMap.lift_comp]

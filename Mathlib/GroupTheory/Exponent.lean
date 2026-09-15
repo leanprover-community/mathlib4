@@ -571,7 +571,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   push Not at hj ⊢
   gconvert hj with n hn ⟨m, hm⟩
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
-  simpa using congr_fun h j
+  simpa using congr($h j)
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
 @[to_additive /-- If `f : M₁ →+ M₂` is surjective, then the exponent of `M₂` divides the exponent of

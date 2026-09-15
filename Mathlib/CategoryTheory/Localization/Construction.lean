@@ -252,8 +252,8 @@ variable {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂)
 `τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂`, we shall define a natural transformation `F₁ ⟶ F₂`.
 This is the `app` field of this natural transformation. -/
 def app (X : W.Localization) : F₁.obj X ⟶ F₂.obj X :=
-  eqToHom (congr_arg F₁.obj ((objEquiv W).right_inv X).symm) ≫
-    τ.app ((objEquiv W).invFun X) ≫ eqToHom (congr_arg F₂.obj ((objEquiv W).right_inv X))
+  eqToHom congr(F₁.obj $(((objEquiv W).right_inv X).symm)) ≫
+    τ.app ((objEquiv W).invFun X) ≫ eqToHom congr(F₂.obj $((objEquiv W).right_inv X))
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

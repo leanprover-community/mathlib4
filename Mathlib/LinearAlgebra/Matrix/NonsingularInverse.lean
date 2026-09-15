@@ -282,11 +282,11 @@ lemma inv_mulVec_eq_vec {A : Matrix n n α} [Invertible A]
 
 lemma mul_right_injective_of_invertible [Invertible A] :
     Function.Injective (fun (x : Matrix n m α) => A * x) :=
-  fun _ _ h => by simpa only [inv_mul_cancel_left_of_invertible] using congr_arg (A⁻¹ * ·) h
+  fun _ _ h => by simpa only [inv_mul_cancel_left_of_invertible] using congr(A⁻¹ * $h)
 
 lemma mul_left_injective_of_invertible [Invertible A] :
     Function.Injective (fun (x : Matrix m n α) => x * A) :=
-  fun a x hax => by simpa only [mul_inv_cancel_right_of_invertible] using congr_arg (· * A⁻¹) hax
+  fun a x hax => by simpa only [mul_inv_cancel_right_of_invertible] using congr($hax * A⁻¹)
 
 lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x = A * y ↔ x = y :=
   (mul_right_injective_of_invertible A).eq_iff
@@ -304,11 +304,11 @@ variable [Fintype n] [Fintype m] [DecidableEq m] [CommRing α]
 
 lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
     Function.Injective (fun x : Matrix l m α => x * A) := fun _ _ g => by
-  simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr_arg (· * B) g
+  simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr($g * B)
 
 lemma mul_right_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
     Function.Injective (fun x : Matrix m l α => B * x) :=
-  fun _ _ g => by simpa only [← Matrix.mul_assoc, Matrix.one_mul, h] using congr_arg (A * ·) g
+  fun _ _ g => by simpa only [← Matrix.mul_assoc, Matrix.one_mul, h] using congr(A * $g)
 
 end InjectiveMul
 

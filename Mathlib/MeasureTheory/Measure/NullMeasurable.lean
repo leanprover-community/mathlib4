@@ -272,7 +272,7 @@ theorem measure_inter_add_sdiff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     _ = μ (s' ∩ t ∪ s' \ t) :=
       (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht) <|
           (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
-    _ = μ s' := congr_arg μ (inter_union_sdiff _ _)
+    _ = μ s' := congr(μ $(inter_union_sdiff ..))
     _ = μ s := hs'
 
 @[deprecated (since := "2026-06-03")] alias measure_inter_add_diff₀ := measure_inter_add_sdiff₀

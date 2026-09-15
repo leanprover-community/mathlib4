@@ -396,7 +396,7 @@ theorem comp_substAlgHom
     ε.comp (substAlgHom ha) = aeval (ha.hasEval.map hε) := by
   ext f
   simp only [AlgHom.coe_comp, substAlgHom_eq_aeval ha]
-  exact DFunLike.congr_fun (comp_aeval ha.hasEval hε) f
+  congrm $(comp_aeval ha.hasEval hε) f
 
 theorem comp_subst [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
     (ha : HasSubst a) (hε : Continuous ε) :
@@ -407,7 +407,7 @@ theorem comp_subst_apply
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
     (ha : HasSubst a) (hε : Continuous ε) (f : MvPowerSeries σ R) :
     ε (subst a f) = aeval (R := R) (ha.hasEval.map hε) f :=
-  congr_fun (comp_subst ha hε) f
+  congr($(comp_subst ha hε) f)
 
 variable [Algebra S T] [IsScalarTower R S T]
 
@@ -468,7 +468,7 @@ theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
 theorem substAlgHom_comp_substAlgHom_apply (ha : HasSubst a) (hb : HasSubst b)
     (f : MvPowerSeries σ R) :
     (substAlgHom hb) (substAlgHom ha f) = substAlgHom (ha.comp hb) f :=
-  DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
+  congr($(substAlgHom_comp_substAlgHom ha hb) f)
 
 theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
     (subst b) ∘ (subst a) = subst (R := R) (fun s ↦ subst b (a s)) := by
@@ -476,7 +476,7 @@ theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
 
 theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : MvPowerSeries σ R) :
     subst b (subst a f) = subst (fun s ↦ subst b (a s)) f :=
-  congr_fun (subst_comp_subst (R := R) ha hb) f
+  congr($(subst_comp_subst (R := R) ha hb) f)
 
 section
 

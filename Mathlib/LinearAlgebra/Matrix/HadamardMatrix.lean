@@ -185,7 +185,7 @@ variable [CommRing R] [StarRing R] {A : Matrix n n R}
 /-- The Hadamard determinant identity: `det A * star (det A) = (card n)^(card n)`. -/
 theorem IsHadamard.det_mul_star_det (hA : A.IsHadamard) :
     A.det * star A.det = (Fintype.card n : R) ^ Fintype.card n := by
-  have := congr_arg det hA.mul_conjTranspose
+  have := congr(det $hA.mul_conjTranspose)
   rwa [det_mul, det_conjTranspose, det_smul, det_one, mul_one] at this
 
 /-- The Hadamard determinant identity: `star (det A) * det A = (card n)^(card n)`. -/
@@ -217,7 +217,7 @@ theorem IsHadamard.of_mul_conjTranspose
     (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard := by
   refine ⟨hentry, hmul, ?_⟩
   have hdet : IsRegular (A.det * star A.det) := by
-    have := congr_arg det hmul
+    have := congr(det $hmul)
     rw [det_mul, det_conjTranspose, det_smul, det_one, mul_one] at this
     rw [this]
     exact hcard.pow _
@@ -245,7 +245,7 @@ theorem IsHadamard.four_dvd_card {A : Matrix n n ℤ}
     Unitary.mem_iff_eq_one_or_eq_neg_one.mp (hA.apply_mem i j)
   obtain ⟨r, s, t, hrs, hrt, hst⟩ := Fintype.two_lt_card_iff.mp hcard
   have horth ⦃i k : n⦄ (hik : i ≠ k) : ∑ j, A i j * A k j = 0 := by
-    simpa [Matrix.mul_apply, hik] using congr_fun (congr_fun hA.mul_conjTranspose i) k
+    simpa [Matrix.mul_apply, hik] using congr($hA.mul_conjTranspose i k)
   have hexpand : ∀ j, (1 + A s j * A r j) * (1 + A t j * A r j) =
       1 + A s j * A r j + A t j * A r j + A s j * A t j := fun j => by
     obtain hr | hr := hpm r j <;> simp [hr] <;> ring

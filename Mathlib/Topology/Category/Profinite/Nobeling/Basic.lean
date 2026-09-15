@@ -186,7 +186,7 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
   · ext i
     rw [Subtype.ext_iff] at h
     by_cases hi : J i
-    · exact congr_fun h ⟨i, hi⟩
+    · congrm $h ⟨i, hi⟩
     · rcases a with ⟨_, c, hc, rfl⟩
       rcases b with ⟨_, d, hd, rfl⟩
       simp only [Proj, ite_eq_right hi]
@@ -239,7 +239,7 @@ noncomputable def spanFunctorIsoIndexFunctor
         have : iso_map C (· ∈ t) ∘ ProjRestricts C f =
             IndexFunctor.map C f ∘ iso_map C (· ∈ s) := by
           ext _ i; exact dite_eq_left i.prop
-        exact congr_fun this x)
+        congrm $this x)
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
@@ -250,7 +250,7 @@ def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsC
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
         ext _ i; exact dite_eq_left i.prop
-      exact congr_fun this.symm _)))
+      congrm $this.symm _)))
 
 end Projections
 

@@ -330,12 +330,12 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
           frobeniusEquiv_symm_pow_p]⟩
-      map_one' := ext fun _ => (congr_arg f <| iterate_map_one _ _).trans f.map_one
+      map_one' := ext fun _ => congr(f $(iterate_map_one ..)).trans f.map_one
       map_mul' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
-      map_zero' := ext fun _ => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
+        ext fun _ => congr(f $(iterate_map_mul ..)).trans <| f.map_mul _ _
+      map_zero' := ext fun _ => congr(f $(iterate_map_zero ..)).trans f.map_zero
       map_add' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
+        ext fun _ => congr(f $(iterate_map_add ..)).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
   right_inv f := RingHom.ext fun r => ext fun n =>
     show coeff S p 0 (f (((frobeniusEquiv R p).symm)^[n] r)) = coeff S p n (f r) by
@@ -439,7 +439,7 @@ variable {p R P}
 /-- A perfection map induces an isomorphism to the perfection. -/
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
-    ⟨fun _ _ hxy => m.injective fun n => (congr_arg (Perfection.coeff R p n) hxy :), fun f =>
+    ⟨fun _ _ hxy => m.injective fun n => congr(Perfection.coeff R p n $hxy), fun f =>
       let ⟨x, hx⟩ := m.surjective f.1 f.2
       ⟨x, Perfection.ext <| hx⟩⟩
 

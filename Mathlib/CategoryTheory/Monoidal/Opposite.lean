@@ -82,11 +82,11 @@ open MonoidalOpposite renaming mop → mop', unmop → unmop'
 
 theorem mop_inj {X Y : C} :
     Function.Injective (Quiver.Hom.mop : (X ⟶ Y) → (mop' X ⟶ mop' Y)) :=
-  fun _ _ H => congr_arg Quiver.Hom.unmop H
+  fun _ _ H => congr($(H).unmop)
 
 theorem unmop_inj {X Y : Cᴹᵒᵖ} :
     Function.Injective (Quiver.Hom.unmop : (X ⟶ Y) → (unmop' X ⟶ unmop' Y)) :=
-  fun _ _ H => congr_arg Quiver.Hom.mop H
+  fun _ _ H => congr($(H).mop)
 
 @[simp]
 theorem unmop_mop {X Y : C} {f : X ⟶ Y} : f.mop.unmop = f :=

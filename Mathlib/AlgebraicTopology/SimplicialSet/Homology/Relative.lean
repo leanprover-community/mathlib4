@@ -215,7 +215,7 @@ noncomputable def chainComplexπ : P.right.chainComplex R ⟶ P.chainComplex R :
 @[reassoc (attr := simp)]
 lemma chainComplex_condition :
     SSet.chainComplexMap P.hom R ≫ P.chainComplexπ R = 0 :=
-  NatTrans.congr_app (NatTrans.congr_app (chainComplexFunctor_condition C) R) P
+  congr(($(chainComplexFunctor_condition C).app R).app P)
 
 @[reassoc (attr := simp)]
 lemma chainComplex_condition_f (n : ℕ) :

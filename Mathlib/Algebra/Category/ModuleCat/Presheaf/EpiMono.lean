@@ -31,12 +31,12 @@ lemma epi_of_surjective (hf : ∀ ⦃X : Cᵒᵖ⦄, Function.Surjective (f.app 
   left_cancellation g₁ g₂ hg := by
     ext X m₂
     obtain ⟨m₁, rfl⟩ := hf m₂
-    exact ConcreteCategory.congr_hom ((evaluation R X ⋙ forget _).congr_map hg) m₁
+    congrm $((evaluation R X ⋙ forget _).congr_map hg) m₁
 
 lemma mono_of_injective (hf : ∀ ⦃X : Cᵒᵖ⦄, Function.Injective (f.app X)) : Mono f where
   right_cancellation {M} g₁ g₂ hg := by
     ext X m
-    exact hf (ConcreteCategory.congr_hom ((evaluation R X ⋙ forget _).congr_map hg) m)
+    exact hf congr($((evaluation R X ⋙ forget _).congr_map hg) m)
 
 variable (f)
 

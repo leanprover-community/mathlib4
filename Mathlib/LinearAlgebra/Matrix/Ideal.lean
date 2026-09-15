@@ -153,7 +153,7 @@ theorem matrix_monotone : Monotone (matrix (R := R) n) :=
 
 theorem matrix_injective [Nonempty n] : Function.Injective (matrix (R := R) n) :=
   fun I J eq ↦ RingCon.ext fun r s ↦ by
-    have := congr_fun (DFunLike.congr_fun eq (Matrix.of fun _ _ ↦ r)) (Matrix.of fun _ _ ↦ s)
+    have := congr($eq (Matrix.of fun _ _ ↦ r) (Matrix.of fun _ _ ↦ s))
     simpa using this
 
 theorem matrix_strictMono_of_nonempty [Nonempty n] :

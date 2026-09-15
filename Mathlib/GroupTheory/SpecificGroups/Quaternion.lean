@@ -99,17 +99,17 @@ instance : Group (QuaternionGroup n) where
   one := one
   one_mul := by
     rintro (i | i)
-    · exact congr_arg a (zero_add i)
-    · exact congr_arg xa (sub_zero i)
+    · congrm a $(zero_add i)
+    · congrm xa $(sub_zero i)
   mul_one := by
     rintro (i | i)
-    · exact congr_arg a (add_zero i)
-    · exact congr_arg xa (add_zero i)
+    · congrm a $(add_zero i)
+    · congrm xa $(add_zero i)
   inv := inv
   inv_mul_cancel := by
     rintro (i | i)
-    · exact congr_arg a (neg_add_cancel i)
-    · exact congr_arg a (sub_self (n + i))
+    · congrm a $(neg_add_cancel i)
+    · congrm a $(sub_self (n + i))
 
 @[simp]
 theorem a_mul_a (i j : ZMod (2 * n)) : a i * a j = a (i + j) :=

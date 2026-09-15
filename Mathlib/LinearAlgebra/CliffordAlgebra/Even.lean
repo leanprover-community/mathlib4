@@ -113,10 +113,10 @@ theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂
   | algebraMap r =>
     exact (f.commutes r).trans (g.commutes r).symm
   | add x y hx hy ihx ihy =>
-    have := congr_arg₂ (· + ·) ihx ihy
+    have := congr($ihx + $ihy)
     exact (map_add f _ _).trans (this.trans <| (map_add g _ _).symm)
   | ι_mul_ι_mul m₁ m₂ x hx ih =>
-    have := congr_arg₂ (· * ·) (LinearMap.congr_fun (LinearMap.congr_fun h m₁) m₂) ih
+    have := congr($h m₁ m₂ * $ih)
     exact (map_mul f _ _).trans (this.trans <| (map_mul g _ _).symm)
 
 variable {Q}

@@ -457,7 +457,7 @@ theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I 
     J = 1 / I := by
   have hI : I ≠ 0 := ne_zero_of_mul_eq_one I J h
   suffices h' : I * (1 / I) = 1 from
-    congr_arg Units.inv <| @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
+    congr($(@Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl).inv)
   apply le_antisymm
   · apply mul_le.mpr _
     intro x hx y hy
@@ -627,7 +627,7 @@ theorem spanSingleton_zero : spanSingleton S (0 : P) = 0 := by
 
 theorem spanSingleton_eq_zero_iff {y : P} : spanSingleton S y = 0 ↔ y = 0 :=
   ⟨fun h =>
-    span_eq_bot.mp (by simpa using congr_arg Subtype.val h : span R {y} = ⊥) y (mem_singleton y),
+    span_eq_bot.mp (by simpa using congr($(h).val) : span R {y} = ⊥) y (mem_singleton y),
     fun h => by simp [h]⟩
 
 theorem spanSingleton_ne_zero_iff {y : P} : spanSingleton S y ≠ 0 ↔ y ≠ 0 :=
@@ -797,7 +797,7 @@ instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Alg
   use (algebraMap R K a)⁻¹ * algebraMap R K (generator aI)
   suffices I = spanSingleton R⁰ ((algebraMap R K a)⁻¹ * algebraMap R K (generator aI)) by
     rw [spanSingleton] at this
-    exact congr_arg Subtype.val this
+    congrm $(this).val
   conv_lhs => rw [ha, ← span_singleton_generator aI]
   rw [Ideal.submodule_span_eq, coeIdeal_span_singleton (generator aI),
     spanSingleton_mul_spanSingleton]

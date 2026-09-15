@@ -55,7 +55,7 @@ lemma antipode_comp_mul_comp_comm :
       ← (Algebra.commute_algebraMap_left (ε a) (_ : A)).eq]
 
 lemma antipode_mul_antidistrib (a b : A) : antipode R (a * b) = antipode R b * antipode R a := by
-  exact congr($antipode_comp_mul_comp_comm (b ⊗ₜ a))
+  congrm $antipode_comp_mul_comp_comm (b ⊗ₜ a)
 
 @[deprecated (since := "2026-06-05")] alias antipode_mul := antipode_mul_antidistrib
 

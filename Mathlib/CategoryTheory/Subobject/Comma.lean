@@ -55,7 +55,7 @@ def projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T] {A : Structur
   refine Subobject.lift (fun P f hf => Subobject.mk f.right) ?_
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) ?_
-  exact congr_arg CommaMorphism.right hi
+  congrm $(hi).right
 
 @[simp]
 theorem projectSubobject_mk [HasFiniteLimits C] [PreservesFiniteLimits T]
@@ -113,7 +113,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
     · simp
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
-      exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
+      congrm $(Subobject.ofMkLEMk_comp h).right
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
@@ -135,8 +135,8 @@ def projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S] {A : Costr
   refine Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) ?_
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj ?_)
-  have := congr_arg Quiver.Hom.unop hi
-  simpa using! congr_arg CommaMorphism.left this
+  have := congr($(hi).unop)
+  simpa using! congr($(this).left)
 
 @[simp]
 theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]
@@ -228,10 +228,9 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
       exact unop_left_comp_ofMkLEMk_unop _
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op ?_
       refine Quiver.Hom.unop_inj ?_
-      have := congr_arg Quiver.Hom.unop (Subobject.ofMkLEMk_comp h)
+      have := congr($(Subobject.ofMkLEMk_comp h).unop)
       simpa only [unop_op, Functor.id_obj, Functor.const_obj_obj, MonoOver.mk_obj, Over.mk_left,
-        MonoOver.mk_arrow, unop_comp, Quiver.Hom.unop_op, comp_left]
-          using congr_arg CommaMorphism.left this
+        MonoOver.mk_arrow, unop_comp, Quiver.Hom.unop_op, comp_left] using congr($(this).left)
 
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then
     `CostructuredArrow S T` is well-copowered. -/

@@ -385,7 +385,7 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun r ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
+        simpa [RingHom.algebraMap_toAlgebra] using congr($he.symm (e₁.symm r)) }
   have := of_restrictScalars_finite A₁ A₂ B₁
   exact equiv e.toLinearEquiv
 

@@ -363,10 +363,10 @@ lemma borelUpper_le_biSup :
         refine Fintype.linearIndependent_iffₛ.mp this n₁ n₂ ?_ i
         ext v
         rw [Subtype.mk.injEq] at h
-        simpa using congr_fun h v
+        simpa using congr($h v)
       · use ⟨χ.property.choose, χ.property.choose_spec.1⟩
         ext i
-        simpa using congr_fun χ.property.choose_spec.2.symm i
+        simpa using congr($(χ.property.choose_spec.2.symm) i)
     replace hu : u ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ := by
       convert! hu; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
     replace hv : v ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ := by
@@ -470,20 +470,20 @@ set_option linter.unusedFintypeInType false in
 lemma cartan_eq :
     letI := b.isLieAbelian_cartan
     H.toLieSubmodule = rootSpace H 0 :=
-  congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
-    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 0
+  congr($((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
+    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 0)
 
 lemma borelLower_eq :
     letI := b.isLieAbelian_cartan
     b.borelLower = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) :=
-  congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
-    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 1
+  congr($((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
+    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 1)
 
 lemma borelUpper_eq :
     letI := b.isLieAbelian_cartan
     b.borelUpper = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) :=
-  congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
-    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 2
+  congr($((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
+    b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 2)
 
 set_option linter.unusedFintypeInType false in
 include b in

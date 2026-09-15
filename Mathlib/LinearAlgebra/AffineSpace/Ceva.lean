@@ -59,7 +59,7 @@ private lemma exists_affineCombination_eq_smul_eq_aux {p : ι → P} (hp : Affin
     · intro j
       by_cases hj : j = i
       · simp [hj]
-      replace hind := congr_fun hind j
+      replace hind := congr($hind j)
       convert! hind using 1
       · simp [Set.indicator_apply, hj]
       · simp [Set.indicator_apply, hj, w', AffineMap.lineMap_apply_module]

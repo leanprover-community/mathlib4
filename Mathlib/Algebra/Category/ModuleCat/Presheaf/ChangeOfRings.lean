@@ -41,7 +41,7 @@ noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶
     { toFun := M'.map f
       map_add' := map_add _
       map_smul' := fun r x ↦ (M'.map_smul f (α.app _ r) x).trans (by
-        have eq := RingHom.congr_fun (congrArg RingCat.Hom.hom <| α.naturality f) r
+        have eq := congr($(α.naturality f).hom r)
         dsimp at eq
         rw [← eq]
         rfl) }

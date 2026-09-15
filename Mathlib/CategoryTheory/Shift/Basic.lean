@@ -271,8 +271,7 @@ lemma shiftFunctorAdd_assoc (a₁ a₂ a₃ : A) :
       isoWhiskerLeft _ (shiftFunctorAdd C a₂ a₃) := by
   ext X
   simpa [shiftFunctorAdd'_eq_shiftFunctorAdd]
-    using NatTrans.congr_app (congr_arg Iso.hom
-      (shiftFunctorAdd'_assoc C a₁ a₂ a₃ _ _ _ rfl rfl rfl)) X
+    using congr($(shiftFunctorAdd'_assoc C a₁ a₂ a₃ _ _ _ rfl rfl rfl).hom.app X)
 
 variable {C}
 
@@ -280,7 +279,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_zero_add_hom_app (a : A) (X : C) :
     (shiftFunctorAdd' C 0 a a (zero_add a)).hom.app X =
     ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd'_zero_add C a)) X
+  simpa using congr($(shiftFunctorAdd'_zero_add C a).hom.app X)
 
 lemma shiftFunctorAdd_zero_add_hom_app (a : A) (X : C) :
     (shiftFunctorAdd C 0 a).hom.app X =
@@ -291,7 +290,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_zero_add_inv_app (a : A) (X : C) :
     (shiftFunctorAdd' C 0 a a (zero_add a)).inv.app X =
     ((shiftFunctorZero C A).hom.app X)⟦a⟧' := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd'_zero_add C a)) X
+  simpa using congr($(shiftFunctorAdd'_zero_add C a).inv.app X)
 
 lemma shiftFunctorAdd_zero_add_inv_app (a : A) (X : C) : (shiftFunctorAdd C 0 a).inv.app X =
     ((shiftFunctorZero C A).hom.app X)⟦a⟧' ≫ eqToHom (by dsimp; rw [zero_add]) := by
@@ -301,7 +300,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_add_zero_hom_app (a : A) (X : C) :
     (shiftFunctorAdd' C a 0 a (add_zero a)).hom.app X =
     (shiftFunctorZero C A).inv.app (X⟦a⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd'_add_zero C a)) X
+  simpa using congr($(shiftFunctorAdd'_add_zero C a).hom.app X)
 
 set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd_add_zero_hom_app (a : A) (X : C) : (shiftFunctorAdd C a 0).hom.app X =
@@ -312,7 +311,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_add_zero_inv_app (a : A) (X : C) :
     (shiftFunctorAdd' C a 0 a (add_zero a)).inv.app X =
     (shiftFunctorZero C A).hom.app (X⟦a⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd'_add_zero C a)) X
+  simpa using congr($(shiftFunctorAdd'_add_zero C a).inv.app X)
 
 set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd_add_zero_inv_app (a : A) (X : C) : (shiftFunctorAdd C a 0).inv.app X =
@@ -327,8 +326,7 @@ lemma shiftFunctorAdd'_assoc_hom_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ 
       ((shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂).hom.app X)⟦a₃⟧' =
     (shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])).hom.app X ≫
       (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).hom.app (X⟦a₁⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom
-    (shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃)) X
+  simpa using congr($(shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃).hom.app X)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
@@ -338,8 +336,7 @@ lemma shiftFunctorAdd'_assoc_inv_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ 
       (shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃])).inv.app X =
     (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).inv.app (X⟦a₁⟧) ≫
       (shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])).inv.app X := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv
-    (shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃)) X
+  simpa using congr($(shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃).inv.app X)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
@@ -348,7 +345,7 @@ lemma shiftFunctorAdd_assoc_hom_app (a₁ a₂ a₃ : A) (X : C) :
       ((shiftFunctorAdd C a₁ a₂).hom.app X)⟦a₃⟧' =
     (shiftFunctorAdd' C a₁ (a₂ + a₃) (a₁ + a₂ + a₃) (add_assoc _ _ _).symm).hom.app X ≫
       (shiftFunctorAdd C a₂ a₃).hom.app (X⟦a₁⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd_assoc C a₁ a₂ a₃)) X
+  simpa using congr($(shiftFunctorAdd_assoc C a₁ a₂ a₃).hom.app X)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
@@ -357,7 +354,7 @@ lemma shiftFunctorAdd_assoc_inv_app (a₁ a₂ a₃ : A) (X : C) :
       (shiftFunctorAdd C (a₁ + a₂) a₃).inv.app X =
     (shiftFunctorAdd C a₂ a₃).inv.app (X⟦a₁⟧) ≫
       (shiftFunctorAdd' C a₁ (a₂ + a₃) (a₁ + a₂ + a₃) (add_assoc _ _ _).symm).inv.app X := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd_assoc C a₁ a₂ a₃)) X
+  simpa using congr($(shiftFunctorAdd_assoc C a₁ a₂ a₃).inv.app X)
 
 end Defs
 
@@ -626,7 +623,7 @@ abbrev shiftComm (i j : A) : X⟦i⟧⟦j⟧ ≅ X⟦j⟧⟦i⟧ :=
 @[simp]
 theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := by
   ext
-  exact NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorComm_symm C i j)) X
+  congrm $(shiftFunctorComm_symm C i j).hom.app X
 
 variable {X Y}
 

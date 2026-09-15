@@ -186,9 +186,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
   smul a S := S.map (DistribSMul.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
-    (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
+    congr(S.map $(LinearMap.ext <| one_smul α)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
-    (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| mul_smul _ _)).trans
+    congr(S.map $(LinearMap.ext <| mul_smul _ _)).trans
       (S.map_comp _ _)
   smul_zero _a := map_bot _
   smul_add _a _S₁ _S₂ := map_sup _ _ _
@@ -272,7 +272,7 @@ not hold so this cannot be stated as a `Module`. -/
 protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
     zero_smul := fun S =>
-      (congr_arg (fun f : M →ₗ[R] M => S.map f) (LinearMap.ext <| zero_smul α)).trans S.map_zero }
+      congr(S.map $(LinearMap.ext <| zero_smul α)).trans S.map_zero }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
 

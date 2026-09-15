@@ -66,7 +66,7 @@ instance main_pair_reflexive (A : adj.toMonad.Algebra) :
     IsReflexivePair (F.map A.a) (adj.counit.app (F.obj A.A)) := by
   apply IsReflexivePair.mk' (F.map (adj.unit.app _)) _ _
   · rw [← F.map_comp, ← F.map_id]
-    exact congr_arg F.map A.unit
+    congrm F.map $A.unit
   · dsimp
     rw [adj.left_triangle_components]
 
@@ -145,7 +145,7 @@ theorem comparisonAdjunction_unit_f_aux
     ((comparisonAdjunction adj).unit.app A).f =
       adj.homEquiv A.A _
         (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))) :=
-  congr_arg (adj.homEquiv _ _) (Category.comp_id _)
+  congr((adj.homEquiv ..) $(Category.comp_id _))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a cofork which is helpful for establishing monadicity: the morphism from the Beck

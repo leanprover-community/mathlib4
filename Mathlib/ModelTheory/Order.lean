@@ -496,7 +496,7 @@ lemma dlo_isExtensionPair
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩
-  refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
+  refine congr($hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩)
   simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
 set_option backward.isDefEq.respectTransparency false in

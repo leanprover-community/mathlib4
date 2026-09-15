@@ -198,8 +198,8 @@ theorem fastFibAux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   refine Nat.binaryRec ?_ ?_ n
   · simp [fastFibAux]
   · rintro (_ | _) n' ih <;>
-      simp only [fastFibAux_bit_false, fastFibAux_bit_true, congr_arg Prod.fst ih,
-        congr_arg Prod.snd ih, Prod.mk_inj] <;>
+      simp only [fastFibAux_bit_false, fastFibAux_bit_true, congr($(ih).fst),
+        congr($(ih).snd), Prod.mk_inj] <;>
       simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 
 theorem fastFib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fastFibAux_eq]

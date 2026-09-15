@@ -263,7 +263,7 @@ lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
 lemma w_app {S S' : CatCommSqOver F G X} (φ : S ⟶ S') (x : X) :
     F.map (φ.fst.app x) ≫ S'.iso.hom.app x =
     S.iso.hom.app x ≫ G.map (φ.snd.app x) :=
-  NatTrans.congr_app φ.w x
+  congr($(φ.w).app x)
 
 variable (F G)
 
@@ -388,7 +388,7 @@ def mkNatIso {J K : X ⥤ F ⊡ G}
     J ≅ K :=
   NatIso.ofComponents
     (fun x ↦ CategoricalPullback.mkIso (e₁.app x) (e₂.app x)
-      (by simpa using NatTrans.congr_app coh x))
+      (by simpa using congr($(coh).app x)))
     (fun {_ _} f ↦ by
       ext
       · exact e₁.hom.naturality f

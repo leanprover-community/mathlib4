@@ -347,7 +347,7 @@ lemma StandardEtalePresentation.hom_ext {f₁ f₂ : S →ₐ[R] T} (h : f₁ P.
     P.P.hom_ext (by simpa)
   ext x
   obtain ⟨x, rfl⟩ := P.equivRing.symm.surjective x
-  exact congr($this x)
+  congrm $this x
 
 open scoped TensorProduct
 
@@ -417,7 +417,7 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     have : ((e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R _ S')).comp (AdjoinRoot.mkₐ P.f)) =
       aeval P.x := by ext; simp [e, StandardEtalePair.equivAwayAdjoinRoot]
     rw [Submonoid.map_powers]
-    exact congr(Submonoid.powers ($this p))
+    congrm Submonoid.powers ($this p)
   have : IsLocalization.Away (aeval P.x p) Sₛ :=
     IsLocalization.Away.of_associated (r := s) ⟨(P.hasMap.2.pow n).unit, hp⟩
   let e₁ : P'.Ring ≃ₐ[R]

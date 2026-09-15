@@ -164,7 +164,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   rw [bernoulli'PowerSeries, coeff_mul, mul_comm X, sum_antidiagonal_succ']
   suffices (∑ p ∈ antidiagonal n,
       bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
-    simpa [map_sum, Nat.factorial] using congr_arg (algebraMap ℚ A) this
+    simpa [map_sum, Nat.factorial] using congr(algebraMap ℚ A $this)
   apply eq_inv_of_mul_eq_one_left
   rw [sum_mul]
   convert! bernoulli'_spec' n using 1
