@@ -20,8 +20,7 @@ namespace Set.Iic
 
 theorem isCompactElement {a : α} {b : Iic a} (h : IsCompactElement (b : α)) :
     IsCompactElement b := by
-  simp only [CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup,
-    Finset.sup_eq_iSup] at h ⊢
+  simp only [isCompactElement_iff_exists_le_iSup_of_le_iSup, Finset.sup_eq_iSup] at h ⊢
   intro ι s hb
   replace hb : (b : α) ≤ iSup ((↑) ∘ s) := le_trans hb <| (coe_iSup s) ▸ le_refl _
   obtain ⟨t, ht⟩ := h ι ((↑) ∘ s) hb
