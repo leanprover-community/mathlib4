@@ -397,6 +397,15 @@ theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Inje
   contrapose! h
   exact G'.ne_of_adj (map_adj _ ((top_adj _ _).mpr h))
 
+theorem eq_bot (f : G →g (⊥ : SimpleGraph W)) : G = ⊥ :=
+  eq_bot_iff_forall_not_adj.mpr fun _ _ ↦ f.map_adj
+
+theorem eq_top_of_surjective {f : (⊤ : SimpleGraph W) →g G} (h : Surjective f) : G = ⊤ := by
+  refine eq_top_iff_forall_ne_adj.mpr fun u v hne ↦ ?_
+  rcases h u with ⟨u, rfl⟩
+  rcases h v with ⟨v, rfl⟩
+  exact f.map_adj <| mt (congrArg f) hne
+
 /-- A function `f` that is injective on adjacent vertices in a graph `G`
 (equivalently `f` is a valid `W`-coloring of `G`, or `G ≤ comap ⊤ f`)
 is a homomorphism from `G` to the mapped graph. -/
@@ -499,6 +508,15 @@ def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
 noncomputable def isoInduceRange : G ≃g G'.induce (Set.range f) where
   __ := Equiv.ofInjective f f.injective
   map_rel_iff' := by simp
+
+theorem eq_bot_of_surjective {f : (⊥ : SimpleGraph W) ↪g G} (h : Surjective f) : G = ⊥ := by
+  refine eq_bot_iff_forall_not_adj.mpr fun u v ↦ ?_
+  rcases h u with ⟨u, rfl⟩
+  rcases h v with ⟨v, rfl⟩
+  exact f.map_rel_iff.mp
+
+theorem eq_top (f : G ↪g (⊤ : SimpleGraph W)) : G = ⊤ :=
+  eq_top_iff_forall_ne_adj.mpr fun _ _ hne ↦ f.map_rel_iff.mp <| f.injective.ne hne
 
 /-- A homomorphism from `⊤` gives rise to an embedding of `⊤`. -/
 @[simps toEmbedding]
