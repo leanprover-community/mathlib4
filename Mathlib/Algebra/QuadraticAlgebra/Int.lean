@@ -17,8 +17,8 @@ not bundled into an `Equiv`, but witnessed by the results below (together with
 
 ## Main definitions
 
-* `QuadraticAlgebra.Int.ofDiscr`: the quadratic ring `QuadraticAlgebra ℤ m σ` of discriminant
-  `D`, where `σ = D % 4 ∈ {0, 1}` and `m = (D - σ) / 4`.
+* `QuadraticAlgebra.Int.ofDiscr D`: the quadratic ring `QuadraticAlgebra ℤ (D / 4) (D % 4)`,
+  which for `D ≡ 0, 1 mod 4` has discriminant `D`.
 
 ## Main results
 
@@ -32,9 +32,8 @@ not bundled into an `Equiv`, but witnessed by the results below (together with
 
 namespace QuadraticAlgebra.Int
 
-/-- The quadratic ring of discriminant `D`: `QuadraticAlgebra ℤ m σ` with `σ = D % 4 ∈ {0, 1}`
-and `m = (D - σ) / 4` so that, for `D ≡ 0, 1 mod 4`, its discriminant is `D`,
-see `discr_ofDiscr`. -/
+/-- The quadratic ring `QuadraticAlgebra ℤ (D / 4) (D % 4)`. For `D ≡ 0, 1 mod 4` its
+discriminant is `D`, see `discr_ofDiscr`. -/
 abbrev ofDiscr (D : ℤ) : Type := QuadraticAlgebra ℤ (D / 4) (D % 4)
 
 /-- For `D ≡ 0, 1 mod 4`, the discriminant of the quadratic ring `ofDiscr D` is `D`. -/
