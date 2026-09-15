@@ -4668,6 +4668,7 @@ public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.FieldTheory.Minpoly.Localization
 public import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 public import Mathlib.FieldTheory.MvRatFunc.Rank
 public import Mathlib.FieldTheory.Normal.Basic
