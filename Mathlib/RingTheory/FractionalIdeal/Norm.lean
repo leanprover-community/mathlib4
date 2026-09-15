@@ -39,10 +39,11 @@ namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
-attribute [local instance] Module.Free.infinite_int Ring.HasFiniteQuotients.of_module_finite_int
+attribute [local instance] Ring.HasFiniteQuotients.of_module_finite_int
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
+    haveI : Infinite R := Module.Free.infinite ℤ R
     (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| =
       (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [div_eq_div_iff]
@@ -59,29 +60,33 @@ theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R
 
 /-- The absolute norm of the fractional ideal `I` extending by multiplicativity the absolute norm
 on (integral) ideals. -/
-noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
-  toFun I := (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)|
-  map_zero' := by
-    rw [num_zero_eq, Submodule.zero_eq_bot, Ideal.absNorm_bot, Nat.cast_zero, zero_div]
-    exact IsFractionRing.injective R K
-  map_one' := by
-    rw [absNorm_div_norm_eq_absNorm_div_norm 1 ⊤ (by simp [Submodule.one_eq_range]),
-      Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one, abs_one,
-      Int.cast_one,
-      one_div_one]
-  map_mul' I J := by
-    rw [absNorm_div_norm_eq_absNorm_div_norm (I.den * J.den) (I.num * J.num) (by
-        have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
-        rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num, ← den_mul_self_eq_num]
-        exact Submodule.mul_smul_mul_eq_smul_mul_smul _ _ _ _),
-      Submonoid.coe_mul, map_mul, map_mul, Nat.cast_mul, div_mul_div_comm,
-      Int.cast_abs, Int.cast_abs, Int.cast_abs, ← abs_mul, Int.cast_mul]
+noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ :=
+  haveI : Infinite R := Module.Free.infinite ℤ R
+  { toFun I := (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)|
+    map_zero' := by
+      rw [num_zero_eq, Submodule.zero_eq_bot, Ideal.absNorm_bot, Nat.cast_zero, zero_div]
+      exact IsFractionRing.injective R K
+    map_one' := by
+      rw [absNorm_div_norm_eq_absNorm_div_norm 1 ⊤ (by simp [Submodule.one_eq_range]),
+        Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one, abs_one,
+        Int.cast_one,
+        one_div_one]
+    map_mul' I J := by
+      rw [absNorm_div_norm_eq_absNorm_div_norm (I.den * J.den) (I.num * J.num) (by
+          have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
+          rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num,
+            ← den_mul_self_eq_num]
+          exact Submodule.mul_smul_mul_eq_smul_mul_smul _ _ _ _),
+        Submonoid.coe_mul, map_mul, map_mul, Nat.cast_mul, div_mul_div_comm,
+        Int.cast_abs, Int.cast_abs, Int.cast_abs, ← abs_mul, Int.cast_mul] }
 
 theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
+    haveI : Infinite R := Module.Free.infinite ℤ R
     absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| := rfl
 
 theorem absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
+    haveI : Infinite R := Module.Free.infinite ℤ R
     absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [absNorm, ← absNorm_div_norm_eq_absNorm_div_norm a I₀ h, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk]
@@ -94,12 +99,14 @@ theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert! ab
 
 theorem absNorm_eq_zero_iff [IsDomain K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
+  have : Infinite R := Module.Free.infinite ℤ R
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
   simp [Algebra.norm_eq_zero_iff]
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :
+    haveI : Infinite R := Module.Free.infinite ℤ R
     absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
   rw [absNorm_eq' 1 I₀ (by rw [one_smul]; rfl), OneMemClass.coe_one, map_one, abs_one,
     Int.cast_one, _root_.div_one]
@@ -138,6 +145,7 @@ variable (R) in
 theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
     absNorm (spanSingleton R⁰ x) = |(Algebra.norm ℚ x)| := by
   have : IsDomain K := IsFractionRing.isDomain R
+  have : Infinite R := Module.Free.infinite ℤ R
   obtain ⟨d, ⟨r, hr⟩⟩ := IsLocalization.exists_integer_multiple R⁰ x
   rw [absNorm_eq' d (Ideal.span {r})]
   · rw [Ideal.absNorm_span_singleton]

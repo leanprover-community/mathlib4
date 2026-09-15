@@ -352,12 +352,11 @@ section Free
 
 variable [Module.Free ℤ S] [Module.Finite ℤ S]
 
-attribute [local instance] Module.Free.infinite_int
-
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
 theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivClass E S I] (e : E) :
+    haveI : Infinite S := Module.Free.infinite ℤ S
     Int.natAbs
         (LinearMap.det
           ((Submodule.subtype I).restrictScalars ℤ ∘ₗ AddMonoidHom.toIntLinearMap (e : S →+ I))) =
@@ -374,11 +373,14 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `bI`
 over `b`. -/
 theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ S)
-    (I : Ideal S) (bI : Basis ι ℤ I) : (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I :=
+    (I : Ideal S) (bI : Basis ι ℤ I) :
+    haveI : Infinite S := Module.Free.infinite ℤ S
+    (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I :=
   Submodule.natAbs_det_basis_change b (I.restrictScalars ℤ) bI
 
 @[simp]
 theorem absNorm_span_singleton (r : S) :
+    haveI : Infinite S := Module.Free.infinite ℤ S
     absNorm (span ({r} : Set S)) = (Algebra.norm ℤ r).natAbs := by
   rw [Algebra.norm_apply]
   by_cases hr : r = 0
@@ -390,17 +392,23 @@ theorem absNorm_span_singleton (r : S) :
   refine b.ext fun i => ?_
   simp
 
-lemma absNorm_span_natCast (n : ℕ) : (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
+lemma absNorm_span_natCast (n : ℕ) :
+    haveI : Infinite S := Module.Free.infinite ℤ S
+    (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
   simp [absNorm_span_singleton, Algebra.norm_natCast]
 
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
+    haveI : Infinite S := Module.Free.infinite ℤ S
     ↑(Ideal.absNorm I) ∣ Algebra.norm ℤ x := by
+  have : Infinite S := Module.Free.infinite ℤ S
   rw [← Int.dvd_natAbs, ← absNorm_span_singleton x, Int.natCast_dvd_natCast]
   exact absNorm_dvd_absNorm_of_le ((span_singleton_le_iff_mem _).mpr h)
 
 @[simp]
 theorem absNorm_span_insert (r : S) (s : Set S) :
+    haveI : Infinite S := Module.Free.infinite ℤ S
     absNorm (span (insert r s)) ∣ gcd (absNorm (span s)) (Algebra.norm ℤ r).natAbs :=
+  haveI : Infinite S := Module.Free.infinite ℤ S
   (dvd_gcd_iff _ _ _).mpr
     ⟨absNorm_dvd_absNorm_of_le (span_mono (Set.subset_insert _ _)),
       _root_.trans
@@ -409,6 +417,7 @@ theorem absNorm_span_insert (r : S) (s : Set S) :
 
 theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     Algebra.norm ℤ x ∣ y ↔ x ∣ y := by
+  have : Infinite S := Module.Free.infinite ℤ S
   rw [← Ideal.mem_span_singleton (y := x), ← eq_intCast (algebraMap ℤ S), ← Ideal.mem_comap,
     ← Ideal.span_singleton_absNorm, Ideal.mem_span_singleton, Ideal.absNorm_span_singleton,
     Int.natAbs_dvd]
