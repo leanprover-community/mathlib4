@@ -79,7 +79,7 @@ scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω 
 with compact support. -/
 scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
-open Distributions
+open scoped Distributions
 
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
@@ -126,6 +126,8 @@ protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contD
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
+protected theorem zero_on_compl (f : 𝓓^{n}(Ω, F)) : EqOn f 0 Ωᶜ := fun _ hx ↦
+  image_eq_zero_of_notMem_tsupport fun h ↦ hx (f.tsupport_subset h)
 
 @[fun_prop]
 protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
@@ -278,7 +280,7 @@ noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
     @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
 
 noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
-  topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
+  isTopologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
 noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
   IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
@@ -339,7 +341,7 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [← f.coe_restrictScalars ℝ]
   rw [continuous_iff_le_induced]
   have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
-    topologicalAddGroup_induced _
+    isTopologicalAddGroup_induced _
   have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
   have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
@@ -674,6 +676,11 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
   exact B.memLp_of_bilin 1 f.memLp_top hφ
 
+protected theorem integrable_smul {f : E → F} {μ : Measure E}
+    (φ : 𝓓^{n}(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
+    Integrable (fun x ↦ φ x • f x) μ :=
+  φ.integrable_bilin (ContinuousLinearMap.lsmul ℝ ℝ) hf
+
 /-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
 `LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both
 - `IsLocallyFiniteMeasure (μ.restrict Ω)` (because we say nothing about points outside of `Ω`)
@@ -691,7 +698,7 @@ protected theorem integrable {μ : Measure E}
   replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   suffices IntegrableOn ((1 : ℝ) • f) (tsupport f) μ by simpa
   rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
-  exact f.memLp_top.smul H
+  exact H.smul f.memLp_top
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
 

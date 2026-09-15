@@ -36,7 +36,9 @@ public section
 
 noncomputable section
 
-open Topology Bornology
+open Bornology
+
+open scoped Topology
 
 namespace NormedSpace
 

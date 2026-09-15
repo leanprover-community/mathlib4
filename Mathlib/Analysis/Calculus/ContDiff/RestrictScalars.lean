@@ -25,7 +25,9 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
   {x : E} {f : E → F} {n : ℕ} {s : Set E}
 
-open ContinuousMultilinearMap Topology
+open ContinuousMultilinearMap
+
+open scoped Topology
 
 /-- Derivation rule for compositions of scalar restriction with continuous multilinear maps. -/
 lemma fderivWithin_restrictScalars_comp

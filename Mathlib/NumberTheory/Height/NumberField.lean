@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.NumberField.ProductFormula
+public import Mathlib.RingTheory.Algebraic.Denominator
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice
@@ -302,7 +303,6 @@ open Finset
 /-- If `x : K` (for a number field `K`), then we can find a nonzero `n : ℕ` such that
 `n ≤ mulHeight₁ x` and `n * x` is integral. I.e., the denominator of `x` can be bounded by
 its multplicative height. -/
--- TODO: Use this to show `natDenominator x ≤ mulHeight₁ x` once #39872 is merged.
 lemma exists_nat_le_mulHeight₁ (x : K) :
     ∃ n : ℕ, n ≠ 0 ∧ n ≤ mulHeight₁ x ∧ IsIntegral ℤ (n * x) := by
   obtain ⟨n, hn, a, ha₁, ha₂⟩ := exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow x
@@ -318,6 +318,13 @@ lemma exists_nat_le_mulHeight₁ (x : K) :
     totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum univ]
   gcongr
   exact Finite.le_ciSup_of_le 1 <| by simp
+
+/-- The natural-number denominator of an element of a number field is bounded by its
+multiplicative height. -/
+lemma natDenominator_le_mulHeight₁ (x : K) : Algebra.natDenominator x ≤ mulHeight₁ x := by
+  obtain ⟨n, hn, hn_le, hn_int⟩ := exists_nat_le_mulHeight₁ x
+  rw [← nsmul_eq_mul, ← Algebra.natDenominator_dvd_iff] at hn_int
+  grw [Nat.le_of_dvd hn.pos hn_int, hn_le]
 
 private lemma pow_totalWeight_sub_one_eq [DecidableEq (InfinitePlace K)] {n : ℕ} (hn : n ≠ 0)
     (v : InfinitePlace K) :

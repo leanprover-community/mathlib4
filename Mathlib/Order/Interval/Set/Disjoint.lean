@@ -175,12 +175,17 @@ variable [Preorder α] {s : Set α} {a : α}
 
 @[to_dual]
 theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici a := by
-  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x hx ↦ mem_iUnion₂.mpr ⟨a, h.left, hx⟩
-  exact Ici_subset_Ici.mpr <| mem_lowerBounds.mp h.right x hx
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x ↦ mem_biUnion h.left
+  exact Ici_subset_Ici.mpr <| h.right hx
 
 @[to_dual (attr := deprecated IsLeast.biUnion_Ici_eq_Ici (since := "2026-08-13"))]
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Ici x = Ici a :=
   a_glb.isLeast a_mem |>.biUnion_Ici_eq_Ici
+
+@[to_dual]
+theorem IsLeast.biUnion_Ioi_eq (h : IsLeast s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x ↦ mem_biUnion h.left
+  exact Ioi_subset_Ioi <| h.right hx
 
 end Preorder
 
