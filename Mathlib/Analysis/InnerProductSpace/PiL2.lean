@@ -405,6 +405,7 @@ theorem repr_injective :
   congr
 
 /-- `b i` is the `i`th basis vector. -/
+@[macro_inline]
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
@@ -1216,8 +1217,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
-    simp only [p1, p2, LinearIsometry.norm_map,
-      ContinuousLinearMap.coe_coe, Submodule.coe_norm]
+    simp [p1, p2]
   exact
     { toLinearMap := M
       norm_map' := M_norm_map }

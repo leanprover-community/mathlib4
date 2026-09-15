@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.Order.Basic
-public import Mathlib.Data.Fintype.WithTopBot
 
 /-! # Order topology on `WithTop ι`
 
