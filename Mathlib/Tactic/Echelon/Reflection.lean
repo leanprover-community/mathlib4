@@ -57,12 +57,10 @@ theorem getD_of_isLowerTriangularDiagList [Zero α] {k c i : ℕ} {rows : List (
         cases i with
         | zero =>
           rw [List.getD_cons_zero]
-          constructor
-          · have := List.getElem?_drop (xs := row) (i := k) (j := 0)
-            grind
-          · intro j hj
-            have := List.getElem?_drop (xs := row) (i := k) (j := j - k)
-            grind
+          have := List.getElem?_drop (xs := row) (i := k) (j := 0)
+          refine ⟨by grind, fun j hj ↦ ?_⟩
+          have := List.getElem?_drop (xs := row) (i := k) (j := j - k)
+          grind
         | succ i =>
           rw [List.getD_cons_succ, ← Nat.add_assoc, Nat.add_right_comm]
           exact ih hrest (by lia)
@@ -104,9 +102,7 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
       obtain ⟨hrow, hrest⟩ := h
       cases i with
       | zero => grind
-      | succ i =>
-        rw [List.getD_cons_succ]
-        exact ih hrest i (by simp)
+      | succ i => grind [List.getD_cons_succ]
   | cons k ks ih =>
     cases rows with
     | nil => simp [IsPivotedList] at h
@@ -115,14 +111,10 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
       cases i with
       | zero =>
         rw [List.getD_cons_zero]
-        refine ⟨fun j hj ↦ ?_, fun c hc ↦ ?_⟩
-        · have := List.getElem?_take_of_lt (l := row) (hj k (by simp))
-          grind
-        · have : k = c := by simpa using hc
-          exact this ▸ hd
-      | succ i =>
-        rw [List.getD_cons_succ]
-        exact ih hrest i
+        refine ⟨fun j hj ↦ ?_, by grind⟩
+        have := List.getElem?_take_of_lt (l := row) (hj k (by simp))
+        grind
+      | succ i => grind [List.getD_cons_succ]
 
 /-- The pivot function of the list of pivot columns: the column of row `i`, and `⊤` for a row
 beyond the list. -/
