@@ -135,7 +135,7 @@ instance [h : Fact (Transcendental R s)] : UniqueFactorizationMonoid R[s] :=
   h.out.uniqueFactorizationMonoid_adjoin
 
 theorem Transcendental.wfDvdMonoid_adjoin (ht : Transcendental R s) : WfDvdMonoid R[s] :=
-  (uniqueFactorizationMonoid_adjoin ht).toIsWellFounded
+  (uniqueFactorizationMonoid_adjoin ht).toWellFounded
 
 end instances
 
