@@ -235,6 +235,13 @@ lemma ofHom_zero : ofHom (0 : ρ.IntertwiningMap σ) = 0 := rfl
 @[simp]
 lemma zero_hom : (0 : A ⟶ B).hom = 0 := rfl
 
+instance : SMul ℕ+ (A ⟶ B) where smul n f := ofHom (n • f.hom)
+
+lemma ofHom_psmul (f : ρ.IntertwiningMap σ) (n : ℕ+) :
+    ofHom (n • f) = n • ofHom f := rfl
+
+lemma psmul_hom (f : A ⟶ B) (n : ℕ+) : (n • f).hom = n • f.hom := rfl
+
 instance : SMul ℕ (A ⟶ B) where smul n f := ofHom (n • f.hom)
 
 lemma ofHom_nsmul (f : ρ.IntertwiningMap σ) (n : ℕ) :
@@ -261,7 +268,7 @@ lemma ofHom_zsmul (f : ρ.IntertwiningMap σ) (n : ℤ) : ofHom (n • f) = n �
 lemma zsmul_hom (f : A ⟶ B) (n : ℤ) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommGroup (A ⟶ B) := fast_instance% hom_injective.addCommGroup
-    Rep.Hom.hom zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
+    Rep.Hom.hom zero_hom add_hom neg_hom sub_hom psmul_hom nsmul_hom zsmul_hom
 
 instance : Preadditive (Rep.{w} k G) where
   add_comp _ _ _ := add_comp

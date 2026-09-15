@@ -212,6 +212,11 @@ instance instSMul : SMul S (M [⋀^ι]→ₗ[R] N) :=
     { c • (f : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 
+instance instPSMul : SMul ℕ+ (M [⋀^ι]→ₗ[R] N) :=
+  ⟨fun c f =>
+    { c • (f : MultilinearMap R (fun _ : ι => M) N) with
+      map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
+
 @[simp]
 theorem smul_apply (c : S) (m : ι → M) : (c • f) m = c • f m :=
   rfl
@@ -223,8 +228,23 @@ theorem coe_smul (c : S) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : �
 theorem coeFn_smul (c : S) (f : M [⋀^ι]→ₗ[R] N) : ⇑(c • f) = c • ⇑f :=
   rfl
 
+@[simp]
+theorem psmul_apply (c : ℕ+) (m : ι → M) : (c • f) m = c • f m :=
+  rfl
+
+@[norm_cast]
+theorem coe_psmul (c : ℕ+) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : ι => M) N) :=
+  rfl
+
+theorem coeFn_psmul (c : ℕ+) (f : M [⋀^ι]→ₗ[R] N) : ⇑(c • f) = c • ⇑f :=
+  rfl
+
 instance instSMulCommClass {T : Type*} [Monoid T] [DistribMulAction T N] [SMulCommClass R T N]
     [SMulCommClass S T N] : SMulCommClass S T (M [⋀^ι]→ₗ[R] N) where
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
+
+instance instPSMulCommClass {T : Type*} [Monoid T] [DistribMulAction T N] [SMulCommClass R T N]
+    [SMulCommClass ℕ+ T N] : SMulCommClass ℕ+ T (M [⋀^ι]→ₗ[R] N) where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance instIsCentralScalar [DistribMulAction Sᵐᵒᵖ N] [IsCentralScalar S N] :
@@ -308,7 +328,8 @@ instance instInhabited : Inhabited (M [⋀^ι]→ₗ[R] N) :=
   ⟨0⟩
 
 instance instAddCommMonoid : AddCommMonoid (M [⋀^ι]→ₗ[R] N) := fast_instance%
-  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => coeFn_smul _ _
+  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) (swap coeFn_psmul)
+    fun _ _ => coeFn_smul _ _
 
 instance instNeg : Neg (M [⋀^ι]→ₗ[R] N') :=
   ⟨fun f =>
@@ -339,7 +360,7 @@ theorem coe_sub : (↑(g - g₂) : MultilinearMap R (fun _ : ι => M) N') = g - 
 
 instance instAddCommGroup : AddCommGroup (M [⋀^ι]→ₗ[R] N') := fast_instance%
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
+    (swap coeFn_psmul) (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
 section DistribMulAction
 

@@ -178,11 +178,17 @@ instance : Neg (TruncatedWittVector p n R) :=
 instance : Sub (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out - y.out)⟩
 
+instance hasPNatScalar : SMul ℕ+ (TruncatedWittVector p n R) :=
+  ⟨fun m x => truncateFun n (m • x.out)⟩
+
 instance hasNatScalar : SMul ℕ (TruncatedWittVector p n R) :=
   ⟨fun m x => truncateFun n (m • x.out)⟩
 
 instance hasIntScalar : SMul ℤ (TruncatedWittVector p n R) :=
   ⟨fun m x => truncateFun n (m • x.out)⟩
+
+instance hasPNatPow : Pow (TruncatedWittVector p n R) ℕ+ :=
+  ⟨fun x m => truncateFun n (x.out ^ m)⟩
 
 instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
   ⟨fun x m => truncateFun n (x.out ^ m)⟩
@@ -205,8 +211,10 @@ macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
       | rw [WittVector.init_mul]
       | rw [WittVector.init_neg]
       | rw [WittVector.init_sub]
+      | rw [WittVector.init_psmul]
       | rw [WittVector.init_nsmul]
       | rw [WittVector.init_zsmul]
+      | rw [WittVector.init_ppow]
       | rw [WittVector.init_pow]})
 
 namespace WittVector
@@ -244,10 +252,16 @@ theorem truncateFun_sub (x y : 𝕎 R) :
     truncateFun n (x - y) = truncateFun n x - truncateFun n y := by
   witt_truncateFun_tac
 
+theorem truncateFun_psmul (m : ℕ+) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
+  witt_truncateFun_tac
+
 theorem truncateFun_nsmul (m : ℕ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 
 theorem truncateFun_zsmul (m : ℤ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
+  witt_truncateFun_tac
+
+theorem truncateFun_ppow (x : 𝕎 R) (m : ℕ+) : truncateFun n (x ^ m) = truncateFun n x ^ m := by
   witt_truncateFun_tac
 
 theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncateFun n x ^ m := by
@@ -270,8 +284,8 @@ variable [Fact p.Prime]
 instance instCommRing : CommRing (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
-    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
-    (truncateFun_intCast n)
+    (truncateFun_psmul n) (truncateFun_nsmul n) (truncateFun_zsmul n)
+    (truncateFun_ppow n) (truncateFun_pow n) (truncateFun_natCast n) (truncateFun_intCast n)
 
 end TruncatedWittVector
 

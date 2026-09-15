@@ -113,7 +113,8 @@ it needs to be reducible(-with-instances).
 noncomputable instance : Semifield ℝ≥0 := fast_instance%
   Function.Injective.semifield toReal Subtype.val_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ => rfl)
 
 instance : IsOrderedRing ℝ≥0 :=
   Nonneg.isOrderedRing

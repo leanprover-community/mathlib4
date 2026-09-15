@@ -21,13 +21,21 @@ that `Data.PNat.Defs` can have very few imports.
 
 @[expose] public section
 
-deriving instance Add, Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
+deriving instance Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
   AddCommSemigroup, CommMonoid, IsOrderedCancelMonoid, WellFoundedLT, AddLeftMono,
   AddLeftStrictMono, AddLeftReflectLE, AddLeftReflectLT for PNat
 
 namespace PNat
 
 instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
+
+protected lemma «exists» {p : ℕ+ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ) (hn : 0 < n), p (PNat.mk n hn) :=
+  Subtype.exists
+
+protected lemma exists_val {p : ℕ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ), 0 < n ∧ p n := by
+  simp [PNat.exists]
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -101,18 +109,11 @@ namespace PNat
 
 open Nat
 
-/-- We now define a long list of structures on `ℕ+` induced by
+/- We now define a long list of structures on `ℕ+` induced by
 similar structures on `ℕ`. Most of these behave in a completely
 obvious way, but there are a few things to be said about
 subtraction, division and powers.
 -/
-@[simp, norm_cast]
-theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
-  Subtype.ext_iff.symm
-
-@[simp, norm_cast]
-theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
-  rfl
 
 /-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
 @[simps]
@@ -155,28 +156,6 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
   rcases k with - | k
   · exact hz
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
-
-/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
-not only to `Prop`. -/
-@[elab_as_elim, induction_eliminator]
-def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
-  rcases n with ⟨n, h⟩
-  induction n with
-  | zero => exact absurd h (by decide)
-  | succ n IH =>
-    rcases n with - | n
-    · exact one
-    · exact succ _ (IH n.succ_pos)
-
-@[simp]
-theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
-  rfl
-
-@[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
-    @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
-  obtain ⟨n, h⟩ := n
-  cases n <;> [exact absurd h (by decide); rfl]
 
 @[simp]
 theorem ofNat_le_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
@@ -321,7 +300,7 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
       rintro rfl
       simp only [mul_zero, ne_zero] at h
     use ⟨n.succ, n.succ_pos⟩
-    rw [← coe_inj, h, mul_coe, mk_coe]
+    rw [← coe_inj, h, mul_coe, mk_coe _ k.prop]
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
   rw [dvd_iff]
