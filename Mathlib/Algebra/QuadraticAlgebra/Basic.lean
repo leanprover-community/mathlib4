@@ -528,12 +528,6 @@ theorem mapRingHom_id : mapRingHom (.id R) a b = .id (QuadraticAlgebra R a b) :=
 theorem mapRingHom_comp [CommSemiring T] (g : S →+* T) :
     (mapRingHom g (f a) (f b)).comp (mapRingHom f a b) = mapRingHom (g.comp f) a b := rfl
 
-/-- The `QuadraticAlgebra R a b`-algebra structure on `QuadraticAlgebra S (f a) (f b)` induced by
-`f`. This is not an instance, since for `R = S` it clashes with `Algebra.id`. -/
-@[instance_reducible]
-def algebra : Algebra (QuadraticAlgebra R a b) (QuadraticAlgebra S (f a) (f b)) :=
-  (mapRingHom f a b).toAlgebra
-
 end CommSemiring
 
 section CommRing
@@ -570,6 +564,13 @@ def baseChange :
 @[simp]
 theorem coe_baseChange :
     baseChange S a b = mapRingHom (algebraMap R S) a b := rfl
+
+/-- The `QuadraticAlgebra R a b`-algebra structure on the base change of `QuadraticAlgebra R a b`
+along `R → S`. This is not an instance, since for `R = S` it clashes with `Algebra.id`. -/
+@[instance_reducible]
+def algebra : Algebra (QuadraticAlgebra R a b)
+    (QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b)) :=
+  (mapRingHom (algebraMap R S) a b).toAlgebra
 
 theorem baseChange_injective [FaithfulSMul R S] :
     Function.Injective (baseChange S a b) :=
