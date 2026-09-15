@@ -288,7 +288,7 @@ end Subsemigroup
 
 namespace Submonoid
 
-variable {M M' : Type*} [MulOneClass M] [MulOneClass M'] {P : Submonoid M} {P' : Submonoid M'}
+variable {M M' : Type*} [MulOneClass M] [MulOneClass M'] {P Q : Submonoid M} {P' : Submonoid M'}
   (f : M →* M')
 
 @[to_additive]
@@ -328,6 +328,34 @@ instance [IsMulFG P] : IsMulFG (P.map f) :=
   .of_surjective (f.submonoidMap P) (f.submonoidMap_surjective P)
 
 @[to_additive]
+instance [IsMulFG P] [IsMulFG Q] : IsMulFG (P ⊔ Q :) := by
+  obtain ⟨s, hs, rfl⟩ := exists_finite_of_isMulFG P
+  obtain ⟨t, ht, rfl⟩ := exists_finite_of_isMulFG Q
+  exact isMulFG_iff_finite.mpr ⟨s ∪ t, hs.union ht, closure_union s t⟩
+
+@[to_additive]
+theorem isMulFG_finset_sup {ι : Type*} (s : Finset ι) (P : ι → Submonoid M)
+    (hP : ∀ i ∈ s, IsMulFG (P i)) : IsMulFG (s.sup P :) :=
+  s.sup_induction (p := fun P : Submonoid M ↦ IsMulFG P)
+    inferInstance (fun _ _ _ _ ↦ inferInstance) hP
+
+@[to_additive]
+theorem isMulFG_biSup_finset {ι : Type*} (s : Finset ι) (P : ι → Submonoid M)
+    (hP : ∀ i ∈ s, IsMulFG (P i)) : IsMulFG (⨆ i ∈ s, P i :) := by
+  rw [← Finset.sup_eq_iSup]
+  exact isMulFG_finset_sup s P hP
+
+@[to_additive]
+theorem isMulFG_biSup {ι : Type*} {s : Set ι} (hs : s.Finite) (P : ι → Submonoid M)
+    (hP : ∀ i ∈ s, IsMulFG (P i)) : IsMulFG (⨆ i ∈ s, P i :) := by
+  convert isMulFG_biSup_finset hs.toFinset P (by simpa) <;> simp
+
+@[to_additive]
+instance {ι : Sort*} [Finite ι] (P : ι → Submonoid M) [∀ i, IsMulFG (P i)] :
+    IsMulFG (iSup P :) := by
+  convert isMulFG_biSup Set.finite_univ (P ∘ PLift.down) _ <;> simp [iSup_plift_down, *]
+
+@[to_additive]
 instance [IsMulFG P] [IsMulFG P'] : IsMulFG (P.prod P') :=
   .of_surjective (P.prodEquiv P').symm (P.prodEquiv P').symm.surjective
 
@@ -335,7 +363,7 @@ end Submonoid
 
 namespace Subgroup
 
-variable {G G' : Type*} [Group G] [Group G'] {H : Subgroup G} {H' : Subgroup G'} (f : G →* G')
+variable {G G' : Type*} [Group G] [Group G'] {H K : Subgroup G} {H' : Subgroup G'} (f : G →* G')
 
 @[to_additive]
 theorem isMulFG_iff : IsMulFG H ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = H := by
@@ -372,6 +400,34 @@ instance [IsMulFG G] : IsMulFG (⊤ : Subgroup G) :=
 @[to_additive]
 instance [IsMulFG H] : IsMulFG (H.map f) :=
   .of_surjective (f.subgroupMap H) (f.subgroupMap_surjective H)
+
+@[to_additive]
+instance [IsMulFG H] [IsMulFG K] : IsMulFG (H ⊔ K :) := by
+  obtain ⟨s, hs, rfl⟩ := exists_finite_of_isMulFG H
+  obtain ⟨t, ht, rfl⟩ := exists_finite_of_isMulFG K
+  exact isMulFG_iff_finite.mpr ⟨s ∪ t, hs.union ht, closure_union s t⟩
+
+@[to_additive]
+theorem isMulFG_finset_sup {ι : Type*} (s : Finset ι) (H : ι → Subgroup G)
+    (hH : ∀ i ∈ s, IsMulFG (H i)) : IsMulFG (s.sup H :) :=
+  s.sup_induction (p := fun H : Subgroup G ↦ IsMulFG H)
+    inferInstance (fun _ _ _ _ ↦ inferInstance) hH
+
+@[to_additive]
+theorem isMulFG_biSup_finset {ι : Type*} (s : Finset ι) (H : ι → Subgroup G)
+    (hH : ∀ i ∈ s, IsMulFG (H i)) : IsMulFG (⨆ i ∈ s, H i :) := by
+  rw [← Finset.sup_eq_iSup]
+  exact isMulFG_finset_sup s H hH
+
+@[to_additive]
+theorem isMulFG_biSup {ι : Type*} {s : Set ι} (hs : s.Finite) (H : ι → Subgroup G)
+    (hH : ∀ i ∈ s, IsMulFG (H i)) : IsMulFG (⨆ i ∈ s, H i :) := by
+  convert isMulFG_biSup_finset hs.toFinset H (by simpa) <;> simp
+
+@[to_additive]
+instance {ι : Sort*} [Finite ι] (H : ι → Subgroup G) [∀ i, IsMulFG (H i)] :
+    IsMulFG (iSup H :) := by
+  convert isMulFG_biSup Set.finite_univ (H ∘ PLift.down) _ <;> simp [iSup_plift_down, *]
 
 @[to_additive]
 instance [IsMulFG H] [IsMulFG H'] : IsMulFG (H.prod H') :=
@@ -419,35 +475,31 @@ theorem AddSubmonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] (P : AddSubmonoid M
 
 @[to_additive]
 theorem Submonoid.FG.bot : FG (⊥ : Submonoid M) :=
-  isMulFG_iff.mpr ⟨∅, by simp⟩
+  inferInstance
 
 @[to_additive]
 theorem Submonoid.FG.sup {Q : Submonoid M} (hP : P.FG) (hQ : Q.FG) : (P ⊔ Q).FG := by
-  classical
-  rw [FG, isMulFG_iff] at *
-  rcases hP with ⟨s, rfl⟩
-  rcases hQ with ⟨t, rfl⟩
-  exact ⟨s ∪ t, by simp [closure_union]⟩
+  infer_instance
 
 @[to_additive]
 theorem Submonoid.FG.finset_sup {ι : Type*} (s : Finset ι) (P : ι → Submonoid M)
     (hP : ∀ i ∈ s, (P i).FG) : (s.sup P).FG :=
-  Finset.sup_induction bot (fun _ ha _ hb => ha.sup hb) hP
+  isMulFG_finset_sup s P hP
 
 @[to_additive]
 theorem Submonoid.FG.biSup_finset {ι : Type*} (s : Finset ι) (P : ι → Submonoid M)
     (hP : ∀ i ∈ s, (P i).FG) : (⨆ i ∈ s, P i).FG := by
-  simpa only [Finset.sup_eq_iSup] using finset_sup s P hP
+  exact isMulFG_biSup_finset s P hP
 
 @[to_additive]
 theorem Submonoid.FG.biSup {ι : Type*} {s : Set ι} (hs : s.Finite) (P : ι → Submonoid M)
     (hP : ∀ i ∈ s, (P i).FG) : (⨆ i ∈ s, P i).FG := by
-  simpa using biSup_finset hs.toFinset P (by simpa)
+  exact isMulFG_biSup hs P hP
 
 @[to_additive]
 theorem Submonoid.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Submonoid M) (hP : ∀ i, (P i).FG) :
     (iSup P).FG := by
-  simpa [iSup_plift_down] using biSup Set.finite_univ (P ∘ PLift.down) fun i _ => hP i.down
+  infer_instance
 
 /-- The product of two finitely generated submonoids is finitely generated. -/
 @[to_additive prod
@@ -636,35 +688,31 @@ theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG
 
 @[to_additive]
 theorem Subgroup.FG.bot : FG (⊥ : Subgroup G) :=
-  isMulFG_iff.mpr ⟨∅, by simp⟩
+  inferInstance
 
 @[to_additive]
 theorem Subgroup.FG.sup {P Q : Subgroup G} (hP : P.FG) (hQ : Q.FG) : (P ⊔ Q).FG := by
-  classical
-  rw [FG, isMulFG_iff] at *
-  rcases hP with ⟨s, rfl⟩
-  rcases hQ with ⟨t, rfl⟩
-  exact ⟨s ∪ t, by simp [closure_union]⟩
+  infer_instance
 
 @[to_additive]
 theorem Subgroup.FG.finset_sup {ι : Type*} (s : Finset ι) (P : ι → Subgroup G)
     (hP : ∀ i ∈ s, (P i).FG) : (s.sup P).FG :=
-  Finset.sup_induction bot (fun _ ha _ hb => ha.sup hb) hP
+  isMulFG_finset_sup s P hP
 
 @[to_additive]
 theorem Subgroup.FG.biSup_finset {ι : Type*} (s : Finset ι) (P : ι → Subgroup G)
     (hP : ∀ i ∈ s, (P i).FG) : (⨆ i ∈ s, P i).FG := by
-  simpa only [Finset.sup_eq_iSup] using finset_sup s P hP
+  exact isMulFG_biSup_finset s P hP
 
 @[to_additive]
 theorem Subgroup.FG.biSup {ι : Type*} {s : Set ι} (hs : s.Finite) (P : ι → Subgroup G)
     (hP : ∀ i ∈ s, (P i).FG) : (⨆ i ∈ s, P i).FG := by
-  simpa using biSup_finset hs.toFinset P (by simpa)
+  exact isMulFG_biSup hs P hP
 
 @[to_additive]
 theorem Subgroup.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Subgroup G) (hP : ∀ i, (P i).FG) :
     (iSup P).FG := by
-  simpa [iSup_plift_down] using biSup Set.finite_univ (P ∘ PLift.down) fun i _ => hP i.down
+  infer_instance
 
 /-- The product of two finitely generated subgroups is finitely generated. -/
 @[to_additive prod

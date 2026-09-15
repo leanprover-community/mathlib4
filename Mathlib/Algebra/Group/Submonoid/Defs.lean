@@ -348,6 +348,10 @@ instance one : One S' :=
 theorem coe_one : ((1 : S') : M₁) = 1 :=
   rfl
 
+@[to_additive]
+instance {M : Type*} [MulOneClass M] : Unique (⊥ : Submonoid M) :=
+  ⟨⟨1⟩, fun g ↦ Subtype.ext g.2⟩
+
 variable {S'}
 
 @[to_additive (attr := simp, norm_cast)]
