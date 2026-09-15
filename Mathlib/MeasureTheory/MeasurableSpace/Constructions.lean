@@ -268,7 +268,7 @@ theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (h
     (h₁ : Measurable (s.domRestrict f)) (h₂ : Measurable (sᶜ.domRestrict f)) : Measurable f :=
   measurable_of_measurable_union_cover s sᶜ hs hs.compl (union_compl_self s).ge h₁ h₂
 
-theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
+protected theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
     {g : (sᶜ : Set α) → β} (hg : Measurable g) (hs : MeasurableSet s) :
     Measurable fun x => if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩ :=
   measurable_of_restrict_of_restrict_compl hs (by simpa) (by simpa)
