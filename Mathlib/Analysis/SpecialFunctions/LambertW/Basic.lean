@@ -555,7 +555,6 @@ end Definition
 
 section RangeAndDomain
 
-@[simp]
 public theorem mem_domain_zero : z ∈ domain 0 := trivial
 
 public theorem mem_domain_of_ne_zero (hz : z ≠ 0) : z ∈ domain k :=
