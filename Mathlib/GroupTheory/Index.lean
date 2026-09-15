@@ -356,7 +356,7 @@ theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
 
 @[to_additive relIndex_mul_card]
 theorem relIndex_mul_card : H.relIndex K * Nat.card (H ⊓ K :) = Nat.card K := by
-  rw [← subgroupOf_map_subtype, card_subtype, relIndex, (H.subgroupOf K).index_mul_card]
+  simpa [mul_comm] using relIndex_inf_mul_relIndex ⊥ H K
 
 /-- The index of a finite subgroup is the quotient of the cardinalities. -/
 @[to_additive /-- The index of a finite additive subgroup is the quotient of the cardinalities. -/]
