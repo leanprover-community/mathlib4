@@ -112,34 +112,31 @@ theorem maxDegree_starGraph [Fintype V] [DecidableEq V] (r : V) :
 
 /-- An equivalence of vertex types lifts to an isomorphism of star graphs. -/
 @[simps toEquiv]
-def starGraphIsoOfEquiv [DecidableEq W] (f : V ≃ W) (v : V) : starGraph v ≃g starGraph (f v) where
+def starGraphIsoOfEquiv (f : V ≃ W) (v : V) : starGraph v ≃g starGraph (f v) where
   __ := f
   map_rel_iff' := by grind [f.injective]
 
 @[simp]
-theorem toEquiv_starGraphIsoOfEquiv [DecidableEq W] (f : V ≃ W) (v : V) :
-    starGraphIsoOfEquiv f v = f :=
+theorem toEquiv_starGraphIsoOfEquiv (f : V ≃ W) (v : V) : starGraphIsoOfEquiv f v = f :=
   rfl
 
 @[simp]
-theorem coe_starGraphIsoOfEquiv [DecidableEq W] (f : V ≃ W) (v : V) :
-    ⇑(starGraphIsoOfEquiv f v) = f :=
+theorem coe_starGraphIsoOfEquiv (f : V ≃ W) (v : V) : ⇑(starGraphIsoOfEquiv f v) = f :=
   rfl
 
 /-- An embedding between vertex types lifts to an embedding between star graphs. -/
 @[simps toEmbedding]
-def starGraphEmbeddingOfEmbedding [DecidableEq W] (f : V ↪ W) (v : V) :
-    starGraph v ↪g starGraph (f v) where
+def starGraphEmbeddingOfEmbedding (f : V ↪ W) (v : V) : starGraph v ↪g starGraph (f v) where
   __ := f
   map_rel_iff' := by simp
 
 @[simp]
-theorem coe_starGraphEmbeddingOfEmbedding [DecidableEq W] (f : V ↪ W) (v : V) :
+theorem coe_starGraphEmbeddingOfEmbedding (f : V ↪ W) (v : V) :
     ⇑(starGraphEmbeddingOfEmbedding f v) = f :=
   rfl
 
 @[simp]
-theorem toEmbedding_starGraphIsoOfEquiv [DecidableEq W] (f : V ≃ W) (v : V) :
+theorem toEmbedding_starGraphIsoOfEquiv (f : V ≃ W) (v : V) :
     (starGraphIsoOfEquiv f v).toEmbedding = starGraphEmbeddingOfEmbedding f.toEmbedding v :=
   rfl
 
@@ -151,9 +148,8 @@ theorem starGraph_isIndContained_starGraph {v : V} {w : W} :
 
 @[simp]
 theorem starGraph_isContained_starGraph {v : V} {w : W} :
-    starGraph v ⊑ starGraph w ↔ Nonempty (V ↪ W) := by
-  classical
-  exact ⟨(⟨·.some.toEmbedding⟩), (starGraph_isIndContained_starGraph.mpr · |>.isContained)⟩
+    starGraph v ⊑ starGraph w ↔ Nonempty (V ↪ W) :=
+  ⟨(⟨·.some.toEmbedding⟩), (starGraph_isIndContained_starGraph.mpr · |>.isContained)⟩
 
 @[simp]
 theorem nonempty_starGraph_iso_starGraph {v : V} {w : W} :
