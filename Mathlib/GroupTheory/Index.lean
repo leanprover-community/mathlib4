@@ -412,10 +412,8 @@ theorem relIndex_ne_zero_trans (hHK : H.relIndex K ≠ 0) (hKL : K.relIndex L �
 @[to_additive]
 theorem relIndex_inf_ne_zero (hH : H.relIndex L ≠ 0) (hK : K.relIndex L ≠ 0) :
     (H ⊓ K).relIndex L ≠ 0 := by
-  replace hH : H.relIndex (K ⊓ L) ≠ 0 := mt (relIndex_eq_zero_of_le_right inf_le_right) hH
-  rw [← inf_relIndex_right] at hH hK ⊢
-  rw [inf_assoc]
-  exact relIndex_ne_zero_trans hH hK
+  rw [← relIndex_inf_mul_relIndex, mul_ne_zero_iff_right hK]
+  exact mt (relIndex_eq_zero_of_le_right inf_le_right) hH
 
 @[to_additive]
 theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).index ≠ 0 := by
