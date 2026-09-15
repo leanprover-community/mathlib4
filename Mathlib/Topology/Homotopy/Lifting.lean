@@ -392,6 +392,10 @@ def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
       congr($(cov.liftPath_lifts ..) 1).trans γ.target⟩)
     fun _ _ h ↦ Subtype.ext (cov.liftPath_apply_one_eq_of_homotopicRel h ..)
 
+theorem coe_monodromy_mk {x y : X} (γ : Path x y) (e : p ⁻¹' {x}) :
+    (cov.monodromy (.mk γ) e : E) = cov.liftPath γ e (γ.source.trans e.2.symm) 1 :=
+  rfl
+
 /-- Lift a homotopy class of paths to a covering space. -/
 def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
     Path.Homotopic.Quotient e.1 (cov.monodromy γ e) :=
@@ -653,6 +657,25 @@ theorem unop_fundamentalGroupToMulOpposite_smul :
   simp [fundamentalGroupToMulOpposite, fiberEquivGroup_smul_self]
 
 variable {e} in
+/-- Moving the basepoint `e` in the fiber by `g` conjugates `fundamentalGroupToMulOpposite`
+by `g`. -/
+theorem fundamentalGroupToMulOpposite_toPermFiber :
+    hp.fundamentalGroupToMulOpposite (hp.toPermFiber x g e) γ =
+      MulOpposite.op (g * (hp.fundamentalGroupToMulOpposite e γ).unop * g⁻¹) := by
+  rw [fundamentalGroupToMulOpposite_apply_eq_Iff, hp.monodromy_toPermFiber]
+  simp only [MulOpposite.unop_op, toPermFiber_apply_apply_coe,
+    ← hp.unop_fundamentalGroupToMulOpposite_smul, mul_smul, inv_smul_smul]
+
+/-- If `G` is commutative, `fundamentalGroupToMulOpposite` does not depend on the choice of the
+basepoint `e` in the fiber. -/
+theorem fundamentalGroupToMulOpposite_eq [IsMulCommutative G] (e' : p ⁻¹' {x}) :
+    hp.fundamentalGroupToMulOpposite e = hp.fundamentalGroupToMulOpposite e' := by
+  obtain ⟨g, rfl⟩ := hp.exists_toPermFiber_eq e e'
+  ext γ
+  rw [fundamentalGroupToMulOpposite_toPermFiber, mul_comm' g, mul_inv_cancel_right,
+    MulOpposite.op_unop]
+
+variable {e} in
 theorem fundamentalGroupToMulOpposite_eq_one_iff :
     hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ e = e where
   mp h := Subtype.ext <| by rw [← hp.unop_fundamentalGroupToMulOpposite_smul, h]; apply one_smul
@@ -692,6 +715,12 @@ def fundamentalGroupEquiv [SimplyConnectedSpace E] :
   MulEquiv.ofBijective (hp.fundamentalGroupToMulOpposite e)
     ⟨hp.fundamentalGroupToMulOpposite_injective e,
      hp.fundamentalGroupToMulOpposite_surjective e⟩
+
+/-- If `G` is commutative, `fundamentalGroupEquiv` does not depend on the choice of the
+basepoint `e` in the fiber. -/
+theorem fundamentalGroupEquiv_eq [SimplyConnectedSpace E] [IsMulCommutative G] (e' : p ⁻¹' {x}) :
+    hp.fundamentalGroupEquiv e = hp.fundamentalGroupEquiv e' :=
+  MulEquiv.ext fun γ ↦ congr($(hp.fundamentalGroupToMulOpposite_eq e e') γ)
 
 end IsQuotientCoveringMap
 
@@ -751,6 +780,21 @@ theorem unop_fundamentalGroupToMulOpposite_smul :
   hp.toMultiplicative.unop_fundamentalGroupToMulOpposite_smul
 
 variable {e} in
+/-- Moving the basepoint `e` in the fiber by `g` conjugates `fundamentalGroupToMulOpposite`
+by `g`. -/
+theorem fundamentalGroupToMulOpposite_toPermFiber :
+    hp.fundamentalGroupToMulOpposite (hp.toMultiplicative.toPermFiber x g e) γ =
+      MulOpposite.op (Multiplicative.ofAdd g * (hp.fundamentalGroupToMulOpposite e γ).unop *
+        (Multiplicative.ofAdd g)⁻¹) :=
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_toPermFiber
+
+/-- If `G` is commutative, `fundamentalGroupToMulOpposite` does not depend on the choice of the
+basepoint `e` in the fiber. -/
+theorem fundamentalGroupToMulOpposite_eq [IsAddCommutative G] (e' : p ⁻¹' {x}) :
+    hp.fundamentalGroupToMulOpposite e = hp.fundamentalGroupToMulOpposite e' :=
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_eq e e'
+
+variable {e} in
 theorem fundamentalGroupToMulOpposite_eq_one_iff :
     hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ e = e :=
   hp.toMultiplicative.fundamentalGroupToMulOpposite_eq_one_iff
@@ -772,5 +816,11 @@ equivalent to the group of the covering map. -/
 def fundamentalGroupEquiv [SimplyConnectedSpace E] :
     FundamentalGroup X x ≃* (Multiplicative G)ᵐᵒᵖ :=
   hp.toMultiplicative.fundamentalGroupEquiv e
+
+/-- If `G` is commutative, `fundamentalGroupEquiv` does not depend on the choice of the
+basepoint `e` in the fiber. -/
+theorem fundamentalGroupEquiv_eq [SimplyConnectedSpace E] [IsAddCommutative G] (e' : p ⁻¹' {x}) :
+    hp.fundamentalGroupEquiv e = hp.fundamentalGroupEquiv e' :=
+  hp.toMultiplicative.fundamentalGroupEquiv_eq e e'
 
 end IsAddQuotientCoveringMap

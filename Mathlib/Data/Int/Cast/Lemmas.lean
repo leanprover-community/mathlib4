@@ -287,6 +287,11 @@ def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
 
 @[simp] lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
 
+variable {β} in
+lemma zmultiplesHom_injective [IsAddTorsionFree β] {x : β} (hx : x ≠ 0) :
+    Function.Injective (zmultiplesHom β x) :=
+  (injective_iff_map_eq_zero _).2 fun _ hn ↦ (IsAddTorsionFree.zsmul_eq_zero_iff_left hx).1 hn
+
 @[simp] lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) :
     zpowersHom α x n = x ^ n.toAdd := rfl
 
