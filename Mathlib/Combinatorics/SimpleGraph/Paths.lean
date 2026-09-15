@@ -193,6 +193,18 @@ theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
     simpa [edges] using h
   exact Finset.card_le_card this
 
+theorem isTrail_iff_ncard_edgeSet_eq_length : p.IsTrail ↔ p.edgeSet.ncard = p.length := by
+  classical
+  rw [isTrail_def, ← length_edges, edgeSet, ← List.coe_toFinset, Set.ncard_coe_finset,
+    List.card_toFinset, ← List.dedup_eq_self, p.edges.dedup_sublist.length_eq]
+
+alias ⟨IsTrail.ncard_edgeSet, _⟩ := isTrail_iff_ncard_edgeSet_eq_length
+
+theorem isTrail_iff_encard_edgeSet_eq_length : p.IsTrail ↔ p.edgeSet.encard = p.length := by
+  simp [isTrail_iff_ncard_edgeSet_eq_length, edgeSet, ← p.edges.finite_toSet.cast_ncard_eq]
+
+alias ⟨IsTrail.encard_edgeSet, _⟩ := isTrail_iff_encard_edgeSet_eq_length
+
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
 theorem IsPath.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
