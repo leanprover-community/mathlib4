@@ -331,6 +331,15 @@ instance [IsMulFG P] : IsMulFG (P.map f) :=
 instance [IsMulFG P] [IsMulFG P'] : IsMulFG (P.prod P') :=
   .of_surjective (P.prodEquiv P').symm (P.prodEquiv P').symm.surjective
 
+@[to_additive]
+instance (s : Set M) [Finite s] : IsMulFG (Submonoid.closure s) :=
+  isMulFG_iff_finite.mpr ⟨s, s.toFinite, rfl⟩
+
+@[to_additive]
+instance {M : Type*} [Monoid M] (x : M) : IsMulFG (Submonoid.powers x) := by
+  rw [Submonoid.powers_eq_closure]
+  infer_instance
+
 end Submonoid
 
 namespace Subgroup
@@ -376,6 +385,15 @@ instance [IsMulFG H] : IsMulFG (H.map f) :=
 @[to_additive]
 instance [IsMulFG H] [IsMulFG H'] : IsMulFG (H.prod H') :=
   .of_surjective (H.prodEquiv H').symm (H.prodEquiv H').symm.surjective
+
+@[to_additive]
+instance (s : Set G) [Finite s] : IsMulFG (Subgroup.closure s) :=
+  isMulFG_iff_finite.mpr ⟨s, s.toFinite, rfl⟩
+
+@[to_additive]
+instance (g : G) : IsMulFG (Subgroup.zpowers g) := by
+  rw [Subgroup.zpowers_eq_closure]
+  infer_instance
 
 end Subgroup
 
@@ -528,15 +546,7 @@ theorem Submonoid.FG.map {M' : Type*} [Monoid M'] {P : Submonoid M} (h : P.FG) (
 @[to_additive]
 theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e : M →* M')
     (he : Function.Injective e) (h : (P.map e).FG) : P.FG := by
-  rw [FG, isMulFG_iff] at h ⊢
-  obtain ⟨s, hs⟩ := h
-  use s.preimage e he.injOn
-  apply Submonoid.map_injective_of_injective he
-  rw [← hs, MonoidHom.map_mclosure e, Finset.coe_preimage]
-  congr
-  rw [Set.image_preimage_eq_iff, ← MonoidHom.coe_mrange e, ← Submonoid.closure_le, hs,
-      MonoidHom.mrange_eq_map e]
-  exact Submonoid.monotone_map le_top
+  exact (isMulFG_congr (P.equivMapOfInjective e he)).mpr h
 
 @[to_additive (attr := simp)]
 theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
@@ -582,20 +592,7 @@ theorem Monoid.fg_iff_exists_freeGroup_hom_surjective_finite :
 
 @[to_additive]
 theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
-  isMulFG_iff.mpr ⟨{r}, (Finset.coe_singleton r).symm ▸ (Submonoid.powers_eq_closure r).symm⟩
-
-@[to_additive]
-instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) :=
-  (Monoid.fg_iff_submonoid_fg _).mpr (Submonoid.powers_fg r)
-
-@[to_additive]
-instance Monoid.closure_finset_fg (s : Finset M) : Monoid.FG (Submonoid.closure (s : Set M)) := by
-  exact Submonoid.isMulFG_iff.mpr ⟨s, rfl⟩
-
-@[to_additive]
-instance Monoid.closure_finite_fg (s : Set M) [Finite s] : Monoid.FG (Submonoid.closure s) :=
-  haveI := Fintype.ofFinite s
-  s.coe_toFinset ▸ Monoid.closure_finset_fg s.toFinset
+  inferInstance
 
 /-! ### Groups and subgroups -/
 
@@ -636,7 +633,7 @@ theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG
 
 @[to_additive]
 theorem Subgroup.FG.bot : FG (⊥ : Subgroup G) :=
-  isMulFG_iff.mpr ⟨∅, by simp⟩
+  inferInstance
 
 @[to_additive]
 theorem Subgroup.FG.sup {P Q : Subgroup G} (hP : P.FG) (hQ : Q.FG) : (P ⊔ Q).FG := by
@@ -671,8 +668,7 @@ theorem Subgroup.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Subgroup G) (hP : 
 /-- The product of two finitely generated additive subgroups is finitely generated. -/]
 theorem Subgroup.FG.prod {G' : Type*} [Group G'] {P : Subgroup G} {Q : Subgroup G'}
     (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
-  rw [fg_iff_submonoid_fg] at *
-  exact hP.prod hQ
+  infer_instance
 
 /-- Finite product of finitely generated subgroups is finitely generated. -/
 @[to_additive /-- Finite product of finitely generated additive subgroups is finitely generated. -/]
@@ -764,15 +760,6 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite :
       hφ.comp (FreeGroup.freeGroupCongr e).symm.surjective⟩
   · intro ⟨α, _, φ, hφ⟩
     exact Group.fg_of_surjective hφ
-
-@[to_additive]
-instance Group.closure_finset_fg (s : Finset G) : Group.FG (Subgroup.closure (s : Set G)) := by
-  exact Subgroup.isMulFG_iff.mpr ⟨s, rfl⟩
-
-@[to_additive]
-instance Group.closure_finite_fg (s : Set G) [Finite s] : Group.FG (Subgroup.closure s) :=
-  haveI := Fintype.ofFinite s
-  s.coe_toFinset ▸ Group.closure_finset_fg s.toFinset
 
 end Group
 
