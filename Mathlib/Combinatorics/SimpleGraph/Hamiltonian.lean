@@ -254,8 +254,7 @@ theorem isHamiltonianCycle_iff_isHamiltonian_tail_and_le_card {p : G.Walk v v} :
   · rw [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, isCycle_iff_isPath_tail_and_le_length]
     refine ⟨⟨hp.isPath, ?_⟩, hp⟩
     have := @Fintype.ofFinite α hp.finite
-    grind [hp.length_eq, Fintype.card_eq_nat_card, Nil.tail, length_eq_zero_iff,
-      length_tail_add_one]
+    grind [hp.length_eq, Fintype.card_eq_nat_card, Nil.tail, length_tail_add_one]
 
 end Walk
 
