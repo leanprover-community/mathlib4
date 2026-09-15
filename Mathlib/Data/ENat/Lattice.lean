@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Order.Lattice.Nat
+public import Mathlib.Order.SuccPred.ENat
 
 /-!
 # Extended natural numbers form a complete linear order

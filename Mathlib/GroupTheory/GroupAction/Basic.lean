@@ -12,8 +12,8 @@ public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Basic properties of group actions

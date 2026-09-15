@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Sigma.Order
 public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Sigma.Order
 
 /-!
 # Finite intervals in a sigma type

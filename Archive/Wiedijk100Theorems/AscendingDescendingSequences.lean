@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.Monotone.Set.Congr
 
 /-!
 # Erdős–Szekeres theorem

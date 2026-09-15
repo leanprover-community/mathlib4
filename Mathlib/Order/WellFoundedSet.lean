@@ -5,9 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Prod.Lex
-public import Mathlib.Data.Sigma.Lex
+public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.Sigma.Lex
 public import Mathlib.Order.WellQuasiOrder
 public import Mathlib.Tactic.TFAE
 

@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Basic.SetLike.Basic
 
 /-! # Class of grading-preserving functions and isomorphisms
 

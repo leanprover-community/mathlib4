@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 /-!
