@@ -15,7 +15,7 @@ public noncomputable section
 
 open Filter
 
-open scoped ENNReal
+open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory
 
@@ -143,6 +143,81 @@ lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
   simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f p μ
 
 end NormedSpace
+
+section NNReal
+
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [MulActionWithZero ℝ≥0 ε]
+  [ContinuousConstSMul ℝ≥0 ε] [ENormSMulClass ℝ≥0 ε]
+
+lemma eLpNorm_const_smul_nnreal {f : α → ε} {c : ℝ≥0} :
+    eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  by_cases hf : AEStronglyMeasurable f μ; swap
+  · simp only [NNReal.enorm_eq_coe, hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable,
+      ne_eq, ENNReal.coe_eq_zero, hc, ENNReal.mul_top]
+    apply eLpNorm_of_not_aestronglyMeasurable
+    rwa [aestronglyMeasurable_const_smul_iff₀ hc (f := f)]
+  apply le_antisymm
+  · apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' (hf.const_smul _)
+    simp [enorm_smul, enorm]
+  · apply ENNReal.mul_le_of_le_div'
+    simp only [enorm, NNReal.nnnorm_eq_self, ENNReal.div_eq_inv_mul, ← ENNReal.coe_inv hc]
+    apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf (Eventually.of_forall fun x ↦ ?_)
+    simp only [Pi.smul_apply, enorm_smul, enorm, NNReal.nnnorm_eq_self, ← mul_assoc]
+    rw [ENNReal.coe_inv hc, ENNReal.inv_mul_cancel (by simp [hc]) (by simp), one_mul]
+
+end NNReal
+
+section ENNReal
+
+theorem eLpNorm_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hf : AEStronglyMeasurable f μ) :
+    eLpNorm (fun x ↦ c * f x) p μ = c * eLpNorm f p μ := by
+  rcases eq_or_ne c ∞ with rfl | hc; swap
+  · lift c to ℝ≥0 using hc
+    apply eLpNorm_const_smul_nnreal
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp [eLpNorm_exponent_zero, hf, (hf.aemeasurable.const_mul ∞).aestronglyMeasurable]
+  by_cases h'f : eLpNorm f p μ = 0
+  · have : (fun x ↦ ∞ * f x) =ᵐ[μ] 0 := by
+      filter_upwards [(eLpNorm_eq_zero_iff hp).mp h'f] with x hx using by simp [hx]
+    rw [eLpNorm_congr_ae this]
+    simp [h'f]
+  rw [ENNReal.top_mul h'f]
+  apply le_antisymm le_top
+  have : Tendsto (fun (t : ℝ≥0) ↦ eLpNorm (t • f) p μ) atTop (𝓝 ∞) := by
+    simp only [eLpNorm_const_smul_nnreal]
+    rw [show ∞ = ∞ * eLpNorm f p μ by rw [ENNReal.top_mul h'f]]
+    apply ENNReal.Tendsto.mul ?_ (by simp) (by simp) (by simp [h'f])
+    exact ENNReal.tendsto_coe_nhds_top.2 tendsto_id
+  apply le_of_tendsto this (Eventually.of_forall (fun t ↦ ?_))
+  apply eLpNorm_mono_enorm (hf.const_smul _) (fun x ↦ ?_)
+  simp only [Pi.smul_apply, enorm_eq_self]
+  exact mul_le_mul (by simp) le_rfl zero_le zero_le
+
+theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hp : 0 < p) :
+    eLpNorm (fun x ↦ c * f x) p μ = c * eLpNorm f p μ := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  by_cases hf : AEStronglyMeasurable f μ
+  · apply eLpNorm_const_mul_ennreal hf
+  simp only [hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable, ENNReal.mul_top hc]
+  by_cases h'f : AEStronglyMeasurable (fun x ↦ c * f x) μ; swap
+  · simp [eLpNorm_of_not_aestronglyMeasurable, h'f]
+  rcases eq_or_ne c ∞ with rfl | h'c; swap
+  · apply (hf ?_).elim
+    convert (h'f.aemeasurable.const_mul (c⁻¹)).aestronglyMeasurable with x
+    rw [← mul_assoc, ENNReal.inv_mul_cancel hc h'c, one_mul]
+  have : (fun x ↦ ∞ * f x) =  (fun x ↦ ∞ * (∞ * f x)) := by simp [← mul_assoc]
+  rw [this, eLpNorm_const_mul_ennreal h'f, ENNReal.top_mul]
+  contrapose! hf
+  rw [eLpNorm_eq_zero_iff hp.ne'] at hf
+  apply h'f.congr
+  filter_upwards [hf] with x hx
+  simp at hx
+  simp [hx]
+
+end ENNReal
 
 end Lp
 end MeasureTheory

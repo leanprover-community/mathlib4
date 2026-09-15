@@ -851,28 +851,32 @@ theorem _root_.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul G β] (c
 /-- Multiplying by an a.e. strongly measurable scalar *function* with values in a group preserves
 a.e. strong measurability. This is the varying-scalar analogue of
 `aestronglyMeasurable_const_smul_iff`. -/
+@[to_fun _root_.aestronglyMeasurable_fun_smul_iff]
 theorem _root_.aestronglyMeasurable_smul_iff [TopologicalSpace G] [ContinuousInv G]
     [ContinuousSMul G β] {c : α → G} (hc : AEStronglyMeasurable c μ) :
-    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ :=
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ :=
   ⟨fun h => (hc.fun_inv.fun_smul h).congr (by simp), fun h => hc.fun_smul h⟩
 
+@[to_fun _root_.IsUnit.aestronglyMeasurable_fun_const_smul_iff]
 nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul M β] {c : M}
     (hc : IsUnit c) :
-    AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ :=
   let ⟨u, hu⟩ := hc
   hu ▸ aestronglyMeasurable_const_smul_iff u
 
+@[to_fun _root_.aestronglyMeasurable_fun_const_smul_iff₀]
 theorem _root_.aestronglyMeasurable_const_smul_iff₀ [ContinuousConstSMul G₀ β] {c : G₀}
     (hc : c ≠ 0) :
-    AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ :=
   (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 
 /-- Multiplying by an almost-everywhere nonzero scalar *function* preserves a.e. strong
 measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`. -/
+@[to_fun _root_.aestronglyMeasurable_fun_smul_iff₀]
 theorem _root_.aestronglyMeasurable_smul_iff₀ [TopologicalSpace G₀] [ContinuousInv₀ G₀]
     [MetrizableSpace G₀] [ContinuousSMul G₀ β] {c : α → G₀}
     (hc : AEStronglyMeasurable c μ) (hc0 : ∀ᵐ x ∂μ, c x ≠ 0) :
-    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ := by
   refine ⟨fun h => (hc.fun_inv₀.fun_smul h).congr ?_, fun h => hc.fun_smul h⟩
   filter_upwards [hc0] with x hx
   simp [hx]
