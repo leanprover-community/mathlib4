@@ -765,6 +765,11 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 
+lemma comp_injective {R S S' : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+    [NonAssocSemiring S'] (e : R ≃+* S) {f g : S →+* S'}
+    (h : f.comp e.toRingHom = g.comp e.toRingHom) : f = g := RingHom.ext
+  fun x ↦ (by simpa using (congrArg (fun x_1 ↦ x_1 (e.symm x)) h))
+
 theorem coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
