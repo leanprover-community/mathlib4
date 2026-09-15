@@ -6,9 +6,9 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Hom.ContinuousEval
 
 import Mathlib.Data.FunLike.Group
+public import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-! # Applying an infinite sum of functions
 

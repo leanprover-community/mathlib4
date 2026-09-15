@@ -45,26 +45,25 @@ section CommutativeSemiring
 
 variable [CommSemiring R]
 
-variable (R) in
 /-- The formal derivative of a formal power series -/
 noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ :=
-  MvPowerSeries.pderiv R ()
+  MvPowerSeries.pderiv ()
 
 /-- Abbreviation of `PowerSeries.derivative`, the formal derivative on `R⟦X⟧` -/
 scoped notation "d⁄dX" => derivative
 
-@[simp] theorem derivative_C {r : R} : d⁄dX R (C r) = 0 := MvPowerSeries.pderiv_C
+@[simp] theorem derivative_C {r : R} : d⁄dX (C r) = 0 := MvPowerSeries.pderiv_C
 
-theorem derivative_one : d⁄dX R 1 = 0 := MvPowerSeries.pderiv_one
+theorem derivative_one : d⁄dX (1 : R⟦X⟧) = 0 := MvPowerSeries.pderiv_one
 
 theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
-    coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1) := by
+    coeff n (d⁄dX f) = coeff (n + 1) f * (n + 1) := by
   simp [coeff, derivative, MvPowerSeries.coeff_pderiv]
 
 /-- The `k`-th coefficient of the `n`-th formal derivative: differentiating `n` times multiplies the
 `(k + n)`-th coefficient by the ascending factorial `(k + 1)(k + 2) ⋯ (k + n)`. -/
 theorem coeff_iterate_derivative (f : R⟦X⟧) (n k : ℕ) :
-    coeff k ((d⁄dX R)^[n] f) = (k + 1).ascFactorial n * coeff (k + n) f := by
+    coeff k (d⁄dX^[n] f) = (k + 1).ascFactorial n * coeff (k + n) f := by
   induction n generalizing k with
   | zero => simp
   | succ n ih =>
@@ -75,20 +74,20 @@ theorem coeff_iterate_derivative (f : R⟦X⟧) (n k : ℕ) :
 /-- Specialisation of `coeff_iterate_derivative` at `k = 0`: the constant term of the `n`-th formal
 derivative recovers `n !` times the `n`-th coefficient, `constantCoeff (Dⁿ f) = n ! * coeff n f`. -/
 theorem constantCoeff_iterate_derivative (f : R⟦X⟧) (n : ℕ) :
-    constantCoeff ((d⁄dX R)^[n] f) = n ! * coeff n f := by
+    constantCoeff (d⁄dX^[n] f) = n ! * coeff n f := by
   simpa using coeff_iterate_derivative f n 0
 
-theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := by
+theorem derivative_coe (f : R[X]) : d⁄dX (f : R⟦X⟧) = Polynomial.derivative f := by
   ext
   rw [coeff_derivative, coeff_coe, coeff_coe, Polynomial.coeff_derivative]
 
-@[simp] theorem derivative_X : d⁄dX R (X : R⟦X⟧) = 1 :=
+@[simp] theorem derivative_X : d⁄dX (X : R⟦X⟧) = 1 :=
   MvPowerSeries.pderiv_X_self
 
 -- We can't use `MvPowerSeries.trunc_pderiv` in the following proof,
 -- since `PowerSeries.trunc` is not defined in terms of `MvPowerSeries.trunc`.
 theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
-    trunc n (d⁄dX R f) = Polynomial.derivative (trunc (n + 1) f) := by
+    trunc n (d⁄dX f) = Polynomial.derivative (trunc (n + 1) f) := by
   ext d
   rw [coeff_trunc]
   split_ifs with h
@@ -98,29 +97,29 @@ theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
     rw [Polynomial.coeff_derivative, coeff_trunc, ite_eq_right this, zero_mul]
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
-    trunc (n - 1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
+    trunc (n - 1) (d⁄dX f) = Polynomial.derivative (trunc n f) := by
   cases n <;> simp [trunc_derivative]
 
 /-- The derivative of `g^n` equals `n * g^(n-1) * g'`. -/
 theorem derivative_pow (g : R⟦X⟧) (n : ℕ) :
-    d⁄dX R (g ^ n) = n * g ^ (n - 1) * d⁄dX R g :=
+    d⁄dX (g ^ n) = n * g ^ (n - 1) * d⁄dX g :=
   MvPowerSeries.pderiv_pow g n
 
 end CommutativeSemiring
 
 /-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
-theorem derivative.ext [CommRing R] [IsAddTorsionFree R] {f g} (hD : d⁄dX R f = d⁄dX R g)
+theorem derivative.ext [CommRing R] [IsAddTorsionFree R] {f g : R⟦X⟧} (hD : d⁄dX f = d⁄dX g)
     (hc : constantCoeff f = constantCoeff g) : f = g :=
   MvPowerSeries.pderiv.ext (fun _ => hD) hc
 
 @[simp]
 theorem derivative_inv [CommRing R] (f : R⟦X⟧ˣ) :
-    d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f :=
+    d⁄dX ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX f :=
   MvPowerSeries.pderiv_inv f
 
 @[simp]
 theorem derivative_invOf [CommRing R] (f : R⟦X⟧) [Invertible f] :
-    d⁄dX R ⅟f = -⅟f ^ 2 * d⁄dX R f :=
+    d⁄dX ⅟f = -⅟f ^ 2 * d⁄dX f :=
   MvPowerSeries.pderiv_invOf f
 
 /-
@@ -128,17 +127,17 @@ The following theorem is stated only in the case that `R` is a field. This is be
 there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`.
 -/
 
-@[simp] theorem derivative_inv' [Field R] (f : R⟦X⟧) : d⁄dX R f⁻¹ = -f⁻¹ ^ 2 * d⁄dX R f :=
+@[simp] theorem derivative_inv' [Field R] (f : R⟦X⟧) : d⁄dX f⁻¹ = -f⁻¹ ^ 2 * d⁄dX f :=
   MvPowerSeries.pderiv_inv' f
 
 /-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
 private theorem derivative_subst_coe [CommRing R] (p : Polynomial R) {g : R⟦X⟧} (hg : HasSubst g) :
-    d⁄dX R ((p : R⟦X⟧).subst g) = (d⁄dX R (p : R⟦X⟧)).subst g * d⁄dX R g := by
-  simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) (derivative R) p,
+    d⁄dX ((p : R⟦X⟧).subst g) = (d⁄dX (p : R⟦X⟧)).subst g * d⁄dX g := by
+  simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) derivative p,
     smul_eq_mul]
 
 theorem derivative_subst [CommRing R] {f g : R⟦X⟧} (hg : HasSubst g) :
-    d⁄dX R (f.subst g) = (d⁄dX R f).subst g * d⁄dX R g := by
+    d⁄dX (f.subst g) = (d⁄dX f).subst g * d⁄dX g := by
   ext n
   obtain ⟨m, hm⟩ := (hg.eventually_coeff_pow_eq_zero (n + 1)).exists_forall_of_atTop
   have : coeff (n + 1) (f.subst g) = coeff (n + 1) ((↑(trunc (m + 1) f) : R⟦X⟧).subst g) := by
@@ -163,29 +162,29 @@ This is defined here as a function, but will be packaged as a
 derivation `derivative` on `R⟦X⟧`.
 -/
 @[deprecated derivative (since := "2026-06-26")]
-noncomputable def derivativeFun (f : R⟦X⟧) := (derivative R).toFun f
+noncomputable def derivativeFun (f : R⟦X⟧) := derivative.toFun f
 
 set_option linter.deprecated false in
 @[deprecated "Use Derivation.map_add" (since := "2026-06-26")]
 theorem derivativeFun_add (f g : R⟦X⟧) :
     derivativeFun (f + g) = derivativeFun f + derivativeFun g :=
-  (derivative R).map_add f g
+  derivative.map_add f g
 
 set_option linter.deprecated false in
 @[deprecated "Use Derivation.leibniz" (since := "2026-06-26")]
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun :=
-  (derivative R).leibniz f g
+  derivative.leibniz f g
 
 set_option linter.deprecated false in
 @[deprecated "Use Derivation.map_one_eq_zero" (since := "2026-06-26")]
 theorem derivativeFun_one : derivativeFun (1 : R⟦X⟧) = 0 :=
-  (derivative R).map_one_eq_zero
+  derivative.map_one_eq_zero
 
 set_option linter.deprecated false in
 @[deprecated "Use Derivation.map_smul" (since := "2026-06-26")]
 theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r • derivativeFun f :=
-  (derivative R).map_smul r f
+  derivative.map_smul r f
 
 @[deprecated (since := "2026-06-26")] alias derivativeFun_C := derivative_C
 
