@@ -1350,42 +1350,46 @@ def ULift.orderIso {α : Type u} [Preorder α] :
 
 namespace Relation
 
-/-- For an injective function `f : α → β`, `Relation.Map · f f` is an order embedding from
-`α`-relations into `β`-relations. -/
+/-- For injective functions `f : α → γ` and `g : β → δ`, `Relation.Map · f g` is an order embedding
+from `α`-`β`-relations into `γ`-`δ`-relations. -/
 @[simps]
-def mapOrderEmbedding (f : α → β) (hf : f.Injective) : (α → α → Prop) ↪o (β → β → Prop) where
-  toFun r := Relation.Map r f f
+def mapOrderEmbedding (f : α → γ) (hf : f.Injective) (g : β → δ) (hg : g.Injective) :
+    (α → β → Prop) ↪o (γ → δ → Prop) where
+  toFun r := Relation.Map r f g
   inj' r s h := by
     dsimp at h
-    rw [← Relation.onFun_map_eq_of_injective (r := r) hf,
-      ← Relation.onFun_map_eq_of_injective (r := s) hf, h]
+    rw [← Relation.bicompl_map_eq_of_injective r hf hg,
+      ← Relation.bicompl_map_eq_of_injective s hf hg, h]
   map_rel_iff' {r s} := by
     refine ⟨fun hle a b hr ↦ ?_, Relation.map_mono⟩
     have ⟨a', b', hs, ha, hb⟩ := hle _ _ ⟨a, b, hr, rfl, rfl⟩
-    rwa [← hf ha, ← hf hb]
+    rwa [← hf ha, ← hg hb]
 
-/-- For a surjective function `f : α → β`, `Function.onFun · f` is an order embedding from
-`β`-relations into `α`-relations. -/
+/-- For surjective functions `f : α → γ` and `g : β → δ`, `Function.bicompl · f g` is an order
+embedding from `γ`-`δ`-relations into `α`-`β`-relations. -/
 @[simps]
-def onFunOrderEmbedding (f : α → β) (hf : f.Surjective) : (β → β → Prop) ↪o (α → α → Prop) where
-  toFun r := r.onFun f
+def bicomplOrderEmbedding (f : α → γ) (hf : f.Surjective) (g : β → δ) (hg : g.Surjective) :
+    (γ → δ → Prop) ↪o (α → β → Prop) where
+  toFun r := r.bicompl f g
   inj' r s h := by
     dsimp at h
-    rw [← Relation.map_onFun_eq_of_surjective (r := r) hf,
-      ← Relation.map_onFun_eq_of_surjective (r := s) hf, h]
+    rw [← Relation.map_bicompl_eq_of_surjective r hf hg,
+      ← Relation.map_bicompl_eq_of_surjective s hf hg, h]
   map_rel_iff' {r s} := by
     refine ⟨fun hle a b hr ↦ ?_, fun hle a b hr ↦ hle _ _ hr⟩
     obtain ⟨a, rfl⟩ := hf a
-    obtain ⟨b, rfl⟩ := hf b
+    obtain ⟨b, rfl⟩ := hg b
     exact hle a b hr
 
-/-- For a bijective function `f : α → β`, `Relation.Map · f f` and `Function.onFun · f` form an
-order isomorphism between `α`-relations and `β`-relations. -/
+/-- For bijective functions `f : α → γ` and `g : β → δ`, `Relation.Map · f g` and
+`Function.bicompl · f g` form an order isomorphism between `α`-`β`-relations into `γ`-`δ`-relations.
+-/
 @[simps]
-def mapOnFunOrderIso (f : α → β) (hf : f.Bijective) : (α → α → Prop) ≃o (β → β → Prop) where
-  __ := Relation.mapOrderEmbedding f hf.injective
-  invFun r := r.onFun f
-  left_inv r := Relation.onFun_map_eq_of_injective r hf.injective
-  right_inv r := Relation.map_onFun_eq_of_surjective r hf.surjective
+def mapBicomplOrderIso (f : α → γ) (hf : f.Bijective) (g : β → δ) (hg : g.Bijective) :
+    (α → β → Prop) ≃o (γ → δ → Prop) where
+  __ := Relation.mapOrderEmbedding f hf.injective g hg.injective
+  invFun r := r.bicompl f g
+  left_inv r := Relation.bicompl_map_eq_of_injective r hf.injective hg.injective
+  right_inv r := Relation.map_bicompl_eq_of_surjective r hf.surjective hg.surjective
 
 end Relation
