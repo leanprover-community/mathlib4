@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.Monotone
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 
 /-!
@@ -179,6 +180,13 @@ theorem memLp [IsFiniteMeasure μ] {p : ℝ≥0∞} (hf : BoundedVariationOn f u
 
 theorem integrable [IsFiniteMeasure μ] (hf : BoundedVariationOn f univ) : Integrable f μ :=
   memLp_one_iff_integrable.1 hf.memLp
+
+/-- A real-valued function with bounded variation on an unordered closed interval is interval
+integrable on it. -/
+theorem intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+    (hf : BoundedVariationOn f (uIcc a b)) : IntervalIntegrable f μ a b := by
+  obtain ⟨p, q, hp, hq, rfl⟩ := hf.locallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn
+  exact hp.intervalIntegrable.sub hq.intervalIntegrable
 
 end BoundedVariationOn
 
