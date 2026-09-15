@@ -1,7 +1,10 @@
 module
 
-import Mathlib.LinearAlgebra.Matrix.Hessenberg.Similarity
+meta import Mathlib.Tactic.Hessenberg.Coeffs
 import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.Tactic.Hessenberg.Lemmas
+
+open Polynomial Mathlib.Tactic.Hessenberg
 
 example :
     let M : Matrix (Fin 3) (Fin 3) ℚ :=
@@ -59,3 +62,16 @@ example :
           1, 1, 1;
           2, 0, 1]
     certShear.H.charpoly = M.charpoly := by simp
+
+#guard coeffHessCharPoly 0 (#[] : Array ℚ) = [1]
+example : coeffHessCharPoly 0 (#[] : Array ℚ) = [1] := by decide +kernel
+
+#guard coeffHessCharPoly 1 (#[5] : Array ℚ) = [-5, 1]
+example : coeffHessCharPoly 1 (#[5] : Array ℚ) = [-5, 1] := by decide +kernel
+
+#guard coeffHessCharPoly 2 (#[1, 2, 3, 4] : Array ℚ) = [-2, -5, 1]
+example : coeffHessCharPoly 2 (#[1, 2, 3, 4] : Array ℚ) = [-2, -5, 1] := by decide +kernel
+
+#guard coeffHessCharPoly 2 (#[1/2, 1, 1, 2] : Array ℚ) = [0, -5/2, 1]
+example : coeffHessCharPoly 2 (#[1/2, 1, 1, 2] : Array ℚ) = [0, -5/2, 1] := by
+  decide +kernel
