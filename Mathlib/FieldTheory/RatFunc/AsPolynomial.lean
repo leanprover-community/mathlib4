@@ -6,6 +6,7 @@ Authors: Anne Baanen, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Valuation.IsTrivialOn
 
