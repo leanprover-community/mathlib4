@@ -236,10 +236,11 @@ theorem bind_apply {m : Measure α} {f : α → Measure β} {s : Set β} (hs : M
     (hf : AEMeasurable f m) : bind m f s = ∫⁻ a, f a s ∂m := by
   rw [bind, join_apply hs, lintegral_map' (measurable_coe hs).aemeasurable hf]
 
-theorem bind_apply_le {m : Measure α} (f : α → Measure β) {s : Set β} (hs : MeasurableSet s) :
+theorem bind_apply_le {m : Measure α} {f : α → Measure β} (hf : AEMeasurable f m) {s : Set β}
+    (hs : MeasurableSet s) :
     bind m f s ≤ ∫⁻ a, f a s ∂m := by
   rw [bind, join_apply hs]
-  apply lintegral_map_le
+  apply lintegral_map_le _ hf
 
 theorem ae_ae_of_ae_bind {m : Measure α} {f : α → Measure β} {p : β → Prop} (hf : AEMeasurable f m)
     (h : ∀ᵐ b ∂m.bind f, p b) : ∀ᵐ a ∂m, ∀ᵐ b ∂f a, p b :=
@@ -279,16 +280,17 @@ theorem bind_sum {ι : Type*} (m : ι → Measure α) (f : α → Measure β)
   simp_rw [bind, map_sum h, join_sum]
 
 lemma bind_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (m : Measure α)
-    (f : α → Measure β) : (c • m).bind f = c • (m.bind f) := by
-  simp_rw [bind, Measure.map_smul, join_smul]
+    {f : α → Measure β} (hf : AEMeasurable f m) : (c • m).bind f = c • (m.bind f) := by
+  simp_rw [bind, Measure.map_smul _ hf, join_smul]
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : AEMeasurable μ m)
     (hf : AEMeasurable f (bind m μ)) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map' (aemeasurable_lintegral hf) hμ)
 
-theorem lintegral_bind_le (f : β → ℝ≥0∞) (m : Measure α) (μ : α → Measure β) :
+theorem lintegral_bind_le (f : β → ℝ≥0∞) (m : Measure α) {μ : α → Measure β}
+    (hμ : AEMeasurable μ m) :
     ∫⁻ x, f x ∂bind m μ ≤ ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
-  (lintegral_join_le _ _).trans (lintegral_map_le _ _)
+  (lintegral_join_le _ _).trans (lintegral_map_le _ hμ)
 
 theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure β} {g : β → Measure γ}
     (hf : AEMeasurable f m) (hg : AEMeasurable g (m.bind f)) :

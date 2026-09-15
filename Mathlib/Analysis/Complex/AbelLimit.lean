@@ -98,7 +98,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
 
 lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ {z : ℂ | 1 - ε < z.re} ∩ stolzCone s ⊆ stolzSet M := by
-  peel stolzCone_subset_stolzSet_aux' s with M ε hM hε H
+  gconvert stolzCone_subset_stolzSet_aux' s with M ε hM hε H
   rintro z ⟨hzl, hzr⟩
   rw [Set.mem_ofPred_eq, sub_lt_comm, ← one_re, ← sub_re] at hzl
   rw [stolzCone, Set.mem_ofPred_eq, ← one_re, ← sub_re] at hzr

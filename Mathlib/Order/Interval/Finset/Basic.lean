@@ -790,7 +790,8 @@ variable [SemilatticeSup α] [LocallyFiniteOrderBot α]
 lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
   le_antisymm (sup'_le _ _ fun _ ↦ mem_Iic.1) <| le_sup' (f := id) <| mem_Iic.2 <| le_refl a
 
-@[simp] lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
+@[to_dual (attr := simp)]
+lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
   le_antisymm (Finset.sup_le fun _ ↦ mem_Iic.1) <| le_sup (f := id) <| mem_Iic.2 <| le_refl a
 
 lemma image_subset_Iic_sup [OrderBot α] [DecidableEq α] (f : ι → α) (s : Finset ι) :
@@ -809,9 +810,6 @@ variable [SemilatticeInf α] [LocallyFiniteOrderTop α]
 
 lemma inf'_Ici (a : α) : (Ici a).inf' nonempty_Ici id = a :=
   ge_antisymm (le_inf' _ _ fun _ ↦ mem_Ici.1) <| inf'_le (f := id) <| mem_Ici.2 <| le_refl a
-
-@[simp] lemma inf_Ici [OrderTop α] (a : α) : (Ici a).inf id = a :=
-  le_antisymm (inf_le (f := id) <| mem_Ici.2 <| le_refl a) <| Finset.le_inf fun _ ↦ mem_Ici.1
 
 end SemilatticeInf
 

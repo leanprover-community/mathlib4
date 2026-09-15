@@ -67,6 +67,24 @@ end CoeFnInstance
 
 variable [CommRing R]
 
+section DistribMulAction
+
+variable {m : Type*}
+
+instance : SMul (GL n R) (Matrix n m R) where
+  smul g A := (g : Matrix n n R) * A
+
+@[simp] lemma smul_def (g : GL n R) (A : Matrix n m R) : g • A = (g : Matrix n n R) * A := rfl
+
+instance {m : Type*} : DistribMulAction (GL n R) (Matrix n m R) where
+  smul g A := (g : Matrix n n R) * A
+  mul_smul g g' A := by simp [Matrix.mul_assoc]
+  one_smul A := by simp
+  smul_zero g := by simp
+  smul_add := by simp [Matrix.mul_add]
+
+end DistribMulAction
+
 lemma scalar_commute (u : Rˣ) (A : GL n R) : scalar n u * A = A * scalar n u := by
   ext : 1
   rw [Units.val_mul, Units.val_mul, coe_scalar, Matrix.scalar_comm _ (Commute.all _)]
@@ -281,17 +299,18 @@ lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R)
 lemma range_toGL_eq_ker_det :
     (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
   ext A
-  exact ⟨by rintro ⟨_, rfl⟩; simp, fun hA ↦ ⟨⟨_,
-    (by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val hA)⟩,
-      Units.ext rfl⟩⟩
+  simp only [MonoidHom.mem_range, MonoidHom.mem_ker]
+  refine ⟨fun ⟨g, hg⟩ ↦ by simp [← hg], fun hA ↦ ⟨⟨A, ?_⟩, by ext; rfl⟩⟩
+  rw [← GeneralLinearGroup.val_det_apply, hA, Units.val_one]
 
-/-- `Matrix.SpecialLinearGroup` is isomorphic to `GeneralLinearGroup.det.ker` -/
+/-- `Matrix.SpecialLinearGroup` is isomorphic to `GeneralLinearGroup.det.ker`. -/
+@[simps]
 def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
   toFun g := ⟨toGL g, coeToGL_det g⟩
-  invFun A := ⟨A.val.val, by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val A.2⟩
-  left_inv g := rfl
-  right_inv A := Subtype.ext (Units.ext rfl)
-  map_mul' g h := Subtype.ext (Units.ext rfl)
+  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.2⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
+  map_mul' _ _ := by ext; rfl
 
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over

@@ -6,8 +6,8 @@ Authors: Kevin Buzzard, Antoine Labelle
 module
 
 public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.Basic.UnivLE
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
-public import Mathlib.Logic.UnivLE
 
 /-!
 
@@ -188,8 +188,6 @@ theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
 theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   .of_equiv e
-
-@[deprecated (since := "2026-02-14")] alias Projective.of_ringEquiv := Projective.of_equiv
 
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm

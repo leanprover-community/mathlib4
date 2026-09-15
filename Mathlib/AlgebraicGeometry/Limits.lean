@@ -126,14 +126,12 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
 noncomputable def specPUnitIsInitial : IsInitial (Spec <| .of PUnit.{u + 1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
-@[deprecated (since := "2026-02-08")] alias specPunitIsInitial := specPUnitIsInitial
-
 lemma isInitial_iff_isEmpty {X : Scheme.{u}} : Nonempty (IsInitial X) ↔ IsEmpty X :=
   ⟨fun ⟨h⟩ ↦ (h.uniqueUpToIso specPUnitIsInitial).hom.homeomorph.isEmpty,
     fun _ ↦ ⟨isInitialOfIsEmpty⟩⟩
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
-  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec <| .of PUnit))
+  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec ↧PUnit))
 
 instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
@@ -435,14 +433,12 @@ lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
   · rintro _ ⟨x, rfl⟩
     exact ⟨f x, by simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
     (f : X ⟶ X') (g : Y ⟶ Y') : IsPullback g coprod.inr coprod.inr (coprod.map f g) :=
   (isPullback_inl_inl_coprodMap g f).of_iso (.refl _) (.refl _) (coprod.braiding _ _)
     (coprod.braiding _ _) (by simp) (by simp) (by simp) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : FinitaryExtensive Scheme where
   hasFiniteCoproducts.out := inferInstance
   van_kampen' {X Y} c hc := by
@@ -500,7 +496,7 @@ variable (R S : Type u) [CommRing R] [CommRing S]
 /-- The map `Spec R ⨿ Spec S ⟶ Spec (R × S)`.
 This is an isomorphism as witnessed by an `IsIso` instance provided below. -/
 noncomputable
-def coprodSpec : Spec (.of R) ⨿ Spec (.of S) ⟶ Spec (.of <| R × S) :=
+def coprodSpec : Spec ↧R ⨿ Spec ↧S ⟶ Spec ↧(R × S) :=
   coprod.desc (Spec.map (CommRingCat.ofHom <| RingHom.fst _ _))
     (Spec.map (CommRingCat.ofHom <| RingHom.snd _ _))
 
@@ -553,8 +549,8 @@ lemma isIso_stalkMap_coprodSpec (x) :
 instance : IsIso (coprodSpec R S) := by
   rw [isIso_iff_isIso_stalkMap]
   refine ⟨?_, isIso_stalkMap_coprodSpec R S⟩
-  convert_to IsIso (TopCat.isoOfHomeo (X := Spec (.of <| R × S)) <|
-    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk (Spec <| .of R) (Spec <| .of S))).inv
+  convert_to IsIso (TopCat.isoOfHomeo (X := Spec ↧(R × S)) <|
+    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk (Spec ↧R) (Spec ↧S))).inv
   · ext x; exact coprodSpec_apply R S x
   · infer_instance
 
@@ -600,7 +596,7 @@ def sigmaSpec (R : ι → CommRingCat) : (∐ fun i ↦ Spec (R i)) ⟶ Spec (.o
 @[reassoc (attr := simp)]
 lemma ι_sigmaSpec (R : ι → CommRingCat) (i) :
     Sigma.ι _ i ≫ sigmaSpec R = Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)) :=
-  Sigma.ι_desc _ _
+  Sigma.ι_comp_desc _ _
 
 instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i))) := by
