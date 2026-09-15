@@ -98,13 +98,14 @@ morphism first and the source-side morphism second. Placeholder abstractions suc
 `LinearMap.comp · ·` keep Lean's usual argument order, which is exactly the order used by the
 command.
 
-The explicit `to_additive` forms are for pairs of categories where the multiplicative and additive
-versions should be generated at the same time. They take the multiplicative category data and the
+The explicit `to_additive` form is for pairs of categories where the multiplicative and additive
+versions should be generated at the same time. It takes the multiplicative category data and the
 corresponding additive category data in one command. The elaborator first enters the additive
 namespace and generates the additive concrete category, then enters the multiplicative namespace and
 generates the multiplicative one. This is useful for commands such as the test case generating both
 `MultiplicativeTestCat` with homs `X →* Y` and `AdditiveTestCat` with homs `X →+ Y`, including their
-matching `ofHom`, `hom_id`, and `hom_comp` declarations:
+matching `ofHom`, `hom_id`, and `hom_comp` declarations. Each category declaration can include its
+own `with_of_hom` clause; the resulting signatures must match under `to_additive`:
 
 ```lean
 structure AdditiveTestCat where
@@ -147,11 +148,12 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory
 
-/-!
-The parser exposes four surface forms: the basic command, the same command with a custom `ofHom`
-signature, a form that supplies multiplicative and additive category data together, and a combined
-form with both `with_of_hom` and explicit additive data.
--/
+/-- A concrete category with bundled homs, identity, composition, and optional `ofHom` signature. -/
+declare_syntax_cat concrete_category_decl
+
+syntax term:max ppSpace term:max ppSpace term:max ppSpace term:max
+  (ppSpace "with_of_hom" (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace
+    "from " term:max ppSpace "to " term:max)? : concrete_category_decl
 
 /--
 `mk_concrete_category C FC id comp` generates the standard boilerplate for a concrete category on
@@ -162,28 +164,8 @@ and composition given by `comp g.hom' f.hom'` for categorical morphisms `f : X �
 The command is intended to be used in the namespace of `C`. It creates declarations named `Hom`,
 `Hom.hom`, `ofHom`, `hom_id`, `hom_comp`, `hom_ofHom`, and `ofHom_hom`.
 -/
-syntax (name := mkConcreteCategory) declModifiers "mk_concrete_category " term:max ppSpace
-  term:max ppSpace term:max ppSpace term:max : command
-
-/-- Variant of `mk_concrete_category` with a custom generated `ofHom` signature. -/
-syntax (name := mkConcreteCategoryWithOfHom) declModifiers "mk_concrete_category " term:max ppSpace
-  term:max ppSpace term:max ppSpace term:max ppSpace "with_of_hom"
-  (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace "from " term:max ppSpace
-  "to " term:max : command
-
-/-- Variant of `mk_concrete_category` generating multiplicative and additive categories together. -/
-syntax (name := mkConcreteCategoryWithAdditive) declModifiers
-  "mk_concrete_category " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
-  "to_additive " term:max ppSpace term:max ppSpace term:max ppSpace term:max : command
-
-/-- Variant of `mk_concrete_category` combining the custom `ofHom` and additive forms. -/
-syntax (name := mkConcreteCategoryWithOfHomAndAdditive) (priority := high) declModifiers
-  "mk_concrete_category " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
-  "with_of_hom" (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace
-  "from " term:max ppSpace "to " term:max ppSpace
-  "to_additive " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
-  "with_of_hom" (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace
-  "from " term:max ppSpace "to " term:max : command
+syntax (name := mkConcreteCategory) declModifiers "mk_concrete_category " concrete_category_decl
+  (ppSpace "to_additive " concrete_category_decl)? : command
 
 /-!
 These helpers inspect raw syntax rather than elaborated terms. This command has to notice ordinary
@@ -265,29 +247,6 @@ private meta def registerConcreteCategoryToAdditive (catNs addCatNs : Name) :
   for suffix in [`Hom, `instCategory, `instConcreteCategory, `Hom.hom, `ofHom,
       `Hom.Simps.hom, `hom_id, `hom_comp, `hom_ofHom, `ofHom_hom] do
     registerToAdditiveExisting (catNs ++ suffix) (addCatNs ++ suffix)
-
-/-!
-For the explicit `to_additive` form without `with_of_hom`, generation is just two ordinary
-`mk_concrete_category` commands: one in the additive namespace, then one in the multiplicative
-namespace. The additive side is generated first so any later `to_additive` naming choices on the
-multiplicative side can refer to existing additive declarations.
--/
-
-/-- Elaborator for the `mk_concrete_category ... to_additive ...` form. -/
-@[command_elab mkConcreteCategoryWithAdditive]
-public meta def elabMkConcreteCategoryWithAdditive : CommandElab := fun stx => do
-  let `($_mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm to_additive
-      $addCat $addFC $addIdTerm $addCompTerm) := stx
-    | throwUnsupportedSyntax
-  let catNs ← categoryNamespaceIdent cat "category must be an identifier in the `to_additive` form"
-  let addCatNs ← categoryNamespaceIdent addCat "additive category must be an identifier"
-  elabInNamespace addCatNs do
-    elabCommand <| ← (set_option hygiene false in
-      `(command| mk_concrete_category $addCat $addFC $addIdTerm $addCompTerm))
-  elabInNamespace catNs do
-    elabCommand <| ← (set_option hygiene false in
-      `(command| mk_concrete_category $cat $FC $idTerm $compTerm))
-  registerConcreteCategoryToAdditive catNs.getId addCatNs.getId
 
 /-- Data for a custom generated `ofHom` declaration: binders, source hom type, source
 object, and target object. -/
@@ -422,43 +381,33 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
       rfl))
   addSimpAttrs (mkIdent `ofHom_hom)
 
-/-!
-The remaining elaborators parse their surface syntax and delegate to the core generator. The
-combined `with_of_hom`/`to_additive` form calls the core generator directly for each namespace
-because each side has its own custom `ofHom` binders and source/target terms.
--/
+/-- Elaborate one concrete category declaration, including its optional `ofHom` signature. -/
+private meta def elabConcreteCategoryDecl (mods : Syntax)
+    (decl : TSyntax `concrete_category_decl) : CommandElabM Unit := do
+  let `(concrete_category_decl| $cat:term $FC:term $idTerm:term $compTerm:term
+      $[with_of_hom $binders:bracketedBinder* hom_type $homTy from $source to $target]?) := decl
+    | throwUnsupportedSyntax
+  let customOfHom? := do
+    return (← binders, ← homTy, ← source, ← target)
+  elabMkConcreteCategoryCore mods cat FC idTerm compTerm customOfHom?
 
-/-- Elaborator for `mk_concrete_category`. -/
+/-- Elaborator for `mk_concrete_category`, with an optional explicit additive declaration. -/
 @[command_elab mkConcreteCategory]
 public meta def elabMkConcreteCategory : CommandElab := fun stx => do
-  let `($mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm) := stx
+  let `($mods:declModifiers mk_concrete_category $decl:concrete_category_decl
+      $[to_additive $addDecl:concrete_category_decl]?) := stx
     | throwUnsupportedSyntax
-  elabMkConcreteCategoryCore mods cat FC idTerm compTerm none
-
-/-- Elaborator for the `mk_concrete_category ... with_of_hom ...` form. -/
-@[command_elab mkConcreteCategoryWithOfHom]
-public meta def elabMkConcreteCategoryWithOfHom : CommandElab := fun stx => do
-  let `($mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm with_of_hom
-      $binders:bracketedBinder* hom_type $homTy from $source to $target) := stx
-    | throwUnsupportedSyntax
-  elabMkConcreteCategoryCore mods cat FC idTerm compTerm (some (binders, homTy, source, target))
-
-/-- Elaborator for the `mk_concrete_category ... with_of_hom ... to_additive ...` form. -/
-@[command_elab mkConcreteCategoryWithOfHomAndAdditive]
-public meta def elabMkConcreteCategoryWithOfHomAndAdditive : CommandElab := fun stx => do
-  let `($_mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm with_of_hom
-      $binders:bracketedBinder* hom_type $homTy from $source to $target to_additive
-      $addCat $addFC $addIdTerm $addCompTerm with_of_hom $addBinders:bracketedBinder*
-      hom_type $addHomTy from $addSource to $addTarget) := stx
-    | throwUnsupportedSyntax
-  let catNs ← categoryNamespaceIdent cat "category must be an identifier in the `to_additive` form"
-  let addCatNs ← categoryNamespaceIdent addCat "additive category must be an identifier"
-  elabInNamespace addCatNs do
-    elabMkConcreteCategoryCore Syntax.missing addCat addFC addIdTerm addCompTerm
-      (some (addBinders, addHomTy, addSource, addTarget))
-  elabInNamespace catNs do
-    elabMkConcreteCategoryCore Syntax.missing cat FC idTerm compTerm
-      (some (binders, homTy, source, target))
-  registerConcreteCategoryToAdditive catNs.getId addCatNs.getId
+  match addDecl with
+  | none => elabConcreteCategoryDecl mods decl
+  | some addDecl =>
+      let catNs ← categoryNamespaceIdent ⟨decl.raw[0]⟩
+        "category must be an identifier in the `to_additive` form"
+      let addCatNs ← categoryNamespaceIdent ⟨addDecl.raw[0]⟩
+        "additive category must be an identifier"
+      elabInNamespace addCatNs do
+        elabConcreteCategoryDecl Syntax.missing addDecl
+      elabInNamespace catNs do
+        elabConcreteCategoryDecl Syntax.missing decl
+      registerConcreteCategoryToAdditive catNs.getId addCatNs.getId
 
 end Mathlib.Tactic.CategoryTheory
