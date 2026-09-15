@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Projective
 
 /-!
+# Modules over semisimple rings are injective and projective
+
 If `R` is a semisimple ring, then any `R`-module is both injective and projective.
 
 -/
