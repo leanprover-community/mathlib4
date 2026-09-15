@@ -314,14 +314,6 @@ section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
-
-instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
-    Module R' S :=
-  inferInstance
-
-instance : Module R S :=
-  inferInstance
-
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstance
 
@@ -1052,7 +1044,7 @@ theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ �
 
 theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
     Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
-      (LinearMapClass.linearMap φ) (LinearMapClass.linearMap ψ) := rfl
+      (LinearMap.ofClass φ) (LinearMap.ofClass ψ) := rfl
 
 theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
     S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl

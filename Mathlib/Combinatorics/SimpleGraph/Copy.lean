@@ -97,6 +97,7 @@ abbrev Iso.toCopy (f : H ≃g G) : Copy H G := f.toEmbedding.toCopy
 
 namespace Copy
 
+@[macro_inline]
 instance : FunLike (Copy H G) W V where
   coe f := DFunLike.coe f.toHom
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
@@ -341,8 +342,7 @@ lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [Decid
 theorem Copy.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
   cases isEmpty_or_nonempty W
-  · have := Function.isEmpty f
-    simp
+  · simp [Function.isEmpty f |>.subsingleton]
   refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
   obtain ⟨v, rfl⟩ := hf w
   grw [← f.degree_le, ← minDegree_le_degree]
@@ -431,10 +431,7 @@ protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isI
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
-    G'.coe ⊴ G :=
-  ⟨{ toFun := (↑)
-     inj' := Subtype.coe_injective
-     map_rel_iff' := hG'.adj.symm }⟩
+    G'.coe ⊴ G := Embedding.ofIsInduced _ hG' |>.isIndContained
 
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _

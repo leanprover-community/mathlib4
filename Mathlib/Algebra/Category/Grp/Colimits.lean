@@ -188,7 +188,7 @@ induces a cocone on `F` as long as the universes work out.
 -/
 @[simps]
 def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
-  pt := AddCommGrpCat.of A
+  pt := ↧A
   ι.app j := ofHom <| f.comp (Quot.ι F j)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -238,7 +238,7 @@ set_option backward.defeqAttrib.useBackward true in
 -/
 @[simps pt ι_app]
 noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocone F where
-  pt := AddCommGrpCat.of (Shrink (Quot F))
+  pt := ↧(Shrink (Quot F))
   ι :=
     { app j :=
         AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
@@ -248,7 +248,7 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrpCat.{w}) [Small.{w} (Quot F)] :
     Quot.desc F (colimitCocone F) = (Shrink.addEquiv (α := Quot F)).symm.toAddMonoidHom := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
-  simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
+  simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_ofClass]
     using! Quot.ι_desc F (colimitCocone F) j x
 
 /-- (internal implementation) The fact that the candidate colimit cocone constructed in
@@ -297,7 +297,7 @@ set_option backward.defeqAttrib.useBackward true in
 agrees with the usual group-theoretical quotient.
 -/
 noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
-    cokernel f ≅ AddCommGrpCat.of (H ⧸ AddMonoidHom.range f.hom) where
+    cokernel f ≅ ↧(H ⧸ AddMonoidHom.range f.hom) where
   hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
         simp

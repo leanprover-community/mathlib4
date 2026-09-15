@@ -55,6 +55,7 @@ structure Fun (X Y : Type*) where
   /-- The underlying function. -/
   toFun : X → Y
 
+@[macro_inline]
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
   coe_injective _ := by aesop
@@ -86,7 +87,7 @@ def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
 /-- The type of morphisms in `Type`. -/
 @[ext]
 structure Hom (X Y : Type u) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying function -/
   hom' : Fun X Y
 
@@ -94,15 +95,12 @@ end TypeCat
 
 open TypeCat CategoryTheory
 
-set_option backward.privateInPublic true in
 @[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
-  id X := .mk <| .id X
-  comp f g := .mk <| g.hom'.comp f.hom'
+  id X := ⟨.id X⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 The concrete category instance on `Type u`.
 
@@ -110,7 +108,7 @@ Note: sometimes one needs to specify explicitly `(CC := fun X ↦ X)` to help ty
 -/
 instance : ConcreteCategory.{u} (Type u) Fun where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 example (X Y : Type u) (f : X ⟶ Y) : (f : X → Y) = (ConcreteCategory.hom f : X → Y) := by
   with_reducible rfl
@@ -415,7 +413,7 @@ open CategoryTheory
 variable {X Y : Type u}
 
 /-- Any isomorphism between types gives an equivalence. -/
-@[simps]
+@[implicit_reducible, simps]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
