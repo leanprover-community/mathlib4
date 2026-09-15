@@ -115,6 +115,11 @@ instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0�
 theorem isFiniteMeasure_of_le (μ : Measure α) [IsFiniteMeasure μ] (h : ν ≤ μ) : IsFiniteMeasure ν :=
   { measure_univ_lt_top := (h Set.univ).trans_lt (measure_lt_top _ _) }
 
+/-- This is not an instance as it is superseded by the fact that is is a probability measure. -/
+theorem isFiniteMeasure_dirac {a : α} : IsFiniteMeasure (dirac a) where
+  measure_univ_lt_top := by
+    simp [dirac_apply_of_mem <| mem_univ a]
+
 @[instance]
 theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [IsFiniteMeasure μ]
     (f : α → β) : IsFiniteMeasure (μ.map f) := by
@@ -122,8 +127,10 @@ theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [
   · constructor
     rw [map_apply_of_aemeasurable hf MeasurableSet.univ]
     exact measure_lt_top μ _
-  · rw [map_of_not_aemeasurable hf]
-    exact MeasureTheory.isFiniteMeasureZero
+  · obtain rfl | hμ := eq_or_ne μ 0
+    · rw [Measure.map_zero]; infer_instance
+    rw [map_of_not_aemeasurable_of_ne_zero hf hμ]
+    exact isFiniteMeasure_dirac
 
 theorem Measure.isFiniteMeasure_of_map {μ : Measure α} {f : α → β}
     (hf : AEMeasurable f μ) [IsFiniteMeasure (μ.map f)] : IsFiniteMeasure μ where
@@ -174,7 +181,7 @@ theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}
     (hp : NullMeasurableSet { a | p a } μ) : (∀ᵐ a ∂μ, p a) ↔ μ { a | p a } = μ univ := by
-  rw [← ae_eq_univ_iff_measure_eq hp, eventuallyEq_univ, eventually_iff]
+  rw [← ae_eq_univ_iff_measure_eq hp, eventuallyEqSet_univ, eventually_iff]
 
 theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasurableSet s μ) :
     (∀ᵐ a ∂μ, a ∈ s) ↔ μ s = μ univ :=
