@@ -13,6 +13,9 @@ public import Mathlib.Tactic.FastInstance
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.
+
+The instances are stated for `SubsemiringClass`, so they apply to every bundled subobject that
+is a subsemiring (`Subsemiring`, `Subring`, `Subalgebra`, ...) without needing a copy per type.
 -/
 
 @[expose] public section
@@ -36,16 +39,6 @@ end SubsemiringClass
 namespace Subsemiring
 
 variable {R : Type*}
-
-/-- A subsemiring of an ordered semiring is an ordered semiring. -/
-instance toIsOrderedRing [Semiring R] [PartialOrder R] [IsOrderedRing R] (s : Subsemiring R) :
-    IsOrderedRing s :=
-  SubsemiringClass.toIsOrderedRing _
-
-/-- A subsemiring of a strict ordered semiring is a strict ordered semiring. -/
-instance toIsStrictOrderedRing [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
-    (s : Subsemiring R) : IsStrictOrderedRing s :=
-  SubsemiringClass.toIsStrictOrderedRing _
 
 section nonneg
 

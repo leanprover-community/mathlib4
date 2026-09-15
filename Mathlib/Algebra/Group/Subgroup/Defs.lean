@@ -239,9 +239,11 @@ theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) :=
 
 variable {H}
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
-  rfl
+@[deprecated (since := "2026-09-06")]
+alias _root_.AddSubgroupClass.coe_nsmul := AddSubmonoidClass.coe_nsmul
+
+@[to_additive existing, deprecated (since := "2026-09-06")]
+alias coe_pow := SubmonoidClass.coe_pow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=

@@ -362,14 +362,6 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
   SubringClass.toCommRing s
 
-/-- A subring of a non-trivial ring is non-trivial. -/
-instance {R} [NonAssocRing R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
-  s.toSubsemiring.nontrivial
-
-/-- A subring of a ring with no zero divisors has no zero divisors. -/
-instance {R} [NonAssocRing R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
-  s.toSubsemiring.noZeroDivisors
-
 /-- A subring of a domain is a domain. -/
 instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   NoZeroDivisors.to_isDomain _

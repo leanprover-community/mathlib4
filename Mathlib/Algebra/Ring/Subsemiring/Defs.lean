@@ -87,9 +87,6 @@ instance (priority := 75) toNonAssocCommSemiring {R} [NonAssocCommSemiring R] [S
 instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
-  Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
-
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
   { SubmonoidClass.subtype s, AddSubmonoidClass.subtype s with toFun := (↑) }
@@ -300,24 +297,16 @@ theorem coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
 theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
   rfl
 
-instance nontrivial [Nontrivial R] : Nontrivial s :=
-  nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
-
 protected theorem pow_mem {R : Type*} [Semiring R] (s : Subsemiring R) {x : R} (hx : x ∈ s)
     (n : ℕ) : x ^ n ∈ s :=
   pow_mem hx n
-
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
-  eq_zero_or_eq_zero_of_mul_eq_zero {_ _} h :=
-    (eq_zero_or_eq_zero_of_mul_eq_zero <| Subtype.ext_iff.mp h).imp Subtype.ext Subtype.ext
 
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
   { s.toNonAssocSemiring, s.toSubmonoid.toMonoid with }
 
-@[simp, norm_cast]
-theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
-    ((x ^ n : s) : R) = (x : R) ^ n := rfl
+@[deprecated (since := "2026-09-06")]
+alias coe_pow := SubmonoidClass.coe_pow
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
