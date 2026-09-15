@@ -36,8 +36,6 @@ noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
-open Submodule
-
 namespace Module
 
 alias DirectedSystem.map_self := DirectedSystem.map_self'
@@ -130,7 +128,7 @@ to a unique map out of the direct limit. -/
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   __ := AddCon.lift _ (DirectSum.toModule R ι P g) <|
-    AddCon.addConGen_le fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
+    AddCon.addConGen_le.2 fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
   map_smul' r := by rintro ⟨x⟩; exact map_smul (DirectSum.toModule R ι P g) r x
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -211,7 +209,7 @@ family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` in
 -/
 def congr (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) :
     DirectLimit G f ≃ₗ[R] DirectLimit G' f' :=
-  LinearEquiv.ofLinear (map (e ·) he)
+  LinearEquiv.ofLinearMap (map (e ·) he)
     (map (fun i ↦ (e i).symm) fun i j h ↦ by
       rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
         refl_toLinearMap, comp_id])
@@ -242,15 +240,17 @@ open _root_.DirectLimit
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
 the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
-  .ofLinear
+  .ofLinearMap
     (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
     (by ext; simp)
     (by ext; simp)
 
+@[simp]
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
-  simp [linearEquiv]; rfl
+  simp [linearEquiv]
 
+@[simp]
 theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.1 g.2 := rfl
 
 end equiv
@@ -269,7 +269,7 @@ theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (H : of R ι G f i x = 0) :
     ∃ j hij, f i j hij x = (0 : G j) := by
-  convert exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
+  convert! exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
   rw [map_zero]
 
 end DirectLimit
@@ -406,6 +406,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
       DirectLimit G f →+ DirectLimit G'' f'') := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence

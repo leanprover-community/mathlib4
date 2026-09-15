@@ -21,7 +21,7 @@ universe v
 
 open List Subtype Nat Function
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*}
 
 namespace Multiset
 
@@ -153,6 +153,9 @@ theorem choose_mem (hp : ∃! a, a ∈ l ∧ p a) : choose p l hp ∈ l :=
 
 theorem choose_property (hp : ∃! a, a ∈ l ∧ p a) : p (choose p l hp) :=
   (choose_spec _ _ _).2
+
+theorem choose_eq_iff (hp : ∃! a, a ∈ l ∧ p a) {a : α} : choose p l hp = a ↔ a ∈ l ∧ p a :=
+  ⟨fun h => h ▸ choose_spec p l hp, hp.unique (choose_spec p l hp)⟩
 
 end Choose
 

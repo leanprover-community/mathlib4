@@ -41,7 +41,6 @@ namespace LeftHomotopyRel
 
 variable {f g : X ⟶ Y} [IsCofibrant X]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When two morphisms `X ⟶ Y` with `X` cofibrant are related by a left homotopy,
 this is a choice of a right homotopy relative to any good path object for `Y`. -/
 noncomputable def rightHomotopy (h : LeftHomotopyRel f g) (Q : PathObject Y) [Q.IsGood] :
@@ -70,7 +69,6 @@ namespace RightHomotopyRel
 
 variable {f g : X ⟶ Y} [IsFibrant Y]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When two morphisms `X ⟶ Y` with `Y` fibrant are related by a right homotopy,
 this is a choice of a left homotopy relative to any good cylinder object for `X`. -/
 noncomputable def leftHomotopy (h : RightHomotopyRel f g) (Q : Cylinder X) [Q.IsGood] :
@@ -125,7 +123,6 @@ namespace LeftHomotopyClass
 
 variable (X)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma postcomp_bijective_of_fibration_of_weakEquivalence
     [IsCofibrant X] (g : Y ⟶ Z) [Fibration g] [WeakEquivalence g] :
     Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp g) := by
@@ -157,11 +154,11 @@ lemma postcomp_bijective_of_weakEquivalence
   have hi : Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp h.i) := by
     rw [← Function.Bijective.of_comp_iff'
       (postcomp_bijective_of_fibration_of_weakEquivalence X h.r)]
-    convert Function.bijective_id
+    convert! Function.bijective_id
     ext φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     simp
-  convert (postcomp_bijective_of_fibration_of_weakEquivalence X h.p).comp hi using 1
+  convert! (postcomp_bijective_of_fibration_of_weakEquivalence X h.p).comp hi using 1
   ext φ
   obtain ⟨φ, rfl⟩ := φ.mk_surjective
   simp
@@ -172,7 +169,6 @@ namespace RightHomotopyClass
 
 variable (Z)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma precomp_bijective_of_cofibration_of_weakEquivalence
     [IsFibrant Z] (f : X ⟶ Y) [Cofibration f] [WeakEquivalence f] :
     Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by
@@ -204,11 +200,11 @@ lemma precomp_bijective_of_weakEquivalence
   have hj : Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp h.p) := by
     rw [← Function.Bijective.of_comp_iff'
       (precomp_bijective_of_cofibration_of_weakEquivalence Z h.s)]
-    convert Function.bijective_id
+    convert! Function.bijective_id
     ext φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     simp
-  convert (precomp_bijective_of_cofibration_of_weakEquivalence Z h.i).comp hj using 1
+  convert! (precomp_bijective_of_cofibration_of_weakEquivalence Z h.i).comp hj using 1
   ext φ
   obtain ⟨φ, rfl⟩ := φ.mk_surjective
   simp
@@ -243,11 +239,9 @@ when `X` is cofibrant and `Y` is fibrant. -/
 def leftHomotopyClassEquivRightHomotopyClass :
     LeftHomotopyClass X Y ≃ RightHomotopyClass X Y where
   toFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
-    dsimp
     rw [RightHomotopyClass.mk_eq_mk_iff]
     exact h.rightHomotopyRel)
   invFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
-    dsimp
     rw [LeftHomotopyClass.mk_eq_mk_iff]
     exact h.leftHomotopyRel)
   left_inv := by rintro ⟨f⟩; rfl

@@ -223,6 +223,24 @@ def omegaToLia :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
+/-- Suggest `rwa` for `rw` followed by `assumption`. -/
+register_option linter.tacticAnalysis.rwaSuggestion : Bool := {
+  defValue := true
+}
+@[tacticAnalysis linter.tacticAnalysis.rwaSuggestion,
+  inherit_doc linter.tacticAnalysis.rwaSuggestion]
+def Mathlib.TacticAnalysis.rwaSuggestion : TacticAnalysis.Config where
+  run seq := do
+    for first in seq.toList, second in seq.toList.tail do
+      match first.tacI.stx, second.tacI.stx with
+      | `(tactic| rw $rws:rwRuleSeq $[$loc:location]?), `(tactic| assumption) => do
+        if let some start := first.tacI.stx.getPos? then
+        if let some stop := second.tacI.stx.getTailPos? then
+          let span := Syntax.setInfo (SourceInfo.synthetic start stop) first.tacI.stx
+          Elab.Command.liftCoreM <|
+            Tactic.TryThis.addSuggestion span (← `(tactic| rwa $rws:rwRuleSeq $[$loc:location]?))
+      | _, _ => pure ()
+
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {
   defValue := false
@@ -239,15 +257,11 @@ def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
   test ctxI i ctx goal := do
     let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
     let tac ← `(tactic| rw [$ctxT,*])
-    let oldMessages := (← get).messages
     try
       let goals ← ctxI.runTacticCode i goal tac
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
-    finally
-      -- Drop any messages, since they will appear as if they are genuine errors.
-      modify fun s => { s with messages := oldMessages }
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if new.1.isEmpty then
       m!"Try this: rw {new.2}"
@@ -412,9 +426,9 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
             -- Extract just the tactic name, ignoring trailing comments/whitespace
             -- Use try/catch because ppTactic can fail on certain syntax (e.g., `congr($h x)`)
             let oldTacticPP := (← try
-              return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii
+              pure (((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii)
             catch _ =>
-              return i.tacI.stx.reprint.getD "???")
+              pure (i.tacI.stx.reprint.getD "???"))
             let newTacticPP ← label.getDM (try
               return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trimAscii.copy
             catch _ =>
@@ -550,8 +564,32 @@ register_option linter.tacticAnalysis.tryAtEachStepFromEnv : Bool := {
    inherit_doc linter.tacticAnalysis.tryAtEachStepFromEnv]
 def tryAtEachStepFromEnv := tryAtEachStepFromEnvImpl
 
--- TODO: add compatibility with `rintro` and `intros`
-/-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
+/-- Convert an `rcases` pattern to an equivalent `intro` argument, if possible. -/
+private def introMergeArgOfRCasesPat? (pat : TSyntax `rcasesPat) : Option Term :=
+  match pat with
+  | `(rcasesPat| _%$x) => some ⟨mkHole x⟩
+  | `(rcasesPat| $h:ident) =>
+      if h.getId == `rfl then none else some ⟨h.raw⟩
+  | _ => none
+
+/-- Convert an `rintro` pattern to an equivalent `intro` argument, if possible. -/
+private def introMergeArgOfRIntroPat? (pat : TSyntax `rintroPat) : Option Term :=
+  match pat with
+  | `(rintroPat| $pat:rcasesPat) => introMergeArgOfRCasesPat? pat
+  | _ => none
+
+/-- Normalize a compatible `intro`-like tactic to the arguments of an equivalent `intro`. -/
+private def introMergeArgs? (stx : TSyntax `tactic) : Option (Array Term) :=
+  match stx with
+  | `(tactic| intro%$x $args*) =>
+      some <| if args.size = 0 then #[⟨mkHole x⟩] else args
+  | `(tactic| intros $ids*) =>
+      if ids.size = 0 then none else some <| ids.map fun stx => ⟨stx.raw⟩
+  | `(tactic| rintro $pats*) =>
+      pats.mapM introMergeArgOfRIntroPat?
+  | _ => none
+
+/-- Suggest merging adjacent `intro`-like tactics whose effect is equivalent to a single `intro`. -/
 register_option linter.tacticAnalysis.introMerge : Bool := {
   defValue := true
 }
@@ -561,11 +599,9 @@ def Mathlib.TacticAnalysis.introMerge : TacticAnalysis.Config := .ofComplex {
   out := Option (TSyntax `tactic)
   ctx := Array (Array Term)
   trigger ctx stx :=
-    match stx with
-    | `(tactic| intro%$x $args*) => .continue ((ctx.getD #[]).push
-      -- if `intro` is used without arguments, treat it as `intro _`
-      <| if args.size = 0 then #[⟨mkHole x⟩] else args)
-    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
+    match introMergeArgs? ⟨stx⟩ with
+    | some args => .continue ((ctx.getD #[]).push args)
+    | none => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
   test ctxI i ctx goal := do
     let ctxT := ctx.flatten
     let tac ← `(tactic| intro $ctxT*)
@@ -643,34 +679,26 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
                 if suggestedTac.raw[4]![1]![0]![1]!.getNumArgs == 0 then
                   continue
 
-            -- Get suggestion as string for analysis
-            let suggPP ← try
-              liftCoreM <| PrettyPrinter.ppTactic suggestedTac
-            catch _ => pure s!"{suggestedTac}"
-            let suggStr := suggPP.pretty
-
             -- Skip suggestions containing hexcode anchors (e.g., #962a, #8ef1)
             -- These are proof-context-specific references that aren't valid in a fresh goal
-            let containsHexcode := suggStr.splitOn "#" |>.drop 1 |>.any fun part =>
-              part.length >= 4 && (part.take 4).all fun c => c.isDigit || c ∈ ['a', 'b', 'c', 'd', 'e', 'f']
-            if containsHexcode then
+            if suggestedTac.raw.find? (·.isOfKind ``Lean.Parser.Tactic.anchor) |>.isSome then
               continue
 
             -- Skip suggestions containing `approx` - these are incomplete approximations
-            if suggStr.contains "approx" then
+            if suggestedTac.raw.find? (fun stx => stx.isOfKind ``Lean.Parser.Tactic.Grind.instantiate &&
+              (stx.find? (·.getAtomVal == "approx")).isSome) |>.isSome
+            then
               continue
 
-            -- Verify suggestion works (suppress any messages from verification)
-            let savedMessages2 := (← get).messages
+            -- Verify suggestion works
             let verifyGoals ← try
               i.runTacticCode goal suggestedTac
             catch _e =>
               pure [goal]  -- Treat exception as failure
-            modify fun s => { s with messages := savedMessages2 }
 
             if !verifyGoals.isEmpty then
               logWarningAt i.tacI.stx
-                m!"`{label}` suggestion failed: `{suggPP}` did not close the goal"
+                m!"`{label}` suggestion failed: `{suggestedTac}` did not close the goal"
 
 /-- Verify that `grind?` suggestions actually work. -/
 register_option linter.tacticAnalysis.verifyGrind : Bool := {

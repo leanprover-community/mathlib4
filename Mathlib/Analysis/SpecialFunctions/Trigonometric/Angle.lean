@@ -88,11 +88,11 @@ theorem coe_eq_zero_iff {x : ℝ} : (x : Angle) = 0 ↔ ∃ n : ℤ, n • (2 * 
 
 @[simp, norm_cast]
 theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (↑x : Angle) := by
-  simpa only [nsmul_eq_mul] using coeHom.map_nsmul x n
+  simpa only [nsmul_eq_mul] using! coeHom.map_nsmul n x
 
 @[simp, norm_cast]
 theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
-  simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
+  simpa only [zsmul_eq_mul] using! coeHom.map_zsmul n x
 
 set_option backward.isDefEq.respectTransparency false in
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
@@ -155,7 +155,7 @@ theorem two_nsmul_eq_iff {ψ θ : Angle} : (2 : ℕ) • ψ = (2 : ℕ) • θ �
   simp_rw [← natCast_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
 
 theorem two_nsmul_eq_zero_iff {θ : Angle} : (2 : ℕ) • θ = 0 ↔ θ = 0 ∨ θ = π := by
-  convert two_nsmul_eq_iff <;> simp
+  convert! two_nsmul_eq_iff <;> simp
 
 theorem two_nsmul_ne_zero_iff {θ : Angle} : (2 : ℕ) • θ ≠ 0 ↔ θ ≠ 0 ∧ θ ≠ π := by
   rw [← not_or, ← two_nsmul_eq_zero_iff]
@@ -463,7 +463,7 @@ theorem neg_pi_lt_toReal (θ : Angle) : -π < θ.toReal := by
 
 theorem toReal_le_pi (θ : Angle) : θ.toReal ≤ π := by
   induction θ using Real.Angle.induction_on
-  convert toIocMod_le_right two_pi_pos _ _
+  convert! toIocMod_le_right two_pi_pos _ _
   ring
 
 theorem abs_toReal_le_pi (θ : Angle) : |θ.toReal| ≤ π :=
@@ -546,7 +546,7 @@ theorem abs_toReal_coe_eq_self_iff {θ : ℝ} : |(θ : Angle).toReal| = θ ↔ 0
 
 theorem abs_toReal_neg_coe_eq_self_iff {θ : ℝ} : |(-θ : Angle).toReal| = θ ↔ 0 ≤ θ ∧ θ ≤ π := by
   refine ⟨fun h => h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h => ?_⟩
-  by_cases hnegpi : θ = π; · simp [hnegpi, Real.pi_pos.le]
+  by_cases hnegpi : θ = π; · simp [hnegpi]
   rw [← coe_neg,
     toReal_coe_eq_self_iff.2
       ⟨neg_lt_neg (lt_of_le_of_ne h.2 hnegpi), (neg_nonpos.2 h.1).trans Real.pi_pos.le⟩,
@@ -580,11 +580,11 @@ theorem toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff {θ : ℝ} {k : ℤ} :
 
 theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ - 2 * π ↔ θ ∈ Set.Ioc π (3 * π) := by
-  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ 1 <;> norm_num
+  convert! @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ 1 <;> norm_num
 
 theorem toReal_coe_eq_self_add_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ + 2 * π ↔ θ ∈ Set.Ioc (-3 * π) (-π) := by
-  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;> norm_num
+  convert! @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;> norm_num
 
 theorem two_nsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
     ((2 : ℕ) • θ).toReal = 2 * θ.toReal - 2 * π ↔ π / 2 < θ.toReal := by
@@ -791,7 +791,7 @@ theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -�
   rcases h with (h | h)
   · rw [abs_of_neg (toReal_neg_iff_sign_neg.2 h), coe_neg, neg_neg, coe_toReal]
   · rw [sign_eq_zero_iff] at h
-    rcases h with (rfl | rfl) <;> simp [abs_of_pos Real.pi_pos]
+    rcases h with (rfl | rfl) <;> simp
 
 theorem eq_iff_sign_eq_and_abs_toReal_eq {θ ψ : Angle} :
     θ = ψ ↔ θ.sign = ψ.sign ∧ |θ.toReal| = |ψ.toReal| := by
@@ -936,7 +936,7 @@ lemma abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal {θ ψ : Angle} (hs
   · obtain ⟨hθ', hψ'⟩ : (-θ).sign = 1 ∧ (-ψ).sign = 1 := by grind [sign_neg, neg_neg]
     have hsa' : (-θ + -ψ).sign ≠ 1 := by
       rwa [← hθ', ne_comm, ← neg_add, sign_neg, sign_neg, neg_injective.ne_iff]
-    convert abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux hθ' hψ' hsa' using 1
+    convert! abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux hθ' hψ' hsa' using 1
     all_goals simp [-neg_add_rev, ← neg_add, abs_toReal_neg]
   · grind [sign_eq_zero_iff, coe_pi_add_coe_pi]
   · exact abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux h (hs ▸ h) (h ▸ hsa.symm)

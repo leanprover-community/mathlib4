@@ -41,7 +41,7 @@ This follows from localizations of regular local rings being regular (@Thmoas-Gu
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing
 
@@ -114,7 +114,7 @@ lemma IsRegularRing.of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
 lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
     IsRegularLocalRing R := by
   let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
-    IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
+    IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using! fun a ↦ a)
   exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
 
 instance (priority := low) [IsDedekindDomain R] : IsRegularRing R := by

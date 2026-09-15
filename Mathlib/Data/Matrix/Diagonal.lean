@@ -29,8 +29,8 @@ assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {l m n : Type*}
+variable {R : Type*} {S : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
@@ -89,9 +89,7 @@ theorem diagonal_eq_zero [Zero α] {d : n → α} : diagonal d = 0 ↔ d = 0 :=
 @[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
   ext i j
-  by_cases h : i = j
-  · simp [h, transpose]
-  · simp [h, transpose, diagonal_apply_ne' _ h]
+  by_cases h : i = j <;> simp [h, transpose, eqComm]
 
 @[simp]
 theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :

@@ -12,6 +12,8 @@ public import Mathlib.Analysis.Convex.Segment
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Tactic.FieldSimp
 
+import Mathlib.Tactic.Bound
+
 /-!
 # Betweenness in affine spaces
 
@@ -378,6 +380,7 @@ theorem wbtw_self_left (x y : P) : Wbtw R x x y :=
 theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
   right_mem_affineSegment _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   refine ⟨fun h => ?_, fun h => ?_⟩
@@ -468,7 +471,7 @@ theorem sbtw_one_zero_iff {x : R} : Sbtw R 1 x 0 ↔ x ∈ Set.Ioo (0 : R) 1 := 
 theorem Wbtw.trans_left {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R w x y) : Wbtw R w x z := by
   rcases h₁ with ⟨t₁, ht₁, rfl⟩
   rcases h₂ with ⟨t₂, ht₂, rfl⟩
-  refine ⟨t₂ * t₁, ⟨mul_nonneg ht₂.1 ht₁.1, mul_le_one₀ ht₂.2 ht₁.1 ht₁.2⟩, ?_⟩
+  refine ⟨t₂ * t₁, ⟨mul_nonneg ht₂.1 ht₁.1, by bound [ht₂.2, ht₁.1, ht₁.2]⟩, ?_⟩
   rw [lineMap_apply, lineMap_apply, lineMap_vsub_left, smul_smul]
 
 theorem Wbtw.trans_right {w x y z : P} (h₁ : Wbtw R w x z) (h₂ : Wbtw R x y z) : Wbtw R w y z := by
@@ -658,10 +661,10 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
       simp [max_eq_left hji.le, min_eq_right hji.le]
   rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment, face_points, face_points]
   congr 2
-  · convert Finset.orderEmbOfFin_zero _ _
+  · convert! Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · lia
-  · convert Finset.orderEmbOfFin_last _ _
+  · convert! Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · lia
 
@@ -712,10 +715,10 @@ lemma mem_interior_face_iff_sbtw [IsDomain R] [IsTorsionFree R V] {n : ℕ}
       simp [max_eq_left hji.le, min_eq_right hji.le]
   rw [h', mem_interior_iff_sbtw, face_points, face_points]
   congr! 4
-  · convert Finset.orderEmbOfFin_zero _ _
+  · convert! Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · lia
-  · convert Finset.orderEmbOfFin_last _ _
+  · convert! Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · lia
 
@@ -732,22 +735,15 @@ variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  rcases h with ⟨t, ⟨ht0, ht1⟩, rfl⟩
-  simp_rw [lineMap_apply]
-  rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
-  rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
-  refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
-  simp only [vadd_vsub, smul_smul, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul]
-  ring_nf
+  simpa using sameRay_of_mem_segment ((mem_segment_iff_wbtw).2 (h.vsub_const x))
 
 theorem Wbtw.sameRay_vsub_left {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ x) := by
   rcases h with ⟨t, ⟨ht0, _⟩, rfl⟩
-  simpa [lineMap_apply] using SameRay.sameRay_nonneg_smul_left (z -ᵥ x) ht0
+  simp [SameRay.sameRay_nonneg_smul_left (z -ᵥ x) ht0]
 
 theorem Wbtw.sameRay_vsub_right {x y z : P} (h : Wbtw R x y z) : SameRay R (z -ᵥ x) (z -ᵥ y) := by
   rcases h with ⟨t, ⟨_, ht1⟩, rfl⟩
-  simpa [lineMap_apply, vsub_vadd_eq_vsub_sub, sub_smul] using
-    SameRay.sameRay_nonneg_smul_right (z -ᵥ x) (sub_nonneg.2 ht1)
+  simp [SameRay.sameRay_nonneg_smul_right (z -ᵥ x) (sub_nonneg.2 ht1)]
 
 end StrictOrderedCommRing
 
@@ -797,16 +793,15 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [IsTorsionFree R V]
   have h₂s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
+  rw [← Finset.univ.affineCombination_piSingle R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
       (Finset.mem_univ _)] at h₁' ⊢
   refine
-    Sbtw.affineCombination_of_mem_affineSpan_pair t.independent hw
-      (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))
+    Sbtw.affineCombination_of_mem_affineSpan_pair t.independent hw (Fintype.sum_pi_single' _ _)
       (Finset.univ.sum_affineCombinationLineMapWeights (Finset.mem_univ _) (Finset.mem_univ _) _)
       h₁' (Finset.mem_univ i₁) ?_
-  rw [Finset.affineCombinationSingleWeights_apply_self,
+  rw [Pi.single_eq_same,
     Finset.affineCombinationLineMapWeights_apply_of_ne h₁₂ h₁₃, sbtw_one_zero_iff]
   have hs : ∀ i : Fin 3, SignType.sign (w i) = SignType.sign (w i₃) := by
     intro i
@@ -949,8 +944,10 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : r₂ ≤ r₁) : Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) := by
-  convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x (-v) (Left.nonneg_neg_iff.2 hr₁)
-      (neg_le_neg_iff.2 hr₂) using 1 <;>
+  convert!
+    wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x (-v) (Left.nonneg_neg_iff.2 hr₁)
+      (neg_le_neg_iff.2 hr₂) using
+    1 <;>
     rw [neg_smul_neg]
 
 theorem wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0) (hr₂ : r₂ ≤ 0) :
@@ -961,8 +958,10 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : 0 ≤ r₂) : Wbtw R (r₁ • v +ᵥ x) x (r₂ • v +ᵥ x) := by
-  convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (r₁ • v +ᵥ x) v (Left.nonneg_neg_iff.2 hr₁)
-      (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using 1 <;>
+  convert!
+    wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (r₁ • v +ᵥ x) v (Left.nonneg_neg_iff.2 hr₁)
+      (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using
+    1 <;>
     simp [sub_smul, ← add_vadd]
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonneg_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁)
@@ -977,8 +976,7 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
   refine
     ⟨(t₁ - t₂ * t₁) / (1 - t₂ * t₁),
       ⟨div_nonneg (sub_nonneg.2 (mul_le_of_le_one_left ht₁.1 ht₂.2))
-          (sub_nonneg.2 (mul_le_one₀ ht₂.2 ht₁.1 ht₁.2)), div_le_one_of_le₀
-            (sub_le_sub_right ht₁.2 _) (sub_nonneg.2 (mul_le_one₀ ht₂.2 ht₁.1 ht₁.2))⟩,
+          (by bound [ht₂.2, ht₁.1, ht₁.2]), by bound [ht₂.2, ht₁.1, ht₁.2]⟩,
       ?_⟩
   simp only [lineMap_apply, smul_smul, ← add_vadd, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul,
     ← add_smul, vadd_vsub, vadd_right_cancel_iff, div_mul_eq_mul_div, div_sub_div_same]
@@ -990,7 +988,7 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
     suffices t₁ = 1 by simp [this]
     exact
       eq_of_le_of_not_lt ht₁.2 fun ht₁lt =>
-        (mul_lt_one_of_nonneg_of_lt_one_right ht₂.2 ht₁.1 ht₁lt).ne h
+        ((mul_le_of_le_one_left ht₁.1 ht₂.2).trans_lt ht₁lt).ne h
   · rw [div_self h]
     ring_nf
 
@@ -1041,17 +1039,8 @@ theorem Sbtw.trans_expand_right {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw
 
 omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
-  rw [collinear_iff_exists_forall_eq_smul_vadd]
-  refine ⟨x, z -ᵥ x, ?_⟩
-  intro p hp
-  simp_rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
-  rcases hp with (rfl | rfl | rfl)
-  · refine ⟨0, ?_⟩
-    simp
-  · rcases h with ⟨t, -, rfl⟩
-    exact ⟨t, rfl⟩
-  · refine ⟨1, ?_⟩
-    simp
+  have : {y, x, z} = {x, y, z} := Set.insert_comm y x {z}
+  simpa [this] using collinear_insert_of_mem_affineSpan_pair (mem_affineSpan h)
 
 theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} : Set P)) :
     Wbtw R x y z ∨ Wbtw R y z x ∨ Wbtw R z x y := by
@@ -1078,23 +1067,7 @@ theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} :
       exact Or.inl (wbtw_or_wbtw_smul_vadd_of_nonneg _ _ hy0.le hz0.le)
 
 theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  refine ⟨Wbtw.sameRay_vsub, fun h => ?_⟩
-  rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
-  · rw [vsub_eq_zero_iff_eq] at h
-    simp [h]
-  · rw [vsub_eq_zero_iff_eq] at h
-    simp [h]
-  · refine
-      ⟨r₂ / (r₁ + r₂),
-        ⟨div_nonneg hr₂.le (add_nonneg hr₁.le hr₂.le),
-          div_le_one_of_le₀ (le_add_of_nonneg_left hr₁.le) (add_nonneg hr₁.le hr₂.le)⟩,
-        ?_⟩
-    have h' : z = r₂⁻¹ • r₁ • (y -ᵥ x) +ᵥ y := by simp [h, hr₂.ne']
-    rw [eq_comm]
-    simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
-      smul_add]
-    convert (one_smul R (y -ᵥ x)).symm
-    field
+  simp [← wbtw_vsub_const_iff x, ← mem_segment_iff_wbtw, mem_segment_iff_sameRay]
 
 lemma wbtw_total_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
     Wbtw R x y z ∨ Wbtw R x z y := by
@@ -1119,7 +1092,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
   replace hT := hT.comp_embedding ⟨_, h⟩
   rw [affineIndependent_iff_not_collinear] at hT
   contrapose hT
-  simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
+  simp [Set.range_comp, hT.symm.collinear]
 
 variable (R)
 
@@ -1134,12 +1107,12 @@ theorem sbtw_pointReflection_of_ne {x y : P} (h : x ≠ y) : Sbtw R y x (pointRe
   exact (pointReflection_involutive R x).injective.ne h
 
 theorem wbtw_midpoint (x y : P) : Wbtw R x (midpoint R x y) y := by
-  convert wbtw_pointReflection R (midpoint R x y) x
+  convert! wbtw_pointReflection R (midpoint R x y) x
   rw [pointReflection_midpoint_left]
 
 theorem sbtw_midpoint_of_ne {x y : P} (h : x ≠ y) : Sbtw R x (midpoint R x y) y := by
   have h : midpoint R x y ≠ x := by simp [h]
-  convert sbtw_pointReflection_of_ne R h
+  convert! sbtw_pointReflection_of_ne R h
   rw [pointReflection_midpoint_left]
 
 end LinearOrderedField

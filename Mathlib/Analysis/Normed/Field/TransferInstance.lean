@@ -18,7 +18,7 @@ In this file, we transfer a normed field structure across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

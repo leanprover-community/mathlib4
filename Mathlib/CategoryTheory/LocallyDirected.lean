@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
-## Locally directed gluing
+# Locally directed gluing
 
 We say that a diagram of sets is "locally directed" if for any `V, W ⊆ U` in the diagram,
 `V ∩ W` is a union of elements in the diagram. Equivalently, for every `x ∈ U` in the diagram,
@@ -18,7 +18,7 @@ This is the condition needed to show that a colimit (in `TopCat`) of open embedd
 gluing of the open sets. See `Mathlib/AlgebraicGeometry/Gluing.lean` for an actual application.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

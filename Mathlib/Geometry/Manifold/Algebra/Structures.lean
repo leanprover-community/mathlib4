@@ -16,7 +16,7 @@ term `ContMDiffRing` instead of Lie mainly because Lie ring has currently anothe
 in mathematics.
 -/
 
-@[expose] public section
+public section
 
 open scoped Manifold ContDiff
 
@@ -48,7 +48,6 @@ instance (priority := 100) ContMDiffRing.toLieAddGroup (I : ModelWithCorners �
 
 end ContMDiffRing
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) instFieldContMDiffRing
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} :
@@ -57,7 +56,7 @@ instance (priority := 100) instFieldContMDiffRing
     contMDiff_mul := by
       rw [contMDiff_iff]
       refine ⟨continuous_mul, fun x y => ?_⟩
-      simp only [mfld_simps]
+      simp only [mfld_simps, chartAt_self_eq]
       rw [contDiffOn_univ]
       exact contDiff_mul }
 

@@ -61,7 +61,6 @@ instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHo
   star_involutive f := SetCoe.ext (star_involutive f.val)
   star_add f g := SetCoe.ext (star_add f.val g.val)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
@@ -118,6 +117,7 @@ section NonAssocStarSemiring
 
 variable [NonAssocSemiring α] [StarRing α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α where
   __ := starCenterToCentroid

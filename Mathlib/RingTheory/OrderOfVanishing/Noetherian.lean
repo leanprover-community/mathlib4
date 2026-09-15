@@ -12,12 +12,13 @@ public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 
 /-!
 # Order of vanishing in Noetherian rings.
 
 In this file we define various properties of the order of vanishing in Noetherian rings, including
- some API for computing the order of vanishing in discrete valuation rings.
+some API for computing the order of vanishing in discrete valuation rings.
 -/
 
 @[expose] public section
@@ -30,7 +31,6 @@ section NoetherianDimLEOne
 
 variable {R : Type*} [CommRing R]
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
-variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 /--
@@ -44,15 +44,15 @@ def ordMonoidHom : R⁰ →* Multiplicative ℕ where
 
 @[simp]
 lemma ordMonoidHom_eq_ord (x : R⁰) : (ordMonoidHom x).toAdd = Ring.ord R x :=
-  (ENat.coe_toNat (ord_ne_top x.2))
+  (ENat.natCast_toNat (ord_ne_top x.2))
 
 @[simp]
 lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
     .coe (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) = ordMonoidWithZeroHom R x := by
   simp only [SetLike.coe_mem, ordMonoidWithZeroHom_eq_ord, ordMonoidHom, MonoidHom.coe_mk,
     OneHom.coe_mk, toAdd_ofAdd]
-  rw [← ENat.coe_lift (ord R x.1) (ord_lt_top x.2), ENat.recTopCoe_coe,
-    ENat.coe_lift, ENat.lift_eq_toNat_of_lt_top]
+  rw [← ENat.natCast_lift (ord R x.1) (ord_lt_top x.2), ENat.recTopCoe_natCast,
+    ENat.natCast_lift, ENat.lift_eq_toNat_of_lt_top]
 
 /--
 Analogue of `ord_ne_top` for `ordMonoidWithZeroHom`.
@@ -96,7 +96,7 @@ lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
     rw [Ideal.span_singleton_zero] at art
     have : IsArtinianRing R :=
       (LinearEquiv.isArtinian_iff (Submodule.quotEquivOfEqBot ⊥ rfl).symm).mpr art
-    exact (IsDiscreteValuationRing.not_krullDimLE_zero R) (PrimeSpectrum.instKrullDimLEOfNatNat R)
+    exact IsDiscreteValuationRing.not_krullDimLE_zero R inferInstance
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
   rw [ord_mul, ord_pow, ord_of_irreducible hϖ]
@@ -190,7 +190,7 @@ lemma ordFrac_irreducible
     IsDiscreteValuationRing.intValuation_maximalIdeal,
     IsDiscreteValuationRing.addVal_uniformizer hϖ, ← WithZero.exp_eq_coe_ofAdd]
 
-open IsDedekindDomain HeightOneSpectrum
+open IsDedekindDomain
 
 lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by

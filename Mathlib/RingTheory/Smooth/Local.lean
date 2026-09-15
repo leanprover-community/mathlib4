@@ -45,7 +45,6 @@ theorem FormallySmooth.iff_injective_lTensor_residueField.{u}
   rw [← IsLocalRing.split_injective_iff_lTensor_residueField_injective,
     P.formallySmooth_iff_split_injection]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField
     (P : Type*) [CommRing P] [Algebra R P] [Algebra P S]
     [IsScalarTower R P S] [FormallySmooth R P] [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
@@ -86,7 +85,14 @@ theorem FormallySmooth.iff_injective_cotangentComplexBaseChange
       (cotangentComplexBaseChange R S P (ResidueField S)).baseChange K ∘ₗ
       (AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm.toLinearMap =
       (cotangentComplexBaseChange R S P K) := by
-    ext; simp [cotangentComplexBaseChange_tmul]
+    ext
+    #adaptation_note /-- Prior to nightly-2026-04-06, this was just `simp`. -/
+    simp_rw [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
+      LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Function.comp_apply,
+      AlgebraTensorModule.cancelBaseChange_symm_tmul, LinearMap.baseChange_tmul,
+      cotangentComplexBaseChange_tmul, kerToTensor_apply, one_smul,
+      AlgebraTensorModule.cancelBaseChange_tmul]
+    simp
   rw [← this]
   refine .trans ?_ ((AlgebraTensorModule.cancelBaseChange _ _ _ _ _).comp_injective _).symm
   exact ((AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm.injective_comp _).symm

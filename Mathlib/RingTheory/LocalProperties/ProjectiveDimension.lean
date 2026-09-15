@@ -20,7 +20,7 @@ In this file, we proved that projective dimension equal to supremum over localiz
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -110,7 +110,7 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
     let Sp (p : MaximalSpectrum R) := S.map (ModuleCat.localizedModuleFunctor p.1.primeCompl)
     have Sp_exact (p : MaximalSpectrum R) : (Sp p).ShortExact :=
       S_exact.map_of_exact (ModuleCat.localizedModuleFunctor p.asIdeal.primeCompl)
-    specialize ih (ModuleCat.of R (LinearMap.ker f))
+    specialize ih ↧(LinearMap.ker f)
     have projp (p : MaximalSpectrum R) : Projective (Sp p).X₂ :=
       (ModuleCat.localizedModuleFunctor.{v} p.1.primeCompl).projective_obj_of_projective proj
     simp only [HasProjectiveDimensionLE] at ih ⊢

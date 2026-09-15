@@ -26,7 +26,6 @@ The order structure on `ValuationSubring K`.
 
 @[expose] public section
 
-
 universe u
 
 noncomputable section
@@ -49,9 +48,9 @@ variable (A : ValuationSubring K)
 
 instance : SetLike (ValuationSubring K) K where
   coe A := A.toSubring
-  coe_injective' := by
+  coe_injective := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
-    replace h := SetLike.coe_injective' h
+    replace h := SetLike.coe_injective h
     congr
 
 instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
@@ -225,6 +224,10 @@ def ofSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R) : Valua
   { R with mem_or_inv_mem' := hR }
 
 @[simp]
+theorem ofSubring_toSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R) :
+    (ValuationSubring.ofSubring R hR).toSubring = R := rfl
+
+@[simp]
 theorem mem_ofSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R) (x : K) :
     x ∈ ofSubring R hR ↔ x ∈ R :=
   Iff.refl _
@@ -269,7 +272,7 @@ def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.Va
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : Monotone (R.mapOfLE S h) := by
   rintro ⟨⟩ ⟨⟩ ⟨a, ha⟩; exact ⟨R.inclusion S h a, ha⟩
 
@@ -384,11 +387,8 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
     map_rel_iff' {a b} :=
       ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
-        simp only [OrderDual.toDual_le_toDual]
-        dsimp at h
-        have := idealOfLE_le_of_le A _ _ ?_ ?_ h
-        · rwa [idealOfLE_ofPrime, idealOfLE_ofPrime] at this
-        all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
+        simpa using idealOfLE_le_of_le A _ _ (le_ofPrime A (PrimeSpectrum.asIdeal _))
+          (le_ofPrime A (PrimeSpectrum.asIdeal _)) h,
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
 instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
@@ -436,6 +436,7 @@ variable {Γ Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ]
   (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
 
 /-- The valuation subring associated to a valuation. -/
+@[instance_reducible]
 def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
@@ -481,7 +482,7 @@ variable (A : ValuationSubring K)
 
 @[simp]
 theorem valuationSubring_valuation : A.valuation.valuationSubring = A := by
-  ext; rw [← A.valuation_le_one_iff]; rfl
+  ext; simp [-valuation_le_one_iff, ← A.valuation_le_one_iff]
 
 theorem integer_valuation : A.valuation.integer = A.toSubring :=
   congr(($A.valuationSubring_valuation).toSubring)
@@ -553,8 +554,8 @@ section nonunits
 /-- The nonunits of a valuation subring of `K`, as a nonunital subring of `K` -/
 def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
-  mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
-    zero_le' zero_le').trans_eq <| mul_one _
+  mul_mem' ha hb := (mul_lt_mul'' (Set.mem_ofPred.mp ha) (Set.mem_ofPred.mp hb)
+    zero_le zero_le).trans_eq <| mul_one _
   add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
   zero_mem' := by simp
   neg_mem' h := (A.valuation.map_neg _).trans_lt h
@@ -635,7 +636,7 @@ def principalUnitGroup : Subgroup Kˣ where
   carrier := {x | A.valuation (x - 1) < 1}
   mul_mem' := by
     intro a b ha hb
-    rw [Set.mem_setOf] at ha hb ⊢
+    rw [Set.mem_ofPred] at ha hb ⊢
     refine lt_of_le_of_lt ?_ (max_lt hb ha)
     rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
       ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel]
@@ -651,7 +652,7 @@ def principalUnitGroup : Subgroup Kˣ where
       Valuation.map_neg]
 
 theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
-  simpa only [add_sub_cancel] using A.valuation.map_one_add_of_lt h
+  simpa only [add_sub_cancel] using! A.valuation.map_one_add_of_lt h
 
 theorem mem_principalUnitGroup_iff (x : Kˣ) :
     x ∈ A.principalUnitGroup ↔ A.valuation ((x : K) - 1) < 1 :=
@@ -689,7 +690,8 @@ theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
   rw [MonoidHom.mem_ker, Units.ext_iff]
-  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
+  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A)
+  convert_to! _ ↔ π _ = 1
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 
@@ -700,11 +702,12 @@ def principalUnitGroupEquiv :
   toFun x :=
     ⟨A.unitGroupMulEquiv ⟨_, A.principal_units_le_units x.2⟩,
       A.coe_mem_principalUnitGroup_iff.1 x.2⟩
-  invFun x :=
+  invFun := fun ⟨x, hx⟩ ↦
     ⟨A.unitGroupMulEquiv.symm x, by
-      rw [A.coe_mem_principalUnitGroup_iff]; simp⟩
+      rw [A.coe_mem_principalUnitGroup_iff]
+      simpa using hx⟩
   left_inv x := by simp
-  right_inv x := by simp
+  right_inv x := by ext; simp
   map_mul' _ _ := rfl
 
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
@@ -725,7 +728,6 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
       Ideal.Quotient.mk _ (A.unitGroupMulEquiv x : A) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext
@@ -746,10 +748,10 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
   QuotientGroup.liftEquiv _ A.surjective_unitGroupToResidueFieldUnits
     A.ker_unitGroupToResidueFieldUnits.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
-    (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
-        (QuotientGroup.mk' (A.principalUnitGroup.subgroupOf A.unitGroup)) =
+    (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _
+      A.principalUnitGroup →* _).comp (QuotientGroup.mk'
+      (A.principalUnitGroup.subgroupOf A.unitGroup)) =
       A.unitGroupToResidueFieldUnits := rfl
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply

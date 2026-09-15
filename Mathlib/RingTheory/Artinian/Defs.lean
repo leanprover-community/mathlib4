@@ -36,16 +36,17 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 -/
 
-@[expose] public section
+public section
 
 /-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
 implemented as the well-foundedness of submodule inclusion. -/
 abbrev IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop :=
   WellFoundedLT (Submodule R M)
 
+@[deprecated "this is definitionally true" (since := "2026-09-07")]
 theorem isArtinian_iff (R M) [Semiring R] [AddCommMonoid M] [Module R M] : IsArtinian R M ↔
     WellFounded (· < · : Submodule R M → Submodule R M → Prop) :=
-  isWellFounded_iff _ _
+  .rfl
 
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem IsArtinian.induction {R M} [Semiring R] [AddCommMonoid M] [Module R M] [IsArtinian R M]
