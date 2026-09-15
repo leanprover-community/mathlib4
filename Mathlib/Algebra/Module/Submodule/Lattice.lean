@@ -195,11 +195,10 @@ instance : Min (Submodule R M) :=
       smul_mem' := by simp +contextual [smul_mem] }⟩
 
 instance completeLattice : CompleteLattice (Submodule R M) where
-  sup a b := sInf { x | a ≤ x ∧ b ≤ x }
+  max a b := sInf { x | a ≤ x ∧ b ≤ x }
   le_sup_left _ _ := Set.subset_iInter₂ fun _ ⟨h, _⟩ ↦ h
   le_sup_right _ _ := Set.subset_iInter₂ fun _ ⟨_, h⟩ ↦ h
   sup_le _ _ _ h₁ h₂ := Set.biInter_subset_of_mem ⟨h₁, h₂⟩
-  inf := (· ⊓ ·)
   le_inf _ _ _ := Set.subset_inter
   inf_le_left _ _ := Set.inter_subset_left
   inf_le_right _ _ := Set.inter_subset_right

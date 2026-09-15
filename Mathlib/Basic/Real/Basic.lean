@@ -401,7 +401,6 @@ theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
   ofCauchy_inf _ _
 
 instance : DistribLattice ℝ where
-  sup := (· ⊔ ·)
   le_sup_left := by
     intro a b
     induction a using Real.ind_mk
@@ -421,7 +420,6 @@ instance : DistribLattice ℝ where
     induction c using Real.ind_mk
     simp_rw [← mk_sup, mk_le]
     exact CauSeq.sup_le
-  inf := (· ⊓ ·)
   inf_le_left := by
     intro a b
     induction a using Real.ind_mk

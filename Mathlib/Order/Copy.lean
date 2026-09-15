@@ -55,21 +55,21 @@ with possibly different definitional equalities. -/
 @[instance_reducible]
 def Lattice.copy (c : Lattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min) : Lattice α where
+    (max : α → α → α) (eq_max : max = (by infer_instance : Max α).max)
+    (min : α → α → α) (eq_min : min = (by infer_instance : Min α).min) : Lattice α where
   le := le
-  sup := sup
-  inf := inf
+  max := max
+  min := min
   lt := fun a b ↦ le a b ∧ ¬ le b a
   le_refl := by intros; simp [eq_le]
   le_trans := by intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
   le_antisymm := by intro _ _ hab hba; simp_rw [eq_le] at hab hba; exact le_antisymm hab hba
-  le_sup_left := by intros; simp [eq_le, eq_sup]
-  le_sup_right := by intros; simp [eq_le, eq_sup]
-  sup_le := by intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_sup, hac, hbc]
-  inf_le_left := by intros; simp [eq_le, eq_inf]
-  inf_le_right := by intros; simp [eq_le, eq_inf]
-  le_inf := by intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
+  le_sup_left := by intros; simp [eq_le, eq_max]
+  le_sup_right := by intros; simp [eq_le, eq_max]
+  sup_le := by intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_max, hac, hbc]
+  inf_le_left := by intros; simp [eq_le, eq_min]
+  inf_le_right := by intros; simp [eq_le, eq_min]
+  le_inf := by intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_min, hac, hbc]
 
 /-- A function to create a provable equal copy of a distributive lattice
 with possibly different definitional equalities. -/
