@@ -692,8 +692,7 @@ jobs:
         id: mint-r2
         if: env.MATHLIB_CACHE_PRIMARY == 'master' && vars.MATHLIB_CACHE_BROKER_URL != ''
         continue-on-error: true
-        # TODO: this pins the head of the open mathlib-ci#67. Re-pin to the merge commit.
-        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@eefa5304fcda37696e07a4c2e25e7b9a696add09
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@5a931cea32b8a6d5eb166aad4330531fb1e771e6
         with:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
