@@ -12,16 +12,15 @@ variable {J : Type u} [Category.{v} J] {C : Type u₁} [Category.{v₁} C] {D : 
 
 variable [HasColimitsOfShape J C] [HasColimitsOfShape J E] [PreservesColimit F (G ⋙ H)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 info: In composition
   colimit.ι ((F ⋙ G) ⋙ H) j ≫ (preservesColimitIso (G ⋙ H) F).inv
 the source of
   (preservesColimitIso (G ⋙ H) F).inv
 is
-  colimit (F ⋙ G ⋙ H)
+  colimit (Functor.comp.{v, v₁, v₃, u, u₁, u₃} F (G ⋙ H))
 but should be
-  colimit ((F ⋙ G) ⋙ H)
+  colimit (Functor.comp.{v, v₂, v₃, u, u₂, u₃} (F ⋙ G) H)
 -/
 #guard_msgs in
 set_option linter.unusedTactic false in

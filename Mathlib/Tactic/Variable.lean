@@ -191,7 +191,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
         trace[«variable?»] m!"elaborated binder types array = {types}"
         Term.synthesizeSyntheticMVarsNoPostponing -- checkpoint for withAutoBoundImplicit
         Term.withoutAutoBoundImplicit do
-        let (binders, toOmit) := ← do
+        let (binders, toOmit) ← (do
           match binder with
           | `(bracketedBinderF|[$[$ident? :]? $ty]) =>
             -- Check if it's an alias
@@ -213,7 +213,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
               return (binders, toOmit.push true)
             else
               return (binders, toOmit.push false)
-          | _ => return (binders, toOmit.push false)
+          | _ => return (binders, toOmit.push false))
         completeBinders' maxSteps gas checkRedundant binders toOmit (i + 1)
   else
     if h : gas = 0 ∧ i < binders.size then

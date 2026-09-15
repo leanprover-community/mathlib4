@@ -147,7 +147,7 @@ we have to decompose the remaining interval `[0, i)` into `k + 1` intervals, hen
 lemma sum_range_add_choose (n k : ℕ) :
     ∑ i ∈ Finset.range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
   rw [← sum_Icc_choose, range_eq_Ico]
-  convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
+  convert! (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
   rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
 
 /-- Summing `i * (n.choose i)` for `i ∈ [0, n]` gives `n * 2 ^ (n - 1)`. -/
@@ -198,7 +198,7 @@ theorem Int.alternating_sum_range_choose {n : ℕ} :
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = 0 := by
-  rw [Int.alternating_sum_range_choose, if_neg h0]
+  rw [Int.alternating_sum_range_choose, ite_eq_right h0]
 
 namespace Finset
 
@@ -224,7 +224,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = 0 := by
   classical
   rw [sum_powerset_neg_one_pow_card]
-  exact if_neg (nonempty_iff_ne_empty.mp h0)
+  exact ite_eq_right (nonempty_iff_ne_empty.mp h0)
 
 variable [NonAssocSemiring R]
 

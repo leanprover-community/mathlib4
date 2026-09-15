@@ -6,7 +6,7 @@ Authors: Alex J. Best
 module
 
 public import Mathlib.Order.Preorder.Finsupp
-public import Mathlib.Order.WellFoundedSet
+public import Mathlib.Order.WellQuasiOrder
 
 /-!
 # Partial well ordering on finsupps
@@ -33,8 +33,3 @@ This version uses finsupps on a finite type as it is intended for use with `MVPo
 instance Finsupp.wellQuasiOrderedLE {α σ : Type*} [Zero α] [Preorder α] [WellQuasiOrderedLE α]
     [Finite σ] : WellQuasiOrderedLE (σ →₀ α) :=
   orderIsoFunOnFinite.wellQuasiOrderedLE_iff.2 inferInstance
-
-@[deprecated Set.isPWO_of_wellQuasiOrderedLE (since := "2025-11-12")]
-theorem Finsupp.isPWO {α σ : Type*} [Zero α] [Preorder α] [WellQuasiOrderedLE α] [Finite σ]
-    (S : Set (σ →₀ α)) : S.IsPWO :=
-  Set.isPWO_of_wellQuasiOrderedLE S

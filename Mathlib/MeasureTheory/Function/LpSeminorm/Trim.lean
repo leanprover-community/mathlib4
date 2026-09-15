@@ -21,8 +21,8 @@ namespace MeasureTheory
 open Filter
 open scoped ENNReal
 
-variable {α E ε : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup E] [TopologicalSpace ε] [ContinuousENorm ε]
+variable {α ε : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
+  [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem eLpNorm'_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
     eLpNorm' f q (μ.trim hm) = eLpNorm' f q μ := by
@@ -37,7 +37,7 @@ theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
     rw [h_set_eq]
   ext1 a
   suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a } by
-    simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]
+    simp_rw [Set.mem_ofPred_eq, ae_iff, h_meas_eq]
   refine (trim_measurableSet_eq hm ?_).symm
   exact (measurableSet_le hf measurable_const).compl
 

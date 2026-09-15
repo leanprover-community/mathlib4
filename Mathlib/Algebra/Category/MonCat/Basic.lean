@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Group.ULift
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMonoid`.
@@ -63,6 +64,20 @@ attribute [coe] AddMonCat.carrier MonCat.carrier
 abbrev of (M : Type u) [Monoid M] : MonCat := ⟨M⟩
 
 end MonCat
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddMonCat.of X` as `↧X`. -/
+@[app_delab AddMonCat.of]
+meta def AddMonCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `MonCat.of X` as `↧X`. -/
+@[app_delab MonCat.of]
+meta def MonCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
 
 @[to_additive AddMonCat]
 mk_concrete_category MonCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
@@ -157,7 +172,7 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
 @[to_additive (attr := simps)
   /-- Universe lift functor for additive monoids. -/]
 def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
-  obj X := MonCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := MonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -197,6 +212,20 @@ abbrev of (M : Type u) [CommMonoid M] : CommMonCat := ⟨M⟩
 
 end CommMonCat
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddCommMonCat.of X` as `↧X`. -/
+@[app_delab AddCommMonCat.of]
+meta def AddCommMonCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `CommMonCat.of X` as `↧X`. -/
+@[app_delab CommMonCat.of]
+meta def CommMonCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 @[to_additive AddCommMonCat]
 mk_concrete_category CommMonCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [CommMonoid X] [CommMonoid Y]
@@ -216,8 +245,6 @@ lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -270,7 +297,7 @@ theorem coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
 @[to_additive hasForgetToAddMonCat]
 instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
   forget₂ :=
-    { obj R := MonCat.of R
+    { obj R := ↧R
       map f := MonCat.ofHom f.hom }
 
 @[to_additive (attr := simp)] lemma coe_forget₂_obj (X : CommMonCat) :
@@ -301,7 +328,7 @@ instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonC
 @[to_additive (attr := simps)
   /-- Universe lift functor for additive commutative monoids. -/]
 def uliftFunctor : CommMonCat.{v} ⥤ CommMonCat.{max v u} where
-  obj X := CommMonCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := CommMonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -397,7 +424,8 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
     exact e.toCommMonCatIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive
+  /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects isomorphisms. -/]
 instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 
@@ -410,15 +438,15 @@ example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
 /-- The equivalence between `AddMonCat` and `MonCat`. -/
 @[simps]
 def AddMonCat.equivalence : AddMonCat ≌ MonCat where
-  functor := { obj X := .of (Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
-  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  functor := { obj X := ↧(Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := ↧(Additive X), map f := ofHom f.hom.toAdditive }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
 /-- The equivalence between `AddCommMonCat` and `CommMonCat`. -/
 @[simps]
 def AddCommMonCat.equivalence : AddCommMonCat ≌ CommMonCat where
-  functor := { obj X := .of (Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
-  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  functor := { obj X := ↧(Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := ↧(Additive X), map f := ofHom f.hom.toAdditive }
   unitIso := Iso.refl _
   counitIso := Iso.refl _

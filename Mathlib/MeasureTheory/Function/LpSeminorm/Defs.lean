@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.MeasureTheory.Function.EssSup
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # ℒp space
@@ -39,8 +38,8 @@ noncomputable section
 
 open scoped NNReal ENNReal
 
-variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {f : α → E}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
+variable {α ε E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {f : α → E}
+  [NormedAddCommGroup E] [ENorm ε]
 
 namespace MeasureTheory
 
@@ -87,7 +86,7 @@ def eLpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
 
-variable {μ ν : Measure α}
+variable {μ : Measure α}
 
 theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
     eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top]
@@ -99,9 +98,6 @@ lemma eLpNorm_nnreal_eq_eLpNorm' {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
 lemma eLpNorm_eq_lintegral_rpow_enorm_toReal (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top, eLpNorm'_eq_lintegral_enorm]
-
-@[deprecated (since := "2026-02-09")]
-alias eLpNorm_eq_lintegral_rpow_enorm := eLpNorm_eq_lintegral_rpow_enorm_toReal
 
 lemma eLpNorm_nnreal_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
@@ -144,7 +140,7 @@ and to `essSup ‖f‖ μ` for `p = ∞`.
 
 This is well-defined only if `MemLp f p μ`. Otherwise, it equals `0`. -/
 noncomputable def lpNorm (f : α → E) (p : ℝ≥0∞) (μ : Measure α) : ℝ :=
-  open Classical in if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
+  open scoped Classical in if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
 
 end Lp
 

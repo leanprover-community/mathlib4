@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
@@ -69,6 +70,20 @@ abbrev of (M : Type u) [Mul M] : MagmaCat := ⟨M⟩
 
 end MagmaCat
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddMagmaCat.of X` as `↧X`. -/
+@[app_delab AddMagmaCat.of]
+meta def AddMagmaCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `MagmaCat.of X` as `↧X`. -/
+@[app_delab MagmaCat.of]
+meta def MagmaCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 @[to_additive AddMagmaCat]
 mk_concrete_category MagmaCat.{u} (· →ₙ* ·) MulHom.id MulHom.comp
   with_of_hom {X Y : Type u} [Mul X] [Mul Y]
@@ -88,8 +103,6 @@ lemma coe_id {X : MagmaCat} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -141,7 +154,7 @@ lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
 
 @[to_additive]
 instance : Inhabited MagmaCat :=
-  ⟨MagmaCat.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 end MagmaCat
 
@@ -177,6 +190,20 @@ abbrev of (M : Type u) [Semigroup M] : Semigrp := ⟨M⟩
 
 end Semigrp
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddSemigrp.of X` as `↧X`. -/
+@[app_delab AddSemigrp.of]
+meta def AddSemigrp.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `Semigrp.of X` as `↧X`. -/
+@[app_delab Semigrp.of]
+meta def Semigrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 @[to_additive AddSemigrp]
 mk_concrete_category Semigrp.{u} (· →ₙ* ·) MulHom.id MulHom.comp
   with_of_hom {X Y : Type u} [Semigroup X] [Semigroup Y]
@@ -196,8 +223,6 @@ lemma coe_id {X : Semigrp} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : Semigrp} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -250,12 +275,12 @@ lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) 
 
 @[to_additive]
 instance : Inhabited Semigrp :=
-  ⟨Semigrp.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 @[to_additive]
 instance hasForgetToMagmaCat : HasForget₂ Semigrp MagmaCat where
   forget₂ :=
-    { obj R := MagmaCat.of R
+    { obj R := ↧R
       map f := MagmaCat.ofHom f.hom }
 
 end Semigrp
@@ -340,7 +365,8 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     exact e.toSemigrpIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects
+isomorphisms. -/]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

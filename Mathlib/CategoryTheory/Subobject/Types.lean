@@ -6,8 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Subobject.WellPowered
-public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `Type u` is well-powered

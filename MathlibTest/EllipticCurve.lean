@@ -3,7 +3,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 
 /-! Test for kernel reduction of elliptic curve `nsmul`
 
-In `addOrderOf_basepoint`, the `rfl` tests that the kernel is able to reduce the `nsmul`
+In `addOrderOf_basepoint`, the `decide` tests that the kernel is able to reduce the `nsmul`
 operation on an elliptic curve to check an equality. `nsmul` on elliptic curves implements
 multiplication by doubling and should be relatively fast.
 -/
@@ -22,8 +22,7 @@ def basepoint : curve.Point :=
     rw [nonsingular_iff, equation_iff]
     decide
 
-set_option maxRecDepth 300 in
 theorem addOrderOf_basepoint : addOrderOf basepoint = 37 := by
   apply addOrderOf_eq_prime
-  · rfl
+  · decide +kernel
   · simp [basepoint]

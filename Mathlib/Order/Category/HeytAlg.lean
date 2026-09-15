@@ -19,7 +19,7 @@ This file defines `HeytAlg`, the category of Heyting algebras.
 
 universe u
 
-open CategoryTheory Opposite Order
+open CategoryTheory Order
 
 /-- The category of Heyting algebras. -/
 structure HeytAlg where
@@ -40,6 +40,11 @@ attribute [coe] HeytAlg.carrier
 
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `HeytAlg.of X` as `↧X`. -/
+@[app_delab HeytAlg.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 mk_concrete_category HeytAlg.{u} (HeytingHom · ·) (fun (X : HeytAlg) ↦ HeytingHom.id X)
   HeytingHom.comp
@@ -103,7 +108,7 @@ instance : Inhabited HeytAlg :=
 
 @[simps]
 instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/

@@ -42,6 +42,11 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddOrd.of X` as `↧X`. -/
+@[app_delab BddOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 mk_concrete_category BddOrd.{u} (BoundedOrderHom · ·) (fun (X : BddOrd) ↦ BoundedOrderHom.id X)
   BoundedOrderHom.comp
   with_of_hom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y]

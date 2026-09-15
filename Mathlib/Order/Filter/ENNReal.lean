@@ -30,7 +30,7 @@ lemma limsSup_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≤
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup]
-  convert sInf_empty
+  convert! sInf_empty
   simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
@@ -40,7 +40,7 @@ lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥
 @[simp]
 lemma limsInf_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≥ ·)) : limsInf f = 0 := by
   rw [limsInf]
-  convert sSup_empty
+  convert! sSup_empty
   simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
@@ -108,7 +108,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ≥0} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup, ← bot_eq_zero]
-  convert sInf_empty
+  convert! sInf_empty
   simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
@@ -296,7 +296,7 @@ lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
   obtain ⟨x, hx⟩ := h₂
   rw [eventually_map] at hx
   have hx₀ : 0 ≤ x := by obtain ⟨i, hi⟩ := hx.exists; exact toReal_nonneg.trans hi
-  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
+  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_ofPred_eq, not_forall]
   refine ⟨.ofReal x, ?_, by simp⟩
   filter_upwards [h₁, hx] with i hi
   simp [le_ofReal_iff_toReal_le, *]

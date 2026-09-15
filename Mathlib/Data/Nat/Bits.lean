@@ -178,7 +178,6 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 
 /-! ### `boddDiv2_eq` and `bodd` -/
 
-set_option linter.deprecated false in
 @[deprecated "`Nat.boddDiv2` has been deprecated" (since := "2026-03-22")]
 theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
   induction n with

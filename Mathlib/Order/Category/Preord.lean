@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
@@ -39,6 +38,11 @@ initialize_simps_projections Preord (carrier → coe, -str)
 
 namespace Preord
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Preord.of X` as `↧X`. -/
+@[app_delab Preord.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Preord (Type u) :=
   ⟨Preord.carrier⟩
 
@@ -52,13 +56,9 @@ mk_concrete_category Preord.{u} (· →o ·) (fun _ ↦ OrderHom.id) OrderHom.co
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : Preord} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -126,7 +126,7 @@ end Preord
 -/
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
-  obj X := .of X.1
+  obj X := ↧X.1
   map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where

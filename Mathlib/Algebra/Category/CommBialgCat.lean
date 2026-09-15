@@ -27,10 +27,9 @@ universe v u
 variable {R : Type u} [CommRing R]
 
 variable (R) in
-set_option backward.privateInPublic true in
 /-- The category of commutative `R`-bialgebras and their morphisms. -/
 structure CommBialgCat where
-  private mk ::
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
   [commRing : CommRing carrier]
@@ -49,12 +48,15 @@ instance : CoeSort (CommBialgCat R) (Type v) := ⟨carrier⟩
 attribute [coe] CommBialgCat.carrier
 
 variable (R) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Turn an unbundled `R`-bialgebra into the corresponding object in the category of `R`-bialgebras.
 
 This is the preferred way to construct a term of `CommBialgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CommBialgCat.of R X` as `↧X`. -/
+@[app_delab CommBialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
@@ -108,9 +110,11 @@ instance hasForgetToCommAlgCat : HasForget₂ (CommBialgCat.{v} R) (CommAlgCat.{
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 bialgebra. -/
 @[simps]
-def ofSelfIso (M : CommBialgCat.{v} R) : of R M ≅ M where
+def ofIsoSelf (M : CommBialgCat.{v} R) : of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
+
+@[deprecated (since := "2026-06-09")] alias ofSelfIso := ofIsoSelf
 
 /-- Build an isomorphism in the category `CommBialgCat R` from a `BialgEquiv` between
 `Bialgebra`s. -/

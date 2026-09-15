@@ -23,8 +23,6 @@ public section
 
 assert_not_exists Finset
 
-open Set
-
 variable {R K : Type*}
 
 namespace Nat
@@ -45,7 +43,7 @@ theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
 
 /-- Natural division is the floor of field division. -/
 theorem floor_div_eq_div (m n : ℕ) : ⌊(m : K) / n⌋₊ = m / n := by
-  convert floor_div_natCast (m : K) n
+  convert! floor_div_natCast (m : K) n
   rw [m.floor_natCast]
 
 end LinearOrderedSemifield

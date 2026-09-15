@@ -22,6 +22,11 @@ universe u
 
 namespace LinOrd
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `LinOrd.of X` as `↧X`. -/
+@[app_delab LinOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 mk_concrete_category LinOrd.{u} (· →o ·) (fun (_ : LinOrd) ↦ OrderHom.id) OrderHom.comp
   with_of_hom {X Y : Type u} [LinearOrder X] [LinearOrder Y]
   hom_type (X →o Y) from (of X) to (of Y)
@@ -30,10 +35,8 @@ mk_concrete_category LinOrd.{u} (· →o ·) (fun (_ : LinOrd) ↦ OrderHom.id) 
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : LinOrd} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : LinOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[simp]
@@ -81,7 +84,7 @@ instance : Inhabited LinOrd :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ LinOrd Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom (OrderHomClass.toLatticeHom _ _ f.hom)
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/

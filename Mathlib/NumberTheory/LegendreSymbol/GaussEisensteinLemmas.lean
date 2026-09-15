@@ -52,9 +52,9 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     · rw [natCast_natAbs_valMinAbs]
       split_ifs
       · rw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
-          if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
+          ite_eq_left (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
       · rw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
-          val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
+          val_cast_of_lt (hep hb), ite_eq_left (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
     (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
@@ -204,7 +204,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
 /-- **Eisenstein's lemma** -/
 theorem eisenstein_lemma {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) {a : ℕ} (ha1 : a % 2 = 1)
     (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = (-1) ^ ∑ x ∈ Ico 1 (p / 2).succ, x * a / p := by
-  haveI hp' : Fact (p % 2 = 1) := ⟨(Nat.Prime.mod_two_eq_one_iff_ne_two Fact.out).mpr hp⟩
+  have hp' : Fact (p % 2 = 1) := ⟨(Nat.Prime.mod_two_eq_one_iff_ne_two Fact.out).mpr hp⟩
   have ha0' : ((a : ℤ) : ZMod p) ≠ 0 := by norm_cast
   rw [neg_one_pow_eq_pow_mod_two, gauss_lemma hp ha0', neg_one_pow_eq_pow_mod_two,
     (by norm_cast : ((a : ℤ) : ZMod p) = (a : ZMod p)),

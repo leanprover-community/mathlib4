@@ -53,7 +53,7 @@ theorem embeddingOfSubset_dist_le (a b : α) :
   rw [dist_eq_norm]
   refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
   simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe]
-  convert abs_dist_sub_le a b (x n) using 2
+  convert! abs_dist_sub_le a b (x n) using 2
   ring
 
 /-- When the reference set is dense, the embedding map is an isometry on its image. -/
@@ -88,7 +88,7 @@ theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpac
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
     rcases h with ⟨basepoint⟩
-    haveI : Inhabited α := ⟨basepoint⟩
+    have : Inhabited α := ⟨basepoint⟩
     have : ∃ s : Set α, s.Countable ∧ Dense s := exists_countable_dense α
     rcases this with ⟨S, ⟨S_countable, S_dense⟩⟩
     rcases Set.countable_iff_exists_subset_range.1 S_countable with ⟨x, x_range⟩
