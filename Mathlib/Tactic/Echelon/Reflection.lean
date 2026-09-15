@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Matrix.OfLists
 import Mathlib.Data.List.GetD
 
 /-!
-# Reflection lemmas for the echelon certificate
+# Reflection certificates for the echelon decomposition
 
 The conditions of `Echelon.Decomposition` on a matrix given as a list of rows, each a sweep along
 the rows, with a bridge lemma to the condition on `ofLists`.
@@ -84,55 +84,22 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
 
 variable {n : ℕ}
 
-/-- The pivot function of the list of pivot columns, `⊤` for the rows beyond the list. -/
-def pivotOfList (m : ℕ) (cols : List (Fin n)) : Fin m → WithTop (Fin n) :=
-  fun i ↦ (cols[(i : ℕ)]?).elim ⊤ (↑)
-
-theorem pivotOfList_eq_top_iff {m : ℕ} {cols : List (Fin n)} {i : Fin m} :
-    pivotOfList m cols i = ⊤ ↔ cols.length ≤ i := by
-  cases h : cols[(i : ℕ)]? <;> simp [pivotOfList, h] <;> grind
-
-theorem pivotOfList_lt_pivotOfList {m : ℕ} {cols : List (Fin n)} (h : cols.SortedLT)
-    {i j : Fin m} (hij : i < j) (hj : (j : ℕ) < cols.length) :
-    pivotOfList m cols i < pivotOfList m cols j := by
-  have hi : (i : ℕ) < cols.length := lt_trans hij hj
-  simp only [pivotOfList, List.getElem?_eq_getElem hi, List.getElem?_eq_getElem hj,
-    Option.elim_some]
-  exact WithTop.coe_lt_coe.mpr (h.getElem_lt_getElem_of_lt hij)
-
-theorem monotone_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)}
-    (h : cols.SortedLT) : Monotone (pivotOfList m cols) := by
-  intro i j hij
-  rcases hij.lt_or_eq with hlt | rfl
-  · by_cases hj : (j : ℕ) < cols.length
-    · exact (pivotOfList_lt_pivotOfList h hlt hj).le
-    · rw [pivotOfList_eq_top_iff.mpr (not_lt.mp hj)]
-      exact le_top
-  · exact le_rfl
-
-theorem strictMonoOn_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)}
-    (h : cols.SortedLT) :
-    StrictMonoOn (pivotOfList m cols) {i | pivotOfList m cols i ≠ ⊤} :=
-  fun _ _ _ hj hij ↦
-    pivotOfList_lt_pivotOfList h hij (lt_of_not_ge (mt pivotOfList_eq_top_iff.mpr hj))
-
 /-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
-beyond the pivot list, all zero. -/
+beyond the pivot list (all 0). -/
 def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) → Prop
   | [], [] => True
   | [], row :: rows => row = List.replicate n 0 ∧ IsPivotedList [] rows
   | _ :: _, [] => False
-  | p :: ps, row :: rows =>
-    row.getD p 0 ≠ 0 ∧ row.take p = List.replicate p 0 ∧ IsPivotedList ps rows
+  | k :: ks, row :: rows =>
+    row.getD k 0 ≠ 0 ∧ row.take k = List.replicate k 0 ∧ IsPivotedList ks rows
 
 theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
     (h : IsPivotedList cols rows) (i : ℕ) :
-    (∀ j : Fin n, (j : WithTop (Fin n)) < (cols[i]?).elim ⊤ (↑) → (rows.getD i []).getD j 0 = 0) ∧
-      ∀ c : Fin n, (cols[i]?).elim ⊤ (↑) = (c : WithTop (Fin n)) →
-        (rows.getD i []).getD c 0 ≠ 0 := by
+    (∀ j, (∀ k ∈ cols[i]?, j < (k : ℕ)) → (rows.getD i []).getD j 0 = 0) ∧
+      ∀ k ∈ cols[i]?, (rows.getD i []).getD k 0 ≠ 0 := by
   induction cols generalizing rows i with
   | nil =>
-    refine ⟨fun j _ ↦ ?_, fun c hc ↦ by simp at hc⟩
+    refine ⟨fun j _ ↦ ?_, by simp⟩
     induction rows generalizing i with
     | nil => simp
     | cons row rows ih =>
@@ -142,28 +109,64 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
       | succ i =>
         rw [List.getD_cons_succ]
         exact ih hrest i (by simp)
-  | cons p ps ih =>
+  | cons k ks ih =>
     cases rows with
     | nil => simp [IsPivotedList] at h
     | cons row rows =>
       obtain ⟨hd, hz, hrest⟩ := h
       cases i with
       | zero =>
-        simp only [List.getD_cons_zero, List.getElem?_cons_zero, Option.elim_some,
-          WithTop.coe_lt_coe, WithTop.coe_eq_coe]
-        refine ⟨fun j hj ↦ ?_, fun c hc ↦ hc ▸ hd⟩
-        have := List.getElem?_take_of_lt (l := row) hj
-        grind
+        rw [List.getD_cons_zero]
+        refine ⟨fun j hj ↦ ?_, fun q hq ↦ ?_⟩
+        · have := List.getElem?_take_of_lt (l := row) (hj k (by simp))
+          grind
+        · have : k = q := by simpa using hq
+          exact this ▸ hd
       | succ i =>
         rw [List.getD_cons_succ]
         exact ih hrest i
+
+/-- The pivot function of the list of pivot columns: the column of row `i`, and `⊤` for a row
+beyond the list. -/
+def pivotOfList (m : ℕ) (cols : List (Fin n)) : Fin m → WithTop (Fin n) :=
+  fun i ↦ cols[(i : ℕ)]?
+
+theorem pivotOfList_eq_coe {m : ℕ} {cols : List (Fin n)} {i : Fin m} {c : Fin n}
+    (hc : cols[(i : ℕ)]? = some c) : pivotOfList m cols i = (c : WithTop (Fin n)) := hc
+
+theorem pivotOfList_lt_pivotOfList {m : ℕ} {cols : List (Fin n)} (hs : cols.SortedLT) {i j : Fin m}
+    (hij : i < j) (hj : pivotOfList m cols j ≠ ⊤) :
+    pivotOfList m cols i < pivotOfList m cols j := by
+  obtain ⟨c, hc⟩ := Option.ne_none_iff_exists'.mp hj
+  obtain ⟨hjl, rfl⟩ := List.getElem?_eq_some_iff.mp hc
+  have hil : (i : ℕ) < cols.length := lt_trans hij hjl
+  rw [pivotOfList_eq_coe (List.getElem?_eq_getElem hil), pivotOfList_eq_coe hc]
+  exact WithTop.coe_lt_coe.mpr (hs.getElem_lt_getElem_of_lt hij)
+
+theorem monotone_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)} (hs : cols.SortedLT) :
+    Monotone (pivotOfList m cols) := by
+  intro i j hij
+  rcases hij.lt_or_eq with hlt | rfl
+  · by_cases hj : pivotOfList m cols j = ⊤
+    · rw [hj]
+      exact le_top
+    · exact (pivotOfList_lt_pivotOfList hs hlt hj).le
+  · exact le_rfl
+
+theorem strictMonoOn_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)} (hs : cols.SortedLT) :
+    StrictMonoOn (pivotOfList m cols) {i | pivotOfList m cols i ≠ ⊤} :=
+  fun _ _ _ hj hij ↦ pivotOfList_lt_pivotOfList hs hij hj
 
 theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
     (hsorted : cols.SortedLT) (h : IsPivotedList cols rows) :
     (ofLists m n rows).IsPivotedBy (pivotOfList m cols) := by
   refine Matrix.isPivotedBy_iff.mpr ⟨monotone_pivotOfList_of_sortedLT hsorted,
     strictMonoOn_pivotOfList_of_sortedLT hsorted, fun i ↦ ?_⟩
-  simp only [ofLists_apply, ofList_apply, pivotOfList]
-  exact getD_of_isPivotedList h i
+  obtain ⟨hzero, hnz⟩ := getD_of_isPivotedList h (i : ℕ)
+  simp only [ofLists_apply, ofList_apply]
+  refine ⟨fun j hj ↦ hzero (j : ℕ) fun k hk ↦ ?_, fun c hc ↦ ?_⟩
+  · rw [pivotOfList_eq_coe hk] at hj
+    exact Fin.lt_def.mp (WithTop.coe_lt_coe.mp hj)
+  · exact hnz c hc
 
 end Mathlib.Tactic.Echelon

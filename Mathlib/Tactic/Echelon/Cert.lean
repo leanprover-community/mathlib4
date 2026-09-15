@@ -64,9 +64,12 @@ def mkMatrixViews {u : Level} {α : Q(Type u)} (_cr : Q(CommRing $α)) (m n : Na
   have lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
   { matrix := q(ofLists $m $n $lit), lit, entries }
 
-/-- Build the list of pivot columns `[c₀, c₁, …]`. -/
-def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
-  let cols ← pivots.toList.mapM (mkFinNumeral n)
+/-- Build the list of pivot columns `[c₀, c₁, …]`, each with its bound. -/
+def mkPivotList (n : ℕ) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
+  let cols ← pivots.toList.mapM fun c => do
+    have cQ : Q(ℕ) := mkNatLit c
+    let hc : Q($cQ < $n) ← mkDecideProofQ q($cQ < $n)
+    return (q((⟨$cQ, $hc⟩ : Fin $n)) : Q(Fin $n))
   return mkListLitQ (u := .zero) (α := q(Fin $n)) cols
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
@@ -95,7 +98,8 @@ def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(C
 /-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/
 def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (cols : Q(List (Fin $n))) (pivots : Array Nat)
-    (certifier : EntryCertifier) : MetaM Q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols)) := do
+    (certifier : EntryCertifier) :
+    MetaM Q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols)) := do
   have rows : Q(List (List $α)) := U.lit
   let hinc ← mkDecideProofQ q(($cols).SortedLT)
   -- one cell per row: the `Eq.refl` of a zero row beyond the pivots, or the nonzero pivot entry
@@ -153,7 +157,7 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   let aEntries := data.rowOrder.map (entries[·]!)
   have Aσ := mkMatrixViews _cr m n aEntries
   let σ ← mkPerm m data.swaps
-  let cols ← mkPivotList n data.pivot
+  have cols : Q(List (Fin $n)) := ← mkPivotList n data.pivot
   have Lm := L.matrix
   have Aσm := Aσ.matrix
   have Um := U.matrix
