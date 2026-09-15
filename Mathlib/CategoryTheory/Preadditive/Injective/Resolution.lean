@@ -148,7 +148,8 @@ and a morphism `f : Z ⟶ Z'`, this structure contains the data of a morphism
 structure Hom (f : Z ⟶ Z') where
   /-- A morphism between the cocomplexes -/
   hom : I.cocomplex ⟶ I'.cocomplex
-  ι_f_zero_comp_hom_f_zero : I.ι.f 0 ≫ hom.f 0 = ((single₀ C).map f).f 0 ≫ I'.ι.f 0
+  ι_f_zero_comp_hom_f_zero : I.ι.f 0 ≫ hom.f 0 = ((single₀ C).map f).f 0 ≫ I'.ι.f 0 :=
+    by cat_disch
 
 namespace Hom
 

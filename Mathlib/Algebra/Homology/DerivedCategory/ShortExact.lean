@@ -42,7 +42,6 @@ noncomputable def triangleOfSESδ :
     Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
     (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma descShortComplex_triangleOfSESδ :
     dsimp% Q.map (CochainComplex.mappingCone.descShortComplex S) ≫ triangleOfSESδ hS =
@@ -50,7 +49,6 @@ lemma descShortComplex_triangleOfSESδ :
       (Functor.commShiftIso Q 1).hom.app S.X₁ := by
   simp [triangleOfSESδ]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
@@ -68,7 +66,7 @@ lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ
 
 /-- The distinguished triangle in the derived category associated to a short
 exact sequence of cochain complexes. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 
@@ -99,13 +97,12 @@ section map
 variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
   (f : S₁ ⟶ S₂)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
 exact sequences of cochain complexes.
 -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ where
   hom₁ := Q.map f.τ₁
   hom₂ := Q.map f.τ₂
@@ -123,5 +120,39 @@ noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ 
     exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm).comm₃
 
 end map
+
+section degreewiseSplit
+
+open CochainComplex HomologicalComplex
+
+variable (σ : ∀ n, (S.map (eval C _ n)).Splitting)
+
+@[reassoc]
+lemma triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp :
+    triangleOfSESδ (S := S)
+      (shortExact_of_degreewise_shortExact _ (fun n ↦ (σ n).shortExact)) =
+    Q.map (homOfDegreewiseSplit S σ) ≫ (Q.commShiftIso (1 : ℤ)).hom.app S.X₁ := by
+  have hS : S.ShortExact := (shortExact_of_degreewise_shortExact _ (fun n ↦ (σ n).shortExact))
+  have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
+  rw [← cancel_epi (Q.map (CochainComplex.mappingCone.descShortComplex S)),
+    descShortComplex_triangleOfSESδ, ← Functor.map_comp_assoc,
+    Q_map_eq_of_homotopy _ (mappingCone.descShortComplexCompHomOfDegreewiseSplitHomotopy S σ)]
+
+/-- If `S` is a short exact sequence of cochain complexes that is degreewise split.
+We have two ways to define a distinguished
+triangle `Q.obj S.X₁ ⟶ Q.obj S.X₂ ⟶ Q.obj S.X₃ ⟶ ...` in the derived category:
+the first triangle corresponds to the image of the distinguished triangle in
+the homotopy category corresponding to the degreewise split short exact sequence,
+and the second triangle follows from the construction which is available for any
+short exact sequence of cochain complexes. This is the canonical isomorphism
+between these two triangles. -/
+@[simps!]
+noncomputable def mapTriangleOfDegreewiseSplitIsotriangleOfSES :
+    DerivedCategory.Q.mapTriangle.obj (triangleOfDegreewiseSplit S σ) ≅
+    triangleOfSES (shortExact_of_degreewise_shortExact _ (fun n ↦ (σ n).shortExact)) :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by
+    simp [triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp σ])
+
+end degreewiseSplit
 
 end DerivedCategory
