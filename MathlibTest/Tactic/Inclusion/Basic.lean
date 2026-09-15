@@ -100,6 +100,14 @@ example {x : ℝ} (hx : x ∈ (⟨1, 2⟩ : Interval Dyadic)) : x + x ≤ 4 := b
 example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc 3 4) :
     x + y ∈ Set.Icc 4 6 := by dyadic_interval
 
+example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc 3 4) :
+    x * y ∈ Set.Icc 3 8 := by dyadic_interval
+
+example {x y : ℝ} (hx : x ∈ Set.Icc (-2) 3) (hy : y ∈ Set.Icc (-5) 7) :
+    x * y ∈ Set.Icc (-15) 21 := by dyadic_interval
+
+example {x y : ℝ} (hx : 3 ≤ x) (hy : 2 ≤ y) : 6 ≤ x * y := by dyadic_interval
+
 example {x : ℝ} (hx : x ∈ Set.Icc (-2) 1) : -x ∈ Set.Icc (-1) 2 := by dyadic_interval
 
 example {x y : ℝ} (hx₀ : 2 ≤ x) (hx₁ : x ≤ 3) (hy₀ : 0 ≤ y) (hy₁ : y ≤ 1) :
@@ -118,6 +126,9 @@ example {x y z : ℝ} (hx : x ∈ Set.Ico 0 1) (hy : y ∈ Set.Ioc 1 2)
 example {x y z : ℝ} (hx₀ : -2 ≤ x) (hx₁ : x ≤ 1) (hy₀ : 1 ≤ y) (hy₁ : y ≤ 3)
     (hz₀ : 4 ≤ z) (hz₁ : z ≤ 5) : x + y - z ∈ Set.Icc (-6) 0 := by dyadic_interval
 
+example {x y z : ℝ} (hx₀ : -2 ≤ x) (hx₁ : x ≤ 3) (hy : y ∈ Set.Icc 1 4)
+    (hz : z ∈ Set.Icc (-1) 2) : x * y + z ∈ Set.Icc (-9) 14 := by dyadic_interval
+
 example {x y : ℝ} (hx₀ : x ≤ 3) (hx₁ : x ≤ 2) (hy₀ : 0 ≤ y) (hy₁ : 1 ≤ y) :
     x - y ≤ 1 := by dyadic_interval
 
@@ -126,6 +137,9 @@ example {x : ℝ} (hx₀ : 1 ≤ x) (hx₁ : x ≤ 2) :
 
 example {x y : ℝ} (hx : x ≤ 1.25) (hy : 0.5 ≤ y) :
     x - y + 2.5 ≤ 3.25 := by dyadic_interval [prec := 2]
+
+example {x y : ℝ} (hx₀ : 1 ≤ x) (hx₁ : x ≤ 2) (hy : y ∈ Set.Icc 0.5 1.25) :
+    x * y + ((1 / 3 : ℚ) : ℝ) ∈ Set.Icc 0.8 2.9 := by dyadic_interval [prec := 12]
 
 end Arithmetic
 
