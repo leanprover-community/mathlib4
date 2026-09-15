@@ -51,7 +51,9 @@ abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   carrier := { a | ∀ m, m ∈ a.coeff.support → f m = i }
   zero_mem' m h := by cases h
   add_mem' {a b} ha hb m h := by
-    classical exact (Finset.mem_union.mp (Finsupp.support_add h)).elim (ha m) (hb m)
+    classical
+    grw [coeff_add, Finsupp.support_add, Finset.mem_union] at h
+    exact h.elim (ha m) (hb m)
   smul_mem' _ _ h := Set.Subset.trans Finsupp.support_smul h
 
 /-- The submodule corresponding to each grade. -/
