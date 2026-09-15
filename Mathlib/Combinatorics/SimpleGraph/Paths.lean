@@ -140,6 +140,15 @@ theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
+@[simp]
+theorem isTrail_concat (hadj : G.Adj v w) :
+    (p.concat hadj).IsTrail ↔ p.IsTrail ∧ s(v, w) ∉ p.edges := by
+  simp_rw [isTrail_def, edges_concat, List.nodup_concat, and_comm]
+
+theorem IsTrail.concat (hp : p.IsTrail) (hadj : G.Adj v w) (hmem : s(v, w) ∉ p.edges) :
+    (p.concat hadj).IsTrail :=
+  isTrail_concat hadj |>.mpr ⟨hp, hmem⟩
+
 theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.IsTrail := by
   simpa [isTrail_def] using h
 
@@ -247,15 +256,16 @@ theorem isPath_of_isSubwalk {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
-theorem concat_isPath_iff {p : G.Walk u v} (h : G.Adj v w) :
+@[simp]
+theorem isPath_concat {p : G.Walk u v} (h : G.Adj v w) :
     (p.concat h).IsPath ↔ p.IsPath ∧ w ∉ p.support := by
-  rw [← (p.concat h).isPath_reverse_iff, ← p.isPath_reverse_iff, reverse_concat, ← List.mem_reverse,
-    ← support_reverse]
-  exact cons_isPath_iff h.symm p.reverse
+  simp_rw [isPath_def, support_concat, ← List.concat_eq_append, List.nodup_concat, and_comm]
+
+@[deprecated (since := "2026-07-15")] alias concat_isPath_iff := isPath_concat
 
 theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
-  (concat_isPath_iff h).mpr ⟨hp, hw⟩
+  (isPath_concat h).mpr ⟨hp, hw⟩
 
 lemma IsPath.take_of_take {n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : n ≤ k) :
     (p.take n).IsPath :=
@@ -1191,24 +1201,29 @@ namespace Walk
 variable {G} {u v : V} {H : SimpleGraph V}
 variable {p : G.Walk u v}
 
-set_option backward.isDefEq.respectTransparency.types false in
-protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
-    (p.transfer H hp).IsPath := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih =>
-    simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
-    exact ⟨ih _ pp.1, pp.2⟩
+@[simp]
+theorem isTrail_transfer (h) : (p.transfer H h).IsTrail ↔ p.IsTrail := by
+  simp [isTrail_def]
 
-set_option backward.isDefEq.respectTransparency.types false in
-protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
-    (q.transfer H hq).IsCycle := by
-  cases q with
-  | nil => simp at qc
-  | cons _ q =>
-    simp only [edges_cons, List.mem_cons, forall_eq_or_imp] at hq
-    simp only [Walk.transfer, cons_isCycle_iff, edges_transfer q hq.2] at qc ⊢
-    exact ⟨qc.1.transfer hq.2, qc.2⟩
+protected alias ⟨_, IsTrail.transfer⟩ := isTrail_transfer
+
+@[simp]
+theorem isPath_transfer (h) : (p.transfer H h).IsPath ↔ p.IsPath := by
+  simp [isPath_def]
+
+protected alias ⟨_, IsPath.transfer⟩ := isPath_transfer
+
+@[simp]
+theorem isCircuit_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCircuit ↔ p.IsCircuit := by
+  simp [isCircuit_def]
+
+protected alias ⟨_, IsCircuit.transfer⟩ := isCircuit_transfer
+
+@[simp]
+theorem isCycle_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCycle ↔ p.IsCycle := by
+  simp [isCycle_def]
+
+protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
 
 end Walk
 

@@ -65,11 +65,11 @@ theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   map_neg _ _
 
 @[simp]
-theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
+theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : (-p).coeff m = -p.coeff m :=
   Finsupp.neg_apply _ _
 
 @[simp, grind =]
-theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
+theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : (p - q).coeff m = p.coeff m - q.coeff m :=
   Finsupp.sub_apply _ _ _
 
 @[simp] lemma support_neg : (-p).support = p.support := by ext; simp
@@ -83,7 +83,7 @@ variable {σ} (p)
 /-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
 removes `d` from the support. -/
 theorem notMem_support_sub_monomial_sub_monomial (d d' : σ →₀ ℕ) (c : R)
-    (hdd' : d ≠ d') (hc : coeff d p = c) :
+    (hdd' : d ≠ d') (hc : p.coeff d = c) :
     d ∉ (p - (monomial d c - monomial d' c)).support := by
   classical
   rw [notMem_support_iff, coeff_sub, coeff_sub, coeff_monomial, coeff_monomial,
@@ -92,7 +92,7 @@ theorem notMem_support_sub_monomial_sub_monomial (d d' : σ →₀ ℕ) (c : R)
 /-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
 leaves the support inside `p.support.erase d ∪ {d'}`. -/
 theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →₀ ℕ) (c : R)
-    (hdd' : d ≠ d') (hc : coeff d p = c) :
+    (hdd' : d ≠ d') (hc : p.coeff d = c) :
     (p - (monomial d c - monomial d' c)).support ⊆ p.support.erase d ∪ {d'} := by
   classical
   intro x hx
@@ -202,8 +202,8 @@ end Eval
 section DegreeOf
 
 theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
-    (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
-    (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
+    (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → f.coeff m = g.coeff m)
+    (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → f.coeff m = g.coeff m) :
     degreeOf x (f - g) < k := by
   rw [degreeOf_lt_iff h]
   grind [degreeOf_lt_iff]

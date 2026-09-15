@@ -85,6 +85,13 @@ protected lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
 lemma pow_four_le_pow_two_of_pow_two_le {a b : R} (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
 
+lemma pow_add_pow_eq_zero_iff_of_even [NoZeroDivisors R]
+    {n : ℕ} (hn : n ≠ 0) (hn' : Even n) (x y : R) :
+    x ^ n + y ^ n = 0 ↔ x = 0 ∧ y = 0 := by
+  obtain ⟨m, rfl⟩ := hn'
+  simp only [pow_add]
+  grind [mul_self_add_mul_self_eq_zero, pow_eq_zero_iff]
+
 end IsOrderedRing
 
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {m n : ℕ}
