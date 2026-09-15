@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-! # Gamma distributions over ℝ
 
@@ -131,6 +132,53 @@ def gammaMeasure (a r : ℝ) : Measure ℝ :=
 lemma isProbabilityMeasure_gammaMeasure {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     IsProbabilityMeasure (gammaMeasure a r) where
   measure_univ := by simp [gammaMeasure, lintegral_gammaPDF_eq_one ha hr]
+
+/-- Every real-power moment of a gamma distribution above the integrability threshold. -/
+theorem integral_rpow_gammaMeasure {a r q : ℝ} (ha : 0 < a) (hr : 0 < r)
+    (haq : 0 < a + q) :
+    (∫ x : ℝ, x ^ q ∂gammaMeasure a r) =
+      r ^ (-q) * Gamma (a + q) / Gamma a := by
+  have hpdf_meas : Measurable (gammaPDF a r) :=
+    (measurable_gammaPDFReal a r).ennreal_ofReal
+  have hpdf_top : ∀ᵐ x : ℝ ∂volume, gammaPDF a r x < ∞ := by
+    filter_upwards with x
+    simp [gammaPDF]
+  rw [gammaMeasure,
+    integral_withDensity_eq_integral_toReal_smul hpdf_meas hpdf_top]
+  have hpdf_nonneg : ∀ x : ℝ, 0 ≤ gammaPDFReal a r x :=
+    gammaPDFReal_nonneg ha hr
+  simp_rw [gammaPDF, ENNReal.toReal_ofReal (hpdf_nonneg _)]
+  simp only [smul_eq_mul]
+  calc
+    (∫ x : ℝ, gammaPDFReal a r x * x ^ q) =
+        ∫ x : ℝ in Ici 0, gammaPDFReal a r x * x ^ q := by
+      rw [← integral_indicator measurableSet_Ici]
+      apply integral_congr_ae
+      filter_upwards with x
+      rw [indicator_apply]
+      split_ifs with hx
+      · rfl
+      · simp only [mem_Ici, not_le] at hx
+        simp [gammaPDFReal, not_le.mpr hx]
+    _ = ∫ x : ℝ in Ioi 0,
+          (r ^ a / Gamma a) * (x ^ (a + q - 1) * exp (-(r * x))) := by
+      rw [integral_Ici_eq_integral_Ioi]
+      apply setIntegral_congr_fun measurableSet_Ioi
+      intro x hx
+      change 0 < x at hx
+      simp only [gammaPDFReal, if_pos hx.le]
+      rw [show a + q - 1 = (a - 1) + q by ring,
+        Real.rpow_add hx (a - 1) q]
+      ring
+    _ = (r ^ a / Gamma a) * ((1 / r) ^ (a + q) * Gamma (a + q)) := by
+      rw [integral_const_mul, integral_rpow_mul_exp_neg_mul_Ioi haq hr]
+    _ = r ^ (-q) * Gamma (a + q) / Gamma a := by
+      rw [one_div, inv_rpow hr.le, ← Real.rpow_neg hr.le]
+      have hrpow : r ^ a * r ^ (-(a + q)) = r ^ (-q) := by
+        rw [← Real.rpow_add hr]
+        congr 1
+        ring
+      rw [div_mul_eq_mul_div, ← mul_assoc, hrpow]
 
 section GammaCDF
 
