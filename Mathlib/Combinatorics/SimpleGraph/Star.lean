@@ -31,7 +31,7 @@ star graph
 
 namespace SimpleGraph
 
-variable {V : Type*} (r : V)
+variable {V W : Type*} (G : SimpleGraph V) (r : V)
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
@@ -102,6 +102,90 @@ lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v
 lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
   simp
+
+@[simp]
+theorem maxDegree_starGraph [Fintype V] [DecidableEq V] (r : V) :
+    (starGraph r).maxDegree = Fintype.card V - 1 :=
+  have : Nonempty V := ⟨r⟩
+  degree_le_maxDegree _ r |>.trans_eq' degree_starGraph_center |>.antisymm' <|
+    Nat.le_sub_one_of_lt <| maxDegree_lt_card_verts _
+
+/-- An equivalence of vertex types lifts to an isomorphism of star graphs. -/
+@[simps toEquiv]
+def starGraphIsoOfEquiv (f : V ≃ W) (v : V) : starGraph v ≃g starGraph (f v) where
+  __ := f
+  map_rel_iff' := by grind [f.injective]
+
+@[simp]
+theorem toEquiv_starGraphIsoOfEquiv (f : V ≃ W) (v : V) : starGraphIsoOfEquiv f v = f :=
+  rfl
+
+@[simp]
+theorem coe_starGraphIsoOfEquiv (f : V ≃ W) (v : V) : ⇑(starGraphIsoOfEquiv f v) = f :=
+  rfl
+
+/-- An embedding between vertex types lifts to an embedding between star graphs. -/
+@[simps toEmbedding]
+def starGraphEmbeddingOfEmbedding (f : V ↪ W) (v : V) : starGraph v ↪g starGraph (f v) where
+  __ := f
+  map_rel_iff' := by simp
+
+@[simp]
+theorem coe_starGraphEmbeddingOfEmbedding (f : V ↪ W) (v : V) :
+    ⇑(starGraphEmbeddingOfEmbedding f v) = f :=
+  rfl
+
+@[simp]
+theorem toEmbedding_starGraphIsoOfEquiv (f : V ≃ W) (v : V) :
+    (starGraphIsoOfEquiv f v).toEmbedding = starGraphEmbeddingOfEmbedding f.toEmbedding v :=
+  rfl
+
+@[simp]
+theorem starGraph_isIndContained_starGraph {v : V} {w : W} :
+    starGraph v ⊴ starGraph w ↔ Nonempty (V ↪ W) := by
+  classical
+  exact ⟨(⟨·.some.toEmbedding⟩), fun ⟨f⟩ ↦ ⟨f.trans <| Equiv.swap w (f v), by dsimp; grind⟩⟩
+
+@[simp]
+theorem starGraph_isContained_starGraph {v : V} {w : W} :
+    starGraph v ⊑ starGraph w ↔ Nonempty (V ↪ W) :=
+  ⟨(⟨·.some.toEmbedding⟩), (starGraph_isIndContained_starGraph.mpr · |>.isContained)⟩
+
+@[simp]
+theorem nonempty_starGraph_iso_starGraph {v : V} {w : W} :
+    Nonempty (starGraph v ≃g starGraph w) ↔ Nonempty (V ≃ W) := by
+  classical
+  exact ⟨(⟨·.some⟩), fun ⟨f⟩ ↦ ⟨f.trans <| .swap w (f v), by grind [f.injective]⟩⟩
+
+/-- There's a copy of the star graph centered at every vertex. -/
+@[simps toHom]
+def starGraphCopyNeighborSet (v : V) : Copy (starGraph (none : Option (G.neighborSet v))) G where
+  toHom.toFun
+  | none => v
+  | some u => u
+  toHom.map_rel' := by grind [mem_neighborSet, adj_symm]
+  injective' _ := by grind [RelHom.coeFn_mk, notMem_neighborSet_self]
+
+@[simp]
+theorem coe_starGraphCopyNeighborSet (v : V) :
+    ⇑(G.starGraphCopyNeighborSet v) = (·.map (↑) |>.getD v) := by
+  ext u
+  cases u <;> rfl
+
+theorem starGraph_isContained_of_card_le_degree_add_one [Finite W] (r : W) {v : V}
+    [Fintype (G.neighborSet v)] (h : Nat.card W ≤ G.degree v + 1) : starGraph r ⊑ G := by
+  refine (G.starGraphCopyNeighborSet v).isContained.trans' (starGraph_isContained_starGraph.mpr ?_)
+  have := Fintype.ofFinite W
+  exact Function.Embedding.nonempty_of_card_le <| by simpa using h
+
+variable {G} in
+theorem starGraph_isContained_iff_card_le_maxDegree_add_one [Nonempty V] [Fintype V] [Finite W]
+    [DecidableRel G.Adj] {r : W} : starGraph r ⊑ G ↔ Nat.card W ≤ G.maxDegree + 1 := by
+  have ⟨v, hv⟩ := G.exists_maximal_degree_vertex
+  refine ⟨fun h ↦ ?_, (G.starGraph_isContained_of_card_le_degree_add_one r <| hv ▸ ·)⟩
+  classical
+  have := Fintype.ofFinite W
+  grw [Nat.card_eq_fintype_card, ← h.maxDegree_mono, maxDegree_starGraph, ← le_tsub_add]
 
 theorem starGraph_inl_unitMk : starGraph (.inl ()) = completeBipartiteGraph Unit V := by
   grind
