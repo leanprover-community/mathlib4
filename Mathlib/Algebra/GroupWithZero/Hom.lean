@@ -79,7 +79,7 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F α β` into an actual
 `MonoidWithZeroHom`. -/
 def MonoidWithZeroHom.ofClass [FunLike F α β] [MonoidWithZeroHomClass F α β]
-    (f : F) : α →*₀ β := { (f : α →* β), (f : ZeroHom α β) with }
+    (f : F) : α →*₀ β := { (.ofClass f : α →* β), (f : ZeroHom α β) with }
 
 namespace MonoidWithZeroHom
 
@@ -126,7 +126,7 @@ initialize_simps_projections MonoidWithZeroHom (toFun → apply)
 
 @[simp] lemma toZeroHom_coe (f : α →*₀ β) : (f.toZeroHom : α → β) = f := rfl
 
-lemma toMonoidHom_coe (f : α →*₀ β) : f.toMonoidHom.toFun = f := rfl
+@[simp] lemma coe_toMonoidHom (f : α →*₀ β) : ⇑(f : α →* β) = f := rfl
 
 @[ext] lemma ext ⦃f g : α →*₀ β⦄ (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 

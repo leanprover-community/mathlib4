@@ -188,7 +188,7 @@ theorem comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_comp_addMonoidHom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
+theorem toAddMonoidHom_comp (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
   rfl
 
 @[simp]

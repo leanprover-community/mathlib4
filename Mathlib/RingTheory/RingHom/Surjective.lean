@@ -58,10 +58,11 @@ theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective 
 theorem surjective_localizationPreserves :
     LocalizationPreserves surjective := by
   introv R H x
-  obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (M.map f) x
+  obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ :=
+    IsLocalization.exists_mk'_eq (M.map (MonoidHom.ofClass f)) x
   obtain ⟨y, rfl⟩ := H x
   use IsLocalization.mk' R' y ⟨s, hs⟩
-  rw [IsLocalization.map_mk']
+  simp [IsLocalization.map_mk']
 
 /-- `R →+* S` is surjective if there exists a set `{ r }` that spans `R` such that
   `Rᵣ →+* Sᵣ` is surjective. -/
@@ -87,7 +88,8 @@ for every prime ideal `P` of `S`. -/
 theorem surjective_localRingHom_of_surjective {R S : Type u} [CommRing R] [CommRing S]
     (f : R →+* S) (h : Function.Surjective f) (P : Ideal S) [P.IsPrime] :
     Function.Surjective (Localization.localRingHom (P.comap f) P f rfl) :=
-  have : IsLocalization (Submonoid.map f (Ideal.comap f P).primeCompl) (Localization.AtPrime P) :=
+  have : IsLocalization (Submonoid.map (MonoidHom.ofClass f) (Ideal.comap f P).primeCompl)
+      (Localization.AtPrime P) :=
     (Submonoid.map_comap_eq_of_surjective h P.primeCompl).symm ▸ Localization.isLocalization
   surjective_localizationPreserves _ _ _ _ h
 

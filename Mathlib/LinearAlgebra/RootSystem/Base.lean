@@ -109,6 +109,7 @@ private lemma map_aux_pos [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f�
   have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
   have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
     rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
+    simp
   aesop
 
 private lemma map_aux_neg [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f₂ : ι₂ → M₂}
@@ -118,6 +119,7 @@ private lemma map_aux_neg [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f�
   have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
   have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
     rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
+    simp
   aesop
 
 /-- The push forward of a base along an equivalence. -/

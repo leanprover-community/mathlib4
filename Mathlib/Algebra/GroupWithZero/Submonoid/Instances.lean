@@ -21,24 +21,24 @@ namespace MonoidWithZeroHom
 variable {G H : Type*}
 
 instance [MulZeroOneClass G] [MulZeroOneClass H] (f : G →*₀ H) :
-    MulZeroOneClass (MonoidHom.mrange f) where
+    MulZeroOneClass f.toMonoidHom.mrange where
   zero := ⟨0, 0, by simp⟩
   zero_mul _ := Subtype.ext (zero_mul _)
   mul_zero _ := Subtype.ext (mul_zero _)
 
 @[simp]
 lemma val_mrange_zero [MulZeroOneClass G] [MulZeroOneClass H] (f : G →*₀ H) :
-    ((0 : MonoidHom.mrange f) : H) = 0 :=
+    ((0 : f.toMonoidHom.mrange) : H) = 0 :=
   rfl
 
 instance [MulZeroOneClass G] [MonoidWithZero H] (f : G →*₀ H) :
-    MonoidWithZero (MonoidHom.mrange f) where
+    MonoidWithZero f.toMonoidHom.mrange where
 
 instance [MulZeroOneClass G] [CommMonoidWithZero H] (f : G →*₀ H) :
-    CommMonoidWithZero (MonoidHom.mrange f) where
+    CommMonoidWithZero f.toMonoidHom.mrange where
 
 instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
-    GroupWithZero (MonoidHom.mrange f) where
+    GroupWithZero f.toMonoidHom.mrange where
   inv := fun x ↦ ⟨x⁻¹, by
     obtain ⟨y, hy⟩ := x.prop
     use y⁻¹
@@ -51,10 +51,10 @@ instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
     simpa using mul_inv_cancel₀ h
 
 instance [GroupWithZero G] [CommGroupWithZero H] (f : G →*₀ H) :
-    CommGroupWithZero (MonoidHom.mrange f) where
+    CommGroupWithZero f.toMonoidHom.mrange where
 
 lemma mker_inverse [CommGroupWithZero H] :
-    MonoidHom.mker (MonoidWithZero.inverse (M := H)) = ⊥ := by
+    (MonoidWithZero.inverse (M := H)).toMonoidHom.mker = ⊥ := by
   ext
   simp
 

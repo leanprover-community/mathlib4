@@ -87,7 +87,7 @@ variable [NonUnitalRingHomClass F α β]
 `NonUnitalRingHom`. This is declared as the default coercion from `F` to `α →ₙ+* β`. -/
 @[coe]
 def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
-  { (f : α →ₙ* β), (f : α →+ β) with }
+  { (f : α →ₙ* β), (.ofClass f : α →+ β) with }
 
 /-- Any type satisfying `NonUnitalRingHomClass` can be cast into `NonUnitalRingHom` via
 `NonUnitalRingHomClass.toNonUnitalRingHom`. -/
@@ -128,10 +128,18 @@ theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁⟩, h₂, h₃⟩ : α →ₙ+* β) : α →ₙ* β) = ⟨f, h₁⟩ :=
   rfl
 
-theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
+attribute [coe] toAddMonoidHom
+
+instance : Coe (α →ₙ+* β) (α →+ β) := ⟨toAddMonoidHom⟩
 
 @[simp]
-theorem coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃) :
+theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑(f : α →+ β) = f := rfl
+
+@[simp]
+theorem ofClass_eq_toAddMonoidHom (f : α →ₙ+* β) : (.ofClass f : α →+ β) = f := rfl
+
+@[simp]
+theorem toAddMonoidHom_mk (f : α → β) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁⟩, h₂, h₃⟩ : α →ₙ+* β) : α →+ β) = ⟨⟨f, h₂⟩, h₃⟩ :=
   rfl
 
@@ -161,7 +169,7 @@ theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
   ext fun _ => rfl
 
-theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
+theorem toAddMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) :=
@@ -199,7 +207,7 @@ theorem id_apply (x : α) : NonUnitalRingHom.id α x = x :=
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_id : (NonUnitalRingHom.id α : α →+ α) = AddMonoidHom.id α :=
+theorem toAddMonoidHom_id : (NonUnitalRingHom.id α : α →+ α) = .id α :=
   rfl
 
 @[simp]
@@ -227,8 +235,8 @@ theorem comp_apply (g : β →ₙ+* γ) (f : α →ₙ+* β) (x : α) : g.comp f
   rfl
 
 @[simp]
-theorem coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
-    AddMonoidHom.mk ⟨g ∘ f, (g.comp f).map_zero'⟩ (g.comp f).map_add' = (g : β →+ γ).comp f :=
+theorem toAddMonoidHom_comp (g : β →ₙ+* γ) (f : α →ₙ+* β) :
+    (g.comp f : α → γ) = (g : β →+ γ).comp f :=
   rfl
 
 @[simp]
@@ -337,7 +345,7 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α 
 `RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def RingHomClass.toRingHom (f : F) : α →+* β :=
-  { (f : α →* β), (f : α →+ β) with }
+  { (.ofClass f : α →* β), (.ofClass f : α →+ β) with }
 
 /-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
 instance : CoeTC F (α →+* β) :=
@@ -389,28 +397,45 @@ theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
     ((f : α →+* β) : α → β) = f :=
   rfl
 
+attribute [coe] RingHom.toMonoidWithZeroHom
+
+instance : Coe (α →+* β) (α →*₀ β) :=
+  ⟨RingHom.toMonoidWithZeroHom⟩
+
+@[simp]
+theorem coe_toMonoidWithZeroHom (f : α →+* β) : ⇑(f : α →*₀ β) = f := rfl
+
 attribute [coe] RingHom.toMonoidHom
 
 instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
 
 @[simp]
-theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
-  rfl
-
-theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
+theorem ofClass_eq_toMonoidHom (f : α →+* β) : (.ofClass f : α →* β) = f :=
   rfl
 
 @[simp]
-theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
+theorem toMonoidHom_toMonoidWithZeroHom (f : α →+* β) : ((f : α →*₀ β) : α →* β) = f :=
   rfl
 
 @[simp]
-theorem toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
+theorem coe_toMonoidHom (f : α →+* β) : ⇑(f : α →* β) = f :=
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
+theorem toMonoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
+  rfl
+
+@[simp]
+theorem ofClass_eq_toAddMonoidHom (f : α →+* β) : (.ofClass f : α →+ β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toAddMonoidHom (f : α →+* β) : ⇑(f : α →+ β) = f :=
+  rfl
+
+@[simp]
+theorem toAddMonoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →+ β) = ⟨⟨f, h₃⟩, h₄⟩ :=
   rfl
 
@@ -449,10 +474,13 @@ theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
   ext fun _ => rfl
 
-theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
+theorem toMonoidWithZeroHom_injective : Injective (fun f : α →+* β => (f : α →*₀ β)) := fun _ _ h =>
+  ext <| DFunLike.congr_fun (F := α →*₀ β) h
+
+theorem toAddMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
   ext <| DFunLike.congr_fun (F := α →+ β) h
 
-theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
+theorem toMonoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 /-- Ring homomorphisms map zero to zero. -/
@@ -530,11 +558,11 @@ theorem id_apply (x : α) : RingHom.id α x = x :=
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
+theorem toAddMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
   rfl
 
 @[simp]
-theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
+theorem toMonoidHom_id : (id α : α →* α) = MonoidHom.id α :=
   rfl
 
 variable {_ : NonAssocSemiring γ}
@@ -631,7 +659,7 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
+theorem toAddMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext
   rfl

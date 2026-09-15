@@ -655,7 +655,7 @@ theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
 @[simp]
 theorem liftNC_one {g_hom R : Type*} [NonAssocSemiring k] [One G] [Semiring R] [FunLike g_hom G R]
     [OneHomClass g_hom G R] (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 := by
-  simp only [one_def, liftNC_single, AddMonoidHom.coe_coe, map_one, mul_one]
+  simp only [one_def, liftNC_single, AddMonoidHom.coe_ofClass, map_one, mul_one]
 
 end Mul
 
@@ -697,7 +697,7 @@ theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R]
   conv_rhs => rw [← sum_coeff_single a, ← sum_coeff_single b]
   simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
   refine Finsupp.sum_congr fun y hy ↦ Finsupp.sum_congr fun x _hx ↦ ?_
-  simp only [AddMonoidHom.coe_coe, map_mul]
+  simp only [AddMonoidHom.coe_ofClass, map_mul]
   rw [mul_assoc, ← mul_assoc (f (y • b.coeff x)), h_comm hy, mul_assoc, mul_assoc]
 
 end DistribSMul
@@ -1056,9 +1056,9 @@ theorem ringHom_ext {f g : SkewMonoidAlgebra k G →+* k} (h₁ : ∀ b, f (sing
     (h_of : ∀ a, f (single a 1) = g (single a 1)) : f = g :=
   have {a : G} {b₁ b₂ : k} : (single 1 b₁) * (single a b₂) = single a (b₁ * b₂) := by
     simp [single_mul_single, one_mul, one_smul]
-  RingHom.coe_addMonoidHom_injective <|
-    addHom_ext fun a b ↦ by rw [← mul_one b, ← this, AddMonoidHom.coe_coe f,
-      AddMonoidHom.coe_coe g, f.map_mul, g.map_mul, h₁, h_of]
+  RingHom.toAddMonoidHom_injective <|
+    addHom_ext fun a b ↦ by rw [← mul_one b, ← this, AddMonoidHom.coe_ofClass f,
+      AddMonoidHom.coe_ofClass g, f.map_mul, g.map_mul, h₁, h_of]
 
 end singleOneRingHom
 

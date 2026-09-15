@@ -94,8 +94,7 @@ def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
   haveI H : ∀ (y : Algebra.algebraMapSubmonoid B A⁰),
       IsUnit (((algebraMap B₂ L₂).comp σ) (y : B)) := by
     rintro ⟨_, x, hx, rfl⟩
-    simpa only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgHom.commutes,
-      isUnit_iff_ne_zero, ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _),
+    simpa [map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _),
       ← IsScalarTower.algebraMap_apply] using nonZeroDivisors.ne_zero hx
   haveI H_eq : (IsLocalization.lift (S := L) H).comp (algebraMap K L) = (algebraMap K L₂) := by
     apply IsLocalization.ringHom_ext A⁰

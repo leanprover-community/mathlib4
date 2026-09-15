@@ -67,16 +67,17 @@ then there exists some `m : M` such that `m • x` falls in the
 adjoin of `IsLocalization.finsetIntegerMultiple _ s` over `R`.
 -/
 theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S']
-    [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S)) S'] (x : S) (s : Finset S')
-    (hx : algebraMap S S' x ∈ Algebra.adjoin R (s : Set S')) :
-    ∃ m : M, m • x ∈
-      Algebra.adjoin R
-        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
+    [IsScalarTower R S S'] [IsLocalization (M.map (MonoidHom.ofClass (algebraMap R S))) S']
+    (x : S) (s : Finset S') (hx : algebraMap S S' x ∈ Algebra.adjoin R (s : Set S')) :
+    ∃ m : M, m • x ∈ Algebra.adjoin R (IsLocalization.finsetIntegerMultiple
+    (M.map (MonoidHom.ofClass (algebraMap R S))) s : Set S) := by
   obtain ⟨⟨_, a, ha, rfl⟩, e⟩ :=
-    IsLocalization.exists_smul_mem_of_mem_adjoin (M.map (algebraMap R S)) x s (Algebra.adjoin R _)
+    IsLocalization.exists_smul_mem_of_mem_adjoin
+      (M.map (MonoidHom.ofClass (algebraMap R S))) x s (Algebra.adjoin R _)
       Algebra.subset_adjoin (by rintro _ ⟨a, _, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
   refine ⟨⟨a, ha⟩, ?_⟩
-  simpa only [Submonoid.smul_def, algebraMap_smul] using e
+  rw [Submonoid.smul_def] at e
+  simpa [-smul_eq_mul, algebraMap_smul] using e
 
 /-- Finite-type can be checked on a standard covering of the target. -/
 lemma Algebra.FiniteType.of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)

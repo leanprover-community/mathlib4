@@ -130,7 +130,7 @@ theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) =
 @[to_additive (attr := simp)]
 theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F M α]
     (f : F) (u : Units M) :
-    f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
+    f ↑u⁻¹ = (f u)⁻¹ := ((.ofClass f : M →* α).comp (Units.coeHom M)).map_inv u
 
 end DivisionMonoid
 
@@ -206,7 +206,7 @@ variable [Monoid M] [Monoid N]
 
 @[to_additive]
 theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
-  rcases h with ⟨y, rfl⟩; exact (Units.map (f : M →* N) y).isUnit
+  rcases h with ⟨y, rfl⟩; exact (Units.map (.ofClass f : M →* N) y).isUnit
 
 @[to_additive]
 theorem unit_map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) :
@@ -267,7 +267,7 @@ variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
   whenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
-class IsLocalHom (f : F) : Prop where
+class IsLocalHom (f : R → S) : Prop where
   /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 
@@ -291,12 +291,6 @@ theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
 theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
-
--- see note [lower instance priority]
-@[instance 100]
-theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
-    IsLocalHom (f : R →* S) :=
-  ⟨IsLocalHom.map_nonunit (f := f)⟩
 
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=

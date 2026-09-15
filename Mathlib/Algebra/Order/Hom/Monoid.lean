@@ -130,7 +130,7 @@ into an actual `OrderMonoidHom`. This is declared as the default coercion from `
   This is declared as the default coercion from `F` to `α →+o β`. -/]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
     α →*o β :=
-  { (f : α →* β) with monotone' := OrderHomClass.monotone f }
+  { (.ofClass f : α →* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
@@ -287,6 +287,11 @@ instance : MonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 
+attribute [coe] OrderMonoidHom.toMonoidHom OrderAddMonoidHom.toAddMonoidHom
+
+@[to_additive]
+instance : Coe (α →*o β) (α →* β) := ⟨toMonoidHom⟩
+
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
@@ -301,7 +306,7 @@ theorem coe_mk (f : α →* β) (h) : (OrderMonoidHom.mk f h : α → β) = f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_coe (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f := by
+theorem mk_toMonoidHom (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f := by
   ext
   rfl
 
@@ -311,7 +316,7 @@ def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
 @[to_additive (attr := simp)]
-theorem coe_monoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
+theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -372,7 +377,7 @@ theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a =
   rfl
 
 @[to_additive]
-theorem coe_comp_monoidHom (f : β →*o γ) (g : α →*o β) :
+theorem toMonoidHom_comp (f : β →*o γ) (g : α →*o β) :
     (f.comp g : α →* γ) = (f : β →* γ).comp g :=
   rfl
 
@@ -465,7 +470,7 @@ section OrderedCommMonoid
 variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneClass β}
 
 @[to_additive (attr := simp)]
-theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f :=
+theorem ofClass_eq_toMonoidHom (f : α →*o β) : (.ofClass f : α →* β) = f :=
   rfl
 
 @[to_additive (attr := simp)]

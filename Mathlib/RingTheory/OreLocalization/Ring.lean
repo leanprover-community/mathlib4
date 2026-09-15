@@ -143,7 +143,7 @@ def universalHom : R[S⁻¹] →+* T :=
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
-      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
+      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_ofClass,
         Submonoid.smul_def]
       simp only [mul_inv_rev, map_mul, map_add, map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
@@ -166,7 +166,7 @@ theorem universalHom_commutes {r : R} : universalHom f fS hf (numeratorHom r) = 
 
 theorem universalHom_unique (φ : R[S⁻¹] →+* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalHom f fS hf :=
-  RingHom.coe_monoidHom_injective <| universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
+  RingHom.toMonoidHom_injective <| universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
 
 end UMP
 

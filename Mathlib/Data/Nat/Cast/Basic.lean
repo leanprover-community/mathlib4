@@ -100,7 +100,7 @@ theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n :
 theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
     (f : F) (h : f 1 = 1) :
     ∀ n : ℕ, f n = n :=
-  eq_natCast' ((f : A →+ B).comp <| Nat.castAddMonoidHom _) (by simpa)
+  eq_natCast' ((.ofClass f : A →+ B).comp <| Nat.castAddMonoidHom _) (by simpa)
 
 theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
     (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
