@@ -26,7 +26,7 @@ These are mostly just carried over from the polynomial ring `R[X]`.
   `R`, a unique factorization monoid, `R[s]` is a unique factorization monoid as well.
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 variable {R S : Type*}
 
@@ -41,7 +41,7 @@ namespace Polynomial
 variable (R) in
 /-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
 between `R[X]` and `R[s]` given by sending `X` to `s`. -/
-def algEquivOfTranscendental (h : Transcendental R s) :
+@[expose] def algEquivOfTranscendental (h : Transcendental R s) :
     R[X] ≃ₐ[R] R[s] :=
   AlgEquiv.ofBijective (aeval (s : R[s])) <| by
     refine ⟨transcendental_iff_injective.mp ?_, ?_⟩
