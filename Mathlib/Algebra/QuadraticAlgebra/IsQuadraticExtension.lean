@@ -49,8 +49,8 @@ theorem IsQuadraticExtension.exists_algEquiv_quadraticAlgebra :
   have : Nontrivial R := nontrivial_of_invariantBasisNumber R
   have : Nontrivial A := Module.nontrivial_of_finrank_pos
     (by rw [IsQuadraticExtension.finrank_eq_two R A]; norm_num)
-  obtain ⟨e, he⟩ := Module.Free.exists_basis_apply_zero_eq
-    (IsQuadraticExtension.finrank_eq_two R A) Module.Free.exists_linearMap_apply_one_eq_one
+  obtain ⟨e, he⟩ := Module.Free.isUnimodular_one.exists_basis_zero_eq
+    (IsQuadraticExtension.finrank_eq_two R A)
   refine ⟨-Algebra.norm R (e 1), Algebra.trace R A (e 1),
     ⟨(AlgEquiv.ofBijective (QuadraticAlgebra.lift ⟨(e 1), ?_⟩) ?_).symm⟩⟩
   · simpa [← sq, ← Algebra.algebraMap_eq_smul_one, neg_add_eq_sub]
