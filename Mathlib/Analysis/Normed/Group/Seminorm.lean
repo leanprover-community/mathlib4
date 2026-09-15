@@ -427,6 +427,11 @@ end CommGroup
 
 end GroupSeminorm
 
+@[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")]
+protected alias _root_.AddGroupSeminorm.smul_apply := smul_apply
+
 namespace NonarchAddGroupSeminorm
 
 section AddGroup
