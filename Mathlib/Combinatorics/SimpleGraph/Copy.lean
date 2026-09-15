@@ -223,6 +223,11 @@ theorem Copy.coe_deleteEdges (f : Copy G H) (s : Set (Sym2 V)) (t : Set (Sym2 W)
   rfl
 
 @[simp]
+theorem Copy.deleteEdges_toHom (f : Copy G H) (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+    (f.deleteEdges s t h).toHom = f.toHom.deleteEdges s t h :=
+  rfl
+
+@[simp]
 theorem Embedding.toCopy_deleteEdges (f : G ↪g H) (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
     (f.deleteEdges s t h).toCopy = f.toCopy.deleteEdges s t h.subset :=
   rfl

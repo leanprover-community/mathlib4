@@ -137,6 +137,11 @@ theorem Embedding.coe_deleteEdges (f : G ↪g G') (s : Set (Sym2 V)) (t : Set (S
     ⇑(f.deleteEdges s t h) = f :=
   rfl
 
+@[simp]
+theorem Embedding.toHom_deleteEdges (f : G ↪g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+    (f.deleteEdges s t h).toHom = f.toHom.deleteEdges s t h.subset :=
+  rfl
+
 /-- Lift an isomorphism between graphs to an isomorphism between the graphs after deleting a set of
 edges. -/
 @[simps toEquiv]
@@ -148,6 +153,11 @@ def Iso.deleteEdges (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h : S
 @[simp]
 theorem Iso.coe_deleteEdges (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
     ⇑(f.deleteEdges s t h) = f :=
+  rfl
+
+@[simp]
+theorem Iso.toHom_deleteEdges (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+    (f.deleteEdges s t h).toHom = f.toHom.deleteEdges s t h.subset :=
   rfl
 
 @[simp]
