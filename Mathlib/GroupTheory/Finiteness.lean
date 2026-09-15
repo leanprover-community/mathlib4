@@ -512,13 +512,6 @@ theorem AddMonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] :
     AddMonoid.FG M ↔ Monoid.FG (Multiplicative M) :=
   isMulFG_multiplicative_iff.symm
 
-instance AddMonoid.fg_of_monoid_fg [Monoid.FG M] : AddMonoid.FG (Additive M) :=
-  inferInstance
-
-instance Monoid.fg_of_addMonoid_fg {M : Type*} [AddMonoid M] [AddMonoid.FG M] :
-    Monoid.FG (Multiplicative M) :=
-  inferInstance
-
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
 @[to_additive]
@@ -553,11 +546,6 @@ theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := b
 theorem Monoid.fg_of_surjective {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M')
     (hf : Function.Surjective f) : Monoid.FG M' := by
   exact IsMulFG.of_surjective f hf
-
-@[to_additive]
-instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') :
-    Monoid.FG (MonoidHom.mrange f) :=
-  Monoid.fg_of_surjective f.mrangeRestrict f.mrangeRestrict_surjective
 
 open FreeMonoid in
 @[to_additive]
@@ -729,10 +717,6 @@ if it is finitely generated as an additive monoid. -/]
 theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G := by
   rfl
 
-@[to_additive]
-instance Monoid.fg_of_group_fg [Group.FG G] : Monoid.FG G :=
-  Group.fg_iff_monoid_fg.1 ‹_›
-
 @[to_additive (attr := simp)]
 theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG := by
   rfl
@@ -742,16 +726,6 @@ theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
 
 theorem AddGroup.fg_iff_mul_fg : AddGroup.FG H ↔ Group.FG (Multiplicative H) :=
   isMulFG_multiplicative_iff.symm
-
-instance AddGroup.fg_of_group_fg [Group.FG G] : AddGroup.FG (Additive G) :=
-  inferInstance
-
-instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) :=
-  inferInstance
-
-@[to_additive]
-instance (priority := 100) Group.fg_of_finite [Finite G] : Group.FG G := by
-  infer_instance
 
 @[to_additive]
 theorem Group.fg_of_surjective {G' : Type*} [Group G'] [hG : Group.FG G] {f : G →* G'}
@@ -792,10 +766,6 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite :
     exact Group.fg_of_surjective hφ
 
 @[to_additive]
-instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range :=
-  Group.fg_of_surjective f.rangeRestrict_surjective
-
-@[to_additive]
 instance Group.closure_finset_fg (s : Finset G) : Group.FG (Subgroup.closure (s : Set G)) := by
   exact Subgroup.isMulFG_iff.mpr ⟨s, rfl⟩
 
@@ -813,42 +783,6 @@ instance QuotientGroup.fg [Group.FG G] (N : Subgroup G) [Subgroup.Normal N] : Gr
   Group.fg_of_surjective <| QuotientGroup.mk'_surjective N
 
 end QuotientGroup
-
-namespace Prod
-
-variable [Monoid N] {G' : Type*} [Group G']
-
-open Monoid in
-/-- The product of two finitely generated monoids is finitely generated. -/
-@[to_additive /-- The product of two finitely generated additive monoids is finitely generated. -/]
-instance instMonoidFG [FG M] [FG N] : FG (M × N) :=
-  inferInstance
-
-open Group in
-/-- The product of two finitely generated groups is finitely generated. -/
-@[to_additive /-- The product of two finitely generated additive groups is finitely generated. -/]
-instance instGroupFG [FG G] [FG G'] : FG (G × G') :=
-  inferInstance
-
-end Prod
-
-namespace Pi
-
-variable {ι : Type*} [Finite ι]
-
-/-- Finite product of finitely generated monoids is finitely generated. -/
-@[to_additive /-- Finite product of finitely generated additive monoids is finitely generated. -/]
-instance instMonoidFG {M : ι → Type*} [∀ i, Monoid (M i)] [∀ i, Monoid.FG (M i)] :
-    Monoid.FG (∀ i, M i) :=
-  inferInstance
-
-/-- Finite product of finitely generated groups is finitely generated. -/
-@[to_additive /-- Finite product of finitely generated additive groups is finitely generated. -/]
-instance instGroupFG {G : ι → Type*} [∀ i, Group (G i)] [∀ i, Group.FG (G i)] :
-    Group.FG (∀ i, G i) :=
-  inferInstance
-
-end Pi
 
 namespace AddMonoid
 
