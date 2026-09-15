@@ -28,7 +28,7 @@ projection `Φ.π : 𝟭 C ⟶ Φ.quotient` along
 ## Main results
 
 * `isIso_toColon_iff` : The morphism `toColon Φ Ψ` is an isomorphism if and only if `Ψ` kills
-quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
+  quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
 
 ## References
 
