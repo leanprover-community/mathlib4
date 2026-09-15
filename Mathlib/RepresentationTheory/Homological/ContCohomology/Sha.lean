@@ -14,8 +14,8 @@ public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functorial
 
 This file defines a general notion of a *Tate–Shafarevich group* of a Galois module (i.e. an abelian
 group `A` equipped with a continuous action of the absolute Galois group `G_K` of a field `K`), as
-the intersection of the kernels of the maps `Hⁿ(G_K, A) → Hⁿ(G_Kᵥ, A)`, induced by the map `G_Kᵥ → G_K`,
-where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing set `V`.
+the intersection of the kernels of the maps `Hⁿ(G_K, A) → Hⁿ(G_Kᵥ, A)`, induced by the map
+`G_Kᵥ → G_K`, where `Kᵥ` is a field extension of `K` for each `v` in an arbitrary indexing set `V`.
 
 ## Main definitions
 
