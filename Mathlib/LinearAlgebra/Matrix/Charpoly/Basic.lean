@@ -113,6 +113,12 @@ lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
   ext i j
   by_cases h : i = j <;> simp [h, charmatrix, diagonal]
 
+lemma charmatrix_mul_map_C_of_mul_eq_mul {A B P : Matrix n n R} (h : A * P = P * B) :
+    charmatrix A * P.map C = P.map C * charmatrix B := by
+  simp only [charmatrix, RingHom.mapMatrix_apply, sub_mul, mul_sub, ← Matrix.map_mul, h]
+  congrm ?_ - _
+  exact Matrix.scalar_comm X commute_X _
+
 lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
@@ -171,6 +177,10 @@ theorem charpoly_reindex (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]
+
+theorem charpoly_submatrix_equiv_self (e : n ≃ m)
+    (M : Matrix m m R) : (M.submatrix e e).charpoly = M.charpoly :=
+  charpoly_reindex e.symm M
 
 lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
     (M.map f).charpoly = M.charpoly.map f := by
@@ -291,6 +301,15 @@ theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
 theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
   simpa using charpoly_units_conj M⁻¹ N
+
+theorem C_det_mul_charpoly_of_mul_eq_mul {A B P : Matrix n n R} (h : A * P = P * B) :
+    C P.det * A.charpoly = C P.det * B.charpoly := by
+  rw [RingHom.map_det, RingHom.mapMatrix_apply, charpoly, charpoly, mul_comm, ← det_mul,
+    charmatrix_mul_map_C_of_mul_eq_mul h, det_mul]
+
+theorem charpoly_eq_of_mul_eq_mul [IsDomain R] {A B P : Matrix n n R}
+    (hP : P.det ≠ 0) (h : A * P = P * B) : A.charpoly = B.charpoly :=
+  mul_left_cancel₀ (C_ne_zero.mpr hP) (C_det_mul_charpoly_of_mul_eq_mul h)
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
