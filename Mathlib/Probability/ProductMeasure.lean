@@ -466,7 +466,7 @@ lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonCl
 
 lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
-  measurable := by fun_prop
+  aemeasurable := (measurable_pi_apply i).aemeasurable
   map_eq := by
     ext s hs
     have : @Function.eval ι X i =

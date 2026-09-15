@@ -87,12 +87,10 @@ theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MulAction G α] [SMulInvar
 theorem ergodicSMul_iterateMulAct {f : α → α} (hf : Measurable f) :
     ErgodicSMul (IterateMulAct f) α μ ↔ Ergodic f μ := by
   simp only [ergodicSMul_iff, smulInvariantMeasure_iterateMulAct, hf]
-  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ⟨?_⟩⟩, fun h ↦ ⟨h.1, ?_⟩⟩
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ .of_preimage_eq hf h₁ fun s htm hs ↦ ?_, fun h ↦ ⟨h.1, ?_⟩⟩
+  · refine h₂ htm fun n ↦ ?_
+    exact (Function.IsFixedPt.preimage_iterate hs n.val).eventuallyEq
   · intro s hm hs
-    refine h₂ hm fun n ↦ ?_
-    nth_rewrite 2 [← Function.IsFixedPt.preimage_iterate hs n.val]
-    rfl
-  · intro s hm hs
-    exact h.quasiErgodic.aeconst_set₀ hm.nullMeasurableSet <| hs (.mk 1)
+    exact h.quasiErgodic.aeconst_set hm.nullMeasurableSet <| hs (.mk 1)
 
 end MeasureTheory
