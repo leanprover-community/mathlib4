@@ -186,6 +186,12 @@ end Lp
 
 section Inhomogeneous
 
+/-- An inhomogeneous version of the `eLpNorm`;
+agreeing with it on `1 ≤ p`, equal to `∫ ‖f a‖^p ∂μ` for `0 < p ≤ 1`
+and  `μ (Function.support fun x ↦ ‖f x‖ₑ)` for `p = 0`.
+
+Under this modification, the triangle inequality holds for all `p` and
+is thus somethimes more convenient. -/
 def inhmgELpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   open scoped Classical in
