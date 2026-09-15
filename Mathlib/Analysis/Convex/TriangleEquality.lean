@@ -96,7 +96,7 @@ theorem norm_sum_eq_iff_pairwise_sameRay :
       le_antisymm (norm_sum_le _ _) (by linarith [norm_add_le (v a) (∑ j ∈ t, v j)])
     refine ⟨ih ht, ?_⟩
     have hat : SameRay ℝ (v a) (∑ j ∈ t, v j) := sameRay_iff_norm_add.2 (by rw [h, ht])
-    exact fun j hj ↦ hat.trans (sameRay_sum (ih ht) hj).symm
+    exact fun j hj ↦ hat.trans (sameRay_sum_right_of_pairwise (ih ht) hj).symm
       fun h ↦ Or.inr <| eq_zero_of_sum_norm_eq_zero (by simpa [h] using ht.symm) hj
 
 omit [StrictConvexSpace ℝ E] in
@@ -105,7 +105,7 @@ the same normalization as the sum. -/
 lemma normalize_eq_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ on v)) (hi : i ∈ s)
     (hvi : v i ≠ 0) :
     NormedSpace.normalize (v i) = NormedSpace.normalize (∑ j ∈ s, v j) :=
-  (sameRay_sum hp hi).normalize_eq hvi (sum_ne_zero_of_pairwise_sameRay hp hi hvi)
+  (sameRay_sum_right_of_pairwise hp hi).normalize_eq hvi (sum_ne_zero_of_pairwise_sameRay hp hi hvi)
 
 /-- **Triangle equality** for nonzero summands: the norm of the sum equals the sum of the norms
 exactly when all the summands have the same normalization. -/
