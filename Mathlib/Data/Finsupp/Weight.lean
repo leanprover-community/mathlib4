@@ -58,7 +58,6 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 - For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
   there are finitely many `f : σ →₀ ℕ` of bounded degree.
 
-
 ## TODO
 
 * Maybe `Finsupp.weight w` and `Finsupp.degree` should have similar types,
@@ -290,6 +289,18 @@ lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R] [CanonicallyOrd
     Monotone (Finsupp.degree (σ := σ) (R := R)) :=
   fun _ _ e ↦
     (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
+
+lemma degree_strictMono [PartialOrder R] [CanonicallyOrderedAdd R] [AddLeftStrictMono R] :
+    StrictMono (Finsupp.degree (σ := σ) (R := R)) := by
+  classical
+  intro a b h
+  obtain ⟨i, hi⟩ : ∃ i, a i < b i := by
+    by_contra! h'
+    exact h.ne (ext fun i ↦ (h.le i).eq_of_not_lt (h' i))
+  have h₀ := mem_support_iff.mpr (zero_le.trans_lt hi).ne'
+  rw [degree_apply, degree_apply, Finset.sum_subset (support_mono h.le) fun _ _ ↦
+    notMem_support_iff.mp, ← b.support.add_sum_erase _ h₀, ← b.support.add_sum_erase _ h₀]
+  exact add_lt_add_of_lt_of_le hi (Finset.sum_le_sum fun j _ ↦ h.le j)
 
 lemma exists_le_degree_eq {σ : Type*} (f : σ →₀ ℕ) (n : ℕ) (hn : n ≤ f.degree) :
     ∃ g ≤ f, g.degree = n := by
