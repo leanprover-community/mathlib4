@@ -176,7 +176,7 @@ section AddCommGroup
 instance : Zero 𝓓^{n}(Ω, F) where
   zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
 
-instance : IsZeroApply 𝓓^{n}(Ω, F) E F where
+instance : IsZeroApply 𝓓^{n}(Ω, F) where
   zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
@@ -185,7 +185,7 @@ instance : Add 𝓓^{n}(Ω, F) where
   add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
     tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-instance : IsAddApply 𝓓^{n}(Ω, F) E F where
+instance : IsAddApply 𝓓^{n}(Ω, F) where
   add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
@@ -193,7 +193,7 @@ instance : IsAddApply 𝓓^{n}(Ω, F) E F where
 instance : Neg 𝓓^{n}(Ω, F) where
   neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
-instance : IsNegApply 𝓓^{n}(Ω, F) E F where
+instance : IsNegApply 𝓓^{n}(Ω, F) where
   neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
@@ -202,7 +202,7 @@ instance : Sub 𝓓^{n}(Ω, F) where
   sub f g := ⟨f - g, f.contDiff.sub g.contDiff, f.hasCompactSupport.sub g.hasCompactSupport,
     tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-instance : IsSubApply 𝓓^{n}(Ω, F) E F where
+instance : IsSubApply 𝓓^{n}(Ω, F) where
   sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
@@ -213,7 +213,7 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
     tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    IsSMulApply R 𝓓^{n}(Ω, F) E F where
+    IsSMulApply R 𝓓^{n}(Ω, F) where
   smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
