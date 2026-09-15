@@ -13,7 +13,6 @@ public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.Tactic.Group
 
 /-!
 # Schreier Graphs and Cayley Graphs
@@ -480,7 +479,7 @@ def quotientRightMul (g : M) : M ⧸ N → M ⧸ N :=
       rw [QuotientGroup.eq]
       rw [QuotientGroup.leftRel_eq] at h
       convert ‹N.Normal›.conj_mem _ h g using 1
-      group)
+      simp [mul_inv_rev, mul_assoc])
 
 /-- Right multiplication by `g⁻¹` sends the coset of `m` to the coset of `m * g⁻¹`. -/
 @[simp]
@@ -532,8 +531,7 @@ theorem SchreierCosetGraph.asAutom_mul (g h : M) :
     induction x using QuotientGroup.induction_on with
     | H m =>
       change QuotientGroup.mk (m * (g * h)⁻¹) = QuotientGroup.mk (m * h⁻¹ * g⁻¹)
-      congr 1
-      group
+      rw [mul_inv_rev, mul_assoc]
   refine Prefunctor.ext' h_obj (fun X Y ⟨s, hs⟩ ↦ ?_)
   exact Subtype.ext (by rw [SchreierGraph.homOfEq_val]; rfl)
 
@@ -560,7 +558,7 @@ theorem SchreierCosetGraph.exists_asAutom_obj_eq (x y : SchreierCosetGraph ι N)
       refine ⟨b⁻¹ * a, ?_⟩
       apply SchreierGraph.ext
       dsimp [SchreierCosetGraph.asAutom]
-      group
+      rw [mul_inv_rev, inv_inv, ← mul_assoc, mul_inv_cancel, one_mul]
 
 /-- Vertex-transitivity of Cayley graphs: right multiplication carries any vertex to any
 other. This is the special case `N = ⊥` of `SchreierCosetGraph.exists_asAutom_obj_eq`. -/
