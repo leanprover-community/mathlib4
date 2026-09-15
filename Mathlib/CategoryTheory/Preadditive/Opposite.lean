@@ -98,10 +98,10 @@ theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
 /-- `G ⟶ G` and `(End G)ᵐᵒᵖ` are isomorphic as `(End G)ᵐᵒᵖ`-modules. -/
 @[simps]
 def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End G)ᵐᵒᵖ] (End G)ᵐᵒᵖ where
-  toFun f := ⟨f⟩
+  toFun f := ⟨.of f⟩
   map_add' := by cat_disch
   map_smul' := by cat_disch
-  invFun := fun ⟨f⟩ => f
+  invFun := fun ⟨f⟩ => f.asHom
   left_inv := by cat_disch
   right_inv := by cat_disch
 

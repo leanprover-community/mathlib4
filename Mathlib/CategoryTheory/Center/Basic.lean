@@ -37,15 +37,18 @@ variable {C}
 /-- The action of the center of a category on an object. (This is necessary as
 `NatTrans.app x X` is syntactically an endomorphism of `(𝟭 C).obj X`
 rather than of `X`.) -/
-abbrev app (x : CatCenter C) (X : C) : X ⟶ X := NatTrans.app x X
+abbrev app (x : CatCenter C) (X : C) : X ⟶ X := x.asHom.app X
+
+@[simp]
+lemma app_one (X : C) : app 1 X = 𝟙 X := rfl
 
 @[ext]
-lemma ext (x y : CatCenter C) (h : ∀ (X : C), x.app X = y.app X) : x = y :=
-  NatTrans.ext (funext h)
+lemma ext (x y : CatCenter C) (h : ∀ (X : C), x.app X = y.app X) : x = y := by
+  cat_disch
 
 @[reassoc]
 lemma naturality (z : CatCenter C) {X Y : C} (f : X ⟶ Y) :
-    f ≫ z.app Y = z.app X ≫ f := NatTrans.naturality z f
+    f ≫ z.app Y = z.app X ≫ f := NatTrans.naturality z.asHom f
 
 @[reassoc]
 lemma mul_app' (x y : CatCenter C) (X : C) : (x * y).app X = y.app X ≫ x.app X := rfl

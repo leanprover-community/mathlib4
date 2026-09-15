@@ -103,11 +103,12 @@ def smul : Γ(X, U) →+* End Γ(M, U) :=
   (M.val.obj (.op U)).smul
 
 @[simp]
-lemma smul_apply (r : Γ(X, U)) (x : Γ(M, U)) : (M.smul r).hom x = r • x := rfl
+lemma smul_apply (r : Γ(X, U)) (x : Γ(M, U)) : (M.smul r).asHom.hom x = r • x := rfl
 
 @[reassoc (attr := simp)]
 lemma map_comp_smul (i : U ⟶ V) (r : Γ(X, V)) :
-    M.smul r ≫ M.presheaf.map i.op = M.presheaf.map i.op ≫ M.smul (X.presheaf.map i.op r) := by
+    (M.smul r).asHom ≫ M.presheaf.map i.op =
+      M.presheaf.map i.op ≫ (M.smul (X.presheaf.map i.op r)).asHom := by
   ext
   simp
 
@@ -351,14 +352,14 @@ def restrictAppIso (M : Y.Modules) (U : X.Opens) : Γ(M.restrict f, U) ≅ Γ(M,
 
 @[elementwise (attr := simp), reassoc (attr := simp)]
 lemma smul_restrictAppIso_hom (M : Y.Modules) (U : X.Opens) (r : Γ(X, U)) :
-    dsimp% (M.restrict f).smul r ≫ (M.restrictAppIso f U).hom =
-      (M.restrictAppIso f U).hom ≫ M.smul ((f.appIso U).inv r) :=
+    dsimp% ((M.restrict f).smul r).asHom ≫ (M.restrictAppIso f U).hom =
+      (M.restrictAppIso f U).hom ≫ (M.smul ((f.appIso U).inv r)).asHom :=
   rfl
 
 @[elementwise (attr := simp), reassoc (attr := simp)]
 lemma smul_restrictAppIso_inv (M : Y.Modules) (U : X.Opens) (r : Γ(Y, f ''ᵁ U)) :
-    M.smul r ≫ (M.restrictAppIso f U).inv =
-      (M.restrictAppIso f U).inv ≫ (M.restrict f).smul ((f.appIso U).hom r) := by
+    (M.smul r).asHom ≫ (M.restrictAppIso f U).inv =
+      (M.restrictAppIso f U).inv ≫ ((M.restrict f).smul ((f.appIso U).hom r)).asHom := by
   simp [← cancel_mono (M.restrictAppIso f U).hom]
 
 @[elementwise (attr := simp), reassoc (attr := simp)]

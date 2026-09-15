@@ -80,10 +80,22 @@ section End
 variable {R : Type w}
 
 instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
-  inferInstanceAs <| Module R (X ⟶ X)
+  (End.addEquiv (X := X)).module R
+
+@[simp]
+lemma _root_.CategoryTheory.End.smul_asHom [Semiring R] [Linear R C] {X : C} (r : R) (e : End X) :
+    (r • e).asHom = r • e.asHom := rfl
+
+/-- The linear equivalence `End X ≃ₗ[R] (X ⟶ X)` when `X` is
+an object of a `R`-linear category. -/
+@[implicit_reducible, simps]
+def _root_.CategoryTheory.End.linearEquiv [Semiring R] [Linear R C] {X : C} :
+    End X ≃ₗ[R] (X ⟶ X) where
+  toAddEquiv := End.addEquiv
+  map_smul' := by simp
 
 instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
-  Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _
+  Algebra.ofModule (by cat_disch) (by cat_disch)
 
 end End
 

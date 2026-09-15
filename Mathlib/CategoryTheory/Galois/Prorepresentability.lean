@@ -296,10 +296,11 @@ local notation "F'" => F ⋙ FintypeCat.incl
 /-- The endomorphisms of `F` are isomorphic to the limit over the fibers of `F` on all
 Galois objects. -/
 noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
-  let i1 : End F ≃ End F' :=
-    (FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful FintypeCat.incl) C).homEquiv
+  let i1 : End F ≃* End F' :=
+    (FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful FintypeCat.incl) C).mulEquivEnd _
   let i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
-    (yoneda.obj (F ⋙ FintypeCat.incl)).mapIso (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).op
+    End.homEquiv.toIso.trans
+      ((yoneda.obj _).mapIso (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).op)
   let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅
       limit ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}) :=
     colimitCoyonedaHomIsoLimit' (incl F) F'
@@ -308,18 +309,18 @@ noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
     Types.limitEquivSections (incl F ⋙ (F ⋙ FintypeCat.incl) ⋙ uliftFunctor.{u₁, u₂})
   let i5 : ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections ≃ (incl F ⋙ F').sections :=
     (Types.sectionsEquiv (incl F ⋙ F')).symm
-  i1.trans <| i2.toEquiv.trans <| i3.toEquiv.trans <| i4.trans i5
+  i1.toEquiv.trans <| i2.toEquiv.trans <| i3.toEquiv.trans <| i4.trans i5
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
-    (endEquivSectionsFibers F f).val A = f.app A A.pt := by
+    (endEquivSectionsFibers F f).val A = f.asHom.app A A.pt := by
   dsimp [endEquivSectionsFibers, Types.sectionsEquiv]
   erw [Types.limitEquivSections_apply, colimitCoyonedaHomIsoLimit'_π_apply]
   change (((FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful
-      FintypeCat.incl) C).homEquiv) f).app A
+      FintypeCat.incl) C).homEquiv) f.asHom).app A
     (((colimit.ι _ _) ≫ (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).hom).app
-      A _) = f.app A A.pt
+      A _) = f.asHom.app A A.pt
   simp
   rfl
 
@@ -347,9 +348,9 @@ noncomputable def endEquivAutGalois : End F ≃ AutGalois F :=
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
-    F.map (AutGalois.π F A (endEquivAutGalois F f)).hom A.pt = f.app A A.pt := by
+    F.map (AutGalois.π F A (endEquivAutGalois F f)).asIso.hom A.pt = f.asHom.app A A.pt := by
   dsimp [endEquivAutGalois, AutGalois.π_apply]
-  change F.map ((((sectionsFunctor _).map (autIsoFibers F).inv) _).val A).hom A.pt = _
+  change F.map ((((sectionsFunctor _).map (autIsoFibers F).inv) _).val A).asIso.hom A.pt = _
   dsimp [autIsoFibers]
   simp only [endEquivSectionsFibers_π]
   erw [evaluationEquivOfIsGalois_symm_fiber]
@@ -357,13 +358,14 @@ lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem endEquivAutGalois_mul (f g : End F) :
-    (endEquivAutGalois F) (g ≫ f) = (endEquivAutGalois F g) * (endEquivAutGalois F f) := by
+    (endEquivAutGalois F) (f * g) = (endEquivAutGalois F g) * (endEquivAutGalois F f) := by
   refine AutGalois.ext F (fun A ↦ evaluation_aut_injective_of_isConnected F A A.pt ?_)
-  simp only [map_mul, endEquivAutGalois_π, Aut.Aut_mul_def, NatTrans.comp_app, Iso.trans_hom]
-  simp only [map_comp, FintypeCat.comp_apply, endEquivAutGalois_π]
-  change f.app A (g.app A A.pt) =
-    (f.app A ≫ F.map ((AutGalois.π F A) ((endEquivAutGalois F) g)).hom) A.pt
-  rw [← f.naturality, FintypeCat.comp_apply, endEquivAutGalois_π]
+  simp only [map_mul, endEquivAutGalois_π, Aut.mul_asIso, Iso.trans_hom,
+    End.mul_asHom, NatTrans.comp_app, FintypeCat.comp_apply,
+    map_comp, FintypeCat.comp_apply, endEquivAutGalois_π]
+  change f.asHom.app A (g.asHom.app A A.pt) =
+    (f.asHom.app A ≫ F.map ((AutGalois.π F A) ((endEquivAutGalois F) g)).asIso.hom) A.pt
+  rw [← f.asHom.naturality, FintypeCat.comp_apply, endEquivAutGalois_π]
 
 /-- The monoid isomorphism between endomorphisms of `F` and the (multiplicative opposite of the)
 limit of automorphism groups of all Galois objects. -/
@@ -371,7 +373,7 @@ noncomputable def endMulEquivAutGalois : End F ≃* (AutGalois F)ᵐᵒᵖ :=
   MulEquiv.mk (Equiv.trans (endEquivAutGalois F) MulOpposite.opEquiv) (by simp)
 
 lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
-    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).hom A.2 = f.app A A.pt :=
+    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).asIso.hom A.2 = f.asHom.app A A.pt :=
   endEquivAutGalois_π F f A
 
 /-- Any endomorphism of a fiber functor is a unit. -/
@@ -380,7 +382,7 @@ theorem FibreFunctor.end_isUnit (f : End F) : IsUnit f :=
     (Group.isUnit ((endMulEquivAutGalois F) f))
 
 /-- Any endomorphism of a fiber functor is an isomorphism. -/
-instance FibreFunctor.end_isIso (f : End F) : IsIso f := by
+instance FibreFunctor.end_isIso (f : End F) : IsIso f.asHom := by
   rw [← isUnit_iff_isIso]
   exact FibreFunctor.end_isUnit F f
 
@@ -388,12 +390,10 @@ instance FibreFunctor.end_isIso (f : End F) : IsIso f := by
 (the multiplicative opposite of) the limit over the automorphism groups of
 the Galois objects. -/
 noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
-  toFun := MonoidHom.comp (endMulEquivAutGalois F) (Aut.toEnd F)
-  invFun t := asIso ((endMulEquivAutGalois F).symm t)
+  toFun := MonoidHom.comp (endMulEquivAutGalois F) Aut.toEnd
+  invFun t := .of (asIso ((endMulEquivAutGalois F).symm t).asHom)
   left_inv t := by
-    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply,
-      MulEquiv.symm_apply_apply]
-    exact Aut.ext rfl
+    cat_disch
   right_inv t := by
     simp only [MonoidHom.coe_comp, MonoidHom.coe_coe]
     exact (MulEquiv.eq_symm_apply (endMulEquivAutGalois F)).mp rfl
@@ -402,8 +402,8 @@ noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
-    F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a =
-      f.hom.app A a := by
+    F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).asIso.hom a =
+      f.asIso.hom.app A a := by
   dsimp [autMulEquivAutGalois, endMulEquivAutGalois]
   rw [endEquivAutGalois_π]
   rfl
@@ -411,8 +411,8 @@ lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma autMulEquivAutGalois_symm_app (x : AutGalois F) (A : C) [IsGalois A] (a : F.obj A) :
-    ((autMulEquivAutGalois F).symm ⟨x⟩).hom.app A a =
-      F.map (AutGalois.π F ⟨A, a, inferInstance⟩ x).hom a := by
+    ((autMulEquivAutGalois F).symm ⟨x⟩).asIso.hom.app A a =
+      F.map (AutGalois.π F ⟨A, a, inferInstance⟩ x).asIso.hom a := by
   rw [← autMulEquivAutGalois_π, MulEquiv.apply_symm_apply]
   rfl
 
@@ -438,11 +438,11 @@ private instance FiberFunctor.isPretransitive_of_isConnected' (X : C) [IsConnect
   obtain ⟨a, ha⟩ := hs x
   obtain ⟨b, hb⟩ := hs y
   have : MulAction.IsPretransitive (Aut F) (F.obj A) := isPretransitive_of_isGalois F A
-  obtain ⟨σ, (hσ : σ.hom.app A a = b)⟩ := MulAction.exists_smul_eq (Aut F) a b
+  obtain ⟨σ, (hσ : σ.asIso.hom.app A a = b)⟩ := MulAction.exists_smul_eq (Aut F) a b
   use σ
   rw [← ha, ← hb]
-  change (F.map f ≫ σ.hom.app X) a = F.map f b
-  rw [σ.hom.naturality, FintypeCat.comp_apply, hσ]
+  change (F.map f ≫ σ.asIso.hom.app X) a = F.map f b
+  rw [σ.asIso.hom.naturality, FintypeCat.comp_apply, hσ]
 
 end Specialized
 
@@ -460,9 +460,9 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     let e (Y : C) : F'.obj Y ≃ F.obj Y := (F.obj Y).uSwitchEquiv
     set x' : F'.obj X := (e X).symm x with hx'
     set y' : F'.obj X := (e X).symm y with hy'
-    obtain ⟨g', (hg' : g'.hom.app X x' = y')⟩ := MulAction.exists_smul_eq (Aut F') x' y'
+    obtain ⟨g', (hg' : g'.asIso.hom.app X x' = y')⟩ := MulAction.exists_smul_eq (Aut F') x' y'
     let gapp (Y : C) : F.obj Y ≅ F.obj Y := FintypeCat.equivEquivIso <|
-      (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.app Y)).trans (e Y)
+      (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.asIso.app Y)).trans (e Y)
     let g : F ≅ F := NatIso.ofComponents gapp <| fun {X Y} f ↦ by
       ext x
       dsimp [gapp, e]
@@ -470,8 +470,7 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
       rw [← Functor.comp_map]
       erw [← NatTrans.naturality_apply, FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]
       rfl
-    refine ⟨g, show (gapp X).hom x = y from ?_⟩
-    simp [gapp, ← hx', hg', hy', Equiv.apply_symm_apply]
+    exact ⟨.of g, by simp [mulAction_def, g, gapp, ← hx', hg', hy']⟩
 
 end General
 

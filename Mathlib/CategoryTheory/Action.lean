@@ -101,19 +101,19 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/
 def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x where
-  toFun f := Functor.Elements.homMk f
-  invFun f := ⟨f.hom, f.map_val⟩
+  toFun f := .of (Functor.Elements.homMk f)
+  invFun f := ⟨f.asHom.hom, f.asHom.map_val⟩
   map_mul' _ _ := rfl
 
 @[simp]
 theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
-    ((stabilizerIsoEnd M x) f).hom = f :=
+    ((stabilizerIsoEnd M x) f).asHom.hom = f :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp 1100]
 theorem stabilizerIsoEnd_symm_apply (f : End _) :
-    (stabilizerIsoEnd M x).symm f = ⟨f.hom, f.map_val⟩ :=
+    (stabilizerIsoEnd M x).symm f = ⟨f.asHom.hom, f.asHom.map_val⟩ :=
   rfl
 
 variable {M}
