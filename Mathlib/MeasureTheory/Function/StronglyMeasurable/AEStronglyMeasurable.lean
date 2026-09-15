@@ -543,15 +543,15 @@ protected theorem real_toNNReal {f : α → ℝ} (hf : AEStronglyMeasurable f μ
 
 theorem _root_.aestronglyMeasurable_indicator_iff [Zero β] {s : Set α} (hs : MeasurableSet s) :
     AEStronglyMeasurable (indicator s f) μ ↔ AEStronglyMeasurable f (μ.restrict s) := by
-  constructor
-  · intro h
-    exact (h.mono_measure Measure.restrict_le_self).congr (indicator_ae_eq_restrict hs)
-  · intro h
-    refine ⟨indicator s (h.mk f), h.stronglyMeasurable_mk.indicator hs, ?_⟩
+  constructor <;> intro h
+  · exact h.restrict.congr (indicator_ae_eq_restrict hs.nullMeasurableSet)
+  · refine ⟨indicator s (h.mk f), h.stronglyMeasurable_mk.indicator hs, ?_⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (h.mk f) :=
-      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs).symm)
+      (indicator_ae_eq_restrict hs.nullMeasurableSet).trans
+        (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs.nullMeasurableSet).symm)
     have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (h.mk f) :=
-      (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
+      (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).trans
+        (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 
 theorem _root_.aestronglyMeasurable_indicator_iff₀
@@ -744,28 +744,26 @@ lemma exists_stronglyMeasurable_range_subset {α β : Type*}
     filter_upwards [h_mem, hff'] with x hx hx'
     exact Eq.symm <| (f' ⁻¹' s).piecewise_eq_of_mem f' _ (by simpa [hx'] using! hx)
 
-theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
-    (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (μ.restrict s))
-    (hg : AEStronglyMeasurable g (μ.restrict sᶜ)) :
+theorem piecewise {s : Set α} [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ)
+    (hf : AEStronglyMeasurable f (μ.restrict s)) (hg : AEStronglyMeasurable g (μ.restrict sᶜ)) :
     AEStronglyMeasurable (s.piecewise f g) μ := by
-  refine ⟨s.piecewise (hf.mk f) (hg.mk g),
-    StronglyMeasurable.piecewise hs hf.stronglyMeasurable_mk hg.stronglyMeasurable_mk, ?_⟩
+  classical
+  have ⟨t, ht, hst⟩ := hs
+  refine ⟨t.piecewise (hf.mk f) (hg.mk g),
+    StronglyMeasurable.piecewise ht hf.stronglyMeasurable_mk hg.stronglyMeasurable_mk, ?_⟩
+  suffices h : s.piecewise f g =ᵐ[μ] s.piecewise (hf.mk f) (hg.mk g) by
+    filter_upwards [h, eventuallyEqSet_iff.1 hst] with x hxf hxt
+    rw [hxf]
+    by_cases hx : x ∈ s
+    · simp [hx, hxt.1 hx]
+    · simp [hx, (not_iff_not.2 hxt).1 hx]
   refine ae_of_ae_restrict_of_ae_restrict_compl s ?_ ?_
-  · have h := hf.ae_eq_mk
-    rw [Filter.EventuallyEq, ae_restrict_iff' hs] at h
-    rw [ae_restrict_iff' hs]
-    filter_upwards [h] with x hx
-    intro hx_mem
-    simp only [hx_mem, Set.piecewise_eq_of_mem, hx hx_mem]
-  · have h := hg.ae_eq_mk
-    rw [Filter.EventuallyEq, ae_restrict_iff' hs.compl] at h
-    rw [ae_restrict_iff' hs.compl]
-    filter_upwards [h] with x hx
-    intro hx_mem
-    rw [Set.mem_compl_iff] at hx_mem
-    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_notMem, hx hx_mem]
+  · filter_upwards [hf.ae_eq_mk, ae_restrict_mem₀ hs] with x hxf hxs
+    simpa [hxs]
+  · filter_upwards [hg.ae_eq_mk, ae_restrict_mem₀ hs.compl] with x hxg hxs
+    simpa [notMem_of_mem_compl hxs]
 
-theorem piecewise_iff {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+theorem piecewise_iff {s : Set α} [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ) :
     AEStronglyMeasurable (s.piecewise f g) μ ↔
       AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable g (μ.restrict sᶜ) := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.piecewise hs hg⟩
