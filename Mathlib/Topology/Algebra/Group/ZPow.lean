@@ -26,7 +26,7 @@ section ZPow
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
-  | Int.negSucc n => by simpa using (continuous_pow (n + 1)).fun_inv
+  | Int.negSucc n => by simpa using (continuous_pow (n + 1) (M := G)).fun_inv
 
 instance AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [IsTopologicalAddGroup A] : ContinuousConstSMul ℤ A :=
