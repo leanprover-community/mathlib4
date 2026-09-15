@@ -78,6 +78,12 @@ example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
     assumption
   exact h
 
+-- `rwa` only supports a single hypothesis as location, so the linter must not fire here.
+#guard_msgs in
+example (P : ℕ → Prop) (a b : ℕ) (hab : a = b) (h : P a) : P a := by
+  rw [hab] at h ⊢
+  assumption
+
 -- `rwa` doesn't support `(config := ...)`, so the linter must not fire here.
 #guard_msgs in
 example (a b c : ℕ) (h₁ : a = b) (h₂ : b = c) : a = c := by
