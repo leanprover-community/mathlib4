@@ -312,7 +312,8 @@ lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X
     · rintro x ⟨hx₁, hx₂⟩
       obtain ⟨i, hi, hxi⟩ := Set.mem_iUnion₂.mp (ht hx₁)
       exact Set.mem_iUnion₂.mpr ⟨i, hi, by simpa [*]⟩
-    · aesop (add simp Set.subset_def)
+    · rw [Set.subset_def]
+      simp +contextual
 
 section CompactSpace
 

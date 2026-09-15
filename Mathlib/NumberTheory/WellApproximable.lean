@@ -239,8 +239,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     exact isOpen_thickening
   have hE₁ : ∀ p, E = A p ∪ B p ∪ C p := by
     intro p
-    simp only [E, A, B, C, addWellApproximable, ← blimsup_or_eq_sup, ← and_or_left, ← sup_eq_union,
-      sq]
+    simp only [E, A, B, C, addWellApproximable, ← blimsup_or_eq_sup, ← and_or_left, sq]
     congr
     ext n
     tauto
