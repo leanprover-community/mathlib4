@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer, Yue Sun
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 
@@ -235,6 +236,9 @@ theorem isHamiltonianCycle_transfer [Finite α] {H : SimpleGraph α} {p : G.Walk
 
 alias ⟨_, IsHamiltonianCycle.transfer⟩ := isHamiltonianCycle_transfer
 
+lemma isHamiltonianCycle_cycleGraph {n : ℕ} : (cycleGraph.cycle n).IsHamiltonianCycle :=
+  isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨cycleGraph.isCycle_cycle, by simp⟩
+
 end Walk
 
 variable [Fintype α]
@@ -297,5 +301,23 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
   refine hp.isHamiltonian_tail.isPath.isTrail.not_mem_support_of_not_reachable
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
+
+theorem isHamiltonian_iff_cycleGraph_isContained (h : 2 < Fintype.card α) :
+    G.IsHamiltonian ↔ cycleGraph (Fintype.card α) ⊑ G := by
+  refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩
+  · obtain ⟨a, p, hp⟩ := h' (by grind)
+    exact cycleGraph_isContained_iff h |>.mpr ⟨a, p, hp.isCycle, hp.length_eq⟩
+  · obtain ⟨a, p, hp₁, hp₂⟩ := cycleGraph_isContained_iff h |>.mp h'
+    exact fun _ ↦ ⟨a, p, Walk.isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨hp₁, hp₂⟩⟩
+
+@[simp]
+theorem isHamiltonian_cycleGraph {n : ℕ} (hn : 2 < n) : (cycleGraph n).IsHamiltonian :=
+  isHamiltonian_iff_cycleGraph_isContained (by simp [hn]) |>.mpr <|
+    Fintype.card_fin _ ▸ IsContained.rfl
+
+@[simp]
+theorem isHamiltonian_top (h : 2 < Fintype.card α) : (completeGraph α).IsHamiltonian :=
+  isHamiltonian_iff_cycleGraph_isContained h |>.mpr <|
+    isContained_top_iff.mpr <| Function.Embedding.nonempty_of_card_le (by simp)
 
 end SimpleGraph
