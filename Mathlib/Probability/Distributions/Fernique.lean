@@ -377,7 +377,6 @@ lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ
 alias lintegral_closedBall_diff_exp_logRatio_mul_sq_le :=
   lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Metric in
 lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
@@ -421,7 +420,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_
     rw [← ae_iff_prob_eq_one ?_] at ha
-    · rw [eventuallyEq_comm, ae_eq_univ]
+    · refine (ae_eq_univ.2 ?_).symm
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]
@@ -608,7 +607,8 @@ theorem exists_integrable_exp_sq_of_map_rotation_eq_self [IsFiniteMeasure μ]
     calc (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4)))
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹)
         • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := by
-      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
+      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul,
+        (ContinuousLinearMap.rotation (-(π / 4))).continuous.aemeasurable]
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹) • (μ.prod μ) := by rw [h_rot]
     _ = μ'.prod μ' := by
       simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]

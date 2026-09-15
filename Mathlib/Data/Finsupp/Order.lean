@@ -24,15 +24,20 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
-public section
-
-noncomputable section
-
 open Finset
 
-variable {ι κ α β : Type*}
+public noncomputable section
+
+variable {ι κ α β M : Type*}
 
 namespace Finsupp
+
+@[simp] lemma support_mapDomain_of_nonneg [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+    [DecidableEq β] {x : α →₀ M} (hx : 0 ≤ x) (f : α → β) :
+    (mapDomain f x).support = x.support.image f := by
+  ext b
+  simp [mapDomain_apply, Finsupp.sum, single_apply]
+  grind [Finset.sum_eq_zero_iff_of_nonneg, Finsupp.le_def]
 
 /-! ### Order structures -/
 
@@ -70,7 +75,7 @@ theorem sum_pos' (h : ∀ i ∈ f.support, 0 ≤ g i (f i)) (hf : ∃ i ∈ f.su
 end IsOrderedCancelAddMonoid
 
 section Preorder
-variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
+variable [Preorder α] {i : ι} {a b : α}
 
 @[simp, gcongr] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single
@@ -293,7 +298,7 @@ lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
   by_cases! hy : y ∉ Set.range f
   · simp [mapDomain_of_notMem_range _ _ hy]
   · obtain ⟨x, rfl⟩ := hy
-    simp [mapDomain_apply h]
+    simp [h]
 
 lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by

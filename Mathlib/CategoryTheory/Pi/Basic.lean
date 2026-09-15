@@ -75,7 +75,6 @@ def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
 variable (I)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between
 pulling back a grading along the identity function,
 and the identity functor. -/
@@ -90,7 +89,6 @@ variable {I}
 variable {K : Type w₂}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism comparing between
 pulling back along two successive functions, and
 pulling back along their composition
@@ -105,7 +103,6 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
@@ -265,7 +262,6 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
@@ -358,7 +354,6 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/

@@ -7,7 +7,6 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
 meta import Lean.Data.Json.FromToJson.Extra
 public import Lean.Message
@@ -210,12 +209,13 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Basic),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data), -- split this up further?
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Algebra.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Array),
 
-  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Data),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Basic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
@@ -224,6 +224,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Logic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Trans),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Init),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Basic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
@@ -242,6 +243,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
 
   (`Mathlib.Logic, `Batteries),
+  (`Mathlib.Logic, `Mathlib.Basic),
   -- TODO: should the next import direction be flipped?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
@@ -267,13 +269,14 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 
   (`Mathlib.Testing, `Batteries),
   -- TODO: this next import should be eliminated.
-  (`Mathlib.Testing, `Mathlib.GroupTheory),
-  (`Mathlib.Testing, `Mathlib.Control),
   (`Mathlib.Testing, `Mathlib.Algebra),
+  (`Mathlib.Testing, `Mathlib.Basic),
+  (`Mathlib.Testing, `Mathlib.Control),
   (`Mathlib.Testing, `Mathlib.Data),
+  (`Mathlib.Testing, `Mathlib.GroupTheory),
+  (`Mathlib.Testing, `Mathlib.Lean),
   (`Mathlib.Testing, `Mathlib.Logic),
   (`Mathlib.Testing, `Mathlib.Order),
-  (`Mathlib.Testing, `Mathlib.Lean),
   (`Mathlib.Testing, `Mathlib.Tactic),
   (`Mathlib.Testing, `Mathlib.Util),
 ]

@@ -31,7 +31,6 @@
     "Mathlib.Computability",
     "Mathlib.Condensed",
     "Mathlib.FieldTheory",
-    "Mathlib.Geometry",
     "Mathlib.InformationTheory",
     "Mathlib.MeasureTheory",
     "Mathlib.ModelTheory",
@@ -51,6 +50,22 @@
   ],
   "Mathlib.Analysis.Calculus": [
     "Mathlib.AlgebraicTopology"
+  ],
+  "Mathlib.Basic": [
+    "Mathlib.AlgebraicGeometry",
+    "Mathlib.AlgebraicTopology",
+    "Mathlib.Analysis",
+    "Mathlib.Computability",
+    "Mathlib.Condensed",
+    "Mathlib.FieldTheory",
+    "Mathlib.Geometry.Euclidean",
+    "Mathlib.Geometry.Group",
+    "Mathlib.Geometry.Manifold",
+    "Mathlib.Geometry.RingedSpace",
+    "Mathlib.InformationTheory",
+    "Mathlib.ModelTheory",
+    "Mathlib.RepresentationTheory",
+    "Mathlib.Testing"
   ],
   "Mathlib.CategoryTheory": [
     "Mathlib.AlgebraicGeometry",
@@ -75,9 +90,7 @@
     "Mathlib.Geometry.Manifold",
     "Mathlib.Geometry.RingedSpace",
     "Mathlib.InformationTheory",
-    "Mathlib.MeasureTheory",
     "Mathlib.ModelTheory",
-    "Mathlib.Probability",
     "Mathlib.RepresentationTheory",
     "Mathlib.Testing"
   ],
@@ -87,7 +100,6 @@
     "Mathlib.CategoryTheory",
     "Mathlib.Condensed",
     "Mathlib.FieldTheory",
-    "Mathlib.Geometry",
     "Mathlib.InformationTheory",
     "Mathlib.MeasureTheory",
     "Mathlib.ModelTheory",
@@ -339,7 +351,6 @@
     "Mathlib.AlgebraicGeometry",
     "Mathlib.Computability",
     "Mathlib.Condensed",
-    "Mathlib.Geometry",
     "Mathlib.InformationTheory",
     "Mathlib.ModelTheory",
     "Mathlib.Probability",

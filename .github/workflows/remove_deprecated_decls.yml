@@ -21,6 +21,9 @@ on:
         default: false
         type: boolean
 
+env:
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+
 jobs:
   build:
     name: Remove outdated deprecated declarations
@@ -204,7 +207,7 @@ jobs:
         type: 'stream'
         topic: 'Mathlib `remove outdated deprecated declarations`'
         content: |
-          Reminder: #${{ steps.find-pr.outputs.pr }} is still open; this has prevented [the automatic
+          Reminder: #${{ steps.find-pr.outputs.number }} is still open; this has prevented [the automatic
           deprecation workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           from creating a new PR.
 

@@ -76,7 +76,6 @@ lemma rpow_eq_exp_mul_log (x : ℝ≥0∞) (y : ℝ) : x ^ y = exp (y * log x) :
 
 section OrderIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ENNReal.log` and its inverse `EReal.exp` are an order isomorphism between `ℝ≥0∞` and
 `EReal`. -/
 noncomputable

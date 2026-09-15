@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Prod
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
@@ -252,5 +253,21 @@ lemma exists_basis_of_base [IsKilling K L] (b : (rootSystem H).Base) :
         contrapose! this
         exact ⟨⟨χ, this⟩, hij, LinearMap.ext fun x ↦ by simp [hχ]⟩ }
   exact ⟨B, rfl, by simp [B]⟩
+
+open scoped Classical in
+/-- Lie algebras with equivalent root systems are equivalent. -/
+def equivOfRootSystemEquiv {L₂ : Type*} [LieRing L₂] [LieAlgebra K L₂] [FiniteDimensional K L₂]
+    {H₂ : LieSubalgebra K L₂} [H₂.IsCartanSubalgebra] [IsTriangularizable K H₂ L₂]
+    [IsSimple K L] [IsSimple K L₂]
+    (e : (rootSystem H).Equiv (rootSystem H₂)) :
+    L ≃ₗ⁅K⁆ L₂ :=
+  letI b := (rootSystem H).nonempty_base.some
+  letI B₁ := (exists_basis_of_base b).choose
+  letI B₂ := (exists_basis_of_base (b.map e)).choose
+  have hA : B₁.A.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) = B₂.A := by
+    have hB₁ : B₁.A = _ := (exists_basis_of_base b).choose_spec.1
+    have hB₂ : B₂.A = _ := (exists_basis_of_base (b.map e)).choose_spec.1
+    simp [hB₁, hB₂, b.map_equiv_cartanMatrix e]
+  LieAlgebra.Basis.equivOfReindex _ _ _ hA
 
 end LieAlgebra
