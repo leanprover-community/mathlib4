@@ -435,7 +435,9 @@ info: AdditiveTestCat.morphism_hom.{u_1} (X : AdditiveTestCat) : Hom.hom X.morph
 
 end AdditiveTestCat
 
--- Check paired declarations with independently optional `with_of_hom` clauses.
+-- Resolve qualified category names inside their enclosing namespace.
+namespace Nested
+
 structure PlainAddCat where
   carrier : Type u
   [str : AddMonoid carrier]
@@ -457,8 +459,8 @@ abbrev of (M : Type u) [Monoid M] : PlainMulCat := ⟨M⟩
 
 end PlainMulCat
 
-mk_concrete_category PlainMulCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
-  to_additive PlainAddCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+mk_concrete_category Nested.PlainMulCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+  to_additive _root_.Nested.PlainAddCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
 
 namespace PlainMulCat
 
@@ -478,7 +480,7 @@ example {X Y : PlainMulCat.{u}} (f : X →* Y) :
 example {X Y : PlainAddCat.{u}} (f : X →+ Y) :
     (PlainAddCat.ofHom f).hom = f := PlainAddCat.hom_ofHom f
 
--- Check paired declarations with independently optional `with_of_hom` clauses.
+-- Resolve short category names inside an enclosing namespace.
 structure CustomMulAddCat where
   carrier : Type u
   [str : AddMonoid carrier]
@@ -524,6 +526,8 @@ example {X Y : CustomMulAddCat.{u}} (f : X →+ Y) :
     (CustomMulAddCat.ofHom f).hom = f := CustomMulAddCat.hom_ofHom f
 
 -- Check paired declarations with independently optional `with_of_hom` clauses.
+end Nested
+
 structure CustomAddAddCat where
   carrier : Type u
   [str : AddMonoid carrier]
