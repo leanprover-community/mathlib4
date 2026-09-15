@@ -436,7 +436,17 @@ noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
   presentation i :=
     letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
       (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)
-      (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
+      (by
+        ext : 3
+        simp only [ObjectProperty.FullSubcategory.comp_hom, pushforwardIdHom_hom,
+          Functor.sheafPushforwardContinuousNatTrans_app_hom, ObjectProperty.ι_obj]
+        exact R.obj.map_id _)
+      (by
+        ext : 3
+        simp only [ObjectProperty.FullSubcategory.comp_hom, ObjectProperty.ι_obj,
+          Functor.sheafPushforwardContinuousNatTrans_app_hom, pushforwardIdHom_hom,
+          PresheafOfModules.pushforwardIdHom_app]
+        exact R.obj.map_id _)
     (((D i.1).presentation i.2).map e.inverse (.refl _)).ofIsIso
       (e.fullyFaithfulFunctor.preimageIso
       (by exact e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom
