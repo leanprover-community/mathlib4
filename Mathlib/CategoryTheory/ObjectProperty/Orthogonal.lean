@@ -50,6 +50,75 @@ def leftOrthogonal : ObjectProperty C :=
 lemma leftOrthogonal_iff (X : C) :
     P.leftOrthogonal X ↔ ∀ ⦃Y : C⦄ (f : X ⟶ Y), P Y → f = 0 := Iff.rfl
 
+/-- The pair `(rightOrthogonal, leftOrthogonal)` forms a Galois connection between
+`ObjectProperty C` and its opposite order. -/
+lemma gc_rightOrthogonal_leftOrthogonal :
+    GaloisConnection (OrderDual.toDual (α := ObjectProperty C) ∘ rightOrthogonal)
+      (leftOrthogonal ∘ OrderDual.ofDual) :=
+  fun _ _ ↦ ⟨fun h _ hPX _ f hQY ↦ h _ hQY f hPX, fun h _ hQY _ f hPX ↦ h _ hPX f hQY⟩
+
+lemma le_leftOrthogonal_iff_le_rightOrthogonal (Q : ObjectProperty C) :
+    P ≤ Q.leftOrthogonal ↔ Q ≤ P.rightOrthogonal :=
+  -- the Galois connection has `rightOrthogonal` as its left adjoint, so its two sides
+  -- appear in the opposite order
+  (gc_rightOrthogonal_leftOrthogonal P (OrderDual.toDual Q)).symm
+
+lemma le_rightOrthogonal_leftOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal :=
+  gc_rightOrthogonal_leftOrthogonal.le_u_l P
+
+lemma le_leftOrthogonal_rightOrthogonal : P ≤ P.leftOrthogonal.rightOrthogonal :=
+  gc_rightOrthogonal_leftOrthogonal.dual.le_u_l P
+
+lemma antitone_rightOrthogonal : Antitone (rightOrthogonal (C := C)) :=
+  gc_rightOrthogonal_leftOrthogonal.monotone_l
+
+lemma antitone_leftOrthogonal : Antitone (leftOrthogonal (C := C)) :=
+  gc_rightOrthogonal_leftOrthogonal.dual.monotone_l
+
+@[simp]
+lemma leftOrthogonal_rightOrthogonal_leftOrthogonal :
+    P.leftOrthogonal.rightOrthogonal.leftOrthogonal = P.leftOrthogonal :=
+  gc_rightOrthogonal_leftOrthogonal.dual.l_u_l_eq_l P
+
+@[simp]
+lemma rightOrthogonal_leftOrthogonal_rightOrthogonal :
+    P.rightOrthogonal.leftOrthogonal.rightOrthogonal = P.rightOrthogonal :=
+  gc_rightOrthogonal_leftOrthogonal.l_u_l_eq_l P
+
+lemma rightOrthogonal_op : P.op.rightOrthogonal = P.leftOrthogonal.op := by
+  ext X
+  constructor
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+
+lemma leftOrthogonal_op : P.op.leftOrthogonal = P.rightOrthogonal.op := by
+  ext X
+  constructor
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+
+lemma rightOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
+    R.unop.rightOrthogonal = R.leftOrthogonal.unop := by
+  ext X
+  constructor
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
+
+lemma leftOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
+    R.unop.leftOrthogonal = R.rightOrthogonal.unop := by
+  ext X
+  constructor
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+  · intro h Y f hY
+    simpa using congrArg Quiver.Hom.unop (h f.op hY)
+
 instance : P.rightOrthogonal.IsClosedUnderIsomorphisms where
   of_iso e h X f hX := by
     rw [← cancel_mono e.inv, zero_comp]

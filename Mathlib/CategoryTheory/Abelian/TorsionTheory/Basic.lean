@@ -4,16 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Blake Farman
 -/
 module
-public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Abelian.Opposite
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
-public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.Subobject.WellPowered
-public import Mathlib.CategoryTheory.Subobject.Lattice
 public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
@@ -67,91 +61,6 @@ namespace ObjectProperty
 section HasZeroMorphisms
 
 variable [HasZeroMorphisms C]
-
-/-!
-### Interaction of the left and right orthogonal
-
-The left and right orthogonal form a Galois connection, and the lemmas below are the
-specializations of the general `GaloisConnection` API to it.
-
-Everything in this section only needs `C` to have zero morphisms. The two instances for closure
-under extensions, further down, additionally need `Preadditive C` and `Balanced C`.
--/
-
-section Orthogonal
-
-variable (P Q : ObjectProperty C)
-
-/-- The pair `(rightOrthogonal, leftOrthogonal)` forms a Galois connection between
-`ObjectProperty C` and its opposite order. -/
-lemma gc_rightOrthogonal_leftOrthogonal :
-    GaloisConnection (OrderDual.toDual (α := ObjectProperty C) ∘ rightOrthogonal)
-      (leftOrthogonal ∘ OrderDual.ofDual) :=
-  fun _ _ ↦ ⟨fun h _ hPX _ f hQY ↦ h _ hQY f hPX, fun h _ hQY _ f hPX ↦ h _ hPX f hQY⟩
-
-lemma le_leftOrthogonal_iff_le_rightOrthogonal :
-    P ≤ Q.leftOrthogonal ↔ Q ≤ P.rightOrthogonal :=
-  -- the Galois connection has `rightOrthogonal` as its left adjoint, so its two sides
-  -- appear in the opposite order
-  (gc_rightOrthogonal_leftOrthogonal P (OrderDual.toDual Q)).symm
-
-lemma le_rightOrthogonal_leftOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal :=
-  gc_rightOrthogonal_leftOrthogonal.le_u_l P
-
-lemma le_leftOrthogonal_rightOrthogonal : P ≤ P.leftOrthogonal.rightOrthogonal :=
-  gc_rightOrthogonal_leftOrthogonal.dual.le_u_l P
-
-lemma antitone_rightOrthogonal : Antitone (rightOrthogonal (C := C)) :=
-  gc_rightOrthogonal_leftOrthogonal.monotone_l
-
-lemma antitone_leftOrthogonal : Antitone (leftOrthogonal (C := C)) :=
-  gc_rightOrthogonal_leftOrthogonal.dual.monotone_l
-
-@[simp]
-lemma leftOrthogonal_rightOrthogonal_leftOrthogonal :
-    P.leftOrthogonal.rightOrthogonal.leftOrthogonal = P.leftOrthogonal :=
-  gc_rightOrthogonal_leftOrthogonal.dual.l_u_l_eq_l P
-
-@[simp]
-lemma rightOrthogonal_leftOrthogonal_rightOrthogonal :
-    P.rightOrthogonal.leftOrthogonal.rightOrthogonal = P.rightOrthogonal :=
-  gc_rightOrthogonal_leftOrthogonal.l_u_l_eq_l P
-
-lemma rightOrthogonal_op : P.op.rightOrthogonal = P.leftOrthogonal.op := by
-  ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
-
-lemma leftOrthogonal_op : P.op.leftOrthogonal = P.rightOrthogonal.op := by
-  ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
-
-lemma rightOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
-    R.unop.rightOrthogonal = R.leftOrthogonal.unop := by
-  ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
-
-lemma leftOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
-    R.unop.leftOrthogonal = R.rightOrthogonal.unop := by
-  ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
-
-end Orthogonal
 
 /-- The left orthogonal of a property of objects is closed under quotients. -/
 instance (P : ObjectProperty C) : P.leftOrthogonal.IsClosedUnderQuotients where
