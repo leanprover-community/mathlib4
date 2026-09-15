@@ -105,6 +105,12 @@ theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff i φ = 0) :
   · simp
   · simpa [Nat.le_find_iff]
 
+/-- The order of a formal power series is at least `n` if and only if its coefficients below `n`
+vanish. -/
+theorem nat_le_order_iff (φ : R⟦X⟧) (n : ℕ) :
+    ↑n ≤ order φ ↔ ∀ i < n, coeff i φ = 0 :=
+  ⟨fun h i hi ↦ coeff_of_lt_order i <| lt_of_lt_of_le (mod_cast hi) h, nat_le_order φ n⟩
+
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
 theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coeff i φ = 0) :
