@@ -186,7 +186,7 @@ theorem IsTrail.even_ncard_neighborSet_toSubgraph_iff {u v} {p : G.Walk u v}
       start_mem_verts_toSubgraph, end_mem_verts_toSubgraph]
   have : Fintype p.toSubgraph.verts := Set.Finite.fintype <| by simp
   classical
-  simpa using p.isEulerian_mapToSubgraph.mpr hp |>.even_degree_iff (x := ⟨w, hw⟩)
+  simpa using p.isEulerian_mapToSubgraph.mpr hp |>.even_degree_iff (w := ⟨w, hw⟩)
 
 omit [DecidableEq V] in
 theorem IsTrail.even_ncard_neighborSet_toSubgraph {u} {p : G.Walk u u}
