@@ -370,6 +370,15 @@ protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?
 protected theorem leftInverse : LeftInverse I.symm I :=
   I.left_inv
 
+include I in
+/-- A space with a charted-space structure modeled on a model with corners is locally connected. -/
+theorem locallyConnectedSpace [NormedSpace ℝ E] (M : Type*) [TopologicalSpace M]
+    [ChartedSpace H M] : LocallyConnectedSpace M := by
+  letI : LocallyPathConnectedSpace (range I) := I.convex_range.locallyPathConnectedSpace
+  letI : LocallyConnectedSpace H :=
+    (I.leftInverse.isEmbedding I.continuous_symm I.continuous).toHomeomorph.locallyConnectedSpace
+  exact ChartedSpace.locallyConnectedSpace H M
+
 theorem injective : Injective I :=
   I.leftInverse.injective
 
