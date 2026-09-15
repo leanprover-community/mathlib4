@@ -133,17 +133,29 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
 
-theorem pathGraph_isContained_iff {n m : ℕ} : pathGraph n ⊑ pathGraph m ↔ n ≤ m := by
-  refine ⟨(Fin.nonempty_embedding_iff.mp ⟨·.some.toEmbedding⟩), fun h ↦ ?_⟩
-  refine Embedding.hasse (Fin.castLEOrderEmb h) ?_ |>.isContained
-  simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
-  exact Set.ordConnected_Iio.preimage_mono Fin.val_strictMono.monotone
+/-- An embedding of the path graph in a larger path graph. -/
+protected def Embedding.pathGraph (n m : ℕ) (h : n ≤ m) : pathGraph n ↪g pathGraph m :=
+  .hasse (Fin.castLEOrderEmb h) <| by
+    simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
+    exact Set.ordConnected_Iio.preimage_mono Fin.val_strictMono.monotone
 
-theorem pathGraph_isIndContained_iff {n m : ℕ} : pathGraph n ⊴ pathGraph m ↔ n ≤ m := by
-  refine ⟨(Fin.nonempty_embedding_iff.mp ⟨·.some.toEmbedding⟩), fun h ↦ ?_⟩
-  refine Embedding.hasse (Fin.castLEOrderEmb h) ?_ |>.isIndContained
-  simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
-  exact Set.ordConnected_Iio.preimage_mono Fin.val_strictMono.monotone
+@[simp]
+theorem Embedding.coe_pathGraph {n m : ℕ} (h : n ≤ m) :
+    ⇑(Embedding.pathGraph n m h) = Fin.castLE h :=
+  rfl
+
+@[simp]
+theorem Embedding.pathGraph_toEmbedding {n m : ℕ} (h : n ≤ m) :
+    (Embedding.pathGraph n m h).toEmbedding = Fin.castLEEmb h :=
+  rfl
+
+theorem pathGraph_isContained_iff {n m : ℕ} : pathGraph n ⊑ pathGraph m ↔ n ≤ m where
+  mp h := Fin.nonempty_embedding_iff.mp ⟨h.some.toEmbedding⟩
+  mpr h := Embedding.pathGraph n m h |>.isContained
+
+theorem pathGraph_isIndContained_iff {n m : ℕ} : pathGraph n ⊴ pathGraph m ↔ n ≤ m where
+  mp h := Fin.nonempty_embedding_iff.mp ⟨h.some.toEmbedding⟩
+  mpr h := Embedding.pathGraph n m h |>.isIndContained
 
 namespace Walk
 
