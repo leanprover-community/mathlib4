@@ -971,6 +971,16 @@ theorem mk'_le_mk'_iff (p : P) {d₁ d₂ : Submodule k V} : mk' p d₁ ≤ mk' 
 theorem mk'_strictMono (p : P) : StrictMono (mk' p (k := k)) :=
   strictMono_of_le_iff_le (fun _ _ ↦ (mk'_le_mk'_iff p).symm)
 
+/-- Two affine subspaces constructed from points and the same direction are equal if and only if
+the difference of the points lies in that direction. -/
+@[simp]
+theorem mk'_eq_mk'_iff {p q : P} {s : Submodule k V} :
+    mk' p s = mk' q s ↔ p -ᵥ q ∈ s where
+  mp h := by
+    rw [AffineSubspace.ext_iff, Set.ext_iff] at h
+    simpa using h p
+  mpr h := ext_of_direction_eq (by simp) ⟨p, by simp, by simpa using h⟩
+
 end AffineSubspace
 
 section AffineSpace'
