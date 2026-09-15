@@ -21,6 +21,9 @@ This file contains the definition of the sinc function and some of its propertie
 ## Main statements
 
 * `continuous_sinc`: the sinc function is continuous.
+* `cos_le_sinc`: `cos x ≤ sinc x` for `|x| < π / 2`, which together with `sinc_le_one` gives the
+  squeeze behind the limit of `sin x / x` at `0`.
+* `sinc_pos`: `sinc` is positive on `(-π, π)`.
 
 -/
 
@@ -89,5 +92,26 @@ lemma continuous_sinc : Continuous sinc := by
   · simp [hx]
   · rw [continuousAt_dslope_of_ne hx]
     fun_prop
+
+/-- For `|x| < π / 2` we have `cos x ≤ sinc x`, and together with
+`sinc_le_one` this gives the squeeze `cos x ≤ sin x / x ≤ 1`. -/
+lemma cos_le_sinc (hx : |x| < π / 2) : cos x ≤ sinc x := by
+  wlog hx₀ : 0 ≤ x generalizing x
+  · simpa using this (x := -x) (by simpa using hx) (by linarith [not_le.mp hx₀])
+  obtain rfl | hx₀ := hx₀.eq_or_lt
+  · simp
+  have hx' := (abs_lt.mp hx).2
+  have hc : 0 < cos x := cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], hx'⟩
+  rw [sinc_of_ne_zero hx₀.ne', le_div_iff₀ hx₀, ← tan_mul_cos hc.ne', mul_comm]
+  exact mul_le_mul_of_nonneg_right (le_tan hx₀.le hx') hc.le
+
+/-- The function `sinc` is positive on `(-π, π)`. -/
+lemma sinc_pos (hx : |x| < π) : 0 < sinc x := by
+  wlog hx₀ : 0 ≤ x generalizing x
+  · simpa using this (x := -x) (by simpa using hx) (by linarith [not_le.mp hx₀])
+  obtain rfl | hx₀ := hx₀.eq_or_lt
+  · simp
+  rw [sinc_of_ne_zero hx₀.ne']
+  exact div_pos (sin_pos_of_pos_of_lt_pi hx₀ (abs_lt.mp hx).2) hx₀
 
 end Real
