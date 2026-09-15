@@ -228,7 +228,7 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
-@[to_additive]
+@[to_additive (attr := simp) negSucc_zsmul]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
