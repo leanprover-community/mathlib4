@@ -67,16 +67,22 @@ lemma coyonedaOpColimitIsoLimitCoyoneda_inv_comp_π (i : I) :
 noncomputable def colimitHomIsoLimitYoneda
     [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) :
     (colimit F ⟶ A) ≅ limit (F.op ⋙ yoneda.obj A) :=
-  (coyonedaOpColimitIsoLimitCoyoneda F).app A ≪≫ limitObjIsoLimitCompEvaluation _ _
+  (coyonedaOpColimitIsoLimitCoyoneda F).app A ≪≫
+    limitObjIsoLimitCompEvaluation (F.op ⋙ coyoneda) A ≪≫
+      HasLimit.isoOfNatIso (Functor.associator F.op coyoneda ((evaluation C (Type u₂)).obj A) ≪≫
+        Functor.isoWhiskerLeft F.op (compEvaluation coyoneda A))
 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda_hom_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda F A).hom ≫ limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ =
       (yoneda.obj A).map (colimit.ι F i).op := by
-  simp only [colimitHomIsoLimitYoneda, Iso.trans_hom, Iso.app_hom, Category.assoc]
-  erw [limitObjIsoLimitCompEvaluation_hom_π]
-  change ((coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ _).app A = _
-  rw [coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π, Functor.flip_map_app]
+  simp only [Functor.comp_obj, Functor.op_obj, yoneda_obj_obj, colimitHomIsoLimitYoneda,
+    Iso.trans_hom, Iso.app_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,
+    evaluation_obj_obj, Functor.flip_obj_obj, Functor.isoWhiskerLeft_hom, NatTrans.comp_app,
+    Functor.associator_hom_app, Functor.whiskerLeft_app, compEvaluation_hom_app,
+    Category.comp_id, limitObjIsoLimitCompEvaluation_hom_π, yoneda_obj_map, Quiver.Hom.unop_op]
+  rw [← NatTrans.comp_app, coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π]
+  simp only [Functor.flip_map_app, yoneda_obj_map, Quiver.Hom.unop_op]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -115,17 +121,23 @@ lemma coyonedaOpColimitIsoLimitCoyoneda'_inv_comp_π (i : I) :
 /-- Variant of `colimitHomIsoLimitYoneda` for contravariant `F`. -/
 noncomputable def colimitHomIsoLimitYoneda' [HasLimitsOfShape I (Type u₂)] (A : C) :
     (colimit F ⟶ A) ≅ limit (F.rightOp ⋙ yoneda.obj A) :=
-  (coyonedaOpColimitIsoLimitCoyoneda' F).app A ≪≫ limitObjIsoLimitCompEvaluation _ _
+  (coyonedaOpColimitIsoLimitCoyoneda' F).app A ≪≫
+    limitObjIsoLimitCompEvaluation (F.rightOp ⋙ coyoneda) A ≪≫
+      HasLimit.isoOfNatIso
+        (Functor.associator F.rightOp coyoneda ((evaluation C (Type u₂)).obj A) ≪≫
+          Functor.isoWhiskerLeft F.rightOp (compEvaluation coyoneda A))
 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda'_hom_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda' F A).hom ≫ limit.π (F.rightOp ⋙ yoneda.obj A) i =
       (yoneda.obj A).map (colimit.ι F ⟨i⟩).op := by
-  simp only [colimitHomIsoLimitYoneda', Iso.trans_hom,
-    Iso.app_hom, Category.assoc]
-  erw [limitObjIsoLimitCompEvaluation_hom_π]
-  change ((coyonedaOpColimitIsoLimitCoyoneda' F).hom ≫ _).app A = _
-  rw [coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π, Functor.flip_map_app]
+  simp only [Functor.comp_obj, yoneda_obj_obj, colimitHomIsoLimitYoneda',
+    Iso.trans_hom, Iso.app_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,
+    evaluation_obj_obj, Functor.flip_obj_obj, Functor.isoWhiskerLeft_hom, NatTrans.comp_app,
+    Functor.associator_hom_app, Functor.whiskerLeft_app, compEvaluation_hom_app,
+    Category.comp_id, limitObjIsoLimitCompEvaluation_hom_π, yoneda_obj_map, Quiver.Hom.unop_op]
+  rw [← NatTrans.comp_app, coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π]
+  simp only [Functor.flip_map_app, yoneda_obj_map, Quiver.Hom.unop_op]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]

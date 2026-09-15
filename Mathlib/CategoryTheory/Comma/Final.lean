@@ -160,7 +160,8 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
   have := final_of_natIso iR
   rw [isConnected_iff_of_equivalence (StructuredArrow.commaMapEquivalence iL.hom iR.inv _)]
   have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
-      StructuredArrow.map₂ (G := 𝟭 _) (F := 𝟭 _) (R' := R ⋙ H) u₂ iR.hom ⋙
+      StructuredArrow.map₂ (G := 𝟭 _) (F := 𝟭 _) (R := G ⋙ R') (R' := R ⋙ H) u₂
+          ((Functor.rightUnitor _).hom ≫ iR.hom ≫ (Functor.leftUnitor _).inv) ⋙
       StructuredArrow.pre _ R H :=
     eqToIso (by
       congr

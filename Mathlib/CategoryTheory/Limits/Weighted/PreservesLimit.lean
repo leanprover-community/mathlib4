@@ -82,7 +82,8 @@ public lemma preservesLimit
     [PreservesColimit G.leftOp (hasWeightedLimit.{w} F).ι] :
     PreservesLimit G (weightedLimFlipObj'.{w} F) where
   preserves {c} hc := ⟨by
-    refine (IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ?_).1
+    refine (IsLimit.equivOfNatIsoOfIso ((Functor.associator ..).symm ≪≫
+      isoWhiskerRight (Functor.opOpCompLeftOpOpIso G) _) _ _ ?_).1
       ((preservesLimit' (coconeLeftOpOfCone c)
         (isColimitOfPreserves (hasWeightedLimit.{w} F).ι
           (isColimitCoconeLeftOpOfCone _ hc))).whiskerEquivalence

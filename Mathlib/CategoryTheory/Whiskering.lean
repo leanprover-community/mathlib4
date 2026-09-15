@@ -167,6 +167,16 @@ def whiskeringRightObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D
     (whiskeringRight E C D').obj (F ⋙ G) :=
   Iso.refl _
 
+/-- The isomorphism between left-whiskering by `F` followed by right-whiskering by `G` and
+right-whiskering by `G` followed by left-whiskering by `F`. This is the functorial form of
+`whiskerRight_left`; its component at `H` is the associator `(F ⋙ H) ⋙ G ≅ F ⋙ H ⋙ G`. -/
+@[simps!]
+def whiskeringLeftObjCompWhiskeringRightObjIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D)
+    (G : D' ⥤ E) :
+    (whiskeringLeft C D D').obj F ⋙ (whiskeringRight C D' E).obj G ≅
+    (whiskeringRight D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
+  NatIso.ofComponents fun H ↦ associator F H G
+
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full :=
   ((Functor.FullyFaithful.ofFullyFaithful F).whiskeringRight C).full
