@@ -5,10 +5,11 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Elab
-public meta import Mathlib.Tactic.Inclusion.Extension.Core.Core
-public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
-public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Tactic.Inclusion.Core.Elab
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # The `dyadic_interval` tactic

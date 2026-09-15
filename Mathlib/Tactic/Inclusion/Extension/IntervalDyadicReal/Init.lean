@@ -6,8 +6,8 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Data.Dyadic
-public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Tactic.Inclusion.Extension.Interval
+public import Mathlib.Tactic.Inclusion.Core.Extensions
 
 /-!
 # Initialization for the dyadic real interval extension family

@@ -7,6 +7,7 @@ module
 
 
 import Mathlib.Data.Nat.Notation
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # The maximal power of one natural number dividing another

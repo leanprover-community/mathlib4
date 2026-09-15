@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.Inseparable
 
 /-!
 # Uniform convergence
