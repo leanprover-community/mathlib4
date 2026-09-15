@@ -154,25 +154,17 @@ section Surjective
 variable {f} (hf : Function.Surjective f)
 
 /-- Given a surjective `f : M →ₗ[R] M₂` and an `R`-module `M₃`, this is a bijection between
-  `R`-linear maps `M₂ →ₗ[R] M₃` and `R`-linear maps `g : M →ₗ[R] M₃` such that `ker f ≤ ker g`. -/
+`R`-linear maps `M₂ →ₗ[R] M₃` and `R`-linear maps `g : M →ₗ[R] M₃` such that `ker f ≤ ker g`. -/
+@[simps apply]
 noncomputable def equivOfSurjective :
     (M₂ →ₗ[R] M₃) ≃ {g : M →ₗ[R] M₃ // ker f ≤ ker g} where
-  toFun h := ⟨h.comp f, fun x hx ↦ by
-    simp only [mem_ker, coe_comp, Function.comp_apply] at hx ⊢
-    rw [hx, map_zero]⟩
-  invFun := fun ⟨g, hg⟩ ↦ (Submodule.liftQ (ker f) g hg).comp
-     (f.quotKerEquivOfSurjective hf).symm.toLinearMap
+  toFun h := ⟨h.comp f, fun x hx ↦ by simp [mem_ker.mp hx]⟩
+  invFun := fun ⟨g, hg⟩ ↦ (ker f).liftQ g hg ∘ₗ (f.quotKerEquivOfSurjective hf).symm
   left_inv h := by
     ext n
     obtain ⟨m, rfl⟩ := hf n
-    simp [f.quotKerEquivOfSurjective_symm_apply hf]
-  right_inv := fun ⟨g, hg⟩ ↦ by
-    ext m
-    simp [f.quotKerEquivOfSurjective_symm_apply hf]
-
-@[simp]
-theorem equivOfSurjective_apply {h : M₂ →ₗ[R] M₃} {m : M} :
-    ((f.equivOfSurjective hf) h).1 m = h (f m) := rfl
+    simp
+  right_inv := fun ⟨g, hg⟩ ↦ by ext; simp
 
 @[simp]
 theorem equivOfSurjective_symm_apply {g : M →ₗ[R] M₃} (hg : ker f ≤ ker g) {m : M} :
