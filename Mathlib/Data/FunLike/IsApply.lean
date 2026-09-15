@@ -223,7 +223,7 @@ theorem coe_div [Div F] [Div β] [IsDivApply F α β] (f g : F) : ↑(f / g) = (
 theorem coe_inv [Inv F] [Inv β] [IsInvApply F α β] (f : F) : ↑(f⁻¹) = (f : α → β)⁻¹ := by
   ext; simp
 
-@[to_additive (attr := simp, norm_cast, to_additive) coe_smul]
+@[to_additive (attr := simp, norm_cast, to_additive) (reorder := f n) coe_smul]
 theorem coe_pow [Pow F M] [Pow β M] [IsPowApply M F α β] (f : F) (n : M) :
     ↑(f ^ n) = (f : α → β) ^ n := by
   ext; simp
