@@ -414,7 +414,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
           (fun k : ℕ => (Fintype.piFinset fun _ : Fin k => Ico 1 n : Finset (Fin k → ℕ)))
           (fun n e => ∏ j : Fin n, r * (a ^ e j * p (e j)))]
       congr! with j
-      simp only [← @MultilinearMap.mkPiAlgebra_apply ℝ (Fin j) _ ℝ]
+      simp only [← @MultilinearMap.mkPiAlgebra_apply ℝ (Fin j) ℝ]
       simp only [←
         MultilinearMap.map_sum_finset (MultilinearMap.mkPiAlgebra ℝ (Fin j) ℝ) fun _ (m : ℕ) =>
           r * (a ^ m * p m)]

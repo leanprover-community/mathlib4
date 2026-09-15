@@ -788,7 +788,7 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
           ContinuousMultilinearMap.map_update_add])
       (fun v i c x ↦ by
         simp only [applyOrderedFinpartition_update_right,
-          ContinuousMultilinearMap.map_update_smul])
+          ContinuousMultilinearMap.map_update_smul, RingHom.id_apply])
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
@@ -811,7 +811,8 @@ and multilinearly on `p`. -/
 @[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) where
+      MultilinearMap (.id 𝕜) (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F)
+        (E [×n]→L[𝕜] G) where
   toFun f :=
     MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
       (fun p m q q' ↦ by

@@ -183,7 +183,7 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
   have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
     rw [Algebra.algebraMap_eq_smul_one]; rfl
   rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_update_smul, update_eq_self,
-    smul_one_smul, Pi.one_def]
+    RingHom.id_apply, smul_one_smul, Pi.one_def]
 
 /--
 The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
@@ -205,7 +205,7 @@ Lifting a multilinear map to an algebra homomorphism from tensor product
 -/
 @[simps!]
 def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
-    (f : MultilinearMap R A S)
+    (f : MultilinearMap (.id R) A S)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S :=
   AlgHom.ofLinearMap (lift f) (show lift f (tprod R 1) = 1 by simp [one]) <|
     LinearMap.map_mul_iff _ |>.mpr <| by aesop
