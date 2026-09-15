@@ -348,6 +348,9 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prodMap isProperMap_id).isClosedMap
 
+lemma IsProperMap.hasCompactFibers {f : X → Y} (hf : IsProperMap f) : HasCompactFibers f :=
+  (isProperMap_iff_isClosedMap_and_compact_fibers.mp hf).2.2
+
 /-- A function into a compact space with a closed graph is continuous.
 
 For the closed graph theorem of functional analysis, about linear maps between Banach spaces, see
