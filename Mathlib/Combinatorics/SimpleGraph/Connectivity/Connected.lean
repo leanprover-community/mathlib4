@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Operations
@@ -23,6 +24,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
   a given graph.
 
 * `SimpleGraph.IsBridge` for whether an edge is a bridge edge
+
+* `SimpleGraph.IsBridgeless` for whether a graph has no bridges
 
 ## Main statements
 
@@ -770,6 +773,22 @@ theorem IsBridge.reachable_iff_adj (h : G.IsBridge s(u, v)) : G.Reachable u v �
   have : G.deleteEdges {s(u, v)} < G := deleteEdges_le _ |>.lt_of_ne <| by grind [isBridge_iff]
   grind [edgeSet_strict_mono this, edgeSet_deleteEdges]
 
+theorem IsBridge.mem_edgeSet_of_preconnected (hG : G.Preconnected) (he : G.IsBridge e) :
+    e ∈ G.edgeSet := by
+  cases e
+  rw [mem_edgeSet, ← he.reachable_iff_adj]
+  apply hG
+
+theorem IsBridge.not_isDiag (h : G.IsBridge e) : ¬e.IsDiag := by
+  cases e
+  rw [Sym2.mk_isDiag_iff]
+  rintro rfl
+  simp [IsBridge] at h
+
+theorem IsBridge.bot : IsBridge ⊥ e ↔ ¬e.IsDiag := by
+  cases e
+  simp [isBridge_iff]
+
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
@@ -882,6 +901,19 @@ theorem Preconnected.connected_deleteEdges_of_not_isBridge (hG : G.Preconnected)
 alias Connected.connected_delete_edge_of_not_isBridge :=
   Preconnected.connected_deleteEdges_of_not_isBridge
 
+theorem IsBridge.of_map (f : Copy G G') (h : G'.IsBridge (e.map f)) : G.IsBridge e := by
+  cases e
+  rw [isBridge_iff]
+  rw [Sym2.map_mk, isBridge_iff, ← Sym2.map_mk, ← Set.image_singleton] at h
+  contrapose! h
+  exact h.map (f.deleteEdges _ _ ((Sym2.map.injective f.injective).preimage_image _).subset).toHom
+
+theorem Iso.isBridge_map (f : G ≃g G') : G'.IsBridge (e.map f) ↔ G.IsBridge e := by
+  cases e
+  rw [Sym2.map_mk, isBridge_iff, ← Sym2.map_mk, ← Set.image_singleton, isBridge_iff]
+  contrapose!
+  exact (f.deleteEdges _ _ ((Sym2.map.injective f.injective).preimage_image _)).reachable_iff
+
 theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.IsBridge e) :
     G.IsBridge e := by obtain ⟨a, b⟩ := e; rw [isBridge_iff] at ⊢ h; grw [hG]; assumption
 
@@ -916,6 +948,29 @@ theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
 @[deprecated (since := "2026-03-18")]
 alias IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge :=
   IsBridge.sup_edge_of_not_reachable_of_isBridge
+
+variable (G) in
+/-- A graph is bridgeless if it has no bridges. -/
+def IsBridgeless : Prop :=
+  ∀ e ∈ G.edgeSet, ¬G.IsBridge e
+
+theorem isBridgeless_iff : G.IsBridgeless ↔ ∀ e ∈ G.edgeSet, ¬G.IsBridge e :=
+  .rfl
+
+theorem not_isBridgeless_iff : ¬G.IsBridgeless ↔ ∃ e ∈ G.edgeSet, G.IsBridge e := by
+  contrapose!
+  rfl
+
+@[simp]
+theorem isBridgeless_of_subsingleton [Subsingleton V] : G.IsBridgeless := by
+  simp [isBridgeless_iff]
+
+@[simp]
+theorem isBridgeless_bot : (⊥ : SimpleGraph V).IsBridgeless := by
+  simp [isBridgeless_iff]
+
+theorem Iso.isBridgeless_iff (f : G ≃g G') : G.IsBridgeless ↔ G'.IsBridgeless := by
+  simp [SimpleGraph.isBridgeless_iff, f.isBridge_map, ← f.image_edgeSet]
 
 end BridgeEdges
 
