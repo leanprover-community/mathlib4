@@ -424,11 +424,9 @@ theorem sin_nonneg_of_mem_Icc {x : ℝ} (hx : x ∈ Icc 0 π) : 0 ≤ sin x := b
 theorem sin_nonneg_of_nonneg_of_le_pi {x : ℝ} (h0x : 0 ≤ x) (hxp : x ≤ π) : 0 ≤ sin x :=
   sin_nonneg_of_mem_Icc ⟨h0x, hxp⟩
 
-theorem sin_add_le_sin_add_sin {x y : ℝ} (h0x : 0 ≤ x) (hxp : x ≤ π) (h0y : 0 ≤ y) (hyp : y ≤ π) :
+theorem sin_add_le_sin_add_sin {x y : ℝ} (hx : 0 ≤ sin x) (hy : 0 ≤ sin y) :
     sin (x + y) ≤ sin x + sin y := by
-  rw [sin_add]
-  nlinarith [cos_le_one x, cos_le_one y, sin_nonneg_of_nonneg_of_le_pi h0x hxp,
-    sin_nonneg_of_nonneg_of_le_pi h0y hyp]
+  grw [sin_add, cos_le_one, cos_le_one, mul_one, one_mul]
 
 theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : sin x < 0 :=
   neg_pos.1 <| sin_neg x ▸ sin_pos_of_pos_of_lt_pi (neg_pos.2 hx0) (neg_lt.1 hpx)
