@@ -122,7 +122,7 @@ lemma isAcyclic_sSup_of_isAcyclic_directedOn (Hs : Set <| SimpleGraph V)
   · simp
   · intro u p hp
     obtain ⟨H, hH, hpH⟩ := p.exists_mem_contains_edges_of_directed Hs hnemp h_dir
-    exact h_acyc H hH (p.transfer H hpH) <| Walk.IsCycle.transfer hp hpH
+    exact h_acyc H hH (p.transfer H hpH) <| hp.transfer hpH
 
 /-- Every acyclic subgraph `H ≤ G` is contained in a maximal such subgraph. -/
 theorem exists_maximal_isAcyclic_of_le_isAcyclic
@@ -151,7 +151,7 @@ lemma IsAcyclic.of_subsingleton [Subsingleton V] {G : SimpleGraph V} : G.IsAcycl
   .of_card_le_two <| ENat.card_le_one.trans one_le_two
 
 lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
-  @IsAcyclic.of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
+  @.of_subsingleton _ (by simp) _
 
 lemma IsTree.of_subsingleton [Nonempty V] [Subsingleton V] {G : SimpleGraph V} : G.IsTree :=
   ⟨.of_subsingleton, .of_subsingleton⟩

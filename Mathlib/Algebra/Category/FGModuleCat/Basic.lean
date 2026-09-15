@@ -230,7 +230,6 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `@[simp]`-normal form of `FGModuleCatEvaluation_apply`, where the carriers have been unfolded.
 -/
 @[simp]
