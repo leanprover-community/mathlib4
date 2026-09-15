@@ -1385,7 +1385,7 @@ order isomorphism between `α`-relations and `β`-relations. -/
 def mapOnFunOrderIso (f : α → β) (hf : f.Bijective) : (α → α → Prop) ≃o (β → β → Prop) where
   __ := Relation.mapOrderEmbedding f hf.injective
   invFun r := r.onFun f
-  left_inv _ := Relation.onFun_map_eq_of_injective hf.injective
-  right_inv _ := Relation.map_onFun_eq_of_surjective hf.surjective
+  left_inv r := Relation.onFun_map_eq_of_injective r hf.injective
+  right_inv r := Relation.map_onFun_eq_of_surjective r hf.surjective
 
 end Relation
