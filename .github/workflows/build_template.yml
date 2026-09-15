@@ -684,10 +684,9 @@ jobs:
 
       # Second upload of the same staged set, to the R2 bucket. Only the `master`
       # container takes this path: master pushes, bors `staging`, and `v4.*` tags.
-      # The action returns short-lived S3 credentials as masked step outputs. The
-      # upload step below maps them into the cache tool's variables, so only that
-      # step holds them. A failed mint fails only this step, and the upload below
-      # is skipped. An empty `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off.
+      # The action returns short-lived S3 credentials as masked step outputs.
+      # A failed mint fails only this step, and the upload below is skipped.
+      # An empty `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off.
       - name: Mint R2 credentials
         id: mint-r2
         if: env.MATHLIB_CACHE_PRIMARY == 'master' && vars.MATHLIB_CACHE_BROKER_URL != ''
@@ -697,10 +696,9 @@ jobs:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
 
-      # A failure here warns and the job succeeds: the Azure upload holds this
-      # run's files. The action sets `success` after every credential output.
       - name: Upload staged cache to R2
         if: steps.mint-r2.outputs.success == 'true'
+        # No need to fail the job for now. Remove when this becomes the primary cache endpoint
         continue-on-error: true
         shell: bash
         env:
