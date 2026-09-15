@@ -678,7 +678,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
 /-- Equivalence between the Sigma type `(i : Fin m) × Fin (n i)` and `Fin (∑ i : Fin m, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i : Fin m, n i) :=
   match m with
-  | 0 => @Equiv.equivOfIsEmpty _ _ _ (by simpa using Fin.isEmpty')
+  | 0 => @Equiv.equivOfIsEmpty _ _ _ (by simp)
   | Nat.succ m =>
     calc _ ≃ _ := (@finSumFinEquiv m 1).sigmaCongrLeft.symm
       _ ≃ _ := Equiv.sumSigmaDistrib _
@@ -713,7 +713,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
     (finSigmaFinEquiv ij : ℕ) = ij.2 := by
   rw [finSigmaFinEquiv_apply, add_eq_right]
-  apply @Finset.sum_of_isEmpty _ _ _ _ (by simpa using Fin.isEmpty')
+  apply @Finset.sum_of_isEmpty _ _ _ _ (by simp)
 
 namespace List
 
