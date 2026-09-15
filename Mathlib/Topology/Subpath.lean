@@ -56,6 +56,11 @@ def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   source' := by simp
   target' := by simp
 
+@[simp]
+theorem subpath_apply (γ : Path a b) (t₀ t₁ t : I) :
+    γ.subpath t₀ t₁ t = γ (Icc.convexComb t₀ t₁ t) :=
+  rfl
+
 /-- Reversing `γ.subpath t₀ t₁` results in `γ.subpath t₁ t₀`. -/
 @[simp]
 theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t₁) = γ.subpath t₁ t₀ := by
@@ -236,6 +241,18 @@ theorem mk_subpath_trans_mk_subpath (γ : Path a b) (s t u : I) :
     (Quotient.mk (γ.subpath s t)).trans (.mk (γ.subpath t u)) = .mk (γ.subpath s u) := by
   rw [← Quotient.mk_trans]
   exact Quotient.eq.mpr (Path.Homotopic.subpath_trans_subpath γ s t u)
+
+namespace Quotient
+
+theorem subpath_self (γ : Path a b) (t : I) :
+    mk (γ.subpath t t) = refl (γ t) := by
+  rw [Path.subpath_self, mk_refl]
+
+theorem subpath_zero_one (γ : Path a b) :
+    mk (γ.subpath 0 1) = (mk γ).cast γ.source γ.target := by
+  rw [Path.subpath_zero_one, mk_cast]
+
+end Quotient
 
 end Path.Homotopic
 
