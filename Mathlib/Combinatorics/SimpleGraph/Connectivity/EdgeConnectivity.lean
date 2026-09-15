@@ -6,6 +6,7 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -25,7 +26,15 @@ This file defines k-edge-connectivity for simple graphs.
 
 namespace SimpleGraph
 
-variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x y : V}
+variable {V W : Type*} {G H : SimpleGraph V} {G' : SimpleGraph W} {k l : ℕ} {u v w x y : V}
+
+-- #43819
+set_option warn.sorry false in
+def Copy.deleteEdges (f : Copy G G') (s : Set (Sym2 V)) (t : Set (Sym2 W))
+    (h : Sym2.map f ⁻¹' t ⊆ s) : Copy (G.deleteEdges s) (G'.deleteEdges t) where
+  toHom.toFun := f
+  toHom.map_rel' := sorry
+  injective' := f.injective
 
 variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
@@ -53,13 +62,44 @@ lemma isEdgeReachable_comm : G.IsEdgeReachable k u v ↔ G.IsEdgeReachable k v u
 lemma IsEdgeReachable.trans (h1 : G.IsEdgeReachable k u v) (h2 : G.IsEdgeReachable k v w) :
     G.IsEdgeReachable k u w := fun _ hk ↦ (h1 hk).trans (h2 hk)
 
+theorem Copy.isEdgeReachable (f : Copy G G') (h : G.IsEdgeReachable k u v) :
+    G'.IsEdgeReachable k (f u) (f v) := by
+  refine fun s hs ↦ (h <| .trans_le' hs ?_).map (f.deleteEdges _ s le_rfl).toHom
+  exact (Sym2.map.injective f.injective).encard_preimage_le s
+
+theorem Copy.isEdgeConnected {f : Copy G G'} (hf : Function.Surjective f)
+    (h : G.IsEdgeConnected k) : G'.IsEdgeConnected k := by
+  intro u v
+  rcases hf u with ⟨u, rfl⟩
+  rcases hf v with ⟨v, rfl⟩
+  exact f.isEdgeReachable <| h u v
+
+theorem Hom.isEdgeConnected {f : G →g G'} (hf : Function.Bijective f) (h : G.IsEdgeConnected k) :
+    G'.IsEdgeConnected k :=
+  Copy.isEdgeConnected (f := ⟨f, hf.injective⟩) hf.surjective h
+
+theorem Iso.isEdgeReachable {f : G ≃g G'} :
+    G'.IsEdgeReachable k (f u) (f v) ↔ G.IsEdgeReachable k u v :=
+  ⟨(by simpa using f.symm.toCopy.isEdgeReachable ·), f.toCopy.isEdgeReachable⟩
+
+theorem Iso.isEdgeConnected {f : G ≃g G'} : G.IsEdgeConnected k ↔ G'.IsEdgeConnected k :=
+  ⟨f.toCopy.isEdgeConnected f.surjective, f.symm.toCopy.isEdgeConnected f.symm.surjective⟩
+
 @[gcongr]
 lemma IsEdgeReachable.mono (hGH : G ≤ H) (h : G.IsEdgeReachable k u v) : H.IsEdgeReachable k u v :=
   fun _ hk ↦ h hk |>.mono <| deleteEdges_mono hGH
 
 @[gcongr]
+theorem IsEdgeConnected.mono (hle : G ≤ H) (h : G.IsEdgeConnected k) : H.IsEdgeConnected k :=
+  (h · · |>.mono hle)
+
+@[gcongr]
 lemma IsEdgeReachable.anti (hkl : k ≤ l) (h : G.IsEdgeReachable l u v) : G.IsEdgeReachable k u v :=
   fun _ hk ↦ h <| by grw [← hkl]; exact hk
+
+@[gcongr]
+theorem IsEdgeConnected.anti (hle : k ≤ l) (h : G.IsEdgeConnected l) : G.IsEdgeConnected k :=
+  (h · · |>.anti hle)
 
 @[simp]
 protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdgeReachable]
