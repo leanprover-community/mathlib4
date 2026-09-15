@@ -641,7 +641,7 @@ theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG
 
 @[to_additive]
 theorem Subgroup.FG.bot : FG (⊥ : Subgroup G) :=
-  inferInstance
+  isMulFG_iff.mpr ⟨∅, by simp⟩
 
 @[to_additive]
 theorem Subgroup.FG.sup {P Q : Subgroup G} (hP : P.FG) (hQ : Q.FG) : (P ⊔ Q).FG := by
@@ -676,7 +676,8 @@ theorem Subgroup.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Subgroup G) (hP : 
 /-- The product of two finitely generated additive subgroups is finitely generated. -/]
 theorem Subgroup.FG.prod {G' : Type*} [Group G'] {P : Subgroup G} {Q : Subgroup G'}
     (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
-  infer_instance
+  rw [fg_iff_submonoid_fg] at *
+  exact hP.prod hQ
 
 /-- Finite product of finitely generated subgroups is finitely generated. -/
 @[to_additive /-- Finite product of finitely generated additive subgroups is finitely generated. -/]
