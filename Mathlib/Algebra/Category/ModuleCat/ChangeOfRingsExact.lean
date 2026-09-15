@@ -25,7 +25,7 @@ public section
 
 universe v u u'
 
-variable {R : Type u} [CommRing R] {R' : Type u'} [CommRing R']
+variable {R : Type u} [Ring R] {R' : Type u'} [CommRing R']
 
 open CategoryTheory
 

@@ -603,7 +603,7 @@ end AddGroup
 
 section AddCommGroup
 
-variable [AddCommGroup E]
+variable [AddGroup E]
 
 theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x - y)) :=

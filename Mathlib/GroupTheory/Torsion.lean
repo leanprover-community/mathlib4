@@ -87,7 +87,7 @@ noncomputable def IsMulTorsion.group [Monoid G] (tG : IsMulTorsion G) : Group G 
 
 section Group
 
-variable [Group G] {N : Subgroup G} [Group H]
+variable [Group G] {N : Subgroup G} [DivInvMonoid H]
 
 /-- Subgroups of torsion groups are torsion groups. -/
 @[to_additive /-- Additive subgroups of torsion additive groups are torsion additive groups. -/]
