@@ -390,6 +390,9 @@ alias ⟨Dense.closure_eq, _⟩ := dense_iff_closure_eq
 theorem interior_eq_empty_iff_dense_compl : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]
 
+theorem interior_compl_eq_empty_iff_dense : interior sᶜ = ∅ ↔ Dense s := by
+  rw [interior_eq_empty_iff_dense_compl, compl_compl]
+
 theorem Dense.interior_compl (h : Dense s) : interior sᶜ = ∅ :=
   interior_eq_empty_iff_dense_compl.2 <| by rwa [compl_compl]
 
