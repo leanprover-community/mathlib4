@@ -309,6 +309,19 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
   catch _ =>
     return none
 
+def FunctionData.validateCompositionalForm (fData : FunctionData) : MetaM Bool :=
+  withLCtx fData.lctx fData.insts do
+    let x := fData.mainVar
+    let e := Mor.mkAppN fData.fn fData.args
+    return visit x false e
+where
+  visit (x : Expr) (xApplied : Bool) : Expr → Bool
+  | .app f a =>
+    let xApplied := xApplied || a == x
+    f.isFVar && f != x && xApplied || visit x xApplied f || visit x false a
+  | .lam _ _ body _ => visit x false body
+  | _ => false
+
 end Meta.FunProp
 
 end Mathlib
