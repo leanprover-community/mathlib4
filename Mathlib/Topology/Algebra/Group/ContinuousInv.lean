@@ -121,12 +121,18 @@ instance (priority := 100) continuousDiv_of_indiscreteTopology [TopologicalSpace
   ⟨continuous_of_indiscreteTopology⟩
 
 @[to_additive]
-instance (priority := 100) topologicalGroup_of_discreteTopology
+instance (priority := 100) isTopologicalGroup_of_discreteTopology
     [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
 
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_of_discreteTopology := isTopologicalGroup_of_discreteTopology
+
 @[to_additive]
-instance (priority := 100) topologicalGroup_of_indiscreteTopology
+instance (priority := 100) isTopologicalGroup_of_indiscreteTopology
     [TopologicalSpace H] [Group H] [IndiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+
+@[to_additive (attr := deprecated (since := "2026-08-21"))]
+alias topologicalGroup_of_indiscreteTopology := isTopologicalGroup_of_indiscreteTopology
 
 section PointwiseLimits
 

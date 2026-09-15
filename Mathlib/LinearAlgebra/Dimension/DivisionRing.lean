@@ -7,8 +7,8 @@ Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 module
 
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Dimension of vector spaces
@@ -18,11 +18,13 @@ over division rings.
 
 ## Main statements
 
-For vector spaces (i.e. modules over a field), we have
+For vector spaces (i.e. modules over a division ring), we have
 
 * `rank_quotient_add_rank_of_divisionRing`: if `V₁` is a submodule of `V`, then
   `Module.rank (V/V₁) + Module.rank V₁ = Module.rank V`.
-* `rank_range_add_rank_ker`: the rank-nullity theorem.
+* `DivisionRing.hasRankNullity`: The rank-nullity theorem for division rings.
+* `Submodule.rank_span_le_rank`: The `K`-rank of the `K`-span of an `R`-submodule `M` of `V`
+  is at most the `R`-rank of `M`.
 
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
 
@@ -30,14 +32,13 @@ See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Ka
 
 public section
 
-
 noncomputable section
 
-universe u₀ u v v' v'' u₁' w w'
+universe u₀ u v
 
 variable {K : Type u} {V V₁ V₂ V₃ : Type v}
 
-open Cardinal Submodule Function Set
+open Cardinal Submodule Function Set Module
 
 section Module
 
@@ -100,6 +101,48 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     grind
 
 end
+
+namespace Submodule
+
+variable {R : Type*} [CommRing R] [Nontrivial R]
+variable [SMulWithZero R K] [FaithfulSMul R K] [IsScalarTower R K K]
+variable [Module R V] [IsScalarTower R K V]
+variable (M : Submodule R V)
+
+/-- The `K`-rank of the `K`-span of an `R`-submodule `M` of `V` is at most the `R`-rank of `M`. -/
+theorem rank_span_le_rank : Module.rank K (span K (M : Set V)) ≤ Module.rank R M := by
+  obtain ⟨b, hbM, hbspan, hbli⟩ := exists_linearIndependent K (M : Set V)
+  rw [← hbspan, rank_span_set hbli]
+  exact LinearIndependent.cardinal_le_rank (v := Set.inclusion hbM)
+    (.of_comp M.subtype (hbli.restrict_scalars' R))
+
+/-- The `K`-rank of the `K`-span of a set `s` in `V` is at most the `R`-rank of the `R`-span
+of `s`. -/
+theorem rank_span_le_rank_span (s : Set V) :
+    Module.rank K (span K s) ≤ Module.rank R (span R s) :=
+  span_span_of_tower R K s ▸ rank_span_le_rank (span R s)
+
+/-- The `K`-rank of the `K`-span of a finitely generated `R`-submodule `M` of `V` is at most
+the `R`-rank of `M`.
+
+This is the `Module.finrank` version of `Submodule.rank_span_le_rank`; see also
+`Submodule.finrank_span_eq_finrank` for an equality in a different setting. -/
+theorem finrank_span_le_finrank (h : M.FG) : finrank K (span K (M : Set V)) ≤ finrank R M := by
+  apply finrank_le_of_rank_le
+  have : Module.Finite R M := Module.Finite.of_fg h
+  rw [finrank_eq_rank]
+  exact rank_span_le_rank M
+
+/-- The `K`-rank of the `K`-span of a finite set `s` in `V` is at most the `R`-rank of the
+`R`-span of `s`.
+
+This is the `Module.finrank` version of `Submodule.rank_span_le_rank_span`; see also
+`Submodule.finrank_span_eq_finrank_span` for an equality in a different setting. -/
+theorem finrank_span_le_finrank_span {s : Set V} (hs : s.Finite) :
+    finrank K (span K s) ≤ finrank R (span R s) :=
+  span_span_of_tower R K s ▸ finrank_span_le_finrank _ (Submodule.fg_span hs)
+
+end Submodule
 
 end DivisionRing
 
