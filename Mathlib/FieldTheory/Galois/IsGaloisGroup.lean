@@ -461,7 +461,7 @@ theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G 
   apply FaithfulSMul.algebraMap_injective C (FractionRing C)
   rw [← IsScalarTower.algebraMap_apply,
     IsScalarTower.algebraMap_apply B (FractionRing B) (FractionRing C)]
-  simp only [restrictHom, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
+  simp only [restrictHom, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_ofClass,
     QuotientGroup.coe_mk', Function.comp_apply]
   rw [algebraMap.smul', algebraMap_quotientMulEquiv_smul, ← IsScalarTower.algebraMap_apply,
     algebraMap.smul', ← IsScalarTower.algebraMap_apply]

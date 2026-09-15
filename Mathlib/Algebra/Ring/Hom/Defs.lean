@@ -131,9 +131,12 @@ theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
 theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
 
 @[simp]
-theorem coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃) :
+theorem toAddMonoidHom_mk (f : α → β) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁⟩, h₂, h₃⟩ : α →ₙ+* β) : α →+ β) = ⟨⟨f, h₂⟩, h₃⟩ :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_mk := toAddMonoidHom_mk
 
 /-- Copy of a `RingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -161,8 +164,11 @@ theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
   ext fun _ => rfl
 
-theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
+theorem toAddMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
@@ -199,8 +205,11 @@ theorem id_apply (x : α) : NonUnitalRingHom.id α x = x :=
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_id : (NonUnitalRingHom.id α : α →+ α) = AddMonoidHom.id α :=
+theorem toAddMonoidHom_id : (NonUnitalRingHom.id α : α →+ α) = AddMonoidHom.id α :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_id := toAddMonoidHom_id
 
 @[simp]
 theorem coe_mulHom_id : (NonUnitalRingHom.id α : α →ₙ* α) = MulHom.id α :=
@@ -227,9 +236,12 @@ theorem comp_apply (g : β →ₙ+* γ) (f : α →ₙ+* β) (x : α) : g.comp f
   rfl
 
 @[simp]
-theorem coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
+theorem toAddMonoidHom_comp (g : β →ₙ+* γ) (f : α →ₙ+* β) :
     AddMonoidHom.mk ⟨g ∘ f, (g.comp f).map_zero'⟩ (g.comp f).map_add' = (g : β →+ γ).comp f :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_comp_addMonoidHom := toAddMonoidHom_comp
 
 @[simp]
 theorem coe_comp_mulHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
@@ -403,17 +415,23 @@ theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : 
   rfl
 
 @[simp]
-theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
+theorem toMonoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_mk := toMonoidHom_mk
 
 @[simp]
 theorem toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
+theorem toAddMonoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →+ β) = ⟨⟨f, h₃⟩, h₄⟩ :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_mk := toAddMonoidHom_mk
 
 /-- Copy of a `RingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -450,11 +468,17 @@ theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
   ext fun _ => rfl
 
-theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
+theorem toAddMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
   ext <| DFunLike.congr_fun (F := α →+ β) h
 
-theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_injective := toAddMonoidHom_injective
+
+theorem toMonoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
+
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_injective := toMonoidHom_injective
 
 /-- Ring homomorphisms map zero to zero. -/
 protected theorem map_zero (f : α →+* β) : f 0 = 0 :=
@@ -531,12 +555,18 @@ theorem id_apply (x : α) : RingHom.id α x = x :=
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
+theorem toAddMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
   rfl
 
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_id := toAddMonoidHom_id
+
 @[simp]
-theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
+theorem toMonoidHom_id : (id α : α →* α) = MonoidHom.id α :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_id := toMonoidHom_id
 
 variable {_ : NonAssocSemiring γ}
 
@@ -632,9 +662,12 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
+theorem toAddMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero := toAddMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
 
 end AddMonoidHom
