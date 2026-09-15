@@ -500,6 +500,24 @@ noncomputable def isoInduceRange : G ≃g G'.induce (Set.range f) where
   __ := Equiv.ofInjective f f.injective
   map_rel_iff' := by simp
 
+/-- A homomorphism from `⊤` gives rise to an embedding of `⊤`. -/
+@[simps toEmbedding]
+def _root_.SimpleGraph.Hom.topEmbedding (f : (⊤ : SimpleGraph W) →g G) :
+    (⊤ : SimpleGraph W) ↪g G where
+  __ := f
+  inj' _ _ hadj := by_contra (f.map_adj · |>.ne hadj)
+  map_rel_iff' := ⟨(mt (congrArg f) ·.ne), f.map_adj⟩
+
+@[simp]
+theorem _root_.SimpleGraph.Hom.coe_topEmbedding (f : (⊤ : SimpleGraph W) →g G) :
+    ⇑f.topEmbedding = f :=
+  rfl
+
+@[simp]
+theorem _root_.SimpleGraph.Hom.toHom_topEmbedding (f : (⊤ : SimpleGraph W) →g G) :
+    f.topEmbedding.toHom = f :=
+  rfl
+
 /-- Given an injective function, there is an embedding from the comapped graph into the original
 graph. -/
 -- Porting note: `@[simps]` does not work here since `f` is not a constructor application.
@@ -539,11 +557,22 @@ protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanning
   .map (.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
+@[simps toEmbedding]
 protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β where
   __ := f
   map_rel_iff' := by simp
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
+
+/-- Embeddings of types induce embeddings of empty graphs on those types. -/
+@[simps toEmbedding]
+protected def emptyGraph {α β : Type*} (f : α ↪ β) : emptyGraph α ↪g emptyGraph β where
+  __ := f
+  map_rel_iff' := by simp
+
+@[simp]
+theorem coe_emptyGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.emptyGraph f) = f :=
+  rfl
 
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
@@ -727,12 +756,33 @@ lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
     (Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β where
+@[simps toEquiv]
+protected def completeGraph (f : V ≃ W) : completeGraph V ≃g completeGraph W where
   __ := f
   map_rel_iff' := by simp
 
-theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
+@[simp]
+theorem coe_completeGraph (f : V ≃ W) : ⇑(Iso.completeGraph f) = f :=
+  rfl
+
+@[simp]
+theorem toEmbedding_completeGraph (f : V ≃ W) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
+  rfl
+
+/-- Equivalences of types induce isomorphisms of empty graphs on those types. -/
+@[simps toEquiv]
+protected def emptyGraph (f : V ≃ W) : emptyGraph V ≃g emptyGraph W where
+  __ := f
+  map_rel_iff' := by simp
+
+@[simp]
+theorem coe_emptyGraph (f : V ≃ W) : ⇑(Iso.emptyGraph f) = f :=
+  rfl
+
+@[simp]
+theorem toEmbedding_emptyGraph (f : V ≃ W) :
+    (Iso.emptyGraph f).toEmbedding = Embedding.emptyGraph f.toEmbedding :=
   rfl
 
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}

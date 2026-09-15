@@ -201,10 +201,29 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   }
 
 /-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
-@[simps!]
+@[simps!, deprecated Hom.topEmbedding (since := "2026-09-14")]
 def topEmbedding (f : Copy (⊤ : SimpleGraph W) G) : (⊤ : SimpleGraph W) ↪g G :=
-  { f.toEmbedding with
-    map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
+  f.toHom.topEmbedding
+
+attribute [deprecated Hom.coe_topEmbedding (since := "2026-09-14")] topEmbedding_apply
+
+/-- A copy into `⊥` gives rise to an embedding into `⊥`. -/
+@[simps toEmbedding]
+def botEmbedding (f : Copy G (⊥ : SimpleGraph W)) : G ↪g (⊥ : SimpleGraph W) where
+  __ := f.toEmbedding
+  map_rel_iff' := ⟨by simp, f.toHom.map_adj⟩
+
+@[simp]
+theorem coe_botEmbedding (f : Copy G (⊥ : SimpleGraph W)) : ⇑f.botEmbedding = f :=
+  rfl
+
+@[simp]
+theorem toHom_botEmbedding (f : Copy G (⊥ : SimpleGraph W)) : f.botEmbedding.toHom = f.toHom :=
+  rfl
+
+@[simp]
+theorem toCopy_botEmbedding (f : Copy G (⊥ : SimpleGraph W)) : f.botEmbedding.toCopy = f :=
+  rfl
 
 end Copy
 
@@ -468,16 +487,26 @@ theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G �
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
     (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
-  ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
+  ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.toHom.topEmbedding⟩⟩
 
-theorem isContained_top_iff {G : SimpleGraph V} : G ⊑ completeGraph W ↔ Nonempty (V ↪ W) :=
+theorem isContained_top_iff : G ⊑ completeGraph W ↔ Nonempty (V ↪ W) :=
   ⟨(⟨·.some.toEmbedding⟩), (.trans (.of_le le_top) ⟨Embedding.completeGraph ·.some |>.toCopy⟩)⟩
+
+theorem bot_isContained_iff : emptyGraph W ⊑ G ↔ Nonempty (W ↪ V) :=
+  ⟨(⟨·.some.toEmbedding⟩), (.trans ⟨Embedding.emptyGraph ·.some |>.toCopy⟩ (.of_le bot_le))⟩
 
 theorem top_isIndContained_top_iff : completeGraph V ⊴ completeGraph W ↔ Nonempty (V ↪ W) :=
   ⟨(⟨·.some.toEmbedding⟩), (⟨.completeGraph ·.some⟩)⟩
 
+theorem bot_isIndContained_bot_iff : emptyGraph V ⊴ emptyGraph W ↔ Nonempty (V ↪ W) :=
+  ⟨(⟨·.some.toEmbedding⟩), (⟨.emptyGraph ·.some⟩)⟩
+
 theorem eq_top_of_isIndContained_top (h : G ⊴ completeGraph W) : G = ⊤ :=
   h.some.comap_eq ▸ comap_top h.some.injective
+
+theorem eq_bot_of_isContained_bot (h : G ⊑ emptyGraph W) : G = ⊥ := by
+  apply bot_unique
+  grw [h.some.toHom.le_comap, comap_bot]
 
 @[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
   Embedding.complEquiv.symm.nonempty_congr
