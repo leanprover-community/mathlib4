@@ -604,15 +604,14 @@ theorem ker_monodromyPerm :
     (hp.isCoveringMap.monodromyPerm x).ker =
     (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range := by
   ext γ; constructor <;> intro h
-  · sorry/-refine ⟨(hp.isCoveringMap.liftPathQuotient γ e).cast rfl congr($h.symm e), ?_⟩
+  · refine ⟨.of ((hp.isCoveringMap.liftPathQuotient γ.asHom e).cast rfl congr(($h.symm e).val)), ?_⟩
     rw [FundamentalGroup.mapOfEq_apply,
       Path.Homotopic.Quotient.map_cast, IsCoveringMap.map_liftPathQuotient]
-    aesop-/
+    aesop
   · obtain ⟨γ, rfl⟩ := h
-    sorry/-
     refine DFunLike.ext' <|
-      (hp.monodromy_eq_id_iff e).mpr <| hp.isCoveringMap.monodromy_eq_of_map_eq γ ?_
-    aesop (add simp FundamentalGroup.mapOfEq_apply) -/
+      (hp.monodromy_eq_id_iff e).mpr <| hp.isCoveringMap.monodromy_eq_of_map_eq γ.asHom ?_
+    aesop (add simp FundamentalGroup.mapOfEq_apply)
 
 theorem monodromyPerm_injective [SimplyConnectedSpace E] :
     Injective (hp.isCoveringMap.monodromyPerm x) := by
