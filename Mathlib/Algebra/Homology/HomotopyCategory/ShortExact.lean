@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.Refinements
@@ -191,5 +192,47 @@ lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     desc_f _ _ _ _ n (n + 1) rfl]
 
 end mappingCone
+
+namespace mappingCocone
+
+variable (S : ShortComplex (CochainComplex C ℤ)) (hS : S.ShortExact)
+
+/-- The canonical morphism `S.X₁ ⟶ mappingCocone S.g` when `S` is a short complex
+of cochain complexes. -/
+noncomputable def liftShortComplex : S.X₁ ⟶ mappingCocone S.g := lift S.g S.f 0 (by simp)
+
+@[reassoc (attr := simp)]
+lemma liftShortComplex_fst : liftShortComplex S ≫ fst S.g  = S.f := by
+  simp [liftShortComplex]
+
+@[reassoc (attr := simp)]
+lemma liftShortComplex_f_fst_f (n : ℤ) : (liftShortComplex S).f n ≫ (fst S.g).f n = S.f.f n := by
+  simp [liftShortComplex]
+
+@[reassoc (attr := simp)]
+lemma liftShortComplex_f_snd_v (i j : ℤ) (h : i + -1 = j) :
+    (liftShortComplex S).f i ≫ (snd S.g).v i j h = 0 := by
+  simp [liftShortComplex]
+
+end mappingCocone
+
+open HomComplex in
+noncomputable def homotopyMappingConeTriangleMor₃CompliftShortComplex
+    (S : ShortComplex (CochainComplex C ℤ)) :
+    Homotopy
+      ((mappingCone.triangle S.f).mor₃ ≫
+        (mappingCocone.liftShortComplex S)⟦1⟧')
+      (mappingCone.descShortComplex S ≫ (mappingCocone.triangle S.g).mor₃) :=
+  (HomComplex.Cochain.equivHomotopy _ _).symm
+    ⟨-Cochain.rightShift
+      ((mappingCone.snd S.f).comp (mappingCocone.inl S.g) (add_zero 0)) 1 (-1) (by lia), by
+    ext n
+    simp [mappingCone.ext_from_iff _ (n + 1) n rfl,
+      mappingCocone.ext_to_iff _ (n + 1) n (by lia),
+      δ_v (-1) 0 (by lia) _ n n (by lia) (n - 1) (n + 1) rfl rfl,
+      Cochain.rightShift_v (n := 0) _ 1 (-1) (by lia) n (n - 1) (by lia) n (by lia),
+      Cochain.rightShift_v (n := 0) _ 1 (-1) (by lia) (n + 1) n (by lia) (n + 1) (by lia),
+      mappingCone.inl_v_d_assoc _ (n + 1) n (n + 2) (by lia) (by lia),
+      mappingCocone.inl_v_d_assoc _ n (n + 1) rfl]⟩
 
 end CochainComplex

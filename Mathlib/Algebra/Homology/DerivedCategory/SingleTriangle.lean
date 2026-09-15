@@ -44,7 +44,25 @@ namespace ShortExact
 category of `C` when `S` is a short exact short complex in `C`. -/
 noncomputable def singleδ : (singleFunctor C 0).obj S.X₃ ⟶
     ((singleFunctor C 0).obj S.X₁)⟦(1 : ℤ)⟧ :=
-  triangleOfSESδ (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0))
+  triangleOfSESδ (hS.map_of_exact (HomologicalComplex.single C (.up ℤ) 0))
+
+@[reassoc (attr := simp)]
+lemma descShortComplex_singleδ :
+    Q.map (CochainComplex.mappingCone.descShortComplex
+      (S.map (HomologicalComplex.single C (.up ℤ) 0))) ≫ hS.singleδ =
+    Q.map (CochainComplex.mappingCone.triangle
+      ((HomologicalComplex.single C (.up ℤ) 0).map S.f)).mor₃ ≫
+      (Q.commShiftIso (1 : ℤ)).hom.app _ :=
+  descShortComplex_triangleOfSESδ _
+
+@[reassoc (attr := simp)]
+lemma singleδ_liftShortComplex :
+    hS.singleδ ≫ (Q.map (CochainComplex.mappingCocone.liftShortComplex
+        (S.map (HomologicalComplex.single C (.up ℤ) 0))))⟦(1 : ℤ)⟧' =
+    Q.map (CochainComplex.mappingCocone.triangle
+      ((HomologicalComplex.single C (.up ℤ) 0).map S.g)).mor₃ ≫
+      (Q.commShiftIso (1 : ℤ)).hom.app _ :=
+  triangleOfSESδ_liftShortComplex _
 
 /-- The (distinguished) triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/

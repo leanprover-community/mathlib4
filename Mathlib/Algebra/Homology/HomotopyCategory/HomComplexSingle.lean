@@ -70,6 +70,7 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
 to `X ⟶ K.X q` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain ((singleFunctor C p).obj X) K n ≃+ (X ⟶ K.X q) where
   toFun α := (HomologicalComplex.singleObjXSelf (.up ℤ) p X).inv ≫ α.v p q h
@@ -138,6 +139,15 @@ lemma toSingleMk_v {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
       f ≫ (HomologicalComplex.singleObjXSelf (.up ℤ) q X).inv := by
   simp [toSingleMk]
 
+lemma toSingleMk_v' {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    (p' q' : ℤ) (h' : p' + n = q') (hp' : p' = p) :
+    (toSingleMk f h).v p' q' h' =
+      (K.XIsoOfEq (by lia)).hom ≫ f ≫
+        (HomologicalComplex.singleObjXIsoOfEq (.up ℤ) q X q' (by lia)).inv := by
+  obtain rfl : p = p' := by lia
+  obtain rfl : q = q' := by lia
+  cat_disch
+
 lemma toSingleMk_v_eq_zero {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     (p' q' : ℤ) (hpq' : p' + n = q') (hp' : p' ≠ p) :
     (toSingleMk f h).v p' q' hpq' = 0 :=
@@ -154,6 +164,7 @@ lemma δ_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C q).obj X` to `K` identify
 to `K.X p ⟶ X` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def toSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain K ((singleFunctor C q).obj X) n ≃+ (K.X p ⟶ X) where
   toFun α := α.v p q h ≫ (HomologicalComplex.singleObjXSelf (.up ℤ) q X).hom
