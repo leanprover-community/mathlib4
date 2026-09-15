@@ -245,7 +245,7 @@ theorem linearIndepOn_pair (D D' : ℙ K V) :
   rw [← ne_eq, ← linearIndependent_pair_iff_ne, LinearIndependent.pair_symm_iff,
     ← linearIndepOn_id_range_iff] at h
   · simpa using h
-  · simpa [injective_pair_iff_ne, injective_pair_iff_ne, ne_eq] using h.injective
+  · simpa [Matrix.pair_injective_iff, ne_eq] using h.injective
 
 end linearIndependent
 

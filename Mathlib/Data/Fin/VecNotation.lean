@@ -499,4 +499,30 @@ lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :
 
 end swap
 
+/-- Any function out of `Fin 0` is injective. It is useful to have this special case for `Fin 0` for
+`simp` so it doesn't do a TC search for `Subsingleton`. -/
+@[simp] theorem injective_of_fin_zero (f : Fin 0 → α) : Function.Injective f :=
+  Function.injective_of_subsingleton _
+
+/-- `vecCons x₀ x` is injective iff `x₀` is not in the range of `x` and `x` is injective.
+It is useful to have this special case of `Fin.cons_injective_iff` so that it
+syntactically matches vector notation and avoids simplifying things like `x 0`. -/
+@[simp] theorem vecCons_injective_iff {x₀ : α} {x : Fin n → α} :
+    Function.Injective (vecCons x₀ x) ↔ x₀ ∉ Set.range x ∧ Function.Injective x :=
+  Fin.cons_injective_iff
+
+/-- `![x, y]` is injective iff its two entries are distinct. -/
+theorem pair_injective_iff {x y : α} :
+    Function.Injective ![x, y] ↔ x ≠ y := by
+  simp
+
+/-- A three-element vector is injective iff its entries are pairwise distinct. -/
+theorem triple_injective_iff {x y z : α} :
+    Function.Injective ![x, y, z] ↔ x ≠ y ∧ x ≠ z ∧ y ≠ z := by
+  simp [not_or]
+  grind
+
 end Matrix
+
+@[deprecated (since := "2026-09-14")]
+alias injective_pair_iff_ne := Matrix.pair_injective_iff
