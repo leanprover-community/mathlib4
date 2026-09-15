@@ -1379,7 +1379,7 @@ where
   inaccessible username. -/
   numNiceForall : Expr → Nat
     | .forallE n _ b bi =>
-      if bi.isInstImplicit || !n.hasMacroScopes then numNiceForall b + 1 else 0
+      if bi.isExplicit && n.hasMacroScopes then 0 else numNiceForall b + 1
     | _ => 0
 
 end Mathlib.Tactic.Translate

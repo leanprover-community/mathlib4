@@ -971,7 +971,7 @@ class DenselyOrdered (α : Type*) [LT α] : Prop where
   /-- An order is dense if there is an element between any pair of distinct elements. -/
   dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂
 
-to_dual_for DenselyOrdered.dense := by simpa [and_comm] using DenselyOrdered.dense a₂ a₁ ‹_›
+to_dual_for DenselyOrdered.dense := by simpa [and_comm] using DenselyOrdered.dense a₂ a₁
 to_dual_for DenselyOrdered.mk := ⟨by simpa [and_comm] using forall_comm.mp dense⟩
 
 @[to_dual exists_between']
