@@ -20,7 +20,7 @@ public section
 instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
   refine Ring.krullDimLE_one_iff.2 fun I hI ↦ or_iff_not_imp_left.2 fun hI' ↦ ?_
-  rw [minimalPrimes_eq_minimals, Set.notMem_setOf_iff, not_minimal_iff_exists_lt hI] at hI'
+  rw [minimalPrimes_eq_minimals, Set.notMem_ofPred_iff, not_minimal_iff_exists_lt hI] at hI'
   obtain ⟨P, hlt, hP⟩ := hI'
   have := IsPrincipalIdealRing.of_surjective (Ideal.Quotient.mk P) Ideal.Quotient.mk_surjective
   have : (I.map (Ideal.Quotient.mk P)).IsMaximal := by

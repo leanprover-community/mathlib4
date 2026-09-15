@@ -134,6 +134,10 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
       Nat.lt_pow_self pp.one_lt
   · simpa only [factorization_eq_zero_of_not_prime n pp] using! hn.bot_lt
 
+/-- A weak upper bound on `n.factorization p` -/
+theorem mul_factorization_le {n p : ℕ} : p * n.factorization p ≤ n := by
+  grw [factorization_le_padicValNat, mul_padicValNat_le]
+
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
   if hn : n = 0 then simp [hn] else
@@ -387,10 +391,13 @@ theorem prod_primeFactors_gcd_mul_prod_primeFactors_mul {β : Type*} [CommMonoid
   · simp
   · rw [primeFactors_mul hm₀ hn₀, primeFactors_gcd hm₀ hn₀, mul_comm, Finset.prod_union_inter]
 
-theorem setOf_pow_dvd_eq_Icc_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
+theorem setOfPred_pow_dvd_eq_Icc_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     { i : ℕ | i ≠ 0 ∧ p ^ i ∣ n } = Set.Icc 1 (n.factorization p) := by
   ext
   simp [one_le_iff_ne_zero, pp.pow_dvd_iff_le_factorization hn]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_pow_dvd_eq_Icc_factorization := setOfPred_pow_dvd_eq_Icc_factorization
 
 /-- The set of positive powers of prime `p` that divide `n` is exactly the set of
 positive natural numbers up to `n.factorization p`. -/

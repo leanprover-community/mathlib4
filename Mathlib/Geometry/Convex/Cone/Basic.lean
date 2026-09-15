@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Convex cones
@@ -55,6 +56,7 @@ variable [Semiring R] [PartialOrder R]
 variable (R M) in
 /-- A convex cone is a subset `s` of an `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
+@[wikidata Q2256541]
 structure ConvexCone [AddCommMonoid M] [SMul R M] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set M
@@ -316,7 +318,7 @@ theorem Blunt.salient : C.Blunt → C.Salient := by
   exact mt Flat.pointed
 
 /-- A pointed convex cone defines a preorder. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toPreorder (C : ConvexCone R G) (h₁ : C.Pointed) : Preorder G where
   le x y := y - x ∈ C
   le_refl x := by rw [sub_self x]; exact h₁

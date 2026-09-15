@@ -37,7 +37,7 @@ For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.l
 
 open TensorProduct IsLocalRing
 
-@[expose] public section
+public section
 
 namespace Algebra
 
@@ -130,7 +130,6 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
   ext x
   dsimp
   induction x with
-  | zero => simp only [LinearEquiv.map_zero, LinearMap.map_zero]
   | add x y _ _ => simp only [LinearEquiv.map_add, LinearMap.map_add, *]
   | tmul x y =>
   dsimp [eₗ, eᵣ, e₁, KaehlerDifferential.cotangentComplexBaseChange,
@@ -153,7 +152,6 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   `S = (P/I)[M⁻¹] = P[M⁻¹]/I[M⁻¹]`, where `P` is a polynomial ring and `M` some submonoid of `P/I`.
   We then apply `FormallySmooth.of_formallySmooth_residueField_tensor_aux` to this presentation.
   -/
-  classical
   obtain ⟨n, f₀, hf₀⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
     (inferInstance : Algebra.FiniteType R P)
   let M' := M.comap f₀

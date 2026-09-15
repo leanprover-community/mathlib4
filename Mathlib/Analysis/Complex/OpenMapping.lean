@@ -93,7 +93,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   have h2 : ∀ᶠ z in 𝓝 z₀, AnalyticAt ℂ f z := (isOpen_analyticAt ℂ f).eventually_mem hf
   obtain ⟨ρ, hρ, h3, h4⟩ :
     ∃ ρ > 0, AnalyticOnNhd ℂ f (closedBall z₀ ρ) ∧ ∀ z ∈ closedBall z₀ ρ, z ≠ z₀ → f z ≠ f z₀ := by
-    simpa only [setOf_and, subset_inter_iff] using!
+    simpa only [ofPred_and, subset_inter_iff] using!
       nhds_basis_closedBall.mem_iff.mp (h2.and (eventually_nhdsWithin_iff.mp h1))
   replace h3 : DiffContOnCl ℂ f (ball z₀ ρ) :=
     ⟨h3.differentiableOn.mono ball_subset_closedBall,

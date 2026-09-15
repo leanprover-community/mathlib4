@@ -30,7 +30,7 @@ function with finite support, module, linear algebra
 
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Submodule
 
 namespace Finsupp
 
@@ -58,11 +58,10 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-variable {α : Type*} {M N P : Type*} {R R₂ R₃ : Type*} {S : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable {α : Type*} {M N : Type*} {R R₂ : Type*} {S : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring S]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
-variable [AddCommMonoid P] [Module R₃ P]
 
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
 
@@ -89,6 +88,7 @@ section LSum
 variable (S)
 variable [Module S N] [SMulCommClass R₂ S N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
 

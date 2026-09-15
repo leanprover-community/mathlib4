@@ -298,11 +298,11 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
   rintro I hI hIX
   have hfin : Set.Finite (ncard '' {Y | P Y ∧ I ⊆ Y ∧ Y ⊆ X}) := by
     rw [finite_iff_bddAbove, bddAbove_def]
-    simp_rw [ENat.le_coe_iff] at hP
+    simp_rw [ENat.le_natCast_iff] at hP
     use n
     rintro x ⟨Y, ⟨hY, -, -⟩, rfl⟩
     obtain ⟨n₀, heq, hle⟩ := hP Y hY
-    rwa [ncard_def, heq, ENat.toNat_coe]
+    rwa [ncard_def, heq, ENat.toNat_natCast]
   obtain ⟨Y, ⟨hY, hIY, hYX⟩, hY'⟩ :=
     Finite.exists_maximalFor' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
   refine ⟨Y, hIY, ⟨hY, hYX⟩, fun K ⟨hPK, hKX⟩ hYK ↦ ?_⟩
@@ -444,9 +444,10 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
 @[simp] theorem ofFinset_indep [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug
     subset_ground {I : Finset α} : (IndepMatroid.ofFinset
       E Indep indep_empty indep_subset indep_aug subset_ground).Indep I ↔ Indep I := by
-  simp only [IndepMatroid.ofFinset, ofFinitaryCardAugment_indep, Finset.coe_subset]
+  simp only [IndepMatroid.ofFinset]
   exact ⟨fun h ↦ h _ Subset.rfl, fun h J hJI ↦ indep_subset h hJI⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This can't be `@[simp]`, because it would cause the more useful
   `Matroid.ofIndepFinset_apply` not to be in simp normal form. -/
 theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug

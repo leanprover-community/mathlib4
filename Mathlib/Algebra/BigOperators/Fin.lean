@@ -617,6 +617,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
   rintro x hx
   rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
@@ -680,7 +681,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
 /-- Equivalence between the Sigma type `(i : Fin m) × Fin (n i)` and `Fin (∑ i : Fin m, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i : Fin m, n i) :=
   match m with
-  | 0 => @Equiv.equivOfIsEmpty _ _ _ (by simpa using Fin.isEmpty')
+  | 0 => @Equiv.equivOfIsEmpty _ _ _ (by simp)
   | Nat.succ m =>
     calc _ ≃ _ := (@finSumFinEquiv m 1).sigmaCongrLeft.symm
       _ ≃ _ := Equiv.sumSigmaDistrib _
@@ -688,6 +689,7 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
       _ ≃ _ := finSumFinEquiv
       _ ≃ _ := finCongr (Fin.sum_univ_castSucc n).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
     (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.2.le i) + k.2 := by
@@ -714,7 +716,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
     (finSigmaFinEquiv ij : ℕ) = ij.2 := by
   rw [finSigmaFinEquiv_apply, add_eq_right]
-  apply @Finset.sum_of_isEmpty _ _ _ _ (by simpa using Fin.isEmpty')
+  apply @Finset.sum_of_isEmpty _ _ _ _ (by simp)
 
 namespace List
 

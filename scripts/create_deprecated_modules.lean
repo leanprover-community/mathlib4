@@ -50,13 +50,19 @@ It returns just the imports of `fileContent`, including trailing comments if `ke
 -/
 def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
+  -- The first argument is a module token (if any).
+  let isModule := !(stx.raw.getArg 0).getArgs.isEmpty
   let imports := stx.raw.getArg 2  -- extract just the imports list
   let imports := if keepTrailing then imports else imports.unsetTrailing
   -- Use `withLeading := false` to exclude leading comments (e.g. copyright header) that the
   -- parser now attaches to the first token (see leanprover/lean4#12662).
   let some substring := imports.getSubstring? (withLeading := false) |
     throw <| .userError "No substring: we have a problem!"
-  return substring.toString
+  -- This implementation is geared for to create a deprecated module:
+  -- since imports there are unused by definition, we need to tell shake to keep them.
+  -- For a general-purpose implementation, whether to add the `--keep-all` flag
+  -- should be made configurable.
+  return (if isModule then "module -- shake: keep-all\n\n" else "") ++ substring.toString
 
 /--
 `getHeaderFromFileName fname keepTrailing` is similar to `getHeader`, except that it assumes that
@@ -161,6 +167,8 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
           and a similarity percentage.\nFull git line: '{git}'"
       continue
     let some pctNat := (pct.drop 1).toNat? | continue
+    -- We skip renames of files in `MathlibTest`.
+    if oldName.startsWith "MathlibTest/" then continue
     -- This looks like a rename with a similarity index at least as big as our threshold:
     -- we add the rename to our dictionary.
     if percent ≤ pctNat then
@@ -233,10 +241,11 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   -- Retrieve the final version of the file, before it was deleted.
   let file ← runCmd s!"git show {modifiedHash}:{fname}"
   -- Generate a module deprecation for the file `fname`.
+  -- As mathlib uses the module system, it is fine to always generate a module.
   let fileHeader ← match rename with
     | some rename => do
       let modName := mkModName rename
-      pure s!"import {modName}"
+      pure s!"module -- shake: keep-all\n\npublic import {modName}"
     | none => getHeader fname file false
   let deprecatedFile := s!"{fileHeader.trimAsciiEnd}\n\n{deprecation.pretty.trimAsciiEnd}\n"
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]

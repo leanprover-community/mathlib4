@@ -37,7 +37,7 @@ affine space, affine equivalence
 
 open Function Set
 
-open Affine
+open scoped Affine
 
 /-- An affine equivalence, denoted `P₁ ≃ᵃ[k] P₂`, is an equivalence between affine spaces
 such that both forward and inverse maps are affine.
@@ -82,6 +82,7 @@ theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) �
 theorem toAffineMap_inj {e e' : P₁ ≃ᵃ[k] P₂} : e.toAffineMap = e'.toAffineMap ↔ e = e' :=
   toAffineMap_injective.eq_iff
 
+@[macro_inline]
 instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -163,7 +164,7 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁ where
   toEquiv := e.toEquiv.symm
   linear := e.linear.symm
   map_vadd' p v :=
-    e.toEquiv.symm.apply_eq_iff_eq_symm_apply.2 <| by
+    e.toEquiv.symm.eq_symm_apply.1 <| by
       rw [Equiv.symm_symm, e.map_vadd' ((Equiv.symm e.toEquiv) p) ((LinearEquiv.symm e.linear) v),
         LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply]
 
@@ -220,8 +221,15 @@ theorem apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₂) : e (e.symm p) = p
 theorem symm_apply_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₁) : e.symm (e p) = p :=
   e.toEquiv.symm_apply_apply p
 
+theorem symm_apply_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e.symm p₁ = p₂ ↔ p₁ = e p₂ :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : p₂ = e.symm p₁ ↔ e p₂ = p₁ :=
+  e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
+  e.eq_symm_apply.symm
 
 theorem apply_eq_iff_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ := by simp
 

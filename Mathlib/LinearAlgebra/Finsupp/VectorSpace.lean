@@ -54,7 +54,6 @@ open Finsupp (linearCombination)
 
 theorem linearIndependent_single (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
-  classical
   have : linearCombination R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) =
     DFinsupp.mapRange.linearMap (fun i ↦ linearCombination R (f i)) ∘ₗ
     (sigmaFinsuppLequivDFinsupp R).toLinearMap := by ext; simp
@@ -148,6 +147,7 @@ lemma linearIndependent_single_of_ne_zero [IsDomain R] [Module R M] [IsTorsionFr
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
     {u : α → ι} {v : β → ι} (hu : u.Injective) (h : IsCompl (Set.range u) (Set.range v)) :
     lcomapDomain u hu =
@@ -192,7 +192,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
     (∑ x : n, Finsupp.single x (if i = x then a else 0)) = Finsupp.single i a := by
   simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
-    if_pos (Finset.mem_univ _)]
+    ite_eq_left (Finset.mem_univ _)]
 
 @[simp]
 theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
@@ -224,19 +224,19 @@ end FreeAbelianGroup
 namespace AddMonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[M] := .finsupp ..
+instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[M] := .finsupp ..
+instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end MonoidAlgebra
 
 namespace Polynomial
-variable {R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {R : Type*} [Semiring R]
 
 instance : Module.Free R R[X] := .of_equiv (Polynomial.toFinsuppIsoLinear _).symm
 

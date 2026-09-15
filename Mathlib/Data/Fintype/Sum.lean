@@ -10,7 +10,7 @@ public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Logic.Embedding.Set
 
 /-!
-## Instances
+# Fintypes and sum types
 
 We provide the `Fintype` instance for the sum of two fintypes.
 -/
@@ -65,7 +65,7 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective

@@ -25,8 +25,6 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 
 @[expose] public section
 
-open Topology
-
 variable {R : Type*} {S : Type*} [Semiring S] [PartialOrder S]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
@@ -217,7 +215,7 @@ theorem smul_left_def [SMul R T] (x : WithAbs v) (t : T) :
 instance [SMul R T] [FaithfulSMul R T] : FaithfulSMul (WithAbs v) T where
   eq_of_smul_eq_smul h := ofAbs_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance [SMul T R] : SMul T (WithAbs v) := (equiv v).smul T
+instance [SMul T R] : SMul T (WithAbs v) := Equiv.smul T { toFun := ofAbs, invFun := toAbs v }
 
 theorem smul_right_def [SMul T R] (t : T) (x : WithAbs v) :
     t • x = toAbs v (t • x.ofAbs) := rfl
@@ -244,7 +242,7 @@ instance moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
 @[deprecated (since := "2026-03-02")] alias instModule_left := moduleLeft
 
 instance [Semiring T] [Module T R] : Module T (WithAbs v) :=
-  fast_instance% (equiv v).module T
+  fast_instance% (equiv v).toAddEquiv.module T
 
 @[deprecated (since := "2026-03-02")] alias instModule_right := instModule
 
@@ -253,7 +251,7 @@ variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithAbs v` and `T`, when
 `v : AbsoluteValue T S`. -/
-def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
+def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).toAddEquiv.linearEquiv R
 
 variable {v}
 
@@ -310,12 +308,28 @@ end WithAbs
 
 namespace AbsoluteValue
 
-variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
-  [Nontrivial L] [Semiring S]
+variable {L K S : Type*} [CommSemiring K] [Semiring L] [Algebra K L] [FaithfulSMul K L]
+  [PartialOrder S] [Semiring S]
+
+variable (K)
+
+/-- The restriction of an absolute value `w` on `L` to `K`. -/
+def under (w : AbsoluteValue L S) : AbsoluteValue K S :=
+  w.comp (FaithfulSMul.algebraMap_injective K L)
+
+theorem under_def (w : AbsoluteValue L S) :
+    w.under K = w.comp (FaithfulSMul.algebraMap_injective K L) :=
+  rfl
+
+variable {K}
 
 /-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
 restriction of `w` to `K`. -/
 class LiesOver (w : AbsoluteValue L S) (v : AbsoluteValue K S) : Prop where
-  comp_eq (w) (v) : w.comp (algebraMap K L).injective = v
+  under_eq (w) (v) : w.under K = v
+
+@[deprecated (since := "2026-08-08")] alias LiesOver.comp_eq := LiesOver.under_eq
+
+instance (w : AbsoluteValue L S) : w.LiesOver (w.under K) := ⟨rfl⟩
 
 end AbsoluteValue

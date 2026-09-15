@@ -220,7 +220,7 @@ theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : Affine
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).centroid = s.centroid := by
   rw [eq_comm]
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   have hf : Function.Injective (S.subtype) := by
     simp only [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).centroid_map S.subtype hf
@@ -403,7 +403,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).faceOppositeCentroid i = s.faceOppositeCentroid i := by
   rw [eq_comm]
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   have hf : Function.Injective (S.subtype) := by
     simp only [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).faceOppositeCentroid_map S.subtype hf (i := i)
@@ -435,13 +435,13 @@ theorem median_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module 
     {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1))
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     (s.map f hf).median i = (s.median i).map f := by
-  simp [median, map_span, Set.image_pair]
+  simp [median, map_span]
 
 theorem median_restrict [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     AffineSubspace.map (AffineSubspace.subtype S) ((s.restrict S hS).median i) = s.median i := by
-  simp [median, map_span, Set.image_pair]
+  simp [median, map_span]
 
 /-- The `faceOppositeCentroid` lines on the median through the corresponding vertex. -/
 theorem faceOppositeCentroid_mem_median (s : Simplex k P n) (i : Fin (n + 1)) :
@@ -585,7 +585,7 @@ theorem medial_restrict [CharZero k] (s : Simplex k P n) (S : AffineSubspace k P
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).medial = s.medial.restrict S (s.affineSpan_range_medial ▸ hS) := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   ext i
   simp [medial_points]
 

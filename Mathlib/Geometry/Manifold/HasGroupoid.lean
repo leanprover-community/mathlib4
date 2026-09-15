@@ -21,7 +21,9 @@ universe u
 
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
-open Set OpenPartialHomeomorph Manifold
+open Set OpenPartialHomeomorph
+
+open scoped Manifold
 
 section HasGroupoid
 
@@ -211,7 +213,7 @@ variable (e : OpenPartialHomeomorph α H)
 whole space `α`, then that open partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
 `IsOpenEmbedding.singletonChartedSpace`.) -/
-@[implicit_reducible]
+@[instance_reducible]
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
@@ -235,7 +237,9 @@ theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ)
 whole space `α`, then the induced charted space structure on `α` is `HasGroupoid G` for any
 structure groupoid `G` which is closed under restrictions. -/
 theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H)
-    [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ (e.singletonChartedSpace h) G :=
+    [ClosedUnderRestriction G] :
+    letI := e.singletonChartedSpace h
+    HasGroupoid α G :=
   { __ := e.singletonChartedSpace h
     compatible := by
       intro e' e'' he' he''
@@ -253,7 +257,7 @@ variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `OpenPartialHomeomorph.singletonChartedSpace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
   (h.toOpenPartialHomeomorph f).singletonChartedSpace (toOpenPartialHomeomorph_source _ _)
 

@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 
 /-!
 # Algebra norms
@@ -56,6 +56,7 @@ variable {R : Type*} [SeminormedCommRing R] {S : Type*} [Ring S] [Algebra R S] {
 def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
   f.toRingNorm.toRingSeminorm
 
+@[macro_inline]
 instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective f f' h := by
@@ -76,6 +77,10 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
   map_smul_eq_mul f := f.smul'
 
 theorem toFun_eq_coe (p : AlgebraNorm R S) : p.toFun = p := rfl
+
+@[simp]
+theorem toRingNorm_apply (p : AlgebraNorm R S) (x : S) : p.toRingNorm x = p x :=
+  rfl
 
 @[ext]
 theorem ext {p q : AlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
@@ -148,6 +153,7 @@ namespace MulAlgebraNorm
 variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
   {f : AlgebraNorm R S}
 
+@[macro_inline]
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective f f' h := by
@@ -165,6 +171,10 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
   map_smul_eq_mul f := f.smul'
 
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
+
+@[simp]
+theorem toMulRingNorm_apply (p : MulAlgebraNorm R S) (x : S) : p.toMulRingNorm x = p x :=
+  rfl
 
 @[ext]
 theorem ext {p q : MulAlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
@@ -211,15 +221,11 @@ namespace MulRingNorm
 
 variable {R : Type*} [NonAssocRing R]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The ring norm underlying a multiplicative ring norm. -/
 def toRingNorm (f : MulRingNorm R) : RingNorm R where
-  toFun       := f
-  map_zero'   := f.map_zero'
-  add_le'     := f.add_le'
-  neg'        := f.neg'
+  toFun := f
+  __ := f
   mul_le' x y := le_of_eq (f.map_mul' x y)
-  eq_zero_of_map_eq_zero' := f.eq_zero_of_map_eq_zero'
 
 /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by

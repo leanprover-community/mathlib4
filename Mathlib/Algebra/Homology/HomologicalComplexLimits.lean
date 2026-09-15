@@ -33,7 +33,6 @@ section
 variable (F : J ⥤ HomologicalComplex C c)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A cone in `HomologicalComplex C c` is limit if the induced cones obtained
 by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are limit. -/
 def isLimitOfEval (s : Cone F)
@@ -60,7 +59,6 @@ def isLimitOfEval (s : Cone F)
 variable [∀ (n : ι), HasLimit (F ⋙ eval C c n)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A cone for a functor `F : J ⥤ HomologicalComplex C c` which is given in degree `n` by
 the limit `F ⋙ eval C c n`. -/
 @[simps]
@@ -113,7 +111,6 @@ section
 variable (F : J ⥤ HomologicalComplex C c)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A cocone in `HomologicalComplex C c` is colimit if the induced cocones obtained
 by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are colimit. -/
 def isColimitOfEval (s : Cocone F)
@@ -141,7 +138,6 @@ def isColimitOfEval (s : Cocone F)
 variable [∀ (n : ι), HasColimit (F ⋙ HomologicalComplex.eval C c n)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A cocone for a functor `F : J ⥤ HomologicalComplex C c` which is given in degree `n` by
 the colimit of `F ⋙ eval C c n`. -/
 @[simps]

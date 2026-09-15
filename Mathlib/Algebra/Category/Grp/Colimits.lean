@@ -69,7 +69,6 @@ lemma Quot.addMonoidHom_ext [DecidableEq J] {α : Type*} [AddMonoid α] {f g : Q
 variable (c : Cocone F)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (implementation detail) Part of the universal property of the colimit cocone, but without
 assuming that `Quot F` lives in the correct universe. -/
 def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
@@ -84,7 +83,6 @@ def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
   simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id, sub_self]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Quot.ι_desc [DecidableEq J] (j : J) (x : F.obj j) :
     Quot.desc F c (Quot.ι F j x) = c.ι.app j x := by
@@ -126,8 +124,7 @@ lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
   dsimp [quotToQuotUlift, Quot.ι]
   conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations F))
     (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
-  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp,
-    Function.comp_apply]
+  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -148,10 +145,10 @@ lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).
   dsimp [quotUliftToQuot, Quot.ι]
   conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations (F ⋙ uliftFunctor)))
     (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
-  simp only [DFinsupp.singleAddHom_apply,
-    DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp, Function.comp_apply]
+  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The additive equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
 -/
@@ -191,7 +188,7 @@ induces a cocone on `F` as long as the universes work out.
 -/
 @[simps]
 def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
-  pt := AddCommGrpCat.of A
+  pt := ↧A
   ι.app j := ofHom <| f.comp (Quot.ι F j)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -212,7 +209,6 @@ lemma Quot.desc_toCocone_desc_app [DecidableEq J] {A : Type w} [AddCommGroup A] 
   dsimp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `c` is a cocone of `F` such that `Quot.desc F c` is bijective, then `c` is a colimit
 cocone of `F`.
@@ -237,21 +233,16 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
     exact Quot.addMonoidHom_ext F (by simp [← hm])
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- (internal implementation) The colimit cocone of a functor `F`, implemented as a quotient of
 `DFinsupp (fun j ↦ F.obj j)`, under the assumption that said quotient is small.
 -/
 @[simps pt ι_app]
 noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocone F where
-  pt := AddCommGrpCat.of (Shrink (Quot F))
+  pt := ↧(Shrink (Quot F))
   ι :=
     { app j :=
         AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
-      naturality _ _ _ := by
-        ext
-        dsimp
-        change Shrink.addEquiv.symm _ = _
-        rw [Quot.map_ι] }
+      naturality _ _ _ := by ext; simp }
 
 @[simp]
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrpCat.{w}) [Small.{w} (Quot F)] :
@@ -300,12 +291,13 @@ namespace AddCommGrpCat
 
 open QuotientAddGroup
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The categorical cokernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical quotient.
 -/
 noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
-    cokernel f ≅ AddCommGrpCat.of (H ⧸ AddMonoidHom.range f.hom) where
+    cokernel f ≅ ↧(H ⧸ AddMonoidHom.range f.hom) where
   hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
         simp

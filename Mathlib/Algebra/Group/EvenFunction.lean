@@ -34,11 +34,17 @@ protected def Even (f : α → β) : Prop := ∀ a, f (-a) = f a
 /-- A function `f` is _odd_ if it satisfies `f (-x) = -f x` for all `x`. -/
 protected def Odd [Neg β] (f : α → β) : Prop := ∀ a, f (-a) = -(f a)
 
+/-- An even function `f` satisfies `f (-x) = f x`. -/
+lemma Even.eq {f : α → β} (hf : f.Even) (x : α) : f (-x) = f x := hf x
+
 /-- Any constant function is even. -/
 lemma Even.const (b : β) : Function.Even (fun _ : α ↦ b) := fun _ ↦ rfl
 
 /-- The zero function is even. -/
 lemma Even.zero [Zero β] : Function.Even (fun (_ : α) ↦ (0 : β)) := Even.const 0
+
+/-- An odd function `f` satisfies `f (-x) = -f x`. -/
+lemma Odd.eq [Neg β] {f : α → β} (hf : f.Odd) (x : α) : f (-x) = -f x := hf x
 
 /-- The zero function is odd. -/
 lemma Odd.zero [NegZeroClass β] : Function.Odd (fun (_ : α) ↦ (0 : β)) := fun _ ↦ neg_zero.symm

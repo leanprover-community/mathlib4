@@ -197,6 +197,12 @@ lemma Reachable.degree_pos_right {G : SimpleGraph V} {u v : V} [Fintype (G.neigh
     (huv : u ≠ v) (hreach : G.Reachable u v) : 0 < G.degree v :=
   hreach.symm.degree_pos_left huv.symm
 
+lemma Reachable.of_isUniversal {G : SimpleGraph V} {u : V} (v : V) (h : G.IsUniversal u) :
+    G.Reachable u v := by
+  by_cases! h' : u = v
+  · exact h' ▸ Reachable.rfl
+  · exact (h h').reachable
+
 lemma not_reachable_of_neighborSet_left_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
     (hu : G.neighborSet u = ∅) : ¬G.Reachable u v :=
   (Reachable.nonempty_neighborSet_left huv).mt (Set.not_nonempty_iff_eq_empty.mpr hu)
@@ -215,7 +221,7 @@ lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype 
   exact not_reachable_of_left_degree_zero huv.symm hu
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
 /-- A graph is preconnected if every pair of vertices is reachable from one another. -/
@@ -373,6 +379,11 @@ theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := b
 
 theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected :=
   G.connected_or_preconnected_compl.elim .inl (.inr ⟨·⟩)
+
+variable {G v} in
+lemma Connected.of_isUniversal (h : G.IsUniversal v) : G.Connected := by
+  refine connected_iff _ |>.mpr ⟨fun u w ↦ ?_, ⟨v⟩⟩
+  exact (Reachable.of_isUniversal u h).symm.trans (Reachable.of_isUniversal w h)
 
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
 components of a graph. -/
@@ -541,7 +552,7 @@ def supp (C : G.ConnectedComponent) :=
 theorem supp_injective :
     Function.Injective (ConnectedComponent.supp : G.ConnectedComponent → Set V) := by
   refine ConnectedComponent.ind₂ ?_
-  simp only [ConnectedComponent.supp, Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq]
+  simp only [ConnectedComponent.supp, Set.ext_iff, ConnectedComponent.eq, Set.mem_ofPred_eq]
   intro v w h
   rw [reachable_comm, h]
 
@@ -741,7 +752,7 @@ lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
 /-! ### Bridge edges -/
 
 section BridgeEdges
-variable {u v : V}
+variable {u v : V} {e : Sym2 V}
 
 /-- An edge of a graph is a *bridge* if without it, its incident vertices
 are not reachable from one another. -/
@@ -762,7 +773,6 @@ theorem IsBridge.reachable_iff_adj (h : G.IsBridge s(u, v)) : G.Reachable u v �
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
     (G.deleteEdges {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor
@@ -852,22 +862,25 @@ lemma IsBridge.notMem_edges_of_isCycle {e : Sym2 V} {u : V} {p : G.Walk u u}
 @[deprecated (since := "2026-06-04")]
 alias isBridge_iff_mem_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
 
+/-- Deleting a non-bridge edge preserves reachability. -/
+theorem Reachable.reachable_deleteEdges_of_not_isBridge (he : ¬G.IsBridge e) (h : G.Reachable u v) :
+    (G.deleteEdges {e}).Reachable u v := by
+  have ⟨p⟩ := h
+  induction p with | nil => simp | @cons u v w hadj p ih
+  refine .trans ?_ <| ih ⟨p⟩
+  rcases eq_or_ne s(u, v) e with rfl | hne
+  · exact isBridge_iff.not_left.mp he
+  · exact deleteEdges_adj.mpr ⟨hadj, hne⟩ |>.reachable
+
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
-lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
-    (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
-  classical
-  simp only [isBridge_iff, not_not] at h
-  obtain hxy | hxy := em' <| G.Adj x y
-  · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
-  refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
-  obtain ⟨P, hP⟩ := hG.exists_isPath w x
-  obtain heP | heP := em' <| s(x, y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x, y)} (by grind)).reverse⟩
-  have hyP := P.snd_mem_support_of_mem_edges heP
-  let P₁ := P.takeUntil y hyP
-  have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
-  have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact h.trans (.symm ⟨P₁.toDeleteEdges {s(x, y)} (by grind)⟩)
+theorem Preconnected.connected_deleteEdges_of_not_isBridge (hG : G.Preconnected)
+    (he : ¬G.IsBridge e) : (G.deleteEdges {e}).Connected where
+  preconnected := (hG · · |>.reachable_deleteEdges_of_not_isBridge he)
+  nonempty := e.ind fun v _ ↦ ⟨v⟩
+
+@[deprecated (since := "2026-08-22")]
+alias Connected.connected_delete_edge_of_not_isBridge :=
+  Preconnected.connected_deleteEdges_of_not_isBridge
 
 theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.IsBridge e) :
     G.IsBridge e := by obtain ⟨a, b⟩ := e; rw [isBridge_iff] at ⊢ h; grw [hG]; assumption

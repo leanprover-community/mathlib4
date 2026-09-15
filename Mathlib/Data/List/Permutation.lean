@@ -12,8 +12,9 @@ public import Mathlib.Data.List.InsertIdx
 public import Mathlib.Data.List.Induction
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Permutations of a list

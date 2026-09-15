@@ -24,15 +24,20 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
-public section
-
-noncomputable section
-
 open Finset
 
-variable {ι κ α β : Type*}
+public noncomputable section
+
+variable {ι κ α β M : Type*}
 
 namespace Finsupp
+
+@[simp] lemma support_mapDomain_of_nonneg [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+    [DecidableEq β] {x : α →₀ M} (hx : 0 ≤ x) (f : α → β) :
+    (mapDomain f x).support = x.support.image f := by
+  ext b
+  simp [mapDomain_apply, Finsupp.sum, single_apply]
+  grind [Finset.sum_eq_zero_iff_of_nonneg, Finsupp.le_def]
 
 /-! ### Order structures -/
 
@@ -70,7 +75,7 @@ theorem sum_pos' (h : ∀ i ∈ f.support, 0 ≤ g i (f i)) (hf : ∃ i ∈ f.su
 end IsOrderedCancelAddMonoid
 
 section Preorder
-variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
+variable [Preorder α] {i : ι} {a b : α}
 
 @[simp, gcongr] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single
@@ -85,7 +90,6 @@ variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β]
 lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
     (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
     (hh₀ : ∀ i ∈ f₁.support ∪ f₂.support, h i 0 = 0) : f₁.sum h ≤ f₂.sum h := by
-  classical
   rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
     sum_of_support_subset _ Finset.subset_union_right _ hh₀]
   gcongr with i hi
@@ -292,9 +296,9 @@ lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
     (f1 - f2).mapDomain f = f1.mapDomain f - f2.mapDomain f := by
   ext y
   by_cases! hy : y ∉ Set.range f
-  · simp [mapDomain_notin_range _ _ hy]
+  · simp [mapDomain_of_notMem_range _ _ hy]
   · obtain ⟨x, rfl⟩ := hy
-    simp [mapDomain_apply h]
+    simp [h]
 
 lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by

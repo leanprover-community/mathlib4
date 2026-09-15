@@ -46,7 +46,7 @@ abbrev CompHaus := CompHausLike (fun _ ↦ True)
 namespace CompHaus
 
 instance : Inhabited CompHaus :=
-  ⟨{ toTop := TopCat.of PEmpty, prop := trivial}⟩
+  ⟨{ toTop := ↧PEmpty, prop := trivial}⟩
 
 instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩
@@ -64,7 +64,12 @@ instance : HasProp (fun _ ↦ True) X := ⟨trivial⟩
 /-- A constructor for objects of the category `CompHaus`,
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
-abbrev of : CompHaus := CompHausLike.of _ X
+abbrev of : CompHaus := ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CompHaus.of X` as `↧X`. -/
+@[app_delab CompHaus.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 end CompHaus
 
@@ -77,7 +82,7 @@ compact Hausdorff spaces.
 -/
 @[simps!]
 def stoneCechObj (X : TopCat) : CompHaus :=
-  CompHaus.of (StoneCech X)
+  ↧(StoneCech X)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of compact
@@ -144,7 +149,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j } =
             ⋂ (i : J) (j : J) (f : i ⟶ j), { u | F.map f (u i) = u j } := by
           ext1
-          simp only [Set.mem_iInter, Set.mem_setOf_eq]
+          simp only [Set.mem_iInter, Set.mem_ofPred_eq]
         rw [this]
         apply isClosed_iInter
         intro i
@@ -192,8 +197,8 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_isClosed hC hD hCD
-    haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
-    haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
+    have : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
+    have : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
     let g : Y ⟶ Z := ofHom _
       ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,

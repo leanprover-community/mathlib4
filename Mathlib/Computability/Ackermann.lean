@@ -97,7 +97,7 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     calc 2 * 3
       _ ≤ 2 * 2 ^ 3 := by simp
-      _ ≤ 2 * 2 ^ (n + 3) := by gcongr <;> lia
+      _ ≤ 2 * 2 ^ (n + 3) := by gcongr; lia
 
 theorem ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp
@@ -358,10 +358,12 @@ lemma primrec_pappAck_step : Primrec pappAck.step := by
     [Code.primrec₂_curry.comp, Code.primrec₂_prec.comp, Code.primrec₂_comp.comp,
       _root_.Primrec.id, Primrec.const]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck_step_zero (c : Code) : (pappAck.step c).eval 0 = c.eval 1 := by
   simp [pappAck.step, Code.eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck_step_succ (c : Code) (n) :
     (pappAck.step c).eval (n + 1) = ((pappAck.step c).eval n).bind c.eval := by
@@ -372,6 +374,7 @@ lemma primrec_pappAck : Primrec pappAck := by
     convert! this using 2 with n; induction n <;> simp [pappAck, *]
   apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
   induction m, n using ack.induct with

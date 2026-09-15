@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.CongrExclamation
+meta import Mathlib.Tactic.CongrExclamation
 
 /-!
 # The `convert` tactic.
@@ -76,8 +77,11 @@ To elaborate config options for `convert`, use `Convert.elabConfig` which choose
 between `Convert.CheapConfig` and `Convert.ExpensiveConfig` based on other flags.
 -/
 structure Convert.CheapConfig extends Congr!.Config where
+  /-- Solve instance equality at the pre-step, since there are no cases where doing so at the
+  post-step solves more goals, and doing this earlier means less work for the congruence algorithm.
+  -/
+  preTransparency := .instances
   postTransparency := .reducible
-  partialApp := false
   sameFun := true
 
 /-- Internal elaborator for `Convert.CheapConfig`: use `Convert.elabConfig` instead. -/
@@ -96,10 +100,12 @@ example the following call runs at `.instances` transparency.
 convert! (postTransparency := .instances)
 ```
 -/
-structure Convert.ExpensiveConfig extends Congr!.Config where
+structure Convert.ExpensiveConfig extends Convert.CheapConfig where
   -- TODO: also enable this in the future?
   -- preTransparency := .default
   -- transparency := .default
+  postTransparency := .default
+  sameFun := false
 
 /-- Internal elaborator for `Convert.ExpensiveConfig`: use `Convert.elabConfig` instead. -/
 declare_config_elab Convert.elabExpensiveConfig Convert.ExpensiveConfig

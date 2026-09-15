@@ -251,6 +251,7 @@ namespace OneHypercover
 variable {S : C} {E : OneHypercover.{w} J S} {F : OneHypercover.{w'} J S}
 variable [HasPullbacks C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two refinement morphism `f, g : E ⟶ F`, this is a `1`-hypercover `W` that
 admits a morphism `h : W ⟶ E` such that `h ≫ f` and `h ≫ g` are homotopic. Hence
 they become equal after quotienting out by homotopy. -/
@@ -302,7 +303,6 @@ variable {S : C}
 
 instance : Nonempty (J.HOneHypercover S) := ⟨⟨Nonempty.some inferInstance⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks, the category of `1`-hypercovers up to homotopy is cofiltered. -/
 instance isCofiltered_of_hasPullbacks [HasPullbacks C] : IsCofiltered (J.HOneHypercover S) where
   cone_objs {E F} :=

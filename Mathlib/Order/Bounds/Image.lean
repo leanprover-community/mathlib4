@@ -158,18 +158,13 @@ section StrictMono
 
 variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
+@[to_dual]
 lemma StrictMono.mem_upperBounds_image (hf : StrictMono f) :
     f a ∈ upperBounds (f '' s) ↔ a ∈ upperBounds s := by simp [upperBounds, hf.le_iff_le]
 
-lemma StrictMono.mem_lowerBounds_image (hf : StrictMono f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ lowerBounds s := by simp [lowerBounds, hf.le_iff_le]
-
+@[to_dual]
 lemma StrictMono.map_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a := by
   simp [IsLeast, hf.injective.eq_iff, hf.mem_lowerBounds_image]
-
-lemma StrictMono.map_isGreatest (hf : StrictMono f) :
-    IsGreatest (f '' s) (f a) ↔ IsGreatest s a := by
-  simp [IsGreatest, hf.injective.eq_iff, hf.mem_upperBounds_image]
 
 end StrictMono
 
@@ -177,19 +172,14 @@ section StrictAnti
 
 variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
+@[to_dual]
 lemma StrictAnti.mem_upperBounds_image (hf : StrictAnti f) :
     f a ∈ upperBounds (f '' s) ↔ a ∈ lowerBounds s := by
   simp [upperBounds, lowerBounds, hf.le_iff_ge]
 
-lemma StrictAnti.mem_lowerBounds_image (hf : StrictAnti f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ upperBounds s := by
-  simp [upperBounds, lowerBounds, hf.le_iff_ge]
-
+@[to_dual]
 lemma StrictAnti.map_isLeast (hf : StrictAnti f) : IsLeast (f '' s) (f a) ↔ IsGreatest s a := by
   simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_lowerBounds_image]
-
-lemma StrictAnti.map_isGreatest (hf : StrictAnti f) : IsGreatest (f '' s) (f a) ↔ IsLeast s a := by
-  simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_upperBounds_image]
 
 end StrictAnti
 
@@ -430,7 +420,13 @@ lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀
   exact (h x).trans (hC <| mem_range_self x)
 
 @[to_dual]
-lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
+lemma BddAbove.range_comp_left {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
     (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
   change BddAbove (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddAbove hf
+
+@[deprecated BddAbove.range_comp_left (since := "2026-06-07")]
+alias BddAbove.range_comp := BddAbove.range_comp_left
+
+@[deprecated BddBelow.range_comp_left (since := "2026-06-07")]
+alias BddBelow.range_comp := BddBelow.range_comp_left
