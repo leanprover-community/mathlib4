@@ -56,7 +56,7 @@ instance (priority := 100) instFieldContMDiffRing
     contMDiff_mul := by
       rw [contMDiff_iff]
       refine ⟨continuous_mul, fun x y => ?_⟩
-      simp only [mfld_simps, chartAt_self_eq]
+      simp only [mfld_simps]
       rw [contDiffOn_univ]
       exact contDiff_mul }
 
