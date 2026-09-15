@@ -603,6 +603,22 @@ lemma deriv_le_slope (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy
     deriv f x ≤ slope f x y :=
   le_slope_of_hasDerivAt hfc hx hy hxy hfd.hasDerivAt
 
+/-- Additive form of the 1D first-order convexity inequality: for `f : ℝ → ℝ` convex on `S`,
+`x, y ∈ S` with `x < y`, and `f` differentiable at `x`, we have
+`f x + f' * (y - x) ≤ f y` where `f' = deriv f x`. -/
+lemma add_hasDerivAt_mul_le (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (ha : HasDerivAt f f' x) :
+    f x + f' * (y - x) ≤ f y := by
+  have h := hfc.le_slope_of_hasDerivAt hx hy hxy ha
+  rw [slope_def_field, le_div_iff₀ (sub_pos.mpr hxy)] at h
+  linarith
+
+/-- Reformulation of `ConvexOn.add_hasDerivAt_mul_le` using `deriv`. -/
+lemma add_deriv_mul_le (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (hfd : DifferentiableAt ℝ f x) :
+    f x + deriv f x * (y - x) ≤ f y :=
+  hfc.add_hasDerivAt_mul_le hx hy hxy hfd.hasDerivAt
+
 end left
 
 section right
@@ -774,6 +790,22 @@ lemma deriv_lt_slope (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S
     deriv f x < slope f x y :=
   hfc.lt_slope_of_hasDerivAt hx hy hxy hfd.hasDerivAt
 
+/-- Strict additive form of the 1D first-order convexity inequality: for `f : ℝ → ℝ` strictly
+convex on `S`, `x, y ∈ S` with `x < y`, and `f` differentiable at `x`, we have
+`f x + f' * (y - x) < f y` where `f' = deriv f x`. -/
+lemma add_hasDerivAt_mul_lt (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (ha : HasDerivAt f f' x) :
+    f x + f' * (y - x) < f y := by
+  have h := hfc.lt_slope_of_hasDerivAt hx hy hxy ha
+  rw [slope_def_field, lt_div_iff₀ (sub_pos.mpr hxy)] at h
+  linarith
+
+/-- Reformulation of `StrictConvexOn.add_hasDerivAt_mul_lt` using `deriv`. -/
+lemma add_deriv_mul_lt (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (hfd : DifferentiableAt ℝ f x) :
+    f x + deriv f x * (y - x) < f y :=
+  hfc.add_hasDerivAt_mul_lt hx hy hxy hfd.hasDerivAt
+
 end left
 
 section right
@@ -892,6 +924,22 @@ lemma slope_le_deriv (hfc : ConcaveOn ℝ S f)
     slope f x y ≤ deriv f x :=
   hfc.slope_le_of_hasDerivAt hx hy hxy hfd.hasDerivAt
 
+/-- Additive form of the 1D first-order concavity inequality: for `f : ℝ → ℝ` concave on `S`,
+`x, y ∈ S` with `x < y`, and `f` differentiable at `x`, we have
+`f y ≤ f x + f' * (y - x)` where `f' = deriv f x`. -/
+lemma le_add_hasDerivAt_mul (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (ha : HasDerivAt f f' x) :
+    f y ≤ f x + f' * (y - x) := by
+  have h := hfc.slope_le_of_hasDerivAt hx hy hxy ha
+  rw [slope_def_field, div_le_iff₀ (sub_pos.mpr hxy)] at h
+  linarith
+
+/-- Reformulation of `ConcaveOn.le_add_hasDerivAt_mul` using `deriv`. -/
+lemma le_add_deriv_mul (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (hfd : DifferentiableAt ℝ f x) :
+    f y ≤ f x + deriv f x * (y - x) :=
+  hfc.le_add_hasDerivAt_mul hx hy hxy hfd.hasDerivAt
+
 end left
 
 section right
@@ -991,6 +1039,22 @@ lemma slope_lt_deriv (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ 
     (hfd : DifferentiableAt ℝ f x) :
     slope f x y < deriv f x :=
   hfc.slope_lt_of_hasDerivAt hx hy hxy hfd.hasDerivAt
+
+/-- Strict additive form of the 1D first-order concavity inequality: for `f : ℝ → ℝ` strictly
+concave on `S`, `x, y ∈ S` with `x < y`, and `f` differentiable at `x`, we have
+`f y < f x + f' * (y - x)` where `f' = deriv f x`. -/
+lemma lt_add_hasDerivAt_mul (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (ha : HasDerivAt f f' x) :
+    f y < f x + f' * (y - x) := by
+  have h := hfc.slope_lt_of_hasDerivAt hx hy hxy ha
+  rw [slope_def_field, div_lt_iff₀ (sub_pos.mpr hxy)] at h
+  linarith
+
+/-- Reformulation of `StrictConcaveOn.lt_add_hasDerivAt_mul` using `deriv`. -/
+lemma lt_add_deriv_mul (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
+    (hfd : DifferentiableAt ℝ f x) :
+    f y < f x + deriv f x * (y - x) :=
+  hfc.lt_add_hasDerivAt_mul hx hy hxy hfd.hasDerivAt
 
 end left
 
