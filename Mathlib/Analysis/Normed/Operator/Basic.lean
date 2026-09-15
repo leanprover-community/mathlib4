@@ -389,6 +389,16 @@ instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨opNorm_smul_le⟩
 
+instance {E F : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsNormableSpace 𝕜 E]
+    [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [IsNormableSpace 𝕜₂ F] :
+    IsNormableSpace 𝕜₂ (E →SL[σ₁₂] F) := by
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := IsNormableSpace.toNormedSpace 𝕜 E
+  let : SeminormedAddCommGroup F := IsNormableSpace.toSeminormedAddCommGroup 𝕜₂ F
+  let : NormedSpace 𝕜₂ F := IsNormableSpace.toNormedSpace 𝕜₂ F
+  infer_instance
+
 /-- The operator norm is submultiplicative. -/
 theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
   csInf_le bounds_bddBelow ⟨by positivity, fun x => by
