@@ -178,7 +178,7 @@ noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup 
   invFun Φ := (monoidHomMonoidHomEquiv G M).mapSubgroup (domRestrictHom Φ.ofDual Mˣ).ker
   map_rel_iff' {H₁} {H₂} := by
     simp_rw [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual,
-      SetLike.le_def, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
+      IsConcreteLE.le_iff, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
     grind [forall_monoidHom_apply_eq_one_iff M H₂]
   left_inv H := by
     ext x

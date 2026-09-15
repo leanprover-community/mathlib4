@@ -326,7 +326,7 @@ end Sylow
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
     P ∈ fixedPoints H (Sylow p G) ↔ H ≤ normalizer P := by
-  simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
+  simp_rw [IsConcreteLE.le_iff, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
 
 theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : Sylow p G) :
     P ⊓ normalizer Q = P ⊓ Q :=
