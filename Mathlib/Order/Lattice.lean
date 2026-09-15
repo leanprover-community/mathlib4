@@ -22,6 +22,10 @@ meet-semilattices.
 Distributive lattices are lattices which satisfy any of four equivalent distributivity properties,
 of `sup` over `inf`, on the left or on the right.
 
+(Semi)modular lattices, a kind of lattice useful in algebra.
+For examples, look to the subobject lattices of abelian groups, submodules, and ideals, or consider
+any distributive lattice.
+
 ## Main declarations
 
 * `SemilatticeSup`: a type class for join semilattices
@@ -35,7 +39,22 @@ of `sup` over `inf`, on the left or on the right.
 * `Lattice.mk'`: an alternative constructor for `Lattice` via proofs that `⊔` and `⊓` are
   commutative, associative and satisfy a pair of "absorption laws".
 
+## Typeclasses
+
 * `DistribLattice`: a type class for distributive lattices.
+
+We define (semi)modularity typeclasses as Prop-valued mixins.
+
+* `IsWeakUpperModularLattice`: Weakly upper modular lattices. Lattice where `a ⊔ b` covers `a`
+  and `b` if `a` and `b` both cover `a ⊓ b`.
+* `IsWeakLowerModularLattice`: Weakly lower modular lattices. Lattice where `a` and `b` cover
+  `a ⊓ b` if `a ⊔ b` covers both `a` and `b`
+* `IsUpperModularLattice`: Upper modular lattices. Lattices where `a ⊔ b` covers `a` if `b`
+  covers `a ⊓ b`.
+* `IsLowerModularLattice`: Lower modular lattices. Lattices where `a` covers `a ⊓ b` if `a ⊔ b`
+  covers `b`.
+* `IsModularLattice`: Modular lattices. Lattices where `a ≤ c → (a ⊔ b) ⊓ c = a ⊔ (b ⊓ c)`. We
+  only require an inequality because the other direction holds in all lattices.
 
 ## Notation
 
@@ -503,6 +522,37 @@ class DistribLattice (α) extends Lattice α where
   /-- The infimum distributes over the supremum -/
   protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
 
+/-- A weakly upper modular lattice is a lattice where `a ⊔ b` covers `a` and `b` if `a` and `b` both
+cover `a ⊓ b`. -/
+class IsWeakUpperModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a ⊔ b` covers `a` and `b` if `a` and `b` both cover `a ⊓ b`. -/
+  covBy_sup_of_inf_covBy_covBy {a b : α} : a ⊓ b ⋖ a → a ⊓ b ⋖ b → a ⋖ a ⊔ b
+
+/-- A weakly lower modular lattice is a lattice where `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers
+both `a` and `b`. -/
+@[to_dual existing]
+class IsWeakLowerModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers both `a` and `b` -/
+  inf_covBy_of_covBy_covBy_sup {a b : α} : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ a
+
+/-- An upper modular lattice, aka semimodular lattice, is a lattice where `a ⊔ b` covers `a` and `b`
+if either `a` or `b` covers `a ⊓ b`. -/
+class IsUpperModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a ⊔ b` covers `a` and `b` if either `a` or `b` covers `a ⊓ b` -/
+  covBy_sup_of_inf_covBy {a b : α} : a ⊓ b ⋖ a → b ⋖ a ⊔ b
+
+/-- A lower modular lattice is a lattice where `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers
+either `a` or `b`. -/
+@[to_dual existing]
+class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
+/-- `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers either `a` or `b` -/
+  inf_covBy_of_covBy_sup {a b : α} : a ⋖ a ⊔ b → a ⊓ b ⋖ b
+
+/-- A modular lattice is one with a limited associativity between `⊓` and `⊔`. -/
+class IsModularLattice (α : Type*) [Lattice α] : Prop where
+/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)` -/
+  sup_inf_le_assoc_of_le : ∀ {x : α} (y : α) {z : α}, x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z
+
 section DistribLattice
 
 variable [DistribLattice α] {x y z : α}
@@ -560,6 +610,67 @@ abbrev DistribLattice.ofInfSupLe
     [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α where
   le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ { (inferInstance : Lattice αᵒᵈ) with
       le_sup_inf := inf_sup_le }).le_sup_inf
+
+/-- A lattice satisfying the (self-dual, a priori weaker) law `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)`
+is distributive. -/
+abbrev DistribLattice.ofSupInfLeAssoc [Lattice α] (h : ∀ x y z : α, (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z) :
+    DistribLattice α where
+  le_sup_inf x y z := (h x y (x ⊔ z)).trans <|
+    (sup_le_sup_left ((inf_comm ..).trans_le (h x z y)) _).trans <| by
+    rw [inf_comm, ← sup_assoc, sup_idem]
+
+section IsModularLattice
+
+variable [Lattice α] [IsModularLattice α]
+
+theorem sup_inf_le_assoc_of_le {x z : α} (y : α) : x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z :=
+  IsModularLattice.sup_inf_le_assoc_of_le y
+
+@[to_dual existing]
+theorem inf_sup_le_assoc_of_le {x z : α} (y : α) : z ≤ x → x ⊓ (y ⊔ z) ≤ x ⊓ y ⊔ z := by
+  simp_rw [inf_comm x, sup_comm _ z]
+  exact sup_inf_le_assoc_of_le y
+
+@[to_dual]
+theorem sup_inf_assoc_of_le {x : α} (y : α) {z : α} (h : x ≤ z) : (x ⊔ y) ⊓ z = x ⊔ y ⊓ z :=
+  le_antisymm (sup_inf_le_assoc_of_le y h)
+    (le_inf (sup_le_sup_left inf_le_left _) (sup_le h inf_le_right))
+
+@[to_dual]
+theorem IsModularLattice.inf_sup_inf_assoc {x y z : α} : x ⊓ z ⊔ y ⊓ z = (x ⊓ z ⊔ y) ⊓ z :=
+  (sup_inf_assoc_of_le y inf_le_right).symm
+
+instance : IsModularLattice αᵒᵈ :=
+  ⟨fun y z xz =>
+    le_of_eq
+      (by
+        rw [inf_comm, sup_comm, eq_comm, inf_comm, sup_comm]
+        exact @sup_inf_assoc_of_le α _ _ _ y _ xz)⟩
+
+variable {x y z : α}
+
+@[to_dual]
+theorem eq_of_le_of_inf_le_of_le_sup (hxy : x ≤ y) (hinf : y ⊓ z ≤ x) (hsup : y ≤ x ⊔ z) :
+    x = y := by
+  refine hxy.antisymm ?_
+  rw [← inf_eq_right, sup_inf_assoc_of_le _ hxy] at hsup
+  rwa [← hsup, sup_le_iff, and_iff_right rfl.le, inf_comm]
+
+@[to_dual]
+theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z) (hsup : y ⊔ z ≤ x ⊔ z) :
+    x = y :=
+  eq_of_le_of_inf_le_of_le_sup hxy (hinf.trans inf_le_left) (le_sup_left.trans hsup)
+
+@[to_dual]
+theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : y < x) (hinf : x ⊓ z ≤ y ⊓ z) : y ⊔ z < x ⊔ z :=
+  lt_of_le_of_ne (sup_le_sup_right (le_of_lt hxy) _) fun hsup =>
+    ne_of_lt hxy <| eq_of_le_of_inf_le_of_sup_le (le_of_lt hxy) hinf (le_of_eq hsup.symm)
+
+theorem strictMono_inf_prod_sup : StrictMono fun x ↦ (x ⊓ z, x ⊔ z) := fun _x _y hxy ↦
+  ⟨⟨inf_le_inf_right _ hxy.le, sup_le_sup_right hxy.le _⟩,
+    fun ⟨inf_le, sup_le⟩ ↦ (sup_lt_sup_of_lt_of_inf_le_inf hxy inf_le).not_ge sup_le⟩
+
+end IsModularLattice
 
 /-!
 ### Lattices derived from linear orders
