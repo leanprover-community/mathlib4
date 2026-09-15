@@ -507,8 +507,7 @@ section Stabilizer
 
 /- For transitive actions, construction of the lattice equivalence
   `block_stabilizerOrderIso` between
-  - blocks of `MulAction G X` containing a point `a ∈ X`,
-  and
+  - blocks of `MulAction G X` containing a point `a ∈ X`, and
   - subgroups of G containing `stabilizer G a`.
   (Wielandt, th. 7.5) -/
 
