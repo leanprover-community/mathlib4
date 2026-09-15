@@ -102,7 +102,7 @@ instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
 
 @[to_dual existing]
 instance _root_.LowerSet.instPartialOrder : PartialOrder (LowerSet α) :=
-  PartialOrder.lift _ SetLike.coe_injective
+  .ofSetLike (LowerSet α) α
 
 @[to_dual existing]
 instance _root_.LowerSet.completeLattice : CompleteLattice (LowerSet α) :=
