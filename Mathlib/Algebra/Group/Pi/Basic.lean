@@ -70,6 +70,11 @@ instance [∀ i, MulOneClass (f i)] [∀ i, IsDedekindFiniteMonoid (f i)] :
   mul_eq_one_symm := by simp [funext_iff, mul_eq_one_comm]
 
 @[to_additive]
+instance [∀ i, MulOneClass (f i)] [∀ i, IsSelfInvMonoid (f i)] :
+    IsSelfInvMonoid (∀ i, f i) where
+  mul_self _ := by ext; exact IsSelfInvMonoid.mul_self _
+
+@[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
   inv_one := by ext; exact inv_one
 

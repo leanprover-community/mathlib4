@@ -83,6 +83,10 @@ lemma ofNat_isUnit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by simp [isUnit_
 lemma isUnit_mul_self (hu : IsUnit u) : u * u = 1 :=
   (isUnit_eq_one_or hu).elim (fun h ↦ h.symm ▸ rfl) fun h ↦ h.symm ▸ rfl
 
+/-- The units of `ℤ` are `±1`, so every unit is its own inverse. -/
+instance : IsSelfInvMonoid ℤˣ where
+  mul_self u := Units.ext <| isUnit_mul_self u.isUnit
+
 lemma isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b)
     (hc : IsUnit c) (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
   rw [isUnit_iff] at ha hb hc hd

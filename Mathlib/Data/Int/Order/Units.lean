@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 module
 
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
@@ -22,19 +23,17 @@ theorem isUnit_iff_abs_eq {x : ℤ} : IsUnit x ↔ abs x = 1 := by
 theorem isUnit_sq {a : ℤ} (ha : IsUnit a) : a ^ 2 = 1 := by rw [sq, isUnit_mul_self ha]
 
 @[simp]
-theorem units_sq (u : ℤˣ) : u ^ 2 = 1 := by
-  rw [Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one, isUnit_sq u.isUnit]
+theorem units_sq (u : ℤˣ) : u ^ 2 = 1 := IsSelfInvMonoid.sq u
 
 alias units_pow_two := units_sq
 
 @[simp]
-theorem units_mul_self (u : ℤˣ) : u * u = 1 := by rw [← sq, units_sq]
+theorem units_mul_self (u : ℤˣ) : u * u = 1 := IsSelfInvMonoid.mul_self u
 
 @[simp]
-theorem units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := by rw [inv_eq_iff_mul_eq_one, units_mul_self]
+theorem units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := IsSelfInvMonoid.inv_eq u
 
-theorem units_div_eq_mul (u₁ u₂ : ℤˣ) : u₁ / u₂ = u₁ * u₂ := by
-  rw [div_eq_mul_inv, units_inv_eq_self]
+theorem units_div_eq_mul (u₁ u₂ : ℤˣ) : u₁ / u₂ = u₁ * u₂ := IsSelfInvMonoid.div_eq_mul u₁ u₂
 
 -- `Units.val_mul` is a "wrong turn" for the simplifier, this undoes it and simplifies further
 @[simp]
@@ -52,10 +51,7 @@ theorem sq_eq_one_of_sq_lt_four {x : ℤ} (h1 : x ^ 2 < 4) (h2 : x ≠ 0) : x ^ 
 theorem sq_eq_one_of_sq_le_three {x : ℤ} (h1 : x ^ 2 ≤ 3) (h2 : x ≠ 0) : x ^ 2 = 1 :=
   sq_eq_one_of_sq_lt_four (lt_of_le_of_lt h1 (lt_add_one (3 : ℤ))) h2
 
-theorem units_pow_eq_pow_mod_two (u : ℤˣ) (n : ℕ) : u ^ n = u ^ (n % 2) := by
-  conv =>
-    lhs
-    rw [← Nat.mod_add_div n 2]
-    rw [pow_add, pow_mul, units_sq, one_pow, mul_one]
+theorem units_pow_eq_pow_mod_two (u : ℤˣ) (n : ℕ) : u ^ n = u ^ (n % 2) :=
+  IsSelfInvMonoid.pow_eq_pow_mod_two u n
 
 end Int

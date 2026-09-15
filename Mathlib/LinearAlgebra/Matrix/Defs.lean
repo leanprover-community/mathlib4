@@ -201,6 +201,10 @@ instance zero [Zero α] : Zero (Matrix m n α) :=
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
   inferInstanceAs <| AddZeroClass (m → n → α)
 
+instance isSelfNegAddMonoid [AddZeroClass α] [IsSelfNegAddMonoid α] :
+    IsSelfNegAddMonoid (Matrix m n α) :=
+  inferInstanceAs <| IsSelfNegAddMonoid (m → n → α)
+
 instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
   inferInstanceAs <| AddMonoid (m → n → α)
 

@@ -5,6 +5,7 @@ Authors: Lawrence Wu
 -/
 module
 
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.GroupTheory.Sylow
@@ -46,6 +47,15 @@ abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n 
   match n with
   | 0 => AddCommGroup.toIntModule G
   | _ + 1 => AddCommMonoid.zmodModule h
+
+/-- An additive monoid in which every element is its own negation is a vector space over
+`ZMod 2 = 𝔽₂`. Together with `ZModModule.toIsSelfNegAddMonoid` this says that `IsSelfNegAddMonoid`
+is exactly the notion of an `𝔽₂`-vector space. Commutativity is automatic
+(`IsSelfNegAddMonoid.add_comm`), and is assumed only so that the resulting module structure is
+built on the given `AddCommMonoid`. See note [reducible non-instances]. -/
+abbrev IsSelfNegAddMonoid.toZModModule [AddCommMonoid M] [IsSelfNegAddMonoid M] :
+    Module (ZMod 2) M :=
+  AddCommMonoid.zmodModule IsSelfNegAddMonoid.two_nsmul
 
 /-- The quotient of an abelian group by a subgroup containing all multiples of `n` is a
 `n`-torsion group. -/

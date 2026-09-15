@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
@@ -1198,7 +1199,8 @@ therefore specialise to the canonical ring of order `n`, namely `ZMod n`.
 
 This spelling `Module (ZMod n) G` has the extra advantage of providing the canonical action by
 `ZMod n`. It is however Type-valued, so we might want to acquire a Prop-valued version in the
-future.
+future. For `n = 2` that version exists: `IsSelfNegAddMonoid`, interchangeable with
+`Module (ZMod 2) G` via `ZModModule.toIsSelfNegAddMonoid` and `IsSelfNegAddMonoid.toZModModule`.
 -/
 
 section Module
@@ -1251,15 +1253,22 @@ end general
 section two
 variable [Module (ZMod 2) G]
 
-lemma ZModModule.add_self (x : G) : x + x = 0 := by
-  simpa [two_nsmul] using char_nsmul_eq_zero 2 x
+/-- Every element of a module over `ZMod 2` is its own negation. This makes the
+`IsSelfNegAddMonoid` lemmas available for such modules. -/
+instance ZModModule.toIsSelfNegAddMonoid : IsSelfNegAddMonoid G where
+  add_self x := by simpa [two_nsmul] using char_nsmul_eq_zero 2 x
 
-lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [add_self, eq_comm, ← sub_eq_zero]
+@[deprecated (since := "2026-09-07")]
+alias ZModModule.add_self := IsSelfNegAddMonoid.add_self_eq_zero
 
-lemma ZModModule.sub_eq_add (x y : G) : x - y = x + y := by simp [neg_eq_self, sub_eq_add_neg]
+@[deprecated (since := "2026-09-07")]
+alias ZModModule.neg_eq_self := IsSelfNegAddMonoid.neg_eq
 
-lemma ZModModule.add_add_add_cancel (x y z : G) : (x + y) + (y + z) = x + z := by
-  simpa [sub_eq_add] using sub_add_sub_cancel x y z
+@[deprecated (since := "2026-09-07")]
+alias ZModModule.sub_eq_add := IsSelfNegAddMonoid.sub_eq_add
+
+@[deprecated (since := "2026-09-07")]
+alias ZModModule.add_add_add_cancel := IsSelfNegAddMonoid.add_add_add_cancel
 
 end two
 end Module

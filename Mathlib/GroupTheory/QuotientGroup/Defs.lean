@@ -100,6 +100,12 @@ theorem mk'_apply (x : G) : mk' N x = x :=
 theorem mk'_surjective : Surjective <| mk' N :=
   @mk_surjective _ _ N
 
+/-- A quotient of a group in which every element is its own inverse again has that property. -/
+@[to_additive /-- A quotient of an additive group in which every element is its own negation again
+has that property. -/]
+instance [IsSelfInvMonoid G] : IsSelfInvMonoid (G ⧸ N) :=
+  (mk'_surjective N).isSelfInvMonoid _ (map_one _) (map_mul _)
+
 @[to_additive]
 theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
   QuotientGroup.eq.trans <| by

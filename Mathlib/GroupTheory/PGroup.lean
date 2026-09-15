@@ -122,6 +122,10 @@ theorem _root_.isPGroup_iff_exists_pow_pow_eq_one [Finite G] :
 theorem of_exponent_dvd_pow {n : ℕ} (h : Monoid.exponent G ∣ p ^ n) : IsPGroup p G :=
   fun g ↦ ⟨n, Monoid.exponent_dvd_iff_forall_pow_eq_one.mp h g⟩
 
+/-- A group in which every element is its own inverse is a `2`-group. -/
+theorem of_isSelfInvMonoid [IsSelfInvMonoid G] : IsPGroup 2 G :=
+  of_exponent_dvd_pow (n := 1) (by simpa using IsSelfInvMonoid.exponent_dvd_two)
+
 theorem _root_.isPGroup_iff_exponent_dvd_pow [Finite G] :
     IsPGroup p G ↔ ∃ n, Monoid.exponent G ∣ p ^ n := by
   simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, Monoid.exponent_dvd]

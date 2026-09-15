@@ -392,6 +392,10 @@ instance toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
 instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
   mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.1) eq)
 
+@[to_additive]
+instance (S : A) [IsSelfInvMonoid M] : IsSelfInvMonoid S where
+  mul_self a := Subtype.ext (IsSelfInvMonoid.mul_self a.1)
+
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
