@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.RingTheory.Adjoin.Basic
-public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.AdjoinRoot.Basic
 
 /-!
 # Adjoining elements to a field
