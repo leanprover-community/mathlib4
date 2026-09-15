@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
@@ -216,14 +217,9 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   let ⟨t, hts, htc, hst⟩ := hmetric
   ⟨t, hts, htc, hst.trans <| closure.mono WeakPseudoEMetricSpace.topology_le⟩
 
--- TODO: generalize to metrizable spaces
-/-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
-countable set. -/
-theorem subset_countable_closure_of_compact {s : Set γ} (hs : IsCompact s) :
-    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  refine subset_countable_closure_of_almost_dense_set s fun ε hε => ?_
-  rcases totallyBounded_iff'.1 hs.totallyBounded ε hε with ⟨t, -, htf, hst⟩
-  exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ => eball_subset_closedEBall⟩
+@[deprecated TopologicalSpace.subset_countable_closure_of_compact (since := "2026-08-06")]
+alias subset_countable_closure_of_compact :=
+  TopologicalSpace.subset_countable_closure_of_compact
 
 end Compact
 
@@ -237,7 +233,7 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace γ]
     SecondCountableTopology γ := by
   suffices SeparableSpace γ by exact UniformSpace.secondCountable_of_separable γ
   choose T _ hTc hsubT using fun n =>
-    subset_countable_closure_of_compact (isCompact_compactCovering γ n)
+    TopologicalSpace.subset_countable_closure_of_compact (isCompact_compactCovering γ n)
   refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering γ) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
@@ -288,7 +284,7 @@ namespace EMetric
 /-- A compact set in an emetric space is separable, i.e., it is the closure of a countable set. -/
 theorem countable_closure_of_compact {s : Set γ} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s = closure t := by
-  rcases subset_countable_closure_of_compact hs with ⟨t, hts, htc, hsub⟩
+  rcases TopologicalSpace.subset_countable_closure_of_compact hs with ⟨t, hts, htc, hsub⟩
   exact ⟨t, hts, htc, hsub.antisymm (closure_minimal hts hs.isClosed)⟩
 
 end EMetric
