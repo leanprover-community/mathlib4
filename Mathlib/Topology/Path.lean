@@ -293,18 +293,7 @@ theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
 
 @[simp]
 theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
-  ext t
-  simp only [trans_apply, symm_apply, Function.comp_apply]
-  split_ifs with h h₁ h₂ <;> rw [coe_symm_eq] at h
-  · have ht : (t : ℝ) = 1 / 2 := by linarith
-    norm_num [ht]
-  · refine congr_arg _ (Subtype.ext ?_)
-    norm_num [sub_sub_eq_add_sub, mul_sub]
-  · refine congr_arg _ (Subtype.ext ?_)
-    simp only [coe_symm_eq]
-    ring
-  · exfalso
-    linarith
+  grind
 
 theorem extend_trans_of_le_half (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : t ≤ 1 / 2) :
     (γ₁.trans γ₂).extend t = γ₁.extend (2 * t) := by
