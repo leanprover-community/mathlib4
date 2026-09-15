@@ -143,16 +143,19 @@ theorem toEmbedding_starGraphIsoOfEquiv [DecidableEq W] (f : V ≃ W) (v : V) :
     (starGraphIsoOfEquiv f v).toEmbedding = starGraphEmbeddingOfEmbedding f.toEmbedding v :=
   rfl
 
+@[simp]
 theorem starGraph_isIndContained_starGraph {v : V} {w : W} :
     starGraph v ⊴ starGraph w ↔ Nonempty (V ↪ W) := by
   classical
   exact ⟨(⟨·.some.toEmbedding⟩), fun ⟨f⟩ ↦ ⟨f.trans <| Equiv.swap w (f v), by dsimp; grind⟩⟩
 
+@[simp]
 theorem starGraph_isContained_starGraph {v : V} {w : W} :
     starGraph v ⊑ starGraph w ↔ Nonempty (V ↪ W) := by
   classical
   exact ⟨(⟨·.some.toEmbedding⟩), (starGraph_isIndContained_starGraph.mpr · |>.isContained)⟩
 
+@[simp]
 theorem nonempty_starGraph_iso_starGraph {v : V} {w : W} :
     Nonempty (starGraph v ≃g starGraph w) ↔ Nonempty (V ≃ W) := by
   classical
