@@ -109,17 +109,14 @@ theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
   simp only [le_antisymm_iff, add_le_add_iff_right]
 
-@[simp]
-theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
-  inductionOn₂ a b fun α r _ β s _ => by
-    simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
-    exact isEmpty_sum
+@[deprecated (since := "2026-07-07")]
+alias left_eq_zero_of_add_eq_zero := eq_zero_of_add_right
 
-theorem left_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : a = 0 :=
-  (add_eq_zero_iff.1 h).1
+@[deprecated (since := "2026-07-07")]
+alias right_eq_zero_of_add_eq_zero := eq_zero_of_add_left
 
-theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
-  (add_eq_zero_iff.1 h).2
+@[deprecated (since := "2026-07-07")]
+alias add_eq_zero_iff := add_eq_zero
 
 /-! ### Limit ordinals -/
 
@@ -508,9 +505,6 @@ theorem isSuccLimit_mul_right {a b : Ordinal} (a0 : 0 < a) (l : IsSuccLimit b) :
     IsSuccLimit (a * b) :=
   (isNormal_mul_right a0).map_isSuccLimit l
 
-@[deprecated (since := "2026-02-01")]
-alias isSuccLimit_mul := isSuccLimit_mul_right
-
 theorem isSuccPrelimit_mul_right {a b : Ordinal} (hb : IsSuccLimit b) : IsSuccPrelimit (a * b) := by
   obtain rfl | ha := eq_zero_or_pos a
   · rw [zero_mul]
@@ -598,14 +592,6 @@ theorem lt_div {a b c : Ordinal} (h : c ≠ 0) : a < b / c ↔ c * succ a ≤ b 
   rw [← not_le, div_le h, not_lt]
 
 theorem div_pos {b c : Ordinal} (h : c ≠ 0) : 0 < b / c ↔ c ≤ b := by simp [lt_div h]
-
-@[deprecated mul_le_iff_le_div (since := "2026-02-27")]
-theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
-  (mul_le_iff_le_div c0).symm
-
-@[deprecated lt_mul_iff_div_lt (since := "2026-02-27")]
-theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
-  (lt_mul_iff_div_lt b0).symm
 
 theorem div_le_of_le_mul {a b c : Ordinal} (h : a ≤ b * c) : a / b ≤ c := by
   obtain rfl | b0 := eq_or_ne b 0
@@ -990,10 +976,6 @@ theorem isSuccPrelimit_iff_omega0_dvd {a : Ordinal} : IsSuccPrelimit a ↔ ω �
     exact (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
     exact isSuccPrelimit_mul_left isSuccLimit_omega0
-
-@[deprecated isSuccPrelimit_iff_omega0_dvd (since := "2026-02-01")]
-theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
-  rw [isSuccLimit_iff, isSuccPrelimit_iff_omega0_dvd]
 
 @[simp]
 theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
-public import Mathlib.Data.Real.Pointwise
+public import Mathlib.Basic.Real.Pointwise
 
 /-!
 # Seminorms
@@ -112,6 +112,7 @@ section SMul
 
 variable [SMul 𝕜 E]
 
+@[macro_inline]
 instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by

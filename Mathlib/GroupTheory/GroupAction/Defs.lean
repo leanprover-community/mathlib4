@@ -490,7 +490,7 @@ group action. -/]
 noncomputable def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
-      Equiv.Set.congr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+      Set.equivOfEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/

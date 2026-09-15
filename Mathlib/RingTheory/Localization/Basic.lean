@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.OreLocalization.Ring

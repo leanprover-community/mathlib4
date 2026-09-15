@@ -40,6 +40,8 @@ order of an element
 
 @[expose] public section
 
+set_option linter.style.longFile 1600
+
 assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
@@ -778,6 +780,22 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 theorem orderOf_dvd_sub_iff_zpow_eq_zpow {a b : ℤ} : (orderOf x : ℤ) ∣ a - b ↔ x ^ a = x ^ b := by
   rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
+@[to_additive]
+theorem isSelfInv_iff_isOfFinOrder_and_orderOf_le_two {a : G} :
+    IsSelfInv a ↔ IsOfFinOrder a ∧ orderOf a ≤ 2 := by
+  rw [isSelfInv_iff_sq_eq_one]
+  refine ⟨fun h ↦ ⟨isOfFinOrder_iff_pow_eq_one.mpr ⟨2, zero_lt_two, h⟩,
+    orderOf_le_of_pow_eq_one zero_lt_two h⟩, fun ⟨hfin, _⟩ ↦ ?_⟩
+  have : orderOf a = 1 ∨ orderOf a = 2 := by grind [hfin.orderOf_pos]
+  rcases this with h₁ | h₂
+  · simp [orderOf_eq_one_iff.mp h₁]
+  · rw [← h₂, pow_orderOf_eq_one a]
+
+@[to_additive]
+theorem IsOfFinOrder.isSelfInv_iff {a : G} (h : IsOfFinOrder a) :
+    IsSelfInv a ↔ orderOf a ≤ 2 := by
+  rw [isSelfInv_iff_isOfFinOrder_and_orderOf_le_two, and_iff_right h]
+
 namespace Subgroup
 variable {H : Subgroup G}
 
@@ -866,7 +884,7 @@ lemma Subgroup.closure_toSubmonoid_of_isOfFinOrder {s : Set G} (hs : ∀ x ∈ s
 `Subgroup.zmultiples a`, sending `i` to `i • a`. -/]
 noncomputable def finEquivZPowers (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ zpowers x :=
-  (finEquivPowers hx).trans <| Equiv.Set.congr hx.powers_eq_zpowers
+  (finEquivPowers hx).trans <| Set.equivOfEq hx.powers_eq_zpowers
 
 @[to_additive]
 lemma finEquivZPowers_apply (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :

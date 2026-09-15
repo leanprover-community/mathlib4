@@ -85,7 +85,7 @@ variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less than `x` and elements
 greater or equal to `x`. -/
 def sumLexIioIci : Iio x ⊕ₗ Ici x ≃o α :=
-  (sumLexCongr (refl _) (Set.congr (Ici x) {y | ¬ y < x} (by ext; simp))).trans <|
+  (sumLexCongr (refl _) (Set.orderIsoOfEq (Ici x) {y | ¬ y < x} (by ext; simp))).trans <|
     ofRelIsoLT (RelIso.sumLexComplLeft (· < ·) x)
 
 @[simp]
@@ -116,7 +116,7 @@ variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less or equal to `x` and
 elements greater than `x`. -/
 def sumLexIicIoi : Iic x ⊕ₗ Ioi x ≃o α :=
-  (sumLexCongr (Set.congr (Iic x) {y | ¬ x < y} (by ext; simp)) (refl _)).trans <|
+  (sumLexCongr (Set.orderIsoOfEq (Iic x) {y | ¬ x < y} (by ext; simp)) (refl _)).trans <|
     ofRelIsoLT (RelIso.sumLexComplRight (· < ·) x)
 
 @[simp]

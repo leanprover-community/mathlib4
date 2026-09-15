@@ -381,7 +381,7 @@ noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range 
 /-- The first isomorphism theorem for sets: the quotient of α by the kernel of a function f
 bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
-  quotientKerEquivRangeKerLift _ |>.trans <| Equiv.Set.congr <| range_kerLift_eq_range _
+  quotientKerEquivRangeKerLift _ |>.trans <| Set.equivOfEq <| range_kerLift_eq_range _
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
 domain. -/
