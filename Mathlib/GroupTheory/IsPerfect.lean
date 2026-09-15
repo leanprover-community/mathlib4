@@ -106,11 +106,11 @@ instance instQuotientSubgroup [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
 
 variable (G) in
 @[simp]
-theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : derivedSeries G n = ⊤ := by
+theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : Subgroup.derivedSeries G n = ⊤ := by
   match n with
   | 0 => simp
   | n + 1 =>
-    rw [derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
+    rw [Subgroup.derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
 
 @[simp]
 theorem lowerCentralSeries_eq_top (H : Subgroup G) [IsPerfect H] (n : ℕ) :
