@@ -79,13 +79,27 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
+def proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
+
+-- `simps` generates the wrong lemmas
+@[simp]
+lemma proj₁_obj : proj₁.obj X = X.fst := rfl
+
+@[simp]
+lemma proj₁_map (f : X ⟶ Y) : proj₁.map f = Hom.fst f := rfl
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
+def proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
+
+-- `simps` generates the wrong lemmas
+@[simp]
+lemma proj₂_obj : proj₂.obj X = X.snd := rfl
+
+@[simp]
+lemma proj₂_map (f : X ⟶ Y) : proj₂.map f = Hom.snd f := rfl
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
@@ -214,5 +228,50 @@ theorem equivalence : Equivalence (Homotopic (X := X) (Y := Y)) :=
   ⟨fun f ↦ ⟨Homotopy.refl f⟩, fun h ↦ h.map Homotopy.symm, fun h₀ h₁ ↦ h₀.map2 Homotopy.trans h₁⟩
 
 end Homotopic
+
+section Embedding
+
+/-- A morphism `f : X ⟶ Y` in `TopPair` is an embedding if its first and second component are
+embeddings. -/
+structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y)where
+  fst : Topology.IsEmbedding (Hom.fst f)
+  snd : Topology.IsEmbedding (Hom.snd f)
+
+end Embedding
+
+section Complement
+
+/-- Two morphisms `f : A ⟶ X` and `g : B ⟶ X` in `TopPair` are complements if their first and second
+components are complements in `TopCat`. -/
+protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
+  fst : IsCompl (Set.range (Hom.fst f)) (Set.range (Hom.fst g))
+  snd : IsCompl (Set.range (Hom.snd f)) (Set.range (Hom.snd g))
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Under the assumptions of excision, the map of the pair `U` is an isomorphism. -/
+lemma isIso_of_isCompl_closure ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X) (hf : IsEmbedding f)
+    (hcompl : TopPair.IsCompl f g)
+    (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) : IsIso U.map := by
+  have surjective_U : Function.Surjective U.map := by
+    rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← Set.image_subset_image_iff hf.fst.injective,
+      Set.image_univ]
+    refine Disjoint.subset_left_of_subset_union (u := Hom.fst g '' (Set.range V.map)) ?_ ?_
+    · calc
+        _ ⊆ closure (Set.range (Hom.fst f)) := subset_closure
+        _ ⊆ interior (Set.range X.map) := hU
+        _ ⊆ Set.range X.map := interior_subset
+        _ ⊆ _ := by
+          simp only [← Set.range_comp, ← CategoryTheory.hom_comp, ← Arrow.w]
+          dsimp
+          have := hcompl.snd.codisjoint
+          simp_all [codisjoint_iff, Set.range_comp, ← Set.image_union, ← Set.sup_eq_union]
+    · rw [Set.disjoint_iff, ← Set.disjoint_iff_inter_eq_empty.mp hcompl.fst.disjoint]
+      grind
+  apply TopCat.isIso_of_bijective_of_isOpenMap _
+    ⟨U.prop.injective, surjective_U⟩
+  apply Topology.IsInducing.isOpenMap U.prop.isInducing
+  simp [Function.Surjective.range_eq surjective_U]
+
+end Complement
 
 end TopPair
