@@ -28,9 +28,6 @@ public section
 
 namespace QuadraticAlgebra.Rat
 
--- TODO: expose the isomorphism itself, as a `def` taking a decomposition
--- `r ^ 2 * d = discr a b` with `r ≠ 0`, and deduce this statement from it. Making `d` canonical
--- instead would need a squarefree-part function on `ℚ`, which does not exist yet.
 /-- Every `QuadraticAlgebra ℚ a b` with nonzero discriminant is isomorphic to
 `QuadraticAlgebra ℚ d 0` for a squarefree integer `d`. -/
 theorem exists_squarefree_algEquiv (a b : ℚ) (hd : discr a b ≠ 0) :
