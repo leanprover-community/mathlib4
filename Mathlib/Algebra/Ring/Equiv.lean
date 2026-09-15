@@ -813,14 +813,12 @@ theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* 
 theorem toRingHom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 
--- TODO: Delete this lemma without deprecation after moving `coe` from `.ofClass` to
--- `.toMonoidHom`, in #43765.
+-- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
 @[simp]
 theorem toMonoidHom_refl' : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
   rfl
 
--- TODO: Delete this lemma without deprecation after moving `coe` from `.ofClass` to
--- `.toAddMonoidHom`, in #43765.
+-- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toAddMonoidHom`, in #43765.
 @[simp]
 theorem toAddMonoidHom_refl' : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
