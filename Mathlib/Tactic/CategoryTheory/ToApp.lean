@@ -6,8 +6,8 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
+public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Util.AddRelatedDecl
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # The `to_app` attribute
@@ -15,12 +15,17 @@ public meta import Mathlib.Tactic.ToAdditive
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where either
 * `η θ : f ⟶ g` are 2-morphisms in some bicategory, or
 * `η θ : NatTrans F G` are natural transformations between functors,
-creates a new lemma named `F_app`. In the bicategorical case, this lemma is obtained by first
-specializing the bicategory in which the equality is taking place to `Cat`, then applying
-`toNatTrans_congr` and `NatTrans.congr_app` to obtain a proof of
-`∀ ... (X : Cat), η.toNatTrans.app X = θ.toNatTrans.app X`, and finally simplifying the conclusion
-using some basic lemmas in the bicategory `Cat`: `Cat.whiskerLeft_app`, `Cat.whiskerRight_app`,
-`Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
+creates a new lemma named `F_app` stating equality of their components. Both sides are simplified
+using the basic lemmas about components listed in `catAppSimp`.
+
+For a theorem about an arbitrary bicategory `B`, this first substitutes `Cat` for the quantified
+`B` and `Cat.bicategory` for its instance. A theorem already about `Cat` only needs the projection
+from 2-morphisms to natural transformations. A theorem about natural transformations is used
+directly, retaining its universe parameters, including independent source and target universes.
+
+When the simplified equation holds by `rfl`, the generated declaration uses that proof. Lean's
+usual inference determines whether it is a `defeq` or `backward_defeq` lemma; the latter is used
+by `dsimp` only with `set_option backward.defeqAttrib.useBackward true`.
 
 So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion of `F_app` will be
 `η.toNatTrans.app (f.obj X) = θ.toNatTrans.app X`.
@@ -37,13 +42,14 @@ open Lean Meta Elab Tactic
 open CategoryTheory
 namespace Mathlib.Tactic.CategoryTheory.ToApp
 
-/-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
+/-- Simplify components of natural transformations and 2-morphisms in `Cat`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [
     ``Cat.Hom.comp_toFunctor, ``Functor.comp_obj, ``Cat.Hom.comp_obj, ``Cat.whiskerLeft_app,
     ``Cat.whiskerRight_app, ``Cat.Hom₂.id_app, ``Cat.Hom₂.comp_app, ``Cat.eqToHom_app,
     ``NatTrans.id_app', ``NatTrans.vcomp_app, ``NatTrans.id_app, ``NatTrans.comp_app,
-    ``NatTrans.hcomp_id_app, ``NatTrans.id_hcomp_app,
+    ``NatTrans.hcomp_id_app, ``NatTrans.id_hcomp_app, ``Functor.whiskerLeft_app,
+    ``Functor.whiskerRight_app, ``CategoryTheory.eqToHom_app,
     ``Cat.leftUnitor_hom_app, ``Cat.leftUnitor_inv_app, ``Cat.rightUnitor_hom_app,
     ``Cat.rightUnitor_inv_app, ``Cat.associator_hom_app, ``Cat.associator_inv_app, ``eqToHom_refl,
     ``Category.comp_id, ``Category.id_comp] e
@@ -52,49 +58,40 @@ def catAppSimp (e : Expr) : MetaM Simp.Result :=
 /--
 Given a term of type `∀ ..., η = θ`, where `η θ : f ⟶ g` are 2-morphisms in some bicategory
 `B`, which is bound by the `∀` binder, get the corresponding equation in the bicategory `Cat`.
+This substitutes the bicategory and its instance; it does not embed an arbitrary bicategory
+into `Cat`. An equation already in `Cat` can also be used directly.
 
 It is important here that the levels in the term are level metavariables, as otherwise these will
 not be reassignable to the corresponding levels of `Cat`. -/
 def toCatExpr (e : Expr) : MetaM Expr := do
-  let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
+  let (args, binderInfos, conclusion) ← forallMetaTelescopeReducing (← inferType e)
   -- Find the expression corresponding to the bicategory, by analyzing `η = θ` (i.e. conclusion)
-  let B ←
-    match conclusion.getAppFnArgs with
-    | (`Eq, #[_, η, _]) =>
-      match (← inferType η).getAppFnArgs with
-      | (`Quiver.Hom, #[_, _, f, _]) =>
-        match (← inferType f).getAppFnArgs with
-        | (`Quiver.Hom, #[_, _, a, _]) => inferType a
-        | _ => throwError "The conclusion {conclusion} is not an equality of 2-morphisms!"
-      | _ => throwError "The conclusion {conclusion} is not an equality of 2-morphisms!"
-    | _ => throwError "The conclusion {conclusion} is not an equality!"
+  let some (type, _, _) := (← whnf conclusion).eq?
+    | throwError "`to_app` expects an equality"
+  let some type ← whnfUntil type ``Quiver.Hom
+    | throwError "`to_app` expects an equality of natural transformations or 2-morphisms"
+  let f := type.getArg! 2
+  let some type ← whnfUntil (← inferType f) ``Quiver.Hom
+    | throwError "`to_app` expects an equality of natural transformations or 2-morphisms"
+  let B := type.getArg! 0
+  let inst? ← args.findM? fun x => do
+    let some type ← whnfUntil (← inferType x) ``Bicategory | return false
+    return type.getArg! 0 == B
   -- Create level metavariables to be used for `Cat.{v, u}`
   let u ← mkFreshLevelMVar
   let v ← mkFreshLevelMVar
   -- Assign `B` to `Cat.{v, u}`
-  let _ ← isDefEq B (.const ``Cat [v, u])
+  unless ← isDefEq B (.const ``Cat [v, u]) do
+    throwError "`to_app` cannot specialize the bicategory {B} to `Cat`"
   -- Assign the right bicategory instance to `Cat.{v, u}`
-  let some inst ← args.findM? fun x => do
-      return (← inferType x).getAppFnArgs == (`CategoryTheory.Bicategory, #[B])
-    | throwError "Cannot find the argument for the bicategory instance of the bicategory in which \
-      the equality is taking place."
-  let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [v, u])
-  -- Construct the new expression
-  let value := mkAppN e args
-  let rec
-  /-- Recursive function which applies `mkLambdaFVars` stepwise
-  (so that each step can have different binderinfos) -/
-    apprec (i : Nat) (e : Expr) : MetaM Expr := do
-      if h : i < args.size then
-        let arg := args[i]
-        let bi := binderInfos[i]!
-        let e' ← apprec (i + 1) e
-        unless arg != B && arg != inst do return e'
-        mkLambdaFVars #[arg] e' (binderInfoForMVars := bi)
-      else
-        return e
-  let value ← apprec 0 value
-  return value
+  -- An equality already in `Cat` need not have a quantified bicategory instance.
+  if let some inst := inst? then
+    unless ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [v, u]) do
+      throwError "`to_app` cannot specialize the bicategory instance to `Cat.bicategory`"
+  -- Abstract the remaining arguments, retaining each original binder's explicitness.
+  (args.zip binderInfos).foldrM (fun (arg, bi) value => do
+    if arg == B || inst? == some arg then return value
+    mkLambdaFVars #[arg] value (binderInfoForMVars := bi)) (mkAppN e args)
 
 universe v u in
 lemma toNatTrans_congr {C D : Cat.{v, u}} {F G : C ⟶ D} {η θ : F ⟶ G} (h : η = θ) :
@@ -105,69 +102,63 @@ Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = �
 (possibly after a `∀` binder), produce the equation `η.toNatTrans = θ.toNatTrans`
 -/
 def toNatTransExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => mkAppM ``toNatTrans_congr #[e]) e
+  forallTelescopeReducing (← inferType e) fun xs _ => do
+    mkLambdaFVars xs (← mkAppM ``toNatTrans_congr #[mkAppN e xs])
 
-/--
-Given functors `F G : C ⥤ D`, and an equation `η = θ` between natural transformations
-(possibly after a `∀` binder), produce the equation `∀ (X : C), η.app X = θ.app X`, and simplify
-it using basic lemmas about `NatTrans.app`. -/
-def toAppExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType catAppSimp (← mkAppM ``NatTrans.congr_app #[e])) e
+/-- The two kinds of component projections, or a bicategory that still needs specialization. -/
+inductive EqKind where
+  | natTrans
+  | cat
+  | bicategory
+  deriving BEq
 
-/--
-If the type of `e` is a proposition which can be proved by `rfl`, replace `e` by that proof.
-
-This preserves the property of the original theorem being a `dsimp` lemma when passing to the
-componentwise theorem.
--/
-def rflProof? (e : Expr) : MetaM (Option Expr) := do
-  forallTelescope (← inferType e) fun args conclusion => do
-    match conclusion.getAppFnArgs with
-    | (`Eq, #[_, lhs, rhs]) =>
-        unless (← isDefEq lhs rhs) do return none
-        let proof ← mkExpectedTypeHint (← mkEqRefl lhs) conclusion
-        return some (← mkLambdaFVars args proof)
-    | _ => return none
+/-- Inspect the equality before constructing a component proof.
+Reducing the morphism type also handles notation and abbreviations. -/
+def eqKind (e : Expr) : MetaM EqKind := do
+  forallTelescopeReducing (← inferType e) (whnfType := true) fun _ type => do
+    let some (type, _, _) := type.consumeMData.eq?
+      | throwError "`to_app` expects an equality"
+    let type ← whnf type
+    if type.isAppOf ``NatTrans then return .natTrans
+    if type.isAppOf ``Cat.Hom₂ then return .cat
+    return .bicategory
 
 /--
 Given a theorem whose conclusion is an equation between either natural transformations between
-functors or 2-morphisms in a bicategory, produce the corresponding theorem about components.
+functors or 2-morphisms in a bicategory, produce the component equation and its proof.
+Keep the type separate so that a `rfl` proof does not replace the right-hand side by the left.
 -/
-def toAppAttributeExpr (e : Expr) : MetaM Expr := do
-  let e ←
-    try
-      toAppExpr e
-    catch _ =>
-      toAppExpr (← toNatTransExpr (← toCatExpr e))
-  return (← rflProof? e).getD e
+def toAppTypeAndProof (e : Expr) : MetaM (Expr × Expr) := do
+  let e ← match ← eqKind e with
+    | .natTrans => pure e
+    | .cat => toNatTransExpr e
+    | .bicategory => toNatTransExpr (← toCatExpr e)
+  forallTelescopeReducing (← inferType e) fun xs _ => do
+    let pf ← mkAppM ``NatTrans.congr_app #[mkAppN e xs]
+    let (type, pf) ← simpEq catAppSimp (← inferType pf) pf
+    let pf ← forallTelescope type fun ys eq => do
+      let some (_, lhs, rhs) := eq.eq? | throwError "`to_app` expects an equality"
+      -- Check the simplified statement: some of the simplification lemmas are not definitional.
+      -- Do not assign the caller's metavariables merely to make this equation reflexive.
+      if ← withNewMCtxDepth <| isDefEq lhs rhs then
+        mkLambdaFVars ys (← mkEqRefl lhs)
+      else
+        pure pf
+    return (← mkForallFVars xs type, ← mkLambdaFVars xs pf)
 
-/-- Mark the declaration as a `defeq` theorem if its conclusion holds by `rfl`. -/
-def markDefEqIfPossible (declName : Name) : MetaM Bool := do
-  let info ← getConstInfo declName
-  forallTelescopeReducing info.type fun _ type => do
-    let type ← whnf type
-    let some (_, lhs, rhs) := type.eq? | return false
-    let ok ← withTransparency .all <| isDefEq lhs rhs
-    if ok then
-      defeqAttr.setTag declName
-    return ok
+/-- Construct a componentwise equality, preserving its simplified statement as the inferred type. -/
+def toAppExpr (e : Expr) : MetaM Expr := do
+  let (type, pf) ← toAppTypeAndProof e
+  mkExpectedTypeHint pf type
 
 /--
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where either
 * `η θ : f ⟶ g` are 2-morphisms in some bicategory, or
 * `η θ : NatTrans F G` are natural transformations between functors,
-creates a new lemma named `F_app`. In the bicategorical case, this lemma is obtained by first
-specializing the bicategory in which the equality is taking place to `Cat`, then applying
-`toNatTrans_congr` and `NatTrans.congr_app` to obtain a proof of
-`∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion using some basic lemmas
-in the bicategory `Cat` (see
-`catAppSimp` for the list of these).
-
-So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion of `F_app` will be
-`η.app (f.obj X) = θ.app X`.
-
-This is useful for automatically generating lemmas that can be applied to expressions of 1-morphisms
-in `Cat` which contain components of 2-morphisms.
+creates a new lemma named `F_app` stating equality of components. A quantified bicategory is first
+specialized to `Cat`; 2-morphisms in `Cat` are projected to natural transformations.
+For natural transformations between functors `C ⥤ D`, the result is
+`∀ ... (X : C), η.app X = θ.app X`, simplified on both sides using `catAppSimp`.
 
 Note that if you want both the lemma and the new lemma to be `simp` lemmas, you should tag the lemma
 `@[to_app (attr := simp)]`. The variant `@[simp, to_app]` on a lemma `F` will tag `F` with
@@ -184,14 +175,18 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
     let tgt := src.appendAfter "_app"
-    addRelatedDecl src tgt ref optAttr
-      (postAddDecl? := fun tgt => discard <| markDefEqIfPossible tgt) fun value levels => do
-        let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
-        let value := value.instantiateLevelParams levels levelMVars
-        let newValue ← toAppAttributeExpr value
-        let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) newValue
-        let output := (r.expr, r.newParamNames.toList)
-        pure output
+    addRelatedDeclWithType src tgt ref optAttr fun value levels => do
+      if (← eqKind value) != .bicategory then
+        let (type, pf) ← toAppTypeAndProof value
+        return (type, pf, levels)
+      let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
+      let value := value.instantiateLevelParams levels levelMVars
+      let (type, pf) ← toAppTypeAndProof value
+      -- Generalize both the statement and proof, including levels absent from a `rfl` proof.
+      let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false)
+        (← mkExpectedTypeHint pf type)
+      setMCtx r.mctx
+      return (r.expr.appFn!.appArg!, r.expr.appArg!, r.newParamNames.toList)
   | _ => throwUnsupportedSyntax }
 
 open Term in
@@ -203,6 +198,6 @@ Given an equation `t` of the form `η = θ` between either natural transformatio
 `NatTrans.app`.
 -/
 elab "to_app_of% " t:term : term => do
-  toAppAttributeExpr (← elabTerm t none)
+  toAppExpr (← withSynthesizeLight <| elabTerm t none)
 
 end Mathlib.Tactic.CategoryTheory.ToApp
