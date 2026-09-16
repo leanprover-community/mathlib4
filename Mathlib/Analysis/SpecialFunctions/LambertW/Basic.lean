@@ -92,7 +92,6 @@ the intermediate value theorem.
 
 ## TODO
 
-+ Define the Lambert W function on ℝ
 + Prove some identities and some special values
 + Prove continuity, differentiability, smoothness
 + Prove asymptotic expansion and series expansion
