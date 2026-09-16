@@ -170,14 +170,15 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
     "lift tactic failed. Tactic is only applicable when the target is a proposition."
   if newVarName == none ∧ !e.isFVar then throwError
     "lift tactic failed. When lifting an expression, a new variable name must be given"
-  let (p, coe, inst) ← Lift.getInst (← inferType e) (← Term.elabType t)
+  let newType ← Term.elabType t
+  let (p, coe, inst) ← Lift.getInst (← inferType e) newType
   let prf ← match hUsing with
     | some h => elabTermEnsuringType h (p.betaRev #[e])
     | none => mkFreshExprMVar (some (p.betaRev #[e]))
   let newVarName ← match newVarName with
                  | some v => pure v.getId
                  | none   => e.fvarId!.getUserName
-  let prfEx ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
+  let prfEx ← mkAppOptM ``CanLift.prf #[none, newType, coe, p, inst, e, prf]
   let prfEx ← instantiateMVars prfEx
   let prfSyn ← prfEx.toSyntax
   -- if we have a new variable, but no hypothesis name was provided, we temporarily use a dummy

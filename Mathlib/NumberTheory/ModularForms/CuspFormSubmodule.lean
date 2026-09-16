@@ -40,7 +40,9 @@ q-expansion coefficient (for `𝒮ℒ`).
 @[expose] public noncomputable section
 
 open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormClass
- ModularFormClass MatrixGroups OnePoint Filter
+ ModularFormClass OnePoint Filter
+
+open scoped MatrixGroups
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
 

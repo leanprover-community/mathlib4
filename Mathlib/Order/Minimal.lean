@@ -220,8 +220,7 @@ variable [WellFoundedLT α]
 @[to_dual]
 lemma exists_minimalFor_of_wellFoundedLT (P : ι → Prop) (f : ι → α) (hP : ∃ i, P i) :
     ∃ i, MinimalFor P f i := by
-  simpa [not_lt_iff_le_imp_ge, InvImage]
-    using! (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
+  simpa [not_lt_iff_le_imp_ge, InvImage] using! (InvImage.wf f wellFounded_lt).has_min _ hP
 
 @[to_dual]
 lemma exists_minimal_of_wellFoundedLT (P : α → Prop) (hP : ∃ a, P a) : ∃ a, Minimal P a :=
@@ -388,7 +387,7 @@ end Subset
 
 section Set
 
-variable {s t : Set α}
+variable {s : Set α}
 section Preorder
 
 variable [Preorder α]

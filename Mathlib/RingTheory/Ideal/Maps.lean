@@ -354,6 +354,9 @@ theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x
 theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := fun h =>
   map_comap_of_surjective f hf K ▸ map_mono h
 
+theorem map_eq_image_of_surjective : map f I = ⇑f '' ↑I := by
+  grind [Ideal.mem_map_iff_of_surjective f hf, SetLike.mem_coe]
+
 end
 
 theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
@@ -969,7 +972,7 @@ theorem annihilator_sup (N P : Submodule R M) :
   rw [← sSup_pair, sSup_eq_iSup, iSup_subtype', annihilator_iSup, ← iInf_pair, iInf_subtype']
 
 theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
-  simp_rw [← le_bot_iff, smul_le, SetLike.le_def, mem_annihilator]; rfl
+  simp_rw [← le_bot_iff, smul_le, IsConcreteLE.le_iff, mem_annihilator]; rfl
 
 @[simp]
 theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=

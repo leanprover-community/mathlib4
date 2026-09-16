@@ -419,7 +419,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `extFunctor`. -/
 @[simps]
 noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} where
-  obj Y := AddCommGrpCat.of (Ext X Y n)
+  obj Y := ↧(Ext X Y n)
   map f := AddCommGrpCat.ofHom ((Ext.mk₀ f).postcomp _ (add_zero n))
   map_comp f f' := by
     ext α

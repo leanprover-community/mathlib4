@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 ## Monomial orders
 
-A *monomial order* is well ordering relation on a type of the form `σ →₀ ℕ` which
+A *monomial order* is a well ordering relation on a type of the form `σ →₀ ℕ` which
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.

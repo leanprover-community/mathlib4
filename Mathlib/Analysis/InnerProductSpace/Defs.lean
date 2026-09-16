@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Basic.Complex.Basic
 
 /-!
 # Inner product spaces
@@ -69,7 +69,9 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Bornology
+open RCLike Real Filter Bornology
+
+open scoped Topology ComplexConjugate
 
 open LinearMap (BilinForm)
 
