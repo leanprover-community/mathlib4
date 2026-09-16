@@ -155,6 +155,27 @@ theorem reflexive (η : F ⟶ G) : η = η := rfl
 
 example (η : F ⟶ G) (X : C) : η.app X = η.app X := reflexive_app η X
 
+-- The source equation is not definitional, but its simplified component equation is.
+@[to_app]
+theorem id_comp (η : F ⟶ G) : 𝟙 F ≫ η = η := Category.id_comp η
+
+example (η : F ⟶ G) (X : C) : η.app X = η.app X := id_comp_app η X
+
+-- Conversely, simplification can turn a definitional equation into a non-definitional one.
+@[to_app]
+theorem semireducibleComp_id (η : F ⟶ G) :
+    semireducibleComp η (𝟙 G) = η ≫ 𝟙 G := rfl
+
+example (η : F ⟶ G) (X : C) :
+    (semireducibleComp η (𝟙 G)).app X = η.app X := semireducibleComp_id_app η X
+
+run_cmd do
+  let env ← Lean.getEnv
+  unless Lean.defeqAttr.hasTag env ``id_comp_app do
+    throwError "Expected a defeq lemma after simplifying the component equation"
+  if Lean.backwardDefeqAttr.hasTag env ``semireducibleComp_id_app then
+    throwError "Unexpected backward-defeq lemma after non-definitional simplification"
+
 -- Abbreviations and let-bound propositions are reduced before inspecting the equality.
 abbrev Arrow (F G : C ⥤ D) := F ⟶ G
 abbrev Same (η θ : Arrow F G) := η = θ

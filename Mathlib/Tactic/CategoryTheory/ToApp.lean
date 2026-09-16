@@ -126,25 +126,38 @@ def eqKind (e : Expr) : MetaM EqKind := do
 /--
 Given a theorem whose conclusion is an equation between either natural transformations between
 functors or 2-morphisms in a bicategory, produce the component equation and its proof.
+Simplify the component expressions and try `rfl` before constructing a proof from the source
+theorem.
 Keep the type separate so that a `rfl` proof does not replace the right-hand side by the left.
 -/
 def toAppTypeAndProof (e : Expr) : MetaM (Expr × Expr) := do
-  let e ← match ← eqKind e with
-    | .natTrans => pure e
-    | .cat => toNatTransExpr e
-    | .bicategory => toNatTransExpr (← toCatExpr e)
-  forallTelescopeReducing (← inferType e) fun xs _ => do
-    let pf ← mkAppM ``NatTrans.congr_app #[mkAppN e xs]
-    let (type, pf) ← simpEq catAppSimp (← inferType pf) pf
-    let pf ← forallTelescope type fun ys eq => do
-      let some (_, lhs, rhs) := eq.eq? | throwError "`to_app` expects an equality"
+  let kind ← eqKind e
+  let e ← if kind == .bicategory then toCatExpr e else pure e
+  let app (η : Expr) : MetaM Expr := do
+    let η ← if kind == .natTrans then pure η else mkAppM ``Cat.Hom₂.toNatTrans #[η]
+    mkAppM ``NatTrans.app #[η]
+  forallTelescopeReducing (← inferType e) (whnfType := true) fun xs eq => do
+    let some (_, lhs, rhs) := eq.consumeMData.eq? | throwError "`to_app` expects an equality"
+    let lhs ← app lhs
+    let rhs ← app rhs
+    forallBoundedTelescope (← inferType lhs) (some 1) fun ys _ => do
+      let lhs ← catAppSimp (mkAppN lhs ys)
+      let rhs ← catAppSimp (mkAppN rhs ys)
+      let type ← mkEq lhs.expr rhs.expr
       -- Check the simplified statement: some of the simplification lemmas are not definitional.
       -- Do not assign the caller's metavariables merely to make this equation reflexive.
-      if ← withNewMCtxDepth <| isDefEq lhs rhs then
-        mkLambdaFVars ys (← mkEqRefl lhs)
-      else
+      let pf ← if ← withNewMCtxDepth <| isDefEq lhs.expr rhs.expr then
+        mkEqRefl lhs.expr
+      else do
+        let e := mkAppN e xs
+        let e ← if kind == .natTrans then pure e else toNatTransExpr e
+        let mut pf ← mkAppM ``NatTrans.congr_app #[e, ys[0]!]
+        if let some lhsProof := lhs.proof? then
+          pf ← mkEqTrans (← mkEqSymm lhsProof) pf
+        if let some rhsProof := rhs.proof? then
+          pf ← mkEqTrans pf rhsProof
         pure pf
-    return (← mkForallFVars xs type, ← mkLambdaFVars xs pf)
+      return (← mkForallFVars (xs ++ ys) type, ← mkLambdaFVars (xs ++ ys) pf)
 
 /-- Construct a componentwise equality, preserving its simplified statement as the inferred type. -/
 def toAppExpr (e : Expr) : MetaM Expr := do
