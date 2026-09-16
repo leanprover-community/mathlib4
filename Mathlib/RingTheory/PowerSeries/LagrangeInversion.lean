@@ -5,14 +5,32 @@ Authors: manman4
 -/
 module
 
-public import Mathlib.RingTheory.LaurentSeries
-public import Mathlib.RingTheory.PowerSeries.Derivative
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Ring
 
 /-!
-# Formal Lagrange inversion
+# Lagrange inversion for formal power series
 
-This file proves the coefficient form of the one-variable Lagrange inversion theorem for formal
-power series. No analytic convergence is involved.
+This file proves the polynomial-kernel form of the one-variable Lagrange inversion theorem.
+Let `P` be a polynomial and let `Y` be a formal power series satisfying
+
+`Y = X * P(Y)`.
+
+Then, for `1 ≤ m` and `k ≤ m`,
+
+`m * [X^m] Y^k = k * [X^(m-k)] P^m`.
+
+We also give the Lagrange--Bürmann form
+
+`m * [X^m] H(Y) = [X^(m-1)] (H' * P^m)`
+
+for a polynomial `H`, and the usual divided coefficient formula over a field of characteristic
+zero.
+
+The proof is purely algebraic and follows the induction in E. Surya and L. Warnke,
+*Lagrange Inversion Formula by Induction*.
 -/
 
 @[expose] public section
@@ -21,485 +39,185 @@ noncomputable section
 
 namespace PowerSeries
 
-open Polynomial
-open scoped PowerSeries LaurentSeries
+open Finset Polynomial
+open scoped PowerSeries
 
-variable {K : Type*} [Field K]
+section CommRing
 
-private def tail (B : K⟦X⟧) : K⟦X⟧ :=
-  PowerSeries.mk fun n => PowerSeries.coeff (n + 1) B
+variable {R : Type*} [CommRing R]
+variable {P : R[X]} {Y : R⟦X⟧}
 
-private def residue (F : K⸨X⸩) : K :=
-  F.coeff (-1)
+private lemma coeff_pow_of_lt
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) {m k : ℕ} (h : m < k) :
+    PowerSeries.coeff m (Y ^ k) = 0 := by
+  have hpow : Y ^ k = PowerSeries.X ^ k * (Polynomial.aeval Y P) ^ k := by
+    rw [← mul_pow, ← hY]
+  rw [hpow, PowerSeries.coeff_X_pow_mul']
+  simp [Nat.not_le.2 h]
 
-private theorem residue_add (F G : K⸨X⸩) :
-    residue (F + G) = residue F + residue G := by
-  simp [residue, HahnSeries.coeff_add']
+private lemma coeff_aeval
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (Q : R[X]) (j : ℕ) :
+    PowerSeries.coeff j (Polynomial.aeval Y Q) =
+      ∑ l ∈ range (j + 1), Q.coeff l * PowerSeries.coeff j (Y ^ l) := by
+  classical
+  set N := max Q.natDegree j with hN
+  have hbig : PowerSeries.coeff j (Polynomial.aeval Y Q) =
+      ∑ l ∈ range (N + 1), Q.coeff l * PowerSeries.coeff j (Y ^ l) := by
+    rw [Polynomial.aeval_eq_sum_range, map_sum]
+    rw [Finset.sum_subset
+      (Finset.range_subset_range.mpr (by omega : Q.natDegree + 1 ≤ N + 1))]
+    · exact Finset.sum_congr rfl fun l _ ↦ by simp
+    · intro l _ hl
+      have hlt : Q.natDegree < l := by
+        have := mem_range.not.1 hl
+        omega
+      simp [Polynomial.coeff_eq_zero_of_natDegree_lt hlt]
+  rw [hbig]
+  refine (Finset.sum_subset
+    (Finset.range_subset_range.mpr (by omega : j + 1 ≤ N + 1)) ?_).symm
+  intro l _ hl
+  have hjl : j < l := by
+    have := mem_range.not.1 hl
+    omega
+  rw [coeff_pow_of_lt hY hjl, mul_zero]
 
-private theorem residue_sub (F G : K⸨X⸩) :
-    residue (F - G) = residue F - residue G := by
-  simp [residue, HahnSeries.coeff_sub]
+end CommRing
 
-private theorem residue_algebraMap_mul (a : K) (F : K⸨X⸩) :
-    residue (algebraMap K K⸨X⸩ a * F) = a * residue F := by
-  unfold residue
-  rw [LaurentSeries.algebraMap_apply]
-  exact HahnSeries.coeff_single_zero_mul
+section TorsionFree
 
-private theorem tail_constantCoeff (B : K⟦X⟧) :
-    PowerSeries.constantCoeff (tail B) = PowerSeries.coeff 1 B := by
-  simp [tail]
+variable {R : Type*} [CommRing R] [NoZeroSMulDivisors ℕ R]
+variable {P : R[X]} {Y : R⟦X⟧}
 
-private theorem eq_X_mul_tail {B : K⟦X⟧}
-    (hB0 : PowerSeries.constantCoeff B = 0) :
-    B = PowerSeries.X * tail B := by
-  rw [PowerSeries.eq_X_mul_shift_add_const B, hB0]
-  simp [tail]
+private lemma natCast_mul_cancel {n : ℕ} (hn : n ≠ 0) {a b : R}
+    (h : (n : R) * a = (n : R) * b) : a = b := by
+  have hsmul : n • a = n • b := by simpa [nsmul_eq_mul] using h
+  exact smul_right_injective R hn hsmul
 
-private theorem residue_single_neg_succ_mul_coe (q : ℕ) (F : K⟦X⟧) :
-    residue
-        (HahnSeries.single (-(q + 1 : ℤ)) 1 * (F : K⸨X⸩)) =
-      PowerSeries.coeff q F := by
-  simp [residue, HahnSeries.coeff_single_mul, PowerSeries.coeff_coe]
+/-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
+`m * [X^m] Y^k = k * [X^(m-k)] P^m` for `1 ≤ m` and `k ≤ m`.
 
-private theorem coe_inv_of_constantCoeff_ne_zero (F : K⟦X⟧)
-    (hF : PowerSeries.constantCoeff F ≠ 0) :
-    ((F⁻¹ : K⟦X⟧) : K⸨X⸩) = ((F : K⸨X⸩)⁻¹) := by
-  apply eq_inv_of_mul_eq_one_left
-  rw [← PowerSeries.coe_mul, PowerSeries.inv_mul_cancel F hF]
-  exact PowerSeries.coe_one
-
-private theorem derivative_inv_pow (F : K⟦X⟧) (q : ℕ) :
-    (d⁄dX) (F⁻¹ ^ q) =
-      PowerSeries.C (-(q : K)) *
-        (F⁻¹ ^ (q + 1) * (d⁄dX) F) := by
-  cases q with
-  | zero => simp
-  | succ q =>
-      rw [Derivation.leibniz_pow, PowerSeries.derivative_inv']
-      simp only [Nat.succ_sub_one, smul_eq_mul]
-      push_cast
-      rw [pow_succ (F⁻¹) (q + 1), pow_succ (F⁻¹) q]
-      rw [PowerSeries.C_eq_algebraMap]
-      push_cast
+The coefficient ring is assumed to have no additive torsion because the inductive proof cancels
+multiplication by a positive natural number. -/
+theorem lagrange_inversion_coeff_pow
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) :
+    ∀ m : ℕ, 1 ≤ m → ∀ k ≤ m,
+      (m : R) * PowerSeries.coeff m (Y ^ k) = (k : R) * (P ^ m).coeff (m - k) := by
+  intro m
+  induction m using Nat.strong_induction_on with
+  | h m ih =>
+    intro hm k hk
+    rcases Nat.eq_zero_or_pos k with rfl | hk0
+    · have hm0 : m ≠ 0 := by omega
+      simp [hm0]
+    obtain ⟨t, rfl⟩ : ∃ t, m = k + t := ⟨m - k, by omega⟩
+    have hcoe : PowerSeries.coeff (k + t) (Y ^ k) =
+        PowerSeries.coeff t (Polynomial.aeval Y (P ^ k)) := by
+      have hpow : Y ^ k = PowerSeries.X ^ k * Polynomial.aeval Y (P ^ k) := by
+        rw [map_pow, ← mul_pow, ← hY]
+      rw [hpow, show k + t = t + k by omega, PowerSeries.coeff_X_pow_mul]
+    rcases Nat.eq_zero_or_pos t with rfl | ht
+    · simp only [add_zero] at hcoe ⊢
+      rw [hcoe, coeff_aeval hY]
+      simp
+    obtain ⟨s, rfl⟩ : ∃ s, t = s + 1 := ⟨t - 1, by omega⟩
+    have hexp : PowerSeries.coeff (k + (s + 1)) (Y ^ k) =
+        ∑ l ∈ range (s + 2),
+          (P ^ k).coeff l * PowerSeries.coeff (s + 1) (Y ^ l) := by
+      rw [hcoe, coeff_aeval hY]
+    have hih : ∀ l ∈ range (s + 2),
+        ((s : R) + 1) * ((P ^ k).coeff l * PowerSeries.coeff (s + 1) (Y ^ l)) =
+          (P ^ k).coeff l * ((l : R) * (P ^ (s + 1)).coeff (s + 1 - l)) := by
+      intro l hl
+      have hl' : l ≤ s + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hl
+      have h := ih (s + 1) (by omega) (by omega) l hl'
+      push_cast at h ⊢
+      rw [show ((s : R) + 1) *
+          ((P ^ k).coeff l * PowerSeries.coeff (s + 1) (Y ^ l)) =
+            (P ^ k).coeff l *
+              (((s : R) + 1) * PowerSeries.coeff (s + 1) (Y ^ l)) by ring, h]
+    have hconv :
+        ∑ l ∈ range (s + 2),
+            (P ^ k).coeff l * ((l : R) * (P ^ (s + 1)).coeff (s + 1 - l)) =
+          (Polynomial.derivative (P ^ k) * P ^ (s + 1)).coeff s := by
+      rw [Polynomial.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+      rw [Finset.sum_range_succ'
+        (fun l ↦ (P ^ k).coeff l * ((l : R) * (P ^ (s + 1)).coeff (s + 1 - l)))]
+      simp only [Nat.cast_zero, mul_zero, zero_mul, add_zero, Nat.cast_add, Nat.cast_one]
+      refine Finset.sum_congr rfl fun p hp ↦ ?_
+      rw [Polynomial.coeff_derivative, show s + 1 - (p + 1) = s - p by omega]
       ring
+    have hpoly : Polynomial.C ((k : R) + (s + 1)) *
+          (Polynomial.derivative (P ^ k) * P ^ (s + 1)) =
+        Polynomial.C (k : R) * Polynomial.derivative (P ^ (k + (s + 1))) := by
+      rw [Polynomial.derivative_pow, Polynomial.derivative_pow,
+        show k + (s + 1) - 1 = (k - 1) + (s + 1) by omega, pow_add,
+        show ((k + (s + 1) : ℕ) : R) = (k : R) + (s + 1) by push_cast; ring]
+      ring
+    have hcoeff : ((k : R) + (s + 1)) *
+          (Polynomial.derivative (P ^ k) * P ^ (s + 1)).coeff s =
+        (k : R) * ((s : R) + 1) * (P ^ (k + (s + 1))).coeff (s + 1) := by
+      have h := congrArg (fun q : R[X] ↦ q.coeff s) hpoly
+      simp only [Polynomial.coeff_C_mul] at h
+      rw [h, Polynomial.coeff_derivative]
+      ring
+    have hsum : ((s : R) + 1) * PowerSeries.coeff (k + (s + 1)) (Y ^ k) =
+        (Polynomial.derivative (P ^ k) * P ^ (s + 1)).coeff s := by
+      rw [hexp, Finset.mul_sum, ← hconv]
+      exact Finset.sum_congr rfl hih
+    rw [show k + (s + 1) - k = s + 1 by omega]
+    refine natCast_mul_cancel (n := s + 1) (by omega) ?_
+    push_cast
+    linear_combination ((k : R) + (s + 1)) * hsum + hcoeff
 
-private theorem coeff_inverse_power_log_derivative [CharZero K] (F : K⟦X⟧)
-    (hF : PowerSeries.constantCoeff F = 1) (q : ℕ) :
-    PowerSeries.coeff q
-        (F⁻¹ ^ (q + 1) * (F + PowerSeries.X * (d⁄dX) F)) =
-      if q = 0 then 1 else 0 := by
-  by_cases hq : q = 0
-  · subst q
-    simp [PowerSeries.coeff_zero_eq_constantCoeff_apply, hF]
-  · have hqne : (q : K) ≠ 0 := Nat.cast_ne_zero.mpr hq
-    have hunit : F⁻¹ * F = (1 : K⟦X⟧) :=
-      PowerSeries.inv_mul_cancel F (by simp [hF])
-    have hfirst : F⁻¹ ^ (q + 1) * F = F⁻¹ ^ q := by
-      rw [pow_succ]
-      calc
-        F⁻¹ ^ q * F⁻¹ * F = F⁻¹ ^ q * (F⁻¹ * F) := by ring
-        _ = F⁻¹ ^ q := by rw [hunit, mul_one]
-    have hderiv := congrArg (PowerSeries.coeff (q - 1))
-      (derivative_inv_pow F q)
-    rw [PowerSeries.coeff_derivative] at hderiv
-    have hqsplit : q - 1 + 1 = q := by omega
-    rw [hqsplit] at hderiv
-    have hqcast : ((q - 1 : ℕ) : K) + 1 = q := by
-      exact_mod_cast hqsplit
-    rw [hqcast] at hderiv
-    rw [PowerSeries.coeff_C_mul] at hderiv
-    have hcoeff :
-        (q : K) * PowerSeries.coeff q (F⁻¹ ^ q) =
-          -(q : K) *
-            PowerSeries.coeff (q - 1)
-              (F⁻¹ ^ (q + 1) * (d⁄dX) F) := by
-      simpa [mul_comm] using hderiv
-    rw [ite_eq_right hq]
-    rw [mul_add, hfirst, ← mul_assoc]
-    rw [map_add]
-    have hsecond :
-        PowerSeries.coeff q
-            (F⁻¹ ^ (q + 1) * PowerSeries.X * (d⁄dX) F) =
-          PowerSeries.coeff (q - 1)
-            (F⁻¹ ^ (q + 1) * (d⁄dX) F) := by
-      calc
-        _ = PowerSeries.coeff q
-            (PowerSeries.X * (F⁻¹ ^ (q + 1) * (d⁄dX) F)) := by
-              congr 1
-              ring
-        _ = _ := by
-          have hs := PowerSeries.coeff_succ_X_mul (q - 1)
-            (F⁻¹ ^ (q + 1) * (d⁄dX) F)
-          rw [hqsplit] at hs
-          exact hs
-    rw [hsecond]
-    apply mul_left_cancel₀ hqne
-    rw [mul_zero, mul_add, hcoeff]
+/-- **Lagrange--Bürmann formula.** If `Y = X * P(Y)`, then for `m ≥ 1` and a
+polynomial `H`,
+
+`m * [X^m] H(Y) = [X^(m-1)] (H' * P^m)`. -/
+theorem lagrange_burmann_coeff
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) {m : ℕ} (hm : 1 ≤ m) (H : R[X]) :
+    (m : R) * PowerSeries.coeff m (Polynomial.aeval Y H) =
+      (Polynomial.derivative H * P ^ m).coeff (m - 1) := by
+  obtain ⟨s, rfl⟩ : ∃ s, m = s + 1 := ⟨m - 1, by omega⟩
+  set f : ℕ → R := fun i ↦
+    H.coeff i * ((i : R) * (P ^ (s + 1)).coeff (s + 1 - i)) with hf
+  have hlhs : ((s + 1 : ℕ) : R) *
+      PowerSeries.coeff (s + 1) (Polynomial.aeval Y H) =
+        ∑ i ∈ range (s + 2), f i := by
+    rw [coeff_aeval hY H, Finset.mul_sum]
+    refine Finset.sum_congr rfl fun i hi ↦ ?_
+    have hi' : i ≤ s + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hi
+    have h := lagrange_inversion_coeff_pow hY (s + 1) (by omega) i hi'
+    rw [hf]
+    simp only
+    rw [← h]
     ring
-
-private theorem derivative_eq_tail_add {B : K⟦X⟧}
-    (hB0 : PowerSeries.constantCoeff B = 0) :
-    (d⁄dX) B = tail B + PowerSeries.X * (d⁄dX) (tail B) := by
-  calc
-    (d⁄dX) B = (d⁄dX) (PowerSeries.X * tail B) := by
-      rw [← eq_X_mul_tail hB0]
-    _ = _ := by
-      rw [Derivation.leibniz]
-      simp only [PowerSeries.derivative_X, smul_eq_mul]
-      ring
-
-private theorem coe_zpow_negSucc_eq {B : K⟦X⟧}
-    (hB0 : PowerSeries.constantCoeff B = 0)
-    (hB1 : PowerSeries.coeff 1 B = 1) (q : ℕ) :
-    ((B : K⸨X⸩) ^ (Int.negSucc q)) =
-      HahnSeries.single (-(q + 1 : ℤ)) 1 *
-        (((tail B)⁻¹ ^ (q + 1) : K⟦X⟧) : K⸨X⸩) := by
-  have htail : PowerSeries.constantCoeff (tail B) = 1 := by
-    rw [tail_constantCoeff, hB1]
-  have hfactor :
-      (B : K⸨X⸩) =
-        HahnSeries.single (1 : ℤ) 1 * ((tail B : K⟦X⟧) : K⸨X⸩) := by
-    calc
-      (B : K⸨X⸩) = ((PowerSeries.X * tail B : K⟦X⟧) : K⸨X⸩) := by
-        rw [← eq_X_mul_tail hB0]
-      _ = _ := by rw [PowerSeries.coe_mul, PowerSeries.coe_X]
-  have hinv := coe_inv_of_constantCoeff_ne_zero (tail B) (by simp [htail])
-  rw [zpow_negSucc, hfactor, mul_pow, mul_inv_rev]
-  rw [← inv_pow, ← inv_pow, ← hinv, ← PowerSeries.coe_pow]
-  rw [HahnSeries.inv_single, HahnSeries.single_pow]
-  norm_num
+  rw [hlhs, Nat.add_sub_cancel, Polynomial.coeff_mul,
+    Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+    Finset.sum_range_succ' f (s + 1)]
+  have hzero : f 0 = 0 := by simp [hf]
+  rw [hzero, add_zero]
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
+  simp only [hf, Polynomial.coeff_derivative,
+    show s + 1 - (i + 1) = s - i by omega]
+  push_cast
   ring
 
-private theorem residue_zpow_mul_derivative [CharZero K] {B : K⟦X⟧}
-    (hB0 : PowerSeries.constantCoeff B = 0)
-    (hB1 : PowerSeries.coeff 1 B = 1) (z : ℤ) :
-    residue
-        (((B : K⸨X⸩) ^ z) *
-          (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) =
-      if z = -1 then 1 else 0 := by
-  cases z with
-  | ofNat k =>
-      rw [ite_eq_right (by simp)]
-      change residue
-        (((B : K⸨X⸩) ^ (k : ℕ)) *
-          (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) = 0
-      have hprod :
-          (B : K⸨X⸩) ^ k * (((d⁄dX) B : K⟦X⟧) : K⸨X⸩) =
-            (((B ^ k) * (d⁄dX) B : K⟦X⟧) : K⸨X⸩) := by
-        rw [PowerSeries.coe_mul, PowerSeries.coe_pow]
-      calc
-        residue
-            ((B : K⸨X⸩) ^ k *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) =
-            residue ((((B ^ k) * (d⁄dX) B : K⟦X⟧) : K⸨X⸩)) := by
-              exact congrArg residue hprod
-        _ = 0 := by
-          unfold residue
-          rw [PowerSeries.coeff_coe]
-          norm_num
-  | negSucc q =>
-      rw [coe_zpow_negSucc_eq hB0 hB1 q, derivative_eq_tail_add hB0]
-      rw [mul_assoc, ← PowerSeries.coe_mul]
-      rw [residue_single_neg_succ_mul_coe]
-      rw [coeff_inverse_power_log_derivative (tail B)
-        (by rw [tail_constantCoeff, hB1])]
-      simp [Int.negSucc_eq]
+end TorsionFree
 
-private theorem residue_shifted_aeval_mul_derivative [CharZero K] {B : K⟦X⟧}
-    (hB0 : PowerSeries.constantCoeff B = 0)
-    (hB1 : PowerSeries.coeff 1 B = 1) (p : K[X]) (n : ℕ) :
-    residue
-        (((B : K⸨X⸩) ^ (-((n + 1 : ℕ) : ℤ))) *
-          Polynomial.aeval (B : K⸨X⸩) p *
-          (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) =
-      p.coeff n := by
-  have hBne : (B : K⸨X⸩) ≠ 0 := by
-    intro h
-    have hzero : B = 0 := by
-      apply HahnSeries.ofPowerSeries_injective (Γ := ℤ)
-      simpa using h
-    rw [hzero] at hB1
-    norm_num at hB1
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq =>
-      rw [map_add]
-      have hsplit :
-          (B : K⸨X⸩) ^ (-((n + 1 : ℕ) : ℤ)) *
-                (Polynomial.aeval (B : K⸨X⸩) p +
-                  Polynomial.aeval (B : K⸨X⸩) q) *
-                (((d⁄dX) B : K⟦X⟧) : K⸨X⸩) =
-            ((B : K⸨X⸩) ^ (-((n + 1 : ℕ) : ℤ)) *
-                Polynomial.aeval (B : K⸨X⸩) p *
-                (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) +
-              ((B : K⸨X⸩) ^ (-((n + 1 : ℕ) : ℤ)) *
-                Polynomial.aeval (B : K⸨X⸩) q *
-                (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) := by ring
-      rw [hsplit]
-      rw [residue_add, hp, hq]
-      simp
-  | monomial k a =>
-      rw [Polynomial.aeval_def, Polynomial.eval₂_monomial]
-      have hzpow :
-          (B : K⸨X⸩) ^ (-((n + 1 : ℕ) : ℤ)) *
-              (B : K⸨X⸩) ^ k =
-            (B : K⸨X⸩) ^ ((k : ℤ) - (n + 1 : ℤ)) := by
-        rw [← zpow_natCast]
-        rw [← zpow_add₀ hBne]
-        congr 1
-      have hreorder :
-          ((B : K⸨X⸩) ^ (-((n + 1 : ℕ) : ℤ)) *
-                (algebraMap K K⸨X⸩ a * (B : K⸨X⸩) ^ k)) *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩) =
-            algebraMap K K⸨X⸩ a *
-              (((B : K⸨X⸩) ^ (-((n + 1 : ℕ) : ℤ)) *
-                  (B : K⸨X⸩) ^ k) *
-                (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) := by ring
-      rw [hreorder, hzpow, residue_algebraMap_mul]
-      rw [residue_zpow_mul_derivative hB0 hB1]
-      by_cases hkn : k = n
-      · subst k
-        simp
-      · have hexp : (k : ℤ) - (n + 1 : ℤ) ≠ -1 := by
-          intro h
-          apply hkn
-          omega
-        simp [hexp, Polynomial.coeff_monomial, hkn]
+section Field
 
-private theorem constantCoeff_aeval_of_constantCoeff_zero {B : K⟦X⟧}
-    (hB0 : PowerSeries.constantCoeff B = 0) (p : K[X]) :
-    PowerSeries.constantCoeff (Polynomial.aeval B p) = p.coeff 0 := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp [hp, hq]
-  | monomial k a =>
-      cases k with
-      | zero => simp [Polynomial.aeval_def]
-      | succ k =>
-          simp [Polynomial.aeval_def, hB0, pow_succ]
+variable {K : Type*} [Field K] [CharZero K]
 
-private theorem coe_polynomial_aeval (B : K⟦X⟧) (p : K[X]) :
-    ((Polynomial.aeval B p : K⟦X⟧) : K⸨X⸩) =
-      Polynomial.aeval (B : K⸨X⸩) p := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp [hp, hq]
-  | monomial k a =>
-      simp only [aeval_monomial, algebraMap_eq, map_mul, HahnSeries.ofPowerSeries_C,
-        HahnSeries.C_apply, map_pow, HahnSeries.single_zero_mul_eq_smul]
-      rw [LaurentSeries.algebraMap_apply, HahnSeries.C_mul_eq_smul]
+/-- The usual coefficient form of formal Lagrange inversion for a polynomial kernel. This is the
+case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff`. -/
+theorem lagrange_inversion_coeff (P : K[X]) (Y : K⟦X⟧)
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) (hn : 1 ≤ n) :
+    PowerSeries.coeff n Y = (P ^ n).coeff (n - 1) / n := by
+  have h := lagrange_inversion_coeff_pow (P := P) hY n hn 1 hn
+  simp only [pow_one, Nat.cast_one, one_mul] at h
+  apply (eq_div_iff (Nat.cast_ne_zero.mpr (by omega))).2
+  simpa [mul_comm] using h
 
-/-- Formal one-variable Lagrange inversion over a field of characteristic zero, for a polynomial
-kernel. -/
-theorem lagrange_inversion_coeff [CharZero K] (φ : K[X])
-    (hφ0 : φ.coeff 0 = 1) (B : K⟦X⟧)
-    (hfix : B = PowerSeries.X * Polynomial.aeval B φ)
-    (n : ℕ) (hn : 1 ≤ n) :
-    PowerSeries.coeff n B = (φ ^ n).coeff (n - 1) / n := by
-  let P : K⟦X⟧ := Polynomial.aeval B φ
-  let Q : K⟦X⟧ := Polynomial.aeval B φ.derivative
-  have hB0 : PowerSeries.constantCoeff B = 0 := by
-    calc
-      PowerSeries.constantCoeff B =
-          PowerSeries.constantCoeff
-            (PowerSeries.X * Polynomial.aeval B φ) :=
-        congrArg PowerSeries.constantCoeff hfix
-      _ = 0 := by simp
-  have hP0 : PowerSeries.constantCoeff P = 1 := by
-    rw [show P = Polynomial.aeval B φ by rfl,
-      constantCoeff_aeval_of_constantCoeff_zero hB0, hφ0]
-  have hB1 : PowerSeries.coeff 1 B = 1 := by
-    calc
-      PowerSeries.coeff 1 B =
-          PowerSeries.coeff 1
-            (PowerSeries.X * Polynomial.aeval B φ) :=
-        congrArg (PowerSeries.coeff 1) hfix
-      _ = PowerSeries.constantCoeff (Polynomial.aeval B φ) := by
-        rw [show 1 = 0 + 1 by omega, PowerSeries.coeff_succ_X_mul,
-          PowerSeries.coeff_zero_eq_constantCoeff_apply]
-      _ = φ.coeff 0 := constantCoeff_aeval_of_constantCoeff_zero hB0 φ
-      _ = 1 := hφ0
-  have hPne : (P : K⸨X⸩) ≠ 0 := by
-    intro h
-    have hzero : P = 0 := by
-      apply HahnSeries.ofPowerSeries_injective (Γ := ℤ)
-      simpa using h
-    rw [hzero] at hP0
-    norm_num at hP0
-  have hSne : (HahnSeries.single (1 : ℤ) (1 : K) : K⸨X⸩) ≠ 0 := by
-    simp
-  have hfixP : B = PowerSeries.X * P := by exact hfix
-  have hfixls :
-      (B : K⸨X⸩) =
-        HahnSeries.single (1 : ℤ) 1 * (P : K⸨X⸩) := by
-    calc
-      (B : K⸨X⸩) = ((PowerSeries.X * P : K⟦X⟧) : K⸨X⸩) := by
-        rw [← hfixP]
-      _ = _ := by rw [PowerSeries.coe_mul, PowerSeries.coe_X]
-  have hderiv :
-      (d⁄dX) B =
-        P + PowerSeries.X * (Q * (d⁄dX) B) := by
-    calc
-      (d⁄dX) B =
-          (d⁄dX) (PowerSeries.X * Polynomial.aeval B φ) := by
-            rw [← hfix]
-      _ = _ := by
-        rw [Derivation.leibniz, Derivation.map_aeval]
-        simp only [PowerSeries.derivative_X, smul_eq_mul, mul_one]
-        change
-          PowerSeries.X * (Q * (d⁄dX) B) + P =
-            P + PowerSeries.X * (Q * (d⁄dX) B)
-        ring
-  have hderivls :
-      (((d⁄dX) B : K⟦X⟧) : K⸨X⸩) =
-        (P : K⸨X⸩) + HahnSeries.single (1 : ℤ) 1 *
-          ((Q : K⸨X⸩) * (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) := by
-    calc
-      (((d⁄dX) B : K⟦X⟧) : K⸨X⸩) =
-          ((P + PowerSeries.X * (Q * (d⁄dX) B) : K⟦X⟧) : K⸨X⸩) := by
-            rw [← hderiv]
-      _ = _ := by
-        rw [PowerSeries.coe_add, PowerSeries.coe_mul, PowerSeries.coe_X,
-          PowerSeries.coe_mul]
-  have hpower (m : ℕ) :
-      (B : K⸨X⸩) ^ (-((m : ℕ) : ℤ)) * (P : K⸨X⸩) ^ m =
-        (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^ (-((m : ℕ) : ℤ)) := by
-    rw [← zpow_natCast]
-    rw [hfixls, mul_zpow]
-    calc
-      ((HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^ (-((m : ℕ) : ℤ)) *
-            (P : K⸨X⸩) ^ (-((m : ℕ) : ℤ))) *
-          (P : K⸨X⸩) ^ (m : ℤ) =
-          (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^ (-((m : ℕ) : ℤ)) *
-            ((P : K⸨X⸩) ^ (-((m : ℕ) : ℤ)) *
-              (P : K⸨X⸩) ^ (m : ℤ)) := by ring
-      _ = _ := by
-        rw [← zpow_add₀ hPne]
-        norm_num
-  have hshift :
-      (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^
-          (-((n - 1 : ℕ) : ℤ)) =
-        (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) *
-          HahnSeries.single (1 : ℤ) 1 := by
-    rw [← zpow_add_one₀ hSne]
-    congr 1
-    omega
-  have hrhs :
-      (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^
-          (-((n + 1 : ℕ) : ℤ)) * (B : K⸨X⸩) =
-        (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) *
-          (P : K⸨X⸩) := by
-    rw [hfixls, ← mul_assoc]
-    congr 1
-    rw [← zpow_add_one₀ hSne]
-    congr 1
-    omega
-  have hderivSub :
-      (((d⁄dX) B : K⟦X⟧) : K⸨X⸩) -
-          HahnSeries.single (1 : ℤ) 1 * (Q : K⸨X⸩) *
-            (((d⁄dX) B : K⟦X⟧) : K⸨X⸩) =
-        (P : K⸨X⸩) := by
-    nth_rewrite 1 [hderivls]
-    ring
-  have hH :
-      (((B : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) * (P : K⸨X⸩) ^ n -
-            (B : K⸨X⸩) ^ (-((n - 1 : ℕ) : ℤ)) *
-              (P : K⸨X⸩) ^ (n - 1) * (Q : K⸨X⸩)) *
-          (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) =
-        (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^
-          (-((n + 1 : ℕ) : ℤ)) * (B : K⸨X⸩) := by
-    rw [hpower n, hpower (n - 1), hshift, hrhs]
-    calc
-      _ = (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) *
-          ((((d⁄dX) B : K⟦X⟧) : K⸨X⸩) -
-            HahnSeries.single (1 : ℤ) 1 * (Q : K⸨X⸩) *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) := by ring
-      _ = _ := by rw [hderivSub]
-  by_cases hn1 : n = 1
-  · subst n
-    simp [hB1, hφ0]
-  · have hn2 : 2 ≤ n := by omega
-    have hEvalP :
-        Polynomial.aeval (B : K⸨X⸩) φ = (P : K⸨X⸩) := by
-      exact (coe_polynomial_aeval B φ).symm
-    have hEvalQ :
-        Polynomial.aeval (B : K⸨X⸩) φ.derivative = (Q : K⸨X⸩) := by
-      exact (coe_polynomial_aeval B φ.derivative).symm
-    have hR1 :
-        residue
-            (((B : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) *
-              (P : K⸨X⸩) ^ n) *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) =
-          (φ ^ n).coeff (n - 1) := by
-      have h := residue_shifted_aeval_mul_derivative hB0 hB1
-        (φ ^ n) (n - 1)
-      rw [show n - 1 + 1 = n by omega, map_pow, hEvalP] at h
-      exact h
-    have hR2 :
-        residue
-            ((((B : K⸨X⸩) ^ (-((n - 1 : ℕ) : ℤ)) *
-                (P : K⸨X⸩) ^ (n - 1)) * (Q : K⸨X⸩)) *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) =
-          (φ ^ (n - 1) * φ.derivative).coeff (n - 2) := by
-      have h := residue_shifted_aeval_mul_derivative hB0 hB1
-        (φ ^ (n - 1) * φ.derivative) (n - 2)
-      rw [show n - 2 + 1 = n - 1 by omega, map_mul, map_pow,
-        hEvalP, hEvalQ] at h
-      simpa only [mul_assoc] using h
-    have hsplit :
-        (((B : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) * (P : K⸨X⸩) ^ n -
-              (B : K⸨X⸩) ^ (-((n - 1 : ℕ) : ℤ)) *
-                (P : K⸨X⸩) ^ (n - 1) * (Q : K⸨X⸩)) *
-            (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) =
-          (((B : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) * (P : K⸨X⸩) ^ n) *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) -
-            ((((B : K⸨X⸩) ^ (-((n - 1 : ℕ) : ℤ)) *
-                (P : K⸨X⸩) ^ (n - 1)) * (Q : K⸨X⸩)) *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) := by ring
-    have hsingle :
-        (HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^
-            (-((n + 1 : ℕ) : ℤ)) =
-          HahnSeries.single (-((n + 1 : ℕ) : ℤ)) 1 := by
-      rw [zpow_neg, zpow_natCast, HahnSeries.single_pow,
-        HahnSeries.inv_single]
-      norm_num
-    have hcoeffResidue :
-        PowerSeries.coeff n B =
-          residue
-            ((HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^
-              (-((n + 1 : ℕ) : ℤ)) * (B : K⸨X⸩)) := by
-      rw [hsingle]
-      exact (residue_single_neg_succ_mul_coe n B).symm
-    have hpoly := congrArg (fun p : K[X] => p.coeff (n - 2))
-      (Polynomial.derivative_pow φ n)
-    change (Polynomial.derivative (φ ^ n)).coeff (n - 2) =
-      (Polynomial.C (n : K) * φ ^ (n - 1) * φ.derivative).coeff (n - 2) at hpoly
-    rw [Polynomial.coeff_derivative] at hpoly
-    have hidx : n - 2 + 1 = n - 1 := by omega
-    rw [hidx] at hpoly
-    simp only [Polynomial.coeff_C_mul, mul_assoc] at hpoly
-    have hcast : ((n - 2 : ℕ) : K) + 1 = n - 1 := by
-      exact_mod_cast hidx
-    rw [hcast] at hpoly
-    have hnne : (n : K) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
-    have hformula :
-        (φ ^ n).coeff (n - 1) -
-            (φ ^ (n - 1) * φ.derivative).coeff (n - 2) =
-          (φ ^ n).coeff (n - 1) / n := by
-      rw [eq_div_iff hnne]
-      linear_combination hpoly
-    have hres := congrArg residue hH
-    calc
-      PowerSeries.coeff n B =
-          residue
-            ((HahnSeries.single (1 : ℤ) 1 : K⸨X⸩) ^
-              (-((n + 1 : ℕ) : ℤ)) * (B : K⸨X⸩)) := hcoeffResidue
-      _ = residue
-            (((B : K⸨X⸩) ^ (-((n : ℕ) : ℤ)) * (P : K⸨X⸩) ^ n -
-                (B : K⸨X⸩) ^ (-((n - 1 : ℕ) : ℤ)) *
-                  (P : K⸨X⸩) ^ (n - 1) * (Q : K⸨X⸩)) *
-              (((d⁄dX) B : K⟦X⟧) : K⸨X⸩)) := hres.symm
-      _ = (φ ^ n).coeff (n - 1) -
-            (φ ^ (n - 1) * φ.derivative).coeff (n - 2) := by
-              rw [hsplit, residue_sub, hR1, hR2]
-      _ = (φ ^ n).coeff (n - 1) / n := hformula
+end Field
 
 end PowerSeries
