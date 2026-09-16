@@ -47,10 +47,10 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
 
 /-- The positional-value representation: `n` equals the sum `∑ aᵢ · bⁱ` where the `aᵢ`
 are the base-`b` digits of `n`. -/
+@[simp]
 theorem eq_mapIdx_digits_sum (b n : ℕ) :
-    n = (List.mapIdx (fun i a ↦ a * b ^ i) (digits b n)).sum := by
-  convert ofDigits_eq_sum_mapIdx b (digits b n)
-  rw [ofDigits_digits]
+    (List.mapIdx (fun i a ↦ a * b ^ i) (digits b n)).sum = n := by
+  rw [← ofDigits_eq_sum_mapIdx b (digits b n), ofDigits_digits]
 
 /-!
 ### Properties
@@ -408,6 +408,9 @@ theorem digitsAppend_eq_nil_iff {b l n : ℕ} :
   intro h
   rw [h, digits_zero, List.length_nil, le_zero]
 
+theorem digitsAppend_ne_nil_of_ne_zero {b l n : ℕ} (hn : n ≠ 0) : digitsAppend b l n ≠ [] :=
+  fun h ↦ hn (digitsAppend_eq_nil_iff.mp h).1
+
 theorem mem_digitsAppend_of_mem_digits {b n : ℕ} (l d : ℕ) (hd : d ∈ digits b n) :
     d ∈ digitsAppend b l n := by
   rw [digitsAppend, List.mem_append]
@@ -418,24 +421,26 @@ theorem digitsAppend_sum_eq_digits_sum (b l n : ℕ) :
   rw [digitsAppend, List.sum_append, List.sum_replicate, nsmul_zero, add_zero]
 
 /-- `digitsAppend b l n` equals `digits b n` (i.e., no zeros were appended) if and only if
-the last element is nonzero, which happens precisely when `l ≤ (digits b n).length`. -/
-theorem digitsAppend_eq_digits_iff {b l n : ℕ} (hn : n ≠ 0) (p : digitsAppend b l n ≠ []) :
-    digitsAppend b l n = digits b n ↔ (digitsAppend b l n).getLast p ≠ 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw! [h]
-    exact getLast_digit_ne_zero _ hn
-  · contrapose! h
-    rw [ne_eq, digitsAppend, List.append_right_eq_self, List.replicate_eq_nil_iff] at h
-    rw! [digitsAppend]
-    rw [List.getLast_append_right, List.getLast_replicate]
-    rwa [ne_eq, List.replicate_eq_nil_iff]
+`l ≤ (digits b n).length`. -/
+theorem digitsAppend_eq_digits_iff_le {b l n : ℕ} :
+    digitsAppend b l n = digits b n ↔ l ≤ (digits b n).length := by
+  rw [digitsAppend, List.append_right_eq_self, List.replicate_eq_nil_iff, Nat.sub_eq_zero_iff_le]
 
-/-- The positional-value formula holds for `digitsAppend`: `n` equals the sum `∑ aᵢ · bⁱ`
-where the `aᵢ` are the base-`b` digits of `n`. -/
+/-- `digitsAppend b l n` equals `digits b n` (i.e., no zeros were appended) if and only if
+the last element is nonzero. -/
+theorem digitsAppend_eq_digits_iff {b l n : ℕ} (hn : n ≠ 0) :
+    digitsAppend b l n = digits b n ↔
+      (digitsAppend b l n).getLast (digitsAppend_ne_nil_of_ne_zero hn) ≠ 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by grind [digitsAppend]⟩
+  rw! [h]
+  exact getLast_digit_ne_zero _ hn
+
+/-- The positional-value formula holds for `digitsAppend`: the sum `∑ aᵢ · bⁱ`, where the `aᵢ`
+are the base-`b` digits of `n`, equals `n`. -/
+@[simp]
 theorem eq_mapIdx_digitsAppend_sum (b l n : ℕ) :
-    n = (List.mapIdx (fun i a ↦ a * b ^ i) (digitsAppend b l n)).sum := by
-  rw [digitsAppend, List.mapIdx_append, List.sum_append, List.mapIdx_replicate]
-  simpa using eq_mapIdx_digits_sum b n
+    (List.mapIdx (fun i a ↦ a * b ^ i) (digitsAppend b l n)).sum = n := by
+  simp [digitsAppend, List.mapIdx_append, List.sum_append, List.mapIdx_replicate]
 
 end Nat
 
