@@ -189,10 +189,24 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
   · exact analyticOrderAt_eq_top.mpr (by simp [he])
   · exact analyticAt_const.analyticOrderAt_eq_natCast.mpr ⟨(fun _ ↦ e), (by fun_prop), (by simpa)⟩
 
+@[simp] theorem analyticOrderAt_zero (z₀ : 𝕜) : analyticOrderAt (fun _ ↦ (0 : E)) z₀ = ⊤ := by
+  classical
+  simp
+
+@[simp] theorem analyticOrderAt_one (z₀ : 𝕜) : analyticOrderAt (fun _ ↦ (1 : 𝕜)) z₀ = 0 := by
+  classical
+  simp
+
 @[simp] theorem analyticOrderNatAt_const (z₀ : 𝕜) (e : E) :
     analyticOrderNatAt (fun _ ↦ e) z₀ = 0 := by
   classical
   simp [analyticOrderNatAt, ne_or_eq e 0]
+
+@[simp] theorem analyticOrderNatAt_zero (z₀ : 𝕜) : analyticOrderNatAt (fun _ ↦ (0 : E)) z₀ = 0 := by
+  simp
+
+@[simp] theorem analyticOrderNatAt_one (z₀ : 𝕜) : analyticOrderNatAt (fun _ ↦ (1 : 𝕜)) z₀ = 0 := by
+  simp
 
 @[simp] lemma analyticOrderAt_id : analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
   analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
