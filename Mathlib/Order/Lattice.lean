@@ -10,6 +10,8 @@ public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
 
+import Mathlib.Tactic.GRewrite
+
 /-!
 # (Semi-)lattices
 
@@ -88,7 +90,7 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
 
-attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeSup.mk SemilatticeSup.casesOn
+attribute [to_dual existing] SemilatticeSup.casesOn
 
 @[to_dual]
 instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
@@ -100,7 +102,7 @@ join-semilattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `sup_eq_right`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (sup_idem : ∀ a : α, a ⊔ a = a) :
     SemilatticeSup α where
@@ -119,7 +121,7 @@ meet-semilattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `inf_eq_right`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def SemilatticeInf.mk' {α : Type*} [Min α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a) :
     SemilatticeInf α where
@@ -270,6 +272,14 @@ theorem sup_sup_sup_comm (a b c d : α) : a ⊔ b ⊔ (c ⊔ d) = a ⊔ c ⊔ (b
   rw [sup_assoc, sup_left_comm b, ← sup_assoc]
 
 @[to_dual]
+theorem sup_rotate (a b c : α) : a ⊔ b ⊔ c = b ⊔ c ⊔ a := by
+  rw [sup_assoc, sup_comm]
+
+@[to_dual]
+theorem sup_rotate' (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (c ⊔ a) := by
+  rw [sup_comm, sup_assoc]
+
+@[to_dual]
 theorem sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 
@@ -294,13 +304,23 @@ theorem sup_eq_sup_iff_left : a ⊔ b = a ⊔ c ↔ b ≤ a ⊔ c ∧ c ≤ a �
 theorem sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c :=
   ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
 
+@[to_dual]
+theorem sup_eq_sup_mono_left (h : a ⊔ b = a ⊔ c) (had : a ≤ d) : d ⊔ b = d ⊔ c := by
+  rw [sup_eq_sup_iff_left] at *
+  exact h.imp (le_trans · (sup_le_sup_right had _)) (le_trans · (sup_le_sup_right had _))
+
+@[to_dual]
+theorem sup_eq_sup_mono_right (h : a ⊔ c = b ⊔ c) (hcd : c ≤ d) : a ⊔ d = b ⊔ d := by
+  rw [sup_eq_sup_iff_right] at *
+  refine h.imp ?_ ?_ <;> intro h' <;> grw [hcd] at h' <;> assumption
+
 @[to_dual inf_lt_or_inf_lt]
 theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
   hab.symm.not_le_or_not_ge.imp left_lt_sup.2 right_lt_sup.2
 
 @[to_dual inf_le_ite]
 theorem ite_le_sup (a b : α) (P : Prop) [Decidable P] : ite P a b ≤ a ⊔ b :=
-  if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
+  if h : P then (ite_eq_left h).trans_le le_sup_left else (ite_eq_right h).trans_le le_sup_right
 
 @[to_dual (reorder := H (x y))]
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
@@ -320,11 +340,11 @@ theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
   ext; apply SemilatticeSup.ext_sup H
 
 @[to_dual]
-instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
-  sup := @SemilatticeInf.inf α _
-  le_sup_left := @SemilatticeInf.inf_le_left α _
-  le_sup_right := @SemilatticeInf.inf_le_right α _
-  sup_le := fun _ _ _ hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb
+instance OrderDual.instSemilatticeSup (α) [h : SemilatticeInf α] : SemilatticeSup αᵒᵈ where
+  sup a b := h.inf a b
+  le_sup_left := h.inf_le_left
+  le_sup_right := h.inf_le_right
+  sup_le _ _ _ := h.le_inf _ _ _
 
 @[to_dual]
 theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
@@ -342,6 +362,16 @@ end SemilatticeSup
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
 attribute [to_dual existing] Lattice.toSemilatticeInf
+
+/-- Auxiliary constructor for `to_dual`. -/
+@[to_dual existing mk, instance_reducible]
+def Lattice.mkDual {α : Type*} [SemilatticeInf α] (sup : α → α → α)
+    (le_sup_left : ∀ a b, a ≤ sup a b) (le_sup_right : ∀ a b, b ≤ sup a b)
+    (sup_le : ∀ a b c, a ≤ c → b ≤ c → sup a b ≤ c) : Lattice α where
+  sup
+  le_sup_left
+  le_sup_right
+  sup_le
 
 instance OrderDual.instLattice (α) [Lattice α] : Lattice αᵒᵈ where
 
@@ -365,7 +395,7 @@ laws relating the two operations has the structure of a lattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `sup_eq_right`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (sup_inf_self : ∀ a b : α, a ⊔ a ⊓ b = a)
@@ -500,7 +530,7 @@ theorem inf_sup_le {x y z : α} : x ⊓ (y ⊔ z) ≤ (x ⊓ y) ⊔ (x ⊓ z) :=
   rw [inf_sup_left]
 
 instance OrderDual.instDistribLattice (α : Type*) [DistribLattice α] : DistribLattice αᵒᵈ where
-  le_sup_inf _ _ _ := (inf_sup_left _ _ _).le
+  le_sup_inf _ _ _ := inf_sup_le
 
 @[to_dual existing]
 theorem inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
@@ -551,15 +581,15 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
   (Std.Total.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
   rwa [sup_eq_left.2 h]
 
-@[to_dual (attr := simp) inf_le_iff]
+@[to_dual inf_le_iff]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
   grind
 
-@[to_dual (attr := simp) inf_lt_iff]
+@[to_dual inf_lt_iff]
 theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
   grind
 
-@[to_dual (attr := simp) lt_inf_iff]
+@[to_dual lt_inf_iff]
 theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
   ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
    fun h => sup_ind (p := (· < a)) b c h.1 h.2⟩
@@ -992,6 +1022,54 @@ protected abbrev Subtype.distribLattice [DistribLattice α] {P : α → Prop}
   letI := Subtype.lattice Psup Pinf
   Subtype.coe_injective.distribLattice _ coe_le_coe coe_lt_coe (coe_sup Psup) (coe_inf Pinf)
 
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `Preorder` across an `Equiv`. -/
+protected abbrev preorder [Preorder β] : Preorder α := by
+  let le := e.le
+  let lt := e.lt
+  apply Function.Injective.preorder e <;> intros <;> rfl
+
+/-- Transfer `PartialOrder` across an `Equiv`. -/
+protected abbrev partialOrder [PartialOrder β] : PartialOrder α := by
+  let preorder := e.preorder
+  apply e.injective.partialOrder <;> intros <;> rfl
+
+/-- Transfer `LinearOrder` across an `Equiv`. -/
+protected abbrev linearOrder [LinearOrder β] [DecidableEq α] : LinearOrder α := by
+  let max := e.max
+  let min := e.min
+  let preorder := e.preorder
+  let compare := e.ord
+  apply e.injective.linearOrder <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `SemilatticeSup` across an `Equiv`. -/
+protected abbrev semilatticeSup [SemilatticeSup β] : SemilatticeSup α := by
+  let max := e.max
+  let partialOrder := e.partialOrder
+  apply e.injective.semilatticeSup <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `SemilatticeInf` across an `Equiv`. -/
+protected abbrev semilatticeInf [SemilatticeInf β] : SemilatticeInf α := by
+  let min := e.min
+  let partialOrder := e.partialOrder
+  apply e.injective.semilatticeInf <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `Lattice` across an `Equiv`. -/
+protected abbrev lattice [Lattice β] : Lattice α := by
+  let semilatticeSup := e.semilatticeSup
+  let semilatticeInf := e.semilatticeInf
+  apply e.injective.lattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `DistribLattice` across an `Equiv`. -/
+protected abbrev distribLattice [DistribLattice β] : DistribLattice α := by
+  let lattice := e.lattice
+  apply e.injective.distribLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv
+
 end lift
 
 namespace ULift
@@ -1016,11 +1094,11 @@ instance Bool.instDistribLattice : DistribLattice Bool := inferInstance
 
 variable [LinearOrder α] {p : α → α → Prop}
 
-lemma pairwise_iff_lt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
-  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
+lemma pairwise_iff_lt [Std.Symm p] : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ symm <| h _ _ hab
 
-lemma pairwise_iff_gt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, b < a → p a b := by
-  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
+lemma pairwise_iff_gt [Std.Symm p] : Pairwise p ↔ ∀ ⦃a b⦄, b < a → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ symm <| h _ _ hab
 
 alias ⟨_, Pairwise.of_lt⟩ := pairwise_iff_lt
 alias ⟨_, Pairwise.of_gt⟩ := pairwise_iff_gt

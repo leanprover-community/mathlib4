@@ -5,13 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.BooleanAlgebra
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Fintype.OfMap
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.List.OfFn
 
 /-!
 # Instances for finite types
@@ -29,7 +30,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 
@@ -38,6 +39,8 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
+
+theorem Finset.univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := rfl
 
 theorem Finset.val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = List.finRange n := rfl
 
@@ -146,12 +149,12 @@ theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
   rfl
 
 /-- Given that `α × β` is a fintype, `α` is also a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.prodLeft {α β} [DecidableEq α] [Fintype (α × β)] [Nonempty β] : Fintype α :=
   ⟨(@univ (α × β) _).image Prod.fst, fun a => by simp⟩
 
 /-- Given that `α × β` is a fintype, `β` is also a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α] : Fintype β :=
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 

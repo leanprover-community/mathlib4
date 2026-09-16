@@ -29,12 +29,14 @@ compactification.
 - `ℚ∞` is used as a local notation for `OnePoint ℚ`
 -/
 
-@[expose] public section
+public section
 
 
-open Set Metric Filter TopologicalSpace
+open Set Filter TopologicalSpace
 
-open Topology OnePoint
+open OnePoint
+
+open scoped Topology
 
 local notation "ℚ∞" => OnePoint ℚ
 
@@ -78,7 +80,7 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
 instance : TotallyDisconnectedSpace ℚ := by
   clear p s
   refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
-  by_contra! H : x ≠ y
+  by_contra H : x ≠ y
   wlog hlt : x < y
   · apply this s hs y hy x hx H.symm <| H.lt_or_gt.resolve_left hlt
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩

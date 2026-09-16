@@ -13,7 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 # Conjugation action of a field on itself
 -/
 
-@[expose] public section
+public section
 
 namespace ConjAct
 

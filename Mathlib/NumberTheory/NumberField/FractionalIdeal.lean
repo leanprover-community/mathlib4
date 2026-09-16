@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Norm
 public import Mathlib.RingTheory.FractionalIdeal.Operations
@@ -17,11 +18,11 @@ Prove some results on the fractional ideals of number fields.
 
 ## Main definitions and results
 
-  * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
-    a fractional ideal of a number field `K`.
-  * `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
-    field `K`, the absolute value of the determinant of the base change from `integralBasis` to
-    `basisOfFractionalIdeal I` is equal to the norm of `I`.
+* `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
+  a fractional ideal of a number field `K`.
+* `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
+  field `K`, the absolute value of the determinant of the base change from `integralBasis` to
+  `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
 
 @[expose] public section

@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.Filter
-public import Mathlib.Data.Finite.Defs
 public import Mathlib.Order.Lex
 
 /-!
@@ -48,7 +48,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 /-- `Fintype α` means that `α` is finite, i.e. there are only
   finitely many distinct elements of type `α`. The evidence of this
@@ -72,7 +72,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {f : α → β} {s : Finset α} {t' : Finset β}
 
 instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
   -- Use custom implementation for better performance.
@@ -85,7 +85,7 @@ end List
 
 namespace Finset
 
-variable [Fintype α] {s t : Finset α}
+variable [Fintype α] {s : Finset α}
 
 /-- `univ` is the universal finite set of type `Finset α` implied from
   the assumption `Fintype α`. -/
@@ -214,6 +214,10 @@ instance decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α]
     Decidable (∃ a, p a) :=
   decidable_of_iff (∃ a ∈ @univ α _, p a) (by simp)
 
+instance {β : α → Type*} [∀ a, LE (β a)] [∀ a, DecidableLE (β a)] [Fintype α] :
+    DecidableLE (∀ a, β a) :=
+  fun _ _ ↦ decidable_of_iff _ Pi.le_def.symm
+
 instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
     DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype
 
@@ -240,36 +244,36 @@ instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
   fun f => decidable_of_iff ((Multiset.map f univ.val).Nodup) nodup_map_univ_iff_injective
 
 instance decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
-    DecidablePred (Surjective : (α → β) → Prop) := fun x => by unfold Surjective; infer_instance
+    DecidablePred (Surjective : (α → β) → Prop) :=
+  fun x ↦ inferInstanceAs <| Decidable (∀ b, ∃ a, x a = b)
 
 instance decidableBijectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
-    DecidablePred (Bijective : (α → β) → Prop) := fun x => by unfold Bijective; infer_instance
+    DecidablePred (Bijective : (α → β) → Prop) :=
+  fun x ↦ inferInstanceAs <| Decidable (Injective x ∧ Surjective x)
 
 instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :
     Decidable (Function.RightInverse f g) :=
-  show Decidable (∀ x, g (f x) = x) by infer_instance
+  inferInstanceAs <| Decidable (∀ x, g (f x) = x)
 
 instance decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → β) (g : β → α) :
     Decidable (Function.LeftInverse f g) :=
-  show Decidable (∀ x, f (g x) = x) by infer_instance
+  inferInstanceAs <| Decidable (∀ x, f (g x) = x)
 
 instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
 
 instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
+@[instance_reducible]
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     Fintype { x // p x } :=
   ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- Construct a fintype from a finset with the same elements. -/
+@[instance_reducible]
 def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fintype p :=
   Fintype.subtype s H
 

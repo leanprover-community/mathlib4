@@ -41,7 +41,6 @@ def cokernelCocone : CokernelCofork f :=
   CokernelCofork.ofπ (Z := of <| H ⧸ f.hom.range) (ofHom (mk' f.hom.range)) <| ext fun x =>
     (eq_zero_iff _).mpr ⟨x, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
@@ -49,6 +48,6 @@ def cokernelIsColimit : IsColimit <| cokernelCocone f :=
       congr_arg Hom.hom (CokernelCofork.condition s))
     (fun _ => rfl)
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
-      (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using h)
+      (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using! h)
 
 end AddCommGrpCat

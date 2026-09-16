@@ -77,6 +77,25 @@ theorem kroneckerMap_map (f : α → β → γ) (g : γ → γ') (A : Matrix l m
     (kroneckerMap f A B).map g = kroneckerMap (fun a b => g (f a b)) A B :=
   ext fun _ _ => rfl
 
+theorem kroneckerMap_submatrix_left
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : l' → l) (c : m' → m) :
+    kroneckerMap f (A.submatrix r c) B =
+      (kroneckerMap f A B).submatrix (.map r id) (.map c id) :=
+  rfl
+
+theorem kroneckerMap_submatrix_right
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : n' → n) (c : p' → p) :
+    kroneckerMap f A (B.submatrix r c) =
+      (kroneckerMap f A B).submatrix (.map id r) (.map id c) :=
+  rfl
+
+theorem kroneckerMap_submatrix_submatrix
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β)
+    (r : l' → l) (c : m' → m) (r' : n' → n) (c' : p' → p) :
+    kroneckerMap f (A.submatrix r c) (B.submatrix r' c') =
+      (kroneckerMap f A B).submatrix (.map r r') (.map c c') :=
+  rfl
+
 @[simp]
 theorem kroneckerMap_zero_left [Zero α] [Zero γ] (f : α → β → γ) (hf : ∀ b, f 0 b = 0)
     (B : Matrix n p β) : kroneckerMap f (0 : Matrix l m α) B = 0 :=
@@ -258,7 +277,7 @@ def kronecker [Mul α] : Matrix l m α → Matrix n p α → Matrix (l × n) (m 
 @[inherit_doc Matrix.kroneckerMap]
 scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
-open Kronecker
+open scoped Kronecker
 
 @[simp]
 theorem kronecker_apply [Mul α] (A : Matrix l m α) (B : Matrix n p α) (i₁ i₂ j₁ j₂) :
@@ -320,7 +339,6 @@ theorem natCast_kronecker_natCast [NonAssocSemiring α] [DecidableEq m] [Decidab
     (a : Matrix m m α) ⊗ₖ (b : Matrix n n α) = ↑(a * b) :=
   (diagonal_kronecker_diagonal _ _).trans <| by simp_rw [← Nat.cast_mul]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) :
     A ⊗ₖ (b : Matrix n n α) = blockDiagonal fun _ => b • A :=
   kronecker_diagonal _ _ |>.trans <| by
@@ -328,7 +346,6 @@ theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m 
     ext
     simp [(Nat.cast_commute b _).eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : Matrix m n α) :
     (a : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun _ => a • B) :=
@@ -427,7 +444,7 @@ scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (TensorProduct
 @[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
   Matrix.kroneckerMap (TensorProduct.tmul R) x y
 
-open Kronecker
+open scoped Kronecker
 
 @[simp]
 theorem kroneckerTMul_apply (A : Matrix l m α) (B : Matrix n p β) (i₁ i₂ j₁ j₂) :
@@ -520,7 +537,7 @@ end Module
 
 section Algebra
 
-open Kronecker
+open scoped Kronecker
 
 open Algebra.TensorProduct
 

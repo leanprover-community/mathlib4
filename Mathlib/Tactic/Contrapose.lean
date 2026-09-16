@@ -13,7 +13,7 @@ The `contrapose` tactic transforms the goal into its contrapositive when that go
 implication or an iff. It also avoids creating a double negation if there already is a negation.
 
 * `contrapose` turns a goal `P → Q` into `¬ Q → ¬ P` and a goal `P ↔ Q` into `¬ P ↔ ¬ Q`
-* `contrapose!` runs `contrapose` and then pushes negations inside `P` and `Q` using `push_neg`
+* `contrapose!` runs `contrapose` and then pushes negations inside `P` and `Q` using `push Not`
 * `contrapose h` first reverts the local assumption `h`, and then uses `contrapose` and `intro h`
 * `contrapose! h` first reverts the local assumption `h`, and then uses `contrapose!` and `intro h`
 * `contrapose h with new_h` uses the name `new_h` for the introduced hypothesis
@@ -53,7 +53,7 @@ turns it into `⊢ ¬ P ↔ ¬ Q`.
 * `contrapose h with new_h` uses the name `new_h` for the introduced hypothesis. This is equivalent
   to `revert h; contrapose; intro new_h`.
 * `contrapose!`, `contrapose! h` and `contrapose! h with new_h` push negation deeper into the goal
-  after contraposing (but before introducing the new hypothesis). See the `push_neg` tactic for more
+  after contraposing (but before introducing the new hypothesis). See the `push Not` tactic for more
   details on the pushing algorithm.
 * `contrapose! (config := cfg)` controls the options for negation pushing. All options for
   `Mathlib.Tactic.Push.Config` are supported:
@@ -127,7 +127,7 @@ syntax (name := contrapose!)
 
 local elab "try_push_neg" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 
 macro_rules
   | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try_push_neg $cfg))

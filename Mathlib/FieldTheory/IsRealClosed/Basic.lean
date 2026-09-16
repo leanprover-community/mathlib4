@@ -35,7 +35,7 @@ real closed, rcf
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

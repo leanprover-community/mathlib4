@@ -5,9 +5,10 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
@@ -15,8 +16,8 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 
 This file defines and develops an API for the polynomial growth condition that appears in the
 statement of the Akra-Bazzi theorem: for the theorem to hold, the function `g` must
-satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant
-`b ∈ (0,1)`.
+satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b*n` and `n` for any
+constant `b ∈ (0,1)`.
 
 ## Implementation notes
 
@@ -29,7 +30,7 @@ arise in practice.
 
 @[expose] public section
 
-open Finset Real Filter Asymptotics
+open Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence

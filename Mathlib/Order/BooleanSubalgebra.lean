@@ -35,7 +35,7 @@ initialize_simps_projections BooleanSubalgebra (carrier → coe, as_prefix coe)
 
 instance instSetLike : SetLike (BooleanSubalgebra α) α where
   coe L := L.carrier
-  coe_injective' L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
+  coe_injective L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
 
 instance : PartialOrder (BooleanSubalgebra α) := .ofSetLike (BooleanSubalgebra α) α
 
@@ -51,9 +51,9 @@ lemma compl_mem (ha : a ∈ L) : aᶜ ∈ L := L.compl_mem' ha
 lemma sup_mem (ha : a ∈ L) (hb : b ∈ L) : a ⊔ b ∈ L := L.supClosed ha hb
 lemma inf_mem (ha : a ∈ L) (hb : b ∈ L) : a ⊓ b ∈ L := L.infClosed ha hb
 lemma sdiff_mem (ha : a ∈ L) (hb : b ∈ L) : a \ b ∈ L := by
-  simpa [sdiff_eq] using L.infClosed ha (compl_mem hb)
+  rw [_root_.sdiff_eq]; exact L.infClosed ha (compl_mem hb)
 lemma himp_mem (ha : a ∈ L) (hb : b ∈ L) : a ⇨ b ∈ L := by
-  simpa [himp_eq] using L.supClosed hb (compl_mem ha)
+  rw [himp_eq]; exact L.supClosed hb (compl_mem ha)
 
 lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := .rfl
 @[simp] lemma mem_toSublattice : a ∈ L.toSublattice ↔ a ∈ L := .rfl
@@ -283,21 +283,17 @@ lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 @[simp] lemma map_map (g : BoundedLatticeHom β γ) (f : BoundedLatticeHom α β) :
     (L.map f).map g = L.map (g.comp f) := SetLike.coe_injective <| image_image _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_equiv {f : α ≃o β} {a : β} : a ∈ L.map f ↔ f.symm a ∈ L := Set.mem_image_equiv
 
 lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.mem_set_image
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : BooleanSubalgebra α) :
     L.map f = L.comap (f.symm : BoundedLatticeHom β α) :=
   SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
-set_option backward.isDefEq.respectTransparency false in
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : BooleanSubalgebra α) :
     L.comap f = L.map (f.symm : BoundedLatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_symm_eq_iff_eq_map {M : BooleanSubalgebra β} {e : β ≃o α} :
     L.map ↑e.symm = M ↔ L = M.map ↑e := by
   simp_rw [← coe_inj]; exact (Equiv.eq_image_iff_symm_image_eq _ _ _).symm
@@ -383,6 +379,18 @@ lemma closure_bot_sup_induction {p : ∀ g ∈ closure s, Prop} (mem : ∀ x hx,
       compl_mem' := fun ⟨_, hb⟩ ↦ ⟨_, compl _ _ hb⟩ }
   closure_le (L := L).mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
+lemma closure_eq_latticeClosure (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) :
+    closure s = latticeClosure s := by
+  refine subset_antisymm ?_ latticeClosure_subset_closure
+  intro t ht
+  induction ht using closure_bot_sup_induction with
+  | mem _ hx => apply subset_latticeClosure hx
+  | bot => apply subset_latticeClosure hs1
+  | sup _ _ _ _ hx hy => apply isSublattice_latticeClosure.supClosed hx hy
+  | compl _ _ h =>
+    rw [← compl_image_latticeClosure_eq_of_compl_image_eq_self hs2]
+    exact mem_image_of_mem compl h
+
 section sdiff_sup
 
 variable (isSublattice : IsSublattice s) (bot_mem : ⊥ ∈ s) (top_mem : ⊤ ∈ s)
@@ -404,7 +412,7 @@ theorem mem_closure_iff_sup_sdiff {a : α} :
   refine tc.induction ⟨∅, by simp⟩ fun ⟨z, w⟩ tc _ ⟨t, eq⟩ ↦ ?_
   simp_rw [Finset.sup_insert, inf_sup_left, eq]
   use {(z, ⟨_, isSublattice.supClosed x.2 w.2⟩), (⟨_, isSublattice.infClosed y.2 z.2⟩, w)} ∪ t
-  simp_rw [Finset.sup_union, Finset.sup_insert, Finset.sup_singleton, sdiff_eq,
+  simp_rw [Finset.sup_union, Finset.sup_insert, Finset.sup_singleton, _root_.sdiff_eq,
     compl_sup, inf_left_comm z.1, compl_inf, compl_compl, inf_sup_right, inf_assoc]
 
 @[elab_as_elim] theorem closure_sdiff_sup_induction {p : ∀ g ∈ closure s, Prop}

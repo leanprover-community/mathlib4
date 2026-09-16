@@ -15,7 +15,7 @@ This file proves that `ℕ+` is a `LocallyFiniteOrder` and calculates the cardin
 intervals as finsets and fintypes.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Function PNat
@@ -24,7 +24,8 @@ namespace PNat
 
 variable (a b : ℕ+)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ+ := Subtype.instLocallyFiniteOrder _
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ+ :=
+  inferInstanceAs <| LocallyFiniteOrder (Subtype _)
 
 theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).subtype fun n : ℕ => 0 < n :=
   rfl
@@ -92,6 +93,7 @@ theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = b - a := by
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← card_uIcc, Fintype.card_ofFinset]
 

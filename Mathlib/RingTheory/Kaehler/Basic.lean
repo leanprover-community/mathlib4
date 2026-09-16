@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.Derivation.ToSquareZero
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.Tactic.SuppressCompilation
 
@@ -83,14 +83,12 @@ theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S)
     D.tensorProductTo (x * y) =
       TensorProduct.lmul' (S := S) R x • D.tensorProductTo y +
         TensorProduct.lmul' (S := S) R y • D.tensorProductTo x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · rw [zero_mul, map_zero, map_zero, zero_smul, smul_zero, add_zero]
+  refine TensorProduct.inductionOn x ?_ ?_
   swap
   · intro x₁ y₁ h₁ h₂
     rw [add_mul, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]
   intro x₁ x₂
-  refine TensorProduct.induction_on y ?_ ?_ ?_
-  · rw [mul_zero, map_zero, map_zero, zero_smul, smul_zero, add_zero]
+  refine TensorProduct.inductionOn y ?_ ?_
   swap
   · intro x₁ y₁ h₁ h₂
     rw [mul_add, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]
@@ -117,8 +115,7 @@ theorem KaehlerDifferential.submodule_span_range_eq_ideal :
       rw [hx, TensorProduct.zero_tmul, sub_zero]
     rw [← this]
     clear this hx
-    refine TensorProduct.induction_on x ?_ ?_ ?_
-    · rw [map_zero, TensorProduct.zero_tmul, sub_zero]; exact zero_mem _
+    refine TensorProduct.inductionOn x ?_ ?_
     · intro x y
       have : x ⊗ₜ[R] y - (x * y) ⊗ₜ[R] (1 : S) = x • ((1 : S) ⊗ₜ y - y ⊗ₜ (1 : S)) := by
         simp_rw [smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
@@ -152,15 +149,15 @@ Note that the slash is `\textfractionsolidus`.
 -/
 def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
-deriving AddCommGroup, Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S), Inhabited
+deriving Inhabited
+
+-- The `SMul R'` instance exists to avoid a zsmul diamond.
+variable {R' : Type*} [CommRing R'] [Algebra R' S] [SMulCommClass R R' S] in
+deriving instance SMul R', AddCommGroup, Module R', Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S)
+  for KaehlerDifferential R S
 
 @[inherit_doc KaehlerDifferential]
 notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
-
-instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
-    [SMulCommClass R R' S] :
-    Module R' Ω[S⁄R] :=
-  Submodule.Quotient.module' _
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
@@ -192,6 +189,40 @@ theorem KaehlerDifferential.DLinearMap_apply (s : S) :
       (KaehlerDifferential.ideal R S).toCotangent
         ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ := rfl
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`LinearMap.CompatibleSMul (↥(ideal R S)) (ideal R S).Cotangent S (S ⊗[R] S)`
+It is needed by the two `← LinearMap.map_smul_of_tower (ideal R S).toCotangent` rewrites in
+`leibniz'` below. The `have` just above them does not rescue the search: it is stated for `Ω[S⁄R]`,
+and `(ideal R S).Cotangent =?= Ω[S⁄R]` already fails at `.instances`.
+
+The failure happens while applying `@LinearMap.IsScalarTower.compatibleSMul`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `SMul S (ideal R S).Cotangent`, whereas the assigned value
+`DistribMulAction.toDistribSMul.toSMul` has type `SMul S Ω[S⁄R]`. The comparison bottoms out at
+`@Ideal.Cotangent =?= KaehlerDifferential`,
+where `KaehlerDifferential` is a plain semireducible `def` and therefore does not unfold at the
+`.instances` transparency that instance search runs at. Lean falls back to synthesize an instance of
+the correct type, which succeeds, but it returns `(ideal R S).instSMulCotangentOfAlgebra`, which
+is not defeq to the assigned value, the comparison bottoming out at
+`instSMulKaehlerDifferentialOfSMulCommClass._aux_1 =?= @Ideal.instSMulCotangentOfAlgebra._aux_1`.
+That second comparison also runs at `.instances`, `respectTransparency false` suppressing the
+transparency bump.
+
+Potential fix: mark `KaehlerDifferential` `@[implicit_reducible]` at its definition site.
+Then `instanceSearchTypes false` and `respectTransparency false` can go, but only together: with
+`respectTransparency false` still in place, the comparison stays at `.instances`, where an
+implicit-reducible definition does not unfold, and the search fails as before.
+The `_aux_1` wrappers for the instance fields become implicit-reducible as soon as
+`KaehlerDifferential` is.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
@@ -206,8 +237,9 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
       rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
-      convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
-        (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
+      convert!
+        Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
+          (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
       simp only [Submodule.coe_add,
         TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
         smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
@@ -480,14 +512,12 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
 unsuppress_compilation in
 local notation3 x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
     Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
   simp_rw [← Finsupp.smul_single_one _ z, ← smul_add, ← smul_sub]
   exact Submodule.smul_mem _ _ (Submodule.subset_span (Or.inl <| Or.inl <| ⟨⟨_, _⟩, rfl⟩))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem KaehlerDifferential.kerTotal_mkQ_single_mul (x y z) :
     (z𝖣x * y) = ((z * x)𝖣y) + (z * y)𝖣x := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
@@ -503,13 +533,13 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_algebraMap (x y) : (y𝖣algebra
 theorem KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one (x) : (x𝖣1) = 0 := by
   rw [← (algebraMap R S).map_one, KaehlerDifferential.kerTotal_mkQ_single_algebraMap]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r • x) = r • y𝖣x := by
-  letI : SMulZeroClass R S := inferInstance
+  let : SMulZeroClass R S := inferInstance
   rw [Algebra.smul_def, KaehlerDifferential.kerTotal_mkQ_single_mul,
     KaehlerDifferential.kerTotal_mkQ_single_algebraMap, add_zero, ← LinearMap.map_smul_of_tower,
     Finsupp.smul_single, mul_comm, Algebra.smul_def]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The (universal) derivation into `(S →₀ S) ⧸ KaehlerDifferential.kerTotal R S`. -/
 noncomputable def KaehlerDifferential.derivationQuotKerTotal :
     Derivation R S ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) where
@@ -575,7 +605,7 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
     (KaehlerDifferential.quotKerTotalEquiv R S).symm.toLinearMap.compDer
         (KaehlerDifferential.D R S) =
       KaehlerDifferential.derivationQuotKerTotal R S := by
-  convert (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
+  convert! (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
 
 end Presentation
 
@@ -694,7 +724,7 @@ lemma KaehlerDifferential.ker_map_of_surjective (h : Function.Surjective (algebr
     Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot,
     Submodule.map_comap_eq_of_surjective (linearCombination_surjective _ _),
     bot_sup_eq, Submodule.map_span, ← Set.range_comp]
-  convert bot_sup_eq _
+  convert! bot_sup_eq _
   rw [Submodule.span_eq_bot]; simp
 
 open IsScalarTower (toAlgHom)
@@ -731,7 +761,6 @@ lemma KaehlerDifferential.range_mapBaseChange :
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
     induction x with
-    | zero => simp
     | tmul r s =>
       obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s
       simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]
@@ -743,7 +772,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
   · convert_to (kerTotal A B).map (Finsupp.linearCombination B (D R B)) ≤ _
     · rw [KaehlerDifferential.ker_map]
       congr 1
-      convert Submodule.comap_id _
+      convert! Submodule.comap_id _
       · ext; simp
     rw [Submodule.map_le_iff_le_comap, kerTotal, Submodule.span_le]
     rintro f ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩)
@@ -818,7 +847,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
-      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,
+      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finsetSum_apply, RingHom.mem_ker,
         Finsupp.single_apply, ← Finset.sum_filter] using DFunLike.congr_fun hx c
     obtain ⟨a, ha⟩ := h c
     use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩
@@ -832,7 +861,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, RingHom.mem_ker.mp this,
         TensorProduct.zero_tmul]
     · have : x i ≠ 0 ∧ algebraMap A B i = c := by
-        convert i.prop
+        convert! i.prop
         simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
       simp [RingHom.mem_ker, ha, this.2]
 

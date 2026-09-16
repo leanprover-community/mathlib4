@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 # Measurability on the quotient of a module by a submodule
 -/
 
-@[expose] public section
+public section
 
 namespace Submodule.Quotient
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {p : Submodule R M}

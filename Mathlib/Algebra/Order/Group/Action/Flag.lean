@@ -15,7 +15,7 @@ public import Mathlib.Order.Preorder.Chain
 Order isomorphisms act on flags.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

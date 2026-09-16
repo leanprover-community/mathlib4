@@ -8,11 +8,10 @@ module
 
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header  --shake: keep
+import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Meta.AppBuilder
 public import Lean.Meta.Match.MatcherInfo
 public import Lean.Meta.Transform
-public import Lean.Structure
 
 /-!
 # Additional operations on Expr and related types
@@ -199,7 +198,7 @@ Each entry in the array is an `Expr.app`,
 and this array has the same length as the one returned by `Lean.Expr.getAppArgs`. -/
 @[inline]
 def getAppApps (e : Expr) : Array Expr :=
-  let dummy := mkSort levelZero
+  let dummy := mkSort .zero
   let nargs := e.getAppNumArgs
   getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 
@@ -224,20 +223,6 @@ def eraseProofs (e : Expr) : MetaM Expr :=
 def type? : Expr → Option Level
   | .sort u => u.dec
   | _ => none
-
-/-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
-`(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
-it does a syntactic check that the expression does not depend on `yₙ`. -/
-@[deprecated "This function was implemented incorrectly" (since := "2026-02-13")]
-def isConstantApplication (e : Expr) :=
-  e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
-where
-  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-    `depth - 1`. -/
-  aux (depth : Nat) : Expr → Nat → Bool
-    | .lam _ _ b _, n + 1  => aux depth b n
-    | e, 0  => !e.hasLooseBVar (depth - 1)
-    | _, _ => false
 
 /--
 Returns `true` if `type` is an application of a constant `decl` for which `p decl` is true, or a

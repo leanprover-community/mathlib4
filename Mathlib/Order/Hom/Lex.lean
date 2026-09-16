@@ -31,7 +31,7 @@ variable {α : Type*}
 
 namespace RelIso
 
-variable {r : α → α → Prop} {x y : α} [IsTrans α r] [Std.Trichotomous r] [DecidableRel r]
+variable {r : α → α → Prop} {x : α} [IsTrans α r] [Std.Trichotomous r] [DecidableRel r]
 
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements less than `x` and elements not
@@ -85,7 +85,7 @@ variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less than `x` and elements
 greater or equal to `x`. -/
 def sumLexIioIci : Iio x ⊕ₗ Ici x ≃o α :=
-  (sumLexCongr (refl _) (setCongr (Ici x) {y | ¬ y < x} (by ext; simp))).trans <|
+  (sumLexCongr (refl _) (Set.orderIsoOfEq (Ici x) {y | ¬ y < x} (by ext; simp))).trans <|
     ofRelIsoLT (RelIso.sumLexComplLeft (· < ·) x)
 
 @[simp]
@@ -116,7 +116,7 @@ variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less or equal to `x` and
 elements greater than `x`. -/
 def sumLexIicIoi : Iic x ⊕ₗ Ioi x ≃o α :=
-  (sumLexCongr (setCongr (Iic x) {y | ¬ x < y} (by ext; simp)) (refl _)).trans <|
+  (sumLexCongr (Set.orderIsoOfEq (Iic x) {y | ¬ x < y} (by ext; simp)) (refl _)).trans <|
     ofRelIsoLT (RelIso.sumLexComplRight (· < ·) x)
 
 @[simp]
@@ -201,7 +201,6 @@ def sumLexProdLexDistrib (α β γ : Type*)
     .trans (.sumProdDistrib α β γ) <| .trans (.sumCongr toLex toLex) toLex
   map_rel_iff' := by simp [Prod.Lex.le_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Equiv.prodCongr` promoted to an order isomorphism between lexicographic products. -/
 @[simps! apply]
 def prodLexCongr {α β γ δ : Type*} [Preorder α] [Preorder β]

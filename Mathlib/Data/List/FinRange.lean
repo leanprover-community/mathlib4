@@ -5,9 +5,8 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 module
 
-public import Mathlib.Data.List.OfFn
-public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Lists of elements of `Fin n`
@@ -32,22 +31,6 @@ lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
 
 @[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
   simpa using (nodup_finRange k).idxOf_getElem i
-
-@[deprecated finRange_eq_nil_iff (since := "2025-11-04")]
-alias finRange_eq_nil := finRange_eq_nil_iff
-
-@[deprecated (since := "2025-11-04")]
-alias finRange_map_get := map_get_finRange
-
-@[deprecated (since := "2025-11-04")]
-alias finRange_map_getElem := map_getElem_finRange
-
-@[deprecated (since := "2025-11-04")]
-alias map_coe_finRange := map_coe_finRange_eq_range
-
-@[deprecated finRange_succ (since := "2025-10-10")]
-theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ :=
-  finRange_succ
 
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
@@ -82,7 +65,7 @@ open List
 theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     map σ (finRange n) ~ finRange n := by
   rw [perm_ext_iff_of_nodup ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
-  simpa [mem_map, mem_finRange] using σ.surjective
+  simpa [mem_map, mem_finRange] using! σ.surjective
 
 /-- The list obtained from a permutation of a tuple `f` is permutation equivalent to
 the list obtained from `f`. -/

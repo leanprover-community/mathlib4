@@ -31,7 +31,6 @@ variable {R : Type*} [CommRing R]
 
 namespace Quaternion
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The dual quaternions can be equivalently represented as a quaternion with dual coefficients,
 or as a dual number with quaternion coefficients.
 
@@ -41,15 +40,11 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
     (⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩)
   invFun d :=
     ⟨(d.fst.re, d.snd.re), (d.fst.imI, d.snd.imI), (d.fst.imJ, d.snd.imJ), (d.fst.imK, d.snd.imK)⟩
-  map_mul' := by
-    intros
-    ext : 1
-    · rfl
-    · dsimp
-      congr 1 <;> simp <;> ring
-  map_add' := by
-    intros
-    rfl
+  map_mul' _ _ := by
+    ext1; · rfl
+    refine .trans ?_ (DualNumber.snd_mul _ _).symm
+    dsimp [-TrivSqZeroExt.snd_mul]; ext <;> ring
+  map_add' _ _ := rfl
   commutes' _ := rfl
 
 /-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/
@@ -96,49 +91,41 @@ theorem imK_snd_dualNumberEquiv (q : Quaternion (DualNumber R)) :
     (dualNumberEquiv q).snd.imK = q.imK.snd :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_re_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).re.fst = d.fst.re :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imI_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imI.fst = d.fst.imI :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imJ_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imJ.fst = d.fst.imJ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imK_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imK.fst = d.fst.imK :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_re_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).re.snd = d.snd.re :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imI_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imI.snd = d.snd.imI :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imJ_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imJ.snd = d.snd.imJ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imK_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imK.snd = d.snd.imK :=

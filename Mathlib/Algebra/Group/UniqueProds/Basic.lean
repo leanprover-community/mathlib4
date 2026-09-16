@@ -31,9 +31,9 @@ However, the order is just a convenience and is not part of the `UniqueProds/Sum
 Here you can see several examples of Types that have `UniqueSums/Prods`
 (`inferInstance` uses `Covariant.to_uniqueProds_left` and `Covariant.to_uniqueSums_left`).
 ```lean
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.PNat.Basic
 import Mathlib.Algebra.Group.UniqueProds.Basic
+import Mathlib.Basic.Real.Basic
+import Mathlib.Data.PNat.Basic
 
 example : UniqueSums ℕ   := inferInstance
 example : UniqueSums ℕ+  := inferInstance
@@ -359,7 +359,7 @@ open MulOpposite in
   contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
   a group, then we only need to check this when `A = B`.
   Here we generalize the result to cancellative semigroups.
-  Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
+  Non-cancellative counterexample: the AddMonoid `{0,1}` with 1+1=1. -/
 @[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
     (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
     UniqueProds G where
@@ -433,8 +433,8 @@ open UniqueMul in
   uniqueMul_of_nonempty {A} := by
     classical
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
-    apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
-    apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
+    apply WellFounded.induction' (· ⊂ ·) A; intro A ihA B hA
+    apply WellFounded.induction' (· ⊂ ·) B; intro B ihB hB
     by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
     · exact of_card_le_one hA hB hc.1 hc.2
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
@@ -511,8 +511,8 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
   uniqueMul_of_one_lt_card {A} := by
     classical
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
-    apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B
-    apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hc
+    apply WellFounded.induction' (· ⊂ ·) A; intro A ihA B
+    apply WellFounded.induction' (· ⊂ ·) B; intro B ihB hc
     obtain ⟨hA, hB, hc⟩ := Nat.one_lt_mul_iff.mp hc
     rw [card_pos] at hA hB
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
@@ -560,7 +560,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
     simp_rw [mem_product] at h1 h2 ⊢
     refine ⟨(_, _), ⟨?_, ?_⟩, (_, _), ⟨?_, ?_⟩, ?_, hu1.of_mulOpposite, hu2.of_mulOpposite⟩
     pick_goal 5
-    · contrapose! hne; rw [Prod.ext_iff] at hne ⊢
+    · contrapose hne; rw [Prod.ext_iff] at hne ⊢
       exact ⟨unop_injective hne.2, unop_injective hne.1⟩
     all_goals apply (mem_map' f).mp
     exacts [h1.2, h1.1, h2.2, h2.1]

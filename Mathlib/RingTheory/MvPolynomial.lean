@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -24,7 +23,7 @@ public section
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Submodule
 
 universe u v
 
@@ -32,7 +31,6 @@ namespace MvPolynomial
 
 variable (σ : Type u) (K : Type v)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotient_mk_comp_C_injective [Field K] (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
     Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
   refine (injective_iff_map_eq_zero _).2 fun x hx => ?_

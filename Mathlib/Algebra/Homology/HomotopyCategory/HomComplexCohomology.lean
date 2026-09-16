@@ -33,7 +33,7 @@ open CategoryTheory Category Limits Preadditive
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] {R : Type*} [Ring R] [Linear R C]
+variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 
@@ -43,7 +43,7 @@ namespace HomComplex
 
 /-- The subgroup of `Cocycle K L n` consisting of coboundaries. -/
 def coboundaries : AddSubgroup (Cocycle K L n) where
-  carrier := setOf (fun α ↦ ∃ (m : ℤ) (hm : m + 1 = n) (β : Cochain K L m), δ m n β = α)
+  carrier := Set.ofPred (fun α ↦ ∃ (m : ℤ) (hm : m + 1 = n) (β : Cochain K L m), δ m n β = α)
   zero_mem' := ⟨n - 1, by simp, 0, by simp⟩
   add_mem' := by
     rintro α₁ α₂ ⟨m, hm, β₁, hβ₁⟩ ⟨m', hm', β₂, hβ₂⟩
@@ -56,8 +56,7 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
 variable {K L n} in
 lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
     α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
-  simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
-    AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+  simp only [coboundaries, AddSubgroup.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk]
   grind
 
 /-- The type of cohomology classes of degree `n` in the complex of morphisms
@@ -131,7 +130,7 @@ def toHom :
       ((HomotopyCategory.quotient C _).obj K ⟶ (HomotopyCategory.quotient C _).obj (L⟦n⟧)) :=
   descAddMonoidHom ((Functor.mapAddHom _).comp Cocycle.equivHomShift.symm.toAddMonoidHom) (by
     rintro ⟨x, _⟩ ⟨m, hm, β, rfl⟩
-    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
+    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_comp, AddMonoidHom.coe_ofClass,
       AddEquiv.toAddMonoidHom_eq_coe, Function.comp_apply, Cocycle.equivHomShift_symm_apply,
       Functor.mapAddHom_apply, HomotopyCategory.quotient_map_eq_zero_iff]
     exact ⟨(Cochain.equivHomotopy _ _).symm ⟨n.negOnePow • β.rightShift _ _ (by lia),
@@ -140,12 +139,11 @@ def toHom :
 lemma toHom_mk (x : Cocycle K L n) :
     toHom (mk x) = (HomotopyCategory.quotient C _).map (Cocycle.equivHomShift.symm x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
-      AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+      AddSubsemigroup.mem_mk, Set.mem_ofPred_eq]
     rw [toHom_mk, HomotopyCategory.quotient_map_eq_zero_iff] at h
     obtain ⟨γ, h⟩ := Cochain.equivHomotopy _ _ h.some
     simp only [Cochain.ofHom_zero, add_zero, Cocycle.equivHomShift_symm_apply,
@@ -174,14 +172,15 @@ noncomputable def homAddEquiv :
 
 end CohomologyClass
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
 @[simps]
 def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
     ((HomComplex K L).sc' n m p).LeftHomologyData where
-  K := .of (Cocycle K L m)
-  H := .of (CohomologyClass K L m)
+  K := ↧(Cocycle K L m)
+  H := ↧(CohomologyClass K L m)
   i := AddCommGrpCat.ofHom (Cocycle.toCochainAddMonoidHom K L m)
   π := AddCommGrpCat.ofHom (CohomologyClass.mkAddMonoidHom K L m)
   wi := by cat_disch
@@ -197,12 +196,12 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         (by
           rintro ⟨_, _⟩ ⟨q, hq, y, rfl⟩
           obtain rfl : n = q := by lia
-          simpa only [zero_comp] using ConcreteCategory.congr_hom s.condition y)))
+          simpa only [zero_comp] using! ConcreteCategory.congr_hom s.condition y)))
       (fun s ↦ rfl)
       (fun s l hl ↦ by
         ext x
         obtain ⟨y, rfl⟩ := x.mk_surjective
-        simpa using ConcreteCategory.congr_hom hl y)
+        simpa using! ConcreteCategory.congr_hom hl y)
 
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/

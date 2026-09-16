@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 This, and the dual result, are used in the development of abelian categories.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -30,7 +30,6 @@ namespace CategoryTheory.NormalMonoCategory
 
 variable [HasFiniteProducts C] [HasKernels C] [IsNormalMonoCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback of two monomorphisms exists. -/
 lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
     HasLimit (cospan a b) :=
@@ -50,10 +49,7 @@ lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b]
         _ = 0 := zero_comp
   HasLimit.mk
     { cone :=
-        PullbackCone.mk a' b' <| by
-          simp? at ha' hb' says
-            simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι] at ha' hb'
-          rw [ha', hb']
+        PullbackCone.mk a' b' <| by rw [dsimp% ha', dsimp% hb']
       isLimit :=
         PullbackCone.IsLimit.mk _
           (fun s =>
@@ -126,8 +122,8 @@ lemma hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f
               Limits.prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
                 (by simp only [prod.comp_lift, Fork.condition s]))
           (fun s => by simp) fun s m h =>
-          pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
-            (by simpa only [huv.symm, pullback.lift_fst] using h) }
+          pullback.hom_ext (by simpa only [pullback.lift_fst] using! h)
+            (by simpa only [huv.symm, pullback.lift_fst] using! h) }
 
 end
 
@@ -141,7 +137,6 @@ instance (priority := 100) hasEqualizers : HasEqualizers C :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a zero morphism is a cokernel of `f`, then `f` is an epimorphism. -/
 theorem epi_of_zero_cokernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsColimit (CokernelCofork.ofπ (0 : Y ⟶ Z) (show f ≫ 0 = 0 by simp))) : Epi f :=
@@ -183,7 +178,6 @@ namespace CategoryTheory.NormalEpiCategory
 
 variable [HasFiniteCoproducts C] [HasCokernels C] [IsNormalEpiCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushout of two epimorphisms exists. -/
 lemma pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     HasColimit (span a b) :=
@@ -261,7 +255,6 @@ private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (
     C :=
   pushout (coprod.desc (𝟙 Y) f) (coprod.desc (𝟙 Y) g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coequalizer of `f` and `g` exists. -/
 lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
   have huv : (pushout.inl _ _ : Y ⟶ Q f g) = pushout.inr _ _ :=
@@ -288,8 +281,8 @@ lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPa
               coprod.hom_ext (by simp only [coprod.inl_desc_assoc])
                 (by simp only [coprod.desc_comp, Cofork.condition s]))
           (fun s => by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
-          pushout.hom_ext (by simpa only [pushout.inl_desc] using h)
-            (by simpa only [huv.symm, pushout.inl_desc] using h) }
+          pushout.hom_ext (by simpa only [pushout.inl_desc] using! h)
+            (by simpa only [huv.symm, pushout.inl_desc] using! h) }
 
 end
 
@@ -303,7 +296,6 @@ instance (priority := 100) hasCoequalizers : HasCoequalizers C :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a zero morphism is a kernel of `f`, then `f` is a monomorphism. -/
 theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsLimit (KernelFork.ofι (0 : Z ⟶ X) (show 0 ≫ f = 0 by simp))) : Mono f :=

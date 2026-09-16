@@ -12,27 +12,34 @@ public import Mathlib.Algebra.Ring.Pi
 # Characteristic of semirings of functions
 -/
 
-@[expose] public section
+public section
 
+section
+variable {ι : Type*} {α : ι → Type*}
 
-universe u v
+theorem CharZero.pi (i : ι) [Π i, AddMonoidWithOne (α i)] [CharZero (α i)] :
+    CharZero (Π i, α i) where
+  cast_injective _ _ h := Nat.cast_injective congr($h i)
 
-namespace CharP
+variable [Nonempty ι]
 
-instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ) [CharP R p] :
-    CharP (ι → R) p :=
-  ⟨fun x =>
-    let ⟨i⟩ := hi
-    Iff.symm <|
-      (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h =>
-          funext fun j =>
-            show Pi.evalRingHom (fun _ => R) j (↑x : ι → R) = 0 by rw [map_natCast, h],
-          fun h ↦ by rw [← map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x, h, map_zero]⟩⟩
+/-- Strictly this only needs any one component to be char-zero, but this is awkward to express. -/
+instance Pi.instCharZero [Π i, AddMonoidWithOne (α i)] [∀ i, CharZero (α i)] :
+    CharZero (Π i, α i) := by
+  inhabit ι
+  exact CharZero.pi default
 
--- diamonds
-instance pi' (ι : Type u) [Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :
-    CharP (ι → R) p :=
-  CharP.pi ι R p
+instance Pi.instCharP [Π i, AddMonoidWithOne (α i)] (p : ℕ) [∀ i, CharP (α i) p] :
+    CharP (Π i, α i) p where
+  cast_eq_zero_iff x := by simp [funext_iff, CharP.cast_eq_zero_iff _ p x]
 
-end CharP
+instance Pi.instExpChar [Π i, AddMonoidWithOne (α i)] (p : ℕ) [∀ i, ExpChar (α i) p] :
+    ExpChar (Π i, α i) p := by
+  inhabit ι
+  obtain hp | rfl := expChar_is_prime_or_one (α default) p
+  · simp only [expChar_prime_iff, hp] at *
+    infer_instance
+  · simp only [expChar_one_iff] at *
+    infer_instance
+
+end

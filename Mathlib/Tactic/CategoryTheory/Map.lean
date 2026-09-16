@@ -8,21 +8,27 @@ module
 public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.Lean.Meta.Simp
 public import Mathlib.Util.AddRelatedDecl
+public import Qq
 
 /-!
 # The `map` attribute
 
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
 in some category `C`, creates a new lemma named `H_map` of the form
-`∀ .. {D} (func : C ⥤ D), F.map f = F.map g` and then applies
+`∀ .. {D} (F : C ⥤ D), F.map f = F.map g` and then applies
 `simp only [Functor.map_comp, Functor.map_id]`.
+
+The generated lemma orders morphism universes before object universes, with source universes
+before target universes in each group. Source parameters retain their names and relative order
+within each group. A parameter used for both objects and morphisms goes in the morphism group;
+parameters unrelated to category universes come last.
 
 There is also a term elaborator `map_of% t` for use within proofs.
 -/
 
 public meta section
 
-open Lean Meta Elab Tactic
+open Lean Meta Elab Tactic Qq
 open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.Map
@@ -32,74 +38,88 @@ namespace Mathlib.Tactic.CategoryTheory.Map
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
-private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
-  let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
-  let (``Quiver.Hom, #[_, instQuiv, _, _]) := α.getAppFnArgs |
-    throwError "`@[map]` expects an equality of morphisms"
-  let (``CategoryTheory.CategoryStruct.toQuiver, #[_, instCS]) := instQuiv.getAppFnArgs |
-    throwError "`@[map]` expects an equality of morphisms"
-  let (``CategoryTheory.Category.toCategoryStruct, #[C, instC]) := instCS.getAppFnArgs |
-    throwError "`@[map]` expects an equality of morphisms"
-  return (C, instC)
-
 /-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
-def mapExprHomAux (e : Expr) (uLev vLev : Level) : MetaM Expr := do
-  let eqTy := (← inferType e).cleanupAnnotations
-  let (C, instC) ← extractCatInstanceFromEq eqTy
-  let Dsort := mkSort (Level.succ uLev)
-  withLocalDecl `D .implicit Dsort fun dFVar => do
-    let catD := mkApp (.const ``CategoryTheory.Category [vLev, uLev]) dFVar
-    withLocalDecl `instD .instImplicit catD fun instDFVar => do
-      let Fty ← mkAppOptM ``CategoryTheory.Functor #[C, instC, dFVar, instDFVar]
-      withLocalDecl `F .default Fty fun fFVar => do
-        let pf₀ ← mkAppM ``CategoryTheory.Functor.congr_map #[fFVar, e]
-        let ty ← instantiateMVars (← inferType pf₀)
-        let (_, pf') ← simpEq (fun e' => mapCompSimp e') ty pf₀
-        mkLambdaFVars #[dFVar, instDFVar, fFVar] pf'
-
-/--
-For `e : f = g`, build `∀ ⦃D⦄ [Category D] (F : C ⥤ D), …` with
-`simp only [Functor.map_comp, Functor.map_id]` on each side of `F.map f = F.map g`, using fresh
-level names `uD` (objects) and `vD` (morphisms) for the target category (for `@[map]` declarations).
--/
-def mapExprHom (e : Expr) (uD vD : Name) : MetaM Expr :=
-  mapExprHomAux e (Level.param uD) (Level.param vD)
+def mapExprHom (type : Q(Prop)) (e : Q($type)) (uLev vLev : Level) : Term.TermElabM Expr := do
+  let u ← mkFreshLevelMVar
+  let v ← mkFreshLevelMVar
+  let C ← mkFreshExprMVarQ q(Type u)
+  let instC ← mkFreshExprMVarQ q(Category.{v} $C) .synthetic
+  let X ← mkFreshExprMVarQ q($C)
+  let Y ← mkFreshExprMVarQ q($C)
+  let f ← mkFreshExprMVarQ q($X ⟶ $Y)
+  let g ← mkFreshExprMVarQ q($X ⟶ $Y)
+  let eqType : Q(Prop) := q($f = $g)
+  unless ← isDefEq type eqType do
+    throwError "`@[map]` expects an equality of morphisms"
+  let _ : $type =Q $eqType := ⟨⟩
+  let mappedType : Q(Prop) := q(∀ {D : Type uLev} [_instD : Category.{vLev} D] (F : $C ⥤ D),
+    F.map $f = F.map $g)
+  let mappedProof : Q($mappedType) := q(fun {D : Type uLev} [_instD : Category.{vLev} D]
+    (F : $C ⥤ D) => F.congr_map $e)
+  -- As in `reassoc_of%`, let simplification use the instance even if synthesis is still pending.
+  let inst := instC.mvarId!
+  let (pf, ()) ← withEnsuringLocalInstance inst do
+    let (_, pf) ← simpEq mapCompSimp mappedType mappedProof
+    return (pf, ())
+  -- Rewriting can determine the source category after this elaborator returns.
+  unless ← Term.synthesizeInstMVarCore inst do
+    Term.registerSyntheticMVarWithCurrRef inst (.typeClass none)
+  return pf
 
 /--
 Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produce a proof of the
-`map` lemma, quantifying over every target category `D` and every functor `F : C ⥤ D` (using two
-fresh level parameters per generated lemma).
-
-Returns the target category's level names for `levelParams`, after `levelMVarToParam` on the rest.
+`map` lemma, quantifying over every target category `D` and every functor `F : C ⥤ D`.
+The target category uses fresh universe metavariables, which the attribute generalizes to
+parameters and `map_of%` leaves for the surrounding elaboration to determine.
 -/
-def mapExpr (pf : Expr) : MetaM (Expr × Array Name) := do
-  let uD ← mkFreshUserName `u
-  let vD ← mkFreshUserName `v
-  forallTelescopeReducing (← inferType pf) fun xs _ => do
-    let pfApp := mkAppN pf xs
-    let inner ← mapExprHom pfApp uD vD
-    let full ← mkLambdaFVars xs inner
-    return (full, #[uD, vD])
-
-/-- Version of `mapExpr` for `TermElabM`. -/
-def mapExpr' (pf : Expr) : TermElabM (Expr × Array Name) := do
-  mapExpr pf
-
-/--
-Like `mapExpr`, but uses fresh level metavariables for the target category so that `map_of% t` can
-specialize to any `D` and `F` in context (see `addRelatedDecl` path for rigid universe parameters).
--/
-def mapExprMVars (pf : Expr) : MetaM Expr := do
+def mapExpr (pf : Expr) : Term.TermElabM Expr := do
   let uLev ← mkFreshLevelMVar
   let vLev ← mkFreshLevelMVar
-  forallTelescopeReducing (← inferType pf) fun xs _ => do
+  forallTelescopeReducing (← inferType pf) (whnfType := true) fun xs type => do
+    let type := (← instantiateMVars type).consumeMData
+    let some _ := type.eq? | throwError "`@[map]` expects an equality"
+    let type : Q(Prop) := type
     let pfApp := mkAppN pf xs
-    let inner ← mapExprHomAux pfApp uLev vLev
+    let inner ← mapExprHom type pfApp uLev vLev
     mkLambdaFVars xs inner
 
-/-- `mapExprMVars` lifted to `TermElabM`. -/
-def mapExprElab (pf : Expr) : TermElabM Expr :=
-  liftMetaM <| mapExprMVars pf
+/-- Collect the universe parameters used for morphisms and objects in category-theoretic types.
+Traversing the levels also handles expressions such as `max u v` and `u + 1`.
+Reduce under binders to expose abbreviated instance types, and follow parent projections to
+recognize structures inheriting from `Quiver`, such as `Groupoid`. -/
+private partial def collectCategoryUniverses (type : Expr) :
+    StateRefT (CollectLevelParams.State × CollectLevelParams.State) MetaM Unit := do
+  forallTelescopeReducing type (whnfType := true) fun xs body => do
+    for x in xs do
+      collectCategoryUniverses (← inferType x)
+    body.forEach fun e => do
+      let (homLevels, objLevels) := match e with
+        | .const ``Category [v, u] | .const ``CategoryStruct [v, u]
+        | .const ``Quiver [v, u] | .const ``Quiver.Hom [v, u] => ([v], [u])
+        | .const ``CategoryTheory.Functor [vC, vD, uC, uD] => ([vC, vD], [uC, uD])
+        | _ => ([], [])
+      modify fun (hom, obj) =>
+        (CollectLevelParams.visitLevels homLevels hom, CollectLevelParams.visitLevels objLevels obj)
+    let .const name _ := body.getAppFn | return
+    let some path := getPathToBaseStructure? (← getEnv) ``Quiver name | return
+    unless path.isEmpty do
+      withLocalDeclD `inst body fun inst => do
+        let quiver ← path.foldlM (fun inst proj => do
+          let args := (← whnf (← inferType inst)).getAppArgs
+          mkAppOptM proj (args.map some |>.push (some inst))) inst
+        collectCategoryUniverses (← inferType quiver)
+
+/-- Order universe parameters by their roles in the generated declaration's type.
+Shared parameters belong to the morphism group; unrelated parameters are placed last.
+Within each group, retain source order and put new target parameters after source parameters. -/
+private def orderMapUniverses (type : Expr) (source target : List Name) : MetaM (List Name) := do
+  let (_, (hom, obj)) ← (collectCategoryUniverses type).run ({}, {})
+  let (hom, obj) := (hom.params, obj.params)
+  let isHom := hom.contains
+  let isObj := fun n => obj.contains n && !isHom n
+  return source.filter isHom ++ target.filter isHom ++
+    source.filter isObj ++ target.filter isObj ++
+    (source ++ target).filter (fun n => !isHom n && !isObj n)
 
 /--
 Adding `@[map]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms
@@ -108,13 +128,15 @@ in some category `C`, creates a new lemma named `H_map` of the form
 `simp only [Functor.map_comp, Functor.map_id]`.
 
 Use `@[map (attr := simp)]` to mark both the original lemma and `H_map` as `simp` lemmas, and
-`@[reassoc (attr := map)]` to generate `_map` versions of both the original lemma the reassociated
-version.
+`@[map (attr := reassoc)]` to generate reassociated versions of both the original lemma and the
+`_map` lemma (`@[reassoc (attr := map)]` generates `_map` versions of both the original and the
+reassociated lemma, but this is of course less general than `@[map (attr := reassoc)]`). All four
+lemmas can be registered as `simp` lemmas with `@[map (attr := reassoc (attr := simp))]`.
 -/
-syntax (name := map) "map" optAttrArg : attr
+syntax (name := mapStx) "map" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
-  name := `map
+  name := `mapStx
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
@@ -124,12 +146,11 @@ initialize registerBuiltinAttribute {
     let tgt := src.appendAfter "_map"
     addRelatedDecl src tgt ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
-        let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
-        let value := value.instantiateLevelParams levels levelMVars
-        let (pf, tgtLevelNames) ← mapExpr' value
-        let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
-        let outLevels := tgtLevelNames.toList ++ r.newParamNames.toList
-        pure (r.expr, outLevels)
+        let pf ← mapExpr value
+        let r := (← getMCtx).levelMVarToParam levels.contains (fun _ => false) pf
+        setMCtx r.mctx
+        let ordered ← orderMapUniverses (← inferType r.expr) levels r.newParamNames.toList
+        pure (r.expr, ordered)
   | _ => throwUnsupportedSyntax }
 
 /--
@@ -139,6 +160,6 @@ produces the corresponding statement with a functor applied and
 -/
 elab "map_of% " t:term : term => do
   let e ← Term.withSynthesizeLight <| Term.elabTerm t none
-  mapExprElab e
+  mapExpr e
 
 end Mathlib.Tactic.CategoryTheory.Map
