@@ -211,6 +211,12 @@ theorem continuous_kernel_iff :
 theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) :=
   (continuous_tfae H).out 3 2
 
+theorem continuous_of_continuous_kernel (h : Continuous (fun p : X × X => kernel H p.1 p.2))
+    (f : H) : Continuous f := by
+  have hf : (f : X → V) = fun x => eval H x f := rfl
+  rw [hf]
+  exact Continuous.clm_apply (((continuous_tfae H).out 1 3).mp h) continuous_const
+
 end continuous
 
 variable {H} in
