@@ -180,8 +180,9 @@ namespace SubgroupClass
 @[to_additive]
 theorem subset_union [LE S] [IsConcreteLE S] {H K L : S} :
     (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
-  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (mem_of_le_of_mem · xH) (mem_of_le_of_mem · xH)⟩
-  rw [or_iff_not_imp_left, SetLike.not_le_iff_exists, ← SetLike.coe_subset_coe]
+  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp
+    (SetLike.coe_subset_coe.2 · xH) (SetLike.coe_subset_coe.2 · xH)⟩
+  rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists, ← SetLike.coe_subset_coe]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
@@ -400,8 +401,10 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 @[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
 
-attribute [deprecated OneMemClass.coe_nonempty (since := "2026-04-20")] Subgroup.coe_nonempty
-attribute [deprecated ZeroMemClass.coe_nonempty (since := "2026-04-20")] AddSubgroup.coe_nonempty
+attribute [deprecated OneMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
+  Subgroup.coe_nonempty
+attribute [deprecated ZeroMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
+  AddSubgroup.coe_nonempty
 
 end Subgroup
 
@@ -713,11 +716,11 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-@[to_additive (attr := deprecated inferInstance (since := "2026-04-09"))]
+@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
 theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H := inferInstance
 
-@[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
+@[to_additive (attr := deprecated setLike_mul_comm +typeChanged (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a :=
   setLike_mul_comm ha hb
