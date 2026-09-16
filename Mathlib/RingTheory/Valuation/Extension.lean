@@ -291,12 +291,11 @@ theorem mapValueGroup₀_self : mapValueGroup₀ vR vR = .id .. := by
   simp
 
 section tower
-variable {A B ΓR ΓA ΓB : Type*}
+variable {A B ΓA ΓB : Type*}
     [CommRing A] [Ring B] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B]
-    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-    [LinearOrderedCommGroupWithZero ΓB]
-    (vR : Valuation R ΓR) (vA : Valuation A ΓA) (vB : Valuation B ΓB)
+    [LinearOrderedCommGroupWithZero ΓA] [LinearOrderedCommGroupWithZero ΓB]
+    (vA : Valuation A ΓA) (vB : Valuation B ΓB)
     [vR.HasExtension vA] [vA.HasExtension vB]
 
 theorem mapValueGroup₀_comp_mapValueGroup₀ :
