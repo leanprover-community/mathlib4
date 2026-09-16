@@ -47,8 +47,8 @@ noncomputable def ofSheafStonean
     (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F] :
     Condensed A :=
   StoneanCompHaus.equivalence A |>.functor.obj {
-    val := F
-    cond := by
+    obj := F
+    property := by
       rw [isSheaf_iff_preservesFiniteProducts_of_projective F]
       exact ⟨fun _ ↦ inferInstance⟩ }
 
@@ -63,8 +63,8 @@ noncomputable def ofSheafForgetStonean
     (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)] :
     Condensed A :=
   StoneanCompHaus.equivalence A |>.functor.obj {
-    val := F
-    cond := by
+    obj := F
+    property := by
       apply isSheaf_coherent_of_projective_of_comp F (CategoryTheory.forget A)
       rw [isSheaf_iff_preservesFiniteProducts_of_projective]
       exact ⟨fun _ ↦ inferInstance⟩ }
@@ -78,8 +78,8 @@ noncomputable def ofSheafProfinite
     (F : Profinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : Condensed A :=
   ProfiniteCompHaus.equivalence A |>.functor.obj {
-    val := F
-    cond := by
+    obj := F
+    property := by
       rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
       exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩ }
 
@@ -95,8 +95,8 @@ noncomputable def ofSheafForgetProfinite
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) :
     Condensed A :=
   ProfiniteCompHaus.equivalence A |>.functor.obj {
-    val := F
-    cond := by
+    obj := F
+    property := by
       apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
       rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
       exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩ }
@@ -108,8 +108,8 @@ satisfies the equalizer condition.
 noncomputable def ofSheafCompHaus
     (F : CompHaus.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : Condensed A where
-  val := F
-  cond := by
+  obj := F
+  property := by
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
     exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
@@ -122,44 +122,44 @@ noncomputable def ofSheafForgetCompHaus
     [ConcreteCategory A FA] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : CompHaus.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) : Condensed A where
-  val := F
-  cond := by
+  obj := F
+  property := by
     apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
     exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /-- A condensed object satisfies the equalizer condition. -/
-theorem equalizerCondition (X : Condensed A) : EqualizerCondition X.val :=
-  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.val |>.mp X.cond |>.2
+theorem equalizerCondition (X : Condensed A) : EqualizerCondition X.obj :=
+  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.obj |>.mp X.property |>.2
 
 /-- A condensed object preserves finite products. -/
-noncomputable instance (X : Condensed A) : PreservesFiniteProducts X.val :=
-  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.val |>.mp
-    X.cond |>.1
+noncomputable instance (X : Condensed A) : PreservesFiniteProducts X.obj :=
+  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.obj |>.mp
+    X.property |>.1
 
 /-- A condensed object regarded as a sheaf on `Profinite` preserves finite products. -/
 noncomputable instance (X : Sheaf (coherentTopology Profinite.{u}) A) :
-    PreservesFiniteProducts X.val :=
-  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.val |>.mp
-    X.cond |>.1
+    PreservesFiniteProducts X.obj :=
+  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.obj |>.mp
+    X.property |>.1
 
 /-- A condensed object regarded as a sheaf on `Profinite` satisfies the equalizer condition. -/
 theorem equalizerCondition_profinite (X : Sheaf (coherentTopology Profinite.{u}) A) :
-    EqualizerCondition X.val :=
-  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.val |>.mp X.cond |>.2
+    EqualizerCondition X.obj :=
+  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.obj |>.mp X.property |>.2
 
 /-- A condensed object regarded as a sheaf on `Stonean` preserves finite products. -/
 noncomputable instance (X : Sheaf (coherentTopology Stonean.{u}) A) :
-    PreservesFiniteProducts X.val :=
-  isSheaf_iff_preservesFiniteProducts_of_projective X.val |>.mp X.cond
+    PreservesFiniteProducts X.obj :=
+  isSheaf_iff_preservesFiniteProducts_of_projective X.obj |>.mp X.property
 
 end Condensed
 
 namespace CondensedSet
 
 /-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u + 1)) [PreservesFiniteProducts F] :
-    CondensedSet :=
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u + 1))
+    [PreservesFiniteProducts F] : CondensedSet :=
   Condensed.ofSheafStonean F
 
 /-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/

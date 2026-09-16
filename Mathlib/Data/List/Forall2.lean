@@ -5,7 +5,11 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Mathlib.Logic.Relator
+public import Batteries.Data.List.Basic
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Double universal quantification on a list
@@ -15,7 +19,7 @@ This file provides an API for `List.Forall₂` (definition in `Data.List.Defs`).
 of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat Function
@@ -290,7 +294,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
       rw [forall₂_nil_right_iff.1 hl1]
       exact SublistForall₂.nil
     | cons _ _ ih => intro l₁ hl1; exact SublistForall₂.cons_right (ih hl1)
-    | cons₂ _ _ ih =>
+    | cons_cons _ _ ih =>
       intro l₁ hl1
       obtain - | ⟨hr, hl⟩ := hl1
       exact SublistForall₂.cons hr (ih hl)

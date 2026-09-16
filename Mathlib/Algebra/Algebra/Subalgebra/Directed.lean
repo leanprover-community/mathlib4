@@ -38,6 +38,17 @@ theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ 
     (iSup_le fun i ↦ le_iSup (fun i ↦ (K i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup K _)
   simp [this, s]
 
+theorem isMulCommutative_iSup {S : ι → Subalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subsemiring.coe_iSup_of_directed dir] using Subsemiring.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 variable (K)
 
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining

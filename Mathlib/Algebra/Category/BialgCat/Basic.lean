@@ -34,6 +34,7 @@ structure BialgCat where
   [instRing : Ring carrier]
   [instBialgebra : Bialgebra R carrier]
 
+initialize_simps_projections BialgCat (-instRing, -instBialgebra)
 attribute [instance] BialgCat.instBialgebra BialgCat.instRing
 
 variable {R}
@@ -52,10 +53,17 @@ def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgCat R where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BialgCat.of R X` as `↧X`. -/
+@[app_delab BialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_counit {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
@@ -106,12 +114,12 @@ lemma hom_ext {X Y : BialgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBia
 
 instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=
-    { obj := fun X => AlgCat.of R X
+    { obj := fun X => ↧X
       map := fun {X Y} f => AlgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgCat R) :
-    (forget₂ (BialgCat R) (AlgCat R)).obj X = AlgCat.of R X :=
+    (forget₂ (BialgCat R) (AlgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -121,12 +129,12 @@ theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
 
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where
   forget₂ :=
-    { obj := fun X => CoalgCat.of R X
+    { obj := fun X => ↧X
       map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgCat R) :
-    (forget₂ (BialgCat R) (CoalgCat R)).obj X = CoalgCat.of R X :=
+    (forget₂ (BialgCat R) (CoalgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]

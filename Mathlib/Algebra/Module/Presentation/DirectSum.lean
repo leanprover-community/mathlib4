@@ -84,6 +84,7 @@ namespace IsPresentation
 variable {solution : ∀ (i : ι), (relations i).Solution (M i)}
   (h : ∀ i, (solution i).IsPresentation)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The direct sum admits a presentation by generators and relations. -/
 noncomputable def directSum.isRepresentationCore :
     Solution.IsPresentationCore.{w'} (directSum solution) where

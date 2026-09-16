@@ -5,7 +5,8 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Basic.Countable.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basics on First-Order Structures
@@ -52,9 +53,9 @@ namespace FirstOrder
 
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- A first-order language consists of a type of functions of every natural-number arity and a
   type of relations of every natural-number arity. -/
-@[nolint checkUnivs]
 structure Language where
   /-- For every arity, a `Type u` of functions of that arity -/
   Functions : ℕ → Type u
@@ -109,12 +110,7 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
   fun _ => instIsEmptySum
 
 @[simp]
-theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
-  sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
-
-instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
-  simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
-  exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
+theorem card_empty : Language.empty.card = 0 := by simp [card]
 
 instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
@@ -169,6 +165,7 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 open Structure
 
 /-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
+@[instance_reducible]
 def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 
@@ -235,6 +232,7 @@ instance : CoeTC L.Constants M :=
 theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
   congr rfl (funext finZeroElim)
 
+variable (L M) in
 /-- Given a language with a nonempty type of constants, any structure will be nonempty. This cannot
   be a global instance, because `L` becomes a metavariable. -/
 theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :=
@@ -279,9 +277,10 @@ attribute [inherit_doc FirstOrder.Language.Hom.map_rel'] FirstOrder.Language.Emb
 
 namespace Hom
 
+@[macro_inline]
 instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 instance homClass : HomClass L (M →[L] N) M N where
   map_fun := map_fun'
@@ -356,16 +355,17 @@ theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
 
 end Hom
 
-/-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
+/-- Any element of a `HomClass` can be realized as a first order homomorphism. -/
 @[simps] def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 
 namespace Embedding
 
+@[macro_inline]
 instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -402,12 +402,7 @@ theorem coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
   rfl
 
 theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
-  | f, g, h => by
-    cases f
-    cases g
-    congr
-    ext x
-    exact funext_iff.1 h x
+  | _, _, h => DFunLike.ext'_iff.mpr h
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -511,13 +506,14 @@ theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
 
 end Embedding
 
-/-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
+/-- Any element of an injective `StrongHomClass` can be realized as a first order embedding. -/
 @[simps] def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 
 namespace Equiv
 
+@[macro_inline]
 instance : EquivLike (M ≃[L] N) M N where
   coe f := f.toFun
   inv f := f.invFun
@@ -716,7 +712,7 @@ theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.c
 theorem comp_right_injective (h : M ≃[L] N) :
     Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
   intro f g hfg
-  convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+  convert! (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
     rw [comp_assoc, self_comp_symm, comp_refl]
 
 @[simp]
@@ -725,7 +721,7 @@ theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h
 
 end Equiv
 
-/-- Any element of a bijective `StrongHomClass` can be realized as a first_order isomorphism. -/
+/-- Any element of a bijective `StrongHomClass` can be realized as a first order isomorphism. -/
 @[simps] def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
     [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
   ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
@@ -767,6 +763,7 @@ end SumStructure
 section Empty
 
 /-- Any type can be made uniquely into a structure over the empty language. -/
+@[instance_reducible]
 def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
@@ -810,7 +807,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
-@[simps!]
+@[simps!, instance_reducible]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 

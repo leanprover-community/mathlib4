@@ -57,7 +57,8 @@ In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 
 * `MonoidHom.mrange`: range of a monoid homomorphism as a submonoid of the codomain;
 * `MonoidHom.mker`: kernel of a monoid homomorphism as a submonoid of the domain;
-* `MonoidHom.restrict`: restrict a monoid homomorphism to a submonoid;
+* `MonoidHom.domRestrict`: restrict a monoid homomorphism to a submonoid of its domain;
+* `MonoidHom.restrict`: restrict the domain and codomain of a monoid homomorphism;
 * `MonoidHom.codRestrict`: restrict the codomain of a monoid homomorphism to a submonoid;
 * `MonoidHom.mrangeRestrict`: restrict a monoid homomorphism to its range;
 
@@ -235,11 +236,7 @@ theorem apply_coe_mem_map (f : F) (S : Submonoid M) (x : S) : f x ∈ S.map f :=
 theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 
--- The simpNF linter says that the LHS can be simplified via `Submonoid.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100, nolint simpNF)]
+@[to_additive (attr := simp 1100)]
 theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
@@ -268,11 +265,11 @@ theorem le_comap_map {f : F} : S ≤ (S.map f).comap f :=
 theorem map_comap_le {S : Submonoid N} {f : F} : (S.comap f).map f ≤ S :=
   (gc_map_comap f).l_u_le _
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem monotone_map {f : F} : Monotone (map f) :=
   (gc_map_comap f).monotone_l
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem monotone_comap {f : F} : Monotone (comap f) :=
   (gc_map_comap f).monotone_u
 
@@ -599,8 +596,7 @@ lemma closure_prod_one (s : Set M) : closure (s ×ˢ ({1} : Set N)) = (closure s
   le_antisymm
     (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, .rfl⟩)
     (prod_le_iff.2 ⟨
-      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩,
-      by simp⟩)
+      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩, by simp⟩)
 
 @[to_additive (attr := simp) closure_zero_prod]
 lemma closure_one_prod (t : Set N) : closure (({1} : Set M) ×ˢ t) = .prod ⊥ (closure t) :=
@@ -681,6 +677,12 @@ theorem map_mrange (g : N →* P) (f : M →* N) : (mrange f).map g = mrange (co
 theorem mrange_eq_top {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_mrange, coe_top]) Set.range_eq_univ
 
+@[to_additive (attr := simp) mrange_prodMap]
+lemma mrange_prodMap {M' N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
+    (g : M' →* N') :
+    MonoidHom.mrange (f.prodMap g) = (MonoidHom.mrange f).prod (MonoidHom.mrange g) :=
+  SetLike.coe_injective Set.range_prodMap
+
 /-- The range of a surjective `MonoidHom` is the whole of the codomain. -/
 @[to_additive (attr := simp)
   /-- The range of a surjective `AddMonoidHom` is the whole of the codomain. -/]
@@ -716,7 +718,9 @@ theorem domRestrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [Submonoid
     (f : M →* N) (s : S) (x : s) : f.domRestrict s x = f x :=
   rfl
 
-@[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrict_apply := _root_.AddMonoidHom.domRestrict_apply
 
 @[to_additive (attr := simp)]
 theorem domRestrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [SetLike S M]
@@ -724,24 +728,33 @@ theorem domRestrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [Set
     f.domRestrict s = 1 ↔ ∀ x ∈ s, f x = 1 := by
   simp [MonoidHom.ext_iff]
 
-@[deprecated (since := "2026-02-10")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
+@[deprecated (since := "2026-07-19")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrict_eq_zero_iff := _root_.AddMonoidHom.domRestrict_eq_zero_iff
 
 @[to_additive (attr := simp)]
 theorem domRestrict_mrange (f : M →* N) : mrange (f.domRestrict S) = S.map f := by
   simp [SetLike.ext_iff]
 
-@[deprecated (since := "2026-02-10")] alias restrict_mrange := domRestrict_mrange
+@[deprecated (since := "2026-07-19")] alias restrict_mrange := domRestrict_mrange
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrict_mrange := _root_.AddMonoidHom.domRestrict_mrange
 
-/-- A version of `MonoidHom.domRestrict` as an homomorphism. -/
+/-- A version of `MonoidHom.domRestrict` as a homomorphism. -/
 @[to_additive (attr := simps apply)
-  /-- A version of `AddMonoidHom.domRestrict` as an homomorphism. -/]
+  /-- A version of `AddMonoidHom.domRestrict` as a homomorphism. -/]
 def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
     [CommMonoid A] : (M →* A) →* (M' →* A) where
   toFun f := f.domRestrict M'
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
-@[deprecated (since := "2026-02-10")] alias restrictHom := domRestrictHom
+@[deprecated (since := "2026-07-19")] alias restrictHom := domRestrictHom
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrictHom := _root_.AddMonoidHom.domRestrictHom
+@[deprecated (since := "2026-07-19")] alias restrictHom_apply := domRestrictHom_apply
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrictHom_apply := _root_.AddMonoidHom.domRestrictHom_apply
 
 /-- Restriction of a `MonoidHom` to a `Submonoid` of the codomain. -/
 @[to_additive (attr := simps apply)
@@ -805,8 +818,11 @@ theorem domRestrict_mker (f : M →* N) :
     mker (f.domRestrict S) = (MonoidHom.mker f).comap S.subtype :=
   rfl
 
-@[deprecated (since := "2026-02-10")]
-alias restrict_mker := domRestrict_mker
+@[deprecated (since := "2026-07-19")] alias restrict_mker := domRestrict_mker
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrict_mker := _root_.AddMonoidHom.domRestrict_mker
+
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
   ext x
@@ -855,12 +871,20 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
   map_mul' x y := Subtype.ext (f.map_mul x y)
 
 @[to_additive]
-lemma submonoidComap_surjective_of_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
+lemma submonoidComap_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
     Surjective (f.submonoidComap N') := fun y ↦ by
   obtain ⟨x, hx⟩ := hf y
   use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
   apply Subtype.val_injective
   simp [hx]
+
+@[to_additive (attr := deprecated (since := "2026-09-09"))]
+alias submonoidComap_surjective_of_surjective := submonoidComap_surjective
+
+@[to_additive]
+lemma submonoidComap_injective (f : M →* N) (N' : Submonoid N) (hf : Injective f) :
+    Injective (f.submonoidComap N') :=
+  fun _ _ h ↦ Subtype.ext (hf (congrArg Subtype.val h))
 
 /-- The `MonoidHom` from a `Submonoid` to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
@@ -877,6 +901,11 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
     Function.Surjective (f.submonoidMap M') := by
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
+
+@[to_additive (attr := grind inj)]
+theorem submonoidMap_injective {f : M →* N} (hf : Injective f) (M' : Submonoid M) :
+    Injective (f.submonoidMap M') := by
+  grind [Injective, submonoidMap_apply_coe]
 
 end MonoidHom
 
@@ -1059,11 +1088,9 @@ end Submonoid
 /-- Restrict the domain and codomain of a `MonoidHom`. -/
 @[to_additive /-- Restrict the domain and codomain of an `AddMonoidHom`. -/]
 def MonoidHom.restrict {M' : Submonoid M} {N' : Submonoid N} {f : M →* N}
-    (h : Set.MapsTo f M' N') : M' →* N' :=
-  (f.domRestrict M').codRestrict N' <| SetLike.forall.mpr h
+    (h : Set.MapsTo f M' N') : M' →* N' := (f.domRestrict M').codRestrict N' <| SetLike.forall.mpr h
 
-@[to_additive]
-lemma MonoidHom.restrict_injective {M' : Submonoid M} {N' : Submonoid N} {f : M →* N}
+@[to_additive] lemma MonoidHom.restrict_injective {M' : Submonoid M} {N' : Submonoid N} {f : M →* N}
     (h : Set.MapsTo f M' N') (hf' : Function.Injective f) : Function.Injective <| f.restrict h :=
   fun _ _ h => Subtype.ext <| hf' <| Subtype.ext_iff.mp h
 
@@ -1077,7 +1104,7 @@ monoid are equal. -/
   /-- Makes the identity additive isomorphism from a proof two submonoids of an additive monoid are
   equal. -/]
 def submonoidCongr (h : S = T) : S ≃* T :=
-  { Equiv.setCongr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 -- this name is primed so that the version to `f.range` instead of `f.mrange` can be unprimed.
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
@@ -1118,9 +1145,6 @@ theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e :
     (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
   rfl
 
-@[deprecated (since := "2025-08-20")]
-alias _root_.AddEquiv.add_submonoid_map_symm_apply := AddEquiv.addSubmonoidMap_symm_apply
-
 end MulEquiv
 
 @[to_additive (attr := simp)]
@@ -1138,11 +1162,13 @@ section Units
 
 namespace Submonoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
 elements of `M`. -/
 @[to_additive (attr := simps!) /-- The additive equivalence between the type of additive units of
 `M` and the additive submonoid whose elements are the additive units of `M`. -/]
-noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
+noncomputable def unitsTypeEquivIsUnitSubmonoid {M : Type*} [Monoid M] :
+    Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
   left_inv _ := IsUnit.unit_of_val_units _

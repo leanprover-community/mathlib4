@@ -5,12 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Functor.Flat
 
 /-!
 # Points of a site
@@ -42,7 +41,8 @@ its associated sheaf.
 
 Under suitable assumptions on the target category `A`, we show that
 both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
-and with arbitrary colimits.
+and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
+is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
 
 -/
 
@@ -85,6 +85,8 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasColimitsOfShape_of_finallySmall _ _
 
+instance : IsSifted Φ.fiber.Elementsᵒᵖ := IsFiltered.isSifted
+
 instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasExactColimitsOfShape_of_final _
@@ -92,20 +94,20 @@ instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 
 /-- The fiber functor on categories of presheaves that is given by a point of a site. -/
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
-  (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π Φ.fiber).op ⋙ colim
+  (Functor.whiskeringLeft _ _ _).obj (Functor.Elements.π Φ.fiber).op ⋙ colim
 
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`, this
 is the canonical map `P.obj (op X) ⟶ Φ.presheafFiber.obj P`. -/
 noncomputable def toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
-  colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
+  colimit.ι ((Functor.Elements.π Φ.fiber).op ⋙ P) (op (Φ.fiber.elementsMk X x))
 
 @[ext]
 lemma presheafFiber_hom_ext
     {P : Cᵒᵖ ⥤ A} {T : A} {f g : Φ.presheafFiber.obj P ⟶ T}
     (h : ∀ (X : C) (x : Φ.fiber.obj X), Φ.toPresheafFiber X x P ≫ f =
       Φ.toPresheafFiber X x P ≫ g) : f = g :=
-  colimit.hom_ext (by rintro ⟨⟨X, x⟩⟩; exact h X x)
+  colimit.hom_ext (fun _ ↦ h _ _)
 
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
@@ -120,14 +122,52 @@ noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
 lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.map f.op ≫ Φ.toPresheafFiber X x P =
       Φ.toPresheafFiber Y (Φ.fiber.map f x) P :=
-  colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ P)
-      (CategoryOfElements.homMk ⟨X, x⟩ ⟨Y, Φ.fiber.map f x⟩ f rfl).op
+  colimit.w ((Functor.Elements.π Φ.fiber).op ⋙ P)
+      (Functor.Elements.homMk (x := Functor.elementsMk _ X x)
+        (y := Functor.elementsMk _ Y (Φ.fiber.map f x)) f rfl).op
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The (colimit) cocone which defines the fiber of a presheaf. -/
+@[simps]
+noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    Cocone ((Functor.Elements.π Φ.fiber).op ⋙ P) where
+  pt := Φ.presheafFiber.obj P
+  ι.app x := Φ.toPresheafFiber x.unop.1 x.unop.2 P
+
+/-- The cocone `Φ.presheafFiberCocone P` is a colimit. -/
+noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    IsColimit (Φ.presheafFiberCocone P) :=
+  colimit.isColimit _
+
+/-- The isomorphism `shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber`. -/
+noncomputable def shrinkYonedaCompPresheafFiberIso [LocallySmall.{w} C] :
+    shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber :=
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso _
+
+lemma shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber
+    [LocallySmall.{w} C] {X : C} (x : Φ.fiber.obj X) :
+    Φ.shrinkYonedaCompPresheafFiberIso.inv.app X x =
+    Φ.toPresheafFiber X x (shrinkYoneda.{w}.obj X)
+      (shrinkYonedaObjObjEquiv.symm (𝟙 X)) :=
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
+    _ (Functor.elementsMk (Φ.fiber) _ x)
+
+lemma presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app
+    [LocallySmall.{w} C] {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) :
+    Φ.presheafFiber.map (shrinkYoneda.{w}.map f)
+      (Φ.shrinkYonedaCompPresheafFiberIso.inv.app X x) =
+    Φ.toPresheafFiber X x (shrinkYoneda.{w}.obj Y)
+      (shrinkYonedaObjObjEquiv.symm f) := by
+  rw [shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber]
+  refine (Φ.toPresheafFiber_naturality_apply (shrinkYoneda.{w}.map f) _ x
+    (shrinkYonedaObjObjEquiv.symm (𝟙 X))).trans (congr_arg _ ?_)
+  simpa using shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w} (𝟙 _) f
 
 section
 
@@ -136,6 +176,7 @@ variable {P : Cᵒᵖ ⥤ A} {T : A}
   (hφ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : Φ.fiber.obj X),
     P.map f.op ≫ φ X x = φ Y (Φ.fiber.map f x) := by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 /-- Constructor for morphisms from the fiber of a presheaf. -/
 noncomputable def presheafFiberDesc :
@@ -166,31 +207,29 @@ instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ (forget A) :=
 lemma toPresheafFiber_jointly_surjective (p : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z = p := by
-  obtain ⟨⟨X, x⟩, z, rfl⟩ := Types.jointly_surjective_of_isColimit
+  obtain ⟨_, z, rfl⟩ := Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) p
-  exact ⟨X, x, z, rfl⟩
+      (colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P))) p
+  exact ⟨_, _, z, rfl⟩
 
 lemma toPresheafFiber_jointly_surjective₂ (p₁ p₂ : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z₁ = p₁ ∧ Φ.toPresheafFiber X x P z₂ = p₂ := by
-  obtain ⟨⟨X, x⟩, z₁, z₂, rfl, rfl⟩ := Types.FilteredColimit.jointly_surjective_of_isColimit₂
+  obtain ⟨_, z₁, z₂, rfl, rfl⟩ := Types.FilteredColimit.jointly_surjective_of_isColimit₂
     (isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) p₁ p₂
-  exact ⟨X, x, z₁, z₂, rfl, rfl⟩
+      (colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P))) p₁ p₂
+  exact ⟨_, _, z₁, z₂, rfl, rfl⟩
 
 lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))) :
     Φ.toPresheafFiber X x P z₁ = Φ.toPresheafFiber X x P z₂ ↔
       ∃ (Y : C) (f : Y ⟶ X) (y : Φ.fiber.obj Y), Φ.fiber.map f y = x ∧
         P.map f.op z₁ = P.map f.op z₂ := by
-  refine (Types.FilteredColimit.isColimit_eq_iff'
-    (ht := isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) ..).trans ?_
+  refine ((colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P)).eq_iff' ..).trans ?_
   constructor
-  · rintro ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
-    exact ⟨Y, f, y, hf, hf'⟩
+  · rintro ⟨_, ⟨f, hf⟩, hf'⟩
+    exact ⟨_, f, _, hf, hf'⟩
   · rintro ⟨Y, f, y, hf, hf'⟩
-    exact ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
+    exact ⟨op (Functor.elementsMk _ _ y), ⟨f, hf⟩, hf'⟩
 
 variable (f : P ⟶ Q)
 
@@ -220,7 +259,10 @@ lemma toPresheafFiber_map_bijective
     Function.Bijective (Φ.presheafFiber.map f) :=
   ⟨Φ.toPresheafFiber_map_injective f, Φ.toPresheafFiber_map_surjective f⟩
 
-lemma W_isInvertedBy_presheafFiber
+/-- See also the lemma `W_isInvertedBy_presheafFiber` in the file
+`Mathlib/CategoryTheory/Sites/Point/Basic.lean` which may apply
+in more cases. -/
+lemma W_isInvertedBy_presheafFiber'
     [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
     J.W.IsInvertedBy (Φ.presheafFiber (A := A)) := by
   intro P Q f hf
@@ -231,25 +273,13 @@ lemma W_isInvertedBy_presheafFiber
 end
 
 /-- The fiber functor on the category of sheaves that is given a by a point of a site. -/
-noncomputable abbrev sheafFiber : Sheaf J A ⥤ A :=
+noncomputable def sheafFiber : Sheaf J A ⥤ A :=
   sheafToPresheaf J A ⋙ Φ.presheafFiber
 
-instance (P : Cᵒᵖ ⥤ A) [HasWeakSheafify J A]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
-    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
-    IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J P)) :=
-  W_isInvertedBy_presheafFiber _ _ (W_toSheafify J P)
-
-variable (A) in
-/-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
-by localization with respect to the class of morphisms `J.W`. -/
-noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
-    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
-    presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
-  (NatIso.ofComponents
-    (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
-      (by simp [← Functor.map_comp])).symm
+/-- The fiber functor on sheaves is induced by the fiber functor on presheaves. -/
+noncomputable def sheafToPresheafCompPresheafFiberIso :
+    sheafToPresheaf J A ⋙ Φ.presheafFiber ≅ Φ.sheafFiber :=
+  Iso.refl _
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=
@@ -264,23 +294,36 @@ instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
     dsimp [presheafFiber]
     infer_instance
 
-instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
-    PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
-  preservesColimitsOfShape {K _} := ⟨fun {F} ↦
-    preservesColimit_of_preserves_colimit_cocone
-      (Sheaf.isColimitSheafifyCocone _ (colimit.isColimit _))
-        (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
-          (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
-            let G := colimit (F ⋙ sheafToPresheaf J A)
-            let φ := CategoryTheory.toSheafify J G
-            have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
-              W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
-            refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
-              (fun k ↦ ?_)
-            dsimp
-            rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
-            dsimp))⟩
+section
+
+variable [LocallySmall.{w} C]
+
+instance : PreservesFiniteLimits Φ.fiber :=
+  preservesFiniteLimits_of_natIso Φ.shrinkYonedaCompPresheafFiberIso
+
+/-- The fiber of the terminal object is a terminal object in `Type w`. -/
+noncomputable def isTerminalFiberObj (T : C) (hT : IsTerminal T) :
+    IsTerminal (Φ.fiber.obj T) :=
+  IsTerminal.isTerminalObj _ _ hT
+
+/-- The fiber of the terminal object contains a unique element. -/
+@[instance_reducible]
+noncomputable def uniqueFiberObj (T : C) (hT : IsTerminal T) :
+    Unique (Φ.fiber.obj T) :=
+  Types.isTerminalEquivUnique _ (Φ.isTerminalFiberObj T hT)
+
+lemma fiber_map_injective_of_mono {U T : C} (f : U ⟶ T) [Mono f] :
+    Function.Injective (Φ.fiber.map f) := by
+  rw [← mono_iff_injective]
+  infer_instance
+
+lemma subsingleton_fiber_obj {U T : C} (f : U ⟶ T) [Mono f] (hT : IsTerminal T) :
+    Subsingleton (Φ.fiber.obj U) where
+  allEq _ _ := Φ.fiber_map_injective_of_mono f (by
+    have := Φ.uniqueFiberObj T hT
+    subsingleton)
+
+end
 
 variable (F : A ⥤ B) [LocallySmall.{w} C] [PreservesFilteredColimitsOfSize.{w, w} F]
 
@@ -299,10 +342,10 @@ lemma toPresheafFiber_presheafFiberCompIso_hom_app
     (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     Φ.toPresheafFiber X x (P ⋙ F) ≫ (Φ.presheafFiberCompIso F).hom.app P =
       F.map (Φ.toPresheafFiber X x P) := by
-  haveI := Functor.Final.preservesColimitsOfShape_of_final
+  have := Functor.Final.preservesColimitsOfShape_of_final
     (FinallySmall.fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
   simp only [presheafFiberCompIso]
-  exact ι_preservesColimitIso_inv F ((CategoryOfElements.π Φ.fiber).op ⋙ P) _
+  exact ι_preservesColimitIso_inv F ((Functor.Elements.π Φ.fiber).op ⋙ P) _
 
 /-- If `Φ` is a point of a site and `F : A ⥤ B` is a functor which preserves
 filtered colimits, then taking fibers of sheaves at `Φ` commutes with `F`. -/
@@ -311,26 +354,6 @@ noncomputable def sheafFiberCompIso [J.HasSheafCompose F] :
     sheafCompose J F ⋙ Φ.sheafFiber ≅ Φ.sheafFiber ⋙ F :=
   Functor.isoWhiskerLeft (sheafToPresheaf J A) (Φ.presheafFiberCompIso F) ≪≫
     (Functor.associator _ _ _).symm
-
-section Comap
-
-variable {C D : Type*} [Category* C] [Category* D]
-  {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-
-/-- If `F : C ⥤ D` is a representably flat and cover preserving functor between sites, then
-any point on `D` induces a point on `C` by precomposing the fiber functor with `F`. -/
-@[simps]
-def comap (F : C ⥤ D) [RepresentablyFlat F] (H : CoverPreserving J K F) (Φ : Point.{w} K)
-    [InitiallySmall (F ⋙ Φ.fiber).Elements] :
-    Point.{w} J where
-  fiber := F ⋙ Φ.fiber
-  jointly_surjective {X} {R} hR x := by
-    obtain ⟨Y, f, ⟨W, g, h, hg, rfl⟩, y, rfl⟩ :=
-      Φ.jointly_surjective (Sieve.functorPushforward F R) (H.1 hR) x
-    use W, g, hg, Φ.fiber.map h y
-    simp
-
-end Comap
 
 end Point
 

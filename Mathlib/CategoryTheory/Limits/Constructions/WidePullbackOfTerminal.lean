@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Existence of wide pullbacks when the target object is terminal
@@ -48,7 +48,7 @@ def isLimitOfFan (hc : IsLimit c) (hB : IsTerminal B) :
     (fun s ↦ hc.lift s.toFan)
     (fun s ↦ hB.hom_ext _ _)
     (fun s i ↦ hc.fac s.toFan (.mk i))
-    (fun s m _ hm ↦ hc.hom_ext (fun ⟨i⟩ ↦ by simpa using hm i))
+    (fun s m _ hm ↦ hc.hom_ext (fun ⟨i⟩ ↦ by simpa using! hm i))
 
 end WidePullbackCone
 

@@ -202,8 +202,8 @@ hold:
 * for any open set `s` we have `y ∈ s → x ∈ s`;
 * `y` is a cluster point of the filter `pure x = 𝓟 {x}`.
 
-This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this preorder is a partial
-order. If `X` is a T₁ space, then this partial order is trivial : `x ⤳ y ↔ x = y`. -/
+This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this `Preorder` is a
+`PartialOrder`. If `X` is a T₁ space, then this `PartialOrder` is trivial: `x ⤳ y ↔ x = y`. -/
 def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
 
 @[inherit_doc]
@@ -223,13 +223,21 @@ def Inseparable (x y : X) : Prop :=
 
 variable (X)
 
+instance : IsPreorder X Specializes :=
+  inferInstanceAs <| IsPreorder X (LE.le.onFun 𝓝)
+
 /-- Specialization forms a preorder on the topological space. -/
+@[instance_reducible]
 def specializationPreorder : Preorder X :=
   { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
     le := fun x y => y ⤳ x
     lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
 
+instance : IsEquiv X Inseparable :=
+  inferInstanceAs <| IsEquiv X (Eq.onFun 𝓝)
+
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
+@[instance_reducible]
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
@@ -238,16 +246,24 @@ def SeparationQuotient := Quotient (inseparableSetoid X)
 
 variable {X}
 
+/--
+A set `s` is locally closed at a point `x` if there is a neighborhood `U` of `x` and a closed set
+`Z` such that `U ∩ s = U ∩ Z`.
+Also see `isLocallyClosedAt_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
+-/
+def IsLocallyClosedAt (s : Set X) (x : X) : Prop :=
+  ∃ U ∈ 𝓝 x, ∃ Z, IsClosed Z ∧ U ∩ s = U ∩ Z
+
 section Lim
 
 
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
-noncomputable def lim [Nonempty X] (f : Filter X) : X :=
+noncomputable def Filter.lim [Nonempty X] (f : Filter X) : X :=
   Classical.epsilon fun x => f ≤ 𝓝 x
 
-/-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
-at `f`, if it exists. -/
-noncomputable def limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
+/-- If `f` is a filter in `α` and `g : α → X` is a function, then `Filter.limUnder f g` is a limit
+of `g` at `f`, if it exists. -/
+noncomputable def Filter.limUnder {α : Type*} [Nonempty X] (f : Filter α) (g : α → X) : X :=
   lim (f.map g)
 
 end Lim
@@ -277,6 +293,7 @@ def IsCompact (s : Set X) :=
 variable (X) in
 /-- Type class for compact spaces. Separation is sometimes included in the definition, especially
 in the French literature, but we do not include it here. -/
+@[wikidata Q381892]
 class CompactSpace : Prop where
   /-- In a compact space, `Set.univ` is a compact set. -/
   isCompact_univ : IsCompact (Set.univ : Set X)

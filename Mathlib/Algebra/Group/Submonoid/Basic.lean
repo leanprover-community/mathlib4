@@ -95,9 +95,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set 
 @[to_additive /-- The `AddSubmonoid`s of an `AddMonoid` form a complete lattice. -/]
 instance : CompleteLattice (Submonoid M) :=
   { (completeLatticeOfInf (Submonoid M)) fun _ =>
-      IsGLB.of_image (f := (SetLike.coe : Submonoid M → Set M))
-        (@fun S T => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
-        isGLB_biInf with
+      .of_image SetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
@@ -205,10 +203,11 @@ theorem dense_induction {motive : M → Prop} (s : Set M) (closure : closure s =
   | one => exact one
   | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
-/- The argument `s : Set M` is explicit in `Submonoid.dense_induction` because the type of the
+/-! The argument `s : Set M` is explicit in `Submonoid.dense_induction` because the type of the
 induction variable, namely `x : M`, does not reference `x`. Making `s` explicit allows the user
 to apply the induction principle while deferring the proof of `closure s = ⊤` without creating
 metavariables, as in the following example. -/
+
 example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x ∈ s, p x)
     (one : p 1) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) : p x := by
   induction x using dense_induction s with
@@ -217,10 +216,9 @@ example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x �
   | one => exact one
   | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
--- TODO: find a nice way to fix the linter
--- simp_all is called on four goals, with only one remaining goal
-set_option linter.flexible false in
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
+@[to_additive /-- The `AddSubmonoid.closure` of a set is the union of `{0}` and its
+`AddSubsemigroup.closure`. -/]
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by
   apply le_antisymm
@@ -231,8 +229,7 @@ lemma closure_eq_one_union (s : Set M) :
     | mul x hx y hy hx hy =>
       push _ ∈ _ at hx hy
       obtain ⟨(rfl | hx), (rfl | hy)⟩ := And.intro hx hy
-      all_goals simp_all
-      exact Or.inr <| mul_mem hx hy
+      all_goals simp_all [mul_mem]
   · rintro x (hx | hx)
     · exact (show x = 1 by simpa using hx) ▸ one_mem (closure s)
     · exact Subsemigroup.closure_le.mpr subset_closure hx
@@ -297,7 +294,7 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
 @[to_additive]
 theorem disjoint_def {p₁ p₂ : Submonoid M} :
     Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 := by
-  simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
+  simp_rw [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_inf, and_imp, mem_bot]
 
 @[to_additive]
 theorem disjoint_def' {p₁ p₂ : Submonoid M} :
@@ -308,11 +305,11 @@ variable {t : Set M}
 
 @[to_additive] -- this must not be a simp-lemma as the conclusion applies to `hts`, causing loops
 lemma closure_sdiff_eq_closure (hts : t ⊆ closure (s \ t)) : closure (s \ t) = closure s := by
-  refine (closure_mono Set.diff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
+  refine (closure_mono Set.sdiff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
   by_cases hxt : x ∈ t
   · exact hts hxt
   · rw [SetLike.mem_coe, Submonoid.mem_closure]
-    exact fun N hN ↦ hN <| Set.mem_diff_of_mem hxs hxt
+    exact fun N hN ↦ hN <| Set.mem_sdiff_of_mem hxs hxt
 
 @[to_additive (attr := simp)]
 lemma closure_sdiff_singleton_one (s : Set M) : closure (s \ {1}) = closure s :=
@@ -351,20 +348,24 @@ section IsUnit
 /-- The submonoid consisting of the units of a monoid -/
 @[to_additive /-- The additive submonoid consisting of the additive units of an additive monoid -/]
 def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
-  carrier := setOf IsUnit
-  one_mem' := by simp only [isUnit_one, Set.mem_setOf_eq]
+  carrier := Set.ofPred IsUnit
+  one_mem' := by simp only [isUnit_one, Set.mem_ofPred_eq]
   mul_mem' := by
     intro a b ha hb
-    rw [Set.mem_setOf_eq] at *
+    rw [Set.mem_ofPred_eq] at *
     exact IsUnit.mul ha hb
 
 @[to_additive]
 theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
     a ∈ IsUnit.submonoid M ↔ IsUnit a := by
-  change a ∈ setOf IsUnit ↔ IsUnit a
-  rw [Set.mem_setOf_eq]
+  change a ∈ Set.ofPred IsUnit ↔ IsUnit a
+  rw [Set.mem_ofPred_eq]
 
 end IsUnit
+
+@[simp] lemma Submonoid.commute_coe_coe {S M : Type*} [Mul M] [SetLike S M]
+    [MulMemClass S M] {s : S} {x y : s} : Commute (x : M) (y : M) ↔ Commute x y := by
+  simp [commute_iff_eq, Subtype.ext_iff]
 
 namespace MonoidHom
 

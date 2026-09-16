@@ -59,6 +59,7 @@ abbrev FGModuleCat := (ModuleCat.isFG.{v} R).FullSubcategory
 variable {R}
 
 /-- A synonym for `M.obj.carrier`, which we can mark with `@[coe]`. -/
+@[reducible]
 def FGModuleCat.carrier (M : FGModuleCat.{v} R) : Type v := M.obj.carrier
 
 instance : CoeSort (FGModuleCat.{v} R) (Type v) :=
@@ -68,18 +69,7 @@ attribute [coe] FGModuleCat.carrier
 
 @[simp] lemma FGModuleCat.obj_carrier (M : FGModuleCat.{v} R) : M.obj.carrier = M.carrier := rfl
 
-instance (M : FGModuleCat.{v} R) : AddCommGroup M := by
-  change AddCommGroup M.obj
-  infer_instance
-
-instance (M : FGModuleCat.{v} R) : Module R M := by
-  change Module R M.obj
-  infer_instance
-
 instance (M : FGModuleCat.{v} R) : Module.Finite R M :=
-  M.property
-
-instance (M : FGModuleCat.{v} R) : Module.Finite R M.1 :=
   M.property
 
 end Ring
@@ -95,15 +85,17 @@ variable (R : Type u) [Ring R]
 
 @[simp] lemma hom_hom_id (A : FGModuleCat.{v} R) : (𝟙 A : A ⟶ A).hom.hom = LinearMap.id := rfl
 
-@[deprecated (since := "2025-12-18")] alias hom_comp := hom_hom_comp
-@[deprecated (since := "2025-12-18")] alias hom_id := hom_hom_id
-
 instance : Inhabited (FGModuleCat.{v} R) :=
-  ⟨⟨ModuleCat.of R PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩
+  ⟨⟨↧PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩
 
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
 abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
-  ⟨ModuleCat.of R V, by change Module.Finite R V; infer_instance⟩
+  ⟨↧V, inferInstanceAs <| Module.Finite R V⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FGModuleCat.of R X` as `↧X`. -/
+@[app_delab FGModuleCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
@@ -194,27 +186,27 @@ section Field
 variable (K : Type u) [Field K]
 
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V.obj ⟶ W.obj) :=
-  (inferInstanceAs <| Module.Finite K (V →ₗ[K] W)).equiv ModuleCat.homLinearEquiv.symm
+  ((inferInstance : Module.Finite K (V →ₗ[K] W))).equiv ModuleCat.homLinearEquiv.symm
 
 instance (V W : FGModuleCat.{v} K) : Module.Finite K (V ⟶ W) :=
-  (inferInstanceAs (Module.Finite K (V.obj ⟶ W.obj))).equiv
+  ((inferInstance : Module.Finite K (V.obj ⟶ W.obj))).equiv
     InducedCategory.homLinearEquiv.symm
 
 instance : (ModuleCat.isFG K).IsMonoidalClosed where
   prop_ihom {X Y} (_ : Module.Finite _ _) (_ : Module.Finite _ _) :=
-    (inferInstanceAs <| Module.Finite K (X →ₗ[K] Y)).equiv ModuleCat.homLinearEquiv.symm
+    ((inferInstance : Module.Finite K (X →ₗ[K] Y))).equiv ModuleCat.homLinearEquiv.symm
 
 variable (V W : FGModuleCat K)
 
 @[simp]
-theorem ihom_obj : (ihom V).obj W = FGModuleCat.of K (V.obj ⟶ W.obj) :=
+theorem ihom_obj : (ihom V).obj W = ↧(V.obj ⟶ W.obj) :=
   rfl
 
 /-- The dual module is the dual in the rigid monoidal category `FGModuleCat K`. -/
 def FGModuleCatDual : FGModuleCat K :=
-  ⟨ModuleCat.of K (Module.Dual K V), Subspace.instModuleDualFiniteDimensional⟩
+  ⟨↧(Module.Dual K V), Subspace.instModuleDualFiniteDimensional⟩
 
-@[simp] lemma FGModuleCatDual_obj : (FGModuleCatDual K V).obj = ModuleCat.of K (Module.Dual K V) :=
+@[simp] lemma FGModuleCatDual_obj : (FGModuleCatDual K V).obj = ↧(Module.Dual K V) :=
   rfl
 @[simp] lemma FGModuleCatDual_coe : (FGModuleCatDual K V : Type u) = Module.Dual K V := rfl
 
@@ -242,9 +234,8 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 -/
 @[simp]
 theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
-    DFunLike.coe
-      (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
-      (FGModuleCatEvaluation K V).hom.hom (f ⊗ₜ x) = f.toFun x :=
+    (FGModuleCatEvaluation K V).hom.hom (A := ↧(Dual K V) ⊗ V.obj) (B := 𝟙_ (ModuleCat K)) (f ⊗ₜ x)
+      = f.toFun x :=
   contractLeft_apply f x
 
 set_option backward.privateInPublic true in
@@ -284,12 +275,14 @@ end FGModuleCat
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp] theorem LinearMap.comp_id_fgModuleCat
+@[simp]
+theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
     (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
   ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
 
-@[simp] theorem LinearMap.id_fgModuleCat_comp
+@[simp]
+theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
     (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
   ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)

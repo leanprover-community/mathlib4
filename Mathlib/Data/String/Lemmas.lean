@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.String.Defs
-public import Mathlib.Tactic.Basic
 
 /-!
 # Miscellaneous lemmas about strings
@@ -29,10 +28,10 @@ lemma length_eq_list_length (l : List Char) : (String.ofList l).length = l.lengt
   to the larger of `n` and `s.length` -/
 @[simp] lemma length_leftpad (n : ℕ) (c : Char) :
     ∀ (s : String), (leftpad n c s).length = max n s.length
-  | s => by simp [leftpad, Nat.sub_add_eq_max]
+  | s => by simp [leftpad, length_toList, Nat.sub_add_eq_max]
 
 lemma leftpad_prefix (n : ℕ) (c : Char) : ∀ s, IsPrefix (replicate (n - length s) c) (leftpad n c s)
-  | s => by simp [leftpad, IsPrefix, replicate]
+  | s => by simp [leftpad, IsPrefix, replicate, length_toList]
 
 lemma leftpad_suffix (n : ℕ) (c : Char) : ∀ s, IsSuffix s (leftpad n c s)
   | s => by simp [leftpad, IsSuffix]

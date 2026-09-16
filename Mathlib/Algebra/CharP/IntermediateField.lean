@@ -18,7 +18,7 @@ covered by `SubsemiringClass.instCharZero`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
 

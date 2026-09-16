@@ -56,10 +56,11 @@ instance : LargeCategory.{u} UniformSpaceCat.{u} where
   comp_id := by intros; apply Hom.ext; simp
   assoc := by intros; apply Hom.ext; ext; simp
 
+@[macro_inline]
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 instance : ConcreteCategory UniformSpaceCat ({ f : · → · // UniformContinuous f }) where
   hom f := f.hom'
@@ -75,7 +76,7 @@ abbrev ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
   ConcreteCategory.ofHom f
 
 instance : Inhabited UniformSpaceCat :=
-  ⟨UniformSpaceCat.of Empty⟩
+  ⟨↧Empty⟩
 
 theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
   rfl
@@ -111,7 +112,7 @@ theorem hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} (h : (f : X → Y) = g) 
 /-- The forgetful functor from uniform spaces to topological spaces. -/
 instance hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
   forget₂ :=
-    { obj := fun X => TopCat.of X
+    { obj := fun X => ↧X
       map := fun f => TopCat.ofHom
         { toFun := f
           continuous_toFun := f.hom.property.continuous } }
@@ -135,7 +136,7 @@ attribute [instance] isUniformSpace isCompleteSpace isT0
 
 /-- The function forgetting that a complete separated uniform spaces is complete and separated. -/
 def toUniformSpace (X : CpltSepUniformSpace) : UniformSpaceCat :=
-  UniformSpaceCat.of X
+  ↧X
 
 instance completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace X).carrier :=
   CpltSepUniformSpace.isCompleteSpace X
@@ -147,30 +148,36 @@ instance t0Space (X : CpltSepUniformSpace) : T0Space (toUniformSpace X).carrier 
 def of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] : CpltSepUniformSpace :=
   ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CpltSepUniformSpace.of X` as `↧X`. -/
+@[app_delab CpltSepUniformSpace.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 @[simp]
 theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] :
     (of X : Type u) = X :=
   rfl
 
 instance : Inhabited CpltSepUniformSpace :=
-  ⟨CpltSepUniformSpace.of Empty⟩
+  ⟨↧Empty⟩
 
 /-- The category instance on `CpltSepUniformSpace`. -/
 instance category : LargeCategory CpltSepUniformSpace :=
-  inferInstanceAs (Category (InducedCategory _ toUniformSpace))
+  inferInstanceAs <| Category (InducedCategory _ toUniformSpace)
 
+@[macro_inline]
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
 instance concreteCategory : ConcreteCategory CpltSepUniformSpace
     ({ f : · → · // UniformContinuous f }) :=
-  InducedCategory.concreteCategory toUniformSpace
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toUniformSpace) _
 
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
-  InducedCategory.hasForget₂ toUniformSpace
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toUniformSpace) _
 
 @[simp]
 theorem hom_comp {X Y Z : CpltSepUniformSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -198,14 +205,14 @@ open CpltSepUniformSpace
 /-- The functor turning uniform spaces into complete separated uniform spaces. -/
 @[simps map]
 noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
-  obj X := CpltSepUniformSpace.of (Completion X)
+  obj X := ↧(Completion X)
   map f := ConcreteCategory.ofHom ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
   map_id _ := InducedCategory.hom_ext (hom_ext (by apply Completion.map_id))
   map_comp f g := InducedCategory.hom_ext (hom_ext (by
     exact (Completion.map_comp g.hom.property f.hom.property).symm))
 
 /-- The inclusion of a uniform space into its completion. -/
-def completionHom (X : UniformSpaceCat) :
+noncomputable def completionHom (X : UniformSpaceCat) :
     X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X) where
   hom'.val := ((↑) : X → Completion X)
   hom'.property := Completion.uniformContinuous_coe X
@@ -227,13 +234,12 @@ theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 
 @[simp]
 theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
-    (f : toUniformSpace (CpltSepUniformSpace.of (Completion X)) ⟶ toUniformSpace Y) :
+    (f : toUniformSpace ↧(Completion X) ⟶ toUniformSpace Y) :
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
   exact congr_fun (Completion.extension_comp_coe f.hom.property) x
 
-@[deprecated (since := "2025-12-18")] alias extension_comp_coe := extension_comp_hom
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=
   Adjunction.mkOfHomEquiv
@@ -264,3 +270,13 @@ example [HasLimits.{u} UniformSpaceCat.{u}] : HasLimits.{u} CpltSepUniformSpace.
   hasLimits_of_reflective <| forget₂ CpltSepUniformSpace UniformSpaceCat.{u}
 
 end UniformSpaceCat
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `UniformSpaceCat.of X` as `↧X`. -/
+@[app_delab UniformSpaceCat.of]
+meta def UniformSpaceCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

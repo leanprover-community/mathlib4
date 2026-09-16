@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Results on `MvPolynomial.expand`
@@ -22,13 +23,11 @@ namespace MvPolynomial
 
 variable {σ R : Type*} [CommSemiring R] (p : ℕ) [ExpChar R p]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem map_frobenius_expand {f : MvPolynomial σ R} :
     (f.expand p).map (frobenius R p) = f ^ p :=
   f.induction_on' fun _ _ => by simp [monomial_pow, frobenius]
     fun _ _ ha hb => by rw [map_add, map_add, ha, hb, add_pow_expChar]
-
-@[deprecated (since := "2025-12-27")]
-alias expand_char := map_frobenius_expand
 
 theorem map_iterateFrobenius_expand (f : MvPolynomial σ R) (n : ℕ) :
     map (iterateFrobenius R p n) (expand (p ^ n) f) = f ^ p ^ n := by
@@ -40,7 +39,13 @@ theorem map_iterateFrobenius_expand (f : MvPolynomial σ R) (n : ℕ) :
     simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
       ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
 
-@[deprecated (since := "2025-12-27")]
-alias map_expand_pow_char := map_iterateFrobenius_expand
+theorem _root_.FiniteField.MvPolynomial.expand_card {K : Type*} [Field K] [Fintype K]
+    (f : MvPolynomial σ K) : expand (Fintype.card K) f = f ^ Fintype.card K := by
+  obtain ⟨p, hp⟩ := CharP.exists K
+  rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
+  have : Fact p.Prime := ⟨hp⟩
+  dsimp at hn
+  rw [hn, ← map_iterateFrobenius_expand p, iterateFrobenius_eq_pow,
+    FiniteField.frobenius_pow hn, RingHom.one_def, map_id]
 
 end MvPolynomial

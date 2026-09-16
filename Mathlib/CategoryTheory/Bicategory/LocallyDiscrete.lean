@@ -6,7 +6,6 @@ Authors: Yuma Mizuno, Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.CommSq
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 
 /-!
@@ -84,7 +83,7 @@ instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsinglet
 
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
-  Discrete.ext η.1.1
+  Discrete.ext η.1
 
 end LocallyDiscrete
 

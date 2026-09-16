@@ -42,7 +42,7 @@ lemma IsPrefix.subset_of_card_le_card (hs : IsPrefix f s) (ht : IsPrefix f t) (h
 
 variable [DecidableEq X]
 
-instance : Decidable (IsPrefix f s) := by unfold IsPrefix; infer_instance
+instance : Decidable (IsPrefix f s) := inferInstanceAs <| Decidable (∀ _, _)
 
 /-- The set of numberings of which `s` is a prefix. -/
 def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}

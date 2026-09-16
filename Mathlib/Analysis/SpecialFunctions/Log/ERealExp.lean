@@ -21,7 +21,7 @@ in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ 
 ## Main Results
 - `EReal.exp_strictMono`: `exp` is increasing;
 - `EReal.exp_neg`, `EReal.exp_add`: `exp` satisfies
-the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
+  the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
 
 ## Tags
 ENNReal, EReal, exponential
@@ -37,13 +37,10 @@ section Definition
 
 /-- Exponential as a function from `EReal` to `ℝ≥0∞`. -/
 noncomputable
-def exp : EReal → ℝ≥0∞
-  | ⊥ => 0
-  | ⊤ => ∞
-  | (x : ℝ) => ENNReal.ofReal (Real.exp x)
+def exp (x : EReal) : ℝ≥0∞ := EReal.rec 0 (fun x => ENNReal.ofReal (Real.exp x)) ∞ x
 
 @[simp] lemma exp_bot : exp ⊥ = 0 := rfl
-@[simp] lemma exp_zero : exp 0 = 1 := by simp [exp]
+@[simp] lemma exp_zero : exp 0 = 1 := by simp [exp, ← coe_zero]
 @[simp] lemma exp_top : exp ⊤ = ∞ := rfl
 @[simp] lemma exp_coe (x : ℝ) : exp x = ENNReal.ofReal (Real.exp x) := rfl
 
@@ -89,12 +86,6 @@ lemma exp_monotone : Monotone exp := exp_strictMono.monotone
 @[simp] lemma exp_le_one_iff {a : EReal} : exp a ≤ 1 ↔ a ≤ 0 := exp_zero ▸ @exp_le_exp_iff a 0
 
 @[simp] lemma one_le_exp_iff {a : EReal} : 1 ≤ exp a ↔ 0 ≤ a := exp_zero ▸ @exp_le_exp_iff 0 a
-
-@[deprecated exp_monotone (since := "2025-10-20")]
-lemma exp_le_exp {a b : EReal} (h : a ≤ b) : exp a ≤ exp b := by simpa
-
-@[deprecated exp_strictMono (since := "2025-10-20")]
-lemma exp_lt_exp {a b : EReal} (h : a < b) : exp a < exp b := by simpa
 
 end Monotonicity
 

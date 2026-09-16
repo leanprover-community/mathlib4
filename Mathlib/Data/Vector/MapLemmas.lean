@@ -9,6 +9,8 @@ public import Mathlib.Data.Vector.Basic
 public import Mathlib.Data.Vector.Snoc
 
 /-!
+# Normalization lemmas for `map` and `mapAccumr` on vectors
+
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
@@ -297,9 +299,9 @@ then the state is redundant and can be optimized out.
 theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (f' : α → β) (s : σ)
     (h : ∀ a s, (f a s).snd = f' a) :
     (mapAccumr f xs s).snd = (map f' xs) := by
-  rw [mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => by rw [h, h])]
+  rw [mapAccumr_eq_map Set.univ (Set.mem_univ _) (fun _ _ _ => Set.mem_univ _)
+    (fun a s s' _ _ => by rw [h, h])]
   simp_all
-
 
 /--
 If an accumulation function `f`, produces the same output bits regardless of accumulation state,
@@ -309,7 +311,8 @@ then the state is redundant and can be optimized out.
 theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × γ) (f' : α → β → γ) (s : σ)
     (h : ∀ a b s, (f a b s).snd = f' a b) :
     (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
-  mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => by rw [h, h])
+  mapAccumr₂_eq_map₂ .univ (Set.mem_univ _) (fun _ _ _ _ => Set.mem_univ _)
+    (fun a b s s' _ _ => by rw [h, h])
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
 pair, then we can simplify to just a single element of state.
@@ -346,7 +349,7 @@ section UnusedInput
 variable {xs : Vector α n} {ys : Vector β n}
 
 /--
-If `f` returns the same output and next state for every value of it's first argument, then
+If `f` returns the same output and next state for every value of its first argument, then
 `xs : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]
@@ -358,7 +361,7 @@ theorem mapAccumr₂_unused_input_left (f : α → β → σ → σ × γ) (f' :
   | snoc xs ys x y ih => simp [h x y s, ih]
 
 /--
-If `f` returns the same output and next state for every value of it's second argument, then
+If `f` returns the same output and next state for every value of its second argument, then
 `ys : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]

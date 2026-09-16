@@ -54,21 +54,20 @@ def addSubgroup : AddSubgroup α where
   __ := addSubmonoid M α
   neg_mem' ha _ := by rw [smul_neg, ha]
 
-/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => addSubgroup M α
-
 @[simp]
-lemma mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
+lemma mem_addSubgroup (a : α) : a ∈ FixedPoints.addSubgroup M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 @[simp]
-lemma addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+lemma addSubgroup_toAddSubmonoid :
+    (FixedPoints.addSubgroup M α).toAddSubmonoid = addSubmonoid M α :=
   rfl
 
 variable {M α β}
 
 /-- The restriction of a `AddMonoidHom` to `FixedPoints.addSubgroup`. -/
-def addSubgroupMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) : α^+M →+ β^+M :=
+def addSubgroupMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) :
+    FixedPoints.addSubgroup M α →+ FixedPoints.addSubgroup M β :=
   addSubmonoidMap h
 
 lemma addSubgroupMap_injective (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a)

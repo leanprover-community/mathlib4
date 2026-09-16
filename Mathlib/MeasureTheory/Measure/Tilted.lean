@@ -93,7 +93,7 @@ lemma tilted_congr {g : α → ℝ} (hfg : f =ᵐ[μ] g) :
 
 lemma tilted_eq_withDensity_nnreal (μ : Measure α) (f : α → ℝ) :
     μ.tilted f = μ.withDensity (fun x ↦ ((↑) : ℝ≥0 → ℝ≥0∞)
-      (⟨exp (f x) / ∫ x, exp (f x) ∂μ, by positivity⟩ : ℝ≥0)) := by
+      (.mk (exp (f x) / ∫ x, exp (f x) ∂μ) (by positivity))) := by
   rw [Measure.tilted]
   congr with x
   rw [ENNReal.ofReal_eq_coe_nnreal]

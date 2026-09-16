@@ -30,8 +30,7 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 assert_not_exists MonoidWithZero DistribMulAction
 
-
-open Pointwise
+open scoped Pointwise
 
 open Function
 
@@ -74,11 +73,9 @@ theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
 theorem nonempty_orbit (a : α) : Set.Nonempty (orbit M a) :=
   Set.range_nonempty _
 
-@[deprecated (since := "2025-09-25")] alias orbit_nonempty := nonempty_orbit
-
 @[to_additive]
 theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
-  Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
+  Set.mapsTo_iff_subset_preimage.mpr <| Set.range_subset_iff.mpr fun m' => ⟨m * m', mul_smul _ _ _⟩
 
 @[to_additive]
 theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
@@ -134,7 +131,7 @@ variable {M α}
 theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
   Iff.rfl
 
@@ -191,6 +188,9 @@ def submonoid : Submonoid α where
 lemma mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
+instance : SMulCommClass M (FixedPoints.submonoid M α) α where
+  smul_comm g x y := by simp_rw [Submonoid.smul_def, smul_eq_mul, smul_mul', x.2 g]
+
 variable {M α β}
 
 /-- The restriction of a `MonoidHom` to `FixedPoints.submonoid`. -/
@@ -212,21 +212,22 @@ def subgroup : Subgroup α where
   __ := submonoid M α
   inv_mem' ha _ := by rw [smul_inv', ha]
 
-/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
-scoped notation α "^*" M:51 => FixedPoints.subgroup M α
-
 @[simp]
-lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+lemma mem_subgroup (a : α) : a ∈ FixedPoints.subgroup M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
+instance : SMulCommClass M (FixedPoints.subgroup M α) α :=
+  inferInstanceAs (SMulCommClass M (FixedPoints.submonoid M α) α)
+
 @[simp]
-lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+lemma subgroup_toSubmonoid : (FixedPoints.subgroup M α).toSubmonoid = submonoid M α :=
   rfl
 
 variable {M α β}
 
 /-- The restriction of a `MonoidHom` to `FixedPoints.subgroup`. -/
-def subgroupMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) : α^*M →* β^*M :=
+def subgroupMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) :
+    FixedPoints.subgroup M α →* FixedPoints.subgroup M β :=
   submonoidMap h
 
 lemma subgroupMap_injective (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a)
@@ -262,10 +263,6 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
-instance instMulAction (H : Subgroup G) : MulAction H α :=
-  inferInstanceAs (MulAction H.toSubmonoid α)
-
-@[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
 
 @[to_additive]
@@ -280,6 +277,15 @@ lemma mem_orbit_of_mem_orbit_subgroup {H : Subgroup G} {a b : α} (h : a ∈ orb
 @[to_additive]
 lemma mem_orbit_symm {a₁ a₂ : α} : a₁ ∈ orbit G a₂ ↔ a₂ ∈ orbit G a₁ := by
   simp_rw [← orbit_eq_iff, eq_comm]
+
+@[to_additive]
+lemma mem_orbit_trans {a b c : α} (hab : a ∈ orbit G b) (hbc : b ∈ orbit G c) :
+    a ∈ orbit G c := by
+  obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hab
+  obtain ⟨g', rfl⟩ := mem_orbit_iff.mp hbc
+  rw [mem_orbit_iff]
+  use g * g'
+  rw [mul_smul]
 
 @[to_additive]
 lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
@@ -314,8 +320,8 @@ of the orbit of `U` under `G`. -/
 of the orbit of `U` under `G`. -/]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
-    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
-  letI := orbitRel G α
+    Quotient.mk' ⁻¹' Quotient.mk' '' U = ⋃ g : G, (g • ·) '' U := by
+  let := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a
   constructor
@@ -327,16 +333,16 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine ⟨g⁻¹ • a, ?_, by simp [f, orbitRel, Quotient.eq']⟩
+    refine ⟨g⁻¹ • a, ?_, by simp +instances [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
-    convert hu₁
+    convert! hu₁
     simp only [inv_smul_smul]
 
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
-  letI := orbitRel G α
+  let := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   refine
     ⟨fun h a a_in_U g g_in_V =>
@@ -363,6 +369,10 @@ abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 variable {G α}
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.quotient_smul_eq {g : G} {a : α} :
+    ⟦g • a⟧ = (⟦a⟧ : orbitRel.Quotient G α) := Quotient.eq.mpr ⟨g, rfl⟩
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
@@ -419,9 +429,6 @@ nonrec lemma orbitRel.Quotient.nonempty_orbit (x : orbitRel.Quotient G α) :
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
   exact nonempty_orbit _
 
-@[deprecated (since := "2025-09-25")]
-alias orbitRel.Quotient.orbit_nonempty := orbitRel.Quotient.nonempty_orbit
-
 @[to_additive]
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
     Set.MapsTo (g • ·) x.orbit x.orbit := by
@@ -463,13 +470,13 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
     {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
     (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
   simp_rw [mem_orbit_symm (a₂ := c)]
-  convert Iff.rfl using 2
+  convert! Iff.rfl using 2
   rw [orbit_eq_iff]
   suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
     rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
-    convert hb using 1
+    convert! hb using 1
     rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 
@@ -497,10 +504,12 @@ def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
 group action. -/]
-def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
-      Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+      Set.equivOfEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
@@ -537,7 +546,7 @@ theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a =
 @[to_additive]
 lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β) :
     stabilizer G a ≤ stabilizer G (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
+  simp_rw [IsConcreteLE.le_iff, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
 
 -- This lemma does not need `MulAction G α`, only `SMul G α`.
 -- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
@@ -545,7 +554,7 @@ lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
 lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
     [SMulCommClass G' α β] (a : α) (b : β) :
     stabilizer G' b ≤ stabilizer G' (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
+  simp_rw [IsConcreteLE.le_iff, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)

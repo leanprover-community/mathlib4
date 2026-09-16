@@ -17,10 +17,10 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 If `f : Module.Dual R V` and `Algebra R A`, then
 
 * `Module.Dual.baseChange A f` is the element
-of `Module.Dual A (A ⊗[R] V)` deduced by base change.
+  of `Module.Dual A (A ⊗[R] V)` deduced by base change.
 
 * `Module.Dual.baseChangeHom` is the `R`-linear map
-given by `Module.Dual.baseChange`.
+  given by `Module.Dual.baseChange`.
 
 * `IsBaseChange.dual` : for finite free modules, taking dual commutes with base change.
 
@@ -93,8 +93,7 @@ private noncomputable def toDualBaseChangeAux :
     map_add' a b := by simp [add_smul]
     map_smul' r a := by simp }).toAddHom
   map_smul' a g := by
-    induction g using TensorProduct.induction_on with
-    | zero => simp
+    induction g using TensorProduct.inductionOn with
     | add x y hx hy => aesop
     | tmul b f => simp [TensorProduct.smul_tmul', mul_smul]
 
@@ -121,7 +120,6 @@ noncomputable def toDualBaseChange :
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearEquiv.trans_apply]
   induction w using ibc.inductionOn with
-  | zero => simp
   | tmul v =>
     simp only [toDualBaseChangeAux_tmul, one_mul]
     conv_lhs => rw [← Basis.sum_equivFun b v, map_sum]

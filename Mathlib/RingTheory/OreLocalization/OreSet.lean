@@ -29,6 +29,7 @@ namespace OreLocalization
 
 /-- Cancellability in monoids with zeros can act as a replacement for the `ore_right_cancel`
 condition of an ore set. -/
+@[instance_reducible]
 def oreSetOfIsCancelMulZero {R : Type*} [MonoidWithZero R] [IsCancelMulZero R]
     {S : Submonoid R} (oreNum : R → S → R) (oreDenom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), oreDenom r s * r = oreNum r s * s) : OreSet S :=
@@ -37,10 +38,9 @@ def oreSetOfIsCancelMulZero {R : Type*} [MonoidWithZero R] [IsCancelMulZero R]
     oreDenom
     ore_eq }
 
-@[deprecated (since := "2026-01-12")] alias oreSetOfCancelMonoidWithZero := oreSetOfIsCancelMulZero
-
 /-- In rings without zero divisors, the first (cancellability) condition is always fulfilled,
 it suffices to give a proof for the Ore condition itself. -/
+@[instance_reducible]
 def oreSetOfNoZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R] {S : Submonoid R}
     (oreNum : R → S → R) (oreDenom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), oreDenom r s * r = oreNum r s * s) : OreSet S :=

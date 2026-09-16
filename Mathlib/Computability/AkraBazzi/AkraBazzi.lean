@@ -58,7 +58,7 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -478,7 +478,6 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                     (n₀ : ℝ) / b' ≤ ⌈n₀ / b'⌉₊ := Nat.le_ceil (↑n₀ / b')
                     _ ≤ n := by exact_mod_cast n₀_div_le_n
                 rwa [div_le_iff₀, mul_comm] at this
-                grind only
         _ ≤ r i n := by grind
   have r_le_n : ∀ i, r i n < n := by grind [AkraBazziRecurrence]
   intro C hC h_ind
@@ -585,7 +584,6 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                     (n₀ : ℝ) / b' ≤ ⌈n₀ / b'⌉₊ := Nat.le_ceil (↑n₀ / b')
                     _ ≤ n := by exact_mod_cast n₀_div_le_n
                 rwa [div_le_iff₀, mul_comm] at this
-                grind only
         _ ≤ r i n := by grind
   have r_le_n : ∀ i, r i n < n := by grind [AkraBazziRecurrence]
   intro C hC h_ind
@@ -642,16 +640,13 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     _ = (1 + ε n) * asympBound g a b n + (C - c₁ * (1 + ε n)) * g n := by ring
     _ ≥ (1 + ε n) * asympBound g a b n + 0 := by
       gcongr
-      refine mul_nonneg ?_ g_pos
-      rw [sub_nonneg]
-      calc c₁ * (1 + ε n)
-        _ ≤ c₁ * 2 := by
-          gcongr
-          refine one_add_smoothingFn_le_two ?_
-          calc exp 1 ≤ ⌈exp 1⌉₊ := by exact Nat.le_ceil _
-                    _ ≤ n := by exact_mod_cast h_exp
-        _ = (2 * c₁) := by ring
-        _ ≤ C := hC
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+      the new canonicalizer; a minimization would help. The original proof was:
+      `exact mul_nonneg (by grind +splitIndPred) g_pos` -/
+      have : 1 + ε ↑n < 2 := by grind
+      exact mul_nonneg (by grw [sub_nonneg, this, mul_comm, hC]) g_pos
     _ = ((1 + ε n) * asympBound g a b n) := by ring
 
 /-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/

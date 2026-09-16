@@ -35,6 +35,7 @@ open Nat Function
 
 namespace List
 
+@[simp]
 theorem rotate_mod (l : List α) (n : ℕ) : l.rotate (n % l.length) = l.rotate n := by simp [rotate]
 
 @[simp]
@@ -68,6 +69,7 @@ theorem rotate'_eq_drop_append_take :
     rw [rotate'_cons_succ, rotate'_eq_drop_append_take hnl', drop, take,
         drop_append_of_le_length hnl, take_append_of_le_length hnl]; simp
 
+@[simp]
 theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m = l.rotate' (n + m)
   | a :: l, 0, m => by simp
   | [], n, m => by simp
@@ -89,11 +91,11 @@ theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n)
         simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
       _ = l := by rw [rotate'_length, rotate'_length_mul l n]
 
+@[simp]
 theorem rotate'_mod (l : List α) (n : ℕ) : l.rotate' (n % l.length) = l.rotate' n :=
-  calc
-    l.rotate' (n % l.length) =
-        (l.rotate' (n % l.length)).rotate' ((l.rotate' (n % l.length)).length * (n / l.length)) :=
-      by rw [rotate'_length_mul]
+  calc l.rotate' (n % l.length)
+    _ = (l.rotate' (n % l.length)).rotate'
+        ((l.rotate' (n % l.length)).length * (n / l.length)) := by rw [rotate'_length_mul]
     _ = l.rotate' n := by rw [rotate'_rotate', length_rotate', Nat.mod_add_div]
 
 theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
@@ -139,6 +141,7 @@ theorem rotate_append_length_eq (l l' : List α) : (l ++ l').rotate l.length = l
   · simp
   · simp_all [rotate']
 
+@[simp]
 theorem rotate_rotate (l : List α) (n m : ℕ) : (l.rotate n).rotate m = l.rotate (n + m) := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate_eq_rotate', rotate'_rotate']
 
@@ -211,6 +214,7 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
       lia
     · rwa [Nat.sub_lt_iff_lt_add' hm, length_drop, Nat.sub_add_cancel hlt.le]
 
+@[simp]
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :
     (l.rotate n)[k] =
       l[(k + n) % l.length]'(mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt h)) := by
@@ -221,6 +225,7 @@ theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
 
+@[simp]
 theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l[n]? := by
   rw [head?_eq_getElem?, getElem?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]
 
@@ -320,6 +325,7 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
       · exact Nat.sub_le _ _
       · exact Nat.sub_lt (by simp) (by simp_all! [k])
 
+@[simp]
 theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
     map f (l.rotate n) = (map f l).rotate n := by
   induction n generalizing l with
@@ -386,13 +392,20 @@ protected theorem IsRotated.forall (l : List α) (n : ℕ) : l.rotate n ~r l :=
 theorem IsRotated.trans : ∀ {l l' l'' : List α}, l ~r l' → l' ~r l'' → l ~r l''
   | _, _, _, ⟨n, rfl⟩, ⟨m, rfl⟩ => ⟨n + m, by rw [rotate_rotate]⟩
 
+instance : IsEquiv (List α) IsRotated where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
+@[deprecated Equivalence.of_isEquiv +typeChanged (since := "2026-09-09")]
 theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
-  Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
+  .of_isEquiv IsRotated
 
 /-- The relation `List.IsRotated l l'` forms a `Setoid` of cycles. -/
+@[instance_reducible]
 def IsRotated.setoid (α : Type*) : Setoid (List α) where
   r := IsRotated
-  iseqv := IsRotated.eqv
+  iseqv := .of_isEquiv IsRotated
 
 theorem IsRotated.perm (h : l ~r l') : l ~ l' :=
   Exists.elim h fun _ hl => hl ▸ (rotate_perm _ _).symm
@@ -480,15 +493,28 @@ theorem IsRotated.dropLast_tail {α}
     simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
 
+theorem comp_isRotated_sublist :
+    Relation.Comp (IsRotated (α := α)) Sublist = Relation.Comp Sublist IsRotated := by
+  ext
+  refine ⟨fun ⟨L₁, hLr, hL⟩ => ?_, fun ⟨L₂, hL, hLr⟩ => ?_⟩ <;>
+    obtain ⟨n, hn, rfl⟩ := isRotated_iff_mod.mp hLr
+  · obtain ⟨L₂L, L₂R, rfl, hL₂L, hL₂R⟩ := append_sublist_iff.mp (rotate_eq_drop_append_take hn ▸ hL)
+    exact ⟨L₂R ++ L₂L, by simpa using hL₂R.append hL₂L, isRotated_append⟩
+  · obtain ⟨lL, lR, rfl, hL, hR⟩ := sublist_append_iff.mp <| take_append_drop n L₂ ▸ hL
+    refine ⟨lR ++ lL, isRotated_append.symm, ?_⟩
+    simpa [rotate_eq_drop_append_take hn] using hR.append hL
+
 /-- List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
 This implies that under certain conditions, there are duplicates in `List.cyclicPermutations l`.
 The `n`th entry is equal to `l.rotate n`, proven in `List.get_cyclicPermutations`.
 The proof that every cyclic permutant of `l` is in the list is `List.mem_cyclicPermutations_iff`.
 
+```
      cyclicPermutations [1, 2, 3, 2, 4] =
        [[1, 2, 3, 2, 4], [2, 3, 2, 4, 1], [3, 2, 4, 1, 2],
-        [2, 4, 1, 2, 3], [4, 1, 2, 3, 2]] -/
+        [2, 4, 1, 2, 3], [4, 1, 2, 3, 2]]
+``` -/
 def cyclicPermutations : List α → List (List α)
   | [] => [[]]
   | l@(_ :: _) => dropLast (zipWith (· ++ ·) (tails l) (inits l))

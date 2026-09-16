@@ -21,15 +21,14 @@ define `Λ.transport .. : LeftResolution ι'`.
 
 namespace CategoryTheory.Abelian
 
-open Category
-
 variable {A C : Type*} [Category* C] [Category* A]
   {A' C' : Type*} [Category* C'] [Category* A']
 
 namespace LeftResolution
 
-open Functor
+open CategoryTheory.Functor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Transport `LeftResolution` via equivalences of categories. -/
 def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
     (eA : A' ≌ A) (eC : C' ≌ C) (e : ι' ⋙ eA.functor ≅ eC.functor ⋙ ι) :

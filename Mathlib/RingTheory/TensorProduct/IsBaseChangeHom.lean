@@ -51,11 +51,10 @@ def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
   toAddHom := (TensorProduct.lift {
     toFun s := s • (LinearMap.compRight R ε (M := M))
     map_add' x y := by ext; simp [add_smul]
-    map_smul' r s := by aesop }).toAddHom
+    map_smul' r s := by simp }).toAddHom
   map_smul' s x := by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
-    induction x using TensorProduct.induction_on with
-    | zero => simp
+    induction x using TensorProduct.inductionOn with
     | add x y hx hy => simp [smul_add, hx, hy]
     | tmul t f => simp [TensorProduct.smul_tmul', mul_smul]
 
@@ -63,7 +62,7 @@ variable [Free R M] [Module.Finite R M]
 
 variable {S}
 
-/-- The base change isomorphism funderlying `IsBaseChange.linearMapRight` -/
+/-- The base change isomorphism underlying `IsBaseChange.linearMapRight` -/
 noncomputable def linearMapRightBaseChangeEquiv
     {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
     S ⊗[R] (M →ₗ[R] N) ≃ₗ[S] (M →ₗ[R] P) := by
@@ -175,7 +174,6 @@ theorem endHom_one {α : M →ₗ[R] P} (j : IsBaseChange S α) :
     j.endHom 1 = 1 := by
   ext p
   induction p using j.inductionOn with
-  | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul _ _ h => simp [h]
   | tmul m => simp [endHom_comp_apply]

@@ -36,12 +36,8 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p 
       rw [hr, ← mul_assoc, mul_comm p, mul_assoc] at hq
       nth_rw 1 [← mul_one (ringChar R)] at hq
       exact Nat.Prime.not_dvd_one hp ⟨r, mul_left_cancel₀ hR hq⟩
-    have h₄ := mt (CharP.intCast_eq_zero_iff R (ringChar R) q).mp
-    apply_fun ((↑) : ℕ → R) at hq
-    apply_fun (· * ·) a at hq
-    rw [Nat.cast_mul, hch, mul_zero, ← mul_assoc, ha, one_mul] at hq
-    norm_cast at h₄
-    exact h₄ h₃ hq.symm
+    simp_all only [ne_eq]
+    grind [ringChar.dvd]
   · intro h
     rcases (hp.coprime_iff_not_dvd.mpr h).isCoprime with ⟨a, b, hab⟩
     apply_fun ((↑) : ℤ → R) at hab

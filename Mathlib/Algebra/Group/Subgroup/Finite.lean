@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Group.Submonoid.Finite
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Subgroups
@@ -20,12 +20,11 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
 variable {G : Type*} [Group G]
-variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
@@ -88,9 +87,15 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
   SubmonoidClass.coe_multiset_prod m
 
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
+theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
-  SubmonoidClass.coe_finset_prod f s
+  SubmonoidClass.coe_finsetProd f s
+
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubgroup.val_finset_sum := _root_.AddSubgroup.val_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias val_finset_prod := val_finsetProd
 
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
@@ -154,6 +159,10 @@ theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H �
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
 
 @[to_additive]
+theorem card_lt_of_lt {H K : Subgroup G} [Finite K] (h : H < K) : Nat.card H < Nat.card K :=
+  (Set.toFinite _).card_lt_card h
+
+@[to_additive]
 theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
     (hf : Function.Injective f) :
     Nat.card (map f K) = Nat.card K := by
@@ -164,6 +173,11 @@ theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
     Nat.card (map K.subtype L) = Nat.card L :=
   card_map_of_injective K.subtype_injective
 
+@[to_additive]
+theorem card_mapSubgroup {G' : Type*} [Group G'] (e : G ≃* G') :
+    Nat.card (e.mapSubgroup H) = Nat.card H :=
+  Subgroup.card_map_of_injective e.injective
+
 end Subgroup
 
 namespace Subgroup
@@ -173,12 +187,6 @@ section Pi
 open Set
 
 variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
-
-@[to_additive (attr := deprecated Submonoid.pi_mem_of_mulSingle_mem_aux (since := "2025-10-08"))]
-theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
-    (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
-    x ∈ H :=
-  Submonoid.pi_mem_of_mulSingle_mem_aux I x h1 h2
 
 @[to_additive]
 theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ i, f i)} (x : ∀ i, f i)
@@ -211,8 +219,8 @@ end Pi
 section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
-    x ∈ Subgroup.setNormalizer S := by
-  haveI := Classical.propDecidable; cases nonempty_fintype S
+    x ∈ Subgroup.normalizer S := by
+  have := Classical.propDecidable; cases nonempty_fintype S
   exact fun n =>
     ⟨h n, fun h₁ =>
       have heq : (fun n => x * n * x⁻¹) '' S = S :=
