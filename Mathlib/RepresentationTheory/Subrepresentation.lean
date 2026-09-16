@@ -100,17 +100,18 @@ end non_comm
 variable [CommSemiring A] [Monoid G] [AddCommMonoid W] [Module A W]
   {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subrepresentation of `ρ` can be thought of as an `A[G]` submodule of `ρ.asModule`.
 -/
 def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
-  __ := σ.toSubmodule
+  carrier := σ.toSubmodule.comap ρ.asModuleEquiv.toLinearMap
+  __ := σ.toSubmodule.comap ρ.asModuleEquiv.toLinearMap
   smul_mem' c v hv := by
     induction c using MonoidAlgebra.induction_linear with
     | zero => simp [zero_smul]
     | add x y hx hy => rw [add_smul]; exact σ.toSubmodule.add_mem' hx hy
     | single g a =>
-      rw [Representation.single_smul]
+      rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_toLinearMap,
+        Representation.asModuleEquiv_apply_single_smul]
       exact σ.toSubmodule.smul_mem' a (σ.apply_mem_toSubmodule g hv)
 
 @[simp]
@@ -147,26 +148,25 @@ def ofSubmodule (N : Submodule A[G] M) :
 @[simp]
 lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N ↔ m ∈ N := by rfl
 
-set_option backward.isDefEq.respectTransparency false in
-/-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`.
--/
-def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
-  toSubmodule := { N with
-    smul_mem' a w hw := by simpa using! (N.smul_mem (algebraMap A A[G] a) hw) }
+/-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`. -/
+noncomputable def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
+  toSubmodule := { (N.restrictScalars A).comap ρ.asModuleEquiv.symm.toLinearMap with
+    smul_mem' a w hw := by
+      replace hw : ρ.asModuleEquiv.symm w ∈ N := by simpa using hw
+      simpa using (N.smul_mem (algebraMap A A[G] a) hw) }
   apply_mem_toSubmodule g w hw := by
-    let _ : Module A[G] W := ρ.instModuleMonoidAlgebraAsModule
-    have h : (MonoidAlgebra.single g (1 : A)) • w ∈ N :=
+    have h : (MonoidAlgebra.single g (1 : A)) • ρ.asModuleEquiv.symm w ∈ N :=
       Submodule.smul_of_tower_mem N _ hw
-    rw [Representation.single_smul, one_smul] at h
-    exact h
+    simpa using h
 
 @[simp]
-lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} : w ∈ ofSubmodule' N ↔ w ∈ N :=
+lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} :
+    w ∈ ofSubmodule' N ↔ ρ.asModuleEquiv.symm w ∈ N :=
   .rfl
 
 /-- An order-preserving equivalence between subrepresentations of `ρ` and submodules of
 `ρ.asModule`. -/
-@[simps]
+@[simps] noncomputable
 def subrepresentationSubmoduleOrderIso : Subrepresentation ρ ≃o Submodule A[G] ρ.asModule where
   toFun := asSubmodule
   invFun := ofSubmodule'
