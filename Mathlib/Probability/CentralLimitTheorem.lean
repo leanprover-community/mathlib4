@@ -148,10 +148,10 @@ theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
   convert!
     (tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub this h hindep hident).continuous_comp (g :=
       (√Var[X 0; P] * ·)) (by fun_prop)
-  · simp [field]
+  · simp [field] -- simp [field, h] triggers the unused simp arguments linter
     field_simp [h]
   · ext
-    simp [field]
+    simp [field] -- simp [field, h] triggers the unused simp arguments linter
     field_simp [h]
 
 end ProbabilityTheory
