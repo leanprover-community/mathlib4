@@ -104,7 +104,7 @@ def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(C
 def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (cols : Q(List (Fin $n))) (pivots : Array Nat)
     (certifier : EntryCertifier) :
-    MetaM Q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols)) := do
+    MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) := do
   have rows : Q(List (List $α)) := U.lit
   let hsorted ← mkDecideProofQ q(($cols).SortedLT)
   -- one cell per pivot row, the nonzero pivot entry and the `Eq.refl` of the zeros before it, on
@@ -118,7 +118,7 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
       ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $kQ (0 : $α))), rest]]
   have h : Q(IsPivotedList $cols $rows) := chain
   return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hsorted $h)
-    q(($(U.matrix)).IsPivotedBy (pivotOfList $m $cols))
+    q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i)
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ`. -/
 def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
@@ -170,11 +170,11 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have hprod : Q($Lm * $Aσm = $Um) := ← certifyProductEq _cr L Aσ U certifier?
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
-  have hpivot : Q(($Um).IsPivotedBy (pivotOfList $m $cols)) :=
+  have hpivot : Q(($Um).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) :=
     ← certifyPivotedBy _cr U cols data.pivot certifier
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag _cr L certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
-  return q(⟨$Lm, $σ, pivotOfList $m $cols, $hU ▸ $hpivot, $hlower, $hdiag⟩)
+  return q(⟨$Lm, $σ, fun i : Fin $m ↦ pivotOfList $cols i, $hU ▸ $hpivot, $hlower, $hdiag⟩)
 
 end Mathlib.Tactic.Echelon
