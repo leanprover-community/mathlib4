@@ -68,9 +68,9 @@ This shortens the overall argument, as the definition of submersions has the sam
   `C^n` immersion `φ : N → P` (at `f x`) is `C^n`.
 * `IsImmersionAt.isDiffImmersionAt`: if `f` is an immersion at `x`, it is also an immersion in the
   sense of differentials at `x`, i.e. `mfderiv% f x` has a continuous left inverse
-* `IsImmersionAt.injective_mfderiv`: if `f` is an immersion at `x`, the differential `mfderiv% f x`
+* `IsImmersionAt.mfderiv_injective`: if `f` is an immersion at `x`, the differential `mfderiv% f x`
   at `x` is injective
-* `IsImmersion.isDiffImmersionAt` and `IsImmersion.injective_mfderiv`: if `f` is an immersion,
+* `IsImmersion.isDiffImmersionAt` and `IsImmersion.mfderiv_injective`: if `f` is an immersion,
   it is an immersion (in the sense of differentials) at every point of the domain.
   In particular, the differential at each point is injective.
 
@@ -561,7 +561,7 @@ lemma isDiffImmersionAt (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 
       (by simp [h.mem_domChart_source])
 
 /-- An immersion at `x` has injective differential. -/
-lemma injective_mfderiv (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+lemma mfderiv_injective (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
     Injective (mfderiv% f x) :=
   (h.isDiffImmersionAt hn).mfderiv_injective
 
@@ -772,8 +772,8 @@ lemma isDiffImmersionAt (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : IsDiffImm
   h.isImmersionAtOfComplement_complement.isDiffImmersionAt hn
 
 /-- An immersion at `x` has injective differential. -/
-lemma injective_mfderiv (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : Injective (mfderiv% f x) :=
-    h.isImmersionAtOfComplement_complement.injective_mfderiv hn
+lemma mfderiv_injective (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : Injective (mfderiv% f x) :=
+    h.isImmersionAtOfComplement_complement.mfderiv_injective hn
 
 end IsImmersionAt
 
@@ -919,9 +919,9 @@ lemma isDiffImmersionAt (h : IsImmersionOfComplement F I J n f) (hn : n ≠ 0) (
   (h x).isDiffImmersionAt hn
 
 /-- An immersion has injective differential at each point. -/
-lemma injective_mfderiv (h : IsImmersionOfComplement F I J n f) (hn : n ≠ 0) (x : M) :
+lemma mfderiv_injective (h : IsImmersionOfComplement F I J n f) (hn : n ≠ 0) (x : M) :
     Injective (mfderiv% f x) :=
-  (h x).injective_mfderiv hn
+  (h x).mfderiv_injective hn
 
 end IsImmersionOfComplement
 
@@ -1014,9 +1014,9 @@ lemma isDiffImmersionAt (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :
   (h.isImmersionOfComplement_complement x).isDiffImmersionAt hn
 
 /-- An immersion has injective differential at each point. -/
-lemma injective_mfderiv (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :
+lemma mfderiv_injective (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :
     Injective (mfderiv% f x) :=
-  (h.isImmersionOfComplement_complement x).injective_mfderiv hn
+  (h.isImmersionOfComplement_complement x).mfderiv_injective hn
 
 end IsImmersion
 
