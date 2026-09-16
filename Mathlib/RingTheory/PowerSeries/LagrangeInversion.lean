@@ -7,14 +7,16 @@ module
 
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Ring
+
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
 
 /-!
 # Lagrange inversion for formal power series
 
-This file proves the polynomial-kernel form of the one-variable Lagrange inversion theorem.
-Let `P` be a polynomial and let `Y` be a formal power series satisfying
+This file proves the polynomial-kernel form of the one-variable Lagrange inversion theorem over a
+commutative ring without additive torsion. Let `P` be a polynomial and let `Y` be a formal power
+series satisfying
 
 `Y = X * P(Y)`.
 
@@ -22,20 +24,22 @@ Then, for `1 ≤ m` and `k ≤ m`,
 
 `m * [X^m] Y^k = k * [X^(m-k)] P^m`.
 
-We also give the Lagrange--Bürmann form
+We also give the Lagrange–Bürmann form
 
 `m * [X^m] H(Y) = [X^(m-1)] (H' * P^m)`
 
 for a polynomial `H`, and the usual divided coefficient formula over a field of characteristic
-zero.
+zero. No analytic convergence is involved.
 
-The proof is purely algebraic and follows the induction in E. Surya and L. Warnke,
-*Lagrange Inversion Formula by Induction*.
+The proof is purely algebraic and follows the induction in the reference below.
+
+## References
+
+* [Erlang Surya and Lutz Warnke, *Lagrange Inversion Formula by
+  Induction*](https://arxiv.org/abs/2305.17576)
 -/
 
 @[expose] public section
-
-noncomputable section
 
 namespace PowerSeries
 
@@ -60,7 +64,7 @@ private lemma coeff_aeval
     PowerSeries.coeff j (Polynomial.aeval Y Q) =
       ∑ l ∈ range (j + 1), Q.coeff l * PowerSeries.coeff j (Y ^ l) := by
   classical
-  set N := max Q.natDegree j with hN
+  let N := max Q.natDegree j
   have hbig : PowerSeries.coeff j (Polynomial.aeval Y Q) =
       ∑ l ∈ range (N + 1), Q.coeff l * PowerSeries.coeff j (Y ^ l) := by
     rw [Polynomial.aeval_eq_sum_range, map_sum]
@@ -169,7 +173,7 @@ theorem lagrange_inversion_coeff_pow
     push_cast
     linear_combination ((k : R) + (s + 1)) * hsum + hcoeff
 
-/-- **Lagrange--Bürmann formula.** If `Y = X * P(Y)`, then for `m ≥ 1` and a
+/-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for `m ≥ 1` and a
 polynomial `H`,
 
 `m * [X^m] H(Y) = [X^(m-1)] (H' * P^m)`. -/
