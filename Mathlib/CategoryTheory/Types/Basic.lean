@@ -55,6 +55,7 @@ structure Fun (X Y : Type*) where
   /-- The underlying function. -/
   toFun : X → Y
 
+@[macro_inline]
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
   coe_injective _ := by aesop
@@ -249,16 +250,16 @@ variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 attribute [elementwise nosimp] Functor.map_comp Functor.map_id NatTrans.comp_app
 
-@[deprecated Functor.map_comp_apply (since := "2026-03-09")]
+@[deprecated Functor.map_comp_apply +typeChanged (since := "2026-03-09")]
 theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
     (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) :=
   F.map_comp_apply f g a
 
-@[deprecated Functor.map_id_apply (since := "2026-03-09")]
+@[deprecated Functor.map_id_apply +typeChanged (since := "2026-03-09")]
 theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a :=
   F.map_id_apply X a
 
-@[deprecated NatTrans.comp_app_apply (since := "2026-03-09")]
+@[deprecated NatTrans.comp_app_apply +typeChanged (since := "2026-03-09")]
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   σ.comp_app_apply τ X x
 
@@ -412,7 +413,7 @@ open CategoryTheory
 variable {X Y : Type u}
 
 /-- Any isomorphism between types gives an equivalence. -/
-@[simps]
+@[implicit_reducible, simps]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
