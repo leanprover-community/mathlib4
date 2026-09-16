@@ -92,67 +92,70 @@ variable {P : R[X]} {Y : R⟦X⟧}
 
 private theorem lagrange_inversion_coeff_pow_of_le
     (hY : Y = PowerSeries.X * Polynomial.aeval Y P) :
-    ∀ m : ℕ, 1 ≤ m → ∀ k ≤ m,
-      (m : R) * PowerSeries.coeff m (Y ^ k) = (k : R) * (P ^ m).coeff (m - k) := by
+    ∀ m : ℕ, ∀ k ≤ m + 1,
+      ((m + 1 : ℕ) : R) * PowerSeries.coeff (m + 1) (Y ^ k) =
+        (k : R) * (P ^ (m + 1)).coeff (m + 1 - k) := by
   intro m
   induction m using Nat.strong_induction_on with
   | h m ih =>
-    intro hm k hk
+    intro k hk
     rcases Nat.eq_zero_or_pos k with rfl | hk0
-    · have hm0 : m ≠ 0 := by omega
-      simp [hm0]
-    obtain ⟨t, rfl⟩ : ∃ t, m = k + t := ⟨m - k, by omega⟩
-    have hcoe : (Y ^ k).coeff (k + t) = (Polynomial.aeval Y (P ^ k)).coeff t := by
+    · simp
+    obtain ⟨t, hmt⟩ : ∃ t, m + 1 = k + t := ⟨m + 1 - k, by omega⟩
+    have hcoe : (Y ^ k).coeff (m + 1) = (Polynomial.aeval Y (P ^ k)).coeff t := by
+      rw [hmt]
       nth_rw 1 [hY, mul_pow, map_pow, add_comm k t, PowerSeries.coeff_X_pow_mul]
-    rcases Nat.eq_zero_or_pos t with rfl | ht
+    rcases t with _ | t
     · rw [hcoe, coeff_aeval hY]
+      simp only [Nat.add_zero] at hmt
+      rw [hmt]
       simp
-    obtain ⟨s, rfl⟩ : ∃ s, t = s + 1 := ⟨t - 1, by omega⟩
-    have hih : ∀ l ∈ range (s + 2),
-        ((s : R) + 1) * ((P ^ k).coeff l * PowerSeries.coeff (s + 1) (Y ^ l)) =
-          (P ^ k).coeff l * ((l : R) * (P ^ (s + 1)).coeff (s + 1 - l)) := by
+    have hih : ∀ l ∈ range (t + 2),
+        ((t : R) + 1) * ((P ^ k).coeff l * PowerSeries.coeff (t + 1) (Y ^ l)) =
+          (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
-      have hl' : l ≤ s + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hl
-      have h := ih (s + 1) (by omega) (by omega) l hl'
+      have hl' : l ≤ t + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hl
+      have h := ih t (by omega) l hl'
       push_cast at h ⊢
-      rw [show ((s : R) + 1) *
-          ((P ^ k).coeff l * PowerSeries.coeff (s + 1) (Y ^ l)) =
+      rw [show ((t : R) + 1) *
+          ((P ^ k).coeff l * PowerSeries.coeff (t + 1) (Y ^ l)) =
             (P ^ k).coeff l *
-              (((s : R) + 1) * PowerSeries.coeff (s + 1) (Y ^ l)) by ring, h]
+              (((t : R) + 1) * PowerSeries.coeff (t + 1) (Y ^ l)) by ring, h]
     have hconv :
-        ∑ l ∈ range (s + 2),
-            (P ^ k).coeff l * ((l : R) * (P ^ (s + 1)).coeff (s + 1 - l)) =
-          (Polynomial.derivative (P ^ k) * P ^ (s + 1)).coeff s := by
+        ∑ l ∈ range (t + 2),
+            (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) =
+          (Polynomial.derivative (P ^ k) * P ^ (t + 1)).coeff t := by
       rw [Polynomial.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
       rw [Finset.sum_range_succ'
-        (fun l ↦ (P ^ k).coeff l * ((l : R) * (P ^ (s + 1)).coeff (s + 1 - l)))]
+        (fun l ↦ (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)))]
       simp only [Nat.cast_zero, mul_zero, zero_mul, add_zero, Nat.cast_add, Nat.cast_one]
       refine Finset.sum_congr rfl fun p _ ↦ ?_
-      rw [Polynomial.coeff_derivative, show s + 1 - (p + 1) = s - p by omega]
+      rw [Polynomial.coeff_derivative, show t + 1 - (p + 1) = t - p by omega]
       ring
-    have hpoly : Polynomial.C ((k : R) + (s + 1)) *
-          (Polynomial.derivative (P ^ k) * P ^ (s + 1)) =
-        Polynomial.C (k : R) * Polynomial.derivative (P ^ (k + (s + 1))) := by
+    have hpoly : Polynomial.C ((k : R) + (t + 1)) *
+          (Polynomial.derivative (P ^ k) * P ^ (t + 1)) =
+        Polynomial.C (k : R) * Polynomial.derivative (P ^ (k + (t + 1))) := by
       rw [Polynomial.derivative_pow, Polynomial.derivative_pow,
-        show k + (s + 1) - 1 = (k - 1) + (s + 1) by omega, pow_add,
-        show ((k + (s + 1) : ℕ) : R) = (k : R) + (s + 1) by push_cast; ring]
+        show k + (t + 1) - 1 = (k - 1) + (t + 1) by omega, pow_add,
+        show ((k + (t + 1) : ℕ) : R) = (k : R) + (t + 1) by push_cast; ring]
       ring
-    have hcoeff : ((k : R) + (s + 1)) *
-          (Polynomial.derivative (P ^ k) * P ^ (s + 1)).coeff s =
-        (k : R) * ((s : R) + 1) * (P ^ (k + (s + 1))).coeff (s + 1) := by
-      have h := congrArg (fun q : R[X] ↦ q.coeff s) hpoly
+    have hcoeff : ((k : R) + (t + 1)) *
+          (Polynomial.derivative (P ^ k) * P ^ (t + 1)).coeff t =
+        (k : R) * ((t : R) + 1) * (P ^ (k + (t + 1))).coeff (t + 1) := by
+      have h := congrArg (fun q : R[X] ↦ q.coeff t) hpoly
       simp only [Polynomial.coeff_C_mul] at h
       rw [h, Polynomial.coeff_derivative]
       ring
-    have hsum : ((s : R) + 1) * PowerSeries.coeff (k + (s + 1)) (Y ^ k) =
-        (Polynomial.derivative (P ^ k) * P ^ (s + 1)).coeff s := by
+    have hsum : ((t : R) + 1) * PowerSeries.coeff (m + 1) (Y ^ k) =
+        (Polynomial.derivative (P ^ k) * P ^ (t + 1)).coeff t := by
       rw [hcoe, coeff_aeval hY, Finset.mul_sum, ← hconv]
       exact Finset.sum_congr rfl hih
-    rw [show k + (s + 1) - k = s + 1 by omega]
-    apply nsmul_right_injective (by omega : s + 1 ≠ 0)
+    rw [hmt] at hsum
+    rw [hmt, show k + (t + 1) - k = t + 1 by omega]
+    apply nsmul_right_injective (by omega : t + 1 ≠ 0)
     simp only [nsmul_eq_mul]
     push_cast
-    linear_combination ((k : R) + (s + 1)) * hsum + hcoeff
+    linear_combination ((k : R) + (t + 1)) * hsum + hcoeff
 
 /-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
 `(n + k) * [X^(n+k)] Y^k = k * [X^n] P^(n+k)` for all natural numbers `n` and `k`.
@@ -166,7 +169,8 @@ theorem lagrange_inversion_coeff_pow
   rcases eq_or_ne (n + k) 0 with hnk | hnk
   · obtain ⟨rfl, rfl⟩ := Nat.add_eq_zero_iff.mp hnk
     simp
-  · simpa using lagrange_inversion_coeff_pow_of_le hY (n + k) (by omega) k (by omega)
+  · simpa [show n + k - 1 + 1 = n + k by omega, show n + k - k = n by omega] using
+      lagrange_inversion_coeff_pow_of_le hY (n + k - 1) k (by omega)
 
 /-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
 a polynomial `H`,
@@ -184,7 +188,7 @@ theorem lagrange_burmann_coeff
     rw [coeff_aeval hY H, Finset.mul_sum]
     refine Finset.sum_congr rfl fun i hi ↦ ?_
     have hi' : i ≤ n + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hi
-    have h := lagrange_inversion_coeff_pow_of_le hY (n + 1) (by omega) i hi'
+    have h := lagrange_inversion_coeff_pow_of_le hY n i hi'
     simp only [hf]
     rw [← h]
     ring
