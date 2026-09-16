@@ -125,13 +125,13 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
         grind [IsPivotedList, splitRevAt_eq, List.reverse_replicate]
       | succ i => grind [IsPivotedList, splitRevAt_eq]
 
-/-- The pivot function of the list of pivot columns: the column of row `i`, and `⊤` for a row
-beyond the list. -/
+/-- The pivot function of the list of pivot columns.
+`WithTop` is an option under the hood, so the lookup directly matches the result. -/
 def pivotOfList (m : ℕ) (cols : List (Fin n)) : Fin m → WithTop (Fin n) :=
   fun i ↦ cols[(i : ℕ)]?
 
 theorem pivotOfList_eq_coe {m : ℕ} {cols : List (Fin n)} {i : Fin m} {c : Fin n}
-    (hc : cols[(i : ℕ)]? = some c) : pivotOfList m cols i = (c : WithTop (Fin n)) := hc
+    (hc : cols[(i : ℕ)]? = some c) : pivotOfList m cols i = ↑c := hc
 
 theorem pivotOfList_lt_pivotOfList {m : ℕ} {cols : List (Fin n)} (hsorted : cols.SortedLT)
     {i j : Fin m} (hij : i < j) (hj : pivotOfList m cols j ≠ ⊤) :
@@ -157,16 +157,21 @@ theorem strictMonoOn_pivotOfList_of_sortedLT {m : ℕ} {cols : List (Fin n)}
     StrictMonoOn (pivotOfList m cols) {i | pivotOfList m cols i ≠ ⊤} :=
   fun _ _ _ hj hij ↦ pivotOfList_lt_pivotOfList hsorted hij hj
 
-theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
-    (hsorted : cols.SortedLT) (h : IsPivotedList cols rows) :
-    (ofLists m n rows).IsPivotedBy (pivotOfList m cols) := by
-  refine Matrix.isPivotedBy_iff.mpr ⟨monotone_pivotOfList_of_sortedLT hsorted,
-    strictMonoOn_pivotOfList_of_sortedLT hsorted, fun i ↦ ?_⟩
+theorem isPivotEntry_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
+    (h : IsPivotedList cols rows) (i : Fin m) :
+    (∀ j : Fin n, ↑j < pivotOfList m cols i → ofLists m n rows i j = 0) ∧
+      ∀ c : Fin n, pivotOfList m cols i = c → ofLists m n rows i c ≠ 0 := by
   obtain ⟨hzero, hnz⟩ := getD_of_isPivotedList h (i : ℕ)
   simp only [ofLists_apply, ofList_apply]
   refine ⟨fun j hj ↦ hzero (j : ℕ) fun k hk ↦ ?_, fun c hc ↦ ?_⟩
   · rw [pivotOfList_eq_coe hk] at hj
     exact Fin.lt_def.mp (WithTop.coe_lt_coe.mp hj)
   · exact hnz c hc
+
+theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
+    (hsorted : cols.SortedLT) (h : IsPivotedList cols rows) :
+    (ofLists m n rows).IsPivotedBy (pivotOfList m cols) :=
+  Matrix.isPivotedBy_iff.mpr ⟨monotone_pivotOfList_of_sortedLT hsorted,
+    strictMonoOn_pivotOfList_of_sortedLT hsorted, isPivotEntry_ofLists h⟩
 
 end Mathlib.Tactic.Echelon
