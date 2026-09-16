@@ -47,14 +47,7 @@ def trifunctorComp₂₃₄FunctorObj (F : C₁ ⥤ C₂₃₄ ⥤ E) :
     (C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj G := trifunctorComp₂₃₄ F G
   map {G G'} τ :=
-    { app X₁ := (Functor.postcompose₃.obj (F.obj X₁)).map τ
-      naturality X₁ Y₁ f := by
-        ext X₂ X₃ X₄
-        change (F.map f).app (((G.obj X₂).obj X₃).obj X₄) ≫
-            (F.obj Y₁).map ((((τ.app X₂).app X₃).app X₄)) =
-          (F.obj X₁).map ((((τ.app X₂).app X₃).app X₄)) ≫
-            (F.map f).app (((G'.obj X₂).obj X₃).obj X₄)
-        exact ((F.map f).naturality _).symm }
+    { app X₁ := (Functor.postcompose₃.obj (F.obj X₁)).map τ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -64,13 +57,7 @@ def trifunctorComp₂₃₄FunctorMap {F F' : C₁ ⥤ C₂₃₄ ⥤ E} (τ : F
     trifunctorComp₂₃₄FunctorObj (C₂ := C₂) (C₃ := C₃) (C₄ := C₄) F ⟶
       trifunctorComp₂₃₄FunctorObj F' where
   app G :=
-    { app X₁ := (Functor.postcompose₃.map (τ.app X₁)).app G
-      naturality X₁ Y₁ f := by
-        ext X₂ X₃ X₄
-        exact NatTrans.congr_app (τ.naturality f) (((G.obj X₂).obj X₃).obj X₄) }
-  naturality G G' σ := by
-    ext X₁ X₂ X₃ X₄
-    exact (τ.app X₁).naturality ((((σ.app X₂).app X₃).app X₄))
+    { app X₁ := (Functor.postcompose₃.map (τ.app X₁)).app G }
 
 /-- The functor
 `(C₁ ⥤ C₂₃₄ ⥤ E) ⥤ (C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E` which
@@ -104,10 +91,7 @@ def trifunctorComp₃₄FunctorObj (F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) :
     (C₃ ⥤ C₄ ⥤ C₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj G := trifunctorComp₃₄ F G
   map {G G'} τ :=
-    { app X₁ := (bifunctorComp₂₃Functor.obj (F.obj X₁)).map τ
-      naturality X₁ Y₁ f := by
-        ext X₂ X₃ X₄
-        exact (((F.map f).app X₂).naturality (((τ.app X₃).app X₄))).symm }
+    { app X₁ := (bifunctorComp₂₃Functor.obj (F.obj X₁)).map τ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -120,11 +104,7 @@ def trifunctorComp₃₄FunctorMap {F F' : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E} (τ 
     { app X₁ := (bifunctorComp₂₃Functor.map (τ.app X₁)).app G
       naturality X₁ Y₁ f := by
         ext X₂ X₃ X₄
-        exact NatTrans.congr_app (NatTrans.congr_app (τ.naturality f) X₂)
-          ((G.obj X₃).obj X₄) }
-  naturality G G' σ := by
-    ext X₁ X₂ X₃ X₄
-    exact ((τ.app X₁).app X₂).naturality (((σ.app X₃).app X₄))
+        simp [NatTrans.naturality_app_app] }
 
 /-- The functor
 `(C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) ⥤ (C₃ ⥤ C₄ ⥤ C₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E` which
