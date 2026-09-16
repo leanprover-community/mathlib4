@@ -219,7 +219,8 @@ lemma associated_iff_emultiplicity_eq' {a b : R} {q : R} (hq : Prime q) :
     refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
     rw [WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hq]
     have h := h q hq
-    rwa [emultiplicity_zero, eq_comm, emultiplicity_eq_top, FiniteMultiplicity.not_iff_forall] at h
+    rwa [emultiplicity_zero_right, eq_comm, emultiplicity_eq_top,
+      FiniteMultiplicity.not_iff_forall] at h
 
 /-- In a `UniqueFactorizationMonoid` with a unique unit and infinitely many elements, two
 elements are equal iff they have the same `emultiplicity` at every prime. -/
