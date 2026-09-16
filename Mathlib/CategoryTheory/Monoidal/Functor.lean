@@ -417,22 +417,22 @@ instance : IsIso (η F) := (εIso F).isIso_inv
 instance (X Y : C) : IsIso (μ F X Y) := (μIso F X Y).isIso_hom
 instance (X Y : C) : IsIso (δ F X Y) := (μIso F X Y).isIso_inv
 
-@[deprecated ε_η_map (since := "2026-03-25")]
+@[reassoc, deprecated ε_η_map +typeChanged (since := "2026-09-16")]
 lemma map_ε_η (G : D ⥤ C') : G.map (ε F) ≫ G.map (η F) = 𝟙 _ := by simp
 
-@[deprecated η_ε_map (since := "2026-03-25")]
+@[reassoc, deprecated η_ε_map +typeChanged (since := "2026-09-16")]
 lemma map_η_ε (G : D ⥤ C') : G.map (η F) ≫ G.map (ε F) = 𝟙 _ := by simp
 
-@[deprecated μ_δ_map (since := "2026-03-25")]
+@[reassoc, deprecated μ_δ_map +typeChanged (since := "2026-09-16")]
 lemma map_μ_δ (G : D ⥤ C') (X Y : C) : G.map (μ F X Y) ≫ G.map (δ F X Y) = 𝟙 _ := by simp
 
-@[deprecated δ_μ_map (since := "2026-03-25")]
+@[reassoc, deprecated δ_μ_map +typeChanged (since := "2026-09-16")]
 lemma map_δ_μ (G : D ⥤ C') (X Y : C) : G.map (δ F X Y) ≫ G.map (μ F X Y) = 𝟙 _ := by simp
 
-@[deprecated (since := "2026-03-25")] alias map_ε_η_assoc := ε_η_map_assoc
-@[deprecated (since := "2026-03-25")] alias map_η_ε_assoc := η_ε_map_assoc
-@[deprecated (since := "2026-03-25")] alias map_μ_δ_assoc := μ_δ_map_assoc
-@[deprecated (since := "2026-03-25")] alias map_δ_μ_assoc := δ_μ_map_assoc
+attribute [deprecated ε_η_map_assoc +typeChanged (since := "2026-09-16")] map_ε_η_assoc
+attribute [deprecated η_ε_map_assoc +typeChanged (since := "2026-09-16")] map_η_ε_assoc
+attribute [deprecated μ_δ_map_assoc +typeChanged (since := "2026-09-16")] map_μ_δ_assoc
+attribute [deprecated δ_μ_map_assoc +typeChanged (since := "2026-09-16")] map_δ_μ_assoc
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_ε_η (T : D) : ε F ▷ T ≫ η F ▷ T = 𝟙 _ := by
