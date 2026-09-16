@@ -162,7 +162,7 @@ lemma comp_whiskerRight {R : Profunctor.{max u w} C D} (f : P ⟶ Q) (g : Q ⟶ 
 
 end Right
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma whisker_exchange {P Q : Profunctor.{max u w} C D} {R S : Profunctor.{max u w} D E}
     (f : P ⟶ Q) (g : R ⟶ S) :
     P.whiskerLeft g ≫ whiskerRight S f = whiskerRight R f ≫ Q.whiskerLeft g := by
