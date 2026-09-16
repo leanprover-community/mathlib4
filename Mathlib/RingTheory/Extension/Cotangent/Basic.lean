@@ -177,15 +177,12 @@ lemma map_comp (f : Hom P P') (g : Hom P' P'') :
     CotangentSpace.map (g.comp f) =
       (CotangentSpace.map g).restrictScalars S ∘ₗ CotangentSpace.map f := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero =>
-    simp only [map_zero]
+  induction x using TensorProduct.inductionOn with
   | add =>
     simp only [map_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, *]
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul => simp only [Derivation.tensorProductTo_tmul, tmul_smul, smul_tmul', map_tmul,
@@ -291,15 +288,12 @@ lemma CotangentSpace.map_sub_map (f g : Hom P P') :
     CotangentSpace.map f - CotangentSpace.map g =
       P'.cotangentComplex.restrictScalars S ∘ₗ (f.sub g) := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero =>
-    simp only [map_zero]
+  induction x using TensorProduct.inductionOn with
   | add =>
     simp only [map_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, *]
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul =>

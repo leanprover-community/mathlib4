@@ -314,14 +314,12 @@ protected inductive WithBot.LE : WithBot α → WithBot α → Prop
   | protected bot_le (x : WithBot α) : WithBot.LE ⊥ x
   | protected coe_le_coe {a b : α} : a ≤ b → WithBot.LE a b
 
-set_option linter.translate.warnInvalid false in
 /-- The order on `WithTop`. -/
 @[to_dual (reorder := 3 4)]
 protected inductive WithTop.LE : WithTop α → WithTop α → Prop
   | protected le_top (x : WithTop α) : WithTop.LE x ⊤
   | protected coe_le_coe {a b : α} : a ≤ b → WithTop.LE a b
 
-attribute [to_dual existing le_top] WithBot.LE.bot_le
 attribute [to_dual existing (reorder := motive (1 2), 4 5, coe_le_coe (1 2))] WithBot.LE.casesOn
 
 /-- The order on `WithBot α`, defined by `⊥ ≤ y` and `a ≤ b → ↑a ≤ ↑b`.
@@ -357,14 +355,12 @@ protected inductive WithBot.LT [LT α] : WithBot α → WithBot α → Prop
   | protected bot_lt (b : α) : WithBot.LT ⊥ b
   | protected coe_lt_coe {a b : α} : a < b → WithBot.LT a b
 
-set_option linter.translate.warnInvalid false in
 /-- The order on `WithTop`. -/
 @[to_dual (reorder := 3 4)]
 protected inductive WithTop.LT [LT α] : WithTop α → WithTop α → Prop
   | protected lt_top (a : α) : WithTop.LT a ⊤
   | protected coe_lt_coe {a b : α} : a < b → WithTop.LT a b
 
-attribute [to_dual existing lt_top] WithBot.LT.bot_lt
 attribute [to_dual existing (reorder := motive (1 2), 4 5, coe_lt_coe (1 2))] WithBot.LT.casesOn
 
 /-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
@@ -772,16 +768,16 @@ instance _root_.WithTop.linearOrder [LinearOrder α] : LinearOrder (WithTop α) 
   Lattice.toLinearOrder _
 
 @[to_dual]
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
-  wf := .intro fun
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) :=
+  .intro fun
   | ⊥ => ⟨_, by simp⟩
   | (a : α) => (wellFounded_lt.1 a).rec fun _ _ ih ↦ .intro _ fun
     | ⊥, _ => ⟨_, by simp⟩
     | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
 
 @[to_dual]
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
-  wf := have acc_some (a : α) : @Acc (WithBot α) (· > ·) a :=
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) :=
+  have acc_some (a : α) : @Acc (WithBot α) (· > ·) a :=
     (wellFounded_gt.1 a).rec fun _ _ ih ↦ ⟨_, by simpa [WithBot.forall]⟩
   .intro fun
     | (a : α) => acc_some a
