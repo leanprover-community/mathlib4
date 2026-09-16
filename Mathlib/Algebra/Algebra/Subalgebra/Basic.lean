@@ -314,14 +314,6 @@ section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
-
-instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
-    Module R' S :=
-  inferInstance
-
-instance : Module R S :=
-  inferInstance
-
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstance
 
@@ -405,6 +397,9 @@ theorem toSubsemiring_subtype : S.toSubsemiring.subtype = (S.val : S →+* A) :=
 @[simp]
 theorem toSubring_subtype {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
     S.toSubring.subtype = (S.val : S →+* A) := rfl
+
+@[simp]
+theorem toSubmodule_subtype : S.toSubmodule.subtype = (S.val : S →ₗ[R] A) := rfl
 
 /-- Linear equivalence between `S : Submodule R A` and `S`. Though these types are equal,
 we define it as a `LinearEquiv` to avoid type equalities. -/
@@ -738,7 +733,7 @@ variable (S)
 
 /-- Two subalgebras that are equal are also equivalent as algebras.
 
-This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Equiv.Set.congr`. -/
+This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Set.equivOfEq`. -/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   __ := LinearEquiv.ofEq _ _ (congr_arg toSubmodule h)
@@ -1049,7 +1044,7 @@ theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ �
 
 theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
     Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
-      (LinearMapClass.linearMap φ) (LinearMapClass.linearMap ψ) := rfl
+      (LinearMap.ofClass φ) (LinearMap.ofClass ψ) := rfl
 
 theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
     S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl

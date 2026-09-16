@@ -5,9 +5,9 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Data.ENNReal.Lemmas
-public import Mathlib.Topology.MetricSpace.Thickening
+public import Mathlib.Basic.ENNReal.Lemmas
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Thickened indicators
