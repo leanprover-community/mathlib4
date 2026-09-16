@@ -142,7 +142,7 @@ def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
           naturality X₂ Y₂ f := by
             ext X₃
             dsimp
-            simp [← NatTrans.comp_app_map, -NatTrans.comp_app] } }
+            simp } }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
