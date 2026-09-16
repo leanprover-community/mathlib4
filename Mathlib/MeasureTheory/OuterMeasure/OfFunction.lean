@@ -71,7 +71,7 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
           show ∀ i, ∃ f : ℕ → Set α, (s i ⊆ ⋃ i, f i) ∧ (∑' i, m (f i)) < μ (s i) + ε' i by
             intro i
             have : μ (s i) < μ (s i) + ε' i :=
-              ENNReal.lt_add_right (ne_top_of_le_ne_top hb.ne <| ENNReal.le_tsum _)
+              ENNReal.lt_add_right (ne_of_lt <| by grw [← hb, ← ENNReal.le_tsum])
                 (by simpa using (hε' i).ne')
             rcases iInf_lt_iff.mp this with ⟨t, ht⟩
             exists t
@@ -138,9 +138,7 @@ theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m
 theorem le_ofFunction {μ : OuterMeasure α} :
     μ ≤ OuterMeasure.ofFunction m m_empty ↔ ∀ s, μ s ≤ m s :=
   ⟨fun H s => le_trans (H s) (ofFunction_le s), fun H _ =>
-    le_iInf fun f =>
-      le_iInf fun hs =>
-        le_trans (μ.mono hs) <| le_trans (measure_iUnion_le f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
+    le_iInf₂ fun f hs => by grw [hs, ← H, ← measure_iUnion_le f]⟩
 
 theorem isGreatest_ofFunction :
     IsGreatest { μ : OuterMeasure α | ∀ s, μ s ≤ m s } (OuterMeasure.ofFunction m m_empty) :=
@@ -162,10 +160,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
   refine le_antisymm (measure_union_le _ _) (le_iInf₂ fun f hf ↦ ?_)
   set μ := OuterMeasure.ofFunction m m_empty
   rcases Classical.em (∃ i, (s ∩ f i).Nonempty ∧ (t ∩ f i).Nonempty) with (⟨i, hs, ht⟩ | he)
-  · calc
-      μ s + μ t ≤ ∞ := le_top
-      _ = m (f i) := (h (f i) hs ht).symm
-      _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
+  · grw [← ENNReal.le_tsum i, h (f i) hs ht, ← le_top]
   set I := fun s => { i : ℕ | (s ∩ f i).Nonempty }
   have hd : Disjoint (I s) (I t) := disjoint_iff_inf_le.mpr fun i hi => he ⟨i, hi⟩
   have hI : ∀ u ⊆ s ∪ t, μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>

@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop

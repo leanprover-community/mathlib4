@@ -141,6 +141,7 @@ variable [TopologicalSpace A]
 
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
+@[macro_inline]
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
   coe_injective f g h := by
@@ -205,7 +206,7 @@ def copy (f : A →A[R] B) (f' : A → B) (h : f' = ⇑f) : A →A[R] B where
     toRingHom := (f : A →A[R] B).toRingHom.copy f' h
     commutes' := fun r => by
       simp only [AlgHom.toRingHom_eq_coe, h, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-        MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_copy, AlgHomClass.commutes f r] }
+        MonoidHom.toOneHom_coe, MonoidHom.coe_ofClass, RingHom.coe_copy, AlgHomClass.commutes f r] }
   cont := show Continuous f' from h.symm ▸ f.continuous
 
 @[simp]
@@ -628,7 +629,7 @@ open scoped IsMulCommutative in
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
@@ -708,7 +709,7 @@ variable [Algebra R A] [IsSemitopologicalRing A]
 open scoped IsMulCommutative in
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   have : IsMulCommutative s := ⟨⟨hs⟩⟩
