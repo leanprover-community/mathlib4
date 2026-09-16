@@ -35,7 +35,8 @@ def Subgroup.subgroupOfContinuousMulEquivOfLe {H K : Subgroup G} (hHK : H ≤ K)
     simp only [subgroupOfEquivOfLe, Topology.IsInducing.subtypeVal.isOpen_iff,
       exists_exists_and_eq_and]
     simpa [Set.ext_iff] using fun s ↦ exists_congr
-      fun t ↦ and_congr_right fun _ ↦ ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind⟩)
+      fun t ↦ and_congr_right fun _ ↦
+        ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind [Subgroup.mem_subgroupOf]⟩)
 
 @[to_additive (attr := simp)]
 lemma Subgroup.subgroupOfContinuousMulEquivOfLe_symm_apply
@@ -52,7 +53,8 @@ variable [IsTopologicalGroup G] [T2Space G]
 
 /-- If `G` is a topological group and `H` a finite-index subgroup, then `G` is topologically
 discrete iff `H` is. -/
-@[to_additive]
+@[to_additive /-- If `G` is an additive topological group and `H` a finite-index additive subgroup,
+then `G` is topologically discrete iff `H` is. -/]
 lemma Subgroup.discreteTopology_iff_of_finiteIndex {H : Subgroup G} [H.FiniteIndex] :
     DiscreteTopology H ↔ DiscreteTopology G := by
   refine ⟨fun hH ↦ ?_, fun hG ↦ inferInstance⟩

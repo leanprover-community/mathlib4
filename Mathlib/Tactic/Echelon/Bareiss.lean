@@ -43,9 +43,9 @@ def checkDecideEq {u : Level} (α : Q(Type u)) : MetaM Bool := do
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
-  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $α) = 0)) | return false
-  return (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
-    (·.isAppOf ``Decidable.isFalse)
+  let some _inst ← synthInstanceQ? q(Decidable (((1 : ℤ) : $α) = 0)) | return false
+  let d := q(decide (((1 : ℤ) : $α) = 0))
+  return (Kernel.whnf (← getEnv) (← getLCtx) d).toOption.any (·.isConstOf ``Bool.false)
 
 /-- `norm_num`'s core as an entry certifier. -/
 def normNumCertifier : EntryCertifier := fun p => do
