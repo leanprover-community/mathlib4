@@ -215,12 +215,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       · exact hcontdiff.continuousOn_fderivWithin hunique (by decide)
     rwa [integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le] at this
     · exact zero_le_one
-    · exact s'
-    · exact hs'c
     · fun_prop
     · fun_prop
-    · exact hf'
-    · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']
       apply integrableOn_zero
   simp [integral_congr_ae hf'g']

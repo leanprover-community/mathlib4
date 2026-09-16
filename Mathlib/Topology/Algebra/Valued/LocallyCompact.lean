@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 public import Mathlib.RingTheory.LocalRing.Quotient
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
@@ -297,7 +296,7 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
 theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]
     [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
     v.IsNontrivial ↔ IsLocalRing.maximalIdeal v.integer ≠ ⊥ := by
-  simp_rw [ne_eq, eq_bot_iff, v.isNontrivial_iff_exists_lt_one, SetLike.le_def, Ideal.mem_bot,
+  simp_rw [ne_eq, eq_bot_iff, v.isNontrivial_iff_exists_lt_one, IsConcreteLE.le_iff, Ideal.mem_bot,
     not_forall, exists_prop, IsLocalRing.notMem_maximalIdeal.not_right,
     Valuation.Integer.not_isUnit_iff_valuation_lt_one]
   exact ⟨fun ⟨x, hx0, hx1⟩ ↦ ⟨⟨x, hx1.le⟩, by simp [Subtype.ext_iff, *]⟩,

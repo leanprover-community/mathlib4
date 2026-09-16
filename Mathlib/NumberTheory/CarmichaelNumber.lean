@@ -5,6 +5,7 @@ Authors: Felix Pernegger
 -/
 module
 
+public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.FermatPsp
 public import Mathlib.Tactic.Simproc.Factors
@@ -20,7 +21,7 @@ This file defines Carmichael numbers and proves Korselt's criterion about them.
 
 ## Main results
 
-* `Nat.IsCarmichael_iff_korselt`: Korselt's criterion for Carmichael numbers
+* `Nat.isCarmichael_iff_korselt`: Korselt's criterion for Carmichael numbers
 * `Nat.isCarmichael_561`: `561` is a Carmichael number
 
 ## TODO
@@ -138,6 +139,22 @@ theorem isCarmichael_iff_korselt :
     exact h_dvd p hp_mem.1 hp_mem.2.1
   rw [probablePrime_iff_zmod_one n (by grind), ← ZMod.coe_unitOfCoprime b hb,
     ← Units.val_pow_eq_pow_val, hd, pow_mul, pow_carmichael, one_pow, Units.val_one]
+
+theorem IsCarmichael.three_le_card_primeFactors (h : IsCarmichael n) :
+    3 ≤ n.primeFactors.card := by
+  obtain ⟨_, _, hs, h⟩ := isCarmichael_iff_korselt.mp h
+  have h0 : n.primeFactors.card ≠ 0 := by grind [primeFactors_eq_empty]
+  have h1 : n.primeFactors.card ≠ 1 := by
+    grind [squarefree_and_prime_pow_iff_prime, isPrimePow_iff_card_primeFactors_eq_one]
+  by_contra h3
+  have h2 : n.primeFactors.card = 2 := by grind
+  obtain ⟨p, q, pq, hp, hq, hn⟩ := (squarefree_and_primeFactors_card_eq_two_iff n).mp ⟨hs, h2⟩
+  contrapose! pq
+  have eq : p - 1 + (q - 1) * p = p * q - 1 := by zify; grind
+  rw [← tsub_le_tsub_iff_right hp.one_le]
+  refine le_of_dvd (tsub_pos_of_lt hp.one_lt) ((Nat.dvd_add_left ⟨p, rfl⟩).mp ?_)
+  rw [eq, hn]
+  exact h q hq (Dvd.intro_left p hn)
 
 /-- **Korselt's criterion** stated in a form suitable for concrete calculations. -/
 theorem isCarmichael_iff_korselt_primeFactorsList :

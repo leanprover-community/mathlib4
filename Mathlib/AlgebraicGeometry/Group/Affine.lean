@@ -261,7 +261,7 @@ instance instCommGrpObjSpecAsOverSpec [HopfAlgebra R A] [IsCocomm R A] :
     CommGrpObj ((Spec A).asOver (Spec R)) where
 
 instance {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-    (f : S →ₐ[R] T) : (Spec.map (CommRingCat.ofHom f.toRingHom)).IsOver (Spec (.of R)) where
+    (f : S →ₐ[R] T) : (Spec.map (CommRingCat.ofHom f.toRingHom)).IsOver (Spec ↧R) where
   comp_over := by simp [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -270,7 +270,7 @@ set_option backward.isDefEq.respectTransparency false in
 def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bialgebra R S]
     [Algebra R T] :
     WithConv (S →ₐ[R] T) ≃*
-      ((Spec (.of T)).asOver (Spec (.of R)) ⟶ (Spec (.of S)).asOver (Spec (.of R))) where
+      ((Spec ↧T).asOver (Spec ↧R) ⟶ (Spec ↧S).asOver (Spec ↧R)) where
   toFun f := (Spec.map (CommRingCat.ofHom f.ofConv.toRingHom)).asOver _
   invFun f := ⟨(Spec.preimage f.left).hom, by
     suffices CommRingCat.ofHom (algebraMap R S) ≫ Spec.preimage f.left =
@@ -327,7 +327,7 @@ instance [X.Over (Spec R)] [IsAffine X] : X.isoSpec.hom.IsOver (Spec R) :=
 /-- The global sections of an affine monoid scheme over `Spec R` are a `R`-bialgebra. -/
 instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine M] :
     Bialgebra R Γ(M, ⊤) := by
-  have : MonObj ((algSpec R).obj <| .op <| CommAlgCat.of R Γ(M, ⊤)) :=
+  have : MonObj ((algSpec R).obj <| .op ↧Γ(M, ⊤)) :=
     .ofIso <| M.isoSpec.asOver (Spec R)
   have : MonObj (op <| CommAlgCat.of R Γ(M, ⊤)) := algSpec.fullyFaithful.monObj _
   exact ((commBialgCatEquivComonCommAlgCat R).inverse.obj <|
@@ -336,7 +336,7 @@ instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine M] :
 /-- The global sections of an affine group scheme over `Spec R` are a `R`-Hopf algebra. -/
 instance [G.Over (Spec R)] [GrpObj (G.asOver (Spec R))] [IsAffine G] :
     HopfAlgebra R Γ(G, ⊤) := by
-  have : GrpObj ((algSpec R).obj <| .op <| CommAlgCat.of R Γ(G, ⊤)) :=
+  have : GrpObj ((algSpec R).obj <| .op ↧Γ(G, ⊤)) :=
     .ofIso <| G.isoSpec.asOver (Spec R)
   have : GrpObj (op <| CommAlgCat.of R Γ(G, ⊤)) := algSpec.fullyFaithful.grpObj _
   exact ((commHopfAlgCatEquivCogrpCommAlgCat R).inverse.obj <|
@@ -353,8 +353,8 @@ over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`.
 This is a version of `pullbackSpecIso` stated in terms of `specOverSpec`.
 TODO: Unify with `pullbackSpecIso` once `OverClass` is refactored to not bundle the morphism. -/
 def pullbackSpecIso' [Algebra R T] :
-    pullback (Spec (.of S) ↘ Spec (.of R)) (Spec (.of T) ↘ Spec (.of R)) ≅
-      Spec (.of <| S ⊗[R] T) := pullbackSpecIso ..
+    pullback (Spec ↧S ↘ Spec ↧R) (Spec ↧T ↘ Spec ↧R) ≅
+      Spec ↧(S ⊗[R] T) := pullbackSpecIso ..
 
 set_option backward.defeqAttrib.useBackward true in
 lemma pullbackSpecIso'_symmetry [Algebra R T] :
@@ -378,7 +378,7 @@ lemma pullbackSpecIso'_symmetry [Algebra R T] :
 
 set_option backward.defeqAttrib.useBackward true in
 instance [Algebra R T] :
-    (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.IsOver (Spec (.of S)) where
+    (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.IsOver (Spec ↧S) where
   comp_over := by
     rw [← cancel_epi (pullbackSymmetry .. ≪≫ pullbackSpecIso' ..).inv,
       Scheme.canonicallyOverPullback_over, Iso.inv_hom_id_assoc, Iso.trans_inv, Category.assoc,
@@ -393,8 +393,8 @@ lemma μ_pullback_left_fst [Algebra R T] :
       (Over.mk (Spec.map (CommRingCat.ofHom (algebraMap R T))))
       (Over.mk (Spec.map (CommRingCat.ofHom (algebraMap R T))))).left ≫
         pullback.fst _ _ =
-    (((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec (.of S)) ⊗ₘ
-        ((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec (.of S)))).left) ≫
+    (((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec ↧S) ⊗ₘ
+        ((pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec ↧S))).left) ≫
           (pullbackSpecIso S (S ⊗[R] T) (S ⊗[R] T)).hom ≫
             Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.mapRingHom (algebraMap _ _)
               Algebra.TensorProduct.includeRight.toRingHom
@@ -422,16 +422,16 @@ lemma μ_pullback_left_fst [Algebra R T] :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [Bialgebra R T] :
-    IsMonHom <| (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec (.of S)) where
+    IsMonHom <| (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec ↧S) where
   one_hom := by
     ext
     rw [← cancel_mono (pullbackSpecIso' ..).inv]
     ext
-    · simp [Scheme.monObjAsOverPullback_one, ε_algSpec_left (R := CommRingCat.of _),
+    · simp [Scheme.monObjAsOverPullback_one, ε_algSpec_left (R := ↧_),
         pullbackSpecIso', specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
         AlgHom.toUnder, Under.homMk_right, Bialgebra.TensorProduct.counitAlgHom_def,
         AlgHom.comp_toRingHom, RingHom.comp_assoc]
-    · simp [Scheme.monObjAsOverPullback_one, ε_algSpec_left (R := CommRingCat.of _),
+    · simp [Scheme.monObjAsOverPullback_one, ε_algSpec_left (R := ↧_),
         pullbackSpecIso', specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
         AlgHom.toUnder, Under.homMk_right,
         ← AlgHom.coe_restrictScalars R (Bialgebra.counitAlgHom S _), -AlgHom.coe_restrictScalars,

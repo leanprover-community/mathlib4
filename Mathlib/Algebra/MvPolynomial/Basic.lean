@@ -533,7 +533,7 @@ lemma disjoint_support_monomial {a : σ →₀ ℕ} {p : MvPolynomial σ R} {s :
 theorem ext (p q : MvPolynomial σ R) : (∀ m, p.coeff m = q.coeff m) → p = q :=
   fun h ↦ AddMonoidAlgebra.ext <| by ext; exact h _
 
-@[deprecated coeff_add (since := "2026-07-06")]
+@[deprecated coeff_add +typeChanged (since := "2026-07-06")]
 protected theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
     coeff (p + q) m = coeff p m + coeff q m := by simp
 
@@ -542,7 +542,7 @@ theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C 
     coeff (C • p) m = C • coeff p m :=
   AddMonoidAlgebra.coeff_smul_apply ..
 
-@[deprecated coeff_zero (since := "2026-07-06")]
+@[deprecated coeff_zero +typeChanged (since := "2026-07-06")]
 protected lemma coeff_zero : (0 : MvPolynomial σ R).coeff = 0 := rfl
 
 @[simp]
@@ -620,7 +620,7 @@ theorem coeff_one [DecidableEq σ] (m) : coeff (1 : MvPolynomial σ R) m = if 0 
 theorem coeff_zero_C (a) : coeff (C a : MvPolynomial σ R) 0 = a :=
   single_eq_same
 
-@[deprecated AddMonoidAlgebra.coeff_one_zero (since := "2026-07-08")]
+@[deprecated AddMonoidAlgebra.coeff_one_zero +typeChanged (since := "2026-07-08")]
 theorem coeff_zero_one : coeff (1 : MvPolynomial σ R) 0 = 1 := by simp
 
 theorem coeff_X_pow [DecidableEq σ] (i : σ) (m) (k : ℕ) :
