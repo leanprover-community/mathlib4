@@ -131,8 +131,7 @@ def symmHomeomorph : I ≃ₜ I where
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
 theorem symm_image_Icc (a b : I) (h : a ≤ b) : σ '' Icc a b = Icc (σ b) (σ a) :=
-  ContinuousOn.image_Icc_of_antitoneOn h
-    (continuous_symm.continuousOn : ContinuousOn σ (Icc a b))
+  continuous_symm.continuousOn.image_Icc_of_antitoneOn h
     (strictAnti_symm.antitone.antitoneOn (Icc a b))
 
 @[simp]

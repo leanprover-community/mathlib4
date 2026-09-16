@@ -53,7 +53,7 @@ theorem edist_le_arcLength (hab : a ≤ b) : edist (f a) (f b) ≤ arcLength f a
 theorem arcLength_add (hab : a ≤ b) (hbc : b ≤ c) :
     arcLength f a b + arcLength f b c = arcLength f a c := by
   unfold arcLength
-  convert eVariationOn.Icc_add_Icc f (s := univ) hab hbc (mem_univ _) <;> simp
+  convert eVariationOn.Icc_add_Icc f hab hbc (mem_univ _) <;> simp
 
 /-- The arc length along a monotone finite subdivision equals the arc length of the whole
 interval. -/
