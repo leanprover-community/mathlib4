@@ -17,7 +17,6 @@ public import Mathlib.Data.PNat.DivMod
 
 namespace PNat
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   constructor <;> intro h
   · rcases h with ⟨_, rfl⟩
