@@ -40,6 +40,9 @@ constructed by `Sym2.fromRel` which is a special case of `Sym2.lift`.
 
 The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
 
+We use the term "fiber" in names to refer to preimages of singleton sets, such as `f ⁻¹' {x}` or
+`{ a // f a = b }`.
+
 ## Tags
 
 symmetric square, unordered pairs, symmetric powers
