@@ -111,7 +111,8 @@ theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.e
 
 @[simp] lemma deleteEdges_eq_bot : G.deleteEdges s = ⊥ ↔ G.edgeSet ⊆ s := by simp [deleteEdges]
 
-/-- Lift a copy between graphs to a copy between the graphs after deleting a set of edges. -/
+/-- Lift a homomorphism between graphs to a homomorphism between the graphs after deleting a set of
+edges. -/
 @[simps -fullyApplied apply]
 def Hom.deleteEdges (f : G →g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h : Sym2.map f ⁻¹' t ⊆ s) :
     G.deleteEdges s →g G'.deleteEdges t where
