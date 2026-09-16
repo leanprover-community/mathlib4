@@ -333,7 +333,7 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
-@[deprecated IsOrderedSMul.smul_le_smul (since := "2026-07-31")]
+@[deprecated IsOrderedSMul.smul_le_smul +typeChanged (since := "2026-07-31")]
 protected theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
