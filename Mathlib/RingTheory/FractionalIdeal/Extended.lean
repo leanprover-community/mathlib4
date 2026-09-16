@@ -284,7 +284,7 @@ theorem coe_extendedHom_eq_span (I : FractionalIdeal A⁰ K) :
 theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
     (hI : extendedHom L B I ≤ 1) : I ≤ 1 := by
   contrapose hI
-  rw [SetLike.not_le_iff_exists] at hI ⊢
+  rw [IsConcreteLE.not_le_iff_exists] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
   · simpa [← FractionalIdeal.mem_coe, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
