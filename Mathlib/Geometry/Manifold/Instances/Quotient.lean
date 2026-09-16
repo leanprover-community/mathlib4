@@ -181,9 +181,9 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
       exact (ContMDiffConstSMul.contMDiff_const_smul g0).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
       exact (ContMDiffConstSMul.contMDiff_const_smul g0⁻¹).contMDiffOn
-    · intro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
-      exact ⟨hQ1, Set.mem_univ _,
-        by simpa [← localInverseAt_symm_trans_eqOn_smul x y g0 hcert] using hQ4⟩
+    · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hh'⟩
+      refine ⟨hQ1, Set.mem_univ _, ?_⟩
+      simpa [← localInverseAt_symm_trans_eqOn_smul x y g0 hh'] using hQ4
 
 end MulAction
 
