@@ -229,12 +229,12 @@ theorem tendsto_map_inv_sqrt_smul_sum
                 rw [integral_const_mul]
               · intro j hj
                 exact ((@MemLp.mul Ω _ ℝ _ P 2 2 1 _ _
-                  (hL2.eval_piLp j) (hL2.eval_piLp i) _).integrable <| by norm_num).const_mul _
+                  (hL2.eval_piLp i) (hL2.eval_piLp j) _).integrable <| by norm_num).const_mul _
             · intro i hi
               apply integrable_finsetSum
               intro j hj
               exact ((@MemLp.mul Ω _ ℝ _ P 2 2 1 _ _
-                (hL2.eval_piLp j) (hL2.eval_piLp i) _).integrable <| by norm_num).const_mul _
+                (hL2.eval_piLp i) (hL2.eval_piLp j) _).integrable <| by norm_num).const_mul _
           _ = ∑ i, ∑ j, (t' i * t' j) * (if i = j then 1 else 0) := by simp_rw [h1]
           _ = ∑ i, (t' i) ^ 2 := by simp [pow_two]
           _ = ‖t'‖ ^ 2 := by rw [EuclideanSpace.norm_sq_eq]; simp [pow_two]
