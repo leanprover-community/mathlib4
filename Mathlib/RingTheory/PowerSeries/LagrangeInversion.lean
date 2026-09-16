@@ -104,11 +104,8 @@ private theorem lagrange_inversion_coeff_pow_of_le
     · have hm0 : m ≠ 0 := by omega
       simp [hm0]
     obtain ⟨t, rfl⟩ : ∃ t, m = k + t := ⟨m - k, by omega⟩
-    have hcoe : PowerSeries.coeff (k + t) (Y ^ k) =
-        PowerSeries.coeff t (Polynomial.aeval Y (P ^ k)) := by
-      have hpow : Y ^ k = PowerSeries.X ^ k * Polynomial.aeval Y (P ^ k) := by
-        rw [map_pow, ← mul_pow, ← hY]
-      rw [hpow, show k + t = t + k by omega, PowerSeries.coeff_X_pow_mul]
+    have hcoe : (Y ^ k).coeff (k + t)  = (Polynomial.aeval Y (P ^ k)).coeff t := by
+      nth_rw 1 [hY, mul_pow, map_pow, add_comm k t, PowerSeries.coeff_X_pow_mul]
     rcases Nat.eq_zero_or_pos t with rfl | ht
     · simp only [add_zero] at hcoe ⊢
       rw [hcoe, coeff_aeval hY]
