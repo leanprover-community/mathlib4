@@ -17,5 +17,5 @@ Please include sufficient information to help us to understand the issue, includ
 - proof-of-concept or exploit code
 - the impact of the issue and how the issue can be exploited
 
-The maintainers will acknowledge your report within 2 business days and you will receive a more detailed reply with next steps within 1 week.
+The maintainers will reply with a message acknowledging the receipt of your report within 2 business days and then respond to the details of your report within 1 week.
 The times quoted here are subject to change, but we will attempt to keep this text up-to-date.
