@@ -390,7 +390,6 @@ def mkTacticSuggestion (stx tac : TSyntax `tactic) (html : Html) : ClickSuggesti
   mkSuggestion stx <div> <div>{html}</div> <div>{← tacticToHtml tac}</div> </div>
 
 /-- Make a suggestion using a separete thread, allowing it to add entries over time. -/
-@[inline]
 def mkIncrementalSuggestions (name : String)
     (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit)
     (wrap : Array Html → Html := .element "div" #[]) : ClickSuggestionsM Html :=

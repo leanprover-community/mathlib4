@@ -14,10 +14,14 @@ public import Mathlib.Tactic.Push
 /-!
 # Normalizing tactics in `#click_suggestions`
 
-This file implement an extensible mechanism for suggesting normalization tactics.
+This file implement an extensible mechanism for suggesting normalization tactics,
+given by the function `suggestNormTactics`.
 
-This file implements support for `dsimp`, `simp`, `push`, `norm_cast`, `push_cast`.
-Downstream files will extend this with e.g. `norm_num`, `ring_nf` and `field_simp`.
+We implement special built-in behaviour for `dsimp only`/`dsimp`/`simp` and for
+`push Not`/`push +distrib Not`, to avoid duplicates when these normalizing to the same expression.
+
+This file implements suggestions for `dsimp`, `simp`, `push`, `norm_cast` and `push_cast`.
+Downstream files will add extensions for e.g. `norm_num`, `ring_nf` and `field_simp`.
 -/
 
 meta section
@@ -196,16 +200,16 @@ We currently use one thread for these, but we might parallelize it in the future
 -/
 public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos : SubExpr.Pos) :
     ClickSuggestionsM Html := do
-  let info : PositionInfo := {
-    hyp? := ← fvarId?.mapM (·.getUserName)
-    convPath? := ← if pos.isRoot then pure none else some <$> Conv.Path.ofSubExprPos rootExpr pos
-  }
   let wrap (htmls : Array Html) :=
     <details>
       <summary className="mv2 pointer"> Normalize </summary>
       {.element "div" #[] htmls}
     </details>
-  mkIncrementalSuggestions "normalize" (wrap := wrap) fun update ↦ do
+  mkIncrementalSuggestions "normalize" (wrap := wrap) fun update ↦ withNewMCtxDepth do
+    let info : PositionInfo := {
+      hyp? := ← fvarId?.mapM (·.getUserName)
+      convPath? := ← if pos.isRoot then pure none else some <$> Conv.Path.ofSubExprPos rootExpr pos
+    }
     suggestPush e info update
     suggestSimp e info update
     for tac in ← normTacticRef.get do
