@@ -89,13 +89,8 @@ end CommRing
 
 section TorsionFree
 
-variable {R : Type*} [CommRing R] [NoZeroSMulDivisors ℕ R]
+variable {R : Type*} [CommRing R] [IsAddTorsionFree R]
 variable {P : R[X]} {Y : R⟦X⟧}
-
-private lemma natCast_mul_cancel {n : ℕ} (hn : n ≠ 0) {a b : R}
-    (h : (n : R) * a = (n : R) * b) : a = b := by
-  have hsmul : n • a = n • b := by simpa [nsmul_eq_mul] using h
-  exact smul_right_injective R hn hsmul
 
 /-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
 `m * [X^m] Y^k = k * [X^(m-k)] P^m` for `1 ≤ m` and `k ≤ m`.
@@ -169,7 +164,8 @@ theorem lagrange_inversion_coeff_pow
       rw [hexp, Finset.mul_sum, ← hconv]
       exact Finset.sum_congr rfl hih
     rw [show k + (s + 1) - k = s + 1 by omega]
-    refine natCast_mul_cancel (n := s + 1) (by omega) ?_
+    apply nsmul_right_injective (by omega : s + 1 ≠ 0)
+    simp only [nsmul_eq_mul]
     push_cast
     linear_combination ((k : R) + (s + 1)) * hsum + hcoeff
 
