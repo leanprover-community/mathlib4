@@ -49,7 +49,7 @@ namespace ArithmeticFunction
 
 /-- The Mertens function `M n = ∑ k ∈ Icc 1 n, μ k`, the summatory function of the Möbius
 function, as an arithmetic function. -/
-def mertens : ArithmeticFunction ℤ := ⟨fun n => ∑ k ∈ Icc 1 n, (μ k : ℤ), by simp⟩
+def mertens : ArithmeticFunction ℤ := ⟨fun n ↦ ∑ k ∈ Icc 1 n, (μ k : ℤ), by simp⟩
 
 theorem mertens_apply (n : ℕ) : mertens n = ∑ k ∈ Icc 1 n, (μ k : ℤ) := rfl
 
@@ -78,22 +78,22 @@ open ArithmeticFunction
 /-- The `n × n` zeta (divisibility) matrix: the `(i, j)` entry is `1` if `i + 1 ∣ j + 1` and `0`
 otherwise. -/
 def zetaMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
-  of fun i j => if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0
+  of fun i j ↦ if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0
 
 /-- The `n × n` Redheffer matrix: the zeta matrix with its first column replaced by ones. -/
 def redheffer (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
-  of fun i j => if (j : ℕ) = 0 ∨ (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0
+  of fun i j ↦ if (j : ℕ) = 0 ∨ (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0
 
-theorem zetaMatrix_apply (n : ℕ) (i j : Fin n) :
+@[simp] theorem zetaMatrix_apply (n : ℕ) (i j : Fin n) :
     zetaMatrix n i j = if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0 := rfl
 
-theorem redheffer_apply (n : ℕ) (i j : Fin n) :
+@[simp] theorem redheffer_apply (n : ℕ) (i j : Fin n) :
     redheffer n i j = if (j : ℕ) = 0 ∨ (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0 := rfl
 
 theorem zetaMatrix_isUpperTriangular (n : ℕ) : (zetaMatrix n).IsUpperTriangular := by
   intro i j hij
   simp only [id] at hij
-  have : ¬ ((i : ℕ) + 1 ∣ (j : ℕ) + 1) := fun hd => by
+  have : ¬ ((i : ℕ) + 1 ∣ (j : ℕ) + 1) := fun hd ↦ by
     have := Nat.le_of_dvd (by omega) hd
     omega
   simp [zetaMatrix_apply, this]
@@ -102,48 +102,41 @@ theorem zetaMatrix_isUpperTriangular (n : ℕ) : (zetaMatrix n).IsUpperTriangula
   rw [det_of_isUpperTriangular (zetaMatrix_isUpperTriangular n)]
   simp [zetaMatrix_apply]
 
-theorem zetaMatrix_apply_zero (n : ℕ) (i : Fin (n + 1)) :
-    zetaMatrix (n + 1) i 0 = if i = 0 then 1 else 0 := by
-  rw [zetaMatrix_apply]
-  by_cases h : i = 0
-  · subst h; simp
-  · simp [h]
-
 theorem redheffer_eq_updateCol (n : ℕ) :
-    redheffer (n + 1) = (zetaMatrix (n + 1)).updateCol 0 (fun _ => 1) := by
+    redheffer (n + 1) = (zetaMatrix (n + 1)).updateCol 0 (fun _ ↦ 1) := by
   ext i j
   by_cases hj : j = 0
   · subst hj; simp [redheffer_apply]
-  · have hj0 : (j : ℕ) ≠ 0 := fun hh => hj (Fin.ext (by simpa using hh))
+  · have hj0 : (j : ℕ) ≠ 0 := fun hh ↦ hj (Fin.ext (by simpa using hh))
     simp [hj, hj0, redheffer_apply, zetaMatrix_apply]
 
 theorem det_redheffer_eq_one_add (n : ℕ) :
-    (redheffer (n + 1)).det
-      = 1 + ((zetaMatrix (n + 1)).updateCol 0 (fun i => if i = 0 then 0 else 1)).det := by
+    (redheffer (n + 1)).det =
+      1 + ((zetaMatrix (n + 1)).updateCol 0 (fun i ↦ if i = 0 then 0 else 1)).det := by
   rw [redheffer_eq_updateCol]
-  have hsplit : (fun _ : Fin (n + 1) => (1 : ℤ))
-      = (fun i => if i = 0 then (1 : ℤ) else 0) + (fun i => if i = 0 then (0 : ℤ) else 1) := by
+  have hsplit : (fun _ : Fin (n + 1) ↦ (1 : ℤ)) =
+      (fun i ↦ if i = 0 then (1 : ℤ) else 0) + (fun i ↦ if i = 0 then (0 : ℤ) else 1) := by
     funext i; by_cases h : i = 0 <;> simp [h]
   rw [hsplit, det_updateCol_add]
   congr 1
-  have hcol : (zetaMatrix (n + 1)).updateCol 0 (fun i => if i = 0 then (1 : ℤ) else 0)
-      = zetaMatrix (n + 1) := by
+  have hcol : (zetaMatrix (n + 1)).updateCol 0 (fun i ↦ if i = 0 then (1 : ℤ) else 0) =
+      zetaMatrix (n + 1) := by
     ext i j
     rw [updateCol_apply]
     by_cases hj : j = 0
-    · subst hj; simp [zetaMatrix_apply_zero]
+    · subst hj; simp
     · simp [hj]
   rw [hcol, det_zetaMatrix]
 
 /-- The row vector `(μ 1, μ 2, …, μ n)`. -/
-def moebiusRow (n : ℕ) : Fin n → ℤ := fun i => (μ ((i : ℕ) + 1) : ℤ)
+def moebiusRow (n : ℕ) : Fin n → ℤ := fun i ↦ (μ ((i : ℕ) + 1) : ℤ)
 
 theorem sum_fin_dvd_eq_sum_divisors (n m : ℕ) (hm1 : 1 ≤ m) (hmn : m ≤ n) :
-    (∑ x : Fin n, if (x : ℕ) + 1 ∣ m then (μ ((x : ℕ) + 1) : ℤ) else 0)
-      = ∑ d ∈ m.divisors, (μ d : ℤ) := by
-  rw [Fin.sum_univ_eq_sum_range (fun x => if x + 1 ∣ m then (μ (x + 1) : ℤ) else 0)]
+    (∑ x : Fin n, if (x : ℕ) + 1 ∣ m then (μ ((x : ℕ) + 1) : ℤ) else 0) =
+      ∑ d ∈ m.divisors, (μ d : ℤ) := by
+  rw [Fin.sum_univ_eq_sum_range (fun x ↦ if x + 1 ∣ m then (μ (x + 1) : ℤ) else 0)]
   rw [← sum_filter]
-  have hset : (range n).filter (fun i => i + 1 ∣ m) = m.divisors.image (· - 1) := by
+  have hset : (range n).filter (fun i ↦ i + 1 ∣ m) = m.divisors.image (· - 1) := by
     ext i
     simp only [mem_filter, mem_range, mem_image, Nat.mem_divisors]
     constructor
@@ -156,7 +149,7 @@ theorem sum_fin_dvd_eq_sum_divisors (n m : ℕ) (hm1 : 1 ≤ m) (hmn : m ≤ n) 
       rw [← hd, show d - 1 + 1 = d by omega]
       exact hdvd
   rw [hset, sum_image]
-  · refine sum_congr rfl fun d hd => ?_
+  · refine sum_congr rfl fun d hd ↦ ?_
     have hdpos : 1 ≤ d := Nat.pos_of_dvd_of_pos (Nat.mem_divisors.mp hd).1 (by omega)
     congr 1
     omega
@@ -167,13 +160,13 @@ theorem sum_fin_dvd_eq_sum_divisors (n m : ℕ) (hm1 : 1 ≤ m) (hmn : m ≤ n) 
     omega
 
 theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
-    (moebiusRow (n + 1)) ᵥ* zetaMatrix (n + 1) = fun k => if k = 0 then (1 : ℤ) else 0 := by
+    (moebiusRow (n + 1)) ᵥ* zetaMatrix (n + 1) = fun k ↦ if k = 0 then (1 : ℤ) else 0 := by
   funext k
   simp only [vecMul, dotProduct, moebiusRow, zetaMatrix_apply]
-  rw [show (∑ x : Fin (n + 1), (μ ((x : ℕ) + 1) : ℤ)
-        * (if (x : ℕ) + 1 ∣ (k : ℕ) + 1 then (1 : ℤ) else 0))
-      = ∑ x : Fin (n + 1), (if (x : ℕ) + 1 ∣ (k : ℕ) + 1 then (μ ((x : ℕ) + 1) : ℤ) else 0)
-      from sum_congr rfl fun x _ => by by_cases h : (x : ℕ) + 1 ∣ (k : ℕ) + 1 <;> simp [h]]
+  rw [show (∑ x : Fin (n + 1), (μ ((x : ℕ) + 1) : ℤ) *
+        (if (x : ℕ) + 1 ∣ (k : ℕ) + 1 then (1 : ℤ) else 0)) =
+      ∑ x : Fin (n + 1), (if (x : ℕ) + 1 ∣ (k : ℕ) + 1 then (μ ((x : ℕ) + 1) : ℤ) else 0)
+      from sum_congr rfl fun x _ ↦ by by_cases h : (x : ℕ) + 1 ∣ (k : ℕ) + 1 <;> simp [h]]
   rw [sum_fin_dvd_eq_sum_divisors (n + 1) ((k : ℕ) + 1) (by omega) (by omega),
     sum_divisors_moebius]
   by_cases hk : k = 0
@@ -181,8 +174,8 @@ theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
   · simp [hk]
 
 theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
-    moebiusRow (n + 1)
-      = (fun k => if k = (0 : Fin (n + 1)) then (1 : ℤ) else 0) ᵥ* (zetaMatrix (n + 1))⁻¹ := by
+    moebiusRow (n + 1) =
+      (fun k ↦ if k = (0 : Fin (n + 1)) then (1 : ℤ) else 0) ᵥ* (zetaMatrix (n + 1))⁻¹ := by
   have hunit : IsUnit (zetaMatrix (n + 1)).det := by simp
   have step := congrArg (· ᵥ* (zetaMatrix (n + 1))⁻¹) (vecMul_moebiusRow_zetaMatrix n)
   simpa [vecMul_vecMul, mul_nonsing_inv _ hunit] using step
@@ -196,28 +189,28 @@ theorem det_zetaMatrix_updateCol (n : ℕ) (u : Fin (n + 1) → ℤ) :
   rw [← hc, moebiusRow_eq_vecMul_inv n]
   simp [mulVec, dotProduct, vecMul]
 
-theorem sum_moebiusRow_succ (n : ℕ) :
-    (∑ j : Fin (n + 1), if j = 0 then (0 : ℤ) else moebiusRow (n + 1) j)
-      = mertens (n + 1) - 1 := by
-  have hval : ∀ j : Fin (n + 1), (if j = 0 then (0 : ℤ) else moebiusRow (n + 1) j)
-      = (fun k : ℕ => if k = 0 then (0 : ℤ) else μ (k + 1)) (j : ℕ) := by
+theorem sum_moebiusRow_add_one (n : ℕ) :
+    (∑ j : Fin (n + 1), if j = 0 then (0 : ℤ) else moebiusRow (n + 1) j) =
+      mertens (n + 1) - 1 := by
+  have hval : ∀ j : Fin (n + 1), (if j = 0 then (0 : ℤ) else moebiusRow (n + 1) j) =
+      (fun k : ℕ ↦ if k = 0 then (0 : ℤ) else μ (k + 1)) (j : ℕ) := by
     intro j
     by_cases hj : j = 0
     · subst hj; simp
-    · have hj0 : (j : ℕ) ≠ 0 := fun hh => hj (Fin.ext (by simpa using hh))
+    · have hj0 : (j : ℕ) ≠ 0 := fun hh ↦ hj (Fin.ext (by simpa using hh))
       simp [moebiusRow, hj, hj0]
   simp_rw [hval]
-  rw [Fin.sum_univ_eq_sum_range (fun k => if k = 0 then (0 : ℤ) else μ (k + 1)) (n + 1)]
+  rw [Fin.sum_univ_eq_sum_range (fun k ↦ if k = 0 then (0 : ℤ) else μ (k + 1)) (n + 1)]
   exact sum_range_ite_moebius n
 
 /-- **Redheffer's theorem**: the determinant of the `(n + 1) × (n + 1)` Redheffer matrix is the
 Mertens function `M (n + 1) = ∑ k ∈ Icc 1 (n + 1), μ k`. -/
 theorem det_redheffer (n : ℕ) : (redheffer (n + 1)).det = mertens (n + 1) := by
   rw [det_redheffer_eq_one_add, det_zetaMatrix_updateCol]
-  have h : (∑ j, moebiusRow (n + 1) j * (if j = 0 then (0 : ℤ) else 1))
-      = mertens (n + 1) - 1 := by
-    rw [← sum_moebiusRow_succ]
-    refine sum_congr rfl fun j _ => ?_
+  have h : (∑ j, moebiusRow (n + 1) j * (if j = 0 then (0 : ℤ) else 1)) =
+      mertens (n + 1) - 1 := by
+    rw [← sum_moebiusRow_add_one]
+    refine sum_congr rfl fun j _ ↦ ?_
     by_cases hj : j = 0 <;> simp [hj]
   rw [h]; ring
 
