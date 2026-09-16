@@ -24,11 +24,12 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 We define multilinear maps as maps from `∀ (i : ι), M₁ i` to `M₂` which are linear in each
 coordinate. Here, `M₁ i` and `M₂` are modules over a ring `R`, and `ι` is an arbitrary type
 (although some statements will require it to be a fintype). This space, denoted by
-`MultilinearMap R M₁ M₂`, inherits a module structure by pointwise addition and multiplication.
+`M₁ →ₘₗ[R] M₂`, inherits a module structure by pointwise addition and multiplication.
 
 ## Main definitions
 
-* `MultilinearMap R M₁ M₂` is the space of multilinear maps from `∀ (i : ι), M₁ i` to `M₂`.
+* `MultilinearMap R M₁ M₂` (`M₁ →ₘₗ[R] M₂`) is the space of multilinear maps
+  from `∀ (i : ι), M₁ i` to `M₂`.
 * `f.map_update_smul` is the multiplicativity of the multilinear map `f` along each coordinate.
 * `f.map_update_add` is the additivity of the multilinear map `f` along each coordinate.
 * `f.map_smul_univ` expresses the multiplicativity of `f` over all coordinates at the same time,
@@ -99,6 +100,15 @@ structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁)
   map_update_smul' :
     ∀ [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
       toFun (update m i (c • x)) = c • toFun (update m i x)
+
+/-- `M →ₘₗ[R] N` is the type of `R`-multilinear maps from `M` to `N`. -/
+notation3:25 M " →ₘₗ[" R "] " N:100 => MultilinearMap R M N
+
+/-- `M [^ι]→ₗ[R] N` is the type of `R`-multilinear maps from `M^ι` to `N`. -/
+notation3:26 M " [^" ι "]→ₗ[" R "] " N:100 => MultilinearMap R (fun _ : ι => M) N
+
+/-- `M [×n]→ₗ[R] N` is the type of `R`-multilinear maps from `M^n` to `N`. -/
+notation3:25 M " [×" n "]→ₗ[" R "] " N:100 => MultilinearMap R (fun _ : Fin n => M) N
 
 namespace MultilinearMap
 
