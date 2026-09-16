@@ -7,22 +7,26 @@ module
 
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
-public import Mathlib.CategoryTheory.Presentable.Dense
-public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
+public import Mathlib.CategoryTheory.Presentable.IsDiscrete
+public import Mathlib.CategoryTheory.Presentable.Uniformization
 
 /-!
 # Comma categories are accessible
 
-Let `F₁ : C₁ ⥤ D` and `F₂ : C₂ ⥤ D` be `κ`-accessible functors between
-`κ`-accessible categories. If we also assume that `F₁` preserves `κ`-presentable
-objects (a property which holds for a well chosen regular cardinal `κ` according to
-the uniformization theorem, see the file
-`Mathlib/CategoryTheory/Presentable/Uniformization.lean`), we show that
-the comma category `Comma F₁ F₂` is also `κ`-accessible (see the instance
-`Comma.isCardinalAccessibleCategory`).
+Let `F₁ : C₁ ⥤ D` and `F₂ : C₂ ⥤ D` be accessible functors between
+accessible categories, then `Comma F₁ F₂` is also an accessible
+category (`Comma.isAccessibleCategory`); similar results hold for `Arrow`,
+`CostructuredArrow`, `StructuredArrow`, `Under`, `Over` categories.
+This is obtained as a consequence of the uniformization theorem for accessible
+categories (see the file `Mathlib/CategoryTheory/Presentable/Uniformization.lean`)
+and the more precise result `Comma.isCardinalAccessibleCategory` which says that
+`Comma F₁ F₂` is a `κ`-accessible category when `F₁` and `F₂` are `κ`-accessible
+functors between `κ`-accessible categories and that `F₁` preserves
+`κ`-presentable objects.
 
-The key point in the technical proof is that if `f : Comma F₁ F₂`, then `f`
-is the `κ`-filtered colimit (indexed by a category denoted `J κ f` here) of the
+The key point in the technical proof of `Comma.isCardinalAccessibleCategory`
+is that if `f : Comma F₁ F₂`, then `f` is the `κ`-filtered colimit
+(indexed by a category denoted `J κ f` here) of the
 `g : Comma F₁ F₂` equipped with a morphism `g ⟶ f` such that both `g.left`
 and `g.right` are `κ`-presentable. In order to do this, we basically need
 to show that the first and second functors `π₁ : J κ f ⥤ J₁ κ f` and
@@ -49,10 +53,11 @@ namespace CategoryTheory
 
 open Limits
 
+variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
+
 namespace Comma
 
-variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
-  (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+variable (F₁ : C₁ ⥤ D) (F₂ : C₂ ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 section
 
@@ -454,6 +459,94 @@ instance : (Comma.snd F₁ F₂).PreservesCardinalPresentable κ where
     simp only [Comma.isCardinalPresentable_iff] at hf
     tauto
 
+section
+
+variable [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
+  [Functor.IsAccessible.{w} F₁] [Functor.IsAccessible.{w} F₂]
+  [IsAccessibleCategory.{w} D]
+
+instance isAccessibleCategory : IsAccessibleCategory.{w} (Comma F₁ F₂) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ :=
+    IsCardinalAccessibleCategory.uniformization_pair F₁ F₂
+  exact ⟨κ, inferInstance, inferInstance⟩
+
+instance : Functor.IsAccessible.{w} (Comma.fst F₁ F₂) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ :=
+    IsCardinalAccessibleCategory.uniformization_pair F₁ F₂
+  exact ⟨κ, inferInstance, inferInstance⟩
+
+instance : Functor.IsAccessible.{w} (Comma.snd F₁ F₂) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ :=
+    IsCardinalAccessibleCategory.uniformization_pair F₁ F₂
+  exact ⟨κ, inferInstance, inferInstance⟩
+
+end
+
 end Comma
+
+namespace Arrow
+
+variable [IsAccessibleCategory.{w} D]
+
+instance : IsAccessibleCategory.{w} (Arrow D) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (Comma _ _))
+
+instance : Functor.IsAccessible.{w} (Arrow.leftFunc : Arrow D ⥤ D) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.fst _ _))
+
+instance : Functor.IsAccessible.{w} (Arrow.rightFunc : Arrow D ⥤ D) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.snd _ _))
+
+end Arrow
+
+namespace CostructuredArrow
+
+variable [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
+  (F : C₁ ⥤ C₂) [Functor.IsAccessible.{w} F] (Y : C₂)
+
+instance : IsAccessibleCategory.{w} (CostructuredArrow F Y) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (Comma _ _))
+
+instance : Functor.IsAccessible.{w} (CostructuredArrow.proj F Y) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.fst _ _))
+
+end CostructuredArrow
+
+namespace StructuredArrow
+
+variable [IsAccessibleCategory.{w} C₁] [IsAccessibleCategory.{w} C₂]
+  (F : C₁ ⥤ C₂) [Functor.IsAccessible.{w} F] (X : C₂)
+
+instance : IsAccessibleCategory.{w} (StructuredArrow X F) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (Comma _ _))
+
+instance : Functor.IsAccessible.{w} (StructuredArrow.proj X F) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (Comma.snd _ _))
+
+end StructuredArrow
+
+namespace Over
+
+variable [IsAccessibleCategory.{w} D] (Y : D)
+
+instance : IsAccessibleCategory.{w} (Over Y) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (CostructuredArrow _ _))
+
+instance : Functor.IsAccessible.{w} (Over.forget Y) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (CostructuredArrow.proj _ _))
+
+end Over
+
+namespace Under
+
+variable [IsAccessibleCategory.{w} D] (X : D)
+
+instance : IsAccessibleCategory.{w} (Under X) :=
+  inferInstanceAs (IsAccessibleCategory.{w} (StructuredArrow _ _))
+
+instance : Functor.IsAccessible.{w} (Under.forget X) :=
+  inferInstanceAs (Functor.IsAccessible.{w} (StructuredArrow.proj _ _))
+
+end Under
 
 end CategoryTheory

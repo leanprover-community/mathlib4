@@ -112,7 +112,7 @@ lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) 
   ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, (⟨·.toWalk, by simp⟩)⟩
 
 theorem eq_of_length_le_one {p q : G.Walk u v} (hp : p.length ≤ 1) (hq : q.length ≤ 1) : p = q := by
-  grind [cases Walk, length_cons, Adj.ne]
+  grind [cases Walk, length_cons]
 
 /-- The `support` of a walk is the list of vertices it visits in order. -/
 def support {u v : V} : G.Walk u v → List V
@@ -157,7 +157,7 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
 lemma cons_tail_support (p : G.Walk u v) : u :: p.support.tail = p.support := by
   cases p <;> simp
 
-@[deprecated cons_tail_support (since := "2026-03-16")]
+@[deprecated cons_tail_support +typeChanged (since := "2026-03-16")]
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
 
@@ -352,6 +352,9 @@ def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
 @[simp]
 lemma mem_edgeSet {u v : V} {p : G.Walk u v} {e : Sym2 V} : e ∈ p.edgeSet ↔ e ∈ p.edges := Iff.rfl
 
+theorem edgeSet_subset_edgeSet (p : G.Walk u v) : p.edgeSet ⊆ G.edgeSet :=
+  p.edges_subset_edgeSet
+
 @[simp]
 lemma edgeSet_nil (u : V) : (nil : G.Walk u u).edgeSet = ∅ := by ext; simp
 
@@ -405,7 +408,7 @@ theorem length_eq_zero_iff {p : G.Walk u v} : p.length = 0 ↔ p.Nil := by
 
 alias ⟨_, Nil.length_eq_zero⟩ := length_eq_zero_iff
 
-@[deprecated length_eq_zero_iff (since := "2026-05-11")]
+@[deprecated length_eq_zero_iff +typeChanged (since := "2026-05-11")]
 lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 :=
   length_eq_zero_iff.symm
 
@@ -423,7 +426,7 @@ theorem eq_nil_iff_nil {p : G.Walk v v} : p = nil ↔ p.Nil := by
 
 alias ⟨_, Nil.eq_nil⟩ := eq_nil_iff_nil
 
-@[deprecated eq_nil_iff_nil (since := "2026-05-11")]
+@[deprecated eq_nil_iff_nil +typeChanged (since := "2026-05-11")]
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil :=
   eq_nil_iff_nil.symm
 
@@ -431,6 +434,9 @@ lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
   match p with
   | nil => Nil.nil
   | cons h w => Unique.eq_default G ▸ h |>.elim
+
+theorem nil_of_bot (p : Walk ⊥ u v) : p.Nil := by
+  cases p <;> [simp; simpa]
 
 @[simp]
 theorem exists_nil_iff {u v : V} : (∃ p : G.Walk u v, p.Nil) ↔ u = v :=

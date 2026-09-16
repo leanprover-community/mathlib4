@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Echelon.Core
 
 /-!
 # Certificate construction for the Bareiss decomposition
@@ -70,11 +71,11 @@ def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
-  let some inst ← synthInstance? q(Decidable (((1 : ℤ) : $α) = 0))
-    | throwError "equality with zero in the element type is not decidable{indentExpr α}"
+  let some _inst ← synthInstanceQ? q(Decidable (((1 : ℤ) : $α) = 0)) |
+    throwError "equality with zero in the element type is not decidable{indentExpr α}"
   -- check if the equality reduced to a concrete false
-  unless (Kernel.whnf (← getEnv) (← getLCtx) inst).toOption.any
-      (·.isAppOf ``Decidable.isFalse) do
+  let d := q(decide (((1 : ℤ) : $α) = 0))
+  unless (Kernel.whnf (← getEnv) (← getLCtx) d).toOption.any (·.isConstOf ``Bool.false) do
     throwError "equality in the element type does not reduce in the kernel{indentExpr α}"
 
 /-- Prove the certificate condition `c` by a kernel-checked `decide`, with `name` naming
