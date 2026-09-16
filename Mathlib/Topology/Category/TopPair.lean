@@ -249,7 +249,8 @@ protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
 
 end Complement
 
-/-- A morphism `g : (V, C) ⟶ (X, A)` in `TopPair` is excisive if it is an embedding, `g(C) = g(V) ∩ C`, and `cl(g(V)ᶜ) ⊆ int(A)`. -/
+/-- A morphism `g : (V, C) ⟶ (X, A)` in `TopPair` is excisive if it is an embedding,
+`g(C) = g(V) ∩ C`, and `cl(g(V)ᶜ) ⊆ int(A)`. -/
 class IsExcisive ⦃V X : TopPair.{u}⦄ (g : V ⟶ X) : Prop where
   isEmbedding_fst : Topology.IsEmbedding (Hom.fst g)
   range_fst_map : Set.range (Hom.fst g ∘ V.map) = Set.range (Hom.fst g) ∩ Set.range X.map
