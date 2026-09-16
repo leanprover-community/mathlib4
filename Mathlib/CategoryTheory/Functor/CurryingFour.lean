@@ -28,6 +28,7 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ E : Type*}
 
 /-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C₃ × C₄ ⥤ E`
 given by the curryfication of functors in four variables. -/
+@[implicit_reducible]
 def currying₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C₃ × C₄ ⥤ E :=
   currying.trans (currying.trans (currying.trans
     (((prod.associativity (C₁ × C₂) C₃ C₄).trans
@@ -42,11 +43,13 @@ abbrev curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C�
   currying₄.inverse
 
 /-- Uncurrying functors in four variables gives a fully faithful functor. -/
+@[implicit_reducible]
 def fullyFaithfulUncurry₄ :
     (uncurry₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ (C₁ × C₂ × C₃ × C₄ ⥤ E)).FullyFaithful :=
   currying₄.fullyFaithfulFunctor
 
 /-- Currying functors in four variables gives a fully faithful functor. -/
+@[implicit_reducible]
 def fullyFaithfulCurry₄ :
     (curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)).FullyFaithful :=
   currying₄.fullyFaithfulInverse
@@ -118,7 +121,7 @@ set_option backward.isDefEq.respectTransparency false in
 `F₄ : C₄ ⥤ D₄` and `G : D₁ × D₂ × D₃ × D₄ ⥤ E`, this is the isomorphism between
 `curry₄.obj (F₁.prod (F₂.prod (F₃.prod F₄)) ⋙ G) : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E`
 and `F₁ ⋙ curry₄.obj G ⋙ ((((whiskeringLeft₃ E).obj F₂).obj F₃).obj F₄)`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def curry₄ObjProdComp (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃)
     (F₄ : C₄ ⥤ D₄) (G : D₁ × D₂ × D₃ × D₄ ⥤ E) :
     curry₄.obj (F₁.prod (F₂.prod (F₃.prod F₄)) ⋙ G) ≅
