@@ -272,7 +272,7 @@ end LE
 
 section Preorder
 
-variable [Preorder A] [] {p q : A}
+variable [Preorder A] [IsConcreteLE A] {p q : A}
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -298,7 +298,7 @@ variable {A B : Type*} [SetLike A B]
 
 section LE
 
-variable [LE A] [] {p q : A}
+variable [LE A] [IsConcreteLE A] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_subset_coe : (p : Set B) ⊆ q ↔ p ≤ q :=
   (IsConcreteLE.le_iff (A := A)).symm
