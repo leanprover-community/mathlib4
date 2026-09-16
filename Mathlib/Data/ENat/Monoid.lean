@@ -74,7 +74,7 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
   · rename_i a; cases a <;> simp
   · simp only [toNat_natCast]; rw [← natCast_mul, toNat_natCast]
 
-@[deprecated add_pos_of_right (since := "2026-05-25")]
+@[deprecated add_pos_of_right +typeChanged (since := "2026-05-25")]
 lemma add_one_pos : 0 < n + 1 :=
   add_pos_of_right zero_lt_one n
 
@@ -247,7 +247,7 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
 @[simp]
 lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
     (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
-  map_mul ((.ofClass (Nat.castRingHom R) : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
+  map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 namespace WithBot
 

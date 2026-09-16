@@ -71,6 +71,7 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
+@[macro_inline]
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
@@ -426,7 +427,6 @@ theorem closed_eq_range_close : l.closed = Set.range (u ∘ l) :=
 def toClosed (x : α) : l.closed :=
   ⟨u (l x), l.closure_is_closed x⟩
 
-@[simp]
 theorem closure_le_closed_iff_le (x : α) {y : α} (hy : y ∈ l.closed) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 
