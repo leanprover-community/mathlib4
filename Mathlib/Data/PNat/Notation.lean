@@ -20,10 +20,9 @@ def PNat := { n : ℕ // 0 < n } deriving DecidableEq, LE, LT
 @[inherit_doc]
 notation "ℕ+" => PNat
 
-/-- Helper constructor for `ℕ+`. -/
+/- Helper constructor for `PNat`. -/
 abbrev PNat.mk (n : ℕ) (h : 0 < n) : ℕ+ := ⟨n, h⟩
 
--- Assert that eta-rfl works; if `PNat.mk` was a `def`, it would not.
 example (n : ℕ+) : n = PNat.mk n.val n.property := by
   with_reducible_and_instances rfl
 
@@ -31,7 +30,6 @@ example (n : ℕ+) : n = PNat.mk n.val n.property := by
 @[coe]
 abbrev PNat.val : ℕ+ → ℕ := Subtype.val
 
--- Assert that eta-rfl works; if `PNat.val` was a `def`, it would not.
 example (n : ℕ+) : n = PNat.mk (PNat.val n) n.property := by
   with_reducible_and_instances rfl
 
@@ -57,7 +55,6 @@ lemma mk_one : PNat.mk 1 Nat.zero_lt_one = (1 : ℕ+) :=
 lemma val_one : (1 : ℕ+).val = 1 :=
   rfl
 
--- Note: similar to Subtype.coe_mk
 @[simp]
 theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
@@ -69,10 +66,17 @@ theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
 instance : Add ℕ+ where
   add m n := ⟨m.1 + n.1, Nat.add_pos_right m.val n.property⟩
 
-/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
-not only to `Prop`. -/
+protected lemma «exists» {p : ℕ+ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ) (hn : 0 < n), p (PNat.mk n hn) :=
+  Subtype.exists
+
+protected lemma exists_val {p : ℕ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ), 0 < n ∧ p n := by
+  simp [PNat.exists]
+
 @[elab_as_elim, induction_eliminator]
-def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
+def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) :
+    p n := by
   rcases n with ⟨n, h⟩
   induction n with
   | zero => exact absurd h (by decide)
@@ -89,34 +93,31 @@ theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
     @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
   obtain ⟨n, h⟩ := n
-  cases n
-  · exact absurd h (by decide)
-  · rfl
+  cases n with
+  | zero => exact absurd h (by decide)
+  | succ n => rfl
 
 @[simp, norm_cast]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
-/-- Strong induction on `ℕ+`. -/
-def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (ind : ∀ k, (∀ m, m < k → p m) → p k) → p n
+def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) :
+    (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
 termination_by n.1
 
-/-- We now define a long list of structures on ℕ+ induced by
-similar structures on ℕ. Most of these behave in a completely
-obvious way, but there are a few things to be said about
-subtraction, division and powers.
--/
-theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := Iff.rfl
+theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) :
+    (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
+  Iff.rfl
 
-theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := Iff.rfl
+theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) :
+    (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
+  Iff.rfl
 
--- This lemma is higher priority than later `Subtype.coe_le_coe` so that the `simpNF` is happy
 @[simp high, norm_cast]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 
--- This lemma is higher priority than later `Subtype.coe_lt_coe` so that the `simpNF` is happy
 @[simp high, norm_cast]
 theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
@@ -149,7 +150,6 @@ protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
 instance : Inhabited ℕ+ :=
   ⟨1⟩
 
--- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[norm_cast]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl

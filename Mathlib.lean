@@ -1226,6 +1226,7 @@ public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.QuadraticAlgebra.Discr
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
+public import Mathlib.Algebra.QuadraticAlgebra.IsQuadraticExtension
 public import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Algebra.Quandle
@@ -4409,8 +4410,11 @@ public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.PFunctor.Multivariate.W
 public import Mathlib.Data.PFunctor.Univariate.Basic
 public import Mathlib.Data.PFunctor.Univariate.M
+public import Mathlib.Data.PNat.Algebra
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Defs
+public import Mathlib.Data.PNat.DivMod
+public import Mathlib.Data.PNat.Dvd
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Data.PNat.Factors
 public import Mathlib.Data.PNat.Find
@@ -4418,6 +4422,7 @@ public import Mathlib.Data.PNat.Interval
 public import Mathlib.Data.PNat.Notation
 public import Mathlib.Data.PNat.Order
 public import Mathlib.Data.PNat.Prime
+public import Mathlib.Data.PNat.SuccOrder
 public import Mathlib.Data.PNat.Xgcd
 public import Mathlib.Data.PSigma.Order
 public import Mathlib.Data.Part
@@ -5205,7 +5210,9 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
+public import Mathlib.LinearAlgebra.ExteriorPower.HodgeStar
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
+public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -7727,7 +7734,6 @@ public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.RSuffices
-public import Mathlib.Tactic.Recall
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.ReduceModChar
 public import Mathlib.Tactic.ReduceModChar.Ext

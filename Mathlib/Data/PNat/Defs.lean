@@ -24,8 +24,7 @@ Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more import
 deriving instance LinearOrder for PNat
 
 namespace PNat
-
-/-- Predecessor of a `ℕ+`, as a `ℕ`. -/
+/- Predecessor of a `ℕ+`, as a `ℕ`. -/
 def natPred (i : ℕ+) : ℕ :=
   i - 1
 
@@ -37,12 +36,12 @@ end PNat
 
 namespace Nat
 
-/-- Convert a natural number to a positive natural number. The
+/- Convert a natural number to a positive natural number. The
   positivity assumption is inferred by `dec_trivial`. -/
 def toPNat (n : ℕ) (h : 0 < n := by decide) : ℕ+ :=
   ⟨n, h⟩
 
-/-- Write a successor as an element of `ℕ+`. -/
+/- Write a successor as an element of `ℕ+`. -/
 def succPNat (n : ℕ) : ℕ+ :=
   ⟨succ n, succ_pos n⟩
 
@@ -58,7 +57,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.ext <| succ_pred_eq_of_pos n.2
 
-/-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
+/- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
 def toPNat' (n : ℕ) : ℕ+ :=
   succPNat (pred n)
@@ -85,70 +84,6 @@ theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
 @[simp]
 theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
   eq (toPNat'_coe n.pos)
-
-/-- We define `m % k` and `m / k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
-  define a function `div_exact` which gives the usual `m / k`
-  in the case where `k` divides `m`.
--/
-def modDivAux : ℕ+ → ℕ → ℕ → ℕ+ × ℕ
-  | k, 0, q => ⟨k, q.pred⟩
-  | _, r + 1, q => ⟨⟨r + 1, Nat.succ_pos r⟩, q⟩
-
-/-- `mod_div m k = (m % k, m / k)`.
-  We define `m % k` and `m / k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
-  define a function `div_exact` which gives the usual `m / k`
-  in the case where `k` divides `m`.
--/
-def modDiv (m k : ℕ+) : ℕ+ × ℕ :=
-  modDivAux k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ))
-
-/-- We define `m % k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` This ensures that `m % k` is always positive.
--/
-def mod (m k : ℕ+) : ℕ+ :=
-  (modDiv m k).1
-
-/-- We define `m / k` in the same way as for `ℕ` except that when `m = n * k` we take
-  `m / k = n - 1`. This ensures that `m = (m % k) + k * (m / k)` in all cases. Later we
-  define a function `div_exact` which gives the usual `m / k` in the case where `k` divides `m`.
--/
-def div (m k : ℕ+) : ℕ :=
-  (modDiv m k).2
-
-theorem mod_coe (m k : ℕ+) :
-    (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
-  dsimp [mod, modDiv]
-  cases (m : ℕ) % (k : ℕ) with
-  | zero =>
-    rw [ite_eq_left rfl]
-    rfl
-  | succ n =>
-    rw [ite_eq_right n.succ_ne_zero]
-    rfl
-
-theorem div_coe (m k : ℕ+) :
-    (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
-  dsimp [div, modDiv]
-  cases (m : ℕ) % (k : ℕ) with
-  | zero =>
-    rw [ite_eq_left rfl]
-    rfl
-  | succ n =>
-    rw [ite_eq_right n.succ_ne_zero]
-    rfl
-
-/-- If `h : k | m`, then `k * (div_exact m k) = m`. Note that this is not equal to `m / k`. -/
-def divExact (m k : ℕ+) : ℕ+ :=
-  ⟨(div m k).succ, Nat.succ_pos _⟩
-
-instance : Add ℕ+ :=
-  ⟨fun m n => ⟨(m : ℕ) + (n : ℕ), Nat.add_lt_add m.2 n.2⟩⟩
 
 end PNat
 
