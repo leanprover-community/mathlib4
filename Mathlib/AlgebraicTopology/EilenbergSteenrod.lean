@@ -286,7 +286,17 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
       exact_of_iso
         (isoMk₂ ((hIsoOfIso e _).app _) ((hIsoOfIso e _).app _) ((hₚIsoOfIso e _).app _)
           (by simp) (by simp [Precomp.map, Hom.iso_comm_app_assoc])) (hPS.exact_fst _ _)
+    epi_map_of_not_rel _ _ hi :=
+    {
+      left_cancellation g h w := by
+        have := (e.hom.homₚ _).app _ ≫= w
+        simp only [← NatTrans.naturality_assoc] at this
+        exact (IsIso.epi_of_iso ((e.hom.homₚ _).app _)).left_cancellation _ _
+          ((hPS.epi_map_of_not_rel _ _ hi).left_cancellation _ _ this)
+    }
   }
+
+end PairSequence
 
 /-- An extraordinary Eilenberg-Steenrod homology theory requires the homotopy, excision, additivity,
 and exactness axioms. -/
