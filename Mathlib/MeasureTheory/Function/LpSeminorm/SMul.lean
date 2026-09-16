@@ -217,6 +217,19 @@ theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞
   simp at hx
   simp [hx]
 
+theorem eLpNorm'_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞}
+    (hq_pos : 0 < q) (hf : AEStronglyMeasurable f μ) :
+    eLpNorm' (fun x ↦ c * f x) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
+  let p := ENNReal.ofReal q
+  have hp : p ≠ 0 := by simp [p, hq_pos]
+  have h'p : p ≠ ∞ := by simp [p]
+  have hcf : AEStronglyMeasurable (c • f) μ := (hf.aemeasurable.const_mul c).aestronglyMeasurable
+  have A : (fun x ↦ c * f x) = c • f := rfl
+  have : q = ENNReal.toReal p := by simp [p, ENNReal.toReal_ofReal hq_pos.le]
+  simp only [this, A, enorm_eq_self, ← eLpNorm_eq_eLpNorm' hp h'p hcf,
+    ← eLpNorm_eq_eLpNorm' hp h'p hf]
+  exact eLpNorm_const_mul_ennreal_of_pos (by simp [p, hq_pos])
+
 end ENNReal
 
 end Lp
