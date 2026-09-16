@@ -283,15 +283,13 @@ lemma atom_mul_atomRel (a b c d e f : ℤ) {u v w x y z : R} (h : u + v + w + x 
   grind only
 
 variable {W} in
-lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) :
-    σ.sign • atomRel W (t <| σ 0) (t <| σ 1) (t <| σ 2) (t <| σ 3) =
-      atomRel W (t 0) (t 1) (t 2) (t 3) := by
-  induction Equiv.Perm.mclosure_swap_castSucc_succ 3 ▸ Submonoid.mem_top σ using
-    Submonoid.closure_induction generalizing t with
-  | mem _ h => rcases h with ⟨_ | _ | _ | -, rfl⟩ <;>
-    simp [Equiv.swap_apply_def] <;> grind only [neg_atomRel₁₂, neg_atomRel₂₃, neg_atomRel₃₄]
+lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (a b c d : ℤ) :
+    σ.sign • atomRel W (![a, b, c, d] <| σ 0) (![a, b, c, d] <| σ 1) (![a, b, c, d] <| σ 2)
+      (![a, b, c, d] <| σ 3) = atomRel W a b c d := by
+  induction σ using Equiv.Perm.swap_induction_on' with
   | one => simp
-  | mul σ τ _ _ hσ hτ => simpa [mul_smul] using congrArg _ (hτ <| t ∘ σ) |>.trans <| hσ t
+  | mul_swap σ x y _ _ => fin_cases x <;> fin_cases y <;> simp [Equiv.swap_apply_def] <;>
+      grind only [neg_atomRel₁₂, neg_atomRel₂₃, neg_atomRel₃₄, smul_neg]
 
 variable {W} in
 lemma foo (v : Fin 4 → ℤ) (neg : W.Odd) (hv : ¬ Function.Injective v) (h0 : W 0 = 0) :
@@ -299,57 +297,45 @@ lemma foo (v : Fin 4 → ℤ) (neg : W.Odd) (hv : ¬ Function.Injective v) (h0 :
   obtain ⟨i, j, h⟩ := Function.not_injective_iff.mp hv
   fin_cases i <;> fin_cases j <;> simp_all
 
-theorem test {n : ℕ} {v : Fin n → ℤ} {x y : ℤ} :
-    Antitone (Matrix.vecCons x (Matrix.vecCons y v)) ↔ y ≤ x ∧ Antitone (Matrix.vecCons y v) := by
-  simp only [Nat.succ_eq_add_one, antitone_vecCons, Matrix.cons_val_zero]
-
 variable {W} in
 lemma atomRel_of_even_odd' (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (even : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m - 2) 2 0 = 0)
     (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) (v : Fin 4 → ℤ)
-    -- Function.IsConst?
     (parity : ∀ i j, v i % 2 = v j % 2) : atomRel W (v 0) (v 1) (v 2) (v 3) = 0 := by
-  wlog hn : 0 ≤ v generalizing v with h -- todo: 0 ≤ v
-  · exact atomRel_abs neg .. ▸ h (abs ∘ v) (by grind) (by simp [Pi.le_def])
-  wlog hm : Antitone v generalizing v with h
-  · rw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort v) v, smul_eq_zero_iff_eq]
-    exact h (v ∘ (Fin.revPerm.trans <| Tuple.sort v)) (fun i j ↦ parity _ _) (fun i ↦ hn _)
-      ((Tuple.monotone_sort v).comp_antitone Fin.rev_anti :)
+  wlog nonneg : ∀ i, 0 ≤ v i generalizing v with h
+  · exact atomRel_abs neg .. ▸ h (abs ∘ v) (by grind) fun i ↦ abs_nonneg _
+  wlog sorted : v 3 ≤ v 2 ∧ v 2 ≤ v 1 ∧ v 1 ≤ v 0 generalizing v with h
+  · have eta : ![v 0, v 1, v 2, v 3] = v := FinVec.etaExpand_eq v
+    rw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort v) (v 0) (v 1) (v 2) (v 3),
+      smul_eq_zero_iff_eq, eta]
+    refine h (v ∘ Fin.revPerm.trans (Tuple.sort v)) (fun i j ↦ parity _ _) (fun i ↦ nonneg _) ?_
+    split_ands <;> exact Tuple.monotone_sort _ <| by decide
   by_cases hv : Function.Injective v; swap
-  · refine foo v neg hv ?_
-    exact pow_mem two 3 |>.right (W 0) (by grind only [atomRel_same₂₃, atom, odd 1])
-  replace hv : StrictAnti v := hm.strictAnti_of_injective hv
-  clear hm
-  replace parity : ∃ c : ℤ, ∀ i, v i % 2 = c := ⟨v 0 % 2, fun i ↦ parity _ _⟩
-  induction hn' : 4 * v 0 + v 1 + v 2 + v 3 using @Int.strongRec 0 generalizing v with
-  | lt n _ => simp_rw [Pi.le_def, Pi.zero_apply] at hn; grind
-  | ge n _ ih =>
+  · exact foo v neg hv <| pow_mem two 3 |>.right (W 0) <|
+      by grind only [atomRel_same₂₃, atom, odd 1]
+  replace sorted : v 3 < v 2 ∧ v 2 < v 1 ∧ v 1 < v 0 :=
+    ⟨sorted.1.lt_of_ne <| hv.ne <| by decide, sorted.2.1.lt_of_ne <| hv.ne <| by decide,
+      sorted.2.2.lt_of_ne <| hv.ne <| by decide⟩
+  clear hv
+  replace nonneg : 0 ≤ v 3 := nonneg 3
+  replace parity : v 0 % 2 = v 1 % 2 ∧ v 1 % 2 = v 2 % 2 ∧ v 2 % 2 = v 3 % 2 :=
+    ⟨parity .., parity .., parity ..⟩
+  induction hn : 4 * v 0 + v 1 + v 2 + v 3 using @Int.strongRec 0 generalizing v with
+  | lt => omega
+  | ge _ _ ih =>
     replace ih (a b c d : ℤ) := (@ih (4 * a + b + c + d) · ![a, b, c, d])
-    simp only [Pi.le_def, ↓Fin.forall_fin_succ, Pi.ofNat_apply, Fin.isValue, Fin.succ_zero_eq_one,
-      Fin.succ_one_eq_two, Fin.reduceSucc, IsEmpty.forall_iff, and_true] at hn
-    simp only [↓Fin.forall_fin_succ, Fin.isValue, Fin.succ_zero_eq_one, Fin.succ_one_eq_two,
-      Fin.reduceSucc, IsEmpty.forall_iff, and_true, exists_eq_left'] at parity
-    simp only [Pi.le_def, ↓Fin.forall_fin_succ, Pi.ofNat_apply, Fin.isValue, --Matrix.cons_val_zero,
-      Fin.succ_zero_eq_one, Fin.succ_one_eq_two, Matrix.cons_val,
-      Fin.reduceSucc, IsEmpty.forall_iff, and_true,
-      strictAnti_vecCons, Nat.reduceAdd, strictAnti_vecEmpty, exists_eq_left', forall_const,
-      and_imp] at ih
-    replace hc : v 1 < v 0 ∧ v 2 < v 1 ∧ v 3 < v 2 := by
-      have : v = ![v 0, v 1, v 2, v 3] := (FinVec.etaExpand_eq v).symm
-      rw [this] at hv
-      simp at hv
-      grind
-    by_cases t : v 2 = v 0 % 2 + 2
-    · wlog _ : v 0 = v 1 + 2
-      · have := @atomRel_avg_sub R _ W (v 0) (v 1) (v 2) (v 3) <| by grind
-        grind [=_ atomRel_neg₄]
-      have := atomRel_avg_sub W (by simp) |>.trans (even (v 0 / 2))
-      grind [odd (v 1 / 2), atomRel_neg₄ W (v 0) (v 1) (v 2) (v 3)]
+    simp only [Matrix.cons_val] at ih
+    wlog _ : v 2 = v 0 % 2 + 2
     · have ha : atom W (v 0 % 2 + 2) (v 0 % 2) ∈ R⁰ := by grind only [atom, mul_mem]
-      apply ha.left _
-      have := @atom_mul_atomRel R _ W (v 0) (v 1) (v 2) (max (v 3) <| v 0 % 2 + 2)
-        (min (v 3) <| v 0 % 2 + 2) (v 0 % 2) 0 0 0 (-1) 0 1 <| by norm_num1
-      grind [atom_same, atomRel_same₃₄, atomRel.eq_def W (v 0) (v 1) (v 2)]
+      exact ha.left _ <| by grind (genLocal := 0) [atom_same, atomRel_same₃₄,
+        atomRel.eq_def W (v 0) (v 1) (v 2), @atom_mul_atomRel R _ W (v 0) (v 1) (v 2)
+          (max (v 3) <| v 0 % 2 + 2) (min (v 3) <| v 0 % 2 + 2) (v 0 % 2) 0 0 0 (-1) 0 1 <|
+          by norm_num1, = (ih)]
+    wlog _ : v 0 = v 1 + 2
+    · grind (genLocal := 0) [=_ atomRel_neg₄,
+        @atomRel_avg_sub R _ W (v 0) (v 1) (v 2) (v 3) <| by grind, = (ih)]
+    grind [odd (v 1 / 2), atomRel_neg₄ W (v 0) (v 1) (v 2) (v 3),
+      atomRel_avg_sub W (by simp) |>.trans (even (v 0 / 2))]
 
 variable {W} in
 lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
@@ -359,8 +345,9 @@ lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰
   wlog _ : 0 ≤ a ∧ 0 ≤ b ∧ 0 ≤ c ∧ 0 ≤ d generalizing a b c d with h
   · exact atomRel_abs neg .. ▸ h (parity.map _ <| by grind) <| by simp
   wlog _ : d ≤ c ∧ c ≤ b ∧ b ≤ a generalizing a b c d with h
-  · erw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort ![a, b, c, d]) ![a, b, c, d],
-      smul_eq_zero_iff_eq, h <| parity.perm (Equiv.Perm.ofFn_comp_perm _ ![a, b, c, d]).symm .symm]
+  · rw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort ![a, b, c, d]) a b c d,
+      smul_eq_zero_iff_eq]
+    refine h (parity.perm (Equiv.Perm.ofFn_comp_perm _ ![a, b, c, d]).symm .symm) ?_ ?_
     · split_ands <;> apply (fun i ↦ by fin_cases i <;> simp <;> omega : 0 ≤ ![a, b, c, d])
     · split_ands <;> exact Tuple.monotone_sort _ <| by decide
   wlog _ : d < c ∧ c < b ∧ b < a
