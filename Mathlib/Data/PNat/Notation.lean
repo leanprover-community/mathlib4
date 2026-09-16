@@ -67,6 +67,8 @@ theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
 instance : Add ℕ+ where
   add m n := ⟨m.1 + n.1, Nat.add_pos_right m.val n.property⟩
 
+/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
+not only to `Prop`. -/
 @[elab_as_elim, induction_eliminator]
 def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) :
     p n := by

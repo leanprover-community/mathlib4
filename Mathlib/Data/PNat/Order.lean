@@ -80,7 +80,7 @@ def coeAddHom : AddHom ℕ+ ℕ where
   toFun := (↑)
   map_add' := add_coe
 
-/- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
+/-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! -fullyApplied apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
