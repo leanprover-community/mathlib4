@@ -5,7 +5,7 @@ public import Mathlib.Lean.Exception
 public import Mathlib.Tactic.ReduceModChar.Ext
 public import Qq.MetaM
 
-meta import Mathlib.Lean.Exception -- TODO: without this, `lake build` throws an error
+meta import Mathlib.Lean.Exception
 
 open Qq Lean Meta Elab Command Mathlib Tactic Translate ToAdditive
 
