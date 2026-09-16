@@ -6,6 +6,7 @@ Authors: Gaëtan Serré
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Widesubcategory
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 
 /-!
 # Copy-discard structures on wide subcategories
@@ -18,7 +19,7 @@ that this condition `P. IsStableUnderComonoid` holds for all objects `c : C`, we
 `WideSubcategory P` is also a copy-discard category.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.MorphismProperty
 

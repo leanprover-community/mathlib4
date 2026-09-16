@@ -32,7 +32,6 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 @[expose] public section
 
-
 universe u v₁ v₂ v₃ v₄
 
 open TensorProduct
@@ -107,13 +106,12 @@ theorem map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ �
 
 @[elab_as_elim]
 theorem inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
-    (zero : motive 0) (tmul : ∀ x y, motive (f x y))
+    (tmul : ∀ x y, motive (f x y))
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
   rw [← h.equiv.right_inv m]
   generalize h.equiv.invFun m = y
   change motive (TensorProduct.lift f y)
   induction y with
-  | zero => rwa [map_zero]
   | tmul _ _ =>
     rw [TensorProduct.lift.tmul]
     apply tmul
@@ -136,7 +134,7 @@ variable {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
   (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂)
 
 theorem map_comp : hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) = hg.map hp i₁ i₂ ∘ₗ hf.map hg j₁ j₂ :=
-  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
 theorem map_map (x : M) :
     hg.map hp i₁ i₂ ((hf.map hg j₁ j₂) x) = hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) x :=
@@ -145,7 +143,7 @@ theorem map_map (x : M) :
 @[simp]
 theorem map_id :
     hf.map hf (LinearMap.id : M₁ →ₗ[R] M₁) (LinearMap.id : M₂ →ₗ[R] M₂) = LinearMap.id :=
-  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
 @[simp]
 protected theorem map_one : hf.map hf (1 : M₁ →ₗ[R] M₁) (1 : M₂ →ₗ[R] M₂) = 1 :=
@@ -167,14 +165,16 @@ end map
 section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
- {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
- [AddCommMonoid M₁₂] [AddCommMonoid M₂₃]
- [Module R M₁]
- [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
- [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
- [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
- [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
+  {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [AddCommMonoid M₁₂] [AddCommMonoid M₂₃]
+  [Module R M₁]
+  [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
+  [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
+  [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
+  [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
 private noncomputable def assocAux
     (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
@@ -214,6 +214,8 @@ private lemma assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
   have : hf.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := hf.equiv_symm_apply _ _
   simp [IsTensorProduct.assocAux, this]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 This is the canonical isomorphism `(M₁ ⊗[R] M₂) ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] (M₂ ⊗[S] M₃)`.
 We state this for a general `M₁₂ = M₁ ⊗[R] M₂` and `M₂₃ = M₂ ⊗[R] M₃`.
@@ -228,12 +230,10 @@ noncomputable def assoc {T : Type*} [CommSemiring T] [Algebra R T] [Module T M�
   toAddEquiv := IsTensorProduct.assocAux (f.restrictScalars₁₂ R S) hf g hg
   map_smul' t x := by
     induction x with
-    | zero => simp
     | add x y _ _ => simp_all
     | tmul x y =>
     obtain ⟨x, rfl⟩ := hf.equiv.surjective x
     induction x with
-    | zero => simp
     | add x y _ _ => simp_all [add_tmul]
     | tmul x z =>
       have : t • (f x) z = f (t • x) z := by simp
@@ -283,6 +283,30 @@ lemma assocOfMapSMul_symm_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
 
 end
 
+section
+
+lemma compr₂_linearEquiv (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
+    IsTensorProduct (f.compr₂ e.toLinearMap) := by
+  simp only [IsTensorProduct] at ist ⊢
+  rw [TensorProduct.lift_compr₂]
+  exact e.bijective.comp ist
+
+lemma compl₂_comp_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
+    IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap) := by
+  simp only [IsTensorProduct] at ist ⊢
+  rw [← TensorProduct.lift_comp_map, ← LinearMap.rTensor_comp_lTensor]
+  exact ist.comp ((e₁.rTensor M₂).bijective.comp (e₂.lTensor N₁).bijective)
+
+lemma comp_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) :
+    IsTensorProduct (f.comp e₁.toLinearMap) :=
+  ist.compl₂_comp_linearEquiv e₁ (LinearEquiv.refl R M₂)
+
+lemma compl₂_linearEquiv (ist : IsTensorProduct f) (e₂ : N₂ ≃ₗ[R] M₂) :
+    IsTensorProduct (f.compl₂ e₂.toLinearMap) :=
+  ist.compl₂_comp_linearEquiv (LinearEquiv.refl R M₁) e₂
+
+end
+
 end IsTensorProduct
 
 end IsTensorProduct
@@ -318,7 +342,6 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
       induction x using h.inductionOn with
-      | zero => rw [smul_zero, map_zero, smul_zero]
       | tmul s m =>
         change h.lift F (r • s • f m) = r • h.lift F (s • f m)
         rw [← mul_smul, hF, hF, mul_smul]
@@ -326,7 +349,7 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
 
 nonrec theorem IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
   have hF : ∀ (s : S) (m : M), h.lift g (s • f m) = s • g m := h.lift_eq _
-  convert hF 1 x <;> rw [one_smul]
+  convert! hF 1 x <;> rw [one_smul]
 
 theorem IsBaseChange.lift_comp (g : M →ₗ[R] Q) : ((h.lift g).restrictScalars R).comp f = g :=
   LinearMap.ext (h.lift_eq g)
@@ -337,15 +360,14 @@ section
 include h
 
 @[elab_as_elim]
-nonrec theorem IsBaseChange.inductionOn (x : N) (motive : N → Prop) (zero : motive 0)
+nonrec theorem IsBaseChange.inductionOn (x : N) {motive : N → Prop}
     (tmul : ∀ m : M, motive (f m)) (smul : ∀ (s : S) (n), motive n → motive (s • n))
     (add : ∀ n₁ n₂, motive n₁ → motive n₂ → motive (n₁ + n₂)) : motive x :=
-  h.inductionOn x zero (fun _ _ => smul _ _ (tmul _)) add
+  h.inductionOn x (fun _ _ => smul _ _ (tmul _)) add
 
 theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
-  refine h.inductionOn x _ ?_ ?_ ?_ ?_
-  · rw [map_zero, map_zero]
+  refine h.inductionOn x ?_ ?_ ?_
   · assumption
   · intro s n e'
     rw [g₁.map_smul, g₂.map_smul, e']
@@ -362,7 +384,7 @@ variable (R M N S)
 
 theorem TensorProduct.isBaseChange : IsBaseChange S (TensorProduct.mk R S M 1) := by
   delta IsBaseChange
-  convert TensorProduct.isTensorProduct R S M using 1
+  convert! TensorProduct.isTensorProduct R S M using 1
   ext s x
   change s • (1 : S) ⊗ₜ[R] x = s ⊗ₜ[R] x
   rw [TensorProduct.smul_tmul']
@@ -371,13 +393,13 @@ theorem TensorProduct.isBaseChange : IsBaseChange S (TensorProduct.mk R S M 1) :
 
 variable {R M N S}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The base change of `M` along `R → S` is linearly equivalent to `S ⊗[R] M`. -/
 noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
   { h.equiv with
     map_smul' := fun r x => by
       change h.equiv (r • x) = r • h.equiv x
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · rw [smul_zero, map_zero, smul_zero]
+      refine TensorProduct.inductionOn x ?_ ?_
       · intro x y
         simp [smul_tmul', Algebra.linearMap_apply, smul_comm r x]
       · intro x y hx hy
@@ -402,6 +424,26 @@ theorem IsBaseChange.linearMap : IsBaseChange S (Algebra.linearMap R S) :=
   of_equiv (AlgebraTensorModule.rid R S S) fun x ↦ by
     simpa using (Algebra.algebraMap_eq_smul_one x).symm
 
+variable [Module R Q] [IsScalarTower R S Q] {f' : P →ₗ[R] Q}
+
+lemma IsBaseChange.iff_of_equiv_comm (eM : M ≃ₗ[R] P) (eN : N ≃ₗ[S] Q)
+    (comm : f'.comp eM.toLinearMap = (eN.restrictScalars R).comp f) :
+    IsBaseChange S f ↔ IsBaseChange S f' := by
+  simp only [IsBaseChange]
+  have (m : M) : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
+  refine ⟨fun ist ↦ ?_, fun ist ↦ ?_⟩
+  · convert! (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
+    ext s m'
+    obtain ⟨m, rfl⟩ := eM.surjective m'
+    simp [this]
+  · convert! (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
+    ext s m
+    simp [this]
+
+lemma IsBaseChange.comp_equiv (e : M ≃ₗ[R] P) (f : P →ₗ[R] N) (isb : IsBaseChange S f) :
+    IsBaseChange S (f.comp e.toLinearMap) :=
+  (IsBaseChange.iff_of_equiv_comm e (LinearEquiv.refl S N) (LinearMap.ext fun y ↦ by simp)).mpr isb
+
 section
 
 variable (A : Type*) [CommSemiring A]
@@ -418,7 +460,6 @@ lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f)
     (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
   refine IsBaseChange.of_equiv e (fun x ↦ ?_)
   induction x with
-  | zero => simp
   | tmul => simp [e, IsBaseChange.equiv_tmul]
   | add _ _ h1 h2 => simp [tmul_add, h1, h2]
 
@@ -441,12 +482,11 @@ theorem IsBaseChange.of_lift_unique
     refine
       { f' with
         map_smul' := fun s x =>
-          TensorProduct.induction_on x ?_ (fun s' y => smul_assoc s s' _) fun x y hx hy => ?_ }
-    · dsimp; rw [map_zero, smul_zero, map_zero, smul_zero]
+          TensorProduct.inductionOn x (fun s' y => smul_assoc s s' _) fun x y hx hy => ?_ }
     · dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
   simp_rw [DFunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
   let fe : S ⊗[R] M ≃ₗ[S] N :=
-    LinearEquiv.ofLinear f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_
+    LinearEquiv.ofLinearMap f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_
   · exact fe.bijective
   · rw [← LinearMap.cancel_left (ULift.moduleEquiv : ULift.{max v₁ v₃} N ≃ₗ[S] N).symm.injective]
     refine (h (ULift.{max v₁ v₃} N) <| ULift.moduleEquiv.symm.toLinearMap.comp f).unique ?_ rfl
@@ -469,7 +509,6 @@ theorem IsBaseChange.iff_lift_unique :
     exact ⟨h.lift g, h.lift_comp g, fun g' e => h.algHom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
     IsBaseChange.of_lift_unique f⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap := by
   apply IsBaseChange.of_lift_unique
   intro Q I₁ I₂ I₃ I₄ g
@@ -495,8 +534,8 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
     (hg : IsBaseChange T g) : IsBaseChange T ((g.restrictScalars R).comp f) := by
   apply IsBaseChange.of_lift_unique
   intro Q _ _ _ _ i
-  letI := Module.compHom Q (algebraMap S T)
-  haveI : IsScalarTower S T Q :=
+  let := Module.compHom Q (algebraMap S T)
+  have : IsScalarTower S T Q :=
     ⟨fun x y z => by
       rw [Algebra.smul_def, mul_smul]
       rfl⟩
@@ -518,9 +557,9 @@ lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
     IsBaseChange T h := by
   apply IsBaseChange.of_lift_unique
   intro Q _ _ _ _ r
-  letI : Module R Q := .restrictScalars R S Q
-  haveI : IsScalarTower R S Q := .restrictScalars R S Q
-  haveI : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
+  let : Module R Q := .restrictScalars R S Q
+  have : IsScalarTower R S Q := .restrictScalars R S Q
+  have : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
     simp [IsScalarTower.algebraMap_apply R S T]
   let r' : M →ₗ[R] Q := r ∘ₗ f
   let q : O →ₗ[T] Q := hc.lift r'
@@ -550,7 +589,7 @@ theorem IsBaseChange.map_id_lsmul_eq_lsmul_algebraMap
     {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R) :
     hf.map hf LinearMap.id (LinearMap.lsmul R M x) = LinearMap.lsmul S N (algebraMap R S x) := by
   ext y
-  refine IsTensorProduct.inductionOn hf y (by simp) ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
+  refine IsTensorProduct.inductionOn hf y ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
   intro s m
   rw [hf.map_eq hf]
   simpa using smul_comm x s (f m)
@@ -582,11 +621,9 @@ def Algebra.IsPushout.equiv [h : Algebra.IsPushout R S R' S'] : S ⊗[R] R' ≃�
   map_mul' x y := by
     dsimp
     induction x with
-    | zero => simp
     | add x y _ _ => simp [*, add_mul]
     | tmul a b =>
       induction y with
-      | zero => simp
       | add x y _ _ => simp [*, mul_add]
       | tmul x y => simp [IsBaseChange.equiv_tmul, Algebra.smul_def, mul_mul_mul_comm]
   commutes' := by simp [IsBaseChange.equiv_tmul, Algebra.smul_def]
@@ -609,7 +646,7 @@ variable {R S R' S'}
 theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' where
   out := .of_equiv
     { __ := (TensorProduct.comm R ..).toAddEquiv.trans (equiv R S R' S').toAddEquiv,
-      map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by
+      map_smul' _ x := x.inductionOn (fun _ _ ↦ by
         simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp +contextual) }
     fun _ ↦ by simp [equiv_tmul]
 
@@ -643,7 +680,7 @@ lemma Algebra.IsPushout.tensorProduct_tensorProduct
       Algebra.TensorProduct.includeRight.toRingHom) :
     Algebra.IsPushout A B (A ⊗[R] S) (B ⊗[R] S) := by
   constructor
-  convert isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
+  convert! isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
   ext s
   simpa using congr($H s)
 
@@ -657,6 +694,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
   (Algebra.TensorProduct.lift f g hf).comp
     ((Algebra.IsPushout.equiv R S R' S').symm.toAlgHom.restrictScalars R)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Algebra.pushoutDesc_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) (x : S) :
@@ -668,6 +706,7 @@ theorem Algebra.lift_algHom_comp_left [Algebra.IsPushout R S R' S'] {A : Type*} 
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R S S') = f :=
   AlgHom.ext fun x => (Algebra.pushoutDesc_left S' f g H x :)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) (x : R') :
@@ -684,8 +723,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
     [Algebra R A] {f g : S' →ₐ[R] A} (h₁ : f.comp (toAlgHom R R' S') = g.comp (toAlgHom R R' S'))
     (h₂ : f.comp (toAlgHom R S S') = g.comp (toAlgHom R S S')) : f = g := by
   ext x
-  refine H.1.inductionOn x _ ?_ ?_ ?_ ?_
-  · simp only [map_zero]
+  refine H.1.inductionOn x ?_ ?_ ?_
   · exact AlgHom.congr_fun h₁
   · intro s s' e
     rw [Algebra.smul_def, map_mul, map_mul, e]
@@ -715,7 +753,7 @@ lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     [Algebra.IsPushout R S R' S'] :
     Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
   let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
-  haveI : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
+  have : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
     rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
   have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
       (toAlgHom R R' T').toLinearMap := by
@@ -766,7 +804,6 @@ def IsPushout.cancelBaseChange : B ⊗[A] M ≃ₗ[S] S ⊗[R] M :=
   AddEquiv.toLinearEquiv (IsPushout.cancelBaseChangeAux R S A B M).symm <| by
     intro s x
     induction x with
-    | zero => simp
     | add x y hx hy => simp only [smul_add, map_add, hx, hy]
     | tmul s' m => simp [Algebra.smul_def, TensorProduct.smul_tmul']
 
@@ -802,6 +839,7 @@ lemma IsPushout.cancelBaseChangeAlg_tmul (c : C) :
     IsPushout.cancelBaseChangeAlg R S A B C (1 ⊗ₜ c) = 1 ⊗ₜ c := by
   simp [cancelBaseChangeAlg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma IsPushout.cancelBaseChangeAlg_symm_tmul (s : S) (c : C) :
     (IsPushout.cancelBaseChangeAlg R S A B C).symm (s ⊗ₜ c) = algebraMap S B s ⊗ₜ c := by

@@ -24,11 +24,11 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
-open Set Function
+open Set
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -37,6 +37,7 @@ namespace Ideal
 variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- An ideal `P` of a ring `R` is prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P` -/
+@[wikidata Q863912]
 class IsPrime (I : Ideal α) : Prop where
   /-- The prime ideal is not the entire ring. -/
   ne_top' : I ≠ ⊤
@@ -90,9 +91,6 @@ theorem not_isPrime_iff {I : Ideal α} :
 instance isPrime_bot [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
-
-@[deprecated isPrime_bot (since := "2026-01-10")]
-theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime := isPrime_bot
 
 theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>

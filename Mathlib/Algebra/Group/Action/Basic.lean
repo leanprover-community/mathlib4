@@ -64,7 +64,7 @@ lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
 
 @[to_additive]
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
-  (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
+  eq_inv_smul_iff.symm
 
 @[to_additive]
 lemma isCancelSMul_iff_eq_one_of_smul_eq :
@@ -95,7 +95,7 @@ section Arrow
 variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive (attr := implicit_reducible, simps) arrowAddAction
+@[to_additive (attr := instance_reducible, simps) arrowAddAction
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)` -/]
 def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
@@ -111,7 +111,7 @@ attribute [local instance] arrowAction
 variable [Monoid M]
 
 /-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
   smul_one _ := rfl
   smul_mul _ _ _ := rfl
@@ -150,7 +150,7 @@ variable (M α) in
 @[to_additive
 /-- Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`. -/]
 def toFun : α ↪ M → α :=
-  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
+  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert! congr_fun H 1⟩
 
 @[to_additive (attr := simp)]
 lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl

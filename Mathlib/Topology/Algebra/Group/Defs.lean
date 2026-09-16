@@ -27,7 +27,7 @@ where subtraction is not given by `a - b = a + (-b)`.
 We also provide convenience dot notation lemmas like `ContinuousAt.neg`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 
@@ -72,21 +72,21 @@ theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f
 
 variable {f : X → G} {s : Set X} {x : X}
 
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
+theorem Continuous.inv (hf : Continuous f) : Continuous f⁻¹ :=
   continuous_inv.comp hf
 
-@[to_additive]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 nonrec theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => (f x)⁻¹) s x :=
+    ContinuousWithinAt f⁻¹ s x :=
   hf.inv
 
-@[to_additive (attr := fun_prop)]
-nonrec theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x => (f x)⁻¹) x :=
+@[to_fun (attr := to_additive (attr := fun_prop))]
+nonrec theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt f⁻¹ x :=
   hf.inv
 
-@[to_additive (attr := fun_prop)]
-theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)⁻¹) s := fun x hx ↦
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn f⁻¹ s := fun x hx ↦
   (hf x hx).inv
 
 end ContinuousInv
@@ -144,22 +144,22 @@ theorem Filter.Tendsto.div' {f g : α → G} {l : Filter α} {a b : G} (hf : Ten
 
 variable {f g : X → G} {s : Set X} {x : X}
 
-@[to_additive (attr := fun_prop) sub]
+@[to_additive (attr := to_fun (attr := fun_prop)) sub]
 nonrec theorem ContinuousAt.div' (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun x => f x / g x) x :=
+    ContinuousAt (f / g) x :=
   hf.div' hg
 
-@[to_additive sub]
+@[to_additive (attr := to_fun (attr := fun_prop)) sub]
 theorem ContinuousWithinAt.div' (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun x => f x / g x) s x :=
+    ContinuousWithinAt (f / g) s x :=
   Filter.Tendsto.div' hf hg
 
-@[to_additive (attr := fun_prop) sub]
+@[to_additive (attr := to_fun (attr := fun_prop)) sub]
 theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x / g x) s := fun x hx => (hf x hx).div' (hg x hx)
+    ContinuousOn (f / g) s := fun x hx => (hf x hx).div' (hg x hx)
 
-@[to_additive (attr := continuity, fun_prop) sub]
-theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
+@[to_additive (attr := to_fun (attr := continuity, fun_prop)) sub]
+theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous (f / g) :=
   continuous_div'.comp₂ hf hg
 
 end ContinuousDiv

@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Results about `minpoly R x / (X - C x)`
@@ -45,7 +45,7 @@ variable {R x}
 
 lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   delta minpolyDiv minpoly
-  rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
+  rw [dite_eq_right hx, Polynomial.map_zero, zero_divByMonic]
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
   rw [← eval_map_algebraMap, ← derivative_map, ← minpolyDiv_spec R x]; simp
@@ -111,8 +111,8 @@ lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
   nontriviality S
   have := congr_arg leadingCoeff (minpolyDiv_spec R x)
   rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
-  · simpa using this
-  · simpa using minpolyDiv_ne_zero hx
+  · simpa using! this
+  · simpa using! minpolyDiv_ne_zero hx
 
 lemma natDegree_minpolyDiv_succ [Nontrivial S] :
     natDegree (minpolyDiv R x) + 1 = natDegree (minpoly R x) := by
@@ -144,7 +144,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩
     · rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left (b := 1) hi)]
-      apply SetLike.le_def.mp ?_
+      apply mem_of_le_of_mem ?_
         (Submodule.mul_mem_mul (IH ((Nat.le_succ _).trans hi))
           (Submodule.mem_span_singleton_self x))
       rw [Submodule.span_mul_span, Set.mul_singleton, Set.image_image]
@@ -157,7 +157,6 @@ lemma span_coeff_minpolyDiv :
     Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
       Subalgebra.toSubmodule (R[x]) := by
   nontriviality S
-  classical
   apply le_antisymm
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩
@@ -172,7 +171,7 @@ lemma span_coeff_minpolyDiv :
         Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
       Submodule.subset_span (Set.mem_range_self _)
     rw [Set.mem_preimage, SetLike.mem_coe, ← Submodule.sub_mem_iff_right _ this]
-    refine SetLike.le_def.mp ?_ (coeff_minpolyDiv_sub_pow_mem_span hx ?_)
+    refine mem_of_le_of_mem ?_ (coeff_minpolyDiv_sub_pow_mem_span hx ?_)
     · rw [Submodule.span_le, Set.image_subset_iff]
       intro j (hj : j < i)
       exact hi j hj (lt_trans hj hi')
@@ -203,7 +202,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     AlgHom.ext_of_adjoin_eq_top hxL (fun _ hx ↦ hx ▸ h)
   apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ this
   · intro σ
-    simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finset_sum,
+    simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finsetSum,
       eval_smul, eval_map, eval₂_minpolyDiv_self, this.eq_iff, smul_eq_mul, mul_ite, mul_zero,
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_X_pow]
     rw [sub_eq_zero, div_mul_cancel₀]

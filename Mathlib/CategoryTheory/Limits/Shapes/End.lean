@@ -88,7 +88,7 @@ def ext {W₁ W₂ : Wedge F} (e : W₁.pt ≅ W₂.pt)
   Cone.ext e (fun j =>
     match j with
     | .left _ => he _
-    | .right f => by simpa using (he f.left) =≫ _)
+    | .right f => by simpa using! (he f.left) =≫ _)
 
 section Constructor
 
@@ -96,7 +96,6 @@ variable (pt : C) (π : ∀ (j : J), pt ⟶ (F.obj (op j)).obj j)
   (hπ : ∀ ⦃i j : J⦄ (f : i ⟶ j), π i ≫ (F.obj (op i)).map f = π j ≫ (F.map f.op).app j)
 
 /-- Constructor for wedges. -/
-@[simps! pt]
 abbrev mk : Wedge F :=
   Multifork.ofι _ pt π (fun f ↦ hπ f.hom)
 
@@ -105,6 +104,9 @@ lemma mk_ι (j : J) : (mk pt π hπ).ι j = π j := rfl
 
 end Constructor
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma condition (c : Wedge F) {i j : J} (f : i ⟶ j) :
     c.ι i ≫ (F.obj (op i)).map f = c.ι j ≫ (F.map f.op).app j :=
@@ -144,6 +146,7 @@ namespace Cowedge
 
 variable {F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `CategoryTheory.Limits.Cocone.ext` specialized to produce
 isomorphisms of cowedges. -/
 @[simps!]
@@ -152,7 +155,7 @@ def ext {W₁ W₂ : Cowedge F} (e : W₁.pt ≅ W₂.pt)
   Cocone.ext e (fun j =>
     match j with
     | .right _ => he _
-    | .left f => by simpa using _ ≫= (he f.left))
+    | .left f => by simpa using! _ ≫= (he f.left))
 
 section Constructor
 
@@ -160,7 +163,6 @@ variable (pt : C) (ι : ∀ (j : J), (F.obj (op j)).obj j ⟶ pt)
   (hι : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f.op).app i ≫ ι i = (F.obj (op j)).map f ≫ ι j)
 
 /-- Constructor for cowedges. -/
-@[simps! pt]
 abbrev mk : Cowedge F :=
   Multicofork.ofπ _ pt ι (fun f ↦ hι f.hom)
 
@@ -169,6 +171,9 @@ lemma mk_π (j : J) : (mk pt ι hι).π j = ι j := rfl
 
 end Constructor
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma condition (c : Cowedge F) {i j : J} (f : i ⟶ j) :
     (F.map f.op).app i ≫ c.π i = (F.obj (op j)).map f ≫ c.π j :=

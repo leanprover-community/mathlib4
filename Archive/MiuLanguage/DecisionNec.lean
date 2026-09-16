@@ -3,9 +3,11 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Archive.MiuLanguage.Basic
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.ModEq
+module
+
+public import Archive.MiuLanguage.Basic
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.ModEq
 
 /-!
 # Decision procedure: necessary condition
@@ -20,6 +22,7 @@ Using this, we give a negative answer to the question: is `"MU"` derivable?
 miu, decision procedure
 -/
 
+@[expose] public section
 
 namespace Miu
 
@@ -133,7 +136,7 @@ theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M 
   constructor
   · rfl
   · obtain ⟨mhead, mtail⟩ := h₂
-    contrapose! mtail
+    contrapose mtail
     rw [cons_append] at mtail
     exact or_self_iff.mp (mem_append.mp mtail)
 
@@ -145,7 +148,7 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs
   · cases as
     · contradiction
     exact mhead
-  · contrapose! nmtail
+  · contrapose nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
     simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail
@@ -163,7 +166,7 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
   · cases as
     · contradiction
     exact mhead
-  · contrapose! nmtail
+  · contrapose nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
     simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail

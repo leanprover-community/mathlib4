@@ -35,7 +35,6 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 namespace GrothendieckTopology.Point
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a point `Φ` of a site `(C, J)`, an object `X : C`, and `x : Φ.fiber.obj X`,
 this is the point of the site `(Over X, J.over X)` such that the fiber of
 an object of `Over X` corresponding to a morphism `f : Y ⟶ X` identifies
@@ -50,7 +49,7 @@ def over : Point.{w} (J.over X) where
   jointly_surjective := by
     rintro U R hR ⟨u, hu⟩
     obtain ⟨R, rfl⟩ := (Sieve.overEquiv _).symm.surjective R
-    simp only [mem_over_iff, Equiv.apply_symm_apply] at hR
+    simp only [mem_over_iff, OrderIso.apply_symm_apply] at hR
     obtain ⟨Y, f, hf, v, rfl⟩ := Φ.jointly_surjective R hR u
     refine ⟨Over.mk (f ≫ U.hom), Over.homMk f, hf, ⟨v, ?_⟩, rfl⟩
     rw [FunctorToTypes.mem_fromOverSubfunctor_iff] at hu ⊢
@@ -71,7 +70,7 @@ lemma IsConservativeFamilyOfPoints.over
   mk' (fun Y S hS ↦ by
     obtain ⟨Y, f, rfl⟩ := Over.mk_surjective Y
     obtain ⟨S, rfl⟩ := (Sieve.overEquiv _).symm.surjective S
-    rw [mem_over_iff, Equiv.apply_symm_apply]
+    rw [mem_over_iff, OrderIso.apply_symm_apply]
     obtain ⟨ι, Z, g, rfl⟩ := S.exists_eq_ofArrows
     rw [hP.jointly_reflect_ofArrows_mem_of_small]
     intro Φ y
@@ -79,7 +78,7 @@ lemma IsConservativeFamilyOfPoints.over
       (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff]; rfl⟩)
     rw [Subtype.ext_iff] at hz₂
     exact ⟨i, Φ.obj.fiber.map b z,
-      (congr_fun (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
+      (ConcreteCategory.congr_hom (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
 
 end ObjectProperty
 

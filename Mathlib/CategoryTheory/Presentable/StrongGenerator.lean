@@ -26,7 +26,7 @@ locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u' u
 
@@ -84,7 +84,7 @@ instance ObjectProperty.isFiltered_costructuredArrow_colimitsCardinalClosure_ι
 
 variable {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
     [HasColimitsOfSize.{w, w} C] [LocallySmall.{w} C]
     {P : ObjectProperty C} [ObjectProperty.Small.{w} P] (hS₁ : P.IsStrongGenerator)

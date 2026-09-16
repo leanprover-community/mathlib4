@@ -15,7 +15,7 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
