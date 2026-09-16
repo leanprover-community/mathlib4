@@ -339,7 +339,7 @@ theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
 theorem isSimpleGroup_iff_card_eq [Finite G] : IsSimpleGroup G ↔ Nat.card G = p := by
   refine ⟨fun h ↦ ?_, fun h ↦ isSimpleGroup_of_prime_card h⟩
   have : IsMulCommutative G := Subgroup.center_eq_top_iff.mp <|
-    (h.eq_bot_or_eq_top_of_normal (Subgroup.center G) inferInstance).resolve_left <|
+    (h.eq_bot_or_eq_top_of_normal (Subgroup.center G)).resolve_left <|
       ne_bot_of_gt <| bot_lt_center hG
   replace h := Group.is_simple_iff_prime_card.mp h
   exact ((Nat.prime_dvd_prime_iff_eq Fact.out h).mp (hG.card_eq_or_dvd.resolve_left h.ne_one)).symm
