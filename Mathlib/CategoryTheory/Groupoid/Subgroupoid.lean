@@ -178,7 +178,7 @@ theorem mem_iff (S : Subgroupoid C) (F : Σ c d, c ⟶ d) : F ∈ S ↔ F.2.2 �
   Iff.rfl
 
 theorem le_iff (S T : Subgroupoid C) : S ≤ T ↔ ∀ {c d}, S.arrows c d ⊆ T.arrows c d := by
-  rw [SetLike.le_def, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
+  rw [IsConcreteLE.le_iff, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
 
 instance : Top (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => Set.univ

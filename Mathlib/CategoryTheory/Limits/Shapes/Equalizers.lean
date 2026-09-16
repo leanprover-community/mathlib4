@@ -140,7 +140,7 @@ theorem walkingParallelPairOp_right :
 The equivalence `WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ` sending left to left and right to
 right.
 -/
-@[simps functor inverse]
+@[implicit_reducible, simps functor inverse]
 def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒᵖ where
   functor := walkingParallelPairOp
   inverse := walkingParallelPairOp.leftOp
