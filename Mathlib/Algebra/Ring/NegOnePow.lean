@@ -5,6 +5,7 @@ Authors: Joël Riou, Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Group.SelfInv.Parity
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Data.ZMod.IntUnitsPower
@@ -44,47 +45,32 @@ lemma negOnePow_one : negOnePow 1 = -1 := rfl
 lemma negOnePow_succ (n : ℤ) : (n + 1).negOnePow = -n.negOnePow := by
   rw [negOnePow_add, negOnePow_one, mul_neg, mul_one]
 
-lemma negOnePow_even (n : ℤ) (hn : Even n) : n.negOnePow = 1 := by
-  obtain ⟨k, rfl⟩ := hn
-  rw [negOnePow_add, units_mul_self]
+lemma negOnePow_even (n : ℤ) (hn : Even n) : n.negOnePow = 1 :=
+  IsSelfInvMonoid.zpow_even hn _
 
 @[simp]
 lemma negOnePow_two_mul (n : ℤ) : (2 * n).negOnePow = 1 :=
   negOnePow_even _ ⟨n, two_mul n⟩
 
-lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 := by
-  obtain ⟨k, rfl⟩ := hn
-  simp only [negOnePow_add, negOnePow_two_mul, negOnePow_one, mul_neg, mul_one]
+lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 :=
+  IsSelfInvMonoid.zpow_odd hn _
 
 @[simp]
 lemma negOnePow_two_mul_add_one (n : ℤ) : (2 * n + 1).negOnePow = -1 :=
   negOnePow_odd _ ⟨n, rfl⟩
 
-lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
-  constructor
-  · intro h
-    rw [← Int.not_odd_iff_even]
-    intro h'
-    simp only [negOnePow_odd _ h'] at h
-    contradiction
-  · exact negOnePow_even n
+lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n :=
+  IsSelfInvMonoid.zpow_eq_one_iff (by decide)
 
-lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
-  constructor
-  · intro h
-    rw [← Int.not_even_iff_odd]
-    intro h'
-    rw [negOnePow_even _ h'] at h
-    contradiction
-  · exact negOnePow_odd n
+lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n :=
+  IsSelfInvMonoid.zpow_eq_self_iff (by decide)
 
 theorem abs_negOnePow (n : ℤ) : |(n.negOnePow : ℤ)| = 1 := by
   rw [abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
 @[simp]
-lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
-  dsimp [negOnePow]
-  simp only [zpow_neg, ← inv_zpow, inv_neg, inv_one]
+lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow :=
+  IsSelfInvMonoid.zpow_neg _ n
 
 @[simp]
 lemma negOnePow_abs (n : ℤ) : |n|.negOnePow = n.negOnePow := by
@@ -95,14 +81,8 @@ lemma negOnePow_sub (n₁ n₂ : ℤ) :
   simp only [sub_eq_add_neg, negOnePow_add, negOnePow_neg]
 
 lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
-    n₁.negOnePow = n₂.negOnePow ↔ Even (n₁ - n₂) := by
-  by_cases h₂ : Even n₂
-  · rw [negOnePow_even _ h₂, Int.even_sub, negOnePow_eq_one_iff]
-    tauto
-  · rw [Int.not_even_iff_odd] at h₂
-    rw [negOnePow_odd _ h₂, Int.even_sub, negOnePow_eq_neg_one_iff,
-      ← Int.not_odd_iff_even, ← Int.not_odd_iff_even]
-    tauto
+    n₁.negOnePow = n₂.negOnePow ↔ Even (n₁ - n₂) :=
+  IsSelfInvMonoid.zpow_eq_zpow_iff (by decide)
 
 @[simp]
 lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by

@@ -5,6 +5,7 @@ Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Idempotent
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.PUnit
@@ -44,7 +45,7 @@ boolean ring, boolean algebra
 
 @[expose] public section
 
-open scoped symmDiff
+open scoped IsSelfNegAddMonoid symmDiff
 
 variable {α β γ : Type*}
 
@@ -63,27 +64,6 @@ lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
-@[scoped simp]
-theorem add_self : a + a = 0 := by
-  have : a + a = a + a + (a + a) :=
-    calc
-      a + a = (a + a) * (a + a) := by rw [mul_self]
-      _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
-      _ = a + a + (a + a) := by rw [mul_self]
-  rwa [right_eq_add] at this
-
-@[scoped simp]
-theorem neg_eq : -a = a :=
-  calc
-    -a = -a + 0 := by rw [add_zero]
-    _ = -a + -a + a := by rw [← neg_add_cancel, add_assoc]
-    _ = a := by rw [add_self, zero_add]
-
-theorem add_eq_zero' : a + b = 0 ↔ a = b :=
-  calc
-    a + b = 0 ↔ a = -b := add_eq_zero_iff_eq_neg
-    _ ↔ a = b := by rw [neg_eq]
-
 @[simp]
 theorem mul_add_mul : a * b + b * a = 0 := by
   have : a + b = a + b + (a * b + b * a) :=
@@ -94,16 +74,29 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a + b + (a * b + b * a) := by abel
   rwa [left_eq_add] at this
 
-@[scoped simp]
-theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
+/-- Every element of a Boolean ring is its own negation, i.e. a Boolean ring has characteristic
+two. This makes the `IsSelfNegAddMonoid` lemmas available for Boolean rings. -/
+instance toIsSelfNegAddMonoid : IsSelfNegAddMonoid α where
+  add_self x := by simpa using mul_add_mul x x
 
 @[simp]
-theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
+theorem mul_one_add_self : a * (1 + a) = 0 := by simp [mul_add]
 
 -- Note [lower instance priority]
 instance (priority := 100) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
-    mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
+    mul_comm := fun a b => by rw [← IsSelfNegAddMonoid.add_eq_zero, mul_add_mul] }
+
+@[deprecated (since := "2026-09-07")] alias add_self := IsSelfNegAddMonoid.add_self_eq_zero
+@[deprecated (since := "2026-09-07")] alias neg_eq := IsSelfNegAddMonoid.neg_eq
+@[deprecated (since := "2026-09-07")] alias add_eq_zero' := IsSelfNegAddMonoid.add_eq_zero
+@[deprecated (since := "2026-09-07")] alias sub_eq_add := IsSelfNegAddMonoid.sub_eq_add
+
+/- The lemmas deprecated above were `scoped simp` in this namespace. Their replacements are
+`scoped simp` in `IsSelfNegAddMonoid` instead, so re-declare them here to keep
+`open scoped BooleanRing` delivering the same simp set. -/
+scoped[BooleanRing] attribute [simp]
+  IsSelfNegAddMonoid.add_self_eq_zero IsSelfNegAddMonoid.neg_eq IsSelfNegAddMonoid.sub_eq_add
 
 end BooleanRing
 
@@ -193,22 +186,24 @@ theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := by
 
 theorem sup_inf_self (a b : α) : a ⊔ a ⊓ b = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
-  rw [← mul_assoc, mul_self, add_assoc, add_self, add_zero]
+  rw [← mul_assoc, mul_self, add_assoc, IsSelfNegAddMonoid.add_self_eq_zero, add_zero]
 
 theorem inf_sup_self (a b : α) : a ⊓ (a ⊔ b) = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
-  rw [mul_add, mul_add, mul_self, ← mul_assoc, mul_self, add_assoc, add_self, add_zero]
+  rw [mul_add, mul_add, mul_self, ← mul_assoc, mul_self, add_assoc,
+    IsSelfNegAddMonoid.add_self_eq_zero, add_zero]
 
 theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b * c + a * (b * c) :=
   calc
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
           (a * b * c + a * a * b * c) := by ring
-    _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
+    _ = a + b * c + a * (b * c) := by
+      simp only [mul_self, IsSelfNegAddMonoid.add_self_eq_zero, add_zero]
 
 theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
-  rw [le_sup_inf_aux, add_self, mul_self, zero_add]
+  rw [le_sup_inf_aux, IsSelfNegAddMonoid.add_self_eq_zero, mul_self, zero_add]
 
 protected theorem sup_def (a b : α) : a ⊔ b = a + b + a * b := rfl
 protected theorem inf_def (a b : α) : a ⊓ b = a * b := rfl
@@ -234,7 +229,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     bot_le a := by simp [← sup_eq_right, BooleanRing.sup_def]
     compl a := 1 + a
     inf_compl_le_bot a := by simp [BooleanRing.inf_def]
-    top_le_sup_compl a := by simp [BooleanRing.sup_def, mul_add, ← add_assoc, add_comm] }
+    top_le_sup_compl a := by simp [BooleanRing.sup_def, mul_add, add_comm] }
 
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
@@ -273,7 +268,7 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
 private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc (a + b + a * b) * (1 + a * b)
     _ = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) := by ring
-    _ = a + b := by simp only [mul_self, add_self, add_zero]
+    _ = a + b := by simp only [mul_self, IsSelfNegAddMonoid.add_self_eq_zero, add_zero]
 
 @[simp]
 theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by

@@ -70,6 +70,9 @@ lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
 instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
+instance instIsSelfNegAddMonoid [IsSelfNegAddMonoid M] : IsSelfNegAddMonoid (ι →₀ M) :=
+  DFunLike.coe_injective.isSelfNegAddMonoid _ coe_zero coe_add
+
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M) where
   add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
 

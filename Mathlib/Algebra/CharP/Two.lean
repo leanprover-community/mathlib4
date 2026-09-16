@@ -15,8 +15,19 @@ public import Mathlib.Algebra.Ring.Parity
 
 This file contains results about `CharP R 2`, in the `CharTwo` namespace.
 
+The lemmas that do not mention multiplication hold for any additive monoid in which every element
+is its own negation, and are stated for `IsSelfNegAddMonoid` in
+`Mathlib/Algebra/Group/SelfInv.lean`; the instance `CharTwo.toIsSelfNegAddMonoid` below makes them
+available here, and a `scoped simp` block below re-exports their `simp` set, so
+`open scoped CharTwo` behaves as before. Lemmas about `n • x` for varying `n` live in
+`Mathlib/Algebra/Group/SelfInv/Parity.lean`, which is not imported here; import it to use them.
+
 The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_char` lemmas
 elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
+
+## Tags
+
+characteristic two, elementary abelian 2-group, boolean group, exponent two
 -/
 
 public section
@@ -73,52 +84,27 @@ example : (37 : R) = 1 := by simp
 
 end AddMonoidWithOne
 
-section Semiring
+section NonAssocSemiring
 
-variable [Semiring R] [CharP R 2]
+variable [NonAssocSemiring R] [CharP R 2]
 
-@[scoped simp]
-theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_mul x, two_eq_zero, zero_mul]
+/-- Every element of a semiring of characteristic two is its own negation. -/
+instance toIsSelfNegAddMonoid : IsSelfNegAddMonoid R where
+  add_self x := by rw [← two_mul x, two_eq_zero, zero_mul]
 
-@[scoped simp]
-protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_nsmul, add_self_eq_zero]
+/- The general characteristic-two lemmas used to live in this namespace. They are now stated for
+`IsSelfNegAddMonoid`; their `simp` set is re-exported here so that `open scoped CharTwo` is
+unchanged, and so that the rest of this file can rely on it. -/
+attribute [scoped simp] IsSelfNegAddMonoid.add_self_eq_zero IsSelfNegAddMonoid.two_nsmul
+  IsSelfNegAddMonoid.add_cancel_left IsSelfNegAddMonoid.add_cancel_right
+  IsSelfNegAddMonoid.add_add_add_cancel IsSelfNegAddMonoid.neg_eq IsSelfNegAddMonoid.sub_eq_add
+  IsSelfNegAddMonoid.two_zsmul
 
-@[scoped simp]
-protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
-  rw [← add_assoc, add_self_eq_zero, zero_add]
-
-@[scoped simp]
-protected theorem add_cancel_right (a b : R) : a + b + b = a := by
-  rw [add_assoc, add_self_eq_zero, add_zero]
-
-end Semiring
+end NonAssocSemiring
 
 section Ring
 
 variable [Ring R] [CharP R 2]
-
-@[scoped simp]
-theorem neg_eq (x : R) : -x = x := by
-  rw [neg_eq_iff_add_eq_zero, add_self_eq_zero]
-
-theorem neg_eq' : Neg.neg = (id : R → R) :=
-  funext neg_eq
-
-@[scoped simp]
-theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
-
-theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
-  rw [← sub_eq_iff_eq_add, sub_eq_add]
-
-theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
-  rw [← eq_sub_iff_add_eq, sub_eq_add]
-
-@[scoped simp]
-protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
-  rw [two_zsmul, add_self_eq_zero]
-
-protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
-  rw [← CharTwo.sub_eq_add, sub_eq_iff_eq_add, zero_add]
 
 theorem intCast_eq_ite (n : ℤ) : (n : R) = if Even n then 0 else 1 := by
   obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg <;> simpa using natCast_eq_ite n
@@ -180,13 +166,29 @@ variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
 
 theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
   intro x y h
-  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero, CharTwo.add_eq_zero] at h
+  rwa [← IsSelfNegAddMonoid.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero,
+    IsSelfNegAddMonoid.add_eq_zero] at h
 
 @[scoped simp]
 theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
   sq_injective.eq_iff
 
 end CommRing
+
+@[deprecated (since := "2026-09-07")]
+alias add_self_eq_zero := IsSelfNegAddMonoid.add_self_eq_zero
+@[deprecated (since := "2026-09-07")] alias two_nsmul := IsSelfNegAddMonoid.two_nsmul
+@[deprecated (since := "2026-09-07")] alias add_cancel_left := IsSelfNegAddMonoid.add_cancel_left
+@[deprecated (since := "2026-09-07")] alias add_cancel_right := IsSelfNegAddMonoid.add_cancel_right
+@[deprecated (since := "2026-09-07")] alias neg_eq := IsSelfNegAddMonoid.neg_eq
+@[deprecated (since := "2026-09-07")] alias neg_eq' := IsSelfNegAddMonoid.neg_eq'
+@[deprecated (since := "2026-09-07")] alias sub_eq_add := IsSelfNegAddMonoid.sub_eq_add
+@[deprecated (since := "2026-09-07")]
+alias add_eq_iff_eq_add := IsSelfNegAddMonoid.add_eq_iff_eq_add
+@[deprecated (since := "2026-09-07")]
+alias eq_add_iff_add_eq := IsSelfNegAddMonoid.eq_add_iff_add_eq
+@[deprecated (since := "2026-09-07")] alias two_zsmul := IsSelfNegAddMonoid.two_zsmul
+@[deprecated (since := "2026-09-07")] alias add_eq_zero := IsSelfNegAddMonoid.add_eq_zero
 
 end CharTwo
 
@@ -199,7 +201,7 @@ section ringChar
 variable [Ring R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
-  refine ⟨fun h => ?_, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
+  refine ⟨fun h => ?_, fun h => have := ringChar.of_eq h; IsSelfNegAddMonoid.neg_eq 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 

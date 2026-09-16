@@ -98,8 +98,13 @@ variable {G : Type*} [Group G] [IsKleinFour G]
 lemma not_isCyclic : ¬IsCyclic G :=
   fun h ↦ by simpa using h.exponent_eq_card
 
+-- Scoped for the same reason as `instFinite` above: it always applies, so as a global instance
+-- every `IsSelfInvMonoid` query would search for an `IsKleinFour` one.
 @[to_additive]
-lemma inv_eq_self (x : G) : x⁻¹ = x := inv_eq_self_of_exponent_two (by simp) x
+scoped instance instIsSelfInvMonoid : IsSelfInvMonoid G := .of_exponent_dvd_two exponent_two.dvd
+
+@[to_additive]
+lemma inv_eq_self (x : G) : x⁻¹ = x := IsSelfInvMonoid.inv_eq x
 
 /- this is not an appropriate global `simp` lemma for a `Prop`-mixin class. Indeed, if it were
 then every time Lean sees `·⁻¹` it would try to apply `inv_eq_self` which would trigger
@@ -108,8 +113,7 @@ scoped[IsKleinFour] attribute [simp] inv_eq_self
 scoped[IsAddKleinFour] attribute [simp] neg_eq_self
 
 @[to_additive]
-lemma mul_self (x : G) : x * x = 1 := by
-  rw [mul_eq_one_iff_eq_inv, inv_eq_self]
+lemma mul_self (x : G) : x * x = 1 := IsSelfInvMonoid.mul_self x
 
 @[to_additive]
 lemma eq_finset_univ [Fintype G] [DecidableEq G]
