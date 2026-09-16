@@ -169,28 +169,34 @@ section continuous
 
 variable [TopologicalSpace X]
 
-theorem continuous_kerFun_iff :
-    Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) := by
-  constructor <;> intro
-  · rw [continuous_iff_continuousAt]
+theorem continuous_tfae : List.TFAE [
+    Continuous (fun p : X × X => kernel H p.1 p.2),
+    Continuous (kerFun H),
+    Continuous (fun x : X => eval H x)] := by
+  tfae_have 1 → 2 := by
+    intro
+    rw [continuous_iff_continuousAt]
     intro x
     rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
     simpa [norm_kerFun_sub_kerFun] using ContinuousAt.tendsto (x := x)
       (f := fun e ↦ √‖kernel H e e - kernel H x e - kernel H e x + kernel H x x‖) (by fun_prop)
-  · dsimp only [kernel, Matrix.of_apply]
-    fun_prop
-
-theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) := by
-  constructor
-  · rintro hE
-    rw [continuous_iff_continuousAt] at ⊢ hE
-    intro x
-    simp_rw [Metric.continuousAt_iff'] at ⊢ hE
-    simp_rw [kerFun_eq_adjoint_eval, LinearIsometryEquiv.dist_map]
-    exact hE x
-  · rintro hK
+  tfae_have 2 → 3 := by
+    rintro hK
     simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
     exact ContinuousLinearMap.adjoint.continuous.comp hK
+  tfae_have 3 → 1 := by
+    rintro hE
+    dsimp only [kernel, Matrix.of_apply]
+    simp_rw [kerFun_eq_adjoint_eval]
+    fun_prop
+  tfae_finish
+
+theorem continuous_kernel_iff :
+    Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) :=
+  (continuous_tfae H).out 1 2
+
+theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) :=
+  (continuous_tfae H).out 3 2
 
 end continuous
 
