@@ -854,6 +854,14 @@ theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : �
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
   simp only [alternatization_def, smul_apply, sum_apply]
 
+@[simp]
+theorem alternatization_compLinearMap
+    (f : MultilinearMap R (fun _ : ι => M') N')
+    (g : M →ₗ[R] M') :
+    (f.compLinearMap fun _ => g).alternatization = f.alternatization.compLinearMap g := by
+  ext
+  simp [alternatization]
+
 end MultilinearMap
 
 namespace AlternatingMap

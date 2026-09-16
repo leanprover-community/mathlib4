@@ -74,7 +74,7 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
   · rename_i a; cases a <;> simp
   · simp only [toNat_natCast]; rw [← natCast_mul, toNat_natCast]
 
-@[deprecated add_pos_of_right (since := "2026-05-25")]
+@[deprecated add_pos_of_right +typeChanged (since := "2026-05-25")]
 lemma add_one_pos : 0 < n + 1 :=
   add_pos_of_right zero_lt_one n
 
