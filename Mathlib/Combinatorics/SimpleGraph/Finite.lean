@@ -412,7 +412,7 @@ section Finite
 variable [Fintype V]
 
 /-- `Fintype` for `neighborSet` -/
-@[deprecated inferInstance (since := "2026-04-29")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-29")]
 abbrev neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
   inferInstance
 
