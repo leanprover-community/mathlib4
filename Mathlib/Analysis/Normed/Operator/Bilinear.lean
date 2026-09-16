@@ -177,11 +177,9 @@ variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
 /-- Flip the order of arguments of a continuous bilinear map. Linear version.
 Do not use: use instead `flip` which outputs a continuous bilinear map. -/
 def flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →ₛₗ[σ₂₃] E' →ₛₗ[σ₁₃] G' :=
-  LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
-      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
-        (fun c y x => by simp only [f.map_smulₛₗ, smul_apply])
+  LinearMap.flip f.toLinearMap₁₂
 
-lemma exists_eq_flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') :
+private lemma exists_eq_flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') :
     ∃ g : F' →SL[σ₂₃] E' →SL[σ₁₃] G', ∀ a b, flipₗ f a b = g a b := by
   let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
   let : NormedSpace 𝕜 E' := IsNormableSpace.toNormedSpace 𝕜 E'
@@ -193,10 +191,9 @@ lemma exists_eq_flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') :
     ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm], fun a b ↦ rfl⟩
 
 /-- Flip the order of arguments of a continuous bilinear map.
-For a version bundled as `LinearIsometryEquiv`, see
-`ContinuousLinearMap.flipL`. -/
+For a version bundled as `LinearIsometryEquiv`, see `ContinuousLinearMap.flipL`. -/
 def flip (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →SL[σ₂₃] E' →SL[σ₁₃] G' :=
-  (flipₗ f).mkContinuous₂OfExists (exists_eq_flipₗ f)
+  (flipₗ f).mkContinuous₂OfExists (by exact exists_eq_flipₗ f)
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
   f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
@@ -322,7 +319,7 @@ def compSLₗ : (F' →SL[σ₂₃] G') →ₗ[𝕜₃] (E' →SL[σ₁₂] F') 
   LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add
     fun c f g => by ext; simp only [map_smulₛₗ, comp_apply, smul_apply]
 
-lemma exists_eq_compSLₗ :
+private lemma exists_eq_compSLₗ :
     ∃ g : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G',
       ∀ a b, compSLₗ E' F' G' σ₁₂ σ₂₃ a b = g a b := by
   let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
@@ -336,7 +333,7 @@ lemma exists_eq_compSLₗ :
 
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
 def compSL : (F' →SL[σ₂₃] G') →L[𝕜₃] (E' →SL[σ₁₂] F') →SL[σ₂₃] E' →SL[σ₁₃] G' :=
-  (compSLₗ E' F' G' σ₁₂ σ₂₃).mkContinuous₂OfExists (exists_eq_compSLₗ E' F' G' σ₁₂ σ₂₃)
+  (compSLₗ E' F' G' σ₁₂ σ₂₃).mkContinuous₂OfExists (by exact exists_eq_compSLₗ E' F' G' σ₁₂ σ₂₃)
 
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound₂ _ zero_le_one
@@ -501,7 +498,7 @@ def smulRightLₗ : StrongDual 𝕜 E' →ₗ[𝕜] Fₗ' →ₗ[𝕜] E' →L[�
     ext x
     simp [smul_smul]
 
-lemma exists_eq_smulRightLₗ :
+private lemma exists_eq_smulRightLₗ :
     ∃ g : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ',
       ∀ a b, smulRightLₗ 𝕜 E' Fₗ' a b = g a b := by
   let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
@@ -519,7 +516,7 @@ This is also known as a rank-one operator.
 See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 @[simps! apply_apply]
 def smulRightL : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ' :=
-  (smulRightLₗ 𝕜 E' Fₗ').mkContinuous₂OfExists (exists_eq_smulRightLₗ 𝕜 E' Fₗ')
+  (smulRightLₗ 𝕜 E' Fₗ').mkContinuous₂OfExists (by exact exists_eq_smulRightLₗ 𝕜 E' Fₗ')
 
 end ContinuousLinearMap
 
