@@ -63,10 +63,10 @@ lemma le_leftOrthogonal_iff_le_rightOrthogonal (Q : ObjectProperty C) :
   -- appear in the opposite order
   (gc_rightOrthogonal_leftOrthogonal P (OrderDual.toDual Q)).symm
 
-lemma le_rightOrthogonal_leftOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal :=
+lemma le_leftOrthogonal_rightOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal :=
   gc_rightOrthogonal_leftOrthogonal.le_u_l P
 
-lemma le_leftOrthogonal_rightOrthogonal : P ≤ P.leftOrthogonal.rightOrthogonal :=
+lemma le_rightOrthogonal_leftOrthogonal : P ≤ P.leftOrthogonal.rightOrthogonal :=
   gc_rightOrthogonal_leftOrthogonal.dual.le_u_l P
 
 lemma antitone_rightOrthogonal : Antitone (rightOrthogonal (C := C)) :=

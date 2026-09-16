@@ -266,9 +266,9 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
 
 /-- If `P` is closed under quotients, extensions, and coproducts, then
 `P.rightOrthogonal.leftOrthogonal ≤ P`. Together with
-`ObjectProperty.le_rightOrthogonal_leftOrthogonal`, this gives equality
-`rightOrthogonal_leftOrthogonal_eq_self`. -/
-lemma rightOrthogonal_leftOrthogonal_le (P : ObjectProperty C)
+`ObjectProperty.le_leftOrthogonal_rightOrthogonal`, this gives equality
+`leftOrthogonal_rightOrthogonal_eq_self`. -/
+lemma leftOrthogonal_rightOrthogonal_le (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
     [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
@@ -281,12 +281,12 @@ lemma rightOrthogonal_leftOrthogonal_le (P : ObjectProperty C)
 
 /-- If an object property `P` in an abelian category is closed under quotients, extensions,
 and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. -/
-theorem rightOrthogonal_leftOrthogonal_eq_self (P : ObjectProperty C)
+theorem leftOrthogonal_rightOrthogonal_eq_self (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
     [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     P.rightOrthogonal.leftOrthogonal = P :=
-  le_antisymm P.rightOrthogonal_leftOrthogonal_le P.le_rightOrthogonal_leftOrthogonal
+  le_antisymm P.leftOrthogonal_rightOrthogonal_le P.le_leftOrthogonal_rightOrthogonal
 
 end ObjectProperty
 
@@ -407,14 +407,14 @@ instance (P : ObjectProperty C) : IsTorsionFreeClass P.rightOrthogonal :=
 
 /-- A property of objects is a torsion class iff it is the left orthogonal of its right
 orthogonal. -/
-lemma isTorsionClass_iff_rightOrthogonal_leftOrthogonal_eq (P : ObjectProperty C) :
+lemma isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq (P : ObjectProperty C) :
     IsTorsionClass P ↔ P.rightOrthogonal.leftOrthogonal = P :=
   ⟨fun ⟨⟨F, h⟩⟩ ↦ by rw [← h.free_eq_rightOrthogonal, ← h.torsion_eq_leftOrthogonal],
     fun h ↦ ⟨⟨P.rightOrthogonal, ⟨h.symm, rfl⟩⟩⟩⟩
 
 /-- A property of objects is a torsion-free class iff it is the right orthogonal of its left
 orthogonal. -/
-lemma isTorsionFreeClass_iff_leftOrthogonal_rightOrthogonal_eq (P : ObjectProperty C) :
+lemma isTorsionFreeClass_iff_rightOrthogonal_leftOrthogonal_eq (P : ObjectProperty C) :
     IsTorsionFreeClass P ↔ P.leftOrthogonal.rightOrthogonal = P :=
   ⟨fun ⟨⟨T, h⟩⟩ ↦ by rw [← h.torsion_eq_leftOrthogonal, ← h.free_eq_rightOrthogonal],
     fun h ↦ ⟨⟨P.leftOrthogonal, ⟨rfl, h.symm⟩⟩⟩⟩
@@ -426,7 +426,7 @@ variable (P : ObjectProperty C) [IsTorsionClass P]
 /-- The torsion theory whose torsion class is `P`; its torsion-free class is necessarily
 `P.rightOrthogonal`. -/
 lemma torsionTheory : TorsionTheory P P.rightOrthogonal :=
-  ⟨((isTorsionClass_iff_rightOrthogonal_leftOrthogonal_eq P).mp inferInstance).symm, rfl⟩
+  ⟨((isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq P).mp inferInstance).symm, rfl⟩
 
 /-- A torsion class is closed under quotients. -/
 instance : P.IsClosedUnderQuotients := (torsionTheory P).torsion_isClosedUnderQuotients
@@ -450,7 +450,7 @@ variable (P : ObjectProperty C) [IsTorsionFreeClass P]
 /-- The torsion theory whose torsion-free class is `P`; its torsion class is necessarily
 `P.leftOrthogonal`. -/
 lemma torsionTheory : TorsionTheory P.leftOrthogonal P :=
-  ⟨rfl, ((isTorsionFreeClass_iff_leftOrthogonal_rightOrthogonal_eq P).mp inferInstance).symm⟩
+  ⟨rfl, ((isTorsionFreeClass_iff_rightOrthogonal_leftOrthogonal_eq P).mp inferInstance).symm⟩
 
 /-- A torsion-free class is closed under subobjects. -/
 instance : P.IsClosedUnderSubobjects := (torsionTheory P).free_isClosedUnderSubobjects
@@ -476,10 +476,10 @@ theorem isTorsionClass_iff (P : ObjectProperty C)
       P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
         ∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J) := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, fun _ ↦ inferInstance⟩, ?_⟩
-  -- these hypotheses are consumed as instances by `rightOrthogonal_leftOrthogonal_eq_self`
+  -- these hypotheses are consumed as instances by `leftOrthogonal_rightOrthogonal_eq_self`
   rintro ⟨hquot, hext, hcoprod⟩
-  exact (isTorsionClass_iff_rightOrthogonal_leftOrthogonal_eq P).mpr
-    P.rightOrthogonal_leftOrthogonal_eq_self
+  exact (isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq P).mpr
+    P.leftOrthogonal_rightOrthogonal_eq_self
 
 /-- A property of objects is a torsion-free class if and only if its opposite is a torsion
 class in the opposite category. -/
