@@ -291,12 +291,12 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
   rw [← relIndex_bot_left, ← index_bot]
   exact relIndex_mul_index bot_le
 
-@[to_additive]
+@[to_additive card_ker_mul_card_range]
 theorem card_ker_mul_card_range (f : G →* G') : Nat.card f.ker * Nat.card f.range = Nat.card G := by
   rw [← index_ker, card_mul_index]
 
-@[to_additive]
-theorem card_ker_mul_card_of_surjective {f : G →* G'} (hf : Function.Surjective f) :
+@[to_additive card_ker_mul_card_of_surjective]
+theorem card_ker_mul_card_of_surjective (hf : Function.Surjective f) :
     Nat.card f.ker * Nat.card G' = Nat.card G := by
   rw [← card_ker_mul_card_range f,  MonoidHom.range_eq_top.mpr hf, Nat.card_congr topEquiv.toEquiv]
 
