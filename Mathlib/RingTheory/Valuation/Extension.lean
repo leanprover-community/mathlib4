@@ -39,7 +39,8 @@ without first determining the normalizations once and for all.
   `vR` on `R`.
 
 * `Valuation.HasExtension.mapValueGroup₀ vR vA` : The extension of valuation groups associated to
-  an extension of the valuation `vR` on `R` to `vA` on `A`.
+  an extension of the valuation `vR` on `R` to `vA` on `A`, which is uniquely characterized by the
+  lemmas `mapValueGroup₀_strictMono`, `mapValueGroup₀_strictMono`, and `mapValueGroup₀_uniq`.
 
 ## References
 
@@ -235,7 +236,10 @@ variable {ΓR ΓA : Type*}
     (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
 
 open MonoidWithZeroHom in
-/-- The map of valuation groups induced by a valuation extension. -/
+/-- The map of valuation groups induced by a valuation extension.
+See `mapValueGroup₀_apply_restrict` for the proof that this map is
+compatible with the valuation extension, `mapValueGroup₀_strictMono` for the proof
+that it is compatible with the order and `mapValueGroup₀_uniq` for the uniqueness. -/
 noncomputable def mapValueGroup₀ :
     (ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
       (ValueGroup₀ (.ofClass vA : A →*₀ ΓA)) := by
@@ -275,7 +279,7 @@ theorem restrict_map_mapValueGroup₀ :
     rw [← comap_apply, hc]
     simp [MonoidWithZeroHom.ValueGroup₀.embedding_apply]
 
-theorem mapValueGroup₀_apply_restrict (x : R) :
+theorem mapValueGroup₀_strictMono (x : R) :
     mapValueGroup₀ vR vA (vR.restrict x) = vA.restrict (algebraMap R A x) :=
   congr($(restrict_map_mapValueGroup₀ vR vA) x)
 
