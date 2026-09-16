@@ -163,7 +163,7 @@ open scoped RealInnerProductSpace
 variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
   {P : Measure Ω} {P' : Measure Ω'}
   [IsProbabilityMeasure P] [IsProbabilityMeasure P']
-  {d : ℕ+} {X : ℕ → Ω → EuclideanSpace ℝ (Fin d)} {Y : Ω' → EuclideanSpace ℝ (Fin d)}
+  {d : ℕ} {X : ℕ → Ω → EuclideanSpace ℝ (Fin d)} {Y : Ω' → EuclideanSpace ℝ (Fin d)}
 
 theorem tendsto_map_inv_sqrt_smul_sum
     (h0 : P[X 0] = 0)
