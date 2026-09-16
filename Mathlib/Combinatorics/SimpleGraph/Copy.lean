@@ -212,6 +212,7 @@ end Copy
 def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy hom_injective
 
 /-- Lift a copy between graphs to a copy between the graphs after deleting a set of edges. -/
+@[simps]
 def Copy.deleteEdges (f : Copy G H) (s : Set (Sym2 V)) (t : Set (Sym2 W))
     (h : Sym2.map f ⁻¹' t ⊆ s) : Copy (G.deleteEdges s) (H.deleteEdges t) where
   toHom := f.toHom.deleteEdges s t h
@@ -220,11 +221,6 @@ def Copy.deleteEdges (f : Copy G H) (s : Set (Sym2 V)) (t : Set (Sym2 W))
 @[simp]
 theorem Copy.coe_deleteEdges {f : Copy G H} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
     ⇑(f.deleteEdges s t h) = f :=
-  rfl
-
-@[simp]
-theorem Copy.deleteEdges_toHom {f : Copy G H} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
-    (f.deleteEdges s t h).toHom = f.toHom.deleteEdges s t h :=
   rfl
 
 @[simp]
