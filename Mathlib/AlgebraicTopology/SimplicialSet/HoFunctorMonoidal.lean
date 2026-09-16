@@ -341,16 +341,14 @@ def associativity'Iso :
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _)
       (fun z₀ z₁ e ↦ by
         dsimp
-        rw [Category.comp_id, Category.id_comp, ← prod_id,
-          inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
-          CategoryTheory.Functor.map_id]
+        simp only [Category.comp_id, Category.id_comp, ← prod_id,
+          CategoryTheory.Functor.map_id, inverse_obj, inverse_map_mkHom_id_homMk]
         dsimp [← Edge.id_tensor_id]))
       (fun y₀ y₁ e ↦ by
         ext z
         obtain ⟨z, rfl⟩ := z.mk_surjective
         dsimp
-        rw [Category.comp_id, Category.id_comp,
-          inverse_map_mkHom_homMk_id, inverse_map_mkHom_id_homMk]))
+        simp only [Category.comp_id, Category.id_comp]))
       (fun x₀ x₁ e ↦ by
         ext y z
         obtain ⟨y, rfl⟩ := y.mk_surjective
