@@ -29,6 +29,7 @@ variable {C₁ C₂ C₁₂ C₃ C₂₃ D₁ D₂ D₃ E : Type*}
 
 /-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E`
 given by the curryfication of functors in three variables. -/
+@[implicit_reducible]
 def currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E :=
   currying.trans (currying.trans (prod.associativity C₁ C₂ C₃).congrLeft)
 
@@ -39,11 +40,13 @@ abbrev uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ 
 abbrev curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E := currying₃.inverse
 
 /-- Uncurrying functors in three variables gives a fully faithful functor. -/
+@[implicit_reducible]
 def fullyFaithfulUncurry₃ :
     (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ × C₂ × C₃ ⥤ E)).FullyFaithful :=
   currying₃.fullyFaithfulFunctor
 
 /-- Currying functors in three variables gives a fully faithful functor. -/
+@[implicit_reducible]
 def fullyFaithfulCurry₃ :
     (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).FullyFaithful :=
   currying₃.fullyFaithfulInverse
@@ -102,7 +105,7 @@ set_option backward.isDefEq.respectTransparency false in
 and `G : D₁ × D₂ × D₃ ⥤ E`, this is the isomorphism between
 `curry₃.obj (F₁.prod (F₂.prod F₃) ⋙ G) : C₁ ⥤ C₂ ⥤ C₃ ⥤ E`
 and `F₁ ⋙ curry₃.obj G ⋙ ((whiskeringLeft₂ E).obj F₂).obj F₃`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def curry₃ObjProdComp (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃) (G : D₁ × D₂ × D₃ ⥤ E) :
     curry₃.obj (F₁.prod (F₂.prod F₃) ⋙ G) ≅
       F₁ ⋙ curry₃.obj G ⋙ ((whiskeringLeft₂ E).obj F₂).obj F₃ :=
@@ -113,7 +116,7 @@ def curry₃ObjProdComp (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C�
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `bifunctorComp₁₂` can be described in terms of the curryfication of functors. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def bifunctorComp₁₂Iso (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ E) :
     bifunctorComp₁₂ F₁₂ G ≅ curry.obj (uncurry.obj F₁₂ ⋙ G) :=
   NatIso.ofComponents (fun _ => NatIso.ofComponents (fun _ => Iso.refl _))
@@ -121,7 +124,7 @@ def bifunctorComp₁₂Iso (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ �
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `bifunctorComp₂₃` can be described in terms of the curryfication of functors. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃) :
     bifunctorComp₂₃ F G₂₃ ≅
     curry.obj (curry.obj (prod.associator _ _ _ ⋙
@@ -132,7 +135,7 @@ def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃
 /--
 Flip the first and third arguments in a trifunctor.
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def flip₁₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₃ ⥤ C₂ ⥤ C₁ ⥤ E where
   obj G := {
     obj H := {
@@ -145,7 +148,7 @@ set_option backward.defeqAttrib.useBackward true in
 /--
 Flip the first and third arguments in a trifunctor, as a functor.
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def flip₁₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₃ ⥤ C₂ ⥤ C₁ ⥤ E) where
   obj F := F.flip₁₃
   map f := {
@@ -158,7 +161,7 @@ def flip₁₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₃ ⥤ C₂ ⥤ C�
 /--
 Flip the second and third arguments in a trifunctor.
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def flip₂₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₁ ⥤ C₃ ⥤ C₂ ⥤ E where
   obj G := (F.obj G).flip
   map f := (flipFunctor _ _ _).map (F.map f)
@@ -167,7 +170,7 @@ set_option backward.defeqAttrib.useBackward true in
 /--
 Flip the second and third arguments in a trifunctor, as a functor.
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def flip₂₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ ⥤ C₃ ⥤ C₂ ⥤ E) where
   obj F := F.flip₂₃
   map f := {
