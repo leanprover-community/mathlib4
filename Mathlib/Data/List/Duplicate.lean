@@ -20,7 +20,7 @@ In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

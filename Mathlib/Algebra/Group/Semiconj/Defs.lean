@@ -75,11 +75,6 @@ additive semigroup is transitive. -/]
 protected theorem isTrans : IsTrans S fun a b ↦ ∃ c, SemiconjBy c a b :=
   ⟨fun _ _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨y * x, hy.mul_left hx⟩⟩
 
-@[deprecated (since := "2026-02-20")]
-protected alias _root_.AddSemiconjBy.transitive := AddSemiconjBy.isTrans
-@[to_additive existing, deprecated (since := "2026-02-20")]
-protected alias transitive := SemiconjBy.isTrans
-
 end Semigroup
 
 section MulOneClass
@@ -99,8 +94,10 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 generally, on `MulOneClass` type) is reflexive. -/
 @[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
 additive monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/]
-protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
-  | a => ⟨1, one_left a⟩
+protected theorem refl : Std.Refl fun a b : M ↦ ∃ c, SemiconjBy c a b where
+  refl a := ⟨1, one_left a⟩
+
+@[deprecated (since := "2026-03-27")] protected alias reflexive := SemiconjBy.refl
 
 end MulOneClass
 

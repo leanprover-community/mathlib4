@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C]
 
 /-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
 there is a natural bijection between `X ⟶ Y` and `X₁ ⟶ Y₁`. See also `Equiv.arrowCongr`. -/
-@[simps]
+@[simps apply]
 def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y) ≃ (X₁ ⟶ Y₁) where
   toFun f := α.inv ≫ f ≫ β.hom
   invFun f := α.hom ≫ f ≫ β.inv

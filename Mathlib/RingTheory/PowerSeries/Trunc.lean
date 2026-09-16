@@ -38,31 +38,31 @@ variable [Semiring R]
 open Finset Nat
 
 set_option backward.privateInPublic true in
-private def trunc_aux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
+private def truncAux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
   ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ)
 
-private theorem coeff_trunc_aux (m) (n) (φ : R⟦X⟧) :
-    (trunc_aux n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [trunc_aux, Polynomial.coeff_monomial]
+private theorem coeff_truncAux (m) (n) (φ : R⟦X⟧) :
+    (truncAux n φ).coeff m = if m < n then coeff m φ else 0 := by
+  simp [truncAux, Polynomial.coeff_monomial]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The `n`th truncation of a formal power series to a polynomial. -/
 def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
-  toFun := trunc_aux n
+  toFun := truncAux n
   map_add' φ ψ := Polynomial.ext fun m => by
-    simp only [coeff_trunc_aux, Polynomial.coeff_add]
+    simp only [coeff_truncAux, Polynomial.coeff_add]
     split_ifs with H
     · rfl
     · rw [zero_add]
-  map_smul' t φ := by ext; simp [trunc_aux, Polynomial.coeff_monomial]
+  map_smul' t φ := by ext; simp [truncAux, Polynomial.coeff_monomial]
 
 lemma trunc_apply (n : ℕ) (φ : R⟦X⟧) :
     trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [trunc, coeff_trunc_aux]
+  simp [trunc, coeff_truncAux]
 
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
@@ -99,7 +99,7 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+*
     intro _ h
     rw [mem_range] at h
     congr
-    rw [coeff_trunc, if_pos h]
+    rw [coeff_trunc, ite_eq_left h]
 
 @[simp] theorem trunc_X (n) : trunc (n + 2) X = (Polynomial.X : R[X]) := by
   ext d
@@ -168,7 +168,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   ext d
   rw [coeff_trunc, coeff_trunc, coeff_coe]
   split_ifs with h
-  · rw [coeff_trunc, if_pos <| lt_of_lt_of_le h hnm]
+  · rw [coeff_trunc, ite_eq_left <| lt_of_lt_of_le h hnm]
   · rfl
 
 @[simp] theorem trunc_trunc {n} (f : R⟦X⟧) : trunc n ↑(trunc n f) = trunc n f :=
@@ -182,7 +182,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   · rw [coeff_mul, coeff_mul, sum_congr rfl]
     intro _ hab
     have ha := lt_of_le_of_lt (antidiagonal.fst_le hab) h
-    rw [coeff_coe, coeff_trunc, if_pos ha]
+    rw [coeff_coe, coeff_trunc, ite_eq_left ha]
   · rfl
 
 @[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
@@ -217,7 +217,7 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R
 long truncation of the power series `f`. -/
 theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
     coeff n (trunc m f) = coeff n f := by
-  rwa [coeff_coe, coeff_trunc, if_pos]
+  rwa [coeff_coe, coeff_trunc, ite_eq_left]
 
 /-- The `n`-th coefficient of `f*g` may be calculated
 from the truncations of `f` and `g`. -/

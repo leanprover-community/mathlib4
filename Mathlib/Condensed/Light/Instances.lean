@@ -19,7 +19,7 @@ in the file `Mathlib/CategoryTheory/Sites/Equivalence.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u u' v
 

@@ -23,6 +23,8 @@ We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -79,7 +81,7 @@ where the operations are already defined on the destination type `D`.
 The functor `F` must preserve all the data parts of the monoidal structure between the two
 categories.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     MonoidalCategory.{v₂} D where
@@ -132,7 +134,7 @@ instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithfu
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps -isSimp, implicit_reducible]
+@[simps -isSimp, instance_reducible]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
@@ -152,11 +154,11 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
       e.counitIso.app _
 
 #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-the fields `whiskerList_eq` and following were all filled by the `cat_disch` auto_param. -/
+the fields `whiskerLeft_eq` and following were all filled by the `cat_disch` auto_param. -/
 attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse

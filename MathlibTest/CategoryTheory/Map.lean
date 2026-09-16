@@ -2,12 +2,14 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Functor.Category
 
-open CategoryTheory
+open CategoryTheory Opposite
 
 namespace Tests.Map
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -15,13 +17,13 @@ variable {C : Type u₁} [Category.{v₁} C]
 lemma comp_map {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
     f ≫ g = h := w
 
-/-- info: Tests.Map.comp_map_map.{u_2, v✝, u_1, u✝} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
-  (h : x ⟶ z) (w : f ≫ g = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) : F.map f ≫ F.map g = F.map h -/
+/-- info: Tests.Map.comp_map_map.{v₁, u_2, u₁, u_1} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
+  (h : x ⟶ z) (w : f ≫ g = h) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map f ≫ F.map g = F.map h -/
 #guard_msgs in
 #check comp_map_map
 
-/-- info: Tests.Map.comp_map_assoc_map.{u_2, v✝, u_1, u✝} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y)
-  (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {Z : C} (h✝ : z ⟶ Z) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) :
+/-- info: Tests.Map.comp_map_assoc_map.{v₁, u_2, u₁, u_1} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
+  (h : x ⟶ z) (w : f ≫ g = h) {Z : C} (h✝ : z ⟶ Z) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) :
   F.map f ≫ F.map g ≫ F.map h✝ = F.map h ≫ F.map h✝ -/
 #guard_msgs in
 #check comp_map_assoc_map
@@ -30,8 +32,8 @@ lemma comp_map {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ 
 lemma comp_map_reassoc {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
     f ≫ g = h := w
 
-/-- info: Tests.Map.comp_map_reassoc_map_assoc.{u_2, v✝, u_1, u✝} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : x ⟶ y)
-  (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) {Z : D}
+/-- info: Tests.Map.comp_map_reassoc_map_assoc.{v₁, u_2, u₁, u_1} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ⟶ y)
+  (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) {Z : D}
   (h✝ : F.obj z ⟶ Z) : F.map f ≫ F.map g ≫ h✝ = F.map h ≫ h✝ -/
 #guard_msgs in
 #check comp_map_reassoc_map_assoc
@@ -40,8 +42,8 @@ lemma comp_map_reassoc {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w 
 lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
     f ≫ g = 𝟙 _ := w
 
-/-- info: Tests.Map.comp_eq_id_map.{u_2, v✝, u_1, u✝} {C : Type u_1} [Category.{u_2, u_1} C] {x y : C} (f : x ⟶ y) (g : y ⟶ x)
-  (w : f ≫ g = 𝟙 x) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) : F.map f ≫ F.map g = 𝟙 (F.obj x) -/
+/-- info: Tests.Map.comp_eq_id_map.{v₁, u_2, u₁, u_1} {C : Type u₁} [Category.{v₁, u₁} C] {x y : C} (f : x ⟶ y) (g : y ⟶ x)
+  (w : f ≫ g = 𝟙 x) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map f ≫ F.map g = 𝟙 (F.obj x) -/
 #guard_msgs in
 #check comp_eq_id_map
 
@@ -49,9 +51,15 @@ lemma comp_eq_id {x y : C} (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 _) :
 lemma comp_map_to_dual {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
     f ≫ g = h := w
 
-/-- info: Tests.Map.comp_map_dual_map.{u_2, v✝, u_1, u✝} {C : Type u_1} [Category.{u_2, u_1} C] {x y z : C} (f : y ⟶ x)
-  (g : z ⟶ y) (h : z ⟶ x) (w : g ≫ f = h) {D : Type u✝} [instD : Category.{v✝, u✝} D] (F : C ⥤ D) :
-  F.map g ≫ F.map f = F.map h -/
+@[map]
+lemma op_hom_eq {x y : Cᵒᵖ} (f g : x ⟶ y) (h : f = g) : f = g := h
+
+example {x y : Cᵒᵖ} (f g : x ⟶ y) (h : f = g)
+    {D : Type*} [Category D] (F : Cᵒᵖ ⥤ D) : F.map f = F.map g := by
+  exact op_hom_eq_map f g h F
+
+/-- info: Tests.Map.comp_map_dual_map.{v₁, u_2, u₁, u_1} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : y ⟶ x) (g : z ⟶ y)
+  (h : z ⟶ x) (w : g ≫ f = h) {D : Type u_1} [_instD : Category.{u_2, u_1} D] (F : C ⥤ D) : F.map g ≫ F.map f = F.map h -/
 #guard_msgs in
 #check comp_map_dual_map
 
@@ -88,5 +96,86 @@ example {D : Type*} [Category* D] {x y z : C} (F : C ⥤ D) (f : x ⟶ y) (g : y
     F.map f ≫ F.map g = F.map h := by
   rw [map_of% (foo)]
   exact w
+
+section
+
+variable {D : Type u₂} [Category.{v₂} D] {x y z : C}
+  (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h)
+
+-- Macro expansion must behave like the underlying theorem, including its implicit arguments.
+local macro "map_test_foo" : term => `(foo)
+
+example : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% map_test_foo]
+  exact w
+
+example : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% @foo]
+  exact w
+
+example : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% foo.{v₁, u₁}]
+  exact w
+
+example : F.map f ≫ F.map g = F.map h := by
+  exact (map_of% (foo w)) F
+
+-- A local theorem with implicit binders must also allow inference from the rewrite target.
+example (eqs : ∀ {x y z : C} {f : x ⟶ y} {g : y ⟶ z} {h : x ⟶ z},
+    f ≫ g = h → f ≫ g = h) : F.map f ≫ F.map g = F.map h := by
+  rw [map_of% eqs]
+  exact w
+
+end
+
+example {D : Type u₂} [Category.{v₂} D] {x y : C}
+    (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ x) (w : f ≫ g = 𝟙 x) :
+    F.map f ≫ F.map g = 𝟙 (F.obj x) := by
+  rw [map_of% comp_eq_id]
+  exact w
+
+-- The source instance can be synthesized through the opposite-category instance.
+example {D : Type u₂} [Category.{v₂} D] {x y z : Cᵒᵖ}
+    (F : Cᵒᵖ ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
+    F.map f ≫ F.map g = F.map h := by
+  rw [map_of% foo]
+  exact w
+
+-- Simplification must preserve an equality as the conclusion, even when it is reflexive.
+@[map]
+lemma refl_hom {x y : C} (f : x ⟶ y) : f = f := rfl
+
+example {x y : C} (f : x ⟶ y) {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) :
+    F.map f = F.map f :=
+  refl_hom_map f F
+
+-- Mapping a generated lemma must retain its first target category and functor as arguments.
+attribute [map] comp_eq_id_map
+
+example {x y : C} (f : x ⟶ y) (g : y ⟶ x) (h : f ≫ g = 𝟙 x)
+    {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+    {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E) :
+    G.map (F.map f) ≫ G.map (F.map g) = 𝟙 (G.obj (F.obj x)) :=
+  comp_eq_id_map_map f g h F G
+
+example {x y : C} (f g : x ⟶ y) (h : f = g)
+    {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+    {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E) :
+    G.map (F.map f) = G.map (F.map g) :=
+  (map_of% (map_of% h)) F G
+
+-- Natural transformations use a derived category instance with composite universe levels.
+@[map]
+lemma nat_eq {D : Type u₂} [Category.{v₂} D]
+    {F G : C ⥤ D} (α β : F ⟶ G) (h : α = β) : α = β := h
+
+example {D : Type u₂} [Category.{v₂} D] {F G : C ⥤ D} (α β : F ⟶ G) (h : α = β)
+    {E : Type u₃} [Category.{v₃} E] (K : (C ⥤ D) ⥤ E) : K.map α = K.map β :=
+  nat_eq_map α β h K
+
+example {D : Type u₂} [Category.{v₂} D] {F G : C ⥤ D} (α β : F ⟶ G) (h : α = β)
+    {E : Type u₃} [Category.{v₃} E] (K : (C ⥤ D) ⥤ E) : K.map α = K.map β := by
+  rw [map_of% nat_eq]
+  exact h
 
 end Tests.Map

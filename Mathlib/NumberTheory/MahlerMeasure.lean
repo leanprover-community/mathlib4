@@ -68,9 +68,6 @@ theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈
   · norm_cast
     grind [Pi.card_Icc, card_Icc]
 
-@[deprecated (since := "2026-02-02")]
-alias card_eq_of_natDegree_le_of_coeff_le := ncard_boxPoly
-
 open NNReal
 
 private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
@@ -224,7 +221,7 @@ theorem cyclotomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degr
   obtain ⟨z, _⟩ := Splits.exists_eval_eq_zero (IsAlgClosed.splits <| p.map (castRingHom ℂ))
     hpdegC
   have hz₀ : z ≠ 0 := by
-    contrapose! hX
+    contrapose hX
     simp_all [X_dvd_iff, coeff_zero_eq_aeval_zero]
   have h_z_root : z ∈ p.aroots ℂ := by aesop
   obtain ⟨m, h_m_pos, h_prim⟩ := isPrimitiveRoot_of_mahlerMeasure_eq_one h hz₀ h_z_root

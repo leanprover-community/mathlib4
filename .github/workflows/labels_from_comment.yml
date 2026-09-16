@@ -29,7 +29,7 @@ jobs:
     steps:
     - name: Add / remove label based on comment
       run: |
-        labelArray=("awaiting-author" "awaiting-zulip" "WIP" "easy" "please-adopt" "help-wanted" "CI" "brownian" "carleson" "CFT" "FLT" "infinity-cosmos" "sphere-packing" "toric" "IMO" "t-algebra" "t-algebraic-geometry" "t-algebraic-topology" "t-analysis" "t-category-theory" "t-combinatorics" "t-computability" "t-condensed" "t-convex-geometry" "t-data" "t-differential-geometry" "t-dynamics" "t-euclidean-geometry" "t-geometric-group-theory" "t-group-theory" "t-linter" "t-logic" "t-measure-probability" "t-meta" "t-number-theory" "t-order" "t-ring-theory" "t-set-theory" "t-topology")
+        labelArray=("awaiting-author" "awaiting-zulip" "WIP" "easy" "please-adopt" "help-wanted" "CI" "brownian" "carleson" "CFT" "FLT" "infinity-cosmos" "sphere-packing" "toric" "LLM-generated" "IMO" "t-algebra" "t-algebraic-geometry" "t-algebraic-topology" "t-analysis" "t-category-theory" "t-combinatorics" "t-computability" "t-condensed" "t-convex-geometry" "t-data" "t-differential-geometry" "t-dynamics" "t-euclidean-geometry" "t-geometric-group-theory" "t-group-theory" "t-linter" "t-logic" "t-measure-probability" "t-meta" "t-number-theory" "t-order" "t-ring-theory" "t-set-theory" "t-topology")
 
         # we strip `\r` since line endings from GitHub contain this character
         COMMENT="${COMMENT//$'\r'/}"
@@ -45,8 +45,13 @@ jobs:
           inComment=""
           label="${labelArray[$i]}"
           printf $'\nProcessing label \'%s\'\n' "${label}"
-          # extract the last line that, up to leading/trailing whitespace, matches the current label
-          inComment="$(printf '%s' "${COMMENT}" | grep "[-]\?${label}$" | tail -1)"
+          # extract the last line whose *entire* content (up to leading/trailing
+          # whitespace, already stripped above) is the label, optionally preceded
+          # by `-`. Anchoring both ends (not just `$`) is what stops bot directives
+          # such as `!downstream-check FLT` — and the downstream-reports automation
+          # comments — from being mistaken for a label request just because the line
+          # happens to end in a label name.
+          inComment="$(printf '%s' "${COMMENT}" | grep "^[-]\?${label}$" | tail -1)"
           if [ -n "${inComment}" ]
           then
             printf $'Found \'%s\'\n' "${inComment}"

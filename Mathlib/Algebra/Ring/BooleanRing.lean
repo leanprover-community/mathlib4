@@ -149,6 +149,11 @@ theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
 
+/-- A recursor for `AsBoolAlg`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def AsBoolAlg.rec {motive : AsBoolAlg α → Sort*} (toBoolAlg : ∀ a, motive (toBoolAlg a)) :
+    ∀ a, motive a := fun a ↦ toBoolAlg (ofBoolAlg a)
+
 instance [Inhabited α] : Inhabited (AsBoolAlg α) :=
   ‹Inhabited α›
 
@@ -205,7 +210,9 @@ theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = 
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [le_sup_inf_aux, add_self, mul_self, zero_add]
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
+protected theorem sup_def (a b : α) : a ⊔ b = a + b + a * b := rfl
+protected theorem inf_def (a b : α) : a ⊓ b = a * b := rfl
+
 /-- The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
@@ -222,19 +229,12 @@ def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
-    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
-                                                     add_assoc, add_self, add_zero]
+    le_top a := by simp [← sup_eq_right, BooleanRing.sup_def, add_right_comm]
     bot := 0
-    bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
-    compl := fun a => 1 + a
-    inf_compl_le_bot := fun a =>
-      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by simp [mul_add, mul_self, add_self]
-    top_le_sup_compl := fun a => by
-      change
-        1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
-          a + (1 + a) + a * (1 + a)
-      simp [mul_add, mul_self, add_self]
-      rw [← add_assoc, add_self] }
+    bot_le a := by simp [← sup_eq_right, BooleanRing.sup_def]
+    compl a := 1 + a
+    inf_compl_le_bot a := by simp [BooleanRing.inf_def]
+    top_le_sup_compl a := by simp [BooleanRing.sup_def, mul_add, ← add_assoc, add_comm] }
 
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
@@ -243,7 +243,7 @@ end BooleanRing
 open BooleanRing
 
 instance : BooleanAlgebra (AsBoolAlg α) :=
-  @BooleanRing.toBooleanAlgebra α _
+  fast_instance% @BooleanRing.toBooleanAlgebra α _
 
 @[simp]
 theorem ofBoolAlg_top : ofBoolAlg (⊤ : AsBoolAlg α) = 1 :=
@@ -367,8 +367,14 @@ theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 
+/-- A recursor for `AsBoolRing`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def AsBoolRing.rec {motive : AsBoolRing α → Sort*}
+    (toBoolRing : ∀ a, motive (toBoolRing a)) : ∀ a, motive a :=
+  fun a ↦ toBoolRing (ofBoolRing a)
+
 instance [Inhabited α] : Inhabited (AsBoolRing α) :=
-  ‹Inhabited α›
+  ⟨default (α := α)⟩
 
 -- See note [reducible non-instances]
 /-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
@@ -424,7 +430,7 @@ scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
 
 instance : BooleanRing (AsBoolRing α) :=
-  @BooleanAlgebra.toBooleanRing α _
+  fast_instance% @BooleanAlgebra.toBooleanRing α _
 
 @[simp]
 theorem ofBoolRing_zero : ofBoolRing (0 : AsBoolRing α) = ⊥ :=
@@ -470,6 +476,19 @@ theorem toBoolRing_inf (a b : α) : toBoolRing (a ⊓ b) = toBoolRing a * toBool
 @[simp]
 theorem toBoolRing_symmDiff (a b : α) : toBoolRing (a ∆ b) = toBoolRing a + toBoolRing b :=
   rfl
+
+@[simp]
+theorem toBoolRing_compl (a : α) : toBoolRing aᶜ = 1 + toBoolRing a := by
+  rw [← hnot_eq_compl, ← top_symmDiff, toBoolRing_symmDiff, toBoolRing_top]
+
+@[simp]
+theorem toBoolRing_sup (a b : α) :
+    toBoolRing (a ⊔ b) = toBoolRing a + toBoolRing b + toBoolRing a * toBoolRing b := by
+  rw [← symmDiff_symmDiff_inf, toBoolRing_symmDiff, toBoolRing_symmDiff, toBoolRing_inf]
+
+@[simp]
+theorem toBoolRing_sdiff (a b : α) : toBoolRing (a \ b) = toBoolRing a * (1 + toBoolRing b) := by
+  simp [sdiff_eq]
 
 /-- Turn a bounded lattice homomorphism from Boolean algebras `α` to `β` into a ring homomorphism
 from `α` to `β` considered as Boolean rings. -/
@@ -541,3 +560,15 @@ instance : BooleanRing Bool where
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
   zsmul := zsmulRec
+
+theorem Bool.zero_eq_false : 0 = false := rfl
+
+theorem Bool.one_eq_true : 1 = true := rfl
+
+theorem Bool.add_eq_xor (b c : Bool) : b + c = (b ^^ c) := rfl
+
+theorem Bool.neg_eq_id (b : Bool) : -b = b := rfl
+
+theorem Bool.sub_eq_xor (b c : Bool) : b - c = (b ^^ c) := rfl
+
+theorem Bool.mul_eq_and (b c : Bool) : b * c = (b && c) := rfl

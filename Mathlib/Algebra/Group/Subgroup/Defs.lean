@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Subgroups
@@ -179,8 +180,9 @@ namespace SubgroupClass
 @[to_additive]
 theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
     (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
-  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (mem_of_le_of_mem · xH) (mem_of_le_of_mem · xH)⟩
-  rw [or_iff_not_imp_left, SetLike.not_le_iff_exists, ← SetLike.coe_subset_coe]
+  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp
+    (SetLike.coe_subset_coe.2 · xH) (SetLike.coe_subset_coe.2 · xH)⟩
+  rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists, ← SetLike.coe_subset_coe]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
@@ -302,7 +304,7 @@ structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
   /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 
-attribute [to_additive] Subgroup
+attribute [to_additive (attr := wikidata Q466109)] Subgroup
 
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
@@ -315,7 +317,7 @@ namespace Subgroup
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
-  coe_injective' p q h := by
+  coe_injective p q h := by
     obtain ⟨⟨⟨hp, _⟩, _⟩, _⟩ := p
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
@@ -396,8 +398,13 @@ theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
   Iff.rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
+
+attribute [deprecated OneMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
+  Subgroup.coe_nonempty
+attribute [deprecated ZeroMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
+  AddSubgroup.coe_nonempty
 
 end Subgroup
 
@@ -546,15 +553,13 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_e
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure. -/]
-instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+  SubgroupClass.toGroup H
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
-  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+  SubgroupClass.toCommGroup H
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive /-- The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. -/]
@@ -598,8 +603,6 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
 
-open Set
-
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
   /-- `H` is closed under conjugation -/
@@ -616,7 +619,7 @@ structure Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
-attribute [to_additive] Subgroup.Normal
+attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
 
 attribute [class] Normal
 
@@ -637,7 +640,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert nH.conj_mem n hn g⁻¹
+  convert! nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]
@@ -713,11 +716,11 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-@[to_additive (attr := deprecated inferInstance (since := "2026-04-09"))]
+@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
 theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H := inferInstance
 
-@[to_additive (attr := deprecated setLike_mul_comm (since := "2026-03-09"))]
+@[to_additive (attr := deprecated setLike_mul_comm +typeChanged (since := "2026-03-09"))]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a :=
   setLike_mul_comm ha hb

@@ -14,7 +14,7 @@ In this file, we transfer a distance and (pseudo-)metric space structure across 
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 
@@ -22,15 +22,16 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
+-- See note [instance transfer via equivalence]
 /-- Transfer a `Dist` across an `Equiv` -/
-protected abbrev dist (e : α ≃ β) [Dist β] : Dist α := ⟨fun x y ↦ dist (e x) (e y)⟩
+protected abbrev dist (e : α ≃ β) [Dist β] : Dist α := ⟨fun x y ↦ dist (e.toFun x) (e.toFun y)⟩
 
 /-- Transfer a `PseudoMetricSpace` across an `Equiv` -/
 protected abbrev pseudometricSpace [PseudoMetricSpace β] (e : α ≃ β) : PseudoMetricSpace α :=
-  .induced e ‹_›
+  .induced e.toFun ‹_›
 
 /-- Transfer a `MetricSpace` across an `Equiv` -/
 protected abbrev metricSpace [MetricSpace β] (e : α ≃ β) : MetricSpace α :=
-  .induced e e.injective ‹_›
+  .induced e.toFun e.injective ‹_›
 
 end Equiv

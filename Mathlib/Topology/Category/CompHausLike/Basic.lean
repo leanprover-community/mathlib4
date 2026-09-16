@@ -102,7 +102,7 @@ variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
 /-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
 class HasProp : Prop where
-  hasProp : P (TopCat.of X)
+  hasProp : P ↧X
 
 instance (X : CompHausLike P) : HasProp P X := ⟨X.4⟩
 
@@ -112,10 +112,15 @@ variable [HasProp P X]
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
 abbrev of : CompHausLike P where
-  toTop := TopCat.of X
+  toTop := ↧X
   is_compact := ‹_›
   is_hausdorff := ‹_›
   prop := HasProp.hasProp
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CompHausLike.of R X` as `↧X`. -/
+@[app_delab CompHausLike.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 theorem coe_of : (CompHausLike.of P X : Type _) = X := rfl
 
@@ -125,7 +130,7 @@ theorem coe_id (X : CompHausLike P) : (𝟙 X : X → X) = id :=
 
 @[simp]
 theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g : X → Z) = g ∘ f :=
+    (f ≫ g : X → Z) = (g ∘ f) :=
   rfl
 
 section
@@ -153,7 +158,7 @@ def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.t
     CompHausLike P ⥤ CompHausLike P' where
   obj X :=
     haveI : HasProp P' X := ⟨(h _ X.prop)⟩
-    CompHausLike.of _ X
+    ↧X
   map {X Y} f := ConcreteCategory.ofHom f.hom.hom
 
 section
@@ -203,7 +208,7 @@ variable {P}
 
 theorem epi_of_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (hf : Function.Surjective f) :
     Epi f := by
-  rw [← CategoryTheory.epi_iff_surjective] at hf
+  rw [← CategoryTheory.ofHom_epi_iff_surjective] at hf
   exact (forget (CompHausLike P)).epi_of_epi_map hf
 
 theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
@@ -214,7 +219,7 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
     exact CategoryTheory.congr_fun ((cancel_mono _).mp this) x₁
-  · rw [← CategoryTheory.mono_iff_injective]
+  · rw [← CategoryTheory.ofHom_mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/

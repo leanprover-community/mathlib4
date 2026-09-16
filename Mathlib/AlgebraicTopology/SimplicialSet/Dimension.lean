@@ -16,11 +16,13 @@ i.e. all nondegenerate simplices of `X` are of dimension `< d`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
-open CategoryTheory Opposite Simplicial
+open CategoryTheory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -71,7 +73,6 @@ namespace Subcomplex
 
 variable {X : SSet.{u}}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (d : ℕ) [X.HasDimensionLT d] (A : X.Subcomplex) : HasDimensionLT A d where
   degenerate_eq_top (n : ℕ) (hd : d ≤ n) := by
     ext x
@@ -90,7 +91,6 @@ lemma eq_top_iff_of_hasDimensionLT (A : X.Subcomplex) (d : ℕ) [X.HasDimensionL
 
 end Subcomplex
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_mono {X Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (d : ℕ)
     [Y.HasDimensionLT d] : X.HasDimensionLT d where
   degenerate_eq_top n hn := by
@@ -133,6 +133,6 @@ lemma hasDimensionLT_subcomplex_top_iff (X : SSet.{u}) (d : ℕ) :
 instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT (⊥ : X.Subcomplex) n where
   degenerate_eq_top k hk := by
     ext ⟨x, hx⟩
-    simp at hx
+    tauto
 
 end SSet

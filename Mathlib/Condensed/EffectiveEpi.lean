@@ -8,14 +8,14 @@ module
 public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.Condensed.Epi
 public import Mathlib.Condensed.Functors
-public import Mathlib.Condensed.Limits
+public import Mathlib.Condensed.Limits  -- shake: keep (compHausToCondensed.PreservesEffectiveEpis), cf. lean#13417
 
 /-!
 
 # The functor from compact Hausdorff spaces to condensed sets preserves effective epimorphisms
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory CompHausLike
 
@@ -26,7 +26,7 @@ instance : compHausToCondensed.PreservesEpimorphisms where
     rw [CondensedSet.epi_iff_locallySurjective_on_compHaus]
     intro S g
     refine ⟨pullback f g.down, pullback.snd _ _, fun y ↦ ?_, ⟨pullback.fst _ _⟩,
-      ULift.ext _ _ <| pullback.condition _ _⟩
+      ULift.ext <| pullback.condition _ _⟩
     rw [CompHaus.epi_iff_surjective] at hf
     obtain ⟨x, hx⟩ := hf (g.down.hom y)
     exact ⟨⟨⟨x, y⟩, hx⟩, rfl⟩

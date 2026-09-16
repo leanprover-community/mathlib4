@@ -35,7 +35,7 @@ def permanent (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
 theorem permanent_diagonal {d : n → R} : permanent (diagonal d) = ∏ i, d i := by
   refine (sum_eq_single 1 (fun σ _ hσ ↦ ?_) (fun h ↦ (h <| mem_univ _).elim)).trans ?_
   · match not_forall.mp (mt Equiv.ext hσ) with
-    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (if_neg hx)
+    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (ite_eq_right hx)
   · simp only [Perm.one_apply, diagonal_apply_eq]
 
 @[simp]
@@ -61,7 +61,7 @@ theorem permanent_unique {n : Type*} [Unique n] [DecidableEq n] [Fintype n] (A :
 theorem permanent_eq_elem_of_subsingleton [Subsingleton n] (A : Matrix n n R) (k : n) :
     permanent A = A k k := by
   have := uniqueOfSubsingleton k
-  convert permanent_unique A
+  convert! permanent_unique A
 
 theorem permanent_eq_elem_of_card_eq_one {A : Matrix n n R} (h : card n = 1) (k : n) :
     permanent A = A k k :=

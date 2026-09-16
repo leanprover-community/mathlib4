@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
@@ -30,9 +29,9 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 -/
 
-@[expose] public section
+public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 open CategoryTheory
 
@@ -49,20 +48,21 @@ abbrev Condensed (C : Type w) [Category.{v} C] :=
 Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
 sheaves on `CompHaus.{u}`.
 -/
-abbrev CondensedSet := Condensed.{u} (Type (u + 1))
+abbrev CondensedSet := Condensed.{u} <| Type (u + 1)
 
 namespace Condensed
 
 variable {C : Type w} [Category.{v} C]
 
-@[deprecated ObjectProperty.FullSubcategory.id_hom (since := "2026-04-08")]
+@[deprecated ObjectProperty.FullSubcategory.id_hom +typeChanged (since := "2026-04-08")]
 lemma id_hom (X : Condensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
 
-@[deprecated ObjectProperty.FullSubcategory.comp_hom (since := "2026-04-08")]
+@[deprecated ObjectProperty.FullSubcategory.comp_hom +typeChanged (since := "2026-04-08")]
 lemma comp_hom {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
-
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-05")] alias id_val := id_hom
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-05")] alias comp_val := comp_hom
 
 @[ext]
@@ -75,11 +75,9 @@ end Condensed
 
 namespace CondensedSet
 
--- Note: `simp` can prove this when stated for `Condensed C` for a concrete category `C`.
--- However, it doesn't seem to see through the abbreviation `CondensedSet`
-@[simp]
+@[deprecated NatTrans.naturality_apply +typeChanged (since := "2026-03-19")]
 lemma hom_naturality_apply {X Y : CondensedSet.{u}} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
-    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
-  NatTrans.naturality_apply f.hom g x
+    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) := by
+  simp
 
 end CondensedSet

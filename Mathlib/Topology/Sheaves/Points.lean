@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.Topology.Sets.Opens
+public import Mathlib.CategoryTheory.Sites.Spaces
+public import Mathlib.Topology.Sheaves.Presheaf
 
 /-!
 # The standard conservative family of points for the site attached to a topological space
@@ -36,13 +37,17 @@ variable {X : Type u} [TopologicalSpace X] (x : X)
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
   fiber.obj U := ULift.{u} (PLift (x ∈ U))
-  fiber.map f h := ⟨⟨leOfHom f h.down.down⟩⟩
+  fiber.map f := ↾fun h ↦ ⟨⟨leOfHom f h.down.down⟩⟩
   isCofiltered :=
-    { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
-      cone_objs := by
-        rintro ⟨U, ⟨⟨hU⟩⟩⟩ ⟨V, ⟨⟨hV⟩⟩⟩
-        exact ⟨⟨U ⊓ V, ⟨⟨⟨hU, hV⟩⟩⟩⟩, ⟨homOfLE (by simp), rfl⟩,
-          ⟨homOfLE (by simp), rfl⟩, ⟨⟩⟩
+    { nonempty := ⟨.mk (obj := ⊤) ⟨⟨by simp⟩⟩⟩
+      cone_objs U V := by
+        induction U with | @mk U hU
+        induction V with | @mk V hV
+        obtain ⟨⟨hU⟩⟩ := hU
+        obtain ⟨⟨hV⟩⟩ := hV
+        exact ⟨.mk (obj := U ⊓ V) ⟨⟨hU, hV⟩⟩,
+          Functor.Elements.homMk (homOfLE (by simp)) rfl,
+          Functor.Elements.homMk (homOfLE (by simp)) rfl, by tauto⟩
       cone_maps _ _ _ _ := ⟨_, 𝟙 _, rfl⟩ }
   initiallySmall := initiallySmall_of_essentiallySmall _
   jointly_surjective := by
@@ -81,7 +86,8 @@ there is a (unique) morphism between the corresponding points of the site
 def pointGrothendieckTopologyHomEquiv {x y : X} :
     (pointGrothendieckTopology x ⟶ pointGrothendieckTopology y) ≃ x ⤳ y where
   toFun f := specializes_iff_forall_open.2 (fun U h₁ h₂ ↦ (f.hom.app ⟨U, h₁⟩ ⟨⟨h₂⟩⟩).down.down)
-  invFun s := { hom.app U hU := ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
+  invFun s := { hom.app U := ↾fun hU ↦
+    ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
   left_inv _ := by subsingleton
   right_inv _ := rfl
 

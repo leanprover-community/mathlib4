@@ -255,7 +255,7 @@ associated Grothendieck topology is pullback stable, and so an additional constr
 in the inductive construction is not needed.
 -/
 def toGrothendieck (K : Coverage C) : GrothendieckTopology C :=
-  K.toPrecoverage.toGrothendieck.copy (fun X ↦ setOf (K.Saturate X)) <| by
+  K.toPrecoverage.toGrothendieck.copy (fun X ↦ Set.ofPred (K.Saturate X)) <| by
     ext
     exact K.saturate_iff_saturate_toPrecoverage.symm
 

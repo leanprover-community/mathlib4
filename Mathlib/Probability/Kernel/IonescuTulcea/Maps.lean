@@ -32,7 +32,7 @@ def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i))
 @[fun_prop]
 lemma measurable_IocProdIoc [∀ i, MeasurableSpace (X i)] {a b c : ι} :
     Measurable (IocProdIoc (X := X) a b c) := by
-  refine measurable_pi_lambda _ (fun i ↦ ?_)
+  refine .of_eval (fun i ↦ ?_)
   by_cases h : i ≤ b
   · simpa [IocProdIoc, h] using measurable_fst.eval
   · simpa [IocProdIoc, h] using measurable_snd.eval
@@ -82,7 +82,7 @@ variable [∀ i, MeasurableSpace (X i)]
 
 @[fun_prop]
 lemma measurable_IicProdIoc {m n : ι} : Measurable (IicProdIoc (X := X) m n) := by
-  refine measurable_pi_lambda _ (fun i ↦ ?_)
+  refine .of_eval (fun i ↦ ?_)
   by_cases h : i ≤ m
   · simpa [IicProdIoc, h] using measurable_fst.eval
   · simpa [IicProdIoc, h] using measurable_snd.eval
@@ -103,7 +103,7 @@ def IicProdIoc {a b : ι} (hab : a ≤ b) :
   right_inv := fun x ↦ funext fun i ↦ by
     by_cases hi : i.1 ≤ a <;> simp [hi]
   measurable_toFun := by
-    refine measurable_pi_lambda _ (fun x ↦ ?_)
+    refine .of_eval (fun x ↦ ?_)
     by_cases h : x ≤ a
     · simpa [h] using measurable_fst.eval
     · simpa [h] using measurable_snd.eval
@@ -129,7 +129,7 @@ def IicProdIoi (a : ι) :
     · simp [not_le.2 <| Set.mem_Ioi.1 i.2]
   right_inv := fun x ↦ by simp
   measurable_toFun := by
-    refine measurable_pi_lambda _ (fun i ↦ ?_)
+    refine .of_eval (fun i ↦ ?_)
     by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
     · exact measurable_fst.eval
     · exact measurable_snd.eval
@@ -150,7 +150,7 @@ def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1
   right_inv := fun x ↦ funext fun i ↦ by cases Nat.mem_Ioc_succ' i; rfl
   measurable_toFun := by
     simp_rw [eqRec_eq_cast]
-    refine measurable_pi_lambda _ (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
+    refine .of_eval (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
     cases Nat.mem_Ioc_succ' i; rfl
 
 end Nat
@@ -180,10 +180,10 @@ lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) →
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IicProdIoc_def, forall_const,
     Subtype.forall, mem_Iic, Set.mem_prod, frestrictLe₂_apply, restrict₂, mem_Ioc]
   refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
-  · convert h i (hi.trans hab)
-    rw [dif_pos hi]
-  · convert h i hi2
-    rw [dif_neg (not_le.2 hi1)]
+  · convert! h i (hi.trans hab)
+    rw [dite_eq_left hi]
+  · convert! h i hi2
+    rw [dite_eq_right (not_le.2 hi1)]
   · split_ifs with hi3
     · exact h1 i hi3
     · exact h2 i ⟨not_le.1 hi3, hi⟩

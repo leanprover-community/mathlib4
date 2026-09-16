@@ -21,7 +21,7 @@ category `C` is `R`-linear.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

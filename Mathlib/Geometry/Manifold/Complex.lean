@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-! # Holomorphic functions on complex manifolds
 
@@ -73,9 +73,9 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
     rw [mdifferentiableAt_iff_of_mem_source hys hfy, hI, differentiableWithinAt_univ,
       e.right_inv hyt] at hy₂
     exact hy₂.2
-  convert norm_eventually_eq_of_isLocalMax hd _
+  convert! norm_eventually_eq_of_isLocalMax hd _
   · exact congr_arg f (extChartAt_to_inv _).symm
-  · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
+  · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using! hc
 
 /-!
 ### Functions holomorphic on a set
@@ -125,7 +125,6 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
 theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
     (hd : MDiff[U] f) (hpc : IsPreconnected U) (hc : IsCompact U)
     (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
-  refine ?_
   -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
   wlog hb₀ : f b = 0 generalizing f
   -- TODO: Add `MDifferentiableOn.sub` etc

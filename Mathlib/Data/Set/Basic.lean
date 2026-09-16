@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of sets
@@ -85,9 +86,6 @@ instance instBoundedOrder : BoundedOrder (Set α) where
   bot := ∅
   top := univ
 
-instance : HasSSubset (Set α) :=
-  ⟨(· < ·)⟩
-
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
   rfl
@@ -104,22 +102,30 @@ theorem sup_eq_union : ((· ⊔ ·) : Set α → Set α → Set α) = (· ∪ ·
 theorem inf_eq_inter : ((· ⊓ ·) : Set α → Set α → Set α) = (· ∩ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_eq_subset : ((· ≤ ·) : Set α → Set α → Prop) = (· ⊆ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_eq_ssubset : ((· < ·) : Set α → Set α → Prop) = (· ⊂ ·) :=
   rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_iff_subset : s ≤ t ↔ s ⊆ t :=
   Iff.rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 
+-- `alias` fills in `le_iff_subset` as the deprecation target, and that is itself deprecated
+-- without a replacement, as `≤` and `⊆` are now syntactically equal.
+set_option linter.deprecated.deprecatedTarget false in
+@[deprecated "this is now a syntactic identity" +typeChanged (since := "2026-05-24")]
 alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
+set_option linter.deprecated.deprecatedTarget false in
+@[deprecated "this is now a syntactic identity" +typeChanged (since := "2026-05-24")]
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
@@ -141,9 +147,10 @@ instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
 
-@[simp]
-theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
+theorem Set.coe_ofPred (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias Set.coe_setOf := Set.coe_ofPred
 
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
@@ -188,69 +195,54 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
-theorem setOf_injective : Function.Injective (@setOf α) := injective_id
+theorem ofPred_injective : Function.Injective (@ofPred α) := injective_id
 
-theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
+@[deprecated (since := "2026-07-09")] alias setOf_injective := ofPred_injective
 
-/-! ### Lemmas about `mem` and `setOf` -/
+theorem ofPred_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
 
-theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
+@[deprecated (since := "2026-07-09")] alias setOf_inj := ofPred_inj
+
+/-! ### Lemmas about `mem` and `ofPred` -/
+
+theorem ofPred_bijective : Bijective (ofPred : (α → Prop) → Set α) :=
   bijective_id
 
-theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
+@[deprecated (since := "2026-07-09")] alias setOf_bijective := ofPred_bijective
+
+theorem subset_ofPred {p : α → Prop} {s : Set α} : s ⊆ ofPred p ↔ ∀ x, x ∈ s → p x :=
   Iff.rfl
 
-theorem setOf_subset {p : α → Prop} {s : Set α} : setOf p ⊆ s ↔ ∀ x, p x → x ∈ s :=
+@[deprecated (since := "2026-07-09")] alias subset_setOf := subset_ofPred
+
+theorem ofPred_subset {p : α → Prop} {s : Set α} : ofPred p ⊆ s ↔ ∀ x, p x → x ∈ s :=
   Iff.rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_subset := ofPred_subset
 
 @[simp]
-theorem setOf_subset_setOf {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
+theorem ofPred_subset_ofPred {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
   Iff.rfl
 
+@[deprecated (since := "2026-07-09")] alias setOf_subset_setOf := ofPred_subset_ofPred
+
 @[gcongr]
-alias ⟨_, setOf_subset_setOf_of_imp⟩ := setOf_subset_setOf
+alias ⟨_, ofPred_subset_ofPred_of_imp⟩ := ofPred_subset_ofPred
 
-theorem setOf_and {p q : α → Prop} : { a | p a ∧ q a } = { a | p a } ∩ { a | q a } :=
+@[deprecated (since := "2026-07-09")]
+alias setOf_subset_setOf_of_imp := ofPred_subset_ofPred_of_imp
+
+theorem ofPred_and {p q : α → Prop} : { a | p a ∧ q a } = { a | p a } ∩ { a | q a } :=
   rfl
 
-theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a | q a } :=
+@[deprecated (since := "2026-07-09")] alias setOf_and := ofPred_and
+
+theorem ofPred_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a | q a } :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_or := ofPred_or
 
 /-! ### Subset and strict subset relations -/
-
-
-instance : @Std.Refl (Set α) (· ⊆ ·) :=
-  show Std.Refl (· ≤ ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊆ ·) :=
-  show IsTrans (Set α) (· ≤ ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
-
-instance : @Std.Antisymm (Set α) (· ⊆ ·) :=
-  show Std.Antisymm (· ≤ ·) by infer_instance
-
-instance : @Std.Irrefl (Set α) (· ⊂ ·) :=
-  show Std.Irrefl (· < ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊂ ·) :=
-  show IsTrans (Set α) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· < ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
-
-instance : @Std.Asymm (Set α) (· ⊂ ·) :=
-  show Std.Asymm (· < ·) by infer_instance
-
-instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ => Iff.rfl⟩
 
 -- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
 @[grind =]
@@ -299,7 +291,7 @@ theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
 theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
 
-@[deprecated not_univ_subset (since := "2026-03-12")]
+@[deprecated not_univ_subset +typeChanged (since := "2026-03-12")]
 theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s :=
   not_univ_subset
 
@@ -370,11 +362,13 @@ theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
 theorem nonempty_of_ssubset (ht : s ⊂ t) : (t \ s).Nonempty :=
   nonempty_of_not_subset ht.2
 
-theorem Nonempty.of_diff (h : (s \ t).Nonempty) : s.Nonempty :=
+theorem Nonempty.of_sdiff (h : (s \ t).Nonempty) : s.Nonempty :=
   h.imp fun _ => And.left
 
+@[deprecated (since := "2026-06-03")] alias Nonempty.of_diff := Nonempty.of_sdiff
+
 theorem nonempty_of_ssubset' (ht : s ⊂ t) : t.Nonempty :=
-  (nonempty_of_ssubset ht).of_diff
+  (nonempty_of_ssubset ht).of_sdiff
 
 theorem Nonempty.inl (hs : s.Nonempty) : (s ∪ t).Nonempty :=
   hs.imp fun _ => Or.inl
@@ -433,10 +427,15 @@ theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
   Iff.rfl
 
 @[simp, grind =]
-theorem setOf_false : { _a : α | False } = ∅ :=
+theorem ofPred_false : { _a : α | False } = ∅ :=
   rfl
 
-@[simp] theorem setOf_bot : { _x : α | ⊥ } = ∅ := rfl
+@[deprecated (since := "2026-07-09")] alias setOf_false := ofPred_false
+
+@[simp] theorem ofPred_bot : { _x : α | ⊥ } = ∅ := rfl
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_bot := ofPred_bot
 
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
@@ -485,7 +484,7 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
+  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›
@@ -502,6 +501,36 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
 
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
+
+theorem forall_mem_univ {p : α → Prop} : (∀ x ∈ (univ : Set α), p x) ↔ ∀ x, p x :=
+  ⟨fun h x => h x (mem_univ x), fun h x _ => h x⟩
+
+theorem forall_mem_ofPred {p q : α → Prop} : (∀ x ∈ ({x | q x} : Set α), p x) ↔ ∀ x, q x → p x :=
+  .rfl
+
+theorem Nonempty.forall_const (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
+  let ⟨x, hx⟩ := h
+  ⟨fun h ↦ h x hx, fun h _ _ ↦ h⟩
+
+@[simp]
+theorem forall_mem_const {p : Prop} [Nonempty s] : (∀ x ∈ s, p) ↔ p :=
+  (nonempty_coe_sort.mp ‹_›).forall_const
+
+theorem exists_mem_empty {p : α → Prop} : (∃ x ∈ (∅ : Set α), p x) ↔ False :=
+  iff_false_intro fun h => h.elim fun _ => And.left
+
+theorem exists_mem_univ {p : α → Prop} : (∃ x ∈ (univ : Set α), p x) ↔ ∃ x, p x :=
+  ⟨Exists.imp fun _ => And.right, Exists.imp fun x => And.intro (mem_univ x)⟩
+
+theorem exists_mem_ofPred {p q : α → Prop} : (∃ x ∈ ({x | q x} : Set α), p x) ↔ ∃ x, q x ∧ p x :=
+  .rfl
+
+theorem Nonempty.exists_const (h : s.Nonempty) {p : Prop} : (∃ x ∈ s, p) ↔ p :=
+  let ⟨x, hx⟩ := h
+  ⟨fun h ↦ h.elim fun _ => And.right, fun h ↦ ⟨x, hx, h⟩⟩
+
+theorem exists_mem_const {p : Prop} [Nonempty s] : (∃ x ∈ s, p) ↔ p :=
+  (nonempty_coe_sort.mp ‹_›).exists_const
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
@@ -523,10 +552,15 @@ Mathematically it is the same as `α` but it has a different type.
 
 
 @[simp, grind =]
-theorem setOf_true : { _x : α | True } = univ :=
+theorem ofPred_true : { _x : α | True } = univ :=
   rfl
 
-@[simp] theorem setOf_top : { _x : α | ⊤ } = univ := rfl
+@[deprecated (since := "2026-07-09")] alias setOf_true := ofPred_true
+
+@[simp] theorem ofPred_top : { _x : α | ⊤ } = univ := rfl
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_top := ofPred_top
 
 @[simp]
 theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
@@ -558,8 +592,11 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
 theorem eq_univ_of_subset {s t : Set α} (h : s ⊆ t) (hs : s = univ) : t = univ :=
   eq_univ_of_univ_subset <| (hs ▸ h : univ ⊆ t)
 
-theorem exists_mem_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ : Set α)
+theorem exists_mem_univ_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ : Set α)
   | ⟨x⟩ => ⟨x, trivial⟩
+
+@[deprecated (since := "2026-08-07")]
+alias exists_mem_of_nonempty := exists_mem_univ_of_nonempty
 
 theorem ne_univ_iff_exists_notMem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
   rw [← not_forall, ← eq_univ_iff_forall]
@@ -669,7 +706,8 @@ theorem union_subset_iff {s t u : Set α} : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ 
 
 @[gcongr]
 theorem union_subset_union {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ s₂) (h₂ : t₁ ⊆ t₂) :
-    s₁ ∪ t₁ ⊆ s₂ ∪ t₂ := fun _ => Or.imp (@h₁ _) (@h₂ _)
+    s₁ ∪ t₁ ⊆ s₂ ∪ t₂ :=
+  sup_le_sup h₁ h₂
 
 theorem union_subset_union_left {s₁ s₂ : Set α} (t) (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
@@ -695,6 +733,14 @@ theorem union_eq_union_iff_left : s ∪ t = s ∪ u ↔ t ⊆ s ∪ u ∧ u ⊆ 
 theorem union_eq_union_iff_right : s ∪ u = t ∪ u ↔ s ⊆ t ∪ u ∧ t ⊆ s ∪ u :=
   sup_eq_sup_iff_right
 
+theorem union_eq_union_mono_left {s₁ s₂ : Set α} (h : s₁ ∪ t = s₁ ∪ u) (hs : s₁ ⊆ s₂) :
+    s₂ ∪ t = s₂ ∪ u :=
+  sup_eq_sup_mono_left h hs
+
+theorem union_eq_union_mono_right {u₁ u₂ : Set α} (h : s ∪ u₁ = t ∪ u₁) (hu : u₁ ⊆ u₂) :
+    s ∪ u₂ = t ∪ u₂ :=
+  sup_eq_sup_mono_right h hu
+
 @[simp]
 theorem union_empty_iff {s t : Set α} : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ := by
   simp only [← subset_empty_iff]
@@ -713,6 +759,14 @@ theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s :=
 @[simp]
 theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
   right_lt_sup
+
+theorem forall_mem_union {p : α → Prop} :
+    (∀ x ∈ s ∪ t, p x) ↔ (∀ x ∈ s, p x) ∧ (∀ x ∈ t, p x) := by
+  simp_rw [mem_union, or_imp, forall_and]
+
+theorem exists_mem_union {p : α → Prop} :
+    (∃ x ∈ s ∪ t, p x) ↔ (∃ x ∈ s, p x) ∨ (∃ x ∈ t, p x) := by
+  simp_rw [mem_union, or_and_right, exists_or]
 
 /-! ### Lemmas about intersection -/
 
@@ -801,6 +855,14 @@ theorem inter_eq_inter_iff_left : s ∩ t = s ∩ u ↔ s ∩ u ⊆ t ∧ s ∩ 
 theorem inter_eq_inter_iff_right : s ∩ u = t ∩ u ↔ t ∩ u ⊆ s ∧ s ∩ u ⊆ t :=
   inf_eq_inf_iff_right
 
+theorem inter_eq_inter_mono_left {s₁ s₂ : Set α} (h : s₁ ∩ t = s₁ ∩ u) (hs : s₂ ⊆ s₁) :
+    s₂ ∩ t = s₂ ∩ u :=
+  inf_eq_inf_mono_left h hs
+
+theorem inter_eq_inter_mono_right {u₁ u₂ : Set α} (h : s ∩ u₁ = t ∩ u₁) (hu : u₂ ⊆ u₁) :
+    s ∩ u₂ = t ∩ u₂ :=
+  inf_eq_inf_mono_right h hu
+
 @[simp, mfld_simps]
 theorem inter_univ (a : Set α) : a ∩ univ = a := inf_top_eq _
 
@@ -809,7 +871,8 @@ theorem univ_inter (a : Set α) : univ ∩ a = a := top_inf_eq _
 
 @[gcongr]
 theorem inter_subset_inter {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ t₁) (h₂ : s₂ ⊆ t₂) :
-    s₁ ∩ s₂ ⊆ t₁ ∩ t₂ := fun _ => And.imp (@h₁ _) (@h₂ _)
+    s₁ ∩ s₂ ⊆ t₁ ∩ t₂ :=
+  inf_le_inf h₁ h₂
 
 theorem inter_subset_inter_left {s t : Set α} (u : Set α) (H : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter H Subset.rfl
@@ -823,18 +886,21 @@ theorem union_inter_cancel_left {s t : Set α} : (s ∪ t) ∩ s = s :=
 theorem union_inter_cancel_right {s t : Set α} : (s ∪ t) ∩ t = t :=
   inter_eq_self_of_subset_right subset_union_right
 
-theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a ∈ s | p a} :=
+theorem inter_ofPred_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a ∈ s | p a} :=
   rfl
 
-theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
+@[deprecated (since := "2026-07-09")]
+alias inter_setOf_eq_sep := inter_ofPred_eq_sep
+
+theorem ofPred_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
   inter_comm _ _
+
+@[deprecated (since := "2026-07-09")] alias setOf_inter_eq_sep := ofPred_inter_eq_sep
 
 theorem sep_eq_inter_sep {α : Type*} {s t : Set α} {p : α → Prop} (hst : s ⊆ t) :
     {x ∈ s | p x} = s ∩ {x ∈ t | p x} := by
-  rw [← inter_setOf_eq_sep s p, ← inter_setOf_eq_sep t p,
+  rw [← inter_ofPred_eq_sep s p, ← inter_ofPred_eq_sep t p,
     ← inter_assoc, ← left_eq_inter.mpr hst]
-
-@[deprecated (since := "2025-12-10")] alias sep_of_subset := sep_eq_inter_sep
 
 @[simp]
 theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=
@@ -876,6 +942,14 @@ theorem union_union_union_comm (s t u v : Set α) : s ∪ t ∪ (u ∪ v) = s �
 theorem inter_inter_inter_comm (s t u v : Set α) : s ∩ t ∩ (u ∩ v) = s ∩ u ∩ (t ∩ v) :=
   inf_inf_inf_comm _ _ _ _
 
+theorem forall_mem_inter {p : α → Prop} :
+    (∀ x ∈ s ∩ t, p x) ↔ (∀ x ∈ s, x ∈ t → p x) := by
+  simp_rw [mem_inter_iff, and_imp]
+
+theorem exists_mem_inter {p : α → Prop} :
+    (∃ x ∈ s ∩ t, p x) ↔ (∃ x ∈ s, x ∈ t ∧ p x) := by
+  simp_rw [mem_inter_iff, and_assoc]
+
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
 
 section Sep
@@ -902,8 +976,11 @@ theorem sep_eq_of_subset (h : s ⊆ t) : { x ∈ t | x ∈ s } = s :=
 @[simp]
 theorem sep_subset (s : Set α) (p : α → Prop) : { x ∈ s | p x } ⊆ s := fun _ => And.left
 
-theorem sep_subset_setOf (s : Set α) (p : α → Prop) : { x ∈ s | p x } ⊆ { x | p x } :=
+theorem sep_subset_ofPred (s : Set α) (p : α → Prop) : { x ∈ s | p x } ⊆ { x | p x } :=
   fun _ => And.right
+
+@[deprecated (since := "2026-07-09")]
+alias sep_subset_setOf := sep_subset_ofPred
 
 @[simp]
 theorem sep_eq_self_iff_mem_true : { x ∈ s | p x } = s ↔ ∀ x ∈ s, p x := by
@@ -942,8 +1019,11 @@ theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q
   inter_union_distrib_left s {x | p x} {x | q x}
 
 @[simp]
-theorem sep_setOf : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
+theorem sep_ofPred : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
   rfl
+
+@[deprecated (since := "2026-07-09")]
+alias sep_setOf := sep_ofPred
 
 end Sep
 
@@ -1085,7 +1165,7 @@ noncomputable instance decidableEq : DecidableEq (Set α) := Classical.typeDecid
 
 end Set
 
-variable {α : Type*} {s t u : Set α}
+variable {α : Type*} {s : Set α}
 
 namespace Equiv
 

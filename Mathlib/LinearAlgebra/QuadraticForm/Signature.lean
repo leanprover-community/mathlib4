@@ -55,7 +55,7 @@ variable {Q}
 
 end Equiv
 
-open Classical in
+open scoped Classical in
 /-- For quadratic forms on finite-dimensional spaces, the maximal finrank of a positive-definite
 subspace of `M`. (Defined as `0` if `M` is infinite-dimensional). -/
 /-
@@ -117,6 +117,7 @@ variable {Q}
 
 @[simp] lemma sigNeg_neg : sigNeg (-Q) = sigPos Q := by rw [← sigPos_neg, neg_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma QuadraticMap.Equivalent.sigPos_eq (h : Equivalent Q Q') : sigPos Q = sigPos Q' := by
   obtain ⟨e⟩ := h
   unfold sigPos
@@ -188,12 +189,11 @@ private lemma negSemidef_spanSubset (s : Set ι) (hs : ∀ i ∈ s, w i ≤ 0) :
 /-- Key lemma for Sylvester's law of inertia: compute the signature of a weighted sum of squares. -/
 lemma sigPos_weightedSumSquares :
     sigPos (weightedSumSquares 𝕜 w) = {i | 0 < w i}.ncard := by
-  classical
   let p : Set ι := {i | 0 < w i}
   let m : Set ι := {i | w i ≤ 0}
   convert_to sigPos _ = p.ncard
   have : p.ncard + m.ncard = Nat.card ι := by
-    convert Set.ncard_add_ncard_compl p
+    convert! Set.ncard_add_ncard_compl p
     ext
     grind
   have : p.ncard ≤ sigPos (weightedSumSquares 𝕜 w) :=
@@ -205,14 +205,13 @@ lemma sigPos_weightedSumSquares :
 lemma sigNeg_weightedSumSquares :
     sigNeg (weightedSumSquares 𝕜 w) = {i | w i < 0}.ncard := by
   simp only [sigNeg]
-  convert sigPos_weightedSumSquares (w := -w) using 2
+  convert! sigPos_weightedSumSquares (w := -w) using 2
   · ext; simp
   · simp
 
 private lemma sigPos_add_sigNeg_add_radical₁ :
     sigPos (weightedSumSquares 𝕜 w) + sigNeg (weightedSumSquares 𝕜 w) +
       Module.finrank 𝕜 (weightedSumSquares 𝕜 w).radical = Nat.card ι := by
-  classical
   rw [radical_weightedSumSquares, sigPos_weightedSumSquares, sigNeg_weightedSumSquares,
     Pi.dim_spanSubset]
   calc {i | 0 < w i}.ncard + {i | w i < 0}.ncard + {i | w i = 0}.ncard
@@ -235,7 +234,7 @@ lemma sigPos_add_sigNeg_add_radical [FiniteDimensional 𝕜 M] :
   have : Invertible (2 : 𝕜) := invertibleOfNonzero (NeZero.ne _)
   obtain ⟨w, e⟩ := Q.equivalent_weightedSumSquares
   rw [e.sigPos_eq, e.sigNeg_eq, e.rank_radical_eq]
-  convert QuadraticForm.sigPos_add_sigNeg_add_radical₁ (w := w)
+  convert! QuadraticForm.sigPos_add_sigNeg_add_radical₁ (w := w)
   exact Eq.symm (Nat.card_fin (Module.finrank 𝕜 M))
 
 /-- Uniqueness part of **Sylvester's law of inertia** (positive part):

@@ -23,7 +23,7 @@ Because there is a global `star` instance on `H →L[𝕜] H` (defined as the li
 Hilbert spaces), which is mathematically distinct from this `star`, we provide
 this instance on `WithConv (E →L[R] F)`. -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
@@ -36,10 +36,7 @@ open WithConv
 /-- The intrinsic star operation on continuous linear maps defined by
 `(star f) x = star (f (star x))`. -/
 instance intrinsicStar : Star (WithConv (E →L[R] F)) where star f := toConv <|
-  { (star (toConv f.ofConv.toLinearMap)).ofConv with
-    cont := by
-      dsimp [star]
-      exact .comp' continuous_star (.comp' f.ofConv.continuous continuous_star) }
+  { (star (toConv f.ofConv.toLinearMap)).ofConv with }
 
 @[simp] theorem intrinsicStar_apply (f : WithConv (E →L[R] F)) (x : E) :
     star f x = star (f (star x)) := rfl

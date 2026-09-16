@@ -10,7 +10,7 @@ public import Mathlib.Data.Finsupp.Single
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`
 
-We interpret maps `Fin n →₀ M` as `n`-tuples of elements of `M`,
+We interpret maps `Fin n →₀ M` as `n`-tuples of elements of `M`.
 We define the following operations:
 * `Finsupp.tail` : the tail of a map `Fin (n + 1) →₀ M`, i.e., its last `n` entries;
 * `Finsupp.cons` : adding an element at the beginning of an `n`-tuple, to get an `n + 1`-tuple;
@@ -79,11 +79,11 @@ theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by simp [cons_zero_e
 variable {s} {y}
 
 theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
 
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   ext a
   simp [← cons_succ a y s, c]
 
