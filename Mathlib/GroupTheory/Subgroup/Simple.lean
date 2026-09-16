@@ -54,7 +54,7 @@ attribute [to_additive existing] IsSimpleGroup isSimpleGroup_iff
 variable {G} {A}
 
 @[to_additive]
-theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn : H.Normal) :
+theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] (H : Subgroup G) [H.Normal] :
     H = ⊥ ∨ H = ⊤ :=
   IsSimpleGroup.eq_bot_or_eq_top_of_normal H
 
