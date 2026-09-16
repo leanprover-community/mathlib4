@@ -169,9 +169,6 @@ section continuous
 
 variable [TopologicalSpace X]
 
-instance instContinuousEvalConst : ContinuousEvalConst H X V where
-  continuous_eval_const := continuous_eval_const
-
 theorem continuous_kerFun_iff :
     Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) := by
   constructor <;> intro
@@ -194,20 +191,6 @@ theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous 
   · rintro hK
     simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
     exact ContinuousLinearMap.adjoint.continuous.comp hK
-
-/-- An RKHS has a continuous kernel when the kernel is jointly continuous in its two arguments. -/
-class ContinuousKernel : Prop where
-  continuous_kernel : Continuous fun p : X × X => kernel H p.1 p.2
-
-theorem continuous_kerFun [ContinuousKernel H] : Continuous (kerFun H) :=
-  (continuous_kerFun_iff H).mp ContinuousKernel.continuous_kernel
-
-theorem continuous_eval' [ContinuousKernel H] : Continuous fun x : X => eval H x :=
-  (continuous_eval_iff H).mpr ((continuous_kerFun_iff H).mp ContinuousKernel.continuous_kernel)
-
-instance instContinuousEval [ContinuousKernel H] : ContinuousEval H X V where
-  continuous_eval := isBoundedBilinearMap_apply.continuous.comp
-    (((continuous_eval' H).comp continuous_snd).prodMk continuous_fst)
 
 end continuous
 
