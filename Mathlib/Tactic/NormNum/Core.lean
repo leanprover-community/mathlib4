@@ -11,6 +11,7 @@ public import Mathlib.Tactic.NormNum.Result
 public meta import Mathlib.Util.Qq
 public import Lean.Elab.Tactic.Try  -- shake: keep (`register_try?_tactic` command dependency)
 public meta import Lean.Meta.Tactic.Try.Collect
+public import Mathlib.Tactic.ClickSuggestions.Normalize
 
 /-!
 ## `norm_num` core functionality
@@ -366,6 +367,22 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 macro (name := normNumCmd) "#norm_num" cfg:optConfig o:(&" only")?
     args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
   `(command| #conv norm_num $cfg:optConfig $[only%$o]? $(args)? => $e)
+
+namespace ClickSuggestions.Normalize
+
+/-- The entry for `norm_num1` in `#click_suggestions`. -/
+def normNum : NormTactic where
+  tacStx loc? := `(tactic| norm_num1 $[$loc?]?)
+  convStx := `(conv| norm_num1)
+  run e := do
+    let ctx ← Simp.mkContext
+      (simpTheorems := #[← simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+      (congrTheorems := ← getSimpCongrTheorems)
+    return (← deriveSimp ctx (useSimp := false) (e := e)).expr
+
+initialize normTacticRef.modify (·.push normNum)
+
+end ClickSuggestions.Normalize
 
 end Mathlib.Tactic
 

@@ -5,113 +5,100 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.Util
-public import Mathlib.Tactic.Ring.RingNF
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Group
-public import Mathlib.Tactic.NoncommRing
-public import Mathlib.Tactic.Abel
-public import Mathlib.Tactic.Push
 public meta import Lean.Elab.Tactic.NormCast
+public import Mathlib.Tactic.ClickSuggestions.Util
+public import Mathlib.Tactic.Widget.Conv
+public import Mathlib.Util.AtomM
+public import Mathlib.Tactic.Push
 
 /-!
 # Normalizing tactics in `#click_suggestions`
 
-This file implement the following suggestions for normalizing tactics:
-- `suggestNormCast`: `norm_cast`, `push_cast`
-- `suggestPush`: `push _`/`push +distrib Not`
-- `suggestSimp`: `dsimp only`/`dsimp`/`simp`/`norm_num`
-- `suggestAlgebraicNormalization`: `field_simp`, `ring_nf`/`noncomm_ring`/`abel`/`group`
+This file implement an extensible mechanism for suggesting normalization tactics.
+
+This file implements support for `dsimp`, `simp`, `push`, `norm_cast`, `push_cast`.
+Downstream files will extend this with e.g. `norm_num`, `ring_nf` and `field_simp`.
 -/
 
 meta section
 
-namespace Mathlib.Tactic.ClickSuggestions
+namespace Mathlib.Tactic.ClickSuggestions.Normalize
 
-open Lean Meta ProofWidgets Jsx Mathlib.Tactic Mathlib.Meta
+open Lean Meta ProofWidgets Jsx
 
 /-- The information that a normalizing tactic needs for where to apply. -/
-public structure RewritingInfo where
+public structure PositionInfo where
   /-- At the goal or a hypothesis. -/
   hyp? : Option Name
   /-- At which subexpression. -/
   convPath? : Option Conv.Path
 
 /-- A `NormStx` stores the syntax for a normalization tactic. -/
-structure NormStx where
+public structure NormStx where
   /-- The `tactic` syntax. -/
-  tac : Option Ident → CoreM (TSyntax `tactic)
+  tacStx : Option (TSyntax ``Parser.Tactic.location) → CoreM (TSyntax `tactic)
   /-- The `conv` syntax. -/
-  conv : OptionT CoreM (TSyntax `conv)
+  convStx : OptionT CoreM (TSyntax `conv)
+
+/-- `NormTactic` stores the information needed for suggesting a normalizing tactic. -/
+public structure NormTactic extends NormStx where
+  /-- Normalize the given expression, throwing an error if the tactic doesn't apply. -/
+  run : Expr → MetaM Expr
 
 /--
 Given that some normalization tactic changes `old` to `new`, return the suggestion for this tactic.
 Note that some tactics have no `conv` analogue, so in that case we
 default to suggesting the usual version of the tactic.
 -/
-def suggestNormalize (old new : Expr) (info : RewritingInfo) (stx : NormStx) :
+def suggestNormalize (old new : Expr) (info : PositionInfo) (stx : NormStx) :
     ClickSuggestionsM (Option Html) := do
   if ← isExplicitEq old new then return none
-  let tac ← match ← stx.conv.run, info.convPath? with
+  let tac ← match ← stx.convStx.run, info.convPath? with
     | some convStx, some path => Conv.pathToStx convStx path info.hyp?
-    | _, _ => stx.tac (info.hyp?.map mkIdent)
+    | _, _ => stx.tacStx (← info.hyp?.mapM fun hyp ↦
+      `(Lean.Parser.Tactic.location| at $(mkIdent hyp):ident))
   let mut html ← exprToHtml new
   if info.convPath?.isNone then
     if info.hyp?.isNone && new.isTrue || info.hyp?.isSome && new.isFalse then
       -- The goal is `True` or a hypothesis is `False`, so we are happy.
       html := <span> {html} {.text " 🎉"} </span>
-  mkTacticSuggestion tac (← stx.tac none) html
+  mkTacticSuggestion tac (← stx.tacStx none) html
 
 section Cast
 
-def normCastStx : NormStx where
-  tac hyp? := `(tactic| norm_cast $[at $hyp?:ident]?)
-  conv     := `(conv| norm_cast)
+public def normCast : NormTactic where
+  run e := return (← Lean.Elab.Tactic.NormCast.derive e).1
+  tacStx loc? := `(tactic| norm_cast $[$loc?]?)
+  convStx     := `(conv| norm_cast)
 
--- There is no `conv` version of `push_cast`.
-def pushCastStx : NormStx where
-  tac hyp? := `(tactic| push_cast $[at $hyp?:ident]?)
-  conv     := failure
-
-/-- Run `norm_cast`. -/
-def runNormCast (e : Expr) : MetaM Expr := do
-  return (← Lean.Elab.Tactic.NormCast.derive e).1
-
-/-- Run `push_cast`. -/
-def runPushCast (e : Expr) : MetaM Expr := do
-  let ctx ← Simp.mkContext
-    (simpTheorems := #[← NormCast.pushCastExt.getTheorems])
-    (congrTheorems := ← getSimpCongrTheorems)
-  return (← Lean.Meta.simp e ctx).1.expr
-
-/-- Create a suggestion for `norm_cast` and/or `push_cast`. -/
-public def suggestNormCast (e : Expr) (info : RewritingInfo) : ClickSuggestionsM Html :=
-  mkIncrementalSuggestions "cast" fun update ↦ do
-    let e' ← runNormCast e
-    if let some html ← suggestNormalize e e' info normCastStx then
-      update html
-    let e' ← runPushCast e
-    if let some html ← suggestNormalize e e' info pushCastStx then
-      update html
+public def pushCast : NormTactic where
+  run e := do
+    let ctx ← Simp.mkContext
+      (simpTheorems := #[← NormCast.pushCastExt.getTheorems])
+      (congrTheorems := ← getSimpCongrTheorems)
+    return (← Lean.Meta.simp e ctx).1.expr
+  tacStx loc? := `(tactic| push_cast $[$loc?:location]?)
+  -- There is no `conv` version of `push_cast`.
+  convStx     := failure
 
 end Cast
 
 section Push
 
-/-- Return the tactic syntax for `push head`. -/
+/-- Return the tactic syntax for `push`. -/
 def pushStx (head : Push.Head) (distrib : Bool) : NormStx :=
-  let cfg := do
+  let cfg :=
     if distrib then `(Parser.Tactic.optConfig| +$(mkIdent `distrib))
-    else `(Parser.Tactic.optConfig| )
-  let head := do
+    else `(Parser.Tactic.optConfig|)
+  let head :=
     match head with
     | .lambda => `(fun _ ↦ _)
     | .forall => `(∀ _, _)
     | .const ``Membership.mem => `(_ ∈ _)
-    | .const c => pure <| mkIdent (← unresolveNameGlobal c)
+    | .const c => return mkIdent (← unresolveNameGlobal c)
   {
-    tac hyp? := do `(tactic| push $(← cfg) $(← head):term $[at $hyp?:ident]?)
-    conv     := do `(conv| push $(← cfg) $(← head):term)
+    tacStx loc? := do `(tactic| push $(← cfg) $(← head):term $[$loc?:location]?)
+    convStx     := do `(conv| push $(← cfg) $(← head):term)
   }
 
 /-- Run `push head`. -/
@@ -126,20 +113,22 @@ def getHead (e : Expr) : Option Push.Head :=
   | .const c _ => some (.const c)
   | _ => none
 
-/-- Create a suggestion for `push`. -/
-public def suggestPush (e : Expr) (info : RewritingInfo) : ClickSuggestionsM Html := do
-  let some head := getHead (← whnfR e) | return .text ""
-  let thms := Push.pushExt.getState (← getEnv)
+/-- Create a suggestion for `push` using the head constant of `e`.
+If the constant is `Not`, then also suggest `push +distrib Not` if that does something different.
+-/
+public def suggestPush (e : Expr) (info : PositionInfo)
+  (update : Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
+  let some head := getHead (← whnfR e) | return
   if let .const headConst := head then
     -- Make sure that there are actually push theorems for this constant, otherwise return.
+    let thms := Push.pushExt.getState (← getEnv)
     try
-      thms.root.forM fun | .const c _, _ => do if c == headConst then failure | _, _ => pure ()
-      return .text ""
+      thms.root.forM fun key _ ↦ do if let .const c _ := key then if c == headConst then failure
+      return
     catch _ => pure ()
-  mkIncrementalSuggestions "push" fun update ↦ do
-    let e₁ ← runPush head false e
-    if let some html ← suggestNormalize e e₁ info (pushStx head false) then
-      update html
+  let e₁ ← runPush head false e
+  if let some html ← suggestNormalize e e₁ info (pushStx head false) then
+    update html
     if head matches .const ``Not then
       -- Also suggest `push +distrib Not` if it behaves differently from `push Not`.
       let e₂ ← runPush head true e
@@ -151,20 +140,17 @@ end Push
 section Simp
 
 def dsimpOnlyStx : NormStx where
-  tac hyp? := `(tactic| dsimp only $[at $hyp?:ident]?)
-  conv     := `(conv| dsimp only)
+  tacStx loc? := `(tactic| dsimp only $[$loc?]?)
+  convStx     := `(conv| dsimp only)
 
 def dsimpStx : NormStx where
-  tac hyp? := `(tactic| dsimp $[at $hyp?:ident]?)
-  conv     := `(conv| dsimp)
+  tacStx loc? := `(tactic| dsimp $[$loc?:location]?)
+  convStx     := `(conv| dsimp)
 
 def simpStx : NormStx where
-  tac hyp? := `(tactic| simp $[at $hyp?:ident]?)
-  conv     := `(conv| simp)
+  tacStx loc? := `(tactic| simp $[$loc?:location]?)
+  convStx     := `(conv| simp)
 
-def normNumStx : NormStx where
-  tac hyp? := `(tactic| norm_num $[at $hyp?:ident]?)
-  conv     := `(conv| norm_num)
 
 /-- Run `dsimp only`. -/
 def runDSimpOnly (e : Expr) : MetaM Expr := do
@@ -185,167 +171,81 @@ def runSimp (e : Expr) : MetaM Expr := do
     (congrTheorems := ← getSimpCongrTheorems)
   return (← Lean.Meta.simp e ctx #[← Simp.getSimprocs]).1.expr
 
-/-- Run `norm_num`. -/
-def runNormNum (e : Expr) : MetaM Expr := do
-  let ctx ← Simp.mkContext
-    (simpTheorems := #[← getSimpTheorems])
-    (congrTheorems := ← getSimpCongrTheorems)
-  return (← NormNum.deriveSimp ctx #[← Simp.getSimprocs] (e := e)).expr
-
-/-- Create suggestions for `dsimp only`, `dsimp`, `simp`, `norm_num`.
-We only suggest a tactic if it gives a different result compared to the previous result.
+/-- Create suggestions for `dsimp only`, `dsimp` and/or `simp`.
+Only suggest a tactic if it gives a different result from the previous one.
 -/
-public def suggestSimp (e : Expr) (info : RewritingInfo) : ClickSuggestionsM Html :=
-  mkIncrementalSuggestions "simp" fun update ↦ do
-    let e₁ ← runDSimpOnly e
-    if let some html ← suggestNormalize e e₁ info dsimpOnlyStx then
-      update html
-    let e₂ ← runDSimp e
-    if let some html ← suggestNormalize e₁ e₂ info dsimpStx then
-      update html
-    let e₃ ← runSimp e
-    if let some html ← suggestNormalize e₂ e₃ info simpStx then
-      update html
-    let e₄ ← runNormNum e
-    if let some html ← suggestNormalize e₃ e₄ info normNumStx then
-      update html
+public def suggestSimp (e : Expr) (info : PositionInfo)
+    (update : Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
+  let e₁ ← runDSimpOnly e
+  if let some html ← suggestNormalize e e₁ info dsimpOnlyStx then
+    update html
+  let e₂ ← runDSimp e
+  if let some html ← suggestNormalize e₁ e₂ info dsimpStx then
+    update html
+  let e₃ ← runSimp e
+  if let some html ← suggestNormalize e₂ e₃ info simpStx then
+    update html
 
 end Simp
 
+public initialize normTacticRef : IO.Ref (Array NormTactic) ← IO.mkRef #[normCast, pushCast]
+
+/-- Create a suggestion for tactics that normalize the selected expression. -/
+public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos : SubExpr.Pos) :
+    ClickSuggestionsM Html := do
+  let info : PositionInfo := {
+    hyp? := ← fvarId?.mapM (·.getUserName)
+    convPath? := ← if pos.isRoot then pure none else some <$> Conv.Path.ofSubExprPos rootExpr pos
+  }
+  let wrap (htmls : Array Html) :=
+    <details>
+      <summary className="mv2 pointer"> Normalize </summary>
+      {.element "div" #[] htmls}
+    </details>
+  mkIncrementalSuggestions "normalize" (wrap := wrap) fun update ↦ do
+    suggestPush e info update
+    suggestSimp e info update
+    for tac in ← normTacticRef.get do
+      let e' ← try tac.run e catch _ => continue
+      if let some html ← suggestNormalize e e' info tac.toNormStx then
+        update html
+
 section Algebra
 
-def ringNFStx : NormStx where
-  tac hyp? := `(tactic| ring_nf $[at $hyp?:ident]?)
-  conv     := `(conv| ring_nf)
-
-def abelNFStx : NormStx where
-  tac hyp? := `(tactic| abel_nf $[at $hyp?:ident]?)
-  conv     := `(conv| abel_nf)
-
-def fieldSimpStx : NormStx where
-  tac hyp? := `(tactic| field_simp $[at $hyp?:ident]?)
-  conv     := `(conv| field_simp)
-
--- `group` doesn't have a `conv` version.
-def groupStx : NormStx where
-  tac hyp? := `(tactic| group $[at $hyp?:ident]?)
-  conv     := failure
-
- -- `noncomm_ring` doesn't even have an `at h` version.
-def noncommRingStx : NormStx where
-  tac _ := `(tactic| noncomm_ring)
-  conv     := failure
-
-open RingNF in
-/-- Run `ring_nf`. -/
-def runRing (e : Expr) (ineq? : Option Mathlib.Ineq) : MetaM Expr := do
+/-- Run a tactic like `ring_nf` or `abel_nf`. -/
+public def runNF (e : Expr) (evalExpr : Expr → AtomM Simp.Result)
+    (cleanup : Simp.Result → MetaM Simp.Result) : MetaM Expr := do
   let expr ← AtomM.run .reducible do
-    if let some ineq := ineq? then
-      let mkApp2 rel lhs rhs := e | failure
-      let lhs := (← evalExpr lhs).expr; let rhs := (← evalExpr rhs).expr
-      if ← isDefEq lhs rhs then
-        match ineq with
-        | .eq | .le => return mkConst ``True
-        | .lt => return mkConst ``False
-      return mkApp2 rel lhs rhs
-    else
-      return (← evalExpr e).expr
-  return (← cleanup {} { expr }).expr
+    if let mkApp2 rel lhs rhs := e then
+      if rel.isAppOfArity ``Eq 1 || rel.isAppOfArity ``LE.le 2 || rel.isAppOfArity ``LT.lt 2 then
+        let lhs := (← evalExpr lhs).expr; let rhs := (← evalExpr rhs).expr
+        if ← isDefEq lhs rhs then
+          if rel.isAppOfArity ``LT.lt 2 then
+            return .const ``False []
+          else
+            return .const ``True []
+        return mkApp2 rel lhs rhs
+    return (← evalExpr e).expr
+  return (← cleanup { expr }).expr
 
-open Abel in
-/-- Run `abel_nf`. -/
-def runAbel (e : Expr) (ineq? : Option Mathlib.Ineq) : MetaM Expr := do
-  let expr ← AtomM.run .reducible do
-    if let some ineq := ineq? then
-      let mkApp2 rel lhs rhs := e | failure
-      let lhs := (← evalExpr lhs).expr; let rhs := (← evalExpr rhs).expr
-      if ← isDefEq lhs rhs then
-        match ineq with
-        | .eq | .le => return mkConst ``True
-        | .lt => return mkConst ``False
-      return mkApp2 rel lhs rhs
-    else
-      return (← evalExpr e).expr
-  return (← cleanup {} { expr }).expr
-
-/-- Run `field_simp`. -/
-def runField (e : Expr) (isProp : Bool) : MetaM Expr := AtomM.run .reducible do
-  let ctx ← Simp.mkContext
-    (simpTheorems := #[← getSimpTheorems])
-    (congrTheorems := ← getSimpCongrTheorems)
-  let disch := fun e ↦ Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
-  if isProp then
-    return (← FieldSimp.reduceProp disch e).expr
-  else
-    return (← FieldSimp.reduceExpr disch e).expr
-
-/-- Run the given tactic `stx`. -/
-private def tryTactic (stx : TSyntax `tactic) (e : Expr) : MetaM Expr := do
+/-- Run the given normalization tactic using its syntax `stx`, such as `group` or `noncomm_ring`. -/
+public def runFromStx (stx : TSyntax `tactic) (e : Expr) : MetaM Expr := do
   let mvar ← mkFreshExprMVar e
   match ← (Elab.Tactic.run mvar.mvarId! (Elab.Tactic.evalTactic stx)).run' with
   | [] => return mkConst ``True
   | [mvarId] => mvarId.getType
   | _ => failure
 
-/-- Run `group`. -/
-def runGroup (e : Expr) : MetaM Expr := do tryTactic (← `(tactic| group)) e
-
-/-- Run `noncomm_ring`. -/
-def runNoncommRing (e : Expr) : MetaM Expr := do tryTactic (← `(tactic| noncomm_ring)) e
-
-/-- Check if `e` is a target for algebraic simplification.
-If so, return the type in which the operations take place, and optionally the relation. -/
-def isAlgebraic (e : Expr) : MetaM (Option (Expr × Option Mathlib.Ineq)) := do
-  if (← whnfR e).getAppFn.constName matches
-    ``HAdd.hAdd | ``Add.add |
-    ``HMul.hMul | ``Mul.mul |
-    ``HSMul.hSMul | ``SMul.smul |
-    ``HPow.hPow | ``Pow.pow |
-    ``Neg.neg |
-    ``HSub.hSub | ``Sub.sub |
-    ``Inv.inv |
-    ``HDiv.hDiv | ``Div.div then
-    return some (← inferType e, none)
-  try
-    let (kind, α, _, _) ← e.ineq?
-    return some (α, some kind)
-  catch _ =>
-    return none
-
-/--
-Create a suggestion for an algebraic normalization tactic.
-
-We suggest `field_simp` when applicable, and additionally we suggest at most one of
-`ring`, `noncomm_ring`, `abel` and `group`, depending on which type class is satisfied.
-
-There are 2 cases where we may suggest this
-1. The selected expression is an algebraic expression.
-2. The selected expression is an equality or inequality of algebraic expressions.
--/
-public def suggestAlgebraicNormalization (e : Expr) (info : RewritingInfo) :
-    ClickSuggestionsM Html := do
-  let some (type, ineq?) ← isAlgebraic e | return .text ""
-  mkIncrementalSuggestions "algebra" fun update ↦ do
-    if let some e' ← try? <| runField e ineq?.isSome then
-      if let some html ← suggestNormalize e e' info fieldSimpStx then
-        update html
-    if let some e' ← try? <| runRing e ineq? then
-      if let some html ← suggestNormalize e e' info ringNFStx then
-        update html
-    else if let .some _ ← trySynthInstance (← mkAppM ``NonAssocSemiring #[type]) then
-      if ineq?.isSome then
-        if let some e' ← try? <| runNoncommRing e then
-          if let some html ← suggestNormalize e e' info noncommRingStx then
-            update html
-    else if let some e' ← try? <| runAbel e ineq? then
-      if let some html ← suggestNormalize e e' info abelNFStx then
-        update html
-    else if let .some _ ← trySynthInstance (← mkAppM ``Group #[type]) then
-      if ineq?.isSome then
-        if let some e' ← try? <| runGroup e then
-          if let some html ← suggestNormalize e e' info groupStx then
-            update html
+/-- Check that `e` is suitable for normalization by a tactic for class `cls`.
+This is used for unstructured normalization tactics such as `group` and `noncomm_ring`. -/
+public def guardHasInstance (e : Expr) (cls : Name) : MetaM Unit := do
+  let type ← match_expr e with
+    | Eq α _ _ => pure α
+    | LE.le α _ _ _ => pure α
+    | LT.lt α _ _ _ => pure α
+    | _ => inferType e
+  discard <| synthInstance (← mkAppM cls #[type])
 
 end Algebra
 
-end Mathlib.Tactic.ClickSuggestions
+end Mathlib.Tactic.ClickSuggestions.Normalize

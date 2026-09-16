@@ -549,7 +549,21 @@ macro (name := abelConv) "abel" : conv =>
 
 end
 
-end Mathlib.Tactic.Abel
+end Abel
+
+namespace ClickSuggestions.Normalize
+
+/-- The entry for `abel_nf` in `#click_suggestions`. -/
+meta def abelNF : NormTactic where
+  tacStx loc? := `(tactic| abel_nf $[$loc?]?)
+  convStx := `(conv| abel_nf)
+  run e := runNF e Abel.evalExpr (Abel.cleanup {})
+
+meta initialize normTacticRef.modify (·.push abelNF)
+
+end ClickSuggestions.Normalize
+
+end Mathlib.Tactic
 
 /-!
 We register `abel` with the `hint` tactic.

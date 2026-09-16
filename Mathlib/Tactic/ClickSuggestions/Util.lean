@@ -392,13 +392,14 @@ def mkTacticSuggestion (stx tac : TSyntax `tactic) (html : Html) : ClickSuggesti
 /-- Make a suggestion using a separete thread, allowing it to add entries over time. -/
 @[inline]
 def mkIncrementalSuggestions (name : String)
-    (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) : ClickSuggestionsM Html :=
+    (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit)
+    (wrap : Array Html → Html := .element "div" #[]) : ClickSuggestionsM Html :=
   mkRefreshComponentM (.text "") fun token ↦ trackingComputation name do
     let htmls ← IO.mkRef #[]
     k fun html ↦ do
       markProgress
       htmls.modify (·.push html)
-      token.update (.element "div" #[] (← htmls.get))
+      token.update (wrap (← htmls.get))
 
 end Widget
 
