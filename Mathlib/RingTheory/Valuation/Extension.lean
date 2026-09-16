@@ -38,6 +38,9 @@ without first determining the normalizations once and for all.
 * `Valuation.HasExtension vR vA` : The valuation `vA` on `A` is an extension of the valuation
   `vR` on `R`.
 
+* `Valuation.HasExtension.mapValueGroup₀ vR vA` : The extension of valuation groups associated to
+  an extension of the valuation `vR` on `R` to `vA` on `A`.
+
 ## References
 
 * [Bourbaki, Nicolas. *Commutative algebra*] Chapter VI §3, Valuations.
