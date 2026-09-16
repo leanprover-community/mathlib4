@@ -399,6 +399,29 @@ with `primesOver`, `ramificationIdx` and `inertiaDeg`, rather than with explicit
 A quadratic field is Galois over `ℚ`, so the `…In` forms are available.
 -/
 
+-- TODO: for `Mathlib/NumberTheory/RamificationInertia/Galois.lean`, next to the definitions of
+-- `ramificationIdxIn` and `inertiaDegIn`: the eliminators that turn a statement holding for every
+-- prime above `p` into the `…In` form, so that the `Classical.choose` never has to be unfolded
+-- by hand.
+
+theorem Ideal.inertiaDegIn_eq_of_forall {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    {p : Ideal A} {n : ℕ} [Nonempty (p.primesOver B)]
+    (h : ∀ P : Ideal B, P.IsPrime → P.LiesOver p → P.inertiaDeg A = n) :
+    Ideal.inertiaDegIn p B = n := by
+  obtain ⟨⟨P, hP, hPp⟩⟩ := ‹Nonempty (p.primesOver B)›
+  have hex : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hP, hPp⟩
+  rw [Ideal.inertiaDegIn, dite_eq_left hex]
+  exact h _ hex.choose_spec.1 hex.choose_spec.2
+
+theorem Ideal.ramificationIdxIn_eq_of_forall {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+    {p : Ideal A} {n : ℕ} [Nonempty (p.primesOver B)]
+    (h : ∀ P : Ideal B, P.IsPrime → P.LiesOver p → P.ramificationIdx A = n) :
+    Ideal.ramificationIdxIn p B = n := by
+  obtain ⟨⟨P, hP, hPp⟩⟩ := ‹Nonempty (p.primesOver B)›
+  have hex : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hP, hPp⟩
+  rw [Ideal.ramificationIdxIn, dite_eq_left hex]
+  exact h _ hex.choose_spec.1 hex.choose_spec.2
+
 namespace NumberField.QuadraticField
 
 open scoped QuadraticAlgebra
@@ -420,9 +443,16 @@ section two
 
 variable {K}
 
+/-- `2` is inert exactly when `discr K % 8 = 5`: `f = 2` at every prime above `2`. -/
+theorem inertiaDeg_two_of_discr_emod_eight (h : NumberField.discr K % 8 = 5)
+    (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver (span {(2 : ℤ)})] :
+    P.inertiaDeg ℤ = 2 :=
+  sorry
+
 /-- `2` is inert exactly when `discr K % 8 = 5`: `f = 2`. -/
 theorem inertiaDegIn_two_of_discr_emod_eight (h : NumberField.discr K % 8 = 5) :
     Ideal.inertiaDegIn (span {(2 : ℤ)}) (𝓞 K) = 2 :=
+  -- the `Nonempty (primesOver …)` instance is stated for `span {(p : ℤ)}`, not the literal `2`
   sorry
 
 /-- `2` is inert exactly when `discr K % 8 = 5`: `g = 1`. -/
@@ -435,9 +465,16 @@ theorem ncard_primesOver_two_of_discr_emod_eight_one (h : NumberField.discr K % 
     ((span {(2 : ℤ)}).primesOver (𝓞 K)).ncard = 2 :=
   sorry
 
+/-- `2` splits exactly when `discr K % 8 = 1`: `f = 1` at every prime above `2`. -/
+theorem inertiaDeg_two_of_discr_emod_eight_one (h : NumberField.discr K % 8 = 1)
+    (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver (span {(2 : ℤ)})] :
+    P.inertiaDeg ℤ = 1 :=
+  sorry
+
 /-- `2` splits exactly when `discr K % 8 = 1`: `f = 1`. -/
 theorem inertiaDegIn_two_of_discr_emod_eight_one (h : NumberField.discr K % 8 = 1) :
     Ideal.inertiaDegIn (span {(2 : ℤ)}) (𝓞 K) = 1 :=
+  -- the `Nonempty (primesOver …)` instance is stated for `span {(p : ℤ)}`, not the literal `2`
   sorry
 
 end two
@@ -446,13 +483,33 @@ section ramified
 
 variable {K p} (hd : (p : ℤ) ∣ NumberField.discr K)
 
+include hd
+
+/-- If `p` divides the discriminant, it is ramified: `e = 2` at every prime above `p`. -/
+theorem ramificationIdx_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.ramificationIdx ℤ = 2 :=
+  sorry
+
 /-- If `p` divides the discriminant, it is ramified: `e = 2`. Uniform in `p`, `p = 2` included. -/
 theorem ramificationIdxIn_of_dvd_discr : Ideal.ramificationIdxIn 𝒑 (𝓞 K) = 2 :=
+  Ideal.ramificationIdxIn_eq_of_forall
+    fun P hP hPp ↦ by
+      have := hP
+      have := hPp
+      exact ramificationIdx_of_dvd_discr hd P
+
+/-- If `p` divides the discriminant, it is ramified: `f = 1` at every prime above `p`. -/
+theorem inertiaDeg_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.inertiaDeg ℤ = 1 :=
   sorry
 
 /-- If `p` divides the discriminant, it is ramified: `f = 1`. -/
 theorem inertiaDegIn_of_dvd_discr : Ideal.inertiaDegIn 𝒑 (𝓞 K) = 1 :=
-  sorry
+  Ideal.inertiaDegIn_eq_of_forall
+    fun P hP hPp ↦ by
+      have := hP
+      have := hPp
+      exact inertiaDeg_of_dvd_discr hd P
 
 /-- If `p` divides the discriminant, it is ramified: `g = 1`. -/
 theorem ncard_primesOver_of_dvd_discr : (𝒑.primesOver (𝓞 K)).ncard = 1 :=
@@ -464,13 +521,35 @@ section inert
 
 variable {K p} (hp2 : p ≠ 2) (hd : ¬ IsSquare ((NumberField.discr K : ZMod p)))
 
+include hp2 hd
+
+/-- If the discriminant is not a square mod `p`, then `p` is inert: `f = 2` at every prime
+above `p`. -/
+theorem inertiaDeg_of_not_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.inertiaDeg ℤ = 2 :=
+  sorry
+
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `f = 2`. -/
 theorem inertiaDegIn_of_not_isSquare : Ideal.inertiaDegIn 𝒑 (𝓞 K) = 2 :=
+  Ideal.inertiaDegIn_eq_of_forall
+    fun P hP hPp ↦ by
+      have := hP
+      have := hPp
+      exact inertiaDeg_of_not_isSquare hp2 hd P
+
+/-- If the discriminant is not a square mod `p`, then `p` is inert: `e = 1` at every prime
+above `p`. -/
+theorem ramificationIdx_of_not_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.ramificationIdx ℤ = 1 :=
   sorry
 
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `e = 1`. -/
 theorem ramificationIdxIn_of_not_isSquare : Ideal.ramificationIdxIn 𝒑 (𝓞 K) = 1 :=
-  sorry
+  Ideal.ramificationIdxIn_eq_of_forall
+    fun P hP hPp ↦ by
+      have := hP
+      have := hPp
+      exact ramificationIdx_of_not_isSquare hp2 hd P
 
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `g = 1`. -/
 theorem ncard_primesOver_of_not_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 1 :=
@@ -483,17 +562,39 @@ section split
 variable {K p} (hp2 : p ≠ 2) (hnd : ¬ (p : ℤ) ∣ NumberField.discr K)
   (hd : IsSquare ((NumberField.discr K : ZMod p)))
 
+include hp2 hnd hd
+
 /-- If the discriminant is a nonzero square mod `p`, then `p` splits: `g = 2`. -/
 theorem ncard_primesOver_of_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 2 :=
   sorry
 
+/-- If the discriminant is a nonzero square mod `p`, then `p` splits: `e = 1` at every prime
+above `p`. -/
+theorem ramificationIdx_of_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.ramificationIdx ℤ = 1 :=
+  sorry
+
 /-- If the discriminant is a nonzero square mod `p`, then `p` splits: `e = 1`. -/
 theorem ramificationIdxIn_of_isSquare : Ideal.ramificationIdxIn 𝒑 (𝓞 K) = 1 :=
+  Ideal.ramificationIdxIn_eq_of_forall
+    fun P hP hPp ↦ by
+      have := hP
+      have := hPp
+      exact ramificationIdx_of_isSquare hp2 hnd hd P
+
+/-- If the discriminant is a nonzero square mod `p`, then `p` splits: `f = 1` at every prime
+above `p`. -/
+theorem inertiaDeg_of_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.inertiaDeg ℤ = 1 :=
   sorry
 
 /-- If the discriminant is a nonzero square mod `p`, then `p` splits: `f = 1`. -/
 theorem inertiaDegIn_of_isSquare : Ideal.inertiaDegIn 𝒑 (𝓞 K) = 1 :=
-  sorry
+  Ideal.inertiaDegIn_eq_of_forall
+    fun P hP hPp ↦ by
+      have := hP
+      have := hPp
+      exact inertiaDeg_of_isSquare hp2 hnd hd P
 
 end split
 
