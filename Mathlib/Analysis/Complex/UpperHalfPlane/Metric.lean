@@ -87,7 +87,7 @@ theorem dist_le_iff_le_sinh :
 
 theorem dist_eq_iff_eq_sinh :
     dist z w = r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) = sinh (r / 2) := by
-  rw [← div_left_inj' (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
+  rw [← div_left_inj₀ (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
 
 theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by

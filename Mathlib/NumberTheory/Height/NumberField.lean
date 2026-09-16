@@ -399,7 +399,7 @@ private lemma finite_setOfPred_isIntegral_nat_mul_and_mulHeight₁_le {n : ℕ} 
   · simp only [Set.mem_ofPred_eq] at ha ⊢
     rw [mul_div_cancel₀ (a : K) hn', mulHeight₁_div_eq_mulHeight]
     exact ⟨a.isIntegral_coe, ha⟩
-  · rwa [div_left_inj' hn', RingOfIntegers.eq_iff] at h
+  · rwa [div_left_inj₀ hn', RingOfIntegers.eq_iff] at h
   · simp only [Set.mem_ofPred_eq, Set.mem_image]
     obtain ⟨a, ha⟩ : ∃ a : 𝓞 K, n * x = a := ⟨⟨_, hx₁⟩, rfl⟩
     refine ⟨a, ?_, (EuclideanDomain.eq_div_of_mul_eq_right hn' ha).symm⟩

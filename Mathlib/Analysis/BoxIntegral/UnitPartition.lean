@@ -135,7 +135,7 @@ variable [NeZero n]
 theorem tag_injective : Function.Injective (fun ν : ι → ℤ ↦ tag n ν) := by
   refine fun _ _ h ↦ funext_iff.mpr fun i ↦ ?_
   have := congr_arg (fun x ↦ x i) h
-  simp_rw [tag_apply, div_left_inj' (c := (n : ℝ)) (Nat.cast_ne_zero.mpr (NeZero.ne n)),
+  simp_rw [tag_apply, div_left_inj₀ (c := (n : ℝ)) (Nat.cast_ne_zero.mpr (NeZero.ne n)),
     add_left_inj, Int.cast_inj] at this
   exact this
 

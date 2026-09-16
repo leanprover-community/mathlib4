@@ -239,7 +239,7 @@ theorem tendsto_stirlingSeq_sqrt_pi : Tendsto stirlingSeq atTop (𝓝 (√π)) :
   obtain ⟨a, hapos, halimit⟩ := stirlingSeq_has_pos_limit_a
   have hπ : π / 2 = a ^ 2 / 2 :=
     tendsto_nhds_unique Wallis.tendsto_W_nhds_pi_div_two (second_wallis_limit a hapos.ne' halimit)
-  rwa [(div_left_inj' (two_ne_zero' ℝ)).mp hπ, sqrt_sq hapos.le]
+  rwa [(div_left_inj₀ (two_ne_zero' ℝ)).mp hπ, sqrt_sq hapos.le]
 
 /-- **Stirling's Formula**, formulated in terms of `Asymptotics.IsEquivalent`. -/
 lemma factorial_isEquivalent_stirling :

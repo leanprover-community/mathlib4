@@ -99,7 +99,7 @@ lemma dist_orthogonalProjection_eq_iff_angle_eq {p p' : P} {s₁ s₂ : AffineSu
       rw [Real.arcsin_inj (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity))
         ((div_le_one hpd).2 ?_)
         (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
-      · rwa [div_left_inj' hpd.ne'] at h
+      · rwa [div_left_inj₀ hpd.ne'] at h
       · rw [dist_orthogonalProjection_eq_infDist]
         exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'₁)
       · rw [dist_orthogonalProjection_eq_infDist]
