@@ -97,9 +97,9 @@ jobs:
       shell: python
 
   # Housekeeping for a green nightly-testing build: tag the commit, advance the tracking
-  # branches, merge the nightly into Lean's `nightly-with-mathlib`, and remind/PR the bump
-  # branch. None of this is the user-facing status report (that is `report_success` above),
-  # so when it can't run (non-nightly toolchain) or fails, it must not silence the ✅.
+  # branches, and remind/PR the bump branch. None of this is the user-facing status report
+  # (that is `report_success` above), so when it can't run (non-nightly toolchain) or fails,
+  # it must not silence the ✅.
   housekeeping:
     if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
             github.event.workflow_run.conclusion == 'success' &&
@@ -199,45 +199,8 @@ jobs:
           # merge, and no bump-branch reminder to compute, so we skip the rest of the
           # housekeeping rather than failing. The ✅ status is still posted by `report_success`.
           echo "is_nightly=false" >> "${GITHUB_OUTPUT}"
-          echo "lean-toolchain '$toolchain' is not a nightly (rc/stable?); skipping tag, lean merge, and bump-branch reminders."
+          echo "lean-toolchain '$toolchain' is not a nightly (rc/stable?); skipping tag and bump-branch reminders."
         fi
-
-    # Next, we'll update the `nightly-with-mathlib` branch at Lean.
-    - name: Cleanup workspace
-      if: steps.tag.outputs.is_nightly == 'true'
-      run: |
-        sudo rm -rf -- *
-    - name: Generate lean-pr-testing app token
-      if: steps.tag.outputs.is_nightly == 'true'
-      id: lean-pr-testing-token
-      uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-      with:
-        app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
-        private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
-        owner: leanprover
-        repositories: lean4
-    # Checkout the Lean repository on 'nightly-with-mathlib'
-    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
-    - name: Checkout Lean repository
-      if: steps.tag.outputs.is_nightly == 'true'
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        repository: leanprover/lean4
-        token: ${{ steps.lean-pr-testing-token.outputs.token }}
-        ref: nightly-with-mathlib
-    # Merge the relevant nightly.
-    - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'
-      if: steps.tag.outputs.is_nightly == 'true'
-      run: |
-        git remote add nightly https://github.com/leanprover/lean4-nightly.git
-        git fetch nightly --tags
-        # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
-        # `--strategy-option ours --allow-unrelated-histories` makes the benign cases (nothing
-        # new to merge, unrelated histories) succeed, so a genuine failure here is a real
-        # problem and should surface via the "Report housekeeping failure" step rather than
-        # being swallowed by `|| true`.
-        git merge "nightly-${NIGHTLY}" --strategy-option ours --allow-unrelated-histories
-        git push origin
 
     # Next, determine if we should remind the humans to create a new PR to the `bump/v4.X.0` branch.
 
@@ -689,8 +652,8 @@ jobs:
             print('No action needed.')
 
     # If any non-`continue-on-error` housekeeping step above failed, surface it loudly to the
-    # status topic. Without this, a green CI whose housekeeping breaks (tagging, lean merge,
-    # bump reminders) would fail silently, since `report_success` is a separate job.
+    # status topic. Without this, a green CI whose housekeeping breaks (tagging, bump
+    # reminders) would fail silently, since `report_success` is a separate job.
     # We stay quiet when the failure is the malformed-bump-branch case, which already has its
     # own dedicated ⚠️ warning step above (otherwise we would double-post).
     - name: Report housekeeping failure to Zulip
@@ -705,4 +668,4 @@ jobs:
         topic: 'Mathlib status updates'
         content: |
           🛠️❗ Housekeeping for the nightly-testing branch [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) ([${{ github.event.workflow_run.head_sha }}](https://github.com/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }})).
-          CI passed (success reporting is handled by the separate `report_success` job), but tagging / `nightly-with-mathlib` merge / bump-branch reminders did not complete. Please check the run.
+          CI passed (success reporting is handled by the separate `report_success` job), but tagging / bump-branch reminders did not complete. Please check the run.
