@@ -56,6 +56,7 @@ abbrev target : C ⥤ C ⥤ C ⥤ C ⥤ C :=
                 ------> X₁ ⊗ (X₂ ⊗ (X₃ ⊗ X₄))
 ```
 -/
+@[implicit_reducible]
 def firstMap
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor ⟶ target tensor :=
@@ -75,6 +76,7 @@ lemma firstMap_app_app_app_app
 
 /-- The two-associator path along the left and bottom of the monoidal pentagon displayed in
 `Pentagon.firstMap`. -/
+@[implicit_reducible]
 def secondMap
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor ⟶ target tensor :=
@@ -103,7 +105,7 @@ abbrev middle (unit : C) : C ⥤ C ⥤ C :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The associator edge of the monoidal triangle. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def associatorMap (unit : C)
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor unit ⟶ middle tensor unit where
@@ -111,7 +113,7 @@ def associatorMap (unit : C)
   naturality _ _ f := NatTrans.congr_app (associator.hom.naturality f) unit
 
 /-- The left-unitor edge of the monoidal triangle. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def leftUnitorMap (unit : C) (leftUnitor : tensor.obj unit ≅ 𝟭 C) :
     middle tensor unit ⟶ tensor where
   app X :=
@@ -139,7 +141,7 @@ unitor.
           ----------> X₁ ⊗ X₂
 ```
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def firstMap (unit : C)
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
     (leftUnitor : tensor.obj unit ≅ 𝟭 C) : source tensor unit ⟶ tensor :=
@@ -147,7 +149,7 @@ def firstMap (unit : C)
 
 /-- The diagonal path in the monoidal triangle displayed in `Triangle.firstMap`, given by the
 right unitor. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def secondMap (unit : C) (rightUnitor : tensor.flip.obj unit ≅ 𝟭 C) :
     source tensor unit ⟶ tensor where
   app X := { app Y := (tensor.map (rightUnitor.hom.app X)).app Y }
