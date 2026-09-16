@@ -4406,8 +4406,11 @@ public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.PFunctor.Multivariate.W
 public import Mathlib.Data.PFunctor.Univariate.Basic
 public import Mathlib.Data.PFunctor.Univariate.M
+public import Mathlib.Data.PNat.Algebra
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Defs
+public import Mathlib.Data.PNat.DivMod
+public import Mathlib.Data.PNat.Dvd
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Data.PNat.Factors
 public import Mathlib.Data.PNat.Find
@@ -4415,6 +4418,7 @@ public import Mathlib.Data.PNat.Interval
 public import Mathlib.Data.PNat.Notation
 public import Mathlib.Data.PNat.Order
 public import Mathlib.Data.PNat.Prime
+public import Mathlib.Data.PNat.SuccOrder
 public import Mathlib.Data.PNat.Xgcd
 public import Mathlib.Data.PSigma.Order
 public import Mathlib.Data.Part

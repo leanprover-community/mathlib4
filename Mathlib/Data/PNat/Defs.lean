@@ -86,67 +86,6 @@ theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
 theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
   eq (toPNat'_coe n.pos)
 
-/-- We define `m % k` and `m / k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
-  define a function `div_exact` which gives the usual `m / k`
-  in the case where `k` divides `m`.
--/
-def modDivAux : ℕ+ → ℕ → ℕ → ℕ+ × ℕ
-  | k, 0, q => ⟨k, q.pred⟩
-  | _, r + 1, q => ⟨⟨r + 1, Nat.succ_pos r⟩, q⟩
-
-/-- `mod_div m k = (m % k, m / k)`.
-  We define `m % k` and `m / k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
-  define a function `div_exact` which gives the usual `m / k`
-  in the case where `k` divides `m`.
--/
-def modDiv (m k : ℕ+) : ℕ+ × ℕ :=
-  modDivAux k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ))
-
-/-- We define `m % k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` This ensures that `m % k` is always positive.
--/
-def mod (m k : ℕ+) : ℕ+ :=
-  (modDiv m k).1
-
-/-- We define `m / k` in the same way as for `ℕ` except that when `m = n * k` we take
-  `m / k = n - 1`. This ensures that `m = (m % k) + k * (m / k)` in all cases. Later we
-  define a function `div_exact` which gives the usual `m / k` in the case where `k` divides `m`.
--/
-def div (m k : ℕ+) : ℕ :=
-  (modDiv m k).2
-
-theorem mod_coe (m k : ℕ+) :
-    (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
-  dsimp [mod, modDiv]
-  cases (m : ℕ) % (k : ℕ) with
-  | zero =>
-    rw [ite_eq_left rfl]
-    rfl
-  | succ n =>
-    rw [ite_eq_right n.succ_ne_zero]
-    rfl
-
-theorem div_coe (m k : ℕ+) :
-    (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
-  dsimp [div, modDiv]
-  cases (m : ℕ) % (k : ℕ) with
-  | zero =>
-    rw [ite_eq_left rfl]
-    rfl
-  | succ n =>
-    rw [ite_eq_right n.succ_ne_zero]
-    rfl
-
-/-- If `h : k | m`, then `k * (div_exact m k) = m`. Note that this is not equal to `m / k`. -/
-def divExact (m k : ℕ+) : ℕ+ :=
-  ⟨(div m k).succ, Nat.succ_pos _⟩
-
 end PNat
 
 section CanLift
