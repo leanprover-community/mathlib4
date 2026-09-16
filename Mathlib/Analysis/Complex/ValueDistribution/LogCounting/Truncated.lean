@@ -35,11 +35,11 @@ For `1 ≤ r`, the counting function of a truncated divisor is bounded above by 
 of the divisor itself.
 -/
 theorem logCounting_truncate_le (D : locallyFinsupp E ℤ) {r : ℝ} (hr : 1 ≤ r) :
-    logCounting D.truncate₁ r ≤ logCounting D r := logCounting_le (truncate₁_le D) hr
+    logCounting D.truncate₁ r ≤ logCounting D r := logCounting_le (D.truncate_le 1 _) hr
 
 /-- For `1 ≤ r`, the counting function of a truncated non-negative divisor is non-negative. -/
 theorem logCounting_truncate_nonneg {D : locallyFinsupp E ℤ} (h : 0 ≤ D) {r : ℝ} (hr : 1 ≤ r) :
-    0 ≤ logCounting D.truncate₁ r := logCounting_nonneg (truncate₁_nonneg h) hr
+    0 ≤ logCounting D.truncate₁ r := logCounting_nonneg (truncate_nonneg 1 _ h) hr
 
 end Function.locallyFinsuppWithin
 
@@ -114,7 +114,7 @@ theorem truncatedLogCounting_nonneg {r : ℝ} (hr : 1 ≤ r) :
 theorem truncatedLogCounting_monotoneOn :
     MonotoneOn (truncatedLogCounting f a) (Set.Ioi 0) := by
   cases a <;>
-  simpa using logCounting_mono <| truncate₁_nonneg <| by positivity
+  simpa using logCounting_mono <| truncate_nonneg 1 _ <| by positivity
 
 /-- Relation between the truncated logarithmic counting functions of `f` and of `f⁻¹`. -/
 @[simp] theorem truncatedLogCounting_inv {f : 𝕜 → 𝕜} :
