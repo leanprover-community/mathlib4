@@ -61,43 +61,24 @@ lemma ι₁_ρ {n : ℕ} (x₀ : Fin (n + 1)) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 noncomputable def retractArrowCastSuccι {n : ℕ} (i : Fin (n + 1)) :
-    RetractArrow Λ[n + 1, i.castSucc].ι (Subcomplex.unionProd.{u} ∂Δ[n + 1] Λ[1, 0]).ι where
-  i := Arrow.homMk (Subcomplex.lift (Λ[n + 1, i.castSucc].ι ≫ ι₁) sorry) ι₁ rfl
-  r := Arrow.homMk (Subcomplex.lift (Subcomplex.ι _ ≫ (ρ i.castSucc)) sorry) (ρ i.castSucc) rfl
+    RetractArrow Λ[n + 1, i.castSucc].ι (Subcomplex.unionProd.{u} Λ[n + 1, i.castSucc] Λ[1, 0]).ι where
+  i := Arrow.homMk (Subcomplex.lift (Λ[n + 1, i.castSucc].ι ≫ ι₁) (by
+    sorry)) ι₁ rfl
+  r := Arrow.homMk (Subcomplex.lift (Subcomplex.ι _ ≫ (ρ i.castSucc)) (by
+    rw [← Subcomplex.image_eq_range, Subcomplex.unionProd, Subcomplex.image_sup, sup_le_iff]
+    constructor
+    · rw [Subcomplex.image_eq_range]
+      sorry
+    · sorry)) (ρ i.castSucc) rfl
   retract := by
     ext : 1
     · rw [← cancel_mono (Subcomplex.ι _)]
       simp
     · simp
 
-def retractArrowSuccι {n : ℕ} (i : Fin (n + 1)) :
-    RetractArrow Λ[n + 1, i.succ].ι (Subcomplex.unionProd.{u} ∂Δ[n + 1] Λ[1, 1]).ι := by
-  sorry
-
 end horn
 
 namespace modelCategoryQuillen
-
-lemma fibration_iff_hasLiftingProperty_unionProd_boundary_horn_one {E B : SSet.{u}} (p : E ⟶ B) :
-    Fibration p ↔
-      ∀ (n : ℕ) (i : Fin 2), HasLiftingProperty (Subcomplex.unionProd.{u} ∂Δ[n] Λ[1, i]).ι p := by
-  refine ⟨fun _ n i ↦ anodyneExtensions_unionProd_ι _ _ (.horn_ι i) _ (mem_fibrations p),
-    fun _ ↦ ?_⟩
-  rw [fibration_iff]
-  rintro _ _ _ h
-  simp only [J, MorphismProperty.iSup_iff] at h
-  obtain ⟨n, ⟨i⟩⟩ := h
-  obtain ⟨i, rfl⟩ | rfl := i.eq_castSucc_or_eq_last
-  · exact (horn.retractArrowCastSuccι i).leftLiftingProperty _
-  · exact (horn.retractArrowSuccι (Fin.last n)).leftLiftingProperty _
-
-lemma fibration_iff_hasLiftingProperty_unionProd_horn_one_boundary {E B : SSet.{u}} (p : E ⟶ B) :
-    Fibration p ↔
-      ∀ (n : ℕ) (i : Fin 2), HasLiftingProperty (Subcomplex.unionProd.{u} Λ[1, i] ∂Δ[n]).ι p := by
-  rw [fibration_iff_hasLiftingProperty_unionProd_boundary_horn_one]
-  refine forall_congr' (fun n ↦ forall_congr' (fun i ↦ ?_))
-  exact HasLiftingProperty.iff_of_arrow_iso_left
-    (Arrow.isoMk (Subcomplex.unionProd.symmIso _ _) (β_ _ _)) _
 
 end modelCategoryQuillen
 
