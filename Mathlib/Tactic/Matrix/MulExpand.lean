@@ -14,9 +14,9 @@ public meta import Mathlib.Tactic.Matrix.ListMatrix
 /-!
 # Expansion of products of list matrices
 
-`proveMul` rewrites `ListMatrix.mul l m n A B` for list literals `A` and `B` to the a literal
+`proveMul` rewrites `ListMatrix.mul l m n A B` for list literals `A` and `B` to a literal
 whose entries are the sums of products of the entries, with the proof constructed manually
-instead of asking kernel to perform reduction.
+instead of asking the kernel to perform reduction.
 
 The entries are obtained by unfolding equations of `ListMatrix.dotProduct` one term at a time,
 instead of leaving the unfolding to the kernel, which can trigger evaluation of arithmetic
