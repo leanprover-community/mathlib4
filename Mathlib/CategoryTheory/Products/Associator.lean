@@ -28,7 +28,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- The associator functor `(C × D) × E ⥤ C × (D × E)`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def associator : (C × D) × E ⥤ C × D × E where
   obj X := (X.1.1, (X.1.2, X.2))
   map := @fun _ _ f => f.1.1 ×ₘ (f.1.2 ×ₘ f.2)
@@ -43,7 +43,7 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E where
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def associativity : (C × D) × E ≌ C × D × E where
   functor := associator C D E
   inverse := inverseAssociator C D E
