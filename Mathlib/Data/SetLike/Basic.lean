@@ -232,7 +232,7 @@ An order defined this way automatically makes available an instance of `IsMemLE`
 
 @[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
 
-instance [Membership B A] : letI := LE.ofMembership A B; IsConcreteLE A B :=
+instance [Membership B A] : letI := LE.ofMembership A B; IsMemLE A B :=
   letI := LE.ofMembership A B; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
@@ -281,7 +281,7 @@ theorem exists_of_lt (h : p < q) : ∃ x ∈ q, x ∉ p :=
 
 end Preorder
 
-end IsConcreteLE
+end IsMemLE
 
 @[deprecated (since := "2026-09-01")] alias SetLike.le_def := IsMemLE.le_iff
 @[deprecated (since := "2026-09-01")]
