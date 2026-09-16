@@ -297,7 +297,7 @@ theorem card_eq_card_range_mul_card_ker (f : G →* G') :
   rw [← index_ker, mul_comm, card_mul_index]
 
 @[to_additive]
-theorem card_eq_card_mul_card_ker_of_surjective {f : G →* G'} (hf : Function.Surjective f) :
+theorem card_eq_card_ker_mul_card_of_surjective {f : G →* G'} (hf : Function.Surjective f) :
     Nat.card G = Nat.card f.ker * Nat.card G' := by
   simp [card_eq_card_range_mul_card_ker f, mul_comm, hf]
 
