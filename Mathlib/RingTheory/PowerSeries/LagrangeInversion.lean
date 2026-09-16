@@ -164,10 +164,7 @@ theorem lagrange_inversion_coeff_pow
     ((n + k : ℕ) : R) * PowerSeries.coeff (n + k) (Y ^ k) =
       (k : R) * (P ^ (n + k)).coeff n := by
   rcases eq_or_ne (n + k) 0 with hnk | hnk
-  · have hn : n = 0 := by omega
-    have hk : k = 0 := by omega
-    subst n
-    subst k
+  · obtain ⟨rfl, rfl⟩ := Nat.add_eq_zero_iff.mp hnk
     simp
   · simpa using lagrange_inversion_coeff_pow_of_le hY (n + k) (by omega) k (by omega)
 
