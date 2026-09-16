@@ -28,9 +28,7 @@ variable (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The canonical multilinear map from `n` copies of the dual of the module `M`
 to the dual of `⨂[R]^n M`. -/
-noncomputable def multilinearMapToDual :
-    MultilinearMap R (fun (_ : Fin n) ↦ Module.Dual R M)
-      (Module.Dual R (⨂[R]^n M)) :=
+noncomputable def multilinearMapToDual : Module.Dual R M [×n]→ₗ[R] Module.Dual R (⨂[R]^n M) :=
   have : ∀ (_ : DecidableEq (Fin n)) (f : Fin n → Module.Dual R M)
       (φ : Module.Dual R M) (i j : Fin n) (v : Fin n → M),
       (Function.update f i φ) j (v j) =
