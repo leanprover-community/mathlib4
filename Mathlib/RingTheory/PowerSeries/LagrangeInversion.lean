@@ -172,28 +172,6 @@ theorem lagrange_inversion_coeff_pow
   · simpa [show n + k - k = n by omega] using
       lagrange_inversion_coeff_pow_of_le hY (n + k) (by omega) k (by omega)
 
-private theorem lagrange_burmann_coeff_of_pos
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) {m : ℕ} (hm : 1 ≤ m) (H : R[X]) :
-    (m : R) * PowerSeries.coeff m (Polynomial.aeval Y H) =
-      (Polynomial.derivative H * P ^ m).coeff (m - 1) := by
-  obtain ⟨s, rfl⟩ : ∃ s, m = s + 1 := ⟨m - 1, by omega⟩
-  set f : ℕ → R := fun i ↦
-    H.coeff i * ((i : R) * (P ^ (s + 1)).coeff (s + 1 - i)) with hf
-  have hlhs : ((s + 1 : ℕ) : R) *
-      PowerSeries.coeff (s + 1) (Polynomial.aeval Y H) =
-        ∑ i ∈ range (s + 2), f i := by
-    rw [coeff_aeval hY H, Finset.mul_sum]
-    refine Finset.sum_congr rfl fun i hi ↦ ?_
-    have hi' : i ≤ s + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hi
-    have h := lagrange_inversion_coeff_pow_of_le hY (s + 1) (by omega) i hi'
-    simp only [hf]
-    rw [← h]
-    ring
-  rw [hlhs, Nat.add_sub_cancel, Polynomial.coeff_mul,
-    Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-    Finset.sum_range_succ' f (s + 1)]
-  grind [Polynomial.coeff_derivative]
-
 /-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
 a polynomial `H`,
 
@@ -202,7 +180,21 @@ theorem lagrange_burmann_coeff
     (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) (H : R[X]) :
     ((n + 1 : ℕ) : R) * PowerSeries.coeff (n + 1) (Polynomial.aeval Y H) =
       (Polynomial.derivative H * P ^ (n + 1)).coeff n := by
-  simpa using lagrange_burmann_coeff_of_pos hY (by omega : 1 ≤ n + 1) H
+  set f : ℕ → R := fun i ↦
+    H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) with hf
+  have hlhs : ((n + 1 : ℕ) : R) *
+      PowerSeries.coeff (n + 1) (Polynomial.aeval Y H) =
+        ∑ i ∈ range (n + 2), f i := by
+    rw [coeff_aeval hY H, Finset.mul_sum]
+    refine Finset.sum_congr rfl fun i hi ↦ ?_
+    have hi' : i ≤ n + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hi
+    have h := lagrange_inversion_coeff_pow_of_le hY (n + 1) (by omega) i hi'
+    simp only [hf]
+    rw [← h]
+    ring
+  rw [hlhs, Polynomial.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+    Finset.sum_range_succ' f (n + 1)]
+  grind [Polynomial.coeff_derivative]
 
 end TorsionFree
 
