@@ -239,7 +239,8 @@ open MonoidWithZeroHom in
 /-- The map of valuation groups induced by a valuation extension.
 See `mapValueGroup₀_apply_restrict` for the proof that this map is
 compatible with the valuation extension, `mapValueGroup₀_strictMono` for the proof
-that it is compatible with the order and `mapValueGroup₀_uniq` for the uniqueness. -/
+that it is compatible with the order and `mapValueGroup₀_uniq` for the uniqueness.
+The definition is not exposed. -/
 noncomputable def mapValueGroup₀ :
     (ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
       (ValueGroup₀ (.ofClass vA : A →*₀ ΓA)) := by
