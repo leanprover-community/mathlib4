@@ -370,11 +370,10 @@ theorem regularizedHGFun_zero_singleton_eq_mul_add_mul (u : ℂ) (z : ℂ) :
     _ = u * C 0 {u + 1} 0 + ∑' n, (u * (z ^ (n + 1) * C 0 {u + 1} (n + 1)) +
         z * (z ^ n * C 0 {u + 2} n)) := by
       rw [Summable.tsum_add hsummable2 hsummable3]
-    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * (u * C 0 {u + 1} (n + 1) + C 0 {u + 2} n) := by
-      congr with n
-      ring
-    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * C 0 {u} (n + 1) := by
-      congrm _ + ∑' n, _ * $(regularizedHGFun_zero_singleton_eq_mul_add_mul_aux u n)
+    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * (u * C 0 {u + 1} (n + 1) + C 0 {u + 2} n) :=
+      congr(_ + ∑' n, $(by ring))
+    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * C 0 {u} (n + 1) :=
+      congr(_ + ∑' n, _ * $(regularizedHGFun_zero_singleton_eq_mul_add_mul_aux u n))
     _ = ∑' n, z ^ n * C 0 {u} n := by
       conv_rhs => rw [hsummable4.tsum_eq_zero_add]
       simpa using mul_regularizedHGFunCoeff_of_mem_right 0 0 (Multiset.mem_singleton_self (u + 1))
