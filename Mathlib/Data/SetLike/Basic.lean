@@ -30,7 +30,7 @@ and various extensionality and simp lemmas. The order induced by set inclusion i
 called `PartialOrder.ofSetlike`: this is not an instance for flexibility in choosing orders.
 The class `IsConcreteLE` abstractly states the order is equal to that induced by set inclusion;
 an instance is automatically available when defining a `PartialOrder` as
-`ofSetLike (MySubobject X)`.
+`.ofSetLike (MySubobject X)`.
 
 A typical subobject should be declared as:
 ```
@@ -248,7 +248,6 @@ A preorder defined this way automatically makes available an instance of `IsConc
 /-- The partial order induced from a `SetLike` instance by inclusion.
 A partial order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
-
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
   __ := Preorder.ofMembership A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
