@@ -264,8 +264,7 @@ theorem restrict_map_mapValueGroup₀ :
   cases c using WithZero.cases_on with
   | zero =>
     rw [restrict_eq_zero_iff, comap_apply, ← restrict_eq_zero_iff] at hc
-    rw [hc]
-    apply WithZero.map'_zero
+    simp [hc]
   | coe c =>
     rw [← MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.injective.eq_iff,
       Valuation.embedding_restrict] at hc ⊢
