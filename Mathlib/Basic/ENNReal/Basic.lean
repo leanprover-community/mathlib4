@@ -374,9 +374,11 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp, norm_cast, gcongr] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
 
-@[deprecated (since := "2026-08-04")] alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
+@[deprecated coe_le_coe +typeChanged (since := "2026-08-04")]
+alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 
-@[deprecated (since := "2026-08-04")] alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
+@[deprecated coe_lt_coe +typeChanged (since := "2026-08-04")]
+alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 
@@ -563,17 +565,17 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
 
-@[deprecated max_eq_zero (since := "2026-05-07")]
+@[deprecated max_eq_zero +typeChanged (since := "2026-05-07")]
 theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
-@[deprecated min_eq_zero (since := "2026-05-07")]
+@[deprecated min_eq_zero +typeChanged (since := "2026-05-07")]
 theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
 
-@[deprecated zero_max (since := "2026-05-07")]
+@[deprecated zero_max +typeChanged (since := "2026-05-07")]
 theorem max_zero_left : max 0 a = a :=
   max_eq_right zero_le
 
-@[deprecated max_zero (since := "2026-05-07")]
+@[deprecated max_zero +typeChanged (since := "2026-05-07")]
 theorem max_zero_right : max a 0 = a :=
   max_eq_left zero_le
 
