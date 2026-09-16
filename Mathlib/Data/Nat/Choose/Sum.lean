@@ -91,7 +91,7 @@ theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
-theorem sum_range_choose (n : ℕ) : ∑ m ∈ range (n + 1), n.choose m = 2 ^ n := by
+theorem sum_range_choose (n : ℕ) : (∑ m ∈ range (n + 1), n.choose m) = 2 ^ n := by
   have := (add_pow 1 1 n).symm
   simpa [one_add_one_eq_two] using this
 

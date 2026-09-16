@@ -133,6 +133,10 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
   four_pow_le_two_mul_add_one_mul_centralBinom n
 
+lemma four_pow_le_add_one_mul_choose (n : ℕ) : 4 ^ n ≤ (n + 1) * (2 * n + 1).choose n :=
+  (four_pow_le_two_mul_add_one_mul_centralBinom n).trans_eq (by
+    rw [add_one_mul_choose_eq, choose_symm_half, mul_comm])
+
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n
   rw [centralBinom_eq_two_mul_choose, two_mul, ← add_assoc,
