@@ -10,204 +10,81 @@ public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 /-!
 # Criterion for bases of finite root systems
 
-Given a finite root pairing $P$, sufficient conditions for a subset of linearly indpendent roots
-$r_i$, $i ∈ s$ to be a base for $P$ are:
+Given a finite crystallographic root pairing $P$, sufficient conditions for a subset of linearly
+independent roots $r_i$, $i ∈ s$ to be a base for $P$ are:
  1. $⟨c_j, r_i⟩ ≤ 0$ for all $i ≠ j$, where $c_j$ is the coroot corresponding to the root $r_j$.
- 2. Every root $α$ can be written as $α = w • r_i$ for some $i ∈ s$ and $w$ is a product of
-    reflections corresponding to elements of $s$.
+ 2. Every root belongs to the $ℤ$-span of the $r_i$, $i ∈ s$.
+ 3. Every coroot belongs to the $ℤ$-span of the $c_i$, $i ∈ s$.
 
 This file provides a proof of this result as the definition: `RootPairing.Base.mk''`.
+
 -/
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 open FaithfulSMul (algebraMap_injective)
-open Function Set Matrix
-
--- TODO Rewrite the absurd Claude proof below into something suitable for Mathlib.
+open Set
 
 namespace RootPairing
 
-lemma exists_root_eq_smul_root_iff (P : RootPairing ι R M N) (s : Set ι) (i j : ι) :
-    (∃ w ∈ Subgroup.closure (Equiv.reflection P '' s), P.root i = w • P.root j) ↔
-      ∃ σ ∈ Subgroup.closure (P.reflectionPerm '' s), i = σ j := by
-  constructor
-  · rintro ⟨w, hw, hij⟩
-    refine ⟨Equiv.indexHom P w, ?_, P.root.injective ?_⟩
-    · have himg : (Equiv.indexHom P) '' (Equiv.reflection P '' s) = P.reflectionPerm '' s := by
-        rw [image_image]; rfl
-      rw [← himg, ← MonoidHom.map_closure]
-      exact ⟨w, hw, rfl⟩
-    · rw [hij]
-      simp [Equiv.indexHom]
-  · rintro ⟨σ, hσ, rfl⟩
-    suffices ∃ w ∈ Subgroup.closure (Equiv.reflection P '' s), ∀ k, P.root (σ k) = w • P.root k by
-      obtain ⟨w, hw, hk⟩ := this
-      exact ⟨w, hw, hk j⟩
-    clear j
-    induction hσ using Subgroup.closure_induction with
-    | mem x hx =>
-      obtain ⟨k, hk, rfl⟩ := hx
-      exact ⟨Equiv.reflection P k, Subgroup.subset_closure ⟨k, hk, rfl⟩, fun i ↦ by simp⟩
-    | one => exact ⟨1, one_mem _, fun i ↦ by simp⟩
-    | mul x y hx hy ihx ihy =>
-      obtain ⟨wx, hwx, hx'⟩ := ihx
-      obtain ⟨wy, hwy, hy'⟩ := ihy
-      refine ⟨wx * wy, mul_mem hwx hwy, fun i ↦ ?_⟩
-      rw [Equiv.Perm.mul_apply, hx' (y i), hy' i, mul_smul]
-    | inv x hx ihx =>
-      obtain ⟨w, hw, h'⟩ := ihx
-      refine ⟨w⁻¹, inv_mem hw, fun i ↦ ?_⟩
-      rw [eq_inv_smul_iff, ← h' (x⁻¹ i)]
-      simp
+-- TODO Rewrite the absurd Claude proof below into something suitable for Mathlib.
+
+section Fintype
+
+variable [Fintype ι] [CharZero R] (P : RootPairing ι R M N) [P.IsCrystallographic]
+
+/-- The defining relation between the canonical positive form and the pairing. -/
+private lemma two_mul_posForm_eq (i j : ι) :
+    2 * (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j)
+      = P.pairingIn ℤ i j * (P.posRootForm ℤ).rootLength j := by
+  apply algebraMap_injective ℤ R
+  rw [map_mul, map_mul, map_ofNat, RootPositiveForm.algebraMap_posForm, algebraMap_pairingIn,
+    RootPositiveForm.algebraMap_rootLength]
+  exact (P.posRootForm ℤ).toInvariantForm.two_mul_apply_root_root i j
+
+private lemma posForm_nonpos_of_pairingIn_nonpos {i j : ι} (h : P.pairingIn ℤ i j ≤ 0) :
+    (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) ≤ 0 := by
+  have h₁ := P.two_mul_posForm_eq i j
+  have h₂ := (P.posRootForm ℤ).rootLength_pos j
+  nlinarith
+
+private lemma pairingIn_neg_of_posForm_neg {i j : ι}
+    (h : (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) < 0) :
+    P.pairingIn ℤ i j < 0 := by
+  have h₁ := P.two_mul_posForm_eq i j
+  have h₂ := (P.posRootForm ℤ).rootLength_pos j
+  nlinarith
+
+end Fintype
 
 variable [Finite ι] [CharZero R] [IsDomain R] (P : RootPairing ι R M N) [P.IsCrystallographic]
-
-lemma exists_mul_diagonal_posDef (s : Finset ι) [DecidableEq ι] (h : LinearIndepOn R P.root s) :
-    ∃ d : s → ℤ, (∀ k, 0 < d k) ∧ ((of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d).PosDef := by
-  have _i : Fintype ι := Fintype.ofFinite ι
-  set B := P.posRootForm ℤ with hB
-  set v : s → P.rootSpan ℤ := fun k ↦ P.rootSpanMem ℤ k with hv
-  set d : s → ℤ := fun k ↦ B.rootLength k with hd
-  set A : Matrix s s ℤ := (of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d with hA
-  have hli : LinearIndependent ℤ v := by
-    refine LinearIndependent.of_comp (P.rootSpan ℤ).subtype ?_
-    have aux : (P.rootSpan ℤ).subtype ∘ v = fun k : s ↦ P.root k := rfl
-    rw [aux]
-    exact h.linearIndependent.restrict_scalars' ℤ
-  have key (k l : s) : A k l = 2 * B.posForm (v k) (v l) := by
-    rw [hA, mul_diagonal]
-    simp only [of_apply, hd, hv]
-    apply FaithfulSMul.algebraMap_injective ℤ R
-    rw [map_mul, map_mul, algebraMap_pairingIn, B.algebraMap_rootLength, map_ofNat,
-      B.algebraMap_posForm]
-    exact (B.toInvariantForm.two_mul_apply_root_root k l).symm
-  have hsymm : A.IsSymm := by
-    ext k l
-    rw [Matrix.transpose_apply, key, key, ← B.isSymm_posForm.eq (v k) (v l)]
-    rfl
-  refine ⟨d, fun k ↦ B.rootLength_pos k, ?_⟩
-  refine Matrix.PosDef.of_dotProduct_mulVec_pos (by simpa using hsymm) fun {x} hx ↦ ?_
-  have expand : x ⬝ᵥ (A *ᵥ x) = 2 * B.posForm (∑ k, x k • v k) (∑ l, x l • v l) := by
-    simp only [dotProduct, mulVec, key, map_sum, map_smul, LinearMap.sum_apply,
-      LinearMap.smul_apply, smul_eq_mul, Finset.mul_sum]
-    refine Finset.sum_congr rfl fun k _ ↦ Finset.sum_congr rfl fun l _ ↦ ?_
-    have hs := B.isSymm_posForm.eq (v l) (v k)
-    simp only [RingHom.id_apply] at hs
-    rw [hs]
-    ring
-  rw [star_trivial, expand]
-  have hne : ∑ k, x k • v k ≠ 0 := by
-    contrapose! hx
-    ext k
-    simpa using (Fintype.linearIndependent_iff.mp hli) x hx k
-  have := P.posRootForm_posForm_pos_of_ne_zero ℤ hne
-  rw [← hB] at this
-  positivity
-
-lemma isFiniteCartan_pairingIn (s : Finset ι) [DecidableEq ι]
-    (h₀ : LinearIndepOn R P.coroot s)
-    (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0) :
-    (of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan where
-  diag k := P.pairingIn_same ℤ k
-  offDiag_nonpos k l hkl := h₁ k.2 l.2 (by simpa using hkl)
-  zero_comm k l := by
-    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    exact P.pairingIn_eq_zero_iff
-  exists_posDef := by
-    have hflip (k l : ι) : P.flip.pairingIn ℤ k l = P.pairingIn ℤ l k := by
-      apply FaithfulSMul.algebraMap_injective ℤ R
-      rw [algebraMap_pairingIn, algebraMap_pairingIn, pairing_flip]
-    obtain ⟨d, hd, hd'⟩ := P.flip.exists_mul_diagonal_posDef s h₀
-    refine ⟨d, hd, ?_⟩
-    have heq : Matrix.diagonal d * (of fun k l : s ↦ P.pairingIn ℤ k l) =
-        ((of fun k l : s ↦ P.flip.pairingIn ℤ k l) * Matrix.diagonal d)ᵀ := by
-      ext k l
-      simp [Matrix.diagonal_mul, Matrix.mul_diagonal, Matrix.transpose_apply, hflip, mul_comm]
-    rw [heq, Matrix.PosDef.transpose_iff]
-    exact hd'
-
-omit [Finite ι] [CharZero R] [IsDomain R] in
-lemma root_mem_span_int_image (s : Finset ι)
-    (h : ∀ i, ∃ σ ∈ Subgroup.closure (P.reflectionPerm '' s), ∃ j ∈ s, i = σ j) (i : ι) :
-    P.root i ∈ Submodule.span ℤ (P.root '' s) := by
-  set Q := Submodule.span ℤ (P.root '' s)
-  let G : Subgroup (Equiv.Perm ι) :=
-    { carrier := {σ | ∀ i, P.root (σ i) ∈ Q ↔ P.root i ∈ Q}
-      one_mem' := fun i ↦ Iff.rfl
-      mul_mem' := fun {a b} ha hb i ↦ (ha (b i)).trans (hb i)
-      inv_mem' := fun {a} ha i ↦ by simpa using (ha (a⁻¹ i)).symm }
-  have hle : Subgroup.closure (P.reflectionPerm '' s) ≤ G := by
-    rw [Subgroup.closure_le]
-    rintro - ⟨k, hk, rfl⟩
-    have hk' : P.root k ∈ Q := Submodule.subset_span ⟨k, hk, rfl⟩
-    have key (i : ι) :
-        P.root (P.reflectionPerm k i) = P.root i - P.pairingIn ℤ i k • P.root k := by
-      rw [P.root_reflectionPerm, P.reflection_apply_root, ← P.algebraMap_pairingIn ℤ]
-      simp [Int.cast_smul_eq_zsmul]
-    have aux (i : ι) (hi : P.root i ∈ Q) : P.root (P.reflectionPerm k i) ∈ Q := by
-      rw [key]
-      exact Submodule.sub_mem _ hi (Submodule.smul_mem _ _ hk')
-    intro i
-    refine ⟨fun hi ↦ ?_, aux i⟩
-    simpa using aux _ hi
-  obtain ⟨σ, hσ, j, hj, rfl⟩ := h i
-  exact (hle hσ j).mpr (Submodule.subset_span ⟨j, hj, rfl⟩)
-
-omit [Finite ι] [IsDomain R] in
-private lemma pairingIn_eq_sum (s : Finset ι) {i : ι} {c : s → ℤ}
-    (hc : P.root i = ∑ k, c k • P.root k) (l : s) :
-    P.pairingIn ℤ i (l : ι) = ∑ j, c j * P.pairingIn ℤ (j : ι) (l : ι) := by
-  apply algebraMap_injective ℤ R
-  have h := congrArg (fun x ↦ P.toLinearMap x (P.coroot l)) hc
-  simpa [map_sum, ← P.algebraMap_pairingIn ℤ, Int.cast_smul_eq_zsmul] using h
-
-omit [Finite ι] [IsDomain R] in
-private lemma eq_zero_of_sum_smul_root_eq_zero (s : Finset ι) [DecidableEq ι]
-    (hA : (of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan)
-    {c : s → ℤ} (hc : ∑ k, c k • P.root k = 0) :
-    c = 0 := by
-  have hpair (l : s) : ∑ k, c k * P.pairingIn ℤ (k : ι) (l : ι) = 0 := by
-    apply algebraMap_injective ℤ R
-    have h := congrArg (fun x ↦ P.toLinearMap x (P.coroot l)) hc
-    simpa [map_sum, ← P.algebraMap_pairingIn ℤ, Int.cast_smul_eq_zsmul] using h
-  obtain ⟨d, hd, hS⟩ := hA.transpose.exists_posDef
-  by_contra hc'
-  have key : (diagonal d * (of fun k l : s ↦ P.pairingIn ℤ k l)ᵀ) *ᵥ c = 0 := by
-    ext k
-    simp only [mulVec, dotProduct, diagonal_mul, transpose_apply, of_apply, Pi.zero_apply]
-    simp_rw [show ∀ x : s, d k * P.pairingIn ℤ (x : ι) (k : ι) * c x
-        = (c x * P.pairingIn ℤ (x : ι) (k : ι)) * d k from fun x ↦ by ring,
-      ← Finset.sum_mul, hpair k, zero_mul]
-  have h := hS.dotProduct_mulVec_pos hc'
-  rw [key] at h
-  simp at h
+  (s : Finset ι)
 
 omit [Finite ι] [CharZero R] [IsDomain R] [P.IsCrystallographic] in
-private lemma sum_smul_root_mem_closure (s : Finset ι) {c : s → ℤ} (hc : 0 ≤ c) :
+private lemma sum_smul_root_mem_closure {c : s → ℤ} (hc : 0 ≤ c) :
     ∑ k, c k • P.root k ∈ AddSubmonoid.closure (P.root '' s) := by
   refine AddSubmonoid.sum_mem _ fun k _ ↦ ?_
-  have h1 : 0 ≤ c k := hc k
-  have h2 : c k • P.root (k : ι) = (c k).toNat • P.root (k : ι) := by
-    rw [← natCast_zsmul, Int.toNat_of_nonneg h1]
-  rw [h2]
+  rw [show c k • P.root (k : ι) = (c k).toNat • P.root (k : ι) by
+    rw [← natCast_zsmul, Int.toNat_of_nonneg (hc k)]]
   exact nsmul_mem (AddSubmonoid.subset_closure (Set.mem_image_of_mem _ k.2)) _
 
-private lemma root_sub_root_notMem_range (s : Finset ι)
-    (hcs : ∀ i, P.coroot i ∈ Submodule.span ℤ (P.coroot '' s))
+/-- If `k ≠ l` are indices of simple roots then `αₖ - αₗ` is not a root. -/
+private lemma root_sub_root_notMem_range
     (h₀' : LinearIndepOn R P.coroot s)
     (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0)
+    (hcs : ∀ i, P.coroot i ∈ Submodule.span ℤ (P.coroot '' s))
     {k l : ι} (hk : k ∈ s) (hl : l ∈ s) (hkl : k ≠ l) :
     P.root k - P.root l ∉ range P.root := by
   classical
   have _i : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   rintro ⟨m, hm⟩
+  -- Since `⟨αₗ, αₖ⟩ ≤ 0`, we have `⟨αₖ - αₗ, αₖ⟩ ≥ 2` and so `⟨αₖ, αₖ - αₗ⟩ = 1`
   have hu : P.pairingIn ℤ m k = 2 - P.pairingIn ℤ l k := by
     apply algebraMap_injective ℤ R
     rw [map_sub, algebraMap_pairingIn, algebraMap_pairingIn, map_ofNat,
       ← P.root_coroot_eq_pairing, ← P.root_coroot_eq_pairing, hm, map_sub, LinearMap.sub_apply,
       P.root_coroot_eq_pairing, P.pairing_same]
-  have hlk : P.pairingIn ℤ l k ≤ 0 := h₁ hl hk (Ne.symm hkl)
+  have hu2 : 2 ≤ P.pairingIn ℤ m k := by have := h₁ hl hk (Ne.symm hkl); omega
   have hmk : m ≠ k := by
     rintro rfl
     rw [eq_comm, sub_eq_self] at hm
@@ -218,297 +95,273 @@ private lemma root_sub_root_notMem_range (s : Finset ι)
       hmk <| (P.pairingIn_two_two_iff ℤ m k).mp h
     simp only [mem_insert_iff, mem_singleton_iff, Prod.mk.injEq] at h4
     omega
+  -- Hence the reflection in `αₖ - αₗ` swaps `αₖ` and `αₗ` and so `αₖ∨ - αₗ∨ = ⟨αₖ - αₗ, αₖ⟩ • m∨`
   have hrefl : P.reflectionPerm m k = l := by
     apply P.root.injective
     rw [P.root_reflectionPerm, P.reflection_apply_root, ← P.algebraMap_pairingIn ℤ, hv, hm]
     simp
-  have hcoroot : P.coroot l = P.coroot k - P.pairingIn ℤ m k • P.coroot m := by
+  have hcoroot : P.coroot k - P.coroot l = P.pairingIn ℤ m k • P.coroot m := by
     have h := P.coroot_reflectionPerm m k
     rw [hrefl, P.coreflection_apply_coroot, ← P.algebraMap_pairingIn ℤ] at h
-    simpa [Int.cast_smul_eq_zsmul] using h
+    rw [h]
+    simp [Int.cast_smul_eq_zsmul]
+  -- This is absurd since `⟨αₖ - αₗ, αₖ⟩ ≥ 2` yet the coefficient of `αₖ∨` must be one
   obtain ⟨e, he⟩ : ∃ e : s → ℤ, ∑ j, e j • P.coroot j = P.coroot m := by
     rw [Set.image_eq_range] at hcs
     exact (Submodule.mem_span_range_iff_exists_fun ℤ).mp (hcs m)
-  have huniq : ∀ c c' : s → ℤ,
-      ∑ j, c j • P.coroot j = ∑ j, c' j • P.coroot j → c = c' :=
+  have huniq : ∀ c c' : s → ℤ, ∑ j, c j • P.coroot j = ∑ j, c' j • P.coroot j → c = c' :=
     fun c c' h ↦ funext fun j ↦
-      Fintype.linearIndependent_iffₛ.mp (h₀'.restrict_scalars' ℤ) c c' h j
-  have key : (Pi.single (⟨l, hl⟩ : s) 1 : s → ℤ)
-      = Pi.single (⟨k, hk⟩ : s) 1 - P.pairingIn ℤ m k • e := by
+      Fintype.linearIndependent_iffₛ.mp (h₀'.linearIndependent.restrict_scalars' ℤ) c c' h j
+  have key : (Pi.single (⟨k, hk⟩ : s) 1 - Pi.single (⟨l, hl⟩ : s) 1 : s → ℤ)
+      = P.pairingIn ℤ m k • e := by
     refine huniq _ _ ?_
-    rw [Fintype.sum_single_smul]
     simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, sub_smul, Finset.sum_sub_distrib,
       Fintype.sum_single_smul, one_smul, mul_smul, ← Finset.smul_sum, he]
     exact hcoroot
   have hk' := congrFun key ⟨k, hk⟩
-  rw [Pi.single_eq_of_ne (by simpa using hkl), Pi.sub_apply, Pi.single_eq_same,
-    Pi.smul_apply, smul_eq_mul] at hk'
-  have hu2 : 2 ≤ P.pairingIn ℤ m k := by omega
-  rcases le_or_gt (e ⟨k, hk⟩) 0 with h | h <;> nlinarith
+  rw [Pi.sub_apply, Pi.single_eq_same, Pi.single_eq_of_ne (by simpa using hkl), Pi.smul_apply,
+    smul_eq_mul] at hk'
+  have : P.pairingIn ℤ m k = 1 := Int.eq_one_of_dvd_one (by omega) ⟨e ⟨k, hk⟩, by omega⟩
+  omega
 
-private lemma nonneg_or_nonpos_aux (s : Finset ι) [DecidableEq ι] {A : Matrix s s ℤ}
-    (hAdiag : ∀ k, A k k = 2)
-    (hAoff : ∀ k l, k ≠ l → A k l ≤ 0)
-    (hApair : ∀ (i : ι) (c : s → ℤ), P.root i = ∑ k, c k • P.root k →
-      ∀ l : s, P.pairingIn ℤ i (l : ι) = ∑ j, c j * A j l)
-    (huniq : ∀ c c' : s → ℤ, ∑ k, c k • P.root k = ∑ k, c' k • P.root k → c = c')
-    (hsub : ∀ k l : s, k ≠ l → P.root k - P.root l ∉ range P.root)
-    (d : s → ℤ) (hd : ∀ k, 0 < d k) (hS : (A * diagonal d).PosDef) (m : ℕ) :
-    ∀ (i : ι) (c : s → ℤ), ∑ k, (c k).natAbs ≤ m →
-      P.root i = ∑ k, c k • P.root k → 0 ≤ c ∨ c ≤ 0 := by
-  have hsymm : (A * diagonal d).IsSymm := hS.isHermitian.isSymm
-  have hmv : ∀ (v : s → ℤ) (i : s),
-      ((A * diagonal d) *ᵥ v) i = (∑ j, v j * A j i) * d i := by
-    intro v i
-    have hd' (j : s) : A i j * d j = A j i * d i := by simpa using hsymm.apply j i
-    simp_rw [mulVec_apply_eq_sum, mul_diagonal, hd', Finset.sum_mul]
-    exact Finset.sum_congr rfl fun j _ ↦ by ring
-  have hpos : ∀ c : s → ℤ, c ≠ 0 → 0 < c ⬝ᵥ (A * diagonal d) *ᵥ c := fun c hc ↦ by
-    simpa using hS.dotProduct_mulVec_pos hc
-  have hsumneg : ∀ (c : s → ℤ) (l : s), ∑ j, (-c) j * A j l = -∑ j, c j * A j l := by
-    intro c l
-    simp
-  have hsingle_sum :
-      ∀ k : s, ∑ j, (Pi.single k 1 : s → ℤ) j • P.root (j : ι) = P.root k :=
-    fun k ↦ by rw [Fintype.sum_single_smul, one_smul]
-  have hsum_sub : ∀ (c : s → ℤ) (k : s),
-      ∑ j, (c - Pi.single k 1 : s → ℤ) j • P.root (j : ι)
-        = (∑ j, c j • P.root (j : ι)) - P.root k := by
-    intro c k
-    simp_rw [Pi.sub_apply, sub_smul]
-    rw [Finset.sum_sub_distrib, hsingle_sum]
-  have hsum_single_sub : ∀ k l : s,
-      ∑ j, (Pi.single k 1 - Pi.single l 1 : s → ℤ) j • P.root (j : ι)
-        = P.root k - P.root l := by
-    intro k l
-    simp_rw [Pi.sub_apply, sub_smul]
-    rw [Finset.sum_sub_distrib, hsingle_sum, hsingle_sum]
-  have hnegroot : ∀ (i : ι) (c : s → ℤ), P.root i = ∑ k, c k • P.root k →
-      P.root (P.reflectionPerm i i) = ∑ k, (-c) k • P.root k := by
-    intro i c hc
-    rw [P.root_reflectionPerm, P.reflection_apply_self, hc]
-    simp [← Finset.sum_neg_distrib]
-  induction m with
+/-- If a root is a combination of the roots indexed by `s`, at least one of whose coefficients is
+negative, then it makes a strictly obtuse angle with one of the roots indexed by `s` whose
+coefficient is negative.
+
+This is where positive-definiteness of the canonical form is used. -/
+private lemma exists_pairingIn_neg
+    (h₀ : LinearIndepOn R P.root s)
+    (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0)
+    {i : ι} {c : s → ℤ} (hc : P.root i = ∑ k, c k • P.root k)
+    {p : s} (hp : c p < 0) :
+    ∃ l, c l < 0 ∧ P.pairingIn ℤ i l < 0 := by
+  classical
+  have _i : Fintype ι := Fintype.ofFinite ι
+  set B := P.posRootForm ℤ
+  set v : s → P.rootSpan ℤ := fun k ↦ P.rootSpanMem ℤ k with hv
+  -- Write `c` as the sum `y + x` of its non-negative and non-positive parts
+  obtain ⟨x, hx⟩ : ∃ x : s → ℤ, ∀ k, x k = min (c k) 0 := ⟨_, fun _ ↦ rfl⟩
+  obtain ⟨y, hy⟩ : ∃ y : s → ℤ, ∀ k, y k = max (c k) 0 := ⟨_, fun _ ↦ rfl⟩
+  set X : P.rootSpan ℤ := ∑ k, x k • v k with hX
+  set Y : P.rootSpan ℤ := ∑ k, y k • v k with hY
+  have hXne : X ≠ 0 := by
+    intro contra
+    have h : ∑ k, x k • P.root (k : ι) = 0 := by
+      have := congrArg (Submodule.subtype (P.rootSpan ℤ)) contra
+      simpa [hX, hv] using this
+    have := Fintype.linearIndependent_iff.mp (h₀.linearIndependent.restrict_scalars' ℤ) x h p
+    rw [hx] at this
+    omega
+  have hYX : P.rootSpanMem ℤ i = Y + X := by
+    have h : P.rootSpanMem ℤ i = ∑ k, c k • v k := by apply Subtype.ext; simpa [hv] using hc
+    rw [h, hY, hX, ← Finset.sum_add_distrib]
+    refine Finset.sum_congr rfl fun k _ ↦ ?_
+    rw [← add_smul, hx, hy, max_add_min, add_zero]
+  -- The non-positive part pairs non-negatively with the non-negative part, hence positively
+  -- with the root itself
+  have h1 : 0 < B.posForm X X := P.posRootForm_posForm_pos_of_ne_zero ℤ hXne
+  have h2 : 0 ≤ B.posForm Y X := by
+    rw [hY, hX]
+    simp only [map_sum, LinearMap.sum_apply, map_smul, LinearMap.smul_apply, smul_eq_mul,
+      Finset.mul_sum]
+    refine Finset.sum_nonneg fun k _ ↦ Finset.sum_nonneg fun l _ ↦ ?_
+    rcases eq_or_ne k l with rfl | hkl
+    · have h : x k * y k = 0 := by
+        rw [hx, hy]
+        rcases le_or_gt (c k) 0 with h | h
+        · simp [max_eq_right h]
+        · simp [min_eq_right h.le]
+      rw [← mul_assoc, h, zero_mul]
+    · have hxk : x k ≤ 0 := by rw [hx]; omega
+      have hyl : 0 ≤ y l := by rw [hy]; omega
+      have hF : B.posForm (v l) (v k) ≤ 0 :=
+        P.posForm_nonpos_of_pairingIn_nonpos <| h₁ l.2 k.2 (by simpa using hkl.symm)
+      exact mul_nonneg_of_nonpos_of_nonpos hxk (by nlinarith)
+  have h3 : 0 < ∑ l, x l * B.posForm (P.rootSpanMem ℤ i) (v l) := by
+    have h4 : B.posForm (P.rootSpanMem ℤ i) X = ∑ l, x l * B.posForm (P.rootSpanMem ℤ i) (v l) := by
+      rw [hX]
+      simp [map_sum]
+    rw [← h4, hYX, map_add, LinearMap.add_apply]
+    linarith
+  -- Thus one of the terms in the sum is positive, which yields the required index
+  obtain ⟨l, -, hl⟩ : ∃ l ∈ Finset.univ, 0 < x l * B.posForm (P.rootSpanMem ℤ i) (v l) := by
+    by_contra contra
+    push Not at contra
+    exact absurd h3 (not_lt.mpr <| Finset.sum_nonpos fun l hl ↦ contra l hl)
+  have hxl : x l < 0 := by
+    have : x l ≤ 0 := by rw [hx]; omega
+    rcases mul_pos_iff.mp hl with ⟨h, -⟩ | ⟨h, -⟩ <;> omega
+  refine ⟨l, by rw [hx] at hxl; omega, P.pairingIn_neg_of_posForm_neg ?_⟩
+  nlinarith [hl, hxl]
+
+omit [Finite ι] [CharZero R] [IsDomain R] [P.IsCrystallographic] in
+private lemma sum_natAbs_succ_eq (c d : s → ℤ) (k : s)
+    (h : ∀ j, j ≠ k → d j = c j) (h' : (d k).natAbs + 1 = (c k).natAbs) :
+    ∑ j, (d j).natAbs + 1 = ∑ j, (c j).natAbs := by
+  classical
+  have h₁ : ∑ j ∈ Finset.univ.erase k, (d j).natAbs = ∑ j ∈ Finset.univ.erase k, (c j).natAbs :=
+    Finset.sum_congr rfl fun j hj ↦ by rw [h j (Finset.ne_of_mem_erase hj)]
+  have h₂ := Finset.add_sum_erase Finset.univ (fun j ↦ (d j).natAbs) (Finset.mem_univ k)
+  have h₃ := Finset.add_sum_erase Finset.univ (fun j ↦ (c j).natAbs) (Finset.mem_univ k)
+  omega
+
+/-- The key step: every root is a non-negative or non-positive combination of the roots indexed
+by `s`. The proof is by induction on the sum of the absolute values of the coefficients. -/
+private lemma nonneg_or_nonpos
+    (h₀ : LinearIndepOn R P.root s)
+    (h₀' : LinearIndepOn R P.coroot s)
+    (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0)
+    (hcs : ∀ i, P.coroot i ∈ Submodule.span ℤ (P.coroot '' s))
+    (n : ℕ) :
+    ∀ (i : ι) (c : s → ℤ), ∑ k, (c k).natAbs ≤ n → P.root i = ∑ k, c k • P.root k →
+      0 ≤ c ∨ c ≤ 0 := by
+  classical
+  have huniq : ∀ c c' : s → ℤ, ∑ k, c k • P.root k = ∑ k, c' k • P.root k → c = c' :=
+    fun c c' h ↦ funext fun j ↦
+      Fintype.linearIndependent_iffₛ.mp (h₀.linearIndependent.restrict_scalars' ℤ) c c' h j
+  have hsingle : ∀ (c : s → ℤ) (k : s) (m : ℤ),
+      ∑ j : s, ((c + Pi.single k m : s → ℤ) j) • P.root j
+        = (∑ j, c j • P.root j) + m • P.root k := by
+    intro c k m
+    simp_rw [Pi.add_apply, add_smul]
+    rw [Finset.sum_add_distrib, Fintype.sum_single_smul]
+  induction n with
   | zero =>
-    intro i c hm hc
-    refine Or.inl (Pi.le_def.mpr fun k ↦ ?_)
-    have h0 : (c k).natAbs = 0 := Nat.le_zero.mp <| le_trans
-      (Finset.single_le_sum (f := fun k ↦ (c k).natAbs) (fun _ _ ↦ Nat.zero_le _)
-        (Finset.mem_univ k)) hm
+    intro i c hn _
+    refine Or.inl fun k ↦ ?_
+    have := Finset.single_le_sum (f := fun k ↦ (c k).natAbs) (fun _ _ ↦ Nat.zero_le _)
+      (Finset.mem_univ k)
     simp only [Pi.zero_apply]
-    grind
-  | succ m ih =>
-    have descent : ∀ (q : ι) (c : s → ℤ), ∑ k, (c k).natAbs ≤ m + 1 →
-        P.root q = ∑ k, c k • P.root k → ∀ k : s, 0 < c k → 0 < ∑ j, c j * A j k →
-        0 ≤ c ∨ (c k = 1 ∧ ∀ j, j ≠ k → c j ≤ 0) := by
-      intro q c hm hc k hck huk
-      by_cases hsingle : c = Pi.single k 1
-      · refine Or.inl (Pi.le_def.mpr fun j ↦ ?_)
-        rw [hsingle]
-        simp only [Pi.zero_apply, Pi.single_apply]
-        split <;> simp
-      have hbne : q ≠ (k : ι) := by
-        intro contra
-        refine hsingle (huniq c (Pi.single k 1) ?_)
-        rw [← hc, contra, hsingle_sum]
-      have hpair : 0 < P.pairingIn ℤ q (k : ι) := by rw [hApair q c hc k]; exact huk
-      obtain ⟨b, hb⟩ := P.root_sub_root_mem_of_pairingIn_pos hpair hbne
-      have hb1 : P.root b = ∑ j, (c - Pi.single k 1 : s → ℤ) j • P.root j := by
-        rw [hsum_sub, ← hc, hb]
-      have hnat : ∑ j, ((c - Pi.single k 1 : s → ℤ) j).natAbs ≤ m := by
-        have h1 : ∑ j ∈ Finset.univ.erase k, ((c - Pi.single k 1 : s → ℤ) j).natAbs
-            = ∑ j ∈ Finset.univ.erase k, (c j).natAbs :=
-          Finset.sum_congr rfl fun j hj ↦ by
-            have hjk : j ≠ k := Finset.ne_of_mem_erase hj
-            simp [hjk]
-        have h2 := Finset.add_sum_erase Finset.univ
-          (fun j ↦ ((c - Pi.single k 1 : s → ℤ) j).natAbs) (Finset.mem_univ k)
-        have h3 := Finset.add_sum_erase Finset.univ (fun j ↦ (c j).natAbs) (Finset.mem_univ k)
-        have h4 : ((c - Pi.single k 1 : s → ℤ) k).natAbs + 1 = (c k).natAbs := by
-          simp only [Pi.sub_apply, Pi.single_eq_same]
-          grind
-        grind
-      rcases ih b _ hnat hb1 with h | h
-      · refine Or.inl (Pi.le_def.mpr fun j ↦ ?_)
-        have := Pi.le_def.mp h j
-        simp only [Pi.zero_apply, Pi.sub_apply, Pi.single_apply] at this ⊢
-        split at this <;> grind
-      · refine Or.inr ⟨?_, fun j hjk ↦ ?_⟩
+    omega
+  | succ n ih =>
+    intro i c hn hc
+    by_contra contra
+    rw [not_or] at contra
+    obtain ⟨hnn, hnp⟩ := contra
+    obtain ⟨p, hp⟩ : ∃ p, c p < 0 := by
+      simp only [Pi.le_def, Pi.zero_apply, not_forall, not_le] at hnn; exact hnn
+    obtain ⟨q, hq⟩ : ∃ q, 0 < c q := by
+      simp only [Pi.le_def, Pi.zero_apply, not_forall, not_le] at hnp; exact hnp
+    -- A simple root with negative coefficient making an obtuse angle with `αᵢ`
+    obtain ⟨l, hcl, hil⟩ := P.exists_pairingIn_neg s h₀ h₁ hc hp
+    -- A simple root with positive coefficient making an acute angle with `αᵢ`
+    obtain ⟨k, hck, hik⟩ : ∃ k, 0 < c k ∧ 0 < P.pairingIn ℤ i k := by
+      have hc' : P.root (P.reflectionPerm i i) = ∑ j, (-c) j • P.root j := by
+        rw [P.root_reflectionPerm, P.reflection_apply_self, hc]
+        simp [← Finset.sum_neg_distrib]
+      obtain ⟨k, hk₁, hk₂⟩ := P.exists_pairingIn_neg s h₀ h₁ hc' (p := q) (by simpa using hq)
+      rw [P.pairingIn_reflectionPerm_self_left] at hk₂
+      exact ⟨k, by simpa using hk₁, by simpa using hk₂⟩
+    have hkl : k ≠ l := fun h ↦ by rw [h] at hck; omega
+    have hkl' : (k : ι) ≠ (l : ι) := fun h ↦ hkl (Subtype.ext h)
+    -- Subtracting `αₖ` we obtain a root with smaller coefficients, necessarily non-positive
+    have hck₁ : c k = 1 ∧ ∀ j, j ≠ k → c j ≤ 0 := by
+      have hik' : i ≠ (k : ι) := by
+        rintro rfl
+        have : c = Pi.single k 1 :=
+          huniq _ _ (by rw [← hc, Fintype.sum_single_smul, one_smul])
+        rw [this, Pi.single_eq_of_ne (Ne.symm hkl)] at hcl
+        omega
+      obtain ⟨i₀, hi₀⟩ := P.root_sub_root_mem_of_pairingIn_pos hik hik'
+      have hci₀ : P.root i₀ = ∑ j : s, ((c + Pi.single k (-1) : s → ℤ) j) • P.root j := by
+        rw [hsingle, ← hc, hi₀]
+        module
+      have hn₀ : ∑ j : s, ((c + Pi.single k (-1) : s → ℤ) j).natAbs ≤ n := by
+        have haux : ∀ j, j ≠ k → (c + Pi.single k (-1) : s → ℤ) j = c j :=
+          fun j hj ↦ by simp [Pi.single_eq_of_ne hj]
+        have haux' : ((c + Pi.single k (-1) : s → ℤ) k).natAbs + 1 = (c k).natAbs := by
+          simp only [Pi.add_apply, Pi.single_eq_same]
+          omega
+        have := sum_natAbs_succ_eq s c (c + Pi.single k (-1)) k haux haux'
+        omega
+      rcases ih i₀ _ hn₀ hci₀ with h | h
+      · have := Pi.le_def.mp h l
+        rw [Pi.zero_apply, Pi.add_apply, Pi.single_eq_of_ne (Ne.symm hkl)] at this
+        omega
+      · refine ⟨?_, fun j hj ↦ ?_⟩
         · have := Pi.le_def.mp h k
-          simp only [Pi.zero_apply, Pi.sub_apply, Pi.single_eq_same] at this
-          grind
+          rw [Pi.zero_apply, Pi.add_apply, Pi.single_eq_same] at this
+          omega
         · have := Pi.le_def.mp h j
-          simp only [Pi.zero_apply, Pi.sub_apply, Pi.single_eq_of_ne hjk] at this
-          grind
-    have main : ∀ (q : ι) (c : s → ℤ), ∑ k, (c k).natAbs ≤ m + 1 →
-        P.root q = ∑ k, c k • P.root k → ∀ k : s, 0 < c k → 0 < ∑ j, c j * A j k →
-        0 ≤ c ∨ c ≤ 0 := by
-      intro p c hm hc k hck huk
-      rcases descent p c hm hc k hck huk with h | ⟨hck1, hcj⟩
-      · exact Or.inl h
-      by_cases hall : ∀ j, j ≠ k → c j = 0
-      · refine Or.inl (Pi.le_def.mpr fun j ↦ ?_)
-        rcases eq_or_ne j k with rfl | hjk
-        · simp [hck1]
-        · simp [hall j hjk]
-      push Not at hall
-      obtain ⟨q, hqk, hq0⟩ := hall
-      have hcq : c q < 0 := lt_of_le_of_ne (hcj q hqk) hq0
-      obtain ⟨l, hcl, hul⟩ : ∃ l, c l < 0 ∧ ∑ j, c j * A j l < 0 := by
-        by_contra hcon
-        push Not at hcon
-        set γ : s → ℤ := Pi.single k 1 - c with hγ
-        have hγk : γ k = 0 := by simp [hγ, hck1]
-        have hγnonneg : ∀ j, 0 ≤ γ j := fun j ↦ by
-          rcases eq_or_ne j k with rfl | hjk
-          · simp [hγ, hck1]
-          · have := hcj j hjk
-            simp only [hγ, Pi.sub_apply, Pi.single_eq_of_ne hjk]
-            grind
-        have hγne : γ ≠ 0 := fun contra ↦ by
-          have := congrFun contra q
-          simp only [hγ, Pi.sub_apply, Pi.single_eq_of_ne hqk, Pi.zero_apply] at this
-          grind
-        have hcγ : c = Pi.single k 1 - γ := by simp [hγ]
-        have hw : ∑ j, γ j * A j k ≤ 0 := by
-          refine Finset.sum_nonpos fun j _ ↦ ?_
-          rcases eq_or_ne j k with rfl | hjk
-          · simp [hγk]
-          · exact mul_nonpos_iff.mpr (Or.inl ⟨hγnonneg j, hAoff j k hjk⟩)
-        have huw : (∑ j, c j * A j k) = 2 - ∑ j, γ j * A j k := by
-          rw [hcγ]
-          simp [sub_mul, Finset.sum_sub_distrib, Pi.single_apply, hAdiag]
-        have hQle : c ⬝ᵥ (A * diagonal d) *ᵥ c ≤ (∑ j, c j * A j k) * d k := by
-          simp only [dotProduct, hmv]
-          rw [← Finset.add_sum_erase Finset.univ _ (Finset.mem_univ k), hck1, one_mul]
-          have : ∑ i ∈ Finset.univ.erase k, c i * ((∑ j, c j * A j i) * d i) ≤ 0 := by
-            refine Finset.sum_nonpos fun i hi ↦ ?_
-            have hik : i ≠ k := Finset.ne_of_mem_erase hi
-            have h1 : c i * ((∑ j, c j * A j i) * d i)
-                = (c i * ∑ j, c j * A j i) * d i := by ring
-            rw [h1]
-            refine mul_nonpos_iff.mpr (Or.inr ⟨?_, (hd i).le⟩)
-            rcases eq_or_lt_of_le (hcj i hik) with h2 | h2
-            · simp [h2]
-            · exact mul_nonpos_iff.mpr (Or.inr ⟨h2.le, hcon i h2⟩)
-          linarith
-        have hpolar : ∀ x y : s → ℤ, (x - y) ⬝ᵥ (A * diagonal d) *ᵥ (x - y)
-            = x ⬝ᵥ (A * diagonal d) *ᵥ x - 2 * (x ⬝ᵥ (A * diagonal d) *ᵥ y)
-              + y ⬝ᵥ (A * diagonal d) *ᵥ y := by
-          intro x y
-          rw [mulVec_sub, sub_dotProduct, dotProduct_sub, dotProduct_sub,
-            hsymm.dotProduct_mulVec_comm (x := y) (y := x)]
-          ring
-        have hQeq : c ⬝ᵥ (A * diagonal d) *ᵥ c = 2 * d k
-            - 2 * ((∑ j, γ j * A j k) * d k) + γ ⬝ᵥ (A * diagonal d) *ᵥ γ := by
-          rw [hcγ, hpolar, single_dotProduct, single_dotProduct, hmv, hmv]
-          simp [Pi.single_apply, hAdiag]
-        have h1 := hpos c (fun contra ↦ by simp [contra] at hck1)
-        have h2 := hpos γ hγne
-        have h3 : (∑ j, γ j * A j k) * d k ≤ 0 :=
-          mul_nonpos_iff.mpr (Or.inr ⟨hw, (hd k).le⟩)
-        rw [huw] at hQle
-        nlinarith
-      have hnegm : ∑ j, ((-c) j).natAbs ≤ m + 1 := by simpa using hm
-      rcases descent (P.reflectionPerm p p) (-c) hnegm (hnegroot p c hc) l (by simpa using hcl)
-        (by rw [hsumneg]; linarith) with h | ⟨h1, h2⟩
-      · refine Or.inr (Pi.le_def.mpr fun j ↦ ?_)
-        have := Pi.le_def.mp h j
-        simp only [Pi.zero_apply, Pi.neg_apply] at this ⊢
-        grind
-      · exfalso
-        have hkl : k ≠ l := by rintro rfl; simp only [Pi.neg_apply] at h1; grind
-        have hceq : c = Pi.single k 1 - Pi.single l 1 := by
-          ext j
-          simp only [Pi.sub_apply]
-          rcases eq_or_ne j k with rfl | hjk
-          · rw [Pi.single_eq_same, Pi.single_eq_of_ne hkl, hck1]; ring
-          rcases eq_or_ne j l with rfl | hjl
-          · have hj := h1
-            simp only [Pi.neg_apply] at hj
-            rw [Pi.single_eq_of_ne hjk, Pi.single_eq_same]
-            grind
-          · have hA := hcj j hjk
-            have hB := h2 j hjl
-            simp only [Pi.neg_apply] at hB
-            rw [Pi.single_eq_of_ne hjk, Pi.single_eq_of_ne hjl]
-            grind
-        refine hsub k l hkl ⟨p, ?_⟩
-        rw [hc, hceq, hsum_single_sub]
-    intro p c hm hc
-    rcases eq_or_ne c 0 with rfl | hc0
-    · exact Or.inl le_rfl
-    obtain ⟨k, hk⟩ : ∃ k, 0 < c k * ∑ j, c j * A j k := by
-      by_contra hcon
-      push Not at hcon
-      have h1 : c ⬝ᵥ (A * diagonal d) *ᵥ c ≤ 0 := by
-        simp only [dotProduct, hmv]
-        refine Finset.sum_nonpos fun i _ ↦ ?_
-        have h2 : c i * ((∑ j, c j * A j i) * d i) = (c i * ∑ j, c j * A j i) * d i := by ring
-        rw [h2]
-        exact mul_nonpos_iff.mpr (Or.inr ⟨hcon i, (hd i).le⟩)
-      exact absurd (hpos c hc0) (not_lt.mpr h1)
-    rcases lt_trichotomy (c k) 0 with h | h | h
-    · have hu : ∑ j, c j * A j k < 0 := by nlinarith
-      have := main (P.reflectionPerm p p) (-c) (by simpa using hm) (hnegroot p c hc) k
-        (by simpa using h) (by rw [hsumneg]; linarith)
-      rcases this with h' | h'
-      · exact Or.inr (by simpa using neg_nonneg.mp (by simpa using h'))
-      · exact Or.inl (by simpa using neg_nonpos.mp (by simpa using h'))
-    · rw [h] at hk; simp at hk
-    · exact main p c hm hc k h (by nlinarith)
+          rw [Pi.zero_apply, Pi.add_apply, Pi.single_eq_of_ne hj] at this
+          omega
+    -- Adding `αₗ` we obtain a root with smaller coefficients, necessarily non-negative
+    have hcl₁ : c l = -1 ∧ ∀ j, j ≠ l → 0 ≤ c j := by
+      have hil' : P.root i ≠ -P.root l := by
+        intro contra
+        have : c = -Pi.single l 1 := by
+          refine huniq _ _ ?_
+          rw [← hc, contra]
+          simp only [Pi.neg_apply, neg_smul, Finset.sum_neg_distrib, Fintype.sum_single_smul,
+            one_smul]
+        rw [this] at hck
+        simp only [Pi.neg_apply, Pi.single_eq_of_ne hkl] at hck
+        omega
+      obtain ⟨i₁, hi₁⟩ := P.root_add_root_mem_of_pairingIn_neg hil hil'
+      have hci₁ : P.root i₁ = ∑ j : s, ((c + Pi.single l 1 : s → ℤ) j) • P.root j := by
+        rw [hsingle, ← hc, hi₁]
+        module
+      have hn₁ : ∑ j : s, ((c + Pi.single l 1 : s → ℤ) j).natAbs ≤ n := by
+        have haux : ∀ j, j ≠ l → (c + Pi.single l 1 : s → ℤ) j = c j :=
+          fun j hj ↦ by simp [Pi.single_eq_of_ne hj]
+        have haux' : ((c + Pi.single l 1 : s → ℤ) l).natAbs + 1 = (c l).natAbs := by
+          simp only [Pi.add_apply, Pi.single_eq_same]
+          omega
+        have := sum_natAbs_succ_eq s c (c + Pi.single l 1) l haux haux'
+        omega
+      rcases ih i₁ _ hn₁ hci₁ with h | h
+      · refine ⟨?_, fun j hj ↦ ?_⟩
+        · have := Pi.le_def.mp h l
+          rw [Pi.zero_apply, Pi.add_apply, Pi.single_eq_same] at this
+          omega
+        · have := Pi.le_def.mp h j
+          rw [Pi.zero_apply, Pi.add_apply, Pi.single_eq_of_ne hj] at this
+          omega
+      · have := Pi.le_def.mp h k
+        rw [Pi.add_apply, Pi.zero_apply, Pi.single_eq_of_ne hkl] at this
+        omega
+    -- Hence `αᵢ = αₖ - αₗ` which is absurd
+    have hceq : c = Pi.single k 1 - Pi.single l 1 := by
+      funext j
+      rcases eq_or_ne j k with rfl | hjk
+      · rw [Pi.sub_apply, Pi.single_eq_same, Pi.single_eq_of_ne hkl, hck₁.1, sub_zero]
+      rcases eq_or_ne j l with rfl | hjl
+      · rw [Pi.sub_apply, Pi.single_eq_of_ne hjk, Pi.single_eq_same, hcl₁.1, zero_sub]
+      · rw [Pi.sub_apply, Pi.single_eq_of_ne hjk, Pi.single_eq_of_ne hjl, sub_zero]
+        have := hck₁.2 j hjk
+        have := hcl₁.2 j hjl
+        omega
+    refine P.root_sub_root_notMem_range s h₀' h₁ hcs k.2 l.2 hkl' ⟨i, ?_⟩
+    rw [hc, hceq]
+    simp_rw [Pi.sub_apply, sub_smul]
+    rw [Finset.sum_sub_distrib, Fintype.sum_single_smul, Fintype.sum_single_smul, one_smul,
+      one_smul]
 
 variable (s : Finset ι)
   (h₀ : LinearIndepOn R P.root s)
   (h₁ : (s : Set ι).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0)
-  (h₂ : ∀ i, ∃ᵉ (w ∈ Subgroup.closure (Equiv.reflection P '' s)) (j ∈ s), P.root i = w • P.root j)
-include h₀ h₁ h₂
+  (h₂ : ∀ i, P.root i ∈ Submodule.span ℤ (P.root '' s))
+  (h₃ : ∀ i, P.coroot i ∈ Submodule.span ℤ (P.coroot '' s))
+include h₀ h₁ h₂ h₃
 
 lemma bar (i : ι) :
      P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
     -P.root i ∈ AddSubmonoid.closure (P.root '' s) := by
-  classical
-  have h₀' : LinearIndepOn R P.coroot s := by
-    have : Fintype ι := Fintype.ofFinite ι
-    rwa [P.linearIndepOn_coroot_iff]
-  have h₂' : ∀ i, ∃ σ ∈ Subgroup.closure (P.reflectionPerm '' s),
-      ∃ j ∈ s, i = σ j := by
-    intro i
-    obtain ⟨w, hw, j, hj, hij⟩ := h₂ i
-    obtain ⟨σ, hσ, hσ'⟩ := (P.exists_root_eq_smul_root_iff s i j).mp ⟨w, hw, hij⟩
-    exact ⟨σ, hσ, j, hj, hσ'⟩
-  have hrs := P.root_mem_span_int_image s h₂'
-  have hcs : ∀ i, P.coroot i ∈ Submodule.span ℤ (P.coroot '' s) :=
-    P.flip.root_mem_span_int_image s h₂'
-  have hA : (of fun k l : s ↦ P.pairingIn ℤ k l).IsFiniteCartan :=
-    P.isFiniteCartan_pairingIn s h₀' h₁
-  obtain ⟨d, hd, hS⟩ := hA.transpose.exists_posDef
-  have hS' : ((of fun k l : s ↦ P.pairingIn ℤ k l) * diagonal d).PosDef := by
-    rw [← Matrix.PosDef.transpose_iff]; simpa using hS
-  have huniq : ∀ c c' : s → ℤ,
-      ∑ k, c k • P.root k = ∑ k, c' k • P.root k → c = c' := by
-    intro c c' h
-    have hz : ∑ k, (c - c') k • P.root (k : ι) = 0 := by
-      simp_rw [Pi.sub_apply, sub_smul]
-      rw [Finset.sum_sub_distrib, h, sub_self]
-    have h' := P.eq_zero_of_sum_smul_root_eq_zero s hA hz
-    ext k
-    simpa [sub_eq_zero] using congrFun h' k
-  have hsub : ∀ k l : s, k ≠ l → P.root k - P.root l ∉ range P.root := fun k l hkl ↦
-    P.root_sub_root_notMem_range s hcs h₀' h₁ k.2 l.2 (by simpa using hkl)
+  have _i : Fintype ι := Fintype.ofFinite ι
+  have h₀' : LinearIndepOn R P.coroot s := by rwa [P.linearIndepOn_coroot_iff]
   obtain ⟨c, hc⟩ : ∃ c : s → ℤ, P.root i = ∑ k, c k • P.root k := by
-    have h := hrs i
+    have h := h₂ i
     rw [Set.image_eq_range] at h
     obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℤ).mp h
     exact ⟨c, hc.symm⟩
-  rcases P.nonneg_or_nonpos_aux s hA.diag hA.offDiag_nonpos
-      (fun i c hc l ↦ P.pairingIn_eq_sum s hc l) huniq hsub d hd hS' _ i c le_rfl hc with h | h
-  · exact Or.inl (hc ▸ P.sum_smul_root_mem_closure s h)
+  rcases P.nonneg_or_nonpos s h₀ h₀' h₁ h₃ _ i c le_rfl hc with h | h
+  · exact Or.inl (hc ▸ sum_smul_root_mem_closure P s h)
   · refine Or.inr ?_
-    have h1 : -P.root i = ∑ k, (-c) k • P.root k := by
-      rw [hc]; simp [← Finset.sum_neg_distrib]
-    rw [h1]
-    exact P.sum_smul_root_mem_closure s (by simpa using h)
+    have h' : -P.root i = ∑ k, (-c) k • P.root k := by
+      rw [hc]
+      simp [← Finset.sum_neg_distrib]
+    rw [h']
+    exact sum_smul_root_mem_closure P s (by simpa using h)
 
 /-- A alternate condition for a subset of linearly independent (co)roots to form a base.
 
@@ -520,19 +373,15 @@ public def Base.mk'' :
   linearIndepOn_coroot := by
     have : Fintype ι := Fintype.ofFinite ι
     rwa [P.linearIndepOn_coroot_iff]
-  root_mem_or_neg_mem := P.bar s h₀ h₁ h₂
+  root_mem_or_neg_mem := P.bar s h₀ h₁ h₂ h₃
   coroot_mem_or_neg_mem i := by
     replace h₀ : LinearIndepOn R P.coroot s := by
       have : Fintype ι := Fintype.ofFinite ι
       rwa [P.linearIndepOn_coroot_iff]
-    refine P.flip.bar s h₀ (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm) (fun j ↦ ?_) ?_
-    obtain ⟨w, hw, k, hk, hjk⟩ := h₂ j
-    obtain ⟨σ, hσ, hσ'⟩ := (P.exists_root_eq_smul_root_iff s j k).mp ⟨w, hw, hjk⟩
-    obtain ⟨w', hw', hw''⟩ := (P.flip.exists_root_eq_smul_root_iff s j k).mpr ⟨σ, hσ, hσ'⟩
-    exact ⟨w', hw', k, hk, hw''⟩
+    exact P.flip.bar s h₀ (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm) h₃ h₂ i
 
 @[simp] lemma Base.mk''_support :
-    (Base.mk'' P s h₀ h₁ h₂).support = s := by
+    (Base.mk'' P s h₀ h₁ h₂ h₃).support = s := by
   rfl
 
 end RootPairing
