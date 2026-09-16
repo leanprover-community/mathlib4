@@ -140,7 +140,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 open orbitRel.Quotient
 
-instance isManifold_quotient_of_contMDiffSMul [ContMDiffConstSMul I n G M] :
+instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] :
     IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
