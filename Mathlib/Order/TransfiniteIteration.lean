@@ -58,9 +58,9 @@ theorem supTransfiniteIterate_of_isMin {j : J} (hj : IsMin j) :
   rw [supTransfiniteIterate, SuccOrder.limitRecOn_isMin _ _ _ hj]
   rfl
 
-@[to_dual (dont_translate := J) (attr := simp) infTransfiniteIterate_bot]
-theorem supTransfiniteIterate_bot [OrderBot J] : supTransfiniteIterate φ (⊥ : J) i₀ = i₀ :=
-  supTransfiniteIterate_of_isMin _ _ isMin_bot
+@[to_dual (dont_translate := J) infTransfiniteIterate_bot]
+theorem supTransfiniteIterate_bot [OrderBot J] : supTransfiniteIterate φ (⊥ : J) i₀ = i₀ := by
+  simp
 
 @[deprecated (since := "2026-09-15")]
 alias transfiniteIterate_bot := supTransfiniteIterate_bot
