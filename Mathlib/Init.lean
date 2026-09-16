@@ -151,4 +151,4 @@ run_cmd liftTermElabM do
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
 
-#allow_unused_tactic! Mathlib.Linter.Style.show
+allow_unused_tactic ! Mathlib.Linter.Style.show
