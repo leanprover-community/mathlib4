@@ -50,7 +50,6 @@ noncomputable def extEquivCohomologyClass :
     ((by rw [HomologicalComplex.mem_quasiIso_iff]; infer_instance))).trans
       CochainComplex.HomComplex.CohomologyClass.equivOfIsKProjective.{w}.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle R.cochainComplex ((singleFunctor C 0).obj Y) n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =

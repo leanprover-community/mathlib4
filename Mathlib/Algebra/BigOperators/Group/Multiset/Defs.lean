@@ -27,13 +27,13 @@ and sums indexed by finite sets.
 
 assert_not_exists MonoidWithZero
 
-variable {F ι M N : Type*}
+variable {ι M N : Type*}
 
 namespace Multiset
 
 section CommMonoid
 
-variable [CommMonoid M] [CommMonoid N] {s t : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
+variable [CommMonoid M] [CommMonoid N] {s : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
 
 /-- Product of a multiset given a commutative monoid structure on `M`.
   `prod {a, b, c} = a * b * c` -/

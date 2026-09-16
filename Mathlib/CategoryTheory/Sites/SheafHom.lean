@@ -39,7 +39,6 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable (F G : Cᵒᵖ ⥤ A)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given two presheaves `F` and `G` on a category `C` with values in a category `A`,
 this `presheafHom F G` is the presheaf of types which sends an object `X : C`
@@ -133,7 +132,6 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :

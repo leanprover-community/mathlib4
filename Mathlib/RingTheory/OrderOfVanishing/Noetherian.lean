@@ -31,7 +31,6 @@ section NoetherianDimLEOne
 
 variable {R : Type*} [CommRing R]
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
-variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 /--

@@ -51,7 +51,7 @@ attribute [local ext] TensorProduct.ext
 
 /-- (implementation) tensor product of R-modules -/
 def tensorObj (M N : SemimoduleCat R) : SemimoduleCat R :=
-  SemimoduleCat.of R (M ⊗[R] N)
+  ↧(M ⊗[R] N)
 
 /-- (implementation) tensor product of morphisms R-modules -/
 def tensorHom {M N M' N' : SemimoduleCat R} (f : M ⟶ N) (g : M' ⟶ N') :
@@ -89,11 +89,11 @@ def associator (M : SemimoduleCat.{v} R) (N : SemimoduleCat.{w} R) (K : Semimodu
   (TensorProduct.assoc R M N K).toModuleIsoₛ
 
 /-- (implementation) the left unitor for R-modules -/
-def leftUnitor (M : SemimoduleCat.{u} R) : SemimoduleCat.of R (R ⊗[R] M) ≅ M :=
+def leftUnitor (M : SemimoduleCat.{u} R) : ↧(R ⊗[R] M) ≅ M :=
   (TensorProduct.lid R M).toModuleIsoₛ
 
 /-- (implementation) the right unitor for R-modules -/
-def rightUnitor (M : SemimoduleCat.{u} R) : SemimoduleCat.of R (M ⊗[R] R) ≅ M :=
+def rightUnitor (M : SemimoduleCat.{u} R) : ↧(M ⊗[R] R) ≅ M :=
   (TensorProduct.rid R M).toModuleIsoₛ
 
 @[simps -isSimp]
@@ -102,7 +102,7 @@ instance instMonoidalCategoryStruct : MonoidalCategoryStruct (SemimoduleCat.{u} 
   whiskerLeft := whiskerLeft
   whiskerRight := whiskerRight
   tensorHom := tensorHom
-  tensorUnit := SemimoduleCat.of R R
+  tensorUnit := ↧R
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
@@ -126,7 +126,7 @@ theorem pentagon (W X Y Z : SemimoduleCat R) :
   rfl
 
 theorem leftUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
-    tensorHom (𝟙 (SemimoduleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
+    tensorHom (𝟙 ↧R) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
@@ -134,7 +134,7 @@ theorem leftUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
   simp [tensorHom, tensorObj, leftUnitor]
 
 theorem rightUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
-    tensorHom f (𝟙 (SemimoduleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
+    tensorHom f (𝟙 ↧R) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
@@ -142,7 +142,7 @@ theorem rightUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
   simp [tensorHom, tensorObj, rightUnitor]
 
 theorem triangle (M N : SemimoduleCat.{u} R) :
-    (associator M (SemimoduleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
+    (associator M ↧R N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
       tensorHom (rightUnitor M).hom (𝟙 N) := by
   ext : 1
   apply TensorProduct.ext_threefold

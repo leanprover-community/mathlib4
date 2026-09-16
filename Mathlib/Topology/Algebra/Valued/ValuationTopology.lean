@@ -5,11 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 public import Mathlib.Topology.Algebra.UniformFilterBasis
-public import Mathlib.RingTheory.Valuation.ValuationSubring
-public import Mathlib.Algebra.Order.GroupWithZero.Range
 
 /-!
 # The topology on a valued ring
@@ -70,9 +69,9 @@ theorem subgroups_basis :
       obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
-      simp only [ltAddSubgroup, Units.coe_map, MonoidHom.coe_coe, AddSubgroup.coe_set_mk,
+      simp only [ltAddSubgroup, Units.coe_map, MonoidHom.coe_ofClass, AddSubgroup.coe_set_mk,
         AddSubmonoid.coe_set_mk, AddSubsemigroup.coe_set_mk, mem_ofPred_eq] at r_in s_in
-      simp only [coe_ltAddSubgroup, Units.coe_map, MonoidHom.coe_coe, mem_ofPred_eq]
+      simp only [coe_ltAddSubgroup, Units.coe_map, MonoidHom.coe_ofClass, mem_ofPred_eq]
       rw [← restrict_lt_iff_lt_embedding] at *
       calc
         v.restrict (r * s) = v.restrict r * v.restrict s := Valuation.map_mul _ _ _

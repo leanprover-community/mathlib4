@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Norm
 public import Mathlib.RingTheory.FractionalIdeal.Operations
