@@ -1,4 +1,4 @@
-import Mathlib.Data.Complex.Basic
+import Mathlib.Basic.Complex.Basic
 
 /-!
 # Tests for `simp`-reduction about `I ^ _`.
