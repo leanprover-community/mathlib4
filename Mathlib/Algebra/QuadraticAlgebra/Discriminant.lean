@@ -104,8 +104,7 @@ variable [CommRing R] {a b a' b' : R}
 /-- The transformation law for an injective algebra map. -/
 theorem discr_eq_im_sq_mul_discr (hf : Function.Injective f) :
     discr a b = (f ω).im ^ 2 * discr a' b' := by
-  rw [im_sq_mul_discr (f ω), trace_algHom_omega f hf, norm_algHom_omega f hf, discr_def]
-  ring
+  grind [im_sq_mul_discr, trace_algHom_omega, norm_algHom_omega, discr]
 
 /-- `discr_eq_im_sq_mul_discr` for an `R`-algebra isomorphism `e`, for which `(e ω).im` is
 automatically a unit (`isUnit_im_omega_of_algEquiv`). -/
@@ -122,34 +121,34 @@ def algEquivDiscrZero [Invertible (2 : R)] (a b : R) :
     (by grind [discr_def, val_unitOfInvertible]) (by grind [val_unitOfInvertible])).symm
 
 @[simp]
-theorem re_algEquivDiscrZero_apply [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
+theorem algEquivDiscrZero_re [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
     (algEquivDiscrZero a b z).re = z.re + ⅟2 * b * z.im := by
   simp [algEquivDiscrZero, mul_comm]
 
 @[simp]
-theorem im_algEquivDiscrZero_apply [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
+theorem algEquivDiscrZero_im [Invertible (2 : R)] (z : QuadraticAlgebra R a b) :
     (algEquivDiscrZero a b z).im = ⅟2 * z.im := by
   simp [algEquivDiscrZero, mul_comm]
 
 @[simp]
-theorem re_algEquivDiscrZero_symm_apply [Invertible (2 : R)]
+theorem algEquivDiscrZero_symm_re [Invertible (2 : R)]
     (z : QuadraticAlgebra R (discr a b) 0) :
     ((algEquivDiscrZero a b).symm z).re = z.re - b * z.im := by
   simp [algEquivDiscrZero, mul_comm, sub_eq_add_neg]
 
 @[simp]
-theorem im_algEquivDiscrZero_symm_apply [Invertible (2 : R)]
+theorem algEquivDiscrZero_symm_im [Invertible (2 : R)]
     (z : QuadraticAlgebra R (discr a b) 0) :
     ((algEquivDiscrZero a b).symm z).im = 2 * z.im := by
   simp [algEquivDiscrZero, mul_comm]
 
 @[simp]
-theorem algEquivDiscrZero_apply_add_smul [Invertible (2 : R)] (x y : R) :
+theorem algEquivDiscrZero_add_smul [Invertible (2 : R)] (x y : R) :
     algEquivDiscrZero a b (x • 1 + y • ω) = (x + ⅟2 * b * y) • 1 + (⅟2 * y) • ω := by
   ext <;> simp [mul_comm]
 
 @[simp]
-theorem algEquivDiscrZero_symm_apply_add_smul [Invertible (2 : R)] (x y : R) :
+theorem algEquivDiscrZero_symm_add_smul [Invertible (2 : R)] (x y : R) :
     (algEquivDiscrZero a b).symm (x • 1 + y • ω) = (x - b * y) • 1 + (2 * y) • ω := by
   ext <;> simp [mul_comm, sub_eq_add_neg]
 
@@ -160,13 +159,12 @@ theorem nonempty_algEquiv_iff (h : IsRegular (2 : R)) :
       ∃ u : Rˣ, discr a b = (u : R) ^ 2 * discr a' b' ∧ 2 ∣ (b - u * b') := by
   refine ⟨fun ⟨e⟩ ↦ ?_, fun ⟨u, hu, ⟨k, hk⟩⟩ ↦ ⟨changeGeneratorEquiv a' b' u k ?_ (by grind)⟩⟩
   · refine ⟨(isUnit_im_omega_of_algEquiv e).unit,
-      by rw [discr_eq_im_sq_mul_discr' e, IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
+      by rw [discr_eq_im_sq_mul_discr e.toAlgHom e.injective, AlgEquiv.toAlgHom_apply,
+        IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
     rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_def, eq_comm]
     exact trace_algHom_omega e.toAlgHom e.injective
-  · rw [discr_def, discr_def] at hu
-    rw [← h.left.eq_iff, mul_sub, mul_sub, ← mul_rotate, ← mul_assoc, ← mul_assoc, ← mul_assoc,
-      ← hk, ← h.left.eq_iff, mul_sub, ← mul_assoc, ← mul_assoc, ← pow_two, ← mul_pow, ← hk]
-    grind
+  · rw [← h.left.eq_iff, ← h.left.eq_iff]
+    grind [discr]
 
 /-- If `2` is invertible, the discriminant classifies quadratic algebras up to
 isomorphism, modulo squares of units. -/
@@ -186,8 +184,7 @@ theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
   obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := by
     rw [← Prime.dvd_mul Int.prime_two, ← sq_sub_sq]
     refine ⟨2 * a' - 2 * a, ?_⟩
-    rwa [mul_sub, ← mul_assoc, ← mul_assoc, show (2 : ℤ) * 2 = 4 by norm_num,
-      sub_eq_sub_iff_add_eq_add, ← discr_def, add_comm, ← discr_def]
+    grind [discr]
   · exact ⟨-1, by simpa, by simpa⟩
   · exact ⟨1, by simpa, by simpa⟩
 

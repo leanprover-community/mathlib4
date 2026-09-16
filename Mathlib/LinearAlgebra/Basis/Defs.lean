@@ -107,6 +107,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
   cases f; cases g; congr
 
 /-- `b i` is the `i`th basis vector. -/
+@[macro_inline]
 instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
