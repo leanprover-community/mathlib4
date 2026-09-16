@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Comap
 public import Mathlib.MeasureTheory.Measure.Continuity
-public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -422,20 +422,6 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
     (hp : ∀ᵐ x ∂μ.restrict s, p x) : ∃ x, x ∈ s ∧ p x := by
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
-
-/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
-then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
-theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
-    (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
-    QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
-  measurable := hf.measurable
-  absolutelyContinuous := by
-    refine AbsolutelyContinuous.mk fun u hum ↦ ?_
-    suffices ν (u ∩ t) = 0 → μ (f ⁻¹' u ∩ s) = 0 by simpa [hum, hf.measurable, hf.measurable hum]
-    refine fun hu ↦ measure_mono_null ?_ (hf.preimage_null hu)
-    rw [preimage_inter]
-    gcongr
-    assumption
 
 /-! ### Extensionality results -/
 
