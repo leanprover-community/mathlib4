@@ -647,10 +647,6 @@ lemma isOpen_slitPlane : IsOpen slitPlane :=
 @[simp]
 lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
 
-open ComplexConjugate in
-@[simp]
-lemma conj_mem_slitPlane {z : ℂ} : conj z ∈ slitPlane ↔ z ∈ slitPlane := by simp [mem_slitPlane_iff]
-
 @[simp]
 lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
   simpa using ofReal_mem_slitPlane (x := -x)

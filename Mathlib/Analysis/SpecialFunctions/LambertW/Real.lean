@@ -8,7 +8,60 @@ module
 public import Mathlib.Analysis.SpecialFunctions.LambertW.Basic
 
 /-!
-# TODO DOC
+# The real Lambert W function
+
+This defines the two branches of the standard Lambert W function over the reals.
+
+If `y = W(x)`, then `x = y * exp y` on each branch.
+
+* `Real.lambertWZero`, the strictly increasing principal branch `W₀ : [-1 / e, +∞) → [-1, +∞)`,
+  is the real part of `Complex.lambertW 0`.
+* `Real.lambertWNegOne`, the strictly decreasing branch `W₋₁ : [-1 / e, 0) → (-∞, -1]`,
+  is the real part of `Complex.lambertW (-1)`.
+
+Outside their domains the two branches discard the imaginary part of complex Lambert W,
+so their values there are junk values. Notably `W₋₁ 0` is the arbitrary junk value produced by
+`Function.invFunOn`, since `0 ∉ Complex.LambertW.domain (-1)`.
+
+## Main definitions
+
+* `Real.lambertWZero`: the principal branch `W₀` of the real Lambert W function.
+* `Real.lambertWNegOne`: the branch `W₋₁` of the real Lambert W function.
+* `Real.omegaConstant`: the omega constant `Ω = W₀ 1`.
+
+## Main results
+
+* `Real.lambertWZero_mul_exp_of_le`, `Real.lambertWNegOne_mul_exp_of_le`: the basic identities
+  `W₀ (y * rexp y) = y` for `-1 ≤ y`, and `W₋₁ (y * rexp y) = y` for `y ≤ -1`.
+* `Real.lambertWZero_mul_exp_lambertWZero_of_le`,
+  `Real.lambertWNegOne_mul_exp_lambertWNegOne_of_mem_Ico`: the basic identities
+  `W₀ x * rexp (W₀ x) = x` for `-(rexp 1)⁻¹ ≤ x`, and
+  `W₋₁ x * rexp (W₋₁ x) = x` for `x ∈ [-1 / e, 0)`.
+* `Real.invOn_mul_exp_lambertWZero`, `Real.invOn_mul_exp_lambertWNegOne`: `W₀` and `W₋₁` are
+  inverses of `y ↦ y * rexp y` on their respective domains and images.
+* `Real.strictMonoOn_lambertWZero` and `Real.strictAntiOn_lambertWNegOne`: `W₀` is strictly
+  increasing, and `W₋₁` is strictly decreasing.
+* `Real.lambertWZero_zero`, `Real.lambertWZero_pos_of_pos` and
+  `Real.lambertWZero_nonneg_of_nonneg`: `W₀` vanishes at `0` and preserves strict and weak
+  positivity.
+* `Real.omegaConstant_mul_exp`, `Real.omegaConstant_eq_exp_neg`:
+  `Ω * rexp Ω = 1` and `Ω = rexp (-Ω)`.
+* `Real.omegaConstant_pos`, `Real.omegaConstant_lt_one`: the bounds `0 < Ω < 1`.
+
+## Notation
+
+The following notations are localized in `RealLambertW`:
+
+* `W₀` is `Real.lambertWZero`.
+* `W₋₁` is `Real.lambertWNegOne`.
+
+Use `open scoped RealLambertW` to use these.
+
+The following notation is localized in `OmegaConstant`:
+
+* `Ω` is `omegaConstant`.
+
+Use `open scoped OmegaConstant` to use this.
 
 ## References
 
@@ -25,11 +78,17 @@ open Set
 
 variable {x y : ℝ}
 
-/-- TODO doc -/
+/-- The principal branch `W₀` of the real Lambert W function, defined as the real part of the
+complex principal branch `Complex.lambertW 0`.
+
+It is the inverse of `x ↦ x * rexp x`, and maps `[-1 / e, +∞)` bijectively onto `[-1, +∞)`. -/
 @[pp_nodot, expose]
 def lambertWZero : ℝ -> ℝ := fun x => (Complex.lambertW 0 x).re
 
-/-- TODO doc -/
+/-- The branch `W₋₁` of the real Lambert W function, defined as the real part of the complex
+branch `Complex.lambertW (-1)`.
+
+It is the inverse of `x ↦ x * rexp x`, and maps `[-1 / e, 0)` bijectively onto `(-∞, -1]`. -/
 @[pp_nodot, expose]
 def lambertWNegOne : ℝ -> ℝ := fun x => (Complex.lambertW (-1) x).re
 
@@ -41,7 +100,10 @@ recommended_spelling "lambertWNegOne" for "W₋₁" in [lambertWNegOne, RealLamb
 
 open scoped RealLambertW
 
-/-- TODO doc -/
+/-- The omega constant `Ω ≈ 0.5671432904` (OEIS: A030178), the value of the principal branch of the
+Lambert W function at `1`.
+
+It is the real solution of `x * rexp x = 1`. -/
 @[wikidata Q2291098]
 abbrev omegaConstant : ℝ := W₀ 1
 
@@ -107,12 +169,12 @@ theorem bijOn_lambertWNegOne : BijOn W₋₁ (Ico (-(rexp 1)⁻¹) 0) (Iic (-1))
   obtain ⟨y, ⟨hy, hyx⟩, -⟩ := existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico hx
   rwa [← hyx, lambertWNegOne_mul_exp_of_le hy]
 
-theorem lambertWZero_mul_exp_lambertWZero_of_le (hx : -(rexp 1)⁻¹ ≤ y) :
-    W₀ y * rexp (W₀ y) = y :=
+theorem lambertWZero_mul_exp_lambertWZero_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
+    W₀ x * rexp (W₀ x) = x :=
   invOn_mul_exp_lambertWZero.left hx
 
-theorem lambertWNegOne_mul_exp_lambertWNegOne_of_mem_Ico (hx : y ∈ Ico (-(rexp 1)⁻¹) 0) :
-    W₋₁ y * rexp (W₋₁ y) = y :=
+theorem lambertWNegOne_mul_exp_lambertWNegOne_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
+    W₋₁ x * rexp (W₋₁ x) = x :=
   invOn_mul_exp_lambertWNegOne.left hx
 
 theorem strictMonoOn_lambertWZero : StrictMonoOn W₀ (Ici (-(rexp 1)⁻¹)) := by
@@ -136,11 +198,11 @@ theorem existsUnique_ge_mul_exp_eq_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
 theorem lambertWZero_zero : W₀ 0 = 0 := by
   nth_rw 1 [← zero_mul, lambertWZero_mul_exp_of_le neg_one_lt_zero.le]
 
-theorem lambertWZero_pos_of_pos (hx : 0 < y) : 0 < W₀ y := by
+theorem lambertWZero_pos_of_pos (hx : 0 < x) : 0 < W₀ x := by
   have : -(rexp 1)⁻¹ ≤ 0 := by simpa using exp_nonneg 1
   exact lambertWZero_zero ▸ strictMonoOn_lambertWZero this (this.trans hx.le) hx
 
-theorem lambertWZero_nonneg_of_nonneg (hx : 0 ≤ y) : 0 ≤ W₀ y := by
+theorem lambertWZero_nonneg_of_nonneg (hx : 0 ≤ x) : 0 ≤ W₀ x := by
   have : -(rexp 1)⁻¹ ≤ 0 := by simpa using exp_nonneg 1
   exact lambertWZero_zero ▸ strictMonoOn_lambertWZero.monotoneOn this (this.trans hx) hx
 
@@ -159,7 +221,9 @@ theorem omegaConstant_lt_one : Ω < 1 := by
   apply strictMonoOn_lambertWZero <;> simp [field, neg_one_lt_zero.le.trans <| exp_nonneg _]
 
 open Qq Mathlib.Meta.Positivity in
-/-- TODO doc -/
+/-- Extension for the `positivity` tactic: `Real.lambertWZero`.
+Since `W₀` is strictly increasing on its domain and vanishes at `0`,
+it preserves both strict and weak positivity. -/
 @[positivity Real.lambertWZero _]
 meta def _root_.Mathlib.Meta.Positivity.evalLambertWZero :
     PositivityExt where eval {u α} zα pα? e :=
