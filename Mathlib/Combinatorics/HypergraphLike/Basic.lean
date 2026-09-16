@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Set.Card.Arithmetic
 
 /-!
-# An incidence interface for graph-like structures
+# General interface for graph-like structures
 
 This module defines `HyperGraphLike` and its general incidence API for graph representations such
 as `SimpleGraph`, `Graph`, and `Digraph`.
@@ -26,50 +26,66 @@ as `SimpleGraph`, `Graph`, and `Digraph`.
 
 ## Implementation notes
 
-Links and adjacency respect source and target roles and need not be symmetric. A link uses two
-distinct incidence identifiers, including when its endpoints coincide. This separates loops (an edge
-with two incidences to the same vertex) and a dangling edge (an edge with one incidence with a
-vertex).
+`HypergraphLike` abstracts a graph-like structure using separate types for vertices, incidence
+identifiers, and edges. It uses incidence hypergraph definition, a span of incidence identifiers
+to edges and vertices, generalized to also include directional information of whether an incidence
+is a source or target.
 
-The maps in the definition of `HyperGraphLike` act on active subtypes. `edgeMap` and `attach` give
-ambient values under the corresponding `Nonempty` assumptions, by sending an arbitrary value outside
-the active incidence set.
--/
+Incidence hypergraphs are more general than graphs or definitions of hypergraph based on
+set-systems. Incidence hypergraphs allow for arbitrary number of incidences of an edge and a vertex,
+and arbitrary number of edges between two vertices. It also has good categorical properties. Two
+additional fields, `IsSource` and `IsTarget`, are used to orient the incidences. Every incidence
+is either a source or a target or both. Strictly source and target incidences are used to model
+directed edges and source & target incidences are used to model undirected edges.
+
+Links require two *distinct* incidences of an edge, one source and one target. This separates loops
+(an edge with two incidences to the same vertex) and a dangling edge (an edge with one incidence
+with a vertex). Adjacency is then simply the existence of a link between two vertices.
+
+Rather than directly using the given types, `HyperGraphLike` has fields for the set of vertices,
+edges, and incidence identifiers, and only those in the sets are treated as part of the graph-like
+structure. You can view the elements of, say, `ν : Type*` as all possible labels for vertices and
+only those in `V(G)` are the labels actively being used in the graph-like structure. The maps in
+the definition of `HyperGraphLike` act on subtypes of `incs G` and people are discouraged from using
+them directly. Instead, `edgeMap` and `attach` are defined on all incidence type under the
+corresponding `Nonempty` assumptions, by sending an arbitrary value outside the active incidence
+set. -/
 
 @[expose] public section
 
 open Set Function
 
-/-- `HyperGraphLike` abstracts a graph-like structure using separate types for vertices, incidence
-identifiers, and edges.
+/-- `HyperGraphLike` abstracts types of graph-like structures using separate types for vertices,
+incidence identifiers, and edges.
 
-Consider a type that models a graph-like structure, `Gr`. For `G : Gr`, `verts G`, `edges G`, and
-`incs G` specify the vertices, edges, and incidence identifiers present in `G`. The supplied maps
-`toEdge G` and `toVert G` assign an edge and endpoint to each active incidence.
-The ambient types may contain unused labels.
+Consider a type `Gr` that models a graph-like structure. For `G : Gr`, `V(G)`, `E(G)`, and `I(G)`
+specify the vertices, edges, and incidence identifiers present in `G`. You can view the elements of,
+say, `ν : Type*` as all possible labels for vertices and only those in `V(G)` are the labels
+actively being used in the given graph-like structure.
+The maps `toEdge G` and `toVert G` assign an edge and endpoint to each incidence in `G`.
 `IsSource` and `IsTarget` orient the incidences. The derived relations `IsLink G e u v` and
 `Adj G u v` use two distinct incidences of one edge, with a source at `u` and a target at `v`. -/
-class HyperGraphLike (V I E : outParam Type*) (Gr : Type*) where
+class HyperGraphLike (ν ι ε : outParam Type*) (Gr : Type*) where
   /-- The set of vertices present in a graph-like structure. -/
-  verts : Gr → Set V
+  verts : Gr → Set ν
   /-- The set of edges present in a graph-like structure. -/
-  edges : Gr → Set E
+  edges : Gr → Set ε
   /-- The set of incidence identifiers used by a graph-like structure. -/
-  incs : Gr → Set I
-  /-- The edge of an active incidence. -/
+  incs : Gr → Set ι
+  /-- Each incidence is assigned an edge. -/
   toEdge : ∀ G, incs G → edges G
-  /-- The endpoint of an active incidence. -/
+  /-- Each incidence is assigned a vertex. -/
   toVert : ∀ G, incs G → verts G
   /-- The predicate that marks an incidence as a source incidence. -/
-  IsSource : Gr → I → Prop
+  IsSource : Gr → ι → Prop
   /-- The predicate that marks an incidence as a target incidence. -/
-  IsTarget : Gr → I → Prop
+  IsTarget : Gr → ι → Prop
   /-- An incidence identifier is used exactly when it is marked as a source or target. -/
   mem_incs_iff ⦃G i⦄ : i ∈ incs G ↔ IsSource G i ∨ IsTarget G i
   -- Link and adjacency may be overridden for definitional agreement with a concrete representation.
   -- The accompanying fields require each override to agree with its default.
   /-- `IsLink G e u v` means that `e` has distinct source and target incidences at `u` and `v`. -/
-  IsLink : Gr → E → V → V → Prop := fun G e u v ↦ ∃ i j : incs G, i ≠ j ∧
+  IsLink : Gr → ε → ν → ν → Prop := fun G e u v ↦ ∃ i j : incs G, i ≠ j ∧
     IsSource G i.val ∧ IsTarget G j.val ∧ (toEdge G i).val = e ∧ (toVert G i).val = u ∧
     (toEdge G j).val = e ∧ (toVert G j).val = v
   /-- Characterizes `IsLink` using the supplied edge and endpoint maps of active incidences. -/
@@ -77,7 +93,7 @@ class HyperGraphLike (V I E : outParam Type*) (Gr : Type*) where
     IsSource G i.val ∧ IsTarget G j.val ∧ (toEdge G i).val = e ∧ (toVert G i).val = u ∧
     (toEdge G j).val = e ∧ (toVert G j).val = v := by grind
   /-- `Adj G u v` means that some edge links `u` to `v`. -/
-  Adj : Gr → V → V → Prop := fun G u v ↦ ∃ e, IsLink G e u v
+  Adj : Gr → ν → ν → Prop := fun G u v ↦ ∃ e, IsLink G e u v
   /-- Adjacency means that an edge links the two vertices. -/
   adj_iff' ⦃G u v⦄ : Adj G u v ↔ ∃ e, IsLink G e u v := by grind
 
@@ -138,11 +154,11 @@ lemma edgeMap_mem [Nonempty E] (hi : i ∈ I(G)) : edgeMap G i ∈ E(G) := by
 
 /-! ### Incidence fibers -/
 
-/-- The active incidence labels belonging to an edge. -/
+/-- The incidence labels belonging to an edge. -/
 def edgeFiber (G : Gr) (e : E) : Set I :=
   Subtype.val '' {i : I(G) | (toEdge G i : E) = e}
 
-/-- The active incidence labels attached to a vertex. -/
+/-- The incidence labels attached to a vertex. -/
 def vertexFiber (G : Gr) (v : V) : Set I :=
   Subtype.val '' {i : I(G) | (toVert G i : V) = v}
 
@@ -209,17 +225,17 @@ lemma biUnion_vertexFiber (G : Gr) : ⋃ v ∈ V(G), vertexFiber G v = I(G) := b
 /-! ### Links and adjacency -/
 
 @[grind →]
-lemma IsLink.edge_mem (h : IsLink G e u v) : e ∈ E(G) := by
+lemma IsLink.edge_mem_edgeSet (h : IsLink G e u v) : e ∈ E(G) := by
   obtain ⟨i, _, _, _, _, rfl, _⟩ := isLink_iff.mp h
   exact (toEdge G i).property
 
 @[grind →]
-lemma IsLink.left_mem (h : IsLink G e u v) : u ∈ V(G) := by
+lemma IsLink.left_mem_vertexSet (h : IsLink G e u v) : u ∈ V(G) := by
   obtain ⟨i, _, _, _, _, _, rfl, _⟩ := isLink_iff.mp h
   exact (toVert G i).property
 
 @[grind →]
-lemma IsLink.right_mem (h : IsLink G e u v) : v ∈ V(G) := by
+lemma IsLink.right_mem_vertexSet (h : IsLink G e u v) : v ∈ V(G) := by
   obtain ⟨_, j, _, _, _, _, _, _, rfl⟩ := isLink_iff.mp h
   exact (toVert G j).property
 
@@ -227,25 +243,26 @@ lemma IsLink.right_mem (h : IsLink G e u v) : v ∈ V(G) := by
 lemma IsLink.adj (h : IsLink G e u v) : Adj G u v := adj_iff'.mpr ⟨e, h⟩
 
 @[grind →]
-lemma Adj.left_mem (h : Adj G u v) : u ∈ V(G) :=
-  (adj_iff'.mp h).elim fun _ h ↦ h.left_mem
+lemma Adj.left_mem_vertexSet (h : Adj G u v) : u ∈ V(G) :=
+  (adj_iff'.mp h).elim fun _ h ↦ h.left_mem_vertexSet
 
 @[grind →]
-lemma Adj.right_mem (h : Adj G u v) : v ∈ V(G) :=
-  (adj_iff'.mp h).elim fun _ h ↦ h.right_mem
+lemma Adj.right_mem_vertexSet (h : Adj G u v) : v ∈ V(G) :=
+  (adj_iff'.mp h).elim fun _ h ↦ h.right_mem_vertexSet
 
 @[simp]
-lemma not_isLink_of_notMem_edges (he : e ∉ E(G)) : ¬ IsLink G e u v := mt IsLink.edge_mem he
+lemma not_isLink_of_notMem_edges (he : e ∉ E(G)) : ¬ IsLink G e u v := mt IsLink.edge_mem_edgeSet he
 
 @[simp]
-lemma not_adj_of_notMem_verts (hu : u ∉ V(G)) : ¬ Adj G u v := mt Adj.left_mem hu
+lemma not_adj_of_notMem_verts (hu : u ∉ V(G)) : ¬ Adj G u v := mt Adj.left_mem_vertexSet hu
 
 @[simp]
-lemma not_adj_of_notMem_verts_right (hv : v ∉ V(G)) : ¬ Adj G u v := mt Adj.right_mem hv
+lemma not_adj_of_notMem_verts_right (hv : v ∉ V(G)) : ¬ Adj G u v := mt Adj.right_mem_vertexSet hv
 
-lemma isLink_iff_exists_incidence [Nonempty V] [Nonempty E] : IsLink G e u v ↔
-    ∃ i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧ edgeMap G i = e ∧ edgeMap G j = e ∧
-    attach G i = u ∧ attach G j = v := by
+lemma isLink_iff_exists_incidence [Nonempty V] [Nonempty E] :
+    IsLink G e u v ↔
+      ∃ i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧ edgeMap G i = e ∧ edgeMap G j = e ∧
+        attach G i = u ∧ attach G j = v := by
   simp only [isLink_iff, toEdge_eq_edgeMap, toVert_eq_attach]
   exact ⟨fun ⟨i, j, hij, hs, ht, he, hu, hf, hv⟩ ↦
     ⟨i, j, fun h ↦ hij (Subtype.ext h), hs, ht, he, hf, hu, hv⟩,
@@ -256,20 +273,21 @@ lemma isLink_attach [Nonempty V] [Nonempty E] (hs : IsSource G i) (ht : IsTarget
     (he : edgeMap G i = edgeMap G j) : IsLink G (edgeMap G i) (attach G i) (attach G j) :=
   isLink_iff_exists_incidence.mpr ⟨i, j, hij, hs, ht, rfl, he.symm, rfl, rfl⟩
 
-lemma adj_iff_exists_incidence [Nonempty V] [Nonempty E] : Adj G u v ↔
-    ∃ i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧ edgeMap G i = edgeMap G j ∧
-    attach G i = u ∧ attach G j = v := by
+lemma adj_iff_exists_incidence [Nonempty V] [Nonempty E] :
+    Adj G u v ↔
+      ∃ i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧ edgeMap G i = edgeMap G j ∧
+        attach G i = u ∧ attach G j = v := by
   simp only [adj_iff', isLink_iff_exists_incidence]
   exact ⟨fun ⟨e, i, j, hij, hs, ht, he, hf, hu, hv⟩ ↦ ⟨i, j, hij, hs, ht, he.trans hf.symm, hu, hv⟩,
     fun ⟨i, j, hij, hs, ht, he, hu, hv⟩ ↦ ⟨edgeMap G i, i, j, hij, hs, ht, rfl, he.symm, hu, hv⟩⟩
 
 /-! ### Incident vertices and edges -/
 
-/-- The set of vertices incident to an edge, forgetting incidence multiplicity and orientation. -/
+/-- The set of vertices incident to an edge, as a source or a target. -/
 def incVerts (G : Gr) (e : E) : Set V :=
   (fun i : I(G) ↦ (toVert G i : V)) '' {i | (toEdge G i : E) = e}
 
-/-- The set of edges incident to a vertex, forgetting incidence multiplicity and orientation. -/
+/-- The set of edges incident to a vertex, as a source or a target. -/
 def incEdges (G : Gr) (v : V) : Set E :=
   (fun i : I(G) ↦ (toEdge G i : E)) '' {i | (toVert G i : V) = v}
 
@@ -358,10 +376,10 @@ lemma IsLink.mem_incEdges_right (h : IsLink G e u v) : e ∈ incEdges G v :=
 
 /-! ### Degree and order -/
 
-/-- The number of active incidences of an edge, with value `⊤` for an infinite fiber. -/
+/-- The number of incidences of an edge, with value `⊤` for an infinite fiber. -/
 noncomputable def order (G : Gr) (e : E) : ℕ∞ := {i : I(G) | (toEdge G i : E) = e}.encard
 
-/-- The number of active incidences attached to a vertex, with value `⊤` for an infinite fiber. -/
+/-- The number of incidences attached to a vertex, with value `⊤` for an infinite fiber. -/
 noncomputable def degree (G : Gr) (v : V) : ℕ∞ := {i : I(G) | (toVert G i : V) = v}.encard
 
 lemma order_eq_encard_edgeFiber (G : Gr) : order G e = (edgeFiber G e).encard :=
@@ -404,8 +422,6 @@ lemma degree_eq_top_iff : degree G v = ⊤ ↔ (vertexFiber G v).Infinite := by
 lemma degree_lt_top_of_finite (hI : I(G).Finite) : degree G v < ⊤ :=
   degree_lt_top_iff.mpr (hI.subset vertexFiber_subset_incs)
 
-/-- Every active vertex has positive degree exactly when `attach` maps the active incidences
-onto the active vertices. -/
 lemma attach_surjOn_iff [Nonempty V] :
     SurjOn (attach G) I(G) V(G) ↔ ∀ v ∈ V(G), 0 < degree G v := by
   simp only [SurjOn, subset_def, mem_image, degree_pos]
@@ -451,8 +467,7 @@ lemma order_eq_top_iff : order G e = ⊤ ↔ (edgeFiber G e).Infinite := by
 lemma order_lt_top_of_finite (hI : I(G).Finite) : order G e < ⊤ :=
   order_lt_top_iff.mpr (hI.subset edgeFiber_subset_incs)
 
-/-- Every active edge has positive order exactly when `edgeMap` maps the active incidences
-onto the active edges. -/
+/-- Every edge has positive order exactly when `edgeMap` maps the incidences onto the edges. -/
 lemma edgeMap_surjOn_iff [Nonempty E] :
     SurjOn (edgeMap G) I(G) E(G) ↔ ∀ e ∈ E(G), 0 < order G e := by
   simp only [SurjOn, subset_def, mem_image, order_eq_encard_edgeFiber, encard_pos, nonempty_def,
@@ -521,21 +536,21 @@ lemma order_eq_zero_of_incs_eq_empty (hI : I(G) = ∅) : order G e = 0 := by
 
 /-! ### Counting incidences -/
 
-/-- Summing degrees over a finite active vertex set counts all incidences. This is true without
-finiteness assumption but requires importing topology here. -/
+/-- Summing degrees over a finite vertex set counts all incidences. This is true without finiteness
+assumption but requires importing topology here. -/
 lemma sum_degree (G : Gr) [Fintype V(G)] : ∑ v : V(G), degree G (v : V) = I(G).encard := by
   simpa only [iUnion_subtype, biUnion_vertexFiber, ← degree_eq_encard_vertexFiber,
     finsum_eq_sum_of_fintype] using (encard_iUnion_of_finite (ι := V(G))
       ((pairwise_disjoint_vertexFiber G).comp_of_injective Subtype.val_injective)).symm
 
-/-- Summing orders over a finite active edge set counts all incidences. This is true without
-finiteness assumption but requires importing topology here. -/
+/-- Summing orders over a finite edge set counts all incidences. This is true without finiteness
+assumption but requires importing topology here. -/
 lemma sum_order (G : Gr) [Fintype E(G)] : ∑ e : E(G), order G (e : E) = I(G).encard := by
   simpa only [iUnion_subtype, biUnion_edgeFiber, ← order_eq_encard_edgeFiber,
     finsum_eq_sum_of_fintype] using (encard_iUnion_of_finite (ι := E(G))
       ((pairwise_disjoint_edgeFiber G).comp_of_injective Subtype.val_injective)).symm
 
-/-- The degree sum equals the edge order sum when both active indexing sets are finite. This is true
+/-- The degree sum equals the edge order sum when both indexing sets are finite. This is true
 without finiteness assumption but requires importing topology here. -/
 lemma sum_degree_eq_sum_order (G : Gr) [Fintype V(G)] [Fintype E(G)] :
     ∑ v : V(G), degree G (v : V) = ∑ e : E(G), order G (e : E) :=
@@ -543,12 +558,12 @@ lemma sum_degree_eq_sum_order (G : Gr) [Fintype V(G)] [Fintype E(G)] :
 
 /-! ### Uniformity and regularity -/
 
-/-- Every active edge has order `k`, counting incidences with multiplicity.
-For `k = ⊤`, every active edge has infinitely many incidences. -/
+/-- Every edge has order `k`, counting incidences with multiplicity. Everything above `ℵ₀` is
+compressed as `⊤`. -/
 def IsUniform (G : Gr) (k : ℕ∞) : Prop := ∀ {e}, e ∈ E(G) → order G e = k
 
-/-- Every active vertex has degree `k`, counting incidences with multiplicity.
-For `k = ⊤`, every active vertex has infinitely many incidences. -/
+/-- Every vertex has degree `k`, counting incidences with multiplicity. Everything above `ℵ₀` is
+compressed as `⊤`. -/
 def IsRegular (G : Gr) (k : ℕ∞) : Prop := ∀ {v}, v ∈ V(G) → degree G v = k
 
 variable {k l : ℕ∞}
