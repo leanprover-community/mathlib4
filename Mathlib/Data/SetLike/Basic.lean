@@ -213,6 +213,7 @@ end SetLike
 
 /--
 A class to indicate that the order on a type corresponds to set inclusion.
+
 An instance of this class is automatically available on any order defined via `LE.ofMembership`.
 -/
 class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
@@ -220,6 +221,8 @@ class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
 @[deprecated (since := "2026-08-12")] alias IsConcreteLE := IsMemLE
+
+section default
 
 variable (A B : Type*)
 
