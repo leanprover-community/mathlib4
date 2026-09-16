@@ -93,8 +93,10 @@ theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mp
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
   simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_ge]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem projIic_of_mem (hx : x ∈ Iic b) : projIic b x = ⟨x, hx⟩ := by simpa [projIic]
 
 theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
@@ -281,6 +283,9 @@ protected theorem Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnec
     {x | IicExtend (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
 
-protected theorem Set.OrdConnected.restrict (hs : s.OrdConnected) :
-    {x | restrict t (· ∈ s) x}.OrdConnected :=
+protected theorem Set.OrdConnected.domRestrict (hs : s.OrdConnected) :
+    {x | domRestrict t (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy hz⟩
+
+@[deprecated (since := "2026-07-19")]
+alias Set.OrdConnected.restrict := Set.OrdConnected.domRestrict

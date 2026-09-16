@@ -56,7 +56,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [pos_iff_ne_zero]
     rintro ⟨x, hx⟩ hu
     refine hx.2 (mem_iUnion.2 ⟨u, ?_⟩)
-    rw [mem_setOf, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
+    rw [mem_ofPred, indicator_of_mem hx.1, eLpNormEssSup_eq_zero_iff.2]
     · simp
     · rwa [indicator_ae_eq_zero, Function.support_one, inter_univ]
   -- Define `f n` to be the average of the first `n + 1` indicators of the `s k`.
@@ -108,7 +108,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
       · classical
         simpa only [Finset.sum_apply, indicator_apply, Pi.one_apply, Finset.sum_boole, Nat.cast_le]
-          using Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
+          using! Finset.card_le_card fun m hm ↦ hxs.mem_toFinset.2 (Finset.mem_filter.1 hm).2
     · simp_rw [← hu.mem_toFinset]
       exact hN₁ _ ⟨x, mem_iInter₂.2 fun n hn ↦ hux <| hu.mem_toFinset.1 hn, hxN⟩
   · refine Eventually.of_forall fun n ↦ ?_

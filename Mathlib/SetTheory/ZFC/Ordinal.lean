@@ -161,15 +161,15 @@ theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔
     intro x y IH hx hy hxy
     by_cases hyx : y ⊆ x
     · exact Or.inl (subset_antisymm hxy hyx)
-    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.diff_nonempty.2 hyx)
-      have hmy : m ∈ y := by simp only [Set.mem_diff, SetLike.mem_coe] at hm; exact hm.1
+    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.sdiff_nonempty.2 hyx)
+      have hmy : m ∈ y := by simp only [Set.mem_sdiff, SetLike.mem_coe] at hm; exact hm.1
       have hmx : m ⊆ x := by
         intro z hzm
         by_contra hzx
         exact hm' _ ⟨hy.mem_trans hzm hmy, hzx⟩ hzm
       obtain rfl | H := IH m x (Sym2.GameAdd.fst_snd hmy) (hy.mem hmy) hx hmx
       · exact Or.inr hmy
-      · cases Set.notMem_of_mem_diff hm H
+      · cases Set.notMem_of_mem_sdiff hm H
   · rintro (rfl | h)
     · rfl
     · exact hy.subset_of_mem h
@@ -210,8 +210,6 @@ protected theorem trichotomous (h : x.IsOrdinal) : Std.Trichotomous (Subrel (· 
     intro ⟨a, ha⟩ ⟨b, hb⟩
     simpa using mem_trichotomous (h.mem ha) (h.mem hb)
 
-@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := IsOrdinal.trichotomous
-
 /-- An ordinal is a transitive set, trichotomous under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     x.IsOrdinal ↔ x.IsTransitive ∧ Std.Trichotomous (Subrel (· ∈ ·) (· ∈ x)) where
@@ -224,9 +222,6 @@ theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     · exact hyw
     · cases asymm hyz hzw
     · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
-
-@[deprecated (since := "2026-01-24")]
-alias _root_.ZFSet.isOrdinal_iff_isTrichotomous := _root_.ZFSet.isOrdinal_iff_trichotomous
 
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
@@ -296,7 +291,7 @@ theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, 
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert! ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
 decreasing_by rename_i x; exact x.2
@@ -349,7 +344,7 @@ theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔
   exact fun h ↦ not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
 
 theorem toZFSet_strictMono : StrictMono toZFSet :=
-  fun _ _ h ↦ by simpa [ssubset_iff_subset_not_subset] using ⟨h.le, h⟩
+  fun _ _ h ↦ by rw [ssubset_iff_subset_not_subset]; simp [h, h.le]
 
 theorem toZFSet_injective : Function.Injective toZFSet :=
   toZFSet_strictMono.injective
@@ -361,10 +356,6 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
 @[simp]
 theorem toZFSet_add_one (o : Ordinal) : toZFSet (o + 1) = insert (toZFSet o) (toZFSet o) := by
   aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
-
-@[deprecated toZFSet_add_one (since := "2026-02-24")]
-theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) :=
-  toZFSet_add_one o
 
 @[simp]
 theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by

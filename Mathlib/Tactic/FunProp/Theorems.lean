@@ -155,6 +155,15 @@ inductive TheoremForm where
 instance : ToString TheoremForm :=
   ⟨fun x => match x with | .uncurried => "simple" | .comp => "compositional"⟩
 
+/-- Gives the theorem form using the result of `FunctionData.decomposition`.
+
+Note that this returns `TheoremForm.comp` even when the decomposition failed (usually due to
+dependent types). This means that the theorem will be applied directly without trying to write the
+goal as a composition. -/
+def DecompositionResult.toTheoremForm : DecompositionResult → TheoremForm
+| .uncurried => .uncurried
+| _ => .comp
+
 /-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where
   /-- function property name -/
@@ -279,28 +288,28 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
 
 Examples:
 - lam
-```
+  ```
   theorem Continuous_id : Continuous fun x ↦ x
   theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f (g x)
-```
+  ```
 - function
-```
+  ```
   theorem Continuous_add : Continuous (fun x ↦ x.1 + x.2)
   theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
       Continuous (fun x ↦ (f x) + (g x))
-```
+  ```
 - mor - the head of function body has to be `DFunLike.coe`
-```
+  ```
   theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
       (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
       ContDiff 𝕜 n fun x ↦ (f x) (g x)
   theorem clm_linear {f : E →L[𝕜] F} : IsLinearMap 𝕜 f
-```
+  ```
 - transition - the conclusion has to be in the form `P f` where `f` is a free variable
-```
+  ```
   theorem linear_is_continuous [FiniteDimensional ℝ E] {f : E → F} (hf : IsLinearMap 𝕜 f) :
       Continuous f
-```
+  ```
 -/
 inductive Theorem where
   | lam        (thm : LambdaTheorem)
@@ -332,10 +341,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
     match fData.fn with
     | .const funName _ =>
 
-      -- todo: more robust detection of compositional and uncurried form!!!
-      -- I think this detects `Continuous fun x => x + c` as compositional ...
-      let dec ← fData.nontrivialDecomposition
-      let form : TheoremForm := if dec.isSome || funName == ``Prod.mk then .comp else .uncurried
+      let dec ← fData.decomposition
 
       return .function {
 -- funPropName funName fData.mainArgs fData.args.size thmForm
@@ -345,7 +351,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := prio
-        form := form
+        form := dec.toTheoremForm
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
@@ -358,8 +364,8 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
       -- todo: maybe do a little bit more careful detection of morphism and transition theorems
       match (← fData.isMorApplication) with
-      | .exact => return .mor thm
-      | .underApplied | .overApplied =>
+      | .exact | .overApplied => return .mor thm
+      | .underApplied =>
         throwError "fun_prop theorem about morphism coercion has to be in fully applied form"
       | .none =>
         if fData.fn.isFVar && (fData.args.size == 1) &&

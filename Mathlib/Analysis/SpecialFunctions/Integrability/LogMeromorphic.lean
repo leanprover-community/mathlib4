@@ -12,6 +12,8 @@ public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+
 /-!
 # Integrability for Logarithms of Meromorphic Functions
 
@@ -23,7 +25,9 @@ functions are circle integrable over every circle in the complex plane.
 
 public section
 
-open Filter Interval MeasureTheory MeromorphicOn Metric Real
+open Filter MeasureTheory MeromorphicOn Metric Real
+
+open scoped Interval
 
 /-!
 ## Interval Integrability for Logarithms of Real Meromorphic Functions
@@ -46,7 +50,7 @@ theorem MeromorphicOn.intervalIntegrable_log_norm (hf : MeromorphicOn f [[a, b]]
       ((MeromorphicOn.divisor f [[a, b]]).finiteSupport isCompact_uIcc)
     have h₄g := MeromorphicOn.extract_zeros_poles_log h₂g h₃g
     rw [intervalIntegrable_congr_codiscreteWithin
-      (h₄g.filter_mono (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc))]
+      (h₄g.filter_mono (Filter.codiscreteWithin_mono Set.uIoc_subset_uIcc))]
     apply IntervalIntegrable.add
     · apply IntervalIntegrable.finsum
       intro i
@@ -60,7 +64,7 @@ theorem MeromorphicOn.intervalIntegrable_log_norm (hf : MeromorphicOn f [[a, b]]
   · rw [← hf.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_Icc inf_le_sup)] at t₀
     push Not at t₀
     have : (log ‖f ·‖) =ᶠ[Filter.codiscreteWithin (Ι a b)] 0 := by
-      apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc)
+      apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin_mono Set.uIoc_subset_uIcc)
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
         Filter.self_mem_codiscreteWithin [[a, b]]] with x h₁x h₂x
       simp only [Pi.zero_apply, log_eq_zero, norm_eq_zero]
@@ -139,9 +143,7 @@ theorem MeromorphicOn.circleIntegrable_log_norm (hf : MeromorphicOn f (sphere c 
       intro i
       apply IntervalIntegrable.const_mul
       apply MeromorphicOn.intervalIntegrable_log_norm
-      apply AnalyticOnNhd.meromorphicOn
-      apply AnalyticOnNhd.sub _ analyticOnNhd_const
-      apply (analyticOnNhd_circleMap c R).mono (by tauto)
+      fun_prop
     · apply ContinuousOn.intervalIntegrable
       apply ContinuousOn.log
       · apply ContinuousOn.norm
@@ -182,6 +184,7 @@ alias circleIntegrable_log_norm_meromorphicOn_of_nonneg :=
 /--
 Variant of `MeromorphicOn.circleIntegrable_log_norm` for factorized rational functions.
 -/
+@[fun_prop]
 theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : ℂ → ℤ) :
     CircleIntegrable (∑ᶠ u, ((D u) * log ‖· - u‖)) c R :=
   CircleIntegrable.finsum (fun _ ↦

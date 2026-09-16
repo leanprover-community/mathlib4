@@ -66,13 +66,13 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
+def _root_.AlgHom.ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    A →ₐ[R] B where
   __ := (f : A →+* B)
   toFun := f
   commutes' := AlgHomClass.commutes f
 
-instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
-  ⟨AlgHomClass.toAlgHom⟩
+@[deprecated (since := "2026-09-07")] alias toAlgHom := AlgHom.ofClass
 
 end AlgHomClass
 
@@ -85,9 +85,10 @@ section Semiring
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
+@[macro_inline]
 instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr
@@ -99,9 +100,12 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_one f := f.map_one'
   commutes f := f.commutes'
 
-@[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
+@[simp] lemma _root_.AlgHomClass.linearMapOfClass_ofClass {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
-    (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
+    (f : F) : (ofClass f : A →ₗ[R] B) = f := rfl
+
+@[deprecated (since := "2026-09-08")] alias
+_root_.AlgHomClass.toLinearMap_toAlgHom := AlgHomClass.linearMapOfClass_ofClass
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
@@ -110,9 +114,11 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₐ[R] B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-08")] alias coe_coe := AlgHom.coe_ofClass
 
 @[simp]
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
@@ -180,11 +186,15 @@ theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔
 theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
   coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
 
-theorem coe_monoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
-  RingHom.coe_monoidHom_injective.comp coe_ringHom_injective
+theorem toMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
+  RingHom.toMonoidHom_injective.comp coe_ringHom_injective
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+ B) :=
-  RingHom.coe_addMonoidHom_injective.comp coe_ringHom_injective
+@[deprecated (since := "2026-09-15")] alias coe_monoidHom_injective := toMonoidHom_injective
+
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+ B) :=
+  RingHom.toAddMonoidHom_injective.comp coe_ringHom_injective
+
+@[deprecated (since := "2026-09-15")] alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐ[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
   DFunLike.congr_fun H x
@@ -280,6 +290,9 @@ def toLinearMap : A →ₗ[R] B where
   map_add' := map_add _
   map_smul' := map_smul _
 
+theorem toLinearMap_eq_coe (f : A →ₐ[R] B) : f.toLinearMap = f :=
+  rfl
+
 @[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
@@ -332,7 +345,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -401,10 +414,13 @@ alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
 
 namespace AlgHomClass
 
+-- TODO: rename again when RingHomClass.toRingHom gets renamed
 @[simp]
-lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+lemma toRingHom_ofClass {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
     [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+    RingHomClass.toRingHom (AlgHom.ofClass f) = RingHomClass.toRingHom f := rfl
+
+@[deprecated (since := "2026-09-08")] alias toRingHom_toAlgHom := toRingHom_ofClass
 
 end AlgHomClass
 
@@ -425,6 +441,13 @@ lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
 lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     f.toNatAlgHom x = f x := rfl
 
+variable (R) (S) in
+/-- Ring homomorphisms are the same as `ℕ`-algebra homomorphisms. -/
+@[simps]
+def equivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
+  toFun := RingHom.toNatAlgHom
+  invFun := AlgHom.toRingHom
+
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
@@ -439,6 +462,13 @@ lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (x : R) :
 lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
+
+variable (R) (S) in
+/-- Ring homomorphisms are the same as `ℤ`-algebra homomorphisms. -/
+@[simps]
+def equivIntAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℤ] S) where
+  toFun := RingHom.toIntAlgHom
+  invFun := AlgHom.toRingHom
 
 end RingHom
 
@@ -511,7 +541,7 @@ end Algebra
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

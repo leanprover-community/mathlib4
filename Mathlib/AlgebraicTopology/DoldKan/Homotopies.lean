@@ -61,7 +61,9 @@ compatible with the application of additive functors (see `map_Hσ`).
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
-  CategoryTheory.SimplicialObject Homotopy Opposite Simplicial DoldKan
+  CategoryTheory.SimplicialObject Homotopy Opposite
+
+open scoped Simplicial DoldKan
 
 noncomputable section
 
@@ -82,6 +84,7 @@ e.g. `c_mk n (n+1) rfl` -/
 theorem c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
   ComplexShape.down_mk i j h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- This lemma is meant to be used with `nullHomotopicMap'_f_of_not_rel_left` -/
 theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
   intro hj
@@ -114,7 +117,6 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
   canonicalizer; a minimization would help. The original proof was: `grind [hσ', hσ]` -/
   simp [hσ', hσ, ha]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
     (hσ' q n (n + 1) rfl : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ := by
@@ -128,32 +130,27 @@ def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
 def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
   nullHomotopy' (hσ' q)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
 theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   unfold Hσ
   rw [nullHomotopicMap'_f_of_not_rel_left (c_mk 1 0 rfl) cs_down_0_not_rel_left]
   rcases q with (_ | q)
   · rw [hσ'_eq (show 0 = 0 + 0 by rfl) (c_mk 1 0 rfl)]
-    simp only [AlternatingFaceMapComplex.obj_X, Nat.reduceAdd, Int.reduceNeg, pow_zero,
-      Fin.zero_eta, Fin.isValue, one_smul, eqToHom_refl, comp_id,
-      AlternatingFaceMapComplex.obj_d_eq, Fin.sum_univ_two, Fin.coe_ofNat_eq_mod, Nat.zero_mod,
-      Nat.mod_succ, pow_one, neg_smul, comp_add, comp_neg]
-    simp [δ_comp_σ_self' X (by rw [Fin.castSucc_zero']), ← δ_comp_σ_succ X (i := 0)]
+    suffices X.σ 0 ≫ X.δ 0 + -X.σ 0 ≫ X.δ 1 = 0 by simpa
+    rw [← Fin.succ_zero_eq_one, δ_comp_σ_succ, δ_comp_σ_self' X (Fin.castSucc_zero.symm)]
+    simp
   · rw [hσ'_eq_zero (Nat.succ_pos q) (c_mk 1 0 rfl), zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
   obtain rfl : n + 1 = m := hnm
-  simp only [hσ', eqToHom_refl, comp_id]
-  unfold hσ
+  -- `simp? [hσ', hσ]` says:
+  simp only [AlternatingFaceMapComplex.obj_X, hσ', hσ, Int.reduceNeg, eqToHom_refl, comp_id]
   split_ifs
   · rw [zero_comp, comp_zero]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For each q, `Hσ q` is a natural transformation. -/
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Hσ q
@@ -164,7 +161,6 @@ def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapCo
     ext n m hnm
     simp only [alternatingFaceMapComplex_map_f, hσ'_naturality]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
 theorem map_hσ' {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n m : ℕ) (hnm : c.Rel m n) :

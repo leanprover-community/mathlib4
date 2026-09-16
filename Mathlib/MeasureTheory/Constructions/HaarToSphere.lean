@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Field.Pointwise
 public import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Generalized polar coordinate change
@@ -87,7 +86,7 @@ variable [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
 @[simp]
 theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
   nontriviality E
-  rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
+  rw [toSphere_apply_univ', measure_sdiff_null (measure_singleton _)]
 
 @[simp]
 theorem toSphere_real_apply_univ : μ.toSphere.real univ = dim E * μ.real (ball 0 1) := by
@@ -108,7 +107,7 @@ instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
     exact ENNReal.mul_lt_top (ENNReal.natCast_lt_top _) <|
-      measure_ball_lt_top.trans_le' <| measure_mono diff_subset
+      measure_ball_lt_top.trans_le' <| measure_mono sdiff_subset
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
@@ -225,7 +224,7 @@ theorem toSphereBallBound_mul_measure_unitBall_le_toSphere_ball {ε : ℝ}
         using this (ε := min ε 2) (by simp [hε]) (by simp)
     · gcongr
       simp
-  rw [μ.toSphere_apply' measurableSet_ball, Subtype.image_ball, setOf_mem_eq]
+  rw [μ.toSphere_apply' measurableSet_ball, Subtype.image_ball, ofPred_mem_eq]
   grw [← ball_subset_sector_of_small_epsilon] <;> try assumption
   · have hdim : Module.finrank ℝ E ≠ 0 := Module.finrank_pos.ne'
     have : min (ENNReal.ofReal ε) 2 = ENNReal.ofReal ε := by simpa
