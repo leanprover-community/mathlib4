@@ -664,7 +664,7 @@ jobs:
           path: cache-staging
 
       - name: Azure CLI OIDC login and mint storage bearer token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
@@ -691,7 +691,7 @@ jobs:
         id: mint-r2
         if: env.MATHLIB_CACHE_PRIMARY == 'master' && vars.MATHLIB_CACHE_BROKER_URL != ''
         continue-on-error: true
-        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@5a931cea32b8a6d5eb166aad4330531fb1e771e6
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
@@ -972,7 +972,7 @@ jobs:
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Generate auto merge app token
         id: auto-merge-app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
