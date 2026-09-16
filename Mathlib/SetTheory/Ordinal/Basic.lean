@@ -183,7 +183,7 @@ theorem type_unit : type (@emptyRelation Unit) = 1 :=
 instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨type_ne_zero_of_nonempty _⟩
 
-@[deprecated _root_.one_ne_zero (since := "2026-05-12")]
+@[deprecated _root_.one_ne_zero +typeChanged (since := "2026-05-12")]
 protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
   _root_.one_ne_zero
 
@@ -687,20 +687,20 @@ theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.ToType` into `β.ToType`. -/
-@[deprecated type_le_iff (since := "2026-04-12")]
+@[deprecated type_le_iff +typeChanged (since := "2026-04-12")]
 noncomputable def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
   apply Classical.choice (type_le_iff.mp _)
   rwa [type_toType, type_toType]
 
 /-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
 of `α.ToType` into `β.ToType`. -/
-@[deprecated type_lt_iff (since := "2026-04-12")]
+@[deprecated type_lt_iff +typeChanged (since := "2026-04-12")]
 noncomputable def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]
 
 /-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
-@[instance_reducible, deprecated WellFoundedLT.toOrderBot (since := "2026-04-12")]
+@[instance_reducible, deprecated WellFoundedLT.toOrderBot +typeChanged (since := "2026-04-12")]
 noncomputable def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
@@ -856,15 +856,15 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
   le_add_self a b := by simpa using add_le_add_left bot_le a
   le_self_add a b := by simpa using add_le_add_right bot_le a
 
-@[deprecated zero_max (since := "2026-05-07")]
+@[deprecated zero_max +typeChanged (since := "2026-05-07")]
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   zero_max
 
-@[deprecated max_zero (since := "2026-05-07")]
+@[deprecated max_zero +typeChanged (since := "2026-05-07")]
 theorem max_zero_right : ∀ a : Ordinal, max a 0 = a :=
   max_zero
 
-@[deprecated _root_.max_eq_zero (since := "2026-05-07")]
+@[deprecated _root_.max_eq_zero +typeChanged (since := "2026-05-07")]
 protected theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
   max_eq_zero
 
@@ -889,27 +889,27 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
-@[deprecated Order.one_le_iff_ne_zero (since := "2026-03-24")]
+@[deprecated Order.one_le_iff_ne_zero +typeChanged (since := "2026-03-24")]
 protected theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
   Order.one_le_iff_ne_zero
 
-@[deprecated add_pos_of_right (since := "2026-04-04")]
+@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   add_pos_of_right zero_lt_one o
 
-@[deprecated add_pos_of_right (since := "2026-04-04")]
+@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
 theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
   (add_pos_of_right zero_lt_one o).ne'
 
-@[deprecated Order.lt_one_iff (since := "2026-03-24")]
+@[deprecated Order.lt_one_iff +typeChanged (since := "2026-03-24")]
 theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
   Order.lt_one_iff
 
-@[deprecated Order.le_one_iff (since := "2026-03-24")]
+@[deprecated Order.le_one_iff +typeChanged (since := "2026-03-24")]
 protected theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
   Order.le_one_iff
 
-@[deprecated Nat.cast_add_one (since := "2026-05-21")]
+@[deprecated Nat.cast_add_one +typeChanged (since := "2026-05-21")]
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   n.cast_add_one
 
@@ -1152,13 +1152,14 @@ theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h :
     #(Ioi i) < #α :=
   mk_Iio_lt (OrderDual.toDual i) h
 
-@[deprecated mk_Iio_lt (since := "2026-04-12")]
+@[deprecated mk_Iio_lt +typeChanged (since := "2026-04-12")]
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
   simpa using mk_Iio_lt i
 
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
 
-@[deprecated mk_Iio_lt (since := "2026-03-20")]
+@[deprecated mk_Iio_lt +typeChanged (since := "2026-03-20")]
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c :=
   mk_Iio_toType_ord_lt x

@@ -299,7 +299,7 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
   le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
   le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
 
-@[deprecated zero_le (since := "2026-04-17")]
+@[deprecated zero_le +typeChanged (since := "2026-04-17")]
 protected theorem zero_le (a : Cardinal) : 0 ≤ a := zero_le
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
@@ -384,7 +384,7 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 @[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
-@[deprecated Order.succ_eq_csInf (since := "2026-03-21")]
+@[deprecated Order.succ_eq_csInf +typeChanged (since := "2026-03-21")]
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
   Order.succ_eq_csInf c
 
@@ -403,7 +403,7 @@ theorem add_one_le_of_lt {a b : Cardinal} (h : a < b) : a + 1 ≤ b := by
   rw [← mk_option]
   exact (f.optionElim b hb).cardinal_le
 
-@[deprecated add_one_le_of_lt (since := "2026-03-21")]
+@[deprecated add_one_le_of_lt +typeChanged (since := "2026-03-21")]
 theorem add_one_le_succ (c : Cardinal) : c + 1 ≤ succ c :=
   add_one_le_of_lt (lt_succ c)
 
@@ -562,7 +562,7 @@ lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
 
 namespace Cardinal
 
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit +typeChanged (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ IsSuccPrelimit ω)
@@ -570,7 +570,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
   subst h
   exact exists_eq_ciSup_of_not_isSuccPrelimit hω
 
-@[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccLimit +typeChanged (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)

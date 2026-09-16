@@ -27,43 +27,43 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Trichotomous.swap (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   inferInstance
 
@@ -109,7 +109,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toDecidableEq := decidableEqOfDecidableLE
     toDecidableLE := hD }
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
   inferInstance
 
@@ -199,7 +199,7 @@ end InvImage
 attribute [class] WellFounded
 
 /-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
-@[deprecated WellFounded (since := "2026-09-07"), mk_iff]
+@[deprecated WellFounded +typeChanged (since := "2026-09-07"), mk_iff]
 class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
@@ -535,13 +535,13 @@ attribute [to_set_notation]
 
 @[deprecated (since := "2026-05-24")] alias HasSubset.subset.trans_eq := LE.le.trans_eq
 
-@[deprecated LE.le.trans (since := "2026-05-24")]
+@[deprecated LE.le.trans +typeChanged (since := "2026-05-24")]
 alias HasSubset.Subset.trans := subset_trans
 
-@[deprecated LE.le.antisymm (since := "2026-05-24")]
+@[deprecated LE.le.antisymm +typeChanged (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm := subset_antisymm
 
-@[deprecated LE.le.antisymm' (since := "2026-05-24")]
+@[deprecated LE.le.antisymm' +typeChanged (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm' := superset_antisymm
 
 end Subset
