@@ -26,9 +26,9 @@ and is almost everywhere strongly measurable.
 * `eLpNormEssSup f μ` : seminorm in `ℒ∞`, equal to the essential supremum `essSup ‖f‖ μ`.
 * `eLpNorm f p μ` : for `p : ℝ≥0∞`, seminorm in `ℒp`, equal to `0` for `p=0`, to `eLpNorm' f p μ`
   for `0 < p < ∞` and to `eLpNormEssSup f μ` for `p = ∞`.
-
 * `MemLp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
   finite `p`-seminorm for the measure `μ` (`eLpNorm f p μ < ∞`)
+* `inhmgELpNorm`: An inhomogeneous version of `eLpNorm`, defined differently for `p < 1`.
 
 -/
 
@@ -186,13 +186,15 @@ end Lp
 
 section Inhomogeneous
 
+variable [TopologicalSpace ε]
+
 /-- An inhomogeneous version of the `eLpNorm`;
 agreeing with it on `1 ≤ p`, equal to `∫ ‖f a‖^p ∂μ` for `0 < p ≤ 1`
 and  `μ (Function.support fun x ↦ ‖f x‖ₑ)` for `p = 0`.
 
 Under this modification, the triangle inequality holds for all `p` and
 is thus somethimes more convenient. -/
-def inhmgELpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
+def inhmgELpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   open scoped Classical in
   if AEStronglyMeasurable f μ then
@@ -203,26 +205,24 @@ def inhmgELpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
 
 variable {μ : Measure α}
 
-theorem inhmgELpNorm_of_not_aestronglyMeasurable [TopologicalSpace ε]
+theorem inhmgELpNorm_of_not_aestronglyMeasurable
     {f : α → ε} {p : ℝ≥0∞} (h : ¬ AEStronglyMeasurable f μ) :
     inhmgELpNorm f p μ = ∞ := by
   simp [inhmgELpNorm, h]
 
-theorem aestronglyMeasurable_of_inhmgELpNorm_ne_top [TopologicalSpace ε]
+theorem aestronglyMeasurable_of_inhmgELpNorm_ne_top
     {f : α → ε} {p : ℝ≥0∞} (h : inhmgELpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
   contrapose! h
   exact inhmgELpNorm_of_not_aestronglyMeasurable h
 
-theorem inhmgELpNorm_eq_eLpNorm [TopologicalSpace ε]
-    (hp : 1 ≤ p) {f : α → ε} :
+theorem inhmgELpNorm_eq_eLpNorm (hp : 1 ≤ p) {f : α → ε} :
     inhmgELpNorm f p μ = eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · have p0 : p ≠ 0 := fun _ ↦ by simp_all
     simp [inhmgELpNorm, hf, not_lt.mpr hp, p0]
   · rw [inhmgELpNorm_of_not_aestronglyMeasurable hf, eLpNorm_of_not_aestronglyMeasurable hf]
 
-theorem inhmgELpNorm_exponent_zero [TopologicalSpace ε] {f : α → ε}
-    (hf : AEStronglyMeasurable f μ) :
+theorem inhmgELpNorm_exponent_zero {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     inhmgELpNorm f 0 μ = μ (Function.support fun x ↦ ‖f x‖ₑ) := by
   simp [inhmgELpNorm, hf]
 
@@ -232,8 +232,7 @@ theorem _root_.Function.support_enorm {α ε : Type*}
   ext
   simp
 
-theorem inhmgELpNorm_pow_eq_eLpNorm [TopologicalSpace ε]
-    (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
+theorem inhmgELpNorm_pow_eq_eLpNorm (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
     inhmgELpNorm f p μ ^ p.toReal⁻¹ = eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · rcases eq_or_ne p 1 with rfl | hp''
@@ -243,13 +242,12 @@ theorem inhmgELpNorm_pow_eq_eLpNorm [TopologicalSpace ε]
   · simp [inhmgELpNorm_of_not_aestronglyMeasurable hf, eLpNorm_of_not_aestronglyMeasurable hf,
       ENNReal.toReal_pos hp' (fun _ ↦ by simp_all)]
 
-theorem inhmgELpNorm_eq_eLpNorm_pow [TopologicalSpace ε]
-    (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
+theorem inhmgELpNorm_eq_eLpNorm_pow (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
     inhmgELpNorm f p μ = eLpNorm f p μ ^ p.toReal:= by
   rw [← inhmgELpNorm_pow_eq_eLpNorm hp hp', ENNReal.rpow_inv_rpow ?_ (inhmgELpNorm f p μ)]
   exact ENNReal.toReal_ne_zero.mpr ⟨hp', fun _ ↦ by simp_all⟩
 
-theorem inhmgELpNorm_eq_lintegral [TopologicalSpace ε]
+theorem inhmgELpNorm_eq_lintegral
     (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     inhmgELpNorm f p μ = ∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ := by
   rw [inhmgELpNorm_eq_eLpNorm_pow hp hp', lintegral_rpow_enorm_eq_rpow_eLpNorm'
