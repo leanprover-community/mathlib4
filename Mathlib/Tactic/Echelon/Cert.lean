@@ -145,10 +145,7 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
           return ⟨fold, entry, ← certifier q($fold = $entry)⟩
       let ⟨_, _, h⟩ := mkListCongr (α := q(List $α)) rowEqs
       pure h
-  let pf ← mkEqTrans
-    (← mkEqSymm (← mkAppM ``ofLists_mul #[toExpr m, toExpr m, toExpr n, r.A, r.B]))
-    (← mkCongrArg (← mkAppOptM ``ofLists #[α, none, toExpr m, toExpr n])
-      (← mkEqTrans r.proof hV))
+  let pf ← mkAppM ``ofLists_mul #[← mkEqTrans r.proof hV]
   return mkExpectedPropHint pf q($(L.matrix) * $(Aσ.matrix) = $(U.matrix))
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
