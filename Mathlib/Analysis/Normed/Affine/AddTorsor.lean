@@ -148,20 +148,20 @@ private theorem image_homothety (c : P) (x : 𝕜) (s : Set P) :
 
 theorem Metric.image_homothety_ball (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' ball p r = ball (homothety c x p) (‖x‖ * r) := by
-  rw [image_homothety, IsometryEquiv.image_ball, _root_.smul_ball hx, IsometryEquiv.image_ball]
-  rfl
+  rw [image_homothety, IsometryEquiv.image_ball, smul_ball hx, IsometryEquiv.image_ball]
+  simp [homothety_apply]
 
 theorem Metric.image_homothety_closedBall (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
-  rw [image_homothety, IsometryEquiv.image_closedBall, _root_.smul_closedBall' hx,
+  rw [image_homothety, IsometryEquiv.image_closedBall, smul_closedBall' hx,
     IsometryEquiv.image_closedBall]
-  rfl
+  simp [homothety_apply]
 
 theorem Metric.image_homothety_closedBall_of_nonneg (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
     homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
-  rw [image_homothety, IsometryEquiv.image_closedBall, _root_.smul_closedBall x _ hr,
+  rw [image_homothety, IsometryEquiv.image_closedBall, smul_closedBall x _ hr,
     IsometryEquiv.image_closedBall]
-  rfl
+  simp [homothety_apply]
 
 theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
     homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
@@ -171,9 +171,9 @@ theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠
 theorem Metric.image_homothety_sphere_of_nonneg [NormedSpace ℝ W] [Nontrivial W]
     (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
     homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
-  rw [image_homothety, IsometryEquiv.image_sphere, _root_.smul_sphere x _ hr,
+  rw [image_homothety, IsometryEquiv.image_sphere, smul_sphere x _ hr,
     IsometryEquiv.image_sphere]
-  rfl
+  simp [homothety_apply]
 
 section invertibleTwo
 
