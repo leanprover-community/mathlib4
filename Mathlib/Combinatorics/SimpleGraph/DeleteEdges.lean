@@ -120,7 +120,7 @@ def Hom.deleteEdges (f : G →g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h : S
     exact ⟨f.map_adj hadj.left, (hadj.right <| h ·)⟩
 
 @[simp]
-theorem Hom.coe_deleteEdges (f : G →g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+theorem Hom.coe_deleteEdges {f : G →g G'} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
     ⇑(f.deleteEdges s t h) = f :=
   rfl
 
@@ -133,12 +133,12 @@ def Embedding.deleteEdges (f : G ↪g G') (s : Set (Sym2 V)) (t : Set (Sym2 W))
   map_rel_iff' := by simp [← h]
 
 @[simp]
-theorem Embedding.coe_deleteEdges (f : G ↪g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+theorem Embedding.coe_deleteEdges {f : G ↪g G'} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
     ⇑(f.deleteEdges s t h) = f :=
   rfl
 
 @[simp]
-theorem Embedding.toHom_deleteEdges (f : G ↪g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+theorem Embedding.toHom_deleteEdges {f : G ↪g G'} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
     (f.deleteEdges s t h).toHom = f.toHom.deleteEdges s t h.subset :=
   rfl
 
@@ -151,17 +151,17 @@ def Iso.deleteEdges (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h : S
   map_rel_iff' := f.toEmbedding.deleteEdges s t h |>.map_adj_iff
 
 @[simp]
-theorem Iso.coe_deleteEdges (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+theorem Iso.coe_deleteEdges {f : G ≃g G'} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
     ⇑(f.deleteEdges s t h) = f :=
   rfl
 
 @[simp]
-theorem Iso.toHom_deleteEdges (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+theorem Iso.toHom_deleteEdges {f : G ≃g G'} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
     (f.deleteEdges s t h).toHom = f.toHom.deleteEdges s t h.subset :=
   rfl
 
 @[simp]
-theorem Iso.toEmbedding_deleteEdges (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h) :
+theorem Iso.toEmbedding_deleteEdges {f : G ≃g G'} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
     (f.deleteEdges s t h).toEmbedding = f.toEmbedding.deleteEdges s t h :=
   rfl
 
