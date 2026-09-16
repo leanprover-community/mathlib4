@@ -87,37 +87,21 @@ lemma rightOrthogonal_leftOrthogonal_rightOrthogonal :
 
 lemma rightOrthogonal_op : P.op.rightOrthogonal = P.leftOrthogonal.op := by
   ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+  exact ⟨fun h _ _ hY ↦ congr($(h _ hY).unop), fun h _ _ hY ↦ congr($(h _ hY).op)⟩
 
 lemma leftOrthogonal_op : P.op.leftOrthogonal = P.rightOrthogonal.op := by
   ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
+  exact ⟨fun h _ _ hY ↦ congr($(h _ hY).unop), fun h _ _ hY ↦ congr($(h _ hY).op)⟩
 
 lemma rightOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
     R.unop.rightOrthogonal = R.leftOrthogonal.unop := by
   ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
+  exact ⟨fun h _ _ hY ↦ congr($(h _ hY).op), fun h _ _ hY ↦ congr($(h _ hY).unop)⟩
 
 lemma leftOrthogonal_unop (R : ObjectProperty Cᵒᵖ) :
     R.unop.leftOrthogonal = R.rightOrthogonal.unop := by
   ext X
-  constructor
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.op (h f.unop hY)
-  · intro h Y f hY
-    simpa using congrArg Quiver.Hom.unop (h f.op hY)
+  exact ⟨fun h _ _ hY ↦ congr($(h _ hY).op), fun h _ _ hY ↦ congr($(h _ hY).unop)⟩
 
 instance : P.rightOrthogonal.IsClosedUnderIsomorphisms where
   of_iso e h X f hX := by
