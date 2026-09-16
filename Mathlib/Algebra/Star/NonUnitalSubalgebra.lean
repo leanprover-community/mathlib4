@@ -770,11 +770,11 @@ theorem toNonUnitalSubalgebra_eq_top {S : NonUnitalStarSubalgebra R A} :
   NonUnitalStarSubalgebra.toNonUnitalSubalgebra_injective.eq_iff' top_toNonUnitalSubalgebra
 
 theorem mem_sup_left {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
@@ -1289,7 +1289,7 @@ variable (R) in
 `star` of elements in this set, then `adjoin R s` is a non-unital commutative semiring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
     (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
     NonUnitalCommSemiring (adjoin R s) :=
@@ -1308,7 +1308,7 @@ open scoped IsMulCommutative in
 `star` of elements in this set, then `adjoin R s` is a non-unital commutative ring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarRing R]
     [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [StarModule R A] {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
