@@ -179,8 +179,7 @@ theorem mk_comp_teichmuller :
 
 variable (p I) in
 theorem mk_comp_teichmuller₀ :
-    (MonoidWithZeroHom.ofClass (Ideal.Quotient.mk I)).comp (teichmuller₀ p I) =
-      .ofClass (coeff (R ⧸ I) p 0) :=
+    ((Ideal.Quotient.mk I) : _ →*₀ _).comp (teichmuller₀ p I) = (coeff (R ⧸ I) p 0 : _ →*₀ R ⧸ I) :=
   MonoidWithZeroHom.ext mk_teichmuller
 
 variable (p I) in

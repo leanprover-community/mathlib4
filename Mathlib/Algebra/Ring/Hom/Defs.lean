@@ -401,6 +401,16 @@ theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
     ((f : α →+* β) : α → β) = f :=
   rfl
 
+attribute [coe] RingHom.toMonoidWithZeroHom
+
+instance : Coe (α →+* β) (α →*₀ β) :=
+  ⟨RingHom.toMonoidWithZeroHom⟩
+
+@[simp]
+theorem coe_toMonoidWithZeroHom (f : α →+* β) : ⇑(f : α →*₀ β) = f := rfl
+
+@[deprecated (since := "2026-09-15")] alias toMonoidWithZeroHom_eq_coe := coe_toMonoidWithZeroHom
+
 attribute [coe] RingHom.toMonoidHom
 
 instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
@@ -408,9 +418,6 @@ instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
 
 @[simp]
 theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
-  rfl
-
-theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 
 @[simp]
@@ -466,6 +473,9 @@ theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
 @[simp]
 theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
   ext fun _ => rfl
+
+theorem toMonoidWithZeroHom_injective : Injective (fun f : α →+* β => (f : α →*₀ β)) := fun _ _ h =>
+  ext <| DFunLike.congr_fun (F := α →*₀ β) h
 
 theorem toAddMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
   ext <| DFunLike.congr_fun (F := α →+ β) h
