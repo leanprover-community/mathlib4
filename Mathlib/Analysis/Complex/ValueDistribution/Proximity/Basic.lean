@@ -139,7 +139,7 @@ The proximity function is non-negative.
 theorem proximity_nonneg {a : WithTop E} :
     0 ≤ proximity f a := by
   intro r
-  cases a <;> 
+  cases a <;>
   simpa [proximity_top, proximity_coe] using circleAverage_nonneg_of_nonneg fun _ _ ↦ posLog_nonneg
 
 @[simp] lemma proximity_const {c : E} {r : ℝ} :
