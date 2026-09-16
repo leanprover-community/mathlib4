@@ -292,8 +292,7 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
   exact relIndex_mul_index bot_le
 
 @[to_additive]
-theorem card_eq_card_range_mul_card_ker (f : G →* G') :
-    Nat.card G = Nat.card f.range * Nat.card f.ker := by
+theorem card_range_mul_card_ker (f : G →* G') : Nat.card f.range * Nat.card f.ker = Nat.card G := by
   rw [← index_ker, mul_comm, card_mul_index]
 
 @[to_additive]
