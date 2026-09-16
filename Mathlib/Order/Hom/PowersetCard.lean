@@ -81,9 +81,11 @@ def permOfDisjoint {m n : ℕ}
 all these terms of `s` to the front. This is the sign of that permutation. -/
 protected def sign [Fintype I] (s : powersetCard I n) : ℤˣ :=
   have : ∃ m, n + m = Fintype.card I := Nat.le.dest <| powersetCard.nonempty_iff.mp ⟨s⟩
-  (powersetCard.permOfDisjoint (s := s) (t := (powersetCard.compl this.choose_spec).symm s) <| by
-    have := this.choose_spec
-    rwa [powersetCard.disjoint_iff_eq_compl, Equiv.apply_symm_apply]).sign
+  letI t := (powersetCard.compl this.choose_spec).symm s
+  have H : Disjoint s.val t.val := by
+    rw [powersetCard.disjoint_iff_eq_compl, Equiv.apply_symm_apply]
+    exact this.choose_spec
+  (powersetCard.permOfDisjoint (s := s) (t := t) H).sign
 
 lemma sign_eq_permOfDisjoint_sign [Fintype I] {m : ℕ} (hkl : n + m = Fintype.card I)
     (s : powersetCard I n) (t : powersetCard I m) (hst : Disjoint s.val t.val) :
