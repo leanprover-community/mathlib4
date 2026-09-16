@@ -75,8 +75,6 @@ and so the equality can just be substituted.
 
 @[expose] public section
 
-set_option linter.style.longFile 1600
-
 open Fin Function Finset Set
 
 universe uR uS uι u v
@@ -1121,36 +1119,6 @@ variable [Semiring R₁] [CommSemiring R₂] [CommSemiring R₃]
   {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
   [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂] [AddCommMonoid N₃]
   [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)] [Module R₂ N₂] [Module R₃ N₃]
-
-/-- `LinearMap.compMultilinearMap` as a semilinear map.
-
-See also `LinearMap.compMultilinearMapₗ`. -/
-@[simps]
-def _root_.LinearMap.compMultilinearMapₛₗ (g : N₂ →ₛₗ[σ₂₃] N₃) :
-    MultilinearMap σ₁₂ M₁ N₂ →ₛₗ[σ₂₃] MultilinearMap σ₁₃ M₁ N₃ where
-  toFun := g.compMultilinearMap
-  map_add' := g.compMultilinearMap_add
-  map_smul' := g.compMultilinearMap_smulₛₗ
-
-/-- An isomorphism of multilinear maps given an isomorphism between their codomains.
-
-This is `LinearMap.compMultilinearMap` as a `σ₂₃`-linear equivalence, and a multilinear version
-of `LinearEquiv.congrRight`: see also `LinearEquiv.multilinearMapCongrRight`. -/
-@[simps! apply symm_apply]
-def _root_.LinearEquiv.multilinearMapCongrRightₛₗ {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂]
-    [RingHomInvPair σ₃₂ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂] (g : N₂ ≃ₛₗ[σ₂₃] N₃) :
-    MultilinearMap σ₁₂ M₁ N₂ ≃ₛₗ[σ₂₃] MultilinearMap σ₁₃ M₁ N₃ where
-  __ := g.toLinearMap.compMultilinearMapₛₗ
-  invFun := g.symm.toLinearMap.compMultilinearMapₛₗ
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
-@[simp]
-lemma _root_.LinearEquiv.toLinearMap_multilinearMapCongrRightₛₗ
-    {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
-    [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂] (g : N₂ ≃ₛₗ[σ₂₃] N₃) :
-    g.multilinearMapCongrRightₛₗ.toLinearMap =
-      (g.compMultilinearMapₛₗ : MultilinearMap σ₁₂ M₁ N₂ →ₛₗ[σ₂₃] MultilinearMap σ₁₃ M₁ N₃) := rfl
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
