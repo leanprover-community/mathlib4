@@ -300,8 +300,6 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
     }
   }
 
-end PairSequence
-
 /-- An extraordinary Eilenberg-Steenrod homology theory requires the homotopy, excision, additivity,
 and exactness axioms. -/
 class IsExtraordinaryEilenbergSteenrod where
