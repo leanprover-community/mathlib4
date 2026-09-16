@@ -1,7 +1,7 @@
 module
+import Mathlib.Basic.ENNReal.Inv
+import Mathlib.Basic.ENNReal.Operations
 import Mathlib.Tactic.Linarith.NNRealPreprocessor
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Inv
 
 open NNReal
 

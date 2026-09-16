@@ -217,36 +217,35 @@ An instance of this class is automatically available on any order defined via `L
 -/
 class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
-  protected le_iff' {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
+  le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
 @[deprecated (since := "2026-08-12")] alias IsConcreteLE := IsMemLE
 
-section default
-
 variable (A B : Type*)
 
--- TODO : rename to `ofMembership`
 /-- The order induced from a `Membership` instance by inclusion.
+
 An order defined this way automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def LE.ofMembership [Membership B A] : LE A where
-  le := fun H K ↦ ∀ ⦃x⦄, x ∈ H → x ∈ K
+  le H K := ∀ ⦃x⦄, x ∈ H → x ∈ K
 
-@[deprecated (since := "2026-08-12")] alias LE.ofSetLike := LE.ofMembership
+@[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
 
-instance [Membership B A] : letI := LE.ofMembership A B; IsMemLE A B :=
-  letI := LE.ofMembership A B; { le_iff' := .rfl }
+instance [Membership B A] : letI := LE.ofMembership A B; IsConcreteLE A B :=
+  letI := LE.ofMembership A B; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
+
 A preorder defined this way automatically makes available an instance of `IsMemLE`.
 -/
-@[reducible] def Preorder.ofMembership [SetLike A B] : Preorder A where
+@[reducible] def Preorder.ofMembership [Membership B A] : Preorder A where
   __ := LE.ofMembership A B
-  lt s t := letI := LE.ofMembership A B; s ≤ t ∧ ¬t ≤ s
-  __ := Preorder.lift (SetLike.coe : A → Set B)
+  le_refl _ _ h := h
+  le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
-A partial order defined this was will automatically makes available an instance of `IsMemLE`.
+A partial order defined this way automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
   __ := Preorder.ofMembership A B
@@ -254,7 +253,7 @@ A partial order defined this was will automatically makes available an instance 
 
 end default
 
-namespace Membership
+namespace IsMemLE
 
 variable {A B : Type*} [Membership B A]
 
@@ -262,20 +261,17 @@ section LE
 
 variable [LE A] [IsMemLE A B] {p q : A}
 
-theorem le_def : p ≤ q ↔ ∀ ⦃x : B⦄, x ∈ p → x ∈ q :=
-  IsMemLE.le_iff'
-
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
+alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simp [le_def]
+  simp [le_iff]
 
 end LE
 
-section PartialOrder
+section Preorder
 
-variable [PartialOrder A] [IsMemLE A B] {p q : A}
+variable [Preorder A] [IsMemLE A B] {p q : A}
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -283,9 +279,17 @@ theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
 theorem exists_of_lt (h : p < q) : ∃ x ∈ q, x ∉ p :=
   (lt_iff_le_and_exists.mp h).2
 
-end PartialOrder
+end Preorder
 
-end Membership
+end IsConcreteLE
+
+@[deprecated (since := "2026-09-01")] alias SetLike.le_def := IsMemLE.le_iff
+@[deprecated (since := "2026-09-01")]
+alias SetLike.not_le_iff_exists := IsMemLE.not_le_iff_exists
+@[deprecated (since := "2026-09-01")]
+alias SetLike.lt_iff_le_and_exists := IsMemLE.lt_iff_le_and_exists
+@[deprecated (since := "2026-09-01")]
+alias SetLike.exists_of_lt := IsMemLE.exists_of_lt
 
 namespace SetLike
 
@@ -296,10 +300,7 @@ section LE
 variable [LE A] [IsMemLE A B] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_subset_coe : (p : Set B) ⊆ q ↔ p ≤ q :=
-  (Membership.le_def (A := A)).symm
-
-@[deprecated (since := "2026-08-12")] alias le_def := Membership.le_def
-@[deprecated (since := "2026-08-12")] alias not_le_iff_exists := Membership.not_le_iff_exists
+  (IsMemLE.le_iff (A := A)).symm
 
 end LE
 
@@ -321,9 +322,6 @@ variable [PartialOrder A] [IsMemLE A B] {p q : A}
 
 @[gcongr, mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
-
-@[deprecated (since := "2026-08-12")] alias lt_iff_le_and_exists := Membership.lt_iff_le_and_exists
-@[deprecated (since := "2026-08-12")] alias exists_of_lt := Membership.exists_of_lt
 
 /-- membership is inherited from `Set X` -/
 abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where

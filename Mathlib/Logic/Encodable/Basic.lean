@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv
@@ -479,12 +479,10 @@ section FindA
 
 variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
-set_option backward.privateInPublic true in
 private def good : Option α → Prop
   | some a => p a
   | none => False
 
-set_option backward.privateInPublic true in
 private local instance decidable_good : DecidablePred (good p)
   | some a => inferInstanceAs <| Decidable (p a)
   | none => inferInstanceAs <| Decidable False
@@ -493,10 +491,8 @@ open Encodable
 
 variable {p}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
-def chooseX (h : ∃ x, p x) : { a : α // p a } :=
+private def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
     let ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
@@ -504,7 +500,7 @@ def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   | some a, h => ⟨a, h⟩
 
 /-- Constructive choice function for a decidable predicate over an encodable type. -/
-def choose (h : ∃ x, p x) : α :=
+@[no_expose] def choose (h : ∃ x, p x) : α :=
   (chooseX h).1
 
 theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
