@@ -120,7 +120,7 @@ lemma transitionMap_eqOn_smul (g : G) :
     ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)).EqOn
       (transitionMap x y)
       ((chartAt H x.out).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans
-        (chartAt H y.out))) := by -- QUESTION: should this `φ x⁻¹ ≫ (g • ·) ≫ φ y` also be a def
+        (chartAt H y.out))) := by
   intro h hh
   simp only [transitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
   simpa using congrArg (chartAt H y.out) (localInverseAt_symm_trans_eqOn_smul x y g hh)
