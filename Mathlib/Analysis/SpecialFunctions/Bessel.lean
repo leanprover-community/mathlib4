@@ -80,6 +80,7 @@ theorem analyticOnNhd_besselJ (a : ℂ) : AnalyticOnNhd ℂ (J a) slitPlane :=
   fun _ hz ↦ analyticAt_besselJ a hz
 
 /-- For integer `a`, `J a` and `J (-a)` are related by a sign. -/
+@[dlmf 10.4.E1]
 theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
   wlog! ha : 0 ≤ a
   · specialize this (-a) x (by simpa using ha.le)
@@ -118,6 +119,7 @@ theorem analyticOnNhd_besselJ_int (a : ℤ) : AnalyticOnNhd ℂ (J a) .univ :=
 theorem besselJ_zero (a : ℂ) : J a 0 = if a = 0 then 1 else 0 := by
   split_ifs with h <;> simp [besselJ, h, regularizedHGFunCoeff]
 
+@[dlmf 10.6.E1]
 theorem two_mul_self_mul_besselJ (a : ℂ) (x : ℂ) :
     2 * a * J a x = x * J (a - 1) x + x * J (a + 1) x := by
   by_cases h : x = 0
