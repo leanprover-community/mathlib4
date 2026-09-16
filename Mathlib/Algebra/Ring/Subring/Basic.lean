@@ -605,7 +605,7 @@ theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
 
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
-@[deprecated isMulCommutative_closure (since := "2026-03-11")]
+@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
 abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : s.Pairwise Commute) :
     CommRing (closure s) :=
   have := isMulCommutative_closure hcomm
@@ -1057,8 +1057,7 @@ protected theorem InClosure.recOn {R} [Ring R] {s : Set R}
         Or.inr <| by rw [List.prod_cons, List.prod_cons, HP, neg_mul_eq_mul_neg]⟩
   · exact ⟨L, HL', Or.inl <| by rw [List.prod_cons, hhd, HP, neg_one_mul, neg_neg]⟩
 
-theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
-  closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
+@[deprecated (since := "2026-09-10")] alias closure_preimage_le := RingHom.closure_preimage_le
 
 end Subring
 

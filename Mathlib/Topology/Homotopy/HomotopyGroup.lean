@@ -105,6 +105,7 @@ variable {N X x}
 
 namespace GenLoop
 
+@[macro_inline]
 instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
   coe_injective := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr

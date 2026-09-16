@@ -228,7 +228,6 @@ lemma eq_bot_or_isNonempty : H = ⊥ ∨ H.IsNonempty := by
     apply Hypergraph.ext empty.1 empty.2
   )
   | inr nonempty => (
-    right
     grind [IsNonempty]
   )
 

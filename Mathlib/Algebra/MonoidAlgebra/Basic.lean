@@ -254,7 +254,7 @@ theorem lift_symm_apply (F : R[M] →ₐ[R] A) (m : M) : (lift R A M).symm F m =
 
 @[simp]
 theorem lift_single (F : M →* A) (a b) : lift R A M F (single a b) = b • F a := by
-  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
+  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_ofClass]
 
 theorem lift_of (F : M →* A) (m : M) : lift R A M F (of R M m) = F m := by simp
 
