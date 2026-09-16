@@ -113,12 +113,13 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
     simpa [hσi] using (this.trans H).trans (totalDegree_rename_le _ _)
   · refine (map_eq_zero_iff _ (rename_injective _ Subtype.val_injective)).not.mpr fun H ↦ ?_
     let e := (Equiv.optionSubtypeNe i).symm
-    have : coeff _ (F₀.coeff _) = _ :=
+    have : (F₀.coeff _).coeff _ = _ :=
       optionEquivLeft_coeff_some_coeff_none _ _ (σ.equivMapDomain e) (renameEquiv k e F)
     dsimp only [F₀] at this
     rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain, coeff_rename_mapDomain _
       e.injective, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_none,
-      ← renameEquiv_apply, H, coeff_zero, eq_comm, ← notMem_support_iff] at this
+      ← renameEquiv_apply, H, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply, eq_comm,
+      ← notMem_support_iff] at this
     exact this hσ
   · apply_fun Subalgebra.val _ at H
     simp_rw [toPolynomialAdjoinImageCompl, Polynomial.coe_mapAlgHom, Polynomial.coeff_map,
@@ -295,7 +296,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFin
   have ⟨i, hi₁, hi₂⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     p hp (a := id) H s n hs hns
   rw [Set.image_id] at hi₂
-  refine not_lt_iff_le_imp_ge.mpr (Hs hi₁) (SetLike.lt_iff_le_and_exists.mpr ⟨?_, n, ?_, hn⟩)
+  refine not_lt_iff_le_imp_ge.mpr (Hs hi₁) (IsConcreteLE.lt_iff_le_and_exists.mpr ⟨?_, n, ?_, hn⟩)
   · rw [separableClosure_le_separableClosure_iff, adjoin_le_iff]
     intro x hx
     obtain rfl | ne := eq_or_ne x i

@@ -57,7 +57,7 @@ variable (F : Sheaf J AddCommGrpCat.{w})
 
 /-- The cohomology of an abelian sheaf in degree `n`. -/
 abbrev H (n : ℕ) : Type w' :=
-  Ext ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ))) F n
+  Ext ((constantSheaf J AddCommGrpCat.{w}).obj ↧(ULift ℤ)) F n
 
 end
 
@@ -153,7 +153,7 @@ variable (J) in
 /-- `H` as a functor. -/
 @[simps]
 noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} where
-  obj F := .of (H F n)
+  obj F := ↧(H F n)
   map f := AddCommGrpCat.ofHom (H.map f n)
 
 instance (n : ℕ) : (functorH J n).Additive where
