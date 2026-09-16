@@ -78,9 +78,8 @@ def warnIfImplicitIllTyped (ref : Syntax) (declName : Name) (declType : Expr) : 
 
 /-- A helper function for constructing a related declaration from an existing one.
 
-This is currently used by the attributes `reassoc` and `elementwise`,
-and has been factored out to avoid code duplication.
-Feel free to add features as needed for other applications.
+This is used by attributes such as `reassoc`, `elementwise`, `map`, and `to_app`,
+either directly or through `addRelatedDecl`.
 
 This helper:
 * throws an error if a declaration named `tgt` already exists
@@ -91,12 +90,11 @@ This helper:
 
 Arguments:
 * `src : Name` is the existing declaration that we are modifying.
-* `prefix_ : String` will be prepended and `suffix : String` will be appended to `src`
-  to form the name of the new declaration.
+* `tgt : Name` is the name of the new declaration.
 * `ref : Syntax` is the syntax where the user requested the related declaration.
-* `construct value levels : MetaM (Expr × List Name)`
+* `construct value levels : MetaM (Expr × Expr × List Name)`
   given an `Expr.const` referring to the original declaration, and its universe variables,
-  should construct the value of the new declaration,
+  should construct the type and value of the new declaration,
   along with the names of its universe variables.
 * `attrs` is the attributes that should be applied to both the new and the original declaration,
   e.g. in the usage `@[reassoc (attr := simp)]`.
@@ -111,9 +109,9 @@ Arguments:
   Warning: As a result, the original doc-string of `ref` will not be visible,
   and go-to-def on `ref` will not go to the definition of `ref`.
 -/
-def addRelatedDecl (src tgt : Name) (ref : Syntax)
+def addRelatedDeclWithType (src tgt : Name) (ref : Syntax)
     (attrs : TSyntax ``optAttrArg)
-    (construct : Expr → List Name → MetaM (Expr × List Name))
+    (construct : Expr → List Name → MetaM (Expr × Expr × List Name))
     (docstringPrefix? : Option String := none)
     (postAddDecl? : Option (Name → MetaM Unit) := none)
     (hoverInfo : Bool := false) :
@@ -125,9 +123,9 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)
-  let (newValue, newLevels) ← construct value info.levelParams
+  let (newType, newValue, newLevels) ← construct value info.levelParams
   let newValue ← instantiateMVars newValue
-  let newType ← instantiateMVars (← inferType newValue)
+  let newType ← instantiateMVars newType
   unless ← isProp newType do throwError "Related declaration is not a proposition: {newType}"
   warnIfImplicitIllTyped ref tgt newType
   addDecl <| ← mkThmOrUnsafeDef
@@ -147,5 +145,20 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
     Term.applyAttributes tgt attrs
     if hoverInfo then
       Term.addTermInfo' ref (← mkConstWithLevelParams tgt) (isBinder := true)
+
+/-- Variant of `addRelatedDeclWithType` which infers the new declaration's type from its value.
+Use `addRelatedDeclWithType` when the inferred type would lose information, for example the
+right-hand side of an equality proved by `rfl`. -/
+def addRelatedDecl (src tgt : Name) (ref : Syntax)
+    (attrs : TSyntax ``optAttrArg)
+    (construct : Expr → List Name → MetaM (Expr × List Name))
+    (docstringPrefix? : Option String := none)
+    (postAddDecl? : Option (Name → MetaM Unit) := none)
+    (hoverInfo : Bool := false) : MetaM Unit :=
+  addRelatedDeclWithType src tgt ref attrs (docstringPrefix? := docstringPrefix?)
+    (postAddDecl? := postAddDecl?) (hoverInfo := hoverInfo) fun value levels => do
+      let (value, levels) ← construct value levels
+      let value ← instantiateMVars value
+      return (← inferType value, value, levels)
 
 end Mathlib.Tactic
