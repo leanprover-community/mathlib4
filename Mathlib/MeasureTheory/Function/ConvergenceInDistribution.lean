@@ -67,7 +67,7 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
   forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i)
   aemeasurable_limit : AEMeasurable Z μ' := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨(μ n).map (X n), inferInstance⟩) l (𝓝 ⟨μ'.map Z, inferInstance⟩)
+      (fun n ↦ ⟨(μ n).map (X n), inferInstance⟩) l (𝓝 (μ'.map Z).toProbabilityMeasure)
 
 theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
     (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
@@ -97,7 +97,7 @@ lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
   forall_aemeasurable j := (hX j).aemeasurable_snd
   aemeasurable_limit := hZ.aemeasurable_snd
   tendsto := by
-    convert! tendsto_const_nhds with j
+    convert! tendsto_const_nhds (x := (μ'.map Z).toProbabilityMeasure) with j
     exact (hX j).map_eq.symm.trans hZ.map_eq
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -143,7 +143,7 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
     · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, Subtype.mk.injEq]
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable (h.forall_aemeasurable _)]
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk]
+    · simp only [ProbabilityMeasure.map, Measure.coe_toProbabilityMeasure]
       congr
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
 
@@ -157,7 +157,8 @@ theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
   forall_aemeasurable := hX₁
   aemeasurable_limit := hZ
   tendsto := by
-    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, ProbabilityMeasure.coe_mk]
+    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, ProbabilityMeasure.coe_mk,
+      Measure.coe_toProbabilityMeasure]
     intro f
     rw [lintegral_map' (by fun_prop) hZ]
     conv in ∫⁻ _, _ ∂_ => rw [lintegral_map' (by fun_prop) (hX₁ i)]
