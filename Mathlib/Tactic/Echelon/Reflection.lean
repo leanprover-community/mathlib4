@@ -137,32 +137,21 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
 
 theorem pivotOfList_lt_pivotOfList {cols : List (Fin n)} (hsorted : cols.SortedLT) {i j : ℕ}
     (hij : i < j) (hj : pivotOfList cols j ≠ ⊤) : pivotOfList cols i < pivotOfList cols j := by
-  obtain ⟨c, hc⟩ := Option.ne_none_iff_exists'.mp hj
-  obtain ⟨hjl, rfl⟩ := List.getElem?_eq_some_iff.mp hc
-  rw [pivotOfList_eq_coe (List.getElem?_eq_getElem (lt_trans hij hjl)), pivotOfList_eq_coe hc]
-  exact WithTop.coe_lt_coe.mpr (hsorted.getElem_lt_getElem_of_lt hij)
+  grind [pivotOfList, List.pairwise_iff_getElem, WithTop.coe_lt_coe, WithTop.some_eq_coe,
+    WithTop.none_eq_top]
 
-theorem monotone_pivotOfList_of_sortedLT {cols : List (Fin n)} (hsorted : cols.SortedLT) :
+theorem pivotOfList_mono_of_sortedLT {cols : List (Fin n)} (hsorted : cols.SortedLT) :
     Monotone (pivotOfList cols) := by
-  intro i j hij
-  rcases hij.lt_or_eq with hlt | rfl
-  · by_cases hj : pivotOfList cols j = ⊤
-    · rw [hj]
-      exact le_top
-    · exact (pivotOfList_lt_pivotOfList hsorted hlt hj).le
-  · exact le_rfl
-
-theorem strictMonoOn_pivotOfList_of_sortedLT {cols : List (Fin n)} (hsorted : cols.SortedLT) :
-    StrictMonoOn (pivotOfList cols) {i | pivotOfList cols i ≠ ⊤} :=
-  fun _ _ _ hj hij ↦ pivotOfList_lt_pivotOfList hsorted hij hj
+  refine monotone_nat_of_le_succ fun i ↦ ?_
+  have := pivotOfList_lt_pivotOfList hsorted (Nat.lt_succ_self i)
+  grind [le_top]
 
 theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : List (Fin n)}
     (hsorted : cols.SortedLT) (h : IsPivotedList cols rows) :
-    (ofLists m n rows).IsPivotedBy fun i : Fin m ↦ pivotOfList cols i :=
-  Matrix.isPivotedBy_iff.mpr
-    ⟨(monotone_pivotOfList_of_sortedLT hsorted).comp Fin.val_strictMono.monotone,
-      (strictMonoOn_pivotOfList_of_sortedLT hsorted).comp (Fin.val_strictMono.strictMonoOn _)
-        fun _ hi ↦ hi,
-      fun i ↦ by simpa [ofLists_apply, ofList_apply] using getD_of_isPivotedList h i⟩
+    (ofLists m n rows).IsPivotedBy fun i : Fin m ↦ pivotOfList cols i := by
+  refine Matrix.isPivotedBy_iff.mpr ⟨?_, fun _ _ _ hj hij ↦ ?_, fun i ↦ ?_⟩
+  · exact (pivotOfList_mono_of_sortedLT hsorted).comp Fin.val_strictMono.monotone
+  · exact pivotOfList_lt_pivotOfList hsorted hij hj
+  · simpa [ofLists_apply, ofList_apply] using getD_of_isPivotedList h i
 
 end Mathlib.Tactic.Echelon
