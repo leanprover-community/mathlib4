@@ -39,7 +39,8 @@ def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
 /-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
-def mapExprHom (type : Q(Prop)) (e : Q($type)) (uLev vLev : Level) : Term.TermElabM Expr := do
+def mapExprHom (type : Q(Prop)) (e : Q($type)) (uLev vLev : Level)
+    (attrName : Name := `map) : Term.TermElabM Expr := do
   let u ← mkFreshLevelMVar
   let v ← mkFreshLevelMVar
   let C ← mkFreshExprMVarQ q(Type u)
@@ -50,7 +51,7 @@ def mapExprHom (type : Q(Prop)) (e : Q($type)) (uLev vLev : Level) : Term.TermEl
   let g ← mkFreshExprMVarQ q($X ⟶ $Y)
   let eqType : Q(Prop) := q($f = $g)
   unless ← isDefEq type eqType do
-    throwError "`@[map]` expects an equality of morphisms"
+    throwError "`@[{attrName}]` expects an equality of morphisms"
   let _ : $type =Q $eqType := ⟨⟩
   let mappedType : Q(Prop) := q(∀ {D : Type uLev} [_instD : Category.{vLev} D] (F : $C ⥤ D),
     F.map $f = F.map $g)
@@ -72,15 +73,15 @@ Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produc
 The target category uses fresh universe metavariables, which the attribute generalizes to
 parameters and `map_of%` leaves for the surrounding elaboration to determine.
 -/
-def mapExpr (pf : Expr) : Term.TermElabM Expr := do
+def mapExpr (pf : Expr) (attrName : Name := `map) : Term.TermElabM Expr := do
   let uLev ← mkFreshLevelMVar
   let vLev ← mkFreshLevelMVar
   forallTelescopeReducing (← inferType pf) (whnfType := true) fun xs type => do
     let type := (← instantiateMVars type).consumeMData
-    let some _ := type.eq? | throwError "`@[map]` expects an equality"
+    let some _ := type.eq? | throwError "`@[{attrName}]` expects an equality"
     let type : Q(Prop) := type
     let pfApp := mkAppN pf xs
-    let inner ← mapExprHom type pfApp uLev vLev
+    let inner ← mapExprHom type pfApp uLev vLev attrName
     mkLambdaFVars xs inner
 
 /-- Collect the universe parameters used for morphisms and objects in category-theoretic types.
@@ -112,7 +113,7 @@ private partial def collectCategoryUniverses (type : Expr) :
 /-- Order universe parameters by their roles in the generated declaration's type.
 Shared parameters belong to the morphism group; unrelated parameters are placed last.
 Within each group, retain source order and put new target parameters after source parameters. -/
-private def orderMapUniverses (type : Expr) (source target : List Name) : MetaM (List Name) := do
+def orderMapUniverses (type : Expr) (source target : List Name) : MetaM (List Name) := do
   let (_, (hom, obj)) ← (collectCategoryUniverses type).run ({}, {})
   let (hom, obj) := (hom.params, obj.params)
   let isHom := hom.contains
