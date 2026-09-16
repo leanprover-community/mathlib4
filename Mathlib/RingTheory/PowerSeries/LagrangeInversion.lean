@@ -169,8 +169,7 @@ theorem lagrange_inversion_coeff_pow
     subst n
     subst k
     simp
-  · simpa [show n + k - k = n by omega] using
-      lagrange_inversion_coeff_pow_of_le hY (n + k) (by omega) k (by omega)
+  · simpa using lagrange_inversion_coeff_pow_of_le hY (n + k) (by omega) k (by omega)
 
 /-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
 a polynomial `H`,
