@@ -49,7 +49,7 @@ additive, preadditive, Hom group, Ab-category, Ab-enriched
 @[expose] public section
 
 
-universe v u
+universe w v u
 
 open CategoryTheory.Limits
 
@@ -202,6 +202,13 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   zero := inferInstance
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
+
+variable (C) in
+lemma hasZeroObject_of_hasCoproduct [HasCoproduct (PEmpty.elim : PEmpty.{w + 1} → C)] :
+    HasZeroObject C :=
+  ⟨∐ (PEmpty.elim : PEmpty.{w + 1} → C), by
+    rw [IsZero.iff_id_eq_zero]
+    cat_disch⟩
 
 /-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=

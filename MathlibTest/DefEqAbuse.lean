@@ -187,7 +187,7 @@ theorem zoC_eq_iff {α} [GrC α] (a : α) : NumC.fromNat 0 = a ↔ a = GrC.add a
 /--
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
-  ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
+  ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?_)
 -/
 #guard_msgs in
 example (a : Int) : NumC.fromNat 0 = a ↔ a = GrC.add a a := by

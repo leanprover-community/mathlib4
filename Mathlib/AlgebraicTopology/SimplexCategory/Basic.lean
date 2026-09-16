@@ -26,7 +26,9 @@ properties of its epimorphisms and monomorphisms.
 
 universe u
 
-open Simplicial CategoryTheory Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SimplexCategory
 
@@ -529,7 +531,7 @@ section Skeleton
 of `NonemptyFinLinOrd` -/
 @[simps obj map]
 def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
-  obj a := NonemptyFinLinOrd.of (Fin (a.len + 1))
+  obj a := ↧(Fin (a.len + 1))
   map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
@@ -595,12 +597,6 @@ section Concrete
 instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin (j.len + 1)) where
   hom := Hom.toOrderHom
   ofHom f := Hom.mk f
-
-instance (x : SimplexCategory) : Fintype (ToType x) :=
-  inferInstanceAs (Fintype (Fin _))
-
-instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
-  inferInstanceAs (OfNat (Fin _) n)
 
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
@@ -745,7 +741,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
   by_cases h' : x ≤ Fin.castSucc i
   · rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
-    rw [Fin.succAbove_of_castSucc_lt _ _ _]
+    rw [Fin.succAbove_of_castSucc_lt]
     · rw [Fin.castSucc_castPred]
     · exact (Fin.castSucc_lt_succ_iff.mpr h')
   · simp only [not_le] at h'
@@ -877,7 +873,7 @@ def toPartOrd : SimplexCategory ⥤ PartOrd.{u} :=
 
 @[simp]
 lemma toPartOrd_obj (n : SimplexCategory) :
-    toPartOrd.{u}.obj n = .of (ULift.{u} (Fin (n.len + 1))) := rfl
+    toPartOrd.{u}.obj n = ↧(ULift.{u} (Fin (n.len + 1))) := rfl
 
 @[simp]
 lemma toPartOrd_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : (Fin (n.len + 1))) :

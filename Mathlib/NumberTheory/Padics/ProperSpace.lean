@@ -34,7 +34,9 @@ public section
 
 assert_not_exists FiniteDimensional
 
-open Metric Topology
+open Metric
+
+open scoped Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 
@@ -54,7 +56,7 @@ theorem totallyBounded_univ : TotallyBounded (Set.univ : Set ℤ_[p]) := by
 /-- The set of p-adic integers `ℤ_[p]` is a compact topological space. -/
 instance compactSpace : CompactSpace ℤ_[p] := by
   rw [← isCompact_univ_iff, isCompact_iff_totallyBounded_isComplete]
-  exact ⟨totallyBounded_univ p, complete_univ⟩
+  exact ⟨totallyBounded_univ p, isComplete_univ⟩
 
 end PadicInt
 

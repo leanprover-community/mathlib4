@@ -26,7 +26,7 @@ This file defines oriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open Module Complex
+open Module
 
 open scoped Affine EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
@@ -351,6 +351,20 @@ oriented angle. -/
 theorem angle_eq_abs_oangle_toReal {p p₁ p₂ : P} (hp₁ : p₁ ≠ p) (hp₂ : p₂ ≠ p) :
     ∠ p₁ p p₂ = |(∡ p₁ p p₂).toReal| :=
   o.angle_eq_abs_oangle_toReal (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₂)
+
+/-- If the unoriented angle at `p₂` between `p₁` and `p₃` is at most `π / 2`, twice that angle is
+the absolute value of twice the oriented angle. -/
+theorem two_mul_angle_eq_abs_two_zsmul_oangle_toReal {p₁ p₂ p₃ : P} (hp₁ : p₁ ≠ p₂) (hp₃ : p₃ ≠ p₂)
+    (h : ∠ p₁ p₂ p₃ ≤ π / 2) : 2 * ∠ p₁ p₂ p₃ = |((2 : ℤ) • ∡ p₁ p₂ p₃).toReal| :=
+  o.two_mul_angle_eq_abs_two_zsmul_oangle_toReal (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃) h
+
+/-- If the unoriented angle at `p₂` between `p₁` and `p₃` is at least `π / 2`, twice that angle is
+`2 * π` minus the absolute value of twice the oriented angle. -/
+theorem two_mul_angle_eq_two_pi_sub_abs_two_zsmul_oangle_toReal {p₁ p₂ p₃ : P} (hp₁ : p₁ ≠ p₂)
+    (hp₃ : p₃ ≠ p₂) (h : π / 2 ≤ ∠ p₁ p₂ p₃) :
+    2 * ∠ p₁ p₂ p₃ = 2 * π - |((2 : ℤ) • ∡ p₁ p₂ p₃).toReal| :=
+  o.two_mul_angle_eq_two_pi_sub_abs_two_zsmul_oangle_toReal (vsub_ne_zero.2 hp₁)
+    (vsub_ne_zero.2 hp₃) h
 
 /-- If the sign of the oriented angle at `p` between two points is zero, either one of the points
 equals `p` or the unoriented angle is 0 or π. -/

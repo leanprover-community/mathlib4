@@ -31,8 +31,6 @@ through the inclusion from `Pith B` to `B` (see
 
 namespace CategoryTheory.Bicategory
 
-open Bicategory
-
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 /-- A bicategory is locally groupoidal if the categories of 1-morphisms are groupoids. -/
