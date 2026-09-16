@@ -115,10 +115,9 @@ map of the quotient is just the action of `g`, read in the charts of `M` at `x.o
 @[to_additive /-- Wherever `g` carries a point of `M` into the range of the local section at `y`,
 the transition map of the quotient is just the additive action of `g`, read in the charts of `M`
 at `x.out` and `y.out`. -/]
-lemma transitionMap_eqOn_smul (g : G) :
-    Set.EqOn (transitionMap x y)
-      ((chartAt H x.out).symm ≫ₕ (Homeomorph.smul g).toOpenPartialHomeomorph ≫ₕ chartAt H y.out)
-      ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)) := by
+lemma transitionMap_eqOn_smul (g : G) : Set.EqOn (transitionMap x y)
+    ((chartAt H x.out).symm ≫ₕ (Homeomorph.smul g).toOpenPartialHomeomorph ≫ₕ chartAt H y.out)
+    ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)) := by
   intro h hh
   simp only [transitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
   simpa using congrArg (chartAt H y.out) (localInverseAt_symm_trans_eqOn_smul x y g hh)
