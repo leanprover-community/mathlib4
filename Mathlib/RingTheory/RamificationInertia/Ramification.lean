@@ -6,11 +6,11 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.LocalRing.Length
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.LocalRing.ResidueField.Separable
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Ramification index
@@ -84,7 +84,7 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
 
 variable {q R} in
 theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
-    [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
+    [Algebra.HasSeparableResidueFieldsAt R S (q.under R)] :
     q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx_eq_one q R⟩
   rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
@@ -97,7 +97,7 @@ theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
   suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
   rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
-  exact ⟨Algebra.IsAlgebraic.isSeparable_of_perfectField, h⟩
+  exact ⟨Algebra.HasSeparableResidueFieldsAt.isSeparable q, h⟩
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one_iff :=
   ramificationIdx_eq_one_iff
@@ -132,12 +132,11 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
       Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength,
       isArtinianRing_iff_krullDimLE_zero, Ring.krullDimLE_zero_iff]
     intro r hr
-    apply isMaximal_of_isIntegral_of_isMaximal_comap (R := Sq)
-    rw [← Ideal.under_def]
+    apply isMaximal_of_isIntegral_of_isMaximal_under (R := Sq)
     have key : map (algebraMap R S) p ≤ under S r := by
       have := r.ker_le_comap (algebraMap Sq _)
-      rw [Ideal.Quotient.algebraMap_eq, mk_ker] at this
-      rwa [map_le_iff_le_comap] at this ⊢
+      rw [Ideal.Quotient.algebraMap_eq, mk_ker, map_le_iff_le_comap] at this
+      rwa [map_le_iff_le_comap]
     have h1 := hq.2 (y := r.under S) ⟨hr.under S, key⟩
     simp_rw [← Localization.AtPrime.under_maximalIdeal (I := q),
       ← under_under (A := S) (B := Sq) (C := Sq ⧸ _),
