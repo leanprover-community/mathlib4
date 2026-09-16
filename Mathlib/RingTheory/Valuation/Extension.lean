@@ -269,7 +269,7 @@ theorem restrict_map_mapValueGroup₀ :
     rw [← MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.injective.eq_iff,
       Valuation.embedding_restrict] at hc ⊢
     rw [← comap_apply, hc]
-    rfl
+    simp [MonoidWithZeroHom.ValueGroup₀.embedding_apply]
 
 theorem mapValueGroup₀_apply_restrict (x : R) :
     mapValueGroup₀ vR vA (vR.restrict x) = vA.restrict (algebraMap R A x) :=
