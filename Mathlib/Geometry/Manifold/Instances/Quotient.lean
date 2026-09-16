@@ -31,6 +31,8 @@ smooth manifold, smooth action, quotient manifold
 
 public noncomputable section
 
+open scoped ContDiff
+
 namespace MulAction
 
 variable {M : Type*} [TopologicalSpace M]
@@ -134,7 +136,7 @@ end orbitRel.Quotient
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
+  (I : ModelWithCorners 𝕜 E H) {n : ℕ∞ω} [IsManifold I n M]
 
 open orbitRel.Quotient
 
