@@ -558,6 +558,7 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
 theorem toAddMonoidHom_liftMonoid (f : α →* R) : ↑(liftMonoid f) = lift f :=
   rfl
 
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-09-15")]
 alias liftMonoid_coe_addMonoidHom := toAddMonoidHom_liftMonoid
 
