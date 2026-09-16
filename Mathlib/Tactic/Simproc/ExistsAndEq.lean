@@ -86,7 +86,6 @@ partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
       -- This quantifier cannot be moved outside, but the equation may be hidden in `tb` itself.
       -- It makes sense only when `tb` is a `Prop`. We don't check it here, but if it's not,
       -- `tb` will not match anything in the `match_expr` above.
-      -- TODO: should we check?
       (.existsType :: ·) <$> findEqPath a tb
   | _ => failure
 
