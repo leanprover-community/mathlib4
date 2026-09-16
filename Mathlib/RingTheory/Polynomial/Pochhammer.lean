@@ -225,7 +225,7 @@ theorem ascPochhammer_eval_succ (r : ℕ) (n : S) :
   | zero => simp
   | succ r ih => grind [ascPochhammer_succ_eval]
 
-@[deprecated ascPochhammer_eval_succ (since := "2026-08-16")]
+@[deprecated ascPochhammer_eval_succ +typeChanged (since := "2026-08-16")]
 theorem ascPochhammer_nat_eval_succ (r : ℕ) (n : ℕ) :
     n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n := by
   simp [ascPochhammer_eval_succ, mul_comm]
