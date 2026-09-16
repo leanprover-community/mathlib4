@@ -16,9 +16,7 @@ public import Mathlib.Data.PNat.Equiv
 @[expose] public section
 
 deriving instance AddLeftMono, AddLeftStrictMono,
-  AddLeftReflectLE, AddLeftReflectLT for PNat
-
-deriving instance WellFoundedLT for PNat
+  AddLeftReflectLE, AddLeftReflectLT, WellFoundedLT for PNat
 
 namespace PNat
 
