@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Functor.CurryingFour
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Testing the `@[defeq]` attribute on some important equalities in category theory
@@ -83,6 +84,84 @@ elab_rules : command
 /-- info: `CategoryTheory.Functor.rightUnitor_hom_app` is tagged with @[defeq] -/
 #guard_msgs in
 #ensure_defeq CategoryTheory.Functor.rightUnitor_hom_app
+
+-- Equivalence and product constructions should compute in dependent positions.
+
+/-- info: `CategoryTheory.Equivalence.mkIso_hom` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.mkIso_hom
+
+/-- info: `CategoryTheory.Equivalence.functorFunctor_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.functorFunctor_map
+
+/-- info: `CategoryTheory.Equivalence.refl_functor` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.refl_functor
+
+/-- info: `CategoryTheory.Equivalence.refl_unitIso` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.refl_unitIso
+
+/-- info: `CategoryTheory.Equivalence.trans_functor` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.trans_functor
+
+/-- info: `CategoryTheory.Equivalence.congrLeft_functor` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.congrLeft_functor
+
+/-- info: `CategoryTheory.Equivalence.congrRight_functor` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.congrRight_functor
+
+/-- info: `CategoryTheory.Equivalence.congrRightFunctor_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Equivalence.congrRightFunctor_map
+
+/-- info: `CategoryTheory.Functor.asEquivalence_functor` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.asEquivalence_functor
+
+/-- info: `CategoryTheory.Functor.asEquivalence_counitIso_hom_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.asEquivalence_counitIso_hom_app
+
+/-- info: `CategoryTheory.ObjectProperty.fullSubcategoryCongr_functor` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.ObjectProperty.fullSubcategoryCongr_functor
+
+/-- info: `CategoryTheory.prod.associator_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.associator_map
+
+/-- info: `CategoryTheory.prod.inverseAssociator_obj` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.inverseAssociator_obj
+
+/-- info: `CategoryTheory.prod.inverseAssociator_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.inverseAssociator_map
+
+/-- info: `CategoryTheory.prod.associativity_unitIso` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.associativity_unitIso
+
+/-- info: `CategoryTheory.prod.prodFunctorToFunctorProdAssociator_hom_app_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.prodFunctorToFunctorProdAssociator_hom_app_app
+
+/-- info: `CategoryTheory.prod.functorProdToProdFunctorAssociator_hom_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.functorProdToProdFunctorAssociator_hom_app
+
+/-- info: `CategoryTheory.prod.prodμ_functor_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.prodμ_functor_map
+
+/-- info: `CategoryTheory.prod.prodμ_inverse_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.prod.prodμ_inverse_map
 
 -- Keep the generated quadrifunctor currying lemmas usable by `dsimp` without compatibility options.
 
