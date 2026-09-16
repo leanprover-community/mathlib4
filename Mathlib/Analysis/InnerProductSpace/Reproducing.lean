@@ -34,7 +34,7 @@ positive semidefinite matrices.
   and continuity of the kernel functions are all equivalent.
 - `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS `OfKernel` is equal to the matrix,
   this is essentially Moore's theorem.
-- `RKHS.RKHSSubmodule`: a submodule of an RKHS is again an RKHS.
+- `RKHS.RKHSSubmodule`: a complete submodule of an RKHS is again an RKHS.
 - `RKHS.kerFun_submodule`: the kernel functions of a submodule RKHS are an orthogonal projection of
   the kernel functions of the full RKHS.
 - `RKHS.kernel_submodule`: the kernel of the submodule RKHS is formed by composing the adjoint of
