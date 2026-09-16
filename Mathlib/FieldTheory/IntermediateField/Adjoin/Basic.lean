@@ -225,7 +225,7 @@ instance : IsCompactlyGenerated (IntermediateField F E) :=
 
 theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset ι, x ∈ ⨆ i ∈ s, f i := by
-  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup (IntermediateField F E) f
+  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup f
   simp only [adjoin_simple_le_iff] at this
   exact this hx
 
@@ -253,6 +253,27 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
   rintro _ h _ rfl
   exact subset_adjoin F _ ⟨_, h, rfl⟩
+
+/-- Adjoining `x + algebraMap F E y`, where `y` lies in the base field, yields the same simple
+extension as adjoining `x`. -/
+theorem adjoin_simple_add_algebraMap (x : E) (y : F) : F⟮x + algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact add_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.sub_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [eq_sub_iff_add_eq]
+
+/-- Adjoining `x * algebraMap F E y`, where `y` is a nonzero element of the base field, yields the
+same simple extension as adjoining `x`. -/
+theorem adjoin_simple_mul_algebraMap (x : E) (y : F) (hy : y ≠ 0) :
+    F⟮x * algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact mul_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.div_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [mul_div_cancel_right₀ x (by rwa [_root_.map_ne_zero])]
 
 end AdjoinDef
 
