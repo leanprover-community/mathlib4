@@ -59,6 +59,17 @@ variable {α : Type}
 /-- Return the declaration values whose `DiscrTree` keys match `e`. -/
 def State.getMatch (state : State α) (e : Expr) : MetaM (Array α) := state.tree.getMatch e
 
+/-- Record that modules importing the current one should keep doing so, even when `shake` cannot
+see a reference that justifies the import: declarations in an environment extension are found by
+looking them up, never by name. Existing imports are kept; new ones are never introduced.
+
+The same stopgap is used by `@[norm_num]`, `@[positivity]`, `@[bareiss_ext]` and
+`declare_aesop_rule_sets`. -/
+def recordRegisteringModule (kind : AttributeKind) : CoreM Unit := do
+  -- A `local` registration does not outlive the current file, so nothing downstream can need it.
+  unless kind == .local do
+    recordExtraRevUseOfCurrentModule
+
 /-- Create a scoped environment extension whose declarations have type `typeName`. By default, the
 environment extension is named after the declaration in which this function is called. -/
 def initializeEnvExt (typeName : Name)
@@ -74,6 +85,15 @@ def initializeEnvExt (typeName : Name)
     addEntry := fun state ((kss, _), ext) ↦
       { tree := insert kss ext state.tree }
   }
+
+/-- Register `entry` in `ext`, recording the current module as one `shake` should preserve.
+
+Prefer this over `ScopedEnvExtension.add` when adding an entry from an attribute handler, so that
+the registration and the `shake` bookkeeping cannot drift apart. -/
+def EnvExt.register (ext : EnvExt α) (entry : Entry × α) (kind : AttributeKind) :
+    CoreM Unit := do
+  ext.add entry kind
+  recordRegisteringModule kind
 
 /-- Elaborate expression patterns into `DiscrTree` paths. -/
 def elabExtKeys (patterns : Array Syntax) : CoreM (Array (Array DiscrTree.Key)) :=
