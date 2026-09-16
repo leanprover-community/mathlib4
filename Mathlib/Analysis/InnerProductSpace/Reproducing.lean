@@ -15,16 +15,22 @@ This file defines vector-valued reproducing Kernel Hilbert spaces, which are Hil
 functions, as well as characterizing these spaces in terms of infinite-dimensional
 positive semidefinite matrices.
 
-## Main results
+## Main definitions
 
 - `RKHS`: the class of reproducing kernel Hilbert spaces
-- `RKHS.kernel`: the kernel of a RKHS as a matrix.
+- `RKHS.eval`: the evaluation operator of a RKHS.
 - `RKHS.kerFun`: the kernel functions of a RKHS.
+- `RKHS.kernel`: the kernel of a RKHS as a matrix.
+- `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
+
+## Main results
+
 - `RKHS.kerFun_dense`: the kernel functions are dense in the Hilbert space.
 - `RKHS.posSemidef_kernel`: The kernel is positive semidefinite.
-- `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
-- `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS is equal to the matrix, this is
-    essentially Moore's theorem.
+- `RKHS.continuous_tfae`: The joint continuity of the kernel, the continuity of the evaluation map
+  and continuity of the kernel functions are all equivalent.
+- `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS `OfKernel` is equal to the matrix,
+  this is essentially Moore's theorem.
 
 ## TODO
 
