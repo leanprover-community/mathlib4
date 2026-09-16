@@ -90,6 +90,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClass α] [MulZeroOneClass β]
   [MulZeroOneClass γ] [MulZeroOneClass δ] {f g : α →*₀o β}
 
+@[macro_inline]
 instance : FunLike (α →*₀o β) α β where
   coe f := f.toFun
   coe_injective f g h := by
