@@ -229,6 +229,7 @@ end AlgebraInstances
 
 section ValueGroup₀
 
+-- TODO: generalize to `[LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]`
 variable {ΓR ΓA : Type*}
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
     (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
