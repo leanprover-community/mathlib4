@@ -20,13 +20,13 @@ series satisfying
 
 `Y = X * P(Y)`.
 
-Then, for `1 ≤ m` and `k ≤ m`,
+Then, for natural numbers `n` and `k`,
 
-`m * [X^m] Y^k = k * [X^(m-k)] P^m`.
+`(n + k) * [X^(n+k)] Y^k = k * [X^n] P^(n+k)`.
 
 We also give the Lagrange–Bürmann form
 
-`m * [X^m] H(Y) = [X^(m-1)] (H' * P^m)`
+`(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`
 
 for a polynomial `H`, and the usual divided coefficient formula over a field of characteristic
 zero. No analytic convergence is involved.
@@ -92,12 +92,7 @@ section TorsionFree
 variable {R : Type*} [CommRing R] [IsAddTorsionFree R]
 variable {P : R[X]} {Y : R⟦X⟧}
 
-/-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
-`m * [X^m] Y^k = k * [X^(m-k)] P^m` for `1 ≤ m` and `k ≤ m`.
-
-The coefficient ring is assumed to have no additive torsion because the inductive proof cancels
-multiplication by a positive natural number. -/
-theorem lagrange_inversion_coeff_pow
+private theorem lagrange_inversion_coeff_pow_of_le
     (hY : Y = PowerSeries.X * Polynomial.aeval Y P) :
     ∀ m : ℕ, 1 ≤ m → ∀ k ≤ m,
       (m : R) * PowerSeries.coeff m (Y ^ k) = (k : R) * (P ^ m).coeff (m - k) := by
@@ -169,11 +164,25 @@ theorem lagrange_inversion_coeff_pow
     push_cast
     linear_combination ((k : R) + (s + 1)) * hsum + hcoeff
 
-/-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for `m ≥ 1` and a
-polynomial `H`,
+/-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
+`(n + k) * [X^(n+k)] Y^k = k * [X^n] P^(n+k)` for all natural numbers `n` and `k`.
 
-`m * [X^m] H(Y) = [X^(m-1)] (H' * P^m)`. -/
-theorem lagrange_burmann_coeff
+The coefficient ring is assumed to have no additive torsion because the inductive proof cancels
+multiplication by a positive natural number. -/
+theorem lagrange_inversion_coeff_pow
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n k : ℕ) :
+    ((n + k : ℕ) : R) * PowerSeries.coeff (n + k) (Y ^ k) =
+      (k : R) * (P ^ (n + k)).coeff n := by
+  rcases eq_or_ne (n + k) 0 with hnk | hnk
+  · have hn : n = 0 := by omega
+    have hk : k = 0 := by omega
+    subst n
+    subst k
+    simp
+  · simpa [show n + k - k = n by omega] using
+      lagrange_inversion_coeff_pow_of_le hY (n + k) (by omega) k (by omega)
+
+private theorem lagrange_burmann_coeff_of_pos
     (hY : Y = PowerSeries.X * Polynomial.aeval Y P) {m : ℕ} (hm : 1 ≤ m) (H : R[X]) :
     (m : R) * PowerSeries.coeff m (Polynomial.aeval Y H) =
       (Polynomial.derivative H * P ^ m).coeff (m - 1) := by
@@ -186,7 +195,7 @@ theorem lagrange_burmann_coeff
     rw [coeff_aeval hY H, Finset.mul_sum]
     refine Finset.sum_congr rfl fun i hi ↦ ?_
     have hi' : i ≤ s + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hi
-    have h := lagrange_inversion_coeff_pow hY (s + 1) (by omega) i hi'
+    have h := lagrange_inversion_coeff_pow_of_le hY (s + 1) (by omega) i hi'
     rw [hf]
     simp only
     rw [← h]
@@ -202,6 +211,16 @@ theorem lagrange_burmann_coeff
   push_cast
   ring
 
+/-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
+a polynomial `H`,
+
+`(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`. -/
+theorem lagrange_burmann_coeff
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) (H : R[X]) :
+    ((n + 1 : ℕ) : R) * PowerSeries.coeff (n + 1) (Polynomial.aeval Y H) =
+      (Polynomial.derivative H * P ^ (n + 1)).coeff n := by
+  simpa using lagrange_burmann_coeff_of_pos hY (by omega : 1 ≤ n + 1) H
+
 end TorsionFree
 
 section Field
@@ -211,11 +230,11 @@ variable {K : Type*} [Field K] [CharZero K]
 /-- The usual coefficient form of formal Lagrange inversion for a polynomial kernel. This is the
 case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff`. -/
 theorem lagrange_inversion_coeff (P : K[X]) (Y : K⟦X⟧)
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) (hn : 1 ≤ n) :
-    PowerSeries.coeff n Y = (P ^ n).coeff (n - 1) / n := by
-  have h := lagrange_inversion_coeff_pow (P := P) hY n hn 1 hn
+    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) :
+    PowerSeries.coeff (n + 1) Y = (P ^ (n + 1)).coeff n / (n + 1) := by
+  have h := lagrange_inversion_coeff_pow (P := P) hY n 1
   simp only [pow_one, Nat.cast_one, one_mul] at h
-  apply (eq_div_iff (Nat.cast_ne_zero.mpr (by omega))).2
+  apply (eq_div_iff (Nat.cast_add_one_ne_zero n)).2
   simpa [mul_comm] using h
 
 end Field
