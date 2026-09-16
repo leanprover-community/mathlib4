@@ -289,8 +289,8 @@ open Classical in
 theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R⁰ K} (hI : I ≠ 0)
     (k : K) (hk : I = spanSingleton R⁰ k) :
     ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
-      ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {choose
-          (exists_mk'_eq R⁰ k)} : Ideal R)).factors -
+      ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span
+          {choose (exists_mk'_eq R⁰ k)} : Ideal R)).factors -
         (Associates.mk v.asIdeal).count (Associates.mk ((Ideal.span {(↑(choose
           (choose_spec (exists_mk'_eq R⁰ k)) : ↥R⁰) : R)}) : Ideal R)).factors : ℤ) = I := by
   set n : R := choose (exists_mk'_eq R⁰ k)
@@ -629,7 +629,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
     · rw [Ideal.zero_eq_bot, bot_lt_iff_ne_bot, ← Ideal.zero_eq_bot,
         mul_ne_zero_iff, Finset.prod_ne_zero_iff]
       exact ⟨hJ, fun x _ ↦ x.3⟩
-  choose! a ha ha' using fun p hps ↦ SetLike.exists_of_lt (this p hps)
+  choose! a ha ha' using fun p hps ↦ IsConcreteLE.exists_of_lt (this p hps)
   obtain ⟨K, hK⟩ : J ∣ Ideal.span {∑ p ∈ s, a p} := by
     rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
     exact sum_mem fun p hp ↦ Ideal.mul_le_left (ha p hp)

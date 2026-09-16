@@ -157,11 +157,6 @@ theorem comp_measurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ
     (hf : Measurable f) : AEMeasurable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
 
-@[fun_prop]
-theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ → β} (hg : AEMeasurable g ν)
-    (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
-  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
-
 theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) := by
   ext1 s hs

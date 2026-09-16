@@ -247,7 +247,7 @@ theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) 
         refine fun h x y h' => h _ _ ?_
         rw [← hI.radical_le_iff] at h' ⊢
         simpa only [Ideal.radical_inf, Ideal.radical_mul] using h'
-      · simp_rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
+      · simp_rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists]
         rintro h s t h' ⟨x, hx, hx'⟩ y hy
         exact h (h' ⟨Ideal.mul_mem_right _ _ hx, Ideal.mul_mem_left _ _ hy⟩) hx'
 

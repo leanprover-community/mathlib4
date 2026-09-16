@@ -101,7 +101,7 @@ lemma IsTangentAt.dist_sq_eq_of_mem {s : Sphere P} {p q : P} {as : AffineSubspac
     (h : s.IsTangentAt p as) (hq : q ∈ as) :
     (dist q s.center) ^ 2 = s.radius ^ 2 + (dist q p) ^ 2 := by
   rw [← h.mem_sphere]
-  exact s.dist_sq_eq_of_mem_orthRadius (SetLike.le_def.1 h.le_orthRadius hq)
+  exact s.dist_sq_eq_of_mem_orthRadius (mem_of_le_of_mem h.le_orthRadius hq)
 
 lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
     (h : s.IsTangentAt p as) : (q ∈ s ∧ q ∈ as) ↔ q = p := by
@@ -146,7 +146,7 @@ lemma IsTangentAt.eq_orthRadius_of_finrank_add_one_eq {s : Sphere P} {as : Affin
 
 lemma IsTangentAt.mem_polar_of_mem {s : Sphere P} {p₁ p₂ : P} {as : AffineSubspace ℝ P}
     (h : s.IsTangentAt p₂ as) (hp₁ : p₁ ∈ as) : p₂ ∈ s.polar p₁ :=
-  mem_polar_of_mem_of_mem_orthRadius h.mem_sphere (SetLike.le_def.1 h.le_orthRadius hp₁)
+  mem_polar_of_mem_of_mem_orthRadius h.mem_sphere (mem_of_le_of_mem h.le_orthRadius hp₁)
 
 /-- The affine subspace `as` is tangent to the sphere `s` at some point. -/
 def IsTangent (s : Sphere P) (as : AffineSubspace ℝ P) : Prop :=
