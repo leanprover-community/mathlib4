@@ -12,7 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 # The complex Lambert W function
 
 This file defines the branches of the standard Lambert W function, i.e. the multivalued inverse of
-`w => w * exp w`, and proves `W_ k` is a bijection from `domain k` onto `range k`.
+`w ↦ w * exp w`, and proves `W_ k` is a bijection from `domain k` onto `range k`.
 
 If `w = W_ k z`, then `z = w * cexp w`. We follow standard usage and say that `z` is in the z-plane
 and `w` is in the w-plane.
@@ -21,7 +21,8 @@ The boundary of the range of the Lambert W function is described by
 `{ w | w.arg + w.im = (2 * k ± 1) * π }`,
 with the special case that, when `k = ±1`, the part of the negative real axis `(-∞, -1]`
 is also part of the boundary.
-So we defines the range using corrected version of `{ w | w.arg + w.im ∈ Ioc (2 * k ± 1) * π }`
+So we define the range using corrected version of
+`{ w | w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) }`.
 
 ## Main definitions
 
@@ -34,11 +35,11 @@ So we defines the range using corrected version of `{ w | w.arg + w.im ∈ Ioc (
 * `Complex.LambertW.existsUnique_mem_range_mul_exp_eq`: every point in the domain of a branch has a
   unique preimage in its range.
 * `Complex.LambertW.bijOn_mul_exp_range_domain`:
-  `w => w * exp w` is a bijection from `range k` to `domain k`.
-* `Complex.LambertW.lambertW_mul_exp_of_mem_range`:
-  `W_ k (w * exp w) = w` for `w ∈ range k`
-* `Complex.LambertW.lambertW_mul_exp_lambertW_of_mem_domain`:
-  `W_ k z * cexp (W_ k z) = z` for `z ∈ domain k`
+  `w ↦ w * exp w` is a bijection from `range k` to `domain k`.
+* `Complex.lambertW_mul_exp_of_mem_range`:
+  `W_ k (w * exp w) = w` for `w ∈ range k`.
+* `Complex.lambertW_mul_exp_lambertW_of_mem_domain`:
+  `W_ k z * cexp (W_ k z) = z` for `z ∈ domain k`.
 * `Complex.eq_mul_exp_iff_exists_eq_lambertW`: `z = w * exp w` if and only if `w = W_ k z` for
   some branch `k` with `z ∈ domain k`.
 * `Complex.existsUnique_eq_lambertW_of_ne_neg_one`: the branch in the previous statement is
@@ -60,7 +61,7 @@ To describe the range of the Lambert W function, `Set.Ioc` is not sufficient, si
 takes the value `π` on the entire negative real axis. Therefore, we use a special-case definition
 for the range.
 
-To prove the bijectivity of the `w => w * exp w`, we first handle seven basic cases and then
+To prove the bijectivity of `w ↦ w * exp w`, we first handle seven basic cases and then
 combine them to obtain the cases `k = 0`, `k = -1`, and `k ≠ 0, -1`,
 from which the general result follows.
 
@@ -92,7 +93,7 @@ the intermediate value theorem.
 
 ## TODO
 
-+ Define the Lambert W function on ℝ
++ Define the Lambert W function over ℝ
 + Prove some identities and some special values
 + Prove continuity, differentiability, smoothness
 + Prove asymptotic expansion and series expansion
