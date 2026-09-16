@@ -37,6 +37,7 @@ def currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E 
 abbrev uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E := currying₃.functor
 
 /-- Currying a functor in three variables. -/
+@[simps! obj_map_app_app obj_obj_map_app obj_obj_obj_map map_app_app_app]
 abbrev curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E := currying₃.inverse
 
 /-- Uncurrying functors in three variables gives a fully faithful functor. -/
@@ -62,26 +63,6 @@ instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ 
 
 instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).Faithful :=
   fullyFaithfulCurry₃.faithful
-
-@[simp]
-lemma curry₃_obj_map_app_app (F : C₁ × C₂ × C₃ ⥤ E)
-    {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) (X₂ : C₂) (X₃ : C₃) :
-    (((curry₃.obj F).map f).app X₂).app X₃ = F.map ⟨f, 𝟙 X₂, 𝟙 X₃⟩ := rfl
-
-@[simp]
-lemma curry₃_obj_obj_map_app (F : C₁ × C₂ × C₃ ⥤ E)
-    (X₁ : C₁) {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) (X₃ : C₃) :
-    (((curry₃.obj F).obj X₁).map f).app X₃ = F.map ⟨𝟙 X₁, f, 𝟙 X₃⟩ := rfl
-
-@[simp]
-lemma curry₃_obj_obj_obj_map (F : C₁ × C₂ × C₃ ⥤ E)
-    (X₁ : C₁) (X₂ : C₂) {X₃ Y₃ : C₃} (f : X₃ ⟶ Y₃) :
-    (((curry₃.obj F).obj X₁).obj X₂).map f = F.map ⟨𝟙 X₁, 𝟙 X₂, f⟩ := rfl
-
-@[simp]
-lemma curry₃_map_app_app_app {F G : C₁ × C₂ × C₃ ⥤ E} (f : F ⟶ G)
-    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
-    (((curry₃.map f).app X₁).app X₂).app X₃ = f.app ⟨X₁, X₂, X₃⟩ := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
