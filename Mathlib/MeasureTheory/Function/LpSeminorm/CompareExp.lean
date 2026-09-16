@@ -241,6 +241,10 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm_of_not_aestronglyMeasurable
       rwa [← eLpNorm_eq_zero_iff hp]
     simp [mul_eq_zero, hc.ne', this]
 
+@[deprecated (since := "2026-09-16")]
+alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable_ennreal :=
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm_of_not_aestronglyMeasurable
+
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable
     (p q r : ℝ≥0∞) (b : E → F → G) (c : ℝ≥0)
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊)
@@ -462,6 +466,9 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm {p q r : ℝ≥0∞} (b : E → F → G) 
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm b c hb.comp_aestronglyMeasurable₂ hf hg
   (ae_enorm_bilin_le_of_ae_nnnorm_le h)
 
+@[deprecated (since := "2026-09-16")]
+alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm := eLpNorm_le_eLpNorm_mul_eLpNorm
+
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm {p q r : ℝ≥0∞} (b : E → F → G) (c : ℝ≥0)
@@ -499,6 +506,9 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos {p q r : ℝ≥0∞} (b : E → F 
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm_of_pos b c hb.comp_aestronglyMeasurable₂
   (ae_enorm_bilin_le_of_ae_nnnorm_le h) hr
+
+@[deprecated (since := "2026-09-16")]
+alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm_of_pos := eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
@@ -592,8 +602,14 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_ennreal {f g : α → ℝ≥0∞}
     [hpqr : HolderTriple p q r] :
     eLpNorm (f * g) r μ ≤ eLpNorm f p μ * eLpNorm g q μ := by
   simpa using! eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm (· * ·) 1 (fun hf hg ↦
-    (hf.aemeasurable.mul hg.aemeasurable).aestronglyMeasurable) hf hg
-    (p := p) (q := q) (r := r) (by simp)
+    (hf.aemeasurable.mul hg.aemeasurable).aestronglyMeasurable) hf hg (by simp)
+
+/-- Hölder's inequality, as an inequality on the `ℒp` seminorm for functions to `ℝ≥0∞`. -/
+theorem eLpNorm_le_eLpNorm_mul_eLpNorm_ennreal_of_pos {f g : α → ℝ≥0∞} (hr : 0 < r)
+    [hpqr : HolderTriple p q r] :
+    eLpNorm (f * g) r μ ≤ eLpNorm f p μ * eLpNorm g q μ := by
+  simpa using! eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm_of_pos (· * ·) 1 (fun hf hg ↦
+    (hf.aemeasurable.fun_mul hg.aemeasurable).aestronglyMeasurable) (by simp) hr
 
 end Mul
 
