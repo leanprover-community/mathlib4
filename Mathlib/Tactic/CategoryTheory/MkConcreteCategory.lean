@@ -149,11 +149,13 @@ open CategoryTheory
 namespace Mathlib.Tactic.CategoryTheory
 
 /-- A concrete category with bundled homs, identity, composition, and optional `ofHom` signature. -/
-declare_syntax_cat concrete_category_decl
+declare_syntax_cat concreteCategoryDecl
 
-syntax term:max ppSpace term:max ppSpace term:max ppSpace term:max
+/-- The data for one concrete category, with an optional custom `ofHom` signature. -/
+syntax (name := concreteCategoryDeclSyntax)
+  term:max ppSpace term:max ppSpace term:max ppSpace term:max
   (ppSpace "with_of_hom" (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace
-    "from " term:max ppSpace "to " term:max)? : concrete_category_decl
+    "from " term:max ppSpace "to " term:max)? : concreteCategoryDecl
 
 /--
 `mk_concrete_category C FC id comp` generates the standard boilerplate for a concrete category on
@@ -164,8 +166,8 @@ and composition given by `comp g.hom' f.hom'` for categorical morphisms `f : X â
 The command is intended to be used in the namespace of `C`. It creates declarations named `Hom`,
 `Hom.hom`, `ofHom`, `hom_id`, `hom_comp`, `hom_ofHom`, and `ofHom_hom`.
 -/
-syntax (name := mkConcreteCategory) declModifiers "mk_concrete_category " concrete_category_decl
-  (ppSpace "to_additive " concrete_category_decl)? : command
+syntax (name := mkConcreteCategory) declModifiers "mk_concrete_category " concreteCategoryDecl
+  (ppSpace "to_additive " concreteCategoryDecl)? : command
 
 /-!
 These helpers inspect raw syntax rather than elaborated terms. This command has to notice ordinary
@@ -389,8 +391,8 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
 
 /-- Elaborate one concrete category declaration, including its optional `ofHom` signature. -/
 private meta def elabConcreteCategoryDecl (mods : Syntax)
-    (decl : TSyntax `concrete_category_decl) : CommandElabM Unit := do
-  let `(concrete_category_decl| $cat:term $FC:term $idTerm:term $compTerm:term
+    (decl : TSyntax `concreteCategoryDecl) : CommandElabM Unit := do
+  let `(concreteCategoryDecl| $cat:term $FC:term $idTerm:term $compTerm:term
       $[with_of_hom $binders:bracketedBinder* hom_type $homTy from $source to $target]?) := decl
     | throwUnsupportedSyntax
   let customOfHom? := do
@@ -400,8 +402,8 @@ private meta def elabConcreteCategoryDecl (mods : Syntax)
 /-- Elaborator for `mk_concrete_category`, with an optional explicit additive declaration. -/
 @[command_elab mkConcreteCategory]
 public meta def elabMkConcreteCategory : CommandElab := fun stx => do
-  let `($mods:declModifiers mk_concrete_category $decl:concrete_category_decl
-      $[to_additive $addDecl:concrete_category_decl]?) := stx
+  let `($mods:declModifiers mk_concrete_category $decl:concreteCategoryDecl
+      $[to_additive $addDecl:concreteCategoryDecl]?) := stx
     | throwUnsupportedSyntax
   match addDecl with
   | none => elabConcreteCategoryDecl mods decl
