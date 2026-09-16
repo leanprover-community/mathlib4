@@ -140,6 +140,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 open orbitRel.Quotient
 
+/-- The quotient of a Cⁿ manifold by a free, properly discontinuous group action such that the
+scalar multiplication `fun x : M ↦ g • x` is Cⁿ is itself a Cⁿ manifold, for the charts of
+`MulAction.instChartedSpaceQuotient`. -/
 instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] :
     IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
