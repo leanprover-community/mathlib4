@@ -83,7 +83,7 @@ def toWellOrderExtension : α ≃ WellOrderExtension α :=
   Equiv.refl _
 
 noncomputable instance [LT α] [h : WellFoundedLT α] : LinearOrder (WellOrderExtension α) :=
-  h.wellOrderExtension
+  fast_instance% h.wellOrderExtension
 
 theorem toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (toWellOrderExtension : α → WellOrderExtension α) := fun _ _ h =>
