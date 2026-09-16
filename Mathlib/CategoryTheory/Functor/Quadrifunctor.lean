@@ -46,8 +46,7 @@ set_option backward.isDefEq.respectTransparency false in
 def trifunctorComp₂₃₄FunctorObj (F : C₁ ⥤ C₂₃₄ ⥤ E) :
     (C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj G := trifunctorComp₂₃₄ F G
-  map {G G'} τ :=
-    { app X₁ := (Functor.postcompose₃.obj (F.obj X₁)).map τ }
+  map {G G'} τ := { app X₁ := (Functor.postcompose₃.obj (F.obj X₁)).map τ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -56,8 +55,7 @@ set_option backward.isDefEq.respectTransparency false in
 def trifunctorComp₂₃₄FunctorMap {F F' : C₁ ⥤ C₂₃₄ ⥤ E} (τ : F ⟶ F') :
     trifunctorComp₂₃₄FunctorObj (C₂ := C₂) (C₃ := C₃) (C₄ := C₄) F ⟶
       trifunctorComp₂₃₄FunctorObj F' where
-  app G :=
-    { app X₁ := (Functor.postcompose₃.map (τ.app X₁)).app G }
+  app G := { app X₁ := (Functor.postcompose₃.map (τ.app X₁)).app G }
 
 /-- The functor
 `(C₁ ⥤ C₂₃₄ ⥤ E) ⥤ (C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E` which
@@ -90,8 +88,7 @@ set_option backward.isDefEq.respectTransparency false in
 def trifunctorComp₃₄FunctorObj (F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) :
     (C₃ ⥤ C₄ ⥤ C₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj G := trifunctorComp₃₄ F G
-  map {G G'} τ :=
-    { app X₁ := (bifunctorComp₂₃Functor.obj (F.obj X₁)).map τ }
+  map {G G'} τ := { app X₁ := (bifunctorComp₂₃Functor.obj (F.obj X₁)).map τ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
