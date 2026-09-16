@@ -1,17 +1,17 @@
 /-
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
+Authors: Joseph Myers, Daniel Liao
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+module
 
-#align_import geometry.euclidean.angle.unoriented.right_angle from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Right-angled triangles
 
-This file proves basic geometrical results about distances and angles in (possibly degenerate)
+This file proves basic geometric results about distances and angles in (possibly degenerate)
 right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 ## Implementation notes
@@ -23,13 +23,14 @@ triangle unnecessarily.
 ## References
 
 * https://en.wikipedia.org/wiki/Pythagorean_theorem
+* https://en.wikipedia.org/wiki/Geometric_mean_theorem
 
 -/
 
+public section
+
 
 noncomputable section
-
-open scoped BigOperators
 
 open scoped EuclideanGeometry
 
@@ -46,26 +47,22 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ angle x y = π / 2 := by
   rw [norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
   exact inner_eq_zero_iff_angle_eq_pi_div_two x y
-#align inner_product_geometry.norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two InnerProductGeometry.norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two
 
 /-- Pythagorean theorem, vector angle form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ :=
   (norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two x y).2 h
-#align inner_product_geometry.norm_add_sq_eq_norm_sq_add_norm_sq' InnerProductGeometry.norm_add_sq_eq_norm_sq_add_norm_sq'
 
 /-- Pythagorean theorem, subtracting vectors, if-and-only-if vector angle form. -/
 theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ angle x y = π / 2 := by
   rw [norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
   exact inner_eq_zero_iff_angle_eq_pi_div_two x y
-#align inner_product_geometry.norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two InnerProductGeometry.norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two
 
 /-- Pythagorean theorem, subtracting vectors, vector angle form. -/
 theorem norm_sub_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ :=
   (norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two x y).2 h
-#align inner_product_geometry.norm_sub_sq_eq_norm_sq_add_norm_sq' InnerProductGeometry.norm_sub_sq_eq_norm_sq_add_norm_sq'
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
 theorem angle_add_eq_arccos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
@@ -73,14 +70,13 @@ theorem angle_add_eq_arccos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
   rw [angle, inner_add_right, h, add_zero, real_inner_self_eq_norm_mul_norm]
   by_cases hx : ‖x‖ = 0; · simp [hx]
   rw [div_mul_eq_div_div, mul_self_div_self]
-#align inner_product_geometry.angle_add_eq_arccos_of_inner_eq_zero InnerProductGeometry.angle_add_eq_arccos_of_inner_eq_zero
 
 /-- An angle in a right-angled triangle expressed using `arcsin`. -/
 theorem angle_add_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0 ∨ y ≠ 0) :
     angle x (x + y) = Real.arcsin (‖y‖ / ‖x + y‖) := by
   have hxy : ‖x + y‖ ^ 2 ≠ 0 := by
     rw [pow_two, norm_add_sq_eq_norm_sq_add_norm_sq_real h, ne_comm]
-    refine' ne_of_lt _
+    refine ne_of_lt ?_
     rcases h0 with (h0 | h0)
     · exact
         Left.add_pos_of_pos_of_nonneg (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)
@@ -89,9 +85,8 @@ theorem angle_add_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
   rw [angle_add_eq_arccos_of_inner_eq_zero h,
     Real.arccos_eq_arcsin (div_nonneg (norm_nonneg _) (norm_nonneg _)), div_pow, one_sub_div hxy]
   nth_rw 1 [pow_two]
-  rw [norm_add_sq_eq_norm_sq_add_norm_sq_real h, pow_two, add_sub_cancel', ← pow_two, ← div_pow,
+  rw [norm_add_sq_eq_norm_sq_add_norm_sq_real h, pow_two, add_sub_cancel_left, ← pow_two, ← div_pow,
     Real.sqrt_sq (div_nonneg (norm_nonneg _) (norm_nonneg _))]
-#align inner_product_geometry.angle_add_eq_arcsin_of_inner_eq_zero InnerProductGeometry.angle_add_eq_arcsin_of_inner_eq_zero
 
 /-- An angle in a right-angled triangle expressed using `arctan`. -/
 theorem angle_add_eq_arctan_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0) :
@@ -101,7 +96,6 @@ theorem angle_add_eq_arctan_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
   nth_rw 3 [← Real.sqrt_sq (norm_nonneg x)]
   rw_mod_cast [← Real.sqrt_mul (sq_nonneg _), div_pow, pow_two, pow_two, mul_add, mul_one, mul_div,
     mul_comm (‖x‖ * ‖x‖), ← mul_div, div_self (mul_self_pos.2 (norm_ne_zero_iff.2 h0)).ne', mul_one]
-#align inner_product_geometry.angle_add_eq_arctan_of_inner_eq_zero InnerProductGeometry.angle_add_eq_arctan_of_inner_eq_zero
 
 /-- An angle in a non-degenerate right-angled triangle is positive. -/
 theorem angle_add_pos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x = 0 ∨ y ≠ 0) :
@@ -112,14 +106,12 @@ theorem angle_add_pos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x = 
   rw [div_lt_one (Real.sqrt_pos.2 (Left.add_pos_of_pos_of_nonneg (mul_self_pos.2
     (norm_ne_zero_iff.2 hx)) (mul_self_nonneg _))), Real.lt_sqrt (norm_nonneg _), pow_two]
   simpa [hx] using h0
-#align inner_product_geometry.angle_add_pos_of_inner_eq_zero InnerProductGeometry.angle_add_pos_of_inner_eq_zero
 
 /-- An angle in a right-angled triangle is at most `π / 2`. -/
 theorem angle_add_le_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     angle x (x + y) ≤ π / 2 := by
   rw [angle_add_eq_arccos_of_inner_eq_zero h, Real.arccos_le_pi_div_two]
   exact div_nonneg (norm_nonneg _) (norm_nonneg _)
-#align inner_product_geometry.angle_add_le_pi_div_two_of_inner_eq_zero InnerProductGeometry.angle_add_le_pi_div_two_of_inner_eq_zero
 
 /-- An angle in a non-degenerate right-angled triangle is less than `π / 2`. -/
 theorem angle_add_lt_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0) :
@@ -128,36 +120,32 @@ theorem angle_add_lt_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) 
     norm_add_eq_sqrt_iff_real_inner_eq_zero.2 h]
   exact div_pos (norm_pos_iff.2 h0) (Real.sqrt_pos.2 (Left.add_pos_of_pos_of_nonneg
     (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)))
-#align inner_product_geometry.angle_add_lt_pi_div_two_of_inner_eq_zero InnerProductGeometry.angle_add_lt_pi_div_two_of_inner_eq_zero
 
 /-- The cosine of an angle in a right-angled triangle as a ratio of sides. -/
 theorem cos_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.cos (angle x (x + y)) = ‖x‖ / ‖x + y‖ := by
   rw [angle_add_eq_arccos_of_inner_eq_zero h,
-    Real.cos_arccos (le_trans (by norm_num) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
-      (div_le_one_of_le _ (norm_nonneg _))]
+    Real.cos_arccos (le_trans (by simp) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
+      (div_le_one_of_le₀ _ (norm_nonneg _))]
   rw [mul_self_le_mul_self_iff (norm_nonneg _) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real h]
   exact le_add_of_nonneg_right (mul_self_nonneg _)
-#align inner_product_geometry.cos_angle_add_of_inner_eq_zero InnerProductGeometry.cos_angle_add_of_inner_eq_zero
 
 /-- The sine of an angle in a right-angled triangle as a ratio of sides. -/
 theorem sin_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0 ∨ y ≠ 0) :
     Real.sin (angle x (x + y)) = ‖y‖ / ‖x + y‖ := by
   rw [angle_add_eq_arcsin_of_inner_eq_zero h h0,
-    Real.sin_arcsin (le_trans (by norm_num) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
-      (div_le_one_of_le _ (norm_nonneg _))]
+    Real.sin_arcsin (le_trans (by simp) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
+      (div_le_one_of_le₀ _ (norm_nonneg _))]
   rw [mul_self_le_mul_self_iff (norm_nonneg _) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real h]
   exact le_add_of_nonneg_left (mul_self_nonneg _)
-#align inner_product_geometry.sin_angle_add_of_inner_eq_zero InnerProductGeometry.sin_angle_add_of_inner_eq_zero
 
 /-- The tangent of an angle in a right-angled triangle as a ratio of sides. -/
 theorem tan_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.tan (angle x (x + y)) = ‖y‖ / ‖x‖ := by
   by_cases h0 : x = 0; · simp [h0]
   rw [angle_add_eq_arctan_of_inner_eq_zero h h0, Real.tan_arctan]
-#align inner_product_geometry.tan_angle_add_of_inner_eq_zero InnerProductGeometry.tan_angle_add_of_inner_eq_zero
 
 /-- The cosine of an angle in a right-angled triangle multiplied by the hypotenuse equals the
 adjacent side. -/
@@ -167,10 +155,9 @@ theorem cos_angle_add_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
   by_cases hxy : ‖x + y‖ = 0
   · have h' := norm_add_sq_eq_norm_sq_add_norm_sq_real h
     rw [hxy, zero_mul, eq_comm,
-      add_eq_zero_iff' (mul_self_nonneg ‖x‖) (mul_self_nonneg ‖y‖), mul_self_eq_zero] at h'
+      add_eq_zero_iff_of_nonneg (mul_self_nonneg ‖x‖) (mul_self_nonneg ‖y‖), mul_self_eq_zero] at h'
     simp [h'.1]
-  · exact div_mul_cancel _ hxy
-#align inner_product_geometry.cos_angle_add_mul_norm_of_inner_eq_zero InnerProductGeometry.cos_angle_add_mul_norm_of_inner_eq_zero
+  · exact div_mul_cancel₀ _ hxy
 
 /-- The sine of an angle in a right-angled triangle multiplied by the hypotenuse equals the
 opposite side. -/
@@ -178,13 +165,12 @@ theorem sin_angle_add_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.sin (angle x (x + y)) * ‖x + y‖ = ‖y‖ := by
   by_cases h0 : x = 0 ∧ y = 0; · simp [h0]
   rw [not_and_or] at h0
-  rw [sin_angle_add_of_inner_eq_zero h h0, div_mul_cancel]
+  rw [sin_angle_add_of_inner_eq_zero h h0, div_mul_cancel₀]
   rw [← mul_self_ne_zero, norm_add_sq_eq_norm_sq_add_norm_sq_real h]
-  refine' (ne_of_lt _).symm
+  refine (ne_of_lt ?_).symm
   rcases h0 with (h0 | h0)
   · exact Left.add_pos_of_pos_of_nonneg (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)
   · exact Left.add_pos_of_nonneg_of_pos (mul_self_nonneg _) (mul_self_pos.2 (norm_ne_zero_iff.2 h0))
-#align inner_product_geometry.sin_angle_add_mul_norm_of_inner_eq_zero InnerProductGeometry.sin_angle_add_mul_norm_of_inner_eq_zero
 
 /-- The tangent of an angle in a right-angled triangle multiplied by the adjacent side equals
 the opposite side. -/
@@ -192,7 +178,6 @@ theorem tan_angle_add_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
     Real.tan (angle x (x + y)) * ‖x‖ = ‖y‖ := by
   rw [tan_angle_add_of_inner_eq_zero h]
   rcases h0 with (h0 | h0) <;> simp [h0]
-#align inner_product_geometry.tan_angle_add_mul_norm_of_inner_eq_zero InnerProductGeometry.tan_angle_add_mul_norm_of_inner_eq_zero
 
 /-- A side of a right-angled triangle divided by the cosine of the adjacent angle equals the
 hypotenuse. -/
@@ -202,7 +187,6 @@ theorem norm_div_cos_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
   rcases h0 with (h0 | h0)
   · rw [div_div_eq_mul_div, mul_comm, div_eq_mul_inv, mul_inv_cancel_right₀ (norm_ne_zero_iff.2 h0)]
   · simp [h0]
-#align inner_product_geometry.norm_div_cos_angle_add_of_inner_eq_zero InnerProductGeometry.norm_div_cos_angle_add_of_inner_eq_zero
 
 /-- A side of a right-angled triangle divided by the sine of the opposite angle equals the
 hypotenuse. -/
@@ -211,7 +195,6 @@ theorem norm_div_sin_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
   rcases h0 with (h0 | h0); · simp [h0]
   rw [sin_angle_add_of_inner_eq_zero h (Or.inr h0), div_div_eq_mul_div, mul_comm, div_eq_mul_inv,
     mul_inv_cancel_right₀ (norm_ne_zero_iff.2 h0)]
-#align inner_product_geometry.norm_div_sin_angle_add_of_inner_eq_zero InnerProductGeometry.norm_div_sin_angle_add_of_inner_eq_zero
 
 /-- A side of a right-angled triangle divided by the tangent of the opposite angle equals the
 adjacent side. -/
@@ -221,14 +204,12 @@ theorem norm_div_tan_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
   rcases h0 with (h0 | h0)
   · simp [h0]
   · rw [div_div_eq_mul_div, mul_comm, div_eq_mul_inv, mul_inv_cancel_right₀ (norm_ne_zero_iff.2 h0)]
-#align inner_product_geometry.norm_div_tan_angle_add_of_inner_eq_zero InnerProductGeometry.norm_div_tan_angle_add_of_inner_eq_zero
 
 /-- An angle in a right-angled triangle expressed using `arccos`, version subtracting vectors. -/
 theorem angle_sub_eq_arccos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     angle x (x - y) = Real.arccos (‖x‖ / ‖x - y‖) := by
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg, angle_add_eq_arccos_of_inner_eq_zero h]
-#align inner_product_geometry.angle_sub_eq_arccos_of_inner_eq_zero InnerProductGeometry.angle_sub_eq_arccos_of_inner_eq_zero
 
 /-- An angle in a right-angled triangle expressed using `arcsin`, version subtracting vectors. -/
 theorem angle_sub_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0 ∨ y ≠ 0) :
@@ -236,14 +217,12 @@ theorem angle_sub_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [or_comm, ← neg_ne_zero, or_comm] at h0
   rw [sub_eq_add_neg, angle_add_eq_arcsin_of_inner_eq_zero h h0, norm_neg]
-#align inner_product_geometry.angle_sub_eq_arcsin_of_inner_eq_zero InnerProductGeometry.angle_sub_eq_arcsin_of_inner_eq_zero
 
 /-- An angle in a right-angled triangle expressed using `arctan`, version subtracting vectors. -/
 theorem angle_sub_eq_arctan_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0) :
     angle x (x - y) = Real.arctan (‖y‖ / ‖x‖) := by
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg, angle_add_eq_arctan_of_inner_eq_zero h h0, norm_neg]
-#align inner_product_geometry.angle_sub_eq_arctan_of_inner_eq_zero InnerProductGeometry.angle_sub_eq_arctan_of_inner_eq_zero
 
 /-- An angle in a non-degenerate right-angled triangle is positive, version subtracting
 vectors. -/
@@ -253,7 +232,6 @@ theorem angle_sub_pos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x = 
   rw [← neg_ne_zero] at h0
   rw [sub_eq_add_neg]
   exact angle_add_pos_of_inner_eq_zero h h0
-#align inner_product_geometry.angle_sub_pos_of_inner_eq_zero InnerProductGeometry.angle_sub_pos_of_inner_eq_zero
 
 /-- An angle in a right-angled triangle is at most `π / 2`, version subtracting vectors. -/
 theorem angle_sub_le_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
@@ -261,7 +239,6 @@ theorem angle_sub_le_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) 
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg]
   exact angle_add_le_pi_div_two_of_inner_eq_zero h
-#align inner_product_geometry.angle_sub_le_pi_div_two_of_inner_eq_zero InnerProductGeometry.angle_sub_le_pi_div_two_of_inner_eq_zero
 
 /-- An angle in a non-degenerate right-angled triangle is less than `π / 2`, version subtracting
 vectors. -/
@@ -270,7 +247,6 @@ theorem angle_sub_lt_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) 
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg]
   exact angle_add_lt_pi_div_two_of_inner_eq_zero h h0
-#align inner_product_geometry.angle_sub_lt_pi_div_two_of_inner_eq_zero InnerProductGeometry.angle_sub_lt_pi_div_two_of_inner_eq_zero
 
 /-- The cosine of an angle in a right-angled triangle as a ratio of sides, version subtracting
 vectors. -/
@@ -278,7 +254,6 @@ theorem cos_angle_sub_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.cos (angle x (x - y)) = ‖x‖ / ‖x - y‖ := by
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg, cos_angle_add_of_inner_eq_zero h]
-#align inner_product_geometry.cos_angle_sub_of_inner_eq_zero InnerProductGeometry.cos_angle_sub_of_inner_eq_zero
 
 /-- The sine of an angle in a right-angled triangle as a ratio of sides, version subtracting
 vectors. -/
@@ -287,7 +262,6 @@ theorem sin_angle_sub_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x �
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [or_comm, ← neg_ne_zero, or_comm] at h0
   rw [sub_eq_add_neg, sin_angle_add_of_inner_eq_zero h h0, norm_neg]
-#align inner_product_geometry.sin_angle_sub_of_inner_eq_zero InnerProductGeometry.sin_angle_sub_of_inner_eq_zero
 
 /-- The tangent of an angle in a right-angled triangle as a ratio of sides, version subtracting
 vectors. -/
@@ -295,7 +269,6 @@ theorem tan_angle_sub_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.tan (angle x (x - y)) = ‖y‖ / ‖x‖ := by
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg, tan_angle_add_of_inner_eq_zero h, norm_neg]
-#align inner_product_geometry.tan_angle_sub_of_inner_eq_zero InnerProductGeometry.tan_angle_sub_of_inner_eq_zero
 
 /-- The cosine of an angle in a right-angled triangle multiplied by the hypotenuse equals the
 adjacent side, version subtracting vectors. -/
@@ -303,7 +276,6 @@ theorem cos_angle_sub_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.cos (angle x (x - y)) * ‖x - y‖ = ‖x‖ := by
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg, cos_angle_add_mul_norm_of_inner_eq_zero h]
-#align inner_product_geometry.cos_angle_sub_mul_norm_of_inner_eq_zero InnerProductGeometry.cos_angle_sub_mul_norm_of_inner_eq_zero
 
 /-- The sine of an angle in a right-angled triangle multiplied by the hypotenuse equals the
 opposite side, version subtracting vectors. -/
@@ -311,7 +283,6 @@ theorem sin_angle_sub_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.sin (angle x (x - y)) * ‖x - y‖ = ‖y‖ := by
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [sub_eq_add_neg, sin_angle_add_mul_norm_of_inner_eq_zero h, norm_neg]
-#align inner_product_geometry.sin_angle_sub_mul_norm_of_inner_eq_zero InnerProductGeometry.sin_angle_sub_mul_norm_of_inner_eq_zero
 
 /-- The tangent of an angle in a right-angled triangle multiplied by the adjacent side equals
 the opposite side, version subtracting vectors. -/
@@ -320,7 +291,6 @@ theorem tan_angle_sub_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [← neg_eq_zero] at h0
   rw [sub_eq_add_neg, tan_angle_add_mul_norm_of_inner_eq_zero h h0, norm_neg]
-#align inner_product_geometry.tan_angle_sub_mul_norm_of_inner_eq_zero InnerProductGeometry.tan_angle_sub_mul_norm_of_inner_eq_zero
 
 /-- A side of a right-angled triangle divided by the cosine of the adjacent angle equals the
 hypotenuse, version subtracting vectors. -/
@@ -329,7 +299,6 @@ theorem norm_div_cos_angle_sub_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [← neg_eq_zero] at h0
   rw [sub_eq_add_neg, norm_div_cos_angle_add_of_inner_eq_zero h h0]
-#align inner_product_geometry.norm_div_cos_angle_sub_of_inner_eq_zero InnerProductGeometry.norm_div_cos_angle_sub_of_inner_eq_zero
 
 /-- A side of a right-angled triangle divided by the sine of the opposite angle equals the
 hypotenuse, version subtracting vectors. -/
@@ -338,7 +307,6 @@ theorem norm_div_sin_angle_sub_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [← neg_ne_zero] at h0
   rw [sub_eq_add_neg, ← norm_neg, norm_div_sin_angle_add_of_inner_eq_zero h h0]
-#align inner_product_geometry.norm_div_sin_angle_sub_of_inner_eq_zero InnerProductGeometry.norm_div_sin_angle_sub_of_inner_eq_zero
 
 /-- A side of a right-angled triangle divided by the tangent of the opposite angle equals the
 adjacent side, version subtracting vectors. -/
@@ -347,7 +315,6 @@ theorem norm_div_tan_angle_sub_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (
   rw [← neg_eq_zero, ← inner_neg_right] at h
   rw [← neg_ne_zero] at h0
   rw [sub_eq_add_neg, ← norm_neg, norm_div_tan_angle_add_of_inner_eq_zero h h0]
-#align inner_product_geometry.norm_div_tan_angle_sub_of_inner_eq_zero InnerProductGeometry.norm_div_tan_angle_sub_of_inner_eq_zero
 
 end InnerProductGeometry
 
@@ -359,13 +326,23 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P]
 
 /-- **Pythagorean theorem**, if-and-only-if angle-at-point form. -/
-theorem dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p1 p2 p3 : P) :
-    dist p1 p3 * dist p1 p3 = dist p1 p2 * dist p1 p2 + dist p3 p2 * dist p3 p2 ↔
-      ∠ p1 p2 p3 = π / 2 := by
-  erw [dist_comm p3 p2, dist_eq_norm_vsub V p1 p3, dist_eq_norm_vsub V p1 p2,
-    dist_eq_norm_vsub V p2 p3, ← norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two,
-    vsub_sub_vsub_cancel_right p1, ← neg_vsub_eq_vsub_rev p2 p3, norm_neg]
-#align euclidean_geometry.dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two
+theorem dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p₁ p₂ p₃ : P) :
+    dist p₁ p₃ * dist p₁ p₃ = dist p₁ p₂ * dist p₁ p₂ + dist p₃ p₂ * dist p₃ p₂ ↔
+      ∠ p₁ p₂ p₃ = π / 2 := by
+  rw [dist_comm p₃ p₂, dist_eq_norm_vsub V p₁ p₃, dist_eq_norm_vsub V p₁ p₂,
+    dist_eq_norm_vsub V p₂ p₃, angle, ← norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two,
+    vsub_sub_vsub_cancel_right p₁, ← neg_vsub_eq_vsub_rev p₂ p₃, norm_neg]
+
+/-- The angle at `p₂` is at least `π / 2` if and only if the square of the opposite side is at
+least the sum of the squares of the other two sides. -/
+theorem dist_sq_add_dist_sq_le_dist_sq_iff_pi_div_two_le_angle {p₁ p₂ p₃ : P} :
+    dist p₁ p₂ * dist p₁ p₂ + dist p₃ p₂ * dist p₃ p₂ ≤ dist p₁ p₃ * dist p₁ p₃ ↔
+      π / 2 ≤ ∠ p₁ p₂ p₃ := by
+  rw [angle, ← inner_nonpos_iff_pi_div_two_le_angle, dist_eq_norm_vsub V p₁ p₃,
+    dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₃ p₂,
+    show (p₁ -ᵥ p₃ : V) = (p₁ -ᵥ p₂) - (p₃ -ᵥ p₂) from (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm,
+    norm_sub_mul_self_real]
+  constructor <;> intro h <;> linarith
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
 theorem angle_eq_arccos_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2) :
@@ -374,7 +351,6 @@ theorem angle_eq_arccos_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p�
     inner_neg_left, neg_vsub_eq_vsub_rev] at h
   rw [angle, dist_eq_norm_vsub' V p₃ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, angle_add_eq_arccos_of_inner_eq_zero h]
-#align euclidean_geometry.angle_eq_arccos_of_angle_eq_pi_div_two EuclideanGeometry.angle_eq_arccos_of_angle_eq_pi_div_two
 
 /-- An angle in a right-angled triangle expressed using `arcsin`. -/
 theorem angle_eq_arcsin_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2)
@@ -384,7 +360,6 @@ theorem angle_eq_arcsin_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p�
   rw [← @vsub_ne_zero V, @ne_comm _ p₃, ← @vsub_ne_zero V _ _ _ p₂, or_comm] at h0
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, angle_add_eq_arcsin_of_inner_eq_zero h h0]
-#align euclidean_geometry.angle_eq_arcsin_of_angle_eq_pi_div_two EuclideanGeometry.angle_eq_arcsin_of_angle_eq_pi_div_two
 
 /-- An angle in a right-angled triangle expressed using `arctan`. -/
 theorem angle_eq_arctan_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2)
@@ -394,7 +369,6 @@ theorem angle_eq_arctan_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p�
   rw [ne_comm, ← @vsub_ne_zero V] at h0
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub' V p₃ p₂, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, angle_add_eq_arctan_of_inner_eq_zero h h0]
-#align euclidean_geometry.angle_eq_arctan_of_angle_eq_pi_div_two EuclideanGeometry.angle_eq_arctan_of_angle_eq_pi_div_two
 
 /-- An angle in a non-degenerate right-angled triangle is positive. -/
 theorem angle_pos_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2)
@@ -404,7 +378,6 @@ theorem angle_pos_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂
   rw [← @vsub_ne_zero V, eq_comm, ← @vsub_eq_zero_iff_eq V, or_comm] at h0
   rw [angle, ← vsub_add_vsub_cancel p₁ p₂ p₃, add_comm]
   exact angle_add_pos_of_inner_eq_zero h h0
-#align euclidean_geometry.angle_pos_of_angle_eq_pi_div_two EuclideanGeometry.angle_pos_of_angle_eq_pi_div_two
 
 /-- An angle in a right-angled triangle is at most `π / 2`. -/
 theorem angle_le_pi_div_two_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2) :
@@ -413,7 +386,6 @@ theorem angle_le_pi_div_two_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠
     inner_neg_left, neg_vsub_eq_vsub_rev] at h
   rw [angle, ← vsub_add_vsub_cancel p₁ p₂ p₃, add_comm]
   exact angle_add_le_pi_div_two_of_inner_eq_zero h
-#align euclidean_geometry.angle_le_pi_div_two_of_angle_eq_pi_div_two EuclideanGeometry.angle_le_pi_div_two_of_angle_eq_pi_div_two
 
 /-- An angle in a non-degenerate right-angled triangle is less than `π / 2`. -/
 theorem angle_lt_pi_div_two_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2)
@@ -423,7 +395,6 @@ theorem angle_lt_pi_div_two_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠
   rw [ne_comm, ← @vsub_ne_zero V] at h0
   rw [angle, ← vsub_add_vsub_cancel p₁ p₂ p₃, add_comm]
   exact angle_add_lt_pi_div_two_of_inner_eq_zero h h0
-#align euclidean_geometry.angle_lt_pi_div_two_of_angle_eq_pi_div_two EuclideanGeometry.angle_lt_pi_div_two_of_angle_eq_pi_div_two
 
 /-- The cosine of an angle in a right-angled triangle as a ratio of sides. -/
 theorem cos_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2) :
@@ -432,7 +403,6 @@ theorem cos_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂
     inner_neg_left, neg_vsub_eq_vsub_rev] at h
   rw [angle, dist_eq_norm_vsub' V p₃ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, cos_angle_add_of_inner_eq_zero h]
-#align euclidean_geometry.cos_angle_of_angle_eq_pi_div_two EuclideanGeometry.cos_angle_of_angle_eq_pi_div_two
 
 /-- The sine of an angle in a right-angled triangle as a ratio of sides. -/
 theorem sin_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2)
@@ -442,7 +412,6 @@ theorem sin_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂
   rw [← @vsub_ne_zero V, @ne_comm _ p₃, ← @vsub_ne_zero V _ _ _ p₂, or_comm] at h0
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, sin_angle_add_of_inner_eq_zero h h0]
-#align euclidean_geometry.sin_angle_of_angle_eq_pi_div_two EuclideanGeometry.sin_angle_of_angle_eq_pi_div_two
 
 /-- The tangent of an angle in a right-angled triangle as a ratio of sides. -/
 theorem tan_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2) :
@@ -451,7 +420,6 @@ theorem tan_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂
     inner_neg_left, neg_vsub_eq_vsub_rev] at h
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub' V p₃ p₂, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, tan_angle_add_of_inner_eq_zero h]
-#align euclidean_geometry.tan_angle_of_angle_eq_pi_div_two EuclideanGeometry.tan_angle_of_angle_eq_pi_div_two
 
 /-- The cosine of an angle in a right-angled triangle multiplied by the hypotenuse equals the
 adjacent side. -/
@@ -461,7 +429,6 @@ theorem cos_angle_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
     inner_neg_left, neg_vsub_eq_vsub_rev] at h
   rw [angle, dist_eq_norm_vsub' V p₃ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, cos_angle_add_mul_norm_of_inner_eq_zero h]
-#align euclidean_geometry.cos_angle_mul_dist_of_angle_eq_pi_div_two EuclideanGeometry.cos_angle_mul_dist_of_angle_eq_pi_div_two
 
 /-- The sine of an angle in a right-angled triangle multiplied by the hypotenuse equals the
 opposite side. -/
@@ -471,7 +438,6 @@ theorem sin_angle_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
     inner_neg_left, neg_vsub_eq_vsub_rev] at h
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, sin_angle_add_mul_norm_of_inner_eq_zero h]
-#align euclidean_geometry.sin_angle_mul_dist_of_angle_eq_pi_div_two EuclideanGeometry.sin_angle_mul_dist_of_angle_eq_pi_div_two
 
 /-- The tangent of an angle in a right-angled triangle multiplied by the adjacent side equals
 the opposite side. -/
@@ -482,7 +448,6 @@ theorem tan_angle_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
   rw [ne_comm, ← @vsub_ne_zero V, ← @vsub_eq_zero_iff_eq V, or_comm] at h0
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub' V p₃ p₂, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, tan_angle_add_mul_norm_of_inner_eq_zero h h0]
-#align euclidean_geometry.tan_angle_mul_dist_of_angle_eq_pi_div_two EuclideanGeometry.tan_angle_mul_dist_of_angle_eq_pi_div_two
 
 /-- A side of a right-angled triangle divided by the cosine of the adjacent angle equals the
 hypotenuse. -/
@@ -493,7 +458,6 @@ theorem dist_div_cos_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
   rw [ne_comm, ← @vsub_ne_zero V, ← @vsub_eq_zero_iff_eq V, or_comm] at h0
   rw [angle, dist_eq_norm_vsub' V p₃ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, norm_div_cos_angle_add_of_inner_eq_zero h h0]
-#align euclidean_geometry.dist_div_cos_angle_of_angle_eq_pi_div_two EuclideanGeometry.dist_div_cos_angle_of_angle_eq_pi_div_two
 
 /-- A side of a right-angled triangle divided by the sine of the opposite angle equals the
 hypotenuse. -/
@@ -504,7 +468,6 @@ theorem dist_div_sin_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
   rw [eq_comm, ← @vsub_ne_zero V, ← @vsub_eq_zero_iff_eq V, or_comm] at h0
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, norm_div_sin_angle_add_of_inner_eq_zero h h0]
-#align euclidean_geometry.dist_div_sin_angle_of_angle_eq_pi_div_two EuclideanGeometry.dist_div_sin_angle_of_angle_eq_pi_div_two
 
 /-- A side of a right-angled triangle divided by the tangent of the opposite angle equals the
 adjacent side. -/
@@ -515,6 +478,46 @@ theorem dist_div_tan_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
   rw [eq_comm, ← @vsub_ne_zero V, ← @vsub_eq_zero_iff_eq V, or_comm] at h0
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub' V p₃ p₂, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, norm_div_tan_angle_add_of_inner_eq_zero h h0]
-#align euclidean_geometry.dist_div_tan_angle_of_angle_eq_pi_div_two EuclideanGeometry.dist_div_tan_angle_of_angle_eq_pi_div_two
+
+/-- **Geometric mean theorem** (or right triangle altitude theorem), if-and-only-if form: if
+`p₄` lies strictly between `p₁` and `p₃` and `∠ p₁ p₄ p₂` is a right angle (so that `p₄` is the
+foot of the altitude from `p₂` in the triangle `p₁ p₂ p₃`), then the square of `dist p₂ p₄`
+equals the product of `dist p₁ p₄` and `dist p₃ p₄` if and only if the angle at `p₂` is a right
+angle. -/
+theorem dist_sq_eq_dist_mul_dist_iff_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P}
+    (hf : Sbtw ℝ p₁ p₄ p₃) (hc : ∠ p₁ p₄ p₂ = π / 2) :
+    dist p₂ p₄ ^ 2 = dist p₁ p₄ * dist p₃ p₄ ↔ ∠ p₁ p₂ p₃ = π / 2 := by
+  rw [angle, ← inner_eq_zero_iff_angle_eq_pi_div_two] at hc ⊢
+  obtain ⟨-, r, hr, hw⟩ := angle_eq_pi_iff.mp hf.angle₁₂₃_eq_pi
+  rw [dist_eq_norm_vsub V p₂ p₄, dist_eq_norm_vsub V p₁ p₄, dist_eq_norm_vsub V p₃ p₄,
+    ← vsub_sub_vsub_cancel_right p₁ p₂ p₄, ← vsub_sub_vsub_cancel_right p₃ p₂ p₄, hw]
+  set u := p₁ -ᵥ p₄
+  set v := p₂ -ᵥ p₄
+  have hc' : ⟪v, u⟫ = 0 := (real_inner_comm u v).trans hc
+  have hexp : ⟪u - v, r • u - v⟫ = ‖v‖ ^ 2 - ‖u‖ * (-r * ‖u‖) := by
+    simp only [inner_sub_left, inner_sub_right, real_inner_smul_right, hc, hc',
+      real_inner_self_eq_norm_sq]
+    ring
+  rw [hexp, norm_smul, Real.norm_eq_abs, abs_of_neg hr, sub_eq_zero, eq_comm]
+
+/-- **Geometric mean theorem** (or right triangle altitude theorem): in a right-angled triangle
+`p₁ p₂ p₃` with the right angle at `p₂`, the square of the altitude `dist p₂ p₄` to the
+hypotenuse is the product of the two segments `dist p₁ p₄` and `dist p₃ p₄` into which its foot
+`p₄` divides the hypotenuse. -/
+theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P} (hf : Sbtw ℝ p₁ p₄ p₃)
+    (hc : ∠ p₁ p₄ p₂ = π / 2) (h : ∠ p₁ p₂ p₃ = π / 2) :
+    dist p₂ p₄ ^ 2 = dist p₁ p₄ * dist p₃ p₄ :=
+  (dist_sq_eq_dist_mul_dist_iff_angle_eq_pi_div_two hf hc).mpr h
+
+/-- Geometric mean relation for a leg of a right-angled triangle: under the hypotheses of the
+geometric mean theorem, the square of the leg `dist p₁ p₂` is the product of the hypotenuse
+`dist p₁ p₃` and its segment `dist p₁ p₄` adjacent to that leg. -/
+theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two' {p₁ p₂ p₃ p₄ : P} (hf : Sbtw ℝ p₁ p₄ p₃)
+    (hc : ∠ p₁ p₄ p₂ = π / 2) (h : ∠ p₁ p₂ p₃ = π / 2) :
+    dist p₁ p₂ ^ 2 = dist p₁ p₃ * dist p₁ p₄ := by
+  rw [pow_two, (dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two p₁ p₄ p₂).mpr hc,
+    ← pow_two (dist p₂ p₄), dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two hf hc h,
+    dist_eq_add_dist_of_angle_eq_pi hf.angle₁₂₃_eq_pi]
+  ring
 
 end EuclideanGeometry

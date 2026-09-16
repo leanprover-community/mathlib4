@@ -3,26 +3,36 @@ Copyright (c) 2023 Mantas Bakšys, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.Order.Rearrangement
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+module
 
-#align_import algebra.order.chebyshev from "leanprover-community/mathlib"@"b7399344324326918d65d0c74e9571e3a8cb9199"
+public import Mathlib.Algebra.Order.Monovary
+public import Mathlib.Algebra.Order.Rearrangement
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
+
+import Mathlib.Algebra.BigOperators.Module
+import Mathlib.Data.Multiset.Fintype
 
 /-!
-# Chebyshev's sum inequality
+# Chebyshev's sum inequality and Abel's inequality
 
-This file proves the Chebyshev sum inequality.
+This file proves the Chebyshev sum inequality, as well as Abel's inequality.
 
-Chebyshev's inequality states `(∑ i in s, f i) * (∑ i in s, g i) ≤ s.card * ∑ i in s, f i * g i`
+Chebyshev's inequality states `(∑ i ∈ s, f i) * (∑ i ∈ s, g i) ≤ #s * ∑ i ∈ s, f i * g i`
 when `f g : ι → α` monovary, and the reverse inequality when `f` and `g` antivary.
 
+Abel's inequality controls a weighted sum of a sequence `f` multiplied by an antitone nonnegative
+sequence `g` in terms of the partial sums of `f`.
 
 ## Main declarations
 
 * `MonovaryOn.sum_mul_sum_le_card_mul_sum`: Chebyshev's inequality.
 * `AntivaryOn.card_mul_sum_le_sum_mul_sum`: Chebyshev's inequality, dual version.
 * `sq_sum_le_card_mul_sum_sq`: Special case of Chebyshev's inequality when `f = g`.
+* `Finset.sum_mul_le_sum_mul_of_sum_range_le`, `Finset.sum_mul_le_mul_of_sum_range_le`,
+  `Finset.mul_le_sum_mul_of_le_sum_range`, `Finset.abs_sum_mul_le_mul_of_abs_sum_range_le`:
+  **Abel's inequality** and its one-sided and absolute-value forms.
 
 ## Implementation notes
 
@@ -36,10 +46,10 @@ The case for `Monotone`/`Antitone` pairs of functions over a `LinearOrder` is no
 file because it is easily deducible from the `Monovary` API.
 -/
 
+public section
+
 
 open Equiv Equiv.Perm Finset Function OrderDual
-
-open BigOperators
 
 variable {ι α β : Type*}
 
@@ -47,48 +57,42 @@ variable {ι α β : Type*}
 
 
 section SMul
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
+  [Module α β] [PosSMulMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
-variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [OrderedSMul α β]
-  {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
-
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
-    ((∑ i in s, f i) • ∑ i in s, g i) ≤ s.card • ∑ i in s, f i • g i := by
-  classical
-    obtain ⟨σ, hσ, hs⟩ := s.countable_toSet.exists_cycleOn
-    rw [← card_range s.card, sum_smul_sum_eq_sum_perm hσ]
-    exact
-      sum_le_card_nsmul _ _ _ fun n _ =>
-        hfg.sum_smul_comp_perm_le_sum_smul fun x hx => hs fun h => hx <| IsFixedPt.perm_pow h _
-#align monovary_on.sum_smul_sum_le_card_smul_sum MonovaryOn.sum_smul_sum_le_card_smul_sum
+    (∑ i ∈ s, f i) • ∑ i ∈ s, g i ≤ #s • ∑ i ∈ s, f i • g i := by
+  obtain ⟨σ, hσ, hs⟩ := s.countable_toSet.exists_cycleOn
+  rw [← card_range #s, sum_smul_sum_eq_sum_perm hσ]
+  exact sum_le_card_nsmul _ _ _ fun n _ ↦
+    hfg.sum_smul_comp_perm_le_sum_smul fun x hx ↦ hs fun h ↦ hx <| IsFixedPt.perm_pow h _
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
-    (s.card • ∑ i in s, f i • g i) ≤ (∑ i in s, f i) • ∑ i in s, g i := by
-  refine hfg.dual_right.sum_smul_sum_le_card_smul_sum
-#align antivary_on.card_smul_sum_le_sum_smul_sum AntivaryOn.card_smul_sum_le_sum_smul_sum
+    #s • ∑ i ∈ s, f i • g i ≤ (∑ i ∈ s, f i) • ∑ i ∈ s, g i :=
+  hfg.dual_right.sum_smul_sum_le_card_smul_sum
 
 variable [Fintype ι]
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem Monovary.sum_smul_sum_le_card_smul_sum (hfg : Monovary f g) :
-    ((∑ i, f i) • ∑ i, g i) ≤ Fintype.card ι • ∑ i, f i • g i :=
+    (∑ i, f i) • ∑ i, g i ≤ Fintype.card ι • ∑ i, f i • g i :=
   (hfg.monovaryOn _).sum_smul_sum_le_card_smul_sum
-#align monovary.sum_smul_sum_le_card_smul_sum Monovary.sum_smul_sum_le_card_smul_sum
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
-    (Fintype.card ι • ∑ i, f i • g i) ≤ (∑ i, f i) • ∑ i, g i := by
-  refine (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
-#align antivary.card_smul_sum_le_sum_smul_sum Antivary.card_smul_sum_le_sum_smul_sum
+    Fintype.card ι • ∑ i, f i • g i ≤ (∑ i, f i) • ∑ i, g i :=
+  (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
 
 end SMul
 
@@ -100,62 +104,152 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 
 section Mul
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  {s : Finset ι} {f g : ι → α}
 
-variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
-
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
-    ((∑ i in s, f i) * ∑ i in s, g i) ≤ s.card * ∑ i in s, f i * g i := by
+    (∑ i ∈ s, f i) * ∑ i ∈ s, g i ≤ #s * ∑ i ∈ s, f i * g i := by
   rw [← nsmul_eq_mul]
   exact hfg.sum_smul_sum_le_card_smul_sum
-#align monovary_on.sum_mul_sum_le_card_mul_sum MonovaryOn.sum_mul_sum_le_card_mul_sum
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the product of their sum is greater than the size of the set times their scalar
 product. -/
 theorem AntivaryOn.card_mul_sum_le_sum_mul_sum (hfg : AntivaryOn f g s) :
-    ((s.card : α) * ∑ i in s, f i * g i) ≤ (∑ i in s, f i) * ∑ i in s, g i := by
+    (#s : α) * ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
   rw [← nsmul_eq_mul]
   exact hfg.card_smul_sum_le_sum_smul_sum
-#align antivary_on.card_mul_sum_le_sum_mul_sum AntivaryOn.card_mul_sum_le_sum_mul_sum
+
+/-- Special case of **Jensen's inequality** for sums of powers. -/
+lemma pow_sum_le_card_mul_sum_pow (hf : ∀ i ∈ s, 0 ≤ f i) :
+    ∀ n, (∑ i ∈ s, f i) ^ (n + 1) ≤ (#s : α) ^ n * ∑ i ∈ s, f i ^ (n + 1)
+  | 0 => by simp
+  | n + 1 =>
+    calc
+      _ = (∑ i ∈ s, f i) ^ (n + 1) * ∑ i ∈ s, f i := by rw [pow_succ]
+      _ ≤ (#s ^ n * ∑ i ∈ s, f i ^ (n + 1)) * ∑ i ∈ s, f i := by
+        gcongr
+        exacts [sum_nonneg hf, pow_sum_le_card_mul_sum_pow hf _]
+      _ = #s ^ n * ((∑ i ∈ s, f i ^ (n + 1)) * ∑ i ∈ s, f i) := by rw [mul_assoc]
+      _ ≤ #s ^ n * (#s * ∑ i ∈ s, f i ^ (n + 1) * f i) := by
+        gcongr _ * ?_
+        exact ((monovaryOn_self ..).pow_left₀ hf _).sum_mul_sum_le_card_mul_sum
+      _ = _ := by simp_rw [← mul_assoc, ← pow_succ]
 
 /-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square
 of the sum is less than the size of the set times the sum of the squares. -/
-theorem sq_sum_le_card_mul_sum_sq : (∑ i in s, f i) ^ 2 ≤ s.card * ∑ i in s, f i ^ 2 := by
+theorem sq_sum_le_card_mul_sum_sq : (∑ i ∈ s, f i) ^ 2 ≤ #s * ∑ i ∈ s, f i ^ 2 := by
   simp_rw [sq]
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
-#align sq_sum_le_card_mul_sum_sq sq_sum_le_card_mul_sum_sq
+
+/-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality** for a
+multiset: the square of the sum is at most the cardinality times the sum of the squares. -/
+theorem Multiset.sq_sum_le_card_mul_sum_sq (m : Multiset α) :
+    m.sum ^ 2 ≤ m.card * (m.map (· ^ 2)).sum := by
+  have := m.sum_map_eq_sum_toEnumFinset id
+  have := _root_.sq_sum_le_card_mul_sum_sq (s := toEnumFinset m) (f := Prod.fst)
+  simp_all [m.sum_map_eq_sum_toEnumFinset (· ^ 2)]
 
 variable [Fintype ι]
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem Monovary.sum_mul_sum_le_card_mul_sum (hfg : Monovary f g) :
-    ((∑ i, f i) * ∑ i, g i) ≤ Fintype.card ι * ∑ i, f i * g i :=
+    (∑ i, f i) * ∑ i, g i ≤ Fintype.card ι * ∑ i, f i * g i :=
   (hfg.monovaryOn _).sum_mul_sum_le_card_mul_sum
-#align monovary.sum_mul_sum_le_card_mul_sum Monovary.sum_mul_sum_le_card_mul_sum
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem Antivary.card_mul_sum_le_sum_mul_sum (hfg : Antivary f g) :
-    ((Fintype.card ι : α) * ∑ i, f i * g i) ≤ (∑ i, f i) * ∑ i, g i :=
+    Fintype.card ι * ∑ i, f i * g i ≤ (∑ i, f i) * ∑ i, g i :=
   (hfg.antivaryOn _).card_mul_sum_le_sum_mul_sum
-#align antivary.card_mul_sum_le_sum_mul_sum Antivary.card_mul_sum_le_sum_mul_sum
 
 end Mul
 
-variable [LinearOrderedField α] {s : Finset ι} {f : ι → α}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  {s : Finset ι} {f : ι → α}
 
-theorem sum_div_card_sq_le_sum_sq_div_card :
-    ((∑ i in s, f i) / s.card) ^ 2 ≤ (∑ i in s, f i ^ 2) / s.card := by
+/-- Special case of **Jensen's inequality** for sums of powers. -/
+lemma pow_sum_div_card_le_sum_pow (hf : ∀ i ∈ s, 0 ≤ f i) (n : ℕ) :
+    (∑ i ∈ s, f i) ^ (n + 1) / #s ^ n ≤ ∑ i ∈ s, f i ^ (n + 1) := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
-  rw [← card_pos, ← @Nat.cast_pos α] at hs
-  rw [div_pow, div_le_div_iff (sq_pos_of_ne_zero _ hs.ne') hs, sq (s.card : α), mul_left_comm, ←
-    mul_assoc]
-  exact mul_le_mul_of_nonneg_right sq_sum_le_card_mul_sum_sq hs.le
-#align sum_div_card_sq_le_sum_sq_div_card sum_div_card_sq_le_sum_sq_div_card
+  rw [div_le_iff₀' (by positivity)]
+  exact pow_sum_le_card_mul_sum_pow hf _
+
+theorem sum_div_card_sq_le_sum_sq_div_card :
+    ((∑ i ∈ s, f i) / #s) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) / #s := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp
+  rw [div_pow, div_le_div_iff₀ (by positivity) (by positivity), sq (#s : α), mul_left_comm,
+    ← mul_assoc]
+  gcongr
+  exact sq_sum_le_card_mul_sum_sq
+
+namespace Finset
+
+variable {R : Type*} {f c g : ℕ → R} {M m : R} {n : ℕ}
+
+section IsOrderedRing
+variable [Ring R] [PartialOrder R] [IsOrderedRing R]
+
+/-- **Abel's inequality** (comparison form): if the partial sums of `f` are dominated by those of
+`c` up to `n`, and `g` is nonnegative and antitone, then the `g`-weighted sum of `f` is dominated by
+that of `c`. -/
+theorem sum_mul_le_sum_mul_of_sum_range_le
+    (hfc : ∀ k ≤ n, ∑ i ∈ range k, f i ≤ ∑ i ∈ range k, c i) (hg₀ : 0 ≤ g)
+    (hg : AntitoneOn g (Set.Iio n)) :
+    ∑ i ∈ range n, f i * g i ≤ ∑ i ∈ range n, c i * g i := by
+  rw [← sub_nonneg, ← sum_sub_distrib]
+  have hD (k) (hk : k ≤ n) : 0 ≤ ∑ i ∈ range k, (c i - f i) := by simpa [sub_nonneg] using hfc k hk
+  simp_rw [← sub_mul, ← smul_eq_mul, sum_range_by_parts' (fun i ↦ c i - f i) g n, smul_eq_mul]
+  rw [sub_nonneg]
+  refine (sum_nonpos fun i hi ↦ ?_).trans (mul_nonneg (hD n le_rfl) (hg₀ (n - 1)))
+  have hi' : i < n - 1 := mem_range.1 hi
+  exact mul_nonpos_of_nonneg_of_nonpos (hD (i + 1) (by omega))
+    (sub_nonpos.2 (hg (Set.mem_Iio.2 (by omega)) (Set.mem_Iio.2 (by omega)) (Nat.le_succ i)))
+
+/-- **Abel's inequality** (one-sided upper form): if every partial sum of `f` up to `n` is at most
+`M`, and `g` is nonnegative and antitone, then `∑ i ∈ range n, f i * g i ≤ M * g 0`. -/
+theorem sum_mul_le_mul_of_sum_range_le
+    (hf : ∀ k ≤ n, ∑ i ∈ range k, f i ≤ M) (hg₀ : 0 ≤ g) (hg : AntitoneOn g (Set.Iio n)) :
+    ∑ i ∈ range n, f i * g i ≤ M * g 0 := by
+  have : 0 ≤ M := by simpa using hf 0 n.zero_le
+  refine (sum_mul_le_sum_mul_of_sum_range_le (c := fun i ↦ if i = 0 then M else 0)
+    (fun k hk ↦ ?_) hg₀ hg).trans ?_
+  · rw [sum_ite_eq']
+    split_ifs <;> simp_all
+  · simp_rw [ite_mul, zero_mul, sum_ite_eq']
+    split_ifs <;> simp [mul_nonneg this (hg₀ 0)]
+
+/-- **Abel's inequality** (one-sided lower form): if every partial sum of `f` up to `n` is at least
+`m`, and `g` is nonnegative and antitone, then `m * g 0 ≤ ∑ i ∈ range n, f i * g i`. -/
+theorem mul_le_sum_mul_of_le_sum_range
+    (hf : ∀ k ≤ n, m ≤ ∑ i ∈ range k, f i) (hg₀ : 0 ≤ g) (hg : AntitoneOn g (Set.Iio n)) :
+    m * g 0 ≤ ∑ i ∈ range n, f i * g i := by
+  have : m ≤ 0 := by simpa using hf 0 n.zero_le
+  refine le_trans ?_ (sum_mul_le_sum_mul_of_sum_range_le (f := fun i ↦ if i = 0 then m else 0)
+    (c := f) (fun k hk ↦ ?_) hg₀ hg)
+  · simp_rw [ite_mul, zero_mul, sum_ite_eq']
+    split_ifs <;> simp [mul_nonpos_of_nonpos_of_nonneg this (hg₀ 0)]
+  · rw [sum_ite_eq']
+    split_ifs <;> simp_all
+
+end IsOrderedRing
+
+/-- **Abel's inequality**: if every partial sum of `f` up to `n` has absolute value at most `M`, and
+`g` is nonnegative and antitone, then `|∑ i ∈ range n, f i * g i| ≤ M * g 0`. -/
+theorem abs_sum_mul_le_mul_of_abs_sum_range_le [Ring R] [LinearOrder R] [IsOrderedRing R]
+    (hf : ∀ k ≤ n, |∑ i ∈ range k, f i| ≤ M) (hg₀ : 0 ≤ g) (hg : AntitoneOn g (Set.Iio n)) :
+    |∑ i ∈ range n, f i * g i| ≤ M * g 0 := by
+  rw [abs_le]
+  refine ⟨?_, sum_mul_le_mul_of_sum_range_le (fun k hk ↦ (abs_le.1 (hf k hk)).2) hg₀ hg⟩
+  simpa [neg_mul] using
+    mul_le_sum_mul_of_le_sum_range (m := -M) (fun k hk ↦ (abs_le.1 (hf k hk)).1) hg₀ hg
+
+end Finset

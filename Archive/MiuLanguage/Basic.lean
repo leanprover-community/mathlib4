@@ -3,9 +3,9 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Mathlib.Tactic.Linarith
+module
 
-#align_import miu_language.basic from "leanprover-community/mathlib"@"7e3fa4c114f6f12380cf3b181fd4bd03a2f05b79"
+public import Mathlib.Tactic.Linarith
 
 /-!
 # An MIU Decision Procedure in Lean
@@ -62,6 +62,7 @@ miu, derivable strings
 
 -/
 
+@[expose] public section
 
 namespace Miu
 
@@ -77,7 +78,6 @@ inductive MiuAtom : Type
   | I : MiuAtom
   | U : MiuAtom
   deriving DecidableEq
-#align miu.miu_atom Miu.MiuAtom
 
 /-!
 The annotation `deriving DecidableEq` above indicates that Lean will automatically derive that
@@ -94,7 +94,6 @@ element.
 -/
 instance miuAtomInhabited : Inhabited MiuAtom :=
   Inhabited.mk M
-#align miu.miu_atom_inhabited Miu.miuAtomInhabited
 
 /-- `MiuAtom.repr` is the 'natural' function from `MiuAtom` to `String`.
 -/
@@ -102,7 +101,6 @@ def MiuAtom.repr : MiuAtom → String
   | M => "M"
   | I => "I"
   | U => "U"
-#align miu.miu_atom.repr Miu.MiuAtom.repr
 
 /-- Using `MiuAtom.repr`, we prove that `MiuAtom` is an instance of `Repr`.
 -/
@@ -111,23 +109,16 @@ instance : Repr MiuAtom :=
 
 /-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
 -/
-def Miustr :=
-  List MiuAtom
-deriving Append
-#align miu.miustr Miu.Miustr
-
-instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
+abbrev Miustr := List MiuAtom
 
 /-- For display purposes, an `Miustr` can be represented as a `String`.
 -/
 def Miustr.mrepr : Miustr → String
   | [] => ""
   | c :: cs => c.repr ++ Miustr.mrepr cs
-#align miu.miustr.mrepr Miu.Miustr.mrepr
 
 instance miurepr : Repr Miustr :=
   ⟨fun u _ => u.mrepr⟩
-#align miu.miurepr Miu.miurepr
 
 /-- In the other direction, we set up a coercion from `String` to `Miustr`.
 -/
@@ -140,18 +131,15 @@ def lcharToMiustr : List Char → Miustr
     | 'I' => I :: ms
     | 'U' => U :: ms
     | _ => []
-#align miu.lchar_to_miustr Miu.lcharToMiustr
 
 instance stringCoeMiustr : Coe String Miustr :=
-  ⟨fun st => lcharToMiustr st.data⟩
-#align miu.string_coe_miustr Miu.stringCoeMiustr
+  ⟨fun st => lcharToMiustr st.toList⟩
 
 /-!
 ### Derivability
 -/
 
 
--- Porting note: Added a lot of `↑` to coerce `List MiuAtom` to `Miustr`
 /--
 The inductive type `Derivable` has five constructors. The nonrecursive constructor `mk` corresponds
 to Hofstadter's axiom that `"MI"` is derivable. Each of the constructors `r1`, `r2`, `r3`, `r4`
@@ -159,11 +147,10 @@ corresponds to the one of Hofstadter's rules of inference.
 -/
 inductive Derivable : Miustr → Prop
   | mk : Derivable "MI"
-  | r1 {x} : Derivable (x ++ ↑[I]) → Derivable (x ++ ↑[I, U])
+  | r1 {x} : Derivable (x ++ [I]) → Derivable (x ++ [I, U])
   | r2 {x} : Derivable (M :: x) → Derivable (M :: x ++ x)
-  | r3 {x y} : Derivable (x ++ ↑[I, I, I] ++ y) → Derivable (x ++ ↑(U :: y))
-  | r4 {x y} : Derivable (x ++ ↑[U, U] ++ y) → Derivable (x ++ y)
-#align miu.derivable Miu.Derivable
+  | r3 {x y} : Derivable (x ++ [I, I, I] ++ y) → Derivable (x ++ (U :: y))
+  | r4 {x y} : Derivable (x ++ [U, U] ++ y) → Derivable (x ++ y)
 
 /-!
 ### Rule usage examples
@@ -194,7 +181,7 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 private theorem MIU_der : Derivable "MIU" := by
   change Derivable ([M] ++ [I, U])
   apply Derivable.r1 -- reduce to deriving `"MI"`,
-  constructor -- which is the base of the inductive construction.
+  constructor! -- which is the base of the inductive construction.
 
 example : Derivable "MIUIU" := by
   change Derivable (M :: [I, U] ++ [I, U])

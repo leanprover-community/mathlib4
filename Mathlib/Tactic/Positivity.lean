@@ -1,3 +1,7 @@
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Init.Data.Int.Order
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Positivity.Finset
+
+set_option linter.style.header false
