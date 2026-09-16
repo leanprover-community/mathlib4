@@ -856,7 +856,7 @@ theorem alternatization_apply (m : MultilinearMap (.id R) (fun _ : ι => M) N') 
 
 @[simp]
 theorem alternatization_compLinearMap
-    (f : MultilinearMap R (fun _ : ι => M') N')
+    (f : MultilinearMap (.id R) (fun _ : ι => M') N')
     (g : M →ₗ[R] M') :
     (f.compLinearMap fun _ => g).alternatization = f.alternatization.compLinearMap g := by
   ext
