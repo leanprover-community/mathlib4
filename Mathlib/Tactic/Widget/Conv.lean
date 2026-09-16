@@ -8,9 +8,9 @@ module
 public import Mathlib.Lean.Name
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.OfRpcMethod
-public import Lean.Server.Rpc.RequestHandling
 public import ProofWidgets.Component.Basic
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import ProofWidgets.Component.Basic
 
 /-! # Conv widget
 
@@ -166,7 +166,7 @@ public def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
 
 open Lean.Parser.Tactic.Conv in
 /--
-Given a `path : Path` and `xs : TSepArray ``enterArg ","`, generate the `conv` syntax
+Given a `path : Path` and ```xs : TSepArray ``enterArg ","```, generate the `conv` syntax
 corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some fvar`,
 start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`.
 -/

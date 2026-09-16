@@ -30,18 +30,18 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {J : Type u₂} [Category.{v₂} J]
 
 instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
-  haveI : HasColimitsOfShape WalkingCospanᵒᵖ C :=
+  have : HasColimitsOfShape WalkingCospanᵒᵖ C :=
     hasColimitsOfShape_of_equivalence walkingCospanOpEquiv.symm
   apply hasLimitsOfShape_op_of_hasColimitsOfShape
 
 instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
-  haveI : HasLimitsOfShape WalkingSpanᵒᵖ C :=
+  have : HasLimitsOfShape WalkingSpanᵒᵖ C :=
     hasLimitsOfShape_of_equivalence walkingSpanOpEquiv.symm
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `Span f.op g.op` and `(Cospan f g).op` -/
 @[simps!]
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -52,6 +52,7 @@ def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `span f.unop g.unop` and `(cospan f g).leftOp` -/
 @[simps!]
 def spanUnop {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -74,6 +75,7 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
       Functor.associator _ _ _
     _ ≅ walkingCospanOpEquiv.functor ⋙ span f.op g.op := isoWhiskerLeft _ (spanOp f g).symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `Cospan f.op g.op` and `(Span f g).op` -/
 @[simps!]
 def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
@@ -84,6 +86,7 @@ def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `cospan f.unop g.unop` and `(span f g).leftOp` -/
 @[simps!]
 def cospanUnop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : X ⟶ Z) :
@@ -109,7 +112,7 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
 namespace PushoutCocone
 
 /-- The obvious map `PushoutCocone f g → PullbackCone f.unop g.unop` -/
-@[simps!]
+@[implicit_reducible, simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     PullbackCone f.unop g.unop :=
   Cocone.unop ((Cocone.precompose (opCospan f.unop g.unop).hom).obj
@@ -122,7 +125,7 @@ theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocon
     c.unop.snd = c.inr.unop := by simp
 
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
-@[simps!]
+@[implicit_reducible, simps!]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
   (Cone.postcompose (cospanOp f g).symm.hom).obj
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
@@ -138,7 +141,7 @@ end PushoutCocone
 namespace PullbackCone
 
 /-- The obvious map `PullbackCone f g → PushoutCocone f.unop g.unop` -/
-@[simps!]
+@[implicit_reducible, simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     PushoutCocone f.unop g.unop :=
   Cone.unop
@@ -152,7 +155,7 @@ theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone
     c.unop.inr = c.snd.unop := by simp
 
 /-- The obvious map `PullbackCone f g → PushoutCocone f.op g.op` -/
-@[simps!]
+@[implicit_reducible, simps!]
 def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutCocone f.op g.op :=
   (Cocone.precompose (spanOp f g).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
@@ -385,7 +388,6 @@ end Pushout
 
 section Map
 
-set_option backward.isDefEq.respectTransparency false in
 lemma op_pullbackMap {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂]
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) [HasPullback g₁ g₂]
     (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁) (eq₂) :
@@ -397,7 +399,6 @@ lemma op_pullbackMap {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPul
   rw [Iso.eq_inv_comp]
   ext <;> simp [← op_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma op_pushoutMap {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂]
     (g₁ : T ⟶ Y) (g₂ : T ⟶ Z) [HasPushout g₁ g₂]
     (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
@@ -420,21 +421,18 @@ open Limits
 variable {C : Type*} [Category* C]
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushout cocone in the opposite category associated to the cone of
 a commutative square identifies to the cocone of the flipped commutative square in
 the opposite category -/
 def coneOp (p : CommSq f g h i) : p.cone.op ≅ p.flip.op.cocone :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback cone in the opposite category associated to the cocone of
 a commutative square identifies to the cone of the flipped commutative square in
 the opposite category -/
 def coconeOp (p : CommSq f g h i) : p.cocone.op ≅ p.flip.op.cone :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushout cocone obtained from the pullback cone associated to a
 commutative square in the opposite category identifies to the cocone associated
 to the flipped square. -/
@@ -442,7 +440,6 @@ def coneUnop {W X Y Z : Cᵒᵖ} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : 
     p.cone.unop ≅ p.flip.unop.cocone :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback cone obtained from the pushout cone associated to a
 commutative square in the opposite category identifies to the cone associated
 to the flipped square. -/

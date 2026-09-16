@@ -3,8 +3,10 @@ Copyright (c) 2026 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Polynomial.Basic
-import Mathlib.RingTheory.Polynomial.Content
+module
+
+public import Mathlib.Analysis.Polynomial.Basic
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # IMO 2002 Q3
@@ -12,7 +14,7 @@ import Mathlib.RingTheory.Polynomial.Content
 Find all pairs of positive integers $m,n ≥ 3$ for which there exist infinitely many
 positive integers $a$ such that $(a^m+a-1) / (a^n+a^2-1)$ is itself an integer.
 
-# Solution
+## Solution
 
 It suffices to find $(m,n)$ pairs for which $a^n+a^2-1 ∣ a^m+a-1$, where both sides are viewed as
 polynomials in $a$. This automatically gives $n ≤ m$, so we have
@@ -25,6 +27,8 @@ $$r^{m-n+1}+r^{m-n}-1 ≤ r^n+r^{m-n}-1 < r^n+r^2-1 = 0.$$
 This eliminates all possibilities except $m = 5, n = 3$,
 which is easily seen to satisfy the original condition.
 -/
+
+public section
 
 open Polynomial
 
@@ -113,6 +117,6 @@ theorem result : {a : ℤ | 0 < a ∧ a ^ n + a ^ 2 - 1 ∣ a ^ m + a - 1}.Infin
   conv =>
     enter [1, 1, a]
     rw [show a ^ 5 + a - 1 = (a ^ 2 - a + 1) * (a ^ 3 + a ^ 2 - 1) by ring]
-  simpa using Set.Ioi_infinite 0
+  simpa using! Set.Ioi_infinite 0
 
 end Imo2002Q3

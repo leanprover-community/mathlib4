@@ -6,6 +6,8 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Continuous linear maps with a continuous left/right inverse
@@ -143,14 +145,14 @@ lemma comp {g : F →L[R] G} (hg : g.HasLeftInverse) (hf : f.HasLeftInverse) :
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   rw [hginv, hfinv]
 
 lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasLeftInverse) :
     f.HasLeftInverse := by
   obtain ⟨fginv, hfginv⟩ := hfg
   refine ⟨fginv.comp g, fun y ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   exact hfginv y
 
 lemma comp_continuousLinearEquivalence {f₀ : F' ≃L[R] E} (hf : f.HasLeftInverse) :
@@ -180,7 +182,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
   [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [T2Space F] {f : E →L[𝕜] F}
 
-/-- If `f : E → F` is injective and `E` is finite-dimensional,
+/-- If `f : E → F` is injective and `F` is finite-dimensional,
 `f` has a continuous left inverse. -/
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Injective f) :
@@ -197,10 +199,11 @@ end NontriviallyNormedField
 section Ring
 
 -- The next lemmas assume we are working over a ring.
-variable {R E E' F F' G : Type*} [Ring R]
+variable {R E F : Type*} [Ring R]
   [TopologicalSpace E] [AddCommGroup E] [Module R E]
   [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has a continuous left inverse, its range admits a closed complement. -/
 lemma closedComplemented_range (hf : f.HasLeftInverse) : Submodule.ClosedComplemented f.range := by
   -- Idea of proof: let g be a left inverse for f. Then ker g is a closed subspace of F,
@@ -211,7 +214,7 @@ lemma closedComplemented_range (hf : f.HasLeftInverse) : Submodule.ClosedComplem
   use (f.comp hf.leftInverse).codRestrict f.range (by intro y; simp)
   rintro ⟨y, x, rfl⟩
   ext
-  simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply]
+  simp only [coe_coe, coe_codRestrict_apply, comp_apply]
   rw [hf.leftInverse_leftInverse]
 
 section
@@ -232,6 +235,7 @@ def complement (h : f.HasLeftInverse) : Submodule R F :=
 lemma isClosed_complement (h : f.HasLeftInverse) : IsClosed (X := F) h.complement :=
   h.closedComplemented_range.isClosed_complement
 
+omit [T1Space F] in
 lemma isCompl_complement (h : f.HasLeftInverse) : IsCompl f.range h.complement :=
   h.closedComplemented_range.isCompl_complement
 
@@ -255,7 +259,7 @@ lemma of_injective_of_isClosed_range_of_closedComplement_range {f : E →L[R] F}
   -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
   obtain ⟨p, hp⟩ := hf''
   refine ⟨(f.leftInverse_of_injective_of_isClosed_range hf hf').comp p, fun x ↦ ?_⟩
-  simpa [hp ⟨f x, by simp⟩] using f.rangeRestrict.leftInverse_apply_of_inj this x
+  simpa [hp ⟨f x, by simp⟩] using! f.rangeRestrict.leftInverse_apply_of_inj this x
 
 end
 
@@ -308,7 +312,7 @@ lemma comp {g : F →L[R] G} (hg : g.HasRightInverse) (hf : f.HasRightInverse) :
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   rw [hfinv, hginv]
 
 lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasRightInverse) :

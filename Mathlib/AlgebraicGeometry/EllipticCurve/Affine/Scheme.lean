@@ -27,9 +27,9 @@ variable {R : Type u} [CommRing R] (W : Affine R) [W.IsElliptic] (A : Type u) [N
 morphisms from `Spec A` to `Spec R[W]` in the category of schemes over `Spec R`. -/
 @[simps!]
 noncomputable def pointEquivSpec :
-    W⟮A⟯ ≃ WithZero {f : Spec (.of A) ⟶ Spec (.of W.CoordinateRing) //
+    (W⁄A).Point ≃ WithZero {f : Spec (.of A) ⟶ Spec (.of W.CoordinateRing) //
       f ≫ Spec.algebraMap R W.CoordinateRing = Spec.algebraMap R A} :=
   pointEquiv .. |>.trans (Spec.homEquivAlgHom.trans <| AdjoinRoot.equivAevalAeval _ |>.trans <|
-    Equiv.setCongr <| by simp_rw [map_polynomial, Polynomial.evalEval_algebraMap]).symm.optionCongr
+    Set.equivOfEq <| by simp_rw [map_polynomial, Polynomial.evalEval_algebraMap]).symm.optionCongr
 
 end WeierstrassCurve.Affine

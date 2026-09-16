@@ -36,7 +36,7 @@ It can be readily confirmed that approximate subgroups are a weakening of subgro
 * `isApproximateSubgroup_one`: A 1-approximate subgroup is the same thing as a subgroup.
 -/
 
-@[expose] public section
+public section
 
 open scoped Finset Pointwise
 

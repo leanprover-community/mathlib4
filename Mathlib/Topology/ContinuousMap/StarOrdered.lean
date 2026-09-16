@@ -34,7 +34,7 @@ be a problem since the only purpose is to obtain the instance `StarOrderedRing C
 `Prop`, but we note it for future reference.
 -/
 
-@[expose] public section
+public section
 
 /-- A type class encoding the property that there is a continuous square root function on
 nonnegative elements. This holds for `ℝ≥0`, `ℝ` and `ℂ` (as well as any C⋆-algebra), and this
@@ -61,7 +61,7 @@ instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
   constructor
   · rw [ContinuousMap.le_def]
     intro h
-    use (mk _ ContinuousSqrt.continuousOn_sqrt.restrict).comp
+    use (mk _ ContinuousSqrt.continuousOn_sqrt.domRestrict).comp
       ⟨_, map_continuous (f.prodMk g) |>.codRestrict (s := {x | x.1 ≤ x.2}) (by exact h)⟩
     ext x
     simpa [IsSelfAdjoint.star_eq <| .of_nonneg (ContinuousSqrt.sqrt_nonneg (f x, g x) (h x))]

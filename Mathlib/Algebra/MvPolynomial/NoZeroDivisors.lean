@@ -26,7 +26,7 @@ variable {R : Type*}
 
 namespace MvPolynomial
 
-variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' : R} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 
@@ -50,7 +50,7 @@ lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ 
     (h : ∀ i ∈ s, f i ≠ 0) :
     degreeOf n (∏ i ∈ s, f i) = ∑ i ∈ s, degreeOf n (f i) := by
   rcases subsingleton_or_nontrivial (MvPolynomial σ R) with nontrivial | nontrivial
-  · simp [Subsingleton.eq_zero]
+  · simp [Subsingleton.eq_zero (α := MvPolynomial σ R)]
   · classical
     induction s using Finset.induction_on with
     | empty => simp
@@ -77,12 +77,11 @@ lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
 
 end Degrees
 
-set_option backward.isDefEq.respectTransparency false in
 theorem totalDegree_mul_of_isDomain {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
-  cases exists_wellOrder σ
-  simp [← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
+  cases exists_wellFoundedGT σ
+  simp [← degree_degLexDegree, MonomialOrder.degree_mul hf hg]
 
 theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     (h : f ∣ g) (hg : g ≠ 0) :
@@ -95,7 +94,7 @@ theorem dvd_C_iff_exists {f : MvPolynomial σ R} {a : R} (ha : a ≠ 0) :
     f ∣ C a ↔ ∃ b, b ∣ a ∧ f = C b := by
   constructor
   · intro hf
-    use coeff 0 f
+    use f.coeff 0
     suffices f.totalDegree = 0 by
       rw [totalDegree_eq_zero_iff_eq_C] at this
       refine ⟨?_, this⟩
@@ -124,10 +123,10 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p)
       exact hp (rename_injective _ (Equiv.injective _) (by simpa using h))
     simp_rw [ne_eq, renameEquiv_apply, algHom_C, algebraMap_eq, optionEquivLeft_C,
       Polynomial.leadingCoeff_C]
-    contrapose! hp'
+    contrapose hp'
     ext m
     apply hc.1
-    simpa using congr_arg (coeff m) hp'
+    simpa using congr_arg ((·.coeff m)) hp'
 
 end nonZeroDivisors
 
@@ -135,7 +134,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [NoZeroDivisors R] {p q r : MvPolynomial σ R}
+variable [CommRing R] [NoZeroDivisors R] {p r : MvPolynomial σ R}
 
 theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
     p ∣ monomial n a ↔ ∃ m b, m ≤ n ∧ b ∣ a ∧ p = monomial m b := by

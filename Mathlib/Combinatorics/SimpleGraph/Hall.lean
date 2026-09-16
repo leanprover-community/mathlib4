@@ -27,7 +27,7 @@ This file derives Hall's Marriage Theorem for bipartite graphs from the combinat
 Hall's Marriage Theorem
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -35,7 +35,7 @@ namespace SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
-/- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
+/-- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
 the subgraph including only the edges between `x` and `f x` for all `x` in `p`. -/
 private
 abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ : ∀ x : p, f x ∉ p)
@@ -49,8 +49,8 @@ abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ 
     split_ifs at h
     · exact h ▸ h₂ ⟨v, by assumption⟩
     · exact h ▸ h₂ ⟨w, by assumption⟩ |>.symm
-  edge_vert {v w} := by grind
-  symm {x y} := by grind
+  edge_vert := by grind
+  symm.symm := by grind
 
 variable [G.LocallyFinite] {p₁ p₂ : Set V}
 
@@ -75,7 +75,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
   · exact ⟨f ⟨v, h'⟩, by simp_all⟩
   · use x
     have := hx₂ ▸ this ⟨x, hx₁⟩
-    simp only [this, ↓reduceDIte, hx₁, hx₂, dite_else_false, forall_exists_index, true_and]
+    simp only [this, ↓reduceDIte, hx₁, hx₂, dite_false_right, forall_exists_index, true_and]
     exact fun _ _ k ↦ Subtype.ext_iff.mp <| hf₁ (hx₂ ▸ k)
 
 lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
@@ -123,7 +123,7 @@ theorem exists_isPerfectMatching_of_forall_ncard_le
     rw [Set.range_comp', hb₁.surjective.range_eq, Subtype.coe_image_univ]
     exact union_eq_univ_of_forall_ncard_le h₁ h₂
   refine ⟨fun v _ ↦ ?_, Subgraph.isSpanning_iff.mpr this⟩
-  simp only [dite_else_false]
+  simp only [dite_false_right]
   split
   · exact existsUnique_eq'
   · obtain ⟨x, _⟩ := hb₁.existsUnique ⟨v, by grind⟩

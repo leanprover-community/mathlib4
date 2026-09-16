@@ -18,13 +18,13 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Main results
 
-* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and ⟨2, 3⟩ = {1}ᶜ.
+* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and `⟨2, 3⟩ = {1}ᶜ`.
   The proof follows https://math.stackexchange.com/a/4224486.
 
 * `Ideal.isPrime_int_iff` : the prime ideals in ℤ are ⟨0⟩ and ⟨p⟩ (for prime `p`).
 -/
 
-@[expose] public section
+public section
 
 /-- The natural numbers form a local semiring. -/
 instance : IsLocalRing ℕ where
@@ -47,8 +47,8 @@ theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = span {2, 3} := b
 
 theorem Nat.one_mem_span_iff {s : Set ℕ} : 1 ∈ span s ↔ 1 ∈ s := by
   rw [← SetLike.mem_coe, ← not_iff_not]
-  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm,
-    ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
+  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm]
+  rw [Set.subset_compl_comm, ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
 
 theorem Nat.one_mem_closure_iff {s : Set ℕ} : 1 ∈ AddSubmonoid.closure s ↔ 1 ∈ s := by
   rw [← Submodule.span_nat_eq_addSubmonoidClosure]
@@ -62,7 +62,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     · exact isPrime_bot
     · exact (maximalIdeal.isMaximal ℕ).isPrime
     · rwa [span_singleton_prime (by simp [hp.ne_zero]), ← Nat.prime_iff]
-  rw [← le_bot_iff, SetLike.not_le_iff_exists] at h0
+  rw [← le_bot_iff, IsConcreteLE.not_le_iff_exists] at h0
   classical
   let p := Nat.find h0
   have ⟨(hp : p ∈ P), (hp0 : p ≠ 0)⟩ := Nat.find_spec h0
@@ -71,7 +71,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     fun ⟨m, n, hm, hn, eq⟩ ↦ have := mul_ne_zero_iff.mp (eq ▸ hp0)
     (h.mem_or_mem (eq ▸ hp)).elim (Nat.find_min h0 hm ⟨·, this.1⟩) (Nat.find_min h0 hn ⟨·, this.2⟩)
   push Not at hsp
-  have ⟨q, hq, hqp⟩ := SetLike.exists_of_lt
+  have ⟨q, hq, hqp⟩ := IsConcreteLE.exists_of_lt
     ((P.span_singleton_le_iff_mem.mpr hp).lt_of_ne (hsp p prime).symm)
   obtain rfl | hn1 := eq_or_ne n 0
   · exact Ideal.zero_mem _
@@ -94,7 +94,7 @@ theorem Ideal.isPrime_int_iff {P : Ideal ℤ} :
 
 theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
   refine le_antisymm (iSup_le fun s ↦ le_of_not_gt fun hs ↦ ?_) ?_
-  · replace hs : 2 < s.length := ENat.coe_lt_coe.mp (WithBot.coe_lt_coe.mp hs)
+  · replace hs : 2 < s.length := ENat.natCast_lt_natCast.mp (WithBot.coe_lt_coe.mp hs)
     let s := s.take ⟨3, by lia⟩
     have : NeZero s.length := ⟨three_ne_zero⟩
     have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)
@@ -110,5 +110,5 @@ theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
     fin_cases i
     · exact bot_lt_iff_ne_bot.mpr (Ideal.span_singleton_eq_bot.not.mpr two_ne_zero)
     · simp_rw [Nat.maximalIdeal_eq_span_two_three]
-      exact SetLike.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
+      exact IsConcreteLE.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
         3, Ideal.subset_span (by simp), Ideal.mem_span_singleton.not.mpr <| by simp⟩

@@ -73,7 +73,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
     rw [← sub_sub_self 1 t] at ht₁; generalize 1 - t = e at *
     constructor
     · suffices e ∈ (Submodule.span (S ⊗[R] S) {1 - e}).annihilator by
-        simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm, -Ideal.submodule_span_eq,
+        simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm,
           Submodule.mem_annihilator_span_singleton] using this
       exact (show Ideal.span _ ≤ _ by simpa only [Ideal.span_le, Set.range_subset_iff,
         Submodule.mem_annihilator_span_singleton, SetLike.mem_coe]) ht₂
@@ -131,6 +131,7 @@ variable (R S) in
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
+
 See `Algebra.FormallyUnramified.iff_exists_tensorProduct`.
 This is the choice of such a `t`.
 -/
@@ -243,15 +244,13 @@ def sec :
       LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply, RingHom.id_apply]
     trans (TensorProduct.AlgebraTensorModule.map (LinearMap.id (R := S) (M := S))
       ((LinearMap.flip (AlgHom.toLinearMap (lsmul R R M))) m)) ((1 ⊗ₜ r) * elem R S)
-    · induction elem R S using TensorProduct.induction_on
-      · simp
+    · induction elem R S using TensorProduct.inductionOn
       · simp [smul_comm r]
       · simp only [map_add, mul_add, *]
     · have := one_tmul_sub_tmul_one_mul_elem (R := R) r
       rw [sub_mul, sub_eq_zero] at this
       rw [this]
-      induction elem R S using TensorProduct.induction_on
-      · simp
+      induction elem R S using TensorProduct.inductionOn
       · simp [TensorProduct.smul_tmul']
       · simp only [map_add, smul_add, mul_add, *]
 
@@ -264,8 +263,7 @@ lemma comp_sec :
     Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
-  · induction elem R S using TensorProduct.induction_on with
-    | zero => simp
+  · induction elem R S using TensorProduct.inductionOn with
     | tmul r s => simp [mul_smul, smul_comm r s]
     | add y z hy hz => simp [hy, hz, add_smul]
   · rw [lmul_elem, one_smul]

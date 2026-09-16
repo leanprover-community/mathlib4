@@ -34,7 +34,7 @@ structure Sequential where
 namespace Sequential
 
 instance : Inhabited Sequential.{u} :=
-  ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
+  ⟨{ toTop := ↧(ULift (Fin 37)) }⟩
 
 instance : CoeSort Sequential Type* :=
   ⟨fun X => X.toTop⟩
@@ -42,17 +42,22 @@ instance : CoeSort Sequential Type* :=
 attribute [instance] is_sequential
 
 instance : Category.{u, u + 1} Sequential.{u} :=
-  inferInstanceAs (Category (InducedCategory _ toTop))
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance : ConcreteCategory.{u} Sequential.{u} (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 variable (X : Type u) [TopologicalSpace X] [SequentialSpace X]
 
 /-- Constructor for objects of the category `Sequential`. -/
 abbrev of : Sequential.{u} where
-  toTop := TopCat.of X
+  toTop := ↧X
   is_sequential := ‹_›
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Sequential.of X` as `↧X`. -/
+@[app_delab Sequential.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 /-- The fully faithful embedding of `Sequential` in `TopCat`. -/
 @[simps!]

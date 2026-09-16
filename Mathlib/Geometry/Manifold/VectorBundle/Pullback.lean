@@ -19,7 +19,7 @@ This file defines pullbacks of `C^n` vector bundles over a manifold.
 
 -/
 
-@[expose] public section
+public section
 
 open Bundle Set
 open scoped Manifold

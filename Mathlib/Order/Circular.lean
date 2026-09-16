@@ -20,10 +20,13 @@ This file defines circular preorders, circular partial orders and circular order
   - cyclic: `btw a b c → btw b c a`
   - antisymmetric: `btw a b c → btw c b a → a = b ∨ b = c ∨ c = a`
   - total: `btw a b c ∨ btw c b a`
+
   along with a strict betweenness relation `sbtw : α → α → α → Prop` which respects
   `sbtw a b c ↔ btw a b c ∧ ¬ btw c b a`, analogously to how `<` and `≤` are related, and is
   - transitive: `sbtw a b c → sbtw b d c → sbtw a d c`.
+
 * A `CircularPartialOrder` drops totality.
+
 * A `CircularPreorder` further drops antisymmetry.
 
 The intuition is that a circular order is a circle and `btw a b c` means that going around
@@ -57,6 +60,7 @@ There's an unsolved diamond on `OrderDual α` here. The instances `LE α → Btw
   `LE α` → `LE αᵒᵈ` → `Btw αᵒᵈ`
 * `LT α` → `SBtw α` → `SBtw αᵒᵈ` vs
   `LT α` → `LT αᵒᵈ` → `SBtw αᵒᵈ`
+
 The fields are propeq, but not defeq. It is temporarily fixed by turning the circularizing instances
 into definitions.
 
@@ -324,11 +328,11 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
 
 theorem compl_cIcc {a b : α} : (cIcc a b)ᶜ = cIoo b a := by
   ext
-  rw [Set.mem_cIoo, sbtw_iff_not_btw, cIcc, mem_compl_iff, mem_setOf]
+  rw [Set.mem_cIoo, sbtw_iff_not_btw, cIcc, mem_compl_iff, mem_ofPred]
 
 theorem compl_cIoo {a b : α} : (cIoo a b)ᶜ = cIcc b a := by
   ext
-  rw [Set.mem_cIcc, btw_iff_not_sbtw, cIoo, mem_compl_iff, mem_setOf]
+  rw [Set.mem_cIcc, btw_iff_not_sbtw, cIoo, mem_compl_iff, mem_ofPred]
 
 end CircularOrder
 

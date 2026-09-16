@@ -19,7 +19,7 @@ Those instances are in their own file only because they require much less import
 file they could go to. This is unfortunate and should be fixed by reorganising files.
 -/
 
-@[expose] public section
+public section
 
 open scoped Int
 

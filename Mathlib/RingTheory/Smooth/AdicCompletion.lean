@@ -51,6 +51,7 @@ noncomputable def liftAdicCompletionAux : (m : ℕ) → A →ₐ[R] S ⧸ (I ^ m
         (Ideal.map_quotient_self _)
     FormallySmooth.lift J ⟨m + 1 + 1, this⟩ q
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma factorₐ_comp_liftAdicCompletionAux (m : ℕ) :
     (Ideal.Quotient.factorₐ _ (Ideal.pow_le_pow_right m.le_succ)).comp
@@ -107,7 +108,7 @@ public lemma exists_kerProj_comp_eq_id (f : S →ₐ[R] A) (hf : Function.Surjec
     (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
   use g
   ext x
-  simpa using congr(Ideal.quotientKerAlgEquivOfSurjective hf ($hg x))
+  simpa using! congr(Ideal.quotientKerAlgEquivOfSurjective hf ($hg x))
 
 end FormallySmooth
 

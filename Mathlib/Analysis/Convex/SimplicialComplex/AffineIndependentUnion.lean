@@ -43,7 +43,7 @@ def ofSimpleGraph {ι : Type*} [DecidableEq ι] (G : SimpleGraph ι) :
   faces := ({s : Finset ι | ∃ v, s = {v}}) ∪ Sym2.toFinset '' G.edgeSet
   isRelLowerSet_faces := by
     intro s hs
-    simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_image] at hs
+    simp only [Set.mem_union, Set.mem_ofPred_eq, Set.mem_image] at hs
     rcases hs with ⟨v, rfl⟩ | ⟨e, he, rfl⟩
     · simp
     · constructor
@@ -52,7 +52,7 @@ def ofSimpleGraph {ι : Type*} [DecidableEq ι] (G : SimpleGraph ι) :
         by_cases h : b.card = 1 <;>
           grind [Finset.card_eq_one, Finset.eq_of_subset_of_card_le hb_sub, Sym2.card_toFinset]
   singleton_mem := by
-    simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_image]
+    simp only [Set.mem_union, Set.mem_ofPred_eq, Set.mem_image]
     intro v
     exact Or.inl ⟨v, rfl⟩
 
@@ -94,7 +94,7 @@ noncomputable def onFinsupp {𝕜 ι : Type*} [DecidableEq ι]
       refine (Finsupp.linearIndependent_single_one 𝕜 ι).affineIndependent.range.mono fun x hx => ?_
       simp only [Set.mem_iUnion, Finset.mem_coe] at hx
       obtain ⟨_, ⟨_, _, rfl⟩, hx⟩ := hx
-      grind )
+      grind)
 
 /--
 The simplicial complex associated to a simple graph, where vertices of the graph
