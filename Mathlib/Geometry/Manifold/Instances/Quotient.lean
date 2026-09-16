@@ -111,11 +111,11 @@ def transitionMap : OpenPartialHomeomorph H H :=
   (chartAt H x.out).symm.trans (((x.localInverseAt).symm.trans (y.localInverseAt)).trans
     (chartAt H y.out))
 
-/-- For a fixed `g`, the transition map of the quotient agrees with `φ x⁻¹ ≫ (g • ·) ≫ φ y` on
-the preimage under `(φ x).symm` of the set where the section comparison is the action of `g`. -/
-@[to_additive /-- For a fixed `g`, the transition map of the quotient agrees with
-`φ x⁻¹ ≫ (g +ᵥ ·) ≫ φ y` on the preimage under `(φ x).symm` of the set where the section
-comparison is the additive action of `g`. -/]
+/-- Wherever `g` carries a point of `M` into the target of the local section at `y`, the transition
+map of the quotient is just the action of `g`, read in the charts of `M` at `x.out` and `y.out`. -/
+@[to_additive /-- Wherever `g` carries a point of `M` into the range of the local section at `y`,
+the transition map of the quotient is just the additive action of `g`, read in the charts of `M`
+at `x.out` and `y.out`. -/]
 lemma transitionMap_eqOn_smul (g : G) :
     ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)).EqOn
       (transitionMap x y)
@@ -125,10 +125,10 @@ lemma transitionMap_eqOn_smul (g : G) :
   simp only [transitionMap, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
   simpa using congrArg (chartAt H y.out) (localInverseAt_symm_trans_eqOn_smul x y g hh)
 
-/-- Locally, the transition map of the quotient is `φ x⁻¹ ≫ (g • ·) ≫ φ y` for a single group
-element `g`. -/
-@[to_additive /-- Locally, the transition map of the quotient is `φ x⁻¹ ≫ (g +ᵥ ·) ≫ φ y` for
-a single group element `g`. -/]
+/-- Near each point of its source, the transition map of the quotient is the action of a single
+element `g : G`. -/
+@[to_additive /-- Near each point of its source, the transition map of the quotient is the
+additive action of a single element `g : G`. -/]
 lemma transitionMap_locally_smul {h : H} (hh : h ∈ (transitionMap x y).source) :
     ∃ g : G, h ∈ (chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target) ∧
       ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)).EqOn
