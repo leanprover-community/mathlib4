@@ -37,8 +37,13 @@ variable {n : ℕ}
 theorem measurableSet_closedInterior (s : Simplex ℝ P n) : MeasurableSet s.closedInterior :=
   s.isClosed_closedInterior.measurableSet
 
-/-- The volume of the cross-section is scaled from the base because of homothety -/
-private theorem measure_cross_section (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+/-- The volume of the cross section of a simplex is scaled from the base. This is an intermediate
+result for volume calculation and is expressed as a.e.-equal to take care of the exception at zero.
+
+TODO: if the cross section object also shows up elsewhere, we should turn it to a proper definition.
+-/
+theorem euclideanHausdorffMeasure_closedInterior_inter_shift_aeEq (s : Simplex ℝ P (n + 1))
+    (i : Fin (n + 2)) :
     (μHE[n] <| s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·)
       =ᵐ[MeasureSpace.volume.restrict (Set.Icc 0 1)]
         (‖·‖₊ ^ n • μHE[n] (s.faceOpposite i).closedInterior) := by
@@ -47,8 +52,9 @@ private theorem measure_cross_section (s : Simplex ℝ P (n + 1)) (i : Fin (n + 
   simp [s.closedInterior_inter_shift_eq_homothety i (Set.Ioc_subset_Icc_self hx),
     euclideanHausdorffMeasure_homothety_image _ _ hx.1.ne.symm]
 
-/-- Cross-section vanishes outside of the simplex. -/
-private theorem cross_section_support (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+/-- The cross section of a simplex vanishes outside of the simplex in terms of its volume. -/
+theorem support_euclideanHausdorffMeasure_closedInterior_inter_shift_subset
+    (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     Function.support (μHE[n] <| s.closedInterior ∩
       (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) ·) ⊆ Set.Icc 0 1 := by
   refine Function.support_subset_iff'.mpr fun x hx ↦ ?_
@@ -77,8 +83,9 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
   simp_rw [← AffineMap.lineMap_apply, ← vectorSpan_pair, ← direction_affineSpan,
     affineSpan_pair_altitudeFoot_eq_altitude,
     closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot s i]
-  rw [← setLIntegral_eq_of_support_subset (cross_section_support s i),
-    lintegral_congr_ae (measure_cross_section s i)]
+  rw [← setLIntegral_eq_of_support_subset
+    (support_euclideanHausdorffMeasure_closedInterior_inter_shift_subset s i),
+    lintegral_congr_ae (euclideanHausdorffMeasure_closedInterior_inter_shift_aeEq s i)]
   -- Cancel common factors and reduce it to `∫ x in 0..1, x ^ n`
   simp_rw [nnreal_smul_coe_apply]
   rw [lintegral_mul_const _ (by fun_prop), ← mul_assoc, mul_comm (ENNReal.ofReal (s.height i))]
