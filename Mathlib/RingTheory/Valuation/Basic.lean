@@ -152,10 +152,10 @@ theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ 
 variable (v : Valuation R Γ₀)
 
 @[simp]
-theorem ofClass_eq_coe : (MonoidWithZeroHom.ofClass v) = v := rfl
+theorem ofClass_eq_toMonoidWithZeroHom : (MonoidWithZeroHom.ofClass v) = v := rfl
 
 @[deprecated (since := "2026-09-15")]
-alias coe_ofClass := ofClass_eq_coe
+alias coe_ofClass := ofClass_eq_toMonoidWithZeroHom
 
 protected theorem map_zero : v 0 = 0 :=
   v.map_zero'
@@ -360,6 +360,9 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
   rw [← v.map_one, ← v.map_neg] at h
   rw [sub_eq_add_neg 1 x]
   simpa only [v.map_one, v.map_neg] using v.map_add_eq_of_lt_left h
+
+@[deprecated (since := "2026-09-15") "Use `simp` and the assumption `Monotone f` instead."]
+alias OrderMonoidWithZeroHom.ofClass_monotone := ofClass_eq_toMonoidHom
 
 /-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
 `Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
@@ -722,6 +725,8 @@ theorem eq_iff (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = 
 theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := by
   have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.eq_iff
   rwa [v₁.map_zero, v₂.map_zero] at this
+
+@[deprecated (since := "2026-09-15")] alias ofClass_eq_zero := eq_zero
 
 lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
   rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]

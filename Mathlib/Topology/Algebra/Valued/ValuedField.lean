@@ -340,6 +340,9 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
 lemma extensionValuation_toFun (x : hat K) : Valued.extensionValuation x =
     ValueGroup₀.embedding (Valued.extension x) := rfl
 
+@[deprecated (since := "2026-09-15")]
+alias extensionValuation_coe_apply := extensionValuation_toFun
+
 @[simp]
 lemma extensionValuation_apply_coe (x : K) :
     Valued.extensionValuation (x : hat K) = v x := by
