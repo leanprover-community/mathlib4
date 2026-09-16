@@ -156,9 +156,9 @@ end basic
 
 section rank
 
-variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A] [Ring.HasFiniteQuotients A]
+variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A]
   [Algebra A B] [Module.Finite A B] [Module.Flat A B] [IsGaloisGroup G A B] (p : Ideal A)
-  [P.LiesOver p]
+  [P.LiesOver p] [p.IsPrime] [Algebra.HasSeparableResidueFieldsAt A B p]
 
 /-! ### Ring-level degree formulas -/
 
@@ -166,30 +166,13 @@ variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A] [Ring.Has
 ramification index and the inertia degree of `p` in `B`. -/
 theorem IsDecompositionRing.finrank_top [FaithfulSMul R B] [P.IsPrime] [P.IsDecompositionRing G R] :
     Module.finrank R B = p.ramificationIdxIn B * p.inertiaDegIn B := by
-  by_cases hp : p = ⊥
-  · have : P.LiesOver (⊥ : Ideal A) := hp ▸ ‹P.LiesOver p›
-    have hP : P = ⊥ := eq_bot_of_liesOver_bot A P
-    rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G, hP,
-      ramificationIdx_bot_eq_one, inertiaDeg_bot_eq_finrank, one_mul,
-      ← IsGaloisGroup.card_eq_finrank' (stabilizer G P) R B, hP, stabilizer_bot, Subgroup.card_top,
-      ← IsGaloisGroup.card_eq_finrank' G A B]
-  · have : p.IsPrime := isPrime_of_liesOver P p
-    have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-    rw [← IsGaloisGroup.card_eq_finrank' (stabilizer G P) R B, card_stabilizer_eq p]
+  rw [← IsGaloisGroup.card_eq_finrank' (stabilizer G P) R B, card_stabilizer_eq p]
 
 /-- The degree `[B : R]` of `B` over the inertia ring `R` equals the ramification index of `p`
 in `B`. -/
 theorem IsInertiaRing.finrank_top [FaithfulSMul R B] [P.IsPrime] [P.IsInertiaRing G R] :
     Module.finrank R B = p.ramificationIdxIn B := by
-  by_cases hp : p = ⊥
-  · have : FaithfulSMul G B := IsGaloisGroup.faithful A
-    have : P.LiesOver (⊥ : Ideal A) := hp ▸ ‹P.LiesOver p›
-    have hP : P = ⊥ := eq_bot_of_liesOver_bot A P
-    rw [ramificationIdxIn_eq_ramificationIdx p P G, hP, ramificationIdx_bot_eq_one,
-      ← IsGaloisGroup.card_eq_finrank' (inertia G P) R B, hP, inertia_bot, Subgroup.card_eq_one]
-  · have : p.IsPrime := isPrime_of_liesOver P p
-    have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-    rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) R B, card_inertia_eq_ramificationIdxIn p]
+  rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) R B, card_inertia_eq_ramificationIdxIn p]
 
 variable [Algebra A R] [IsScalarTower A R B]
 
@@ -250,8 +233,8 @@ theorem primesOver_eq_singleton [P.IsPrime] [Finite (stabilizer G P)] :
   exact σ.prop
 
 variable [Finite G] [IsGaloisGroup G A B] [IsDomain A] [IsDomain B] [FaithfulSMul R B]
-  [Module.Finite A B] [Module.Flat A B] [Module.Flat R B] [Ring.HasFiniteQuotients A]
-  [𝓟.IsPrime] [P.IsPrime]
+  [Module.Finite A B] [Module.Flat A B] [Module.Flat R B] [p.IsPrime]
+  [Algebra.HasSeparableResidueFieldsAt A B p] [𝓟.IsPrime] [P.IsPrime]
 
 include G P in
 private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq :
