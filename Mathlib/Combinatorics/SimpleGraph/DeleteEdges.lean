@@ -112,17 +112,13 @@ theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.e
 @[simp] lemma deleteEdges_eq_bot : G.deleteEdges s = ⊥ ↔ G.edgeSet ⊆ s := by simp [deleteEdges]
 
 /-- Lift a copy between graphs to a copy between the graphs after deleting a set of edges. -/
+@[simps -fullyApplied apply]
 def Hom.deleteEdges (f : G →g G') (s : Set (Sym2 V)) (t : Set (Sym2 W)) (h : Sym2.map f ⁻¹' t ⊆ s) :
     G.deleteEdges s →g G'.deleteEdges t where
   toFun := f
   map_rel' hadj := by
     rw [deleteEdges_adj] at hadj ⊢
     exact ⟨f.map_adj hadj.left, (hadj.right <| h ·)⟩
-
-@[simp]
-theorem Hom.coe_deleteEdges {f : G →g G'} {s : Set (Sym2 V)} {t : Set (Sym2 W)} (h) :
-    ⇑(f.deleteEdges s t h) = f :=
-  rfl
 
 /-- Lift an embedding between graphs to an embedding between the graphs after deleting a set of
 edges. -/
