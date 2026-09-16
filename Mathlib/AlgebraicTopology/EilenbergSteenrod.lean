@@ -139,6 +139,10 @@ lemma inv_hom_iso_homₚ_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
     (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X = (f.homₚ i).app (ofTopCat X) :=
   congr($(inv_hom_iso_homₚ _ _).app _)
 
+/-- The map `H i X.fst ⟶ Hₚ i X` incuded by the inclusion. -/
+abbrev hFstToHₚ (i : ι) (X : TopPair.{u}) : (HP.H i).obj X.fst ⟶ (HP.Hₚ i).obj X :=
+  (HP.iso i).hom.app _ ≫ (HP.Hₚ i).map X.j
+
 /-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
 -/
 @[simps]
@@ -246,14 +250,13 @@ instance : IsClosedUnderIsomorphisms (isAdditive.{u} C c) where
 class HasPairSequence where
   /-- Exactness of the sequence `H i X.fst ⟶ Hₚ i X ⟶ H j X.snd.` -/
   exact_pair (X : TopPair) (i j : ι) (hij : c.Rel i j) :
-      (ComposableArrows.mk₂ ((HP.Hₚ i).map X.j) ((HP.δ i j).app _)).Exact
+      (ComposableArrows.mk₂ (HP.hFstToHₚ i X) ((HP.δ i j).app _)).Exact
   /-- Exactness of the sequence `Hₚ i X ⟶ H j X.snd ⟶ H j X.fst`. -/
   exact_snd (X : TopPair) (i j : ι) (hij : c.Rel i j) :
       (ComposableArrows.mk₂ ((HP.δ i j).app _) ((HP.H j).map X.map)).Exact
   /-- Exactness of the sequence `H i X.snd ⟶ H i X.fst ⟶ Hₚ i X`. -/
   exact_fst (X : TopPair) (i : ι) :
-      (ComposableArrows.mk₂ ((HP.H i).map X.map) ((HP.iso i).hom.app _
-      ≫ (HP.Hₚ i).map X.j)).Exact
+      (ComposableArrows.mk₂ ((HP.H i).map X.map) (HP.hFstToHₚ i X)).Exact
   /-- The boundary map out of homology with final index (i.e. an index with no successors in the
   `ComplexShape`) is an epi. -/
   epi_map_of_not_rel (X : TopPair) (i : ι) (hi : ∀ (j : ι), ¬ c.Rel i j) :
@@ -276,8 +279,9 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
   of_iso e hPS := {
     exact_pair _ _ _ hij :=
       exact_of_iso
-        (isoMk₂ ((hₚIsoOfIso e _).app _) ((hₚIsoOfIso e _).app _) ((hIsoOfIso e _).app _)
-          (by cat_disch) (by simp [Precomp.map, Hom.w_app])) (hPS.exact_pair _ _ _ hij)
+        (isoMk₂ ((hIsoOfIso e _).app _) ((hₚIsoOfIso e _).app _) ((hIsoOfIso e _).app _)
+          (by simp [Hom.iso_comm_app_assoc]) (by simp [Precomp.map, Hom.w_app]))
+          (hPS.exact_pair _ _ _ hij)
     exact_snd _ _ _ hij :=
       exact_of_iso
         (isoMk₂ ((hₚIsoOfIso e _).app _) ((hIsoOfIso e _).app _) ((hIsoOfIso e _).app _)
