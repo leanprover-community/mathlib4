@@ -279,7 +279,7 @@ theorem restrict_map_mapValueGroup₀ :
     rw [← comap_apply, hc]
     simp [MonoidWithZeroHom.ValueGroup₀.embedding_apply]
 
-theorem mapValueGroup₀_strictMono (x : R) :
+theorem mapValueGroup₀_apply_restrict (x : R) :
     mapValueGroup₀ vR vA (vR.restrict x) = vA.restrict (algebraMap R A x) :=
   congr($(restrict_map_mapValueGroup₀ vR vA) x)
 
