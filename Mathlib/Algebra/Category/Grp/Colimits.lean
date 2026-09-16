@@ -291,6 +291,15 @@ namespace AddCommGrpCat
 
 open QuotientAddGroup
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/12179:
+
+This definition fails without `respectTransparency false`. Removing `lift_mk` from the `dsimp only`
+set in `inv_hom_id` would help. A more sustainable fix would probably be to revisit the `lift_mk`
+refl lemma: Its LHS and RHS are not defeq at implicit transparency. Either the lemma shouldn't be
+a refl lemma or more declarations need to be implicit-reducible.
+-/
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The categorical cokernel of a morphism in `AddCommGrpCat`
@@ -311,8 +320,8 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     rfl
   inv_hom_id := by
     ext x
-    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk',
-      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, lift_mk, hom_id, AddMonoidHom.coe_id]
+    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk', lift_mk,
+      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, hom_id, AddMonoidHom.coe_id]
     exact QuotientAddGroup.induction_on (α := H) x <| cokernel.π_desc_apply f _ _
 
 end AddCommGrpCat
