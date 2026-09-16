@@ -68,10 +68,10 @@ alias maxPowDiv_eq_emultiplicity := multiplicity_eq_emultiplicity
 @[deprecated (since := "2026-03-15")]
 alias maxPowDiv_eq_multiplicity := padicValNat_def
 
-@[deprecated multiplicity_zero_right (since := "2026-03-15")]
+@[deprecated multiplicity_zero_right +typeChanged (since := "2026-03-15")]
 protected theorem zero : multiplicity p 0 = 0 := multiplicity_zero_right p
 
-@[deprecated multiplicity_one_right (since := "2026-03-15")]
+@[deprecated multiplicity_one_right +typeChanged (since := "2026-03-15")]
 protected theorem one : multiplicity p 1 = 0 := multiplicity_one_right
 
 end padicValNat
