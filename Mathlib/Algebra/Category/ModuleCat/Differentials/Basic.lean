@@ -96,7 +96,7 @@ variable (f) in
 /-- The module of differentials of a morphism `f : A ⟶ B` in the category `CommRingCat`. -/
 noncomputable def KaehlerDifferential : ModuleCat.{u} B :=
   letI := f.hom.toAlgebra
-  ModuleCat.of B (_root_.KaehlerDifferential A B)
+  ↧(_root_.KaehlerDifferential A B)
 
 namespace KaehlerDifferential
 

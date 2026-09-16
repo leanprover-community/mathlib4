@@ -34,7 +34,9 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
 @[expose] public section
 
 noncomputable section
-open NNReal ENNReal Topology Set Filter Bornology
+open NNReal ENNReal Set Filter Bornology
+
+open scoped Topology
 
 universe u v w
 
@@ -649,7 +651,7 @@ end Cthickening
 
 section PseudoMetricSpace
 
-variable {α β E : Type*} [PseudoMetricSpace α] {l : Filter β} {s : Set α}
+variable {α β : Type*} [PseudoMetricSpace α] {l : Filter β} {s : Set α}
 
 theorem thickening_ball (x : α) (ε δ : ℝ) :
     thickening ε (ball x δ) ⊆ ball x (ε + δ) := by

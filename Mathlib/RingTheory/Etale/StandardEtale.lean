@@ -234,7 +234,7 @@ def equivMvPolynomialQuotient :
     P.Ring ≃ₐ[R] MvPolynomial (Fin 2) R ⧸ Ideal.span
       {Bivariate.equivMvPolynomial R (C P.f), Bivariate.equivMvPolynomial R (.X * C P.g - 1)} :=
   Ideal.quotientEquivAlg _ _ (Bivariate.equivMvPolynomial R)
-    (by simp only [Ideal.map_span, Set.image_insert_eq, Set.image_singleton]; rfl)
+    (by simp [Ideal.map_span])
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

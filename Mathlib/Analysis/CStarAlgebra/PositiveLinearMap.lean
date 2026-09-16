@@ -43,18 +43,18 @@ variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder
 lemma apply_le_of_isSelfAdjoint (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :
     f x ≤ f (algebraMap ℝ B₁ ‖x‖) := by
   gcongr
-  exact IsSelfAdjoint.le_algebraMap_norm_self hx
+  exact IsSelfAdjoint.le_algebraMap_norm_self _
 
 lemma norm_apply_le_of_nonneg [StarOrderedRing B₂] (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
     ‖f x‖ ≤ ‖f 1‖ * ‖x‖ := by
   have h : ‖‖x‖‖ = ‖x‖ := by simp
   rw [mul_comm, ← h, ← norm_smul ‖x‖ (f 1)]
   clear h
-  refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg hx) ?_
+  refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_
   rw [← Complex.coe_smul, ← LinearMapClass.map_smul f]
   gcongr
   rw [← Algebra.algebraMap_eq_smul_one]
-  exact IsSelfAdjoint.le_algebraMap_norm_self <| .of_nonneg hx
+  exact IsSelfAdjoint.le_algebraMap_norm_self _
 
 open Complex Filter in
 /--
@@ -105,7 +105,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     rw [pow_mul', sq] at this
     simpa [norm_smul] using (le_inv_mul_iff₀ (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
   · have (m : ℕ) : 0 ≤ ((2 : ℝ) ^ (-(m : ℤ)) • x m) := smul_nonneg (by positivity) (hx_nonneg m)
-    refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (this n)) ?_
+    refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_ (f.map_nonneg (this n))
     gcongr
     exact x_summable.le_tsum n fun m _ ↦ this m
 

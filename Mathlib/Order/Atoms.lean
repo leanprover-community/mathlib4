@@ -5,14 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
-public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Nontriviality
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+public import Mathlib.Tactic.Nontriviality.Core
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -227,12 +223,12 @@ variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
-  simp_rw [IsAtom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
+  simp_rw [IsAtom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem isCoatom_iff [OrderTop A] {K : A} :
     IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
+  simp_rw [IsCoatom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem covBy_iff {K L : A} :
@@ -241,7 +237,7 @@ theorem covBy_iff {K L : A} :
   contrapose!
   rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    SetLike.not_le_iff_exists, and_comm, implies_true]
+    IsConcreteLE.not_le_iff_exists, and_comm, implies_true]
 
 /-- Dual variant of `SetLike.covBy_iff` -/
 theorem covBy_iff' {K L : A} :
@@ -250,7 +246,7 @@ theorem covBy_iff' {K L : A} :
   push Not
   rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    SetLike.not_le_iff_exists, ne_comm, implies_true]
+    IsConcreteLE.not_le_iff_exists, ne_comm, implies_true]
 
 end SetLike
 
@@ -491,28 +487,30 @@ end StronglyAtomic
 
 section WellFounded
 
-theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
-    IsStronglyAtomic α where
+instance [WellFoundedLT α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
-    refine ⟨WellFounded.min h (Set.Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
-    have hmem := (WellFounded.min_mem h (Set.Ioc a b) ⟨b, hab,rfl.le⟩)
-    exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min h
-      (Set.Ioc a b) ⟨hac, hlt.le.trans hmem.2⟩ hlt⟩, hmem.2⟩
-
-theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
-    IsStronglyCoatomic α :=
-  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| IsStronglyAtomic.of_wellFounded_lt (α := αᵒᵈ) h
-
-instance [WellFoundedLT α] : IsStronglyAtomic α :=
-  IsStronglyAtomic.of_wellFounded_lt wellFounded_lt
+    obtain ⟨m, ⟨ham, hmb⟩, hm⟩ := wellFounded_lt.has_min (.Ioc a b) ⟨b, hab, le_rfl⟩
+    exact ⟨m, ⟨⟨ham, fun c hac hcm ↦ hm _ ⟨hac, hcm.le.trans hmb⟩ hcm⟩, hmb⟩⟩
 
 instance [WellFoundedGT α] : IsStronglyCoatomic α :=
-    IsStronglyCoatomic.of_wellFounded_gt wellFounded_gt
+  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| inferInstanceAs (IsStronglyAtomic (αᵒᵈ))
 
+@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
+    IsStronglyAtomic α :=
+  inferInstance
+
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
+    IsStronglyCoatomic α :=
+  inferInstance
+
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
   (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
 
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
@@ -1278,7 +1276,7 @@ instance isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π
 end Pi
 
 section BooleanAlgebra
-variable [BooleanAlgebra α] {a b : α}
+variable [BooleanAlgebra α] {a : α}
 
 @[simp] lemma isAtom_compl : IsAtom aᶜ ↔ IsCoatom a := isCompl_compl.symm.isAtom_iff_isCoatom
 @[simp] lemma isCoatom_compl : IsCoatom aᶜ ↔ IsAtom a := isCompl_compl.symm.isCoatom_iff_isAtom

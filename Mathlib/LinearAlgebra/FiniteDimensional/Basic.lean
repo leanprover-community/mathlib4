@@ -50,8 +50,7 @@ variable {K : Type u} {V : Type v}
 
 namespace FiniteDimensional
 section DivisionRing
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem finrank_le_iff_rank_le [FiniteDimensional K V] {n : ℕ} :
     finrank K V ≤ n ↔ Module.rank K V ≤ n := by

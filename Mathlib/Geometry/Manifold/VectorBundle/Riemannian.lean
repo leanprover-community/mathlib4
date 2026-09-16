@@ -42,8 +42,9 @@ variable
 
 @[expose] public section
 
-open Manifold Bundle ContinuousLinearMap ENat Bornology
-open scoped ContDiff Topology
+open Bundle ContinuousLinearMap ENat Bornology
+
+open scoped Manifold ContDiff Topology
 
 section
 
@@ -268,3 +269,14 @@ instance (g : ContMDiffRiemannianMetric IB n F E) :
 end Construction
 
 end Bundle
+
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [IsManifold I 1 M] [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+
+instance [CompleteSpace E] {x : M} : CompleteSpace (TangentSpace I x) :=
+  VectorBundle.completeSpace ℝ E ..
+
+end

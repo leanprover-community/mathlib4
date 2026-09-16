@@ -5,9 +5,9 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Data.ENNReal.Lemmas
-public import Mathlib.Topology.MetricSpace.Thickening
+public import Mathlib.Basic.ENNReal.Lemmas
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Thickened indicators
@@ -37,7 +37,9 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 @[expose] public section
 
-open NNReal ENNReal Topology BoundedContinuousFunction Set Metric Filter
+open NNReal ENNReal BoundedContinuousFunction Set Metric Filter
+
+open scoped Topology
 
 noncomputable section thickenedIndicator
 

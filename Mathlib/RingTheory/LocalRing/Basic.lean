@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Ideal.Nonunits
 
+import Mathlib.Algebra.Group.Units.Opposite
+
 /-!
 
 # Local rings
@@ -56,6 +58,10 @@ variable (R) in
 theorem exists_of_isUnit_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (h : IsUnit (∑ i ∈ s, f i)) : ∃ i ∈ s, IsUnit (f i) := by
   contrapose! h; exact (nonunitsAddSubmonoid R).sum_mem h
+
+instance : IsLocalRing Rᵐᵒᵖ where
+  isUnit_or_isUnit_of_add_one h := by
+    simpa using isUnit_or_isUnit_of_add_one <| (MulOpposite.op_eq_one_iff _).mp h
 
 end Semiring
 

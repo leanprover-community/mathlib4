@@ -17,7 +17,9 @@ unbounded.
 
 public section
 
-open AffineSpace Bornology Filter Topology
+open AffineSpace Bornology Filter
+
+open scoped Topology
 
 variable
   {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
