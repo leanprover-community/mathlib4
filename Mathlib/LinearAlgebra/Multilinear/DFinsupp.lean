@@ -52,8 +52,7 @@ generators.
 
 This is a multilinear version of `DFinsupp.lhom_ext'`. -/
 @[ext]
-theorem dfinsupp_ext [∀ i, DecidableEq (κ i)]
-    ⦃f g : MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N⦄
+theorem dfinsupp_ext [∀ i, DecidableEq (κ i)] ⦃f g : (fun i ↦ Π₀ j : κ i, M i j) →ₘₗ[R] N⦄
     (h : ∀ p : Π i, κ i,
       f.compLinearMap (fun i => DFinsupp.lsingle (p i)) =
       g.compLinearMap (fun i => DFinsupp.lsingle (p i))) : f = g := by
@@ -90,8 +89,8 @@ This is the `DFinsupp` version of `MultilinearMap.piFamily`.
 -/
 @[simps]
 def dfinsuppFamily
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
-    MultilinearMap R (fun i => Π₀ j : κ i, M i j) (Π₀ t : Π i, κ i, N t) where
+    (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) :
+    (fun i => Π₀ j : κ i, M i j) →ₘₗ[R] (Π₀ t : Π i, κ i, N t) where
   toFun x :=
   { toFun := fun p => f p (fun i => x i (p i))
     support' := (Trunc.finChoice fun i => (x i).support').map fun s => ⟨
@@ -115,8 +114,7 @@ def dfinsuppFamily
 theorem support_dfinsuppFamily_subset
     [∀ i, DecidableEq (κ i)]
     [∀ i j, (x : M i j) → Decidable (x ≠ 0)] [∀ i, (x : N i) → Decidable (x ≠ 0)]
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p))
-    (x : ∀ i, Π₀ j : κ i, M i j) :
+    (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) (x : ∀ i, Π₀ j : κ i, M i j) :
     (dfinsuppFamily f x).support ⊆ Fintype.piFinset fun i => (x i).support := by
   intro p hp
   simp only [DFinsupp.mem_support_toFun, dfinsuppFamily_apply_toFun, ne_eq,
@@ -129,7 +127,7 @@ theorem support_dfinsuppFamily_subset
 at that point. -/
 @[simp]
 theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p))
+    (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p))
     (p : ∀ i, κ i) (m : ∀ i, M i (p i)) :
     dfinsuppFamily f (fun i => .single (p i) (m i)) = DFinsupp.single p (f p m) := by
   ext q
@@ -145,7 +143,7 @@ theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
 the component from that member. -/
 @[simp]
 theorem dfinsuppFamily_single_left_apply [∀ i, DecidableEq (κ i)]
-    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i, Π₀ j, M i j) :
+    (p : Π i, κ i) (f : (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) (x : Π i, Π₀ j, M i j) :
     dfinsuppFamily (Pi.single p f) x = DFinsupp.single p (f fun i => x _ (p i)) := by
   ext p'
   obtain rfl | hp := eq_or_ne p p'
@@ -153,32 +151,32 @@ theorem dfinsuppFamily_single_left_apply [∀ i, DecidableEq (κ i)]
   · simp [hp]
 
 theorem dfinsuppFamily_single_left [∀ i, DecidableEq (κ i)]
-    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    (p : Π i, κ i) (f : (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) :
     dfinsuppFamily (Pi.single p f) =
       (DFinsupp.lsingle p).compMultilinearMap (f.compLinearMap fun i => DFinsupp.lapply (p i)) :=
   ext <| dfinsuppFamily_single_left_apply _ _
 
 @[simp]
 theorem dfinsuppFamily_compLinearMap_lsingle [∀ i, DecidableEq (κ i)]
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) (p : ∀ i, κ i) :
+    (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) (p : ∀ i, κ i) :
     (dfinsuppFamily f).compLinearMap (fun i => DFinsupp.lsingle (p i))
       = (DFinsupp.lsingle p).compMultilinearMap (f p) :=
   MultilinearMap.ext <| dfinsuppFamily_single f p
 
 @[simp]
 theorem dfinsuppFamily_zero :
-    dfinsuppFamily (0 : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) = 0 := by
+    dfinsuppFamily (0 : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) = 0 := by
   ext; simp
 
 @[simp]
-theorem dfinsuppFamily_add (f g : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+theorem dfinsuppFamily_add (f g : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) :
     dfinsuppFamily (f + g) = dfinsuppFamily f + dfinsuppFamily g := by
   ext; simp
 
 @[simp]
 theorem dfinsuppFamily_smul
     [Monoid S] [∀ p, DistribMulAction S (N p)] [∀ p, SMulCommClass R S (N p)]
-    (s : S) (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    (s : S) (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p)) :
     dfinsuppFamily (s • f) = s • dfinsuppFamily f := by
   ext; simp
 
@@ -193,8 +191,8 @@ variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 /-- `MultilinearMap.dfinsuppFamily` as a linear map. -/
 @[simps]
 def dfinsuppFamilyₗ :
-    (Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p))
-      →ₗ[R] MultilinearMap R (fun i => Π₀ j : κ i, M i j) (Π₀ t : Π i, κ i, N t) where
+    (Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] (N p))
+      →ₗ[R] (fun i => Π₀ j : κ i, M i j) →ₘₗ[R] (Π₀ t : Π i, κ i, N t) where
   toFun := dfinsuppFamily
   map_add' := dfinsuppFamily_add
   map_smul' := dfinsuppFamily_smul
@@ -205,8 +203,7 @@ variable (R κ) in
 /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
 on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
 def fromDFinsuppEquiv :
-    ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) N) ≃ₗ[R]
-      MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N :=
+    ((p : Π i, κ i) → (fun i ↦ M i (p i)) →ₘₗ[R] N) ≃ₗ[R] (fun i ↦ Π₀ j : κ i, M i j) →ₘₗ[R] N :=
   LinearEquiv.ofLinearMap
     ((DFinsupp.lsum ℕ fun _ ↦ .id).compMultilinearMapₗ R ∘ₗ MultilinearMap.dfinsuppFamilyₗ)
     (LinearMap.pi fun p ↦ MultilinearMap.compLinearMapₗ fun i ↦ DFinsupp.lsingle (p i))
@@ -215,14 +212,14 @@ def fromDFinsuppEquiv :
 
 @[simp]
 theorem fromDFinsuppEquiv_single
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
+    (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] N)
     (p : Π i, κ i) (x : Π i, M i (p i)) :
     fromDFinsuppEquiv κ R f (fun i => DFinsupp.single (p i) (x i)) = f p x := by
   simp [fromDFinsuppEquiv]
 
 theorem fromDFinsuppEquiv_apply
     [Π i (j : κ i) (x : M i j), Decidable (x ≠ 0)]
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
+    (f : Π (p : Π i, κ i), (fun i ↦ M i (p i)) →ₘₗ[R] N)
     (x : Π i, Π₀ (j : κ i), M i j) :
     fromDFinsuppEquiv κ R f x =
       ∑ p ∈ Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := by
@@ -232,8 +229,7 @@ theorem fromDFinsuppEquiv_apply
   simp
 
 @[simp]
-theorem fromDFinsuppEquiv_symm_apply (f : MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N)
-    (p : Π i, κ i) :
+theorem fromDFinsuppEquiv_symm_apply (f : (fun i ↦ Π₀ j : κ i, M i j) →ₘₗ[R] N) (p : Π i, κ i) :
     (fromDFinsuppEquiv κ R).symm f p = f.compLinearMap (fun i ↦ DFinsupp.lsingle (p i)) :=
   rfl
 
@@ -252,7 +248,7 @@ the domain and `ι'` on the codomain and the dependent, finitely supported maps 
 `(Π i, κ i) × ι'` into `R`.
 -/
 def freeDFinsuppEquiv :
-    (Π₀ (_ : (Π i, κ i) × ι'), R) ≃ₗ[R] MultilinearMap R (fun i => Π₀ _ : κ i, R) (Π₀ _ : ι', R) :=
+    (Π₀ (_ : (Π i, κ i) × ι'), R) ≃ₗ[R] (fun i => Π₀ _ : κ i, R) →ₘₗ[R] (Π₀ _ : ι', R) :=
   (DFinsupp.domLCongr (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) ≪≫ₗ
   (DFinsupp.sigmaCurryLEquiv (M := fun _ _ => R)) ≪≫ₗ
   DFinsupp.linearEquivFunOnFintype ≪≫ₗ
