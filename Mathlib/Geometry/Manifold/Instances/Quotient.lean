@@ -80,7 +80,7 @@ lemma localInverseAt_symm_trans_eqOn_smul (x y : orbitRel.Quotient G M) (g : G) 
     using localInverseAt_apply_mk_eq_smul hm
 
 /-- If `⟦m⟧` is in the source of `x.localInverseAt`, then there is some `g ∈ G` such that
-`g • m` is in the target of `x.localInverseAt`. -/
+`g • m` lies in the target of `x.localInverseAt`. -/
 lemma exists_smul_mem_localInverseAt_target {m : M}
     (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) :
     ∃ g : G, g • m ∈ (x.localInverseAt).target := by
