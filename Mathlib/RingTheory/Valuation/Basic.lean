@@ -361,8 +361,8 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
   rw [sub_eq_add_neg 1 x]
   simpa only [v.map_one, v.map_neg] using v.map_add_eq_of_lt_left h
 
-@[deprecated (since := "2026-09-15") "Use `simp` and the assumption `Monotone f` instead."]
-alias OrderMonoidWithZeroHom.ofClass_monotone := ofClass_eq_toMonoidHom
+@[deprecated "Use `simp` and the assumption `Monotone f` instead." (since := "2026-09-15")]
+alias OrderMonoidWithZeroHom.ofClass_monotone := ofClass_eq_toMonoidWithZeroHom
 
 /-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
 `Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
