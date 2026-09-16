@@ -203,10 +203,8 @@ case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff`. -/
 theorem lagrange_inversion_coeff (P : K[X]) (Y : K⟦X⟧)
     (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) :
     PowerSeries.coeff (n + 1) Y = (P ^ (n + 1)).coeff n / (n + 1) := by
-  have h := lagrange_inversion_coeff_pow (P := P) hY n 1
-  simp only [pow_one, Nat.cast_one, one_mul] at h
-  apply (eq_div_iff (Nat.cast_add_one_ne_zero n)).2
-  simpa [mul_comm] using h
+  field_simp [Nat.cast_add_one_ne_zero n]
+  simpa [mul_comm] using lagrange_inversion_coeff_pow (P := P) hY n 1
 
 end Field
 
