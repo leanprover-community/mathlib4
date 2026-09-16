@@ -73,7 +73,7 @@ abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
 
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
-allow_unused_tactic !
+allow_unused_tactic!
   Lean.Parser.Term.byTactic
   Lean.Parser.Tactic.tacticSeq
   Lean.Parser.Tactic.tacticSeq1Indented

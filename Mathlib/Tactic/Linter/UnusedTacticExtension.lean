@@ -40,7 +40,7 @@ public initialize allowedUnusedTacticExt :
 These are tactics that the unused tactic linter will ignore, since they are expected to not change
 the tactic state.
 
-See the `allow_unused_tactic ! ids` command for dynamically extending the extension as a user-facing
+See the `allow_unused_tactic! ids` command for dynamically extending the extension as a user-facing
 command.
 -/
 def addAllowedUnusedTactic {m : Type → Type} [Monad m] [MonadEnv m]
@@ -86,7 +86,7 @@ allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 ```
 
 This change is file-local.  If you want a *persistent* change, then use the `!`-flag:
-the command `allow_unused_tactic ! ids` makes the change the linter continues to ignore these
+the command `allow_unused_tactic! ids` makes the change the linter continues to ignore these
 tactics also in files importing a file where this command is issued.
 
 The command `#show_kind tac` may help to find the `SyntaxNodeKind`.
@@ -103,6 +103,10 @@ elab "allow_unused_tactic" pers:("!")? ppSpace colGt ids:ident* : command => do
       logErrorAt ref (md ++ m!"\n\
         The command `#show_kind {ref}` may help to find the correct `SyntaxNodeKind`.")
     | _ => logError e.toMessageData
+
+@[inherit_doc commandAllow_unused_tactic!___]
+macro "allow_unused_tactic!" ppSpace colGt ids:ident* : command =>
+  `(allow_unused_tactic ! $ids*)
 
 /--
 `#show_kind tac` takes as input the syntax of a tactic and returns the `SyntaxNodeKind`
