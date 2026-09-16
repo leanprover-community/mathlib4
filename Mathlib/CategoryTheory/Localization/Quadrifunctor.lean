@@ -85,6 +85,7 @@ variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
 `W₃ : MorphismProperty C₃` and `W₄ : MorphismProperty C₄`, respectively, and a quadrifunctor
 `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E` which inverts `W₁`, `W₂`, `W₃` and `W₄`, this is the induced
 localized quadrifunctor `D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E`. -/
+@[implicit_reducible]
 noncomputable def lift₄ : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E :=
   curry₄.obj (lift (uncurry₄.obj F) hF (L₁.prod (L₂.prod (L₃.prod L₄))))
 
@@ -112,6 +113,7 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃) (L
 
 /-- The natural transformation `F₁' ⟶ F₂'` of quadrifunctors induced by a natural transformation
 `τ : F₁ ⟶ F₂` when `F₁'` and `F₂'` lift `F₁` and `F₂`, respectively. -/
+@[implicit_reducible]
 noncomputable def lift₄NatTrans : F₁' ⟶ F₂' :=
   fullyFaithfulUncurry₄.preimage
     (liftNatTrans (L₁.prod (L₂.prod (L₃.prod L₄))) (W₁.prod (W₂.prod (W₃.prod W₄)))
@@ -150,7 +152,7 @@ theorem natTrans₄_ext {τ τ' : F₁' ⟶ F₂'}
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `F₁' ≅ F₂'` of quadrifunctors induced by a natural isomorphism
 `e : F₁ ≅ F₂` when `F₁'` and `F₂'` lift `F₁` and `F₂`, respectively. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def lift₄NatIso : F₁' ≅ F₂' where
   hom := lift₄NatTrans L₁ L₂ L₃ L₄ W₁ W₂ W₃ W₄ F₁ F₂ F₁' F₂' e.hom
   inv := lift₄NatTrans L₁ L₂ L₃ L₄ W₁ W₂ W₃ W₄ F₂ F₁ F₂' F₁' e.inv
