@@ -79,7 +79,7 @@ instance : LE SignType :=
   ⟨SignType.LE⟩
 
 instance : DecidableLE SignType := fun a b => by
-  cases a <;> cases b <;> first | exact isTrue (by constructor) | exact isFalse (by rintro ⟨_⟩)
+  cases a <;> cases b <;> first | exact isTrue (by constructor!) | exact isFalse (by rintro ⟨_⟩)
 
 /-- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
@@ -266,7 +266,7 @@ variable [Zero α] [Preorder α] [DecidableLT α] {a : α}
 def SignType.sign : α →o SignType :=
   ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp
-    split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
+    split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor!
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
     · cases h₂ (h₁.trans_le h)
     · cases h₄ (h.trans_lt h₃)⟩
