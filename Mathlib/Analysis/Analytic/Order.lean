@@ -202,12 +202,6 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
   classical
   simp [analyticOrderNatAt, ne_or_eq e 0]
 
-@[simp] theorem analyticOrderNatAt_zero (z₀ : 𝕜) : analyticOrderNatAt (fun _ ↦ (0 : E)) z₀ = 0 := by
-  simp
-
-@[simp] theorem analyticOrderNatAt_one (z₀ : 𝕜) : analyticOrderNatAt (fun _ ↦ (1 : 𝕜)) z₀ = 0 := by
-  simp
-
 @[simp] lemma analyticOrderAt_id : analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
   analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
 
