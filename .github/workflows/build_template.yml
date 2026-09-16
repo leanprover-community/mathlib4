@@ -48,6 +48,7 @@ env:
   # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
 
 jobs:
   build:
@@ -663,7 +664,7 @@ jobs:
           path: cache-staging
 
       - name: Azure CLI OIDC login and mint storage bearer token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
@@ -680,6 +681,46 @@ jobs:
           # container.
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
+
+      # Second upload of the same staged set, to the R2 bucket. Only the `master`
+      # container takes this path: master pushes, bors `staging`, and `v4.*` tags.
+      # The action returns short-lived S3 credentials as masked step outputs.
+      # A failed mint fails only this step, and the upload below is skipped.
+      # An empty `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off.
+      - name: Mint R2 credentials
+        id: mint-r2
+        if: env.MATHLIB_CACHE_PRIMARY == 'master' && vars.MATHLIB_CACHE_BROKER_URL != ''
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+          audience: mathlib-cache-broker
+
+      - name: Upload staged cache to R2
+        if: steps.mint-r2.outputs.success == 'true'
+        # No need to fail the job for now. Remove when this becomes the primary cache endpoint
+        continue-on-error: true
+        shell: bash
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
+          MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
+          MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
+          # R2 signs every request in the region `auto`.
+          MATHLIB_CACHE_S3_REGION: auto
+          # The flat write puts `{url}/f/{hash}.ltar` under the bucket's `mathlib4/`
+          # prefix, which the cache resolver serves.
+          MATHLIB_CACHE_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
+        run: |
+          if [ -z "$MATHLIB_CACHE_PUT_URL" ]; then
+            echo "::warning::the secret MATHLIB_CACHE_R2_PUT_URL is unset; the R2 upload is skipped"
+            exit 1
+          fi
+          echo "Uploading cache to R2 (the bucket's master prefix)..."
+          if ! lake env "$CACHE_BIN" put-staged --backend=s3 --staging-dir="cache-staging" --repo="$REPO"; then
+            echo "::warning::the R2 upload failed; the Azure upload holds this run's files"
+            exit 1
+          fi
 
   post_steps:
     name: Post-Build Step
@@ -931,7 +972,7 @@ jobs:
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Generate auto merge app token
         id: auto-merge-app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}

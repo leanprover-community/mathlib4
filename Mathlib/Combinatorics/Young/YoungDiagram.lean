@@ -10,7 +10,6 @@ public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
-public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Young diagrams
@@ -186,9 +185,9 @@ section Transpose
 
 /-- The `transpose` of a Young diagram is obtained by swapping i's with j's. -/
 def transpose (μ : YoungDiagram) : YoungDiagram where
-  cells := Equiv.Finset.congr (Equiv.prodComm _ _) μ.cells
+  cells := (Equiv.prodComm _ _).finsetCongr μ.cells
   isLowerSet _ _ h := by
-    simp only [Finset.mem_coe, Equiv.Finset.congr_apply, Finset.mem_map_equiv]
+    simp only [Finset.mem_coe, Equiv.finsetCongr_apply, Finset.mem_map_equiv]
     intro hcell
     apply μ.isLowerSet _ hcell
     simp [h]
@@ -396,8 +395,8 @@ lemma sum_rowLens_eq_card (μ : YoungDiagram) : μ.rowLens.sum = μ.card := by
     intro i _hi
     rw [YoungDiagram.rowLen_eq_card, row]
   rw [YoungDiagram.card, Finset.card_eq_sum_card_fiberwise hf, Finset.sum_congr rfl hr,
-    YoungDiagram.rowLens, ← List.sum_toFinset, List.toFinset_range]
-  exact List.nodup_range
+    YoungDiagram.rowLens, Finset.sum_eq_multiset_sum, Finset.range_val, Multiset.range,
+    Multiset.map_coe, Multiset.sum_coe]
 
 end RowLens
 

@@ -110,7 +110,7 @@ instance {n : ℕ} (d : (SimplexCategory.Truncated n)ᵒᵖ) :
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 this is the isomorphism `Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal` in `Cat`. -/
 def isoTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
-    Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal :=
+    ↧X.HomotopyCategory ≅ Cat.chosenTerminal :=
   IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
 
 namespace BinaryProduct
@@ -316,14 +316,12 @@ lemma inverse_comp_mapHomotopyCategory_snd :
     inverse X Y ⋙ mapHomotopyCategory (snd _ _) = CategoryTheory.Prod.snd _ _ :=
   Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
     CategoryTheory.Prod.snd _ _ = Functor.prod (isoTerminal X).inv.toFunctor (𝟭 _) ⋙
       inverse X Y ⋙ mapHomotopyCategory (snd _ _) := by
   rw [inverse_comp_mapHomotopyCategory_snd]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
     CategoryTheory.Prod.fst _ _ = Functor.prod (𝟭 _) (isoTerminal Y).inv.toFunctor ⋙
       inverse X Y ⋙ mapHomotopyCategory (fst _ _) := by
@@ -424,7 +422,7 @@ objects of `hoFunctor.obj X`. -/
 def hoFunctor.unitHomEquiv (X : SSet.{u}) :
     (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
   (SSet.unitHomEquiv X).trans <|
-    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+    HomotopyCategory.objEquiv.symm.trans Cat.fromChosenTerminalEquiv.symm
 
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x =

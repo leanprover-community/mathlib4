@@ -121,7 +121,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
     have h : natDegree tl.prod ≤ n * tl.length := by
       refine (natDegree_list_prod_le _).trans ?_
       rw [← tl.length_map natDegree, mul_comm]
-      refine List.sum_le_card_nsmul _ _ ?_
+      refine List.sum_le_length_nsmul _ _ ?_
       simpa using hl'
     exact coeff_mul_add_eq_of_natDegree_le (hl _ List.mem_cons_self) h
 

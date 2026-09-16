@@ -39,6 +39,12 @@ theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e :
 theorem gcd_right_comm (a b c : ℕ) : gcd (gcd a b) c = gcd (gcd a c) b := by
   rw [gcd_assoc, gcd_assoc, gcd_comm b c]
 
+theorem gcd_gcd_gcd_right (a b c : ℕ) : (a.gcd c).gcd (b.gcd c) = (a.gcd b).gcd c := by
+  rw [gcd_left_comm, gcd_gcd_self_left_right, gcd_left_comm, gcd_assoc]
+
+theorem gcd_gcd_gcd_left (a b c : ℕ) : (c.gcd a).gcd (c.gcd b) = c.gcd (a.gcd b) := by
+  rw [gcd_comm c a, gcd_comm c b, gcd_gcd_gcd_right, gcd_comm]
+
 /-! Lemmas where one argument consists of addition of a multiple of the other -/
 
 @[simp]

@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.CategoryTheory.Sites.CoversTop.Over
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 # Quasicoherent sheaves
@@ -55,7 +57,7 @@ class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Pr
 attribute [instance] Presentation.IsFinite.isFiniteType_generators
   Presentation.IsFinite.isFiniteType_relations
 
-@[deprecated Presentation.IsFinite.isFiniteType_relations (since := "2026-04-14")]
+@[deprecated Presentation.IsFinite.isFiniteType_relations +typeChanged (since := "2026-04-14")]
 lemma Presentation.IsFinite.finite_relations {M : SheafOfModules.{u} R} (p : M.Presentation)
     [p.IsFinite] : Finite p.relations.I := GeneratingSections.IsFiniteType.finite
 

@@ -90,6 +90,11 @@ protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (Adj
   rintro x hx rfl
   exact h (degree_C hx.ne_zero)
 
+variable {f} in
+lemma nontrivial_iff_of_monic (monic : f.Monic) : Nontrivial (AdjoinRoot f) ↔ 0 < f.degree := by
+  rw [AdjoinRoot, Quotient.nontrivial_iff, ne_eq, span_singleton_eq_top, monic.isUnit_iff,
+    monic.degree_pos]
+
 /-- Ring homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
 def mk : R[X] →+* AdjoinRoot f :=
   Ideal.Quotient.mk _
@@ -273,6 +278,17 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
     rw [← degree_C h_contra]
     apply le_antisymm (degree_le_of_dvd hp (by rwa [Ne, C_eq_zero])) _
     rwa [degree_C h_contra, zero_le_degree_iff]
+
+theorem of.injective_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
+    Function.Injective (AdjoinRoot.of f) := by
+  rw [injective_iff_map_eq_zero]
+  intro r hr; by_contra ne_zero
+  exact mk_ne_zero_of_degree_lt monic (C_ne_zero.mpr ne_zero) (degree_C ne_zero ▸ deg) hr
+
+lemma faithfulSMul_of_monic_of_degree_pos (monic : f.Monic) (deg : 0 < f.degree) :
+    FaithfulSMul R (AdjoinRoot f) :=
+  (faithfulSMul_iff_algebraMap_injective R (AdjoinRoot f)).mpr <|
+    of.injective_of_monic_of_degree_pos monic deg
 
 variable [CommRing S]
 
@@ -509,11 +525,89 @@ lemma algEquivOfEq_toAlgHom (f g : S[X]) (hfg) :
 lemma algEquivOfEq_root (f g : S[X]) (hfg) : algEquivOfEq R f g hfg (root f) = root g := by
   rw [coe_algEquivOfEq, algHomOfDvd_root]
 
+section comp
+variable (f g) (x : R)
+
+/-- Adjoining a root of `f(g(x))` is the same as first adjoining a root of `f(x)`,
+and then adjoining a root of `g(x) - root f`. -/
+def compAlgEquiv : AdjoinRoot (f.comp g) ≃ₐ[R] AdjoinRoot (g.map (of f) - C (root f)) :=
+  .ofAlgHom
+    (liftAlgHom (f.comp g) (Algebra.ofId R (AdjoinRoot _)) (root _) ?fgroot)
+    (liftAlgHom _ (liftAlgHom f (Algebra.ofId R (AdjoinRoot (f.comp g)))
+      (g.aeval (root (f.comp g))) ?froot) (root (f.comp g)) ?groot)
+    (AdjoinRoot.algHom_ext' (AdjoinRoot.algHom_ext ?mapf) ?mapg) (AdjoinRoot.algHom_ext ?mapfg)
+where finally
+  case fgroot =>
+    conv =>
+      rw [Algebra.toRingHom_ofId, algebraMap_eq', algebraMap_eq, eval₂_comp]
+      enter [1, 2]
+      rw [eval₂_eq_eval_map]
+      enter [2]
+      equals (g.map (of f) - C (root f)).map (of _) + C (of _ (root f)) =>
+        rw [Polynomial.map_sub, Polynomial.map_C, sub_add_cancel, Polynomial.map_map]
+    rw [eval_add, eval_C, (isRoot_root _).eq_zero, zero_add, ← hom_eval₂, eval₂_root, map_zero]
+  case mapfg =>
+    rw [AlgHom.comp_apply, liftAlgHom_root, liftAlgHom_root, AlgHom.id_apply]
+  case froot =>
+    rw [Algebra.toRingHom_ofId, aeval_def, algebraMap_eq, ← eval₂_comp, eval₂_root]
+  case mapf =>
+    rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgHom.id_comp, coe_ofAlgHom,
+      liftAlgHom_of, liftAlgHom_root, aeval_def, algebraMap_eq, coe_liftAlgHom]
+    dsimp only [AlgHom.toRingHom_eq_coe]
+    rw [hom_eval₂, lift_root, lift_comp_of, Algebra.toRingHom_ofId, eval₂_eq_eval_map,
+      algebraMap_eq', algebraMap_eq]
+    conv =>
+      enter [1, 2]
+      equals (g.map (of f) - C (root f)).map (of _) + C (of _ (root f)) =>
+        rw [Polynomial.map_sub, Polynomial.map_C, sub_add_cancel, Polynomial.map_map]
+    rw [eval_add, eval_C, (isRoot_root _).eq_zero, zero_add]
+  case groot =>
+    rw [eval₂_eq_eval_map, Polynomial.map_sub, Polynomial.map_C, Polynomial.map_map,
+      AlgHom.coe_toRingHom, liftAlgHom_root, toRingHom_liftAlgHom]
+    dsimp only [AlgHom.toRingHom_eq_coe]
+    rw [lift_comp_of, Algebra.toRingHom_ofId, eval_sub, eval_C, eval_map, ← aeval_def,
+      sub_self]
+  case mapg =>
+    rw [AlgHom.comp_apply, liftAlgHom_root, liftAlgHom_root, AlgHom.id_apply]
+
+@[simp]
+theorem compAlgEquiv_of : compAlgEquiv f g (of (f.comp g) x) = of _ (of f x) := by
+  unfold compAlgEquiv
+  rw [AlgEquiv.ofAlgHom_apply, liftAlgHom_of, Algebra.ofId_apply,
+    algebraMap_eq', algebraMap_eq, RingHom.comp_apply]
+
+@[simp]
+theorem compAlgEquiv_root : compAlgEquiv f g (root (f.comp g)) = root _ := by
+  unfold compAlgEquiv
+  rw [AlgEquiv.ofAlgHom_apply, liftAlgHom_root]
+
+@[simp]
+theorem compAlgEquiv_symm_of_of : (compAlgEquiv f g).symm (of _ (of f x)) = of (f.comp g) x := by
+  unfold compAlgEquiv
+  rw [AlgEquiv.ofAlgHom_symm_apply, liftAlgHom_of, liftAlgHom_of,
+    Algebra.ofId_apply, algebraMap_eq]
+
+theorem compAlgEquiv_symm_of_root :
+    (compAlgEquiv f g).symm (of _ (root f)) = g.aeval (root (f.comp g)) := by
+  unfold compAlgEquiv
+  rw [AlgEquiv.ofAlgHom_symm_apply, liftAlgHom_of, liftAlgHom_root]
+
+@[simp]
+theorem compAlgEquiv_symm_root : (compAlgEquiv f g).symm (root _) = root (f.comp g) := by
+  unfold compAlgEquiv
+  rw [AlgEquiv.ofAlgHom_symm_apply, liftAlgHom_root]
+
+end comp
+
 end CommRing
 
 section Irreducible
 
 variable [Field K] {f : K[X]}
+
+theorem isField_iff_irreducible : IsField (AdjoinRoot f) ↔ Irreducible f :=
+  (Ideal.Quotient.maximal_ideal_iff_isField_quotient _).symm.trans
+    (Ideal.irreducible_iff_isMaximal_span_singleton_of_not_isField (Polynomial.not_isField K)).symm
 
 instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
@@ -568,6 +662,17 @@ variable [CommRing R] {g : R[X]}
 
 theorem isIntegral_root' (hg : g.Monic) : IsIntegral R (root g) :=
   ⟨g, hg, eval₂_root g⟩
+
+open Algebra in
+lemma isIntegral_of_monic (monic : g.Monic) : Algebra.IsIntegral R (AdjoinRoot g) := by
+  rw [← AlgEquiv.isIntegral_iff ((Subalgebra.equivOfEq R[root g] ⊤ adjoinRoot_eq_top).trans
+    Subalgebra.topEquiv)]
+  exact .adjoin (by simpa using isIntegral_root' monic)
+
+lemma isLocalHom_of_monic_of_degree_pos (monic : g.Monic) (deg : 0 < g.degree) :
+    IsLocalHom (algebraMap R (AdjoinRoot g)) :=
+  have := faithfulSMul_of_monic_of_degree_pos monic deg
+  (isIntegral_of_monic monic).isLocalHom
 
 /-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
 
@@ -990,8 +1095,8 @@ theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :
 end
 
 section TensorProduct
-variable {R S T U : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-  [CommRing U] [Algebra R U] {p : Polynomial S}
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+  {p : Polynomial S}
 
 open Algebra TensorProduct
 

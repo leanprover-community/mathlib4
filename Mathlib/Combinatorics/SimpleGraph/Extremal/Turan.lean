@@ -83,7 +83,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
     · rw [Nat.mod_eq_of_lt (a.2.trans_le h), Nat.mod_eq_of_lt (b.2.trans_le h), Fin.val_inj]
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
-  rw [cliqueFree_iff]
+  rw [cliqueFree_iff_isEmpty_copy_top_fin]
   by_contra! ⟨f⟩
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
@@ -299,7 +299,7 @@ variable {α : Type*} [Fintype α] [Nontrivial α]
 lemma isExtremal_top_free_iff_isTuranMaximal :
     G.IsExtremal (⊤ : SimpleGraph α).Free ↔ G.IsTuranMaximal (card α - 1) := by
   simp_rw [IsTuranMaximal, IsExtremal,
-    Nat.sub_one_add_one Fintype.card_ne_zero, cliqueFree_iff_top_free]
+    Nat.sub_one_add_one Fintype.card_ne_zero, cliqueFree_card_iff_free_top]
 
 lemma isExtremal_top_free_turanGraph :
     (turanGraph n (card α - 1)).IsExtremal (⊤ : SimpleGraph α).Free := by
