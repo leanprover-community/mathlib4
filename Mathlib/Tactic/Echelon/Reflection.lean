@@ -127,12 +127,13 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
       | zero =>
         rw [List.getD_cons_zero]
         have := List.getElem?_drop (xs := row) (i := k) (j := 0)
-        refine ⟨fun j hj ↦ ?_, ?_⟩
+        refine ⟨fun j hj ↦ ?_, fun c hc ↦ ?_⟩
         · have hjk : (j : ℕ) < k := Fin.lt_def.mp (WithTop.coe_lt_coe.mp hj)
           have := List.getElem?_take_of_lt (l := row) hjk
           grind [IsPivotedList, splitRevAt_eq, List.reverse_replicate]
-        · admit
-      | succ i => grind [IsPivotedList, splitRevAt_eq, pivotOfList_cons_succ]
+        · rw [pivotOfList_eq_coe rfl, WithTop.coe_eq_coe] at hc; subst hc
+          grind [IsPivotedList, splitRevAt_eq]
+      | succ i => exact ih (by grind [IsPivotedList, splitRevAt_eq]) i
 
 theorem pivotOfList_lt_pivotOfList {cols : List (Fin n)} (hsorted : cols.SortedLT) {i j : ℕ}
     (hij : i < j) (hj : pivotOfList cols j ≠ ⊤) : pivotOfList cols i < pivotOfList cols j := by
