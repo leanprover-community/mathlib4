@@ -16,7 +16,7 @@ field extensions, K is another extension of F, and `f` is an embedding of L/F in
 that the minimal polynomials of a set of generators of E/L splits in K (via `f`), then `f`
 extends to an embedding of E/F into K/F.
 
-## Reference
+## References
 
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly

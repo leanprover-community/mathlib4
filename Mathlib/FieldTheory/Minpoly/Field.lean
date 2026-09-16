@@ -240,7 +240,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
   -- needs explicit coercion on the RHS
-  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
+  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rw [DFunLike.ext'_iff] at this ⊢; assumption
   rw [funext_iff] at h
   exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)

@@ -108,7 +108,7 @@ theorem finiteDimensional_iff_finite {p : ι → P} (hi : AffineIndependent k p)
   exact hi.codRestrict (vectorSpan k (Set.range p)) (by simp [vsub_mem_vectorSpan]) |>.finite
 
 /-- An affine-independent family of points in a finite-dimensional affine subspace is finite. -/
-@[deprecated finiteDimensional_iff_finite (since := "2026-09-01")]
+@[deprecated finiteDimensional_iff_finite +typeChanged (since := "2026-09-01")]
 theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndependent k p)
     [FiniteDimensional k (vectorSpan k (Set.range p))] : Finite ι :=
   finiteDimensional_iff_finite k hi |>.mp inferInstance
@@ -122,7 +122,7 @@ theorem finiteDimensional_iff_setFinite {s : Set ι} {f : s → P}
     exact finiteDimensional_vectorSpan_range k f
 
 /-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
-@[deprecated finiteDimensional_iff_setFinite (since := "2026-09-01")]
+@[deprecated finiteDimensional_iff_setFinite +typeChanged (since := "2026-09-01")]
 theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
     [FiniteDimensional k (vectorSpan k (Set.range f))] : s.Finite :=
   finiteDimensional_iff_setFinite k hi |>.mp inferInstance

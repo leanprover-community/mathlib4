@@ -174,7 +174,7 @@ theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace 𝕜 P} [N
   have h := SetLike.coe_mem (orthogonalProjection ({p₁} : AffineSubspace 𝕜 P) p₂)
   rwa [mem_singleton_iff] at h
 
-@[deprecated orthogonalProjection_singleton (since := "2026-09-01")]
+@[deprecated orthogonalProjection_singleton +typeChanged (since := "2026-09-01")]
 lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
     orthogonalProjection (affineSpan 𝕜 {p₁}) p₂ = p₁ := by
   simp
