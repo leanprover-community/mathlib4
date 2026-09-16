@@ -49,6 +49,8 @@ end Function.locallyFinsuppWithin
 
 namespace ValueDistribution
 
+open locallyFinsuppWithin
+
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -78,6 +80,8 @@ counts the zeros of `f - a₀`, each with multiplicity one.
 lemma truncatedLogCounting_coe :
     truncatedLogCounting f a₀ = ((divisor (f · - a₀) Set.univ)⁺.truncate₁).logCounting := rfl
 
+attribute [local simp] truncatedLogCounting_top truncatedLogCounting_coe
+
 /--
 The truncated logarithmic counting function `truncatedLogCounting f 0` counts the zeros of `f`, each
 with multiplicity one.
@@ -97,45 +101,25 @@ logarithmic counting function.
 -/
 theorem truncatedLogCounting_le {r : ℝ} (hr : 1 ≤ r) :
     truncatedLogCounting f a r ≤ logCounting f a r := by
-  cases a with
-  | top =>
-    rw [truncatedLogCounting_top, logCounting_top]
-    exact locallyFinsuppWithin.logCounting_truncate_le _ hr
-  | coe a₀ =>
-    rw [truncatedLogCounting_coe, logCounting_coe]
-    exact locallyFinsuppWithin.logCounting_truncate_le _ hr
+  cases a <;>
+  simpa [logCounting_top, logCounting_coe] using logCounting_truncate_le _ hr
 
 /-- For `1 ≤ r`, the truncated logarithmic counting function is non-negative. -/
 theorem truncatedLogCounting_nonneg {r : ℝ} (hr : 1 ≤ r) :
     0 ≤ truncatedLogCounting f a r := by
-  cases a with
-  | top =>
-    rw [truncatedLogCounting_top]
-    exact locallyFinsuppWithin.logCounting_truncate_nonneg (negPart_nonneg _) hr
-  | coe a₀ =>
-    rw [truncatedLogCounting_coe]
-    exact locallyFinsuppWithin.logCounting_truncate_nonneg (posPart_nonneg _) hr
+  cases a <;>
+  simpa using logCounting_truncate_nonneg (by positivity) hr
 
 /-- The truncated logarithmic counting function is monotonous. -/
 theorem truncatedLogCounting_monotoneOn :
     MonotoneOn (truncatedLogCounting f a) (Set.Ioi 0) := by
-  cases a with
-  | top =>
-    rw [truncatedLogCounting_top]
-    exact locallyFinsuppWithin.logCounting_mono
-      (locallyFinsuppWithin.truncate₁_nonneg (negPart_nonneg _))
-  | coe a₀ =>
-    rw [truncatedLogCounting_coe]
-    exact locallyFinsuppWithin.logCounting_mono
-      (locallyFinsuppWithin.truncate₁_nonneg (posPart_nonneg _))
+  cases a <;>
+  simpa using logCounting_mono <| truncate₁_nonneg <| by positivity
 
 /-- Relation between the truncated logarithmic counting functions of `f` and of `f⁻¹`. -/
 @[simp] theorem truncatedLogCounting_inv {f : 𝕜 → 𝕜} :
     truncatedLogCounting f⁻¹ ⊤ = truncatedLogCounting f 0 := by
-  rw [truncatedLogCounting_top, truncatedLogCounting_zero]
-  congr 1
-  ext z
-  simp [divisor_inv]
+  simp [truncatedLogCounting_zero]
 
 /--
 If two functions differ only on a discrete set, then their truncated logarithmic counting functions
@@ -145,13 +129,10 @@ theorem truncatedLogCounting_congr_codiscrete [NormedSpace ℂ E] {f g : ℂ →
     (hfg : f =ᶠ[codiscrete ℂ] g) :
     truncatedLogCounting f = truncatedLogCounting g := by
   ext a : 1
-  cases a with
-  | top =>
-    rw [truncatedLogCounting_top, truncatedLogCounting_top,
-      divisor_congr_codiscreteWithin hfg isOpen_univ]
-  | coe a₀ =>
-    rw [truncatedLogCounting_coe, truncatedLogCounting_coe]
-    congr 3
-    exact divisor_congr_codiscreteWithin (by filter_upwards [hfg] using by simp) isOpen_univ
+  cases a
+  all_goals
+    simp only [truncatedLogCounting_top, truncatedLogCounting_coe]
+    congr! 3
+    exact divisor_congr_codiscreteWithin (hfg.mono <| by simp) isOpen_univ
 
 end ValueDistribution

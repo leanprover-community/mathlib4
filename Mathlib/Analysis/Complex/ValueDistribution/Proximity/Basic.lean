@@ -83,15 +83,9 @@ agree, except perhaps at radius 0.
 lemma proximity_congr_codiscreteWithin {f g : ℂ → E} {a : WithTop E} {r : ℝ}
     (hfg : f =ᶠ[codiscreteWithin (sphere 0 |r|)] g) (hr : r ≠ 0) :
     proximity f a r = proximity g a r := by
-  cases a with
-  | top =>
-    rw [proximity_top, proximity_top]
-    apply circleAverage_congr_codiscreteWithin _ hr
-    filter_upwards [hfg] using by aesop
-  | coe a₀ =>
-    rw [proximity_coe, proximity_coe]
-    apply circleAverage_congr_codiscreteWithin _ hr
-    filter_upwards [hfg] using by aesop
+  cases a <;>
+  simpa only [proximity_top, proximity_coe]
+    using circleAverage_congr_codiscreteWithin (hfg.mono <| by grind) hr
 
 /--
 If two functions differ only on a discrete set, then their proximity functions
@@ -145,11 +139,8 @@ The proximity function is non-negative.
 theorem proximity_nonneg {a : WithTop E} :
     0 ≤ proximity f a := by
   intro r
-  cases a with
-  | top =>
-    simpa [proximity_top] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
-  | coe a₀ =>
-    simpa [proximity_coe] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
+  cases a <;> 
+  simpa [proximity_top, proximity_coe] using circleAverage_nonneg_of_nonneg fun _ _ ↦ posLog_nonneg
 
 @[simp] lemma proximity_const {c : E} {r : ℝ} :
     proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
