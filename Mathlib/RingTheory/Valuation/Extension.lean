@@ -273,7 +273,7 @@ theorem restrict_map_mapValueGroup₀ :
 
 theorem mapValueGroup₀_apply_restrict (x : R) :
     mapValueGroup₀ vR vA (vR.restrict x) = vA.restrict (algebraMap R A x) :=
-  congrFun (congrArg DFunLike.coe (restrict_map_mapValueGroup₀ vR vA)) x
+  congr($(restrict_map_mapValueGroup₀ vR vA) x)
 
 theorem mapValueGroup₀_uniq (m : type_of% (mapValueGroup₀ vR vA))
     (hm : ∀ x, m (vR.restrict x) = vA.restrict (algebraMap R A x)) :
@@ -310,7 +310,7 @@ theorem mapValueGroup₀_comp_mapValueGroup₀ :
 theorem mapValueGroup₀_mapValueGroup₀ (x) :
     haveI := HasExtension.comp vR vA vB
     (mapValueGroup₀ vA vB) (mapValueGroup₀ vR vA x) = mapValueGroup₀ vR vB x :=
-  congrFun (congrArg DFunLike.coe (mapValueGroup₀_comp_mapValueGroup₀ vR vA vB)) x
+  congr($(mapValueGroup₀_comp_mapValueGroup₀ vR vA vB) x)
 
 end tower
 
