@@ -25,6 +25,18 @@ open scoped Simplicial
 
 namespace SSet
 
+namespace horn
+
+def retractArrowCastSuccι {n : ℕ} (i : Fin (n + 1)) :
+    RetractArrow Λ[n + 1, i.castSucc].ι (Subcomplex.unionProd.{u} Λ[1, 0] ∂Δ[n + 1]).ι := by
+  sorry
+
+def retractArrowSuccι {n : ℕ} (i : Fin (n + 1)) :
+    RetractArrow Λ[n + 1, i.succ].ι (Subcomplex.unionProd.{u} Λ[1, 1] ∂Δ[n + 1]).ι := by
+  sorry
+
+end horn
+
 namespace modelCategoryQuillen
 
 lemma fibration_iff_hasLiftingProperty_unionProd_horn_one_boundary {E B : SSet.{u}} (p : E ⟶ B) :
@@ -36,7 +48,9 @@ lemma fibration_iff_hasLiftingProperty_unionProd_horn_one_boundary {E B : SSet.{
   rintro _ _ _ h
   simp only [J, MorphismProperty.iSup_iff] at h
   obtain ⟨n, ⟨i⟩⟩ := h
-  sorry
+  obtain ⟨i, rfl⟩ | rfl := i.eq_castSucc_or_eq_last
+  · exact (horn.retractArrowCastSuccι i).leftLiftingProperty _
+  · exact (horn.retractArrowSuccι (Fin.last n)).leftLiftingProperty _
 
 end modelCategoryQuillen
 
