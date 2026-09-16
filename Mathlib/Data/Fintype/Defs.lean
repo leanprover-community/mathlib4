@@ -202,9 +202,8 @@ open Finset
 namespace Fintype
 
 instance decidablePiFintype {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
-    DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
-    (by simp [funext_iff])
+    DecidableEq (∀ a, β a) := fun f g ↦
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a) (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -219,17 +218,17 @@ instance {β : α → Type*} [∀ a, LE (β a)] [∀ a, DecidableLE (β a)] [Fin
   fun _ _ ↦ decidable_of_iff _ Pi.le_def.symm
 
 instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
-    DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype
+    DecidablePred (· ∈ Set.range f) := fun _ ↦ Fintype.decidableExistsFintype
 
 instance decidableSubsingleton [Fintype α] [DecidableEq α] {s : Set α} [DecidablePred (· ∈ s)] :
     Decidable s.Subsingleton := decidable_of_iff (∀ a ∈ s, ∀ b ∈ s, a = b) Iff.rfl
 
 section BundledHoms
 
-instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fun a b =>
+instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fun a b ↦
   decidable_of_iff (a.1 = b.1) Equiv.coe_fn_injective.eq_iff
 
-instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
+instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b ↦
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
 
 end BundledHoms
