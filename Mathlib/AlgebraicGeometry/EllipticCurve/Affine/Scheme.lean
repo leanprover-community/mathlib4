@@ -23,6 +23,9 @@ open AlgebraicGeometry CategoryTheory
 variable {R : Type u} [CommRing R] (W : Affine R) [W.IsElliptic] (A : Type u) [Nontrivial A]
   [CommRing A] [Algebra R A]
 
+instance : (W⁄A).IsElliptic :=
+  inferInstanceAs (W.map (algebraMap R A)).IsElliptic
+
 /-- The equivalence between the type of `A`-points of an elliptic curve `W` over `R` and the type of
 morphisms from `Spec A` to `Spec R[W]` in the category of schemes over `Spec R`. -/
 @[simps!]
@@ -30,6 +33,9 @@ noncomputable def pointEquivSpec :
     (W⁄A).Point ≃ WithZero {f : Spec (.of A) ⟶ Spec (.of W.CoordinateRing) //
       f ≫ Spec.algebraMap R W.CoordinateRing = Spec.algebraMap R A} :=
   pointEquiv .. |>.trans (Spec.homEquivAlgHom.trans <| AdjoinRoot.equivAevalAeval _ |>.trans <|
-    Set.equivOfEq <| by simp_rw [map_polynomial, Polynomial.evalEval_algebraMap]).symm.optionCongr
+    Equiv.subtypeEquivRight fun xy ↦
+      show W.polynomial.aevalAeval xy.1 xy.2 = 0 ↔ (W⁄A).Equation xy.1 xy.2 by
+        simp only [Equation, WeierstrassCurve.baseChange, map_polynomial,
+          Polynomial.evalEval_algebraMap]).symm.optionCongr
 
 end WeierstrassCurve.Affine
