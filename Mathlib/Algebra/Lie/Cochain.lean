@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
+
 This file defines low degree cochains of Lie algebras with coefficients given by a module. They are
 useful in the construction of central extensions, so we treat these easier cases separately from the
 general theory of Lie algebra cohomology.
@@ -52,6 +53,7 @@ section
 
 variable {R L M}
 
+@[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
   coe_injective _ _ h := by

@@ -189,7 +189,7 @@ instance : IsIso (coequalizerComparison f g G) := by
 instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
   ⟨fun {W} h k => by
     rw [← ι_comp_coequalizerComparison]
-    haveI : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by
+    have : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by
       apply epi_comp
     apply (cancel_epi _).1⟩
 
@@ -206,7 +206,6 @@ theorem map_π_preserves_coequalizer_inv_desc {W : D} (k : G.obj Y ⟶ W)
       (PreservesCoequalizer.iso G f g).inv ≫ coequalizer.desc k wk = k := by
   rw [← Category.assoc, map_π_preserves_coequalizer_inv, coequalizer.π_desc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem map_π_preserves_coequalizer_inv_colimMap {X' Y' : D} (f' g' : X' ⟶ Y')
     [HasCoequalizer f' g'] (p : G.obj X ⟶ X') (q : G.obj Y ⟶ Y') (wf : G.map f ≫ q = p ≫ f')

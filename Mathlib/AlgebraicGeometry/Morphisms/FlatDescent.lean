@@ -36,11 +36,13 @@ open CategoryTheory Limits MorphismProperty
 
 namespace AlgebraicGeometry
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Surjective satisfies fpqc descent. -/
 instance Flat.surjective_descendsAlong_surjective_inf_flat_inf_quasicompact :
     DescendsAlong @Surjective (@Surjective ⊓ @Flat ⊓ @QuasiCompact) :=
   .of_le (Q := @Surjective) (le_of_inf_eq' (by grind))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Universally closed satisfies fpqc descent. -/
 @[stacks 02KS]
 instance descendsAlong_universallyClosed_surjective_inf_flat_inf_quasicompact :
@@ -58,6 +60,7 @@ instance descendsAlong_universallyClosed_surjective_inf_flat_inf_quasicompact :
     exact p.isClosedMap _ (hs.preimage r.continuous)
   rwa [(Flat.isQuotientMap_of_surjective _).isClosed_preimage] at this
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Universally open satisfies fpqc descent. -/
 @[stacks 02KT]
 instance descendsAlong_universallyOpen_surjective_inf_flat_inf_quasicompact :
@@ -76,6 +79,7 @@ instance descendsAlong_universallyOpen_surjective_inf_flat_inf_quasicompact :
     exact p.isOpenMap _ (hs.preimage r.continuous)
   rwa [(Flat.isQuotientMap_of_surjective _).isOpen_preimage] at this
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Universally injective satisfies fpqc descent. -/
 @[stacks 02KW]
 instance descendsAlong_universallyInjective_surjective_inf_flat_inf_quasicompact :
@@ -83,6 +87,7 @@ instance descendsAlong_universallyInjective_surjective_inf_flat_inf_quasicompact
   rw [universallyInjective_eq_diagonal]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Being an isomorphism satisfies fpqc descent. -/
 @[stacks 02L4]
 instance descendsAlong_isomorphisms_surjective_inf_flat_inf_quasicompact :
@@ -122,6 +127,7 @@ instance descendsAlong_isomorphisms_surjective_inf_flat_inf_quasicompact :
     rwa [← flat_and_surjective_SpecMap_iff, and_comm]
   · simp_rw [← isIso_SpecMap_iff, implies_true]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Being an open immersion satisfies fpqc descent. -/
 @[stacks 02L3]
 instance descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact' :
@@ -153,6 +159,7 @@ instance descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact' :
   rw [← IsOpenImmersion.lift_fac U.ι g (by simp [U])]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma HasRingHomProperty.descendsAlong_flat {P : MorphismProperty Scheme.{u}}
     [P.IsStableUnderBaseChange] {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
     [HasRingHomProperty P Q] (h : RingHom.CodescendsAlong Q RingHom.FaithfullyFlat) :
@@ -166,6 +173,7 @@ lemma HasRingHomProperty.descendsAlong_flat {P : MorphismProperty Scheme.{u}}
     refine ⟨?_, (Spec.map f).surjective⟩
     rwa [HasRingHomProperty.Spec_iff (P := @Flat)] at hf₂
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- fpqc descent implies fppf descent -/
 instance (P : MorphismProperty Scheme) [P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @QuasiCompact)]
     [IsZariskiLocalAtTarget P] :
@@ -180,12 +188,14 @@ instance (P : MorphismProperty Scheme) [P.DescendsAlong (@Surjective ⊓ @Flat �
   · exact ⟨fun x ↦ have ⟨y, hyV, e⟩ := e.ge (Set.mem_univ x); ⟨⟨y, hyV⟩, e⟩⟩
   · exact IsZariskiLocalAtTarget.of_isPullback (.flip <| .of_hasPullback _ _) H
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [QuasiCompact f] :
     (Over.pullback f).Faithful :=
   MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong
     (P := @Surjective ⊓ @Flat ⊓ @QuasiCompact)
     ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y : Scheme} (f : X ⟶ Y) [Surjective f] [Flat f] [LocallyOfFinitePresentation f] :
     (Over.pullback f).Faithful :=
   MorphismProperty.faithful_overPullback_of_isomorphisms_descendAlong

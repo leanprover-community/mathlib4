@@ -176,7 +176,7 @@ end OrderedRing
 section LinearOrderedField
 
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
+  [AddCommGroup V] [Module R V] [AddTorsor V P] {x : P}
 variable {R}
 
 lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by

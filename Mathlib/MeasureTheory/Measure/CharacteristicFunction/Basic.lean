@@ -51,7 +51,9 @@ and `L`.
 
 @[expose] public section
 
-open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate WithLp
+open BoundedContinuousFunction Real Complex WithLp
+
+open scoped RealInnerProductSpace ComplexConjugate
 
 open scoped ENNReal
 
@@ -67,6 +69,7 @@ def innerProbChar (t : E) : E →ᵇ ℂ :=
 
 lemma innerProbChar_apply (t x : E) : innerProbChar t x = exp (⟪x, t⟫ * I) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma innerProbChar_zero : innerProbChar (0 : E) = 1 := by simp [innerProbChar]
 
@@ -79,6 +82,7 @@ def probCharDual (L : StrongDual ℝ F) : F →ᵇ ℂ :=
 
 lemma probCharDual_apply (L : StrongDual ℝ F) (x : F) : probCharDual L x = exp (L x * I) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma probCharDual_zero : probCharDual (0 : StrongDual ℝ F) = 1 := by simp [probCharDual]
 
@@ -108,9 +112,9 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
   obtain ⟨w, hw⟩ := hg
   rw [hw]
   have hsum (P : Measure V) [IsFiniteMeasure P] :
-      ∫ v, ∑ a ∈ w.support, w a * e (L v a) ∂P = ∑ a ∈ w.support, ∫ v, w a * e (L v a) ∂P :=
-    integral_finsetSum w.support
-      fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
+      ∫ v, w.coeff.sum (fun a z ↦ z * e (L v a)) ∂P =
+        w.coeff.sum (fun a z ↦ ∫ v, z * e (L v a) ∂P) :=
+    integral_finsetSum _ fun a ha ↦ ((char he hL a).integrable P).const_mul  _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
   simp only [MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
@@ -193,6 +197,13 @@ lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : 
     IntervalIntegrable (charFun μ) volume a b :=
   IntervalIntegrable.mono_fun' (g := fun _ ↦ μ.real Set.univ) (by simp)
     stronglyMeasurable_charFun.aestronglyMeasurable (ae_of_all _ norm_charFun_le)
+
+lemma charFun_map_eq_charFun_map_inner_one {α : Type*} {mα : MeasurableSpace α} [BorelSpace E]
+  {μ : Measure α} {Y : α → E} (hY : AEMeasurable Y μ) (t : E) :
+  charFun (μ.map Y) t = charFun (μ.map (⟪Y ·, t⟫)) (1 : ℝ) := by
+  rw [charFun_apply, charFun_apply_real, integral_map, integral_map]
+  · simp
+  all_goals fun_prop
 
 lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     charFun (μ.map (r • ·)) t = charFun μ (r • t) := by

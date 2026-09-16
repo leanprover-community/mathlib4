@@ -13,7 +13,7 @@ public import Mathlib.Order.RelIso.Basic
 # Tautological action by relation automorphisms
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

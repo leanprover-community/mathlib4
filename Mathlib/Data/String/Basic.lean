@@ -53,26 +53,27 @@ def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
     else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
   else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
     ltb ⟨ofList (c :: s₁.s.toList), s₁.i + c⟩ ⟨ofList (c :: s₂.s.toList), s₂.i + c⟩ =
       ltb s₁ s₂ := by
   fun_induction ltb s₁ s₂ with
   | case1 s₁ s₂ h₁ h₂ h ih =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
+      ite_eq_left (by simpa using h₁), ite_eq_left (by simpa using h₂), ite_eq_left, ← ih]
     · simp only [Legacy.Iterator.next, Pos.Raw.next, get_cons_addChar, ofList_toList]
       congr 2 <;> apply Pos.Raw.add_char_right_comm
     · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case2 s₁ s₂ h₁ h₂ h =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_neg]
-    · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList, decide_eq_decide]
+      ite_eq_left (by simpa using h₁), ite_eq_left (by simpa using h₂), ite_eq_right]
+    · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList]
     · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case3 s₁ s₂ h₁ h₂ =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_neg (by simpa using h₂)]
+      ite_eq_left (by simpa using h₁), ite_eq_right (by simpa using h₂)]
   | case4 s₁ s₂ h₁ =>
-    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, if_neg (by simpa using h₁)]
+    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, ite_eq_right (by simpa using h₁)]
 
 theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.Raw) :
     ltb ⟨ofList (c :: cs₁), i₁ + c⟩ ⟨ofList (c :: cs₂), i₂ + c⟩ =
