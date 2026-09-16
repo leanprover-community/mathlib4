@@ -33,7 +33,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Given a bifunctor `F : C₁ ⥤ C₂₃₄ ⥤ E` and a trifunctor
 `G : C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄`, this is the quadrifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E`
 obtained by composition. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₂₃₄ (F : C₁ ⥤ C₂₃₄ ⥤ E) (G : C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) :
     C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj X₁ := (Functor.postcompose₃.obj (F.obj X₁)).obj G
@@ -42,7 +42,7 @@ def trifunctorComp₂₃₄ (F : C₁ ⥤ C₂₃₄ ⥤ E) (G : C₂ ⥤ C₃ �
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `trifunctorComp₂₃₄Functor`. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₂₃₄FunctorObj (F : C₁ ⥤ C₂₃₄ ⥤ E) :
     (C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj G := trifunctorComp₂₃₄ F G
@@ -59,7 +59,7 @@ def trifunctorComp₂₃₄FunctorObj (F : C₁ ⥤ C₂₃₄ ⥤ E) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `trifunctorComp₂₃₄Functor`. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₂₃₄FunctorMap {F F' : C₁ ⥤ C₂₃₄ ⥤ E} (τ : F ⟶ F') :
     trifunctorComp₂₃₄FunctorObj (C₂ := C₂) (C₃ := C₃) (C₄ := C₄) F ⟶
       trifunctorComp₂₃₄FunctorObj F' where
@@ -76,7 +76,7 @@ def trifunctorComp₂₃₄FunctorMap {F F' : C₁ ⥤ C₂₃₄ ⥤ E} (τ : F
 `(C₁ ⥤ C₂₃₄ ⥤ E) ⥤ (C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E` which
 sends `F : C₁ ⥤ C₂₃₄ ⥤ E` and `G : C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄` to
 `trifunctorComp₂₃₄ F G`. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₂₃₄Functor :
     (C₁ ⥤ C₂₃₄ ⥤ E) ⥤ (C₂ ⥤ C₃ ⥤ C₄ ⥤ C₂₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj := trifunctorComp₂₃₄FunctorObj
@@ -90,7 +90,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E` and a bifunctor
 `G : C₃ ⥤ C₄ ⥤ C₃₄`, this is the quadrifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E`
 obtained by composition. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₃₄ (F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) (G : C₃ ⥤ C₄ ⥤ C₃₄) :
     C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj X₁ := bifunctorComp₂₃ (F.obj X₁) G
@@ -99,7 +99,7 @@ def trifunctorComp₃₄ (F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) (G : C₃ ⥤ C�
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `trifunctorComp₃₄Functor`. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₃₄FunctorObj (F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) :
     (C₃ ⥤ C₄ ⥤ C₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj G := trifunctorComp₃₄ F G
@@ -112,7 +112,7 @@ def trifunctorComp₃₄FunctorObj (F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `trifunctorComp₃₄Functor`. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₃₄FunctorMap {F F' : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E} (τ : F ⟶ F') :
     trifunctorComp₃₄FunctorObj (C₃ := C₃) (C₄ := C₄) F ⟶
       trifunctorComp₃₄FunctorObj F' where
@@ -130,7 +130,7 @@ def trifunctorComp₃₄FunctorMap {F F' : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E} (τ 
 `(C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) ⥤ (C₃ ⥤ C₄ ⥤ C₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E` which
 sends `F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E` and `G : C₃ ⥤ C₄ ⥤ C₃₄` to
 `trifunctorComp₃₄ F G`. -/
-@[simps]
+@[implicit_reducible, simps]
 def trifunctorComp₃₄Functor :
     (C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E) ⥤ (C₃ ⥤ C₄ ⥤ C₃₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E where
   obj := trifunctorComp₃₄FunctorObj
