@@ -217,6 +217,24 @@ elab_rules : tactic
     let postCtx ← Mathlib.Tactic.Module.postprocessCtx
     transformAtNondepPropLocation (moduleNFCore s base) "module_nf" loc .error false postCtx
 
-end Mathlib.Tactic.ModuleNF
+end ModuleNF
+
+namespace ClickSuggestions.Normalize
+
+/-- The entry for `module_nf` in `#click_suggestions`. -/
+def moduleNF : NormTactic where
+  tacStx loc? := `(tactic| module_nf $[$loc?]?)
+  convStx := failure
+  run e := do
+    let base ← ModuleNF.inferBase #[e]
+    let s ← IO.mkRef {}
+    let postCtx ← Mathlib.Tactic.Module.postprocessCtx
+    return (← ModuleNF.moduleNFCore s base e postCtx).expr
+
+initialize normTacticRef.modify (·.push moduleNF)
+
+end ClickSuggestions.Normalize
+
+end Mathlib.Tactic
 
 end
