@@ -245,18 +245,6 @@ lemma map_scalar (u : Rˣ) : map f (scalar n u) = scalar n (Units.map f u) := by
   simp [Matrix.diagonal_apply]
   split <;> simp
 
-/-- A ring equivalence `R ≃+* S` induces a group equivalence `GL n R ≃* GL n S`. -/
-abbrev mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
-  Units.mapEquiv f.mapMatrix.toMulEquiv
-
-@[simp]
-lemma mapEquiv_symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv (n := n) f.symm := rfl
-
---@[simps!]
-def piEquiv {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] :
-    GL n (∀ i, R i) ≃* ∀ i, GL n (R i) := sorry
-  --(Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
-
 section kronecker
 variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
 
