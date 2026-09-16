@@ -199,13 +199,8 @@ The suggestions are shown incrementally, so they show up as soon as they are com
 We currently use one thread for these, but we might parallelize it in the future.
 -/
 public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos : SubExpr.Pos) :
-    ClickSuggestionsM Html := do
-  let wrap (htmls : Array Html) :=
-    <details>
-      <summary className="mv2 pointer"> Normalize </summary>
-      {.element "div" #[] htmls}
-    </details>
-  mkIncrementalSuggestions "normalize" (wrap := wrap) fun update ↦ withNewMCtxDepth do
+    ClickSuggestionsM Html :=
+  mkIncrementalSuggestions "normalize" (.text "Normalize") fun update ↦ withNewMCtxDepth do
     let info : PositionInfo := {
       hyp? := ← fvarId?.mapM (·.getUserName)
       convPath? := ← if pos.isRoot then pure none else some <$> Conv.Path.ofSubExprPos rootExpr pos

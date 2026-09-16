@@ -389,16 +389,23 @@ def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
 def mkTacticSuggestion (stx tac : TSyntax `tactic) (html : Html) : ClickSuggestionsM Html := do
   mkSuggestion stx <div> <div>{html}</div> <div>{← tacticToHtml tac}</div> </div>
 
-/-- Make a suggestion using a separete thread, allowing it to add entries over time. -/
-def mkIncrementalSuggestions (name : String)
-    (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit)
-    (wrap : Array Html → Html := .element "div" #[]) : ClickSuggestionsM Html :=
+/-- Make a list of suggestions by running `k` in a separate thread,
+letting it add them one by one. -/
+def mkIncrementalSuggestions (name : String) (title : Html)
+    (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) : ClickSuggestionsM Html :=
   mkRefreshComponentM (.text "") fun token ↦ trackingComputation name do
     let htmls ← IO.mkRef #[]
     k fun html ↦ do
       markProgress
       htmls.modify (·.push html)
-      token.update (wrap (← htmls.get))
+      token.update <details>
+          <summary className="mv2 pointer"> {title} {.text "⏳️"} </summary>
+          {.element "div" #[] (← htmls.get)}
+        </details>
+    token.update <details>
+        <summary className="mv2 pointer"> {title} </summary>
+        {.element "div" #[] (← htmls.get)}
+      </details>
 
 end Widget
 
