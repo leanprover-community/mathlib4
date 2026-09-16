@@ -299,20 +299,20 @@ variable [DecidableEq ι]
 all other coordinates. -/
 abbrev EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι := PiLp.single 2 i a
 
-@[deprecated PiLp.ofLp_single (since := "2026-03-15")]
+@[deprecated PiLp.ofLp_single +typeChanged (since := "2026-03-15")]
 lemma EuclideanSpace.ofLp_single (i : ι) (a : 𝕜) : ofLp (single i a) = Pi.single i a := by
   simp
 
-@[deprecated PiLp.toLp_single (since := "2026-03-15")]
+@[deprecated PiLp.toLp_single +typeChanged (since := "2026-03-15")]
 lemma EuclideanSpace.toLp_single (i : ι) (a : 𝕜) : toLp _ (Pi.single i a) = single i a := by
   simp
 
-@[deprecated PiLp.single_apply (since := "2026-03-15")]
+@[deprecated PiLp.single_apply +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
     (EuclideanSpace.single i a) j = ite (j = i) a 0 := by
   simp
 
-@[deprecated PiLp.single_eq_zero_iff (since := "2026-03-15")]
+@[deprecated PiLp.single_eq_zero_iff +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
     EuclideanSpace.single i a = 0 ↔ a = 0 := by simp
 
@@ -325,25 +325,25 @@ theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace
 theorem EuclideanSpace.inner_single_right (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
     ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [PiLp.inner_apply]
 
-@[deprecated PiLp.norm_single (since := "2026-03-15")]
+@[deprecated PiLp.norm_single +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.norm_single (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖ = ‖a‖ := by simp
 
-@[deprecated PiLp.nnnorm_single (since := "2026-03-15")]
+@[deprecated PiLp.nnnorm_single +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.nnnorm_single (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖₊ = ‖a‖₊ := by simp
 
-@[deprecated PiLp.dist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.dist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.dist_single_same (i : ι) (a b : 𝕜) :
     dist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = dist a b := by
   simp
 
-@[deprecated PiLp.nndist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.nndist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.nndist_single_same (i : ι) (a b : 𝕜) :
     nndist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = nndist a b := by
   simp
 
-@[deprecated PiLp.edist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.edist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.edist_single_same (i : ι) (a b : 𝕜) :
     edist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = edist a b := by
   simp
@@ -405,6 +405,7 @@ theorem repr_injective :
   congr
 
 /-- `b i` is the `i`th basis vector. -/
+@[macro_inline]
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|

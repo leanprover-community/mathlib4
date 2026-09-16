@@ -207,7 +207,7 @@ def coeMonoidHom : ℕ+ →* ℕ where
 theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
-@[deprecated le_one_iff_eq_one (since := "2026-05-07")]
+@[deprecated le_one_iff_eq_one +typeChanged (since := "2026-05-07")]
 theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 := by
   simp
 
@@ -221,7 +221,7 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
 theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 
-@[deprecated one_lt_of_gt (since := "2026-05-07")]
+@[deprecated one_lt_of_gt +typeChanged (since := "2026-05-07")]
 theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := hab.one_lt
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl

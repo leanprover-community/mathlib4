@@ -93,10 +93,10 @@ lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (discriminantEquiv f) z = f z / Δ z := rfl
 
 /-- Divide a cusp form by the discriminant to get a modular form of weight `k - 12`. -/
-@[deprecated discriminantEquiv (since := "2026-05-18")]
+@[deprecated discriminantEquiv +typeChanged (since := "2026-05-18")]
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) := discriminantEquiv f
 
-@[deprecated discriminantEquiv_apply (since := "2026-05-18")]
+@[deprecated discriminantEquiv_apply +typeChanged (since := "2026-05-18")]
 lemma divDiscriminant_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (divDiscriminant f) z = f z / Δ z := rfl
 
