@@ -35,9 +35,27 @@ of the zeta matrix with `(0, 1, …, 1)`, and that row is `(μ 1, …, μ (n + 1
 `μ * ζ = 1` (`ArithmeticFunction.moebius_mul_coe_zeta`). The sum `μ 2 + ⋯ + μ (n + 1)` is
 `mertens (n + 1) - 1`.
 
+## Implementation notes
+
+Indices are `Fin n`, so the matrix on `{1, …, n}` is written with `i + 1` and `j + 1`. The
+theorem is stated for `redheffer (n + 1)`: the empty matrix has determinant `1` while
+`mertens 0 = 0`. `mertens` is an `ArithmeticFunction ℤ` (so `mertens 0 = 0` is `map_zero`) with
+`mertens_apply` as its defining lemma; `zetaMatrix_apply` and `redheffer_apply` are the `simp`
+normal forms of the two matrices.
+
+Since `M n = 0` for infinitely many `n` (Odlyzko and te Riele's disproof of the Mertens
+conjecture, [odlyzko1985]), the Redheffer matrix is singular infinitely often; the Riemann
+hypothesis is equivalent to `M x = O(x ^ (1/2 + ε))` for every `ε > 0`. Neither fact is
+formalised here.
+
 ## References
 
 * [R. M. Redheffer, *Eine explizit lösbare Optimierungsaufgabe*][redheffer1977]
+* [A. M. Odlyzko, H. J. J. te Riele, *Disproof of the Mertens conjecture*][odlyzko1985]
+
+## Tags
+
+mertens function, redheffer matrix, moebius function, determinant
 -/
 
 @[expose] public section
