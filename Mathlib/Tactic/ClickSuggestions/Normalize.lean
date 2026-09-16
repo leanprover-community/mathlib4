@@ -190,7 +190,10 @@ end Simp
 
 public initialize normTacticRef : IO.Ref (Array NormTactic) ← IO.mkRef #[normCast, pushCast]
 
-/-- Create a suggestion for tactics that normalize the selected expression. -/
+/-- Create a suggestion for tactics that normalize the selected expression.
+The suggestions are shown incrementally, so they show up as soon as they are computed.
+We currently use one thread for these, but we might parallelize it in the future.
+-/
 public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos : SubExpr.Pos) :
     ClickSuggestionsM Html := do
   let info : PositionInfo := {
