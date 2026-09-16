@@ -392,10 +392,9 @@ the Galois objects. -/
 noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
   toFun := MonoidHom.comp (endMulEquivAutGalois F) Aut.toEnd
   invFun t := .of (asIso ((endMulEquivAutGalois F).symm t).asHom)
-  left_inv t := by
-    cat_disch
+  left_inv t := by cat_disch
   right_inv t := by
-    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe]
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_ofClass]
     exact (MulEquiv.eq_symm_apply (endMulEquivAutGalois F)).mp rfl
   map_mul' := by simp [map_mul]
 
