@@ -13,7 +13,8 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Redheffer
 The *Möbius matrix* `Matrix.moebiusMatrix n` is the `n × n` matrix with entry
 `μ ((j + 1) / (i + 1))` at `(i, j)` when `i + 1 ∣ j + 1` and `0` otherwise. It is the two-sided
 inverse of the zeta (divisibility) matrix `Matrix.zetaMatrix n`: this is Möbius inversion,
-`μ * ζ = 1`, written for the matrices of the truncated Dirichlet convolution on `{1, …, n}`.
+`μ * ζ = 1` (`ArithmeticFunction.moebius_mul_coe_zeta`), written for the matrices of the truncated
+Dirichlet convolution on `{1, …, n}`.
 
 ## Main results
 
@@ -61,8 +62,8 @@ theorem moebiusMatrix_isUpperTriangular (n : ℕ) : (moebiusMatrix n).IsUpperTri
     omega
   simp [this]
 
-theorem sum_fin_dvd_dvd_eq_sum_divisors (n a b : ℕ) (f : ℕ → ℤ) (ha : 1 ≤ a) (hb : 1 ≤ b)
-    (hab : a ∣ b) (hbn : b ≤ n) :
+theorem sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (n a b : ℕ) (f : ℕ → M)
+    (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a ∣ b) (hbn : b ≤ n) :
     (∑ k : Fin n, if a ∣ (k : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ b then f (((k : ℕ) + 1) / a) else 0) =
       ∑ d ∈ (b / a).divisors, f d := by
   obtain ⟨m, rfl⟩ := hab
