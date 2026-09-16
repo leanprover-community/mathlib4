@@ -114,6 +114,7 @@ lemma eval_def (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := by rfl
 @[simp]
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := by rfl
 
+@[fun_prop]
 lemma continuous_eval_const (x : X) : Continuous (fun (f : H) ↦ f x) := (eval H x).continuous
 
 @[deprecated (since := "2026-08-19")]
@@ -168,7 +169,7 @@ lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x 
   rw [norm_kernel_eq_norm_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
 
 lemma norm_kerFun_sub_kerFun_sq (x y : X) :
-    ‖kerFun H x - kerFun H y‖^2 = ‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
+    ‖kerFun H x - kerFun H y‖ ^ 2 = ‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
   rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self]
   simp [← kernel_apply, ← sub_add]
 
@@ -191,21 +192,15 @@ theorem continuous_tfae : List.TFAE [
     Continuous (fun p : X × X => kernel H p.1 p.2),
     Continuous (kerFun H),
     Continuous (fun x : X => eval H x)] := by
-  tfae_have 1 → 2 := by
-    intro
-    rw [continuous_iff_continuousAt]
-    intro x
+  tfae_have 1 → 2 := fun _ ↦ continuous_iff_continuousAt.mpr fun x ↦ by
     rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]
     simpa [norm_kerFun_sub_kerFun] using ContinuousAt.tendsto (x := x)
       (f := fun e ↦ √‖kernel H e e - kernel H x e - kernel H e x + kernel H x x‖) (by fun_prop)
-  tfae_have 2 → 3 := by
-    rintro hK
+  tfae_have 2 → 3 := fun _ ↦ by
     simp_rw +singlePass [← adjoint_adjoint (eval H _), ← kerFun_eq_adjoint_eval]
-    exact ContinuousLinearMap.adjoint.continuous.comp hK
-  tfae_have 3 → 1 := by
-    rintro hE
-    dsimp only [kernel, Matrix.of_apply]
-    simp_rw [kerFun_eq_adjoint_eval]
+    fun_prop
+  tfae_have 3 → 1 := fun _ ↦ by
+    simp_rw [kernel_apply, kerFun_eq_adjoint_eval]
     fun_prop
   tfae_finish
 
