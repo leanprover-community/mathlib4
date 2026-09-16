@@ -63,9 +63,12 @@ variable {x : orbitRel.Quotient G M}
 
 variable (x) in
 /-- A choice of local section of the quotient map `M → orbitRel.Quotient G M` around `x`. -/
+@[to_additive
+/-- A choice of local section of the quotient map `M → orbitRel.Quotient G M` around `x`. -/]
 abbrev localInverseAt : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul.localInverseAt x.out
 
+@[to_additive]
 lemma localInverseAt_apply_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (x.localInverseAt).target) :
     x.localInverseAt ⟦m⟧ = g • m := by
   rw [← orbitRel.Quotient.quotient_smul_eq (g := g),
@@ -74,6 +77,8 @@ lemma localInverseAt_apply_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (x.local
 
 /-- On the open set `(g • ·) ⁻¹' (y.localInverseAt).target`, the section comparison
 `(x.localInverseAt).symm.trans (y.localInverseAt)` is the action of `g`. -/
+@[to_additive /-- On the open set `(g +ᵥ ·) ⁻¹' (y.localInverseAt).target`, the section comparison
+`(x.localInverseAt).symm.trans (y.localInverseAt)` is the additive action of `g`. -/]
 lemma localInverseAt_symm_trans_eqOn_smul (x y : orbitRel.Quotient G M) (g : G) :
     ((g • ·) ⁻¹' (y.localInverseAt).target).EqOn
       ((x.localInverseAt).symm.trans (y.localInverseAt)) (g • ·) := by
@@ -84,6 +89,8 @@ lemma localInverseAt_symm_trans_eqOn_smul (x y : orbitRel.Quotient G M) (g : G) 
 
 /-- If `⟦m⟧` is in the source of `x.localInverseAt`, then there is some `g ∈ G` such that
 `g • m` lies in the target of `x.localInverseAt`. -/
+@[to_additive /-- If `⟦m⟧` is in the source of `x.localInverseAt`, then there is some `g ∈ G` such
+that `g +ᵥ m` lies in the target of `x.localInverseAt`. -/]
 lemma exists_smul_mem_localInverseAt_target {m : M}
     (hm : (⟦m⟧ : orbitRel.Quotient G M) ∈ (x.localInverseAt).source) :
     ∃ g : G, g • m ∈ (x.localInverseAt).target := by
@@ -98,12 +105,17 @@ lemma exists_smul_mem_localInverseAt_target {m : M}
 variable (x y : orbitRel.Quotient G M)
 
 /-- The transition map between the charts of the quotient associated to `x` and `y`. -/
+@[to_additive
+/-- The transition map between the charts of the quotient associated to `x` and `y`. -/]
 def transitionMap : OpenPartialHomeomorph H H :=
   (chartAt H x.out).symm.trans (((x.localInverseAt).symm.trans (y.localInverseAt)).trans
     (chartAt H y.out))
 
 /-- For a fixed `g`, the transition map of the quotient agrees with `φ x⁻¹ ≫ (g • ·) ≫ φ y` on
 the preimage under `(φ x).symm` of the set where the section comparison is the action of `g`. -/
+@[to_additive /-- For a fixed `g`, the transition map of the quotient agrees with
+`φ x⁻¹ ≫ (g +ᵥ ·) ≫ φ y` on the preimage under `(φ x).symm` of the set where the section
+comparison is the additive action of `g`. -/]
 lemma transitionMap_eqOn_smul (g : G) :
     ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)).EqOn
       (transitionMap x y)
@@ -115,6 +127,8 @@ lemma transitionMap_eqOn_smul (g : G) :
 
 /-- Locally, the transition map of the quotient is `φ x⁻¹ ≫ (g • ·) ≫ φ y` for a single group
 element `g`. -/
+@[to_additive /-- Locally, the transition map of the quotient is `φ x⁻¹ ≫ (g +ᵥ ·) ≫ φ y` for
+a single group element `g`. -/]
 lemma transitionMap_locally_smul {h : H} (hh : h ∈ (transitionMap x y).source) :
     ∃ g : G, h ∈ (chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target) ∧
       ((chartAt H x.out).symm ⁻¹' ((g • ·) ⁻¹' (y.localInverseAt).target)).EqOn
@@ -143,6 +157,9 @@ open orbitRel.Quotient
 /-- The quotient of a Cⁿ manifold by a free, properly discontinuous group action such that the
 scalar multiplication `fun x : M ↦ g • x` is Cⁿ is itself a Cⁿ manifold, for the charts of
 `MulAction.instChartedSpaceQuotient`. -/
+@[to_additive /-- The quotient of a Cⁿ manifold by a free, properly discontinuous additive group
+action such that the translation `fun x : M ↦ g +ᵥ x` is Cⁿ is itself a Cⁿ manifold, for the charts
+of `AddAction.instChartedSpaceQuotient`. -/]
 instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] :
     IsManifold I n (orbitRel.Quotient G M) where
   compatible := by
