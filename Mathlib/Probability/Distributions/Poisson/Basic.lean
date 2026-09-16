@@ -68,10 +68,6 @@ lemma hasSum_one_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^
 instance (r : ℝ≥0) : IsProbabilityMeasure Po(r) :=
   (hasSum_one_poissonMeasure r).isProbabilityMeasure_sum_dirac (fun _ ↦ by positivity)
 
-instance (r : ℝ≥0) {R : Type*} [NatCast R] [MeasurableSpace R] :
-    IsProbabilityMeasure Po(R, r) :=
-  Measure.isProbabilityMeasure_map .of_discrete
-
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -209,25 +205,25 @@ end Convolution
 section PoissonPMF
 
 /-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
-@[deprecated poissonMeasure (since := "2026-03-08")]
+@[deprecated poissonMeasure +typeChanged (since := "2026-03-08")]
 noncomputable
 def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (-r) * r ^ n / (n)!
 
 @[deprecated (since := "2026-03-08")]
 alias poissonPMFRealSum := hasSum_one_poissonMeasure
 
-@[deprecated poissonMeasure_real_singleton_pos (since := "2026-03-08")]
+@[deprecated poissonMeasure_real_singleton_pos +typeChanged (since := "2026-03-08")]
 lemma poissonPMFReal_pos {r : ℝ≥0} {n : ℕ} (hr : 0 < r) : 0 < poissonPMFReal r n := by
   rw [poissonPMFReal]
   positivity
 
-@[deprecated measureReal_nonneg (since := "2026-03-08")]
+@[deprecated measureReal_nonneg +typeChanged (since := "2026-03-08")]
 lemma poissonPMFReal_nonneg {r : ℝ≥0} {n : ℕ} : 0 ≤ poissonPMFReal r n := by
   unfold poissonPMFReal
   positivity
 
 /-- The pmf of the Poisson distribution depending on its rate, as a PMF. -/
-@[deprecated poissonMeasure (since := "2026-03-08")]
+@[deprecated poissonMeasure +typeChanged (since := "2026-03-08")]
 noncomputable
 def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   refine ⟨fun n ↦ ENNReal.ofReal (poissonPMFReal r n), ?_⟩
@@ -235,15 +231,15 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   rw [← toNNReal_one]
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
-@[deprecated poissonMeasure (since := "2026-03-08")]
+@[deprecated poissonMeasure +typeChanged (since := "2026-03-08")]
 lemma poissonPMFReal_ofReal_eq_poissonPMF (r : ℝ≥0) (n : ℕ) :
     ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n := by
   simpa only [poissonPMF] using by rfl
 
-@[deprecated Measurable.of_discrete (since := "2026-03-08")]
+@[deprecated Measurable.of_discrete +typeChanged (since := "2026-03-08")]
 lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
 
-@[deprecated StronglyMeasurable.of_discrete (since := "2026-03-08")]
+@[deprecated StronglyMeasurable.of_discrete +typeChanged (since := "2026-03-08")]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
 

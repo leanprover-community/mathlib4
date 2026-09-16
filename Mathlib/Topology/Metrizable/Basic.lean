@@ -22,7 +22,9 @@ assert_not_exists AddMonoidWithOne
 
 public section
 
-open Filter Set Topology Uniformity UniformSpace SetRel
+open Filter Set Topology UniformSpace SetRel
+
+open scoped Uniformity
 
 namespace TopologicalSpace
 
