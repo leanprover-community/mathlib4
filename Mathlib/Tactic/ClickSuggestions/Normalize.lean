@@ -230,13 +230,13 @@ public def runNF (e : Expr) (evalExpr : Expr → AtomM Simp.Result)
     return (← evalExpr e).expr
   return (← cleanup { expr }).expr
 
-/-- Run the given normalization tactic using its syntax `stx`, such as `group` or `noncomm_ring`. -/
-public def runFromStx (stx : TSyntax `tactic) (e : Expr) : MetaM Expr := do
-  let mvar ← mkFreshExprMVar e
-  match ← (Elab.Tactic.run mvar.mvarId! (Elab.Tactic.evalTactic stx)).run' with
-  | [] => return mkConst ``True
-  | [mvarId] => mvarId.getType
-  | _ => failure
+/-- Simplify `e` using normalization tactic `tac`, such as `group` or `noncomm_ring`. -/
+public def runFromStx (tac : TSyntax `tactic) (e : Expr) : MetaM Expr := do
+  let e' ← mkFreshExprMVar (← inferType e)
+  let mvar ← mkFreshExprMVar (← mkAppM ``Eq #[e, e'])
+  let [mvarId] ← (Elab.Tactic.run mvar.mvarId! (Elab.Tactic.evalTactic tac)).run' | failure
+  _ ← mvarId.applyConst ``rfl
+  instantiateMVars e'
 
 /-- Check that `e` is suitable for normalization by a tactic for class `cls`.
 This is used for unstructured normalization tactics such as `group` and `noncomm_ring`. -/
