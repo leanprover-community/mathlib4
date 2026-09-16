@@ -339,13 +339,10 @@ def associativity'Iso :
     Functor.prod (𝟭 _) (inverse Y Z) ⋙ inverse X (Y ⊗ Z) :=
   Functor.fullyFaithfulCurry₃.preimageIso
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _)
-      (fun z₀ z₁ e ↦ by
-        dsimp
-        simp [← prod_id, ← Edge.id_tensor_id]))
+      (fun z₀ z₁ e ↦ by simp [← prod_id, ← Edge.id_tensor_id]))
       (fun y₀ y₁ e ↦ by
         ext z
         obtain ⟨z, rfl⟩ := z.mk_surjective
-        dsimp
         simp))
       (fun x₀ x₁ e ↦ by
         ext y z
