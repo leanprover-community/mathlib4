@@ -165,10 +165,8 @@ example : DecidableEq UnitAlias :=
 /-! The root is an instance family, and the instances do not reduce to a constructor application. -/
 /--
 error: Provided instance does not reduce to a constructor application
-  decidable_of_iff (() = ()) ⋯
-Reduces to an application of decidable_of_iff.
-
-This instance is not a structure and not canonical. Use a separate 'instance' command to define it.
+  sorry
+Reduces to an application of sorryAx.
 
 Use `set_option trace.Elab.fast_instance true` to analyze the error.
 
@@ -176,7 +174,7 @@ Trace of fields visited: []
 -/
 #guard_msgs in
 example : DecidableEq UnitAlias :=
-  fast_instance% fun _ _ ↦ decidable_of_iff (() = ()) .rfl
+  fast_instance% fun _ _ ↦ sorry
 
 /-! The root is an instance family, and the instances do not reduce to a constructor application,
 but are equal defeq to what `inferInstance` would synthesize, so we allow it with a warning. -/
@@ -201,8 +199,6 @@ constructor application. -/
 error: Provided instance does not reduce to a constructor application
   sorry
 Reduces to an application of sorryAx.
-
-This instance is not a structure and not canonical. Use a separate 'instance' command to define it.
 
 Use `set_option trace.Elab.fast_instance true` to analyze the error.
 
