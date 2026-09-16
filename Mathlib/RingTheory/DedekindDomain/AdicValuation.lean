@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.Algebra.Group.Submonoid.Units
 
 /-!
 # Adic valuations on Dedekind domains
@@ -273,7 +274,7 @@ theorem intValuation_exists_uniformizer :
   have hlt : v.asIdeal ^ 2 < v.asIdeal := by
     rw [← Ideal.dvdNotUnit_iff_lt]
     exact ⟨v.ne_bot, v.asIdeal, Ideal.isUnit_iff.not.mpr v.isPrime.ne_top, sq v.asIdeal⟩
-  obtain ⟨π, mem, notMem⟩ := SetLike.exists_of_lt hlt
+  obtain ⟨π, mem, notMem⟩ := IsConcreteLE.exists_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h
@@ -668,7 +669,7 @@ back along `equiv`, and that of the completion. -/
 def valueGroupEquiv :
     valueGroup (.ofClass (valuation K v)) ≃*
       valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
-  __ := Equiv.Set.congr (by rw [valueGroup_eq K v])
+  __ := Set.equivOfEq (by rw [valueGroup_eq K v])
   map_mul' _ _ := rfl
 
 @[simp] theorem coe_valueGroupEquiv (a : valueGroup (.ofClass (valuation K v))) :

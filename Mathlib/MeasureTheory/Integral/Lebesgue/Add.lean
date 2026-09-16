@@ -450,6 +450,13 @@ theorem lintegral_lintegral_mul {β} [MeasurableSpace β] {ν : Measure β} {f :
     ∫⁻ x, ∫⁻ y, f x * g y ∂ν ∂μ = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
   simp [lintegral_const_mul'' _ hg, lintegral_mul_const'' _ hf]
 
+theorem lintegral_lintegral_mul_le {β} [MeasurableSpace β] {ν : Measure β} (f : α → ℝ≥0∞)
+    (g : β → ℝ≥0∞) :
+    (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν ≤ ∫⁻ x, ∫⁻ y, f x * g y ∂ν ∂μ := by
+  grw [lintegral_mul_const_le]
+  refine lintegral_mono fun a ↦ ?_
+  grw [lintegral_const_mul_le]
+
 end Mul
 
 section Trim
