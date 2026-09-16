@@ -69,6 +69,11 @@ variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 def balancedCore (s : Set E) : Set E :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
 
+/-- Helper definition to prove `balanced_core_eq_iInter` -/
+@[deprecated "Use balancedCore directly instead" (since := "2026-09-16")]
+def balancedCoreAux (s : Set E) :=
+  ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
+
 /-- The smallest balanced superset of `s`. -/
 def balancedHull : ClosureOperator (Set E) :=
   .ofCompletePred (Balanced 𝕜) fun _ ↦ .sInter
@@ -99,6 +104,10 @@ theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
   simp_rw [balancedCore, mem_sUnion, mem_ofPred_eq, and_assoc]
+
+@[deprecated "Use mem_balancedCore_iff directly" (since := "2026-09-16")]
+theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
+  mem_iInter₂
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
     a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s :=
@@ -173,6 +182,41 @@ section NormedField
 
 variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
+@[deprecated "Use balancedCore_empty directly" (since := "2026-09-16")]
+theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
+  simp_rw [balancedCoreAux, iInter₂_eq_empty_iff, smul_set_empty]
+  exact fun _ => ⟨1, norm_one.ge, notMem_empty _⟩
+
+@[deprecated "Use balancedCore_subset directly" (since := "2026-09-16")]
+theorem balancedCoreAux_subset (s : Set E) : balancedCoreAux 𝕜 s ⊆ s := fun x hx => by
+  simpa only [one_smul] using mem_balancedCoreAux_iff.1 hx 1 norm_one.ge
+
+@[deprecated "Use balancedCore.balanced directly" (since := "2026-09-16")]
+theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
+    Balanced 𝕜 (balancedCoreAux 𝕜 s) := by
+  rintro a ha x ⟨y, hy, rfl⟩
+  obtain rfl | h := eq_or_ne a 0
+  · simp_rw [zero_smul, h0]
+  rw [mem_balancedCoreAux_iff] at hy ⊢
+  intro r hr
+  have h'' : 1 ≤ ‖a⁻¹ • r‖ := by
+    rw [norm_smul, norm_inv]
+    exact one_le_mul_of_one_le_of_one_le ((one_le_inv₀ (norm_pos_iff.mpr h)).2 ha) hr
+  have h' := hy (a⁻¹ • r) h''
+  rwa [smul_assoc, mem_inv_smul_set_iff₀ h] at h'
+
+@[deprecated "Use Balanced.subset_balancedCore_of_subset directly" (since := "2026-09-16")]
+theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s := by
+  refine fun x hx => mem_balancedCoreAux_iff.2 fun r hr => ?_
+  rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.mp <| zero_lt_one.trans_le hr)]
+  refine h (ht.smul_mem ?_ hx)
+  rw [norm_inv]
+  exact inv_le_one_of_one_le₀ hr
+
+@[deprecated "Use balancedCore directly instead of balancedCoreAux" (since := "2026-09-16")]
+theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCoreAux 𝕜 s :=
+  balancedCoreAux_maximal (balancedCore_subset s) (balancedCore_balanced s)
+
 theorem iInter_smul_subset (s : Set E) : (⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s) ⊆ s := fun x hx => by
   simpa only [one_smul] using mem_iInter₂.1 hx 1 norm_one.ge
 
@@ -224,8 +268,19 @@ end balancedHull
 
 section Topology
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [ContinuousSMul 𝕜 E] {U : Set E}
+variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {U : Set E}
+
+protected theorem IsOpen.balancedHull [ContinuousConstSMul 𝕜 E] {s : Set E} (hs : IsOpen s)
+    (hzero : 0 ∈ s) : IsOpen (balancedHull 𝕜 s) := by
+  have : (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1), r • s) = (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1 ∧ r ≠ 0), r • s) := by
+    refine subset_antisymm (Set.iUnion₂_mono' fun r hr ↦ ?_) (Set.iUnion₂_mono' (by grind))
+    obtain rfl | hr_ne := eq_or_ne r 0
+    · exact ⟨1, by simp, by simpa [Set.zero_smul_set ⟨0, hzero⟩]⟩
+    · use r
+  rw [balancedHull_eq_iUnion, this]
+  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
+
+variable [ContinuousSMul 𝕜 E]
 
 protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by
   obtain h | h := eq_empty_or_nonempty (balancedCore 𝕜 U)
@@ -236,17 +291,6 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     have ha' := lt_of_lt_of_le zero_lt_one ha
     rw [norm_pos_iff] at ha'
     exact isClosedMap_smul_of_ne_zero ha' U hU
-
-omit [ContinuousSMul 𝕜 E] in
-protected theorem IsOpen.balancedHull [ContinuousConstSMul 𝕜 E] {s : Set E} (hs : IsOpen s)
-    (hzero : 0 ∈ s) : IsOpen (balancedHull 𝕜 s) := by
-  have : (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1), r • s) = (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1 ∧ r ≠ 0), r • s) := by
-    refine subset_antisymm (Set.iUnion₂_mono' fun r hr ↦ ?_) (Set.iUnion₂_mono' (by grind))
-    obtain rfl | hr_ne := eq_or_ne r 0
-    · exact ⟨1, by simp, by simpa [Set.zero_smul_set ⟨0, hzero⟩]⟩
-    · use r
-  rw [balancedHull_eq_iUnion, this]
-  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
 
 -- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
 variable [NeBot (𝓝[≠] (0 : 𝕜))]

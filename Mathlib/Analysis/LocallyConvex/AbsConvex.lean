@@ -256,18 +256,8 @@ theorem nhds_hasBasis_absConvex :
   refine ⟨(balancedCore.balanced s).convexHull, ?_⟩
   exact convex_convexHull 𝕜 (balancedCore 𝕜 s)
 
-variable [IsTopologicalAddGroup E] [ZeroLEOneClass 𝕜]
+variable [IsTopologicalAddGroup E]
 
-/-- The open absolutely convex sets form a basis of the neighborhood filter of the origin: the
-absolutely convex hull of an open neighborhood of `0` is again open. -/
-theorem nhds_hasBasis_absConvex_open :
-    (𝓝 (0 : E)).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id :=
-  ((nhds_basis_opens' 0).and_isClosed (c := absConvexHull 𝕜) (nhds_hasBasis_absConvex 𝕜 E)
-    fun _ hs hso ↦ hso.absConvexHull 𝕜 (mem_of_mem_nhds hs)).to_hasBasis
-      (fun s hs ↦ ⟨s, ⟨mem_of_mem_nhds hs.1, hs.2⟩, Subset.rfl⟩)
-      (fun s hs ↦ ⟨s, ⟨hs.2.1.mem_nhds hs.1, hs.2⟩, Subset.rfl⟩)
-
-omit [ZeroLEOneClass 𝕜] in
 /-- The closed absolutely convex sets form a basis of the neighborhood filter of the origin: the
 closure of an absolutely convex neighborhood of `0` is again absolutely convex. -/
 theorem nhds_hasBasis_absConvex_closed :
@@ -278,6 +268,17 @@ theorem nhds_hasBasis_absConvex_closed :
     fun _ _ ht ↦ ht.closure).to_hasBasis
       (fun s hs ↦ ⟨s, ⟨hs.1, hs.2.2, hs.2.1⟩, Subset.rfl⟩)
       (fun s hs ↦ ⟨s, ⟨hs.1, hs.2.2, hs.2.1⟩, Subset.rfl⟩)
+
+variable [ZeroLEOneClass 𝕜]
+
+/-- The open absolutely convex sets form a basis of the neighborhood filter of the origin: the
+absolutely convex hull of an open neighborhood of `0` is again open. -/
+theorem nhds_hasBasis_absConvex_open :
+    (𝓝 (0 : E)).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id :=
+  ((nhds_basis_opens' 0).and_isClosed (c := absConvexHull 𝕜) (nhds_hasBasis_absConvex 𝕜 E)
+    fun _ hs hso ↦ hso.absConvexHull 𝕜 (mem_of_mem_nhds hs)).to_hasBasis
+      (fun s hs ↦ ⟨s, ⟨mem_of_mem_nhds hs.1, hs.2⟩, Subset.rfl⟩)
+      (fun s hs ↦ ⟨s, ⟨hs.2.1.mem_nhds hs.1, hs.2⟩, Subset.rfl⟩)
 
 theorem exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset [FirstCountableTopology E] :
     ∃ x : ℕ → Set E, (𝓝 (0 : E)).HasAntitoneBasis x ∧
