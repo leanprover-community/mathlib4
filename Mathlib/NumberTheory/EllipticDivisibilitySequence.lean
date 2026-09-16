@@ -301,30 +301,32 @@ variable {W} in
 lemma atomRel_of_even_odd' (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (even : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m - 2) 2 0 = 0)
     (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) (v : Fin 4 → ℤ)
+    -- Function.IsConst?
     (parity : ∀ i j, v i % 2 = v j % 2) : atomRel W (v 0) (v 1) (v 2) (v 3) = 0 := by
-  wlog nonneg : ∀ i, 0 ≤ v i generalizing v with h
-  · exact atomRel_abs neg .. ▸ h (abs ∘ v) (by grind) fun i ↦ abs_nonneg _
-  wlog sorted : v 3 ≤ v 2 ∧ v 2 ≤ v 1 ∧ v 1 ≤ v 0 generalizing v with h
+  wlog hn : 0 ≤ v generalizing v with h -- todo: 0 ≤ v
+  · exact atomRel_abs neg .. ▸ h (abs ∘ v) (by grind) (by simp [Pi.le_def])
+  wlog hm : Antitone v generalizing v with h
   · have eta : ![v 0, v 1, v 2, v 3] = v := FinVec.etaExpand_eq v
     rw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort v) (v 0) (v 1) (v 2) (v 3),
       smul_eq_zero_iff_eq, eta]
-    refine h (v ∘ Fin.revPerm.trans (Tuple.sort v)) (fun i j ↦ parity _ _) (fun i ↦ nonneg _) ?_
-    split_ands <;> exact Tuple.monotone_sort _ <| by decide
+    exact h (v ∘ (Fin.revPerm.trans <| Tuple.sort v)) (fun i j ↦ parity _ _) (fun i ↦ hn _)
+      ((Tuple.monotone_sort v).comp_antitone Fin.rev_anti :)
   by_cases hv : Function.Injective v; swap
-  · exact foo v neg hv <| pow_mem two 3 |>.right (W 0) <|
-      by grind only [atomRel_same₂₃, atom, odd 1]
-  replace sorted : v 3 < v 2 ∧ v 2 < v 1 ∧ v 1 < v 0 :=
-    ⟨sorted.1.lt_of_ne <| hv.ne <| by decide, sorted.2.1.lt_of_ne <| hv.ne <| by decide,
-      sorted.2.2.lt_of_ne <| hv.ne <| by decide⟩
-  clear hv
-  replace nonneg : 0 ≤ v 3 := nonneg 3
-  replace parity : v 0 % 2 = v 1 % 2 ∧ v 1 % 2 = v 2 % 2 ∧ v 2 % 2 = v 3 % 2 :=
-    ⟨parity .., parity .., parity ..⟩
-  induction hn : 4 * v 0 + v 1 + v 2 + v 3 using @Int.strongRec 0 generalizing v with
-  | lt => omega
-  | ge _ _ ih =>
+  · refine foo v neg hv ?_
+    exact pow_mem two 3 |>.right (W 0) (by grind only [atomRel_same₂₃, atom, odd 1])
+  replace hv : StrictAnti v := hm.strictAnti_of_injective hv
+  clear hm
+  replace parity : ∃ c : ℤ, ∀ i, v i % 2 = c := ⟨v 0 % 2, fun i ↦ parity _ _⟩
+  induction hn' : 4 * v 0 + v 1 + v 2 + v 3 using @Int.strongRec 0 generalizing v with
+  | lt n _ => simp_rw [Pi.le_def, Pi.zero_apply] at hn; grind
+  | ge n _ ih =>
     replace ih (a b c d : ℤ) := (@ih (4 * a + b + c + d) · ![a, b, c, d])
-    simp only [Matrix.cons_val] at ih
+    simp only [Pi.le_def, ↓Fin.forall_fin_succ, Pi.ofNat_apply, Fin.isValue, Fin.succ_zero_eq_one,
+      Fin.succ_one_eq_two, Fin.reduceSucc, IsEmpty.forall_iff, and_true, Matrix.cons_val,
+      strictAnti_vecCons, strictAnti_vecEmpty, Nat.reduceAdd, exists_eq_left', forall_const,
+      and_imp] at hn parity ih
+    replace hv : v 1 < v 0 ∧ v 2 < v 1 ∧ v 3 < v 2 :=
+      ⟨hv (by decide), hv (by decide), hv (by decide)⟩
     wlog _ : v 2 = v 0 % 2 + 2
     · have ha : atom W (v 0 % 2 + 2) (v 0 % 2) ∈ R⁰ := by grind only [atom, mul_mem]
       exact ha.left _ <| by grind (genLocal := 0) [atom_same, atomRel_same₃₄,
