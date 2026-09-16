@@ -27,11 +27,7 @@ A p-group is a group in which the order of every element is a power of `p`.
   `IsPGroup.exists_fixed_point_of_prime_dvd_card_of_fixed_point`: existence of fixed points;
 * `IsPGroup.center_nontrivial`: the center of a nontrivial finite p-group is nontrivial;
 * `IsPGroup.isMulCommutative_of_card_eq_prime_sq`: a group of order `p ^ 2` is commutative;
-* `IsPGroup.isSimpleGroup_iff_card_eq`: a finite p-group is simple iff it has cardinality `p`;
-* `IsPGroup.isCoatom_iff_index_eq_prime`: in an abelian p-group, a subgroup is maximal iff it has
-  index `p`;
-* `IsPGroup.not_isCyclic_iff_exists_ne_index_eq_prime`: a finite abelian p-group is non-cyclic iff
-  it has two distinct subgroups of index `p`.
+* `IsPGroup.isSimpleGroup_iff_card_eq`: a finite p-group is simple iff it has cardinality `p`.
 
 Being a p-group is also shown to pass to subgroups, quotients, images and joins, and p-groups for
 distinct primes are shown to be disjoint.
@@ -345,8 +341,7 @@ theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
 theorem isSimpleGroup_iff_card_eq [Finite G] : IsSimpleGroup G ↔ Nat.card G = p := by
   refine ⟨fun h ↦ ?_, fun h ↦ isSimpleGroup_of_prime_card h⟩
   have : IsMulCommutative G := Subgroup.center_eq_top_iff.mp <|
-    (h.eq_bot_or_eq_top_of_normal (Subgroup.center G) inferInstance).resolve_left <|
-      ne_bot_of_gt <| bot_lt_center hG
+    (h.eq_bot_or_eq_top_of_normal (Subgroup.center G)).resolve_left (bot_lt_center hG).ne'
   replace h := Group.is_simple_iff_prime_card.mp h
   exact ((Nat.prime_dvd_prime_iff_eq Fact.out h).mp (hG.card_eq_or_dvd.resolve_left h.ne_one)).symm
 
@@ -501,7 +496,7 @@ def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
   commGroupOfCyclicCenterQuotient _ (QuotientGroup.ker_mk' <| center G).le
 
-@[deprecated isMulCommutative_of_card_eq_prime_sq (since := "2026-05-26")]
+@[deprecated isMulCommutative_of_card_eq_prime_sq +typeChanged (since := "2026-05-26")]
 theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G, a * b = b * a :=
   isMulCommutative_of_card_eq_prime_sq hG |>.is_comm.comm
 
