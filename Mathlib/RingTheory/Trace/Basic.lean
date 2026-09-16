@@ -642,7 +642,7 @@ theorem IsQuadraticExtension.sq_sub_trace_smul_add_norm_eq_zero (a : A) :
   have : Nontrivial R := nontrivial_of_invariantBasisNumber R
   let b := Module.finBasisOfFinrankEq R A (IsQuadraticExtension.finrank_eq_two R A)
   simpa [Matrix.charpoly_fin_two, ← Algebra.trace_eq_matrix_trace b,
-    ← Algebra.norm_eq_matrix_det b, smul_def] using Algebra.aeval_leftMulMatrix_charpoly b a
+    ← Algebra.norm_eq_matrix_det b, smul_def] using Algebra.aeval_charpoly_leftMulMatrix b a
 
 variable (R) in
 /-- The square of an element of a quadratic extension in terms of its trace and norm. -/
