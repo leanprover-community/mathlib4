@@ -36,7 +36,7 @@ The proof is purely algebraic and follows the induction in the reference below.
 ## References
 
 * [Erlang Surya and Lutz Warnke, *Lagrange Inversion Formula by
-  Induction*](https://arxiv.org/abs/2305.17576)
+  Induction*][surya_warnke_2023]
 -/
 
 @[expose] public section
