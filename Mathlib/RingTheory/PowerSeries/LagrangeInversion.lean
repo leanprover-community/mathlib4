@@ -5,18 +5,16 @@ Authors: Seiichi Manyama
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Derivative
 
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
 
 /-!
-# Lagrange inversion for formal power series
+# Lagrange inversion formula for formal power series
 
-This file proves the polynomial-kernel form of the one-variable Lagrange inversion theorem over a
-commutative ring without additive torsion. Let `P` be a polynomial and let `Y` be a formal power
-series satisfying
+This file proves the one-variable Lagrange inversion formula over a commutative ring without
+additive torsion. Let `P` and `Y` be formal power series satisfying
 
 `Y = X * P(Y)`.
 
@@ -28,10 +26,10 @@ We also give the Lagrange–Bürmann form
 
 `(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`
 
-for a polynomial `H`, and the usual divided coefficient formula over a field of characteristic
-zero. No analytic convergence is involved.
+for a formal power series `H`, and the usual divided coefficient formula over a field of
+characteristic zero.
 
-The proof is purely algebraic and follows the induction in the reference below.
+The proof follows the induction in the reference below.
 
 ## References
 
@@ -43,55 +41,52 @@ The proof is purely algebraic and follows the induction in the reference below.
 
 namespace PowerSeries
 
-open Finset Polynomial
+open Finset
 open scoped PowerSeries
 
 section CommRing
 
 variable {R : Type*} [CommRing R]
-variable {P : R[X]} {Y : R⟦X⟧}
+variable {P Y : R⟦X⟧}
+
+private lemma constantCoeff_eq_zero
+    (hY : Y = PowerSeries.X * P.subst Y) : Y.constantCoeff = 0 := by
+  rw [hY]
+  simp
+
+private lemma hasSubst_of_fixedPoint
+    (hY : Y = PowerSeries.X * P.subst Y) : HasSubst Y :=
+  HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
 
 private lemma coeff_pow_of_lt
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) {m k : ℕ} (h : m < k) :
+    (hY : Y = PowerSeries.X * P.subst Y) {m k : ℕ} (h : m < k) :
     PowerSeries.coeff m (Y ^ k) = 0 := by
-  have hpow : Y ^ k = PowerSeries.X ^ k * (Polynomial.aeval Y P) ^ k := by
-    rw [← mul_pow, ← hY]
+  have hpow : Y ^ k = PowerSeries.X ^ k * (P.subst Y) ^ k := by rw [← mul_pow, ← hY]
   simp [hpow, PowerSeries.coeff_X_pow_mul', Nat.not_le.2 h]
 
-private lemma coeff_aeval
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (Q : R[X]) (j : ℕ) :
-    PowerSeries.coeff j (Polynomial.aeval Y Q) =
+private lemma coeff_subst_of_fixedPoint
+    (hY : Y = PowerSeries.X * P.subst Y) (Q : R⟦X⟧) (j : ℕ) :
+    PowerSeries.coeff j (Q.subst Y) =
       ∑ l ∈ range (j + 1), Q.coeff l * PowerSeries.coeff j (Y ^ l) := by
-  let N := max Q.natDegree j
-  have hbig : PowerSeries.coeff j (Polynomial.aeval Y Q) =
-      ∑ l ∈ range (N + 1), Q.coeff l * PowerSeries.coeff j (Y ^ l) := by
-    rw [Polynomial.aeval_eq_sum_range, map_sum]
-    rw [Finset.sum_subset
-      (Finset.range_subset_range.mpr (by omega : Q.natDegree + 1 ≤ N + 1))]
-    · exact Finset.sum_congr rfl fun l _ ↦ by simp
-    · intro l _ hl
-      have hlt : Q.natDegree < l := by
-        have := mem_range.not.1 hl
-        omega
-      simp [Polynomial.coeff_eq_zero_of_natDegree_lt hlt]
-  rw [hbig]
-  refine (Finset.sum_subset
-    (Finset.range_subset_range.mpr (by omega : j + 1 ≤ N + 1)) ?_).symm
-  intro l _ hl
-  have hjl : j < l := by
-    have := mem_range.not.1 hl
-    omega
-  rw [coeff_pow_of_lt hY hjl, mul_zero]
+  rw [coeff_subst' (hasSubst_of_fixedPoint hY),
+    finsum_eq_sum_of_support_subset (s := range (j + 1))]
+  · simp [smul_eq_mul]
+  · intro l hl
+    simp only [Finset.mem_coe, mem_range]
+    by_contra hlj
+    have hjl : j < l := by omega
+    have hl := Function.mem_support.mp hl
+    simp [coeff_pow_of_lt hY hjl] at hl
 
 end CommRing
 
 section TorsionFree
 
 variable {R : Type*} [CommRing R] [IsAddTorsionFree R]
-variable {P : R[X]} {Y : R⟦X⟧}
+variable {P Y : R⟦X⟧}
 
 private theorem lagrange_inversion_coeff_pow_of_le
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) :
+    (hY : Y = PowerSeries.X * P.subst Y) :
     ∀ m : ℕ, ∀ k ≤ m + 1,
       ((m + 1 : ℕ) : R) * PowerSeries.coeff (m + 1) (Y ^ k) =
         (k : R) * (P ^ (m + 1)).coeff (m + 1 - k) := by
@@ -102,11 +97,12 @@ private theorem lagrange_inversion_coeff_pow_of_le
     rcases Nat.eq_zero_or_pos k with rfl | hk0
     · simp
     obtain ⟨t, hmt⟩ : ∃ t, m + 1 = k + t := ⟨m + 1 - k, by omega⟩
-    have hcoe : (Y ^ k).coeff (m + 1) = (Polynomial.aeval Y (P ^ k)).coeff t := by
+    have hcoe : (Y ^ k).coeff (m + 1) = PowerSeries.coeff t ((P ^ k).subst Y) := by
       rw [hmt]
-      nth_rw 1 [hY, mul_pow, map_pow, add_comm k t, PowerSeries.coeff_X_pow_mul]
+      nth_rw 1 [hY, mul_pow, ← subst_pow (hasSubst_of_fixedPoint hY), add_comm k t,
+        PowerSeries.coeff_X_pow_mul]
     rcases t with _ | t
-    · rw [hcoe, coeff_aeval hY]
+    · rw [hcoe, coeff_subst_of_fixedPoint hY]
       simp only [Nat.add_zero] at hmt
       rw [hmt]
       simp
@@ -123,32 +119,33 @@ private theorem lagrange_inversion_coeff_pow_of_le
               (((t : R) + 1) * PowerSeries.coeff (t + 1) (Y ^ l)) by ring, h]
     have hconv :
         ∑ l ∈ range (t + 2),
-            (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) =
-          (Polynomial.derivative (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [Polynomial.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+          (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) =
+          (PowerSeries.derivative (P ^ k) * P ^ (t + 1)).coeff t := by
+      rw [PowerSeries.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
       rw [Finset.sum_range_succ'
         (fun l ↦ (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)))]
       simp only [Nat.cast_zero, mul_zero, zero_mul, add_zero, Nat.cast_add, Nat.cast_one]
       refine Finset.sum_congr rfl fun p _ ↦ ?_
-      rw [Polynomial.coeff_derivative, show t + 1 - (p + 1) = t - p by omega]
+      rw [PowerSeries.coeff_derivative, show t + 1 - (p + 1) = t - p by omega]
       ring
-    have hpoly : Polynomial.C ((k : R) + (t + 1)) *
-          (Polynomial.derivative (P ^ k) * P ^ (t + 1)) =
-        Polynomial.C (k : R) * Polynomial.derivative (P ^ (k + (t + 1))) := by
-      rw [Polynomial.derivative_pow, Polynomial.derivative_pow,
-        show k + (t + 1) - 1 = (k - 1) + (t + 1) by omega, pow_add,
-        show ((k + (t + 1) : ℕ) : R) = (k : R) + (t + 1) by push_cast; ring]
+    have hpoly : PowerSeries.C ((k : R) + (t + 1)) *
+          (PowerSeries.derivative (P ^ k) * P ^ (t + 1)) =
+        PowerSeries.C (k : R) * PowerSeries.derivative (P ^ (k + (t + 1))) := by
+      rw [PowerSeries.derivative_pow, PowerSeries.derivative_pow,
+        show k + (t + 1) - 1 = (k - 1) + (t + 1) by omega, pow_add]
+      simp only [map_add, map_natCast, map_one]
+      push_cast
       ring
     have hcoeff : ((k : R) + (t + 1)) *
-          (Polynomial.derivative (P ^ k) * P ^ (t + 1)).coeff t =
+          (PowerSeries.derivative (P ^ k) * P ^ (t + 1)).coeff t =
         (k : R) * ((t : R) + 1) * (P ^ (k + (t + 1))).coeff (t + 1) := by
-      have h := congrArg (fun q : R[X] ↦ q.coeff t) hpoly
-      simp only [Polynomial.coeff_C_mul] at h
-      rw [h, Polynomial.coeff_derivative]
+      have h := congrArg (fun q : R⟦X⟧ ↦ q.coeff t) hpoly
+      simp only [PowerSeries.coeff_C_mul] at h
+      rw [h, PowerSeries.coeff_derivative]
       ring
     have hsum : ((t : R) + 1) * PowerSeries.coeff (m + 1) (Y ^ k) =
-        (Polynomial.derivative (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [hcoe, coeff_aeval hY, Finset.mul_sum, ← hconv]
+        (PowerSeries.derivative (P ^ k) * P ^ (t + 1)).coeff t := by
+      rw [hcoe, coeff_subst_of_fixedPoint hY, Finset.mul_sum, ← hconv]
       exact Finset.sum_congr rfl hih
     rw [hmt] at hsum
     rw [hmt, show k + (t + 1) - k = t + 1 by omega]
@@ -163,7 +160,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
 The coefficient ring is assumed to have no additive torsion because the inductive proof cancels
 multiplication by a positive natural number. -/
 theorem lagrange_inversion_coeff_pow
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n k : ℕ) :
+    (hY : Y = PowerSeries.X * P.subst Y) (n k : ℕ) :
     ((n + k : ℕ) : R) * PowerSeries.coeff (n + k) (Y ^ k) =
       (k : R) * (P ^ (n + k)).coeff n := by
   rcases eq_or_ne (n + k) 0 with hnk | hnk
@@ -173,28 +170,28 @@ theorem lagrange_inversion_coeff_pow
       lagrange_inversion_coeff_pow_of_le hY (n + k - 1) k (by omega)
 
 /-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
-a polynomial `H`,
+a formal power series `H`,
 
 `(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`. -/
 theorem lagrange_burmann_coeff
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) (H : R[X]) :
-    ((n + 1 : ℕ) : R) * PowerSeries.coeff (n + 1) (Polynomial.aeval Y H) =
-      (Polynomial.derivative H * P ^ (n + 1)).coeff n := by
+    (hY : Y = PowerSeries.X * P.subst Y) (n : ℕ) (H : R⟦X⟧) :
+    ((n + 1 : ℕ) : R) * PowerSeries.coeff (n + 1) (H.subst Y) =
+      (PowerSeries.derivative H * P ^ (n + 1)).coeff n := by
   set f : ℕ → R := fun i ↦
     H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) with hf
   have hlhs : ((n + 1 : ℕ) : R) *
-      PowerSeries.coeff (n + 1) (Polynomial.aeval Y H) =
+      PowerSeries.coeff (n + 1) (H.subst Y) =
         ∑ i ∈ range (n + 2), f i := by
-    rw [coeff_aeval hY H, Finset.mul_sum]
+    rw [coeff_subst_of_fixedPoint hY H, Finset.mul_sum]
     refine Finset.sum_congr rfl fun i hi ↦ ?_
     have hi' : i ≤ n + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hi
     have h := lagrange_inversion_coeff_pow_of_le hY n i hi'
     simp only [hf]
     rw [← h]
     ring
-  rw [hlhs, Polynomial.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+  rw [hlhs, PowerSeries.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
     Finset.sum_range_succ' f (n + 1)]
-  grind [Polynomial.coeff_derivative]
+  grind [PowerSeries.coeff_derivative]
 
 end TorsionFree
 
@@ -202,10 +199,10 @@ section Field
 
 variable {K : Type*} [Field K] [CharZero K]
 
-/-- The usual coefficient form of formal Lagrange inversion for a polynomial kernel. This is the
+/-- The usual coefficient form of the formal Lagrange inversion formula. This is the
 case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff`. -/
-theorem lagrange_inversion_coeff (P : K[X]) (Y : K⟦X⟧)
-    (hY : Y = PowerSeries.X * Polynomial.aeval Y P) (n : ℕ) :
+theorem lagrange_inversion_coeff (P Y : K⟦X⟧)
+    (hY : Y = PowerSeries.X * P.subst Y) (n : ℕ) :
     PowerSeries.coeff (n + 1) Y = (P ^ (n + 1)).coeff n / (n + 1) := by
   have h := lagrange_inversion_coeff_pow (P := P) hY n 1
   simp only [pow_one, Nat.cast_one, one_mul] at h
