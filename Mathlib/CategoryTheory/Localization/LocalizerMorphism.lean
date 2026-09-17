@@ -91,7 +91,7 @@ def prod {C₁' C₂' : Type*} [Category* C₁'] [Category* C₂']
     (Φ₁ : LocalizerMorphism W₁ W₂) (Φ₂ : LocalizerMorphism W₁' W₂') :
     LocalizerMorphism (W₁.prod W₁') (W₂.prod W₂') where
   functor := Φ₁.functor.prod Φ₂.functor
-  map := fun _ _ ⟨f₁, f₂⟩ ⟨h₁, h₂⟩ ↦ ⟨Φ₁.map f₁ h₁, Φ₂.map f₂ h₂⟩
+  map _ _ f hf := ⟨Φ₁.map f.1 hf.1, Φ₂.map f.2 hf.2⟩
 
 variable (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
