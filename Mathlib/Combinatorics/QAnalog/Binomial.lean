@@ -66,6 +66,16 @@ def qBinomial (q : R) : ℕ → ℕ → R
 theorem qBinomial_succ_succ :
     qBinomial q (n + 1) (k + 1) = qBinomial q n k + q ^ (k + 1) * qBinomial q n (k + 1) := rfl
 
+theorem qBinomial_succ_left (hk : 0 < k) :
+    qBinomial q (n + 1) k = qBinomial q n (k - 1) + q ^ k * qBinomial q n k := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  simp [qBinomial_succ_succ]
+
+theorem qBinomial_succ_right (hn : 0 < n) :
+    qBinomial q n (k + 1) = qBinomial q (n - 1) k  + q ^ (k + 1) * qBinomial q (n - 1) (k + 1) := by
+  obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
+  simp [qBinomial_succ_succ]
+
 theorem qBinomial_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → qBinomial q n k = 0
   | 0, _ + 1, _ => rfl
   | n + 1, k + 1, h => by
@@ -75,8 +85,7 @@ theorem qBinomial_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → qBinomial q n k = 0
 @[simp] theorem qBinomial_self : qBinomial q n n = 1 := by
   induction n with
   | zero => rfl
-  | succ n ih =>
-    rw [qBinomial_succ_succ, ih, qBinomial_eq_zero_of_lt q (Nat.lt_succ_self n), mul_zero, add_zero]
+  | succ n ih => simp [qBinomial_succ_succ, ih, qBinomial_eq_zero_of_lt]
 
 @[simp] theorem qBinomial_one_right : qBinomial q n 1 = qNat q n := by
   induction n with
@@ -161,6 +170,15 @@ theorem qBinomial_symm (h : k ≤ n) : qBinomial q n (n - k) = qBinomial q n k :
       · rw [show n + 1 - (k + 1) = n - (k + 1) + 1 by omega, qBinomial_succ_succ,
           ih (k + 1) (by omega), show n - (k + 1) + 1 = n - k by omega, ih k (by omega),
           qBinomial_succ_succ' q n k]
+
+theorem qBinomial_symm_of_eq_add {n a b : ℕ} (h : n = a + b) :
+    qBinomial q n a = qBinomial q n b := by
+  suffices qBinomial q n (n - b) = qBinomial q n b by
+    rw [h, Nat.add_sub_cancel_right] at this; rwa [h]
+  rw [qBinomial_symm q _ _ (h ▸ le_add_left _ _)]
+
+theorem qBinomial_symm_add {a b : ℕ} : qBinomial q (a + b) a = qBinomial q (a + b) b :=
+  qBinomial_symm_of_eq_add q rfl
 
 /-- At `q = 1` the `q`-binomial coefficient is the usual binomial coefficient. -/
 @[simp] theorem qBinomial_one_left : qBinomial (1 : R) n k = n.choose k := by
@@ -264,14 +282,11 @@ end Hom
 
 /-! ### The `q`-binomial theorem -/
 
-section Semiring
-variable [Semiring R]
-
 /-- **The `q`-binomial theorem** (Rothe's formula) for commuting elements `q` and `x`:
 `(1 + x) (1 + qx) ⋯ (1 + q ^ (n - 1) x) = ∑_{k ≤ n} q ^ (k choose 2) [n choose k]_q x ^ k`.
 The factors of the product on the left commute with each other, so the order is irrelevant;
 see `prod_one_add_pow_mul_eq_sum_qBinomial` for the formulation over a commutative semiring. -/
-theorem Commute.list_prod_one_add_pow_mul {q x : R} (h : Commute q x) (n : ℕ) :
+theorem Commute.list_prod_one_add_pow_mul {q x : R} [Semiring R] (h : Commute q x) (n : ℕ) :
     ((List.range n).map fun i => 1 + q ^ i * x).prod
       = ∑ k ∈ range (n + 1), q ^ (k.choose 2) * qBinomial q n k * x ^ k := by
   induction n with
@@ -316,19 +331,12 @@ theorem Commute.list_prod_one_add_pow_mul {q x : R} (h : Commute q x) (n : ℕ) 
     simp only [Nat.choose_zero_succ, pow_zero, qBinomial_zero_right, mul_one]
     abel
 
-end Semiring
-
-section CommSemiring
-variable [CommSemiring R]
-
 /-- **The `q`-binomial theorem** (Rothe's formula) over a commutative semiring:
 `∏_{i < n} (1 + q ^ i x) = ∑_{k ≤ n} q ^ (k choose 2) [n choose k]_q x ^ k`. -/
-theorem prod_one_add_pow_mul_eq_sum_qBinomial (q x : R) (n : ℕ) :
+theorem prod_one_add_pow_mul_eq_sum_qBinomial [CommSemiring R] (q x : R) (n : ℕ) :
     ∏ i ∈ range n, (1 + q ^ i * x)
       = ∑ k ∈ range (n + 1), q ^ (k.choose 2) * qBinomial q n k * x ^ k :=
   (Commute.all q x).list_prod_one_add_pow_mul n
-
-end CommSemiring
 
 section Ring
 variable [Ring R]
@@ -353,14 +361,42 @@ theorem Commute.qPochhammer_eq_sum_qBinomial {q x : R} (h : Commute q x) (n : �
 
 end Ring
 
-section CommRing
-variable [CommRing R]
-
 /-- **The `q`-binomial theorem** over a commutative ring, in terms of the `q`-Pochhammer symbol:
 `(x; q)_n = ∑_{k ≤ n} (-1) ^ k q ^ (k choose 2) [n choose k]_q x ^ k`. -/
-theorem qPochhammer_eq_sum_qBinomial (q x : R) (n : ℕ) :
+theorem qPochhammer_eq_sum_qBinomial [CommRing R] (q x : R) (n : ℕ) :
     qPochhammer q x n
       = ∑ k ∈ range (n + 1), (-1) ^ k * q ^ (k.choose 2) * qBinomial q n k * x ^ k :=
   (Commute.all q x).qPochhammer_eq_sum_qBinomial n
 
-end CommRing
+/-- The `q`-trinomial identity: -/
+theorem qBinomial_mul_eq_mul [CommRing R] (q : R) (n m k : ℕ) :
+    qBinomial q (n + m + k) (n + k) * qBinomial q (n + k) k
+      = qBinomial q (n + m + k) (m + k) * qBinomial q (m + k) k := by
+  induction n generalizing k m with
+  | zero =>
+    cases m <;> cases k <;> simp
+  | succ n ih =>
+    induction m generalizing k with
+    | zero => simp
+    | succ m ihm =>
+      induction k with
+      | zero => simpa using (qBinomial_symm_add q (a := n + 1) (b := m + 1))
+      | succ k ihk =>
+        specialize ihm (k + 1)
+        specialize ih (m + 1) (k + 1)
+        have h₁ := qBinomial_succ_succ' q (n + 1 + (m + 1) + k) (n + 1 + k)
+        have h₂ := qBinomial_succ_succ' q (m + (k + 1)) k
+        have h₃ := qBinomial_succ_succ q (n + 1 + (m + 1) + k) (m + 1 + k)
+        have h₄ := qBinomial_succ_succ q (n + (k + 1)) k
+        rw [show n + 1 + (m + 1) + k - (n + 1 + k) = m + 1 by omega] at h₁
+        rw [show m + (k + 1) - k = m + 1 by omega] at h₂
+        simp only [Nat.add_left_comm, Nat.add_comm] at h₁ h₂ h₃ h₄ ihm ih ihk ⊢
+        rw [h₁, h₃, add_mul, add_mul, ihm, h₄]
+        conv_rhs => lhs; rw [h₂]
+        simp only [mul_add, mul_assoc]
+        conv_lhs =>
+          rhs; rhs
+          rw [mul_left_comm _ (q ^ (k + 1)), ← mul_assoc, ← pow_add]
+        simp only [Nat.add_left_comm, Nat.add_comm]
+        rw [ihk, ih]
+        ac_rfl
