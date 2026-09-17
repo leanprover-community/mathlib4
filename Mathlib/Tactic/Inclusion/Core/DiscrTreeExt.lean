@@ -59,12 +59,14 @@ variable {α : Type}
 /-- Return the declaration values whose `DiscrTree` keys match `e`. -/
 def State.getMatch (state : State α) (e : Expr) : MetaM (Array α) := state.tree.getMatch e
 
-/-- Record that modules importing the current one should keep doing so, even when `shake` cannot
-see a reference that justifies the import: declarations in an environment extension are found by
-looking them up, never by name. Existing imports are kept; new ones are never introduced.
+/-- When the current module registers an attribute, record for `shake` that modules importing
+the current one should continue to do.
 
-The same stopgap is used by `@[norm_num]`, `@[positivity]`, `@[bareiss_ext]` and
-`declare_aesop_rule_sets`. -/
+`kind` indicates the scope at which the attribute is registered.
+
+TODO: This is an overly conservative approximation: better would be to record at the use site
+which tagged declarations are actually used.
+-/
 def recordRegisteringModule (kind : AttributeKind) : CoreM Unit := do
   -- A `local` registration does not outlive the current file, so nothing downstream can need it.
   unless kind == .local do
