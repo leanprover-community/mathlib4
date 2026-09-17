@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
@@ -164,6 +165,20 @@ lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
   simp
 
 end Interchange
+
+section prod
+
+variable {D₁ D₂ D₃ D₄ : Type*}
+  [Category* D₁] [Category* D₂] [Category* D₃] [Category* D₄]
+  {T' : D₁ ⥤ D₂} {L' : D₁ ⥤ D₃} {R' : D₂ ⥤ D₄} {B' : D₃ ⥤ D₄}
+
+/-- The external product of two `2`-squares of functors. -/
+@[simps!]
+def prod (w : TwoSquare T L R B) (w' : TwoSquare T' L' R' B') :
+    TwoSquare (T.prod T') (L.prod L') (R.prod R') (B.prod B') :=
+  TwoSquare.mk _ _ _ _ (NatTrans.prod w w')
+
+end prod
 
 end TwoSquare
 
