@@ -7362,6 +7362,7 @@ public import Mathlib.RingTheory.WittVector.Truncated
 public import Mathlib.RingTheory.WittVector.Verschiebung
 public import Mathlib.RingTheory.WittVector.WittPolynomial
 public import Mathlib.RingTheory.ZMod
+public import Mathlib.RingTheory.ZMod.LocalRing
 public import Mathlib.RingTheory.ZMod.Torsion
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
 public import Mathlib.RingTheory.ZariskisMainTheorem
