@@ -139,7 +139,7 @@ theorem infTransfiniteIterate_antitone (hφ : ∀ i, φ i ≤ i) :
 theorem top_mem_range_supTransfiniteIterate {i₀ : I}
     (hφ' : ∀ i ≠ (⊤ : I), i < φ i) (φtop : φ ⊤ = ⊤)
     (H : ¬ Function.Injective (fun j : J ↦ supTransfiniteIterate φ j i₀)) :
-    ∃ (j : J), supTransfiniteIterate φ j i₀ = ⊤ := by
+    ∃ j : J, supTransfiniteIterate φ j i₀ = ⊤ := by
   have := SuccOrder.ofLinearWellFoundedLT J
   have hφ (i : I) : i ≤ φ i := by
     by_cases hi : i = ⊤
