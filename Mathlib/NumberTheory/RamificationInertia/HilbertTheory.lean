@@ -180,7 +180,6 @@ variable [Algebra A R] [IsScalarTower A R B]
 of `B` lying over `p`. -/
 theorem IsDecompositionRing.finrank_bot [FaithfulSMul R B] [P.IsPrime] [P.IsDecompositionRing G R] :
     Module.finrank A R = (p.primesOver B).ncard := by
-  have : p.IsPrime := isPrime_of_liesOver P p
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
@@ -192,7 +191,6 @@ theorem IsDecompositionRing.finrank_bot [FaithfulSMul R B] [P.IsPrime] [P.IsDeco
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
 theorem IsInertiaRing.finrank_bot [FaithfulSMul R B] [P.IsPrime] [P.IsInertiaRing G R] :
     Module.finrank A R = (p.primesOver B).ncard * p.inertiaDegIn B := by
-  have : p.IsPrime := isPrime_of_liesOver P p
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
@@ -389,37 +387,41 @@ variable (D' : Type*) [Field D'] [Algebra D' L] (E' : Type*) [Field E'] [Algebra
 
 /-- Two decomposition fields are isomorphic. Superseded by
 `Ideal.IsDecompositionRing.ringEquiv`. -/
-@[deprecated Ideal.IsDecompositionRing.ringEquiv (since := "2026-07-10")]
+@[deprecated "Use the ring-level `Ideal.IsDecompositionRing.ringEquiv`." (since := "2026-07-10")]
 noncomputable def IsDecompositionField.ringEquiv [IsDecompositionField K L P D]
     [IsDecompositionField K L P D'] :
     D ≃+* D' :=
   IsGaloisGroup.ringEquiv (stabilizer Gal(L/K) P) D D' L
 
-@[deprecated Ideal.IsDecompositionRing.algebraMap_ringEquiv_apply (since := "2026-07-10")]
+@[deprecated "Use the ring-level \
+`Ideal.IsDecompositionRing.algebraMap_ringEquiv_apply`." (since := "2026-07-10")]
 theorem IsDecompositionField.algebraMap_ringEquiv_apply [IsDecompositionField K L P D]
     [IsDecompositionField K L P D'] (x : D) :
     algebraMap D' L (IsDecompositionField.ringEquiv K L P D D' x) = algebraMap D L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
-@[deprecated Ideal.IsDecompositionRing.algebraMap_ringEquiv_symm_apply (since := "2026-07-10")]
+@[deprecated "Use the ring-level \
+`Ideal.IsDecompositionRing.algebraMap_ringEquiv_symm_apply`." (since := "2026-07-10")]
 theorem IsDecompositionField.algebraMap_ringEquiv_symm_apply [IsDecompositionField K L P D]
     [IsDecompositionField K L P D'] (x : D') :
     algebraMap D L ((IsDecompositionField.ringEquiv K L P D D').symm x) = algebraMap D' L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 /-- Two inertia fields are isomorphic. Superseded by `Ideal.IsInertiaRing.ringEquiv`. -/
-@[deprecated Ideal.IsInertiaRing.ringEquiv (since := "2026-07-10")]
+@[deprecated "Use the ring-level `Ideal.IsInertiaRing.ringEquiv`." (since := "2026-07-10")]
 noncomputable def IsInertiaField.ringEquiv [IsInertiaField K L P E] [IsInertiaField K L P E'] :
     E ≃+* E' :=
   IsGaloisGroup.ringEquiv (inertia Gal(L/K) P) E E' L
 
-@[deprecated Ideal.IsInertiaRing.algebraMap_ringEquiv_apply (since := "2026-07-10")]
+@[deprecated "Use the ring-level \
+`Ideal.IsInertiaRing.algebraMap_ringEquiv_apply`." (since := "2026-07-10")]
 theorem IsInertiaField.algebraMap_ringEquiv_apply [IsInertiaField K L P E]
     [IsInertiaField K L P E'] (x : E) :
     algebraMap E' L (IsInertiaField.ringEquiv K L P E E' x) = algebraMap E L x := by
   simp [IsInertiaField.ringEquiv, IsGaloisGroup.ringEquiv]
 
-@[deprecated Ideal.IsInertiaRing.algebraMap_ringEquiv_symm_apply (since := "2026-07-10")]
+@[deprecated "Use the ring-level \
+`Ideal.IsInertiaRing.algebraMap_ringEquiv_symm_apply`." (since := "2026-07-10")]
 theorem IsInertiaField.algebraMap_ringEquiv_symm_apply [IsInertiaField K L P E]
     [IsInertiaField K L P E'] (x : E') :
     algebraMap E L ((IsInertiaField.ringEquiv K L P E E').symm x) = algebraMap E' L x := by
