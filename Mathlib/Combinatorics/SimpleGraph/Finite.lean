@@ -620,7 +620,7 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
 omit [Fintype V] in
 theorem encard_commonNeighbors_top {u v : V} (h : u ≠ v) :
     (commonNeighbors ⊤ u v).encard = ENat.card V - 2 := by
-  simp [commonNeighbors_top_eq, Set.encard_sdiff, Set.encard_pair h]
+  simp [commonNeighbors_top_eq, Set.encard_pair h]
 
 @[simp] lemma insert_neighborFinset_eq_univ [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     insert v (G.neighborFinset v) = univ ↔ G.IsUniversal v := by
