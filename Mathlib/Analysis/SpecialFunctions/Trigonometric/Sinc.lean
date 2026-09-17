@@ -97,7 +97,7 @@ lemma continuous_sinc : Continuous sinc := by
 `sinc_le_one` this gives the squeeze `cos x ≤ sin x / x ≤ 1`. -/
 lemma cos_le_sinc (hx : |x| < π / 2) : cos x ≤ sinc x := by
   wlog hx₀ : 0 ≤ x generalizing x
-  · simpa using this (x := -x) (by simpa using hx) (by linarith [not_le.mp hx₀])
+  · grind [sinc_neg, cos_neg]
   obtain rfl | hx₀ := hx₀.eq_or_lt
   · simp
   have hx' := (abs_lt.mp hx).2
