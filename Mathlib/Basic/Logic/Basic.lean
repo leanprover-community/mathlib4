@@ -328,6 +328,10 @@ protected alias Xor'.or := Xor.or
 alias Iff.and := and_congr
 alias ⟨And.rotate, _⟩ := and_rotate
 
+-- #43891
+instance : Std.Symm And where
+  symm _ _ := .symm
+
 theorem and_symm_right {α : Sort*} (a b : α) (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]
 theorem and_symm_left {α : Sort*} (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]
 
