@@ -89,9 +89,9 @@ theorem index_normalCore_dvd_factorial_index [H.FiniteIndex] :
 variable (H) in
 @[to_additive]
 theorem index_normalCore_le_factorial_index : H.normalCore.index ≤ H.index ! := by
-  by_cases h : H.FiniteIndex
-  · exact le_of_dvd H.index.factorial_pos H.index_normalCore_dvd_factorial_index
-  have := H.normalCore.not_finiteIndex_iff.mp fun _ ↦ h <| finiteIndex_of_le H.normalCore_le
-  simp [this]
+  by_cases! h : ¬H.normalCore.FiniteIndex
+  · simp [not_finiteIndex_iff.mp h]
+  have : H.FiniteIndex := finiteIndex_of_le H.normalCore_le
+  exact le_of_dvd H.index.factorial_pos H.index_normalCore_dvd_factorial_index
 
 end Subgroup
