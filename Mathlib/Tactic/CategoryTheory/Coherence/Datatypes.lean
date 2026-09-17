@@ -166,7 +166,7 @@ inductive Mor₂Iso : Type where
   deriving Inhabited
 
 /-- A monad equipped with the ability to unfold `BicategoricalCoherence.iso`. -/
-class MonadCoherehnceHom (m : Type → Type) where
+class MonadCoherenceHom (m : Type → Type) where
   /-- Unfold a coherence isomorphism. -/
   unfoldM (α : CoherenceHom) : m Mor₂Iso
 

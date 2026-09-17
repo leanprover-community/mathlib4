@@ -55,7 +55,7 @@ class IsCompletelyPseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : P
   complete : ∃ m : PseudoMetricSpace X, m.toUniformSpace.toTopologicalSpace = t ∧
     @CompleteSpace X m.toUniformSpace
 
-instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace
+instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace
     [PseudoMetricSpace X] [CompleteSpace X] : IsCompletelyPseudoMetrizableSpace X :=
   ⟨⟨‹_›, rfl, ‹_›⟩⟩
 

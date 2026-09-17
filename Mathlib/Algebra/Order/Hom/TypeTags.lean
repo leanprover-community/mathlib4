@@ -96,7 +96,7 @@ instance Additive.instUniqueOrderAddMonoidIso {G H : Type*}
     Unique (Additive G ≃+o Additive H) :=
   OrderMonoidIso.toAdditive.symm.unique
 
-instance Multiplicative.instUniqueOrderdMonoidIso {G H : Type*}
+instance Multiplicative.instUniqueOrderMonoidIso {G H : Type*}
     [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] [Unique (G ≃+o H)] :
     Unique (Multiplicative G ≃*o Multiplicative H) :=
   OrderAddMonoidIso.toMultiplicative.symm.unique

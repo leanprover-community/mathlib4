@@ -655,7 +655,7 @@ noncomputable def ofIsIsoLeftRightHomologyComparison'
 
 end HomologyData
 
-lemma leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHomologyMap'
+lemma leftRightHomologyComparison'_eq_leftHomologyMap'_comp_iso_hom_comp_rightHomologyMap'
     (h : S.HomologyData) (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     leftRightHomologyComparison' h₁ h₂ =
       leftHomologyMap' (𝟙 S) h₁ h.left ≫ h.iso.hom ≫ rightHomologyMap' (𝟙 S) h.right h₂ := by
@@ -666,7 +666,7 @@ lemma leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHo
 lemma leftRightHomologyComparison'_fac (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
     [S.HasHomology] :
     leftRightHomologyComparison' h₁ h₂ = h₁.homologyIso.inv ≫ h₂.homologyIso.hom := by
-  rw [leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHomologyMap'
+  rw [leftRightHomologyComparison'_eq_leftHomologyMap'_comp_iso_hom_comp_rightHomologyMap'
     S.homologyData h₁ h₂]
   dsimp only [LeftHomologyData.homologyIso, LeftHomologyData.leftHomologyIso,
     Iso.symm, Iso.trans, Iso.refl, leftHomologyMapIso', leftHomologyIso,

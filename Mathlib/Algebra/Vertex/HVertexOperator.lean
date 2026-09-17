@@ -64,9 +64,11 @@ def coeff : HVertexOperator Γ R V W →ₗ[R] Γ → V →ₗ[R] W where
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
+theorem coeff_isPWO_support (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
   ((of R).symm (A v)).isPWO_support'
+
+@[deprecated (since := "2026-09-17")] alias coeff_isPWOsupport := coeff_isPWO_support
 
 @[ext]
 theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[R] Γ → (V →ₗ[R] W)) := by
@@ -92,7 +94,8 @@ theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
   rfl
 
 @[simp]
-theorem of_coeff_coeff (A : HVertexOperator Γ R V W) : of_coeff A.coeff A.coeff_isPWOsupport = A :=
+theorem of_coeff_coeff (A : HVertexOperator Γ R V W) :
+    of_coeff A.coeff A.coeff_isPWO_support = A :=
   rfl
 
 end Coeff

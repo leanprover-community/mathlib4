@@ -504,7 +504,7 @@ def UniversalFactorizationRing.presentation :
   letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   (MvPolynomial.universalFactorizationMapPresentation R n m k hn).baseChange _
 
-lemma UniversalFactorizationRing.jacobian_resentation :
+lemma UniversalFactorizationRing.jacobian_presentation :
     (presentation m k hn p).jacobian =
       (-1) ^ n * (factor₁ m k hn p).1.resultant (factor₂ m k hn p).1 := by
   cases subsingleton_or_nontrivial 𝓡
@@ -523,6 +523,10 @@ lemma UniversalFactorizationRing.jacobian_resentation :
     (monic_freeMonic R m).natDegree_map, MonicDegreeEq.natDegree,
     MonicDegreeEq.natDegree, natDegree_freeMonic, natDegree_freeMonic]
   rfl
+
+@[deprecated (since := "2026-09-17")]
+alias UniversalFactorizationRing.jacobian_resentation :=
+  UniversalFactorizationRing.jacobian_presentation
 
 open UniversalFactorizationRing in
 /-- The universal coprime factorization ring of a monic polynomial `p` of degree `n`.
@@ -556,7 +560,7 @@ lemma UniversalCoprimeFactorizationRing.isCoprime_factor₁_factor₂ :
     (UniversalFactorizationRing.factor₁ m k hn p).monic.natDegree_map,
     (UniversalFactorizationRing.factor₂ m k hn p).monic.natDegree_map]
   refine ((IsUnit.mul_iff (x := algebraMap 𝓡 𝓡' ((-1) ^ n))).mp ?_).2
-  rw [← map_mul, ← UniversalFactorizationRing.jacobian_resentation m k hn p]
+  rw [← map_mul, ← UniversalFactorizationRing.jacobian_presentation m k hn p]
   exact IsLocalization.Away.algebraMap_isUnit _
 
 open UniversalFactorizationRing in
@@ -593,7 +597,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     rw [Subtype.forall]
     change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap f
     simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
-    rw [← AlgHom.coe_toRingHom, UniversalFactorizationRing.jacobian_resentation, map_mul,
+    rw [← AlgHom.coe_toRingHom, UniversalFactorizationRing.jacobian_presentation, map_mul,
       ← Polynomial.resultant_map_map, IsUnit.mul_iff]
     refine ⟨by cases n <;> simp, ?_⟩
     rw [← (UniversalFactorizationRing.factor₁ m k hn p).monic.natDegree_map f.toRingHom,

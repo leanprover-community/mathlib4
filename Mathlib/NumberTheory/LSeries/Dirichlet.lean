@@ -23,7 +23,7 @@ on `re s > 1`; see `LSeries_vonMangoldt_eq_deriv_riemannZeta_div`.
 
 We also prove some general results on L-series associated to Dirichlet characters
 (i.e., Dirichlet L-series). For example, we show that the abscissa of absolute convergence
-equals `1` (see `DirichletCharacter.absicssaOfAbsConv_eq_one`) and that the L-series does not
+equals `1` (see `DirichletCharacter.abscissaOfAbsConv_eq_one`) and that the L-series does not
 vanish on the open half-plane `re s > 1` (see `DirichletCharacter.LSeries_ne_zero_of_one_lt_re`).
 
 We deduce results on the Riemann zeta function (which is `L 1` or `L ↗ζ` on `re s > 1`)
@@ -197,10 +197,12 @@ lemma LSeriesSummable_iff {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ 
 
 /-- The abscissa of absolute convergence of the L-series of a Dirichlet character mod `N > 0`
 is `1`. -/
-lemma absicssaOfAbsConv_eq_one {N : ℕ} (hn : N ≠ 0) (χ : DirichletCharacter ℂ N) :
+lemma abscissaOfAbsConv_eq_one {N : ℕ} (hn : N ≠ 0) (χ : DirichletCharacter ℂ N) :
     abscissaOfAbsConv ↗χ = 1 := by
   simpa [abscissaOfAbsConv, LSeriesSummable_iff hn χ, Set.Ioi_def, EReal.image_coe_Ioi]
     using csInf_Ioo <| EReal.coe_lt_top 1
+
+@[deprecated (since := "2026-09-17")] alias absicssaOfAbsConv_eq_one := abscissaOfAbsConv_eq_one
 
 /-- The L-series of the twist of `f` by a Dirichlet character converges at `s` if the L-series
 of `f` does. -/
@@ -246,7 +248,7 @@ open LSeries Nat Complex DirichletCharacter
 
 /-- The abscissa of (absolute) convergence of the constant sequence `1` is `1`. -/
 lemma LSeries.abscissaOfAbsConv_one : abscissaOfAbsConv 1 = 1 :=
-  modOne_eq_one (χ := χ₁) ▸ absicssaOfAbsConv_eq_one one_ne_zero χ₁
+  modOne_eq_one (χ := χ₁) ▸ abscissaOfAbsConv_eq_one one_ne_zero χ₁
 
 /-- The `LSeries` of the constant sequence `1` converges at `s` if and only if `re s > 1`. -/
 theorem LSeriesSummable_one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re :=
@@ -411,7 +413,7 @@ lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
   -- now `N ≠ 0`
   have hχ : LSeriesSummable ↗χ s := (LSeriesSummable_iff hN χ).mpr hs
   have hs' : abscissaOfAbsConv ↗χ < s.re := by
-    rwa [absicssaOfAbsConv_eq_one hN, ← EReal.coe_one, EReal.coe_lt_coe_iff]
+    rwa [abscissaOfAbsConv_eq_one hN, ← EReal.coe_one, EReal.coe_lt_coe_iff]
   have hΛ : LSeriesSummable (↗χ * ↗Λ) s := LSeriesSummable_twist_vonMangoldt χ hs
   rw [eq_div_iff <| LSeries_ne_zero_of_one_lt_re χ hs, ← LSeries_convolution' hΛ hχ,
     convolution_twist_vonMangoldt, LSeries_deriv hs', neg_neg]

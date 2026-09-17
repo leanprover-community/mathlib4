@@ -144,10 +144,15 @@ theorem MonoidHomClass.antilipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : �
 theorem LipschitzWith.norm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f) (hf : f 1 = 1)
     (x) : ‖f x‖ ≤ K * ‖x‖ := by simpa only [dist_one_right, hf] using h.dist_le_mul x 1
 
-@[to_additive LipschitzWith.nnorm_le_mul]
-theorem LipschitzWith.nnorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f) (hf : f 1 = 1)
+@[to_additive LipschitzWith.nnnorm_le_mul]
+theorem LipschitzWith.nnnorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f) (hf : f 1 = 1)
     (x) : ‖f x‖₊ ≤ K * ‖x‖₊ :=
   h.norm_le_mul' hf x
+
+@[deprecated (since := "2026-09-17")]
+alias LipschitzWith.nnorm_le_mul := LipschitzWith.nnnorm_le_mul
+@[to_additive existing LipschitzWith.nnorm_le_mul, deprecated (since := "2026-09-17")]
+alias LipschitzWith.nnorm_le_mul' := LipschitzWith.nnnorm_le_mul'
 
 @[to_additive AntilipschitzWith.le_mul_norm]
 theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)

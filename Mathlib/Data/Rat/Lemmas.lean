@@ -228,10 +228,12 @@ theorem add_num_den' (q r : ℚ) :
   apply Rat.eq_iff_mul_eq_mul.mp
   rw [← divInt_eq_div]
 
-theorem substr_num_den' (q r : ℚ) :
+theorem sub_num_den' (q r : ℚ) :
     (q - r).num * q.den * r.den = (q.num * r.den - r.num * q.den) * (q - r).den := by
   rw [sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← num_neg_eq_neg_num, ← den_neg_eq_den r,
     add_num_den' q (-r)]
+
+@[deprecated (since := "2026-09-17")] alias substr_num_den' := sub_num_den'
 
 end Casts
 

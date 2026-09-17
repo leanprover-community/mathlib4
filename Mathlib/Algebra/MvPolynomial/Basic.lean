@@ -99,7 +99,7 @@ instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
 instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
   ⟨0⟩
 
-instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
+instance distribMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
     DistribMulAction R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.distribMulAction
 

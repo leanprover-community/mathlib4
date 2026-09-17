@@ -480,7 +480,7 @@ attribute [simp, reassoc] MonoidalRightAction.actionHom_rightUnitor
 
 /-- A monoidal category acts on itself through the tensor product. -/
 @[simps!]
-instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
+instance selfRightAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionObj x y := x ⊗ y
   actionHom f g := f ⊗ₘ g
   actionUnitIso x := ρ_ x
