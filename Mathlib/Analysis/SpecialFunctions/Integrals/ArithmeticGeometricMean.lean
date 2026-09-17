@@ -59,7 +59,7 @@ lemma agmIntegral_zero_left : agmIntegral 0 b = 0 := by
   rw [agmIntegral, setIntegral_congr_fun measurableSet_Ioi cong]
   apply integral_undef (?_ : ¬IntegrableOn _ _ _)
   by_contra! h
-  replace h := h.mono_set (Set.Ioc_subset_Ioi_self (b := 1))
+  replace h := h.mono_set (Set.Ioc_subset_Ioi_self (a := 1))
   replace h : IntegrableOn (fun a ↦ a⁻¹ * (√(1 + b ^ 2))⁻¹) (Set.Ioc 0 1) := by
     apply h.mono' (measurable_inv.aestronglyMeasurable.restrict.mul_const _)
     refine ae_restrict_of_forall_mem measurableSet_Ioc fun x ⟨hx₁, hx₂⟩ ↦ ?_
