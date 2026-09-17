@@ -96,28 +96,20 @@ theorem hasBasis_uniformity :
 
 end IsValuativeTopology
 
-namespace ValuativeRel.RankLeOneStruct
+namespace ValuativeRel
 
-variable {L : Type*} [Field L] [ValuativeRel L] (e : RankLeOneStruct L) {x y : L}
+variable {L : Type*} [Field L] [ValuativeRel L] [IsRankLeOne L] {x y : L}
 
 /-- The real absolute value on a field `L` with a valuative relation, determined by an embedding
 `e` of the value group of `L` into `ℝ≥0`. -/
-def absoluteValue : AbsoluteValue L ℝ where
-  toFun x := e.emb (valuation L x)
-  map_mul' x y := by simp
-  nonneg' _ := NNReal.coe_nonneg _
-  eq_zero' x := by
-    rw [NNReal.coe_eq_zero, ← map_zero e.emb, e.strictMono.injective.eq_iff, (valuation L).zero_iff]
-  add_le' x y := by
-    refine le_trans ?_ (max_le_add_of_nonneg (NNReal.coe_nonneg _) (NNReal.coe_nonneg _))
-    simp only [le_max_iff, NNReal.coe_le_coe, e.strictMono.le_iff_le]
-    exact le_max_iff.1 ((valuation L).map_add x y)
+def absoluteValue : AbsoluteValue L ℝ :=
+  (valuation L).absoluteValue
 
 @[simp]
-theorem absoluteValue_apply (x : L) : e.absoluteValue x = e.emb (valuation L x) := rfl
+theorem absoluteValue_apply (x : L) : absoluteValue x = (valuation L).norm x := rfl
 
-theorem absoluteValue_le_absoluteValue_iff : e.absoluteValue x ≤ e.absoluteValue y ↔ x ≤ᵥ y := by
-  rw [absoluteValue_apply, absoluteValue_apply, NNReal.coe_le_coe, e.strictMono.le_iff_le,
+theorem absoluteValue_le_absoluteValue_iff : absoluteValue x ≤ absoluteValue y ↔ x ≤ᵥ y := by
+  simp [absoluteValue_apply, absoluteValue_apply, norm_def, strictMono.le_iff_le,
     (valuation L).vle_iff_le]
 
 theorem absoluteValue_lt_absoluteValue_iff : e.absoluteValue x < e.absoluteValue y ↔ x <ᵥ y := by
