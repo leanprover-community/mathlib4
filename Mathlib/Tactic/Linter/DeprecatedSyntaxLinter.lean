@@ -163,7 +163,7 @@ partial def hasMaxPrec : Syntax → Bool
     | ``Parser.Term.type | ``Parser.Term.sort | ``Parser.Term.prop
     -- brackets
     | ``Parser.Term.paren | ``Parser.Term.typeAscription
-    -- miscelaneous: `·`, `@x`, `x.1`, `.x`, `x.{u}`
+    -- miscellaneous: `·`, `@x`, `x.1`, `.x`, `x.{u}`
     | ``Parser.Term.cdot | ``Parser.Term.explicit
     | ``Parser.Term.proj | ``Parser.Term.dotIdent | ``Parser.Term.explicitUniv
     -- getElem notation
