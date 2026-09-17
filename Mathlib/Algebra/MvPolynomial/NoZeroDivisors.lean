@@ -26,7 +26,7 @@ variable {R : Type*}
 
 namespace MvPolynomial
 
-variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' : R} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 
@@ -94,7 +94,7 @@ theorem dvd_C_iff_exists {f : MvPolynomial σ R} {a : R} (ha : a ≠ 0) :
     f ∣ C a ↔ ∃ b, b ∣ a ∧ f = C b := by
   constructor
   · intro hf
-    use coeff 0 f
+    use f.coeff 0
     suffices f.totalDegree = 0 by
       rw [totalDegree_eq_zero_iff_eq_C] at this
       refine ⟨?_, this⟩
@@ -126,7 +126,7 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p)
     contrapose hp'
     ext m
     apply hc.1
-    simpa using congr_arg (coeff m) hp'
+    simpa using congr_arg ((·.coeff m)) hp'
 
 end nonZeroDivisors
 
@@ -134,7 +134,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [NoZeroDivisors R] {p q r : MvPolynomial σ R}
+variable [CommRing R] [NoZeroDivisors R] {p r : MvPolynomial σ R}
 
 theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
     p ∣ monomial n a ↔ ∃ m b, m ≤ n ∧ b ∣ a ∧ p = monomial m b := by

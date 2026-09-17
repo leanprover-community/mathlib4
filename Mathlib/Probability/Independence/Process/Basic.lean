@@ -166,8 +166,8 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
     (h : ∀ (I : Finset S) (J : Finset T),
       IndepFun (fun ω (i : I) ↦ X i ω) (fun ω (j : J) ↦ Y j ω) κ P) [IsZeroOrMarkovKernel κ] :
     IndepFun (fun ω i ↦ X i ω) (fun ω j ↦ Y j ω) κ P := by
-  refine IndepFun.process_indepFun hX (measurable_pi_lambda _ hY) fun I ↦ ?_
-  exact IndepFun.indepFun_process (measurable_pi_lambda _ fun _ ↦ hX _) hY fun J ↦ h I J
+  refine IndepFun.process_indepFun hX (.of_eval hY) fun I ↦ ?_
+  exact IndepFun.indepFun_process (.of_eval fun _ ↦ hX _) hY fun J ↦ h I J
 
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families

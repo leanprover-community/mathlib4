@@ -38,13 +38,13 @@ public section
 
 open Function OrderDual Set
 
-variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β : Type*} {ι : Sort*}
 
 open OrderDual
 
 section
 
-variable [CompleteLattice α] {f g s : ι → α} {a b : α}
+variable [CompleteLattice α] {f : ι → α} {a b : α}
 
 /-!
 ### `iSup` and `iInf` under `Bool`

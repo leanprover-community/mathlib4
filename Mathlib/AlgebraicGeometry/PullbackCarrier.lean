@@ -277,13 +277,11 @@ def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
       ← Scheme.Hom.comp_apply]
     simp [Triplet.Spec_ofPointTensor_SpecTensorTo]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma carrierEquiv_symm_fst (T : Triplet f g) (p : Spec T.tensor) :
     pullback.fst f g (carrierEquiv.symm ⟨T, p⟩) = T.x := by
   simp [carrierEquiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma carrierEquiv_symm_snd (T : Triplet f g) (p : Spec T.tensor) :
     pullback.snd f g (carrierEquiv.symm ⟨T, p⟩) = T.y := by

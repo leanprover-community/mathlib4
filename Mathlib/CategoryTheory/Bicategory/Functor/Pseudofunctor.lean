@@ -115,7 +115,7 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
 variable (F : B ⥤ᵖ C)
 
 /-- The oplax functor associated with a pseudofunctor. -/
-@[simps]
+@[implicit_reducible, simps]
 def toOplax : B ⥤ᵒᵖᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).hom
@@ -125,7 +125,7 @@ instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᵒᵖᴸ C) :=
   ⟨toOplax⟩
 
 /-- The lax functor associated with a pseudofunctor. -/
-@[simps]
+@[implicit_reducible, simps]
 def toLax : B ⥤ᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).inv

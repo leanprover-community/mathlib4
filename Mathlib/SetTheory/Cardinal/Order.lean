@@ -62,7 +62,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Field
 
-open List Function Order Set
+open Function Order Set
 
 noncomputable section
 
@@ -297,7 +297,7 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
   le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
   le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
 
-@[deprecated zero_le (since := "2026-04-17")]
+@[deprecated zero_le +typeChanged (since := "2026-04-17")]
 protected theorem zero_le (a : Cardinal) : 0 ≤ a := zero_le
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
@@ -357,7 +357,7 @@ theorem power_le_power_right {a b c : Cardinal} : a ≤ b → a ^ c ≤ b ^ c :=
 theorem power_pos {a : Cardinal} (b : Cardinal) (ha : 0 < a) : 0 < a ^ b :=
   (power_ne_zero _ ha.ne').bot_lt
 
-protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
+protected instance lt_wf : WellFoundedLT Cardinal.{u} :=
   ⟨fun a =>
     by_contradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
@@ -370,22 +370,19 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
       simpa only [mk_out] using this⟩
 
 instance : WellFoundedRelation Cardinal.{u} :=
-  ⟨(· < ·), Cardinal.lt_wf⟩
-
-instance : WellFoundedLT Cardinal.{u} :=
-  ⟨Cardinal.lt_wf⟩
+  WellFoundedLT.toWellFoundedRelation
 
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
-  dif_neg Set.not_nonempty_empty
+  dite_eq_right Set.not_nonempty_empty
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 @[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
-@[deprecated Order.succ_eq_csInf (since := "2026-03-21")]
+@[deprecated Order.succ_eq_csInf +typeChanged (since := "2026-03-21")]
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
   Order.succ_eq_csInf c
 
@@ -404,7 +401,7 @@ theorem add_one_le_of_lt {a b : Cardinal} (h : a < b) : a + 1 ≤ b := by
   rw [← mk_option]
   exact (f.optionElim b hb).cardinal_le
 
-@[deprecated add_one_le_of_lt (since := "2026-03-21")]
+@[deprecated add_one_le_of_lt +typeChanged (since := "2026-03-21")]
 theorem add_one_le_succ (c : Cardinal) : c + 1 ≤ succ c :=
   add_one_le_of_lt (lt_succ c)
 
@@ -550,20 +547,20 @@ variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type can be well-ordered. -/
 theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
-  exact ⟨linearOrderOfSTO WellOrderingRel, ⟨WellOrderingRel.isWellOrder.wf⟩⟩
+  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.wf⟩
 
 variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type can be co-well-ordered. -/
 @[to_dual existing]
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
-  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), ⟨WellOrderingRel.isWellOrder.wf⟩⟩
+  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), WellOrderingRel.isWellOrder.wf⟩
 
 @[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
 
 namespace Cardinal
 
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit +typeChanged (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ IsSuccPrelimit ω)
@@ -571,7 +568,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
   subst h
   exact exists_eq_ciSup_of_not_isSuccPrelimit hω
 
-@[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccLimit +typeChanged (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
