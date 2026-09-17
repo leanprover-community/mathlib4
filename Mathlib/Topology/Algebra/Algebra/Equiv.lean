@@ -6,6 +6,7 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Isomorphisms of topological algebras
@@ -74,8 +75,10 @@ def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
   __ := e.toAlgHom
   cont := e.continuous_toFun
 
-instance coe : Coe (A ≃A[R] B) (A →A[R] B) := ⟨toContinuousAlgHom⟩
+instance : CoeOut (A ≃A[R] B) (A →A[R] B) where coe := toContinuousAlgHom
+instance : CoeOut (A ≃A[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
+@[macro_inline]
 instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -119,6 +122,30 @@ theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
 
 @[simp]
 theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
+
+/-- The natural coercion from a continuous algebra isomorphism
+to a continuous linear isomorphism. -/
+@[coe]
+def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
+  { e with __ := e.toLinearEquiv }
+
+instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
+
+@[simp] theorem coeCLE_apply (e : A ≃A[R] B) (a : A) : (e : A ≃L[R] B) a = e a := rfl
+
+@[simp] theorem coe_coeCLE (e : A ≃A[R] B) : ⇑(e : A ≃L[R] B) = e := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
+    e.toContinuousLinearEquiv a = e a := rfl
+
+theorem toContinuousLinearMap_toContinuousLinearEquiv_eq (e : A ≃A[R] B) :
+    e.toContinuousLinearEquiv.toContinuousLinearMap
+    = e.toContinuousAlgHom.toContinuousLinearMap := rfl
+
+theorem toContinuousLinearEquiv_toLinearEquiv_eq (e : A ≃A[R] B) :
+    e.toContinuousLinearEquiv.toLinearEquiv
+    = e.toAlgEquiv.toLinearEquiv := rfl
 
 theorem isOpenMap (e : A ≃A[R] B) : IsOpenMap e :=
   e.toHomeomorph.isOpenMap
@@ -179,7 +206,14 @@ theorem refl_apply (a : A) : refl R A a = a := rfl
 theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
 
 @[simp]
+theorem coeCLE_refl : (refl R A).toContinuousLinearEquiv = ContinuousLinearEquiv.refl R A := rfl
+
+@[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl
+
+@[simp]
+theorem refl_toContinuousLinearEquiv :
+    (refl R A).toContinuousLinearEquiv = .refl R A := rfl
 
 variable {R A}
 
@@ -199,11 +233,11 @@ theorem symm_apply_apply (e : A ≃A[R] B) (a : A) : e.symm (e a) = a :=
   e.1.left_inv a
 
 @[simp]
-theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' (e '' S) = S :=
+theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' e '' S = S :=
   e.toEquiv.symm_image_image S
 
 @[simp]
-theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' (e.symm '' S) = S :=
+theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' e.symm '' S = S :=
   e.symm.symm_image_image S
 
 @[simp]
@@ -211,6 +245,10 @@ theorem symm_toAlgEquiv (e : A ≃A[R] B) : e.symm.toAlgEquiv = e.toAlgEquiv.sym
 
 @[simp]
 theorem symm_toHomeomorph (e : A ≃A[R] B) : e.symm.toHomeomorph = e.toHomeomorph.symm := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_symm (e : A ≃A[R] B) :
+    e.symm.toContinuousLinearEquiv = e.toContinuousLinearEquiv.symm := rfl
 
 theorem symm_map_nhds_eq (e : A ≃A[R] B) (a : A) : Filter.map e.symm (𝓝 (e a)) = 𝓝 a :=
   e.toHomeomorph.symm_map_nhds_eq a
@@ -226,6 +264,11 @@ def trans (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) : A ≃A[R] C where
 theorem trans_toAlgEquiv (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
     (e₁.trans e₂).toAlgEquiv = e₁.toAlgEquiv.trans e₂.toAlgEquiv :=
   rfl
+
+@[simp]
+theorem trans_toContinuousLinearEquiv (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
+    (e₁.trans e₂).toContinuousLinearEquiv
+    = e₁.toContinuousLinearEquiv.trans e₂.toContinuousLinearEquiv := rfl
 
 @[simp]
 theorem trans_apply (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) (a : A) :
@@ -283,11 +326,11 @@ theorem image_symm_eq_preimage (e : A ≃A[R] B) (S : Set B) : e.symm '' S = e �
   rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
-theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' (e ⁻¹' S) = S :=
+theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' e ⁻¹' S = S :=
   e.toEquiv.symm_preimage_preimage S
 
 @[simp]
-theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' (e.symm ⁻¹' S) = S :=
+theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' e.symm ⁻¹' S = S :=
   e.symm.symm_preimage_preimage S
 
 theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂] [Ring E₁]

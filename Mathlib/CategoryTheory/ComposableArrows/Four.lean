@@ -143,7 +143,7 @@ abbrev fourδ₃Toδ₂' :
 
 /-- Variant of `fourδ₂Toδ₁` for preorders. -/
 abbrev fourδ₂Toδ₁' :
-    mk₃ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) (homOfLE hi₃₄)  ⟶
+    mk₃ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) (homOfLE hi₃₄) ⟶
       mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
   fourδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ _ _ rfl rfl
 

@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
 module
-
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Order.Module
 public import Mathlib.Topology.Order.DenselyOrdered
+
 
 /-!
 # Proper cones
@@ -44,14 +45,14 @@ The next steps are:
 
 @[expose] public section
 
-open ContinuousLinearMap Filter Function Set
+open ContinuousLinearMap Function Set
 
 variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
 variable [AddCommMonoid F] [TopologicalSpace F] [Module R F]
 variable [AddCommMonoid G] [TopologicalSpace G] [Module R G]
 
-local notation "R≥0" => {r : R // 0 ≤ r}
+local notation "R≥0" => Nonneg R
 
 variable (R E) in
 /-- A proper cone is a pointed cone `C` that is closed. Proper cones have the nice property that
@@ -76,7 +77,9 @@ lemma toPointedCone_injective : Injective ((↑) : ProperCone R E → PointedCon
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
 instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
-  coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+
+instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
@@ -157,21 +160,10 @@ end ProperCone
 ### Topological properties of convex cones
 
 This section proves topological results about convex cones.
-
-#### TODO
-
-This result generalises to G-submodules.
 -/
 
 namespace ConvexCone
-variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E] {s : Set E}
-
--- FIXME: This is necessary for the proof below but triggers the `unusedSectionVars` linter.
--- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M] in
-/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
-doesn't support that use case. See
-https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
-proof_wanted isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set E)
+variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E]
 
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [DenselyOrdered 𝕜] [NoMaxOrder 𝕜]
   [ContinuousSMul 𝕜 E] {C : ConvexCone 𝕜 E}
@@ -184,8 +176,7 @@ lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsCl
   have hfS : closure (f '' Set.Ioi 0) ⊆ C :=
     hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact C.smul_mem h hx
   -- `f` is continuous at `0` from the right
-  have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 :=
-    (continuous_id.smul continuous_const).continuousWithinAt
+  have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 := by fun_prop
   -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`
   simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
 

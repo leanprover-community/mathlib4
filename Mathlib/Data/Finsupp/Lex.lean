@@ -52,13 +52,12 @@ instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
 instance [LT α] [LT N] : LT (Colex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· > ·) (· < ·) (ofColex f) (ofColex g)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Lex.lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff := Lex.lt_iff
-
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.lt_iff [LT α] [LT N] {a b : Colex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
@@ -75,13 +74,12 @@ theorem lex_iff_of_unique [Unique α] [LT N] {r} [Std.Irrefl r] {x y : α →₀
     Finsupp.Lex r (· < ·) x y ↔ x default < y default :=
   Pi.lex_iff_of_unique
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Lex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →₀ N)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
 
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
-
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
     x < y ↔ x default < y default :=
   Lex.lt_iff_of_unique (α := αᵒᵈ)
@@ -122,13 +120,12 @@ instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) w
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
 
-@[deprecated (since := "2025-11-29")]
-alias lex_le_iff_of_unique := Lex.le_iff_of_unique
-
+set_option backward.isDefEq.respectTransparency false in
 theorem Colex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
   Lex.le_iff_of_unique (α := αᵒᵈ)
@@ -158,10 +155,6 @@ theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1)
 theorem Colex.single_le_iff {a b : α} : toColex (single a 1) ≤ toColex (single b 1) ↔ a ≤ b :=
   Colex.single_strictMono.le_iff_le
 
-@[deprecated Lex.single_strictAnti (since := "2025-10-28")]
-theorem Lex.single_antitone : Antitone fun (a : α) ↦ toLex (single a 1) :=
-  Lex.single_strictAnti.antitone
-
 variable [PartialOrder N]
 
 theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
@@ -169,11 +162,6 @@ theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
 
 theorem toColex_monotone : Monotone (@toColex (α →₀ N)) :=
   toLex_monotone (α := αᵒᵈ)
-
-@[deprecated Lex.lt_iff (since := "2025-10-12")]
-theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
 
 end NHasZero
 
@@ -211,6 +199,7 @@ section Right
 
 variable [AddRightStrictMono N]
 
+set_option backward.isDefEq.respectTransparency false in
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr($(lta j ja) + f j), add_lt_add_left ha _⟩⟩
 
@@ -231,15 +220,23 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Lex (α →₀ N)) where
+  isBot_zero := isBot_bot
+
+instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Colex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toColex_monotone bot_le
+
+instance Colex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Colex (α →₀ N)) where
+  isBot_zero := isBot_bot
 
 instance Lex.isOrderedCancelAddMonoid
     [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :

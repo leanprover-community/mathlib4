@@ -66,22 +66,22 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     {ι : Type*} {v : ι → K} (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent E v := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  haveI := expChar_of_injective_algebraMap (algebraMap F K).injective q
+  have := expChar_of_injective_algebraMap (algebraMap F K).injective q
   refine linearIndependent_iff.mpr fun l hl ↦ Finsupp.ext fun i ↦ ?_
   choose f hf using fun i ↦ (isPurelyInseparable_iff_pow_mem F q).1 ‹_› (l i)
   let n := l.support.sup f
   have := (expChar_pow_pos F q n).ne'
   replace hf (i : ι) : l i ^ q ^ n ∈ (algebraMap F E).range := by
     by_cases hs : i ∈ l.support
-    · convert pow_mem (hf i) (q ^ (n - f i)) using 1
+    · convert! pow_mem (hf i) (q ^ (n - f i)) using 1
       rw [← pow_mul, ← pow_add, Nat.add_sub_of_le (Finset.le_sup hs)]
     exact ⟨0, by rw [map_zero, Finsupp.notMem_support_iff.1 hs, zero_pow this]⟩
   choose lF hlF using hf
   let lF₀ := Finsupp.onFinset l.support lF fun i ↦ by
-    contrapose!
+    contrapose
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
     rw [hlF, Finsupp.notMem_support_iff.1 hs, zero_pow this]
-  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep) lF₀ <| by
+  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep :) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
     rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
     rw [← hl, Finsupp.linearCombination_apply,
@@ -89,7 +89,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
   refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
-  convert map_zero (algebraMap F E)
+  convert! map_zero (algebraMap F E)
   exact congr($h i)
 
 variable {F K} in
@@ -103,7 +103,7 @@ theorem IntermediateField.linearDisjoint_of_isPurelyInseparable_of_isSeparable
   .of_basis_left b <| b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective)
     |>.map_of_isPurelyInseparable_of_isSeparable E fun i ↦ by
-      simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i)
+      simpa only [IsSeparable, minpoly_eq] using! Algebra.IsSeparable.isSeparable F (b i)
 
 namespace Field
 
@@ -148,8 +148,8 @@ It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`
 intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
-  convert sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
-  haveI : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  convert! sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
+  have : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [sepDegree, ← separableClosure.map_eq_of_separableClosure_eq_bot F
     (separableClosure.separableClosure_eq_bot E K)]
   exact (separableClosure F (separableClosure E K)).equivMap
@@ -207,7 +207,7 @@ inseparable degrees, as natural numbers, satisfy the tower law: $[E:F]_i [K:E]_i
 @[stacks 09HK "Part 2, `finInsepDegree` variant"]
 theorem finInsepDegree_mul_finInsepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
     finInsepDegree F E * finInsepDegree E K = finInsepDegree F K := by
-  simpa only [map_mul, Cardinal.toNat_lift] using
+  simpa only [map_mul, Cardinal.toNat_lift] using!
     congr(Cardinal.toNat $(lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic F E K))
 
 end Field
@@ -227,10 +227,10 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
     rw [restrictScalars_adjoin_of_algEquiv (E := K) j rfl, restrictScalars_adjoin]
     exact adjoin.mono _ _ _ Set.subset_union_right
   let i : M →+* L := Subsemiring.inclusion hi
-  letI : Algebra M L := i.toAlgebra
-  letI : SMul M L := Algebra.toSMul
-  haveI : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  haveI : IsPurelyInseparable M L := by
+  let : Algebra M L := i.toAlgebra
+  let : SMul M L := Algebra.toSMul
+  have : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  have : IsPurelyInseparable M L := by
     change IsPurelyInseparable M (extendScalars hi)
     obtain ⟨q, _⟩ := ExpChar.exists F
     have : extendScalars hi = adjoin M (E' : Set K) := restrictScalars_injective F <| by
@@ -270,8 +270,8 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
     (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)
   have hsep' := IsSeparable.tower_top E hsep
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
+  have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
+  have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
     ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,

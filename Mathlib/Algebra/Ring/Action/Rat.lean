@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 # Actions by nonnegative rational numbers
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid
 

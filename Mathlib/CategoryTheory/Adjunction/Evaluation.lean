@@ -6,7 +6,6 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
@@ -47,6 +46,8 @@ def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
         ext
         simp }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction showing that evaluation is a right adjoint. -/
 @[simps! unit_app counit_app_app]
 def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluation _ _).obj c :=
@@ -90,6 +91,8 @@ def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
   map f := { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction showing that evaluation is a left adjoint. -/
 @[simps! unit_app_app counit_app]
 def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRightAdjoint D c :=

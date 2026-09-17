@@ -12,9 +12,8 @@ public import Mathlib.Algebra.Order.Monoid.Submonoid
 /-!
 # Construct ordered groups from groups with a specified positive cone.
 
-In this file we provide the structure `GroupCone` and the predicate `IsMaxCone`
-that encode axioms of `OrderedCommGroup` and `LinearOrderedCommGroup`
-in terms of the subset of non-negative elements.
+In this file we provide the structure `GroupCone` and the predicate `IsMaxCone` that encode
+the axioms of ordered groups in terms of the subset of non-negative elements.
 
 We also provide constructors that convert between
 cones in groups and the corresponding ordered groups.
@@ -54,7 +53,10 @@ structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
 @[to_additive]
 instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
   coe C := C.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+@[to_additive]
+instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G) G
 
 @[to_additive]
 instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
@@ -65,9 +67,6 @@ instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
 
 initialize_simps_projections GroupCone (carrier → coe, as_prefix coe)
 initialize_simps_projections AddGroupCone (carrier → coe, as_prefix coe)
-
-@[deprecated (since := "2025-08-21")] alias IsMaxCone := NegMemClass
-@[deprecated (since := "2025-08-21")] alias IsMaxMulCone := InvMemClass
 
 namespace GroupCone
 variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
@@ -91,10 +90,6 @@ instance oneLE.hasMemOrInvMem {H : Type*} [CommGroup H] [LinearOrder H] [IsOrder
     HasMemOrInvMem (oneLE H) where
   mem_or_inv_mem := by simpa using le_total 1
 
-@[deprecated (since := "2025-08-21")] alias oneLE.isMaxMulCone := oneLE.hasMemOrInvMem
-@[deprecated (since := "2025-08-21")] alias _root_.AddGroupCone.nonneg.isMaxCone :=
-  AddGroupCone.nonneg.hasMemOrNegMem
-
 end GroupCone
 
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
@@ -108,7 +103,7 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le_antisymm a b nab nba := by
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G]
     [GroupConeClass S G] {C : S} {a b : G} :
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
@@ -118,7 +113,7 @@ lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G
 abbrev LinearOrder.mkOfGroupCone
     [GroupConeClass S G] [HasMemOrInvMem C] [DecidablePred (· ∈ C)] : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
-  le_total a b := by simpa using mem_or_inv_mem C (b / a)
+  le_total a b := by simpa [PartialOrder.mkOfGroupCone_le_iff] using mem_or_inv_mem C (b / a)
   toDecidableLE _ := _
 
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/

@@ -19,11 +19,13 @@ which will allow the use of the small object argument in `SSet`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -38,14 +40,13 @@ lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
       (p : Y ⟶ X), Epi p := by
   refine ⟨∐ (fun (s : X.N) ↦ Δ[s.dim]), inferInstance, ?_,
     Sigma.desc (fun s ↦ yonedaEquiv.symm s.simplex), ?_⟩
-  · apply (config := { allowSynthFailures := true })
-      isCardinalPresentable_of_isColimit' _ (coproductIsCoproduct _)
+  · apply +allowSynthFailures isCardinalPresentable_of_isColimit' _ (coproductIsCoproduct _)
     · exact hasCardinalLT_of_finite _ _ (by rfl)
     · rintro s
       dsimp
       infer_instance
   · simp only [← Subcomplex.range_eq_top_iff, range_eq_iSup_sigma_ι,
-        colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, ← N.iSup_subcomplex_eq_top,
+        colimit.ι_desc, Cofan.mk_ι_app, ← N.iSup_subcomplex_eq_top,
         Subcomplex.range_eq_ofSimplex, Equiv.apply_symm_apply]
 
 instance (X : SSet.{u}) [X.Finite] : IsFinitelyPresentable.{u} X := by
@@ -53,8 +54,7 @@ instance (X : SSet.{u}) [X.Finite] : IsFinitelyPresentable.{u} X := by
   obtain ⟨Z, _, _, q, _⟩ := exists_epi_from_isCardinalPresentable (pullback p p)
   have := Cardinal.fact_isRegular_aleph0.{u}
   have := IsRegularEpiCategory.regularEpiOfEpi p
-  apply (config := { allowSynthFailures := true })
-    isCardinalPresentable_of_isColimit' _
+  apply +allowSynthFailures isCardinalPresentable_of_isColimit' _
       (isCoequalizerEpiComp ((EffectiveEpi.getStruct p).isColimitCoforkOfIsPullback
         (IsPullback.of_hasPullback p p)) q) _
   · exact hasCardinalLT_of_finite _ _ (by rfl)

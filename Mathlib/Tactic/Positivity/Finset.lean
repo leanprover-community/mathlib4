@@ -27,7 +27,8 @@ open Qq Lean Meta Finset
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
-meta def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
+meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
     let some ps ← proveFinsetNonempty s | return .none
@@ -37,7 +38,8 @@ meta def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
 @[positivity Fintype.card _]
-meta def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
+meta def evalFintypeCard : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Fintype.card $β $instβ) =>
     let instβno ← synthInstanceQ q(Nonempty $β)
@@ -49,7 +51,8 @@ meta def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.dens _]
-meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
+meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, 𝕜, e with
   | 0, ~q(ℚ≥0), ~q(@Finset.dens $α $instα $s) =>
     let some ps ← proveFinsetNonempty s | return .none
@@ -57,9 +60,19 @@ meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
   | _, _, _ => throwError "not Finset.dens"
 
+/-- Return whether `p` is a proposition of the form `?a ∈ s`. If so, return `a` and a Qq-proof that
+`p` is `a ∈ s`. -/
+private meta def isMemFinset? {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) (p : Q(Prop)) :
+    MetaM <| Option <| (a : Q($α)) ×' $p =Q ($a ∈ $s) := withNewMCtxDepth do
+  let m ← mkFreshExprMVarQ q($α)
+  let .defEq _ ← withReducible <| isDefEqQ q($p) q($m ∈ $s) | return none
+  let ⟨m, _⟩ ← instantiateMVarsQ' q($m)
+  return some ⟨q($m), ⟨⟩⟩
+
 attribute [local instance] monadLiftOptionMetaM in
-/-- The `positivity` extension which proves that `∑ i ∈ s, f i` is nonnegative if `f` is, and
-positive if each `f i` is and `s` is nonempty.
+/-- The `positivity` extension which proves that `∑ a ∈ s, f a` is nonnegative if `f` is, and
+positive if either each `f i` is and `s` is nonempty, or some `f a` is where `a ∈ s` is an
+assumption.
 
 TODO: The following example does not work
 ```
@@ -68,29 +81,50 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.sum _ _]
-meta def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with
+  | none => pure .none -- TODO: the case without PartialOrder
+  | some pα => do
   match e with
   | ~q(@Finset.sum $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) := ← (do
+    let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none
-      let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
+      let .some _pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some q(@sum_pos $ι $α $instα $pα $pα' $f $s (fun i _ ↦ $pr i) $ps))
-    -- Try to show that the sum is positive
+      pure <| some q(sum_pos (fun i _ ↦ $pr i) $ps)
+    -- Try to show that the sum is positive because all summands are
     if let some p_pos := p_pos then
       return .positive p_pos
+    let pbody ← rbody.toNonneg
+    let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+    -- Else try to show that the sum is positive because one summand is. We look for the witness
+    -- among the assumptions of the form `a ∈ s`, since we have no other way of getting hold of an
+    -- element of `s` at which `f` might be positive.
+    let p_pos' : Option Q(0 < $e) ← (do
+      let .some _pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
+      for ldecl in ← getLCtx do
+        if ldecl.isImplementationDetail then continue
+        unless ← Meta.isProp ldecl.type do continue
+        have ty : Q(Prop) := ldecl.type
+        have ha : Q($ty) := ldecl.toExpr
+        let .some ⟨a, _⟩ ← isMemFinset? q($s) ty | continue
+        have fa : Q($α) := .betaRev f #[a]
+        let : $fa =Q $f $a := ⟨⟩
+        let .positive pa ← catchNone (core zα pα fa) | continue
+        assertInstancesCommute
+        return some q(sum_pos' (fun i _ ↦ $pr i) ⟨$a, $ha, $pa⟩)
+      return none)
+    if let some p_pos' := p_pos' then
+      return .positive p_pos'
     -- Fall back to showing that the sum is nonnegative
-    else
-      let pbody ← rbody.toNonneg
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let pα' ← synthInstanceQ q(AddLeftMono $α)
-      assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $instα $pα $f $s $pα' fun i _ ↦ $pr i)
+    let _pα' ← synthInstanceQ q(AddLeftMono $α)
+    assertInstancesCommute
+    return .nonnegative q(sum_nonneg fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 variable {α : Type*} {s : Finset α}
@@ -108,6 +142,19 @@ example [Nonempty α] : 0 < #(univ : Finset α) := by positivity
 example [Nonempty α] : 0 < Fintype.card α := by positivity
 example [Nonempty α] : 0 < dens (univ : Finset α) := by positivity
 example [Nonempty α] : dens (univ : Finset α) ≠ 0 := by positivity
+
+example {f : α → ℕ} : 0 ≤ ∑ a ∈ s, f a := by positivity
+example {f : α → ℕ} (hs : s.Nonempty) : 0 < ∑ i ∈ s, (f i + 1) := by positivity
+example {f : α → ℕ} {a : α} (ha : a ∈ s) (hfa : 0 < f a) : 0 < ∑ a ∈ s, f a := by positivity
+example {f : α → ℕ} {a : α} (ha : a ∈ s) (hfa : f a ≠ 0) : ∑ a ∈ s, f a ≠ 0 := by positivity
+-- `f` need not be positive at the witness `a`, in which case we only get nonnegativity
+example {f : α → ℕ} {a : α} (_ha : a ∈ s) : 0 ≤ ∑ a ∈ s, f a := by positivity
+
+-- Extra `_ ∈ s` assumptions do not throw off `positivity`
+example {f : α → ℕ} {a b : α} (_ha : a ∈ s) (hb : b ∈ s) (hb : 0 < f b) : 0 < ∑ a ∈ s, f a := by
+  positivity
+example {f : α → ℕ} {a b : α} (ha : a ∈ s) (_hb : b ∈ s) (hfa : 0 < f a) : 0 < ∑ a ∈ s, f a := by
+  positivity
 
 example {G : Type*} {A : Finset G} :
     let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ #A := by

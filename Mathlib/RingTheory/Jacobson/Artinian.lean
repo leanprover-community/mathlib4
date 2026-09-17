@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Jacobson.Ring
 
 ## Main results
 - `Module.finite_iff_isArtinianRing`: If `A` is a finite type algebra over an Artinian ring `R`,
-then `A` is finite over `R` if and only if `A` is an Artinian ring.
+  then `A` is finite over `R` if and only if `A` is an Artinian ring.
 
 -/
 
@@ -24,10 +24,8 @@ variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] [Algebra.FiniteTy
 attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] :
     Module.Finite R A :=
-  (Finite.equiv_iff <|
-    (AlgEquiv.ofRingEquiv (f := IsArtinianRing.equivPi A) fun _ ↦ rfl).toLinearEquiv).mpr <|
   have (I : MaximalSpectrum A) := finite_of_finite_type_of_isJacobsonRing R (A ⧸ I.asIdeal)
-  Finite.pi
+  .equiv ((IsArtinianRing.equivPi A).restrictScalars R).toLinearEquiv.symm
 
 /-- If `A` is a finite type algebra over `R`, then `A` is an Artinian ring and `R` is Jacobson
 implies `A` is finite over `R`. -/
@@ -43,7 +41,7 @@ lemma Module.finite_of_isArtinianRing [IsJacobsonRing R] [IsArtinianRing A] :
 then `A` is finite over `R` if and only if `A` is an Artinian ring. -/
 lemma Module.finite_iff_isArtinianRing [IsArtinianRing R] :
     Module.Finite R A ↔ IsArtinianRing A :=
-  ⟨isArtinian_of_tower _ ∘ ((IsArtinianRing.tfae R A).out 0 2).mp,
+  ⟨isArtinian_of_tower _ ∘ ((IsArtinianRing.tfae R A).out 1 3).mp,
     fun _ ↦ finite_of_isArtinianRing R A⟩
 
 /-- If `A` is a finite type algebra over an Artinian ring `R`,

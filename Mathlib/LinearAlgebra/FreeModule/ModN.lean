@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
@@ -29,6 +30,7 @@ namespace ModN
 
 instance : Module (ZMod n) (ModN G n) := QuotientAddGroup.zmodModule (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of `ModN G n` in terms of monoids: Monoid homomorphisms from `ModN G n`
 are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // ∀ g, n • φ g = 0} where
@@ -61,7 +63,6 @@ variable [NeZero n]
 /-- Given a free module `G` over `ℤ`, construct the corresponding basis
 of `G / ⟨n⟩` over `ℤ / nℤ`. -/
 noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (ModN G n) := by
-  set ψ : G →+ G := zsmulAddGroupHom n
   set nG := LinearMap.range (LinearMap.lsmul ℤ G n)
   set H := G ⧸ nG
   set φ : G →ₗ[ℤ] H := nG.mkQ
@@ -79,27 +80,36 @@ noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (M
     simp only [Submodule.mkQ_apply, g] at hx
     rw [Submodule.liftQ_apply] at hx
     replace hx : ∀ b, ↑n ∣ f x b := by
-      simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using hx
+      simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using! hx
     simp only [Submodule.mkQ_apply]
     rw [Submodule.Quotient.mk_eq_zero]
     choose c hc using hx
     refine ⟨b.repr.symm ⟨(f x).support, c, by simp [hc, NeZero.ne]⟩, b.repr.injective ?_⟩
-    simpa [DFunLike.ext_iff, eq_comm] using hc
+    simpa [DFunLike.ext_iff, eq_comm] using! hc
   · suffices mod ∘ b.repr = g ∘ nG.mkQ by
       exact (this ▸ (mapRange_surjective _ (map_zero _) ZMod.intCast_surjective).comp
         b.repr.surjective).of_comp
     ext x b
     simp [mod, g, f, H]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma basis_apply_eq_mkQ {ι : Type*} (b : Basis ι ℤ G) (i : ι) : basis b i = mkQ n (b i) := by
   rw [Basis.apply_eq_iff]; simp [basis, mkQ]
 
-variable [Module.Free ℤ G] [Module.Finite ℤ G]
+/-- The quotient `ModN G n` is a torsion group. -/
+theorem isAddTorsion : IsAddTorsion (ModN G n) := by
+  intro x
+  rw [isOfFinAddOrder_iff_nsmul_eq_zero]
+  refine ⟨n, NeZero.pos _, by simp [← Nat.cast_smul_eq_nsmul (ZMod n)]⟩
 
-instance instModuleFinite : Module.Finite (ZMod n) (ModN G n) :=
-  .of_basis <| basis <| Module.Free.chooseBasis ℤ G
+variable [Module.Finite ℤ G]
 
-instance instFinite : Finite (ModN G n) := Module.finite_of_finite (ZMod n)
+instance instFinite : Finite (ModN G n) :=
+  Module.finite_of_fg_torsion (ModN G n) (isAddTorsion_iff_isTorsion_int.1 isAddTorsion)
+
+instance instModuleFinite : Module.Finite (ZMod n) (ModN G n) := .of_finite
+
+variable [Module.Free ℤ G]
 
 variable (G n)
 @[simp] lemma natCard_eq : Nat.card (ModN G n) = n ^ Module.finrank ℤ G := by

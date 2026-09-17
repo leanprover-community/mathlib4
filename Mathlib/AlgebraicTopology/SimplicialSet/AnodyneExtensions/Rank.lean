@@ -33,8 +33,6 @@ then `P.RankFunction ℕ` is non empty (TODO @joelriou).
 
 universe v u
 
-open CategoryTheory Simplicial
-
 namespace SSet.Subcomplex
 
 variable {X : SSet.{u}} {A : X.Subcomplex}
@@ -81,6 +79,7 @@ variable {P α} [WellFoundedLT α] [P.IsProper] (f : P.WeakRankFunction α)
 
 include f
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma wf_ancestralRel : WellFounded P.AncestralRel := by
   rw [wellFounded_iff_isEmpty_descending_chain]
   refine ⟨fun ⟨g, hg⟩ ↦ ?_⟩
@@ -165,6 +164,16 @@ noncomputable def weakRankFunctionEquiv :
         exact g.lt hxy }
   left_inv _ := by simp
   right_inv _ := by simp
+
+variable {h α} [WellFoundedLT α]
+
+lemma RankFunction.isRegular [h.IsProper] (f : h.RankFunction α) : h.IsRegular := by
+  rw [← isRegular_pairing_iff]
+  exact (h.rankFunctionEquiv α f).isRegular
+
+lemma WeakRankFunction.isRegular [h.IsProper] (f : h.WeakRankFunction α) : h.IsRegular := by
+  rw [← isRegular_pairing_iff]
+  exact (h.weakRankFunctionEquiv α f).isRegular
 
 end PairingCore
 

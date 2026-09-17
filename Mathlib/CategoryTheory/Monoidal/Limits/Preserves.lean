@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 This file records some `PreservesColimits` instances on tensor products in monoidal categories. -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.MonoidalCategory.Limits
 open _root_.CategoryTheory.Limits

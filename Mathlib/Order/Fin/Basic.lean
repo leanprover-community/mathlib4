@@ -5,8 +5,10 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 module
 
+public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Fin.Embedding
 public import Mathlib.Data.Fin.Rev
+public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Hom.Basic
 
 /-!
@@ -46,20 +48,19 @@ variable {m n : ℕ}
 
 /-! ### Instances -/
 
-instance : Max (Fin n) where max x y := ⟨max x y, max_rec' (· < n) x.2 y.2⟩
-instance : Min (Fin n) where min x y := ⟨min x y, min_rec' (· < n) x.2 y.2⟩
+attribute [norm_cast] Fin.val_max Fin.val_min
 
-@[simp, norm_cast]
+@[deprecated Fin.val_max (since := "2026-09-09")]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
 
-@[simp, norm_cast]
+@[deprecated Fin.val_min (since := "2026-09-09")]
 theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
 
 theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
 
 instance instLinearOrder : LinearOrder (Fin n) :=
   Fin.val_injective.linearOrder _
-    Fin.le_iff_val_le_val Fin.lt_def coe_min coe_max compare_eq_compare_val
+    Fin.le_iff_val_le_val Fin.lt_def val_min val_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
@@ -69,7 +70,6 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
 
 instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
   LinearOrder.toBiheytingAlgebra (Fin n)
-
 
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
 `[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
@@ -90,9 +90,13 @@ instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInst
 
 /-! ### Miscellaneous lemmas -/
 
-lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
+instance [NeZero n] : IsBotZeroClass (Fin n) where
+  isBot_zero := isBot_bot
 
-lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := rfl
+@[deprecated _root_.bot_eq_zero +typeChanged (since := "2026-05-07")]
+protected lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := _root_.bot_eq_zero
+
+lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
 @[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
 @[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
@@ -194,19 +198,13 @@ variable {p : Fin (n + 1)} {i j : Fin n}
 lemma succAbove_inj : succAbove p i = succAbove p j ↔ i = j :=
   (strictMono_succAbove p).injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 lemma succAbove_le_succAbove_iff : succAbove p i ≤ succAbove p j ↔ i ≤ j :=
   (strictMono_succAbove p).le_iff_le
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.succAbove_le_succAbove⟩ := succAbove_le_succAbove_iff
-
-@[simp]
+@[simp, gcongr]
 lemma succAbove_lt_succAbove_iff : succAbove p i < succAbove p j ↔ i < j :=
   (strictMono_succAbove p).lt_iff_lt
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.succAbove_lt_succAbove⟩ := succAbove_lt_succAbove_iff
 
 @[simp]
 theorem natAdd_inj (m) {i j : Fin n} : natAdd m i = natAdd m j ↔ i = j :=
@@ -216,49 +214,31 @@ theorem natAdd_injective (m n : ℕ) :
     Function.Injective (Fin.natAdd n : Fin m → _) :=
   (strictMono_natAdd _).injective
 
-@[simp]
+@[simp, gcongr]
 theorem natAdd_le_natAdd_iff (m) {i j : Fin n} : natAdd m i ≤ natAdd m j ↔ i ≤ j :=
   (strictMono_natAdd _).le_iff_le
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.natAdd_le_natAdd⟩ := natAdd_le_natAdd_iff
-
-@[simp]
+@[simp, gcongr]
 theorem natAdd_lt_natAdd_iff (m) {i j : Fin n} : natAdd m i < natAdd m j ↔ i < j :=
   (strictMono_natAdd _).lt_iff_lt
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.natAdd_lt_natAdd⟩ := natAdd_lt_natAdd_iff
 
 @[simp]
 theorem addNat_inj (m) {i j : Fin n} : i.addNat m = j.addNat m ↔ i = j :=
   (strictMono_addNat _).injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 theorem addNat_le_addNat_iff (m) {i j : Fin n} : i.addNat m ≤ j.addNat m ↔ i ≤ j :=
   (strictMono_addNat _).le_iff_le
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.addNat_le_addNat⟩ := addNat_le_addNat_iff
-
-@[simp]
+@[simp, gcongr]
 theorem addNat_lt_addNat_iff (m) {i j : Fin n} : i.addNat m < j.addNat m ↔ i < j :=
   (strictMono_addNat _).lt_iff_lt
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.addNat_lt_addNat⟩ := addNat_lt_addNat_iff
-
-@[simp]
+@[simp, gcongr]
 theorem castLE_le_castLE_iff {i j : Fin n} (h : n ≤ m) : i.castLE h ≤ j.castLE h ↔ i ≤ j := .rfl
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.castLE_le_castLE⟩ := castLE_le_castLE_iff
-
-@[simp]
+@[simp, gcongr]
 theorem castLE_lt_castLE_iff {i j : Fin n} (h : n ≤ m) : i.castLE h < j.castLE h ↔ i < j := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Fin.castLE_lt_castLE⟩ := castLE_lt_castLE_iff
 
 lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
@@ -373,11 +353,19 @@ def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strict
 @[simps! apply toEmbedding]
 def castLEOrderEmb (h : n ≤ m) : Fin n ↪o Fin m := .ofStrictMono (castLE h) (strictMono_castLE h)
 
+@[simp]
+theorem coe_castLEOrderEmb (h : n ≤ m) : castLEOrderEmb h = castLE h :=
+  rfl
+
 /-- `Fin.castAdd` as an `OrderEmbedding`.
 
 `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
 @[simps! apply toEmbedding]
 def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (strictMono_castAdd m)
+
+@[simp]
+theorem coe_castAddOrderEmb (m : ℕ) : (castAddOrderEmb m : Fin n → _) = castAdd m :=
+  rfl
 
 /-- `Fin.castSucc` as an `OrderEmbedding`.
 
@@ -385,11 +373,19 @@ def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (s
 @[simps! apply toEmbedding]
 def castSuccOrderEmb : Fin n ↪o Fin (n + 1) := .ofStrictMono castSucc strictMono_castSucc
 
+@[simp]
+theorem coe_castSuccOrderEmb : (castSuccOrderEmb : Fin n → _) = castSucc :=
+  rfl
+
 /-- `Fin.addNat` as an `OrderEmbedding`.
 
 `addNatOrderEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
 @[simps! apply toEmbedding]
 def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (strictMono_addNat m)
+
+@[simp]
+theorem coe_addNatOrderEmb (m : ℕ) : (addNatOrderEmb m : Fin n → _) = (addNat · m) :=
+  rfl
 
 /-- `Fin.natAdd` as an `OrderEmbedding`.
 
@@ -397,14 +393,24 @@ def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (
 @[simps! apply toEmbedding]
 def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (strictMono_natAdd n)
 
+@[simp]
+theorem coe_natAddOrderEmb (n : ℕ) : (natAddOrderEmb n : Fin m → _) = natAdd n :=
+  rfl
+
 /-- `Fin.succAbove p` as an `OrderEmbedding`. -/
 @[simps! apply toEmbedding]
 def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
 
-/-! ### Uniqueness of order isomorphisms -/
+@[simp]
+theorem coe_succAboveOrderEmb (p : Fin (n + 1)) : succAboveOrderEmb p = succAbove p :=
+  rfl
 
-variable {α : Type*} [Preorder α]
+lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
+    Set.range (Fin.succAboveOrderEmb i) = {i}ᶜ := by
+  simp
+
+/-! ### Uniqueness of order isomorphisms -/
 
 /-- If `e` is an `orderIso` between `Fin n` and `Fin m`, then `n = m` and `e` is the identity
 map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i : ℕ)`. -/

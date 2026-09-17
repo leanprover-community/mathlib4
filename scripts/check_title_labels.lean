@@ -21,8 +21,11 @@ open Cli in
 The exit code is the number of violations found. -/
 def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
   let title := (args.positionalArg! "title").value
-  let labels : Array String := args.variableArgsAs! String
-  -- We not validate titles of WIP PRs.
+  let labels : List String := match args.flag? "labels" with
+  | some f => (f.as! String).splitOn "\n"
+  | none => []
+  IO.println s!"labels are {labels}"
+  -- We do not validate titles of WIP PRs.
   if labels.contains "WIP" then return 0
 
   let mut numberErrors := 0
@@ -45,7 +48,7 @@ def checkTitleLabels : Cmd := `[Cli|
   If the inpupt title does not pass validation, output a list of errors."
 
   FLAGS:
-    "labels" : Array String; "list of label names of this PR\
+    "labels" : String; "newline-separated list of label names of this PR\
       These are optional; we merely use a WIP label to skip any checks of the PR title"
 
   ARGS:

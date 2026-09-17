@@ -131,11 +131,9 @@ theorem arsinh_strictMono : StrictMono arsinh :=
 theorem arsinh_inj : arsinh x = arsinh y ↔ x = y :=
   arsinh_injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.arsinh_le_arsinh⟩ := arsinh_le_arsinh
 
 @[simp]
 theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
@@ -160,8 +158,9 @@ theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
   lt_iff_lt_of_le_iff_le arsinh_nonneg_iff
 
 theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (√(1 + x ^ 2))⁻¹ x := by
-  convert sinhHomeomorph.toOpenPartialHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
-    (hasStrictDerivAt_sinh _) using 2
+  convert!
+    sinhHomeomorph.toOpenPartialHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
+      (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
 
 theorem hasDerivAt_arsinh (x : ℝ) : HasDerivAt arsinh (√(1 + x ^ 2))⁻¹ x :=

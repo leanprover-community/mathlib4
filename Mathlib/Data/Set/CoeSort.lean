@@ -25,7 +25,7 @@ namespace Set
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 /-- Given the set `s`, `Elem s` is the `Type` of element of `s`.
 
@@ -39,7 +39,8 @@ See e.g. `Mathlib/Data/Set/Order.lean`.
 /-- Coercion from a set to the corresponding subtype. -/
 instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
 
-@[simp] theorem elem_mem {σ α} [I : Membership σ α] {S} :
-    @Set.Elem σ (@Membership.mem σ α I S) = { x // x ∈ S } := rfl
+@[simp] theorem elem_mem {σ α} [Membership σ α] {S : α} :
+    ↑{x : σ | x ∈ S} = {x // x ∈ S} :=
+  rfl
 
 end Set

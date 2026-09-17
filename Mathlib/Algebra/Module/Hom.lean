@@ -46,6 +46,7 @@ instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
   zero_smul _ := ext fun _ => zero_smul _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance instDomMulActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
     Module Sᵈᵐᵃ (M →+ M₂) where
@@ -71,12 +72,12 @@ section
 variable [Monoid R] [Monoid S] [AddCommMonoid A]
 
 instance instDistribSMul [DistribSMul M A] : DistribSMul M (AddMonoid.End A) :=
-  AddMonoidHom.instDistribSMul
+  inferInstanceAs <| DistribSMul M (A →+ A)
 
 variable [DistribMulAction R A] [DistribMulAction S A]
 
 instance instDistribMulAction : DistribMulAction R (AddMonoid.End A) :=
-  AddMonoidHom.instDistribMulAction
+  inferInstanceAs <| DistribMulAction R (A →+ A)
 
 @[simp] theorem coe_smul (r : R) (f : AddMonoid.End A) : ⇑(r • f) = r • ⇑f := rfl
 
@@ -96,7 +97,7 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
 end
 
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) :=
-  AddMonoidHom.instModule
+  inferInstanceAs <| Module R (A →+ A)
 
 /-- The tautological action by `AddMonoid.End α` on `α`.
 
@@ -110,13 +111,6 @@ end AddMonoid.End
 /-! ### Miscellaneous morphisms -/
 
 namespace AddMonoidHom
-
-/-- Scalar multiplication on the left as an additive monoid homomorphism.
-
-See also the linear map version of this `Module.End.smulLeft`. -/
-@[simps! -fullyApplied, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
-protected def smulLeft [AddMonoid A] [DistribSMul M A] (c : M) : A →+ A :=
-  DistribSMul.toAddMonoidHom _ c
 
 /-- Scalar multiplication as a biadditive monoid homomorphism. We need `M` to be commutative
 to have addition on `M →+ M`. -/

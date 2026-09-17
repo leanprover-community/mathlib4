@@ -5,10 +5,11 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Topology.MetricSpace.TransferInstance
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Transfer normed algebraic structures across `Equiv`s
@@ -17,13 +18,11 @@ In this file, we transfer a normed field structure across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 
 namespace Equiv
-
-variable (e : α ≃ β) [NormedCommGroup β]
 
 /-- Transfer a `NormedField` across an `Equiv` -/
 protected abbrev normedField [NormedField β] (e : α ≃ β) : NormedField α :=

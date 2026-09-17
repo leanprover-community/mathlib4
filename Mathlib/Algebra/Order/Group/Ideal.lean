@@ -20,7 +20,7 @@ finitely generated, and the semigroup ideals satisfy the ascending chain conditi
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-@[expose] public section
+public section
 
 namespace SemigroupIdeal
 
@@ -33,10 +33,10 @@ generated. -/
 ideal is finitely generated. -/]
 theorem fg_of_wellQuasiOrderedLE (I : SemigroupIdeal M) : I.FG := by
   have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ I }
-  refine ⟨_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
-    (hpwo.mono (setOf_minimal_subset _)), ?_⟩
+  refine ⟨_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
+    (hpwo.mono (setOfPred_minimal_subset _)), ?_⟩
   ext x
-  simp only [mem_closure'', SetLike.setOf_mem_eq, SetLike.mem_coe, Set.mem_setOf_eq]
+  simp only [mem_closure'', SetLike.setOfPred_mem_eq, SetLike.mem_coe, Set.mem_ofPred_eq]
   constructor
   · intro hx
     rcases hpwo.exists_le_minimal hx with ⟨z, hz, hz'⟩
@@ -65,7 +65,7 @@ instance : WellFoundedGT (SemigroupIdeal M) := by
   apply (f.mono hn).antisymm
   apply (le_iSup f n).trans
   intro x hx
-  rw [SetLike.mem_coe, hI, mem_closure''] at hx
+  rw [hI, mem_closure''] at hx
   rcases hx with ⟨y, z, hz, rfl⟩
   exact SemigroupIdeal.mul_mem _ _ (f.mono (Finset.le_sup hz) (hg _ hz))
 

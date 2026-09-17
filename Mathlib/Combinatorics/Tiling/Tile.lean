@@ -154,7 +154,8 @@ element of `G`, used with `induction pt using PlacedTile.induction_on`. -/
 @[elab_as_elim] protected lemma induction_on {ppt : PlacedTile ps → Prop} (pt : PlacedTile ps)
     (h : ∀ i : ιₚ, ∀ gx : G, ppt ⟨i, gx⟩) : ppt pt := by
   rcases pt with ⟨i, gx⟩
-  exact Quotient.inductionOn' gx (h i)
+  induction gx using Quotient.inductionOn
+  apply h
 
 /-- An alternative extensionality principle for `PlacedTile` that avoids `HEq`, using existence of a
 common group element. -/
@@ -196,9 +197,8 @@ directly. -/
   Quotient.liftOn' pt.groupElts (fun g ↦ g • (ps pt.index : Set X))
     fun a b r ↦ by
       rw [QuotientGroup.leftRel_eq] at r
-      simp only
       rw [eq_comm, ← inv_smul_eq_iff, smul_smul, ← MulAction.mem_stabilizer_iff]
-      exact SetLike.le_def.1 (Subgroup.map_subtype_le _) r
+      exact mem_of_le_of_mem (Subgroup.map_subtype_le _) r
 
 instance : CoeOut (PlacedTile ps) (Set X) where
   coe := coeSet
@@ -249,6 +249,7 @@ instance : SMul G (PlacedTile ps) where
   induction pt using PlacedTile.induction_on
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_smul (g : G) (pt : PlacedTile ps) :
     (g • pt : PlacedTile ps) = g • (pt : Set X) := by
   induction pt using PlacedTile.induction_on

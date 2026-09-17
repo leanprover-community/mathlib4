@@ -20,14 +20,7 @@ and its submodules. This immediately implies that the category of `R`-modules is
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Subobject
-
-open CategoryTheory.Limits
-
-open ModuleCat
+open CategoryTheory Subobject Limits
 
 universe v u
 
@@ -54,8 +47,9 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · ext x
           rfl)
       left_inv := fun N => by
-        convert congr_arg LinearMap.range (ModuleCat.hom_ext_iff.mp
-            (underlyingIso_arrow (ofHom N.subtype))) using 1
+        convert!
+          congr_arg LinearMap.range
+            (ModuleCat.hom_ext_iff.mp (underlyingIso_arrow (ofHom N.subtype))) using 1
         · have :
             (underlyingIso (ofHom N.subtype)).inv =
               ofHom (underlyingIso (ofHom N.subtype)).symm.toLinearEquiv.toLinearMap := by
@@ -65,7 +59,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
-        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
+        convert! LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
         · rw [← hom_comp, ofMkLEMk_comp]
           exact (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
@@ -84,7 +78,7 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f.hom) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10959): the whole proof was just `simp [toKernelSubobject]`.
-  simp [toKernelSubobject, -hom_comp, ← ConcreteCategory.comp_apply]
+  simp [toKernelSubobject, -hom_comp, ← CategoryTheory.comp_apply]
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.

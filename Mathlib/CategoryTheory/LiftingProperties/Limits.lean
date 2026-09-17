@@ -16,7 +16,7 @@ certain (co)limits.
 
 -/
 
-@[expose] public section
+public section
 
 universe v
 

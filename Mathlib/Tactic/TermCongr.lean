@@ -5,10 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Lean.Meta.CongrTheorems
-public meta import Mathlib.Logic.Basic
-public import Mathlib.Tactic.Basic
+public import Mathlib.Lean.Meta.CongrTheorems
 
 /-! # `congr(...)` congruence quotations
 
@@ -79,6 +76,8 @@ This can potentially break tactics that are sensitive to metadata or reducible f
 Please report anything that goes wrong with `congr(...)` lemmas on Zulip.
 
 For debugging, you can set `set_option trace.Elab.congr true`.
+
+[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")" : term
 

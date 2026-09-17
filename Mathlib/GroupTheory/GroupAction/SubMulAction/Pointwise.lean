@@ -18,10 +18,10 @@ To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale
 
 -/
 
-@[expose] public section
+public section
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*}
 
@@ -87,8 +87,6 @@ instance : MulOneClass (SubMulAction R M) where
     rintro ⟨r, y, hy, rfl⟩
     exact smul_mem _ _ hy
 
-@[deprecated (since := "2025-06-04")] alias mulOneClass := instMulOneClass
-
 end MulOneClass
 
 section Semigroup
@@ -97,8 +95,6 @@ variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 
 instance : Semigroup (SubMulAction R M) where
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
-
-@[deprecated (since := "2025-06-04")] alias semiGroup := instSemigroup
 
 end Semigroup
 

@@ -142,14 +142,11 @@ def Balanced : Ordnode α → Prop
   | node _ l _ r => BalancedSz (size l) (size r) ∧ Balanced l ∧ Balanced r
 
 instance Balanced.dec : DecidablePred (@Balanced α)
-  | nil => by
-    unfold Balanced
-    infer_instance
-  | node _ l _ r => by
-    unfold Balanced
+  | nil => inferInstanceAs <| Decidable True
+  | node _ l _ r =>
     haveI := Balanced.dec l
     haveI := Balanced.dec r
-    infer_instance
+    inferInstanceAs <| Decidable (BalancedSz l.size r.size ∧ l.Balanced ∧ r.Balanced)
 
 @[symm]
 theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=
@@ -543,6 +540,7 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 /-! ### `insert` -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) :
     ∀ t : Ordnode α, dual (Ordnode.insert x t) = @Ordnode.insert αᵒᵈ _ _ x (dual t)
   | nil => rfl
@@ -555,6 +553,7 @@ theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α
 /-! ### `balance` properties -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Sized l)
     (sr : Sized r) : @balance α l x r = balance' l x r := by
   obtain - | ⟨ls, ll, lx, lr⟩ := l
@@ -562,7 +561,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
     · rfl
     · rw [sr.eq_node'] at hr ⊢
       obtain - | ⟨rls, rll, rlx, rlr⟩ := rl <;> obtain - | ⟨rrs, rrl, rrx, rrr⟩ := rr <;>
-        dsimp [balance, balance']
+        dsimp +instances [balance, balance']
       · rfl
       · have : size rrl = 0 ∧ size rrr = 0 := by
           have := balancedSz_zero.1 hr.1.symm
@@ -570,17 +569,17 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sr.2.2.2.1.size_eq_zero.1 this.1
         cases sr.2.2.2.2.size_eq_zero.1 this.2
         obtain rfl : rrs = 1 := sr.2.2.1
-        rw [if_neg, rotateL_node, if_pos]; · rfl
-        all_goals dsimp only [size]; decide
+        rw [ite_eq_right, rotateL_node, ite_eq_left]; · rfl
+        all_goals (try dsimp only [size]); decide
       · have : size rll = 0 ∧ size rlr = 0 := by
           have := balancedSz_zero.1 hr.1
           rwa [size, sr.2.1.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero] at this
         cases sr.2.1.2.1.size_eq_zero.1 this.1
         cases sr.2.1.2.2.size_eq_zero.1 this.2
         obtain rfl : rls = 1 := sr.2.1.1
-        rw [if_neg, rotateL_node, if_neg]; · rfl
-        all_goals dsimp only [size]; decide
-      · symm; rw [zero_add, if_neg, rotateL]
+        rw [ite_eq_right, rotateL_node, ite_eq_right]; · rfl
+        all_goals (try dsimp only [size]); decide
+      · symm; rw [zero_add, ite_eq_right, rotateL]
         · dsimp only [size_node]; split_ifs
           · simp [node3L, node']; abel
           · simp [node4L, node', sr.2.1.1]; abel
@@ -596,23 +595,23 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sl.2.2.2.1.size_eq_zero.1 this.1
         cases sl.2.2.2.2.size_eq_zero.1 this.2
         obtain rfl : lrs = 1 := sl.2.2.1
-        rw [if_neg, rotateR_node, if_neg]; · rfl
-        all_goals dsimp only [size]; decide
+        rw [ite_eq_right, rotateR_node, ite_eq_right]; · rfl
+        all_goals (try dsimp only [size]); decide
       · have : size lll = 0 ∧ size llr = 0 := by
           have := balancedSz_zero.1 hl.1
           rwa [size, sl.2.1.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero] at this
         cases sl.2.1.2.1.size_eq_zero.1 this.1
         cases sl.2.1.2.2.size_eq_zero.1 this.2
         obtain rfl : lls = 1 := sl.2.1.1
-        rw [if_neg, rotateR_node, if_pos]; · rfl
-        all_goals dsimp only [size]; decide
-      · symm; rw [if_neg, rotateR]
+        rw [ite_eq_right, rotateR_node, ite_eq_left]; · rfl
+        all_goals (try dsimp only [size]); decide
+      · symm; rw [ite_eq_right, rotateR]
         · dsimp only [size_node]; split_ifs
           · simp [node3R, node']; abel
           · simp [node4R, node', sl.2.2.1]; abel
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
     · simp only [balance, id_eq, balance', size_node, gt_iff_lt]
-      symm; rw [if_neg]
+      symm; rw [ite_eq_right]
       · split_ifs with h h_1
         · have rd : delta ≤ size rl + size rr := by
             have := lt_of_le_of_lt (Nat.mul_le_mul_left _ sl.pos) h
@@ -769,6 +768,7 @@ theorem Bounded.dual :
   | nil, o₁, o₂, h => by cases o₁ <;> cases o₂ <;> trivial
   | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
     Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
   ⟨Bounded.dual, fun h => by

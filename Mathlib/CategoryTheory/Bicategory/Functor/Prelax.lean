@@ -22,7 +22,7 @@ oplax functors.
 
 A PrelaxFunctorStruct `F` between quivers `B` and `C`, such that both have been equipped with quiver
 structures on the hom-types, consists of
-* a function between objects `F.obj : B ⟶ C`,
+* a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 
@@ -42,8 +42,6 @@ corresponding hom types.
 @[expose] public section
 
 namespace CategoryTheory
-
-open Category Bicategory
 
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -136,8 +134,8 @@ def mkOfHomFunctors (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : PrelaxFunctor B B where
   toPrelaxFunctorStruct := PrelaxFunctorStruct.id B
 
-instance : Inhabited (PrelaxFunctorStruct B B) :=
-  ⟨PrelaxFunctorStruct.id B⟩
+instance : Inhabited (PrelaxFunctor B B) :=
+  ⟨PrelaxFunctor.id B⟩
 
 variable (F : PrelaxFunctor B C)
 
@@ -161,9 +159,9 @@ section
 
 variable {a b : B}
 
-/-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms
+/-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ g` to 2-isomorphisms
 `F.map f ≅ F.map g`. -/
-@[simps!]
+@[simps! -isSimp]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
 
@@ -174,6 +172,10 @@ instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map�
 lemma map₂_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : F.map₂ (inv η) = inv (F.map₂ η) := by
   apply IsIso.eq_inv_of_hom_inv_id
   simp [← F.map₂_comp η (inv η)]
+
+lemma map₂_iso_inv {f g : a ⟶ b} (η : f ≅ g) :
+    F.map₂ η.inv = inv (F.map₂ η.hom) := by
+  rw [← F.map₂_inv, IsIso.Iso.inv_hom]
 
 @[reassoc, simp]
 lemma map₂_hom_inv {f g : a ⟶ b} (η : f ≅ g) :
@@ -202,6 +204,7 @@ lemma map₂_eqToHom {x y : B} (f g : x ⟶ y) (hfg : f = g) :
   subst hfg
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map₂Iso_eqToIso {x y : B} (f g : x ⟶ y) (hfg : f = g) :
     F.map₂Iso (eqToIso hfg) = eqToIso (by rw [← hfg]) := by
   subst hfg

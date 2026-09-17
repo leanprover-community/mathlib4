@@ -61,9 +61,8 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
       apply IsCompact.isClosed
       suffices H : IsCompact ((fun (g : G) ↦ g • x) '' (K n ∩ g • V)) by
         simpa only [F, smul_singleton] using H
-      apply IsCompact.image
-      · exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
-      · exact continuous_id.smul continuous_const
+      apply IsCompact.image ?_ (by fun_prop)
+      exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
     · apply eq_univ_iff_forall.2 (fun y ↦ ?_)
       obtain ⟨h, rfl⟩ : ∃ h, h • x = y := exists_smul_eq G x y
       obtain ⟨n, hn⟩ : ∃ n, h ∈ K n := exists_mem_compactCovering h
@@ -110,7 +109,9 @@ theorem isOpenMap_smul_of_sigmaCompact (x : X) : IsOpenMap (fun (g : G) ↦ g �
 
 /-- A surjective morphism of topological groups is open when the source group is sigma-compact and
 the target group is a Baire space (for instance a locally compact group). -/
-@[to_additive]
+@[to_additive /-- A surjective morphism of additive topological groups is open when the source group
+is sigma-compact and the target group is a Baire space (for instance a locally compact additive
+group). -/]
 theorem MonoidHom.isOpenMap_of_sigmaCompact
     {H : Type*} [Group H] [TopologicalSpace H] [BaireSpace H] [T2Space H] [ContinuousMul H]
     (f : G →* H) (hf : Function.Surjective f) (h'f : Continuous f) :

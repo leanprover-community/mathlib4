@@ -34,21 +34,13 @@ variable (G : Type u) [Group G]
 
 open Subgroup (centralizer)
 
+open scoped IsMulCommutative in
 /-- The abelianization of G is the quotient of G by its commutator subgroup. -/
 def Abelianization : Type u :=
   G ⧸ commutator G
+deriving CommGroup
 
 namespace Abelianization
-
-attribute [local instance] QuotientGroup.leftRel
-
-instance commGroup : CommGroup (Abelianization G) where
-  __ := QuotientGroup.Quotient.group _
-  mul_comm x y := Quotient.inductionOn₂ x y fun a b ↦ Quotient.sound' <|
-    QuotientGroup.leftRel_apply.mpr <| Subgroup.subset_closure
-      -- We avoid `group` here to minimize imports while low in the hierarchy;
-      -- typically it would be better to invoke the tactic.
-      ⟨b⁻¹, Subgroup.mem_top _, a⁻¹, Subgroup.mem_top _, by simp [commutatorElement_def, mul_assoc]⟩
 
 instance : Inhabited (Abelianization G) :=
   ⟨1⟩
@@ -75,12 +67,12 @@ section lift
 -- So far we have built Gᵃᵇ and proved it's an abelian group.
 -- Furthermore we defined the canonical projection `of : G → Gᵃᵇ`
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
-variable {A : Type v} [CommGroup A] (f : G →* A)
+variable {A : Type v} [Group A] [IsMulCommutative A] (f : G →* A)
 
 theorem commutator_subset_ker : commutator G ≤ f.ker := by
   rw [commutator_eq_closure, Subgroup.closure_le]
   rintro x ⟨p, q, rfl⟩
-  simp [MonoidHom.mem_ker, mul_right_comm (f p) (f q), commutatorElement_def]
+  simp [MonoidHom.mem_ker, mul_comm' (f p) (f q), commutatorElement_def]
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of a `G` to `A` that factors through `f`. -/
@@ -93,9 +85,6 @@ def lift : (G →* A) ≃ (Abelianization G →* A) where
 theorem lift_apply_of (x : G) : lift f (of x) = f x :=
   rfl
 
-@[deprecated (since := "2025-07-23")]
-alias lift.of := lift_apply_of
-
 theorem coe_lift_symm : (lift.symm : (Abelianization G →* A) → (G →* A)) = (·.comp of) := rfl
 
 @[simp]
@@ -106,8 +95,6 @@ theorem lift_unique (φ : Abelianization G →* A)
     (hφ : ∀ x : G, φ (Abelianization.of x) = f x)
     {x : Abelianization G} : φ x = lift f x :=
   QuotientGroup.induction_on x hφ
-
-@[deprecated (since := "2025-07-23")] alias lift.unique := lift_unique
 
 @[simp]
 theorem lift_of : lift of = MonoidHom.id (Abelianization G) :=

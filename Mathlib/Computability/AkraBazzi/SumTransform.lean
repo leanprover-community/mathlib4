@@ -322,7 +322,7 @@ lemma eventually_one_sub_smoothingFn_pos_real : ∀ᶠ (x : ℝ) in atTop, 0 < 1
   eventually_one_sub_smoothingFn_gt_const_real 0 zero_lt_one
 
 lemma eventually_one_sub_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 - ε n :=
-  (eventually_one_sub_smoothingFn_pos_real).natCast_atTop
+  eventually_one_sub_smoothingFn_pos_real.natCast_atTop
 
 lemma eventually_one_sub_smoothingFn_nonneg : ∀ᶠ (n : ℕ) in atTop, 0 ≤ 1 - ε n := by
   filter_upwards [eventually_one_sub_smoothingFn_pos] with n hn; exact le_of_lt hn
@@ -357,8 +357,7 @@ lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + 
 
 lemma deriv_smoothingFn {x : ℝ} : deriv ε x = -x⁻¹ / (log x ^ 2) := by
   unfold smoothingFn
-  simp_rw [one_div]
-  apply deriv_inv_log
+  simp
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ :=
   calc deriv ε
@@ -490,7 +489,7 @@ bound expression. -/
 
 @[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
+  refine continuous_finsetSum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -502,7 +501,7 @@ lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) 
 lemma tendsto_zero_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) atTop (𝓝 0) := by
   have h₁ : Finset.univ.sum (fun _ : α => (0 : ℝ)) = 0 := by simp
   rw [← h₁]
-  refine tendsto_finset_sum (univ : Finset α) (fun i _ => ?_)
+  refine tendsto_finsetSum (univ : Finset α) (fun i _ => ?_)
   rw [← mul_zero (a i)]
   refine Tendsto.mul (by simp) <| tendsto_rpow_atTop_of_base_lt_one _ ?_ (R.b_lt_one i)
   have := R.b_pos i

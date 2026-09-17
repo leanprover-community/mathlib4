@@ -50,9 +50,11 @@ section get
 
 variable {x : α ⊕ β}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
   cases x <;> simp
 
@@ -242,6 +244,11 @@ theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
     Injective (Sum.elim f g) ↔ Injective f ∧ Injective g ∧ ∀ a b, f a ≠ g b where
   mp h := ⟨h.comp inl_injective, h.comp inr_injective, fun _ _ => h.ne inl_ne_inr⟩
   mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
+
+@[simp]
+theorem elim_injective' {γ : Sort*} {f : α → γ} :
+    Injective (Sum.elim f : (β → γ) → (α ⊕ β → γ)) :=
+  fun g₁ g₂ hg ↦ funext fun b ↦ by simpa using congr_fun hg (Sum.inr b)
 
 @[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :

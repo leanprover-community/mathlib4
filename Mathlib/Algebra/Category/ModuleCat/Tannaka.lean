@@ -22,6 +22,7 @@ universe u
 
 open CategoryTheory
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] add_smul mul_smul in
 attribute [local ext] End.ext in
 /-- An ingredient of Tannaka duality for rings:
@@ -34,7 +35,7 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
     ObjectProperty.homMk
       { app M := @AddCommGrpCat.ofHom M.carrier M.carrier _ _
           (DistribSMul.toAddMonoidHom M r) }
-  invFun φ := φ.hom.app (ModuleCat.of R R) (1 : R)
+  invFun φ := φ.hom.app ↧R (1 : R)
   left_inv _ := by simp
   right_inv φ := by
     ext M (x : M)

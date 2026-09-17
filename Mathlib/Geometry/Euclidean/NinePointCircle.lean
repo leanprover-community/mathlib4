@@ -71,14 +71,14 @@ theorem ninePointCircle_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 
     (s.reindex e).ninePointCircle = s.ninePointCircle := by
   have h : n = m := by simpa using Fin.equiv_iff_eq.mp ⟨e⟩
   ext
-  · simp [ninePointCircle_center, centroid_reindex,  h]
+  · simp [ninePointCircle_center, centroid_reindex, h]
   · simp [ninePointCircle_radius, h]
 
 theorem ninePointCircle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
     [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).ninePointCircle =
-    {center := f s.ninePointCircle.center, radius := s.ninePointCircle.radius} := by
+    { center := f s.ninePointCircle.center, radius := s.ninePointCircle.radius } := by
   ext
   · simp [ninePointCircle_center, centroid_map]
   · simp [ninePointCircle_radius]
@@ -87,9 +87,9 @@ theorem ninePointCircle_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubs
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).ninePointCircle =
-    {center := ⟨s.ninePointCircle.center,
+    { center := ⟨s.ninePointCircle.center,
       Set.mem_of_mem_of_subset (s.ninePointCircle_center_mem_affineSpan) hS⟩,
-      radius := s.ninePointCircle.radius} := by
+      radius := s.ninePointCircle.radius } := by
   ext
   · simp [ninePointCircle_center, centroid_restrict]
   · simp [ninePointCircle_radius]
@@ -118,7 +118,7 @@ being $1/n$th of the way from the Monge point to a vertex. Specifically for tria
 the midpoints between the orthocenter and a given vertex
 (`Affine.Triangle.eulerPoint_eq_midpoint`). -/
 def eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :=
-    (n : ℝ)⁻¹ • (s.points i -ᵥ s.mongePoint) +ᵥ s.mongePoint
+  (n : ℝ)⁻¹ • (s.points i -ᵥ s.mongePoint) +ᵥ s.mongePoint
 
 @[simp]
 theorem eulerPoint_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
@@ -139,7 +139,6 @@ theorem eulerPoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace 
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).eulerPoint i = s.eulerPoint i := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   simp [eulerPoint]
 
 theorem points_vsub_eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
@@ -147,15 +146,11 @@ theorem points_vsub_eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1))
   rw [eulerPoint, vsub_vadd_eq_vsub_sub]
   by_cases hn : n = 0
   · obtain rfl := hn
-    have : Subsingleton (Fin (0 + 1)) := inferInstanceAs (Subsingleton (Fin 1))
-    have hi : i = 0 := Subsingleton.eq_zero i
-    have hrange : Set.range s.points = {s.points i} := by simp [hi]
+    have hrange : Set.range s.points = {s.points i} := by simp [Subsingleton.eq_zero (α := Fin 1) i]
     obtain hmonge := s.mongePoint_mem_affineSpan
     rw [hrange, mem_affineSpan_singleton] at hmonge
     simp [hmonge]
-  have : ((n - 1) / n : ℝ) = 1 - (n : ℝ)⁻¹ := by
-    rw [sub_div, div_self (by simpa using hn), one_div]
-  rw [this, sub_smul, one_smul]
+  rw [sub_div, div_self (by simpa using hn), one_div, sub_smul, one_smul]
 
 theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :
@@ -216,7 +211,7 @@ theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
 
 theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     s.altitudeFoot i ∈ s.ninePointCircle := by
-  convert s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
+  convert! s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
   rw [Simplex.altitudeFoot]
   unfold Simplex.orthogonalProjectionSpan
   congr 1

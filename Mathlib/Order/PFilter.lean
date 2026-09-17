@@ -72,7 +72,9 @@ instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
 /-- A filter on `P` is a subset of `P`. -/
 instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
-  coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
+  coe_injective := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
+
+instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P) P
 
 theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 
@@ -151,7 +153,8 @@ variable [CompleteSemilatticeInf P]
 
 theorem sInf_gc :
     GaloisConnection (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=
-  fun x F => by simp only [le_sInf_iff, SetLike.mem_coe, toDual_le, SetLike.le_def, mem_principal]
+  fun x F => by
+    simp only [le_sInf_iff, SetLike.mem_coe, toDual_le, IsConcreteLE.le_iff, mem_principal]
 
 /-- If a poset `P` admits arbitrary `Inf`s, then `principal` and `Inf` form a Galois coinsertion. -/
 def infGi :

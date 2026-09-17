@@ -34,8 +34,7 @@ noncomputable def quotientKerRightHomEquivRight : E ⧸ S.rightHom.ker ≃* G :=
 /-- The isomorphism `E ⧸ S.inl.range ≃* G` induced by `S.rightHom` -/
 @[to_additive /-- The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom` -/]
 noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
-  (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
-    S.quotientKerRightHomEquivRight
+  QuotientGroup.liftEquiv _ S.rightHom_surjective S.range_inl_eq_ker_rightHom
 
 /-- An arbitrarily chosen section -/
 @[to_additive surjInvRightHom /-- An arbitrarily chosen section -/]
@@ -163,7 +162,7 @@ noncomputable def semidirectProductToGroupExtensionEquiv :
     rw [← MonoidHom.mem_range, S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv,
       rightHom_splitting, mul_inv_cancel]
   map_mul' := fun ⟨n₁, g₁⟩ ⟨n₂, g₂⟩ ↦ by
-    simp only [conjAct, MonoidHom.comp_apply, map_mul, inl_conjAct_comm, MonoidHom.coe_coe]
+    simp only [conjAct, MonoidHom.comp_apply, map_mul, inl_conjAct_comm, MonoidHom.coe_ofClass]
     group
   inl_comm := by
     ext n

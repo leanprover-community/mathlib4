@@ -21,10 +21,10 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future works
+## Future work
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
-with `IsNoetherianObject` in `Cᵒᵖ`.
+  with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
 
@@ -76,8 +76,7 @@ lemma isArtinianObject_iff_not_strictAnti :
     IsArtinianObject X ↔ ∀ (f : ℕ → Subobject X), ¬ StrictAnti f := by
   refine ⟨fun _ ↦ not_strictAnti_of_wellFoundedLT, fun h ↦ ?_⟩
   dsimp only [IsArtinianObject]
-  rw [ObjectProperty.is_iff, isArtinianObject, WellFoundedLT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+  rw [ObjectProperty.is_iff, isArtinianObject, WellFoundedLT, RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in
@@ -86,6 +85,8 @@ lemma not_strictAnti_of_isArtinianObject
     ¬ StrictAnti f :=
   (isArtinianObject_iff_not_strictAnti X).1 inferInstance f
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma isArtinianObject_iff_isEventuallyConstant :
     IsArtinianObject X ↔ ∀ (F : ℕ ⥤ (MonoOver X)ᵒᵖ),
       IsFiltered.IsEventuallyConstant F := by
@@ -153,6 +154,7 @@ noncomputable def simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZer
     simpleSubobject h ⟶ X :=
   (exists_simple_subobject h).choose.arrow
 
+set_option backward.isDefEq.respectTransparency false in
 instance mono_simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     Mono (simpleSubobjectArrow h) := by
   dsimp only [simpleSubobjectArrow]

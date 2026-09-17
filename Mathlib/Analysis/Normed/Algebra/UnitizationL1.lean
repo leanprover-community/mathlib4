@@ -18,7 +18,7 @@ algebra on itself (see `Unitization.instNormedRing`).
 However, this construction is only valid (and an isometry) when `A` is a `RegularNormedAlgebra`.
 Sometimes it is useful to consider the unitization of a non-unital algebra with the $L^1$ norm
 instead. This file provides that norm on the type synonym `WithLp 1 (Unitization 𝕜 A)`, along
-with the algebra isomomorphism between `Unitization 𝕜 A` and `WithLp 1 (Unitization 𝕜 A)`.
+with the algebra isomorphism between `Unitization 𝕜 A` and `WithLp 1 (Unitization 𝕜 A)`.
 Note that `TrivSqZeroExt` is also equipped with the $L^1$ norm in the analogous way, but it is
 registered as an instance without the type synonym.
 
@@ -51,7 +51,7 @@ noncomputable def uniformEquiv_unitization_addEquiv_prod :
     WithLp 1 (Unitization 𝕜 A) ≃ᵤ WithLp 1 (𝕜 × A) :=
   { unitization_addEquiv_prod 𝕜 A with
     uniformContinuous_invFun := uniformContinuous_comap' uniformContinuous_id
-    uniformContinuous_toFun := uniformContinuous_iff.mpr le_rfl }
+    uniformContinuous_toFun := uniformContinuous_iff_le_comap.mpr le_rfl }
 
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (WithLp 1 (Unitization 𝕜 A)) :=
@@ -80,7 +80,7 @@ lemma unitization_nnnorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ 
 
 lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm
-    ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)
+    ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 𝕜 A)
     unitization_norm_inr
 
 variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
@@ -96,6 +96,15 @@ instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [I
   (WithLp.equiv 1 (Unitization 𝕜 A)).algebra R
 
 @[simp]
+lemma unitization_ofLp_one : ofLp (1 : WithLp 1 (Unitization 𝕜 A)) = 1 := rfl
+
+@[simp]
+lemma unitization_toLp_one : toLp 1 (1 : Unitization 𝕜 A) = 1 := rfl
+
+instance : NormOneClass (WithLp 1 (Unitization 𝕜 A)) where
+  norm_one := by simp [unitization_norm_def]
+
+@[simp]
 lemma unitization_algebraMap (r : 𝕜) :
     ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
@@ -109,24 +118,37 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
   commutes' _ := rfl
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
-  dist_eq := dist_eq_norm
+  dist_eq := dist_eq_norm_neg_add
   norm_mul_le x y := by
     simp_rw [unitization_norm_def, add_mul, mul_add, unitization_mul, fst_mul, snd_mul]
     rw [add_assoc, add_assoc]
-    gcongr
-    · exact norm_mul_le _ _
-    · apply (norm_add_le _ _).trans
-      gcongr
-      · simp [norm_smul]
-      · apply (norm_add_le _ _).trans
-        gcongr
-        · simp [norm_smul, mul_comm]
-        · exact norm_mul_le _ _
+    grw [norm_mul_le, norm_add_le, norm_smul, norm_add_le, norm_smul, norm_mul_le]
+    congr! 3
+    exact mul_comm ..
 
 noncomputable instance instUnitizationNormedAlgebra :
     NormedAlgebra 𝕜 (WithLp 1 (Unitization 𝕜 A)) where
   norm_smul_le r x := by
     simp_rw [unitization_norm_def, ofLp_smul, fst_smul, snd_smul, norm_smul, mul_add]
     exact le_rfl
+
+instance [HasSummableGeomSeries A] :
+    HasSummableGeomSeries (WithLp 1 (Unitization 𝕜 A)) := by
+  /- Take `x = (r, a) : Unitization 𝕜 A` with `‖x‖ = ‖r‖ + ‖a‖ < 1`.
+  Then `‖r‖ < 1`, so `r ≠ 1`, and `‖b‖ < 1` where `b := (1 - r)⁻¹ • a`. By hypothesis, `-b` is
+  quasiregular, so `1 - ↑b` is invertible in `Unitization 𝕜 A`. But then
+  `1 - x = (1 - r) • (1 - ↑b)` is invertible. -/
+  rw [hasSummableGeomSeries_iff_isUnit]
+  intro x hx₁
+  let (eq := hx) (r, a) := (ofLp x).toProd
+  have hra_norm : ‖r‖ + ‖a‖ < 1 := by simpa [hx, unitization_norm_def] using hx₁
+  have ha : ‖a‖ < ‖1 - r‖ := by linarith [norm_sub_norm_le 1 r, norm_one (α := 𝕜)]
+  have hr : 0 < ‖1 - r‖ := (norm_nonneg a).trans_lt ha
+  have hr₁ : 1 - r ≠ 0 := norm_pos_iff.mp hr
+  have key : IsQuasiregular (-((1 - r)⁻¹ • a)) :=
+    .of_norm_lt_one <| by rwa [norm_neg, norm_smul, norm_inv, inv_mul_lt_one₀ hr]
+  rw [← isUnit_map_iff (unitizationAlgEquiv 𝕜)]
+  convert key.isUnit' 𝕜 |>.smul <| Units.mk0 (1 - r) hr₁
+  ext <;> simp [hx, smul_inv_smul₀, hr₁]
 
 end WithLp

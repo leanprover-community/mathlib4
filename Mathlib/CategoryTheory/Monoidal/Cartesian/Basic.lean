@@ -130,6 +130,7 @@ lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g�
     tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pentagon (W X Y Z : C) :
     tensorHom ℬ (BinaryFan.associatorOfLimitCone ℬ W X Y).hom (𝟙 Z) ≫
         (BinaryFan.associatorOfLimitCone ℬ W (tensorObj ℬ X Y) Z).hom ≫
@@ -146,6 +147,7 @@ lemma pentagon (W X Y Z : C) :
   apply (ℬ _ _).isLimit.hom_ext
   rintro ⟨_ | _⟩ <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma triangle (X Y : C) :
     (BinaryFan.associatorOfLimitCone ℬ X 𝒯.cone.pt Y).hom ≫
         tensorHom ℬ (𝟙 X) (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt Y).isLimit).hom =
@@ -162,6 +164,7 @@ lemma rightUnitor_naturality (f : X₁ ⟶ X₂) :
       (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₁ 𝒯.cone.pt).isLimit).hom ≫ f := by
   simp [tensorHom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     tensorHom ℬ (tensorHom ℬ f₁ f₂) f₃ ≫ (BinaryFan.associatorOfLimitCone ℬ Y₁ Y₂ Y₃).hom =
       (BinaryFan.associatorOfLimitCone ℬ X₁ X₂ X₃).hom ≫ tensorHom ℬ f₁ (tensorHom ℬ f₂ f₃) := by
@@ -268,6 +271,14 @@ lemma lift_fst_snd {X Y : C} : lift (fst X Y) (snd X Y) = 𝟙 (X ⊗ Y) := by e
 lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
     lift (f ≫ fst _ _) (f ≫ snd _ _) = f := by
   cat_disch
+
+/-- The universal property of a cartesian `⊗` as an equivalence. -/
+@[simps]
+def liftEquiv {T X Y : C} : (T ⟶ X) × (T ⟶ Y) ≃ (T ⟶ X ⊗ Y) where
+  toFun f := lift f.1 f.2
+  invFun f := ⟨f ≫ fst _ _, f ≫ snd _ _⟩
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
@@ -454,10 +465,11 @@ lemma lift_braiding_inv {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
     lift f g ≫ (β_ Y X).inv = lift g f := by aesop
 
 -- See note [lower instance priority]
-instance (priority := low) toSymmetricCategory [BraidedCategory C] : SymmetricCategory C where
+instance (priority := low) toSymmetricCategory : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/
+@[instance_reducible]
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
@@ -477,6 +489,19 @@ instance : Subsingleton (SymmetricCategory C) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; congr; exact Subsingleton.elim _ _
 
 end BraidedCategory
+
+instance preservesMonomorphisms_tensorLeft (X : C) :
+    Functor.PreservesMonomorphisms (tensorLeft X) where
+  preserves f hf := {
+    right_cancellation _ _ w := by
+      apply hom_ext
+      · simpa using w =≫ fst _ _
+      · simpa [cancel_mono_assoc_iff] using w =≫ snd _ _ }
+
+instance preservesMonomorphisms_tensorRight (X : C) :
+    Functor.PreservesMonomorphisms (tensorRight X) :=
+  letI := BraidedCategory.ofCartesianMonoidalCategory (C := C)
+  Functor.PreservesMonomorphisms.of_iso (BraidedCategory.tensorLeftIsoTensorRight _)
 
 instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
@@ -613,6 +638,7 @@ theorem prodComparison_inv_natural_whiskerRight (f : A ⟶ A') [IsIso (prodCompa
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 lemma prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
@@ -623,6 +649,7 @@ lemma prodComparison_comp :
 lemma prodComparison_id :
     prodComparison (𝟭 C) A B = 𝟙 (A ⊗ B) := lift_fst_snd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product comparison morphism from `F(A ⊗ -)` to `FA ⊗ F-`, whose components are given by
 `prodComparison`. -/
 @[simps]
@@ -635,15 +662,18 @@ def prodComparisonNatTrans (A : C) :
       Functor.comp_map, curriedTensor_obj_map, Category.assoc, prodComparison_fst, whiskerLeft_fst,
       prodComparison_snd, prodComparison_snd_assoc, whiskerLeft_snd, ← F.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonNatTrans_comp :
     prodComparisonNatTrans (F ⋙ G) A = Functor.whiskerRight (prodComparisonNatTrans F A) G ≫
       Functor.whiskerLeft F (prodComparisonNatTrans G (F.obj A)) := by
   ext; simp [prodComparison_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma prodComparisonNatTrans_id :
     prodComparisonNatTrans (𝟭 C) A = 𝟙 _ := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product comparison morphism from `F(- ⊗ -)` to `F- ⊗ F-`, whose components are given by
 `prodComparison`. -/
 @[simps]
@@ -657,6 +687,7 @@ def prodComparisonBifunctorNatTrans :
 
 variable {E : Type u₂} [Category.{v₂} E] [CartesianMonoidalCategory E] (G : D ⥤ E)
 
+set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (F ⋙ G) =
     Functor.whiskerRight
       (prodComparisonBifunctorNatTrans F) ((Functor.whiskeringRight _ _ _).obj G) ≫
@@ -665,11 +696,12 @@ theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (
   ext; simp [prodComparison_comp]
 
 instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
-  letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
+  let : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
   apply NatIso.isIso_of_isIso_app
 
+set_option backward.defeqAttrib.useBackward true in
 instance [∀ A B, IsIso (prodComparison F A B)] : IsIso (prodComparisonBifunctorNatTrans F) := by
-  letI : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
+  let : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
     fun _ ↦ by dsimp; apply NatIso.isIso_of_isIso_app
   apply NatIso.isIso_of_isIso_app
 
@@ -704,6 +736,7 @@ instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A
 
 @[simp] lemma prodComparisonIso_id : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma prodComparisonIso_comp [PreservesLimit (pair A B) (F ⋙ G)]
     [PreservesLimit (pair (F.obj A) (F.obj B)) G] :
@@ -761,6 +794,7 @@ end prodComparison
 
 end CartesianMonoidalCategoryComparison
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
 -/
 noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :
@@ -773,6 +807,7 @@ open Limits
 
 variable {P : ObjectProperty C}
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/
@@ -850,6 +885,7 @@ omit [F.OplaxMonoidal] in
 
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
 the identity and composition of functors. -/
+@[instance_reducible]
 def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
   η := terminalComparison F
   δ X Y := prodComparison F X Y
@@ -888,6 +924,7 @@ lemma μ_fst (X Y : C) : μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) 
 lemma μ_snd (X Y : C) : μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc]
 lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := by
@@ -907,6 +944,7 @@ omit [F.Monoidal] in
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
+@[instance_reducible]
 noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Monoidal :=
   .ofOplaxMonoidal F
 
@@ -944,6 +982,7 @@ attribute [local instance] Functor.Monoidal.ofChosenFiniteProducts in
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
+@[instance_reducible]
 noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Braided where
   braided X Y := by rw [← cancel_mono (Monoidal.μIso _ _ _).inv]; ext <;> simp [← F.map_comp]
 
