@@ -220,7 +220,14 @@ public def runNF (e : Expr) (evalExpr : Expr → AtomM Simp.Result)
   let expr ← AtomM.run .reducible do
     if let mkApp2 rel lhs rhs := e then
       if rel.isAppOfArity ``Eq 1 || rel.isAppOfArity ``LE.le 2 || rel.isAppOfArity ``LT.lt 2 then
-        let lhs := (← evalExpr lhs).expr; let rhs := (← evalExpr rhs).expr
+        -- Allow `evalExpr` to fail on at most one of `lhs` and `rhs`.
+        let (lhs, rhs) ←
+          try
+            let lhs := (← evalExpr lhs).expr
+            let rhs ← try pure (← evalExpr rhs).expr catch _ => pure rhs
+            pure (lhs, rhs)
+          catch _ =>
+            pure (lhs, (← evalExpr rhs).expr)
         if ← isDefEq lhs rhs then
           if rel.isAppOfArity ``LT.lt 2 then
             return .const ``False []
