@@ -84,7 +84,7 @@ alias MeromorphicOn.codiscreteWithin_setOfPred_ne_zero :=
 
 @[deprecated (since := "2026-07-09")]
 alias MeromorphicOn.codiscreteWithin_setOf_ne_zero :=
-  MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
+  _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
 
 /-!
 ## Identity Principles
