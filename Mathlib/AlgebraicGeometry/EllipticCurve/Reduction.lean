@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 public import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
@@ -57,15 +57,17 @@ variable {K : Type*} [Field K] [Algebra R K]
 it has coefficients in the ring `R`. -/
 @[mk_iff]
 class IsIntegral (W : WeierstrassCurve K) : Prop where
-  integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
+  integral : ∃ W_int : WeierstrassCurve R, W = W_int⁄K
 
 /-- An integral model of an integral Weierstrass curve. -/
 noncomputable def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     WeierstrassCurve R :=
   hW.integral.choose
 
+variable (W : WeierstrassCurve K) [hW : IsIntegral R W]
+
 lemma baseChange_integralModel_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
-    (integralModel R W).baseChange K = W :=
+    (integralModel R W)⁄K = W :=
   hW.integral.choose_spec.symm
 
 lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
@@ -77,7 +79,7 @@ lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
     IsIntegral R W := by
   use ⟨h₁.choose, h₂.choose, h₃.choose, h₄.choose, h₆.choose⟩
   ext
-  all_goals simp only [map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
+  all_goals simp only [baseChange, map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
   · apply h₁.choose_spec.symm
   · apply h₂.choose_spec.symm
   · apply h₃.choose_spec.symm
@@ -86,76 +88,75 @@ lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
 
 lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
     ∃ r : R, algebraMap R K r = W.Δ := by
-  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
+  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int⁄K :=
     IsIntegral.integral
   use W_int.Δ
-  rw [hW_int, map_Δ]
+  rw [hW_int, baseChange, map_Δ]
 
 lemma integralModel_a₁_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₁ = W.a₁ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₂ = W.a₂ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₃_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₃ = W.a₃ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₄ = W.a₄ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_a₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).a₆ = W.a₆ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₂ = W.b₂ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₄ = W.b₄ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₆ = W.b₆ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_b₈_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).b₈ = W.b₈ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_c₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).c₄ = W.c₄ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_c₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).c₆ = W.c₆ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).Δ = W.Δ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
-  simp [integralModel]
+  simp [baseChange]
 
 variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 
 open ValuationRing
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_isIntegral (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegral R (C • W) := by
   let l₀ := [W.a₁, W.a₂, W.a₃, W.a₄, W.a₆]
@@ -190,7 +191,7 @@ theorem exists_isIntegral (W : WeierstrassCurve K) :
         inv_pow, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
       apply (Valuation.mem_integer_iff _ _).mpr
       simp only [map_mul, map_inv₀, map_pow, ha]
-      refine inv_mul_le_one_of_le₀ ?_ zero_le'
+      refine inv_mul_le_one_of_le₀ ?_ zero_le
       refine (hlmax _ (by simp [l₀, l])).trans ?_
     any_goals
       apply le_self_pow hlmax_ge_1.le
@@ -198,6 +199,51 @@ theorem exists_isIntegral (W : WeierstrassCurve K) :
     rfl
 
 end Integral
+
+section UIntegral
+
+open Polynomial
+
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {K : Type*} [Field K]
+  [Algebra R K] [IsFractionRing R K] {W W' : WeierstrassCurve K} [IsIntegral R W] [IsIntegral R W']
+  {CK : VariableChange K} (hCK : CK • W = W') {u : Rˣ} (hu : algebraMap R K u = CK.u)
+
+include hCK hu
+
+lemma r_integral_of_u_integral : ∃ r : R, algebraMap R K r = CK.r := by
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 4 - C (integralModel R W).b₄ * X ^ 2 -
+    C (u ^ 6 * (integralModel R W').b₆ + 2 * (integralModel R W).b₆) * X -
+    C ((integralModel R W).b₈ - u ^ 8 * (integralModel R W').b₈), by monicity!, ?_⟩
+  simp [map_ofNat, hu, ← hCK, integralModel_b₄_eq, integralModel_b₆_eq,
+    integralModel_b₈_eq, variableChange_b₆, variableChange_b₈]
+  ring1
+
+lemma s_integral_of_u_integral : ∃ s : R, algebraMap R K s = CK.s := by
+  rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C (integralModel R W).a₁ * X +
+    C (u ^ 2 * (integralModel R W').a₂ - (integralModel R W).a₂ - 3 * r), by monicity!, ?_⟩
+  simp [map_ofNat, hu, hr, ← hCK, integralModel_a₁_eq, integralModel_a₂_eq,
+    variableChange_a₂]
+  ring1
+
+lemma t_integral_of_u_integral : ∃ t : R, algebraMap R K t = CK.t := by
+  rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 +
+    C ((integralModel R W).a₃ + r * (integralModel R W).a₁) * X +
+    C (u ^ 6 * (integralModel R W').a₆ - (integralModel R W).a₆ - r * (integralModel R W).a₄
+      - r ^ 2 * (integralModel R W).a₂ - r ^ 3), by monicity!, ?_⟩
+  simp [hu, hr, ← hCK, integralModel_a₁_eq, integralModel_a₂_eq, integralModel_a₃_eq,
+    integralModel_a₄_eq, integralModel_a₆_eq, variableChange_a₆]
+  ring1
+
+/-- A variable change over the fraction field between integral Weierstrass equations descends to the
+base ring if its `u` coefficient descends to a unit of the base ring. -/
+theorem variableChange_integral_of_u_integral : ∃ CR : VariableChange R, CR.baseChange K = CK := by
+  rcases r_integral_of_u_integral hCK hu, s_integral_of_u_integral hCK hu,
+    t_integral_of_u_integral hCK hu with ⟨⟨r, hr⟩, ⟨s, hs⟩, ⟨t, ht⟩⟩
+  exact ⟨⟨u, r, s, t⟩, by ext <;> simpa⟩
+
+end UIntegral
 
 section Minimal
 
@@ -207,7 +253,7 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 open WithZero Multiplicative
 open IsDiscreteValuationRing IsDedekindDomain.HeightOneSpectrum
 
-open Classical in
+open scoped Classical in
 /-- The valuation of the discriminant of a Weierstrass curve `W`,
 which is at most 1 if `W` is integral. Zero otherwise. -/
 noncomputable def valuation_Δ_aux (W : WeierstrassCurve K) :
@@ -317,7 +363,7 @@ the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` 
 To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
 `(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
 @[mk_iff]
-class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) : Prop
     extends W.HasMultiplicativeReduction R where
   splitMultiplicativeReduction : letI I := W.integralModel R
     Splits <| .map (algebraMap R (ResidueField R)) <|

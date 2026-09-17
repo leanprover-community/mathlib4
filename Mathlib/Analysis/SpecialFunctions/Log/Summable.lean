@@ -20,7 +20,9 @@ public section
 
 variable {ι : Type*}
 
-open Filter Topology NNReal SummationFilter
+open Filter SummationFilter
+
+open scoped Topology
 
 namespace Complex
 variable {f : ι → ℂ} {a : ℂ}
@@ -40,7 +42,6 @@ lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (
     cexp (∑' i, log (f i)) = ∏' i, f i :=
   (hasProd_of_hasSum_log hfn hf.hasSum).tprod_eq.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
   apply (hf.norm.mul_left (3 / 2)).of_norm_bounded_eventually
@@ -174,8 +175,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   obtain ⟨r₁, hr₁, s₁, hs₁⟩ :=
     (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finsetProd
   obtain ⟨s₂, hs₂⟩ := prod_vanishing_of_summable_norm hf (show 0 < ε / (2 * r₁) by positivity)
-  simp only [unconditional, Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset,
-    Set.mem_preimage]
+  simp only [unconditional, Filter.mem_map, mem_atTop_sets, Set.mem_preimage]
   let s := s₁ ∪ s₂
   -- The idea here is that if `s` is a large enough finset, then the product over `s` is bounded
   -- by some `r`, and the product over finsets disjoint from `s` is within `ε / (2 * r)` of 1.
@@ -195,6 +195,11 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
       simp [s, sdiff_union_distrib, disjoint_iff_inter_eq_empty]
   · intro x hx y hy
     exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
+
+lemma multipliable_one_sub_of_summable [CompleteSpace R] (hf : Summable fun i ↦ ‖f i‖) :
+    Multipliable fun i ↦ (1 - f i) := by
+  have : Summable fun i ↦ ‖-f i‖ := by simpa using hf
+  simpa [← sub_eq_add_neg] using multipliable_one_add_of_summable this
 
 lemma summable_finsetProd_of_summable_norm [CompleteSpace R] (hf : Summable (fun i ↦ ‖f i‖)) :
     Summable (fun s ↦ ∏ i ∈ s, f i) :=

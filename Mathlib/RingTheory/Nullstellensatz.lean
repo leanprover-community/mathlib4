@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Nullstellensatz
+
 This file establishes a version of Hilbert's classical Nullstellensatz for `MvPolynomial`s.
 The main statement of the theorem is `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`.
 
@@ -102,11 +103,11 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → K) (p : MvPolynomial σ k) 
   ⟨fun h => h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
 
 instance {x : σ → K} : (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)).IsPrime := by
-  convert RingHom.ker_isPrime (aeval (R := k) x)
+  convert! RingHom.ker_isPrime (aeval (R := k) x)
   ext; simp
 
 instance {x : σ → K} : (vanishingIdeal K {x} : Ideal (MvPolynomial σ K)).IsMaximal := by
-  convert RingHom.ker_isMaximal_of_surjective (aeval (R := K) x) ?_
+  convert! RingHom.ker_isMaximal_of_surjective (aeval (R := K) x) ?_
   · ext; simp
   · intro z; use C z; simp
 

@@ -5,13 +5,12 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Order.RelClasses
 public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Bounded and unbounded sets
+
 We prove miscellaneous lemmas about bounded and unbounded sets. Many of these are just variations on
 the same ideas, or similar results with a few minor differences. The file is divided into these
 different general ideas.
@@ -44,42 +43,25 @@ theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := f
 /-! ### Alternate characterizations of unboundedness on orders -/
 
 
+@[to_dual unbounded_ge_of_forall_exists_gt]
 theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, a < b) :
     Unbounded (· ≤ ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
   ⟨b, hb, fun hba => hba.not_gt hb'⟩
 
+@[to_dual unbounded_ge_iff]
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
   simp only [Unbounded, not_le]
 
+@[to_dual unbounded_gt_of_forall_exists_ge]
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
     Unbounded (· < ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
   ⟨b, hb, fun hba => hba.not_ge hb'⟩
 
+@[to_dual unbounded_gt_iff]
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
   simp only [Unbounded, not_lt]
-
-theorem unbounded_ge_of_forall_exists_gt [Preorder α] (h : ∀ a, ∃ b ∈ s, b < a) :
-    Unbounded (· ≥ ·) s :=
-  @unbounded_le_of_forall_exists_lt αᵒᵈ _ _ h
-
-theorem unbounded_ge_iff [LinearOrder α] : Unbounded (· ≥ ·) s ↔ ∀ a, ∃ b ∈ s, b < a :=
-  ⟨fun h a =>
-    let ⟨b, hb, hba⟩ := h a
-    ⟨b, hb, lt_of_not_ge hba⟩,
-    unbounded_ge_of_forall_exists_gt⟩
-
-theorem unbounded_gt_of_forall_exists_ge [Preorder α] (h : ∀ a, ∃ b ∈ s, b ≤ a) :
-    Unbounded (· > ·) s := fun a =>
-  let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => not_le_of_gt hba hb'⟩
-
-theorem unbounded_gt_iff [LinearOrder α] : Unbounded (· > ·) s ↔ ∀ a, ∃ b ∈ s, b ≤ a :=
-  ⟨fun h a =>
-    let ⟨b, hb, hba⟩ := h a
-    ⟨b, hb, le_of_not_gt hba⟩,
-    unbounded_gt_of_forall_exists_ge⟩
 
 /-! ### Relation between boundedness by strict and nonstrict orders. -/
 
@@ -285,7 +267,7 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
-  convert @unbounded_le_inter_not_le _ s _ a
+  convert! @unbounded_le_inter_not_le _ s _ a
   exact lt_iff_not_ge
 
 theorem bounded_le_inter_le [LinearOrder α] (a : α) :
@@ -313,12 +295,12 @@ theorem unbounded_lt_inter_not_lt [SemilatticeSup α] (a : α) :
 
 theorem bounded_lt_inter_le [LinearOrder α] (a : α) :
     Bounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· < ·) s := by
-  convert @bounded_lt_inter_not_lt _ s _ a
+  convert! @bounded_lt_inter_not_lt _ s _ a
   exact not_lt.symm
 
 theorem unbounded_lt_inter_le [LinearOrder α] (a : α) :
     Unbounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Unbounded (· < ·) s := by
-  convert @unbounded_lt_inter_not_lt _ s _ a
+  convert! @unbounded_lt_inter_not_lt _ s _ a
   exact not_lt.symm
 
 theorem bounded_lt_inter_lt [LinearOrder α] [NoMaxOrder α] (a : α) :

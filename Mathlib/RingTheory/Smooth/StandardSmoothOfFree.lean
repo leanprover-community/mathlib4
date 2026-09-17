@@ -44,6 +44,7 @@ open KaehlerDifferential
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`, then `S`
 is `R`-standard smooth. -/
 theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
@@ -96,6 +97,7 @@ theorem Etale.iff_isStandardSmoothOfRelativeDimension_zero :
   refine ⟨inferInstance, ⟨Empty, Module.Basis.empty Ω[S⁄R], ?_⟩⟩
   simp [Set.range_subset_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- If `S` is `R`-smooth at a prime `p`, then `S` is `R`-standard-smooth in a neighbourhood of `p`:
 there exists a basic open `p ∈ D(f)` of `Spec S` such that `S[1/f]` is standard smooth. -/
@@ -107,7 +109,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
   · obtain ⟨g, hg, hsm⟩ := IsSmoothAt.exists_notMem_smooth R p
     have _ : (Ideal.map (algebraMap S (Localization.Away g)) p).IsPrime := by
       apply IsLocalization.isPrime_of_isPrime_disjoint (.powers g) _ _ ‹_›
-      rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)]
+      rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime]
     obtain ⟨g', hg', hstd⟩ := this (R := R) (p.map (algebraMap S (Localization.Away g))) hsm
     have : IsLocalization.Away (g * (IsLocalization.Away.sec g g').1) (Localization.Away g') :=
       .mul_of_associated _ _ g' <| IsLocalization.Away.associated_sec_fst g g'

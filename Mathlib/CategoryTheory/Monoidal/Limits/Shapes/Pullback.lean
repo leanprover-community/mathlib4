@@ -75,7 +75,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 variable [HasPushouts C]
   {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-  (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C}
+  (h : Y ⟶ W) {Q : C}
 
 variable {A B X Y Z W : C} {f : A ⟶ B} {g : X ⟶ Y}
 

@@ -23,7 +23,9 @@ collection of theorems is to show the equivalence of the different approaches.
 
 /-- The type of positive binary numbers.
 
-     13 = 1101(base 2) = bit1 (bit0 (bit1 one)) -/
+```
+13 = 1101(base 2) = bit1 (bit0 (bit1 one))
+``` -/
 inductive PosNum : Type
   | one : PosNum
   | bit1 : PosNum → PosNum
@@ -38,7 +40,9 @@ instance : Inhabited PosNum :=
 
 /-- The type of nonnegative binary numbers, using `PosNum`.
 
-     13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one))) -/
+```
+13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one)))
+``` -/
 inductive Num : Type
   | zero : Num
   | pos : PosNum → Num
@@ -55,8 +59,10 @@ instance : Inhabited Num :=
 
 /-- Representation of integers using trichotomy around zero.
 
-     13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one)))
-     -13 = -1101(base 2) = neg (bit1 (bit0 (bit1 one))) -/
+```
+13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one)))
+-13 = -1101(base 2) = neg (bit1 (bit0 (bit1 one)))
+``` -/
 inductive ZNum : Type
   | zero : ZNum
   | pos : PosNum → ZNum

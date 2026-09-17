@@ -26,7 +26,7 @@ variable {R : Type u}
 -- see Note [lower instance priority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
     [AddZeroClass R] [One R] [LE R] [CanonicallyOrderedAdd R] : ZeroLEOneClass R where
-  zero_le_one := zero_le _
+  zero_le_one := zero_le
 
 -- this holds more generally if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
@@ -40,7 +40,6 @@ namespace CanonicallyOrderedAdd
 instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring R]
     [LE R] [CanonicallyOrderedAdd R] : MulLeftMono R := by
   refine ⟨fun a b c h => ?_⟩
-  dsimp
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -69,7 +68,7 @@ protected theorem mul_pos [NoZeroDivisors R] {a b : R} :
     0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 
-lemma pow_pos [NoZeroDivisors R] {a : R} (ha : 0 < a) (n : ℕ) : 0 < a ^ n :=
+lemma pow_pos [IsReduced R] {a : R} (ha : 0 < a) (n : ℕ) : 0 < a ^ n :=
   pos_iff_ne_zero.2 <| pow_ne_zero _ ha.ne'
 
 protected lemma mul_lt_mul_of_lt_of_lt
@@ -79,8 +78,8 @@ protected lemma mul_lt_mul_of_lt_of_lt
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
   obtain rfl | hc := eq_zero_or_pos c
   · rw [mul_zero]
-    exact mul_pos ((zero_le _).trans_lt hab) hcd
-  · exact mul_lt_mul_of_pos' hab hcd hc ((zero_le _).trans_lt hab)
+    exact mul_pos hab.pos hcd
+  · exact mul_lt_mul_of_pos' hab hcd hc hab.pos
 
 end CanonicallyOrderedAdd
 

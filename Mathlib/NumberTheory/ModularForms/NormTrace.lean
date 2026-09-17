@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
 /-!
 # Norm and trace maps
@@ -13,6 +13,7 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne
 Given two subgroups `𝒢, ℋ` of `GL(2, ℝ)` with `𝒢.relindex ℋ ≠ 0` (i.e. `𝒢 ⊓ ℋ` has finite index
 in `ℋ`), we define a trace map from `ModularForm (𝒢 ⊓ ℋ) k` to `ModularForm ℋ k`.
 -/
+
 @[expose] public noncomputable section
 
 open UpperHalfPlane
@@ -58,7 +59,6 @@ protected def trace : SlashInvariantForm ℋ k where
     simpa [SlashAction.sum_slash, quotientFunc_smul f hh]
       using Equiv.sum_comp (MulAction.toPerm (_ : ℋ)) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
 protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
@@ -86,7 +86,7 @@ protected def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k 
     rintro rfl
     rw [SlashInvariantForm.trace, IsBoundedAtImInfty, Filter.BoundedAtFilter,
       SlashAction.sum_slash, Finset.sum_fn]
-    refine .sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f _).bdd_at_cusps' ?_ γ rfl)
+    refine .fun_sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f _).bdd_at_cusps' ?_ γ rfl)
     simpa using h.of_isFiniteRelIndex_conj hr
 
 /-- The trace of a cusp form, as a cusp form. -/
@@ -123,7 +123,7 @@ variable {f} in
 lemma ModularForm.norm_ne_zero [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k]
     (hf : (f : ℍ → ℂ) ≠ 0) : ModularForm.norm ℋ f ≠ 0 := by
   contrapose hf
-  rw [← DFunLike.coe_injective.eq_iff, coe_norm, coe_zero, prod_eq_zero_iff] at hf
+  rw [← DFunLike.coe_injective.eq_iff, coe_norm, FunLike.coe_zero, prod_eq_zero_iff] at hf
   · simpa [QuotientGroup.exists_mk] using hf
   · exact Quotient.forall.mpr fun r _ ↦ (translate f r.val⁻¹).holo'
 
@@ -158,7 +158,7 @@ private lemma ModularForm.eq_const_of_weight_zero₀ [𝒢.IsArithmetic] [𝒢.H
     simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk] using ⟨1, by simp⟩
   obtain rfl : c = 0 := by simpa [hc]
   -- So `f - f I` has zero norm, hence it's the zero form.
-  simp only [Function.const_zero, coe_eq_zero_iff, norm_eq_zero_iff, sub_eq_zero] at hc
+  simp only [Function.const_zero, FunLike.coe_zero_iff, norm_eq_zero_iff, sub_eq_zero] at hc
   exact ⟨f I, by rw [hc, ModularForm.coe_const, Function.const_apply]⟩
 
 lemma ModularForm.eq_const_of_weight_zero [𝒢.IsArithmetic] (f : ModularForm 𝒢 0) :

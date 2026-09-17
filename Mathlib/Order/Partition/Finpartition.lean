@@ -141,13 +141,13 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
       exact e.symm.map_rel_iff.mp this
-    · convert e.symm.map_rel_iff.mpr hxu
+    · convert! e.symm.map_rel_iff.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
   sup_parts := by simp [← P.sup_parts]
   bot_notMem := by
     rw [mem_map_equiv]
-    convert P.bot_notMem
+    convert! P.bot_notMem
     exact e.symm.map_bot
 
 @[simp]
@@ -194,6 +194,24 @@ theorem ne_bot {b : α} (hb : b ∈ P.parts) : b ≠ ⊥ := by
 
 protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
   P.supIndep.pairwiseDisjoint
+
+section Apply
+
+variable {β : Type*} {f : α → β}
+
+/-- The `sup` of a sup-bot-preserving map `f` over the parts of a `Finpartition` equals `f a`. -/
+theorem sup_parts_apply [SemilatticeSup β] [OrderBot β] (hf : ∀ x y, f (x ⊔ y) = f x ⊔ f y)
+    (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
+  (apply_sup_eq_sup_comp f hf hbot).symm.trans (congrArg f P.sup_parts)
+
+/-- Parts of a `Finpartition` are pairwise disjoint under an inf-bot-preserving map. -/
+theorem pairwiseDisjoint_apply [SemilatticeInf β] [OrderBot β] (hf : ∀ x y, f (x ⊓ y) = f x ⊓ f y)
+    (hbot : f ⊥ = ⊥) : (P.parts : Set α).PairwiseDisjoint f := by
+  intro _ hx _ hy hxy
+  have := (P.disjoint hx hy hxy).eq_bot
+  simp_all [disjoint_iff, ← hf]
+
+end Apply
 
 variable {P}
 
@@ -418,7 +436,7 @@ instance : SemilatticeInf (Finpartition a) :=
 def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
   parts := (P.parts.image (· ⊓ b)).erase ⊥
   supIndep := supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
-    simp only [coe_erase, coe_image, Set.mem_diff, Set.mem_image, Set.mem_singleton_iff] at hx hy
+    simp only [coe_erase, coe_image, Set.mem_sdiff, Set.mem_image, Set.mem_singleton_iff] at hx hy
     obtain ⟨⟨px, hpx, rfl⟩, _⟩ := hx
     obtain ⟨⟨py, hpy, rfl⟩, _⟩ := hy
     simpa [Function.onFun, id_eq]
@@ -428,6 +446,39 @@ def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
     have : P.parts.sup (fun x => x) = a := P.sup_parts
     rw [this, inf_eq_right.mpr hb]
   bot_notMem := notMem_erase _ _
+
+@[simp]
+theorem parts_restrict (P : Finpartition a) (hb : b ≤ a) :
+    (P.restrict hb).parts = (P.parts.image (· ⊓ b)).erase ⊥ :=
+  rfl
+
+@[gcongr]
+theorem restrict_mono {P Q : Finpartition a} (hb : b ≤ a) (hPQ : P ≤ Q) :
+    P.restrict hb ≤ Q.restrict hb := by
+  intro x hx
+  simp_rw [parts_restrict, mem_erase, mem_image] at hx ⊢
+  obtain ⟨h, x, hx, rfl⟩ := hx
+  obtain ⟨y, hy, hxy⟩ := hPQ hx
+  exact ⟨y ⊓ b, ⟨ne_bot_of_le_ne_bot h (by gcongr), y, hy, rfl⟩, by gcongr⟩
+
+@[simp]
+theorem restrict_top (hb : b ≤ a) : restrict ⊤ hb = ⊤ := by
+  simp_rw [Top.top]
+  rcases eq_or_ne b ⊥ with rfl | hb'
+  · exact Subsingleton.elim ..
+  rw [dite_eq_right (ne_bot_of_le_ne_bot hb' hb), dite_eq_right hb']
+  ext1
+  simp_rw [parts_restrict, indiscrete_parts, image_singleton, inf_eq_right.mpr hb,
+    erase_eq_of_notMem (mem_singleton.not.mpr hb'.symm)]
+
+theorem restrict_inf (P Q : Finpartition a) (hb : b ≤ a) :
+    (P ⊓ Q).restrict hb = P.restrict hb ⊓ Q.restrict hb := by
+  refine le_antisymm (Monotone.map_inf_le (fun _ _ => restrict_mono hb) _ _) (fun x => ?_)
+  simp only [parts_inf, parts_restrict, mem_erase, mem_image, mem_product, Prod.exists]
+  rintro ⟨h, -, -, ⟨⟨-, y, hy, rfl⟩, ⟨-, z, hz, rfl⟩⟩, rfl⟩
+  exact ⟨y ⊓ z ⊓ b, ⟨by ac_nf at h ⊢, y ⊓ z,
+    ⟨ne_bot_of_le_ne_bot h <| inf_le_inf inf_le_left inf_le_left, y, z, ⟨hy, hz⟩, rfl⟩, rfl⟩,
+    by ac_nf⟩
 
 /-- The sum of a set-valued function over restricted partition parts equals the sum over original
 parts with `f (· ⊓ b)`, provided `f ⊥ = 0` (so bottom terms don't contribute). -/
@@ -445,7 +496,7 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
   have hz : ∑ x ∈ P.parts.filter (¬ · ⊓ b ≠ ⊥), f (x ⊓ b) = 0 := Finset.sum_eq_zero fun x hx => by
     simp only [ne_eq, Decidable.not_not, Finset.mem_filter] at hx
     rw [hx.2, hf]
-  simp only [restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
+  simp only [parts_restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
     Finset.sum_image hinj, add_zero]
 
 /-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
@@ -739,7 +790,7 @@ lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.1,
   simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
 theorem sum_card_parts : ∑ i ∈ P.parts, #i = #s := by
-  convert congr_arg Finset.card P.biUnion_parts
+  convert! congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl
 
