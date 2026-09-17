@@ -301,17 +301,17 @@ theorem card_ker_mul_card_of_surjective (hf : Function.Surjective f) :
   rw [← card_ker_mul_card_range f,  MonoidHom.range_eq_top.mpr hf, Nat.card_congr topEquiv.toEquiv]
 
 @[to_additive]
-theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
+theorem card_dvd_of_surjective (hf : Function.Surjective f) :
     Nat.card G' ∣ Nat.card G :=
   Dvd.intro_left (Nat.card f.ker) (card_ker_mul_card_of_surjective hf)
 
 @[to_additive]
 theorem card_range_dvd (f : G →* G') : Nat.card f.range ∣ Nat.card G :=
-  card_dvd_of_surjective f.rangeRestrict f.rangeRestrict_surjective
+  card_dvd_of_surjective f.rangeRestrict_surjective
 
 @[to_additive]
 theorem card_map_dvd (f : G →* G') : Nat.card (H.map f) ∣ Nat.card H :=
-  card_dvd_of_surjective (f.subgroupMap H) (f.subgroupMap_surjective H)
+  card_dvd_of_surjective (f.subgroupMap_surjective H)
 
 @[to_additive]
 theorem index_map (f : G →* G') :
@@ -319,7 +319,7 @@ theorem index_map (f : G →* G') :
   rw [← comap_map_eq, index_comap, relIndex_mul_index (H.map_le_range f)]
 
 @[to_additive]
-theorem index_map_dvd {f : G →* G'} (hf : Function.Surjective f) :
+theorem index_map_dvd (hf : Function.Surjective f) :
     (H.map f).index ∣ H.index := by
   rw [index_map, f.range_eq_top_of_surjective hf, index_top, mul_one]
   exact index_dvd_of_le le_sup_left
@@ -343,7 +343,7 @@ theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.inde
   index_map_of_bijective e.bijective H
 
 @[to_additive]
-theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
+theorem index_map_of_injective (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
   rw [H.index_map, f.ker_eq_bot hf, sup_bot_eq]
 
