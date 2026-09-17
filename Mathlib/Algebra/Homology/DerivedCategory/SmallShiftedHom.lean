@@ -40,7 +40,7 @@ open DerivedCategory
 
 variable [HasDerivedCategory C]
 
-/-- This is the morphism `Q.obj K ⟶ (Q.obj L)⟦n⟧` in the derived cateogry that is
+/-- This is the morphism `Q.obj K ⟶ (Q.obj L)⟦n⟧` in the derived category that is
 attached to a class in `CohomologyClass K L n`. -/
 noncomputable def toShiftedHom (x : CohomologyClass K L n) : Q.obj K ⟶ (Q.obj L)⟦n⟧ :=
   Quotient.lift (fun y ↦ ShiftedHom.map (Cocycle.equivHomShift.symm y) Q) (fun y₁ y₂ h ↦ by
