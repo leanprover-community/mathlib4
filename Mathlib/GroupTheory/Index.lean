@@ -341,8 +341,7 @@ theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.inde
   index_map_of_bijective e.bijective H
 
 @[to_additive]
-theorem index_map_of_injective (hf : Function.Injective f) :
-    (H.map f).index = H.index * f.range.index := by
+theorem index_map_of_injective (hf : Injective f) : (H.map f).index = H.index * f.range.index := by
   rw [H.index_map, f.ker_eq_bot hf, sup_bot_eq]
 
 @[to_additive]
