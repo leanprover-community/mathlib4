@@ -93,7 +93,7 @@ theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = .mk r hr :=
   NNReal.eq <| norm_of_nonneg hr
 
 lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
-  simp [enorm, nnnorm_of_nonneg hr, ENNReal.ofReal, toNNReal, hr]
+  simp [enorm, nnnorm_of_nonneg hr, ENNReal.ofReal, toNNReal_of_nonneg hr]
 
 lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ := by
   simp [Real.enorm_of_nonneg, ha]

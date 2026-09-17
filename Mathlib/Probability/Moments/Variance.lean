@@ -400,7 +400,7 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
   rw [ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hc.ne.symm), hX.ofReal_variance_eq]
   convert! @meas_ge_le_evariance_div_sq _ _ _ _ hX.aestronglyMeasurable c.toNNReal
     (by simp [hc]) using 1
-  · simp
+  · simp [Real.coe_toNNReal']
   · rw [ENNReal.ofReal_pow hc.le]
     rfl
 

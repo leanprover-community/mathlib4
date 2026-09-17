@@ -155,13 +155,13 @@ lemma eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
     (Ideal.map_mono h₁) (by
       rw [← Ideal.under_under (B := S), ← Ideal.under_under (A := R) (B := S) (C := S ⧸ _)]
       dsimp [Ideal.under] at h₂ ⊢
-      simp [Ideal.map_comap_le]
-      simp [Ideal.map_comap_le, ← h₂])
+      simp [sup_of_le_right, Ideal.map_comap_le]
+      simp [sup_of_le_right, Ideal.map_comap_le, ← h₂])
   replace this := (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm.trans
     congr($(this).comap _)
   simp [Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective,
-    ← RingHom.ker_eq_comap_bot, Ideal.map_comap_le] at this
-  simpa [Ideal.map_comap_le, ← h₂] using this
+    ← RingHom.ker_eq_comap_bot, sup_of_le_left, Ideal.map_comap_le] at this
+  simpa [sup_of_le_left, Ideal.map_comap_le, ← h₂] using this
 
 open _root_.TensorProduct in
 /-- Use `Algebra.QuasiFiniteAt.baseChange` instead for `Algebra.QuasiFiniteAt R p`. -/
@@ -223,7 +223,7 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
   apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
   rw [Ideal.comap_comap, Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective]
   refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm
-  simp [← RingHom.ker_eq_comap_bot, Ideal.map_comap_le]
+  simp [← RingHom.ker_eq_comap_bot, sup_of_le_left, Ideal.map_comap_le]
 
 /-- Use `Algebra.QuasiFinite.of_quasiFiniteAt_residueField` instead
 for `Algebra.QuasiFiniteAt R q`. -/

@@ -864,7 +864,7 @@ lemma stoppedProcess_div [Div β] :
 
 @[simp] lemma stoppedProcess_const_bot [OrderBot ι] :
     stoppedProcess u (fun _ ↦ ⊥) = fun _ ↦ u ⊥ := by
-  ext; simp [stoppedProcess, ← WithTop.coe_bot]
+  ext; simp_rw [stoppedProcess, inf_bot_eq, ← WithTop.coe_bot, untopD_coe]
 
 @[simp] lemma stoppedProcess_const_top : stoppedProcess u (fun _ ↦ ⊤) = u := by
   ext; simp [stoppedProcess]
@@ -913,7 +913,7 @@ theorem stoppedProcess_stoppedProcess :
   · simp [hσ]
   by_cases hστ : σ ω ≤ τ ω
   · rw [min_eq_left, untopA_eq_untop coe_ne_top]
-    · simp [hστ]
+    · simp [min_eq_left hστ]
     · refine le_trans ?_ hστ
       simp [untopA_eq_untop]
   · nth_rewrite 2 [untopA_eq_untop]
@@ -925,10 +925,10 @@ theorem stoppedProcess_stoppedProcess' :
   rw [stoppedProcess_stoppedProcess]; rfl
 
 theorem stoppedProcess_stoppedProcess_of_le_right (h : σ ≤ τ) :
-    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u σ := by simp [h]
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u σ := by simp [inf_of_le_left h]
 
 theorem stoppedProcess_stoppedProcess_of_le_left (h : τ ≤ σ) :
-    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u τ := by simp [h]
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u τ := by simp [inf_of_le_right h]
 
 section Progressive
 
@@ -991,10 +991,7 @@ theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
   refine h.comp h_meas fun i ω ↦ ?_
   cases τ ω with
   | top => simp
-  | coe t =>
-    rcases le_total i t with h_it | h_ti
-    · simp [(mod_cast h_it : (i : WithTop ι) ≤ t)]
-    · simpa [(mod_cast h_ti : t ≤ (i : WithTop ι))]
+  | coe t => simp [← coe_inf]
 
 @[deprecated (since := "2026-04-24")]
 alias ProgMeasurable.stoppedProcess := IsStronglyProgressive.stoppedProcess

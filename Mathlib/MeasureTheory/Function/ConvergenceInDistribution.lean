@@ -325,7 +325,7 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
   · suffices TendstoInMeasure μ'' (fun n ω ↦ ((0 : E), Y n ω - c)) l 0 by
       convert! this with n ω
       simp
-    simpa [tendstoInMeasure_iff_norm] using hY
+    simpa [max_eq_right, tendstoInMeasure_iff_norm] using hY
 
 /-- **Slutsky's theorem** for a continuous function: if `X n` converges in distribution to `Z`,
 `Y n` converges in probability to a constant `c`, and `g` is a continuous function, then

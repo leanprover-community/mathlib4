@@ -441,24 +441,15 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
     · obtain ⟨z₂, z₂lt, h₂⟩ : ∃ z₂ < g x, Ioc z₂ (g x) ⊆ v :=
         exists_Ioc_subset_of_mem_nhds (v_open.mem_nhds xv) hx₂
       filter_upwards [hf z₁ z₁lt, hg z₂ z₂lt] with z h₁z h₂z
-      have A1 : min (f z) (f x) ∈ u := by
-        by_cases! H : f z ≤ f x
-        · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [H.le]
-      have A2 : min (g z) (g x) ∈ v := by
-        by_cases! H : g z ≤ g x
-        · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [H.le]
+      have A1 : min (f z) (f x) ∈ u := by grind
+      have A2 : min (g z) (g x) ∈ v := by grind
       have : (min (f z) (f x), min (g z) (g x)) ∈ u ×ˢ v := ⟨A1, A2⟩
       calc
         y < min (f z) (f x) + min (g z) (g x) := h this
         _ ≤ f z + g z := add_le_add (min_le_left _ _) (min_le_left _ _)
     · simp only [not_exists, not_lt] at hx₂
       filter_upwards [hf z₁ z₁lt] with z h₁z
-      have A1 : min (f z) (f x) ∈ u := by
-        by_cases! H : f z ≤ f x
-        · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [H.le]
+      have A1 : min (f z) (f x) ∈ u := by grind
       have : (min (f z) (f x), g x) ∈ u ×ˢ v := ⟨A1, xv⟩
       calc
         y < min (f z) (f x) + g x := h this
@@ -468,10 +459,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
     · obtain ⟨z₂, z₂lt, h₂⟩ : ∃ z₂ < g x, Ioc z₂ (g x) ⊆ v :=
         exists_Ioc_subset_of_mem_nhds (v_open.mem_nhds xv) hx₂
       filter_upwards [hg z₂ z₂lt] with z h₂z
-      have A2 : min (g z) (g x) ∈ v := by
-        by_cases! H : g z ≤ g x
-        · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [H.le] using h₂ ⟨z₂lt, le_rfl⟩
+      have A2 : min (g z) (g x) ∈ v := by grind
       have : (f x, min (g z) (g x)) ∈ u ×ˢ v := ⟨xu, A2⟩
       calc
         y < f x + min (g z) (g x) := h this

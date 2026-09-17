@@ -219,10 +219,10 @@ variable [Monoid α] [LinearOrder α] [CanonicallyOrderedMul α]
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
   rcases le_total a b with hb | hb
-  · simp [hb, le_mul_right]
+  · rw [inf_of_le_left hb, inf_of_le_left (le_mul_right hb), inf_of_le_left le_self_mul]
   · rcases le_total a c with hc | hc
-    · simp [hc, le_mul_left]
-    · simp [hb, hc]
+    · rw [inf_of_le_left hc, inf_of_le_left (le_mul_left hc), inf_of_le_left le_mul_self]
+    · rw [inf_of_le_right hb, inf_of_le_right hc]
 
 @[to_additive]
 theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) c := by

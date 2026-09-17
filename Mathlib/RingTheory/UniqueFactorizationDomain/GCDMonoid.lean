@@ -41,8 +41,8 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMonoid
     rw [← mk_dvd_mk, Associates.quot_out, congr_fun₂ dvd_eq_le, le_inf_iff,
       mk_le_mk_iff_dvd, mk_le_mk_iff_dvd]
     exact ⟨hac, hab⟩
-  lcm_zero_left a := by simp
-  lcm_zero_right a := by simp
+  lcm_zero_left a := by simp [sup_of_le_left]
+  lcm_zero_right a := by simp [sup_of_le_right]
   gcd_mul_lcm a b := by
     rw [← mk_eq_mk_iff_associated, ← Associates.mk_mul_mk, ← associated_iff_eq, Associates.quot_out,
       Associates.quot_out, mul_comm, sup_mul_inf, Associates.mk_mul_mk]

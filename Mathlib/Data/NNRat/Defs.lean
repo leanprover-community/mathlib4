@@ -110,6 +110,7 @@ lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq�
 def _root_.Rat.toNNRat (q : ℚ) : ℚ≥0 :=
   ⟨max q 0, le_max_right _ _⟩
 
+@[simp]
 theorem _root_.Rat.coe_toNNRat (q : ℚ) (hq : 0 ≤ q) : (q.toNNRat : ℚ) = q :=
   max_eq_left hq
 
@@ -247,15 +248,17 @@ namespace Rat
 
 variable {p q : ℚ}
 
+theorem coe_toNNRat' (q : ℚ) : (q.toNNRat : ℚ) = max q 0 :=
+  rfl
+
 @[simp]
 theorem toNNRat_zero : toNNRat 0 = 0 := rfl
 
 @[simp]
 theorem toNNRat_one : toNNRat 1 = 1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem toNNRat_pos : 0 < toNNRat q ↔ 0 < q := by simp [toNNRat, ← coe_lt_coe]
+theorem toNNRat_pos : 0 < toNNRat q ↔ 0 < q := by simp [coe_toNNRat', ← coe_lt_coe]
 
 @[simp]
 theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
@@ -263,15 +266,12 @@ theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
 
 alias ⟨_, toNNRat_of_nonpos⟩ := toNNRat_eq_zero
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
 theorem toNNRat_le_toNNRat_iff (hp : 0 ≤ p) : toNNRat q ≤ toNNRat p ↔ q ≤ p := by
-  simp [← coe_le_coe, toNNRat, hp]
+  grind [← coe_le_coe, coe_toNNRat']
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_lt_toNNRat_iff' : toNNRat q < toNNRat p ↔ q < p ∧ 0 < p := by
-  simp [← coe_lt_coe, toNNRat]
+  simp [← coe_lt_coe, coe_toNNRat']
 
 theorem toNNRat_lt_toNNRat_iff (h : 0 < p) : toNNRat q < toNNRat p ↔ q < p :=
   toNNRat_lt_toNNRat_iff'.trans (and_iff_left h)
@@ -279,14 +279,14 @@ theorem toNNRat_lt_toNNRat_iff (h : 0 < p) : toNNRat q < toNNRat p ↔ q < p :=
 theorem toNNRat_lt_toNNRat_iff_of_nonneg (hq : 0 ≤ q) : toNNRat q < toNNRat p ↔ q < p :=
   toNNRat_lt_toNNRat_iff'.trans ⟨And.left, fun h ↦ ⟨h, hq.trans_lt h⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem toNNRat_add (hq : 0 ≤ q) (hp : 0 ≤ p) : toNNRat (q + p) = toNNRat q + toNNRat p :=
-  NNRat.ext <| by simp [toNNRat, hq, hp, add_nonneg]
+theorem toNNRat_add (hq : 0 ≤ q) (hp : 0 ≤ p) : toNNRat (q + p) = toNNRat q + toNNRat p := by
+  ext; push_cast; simp [coe_toNNRat, hq, hp, add_nonneg]
 
 theorem toNNRat_add_le : toNNRat (q + p) ≤ toNNRat q + toNNRat p :=
   coe_le_coe.1 <| max_le (add_le_add (le_max_left _ _) (le_max_left _ _)) <| coe_nonneg _
 
+@[simp]
 theorem toNNRat_le_iff_le_coe {p : ℚ≥0} : toNNRat q ≤ p ↔ q ≤ ↑p :=
   NNRat.gi.gc q p
 
@@ -303,10 +303,9 @@ theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q
 theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
-  · ext; simp [toNNRat, hp, hq, mul_nonneg]
+  · ext; simp [Rat.coe_toNNRat, hp, hq, mul_nonneg]
   · have hpq := mul_nonpos_of_nonneg_of_nonpos hp hq
     rw [toNNRat_eq_zero.2 hq, toNNRat_eq_zero.2 hpq, mul_zero]
 

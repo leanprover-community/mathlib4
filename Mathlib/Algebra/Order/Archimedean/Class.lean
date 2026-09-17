@@ -368,11 +368,13 @@ theorem min_le_mk_div (a b : M) : min (mk a) (mk b) ≤ mk (a / b) := by
 
 @[to_additive]
 theorem mk_left_le_mk_mul (hab : mk a ≤ mk b) : mk a ≤ mk (a * b) := by
-  simpa [hab] using min_le_mk_mul (a := a) (b := b)
+  grw [← min_le_mk_mul]
+  simp [hab]
 
 @[to_additive]
 theorem mk_right_le_mk_mul (hba : mk b ≤ mk a) : mk b ≤ mk (a * b) := by
-  simpa [hba] using min_le_mk_mul (a := a) (b := b)
+  grw [← min_le_mk_mul]
+  simp [hba]
 
 @[to_additive]
 theorem mk_left_le_mk_div (hab : mk a ≤ mk b) : mk a ≤ mk (a / b) := by

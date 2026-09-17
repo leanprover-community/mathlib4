@@ -62,7 +62,7 @@ theorem intervalIntegrable_sqrt_one_sub_sq_inv :
     IntervalIntegrable (fun x ↦ √(1 - x ^ 2)⁻¹) volume (-1) 1 := by
   rw [intervalIntegrable_iff]
   refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
-  simpa using! (hasDerivAt_arccos (by aesop) (by aesop)).neg
+  simpa using! (hasDerivAt_arccos (by grind) (by grind)).neg
 
 theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
     Integrable f measureT := by
@@ -86,7 +86,7 @@ theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :
     · simp_rw [Function.comp_apply]
       exact integral_congr <| fun x hx => by simp [cos_arccos (x := x) (by aesop) (by aesop)]
     · fun_prop
-    · exact fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop))
+    · exact fun x hx ↦ (hasDerivAt_arccos (by grind) (by grind))
     · simp
   _ = ∫ θ in 0..π, f (cos θ) := by simp
 

@@ -193,9 +193,8 @@ variable [Fintype ι] [∀ i, CStarRing (R i)]
 instance _root_.Prod.cstarRing : CStarRing (R₁ × R₂) where
   norm_mul_self_le x := by
     dsimp only [norm]
-    simp only [Prod.fst_mul, Prod.fst_star, Prod.snd_mul, Prod.snd_star, norm_star_mul_self, ← sq]
-    rw [le_sup_iff]
-    rcases le_total ‖x.fst‖ ‖x.snd‖ with (h | h) <;> simp [h]
+    simp only [Prod.fst_mul, Prod.fst_star, Prod.snd_mul, Prod.snd_star, norm_star_mul_self]
+    grind
 
 instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
   norm_mul_self_le x := by

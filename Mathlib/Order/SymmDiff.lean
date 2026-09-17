@@ -158,7 +158,7 @@ theorem symmDiff_sdiff : a ∆ b \ c = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) := by
 @[to_dual (attr := simp) sup_himp_bihimp]
 theorem symmDiff_sdiff_inf : a ∆ b \ (a ⊓ b) = a ∆ b := by
   rw [symmDiff_sdiff]
-  simp [symmDiff]
+  simp [symmDiff, sup_of_le_left]
 
 @[to_dual (attr := simp)]
 theorem symmDiff_sdiff_eq_sup : a ∆ (b \ a) = a ⊔ b := by
