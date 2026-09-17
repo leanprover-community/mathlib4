@@ -24,11 +24,6 @@ This file defines Carmichael numbers and proves Korselt's criterion about them.
 * `Nat.isCarmichael_iff_korselt`: Korselt's criterion for Carmichael numbers
 * `Nat.isCarmichael_561`: `561` is a Carmichael number
 
-## TODO
-
-* Prove (in a computationally efficient manner) that there are no Carmichael numbers
-  less than `561`.
-
 ## References
 
 https://en.wikipedia.org/wiki/Carmichael_number
@@ -174,14 +169,14 @@ theorem isCarmichael_1105 : IsCarmichael 1105 := by
   simp [isCarmichael_iff_korselt_primeFactorsList]
   norm_num
 
+
 /-- Small primes up to 37, sufficient to witness Korselt divisibility failure for candidates. -/
 def smallPrimes : List ℕ := (List.range 38).filter (fun p => decide p.Prime)
 
 lemma mem_smallPrimes_prime {p : ℕ} (h : p ∈ smallPrimes) : p.Prime :=
   of_decide_eq_true (List.mem_filter.mp h).2
 
-/-- Computable certificate that 
- is not a Carmichael number. -/
+/-- Computable certificate that `n` is not a Carmichael number. -/
 def isNotCarmichael (n : ℕ) : Bool :=
   if n ≤ 2 then true
   else if n % 2 = 0 then true
@@ -193,8 +188,7 @@ def isNotCarmichael (n : ℕ) : Bool :=
   ) then true
   else decide n.Prime
 
-/-- Soundness of isNotCarmichael: if certified, 
- is not Carmichael. -/
+/-- Soundness of `isNotCarmichael`: if certified, `n` is not Carmichael. -/
 theorem not_isCarmichael_of_dec {n : ℕ} (h : isNotCarmichael n = true) : ¬ n.IsCarmichael := by
   intro hc
   unfold isNotCarmichael at h
@@ -220,22 +214,18 @@ theorem not_isCarmichael_of_dec {n : ℕ} (h : isNotCarmichael n = true) : ¬ n.
         (Nat.dvd_iff_mod_eq_zero.mp (hkorselt (n / p) hq_prime (Nat.div_dvd_of_dvd hp_dvd)))
   · exact hc.2.1 (of_decide_eq_true h)
 
-/-- Bounded verifier checking that no natural number below N is Carmichael. -/
+/-- Bounded verifier checking that no natural number below `N` is Carmichael. -/
 def checkCarmichaelBound (N : ℕ) : Bool := (List.range N).all isNotCarmichael
-
 theorem checkCarmichaelBound_sound {N : ℕ} (h : checkCarmichaelBound N = true) :
     ∀ n < N, ¬ n.IsCarmichael := fun n hn =>
   not_isCarmichael_of_dec ((List.all_eq_true.mp h) n (List.mem_range.mpr hn))
-
 set_option maxRecDepth 10000 in
 /-- There are no Carmichael numbers strictly less than 561. -/
 theorem not_isCarmichael_of_lt_561 {n : ℕ} (hn : n < 561) : ¬ n.IsCarmichael :=
   checkCarmichaelBound_sound (by decide) n hn
-
 /-- 561 is the minimal Carmichael number. -/
 theorem isCarmichael_min {n : ℕ} (hn : n.IsCarmichael) : 561 ≤ n :=
   not_lt.mp (not_isCarmichael_of_lt_561 · hn)
-
 /-- Any number with at most 2 prime factors is not Carmichael. -/
 theorem not_isCarmichael_of_card_primeFactors_le_two {n : ℕ} (h : n.primeFactors.card ≤ 2) :
     ¬ n.IsCarmichael := fun hc => by have := hc.three_le_card_primeFactors; omega
