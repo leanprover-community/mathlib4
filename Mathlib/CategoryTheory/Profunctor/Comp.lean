@@ -254,7 +254,6 @@ lemma whiskerRight_id {P Q : Profunctor.{u} C D} (f : P ⟶ Q) :
   ext _ _ ⟨_, _, g⟩
   simp [chosenCoend.map_apply]
 
-
 end RightUnitor
 
 section Associator
