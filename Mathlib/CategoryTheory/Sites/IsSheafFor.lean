@@ -811,7 +811,7 @@ def Arrows.toCompatible (s : P.obj (op B)) :
   property i j Z gi gj h := by
     simp [← FunctorToTypes.map_comp_apply, ← op_comp, h]
 
-theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
+theorem isSheafFor_ofArrows_iff_bijective_toCompatible :
     IsSheafFor P (ofArrows X π) ↔
       Function.Bijective (Arrows.toCompatible P π) := by
   rw [isSheafFor_arrows_iff]
@@ -826,6 +826,10 @@ theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
     dsimp at hy
     subst hy
     exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
+
+@[deprecated (since := "2026-09-17")]
+alias isSheafFor_ofArrows_iff_bijective_toCompabible :=
+  isSheafFor_ofArrows_iff_bijective_toCompatible
 
 @[simp]
 lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
@@ -844,7 +848,7 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
         simp only [Category.assoc] at h
         exact s.property _ _ _ _ _ h⟩ }
   simp only [this, ← isSheafFor_iff_generate,
-    isSheafFor_ofArrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff',
+    isSheafFor_ofArrows_iff_bijective_toCompatible, ← e.bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (P.mapIso (asIso f).symm.op).toEquiv.bijective]
   convert Iff.rfl using 2
   ext
@@ -874,7 +878,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
       invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
           (by simp only [← Functor.map_comp, h])⟩ }
-  simp only [isSheafFor_ofArrows_iff_bijective_toCompabible,
+  simp only [isSheafFor_ofArrows_iff_bijective_toCompatible,
     ← e.bijective.of_comp_iff']
   rfl
 

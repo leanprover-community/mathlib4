@@ -95,20 +95,20 @@ class MonadNormalizeNaturality (m : Type → Type) where
 
 open MonadNormalizeNaturality
 
-variable [MonadCoherehnceHom (CoherenceM ρ)] [MonadNormalizeNaturality (CoherenceM ρ)]
+variable [MonadCoherenceHom (CoherenceM ρ)] [MonadNormalizeNaturality (CoherenceM ρ)]
 
 /-- Meta version of `CategoryTheory.FreeBicategory.normalize_naturality`. -/
 partial def naturality (nm : Name) (p : NormalizedHom) (η : Mor₂Iso) : CoherenceM ρ Expr := do
   let result ← match η with
   | .of _ => throwError m!"could not find a structural isomorphism, but {η.e}"
   | .coherenceComp _ _ _ _ _ α η θ => withTraceNode nm (fun _ => return m!"monoidalComp") do
-    let α ← MonadCoherehnceHom.unfoldM α
+    let α ← MonadCoherenceHom.unfoldM α
     let αθ ← comp₂M α θ
     let ηαθ ← comp₂M η αθ
     naturality nm p ηαθ
   | .structuralAtom η => match η with
     | .coherenceHom α => withTraceNode nm (fun _ => return m!"coherenceHom") do
-      let α ← MonadCoherehnceHom.unfoldM α
+      let α ← MonadCoherenceHom.unfoldM α
       naturality nm p α
     | .associator _ f g h => withTraceNode nm (fun _ => return m!"associator") do
       let ⟨pf, η_f⟩ ← normalize p f
@@ -171,7 +171,7 @@ export MkEqOfNaturality (mkEqOfNaturality)
 associators, unitors, and identities. -/
 def pureCoherence (ρ : Type) [Context ρ] [MkMor₂ (CoherenceM ρ)]
     [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
-    [MonadCoherehnceHom (CoherenceM ρ)] [MonadNormalizeNaturality (CoherenceM ρ)]
+    [MonadCoherenceHom (CoherenceM ρ)] [MonadNormalizeNaturality (CoherenceM ρ)]
     [MkEqOfNaturality (CoherenceM ρ)]
     (nm : Name) (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do

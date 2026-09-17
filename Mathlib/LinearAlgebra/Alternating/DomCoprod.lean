@@ -181,8 +181,8 @@ end AlternatingMap
 
 open Equiv
 
-/-- A helper lemma for `MultilinearMap.domCoprod_alternization`. -/
-theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableEq ιb]
+/-- A helper lemma for `MultilinearMap.domCoprod_alternatization`. -/
+theorem MultilinearMap.domCoprod_alternatization_coe [DecidableEq ιa] [DecidableEq ιb]
     (a : MultilinearMap R' (fun _ : ιa => Mᵢ) N₁) (b : MultilinearMap R' (fun _ : ιb => Mᵢ) N₂) :
     MultilinearMap.domCoprod (MultilinearMap.alternatization a)
       (MultilinearMap.alternatization b) =
@@ -194,13 +194,16 @@ theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableE
     ← TensorProduct.smul_tmul', TensorProduct.tmul_smul]
   rfl
 
+@[deprecated (since := "2026-09-17")]
+alias MultilinearMap.domCoprod_alternization_coe := MultilinearMap.domCoprod_alternatization_coe
+
 open AlternatingMap
 
 open Perm in
 /-- Computing the `MultilinearMap.alternatization` of the `MultilinearMap.domCoprod` is the same
 as computing the `AlternatingMap.domCoprod` of the `MultilinearMap.alternatization`s.
 -/
-theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ιb]
+theorem MultilinearMap.domCoprod_alternatization [DecidableEq ιa] [DecidableEq ιb]
     (a : MultilinearMap R' (fun _ : ιa => Mᵢ) N₁) (b : MultilinearMap R' (fun _ : ιb => Mᵢ) N₂) :
     MultilinearMap.alternatization (MultilinearMap.domCoprod a b) =
       a.alternatization.domCoprod (MultilinearMap.alternatization b) := by
@@ -227,19 +230,25 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
            (domDomCongr τ.1 a).domCoprod (domDomCongr τ.2 b)) := by
       simp [f, domDomCongr_mul, domCoprod_domDomCongr_sumCongr, mul_smul]
     _ = domCoprod.summand (alternatization a) (alternatization b) (Quotient.mk'' σ) := by
-      simp [domCoprod.summand_mk'', domCoprod_alternization_coe, ← domDomCongrEquiv_apply,
+      simp [domCoprod.summand_mk'', domCoprod_alternatization_coe, ← domDomCongrEquiv_apply,
         Finset.smul_sum, ← Finset.sum_product']
+
+@[deprecated (since := "2026-09-17")]
+alias MultilinearMap.domCoprod_alternization := MultilinearMap.domCoprod_alternatization
 
 /-- Taking the `MultilinearMap.alternatization` of the `MultilinearMap.domCoprod` of two
 `AlternatingMap`s gives a scaled version of the `AlternatingMap.coprod` of those maps.
 -/
-theorem MultilinearMap.domCoprod_alternization_eq [DecidableEq ιa] [DecidableEq ιb]
+theorem MultilinearMap.domCoprod_alternatization_eq [DecidableEq ιa] [DecidableEq ιb]
     (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
     MultilinearMap.alternatization
       (MultilinearMap.domCoprod a b : MultilinearMap R' (fun _ : ιa ⊕ ιb => Mᵢ) (N₁ ⊗ N₂)) =
       ((Fintype.card ιa).factorial * (Fintype.card ιb).factorial) • a.domCoprod b := by
-  rw [MultilinearMap.domCoprod_alternization, coe_alternatization, coe_alternatization, mul_smul,
+  rw [MultilinearMap.domCoprod_alternatization, coe_alternatization, coe_alternatization, mul_smul,
     ← AlternatingMap.domCoprod'_apply, ← AlternatingMap.domCoprod'_apply,
     ← TensorProduct.smul_tmul', TensorProduct.tmul_smul,
     LinearMap.map_smul_of_tower AlternatingMap.domCoprod',
     LinearMap.map_smul_of_tower AlternatingMap.domCoprod']
+
+@[deprecated (since := "2026-09-17")]
+alias MultilinearMap.domCoprod_alternization_eq := MultilinearMap.domCoprod_alternatization_eq

@@ -202,10 +202,13 @@ theorem toNonUnitalSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonUnitalRing
 
@@ -266,10 +269,13 @@ theorem toNonAssocSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonAssocRing
 

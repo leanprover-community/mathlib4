@@ -304,7 +304,7 @@ def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ
 end SpecΓ
 
 /-- The stalk map of `Spec M⁻¹R ⟶ Spec R` is an iso for each `p : Spec M⁻¹R`. -/
-theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid R)
+theorem isIso_SpecMap_stalkMap_localization (R : CommRingCat.{u}) (M : Submonoid R)
     (x : PrimeSpectrum (Localization M)) :
     IsIso
       ((Spec.toPresheafedSpace.map
@@ -318,8 +318,11 @@ theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid 
       x.asIdeal).toRingEquiv.toCommRingCatIso.hom
   infer_instance
 
+@[deprecated (since := "2026-09-17")]
+alias isIso_SpecMap_stakMap_localization := isIso_SpecMap_stalkMap_localization
+
 @[deprecated (since := "2025-10-11")]
-alias Spec_map_localization_isIso := isIso_SpecMap_stakMap_localization
+alias Spec_map_localization_isIso := isIso_SpecMap_stalkMap_localization
 
 namespace StructureSheaf
 

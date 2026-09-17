@@ -210,13 +210,16 @@ lemma cpolynomialAt_uncurry_of_linear :
     ContinuousLinearMap.cpolynomialAt _ _
   exact f.flipLinear.cpolynomialAt_uncurry_of_multilinear.comp this
 
-lemma cpolyomialOn_uncurry_of_linear :
+lemma cpolynomialOn_uncurry_of_linear :
     CPolynomialOn 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_linear
 
+@[deprecated (since := "2026-09-17")]
+alias cpolyomialOn_uncurry_of_linear := cpolynomialOn_uncurry_of_linear
+
 lemma analyticOnNhd_uncurry_of_linear :
     AnalyticOnNhd 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
-  f.cpolyomialOn_uncurry_of_linear.analyticOnNhd
+  f.cpolynomialOn_uncurry_of_linear.analyticOnNhd
 
 lemma analyticOn_uncurry_of_linear :
     AnalyticOn 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
@@ -241,7 +244,7 @@ lemma cpolynomialAt_uncurry_compContinuousLinearMap :
 lemma cpolynomialOn_uncurry_compContinuousLinearMap :
     CPolynomialOn 𝕜 (fun (p : (Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G))
       ↦ p.2.compContinuousLinearMap p.1) t :=
-  cpolyomialOn_uncurry_of_linear
+  cpolynomialOn_uncurry_of_linear
     (ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜 Fm Em G)
 
 lemma analyticOnNhd_uncurry_compContinuousLinearMap :

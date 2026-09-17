@@ -451,12 +451,14 @@ def mapAlgHom (f : S →ₐ[R] T) (p : S[X]) (q : T[X]) (h : q ∣ p.map f) :
 @[simp] lemma coe_mapAlgHom (f : S →ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
     ⇑(mapAlgHom f p q h) = map f p q h := rfl
 
-lemma mapAlgHom_comp_mapAlghom (f : S →ₐ[R] T) (g : T →ₐ[R] U) (p : S[X]) (q : T[X]) (r : U[X])
+lemma mapAlgHom_comp_mapAlgHom (f : S →ₐ[R] T) (g : T →ₐ[R] U) (p : S[X]) (q : T[X]) (r : U[X])
     (hf hg) :
     (mapAlgHom g q r hg).comp (mapAlgHom f p q hf) =
       mapAlgHom (g.comp f) p r
         (hg.trans <| by simpa [Polynomial.map_map] using Polynomial.map_dvd g.toRingHom hf) := by
   aesop
+
+@[deprecated (since := "2026-09-17")] alias mapAlgHom_comp_mapAlghom := mapAlgHom_comp_mapAlgHom
 
 /-- `AdjoinRoot.map` as an `AlgEquiv`. -/
 def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map f) q) :

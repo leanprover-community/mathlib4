@@ -29,7 +29,7 @@ bijection and that the residual degree and ramification index are preserved by t
 - `IsDedekindDomain.primesOverEquivPrimesOver`: the bijection between the primes over
   `p` in `S` and the primes over the maximal ideal of `Rₚ` in `Sₚ`.
 
-- `IsDedekindDomain.primesOverEquivPrimesOver_inertiagDeg_eq`: the bijection
+- `IsDedekindDomain.primesOverEquivPrimesOver_inertiaDeg_eq`: the bijection
   `primesOverEquivPrimesOver` preserves the inertia degree.
 
 - `IsDedekindDomain.primesOverEquivPrimesOver_ramificationIdx_eq`: the bijection
@@ -239,7 +239,7 @@ theorem primesOverEquivPrimesOver_apply (hp : p ≠ ⊥) (P : p.primesOver S) :
 theorem primesOverEquivPrimesOver_symm_apply (hp : p ≠ ⊥) (Q : (maximalIdeal Rₚ).primesOver Sₚ) :
     ((primesOverEquivPrimesOver p Rₚ Sₚ hp).symm Q).1 = Ideal.comap (algebraMap S Sₚ) Q := rfl
 
-theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (P : p.primesOver S) :
+theorem primesOverEquivPrimesOver_inertiaDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (P : p.primesOver S) :
     (maximalIdeal Rₚ).inertiaDeg (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
       p.inertiaDeg P.val := by
   have : NeZero p := ⟨hp⟩
@@ -247,6 +247,9 @@ theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) 
     (ne_bot_of_mem_primesOver (NeZero.ne _) P.prop) inferInstance
   have : (P.1.map (algebraMap S Sₚ)).LiesOver (maximalIdeal Rₚ) := liesOver_map_of_liesOver p _ _ _
   exact inertiaDeg_map_eq_inertiaDeg p _ _ _
+
+@[deprecated (since := "2026-09-17")]
+alias primesOverEquivPrimesOver_inertiagDeg_eq := primesOverEquivPrimesOver_inertiaDeg_eq
 
 theorem primesOverEquivPrimesOver_ramificationIdx_eq (hp : p ≠ ⊥) [NoZeroSMulDivisors R Rₚ]
     [NoZeroSMulDivisors R Sₚ] [NoZeroSMulDivisors S Sₚ] [NoZeroSMulDivisors Rₚ Sₚ]

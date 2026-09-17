@@ -474,9 +474,13 @@ theorem mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔
 theorem coLindelof_le_coclosedLindelof : coLindelof X ≤ coclosedLindelof X :=
   iInf_mono fun _ => le_iInf fun _ => le_rfl
 
-theorem IsLindeof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
+theorem IsLindelof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
     sᶜ ∈ Filter.coclosedLindelof X :=
   hasBasis_coclosedLindelof.mem_of_mem ⟨hs', hs⟩
+
+@[deprecated (since := "2026-09-17")]
+alias IsLindeof.compl_mem_coclosedLindelof_of_isClosed :=
+  IsLindelof.compl_mem_coclosedLindelof_of_isClosed
 
 /-- X is a Lindelöf space iff every open cover has a countable subcover. -/
 class LindelofSpace (X : Type*) [TopologicalSpace X] : Prop where

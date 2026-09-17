@@ -187,7 +187,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ finite_of_finite_type_of_isJacobsonRing _ _⟩
 
 @[stacks 01TB "(1) => (3)"]
-lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
+lemma Scheme.Hom.closedPoints_subset_preimage_closedPoints
     {X Y : Scheme.{u}} (f : X ⟶ Y) [JacobsonSpace Y] [LocallyOfFiniteType f] :
     closedPoints X ⊆ f ⁻¹' closedPoints Y := by
   intro x hx
@@ -197,13 +197,17 @@ lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
   simpa [Set.range_comp, Scheme.range_fromSpecResidueField] using
     (X.fromSpecResidueField x ≫ f).isClosedMap.isClosed_range
 
+@[deprecated (since := "2026-09-17")]
+alias Scheme.Hom.closePoints_subset_preimage_closedPoints :=
+  Scheme.Hom.closedPoints_subset_preimage_closedPoints
+
 @[stacks 01TB "(1) => (2)"]
 lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace X] {x : X} :
     IsClosed {x} ↔ LocallyOfFiniteType (X.fromSpecResidueField x) := by
   constructor
   · exact fun H ↦ have := isClosed_singleton_iff_isClosedImmersion.mp H; inferInstance
   · intro H
-    simpa using (X.fromSpecResidueField x).closePoints_subset_preimage_closedPoints
+    simpa using (X.fromSpecResidueField x).closedPoints_subset_preimage_closedPoints
       (IsLocalRing.isClosed_singleton_closedPoint _)
 
 end AlgebraicGeometry

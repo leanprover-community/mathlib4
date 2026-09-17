@@ -806,7 +806,7 @@ open Equiv
 
 variable [Fintype ι] [DecidableEq ι]
 
-private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
+private theorem alternatization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
     (v : ι → M) (i j : ι) (i_ne_j : i ≠ j) (hv : v i = v j) :
     (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) v = 0 := by
   rw [sum_apply]
@@ -823,7 +823,7 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
     { ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ with
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
       map_eq_zero_of_eq' := private fun v i j hvij hij =>
-        alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
+        alternatization_map_eq_zero_of_eq_aux m v i j hij hvij }
   map_add' a b := by
     ext
     simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply, add_apply,

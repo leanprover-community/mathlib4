@@ -857,7 +857,8 @@ def adjSylvester (f g : R[X]) :
   (f.sylvester g m n).adjugate.toLin (degreeLT.basis R (m + n))
     (((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv)
 
-lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+lemma sylvesterMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     sylvesterMap f g hf hg ∘ₗ adjSylvester f g = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
@@ -865,13 +866,20 @@ lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : 
   rwa [Matrix.toLin_mul b₂ b₁ b₂, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
 
-lemma adjSylvester_comp_sylveserMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+@[deprecated (since := "2026-09-17")]
+alias sylveserMap_comp_adjSylvester := sylvesterMap_comp_adjSylvester
+
+lemma adjSylvester_comp_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     adjSylvester f g ∘ₗ sylvesterMap f g hf hg = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
   have := congr(Matrix.toLin b₁ b₁ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).adjugate_mul))
   rwa [Matrix.toLin_mul b₁ b₂ b₁, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
+
+@[deprecated (since := "2026-09-17")]
+alias adjSylvester_comp_sylveserMap := adjSylvester_comp_sylvesterMap
 
 /-- Note that if `n = m = 0` then `resultant = 1` but `f` and `g` aren't necessarily coprime. -/
 lemma exists_mul_add_mul_eq_C_resultant
@@ -881,7 +889,7 @@ lemma exists_mul_add_mul_eq_C_resultant
   let X := adjSylvester f g ⟨1, by simpa [Polynomial.mem_degreeLT,
     ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
   have : ((sylvesterMap f g hf hg X)).1 = _ :=
-    congr(($(sylveserMap_comp_adjSylvester f g hf hg) _).1)
+    congr(($(sylvesterMap_comp_adjSylvester f g hf hg) _).1)
   refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
