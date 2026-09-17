@@ -510,11 +510,11 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 
 variable {R}
 
-lemma lsmul_eq_distribSMul_toLinearMap (r : R) :
+lemma lsmul_eq_distribSMulToLinearMap (r : R) :
     lsmul R M r = DistribSMul.toLinearMap R M r := rfl
 
 @[deprecated (since := "2026-09-17")]
-alias lsmul_eq_distribSMultoLinearMap := lsmul_eq_distribSMul_toLinearMap
+alias lsmul_eq_distribSMultoLinearMap := lsmul_eq_distribSMulToLinearMap
 
 variable {M}
 
