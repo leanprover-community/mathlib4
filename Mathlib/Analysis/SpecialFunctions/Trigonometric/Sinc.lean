@@ -93,6 +93,8 @@ lemma continuous_sinc : Continuous sinc := by
   · rw [continuousAt_dslope_of_ne hx]
     fun_prop
 
+attribute [grind =] tan_mul_cos sinc_of_ne_zero
+
 /-- For `|x| < π / 2` we have `cos x ≤ sinc x`, and together with
 `sinc_le_one` this gives the squeeze `cos x ≤ sin x / x ≤ 1`. -/
 lemma cos_le_sinc (hx : |x| < π / 2) : cos x ≤ sinc x := by
