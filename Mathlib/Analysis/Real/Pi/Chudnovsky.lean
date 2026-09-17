@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-meta import Batteries.Data.Rat.Float  -- shake: keep (for `#eval` sanity check)
+meta import Batteries.Data.Float.Rat  -- shake: keep (for `#eval` sanity check)
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.Positivity
@@ -24,7 +24,8 @@ but at present we are a long way off.
 ## Future work
 
 * Use this formula to give approximations for `π`.
-* Prove the sum equals `π⁻¹`, as stated using `proof_wanted` below.
+* Prove the sum equals `π⁻¹`, as stated using `proof_wanted` in
+  `Wanted/Analysis/Real/Pi/Chudnovsky.lean`.
 * Show that each imaginary quadratic field of class number 1 (corresponding to Heegner numbers)
   gives a Ramanujan type formula, and that this is the formula coming from 163,
   with `j ((1 + √-163) / 2) = -640320^3`, and the other magic constants coming from
@@ -38,7 +39,7 @@ but at present we are a long way off.
 
 @[expose] public section
 
-open scoped Real BigOperators
+open scoped Real
 open Nat
 
 /-- The numerator of the nth term in Chudnovsky's series -/
@@ -62,6 +63,3 @@ def chudnovskyTerm (n : ℕ) : ℚ :=
 /-- The infinite sum in Chudnovsky's formula for `π⁻¹` -/
 noncomputable def chudnovskySum : ℝ :=
   12 / (640320 : ℝ) ^ (3 / 2 : ℝ) * ∑' n : ℕ, (chudnovskyTerm n : ℝ)
-
-/-- **Chudnovsky's formula**: The sum equals `π⁻¹` -/
-proof_wanted chudnovskySum_eq_pi_inv : chudnovskySum = π⁻¹

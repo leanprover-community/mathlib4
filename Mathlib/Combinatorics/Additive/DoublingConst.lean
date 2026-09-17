@@ -21,7 +21,7 @@ open scoped Pointwise
 
 namespace Finset
 section Group
-variable {G G' : Type*} [Group G] [AddGroup G'] [DecidableEq G] [DecidableEq G'] {A B : Finset G}
+variable {G : Type*} [Group G] [DecidableEq G] {A B : Finset G}
 
 /-- The doubling constant `σₘ[A, B]` of two finsets `A` and `B` in a group is `|A * B| / |A|`.
 
@@ -155,42 +155,25 @@ end Fintype
 
 variable {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
 
--- we can't use `to_additive`, because it tries to translate `/` to `-`
-lemma cast_addConst (A B : Finset G') : (σ[A, B] : 𝕜) = #(A + B) / #A := by
-  simp [addConst]
-
-lemma cast_subConst (A B : Finset G') : (δ[A, B] : 𝕜) = #(A - B) / #A := by
-  simp [subConst]
-
+@[to_additive (dont_translate := 𝕜)]
 lemma cast_mulConst (A B : Finset G) : (σₘ[A, B] : 𝕜) = #(A * B) / #A := by simp [mulConst]
 
+@[to_additive (dont_translate := 𝕜)]
 lemma cast_divConst (A B : Finset G) : (δₘ[A, B] : 𝕜) = #(A / B) / #A := by simp [divConst]
 
-lemma cast_addConst_mul_card (A B : Finset G') : (σ[A, B] * #A : 𝕜) = #(A + B) := by
-  norm_cast; exact addConst_mul_card _ _
-
-lemma cast_subConst_mul_card (A B : Finset G') : (δ[A, B] * #A : 𝕜) = #(A - B) := by
-  norm_cast; exact subConst_mul_card _ _
-
-lemma card_mul_cast_addConst (A B : Finset G') : (#A * σ[A, B] : 𝕜) = #(A + B) := by
-  norm_cast; exact card_mul_addConst _ _
-
-lemma card_mul_cast_subConst (A B : Finset G') : (#A * δ[A, B] : 𝕜) = #(A - B) := by
-  norm_cast; exact card_mul_subConst _ _
-
-@[simp]
+@[to_additive (dont_translate := 𝕜) (attr := simp) cast_addConst_mul_card]
 lemma cast_mulConst_mul_card (A B : Finset G) : (σₘ[A, B] * #A : 𝕜) = #(A * B) := by
   norm_cast; exact mulConst_mul_card _ _
 
-@[simp]
+@[to_additive (dont_translate := 𝕜) (attr := simp) cast_subConst_mul_card]
 lemma cast_divConst_mul_card (A B : Finset G) : (δₘ[A, B] * #A : 𝕜) = #(A / B) := by
   norm_cast; exact divConst_mul_card _ _
 
-@[simp]
+@[to_additive (dont_translate := 𝕜) (attr := simp) card_mul_cast_addConst]
 lemma card_mul_cast_mulConst (A B : Finset G) : (#A * σₘ[A, B] : 𝕜) = #(A * B) := by
   norm_cast; exact card_mul_mulConst _ _
 
-@[simp]
+@[to_additive (dont_translate := 𝕜) (attr := simp) card_mul_cast_subConst]
 lemma card_mul_cast_divConst (A B : Finset G) : (#A * δₘ[A, B] : 𝕜) = #(A / B) := by
   norm_cast; exact card_mul_divConst _ _
 

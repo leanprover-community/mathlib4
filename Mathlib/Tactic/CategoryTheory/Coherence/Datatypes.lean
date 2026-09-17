@@ -6,6 +6,7 @@ Authors: Yuma Mizuno
 module
 
 public meta import Lean.Meta.Basic
+public meta import Batteries.Tactic.Alias
 public import Mathlib.Init
 
 /-!
@@ -169,6 +170,8 @@ inductive Mor₂Iso : Type where
 class MonadCoherenceHom (m : Type → Type) where
   /-- Unfold a coherence isomorphism. -/
   unfoldM (α : CoherenceHom) : m Mor₂Iso
+
+@[deprecated (since := "2026-09-17")] alias MonadCoherehnceHom := MonadCoherenceHom
 
 /-- The underlying lean expression of a 2-isomorphism. -/
 def StructuralAtom.e : StructuralAtom → Expr
@@ -416,7 +419,7 @@ inductive NormalizedHom : Type
 /-- The underlying expression of a normalized 1-morphism. -/
 def NormalizedHom.e : NormalizedHom → Mor₁
   | NormalizedHom.nil e _ => e
-  | NormalizedHom.cons e _ _  => e
+  | NormalizedHom.cons e _ _ => e
 
 /-- The domain of a normalized 1-morphism. -/
 def NormalizedHom.src : NormalizedHom → Obj

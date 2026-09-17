@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 (Using the pointwise monoidal structure on the functor category.)
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

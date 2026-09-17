@@ -18,7 +18,9 @@ This file provides the additive action `AffineSubspace.pointwiseAddAction` in th
 @[expose] public section
 
 
-open Affine Pointwise
+open Pointwise
+
+open scoped Affine
 
 open Set
 
@@ -34,6 +36,7 @@ variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseVAdd : VAdd V (AffineSubspace k P) where
   vadd x s := s.map (AffineEquiv.constVAdd k P x)
 
@@ -45,6 +48,7 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseVAdd
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseAddAction : AddAction V (AffineSubspace k P) :=
   SetLike.coe_injective.addAction _ coe_pointwise_vadd
 
@@ -90,6 +94,7 @@ This is available as an instance in the `Pointwise` locale.
 
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
+@[instance_reducible]
 protected def pointwiseSMul : SMul M (AffineSubspace k V) where
   smul a s := s.map (DistribSMul.toLinearMap k _ a).toAffineMap
 
@@ -122,6 +127,7 @@ This is available as an instance in the `Pointwise` locale.
 
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
+@[instance_reducible]
 protected def mulAction : MulAction M (AffineSubspace k V) :=
   SetLike.coe_injective.mulAction _ coe_smul
 

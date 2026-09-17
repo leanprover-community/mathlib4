@@ -12,7 +12,7 @@ public import Mathlib.Data.Matrix.Basis
 # The matrix algebra is a central algebra
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 variable {n R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Fintype n] [DecidableEq n]

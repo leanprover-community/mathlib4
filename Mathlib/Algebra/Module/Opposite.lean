@@ -16,13 +16,13 @@ This file contains definitions that build on top of the group action definitions
 `Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists LinearMap
 
 section
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M]
+variable {R : Type*} [Semiring R]
 
 -- see Note [lower instance priority]
 /-- Like `Semiring.toModule`, but multiplies on the right. -/

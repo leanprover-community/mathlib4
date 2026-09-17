@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Finset.Lattice.Prod
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Lattice.Image
 
 /-!
@@ -34,7 +34,7 @@ namespace Finset
 
 variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ']
   [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε'] {f f' : α → β → γ} {g g' : α → β → γ → δ}
-  {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ} {a a' : α} {b b' : β} {c : γ}
+  {s s' : Finset α} {t t' : Finset β} {u : Finset γ} {a : α} {b : β} {c : γ}
 
 /-- The image of a binary function `f : α → β → γ` as a function `Finset α → Finset β → Finset γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
@@ -102,7 +102,7 @@ theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.imag
   simp_rw [image₂_subset_iff, image_subset_iff]
 
 theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a => f a b) ⊆ u := by
-  simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
+  simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_comm α]
 
 @[simp]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by

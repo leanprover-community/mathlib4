@@ -40,8 +40,6 @@ class HopfObj (X : C) extends BimonObj X where
   antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by cat_disch
   antipode_right (X) : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by cat_disch
 
-@[deprecated (since := "2025-09-14")] alias Hopf_Class := HopfObj
-
 namespace HopfObj
 
 @[inherit_doc] scoped notation "𝒮" => HopfObj.antipode
@@ -62,8 +60,6 @@ structure Hopf where
   X : C
   [hopf : HopfObj X]
 
-@[deprecated (since := "2025-09-15")] alias Hopf_ := Hopf
-
 attribute [instance] Hopf.hopf
 
 namespace Hopf
@@ -72,8 +68,6 @@ variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
 def toBimon (A : Hopf C) : Bimon C := .mk' A.X
-
-@[deprecated (since := "2025-09-15")] alias toBimon_ := toBimon
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
@@ -88,6 +82,7 @@ namespace HopfObj
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Morphisms of Hopf monoids intertwine the antipodes. -/
 theorem hom_antipode {A B : C} [HopfObj A] [HopfObj B] (f : A ⟶ B) [IsBimonHom f] :
     f ≫ 𝒮 = 𝒮 ≫ f := by
@@ -243,7 +238,6 @@ theorem antipode_comul₂ (A : C) [HopfObj A] :
   slice_lhs 2 3 =>
     simp only [← whiskerLeft_comp]
     rw [ComonObj.counit_comul]
-    simp only [whiskerLeft_comp]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [BraidedCategory.braiding_naturality_left]
@@ -261,6 +255,7 @@ theorem antipode_comul₂ (A : C) [HopfObj A] :
   rw [rightUnitor_inv_naturality_assoc, tensorHom_def]
   monoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem antipode_comul (A : C) [HopfObj A] :
     𝒮[A] ≫ Δ[A] = Δ[A] ≫ (β_ _ _).hom ≫ (𝒮[A] ⊗ₘ 𝒮[A]) := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
@@ -390,7 +385,6 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 6 7 =>
     simp only [← whiskerLeft_comp]
     rw [MonObj.one_mul]
-    simp only [whiskerLeft_comp]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [← BraidedCategory.braiding_naturality_left]
@@ -404,7 +398,6 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 6 7 =>
     simp only [← whiskerLeft_comp]
     rw [Iso.inv_hom_id]
-    simp only [whiskerLeft_comp]
   simp only [whiskerLeft_id, Category.id_comp]
   slice_lhs 5 6 =>
     rw [whiskerLeft_rightUnitor, Category.assoc, ← rightUnitor_naturality]
@@ -418,12 +411,12 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
   slice_lhs 2 3 =>
     rw [← whisker_exchange]
   slice_lhs 1 2 =>
-    dsimp
     rw [← tensorHom_def]
   slice_lhs 2 3 =>
     rw [rightUnitor_naturality]
   monoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mul_antipode (A : C) [HopfObj A] :
     μ[A] ≫ 𝒮[A] = (𝒮[A] ⊗ₘ 𝒮[A]) ≫ (β_ _ _).hom ≫ μ[A] := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
@@ -446,6 +439,7 @@ theorem mul_antipode (A : C) [HopfObj A] :
     simp only [Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₂ A
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 In a commutative Hopf algebra, the antipode squares to the identity.
 -/

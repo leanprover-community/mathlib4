@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Co-Heyting boundary
@@ -42,7 +43,7 @@ def boundary (a : α) : α :=
 /-- The boundary of an element of a co-Heyting algebra. -/
 scoped[Heyting] prefix:120 "∂ " => Coheyting.boundary
 
-open Heyting
+open scoped Heyting
 
 -- TODO: Should hnot be named hNot?
 theorem inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
@@ -84,7 +85,7 @@ theorem boundary_sup_le : ∂ (a ⊔ b) ≤ ∂ a ⊔ ∂ b := by
     sup_le_sup (inf_le_inf_left _ <| hnot_anti le_sup_left)
       (inf_le_inf_left _ <| hnot_anti le_sup_right)
 
-/- The intuitionistic version of `Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left`. Either
+/-- The intuitionistic version of `Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left`. Either
 proof can be obtained from the other using the equivalence of Heyting algebras and intuitionistic
 logic and duality between Heyting and co-Heyting algebras. It is crucial that the following proof be
 intuitionistic. -/
@@ -114,11 +115,18 @@ theorem boundary_sup_sup_boundary_inf (a b : α) : ∂ (a ⊔ b) ⊔ ∂ (a ⊓ 
       boundary_le_boundary_sup_sup_boundary_inf_right
 
 @[simp]
-theorem boundary_idem (a : α) : ∂ ∂ a = ∂ a := by rw [boundary, hnot_boundary, inf_top_eq]
+theorem boundary_boundary (a : α) : ∂ ∂ a = ∂ a := by rw [boundary, hnot_boundary, inf_top_eq]
+
+alias boundary_idem := boundary_boundary
 
 theorem hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
   rw [boundary, sup_inf_left, hnot_sup_self, inf_top_eq, sup_eq_right]
   exact hnot_hnot_le
+
+theorem sdiff_boundary_self : a \ ∂ a = ￢￢a := by
+  rw (occs := [1]) [← hnot_hnot_sup_boundary a]
+  rw [sup_sdiff_distrib, sdiff_self, sup_bot_eq, hnot_sdiff_comm,
+    hnot_boundary, top_sdiff']
 
 theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
   ⟨fun h => ⟨a, by rw [boundary, h, inf_top_eq]⟩, by
@@ -127,7 +135,7 @@ theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
 
 end Coheyting
 
-open Heyting
+open scoped Heyting
 
 section BooleanAlgebra
 

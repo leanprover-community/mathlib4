@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Data.Set.Functor
 
@@ -21,11 +21,11 @@ finite sets
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
-open Set Function
+open Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Set
 
@@ -41,6 +41,7 @@ attribute [local instance] Set.monad
 
 /-- If `s : Set α` is a set with `Fintype` instance and `f : α → Set β` is a function such that
 each `f a`, `a ∈ s`, has a `Fintype` structure, then `s >>= f` has a `Fintype` structure. -/
+@[instance_reducible]
 def fintypeBind {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
     (H : ∀ a ∈ s, Fintype (f a)) : Fintype (s >>= f) :=
   Set.fintypeBiUnion s f H

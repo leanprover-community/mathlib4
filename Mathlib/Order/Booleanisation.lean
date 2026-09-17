@@ -63,7 +63,7 @@ instance instCompl : Compl (Booleanisation α) where
 @[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
 @[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
 
-variable [GeneralizedBooleanAlgebra α] {a b : α}
+variable [GeneralizedBooleanAlgebra α]
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
 * `a ≤ b` iff `a ≤ b` in `α`
@@ -136,6 +136,8 @@ instance instSDiff : SDiff (Booleanisation α) where
     | lift a, comp b => lift (a ⊓ b)
     | comp a, lift b => comp (a ⊔ b)
     | comp a, comp b => lift (b \ a)
+
+variable {a b : α}
 
 @[simp] lemma lift_le_lift : lift a ≤ lift b ↔ a ≤ b := ⟨by rintro ⟨_⟩; assumption, LE.lift⟩
 @[simp] lemma comp_le_comp : comp a ≤ comp b ↔ b ≤ a := ⟨by rintro ⟨_⟩; assumption, LE.comp⟩

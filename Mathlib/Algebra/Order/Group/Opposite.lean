@@ -15,7 +15,7 @@ This file transfers order instances and ordered monoid/group instances from `α`
 `αᵃᵒᵖ`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

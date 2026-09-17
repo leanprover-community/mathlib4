@@ -50,6 +50,11 @@ instance : CoeSort FinBoolAlg Type* :=
 abbrev of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FinBoolAlg.of X` as `↧X`. -/
+@[app_delab FinBoolAlg.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 theorem coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
   rfl
 
@@ -57,16 +62,16 @@ instance : Inhabited FinBoolAlg :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinBoolAlg :=
-  inferInstanceAs (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
+  inferInstanceAs <| Category (InducedCategory _ toBoolAlg)
 
 instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
-  InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
-  InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := FinBddDistLat.ofHom f.hom.hom
 
 instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
@@ -77,7 +82,7 @@ instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
 
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map {X Y} f := InducedCategory.homMk (PartOrd.ofHom f.hom.hom)
 
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful where
@@ -115,10 +120,11 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
       forget₂ FinBoolAlg FinBddDistLat ⋙ FinBddDistLat.dual :=
   rfl
 
+attribute [local instance] FintypeCat.fintype in
 /-- The powerset functor. `Set` as a functor. -/
 @[simps]
-def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
-  obj X := op <| .of (Set X)
+noncomputable def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
+  obj X := op ↧(Set X)
   map {X Y} f :=
     Quiver.Hom.op <| InducedCategory.homMk <|
       BoolAlg.ofHom <| CompleteLatticeHom.setPreimage f

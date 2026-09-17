@@ -303,9 +303,11 @@ theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
       simp only [cast_one, Num.ofNat'_one]
       norm_cast
   | bit0 p => by
-      simpa only [Nat.bit_false, cond_false, two_mul, of_to_nat' p] using Num.ofNat'_bit false p
+      simpa only [Nat.bit_false, Bool.cond_false, two_mul, of_to_nat' p] using!
+        Num.ofNat'_bit false p
   | bit1 p => by
-      simpa only [Nat.bit_true, cond_true, two_mul, of_to_nat' p] using Num.ofNat'_bit true p
+      simpa only [Nat.bit_true, Bool.cond_true, two_mul, of_to_nat' p] using!
+        Num.ofNat'_bit true p
 
 end PosNum
 
@@ -335,13 +337,13 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 
 /--
 This tactic tries to prove (in)equalities about `Num`s by transferring them to the `Nat` world and
-then trying to call `simp`.
+then trying to call `grind`.
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
-    (intros; transfer_rw; try simp))
+    ((repeat intro (_ : Num)); transfer_rw; try grind))
 
 instance addMonoid : AddMonoid Num where
   zero_add := zero_add
@@ -359,31 +361,28 @@ instance commSemiring : CommSemiring Num where
   __ := Num.addMonoid
   __ := Num.addMonoidWithOne
   npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
-  mul_zero _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, mul_zero]
-  zero_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, zero_mul]
-  mul_one _ := by rw [← to_nat_inj, mul_to_nat, cast_one, mul_one]
-  one_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_one, one_mul]
-  add_comm _ _ := by simp_rw [← to_nat_inj, add_to_nat, add_comm]
-  mul_comm _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_comm]
-  mul_assoc _ _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_assoc]
-  left_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, mul_add]
-  right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
+  mul_zero := by transfer
+  zero_mul := by transfer
+  mul_one := by transfer
+  one_mul := by transfer
+  add_comm := by transfer
+  mul_comm := by transfer
+  mul_assoc := by transfer
+  left_distrib := by transfer
+  right_distrib := by transfer
 
 instance partialOrder : PartialOrder Num where
-  lt_iff_le_not_ge a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_ge]
+  lt_iff_le_not_ge := by transfer
   le_refl := by transfer
-  le_trans a b c := by transfer_rw; apply le_trans
-  le_antisymm a b := by transfer_rw; apply le_antisymm
+  le_trans := by transfer
+  le_antisymm := by transfer
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
-  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
-  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
+  add_le_add_left a b h c := by revert h; transfer
+  le_of_add_le_add_left a b c := by transfer
 
 instance linearOrder : LinearOrder Num :=
-  { le_total := by
-      intro a b
-      transfer_rw
-      apply le_total
+  { le_total a b := by transfer
     toDecidableLT := Num.decidableLT
     toDecidableLE := Num.decidableLE
     -- This is relying on an automatically generated instance name,
@@ -515,13 +514,13 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 
 /--
 This tactic tries to prove (in)equalities about `PosNum`s by transferring them to the `Nat` world
-and then trying to call `simp`.
+and then trying to call `grind`.
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
-    (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
+    ((repeat intro (_ : PosNum)); transfer_rw; try grind))
 
 instance addCommSemigroup : AddCommSemigroup PosNum where
   add_assoc := by transfer
@@ -535,27 +534,15 @@ instance commMonoid : CommMonoid PosNum where
   mul_comm := by transfer
 
 instance distrib : Distrib PosNum where
-  left_distrib := by transfer; simp [mul_add]
-  right_distrib := by transfer; simp [mul_add, mul_comm]
+  left_distrib := by transfer
+  right_distrib := by transfer
 
 instance linearOrder : LinearOrder PosNum where
-  lt_iff_le_not_ge := by
-    intro a b
-    transfer_rw
-    apply lt_iff_le_not_ge
+  lt_iff_le_not_ge := by transfer
   le_refl := by transfer
-  le_trans := by
-    intro a b c
-    transfer_rw
-    apply le_trans
-  le_antisymm := by
-    intro a b
-    transfer_rw
-    apply le_antisymm
-  le_total := by
-    intro a b
-    transfer_rw
-    apply le_total
+  le_trans := by transfer
+  le_antisymm := by transfer
+  le_total := by transfer
   toDecidableLT := by infer_instance
   toDecidableLE := by infer_instance
   toDecidableEq := by infer_instance
@@ -591,15 +578,12 @@ theorem cast_pos [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] (n : P
 theorem cast_mul [NonAssocSemiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
   rw [← cast_to_nat, mul_to_nat, Nat.cast_mul, cast_to_nat, cast_to_nat]
 
--- TODO: find a good way to fix the linter error
--- simp is called on three goals, with different simp set
-set_option linter.flexible false in
 @[simp]
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
-  revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
+  norm_cast at this
+  -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
+  revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
@@ -729,13 +713,11 @@ theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
 theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
   cases m <;> cases n <;> try { rfl }; apply PosNum.cmp_swap
 
--- TODO: find a good way to fix the linter; simp applies to three goals at once
-set_option linter.flexible false in
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
-  revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
+  norm_cast at this
+  -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
+  revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : Num} :

@@ -22,9 +22,9 @@ which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Ba
 Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 -/
 
-@[expose] public section
+public section
 
-open Function Nat
+open Nat
 
 variable {R : Type*}
 
@@ -106,37 +106,5 @@ lemma nonneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n
 @[deprecated (since := "2026-09-17")]
 alias nneg_mul_add_sq_of_abs_le_one := nonneg_mul_add_sq_of_abs_le_one
 
-@[deprecated (since := "2025-11-07")] alias cast_natAbs := Nat.cast_natAbs
-
 end LinearOrderedRing
 end Int
-
-/-! ### Order dual -/
-
-open OrderDual
-
-namespace OrderDual
-
-instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
-
-end OrderDual
-
-@[simp] lemma toDual_intCast [IntCast R] (n : ℤ) : toDual (n : R) = n := rfl
-
-@[simp] lemma ofDual_intCast [IntCast R] (n : ℤ) : (ofDual n : R) = n := rfl
-
-/-! ### Lexicographic order -/
-
-namespace Lex
-
-instance instIntCast [IntCast R] : IntCast (Lex R) := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (Lex R) := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) := ‹_›
-
-end Lex
-
-@[simp] lemma toLex_intCast [IntCast R] (n : ℤ) : toLex (n : R) = n := rfl
-
-@[simp] lemma ofLex_intCast [IntCast R] (n : ℤ) : (ofLex n : R) = n := rfl

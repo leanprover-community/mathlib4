@@ -46,7 +46,7 @@ are affinely dependent (see `finrank_vectorSpan_le_iff_not_affineIndependent`). 
 theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
     ∃ I, (convexHull 𝕜 (f '' I) ∩ convexHull 𝕜 (f '' Iᶜ)).Nonempty := by
   rw [affineIndependent_iff] at h
-  push_neg at h
+  push Not at h
   obtain ⟨s, w, h_wsum, h_vsum, nonzero_w_index, h1, h2⟩ := h
   let I : Finset ι := {i ∈ s | 0 ≤ w i}
   let J : Finset ι := {i ∈ s | w i < 0}
@@ -116,7 +116,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   use p
   apply mem_biInter
   intro i hi
-  let i : s := ⟨i, hi⟩
+  lift i to s using hi
   /- It suffices to show that for any subcollection `J` of `s` containing `i`, the convex
   hull of `a '' (s \ J)` is contained in `F i`. -/
   suffices ∀ J : Set s, (i ∈ J) → (convexHull 𝕜) (a '' Jᶜ) ⊆ F i by
@@ -132,13 +132,8 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:
   `a j ∈ ⋂ F '' (Set.univ \ {j}) ⊆ F i`. -/
   apply mem_of_subset_of_mem (s₁ := ⋂ k ∈ (s.erase j), F k)
-  · apply biInter_subset_of_mem
-    simp only [erase_val]
-    suffices h : i.val ∈ s.erase j by assumption
-    simp only [mem_erase]
-    constructor
-    · exact fun h' ↦ hj ((show i = j from SetCoe.ext h') ▸ hi)
-    · assumption
+  · apply iInter₂_subset
+    simp [mem_erase, ne_of_mem_of_not_mem hi hj]
   · apply Nonempty.some_mem
 
 /-- **Helly's theorem** for finite families of convex sets in its classical form.
@@ -273,14 +268,14 @@ theorem helly_theorem_set_compact [TopologicalSpace E] [T2Space E] {F : Set (Set
     (⋂₀ (F : Set (Set E))).Nonempty := by
   apply helly_theorem_set_compact' h_convex h_compact
   intro I hI_ss hI_card
-  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (hkt := h_card)
-    (by simpa only [encard_coe_eq_coe_finsetCard, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_le])
+  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (by norm_cast) h_card
   apply Set.Nonempty.mono <| sInter_mono (by simpa [hI_ss])
   have hJ_fin : Fintype J := Finite.fintype <| finite_of_encard_eq_coe hJ_card
   let J' := J.toFinset
   rw [← coe_toFinset J]
   apply h_inter J'
   · simpa [J']
-  · rwa [encard_eq_coe_toFinset_card J, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_inj] at hJ_card
+  · rwa [encard_eq_coe_toFinset_card J, ← ENat.natCast_one, ← ENat.natCast_add, Nat.cast_inj]
+      at hJ_card
 
 end Convex

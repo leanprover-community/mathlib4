@@ -21,7 +21,7 @@ namespace Set
 
 variable {α : Type*} [Monoid α] {s : Set α} {n : ℕ}
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :

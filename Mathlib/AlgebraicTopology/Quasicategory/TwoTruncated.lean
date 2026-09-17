@@ -275,6 +275,7 @@ lemma Edge.CompStruct.homotopyCategory₂_fac {f : Edge x y} {g : Edge y z} {h :
     (s : CompStruct f g h) : homMk f ≫ homMk g = homMk h :=
   (comp_unique (compStruct _ _) s .refl .refl).congr_homotopyCategory₂HomMk
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If we have a factorization `homMk f ≫ homMk g = homMk h`, this is the choice
 of a structure `CompStruct f g h`.

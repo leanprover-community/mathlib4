@@ -149,6 +149,7 @@ theorem id_pow (n : ℕ) : (id : End R M) ^ n = .id :=
 variable {f' : End R M}
 
 theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = .comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
+theorem iterate_succ' (n : ℕ) : f' ^ (n + 1) = .comp f' (f' ^ n) := by rw [pow_succ', mul_eq_comp]
 
 theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
   | 0 => surjective_id
@@ -251,8 +252,6 @@ def DistribMulAction.toModuleEnd [DistribMulAction S M] [SMulCommClass S R M] :
   toFun := DistribSMul.toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
-
-@[deprecated (since := "2026-01-07")] alias DistribMulAction.toLinearMap := DistribSMul.toLinearMap
 
 end
 

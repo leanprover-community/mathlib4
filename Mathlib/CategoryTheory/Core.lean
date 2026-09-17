@@ -23,11 +23,13 @@ Any functor `F` from a groupoid `G` into `C` factors through `CategoryTheory.Cor
 but this is not functorial with respect to `F`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -47,7 +49,7 @@ structure CoreHom (X Y : Core C) where
   /-- The isomorphism of objects of `C` underlying a morphism in `Core C`. -/
   iso : X.of ≅ Y.of
 
-@[simps!]
+@[simps! id_iso inv_iso]
 instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : Core C) := CoreHom X Y
   id (X : Core C) := .mk <| Iso.refl X.of
@@ -148,6 +150,7 @@ namespace Iso
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A natural isomorphism of functors induces a natural isomorphism between their cores. -/
 @[simps!]
 def core {F G : C ⥤ D} (α : F ≅ G) : F.core ≅ G.core :=
@@ -160,26 +163,31 @@ lemma coreComp {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) : (α ≪≫ β).
 @[simp]
 lemma coreId {F : C ⥤ D} : (Iso.refl F).core = Iso.refl F.core := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreWhiskerLeft {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G H : D ⥤ E} (η : G ≅ H) :
     (isoWhiskerLeft F η).core =
     F.coreComp G ≪≫ isoWhiskerLeft F.core η.core ≪≫ (F.coreComp H).symm := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreWhiskerRight {E : Type u₃} [Category.{v₃} E] {F G : C ⥤ D} (η : F ≅ G) (H : D ⥤ E) :
     (isoWhiskerRight η H).core =
     F.coreComp H ≪≫ isoWhiskerRight η.core H.core ≪≫ (G.coreComp H).symm := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreLeftUnitor {F : C ⥤ D} :
     F.leftUnitor.core =
     (𝟭 C).coreComp F ≪≫ isoWhiskerRight (Functor.coreId C) _ ≪≫ F.core.leftUnitor := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreRightUnitor {F : C ⥤ D} :
     F.rightUnitor.core =
     (F).coreComp (𝟭 D) ≪≫ isoWhiskerLeft _ (Functor.coreId D) ≪≫ F.core.rightUnitor := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
     (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
     (Functor.associator F G H).core =
@@ -194,6 +202,7 @@ namespace Core
 
 variable {G : Type u₂} [Groupoid.{v₂} G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `functorToCore (F ⋙ H)` factors through `functorToCore H`. -/
 def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
@@ -212,6 +221,7 @@ lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ 
     functorToCore (H ⋙ F) = functorToCore H ⋙ F.core :=
   Functor.ext_of_iso (functorToCoreCompRightIso H F) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `functorToCore (𝟭 G)` is a section of `inclusion G`. -/
 def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
@@ -232,6 +242,7 @@ variable (D : Type u₂) [Category.{v₂} D]
 
 namespace Equivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {D} in
 /-- Equivalent categories have equivalent cores. -/
 @[simps!]
@@ -256,12 +267,13 @@ end
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
 to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
-def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂) where
+def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
+    Core (Type u₁) ⥤ Core (Type u₂) where
   obj x := .mk <| m x.of
   map f := .mk <| (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
   map_id α := by ext x; exact congr_fun (EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext
-    simp [EquivFunctor.map_trans', Function.comp]
+    simp [Equiv.toIso, EquivFunctor.map_trans']
 
 end CategoryTheory

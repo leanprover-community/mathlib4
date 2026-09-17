@@ -17,7 +17,7 @@ This file proves that the lexicographic order on pi types is compatible with the
 operations.
 -/
 
-@[expose] public section
+public section
 
 namespace Pi.Lex
 variable {ι : Type*} {α : ι → Type*} [LinearOrder ι]

@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
 We introduce constructors `Cochain.fromSingleMk` and `Cocycle.fromSingleMk`
 for cochains and cocycles from a single complex. We also introduce similar
-definitions for cochains and cocyles to a single complex.
+definitions for cochains and cocycles to a single complex.
 
 -/
 
@@ -112,13 +112,13 @@ lemma fromSingleMk_precomp
     fromSingleMk (g ≫ f) h =
       (Cochain.ofHom ((singleFunctor C p).map g)).comp (fromSingleMk f h) (zero_add n) := by
   apply (fromSingleEquiv h).injective
-  simp [fromSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
+  simp [fromSingleEquiv, singleFunctor, HomologicalComplex.single_map_f_self]
 
 lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
     {L : CochainComplex C ℤ} (g : K ⟶ L) :
     fromSingleMk (f ≫ g.f q) h =
       (fromSingleMk f h).comp (.ofHom g) (add_zero n) :=
-  (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor, singleFunctors])
+  (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor])
 
 /-- Constructor for cochains to a single complex. -/
 @[nolint unusedArguments]
@@ -196,14 +196,14 @@ lemma toSingleMk_postcomp
     toSingleMk (f ≫ g) h =
       (toSingleMk f h).comp (.ofHom ((singleFunctor C q).map g)) (add_zero n) := by
   apply (toSingleEquiv h).injective
-  simp [toSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
+  simp [toSingleEquiv, singleFunctor, HomologicalComplex.single_map_f_self]
 
 lemma toSingleMk_precomp
     {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     {L : CochainComplex C ℤ} (g : L ⟶ K) :
     toSingleMk (g.f p ≫ f) h =
       (Cochain.ofHom g).comp (toSingleMk f h) (zero_add n) :=
-  (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor, singleFunctors])
+  (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor])
 
 end Cochain
 
@@ -314,7 +314,7 @@ lemma toSingleMk_surjective {q n : ℤ} (α : Cocycle K ((singleFunctor C q).obj
   rw [coe_units_smul, δ_units_smul, ← hf, Cochain.δ_toSingleMk _ _ _ p' (by lia),
     smul_smul, Int.units_mul_self, one_smul] at hα
   refine ⟨f, ?_, ?_⟩
-  · simpa [← cancel_mono (HomologicalComplex.singleObjXSelf (.up ℤ) q X).inv] using
+  · simpa [← cancel_mono (HomologicalComplex.singleObjXSelf (.up ℤ) q X).inv] using!
     Cochain.congr_v hα p' q (by lia)
   · ext : 1; assumption
 

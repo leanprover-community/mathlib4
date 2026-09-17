@@ -16,7 +16,7 @@ if the corresponding set in `Set (Arrow C)` is.
 
 -/
 
-@[expose] public section
+public section
 
 universe w t v u
 
@@ -59,6 +59,24 @@ lemma isSmall_iff_eq_ofHoms :
       simp only [← W.arrow_mk_mem_toSet_iff, hi, Arrow.mk_eq, Subtype.coe_prop]
   · rintro ⟨_, _, _, _, rfl⟩
     infer_instance
+
+instance isSmall_iSup {α : Type*} (W : α → MorphismProperty C)
+    [Small.{w} α] [∀ a, IsSmall.{w} (W a)] :
+    IsSmall.{w} (iSup W) where
+  small_toSet := by
+    rw [toSet_iSup]
+    refine small_of_surjective (f := fun (⟨i, f⟩ : Σ i, (W i).toSet) ↦
+      ⟨f, by rw [Set.mem_iUnion]; exact ⟨i, f.prop⟩⟩) ?_
+    rintro ⟨f, hf⟩
+    simp only [Set.mem_iUnion] at hf
+    obtain ⟨i, hf⟩ := hf
+    exact ⟨⟨i, ⟨_, hf⟩⟩, rfl⟩
+
+instance {α : Type t} [Small.{w} α] (W : α → MorphismProperty C) [∀ i, IsSmall.{w} (W i)] :
+    IsSmall.{w} (⨆ i, W i) := by
+  choose α A B f hf using fun i ↦ (isSmall_iff_eq_ofHoms.{w} (W i)).1 inferInstance
+  simp only [hf, iSup_ofHoms]
+  infer_instance
 
 end MorphismProperty
 

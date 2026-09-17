@@ -7,7 +7,7 @@ namespace CategoryTheory.Bicategory
 
 /-- `normalize% η` is the normalization of the 2-morphism `η`.
 1. The normalized 2-morphism is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where
-  each `αᵢ` is a structural 2-morphism (consisting of associators and unitors),
+   each `αᵢ` is a structural 2-morphism (consisting of associators and unitors),
 2. each `ηᵢ` is a non-structural 2-morphism of the form `f₁ ◁ ... ◁ fₘ ◁ θ`, and
 3. `θ` is of the form `ι ▷ g₁ ▷ ... ▷ gₗ`
 -/

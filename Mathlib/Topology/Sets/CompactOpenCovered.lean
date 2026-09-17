@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
@@ -85,7 +85,7 @@ lemma of_iUnion_eq_of_finite {κ : Type*} [Finite κ] (s : κ → Set S) (hs : �
     (H : ∀ i, IsCompactOpenCovered f (s i)) : IsCompactOpenCovered f U := by
   rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   have (i : κ) : ∃ (V : Opens (Σ i, X i)), IsCompact V.1 ∧ (f _ ·.snd) '' V.1 = s i := by
-    convert H i; rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
+    convert! H i; rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   choose V hVeq hVc using this
   exact ⟨⨆ i, V i, by simpa using isCompact_iUnion hVeq, by simp_all [Set.image_iUnion, ← hs]⟩
 
@@ -111,7 +111,7 @@ lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U
   refine of_biUnion_eq_of_isCompact hU { Us x h | (x : S) (h : x ∈ U) } ?_ ?_
   · refine subset_antisymm (fun x ↦ ?_) fun x hx ↦ ?_
     · simp [Opens.forall]
-      aesop
+      grind
     · simpa using ⟨⟨Us x hx, hUo _ _⟩, ⟨x, by simpa⟩, hUx _ _⟩
   · grind
 

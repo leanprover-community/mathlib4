@@ -5,10 +5,11 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Data.Tree.Basic
-public meta import Mathlib.Logic.Basic
-public import Mathlib.Algebra.Field.Basic
 public meta import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Basic.Logic.Basic
+public meta import Mathlib.Data.Tree.Basic
+
+public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Tactic.NormNum.Core
@@ -37,7 +38,7 @@ open Lean Parser Tactic Mathlib Meta NormNum Qq
 
 initialize registerTraceClass `CancelDenoms
 
-namespace CancelDenoms
+namespace Mathlib.Tactic.CancelDenoms
 
 /-! ### Lemmas used in the procedure -/
 
@@ -95,7 +96,6 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
 theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
     (a ≠ b) = (1 / gcd * (bd * a') ≠ 1 / gcd * (ad * b')) := by
-  classical
   rw [eq_iff_iff, not_iff_not, cancel_factors_eq ha hb had hbd hgcd]
 
 /-! ### Computing cancellation factors -/
@@ -105,7 +105,7 @@ theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
 be able to cancel all the numeric denominators in `e`. The returned `Tree` describes how to
 distribute the value `n` over products inside `e`.
 -/
-partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
+partial def findCancelFactor (e : Expr) : ℕ × BinaryTree ℕ :=
   match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, e1, e2]) | (``HSub.hSub, #[_, _, _, _, e1, e2]) =>
     let (v1, t1) := findCancelFactor e1
@@ -139,7 +139,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     | none => (1, .node 1 .nil .nil)
   | _ => (1, .node 1 .nil .nil)
 
-def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
+private def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   try
     synthesizeUsingTactic' type (← `(tactic| norm_num))
   catch e =>
@@ -162,7 +162,7 @@ The `v'` argument is a numeral expression corresponding to `v`, which we need in
 the return type accurately.
 -/
 partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (v' : Q($α))
-    (t : Tree ℕ) (e : Q($α)) : MetaM (CancelResult q(inferInstance) e v') := do
+    (t : BinaryTree ℕ) (e : Q($α)) : MetaM (CancelResult q(inferInstance) e v') := do
   let amwo : Q(AddMonoidWithOne $α) := q(inferInstance)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
@@ -230,7 +230,8 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e = {e}"
   let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
-  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) false eSimp.expr
+  let eSimpNormNum ←
+    Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) (useSimp := false) (e := eSimp.expr)
   trace[CancelDenoms] "e norm_num'd = {eSimpNormNum.expr}"
   let (n, t) := findCancelFactor eSimpNormNum.expr
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
@@ -327,18 +328,18 @@ syntax (name := cancelDenoms) "cancel_denoms" (location)? : tactic
 
 open Elab Tactic
 
-def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
+private def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
   let t ← instantiateMVars (← fvar.getDecl).type
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType t
   liftMetaTactic' fun g => do
     let res ← g.replaceLocalDecl fvar new eqPrf
     return res.mvarId
 
-def cancelDenominatorsTarget : TacticM Unit := do
+private def cancelDenominatorsTarget : TacticM Unit := do
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType (← getMainTarget)
   liftMetaTactic' fun g => g.replaceTargetEq new eqPrf
 
-def cancelDenominators (loc : Location) : TacticM Unit := do
+private def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
     (fun _ ↦ throwError "Failed to cancel any denominators")
 
@@ -346,3 +347,5 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
   Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))
+
+end Mathlib.Tactic
