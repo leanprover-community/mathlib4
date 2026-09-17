@@ -18,6 +18,8 @@ public import Mathlib.Tactic.Order
 # More operations on modules and ideals
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
@@ -284,27 +286,27 @@ theorem pow_mem_pow {x : R} (hx : x ∈ I) (n : ℕ) : x ^ n ∈ I ^ n :=
 theorem mul_le : I * J ≤ K ↔ ∀ r ∈ I, ∀ s ∈ J, r * s ∈ K :=
   Submodule.smul_le
 
-theorem mul_le_left : I * J ≤ J :=
+theorem mul_le_right : I * J ≤ J :=
   mul_le.2 fun _ _ _ => J.mul_mem_left _
 
 @[simp]
 theorem sup_mul_left_self : I ⊔ J * I = I :=
-  sup_eq_left.2 mul_le_left
+  sup_eq_left.2 mul_le_right
 
 @[simp]
 theorem mul_left_self_sup : J * I ⊔ I = I :=
-  sup_eq_right.2 mul_le_left
+  sup_eq_right.2 mul_le_right
 
-theorem mul_le_right [I.IsTwoSided] : I * J ≤ I :=
+theorem mul_le_left [I.IsTwoSided] : I * J ≤ I :=
   mul_le.2 fun _ hr _ _ ↦ I.mul_mem_right _ hr
 
 @[simp]
 theorem sup_mul_right_self [I.IsTwoSided] : I ⊔ I * J = I :=
-  sup_eq_left.2 mul_le_right
+  sup_eq_left.2 mul_le_left
 
 @[simp]
 theorem mul_right_self_sup [I.IsTwoSided] : I * J ⊔ I = I :=
-  sup_eq_right.2 mul_le_right
+  sup_eq_right.2 mul_le_left
 
 protected theorem mul_assoc : I * J * K = I * (J * K) :=
   Submodule.smul_assoc I J K
@@ -353,7 +355,7 @@ theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
   · rw [Submodule.pow_zero, one_eq_top]; exact le_top
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm, Submodule.pow_add _ m.add_one_ne_zero]
-  exact mul_le_left
+  exact mul_le_right
 
 theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
   calc
@@ -382,7 +384,7 @@ instance (priority := low) : (I ^ n).IsTwoSided :=
     (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
 
 protected theorem mul_one : I * 1 = I :=
-  mul_le_right.antisymm
+  mul_le_left.antisymm
     fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ Submodule.mem_top)
 
 protected theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
@@ -408,12 +410,12 @@ theorem span_mul_span (S T : Set R) [(span S).IsTwoSided] :
     span S * span T = span (S * T) :=
   Submodule.span_smul_span S T
 
-theorem span_mul_span' (S T : Set R) [(span S).IsTwoSided] : span S * span T = span (S * T) :=
-  (span_mul_span S T).trans <| congr_arg span <| Set.ext <| by simp [Set.mem_mul, eq_comm]
+@[deprecated (since := "2026-08-14")]
+alias span_mul_span' := span_mul_span
 
 theorem span_singleton_mul_span_singleton (r s : R) [(span {r}).IsTwoSided] :
     span {r} * span {s} = (span {r * s} : Ideal R) := by
-  rw [span_mul_span', Set.singleton_mul_singleton]
+  rw [span_mul_span, Set.singleton_mul_singleton]
 
 theorem span_singleton_pow (s : R) [(span {s}).IsTwoSided] (n : ℕ) :
     span {s} ^ n = (span {s ^ n} : Ideal R) := by
@@ -429,7 +431,7 @@ theorem mem_mul_span_singleton {x y : R} {I : Ideal R} [I.IsTwoSided] :
 
 theorem span_singleton_mul_left_mono [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
     {x : R} (hx : x ≠ 0) : I * span {x} ≤ J * span {x} ↔ I ≤ J := by
-  simp [SetLike.le_def, mem_mul_span_singleton, hx]
+  simp [IsConcreteLE.le_iff, mem_mul_span_singleton, hx]
 
 theorem span_singleton_mul_left_inj [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
     {x : R} (hx : x ≠ 0) : I * span {x} = J * span {x} ↔ I = J := by
@@ -445,14 +447,14 @@ lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided]
   exact not_or_intro hI hJ
 
 theorem sup_mul_eq_of_coprime_left [I.IsTwoSided] (h : I ⊔ J = ⊤) : I ⊔ J * K = I ⊔ K :=
-  le_antisymm (sup_le_sup_left mul_le_left _) fun i hi => by
+  le_antisymm (sup_le_sup_left mul_le_right _) fun i hi => by
     rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi ⊢
     obtain ⟨i1, hi1, j, hj, h⟩ := h; obtain ⟨i', hi', k, hk, rfl⟩ := hi
     refine ⟨_, add_mem hi' (mul_mem_right k _ hi1), _, mul_mem_mul hj hk, ?_⟩
     rw [add_assoc, ← add_mul, h, one_mul]
 
 theorem sup_mul_eq_of_coprime_right [J.IsTwoSided] (h : I ⊔ K = ⊤) : I ⊔ J * K = I ⊔ J :=
-  le_antisymm (sup_le_sup_left mul_le_right _) fun i hi ↦ by
+  le_antisymm (sup_le_sup_left mul_le_left _) fun i hi ↦ by
     rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi ⊢
     obtain ⟨i1, hi1, k, hk, h⟩ := h; obtain ⟨i', hi', j, hj, rfl⟩ := hi
     refine ⟨_, add_mem hi' (mul_mem_left _ j hi1), _, mul_mem_mul hj hk, ?_⟩
@@ -512,7 +514,7 @@ theorem mul_top [I.IsTwoSided] : I * ⊤ = I :=
 
 theorem span_pair_mul_span_pair (w x y z : R) [(span {w, x}).IsTwoSided] :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
-  rw [span_mul_span']; congr; ext r; simp [Set.mem_mul, or_assoc, eq_comm (a := r)]
+  rw [span_mul_span]; congr; ext r; simp [Set.mem_mul, or_assoc, eq_comm (a := r)]
 
 variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
@@ -565,9 +567,9 @@ lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔
   apply Finset.sup_le
   intro i hi
   by_cases hn : n ≤ i
-  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
+  · exact (Ideal.mul_le_left.trans (Ideal.mul_le_left.trans
       ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
-  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
+  · refine (Ideal.mul_le_left.trans (Ideal.mul_le_right.trans
       ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
     lia
 
@@ -594,7 +596,7 @@ theorem le_span_singleton_mul_iff {x : R} {I J : Ideal R} :
 
 theorem span_singleton_mul_le_iff {x : R} {I J : Ideal R} :
     span {x} * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
-  simp [SetLike.le_def, mem_span_singleton_mul]
+  simp [IsConcreteLE.le_iff, mem_span_singleton_mul]
 
 theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
     span {x} * I ≤ span {y} * J ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ := by
@@ -603,7 +605,7 @@ theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
 theorem span_singleton_mul_right_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I ≤ span {x} * J ↔ I ≤ J := by
   simp_rw [span_singleton_mul_le_span_singleton_mul, mul_right_inj' hx,
-    exists_eq_right', SetLike.le_def]
+    exists_eq_right', IsConcreteLE.le_iff]
 
 theorem span_singleton_mul_right_inj [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I = span {x} * J ↔ I = J := by
@@ -715,7 +717,7 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
   · rintro ⟨x, y, hxy⟩
     rw [eq_top_iff_one]
     apply (show x * I + y * J ≤ I ⊔ J from
-      sup_le (mul_le_left.trans le_sup_left) (mul_le_left.trans le_sup_right))
+      sup_le (mul_le_right.trans le_sup_left) (mul_le_right.trans le_sup_right))
     rw [hxy]
     simp only [one_eq_top, Submodule.mem_top]
   · intro h
@@ -777,7 +779,7 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
 
-@[deprecated mul_eq_inf_of_isCoprime (since := "2026-03-10")]
+@[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-03-10")]
 theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
 
@@ -889,7 +891,7 @@ theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
 lemma isRadical_bot_iff : (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
-  simp only [IsRadical, SetLike.le_def, Ideal.mem_radical_iff, Ideal.mem_bot,
+  simp only [IsRadical, IsConcreteLE.le_iff, Ideal.mem_radical_iff, Ideal.mem_bot,
     forall_exists_index, isReduced_iff, IsNilpotent]
 
 lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [isRadical_bot_iff]
@@ -965,7 +967,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
-@[deprecated isRadical_bot (since := "2026-08-03")]
+@[deprecated isRadical_bot +typeChanged (since := "2026-08-03")]
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
     (⊥ : Ideal R).IsRadical := isRadical_bot
 
@@ -988,7 +990,8 @@ lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
 
 theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P := by
   rw [or_comm, Ideal.mul_le]
-  simp_rw [hp.mul_mem_iff_mem_or_mem, SetLike.le_def, ← forall_or_left, or_comm, forall_or_left]
+  simp_rw [hp.mul_mem_iff_mem_or_mem, IsConcreteLE.le_iff, ← forall_or_left, or_comm,
+    forall_or_left]
 
 theorem IsPrime.inf_le {I J P : Ideal R} (hp : IsPrime P) : I ⊓ J ≤ P ↔ I ≤ P ∨ J ≤ P :=
   ⟨fun h ↦ hp.mul_le.1 <| mul_le_inf.trans h, fun h ↦ h.elim inf_le_left.trans inf_le_right.trans⟩
@@ -1093,8 +1096,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         exact ⟨hp.1, hp.2.2⟩
       have hiu : i ∉ u := mt Finset.mem_insert_of_mem hit
       have hn' : (insert i u).card = n := by
-        rwa [Finset.card_insert_of_notMem] at hn ⊢
-        exacts [hiu, hju]
+        rw [Finset.card_insert_of_notMem] at hn ⊢
+        exacts [hn, hiu, hju]
       have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k := by
         rw [Finset.coe_insert] at h ⊢
         rw [Finset.coe_insert] at h
@@ -1295,6 +1298,15 @@ instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
   uniq u := Units.ext (show (u : Ideal R) = 1 by rw [isUnit_iff.mp u.isUnit, one_eq_top])
 
+/-- `span {a}` divides `span {b}` if and only if `a` divides `b`. -/
+theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
+    span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
+  ⟨fun h => span_singleton_le_span_singleton.mp (le_of_dvd h),
+   fun ⟨c, hc⟩ => ⟨span {c}, by rw [hc, span_singleton_mul_span_singleton]⟩⟩
+
+@[deprecated (since := "2026-04-16")]
+alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
+
 end Dvd
 
 end MulAndRadical
@@ -1338,7 +1350,7 @@ theorem range_finsuppTotal :
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
-      rw [dif_pos (ha i)]
+      rw [dite_eq_left (ha i)]
     · exact fun _ => zero_smul _ _
 
 end Total

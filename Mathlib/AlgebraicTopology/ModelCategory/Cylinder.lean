@@ -93,11 +93,9 @@ a cylinder object for `A`. `P` shall be a *good* cylinder object
 when this morphism is a cofibration. -/
 noncomputable def i : A ⨿ A ⟶ P.I := coprod.desc P.i₀ P.i₁
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_i : coprod.inl ≫ P.i = P.i₀ := by simp [i]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_i : coprod.inr ≫ P.i = P.i₁ := by simp [i]
 
@@ -234,7 +232,6 @@ section
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
     (codiag A))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A cylinder object for `A` can be obtained from a factorization of the obvious
 map `A ⨿ A ⟶ A` as a cofibration followed by a trivial fibration. -/
 @[simps]

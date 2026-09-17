@@ -1,0 +1,55 @@
+{
+  "_comment": "The mathlib4 config (.github/zulip-emoji-config.json) retargeted at the leanprover-community/mathlib4-nightly-testing repo and its 'nightly-testing-mathlib' channel (where adaptation PRs are announced, one topic per PR), with the unused 'maintainer-merge' state and 'reviewers' channel dropped. Keep otherwise in sync with that file. Docs: https://github.com/leanprover-community/mathlib-ci/blob/master/docs/zulip-emoji-reconcile.md",
+
+  "github_repo": "leanprover-community/mathlib4-nightly-testing",
+
+  "merged_title_prefix": "[Merged by Bors] -",
+
+  "zulip": {
+    "site": "https://leanprover.zulipchat.com",
+    "email": "github-mathlib4-bot@leanprover.zulipchat.com"
+  },
+
+  "channels": {
+    "pr_reviews": "nightly-testing-mathlib",
+    "rss_allow": ["mathlib bors notifications"]
+  },
+
+  "ci": {
+    "check_names": ["Build", "Lint style", "Post-Build Step", "Check workflows"]
+  },
+
+  "states": [
+    {
+      "name": "merged", "group": "pr", "priority": 30,
+      "source": {"state": "merged"}, "emoji": "merge"
+    },
+    {
+      "name": "closed", "group": "pr", "priority": 20,
+      "source": {"state": "closed"},
+      "emoji": "closed-pr", "emoji_code": "61293", "reaction_type": "realm_emoji"
+    },
+    {
+      "name": "ready-to-merge", "group": "pr", "priority": 12,
+      "source": {"label": "ready-to-merge"},
+      "emoji": "bors", "emoji_code": "22134", "reaction_type": "realm_emoji"
+    },
+    {
+      "name": "delegated", "group": "pr", "priority": 11,
+      "source": {"label": "delegated"}, "emoji": "peace_sign"
+    },
+    {
+      "name": "awaiting-author", "group": "pr", "priority": 10,
+      "source": {"label": "awaiting-author"}, "emoji": "writing"
+    },
+
+    {"name": "ci-running", "group": "ci", "source": {"ci": "running"}, "emoji": "yellow"},
+    {"name": "ci-success", "group": "ci", "source": {"ci": "success"}, "emoji": "check"},
+    {"name": "ci-failure", "group": "ci", "source": {"ci": "failure"}, "emoji": "cross_mark"},
+
+    {
+      "name": "migrated", "group": null, "sticky": true,
+      "source": {"label": "migrated-from-branch"}, "emoji": "skip_forward"
+    }
+  ]
+}

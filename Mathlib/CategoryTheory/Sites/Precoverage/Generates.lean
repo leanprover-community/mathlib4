@@ -27,7 +27,7 @@ presheafs `Cᵒᵖ ⥤ Type max u v`. We then show that this implies that the co
 for all presheafs `Cᵒᵖ ⥤ Type w`.
 -/
 
-@[expose] public section
+public section
 
 universe t t' w v u
 

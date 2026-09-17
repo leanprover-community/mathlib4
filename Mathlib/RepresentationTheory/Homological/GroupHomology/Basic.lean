@@ -150,13 +150,12 @@ theorem d_eq [DecidableEq G] :
 
 end inhomogeneousChains
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous chains
 $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
 noncomputable abbrev inhomogeneousChains :
     ChainComplex (ModuleCat k) ℕ :=
-  ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
+  ChainComplex.of (fun n => ↧((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
     classical
     rw [inhomogeneousChains.d_eq, inhomogeneousChains.d_eq]
@@ -181,7 +180,6 @@ theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
   simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousChainsIso [DecidableEq G] :

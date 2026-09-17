@@ -35,15 +35,15 @@ noncomputable instance : SupSet ℕ :=
 
 open scoped Classical in
 theorem sInf_def {s : Set ℕ} (h : s.Nonempty) : sInf s = @Nat.find (fun n ↦ n ∈ s) _ h :=
-  dif_pos _
+  dite_eq_left _
 
 open scoped Classical in
 theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
     sSup s = @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h :=
-  dif_pos _
+  dite_eq_left _
 
 theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sSup s = 0 :=
-  dif_neg fun ⟨n, hn⟩ ↦
+  dite_eq_right fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_gt n
     (hn k hks).not_gt hk
 
@@ -56,21 +56,16 @@ lemma iSup_of_not_bddAbove {ι : Sort*} {f : ι → ℕ} (h : ¬ BddAbove (Set.r
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
-  cases eq_empty_or_nonempty s with
-  | inl h => subst h
-             simp only [or_true, InfSet.sInf,
-                        mem_empty_iff_false, exists_false, dif_neg, not_false_iff]
-  | inr h => simp only [h.ne_empty, or_false, Nat.sInf_def, h, Nat.find_eq_zero]
+  rcases eq_empty_or_nonempty s with (rfl | h)
+  · simp [sInf]
+  · simp [h, h.ne_empty, Nat.sInf_def]
 
 @[simp]
 theorem sInf_empty : sInf ∅ = 0 := by
-  rw [sInf_eq_zero]
-  right
-  rfl
+  simp
 
-@[simp]
 theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
-  rw [iInf_of_isEmpty, sInf_empty]
+  simp
 
 /-- This combines `Nat.iInf_of_empty` with `ciInf_const`. -/
 @[simp]
@@ -142,7 +137,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       intro s hs
       simp only [sSup,
         mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
-      rw [dif_neg]
+      rw [dite_eq_right]
       · exact le_antisymm (zero_le _) (find_le trivial)
       · exact hs
     csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }

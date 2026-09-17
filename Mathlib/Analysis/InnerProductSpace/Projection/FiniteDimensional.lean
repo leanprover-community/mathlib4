@@ -40,7 +40,7 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
 
-open Topology Finsupp Submodule RCLike Real Filter InnerProductSpace
+open Finsupp Submodule RCLike Real InnerProductSpace
 open LinearMap (ker range)
 
 variable (K : Submodule 𝕜 E)
@@ -210,7 +210,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     have : finrank ℝ Vᗮ ≤ n := by
       change finrank ℝ Wᗮ ≤ n + 1 at hn
       have : finrank ℝ W + 1 ≤ finrank ℝ V :=
-        finrank_lt_finrank_of_lt ((SetLike.lt_iff_le_and_exists (B := F)).2 ⟨H₂V, v, H₁V, hv'⟩)
+        finrank_lt_finrank_of_lt ((IsConcreteLE.lt_iff_le_and_exists (B := F)).2 ⟨H₂V, v, H₁V, hv'⟩)
       have : finrank ℝ V + finrank ℝ Vᗮ = finrank ℝ F := V.finrank_add_finrank_orthogonal
       have : finrank ℝ W + finrank ℝ Wᗮ = finrank ℝ F := W.finrank_add_finrank_orthogonal
       lia
@@ -287,7 +287,6 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
     simp_rw [map_add, Finset.sum_add_distrib]
     exact congr_arg₂ (· + ·) hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a family of submodules is orthogonal, then the `orthogonalProjection` on a direct sum
 is just the coefficient of that direct sum. -/
 theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
@@ -308,7 +307,6 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
 projection provides a means to decompose the space into its submodules.
 

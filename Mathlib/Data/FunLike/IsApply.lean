@@ -6,9 +6,10 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Algebra.Group.Monoid
+public import Mathlib.Data.Int.Notation
 
 /-! # Typeclasses for `FunLike` and algebraic operations
 In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`
@@ -200,7 +201,7 @@ end Def
 
 namespace FunLike
 
-variable {M M' F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
+variable {M F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
 
 section Coercion
 

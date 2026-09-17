@@ -44,7 +44,8 @@ The difference however, is that the former takes `D` as the only variable
 and fixing `D` would forces `k`. Whereas the later takes `D` and `L` as
 separate variables constrained by certain relations.
 
-## Reference
+## References
+
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
@@ -56,7 +57,7 @@ variable {D : Type*} [DivisionRing D] [Algebra.IsAlgebraic (Subring.center D) D]
 
 local notation3 "k" => Subring.center D
 
-open Polynomial LinearMap LieAlgebra
+open LinearMap LieAlgebra
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
   then for every element `a` of `D`, there exists a natural number `n`
