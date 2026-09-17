@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
-# External products of Guitart exact quares
+# External products of Guitart exact squares
 
 In this file, we show that the external product of two Guitart exact
 squares is a Guitart exact square.
