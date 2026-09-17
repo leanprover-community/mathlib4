@@ -25,7 +25,10 @@ namespace Convexity.ConvexSpace
 variable {R : Type*} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
   {Y Z : Type*} [ConvexSpace R Y] [ConvexSpace R Z]
 
-/-- The cone of an affine map from the standard simplex. -/
+/-- The cone of an affine map from the standard simplex. If `s` is an affine
+map `StdSimplex R (Fin n) → Y` and `y : Y`, then `s.cone y` is the affine map
+`StdSimplex R (Fin (n + 1)) → Y` which sends the vertex `0` to `y` and the
+vertex `i.succ` to the image by `s` of the `i`th vertex of the standard simplex. -/
 noncomputable def AffineMap.cone
     {n : ℕ} (s : ConvexSpace.AffineMap R (StdSimplex R (Fin n)) Y) (y : Y) :
     ConvexSpace.AffineMap R (StdSimplex R (Fin (n + 1))) Y :=
