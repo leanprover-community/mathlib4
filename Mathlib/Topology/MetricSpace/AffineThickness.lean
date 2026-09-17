@@ -95,13 +95,12 @@ theorem le_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) : r ≤ ethickn
     ∀ r' : ℝ≥0, ∀ A : AffineSubspace 𝕜 P, Module.rank 𝕜 A.direction ≤ n → s ⊆ cthickening r' A
       → r ≤ r' := by
   rw [ethickness, le_sInf_iff]
-  refine ⟨fun h r' A hA hs => ?_, ?_⟩
-  · exact h r' ⟨A, hA, by simpa using hs⟩
-  · rintro h t ⟨A, hA, hs⟩
-    rcases eq_or_ne t ⊤ with rfl | ht
-    · exact le_top
-    · lift t to ℝ≥0 using ht with u
-      exact h u A hA hs
+  refine ⟨fun h r' A hA hs => h r' ⟨A, hA, by simpa using hs⟩, ?_⟩
+  rintro h t ⟨A, hA, hs⟩
+  rcases eq_or_ne t ⊤ with rfl | ht
+  · exact le_top
+  lift t to ℝ≥0 using ht with u
+  exact h u A hA hs
 
 theorem le_mul_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) {C} (hC1 : C ≠ 0) (hC2 : C ≠ ⊤) :
     r ≤ C * ethickness 𝕜 s n ↔
@@ -112,55 +111,36 @@ theorem le_mul_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) {C} (hC1 : 
 /-- `ethickness 𝕜 s n` is decreasing in `n` -/
 theorem ethickness_antitone {s : Set P} : Antitone (ethickness 𝕜 s) := by
   intro m n hmn
-  exact sInf_le_sInf (fun r ⟨A, hA, hs⟩ => ⟨A, hA.trans (Nat.cast_le.mpr hmn), hs⟩)
+  exact sInf_le_sInf fun _ ⟨A, hA, hs⟩ ↦ ⟨A, hA.trans (Nat.cast_le.mpr hmn), hs⟩
 
 /-- `ethickness 𝕜 s n` is monotone in `s` -/
 theorem ethickness_monotone : Monotone (ethickness 𝕜 (P := P)) := by
   intro s t hst n
-  exact sInf_le_sInf (fun r ⟨A, hA, ht⟩ => ⟨A, hA, hst.trans ht⟩)
+  exact sInf_le_sInf fun _ ⟨A, hA, ht⟩ ↦ ⟨A, hA, hst.trans ht⟩
 
 /-- Taking the closure does not change `ethickness`, since each `cthickening` is closed. -/
 theorem ethickness_closure (s : Set P) (n : ℕ) :
     ethickness 𝕜 (closure s) n = ethickness 𝕜 s n := by
   apply congrArg sInf
   ext r
-  simp only [Set.mem_ofPred_eq]
-  refine ⟨fun ⟨A, hA, hsub⟩ => ⟨A, hA, subset_closure.trans hsub⟩,
-    fun ⟨A, hA, hsub⟩ => ⟨A, hA, closure_minimal hsub isClosed_cthickening⟩⟩
+  exact ⟨fun ⟨A, hA, h⟩ ↦ ⟨A, hA, subset_closure.trans h⟩,
+    fun ⟨A, hA, h⟩ ↦ ⟨A, hA, closure_minimal h isClosed_cthickening⟩⟩
 
 lemma thickness_nonneg (s : Set P) (n : ℕ) :
     0 ≤ thickness 𝕜 s n := by
-  unfold thickness
-  apply Real.sInf_nonneg
-  intro r ⟨hr, _⟩
-  exact hr
+  exact Real.sInf_nonneg fun _ ↦ And.left
 
 theorem thickness_eq_zero_of_rank_le {s : Set P} {n : ℕ} (h : Module.rank 𝕜 V ≤ n) :
     thickness 𝕜 s n = 0 := by
-  apply le_antisymm
-  · apply csInf_le ⟨0, fun _ ↦ And.left⟩
-    constructor
-    · trivial
-    · use ⊤
-      constructor
-      · rwa [AffineSubspace.direction_top, rank_top]
-      · simp
-  · apply thickness_nonneg
+  refine le_antisymm ?_ (thickness_nonneg _ _)
+  refine csInf_le ⟨0, fun _ ↦ And.left⟩ ⟨le_rfl, ⊤, ?_, by simp⟩
+  rwa [AffineSubspace.direction_top, rank_top]
 
 theorem thickness_empty [Nontrivial 𝕜] (n : ℕ) :
     thickness 𝕜 (∅ : Set P) n = 0 := by
-  apply le_antisymm
-  · apply csInf_le ⟨0, fun _ ↦ And.left⟩
-    refine ⟨le_refl 0, ⊥, ?_, Set.empty_subset _⟩
-    rw [AffineSubspace.direction_bot]
-    calc Module.rank 𝕜 (⊥ : Submodule 𝕜 V)
-        = 0 := by
-          rw [rank_eq_zero_iff]
-          intro x; use 1
-          simp only [ne_eq, one_ne_zero, not_false_eq_true, one_smul, true_and]
-          exact Submodule.eq_zero_of_bot_submodule x
-      _ ≤ _ := by simp
-  · exact thickness_nonneg _ _
+  refine le_antisymm ?_ (thickness_nonneg _ _)
+  refine csInf_le ⟨0, fun _ ↦ And.left⟩ ⟨le_rfl, ⊥, ?_, Set.empty_subset _⟩
+  rw [AffineSubspace.direction_bot, rank_bot]; exact zero_le
 
 theorem ethickness_le_of_cthickening {s : Set P} {n : ℕ} (r : ℝ≥0)
     {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n)
@@ -187,8 +167,7 @@ theorem exists_cthickening_of_ethickness_lt {s : Set P} {n : ℕ} {r : ℝ≥0}
   rw [← not_le, le_ethickness_iff] at hr
   push Not at hr
   obtain ⟨r', A, hA, hsA, hr'⟩ := hr
-  refine ⟨A, hA, hsA.trans (cthickening_mono ?_ _)⟩
-  exact_mod_cast hr'.le
+  exact ⟨A, hA, hsA.trans (cthickening_mono (mod_cast hr'.le) _)⟩
 
 end
 
@@ -200,21 +179,15 @@ variable
 
 theorem ethickness_closedBall_le {x : P} (r : ℝ≥0) (n : ℕ) :
     ethickness 𝕜 (closedBall x r) n ≤ r := by
-  apply sInf_le
-  use affineSpan 𝕜 {x}
-  constructor
-  · rw [direction_affineSpan, vectorSpan_singleton]
-    simp
-  · apply closedBall_subset_cthickening
-    simp
+  refine ethickness_le_of_cthickening r (A := affineSpan 𝕜 {x}) ?_
+    (closedBall_subset_cthickening (by simp) _)
+  rw [direction_affineSpan, vectorSpan_singleton, rank_bot]; exact zero_le
 
 /-- If a set is contained in a ball of radius `r`,
 then its thickness is bounded by `r` at all ranks. -/
 theorem ethickness_le_of_subset_closedBall {s : Set P} {x : P} (r : ℝ≥0)
     (h : s ⊆ closedBall x r) (n : ℕ) : ethickness 𝕜 s n ≤ r := by
-  trans ethickness 𝕜 (closedBall x r) n
-  · apply ethickness_monotone h
-  · apply ethickness_closedBall_le
+  grw [ethickness_monotone h n, ethickness_closedBall_le]
 
 omit [Nontrivial 𝕜] in
 /-- The `ethickness` at rank `n` of the `r`-thickening of a set is bounded by `r` plus the
@@ -232,10 +205,8 @@ theorem ethickness_cthickening_le {s : Set P} (r : ℝ≥0) (n : ℕ) :
   rcases eq_or_ne t ⊤ with rfl | ht_top
   · simp
   lift t to ℝ≥0 using ht_top with δ
-  apply ethickness_le_of_cthickening (r + δ) hA
-  apply (cthickening_subset_of_subset r hsA).trans
-  rw [NNReal.coe_add, ENNReal.coe_toReal]
-  apply cthickening_cthickening_subset r.coe_nonneg δ.coe_nonneg
+  exact ethickness_le_of_cthickening (r + δ) hA <| (cthickening_subset_of_subset r hsA).trans
+    (cthickening_cthickening_subset r.coe_nonneg δ.coe_nonneg _)
 
 /-- `ethickness` and `thickness` coincide when the set is bounded. -/
 theorem ethickness_thickness {s : Set P} (h : Bornology.IsBounded s) :
@@ -250,62 +221,38 @@ theorem ethickness_thickness {s : Set P} (h : Bornology.IsBounded s) :
   replace h : R.Nonempty := by
     obtain ⟨x⟩ : Nonempty P := inferInstance
     obtain ⟨r, hr, hs⟩ := h.subset_closedBall_lt 0 x
-    use r
-    constructor
-    · linarith
-    · use affineSpan 𝕜 {x}
-      constructor
-      · rw [direction_affineSpan, vectorSpan_singleton]
-        simp
-      · apply hs.trans
-        apply closedBall_subset_cthickening
-        simp
-  have hbdd : BddBelow R := by use 0; intro r hr; exact hr.1
+    refine ⟨r, hr.le, affineSpan 𝕜 {x}, ?_, hs.trans (closedBall_subset_cthickening (by simp) _)⟩
+    rw [direction_affineSpan, vectorSpan_singleton, rank_bot]; exact zero_le
+  have hbdd : BddBelow R := ⟨0, fun _ ↦ And.left⟩
   have h₂ : ENNReal.ofReal '' R ⊆ eR := by
-    intro t ⟨r, hr, ht⟩
-    obtain ⟨hr, A, hA⟩ := hr
-    use A
-    convert hA
-    simpa [← ht]
-  apply le_antisymm
+    rintro _ ⟨r, ⟨hr, A, hA, hs⟩, rfl⟩
+    exact ⟨A, hA, by simpa [hr]⟩
+  refine le_antisymm ?_ (le_sInf fun t hr ↦ ?_)
   · convert sInf_le_sInf h₂
-    apply ENNReal.ofReal_mono.map_csInf_of_continuousAt (A_nonemp := h) (A_bdd := hbdd)
-    apply ENNReal.continuous_ofReal.continuousAt
-  · apply le_sInf
-    intro t hr
-    by_cases ht : t = ⊤
-    · simp [ht]
-    · have ht' := ENNReal.ofReal_toReal ht
-      rw [← ht']
-      simp only [ENNReal.toReal_nonneg, ENNReal.ofReal_le_ofReal_iff]
-      apply csInf_le hbdd
-      constructor
-      · positivity
-      · exact hr
+    exact ENNReal.ofReal_mono.map_csInf_of_continuousAt
+      ENNReal.continuous_ofReal.continuousAt h hbdd
+  · rcases eq_or_ne t ⊤ with rfl | ht
+    · exact le_top
+    lift t to ℝ≥0 using ht
+    simpa using csInf_le hbdd ⟨t.coe_nonneg, hr⟩
 
 theorem ethickness_thickness' {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
     ethickness 𝕜 s n = ENNReal.ofReal (thickness 𝕜 s n) := by
-  rw [ethickness_thickness h]
-  simp
+  simp [ethickness_thickness h]
 
 theorem toReal_ethickness {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
     ENNReal.toReal (ethickness 𝕜 s n) = thickness 𝕜 s n := by
-  rw [ethickness_thickness' h]
-  rw [ENNReal.toReal_ofReal]
-  exact thickness_nonneg _ _
+  rw [ethickness_thickness' h, ENNReal.toReal_ofReal (thickness_nonneg _ _)]
 
 /-- Taking the closure does not change `thickness` of a bounded set. -/
 theorem thickness_closure {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
     thickness 𝕜 (closure s) n = thickness 𝕜 s n := by
-  have := ethickness_closure (𝕜 := 𝕜) s n
-  rw [ethickness_thickness' h.closure, ethickness_thickness' h] at this
-  exact (ENNReal.ofReal_le_ofReal_iff (thickness_nonneg s n)).mp this.le
-    |>.antisymm <| (ENNReal.ofReal_le_ofReal_iff (thickness_nonneg _ n)).mp this.ge
+  rw [← toReal_ethickness h.closure, ← toReal_ethickness h, ethickness_closure]
 
 /-- A bounded set has finite `ethickness` at every rank. -/
 theorem ethickness_ne_top {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
     ethickness 𝕜 s n ≠ ⊤ := by
-  rw [ethickness_thickness' h]; exact ENNReal.ofReal_ne_top
+  simp [ethickness_thickness' h]
 
 /-- A bounded set has `ethickness` strictly less than `⊤` at every rank. -/
 theorem ethickness_lt_top {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
@@ -315,49 +262,31 @@ theorem ethickness_lt_top {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
 theorem thickness_monotone {s t : Set P} (ht : Bornology.IsBounded t) (h : s ⊆ t) :
     thickness 𝕜 s ≤ thickness 𝕜 t := by
   intro n
-  rw [← ENNReal.ofReal_le_ofReal_iff]
-  · rw [← ethickness_thickness' ht n]
-    rw [← ethickness_thickness' (ht.subset h) n]
-    apply ethickness_monotone h
-  · apply thickness_nonneg
+  rw [← toReal_ethickness ht, ← toReal_ethickness (ht.subset h)]
+  exact ENNReal.toReal_mono (ethickness_ne_top ht n) (ethickness_monotone h n)
 
 /-- Provided that `s` is bounded, `thickness 𝕜 s n` is decreasing in `n` -/
 theorem thickness_antitone {s : Set P} (hs : Bornology.IsBounded s) {m n : ℕ} (h : m ≤ n) :
     thickness 𝕜 s n ≤ thickness 𝕜 s m := by
-  rw [← ENNReal.ofReal_le_ofReal_iff]
-  · repeat rw [← ethickness_thickness' hs]
-    apply ethickness_antitone h
-  · apply thickness_nonneg
+  rw [← toReal_ethickness hs, ← toReal_ethickness hs]
+  exact ENNReal.toReal_mono (ethickness_ne_top hs m) (ethickness_antitone h)
 
 theorem thickness_closedBall_le {x : P} {r : ℝ} (hr : 0 ≤ r) (n : ℕ) :
     thickness 𝕜 (closedBall x r) n ≤ r := by
-  set R := { ε : ℝ | 0 ≤ ε ∧ ∃ A : AffineSubspace 𝕜 P,
-    Module.rank 𝕜 A.direction ≤ n ∧ (closedBall x r) ⊆ cthickening ε A }
-  have hbdd : BddBelow R := ⟨0, fun _ ↦ And.left⟩
-  apply csInf_le hbdd
-  constructor
-  · assumption
-  · use affineSpan 𝕜 {x}
-    constructor
-    · rw [direction_affineSpan, vectorSpan_singleton]
-      simp
-    · apply closedBall_subset_cthickening
-      simp
+  refine thickness_le_of_cthickening hr (A := affineSpan 𝕜 {x}) ?_
+    (closedBall_subset_cthickening (by simp) _)
+  rw [direction_affineSpan, vectorSpan_singleton, rank_bot]; exact zero_le
 
 /-- If a set is contained in a ball of radius `r`,
 then its thickness is bounded by `r` at all ranks. -/
 theorem thickness_le_of_subset_closedBall {s : Set P} {x : P} {r : ℝ}
     (h : s ⊆ closedBall x r) (hr : 0 ≤ r) (n : ℕ) : thickness 𝕜 s n ≤ r := by
-  trans thickness 𝕜 (closedBall x r) n
-  · apply thickness_monotone isBounded_closedBall h
-  · apply thickness_closedBall_le hr
+  grw [thickness_monotone isBounded_closedBall h n, thickness_closedBall_le hr]
 
 /-- A variant of `thickness_le_of_subset_closedBall` -/
 theorem thickness_le_of_subset_closedBall_of_nonempty {s : Set P} {x : P} {r : ℝ}
     (h : s ⊆ closedBall x r) (hs : s.Nonempty) : ∀ n : ℕ, thickness 𝕜 s n ≤ r := by
-  suffices hr : 0 ≤ r from thickness_le_of_subset_closedBall h hr
-  rw [← nonempty_closedBall (x := x) (ε := r)]
-  exact hs.mono h
+  exact thickness_le_of_subset_closedBall h (nonempty_closedBall.1 (hs.mono h))
 
 end
 
@@ -369,14 +298,9 @@ variable
 
 theorem ethickness_eq_zero_of_finrank_le {s : Set P} {n : ℕ} (h : Module.finrank 𝕜 V ≤ n) :
     ethickness 𝕜 s n = 0 := by
-  rw [← bot_eq_zero, eq_bot_iff, bot_eq_zero]
-  apply sInf_le
-  · use ⊤
-    constructor
-    · rw [AffineSubspace.direction_top, rank_top]
-      rw [← Module.finrank_eq_rank']
-      exact_mod_cast h
-    · simp
+  refine nonpos_iff_eq_zero.1 <| ethickness_le_of_cthickening 0 (A := ⊤) ?_ (by simp)
+  rw [AffineSubspace.direction_top, rank_top, ← Module.finrank_eq_rank']
+  exact_mod_cast h
 
 omit [FiniteDimensional 𝕜 V] in
 theorem ethickness.scale_le {n} (s : Set P) (hn : n < Module.finrank 𝕜 V) :
@@ -392,12 +316,7 @@ omit [FiniteDimensional 𝕜 V] in
 theorem ethickness.le_scale_iff (s : Set P) {δ : ℝ≥0} :
     δ ≤ ethickness.scale 𝕜 s ↔
       ∀ n : Fin (Module.finrank 𝕜 V), δ ≤ ethickness 𝕜 s n := by
-  simp only [Finset.le_inf_iff, Finset.mem_range]
-  constructor
-  · intro h n
-    exact h n.val n.prop
-  · intro h n hn
-    exact h ⟨n, hn⟩
+  simp [Fin.forall_iff]
 
 /-- If `r : ℝ≥0` strictly exceeds `ethickness.scale 𝕜 s`, then `s` is contained in the
 closed `r`-neighborhood of some affine subspace of codimension `1` in `V`. -/
@@ -407,30 +326,18 @@ theorem ethickness.exists_cthickening_of_scale_lt [Nontrivial V] {s : Set P} {r 
       Module.finrank 𝕜 V = Module.finrank 𝕜 A.direction + 1 ∧ s ⊆ cthickening r A := by
   rw [scale_eq] at hr
   obtain ⟨A, hA, hsA⟩ := exists_cthickening_of_ethickness_lt hr
-  have hV : 0 < Module.finrank 𝕜 V := Module.finrank_pos
-  have hA' : Module.finrank 𝕜 A.direction ≤ Module.finrank 𝕜 V - 1 :=
-    Module.finrank_le_of_rank_le hA
-  by_cases hAbot : A = ⊥
-  · subst hAbot
-    rw [AffineSubspace.bot_coe, Metric.cthickening_empty] at hsA
-    have hs : s = ∅ := Set.subset_eq_empty hsA rfl
-    obtain ⟨x⟩ : Nonempty P := inferInstance
-    obtain ⟨W, -, hW⟩ := (⊥ : Submodule 𝕜 V).exists_le_finrank_eq
-      (k := Module.finrank 𝕜 V - 1) (by simp) (Nat.sub_le _ _)
-    refine ⟨AffineSubspace.mk' x W, ⟨⟨x, AffineSubspace.self_mem_mk' x W⟩⟩, ?_, ?_⟩
-    · rw [AffineSubspace.direction_mk', hW]
-      exact (Nat.sub_add_cancel hV).symm
-    · rw [hs]; exact Set.empty_subset _
-  · obtain ⟨x, hxA⟩ : (A : Set P).Nonempty :=
-      (AffineSubspace.nonempty_iff_ne_bot A).mpr hAbot
-    obtain ⟨W, hAW, hW⟩ := A.direction.exists_le_finrank_eq hA' (Nat.sub_le _ _)
-    refine ⟨AffineSubspace.mk' x W, ⟨⟨x, AffineSubspace.self_mem_mk' x W⟩⟩, ?_, ?_⟩
-    · rw [AffineSubspace.direction_mk', hW]
-      exact (Nat.sub_add_cancel hV).symm
-    · have hle : A ≤ AffineSubspace.mk' x W := fun p hp => by
-        rw [AffineSubspace.mem_mk']
-        exact hAW ((AffineSubspace.vsub_right_mem_direction_iff_mem hxA p).mpr hp)
-      exact hsA.trans (Metric.cthickening_subset_of_subset _ (SetLike.coe_subset_coe.mpr hle))
+  obtain ⟨W, hAW, hW⟩ := A.direction.exists_le_finrank_eq
+    (Module.finrank_le_of_rank_le hA) (Nat.sub_le _ _)
+  obtain ⟨x, hx⟩ : ∃ x : P, s ⊆ cthickening r (AffineSubspace.mk' x W) := by
+    rcases (A : Set P).eq_empty_or_nonempty with hAe | ⟨x, hxA⟩
+    · exact ⟨Classical.arbitrary P, by simp_all⟩
+    refine ⟨x, hsA.trans (cthickening_subset_of_subset _ fun p hp ↦ ?_)⟩
+    rw [SetLike.mem_coe, AffineSubspace.mem_mk']
+    exact hAW ((AffineSubspace.vsub_right_mem_direction_iff_mem hxA p).2 hp)
+  have : 0 < Module.finrank 𝕜 V := Module.finrank_pos (R := 𝕜) (M := V)
+  refine ⟨_, ⟨⟨x, AffineSubspace.self_mem_mk' x W⟩⟩, ?_, hx⟩
+  rw [AffineSubspace.direction_mk', hW]
+  omega
 
 end FiniteDimensional
 
@@ -443,15 +350,11 @@ theorem Set.Subsingleton.ethickness_eq_zero {𝕜} [Ring 𝕜] [Nontrivial 𝕜]
     Metric.ethickness 𝕜 s n = 0 := by
   rcases hs.eq_empty_or_singleton with hs | ⟨x, hs⟩
   · simp [hs]
-  · apply csInf_eq_bot_of_bot_mem
-    simp only [bot_eq_zero', Set.mem_ofPred_eq]
-    use AffineSubspace.mk' x ⊥
-    rw [AffineSubspace.direction_mk']
-    constructor
-    · simp
-    · simp only [ENNReal.toReal_zero, Metric.cthickening_zero, hs, Set.singleton_subset_iff]
-      apply subset_closure
-      apply AffineSubspace.self_mem_mk'
+  · refine nonpos_iff_eq_zero.1 <|
+      Metric.ethickness_le_of_cthickening 0 (A := .mk' x ⊥)
+      (by rw [AffineSubspace.direction_mk', rank_bot]; exact zero_le) ?_
+    rw [hs, Set.singleton_subset_iff]
+    exact Metric.self_subset_cthickening _ (AffineSubspace.self_mem_mk' x _)
 
 /-- A variant of `Metric.ethickness.exists_cthickening_of_scale_lt` -/
 theorem Bornology.IsBounded.exists_cthickening_thickness {𝕜} [DivisionRing 𝕜]
@@ -463,17 +366,9 @@ theorem Bornology.IsBounded.exists_cthickening_thickness {𝕜} [DivisionRing �
       Module.finrank 𝕜 A.direction = n ∧
         s ⊆ Metric.cthickening (Metric.thickness 𝕜 s n + ε) A := by
   have : Nontrivial V := Module.nontrivial_of_finrank_eq_succ hV
-  set δ : ℝ := Metric.thickness 𝕜 s n + ε
-  have hthick : 0 ≤ Metric.thickness 𝕜 s n := Metric.thickness_nonneg s n
-  have hδ : 0 < δ := by positivity
-  set r : ℝ≥0 := δ.toNNReal with hr_def
-  have hr_coe : (r : ℝ) = δ := Real.coe_toNNReal δ hδ.le
-  have hscale_lt : Metric.ethickness.scale 𝕜 s < r := by
-    rw [Metric.ethickness.scale_eq]
-    have hsub : Module.finrank 𝕜 V - 1 = n := by omega
-    rw [hsub, Metric.ethickness_thickness' h n,
-      show ((r : ℝ≥0) : ℝ≥0∞) = ENNReal.ofReal δ from by
-        rw [← hr_coe]; exact ENNReal.ofReal_coe_nnreal.symm]
-    exact (ENNReal.ofReal_lt_ofReal_iff_of_nonneg hthick).mpr (by linarith)
-  obtain ⟨A, hAne, hAfr, hsA⟩ := Metric.ethickness.exists_cthickening_of_scale_lt hscale_lt
-  exact ⟨A, hAne, by omega, hr_coe ▸ hsA⟩
+  have hδ := add_nonneg (Metric.thickness_nonneg (𝕜 := 𝕜) s n) hε.le
+  obtain ⟨A, hAne, hAfr, hsA⟩ := Metric.ethickness.exists_cthickening_of_scale_lt (𝕜 := 𝕜)
+    (r := (Metric.thickness 𝕜 s n + ε).toNNReal) (s := s) <| by
+    rw [Metric.ethickness.scale_eq, hV, Nat.add_sub_cancel, Metric.ethickness_thickness' h n]
+    exact (ENNReal.ofReal_lt_ofReal_iff_of_nonneg (Metric.thickness_nonneg _ _)).2 (by linarith)
+  exact ⟨A, hAne, by omega, Real.coe_toNNReal _ hδ ▸ hsA⟩

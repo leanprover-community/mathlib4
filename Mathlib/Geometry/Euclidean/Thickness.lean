@@ -67,8 +67,7 @@ lemma infDist_add_le_of_closedBall_subset_cthickening
   -- the pushed point `y = ρ • u +ᵥ x`
   set y : E := (ρ • u) +ᵥ x with hydef
   have hy_ball : y ∈ closedBall x ρ := by
-    rw [mem_closedBall, dist_eq_norm_vsub V, hydef, vadd_vsub, norm_smul,
-      Real.norm_eq_abs, abs_of_pos hρ, hu_norm, mul_one]
+    simp [hydef, dist_eq_norm_vsub V, norm_smul, abs_of_pos hρ, hu_norm]
   have hy_infDist : Metric.infDist y (A : Set E) ≤ (r' : ℝ) :=
     ENNReal.toReal_le_of_le_ofReal (NNReal.coe_nonneg r')
       (Metric.mem_cthickening_iff.1 (hballsub hy_ball))
@@ -84,11 +83,9 @@ lemma infDist_add_le_of_closedBall_subset_cthickening
         e2, inner_add_left, hu_inner, Submodule.inner_right_of_mem_orthogonal hpa hu_mem]
       ring
     calc Metric.infDist x (A : Set E) + ρ = inner ℝ (y -ᵥ a) u := hinner.symm
-      _ ≤ |inner ℝ (y -ᵥ a) u| := le_abs_self _
-      _ ≤ ‖y -ᵥ a‖ * ‖u‖ := abs_real_inner_le_norm _ _
-      _ = ‖y -ᵥ a‖ := by rw [hu_norm, mul_one]
-      _ = dist y a := (dist_eq_norm_vsub V y a).symm
-  linarith [hlb, hy_infDist]
+      _ ≤ ‖y -ᵥ a‖ * ‖u‖ := real_inner_le_norm _ _
+      _ = dist y a := by rw [hu_norm, mul_one, dist_eq_norm_vsub V]
+  linarith
 
 end
 
@@ -107,48 +104,35 @@ point of `s` by `ρ` along the direction realizing its distance to a covering su
 theorem le_ethickness_cthickening {s : Set E} (hs : s.Nonempty) {ρ : ℝ} {n : ℕ}
     (hn : n < Module.finrank ℝ V) :
     ethickness ℝ s n + ENNReal.ofReal ρ ≤ ethickness ℝ (cthickening ρ s) n := by
-  by_cases hρ : ρ ≤ 0
-  · rw [ENNReal.ofReal_of_nonpos hρ, add_zero]
-    exact ethickness_monotone (Metric.self_subset_cthickening s) n
-  · replace hρ : 0 < ρ := not_le.1 hρ
-    rw [le_ethickness_iff]
-    intro r' A hA hsub
-    have hAdim : Module.finrank ℝ A.direction < Module.finrank ℝ V :=
-      lt_of_le_of_lt (Module.finrank_le_of_rank_le hA) hn
-    have hperp : A.directionᗮ ≠ ⊥ := by
-      rw [Ne, Submodule.orthogonal_eq_bot_iff]
-      intro htop
-      rw [htop, Submodule.topEquiv.finrank_eq] at hAdim
-      exact lt_irrefl _ hAdim
-    obtain ⟨x₀, hx₀⟩ := hs
-    have hAne : (A : Set E).Nonempty := by
-      by_contra h
-      rw [Set.not_nonempty_iff_eq_empty] at h
-      have hx' := ((closedBall_subset_cthickening hx₀ ρ).trans hsub) (mem_closedBall_self hρ.le)
-      rw [h, cthickening_empty] at hx'
-      exact hx'
-    have : Nonempty A := hAne.to_subtype
-    have : A.direction.HasOrthogonalProjection := inferInstance
-    -- key per-point bound: for `x ∈ s`, `infDist x A + ρ ≤ r'`.
-    have hcov : ∀ x ∈ s, Metric.infDist x (A : Set E) + ρ ≤ (r' : ℝ) := fun x hx =>
-      infDist_add_le_of_closedBall_subset_cthickening hAne hperp hρ
-        ((closedBall_subset_cthickening hx ρ).trans hsub)
-    -- assemble: `s ⊆ cthickening (r' - ρ) A`, so `ethickness s n ≤ r' - ρ`.
-    have hρr : ρ ≤ (r' : ℝ) := by
-      have := hcov x₀ hx₀
-      linarith [Metric.infDist_nonneg (x := x₀) (s := (A : Set E))]
-    have hsub' : s ⊆ cthickening ((r' : ℝ) - ρ) (A : Set E) := fun x hx => by
-      have hxle : Metric.infDist x (A : Set E) ≤ (r' : ℝ) - ρ := by linarith [hcov x hx]
-      rw [Metric.mem_cthickening_iff, ← ENNReal.ofReal_toReal (Metric.infEDist_ne_top hAne)]
-      exact ENNReal.ofReal_le_ofReal hxle
-    have heth : ethickness ℝ s n ≤ ENNReal.ofReal ((r' : ℝ) - ρ) :=
-      ethickness_le_of_cthickening ((r' : ℝ) - ρ).toNNReal hA
-        (by rwa [Real.coe_toNNReal _ (by linarith)])
-    calc ethickness ℝ s n + ENNReal.ofReal ρ
-        ≤ ENNReal.ofReal ((r' : ℝ) - ρ) + ENNReal.ofReal ρ := by gcongr
-      _ = ENNReal.ofReal (r' : ℝ) := by
-            rw [← ENNReal.ofReal_add (by linarith) hρ.le, sub_add_cancel]
-      _ = (r' : ℝ≥0∞) := ENNReal.ofReal_coe_nnreal
+  rcases le_or_gt ρ 0 with hρ | hρ
+  · simpa [ENNReal.ofReal_of_nonpos hρ] using ethickness_monotone (self_subset_cthickening s) n
+  rw [le_ethickness_iff]
+  intro r' A hA hsub
+  have hperp : A.directionᗮ ≠ ⊥ := by
+    intro h
+    rw [Submodule.orthogonal_eq_bot_iff] at h
+    have := Module.finrank_le_of_rank_le hA
+    rw [h, finrank_top] at this
+    omega
+  obtain ⟨x₀, hx₀⟩ := hs
+  have hAne : (A : Set E).Nonempty := by
+    rw [Set.nonempty_iff_ne_empty]
+    intro h
+    simpa [h] using hsub (self_subset_cthickening s hx₀)
+  have : Nonempty A := hAne.to_subtype
+  -- key per-point bound: for `x ∈ s`, `infDist x A + ρ ≤ r'`.
+  have hcov (x) (hx : x ∈ s) : infDist x (A : Set E) + ρ ≤ r' :=
+    infDist_add_le_of_closedBall_subset_cthickening hAne hperp hρ
+      ((closedBall_subset_cthickening hx ρ).trans hsub)
+  -- assemble: `s ⊆ cthickening (r' - ρ) A`, so `ethickness s n ≤ r' - ρ`.
+  have hρr : ρ ≤ r' := by linarith [hcov x₀ hx₀, infDist_nonneg (x := x₀) (s := (A : Set E))]
+  have heth : ethickness ℝ s n ≤ ENNReal.ofReal (r' - ρ) := by
+    refine ethickness_le_of_cthickening _ hA fun x hx ↦ ?_
+    rw [Real.coe_toNNReal _ (by linarith), mem_cthickening_iff,
+      ← ENNReal.ofReal_toReal (infEDist_ne_top hAne)]
+    have : infDist x (A : Set E) ≤ r' - ρ := by linarith [hcov x hx]
+    exact ENNReal.ofReal_le_ofReal this
+  grw [heth, ← ENNReal.ofReal_add (by linarith) hρ.le, sub_add_cancel, ENNReal.ofReal_coe_nnreal]
 
 /-- **Lower bound for the `ethickness` of a closed ball.** At every rank `n` strictly below the
 ambient dimension, the closed ball of radius `r` has `ethickness` at least `r`: a ball is the
@@ -157,19 +141,7 @@ Together with `ethickness_closedBall_le` this pins the value to exactly `r`. -/
 theorem le_ethickness_closedBall {x : E} (r : ℝ≥0) {n : ℕ}
     (hn : n < Module.finrank ℝ V) :
     (r : ℝ≥0∞) ≤ ethickness ℝ (closedBall x r) n := by
-  have h_nonneg : 0 ≤ (r : ℝ) := r.coe_nonneg
-  have h_eq : closedBall x (r : ℝ) = cthickening (r : ℝ) ({x} : Set E) := by
-    symm; exact Metric.cthickening_singleton x h_nonneg
-  rw [h_eq]
-  have h_singleton_nonempty : ({x} : Set E).Nonempty := Set.singleton_nonempty x
-  have h_singleton_subsingleton : ({x} : Set E).Subsingleton :=
-    Set.subsingleton_singleton (a := x)
-  have h_eth_singleton_zero : ethickness ℝ ({x} : Set E) n = 0 :=
-    h_singleton_subsingleton.ethickness_eq_zero n
-  have h_ineq : ethickness ℝ ({x} : Set E) n + ENNReal.ofReal (r : ℝ) ≤
-    ethickness ℝ (cthickening (r : ℝ) ({x} : Set E)) n :=
-    le_ethickness_cthickening h_singleton_nonempty hn
-  rw [h_eth_singleton_zero, zero_add] at h_ineq
-  simpa [ENNReal.ofReal_coe_nnreal] using h_ineq
+  simpa [Set.subsingleton_singleton.ethickness_eq_zero, cthickening_singleton _ r.coe_nonneg]
+    using le_ethickness_cthickening (Set.singleton_nonempty x) (ρ := r) hn
 
 end Metric
