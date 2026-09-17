@@ -62,18 +62,19 @@ def suggestNormalize (old new : Expr) (info : PositionInfo) (stx : NormStx) :
     | _, _ => stx.tacStx (← info.hyp?.mapM fun hyp ↦
       `(Lean.Parser.Tactic.location| at $(mkIdent hyp):ident))
   let mut html ← exprToHtml new
-  if info.convPath?.isNone then
-    if info.hyp?.isNone && new.isTrue || info.hyp?.isSome && new.isFalse then
-      -- The goal is `True` or a hypothesis is `False`, so we are happy.
-      html := <span> {html} {.text " 🎉"} </span>
-  mkTacticSuggestion tac (← stx.tacStx none) html
+  let solves := info.convPath?.isNone &&
+    (info.hyp?.isNone && new.isTrue || info.hyp?.isSome && new.isFalse)
+  if solves then
+    addSolvingSuggestion tac
+  let button := (← PrettyPrinter.ppTactic (← stx.tacStx none)).pretty
+  mkSuggestion tac button html (solves := solves)
 
 section Cast
 
 public def normCast : NormTactic where
   run e := return (← Lean.Elab.Tactic.NormCast.derive e).1
   tacStx loc? := `(tactic| norm_cast $[$loc?]?)
-  convStx     := `(conv| norm_cast)
+  convStx := `(conv| norm_cast)
 
 public def pushCast : NormTactic where
   run e := do
@@ -83,7 +84,7 @@ public def pushCast : NormTactic where
     return (← Lean.Meta.simp e ctx).1.expr
   tacStx loc? := `(tactic| push_cast $[$loc?:location]?)
   -- There is no `conv` version of `push_cast`.
-  convStx     := failure
+  convStx := failure
 
 end Cast
 
@@ -102,7 +103,7 @@ def pushStx (head : Push.Head) (distrib : Bool) : NormStx :=
     | .const c => return mkIdent (← unresolveNameGlobal c)
   {
     tacStx loc? := do `(tactic| push $(← cfg) $(← head):term $[$loc?:location]?)
-    convStx     := do `(conv| push $(← cfg) $(← head):term)
+    convStx := do `(conv| push $(← cfg) $(← head):term)
   }
 
 /-- Run `push head`. -/
@@ -145,15 +146,15 @@ section Simp
 
 def dsimpOnlyStx : NormStx where
   tacStx loc? := `(tactic| dsimp only $[$loc?]?)
-  convStx     := `(conv| dsimp only)
+  convStx := `(conv| dsimp only)
 
 def dsimpStx : NormStx where
   tacStx loc? := `(tactic| dsimp $[$loc?:location]?)
-  convStx     := `(conv| dsimp)
+  convStx := `(conv| dsimp)
 
 def simpStx : NormStx where
   tacStx loc? := `(tactic| simp $[$loc?:location]?)
-  convStx     := `(conv| simp)
+  convStx := `(conv| simp)
 
 
 /-- Run `dsimp only`. -/
@@ -200,7 +201,7 @@ We currently use one thread for these, but we might parallelize it in the future
 -/
 public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos : SubExpr.Pos) :
     ClickSuggestionsM Html :=
-  mkIncrementalSuggestions "normalize" (.text "Normalize") fun update ↦ withNewMCtxDepth do
+  mkIncrementalSuggestions "Normalization" fun update ↦ withNewMCtxDepth do
     let info : PositionInfo := {
       hyp? := ← fvarId?.mapM (·.getUserName)
       convPath? := ← if pos.isRoot then pure none else some <$> Conv.Path.ofSubExprPos rootExpr pos
