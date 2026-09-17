@@ -6,6 +6,7 @@ Authors: Justin Lai
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
 /-!
 
@@ -30,7 +31,7 @@ star graph
 
 namespace SimpleGraph
 
-variable {V : Type*}
+variable {V : Type*} (r : V)
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
@@ -73,6 +74,24 @@ lemma isAcyclic_starGraph (r : V) : (starGraph r).IsAcyclic := by
 
 lemma isTree_starGraph (r : V) : (starGraph r).IsTree :=
   ⟨connected_starGraph r, isAcyclic_starGraph r⟩
+
+/-- Bicoloring of a star graph -/
+def Coloring.starGraphBool [DecidableEq V] : (starGraph r).Coloring Bool where
+  toFun v := v = r
+  map_rel' := by grind [top_adj]
+
+theorem IsBipartite.starGraph : (starGraph r).IsBipartite := by
+  classical
+  simpa using Coloring.starGraphBool r |>.colorable
+
+theorem IsBipartiteWith.starGraph : (starGraph r).IsBipartiteWith {r} {r}ᶜ := by
+  grind [IsBipartiteWith]
+
+theorem IsCompleteBetween.starGraph : (starGraph r).IsCompleteBetween {r} {r}ᶜ := by
+  grind [IsCompleteBetween]
+
+theorem IsCompleteMultipartite.starGraph : (starGraph r).IsCompleteMultipartite := by
+  grind [IsCompleteMultipartite, isTrans_def]
 
 /-- Every non-center vertex of a starGraph has degree one. -/
 lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
