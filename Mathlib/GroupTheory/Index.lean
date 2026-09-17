@@ -352,6 +352,15 @@ theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
 theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
   rw [mul_comm, card_mul_index]
 
+@[to_additive relIndex_mul_card]
+theorem relIndex_mul_card : H.relIndex K * Nat.card (H ⊓ K :) = Nat.card K := by
+  simpa [mul_comm] using relIndex_inf_mul_relIndex ⊥ H K
+
+/-- The index of a finite subgroup is the quotient of the cardinalities. -/
+@[to_additive /-- The index of a finite additive subgroup is the quotient of the cardinalities. -/]
+theorem index_eq_card_div [Finite H] : H.index = Nat.card G / Nat.card H := by
+  rw [← card_mul_index H, Nat.mul_div_cancel_left _ Nat.card_pos]
+
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
@@ -401,10 +410,8 @@ theorem relIndex_ne_zero_trans (hHK : H.relIndex K ≠ 0) (hKL : K.relIndex L �
 @[to_additive]
 theorem relIndex_inf_ne_zero (hH : H.relIndex L ≠ 0) (hK : K.relIndex L ≠ 0) :
     (H ⊓ K).relIndex L ≠ 0 := by
-  replace hH : H.relIndex (K ⊓ L) ≠ 0 := mt (relIndex_eq_zero_of_le_right inf_le_right) hH
-  rw [← inf_relIndex_right] at hH hK ⊢
-  rw [inf_assoc]
-  exact relIndex_ne_zero_trans hH hK
+  rw [← relIndex_inf_mul_relIndex, mul_ne_zero_iff_right hK]
+  exact mt (relIndex_eq_zero_of_le_right inf_le_right) hH
 
 @[to_additive]
 theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).index ≠ 0 := by
@@ -424,9 +431,11 @@ lemma relIndex_inter_ne_zero {J K : Subgroup G} (hJK : J.relIndex K ≠ 0) (L : 
 theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L := by
   by_cases h : H.relIndex L = 0
   · simp [relIndex_eq_zero_of_le_left inf_le_left h]
-  rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
-    inf_relIndex_right, inf_relIndex_right]
-  grw [relIndex_le_of_le_right inf_le_right h]
+  grw [← relIndex_inf_mul_relIndex, relIndex_le_of_le_right inf_le_right h]
+
+@[to_additive]
+theorem index_inf : (H ⊓ K).index = H.relIndex K * K.index := by
+  rw [← inf_relIndex_right, relIndex_mul_index inf_le_right]
 
 @[to_additive]
 theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
@@ -520,7 +529,7 @@ lemma disjoint_of_coprime_natCard (h : Nat.card H |>.Coprime <| Nat.card K) : Di
   disjoint_iff.mpr <| card_eq_one.mp <| Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
 
-@[to_additive (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
+@[to_additive (attr := deprecated disjoint_of_coprime_natCard +typeChanged (since := "2026-05-28"))]
 lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   disjoint_iff.mp <| disjoint_of_coprime_natCard h
 
@@ -785,6 +794,18 @@ instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
   ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relIndex_eq_zero h⟩
 
 @[to_additive]
+instance (H' : Subgroup G') [H'.FiniteIndex] : (H'.comap f).FiniteIndex where
+  index_ne_zero := by
+    rw [index_comap]
+    exact FiniteIndex.index_ne_zero
+
+variable (H) in
+@[to_additive]
+theorem FiniteIndex.map_of_surjective [H.FiniteIndex] (hf : Function.Surjective f) :
+    (H.map f).FiniteIndex where
+  index_ne_zero := ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (H.index_map_dvd hf)
+
+@[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
@@ -929,7 +950,7 @@ lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy 
     rw [← map_univ_equiv (Equiv.mulRight y⁻¹), filter_map, card_map]
   congr 2 with g
   simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
-  let f' := MonoidHomClass.toMonoidHom f
+  let f' := MonoidHom.ofClass f
   change f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
   rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 
