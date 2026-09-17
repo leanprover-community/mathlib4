@@ -102,7 +102,7 @@ attribute [instance] RootPairing.isPerfPair_toLinearMap
 /-- A root datum is a root pairing with coefficients in the integers: the intended use is for the
 case in which which the root and coroot spaces are finitely-generated free Abelian groups.
 
-Observe that the assumptions `[Finite ℤ X₁] [Finite ℤ X₂]` should be supplied explicitely and are
+Observe that the assumptions `[Finite ℤ X₁] [Finite ℤ X₂]` should be supplied explicitly and are
 not part of the definition. Once they're assumed, freeness follows automatically since two
 finitely-generated Abelian groups in perfect pairing are necessarily free, and Lean knows this,
 e.g., via `Module.IsReflexive.of_isPerfPair`, `Module.IsReflexive.to_isTorsionFree`,
