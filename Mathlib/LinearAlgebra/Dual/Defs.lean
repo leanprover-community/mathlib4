@@ -264,6 +264,8 @@ lemma dualMap_dualMap_eq_iff_of_injective
 instance : IsReflexive R (Dual R M) :=
   ⟨by simpa only [← symm_dualMap_evalEquiv] using! (evalEquiv R M).dualMap.symm.bijective⟩
 
+@[deprecated (since := "2026-09-17")] alias Dual.instIsReflecive := instIsReflexiveDual
+
 variable {R M N} in
 /-- A direct summand of a reflexive module is reflexive. -/
 lemma IsReflexive.of_split (i : N →ₗ[R] M) (s : M →ₗ[R] N) (H : s ∘ₗ i = .id) :

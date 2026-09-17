@@ -88,4 +88,8 @@ instance {G H : Type*} [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [Par
     [Unique (G ≃+o H)] : Unique (Multiplicative G ≃*o Multiplicative H) :=
   OrderAddMonoidIso.toMultiplicative.symm.unique
 
+@[deprecated (since := "2026-09-17")]
+alias Multiplicative.instUniqueOrderdMonoidIso :=
+  instUniqueOrderMonoidIsoMultiplicativeOfOrderAddMonoidIso
+
 end TypeTags

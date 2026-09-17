@@ -120,6 +120,10 @@ instance (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) : (F.mapHomologicalComplex c).Additive where
 
+@[deprecated (since := "2026-09-17")]
+alias Functor.map_homogical_complex_additive :=
+  instAdditiveHomologicalComplexMapHomologicalComplex
+
 variable (W₁)
 
 /-- The functor on homological complexes induced by the identity functor is
