@@ -71,9 +71,9 @@ theorem Finite.isGreatest_ciSup [Nonempty ι] [Finite ι] (f : ι → α) :
 theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a ↔ ∀ x ∈ s, x < a :=
   ⟨fun h _ hx => (le_csSup hs.bddAbove hx).trans_lt h, fun H => H _ <| h.csSup_mem hs⟩
 
-section ConditionallyCompleteLattice
+section ConditionallyCompletePartialOrderSup
 
-variable [ConditionallyCompleteLattice β] {f : α → β}
+variable [ConditionallyCompletePartialOrderSup β] {f : α → β}
 
 @[to_dual]
 theorem Set.Finite.map_sSup_of_monotoneOn (hfin : s.Finite) (hne : s.Nonempty)
@@ -85,6 +85,12 @@ theorem Set.Finite.map_sSup_of_monotone (hfin : s.Finite) (hne : s.Nonempty) (hf
     f (sSup s) = sSup (f '' s) :=
   hfin.map_sSup_of_monotoneOn hne <| hf.monotoneOn s
 
+end ConditionallyCompletePartialOrderSup
+
+section ConditionallyCompletePartialOrder
+
+variable [ConditionallyCompletePartialOrder β] {f : α → β}
+
 @[to_dual]
 theorem Set.Finite.map_sSup_of_antitoneOn (hfin : s.Finite) (hne : s.Nonempty)
     (hf : AntitoneOn f s) : f (sSup s) = sInf (f '' s) :=
@@ -95,7 +101,7 @@ theorem Set.Finite.map_sSup_of_antitone (hne : s.Nonempty) (hfin : s.Finite) (hf
     f (sSup s) = sInf (f '' s) :=
   hfin.map_sSup_of_antitoneOn hne <| hf.antitoneOn s
 
-end ConditionallyCompleteLattice
+end ConditionallyCompletePartialOrder
 
 variable (f : ι → α)
 
