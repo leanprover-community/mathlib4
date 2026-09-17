@@ -203,6 +203,32 @@ theorem finDim_le_zero_iff_subsingleton [StrongRankCondition R] [IsDomain R]
   · simp [hs]
   simp [finDim_eq_finrank, hs, Module.finrank_zero_iff, Submodule.subsingleton_iff_eq_bot]
 
+theorem zero_lt_dim_iff_nontrivial [IsDomain R] [Module.IsTorsionFree R s.direction] :
+    0 < dim s ↔ (s : Set A).Nontrivial := by
+  contrapose!
+  simp
+
+theorem zero_lt_finDim_iff_nontrivial [StrongRankCondition R] [IsDomain R]
+    [Module.IsTorsionFree R s.direction] [Module.Finite R s.direction] :
+    0 < finDim s ↔ (s : Set A).Nontrivial := by
+  contrapose!
+  simp
+
+theorem dim_eq_zero_iff [IsDomain R] [Module.IsTorsionFree R V] : dim s = 0 ↔ ∃ x : A, s = {x} := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have h₁ : (s : Set A).Nonempty := dim_ne_bot_iff.mp (by simp [h])
+    have h₂ := dim_le_zero_iff_subsingleton.mp (le_of_eq h)
+    obtain ⟨x, hx⟩ := Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨h₁, h₂⟩
+    exact ⟨x, (AffineSubspace.ext_iff _ _).mpr hx⟩
+  · obtain ⟨x, rfl⟩ := h
+    simp [dim]
+
+theorem finDim_eq_zero_iff [StrongRankCondition R] [IsDomain R] [Module.IsTorsionFree R V]
+    [Module.Finite R s.direction] : finDim s = 0 ↔ ∃ x : A, s = {x} := by
+  rcases eq_or_ne s ⊥ with rfl | hs
+  · simpa using fun x ↦ Ne.symm (singleton_ne_bot _ _ _)
+  simp [finDim_eq_map_dim_toNat, dim_eq_zero_iff, show s.dim ≠ ⊥ by simpa, WithBot.unbot_eq_iff]
+
 end Ring
 
 section DivisionRing
@@ -217,6 +243,48 @@ theorem finDim_strictMono [Module.Finite R t.direction] (h : s < t) : finDim s <
   rw [finDim_eq_finrank hs, finDim_eq_finrank (ne_bot_of_gt h), Nat.cast_lt]
   refine Submodule.finrank_lt_finrank_of_lt (direction_lt_of_nonempty h ?_)
   exact (nonempty_iff_ne_bot _).mpr hs
+
+@[simp]
+theorem finrank_vectorSpan_pair {x y : A} (hxy : x ≠ y) :
+    Module.finrank R (vectorSpan R {x, y}) = 1 := by
+  rw [vectorSpan_pair, finrank_span_singleton]
+  simpa
+
+@[simp]
+theorem finrank_direction_affineSpan_pair {x y : A} (hxy : x ≠ y) :
+    Module.finrank R (affineSpan R {x, y}).direction = 1 := by
+  rw [direction_affineSpan, finrank_vectorSpan_pair hxy]
+
+@[simp]
+theorem dim_affineSpan_pair {x y : A} (hxy : x ≠ y) : (affineSpan R {x, y}).dim = 1 := by
+  rw [dim_eq_rank (nonempty_iff_ne_bot _ |>.mp ⟨x, left_mem_affineSpan_pair ..⟩)]
+  simp [Module.rank_eq_one_iff_finrank_eq_one, hxy]
+
+@[simp]
+theorem finDim_affineSpan_pair {x y : A} (hxy : x ≠ y) : (affineSpan R {x, y}).finDim = 1 := by
+  simp [finDim_eq_map_dim_toNat, hxy]
+
+theorem dim_eq_one_iff :
+    dim s = 1 ↔ ∃ x y : s, x ≠ y ∧ s = affineSpan R {x.1, y.1} := by
+  rcases eq_or_ne s ⊥ with rfl | hs
+  · simp
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨x, hx, y, hy, hxy⟩ := zero_lt_dim_iff_nontrivial (s := s) |>.mp (by simp [h])
+    refine ⟨⟨x, hx⟩, ⟨y, hy⟩, by simpa, ext_of_direction_eq ?_ ?_⟩
+    · rw [dim_eq_rank hs, WithBot.coe_eq_one, Module.rank_eq_one_iff_finrank_eq_one] at h
+      have := eq_span_singleton_of_mem_of_finrank_eq_one h (vsub_mem_direction hx hy) (by simpa)
+      grind [direction_affineSpan, vectorSpan_pair]
+    · exact ⟨x, by simp_all [left_mem_affineSpan_pair]⟩
+  · obtain ⟨_, _, h₁, h₂⟩ := h
+    rw [dim_eq_rank hs, WithBot.coe_eq_one, Module.rank_eq_one_iff_finrank_eq_one, h₂]
+    simp [h₁]
+
+theorem finDim_eq_one_iff :
+    finDim s = 1 ↔ ∃ x y : s, x ≠ y ∧ s = affineSpan R {x.1, y.1} := by
+  rcases eq_or_ne s ⊥ with rfl | hs
+  · simp
+  rw [finDim_eq_finrank hs, Nat.cast_eq_one, ← Module.rank_eq_one_iff_finrank_eq_one]
+  simpa [dim_eq_rank hs] using dim_eq_one_iff (s := s)
 
 end DivisionRing
 
