@@ -296,7 +296,7 @@ theorem card_ker_mul_card_range (f : G →* G') : Nat.card f.ker * Nat.card f.ra
   rw [← index_ker, card_mul_index]
 
 @[to_additive card_ker_mul_card_of_surjective]
-theorem card_ker_mul_card_of_surjective (hf : Function.Surjective f) :
+theorem card_ker_mul_card_of_surjective (hf : Surjective f) :
     Nat.card f.ker * Nat.card G' = Nat.card G := by
   rw [← card_ker_mul_card_range f,  MonoidHom.range_eq_top.mpr hf, Nat.card_congr topEquiv.toEquiv]
 
