@@ -5,7 +5,7 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.Tactic.FieldSimp
 
@@ -23,8 +23,8 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 ## Results
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
   on the size of the sifted set in terms of `mainSum` and `errSum`
- * `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
- * `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
+* `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
+* `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
 
 ## References
 
@@ -85,11 +85,12 @@ attribute [arith_mult] BoundingSieve.nu_mult
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
 @[positivity BoundingSieve.weights _ _]
-meta def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@BoundingSieve.weights $s $n) =>
     assertInstancesCommute
@@ -146,7 +147,7 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ s.prodPrimes) (hd_ne_
   calc
     s.nu d = ∏ p ∈ d.primeFactors, s.nu p := (prod_primeFactors_nu hdP).symm
     _ < ∏ p ∈ d.primeFactors, 1 := by
-      apply prod_lt_prod_of_nonempty
+      apply prod_lt_prod_of_nonempty₀
       · intro p hp
         simp only [mem_primeFactors] at hp
         apply s.nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
@@ -243,7 +244,7 @@ private theorem sum_divisors_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → �
   congr! 1 with d hd
   rw [mem_divisors] at hd
   suffices ∀ d1 d2, (d1 ∣ d ∧ d2 ∣ d ∧ d = d1.lcm d2) = (d = d1.lcm d2) by
-    simp_rw [←Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ite_sum_zero, ← ite_and, this]
+    simp_rw [← Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ite_sum_zero, ← ite_and, this]
   simp +contextual [← and_assoc, Nat.dvd_lcm_left, Nat.dvd_lcm_right]
 
 theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) :
@@ -305,13 +306,12 @@ theorem inv_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l
   congr! 1 with ⟨d, e⟩ hd
   obtain ⟨rfl, -⟩ : d * e = l ∧ _ := by simpa using hd
   obtain ⟨hde, -⟩ : d.Coprime e ∧ _ := by simpa only [squarefree_mul_iff] using hl
-  obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 :=
-    by simp_all [s.nu_mult.map_mul_of_coprime hde]
+  obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 := by simp_all [s.nu_mult.map_mul_of_coprime hde]
   simp [field, s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
 theorem nu_inv_eq_sum_divisors_inv_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :
     (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then (s.selbergTerms l)⁻¹ else 0 := by
-  rw [eq_comm, ←sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
+  rw [eq_comm, ← sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
   have hd_pos : 0 < d := Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero prodPrimes_ne_zero hdP
   revert hdP; revert d
   apply (ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq_on _ (fun _ _ ↦ Nat.dvd_trans)).mpr

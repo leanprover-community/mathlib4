@@ -20,7 +20,7 @@ universe w v u
 
 namespace CategoryTheory
 
-open Opposite TypeCat ConcreteCategory
+open Opposite TypeCat
 
 namespace Limits.Types
 

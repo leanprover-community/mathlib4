@@ -6,8 +6,8 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
-public import Mathlib.Order.Antisymmetrization
 public meta import Lean.Meta.ExprLens
+public meta import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
@@ -43,10 +43,11 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   withLocalDeclD `a α fun a ↦ do
   withLocalDeclD `b α fun b ↦ do
   withNewMCtxDepth do
+  let mut result : Array GrwPos := #[]
   -- Any relation `r` can be proved from `AntisymmRel r`, so we add this as a possible relation
-  let antiSymm := mkApp2 (.const ``AntisymmRel [u]) α relation
-  let mut result : Array GrwPos :=
-    #[{ relName := ``AntisymmRel, relation := antiSymm, symm? := none }]
+  if (← getEnv).contains `AntisymmRel then
+    let antiSymm := mkApp2 (.const `AntisymmRel [u]) α relation
+    result := result.push { relName := `AntisymmRel, relation := antiSymm, symm? := none }
   -- If `relName` is symmetric, then include the reverse as a possible relation (`symm? := none`)
   let symm? ← try
     let dummyVar ← mkFreshExprMVar (mkApp2 relation a b)
@@ -61,7 +62,9 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   result := result.push { relName, relation, symm? }
   -- For `≤`, we add the relation `<`.
   if relName == ``LE.le then
-    let (mvars, _, le) ← forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels ``le_of_lt))
+    if (← getEnv).contains `le_of_lt then
+      let (mvars, _, le) ←
+        forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels `le_of_lt))
       if ← isDefEq le.appFn!.appFn! relation then
         let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
         result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
@@ -174,8 +177,8 @@ private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemm
   mkRewrite i.rwKind lem.symm proof (← getHypIdent?) (grw := true)
 
 /-- Generate the suggestion for rewriting with `lem`. -/
-def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwKey) := do
-  withNewMCtxDepth do
+def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) (assignableMVars : Array Expr) :
+    ClickSuggestionsM (Result GrwKey) := do
   let mctx ← getMCtx
   (·.getDM do throwError "no suitable `grw` relation was found") =<< i.gpos.findSomeM? fun pos ↦ do
   unless lem.relName == pos.relName && pos.symm?.all (· == lem.symm) do return none
@@ -193,15 +196,11 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwK
   if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
     throwError "{lhs} and {e} do not match according to the head-constant indexing"
   synthAppInstances `click_suggestions default mvars binderInfos false false
-  let mut extraGoals := #[]
-  for mvar in mvars do
-    unless ← mvar.mvarId!.isAssigned do
-      extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar))
+  let mvars ← mvars.map Expr.mvarId! |>.filterM (not <$> ·.isAssigned)
+  let extraGoals ← mvars.mapM (do instantiateMVars <| ← ·.getType)
 
   let replacement ← instantiateMVars rhs
-  let makesNewMVars :=
-    (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    extraGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
+  let unhelpfulMVars ← hasUnhelpfulMVars mvars assignableMVars (extraGoals.push replacement)
   let proof ← instantiateMVars proof
   let isRefl ← isExplicitEq e replacement
   let justLemmaName ←
@@ -227,10 +226,10 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwK
     htmls := htmls.push
       <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
-    if !isRefl && !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-    else
+    if isRefl || unhelpfulMVars then
       pure none
+    else
+      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← do

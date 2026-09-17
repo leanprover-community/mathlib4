@@ -5,8 +5,7 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.Order.SymmDiff
+public import Mathlib.MeasureTheory.VectorMeasure.Order
 
 /-!
 # Hahn decomposition
@@ -110,13 +109,13 @@ private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
 
 private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     ExistsOneDivLT s i (findExistsOneDivLT s i) := by
-  rw [findExistsOneDivLT, dif_pos hi]
+  rw [findExistsOneDivLT, dite_eq_left hi]
   convert! Nat.find_spec (existsNatOneDivLTMeasure_of_not_negative hi)
 
 private theorem findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
     (hm : m < findExistsOneDivLT s i) : ¬ExistsOneDivLT s i m := by
   classical
-  rw [findExistsOneDivLT, dif_pos hi] at hm
+  rw [findExistsOneDivLT, dite_eq_left hi] at hm
   exact Nat.find_min _ hm
 
 open scoped Classical in
@@ -130,7 +129,7 @@ private theorem someExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     someExistsOneDivLT s i ⊆ i ∧
       MeasurableSet (someExistsOneDivLT s i) ∧
         (1 / (findExistsOneDivLT s i + 1) : ℝ) < s (someExistsOneDivLT s i) := by
-  rw [someExistsOneDivLT, dif_pos hi]
+  rw [someExistsOneDivLT, dite_eq_left hi]
   exact Classical.choose_spec (findExistsOneDivLT_spec hi)
 
 private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
@@ -138,7 +137,7 @@ private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
   · exact
       let ⟨h, _⟩ := someExistsOneDivLT_spec hi
       h
-  · rw [someExistsOneDivLT, dif_neg hi]
+  · rw [someExistsOneDivLT, dite_eq_right hi]
     exact Set.empty_subset _
 
 private theorem someExistsOneDivLT_subset' : someExistsOneDivLT s (i \ j) ⊆ i :=
@@ -149,7 +148,7 @@ private theorem someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneD
   · exact
       let ⟨_, h, _⟩ := someExistsOneDivLT_spec hi
       h
-  · rw [someExistsOneDivLT, dif_neg hi]
+  · rw [someExistsOneDivLT, dite_eq_right hi]
     exact MeasurableSet.empty
 
 private theorem someExistsOneDivLT_lt (hi : ¬s ≤[i] 0) :
@@ -423,8 +422,7 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
       le_antisymm (hi'.2 (hi.compl.inter hj) Set.inter_subset_left)
         (hj'.1 (hi.compl.inter hj) Set.inter_subset_right),
       le_antisymm (hj'.2 (hj.compl.inter hi) Set.inter_subset_left)
-        (hi'.1 (hj.compl.inter hi) Set.inter_subset_right),
-      VectorMeasure.zero_apply, VectorMeasure.zero_apply, zero_add]
+        (hi'.1 (hj.compl.inter hi) Set.inter_subset_right), zero_apply, zero_apply, zero_add]
     · exact
         Set.disjoint_of_subset_left Set.inter_subset_left
           (Set.disjoint_of_subset_right Set.inter_subset_right
@@ -436,8 +434,7 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
       le_antisymm (hi'.2 (hj.inter hi.compl) Set.inter_subset_right)
         (hj'.1 (hj.inter hi.compl) Set.inter_subset_left),
       le_antisymm (hj'.2 (hi.inter hj.compl) Set.inter_subset_right)
-        (hi'.1 (hi.inter hj.compl) Set.inter_subset_left),
-      VectorMeasure.zero_apply, VectorMeasure.zero_apply, zero_add]
+        (hi'.1 (hi.inter hj.compl) Set.inter_subset_left), zero_apply, zero_apply, zero_add]
     · exact
         Set.disjoint_of_subset_left Set.inter_subset_left
           (Set.disjoint_of_subset_right Set.inter_subset_right

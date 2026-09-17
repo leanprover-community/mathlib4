@@ -11,8 +11,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Order
 /-!
 # Construct ordered rings from rings with a specified positive cone.
 
-In this file we provide the structure `RingCone`
-that encodes axioms of `OrderedRing` and `LinearOrderedRing`
+In this file we provide the structure `RingCone` that encodes axioms of ordered rings
 in terms of the subset of non-negative elements.
 
 We also provide constructors that convert between

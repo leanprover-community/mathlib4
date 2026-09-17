@@ -35,7 +35,7 @@ the circumcenter.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 
@@ -56,7 +56,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     (hp : p ∉ s) (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
     ∃! cs₂ : Sphere P,
       cs₂.center ∈ affineSpan ℝ (insert p (s : Set P)) ∧ insert p ps ⊆ (cs₂ : Set P) := by
-  haveI : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
+  have : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
   rcases hu with ⟨⟨cc, cr⟩, ⟨hcc, hcr⟩, hcccru⟩
   simp only at hcc hcr hcccru
   let x := dist cc (orthogonalProjection s p)
@@ -67,8 +67,9 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   let cr₂ := √(cr * cr + ycc₂ * ycc₂)
   use ⟨cc₂, cr₂⟩
   simp -zeta -proj only
-  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ (orthogonalProjection s p : P) :=
-    by simp
+  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ
+    (orthogonalProjection s p : P) := by
+    simp
   constructor
   · constructor
     · refine vadd_mem_of_mem_direction ?_ (mem_affineSpan ℝ (Set.mem_insert_of_mem _ hcc))
@@ -143,7 +144,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
       obtain ⟨i, hi⟩ := hn
-      haveI : Unique ι := ⟨⟨i⟩, hi⟩
+      have : Unique ι := ⟨⟨i⟩, hi⟩
       use ⟨p i, 0⟩
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
       constructor
@@ -158,11 +159,11 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       classical
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype {x | x ≠ i}]
-        · rw [Finset.filter_not, Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
+        · rw [Finset.filter_not, Finset.filter_eq' _ i, ite_eq_left (Finset.mem_univ _),
             Finset.card_sdiff, Finset.card_univ, hn]
           simp
         · simp
-      haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
+      have : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
       have ha2 : AffineIndependent ℝ fun i2 : ι2 => p i2 := ha.subtype _
       replace hm := hm ha2 _ hc
       have hr : Set.range p = insert (p i) (Set.range fun i2 : ι2 => p i2) := by
@@ -367,11 +368,10 @@ theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)
-    (h₁' : ↑(s.orthogonalProjectionSpan p₁) = s.circumcenter)
-    (h : s.points 0 ∈ affineSpan ℝ (Set.range s.points)) :
+    (h₁' : ↑(s.orthogonalProjectionSpan p₁) = s.circumcenter) :
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius := by
-  rw [dist_comm, ← h₁ 0,
-    s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₁ h]
+  rw [dist_comm, ← h₁ 0, s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
+    p₁ (mem_affineSpan_range ..)]
   simp only [h₁', dist_comm p₁, add_sub_cancel_left, Simplex.dist_circumcenter_eq_circumradius]
 
 /-- If there exists a distance that a point has from all vertices of a
@@ -578,7 +578,7 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
     sum_const, filter_or, filter_eq']
   rw [card_union_of_disjoint]
   · norm_num
-  · simpa only [if_true, mem_univ, disjoint_singleton] using h
+  · simpa only [ite_true, mem_univ, disjoint_singleton] using h
 
 /-- The reflection of the circumcenter of a simplex in an edge, in
 terms of `pointsWithCircumcenter`. -/
@@ -796,13 +796,12 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
     subst hp₂
     exact s.coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection hp₂o
   rw [h₂'] at hp₂
-  have h : s.points 0 ∈ span_s := mem_affineSpan ℝ (Set.mem_range_self _)
   have hd₁ :
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius :=
-    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₁ h₁' h
+    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₁ h₁'
   have hd₂ :
     dist p₂ s.circumcenter * dist p₂ s.circumcenter = r * r - s.circumradius * s.circumradius :=
-    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₂ h₂' h
+    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₂ h₂'
   rw [← hd₂, hp₁, hp₂, dist_eq_norm_vsub V _ s.circumcenter, dist_eq_norm_vsub V _ s.circumcenter,
     vadd_vsub, vadd_vsub, ← real_inner_self_eq_norm_mul_norm, ← real_inner_self_eq_norm_mul_norm,
     real_inner_smul_left, real_inner_smul_left, real_inner_smul_right, real_inner_smul_right, ←

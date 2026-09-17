@@ -220,7 +220,14 @@ lemma directedOn_iff_isDirectedOrder [LE α] {s : Set α} :
 @[to_dual]
 alias ⟨DirectedOn.isDirectedOrder, DirectedOn.of_isDirectedOrder⟩ := directedOn_iff_isDirectedOrder
 
+theorem DirectedOn.empty : DirectedOn r ∅ :=
+  fun _ ↦ False.elim
+
 section Reflexive
+
+theorem Set.Subsingleton.directedOn [Std.Refl r] {s : Set α} (h : s.Subsingleton) :
+    DirectedOn r s :=
+  fun a ha _ hb ↦ ⟨a, ha, refl a, h ha hb ▸ refl a⟩
 
 protected theorem DirectedOn.insert [Std.Refl r] (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
@@ -234,7 +241,7 @@ protected theorem DirectedOn.insert [Std.Refl r] (a : α) {s : Set α} (hd : Dir
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
 
 theorem directedOn_singleton [Std.Refl r] (a : α) : DirectedOn r ({a} : Set α) :=
-  fun x hx _ hy => ⟨x, hx, refl _, hx.symm ▸ hy.symm ▸ refl _⟩
+  Set.subsingleton_singleton.directedOn
 
 theorem directedOn_pair [Std.Refl r] {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
   (directedOn_singleton _).insert _ fun c hc => ⟨c, hc, hc.symm ▸ hab, refl _⟩

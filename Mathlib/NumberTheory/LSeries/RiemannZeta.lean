@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 public import Mathlib.Analysis.PSeriesComplex
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definition of the Riemann zeta function
@@ -83,7 +84,7 @@ lemma HurwitzZeta.completedCosZeta₀_zero (s : ℂ) :
 
 lemma completedRiemannZeta_eq (s : ℂ) :
     completedRiemannZeta s = completedRiemannZeta₀ s - 1 / s - 1 / (1 - s) := by
-  simp_rw [completedRiemannZeta, completedRiemannZeta₀, completedHurwitzZetaEven_eq, if_true]
+  simp_rw [completedRiemannZeta, completedRiemannZeta₀, completedHurwitzZetaEven_eq, ite_true]
 
 /-- The modified completed Riemann zeta function `Λ(s) + 1 / s + 1 / (1 - s)` is entire. -/
 theorem differentiable_completedZeta₀ : Differentiable ℂ completedRiemannZeta₀ :=
@@ -116,12 +117,13 @@ lemma completedRiemannZeta_residue_one :
 -/
 
 /-- The Riemann zeta function `ζ(s)`. -/
+@[wikidata Q187235]
 def riemannZeta := hurwitzZetaEven 0
 
 lemma HurwitzZeta.hurwitzZetaEven_zero : hurwitzZetaEven 0 = riemannZeta := rfl
 
 lemma HurwitzZeta.cosZeta_zero : cosZeta 0 = riemannZeta := by
-  simp_rw [cosZeta, riemannZeta, hurwitzZetaEven, if_true, completedHurwitzZetaEven_zero,
+  simp_rw [cosZeta, riemannZeta, hurwitzZetaEven, ite_true, completedHurwitzZetaEven_zero,
     completedCosZeta_zero]
 
 lemma HurwitzZeta.hurwitzZeta_zero : hurwitzZeta 0 = riemannZeta := by
@@ -147,7 +149,7 @@ lemma analyticOn_riemannZeta :
 
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
-  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, if_true]
+  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, ite_true]
 
 lemma riemannZeta_def_of_ne_zero {s : ℂ} (hs : s ≠ 0) :
     riemannZeta s = completedRiemannZeta s / Gammaℝ s := by
@@ -179,6 +181,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
 
 /-- A formal statement of the **Riemann hypothesis** – constructing a term of this type is worth a
 million dollars. -/
+@[wikidata Q205966]
 def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
 

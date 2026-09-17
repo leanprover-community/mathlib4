@@ -127,7 +127,7 @@ theorem mongePoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace 
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).mongePoint = s.mongePoint := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   simp_rw [mongePoint]
   rw [← Simplex.centroid, ← Simplex.centroid]
   simp [centroid_restrict, circumcenter_restrict]
@@ -170,7 +170,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
         mongePointWeightsWithCircumcenter] <;>
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
-  · rw [if_pos (mem_univ _), card_fin]
+  · rw [ite_eq_left (mem_univ _), card_fin]
     field
   · simp [field]
     ring
@@ -487,6 +487,14 @@ theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3
   refine affineSpan_le_of_subset_coe ?_
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
+
+/-- The affine span of the orthocenter and a vertex is equal to the
+altitude if the orthocenter is not the vertex. -/
+theorem affineSpan_orthocenter_point_eq_altitude (t : Triangle ℝ P) (i : Fin 3)
+    (h : t.orthocenter ≠ t.points i) : line[ℝ, t.orthocenter, t.points i] = t.altitude i := by
+  rw [← affineSpan_pair_altitudeFoot_eq_altitude, affineSpan_pair_eq_of_left_mem_of_ne _ h]
+  rw [affineSpan_pair_altitudeFoot_eq_altitude]
+  exact orthocenter_mem_altitude t
 
 /-- Suppose we are given a triangle `t₁`, and replace one of its
 vertices by its orthocenter, yielding triangle `t₂` (with vertices not

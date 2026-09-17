@@ -96,7 +96,7 @@ lemma zariskisMainProperty_iff' {p : Ideal S} :
 lemma zariskisMainProperty_iff_exists_saturation_eq_top {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, ∃ h : IsIntegral R r,
       (integralClosure R S).saturation (.powers r) (by simpa [Submonoid.powers_le]) = ⊤ := by
-  simp [zariskisMainProperty_iff, ← top_le_iff, SetLike.le_def,
+  simp [zariskisMainProperty_iff, ← top_le_iff, IsConcreteLE.le_iff,
     Submonoid.mem_powers_iff, mem_integralClosure_iff]
 
 lemma ZariskisMainProperty.restrictScalars [Algebra S T] [IsScalarTower R S T]
@@ -149,10 +149,10 @@ lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
   have ht't : t' * algebraMap S St t = 1 := by rw [mul_comm, IsLocalization.Away.mul_invSelf]
   let R₁ := Algebra.adjoin R {t'}
   let R₂ := Algebra.adjoin R₁ {algebraMap S St (φ X)}
-  letI : Algebra R₁ R₂ := R₂.algebra
-  letI : Algebra R₂ St := R₂.toAlgebra
-  letI : Algebra R₁ St := R₁.toAlgebra
-  haveI : IsScalarTower R₁ R₂ St := Subalgebra.isScalarTower_mid _
+  let : Algebra R₁ R₂ := R₂.algebra
+  let : Algebra R₂ St := R₂.toAlgebra
+  let : Algebra R₁ St := R₁.toAlgebra
+  have : IsScalarTower R₁ R₂ St := Subalgebra.isScalarTower_mid _
   have : Algebra.IsIntegral R₁ R₂ := by
     cases subsingleton_or_nontrivial R₁
     · have := (algebraMap R₁ R₂).codomain_trivial; exact ⟨(Subsingleton.elim · 0 ▸ isIntegral_zero)⟩
@@ -194,7 +194,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
   set a := p.leadingCoeff
   let R' := Localization.Away a
   let S' := Localization.Away (algebraMap R S a)
-  letI : Algebra R' S' := (Localization.awayMap (algebraMap R S) a).toAlgebra
+  let : Algebra R' S' := (Localization.awayMap (algebraMap R S) a).toAlgebra
   have : IsScalarTower R R' S' := .of_algebraMap_eq (by
     simp +zetaDelta [RingHom.algebraMap_toAlgebra, IsLocalization.Away.map, ← algebraMap_apply R S])
   have ha : IsUnit (algebraMap R R' a) := IsLocalization.Away.algebraMap_isUnit a
@@ -241,7 +241,7 @@ lemma exists_leadingCoeff_pow_smul_mem_conductor
       exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_range φ _ p
         (hφ.to_isIntegral (t * x)) (by convert! this using 1; ring)
     obtain ⟨r, hr : algebraMap _ _ r = _⟩ := hRS.le hn
-    exact ⟨n, (C r + q), by simp [← Polynomial.algebraMap_eq, - Polynomial.algebraMap_apply, hr]⟩
+    exact ⟨n, (C r + q), by simp [← Polynomial.algebraMap_eq, -Polynomial.algebraMap_apply, hr]⟩
   choose n hn using this
   obtain ⟨s, hs⟩ := Module.Finite.fg_top (R := R[X]) (M := S)
   refine ⟨s.sup n, fun x ↦ ?_⟩
@@ -464,7 +464,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
     (x : S) (hx : Algebra.adjoin R {x} = ⊤) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
-  · letI inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
+  · let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
     have inst : Algebra.WeaklyQuasiFiniteAt (integralClosure R S) p :=
       .of_restrictScalars R (integralClosure R S) _
@@ -476,7 +476,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     exact Algebra.adjoin_mono (by simp)
   have H₀ : Function.Surjective (aeval (R := R) x) := by
     rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_singleton_eq_range_aeval]
-  have ⟨f, (hf : aeval x f = 0), hfp⟩ := SetLike.not_le_iff_exists.mp
+  have ⟨f, (hf : aeval x f = 0), hfp⟩ := IsConcreteLE.not_le_iff_exists.mp
     (Polynomial.not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt _ H₀ p)
   obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using! hfp
   clear hfp
@@ -508,7 +508,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
     (f : R[X] →ₐ[R] S) (hf : f.Finite) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
-  · letI inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
+  · let inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
     have inst : Algebra.WeaklyQuasiFiniteAt (integralClosure R S) p :=
       .of_restrictScalars R (integralClosure R S) _
@@ -534,7 +534,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     convert! (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf
       using 1
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes, J]
-  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp hf
+  obtain ⟨x, hx, hxp⟩ := IsConcreteLE.not_le_iff_exists.mp hf
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
   refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
   · have : Algebra.WeaklyQuasiFiniteAt R (p.under f.range) := by
@@ -595,7 +595,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
       MvPolynomial.aeval fun i ↦ ⟨f (.X i.succ), Algebra.subset_adjoin (by simp)⟩
     have := IH (R := R) (S := R') (p.under R') φ <| by
       refine RingHom.finite_iff_isIntegral_and_finiteType.mpr ⟨?_, ?_⟩
-      · letI := φ.toAlgebra
+      · let := φ.toAlgebra
         have : IsScalarTower (MvPolynomial (Fin n) R) R' S := .of_algebraMap_eq' <| by
           ext <;> simp [φ, (f'.toRingHom.comp C).algebraMap_toAlgebra, φ.algebraMap_toAlgebra, f',
             MvPolynomial.finSuccEquiv, MvPolynomial.optionEquivLeft]
@@ -609,8 +609,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
           simp +contextual only [Subalgebra.range_val, Algebra.adjoin_le_iff, Subalgebra.coe_map,
             Subalgebra.coe_val, Set.subset_def, SetLike.mem_coe, Algebra.mem_adjoin_of_mem,
             Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right, R']
-          simpa [R', mem_integralClosure_iff,
-            ← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective R' S),
+          simpa [R', mem_integralClosure_iff, ← isIntegral_algebraMap_iff (A := R') (B := S),
             forall_and, hr, or_imp, Finset.mem_smul_finset]
         refine ⟨fun i ↦ ?_, fun a has ↦ ?_⟩
         · convert! isIntegral_algebraMap (x := MvPolynomial.X i)
@@ -623,7 +622,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
         exact ⟨(Subalgebra.fg_top _).mpr ⟨_, rfl⟩⟩
     refine this.trans _ ⟨⟨r, hrR'⟩, hrp, ?_⟩
     suffices ⊤ ≤ R'.saturation (.powers r) (by simpa [Submonoid.powers_le]) by
-      simpa [SetLike.le_def, Subalgebra.smul_def, Submonoid.mem_powers_iff,
+      simpa [IsConcreteLE.le_iff, Subalgebra.smul_def, Submonoid.mem_powers_iff,
         SetLike.ext_iff, Algebra.mem_bot] using this
     rw [← hs, Algebra.adjoin_le_iff]
     intro x hx
@@ -716,9 +715,8 @@ lemma ZariskisMainProperty.quasiFiniteAt
   have : Algebra.QuasiFinite R (Localization.Away r.1) :=
     .of_surjective_algHom (Localization.awayMapₐ S'.val r) H.2
   let f : Localization.Away r.1 →ₐ[S] Localization.AtPrime p :=
-    IsLocalization.liftAlgHom (M := .powers r.1) (f := Algebra.ofId _ _) (by
-      simpa [Submonoid.mem_powers_iff] using
-        (IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩).pow)
+    IsLocalization.Away.liftAlgHom r.1 (f := Algebra.ofId _ _) <|
+      IsLocalization.map_units (M := p.primeCompl) (Localization.AtPrime p) ⟨r, hrp⟩
   refine .of_forall_exists_mul_mem_range (f.restrictScalars R) fun x ↦ ?_
   obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
   exact ⟨algebraMap _ _ s, by simpa using IsLocalization.map_units _ ⟨s, hs⟩,

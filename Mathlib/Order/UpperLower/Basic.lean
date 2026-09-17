@@ -170,12 +170,16 @@ theorem Set.antitone_mem : Antitone (· ∈ s) ↔ IsLowerSet s :=
   forall_comm
 
 @[simp]
-theorem isUpperSet_setOf : IsUpperSet { a | p a } ↔ Monotone p :=
+theorem isUpperSet_setOfPred : IsUpperSet { a | p a } ↔ Monotone p :=
   Iff.rfl
 
+@[deprecated (since := "2026-07-09")] alias isUpperSet_setOf := isUpperSet_setOfPred
+
 @[simp]
-theorem isLowerSet_setOf : IsLowerSet { a | p a } ↔ Antitone p :=
+theorem isLowerSet_setOfPred : IsLowerSet { a | p a } ↔ Antitone p :=
   forall_comm
+
+@[deprecated (since := "2026-07-09")] alias isLowerSet_setOf := isLowerSet_setOfPred
 
 @[to_dual]
 lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=
@@ -248,7 +252,7 @@ theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :
     s = ∅ ∨ ∃ a, s = Ici a := by
   refine or_iff_not_imp_left.2 fun ha ↦ ?_
   obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
-  exact ⟨_, ext fun b ↦ ⟨wellFounded_lt.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
+  exact ⟨_, ext fun b ↦ ⟨WellFoundedLT.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
 
 @[to_dual]
 theorem IsLowerSet.eq_univ_or_Iio [WellFoundedLT α] (h : IsLowerSet s) :
