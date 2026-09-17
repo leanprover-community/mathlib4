@@ -27,6 +27,7 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 * `Tuple.sortDesc`: given `f : Fin n → α`, produces a permutation on `Fin n` sorting into decreasing
   order
 * `Tuple.antitone_sortDesc`: `f ∘ Tuple.sortDesc f` is `Antitone`
+* `Tuple.comp_sort_comp_rev_eq_comp_sortDesc`: sorting descending equals sorting ascending, reversed
 
 -/
 
@@ -199,6 +200,16 @@ theorem comp_perm_comp_sortDesc_eq_comp_sortDesc :
     (f ∘ σ) ∘ sortDesc (f ∘ σ) = f ∘ sortDesc f := by
   rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
   exact unique_antitone (antitone_sortDesc (f ∘ σ)) (antitone_sortDesc f)
+
+/-- Sorting `f` in descending order is the same as sorting it in ascending order, then reversing. -/
+theorem comp_sort_comp_rev_eq_comp_sortDesc : f ∘ sort f ∘ Fin.rev = f ∘ sortDesc f := by
+  rw [show ⇑(sort f) ∘ Fin.rev = ⇑(sort f * Fin.revPerm : Equiv.Perm (Fin n)) from rfl]
+  exact unique_antitone ((monotone_sort f).comp_antitone Fin.rev_anti) (antitone_sortDesc f)
+
+/-- Sorting `f` in ascending order is the same as sorting it in descending order, then reversing. -/
+theorem comp_sortDesc_comp_rev_eq_comp_sort : f ∘ sortDesc f ∘ Fin.rev = f ∘ sort f := by
+  rw [show ⇑(sortDesc f) ∘ Fin.rev = ⇑(sortDesc f * Fin.revPerm : Equiv.Perm (Fin n)) from rfl]
+  exact unique_monotone ((antitone_sortDesc f).comp Fin.rev_anti) (monotone_sort f)
 
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`
 has a pair of strictly decreasing entries. -/
