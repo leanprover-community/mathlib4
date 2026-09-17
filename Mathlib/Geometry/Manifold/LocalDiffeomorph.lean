@@ -185,6 +185,13 @@ lemma localInverse_mem_target (hf : IsLocalDiffeomorphAt I J n f x) :
     x ∈ hf.localInverse.target :=
   hf.choose_spec.1
 
+lemma localInverse_contMDiffOn (hf : IsLocalDiffeomorphAt I J n f x) :
+    CMDiff[hf.localInverse.source] n hf.localInverse :=
+  hf.localInverse.contMDiffOn_toFun
+
+@[deprecated (since := "2026-09-17")]
+alias contmdiffOn_localInverse := localInverse_contMDiffOn
+
 lemma continuousAt_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     ContinuousAt hf.localInverse (f x) :=
   hf.localInverse_contMDiffOn.continuousOn.continuousAt <|
@@ -225,13 +232,6 @@ lemma localInverse_eventuallyEq_left (hf : IsLocalDiffeomorphAt I J n f x) :
 lemma localInverse_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
     IsLocalDiffeomorphAt J I n (hf.localInverse) (f x) :=
   hf.localInverse.isLocalDiffeomorphAt _ _ _ hf.localInverse_mem_source
-
-lemma localInverse_contMDiffOn (hf : IsLocalDiffeomorphAt I J n f x) :
-    CMDiff[hf.localInverse.source] n hf.localInverse :=
-  hf.localInverse.contMDiffOn_toFun
-
-@[deprecated (since := "2026-09-17")]
-alias contmdiffOn_localInverse := localInverse_contMDiffOn
 
 lemma localInverse_contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
     CMDiffAt n hf.localInverse (f x) :=
