@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
-## Polynomials over finite fields
+# Polynomials over finite fields
 -/
 
 @[expose] public section
