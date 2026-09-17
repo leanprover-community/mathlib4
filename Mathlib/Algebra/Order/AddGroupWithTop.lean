@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
+import Mathlib.Tactic.Basify.Attr
 
 
 /-!
@@ -54,11 +55,11 @@ class LinearOrderedAddCommGroupWithTop (α : Type*)
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b c : α}
 
-@[simp]
+@[simp, basify_simp]
 theorem top_add (a : α) : ⊤ + a = ⊤ :=
   LinearOrderedAddCommMonoidWithTop.top_add' a
 
-@[simp]
+@[simp, basify_simp]
 theorem add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
 
