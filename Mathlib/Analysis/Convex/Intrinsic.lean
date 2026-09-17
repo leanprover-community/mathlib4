@@ -458,9 +458,12 @@ theorem Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicIn
   let A := (affineSpan 𝕜 C).subtype.comp (AffineEquiv.vaddConst 𝕜 xA).toAffineMap
   rw [intrinsicInterior, ← image_interior_preimage_comp (vaddConst xA) (vaddConst xA).isHomeomorph]
   intro _ hz
-  simpa [A] using! Convex.openSegment_image_interior_closure_preimage_subset (A := A) hC
-    (by simpa [A] using! ((vaddConst xA).mem_interior_preimage_comp _ 0).2 (by simpa))
-    (by simpa [A] using! ((vaddConst xA).mem_closure_preimage_comp _ (yA -ᵥ xA)).2 (by simpa))
+  simpa [A] using! Convex.openSegment_image_interior_closure_preimage_subset (A := A)
+    (x := 0) (y := yA -ᵥ xA) hC
+    (by change 0 ∈ interior ((vaddConst xA) ⁻¹' (((↑) : affineSpan 𝕜 C → E) ⁻¹' C))
+        simpa [← (vaddConst xA).preimage_interior] using hxA)
+    (by change yA -ᵥ xA ∈ closure ((vaddConst xA) ⁻¹' (((↑) : affineSpan 𝕜 C → E) ⁻¹' C))
+        simpa [← (vaddConst xA).preimage_closure] using hyA)
     (by simpa [A] using hz)
 
 end IntrinsicClosure
