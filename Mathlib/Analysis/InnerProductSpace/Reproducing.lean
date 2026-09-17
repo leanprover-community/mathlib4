@@ -189,7 +189,7 @@ section continuous
 
 variable [TopologicalSpace X]
 
-theorem continuous_tfae : List.TFAE [
+theorem continuous_kernel_tfae : List.TFAE [
     Continuous (fun p : X × X => kernel H p.1 p.2),
     Continuous (kerFun H),
     Continuous (fun x : X => eval H x)] := by
@@ -207,16 +207,16 @@ theorem continuous_tfae : List.TFAE [
 
 theorem continuous_kernel_iff :
     Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) :=
-  (continuous_tfae H).out 1 2
+  (continuous_kernel_tfae H).out 1 2
 
 theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) :=
-  (continuous_tfae H).out 3 2
+  (continuous_kernel_tfae H).out 3 2
 
 theorem continuous_of_continuous_kernel (h : Continuous (fun p : X × X => kernel H p.1 p.2))
     (f : H) : Continuous f := by
   have hf : (f : X → V) = fun x => eval H x f := rfl
   rw [hf]
-  exact Continuous.clm_apply (((continuous_tfae H).out 1 3).mp h) continuous_const
+  exact Continuous.clm_apply (((continuous_kernel_tfae H).out 1 3).mp h) continuous_const
 
 end continuous
 
