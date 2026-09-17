@@ -16,7 +16,8 @@ public import Mathlib.Tactic.Lift
 # The positive natural numbers
 
 This file contains the definitions, and basic results.
-Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more imports.
+Most algebraic facts are deferred to `Data.PNat.Algebra` and
+`Data.PNat.Algebra.Order`, as they need more imports.
 -/
 
 @[expose] public section

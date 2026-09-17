@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 module
 
 public import Mathlib.Data.PNat.Dvd
+public import Mathlib.Data.PNat.Algebra.Order
 
 /-!
 # The positive natural numbers
@@ -13,6 +14,11 @@ public import Mathlib.Data.PNat.Dvd
 This file develops the type `ℕ+` or `PNat`, the subtype of natural numbers that are positive.
 It is defined in `Data.PNat.Notation`, but most of the development is deferred to here so
 that `Data.PNat.Notation`, `Data.PNat.Defs`, etc can have very few imports.
+
+## Implementation details
+
+This file imports more than necessary to prove the results below,
+so that it can act as a reexport of underlying theory in a single file.
 -/
 
 @[expose] public section
