@@ -84,6 +84,15 @@ abbrev op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
   map _ _ _ hf := Φ.map _ hf
 
+/-- The external product of two morphisms of localizers. -/
+@[simps, implicit_reducible]
+def prod {C₁' C₂' : Type*} [Category* C₁'] [Category* C₂']
+    {W₁' : MorphismProperty C₁'} {W₂' : MorphismProperty C₂'}
+    (Φ₁ : LocalizerMorphism W₁ W₂) (Φ₂ : LocalizerMorphism W₁' W₂') :
+    LocalizerMorphism (W₁.prod W₁') (W₂.prod W₂') where
+  functor := Φ₁.functor.prod Φ₂.functor
+  map := fun _ _ ⟨f₁, f₂⟩ ⟨h₁, h₂⟩ ↦ ⟨Φ₁.map f₁ h₁, Φ₂.map f₂ h₂⟩
+
 variable (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
 lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=

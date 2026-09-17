@@ -3134,6 +3134,7 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFuncto
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
 public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.FiniteProducts
 public import Mathlib.CategoryTheory.Localization.HasLocalization
