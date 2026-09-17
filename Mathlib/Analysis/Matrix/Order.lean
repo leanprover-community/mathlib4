@@ -23,8 +23,6 @@ This allows us to use more general results from C⋆-algebras, like `CFC.sqrt`.
 ## Main results
 
 * `Matrix.instPartialOrder`: the partial order on matrices given by `x ≤ y := (y - x).PosSemidef`.
-* `Matrix.PosSemidef.dotProduct_mulVec_zero_iff`: for a positive semi-definite matrix `A`,
-  we have `x⋆ A x = 0` iff `A x = 0`.
 * `Matrix.toMatrixInnerProductSpace`: the inner product on matrices induced by a
   positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
 
@@ -149,22 +147,6 @@ lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
 
 end sqrtDeprecated
 
-/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
-theorem dotProduct_mulVec_zero_iff {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
-  classical
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ dotProduct_zero _⟩
-  obtain ⟨B, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hA.nonneg
-  simp_rw [← Matrix.mulVec_mulVec, dotProduct_mulVec _ _ (B *ᵥ x), star_eq_conjTranspose,
-    vecMul_conjTranspose, star_star, dotProduct_star_self_eq_zero] at h ⊢
-  rw [h, mulVec_zero]
-
-/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
-theorem toLinearMap₂'_zero_iff [DecidableEq n]
-    {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
-  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
-
 theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
     (CFC.sqrt A).det = RCLike.sqrt A.det := by
   rw [CFC.sqrt_eq_cfc, cfc_nnreal_eq_real _ A, hA.1.cfc_eq, RCLike.sqrt_of_nonneg hA.det_nonneg]
@@ -191,18 +173,6 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
     intro i
     simpa [h1.spectrum_eq_image_range] using @h2 (h1.eigenvalues i)
 
-/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
-@[grind =]
-theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
-    (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
-  refine ⟨fun h => h.isUnit, fun h => .of_dotProduct_mulVec_pos hx.1 fun v hv => ?_⟩
-  obtain ⟨y, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
-  simp_rw [dotProduct_mulVec, ← vecMul_vecMul, star_eq_conjTranspose, ← star_mulVec,
-    ← dotProduct_mulVec, dotProduct_star_self_pos_iff]
-  contrapose hv
-  rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
-    mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
-
 theorem isStrictlyPositive_iff_posDef [DecidableEq n] {x : Matrix n n 𝕜} :
     IsStrictlyPositive x ↔ x.PosDef :=
   ⟨fun h => h.nonneg.posSemidef.posDef_iff_isUnit.mpr h.isUnit,
@@ -212,9 +182,6 @@ alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPo
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
 
-lemma PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
-    A.PosDef ↔ A.det ≠ 0 := by
-  simp [hA.posDef_iff_isUnit, isUnit_iff_isUnit_det]
 
 section kronecker
 

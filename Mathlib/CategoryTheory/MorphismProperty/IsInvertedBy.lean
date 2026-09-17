@@ -49,6 +49,14 @@ theorem of_comp {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Cate
   dsimp
   infer_instance
 
+lemma of_comp_of_reflectsIsomorphisms
+    {W : MorphismProperty C} {F : C ⥤ D} {E : Type*} [Category* E]
+    (G : D ⥤ E) [G.ReflectsIsomorphisms] (h : W.IsInvertedBy (F ⋙ G)) :
+    W.IsInvertedBy F :=
+  fun _ _ f hf ↦ by
+    rw [← isIso_iff_of_reflects_iso _ G]
+    exact h _ hf
+
 set_option backward.defeqAttrib.useBackward true in
 theorem op {W : MorphismProperty C} {L : C ⥤ D} (h : W.IsInvertedBy L) : W.op.IsInvertedBy L.op :=
   fun X Y f hf => by

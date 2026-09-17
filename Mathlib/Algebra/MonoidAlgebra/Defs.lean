@@ -365,7 +365,7 @@ lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
 lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
   ext; simp
 
-@[to_additive (attr := deprecated coeff_add (since := "2026-06-18"))]
+@[to_additive (attr := deprecated coeff_add +typeChanged (since := "2026-06-18"))]
 lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := (rfl)
 
 @[to_additive (attr := simp)]
@@ -419,7 +419,7 @@ lemma addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : R[M] →+ N⦄
     (hfg : ∀ m, f.comp (singleAddHom m) = g.comp (singleAddHom m)) : f = g :=
   addMonoidHom_ext <| by simpa [DFunLike.ext_iff] using hfg
 
-@[to_additive (attr := deprecated Finsupp.sum_single_index (since := "2026-06-18"))]
+@[to_additive (attr := deprecated Finsupp.sum_single_index +typeChanged (since := "2026-06-18"))]
 lemma sum_single_index [AddCommMonoid N] {m : M} {r : R} {h : M → R → N} (h_zero : h m 0 = 0) :
     (single m r).coeff.sum h = h m r := by
   simp [h_zero]
@@ -430,11 +430,12 @@ lemma sum_coeff_single (f : R[M]) : f.coeff.sum single = f := by ext; simp
 @[to_additive (attr := deprecated sum_coeff_single (since := "2026-06-18"))]
 alias sum_single := sum_coeff_single
 
-@[to_additive (attr := deprecated Finsupp.single_apply (since := "2026-06-18"))]
+@[to_additive (attr := deprecated Finsupp.single_apply +typeChanged (since := "2026-06-18"))]
 theorem coeff_single_apply {a a' : M} {b : R} [Decidable (a = a')] :
     (single a b).coeff a' = if a = a' then b else 0 :=
   Finsupp.single_apply
 
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-06-18")] protected alias single_apply := coeff_single_apply
 
 @[to_additive (attr := simp)]
@@ -586,14 +587,14 @@ lemma coeff_mul_single_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, d * m ≠
 lemma coeff_single_mul_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, m * d ≠ m') :
     (single m r * x).coeff m' = 0 := by classical simp [coeff_mul, h]
 
-@[to_additive (attr := deprecated coeff_mul_single_of_forall_mul_ne (since := "2026-06-18"))
-  (dont_translate := R)]
+@[to_additive (attr := deprecated coeff_mul_single_of_forall_mul_ne +typeChanged
+  (since := "2026-06-18")) (dont_translate := R)]
 lemma mul_single_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
     (h : ¬∃ d, g' = d * g) : (x * single g r).coeff g' = 0 :=
   coeff_mul_single_of_forall_mul_ne _ _ <| by simpa [eq_comm] using h
 
-@[to_additive (attr := deprecated coeff_single_mul_of_forall_mul_ne (since := "2026-06-18"))
-  (dont_translate := R)]
+@[to_additive (attr := deprecated coeff_single_mul_of_forall_mul_ne +typeChanged
+  (since := "2026-06-18")) (dont_translate := R)]
 lemma single_mul_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
     (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 :=
   coeff_single_mul_of_forall_mul_ne _ _ <| by simpa [eq_comm] using h
@@ -692,7 +693,7 @@ then they are equal. -/]
 lemma ringHom_ext [Semiring S] {f g : R[M] →+* S}
     (h₁ : ∀ r, f (single 1 r) = g (single 1 r)) (h_of : ∀ m, f (single m 1) = g (single m 1)) :
     f = g :=
-  RingHom.coe_addMonoidHom_injective <| addMonoidHom_ext fun m r ↦ by
+  RingHom.toAddMonoidHom_injective <| addMonoidHom_ext fun m r ↦ by
     simpa [← map_mul] using! congr($(h₁ r) * $(h_of m))
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
@@ -920,7 +921,7 @@ lemma intCast_def [MulOneClass M] (z : ℤ) : (z : R[M]) = single 1 (z : R) := r
 @[to_additive (dont_translate := R)]
 instance ring [Monoid M] : Ring R[M] where
 
-@[deprecated coeff_neg (since := "2026-06-18")]
+@[deprecated coeff_neg +typeChanged (since := "2026-06-18")]
 lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := (rfl)
 
 end Ring
