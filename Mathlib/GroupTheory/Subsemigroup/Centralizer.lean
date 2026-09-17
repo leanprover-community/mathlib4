@@ -89,7 +89,7 @@ theorem isMulCommutative_closure {s : Set M} (hcomm : s.Pairwise Commute) :
 
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
-@[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-09"))
+@[to_additive (attr := deprecated isMulCommutative_closure +typeChanged (since := "2026-03-09"))
 /-- If all the elements of a set `s` commute, then `closure s` forms an additive
 commutative semigroup. -/]
 abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : s.Pairwise Commute) :

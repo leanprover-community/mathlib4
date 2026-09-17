@@ -155,6 +155,33 @@ isomorphisms on the right side. -/
 def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
   (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`Category.{max u v, max u v} (Comma (𝟭 C) (𝟭 C) ⥤ Comma (𝟭 C) (𝟭 C))`
+It is needed by the `⟨F⟩` pattern in the opening `intro`, which re-elaborates `ofHoms.mk F` against
+a goal where the carrier `Arrow C ⥤ Arrow C` is exposed at its `Comma (𝟭 C) (𝟭 C)` spelling.
+
+The failure happens while applying `@Functor.category`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `Category (Comma (𝟭 C) (𝟭 C))`, whereas the assigned value `instCategoryArrow` has type
+`Category (Arrow C)`. The comparison bottoms out at `Comma (𝟭 C) (𝟭 C) =?= Arrow C`, where `Arrow`
+is a plain semireducible `def` and therefore does not unfold at the `.instances` transparency that
+instance search runs at. Lean falls back to synthesize an instance of the correct type, but it
+returns `commaCategory`, which is again not defeq to `instCategoryArrow`: that comparison runs at
+`.implicit`, and `Arrow` does not unfold there either.
+
+With the metavariable unsolved, the `intro` argument `⟨F⟩` has type `ofHoms ?m.69 (?m.69 F)`,
+which fails to unify with `(succStruct I κ).prop f✝`.
+
+Potential fix: mark `Arrow` and `Arrow.Hom` implicit-reducible, then remove
+`instanceSearchTypes false`.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma succStruct_prop_le_propArrow :

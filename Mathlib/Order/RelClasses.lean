@@ -27,43 +27,43 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem Std.Trichotomous.swap (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   inferInstance
 
@@ -108,7 +108,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toMax := maxOfLe,
     toDecidableLE := hD }
 
-@[deprecated inferInstance (since := "2026-04-28")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
   inferInstance
 
@@ -141,12 +141,56 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
 
 /-! ### Inverse Image -/
 
-theorem InvImage.trichotomous [Std.Trichotomous r] {f : β → α} (h : Function.Injective f) :
-    Std.Trichotomous (InvImage r f) :=
-  ⟨fun {a b} hab hba ↦ h <| Std.Trichotomous.trichotomous (f a) (f b) hab hba⟩
+namespace InvImage
 
-instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f) where
-  asymm a b h h2 := Std.Asymm.asymm (f a) (f b) h h2
+variable {α β : Sort*} {r : α → α → Prop} (f : β → α)
+
+instance refl [Std.Refl r] : Std.Refl (InvImage r f) :=
+  inferInstanceAs <| Std.Refl (r on f)
+
+instance symm [Std.Symm r] : Std.Symm (InvImage r f) :=
+  inferInstanceAs <| Std.Symm (r on f)
+
+instance asymm [Std.Asymm r] : Std.Asymm (InvImage r f) :=
+  inferInstanceAs <| Std.Asymm (r on f)
+
+instance total [Std.Total r] : Std.Total (InvImage r f) :=
+  inferInstanceAs <| Std.Total (r on f)
+
+instance isPreorder [IsPreorder α r] : IsPreorder β (InvImage r f) :=
+  inferInstanceAs <| IsPreorder β (r on f)
+
+instance isEquiv [IsEquiv α r] : IsEquiv β (InvImage r f) :=
+  inferInstanceAs <| IsEquiv β (r on f)
+
+instance isStrictOrder [IsStrictOrder α r] : IsStrictOrder β (InvImage r f) :=
+  inferInstanceAs <| IsStrictOrder β (r on f)
+
+instance isStrictWeakOrder [IsStrictWeakOrder α r] : IsStrictWeakOrder β (InvImage r f) :=
+  inferInstanceAs <| IsStrictWeakOrder β (r on f)
+
+variable {f}
+
+theorem antisymm [Std.Antisymm r] (hf : Function.Injective f) : Std.Antisymm (InvImage r f) :=
+  hf.antisymm_onFun r
+
+theorem trichotomous [Std.Trichotomous r] (hf : Function.Injective f) :
+    Std.Trichotomous (InvImage r f) :=
+  hf.trichotomous_onFun r
+
+theorem isPartialOrder [IsPartialOrder α r] (hf : Function.Injective f) :
+    IsPartialOrder β (InvImage r f) :=
+  hf.isPartialOrder_onFun r
+
+theorem isLinearOrder [IsLinearOrder α r] (hf : Function.Injective f) :
+    IsLinearOrder β (InvImage r f) :=
+  hf.isLinearOrder_onFun r
+
+theorem isStrictTotalOrder [IsStrictTotalOrder α r] (hf : Function.Injective f) :
+    IsStrictTotalOrder β (InvImage r f) :=
+  hf.isStrictTotalOrder_onFun r
+
+end InvImage
 
 /-! ### Well-order -/
 
@@ -154,7 +198,7 @@ instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f)
 attribute [class] WellFounded
 
 /-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
-@[deprecated WellFounded (since := "2026-09-07"), mk_iff]
+@[deprecated WellFounded +typeChanged (since := "2026-09-07"), mk_iff]
 class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
@@ -437,7 +481,23 @@ instance instTotal [Std.Total r] {f : β → α} : Std.Total (f ⁻¹'o r) :=
   ⟨fun _ _ => total_of r _ _⟩
 
 theorem antisymm [Std.Antisymm r] {f : β → α} (hf : f.Injective) : Std.Antisymm (f ⁻¹'o r) :=
-  ⟨fun _ _ h₁ h₂ ↦ hf <| antisymm_of r h₁ h₂⟩
+  hf.antisymm_onFun r
+
+theorem trichotomous [Std.Trichotomous r] {f : β → α} (hf : f.Injective) :
+    Std.Trichotomous (f ⁻¹'o r) :=
+  hf.trichotomous_onFun r
+
+theorem isPartialOrder [IsPartialOrder α r] {f : β → α} (hf : f.Injective) :
+    IsPartialOrder β (f ⁻¹'o r) :=
+  hf.isPartialOrder_onFun r
+
+theorem isLinearOrder [IsLinearOrder α r] {f : β → α} (hf : f.Injective) :
+    IsLinearOrder β (f ⁻¹'o r) :=
+  hf.isLinearOrder_onFun r
+
+theorem isStrictTotalOrder [IsStrictTotalOrder α r] {f : β → α} (hf : f.Injective) :
+    IsStrictTotalOrder β (f ⁻¹'o r) :=
+  hf.isStrictTotalOrder_onFun r
 
 end Order.Preimage
 
@@ -474,13 +534,13 @@ attribute [to_set_notation]
 
 @[deprecated (since := "2026-05-24")] alias HasSubset.subset.trans_eq := LE.le.trans_eq
 
-@[deprecated LE.le.trans (since := "2026-05-24")]
+@[deprecated LE.le.trans +typeChanged (since := "2026-05-24")]
 alias HasSubset.Subset.trans := subset_trans
 
-@[deprecated LE.le.antisymm (since := "2026-05-24")]
+@[deprecated LE.le.antisymm +typeChanged (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm := subset_antisymm
 
-@[deprecated LE.le.antisymm' (since := "2026-05-24")]
+@[deprecated LE.le.antisymm' +typeChanged (since := "2026-05-24")]
 alias HasSubset.Subset.antisymm' := superset_antisymm
 
 end Subset
