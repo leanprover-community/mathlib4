@@ -21,6 +21,8 @@ regular `(m + 2)`-gon. We prove a two-coset normal form in the presented Coxeter
 to prove that this homomorphism is bijective.
 -/
 
+public section
+
 namespace CoxeterMatrix.I
 
 open DihedralGroup
@@ -100,8 +102,7 @@ private theorem c1_eq_c0_mul_rot (m : ℕ) : c1 m = c0 m * rot m := by
 
 @[simp] private theorem c0_mul_rot_mul_c0 (m : ℕ) :
     c0 m * rot m * c0 m = (rot m)⁻¹ := by
-  rw [rot, ← one_mul (c1 m * c0 m), ← c0_sq, mul_assoc, mul_assoc, mul_inv_rev,
-    c0_inv, c1_inv]
+  rw [rot, ← mul_assoc, c0_sq, one_mul, mul_inv_rev, c1_inv, c0_inv]
 
 private theorem c0_mul_rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
     c0 m * (rot m) ^ k * c0 m = (rot m) ^ (-k) := by
@@ -115,8 +116,8 @@ private theorem c0_mul_rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
 
 private theorem rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
     (rot m) ^ k * c0 m = c0 m * (rot m) ^ (-k) := by
-  rw [← one_mul ((rot m) ^ k * c0 m), ← c0_sq, mul_assoc, mul_assoc,
-    c0_mul_rot_zpow_mul_c0]
+  rw [← one_mul ((rot m) ^ k * c0 m), ← c0_sq, mul_assoc,
+    ← mul_assoc (c0 m) ((rot m) ^ k) (c0 m), c0_mul_rot_zpow_mul_c0]
 
 private theorem rot_zpow_mul_c1 (m : ℕ) (k : ℤ) :
     (rot m) ^ k * c1 m = c0 m * (rot m) ^ (-k + 1) := by
@@ -153,10 +154,10 @@ private theorem hasDihedralNormalForm (m : ℕ) (w : IGroup m) :
         exact c0_mul_rot_zpow_mul_c1 m k
 
 @[simp] private theorem toDihedral_c0 (m : ℕ) : toDihedral m (c0 m) = sr 0 := by
-  simpa [c0] using toDihedral_simple_zero m
+  simp [c0]
 
 @[simp] private theorem toDihedral_rot (m : ℕ) : toDihedral m (rot m) = r 1 := by
-  simpa [rot, c0, c1] using toDihedral_simple_mul_simple m
+  simp [rot, c0, c1]
 
 private theorem eq_one_of_toDihedral_eq_one (m : ℕ) {w : IGroup m}
     (hw : toDihedral m w = 1) : w = 1 := by
