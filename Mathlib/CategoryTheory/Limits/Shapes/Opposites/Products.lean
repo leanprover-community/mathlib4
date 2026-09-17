@@ -300,7 +300,6 @@ instance : HasBinaryCoproduct (op A) (op B) := by
   convert! (inferInstance : HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A B) in
 /--
 The canonical isomorphism from the opposite of the binary product to the coproduct in the opposite
