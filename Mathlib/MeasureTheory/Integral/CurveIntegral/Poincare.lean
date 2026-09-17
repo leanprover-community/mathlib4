@@ -215,12 +215,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       · exact hcontdiff.continuousOn_fderivWithin hunique (by decide)
     rwa [integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le] at this
     · exact zero_le_one
-    · exact s'
-    · exact hs'c
     · fun_prop
     · fun_prop
-    · exact hf'
-    · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']
       apply integrableOn_zero
   simp [integral_congr_ae hf'g']
@@ -292,7 +288,6 @@ namespace Convex
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
   {a b c : E} {s : Set E} {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `ω` is a closed `1`-form on a convex set,
 then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`

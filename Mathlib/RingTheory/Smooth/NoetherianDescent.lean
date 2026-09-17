@@ -164,7 +164,7 @@ lemma exists_kerSquareLift_comp_eq_id :
   choose p hp using fun i ↦ (D.h i).mem_range_map_iff_coeffs_subset.mpr (D.coeffs_h_subset R i)
   refine ⟨?_, ?_⟩
   · refine Ideal.Quotient.liftₐ _ ((Ideal.Quotient.mkₐ _ _).comp <| aeval p) ?_
-    simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
+    simp_rw [← RingHom.mem_ker, ← IsConcreteLE.le_iff, Ideal.span_le, Set.range_subset_iff]
     intro i
     simp only [← AlgHom.comap_ker, Ideal.coe_comap, Set.mem_preimage, SetLike.mem_coe]
     rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker,
@@ -250,13 +250,6 @@ public theorem exists_subalgebra_fg [Smooth A B] :
   exact ⟨D.subalgebra R, P.ModelOfHasCoeffs (D.subalgebra R), inferInstance, inferInstance,
     D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
-
-@[deprecated exists_subalgebra_fg (since := "2026-01-07")]
-public theorem exists_subalgebra_finiteType [Smooth A B] :
-    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
-      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
-  obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
-  exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an

@@ -30,9 +30,9 @@ a convex set.
 
 @[expose] public section
 
-open LinearMap Set Convex Pointwise
+open LinearMap Set Convex
 
-variable {𝕜 E F α β ι : Type*}
+variable {𝕜 E F α β : Type*}
 
 section OrderedSemiring
 
@@ -706,7 +706,7 @@ variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
 
 section PosSMulStrictMono
 
-variable [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
+variable [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f y ≤ f (a • x + b • y)) :
@@ -756,7 +756,7 @@ end PosSMulStrictMono
 
 section Module
 
-variable [Module 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
+variable [Module 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f : E → β}
 
 /-! The following lemmas don't require `Module 𝕜 E` if you add the hypothesis `x ≠ y`. At the time
 of the writing, we decided the resulting lemmas wouldn't be useful. Feel free to reintroduce them.

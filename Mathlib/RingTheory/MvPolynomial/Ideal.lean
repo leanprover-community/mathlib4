@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -76,16 +75,15 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
   apply le_antisymm
   · simp [idealOfVars, Ideal.span_le, Set.range_subset_iff, restrictSupportIdeal, X]
-  · simp only [SetLike.le_def, restrictSupportIdeal, Submodule.mem_mk, Submodule.mem_toAddSubmonoid,
-      ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
-    rw [← SetLike.le_def, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
+  · simp only [IsConcreteLE.le_iff, restrictSupportIdeal, Submodule.mem_mk,
+      Submodule.mem_toAddSubmonoid, ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
+    rw [← IsConcreteLE.le_iff, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
     intro x hx
     obtain ⟨i, hi⟩ : x.support.Nonempty := by aesop
     obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
     simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
 
 open scoped Pointwise in
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_idealOfVars (n : ℕ) :
     idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
   rw [idealOfVars_eq_restrictSupportIdeal]
@@ -157,7 +155,7 @@ lemma span_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
     span (m.leadingTerm '' (insert 0 B)) = span (m.leadingTerm '' B) := by
   by_cases h : 0 ∈ B
   · rw [Set.insert_eq_of_mem h]
-  · simp [image_leadingTerm_insert_zero]
+  · simp
 
 lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p)) :

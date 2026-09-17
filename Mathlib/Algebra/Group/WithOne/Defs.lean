@@ -5,10 +5,11 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.DivInvMonoid
+public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -162,7 +163,8 @@ lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
   Option.some_injective _
 
 @[to_additive (attr := elab_as_elim)]
-protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
+protected theorem cases_on {motive : WithOne α → Prop} :
+    ∀ x : WithOne α, (one : motive 1) → (coe : ∀ a : α, motive a) → motive x :=
   Option.casesOn
 
 @[to_additive]

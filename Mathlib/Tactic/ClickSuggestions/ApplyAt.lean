@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public import Mathlib.Tactic.ApplyAt
+public meta import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
 # Support for `apply at` suggestions in `#click_suggestions`
@@ -57,8 +58,8 @@ private def tacticSyntax (lem : ApplyAtLemma) : ClickSuggestionsM (TSyntax `tact
   `(tactic| apply $(mkIdent (← lem.name.unresolveName)) at $(← getHypIdent!))
 
 /-- Generate the suggestion for applying `lem`. -/
-def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey) :=
-  withNewMCtxDepth do
+def ApplyAtLemma.try (lem : ApplyAtLemma) (assignableMVars : Array Expr) :
+    ClickSuggestionsM (Result ApplyAtKey) := do
   let (_proof, mvars, binderInfos, replacement) ← lem.name.forallMetaTelescopeReducing
   let mvar := mvars.back!
   let mvars := mvars.pop
@@ -66,15 +67,11 @@ def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey
   unless ← isDefEq mvar (.fvar fvarId) do
     throwError "{← inferType mvar} does not unify with {← fvarId.getType}"
   synthAppInstances `click_suggestions default mvars binderInfos false false
-  let mut newGoals := #[]
-  for mvar in mvars do
-    unless ← mvar.mvarId!.isAssigned do
-      newGoals := newGoals.push (← instantiateMVars (← inferType mvar))
+  let mvars ← mvars.map Expr.mvarId! |>.filterM (not <$> ·.isAssigned)
+  let newGoals ← mvars.mapM (do instantiateMVars <| ← ·.getType)
 
   let replacement ← instantiateMVars replacement
-  let makesNewMVars :=
-    (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    newGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
+  let unhelpfulMVars ← hasUnhelpfulMVars mvars assignableMVars (newGoals.push replacement)
   let key := {
     numGoals := newGoals.size
     nameLength := lem.name.length
@@ -88,7 +85,7 @@ def ApplyAtLemma.try (lem : ApplyAtLemma) : ClickSuggestionsM (Result ApplyAtKey
   for goal in newGoals do
     htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
-    if makesNewMVars then
+    if unhelpfulMVars then
       pure none
     else
       some <$> mkSuggestion tactic (.element "div" #[] htmls)

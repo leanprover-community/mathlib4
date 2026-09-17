@@ -162,7 +162,7 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
     fun r hr s hs hrs ↦ (isCoprime_pow_of_ne _ _ hrs _ _).sup_eq
   rw [this, ← iSup_torsionBySet_ideal_eq_torsionBySet_iInf hPairwise] at hmem
   revert x
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   refine iSup_mono (fun P x hxmem ↦ ?_)
   by_cases hPS : P ∈ S
   · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport,

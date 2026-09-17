@@ -207,7 +207,7 @@ def coeMonoidHom : ℕ+ →* ℕ where
 theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
-@[deprecated le_one_iff_eq_one (since := "2026-05-07")]
+@[deprecated le_one_iff_eq_one +typeChanged (since := "2026-05-07")]
 theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 := by
   simp
 
@@ -221,7 +221,7 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
 theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 
-@[deprecated one_lt_of_gt (since := "2026-05-07")]
+@[deprecated one_lt_of_gt +typeChanged (since := "2026-05-07")]
 theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := hab.one_lt
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
@@ -256,7 +256,7 @@ theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
     PNat.eq <| by
-      rw [add_coe, sub_coe, if_pos h]
+      rw [add_coe, sub_coe, ite_eq_left h]
       exact add_tsub_cancel_of_le h.le
 
 theorem sub_add_of_lt {a b : ℕ+} (h : b < a) : a - b + b = a := by
@@ -328,12 +328,12 @@ theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
   rw [Nat.dvd_iff_mod_eq_zero]; constructor
   · intro h
     apply PNat.eq
-    rw [mod_coe, if_pos h]
+    rw [mod_coe, ite_eq_left h]
   · intro h
     by_cases h' : (m : ℕ) % (k : ℕ) = 0
     · exact h'
     · replace h : (mod m k : ℕ) = (k : ℕ) := congr_arg _ h
-      rw [mod_coe, if_neg h'] at h
+      rw [mod_coe, ite_eq_right h'] at h
       exact ((Nat.mod_lt (m : ℕ) k.pos).ne h).elim
 
 theorem le_of_dvd {m n : ℕ+} : m ∣ n → m ≤ n := by

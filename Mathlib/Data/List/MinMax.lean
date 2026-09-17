@@ -57,7 +57,7 @@ private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (som
 
 @[simp]
 theorem argAux_self (hr₀ : Std.Irrefl r) (a : α) : argAux r (some a) a = a :=
-  if_neg <| hr₀.irrefl _
+  ite_eq_right <| hr₀.irrefl _
 
 theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : IsTrans α r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
@@ -136,7 +136,18 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     · simp
     dsimp
     rw [← apply_ite, ← apply_ite]
-    grind -abstractProof -- Without `-abstractProof`, `to_dual` gives an error.
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727, this was
+    `grind -abstractProof`, with a note that plain `grind` made `@[to_dual]` fail. The
+    grind proof term now contains a `Classical.byContradiction` that `@[to_dual]` cannot
+    insert a cast into, with or without `-abstractProof`, so the case analysis is spelled
+    out instead; the six `@[to_dual]` failures further down this file all cascade from
+    here. -/
+    dsimp only
+    split_ifs <;> simp_all only [not_lt, Option.some.injEq] <;>
+      first
+        | rfl
+        | exact absurd (‹f a < f m›.trans ‹f m < f tl›) (not_lt.2 ‹f tl ≤ f a›)
+        | exact absurd (‹f a < f tl›.trans_le ‹f tl ≤ f m›) (not_lt.2 ‹f m ≤ f a›)
 
 variable [DecidableEq α]
 
@@ -151,15 +162,15 @@ theorem index_of_argmax :
       simp_all
     rw [h] at hm
     dsimp only at hm
-    simp only [cond_eq_ite, beq_iff_eq]
+    simp only [beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_gt ‹_› ‹_›
-    · rw [if_pos rfl]
-    · rw [if_neg, if_neg]
+    · rw [ite_eq_left rfl]
+    · rw [ite_eq_right, ite_eq_right]
       · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne
-    · rw [if_pos rfl]
+    · rw [ite_eq_left rfl]
       exact Nat.zero_le _
 
 @[to_dual]
@@ -324,7 +335,6 @@ theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat
 theorem Perm.maximum_eq {l l' : List α} (h : l ~ l') :
     l.maximum = l'.maximum := by
   induction h with grind [maximum_cons]
-
 
 @[to_dual]
 lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.maximum.unbotD d := by

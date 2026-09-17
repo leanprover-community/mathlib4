@@ -41,8 +41,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
 
 universe u v w x y z u' v' w' y'
 
-variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
-variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x}
+variable {R : Type u} {M : Type v} {M₂ : Type w}
+variable {M₃ : Type y} {M₄ : Type z} {ι : Type x}
 variable {M₅ M₆ : Type*}
 
 section Prod
@@ -90,7 +90,6 @@ theorem fst_surjective : Function.Surjective (fst R M M₂) := fun x => ⟨(x, 0
 
 theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x), rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The prod of two linear maps is a linear map. -/
 @[simps]
 def prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : M →ₗ[R] M₂ × M₃ where
@@ -454,7 +453,7 @@ theorem ker_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ker (prod f g) 
 
 theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
     range (prod f g) ≤ (range f).prod (range g) := by
-  simp only [SetLike.le_def, prod_apply, mem_range, mem_prod, exists_imp]
+  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp]
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
@@ -478,7 +477,6 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [this] at h
   simpa [this] using h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
 equivalence between `C` and `range f`. -/
 @[simps!]
@@ -861,7 +859,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
   refine le_antisymm (f.range_prod_le g) ?_
-  simp only [SetLike.le_def, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
+  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
     Prod.forall, Function.prod_apply]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
@@ -929,7 +927,7 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
     ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
   obtain ⟨f', hf'⟩ :=
     AddMonoidHom.exists_mrange_eq_mgraph (G := G) (H := H) (I := I) (f := f) hf₁ hf
-  simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_coe,
+  simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_ofClass,
     AddMonoidHom.mem_mgraph] at hf'
   use
   { toFun := f'.toFun
@@ -943,7 +941,7 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
       rw [LinearMap.mem_range, hf'] }
   ext x
   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
-    coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x
+    coe_mk, AddHom.coe_mk, AddMonoidHom.coe_ofClass, Set.mem_range] using hf' x
 
 /-- **Vertical line test** for linear maps.
 

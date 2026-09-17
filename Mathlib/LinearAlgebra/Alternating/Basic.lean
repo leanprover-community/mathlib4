@@ -91,6 +91,7 @@ open Function
 
 section Coercions
 
+@[macro_inline]
 instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective f g h := by
@@ -852,6 +853,14 @@ theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
   simp only [alternatization_def, smul_apply, sum_apply]
+
+@[simp]
+theorem alternatization_compLinearMap
+    (f : MultilinearMap R (fun _ : ι => M') N')
+    (g : M →ₗ[R] M') :
+    (f.compLinearMap fun _ => g).alternatization = f.alternatization.compLinearMap g := by
+  ext
+  simp [alternatization]
 
 end MultilinearMap
 
