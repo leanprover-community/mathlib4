@@ -245,6 +245,11 @@ theorem toProd_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).toProd = -x.toPr
   rfl
 
 @[simp]
+theorem toProd_sub [Sub R] [Sub A] (x₁ x₂ : Unitization R A) :
+    (x₁ - x₂).toProd = x₁.toProd - x₂.toProd :=
+  rfl
+
+@[simp]
 theorem toProd_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) :
     (s • x).toProd = s • x.toProd :=
   rfl
@@ -790,8 +795,8 @@ variable [Semiring C] [Algebra R C] [StarRing C]
 /-- See note [partially-applied ext lemmas] -/
 @[ext]
 theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
-    (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
-      (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
+    (h : φ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A) =
+      ψ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A)) :
     φ = ψ :=
   Unitization.algHom_ext'' <| DFunLike.congr_fun h
 

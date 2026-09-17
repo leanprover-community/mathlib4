@@ -166,6 +166,10 @@ theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
 theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 
+@[simp]
+theorem singleton_le_iff {x : α} {K : Compacts α} : {x} ≤ K ↔ x ∈ K :=
+  Set.singleton_subset_iff
+
 theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjoint K L where
   mp h := .of_orderEmbedding (.ofMapLEIff SetLike.coe (fun _ _ => SetLike.coe_subset_coe)) h
   mpr h := by
@@ -508,6 +512,10 @@ theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts
 @[simp]
 theorem singleton_inj {x y : α} : ({x} : NonemptyCompacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
+
+@[simp]
+theorem singleton_le_iff {x : α} {K : NonemptyCompacts α} : {x} ≤ K ↔ x ∈ K :=
+  Set.singleton_subset_iff
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/

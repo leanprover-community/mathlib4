@@ -102,21 +102,6 @@ theorem mdifferentiable_iff_differentiable : MDiff f ↔ Differentiable 𝕜 f :
 alias ⟨MDifferentiable.differentiable, Differentiable.mdifferentiable⟩ :=
   mdifferentiable_iff_differentiable
 
-/-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
-@[simp]
-theorem mfderivWithin_eq_fderivWithin :
-    mfderiv[s] f x = fderivWithin 𝕜 f s x := by
-  by_cases h : MDiffAt[s] f x
-  · simp only [mfderivWithin, h, ite_eq_left, mfld_simps]
-    rfl
-  · simp only [mfderivWithin, h, ite_eq_right, not_false_iff]
-    rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
-    exact (fderivWithin_zero_of_not_differentiableWithinAt h).symm
-
-/-- For maps between vector spaces, `mfderiv` and `fderiv` coincide -/
-@[simp]
-theorem mfderiv_eq_fderiv : mfderiv% f x = fderiv 𝕜 f x := by
-  rw [← mfderivWithin_univ, ← fderivWithin_univ]
-  exact mfderivWithin_eq_fderivWithin
+-- `mfderivWithin_eq_fderivWithin` and `mfderiv_eq_fderiv` are proven in `NormedSpace.lean`
 
 end MFDerivFDeriv
