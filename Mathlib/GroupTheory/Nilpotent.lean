@@ -1264,7 +1264,7 @@ namespace IsPGroup
 variable {p : ℕ} [hp : Fact p.Prime]
 
 /-- In a nilpotent p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
-theorem isCoatom_iff_index_eq_prime [Group.IsNilpotent G] (hG : IsPGroup p G) (H : Subgroup G) :
+theorem isCoatom_iff_index_eq_prime [Group.IsNilpotent G] (hG : IsPGroup p G) {H : Subgroup G} :
     IsCoatom H ↔ H.index = p := by
   refine ⟨fun h ↦ ?_, fun h ↦ Subgroup.isCoatom_of_index_prime (h ▸ hp.out)⟩
   have hHp := H.isCoatom_iff_index_prime.mp h
@@ -1278,9 +1278,8 @@ theorem not_isCyclic_iff_exists_ne_index_eq_prime [Group.IsNilpotent G]
     ¬ IsCyclic G ↔ ∃ H₁ H₂ : Subgroup G, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by
   refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, hne, h₁, h₂⟩ _ ↦ hne ?_⟩
   · by_contra! h
-    refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ by_contra fun hne ↦ ?_)
-    exact h M₁ M₂ hne ((hG.isCoatom_iff_index_eq_prime M₁).mp hM₁)
-      ((hG.isCoatom_iff_index_eq_prime M₂).mp hM₂)
+    refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ by_contra fun h' ↦ ?_)
+    exact h M₁ M₂ h' (hG.isCoatom_iff_index_eq_prime.mp hM₁) (hG.isCoatom_iff_index_eq_prime.mp hM₂)
   · rw [IsCyclic.subgroup_eq_iff_index_eq, h₁, h₂]
 
 end IsPGroup

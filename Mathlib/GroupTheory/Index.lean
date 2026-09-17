@@ -809,6 +809,13 @@ theorem FiniteIndex.map_of_surjective [H.FiniteIndex] (hf : Function.Surjective 
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
+/-- If `H ≤ K` and `H.index` divides `K.index`, then `H = K`. -/
+@[to_additive]
+theorem eq_of_index_dvd_index [hK : K.FiniteIndex] (h_le : H ≤ K) (h_dvd : H.index ∣ K.index) :
+    H = K := by
+  rw [← h_le.ge_iff_eq, ← relIndex_eq_one, ← Nat.dvd_one]
+  exact Nat.dvd_of_mul_dvd_mul_right hK.index_ne_zero.pos (by simpa [relIndex_mul_index h_le])
+
 @[to_additive]
 lemma isFiniteRelIndex_of_le_left (L : Subgroup G) [H.IsFiniteRelIndex L] (h : H ≤ K) :
     K.IsFiniteRelIndex L := by

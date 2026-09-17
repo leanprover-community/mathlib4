@@ -27,11 +27,10 @@ public section
 @[to_additive]
 theorem Group.isSimpleGroup_of_isCoatom {G : Type*} [Group G] {M : Subgroup G} [M.Normal]
     (h : IsCoatom M) : IsSimpleGroup (G ⧸ M) := by
-  refine (isSimpleGroup_iff _).mpr ⟨QuotientGroup.nontrivial_iff.mpr h.1, fun H _ ↦ ?_⟩
   have : IsSimpleOrder (Subgroup (G ⧸ M)) :=
     (QuotientGroup.comapMk'OrderIso M).isSimpleOrder_iff.mpr <|
       Set.isSimpleOrder_Ici_iff_isCoatom.mpr h
-  exact eq_bot_or_eq_top H
+  exact IsSimpleGroup.of_isSimpleOrder
 
 /-- A subgroup of a commutative group is maximal (a coatom in the subgroup lattice) iff the quotient
 by it is simple. Group analogue of `isSimpleModule_iff_isCoatom`. -/

@@ -35,11 +35,11 @@ namespace Subgroup
 /-- A subgroup of prime index is maximal. -/
 @[to_additive]
 theorem isCoatom_of_index_prime (hH : H.index.Prime) : IsCoatom H := by
-  refine ⟨fun hM ↦ Nat.prime_one_false <| (hM ▸ index_top) ▸ hH, fun K hK ↦ ?_⟩
-  refine index_eq_one.mp <|
-    (hH.eq_one_or_self_of_dvd _ (index_dvd_of_le hK.le)).resolve_right fun h' ↦ ?_
   have : H.FiniteIndex := ⟨hH.ne_zero⟩
-  exact (index_strictAnti hK).ne h'
+  refine isCoatom_iff_ge_of_le.mpr ⟨fun hM ↦ by simpa [hM] using hH.ne_one, fun K hK hHK ↦ ?_⟩
+  have : K.FiniteIndex := finiteIndex_of_le hHK
+  have h := (hH.eq_one_or_self_of_dvd _ (index_dvd_of_le hHK)).resolve_left (by simpa)
+  exact (eq_of_index_dvd_index hHK h.symm.dvd).ge
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
