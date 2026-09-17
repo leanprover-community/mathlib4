@@ -533,6 +533,14 @@ instance : ContinuousSup (Compacts α) := by
   simp_rw [isEmbedding_coe.continuous_iff, Function.comp_def, coe_sup]
   fun_prop
 
+theorem isOpen_biUnion_coe_of_isOpen {S : Set (Compacts α)} (hS : IsOpen S) :
+    IsOpen (⋃ K ∈ S, (K : Set α)) := by
+  simp_rw [isOpen_iff_eventually, forall_mem_biUnion]
+  intro K hK x hx
+  have : Continuous ({·} ⊔ K) := by fun_prop
+  filter_upwards [(this.tendsto' x K (by ext1; simpa)).eventually (hS.eventually_mem hK)] with y hy
+  exact mem_iUnion₂_of_mem hy <| by simp
+
 @[fun_prop]
 theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 ×ˢ p.2 := by
   rw [continuous_induced_rng, continuous_generateFrom_iff]
@@ -605,7 +613,7 @@ instance [T2Space α] : T2Space (Compacts α) where
   t2 K₁ K₂ h := by
     wlog h' : ¬(K₁ ≤ K₂) generalizing K₁ K₂
     · grind [Disjoint.symm, le_antisymm]
-    rw [SetLike.not_le_iff_exists] at h'
+    rw [IsConcreteLE.not_le_iff_exists] at h'
     obtain ⟨x, hx₁, hx₂⟩ := h'
     obtain ⟨U, V, hU, hV, hU', hV', hUV⟩ := K₂.isCompact.separation_of_notMem hx₂
     exact ⟨_, _, isOpen_inter_nonempty_of_isOpen hV, isOpen_subsets_of_isOpen hU, ⟨x, hx₁, hV'⟩,
@@ -884,6 +892,11 @@ theorem dense_setOfPred_finite : Dense {K : NonemptyCompacts α | (K : Set α).F
 
 @[deprecated (since := "2026-07-09")]
 alias dense_setOf_finite := dense_setOfPred_finite
+
+theorem isOpen_biUnion_coe_of_isOpen {S : Set (NonemptyCompacts α)} (hS : IsOpen S) :
+    IsOpen (⋃ K ∈ S, (K : Set α)) := by
+  rw [isOpenEmbedding_toCompacts.isOpen_iff_image_isOpen] at hS
+  simpa using Compacts.isOpen_biUnion_coe_of_isOpen hS
 
 /-- Given a basis `B` on a topological space `α`, the topology of `NonemptyCompacts α` has a basis
 consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where

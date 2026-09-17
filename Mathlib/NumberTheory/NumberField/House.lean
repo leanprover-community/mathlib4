@@ -58,8 +58,14 @@ lemma house_prod_le (s : Finset K) : house (∏ x ∈ s, x) ≤ ∏ x ∈ s, hou
 theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
   simp only [house, map_add]; apply norm_add_le
 
-theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := by
-  simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
+theorem house_pow (α : K) (i : ℕ) : house (α ^ i) = house α ^ i := by
+  simp_rw [house_eq_sup', map_pow, nnnorm_pow]
+  rw [← Function.comp_def (· ^ i),
+    ← Finset.apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ (pow_left_mono (M := NNReal) i).map_max,
+    NNReal.coe_pow]
+
+@[deprecated house_pow +typeChanged (since := "2026-08-28")]
+theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := (house_pow α i).le
 
 theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
@@ -345,7 +351,7 @@ theorem exists_ne_zero_int_vec_house_le :
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   have hphqh : p * h < q * h := by gcongr; exact finrank_pos
-  have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
+  have h0ph : 0 < p * h := by rw [mul_pos_iff]; exact Or.inl ⟨h0p, finrank_pos⟩
   have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by
     rw [Fintype.card_prod, cardα, Embeddings.card]
   have hfinq : Fintype.card (β × (K →+* ℂ)) = q * h := by
