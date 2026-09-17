@@ -102,6 +102,7 @@ variable (F : C₁ ⥤ C₂ ⥤ E) {W₁ : MorphismProperty C₁} {W₂ : Morphi
 to `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂` respectively,
 and a bifunctor `F : C₁ ⥤ C₂ ⥤ E` which inverts `W₁` and `W₂`, this is
 the induced localized bifunctor `D₁ ⥤ D₂ ⥤ E`. -/
+@[implicit_reducible]
 noncomputable def lift₂ : D₁ ⥤ D₂ ⥤ E :=
   curry.obj (lift (uncurry.obj F) hF (L₁.prod L₂))
 
@@ -159,6 +160,7 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
 /-- The natural transformation `F₁' ⟶ F₂'` of bifunctors induced by a
 natural transformation `τ : F₁ ⟶ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/
+@[implicit_reducible]
 noncomputable def lift₂NatTrans (τ : F₁ ⟶ F₂) : F₁' ⟶ F₂' :=
   fullyFaithfulUncurry.preimage
     (liftNatTrans (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F₁)
@@ -185,7 +187,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def lift₂NatIso (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := lift₂NatTrans L₁ L₂ W₁ W₂ F₁ F₂ F₁' F₂' e.hom
   inv := lift₂NatTrans L₁ L₂ W₁ W₂ F₂ F₁ F₂' F₁' e.inv
