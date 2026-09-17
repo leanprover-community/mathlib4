@@ -19,10 +19,7 @@ over it). Moreover, if `G` is abelian and compact, then `D(G, R)` is a commutati
 
 public noncomputable section
 
-variable {G R : Type*} [TopologicalSpace G]
-  [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
-
-attribute [local ext] DFunLike.ext -- why is this not set by default?
+variable {G R : Type*} [TopologicalSpace G] [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
 
 namespace AbstractMeasure
 
@@ -123,7 +120,7 @@ def diracHom : G →* D(G, R) where
 
 /-- Measures form a `R`-algebra. -/
 noncomputable instance : Algebra R D(G, R) := Algebra.ofModule
-  (by intro r μ ν; ext; simp [mul_apply]) (by intro r μ ν; ext; simp [mul_apply])
+  (by intros; ext; simp [mul_apply]) (by intros; ext; simp [mul_apply])
 
 /-- The canonical homomorphism from the monoid algebra `R[G]` to `D(G, R)`. -/
 def monoidAlgebraHom : MonoidAlgebra R G →ₐ[R] D(G, R) :=

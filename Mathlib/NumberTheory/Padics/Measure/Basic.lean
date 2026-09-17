@@ -63,6 +63,11 @@ instance : AddCommGroup (AbstractMeasure X R E) :=
 instance isAddApply : IsAddApply (AbstractMeasure X R E) C(X, R) E where
   add_apply _ _ _ := rfl
 
+omit [IsTopologicalAddGroup E] in
+@[ext] lemma ext {μ ν : AbstractMeasure X R E} (hμν : ∀ f : C(X, R), μ f = ν f) :
+    μ = ν :=
+  DFunLike.ext _ _ hμν
+
 end NoContinuousSMul
 
 section ContinuousSMul
