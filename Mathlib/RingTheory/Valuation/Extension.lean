@@ -242,14 +242,16 @@ compatible with the valuation extension, `mapValueGroup₀_strictMono` for the p
 that it is compatible with the order and `mapValueGroup₀_uniq` for the uniqueness.
 The definition is not exposed. -/
 noncomputable def mapValueGroup₀ :
-    (ValueGroup₀ (.ofClass vR : R →*₀ ΓR)) →*₀
-      (ValueGroup₀ (.ofClass vA : A →*₀ ΓA)) := by
+    (ValueGroup₀ (vR : R →*₀ ΓR)) →*₀o (ValueGroup₀ (vA : A →*₀ ΓA)) := by
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
-  refine (WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom
-  intro r hr
-  rw [mem_valueGroup_iff_of_comm] at hr ⊢
-  obtain ⟨a, ha0, x, hr⟩ := hr
-  exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
+  refine .mk ((WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom) ?_
+  · intro r hr
+    rw [mem_valueGroup_iff_of_comm] at hr ⊢
+    obtain ⟨a, ha0, x, hr⟩ := hr
+    exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
+  · refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso.toOrderIso.strictMono |>.monotone
+    intro a b hab
+    simpa [← Subtype.coe_lt_coe] using hab
 
 theorem mapValueGroup₀_strictMono : StrictMono (mapValueGroup₀ vR vA) := by
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
@@ -261,14 +263,13 @@ theorem mapValueGroup₀_monotone : Monotone (mapValueGroup₀ vR vA) :=
   (mapValueGroup₀_strictMono vR vA).monotone
 
 theorem restrict_map_mapValueGroup₀ :
-    vR.restrict.map (mapValueGroup₀ vR vA) (mapValueGroup₀_monotone vR vA) =
-      vA.restrict.comap (algebraMap R A) := by
+    vR.restrict.map (mapValueGroup₀ vR vA) = vA.restrict.comap (algebraMap R A) := by
   ext x
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
   unfold mapValueGroup₀
-  simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply,
-    MonoidWithZeroHom.comp_apply, comap_apply]
-  rw [MulEquiv.toMonoidWithZeroHom_apply, OrderMonoidIso.coe_mulEquiv, h.orderMonoidIso_spec x]
+  simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply, OrderMonoidWithZeroHom.coe_mk,
+    MonoidWithZeroHom.coe_comp, MulEquiv.coe_toMonoidWithZeroHom, OrderMonoidIso.coe_mulEquiv,
+    Function.comp_apply, IsEquiv.orderMonoidIso_spec, comap_apply]
   generalize hc : (vA.comap (algebraMap R A)).restrict x = c
   cases c using WithZero.cases_on with
   | zero =>
