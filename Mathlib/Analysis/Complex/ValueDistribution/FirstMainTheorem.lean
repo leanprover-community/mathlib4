@@ -180,9 +180,7 @@ private lemma transitivity₁ {f₁ f₃ : ℝ → ℝ} (f₂ : ℂ → ℂ)
     (h₂₃ : (characteristic f₂ ⊤ - f₃) =O[atTop] (1 : ℝ → ℝ))
     (h₁₂ : (f₁ - characteristic f₂ ⊤) =O[atTop] (1 : ℝ → ℝ)) :
     (f₁ - f₃) =O[atTop] (1 : ℝ → ℝ) := by
-  convert h₁₂.add h₂₃
-  simp only [Pi.sub_apply]
-  ring
+  simpa using! h₁₂.add h₂₃
 
 /-
 Private transitivity lemma, used in the proof of `isBigO_characteristic_sub_characteristic_moebius`:
@@ -192,13 +190,9 @@ of the difference of the characteristic functions.
 private lemma transitivity₂ {f₁ f₂ f₃ : ℂ → ℂ} (h₂₃ : f₂ =ᶠ[codiscrete ℂ] f₃)
     (h₁₂ : (characteristic f₁ ⊤ - characteristic f₂ ⊤) =O[atTop] (1 : ℝ → ℝ)) :
     (characteristic f₁ ⊤ - characteristic f₃ ⊤) =O[atTop] (1 : ℝ → ℝ) := by
-  simp_rw [isBigO_iff, eventually_atTop] at *
-  obtain ⟨c, a, hc⟩ := h₁₂
-  use c, max a 1
-  intro r hr
-  simp only [Pi.sub_apply, Pi.one_apply, norm_one, mul_one] at *
-  rw [characteristic_congr_codiscrete h₂₃.symm (by grind)]
-  apply hc r (by aesop)
+  apply EventuallyEq.trans_isBigO ?_ h₁₂
+  filter_upwards [Ioi_mem_atTop 0] with x hx
+  simpa using characteristic_congr_codiscrete h₂₃.symm (by grind)
 
 /--
 Reformulation of the first main theorem: Postcomposing a meromorphic function `f : ℂ → ℂ` with a
@@ -207,7 +201,7 @@ for the value `⊤` only by a bounded function.
 -/
 theorem isBigO_characteristic_sub_characteristic_moebius {a b c d : ℂ} {f : ℂ → ℂ}
     (hf : Meromorphic f) (hΔ : a * d - b * c ≠ 0) :
-    (characteristic f ⊤ - characteristic ((a • f · + b) / (c • f · + d)) ⊤)
+    (characteristic f ⊤ - characteristic ((a * f · + b) / (c * f · + d)) ⊤)
       =O[atTop] (1 : ℝ → ℝ) := by
   by_cases hc : c = 0
   · -- Affine case `c = 0`: the map is `w ↦ (a / d) * w + b / d`.
