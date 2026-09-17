@@ -99,10 +99,10 @@ initialize_simps_projections GradedAlgHom (toFun → apply)
 theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
     ⇑(⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : 𝒜 →ₐᵍ[R] ℬ) = f := rfl
 
-theorem toAlgHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
+theorem coe_toAlgHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
   dsimp only
 
-@[deprecated (since := "2026-05-05")] alias coe_algHom_mk := toAlgHom_mk
+@[deprecated (since := "2026-05-05")] alias coe_algHom_mk := coe_toAlgHom_mk
 
 variable (f : 𝒜 →ₐᵍ[R] ℬ)
 
@@ -112,28 +112,28 @@ theorem coe_fn_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) �
 theorem coe_fn_inj {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} : (f₁ : A → B) = f₂ ↔ f₁ = f₂ :=
   DFunLike.coe_fn_eq
 
-theorem toAlgHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₐ[R] B) :=
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₐ[R] B) :=
   fun _ _ h ↦ coe_fn_injective congr($h)
 
-@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := toAlgHom_injective
+@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 theorem toGradedRingHom_injective : Function.Injective (toGradedRingHom (𝒜 := 𝒜) (ℬ := ℬ)) :=
   fun _ _ h ↦ coe_fn_injective congr($h)
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₗ[R] B) :=
-  AlgHom.toLinearMap_injective.comp toAlgHom_injective
+  AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
-  AlgHom.toRingHom_injective.comp toAlgHom_injective
+  AlgHom.toRingHom_injective.comp coe_toAlgHom_injective
 
 theorem toMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
-  AlgHom.toMonoidHom_injective.comp toAlgHom_injective
+  AlgHom.toMonoidHom_injective.comp coe_toAlgHom_injective
 
 @[deprecated (since := "2026-09-15")]
 alias coe_monoidHom_injective := toMonoidHom_injective
 
 theorem toAddMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
-  AlgHom.toAddMonoidHom_injective.comp toAlgHom_injective
+  AlgHom.toAddMonoidHom_injective.comp coe_toAlgHom_injective
 
 @[deprecated (since := "2026-09-15")]
 alias coe_addMonoidHom_injective := toAddMonoidHom_injective
@@ -226,11 +226,11 @@ instance : Monoid (𝒜 →ₐᵍ[R] 𝒜) where
 
 lemma cancel_right {g₁ g₂ : ℬ →ₐᵍ[R] 𝒞} {f : 𝒜 →ₐᵍ[R] ℬ} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ toAlgHom_injective <| (AlgHom.cancel_right hf).1 congr($h), fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ coe_toAlgHom_injective <| (AlgHom.cancel_right hf).1 congr($h), fun h ↦ h ▸ rfl⟩
 
 lemma cancel_left {g₁ g₂ : 𝒜 →ₐᵍ[R] ℬ} {f : ℬ →ₐᵍ[R] 𝒞} (hf : Function.Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h ↦ toAlgHom_injective <| (AlgHom.cancel_left hf).1 congr($h), fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ coe_toAlgHom_injective <| (AlgHom.cancel_left hf).1 congr($h), fun h ↦ h ▸ rfl⟩
 
 /-- We enrich the existing function `toAlgHom` with the structure of a `MonoidHom`, to produce a
 bundled function that we now call `toEnd`. -/

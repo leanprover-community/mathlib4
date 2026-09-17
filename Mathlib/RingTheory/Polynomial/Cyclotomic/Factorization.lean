@@ -64,7 +64,7 @@ private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ 
       ⟨n, pos_of_ne_zero (fun h0 ↦ by simp [h0, hp.out.ne_one] at hn),
       hζ.pow_eq_one⟩
   refine dvd_antisymm
-    (orderOf_dvd_iff_pow_eq_one.mpr <| AlgEquiv.toAlgHom_injective <| pB.algHom_ext ?_)
+    (orderOf_dvd_iff_pow_eq_one.mpr <| AlgEquiv.coe_toAlgHom_injective <| pB.algHom_ext ?_)
     (orderOf_dvd_iff_pow_eq_one.mpr <| Units.ext ?_)
   · simp only [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_pow, AlgEquiv.one_apply,
       coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, hK]

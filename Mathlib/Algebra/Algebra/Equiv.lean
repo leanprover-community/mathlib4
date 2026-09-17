@@ -200,11 +200,11 @@ theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
 @[simp, norm_cast]
 theorem coe_toAlgHom :  DFunLike.coe e.toAlgHom = e := rfl
 
-theorem toAlgHom_injective : Function.Injective (toAlgHom : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
   fun _ _ h => ext <| AlgHom.congr_fun h
 
 @[deprecated (since := "2026-05-05")] alias coe_algHom := coe_toAlgHom
-@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := toAlgHom_injective
+@[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 @[simp, norm_cast]
 lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
@@ -784,7 +784,7 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
 
 /-- See also `Finite.algHom` -/
 instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
-  Finite.of_injective _ AlgEquiv.toAlgHom_injective
+  Finite.of_injective _ AlgEquiv.coe_toAlgHom_injective
 
 -- TODO Morally this is just `isLocalHom_equiv`: can we obviate the need for this instance?
 instance : IsLocalHom e.toAlgHom := by
