@@ -76,16 +76,24 @@ section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice β] {f : α → β}
 
 @[to_dual]
-theorem Set.Finite.map_sSup_of_monotone (hmono : Monotone f) {s : Set α} (hne : s.Nonempty)
-    (hfin : s.Finite) : f (sSup s) = sSup (f '' s) :=
-  le_antisymm (hmono.le_csSup_image (hne.csSup_mem hfin) hfin.bddAbove)
-    (hmono.csSup_image_le_map_csSup hne hfin.bddAbove)
+theorem Set.Finite.map_sSup_of_monotoneOn (hfin : s.Finite) (hne : s.Nonempty)
+    (hf : MonotoneOn f s) : f (sSup s) = sSup (f '' s) :=
+  (hf.map_isGreatest <| hne.isGreatest_csSup hfin).csSup_eq.symm
 
 @[to_dual]
-theorem Set.Finite.map_sInf_of_antitone (hf : Antitone f) {s : Set α} (hne : s.Nonempty)
-    (hfin : s.Finite) : f (sInf s) = sSup (f '' s) :=
-  le_antisymm (hf.le_csSup_image (hne.csInf_mem hfin) hfin.bddBelow)
-    (hf.csSup_image_le_map_csInf hne hfin.bddBelow)
+theorem Set.Finite.map_sSup_of_monotone (hfin : s.Finite) (hne : s.Nonempty) (hf : Monotone f) :
+    f (sSup s) = sSup (f '' s) :=
+  hfin.map_sSup_of_monotoneOn hne <| hf.monotoneOn s
+
+@[to_dual]
+theorem Set.Finite.map_sSup_of_antitoneOn (hfin : s.Finite) (hne : s.Nonempty)
+    (hf : AntitoneOn f s) : f (sSup s) = sInf (f '' s) :=
+  (hf.map_isGreatest <| hne.isGreatest_csSup hfin).csInf_eq.symm
+
+@[to_dual]
+theorem Set.Finite.map_sSup_of_antitone (hne : s.Nonempty) (hfin : s.Finite) (hf : Antitone f) :
+    f (sSup s) = sInf (f '' s) :=
+  hfin.map_sSup_of_antitoneOn hne <| hf.antitoneOn s
 
 end ConditionallyCompleteLattice
 
