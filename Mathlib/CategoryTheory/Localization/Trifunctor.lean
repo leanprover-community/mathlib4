@@ -86,6 +86,7 @@ with respect to `W₁ : MorphismProperty C₁`, `W₂ : MorphismProperty C₂` a
 `W₃ : MorphismProperty C₃` respectively, and a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E`
 which inverts `W₁`, `W₂` and `W₃`, this is the induced localized
 trifunctor `D₁ ⥤ D₂ ⥤ D₃ ⥤ E`. -/
+@[implicit_reducible]
 noncomputable def lift₃ : D₁ ⥤ D₂ ⥤ D₃ ⥤ E :=
   curry₃.obj (lift (uncurry₃.obj F) hF (L₁.prod (L₂.prod L₃)))
 
@@ -110,6 +111,7 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃)
 /-- The natural transformation `F₁' ⟶ F₂'` of trifunctors induced by a
 natural transformation `τ : F₁ ⟶ F₂` when `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₁'`
 and `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂'` hold. -/
+@[implicit_reducible]
 noncomputable def lift₃NatTrans : F₁' ⟶ F₂' :=
   fullyFaithfulUncurry₃.preimage
     (liftNatTrans (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃)) (uncurry₃.obj F₁)
@@ -141,7 +143,7 @@ theorem natTrans₃_ext {τ τ' : F₁' ⟶ F₂'}
 /-- The natural isomorphism `F₁' ≅ F₂'` of trifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₁'`
 and `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂'` hold. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def lift₃NatIso : F₁' ≅ F₂' where
   hom := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₂ F₁' F₂' e.hom
   inv := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₁ F₂' F₁' e.inv
@@ -199,6 +201,7 @@ noncomputable def Lifting₃.bifunctorComp₂₃ :
 variable {F₁₂ G F G₂₃}
 
 /-- The associator isomorphism obtained by localization. -/
+@[implicit_reducible]
 noncomputable def associator : bifunctorComp₁₂ F₁₂' G' ≅ bifunctorComp₂₃ F' G₂₃' :=
   letI := Lifting₃.bifunctorComp₁₂ L₁ L₂ L₃ L₁₂ L W₁ W₂ W₃ W₁₂ F₁₂ G F₁₂' G'
   letI := Lifting₃.bifunctorComp₂₃ L₁ L₂ L₃ L₂₃ L W₁ W₂ W₃ W₂₃ F G₂₃ F' G₂₃'
