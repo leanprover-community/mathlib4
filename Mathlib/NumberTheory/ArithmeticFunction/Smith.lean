@@ -26,6 +26,8 @@ The classical case is `f = id` and `g = φ` (Euler's totient, by `Nat.sum_totien
   `Z` the zeta matrix and `D = diagonal (g ∘ (· + 1))`.
 * `Matrix.det_gcdMatrix`: Smith's determinant, `det (gcdMatrix n f) = ∏ i, g (i + 1)`.
 * `Matrix.det_gcdMatrix_id`: the classical statement with Euler's totient.
+* `Matrix.det_gcdMatrix_sigma`, `Matrix.det_gcdMatrix_card_divisors`: the instances
+  `f = σ k` (`det = ∏ (i + 1) ^ k`, so `n!` for `k = 1`) and `f = τ` (`det = 1`).
 
 ## Implementation notes
 
@@ -40,12 +42,13 @@ The classical case is `f = id` and `g = φ` (Euler's totient, by `Nat.sum_totien
 
 ## Tags
 
-smith determinant, gcd matrix, zeta matrix, totient
+smith determinant, gcd matrix, zeta matrix, totient, divisor function
 -/
 
 @[expose] public section
 
 open Finset
+open scoped ArithmeticFunction.sigma
 
 namespace Matrix
 
@@ -111,5 +114,14 @@ theorem det_gcdMatrix_id (n : ℕ) :
     (gcdMatrix n (fun m ↦ (m : R))).det = ∏ i : Fin n, (Nat.totient ((i : ℕ) + 1) : R) :=
   det_gcdMatrix n (fun m ↦ (m : R)) (fun m ↦ (Nat.totient m : R)) fun m _ ↦ by
     rw [← Nat.cast_sum, Nat.sum_totient]
+
+theorem det_gcdMatrix_sigma (n k : ℕ) :
+    (gcdMatrix n (fun m ↦ (σ k m : R))).det = ∏ i : Fin n, (((i : ℕ) + 1 : ℕ) : R) ^ k :=
+  det_gcdMatrix n (fun m ↦ (σ k m : R)) (fun m ↦ (m : R) ^ k) fun m _ ↦ by
+    simp [ArithmeticFunction.sigma_apply]
+
+theorem det_gcdMatrix_card_divisors (n : ℕ) :
+    (gcdMatrix n (fun m ↦ (m.divisors.card : R))).det = 1 := by
+  simpa using det_gcdMatrix n (fun m ↦ (m.divisors.card : R)) (fun _ ↦ (1 : R)) fun m _ ↦ by simp
 
 end Matrix
