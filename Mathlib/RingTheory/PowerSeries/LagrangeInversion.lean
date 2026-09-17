@@ -61,14 +61,13 @@ private lemma hasSubst_of_fixedPoint
 
 private lemma coeff_pow_of_lt
     (hY : Y = X * P.subst Y) {m k : ℕ} (h : m < k) :
-    coeff m (Y ^ k) = 0 := by
+    (Y ^ k).coeff m = 0 := by
   have hpow : Y ^ k = X ^ k * (P.subst Y) ^ k := by rw [← mul_pow, ← hY]
   simp [hpow, coeff_X_pow_mul', Nat.not_le.2 h]
 
 private lemma coeff_subst_of_fixedPoint
     (hY : Y = X * P.subst Y) (Q : R⟦X⟧) (j : ℕ) :
-    coeff j (Q.subst Y) =
-      ∑ l ∈ range (j + 1), Q.coeff l * coeff j (Y ^ l) := by
+    coeff j (Q.subst Y) = ∑ l ∈ range (j + 1), Q.coeff l * (Y ^ l).coeff j := by
   rw [coeff_subst' (hasSubst_of_fixedPoint hY),
     finsum_eq_sum_of_support_subset (s := range (j + 1))]
   · simp [smul_eq_mul]
@@ -87,7 +86,7 @@ variable {P Y : R⟦X⟧}
 private theorem lagrange_inversion_coeff_pow_of_le
     (hY : Y = X * P.subst Y) :
     ∀ m : ℕ, ∀ k ≤ m + 1,
-      ((m + 1 : ℕ) : R) * coeff (m + 1) (Y ^ k) =
+      ((m + 1 : ℕ) : R) * (Y ^ k).coeff (m + 1) =
         (k : R) * (P ^ (m + 1)).coeff (m + 1 - k) := by
   intro m
   induction m using Nat.strong_induction_on with
@@ -103,7 +102,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
     · rw [hcoe, coeff_subst_of_fixedPoint hY, hmt]
       simp
     have hih : ∀ l ∈ range (t + 2),
-        ((t : R) + 1) * ((P ^ k).coeff l * coeff (t + 1) (Y ^ l)) =
+        ((t : R) + 1) * ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
           (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
       rw [mem_range_succ_iff] at hl
@@ -113,8 +112,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
         ∑ l ∈ range (t + 2),
           (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) =
           (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk]
-      rw [sum_range_succ'
+      rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ'
         (fun l ↦ (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)))]
       simp only [Nat.cast_zero, mul_zero, zero_mul, add_zero, Nat.cast_add, Nat.cast_one]
       refine sum_congr rfl fun p _ ↦ ?_
@@ -135,8 +133,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
       simp only [coeff_C_mul] at h
       rw [h, coeff_derivative]
       ring
-    have hsum : ((t : R) + 1) * coeff (m + 1) (Y ^ k) =
-        (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
+    have hsum : ((t : R) + 1) * (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
       rw [hcoe, coeff_subst_of_fixedPoint hY, mul_sum, ← hconv]
       exact sum_congr rfl hih
     rw [hmt] at hsum
@@ -152,8 +149,7 @@ The coefficient ring is assumed to have no additive torsion because the inductiv
 multiplication by a positive natural number. -/
 theorem lagrange_inversion_coeff_pow
     (hY : Y = X * P.subst Y) (n k : ℕ) :
-    ((n + k : ℕ) : R) * coeff (n + k) (Y ^ k) =
-      (k : R) * (P ^ (n + k)).coeff n := by
+    ((n + k : ℕ) : R) * (Y ^ k).coeff (n + k) = (k : R) * (P ^ (n + k)).coeff n := by
   rcases eq_or_ne (n + k) 0 with hnk | hnk
   · obtain ⟨rfl, rfl⟩ := Nat.add_eq_zero_iff.mp hnk
     simp
@@ -166,8 +162,7 @@ a formal power series `H`,
 `(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`. -/
 theorem lagrange_burmann_coeff
     (hY : Y = X * P.subst Y) (n : ℕ) (H : R⟦X⟧) :
-    ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
-      (d⁄dX H * P ^ (n + 1)).coeff n := by
+    ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
   have hlhs : ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
         ∑ i ∈ range (n + 2), H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) := by
     rw [coeff_subst_of_fixedPoint hY H, mul_sum]
@@ -188,7 +183,7 @@ variable {K : Type*} [Field K] [CharZero K]
 case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff`. -/
 theorem lagrange_inversion_coeff (P Y : K⟦X⟧)
     (hY : Y = X * P.subst Y) (n : ℕ) :
-    coeff (n + 1) Y = (P ^ (n + 1)).coeff n / (n + 1) := by
+    Y.coeff (n + 1) = (P ^ (n + 1)).coeff n / (n + 1) := by
   field_simp [Nat.cast_add_one_ne_zero n]
   simpa [mul_comm] using lagrange_inversion_coeff_pow (P := P) hY n 1
 
