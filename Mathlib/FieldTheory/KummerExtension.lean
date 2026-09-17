@@ -278,7 +278,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     intro e
     have := Fact.mk H
     let : Algebra K K[n√a] := inferInstance
-    apply AlgEquiv.coe_toAlgHom_injective
+    apply AlgEquiv.toAlgHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
       MonoidHom.toOneHom_coe, AlgEquiv.coe_toAlgHom, autAdjoinRootXPowSubC_root, Algebra.smul_def]

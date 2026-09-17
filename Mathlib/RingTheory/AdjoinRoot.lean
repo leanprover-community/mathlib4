@@ -194,7 +194,7 @@ lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (o
 lemma algHom_ext' {f g : AdjoinRoot p →ₐ[S] T}
     (hAlg : f.comp (ofAlgHom S p) = g.comp (ofAlgHom S p))
     (hRoot : f (root p) = g (root p)) : f = g := by
-  apply AlgHom.coe_toRingHom_injective; exact ringHom_ext congr(($hAlg).toRingHom) hRoot
+  apply AlgHom.toRingHom_injective; exact ringHom_ext congr(($hAlg).toRingHom) hRoot
 
 end Algebra
 

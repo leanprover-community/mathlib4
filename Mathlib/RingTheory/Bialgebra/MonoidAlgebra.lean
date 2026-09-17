@@ -115,14 +115,14 @@ lemma bialgHom_ext ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
   (single_one_right : ∀ (m : M), φ₁ (single m 1) = φ₂ (single m 1))
   (single_one_left : (φ₁ : A[M] →ₐ[R] B).comp singleOneAlgHom =
     (φ₂ : A[M] →ₐ[R] B).comp singleOneAlgHom) : φ₁ = φ₂ :=
-  BialgHom.coe_toAlgHom_injective <| algHom_ext single_one_right single_one_left
+  BialgHom.toAlgHom_injective <| algHom_ext single_one_right single_one_left
 
 /-- Version of `bialgHom_ext` where both assumptions are written as equalities of bundled homs. -/
 lemma bialgHom_ext' ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
     (single_one_right : (φ₁ : A[M] →* B).comp (of A M) = (φ₂ : A[M] →* B).comp (of A M))
     (single_one_left : (φ₁ : A[M] →ₐ[R] B).comp singleOneAlgHom =
       (φ₂ : A[M] →ₐ[R] B).comp singleOneAlgHom) : φ₁ = φ₂ :=
-  BialgHom.coe_toAlgHom_injective <| algHom_ext' single_one_right single_one_left
+  BialgHom.toAlgHom_injective <| algHom_ext' single_one_right single_one_left
 
 @[to_additive (attr := simp)]
 lemma counit_domCongr (e : M ≃* N) (x : A[M]) : counit (R := R) (domCongr R A e x) = counit x := by
@@ -355,7 +355,7 @@ lemma bialgHom_ext' ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
     (single_one_right : (φ₁ : A[M] →* B).comp (of A M) = (φ₂ : A[M] →* B).comp (of A M))
     (single_one_left : (φ₁ : A[M] →ₐ[R] B).comp singleZeroAlgHom =
       (φ₂ : A[M] →ₐ[R] B).comp singleZeroAlgHom) : φ₁ = φ₂ :=
-  BialgHom.coe_toAlgHom_injective <| algHom_ext' single_one_right single_one_left
+  BialgHom.toAlgHom_injective <| algHom_ext' single_one_right single_one_left
 
 lemma isGroupLikeElem_of (m : M) : IsGroupLikeElem R (of A M m) := isGroupLikeElem_single_one ..
 

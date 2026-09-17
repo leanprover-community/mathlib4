@@ -60,7 +60,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
     apply (hμ.powerBasis K).algHom_ext
     rw [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_toAlgHom, powerBasis_gen,
       ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
-  exact AlgEquiv.coe_toAlgHom_injective this
+  exact AlgEquiv.toAlgHom_injective this
 
 end IsPrimitiveRoot
 
@@ -89,7 +89,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
           exact ((zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible h).symm.trans hr)
     left_inv := fun f => by
       simp only [MonoidHom.toFun_eq_coe]
-      apply AlgEquiv.coe_toAlgHom_injective
+      apply AlgEquiv.toAlgHom_injective
       apply (hζ.powerBasis K).algHom_ext
       simp only [AlgEquiv.coe_toAlgHom]
       rw [PowerBasis.equivOfMinpoly_gen]

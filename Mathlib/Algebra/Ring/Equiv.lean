@@ -780,11 +780,11 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 
-theorem coe_toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+theorem toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_inj_iff := coe_toRingHom_inj_iff
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_inj_iff := toRingHom_inj_iff
 
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]
@@ -939,15 +939,15 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
 
 attribute [simp] ofRingHom_apply
 
-theorem coe_toRingHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
+theorem toRingHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl
 
 @[simp]
-theorem ofRingHom_coe_toRingHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
+theorem ofRingHom_toRingHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
   ext fun _ ↦ rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_ofRingHom := coe_toRingHom_ofRingHom
-@[deprecated (since := "2026-05-05")] alias ofRingHom_coe_ringHom := ofRingHom_coe_toRingHom
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_ofRingHom := toRingHom_ofRingHom
+@[deprecated (since := "2026-05-05")] alias ofRingHom_coe_ringHom := ofRingHom_toRingHom
 
 @[simp]
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
