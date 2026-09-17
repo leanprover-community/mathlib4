@@ -66,6 +66,7 @@ variable [TopologicalSpace ι] [SecondCountableTopology ι] [OrderTopology ι]
 
 /-- The set of values taken by a right-continuous process with strongly measurable marginals
 is separable. -/
+@[to_dual]
 lemma isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous [TopologicalSpace E]
     (hX : ∀ i, StronglyMeasurable (X i)) (hX_cont : ∀ ω, IsRightContinuous (X · ω)) :
     IsSeparable (⋃ t, range (X t)) := by
