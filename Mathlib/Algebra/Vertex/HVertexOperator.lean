@@ -94,8 +94,7 @@ theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
   rfl
 
 @[simp]
-theorem of_coeff_coeff (A : HVertexOperator Γ R V W) :
-    of_coeff A.coeff A.coeff_isPWO_support = A :=
+theorem of_coeff_coeff (A : HVertexOperator Γ R V W) : of_coeff A.coeff A.coeff_isPWO_support = A :=
   rfl
 
 end Coeff
