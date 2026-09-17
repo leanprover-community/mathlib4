@@ -371,7 +371,10 @@ lemma strictMono_φ : StrictMono (φ x hd) := by
         dsimp
   · exact Prod.lt_of_lt_of_le (by simp) (by simp)
   · rw [φ_of_gt _ _ _ (by grind), φ_of_gt _ _ _ (by grind)]
-    exact hx' (by grind)
+    #adaptation_note /--
+    Before https://github.com/leanprover/lean4/pull/14727, `rw [Fin.lt_def]` was unnecessary
+    -/
+    exact hx' (by rw [Fin.lt_def]; grind)
 
 /-- The type (I) simplex reconstructed from a type (II) simplex. -/
 noncomputable abbrev simplex : (Δ[m + 1] ⊗ Δ[n]) _⦋d + 1⦌ :=

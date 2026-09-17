@@ -48,12 +48,12 @@ lemma exists_eq_ciSup_of_not_isSuccLimit (hbdd : BddAbove (range f))
     (hf : ¬ IsSuccLimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccLimit (range_nonempty f) hbdd hf
 
-@[deprecated csInf_mem_of_not_isPredLimit (since := "2026-04-24")]
+@[deprecated csInf_mem_of_not_isPredLimit +typeChanged (since := "2026-04-24")]
 lemma csInf_mem_of_not_isPredPrelimit (hne : s.Nonempty) (hbdd : BddBelow s)
     (hlim : ¬ IsPredPrelimit (sInf s)) : sInf s ∈ s :=
   csInf_mem_of_not_isPredLimit hne hbdd <| mt IsPredLimit.isPredPrelimit hlim
 
-@[deprecated exists_eq_ciInf_of_not_isPredLimit (since := "2026-04-24")]
+@[deprecated exists_eq_ciInf_of_not_isPredLimit +typeChanged (since := "2026-04-24")]
 lemma exists_eq_ciInf_of_not_isPredPrelimit (hf : BddBelow (range f))
     (hf' : ¬ IsPredPrelimit (⨅ i, f i)) : ∃ i, f i = ⨅ i, f i :=
   exists_eq_ciInf_of_not_isPredLimit hf <| mt IsPredLimit.isPredPrelimit hf'
@@ -68,29 +68,30 @@ lemma IsLUB.exists_of_nonempty_of_not_isSuccLimit (hf : IsLUB (range f) x) (hx :
     ∃ i, f i = x :=
   hf.mem_of_nonempty_of_not_isSuccLimit (range_nonempty f) hx
 
-@[deprecated mem_of_nonempty_of_not_isSuccLimit (since := "2026-04-24")]
+@[deprecated mem_of_nonempty_of_not_isSuccLimit +typeChanged (since := "2026-04-24")]
 lemma IsLUB.mem_of_nonempty_of_not_isSuccPrelimit
     (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccPrelimit x) : x ∈ s :=
   hs.mem_of_nonempty_of_not_isSuccLimit hne <| mt IsSuccLimit.isSuccPrelimit hx
 
-@[deprecated mem_of_nonempty_of_not_isPredLimit (since := "2026-04-24")]
+@[deprecated mem_of_nonempty_of_not_isPredLimit +typeChanged (since := "2026-04-24")]
 lemma IsGLB.mem_of_nonempty_of_not_isPredPrelimit
     (hs : IsGLB s x) (hne : s.Nonempty) (hx : ¬ IsPredPrelimit x) : x ∈ s :=
   hs.mem_of_nonempty_of_not_isPredLimit hne <| mt IsPredLimit.isPredPrelimit hx
 
-@[deprecated exists_of_nonempty_of_not_isSuccLimit (since := "2026-04-24")]
+@[deprecated exists_of_nonempty_of_not_isSuccLimit +typeChanged (since := "2026-04-24")]
 lemma IsLUB.exists_of_nonempty_of_not_isSuccPrelimit
     (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) : ∃ i, f i = x :=
   hf.exists_of_nonempty_of_not_isSuccLimit <| mt IsSuccLimit.isSuccPrelimit hx
 
-@[deprecated exists_of_nonempty_of_not_isPredLimit (since := "2026-04-24")]
+@[deprecated exists_of_nonempty_of_not_isPredLimit +typeChanged (since := "2026-04-24")]
 lemma IsGLB.exists_of_nonempty_of_not_isPredPrelimit
     (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) : ∃ i, f i = x :=
   hf.exists_of_nonempty_of_not_isPredLimit <| mt IsPredLimit.isPredPrelimit hx
 
 /-- Every conditionally complete linear order with well-founded `<` is a successor order, by setting
 the successor of an element to be the infimum of all larger elements. -/
-@[instance_reducible, deprecated SuccOrder.ofLinearWellFoundedLT (since := "2026-04-12")]
+@[instance_reducible, deprecated SuccOrder.ofLinearWellFoundedLT +typeChanged
+  (since := "2026-04-12")]
 noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
     SuccOrder α := .ofLinearWellFoundedLT _
 

@@ -545,7 +545,7 @@ theorem epsilon_zero_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
 theorem epsilon_add_one_eq_nfp (o : Ordinal) : ε_ (o + 1) = nfp (fun a ↦ ω ^ a) (ε_ o + 1) := by
   simp [epsilon_eq_deriv, deriv_add_one]
 
-@[deprecated epsilon_add_one_eq_nfp (since := "2026-06-18")]
+@[deprecated epsilon_add_one_eq_nfp +typeChanged (since := "2026-06-18")]
 theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
   simpa [succ_eq_add_one] using epsilon_add_one_eq_nfp o
 
@@ -645,7 +645,7 @@ theorem gamma_zero_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
 theorem gamma_add_one_eq_nfp (o : Ordinal) : Γ_ (o + 1) = nfp (veblen · 0) (Γ_ o + 1) :=
   by simp [gamma, deriv_add_one]
 
-@[deprecated gamma_add_one_eq_nfp (since := "2026-06-18")]
+@[deprecated gamma_add_one_eq_nfp +typeChanged (since := "2026-06-18")]
 theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) :=
   by simpa [succ_eq_add_one] using gamma_add_one_eq_nfp o
 

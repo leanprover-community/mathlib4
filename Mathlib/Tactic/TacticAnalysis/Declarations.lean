@@ -232,14 +232,19 @@ register_option linter.tacticAnalysis.rwaSuggestion : Bool := {
 def Mathlib.TacticAnalysis.rwaSuggestion : TacticAnalysis.Config where
   run seq := do
     for first in seq.toList, second in seq.toList.tail do
-      match first.tacI.stx, second.tacI.stx with
-      | `(tactic| rw $rws:rwRuleSeq $[$loc:location]?), `(tactic| assumption) => do
+      -- `rwa` only supports no location or a single hypothesis, so we only suggest it in
+      -- those cases.
+      let suggestion? : Option (TSyntax `tactic) ← match first.tacI.stx, second.tacI.stx with
+        | `(tactic| rw $rws:rwRuleSeq), `(tactic| assumption) =>
+          some <$> `(tactic| rwa $rws:rwRuleSeq)
+        | `(tactic| rw $rws:rwRuleSeq at $h:term), `(tactic| assumption) =>
+          some <$> `(tactic| rwa $rws:rwRuleSeq at $h:term)
+        | _, _ => pure none
+      if let some suggestion := suggestion? then
         if let some start := first.tacI.stx.getPos? then
         if let some stop := second.tacI.stx.getTailPos? then
           let span := Syntax.setInfo (SourceInfo.synthetic start stop) first.tacI.stx
-          Elab.Command.liftCoreM <|
-            Tactic.TryThis.addSuggestion span (← `(tactic| rwa $rws:rwRuleSeq $[$loc:location]?))
-      | _, _ => pure ()
+          Elab.Command.liftCoreM <| Tactic.TryThis.addSuggestion span suggestion
 
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {

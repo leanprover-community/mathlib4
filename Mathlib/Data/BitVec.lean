@@ -75,14 +75,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
-  | succ n ih => simp [ih, BitVec.pow_succ]
+  | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
 
 /-!
 ## Ring
 -/
 
 -- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
-example : @instHPow (Fin (2 ^ w)) ℕ NPow.toPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
+example : @instHPow (Fin (2 ^ w)) ℕ NPow.toPow =
+    @instHPow (Fin (2 ^ w)) ℕ (@_root_.instPowNat _ Fin.instNatPow) := rfl
 
 instance : CommSemiring (BitVec w) :=
   open Fin.CommRing in
