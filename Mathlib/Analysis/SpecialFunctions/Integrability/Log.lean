@@ -178,40 +178,6 @@ theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : �
   CircleIntegrable.finsum (fun _ ↦
     ((analyticOnNhd_id.sub analyticOnNhd_const).meromorphicOn.circleIntegrable_log_norm).const_smul)
 
-/--
-If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
--/
-theorem MeromorphicOn.circleIntegrable_posLog_norm (hf : MeromorphicOn f (sphere c |R|)) :
-    CircleIntegrable (log⁺ ‖f ·‖) c R := by
-  simp_rw [← half_mul_log_add_log_abs, mul_add]
-  apply CircleIntegrable.add
-  · apply hf.circleIntegrable_log_norm.const_mul
-  · apply hf.circleIntegrable_log_norm.abs.const_mul
-
-/--
-If `f` is meromorphic, then `log⁺ ‖f ·‖` is circle integrable over every circle.
--/
-@[fun_prop]
-theorem Meromorphic.circleIntegrable_posLog_norm {f : ℂ → E} (hf : Meromorphic f) {c : ℂ} {R : ℝ} :
-    CircleIntegrable (log⁺ ‖f ·‖) c R :=
-  hf.meromorphicOn.circleIntegrable_posLog_norm
-
-@[deprecated (since := "2026-03-28")]
-alias circleIntegrable_posLog_norm_meromorphicOn := MeromorphicOn.circleIntegrable_posLog_norm
-
-/--
-Variant of `MeromorphicOn.circleIntegrable_posLog_norm` for non-negative radii.
--/
-theorem MeromorphicOn.circleIntegrable_posLog_norm_of_nonneg (hf : MeromorphicOn f (sphere c R))
-    (hR : 0 ≤ R) :
-    CircleIntegrable (log⁺ ‖f ·‖) c R := by
-  rw [← abs_of_nonneg hR] at hf
-  exact hf.circleIntegrable_posLog_norm
-
-@[deprecated (since := "2026-03-28")]
-alias circleIntegrable_posLog_norm_meromorphicOn_of_nonneg :=
-    MeromorphicOn.circleIntegrable_posLog_norm_of_nonneg
-
 lemma circleIntegrable_log_norm_sub_const {a : ℂ} (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
   MeromorphicOn.circleIntegrable_log_norm (fun _ _ ↦ by fun_prop)
 
