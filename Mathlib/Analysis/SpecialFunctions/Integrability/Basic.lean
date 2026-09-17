@@ -19,7 +19,9 @@ powers and the logarithm.
 
 public section
 
-open Interval MeasureTheory Real Set
+open MeasureTheory Real Set
+
+open scoped Interval
 
 variable {a b c : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 

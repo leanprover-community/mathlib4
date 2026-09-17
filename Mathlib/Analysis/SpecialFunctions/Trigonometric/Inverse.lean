@@ -22,7 +22,9 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Topology Filter Set Filter Real
+open Filter Set Filter Real
+
+open scoped Topology
 
 namespace Real
 variable {x y : ℝ}
@@ -363,7 +365,14 @@ theorem sin_arccos (x : ℝ) : sin (arccos x) = √(1 - x ^ 2) := by
 theorem arccos_le_pi_div_two {x} : arccos x ≤ π / 2 ↔ 0 ≤ x := by simp [arccos]
 
 @[simp]
+theorem pi_div_two_le_arccos {x : ℝ} : π / 2 ≤ arccos x ↔ x ≤ 0 := by simp [arccos]
+
+@[simp]
 theorem arccos_lt_pi_div_two {x : ℝ} : arccos x < π / 2 ↔ 0 < x := by simp [arccos]
+
+@[simp]
+theorem pi_div_two_lt_arccos {x : ℝ} : π / 2 < arccos x ↔ x < 0 :=
+  lt_iff_lt_of_le_iff_le arccos_le_pi_div_two
 
 @[simp]
 theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by
