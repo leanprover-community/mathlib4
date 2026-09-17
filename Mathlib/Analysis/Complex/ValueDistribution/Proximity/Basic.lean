@@ -257,20 +257,13 @@ theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic 
       rw [proximity_inv, proximity_inv]
 
 /--
-Multiplying a meromorphic function by a nonzero constant `s` changes the proximity function (for
-the value `⊤`) only by a bounded function. More precisely, the difference is bounded by
-`log⁺ ‖s‖ + log⁺ ‖s⁻¹‖`.
+Multiplying a meromorphic function by a nonzero constant `s` changes the proximity function (for the
+value `⊤`) at most by `log⁺ ‖s‖ + log⁺ ‖s⁻¹‖`.
 -/
-theorem isBigO_proximity_top_sub_proximity_const_smul_top [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
-    (hf : Meromorphic f) (hs : s ≠ 0) :
-    (proximity f ⊤ - proximity (s • f) ⊤) =O[atTop] (1 : ℝ → ℝ) := by
-  apply Asymptotics.isBigO_iff.2
-  use log⁺ ‖s‖ + log⁺ ‖s⁻¹‖
-  apply eventually_atTop.2
-  use 0
-  intro r hr
-  simp only [proximity, ↓reduceDIte, Pi.smul_apply, Pi.sub_apply, norm_eq_abs, norm_inv,
-    Pi.one_apply, norm_one, mul_one]
+theorem isBigO_proximity_top_sub_proximity_const_smul_top_le [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
+    {r : ℝ} (hf : Meromorphic f) (hs : s ≠ 0) :
+    |proximity f ⊤ r - proximity (s • f) ⊤ r| ≤ log⁺ ‖s‖ + log⁺ ‖s⁻¹‖ := by
+  simp only [proximity, ↓reduceDIte, Pi.smul_apply, norm_inv]
   rw [← circleAverage_sub (by fun_prop) (by fun_prop)]
   trans circleAverage |(log⁺ ‖f ·‖) - (log⁺ ‖s • f ·‖)| 0 r
   · apply abs_circleAverage_le_circleAverage_abs
@@ -281,6 +274,21 @@ theorem isBigO_proximity_top_sub_proximity_const_smul_top [NormedSpace ℂ E] {f
     rw [norm_smul, abs_sub_comm]
     apply abs_posLog_mul_sub_posLog_le_posLog_add_posLog
     simp_all
+
+/--
+Multiplying a meromorphic function by a nonzero constant `s` changes the proximity function (for the
+value `⊤`) only by a bounded function.
+-/
+theorem isBigO_proximity_top_sub_proximity_const_smul_top_isBigO [NormedSpace ℂ E] {f : ℂ → E}
+    {s : ℂ} (hf : Meromorphic f) (hs : s ≠ 0) :
+    (proximity f ⊤ - proximity (s • f) ⊤) =O[atTop] (1 : ℝ → ℝ) := by
+  apply Asymptotics.isBigO_iff.2
+  use log⁺ ‖s‖ + log⁺ ‖s⁻¹‖
+  apply eventually_atTop.2
+  use 0
+  intro r hr
+  rw [Pi.sub_apply, norm_eq_abs, Pi.one_apply, norm_one, mul_one]
+  apply isBigO_proximity_top_sub_proximity_const_smul_top_le hf hs
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `⊤` equals `n` times the proximity
