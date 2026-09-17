@@ -58,6 +58,11 @@ def cosh (z : ℂ) : ℂ :=
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
+/-- The complex hyperbolic tangent function, defined as `cosh z / sinh z` -/
+@[pp_nodot]
+def coth (z : ℂ) : ℂ :=
+  cosh z / sinh z
+
 end
 
 end Complex
@@ -103,6 +108,12 @@ the complex hyperbolic tangent -/
 @[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
+
+/-- The real hyperbolic cotangent function, defined as the real part of
+the complex hyperbolic cotangent -/
+@[pp_nodot]
+nonrec def coth (x : ℝ) : ℝ :=
+  (coth x).re
 
 end
 
@@ -212,6 +223,32 @@ theorem ofReal_tanh (x : ℝ) : (Real.tanh x : ℂ) = tanh x :=
 theorem tanh_ofReal_im (x : ℝ) : (tanh x).im = 0 := by rw [← ofReal_tanh_ofReal_re, ofReal_im]
 
 theorem tanh_ofReal_re (x : ℝ) : (tanh x).re = Real.tanh x :=
+  rfl
+
+theorem coth_eq_cosh_div_sinh : coth x = cosh x / sinh x :=
+  rfl
+
+@[simp]
+theorem coth_zero : coth 0 = 0 := by simp [coth]
+
+@[simp]
+theorem coth_neg : coth (-x) = -coth x := by simp [coth, div_neg]
+
+theorem coth_conj : coth (conj x) = conj (coth x) := by
+  rw [coth, sinh_conj, cosh_conj, ← map_div₀, coth]
+
+@[simp]
+theorem ofReal_coth_ofReal_re (x : ℝ) : ((coth x).re : ℂ) = coth x :=
+  conj_eq_iff_re.1 <| by rw [← coth_conj, conj_ofReal]
+
+@[simp, norm_cast]
+theorem ofReal_coth (x : ℝ) : (Real.coth x : ℂ) = coth x :=
+  ofReal_coth_ofReal_re _
+
+@[simp]
+theorem coth_ofReal_im (x : ℝ) : (coth x).im = 0 := by rw [← ofReal_coth_ofReal_re, ofReal_im]
+
+theorem coth_ofReal_re (x : ℝ) : (coth x).re = Real.coth x :=
   rfl
 
 @[simp]
