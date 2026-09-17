@@ -276,13 +276,15 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
     simp [callCC, OptionT.goto_mkLabel, @callCC_bind_left m _]
   callCC_dummy := by intros; ext; simp [callCC, OptionT.callCC, @callCC_dummy m _]
 
-/-- Lift a jump target along `WriterT`: jumping with `a` becomes a jump in the base monad
-with `(a, ∅)`, resetting the accumulated log. -/
+/-- Lift a jump target along `WriterT` (with `EmptyCollection` log):
+jumping with `a` becomes a jump in the base monad with `(a, ∅)`,
+resetting the accumulated log to the start of the block. -/
 def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩
 
-/-- Lift a jump target along `WriterT`: jumping with `a` becomes a jump in the base monad
-with `(a, 1)`, resetting the accumulated log. -/
+/-- Lift a jump target along `WriterT` (with `Monoid` log):
+jumping with `a` becomes a jump in the base monad with `(a, 1)`,
+resetting the accumulated log to the start of the block. -/
 def WriterT.mkLabel' {α β ω} [Monoid ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 1)⟩
 
@@ -292,14 +294,14 @@ theorem WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label
 theorem WriterT.goto_mkLabel' {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel' x) i = monadLift (goto x (i, 1)) := by cases x; rfl
 
-/-- The `callCC` operation of `WriterT ω m` for an `EmptyCollection` log, delegating to `callCC`
-in the base monad. -/
+/-- The `callCC` operation of `WriterT ω m` (with `EmptyCollection` log),
+delegating to `callCC` in the base monad. -/
 nonrec def WriterT.callCC [MonadCont m] {α β ω : Type _} [EmptyCollection ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <| callCC (WriterT.run ∘ f ∘ WriterT.mkLabel : Label (α × ω) m β → m (α × ω))
 
-/-- The `callCC` operation of `WriterT ω m` for a `Monoid` log, delegating to `callCC`
-in the base monad. -/
+/-- The `callCC` operation of `WriterT ω m` (with `Monoid` log),
+delegating to `callCC` in the base monad. -/
 def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <|
