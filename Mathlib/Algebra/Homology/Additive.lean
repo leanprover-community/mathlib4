@@ -117,8 +117,7 @@ def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
 instance (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
     (F.mapHomologicalComplex c).PreservesZeroMorphisms where
 
-instance Functor.mapHomologicalComplex_additive (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
-    (F.mapHomologicalComplex c).Additive where
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) : (F.mapHomologicalComplex c).Additive where
 
 variable (W₁)
 
