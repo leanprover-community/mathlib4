@@ -64,7 +64,7 @@ theorem house_pow (α : K) (i : ℕ) : house (α ^ i) = house α ^ i := by
     ← Finset.apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ (pow_left_mono (M := NNReal) i).map_max,
     NNReal.coe_pow]
 
-@[deprecated house_pow (since := "2026-08-28")]
+@[deprecated house_pow +typeChanged (since := "2026-08-28")]
 theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := (house_pow α i).le
 
 theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
@@ -351,7 +351,7 @@ theorem exists_ne_zero_int_vec_house_le :
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   have hphqh : p * h < q * h := by gcongr; exact finrank_pos
-  have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
+  have h0ph : 0 < p * h := by rw [mul_pos_iff]; exact Or.inl ⟨h0p, finrank_pos⟩
   have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by
     rw [Fintype.card_prod, cardα, Embeddings.card]
   have hfinq : Fintype.card (β × (K →+* ℂ)) = q * h := by

@@ -158,8 +158,8 @@ theorem one_le_prod [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i �
 theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod fun i _ ↦ h i
 
-attribute [deprecated sum_nonneg (since := "2026-09-01")] sum_nonneg'
-attribute [deprecated one_le_prod (since := "2026-09-01")] one_le_prod''
+attribute [deprecated sum_nonneg +typeChanged (since := "2026-09-01")] sum_nonneg'
+attribute [deprecated one_le_prod +typeChanged (since := "2026-09-01")] one_le_prod''
 
 @[to_additive]
 theorem prod_le_one [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
