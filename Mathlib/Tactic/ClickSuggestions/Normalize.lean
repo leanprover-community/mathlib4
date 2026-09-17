@@ -71,11 +71,13 @@ def suggestNormalize (old new : Expr) (info : PositionInfo) (stx : NormStx) :
 
 section Cast
 
+/-- The entry for `norm_cast` in `#click_suggestions`. -/
 public def normCast : NormTactic where
   run e := return (← Lean.Elab.Tactic.NormCast.derive e).1
   tacStx loc? := `(tactic| norm_cast $[$loc?]?)
   convStx := `(conv| norm_cast)
 
+/-- The entry for `push_cast` in `#click_suggestions`. -/
 public def pushCast : NormTactic where
   run e := do
     let ctx ← Simp.mkContext
@@ -193,6 +195,7 @@ public def suggestSimp (e : Expr) (info : PositionInfo)
 
 end Simp
 
+/-- An `IO.Ref` for normalization tactics in `#click_suggestions`. -/
 public initialize normTacticRef : IO.Ref (Array NormTactic) ← IO.mkRef #[normCast, pushCast]
 
 /-- Create a suggestion for tactics that normalize the selected expression.
