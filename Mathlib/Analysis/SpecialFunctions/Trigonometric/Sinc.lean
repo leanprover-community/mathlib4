@@ -100,10 +100,9 @@ lemma cos_le_sinc (hx : |x| < π / 2) : cos x ≤ sinc x := by
   · grind [sinc_neg, cos_neg]
   obtain rfl | hx₀ := hx₀.eq_or_lt
   · simp
-  have hx' := (abs_lt.mp hx).2
-  have hc : 0 < cos x := cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], hx'⟩
-  rw [sinc_of_ne_zero hx₀.ne', le_div_iff₀ hx₀, ← tan_mul_cos hc.ne', mul_comm]
-  exact mul_le_mul_of_nonneg_right (le_tan hx₀.le hx') hc.le
+  have hc : 0 < cos x := cos_pos_of_mem_Ioo <| by grind
+  suffices x * cos x ≤ tan x * cos x by rw [← le_div_iff₀' hx₀] at this; grind
+  grw [le_tan hx₀.le (abs_lt.mp hx).2]
 
 /-- The function `sinc` is positive on `(-π, π)`. -/
 lemma sinc_pos (hx : |x| < π) : 0 < sinc x := by
