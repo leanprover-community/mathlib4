@@ -54,6 +54,9 @@ def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := no
   let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
+@[deprecated (since := "2026-09-17")]
+alias _root_.Mathlib.Tactic.DeprecateTo.mkDeprecationStx := mkDeprecationStx
+
 /-- Returns the array of names that are in `new` but not in `old`. -/
 def newNames (old new : Environment) : Array Name := Id.run do
   let mut diffs := #[]
@@ -61,6 +64,9 @@ def newNames (old new : Environment) : Array Name := Id.run do
     unless old.constants.map₂.contains c do
       diffs := diffs.push c
   pure <| diffs.qsort (·.toString < ·.toString)
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.Mathlib.Tactic.DeprecateTo.newNames := newNames
 
 variable (newName : TSyntax `ident) in
 /--
@@ -77,6 +83,9 @@ def renameTheorem : TSyntax `command → TSyntax `Lean.Parser.Command.declId × 
   | `(command| $dm:declModifiers lemma $id:declId $d:declSig $v:declVal) => Unhygienic.run do
     return (id, ← `($dm:declModifiers lemma $newName:declId $d:declSig $v:declVal))
   | a => (default, a)
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.Mathlib.Tactic.DeprecateTo.renameTheorem := renameTheorem
 
 open Meta.Tactic.TryThis in
 /--
@@ -151,5 +160,12 @@ elab tk:"#deprecate " id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command : 
 
       addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
         toMessageData
+
+@[inherit_doc «command#deprecate______»]
+macro (name := oldStx) "deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command :
+    command =>
+  `(command| #deprecate $id* $[$dat]? $cmd)
+
+deprecated_syntax oldStx "use `#deprecate` instead of `deprecate to`" (since := "2026-09-17")
 
 end Mathlib.Tactic.Deprecate
