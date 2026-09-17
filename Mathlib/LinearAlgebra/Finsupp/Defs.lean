@@ -40,8 +40,8 @@ open Set LinearMap
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R R₂ R₃ : Type*} {S : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R R₂ R₃ : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
 variable [AddCommMonoid P] [Module R₃ P]
@@ -52,7 +52,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃
 
 section LinearEquivFunOnFinite
 
-variable (R : Type*) {S : Type*} (M : Type*) (α : Type*)
+variable (R : Type*) (M : Type*) (α : Type*)
 variable [Finite α] [AddCommMonoid M] [Semiring R] [Module R M]
 
 /-- Given `Finite α`, `linearEquivFunOnFinite R` is the natural `R`-linear equivalence between

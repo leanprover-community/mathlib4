@@ -38,7 +38,7 @@ open Projectivization Matrix Polynomial OnePoint
 
 section MatrixProdAction
 
-variable {R n : Type*} [Semiring R] [Fintype n] [DecidableEq n]
+variable {R : Type*} [Semiring R]
 
 @[simp] lemma Matrix.mulVec_fin_two (m : Matrix (Fin 2) (Fin 2) R) (v : Fin 2 → R) :
     m *ᵥ v = ![m 0 0 * v 0 + m 0 1 * v 1, m 1 0 * v 0 + m 1 1 * v 1] := by
@@ -65,7 +65,7 @@ lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
   simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum]
 
-@[deprecated Matrix.GeneralLinearGroup.fin_two_smul (since := "2026-04-19")]
+@[deprecated Matrix.GeneralLinearGroup.fin_two_smul +typeChanged (since := "2026-04-19")]
 lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
     (g : GL (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by

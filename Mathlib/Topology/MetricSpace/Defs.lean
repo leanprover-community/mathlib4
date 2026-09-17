@@ -48,7 +48,7 @@ open scoped NNReal Uniformity
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {X : Type*}
 variable [PseudoMetricSpace α]
 
 /-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
@@ -129,7 +129,7 @@ theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
 
 namespace Metric
 
-variable {x : γ} {s : Set γ}
+variable {x : γ}
 
 @[simp] theorem closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ => dist_le_zero
 

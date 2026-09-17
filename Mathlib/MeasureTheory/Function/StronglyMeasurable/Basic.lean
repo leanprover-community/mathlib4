@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
@@ -85,7 +86,7 @@ open MeasureTheory
 /-! ## Strongly measurable functions -/
 
 section StronglyMeasurable
-variable {_ : MeasurableSpace α} {μ : Measure α} {f : α → β} {g : ℕ → α} {m : ℕ}
+variable {_ : MeasurableSpace α} {f : α → β} {g : ℕ → α} {m : ℕ}
 
 variable [TopologicalSpace β]
 
@@ -495,6 +496,11 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 protected theorem star {R : Type*} [MeasurableSpace α] [Star R] [TopologicalSpace R]
     [ContinuousStar R] (f : α → R) (hf : StronglyMeasurable f) : StronglyMeasurable (star f) :=
   ⟨fun n => star (hf.approx n), fun x => (hf.tendsto_approx x).star⟩
+
+protected theorem star_iff {R : Type*} [MeasurableSpace α] [InvolutiveStar R] [TopologicalSpace R]
+    [ContinuousStar R] {f : α → R} :
+    StronglyMeasurable (star f) ↔ StronglyMeasurable f :=
+  ⟨fun h ↦ by simpa using h.star, fun h ↦ h.star⟩
 
 /-- In a normed vector space, the addition of a measurable function and a strongly measurable
 function is measurable. Note that this is not true without further second-countability assumptions

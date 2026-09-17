@@ -208,20 +208,18 @@ instance : IsAbsoluteValue (padicNorm p) where
 of the norms of `q` and `r`. -/
 theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
     padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) :=
-  IsNonarchimedean.add_eq_max_of_ne (f := IsAbsoluteValue.toAbsoluteValue (padicNorm p))
-    (fun _ _ ↦ padicNorm.nonarchimedean) hne
+  IsNonarchimedean.add_eq_max_of_ne (fun a ↦ by simp) (fun _ _ ↦ padicNorm.nonarchimedean) hne
 
 theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
   · norm_cast at hz
     simp [hz]
   · rw [zpow_le_zpow_iff_right₀, neg_le_neg_iff, padicValRat.of_int,
-      padicValInt.of_ne_one_ne_zero hp.1.ne_one _]
+      padicValInt.of_ne_one_ne_zero]
     · norm_cast
       rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
       · norm_cast
       · apply Int.finiteMultiplicity_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
-    · exact_mod_cast hz
     · exact_mod_cast hp.out.one_lt
 
 /-- The `p`-adic norm of an integer `m` is one iff `p` doesn't divide `m`. -/

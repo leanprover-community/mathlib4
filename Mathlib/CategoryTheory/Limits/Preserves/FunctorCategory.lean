@@ -45,7 +45,6 @@ section
 
 variable {C : Type u} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{u} D]
-variable {E : Type u} [Category.{v₂} E]
 
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
 `F : C ⥤ D` also preserves colimits.

@@ -123,11 +123,9 @@ abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X�
   (BinaryFan.IsLimit.lift' (ℬ Y₁ Y₂).isLimit ((ℬ X₁ X₂).cone.π.app ⟨.left⟩ ≫ f)
       (((ℬ X₁ X₂).cone.π.app ⟨.right⟩ : (ℬ X₁ X₂).cone.pt ⟶ X₂) ≫ g)).val
 
-set_option backward.isDefEq.respectTransparency false in
 lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
@@ -156,13 +154,11 @@ lemma triangle (X Y : C) :
       tensorHom ℬ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit).hom (𝟙 Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_naturality (f : X₁ ⟶ X₂) :
     tensorHom ℬ (𝟙 𝒯.cone.pt) f ≫ (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₂).isLimit).hom =
       (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₁).isLimit).hom ≫ f := by
   simp [tensorHom]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_naturality (f : X₁ ⟶ X₂) :
     tensorHom ℬ f (𝟙 𝒯.cone.pt) ≫ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₂ 𝒯.cone.pt).isLimit).hom =
       (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₁ 𝒯.cone.pt).isLimit).hom ≫ f := by
@@ -183,7 +179,6 @@ end ofChosenFiniteProducts
 
 open ofChosenFiniteProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
 over arbitrary pairs of objects. -/
 abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
@@ -800,7 +795,6 @@ end prodComparison
 end CartesianMonoidalCategoryComparison
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
 -/
 noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :

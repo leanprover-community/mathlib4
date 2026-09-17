@@ -367,7 +367,7 @@ theorem rotate_edges (hu : u ∈ c.support) : (c.rotate u).edges ~r c.edges := (
 theorem nil_rotate {c : G.Walk v v} (hu : u ∈ c.support) : (c.rotate u).Nil ↔ c.Nil := by
   simp [← length_eq_zero_iff, hu]
 
-@[deprecated nil_rotate (since := "2026-05-11")]
+@[deprecated nil_rotate +typeChanged (since := "2026-05-11")]
 lemma rotate_eq_nil {c : G.Walk v v} (hu : u ∈ c.support) : c.rotate u = nil ↔ c = nil := by
   simp [hu]
 

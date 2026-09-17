@@ -288,7 +288,7 @@ open FreeGroupoid
 set_option backward.isDefEq.respectTransparency false in
 /-- The free groupoid construction on a category as a functor. -/
 def free : Cat.{u, u} ⥤ Grpd.{u, u} where
-  obj C := Grpd.of <| FreeGroupoid C
+  obj C := ↧(FreeGroupoid C)
   map {C D} F := map F.toFunctor
   map_id C := by simp [map_id, id_eq_id]
   map_comp F G := by simp [Grpd.comp_eq_comp, map_comp]
@@ -312,22 +312,22 @@ variable {C : Type u} [Category.{u} C] {D : Type u} [Groupoid.{u} D]
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply (F : FreeGroupoid C ⥤ D) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F).toFunctor = FreeGroupoid.of C ⋙ F :=
+    (freeForgetAdjunction.homEquiv ↧C ↧D F).toFunctor = FreeGroupoid.of C ⋙ F :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_symm_apply (F : C ⥤ D) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F.toCatHom = map F ⋙ lift (𝟭 D) :=
+    (freeForgetAdjunction.homEquiv ↧C ↧D).symm F.toCatHom = map F ⋙ lift (𝟭 D) :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_unit_app :
-    (freeForgetAdjunction.unit.app (Cat.of C)).toFunctor = FreeGroupoid.of C :=
+    (freeForgetAdjunction.unit.app ↧C).toFunctor = FreeGroupoid.of C :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_counit_app :
-    freeForgetAdjunction.counit.app (Grpd.of D) = lift (𝟭 D) :=
+    freeForgetAdjunction.counit.app ↧D = lift (𝟭 D) :=
   rfl
 
 instance : Reflective Grpd.forgetToCat where

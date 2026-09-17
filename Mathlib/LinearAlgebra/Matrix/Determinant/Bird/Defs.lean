@@ -5,12 +5,12 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
