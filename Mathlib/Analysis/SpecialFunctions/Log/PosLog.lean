@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # The Positive Part of the Logarithm
@@ -86,30 +87,34 @@ theorem posLog_eq_log (hx : 1 ≤ |x|) : log⁺ x = log x := by
   rw [← log_abs]
   apply log_nonneg hx
 
+/-- The function `log⁺` is monotone on the interval [-1,∞). -/
+theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici (-1)) := by
+  intro x hx y _ hxy
+  grind [posLog_eq_zero_iff, posLog_nonneg, posLog_eq_log, log_le_log]
+
+/-- The function `log⁺` is antitone on the interval (-∞,1]. -/
+theorem antitoneOn_posLog : AntitoneOn log⁺ (Set.Iic 1) := by
+  intro x hx y hy hxy
+  rw [← posLog_neg x, ← posLog_neg y]
+  exact monotoneOn_posLog (by grind) (by grind) (neg_le_neg hxy)
+
 /-- The function `log⁺` equals `log` for all natural numbers. -/
 theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   by_cases hn : n = 0
   · simp [hn, posLog]
   · simp [posLog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
 
+/-- Presentation of `|log|` in terms of the positive part of the logarithm. -/
+theorem abs_log_eq_posLog_add_posLog_inv (x : ℝ) : |log x| = log⁺ x + log⁺ x⁻¹ := by
+  grind [half_mul_log_add_log_abs (x := x), log_inv x ▸ half_mul_log_add_log_abs (x := x⁻¹)]
+
 /-- The function `log⁺` equals `log (max 1 _)` for non-negative real numbers. -/
 theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
   grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_apply]
 
-/-- The function `log⁺` is monotone on the positive axis. -/
-theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
-  intro x hx y hy hxy
-  simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
-  by_cases! h : log x ≤ 0
-  · tauto
-  · right
-    have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 h)) hxy
-    simp only [this, and_true, ge_iff_le]
-    linarith
-
 @[gcongr]
-lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
-  monotoneOn_posLog hx (hx.trans hxy) hxy
+lemma posLog_le_posLog (hx : -1 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+  monotoneOn_posLog (by grind) (by grind) hxy
 
 /-- The function `log⁺` commutes with taking powers. -/
 @[simp] lemma posLog_pow (n : ℕ) (x : ℝ) : log⁺ (x ^ n) = n * log⁺ x := by
@@ -120,6 +125,14 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   rw [not_le] at hx
   have : 1 ≤ |x ^ n| := by simp_all [one_le_pow₀, hx.le]
   simp [posLog_eq_log this, posLog_eq_log hx.le]
+
+/-- The function `log⁺` commutes with real powers with nonnegative base and exponent. -/
+@[simp] theorem posLog_rpow {x α : ℝ} (hx : -1 ≤ x) (hα : 0 ≤ α) : log⁺ (x ^ α) = α * log⁺ x := by
+  rcases le_or_gt x 0 with h | h
+  · have h₁ : |x| ≤ 1 := abs_le.2 ⟨hx, h.trans zero_le_one⟩
+    rw [(posLog_eq_zero_iff x).2 h₁, mul_zero, (posLog_eq_zero_iff _).2]
+    exact (abs_rpow_le_abs_rpow x α).trans (rpow_le_one (abs_nonneg x) h₁ hα)
+  · rw [posLog_apply, posLog_apply, log_rpow h, mul_max_of_nonneg _ _ hα, mul_zero]
 
 /-- The function `log⁺` is continuous. -/
 @[fun_prop] theorem continuous_posLog : Continuous log⁺ := by
@@ -132,6 +145,36 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
     simp_all [le_of_lt]
   rw [posLog_def]
   fun_prop
+
+/-!
+## Trivial Estimates
+-/
+
+/-- For nonnegative `x`, the positive part of the logarithm is bounded by `log (1 + x)`. -/
+lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ log (1 + x) := by
+  rw [posLog_eq_log_max_one hx]
+  exact log_le_log (by positivity) (max_le (by linarith) (by linarith))
+
+/-- Converse to `posLog_le_log_one_add` up to the additive constant `log 2`. -/
+lemma log_one_add_le_posLog {x : ℝ} : log (1 + x) ≤ log⁺ x + log 2 := by
+  have h₁ : (1 : ℝ) ≤ max 1 |x| := le_max_left ..
+  have h₂ : |1 + x| ≤ max 1 |x| * 2 := by
+    linarith [abs_add_le 1 x, le_max_right 1 |x|, abs_one (α := ℝ)]
+  calc log (1 + x)
+  _ ≤ log⁺ (1 + x) := le_max_right ..
+  _ = log⁺ |1 + x| := (posLog_abs _).symm
+  _ ≤ log⁺ (max 1 |x| * 2) := posLog_le_posLog (neg_one_lt_zero.le.trans (abs_nonneg _)) h₂
+  _ = log⁺ x + log 2 := by
+    rw [posLog_eq_log (by rw [abs_of_nonneg (by positivity)]; linarith),
+      log_mul (by positivity) two_ne_zero, ← posLog_eq_log_max_one (abs_nonneg x), posLog_abs]
+
+/-- The positive part of the logarithm is bounded by the absolute value: `log⁺ x ≤ |x|`. -/
+lemma posLog_le_abs (x : ℝ) : log⁺ x ≤ |x| := by
+  rcases le_or_gt |x| 1 with h | h
+  · rw [(posLog_eq_zero_iff x).2 h]
+    exact abs_nonneg x
+  · rw [← posLog_abs, posLog_eq_log (by rw [abs_abs]; exact h.le)]
+    linarith [log_le_sub_one_of_pos (lt_trans one_pos h)]
 
 /-!
 ## Estimates for Products
@@ -186,10 +229,10 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   _ = log⁺ |∑ t ∈ s, f t| := by
     rw [Real.posLog_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t|) := by
-    apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
+    apply posLog_le_posLog (neg_one_lt_zero.le.trans (abs_nonneg _))
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [mul_nonneg])
+    apply posLog_le_posLog (neg_one_lt_zero.le.trans (Finset.sum_nonneg fun _ _ ↦ abs_nonneg _))
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
@@ -207,6 +250,7 @@ lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s 
     (f : α → E) :
     log⁺ ‖∑ t ∈ s, f t‖ ≤ log s.card + ∑ t ∈ s, log⁺ ‖f t‖ := by
   grw [norm_sum_le, posLog_sum]
+  exact neg_one_lt_zero.le.trans (norm_nonneg _)
 
 /--
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
@@ -221,5 +265,6 @@ monotonicity of `log⁺` and the triangle inequality.
 lemma posLog_norm_add_le {E : Type*} [SeminormedAddCommGroup E] (a b : E) :
     log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
   grw [norm_add_le, posLog_add, add_rotate]
+  exact neg_one_lt_zero.le.trans (norm_nonneg _)
 
 end Real

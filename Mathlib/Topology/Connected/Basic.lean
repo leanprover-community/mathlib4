@@ -507,11 +507,11 @@ noncomputable def connectedComponentIn (F : Set α) (x : α) : Set α :=
 
 theorem connectedComponentIn_eq_image {F : Set α} {x : α} (h : x ∈ F) :
     connectedComponentIn F x = (↑) '' connectedComponent (⟨x, h⟩ : F) :=
-  dif_pos h
+  dite_eq_left h
 
 theorem connectedComponentIn_eq_empty {F : Set α} {x : α} (h : x ∉ F) :
     connectedComponentIn F x = ∅ :=
-  dif_neg h
+  dite_eq_right h
 
 theorem mem_connectedComponent {x : α} : x ∈ connectedComponent x :=
   mem_sUnion_of_mem (mem_singleton x) ⟨isPreconnected_singleton, mem_singleton x⟩
@@ -620,7 +620,7 @@ theorem ContinuousOn.image_connectedComponentIn_subset [TopologicalSpace β] {f 
     |>.subset_connectedComponentIn (mem_image_of_mem _ <| mem_connectedComponentIn hx)
       (image_mono <| connectedComponentIn_subset _ _)
 
-@[deprecated ContinuousOn.image_connectedComponentIn_subset (since := "2026-07-27")]
+@[deprecated ContinuousOn.image_connectedComponentIn_subset +typeChanged (since := "2026-07-27")]
 theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
     {a : α} (hf : Continuous f) (hx : a ∈ s) :
     f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
@@ -635,11 +635,29 @@ theorem ContinuousOn.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α �
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
   mapsTo_iff_image_subset.2 <| h.image_connectedComponentIn_subset hx
 
-@[deprecated ContinuousOn.mapsTo_connectedComponentIn (since := "2026-07-27")]
+@[deprecated ContinuousOn.mapsTo_connectedComponentIn +typeChanged (since := "2026-07-27")]
 theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
     (h : Continuous f) {a : α} (hx : a ∈ s) :
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
   h.continuousOn.mapsTo_connectedComponentIn hx
+
+/-- The connected component of `(x, y)` in the product space is the product of the connected
+components of `x` and `y`. -/
+theorem connectedComponent_prod [TopologicalSpace β] (x : α) (y : β) :
+    connectedComponent (x, y) = connectedComponent x ×ˢ connectedComponent y :=
+  subset_antisymm
+    (fun _ hp ↦ ⟨continuous_fst.mapsTo_connectedComponent (x, y) hp,
+      continuous_snd.mapsTo_connectedComponent (x, y) hp⟩)
+    (isPreconnected_connectedComponent.prod isPreconnected_connectedComponent
+      |>.subset_connectedComponent ⟨mem_connectedComponent, mem_connectedComponent⟩)
+
+/-- The connected component of `x` in a product space is the product of the connected components
+of its coordinates. -/
+theorem connectedComponent_pi [∀ i, TopologicalSpace (X i)] (x : ∀ i, X i) :
+    connectedComponent x = univ.pi fun i ↦ connectedComponent (x i) :=
+  subset_antisymm (fun _ hy i _ ↦ (continuous_apply i).mapsTo_connectedComponent x hy)
+    (isPreconnected_univ_pi (fun _ ↦ isPreconnected_connectedComponent)
+      |>.subset_connectedComponent fun _ _ ↦ mem_connectedComponent)
 
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=

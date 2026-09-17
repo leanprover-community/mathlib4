@@ -63,7 +63,7 @@ This is also available in the `ArithmeticFunction.vonMangoldt` locale, allowing 
 access to the notation.
 -/
 noncomputable def vonMangoldt : ArithmeticFunction ℝ :=
-  ⟨fun n => if IsPrimePow n then Real.log (minFac n) else 0, if_neg not_isPrimePow_zero⟩
+  ⟨fun n => if IsPrimePow n then Real.log (minFac n) else 0, ite_eq_right not_isPrimePow_zero⟩
 
 @[inherit_doc] scoped[ArithmeticFunction] notation "Λ" => ArithmeticFunction.vonMangoldt
 
@@ -87,7 +87,7 @@ theorem vonMangoldt_apply_pow {n k : ℕ} (hk : k ≠ 0) : Λ (n ^ k) = Λ n := 
   simp only [vonMangoldt_apply, isPrimePow_pow_iff hk, pow_minFac hk]
 
 theorem vonMangoldt_apply_prime {p : ℕ} (hp : p.Prime) : Λ p = Real.log p := by
-  rw [vonMangoldt_apply, Prime.minFac_eq hp, if_pos hp.prime.isPrimePow]
+  rw [vonMangoldt_apply, Prime.minFac_eq hp, ite_eq_left hp.prime.isPrimePow]
 
 theorem vonMangoldt_ne_zero_iff {n : ℕ} : Λ n ≠ 0 ↔ IsPrimePow n := by
   rcases eq_or_ne n 1 with (rfl | hn); · simp [not_isPrimePow_one]
