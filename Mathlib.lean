@@ -4409,6 +4409,7 @@ public import Mathlib.Data.PFunctor.Multivariate.W
 public import Mathlib.Data.PFunctor.Univariate.Basic
 public import Mathlib.Data.PFunctor.Univariate.M
 public import Mathlib.Data.PNat.Algebra
+public import Mathlib.Data.PNat.Algebra.Order
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Defs
 public import Mathlib.Data.PNat.DivMod
