@@ -14,7 +14,7 @@ public meta import Lean.Meta.Tactic.Generalize
 # The `basify` tactic
 
 Mathlib has many types built from a well-behaved type by a construction that makes the resulting
-arithmetic partial or truncated. The two commonest are
+arithmetic partial or truncated. The two most common are
 
 * *extensions* by a point at infinity, such as `ℕ∞ = WithTop ℕ`;
 * *subtypes* cut out by an inequality, such as `ℝ≥0 = {r : ℝ // 0 ≤ r}`.
