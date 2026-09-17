@@ -59,7 +59,7 @@ Use `open scoped RealLambertW` to use these.
 
 The following notation is localized in `OmegaConstant`:
 
-* `Ω` is `omegaConstant`.
+* `Ω` is `Real.omegaConstant`.
 
 Use `open scoped OmegaConstant` to use this.
 
