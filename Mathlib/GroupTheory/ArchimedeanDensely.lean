@@ -90,8 +90,7 @@ instance : Unique (ℤ ≃+o ℤ) where
 namespace WithZero
 
 /-- A multiplicative automorphism of `ℤᵐ⁰` restricts to an additive automorphism of `ℤ`.
-The order plays no role here; it is only used in `orderMonoidIso_int_eq_refl` to rule out
-the automorphism induced by negation. -/
+The order plays no role here; it is only used in `orderMonoidIso_int_eq_refl`. -/
 private def logMapAddEquiv (e : ℤᵐ⁰ ≃* ℤᵐ⁰) : ℤ ≃+ ℤ :=
   AddEquiv.toMultiplicative.symm e.unzero
 
@@ -103,7 +102,12 @@ private lemma logMapAddEquiv_apply (e : ℤᵐ⁰ ≃* ℤᵐ⁰) (z : ℤ) :
     logMapAddEquiv e z = log (e (exp z)) := by
   rw [← exp_logMapAddEquiv, log_exp]
 
-/-- The only order-preserving multiplicative automorphism of `ℤᵐ⁰` is the identity. -/
+/-- The only order-preserving multiplicative automorphism of `ℤᵐ⁰` is the identity.
+
+Neither hypothesis can be dropped. For every `a : ℤ` the map `x ↦ x * exp a` is an order
+isomorphism of `ℤᵐ⁰`, so the order isomorphisms alone form a copy of `ℤ`, and it is
+multiplicativity that forces `a = 0`. Conversely `x ↦ x⁻¹` is a multiplicative automorphism,
+and it is the order that rules it out. -/
 theorem orderMonoidIso_int_eq_refl (e : ℤᵐ⁰ ≃*o ℤᵐ⁰) :
     e = OrderMonoidIso.refl ℤᵐ⁰ := by
   have hmono : Monotone (logMapAddEquiv e.toMulEquiv) := by
