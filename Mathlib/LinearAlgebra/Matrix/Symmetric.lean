@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Symmetric matrices
@@ -30,6 +31,7 @@ variable {α β n m R : Type*}
 namespace Matrix
 
 /-- A matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`. -/
+@[wikidata Q339011]
 def IsSymm (A : Matrix n n α) : Prop :=
   Aᵀ = A
 
@@ -133,6 +135,11 @@ theorem isSymm_smul_iff [Monoid R] [MulAction R α] {A : Matrix n n α} (k : R) 
   refine ⟨fun h ↦ ?_, (·.smul k)⟩
   rw [← invOf_smul_smul k A]
   exact h.smul ⅟k
+
+lemma IsSymm.dotProduct_mulVec_comm [Fintype n] [NonUnitalCommSemiring α]
+    {A : Matrix n n α} (hA : A.IsSymm) {x y : n → α} :
+    x ⬝ᵥ A *ᵥ y = y ⬝ᵥ A *ᵥ x := by
+  rw [dotProduct_mulVec, ← mulVec_transpose, hA.eq, dotProduct_comm]
 
 @[simp]
 theorem IsSymm.submatrix {A : Matrix n n α} (h : A.IsSymm) (f : m → n) : (A.submatrix f f).IsSymm :=

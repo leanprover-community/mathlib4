@@ -23,8 +23,6 @@ public section
 
 namespace CategoryTheory
 
-open Localization
-
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C) {A : Type*} [Category* A]
 
 namespace GrothendieckTopology

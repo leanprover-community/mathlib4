@@ -35,7 +35,7 @@ instance grpGroup (A : Type u) [GrpObj A] : Group A :=
 
 /-- Converting a group object in `Type u` into a group. -/
 noncomputable def functor : Grp (Type u) ⥤ GrpCat.{u} where
-  obj A := GrpCat.of A.X
+  obj A := ↧A.X
   map f := GrpCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/

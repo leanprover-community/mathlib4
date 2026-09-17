@@ -52,7 +52,7 @@ section ProdPrimeFactors
 /-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
 def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
   toFun d := if d = 0 then 0 else ∏ p ∈ d.primeFactors, f p
-  map_zero' := if_pos rfl
+  map_zero' := ite_eq_left rfl
 
 open Batteries.ExtendedBinder
 
@@ -64,7 +64,7 @@ scoped macro_rules (kind := bigproddvd)
 @[simp]
 theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :
     ∏ᵖ p ∣ n, f p = ∏ p ∈ n.primeFactors, f p :=
-  if_neg hn
+  ite_eq_right hn
 
 namespace IsMultiplicative
 
@@ -317,7 +317,8 @@ theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k 
 
 theorem cardFactors_eq_sum_factorization {n : ℕ} :
     Ω n = n.factorization.sum fun _ k => k := by
-  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
+  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum,
+    primeFactorsList_count_eq]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 def cardDistinctFactors : ArithmeticFunction ℕ :=
@@ -451,7 +452,7 @@ theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
 end Nat.Coprime
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]

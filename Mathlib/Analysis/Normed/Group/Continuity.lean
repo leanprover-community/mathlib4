@@ -23,14 +23,14 @@ public section
 
 variable {α ι κ E F G : Type*}
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter Function Metric
+open ENNReal Filter NNReal Topology
+
+open scoped Uniformity
 
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G]
-
-open Finset
 
 section ContinuousENorm
 
@@ -155,7 +155,7 @@ end Instances
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -196,7 +196,7 @@ end
 
 section
 
-variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
+variable [TopologicalSpace α] {f : α → E} {a : α}
 
 @[to_additive (attr := fun_prop) Continuous.norm]
 theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
@@ -301,7 +301,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -402,8 +402,11 @@ theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
 
 variable (E)
 
-/-- A version of `comap_norm_nhdsGT_zero` for a multiplicative normed group. -/
-@[to_additive comap_norm_nhdsGT_zero]
+/-- In a normed group, the pullback under the norm of `𝓝[>] 0` is the punctured neighborhood
+of `1`. -/
+@[to_additive comap_norm_nhdsGT_zero
+/-- In a normed additive group, the pullback under the norm of `𝓝[>] 0` is the punctured
+neighborhood of `0`. -/]
 lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
 
