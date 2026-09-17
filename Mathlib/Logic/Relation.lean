@@ -923,16 +923,16 @@ lemma reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
 end EqvGen
 
 @[deprecated (since := "2026-09-10")]
-alias EqvGen.reflGen_le_eqvGen := reflGen_le_eqvGen
+protected alias EqvGen.reflGen_le_eqvGen := reflGen_le_eqvGen
 
 @[deprecated (since := "2026-09-10")]
-alias EqvGen.symmGen_le_eqvGen := symmGen_le_eqvGen
+protected alias EqvGen.symmGen_le_eqvGen := symmGen_le_eqvGen
 
 @[deprecated (since := "2026-09-10")]
-alias EqvGen.transGen_le_eqvGen := transGen_le_eqvGen
+protected alias EqvGen.transGen_le_eqvGen := transGen_le_eqvGen
 
 @[deprecated (since := "2026-09-10")]
-alias EqvGen.reflTransGen_le_eqvGen := reflTransGen_le_eqvGen
+protected alias EqvGen.reflTransGen_le_eqvGen := reflTransGen_le_eqvGen
 
 /-- The join of a relation on a single type is a new relation for which
 pairs of terms are related if there is a third term they are both
