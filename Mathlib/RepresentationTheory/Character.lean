@@ -132,7 +132,7 @@ end Group
 section Orthogonality
 
 variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+  [AddCommGroup W] [Module k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 variable [Fintype G] [Invertible (Nat.card G : k)] [IsAlgClosed k]
@@ -143,6 +143,8 @@ algebraically closed field whose characteristic doesn't divide the order of the 
 theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g * σ.character g⁻¹ =
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
+  have := IsIrreducible.finiteDimensional ρ
+  have := IsIrreducible.finiteDimensional σ
   cases isEmpty_or_nonempty (Equiv σ ρ)
   · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
     simpa [finrank_eq_zero_of_subsingleton]

@@ -65,6 +65,13 @@ theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
 instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ sub_eq_zero.mp <| (bijective_or_eq_zero _).resolve_left
     fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
+
+variable (ρ) in
+include ρ in
+theorem finiteDimensional [Finite G] : FiniteDimensional k V :=
+  have := Module.Finite.trans (R := k) k[G] ρ.asModule
+  .of_surjective ρ.asModuleEquiv.toLinearMap ρ.asModuleEquiv.surjective
+
 variable [FiniteDimensional k V] [IsAlgClosed k]
 
 variable (f : IntertwiningMap ρ ρ) in
