@@ -55,7 +55,45 @@ lemma exists_le_maximal (s : Finset α) (ha : a ∈ s) : ∃ b, a ≤ b ∧ Maxi
     simpa [Maximal, and_assoc] using {x ∈ s | a ≤ x}.exists_maximal ⟨a, mem_filter.2 ⟨ha, le_rfl⟩⟩
   exact ⟨b, hab, hb, fun c hc hbc ↦ hbmin hc (hab.trans hbc) hbc⟩
 
+variable [DecidableEq α] {i : α}
+
+/-- Maximal elements of `insert a s`: either `a` itself, when nothing in `s` is above it, or a
+maximal element of `s` which is not below `a`. -/
+@[to_dual /-- Minimal elements of `insert a s`: either `a` itself, when nothing in `s` is
+below it, or a minimal element of `s` which is not above `a`. -/]
+lemma maximal_mem_insert_iff :
+    Maximal (· ∈ insert a s) i ↔ (i = a ∧ ∀ x ∈ s, ¬ a < x) ∨ (Maximal (· ∈ s) i ∧ ¬ i < a) := by
+  grind [Maximal, lt_iff_le_not_ge]
+
+@[to_dual]
+lemma maximal_mem_insert_self_iff : Maximal (· ∈ insert a s) a ↔ ∀ x ∈ s, ¬ a < x := by
+  grind [maximal_mem_insert_iff, Maximal]
+
+@[to_dual]
+lemma maximal_mem_insert_iff_of_mem (hi : i ∈ s) :
+    Maximal (· ∈ insert a s) i ↔ Maximal (· ∈ s) i ∧ ¬ i < a := by
+  grind [maximal_mem_insert_iff]
+
 end Preorder
+
+section LinearOrder
+variable [LinearOrder α] [DecidableEq α] {s : Finset α} {a i : α}
+
+@[to_dual]
+lemma maximal_mem_insert_iff_le :
+    Maximal (· ∈ insert a s) i ↔ (i = a ∧ ∀ x ∈ s, x ≤ a) ∨ (Maximal (· ∈ s) i ∧ a ≤ i) := by
+  grind [maximal_mem_insert_iff]
+
+@[to_dual]
+lemma maximal_mem_insert_self_iff_le : Maximal (· ∈ insert a s) a ↔ ∀ x ∈ s, x ≤ a := by
+  grind [maximal_mem_insert_self_iff]
+
+@[to_dual]
+lemma maximal_mem_insert_iff_of_mem_le (hi : i ∈ s) :
+    Maximal (· ∈ insert a s) i ↔ Maximal (· ∈ s) i ∧ a ≤ i := by
+  grind [maximal_mem_insert_iff_of_mem hi]
+
+end LinearOrder
 end Finset
 
 namespace Set
