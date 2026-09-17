@@ -1,4 +1,4 @@
-import Mathlib.Tactic.DeprecateTo
+import Mathlib.Tactic.Deprecate
 import Mathlib.Tactic.ToAdditive
 
 set_option linter.translateRedundant false in

@@ -7517,7 +7517,7 @@ public import Mathlib.Tactic.DeclarationNames
 public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DepRewrite
-public import Mathlib.Tactic.DeprecateTo
+public import Mathlib.Tactic.Deprecate
 public import Mathlib.Tactic.DeriveCountable
 public import Mathlib.Tactic.DeriveEncodable
 public import Mathlib.Tactic.DeriveFintype
