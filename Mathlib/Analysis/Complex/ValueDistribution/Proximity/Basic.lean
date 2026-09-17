@@ -209,8 +209,8 @@ theorem proximity_add_top_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f�
 
 
 /--
-The proximity function of `f • g` at `⊤` is less than or equal to the sum of the proximity functions of
-`f` and `g`, respectively.
+The proximity function of `f • g` at `⊤` is less than or equal to the sum of the proximity functions
+of `f` and `g`, respectively.
 -/
 theorem proximity_smul_top_le [NormedSpace ℂ E] {f₁ : ℂ → ℂ} {f₂ : ℂ → E} (h₁f₁ : Meromorphic f₁)
     (h₁f₂ : Meromorphic f₂) :
@@ -237,8 +237,8 @@ theorem proximity_smul_top_le [NormedSpace ℂ E] {f₁ : ℂ → ℂ} {f₂ : �
     _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
 
 /--
-The proximity function of `f * g` at `⊤` is less than or equal to the sum of the proximity functions of
-`f` and `g`, respectively.
+The proximity function of `f * g` at `⊤` is less than or equal to the sum of the proximity functions
+of `f` and `g`, respectively.
 -/
 theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁ : Meromorphic f₁) (h₂ : Meromorphic f₂) :
     proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := proximity_smul_top_le h₁ h₂
