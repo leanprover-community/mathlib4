@@ -14,14 +14,14 @@ public import Mathlib.Tactic.Push
 /-!
 # Normalizing tactics in `#click_suggestions`
 
-This file implement an extensible mechanism for suggesting normalization tactics,
+This file implements an extensible mechanism for suggesting normalization tactics,
 given by the function `suggestNormTactics`.
 
 We implement special built-in behaviour for `dsimp only`/`dsimp`/`simp` and for
-`push Not`/`push +distrib Not`, to avoid duplicates when these normalizing to the same expression.
+`push Not`/`push +distrib Not`, to avoid duplicates when these normalize to the same expression.
 
 This file implements suggestions for `dsimp`, `simp`, `push`, `norm_cast` and `push_cast`.
-Downstream files will add extensions for e.g. `norm_num`, `ring_nf` and `field_simp`.
+Downstream files add extensions for e.g. `norm_num`, `ring_nf` and `field_simp`.
 -/
 
 meta section
@@ -251,13 +251,13 @@ public def runFromStx (tac : TSyntax `tactic) (e : Expr) : MetaM Expr := do
 
 /-- Check that `e` is suitable for normalization by a tactic for class `cls`.
 This is used for unstructured normalization tactics such as `group` and `noncomm_ring`. -/
-public def guardHasInstance (e : Expr) (cls : Name) : MetaM Unit := do
+public def involvesClass (e : Expr) (cls : Name) : MetaM Bool := do
   let type ← match_expr e with
     | Eq α _ _ => pure α
     | LE.le α _ _ _ => pure α
     | LT.lt α _ _ _ => pure α
     | _ => inferType e
-  discard <| synthInstance (← mkAppM cls #[type])
+  return (← trySynthInstance (← mkAppM cls #[type])) matches .some _
 
 end Algebra
 

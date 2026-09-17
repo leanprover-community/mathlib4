@@ -7484,6 +7484,7 @@ public import Mathlib.Tactic.ClickSuggestions.Apply
 public import Mathlib.Tactic.ClickSuggestions.ApplyAt
 public import Mathlib.Tactic.ClickSuggestions.FindPremises
 public import Mathlib.Tactic.ClickSuggestions.GRewrite
+public import Mathlib.Tactic.ClickSuggestions.Normalize
 public import Mathlib.Tactic.ClickSuggestions.Rewrite
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public import Mathlib.Tactic.ClickSuggestions.TryPremises

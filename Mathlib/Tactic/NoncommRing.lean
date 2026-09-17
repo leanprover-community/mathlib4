@@ -98,13 +98,15 @@ namespace ClickSuggestions.Normalize
 
 open Lean
 
-/-- The entry for `noncomm_ring` in `#click_suggestions`. -/
+/-- The entry for `noncomm_ring` in `#click_suggestions`.
+It is not suggested when `ring_nf` can be used instead. -/
 def noncommRing : NormTactic where
   tacStx loc? := `(tactic| noncomm_ring $[$loc?:location]?)
   -- `noncomm_ring` doesn't have a `conv` version.
   convStx := failure
   run e := do
-    guardHasInstance e ``Group
+    guard !(← involvesClass e ``CommSemiring)
+    guard (← involvesClass e ``NonUnitalNonAssocSemiring)
     runFromStx (← `(tactic| noncomm_ring)) e
 
 initialize normTacticRef.modify (·.push noncommRing)

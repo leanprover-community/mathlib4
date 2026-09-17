@@ -99,7 +99,7 @@ def group : NormTactic where
   -- `group` doesn't have a `conv` version.
   convStx := failure
   run e := do
-    guardHasInstance e ``Group
+    guard (← involvesClass e ``Group)
     runFromStx (← `(tactic| group)) e
 
 initialize normTacticRef.modify (·.push group)

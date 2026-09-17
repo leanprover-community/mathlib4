@@ -14,7 +14,7 @@ import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
-This file tests some basic features of `#click_search`
+This file tests some basic features of `#click_suggestions`
 -/
 
 set_option linter.all false
@@ -90,7 +90,7 @@ example {p q r : Prop} (h₁ : p → q → r) (h₂ : p → q) (h₃ : p) : r :=
 -- Test with bound variables:
 example : ∀ n m : Nat, n + m = m + n := by
   click_test "/1/1/1" => "simp_rw [Nat.add_comm]"
-  click_test "/1/1" => "conv =>\nenter [n, m]\nring_nf"
+  click_test "/1/1" => "conv =>\n enter [n, m]\n ring_nf"
   intro n m
   -- The arguments are only inserted when needed:
   click_test "/1" => "rw [Nat.add_comm m n]"

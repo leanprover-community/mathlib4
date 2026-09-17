@@ -803,7 +803,8 @@ def fieldSimp : NormTactic where
       (congrTheorems := ← getSimpCongrTheorems)
     let disch := fun e ↦ Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
     if ← isProp e then
-      return (← FieldSimp.reduceProp disch e).expr
+      let cleanup e := return (← simpOnlyNames [] e).expr -- convert e.g. `x = x` to `True`
+      cleanup (← FieldSimp.reduceProp disch e).expr
     else
       return (← FieldSimp.reduceExpr disch e).expr
 

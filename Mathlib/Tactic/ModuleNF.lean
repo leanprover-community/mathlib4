@@ -221,12 +221,16 @@ end ModuleNF
 
 namespace ClickSuggestions.Normalize
 
-/-- The entry for `module_nf` in `#click_suggestions`. -/
+/-- The entry for `module_nf` in `#click_suggestions`.
+It is only suggested for expressions containing `•` or `algebraMap`,
+and the base type should not be `ℕ` or `ℤ`, as that is handled by `abel_nf`.
+-/
 def moduleNF : NormTactic where
   tacStx loc? := `(tactic| module_nf $[$loc?]?)
   convStx := failure
   run e := do
     let base ← ModuleNF.inferBase #[e]
+    guard !(base.2 matches .const ``Nat _ | .const ``Int _)
     let s ← IO.mkRef {}
     let postCtx ← Mathlib.Tactic.Module.postprocessCtx
     return (← ModuleNF.moduleNFCore s base e postCtx).expr
