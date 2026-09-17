@@ -81,6 +81,14 @@ def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
 
 variable {C}
 
+/-- `shiftFunctor Cᵒᵖ n` is *definitionally* `(shiftFunctor C (-n)).op`, but the projection out of
+the `HasShift Cᵒᵖ ℤ` instance does not reduce at the transparency `rw` and `simp` use, so a goal
+mixing the two spellings of an object is defeq without being syntactically equal. Normalising with
+this lemma (which `dsimp` can apply, as it is `rfl`) is what lets the proofs below use `rw`/`simp`
+rather than `erw`. Outside this file, use `shiftFunctorOpIso` instead. -/
+private lemma shiftFunctor_op_obj (X : Cᵒᵖ) (n : ℤ) :
+    (shiftFunctor Cᵒᵖ n).obj X = Opposite.op (X.unop⟦-n⟧) := rfl
+
 lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
       ((shiftFunctorZero C ℤ).inv.app X.unop).op := rfl
@@ -264,21 +272,15 @@ lemma opShiftFunctorEquivalence_add_unitIso_hom_app_eq
       (((opShiftFunctorEquivalence C m).unitIso.hom.app (X⟦n⟧)).unop⟦n⟧').op ≫
       ((shiftFunctorAdd' C m n p h).hom.app _).op ≫
       (((shiftFunctorAdd' Cᵒᵖ n m p (by lia)).inv.app X).unop⟦p⟧').op := by
-  rw [opShiftFunctorEquivalence_unitIso_hom_app X p (-p) (by lia),
-    opShiftFunctorEquivalence_unitIso_hom_app X n (-n) (by lia),
-    opShiftFunctorEquivalence_unitIso_hom_app (X⟦n⟧) m (-m) (by lia)]
-  simp only [shiftFunctorAdd'_op_inv_app _ n m p (by lia) _ _ _ (add_neg_cancel n)
-    (add_neg_cancel m) (add_neg_cancel p), shiftFunctor_op_map _ m (-m),
-    Category.assoc, Iso.inv_hom_id_app_assoc]
-  erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id,
-    id_comp, id_comp]
-  dsimp
-  rw [comp_id, shiftFunctorCompIsoId_add'_hom_app _ _ _ _ _ _
-    (neg_add_cancel m) (neg_add_cancel n) (neg_add_cancel p) h]
-  dsimp
-  simp only [Category.assoc]
-  erw [comp_id, id_comp, id_comp]
-  rfl
+  rw [opShiftFunctorEquivalence_unitIso_hom_app X p (-p),
+    opShiftFunctorEquivalence_unitIso_hom_app X n (-n),
+    opShiftFunctorEquivalence_unitIso_hom_app (X⟦n⟧) m (-m)]
+  rw [shiftFunctorAdd'_op_inv_app _ n m p (by lia) _ _ _ (add_neg_cancel n)
+    (add_neg_cancel m) (add_neg_cancel p),
+    shiftFunctorCompIsoId_add'_hom_app _ _ _ _ _ _
+      (neg_add_cancel m) (neg_add_cancel n) (neg_add_cancel p) h]
+  simp [shiftFunctorOpIso, shiftFunctor_op_obj, shiftFunctor_op_map _ m (-m), ← op_comp,
+    (shiftFunctorAdd' C m n p h).hom.naturality]
 
 set_option backward.defeqAttrib.useBackward true in
 lemma opShiftFunctorEquivalence_add_unitIso_inv_app_eq
