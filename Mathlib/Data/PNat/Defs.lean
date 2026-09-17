@@ -11,6 +11,7 @@ public import Mathlib.Data.PNat.Notation
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # The positive natural numbers
@@ -80,6 +81,7 @@ namespace PNat
 
 open Nat
 
+@[basify_simp]
 theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
   succ_pred_eq_of_pos
 
@@ -101,3 +103,10 @@ instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
         Int.natAbs_of_nonneg hn.le]⟩⟩
 
 end CanLift
+
+/-- A `Subtype.mk`-free eliminator for `ℕ+`, exposing the underlying natural and its positivity.
+See `NNReal.recToNNReal` for why `basify` needs this shape. -/
+@[elab_as_elim, basify_elim]
+def PNat.recToPNat {C : ℕ+ → Sort*} (mk : ∀ (n : ℕ) (_pos : 0 < n), C n.toPNat') (t : ℕ+) :
+    C t :=
+  PNat.coe_toPNat' t ▸ mk t t.pos

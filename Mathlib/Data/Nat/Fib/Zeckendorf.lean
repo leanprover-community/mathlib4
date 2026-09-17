@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.Nat.Fib.Basic
 
 /-!

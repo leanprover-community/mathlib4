@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.PNat.Dvd
 public import Mathlib.Data.PNat.Algebra.Order
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # The positive natural numbers
@@ -25,7 +26,7 @@ so that it can act as a reexport of underlying theory in a single file.
 
 namespace PNat
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 lemma val_ofNat (n : ℕ) [NeZero n] :
     ((ofNat(n) : ℕ+) : ℕ) = OfNat.ofNat n :=
   rfl
@@ -36,6 +37,9 @@ lemma mk_ofNat (n : ℕ) (h : 0 < n) :
   rfl
 
 end PNat
+
+
+
 
 namespace PNat
 

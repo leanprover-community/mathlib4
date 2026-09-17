@@ -8,6 +8,7 @@ module
 import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.PNat.Algebra
 public import Mathlib.Data.PNat.Order
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Ordered algebraic lemmas for positive natural numbers
@@ -47,6 +48,7 @@ theorem lt_succ_self (a : ℕ+) : a < succPNat a := Nat.lt_add_one a
 instance instSub : Sub ℕ+ :=
   ⟨fun a b => toPNat' (a - b : ℕ)⟩
 
+@[basify_op]
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
   change (toPNat' _ : ℕ) = ite _ _ _
   split_ifs with h

@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Basify.Attr
 
 /-! # Definition and notation for positive natural numbers -/
 
@@ -60,7 +61,7 @@ lemma val_one : (1 : ℕ+).val = 1 :=
 theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_simp ←]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
   Subtype.ext_iff.symm
 
@@ -92,7 +93,7 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
   | zero => exact absurd h (by decide)
   | succ n => rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
@@ -115,11 +116,11 @@ theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) :
     (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
   Iff.rfl
 
-@[simp high, norm_cast]
+@[simp high, norm_cast, basify_simp ←]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 
-@[simp high, norm_cast]
+@[simp high, norm_cast, basify_simp ←]
 theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
 
@@ -151,7 +152,7 @@ protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
 instance : Inhabited ℕ+ :=
   ⟨1⟩
 
-@[norm_cast]
+@[norm_cast, basify_op]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 

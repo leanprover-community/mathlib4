@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Positive.Ring
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.PNat.Notation
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Algebraic lemmas for positive natural numbers
@@ -22,7 +23,7 @@ namespace PNat
 
 open Nat
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
 
