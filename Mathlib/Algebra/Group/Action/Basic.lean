@@ -64,7 +64,7 @@ lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
 
 @[to_additive]
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
-  (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
+  eq_inv_smul_iff.symm
 
 @[to_additive]
 lemma isCancelSMul_iff_eq_one_of_smul_eq :

@@ -194,13 +194,11 @@ def karoubiHomologicalComplexEquivalence :
 
 variable (α : Type*) [AddRightCancelSemigroup α] [One α]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Karoubi (ChainComplex C α) ≌ ChainComplex (Karoubi C) α`. -/
 @[simps!]
 def karoubiChainComplexEquivalence : Karoubi (ChainComplex C α) ≌ ChainComplex (Karoubi C) α :=
   karoubiHomologicalComplexEquivalence C (ComplexShape.down α)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Karoubi (CochainComplex C α) ≌ CochainComplex (Karoubi C) α`. -/
 @[simps!]
 def karoubiCochainComplexEquivalence :

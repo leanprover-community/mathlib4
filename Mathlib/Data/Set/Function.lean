@@ -26,7 +26,7 @@ This file contains basic results on the following predicates of functions and se
 
 @[expose] public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ δ : Type*} {ι : Sort*}
 
 open Equiv Equiv.Perm Function
 
@@ -684,8 +684,8 @@ lemma bijOn_id (s : Set α) : BijOn id s s := ⟨s.mapsTo_id, s.injOn_id, s.surj
 theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :=
   BijOn.mk (hg.mapsTo.comp hf.mapsTo) (hg.injOn.comp hf.injOn hf.mapsTo) (hg.surjOn.comp hf.surjOn)
 
-/-- If `f : α → β` and `g : β → γ` and if `f` is injective on `s`, then `f ∘ g` is a bijection
-on `s` iff  `g` is a bijection on `f '' s`. -/
+/-- If `f : α → β` and `g : β → γ` and if `f` is injective on `s`, then `g ∘ f` is a bijection
+on `s` iff `g` is a bijection on `f '' s`. -/
 theorem bijOn_comp_iff (hf : InjOn f s) : BijOn (g ∘ f) s p ↔ BijOn g (f '' s) p := by
   simp only [BijOn, InjOn.comp_iff, surjOn_comp_iff, mapsTo_image_iff, hf]
 
@@ -703,7 +703,7 @@ p₁       p₂
 
 and `f` induces a bijection from `s : Set α` to `t : Set β`, then `g`
 induces a bijection from the image of `s` to the image of `t`, as long as `g` is
-is injective on the image of `s`.
+injective on the image of `s`.
 -/
 theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} (comm : ∀ a, p₂ (f a) = g (p₁ a))
     (hbij : BijOn f s t) (hinj : InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
@@ -957,7 +957,7 @@ noncomputable def invFunOn [Nonempty α] (f : α → β) (s : Set α) (b : β) :
 variable [Nonempty α]
 
 theorem invFunOn_pos (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s ∧ f (invFunOn f s b) = b := by
-  rw [invFunOn, dif_pos h]
+  rw [invFunOn, dite_eq_left h]
   exact Classical.choose_spec h
 
 theorem invFunOn_mem (h : ∃ a ∈ s, f a = b) : invFunOn f s b ∈ s :=
@@ -967,7 +967,7 @@ theorem invFunOn_eq (h : ∃ a ∈ s, f a = b) : f (invFunOn f s b) = b :=
   (invFunOn_pos h).right
 
 theorem invFunOn_neg (h : ¬∃ a ∈ s, f a = b) : invFunOn f s b = Classical.choice ‹Nonempty α› := by
-  rw [invFunOn, dif_neg h]
+  rw [invFunOn, dite_eq_right h]
 
 @[simp]
 theorem invFunOn_apply_mem (h : a ∈ s) : invFunOn f s (f a) ∈ s :=

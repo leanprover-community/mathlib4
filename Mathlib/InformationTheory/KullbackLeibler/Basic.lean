@@ -62,22 +62,22 @@ noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
 lemma klDiv_of_ac_of_integrable (h1 : μ ≪ ν) (h2 : Integrable (llr μ ν) μ) :
     klDiv μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ) := by
   rw [klDiv_def]
-  exact if_pos ⟨h1, h2⟩
+  exact ite_eq_left ⟨h1, h2⟩
 
 @[simp]
 lemma klDiv_of_not_ac (h : ¬ μ ≪ ν) : klDiv μ ν = ∞ := by
   rw [klDiv_def]
-  exact if_neg (not_and_of_not_left _ h)
+  exact ite_eq_right (not_and_of_not_left _ h)
 
 @[simp]
 lemma klDiv_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : klDiv μ ν = ∞ := by
   rw [klDiv_def]
-  exact if_neg (not_and_of_not_right _ h)
+  exact ite_eq_right (not_and_of_not_right _ h)
 
 @[simp]
 lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
   have h := llr_self μ
-  rw [klDiv_def, if_pos]
+  rw [klDiv_def, ite_eq_left]
   · simp [integral_congr_ae h]
   · rw [integrable_congr h]
     exact ⟨Measure.AbsolutelyContinuous.rfl, integrable_zero _ _ μ⟩
@@ -170,7 +170,7 @@ lemma toReal_klDiv_of_measure_eq (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
 lemma toReal_klDiv_eq_integral_klFun (h : μ ≪ ν) :
     (klDiv μ ν).toReal = ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
   by_cases h_int : Integrable (llr μ ν) μ
-  · rw [klDiv_eq_integral_klFun, if_pos ⟨h, h_int⟩, ENNReal.toReal_ofReal]
+  · rw [klDiv_eq_integral_klFun, ite_eq_left ⟨h, h_int⟩, ENNReal.toReal_ofReal]
     exact integral_nonneg fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
   · rw [integral_undef]
     · rw [klDiv_of_not_integrable h_int, ENNReal.toReal_top]
@@ -379,7 +379,7 @@ lemma klDiv_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ klDiv_self _⟩
   have h_ne : klDiv μ ν ≠ ⊤ := by simp [h]
   rw [klDiv_ne_top_iff] at h_ne
-  rw [klDiv_eq_lintegral_klFun, if_pos h_ne.1, lintegral_eq_zero_iff (by fun_prop)] at h
+  rw [klDiv_eq_lintegral_klFun, ite_eq_left h_ne.1, lintegral_eq_zero_iff (by fun_prop)] at h
   refine (Measure.rnDeriv_eq_one_iff_eq h_ne.1).mp ?_
   filter_upwards [h] with x hx
   simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero] at hx

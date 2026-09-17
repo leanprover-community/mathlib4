@@ -37,7 +37,7 @@ open Set
 
 section Minor
 
-variable {α : Type*} {M M' N : Matroid α} {e f : α} {I C D : Set α}
+variable {α : Type*} {M M' N : Matroid α} {e : α} {I C D : Set α}
 
 /-! ### Minors -/
 
