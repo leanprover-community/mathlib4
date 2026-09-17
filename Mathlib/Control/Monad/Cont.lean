@@ -100,7 +100,7 @@ variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 /-- Build a `ContT` from a function taking a continuation callback. -/
 def mk (f : (α → m r) → m r) : ContT r m α := f
 
-/-- Run a continuation computation by providing a continuation function. -/
+/-- Run a `ContT` with a provided callback. -/
 def run (x : ContT r m α) : (α → m r) → m r := x
 
 /-- Compose a given function with the continuation computation. -/
