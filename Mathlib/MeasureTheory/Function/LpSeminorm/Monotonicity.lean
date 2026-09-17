@@ -85,6 +85,20 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
     simp [ENNReal.mul_rpow_eq_ite, hp']
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
+theorem le_eLpNorm_of_bddBelow' (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → ε} (C : ℝ≥0∞) {s : Set α}
+    (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖ₑ) :
+    C * μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
+  by_cases hmeas : AEStronglyMeasurable f μ; swap
+  · rw [eLpNorm_of_not_aestronglyMeasurable hmeas]; exact le_top
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' hmeas,
+    one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
+    ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
+    inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const]
+  apply (lintegral_mono_ae _).trans (setLIntegral_le_lintegral s _)
+  rw [← ae_restrict_iff'₀ hs] at hf
+  filter_upwards [hf] with x hx
+  exact ENNReal.rpow_le_rpow hx ENNReal.toReal_nonneg
+
 end ESeminormedAddMonoid
 
 -- TODO: eventually, deprecate and remove the nnnorm version
@@ -220,31 +234,12 @@ theorem MemLp.of_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : Me
 
 end Monotonicity
 
-theorem le_eLpNorm_of_bddBelow' (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0∞) {s : Set α}
-    (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖ₑ) :
-    C * μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
-  by_cases hmeas : AEStronglyMeasurable f μ; swap
-  · rw [eLpNorm_of_not_aestronglyMeasurable hmeas]; exact le_top
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' hmeas,
-    one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
-    ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
-    inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const]
-  apply (lintegral_mono_ae _).trans (setLIntegral_le_lintegral s _)
-  rw [← ae_restrict_iff'₀ hs] at hf
-  filter_upwards [hf] with x hx
-  exact ENNReal.rpow_le_rpow hx ENNReal.toReal_nonneg
-
 theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0) {s : Set α}
     (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
     C • μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
   rw [ENNReal.smul_def, smul_eq_mul]
   apply le_eLpNorm_of_bddBelow' hp hp' C hs
-  filter_upwards [hf] with x hx hxs
-  rcases eq_top_or_lt_top ‖f x‖ₑ with hxf | hxf
-  · exact hxf ▸ le_top
-  specialize hx hxs
-  rwa [← toNNReal_enorm, ← ENNReal.toNNReal_coe C,
-    ENNReal.toNNReal_le_toNNReal ENNReal.coe_ne_top hxf.ne] at hx
+  simpa only [coe_le_enorm]
 
 section Star
 
