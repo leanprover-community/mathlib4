@@ -164,4 +164,17 @@ theorem carmichael_pow_of_prime_ne_two {p : ℕ} (n : ℕ) (hp : p.Prime) (hp₂
   rw [carmichael_eq_exponent', ← ZMod.card_units_eq_totient, Fintype.card_eq_nat_card]
   exact IsCyclic.iff_exponent_eq_card.mp <| ZMod.isCyclic_units_of_prime_pow p hp hp₂ n
 
+@[simp]
+theorem carmichael_one : carmichael 1 = 1 := by
+  rw [← pow_zero 2, carmichael_two_pow_of_le_two (zero_le 2), pow_zero]
+
+@[simp]
+theorem carmichael_two : carmichael 2 = 1 := by
+  rw [← pow_one 2, carmichael_two_pow_of_le_two one_le_two, tsub_self, pow_zero]
+
+theorem carmichael_of_prime {n : ℕ} (hn : n.Prime) : carmichael n = n - 1 := by
+  by_cases ne_two : n = 2
+  · simp [ne_two]
+  · rw [← Nat.totient_prime hn, ← pow_one n, ← carmichael_pow_of_prime_ne_two 1 hn ne_two]
+
 end ArithmeticFunction

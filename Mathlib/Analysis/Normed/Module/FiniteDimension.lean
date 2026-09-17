@@ -162,7 +162,7 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
-attribute [deprecated AffineEquiv.toContinuousAffineEquiv (since := "2026-05-11")]
+attribute [deprecated AffineEquiv.toContinuousAffineEquiv +typeChanged (since := "2026-05-11")]
   AffineEquiv.toHomeomorphOfFiniteDimensional
 
 /-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
@@ -699,16 +699,10 @@ theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff
 
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff := Asymptotics.IsEquivalent.summable_iff
-
 theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) :
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff_nat
-
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 
 namespace Module.Basis
 
