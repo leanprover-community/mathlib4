@@ -163,6 +163,36 @@ elab_rules : command
 #guard_msgs in
 #ensure_defeq CategoryTheory.prod.prodμ_inverse_map
 
+-- Keep the currying map lemmas usable by `dsimp` without compatibility options.
+
+/-- info: `CategoryTheory.Functor.curry_obj_obj_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry_obj_obj_map
+
+/-- info: `CategoryTheory.Functor.curry_obj_map_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry_obj_map_app
+
+/-- info: `CategoryTheory.Functor.curry_map_app_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry_map_app_app
+
+/-- info: `CategoryTheory.Functor.curry₃_obj_map_app_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₃_obj_map_app_app
+
+/-- info: `CategoryTheory.Functor.curry₃_obj_obj_map_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₃_obj_obj_map_app
+
+/-- info: `CategoryTheory.Functor.curry₃_obj_obj_obj_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₃_obj_obj_obj_map
+
+/-- info: `CategoryTheory.Functor.curry₃_map_app_app_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₃_map_app_app_app
+
 -- Keep the generated quadrifunctor currying lemmas usable by `dsimp` without compatibility options.
 
 /-- info: `CategoryTheory.Functor.curry₄_obj_map_app_app_app` is tagged with @[defeq] -/
