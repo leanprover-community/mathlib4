@@ -4499,11 +4499,13 @@ public import Mathlib.Data.Set.Lattice.Indexed
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Data.Set.List
 public import Mathlib.Data.Set.MemPartition
+public import Mathlib.Data.Set.Monotone
 public import Mathlib.Data.Set.MulAntidiagonal
 public import Mathlib.Data.Set.NAry
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Data.Set.Opposite
+public import Mathlib.Data.Set.Order
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.Data.Set.Pairwise.List
@@ -6350,8 +6352,6 @@ public import Mathlib.Order.Monotone.Extension
 public import Mathlib.Order.Monotone.Monovary
 public import Mathlib.Order.Monotone.MonovaryOrder
 public import Mathlib.Order.Monotone.Odd
-public import Mathlib.Order.Monotone.Set.Basic
-public import Mathlib.Order.Monotone.Set.Congr
 public import Mathlib.Order.Monotone.Union
 public import Mathlib.Order.Nat
 public import Mathlib.Order.NonemptyFiniteChains
