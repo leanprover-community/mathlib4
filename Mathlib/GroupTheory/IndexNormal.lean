@@ -72,7 +72,7 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
       (dvd_trans (minFac_dvd H.normalCore.index) (H.normalCore.index_dvd_card))
 
 theorem _root_.AddSubgroup.index_normalCore_dvd_factorial_index {G : Type*} [AddGroup G]
-    (H : AddSubgroup G) [H.FiniteIndex] : H.normalCore.index ∣ H.index.factorial := by
+    (H : AddSubgroup G) [H.FiniteIndex] : H.normalCore.index ∣ H.index ! := by
   have := QuotientAddGroup.quotientKerEquivRange (AddAction.toPermHom G (G ⧸ H))
   rw [AddSubgroup.index, H.normalCore_eq_ker, Nat.card_congr this.toEquiv, AddSubgroup.index,
     ← Nat.card_perm]
@@ -81,14 +81,14 @@ theorem _root_.AddSubgroup.index_normalCore_dvd_factorial_index {G : Type*} [Add
 variable (H) in
 @[to_additive existing]
 theorem index_normalCore_dvd_factorial_index [H.FiniteIndex] :
-    H.normalCore.index ∣ H.index.factorial := by
+    H.normalCore.index ∣ H.index ! := by
   have := QuotientGroup.quotientKerEquivRange <| toPermHom G (G ⧸ H)
   rw [index, H.normalCore_eq_ker, Nat.card_congr this.toEquiv, index, ← Nat.card_perm]
   apply card_subgroup_dvd_card
 
 variable (H) in
 @[to_additive]
-theorem index_normalCore_le_factorial_index : H.normalCore.index ≤ H.index.factorial := by
+theorem index_normalCore_le_factorial_index : H.normalCore.index ≤ H.index ! := by
   by_cases h : H.FiniteIndex
   · exact Nat.le_of_dvd H.index.factorial_pos H.index_normalCore_dvd_factorial_index
   have := H.normalCore.not_finiteIndex_iff.mp fun _ ↦ h <| finiteIndex_of_le H.normalCore_le
