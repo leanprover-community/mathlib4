@@ -653,8 +653,8 @@ theorem mem_fromRel_irrefl_other_ne [Std.Symm r] [Std.Irrefl r] (hz : z ∈ from
 instance fromRel.decidablePred [Std.Symm r] [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel r) := fun z => z.recOnSubsingleton h
 
-lemma fromRel_relationMap (r : α → α → Prop) [Std.Symm r] (f : α → β) :
-    fromRel (Relation.Map r f f) = Sym2.map f '' Sym2.fromRel r := by
+variable (f r) in
+lemma fromRel_relationMap [Std.Symm r] : fromRel (Relation.Map r f f) = map f '' fromRel r := by
   ext ⟨a, b⟩
   simp only [fromRel_prop, Relation.Map, Set.mem_image, Sym2.exists, map_mk, Sym2.eq,
     rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
@@ -673,11 +673,10 @@ theorem fromRelNdrec_mk {motive : Sort*} [Std.Symm r] {a b : α} (hz : r a b)
     fromRelNdrec s(a, b) hz f h = f a b hz :=
   rfl
 
-variable (r) in
 /-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
 fibers of a function `f`, given that `f` agrees on elements related by `r`. -/
 @[simps]
-def _root_.Equiv.sigmaFiberFromRel [Std.Symm r] (f : α → β) (hf : r ≤ Setoid.ker f) :
+def _root_.Equiv.sigmaFiberFromRel [Std.Symm r] (hf : r ≤ Setoid.ker f) :
     fromRel r ≃ Σ b : β, fromRel (α := { a // f a = b }) (r on (↑)) where
   toFun z := z.val.fromRelNdrec z.prop
     (fun a₁ a₂ h ↦ ⟨f a₁, s(⟨a₁, rfl⟩, ⟨a₂, hf a₁ a₂ h |>.symm⟩), h⟩)
@@ -698,7 +697,7 @@ equivalent to summing that set restricted to equivalence classes of `r'` using a
 @[simps!]
 def _root_.Equiv.sigmaQuotFromRel [Std.Symm r] {r' : β → β → Prop} (f : r →r r') :
     fromRel r ≃ Σ q : Quot r', fromRel (α := { x // .mk r' (f x) = q }) (r on (↑)) :=
-  .sigmaFiberFromRel r _ fun _ _ h ↦ Quot.sound <| f.map_rel h
+  .sigmaFiberFromRel fun _ _ h ↦ Quot.sound <| f.map_rel h
 
 /-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
@@ -706,7 +705,7 @@ equivalent to summing that set restricted to equivalence classes of `r'` using a
 @[simps!]
 def _root_.Equiv.sigmaQuotientFromRel [Std.Symm r] {r' : Setoid β} (f : r →r r') :
     fromRel r ≃ Σ q : Quotient r', fromRel (α := { x // ⟦f x⟧ = q }) (r on (↑)) :=
-  .sigmaFiberFromRel r _ fun _ _ h ↦ Quotient.sound <| f.map_rel h
+  .sigmaFiberFromRel fun _ _ h ↦ Quotient.sound <| f.map_rel h
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symm`). -/
