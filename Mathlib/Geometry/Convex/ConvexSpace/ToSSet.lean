@@ -94,12 +94,9 @@ lemma toSSet.δ_two_affineMapMk₃ (y₀ y₁ y₂ : Y) :
 @[simp]
 lemma toSSet.δ_zero (y : Y) {n : ℕ} (s : ConvexSpace.AffineMap R (StdSimplex R (Fin (n + 1))) Y) :
     (toSSet R Y).δ 0 (s.cone y) = s := by
-  ext
-  simp [SimplicialObject.δ_def, SimplexCategory.δ_apply,
-    AffineMap.cone_def, StdSimplex.affineMapMk_apply]
+  aesop
 
-lemma toSSet.δ_affineMapMk {n : ℕ} (s : Fin (n + 2) → Y)
-    (i : Fin (n + 2)) :
+lemma toSSet.δ_affineMapMk {n : ℕ} (s : Fin (n + 2) → Y) (i : Fin (n + 2)) :
     (toSSet R Y).δ i (StdSimplex.affineMapMk s) = StdSimplex.affineMapMk (s ∘ i.succAbove) := by
   aesop
 
