@@ -303,7 +303,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   · lift n to ℕ using hn
     rw [comapDomain_single_map, Int.toNat_natCast]
     rfl
-  · exact comapDomain_single_of_not_mem_range
+  · exact comapDomain_single_of_notMem_range
       (by rintro ⟨m, rfl⟩; exact hn (Int.natCast_nonneg m)) Nat.cast_injective
 
 @[simp]
