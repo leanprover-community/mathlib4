@@ -115,10 +115,6 @@ open Filter Topology Set
 
 variable {x : ℝ}
 
-theorem existsUnique_mem_Ioc (x : ℝ) : ∃! k : ℤ, x ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) := by
-  simpa [mul_comm, mul_two, mul_sub, mul_add, add_comm, sub_lt_iff_lt_add] using
-    existsUnique_sub_zsmul_mem_Ioc two_pi_pos x (-π)
-
 theorem existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
     ∃! t ∈ Ico (-1) 0, t * rexp t = x := by
   obtain ⟨t, ht, hteq⟩ : ∃ t ∈ Icc (-1) 0, t * rexp t = x :=
@@ -126,6 +122,7 @@ theorem existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻
   exact ⟨t, ⟨⟨ht.left, by grind⟩, hteq⟩, fun y hy => exp_injective (mul_log_strictMonoOn.injOn
     (exp_le_exp.mpr hy.left.left) (exp_le_exp.mpr ht.left) (by grind [log_exp]))⟩
 
+--  TODO : reffer to `Real.lambertWNegOne`
 public theorem existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
     ∃! t ∈ Iic (-1), t * rexp t = x := by
   -- `Iic (-1)` is unbounded, so first pick `S` with `t * rexp t < x` for all `t ≥ S`,
@@ -628,18 +625,18 @@ public theorem iUnion_range : ⋃ k, range k = univ := by
   refine eq_univ_iff_forall.mpr fun w => mem_iUnion.mpr ?_
   by_cases hw : w ∈ Iic (-1) ×ℂ {0}
   · use -1, Or.inr hw
-  · obtain ⟨k, hk, -⟩ : ∃! k : ℤ, w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) :=
-      Real.existsUnique_mem_Ioc (w.arg + w.im)
-    use k, mem_range_iff_of_notMem hw |>.mpr hk
+  · refine ⟨toIocDiv two_pi_pos (-π) (w.arg + w.im), mem_range_iff_of_notMem hw |>.mpr ?_⟩
+    grind [sub_toIocDiv_zsmul_mem_Ioc two_pi_pos (-π) (w.arg + w.im)]
 
 theorem eq_of_mem_range_of_mem_range {i j : ℤ}
     (hi : w ∈ range i) (hj : w ∈ range j) (hw : w ≠ -1) : i = j := by
   by_cases hw' : w ∈ Iic (-1) ×ℂ {0}
   · have hre : w.re ≠ -1 := fun hre => hw (Complex.ext hre (by simpa using hw'.right))
     grind [mem_range_iff_of_mem hw']
-  · obtain ⟨k, -, hk⟩ : ∃! k : ℤ, w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) :=
-      Real.existsUnique_mem_Ioc (w.arg + w.im)
-    grind [mem_range_iff_of_notMem hw' |>.mp hi, mem_range_iff_of_notMem hw' |>.mp hj]
+  · rw [mem_range_iff_of_notMem hw'] at hi hj
+    have := toIocDiv_eq_iff two_pi_pos (a := -π) (b := w.arg + w.im) (n := i) |>.mpr
+    have := toIocDiv_eq_iff two_pi_pos (a := -π) (b := w.arg + w.im) (n := j) |>.mpr
+    grind
 
 public theorem existsUnique_mem_range_of_ne_neg_one (hw : w ≠ -1) :
     ∃! k : ℤ, w ∈ range k := by
@@ -706,6 +703,8 @@ theorem mem_Iic_of_mem_range_neg_one_of_mul_exp_mem
   rw [arg_eq_pi_iff (z := w * cexp w) |>.mpr <| by grind [mem_reProdIm.mp hz]] at this
   replace : w.im = 0 := im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem (by grind) hz
   grind [arg_mem_Ioc]
+
+--  The seven basic case.
 
 theorem existsUnique_eq_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     ∃! w : ℂ, w.arg + w.im = π ∧ w * cexp w = z ∧ w.im > 0 := by
@@ -787,6 +786,8 @@ theorem existsUnique_mem_Ioo_mul_exp_eq (k : ℤ) (hz : z ∈ Complex.slitPlane)
   · grind [arg_mul_exp_eq_of_mem (by grind [slitPlane_ne_zero]) ⟨hw'.left, hw'.right.le⟩]
   · exact hw'z.trans hz'
 
+-- Combine basic cases to obtain the cases `k = 0`, `k = -1`, and `k ≠ 0, -1`.
+
 theorem existsUnique_mem_range_zero (z : ℂ) :
     ∃! w : ℂ, w ∈ range 0 ∧ w * cexp w = z := by
   by_cases hz : z = 0
@@ -855,6 +856,8 @@ public theorem existsUnique_mem_range_mul_exp_eq (hz : z ∈ domain k) :
   · exact existsUnique_mem_range_zero z
   · exact existsUnique_mem_range_neg_one (by rwa [domain_of_ne_zero (by decide)] at hz)
   · exact existsUnique_mem_range_of_ne hk hk' (by rwa [domain_of_ne_zero hk] at hz)
+
+--  Public theorems about bijectivity.
 
 public theorem mul_exp_mem_domain (hw : w ∈ range k) : w * cexp w ∈ domain k := by
   grind [domain, ne_zero_of_mem_range, exp_ne_zero]
