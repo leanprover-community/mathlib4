@@ -75,9 +75,7 @@ private lemma coeff_subst_of_fixedPoint
   · intro l hl
     simp only [mem_coe, mem_range]
     by_contra hlj
-    have hjl : j < l := by omega
-    have hl := Function.mem_support.mp hl
-    simp [coeff_pow_of_lt hY hjl] at hl
+    simp [coeff_pow_of_lt hY (by omega : j < l)] at hl
 
 end CommRing
 
@@ -99,8 +97,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
     · simp
     obtain ⟨t, hmt⟩ : ∃ t, m + 1 = k + t := ⟨m + 1 - k, by omega⟩
     have hcoe : (Y ^ k).coeff (m + 1) = coeff t ((P ^ k).subst Y) := by
-      rw [hmt]
-      nth_rw 1 [hY, mul_pow, ← subst_pow (hasSubst_of_fixedPoint hY), add_comm k t,
+      nth_rw 1 [hmt, hY, mul_pow, ← subst_pow (hasSubst_of_fixedPoint hY), add_comm k t,
         coeff_X_pow_mul]
     rcases t with _ | t
     · rw [hcoe, coeff_subst_of_fixedPoint hY, hmt]
@@ -109,13 +106,9 @@ private theorem lagrange_inversion_coeff_pow_of_le
         ((t : R) + 1) * ((P ^ k).coeff l * coeff (t + 1) (Y ^ l)) =
           (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
-      have hl' : l ≤ t + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hl
-      have h := ih t (by omega) l hl'
-      push_cast at h
-      rw [show ((t : R) + 1) *
-          ((P ^ k).coeff l * coeff (t + 1) (Y ^ l)) =
-            (P ^ k).coeff l *
-              (((t : R) + 1) * coeff (t + 1) (Y ^ l)) by ring, h]
+      rw [mem_range_succ_iff] at hl
+      rw_mod_cast [← ih t (by omega) l hl]
+      ring
     have hconv :
         ∑ l ∈ range (t + 2),
           (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) =
@@ -183,13 +176,10 @@ theorem lagrange_burmann_coeff
         ∑ i ∈ range (n + 2), f i := by
     rw [coeff_subst_of_fixedPoint hY H, mul_sum]
     refine sum_congr rfl fun i hi ↦ ?_
-    have hi' : i ≤ n + 1 := by simpa [Nat.lt_succ_iff] using mem_range.1 hi
-    have h := lagrange_inversion_coeff_pow_of_le hY n i hi'
-    simp only [hf]
-    rw [← h]
+    rw [mem_range_succ_iff] at hi
+    simp only [hf, ← lagrange_inversion_coeff_pow_of_le hY n i hi]
     ring
-  rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-    sum_range_succ' f (n + 1)]
+  rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ' f (n + 1)]
   grind [coeff_derivative]
 
 end TorsionFree
