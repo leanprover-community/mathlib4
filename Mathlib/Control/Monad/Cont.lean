@@ -353,7 +353,7 @@ def ReaderT.mkLabel {α β} (ρ) : Label α m β → Label α (ReaderT ρ m) β
 theorem ReaderT.goto_mkLabel {α ρ β} (x : Label α m β) (i : α) :
     goto (ReaderT.mkLabel ρ x) i = monadLift (goto x i) := by cases x; rfl
 
-/-- The `callCC` operation of `ReaderT ρ m`, delegating to `callCC` in the base monad. -/
+/-- The `callCC` operation of `ReaderT ε m`, delegating to `callCC` in the base monad. -/
 nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
     (f : Label α (ReaderT ε m) β → ReaderT ε m α) : ReaderT ε m α :=
   ReaderT.mk (fun r => callCC fun f' => (f <| ReaderT.mkLabel _ f').run r)
