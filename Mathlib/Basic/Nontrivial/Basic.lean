@@ -22,13 +22,16 @@ Results about `Nontrivial`.
 variable {α : Type*} {β : Type*}
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
+@[to_dual self]
 theorem nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=
   ⟨⟨x, y, ne_of_lt h⟩⟩
 
+@[to_dual none]
 theorem exists_pair_lt (α : Type*) [Nontrivial α] [LinearOrder α] : ∃ x y : α, x < y := by
   rcases exists_pair_ne α with ⟨x, y, hxy⟩
   cases lt_or_gt_of_ne hxy <;> exact ⟨_, _, ‹_›⟩
 
+@[to_dual none]
 theorem nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x < y :=
   ⟨fun h ↦ @exists_pair_lt α h _, fun ⟨x, y, h⟩ ↦ nontrivial_of_lt x y h⟩
 
@@ -57,6 +60,29 @@ instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α ×
 
 instance nontrivial_prod_left [Nontrivial α] [Nonempty β] : Nontrivial (α × β) :=
   Prod.fst_surjective.nontrivial
+
+instance [Nontrivial α] : Nontrivial (α ⊕ β) :=
+  have ⟨a, b, h⟩ := ‹Nontrivial α›.exists_pair_ne
+  ⟨.inl a, .inl b, by simpa⟩
+
+instance [Nontrivial β] : Nontrivial (α ⊕ β) :=
+  have ⟨a, b, h⟩ := ‹Nontrivial β›.exists_pair_ne
+  ⟨.inr a, .inr b, by simpa⟩
+
+instance [Nonempty α] [Nonempty β] : Nontrivial (α ⊕ β) :=
+  ⟨.inl <| Classical.arbitrary α, .inr <| Classical.arbitrary β, by simp⟩
+
+instance [Subsingleton α] [IsEmpty β] : Subsingleton (α ⊕ β) where
+  allEq
+  | .inr a, _ => ‹IsEmpty β›.elim a
+  | _, .inr b => ‹IsEmpty β›.elim b
+  | .inl a, .inl b => congrArg _ <| Subsingleton.elim a b
+
+instance [IsEmpty α] [Subsingleton β] : Subsingleton (α ⊕ β) where
+  allEq
+  | .inl a, _ => ‹IsEmpty α›.elim a
+  | _, .inl b => ‹IsEmpty α›.elim b
+  | .inr a, .inr b => congrArg _ <| Subsingleton.elim a b
 
 namespace Pi
 
