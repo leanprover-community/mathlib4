@@ -301,8 +301,7 @@ theorem card_ker_mul_card_of_surjective (hf : Function.Surjective f) :
   rw [← card_ker_mul_card_range f,  MonoidHom.range_eq_top.mpr hf, Nat.card_congr topEquiv.toEquiv]
 
 @[to_additive]
-theorem card_dvd_of_surjective (hf : Function.Surjective f) :
-    Nat.card G' ∣ Nat.card G :=
+theorem card_dvd_of_surjective (hf : Surjective f) : Nat.card G' ∣ Nat.card G :=
   Dvd.intro_left (Nat.card f.ker) (card_ker_mul_card_of_surjective hf)
 
 @[to_additive]
