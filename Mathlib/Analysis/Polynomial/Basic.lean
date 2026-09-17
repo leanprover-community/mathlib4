@@ -329,8 +329,7 @@ lemma isEquivalent_cobounded_leading_monomial :
       ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
         (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
 
-theorem isBigO_cobounded_pow_natDegree
-    (p : Polynomial R) :
+theorem isBigO_cobounded_pow_natDegree (p : Polynomial R) :
     p.eval =O[cobounded R] (· ^ p.natDegree) :=
   isEquivalent_cobounded_leading_monomial.isBigO.trans (isBigO_const_mul_self _ _ _)
 

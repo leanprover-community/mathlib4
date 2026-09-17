@@ -75,19 +75,6 @@ end HasSum
 
 namespace HasFPowerSeriesAt
 
-theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
-  have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
-  have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
-  simp only [hasFPowerSeriesAt_iff, coeff_fslope] at hp ⊢
-  refine hp.mono fun x hx => ?_
-  by_cases h : x = 0
-  · convert! hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
-  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, _root_.pow_succ]
-    suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
-      simpa [dslope, slope, h, smul_smul, hxx] using this
-    simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
-
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
     HasFPowerSeriesAt ((swap dslope z₀)^[n] f) (fslope^[n] p) z₀ := by
   induction n generalizing f p with

@@ -151,4 +151,59 @@ theorem apply_eq_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differe
     (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) : f x = c :=
   congr($(hf.eq_const_of_tendsto_cocompact hb) x)
 
+/--
+**Corollary of Liouville's theorem for functions with polynomial growth**: an entire function
+`f : ℂ → ℂ` that is `O(z ^ n)` along `cobounded` is a polynomial of degree at most `n`.
+-/
+theorem exists_eq_polynomial_eval_of_isBigO_pow {n : ℕ} {f : ℂ → ℂ}
+    (hf : Differentiable ℂ f) (hg : f =O[cobounded ℂ] (· ^ n)) :
+    ∃ p : Polynomial ℂ, p.natDegree ≤ n ∧ f = p.eval := by
+  induction n generalizing f with
+  | zero =>
+    obtain ⟨C, hg⟩ := Asymptotics.isBigO_iff.1 hg
+    simp only [pow_zero, norm_one, mul_one] at hg
+    have hK : IsBounded {z : ℂ | C < ‖f z‖} := by
+      have : IsBounded {z : ℂ | ‖f z‖ ≤ C}ᶜ := isBounded_compl_iff.2 hg
+      simpa only [compl_ofPred, not_le] using this
+    have hbdd : IsBounded (range f) := by
+      have himg : IsBounded (f '' {z : ℂ | C < ‖f z‖}) :=
+        ((hK.isCompact_closure.image hf.continuous).isBounded).subset
+          (image_mono subset_closure)
+      refine (himg.union (isBounded_closedBall (x := (0 : ℂ)) (r := C))).subset ?_
+      rintro _ ⟨z, rfl⟩
+      by_cases hz : C < ‖f z‖
+      · exact Or.inl ⟨z, hz, rfl⟩
+      · exact Or.inr (by simp only [mem_closedBall, dist_zero_right]; exact not_lt.mp hz)
+    obtain ⟨c, hc⟩ := hf.exists_eq_const_of_bounded hbdd
+    exact ⟨Polynomial.C c, by simp, by rw [hc]; ext z; simp⟩
+  | succ n ih =>
+    obtain ⟨C, hg⟩ := Asymptotics.isBigO_iff.1 hg
+    simp only [norm_pow] at hg
+    have e1 : ∀ᶠ z in cobounded ℂ, (1 : ℝ) ≤ ‖z‖ := eventually_cobounded_le_norm (E := ℂ) 1
+    have hgrowth : dslope f 0 =O[cobounded ℂ] (· ^ n) := by
+      refine Asymptotics.IsBigO.of_bound (C + ‖f 0‖) ?_
+      filter_upwards [hg, e1] with z hz h1z
+      have hz0 : z ≠ 0 := by rintro rfl; rw [norm_zero] at h1z; linarith
+      rw [norm_pow, dslope_of_ne f hz0, slope_def_field, sub_zero, norm_div,
+        div_le_iff₀ (by positivity), mul_assoc, ← pow_succ]
+      have hpow : (1 : ℝ) ≤ ‖z‖ ^ (n + 1) := one_le_pow₀ h1z
+      nlinarith [norm_sub_le (f z) (f 0), hz, norm_nonneg (f 0),
+        mul_nonneg (norm_nonneg (f 0)) (sub_nonneg.2 hpow)]
+    have hdf : Differentiable ℂ (dslope f 0) :=
+      analyticOnNhd_univ_iff_differentiable.1
+        ((analyticOnNhd_univ_iff_differentiable.2 hf).dslope 0)
+    obtain ⟨q, hqn, hq⟩ := ih hdf hgrowth
+    refine ⟨Polynomial.X * q + Polynomial.C (f 0), ?_, ?_⟩
+    · calc (Polynomial.X * q + Polynomial.C (f 0)).natDegree
+          = (Polynomial.X * q).natDegree := Polynomial.natDegree_add_C
+        _ ≤ Polynomial.X.natDegree + q.natDegree := Polynomial.natDegree_mul_le
+        _ ≤ 1 + n := add_le_add Polynomial.natDegree_X_le hqn
+        _ = n + 1 := add_comm _ _
+    · funext z
+      have hid : z • dslope f 0 z = f z - f 0 := by
+        have h := sub_smul_dslope f 0 z; rwa [sub_zero] at h
+      simp only [hq, smul_eq_mul] at hid
+      simp only [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_X, Polynomial.eval_C]
+      rw [hid]; ring
+
 end Differentiable
