@@ -115,7 +115,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   | one => rfl
   | bit1 m hm =>
     rw [hm]
-    exact if_neg (encodePosNum_nonempty m)
+    exact ite_eq_right (encodePosNum_nonempty m)
   | bit0 m hm => exact congr_arg PosNum.bit0 hm
 
 @[simp] theorem decode_encodeNum (n) : decodeNum (encodeNum n) = n := by
@@ -123,7 +123,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   · rfl
   rw [decode_encodePosNum n]
   rw [PosNum.cast_to_num]
-  exact if_neg (encodePosNum_nonempty n)
+  exact ite_eq_right (encodePosNum_nonempty n)
 
 @[simp] theorem decode_encodeNat (n) : decodeNat (encodeNat n) = n := by
   conv_rhs => rw [← Num.to_of_nat n]
@@ -249,18 +249,18 @@ abbrev finEncodingBoolBool := encodingBoolBool
 
 /-- Deprecated alias for `encodingList`. -/
 @[reducible, nolint unusedArguments,
-  deprecated encodingList (since := "2026-05-07")]
+  deprecated encodingList +typeChanged (since := "2026-05-07")]
 def finEncodingList (α : Type) [Fintype α] := encodingList α
 
 /-- Deprecated alias for `encodingProd`. -/
 @[reducible, nolint unusedArguments,
-  deprecated encodingProd (since := "2026-05-07")]
+  deprecated encodingProd +typeChanged (since := "2026-05-07")]
 def finEncodingPair {α β Γ₁ Γ₂ : Type*} [Fintype Γ₁] [Fintype Γ₂]
     (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :=
   encodingProd ea eb
 
 /-- Deprecated alias for `Encoding.card_le_aleph0`. -/
-@[deprecated Encoding.card_le_aleph0 (since := "2026-05-07")]
+@[deprecated Encoding.card_le_aleph0 +typeChanged (since := "2026-05-07")]
 theorem FinEncoding.card_le_aleph0 {α Γ} [Countable Γ] (e : Encoding α Γ) : #α ≤ ℵ₀ :=
   e.card_le_aleph0
 

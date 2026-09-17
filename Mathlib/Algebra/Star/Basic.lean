@@ -182,7 +182,7 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
     map_mul' := star_mul' }
 
 variable (R) in
-@[simp]
+@[simp, grind =]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 
@@ -256,7 +256,7 @@ theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
   rfl
 
 variable (R) in
-@[simp]
+@[simp, grind =]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
 
@@ -292,6 +292,8 @@ which is additive which makes `R` with its multiplicative structure into a \*-mu
 class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
+
+attribute [grind =] star_add
 
 instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R] [StarRing R] :
     StarAddMonoid R where
@@ -421,7 +423,7 @@ class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop w
 
 export StarModule (star_smul)
 
-attribute [simp] star_smul
+attribute [simp, grind =] star_smul
 
 /-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=

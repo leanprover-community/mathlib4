@@ -36,8 +36,6 @@ noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
-open Submodule
-
 namespace Module
 
 alias DirectedSystem.map_self := DirectedSystem.map_self'
@@ -421,23 +419,21 @@ def congr (e : (i : ι) → G i ≃+ G' i)
     (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
       have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
-        AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply] at eq1 ⊢
+        AddMonoidHom.coe_ofClass, AddEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
     congr e he (of G f i g) = of G' f' i (e i g) :=
   map_apply_of _ he _
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_symm_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
     (congr e he).symm (of G' f' i g) = of G f i ((e i).symm g) := by
-  simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_coe]
+  simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_ofClass]
 
 end functorial
 

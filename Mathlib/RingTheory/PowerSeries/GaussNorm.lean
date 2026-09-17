@@ -6,8 +6,8 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Gauss norm for power series

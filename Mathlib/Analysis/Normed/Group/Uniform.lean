@@ -21,7 +21,7 @@ public section
 
 variable {𝓕 E F : Type*}
 
-open Filter Function Metric Bornology
+open Filter
 open scoped ENNReal NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
@@ -56,8 +56,6 @@ theorem dist_self_mul_right (a b : E) : dist b (b * a) = ‖a‖ := by
 @[to_additive (attr := simp)]
 theorem dist_self_mul_left (a b : E) : dist (b * a) b = ‖a‖ := by
   rw [dist_comm, dist_self_mul_right]
-
-open Finset
 
 variable [FunLike 𝓕 E F]
 

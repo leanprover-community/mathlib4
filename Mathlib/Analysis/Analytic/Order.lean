@@ -62,7 +62,7 @@ noncomputable def analyticOrderNatAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ := (an
 
 @[simp]
 lemma analyticOrderAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) : analyticOrderAt f z₀ = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 @[simp]
 lemma analyticOrderNatAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) :
@@ -75,6 +75,10 @@ lemma analyticOrderNatAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) :
 lemma analyticOrderAt_eq_top : analyticOrderAt f z₀ = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 where
   mp hf := by unfold analyticOrderAt at hf; split_ifs at hf with h <;> simp [*] at *
   mpr hf := by unfold analyticOrderAt; simp [hf, analyticAt_congr hf, analyticAt_const]
+
+@[simp]
+lemma analyticOrderAt_zero : analyticOrderAt (0 : 𝕜 → E) z₀ = ⊤ := by
+  simp [analyticOrderAt_eq_top]
 
 lemma eventuallyConst_iff_analyticOrderAt_sub_eq_top :
     EventuallyConst f (𝓝 z₀) ↔ analyticOrderAt (f · - f z₀) z₀ = ⊤ := by
@@ -411,7 +415,7 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
   · exact hFa.congr (by filter_upwards [hU0] using by simp +contextual)
   · by_cases hz : z ∈ U
     · simpa [hz] using hU' z hz
-    · simp only [if_neg hz]
+    · simp only [ite_eq_right hz]
       rw [smul_inv_smul₀]
       · module
       · contrapose hz

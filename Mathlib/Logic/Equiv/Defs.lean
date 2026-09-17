@@ -5,14 +5,12 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Unique
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
-public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Simps.Basic
-public import Mathlib.Tactic.Substs
+public import Mathlib.Tactic.Simps
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types
@@ -100,6 +98,7 @@ abbrev Equiv.Perm (α : Sort*) :=
 
 namespace Equiv
 
+@[macro_inline]
 instance : EquivLike (α ≃ β) α β where
   coe := Equiv.toFun
   inv := Equiv.invFun
@@ -298,7 +297,7 @@ theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :
 
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x := by grind
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y ↔ x = f.symm y :=
   f.eq_symm_apply.symm
 
