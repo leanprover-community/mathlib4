@@ -319,8 +319,7 @@ theorem index_map (f : G →* G') :
   rw [← comap_map_eq, index_comap, relIndex_mul_index (H.map_le_range f)]
 
 @[to_additive]
-theorem index_map_dvd (hf : Function.Surjective f) :
-    (H.map f).index ∣ H.index := by
+theorem index_map_dvd (hf : Function.Surjective f) : (H.map f).index ∣ H.index := by
   rw [index_map, f.range_eq_top_of_surjective hf, index_top, mul_one]
   exact index_dvd_of_le le_sup_left
 
