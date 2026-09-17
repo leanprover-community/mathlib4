@@ -244,7 +244,7 @@ instance finite_direction_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
 @[deprecated (since := "2026-09-13")]
 alias finiteDimensional_direction_map := finite_direction_map
 
-variable [Nontrivial k]
+attribute [local instance] nontrivial_of_invariantBasisNumber
 
 /-- The `vectorSpan` of a finite subset of an affinely independent
 family has dimension one less than its cardinality. -/
