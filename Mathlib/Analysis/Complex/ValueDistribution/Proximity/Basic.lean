@@ -260,7 +260,7 @@ theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic 
 Multiplying a meromorphic function by a nonzero constant `s` changes the proximity function (for the
 value `⊤`) at most by `log⁺ ‖s‖ + log⁺ ‖s⁻¹‖`.
 -/
-theorem isBigO_proximity_top_sub_proximity_const_smul_top_le [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
+theorem proximity_top_sub_proximity_const_smul_top_le [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
     {r : ℝ} (hf : Meromorphic f) (hs : s ≠ 0) :
     |proximity f ⊤ r - proximity (s • f) ⊤ r| ≤ log⁺ ‖s‖ + log⁺ ‖s⁻¹‖ := by
   simp only [proximity, ↓reduceDIte, Pi.smul_apply, norm_inv]
@@ -279,7 +279,7 @@ theorem isBigO_proximity_top_sub_proximity_const_smul_top_le [NormedSpace ℂ E]
 Multiplying a meromorphic function by a nonzero constant `s` changes the proximity function (for the
 value `⊤`) only by a bounded function.
 -/
-theorem isBigO_proximity_top_sub_proximity_const_smul_top_isBigO [NormedSpace ℂ E] {f : ℂ → E}
+theorem isBigO_proximity_top_sub_proximity_const_smul_top [NormedSpace ℂ E] {f : ℂ → E}
     {s : ℂ} (hf : Meromorphic f) (hs : s ≠ 0) :
     (proximity f ⊤ - proximity (s • f) ⊤) =O[atTop] (1 : ℝ → ℝ) := by
   apply Asymptotics.isBigO_iff.2
@@ -288,7 +288,7 @@ theorem isBigO_proximity_top_sub_proximity_const_smul_top_isBigO [NormedSpace �
   use 0
   intro r hr
   rw [Pi.sub_apply, norm_eq_abs, Pi.one_apply, norm_one, mul_one]
-  apply isBigO_proximity_top_sub_proximity_const_smul_top_le hf hs
+  apply proximity_top_sub_proximity_const_smul_top_le hf hs
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `⊤` equals `n` times the proximity

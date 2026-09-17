@@ -121,7 +121,7 @@ theorem isBigO_characteristic_sub_characteristic_const_mul {f : ℂ → ℂ} {s 
   unfold characteristic
   rw [logCounting_const_smul_top hs]
   ring_nf
-  apply isBigO_proximity_top_sub_proximity_const_smul_top_isBigO hf hs
+  apply isBigO_proximity_top_sub_proximity_const_smul_top hf hs
 
 /--
 For `1 ≤ r`, the characteristic function of a sum `∑ a, f a` at `⊤` is less than or equal to the sum
