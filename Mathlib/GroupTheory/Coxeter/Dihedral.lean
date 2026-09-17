@@ -19,6 +19,11 @@ This file identifies the Coxeter group associated to `CoxeterMatrix.I m` with th
 The canonical homomorphism sends the two simple reflections to two adjacent reflections of the
 regular `(m + 2)`-gon. We prove a two-coset normal form in the presented Coxeter group and use it
 to prove that this homomorphism is bijective.
+
+## Main definitions
+
+* `CoxeterMatrix.I.toDihedral`: the canonical homomorphism to the concrete dihedral group.
+* `CoxeterMatrix.I.groupEquivDihedralGroup`: the resulting multiplicative equivalence.
 -/
 
 public section
