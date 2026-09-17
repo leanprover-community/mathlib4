@@ -142,7 +142,6 @@ private theorem lagrange_inversion_coeff_pow_of_le
     rw [hmt] at hsum
     rw [hmt, show k + (t + 1) - k = t + 1 by omega]
     apply nsmul_right_injective (by omega : t + 1 ≠ 0)
-    simp only [nsmul_eq_mul]
     push_cast
     linear_combination ((k : R) + (t + 1)) * hsum + hcoeff
 
@@ -169,17 +168,14 @@ theorem lagrange_burmann_coeff
     (hY : Y = X * P.subst Y) (n : ℕ) (H : R⟦X⟧) :
     ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
       (d⁄dX H * P ^ (n + 1)).coeff n := by
-  set f : ℕ → R := fun i ↦
-    H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) with hf
-  have hlhs : ((n + 1 : ℕ) : R) *
-      coeff (n + 1) (H.subst Y) =
-        ∑ i ∈ range (n + 2), f i := by
+  have hlhs : ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
+        ∑ i ∈ range (n + 2), H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) := by
     rw [coeff_subst_of_fixedPoint hY H, mul_sum]
     refine sum_congr rfl fun i hi ↦ ?_
     rw [mem_range_succ_iff] at hi
-    simp only [hf, ← lagrange_inversion_coeff_pow_of_le hY n i hi]
+    simp only [← lagrange_inversion_coeff_pow_of_le hY n i hi]
     ring
-  rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ' f (n + 1)]
+  rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
   grind [coeff_derivative]
 
 end TorsionFree
