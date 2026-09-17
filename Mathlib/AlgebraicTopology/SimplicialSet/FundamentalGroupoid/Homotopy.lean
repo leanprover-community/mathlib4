@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 
 /-!
-# Homotopic maps induce isomorphisms functors on the fundamental groupoid
+# Homotopic maps induce isomorphic functors on the fundamental groupoid
 
 The main definition in this file is `SSet.congrMapFundamentalGroupoid`.
 Given two morphisms of simplicial sets `f : X ⟶ Y` and `g : X ⟶ Y`
