@@ -79,15 +79,12 @@ instance [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
   let F := (Φ₁.op.prod Φ₂.op).functor
   let F' := (Φ₁.op.prod Φ₂.op).localizedFunctor L L'
   let e : F ⋙ L' ≅ L ⋙ F' := ((Φ₁.op.prod Φ₂.op).catCommSq L L').iso
-  have he := (Φ₁.op.prod Φ₂.op).guitartExact_of_isRightDerivabilityStructure' _ _ _ e
-  let E := prodOpEquiv C₁ C₂
-  let E' := prodOpEquiv D₁ D₂
-  let w : (Φ₁.prod Φ₂).op.functor ⋙ (prodOpEquiv D₁ D₂).functor ≅ E.functor ⋙ F := Iso.refl _
-  rw [isRightDerivabilityStructure_iff (Φ₁.prod Φ₂).op (E.functor ⋙ L)
-    (E'.functor ⋙ L') _ (Functor.isoWhiskerLeft E.functor e)]
-  have : (Functor.isoWhiskerLeft E.functor e).hom =
-    (TwoSquare.vComp (.mk _ _ _ _ w.hom) (.mk _ _ _ _ e.hom)) := by
-    ext ⟨X₁, X₂⟩ <;> simp [w, L']
+  let w : (Φ₁.prod Φ₂).op.functor ⋙ (prodOpEquiv D₁ D₂).functor ≅
+    (prodOpEquiv C₁ C₂).functor ⋙ F := Iso.refl _
+  rw [isRightDerivabilityStructure_iff (Φ₁.prod Φ₂).op ((prodOpEquiv C₁ C₂).functor ⋙ L)
+    ((prodOpEquiv D₁ D₂).functor ⋙ L') _ (Functor.isoWhiskerLeft (prodOpEquiv C₁ C₂).functor e)]
+  have : (Functor.isoWhiskerLeft (prodOpEquiv C₁ C₂).functor e).hom =
+    (TwoSquare.vComp (.mk _ _ _ _ w.hom) (.mk _ _ _ _ e.hom)) := by cat_disch
   rw [this]
   infer_instance
 
