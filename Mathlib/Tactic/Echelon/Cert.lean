@@ -16,15 +16,9 @@ public meta import Mathlib.Tactic.Matrix.MulExpand
 /-!
 # Certificate construction for the Bareiss decomposition
 
-`certifyDecomposition` builds the `Echelon.Decomposition` certificate from the decomposition
-data, proving each certificate condition by kernel evaluation, or from proofs of the
+`certifyDecomposition` builds the certificates of the conditions of an `Echelon.Decomposition`
+from the decomposition data, proving each condition by kernel evaluation, or from proofs of the
 individual entries supplied by an entry certifier.
-
-## Main definitions
-
-- `certifyDecomposition`: build the `Echelon.Decomposition` certificate of a matrix literal.
-- `mkMatrixViews`: elaborate the row list of a matrix literal and its `ofLists` term.
-- `mkPerm`, `mkPivotList`: elaborate the row permutation and the pivot list.
 
 ## Implementation notes
 
@@ -148,18 +142,50 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   let pf ← mkAppM ``ofLists_mul #[← mkEqTrans r.proof hV]
   return mkExpectedPropHint pf q($(L.matrix) * $(Aσ.matrix) = $(U.matrix))
 
-/-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
-`entries`, the parsed entries of `A`. -/
+/-- The structure of all certificates constructed for a decomposition.
+This preserves the full intermediate certs constructed instead of only exposing the required part
+in `Echelon.Decomposition`, so downstream tactics do not need to rebuild them. -/
+structure DecompositionCert {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
+  /-- The transformation matrix. -/
+  L : Q(Matrix (Fin $m) (Fin $m) $α)
+  /-- The row permutation. -/
+  σ : Q(Equiv.Perm (Fin $m))
+  /-- The pivot function of the echelon form. -/
+  pivot : Q(Fin $m → WithTop (Fin $n))
+  /-- The echelon form. -/
+  U : Q(Matrix (Fin $m) (Fin $n) $α)
+  /-- The product equation. -/
+  mul_eq : Q($L * ($A).submatrix $σ id = $U)
+  /-- The pivot condition of the echelon form. -/
+  isPivotedBy : Q(($U).IsPivotedBy $pivot)
+  /-- Lower triangularity of the transformation matrix. -/
+  L_lowerTriangular : Q(($L).IsLowerTriangular)
+  /-- The nonzero diagonal of the transformation matrix. -/
+  L_diag_ne_zero : Q(∀ i, ($L).diag i ≠ 0)
+
+/-- The `Echelon.Decomposition` certificate assembled from the parts. -/
+def DecompositionCert.toDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)}
+    {_cr : Q(CommRing $α)}
+    {A : Q(Matrix (Fin $m) (Fin $n) $α)} (c : DecompositionCert _cr A) :
+    Q(Echelon.Decomposition $A) :=
+  -- the fields as locals: Qq identifies a spliced term only by its variable
+  let ⟨L, σ, pivot, _U, mul_eq, isPivotedBy, L_lowerTriangular, L_diag_ne_zero⟩ := c
+  q(⟨$L, $σ, $pivot, $mul_eq ▸ $isPivotedBy, $L_lowerTriangular, $L_diag_ne_zero⟩)
+
+/-- Build the `DecompositionCert` of `A` from the decomposition data and the parsed entries
+of `A`. -/
 def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
     (data : BareissData Expr) (certifier? : Option EntryCertifier) :
-    MetaM Q(Echelon.Decomposition $A) := do
+    MetaM (DecompositionCert _cr A) := do
   have L := mkMatrixViews _cr m m data.L
   have U := mkMatrixViews _cr m n data.U
   let aEntries := data.rowOrder.map (entries[·]!)
   have Aσ := mkMatrixViews _cr m n aEntries
   let σ ← mkPerm m data.swaps
   have cols : Q(List (Fin $n)) := ← mkPivotList n data.pivot
+  have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
   have Lm := L.matrix
   have Aσm := Aσ.matrix
   have Um := U.matrix
@@ -167,11 +193,11 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   have hprod : Q($Lm * $Aσm = $Um) := ← certifyProductEq _cr L Aσ U certifier?
   have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
-  have hpivot : Q(($Um).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) :=
-    ← certifyPivotedBy _cr U cols data.pivot certifier
+  have hpivot : Q(($Um).IsPivotedBy $pivot) := ← certifyPivotedBy _cr U cols data.pivot certifier
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag _cr L certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
-  return q(⟨$Lm, $σ, fun i : Fin $m ↦ pivotOfList $cols i, $hU ▸ $hpivot, $hlower, $hdiag⟩)
+  return { L := Lm, σ, pivot, U := Um, mul_eq := hU, isPivotedBy := hpivot,
+           L_lowerTriangular := hlower, L_diag_ne_zero := hdiag }
 
 end Mathlib.Tactic.Echelon

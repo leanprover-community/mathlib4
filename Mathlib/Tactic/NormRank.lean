@@ -29,8 +29,10 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
     MetaM Simp.Result := do
   let u ← getDecLevel R
   have α : Q(Type u) := R
-  let res ← mkBareissDecomposition A m n α entries
-  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
+  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+  have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
+  let res ← mkBareissDecomposition _cr A entries
+  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert.toDecomposition]
   let k := mkNatLit res.data.pivot.size
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
 

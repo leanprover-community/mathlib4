@@ -13,7 +13,8 @@ public import Mathlib.Tactic.Echelon.Rat
 
 Given a matrix literal `A` over a commutative domain, the entry point
 `mkBareissDecomposition` selects a computation model for the element type, runs the
-elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Echelon.Decomposition A`.
+elimination, and elaborates the certificate of the decomposition with the terms and proofs it
+is assembled from.
 The elimination itself is the model-parameterized `bareissDecomp` in
 `Mathlib.Tactic.Echelon.Core`, and the certificate construction `certifyDecomposition` in
 `Mathlib.Tactic.Echelon.Cert`.
@@ -21,7 +22,8 @@ The elimination itself is the model-parameterized `bareissDecomp` in
 ## Main definitions
 
 - `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
-- `BareissResult`: the elaborated certificate together with the computed decomposition data.
+- `BareissResult`: the decomposition data and its certificate with the terms and proofs it is
+  assembled from.
 - `checkBareissApplicable`: the applicability check of the Bareiss method.
 - `checkDecideEq`: check whether `decide` settles equality in a ring.
 - `normNumCertifier`: `norm_num`'s core as an entry certifier.
@@ -81,21 +83,22 @@ def modelFor {u : Level} (α : Q(Type u)) : MetaM Model := do
       pure (some normNumCertifier)
   return { producer := ← ratProducer (u := u) α, entryCertifier? := certifier? }
 
-/-- The result of producing a decomposition by Bareiss. -/
-structure BareissResult where
-  /-- The elaborated `Echelon.Decomposition` certificate term. -/
-  cert : Expr
-  /-- The decomposition data underlying the certificate. -/
+/-- The result of producing a decomposition by Bareiss: the decomposition data and its
+`DecompositionCert`. -/
+structure BareissResult {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
+  /-- The decomposition data, as computed by the producer. -/
   data : BareissData Expr
+  /-- The certificate, as constructed by the certifier. -/
+  cert : DecompositionCert _cr A
 
-/-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
-`A`. -/
-def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
-    (entries : Array (Array Expr)) : MetaM BareissResult := do
+/-- Produce the decomposition of the matrix literal `A` and elaborate its certificate with the
+terms and proofs it is assembled from. -/
+def mkBareissDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) :
+    MetaM (BareissResult _cr A) := do
   let model ← modelFor α
   let d ← model.producer entries
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
-  have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  return { cert := ← certifyDecomposition _cr A entries d model.entryCertifier?, data := d }
+  return { data := d, cert := ← certifyDecomposition _cr A entries d model.entryCertifier? }
 
 end Mathlib.Tactic.Echelon
