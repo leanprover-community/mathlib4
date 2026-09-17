@@ -6,10 +6,13 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Group.PPow.Defs
-public import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.PNat.Algebra
 
 /-!
-# TODO : Fill in module docstring
+# Algebra of positive powers
+
+Basic identities for powers indexed by `ℕ+`,
+such as distributivity and commutativity of positive powers.
 -/
 
 public section
