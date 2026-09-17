@@ -238,37 +238,31 @@ where
 section Meta
 
 /-- Determine whether the explicit parts of two expressions are equal,
-and the implicit parts are definitionally equal, up to `reducible_and_instances` transparency.
+and the implicit parts are definitionally equal, up to `implicit` transparency.
 This says whether two expressions are 'morally equal', and is used for deduplicating suggestions. -/
 partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let t := t.cleanupAnnotations; let s := s.cleanupAnnotations
   if t == s then
     return true
-  unless t.getAppNumArgs == s.getAppNumArgs && t.getAppFn == s.getAppFn do
+  -- Unify lambdas and foralls
+  if t.isLambda && s.isLambda || t.isForall && s.isForall then
+    unless ← withNewMCtxDepth <| withImplicit <| isDefEq t.bindingDomain! s.bindingDomain! do
+      return false
+    return ← withLocalDeclD `_ t.bindingDomain! fun x ↦
+      isExplicitEq (t.bindingBody!.instantiate1 x) (s.bindingBody!.instantiate1 x)
+  -- Unify applications of the same head function.
+  unless t.isApp && t.getAppNumArgs == s.getAppNumArgs do
+    return false
+  unless ← isExplicitEq t.getAppFn s.getAppFn do
     return false
   let tArgs := t.getAppArgs
   let sArgs := s.getAppArgs
-  -- TODO: let's just use `getFunInfo`.
-  let bis ← getBinderInfos t.getAppFn tArgs
-  t.getAppNumArgs.allM fun i _ =>
-    if bis[i]!.isExplicit then
+  let info ← getFunInfoNArgs t.getAppFn t.getAppNumArgs
+  t.getAppNumArgs.allM fun i _ => do
+    if info.paramInfo[i]!.isExplicit then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
-      withNewMCtxDepth <| withReducibleAndInstances <| isDefEq tArgs[i]! sArgs[i]!
-where
-  /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
-  getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
-    let mut fnType ← inferType fn
-    let mut result := Array.mkEmpty args.size
-    let mut j := 0
-    for i in [:args.size] do
-      unless fnType.isForall do
-        fnType ← whnfD (fnType.instantiateRevRange j i args)
-        j := i
-      let .forallE _ _ b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
-      fnType := b
-      result := result.push bi
-    return result
+      withNewMCtxDepth <| withImplicit <| isDefEq tArgs[i]! sArgs[i]!
 
 end Meta
 

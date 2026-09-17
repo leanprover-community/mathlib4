@@ -68,3 +68,9 @@ example : ((1 : ℕ) + (2 : ℤ) : ℚ) = (1 : NNRat) * (3 : ℚ) := by
   click_test => "dsimp" "simp" "push_cast" "norm_cast" "norm_num1" "ring_nf"
   norm_num1
   rfl
+
+example {P : ℚ → Prop} (h : ∀ ε, ε ≤ 0 ∨ ¬ P ε) : ¬ ∃ ε > 0, P ε := by
+  click_test => "push Not" "push +distrib Not" "simp"
+  fail_if_success click_test => "norm_cast"
+  push +distrib Not
+  exact h
