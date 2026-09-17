@@ -130,6 +130,7 @@ def main (args : List String) : IO Unit := do
   let containerStr? ← parseNamedOpt "container" options
   let scopeStr? ← parseNamedOpt "scope" options
   let unsafeFlag := parseFlagOpt "unsafe" options
+  let namespaced := parseFlagOpt "namespaced" options
   let unsafeWindowStr? ← parseNamedOpt "unsafe-window" options
   let backendStr? ← parseNamedOpt "backend" options
 
@@ -182,8 +183,7 @@ def main (args : List String) : IO Unit := do
       Process.exit 1
     | some cs => cacheFromOverride.set (some cs)
 
-  -- Parse `--container=NAME`. Validation is unconditional; `put` enforces that
-  -- the flag is set (via `stagedUploadDest`).
+  -- Parse `--container=NAME`, the Azure container of an upload (`Upload.decide`).
   let container? ← match containerStr? with
     | none => pure none
     | some s => match Container.parse? s with
@@ -192,6 +192,21 @@ def main (args : List String) : IO Unit := do
         IO.eprintln s!"Unknown container name in --container={s}.\n\
           Known containers: {", ".intercalate (Container.all.map Container.name)}."
         Process.exit 1
+
+  -- The layout a `put` writes and the URL it goes under (`Upload.decide`), from
+  -- the flags, `MATHLIB_CACHE_PUT_URL` (an empty value means unset), and the
+  -- scope. A mismatch fails here, before any packing.
+  let decideUpload : IO (Layout × String) := do
+    let options : Upload.Options := {
+      namespaced, container?, repo?, scope? := ← getRepoScope,
+      putURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_PUT_URL") }
+    match Upload.decide options with
+    | .ok (layout, url) =>
+      IO.println s!"Cache upload layout: {layout.name}"
+      pure (layout, url)
+    | .error msg =>
+      IO.eprintln msg
+      Process.exit 1
 
   -- Early dispatch for `query`: avoids running `parseArgs` (which would try to
   -- interpret a git ref like `HEAD` as a Lean module) and skips the expensive
@@ -222,12 +237,13 @@ def main (args : List String) : IO Unit := do
     if !(← stagingDir.isDir) then
       IO.eprintln "--staging-dir must be a directory"
       Process.exit 1
-    runPut container? repo? backend stagingDir (overwrite := false)
+    let (layout, url) ← decideUpload
+    uploadFiles layout url backend stagingDir (overwrite := false)
       (getFileNames := do
         return (← getFilesWithExtension stagingDir "ltar").map (·.fileName.get!))
     return
   | "put-staged" :: _ =>
-    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
+    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] [--namespaced] \
       [--repo=OWNER/REPO] [--scope=REF] [--backend=NAME]"
     Process.exit 1
   | _ => pure ()
@@ -274,8 +290,9 @@ def main (args : List String) : IO Unit := do
   -- `pack`-and-upload: the hash memo scopes the file list to what this
   -- checkout's build links, so nothing else in the shared per-user cache
   -- directory is uploaded.
-  let put (overwrite := false) :=
-    runPut container? repo? backend IO.CACHEDIR
+  let put (overwrite := false) := do
+    let (layout, url) ← decideUpload
+    uploadFiles layout url backend IO.CACHEDIR
       (getFileNames := pack overwrite (verbose := true)) overwrite
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))

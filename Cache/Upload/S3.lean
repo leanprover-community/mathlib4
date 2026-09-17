@@ -15,7 +15,6 @@ The complete s3 upload path. This module holds:
 
 * the credential set (`S3Credentials`), its resolution (`s3AuthFrom`), and the
   signing region (`s3RegionFrom`);
-* the destination resolution (`s3UploadDestFrom`);
 * the transfer-tool policy (`s3UploadToolFrom`);
 * the SigV4 curl arguments (`s3CurlArgs`);
 * the rclone tool's configuration (`rcloneEnv`) and the endpoint and bucket
@@ -26,25 +25,6 @@ The complete s3 upload path. This module holds:
 namespace Cache.Requests
 
 open System (FilePath)
-
-/--
-The upload destination for the s3 backend: the container write rebased under
-the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
-`MATHLIB_CACHE_BASE_URL` rebases reads. A bucket URL is account-specific, so
-the backend has no default endpoint and an unset base errors. A base without
-`--container` errors, since a base rebases a container write.
--/
-def s3UploadDestFrom (putBase? : Option String) (container? : Option Container)
-    (repo : String) (scope? : Option String) : Except String StagedUploadDest :=
-  match putBase?, container? with
-  | some base, some c => .ok (containerUploadDest base c repo scope?)
-  | some _, none => .error
-      "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
-      pass --container=NAME to name the container."
-  | none, _ => .error
-      "the s3 backend uploads to the bucket endpoint MATHLIB_CACHE_PUT_BASE_URL \
-      names (https://host/bucket): set it, or set MATHLIB_CACHE_PUT_URL for a \
-      flat upload"
 
 /-- S3-compatible credentials for a direct bucket write. `sessionToken?`
 carries the session token of a temporary credential and is absent for a
@@ -122,7 +102,7 @@ def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
 Split an S3 upload base into the endpoint origin and the bucket path:
 `https://host/bucket[/prefix]` becomes `(https://host, bucket[/prefix])`.
 rclone addresses a destination as `:s3:{bucket}/{key}` against an endpoint.
-`stagedUploadDestFrom` rejects an s3 base that does not split.
+`uploadFiles` rejects an s3 URL that does not split.
 -/
 def s3EndpointSplit (base : String) : Except String (String × String) :=
   match base.splitOn "://" with

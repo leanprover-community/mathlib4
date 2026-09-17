@@ -357,12 +357,12 @@ container reachable at `containerURL`.
 
 The `f/` prefix marks files. Whether the rest of the path is
 flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
-container (see `Container.flatPath`), not the repo: the same hash under
+container (see `Container.layout`), not the repo: the same hash under
 `repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
 
-`container` is `none` for the user-supplied `MATHLIB_CACHE_GET_URL` /
-`MATHLIB_CACHE_PUT_URL` URLs, where no container policy applies; the path then
-follows the repo directly — flat for `MATHLIBREPO`, prefixed otherwise.
+`container` is `none` for the user-supplied `MATHLIB_CACHE_GET_URL`, where no
+container policy applies; the path then follows the repo directly, flat for
+`MATHLIBREPO` and prefixed otherwise.
 
 `repo` is lowercased via `normalizeRepo` so the repo-namespaced path is
 case-insensitive in the GitHub owner/repo name.

@@ -10,35 +10,15 @@ import Cache.Upload.Curl
 /-!
 # The Azure Blob Storage backend
 
-The complete azure upload path: the destination resolution
-(`azureUploadDestFrom`), the credential resolution (`azureAuthFrom`), the
-request signing (`azureBearerCurlArgs`), and the transfer entry point
+The complete azure upload path: the credential resolution (`azureAuthFrom`),
+the request signing (`azureBearerCurlArgs`), and the transfer entry point
 (`azurePutStaged`). rclone signs only S3 requests, so the backend always
 transfers with the curl tool.
-
-The storage account URL and the container model live in `Cache/Infra.lean`,
-because the read side uses them too.
 -/
 
 namespace Cache.Requests
 
 open System (FilePath)
-
-/--
-The upload destination for the azure backend: the chosen `--container` on the
-`lakecache` Azure storage account, or on the base
-`MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as `MATHLIB_CACHE_BASE_URL`
-rebases reads. A missing container errors: an upload targets exactly one
-container.
--/
-def azureUploadDestFrom (putBase? : Option String) (container? : Option Container)
-    (repo : String) (scope? : Option String) : Except String StagedUploadDest :=
-  match container? with
-  | some c => .ok (containerUploadDest (putBase?.getD azureAccountURL) c repo scope?)
-  | none => .error
-      s!"an upload targets one container: pass --container=NAME (known: \
-      {", ".intercalate (Container.all.map Container.name)}), or set \
-      MATHLIB_CACHE_PUT_URL for a flat upload"
 
 /-- The api-version header that every bearer-authenticated Azure request
 sends. Bearer authentication requires an api-version that supports OAuth. -/
