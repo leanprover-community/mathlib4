@@ -270,7 +270,7 @@ def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLi
   NatIso.ofComponents (fun j =>
     limitObjIsoLimitCompEvaluation (F ⋙ (whiskeringLeft _ _ _).obj G) j ≪≫
       HasLimit.isoOfNatIso
-        (Functor.associator F ((whiskeringLeft D K C).obj G) ((evaluation D C).obj j) ≪≫
+        (Functor.associator .. ≪≫
           isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (limitObjIsoLimitCompEvaluation F (G.obj j)).symm)
 
@@ -363,7 +363,7 @@ def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [H
   NatIso.ofComponents (fun j =>
     colimitObjIsoColimitCompEvaluation (F ⋙ (whiskeringLeft _ _ _).obj G) j ≪≫
       HasColimit.isoOfNatIso
-        (Functor.associator F ((whiskeringLeft D K C).obj G) ((evaluation D C).obj j) ≪≫
+        (Functor.associator .. ≪≫
           isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (colimitObjIsoColimitCompEvaluation F (G.obj j)).symm)
 

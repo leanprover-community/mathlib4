@@ -76,13 +76,9 @@ noncomputable def colimitHomIsoLimitYoneda
 lemma colimitHomIsoLimitYoneda_hom_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda F A).hom ≫ limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ =
       (yoneda.obj A).map (colimit.ι F i).op := by
-  simp only [Functor.comp_obj, Functor.op_obj, yoneda_obj_obj, colimitHomIsoLimitYoneda,
-    Iso.trans_hom, Iso.app_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,
-    evaluation_obj_obj, Functor.flip_obj_obj, Functor.isoWhiskerLeft_hom, NatTrans.comp_app,
-    Functor.associator_hom_app, Functor.whiskerLeft_app, compEvaluation_hom_app,
-    Category.comp_id, limitObjIsoLimitCompEvaluation_hom_π, yoneda_obj_map, Quiver.Hom.unop_op]
-  rw [← NatTrans.comp_app, coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π]
-  simp only [Functor.flip_map_app, yoneda_obj_map, Quiver.Hom.unop_op]
+  dsimp [colimitHomIsoLimitYoneda]
+  simp only [Category.assoc, HasLimit.isoOfNatIso_hom_π, Iso.trans_hom, NatTrans.comp_app]
+  simp [← NatTrans.comp_app]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -131,13 +127,9 @@ noncomputable def colimitHomIsoLimitYoneda' [HasLimitsOfShape I (Type u₂)] (A 
 lemma colimitHomIsoLimitYoneda'_hom_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda' F A).hom ≫ limit.π (F.rightOp ⋙ yoneda.obj A) i =
       (yoneda.obj A).map (colimit.ι F ⟨i⟩).op := by
-  simp only [Functor.comp_obj, yoneda_obj_obj, colimitHomIsoLimitYoneda',
-    Iso.trans_hom, Iso.app_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,
-    evaluation_obj_obj, Functor.flip_obj_obj, Functor.isoWhiskerLeft_hom, NatTrans.comp_app,
-    Functor.associator_hom_app, Functor.whiskerLeft_app, compEvaluation_hom_app,
-    Category.comp_id, limitObjIsoLimitCompEvaluation_hom_π, yoneda_obj_map, Quiver.Hom.unop_op]
-  rw [← NatTrans.comp_app, coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π]
-  simp only [Functor.flip_map_app, yoneda_obj_map, Quiver.Hom.unop_op]
+  dsimp [colimitHomIsoLimitYoneda']
+  simp only [Category.assoc, HasLimit.isoOfNatIso_hom_π, Iso.trans_hom, NatTrans.comp_app]
+  simp [← NatTrans.comp_app]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
