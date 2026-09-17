@@ -197,7 +197,7 @@ alias maxPowDiv.base_mul_eq_succ := padicValNat_base_mul
 @[deprecated (since := "2026-03-15")]
 alias maxPowDiv.base_pow_mul := padicValNat_base_pow_mul
 
-@[deprecated (since := "2026-03-15")]
+@[deprecated pow_dvd_iff_le_padicValNat +typeChanged (since := "2026-03-15")]
 alias ⟨_, maxPowDiv.le_of_dvd⟩ := pow_dvd_iff_le_padicValNat
 
 @[deprecated (since := "2026-03-15")]
