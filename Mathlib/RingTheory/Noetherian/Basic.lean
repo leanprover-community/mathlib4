@@ -243,12 +243,12 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem IsNoetherian.induction [IsNoetherian R M] {P : Submodule R M → Prop}
     (hgt : ∀ I, (∀ J > I, P J) → P I) (I : Submodule R M) : P I :=
-  IsWellFounded.induction _ I hgt
+  WellFounded.induction' _ I hgt
 
 theorem LinearMap.isNoetherian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid P] [Module S P]
     {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] P) (hl : Function.Bijective l) :
     IsNoetherian R M ↔ IsNoetherian S P := by
-  simp_rw [isNoetherian_iff']
+  simp_rw [isNoetherian_iff]
   let e := Submodule.orderIsoMapComapOfBijective l hl
   exact ⟨fun _ ↦ e.symm.strictMono.wellFoundedGT, fun _ ↦ e.strictMono.wellFoundedGT⟩
 
@@ -313,13 +313,13 @@ instance (priority := 100) isNoetherian_of_subsingleton (R M) [Subsingleton R] [
 
 theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (h : IsNoetherian R M) : IsNoetherian R N :=
-  isNoetherian_mk ⟨OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h.wf⟩
+  isNoetherian_mk (OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h.wf)
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Noetherian, then `M / S` is
 also Noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
-  isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩
+  isNoetherian_mk ((Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf)
 
 instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
@@ -343,7 +343,7 @@ theorem IsNoetherianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScala
 
 theorem isNoetherianRing_of_surjective (R) [Semiring R] (S) [Semiring S] (f : R →+* S)
     (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S :=
-  isNoetherian_mk ⟨OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H.wf⟩
+  isNoetherian_mk (OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H.wf)
 
 instance isNoetherianRing_rangeS {R} [Semiring R] {S} [Semiring S] (f : R →+* S)
     [IsNoetherianRing R] : IsNoetherianRing f.rangeS :=
@@ -359,7 +359,7 @@ theorem isNoetherianRing_of_ringEquiv (R) [Semiring R] {S} [Semiring S] (f : R �
 
 instance {R S} [Semiring R] [Semiring S] [IsNoetherianRing R] [IsNoetherianRing S] :
     IsNoetherianRing (R × S) := by
-  rw [IsNoetherianRing, isNoetherian_iff'] at *
+  rw [IsNoetherianRing, isNoetherian_iff] at *
   exact Ideal.idealProdEquiv.toOrderEmbedding.wellFoundedGT
 
 instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i, IsNoetherianRing (R i)],

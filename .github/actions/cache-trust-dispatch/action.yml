@@ -142,12 +142,12 @@ runs:
               "nightly-testing"|"nightly-testing-green"|"staging"|bump/*)
                 # Trusted nightly refs use the default [nightly-testing, legacy].
                 # It excludes `pr-toolchain-tests` so an upload from a
-                # `lean-pr-testing-*` branch never reaches a trusted-nightly
+                # `batteries-pr-testing-*` branch never reaches a trusted-nightly
                 # consumer.
                 PRIMARY="nightly-testing"
                 ;;
               *)
-                # `lean-pr-testing-*`, `batteries-pr-testing-*`, etc.:
+                # `batteries-pr-testing-*`, etc.:
                 # least-trusted (can build with arbitrary toolchains). Widen
                 # reads to recover this branch's own previously-uploaded
                 # artifacts; trusted-nightly stays preferred where hash
