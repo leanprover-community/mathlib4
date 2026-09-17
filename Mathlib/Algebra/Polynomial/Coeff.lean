@@ -40,7 +40,7 @@ section Coeff
 @[simp]
 theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := rfl
 
-@[deprecated AddMonoidAlgebra.coeff_smul_apply (since := "2026-09-03")]
+@[deprecated AddMonoidAlgebra.coeff_smul_apply +typeChanged (since := "2026-09-03")]
 protected theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
     coeff (r • p) n = r • coeff p n := coeff_smul_apply ..
 

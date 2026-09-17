@@ -89,19 +89,19 @@ section Semiring
 variable [Semiring R] {p q : R[X]}
 
 /-- The underlying `R[ℕ]` of a polynomial in `R[X]`. Now the identity, as `R[X]` is defeq `R[ℕ]`. -/
-@[deprecated id (since := "2026-07-18")]
+@[deprecated id +typeChanged (since := "2026-07-18")]
 def toFinsupp : R[X] → R[ℕ] := id
 
 /-- Construct a polynomial in `R[X]` from an element of `R[ℕ]`. Now the identity, as `R[X]` is
 defeq `R[ℕ]`. -/
-@[deprecated id (since := "2026-07-18")]
+@[deprecated id +typeChanged (since := "2026-07-18")]
 def ofFinsupp : R[ℕ] → R[X] := id
 
-@[deprecated AddMonoidAlgebra.forall (since := "2026-09-11")]
+@[deprecated AddMonoidAlgebra.forall +typeChanged (since := "2026-09-11")]
 theorem forall_iff_forall_finsupp (P : R[X] → Prop) : (∀ p, P p) ↔ ∀ q, P ⟨q⟩ :=
   AddMonoidAlgebra.forall
 
-@[deprecated AddMonoidAlgebra.exists (since := "2026-09-11")]
+@[deprecated AddMonoidAlgebra.exists +typeChanged (since := "2026-09-11")]
 theorem exists_iff_exists_finsupp (P : R[X] → Prop) : (∃ p, P p) ↔ ∃ q, P ⟨q⟩ :=
   AddMonoidAlgebra.exists
 
@@ -188,7 +188,7 @@ theorem _root_.IsSMulRegular.polynomial {S : Type*} [SMulZeroClass S R] {a : S}
     (ha : IsSMulRegular R a) : IsSMulRegular R[X] a
   | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (ofCoeff_injective h)
 
-@[deprecated Function.injective_id (since := "2026-07-18")]
+@[deprecated Function.injective_id +typeChanged (since := "2026-07-18")]
 theorem toFinsupp_injective : Function.Injective (toFinsupp : R[X] → R[ℕ]) :=
   fun _ _ h => h
 
@@ -286,12 +286,12 @@ the main version once `Polynomial.coeff` is replaced by `AddMonoidAlgebra.coeff`
 @[simp] lemma coeff_monomial' (n : ℕ) (r : R) : (monomial n r).coeff = Finsupp.single n r := by
   simp [monomial]
 
-@[deprecated coeff_monomial' (since := "2026-07-18")]
+@[deprecated coeff_monomial' +typeChanged (since := "2026-07-18")]
 theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = single n r := rfl
 
 lemma single_eq_monomial (n : ℕ) (r : R) : .single n r = monomial n r := rfl
 
-@[deprecated single_eq_monomial (since := "2026-07-18")]
+@[deprecated single_eq_monomial +typeChanged (since := "2026-07-18")]
 theorem ofFinsupp_single (n : ℕ) (r : R) : (ofFinsupp (.single n r) : R[X]) = monomial n r := rfl
 
 @[simp]
@@ -393,7 +393,7 @@ theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
 
 lemma X_eq_single : X = single 1 (1 : R) := rfl
 
-@[deprecated X_eq_single (since := "2026-07-18")]
+@[deprecated X_eq_single +typeChanged (since := "2026-07-18")]
 theorem toFinsupp_X : X.toFinsupp = .single 1 (1 : R) :=
   rfl
 
@@ -548,7 +548,7 @@ lemma toFinsupp_C_mul_X_pow (a : R) (n : ℕ) : (C a * X ^ n).toFinsupp = single
 
 theorem C_mul_X_eq_monomial : C a * X = monomial 1 a := by rw [← C_mul_X_pow_eq_monomial, pow_one]
 
-@[deprecated AddMonoidAlgebra.coeff_single (since := "2026-07-18")]
+@[deprecated AddMonoidAlgebra.coeff_single +typeChanged (since := "2026-07-18")]
 theorem toFinsupp_C_mul_X (a : R) : (C a * X).toFinsupp = .single 1 a := by
   rw [C_mul_X_eq_monomial, toFinsupp_monomial]
 
@@ -856,10 +856,10 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
 theorem erase_monomial {n : ℕ} {a : R} : (monomial n a).erase n = 0 :=
   AddMonoidAlgebra.erase_single n a
 
-@[simp]
+@[deprecated Finsupp.erase_same +typeChanged (since := "2026-09-17")]
 theorem erase_same (p : R[X]) (n : ℕ) : coeff (p.erase n) n = 0 := by simp
 
-@[simp]
+@[deprecated Finsupp.erase_ne +typeChanged (since := "2026-09-17")]
 theorem erase_ne (p : R[X]) {n i : ℕ} (h : i ≠ n) : coeff (p.erase n) i = coeff p i := by
   simp [h]
 
@@ -872,9 +872,8 @@ theorem coeff_update_apply (p : R[X]) (n : ℕ) (a : R) (i : ℕ) :
     (p.update n a).coeff i = if i = n then a else p.coeff i := by
   rw [coeff_update, Function.update_apply]
 
-@[simp]
-theorem coeff_update_same (p : R[X]) (n : ℕ) (a : R) : (p.update n a).coeff n = a := by
-  rw [p.coeff_update_apply, ite_eq_left rfl]
+@[deprecated Function.update_self +typeChanged (since := "2026-09-17")]
+theorem coeff_update_same (p : R[X]) (n : ℕ) (a : R) : (p.update n a).coeff n = a := by simp
 
 theorem coeff_update_ne (p : R[X]) {n i : ℕ} (a : R) (h : i ≠ n) :
     (p.update n a).coeff i = p.coeff i := by rw [p.coeff_update_apply, ite_eq_right h]
