@@ -112,7 +112,7 @@ Technically, the command also take an optional `String` argument to fill in the 
 However, its use is mostly intended for debugging purposes, where having a variable date would
 make tests time-dependent.
 -/
-elab tk:"#deprecate" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command : command => do
+elab tk:"#deprecate " id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command : command => do
   let oldEnv ← getEnv
   try
     elabCommand cmd
