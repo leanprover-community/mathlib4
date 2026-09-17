@@ -228,10 +228,11 @@ theorem Ico_union_Ioi_eq_Ici_sdiff_singleton (a_le_b : a ≤ b) :
 
 /-! ### An infinite and a finite interval -/
 
+@[to_dual]
 theorem Iic_subset_Iio_union_Icc : Iic b ⊆ Iio a ∪ Icc a b := fun x hx =>
   (lt_or_ge x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_union_Icc_eq_Iic (h : a ≤ b) : Iio a ∪ Icc a b = Iic b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx => (le_of_lt hx).trans h) And.right)
     Iic_subset_Iio_union_Icc
