@@ -754,7 +754,7 @@ theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
   simp [h]
 
 @[simp]
-theorem ncard_pair_iff {a b : α} : Set.ncard {a, b} = 2 ↔ a ≠ b := by
+theorem ncard_pair_eq_two_iff {a b : α} : Set.ncard {a, b} = 2 ↔ a ≠ b := by
   refine ⟨fun h ↦ ?_, (by simp [·])⟩
   by_contra!
   simp [this] at h
