@@ -33,11 +33,8 @@ open scoped NNReal ENNReal
 
 open Metric EuclideanGeometry
 
-section
-
-variable {V E : Type*}
-  [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-  [MetricSpace E] [NormedAddTorsor V E]
+variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace E]
+  [NormedAddTorsor V E]
 
 /-- Pushing `x` by `ρ` along a unit vector orthogonal to `A.direction` (which exists since
 `A` is a strict subspace, `A.directionᗮ ≠ ⊥`) shows that if the closed `ρ`-ball around `x`
@@ -87,13 +84,9 @@ lemma infDist_add_le_of_closedBall_subset_cthickening
       _ = dist y a := by rw [hu_norm, mul_one, dist_eq_norm_vsub V]
   linarith
 
-end
-
 namespace Metric
 
-variable {V E : Type*}
-  [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
-  [MetricSpace E] [NormedAddTorsor V E]
+variable [FiniteDimensional ℝ V]
 
 /-- **Lower bound for the `ethickness` of a thickening.** Thickening a nonempty set by `ρ`
 increases its `ethickness` by at least `ρ` at every rank below the ambient dimension: the key
