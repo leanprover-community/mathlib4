@@ -33,6 +33,7 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable [DecidableEq ι] [AddMonoid ι]
 variable [Semiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance baseChange : GradedAlgebra fun i ↦ (𝒜 i).baseChange S where
   one_mem := tmul_mem_baseChange_of_mem _ <| one_mem_graded 𝒜
   mul_mem i j := by
@@ -122,14 +123,13 @@ def liftEquiv : (𝒜 →ₐᵍ[R] (ℬ · |>.restrictScalars R)) ≃ ((𝒜 · 
       map_mem hx := by
         obtain ⟨x, rfl⟩ := toBaseChange_surjective' _ _ hx
         induction x with
-        | zero => simp
         | add => simp_all [add_mem]
         | tmul r x => simpa using smul_mem _ _ <| by exact f.map_mem x.2 }
   invFun f :=
     { AlgHom.liftEquiv R S A B |>.symm f with
       map_mem hx := f.map_mem <| tmul_mem_baseChange_of_mem _ hx }
-  left_inv f := coe_algHom_injective <| by simp
-  right_inv f := coe_algHom_injective <| by simp
+  left_inv f := coe_toAlgHom_injective <| by simp
+  right_inv f := coe_toAlgHom_injective <| by simp
 
 variable {𝒜 ℬ}
 

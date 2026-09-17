@@ -42,7 +42,7 @@ public section
 
 open scoped Manifold Topology ContDiff
 
-open Function Set
+open Set
 
 variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -104,7 +104,7 @@ def LiftSourceTargetPropertyAt (f : M → N) (x : M)
 
 namespace LocalPresentationAt
 
-variable {f g : M → N} {x : M}
+variable {f : M → N} {x : M}
   {P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop}
 
 lemma mapsto_domChart_source_codChart_source (h : LocalPresentationAt I J n f x P) :
@@ -238,7 +238,7 @@ lemma prodMap [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsMani
       (domChart_mem_maximalAtlas hf) (domChart_mem_maximalAtlas hg)
   · apply IsManifold.mem_maximalAtlas_prod
       (codChart_mem_maximalAtlas hf) (codChart_mem_maximalAtlas hg)
-  · simp only [OpenPartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source,
+  · simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph, PartialEquiv.prod_source,
       preimage_prod_map_prod]
     exact prod_mono hf.source_subset_preimage_source hg.source_subset_preimage_source
   · exact h hf.property hg.property

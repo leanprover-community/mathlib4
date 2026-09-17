@@ -119,6 +119,7 @@ def pi (γ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) : Path.Homotopic.Quot
   (_root_.Quotient.map Path.pi fun x y hxy =>
     Nonempty.map (piHomotopy x y) (Classical.nonempty_pi.mpr hxy)) (Quotient.choice γ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
     (Path.Homotopic.pi fun i => (Quotient.mk (γ i))) = Quotient.mk (Path.pi γ) := by
   simp_rw [← Quotient.mk'_eq_mk, Quotient.mk', pi, Quotient.choice_eq, Quotient.map_mk]

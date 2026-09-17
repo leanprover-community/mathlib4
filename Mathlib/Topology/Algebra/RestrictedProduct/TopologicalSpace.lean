@@ -410,7 +410,7 @@ theorem weaklyLocallyCompactSpace_of_cofinite [∀ i, WeaklyLocallyCompactSpace 
     have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr (hAcompact.and x.2)
     have hSx : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi.2
     have hSA : ∀ i ∈ S, IsCompact (A i) := fun i hi ↦ hi.1
-    haveI := weaklyLocallyCompactSpace_of_principal hS hSA
+    have := weaklyLocallyCompactSpace_of_principal hS hSA
     rcases exists_inclusion_eq_of_eventually R A hS hSx with ⟨x', hxx'⟩
     rw [← hxx', nhds_eq_map_inclusion hAopen]
     rcases exists_compact_mem_nhds x' with ⟨K, K_compact, hK⟩
@@ -529,7 +529,7 @@ instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] [∀ i, ContinuousIn
   continuous_inv := by
     rw [continuous_dom]
     intro T hT
-    haveI : ContinuousInv (Πʳ i, [R i, B i]_[𝓟 T]) :=
+    have : ContinuousInv (Πʳ i, [R i, B i]_[𝓟 T]) :=
       isEmbedding_coe_of_principal.continuousInv fun _ ↦ rfl
     exact (continuous_inclusion hT).comp continuous_inv
 
@@ -540,7 +540,7 @@ instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
   continuous_const_smul g := by
     rw [continuous_dom]
     intro T hT
-    haveI : ContinuousConstSMul G (Πʳ i, [R i, B i]_[𝓟 T]) :=
+    have : ContinuousConstSMul G (Πʳ i, [R i, B i]_[𝓟 T]) :=
       isEmbedding_coe_of_principal.continuousConstSMul id rfl
     exact (continuous_inclusion hT).comp (continuous_const_smul g)
 

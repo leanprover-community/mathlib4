@@ -6,15 +6,12 @@ Authors: Anne Baanen, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
-public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Valuation.IsTrivialOn
-
 
 /-!
 # Generalities on the polynomial structure of rational functions
+
 * Main evaluation properties
 * Study of the X-adic valuation
 

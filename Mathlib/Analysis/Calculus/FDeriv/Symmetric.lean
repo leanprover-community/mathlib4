@@ -117,18 +117,22 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
     (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt one_ne_zero
 
-lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
+lemma fderivWithin_fderivWithin_eq_of_eventuallyEqSet (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
       (fderivWithin_eventually_congr_set h).fderivWithin_eq_of_nhds
   _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
 
+@[deprecated (since := "2026-08-14")]
+alias fderivWithin_fderivWithin_eq_of_eventuallyEq :=
+  fderivWithin_fderivWithin_eq_of_eventuallyEqSet
+
 lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
     (h : s ∈ 𝓝 x) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderiv 𝕜 (fderiv 𝕜 f) x := by
   simp only [← fderivWithin_univ]
-  apply fderivWithin_fderivWithin_eq_of_eventuallyEq
+  apply fderivWithin_fderivWithin_eq_of_eventuallyEqSet
   simp [h]
 
 @[simp] lemma isSymmSndFDerivWithinAt_univ :
@@ -146,7 +150,7 @@ theorem IsSymmSndFDerivWithinAt.mono_of_mem_nhdsWithin (h : IsSymmSndFDerivWithi
 theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s x)
     (hst : s =ᶠ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
   intro v w
-  rw [fderivWithin_fderivWithin_eq_of_eventuallyEq hst.symm]
+  rw [fderivWithin_fderivWithin_eq_of_eventuallyEqSet hst.symm]
   exact h v w
 
 theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
@@ -273,7 +277,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
     · suffices H : HasDerivWithinAt (fun u => ((u * h) ^ 2 / 2) • f'' w w)
           ((((2 : ℕ) : ℝ) * (t * h) ^ (2 - 1) * (1 * h) / 2) • f'' w w) (Icc 0 1) t by
-        convert! H using 2
+        convert H
         ring
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_id',
         HasDerivAt.pow, HasDerivAt.mul_const]
@@ -302,7 +306,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
           refine ⟨?_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
           rw [add_assoc, add_mem_ball_iff_norm]
           exact I.trans_lt hδ
-        simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel_left] using sδ H
+        simpa only [mem_ofPred_eq, add_assoc x, add_sub_cancel_left] using sδ H
       _ ≤ ε * (‖h • v‖ + ‖h • w‖) * ‖h • w‖ := by
         gcongr
         apply (norm_add_le _ _).trans
@@ -464,8 +468,6 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
   let _ := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ F := NormedSpace.restrictScalars ℝ 𝕜 F
-  let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
-  let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
   let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
@@ -587,9 +589,8 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞ω}
       (m := 0) le_rfl).continuousOn
     apply this.congr
     intro y hy
-    apply fderivWithin_fderivWithin_eq_of_eventuallyEq
+    apply fderivWithin_fderivWithin_eq_of_eventuallyEqSet
     filter_upwards [u_open.mem_nhds hy.2] with z hz
-    change (z ∈ s) = (z ∈ s ∩ u)
     simp_all
   have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x)) := by

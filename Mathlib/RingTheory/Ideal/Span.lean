@@ -169,7 +169,7 @@ lemma span_range_eq_span_range_support (x : ι → α) :
   congr
   ext1 a
   simp only [mem_sdiff, mem_range, mem_singleton_iff]
-  exact ⟨fun ⟨⟨i, hi⟩, ha⟩ ↦ ⟨⟨i, mem_setOf.mpr (hi ▸ ha)⟩, hi⟩,
+  exact ⟨fun ⟨⟨i, hi⟩, ha⟩ ↦ ⟨⟨i, mem_ofPred.mpr (hi ▸ ha)⟩, hi⟩,
     fun ⟨j, hj⟩ ↦ ⟨⟨j.val, hj⟩, by grind⟩⟩
 
 end Semiring

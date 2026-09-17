@@ -57,6 +57,7 @@ namespace ChainComplex
 
 variable [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] HomologicalComplex.XIsoOfEq in
 /-- The equivalence of categories `ChainComplex C ℤ ≌ CochainComplex C ℤ`. -/
@@ -114,6 +115,7 @@ def homotopyOp (h : Homotopy f g) :
       symm
       exact prevD_eq _ (j' := n - 1) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homotopyOp_hom_eq (h : Homotopy f g)
     (p q p' q' : ℤ) (hp : p + p' = 0 := by lia) (hq : q + q' = 0 := by lia) :
@@ -171,6 +173,7 @@ lemma homotopyUnop_hom_eq
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Two morphisms of cochain complexes indexed by `ℤ` are homotopic iff
 they are homotopic after the application of the functor
@@ -199,7 +202,7 @@ lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)
     (by grind [next])] at hK
 
 lemma acyclic_op {K : CochainComplex C ℤ} (hK : K.Acyclic) :
-   ((opEquivalence C).functor.obj (op K)).Acyclic :=
+    ((opEquivalence C).functor.obj (op K)).Acyclic :=
   fun n ↦ exactAt_op (hK (-n)) n
 
 end CochainComplex

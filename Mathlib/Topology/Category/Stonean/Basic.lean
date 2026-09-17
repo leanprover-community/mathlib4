@@ -55,13 +55,11 @@ namespace CompHaus
 instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   apply CompactT2.Projective.extremallyDisconnected
   intro A B _ _ _ _ _ _ f g hf hg hsurj
-  let A' : CompHaus := CompHaus.of A
-  let B' : CompHaus := CompHaus.of B
+  let A' : CompHaus := ↧A
+  let B' : CompHaus := ↧B
   let f' : X ⟶ B' := CompHausLike.ofHom _ ⟨f, hf⟩
   let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g,hg⟩
-  have : Epi g' := by
-    rw [CompHaus.epi_iff_surjective]
-    assumption
+  have : Epi g' := by rwa [CompHaus.epi_iff_surjective]
   obtain ⟨h, hh⟩ := Projective.factors f' g'
   refine ⟨h, h.hom.hom.2, ?_⟩
   ext t
@@ -97,7 +95,12 @@ instance (X : Type*) [TopologicalSpace X]
 compact, Hausdorff and extremally disconnected topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
-    [ExtremallyDisconnected X] : Stonean := CompHausLike.of _ X
+    [ExtremallyDisconnected X] : Stonean := ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Stonean.of X` as `↧X`. -/
+@[app_delab Stonean.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance (X : Stonean.{u}) : ExtremallyDisconnected X := X.prop
 
@@ -141,20 +144,20 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     ext x
     apply ULift.ext -- why is `ext` not doing this automatically?
     change 1 = ite _ _ _ -- why is `dsimp` not getting me here?
-    rw [if_neg]
+    rw [ite_eq_right]
     refine mt (hVU ·) ?_ -- what would be an idiomatic tactic for this step?
     simpa only [U, Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
       using! exists_apply_eq_apply f x
   apply_fun fun e => (e y).down at H
   change 1 = ite _ _ _ at H -- why is `dsimp at H` not getting me here?
-  rw [if_pos hyV] at H
+  rw [ite_eq_left hyV] at H
   exact one_ne_zero H
 
 /-- Every Stonean space is projective in `CompHaus` -/
 instance instProjectiveCompHausCompHaus (X : Stonean) : Projective (toCompHaus.obj X) where
   factors := by
     intro B C φ f _
-    haveI : ExtremallyDisconnected (toCompHaus.obj X).toTop := X.prop
+    have : ExtremallyDisconnected (toCompHaus.obj X).toTop := X.prop
     have hf : Function.Surjective f := by rwa [← CompHaus.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
       f.hom.hom.continuous
@@ -167,7 +170,7 @@ instance instProjectiveCompHausCompHaus (X : Stonean) : Projective (toCompHaus.o
 instance (X : Stonean) : Projective (toProfinite.obj X) where
   factors := by
     intro B C φ f _
-    haveI : ExtremallyDisconnected (toProfinite.obj X) := X.prop
+    have : ExtremallyDisconnected (toProfinite.obj X) := X.prop
     have hf : Function.Surjective f := by rwa [← Profinite.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
       f.hom.hom.continuous
@@ -180,7 +183,7 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
 instance (X : Stonean) : Projective X where
   factors := by
     intro B C φ f _
-    haveI : ExtremallyDisconnected X.toTop := X.prop
+    have : ExtremallyDisconnected X.toTop := X.prop
     have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
       f.hom.hom.continuous

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Monoid
 public import Batteries.Data.List.Lemmas
 
 /-!
@@ -23,7 +23,6 @@ variable {ι M N : Type*}
 namespace List
 section Defs
 
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] prod prod_nil prod_cons prod_one_cons prod_append prod_concat
   prod_flatten prod_eq_foldl
 
@@ -93,9 +92,12 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   | zero => rw [pow_zero, replicate_zero, prod_nil]
   | succ n ih => rw [replicate_succ, prod_cons, ih, pow_succ']
 
-@[to_additive sum_eq_card_nsmul]
-theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
+@[to_additive sum_eq_length_nsmul]
+theorem prod_eq_pow_length (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
   rw [← prod_replicate, ← List.eq_replicate_iff.mpr ⟨rfl, h⟩]
+
+@[to_additive (attr := deprecated (since := "2026-08-26")) sum_eq_card_nsmul]
+alias prod_eq_pow_card := prod_eq_pow_length
 
 @[to_additive]
 theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)

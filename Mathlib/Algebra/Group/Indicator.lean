@@ -209,7 +209,7 @@ lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ 
     (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
   suffices ∀ j', j' ≠ j → {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
   intro j' h hj hj' hi
-  simp only [Pairwise, Disjoint, Set.le_eq_subset, Set.subset_inter_iff] at hs
+  simp only [Pairwise, Disjoint, Set.subset_inter_iff] at hs
   simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
 
 end One
@@ -233,6 +233,3 @@ end Set
 theorem map_mulIndicator {M N F : Type*} [One M] [One N] [FunLike F M N] [OneHomClass F M N] (f : F)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
   simp [Set.mulIndicator_comp_of_one]
-
-@[deprecated (since := "2025-12-08")] alias MonoidHom.map_mulIndicator := map_mulIndicator
-@[deprecated (since := "2025-12-08")] alias AddMonoidHom.map_indicator := map_indicator

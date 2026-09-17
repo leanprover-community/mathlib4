@@ -7,11 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.PID
 public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.Algebra.Polynomial.Module.AEval
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # The normal basis theorem

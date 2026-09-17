@@ -5,8 +5,8 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Basic facts about algebra representations
@@ -48,4 +48,5 @@ theorem IsSimpleModule.finrank_eq_one_of_isMulCommutative [IsMulCommutative A] :
   obtain hU | hU := eq_bot_or_eq_top U
   · exact (v_nz <| hU.le <| Submodule.mem_span_singleton_self v).elim
   · rw [finrank_eq_one_iff_of_nonzero v v_nz]
-    rwa [← top_le_iff] at hU ⊢
+    rw [← top_le_iff] at hU ⊢
+    assumption

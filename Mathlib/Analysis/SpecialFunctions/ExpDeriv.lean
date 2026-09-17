@@ -37,10 +37,11 @@ section
 open Complex
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+  {f : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
-theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
+@[fun_prop]
+theorem analyticOnNhd_cexp {u : Set ℂ} : AnalyticOnNhd ℂ exp u := by
   rw [Complex.exp_eq_exp_ℂ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 
@@ -219,7 +220,8 @@ open Real
 variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
 
 /-- The function `Real.exp` is real analytic. -/
-theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
+@[fun_prop]
+theorem analyticOnNhd_rexp {u : Set ℝ} : AnalyticOnNhd ℝ exp u := by
   rw [Real.exp_eq_exp_ℝ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 

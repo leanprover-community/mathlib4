@@ -6,7 +6,8 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
@@ -46,6 +47,7 @@ section Semimodule
 
 /-- A `LocallyConvexSpace` is a topological semimodule over an ordered semiring in which convex
 neighborhoods of a point form a neighborhood basis at that point. -/
+@[wikidata Q1572357]
 class LocallyConvexSpace (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜]
     [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] : Prop where
   convex_basis : ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id
@@ -100,14 +102,14 @@ theorem locallyConvexSpace_iff_exists_convex_subset_zero :
   (locallyConvexSpace_iff_zero 𝕜 E).trans hasBasis_self
 
 -- see Note [lower instance priority]
-instance (priority := 100) LocallyConvexSpace.toLocPathConnectedSpace [Module ℝ E]
-    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E :=
+instance (priority := 100) LocallyConvexSpace.toLocallyPathConnectedSpace [Module ℝ E]
+    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocallyPathConnectedSpace E :=
   .of_bases (fun x ↦ convex_basis (𝕜 := ℝ) x)
     fun _ _ hs ↦ hs.2.isPathConnected <| nonempty_of_mem <| mem_of_mem_nhds hs.1
 
 /-- Convex subsets of locally convex spaces are locally path-connected. -/
-theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
-    {S : Set E} (hS : Convex ℝ S) : LocPathConnectedSpace S := by
+theorem Convex.locallyPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+    {S : Set E} (hS : Convex ℝ S) : LocallyPathConnectedSpace S := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨t, ht⟩ ↦ mem_of_superset ht.1.1 ht.2⟩⟩⟩
   let ⟨t, ht⟩ := (mem_nhds_subtype S x s).mp hs
   let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.1).mem_iff.mp ht.1
@@ -115,6 +117,9 @@ theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [Loca
   · exact continuousAt_subtype_val.preimage_mem_nhds ht'.1.1
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
     exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.2, mem_of_mem_nhds ht'.1.1⟩
+
+@[deprecated (since := "2026-06-21")]
+alias Convex.locPathConnectedSpace := Convex.locallyPathConnectedSpace
 
 end Module
 
@@ -139,8 +144,8 @@ is closed admit disjoint convex open neighborhoods. -/
 theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
-  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
+  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
   rw [← uniformity_eq_comap_nhds_zero] at this
   rcases disj.exists_uniform_thickening_of_basis this hs₂ ht₂ with ⟨V, ⟨hV0, hVopen, hVconvex⟩, hV⟩
@@ -168,7 +173,7 @@ variable {ι : Sort*} {𝕜 E F : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
 protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
     (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ _ t) :
     @LocallyConvexSpace 𝕜 E _ _ _ _ (sInf ts) := by
-  letI : TopologicalSpace E := sInf ts
+  let : TopologicalSpace E := sInf ts
   refine .ofBases 𝕜 E (fun _ => fun If : Set ts × (ts → Set E) => ⋂ i ∈ If.1, If.2 i)
       (fun x => fun If : Set ts × (ts → Set E) =>
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
@@ -190,7 +195,7 @@ protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
 
 protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
     (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ _ (t.induced f) := by
-  letI : TopologicalSpace E := t.induced f
+  let : TopologicalSpace E := t.induced f
   refine LocallyConvexSpace.ofBases 𝕜 E (fun _ => preimage f)
     (fun x => fun s : Set F => s ∈ 𝓝 (f x) ∧ Convex 𝕜 s) (fun x => ?_) fun x s ⟨_, hs⟩ =>
     hs.linear_preimage f

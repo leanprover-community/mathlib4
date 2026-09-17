@@ -5,23 +5,27 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Basis
+public import Mathlib.Algebra.Lie.Basis.Base
 public import Mathlib.Algebra.Lie.CartanCriterion
+public import Mathlib.Algebra.Lie.CartanExists  -- shake: keep (used in `example` only)
+public import Mathlib.Algebra.Lie.Weights.IsSimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
 
 /-!
-# The basis obtained from Geck's construction of Lie algebras from root systems
+# Geck's construction is complete
 
 The Geck construction of a Lie algebra associated to a root system,
-`RootPairing.GeckConstruction.lieAlgebra`, yields a simple Lie algebra with distinguished basis
-which we construct here.
+`RootPairing.GeckConstruction.lieAlgebra`, yields a simple Lie algebra. In this file we show that
+this construction yields all finite-dimensional simple Lie algebras up to isomorphism.
 
 ## Main definitions / results:
 
 * `RootPairing.GeckConstruction.basis`: the Geck construction yields a basis.
 * `RootPairing.GeckConstruction.equivRootSystem`: up to equivalence,
   `LieAlgebra.IsKilling.rootSystem` is left inverse to `RootPairing.GeckConstruction.lieAlgebra`.
+* `RootPairing.GeckConstruction.equivLieAlgebra`: up to equivalence,
+  `LieAlgebra.IsKilling.rootSystem` is right inverse to `RootPairing.GeckConstruction.lieAlgebra`.
 
 -/
 
@@ -33,7 +37,11 @@ open Set
 
 namespace RootPairing.GeckConstruction
 
-variable {ι K M N : Type*} [Fintype ι] [DecidableEq ι] [Field K] [CharZero K]
+variable {K : Type*} [Field K] [CharZero K]
+
+section LeftInverse
+
+variable {ι M N : Type*} [Fintype ι] [DecidableEq ι]
   [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
   {P : RootPairing ι K M N} [P.IsReduced] [P.IsCrystallographic] [P.IsIrreducible] [P.IsRootSystem]
   (b : P.Base)
@@ -42,12 +50,11 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The Geck construction yields a basis of the Lie algebra it constructs. -/
 def basis :
-    LieAlgebra.Basis b.support K (lieAlgebra b) where
+    LieAlgebra.Basis b.support (cartanSubalgebra' b) where
   A := b.cartanMatrix
   h i := ⟨h i, h_mem_lieAlgebra i⟩
   e i := ⟨e i, e_mem_lieAlgebra i⟩
   f i := ⟨f i, f_mem_lieAlgebra i⟩
-  cartan := cartanSubalgebra' b
   cartan_eq_lieSpan := by
     rw [cartanSubalgebra', cartanSubalgebra_eq_lieSpan, ← LieSubalgebra.comap_lieSpan_range_eq]
     rfl
@@ -88,17 +95,49 @@ def basis :
 
 @[simp] lemma basis_A_eq : (basis b).A = b.cartanMatrix := rfl
 
-instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
-  inferInstanceAs (basis b).cartan.IsCartanSubalgebra
+instance : (cartanSubalgebra' b).IsCartanSubalgebra := (basis b).isCartanSubalgebra
 
--- TODO drop this after: https://github.com/leanprover-community/mathlib4/issues/28713
-variable [Fact ((4 - b.cartanMatrix).det ≠ 0)]
+variable [IsAlgClosed K]
 
-open LieAlgebra.IsKilling in
+open LieAlgebra LieAlgebra.IsKilling
+
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to
 `RootPairing.GeckConstruction.lieAlgebra`. -/
-def equivRootSystem [IsAlgClosed K] :
-    P.Equiv (rootSystem (basis b).cartan) :=
+def equivRootSystem :
+    P.Equiv (rootSystem (cartanSubalgebra' b)) :=
   b.equivOfCartanMatrixEq _ (basis b).baseSupportEquiv <| by simp [(basis b).cartanMatrix_base_eq]
+
+instance : IsSimple K (lieAlgebra b) := by
+  rw [← isSimple_iff_isIrreducible (H := cartanSubalgebra' b)]
+  exact (equivRootSystem b).isIrreducible
+
+end LeftInverse
+
+section RightInverse
+
+open LieAlgebra LieAlgebra.IsKilling
+
+variable [IsAlgClosed K]
+  {L : Type*} [LieRing L] [LieAlgebra K L] [FiniteDimensional K L] [IsSimple K L]
+
+open scoped Classical in
+/-- `LieAlgebra.IsKilling.rootSystem` is right inverse to `RootPairing.GeckConstruction.lieAlgebra`.
+-/
+def equivLieAlgebra (H : LieSubalgebra K L) [H.IsCartanSubalgebra] (b : (rootSystem H).Base) :
+    L ≃ₗ⁅K⁆ lieAlgebra b :=
+  equivOfRootSystemEquiv <| equivRootSystem b
+
+open scoped Classical in
+/-- Every finite-dimensional simple Lie algebra arises from a root system via Geck's construction.
+
+(Provided the coefficients are an algebraically-closed field of characteristic zero.) -/
+example :
+    ∃ (H : LieSubalgebra K L) (_ : H.IsCartanSubalgebra) (b : (rootSystem H).Base),
+      Nonempty (L ≃ₗ⁅K⁆ lieAlgebra b) := by
+  obtain ⟨x, hx⟩ := exists_isCartanSubalgebra_engel K L
+  obtain ⟨b⟩ := (rootSystem (LieSubalgebra.engel K x)).nonempty_base
+  exact ⟨_, hx, b, ⟨equivLieAlgebra (.engel K x) b⟩⟩
+
+end RightInverse
 
 end RootPairing.GeckConstruction

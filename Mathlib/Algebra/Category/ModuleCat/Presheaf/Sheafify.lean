@@ -57,6 +57,7 @@ variable {R₀ R : Cᵒᵖ ⥤ RingCat.{u}} (α : R₀ ⟶ R) [Presheaf.IsLocall
   (r₀ : FamilyOfElements (R₀ ⋙ forget _) P) (m₀ : FamilyOfElements (M₀.presheaf ⋙ forget _) P)
 include hA
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     {Y : C} (r₀ r₀' : R₀.obj (Opposite.op Y))
     (m₀ m₀' : M₀.obj (Opposite.op Y))
@@ -149,6 +150,7 @@ structure SMulCandidate where
   h ⦃Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.obj.map f r)
     (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.obj.map f m) : A.obj.map f x = φ.app Y (r₀ • m₀)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for `SMulCandidate`. -/
 def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
@@ -170,13 +172,13 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
       simp
-      rfl
     · erw [NatTrans.naturality_apply φ, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp
       rw [Functor.map_comp]
       rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Nonempty (SMulCandidate α φ r m) := ⟨by
   let S := (Presheaf.imageSieve α r ⊓ Presheaf.imageSieve φ m)
   have hS : S ∈ J _ := by
@@ -224,6 +226,7 @@ lemma map_smul_eq {Y : Cᵒᵖ} (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.ap
     A.obj.map f (smul α φ r m) = φ.app Y (r₀ • m₀) :=
   (smulCandidate α φ r m).h f r₀ hr₀ m₀ hm₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected lemma one_smul : smul α φ 1 m = m := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
   rintro Y f ⟨m₀, hm₀⟩
@@ -290,7 +293,7 @@ variable (X)
 
 /-- The module structure on the sections of the sheafification of the underlying
 presheaf of abelian groups of a presheaf of modules. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def module : Module (R.obj.obj X) (A.obj.obj X) where
   smul r m := smul α φ r m
   one_smul := Sheafify.one_smul α φ
@@ -335,6 +338,46 @@ noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
     ((toSheafify α φ).app X).hom x = φ.app X x := rfl
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+```
+DFunLike (↑(M₀.obj X) →ₗ[↑(R₀.obj X)]
+    ↑((ModuleCat.restrictScalars (RingCat.Hom.hom (α.app X))).obj ((sheafify α φ).val.obj X)))
+  ↑(M₀.obj X) _
+```
+It is needed to elaborate the `DFunLike.coe` in the statement below.
+
+The failure happens while applying `@LinearMap.instFunLike`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+```
+Module ↑(R₀.obj X) ↑((ModuleCat.restrictScalars (RingCat.Hom.hom (α.app X))).obj
+((sheafify α φ).val.obj X))
+```
+The assigned value
+```
+(((restrictScalars α).obj (sheafify α φ).val).obj X).isModule
+```
+has type `Module ↑(R₀.obj X) ↑(((restrictScalars α).obj (sheafify α φ).val).obj X)`, which is the
+same module written once through `PresheafOfModules.restrictScalars` and once through
+`ModuleCat.restrictScalars`. Lean falls back to synthesize an instance of the correct type, which
+succeeds, but the candidate is again not defeq to the assigned value. Both comparisons bottom out at
+```
+((restrictScalars α).obj (sheafify α φ).val).1 =?=
+(ModuleCat.restrictScalars (RingCat.Hom.hom (α.app X))).1
+```
+The second one runs at `.implicit`, where `PresheafOfModules.restrictScalars` does not unfold
+either.
+
+Potential fix: Mark `PresheafOfModules.restrictScalars` and `PresheafOfModules.restrictScalarsObj`
+implicit-reducible; then both backward compatibility options can go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `@[simp]`-normal form of `toSheafify_app_apply`. -/
 @[simp]
 lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :

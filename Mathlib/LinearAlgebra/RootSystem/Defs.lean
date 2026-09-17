@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Reflection
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Root data and root systems
@@ -113,11 +114,10 @@ variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
 /-- A root system is a root pairing for which the roots and coroots span their ambient modules. -/
+@[wikidata Q534131]
 class IsRootSystem : Prop where
   span_root_eq_top : span R (range P.root) = ⊤
   span_coroot_eq_top : span R (range P.coroot) = ⊤
-
-@[deprecated (since := "2025-12-14")] alias RootSystem := IsRootSystem
 
 attribute [simp] IsRootSystem.span_root_eq_top
 attribute [simp] IsRootSystem.span_coroot_eq_top
@@ -180,6 +180,14 @@ abbrev root' (i : ι) : Dual R N := P.toLinearMap (P.root i)
 
 /-- Coroots written as functionals on the weight space. -/
 abbrev coroot' (i : ι) : Dual R M := P.toLinearMap.flip (P.coroot i)
+
+lemma root'_ne_zero [NeZero (2 : R)] : P.root' i ≠ 0 := by
+  change P.toLinearMap.toPerfPair (P.root i) ≠ 0
+  simpa only [EmbeddingLike.map_ne_zero_iff] using P.ne_zero i
+
+lemma coroot'_ne_zero [NeZero (2 : R)] : (P.coroot' i : Dual R M) ≠ 0 := by
+  change P.toLinearMap.flip.toPerfPair (P.coroot i) ≠ 0
+  simpa only [EmbeddingLike.map_ne_zero_iff] using P.ne_zero' i
 
 /-- This is the pairing between roots and coroots. -/
 def pairing : R := P.root' i (P.coroot j)
@@ -400,7 +408,7 @@ lemma pairing_reflectionPerm_self_right (i j : ι) :
 
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
-@[simps, implicit_reducible] def indexNeg : InvolutiveNeg ι where
+@[simps, instance_reducible] def indexNeg : InvolutiveNeg ι where
   neg i := P.reflectionPerm i i
   neg_neg i := by
     apply P.root.injective
@@ -543,9 +551,6 @@ lemma reflectionPerm_eq_reflectionPerm_iff [P.IsRootSystem] (i j : ι) :
   ext x
   exact (P.reflectionPerm_eq_reflectionPerm_iff_of_span i j).mp h x <| by simp
 
-@[deprecated (since := "2025-12-14")]
-alias _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff := reflectionPerm_eq_reflectionPerm_iff
-
 @[simp] lemma toPerfPair_comp_root : P.toPerfPair ∘ P.root = P.root' := rfl
 
 @[simp] lemma toPerfPair_flip_comp_coroot :
@@ -673,8 +678,8 @@ protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N�
 
 instance [P.IsRootSystem] (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
     (P.map e f g).IsRootSystem where
-  span_root_eq_top := by simp [RootPairing.map, Embedding.coe_trans, range_comp]
-  span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, RootPairing.map]
+  span_root_eq_top := by simp [RootPairing.map, range_comp]
+  span_coroot_eq_top := by simp [range_comp, RootPairing.map]
 
 end Map
 

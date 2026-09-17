@@ -9,11 +9,11 @@ public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Compact
 public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.MetricSpace.Cauchy
-public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
-## Boundedness in (pseudo)-metric spaces
+# Boundedness in (pseudo)-metric spaces
 
 This file contains one definition, and various results on boundedness in pseudo-metric spaces.
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
@@ -43,7 +43,7 @@ open scoped ENNReal Uniformity Topology Pointwise
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {ι : Type*}
 
 section UniformSpace
 variable [UniformSpace α] [Preorder α] [CompactIccSpace α]
@@ -329,11 +329,10 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
     IsCompact (closure s) :=
   isCompact_of_isClosed_isBounded isClosed_closure h.closure
 
--- TODO: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
 /-- The **Heine–Borel theorem**:
-In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
+In a proper metric space, a set is compact if and only if it is closed and bounded. -/
 @[wikidata Q253214]
-theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
+theorem isCompact_iff_isClosed_bounded {α : Type*} {s : Set α} [MetricSpace α] [ProperSpace α] :
     IsCompact s ↔ IsClosed s ∧ IsBounded s :=
   ⟨fun h => ⟨h.isClosed, h.isBounded⟩, fun h => isCompact_of_isClosed_isBounded h.1 h.2⟩
 
@@ -585,11 +584,12 @@ end Metric
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-meta def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDiam : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
     assertInstancesCommute
@@ -649,7 +649,7 @@ theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ 
   refine hf.exists_forall_le' (x₀ := x₀) ?_
   have hU : {x : β | f x₀ < f x} ∈ Filter.cocompact β := by
     refine Filter.mem_cocompact'.mpr ⟨_, ?_, fun ⦃_⦄ a ↦ a⟩
-    simp only [Set.compl_setOf, not_lt]
+    simp only [Set.compl_ofPred, not_lt]
     exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
   filter_upwards [hU] with x hx using hx.le
 
@@ -665,3 +665,19 @@ theorem exists_forall_ge_of_isBounded {f : β → α} (hf : Continuous f) (x₀ 
   hf.exists_forall_le_of_isBounded (α := αᵒᵈ) x₀ h
 
 end Continuous
+
+/-- If `U : ι → Set X` is an open covering of a compact metric space `X`,
+there exists `ε > 0` such that any subset of `X` of diameter `≤ ε`
+is contained in some `U i`. -/
+lemma CompactSpace.lebesgue_number_lemma {X : Type*} [MetricSpace X] [CompactSpace X]
+    {ι : Type*} (U : ι → Set X) (hU : ∀ i, IsOpen (U i)) (hU' : ⋃ i, U i = Set.univ) :
+    ∃ ε > 0, ∀ (S : Set X) (_ : S.Nonempty) (_ : Metric.diam S ≤ ε), ∃ (i : ι), S ⊆ U i := by
+  obtain ⟨δ, hδ, hδ'⟩ := lebesgue_number_lemma_of_metric isCompact_univ hU (by simp [hU'])
+  refine ⟨δ / 2, by simpa, fun S ⟨x, hx⟩ hS₂ ↦ ?_⟩
+  obtain ⟨i, hi⟩ := hδ' x (by simp)
+  refine ⟨i, fun s hs ↦ hi ?_⟩
+  simp only [Metric.mem_ball]
+  refine lt_of_le_of_lt (Metric.dist_le_diam_of_mem' ?_ hs hx)
+    (lt_of_le_of_lt hS₂ (by simpa))
+  simpa only [← Metric.isBounded_iff_ediam_ne_top] using
+    Metric.isBounded_of_compactSpace

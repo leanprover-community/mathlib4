@@ -162,7 +162,7 @@ instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
     IsUniformAddGroup (tsze R M) :=
   inferInstanceAs <| IsUniformAddGroup (R × M)
 
-open Uniformity
+open scoped Uniformity
 
 theorem uniformity_def :
     𝓤 (tsze R M) =
