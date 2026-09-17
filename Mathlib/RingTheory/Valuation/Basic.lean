@@ -473,46 +473,25 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 def restrict : Valuation R (ValueGroup₀ (v : R →*₀ Γ₀)) where
   __ := restrict₀ (v : R →*₀ Γ₀)
   map_add_le_max' x y := by
-    simp
-    by_cases H : v x ≠ 0 ∨ v y ≠ 0
-    · rcases H with h | h
-      all_goals simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, coe_ofClass, h,
-        reduceDIte, le_sup_iff]
-      all_goals split_ifs with H
-      · simp [H]
-      · simp only [H, ↓reduceDIte, WithZero.coe_le_coe, Subtype.mk_le_mk, ← Units.val_le_val,
-          Units.val_mk0]
-        split_ifs with hy
-        · simpa [hy] using map_add_le _ (le_rfl (a := v x)) (hy ▸ zero_le)
-        · simp [hy, ← Units.val_le_val]
-      · simp [H]
-      · simp only [H, ↓reduceDIte, WithZero.coe_le_coe, Subtype.mk_le_mk]
-        split_ifs with hx
-        · simpa [hx, ← Units.val_le_val] using map_add_le _ (hx ▸ zero_le) (le_rfl (a := v y))
-        · simp [hx, ← Units.val_le_val]
-    · simp only [ne_eq, not_or, Decidable.not_not] at H
-      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply,
-        MonoidWithZeroHom.coe_ofClass, H, ↓reduceDIte, max_self, nonpos_iff_eq_zero]
-      replace H : v (x + y) = 0 :=
-        le_antisymm (map_add_le _ (le_of_eq H.1) (le_of_eq H.2)) zero_le
-      simp [H]
+    have := (embedding_strictMono (f := (v : R →*₀ Γ₀)))
+    simp [← this.le_iff_le, this.monotone.map_max]
 
-lemma restrict_def (x : R) : v.restrict x = restrict₀ (.ofClass v) x := rfl
+lemma restrict_def (x : R) : v.restrict x = restrict₀ (v : R →*₀ Γ₀) x := rfl
 
 @[simp]
 lemma embedding_restrict (x : R) : embedding (v.restrict x) = v x :=
   embedding_restrict₀ x
 
-lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
+lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ (v : R →*₀ Γ₀)} :
     v.restrict x < g ↔ v x < embedding g :=
   embedding_strictMono.lt_iff_lt.symm.trans (by simp)
 
-lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ (.ofClass v)} :
+lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ (v : R →*₀ Γ₀)} :
     v.restrict x ≤ g ↔ v x ≤ embedding g :=
   embedding_strictMono.le_iff_le.symm.trans (by simp)
 
 lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x =
-    (valueGroup.mk (.ofClass v) 1 x (by simp) hx : ValueGroup₀ (.ofClass v)) := by
+    (valueGroup.mk (v : R →*₀ Γ₀) 1 x (by simp) hx : ValueGroup₀ (v : R →*₀ Γ₀)) := by
   simp [restrict_def, restrict₀_apply, valueGroup.mk, hx]
 
 @[simp]
@@ -550,7 +529,7 @@ lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
   simp [restrict_def, restrict₀_eq_one_iff]
 
-lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
   set u := WithZero.unzero (Units.ne_zero γ) with hu_def
   obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
@@ -619,14 +598,14 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   simp_all [one_apply_of_ne_zero]
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
-    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid (.ofClass v)) := by
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid (v : R →*₀ Γ₀)) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
   rw [Submonoid.nontrivial_iff_exists_ne_one]
   use (Units.mk0 (v x) h0), (MonoidWithZeroHom.ofClass v).mem_valueMonoid (Set.mem_range_self x)
   simpa [Units.ext_iff]
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
-    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup (.ofClass v)) := by
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup (v : R →*₀ Γ₀)) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
   rw [Subgroup.nontrivial_iff_exists_ne_one]
   use (Units.mk0 (v x) h0), (MonoidWithZeroHom.ofClass v).mem_valueGroup (Set.mem_range_self x)
@@ -823,7 +802,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 /-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
 `ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
 `valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
-noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
+noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (v : R →*₀ Γ₀)) :
     ValueGroup₀ (.ofClass w) :=
   if hx : x = 0 then 0 else
     haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
