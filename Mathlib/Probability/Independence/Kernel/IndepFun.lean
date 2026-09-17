@@ -418,24 +418,13 @@ theorem iIndepFun.indepFun_set (S T : Set ι) (hST : Disjoint S T)
   · rw [Finset.disjoint_iff_inter_eq_empty]
     grind
 
-
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
 theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
-    IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
-  classical
-  have : Disjoint (S : Set ι) T := by
-    rw [Finset.disjoint_iff_inter_eq_empty] at hST
-    rw [Set.disjoint_iff]
-    intro x hx
-    simp_all
-    have : x ∈ S ∩ T := by grind
-    grind
-  have := hf_Indep.indepFun_set S T this hf_meas
-  intro s t hs ht
-  filter_upwards [this s t hs ht] with ω hω using hω
+    IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ :=
+  hf_Indep.indepFun_set S T (Finset.disjoint_coe_iff.2 hST) hf_meas
 
 theorem iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) :
