@@ -11,6 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Integrals of Functions Prominently Involving the Logarithm
+
 ## Integral of `log ∘ sin`
 
 This file computes special values of the integral of `log ∘ sin`. Given that the indefinite integral
