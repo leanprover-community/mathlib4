@@ -135,9 +135,12 @@ theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 
+attribute [coe] Valuation.toMonoidWithZeroHom
+
+instance : Coe (Valuation R Γ₀) (R →*₀ Γ₀) := ⟨toMonoidWithZeroHom⟩
+
 @[simp]
-theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
-    (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
+theorem coe_toMonoidWithZeroHom (v : Valuation R Γ₀) : ⇑(v : R →*₀ Γ₀) = v := rfl
 
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
@@ -146,7 +149,9 @@ theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ 
 variable (v : Valuation R Γ₀)
 
 @[simp]
-theorem coe_ofClass : ⇑(MonoidWithZeroHom.ofClass v) = v := rfl
+theorem ofClass_eq_toMonoidWithZeroHom : MonoidWithZeroHom.ofClass v = v := rfl
+
+@[deprecated (since := "2026-09-17")] alias coe_ofClass := coe_toMonoidWithZeroHom
 
 protected theorem map_zero : v 0 = 0 :=
   v.map_zero'
@@ -465,9 +470,10 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 @[implicit_reducible]
-def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
-  __ := restrict₀ (.ofClass v)
+def restrict : Valuation R (ValueGroup₀ (v : R →*₀ Γ₀)) where
+  __ := restrict₀ (v : R →*₀ Γ₀)
   map_add_le_max' x y := by
+    simp
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
     · rcases H with h | h
       all_goals simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, coe_ofClass, h,
