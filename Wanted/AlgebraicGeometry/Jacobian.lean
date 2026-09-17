@@ -3,17 +3,15 @@ Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
-import Mathlib.AlgebraicGeometry.Morphisms.Proper
-import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+module
 
-/-!
-# Jacobians in algebraic geometry, expressed via `theorem_wanted` / `def_wanted`
+public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
+/-
 Christian Merten's `JacobianChallenge.lean`
-(https://github.com/leanprover/lean-eval/blob/main/LeanEval/AlgebraicGeometry/JacobianChallenge.lean)
-demonstrating Batteries' `def_wanted` / `theorem_wanted` infrastructure
-(https://github.com/leanprover-community/batteries/pull/1818).
+(https://github.com/leanprover/lean-eval/blob/main/LeanEval/AlgebraicGeometry/JacobianChallenge.lean).
 
 Every dependency between "wanted" declarations is expressed via the `❰…❱` bracket syntax, so the
 recorded placeholder types carry the full dependency graph.
@@ -44,7 +42,7 @@ def_wanted Jacobian (C : Over (Spec (.of k))) [IsProper C.hom]
 
 namespace Jacobian
 
-/-! ## The Jacobian of `C` is an abelian variety. -/
+/- ## The Jacobian of `C` is an abelian variety. -/
 
 /-- The group scheme structure on the Jacobian of the curve `C`. -/
 instance_wanted : GrpObj (❰Jacobian❱ C)
