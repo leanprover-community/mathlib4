@@ -79,7 +79,7 @@ scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω 
 with compact support. -/
 scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
-open Distributions
+open scoped Distributions
 
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
@@ -279,8 +279,8 @@ instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
     @ContinuousSMul ℝ 𝓓^{n}(Ω, F) _ _ t ∧
     @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
 
-instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
-  topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
+noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
+  isTopologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
 instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
   IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
@@ -341,7 +341,7 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [← f.coe_restrictScalars ℝ]
   rw [continuous_iff_le_induced]
   have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
-    topologicalAddGroup_induced _
+    isTopologicalAddGroup_induced _
   have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
   have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
@@ -698,7 +698,7 @@ protected theorem integrable {μ : Measure E}
   replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   suffices IntegrableOn ((1 : ℝ) • f) (tsupport f) μ by simpa
   rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
-  exact f.memLp_top.smul H
+  exact H.smul f.memLp_top
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
 
@@ -750,8 +750,8 @@ end Integral
 
 section Multiplication
 
-variable {F F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace ℝ F]
+variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
 
@@ -759,11 +759,11 @@ section bilin
 
 open ContinuousLinearMap Finset
 
-/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_(E, F),
+/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_(E, F₁),
 where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
-def bilinLeftCLM (B : F →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
-    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
-  letI T : 𝓓^{n}(Ω, F) → 𝓓^{n}(Ω, F₃) :=
+def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
+    𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
+  letI T : 𝓓^{n}(Ω, F₁) → 𝓓^{n}(Ω, F₃) :=
     fun φ ↦ ⟨fun x ↦ B (φ x) (g x),
       ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
       (by exact (φ.hasCompactSupport).mono (by aesop)),
@@ -773,59 +773,59 @@ def bilinLeftCLM (B : F →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : 
     (fun K K_sub_Ω f ↦ by congr)
 
 @[simp]
-theorem bilinLeftCLM_apply (B : F →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
-    (φ : 𝓓^{n}(Ω, F)) : bilinLeftCLM B hg φ = fun x => B (φ x) (g x) := rfl
+theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
+    (φ : 𝓓^{n}(Ω, F₁)) : bilinLeftCLM B hg φ = fun x => B (φ x) (g x) := rfl
 
 end bilin
 
 section smul
 
-variable (F Ω) in
+variable (F₁ Ω) in
 open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
 where `g` is a C^n function. -/
-def smulLeftCLM (n := ⊤) (g : E → 𝕜) : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F) :=
+def smulLeftCLM (n := ⊤) (g : E → 𝕜) : 𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₁) :=
   if hg : ContDiff ℝ n g then
     bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
   else 0
 
 @[simp]
-theorem smulLeftCLM_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F)) :
-    smulLeftCLM Ω F n g f = fun x ↦ g x • f x := by
+theorem smulLeftCLM_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F₁)) :
+    smulLeftCLM Ω F₁ n g f = fun x ↦ g x • f x := by
   simp [smulLeftCLM, hg]
 
 @[simp]
-theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F)) (x : E) :
-    smulLeftCLM Ω F n g f x = g x • f x := by
+theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : ContDiff ℝ n g) (f : 𝓓^{n}(Ω, F₁)) (x : E) :
+    smulLeftCLM Ω F₁ n g f x = g x • f x := by
   simp [smulLeftCLM_apply hg]
 
 @[simp]
 theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
-    (hg₂ : ContDiff ℝ n g₂) (f : 𝓓^{n}(Ω, F)) :
-    smulLeftCLM Ω F n g₁ (smulLeftCLM Ω F n g₂ f) = smulLeftCLM Ω F n (g₁ * g₂) f := by
+    (hg₂ : ContDiff ℝ n g₂) (f : 𝓓^{n}(Ω, F₁)) :
+    smulLeftCLM Ω F₁ n g₁ (smulLeftCLM Ω F₁ n g₂ f) = smulLeftCLM Ω F₁ n (g₁ * g₂) f := by
   ext x
   simp [Pi.mul_def, hg₁, hg₂, hg₁.mul hg₂, smul_smul]
 
 theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
     (hg₂ : ContDiff ℝ n g₂) :
-    smulLeftCLM Ω F n g₁ ∘L smulLeftCLM Ω F n g₂ = smulLeftCLM Ω F n (g₁ * g₂) := by
+    smulLeftCLM Ω F₁ n g₁ ∘L smulLeftCLM Ω F₁ n g₂ = smulLeftCLM Ω F₁ n (g₁ * g₂) := by
   ext1 f
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
 
 theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
     (hg₂ : ContDiff ℝ n g₂) :
-    smulLeftCLM Ω F n (g₁ + g₂) = smulLeftCLM Ω F n g₁ + smulLeftCLM Ω F n g₂ := by
+    smulLeftCLM Ω F₁ n (g₁ + g₂) = smulLeftCLM Ω F₁ n g₁ + smulLeftCLM Ω F₁ n g₂ := by
   ext f x
   simp [Pi.add_def, hg₁, hg₂, hg₁.add hg₂, add_smul]
 
 theorem smulLeftCLM_sub {g₁ g₂ : E → 𝕜} (hg₁ : ContDiff ℝ n g₁)
     (hg₂ : ContDiff ℝ n g₂) :
-    smulLeftCLM Ω F n (g₁ - g₂) = smulLeftCLM Ω F n g₁ - smulLeftCLM Ω F n g₂ := by
+    smulLeftCLM Ω F₁ n (g₁ - g₂) = smulLeftCLM Ω F₁ n g₁ - smulLeftCLM Ω F₁ n g₂ := by
   ext f x
   simp [Pi.sub_def, hg₁, hg₂, hg₁.sub hg₂, sub_smul]
 
 theorem smulLeftCLM_neg {g : E → 𝕜} (hg : ContDiff ℝ n g) :
-    smulLeftCLM Ω F n (-g) = -smulLeftCLM Ω F n g := by
+    smulLeftCLM Ω F₁ n (-g) = -smulLeftCLM Ω F₁ n g := by
   ext f x
   simp [Pi.neg_def, hg, hg.neg, neg_smul]
 

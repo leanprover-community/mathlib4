@@ -217,6 +217,8 @@ example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x �
   | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
+@[to_additive /-- The `AddSubmonoid.closure` of a set is the union of `{0}` and its
+`AddSubsemigroup.closure`. -/]
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by
   apply le_antisymm
@@ -292,7 +294,7 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
 @[to_additive]
 theorem disjoint_def {p₁ p₂ : Submonoid M} :
     Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 := by
-  simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
+  simp_rw [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_inf, and_imp, mem_bot]
 
 @[to_additive]
 theorem disjoint_def' {p₁ p₂ : Submonoid M} :

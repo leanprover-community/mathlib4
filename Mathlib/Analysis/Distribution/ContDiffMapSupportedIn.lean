@@ -110,7 +110,7 @@ functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓_{" K "}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
-open Distributions
+open scoped Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
@@ -534,7 +534,7 @@ protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
 instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) :=
-  topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
 
 instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
@@ -648,7 +648,7 @@ protected noncomputable def supSeminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E
 
 protected theorem withSeminorms :
     WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
-  let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
+  let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Unit) :=
     SeminormFamily.sigma fun i _ ↦
       (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
   have : WithSeminorms p :=

@@ -9,7 +9,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.EMetricSpace.Basic
 
 /-!
-## Cauchy sequences in (pseudo-)metric spaces
+# Cauchy sequences in (pseudo-)metric spaces
 
 Various results on Cauchy sequences in (pseudo-)metric spaces, including
 
