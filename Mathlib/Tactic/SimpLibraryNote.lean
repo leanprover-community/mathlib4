@@ -21,6 +21,7 @@ library_note «Simp lemmas with weak keys» /--
 Certain theorems shouldn't be tagged with the `simp` attribute as they have "weak keys", i.e. they
 match on certain patterns that occur much more often than the lemmas are actually applicable.
 This is harmful as it affects the performance of the `simp` tactic.
+For example, `simp` might spend a lot of time on failing typeclass instance synthesis.
 As a replacement, one can use `scoped simp` with an appropriate namespace.
 See also the following PRs:
 - https://github.com/leanprover-community/mathlib4/pull/15620
