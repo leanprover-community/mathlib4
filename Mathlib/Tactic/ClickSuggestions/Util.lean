@@ -362,7 +362,7 @@ def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves
     | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
     | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
-  let buttonText := s!"{if solves then "🎉" else ""}[{button}] "
+  let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=
     .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText]
   return <div
