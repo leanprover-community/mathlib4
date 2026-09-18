@@ -14,7 +14,7 @@ This file provides scoped instances that promote algebraic structures satisfying
 `IsMulCommutative` or `IsAddCommutative` to their bundled commutative counterparts.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
 

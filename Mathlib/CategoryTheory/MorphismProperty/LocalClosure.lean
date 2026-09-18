@@ -15,7 +15,7 @@ We define the source local closure of a morphism property `P` w.r.t. a precovera
 weakest property containing `P` that is `K`-local on the source.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

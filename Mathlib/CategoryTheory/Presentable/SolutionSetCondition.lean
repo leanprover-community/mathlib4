@@ -20,7 +20,7 @@ the book by Adámek and Rosický).
 
 -/
 
-@[expose] public section
+public section
 
 universe w
 

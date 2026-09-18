@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Limits
 
-@[expose] public section
+public section
 
 variable {C : Type u₁} [Category.{v₁} C] {I : Type u₂} [Category.{v₂} I]
   {I' : Type u₃} [Category.{v₃} I'] {D : I ⥤ C} {D' : I' ⥤ C}
