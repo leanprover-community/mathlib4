@@ -66,10 +66,6 @@ private lemma constantCoeff_eq_zero : Y.constantCoeff = 0 := by
 private lemma hasSubst_of_fixedPoint : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
 
-private lemma coeff_pow_of_lt {m k : ℕ} (h : m < k) : (Y ^ k).coeff m = 0 := by
-  have hpow : Y ^ k = X ^ k * (P.subst Y) ^ k := by rw [← mul_pow, ← hY]
-  simp [hpow, coeff_X_pow_mul', Nat.not_le.2 h]
-
 private lemma coeff_subst_of_fixedPoint (Q : R⟦X⟧) (j : ℕ) :
     coeff j (Q.subst Y) = ∑ l ∈ range (j + 1), Q.coeff l * (Y ^ l).coeff j := by
   rw [coeff_subst' (hasSubst_of_fixedPoint hY),
@@ -78,7 +74,7 @@ private lemma coeff_subst_of_fixedPoint (Q : R⟦X⟧) (j : ℕ) :
   · intro l hl
     simp only [mem_coe, mem_range]
     by_contra hlj
-    simp [coeff_pow_of_lt hY (by omega : j < l)] at hl
+    simp [coeff_pow_eq_zero_of_lt (constantCoeff_eq_zero hY) (by omega : j < l)] at hl
 
 /-- If `Y = X * P(Y)` and the constant coefficient of `P` is zero, then `Y = 0`. -/
 theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0) : Y = 0 := by
