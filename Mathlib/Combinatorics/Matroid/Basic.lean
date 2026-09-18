@@ -5,8 +5,8 @@ Authors: Peter Nelson
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Order.UpperLower.Closure
