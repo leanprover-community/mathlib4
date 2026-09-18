@@ -53,7 +53,7 @@ instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
 
 @[to_dual]
 instance OrderDual.orderSupSet (α) [Preorder α] [OrderInfSet α] : OrderSupSet αᵒᵈ where
-  isLUB_sSup_of_isLUB _ _ := isGLB_sInf_of_isGLB (α := α)
+  isLUB_sSup_of_isLUB _ _ := IsGLB.isGLB_sInf (α := α)
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -83,7 +83,7 @@ theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
   CompleteSemilatticeSup.isLUB_sSup _
 
 @[to_dual]
-instance (priority := 100) CompleteSemilatticeSup.toOrderSupSet [CompleteSemilatticeSup α] :
+instance (priority := 100) CompleteSemilatticeSup.toOrderSupSet :
     OrderSupSet α where
   isLUB_sSup_of_isLUB _ _ _ := isLUB_sSup _
 
