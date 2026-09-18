@@ -86,7 +86,7 @@ variable {P Y : R⟦X⟧}
 variable (hY : Y = X * P.subst Y)
 include hY
 
-private theorem lagrange_inversion_coeff_pow_of_le (m : ℕ) (k : ℕ) (hk : k ≤ m + 1) :
+private theorem lagrange_inversion_coeff_pow_of_le (m k : ℕ) (hk : k ≤ m + 1) :
       (m + 1) • (Y ^ k).coeff (m + 1) = k • (P ^ (m + 1)).coeff (m + 1 - k) := by
   induction m using Nat.strong_induction_on generalizing k with
   | h m ih =>
