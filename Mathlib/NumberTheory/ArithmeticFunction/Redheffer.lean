@@ -78,7 +78,6 @@ theorem mertens_apply (n : ℕ) : mertens n = ∑ k ∈ Icc 1 n, (μ k : ℤ) :=
 theorem mertens_add_one (n : ℕ) : mertens (n + 1) = mertens n + μ (n + 1) := by
   rw [mertens_apply, mertens_apply, sum_Icc_succ_top (by omega)]
 
-/-- The Mertens function as a sum over `Fin n`, the `0`-based form used for the matrices below. -/
 theorem mertens_eq_sum_fin (n : ℕ) : mertens n = ∑ i : Fin n, (μ ((i : ℕ) + 1) : ℤ) := by
   rw [mertens_apply, Fin.sum_univ_eq_sum_range (fun i ↦ (μ (i + 1) : ℤ)), range_eq_Ico,
     sum_Ico_add' (fun i ↦ (μ i : ℤ)) 0 n 1, Ico_add_one_right_eq_Icc]
