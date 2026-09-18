@@ -61,6 +61,7 @@ lemma Hom.ext {X Y : Q C} (φ₁ φ₂ : Hom X Y) (e : (φ₁.i : C) ≅ φ₂.i
   obtain rfl : j₁ = j₂ := by rw [h₂, this, id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Hom.mk'_surjective {X Y : Q C} (φ : Hom X Y) : ∃ (Z : C) (j : Z ⟶ X.obj) (i : Z ⟶ Y.obj)
     (_ : AdmissibleMono i) (_ : AdmissibleEpi j), φ = Hom.mk' _ _ j i  := by
   refine ⟨_ , φ.j, φ.i.arrow, inferInstance, inferInstance, ?_⟩

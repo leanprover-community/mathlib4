@@ -36,10 +36,10 @@ def obj (_ : ∀ j, X j ⟶ Y j) (i j : J) : C :=
   if i ≤ j then X j else Y j
 
 def objIso₁ (i j : J) (hij : i ≤ j) : obj f i j ≅ X j :=
-  eqToIso (dif_pos hij)
+  eqToIso (dite_eq_left hij)
 
 def objIso₂ (i j : J) (hij : j < i) : obj f i j ≅ Y j :=
-  eqToIso (dif_neg (by simpa using hij))
+  eqToIso (dite_eq_right (by simpa using hij))
 
 def map (i₁ i₂ : J) (h : i₁ ≤ i₂) (j : J) :
     obj f i₁ j ⟶ obj f i₂ j :=
@@ -96,6 +96,7 @@ def diagramFunctor :
 
 abbrev columnFunctor (j : J) : J ⥤ C := (diagramFunctor f).flip.obj (.mk j)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance (j : J) [OrderBot J] [SuccOrder J] :
     (columnFunctor f j).IsWellOrderContinuous where
@@ -139,6 +140,7 @@ def cocone : Cocone (diagramFunctor f) where
   pt := Discrete.functor Y
   ι.app i := Discrete.natTrans (fun ⟨j⟩ ↦ objι f i j)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 def isColimitCocone [SuccOrder J] [NoMaxOrder J] :
     IsColimit (cocone f) :=
@@ -156,7 +158,7 @@ def isColimitCocone [SuccOrder J] [NoMaxOrder J] :
             simp only [not_le]
             exact lt_of_le_of_lt (Order.le_succ j) hij
           rw [← s.w (homOfLE hij.le)]
-          simp [objι, map, dif_neg this]
+          simp [objι, map, dite_eq_right this]
       uniq s l hl := by
         dsimp
         rw [← hl]
@@ -204,8 +206,8 @@ lemma isPushout (i : J) :
         map f _ _ (Order.le_succ i) j ≫ φ s j = Sigma.ι (obj f i) j ≫ s.inl := by
       dsimp [φ]
       split_ifs with h₁ h₂
-      · simp [map, dif_pos h₁]
-      · simp [map, dif_neg h₁, dif_neg (show ¬ i ≤ j by grind)]
+      · simp [map, dite_eq_left h₁]
+      · simp [map, dite_eq_right h₁, dite_eq_right (show ¬ i ≤ j by grind)]
       · obtain rfl : i = j := by grind
         have := s.condition
         rw [Category.assoc] at this
@@ -213,7 +215,7 @@ lemma isPushout (i : J) :
     refine PushoutCocone.IsColimit.mk _ (fun s ↦ Sigma.desc (φ s))
       (fun s ↦ by ext; simp [hφ₂]) (fun s ↦ by simp [hφ₁])
       (fun s l hl₁ hl₂ ↦ Sigma.hom_ext _ _ (fun j ↦ ?_))
-    rw [Sigma.ι_desc]
+    rw [Sigma.ι_comp_desc]
     by_cases hij : i = j
     · subst hij
       rw [Category.assoc] at hl₂

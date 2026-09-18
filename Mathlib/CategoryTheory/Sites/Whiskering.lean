@@ -59,6 +59,9 @@ instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
 instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Full from inferInstance
 
+instance [HasZeroMorphisms A] [HasZeroMorphisms B] [F.PreservesZeroMorphisms] :
+    (sheafCompose J F).PreservesZeroMorphisms where
+
 variable {F} in
 /-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F ⋙ sheafToPresheaf J B` is fully
 faithful. -/
