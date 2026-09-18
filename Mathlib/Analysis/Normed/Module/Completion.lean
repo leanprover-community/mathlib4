@@ -133,9 +133,8 @@ abbrev normedAlgebraReal [CompleteSpace 𝔸] : NormedAlgebra ℝ 𝔸 where
       (uniformContinuous_uniformly_extend ue Rat.denseRange_cast
         (uniformContinuous_algebraMap 𝔸)).continuous
     refine (Rat.denseRange_cast (𝕜 := ℝ)).induction_on r ?_ fun a ↦ ?_
-    · simpa only [Algebra.smul_def, algebraMap] using isClosed_le (by fun_prop) (by fun_prop)
-    · simp only [Algebra.smul_def, algebraMap, Rat.norm_cast_real]
-      change ‖(ue.isDenseInducing Rat.denseRange_cast).extend (algebraMap ℚ 𝔸) a * x‖ ≤ _
+    · simpa [Algebra.smul_def, algebraMap] using isClosed_le (by fun_prop) (by fun_prop)
+    · change ‖(ue.isDenseInducing Rat.denseRange_cast).extend (algebraMap ℚ 𝔸) a * x‖ ≤ _
       rw [(ue.isDenseInducing Rat.denseRange_cast).extend_eq (by fun_prop), ← Algebra.smul_def]
       exact norm_smul_le a x
 
@@ -155,6 +154,6 @@ noncomputable instance [CompleteSpace 𝔸] : Unique (NormedAlgebra ℝ 𝔸) wh
     refine (Rat.denseRange_cast (𝕜 := ℝ)).induction_on r ?_ fun a ↦ ?_
     · exact isClosed_eq (by fun_prop) (by simp only [algebraMap]; fun_prop)
     · rw [← eq_ratCast (algebraMap ℚ ℝ), ← IsScalarTower.rat.algebraMap_apply,
-        ← @(@IsScalarTower.rat _ _ _ _ (normedAlgebraReal 𝔸).toModule _ _).algebraMap_apply]
+        ← @(@IsScalarTower.rat _ _ _ _ (normedAlgebraReal 𝔸).toModule ..).algebraMap_apply]
 
 end Real
