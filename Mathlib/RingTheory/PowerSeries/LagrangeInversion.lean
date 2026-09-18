@@ -178,9 +178,9 @@ theorem lagrange_inversion_coeff_pow
   · simp +contextual
   have hYsubst := hasSubst_of_fixedPoint hY
   have h := lagrange_burmann_coeff hY (n + k) (X ^ (k + 1))
-  rw [subst_pow hYsubst, subst_X hYsubst, derivative_pow, derivative_X] at h
-  simp only [mul_assoc, coeff_natCast_mul] at h
-  simpa [nsmul_eq_mul, add_assoc] using h
+  simp only [subst_pow hYsubst, subst_X hYsubst, derivative_pow, derivative_X, mul_assoc,
+    coeff_natCast_mul, add_assoc] at h
+  simpa using h
 
 end TorsionFree
 
