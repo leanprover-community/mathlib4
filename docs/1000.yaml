@@ -1249,7 +1249,9 @@ Q1052021:
 
 Q1052678:
   title: Baire category theorem
-  decl: dense_sInter_of_isOpen
+  decls:
+  - BaireSpace.of_completelyPseudoMetrizable
+  - BaireSpace.of_t2Space_locallyCompactSpace
 
 Q1052752:
   title: Stolz–Cesàro theorem
