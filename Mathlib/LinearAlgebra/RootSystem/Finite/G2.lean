@@ -544,7 +544,7 @@ def basis : Module.Basis (Fin 2) R M :=
     refine (IsReduced.linearIndependent_iff P).mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · norm_num [h] at this
     · simp only [root_eq_neg_iff] at h
-      norm_num [h] at this
+      simp [h] at this
   Module.Basis.mk this (by simp)
 
 lemma mem_allRoots (i : ι) :

@@ -337,7 +337,7 @@ lemma tendsto_one_add_cpow_exp_of_tendsto {g : ℝ → ℂ} {t : ℂ}
   rw [cpow_def_of_ne_zero, mul_comm]
   intro hg0
   rw [← add_eq_zero_iff_neg_eq.mp hg0] at hg1
-  norm_num at hg1
+  simp at hg1
 
 /-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t : ℂ`. -/
 lemma tendsto_one_add_div_cpow_exp (t : ℂ) :

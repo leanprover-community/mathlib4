@@ -157,6 +157,6 @@ theorem card_restricted_eq_card_countRestricted (n : ℕ) {m : ℕ} (hm : 0 < m)
 
 theorem card_odds_eq_card_distincts (n : ℕ) : #(odds n) = #(distincts n) := by
   simp_rw [← countRestricted_two, odds, even_iff_two_dvd]
-  exact card_restricted_eq_card_countRestricted n (by norm_num)
+  exact card_restricted_eq_card_countRestricted n (by simp)
 
 end Nat.Partition

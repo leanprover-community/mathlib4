@@ -73,7 +73,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
   rw [mul_div_assoc, mul_comm]
   refine (tendsto_choose_mul_pow_atTop k hr).mul ?_
   have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
-    (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by norm_num))
+    (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by simp))
   have hEq : (fun n => (1 - p n) ^ (n - k)) =ᶠ[atTop]
       (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
     filter_upwards [eventually_ge_atTop k, hp_lt_half] with n hn hne

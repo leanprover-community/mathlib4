@@ -208,7 +208,7 @@ theorem leadingCoeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
     replace hPdeg : d ≤ n := (WithBot.coe_le rfl).mp hPdeg
     rw [leadingCoeff, natDegree_eq_of_degree_eq_some hd.symm]
     grw [coeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd, hPdeg]
-    norm_num
+    simp
 
 theorem coeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
@@ -233,7 +233,7 @@ theorem leadingCoeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]} (hn : 2 
   contrapose! hP
   have : d - 1 < n - 1 := by grind [Nat.cast_withBot, WithBot.coe_le_coe, WithBot.coe_lt_coe]
   calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd
-  _ < 2 ^ (n - 1) := by gcongr; norm_num
+  _ < 2 ^ (n - 1) := by gcongr; simp
 
 /-- Coefficients used to compute the iterated derivative of a polynomial given its values on the
 Chebyshev nodes. -/
