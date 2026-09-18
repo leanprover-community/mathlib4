@@ -2845,6 +2845,7 @@ public import Mathlib.CategoryTheory.Generator.HomologicalComplex
 public import Mathlib.CategoryTheory.Generator.Indization
 public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Generator.Presheaf
+public import Mathlib.CategoryTheory.Generator.Retract
 public import Mathlib.CategoryTheory.Generator.Sheaf
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
 public import Mathlib.CategoryTheory.Generator.Type
