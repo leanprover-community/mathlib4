@@ -387,15 +387,6 @@ def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
     isoWhiskerLeft _ f.unitIso ≪≫ (Functor.associator _ _ _).symm) _ ≪≫ Functor.associator _ _ _
   counitIso := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Functor.associator _ _ _) ≪≫
       isoWhiskerLeft _ e.counitIso ≪≫ f.inverse.rightUnitor) _ ≪≫ f.counitIso
-  -- We wouldn't have needed to give this proof if we'd used `Equivalence.mk`,
-  -- but we choose to avoid using that here, for the sake of good structure projection `simp`
-  -- lemmas.
-  functor_unitIso_comp X := by
-    dsimp
-    simp only [comp_id, id_comp, map_comp, fun_inv_map, comp_obj, id_obj, counitInv,
-      functor_unit_comp_assoc, assoc]
-    slice_lhs 2 3 => rw [← Functor.map_comp, Iso.inv_hom_id_app]
-    simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
 functor. -/

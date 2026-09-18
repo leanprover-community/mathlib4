@@ -115,7 +115,7 @@ structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the third commutative square of a triangle morphism -/
   comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by cat_disch
 
-attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.comm₂
+attribute [map (attr := reassoc (attr := simp))] TriangleMorphism.comm₁ TriangleMorphism.comm₂
   TriangleMorphism.comm₃
 
 /-- The identity triangle morphism.
