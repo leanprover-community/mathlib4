@@ -62,15 +62,15 @@ instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
     [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) :=
   inferInstanceAs <| Decidable (_ ∧ _)
 
-@[simp]
-theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
-    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v := by
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
-
+@[grind =]
 theorem map_adj' (f : V → W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ u ≠ v ∧ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
+
+@[simp]
+theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
+    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v := by
+  grind
 
 theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).edgeSet = f.sym2Map '' G.edgeSet := by
@@ -108,13 +108,11 @@ theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
 
 @[simp] lemma map_id : G.map id = G := by
   ext
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
+  grind
 
 @[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
   ext
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
+  grind
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by

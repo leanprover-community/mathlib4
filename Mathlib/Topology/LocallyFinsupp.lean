@@ -95,8 +95,8 @@ def LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop :=
 
 lemma LocallyFiniteSupport.iff_locallyFinite_support [Zero Y] (f : X → Y) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔ LocallyFiniteSupport f := by
-  dsimp only [LocallyFinite]
-  peel with z t ht
+  dsimp only [LocallyFinite, LocallyFiniteSupport]
+  congr! with z t ht
   have aux1 : t ∩ f.support = {i : f.support | ↑i ∈ t} := by aesop
   have aux2 : InjOn Subtype.val {i : f.support | ↑i ∈ t} := by aesop
   simp only [singleton_inter_nonempty, aux1, finite_image_iff aux2]
@@ -124,6 +124,7 @@ namespace Function.locallyFinsuppWithin
 Functions with locally finite support within `U` are `FunLike`: the coercion to functions is
 injective.
 -/
+@[macro_inline]
 instance [Zero Y] : FunLike (locallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
   coe_injective := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
@@ -318,9 +319,6 @@ def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
-
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
@@ -398,6 +396,24 @@ its negative.
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+variable (Y) in
+/--
+`supported Y U s` is the additive subgroup of those functions with locally finite support
+within `U` whose support is contained in `s`.
+
+This is the analogue of `Finsupp.supported`, which cannot be used here: it is a `Submodule` of
+`α →₀ M` and so requires a semiring acting on a commutative `M`, whereas `Y` is an arbitrary
+additive group.
+-/
+def supported [AddGroup Y] (U s : Set X) : AddSubgroup (locallyFinsuppWithin U Y) where
+  carrier := {D | D.support ⊆ s}
+  zero_mem' := by simp
+  add_mem' ha hb := (support_add _ _).trans (Set.union_subset ha hb)
+  neg_mem' ha := by simpa [support_neg] using ha
+
+@[simp] lemma mem_supported [AddGroup Y] {s : Set X} {D : locallyFinsuppWithin U Y} :
+    D ∈ supported Y U s ↔ D.support ⊆ s := Iff.rfl
 
 instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
   le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
@@ -637,7 +653,7 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
@@ -654,7 +670,7 @@ noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : S
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
