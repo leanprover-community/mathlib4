@@ -255,7 +255,7 @@ value `⊤`) at most by `log⁺ ‖s‖ + log⁺ ‖s⁻¹‖`.
 theorem proximity_top_sub_proximity_const_smul_top_le [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
     {r : ℝ} (hf : Meromorphic f) (hs : s ≠ 0) :
     |proximity f ⊤ r - proximity (s • f) ⊤ r| ≤ log⁺ ‖s‖ + log⁺ ‖s⁻¹‖ := by
-  simp only [proximity, ↓reduceDIte, Pi.smul_apply, norm_inv]
+  simp only [proximity, WithTop.recTopCoe_top, Pi.smul_apply, norm_inv]
   rw [← circleAverage_sub (by fun_prop) (by fun_prop)]
   trans circleAverage |(log⁺ ‖f ·‖) - (log⁺ ‖s • f ·‖)| 0 r
   · apply abs_circleAverage_le_circleAverage_abs
