@@ -465,9 +465,8 @@ theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
 vanishes. -/
 theorem coeff_pow_eq_zero_of_lt {f : R⟦X⟧} (hf : f.constantCoeff = 0) {m k : ℕ}
     (h : m < k) : (f ^ k).coeff m = 0 := by
-  rw [f.eq_X_mul_shift_add_const, hf]
-  rw [map_zero, add_zero, (commute_X _).symm.mul_pow, coeff_X_pow_mul',
-    ite_eq_right (Nat.not_le.2 h)]
+  rw [f.eq_X_mul_shift_add_const, hf, map_zero, add_zero, (commute_X _).symm.mul_pow,
+    coeff_X_pow_mul', ite_eq_right (Nat.not_le.2 h)]
 
 section Map
 

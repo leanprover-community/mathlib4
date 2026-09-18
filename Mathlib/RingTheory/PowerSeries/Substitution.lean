@@ -252,13 +252,11 @@ theorem coeff_subst' {b : S⟦X⟧} (hb : HasSubst b) (f : R⟦X⟧) (e : ℕ) :
 
 /-- The coefficient of a substitution by a power series with zero constant coefficient is a
 finite sum. -/
-theorem coeff_subst_of_constantCoeff_zero {b : R⟦X⟧} (hb : b.constantCoeff = 0)
-    (f : R⟦X⟧) (e : ℕ) :
-    coeff e (f.subst b) =
-      ∑ d ∈ Finset.range (e + 1), f.coeff d * (b ^ d).coeff e := by
+theorem coeff_subst_of_constantCoeff_zero {b : R⟦X⟧} (hb : b.constantCoeff = 0) (f : R⟦X⟧) (e : ℕ) :
+    coeff e (f.subst b) = ∑ d ∈ Finset.range (e + 1), f.coeff d * (b ^ d).coeff e := by
   rw [coeff_subst' (HasSubst.of_constantCoeff_zero' hb),
     finsum_eq_sum_of_support_subset (s := Finset.range (e + 1))]
-  · simp [smul_eq_mul]
+  · simp
   · intro d hd
     simp only [Finset.mem_coe, Finset.mem_range]
     by_contra hde

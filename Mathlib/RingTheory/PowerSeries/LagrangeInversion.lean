@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Derivative
 
-import Mathlib.RingTheory.MvPowerSeries.Inverse
+import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
@@ -33,11 +33,13 @@ characteristic zero.
 
 ## Main results
 
-* `PowerSeries.eq_zero_of_fixedPoint_of_constantCoeff_eq_zero`
-* `PowerSeries.lagrange_burmann_coeff`
-* `PowerSeries.lagrange_inversion_coeff_pow`
-* `PowerSeries.lagrange_burmann_coeff_div`
-* `PowerSeries.lagrange_inversion_coeff`
+* `PowerSeries.lagrange_burmann_coeff`: the Lagrange–Bürmann coefficient formula over a
+  commutative ring without additive torsion.
+* `PowerSeries.lagrange_inversion_coeff_pow`: the coefficient formula for powers of `Y`.
+* `PowerSeries.lagrange_burmann_coeff_div`: the divided Lagrange–Bürmann formula over a field of
+  characteristic zero.
+* `PowerSeries.lagrange_inversion_coeff`: the usual divided coefficient formula over a field of
+  characteristic zero.
 
 ## References
 
@@ -72,9 +74,7 @@ theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0
   obtain ⟨Q, rfl⟩ := X_dvd_iff.mpr hP
   rw [subst_mul hsubst, subst_X hsubst] at hY
   have hunit : IsUnit (1 - X * Q.subst Y) := by
-    apply MvPowerSeries.isUnit_iff_constantCoeff.mpr
-    change IsUnit (constantCoeff (1 - X * Q.subst Y))
-    simp
+    simp [isUnit_iff_constantCoeff]
   rw [← hunit.mul_left_eq_zero]
   linear_combination hY
 
