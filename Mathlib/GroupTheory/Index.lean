@@ -299,7 +299,7 @@ theorem card_ker_mul_card_range (f : G →* G') : Nat.card f.ker * Nat.card f.ra
 @[to_additive card_ker_mul_card_of_surjective]
 theorem card_ker_mul_card_of_surjective (hf : Surjective f) :
     Nat.card f.ker * Nat.card G' = Nat.card G := by
-  rw [← card_ker_mul_card_range f, f.range_eq_top.mpr hf, card_top]
+  rw [← card_ker_mul_card_range f, f.range_eq_top_of_surjective hf, card_top]
 
 @[to_additive]
 theorem card_dvd_of_surjective (hf : Surjective f) : Nat.card G' ∣ Nat.card G :=
