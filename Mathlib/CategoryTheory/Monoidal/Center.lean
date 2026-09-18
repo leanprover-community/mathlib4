@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category

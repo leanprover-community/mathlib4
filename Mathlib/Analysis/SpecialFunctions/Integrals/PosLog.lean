@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Log
-public import Mathlib.MeasureTheory.Integral.CircleAverage
+import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # Representation of `log⁺` as a Circle Average

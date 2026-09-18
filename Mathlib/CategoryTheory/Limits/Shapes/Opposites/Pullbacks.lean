@@ -6,7 +6,7 @@ Authors: Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Pullbacks and pushouts in `C` and `Cᵒᵖ`

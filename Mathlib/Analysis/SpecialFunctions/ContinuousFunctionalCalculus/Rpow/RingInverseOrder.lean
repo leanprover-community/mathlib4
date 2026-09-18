@@ -11,8 +11,8 @@ import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Algebra.Algebra.StrictPositivity
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Order properties of `Ring.inverse` in C⋆-algebras

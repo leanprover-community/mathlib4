@@ -7,10 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Integer
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Matrices and linear equivalences

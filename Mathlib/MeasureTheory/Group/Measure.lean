@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
-public import Mathlib.GroupTheory.Complement
+import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod

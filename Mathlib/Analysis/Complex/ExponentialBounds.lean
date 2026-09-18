@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.Complex.Exponential
+import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Bounds on specific values of the exponential

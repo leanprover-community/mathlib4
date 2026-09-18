@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
 

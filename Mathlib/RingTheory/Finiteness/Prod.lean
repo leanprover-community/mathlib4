@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Prod
 public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!

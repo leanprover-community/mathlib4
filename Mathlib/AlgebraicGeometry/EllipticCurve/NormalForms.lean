@@ -6,7 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-public import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 

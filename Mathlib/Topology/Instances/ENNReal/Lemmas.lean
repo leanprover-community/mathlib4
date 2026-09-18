@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Basic.ENNReal.BigOperators
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Instances.NNReal.Lemmas

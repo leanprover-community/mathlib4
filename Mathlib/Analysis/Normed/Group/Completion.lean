@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Topology.Algebra.GroupCompletion
+import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.MetricSpace.Completion
 
 /-!

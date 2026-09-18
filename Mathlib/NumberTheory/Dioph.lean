@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.PFun
 public import Mathlib.Data.Vector3
 public import Mathlib.NumberTheory.PellMatiyasevic

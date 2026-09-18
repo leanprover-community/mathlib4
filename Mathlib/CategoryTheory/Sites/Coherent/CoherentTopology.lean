@@ -5,7 +5,7 @@ Authors: Adam Topaz, Nikolas Kuhn
 -/
 module
 
-public import Mathlib.Basic.Finite.Sigma
+import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 
 /-!

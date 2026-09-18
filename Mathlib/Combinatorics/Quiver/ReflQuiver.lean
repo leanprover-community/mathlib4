@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 module
 
-public import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Function
 public import Mathlib.CategoryTheory.Category.Cat
 
 /-!

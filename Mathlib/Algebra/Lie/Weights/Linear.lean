@@ -6,8 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.Trace
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights

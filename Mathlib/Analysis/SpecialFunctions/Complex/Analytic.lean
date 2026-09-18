@@ -5,10 +5,10 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Composition
-public import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.Composition
+import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # Various complex special functions are analytic

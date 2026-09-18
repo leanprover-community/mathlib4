@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Lattice
 
 /-!

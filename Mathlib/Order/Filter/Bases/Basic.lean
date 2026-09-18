@@ -6,9 +6,9 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Sigma
-public import Mathlib.Order.Filter.Defs
+import Mathlib.Order.Filter.Defs
 public import Mathlib.Order.Filter.Map
-public import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.Closure
 
 /-!

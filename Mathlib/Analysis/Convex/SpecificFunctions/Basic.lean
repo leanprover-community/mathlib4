@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Slope
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Collection of convex functions

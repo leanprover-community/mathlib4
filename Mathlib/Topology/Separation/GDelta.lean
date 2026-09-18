@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Compactness.SigmaCompact
-public import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Compactness.Lindelof
+import Mathlib.Topology.Compactness.SigmaCompact
+import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
 

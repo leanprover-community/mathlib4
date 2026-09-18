@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Tactic.ComputeDegree
 
 /-!

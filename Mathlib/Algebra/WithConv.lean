@@ -6,7 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.TransferInstance
 
 /-! # Type synonym for linear map convolutive ring and intrinsic star

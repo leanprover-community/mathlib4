@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules

@@ -5,10 +5,10 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
-public import Mathlib.Combinatorics.SimpleGraph.Copy
+import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!

@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Core
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Attr.Core
 
 /-!

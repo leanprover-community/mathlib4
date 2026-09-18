@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!

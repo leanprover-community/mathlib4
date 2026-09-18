@@ -5,12 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.FinitePresentation
-public import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
-public import Mathlib.RingTheory.RingHom.Finite
-public import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.RingHom.FiniteType
 
 /-!
 # Descent of finiteness conditions under faithfully flat maps

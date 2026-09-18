@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # Euclidean distance on a finite-dimensional space

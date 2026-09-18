@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Basic.Logic.Basic
+import Mathlib.Basic.Logic.Basic
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.Defs.LinearOrder

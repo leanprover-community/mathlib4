@@ -6,10 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.VectorField
-public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Vector fields in manifolds

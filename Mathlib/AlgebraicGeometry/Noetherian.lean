@@ -6,8 +6,8 @@ Authors: Geno Racklin Asher
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-public import Mathlib.RingTheory.Localization.Submodule
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
 /-!
 # Noetherian and Locally Noetherian Schemes

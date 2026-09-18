@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Instances.Sphere
 public import Mathlib.Topology.Homotopy.Equiv
-public import Mathlib.Util.Superscript
+import Mathlib.Util.Superscript
 
 /-!
 # Statement of the generalized Poincaré conjecture

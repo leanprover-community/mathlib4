@@ -5,10 +5,10 @@ Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Closure
+import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.FieldTheory.SeparableClosure
-public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
 # Galois Extensions

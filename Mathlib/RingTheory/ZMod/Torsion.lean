@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-public import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Torsion group of `ZMod p` for prime `p`

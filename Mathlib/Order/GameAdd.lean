@@ -6,7 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Logic.Relation
+import Mathlib.Logic.Relation
 
 /-!
 # Game addition relation

@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-public import Mathlib.CategoryTheory.Balanced
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Balanced
 public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!

@@ -9,11 +9,11 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.Square
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 public import Mathlib.CategoryTheory.Sites.Abelian
-public import Mathlib.CategoryTheory.Sites.Adjunction
-public import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.Adjunction
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Mayer-Vietoris squares

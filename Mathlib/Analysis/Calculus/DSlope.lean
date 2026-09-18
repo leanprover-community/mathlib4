@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Slope of a differentiable function

@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Topology.DiscreteSubset
+import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Topology.IsLocalHomeomorph
 

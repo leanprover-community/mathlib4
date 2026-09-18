@@ -10,7 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # Integers mod `n`

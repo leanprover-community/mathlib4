@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Cover
 public import Mathlib.Order.LatticeIntervals
-public import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Modular Lattices

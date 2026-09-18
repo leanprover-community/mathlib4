@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of commutative additive groups has images.

@@ -6,7 +6,7 @@ Authors: Jon Eugster, Dagur Asgeirsson, Emily Riehl
 module
 
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-public import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Existence of conical limits

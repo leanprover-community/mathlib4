@@ -5,12 +5,12 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-public import Mathlib.Algebra.Polynomial.OfFn
-public import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
+import Mathlib.Algebra.Polynomial.OfFn
+import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
-public import Mathlib.Data.Pi.Interval
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+import Mathlib.Data.Pi.Interval
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.RingTheory.SimpleRing.Principal
 

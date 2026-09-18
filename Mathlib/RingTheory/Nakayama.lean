@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Finiteness.Nakayama
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!

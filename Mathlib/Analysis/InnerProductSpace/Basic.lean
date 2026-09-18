@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic

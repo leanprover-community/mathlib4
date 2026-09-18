@@ -5,7 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.CharP.Defs
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order

@@ -6,7 +6,7 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-public import Mathlib.Algebra.ContinuedFractions.Translations
+import Mathlib.Algebra.ContinuedFractions.Translations
 public import Mathlib.Algebra.Order.Floor.Ring
 
 /-!

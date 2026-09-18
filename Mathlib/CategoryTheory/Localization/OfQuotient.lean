@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
+import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
-public import Mathlib.CategoryTheory.Localization.Opposite
-public import Mathlib.CategoryTheory.Quotient
+import Mathlib.CategoryTheory.Localization.Opposite
+import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Certain quotient categories are localizations

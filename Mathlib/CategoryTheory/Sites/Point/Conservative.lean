@@ -6,10 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Category
-public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
+import Mathlib.CategoryTheory.Sites.Point.Skyscraper
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
-public import Mathlib.CategoryTheory.Types.Epimorphisms
+import Mathlib.CategoryTheory.Types.Epimorphisms
 
 /-!
 # Conservative families of points

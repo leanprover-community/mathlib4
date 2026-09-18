@@ -6,7 +6,7 @@ Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wan
 module
 
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
-public import Mathlib.LinearAlgebra.Dimension.Basic
+import Mathlib.LinearAlgebra.Dimension.Basic
 public import Mathlib.RingTheory.MvPolynomial
 
 /-!

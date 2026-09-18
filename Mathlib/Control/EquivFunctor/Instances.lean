@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Control.EquivFunctor
+import Mathlib.Control.EquivFunctor
 public import Mathlib.Data.Fintype.OfMap
 
 /-!

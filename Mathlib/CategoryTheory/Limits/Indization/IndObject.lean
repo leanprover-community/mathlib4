@@ -6,11 +6,11 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.FinallySmall
-public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Filtered.Small
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Filtered.Small
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # Ind-objects

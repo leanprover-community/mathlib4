@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.ZMod
-public import Mathlib.Algebra.Regular.Opposite
+import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Coprime.Ideal
-public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 

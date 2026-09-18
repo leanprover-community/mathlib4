@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.LinearAlgebra.BilinearMap
 

@@ -5,11 +5,11 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public import Mathlib.Algebra.Group.Invertible.Defs
-public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Basic
-public import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Nat.Cast.Commute
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
 

@@ -6,7 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Star.Pi
-public import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Analysis.Normed.Group.Hom

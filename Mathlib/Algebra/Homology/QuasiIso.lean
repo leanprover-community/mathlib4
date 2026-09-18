@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Homology.ShortComplex.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Quasi-isomorphisms

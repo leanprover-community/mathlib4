@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Coproducts in `Type`

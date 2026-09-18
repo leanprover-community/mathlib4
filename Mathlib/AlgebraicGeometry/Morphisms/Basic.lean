@@ -6,8 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Limits
-public import Mathlib.CategoryTheory.MorphismProperty.Local
-public import Mathlib.Data.List.TFAE
+import Mathlib.CategoryTheory.MorphismProperty.Local
+import Mathlib.Data.List.TFAE
 
 /-!
 # Properties of morphisms between Schemes

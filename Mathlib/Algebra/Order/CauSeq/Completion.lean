@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.CauSeq.Basic
 public import Mathlib.Algebra.Ring.Action.Rat
-public import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Cauchy completion

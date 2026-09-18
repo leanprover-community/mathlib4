@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Floor.Div
-public import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Nat.Factorization.Defs
 
 /-!

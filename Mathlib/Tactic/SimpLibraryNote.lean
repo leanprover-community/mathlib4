@@ -7,7 +7,7 @@ Authors: Paul Lezeau
 module
 
 public import Batteries.Util.LibraryNote
-public import Mathlib.Init
+import Mathlib.Init
 
 /-! # Simp Lemmas With Weak Keys Library Note
 

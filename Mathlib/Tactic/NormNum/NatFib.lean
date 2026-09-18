@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Data.Nat.Fib.Basic
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.fib`
 

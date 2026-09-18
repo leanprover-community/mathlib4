@@ -6,9 +6,9 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.Algebra.Prod
-public import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # Spectrum and quasispectrum of products

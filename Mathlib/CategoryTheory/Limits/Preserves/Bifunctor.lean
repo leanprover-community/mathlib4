@@ -6,8 +6,8 @@ Authors: Robin Carlier, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Fubini
-public import Mathlib.CategoryTheory.Functor.Currying
-public import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!

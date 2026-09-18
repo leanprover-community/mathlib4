@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+import Mathlib.CategoryTheory.MorphismProperty.Factorization
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!

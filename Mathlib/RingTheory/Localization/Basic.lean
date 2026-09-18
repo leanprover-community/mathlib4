@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Field.IsField
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Basic.Finite.Prod
-public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Basic.Finite.Prod
+import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings

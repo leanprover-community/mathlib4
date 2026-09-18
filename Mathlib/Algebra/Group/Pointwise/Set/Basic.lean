@@ -5,7 +5,7 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Set.NAry

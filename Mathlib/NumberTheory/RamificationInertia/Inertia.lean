@@ -6,7 +6,7 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.RingTheory.Finiteness.Quotient
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 /-!

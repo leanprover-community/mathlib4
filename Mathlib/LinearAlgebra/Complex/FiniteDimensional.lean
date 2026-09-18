@@ -5,11 +5,11 @@ Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Analysis.Complex.Cardinality
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Complex number as a finite-dimensional vector space over `ℝ`

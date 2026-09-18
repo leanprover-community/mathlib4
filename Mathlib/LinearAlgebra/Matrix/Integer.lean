@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Rat.Cast.CharZero
 

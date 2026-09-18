@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Lifting topological spaces to a higher universe

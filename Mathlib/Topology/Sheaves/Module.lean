@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 public import Mathlib.Topology.Sheaves.Over
-public import Mathlib.Topology.Sheaves.SheafCondition.Sites
+import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-! # Specialized results for sheaves of modules over topological spaces -/
 

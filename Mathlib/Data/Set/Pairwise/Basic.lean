@@ -6,8 +6,8 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Logic.Pairwise
-public import Mathlib.Logic.Relation
+import Mathlib.Logic.Pairwise
+import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise

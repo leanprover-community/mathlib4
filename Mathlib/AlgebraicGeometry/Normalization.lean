@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
-public import Mathlib.Tactic.DepRewrite
+import Mathlib.Tactic.DepRewrite
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.RingTheory.Smooth.IntegralClosure

@@ -6,10 +6,10 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Submodule
-public import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
+import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
-public import Mathlib.CategoryTheory.Sites.Subsheaf
-public import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.Subsheaf
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Submodules of sheaves of modules

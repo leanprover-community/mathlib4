@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.LocallyClosed
+import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Sets.Opens
 
 /-!

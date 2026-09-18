@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Batteries.Tactic.Init
+import Batteries.Tactic.Init
 public import Mathlib.Tactic.Push
 
 /-!

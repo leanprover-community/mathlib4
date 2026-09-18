@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Analysis.Normed.Group.Quotient
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Topology.Instances.AddCircle.Real  -- shake: keep (used in type annotation)
 
 /-!

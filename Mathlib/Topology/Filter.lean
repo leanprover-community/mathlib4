@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Lift
-public import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Topology.Separation.Basic
 
 /-!

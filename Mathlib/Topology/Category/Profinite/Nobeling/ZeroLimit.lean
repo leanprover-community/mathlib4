@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Eval.Subring
-public import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Polynomials that lift

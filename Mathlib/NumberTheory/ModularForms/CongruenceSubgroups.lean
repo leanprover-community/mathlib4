@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Integer
+import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!

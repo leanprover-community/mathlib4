@@ -7,10 +7,10 @@ module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.CategoryTheory.Conj
-public import Mathlib.CategoryTheory.Groupoid
-public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.Topology.Connected.PathConnected
-public import Mathlib.Topology.Homotopy.Path
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Fundamental group of a space

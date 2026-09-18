@@ -5,11 +5,11 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Subspace
+import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!
 # Symmetric linear maps in an inner product space

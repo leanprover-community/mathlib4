@@ -6,7 +6,7 @@ Authors: Reid Barton
 module
 
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Infinitude of intervals

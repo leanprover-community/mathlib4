@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.RingTheory.PrincipalIdealDomain
 

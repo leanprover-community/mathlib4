@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.CategoryTheory.Category.Init

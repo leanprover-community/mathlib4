@@ -5,13 +5,13 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
-public import Mathlib.RingTheory.Smooth.Flat
+import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.Field
 
 /-!

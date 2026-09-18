@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.Sum
+import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Interval.Finset.Defs
 

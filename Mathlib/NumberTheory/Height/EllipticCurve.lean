@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.AddSubMap
 public import Mathlib.GroupTheory.Descent
 public import Mathlib.NumberTheory.Height.MvPolynomial
-public import Mathlib.Order.Northcott
+import Mathlib.Order.Northcott
 
 /-!
 # The naïve height and the approximate parallelogram law

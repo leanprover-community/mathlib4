@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.Basic
 public import Mathlib.Topology.Connected.Clopen
 
 /-!

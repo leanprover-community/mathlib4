@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.CatCommSq
+import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!

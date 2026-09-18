@@ -6,7 +6,7 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Covers of schemes

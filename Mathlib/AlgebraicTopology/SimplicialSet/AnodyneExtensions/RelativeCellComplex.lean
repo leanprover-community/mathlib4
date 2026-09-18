@@ -9,8 +9,8 @@ public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
-public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
-public import Mathlib.CategoryTheory.Types.Monomorphisms
+import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
+import Mathlib.CategoryTheory.Types.Monomorphisms
 
 /-!
 # The relative cell complex attached to a rank function for a pairing

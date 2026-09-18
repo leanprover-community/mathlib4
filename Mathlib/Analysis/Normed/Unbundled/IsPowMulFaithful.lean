@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Equivalent power-multiplicative norms

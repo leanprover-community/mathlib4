@@ -5,13 +5,13 @@ Authors: Antoine Labelle, Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Cast
+import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.Symmetric
-public import Mathlib.Data.Sigma.Basic
-public import Mathlib.Data.Sum.Basic
+import Mathlib.Data.Sigma.Basic
+import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Covering

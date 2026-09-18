@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
-public import Mathlib.Algebra.Module.TransferInstance
+import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!

@@ -5,7 +5,7 @@ Authors: Chris Hughes, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 

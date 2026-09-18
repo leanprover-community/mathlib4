@@ -5,10 +5,10 @@ Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import Mathlib.LinearAlgebra.Matrix.RowCol
+import Mathlib.LinearAlgebra.Matrix.RowCol
 public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse

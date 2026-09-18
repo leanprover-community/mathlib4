@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-public import Mathlib.Algebra.CharP.CharAndCard
+import Mathlib.Algebra.CharP.CharAndCard
 
 import Mathlib.NumberTheory.MulChar.Lemmas
 

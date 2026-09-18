@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.Local
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.Localization.Adjunction
 
 /-!

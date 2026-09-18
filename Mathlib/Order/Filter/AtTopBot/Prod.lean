@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Prod
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on products

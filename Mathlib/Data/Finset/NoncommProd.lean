@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Commute.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.

@@ -6,12 +6,12 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Group.SelfInv
+import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
-public import Mathlib.Order.OrderDual
-public import Mathlib.Order.Lex
+import Mathlib.Order.OrderDual
+import Mathlib.Order.Lex
 public import Mathlib.Algebra.Order.Ring.Synonym
 
 import Mathlib.Tactic.Tauto

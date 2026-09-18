@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-public import Mathlib.GroupTheory.Abelianization.Defs
+import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Commutator.Finite
 public import Mathlib.GroupTheory.Transfer
 

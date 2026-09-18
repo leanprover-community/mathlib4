@@ -6,7 +6,7 @@ Authors: Jiedong Jiang, Christian Merten
 module
 
 public import Mathlib.RingTheory.RingHom.OpenImmersion
-public import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Local isomorphisms

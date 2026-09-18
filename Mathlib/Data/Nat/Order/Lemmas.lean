@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Set.Basic
-public import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.ByContra
 
 /-!
 # Further lemmas about the natural numbers

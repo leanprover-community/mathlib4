@@ -6,10 +6,10 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.RingTheory.IsTensorProduct
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Flatness is stable under composition and base change

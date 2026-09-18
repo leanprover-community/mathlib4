@@ -5,10 +5,10 @@ Authors: Peter Nelson, Junyan Xu
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.Map
+import Mathlib.Combinatorics.Matroid.Map
 public import Mathlib.Combinatorics.Matroid.Rank.ENat
-public import Mathlib.Combinatorics.Matroid.Rank.Finite
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Combinatorics.Matroid.Rank.Finite
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinal-valued rank

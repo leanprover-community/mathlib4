@@ -5,10 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Algebraic.Defs
-public import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.RingTheory.Polynomial.Tower
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!

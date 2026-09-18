@@ -6,12 +6,12 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Representable
-public import Mathlib.AlgebraicGeometry.Sites.BigZariski
-public import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Sites.BigZariski
+import Mathlib.AlgebraicGeometry.OpenImmersion
 public import Mathlib.AlgebraicGeometry.GluingOneHypercover
-public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Representability of schemes is a local property

@@ -6,7 +6,7 @@ Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Mi
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 public import Mathlib.AlgebraicGeometry.ValuativeCriterion
 

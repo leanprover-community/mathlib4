@@ -13,7 +13,7 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Sigma
-public import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.OrderIsoNat
 
 /-!
 # Series of a relation

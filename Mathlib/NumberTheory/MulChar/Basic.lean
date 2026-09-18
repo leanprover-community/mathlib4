@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype

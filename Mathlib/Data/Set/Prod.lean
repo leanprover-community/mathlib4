@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.SProd
-public import Mathlib.Data.Sum.Basic
+import Mathlib.Data.SProd
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types

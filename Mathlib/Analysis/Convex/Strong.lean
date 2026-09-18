@@ -5,7 +5,7 @@ Authors: Chenyi Li, Ziyu Wang, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!

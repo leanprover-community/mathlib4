@@ -6,8 +6,8 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 /-! # The Mellin transform
 

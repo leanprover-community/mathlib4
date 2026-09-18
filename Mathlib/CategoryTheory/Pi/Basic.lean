@@ -5,8 +5,8 @@ Authors: Simon Hudon, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.CategoryTheory.NatIso
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.Products.Basic
 
 /-!

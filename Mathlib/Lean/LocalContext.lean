@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public import Lean.LocalContext
+import Mathlib.Init
+import Lean.LocalContext
 public import Batteries.Control.AlternativeMonad
 
 /-!

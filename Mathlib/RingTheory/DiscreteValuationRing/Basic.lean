@@ -7,9 +7,9 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Length
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 public import Mathlib.RingTheory.Valuation.ValuationRing
 

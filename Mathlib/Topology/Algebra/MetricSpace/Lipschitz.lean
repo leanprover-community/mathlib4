@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.RepresentationTheory.Basic
 
 /-!

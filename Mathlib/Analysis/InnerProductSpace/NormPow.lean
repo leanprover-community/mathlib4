@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Properties about the powers of the norm

@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Basic.Unique
-public import Mathlib.Tactic.Conv
-public import Batteries.Tactic.SeqFocus
+import Mathlib.Tactic.Conv
+import Batteries.Tactic.SeqFocus
 
 /-!
 # Groups with an adjoined zero element

@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.Sylow
 public import Mathlib.Algebra.Group.Subgroup.Order
-public import Mathlib.GroupTheory.Commutator.Finite
+import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 

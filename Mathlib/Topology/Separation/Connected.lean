@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!

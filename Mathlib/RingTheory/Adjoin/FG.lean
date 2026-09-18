@@ -6,10 +6,10 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Adjoining elements to form subalgebras

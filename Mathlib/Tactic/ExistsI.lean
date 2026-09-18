@@ -5,7 +5,7 @@ Authors: Arthur Paulino, Gabriel Ebner, Moritz Doll
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 /-!
 # The `existsi` tactic
 

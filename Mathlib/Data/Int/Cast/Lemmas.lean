@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Parity
 

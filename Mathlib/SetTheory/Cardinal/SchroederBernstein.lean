@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.FixedPoints
 public import Mathlib.Order.Zorn
 

@@ -5,7 +5,7 @@ Authors: Andrew Yang, Fangming Li
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!

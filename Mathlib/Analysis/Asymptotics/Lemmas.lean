@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Ring
-public import Mathlib.Analysis.Normed.Group.Bounded
+import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity

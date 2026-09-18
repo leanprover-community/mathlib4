@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Module
+import Mathlib.Tactic.Module
 public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic

@@ -6,7 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Reverse
-public import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Theory of monic polynomials

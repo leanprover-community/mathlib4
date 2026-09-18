@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 

@@ -6,7 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Data.Set.UnionLift
+import Mathlib.Data.Set.UnionLift
 
 /-!
 # Subalgebras and directed Unions of sets

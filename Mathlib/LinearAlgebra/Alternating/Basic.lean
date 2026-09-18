@@ -6,7 +6,7 @@ Authors: Eric Wieser, Zhangir Azerbayev
 module
 
 public import Mathlib.GroupTheory.Perm.Sign
-public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 

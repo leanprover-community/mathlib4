@@ -5,7 +5,7 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
 public import Mathlib.RingTheory.PowerSeries.Basic
 

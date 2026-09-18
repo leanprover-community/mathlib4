@@ -5,7 +5,7 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Probability.Kernel.Integral
 
 /-! # Integral against a kernel over a set

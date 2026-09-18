@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Xavier Roblot
 -/
 module
 
-public import Mathlib.FieldTheory.PrimeField
+import Mathlib.FieldTheory.PrimeField
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!

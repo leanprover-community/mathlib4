@@ -6,10 +6,10 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
+import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 
 /-!

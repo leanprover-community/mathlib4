@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.ProperAction
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
-public import Mathlib.Topology.Algebra.Group.DiscontinuousSubgroup
+import Mathlib.Topology.Algebra.Group.DiscontinuousSubgroup
 
 /-!
 # Arithmetic subgroups act properly discontinuously

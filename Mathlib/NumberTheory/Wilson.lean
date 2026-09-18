@@ -5,7 +5,7 @@ Authors: John Nicol, Haobo Ma, Wenlin Zhang
 -/
 module
 
-public import Mathlib.Data.ZMod.Factorial
+import Mathlib.Data.ZMod.Factorial
 public import Mathlib.FieldTheory.Finite.Basic
 
 /-!

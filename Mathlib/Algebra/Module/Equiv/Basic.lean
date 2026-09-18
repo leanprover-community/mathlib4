@@ -8,12 +8,12 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.End
-public import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Prod
 
 /-!

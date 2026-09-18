@@ -5,7 +5,7 @@ Authors: Yudai Yamazaki
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!

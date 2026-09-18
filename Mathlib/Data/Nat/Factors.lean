@@ -10,7 +10,7 @@ public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.List.Prime
 public import Mathlib.Data.List.Sort
-public import Mathlib.Data.List.Perm.Subperm
+import Mathlib.Data.List.Perm.Subperm
 
 /-!
 # Prime numbers

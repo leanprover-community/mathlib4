@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
-public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
+import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 
 /-!
 # Quasi-Measure-Preserving Functions

@@ -6,7 +6,7 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Presentation.Core
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!

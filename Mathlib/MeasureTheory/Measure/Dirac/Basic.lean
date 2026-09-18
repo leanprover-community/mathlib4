@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-public import Mathlib.MeasureTheory.Measure.Dirac.Def
+import Mathlib.MeasureTheory.Measure.Dirac.Def
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability

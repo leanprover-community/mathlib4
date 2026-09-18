@@ -7,8 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.Tactic.Ring.NamePolyVars
-public import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Tactic.Ring.NamePolyVars
+import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # The addition-and-subtraction map on x-coordinates

@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.SingleObj
-public import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!

@@ -6,9 +6,9 @@ Authors: Kim Morrison
 module
 
 meta import Batteries.Data.Float.Rat  -- shake: keep (for `#eval` sanity check)
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity
 
 /-!
 # Chudnovsky's formula for π

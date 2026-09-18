@@ -9,7 +9,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.BigOperators.Ring.Multiset
-public import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Int.Cast.Lemmas
 

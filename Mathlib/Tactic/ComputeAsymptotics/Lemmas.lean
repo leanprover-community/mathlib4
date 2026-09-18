@@ -6,7 +6,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Analysis.Asymptotics.Lemmas
-public import Mathlib.Topology.Algebra.Group.Order
+import Mathlib.Topology.Algebra.Group.Order
 
 /-!
 # Conversion lemmas

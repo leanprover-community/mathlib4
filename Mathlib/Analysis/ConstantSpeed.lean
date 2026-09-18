@@ -5,11 +5,11 @@ Authors: Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Function
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Constant speed

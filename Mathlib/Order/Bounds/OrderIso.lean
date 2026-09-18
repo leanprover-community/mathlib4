@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Order.Bounds.Image
-public import Mathlib.Order.Hom.Set
+import Mathlib.Order.Hom.Set
 
 /-!
 # Order isomorphisms and bounds.

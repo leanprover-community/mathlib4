@@ -5,9 +5,9 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 import Mathlib.LinearAlgebra.FreeModule.PID

@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.NeZero
 public import Mathlib.Order.Hom.Basic

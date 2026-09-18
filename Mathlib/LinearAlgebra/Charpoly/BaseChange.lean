@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.RingTheory.TensorProduct.Finite
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 
 /-! # The characteristic polynomial of base change -/

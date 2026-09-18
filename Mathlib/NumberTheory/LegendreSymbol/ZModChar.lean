@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Data.Int.Range
+import Mathlib.Data.Int.Range
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.NumberTheory.MulChar.Basic
 

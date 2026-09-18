@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.GroupTheory.FreeAbelianGroup
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adjunctions regarding the category of (abelian) groups

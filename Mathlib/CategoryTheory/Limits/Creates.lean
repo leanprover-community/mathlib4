@@ -5,7 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!

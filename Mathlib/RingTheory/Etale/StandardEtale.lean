@@ -6,10 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
-public import Mathlib.Algebra.Polynomial.Taylor
+import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
-public import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
 

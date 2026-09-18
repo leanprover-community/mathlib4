@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-! # Base change of a free module
 

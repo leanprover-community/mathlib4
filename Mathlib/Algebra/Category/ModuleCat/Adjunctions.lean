@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Module
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 

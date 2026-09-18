@@ -5,7 +5,7 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Order.Filter.Cofinite
 

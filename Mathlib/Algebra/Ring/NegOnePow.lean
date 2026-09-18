@@ -5,8 +5,8 @@ Authors: Joël Riou, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Data.ZMod.IntUnitsPower
 
 /-!

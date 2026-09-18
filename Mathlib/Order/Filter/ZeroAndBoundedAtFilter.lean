@@ -5,7 +5,7 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Algebra.Algebra.Pi
 

@@ -6,8 +6,8 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Group.Prod
-public import Mathlib.Algebra.GroupWithZero.Commute
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Geometry.RingedSpace.Basic
-public import Mathlib.Geometry.RingedSpace.Stalks
+import Mathlib.Geometry.RingedSpace.Stalks
 
 /-!
 # The category of locally ringed spaces

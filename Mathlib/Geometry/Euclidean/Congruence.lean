@@ -6,9 +6,9 @@ Authors: Jovan Gerbscheid, Chu Zheng
 module
 
 public import Mathlib.Topology.MetricSpace.Congruence
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!

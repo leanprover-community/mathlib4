@@ -6,7 +6,7 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Any small complete category is a preorder

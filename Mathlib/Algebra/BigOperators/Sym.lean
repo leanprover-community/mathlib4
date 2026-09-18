@@ -6,8 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Data.Sym.Sym2.Order
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Sym.Sym2.Order
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.

@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Projections
-public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!

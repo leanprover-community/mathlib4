@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 

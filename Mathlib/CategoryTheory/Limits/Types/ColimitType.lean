@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!

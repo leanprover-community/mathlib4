@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Logic.Pairwise
+import Mathlib.Logic.Pairwise
 
 import Mathlib.Util.Delaborators
 public import Mathlib.Util.Delaborators

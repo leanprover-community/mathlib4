@@ -5,9 +5,9 @@ Authors: Etienne Marion, David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Bernoulli distribution

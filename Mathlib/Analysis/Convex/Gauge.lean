@@ -5,9 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.RCLike.Basic
 

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!

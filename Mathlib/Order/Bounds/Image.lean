@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 module
 
-public import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.NAry
 public import Mathlib.Order.Bounds.Basic
 
 /-!

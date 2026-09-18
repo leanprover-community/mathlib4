@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!

@@ -5,7 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.FiberBundle.Basic
+import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 

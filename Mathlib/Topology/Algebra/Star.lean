@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Topology.Algebra.Constructions
-public import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Algebra.Star.Basic
 
 /-!

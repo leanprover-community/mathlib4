@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 module
 
 public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 

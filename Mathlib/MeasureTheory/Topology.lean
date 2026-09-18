@@ -6,7 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
-public import Mathlib.Topology.DiscreteSubset
+import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Theorems combining measure theory and topology

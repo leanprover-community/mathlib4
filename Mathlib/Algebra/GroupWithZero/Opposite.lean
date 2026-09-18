@@ -6,7 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!

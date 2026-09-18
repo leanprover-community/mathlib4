@@ -6,7 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.DirectSum.Algebra
-public import Mathlib.Analysis.Calculus.FDeriv.Star
+import Mathlib.Analysis.Calculus.FDeriv.Star
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp

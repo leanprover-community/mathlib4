@@ -5,8 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Module
-public import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.RingTheory.Discriminant
 
 /-!

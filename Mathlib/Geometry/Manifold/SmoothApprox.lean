@@ -5,7 +5,7 @@ Authors: Anatole Dedecker, Patrick Massot
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!

@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.NatIso
-public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Full and faithful functors

@@ -6,7 +6,7 @@ Authors: Markus Himmel, Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
-public import Mathlib.Algebra.Group.Shrink
+import Mathlib.Algebra.Group.Shrink
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 

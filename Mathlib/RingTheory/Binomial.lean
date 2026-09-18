@@ -6,12 +6,12 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Ring.NegOnePow
-public import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Module

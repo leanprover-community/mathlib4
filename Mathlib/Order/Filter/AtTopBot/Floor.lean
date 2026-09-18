@@ -6,9 +6,9 @@ Authors: Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Order.Filter.AtTopBot.Finite
-public import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # `a * c ^ n < (n - d)!` holds true for sufficiently large `n`.

@@ -8,7 +8,7 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.FieldTheory.Tower
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!

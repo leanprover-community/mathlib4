@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Preadditive structure on functor categories

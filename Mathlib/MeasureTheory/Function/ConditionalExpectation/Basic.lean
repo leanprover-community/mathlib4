@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 

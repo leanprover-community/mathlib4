@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 /-!
 

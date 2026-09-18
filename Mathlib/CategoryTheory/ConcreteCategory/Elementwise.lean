@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Elementwise
-public import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!

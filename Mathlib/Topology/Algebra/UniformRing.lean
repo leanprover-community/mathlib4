@@ -5,8 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic

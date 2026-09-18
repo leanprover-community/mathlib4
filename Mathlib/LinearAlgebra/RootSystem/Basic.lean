@@ -5,7 +5,7 @@ Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.Defs
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
 /-!

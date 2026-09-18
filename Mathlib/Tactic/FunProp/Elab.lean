@@ -9,7 +9,7 @@ public import Mathlib.Tactic.FunProp.Core
 
 import Mathlib.Tactic.InferParam
 import Lean.Elab.InfoTree.Main
-public import Lean.Elab.ConfigEval
+import Lean.Elab.ConfigEval
 public meta import Lean.Elab.ConfigEval
 
 /-!

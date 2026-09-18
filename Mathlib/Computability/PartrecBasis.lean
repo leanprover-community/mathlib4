@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.PartrecCode
-public import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Subsingleton
 
 /-!
 # A simplified basis for partial recursive functions

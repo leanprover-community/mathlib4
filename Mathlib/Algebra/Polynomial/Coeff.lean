@@ -6,9 +6,9 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 
 /-!

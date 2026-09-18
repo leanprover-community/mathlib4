@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Bool.Basic
-public import Mathlib.Data.Subtype
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Data.Subtype
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Countable and uncountable types

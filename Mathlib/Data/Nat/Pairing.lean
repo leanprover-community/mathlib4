@@ -5,8 +5,8 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Data.Nat.Sqrt
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Data.Nat.Sqrt
 public import Mathlib.Data.Set.Lattice.Image
 
 /-!

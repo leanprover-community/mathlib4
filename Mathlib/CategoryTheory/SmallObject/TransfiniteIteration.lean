@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The transfinite iteration of a successor structure

@@ -5,9 +5,9 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Order.KrullDimension
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+import Mathlib.Order.KrullDimension
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 

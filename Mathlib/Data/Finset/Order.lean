@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.ZeroCons
+import Mathlib.Data.Multiset.ZeroCons
 public import Mathlib.Order.Directed
 
 /-!

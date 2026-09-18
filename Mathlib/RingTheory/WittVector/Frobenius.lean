@@ -5,10 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.ZMod
-public import Mathlib.Data.Nat.Multiplicity
-public import Mathlib.FieldTheory.Perfect
-public import Mathlib.RingTheory.WittVector.Basic
+import Mathlib.Algebra.Algebra.ZMod
+import Mathlib.Data.Nat.Multiplicity
+import Mathlib.FieldTheory.Perfect
+import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!

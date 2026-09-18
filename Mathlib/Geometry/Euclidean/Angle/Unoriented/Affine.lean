@@ -6,7 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 public import Mathlib.Analysis.Normed.Affine.Isometry
 

@@ -5,9 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!

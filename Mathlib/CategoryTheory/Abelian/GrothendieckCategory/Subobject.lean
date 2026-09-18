@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-public import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Subobjects in Grothendieck abelian categories

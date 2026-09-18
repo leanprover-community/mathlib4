@@ -6,7 +6,7 @@ Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
 module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 
 /-!

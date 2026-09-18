@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
-public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
+import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 public import Mathlib.CategoryTheory.Sites.Monoidal
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 

@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.Defs
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 

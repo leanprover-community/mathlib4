@@ -8,7 +8,7 @@ module
 public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Order.TypeTags
 public import Mathlib.Data.Option.NAry
-public import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Lift
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Order.Lattice

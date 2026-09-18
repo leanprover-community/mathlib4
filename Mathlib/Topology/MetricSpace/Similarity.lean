@@ -6,8 +6,8 @@ Authors: Jovan Gerbscheid, Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Congruence
-public import Mathlib.Topology.MetricSpace.Dilation
-public import Mathlib.Tactic.FinCases
+import Mathlib.Topology.MetricSpace.Dilation
+import Mathlib.Tactic.FinCases
 
 /-!
 # Similarities

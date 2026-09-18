@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Dynamics.Ergodic.Action.OfMinimal
-public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!

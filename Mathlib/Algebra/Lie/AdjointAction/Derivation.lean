@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.Derivation.Basic
-public import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Adjoint action of a Lie algebra on itself

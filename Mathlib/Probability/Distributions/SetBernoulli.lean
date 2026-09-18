@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProductMeasure
-public import Mathlib.Probability.HasLaw
+import Mathlib.Probability.HasLaw
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 

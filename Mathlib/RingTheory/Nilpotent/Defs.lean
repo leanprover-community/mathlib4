@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.GroupWithZero.Hom
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.Lattice.Nat
 

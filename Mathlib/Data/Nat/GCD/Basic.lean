@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`

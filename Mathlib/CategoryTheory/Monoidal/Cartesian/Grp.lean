@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 public import Mathlib.CategoryTheory.Monoidal.Grp
 
 /-!

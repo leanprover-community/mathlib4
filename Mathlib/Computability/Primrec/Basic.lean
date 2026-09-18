@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Basic.Denumerable
-public import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Function.Iterate
 
 /-!
 # The primitive recursive functions

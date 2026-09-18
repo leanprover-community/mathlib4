@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Module.Opposite
+import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Topology.UniformSpace.Completion
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 

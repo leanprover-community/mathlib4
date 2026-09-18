@@ -5,15 +5,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Basic
-public import Mathlib.Algebra.GroupWithZero.NeZero
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.Order.Monoid.NatCast
-public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Tauto
 
 /-!
 # Basic facts for ordered rings and semirings

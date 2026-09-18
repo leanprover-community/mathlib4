@@ -5,7 +5,7 @@ Authors: Jakob Scholbach
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.FieldTheory.Separable
 
 /-!

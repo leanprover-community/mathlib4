@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.FunProp.Attr
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.Measurability
 
 /-!

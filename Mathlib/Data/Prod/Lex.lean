@@ -10,7 +10,7 @@ public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
 public import Mathlib.Tactic.Tauto
-public import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Lexicographic order

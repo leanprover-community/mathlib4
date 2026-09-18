@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Functor.Multivariate
+import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!

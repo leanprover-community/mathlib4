@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.Order.Interval.Set.SuccOrder
-public import Mathlib.Order.Shrink
+import Mathlib.Order.Shrink
 /-!
 # Classes of morphisms that are stable under transfinite composition
 

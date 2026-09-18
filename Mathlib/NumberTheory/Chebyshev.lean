@@ -5,11 +5,11 @@ Authors: Alastair Irving, Terry Tao, Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
-public import Mathlib.NumberTheory.PrimeCounting
+import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 

@@ -6,11 +6,11 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Disjointed
-public import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Zify
 
 /-!
 # Decomposing a locally finite ordered ring into boxes

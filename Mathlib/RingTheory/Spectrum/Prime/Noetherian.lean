@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.Topology.NoetherianSpace
+import Mathlib.Topology.NoetherianSpace
 
 /-!
 # Prime spectra of Noetherian and Artinian rings

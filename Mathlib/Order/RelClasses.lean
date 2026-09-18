@@ -8,7 +8,7 @@ module
 public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
 public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Unbundled relation classes

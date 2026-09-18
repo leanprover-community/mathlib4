@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Basic
 
 /-!
 # The functor from `Set X` to types

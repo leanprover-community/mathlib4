@@ -6,10 +6,10 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.AlgCat.Basic
-public import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 

@@ -6,8 +6,8 @@ Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guir
 module
 
 public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.Algebra.Group.Defs
+import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.LocalAtTarget
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Finset.Lattice.Prod
-public import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets

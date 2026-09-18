@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Abelian categories with enough injectives have injective resolutions

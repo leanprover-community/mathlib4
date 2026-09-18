@@ -5,12 +5,12 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-public import Mathlib.RingTheory.MvPowerSeries.Trunc
+import Mathlib.RingTheory.MvPowerSeries.Trunc
 public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.TopologicallyNilpotent
-public import Mathlib.Topology.Algebra.LinearTopology
+import Mathlib.Topology.Algebra.TopologicallyNilpotent
+import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.UniformRing
 
 /-! # Evaluation of multivariate power series

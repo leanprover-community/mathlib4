@@ -5,7 +5,7 @@ Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
-public import Mathlib.NumberTheory.Height.Basic
+import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.RingTheory.Algebraic.Denominator

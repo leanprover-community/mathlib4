@@ -5,7 +5,7 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, An
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENat.Lattice
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.RingTheory.Finiteness.Ideal
 

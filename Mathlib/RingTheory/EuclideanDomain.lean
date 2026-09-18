@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!

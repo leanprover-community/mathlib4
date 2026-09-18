@@ -5,8 +5,8 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
 
 /-!

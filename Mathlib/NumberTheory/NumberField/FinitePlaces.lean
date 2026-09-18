@@ -5,9 +5,9 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Tactic.Positivity
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Tactic.Positivity
 
 deprecated_module (since := "2026-03-09")

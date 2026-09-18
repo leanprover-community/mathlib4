@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.Int.Interval
 

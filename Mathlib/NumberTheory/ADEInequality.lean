@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Data.Multiset.Sort
-public import Mathlib.Data.PNat.Basic
+import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Data.Multiset.Sort
+import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Interval
 public import Mathlib.Tactic.NormNum
-public import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`

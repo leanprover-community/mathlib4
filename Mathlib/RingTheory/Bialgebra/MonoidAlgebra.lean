@@ -6,7 +6,7 @@ Authors: Amelia Livingston, Yaël Dillies, Michał Mrugała
 module
 
 public import Mathlib.RingTheory.Bialgebra.Convolution
-public import Mathlib.RingTheory.Bialgebra.Equiv
+import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 

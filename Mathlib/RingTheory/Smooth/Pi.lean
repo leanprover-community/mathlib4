@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Idempotents
+import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Smooth.Basic
 
 /-!

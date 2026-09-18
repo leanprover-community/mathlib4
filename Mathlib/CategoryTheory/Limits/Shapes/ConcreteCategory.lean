@@ -7,10 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products

@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.DedekindDomain
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.Algebra.Module.Projective
+import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
-public import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Structure of finitely generated modules over a PID

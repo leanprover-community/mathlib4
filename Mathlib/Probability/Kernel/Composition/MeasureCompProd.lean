@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-public import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Composition.CompProd
 
 /-!

@@ -5,9 +5,9 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
-public import Mathlib.NumberTheory.Modular
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
 # Level one modular forms

@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.DirectSum.Ring
 

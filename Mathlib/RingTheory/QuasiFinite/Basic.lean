@@ -6,15 +6,15 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.RingTheory.Artinian.Ring
+import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Finiteness.NilpotentKer
+import Mathlib.RingTheory.Finiteness.NilpotentKer
 public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Localization.InvSubmonoid
-public import Mathlib.RingTheory.Localization.Submodule
-public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
-public import Mathlib.RingTheory.TensorProduct.Pi
+import Mathlib.RingTheory.Localization.InvSubmonoid
+import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+import Mathlib.RingTheory.TensorProduct.Pi
 
 /-!
 # Quasi-finite algebras

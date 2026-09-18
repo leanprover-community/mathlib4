@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Order.Defs.LinearOrder
-public import Mathlib.Order.RelClasses
+import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Order.RelClasses
 
 import Mathlib.Order.WellFounded
 

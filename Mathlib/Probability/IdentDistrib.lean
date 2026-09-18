@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.Moments.Variance
+import Mathlib.Probability.Moments.Variance
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!

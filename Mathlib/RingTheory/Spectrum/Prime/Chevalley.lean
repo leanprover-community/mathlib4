@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 

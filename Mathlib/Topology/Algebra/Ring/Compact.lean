@@ -7,15 +7,15 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.LocalRing.Quotient
-public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.Field
-public import Mathlib.Topology.Algebra.Module.Basic
-public import Mathlib.Topology.Algebra.Module.Compact
-public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.RingTheory.HopkinsLevitzki
+import Mathlib.RingTheory.IntegralDomain
+import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Compact
+import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 

@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Goursat
-public import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!

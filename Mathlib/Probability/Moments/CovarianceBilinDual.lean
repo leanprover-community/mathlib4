@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
-public import Mathlib.LinearAlgebra.BilinearForm.Properties
+import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.Probability.Moments.Variance
 

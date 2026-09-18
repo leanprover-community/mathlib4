@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
-public import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 
 import Mathlib.Algebra.GroupWithZero.Idempotent

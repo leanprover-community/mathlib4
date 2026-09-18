@@ -6,7 +6,7 @@ Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Field
-public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.Order.Group
 

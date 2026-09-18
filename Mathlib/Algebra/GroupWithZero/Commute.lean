@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Nontriviality
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.

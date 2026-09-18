@@ -6,10 +6,10 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Transfer algebraic structures across `Equiv`s

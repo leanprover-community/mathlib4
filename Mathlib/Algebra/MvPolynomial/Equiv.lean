@@ -6,12 +6,12 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro, Elias Judin
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Fin
-public import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Algebra.MvPolynomial.Degrees
-public import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Data.Finsupp.Option
-public import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Data.Finsupp.Option
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Equivalences between polynomial rings

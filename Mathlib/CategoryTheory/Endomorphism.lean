@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.CategoryTheory.Groupoid

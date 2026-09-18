@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Algebra.Polynomial.Eval.Defs
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!

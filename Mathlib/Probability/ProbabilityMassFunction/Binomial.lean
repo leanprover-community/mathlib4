@@ -5,10 +5,10 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Probability.Distributions.Binomial
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
-public import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # The binomial distribution

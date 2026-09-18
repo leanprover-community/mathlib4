@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Forgetful functors that reflect isomorphisms

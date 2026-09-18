@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 

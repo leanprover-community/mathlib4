@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Continuity of series of functions

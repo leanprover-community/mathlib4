@@ -7,11 +7,11 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
-public import Mathlib.AlgebraicTopology.SimplicialSet.Op
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.Op
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Finset
-public import Mathlib.Order.Fin.SuccAboveOrderIso
+import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Order.Preorder.Finite
 

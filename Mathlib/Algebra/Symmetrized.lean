@@ -6,7 +6,7 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Algebra.Jordan.Basic
-public import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.Defs
 
 /-!
 # Symmetrized algebra

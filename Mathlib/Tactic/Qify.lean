@@ -5,10 +5,10 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
-public import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Cast.Lemmas
 public meta import Mathlib.Tactic.ToAdditive
 
 /-!

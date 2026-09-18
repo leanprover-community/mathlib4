@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Basic
 public import Mathlib.Order.Filter.Map
 
 /-!

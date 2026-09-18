@@ -5,10 +5,10 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Basic.Complex.Basic
+import Mathlib.Basic.Complex.Basic
 
 /-!
 # Inner product spaces

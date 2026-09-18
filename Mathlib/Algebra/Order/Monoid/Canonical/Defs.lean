@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Order.BoundedOrder.Basic
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Canonically ordered monoids

@@ -5,9 +5,9 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.List.ProdSigma
+import Mathlib.Data.List.ProdSigma
 public import Mathlib.Data.List.Pi
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.Periodic
 public import Mathlib.Algebra.Field.Subfield.Basic
-public import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 
 import Mathlib.Algebra.Order.Monoid.Canonical.Basic

@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Johan Commelin
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 public import Mathlib.Combinatorics.Enumerative.Composition
 

@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Supported
+import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.RingTheory.WittVector.Truncated
 
 /-!

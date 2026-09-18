@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Topology.Semicontinuity.Basic
-public import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle

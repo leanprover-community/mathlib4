@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
-public import Mathlib.CategoryTheory.Presentable.IsDiscrete
+import Mathlib.CategoryTheory.Presentable.IsDiscrete
 public import Mathlib.CategoryTheory.Presentable.Uniformization
 
 /-!

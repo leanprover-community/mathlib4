@@ -6,7 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 

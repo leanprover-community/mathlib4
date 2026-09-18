@@ -5,7 +5,7 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 

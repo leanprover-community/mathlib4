@@ -6,11 +6,11 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.Algebra.Category.Grp.Colimits
-public import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # The category of abelian groups is abelian

@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
-public import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic

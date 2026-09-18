@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.AlgebraTower
+import Mathlib.RingTheory.AlgebraTower
 public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!

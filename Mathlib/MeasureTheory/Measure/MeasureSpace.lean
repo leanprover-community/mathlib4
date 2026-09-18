@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Tactic.Measurability
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.EReal.Inv
+import Mathlib.Tactic.Measurability
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.MetricSpace.Bounded
 
 deprecated_module (since := "2026-08-19")

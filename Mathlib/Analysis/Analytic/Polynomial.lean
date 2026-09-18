@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 

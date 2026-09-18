@@ -6,9 +6,9 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Yoneda
-public import Mathlib.Tactic.FinCases
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Yoneda
+import Mathlib.Tactic.FinCases
 
 /-!
 # Simplicial sets

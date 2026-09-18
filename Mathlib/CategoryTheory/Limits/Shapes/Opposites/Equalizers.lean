@@ -5,8 +5,8 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 
 /-!

@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
-public import Mathlib.Algebra.Category.ModuleCat.Limits
+import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings

@@ -8,10 +8,10 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.Data.Set.Lattice.Disjoint
 

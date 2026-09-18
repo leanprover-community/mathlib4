@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # `nth_rewrite` tactic

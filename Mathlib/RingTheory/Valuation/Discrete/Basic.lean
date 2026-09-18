@@ -5,11 +5,11 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Range
+import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!

@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Monotone
-public import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.Disjoint
 public import Mathlib.Order.SuccPred.Archimedean
 
 /-!

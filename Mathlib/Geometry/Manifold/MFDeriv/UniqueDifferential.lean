@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Unique derivative sets in manifolds

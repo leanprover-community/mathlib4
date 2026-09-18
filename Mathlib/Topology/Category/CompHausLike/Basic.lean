@@ -6,8 +6,8 @@ Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 module
 
 public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.CategoryTheory.Functor.EpiMono
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 /-!
 
 # Categories of Compact Hausdorff Spaces

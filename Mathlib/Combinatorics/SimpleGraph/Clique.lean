@@ -10,10 +10,10 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Lattice.Nat
-public import Mathlib.SetTheory.Cardinal.NatCard
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.SetTheory.Cardinal.NatCard
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Graph cliques

@@ -6,7 +6,7 @@ Authors: Niels Voss, Arnav Mehta
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.LinearAlgebra.Eigenspace.Zero
+import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Singular values for finite-dimensional linear maps

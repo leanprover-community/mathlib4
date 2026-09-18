@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Extension.Generators
+import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.Algebra.Module.SnakeLemma
-public import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 

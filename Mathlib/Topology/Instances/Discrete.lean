@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Topology.Order.Basic
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Instances related to the discrete topology

@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Relation
+import Mathlib.Logic.Relation
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Tactic.Tauto
 

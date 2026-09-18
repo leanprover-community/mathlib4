@@ -5,9 +5,9 @@ Authors: Ashvni Narayanan, David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.NumberTheory.Bernoulli
 
 /-!

@@ -6,7 +6,7 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Analytic.ChangeOrigin
+import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set

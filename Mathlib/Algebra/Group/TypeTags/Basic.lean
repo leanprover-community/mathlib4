@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Notation.Pi.Basic
-public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Logic.Function.Iterate
+import Mathlib.Data.FunLike.Basic
+import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Equiv.Defs
 
 /-!

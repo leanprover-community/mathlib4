@@ -8,11 +8,11 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Subring.Basic
-public import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Int.CharZero
 
 import Mathlib.Algebra.Ring.Hom.InjSurj

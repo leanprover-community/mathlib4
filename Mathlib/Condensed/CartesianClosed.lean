@@ -5,11 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.EReal.Inv
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.MetricSpace.Bounded
 /-!
 
 # Condensed sets form a Cartesian closed category

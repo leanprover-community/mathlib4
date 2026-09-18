@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Hom
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The Weyl group of a root pairing

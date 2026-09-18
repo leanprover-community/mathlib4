@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Basic
+import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Sites.Over
-public import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!

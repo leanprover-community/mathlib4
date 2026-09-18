@@ -6,7 +6,7 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.RingTheory.SimpleRing.Basic
-public import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Algebra.Field.Equiv
 
 /-!

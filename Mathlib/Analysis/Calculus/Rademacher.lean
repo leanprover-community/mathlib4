@@ -6,11 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.BoundedVariation
+import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 /-!

@@ -6,16 +6,16 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-public import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.FunLike.Group
+import Mathlib.Data.FunLike.Group
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
 /-!

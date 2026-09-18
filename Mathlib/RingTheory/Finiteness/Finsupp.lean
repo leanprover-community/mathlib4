@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!

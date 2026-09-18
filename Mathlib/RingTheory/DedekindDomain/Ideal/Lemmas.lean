@@ -5,10 +5,10 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.RingTheory.ChainOfDivisors
+import Mathlib.Algebra.Order.GroupWithZero.OrderIso
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 

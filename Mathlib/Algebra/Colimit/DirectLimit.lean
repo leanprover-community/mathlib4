@@ -5,13 +5,13 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Order.DirectedInverseSystem
-public import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of algebraic structures

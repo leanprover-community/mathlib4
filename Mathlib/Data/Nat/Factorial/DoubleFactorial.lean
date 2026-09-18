@@ -5,7 +5,7 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic

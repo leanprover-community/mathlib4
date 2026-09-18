@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Group action on fields

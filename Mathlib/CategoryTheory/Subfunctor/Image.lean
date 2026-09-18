@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # The image of a subfunctor

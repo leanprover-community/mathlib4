@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Algebra.GroupWithZero.Indicator
-public import Mathlib.Topology.Piecewise
+import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!

@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Group.Arithmetic
-public import Mathlib.MeasureTheory.Measure.Map
+import Mathlib.MeasureTheory.Measure.Map
 
 /-!
 # Definitions about invariant measures

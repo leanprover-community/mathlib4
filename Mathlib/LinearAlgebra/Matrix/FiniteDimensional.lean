@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # The finite-dimensional space of matrices

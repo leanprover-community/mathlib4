@@ -5,13 +5,13 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Localization
+import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Subfunctor.Basic
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+import Mathlib.CategoryTheory.Subfunctor.Basic
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 public import Mathlib.CategoryTheory.Sites.Coverage
 

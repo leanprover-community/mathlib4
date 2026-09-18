@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # More `Char` instances

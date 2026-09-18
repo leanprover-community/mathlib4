@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 

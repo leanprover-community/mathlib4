@@ -6,9 +6,9 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
+import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
+import Mathlib.Order.Preorder.Finite
 
 /-!
 

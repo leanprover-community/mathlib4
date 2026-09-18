@@ -6,8 +6,8 @@ Authors: Rida Hamadani
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
-public import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
+import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
 # Subwalks

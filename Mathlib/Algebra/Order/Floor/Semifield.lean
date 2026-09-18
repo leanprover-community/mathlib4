@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Tactic.Linarith
 

@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.Analysis.Complex.RemovableSingularity
-public import Mathlib.Analysis.Normed.Module.HahnBanach
+import Mathlib.Analysis.Complex.RemovableSingularity
+import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # Schwarz lemma

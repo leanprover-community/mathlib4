@@ -5,9 +5,9 @@ Authors: Iván Renison
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
+import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 
 /-!
 # Traces in inner product spaces

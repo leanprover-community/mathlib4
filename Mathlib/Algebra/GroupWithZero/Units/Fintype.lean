@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Ring.Int.Units
-public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Sum
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 

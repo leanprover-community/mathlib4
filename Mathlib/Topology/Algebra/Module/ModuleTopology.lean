@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.RingTheory.Finiteness.Cardinality
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # A "module topology" for modules over a topological ring

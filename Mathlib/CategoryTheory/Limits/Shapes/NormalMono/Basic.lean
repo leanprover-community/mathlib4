@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.

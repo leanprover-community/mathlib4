@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!

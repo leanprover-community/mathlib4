@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Kernels
-public import Mathlib.Algebra.Exact.Basic
+import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.GroupTheory.QuotientGroup.Finite
+import Mathlib.GroupTheory.QuotientGroup.Finite
 
 /-!
 # Homology and exactness of short complexes of abelian groups

@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Complex.Periodic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 

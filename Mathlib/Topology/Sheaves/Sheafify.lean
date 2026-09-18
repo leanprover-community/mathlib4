@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Sheaves.LocalPredicate
-public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.Skyscraper
+import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # Sheafification of `Type`-valued presheaves

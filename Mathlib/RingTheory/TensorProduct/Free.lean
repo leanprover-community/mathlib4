@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-public import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!

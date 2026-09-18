@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-public import Mathlib.MeasureTheory.Measure.Interval
+import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Topology
 

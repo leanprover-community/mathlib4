@@ -6,7 +6,7 @@ Authors: Gregory Wickham
 module
 
 public import Mathlib.Topology.Algebra.GroupCompletion
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 
 /-!

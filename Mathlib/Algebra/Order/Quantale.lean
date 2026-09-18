@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Tactic.Variable
+import Mathlib.Tactic.Variable
 
 /-!
 # Theory of quantales

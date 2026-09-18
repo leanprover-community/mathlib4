@@ -6,7 +6,7 @@ Authors: Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Opposites
 
 /-!
 # The dualizing functor on `Cat`

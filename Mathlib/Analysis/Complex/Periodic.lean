@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.RemovableSingularity
-public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!

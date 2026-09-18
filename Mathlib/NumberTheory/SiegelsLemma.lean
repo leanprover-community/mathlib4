@@ -6,7 +6,7 @@ Authors: Fabrizio Barroero, Laura Capuano, Amos Turchet
 module
 
 public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Data.Pi.Interval
+import Mathlib.Data.Pi.Interval
 
 /-!
 # Siegel's Lemma

@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
-public import Mathlib.CategoryTheory.Limits.Yoneda
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Preservation of pullback/pushout squares

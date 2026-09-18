@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.IndepAxioms
+import Mathlib.Combinatorics.Matroid.IndepAxioms
 public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental

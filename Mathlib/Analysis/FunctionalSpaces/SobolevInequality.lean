@@ -5,10 +5,10 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Pi
+import Mathlib.Analysis.Calculus.Deriv.Pi
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-public import Mathlib.Analysis.InnerProductSpace.NormPow
-public import Mathlib.Data.Finset.Interval
+import Mathlib.Analysis.InnerProductSpace.NormPow
+import Mathlib.Data.Finset.Interval
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!

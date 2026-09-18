@@ -8,9 +8,9 @@ module
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
+import Mathlib.SetTheory.Cardinal.HasCardinalLT
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # κ-filtered category
 

@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Group.Int.Defs
 

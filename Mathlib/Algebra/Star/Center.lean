@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Algebra.Group.Center
 

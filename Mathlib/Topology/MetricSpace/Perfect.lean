@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Topology.Perfect
 public import Mathlib.Topology.MetricSpace.Polish
-public import Mathlib.Topology.MetricSpace.CantorScheme
-public import Mathlib.Topology.Metrizable.Real
+import Mathlib.Topology.MetricSpace.CantorScheme
+import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Perfect Sets

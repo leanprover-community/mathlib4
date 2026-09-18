@@ -6,7 +6,7 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality

@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Yoneda
 

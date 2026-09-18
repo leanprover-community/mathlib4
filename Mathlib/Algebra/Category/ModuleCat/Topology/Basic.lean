@@ -5,11 +5,11 @@ Authors: Richard Hill, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Colimits
+import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
-public import Lean.Meta.Tactic.Rfl
+import Lean.Meta.Tactic.Rfl
 
 /-!
 # The category `TopModuleCat R` of topological modules

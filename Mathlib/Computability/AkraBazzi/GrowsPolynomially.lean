@@ -5,9 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Order.ToIntervalMod
+import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.SpecialFunctions.Log.Base
+import Mathlib.Analysis.SpecialFunctions.Log.Base
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Algebra.Order.Interval.Set.Group
 

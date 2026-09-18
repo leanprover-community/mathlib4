@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Patrick Luo
 -/
 module
 
-public import Mathlib.GroupTheory.Finiteness
-public import Mathlib.GroupTheory.FreeAbelianGroup
+import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
-public import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.GroupTheory.MonoidLocalization.Finite

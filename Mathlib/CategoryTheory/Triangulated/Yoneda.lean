@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
-public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!

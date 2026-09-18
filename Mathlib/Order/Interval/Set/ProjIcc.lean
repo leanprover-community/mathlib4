@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Function
 public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!

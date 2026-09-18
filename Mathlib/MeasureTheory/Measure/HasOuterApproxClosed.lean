@@ -6,7 +6,7 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-public import Mathlib.MeasureTheory.Integral.IntegrableOn
+import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!

@@ -5,7 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!

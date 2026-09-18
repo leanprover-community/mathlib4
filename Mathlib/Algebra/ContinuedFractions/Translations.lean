@@ -6,7 +6,7 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Basic
-public import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Data.Seq.Basic
 
 /-!

@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!

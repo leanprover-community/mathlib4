@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.EMetricSpace.Paracompact
-public import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
-public import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Shrinking lemma in a proper metric space

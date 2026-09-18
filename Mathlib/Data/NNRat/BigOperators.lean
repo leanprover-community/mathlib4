@@ -6,8 +6,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Data.NNRat.Defs
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.NNRat.Defs
 
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
 -/

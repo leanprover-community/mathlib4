@@ -6,7 +6,7 @@ Authors: PFR contributors
 module
 
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Topology.Piecewise
+import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.Clopen
 
 /-!

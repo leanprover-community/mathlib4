@@ -7,9 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-public import Mathlib.Tactic.CategoryTheory.MonoidalComp
-public import Lean.Meta.Tactic.Congr
-public import Mathlib.Lean.Meta
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
+import Lean.Meta.Tactic.Congr
+import Mathlib.Lean.Meta
 
 /-!
 # A `coherence` tactic for monoidal categories

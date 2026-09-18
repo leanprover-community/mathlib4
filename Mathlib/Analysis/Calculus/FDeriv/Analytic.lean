@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.CPolynomial
 public import Mathlib.Analysis.Analytic.Inverse
-public import Mathlib.Analysis.Analytic.Within
+import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 public import Mathlib.Analysis.Calculus.FDeriv.Add

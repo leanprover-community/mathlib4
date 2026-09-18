@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Ring.InjSurj
 
 /-!

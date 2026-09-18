@@ -5,12 +5,12 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
+import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
+import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
-public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 /-!
 # Dedekind eta function

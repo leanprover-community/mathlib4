@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 
 /-!
 # Sheaf of continuous maps associated to topological space

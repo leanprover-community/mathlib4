@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.Basic
 

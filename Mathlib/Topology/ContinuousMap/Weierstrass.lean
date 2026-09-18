@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!

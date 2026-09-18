@@ -5,12 +5,12 @@ Authors: Vincent Beffara
 -/
 module
 
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Analytic.Polynomial
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions

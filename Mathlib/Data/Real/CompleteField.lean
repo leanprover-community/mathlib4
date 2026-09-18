@@ -5,6 +5,6 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 
 deprecated_module (since := "2026-03-05")

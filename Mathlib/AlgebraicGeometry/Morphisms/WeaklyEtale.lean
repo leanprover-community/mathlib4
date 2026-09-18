@@ -6,7 +6,7 @@ Authors: Jiedong Jiang, Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
-public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
 
