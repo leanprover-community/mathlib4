@@ -149,7 +149,7 @@ runs:
       shell: bash # We're only building a trusted branch with the tools, so no need to run inside landrun.
       run: |
         cd "${{ inputs.path }}"
-        lake build cache check-yaml graph
+        lake build cache check-yaml graph lint-exec
         ls .lake/build/bin/cache
         ls .lake/build/bin/check-yaml
         ls .lake/packages/importGraph/.lake/build/bin/graph
