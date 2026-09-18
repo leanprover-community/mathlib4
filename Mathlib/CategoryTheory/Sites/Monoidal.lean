@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Sites.SheafHom
+public import Mathlib.CategoryTheory.Localization.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Sites.Linear
 
 /-!
 # Monoidal category structure on categories of sheaves
@@ -224,3 +227,34 @@ noncomputable example
 end Sheaf
 
 end CategoryTheory
+
+section
+
+universe u
+
+open CategoryTheory MonoidalCategory Sheaf
+
+variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
+    [Preadditive A]
+
+lemma CategoryTheory.Sheaf.monoidalPreadditive [MonoidalCategory A]
+    [(J.W (A := A)).IsMonoidal] [HasSheafify J A] [Limits.HasBinaryProducts A]
+    [MonoidalPreadditive A] :
+    letI := monoidalCategory J A
+    MonoidalPreadditive (Sheaf J A) :=
+  Localization.Monoidal.monoidalPreadditive
+    (L := presheafToSheaf J A) (W := J.W (A := A)) (Iso.refl _)
+    (R := sheafToPresheaf J A) (sheafificationAdjunction J A)
+
+attribute [local instance] CategoryTheory.Sheaf.monoidalCategory
+  CategoryTheory.Sheaf.monoidalPreadditive in
+lemma CategoryTheory.Sheaf.monoidalLinear [MonoidalCategory A]
+    [(J.W (A := A)).IsMonoidal] [HasSheafify J A] [Limits.HasBinaryProducts A]
+    [MonoidalPreadditive A] (R : Type u) [Ring R] [Linear R A]
+    [MonoidalLinear R A] [(presheafToSheaf J A).Linear R] :
+    MonoidalLinear R (Sheaf J A) :=
+  Localization.Monoidal.monoidalLinear (A := R)
+    (L := presheafToSheaf J A) (W := J.W (A := A)) (Iso.refl _)
+    (R := sheafToPresheaf J A) (sheafificationAdjunction J A)
+
+end

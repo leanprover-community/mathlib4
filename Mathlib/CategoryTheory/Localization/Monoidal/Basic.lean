@@ -82,7 +82,7 @@ end MorphismProperty
 to `W : MorphismProperty C` which satisfies `W.IsMonoidal`, and a choice
 of object `unit : D` with an isomorphism `L.obj (𝟙_ C) ≅ unit`, this is a
 type synonym for `D` on which we define the localized monoidal category structure. -/
-@[nolint unusedArguments]
+@[implicit_reducible, nolint unusedArguments]
 def LocalizedMonoidal (L : C ⥤ D) (W : MorphismProperty C)
     [W.IsMonoidal] [L.IsLocalization W] {unit : D} (_ : L.obj (𝟙_ C) ≅ unit) :=
   D
@@ -92,12 +92,13 @@ variable [W.IsMonoidal] [L.IsLocalization W] {unit : D} (ε : L.obj (𝟙_ C) �
 namespace Localization
 
 instance : Category (LocalizedMonoidal L W ε) :=
-  inferInstanceAs (Category D)
+  ‹Category D›
 
 namespace Monoidal
 
 /-- The monoidal functor from a monoidal category `C` to
 its localization `LocalizedMonoidal L W ε`. -/
+@[implicit_reducible]
 def toMonoidalCategory : C ⥤ LocalizedMonoidal L W ε := L
 
 /-- The isomorphism `ε : L.obj (𝟙_ C) ≅ unit`,
