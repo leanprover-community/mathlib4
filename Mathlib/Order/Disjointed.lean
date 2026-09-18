@@ -9,6 +9,7 @@ public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Making a sequence disjoint
@@ -327,6 +328,12 @@ theorem disjointed_eq_inter_compl [Preorder ι] [LocallyFiniteOrderBot ι] (f : 
 theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x ∈ s n)
     [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
   ext x
+  simp [Nat.find_eq_iff, disjointed_eq_inter_compl]
+
+theorem preimage_find_eq_disjointed_setOf {p : α → ℕ → Prop} (H : ∀ (x : α), ∃ n, p x n)
+    [inst : (x : α) → (n : ℕ) → Decidable (p x n)] (n : ℕ) :
+    (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed (fun k ↦ {x | p x k}) n := by
+  ext
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]
 
 end Set

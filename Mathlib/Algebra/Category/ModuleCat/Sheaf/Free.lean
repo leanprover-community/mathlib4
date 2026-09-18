@@ -70,7 +70,6 @@ lemma freeHomEquiv_comp_apply {M N : SheafOfModules.{u} R} {I : Type u}
     (f : free I ⟶ M) (p : M ⟶ N) (i : I) :
     N.freeHomEquiv (f ≫ p) i = sectionsMap p (M.freeHomEquiv f i) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma freeHomEquiv_symm_comp {M N : SheafOfModules.{u} R} {I : Type u} (s : I → M.sections)
     (p : M ⟶ N) :
     M.freeHomEquiv.symm s ≫ p = N.freeHomEquiv.symm (fun i ↦ sectionsMap p (s i)) :=
@@ -139,7 +138,7 @@ lemma freeFunctor_obj (X : Type u) :
 lemma freeFunctor_map {X Y : Type u} (f : X ⟶ Y) :
     dsimp% (freeFunctor (R := R)).map f = freeMap f :=
   Cofan.IsColimit.hom_ext (isColimitFreeCofan _) _ _
-    (fun i ↦ (Sigma.ι_desc _ _).trans (ιFree_freeMap f i).symm)
+    (fun i ↦ (Sigma.ι_comp_desc _ _).trans (ιFree_freeMap f i).symm)
 
 instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) :=
   inferInstanceAs (PreservesColimitsOfSize.{v₂, u₂} (sigmaConst.obj _))

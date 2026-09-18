@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Abelian.Ext
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
@@ -116,7 +115,7 @@ def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ := by
   refine NatIso.ofComponents (fun _ => Types.productIso _) fun _ => ?_
   ext : 2
-  exact Matrix.ext fun _ _ => Pi.lift_π_apply (f := fun _ ↦ G) _ _ _
+  exact Matrix.ext fun _ _ => Pi.lift_comp_π_apply (f := fun _ ↦ G) _ _ _
 
 variable (k)
 
@@ -276,7 +275,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     AlgebraicTopology.AlternatingFaceMapComplex.ε_app_f_zero, compForgetAugmentedIso, eqToIso.inv,
     HomologicalComplex.eqToHom_f, compForgetAugmented, compForgetAugmented.toModule, ε,
     SimplicialObject.augment, Unique.eq_default (terminal.from _), MonoidAlgebra.coeff_single,
-    Finsupp.single_apply, if_pos (Subsingleton.elim _ _)]
+    Finsupp.single_apply, ite_eq_left (Subsingleton.elim _ _)]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by

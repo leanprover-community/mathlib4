@@ -8,9 +8,6 @@ module
 public import Mathlib.Order.Filter.Interval
 public import Mathlib.Order.Interval.Set.Pi
 public import Mathlib.Order.OrdContinuous
-public import Mathlib.Tactic.TFAE
-public import Mathlib.Tactic.NormNum
-public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Order.OrderClosed
 
 /-!
@@ -114,8 +111,14 @@ theorem isOpen_iff_generate_intervals [t : OrderTopology α] {s : Set α} :
 theorem isOpen_lt' [OrderTopology α] (a : α) : IsOpen { b : α | a < b } :=
   isOpen_iff_generate_intervals.2 <| .basic _ ⟨a, .inl rfl⟩
 
-@[to_dual]
+/-- A version of `isOpen_Ioi` that doesn't require a `LinearOrder`. -/
+@[to_dual /-- A version of `isOpen_Iio` that doesn't require a `LinearOrder`. -/]
 theorem isOpen_Ioi' [OrderTopology α] (a : α) : IsOpen (Ioi a) := isOpen_lt' a
+
+/-- A version of `isOpen_Ioo` that doesn't require a `LinearOrder`. -/
+@[to_dual self]
+theorem isOpen_Ioo' [OrderTopology α] (a b : α) : IsOpen (Ioo a b) :=
+  (isOpen_Ioi' a).inter (isOpen_Iio' b)
 
 @[to_dual gt_mem_nhds]
 theorem lt_mem_nhds [OrderTopology α] {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a < x :=
@@ -169,8 +172,6 @@ lemma exists_countable_generateFrom_Ioi_Iio
   refine ⟨a '' t, t_count.image _, ?_⟩
   apply le_antisymm
   · apply le_generateFrom_iff_subset_isOpen.2
-    simp only [mem_image, exists_exists_and_eq_and, ofPred_subset_ofPred, forall_exists_index,
-      and_imp]
     grind [isOpen_Iio', isOpen_Ioi']
   · rw [ht]
     apply generateFrom_anti

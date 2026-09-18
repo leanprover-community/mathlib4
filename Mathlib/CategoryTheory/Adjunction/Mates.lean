@@ -132,7 +132,7 @@ theorem mateEquiv_counit_symm (α : TwoSquare R₁ H G R₂) (d : D) :
   exact (mateEquiv_counit adj₁ adj₂ ((mateEquiv adj₁ adj₂).symm α) d)
 
 set_option backward.defeqAttrib.useBackward true in
-/- A component of a transposed version of the mates correspondence. -/
+/-- A component of a transposed version of the mates correspondence. -/
 theorem unit_mateEquiv (α : TwoSquare G L₁ L₂ H) (c : C) :
     G.map (adj₁.unit.app c) ≫ (mateEquiv adj₁ adj₂ α).app _ =
       adj₂.unit.app _ ≫ R₂.map (α.app _) := by
@@ -330,7 +330,6 @@ theorem conjugateEquiv_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (α : 𝟭 
     (conjugateEquiv adj Adjunction.id α).app c = α.app (R.obj c) ≫ adj.counit.app c := by
   simp [conjugateEquiv, mateEquiv, Adjunction.id]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem conjugateEquiv_adjunction_id_symm {L R : C ⥤ C} (adj : L ⊣ R) (α : R ⟶ 𝟭 C) (c : C) :
     ((conjugateEquiv adj Adjunction.id).symm α).app c = adj.unit.app c ≫ α.app (L.obj c) := by

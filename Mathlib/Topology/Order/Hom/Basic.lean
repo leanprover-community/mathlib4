@@ -89,6 +89,7 @@ variable [Preorder β] [TopologicalSpace γ] [Preorder γ] [TopologicalSpace δ]
 def toContinuousMap (f : α →Co β) : C(α, β) :=
   { f with }
 
+@[macro_inline]
 instance instFunLike : FunLike (α →Co β) α β where
   coe f := f.toFun
   coe_injective f g h := by

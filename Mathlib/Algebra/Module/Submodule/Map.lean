@@ -28,10 +28,10 @@ submodule, subspace, linear map, pushforward, pullback
 
 @[expose] public section
 
-open Function Pointwise Set
+open Function Set
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 
 namespace Submodule
 
@@ -589,7 +589,7 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  simp only [SetLike.le_def, mem_comap, mem_inf, LinearMap.add_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, mem_inf, LinearMap.add_apply]
   exact fun _ h ↦ add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
@@ -609,7 +609,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
 theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
-  simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
 
 theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :
@@ -674,6 +674,13 @@ theorem submoduleMap_surjective [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ
 theorem submoduleMap_injective [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} (hf : Injective f)
     (p : Submodule R M) : Injective (f.submoduleMap p) :=
   f.toAddMonoidHom.addSubmonoidMap_injective hf _
+
+theorem submoduleMap_injective_of_injOn [RingHomSurjective σ₁₂]
+    {p : Submodule R M} {f : M →ₛₗ[σ₁₂] M₂} (hf : Set.InjOn f p) :
+    Injective (f.submoduleMap p) := by
+  intro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+  replace hxy : f x = f y := by simpa [Subtype.ext_iff] using hxy
+  aesop
 
 open Submodule
 
