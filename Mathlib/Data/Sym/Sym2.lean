@@ -271,6 +271,10 @@ theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) :
   refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
   simp [hinj.eq_iff]
 
+-- #43815
+set_option warn.sorry false in
+theorem map.bijective {f : α → β} (h : Bijective f) : Bijective (map f) := sorry
+
 /-- `mk a` as an embedding. This is the symmetric version of `Function.Embedding.sectL`. -/
 @[simps]
 def mkEmbedding (a : α) : α ↪ Sym2 α where

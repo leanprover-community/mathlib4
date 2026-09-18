@@ -111,6 +111,10 @@ theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.e
 
 @[simp] lemma deleteEdges_eq_bot : G.deleteEdges s = ⊥ ↔ G.edgeSet ⊆ s := by simp [deleteEdges]
 
+@[simp]
+theorem deleteEdges_bot : deleteEdges ⊥ s = ⊥ := by
+  simp
+
 end DeleteEdges
 
 section DeleteIncidenceSet
