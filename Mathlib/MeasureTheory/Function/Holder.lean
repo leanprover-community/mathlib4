@@ -44,8 +44,8 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 theorem MeasureTheory.eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm {f : α → E} {g : α → F}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     eLpNorm (fun a ↦ B (f a) (g a)) r μ ≤ ‖B‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
-  eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm (B · ·) ‖B‖ₑ B.continuous₂ hf hg
-    (.of_forall fun _ ↦ B.le_opENorm₂ ..)
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm (B · ·) ‖B‖ₑ B.continuous₂.comp_aestronglyMeasurable₂
+    hf hg (.of_forall fun _ ↦ B.le_opENorm₂ ..)
 
 namespace ContinuousLinearMap
 
@@ -81,7 +81,7 @@ lemma nnnorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖B.holder r f g‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
   simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← enorm_eq_nnnorm, Lp.enorm_def]
   apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
-  exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm (B · ·) ‖B‖₊ B.continuous₂
+  exact eLpNorm_le_eLpNorm_mul_eLpNorm (B · ·) ‖B‖₊ B.continuous₂
     (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g)
     (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
