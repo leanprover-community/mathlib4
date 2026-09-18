@@ -364,6 +364,10 @@ def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A :=
     (sheafToPresheaf _ _ ⋙ (whiskeringLeft _ _ _).obj F.op)
     (F.op_comp_isSheaf J K)
 
+@[simp]
+lemma sheafPushforwardContinuous_obj_obj (X : Sheaf K A) :
+    ((F.sheafPushforwardContinuous A J K).obj X).obj = F.op ⋙ X.obj := rfl
+
 /-- The functor `F.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A`
 is induced by the precomposition with `F.op`. -/
 @[simps!]

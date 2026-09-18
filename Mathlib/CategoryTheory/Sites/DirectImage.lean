@@ -61,13 +61,7 @@ lemma inverseDirectImageAdjunction_counit_app (X : Sheaf K A) :
     (presheafToSheaf K A).map ((F.op.lanAdjunction A).counit.app X.obj) ≫
       (sheafificationAdjunction K A).counit.app X := by
   change (𝟭 (Sheaf K A)).map ((inverseDirectImageAdjunction J K A F).counit.app X) = _
-  simp only [Functor.comp_obj, ObjectProperty.ι_obj, Functor.id_obj, inverseDirectImageAdjunction,
-    Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
-    whiskeringLeft_obj_obj, Functor.comp_map, Category.id_comp]
-  simp only [Adjunction.comp_counit_app, ObjectProperty.ι_obj]
-  rw [(F.op.lan).map_id (F.op ⋙ X.obj),
-    (presheafToSheaf K A).map_id (F.op.lan.obj (F.op ⋙ X.obj))]
-  exact Category.id_comp _
+  simp [inverseDirectImageAdjunction, -Functor.id_map]
 
 /-- The trivial topology on the category with one object and one morphism. -/
 abbrev pointTopology : GrothendieckTopology PUnit := ⊥
