@@ -144,31 +144,6 @@ lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
 
 end NormedSpace
 
-section NNReal
-
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [MulActionWithZero ℝ≥0 ε]
-  [ContinuousConstSMul ℝ≥0 ε] [ENormSMulClass ℝ≥0 ε]
-
-lemma eLpNorm_const_smul_nnreal {f : α → ε} {c : ℝ≥0} :
-    eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
-  rcases eq_or_ne c 0 with rfl | hc
-  · simp
-  by_cases hf : AEStronglyMeasurable f μ; swap
-  · simp only [NNReal.enorm_eq_coe, hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable,
-      ne_eq, ENNReal.coe_eq_zero, hc, ENNReal.mul_top]
-    apply eLpNorm_of_not_aestronglyMeasurable
-    rwa [aestronglyMeasurable_const_smul_iff₀ hc (f := f)]
-  apply le_antisymm
-  · apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' (hf.const_smul _)
-    simp [enorm_smul, enorm]
-  · apply ENNReal.mul_le_of_le_div'
-    simp only [enorm, NNReal.nnnorm_eq_self, ENNReal.div_eq_inv_mul, ← ENNReal.coe_inv hc]
-    apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf (Eventually.of_forall fun x ↦ ?_)
-    simp only [Pi.smul_apply, enorm_smul, enorm, NNReal.nnnorm_eq_self, ← mul_assoc]
-    rw [ENNReal.coe_inv hc, ENNReal.inv_mul_cancel (by simp [hc]) (by simp), one_mul]
-
-end NNReal
-
 section ENNReal
 
 theorem eLpNorm'_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞}
@@ -212,6 +187,25 @@ theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞
   simp [hx]
 
 end ENNReal
+
+section NNReal
+
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [MulActionWithZero ℝ≥0 ε]
+  [ContinuousConstSMul ℝ≥0 ε] [ENormSMulClass ℝ≥0 ε]
+
+lemma eLpNorm_const_smul_nnreal {f : α → ε} {c : ℝ≥0} :
+    eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · simpa [enorm_smul, ← eLpNorm_enorm _ (hf.const_smul _), ← eLpNorm_enorm _ hf]
+      using eLpNorm_const_mul_ennreal hf.enorm.aestronglyMeasurable
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  simp only [NNReal.enorm_eq_coe, hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable,
+    ne_eq, ENNReal.coe_eq_zero, hc, ENNReal.mul_top]
+  apply eLpNorm_of_not_aestronglyMeasurable
+  rwa [aestronglyMeasurable_const_smul_iff₀ hc (f := f)]
+
+end NNReal
 
 end Lp
 end MeasureTheory
