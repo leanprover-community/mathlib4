@@ -14,15 +14,14 @@ public meta import Lean.Meta.Tactic.Generalize
 # The `basify` tactic
 
 Mathlib has many types built from a well-behaved type by a construction that makes the resulting
-arithmetic partial or truncated. The two commonest are
+arithmetic partial or truncated. The two most common are
 
 * *extensions* by a point at infinity, such as `ℕ∞ = WithTop ℕ`;
 * *subtypes* cut out by an inequality, such as `ℝ≥0 = {r : ℝ // 0 ≤ r}`.
 
 Goals about them are painful, because the decision procedures one would like to use (`grind`,
-`linarith`, `norm_num`) only understand the underlying type. `basify`
-peels the construction off, turning the goal into an equivalent one about that type:
-
+`linarith`, `norm_num`) only understand the underlying type. `basify` ("base" + "ify")
+peels the construction off, turning the goal into an equivalent one about the base type:
 ```
 example (a b : ℝ≥0∞) (h : a + b = 0) : a = 0 := by
   basify
@@ -132,7 +131,7 @@ def isAtom (e : Expr) : MetaM Bool := do
 /-- Collect the atoms of `e` -/
 partial def collectAtoms (e : Expr) : AtomM Unit := do
   -- we traverse subexpressions under binders too, and check there's no loose bound variables
-  if !e.hasLooseBVars then
+  if !e.hasLooseBVars && !e.isRawNatLit then
     if ← isAtom e then
       discard <| AtomM.addAtom e
       return

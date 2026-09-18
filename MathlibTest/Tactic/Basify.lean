@@ -178,6 +178,27 @@ example (f : ℕ → ℝ≥0∞) (h : ∀ i, f i ≤ 1) : f 0 ≤ 1 := by
   have := h 0
   basify
 
+/-! ### Numerals -/
+
+section Numerals
+
+/-- An eliminator for `ℕ`, so that `ℕ` counts as a registered type below. Mathlib registers none,
+but a numeral carries a `ℕ` index whatever its own type, so one is needed to reach it. -/
+@[elab_as_elim]
+private def natRecToInt {C : ℕ → Sort*} (mk : ∀ (n : ℤ) (_nonneg : 0 ≤ n), C n.toNat) (t : ℕ) :
+    C t :=
+  Int.toNat_natCast t ▸ mk t (Int.natCast_nonneg t)
+
+attribute [local basify_elim] natRecToInt
+
+/-- A raw natural number literal is not an atom: case splitting the `3` of `@OfNat.ofNat ℕ 3 _`
+turns the numeral into an opaque term. -/
+example (a : ℕ) (h : 2 * a = 6) : a = 3 := by
+  basify
+  lia
+
+end Numerals
+
 /-! ### Complex examples -/
 
 /-- The `ℝ≥0∞` arithmetic at the heart of `Wiedijk100Theorems.first_vote_neg`. The original proof
