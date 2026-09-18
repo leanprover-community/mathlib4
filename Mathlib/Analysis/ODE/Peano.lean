@@ -13,7 +13,7 @@ public import Mathlib.Topology.MetricSpace.UniformConvergence
 # Peano Existence Theorem
 
 This file proves Peano's existence theorem for a continuous time-dependent vector field on a
-finite-dimensional real normed vector space. The assumptions are collected in `IsPeano`.
+finite-dimensional real normed vector space. The assumptions are collected in `IsPeanoODE`.
 
 The proof constructs Tonelli approximations with a delayed input, extracts a uniformly
 convergent subsequence using the Arzelà–Ascoli theorem, and passes to the limit in the associated
@@ -21,11 +21,17 @@ integral equation.
 
 ## Main definitions
 
-- `IsPeano`: the hypotheses on the vector field and its cylinder of definition.
-- `IsPeano.stepSize`: the time-step size of a Tonelli approximation.
-- `IsPeano.delayedInput`: the delayed time argument used in the Tonelli approximations.
-- `IsPeano.tonelliIterate`: the recursively defined curves used in the construction.
-- `IsPeano.tonelliApproximation`: the diagonal sequence of Tonelli approximations.
+- `IsPeanoODE`: the hypotheses on the vector field and its cylinder of definition.
+- `IsPeanoODE.stepSize`: the time-step size of a Tonelli approximation.
+- `IsPeanoODE.delayedInput`: the delayed time argument used in the Tonelli approximations.
+- `IsPeanoODE.tonelliIterate`: the recursively defined curves used in the construction.
+- `IsPeanoODE.tonelliApproximation`: the diagonal sequence of Tonelli approximations.
+
+## Main statements
+
+- `IsPeano.exists_eq_forall_mem_Icc_eq_integral`: existence of a solution to the integral equation.
+- `IsPeano.exists_eq_forall_mem_Icc_hasDerivWithinAt₀`: Peano's existence theorem in differential
+  form.
 
 ## Main statements
 
@@ -52,25 +58,26 @@ open scoped NNReal
 
 /-! ### Assumptions of Peano's existence theorem -/
 
-/-- The hypotheses for Peano's existence theorem on a closed time interval and a closed ball. -/
-structure IsPeano {E : Type*} [NormedAddCommGroup E]
-    (f : ℝ × E → E) (tmin tmax t₀ : ℝ) (x₀ : E) (r L : ℝ≥0) : Prop where
+/-- The hypotheses for Peano's existence theorem on a closed time interval and a closed ball.
+This structure is modelled on `IsPicardLindelof`. -/
+structure IsPeanoODE {E : Type*} [NormedAddCommGroup E]
+    (f : ℝ → E → E) (tmin tmax t₀ : ℝ) (x₀ : E) (r L : ℝ≥0) : Prop where
   /-- The initial time belongs to the time interval. -/
   t₀_mem : t₀ ∈ Icc tmin tmax
-  /-- The vector field is continuous on the set product of a time interval and a closed ball. -/
-  continuousOn : ContinuousOn f (Icc tmin tmax ×ˢ closedBall x₀ r)
+  /-- The vector field is jointly continuous in time and space on the cylinder. -/
+  continuousOn : ContinuousOn f.uncurry (Icc tmin tmax ×ˢ closedBall x₀ r)
   /-- `L` is an upper bound of the norm of the vector field. -/
-  norm_le : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ r, ‖f (t, x)‖ ≤ L
+  norm_le : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ r, ‖f t x‖ ≤ L
   /-- The time interval of validity. -/
   mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ r
 
-namespace IsPeano
+namespace IsPeanoODE
 
 open Filter
 open scoped BoundedContinuousFunction
 
 variable {E : Type*} [NormedAddCommGroup E]
-  {f : ℝ × E → E} {α : ℝ → E} {tmin tmax t₀ : ℝ} {x₀ : E} {r L : ℝ≥0}
+  {f : ℝ → E → E} {α : ℝ → E} {tmin tmax t₀ : ℝ} {x₀ : E} {r L : ℝ≥0}
 
 private lemma Icc_t0_subset_Icc (ht₀ : t₀ ∈ Icc tmin tmax) :
     Icc t₀ tmax ⊆ Icc tmin tmax :=
@@ -137,21 +144,21 @@ lemma lipschitzWith_delayedInput {t₀ tmax : ℝ} (n : ℕ) :
     abs_max_sub_max_le_abs (x - stepSize t₀ tmax n) (y - stepSize t₀ tmax n) t₀
 
 /-- The recursively defined curves used to build the Tonelli approximations. -/
-noncomputable def tonelliIterate (f : ℝ × E → E) (t₀ tmax : ℝ) (x₀ : E) (n : ℕ) :
+noncomputable def tonelliIterate (f : ℝ → E → E) (t₀ tmax : ℝ) (x₀ : E) (n : ℕ) :
     ℕ → ℝ → E
   | 0 => fun _ ↦ x₀
   | k + 1 =>
       fun t ↦ x₀ + ∫ s in t₀..t,
-        f (s, tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s))
+        f s (tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s))
 
 /-- Every recursively defined curve takes the value `x₀` at `t₀`. -/
 lemma tonelliIterate_apply_t₀
-    (f : ℝ × E → E) {t₀ tmax : ℝ} (x₀ : E) (n : ℕ) (k : ℕ) :
+    (f : ℝ → E → E) {t₀ tmax : ℝ} (x₀ : E) (n : ℕ) (k : ℕ) :
     tonelliIterate f t₀ tmax x₀ n k t₀ = x₀ := by
   induction k <;> simp [tonelliIterate]
 
 /-- Every recursively defined curve stays in the cylinder and has Lipschitz constant `L`. -/
-private lemma tonelliIterate_bounds (hf : IsPeano f tmin tmax t₀ x₀ r L) (n k : ℕ) :
+private lemma tonelliIterate_bounds (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n k : ℕ) :
     MapsTo (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) (closedBall x₀ r) ∧
     LipschitzOnWith L (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) := by
   induction k with
@@ -169,14 +176,16 @@ private lemma tonelliIterate_bounds (hf : IsPeano f tmin tmax t₀ x₀ r L) (n 
       hk.1.comp h_delayed
     have h_cont :
         ContinuousOn
-          (fun s ↦ f (s, tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
+          (fun s ↦ f s (tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
           (uIcc t₀ tmax) := by
       rw [uIcc_of_le hf.t₀_mem.2]
-      exact hf.continuousOn.comp (by fun_prop [delayedInput])
+      exact hf.continuousOn.comp
+        (f := fun s ↦ (s, tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
+        (by fun_prop [delayedInput])
         (fun t ht ↦ ⟨Icc_t0_subset_Icc hf.t₀_mem ht, h_map ht⟩)
     have h_int :
         IntervalIntegrable
-          (fun s ↦ f (s, tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
+          (fun s ↦ f s (tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
           MeasureTheory.volume t₀ tmax :=
       ContinuousOn.intervalIntegrable h_cont
     have h_lip : LipschitzOnWith L (tonelliIterate f t₀ tmax x₀ n (k + 1)) (Icc t₀ tmax) := by
@@ -198,13 +207,13 @@ private lemma tonelliIterate_bounds (hf : IsPeano f tmin tmax t₀ x₀ r L) (n 
 
 /-- Every recursively defined curve stays in the cylinder. -/
 lemma mapsTo_tonelliIterate_closedBall
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
     MapsTo (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) (closedBall x₀ r) :=
   tonelliIterate_bounds hf n k |>.1
 
 /-- Every recursively defined curve is Lipschitz continuous with constant `L`. -/
 lemma lipschitzOnWith_tonelliIterate
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
     LipschitzOnWith L (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) :=
   tonelliIterate_bounds hf n k |>.2
 
@@ -228,24 +237,24 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (ht₀ : t₀ ≤ tmax) 
 
 /-- The diagonal sequence of Tonelli approximations. -/
 noncomputable def tonelliApproximation
-    (f : ℝ × E → E) (t₀ tmax : ℝ) (x₀ : E) (n : ℕ) : ℝ → E :=
+    (f : ℝ → E → E) (t₀ tmax : ℝ) (x₀ : E) (n : ℕ) : ℝ → E :=
   fun t ↦ tonelliIterate f t₀ tmax x₀ (n + 1) (n + 1) t
 
 /-- Every diagonal Tonelli approximation stays in the cylinder. -/
 lemma mapsTo_tonelliApproximation_closedBall
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     MapsTo (tonelliApproximation f t₀ tmax x₀ n) (Icc t₀ tmax) (closedBall x₀ r) :=
   mapsTo_tonelliIterate_closedBall hf (n + 1) (n + 1)
 
 /-- Every diagonal Tonelli approximation is Lipschitz continuous with constant `L`. -/
 lemma lipschitzOnWith_tonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     LipschitzOnWith L (tonelliApproximation f t₀ tmax x₀ n) (Icc t₀ tmax) :=
   lipschitzOnWith_tonelliIterate hf (n + 1) (n + 1)
 
 /-- Every diagonal Tonelli approximation takes the value `x₀` at `t₀`. -/
 lemma tonelliApproximation_apply_t₀
-    (f : ℝ × E → E) {t₀ tmax : ℝ} (x₀ : E) (n : ℕ) :
+    (f : ℝ → E → E) {t₀ tmax : ℝ} (x₀ : E) (n : ℕ) :
     tonelliApproximation f t₀ tmax x₀ n t₀ = x₀ :=
   tonelliIterate_apply_t₀ f x₀ (n + 1) (n + 1)
 
@@ -253,7 +262,7 @@ lemma tonelliApproximation_apply_t₀
 lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀ tmax) :
     tonelliApproximation f t₀ tmax x₀ n t =
       x₀ + ∫ s in t₀..t,
-        f (s, tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) s)) := by
+        f s (tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) s)) := by
   have h_succ : ∀ t ∈ Icc t₀ tmax, tonelliApproximation f t₀ tmax x₀ n t =
       tonelliIterate f t₀ tmax x₀ (n + 1) (n + 2) t := by
     intro t ht
@@ -269,21 +278,21 @@ section ArzelaAscoli
 
 /-- The Tonelli approximations as bounded continuous functions on `Icc t₀ tmax`. -/
 private noncomputable def boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) : Icc t₀ tmax →ᵇ E :=
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) : Icc t₀ tmax →ᵇ E :=
   .mkOfCompact ⟨(Icc t₀ tmax).domRestrict (tonelliApproximation f t₀ tmax x₀ n),
     continuousOn_iff_continuous_domRestrict.mp
       (lipschitzOnWith_tonelliApproximation hf n).continuousOn⟩
 
 /-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
 private lemma lipschitzWith_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     LipschitzWith L (boundedTonelliApproximation hf n) :=
   lipschitzWith_iff_dist_le_mul.mpr fun t s ↦
     (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.2 s.val s.2
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
 private lemma equicontinuous_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
   (LipschitzWith.uniformEquicontinuous _ L
     (lipschitzWith_boundedTonelliApproximation hf)).equicontinuous
@@ -292,7 +301,7 @@ variable [FiniteDimensional ℝ E]
 
 /-- The closure of the family of the Tonelli approximations is compact. -/
 private lemma isCompact_closure_range_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     IsCompact (closure (range (boundedTonelliApproximation hf))) := by
   apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) (isCompact_closedBall _ _)
   · rintro g x ⟨n, rfl⟩
@@ -301,7 +310,7 @@ private lemma isCompact_closure_range_boundedTonelliApproximation
 
 /-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/
 private lemma exists_tendsto_subseq_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     ∃ β : Icc t₀ tmax →ᵇ E, ∃ φ : ℕ → ℕ, StrictMono φ ∧
       Tendsto (boundedTonelliApproximation hf ∘ φ) atTop (nhds β) := by
   obtain ⟨β, _, φ, hφ_mono, hφ_tendsto⟩ :=
@@ -319,7 +328,7 @@ variable [FiniteDimensional ℝ E]
 
 /-- A subsequence of Tonelli approximations converges uniformly to a continuous curve. -/
 lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ∃ φ : ℕ → ℕ, StrictMono φ ∧ ContinuousOn α (Icc t₀ tmax) ∧
       MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
         TendstoUniformlyOn (tonelliApproximation f t₀ tmax x₀ ∘ φ) α atTop (Icc t₀ tmax) := by
@@ -379,7 +388,7 @@ end LimitExtraction
 
 /-- Every composition of a Tonelli approximation with its delayed input is continuous. -/
 lemma continuousOn_tonelliApproximation_delayedInput
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     ContinuousOn
       (fun t ↦ tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t))
       (Icc t₀ tmax) :=
@@ -389,7 +398,7 @@ lemma continuousOn_tonelliApproximation_delayedInput
 
 /-- Every Tonelli approximation composed with its delayed input stays in the cylinder. -/
 lemma mapsTo_tonelliApproximation_delayedInput
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     MapsTo
       (fun t ↦ tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t))
       (Icc t₀ tmax) (closedBall x₀ r) :=
@@ -398,9 +407,9 @@ lemma mapsTo_tonelliApproximation_delayedInput
 
 /-- Every composition of the vector field `f` with a delayed Tonelli approximation is continuous. -/
 lemma continuousOn_comp_tonelliApproximation_delayedInput
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     ContinuousOn
-      (fun t ↦ f (t, tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t)))
+      (fun t ↦ f t (tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t)))
       (Icc t₀ tmax) := by
   apply hf.continuousOn.comp
     (ContinuousOn.prodMk continuousOn_id (continuousOn_tonelliApproximation_delayedInput hf n))
@@ -425,9 +434,9 @@ variable [FiniteDimensional ℝ E]
 
 /-- There exists a solution of the integral equation on the interval forward in time. -/
 lemma exists_eq_forall_mem_Icc_eq_integral_forward
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ContinuousOn α (Icc t₀ tmax) ∧ MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
-      ∀ t ∈ Icc t₀ tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
+      ∀ t ∈ Icc t₀ tmax, α t = x₀ + ∫ s in t₀..t, f s (α s) := by
   obtain ⟨α, φ, hφ_mono, hα_cont, hα_maps, hα_tendsto⟩ :=
     exists_tendstoUniformlyOn_subseq_tonelliApproximation hf
   refine ⟨α, hα_cont, hα_maps, fun t ht ↦ tendsto_nhds_unique
@@ -450,7 +459,10 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward
         hφ_mono hα_cont hα_tendsto
     filter_upwards with s hs
     have hs := mem_Icc_of_mem_uIoc ht hs
-    apply Tendsto.comp (hf.continuousOn.continuousWithinAt _)
+    apply Tendsto.comp
+      (f := fun n ↦
+        (s, tonelliApproximation f t₀ tmax x₀ (φ n) (delayedInput t₀ tmax (φ n + 1) s)))
+      (hf.continuousOn.continuousWithinAt (x := (s, α s)) _)
     · refine tendsto_nhdsWithin_iff.mpr
         ⟨Tendsto.prodMk_nhds tendsto_const_nhds (h_lim s hs), ?_⟩
       apply Eventually.of_forall
@@ -549,4 +561,4 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
     · apply h_cont.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc
     · exact h_cont.continuousWithinAt ht
 
-end IsPeano
+end IsPeanoODE
