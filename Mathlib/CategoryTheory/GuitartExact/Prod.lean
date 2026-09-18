@@ -77,12 +77,9 @@ def inverse : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w'
       ext
       · exact CostructuredArrow.w f.1.right
       · exact CostructuredArrow.w f.2.right)) (by
-      dsimp
-      ext
-      · have := StructuredArrow.w f.1
-        cat_disch
-      · have := StructuredArrow.w f.2
-        cat_disch)
+      have := StructuredArrow.w f.1
+      have := StructuredArrow.w f.2
+      cat_disch
 
 end prodEquivalence
 
