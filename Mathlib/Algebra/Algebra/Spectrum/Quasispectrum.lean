@@ -241,6 +241,8 @@ lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [CommSemiring R] [NonUn
     exact (Unitization.unitsFstOne_mulEquiv_quasiregular R).symm u |>.val.isUnit
   · exact ⟨(Unitization.unitsFstOne_mulEquiv_quasiregular R) ⟨hx.unit, by simp⟩, by simp⟩
 
+alias ⟨IsQuasiregular.isUnit', _⟩ := isQuasiregular_iff_isUnit'
+
 variable (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalRing A]
   [Module R A]
 
@@ -316,7 +318,7 @@ lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRin
   let : Star A := ⟨id⟩
   let : Star B := ⟨id⟩
   have : StarHomClass F A B := ⟨fun _ _ ↦ rfl⟩
-  let e := StarAlgEquivClass.toStarAlgEquiv f
+  let e := StarAlgEquiv.ofClass f
   apply subset_antisymm
   · exact NonUnitalAlgHom.quasispectrum_apply_subset' R e a
   · simpa using! NonUnitalAlgHom.quasispectrum_apply_subset' R e.symm (e a)

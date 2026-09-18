@@ -902,7 +902,7 @@ theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
 lemma degree_toSubgraph (G H : SimpleGraph V) (h : H ≤ G) {v : V}
     [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
     (toSubgraph H h).degree v = H.degree v := by
-  simp [Subgraph.degree, card_neighborSet_toSubgraph]
+  simp [Subgraph.degree, card_neighborSet_toSubgraph, -Set.fintypeCard_eq_ncard]
 
 section MkProperties
 
@@ -985,8 +985,7 @@ theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
 @[simp]
 theorem map_subgraphOfAdj (f : G →g G') {v w : V} (hvw : G.Adj v w) :
     Subgraph.map f (G.subgraphOfAdj hvw) = G'.subgraphOfAdj (f.map_adj hvw) := by
-  ext <;> grind [Subgraph.map_verts, subgraphOfAdj_verts, Relation.Map, Subgraph.map_adj,
-    subgraphOfAdj_adj]
+  ext <;> grind [Subgraph.map_verts, subgraphOfAdj_verts, Subgraph.map_adj, subgraphOfAdj_adj]
 
 theorem neighborSet_subgraphOfAdj_subset {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u ⊆ {v, w} :=
