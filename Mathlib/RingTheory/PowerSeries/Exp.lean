@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.RingTheory.PowerSeries.Derivative
+public import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!
 # Exponential Power Series
@@ -25,7 +26,7 @@ a uniqueness characterization, and the functional equation for multiplication.
 * `PowerSeries.coeff_exp`: The coefficient of `exp A` at `n` is `1/n!`.
 * `PowerSeries.constantCoeff_exp`: The constant term of `exp A` is `1`.
 * `PowerSeries.map_exp`: `exp` is preserved by ring homomorphisms between ℚ-algebras.
-* `PowerSeries.derivative_exp`: The derivative of exp equals exp: `d⁄dX A (exp A) = exp A`.
+* `PowerSeries.derivative_exp`: The derivative of exp equals exp: `d⁄dX (exp A) = exp A`.
 * `PowerSeries.exp_unique_of_derivative_eq_self`: A power series with derivative equal to itself
   and constant term `1` must be `exp`.
 * `PowerSeries.isUnit_exp`: `exp A` is a unit (invertible).
@@ -67,7 +68,7 @@ theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
 /-! ### Derivative of exp -/
 
 theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
-    d⁄dX A (exp A) = exp A := by
+    d⁄dX (exp A) = exp A := by
   ext n
   rw [coeff_derivative, coeff_exp, coeff_exp]
   have key : (n + 1 : A) = algebraMap ℚ A (n + 1) := by
@@ -85,16 +86,16 @@ variable {A : Type*}
 The proof uses induction on coefficients: if `f' = f` and `f(0) = 1`, then
 `coeff (n+1) f * (n+1) = coeff n f`, which determines all coefficients uniquely. -/
 theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [IsAddTorsionFree A]
-    {f : PowerSeries A} (hd : d⁄dX A f = f) (hc : constantCoeff f = 1) :
+    {f : PowerSeries A} (hd : d⁄dX f = f) (hc : constantCoeff f = 1) :
     f = exp A := by
   ext n
   induction n with
   | zero =>
     rw [coeff_zero_eq_constantCoeff, hc, constantCoeff_exp]
   | succ n ih =>
-    have eq1 : coeff n (d⁄dX A f) = coeff n f := congrArg (coeff n) hd
+    have eq1 : coeff n (d⁄dX f) = coeff n f := congrArg (coeff n) hd
     rw [coeff_derivative] at eq1
-    have eq2 : coeff n (d⁄dX A (exp A)) = coeff n (exp A) := congrArg (coeff n) (derivative_exp A)
+    have eq2 : coeff n (d⁄dX (exp A)) = coeff n (exp A) := congrArg (coeff n) (derivative_exp A)
     rw [coeff_derivative] at eq2
     rw [ih] at eq1
     have h : coeff (n + 1) f * (n + 1) = coeff (n + 1) (exp A) * (n + 1) := by
@@ -109,7 +110,7 @@ theorem isUnit_exp (A : Type*) [Ring A] [Algebra ℚ A] : IsUnit (exp A) :=
 
 @[simp]
 theorem order_exp (A : Type*) [Ring A] [Algebra ℚ A] [Nontrivial A] : (exp A).order = 0 :=
-  order_zero_of_unit (isUnit_exp A)
+  order_zero_of_isUnit (isUnit_exp A)
 
 
 open RingHom
@@ -130,7 +131,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     a ^ x * b ^ (n - x) *
         (algebraMap ℚ A (1 / ↑x.factorial) * algebraMap ℚ A (1 / ↑(n - x).factorial)) =
       a ^ x * b ^ (n - x) * (↑(n.choose x) * (algebraMap ℚ A) (1 / ↑n.factorial))
-    by convert this using 1 <;> ring
+    by convert! this using 1 <;> ring
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
   refine RingHom.congr_arg _ ?_
@@ -147,7 +148,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
-  convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
+  convert! exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by

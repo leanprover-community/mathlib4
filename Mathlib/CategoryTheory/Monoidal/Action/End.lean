@@ -59,6 +59,7 @@ lemma curriedActionMop_map_unmop_app {c c' : C} (f : c ⟶ c') (d : D) :
     ((curriedActionMop C D).map f).unmop.app d = f ⊵ₗ d :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open MonoidalOpposite in
 /-- When `C` acts on the left on `D`, the functor
@@ -91,10 +92,9 @@ end
 
 variable {C D}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A monoidal functor `F : C ⥤ (D ⥤ D)ᴹᵒᵖ` can be thought of as a left action
 of `C` on `D`. -/
-@[simps!, implicit_reducible]
+@[simps!, instance_reducible]
 def actionOfMonoidalFunctorToEndofunctorMop (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Monoidal] :
     MonoidalLeftAction C D where
   actionObj c d := (F.obj c).unmop.obj d
@@ -106,6 +106,7 @@ def actionOfMonoidalFunctorToEndofunctorMop (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Mo
     have e := congrArg (fun t ↦ t.unmop.app c₃) <|
       Functor.OplaxMonoidal.δ_natural F f g
     dsimp at e
+    rw [endofunctorMonoidalCategory_tensorMap_app] at e
     simp [reassoc_of% e]
   whiskerRight_actionHomLeft {x y} c f d := by
     have e := congrArg (fun t ↦ t.unmop.app d) <|
@@ -156,6 +157,7 @@ namespace MonoidalRightAction
 
 variable {C D}
 
+set_option backward.defeqAttrib.useBackward true in
 open MonoidalOpposite in
 /-- When `C` acts on the right on `D`, the functor `curriedAction : C ⥤ (D ⥤ D)`
 is monoidal, where `D ⥤ D` has the composition monoidal structure. -/
@@ -180,10 +182,9 @@ instance curriedActionMonoidal [MonoidalRightAction C D] :
     simpa [-actionHom_leftUnitor] using
       t ⊴ᵣ (λ_ x).inv ≫= actionHom_leftUnitor x t
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A monoidal functor `F : C ⥤ D ⥤ D` can be thought of as a right action
 of `C` on `D`. -/
-@[simps!, implicit_reducible]
+@[simps!, instance_reducible]
 def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
     MonoidalRightAction C D where
   actionObj d c := (F.obj c).obj d
@@ -195,6 +196,7 @@ def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
     have e := congrArg (fun t ↦ t.app c₁) <|
       Functor.OplaxMonoidal.δ_natural F g h
     dsimp at e
+    rw [endofunctorMonoidalCategory_tensorMap_app] at e
     simp [reassoc_of% e]
 
 /-- If the action of `C` on `D` comes from a monoidal functor `C ⥤ (D ⥤ D)`,

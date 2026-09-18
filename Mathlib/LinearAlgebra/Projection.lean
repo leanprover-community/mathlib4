@@ -72,28 +72,6 @@ namespace Submodule
 
 open LinearMap
 
-/-- If `q` is a complement of `p`, then `M/p ≃ q`. -/
-def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
-  LinearEquiv.symm <|
-    LinearEquiv.ofBijective (p.mkQ.comp q.subtype)
-      ⟨by rw [← ker_eq_bot, ker_comp, ker_mkQ, disjoint_iff_comap_eq_bot.1 h.symm.disjoint], by
-        rw [← range_eq_top, range_comp, range_subtype, map_mkQ_eq_top, h.sup_eq_top]⟩
-
-@[simp]
-theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
-    -- Porting note: type ascriptions needed on the RHS
-    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
-
-@[simp]
-theorem quotientEquivOfIsCompl_apply_mk_coe (h : IsCompl p q) (x : q) :
-    quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
-  (quotientEquivOfIsCompl p q h).apply_symm_apply x
-
-@[simp]
-theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
-    (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
-  (quotientEquivOfIsCompl p q h).symm_apply_apply x
-
 /-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. -/
 def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   apply LinearEquiv.ofBijective (p.subtype.coprod q.subtype)
@@ -187,6 +165,12 @@ theorem projectionOnto_apply_left (h : IsCompl p q) (x : p) :
 theorem projection_apply_left (hpq : IsCompl p q) (x : p) :
     p.projection q hpq x = x := by simp [projection]
 
+lemma projectionOnto_apply_of_mem_left (hpq : IsCompl p q) {x : E} (hx : x ∈ p) :
+    p.projectionOnto q hpq x = ⟨x, hx⟩ := projectionOnto_apply_left hpq ⟨x, hx⟩
+
+lemma projection_apply_of_mem_left (hpq : IsCompl p q) {x : E} (hx : x ∈ p) :
+    p.projection q hpq x = x := projection_apply_left hpq ⟨x, hx⟩
+
 @[simp]
 theorem range_projectionOnto (h : IsCompl p q) : range (projectionOnto p q h) = ⊤ :=
   range_eq_of_proj (projectionOnto_apply_left h)
@@ -238,6 +222,10 @@ theorem projectionOnto_comp_subtype (h : IsCompl p q) :
     (projectionOnto p q h).comp p.subtype = LinearMap.id :=
   LinearMap.ext <| projectionOnto_apply_left h
 
+theorem projectionOnto_comp_subtype_eq_zero (h : IsCompl p q) :
+    p.projectionOnto q h ∘ₗ q.subtype = 0 := by
+  ext; simp
+
 theorem projectionOnto_projection (h : IsCompl p q) (x : E) :
     projectionOnto p q h (p.projection q h x) = projectionOnto p q h x :=
   projectionOnto_apply_left h _
@@ -262,6 +250,11 @@ theorem projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   dsimp only [projection, projectionOnto]
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
+
+theorem subtype_comp_projectionOnto_add_eq_id (h : IsCompl p q) :
+    p.subtype.comp (projectionOnto _ _ h) +
+      q.subtype.comp (projectionOnto _ _ h.symm) = LinearMap.id := by
+  ext; simp [projection_add_projection_eq_self]
 
 theorem projection_add_projection_eq_id (hpq : IsCompl p q) :
     p.projection q hpq + q.projection p hpq.symm = .id :=
@@ -291,6 +284,53 @@ theorem toLinearMap_prodEquivOfIsCompl_symm (hpq : IsCompl p q) :
     (p.prodEquivOfIsCompl q hpq).symm.toLinearMap =
       (p.projectionOnto q hpq).prod (q.projectionOnto p hpq.symm) :=
   LinearMap.ext <| by simp
+
+theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x ∈ q := by
+  rw [← projection_eq_self_sub_projection h]
+  exact projection_apply_mem h.symm x
+
+variable (p q) in
+/-- If `q` is a complement of `p`, then `M ⧸ p ≃ q`. The forward direction sends a quotient class
+to its projection onto `q` along `p`; the backward direction sends an element of `q` to its class
+in `M ⧸ p`. -/
+@[simps! symm_apply]
+def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
+  .ofLinearMap
+    (p.liftQ (q.projectionOnto p h.symm) (by simp))
+    (p.mkQ ∘ₗ q.subtype)
+    (by ext; simp)
+    (by ext; simp [Quotient.eq, sub_mem_comm_iff, sub_projection_mem])
+
+theorem quotientEquivOfIsCompl_comp_mkQ (h : IsCompl p q) :
+    (quotientEquivOfIsCompl p q h : E ⧸ p →ₗ[R] q) ∘ₗ p.mkQ = q.projectionOnto p h.symm :=
+  rfl
+
+@[simp]
+theorem quotientEquivOfIsCompl_apply_mk (h : IsCompl p q) (x : E) :
+    quotientEquivOfIsCompl p q h (Quotient.mk x) = q.projectionOnto p h.symm x :=
+  rfl
+
+theorem quotientEquivOfIsCompl_apply_mk_right (h : IsCompl p q) (x : q) :
+    quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
+  (quotientEquivOfIsCompl p q h).apply_symm_apply x
+
+@[deprecated (since := "2026-05-06")]
+alias quotientEquivOfIsCompl_apply_mk_coe := quotientEquivOfIsCompl_apply_mk_right
+
+@[simp]
+theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
+    (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
+  (quotientEquivOfIsCompl p q h).symm_apply_apply x
+
+@[simp]
+lemma toLinearMap_quotientEquivOfIsCompl (h : IsCompl p q) :
+    (p.quotientEquivOfIsCompl q h).toLinearMap = p.liftQ (q.projectionOnto p h.symm) (by simp) :=
+  rfl
+
+@[simp]
+lemma toLinearMap_symm_quotientEquivOfIsCompl (h : IsCompl p q) :
+    (p.quotientEquivOfIsCompl q h).symm.toLinearMap = p.mkQ ∘ₗ q.subtype :=
+  rfl
 
 end Submodule
 
@@ -339,11 +379,11 @@ def ofIsCompl {p q : Submodule R E} (h : IsCompl p q) (φ : p →ₗ[R] F) (ψ :
 variable {p q}
 
 @[simp]
-theorem ofIsCompl_left_apply (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (u : p) :
+theorem ofIsCompl_apply_left (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (u : p) :
     ofIsCompl h φ ψ (u : E) = φ u := by simp [ofIsCompl]
 
 @[simp]
-theorem ofIsCompl_right_apply (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (v : q) :
+theorem ofIsCompl_apply_right (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (v : q) :
     ofIsCompl h φ ψ (v : E) = ψ v := by simp [ofIsCompl]
 
 theorem ofIsCompl_eq (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
@@ -427,8 +467,8 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
     invFun := fun φ => ⟨φ.domRestrict p, φ.domRestrict q⟩
     left_inv := fun φ ↦ by
       ext x
-      · exact ofIsCompl_left_apply h x
-      · exact ofIsCompl_right_apply h x
+      · exact ofIsCompl_apply_left h x
+      · exact ofIsCompl_apply_right h x
     right_inv := fun φ ↦ by
       ext x
       obtain ⟨a, b, hab, _⟩ := existsUnique_add_of_isCompl h x
@@ -624,7 +664,7 @@ open LinearMap in
 its range along its kernel. -/
 theorem IsIdempotentElem.eq_projection {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
     T = T.range.projection T.ker hT.isCompl := by
-  convert ofIsCompl_subtype_zero_eq hT.isCompl
+  convert! ofIsCompl_subtype_zero_eq hT.isCompl
   exact ofIsCompl_eq _ (by simp [hT.isProj_range.map_id]) (by simp) |>.symm
 
 open LinearMap in
@@ -642,7 +682,7 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
-    SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    IsConcreteLE.le_iff, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
 open LinearMap in
 /-- Idempotent operators are equal iff their range and kernels are. -/
@@ -670,7 +710,7 @@ theorem IsIdempotentElem.range_eq_ker_one_sub {E : Type*} [AddCommGroup E] [Modu
 open LinearMap in
 theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (id - p) := by
-  simpa using hp.one_sub.range_eq_ker_one_sub.symm
+  simpa using! hp.one_sub.range_eq_ker_one_sub.symm
 
 theorem IsIdempotentElem.ker_eq_range_one_sub {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) :=
@@ -808,5 +848,7 @@ namespace LinearMap
   surjective_comp_projectionOnto
 @[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
   isIdempotentElem_iff_eq_projection_range_ker
+@[deprecated (since := "2026-05-16")] alias ofIsCompl_left_apply := ofIsCompl_apply_left
+@[deprecated (since := "2026-05-16")] alias ofIsCompl_right_apply := ofIsCompl_apply_right
 
 end LinearMap

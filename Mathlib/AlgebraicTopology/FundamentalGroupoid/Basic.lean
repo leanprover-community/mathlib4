@@ -52,10 +52,10 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
   · constructor
     · apply mul_nonneg <;> grind
     · rw [mul_assoc]
-      apply mul_le_one₀ <;> grind
+      apply (mul_le_of_le_one_left ?_ ?_).trans ?_ <;> grind
   · constructor
     · apply mul_nonneg <;> grind
-    · apply mul_le_one₀ <;> grind
+    · apply (mul_le_of_le_one_left ?_ ?_).trans ?_ <;> grind
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
@@ -99,6 +99,7 @@ theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
       p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
@@ -358,11 +359,11 @@ theorem fromPath_eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path
   ⟨fun ih ↦ Quotient.exact ih, fun h ↦ Quotient.sound h⟩
 
 lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
-    eqToHom (congr_arg mk h) = ⟦(Path.refl x₁).cast h rfl⟧ := by subst h; rfl
+    eqToHom congr(mk $h) = (Path.Homotopic.Quotient.refl x₁).cast h rfl := by subst h; rfl
 
 @[reassoc]
-lemma conj_eqToHom {x y x' y' : X} {p : Path x y} (hx : x' = x) (hy : y' = y) :
-    eqToHom (congr_arg mk hx) ≫ .mk p ≫ eqToHom (congr_arg mk hy.symm) = .mk (p.cast hx hy) := by
+lemma conj_eqToHom {x y x' y' : X} {p : Path.Homotopic.Quotient x y} (hx : x' = x) (hy : y' = y) :
+    eqToHom congr(mk $hx) ≫ p ≫ eqToHom congr(mk $hy.symm) = p.cast hx hy := by
   subst hx hy; simp
 
 end FundamentalGroupoid

@@ -20,7 +20,7 @@ public section
 instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
   refine Ring.krullDimLE_one_iff.2 fun I hI ↦ or_iff_not_imp_left.2 fun hI' ↦ ?_
-  rw [minimalPrimes_eq_minimals, Set.notMem_setOf_iff, not_minimal_iff_exists_lt hI] at hI'
+  rw [minimalPrimes_eq_minimals, Set.notMem_ofPred_iff, not_minimal_iff_exists_lt hI] at hI'
   obtain ⟨P, hlt, hP⟩ := hI'
   have := IsPrincipalIdealRing.of_surjective (Ideal.Quotient.mk P) Ideal.Quotient.mk_surjective
   have : (I.map (Ideal.Quotient.mk P)).IsMaximal := by
@@ -51,5 +51,5 @@ lemma IsPrincipalIdealRing.height_eq_one_of_isMaximal {R : Type*} [CommRing R] [
   · suffices h : (m.height : WithBot ℕ∞) ≤ 1 by norm_cast at h
     rw [← IsPrincipalIdealRing.ringKrullDim_eq_one _ h]
     exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
-  · rw [Order.one_le_iff_pos, Ideal.height_eq_primeHeight, Ideal.primeHeight, Order.height_pos]
-    exact not_isMin_of_lt (b := ⊥) (Ideal.bot_lt_of_maximal m h)
+  · apply le_of_eq_of_le _ (Ideal.height_add_one_le_of_lt_of_isPrime (Ideal.bot_lt_of_maximal m h))
+    simp

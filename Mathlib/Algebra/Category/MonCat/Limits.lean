@@ -38,7 +38,6 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ MonCat.{u})
 instance monoidObj (j : J) : Monoid (F.obj j) :=
   inferInstanceAs <| Monoid (F.obj j)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `MonCat` form a submonoid of all sections. -/
 @[to_additive
 /-- The flat sections of a functor into `AddMonCat` form an additive submonoid of all sections. -/]
@@ -53,12 +52,12 @@ instance sectionsMonoid : Monoid (F ⋙ forget MonCat.{u}).sections :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget MonCat))]
 
-set_option backward.inferInstanceAs.wrap.data false in
 @[to_additive]
 noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=
   inferInstanceAs <| Monoid (Shrink (F ⋙ forget MonCat.{u}).sections)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
 @[to_additive /-- `limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`. -/]
@@ -79,12 +78,13 @@ namespace HasLimits
 -/
 @[to_additive /-- (Internal use only; use the limits API.) -/]
 noncomputable def limitCone : Cone F :=
-  { pt := MonCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
+  { pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
     { app j := ofHom (limitπMonoidHom F j)
       naturality := fun _ _ f => MonCat.ext fun x =>
         ConcreteCategory.congr_hom ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x } }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `MonCat` is a limit cone.
 (Internal use only; use the limits API.)
@@ -148,6 +148,7 @@ noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
 noncomputable instance forget_preservesLimits : PreservesLimits (forget MonCat.{u}) :=
   MonCat.forget_preservesLimitsOfSize.{u, u}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance forget_createsLimit :
@@ -157,7 +158,7 @@ noncomputable instance forget_createsLimit :
   have : Small.{u} (Functor.sections (F ⋙ forget MonCat)) :=
     (Types.hasLimit_iff_small_sections _).mp (HasLimit.mk { cone := c, isLimit := t })
   refine LiftsToLimit.mk (LiftableCone.mk
-    { pt := MonCat.of (Types.Small.limitCone (F ⋙ forget MonCat)).pt,
+    { pt := ↧(Types.Small.limitCone (F ⋙ forget MonCat)).pt,
       π := NatTrans.mk
         (fun j => ofHom (limitπMonoidHom F j))
         (MonCat.HasLimits.limitCone F).π.naturality }
@@ -177,8 +178,7 @@ noncomputable instance forget_createsLimit :
       simp only [Types.Small.limitCone_pt, Functor.comp_obj, Functor.mapCone_pt,
         Types.Small.limitConeIsLimit_lift, Functor.const_obj_obj, Functor.mapCone_π_app,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, map_mul]
-      congr
-      simp only [Functor.comp_obj, Equiv.symm_apply_apply]
+      rw [← equivShrink_mul]
       rfl
   · exact fun _ ↦ rfl
 
@@ -234,7 +234,7 @@ and then reuse the existing limit. -/]
 noncomputable instance forget₂CreatesLimit : CreatesLimit F (forget₂ CommMonCat MonCat.{u}) :=
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone :=
-        { pt := CommMonCat.of (Types.Small.limitCone (F ⋙ forget CommMonCat)).pt
+        { pt := ↧(Types.Small.limitCone (F ⋙ forget CommMonCat)).pt
           π :=
             { app j := ofHom (MonCat.limitπMonoidHom (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}) j)
               naturality _ _ j := ext <| fun x => ConcreteCategory.congr_hom

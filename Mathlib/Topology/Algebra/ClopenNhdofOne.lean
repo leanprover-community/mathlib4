@@ -27,6 +27,7 @@ public section
 
 namespace IsTopologicalGroup
 
+@[to_additive]
 theorem exist_openNormalSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ W := by
@@ -43,6 +44,7 @@ namespace ProfiniteGrp
 variable {G : Type*} [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [CompactSpace G] [TotallyDisconnectedSpace G]
 
+@[to_additive]
 theorem exist_openNormalSubgroup_sub_open_nhds_of_one
     {U : Set G} (UOpen : IsOpen U) (einU : 1 ∈ U) :
     ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ U := by
@@ -56,6 +58,10 @@ open scoped Pointwise in
 Any closed subgroup of a profinite group is the intersection of the open subgroups containing it.
 See https://math.stackexchange.com/questions/5023433/closed-subgroups-of-a-compact-topological-group.
 -/
+@[to_additive /--
+Any closed subgroup of a profinite group is the intersection of the open subgroups containing it.
+See https://math.stackexchange.com/questions/5023433/closed-subgroups-of-a-compact-topological-group.
+-/]
 theorem closedSubgroup_eq_sInf_open (H : ClosedSubgroup G) :
     H = sInf {N : Subgroup G | IsOpen (N : Set G) ∧ H ≤ N} := by
   apply le_antisymm

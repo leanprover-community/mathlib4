@@ -48,7 +48,7 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     refine ⟨n, hn0, ((h.toFinset.erase I).inf id) ^ n, hn, ?_⟩
     have (K : Ideal R) (hKI : K ≤ I) (hK : K ∈ ann.minimalPrimes) : K = I :=
       le_antisymm hKI (hI.2 hK.1 hKI)
-    simpa [hI.1.1.pow_le_iff hn0, hI.1.1.inf_le', imp_not_comm, not_imp_not]
+    simpa [hI.isPrime.pow_le_iff hn0, hI.isPrime.inf_le', imp_not_comm, not_imp_not]
   obtain ⟨hn0, J, hJ, hJI⟩ := Nat.find_spec key
   -- let `n` be minimal such that there exists an ideal `J` with `I ^ n * J ≤ ann` and `¬ J ≠ I`
   set n := Nat.find key
@@ -67,16 +67,14 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     exact ⟨y • x, le_antisymm (step1 y y.2) hyI⟩
   -- if not, then for every `y ∈ K`, there exists an `f y ∈ colon N {y • x}` with `f y ∉ I`
   by_contra! h'
-  simp only [SetLike.not_le_iff_exists] at h'
+  simp only [IsConcreteLE.not_le_iff_exists] at h'
   choose f g h using h'
   -- let `s` be a finite generating set for `K`
   obtain ⟨s, hs⟩ : (⊤ : Submodule R K).FG := Module.Finite.fg_top
   -- let `z` be the product of these finitely many `f y`'s
   let z := ∏ y ∈ s, f y
   -- then `z ∉ I`
-  have hz : z ∉ I := by
-    simp only [z, hI.1.1.prod_mem_iff, not_exists, not_and_or]
-    exact fun i ↦ Or.inr (h i)
+  have hz : z ∉ I := by simp [z, hI.isPrime.prod_mem_iff, h]
   -- and `K ≤ colon N {z • x}`
   have hz' : K ≤ colon N {z • x} := by
     rw [← (map_injective_of_injective K.subtype_injective).eq_iff, map_subtype_top] at hs
@@ -92,11 +90,11 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     simpa only [ann, mem_colon_singleton, mul_comm, mul_smul] using hz' hi
   -- but now `K = I ^ (n - 1) * J` contradicts the minimality of `n`
   have hK : I ^ (n - 1) * (J * Ideal.span {z}) ≤ ann ∧ ¬ J * Ideal.span {z} ≤ I := by
-    rw [← mul_assoc, hI.1.1.mul_le, not_or, Ideal.span_singleton_le_iff_mem]
+    rw [← mul_assoc, hI.isPrime.mul_le, not_or, Ideal.span_singleton_le_iff_mem]
     exact ⟨hz', hJI, hz⟩
   by_cases hn' : n - 1 = 0
   · simp [K, show n = 1 by grind] at hz'
-    exact (hK.2 (hz'.trans hI.1.2)).elim
+    exact (hK.2 (hz'.trans hI.le)).elim
   · grind [Nat.find_min' key ⟨hn', J * Ideal.span {z}, hK⟩]
 
 end Submodule

@@ -5,10 +5,9 @@ Authors: Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 
-import Mathlib.Tactic.ApplyFun
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
 # Supports of submonoids
@@ -54,8 +53,8 @@ theorem mem_mulSupport {x} : x ∈ M.mulSupport ↔ x ∈ M ∧ x⁻¹ ∈ M := 
 @[to_additive (attr := simp)]
 theorem mulSupport_toSubmonoid : M.mulSupport.toSubmonoid = M ⊓ M⁻¹ := rfl
 
-@[to_additive]
-/- The support of a submonoid is the largest subgroup it contains. -/
+/-- The support of a submonoid is the largest subgroup it contains. -/
+@[to_additive /-- The support of a submonoid is the largest subgroup it contains. -/]
 theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     GaloisConnection (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
   fun _ _ ↦ ⟨fun _ _ ↦ by aesop, fun h _ hx ↦ (h hx).1⟩
@@ -115,6 +114,6 @@ theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) :
 @[to_additive]
 theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
     Maximal IsMulPointed M :=
-  ⟨hMp, fun N hN h ↦ by rw [SetLike.le_def] at h ⊢; aesop⟩
+  ⟨hMp, fun N hN h ↦ by rw [IsConcreteLE.le_iff] at h ⊢; aesop⟩
 
 end Submonoid.IsMulSpanning

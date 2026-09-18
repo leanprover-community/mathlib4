@@ -26,7 +26,9 @@ lemmas about preimages and images of all intervals. We also prove a few lemmas a
 public section
 
 
-open Interval Pointwise
+open Pointwise
+
+open scoped Interval
 
 variable {α : Type*}
 
@@ -172,6 +174,10 @@ lemma inv_Ioc (a b : α) : (Ioc a b)⁻¹ = Ico b⁻¹ a⁻¹ := by
 
 @[to_additive (attr := simp)]
 lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Ioi_inter_Iio, inter_comm]
+
+@[to_additive Icc_sub_Icc_subset]
+lemma Icc_div_Icc_subset' (a b c d : α) : Icc a b / Icc c d ⊆ Icc (a / d) (b / c) := by
+  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc_subset']
 
 /-!
 ### Preimages under `x ↦ a * x`
@@ -467,6 +473,11 @@ variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 lemma inv_uIcc (a b : α) : [[a, b]]⁻¹ = [[a⁻¹, b⁻¹]] := by
   simp only [uIcc, inv_Icc, inv_sup, inv_inf]
 
+@[to_additive]
+lemma Icc_div_Icc {a b c d : α} (hab : a ≤ b) (hcd : c ≤ d) :
+    Icc a b / Icc c d = Icc (a / d) (b / c) := by
+  simp only [div_eq_mul_inv, inv_Icc, Icc_mul_Icc hab <| inv_le_inv_iff.mpr hcd]
+
 end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
@@ -535,19 +546,19 @@ variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [MulPosReflectL
 
 @[simp]
 theorem preimage_mul_const_Iic₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iic a = Iic (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iic a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iic a
 
 @[simp]
 theorem preimage_mul_const_Ici₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ici a = Ici (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ici a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ici a
 
 @[simp]
 theorem preimage_mul_const_Ioi₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ioi a = Ioi (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ioi a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ioi a
 
 @[simp]
 theorem preimage_mul_const_Iio₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iio a = Iio (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iio a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iio a
 
 @[simp]
 theorem preimage_mul_const_Icc₀ (a b : G₀) (h : 0 < c) :
@@ -842,7 +853,7 @@ lemma preimage_const_mul_Ioi_or_Iio (hb : a ≠ 0) {U V : Set α}
     (hU : U ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}) (hV : V = (a * ·) ⁻¹' U) :
     V ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a} := by
   obtain ⟨aU, (haU | haU)⟩ := hU <;>
-  simp only [hV, haU, mem_setOf_eq] <;>
+  simp only [hV, haU, mem_ofPred_eq] <;>
   use a⁻¹ * aU <;>
   rcases lt_or_gt_of_ne hb with (hb | hb)
   · right; rw [Set.preimage_const_mul_Ioi_of_neg _ hb, div_eq_inv_mul]
@@ -897,10 +908,6 @@ theorem Ici_pow_eq {a : α} :
     ∀ n ≠ 0, Ici a ^ n = Ici (a ^ n)
   | 1, _ => by simp
   | n + 2, _ => by simp [pow_succ _ n.succ, Ici_pow_eq, Ici_mul_Ici_eq]
-
-omit [MulRightMono α] in
-@[to_additive]
-lemma Ici_one_eq_univ : Set.Ici (1 : α) = Set.univ := by aesop
 
 end CanonicallyOrdered
 

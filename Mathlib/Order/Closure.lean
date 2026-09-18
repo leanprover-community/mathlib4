@@ -71,9 +71,10 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
+@[macro_inline]
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h
@@ -149,8 +150,11 @@ variable {c} {x y : α}
 theorem IsClosed.closure_eq : c.IsClosed x → c x = x := c.isClosed_iff.1
 
 /-- The set of closed elements for `c` is exactly its range. -/
-theorem setOf_isClosed_eq_range_closure : {x | c.IsClosed x} = Set.range c := by
+theorem setOfPred_isClosed_eq_range_closure : {x | c.IsClosed x} = Set.range c := by
   ext x; exact ⟨fun hx ↦ ⟨x, hx.closure_eq⟩, by rintro ⟨y, rfl⟩; exact c.isClosed_closure _⟩
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isClosed_eq_range_closure := setOfPred_isClosed_eq_range_closure
 
 theorem le_closure_iff : x ≤ c y ↔ c x ≤ c y :=
   ⟨fun h ↦ c.idempotent y ▸ c.monotone h, (c.le_closure x).trans⟩
@@ -164,6 +168,16 @@ lemma closure_min (hxy : x ≤ y) (hy : c.IsClosed y) : c x ≤ y := hy.closure_
 lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
   left _ := and_imp.mpr closure_min
   right _ h := h ⟨c.le_closure x, c.isClosed_closure x⟩
+
+/-- If the closed elements are stable under a binary operation `f` that is monotone in both of its
+arguments, then the closure is sub-`f`: `c (f x y) ≤ f (c x) (c y)`. Compare `closure_inf_le`,
+which is the case `f = (· ⊓ ·)`, where no stability assumption is needed. -/
+lemma closure_binop_le (c : ClosureOperator α) {f : α → α → α}
+    (hf : ∀ ⦃x y x' y'⦄, x ≤ x' → y ≤ y' → f x y ≤ f x' y')
+    (hclosed : ∀ ⦃x y⦄, c.IsClosed x → c.IsClosed y → c.IsClosed (f x y)) (x y : α) :
+    c (f x y) ≤ f (c x) (c y) :=
+  closure_min (hf (c.le_closure x) (c.le_closure y))
+    (hclosed (c.isClosed_closure x) (c.isClosed_closure y))
 
 end Preorder
 
@@ -236,6 +250,12 @@ theorem closure_inf_le [SemilatticeInf α] (c : ClosureOperator α) (x y : α) :
 section SemilatticeSup
 
 variable [SemilatticeSup α] (c : ClosureOperator α)
+
+theorem sup_closure_le (x y : α) : x ⊔ c y ≤ c (x ⊔ y) :=
+  sup_le (le_sup_left.trans (c.le_closure _)) (c.monotone le_sup_right)
+
+theorem closure_sup_le (x y : α) : c x ⊔ y ≤ c (x ⊔ y) :=
+  sup_le (c.monotone le_sup_left) (le_sup_right.trans (c.le_closure _))
 
 theorem closure_sup_closure_le (x y : α) : c x ⊔ c y ≤ c (x ⊔ y) :=
   c.monotone.le_map_sup _ _
@@ -401,13 +421,12 @@ theorem closure_is_closed (x : α) : u (l x) ∈ l.closed :=
 
 /-- The set of closed elements for `l` is the range of `u ∘ l`. -/
 theorem closed_eq_range_close : l.closed = Set.range (u ∘ l) :=
-  l.closureOperator.setOf_isClosed_eq_range_closure
+  l.closureOperator.setOfPred_isClosed_eq_range_closure
 
 /-- Send an `x` to an element of the set of closed elements (by taking the closure). -/
 def toClosed (x : α) : l.closed :=
   ⟨u (l x), l.closure_is_closed x⟩
 
-@[simp]
 theorem closure_le_closed_iff_le (x : α) {y : α} (hy : y ∈ l.closed) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 

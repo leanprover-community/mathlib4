@@ -73,6 +73,7 @@ lemma bracket_eq_fun (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
 
 section CompatibleDerivations
 variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R A A') in
 /-- Let `σ : A → A'` be a an homomorphism. A derivation `d : A → A` and a derivation

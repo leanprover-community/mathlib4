@@ -5,8 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # The set lattice and (pre)images of functions
@@ -231,7 +230,7 @@ theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ i, p i → Set α} (hp
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
     (f '' ⋂ (i) (hi), s i hi) = ⋂ (i) (hi), f '' s i hi := by
   simp only [iInter, iInf_subtype']
-  haveI : Nonempty { i // p i } := nonempty_subtype.2 hp
+  have : Nonempty { i // p i } := nonempty_subtype.2 hp
   apply InjOn.image_iInter_eq
   simpa only [iUnion, iSup_subtype'] using h
 
