@@ -6,6 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Linear.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Linear
 
 /-!
 # Monoidal structure on `C ⥤ D` when `D` is monoidal.
@@ -249,3 +251,19 @@ instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     simp [← Functor.map_comp]
 
 end CategoryTheory
+
+section
+
+namespace CategoryTheory
+
+variable {C A : Type*} [Category C] [Category A] [Preadditive A]
+    [MonoidalCategory A] [MonoidalPreadditive A]
+
+instance : MonoidalPreadditive (C ⥤ A) where
+
+instance (R : Type*) [Ring R] [Linear R A] [MonoidalLinear R A] :
+    MonoidalLinear R (C ⥤ A) where
+
+end CategoryTheory
+
+end
