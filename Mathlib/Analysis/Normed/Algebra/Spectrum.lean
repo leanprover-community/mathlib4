@@ -184,7 +184,7 @@ theorem mem_resolventSet_of_norm_lt {a : A} {k : 𝕜} (h : ‖a‖ < ‖k‖) :
 protected theorem isClosed (a : A) : IsClosed (σ a) :=
   (isOpen_resolventSet a).isClosed_compl
 
-@[deprecated mem_resolventSet_of_norm_lt (since := "2026-08-14")]
+@[deprecated mem_resolventSet_of_norm_lt +typeChanged (since := "2026-08-14")]
 theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 : A)‖ < ‖k‖) : k ∈ ρ a := by
   nontriviality A
   grw [← one_le_norm_one, mul_one] at h
@@ -193,14 +193,14 @@ theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 
 theorem norm_le_norm_of_mem {a : A} {k : 𝕜} (hk : k ∈ σ a) : ‖k‖ ≤ ‖a‖ :=
   le_of_not_gt <| mt mem_resolventSet_of_norm_lt hk
 
-@[deprecated norm_le_norm_of_mem (since := "2026-08-14")]
+@[deprecated norm_le_norm_of_mem +typeChanged (since := "2026-08-14")]
 theorem norm_le_norm_mul_of_mem {a : A} {k : 𝕜} (hk : k ∈ σ a) : ‖k‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
   le_of_not_gt <| mt mem_resolventSet_of_norm_lt_mul hk
 
 theorem subset_closedBall_norm (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) ‖a‖ :=
   fun k hk => by simp [norm_le_norm_of_mem hk]
 
-@[deprecated subset_closedBall_norm (since := "2026-08-14")]
+@[deprecated subset_closedBall_norm +typeChanged (since := "2026-08-14")]
 theorem subset_closedBall_norm_mul (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) (‖a‖ * ‖(1 : A)‖) :=
   fun k hk => by simp [norm_le_norm_mul_of_mem hk]
 
@@ -264,10 +264,6 @@ theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a)
 
 end NNReal
 
-theorem spectralRadius_le_nnnorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
-  refine iSup₂_le fun k hk => ?_
-  exact mod_cast norm_le_norm_of_mem hk
-
 section Unital
 
 variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
@@ -278,6 +274,7 @@ variable (𝕜)
 
 theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
     spectralRadius 𝕜 a ≤ (‖a ^ (n + 1)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) := by
+  rw [spectralRadius_eq_of_unital]
   refine iSup₂_le fun k hk => ?_
   -- apply easy direction of the spectral mapping theorem for polynomials
   have pow_mem : k ^ (n + 1) ∈ σ (a ^ (n + 1)) := by
@@ -444,7 +441,7 @@ private lemma quasispectrum_eq_spectrum_toLp_inr (a : A) :
   simpa [Unitization.quasispectrum_eq_spectrum_inr 𝕜, unitizationAlgEquiv] using
     AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A) |>.symm
 
-variable [CompleteSpace 𝕜] [CompleteSpace A]
+variable [HasSummableGeomSeries A]
 
 namespace quasispectrum
 
@@ -538,7 +535,7 @@ theorem norm_apply_le_self [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜]
     (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
   spectrum.norm_le_norm_of_mem (apply_mem_spectrum f _)
 
-@[deprecated norm_apply_le_self (since := "2026-08-14")]
+@[deprecated norm_apply_le_self +typeChanged (since := "2026-08-14")]
 theorem norm_apply_le_self_mul_norm_one [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) :
     ‖f a‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
   spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum f _)

@@ -302,12 +302,34 @@ lemma summable_iterate_mul_of_norm_lt_one [HasSummableGeomSeries R] {x : R} (h :
     Summable ((· * x)^[·] x) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
+-- Move me
+/-- A non-unital subring of a non-unital seminormed ring is also a non-unital seminormed ring,
+with the restriction of the norm. -/
+instance (priority := 75) NonUnitalSubringClass.nonUnitalSeminormedRing {S E : Type*}
+    [NonUnitalSeminormedRing E] [SetLike S E] [NonUnitalSubringClass S E] (s : S) :
+    NonUnitalSeminormedRing s :=
+  { AddSubgroupClass.seminormedAddCommGroup s, NonUnitalSubringClass.toNonUnitalRing s with
+    norm_mul_le a b := norm_mul_le a.1 b.1 }
+
+-- Move me
+/-- A non-unital subring of a non-unital seminormed ring is also a non-unital seminormed ring,
+with the restriction of the norm. -/
+instance (priority := 75) NonUnitalSubringClass.nonUnitalNormedRing {S E : Type*}
+    [NonUnitalNormedRing E] [SetLike S E] [NonUnitalSubringClass S E] (s : S) :
+    NonUnitalNormedRing s :=
+  { NonUnitalSubringClass.nonUnitalSeminormedRing s with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+
 /-- A closed subring has summable geometric series when the ambient ring does. -/
 instance {S : Type*} [SetLike S R] [NonUnitalSubringClass S R] [HasSummableGeomSeries R]
     (s : S) [hs : IsClosed (s : Set R)] : HasSummableGeomSeries s where
   summable_geometric_of_norm_lt_one x hx := by
-    obtain ⟨L, hL⟩ := summable_geometric_of_norm_lt_one (x := (x : R)) hx
-    simp only [← SubmonoidClass.coe_pow] at hL
+    obtain ⟨L, hL⟩ := summable_iterate_mul_of_norm_lt_one (x := (x : R)) hx
+    replace hL : HasSum (fun x_1 ↦ (↑((fun x_2 ↦ x_2 * x)^[x_1] x) : R)) L := by
+      convert hL with n
+      induction n with
+      | zero => simp
+      | succ n ih => simp [ih, iterate_succ_apply']
     lift L to s using hs.mem_of_tendsto hL.tendsto_sum_nat <| .of_forall fun _ ↦ by
       simp only [← AddSubmonoidClass.coe_finsetSum, Subtype.coe_prop]
     apply HasSum.summable (a := L)
