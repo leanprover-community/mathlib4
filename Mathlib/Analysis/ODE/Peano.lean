@@ -262,21 +262,21 @@ section ArzelaAscoli
 
 /-- The Tonelli approximations as bounded continuous functions on `Icc t₀ tmax`. -/
 private noncomputable def boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) : Icc t₀ tmax →ᵇ E :=
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) : Icc t₀ tmax →ᵇ E :=
   .mkOfCompact ⟨(Icc t₀ tmax).domRestrict (tonelliApproximation f t₀ tmax x₀ n),
     continuousOn_iff_continuous_domRestrict.mp
       (lipschitzOnWith_tonelliApproximation hf n).continuousOn⟩
 
 /-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
 private lemma lipschitzWith_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     LipschitzWith L (boundedTonelliApproximation hf n) :=
   lipschitzWith_iff_dist_le_mul.mpr fun t s ↦
     (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.2 s.val s.2
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
 private lemma equicontinuous_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
   (LipschitzWith.uniformEquicontinuous _ L
     (lipschitzWith_boundedTonelliApproximation hf)).equicontinuous
@@ -285,7 +285,7 @@ variable [FiniteDimensional ℝ E]
 
 /-- The closure of the family of the Tonelli approximations is compact. -/
 private lemma isCompact_closure_range_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     IsCompact (closure (range (boundedTonelliApproximation hf))) := by
   apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) (isCompact_closedBall _ _)
   · rintro g x ⟨n, rfl⟩
@@ -294,7 +294,7 @@ private lemma isCompact_closure_range_boundedTonelliApproximation
 
 /-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/
 private lemma exists_tendsto_subseq_boundedTonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     ∃ β : Icc t₀ tmax →ᵇ E, ∃ φ : ℕ → ℕ, StrictMono φ ∧
       Tendsto (boundedTonelliApproximation hf ∘ φ) atTop (nhds β) := by
   obtain ⟨β, _, φ, hφ_mono, hφ_tendsto⟩ :=
