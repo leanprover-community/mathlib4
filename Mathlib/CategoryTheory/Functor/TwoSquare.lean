@@ -53,15 +53,17 @@ abbrev TwoSquare := T ⋙ R ⟶ L ⋙ B
 namespace TwoSquare
 
 /-- Constructor for `TwoSquare`. -/
+@[deprecated "No replacement" (since := "2026-09-18")]
 abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T} {L} {R} {B} in
 /-- The natural transformation associated to a 2-square. -/
+@[deprecated "No replacement" (since := "2026-09-18")]
 abbrev natTrans (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
 
 /-- The type of 2-squares on functors `T`, `L`, `R`, and `B` is trivially equivalent to
 the type of natural transformations `T ⋙ R ⟶ L ⋙ B`. -/
-@[simps]
+@[simps, deprecated "No replacement" (since := "2026-09-18")]
 def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
   toFun := natTrans
   invFun := mk T L R B
@@ -69,16 +71,13 @@ def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
 variable {T L R B}
 
 /-- The opposite of a `2`-square. -/
-def op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op := NatTrans.op α
+abbrev op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op := NatTrans.op α
 
-@[simp]
+@[deprecated "No replacement" (since := "2026-09-18")]
 lemma natTrans_op (α : TwoSquare T L R B) :
     α.op.natTrans = NatTrans.op α.natTrans := rfl
 
-instance (α : TwoSquare T L R B) [IsIso α.natTrans] : IsIso α.op.natTrans :=
-  inferInstanceAs (IsIso (NatTrans.op α.natTrans))
-
-@[ext]
+@[deprecated "Use NatTrans.ext" (since := "2026-09-18")]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.natTrans.app X) :
     w = w' :=
   NatTrans.ext (funext h)
@@ -102,25 +101,25 @@ scoped notation "𝟙ᵥ" => vId  -- type as \b1\_v
 /-- Whiskering a 2-square with a natural transformation at the top. -/
 @[simps!]
 protected def whiskerTop {T' : C₁ ⥤ C₂} (w : TwoSquare T' L R B) (α : T ⟶ T') : TwoSquare T L R B :=
-  .mk _ _ _ _ <| whiskerRight α R ≫ w.natTrans
+  whiskerRight α R ≫ w
 
 /-- Whiskering a 2-square with a natural transformation at the left side. -/
 @[simps!]
 protected def whiskerLeft {L' : C₁ ⥤ C₃} (w : TwoSquare T L R B) (α : L ⟶ L') :
     TwoSquare T L' R B :=
-  .mk _ _ _ _ <| w.natTrans ≫ whiskerRight α B
+  w ≫ whiskerRight α B
 
 /-- Whiskering a 2-square with a natural transformation at the right side. -/
 @[simps!]
 protected def whiskerRight {R' : C₂ ⥤ C₄} (w : TwoSquare T L R' B) (α : R ⟶ R') :
     TwoSquare T L R B :=
-  .mk _ _ _ _ <| whiskerLeft T α ≫ w.natTrans
+  whiskerLeft T α ≫ w
 
 /-- Whiskering a 2-square with a natural transformation at the bottom. -/
 @[simps!]
 protected def whiskerBottom {B' : C₃ ⥤ C₄} (w : TwoSquare T L R B) (α : B ⟶ B') :
     TwoSquare T L R B' :=
-  .mk _ _ _ _ <| w.natTrans ≫ whiskerLeft L α
+  w ≫ whiskerLeft L α
 
 variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u₈}
   [Category.{v₅} C₅] [Category.{v₆} C₆] [Category.{v₇} C₇] [Category.{v₈} C₈]
@@ -130,8 +129,8 @@ variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u
 @[simps!]
 def hComp (w : TwoSquare T L R B) (w' : TwoSquare T' R R' B') :
     TwoSquare (T ⋙ T') L R' (B ⋙ B') :=
-  .mk _ _ _ _ <| (associator _ _ _).hom ≫ (whiskerLeft T w'.natTrans) ≫
-    (associator _ _ _).inv ≫ (whiskerRight w.natTrans B') ≫ (associator _ _ _).hom
+  (associator _ _ _).hom ≫ (whiskerLeft T w') ≫
+    (associator _ _ _).inv ≫ (whiskerRight w B') ≫ (associator _ _ _).hom
 
 /-- Notation for the horizontal composition of 2-squares. -/
 scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
@@ -140,8 +139,8 @@ scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
 @[simps!]
 def vComp (w : TwoSquare T L R B) (w' : TwoSquare B L' R'' B'') :
     TwoSquare T (L ⋙ L') (R ⋙ R'') B'' :=
-  .mk _ _ _ _ <| (associator _ _ _).inv ≫ whiskerRight w.natTrans R'' ≫
-    (associator _ _ _).hom ≫ whiskerLeft L w'.natTrans ≫ (associator _ _ _).inv
+  (associator _ _ _).inv ≫ whiskerRight w R'' ≫
+    (associator _ _ _).hom ≫ whiskerLeft L w' ≫ (associator _ _ _).inv
 
 /-- Notation for the vertical composition of 2-squares. -/
 scoped infixr:80 " ≫ᵥ " => vComp -- type as \gg\_v
@@ -150,7 +149,6 @@ section Interchange
 
 variable {C₉ : Type u₉} [Category.{v₉} C₉] {R₃ : C₆ ⥤ C₉} {B₃ : C₈ ⥤ C₉}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When composing 2-squares which form a diagram of grid, composing horizontally first yields the
 same result as composing vertically first. -/
 lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
@@ -176,7 +174,7 @@ variable {D₁ D₂ D₃ D₄ : Type*}
 @[simps!]
 def prod (w : TwoSquare T L R B) (w' : TwoSquare T' L' R' B') :
     TwoSquare (T.prod T') (L.prod L') (R.prod R') (B.prod B') :=
-  TwoSquare.mk _ _ _ _ (NatTrans.prod w w')
+  NatTrans.prod w w'
 
 end prod
 
