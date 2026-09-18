@@ -3513,6 +3513,7 @@ public import Mathlib.CategoryTheory.Sites.LocallyInjective
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
 public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 public import Mathlib.CategoryTheory.Sites.Monoidal
+public import Mathlib.CategoryTheory.Sites.MonoidalFunctor
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 public import Mathlib.CategoryTheory.Sites.Over
