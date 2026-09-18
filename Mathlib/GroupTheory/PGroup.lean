@@ -5,9 +5,7 @@ Authors: Chris Hughes, Thomas Browning, Snir Broshi
 -/
 module
 
-public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.GroupTheory.Perm.Cycle.Type
-public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
