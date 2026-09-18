@@ -3,7 +3,7 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid, Yury Kudryashov
 -/
-module  -- shake: keep-downstream (`register_hint` is untracked; `grw` re-exports the lemma set)
+module
 
 public import Mathlib.Tactic.GCongr.Core
 public import Mathlib.Tactic.Hint

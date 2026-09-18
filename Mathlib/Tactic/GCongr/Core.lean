@@ -542,7 +542,6 @@ def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool
   -- extension closes the goal.
   let tacs := (forwardExt.getState (← getEnv)).2
   let mctx ← getMCtx
-  -- Iterate over a list of terms
   for h in hs do
     try
       tacs.firstM fun (n, tac) =>
@@ -804,11 +803,6 @@ partial def _root_.Lean.MVarId.gcongr
     catch _ =>
       setMCtx mctx
       continue
-    -- `@[gcongr]` lemmas are found by `DiscrTree` lookup, so there is no constant reference for
-    -- `shake` to trace back to the module that registered `lem`. Record it now that `lem` has
-    -- actually been applied. When the attribute handler built an auxiliary lemma, `lem.declName`
-    -- names that auxiliary lemma, which lives in the registering module: what we want here.
-    recordExtraModUseFromDecl (isMeta := false) lem.declName
     sideGoals.forM dischargeSide
     for (mvarId, isContra) in mainGoals do
       let mdataLhs?' := mdataLhs?.map (· != isContra)
