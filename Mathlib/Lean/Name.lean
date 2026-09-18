@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
-public import Lean.Meta.Match.MatcherInfo
+public meta import Lean.Meta.Match.MatcherInfo
 
 /-!
 # Additional functions on `Lean.Name`.
@@ -14,7 +14,7 @@ public import Lean.Meta.Match.MatcherInfo
 We provide `allNames` and `allNamesByModule`.
 -/
 
-public section
+public meta section
 
 open Lean Meta Elab
 

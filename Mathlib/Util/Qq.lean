@@ -6,8 +6,8 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 module
 
 public import Mathlib.Init
-public import Qq
-public import Qq.Typ
+public meta import Qq
+public meta import Qq.Typ
 
 /-!
 # Extra `Qq` helpers
@@ -15,7 +15,7 @@ public import Qq.Typ
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
 
-public section
+public meta section
 
 open Lean Elab Tactic Meta
 

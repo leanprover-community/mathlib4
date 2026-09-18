@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Expr.Basic
 
 /-!
 # `Ineq` datatype
@@ -15,7 +15,7 @@ involving it. The type `Ineq` is one of the fundamental objects manipulated by t
 `linear_combination` tactics.
 -/
 
-@[expose] public section
+@[expose] public meta section
 
 open Lean Meta
 

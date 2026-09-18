@@ -5,16 +5,16 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.Elab.SyntheticMVars
+public meta import Lean.Elab.SyntheticMVars
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header  -- shake: keep
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # Additions to `Lean.Elab.Tactic.Meta`
 -/
 
-@[expose] public section
+@[expose] public meta section
 
 namespace Lean.Elab
 open Term

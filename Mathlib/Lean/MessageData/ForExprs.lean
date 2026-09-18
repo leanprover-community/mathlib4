@@ -7,8 +7,8 @@ Authors: Eric Wieser, Kim Morrison
 module
 
 import Mathlib.Init
-public import Lean.Message
-public import Lean.Meta.Basic
+public meta import Lean.Message
+public meta import Lean.Meta.Basic
 
 /-!
 # Tools for extracting `Expr`s from `MessageData` nodes
@@ -20,7 +20,7 @@ expressions `e` in a `msg : MessageData`. The surrounding monad must support `Ba
 Some helpers are provided implemented in terms of this.
 -/
 
-public section
+public meta section
 
 namespace Lean.MessageData
 

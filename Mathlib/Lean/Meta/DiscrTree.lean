@@ -11,7 +11,7 @@ public import Mathlib.Init
 # Additions to `Lean.Meta.DiscrTree`
 -/
 
-@[expose] public section
+@[expose] public meta section
 
 namespace Lean.Meta.DiscrTree
 

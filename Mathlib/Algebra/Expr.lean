@@ -6,15 +6,15 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Init
-public import Qq
-public import Qq.Typ
+public meta import Qq
+public meta import Qq.Typ
 
 /-! # Helpers to invoke functions involving algebra at tactic time
 
 This file provides instances on `x y : Q($α)` such that `x + y = q($x + $y)`.
 -/
 
-@[expose] public section
+@[expose] public meta section
 open Qq
 
 /-- Produce a `One` instance for `Q($α)` such that `1 : Q($α)` is `q(1 : $α)`. -/
