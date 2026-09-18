@@ -639,7 +639,8 @@ theorem eq_of_mem_range_of_mem_range {i j : ℤ}
     have := toIocDiv_eq_iff two_pi_pos (a := -π) (b := w.arg + w.im) (n := j) |>.mpr
     grind
 
-/-- See also `Complex.LambertW.index`. -/
+/-- See also `Complex.LambertW.index`, `Complex.eq_lambertW_index_of_eq_mul_exp` and
+`Complex.eq_index_of_mem_lambertW`. -/
 public theorem existsUnique_mem_range_of_ne_neg_one (hw : w ≠ -1) :
     ∃! k : ℤ, w ∈ range k := by
   obtain ⟨k, hk⟩ : ∃ k, w ∈ range k := mem_iUnion.mp <| eq_univ_iff_forall.mp iUnion_range w
@@ -852,7 +853,8 @@ theorem existsUnique_mem_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) (hz : z ≠
       rw [mul_exp_eq_of_arg_add_im_eq (ne_zero_of_mem_range hk hw) h_eq, ← ofReal_neg,
         arg_ofReal_of_neg <| neg_neg_iff_pos.mpr <| Real.exp_pos _]
 
-/-- The `w` is `W_ k z`, see also `Complex.lambertW`. -/
+/-- The `w` is `W_ k z`, see also `Complex.lambertW`,
+`Complex.lambertW_mul_exp_lambertW_of_mem_domain` and `Complex.eq_lambertW_of_eq_mul_exp`. -/
 public theorem existsUnique_mem_range_mul_exp_eq (hz : z ∈ domain k) :
     ∃! w ∈ range k, w * cexp w = z := by
   rcases (show k = 0 ∨ k = -1 ∨ (k ≠ 0 ∧ k ≠ -1) by tauto) with rfl | rfl | ⟨hk, hk'⟩
@@ -960,6 +962,12 @@ public theorem lambertW_mul_exp_of_mem_range (hw : w ∈ range k) : W_ k (w * ex
 public theorem lambertW_mul_exp_lambertW_of_mem_domain (hz : z ∈ domain k) :
     W_ k z * cexp (W_ k z) = z :=
   invOn_mul_exp_lambertW_domain_range.left hz
+
+/-- If `w ∈ range k` and `z = w * cexp w`, then `w = W_ k z`. In other words, on
+`range k`, `W_ k z` is the unique inverse of `w ↦ w * cexp w`. -/
+public theorem eq_lambertW_of_eq_mul_exp (hw : w ∈ range k) (hz : z = w * cexp w) :
+    w = W_ k z := by
+  rw [hz, lambertW_mul_exp_of_mem_range hw]
 
 @[simp]
 public theorem lambertW_zero_mul_exp_lambertW_zero : W₀ z * cexp (W₀ z) = z :=
