@@ -104,7 +104,7 @@ lemma IsCompactElement.exists_le_finsetSup_of_le_isLUB {α : Type*} [Semilattice
     use (t ∪ t').sup id
     grind
   specialize hk {x | ∃ t : Finset α, ↑t ⊆ s ∧ x = t.sup id} u ⟨⊥, ∅, by simp⟩ hdir
-  simp only [Set.mem_ofPred_eq, ↓existsAndEq, and_true] at hk
+  simp only [Set.mem_ofPred, ↓existsAndEq, and_true] at hk
   refine hk ⟨?_, ?_⟩ hle
   · rintro _ ⟨t, ht, rfl⟩
     exact Finset.sup_le fun x hx => hu.1 (ht hx)
