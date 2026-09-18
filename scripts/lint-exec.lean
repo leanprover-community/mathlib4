@@ -32,7 +32,8 @@ The one exception is that commands which change the *parser* for later commands 
 (`namespace`, `open`, `notation`, `syntax`, `macro`, …) are elaborated, because otherwise ordinary
 files with local notation would not parse. `macro` and `elab` only have their `syntax` half
 installed; their bodies are never even defined. After the first disallowed finding in a file the
-linter stops elaborating and only parses.
+linter stops elaborating `syntax`, `macro` and `elab` (the commands that could refer to a parser
+defined in the file) and only parses those.
 
 A file that does not parse is reported as a finding (`parse-error`): a broken file cannot be
 vouched for, and the build will fail on it anyway.
@@ -84,6 +85,13 @@ def scopingCommands : List Name := [
   `declare_syntax_cat, `syntax, `syntaxAbbrev, `notation, `mixfix, `binder_predicate,
   `notation3, `binderPredicate, `macro, `elab]
 
+/-- The subset of `scopingCommands` that can refer to a parser *defined in the file* (`syntax`
+takes arbitrary parser names, and `macro`/`elab` declare `syntax`). After a disallowed finding
+these are no longer elaborated, so that a flagged `unsafe def myParser` can never be run; the
+others (whose syntax is built from atoms, precedences and categories only) still are, so that
+later notation in the file keeps parsing. -/
+def parserReferencingCommands : List Name := [`syntax, `syntaxAbbrev, `macro, `elab]
+
 /-- The first atom of a command, e.g. `"scoped"` for `scoped[NS] …`. -/
 partial def headAtom? : Syntax → Option String
   | .atom _ v => some v
@@ -92,12 +100,12 @@ partial def headAtom? : Syntax → Option String
 
 /-- Is this a command we elaborate (see `scopingCommands`)? Wrapper commands (`… in`, Mathlib's
 `scoped[NS] …` and `with_weak_namespace NS …`) are elaborated iff their inner command is. -/
-partial def isScoping (stx : Syntax) : Bool :=
+partial def isScoping (stx : Syntax) (afterFinding : Bool := false) : Bool :=
   let last := stx.getKind.componentsRev.headD .anonymous
   if last == `in || last == `scopedNS || headAtom? stx == some "with_weak_namespace"
       || headAtom? stx == some "unsuppress_compilation" then
-    isScoping (innermost stx.getArgs.back!)
-  else scopingCommands.contains last
+    isScoping (innermost stx.getArgs.back!) afterFinding
+  else scopingCommands.contains last && !(afterFinding && parserReferencingCommands.contains last)
 where
   /-- Skip through optional/sequence nodes (e.g. `(" in " command)?`) to the wrapped command. -/
   innermost (stx : Syntax) : Syntax :=
@@ -245,7 +253,7 @@ def lintFile (path : FilePath) (allow : Array String) (stopOnFinding verbose : B
   withReader (fun c => { c with fileName := path.toString, fileMap := ictx.fileMap }) do
     let mut pstate := pstate
     let mut findings := #[]
-    let mut stopElab := false
+    let mut afterFinding := false
     let mut lastElabError : Option (Position × String) := none
     repeat
       let s ← get
@@ -264,8 +272,8 @@ def lintFile (path : FilePath) (allow : Array String) (stopOnFinding verbose : B
             { pos := ictx.fileMap.ofPosition m.pos, construct := parseErrorConstruct, detail }
       let fs := walk cmd
       findings := findings ++ fs
-      if stopOnFinding && fs.any (!allow.contains ·.construct) then stopElab := true
-      if !stopElab && isScoping cmd then
+      if stopOnFinding && fs.any (!allow.contains ·.construct) then afterFinding := true
+      if isScoping cmd afterFinding then
         if let some e ← elabScoping cmd then
           let p := ictx.fileMap.toPosition (cmd.getPos?.getD 0)
           if verbose then IO.eprintln s!"{path}:{p.line}: could not set up command: {e}"
