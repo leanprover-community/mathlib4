@@ -87,8 +87,7 @@ variable {P Y : R⟦X⟧}
 variable (hY : Y = X * P.subst Y)
 include hY
 
-private theorem lagrange_inversion_coeff_pow_of_le
-    : ∀ m : ℕ, ∀ k ≤ m + 1,
+private theorem lagrange_inversion_coeff_pow_of_le : ∀ m : ℕ, ∀ k ≤ m + 1,
       (m + 1) • (Y ^ k).coeff (m + 1) = k • (P ^ (m + 1)).coeff (m + 1 - k) := by
   intro m
   induction m using Nat.strong_induction_on with
@@ -135,9 +134,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
     have hcoeff : ((k : R) + (t + 1)) *
           (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t =
         (k : R) * ((t : R) + 1) * (P ^ (k + (t + 1))).coeff (t + 1) := by
-      have h := congrArg (fun q : R⟦X⟧ ↦ q.coeff t) hpoly
-      simp only [coeff_C_mul] at h
-      rw [h, coeff_derivative]
+      rw [← coeff_C_mul, hpoly, coeff_C_mul, coeff_derivative]
       ring
     have hsum : ((t : R) + 1) * (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
       rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), mul_sum, ← hconv]
@@ -152,8 +149,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
 a formal power series `H`,
 
 `(n + 1) * [X ^ (n + 1)] H(Y) = [X ^ n] (H' * P ^ (n + 1))`. -/
-theorem lagrange_burmann_coeff
-    (n : ℕ) (H : R⟦X⟧) :
+theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
   simp only [nsmul_eq_mul]
   have hlhs : ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
@@ -171,8 +167,7 @@ theorem lagrange_burmann_coeff
 /-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
 `(n + k) * [X ^ (n + k)] Y ^ k = k * [X ^ n] P ^ (n + k)` for all natural numbers
 `n` and `k`. -/
-theorem lagrange_inversion_coeff_pow
-    (n k : ℕ) :
+theorem lagrange_inversion_coeff_pow (n k : ℕ) :
     (n + k) • (Y ^ k).coeff (n + k) = k • (P ^ (n + k)).coeff n := by
   rcases k with _ | k
   · simp +contextual
