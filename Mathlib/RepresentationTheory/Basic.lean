@@ -174,11 +174,24 @@ theorem asModuleEquiv_symm_map_smul (r : k) (x : V) :
   rw [LinearEquiv.symm_apply_eq]
   simp
 
-@[simp]
 theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
     ρ.asModuleEquiv.symm (ρ g x) = MonoidAlgebra.of k G g • ρ.asModuleEquiv.symm x := by
   rw [LinearEquiv.symm_apply_eq]
   simp
+
+lemma asModuleEquiv_apply_single_smul (t : k) (g : G) (v : ρ.asModule) :
+    ρ.asModuleEquiv (MonoidAlgebra.single (g : G) t • v) = t • ρ g (ρ.asModuleEquiv v) := by
+  simp
+
+@[simp]
+lemma single_smul_asModuleEquiv_symm_apply (t : k) (g : G) (v : V) :
+    MonoidAlgebra.single (g : G) t • ρ.asModuleEquiv.symm v = t • ρ.asModuleEquiv.symm (ρ g v) := by
+  rw [← map_smul ρ.asModuleEquiv.symm, ρ.asModuleEquiv.eq_symm_apply,
+    asModuleEquiv_apply_single_smul, LinearEquiv.apply_symm_apply]
+
+theorem single_smul (t : k) (g : G) (v : ρ.asModule) :
+    MonoidAlgebra.single (g : G) t • v = t • ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv v)) :=
+  ρ.single_smul_asModuleEquiv_symm_apply t g (ρ.asModuleEquiv v)
 
 /-- Build a `Representation k G M` from a `[Module k[G] M]`.
 
@@ -244,7 +257,7 @@ theorem ofModule_asModule_act (g : G) (x : RestrictScalars k k[G] ρ.asModule) :
       (RestrictScalars.addEquiv _ _ _).symm
         (ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv (RestrictScalars.addEquiv _ _ _ x)))) := by
   dsimp [ofModule, RestrictScalars.lsmul_apply_apply]
-  simp
+  simp [single_smul]
 
 theorem smul_ofModule_asModule (r : k[G]) (m : (ofModule M).asModule) :
     (RestrictScalars.addEquiv k _ _) ((ofModule M).asModuleEquiv (r • m)) =
@@ -254,18 +267,11 @@ theorem smul_ofModule_asModule (r : k[G]) (m : (ofModule M).asModule) :
 
 end
 
-@[simp]
-lemma single_smul (t : k) (g : G) (v : ρ.asModule) :
-    MonoidAlgebra.single (g : G) t • v = t • ρ g (ρ.asModuleEquiv v) := by
-  rw [← LinearMap.smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower k k[G] ρ.asModule where
   smul_assoc t x v := by
     revert t
     apply x.induction_on
-    · simp
+    · simp [← ρ.asModuleEquiv.injective.eq_iff]
     · intro y z hy hz
       simp [add_smul, hy, hz]
     · intro s y hy t
