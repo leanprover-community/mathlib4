@@ -400,7 +400,7 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
 @[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
 
 @[simp]
-theorem trans_prodComm_prodComm [Module R₁ M₂] :
+theorem prodComm_trans_prodComm [Module R₁ M₂] :
     (prodComm R₁ M₁ M₂).trans (prodComm R₁ M₂ M₁) = .refl _ _ := by
   ext
   all_goals simp

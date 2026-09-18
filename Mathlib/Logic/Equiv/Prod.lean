@@ -98,7 +98,7 @@ theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
 
 @[simp]
-theorem trans_prodComm_prodComm (α β) : (prodComm α β).trans (prodComm β α) = Equiv.refl _ := by
+theorem prodComm_trans_prodComm (α β) : (prodComm α β).trans (prodComm β α) = Equiv.refl _ := by
   ext
   all_goals simp
 
