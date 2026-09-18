@@ -661,7 +661,10 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     MetaM (ConstantInfo × Option RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
-  -- Expose the target body when source body is exposed
+  /- `addDecl` infers visibility from whether the name `tgt` is private, and exposure
+  from the current value of `isExporting` (and whether the declaration is a theorem).
+  So, we use `withExporing (isExporting := exposeBody)` around `addDecl`.
+  We also need this around `updateDecl` to make sure all identifiers are recognized. -/
   let exposeBody := (← getEnv).hasExposedBody srcDecl.name
   let decl ← withExporting (isExporting := exposeBody) do←
     if let some unfoldBoundaries := t.unfoldBoundaries? then
