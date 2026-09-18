@@ -15,9 +15,9 @@ This file contains basic results on piecewise defined functions.
 
 public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ δ : Type*} {ι : Sort*}
 
-open Equiv Equiv.Perm Function
+open Equiv.Perm Function
 
 namespace Set
 
@@ -50,11 +50,11 @@ theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ inse
 
 @[simp]
 theorem piecewise_eq_of_mem {i : α} (hi : i ∈ s) : s.piecewise f g i = f i :=
-  if_pos hi
+  ite_eq_left hi
 
 @[simp]
 theorem piecewise_eq_of_notMem {i : α} (hi : i ∉ s) : s.piecewise f g i = g i :=
-  if_neg hi
+  ite_eq_right hi
 
 theorem piecewise_singleton (x : α) [∀ y, Decidable (y ∈ ({x} : Set α))] [DecidableEq α]
     (f g : α → β) : piecewise {x} f g = Function.update g x (f x) := by

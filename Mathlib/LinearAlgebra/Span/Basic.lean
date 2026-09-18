@@ -347,9 +347,9 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
 
 theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by
-  rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
+  rw [isCompactElement_iff_le_of_directed_sSup_le]
   intro d hemp hdir hsup
-  have : x ∈ (sSup d) := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
+  have : x ∈ (sSup d) := (mem_of_le_of_mem hsup) (mem_span_singleton_self x)
   obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_sSup_of_directed hemp hdir).mp this
   exact ⟨y, ⟨hyd, by simpa only [span_le, singleton_subset_iff] ⟩⟩
 
@@ -359,8 +359,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
   rw [span_eq_iSup_of_singleton_spans]
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_iSup]
-  exact
-    CompleteLattice.isCompactElement_finsetSup S fun x _ => singleton_span_isCompactElement x
+  exact isCompactElement_finsetSup S fun x _ => singleton_span_isCompactElement x
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
 theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
@@ -413,10 +412,19 @@ theorem prod_inf_prod : prod p q₁ ⊓ prod p' q₁' = prod (p ⊓ p') (q₁ �
 theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ ⊔ q₁') := by
   refine le_antisymm
     (sup_le (prod_mono le_sup_left le_sup_left) (prod_mono le_sup_right le_sup_right)) ?_
-  simp only [SetLike.le_def, mem_prod, and_imp, Prod.forall]; intro xx yy hxx hyy
+  simp only [IsConcreteLE.le_iff, mem_prod, and_imp, Prod.forall]; intro xx yy hxx hyy
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
   exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
+
+/-- The product submodule `p.prod q` is linearly equivalent to the product `p × q` of the
+submodules. -/
+@[simps]
+def prodEquiv (p : Submodule R M) (q : Submodule R M') : p.prod q ≃ₗ[R] p × q where
+  toFun x := (⟨x.1.1, (mem_prod.1 x.2).1⟩, ⟨x.1.2, (mem_prod.1 x.2).2⟩)
+  invFun y := ⟨(y.1.1, y.2.1), mem_prod.2 ⟨y.1.2, y.2.2⟩⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 /-- If a bilinear map takes values in a submodule along two sets, then the same is true along
 the span of these sets. -/
@@ -604,7 +612,7 @@ lemma comap_covBy_of_surjective {f : M →ₛₗ[τ₁₂] M₂} (hf : Surjectiv
   rwa [← comap_lt_comap_iff_of_surjective hf, comap_map_eq, sup_eq_left.mpr]
   refine (LinearMap.ker_le_comap (f : M →ₛₗ[τ₁₂] M₂)).trans h₁.le
 
-@[deprecated map_eq_range_iff (since := "2026-07-01")]
+@[deprecated map_eq_range_iff +typeChanged (since := "2026-07-01")]
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ Codisjoint S f.ker := by
   simp [map_eq_range_iff]
@@ -672,7 +680,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x :
 /-- There is no vector subspace between `s` and `K ∙ x ⊔ s`, `WCovBy` version. -/
 theorem wcovBy_span_singleton_sup (x : V) (s : Submodule K V) : WCovBy s (K ∙ x ⊔ s) := by
   refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_ge ?_⟩
-  rcases SetLike.exists_of_lt hpq with ⟨y, hyq, hyp⟩
+  rcases IsConcreteLE.exists_of_lt hpq with ⟨y, hyq, hyp⟩
   obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ s, c • x + z = y := by
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
   rcases eq_or_ne c 0 with rfl | hc
@@ -748,8 +756,6 @@ lemma smulRight_id : id.smulRight = toSpanSingleton R M := rfl
 theorem toSpanSingleton_apply_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 
-@[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
-
 theorem toSpanSingleton_injective : Function.Injective (toSpanSingleton R M) :=
   fun _ _ eq ↦ by simpa using congr($eq 1)
 
@@ -784,9 +790,6 @@ theorem isIdempotentElem_map_one_iff {f : Module.End R R} :
     LinearMap.ext_iff]
   simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
-
-@[deprecated (since := "2025-12-05")] alias isIdempotentElem_apply_one_iff :=
-  isIdempotentElem_map_one_iff
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem range_toSpanSingleton (x : M) :

@@ -38,7 +38,7 @@ variable [Ring R]
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 def free : Type u ⥤ ModuleCat R where
-  obj X := ModuleCat.of R (X →₀ R)
+  obj X := ↧(X →₀ R)
   map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ (f : _ → _)
 
 /-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
@@ -46,7 +46,7 @@ free `R`-module with generators `x : X`, implemented as the monoid algebra `R[X]
 -/
 @[simps]
 def monoidAlgebraFree : Type u ⥤ ModuleCat.{u} R where
-  obj X := .of R R[X]
+  obj X := ↧R[X]
   map f := ofHom (MonoidAlgebra.mapDomainLinearMap R R f)
 
 variable {R}
@@ -89,8 +89,7 @@ def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
 
 variable (R)
 
-/-- The free-forgetful adjunction for R-modules.
--/
+/-- The free-forgetful adjunction for R-modules. -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => freeHomEquiv
@@ -114,6 +113,7 @@ variable [CommRing R]
 
 namespace FreeMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
@@ -240,6 +240,7 @@ open Finsupp
 -- Conceptually, it would be nice to construct this via "transport of enrichment",
 -- using the fact that `ModuleCat.Free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
 -- monoidal. This still seems difficult, so we just do it by hand.
+set_option backward.isDefEq.respectTransparency.types false in
 instance categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
   id := fun X : C => Finsupp.single (𝟙 X) 1
@@ -337,6 +338,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_map_single (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (r : R) :
     (lift R F).map (single f r) = r • F.map f := by simp
 
@@ -354,6 +356,7 @@ instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
     dsimp
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The embedding into the `R`-linear completion, followed by the lift,
 is isomorphic to the original functor.

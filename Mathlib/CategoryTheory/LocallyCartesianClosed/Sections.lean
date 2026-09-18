@@ -104,6 +104,7 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     dsimp [uncurry] at *
     rw [Category.assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sectionsCurry_sectionUncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
@@ -111,6 +112,7 @@ theorem sectionsCurry_sectionUncurry {X : Over I} {A : C} {v : A ⟶ (sections I
   dsimp [sectionsCurry, sectionsUncurry]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sectionsUncurry_sectionsCurry {X : Over I} {A : C} {u : (toOver I).obj A ⟶ X} :
@@ -147,6 +149,9 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
     · simp [← curry_natural_right]
     · simp
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The adjunction between the toOver functor and the sections functor. -/
 @[simps! unit_app counit_app]
 def toOverSectionsAdj : toOver I ⊣ sections I :=

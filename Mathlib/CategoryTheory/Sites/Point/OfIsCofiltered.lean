@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ShrinkYoneda
-public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
@@ -65,7 +64,6 @@ lemma fiberMk_jointly_surjective {X : C} (x : (fiber.{w} p).obj X) :
   exact ⟨U.unop, f, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {p} in
 lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
     {U : N} {X : C} {f₁ f₂ : p.obj U ⟶ X} (hf : fiberMk f₁ = fiberMk f₂) :
@@ -77,7 +75,6 @@ lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
   simpa [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}] using hg
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fiberMk_map_comp {U V : N} (g : V ⟶ U) {X : C} (f : p.obj U ⟶ X) :
     fiberMk.{w} (p.map g ≫ f) = fiberMk.{w} f := by
@@ -91,7 +88,6 @@ lemma fiberMk_map {U V : N} (g : V ⟶ U) :
   simpa using fiberMk_map_comp (p := p) g (𝟙 (p.obj U))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fiber_map_fiberMk {U : N} {X : C} (f : p.obj U ⟶ X) {Y : C} (g : X ⟶ Y) :
     (fiber p).map g (fiberMk.{w} f) = fiberMk.{w} (f ≫ g) :=
@@ -104,18 +100,20 @@ is cofiltered and initially small. -/
 @[simps]
 noncomputable def functor : N ⥤ (fiber.{w} p).Elements where
   obj U := Functor.elementsMk _ (p.obj U) (fiberMk (𝟙 _))
-  map {U V} f := CategoryOfElements.homMk _ _ (p.map f) (by simp)
+  map {U V} f := Functor.Elements.homMk (p.map f) (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
 instance [IsCofiltered N] : (functor.{w} p).Initial := by
-  refine Functor.initial_of_exists_of_isCofiltered _ ?_ ?_
-  · rintro ⟨X, x⟩
+  refine Functor.initial_of_exists_of_isCofiltered _ (fun e ↦ ?_) ?_
+  · induction e with | mk x
     obtain ⟨U, f, rfl⟩ := fiberMk_jointly_surjective x
     exact ⟨U, f, by simp⟩
-  · rintro ⟨X, x⟩ V ⟨φ₁, hφ₁⟩ ⟨φ₂, hφ₂⟩
+  · intro e V φ₁ φ₂
+    induction e with | mk x
     obtain ⟨U, f, rfl⟩ := fiberMk_jointly_surjective x
     obtain ⟨W, g, hg⟩ := exists_of_fiberMk_eq_fiberMk
-      (show fiberMk.{w} φ₁ = fiberMk.{w} φ₂ by simpa using hφ₁.trans hφ₂.symm)
+      (show fiberMk.{w} φ₁.hom = fiberMk.{w} φ₂.hom by
+        simpa using φ₁.map_val.trans φ₂.map_val.symm)
     exact ⟨_, g, by cat_disch⟩
 
 instance [IsCofiltered N] :
@@ -163,6 +161,7 @@ lemma toPresheafFiberOfIsCofiltered_w {V U : N} (f : V ⟶ U) (P : Cᵒᵖ ⥤ A
       toPresheafFiberOfIsCofiltered p hp U P := by
   simp [toPresheafFiberOfIsCofiltered]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toPresheafFiberOfIsCofiltered_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (U : N) :
     toPresheafFiberOfIsCofiltered p hp U P ≫

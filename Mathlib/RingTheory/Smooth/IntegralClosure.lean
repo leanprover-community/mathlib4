@@ -41,7 +41,6 @@ def TensorProduct.toIntegralClosure
     S ⊗[R] integralClosure R B →ₐ[S] integralClosure S (S ⊗[R] B) :=
     (Algebra.TensorProduct.map (.id _ _) (integralClosure R B).val).codRestrict _ fun x ↦ by
   induction x with
-  | zero => simp
   | add x y _ _ => rw [map_add]; exact add_mem ‹_› ‹_›
   | tmul x y =>
     convert!
@@ -160,7 +159,6 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
     (M : Submonoid R) [IsLocalization M S] :
     Function.Bijective (toIntegralClosure R S B) := by
-  classical
   let φ : integralClosure R B →ₐ[R] integralClosure S (S ⊗[R] B) :=
     AlgHom.codRestrict (Algebra.TensorProduct.includeRight.comp (integralClosure R B).val)
       ((integralClosure S (S ⊗[R] B)).restrictScalars R) fun ⟨x, hx⟩ ↦ by

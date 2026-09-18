@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Co-Heyting boundary
@@ -42,7 +43,7 @@ def boundary (a : α) : α :=
 /-- The boundary of an element of a co-Heyting algebra. -/
 scoped[Heyting] prefix:120 "∂ " => Coheyting.boundary
 
-open Heyting
+open scoped Heyting
 
 -- TODO: Should hnot be named hNot?
 theorem inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
@@ -134,7 +135,7 @@ theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
 
 end Coheyting
 
-open Heyting
+open scoped Heyting
 
 section BooleanAlgebra
 

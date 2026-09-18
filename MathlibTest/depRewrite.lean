@@ -1,5 +1,9 @@
 import Mathlib.Tactic.DepRewrite
 
+/-!
+# Tests for the `rewrite!` and `rw!` tactics
+-/
+
 /-! ## Basic tests for `rewrite!`. -/
 
 private axiom test_sorry : ∀ {α}, α
@@ -227,7 +231,6 @@ example (f : B n → Nat) (b : B n) :
   rewrite! [eq]
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 -- Test casting twice (from the LHS to `x` and back).
 theorem bool_dep_test
     (b : Bool)
@@ -250,6 +253,7 @@ theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) 
   exact test_sorry
 
 -- Test definitional equalities that get broken by rewriting.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -260,6 +264,7 @@ example (b : Bool) (h : true = b)
   exact test_sorry
 
 -- As above.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -272,6 +277,7 @@ example (b : Bool) (h : true = b)
   exact test_sorry
 
 -- As above.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)

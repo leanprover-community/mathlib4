@@ -42,7 +42,7 @@ assert_not_exists Module.Basis
 
 noncomputable section
 
-open Set Function Filter
+open Set Function
 open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
@@ -71,7 +71,7 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
           show ∀ i, ∃ f : ℕ → Set α, (s i ⊆ ⋃ i, f i) ∧ (∑' i, m (f i)) < μ (s i) + ε' i by
             intro i
             have : μ (s i) < μ (s i) + ε' i :=
-              ENNReal.lt_add_right (ne_top_of_le_ne_top hb.ne <| ENNReal.le_tsum _)
+              ENNReal.lt_add_right (ne_of_lt <| by grw [← hb, ← ENNReal.le_tsum])
                 (by simpa using (hε' i).ne')
             rcases iInf_lt_iff.mp this with ⟨t, ht⟩
             exists t
@@ -138,9 +138,7 @@ theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m
 theorem le_ofFunction {μ : OuterMeasure α} :
     μ ≤ OuterMeasure.ofFunction m m_empty ↔ ∀ s, μ s ≤ m s :=
   ⟨fun H s => le_trans (H s) (ofFunction_le s), fun H _ =>
-    le_iInf fun f =>
-      le_iInf fun hs =>
-        le_trans (μ.mono hs) <| le_trans (measure_iUnion_le f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
+    le_iInf₂ fun f hs => by grw [hs, ← H, ← measure_iUnion_le f]⟩
 
 theorem isGreatest_ofFunction :
     IsGreatest { μ : OuterMeasure α | ∀ s, μ s ≤ m s } (OuterMeasure.ofFunction m m_empty) :=
@@ -162,10 +160,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
   refine le_antisymm (measure_union_le _ _) (le_iInf₂ fun f hf ↦ ?_)
   set μ := OuterMeasure.ofFunction m m_empty
   rcases Classical.em (∃ i, (s ∩ f i).Nonempty ∧ (t ∩ f i).Nonempty) with (⟨i, hs, ht⟩ | he)
-  · calc
-      μ s + μ t ≤ ∞ := le_top
-      _ = m (f i) := (h (f i) hs ht).symm
-      _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
+  · grw [← ENNReal.le_tsum i, h (f i) hs ht, ← le_top]
   set I := fun s => { i : ℕ | (s ∩ f i).Nonempty }
   have hd : Disjoint (I s) (I t) := disjoint_iff_inf_le.mpr fun i hi => he ⟨i, hi⟩
   have hI : ∀ u ⊆ s ∪ t, μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>
@@ -230,7 +225,7 @@ theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
 theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.ofFunction m m_empty =
     OuterMeasure.ofFunction (c • m) (by simp [m_empty]) := by
   ext1 s
-  haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
+  have : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
   iInf_subtype']
   rw [ENNReal.mul_iInf fun h => (hc h).elim]
@@ -391,7 +386,7 @@ the minimum value of a measure on that set: it is the infimum sum of measures of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem biInf_apply {ι} {I : Set ι} (hI : I.Nonempty) (m : ι → OuterMeasure α) (s : Set α) :
     (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   simp only [← iInf_subtype'', iInf_apply]
 
 /-- The value of the Infimum of a nonempty family of outer measures on a set is not simply
@@ -433,7 +428,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
 
 theorem map_biInf_comap {ι β} {I : Set ι} (hI : I.Nonempty) {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i ∈ I, comap f (m i)) = ⨅ i ∈ I, map f (comap f (m i)) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   rw [← iInf_subtype'', ← iInf_subtype'']
   exact map_iInf_comap _
 
@@ -450,7 +445,7 @@ theorem restrict_iInf {ι} [Nonempty ι] (s : Set α) (m : ι → OuterMeasure �
 
 theorem restrict_biInf {ι} {I : Set ι} (hI : I.Nonempty) (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨅ i ∈ I, m i) = ⨅ i ∈ I, restrict s (m i) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   rw [← iInf_subtype'', ← iInf_subtype'']
   exact restrict_iInf _ _
 

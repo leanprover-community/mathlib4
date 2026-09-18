@@ -24,8 +24,8 @@ open CategoryTheory Limits ConcreteCategory
 
 namespace CategoryTheory.Limits.Types
 
-variable {X Y Z : Type u} {X' Y' Z' : Type v}
-variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
+variable {X Y Z : Type u}
+variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
@@ -123,7 +123,7 @@ section Pullback
 
 open CategoryTheory.Limits.WalkingCospan
 
-variable {W X Y Z : Type u} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Type u} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- The pullback given by the instance `HasPullbacks (Type u)` is isomorphic to the
 explicit pullback object given by `PullbackObj`.

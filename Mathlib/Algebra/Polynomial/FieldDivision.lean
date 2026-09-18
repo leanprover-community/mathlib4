@@ -253,7 +253,7 @@ end IsDomain
 
 section DivisionRing
 
-variable [DivisionRing R] {p q : R[X]}
+variable [DivisionRing R] {p : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
   lt_of_not_ge fun h => by
@@ -264,7 +264,7 @@ end DivisionRing
 
 section SimpleRing
 
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p q : R[X]}
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p : R[X]}
 
 @[simp]
 protected theorem map_eq_zero (f : R →+* S) : p.map f = 0 ↔ p = 0 :=
@@ -368,13 +368,12 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
-    classical
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
-    rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
+    rw [mod_def, modByMonic, dite_eq_left (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and, if_false]⟩
+    simp only [this, false_and, ite_false]⟩
 
 protected theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
@@ -608,6 +607,10 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
 theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
   simp [normalize_apply]
 
+@[simp]
+theorem natDegree_normalize [DecidableEq R] : natDegree (normalize p) = natDegree p :=
+  natDegree_eq_of_degree_eq degree_normalize
+
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
@@ -652,7 +655,6 @@ then `f / (X - a)` is coprime with `X - a`.
 Note that we do not assume `f a = 0`, because `f / (X - a) = (f - f a) / (X - a)`. -/
 theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f : K[X]) (a : K)
     (hf' : f.derivative.eval a ≠ 0) : IsCoprime (X - C a : K[X]) (f /ₘ (X - C a)) := by
-  classical
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_

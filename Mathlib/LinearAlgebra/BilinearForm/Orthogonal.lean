@@ -121,16 +121,15 @@ theorem isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
   if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n → V}
     (hv₁ : B.iIsOrtho v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K v := by
-  classical
-    rw [linearIndependent_iff']
-    intro s w hs i hi
-    have : B (s.sum fun i : n => w i • v i) (v i) = 0 := by rw [hs, zero_left]
-    have hsum : (s.sum fun j : n => w j * B (v j) (v i)) = w i * B (v i) (v i) := by
-      apply Finset.sum_eq_single_of_mem i hi
-      intro j _ hij
-      rw [iIsOrtho_def.1 hv₁ _ _ hij, mul_zero]
-    simp_rw [sum_left, smul_left, hsum] at this
-    exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
+  rw [linearIndependent_iff']
+  intro s w hs i hi
+  have : B (s.sum fun i : n => w i • v i) (v i) = 0 := by rw [hs, zero_left]
+  have hsum : (s.sum fun j : n => w j * B (v j) (v i)) = w i * B (v i) (v i) := by
+    apply Finset.sum_eq_single_of_mem i hi
+    intro j _ hij
+    rw [iIsOrtho_def.1 hv₁ _ _ hij, mul_zero]
+  simp_rw [sum_left, smul_left, hsum] at this
+  exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
 
 end
 
@@ -175,7 +174,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : B
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
     B.orthogonal (K ∙ x) = LinearMap.ker (LinearMap.BilinForm.toLinHomAux₁ B x) :=
-  LinearMap.orthogonal_span_singleton_eq_to_lin_ker ..
+  Submodule.orthogonalBilin_span_singleton x
 
 theorem span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : B x x ≠ 0) :
     K ∙ x ⊔ B.orthogonal (K ∙ x) = ⊤ :=
@@ -188,9 +187,6 @@ theorem isCompl_span_singleton_orthogonal {B : BilinForm K V} {x : V} (hx : B x 
   LinearMap.isCompl_span_singleton_orthogonal hx
 
 end Orthogonal
-
-variable {M₂' : Type*}
-variable [AddCommMonoid M₂'] [Module R M₂']
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
 nondegenerate if `Disjoint W (B.orthogonal W)`. -/

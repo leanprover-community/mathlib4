@@ -35,7 +35,7 @@ namespace IsGCDMonoid
 lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     {J : Ideal R} (hJ : ∃ K : Ideal R, J * K ≠ 0 ∧ (J * K).IsPrincipal) :
     J.IsPrincipal := by
-  letI : NormalizedGCDMonoid R := Classical.arbitrary _
+  let : NormalizedGCDMonoid R := Classical.arbitrary _
   obtain ⟨K, hJK0, hK⟩ := hJ
   rcases hK.principal with ⟨x, hJK⟩
   have hxmemJK : x ∈ J * K := by simp [hJK]
