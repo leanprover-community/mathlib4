@@ -361,8 +361,10 @@ def lintAll (cfg : Config) (args : List String) : IO Bool := do
   let jobs ← match cfg.jobs with
     | some n => pure (max n 1)
     | none =>
-      let nproc := (← IO.Process.run { cmd := "nproc" }).trimAscii.toString
-      pure <| (nproc.toNat?.getD 4).max 1
+      -- `nproc` is not available everywhere (e.g. macOS); fall back to a fixed number.
+      let nproc ← (do return (← IO.Process.run { cmd := "nproc" }).trimAscii.toString.toNat?)
+        |>.toBaseIO
+      pure <| (nproc.toOption.bind id |>.getD 4).max 1
   let app ← IO.appPath
   let mut bad := false
   let mut pending := cfg.files.toList
