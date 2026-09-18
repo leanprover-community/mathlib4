@@ -90,7 +90,6 @@ private theorem lagrange_inversion_coeff_pow_of_le : ∀ m : ℕ, ∀ k ≤ m + 
   induction m using Nat.strong_induction_on with
   | h m ih =>
     intro k hk
-    simp only [nsmul_eq_mul]
     rcases Nat.eq_zero_or_pos k with rfl | hk0
     · simp
     obtain ⟨t, hmt⟩ : ∃ t, m + 1 = k + t := ⟨m + 1 - k, by omega⟩
@@ -100,47 +99,40 @@ private theorem lagrange_inversion_coeff_pow_of_le : ∀ m : ℕ, ∀ k ≤ m + 
     rcases t with _ | t
     · rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), hmt]
       simp
-    have hih : ∀ l ∈ range (t + 2),
-        ((t : R) + 1) * ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
-          (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) := by
+    have hih : ∀ l ∈ range (t + 2), (t + 1) • ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
+        (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
-      rw [mem_range_succ_iff] at hl
-      have h := ih t (by omega) l hl
-      simp only [nsmul_eq_mul] at h
-      push_cast at h
-      rw [show ((t : R) + 1) * ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
-          (P ^ k).coeff l * (((t : R) + 1) * (Y ^ l).coeff (t + 1)) by ring, h]
+      have h := ih t (by omega) l (mem_range_succ_iff.mp hl)
+      rw [show (t + 1) • ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
+          (P ^ k).coeff l * ((t + 1) • (Y ^ l).coeff (t + 1)) by ring, h]
     have hconv :
-        ∑ l ∈ range (t + 2),
-          (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) =
+        ∑ l ∈ range (t + 2), (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) =
           (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ'
-        (fun l ↦ (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)))]
-      simp only [Nat.cast_zero, mul_zero, zero_mul, add_zero, Nat.cast_add, Nat.cast_one]
+      rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
+      simp only [zero_smul, mul_zero, add_zero]
       refine sum_congr rfl fun p _ ↦ ?_
-      rw [coeff_derivative, show t + 1 - (p + 1) = t - p by omega]
-      ring
-    have hpoly : C ((k : R) + (t + 1)) *
-          (d⁄dX (P ^ k) * P ^ (t + 1)) =
-        C (k : R) * d⁄dX (P ^ (k + (t + 1))) := by
-      rw [derivative_pow, derivative_pow,
-        show k + (t + 1) - 1 = (k - 1) + (t + 1) by omega, pow_add]
-      simp only [map_add, map_natCast, map_one]
+      rw [coeff_derivative]
       push_cast
       ring
-    have hcoeff : ((k : R) + (t + 1)) *
-          (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t =
-        (k : R) * ((t : R) + 1) * (P ^ (k + (t + 1))).coeff (t + 1) := by
-      rw [← coeff_C_mul, hpoly, coeff_C_mul, coeff_derivative]
+    have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) =
+        k • d⁄dX (P ^ (k + (t + 1))) := by
+      rw [derivative_pow, derivative_pow, show k + (t + 1) - 1 = (k - 1) + (t + 1) by omega,
+        pow_add]
+      push_cast
       ring
-    have hsum : ((t : R) + 1) * (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), mul_sum, ← hconv]
+    have hcoeff : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t =
+        k • (t + 1) • (P ^ (k + (t + 1))).coeff (t + 1) := by
+      have h := congrArg (coeff t) hpoly
+      simp only [nsmul_eq_mul, coeff_natCast_mul, coeff_derivative] at h
+      push_cast at h
+      linear_combination h
+    have hsum : (t + 1) • (Y ^ k).coeff (m + 1) =
+        (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
+      rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), smul_sum, ← hconv]
       exact sum_congr rfl hih
-    rw [hmt] at hsum
-    rw [hmt, show k + (t + 1) - k = t + 1 by omega]
     apply nsmul_right_injective (by omega : t + 1 ≠ 0)
-    push_cast
-    linear_combination ((k : R) + (t + 1)) * hsum + hcoeff
+    simp [hmt] at *
+    linear_combination (k + t + 1) • hsum + hcoeff
 
 /-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
 a formal power series `H`,
