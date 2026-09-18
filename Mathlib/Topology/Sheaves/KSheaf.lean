@@ -18,7 +18,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 We define K-sheaves on a T2 topological space with value in an arbitrary category.
 
 One may expect this notion to come from sheaves on a site of compact subset of a topological space
-but there is no coresponding Grothendieck topology on compact subsets, in particular
+but there is no corresponding Grothendieck topology on compact subsets, in particular
 because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a
 limit condition.
 -/
@@ -54,7 +54,7 @@ def pushforward {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') :
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `P` is a KPresheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
-structure of cocone over the diagramm defined by the `P.obj (op L)` for `L` a compact
+structure of cocone over the diagram defined by the `P.obj (op L)` for `L` a compact
 neighbourhood of `K` -/
 @[simps]
 def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
@@ -67,7 +67,7 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
     rfl
 
 /-- For `P` a KPresheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
-structure of cocone over the diagramm defined by the `P.obj (op (closure (U : Set X)))` for `U`
+structure of cocone over the diagram defined by the `P.obj (op (closure (U : Set X)))` for `U`
 an open neighbourhood of `K` -/
 def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) :=
   Cocone.whisker K.openRcNhdsToCompactNhds_mono.functor.op <| P.coconeOfCompacts K
@@ -76,8 +76,8 @@ variable [T2Space X]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For`K` a compact and `P`a KPresheaf verifying the third axiom of KSheaves, this is
-a recipi to build maps from `P.obj(op K)` by only using the open relatively
-comapct neighbourhoods and not all the compacts neighbourhoods. -/
+a recipe to build maps from `P.obj(op K)` by only using the open relatively
+compact neighbourhoods and not all the compacts neighbourhoods. -/
 noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
     (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G)
     (α : (K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Subtype.mono_coe _).functor.op ⋙ P) ⟶ G) :
@@ -94,9 +94,9 @@ lemma hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOf
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Ksheaf condition. It's a generalisation of the one of J.Pardon that
-corespond to the one of J.Lurie in the case of usual categories.
+correspond to the one of J.Lurie in the case of usual categories.
 
-There is no coresponding Grothendieck topology on compact subsets, in particular
+There is no corresponding Grothendieck topology on compact subsets, in particular
 because the nonempty_isColimit_coconeOfCompacts condition can't be expressed as a
 limit condition. -/
 structure IsKSheaf (P : KPresheaf A X) : Prop where
@@ -112,7 +112,7 @@ end KPresheaf
 variable [T2Space X]
 
 variable (X A) in
-/-- The pbject property of being a KSheaf -/
+/-- The object property of being a KSheaf -/
 abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := fun P ↦ P.IsKSheaf
 
 variable (X A) in
@@ -122,8 +122,8 @@ abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
 namespace KSheaf
 
 set_option backward.isDefEq.respectTransparency false in
-/-- For`K`a compact and `P`a KSheaf, this is a recipi to build maps from
-`P.obj (op K)` by only using the open relatively comapct neighbourhoods and not
+/-- For`K`a compact and `P`a KSheaf, this is a recipe to build maps from
+`P.obj (op K)` by only using the open relatively compact neighbourhoods and not
 all the compacts neighbourhoods. -/
 noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openRcNhds)ᵒᵖ ⥤ A}
     (t : Cocone G)
