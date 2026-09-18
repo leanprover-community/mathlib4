@@ -4143,8 +4143,7 @@ public import Mathlib.Data.FunLike.IsApply
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.FunLike.Ring
 public import Mathlib.Data.Holor
-public meta import Mathlib.Data.Ineq
-public import Mathlib.Data.Ineq.Defs
+public import Mathlib.Data.Ineq
 public import Mathlib.Data.Int.AbsoluteValue
 public import Mathlib.Data.Int.Associated
 public import Mathlib.Data.Int.Basic
@@ -7607,6 +7606,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 public import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 public import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic
+public import Mathlib.Tactic.Ineq
 public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases

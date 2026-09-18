@@ -15,6 +15,3 @@ public def foo : Lean.Expr := .bvar 0
 
 -- The same API remains usable during elaboration.
 public meta def elaboratedExpr : Lean.Expr := .bvar 0
-
--- The data API shared with the expression recognizers remains available at runtime.
-public def comparison : Mathlib.Ineq := .le

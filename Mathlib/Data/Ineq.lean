@@ -5,53 +5,58 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Data.Ineq.Defs
-public import Mathlib.Lean.Expr.Basic
+public import Mathlib.Init
 
 /-!
-# Parsing inequalities in expressions
+# `Ineq` datatype
 
-This file provides expression recognizers returning the `Mathlib.Ineq` comparison type.
+This file contains an enum `Ineq` (whose constructors are `eq`, `le`, `lt`), and operations
+involving it. The type `Ineq` is one of the fundamental objects manipulated by the `linarith` and
+`linear_combination` tactics.
 -/
 
 @[expose] public section
 
-open Lean Meta
+namespace Mathlib
 
-namespace Lean.Expr
-open Mathlib
+/-! ### Inequalities -/
 
-/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
-`Linarith.Ineq`) together with the type in which the (in)equality occurs and the two sides of the
-(in)equality.
+/-- The three-element type `Ineq` is used to represent the strength of a comparison between
+terms. -/
+inductive Ineq : Type
+  | eq | le | lt
+deriving DecidableEq, Inhabited, Repr
 
-This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
-for compositionality.
+namespace Ineq
+
+/--
+`max R1 R2` computes the strength of the sum of two inequalities. If `t1 R1 0` and `t2 R2 0`,
+then `t1 + t2 (max R1 R2) 0`.
 -/
-def ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
-  let e ← whnfR (← instantiateMVars e)
-  match e.eq? with
-  | some p => return (Ineq.eq, p)
-  | none =>
-  match e.le? with
-  | some p => return (Ineq.le, p)
-  | none =>
-  match e.lt? with
-  | some p => return (Ineq.lt, p)
-  | none => throwError "Not a comparison: {e}"
+def max : Ineq → Ineq → Ineq
+  | lt, _ => lt
+  | _, lt => lt
+  | le, _ => le
+  | _, le => le
+  | eq, eq => eq
 
-/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, or the negation of such, and return this
-relation (as a `Linarith.Ineq`) together with the type in which the (in)equality occurs, the two
-sides of the (in)equality, and a Boolean flag indicating the presence or absence of the `¬`.
+/-- `Ineq` is ordered `eq < le < lt`. -/
+def cmp : Ineq → Ineq → Ordering
+  | eq, eq => Ordering.eq
+  | eq, _ => Ordering.lt
+  | le, le => Ordering.eq
+  | le, lt => Ordering.lt
+  | lt, lt => Ordering.eq
+  | _, _ => Ordering.gt
 
-This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
-for compositionality.
--/
-def ineqOrNotIneq? (e : Expr) : MetaM (Bool × Ineq × Expr × Expr × Expr) := do
-  try
-    return (true, ← e.ineq?)
-  catch _ =>
-    let some e' := e.not? | throwError "Not a comparison: {e}"
-    return (false, ← e'.ineq?)
+/-- Prints an `Ineq` as the corresponding infix symbol. -/
+def toString : Ineq → String
+  | eq => "="
+  | le => "≤"
+  | lt => "<"
 
-end Lean.Expr
+instance : ToString Ineq := ⟨toString⟩
+
+instance : Std.ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
+
+end Mathlib.Ineq
