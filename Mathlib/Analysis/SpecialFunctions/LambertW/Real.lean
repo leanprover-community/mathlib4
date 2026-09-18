@@ -27,7 +27,7 @@ so their values there are junk values. Notably `W₋₁ 0` is the arbitrary junk
 
 * `Real.lambertWZero`: the principal branch `W₀` of the real Lambert W function.
 * `Real.lambertWNegOne`: the branch `W₋₁` of the real Lambert W function.
-* `Real.omegaConstant`: the omega constant `Ω = W₀ 1`.
+* `Real.omegaConstant`: the omega constant `Ω = W₀ 1 ≈ 0.5671432904`.
 
 ## Main results
 
@@ -41,9 +41,6 @@ so their values there are junk values. Notably `W₋₁ 0` is the arbitrary junk
   inverses of `y ↦ y * rexp y` on their respective domains and images.
 * `Real.strictMonoOn_lambertWZero` and `Real.strictAntiOn_lambertWNegOne`: `W₀` is strictly
   increasing, and `W₋₁` is strictly decreasing.
-* `Real.lambertWZero_zero`, `Real.lambertWZero_pos_of_pos` and
-  `Real.lambertWZero_nonneg_of_nonneg`: `W₀` vanishes at `0` and preserves strict and weak
-  positivity.
 * `Real.omegaConstant_mul_exp`, `Real.omegaConstant_eq_exp_neg`:
   `Ω * rexp Ω = 1` and `Ω = rexp (-Ω)`.
 * `Real.omegaConstant_pos`, `Real.omegaConstant_lt_one`: the bounds `0 < Ω < 1`.
@@ -99,17 +96,6 @@ recommended_spelling "lambertWZero" for "W₀" in [lambertWZero, RealLambertW.«
 recommended_spelling "lambertWNegOne" for "W₋₁" in [lambertWNegOne, RealLambertW.«termW₋₁»]
 
 open scoped RealLambertW
-
-/-- The omega constant `Ω ≈ 0.5671432904` (OEIS: A030178), the value of the principal branch of the
-Lambert W function at `1`.
-
-It is the real solution of `x * rexp x = 1`. -/
-@[wikidata Q2291098]
-abbrev omegaConstant : ℝ := W₀ 1
-
-@[inherit_doc] scoped[OmegaConstant] notation "Ω" => Real.omegaConstant
-
-open scoped OmegaConstant
 
 theorem _root_.Complex.LambertW.ofReal_mem_range_zero
     (hx : -1 ≤ y) : (y : ℂ) ∈ Complex.LambertW.range 0 := by
@@ -177,6 +163,25 @@ theorem lambertWNegOne_mul_exp_lambertWNegOne_of_mem_Ico (hx : x ∈ Ico (-(rexp
     W₋₁ x * rexp (W₋₁ x) = x :=
   invOn_mul_exp_lambertWNegOne.left hx
 
+/-- If `hy : -1 ≤ y` and `x = y * rexp y`, then `y = W₀ x`. In other words, on
+`[-1, ∞)`, `W₀` is the unique inverse of `y ↦ y * rexp y`. -/
+theorem eq_lambertWZero_of_le (hy : -1 ≤ y) (hyx : x = y * rexp y) :
+    y = W₀ x :=
+  hyx ▸ (invOn_lambertWZero_mul_exp.left hy).symm
+
+/-- If `hy : y ≤ -1` and `x = y * rexp y`, then `y = W₋₁ x`. In other words, on
+`(-∞, -1]`, `W₋₁` is the unique inverse of `y ↦ y * rexp y`. -/
+theorem eq_lambertWNegOne_of_le (hy : y ≤ -1) (hyx : x = y * rexp y) :
+    y = W₋₁ x :=
+  hyx ▸ (invOn_lambertWNegOne_mul_exp.left hy).symm
+
+/-- See also `Real.lambertWZero`, `lambertWZero_mul_exp_lambertWZero_of_le` and
+`eq_lambertWZero_of_le`. -/
+theorem existsUnique_ge_mul_exp_eq_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
+    ∃! y ≥ -1, y * rexp y = x :=
+  ⟨W₀ x, ⟨bijOn_lambertWZero.mapsTo hx, invOn_lambertWZero_mul_exp.right hx⟩,
+    fun _y' ⟨hy', hy'x⟩ => eq_lambertWZero_of_le hy' hy'x.symm⟩
+
 theorem strictMonoOn_lambertWZero : StrictMonoOn W₀ (Ici (-(rexp 1)⁻¹)) := by
   apply Function.strictMonoOn_of_rightInvOn_of_mapsTo ?_
     invOn_mul_exp_lambertWZero.left bijOn_lambertWZero.mapsTo
@@ -189,11 +194,6 @@ theorem strictAntiOn_lambertWNegOne : StrictAntiOn W₋₁ (Ico (-(rexp 1)⁻¹)
   exact (mul_log_strictAntiOn.comp_strictMonoOn (exp_strictMono.strictMonoOn (Iic (-1))) fun x hx =>
     ⟨exp_pos x |>.le, exp_le_exp.mpr hx⟩).congr fun x hx => by simp [mul_comm]
 
-theorem existsUnique_ge_mul_exp_eq_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
-    ∃! y ≥ -1, y * rexp y = x :=
-  ⟨W₀ x, ⟨bijOn_lambertWZero.mapsTo hx, invOn_lambertWZero_mul_exp.right hx⟩,
-    fun _y' ⟨hy', hy'x⟩ => hy'x ▸ (invOn_lambertWZero_mul_exp.left hy').symm⟩
-
 @[simp]
 theorem lambertWZero_zero : W₀ 0 = 0 := by
   nth_rw 1 [← zero_mul, lambertWZero_mul_exp_of_le neg_one_lt_zero.le]
@@ -205,6 +205,19 @@ theorem lambertWZero_pos_of_pos (hx : 0 < x) : 0 < W₀ x := by
 theorem lambertWZero_nonneg_of_nonneg (hx : 0 ≤ x) : 0 ≤ W₀ x := by
   have : -(rexp 1)⁻¹ ≤ 0 := by simpa using exp_nonneg 1
   exact lambertWZero_zero ▸ strictMonoOn_lambertWZero.monotoneOn this (this.trans hx) hx
+
+section OmegaConstant
+
+/-- The omega constant `Ω ≈ 0.5671432904` (OEIS: A030178), the value of the principal branch of the
+Lambert W function at `1`.
+
+It is the real solution of `x * rexp x = 1`. -/
+@[wikidata Q2291098]
+abbrev omegaConstant : ℝ := W₀ 1
+
+@[inherit_doc] scoped[OmegaConstant] notation "Ω" => Real.omegaConstant
+
+open scoped OmegaConstant
 
 theorem omegaConstant_eq : Ω = W₀ 1 := rfl
 
@@ -239,5 +252,7 @@ meta def _root_.Mathlib.Meta.Positivity.evalLambertWZero :
 
 theorem omegaConstant_pos : 0 < Ω := by
   positivity
+
+end OmegaConstant
 
 end Real
