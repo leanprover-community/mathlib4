@@ -391,12 +391,7 @@ theorem qBinomial_mul_eq_mul [CommRing R] (q : R) (n m k : ℕ) :
         rw [show n + 1 + (m + 1) + k - (n + 1 + k) = m + 1 by omega] at h₁
         rw [show m + (k + 1) - k = m + 1 by omega] at h₂
         simp only [Nat.add_left_comm, Nat.add_comm] at h₁ h₂ h₃ h₄ ihm ih ihk ⊢
-        rw [h₁, h₃, add_mul, add_mul, ihm, h₄]
-        conv_rhs => lhs; rw [h₂]
-        simp only [mul_add, mul_assoc]
-        conv_lhs =>
-          rhs; rhs
-          rw [mul_left_comm _ (q ^ (k + 1)), ← mul_assoc, ← pow_add]
-        simp only [Nat.add_left_comm, Nat.add_comm]
-        rw [ihk, ih]
+        nth_rw 1 [h₁, h₃, add_mul, add_mul, ihm, h₄, h₂, mul_add, mul_left_comm _ (q ^ (k + 1)),
+          mul_add, mul_assoc, mul_assoc, ← mul_assoc, ← mul_assoc, ← pow_add, mul_assoc]
+        simp only [Nat.add_left_comm, Nat.add_comm, ihk, ih]
         ac_rfl
