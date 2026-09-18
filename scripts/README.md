@@ -232,7 +232,9 @@ to module `Foo.Bar` (no `srcDir` indirection).
   Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
 - `lint-exec.lean`, `nolints-exec.txt`
   flags elaboration-time code execution (`#eval`, `run_cmd`, `initialize`, `unsafe`,
-  `@[implemented_by]`, `@[extern]`, ...) beyond the uses recorded in `nolints-exec.txt`.
+  `@[implemented_by]`, `@[extern]`, ...) and, outside `Mathlib/Tactic`, `Mathlib/Util` and
+  `Mathlib/Lean`, definitions of metaprograms (`elab`, `macro`, `@[positivity]`, ...) beyond
+  the uses recorded in `nolints-exec.txt`.
   Parses files against their imports' oleans without elaborating them.
   Run via `lake exe lint-exec <files>`; CI runs it on the files a PR changes.
 - `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.

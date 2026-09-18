@@ -1,42 +1,254 @@
-# Uses of constructs that execute code at elaboration time or bypass the type checker, as
-# checked by `lake exe lint-exec` (see `scripts/lint-exec.lean`).
+# Uses of constructs that execute code at elaboration time, bypass the type checker, or define
+# metaprograms, as checked by `lake exe lint-exec` (see `scripts/lint-exec.lean`).
 #
 # Format: `<path>: <construct>=<count> ...`, one line per file, sorted by path, allowing that
-# many uses of the construct in that file. Constructs: `#eval` `run_cmd` `run_meta` `run_elab`
-# `run_tac` `initialize` `@[init]` `unsafe` `@[implemented_by]` `@[extern]`, plus `parse-error`
-# for files the linter cannot parse and `missing-import` for imports it cannot resolve.
+# many uses of the construct in that file (`*`: any number). A path ending in `/` covers every
+# file below it, and a construct ending in `*` every construct with that prefix.
 #
-# Adding or bumping an entry here means "this use has been reviewed". Regenerate with
-# `lake exe lint-exec --emit-allowlist <files>` on a tree you trust.
+# Constructs: `#eval` `run_cmd` `run_meta` `run_elab` `run_tac` `initialize` `@[init]` `unsafe`
+# `@[implemented_by]` `@[extern]`; `meta:elab` `meta:macro` `meta:simproc_decl` `meta:@[positivity]`
+# etc. for definitions of metaprograms; `parse-error` for files the linter cannot parse and
+# `missing-import` for imports it cannot resolve.
+#
+# Adding or bumping an entry here means "this use has been reviewed". Regenerate the per-file
+# lines with `lake exe lint-exec --emit-allowlist <files>` on a tree you trust.
+
+# Metaprogramming lives here; defining elaborators, macros and tactic extensions is the point.
+Mathlib/Lean/: meta:*=*
+Mathlib/Tactic/: meta:*=*
+Mathlib/Util/: meta:*=*
+
+Archive/Examples/IfNormalization/Result.lean: meta:macro=2
+Archive/Imo/Imo2001Q5.lean: meta:macro=1
+Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean: meta:elab=1 meta:macro=1
+Mathlib/Algebra/Algebra/Subalgebra/Lattice.lean: meta:@[app_delab]=1 meta:macro_rules=1
+Mathlib/Algebra/Algebra/Unitization.lean: meta:@[app_delab]=1
+Mathlib/Algebra/BigOperators/Expect.lean: meta:@[app_delab]=1 meta:macro_rules=1
+Mathlib/Algebra/BigOperators/Group/Finset/Defs.lean: meta:@[app_delab]=2 meta:macro_rules=2
+Mathlib/Algebra/Category/AlgCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/BialgCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/BoolRing.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/CoalgCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/CommAlgCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/CommBialgCat.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/CommHopfAlgCat.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/FGModuleCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/Grp/Basic.lean: meta:@[app_delab]=4
+Mathlib/Algebra/Category/Grp/FiniteGrp.lean: meta:@[app_delab]=2
+Mathlib/Algebra/Category/GrpWithZero.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/HopfAlgCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/ModuleCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/ModuleCat/Semi.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/ModuleCat/Topology/Basic.lean: meta:@[app_delab]=1
+Mathlib/Algebra/Category/MonCat/Basic.lean: meta:@[app_delab]=4
+Mathlib/Algebra/Category/Ring/Basic.lean: meta:@[app_delab]=4
+Mathlib/Algebra/Category/Semigrp/Basic.lean: meta:@[app_delab]=4
+Mathlib/Algebra/GradedMonoid.lean: meta:macro=2
+Mathlib/Algebra/Module/Torsion/Basic.lean: meta:@[app_unexpander]=1 meta:macro_rules=1
+Mathlib/Algebra/MonoidAlgebra/Defs.lean: meta:@[app_delab]=2 meta:@[app_unexpander]=2 meta:macro_rules=2
+Mathlib/Algebra/Order/AbsoluteValue/Basic.lean: meta:@[positivity]=1
+Mathlib/Algebra/Order/Algebra.lean: meta:@[positivity]=1
+Mathlib/Algebra/Order/BigOperators/Expect.lean: meta:@[positivity]=1
+Mathlib/Algebra/Order/BigOperators/Ring/Finset.lean: meta:@[positivity]=1
 Mathlib/Algebra/Order/CauSeq/Completion.lean: unsafe=1
-Mathlib/Analysis/Real/Pi/Bounds.lean: unsafe=2
+Mathlib/Algebra/Order/Field/Basic.lean: meta:@[positivity]=3
+Mathlib/Algebra/Order/Field/Power.lean: meta:@[positivity]=1
+Mathlib/Algebra/Order/Floor/Extended.lean: meta:@[positivity]=1
+Mathlib/Algebra/Order/Floor/Ring.lean: meta:@[positivity]=4
+Mathlib/Algebra/Order/Floor/Semifield.lean: meta:@[norm_num]=1
+Mathlib/Algebra/Order/Group/Unbundled/Abs.lean: meta:@[app_unexpander]=2 meta:macro=2
+Mathlib/Algebra/Order/Interval/Basic.lean: meta:@[positivity]=2
+Mathlib/Algebra/Order/Module/Field.lean: meta:@[positivity]=1
+Mathlib/Algebra/Ring/Ext.lean: meta:macro=2
+Mathlib/Algebra/WithConv.lean: meta:@[app_delab]=1
+Mathlib/AlgebraicGeometry/AffineScheme.lean: meta:@[app_delab]=1
+Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Basic.lean: meta:macro=2
+Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean: meta:macro=4
+Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Point.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Basic.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Basic.lean: meta:macro=4
+Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Basic.lean: meta:macro=4
+Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/EllipticCurve/VariableChange.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/EllipticCurve/Weierstrass.lean: meta:macro=1
+Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean: meta:macro=2
+Mathlib/AlgebraicGeometry/Scheme.lean: meta:@[app_delab]=3
+Mathlib/AlgebraicTopology/SimplexCategory/Defs.lean: meta:macro=1 meta:macro_rules=1
+Mathlib/AlgebraicTopology/SimplicialObject/Basic.lean: meta:macro_rules=2
+Mathlib/Analysis/Complex/Exponential.lean: meta:@[positivity]=1
+Mathlib/Analysis/Complex/Order.lean: meta:@[positivity]=1
+Mathlib/Analysis/Complex/Trigonometric.lean: meta:@[positivity]=1
+Mathlib/Analysis/Complex/UpperHalfPlane/Basic.lean: meta:@[positivity]=2
+Mathlib/Analysis/InnerProductSpace/PiL2.lean: meta:@[app_delab]=1 meta:macro_rules=1
+Mathlib/Analysis/LocallyConvex/WeakOperatorTopology.lean: meta:@[app_delab]=1
+Mathlib/Analysis/Normed/Group/Basic.lean: meta:@[positivity]=2
+Mathlib/Analysis/Normed/Group/SemiNormedGrp.lean: meta:@[app_delab]=2
+Mathlib/Analysis/Normed/Lp/WithLp.lean: meta:@[app_delab]=1
+Mathlib/Analysis/Normed/Ring/WithAbs.lean: meta:@[app_delab]=1
+Mathlib/Analysis/Real/Pi/Bounds.lean: meta:elab=2 unsafe=2
 Mathlib/Analysis/Real/Pi/Chudnovsky.lean: #eval=1
+Mathlib/Analysis/Real/Sqrt.lean: meta:@[positivity]=2
+Mathlib/Analysis/SpecialFunctions/Bernstein.lean: meta:@[positivity]=1
+Mathlib/Analysis/SpecialFunctions/Gamma/Basic.lean: meta:@[positivity]=1
+Mathlib/Analysis/SpecialFunctions/Log/Basic.lean: meta:@[positivity]=3
+Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean: meta:@[norm_num]=1 meta:@[positivity]=2
+Mathlib/Analysis/SpecialFunctions/Pow/Real.lean: meta:@[norm_num]=1 meta:@[positivity]=2
+Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean: meta:@[positivity]=3
+Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean: meta:@[positivity]=1
+Mathlib/Analysis/SpecialFunctions/Trigonometric/DerivHyp.lean: meta:@[positivity]=1
 Mathlib/Basic/Complex/Basic.lean: unsafe=1
-Mathlib/Basic/ENNReal/Basic.lean: unsafe=1
-Mathlib/Basic/NNReal/Defs.lean: unsafe=1
+Mathlib/Basic/ENNReal/Basic.lean: meta:@[positivity]=2 unsafe=1
+Mathlib/Basic/ENNReal/Real.lean: meta:@[positivity]=1
+Mathlib/Basic/ExistsUnique.lean: meta:@[app_unexpander]=1 meta:macro=1 meta:macro_rules=1
+Mathlib/Basic/NNReal/Defs.lean: meta:@[positivity]=3 unsafe=1
 Mathlib/Basic/Real/Basic.lean: unsafe=1
-Mathlib/Data/DFinsupp/Notation.lean: unsafe=1
-Mathlib/Data/Finset/Sort.lean: unsafe=1
-Mathlib/Data/Finsupp/Notation.lean: parse-error=3 unsafe=1
+Mathlib/CategoryTheory/Category/Basic.lean: meta:@[tactic]=1 meta:elab=1 meta:macro=4
+Mathlib/CategoryTheory/Category/Cat.lean: meta:@[app_delab]=1
+Mathlib/CategoryTheory/Category/PartialFun.lean: meta:@[app_delab]=1
+Mathlib/CategoryTheory/Category/Quiv.lean: meta:@[app_delab]=1
+Mathlib/CategoryTheory/Category/ReflQuiv.lean: meta:@[app_delab]=1
+Mathlib/CategoryTheory/ComposableArrows/Basic.lean: meta:macro=1
+Mathlib/CategoryTheory/ConcreteCategory/Notation.lean: meta:elab_rules=1
+Mathlib/CategoryTheory/Discrete/Basic.lean: meta:macro=1
+Mathlib/CategoryTheory/FiberedCategory/HomLift.lean: meta:macro=1
+Mathlib/CategoryTheory/FintypeCat.lean: meta:@[app_delab]=1
+Mathlib/CategoryTheory/Groupoid/Grpd/Basic.lean: meta:@[app_delab]=1
+Mathlib/CategoryTheory/Monoidal/Closed/Cartesian.lean: meta:@[app_delab]=1
+Mathlib/CategoryTheory/Presentable/CardinalDirectedPoset.lean: meta:@[app_delab]=1
+Mathlib/Combinatorics/Enumerative/DyckWord.lean: meta:@[positivity]=1
+Mathlib/Combinatorics/Matroid/Basic.lean: meta:macro=1
+Mathlib/Combinatorics/SimpleGraph/Basic.lean: meta:macro=3
+Mathlib/Combinatorics/SimpleGraph/Regularity/Bound.lean: meta:@[positivity]=2 meta:macro=1
+Mathlib/Combinatorics/SimpleGraph/Triangle/Removal.lean: meta:@[positivity]=1
+Mathlib/Data/DFinsupp/Notation.lean: meta:@[app_unexpander]=2 meta:@[term_elab]=2 unsafe=1
+Mathlib/Data/EReal/Basic.lean: meta:@[positivity]=4
+Mathlib/Data/EReal/Inv.lean: meta:@[positivity]=2
+Mathlib/Data/EReal/Operations.lean: meta:@[positivity]=2
 Mathlib/Data/FP/Basic.lean: unsafe=14
+Mathlib/Data/Fin/Basic.lean: meta:macro=1
+Mathlib/Data/Fin/VecNotation.lean: meta:@[app_unexpander]=2 meta:macro_rules=1
+Mathlib/Data/Finset/Filter.lean: meta:@[term_elab]=1
+Mathlib/Data/Finset/Sort.lean: unsafe=1
+Mathlib/Data/Finsupp/Notation.lean: meta:@[app_unexpander]=2 meta:@[term_elab]=2 meta:@[term_parser]=1 meta:macro_rules=1 parse-error=3 unsafe=1
+Mathlib/Data/Fintype/Defs.lean: meta:@[app_delab]=1 meta:@[term_elab]=1
+Mathlib/Data/Fintype/Sets.lean: meta:elab=1
 Mathlib/Data/FunLike/Basic.lean: run_cmd=1
 Mathlib/Data/List/Cycle.lean: unsafe=1
 Mathlib/Data/Multiset/Sort.lean: unsafe=2
-Mathlib/Data/Part.lean: unsafe=1
+Mathlib/Data/NNRat/Floor.lean: meta:@[norm_num]=1
+Mathlib/Data/Nat/Bitwise.lean: meta:macro=1
+Mathlib/Data/Nat/Choose/Multinomial.lean: meta:@[positivity]=1
+Mathlib/Data/Nat/Factorial/DoubleFactorial.lean: meta:@[positivity]=1
+Mathlib/Data/Nat/Totient.lean: meta:@[positivity]=1
+Mathlib/Data/Num/Lemmas.lean: meta:macro=4
+Mathlib/Data/Num/ZNum.lean: meta:macro=2
+Mathlib/Data/Opposite.lean: meta:@[app_unexpander]=1
 Mathlib/Data/PNat/Factors.lean: unsafe=1
+Mathlib/Data/Part.lean: unsafe=1
+Mathlib/Data/Prod/Basic.lean: meta:@[app_delab]=2
+Mathlib/Data/QPF/Multivariate/Constructions/Cofix.lean: meta:elab_rules=1
 Mathlib/Data/Quot.lean: run_cmd=1 unsafe=1
+Mathlib/Data/Rat/Cast/Order.lean: meta:@[positivity]=2
+Mathlib/Data/Rat/Floor.lean: meta:@[norm_num]=4
+Mathlib/Data/SProd.lean: meta:macro_rules=1
 Mathlib/Data/Seq/Computation.lean: unsafe=1
 Mathlib/Data/Seq/Defs.lean: unsafe=2
+Mathlib/Data/Set/Card.lean: meta:macro_rules=2
+Mathlib/Data/Set/Defs.lean: meta:@[app_unexpander]=2 meta:@[term_elab]=1 meta:macro=3
+Mathlib/Data/Set/Notation.lean: meta:@[delab]=1
+Mathlib/Data/SetLike/Basic.lean: meta:@[app_delab]=1
 Mathlib/Data/Sym/Sym2.lean: unsafe=1
 Mathlib/Data/UInt.lean: run_cmd=2
-Mathlib/Geometry/Manifold/Notation.lean: initialize=3
+Mathlib/Data/Vector3.lean: meta:@[app_unexpander]=2 meta:macro_rules=1
+Mathlib/FieldTheory/Galois/Notation.lean: meta:@[app_delab]=1 meta:macro=1
+Mathlib/FieldTheory/IntermediateField/Adjoin/Defs.lean: meta:@[app_delab]=1 meta:macro=1
+Mathlib/FieldTheory/RatFunc/Basic.lean: meta:macro=2
+Mathlib/Geometry/Convex/Cone/Pointed.lean: meta:@[app_unexpander]=1
+Mathlib/Geometry/Diffeology/Basic.lean: meta:macro=1
+Mathlib/Geometry/Euclidean/Altitude.lean: meta:@[positivity]=1
+Mathlib/Geometry/Manifold/Category/MfldCat/OfModel.lean: meta:@[app_delab]=1
+Mathlib/Geometry/Manifold/MFDeriv/NormedSpace.lean: meta:@[app_delab]=2 meta:elab=2
+Mathlib/Geometry/Manifold/Notation.lean: initialize=3 meta:@[app_delab]=12 meta:@[delab]=1 meta:elab=18
+Mathlib/Geometry/Manifold/PoincareConjecture.lean: meta:macro=2
+Mathlib/Geometry/Manifold/VectorBundle/CovariantDerivative/LeviCivita.lean: meta:macro_rules=2
+Mathlib/Geometry/Manifold/VectorBundle/CovariantDerivative/Metric.lean: meta:macro_rules=1
 Mathlib/GroupTheory/GroupAction/DomAct/Basic.lean: run_cmd=1
+Mathlib/GroupTheory/OreLocalization/Basic.lean: meta:macro_rules=1
 Mathlib/GroupTheory/Perm/Cycle/Concrete.lean: unsafe=1
 Mathlib/Init.lean: run_cmd=1
 Mathlib/Lean/CoreM.lean: unsafe=1
 Mathlib/Lean/Meta/CongrTheorems.lean: initialize=1
+Mathlib/LinearAlgebra/Dual/Basis.lean: meta:elab=1
+Mathlib/LinearAlgebra/LinearIndependent/Defs.lean: meta:@[app_delab]=1
+Mathlib/LinearAlgebra/Matrix/Notation.lean: meta:@[app_delab]=1 meta:macro_rules=1
+Mathlib/LinearAlgebra/Span/Defs.lean: meta:@[app_unexpander]=1
 Mathlib/LinearAlgebra/TensorProduct/Defs.lean: unsafe=1
+Mathlib/Logic/Equiv/PartialEquiv.lean: meta:elab=1
+Mathlib/MeasureTheory/Category/MeasCat.lean: meta:@[app_delab]=1
+Mathlib/MeasureTheory/Constructions/BorelSpace/Basic.lean: meta:elab_rules=1
+Mathlib/MeasureTheory/Covering/Besicovitch.lean: meta:@[positivity]=1
+Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean: meta:@[app_unexpander]=1 meta:macro=1
+Mathlib/MeasureTheory/Function/ConditionalLExpectation.lean: meta:@[app_unexpander]=1 meta:macro=1
+Mathlib/MeasureTheory/Integral/Bochner/Basic.lean: meta:@[positivity]=1
+Mathlib/MeasureTheory/Integral/DivergenceTheorem.lean: meta:macro=4
+Mathlib/MeasureTheory/Integral/IntervalIntegral/FundThmCalculus.lean: meta:macro=1
+Mathlib/MeasureTheory/Integral/TorusIntegral.lean: meta:macro_rules=1
+Mathlib/MeasureTheory/Measure/LevyProkhorovMetric.lean: meta:@[app_delab]=1
+Mathlib/MeasureTheory/Measure/MeasureSpaceDef.lean: meta:macro=1
+Mathlib/MeasureTheory/Measure/Real.lean: meta:@[positivity]=1
+Mathlib/MeasureTheory/OuterMeasure/AE.lean: meta:@[app_delab]=4
+Mathlib/NumberTheory/ArithmeticFunction/Misc.lean: meta:@[positivity]=1 meta:macro_rules=1
+Mathlib/NumberTheory/ArithmeticFunction/VonMangoldt.lean: meta:@[positivity]=1
+Mathlib/NumberTheory/ArithmeticFunction/Zeta.lean: meta:@[positivity]=1
+Mathlib/NumberTheory/Bertrand.lean: run_tac=1
+Mathlib/NumberTheory/Chebyshev.lean: meta:@[positivity]=2
+Mathlib/NumberTheory/Height/Basic.lean: meta:@[positivity]=4
+Mathlib/NumberTheory/Height/NumberField.lean: meta:@[positivity]=1
+Mathlib/NumberTheory/Height/Projectivization.lean: meta:@[positivity]=2
+Mathlib/NumberTheory/LucasLehmer.lean: meta:@[norm_num]=1 meta:@[positivity]=1
+Mathlib/NumberTheory/SelbergSieve.lean: meta:@[positivity]=1
+Mathlib/Order/Bounds/Basic.lean: meta:macro=1
+Mathlib/Order/Category/BddDistLat.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/BddLat.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/BddOrd.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/BoolAlg.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/CompleteLat.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/DistLat.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/FinBddDistLat.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/FinBoolAlg.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/FinPartOrd.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/Frm.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/HeytAlg.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/Lat.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/LinOrd.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/NonemptyFinLinOrd.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/OmegaCompletePartialOrder.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/PartOrd.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/PartOrdEmb.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/Preord.lean: meta:@[app_delab]=1
+Mathlib/Order/Category/Semilat.lean: meta:@[app_delab]=2
+Mathlib/Order/Defs/LinearOrder.lean: meta:macro=1
+Mathlib/Order/Filter/Defs.lean: meta:@[app_unexpander]=4 meta:@[term_elab]=2 meta:elab_rules=1
+Mathlib/Order/Filter/IsBounded.lean: meta:macro=1
+Mathlib/Order/Interval/Finset/Defs.lean: meta:@[term_elab]=1
 Mathlib/Order/Interval/Lex.lean: #eval=1
+Mathlib/Order/Notation.lean: meta:@[delab]=2 meta:macro_rules=1
+Mathlib/Order/SetNotation.lean: meta:@[app_delab]=4
+Mathlib/Probability/ConditionalProbability.lean: meta:@[app_delab]=1 meta:@[app_unexpander]=1 meta:macro=6
+Mathlib/Probability/Notation.lean: meta:macro=1
+Mathlib/RingTheory/Coalgebra/TensorProduct.lean: meta:macro=1
+Mathlib/RingTheory/Derivation/DifferentialRing.lean: meta:@[app_delab]=1
+Mathlib/RingTheory/HahnSeries/Basic.lean: meta:@[app_unexpander]=1 meta:macro_rules=1
+Mathlib/RingTheory/Kaehler/Basic.lean: meta:macro=1
+Mathlib/RingTheory/Radical/NatInt.lean: meta:@[positivity]=1
+Mathlib/RingTheory/Valuation/ValuativeRel/Basic.lean: meta:macro_rules=3
+Mathlib/RingTheory/WittVector/Basic.lean: meta:elab=1 meta:macro=1
+Mathlib/RingTheory/WittVector/InitTail.lean: meta:elab_rules=1
+Mathlib/RingTheory/WittVector/IsPoly.lean: meta:elab_rules=1 meta:macro_rules=1
+Mathlib/RingTheory/WittVector/Truncated.lean: meta:macro=1
 Mathlib/Tactic/Abel.lean: initialize=2
 Mathlib/Tactic/AdaptationNote.lean: initialize=1
 Mathlib/Tactic/Algebraize.lean: initialize=1
@@ -55,6 +267,7 @@ Mathlib/Tactic/ClickSuggestions/FindPremises.lean: initialize=4
 Mathlib/Tactic/ComputeDegree.lean: initialize=1
 Mathlib/Tactic/CongrExclamation.lean: initialize=2
 Mathlib/Tactic/CongrM.lean: initialize=1
+Mathlib/Tactic/Conv.lean: run_tac=1
 Mathlib/Tactic/CrossRefAttribute.lean: initialize=6 parse-error=11
 Mathlib/Tactic/DepRewrite.lean: initialize=1
 Mathlib/Tactic/DeriveCountable.lean: initialize=1
@@ -66,10 +279,10 @@ Mathlib/Tactic/Echelon/Core.lean: initialize=2 unsafe=1
 Mathlib/Tactic/Eqns.lean: initialize=2
 Mathlib/Tactic/Eval.lean: unsafe=1
 Mathlib/Tactic/Explode/Datatypes.lean: initialize=1
-Mathlib/Tactic/FastInstance.lean: initialize=1
 Mathlib/Tactic/FBinop.lean: initialize=1
-Mathlib/Tactic/FieldSimp/Attr.lean: initialize=1
+Mathlib/Tactic/FastInstance.lean: initialize=1
 Mathlib/Tactic/FieldSimp.lean: initialize=1
+Mathlib/Tactic/FieldSimp/Attr.lean: initialize=1
 Mathlib/Tactic/Find.lean: initialize=1
 Mathlib/Tactic/FindSyntax.lean: unsafe=1
 Mathlib/Tactic/FunProp/Attr.lean: initialize=1
@@ -86,9 +299,9 @@ Mathlib/Tactic/Inclusion/Core/Core.lean: unsafe=1
 Mathlib/Tactic/Inclusion/Core/DiscrTreeExt.lean: unsafe=1
 Mathlib/Tactic/Inclusion/Core/Extensions.lean: initialize=2 unsafe=1
 Mathlib/Tactic/Inclusion/Core/Inclusion.lean: initialize=1
-Mathlib/Tactic/Inclusion/ExtensionAPI/Attr.lean: initialize=5
 Mathlib/Tactic/Inclusion/Extension/Core/Init.lean: initialize=1
 Mathlib/Tactic/Inclusion/Extension/IntervalDyadicReal/Init.lean: initialize=1
+Mathlib/Tactic/Inclusion/ExtensionAPI/Attr.lean: initialize=5
 Mathlib/Tactic/Linarith/Datatypes.lean: initialize=2
 Mathlib/Tactic/Linarith/NNRealPreprocessor.lean: initialize=1
 Mathlib/Tactic/Linarith/Preprocessing.lean: initialize=1
@@ -113,8 +326,8 @@ Mathlib/Tactic/Linter/PPRoundtrip.lean: initialize=1
 Mathlib/Tactic/Linter/PrivateModule.lean: initialize=1
 Mathlib/Tactic/Linter/Style.lean: initialize=9
 Mathlib/Tactic/Linter/UnusedInstancesInType.lean: initialize=2
-Mathlib/Tactic/Linter/UnusedTacticExtension.lean: initialize=2
 Mathlib/Tactic/Linter/UnusedTactic.lean: initialize=2
+Mathlib/Tactic/Linter/UnusedTacticExtension.lean: initialize=2
 Mathlib/Tactic/Linter/UpstreamableDecl.lean: initialize=1
 Mathlib/Tactic/Linter/ValidatePRTitle.lean: #eval=11
 Mathlib/Tactic/Linter/Whitespace.lean: initialize=1
@@ -124,13 +337,13 @@ Mathlib/Tactic/Monotonicity/Attr.lean: initialize=1
 Mathlib/Tactic/MoveAdd.lean: initialize=1
 Mathlib/Tactic/NormNum/Core.lean: initialize=3 unsafe=1
 Mathlib/Tactic/Order.lean: initialize=1
+Mathlib/Tactic/PPWithUniv.lean: initialize=1
 Mathlib/Tactic/Polynomial/Core.lean: initialize=4 unsafe=1
 Mathlib/Tactic/Positivity/Core.lean: initialize=4 unsafe=1
-Mathlib/Tactic/PPWithUniv.lean: initialize=1
 Mathlib/Tactic/ProxyType.lean: initialize=1
 Mathlib/Tactic/Push/Attr.lean: initialize=3
-Mathlib/Tactic/ReduceModChar/Ext.lean: initialize=1
 Mathlib/Tactic/ReduceModChar.lean: unsafe=2
+Mathlib/Tactic/ReduceModChar/Ext.lean: initialize=1
 Mathlib/Tactic/Ring/Basic.lean: initialize=1
 Mathlib/Tactic/Ring/RingNF.lean: initialize=1
 Mathlib/Tactic/Sat/FromLRAT.lean: unsafe=4
@@ -140,10 +353,10 @@ Mathlib/Tactic/Simproc/Divisors.lean: unsafe=3
 Mathlib/Tactic/Simps/Basic.lean: initialize=6 unsafe=1
 Mathlib/Tactic/Simps/NotationClass.lean: initialize=1
 Mathlib/Tactic/SuccessIfFailWithMsg.lean: unsafe=1
+Mathlib/Tactic/TFAE.lean: parse-error=5
 Mathlib/Tactic/TacticAnalysis.lean: initialize=3 unsafe=2
 Mathlib/Tactic/Tauto.lean: initialize=1
 Mathlib/Tactic/TermCongr.lean: initialize=1
-Mathlib/Tactic/TFAE.lean: parse-error=5
 Mathlib/Tactic/ToFun.lean: initialize=1
 Mathlib/Tactic/Trace.lean: unsafe=1
 Mathlib/Tactic/Translate/Attributes.lean: initialize=1
@@ -156,6 +369,32 @@ Mathlib/Tactic/Widget/LibraryRewrite.lean: initialize=3
 Mathlib/Tactic/Widget/SelectInsertParamsClass.lean: initialize=1
 Mathlib/Tactic/Widget/StringDiagram.lean: initialize=1
 Mathlib/Tactic/WithoutCDot.lean: parse-error=2
+Mathlib/Topology/Algebra/Category/ProfiniteGrp/Basic.lean: meta:@[app_delab]=2
+Mathlib/Topology/Algebra/InfiniteSum/ENNReal.lean: meta:macro_rules=1
+Mathlib/Topology/Algebra/InfiniteSum/Order.lean: meta:@[positivity]=1
+Mathlib/Topology/Algebra/Valued/WithVal.lean: meta:@[app_delab]=1
+Mathlib/Topology/Baire/BaireMeasurable.lean: meta:@[app_delab]=2
+Mathlib/Topology/Category/Born.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/CompHaus/Basic.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/CompHausLike/Basic.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/CompactlyGenerated.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/DeltaGenerated.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/FinTopCat.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/LightProfinite/Basic.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/Locale.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/Profinite/Basic.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/Sequential.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/Stonean/Basic.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/TopCat/Basic.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/TopCommRingCat.lean: meta:@[app_delab]=1
+Mathlib/Topology/Category/UniformSpace.lean: meta:@[app_delab]=2
+Mathlib/Topology/Convenient/Category.lean: meta:@[app_delab]=2
+Mathlib/Topology/Defs/Basic.lean: meta:@[app_delab]=6
+Mathlib/Topology/MetricSpace/Bounded.lean: meta:@[positivity]=1
+Mathlib/Topology/MetricSpace/Pseudo/Defs.lean: meta:@[positivity]=1
+Mathlib/Topology/Order/Category/AlexDisc.lean: meta:@[app_delab]=1
+Mathlib/Topology/Sheaves/Presheaf.lean: meta:macro=3
+Mathlib/Topology/UnitInterval.lean: meta:macro=1
 Mathlib/Util/AliasIn.lean: initialize=1
 Mathlib/Util/CompileInductive.lean: run_cmd=1
 Mathlib/Util/CountHeartbeats.lean: initialize=1
