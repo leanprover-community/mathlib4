@@ -56,7 +56,7 @@ private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
     ((Real.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
   exact ((key hA).mul (tendsto_spectralRadiusLim B)).mul (key hC)
 
--- waiting on spectral radius (also look into futher golfing)
+-- waiting on spectral radius (also look into further golfing)
 theorem Matrix.spectralRadiusLim_conj {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
     (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
