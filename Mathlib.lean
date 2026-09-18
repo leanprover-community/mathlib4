@@ -1212,6 +1212,7 @@ public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Polynomial.SpecificDegree
 public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Algebra.Polynomial.Sturm.Sequence
 public import Mathlib.Algebra.Polynomial.SumIteratedDerivative
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.Algebra.Polynomial.UnitTrinomial
