@@ -593,9 +593,11 @@ theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
   (measurable_pi_apply a).comp hg
 
 @[fun_prop]
-theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun c => f c a) :
+theorem Measurable.of_eval {f : α → ∀ a, X a} (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
+
+@[deprecated (since := "2026-08-20")] alias measurable_pi_lambda := Measurable.of_eval
 
 lemma MeasurableSpace.comap_process_pi (X : (a : δ) → β → X a) :
     MeasurableSpace.comap (fun b a ↦ X a b) inferInstance =
@@ -652,21 +654,21 @@ theorem measurable_update_left {a : δ} [DecidableEq δ] {x : X a} :
 
 @[fun_prop]
 theorem Set.measurable_restrict (s : Set δ) : Measurable (s.domRestrict (π := X)) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
     Measurable (domRestrict₂ (π := X) hst) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := X)) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
     Measurable (Finset.restrict₂ (π := X) hst) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
@@ -791,7 +793,7 @@ theorem measurable_tProd_elim [DecidableEq δ] :
 
 theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ l) :
     Measurable (TProd.elim' h : TProd X l → ∀ i, X i) :=
-  measurable_pi_lambda _ fun i => measurable_tProd_elim (h i)
+  .of_eval fun i => measurable_tProd_elim (h i)
 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (X i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
@@ -1040,7 +1042,7 @@ variable {κ X : Type*} [MeasurableSpace X]
 
 @[fun_prop]
 lemma measurable_curry : Measurable (@curry ι κ X) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ .of_eval fun _ ↦ measurable_pi_apply _
 
 -- This cannot be tagged with `fun_prop` because `fun_prop` can see through `Function.uncurry`.
 lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by fun_prop
@@ -1059,11 +1061,11 @@ variable {κ : ι → Type*} {X : (i : ι) → κ i → Type*} [∀ i j, Measura
 
 @[fun_prop]
 lemma measurable_sigmaCurry : Measurable (Sigma.curry (γ := X)) :=
-    measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+    .of_eval fun _ ↦ .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 lemma measurable_sigmaUncurry : Measurable (Sigma.uncurry (γ := X)) := by
-  refine measurable_pi_lambda _ fun _ ↦ ?_
+  refine .of_eval fun _ ↦ ?_
   simp only [Sigma.uncurry]
   fun_prop
 

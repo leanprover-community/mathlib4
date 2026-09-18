@@ -414,7 +414,7 @@ alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
 theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg
   rw [mem_normalizer_iff_conj_image_eq] at hg
-  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_coe, hg]
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_ofClass, hg]
 
 variable {H}
 
@@ -522,6 +522,19 @@ theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ normaliz
 theorem le_normalizer_of_normal [H.Normal] : K ≤ normalizer H := subset_normalizer_of_normal
 
 @[to_additive]
+lemma inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
+    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
+  intro g hg
+  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
+
+@[deprecated (since := "2026-08-27")] alias normalizer_inf_normalizer_le_normalizer_sup :=
+  inf_normalizer_le_normalizer_sup
+
+@[deprecated (since := "2026-08-27")]
+alias _root_.AddSubgroup.normalizer_inf_normalizer_le_normalizer_sup :=
+  AddSubgroup.inf_normalizer_le_normalizer_sup
+
+@[to_additive]
 theorem inf_normalizer_le_normalizer_inf :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊓ K :) : Set G) :=
   fun _ h g ↦ and_congr (h.1 g) (h.2 g)
@@ -533,11 +546,15 @@ theorem iInf_normalizer_le_normalizer_iInf {ι : Sort*} (H : ι → Subgroup G) 
 
 variable (G) in
 /-- Every proper subgroup `H` of `G` is a proper normal subgroup of the normalizer of `H` in `G`. -/
+@[to_additive AddNormalizerCondition /-- Every proper additive subgroup `H` of `G` is a proper
+normal additive subgroup of the normalizer of `H` in `G`. -/]
 def _root_.NormalizerCondition :=
   ∀ H : Subgroup G, H < ⊤ → H < normalizer H
 
 /-- Alternative phrasing of the normalizer condition: Only the full group is self-normalizing.
 This may be easier to work with, as it avoids inequalities and negations. -/
+@[to_additive /-- Alternative phrasing of the normalizer condition: Only the full additive group is
+self-normalizing. This may be easier to work with, as it avoids inequalities and negations. -/]
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, normalizer H = H → H = ⊤ := by
   apply forall_congr'; intro H
@@ -1154,7 +1171,7 @@ end ConjClasses
 
 namespace AddSubgroup
 
-variable {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
+variable {M : Type*} [AddGroup M] (I J : AddSubgroup M) (G : Type*)
     [Group G] [MulAction G M]
 
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
@@ -1176,6 +1193,11 @@ lemma subgroupOf_inertia (H : Subgroup G) : (I.inertia G).subgroupOf H = I.inert
 
 variable {I G} in
 lemma coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H := .rfl
+
+variable {I J} in
+@[gcongr]
+lemma inertia_mono (h : I ≤ J) : I.inertia G ≤ J.inertia G :=
+  fun _ hx x ↦ h (hx x)
 
 variable {G} in
 @[simp]

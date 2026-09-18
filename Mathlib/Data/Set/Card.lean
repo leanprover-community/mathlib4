@@ -507,7 +507,7 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
   hf.injOn.encard_image
 
 theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
-    ENat.card α ≤ (range f).encard := by
+    (range f).encard = ENat.card α := by
   rw [← image_univ, hf.encard_image, encard_univ]
 
 theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard :=
