@@ -70,9 +70,7 @@ noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) 
     rw [dite_eq_right (fun h ↦ hf (by ext; simpa))]
     simp
   nnqsmul := _
-  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def _ _ := rfl
 
 open Module
 
