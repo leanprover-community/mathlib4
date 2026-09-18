@@ -885,7 +885,7 @@ lemma height_eq_krullDim_Iic (x : α) : (height x : ℕ∞) = krullDim (Set.Iic 
     exact le_iSup (fun p ↦ (p.length : ℕ∞)) q
   · apply iSup_le; intro p; apply iSup_le; intro _
     have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
-    rw [← LTSeries.map_length p (fun x ↦ x.1) mono, ]
+    rw [← LTSeries.map_length p (fun x ↦ x.1) mono]
     refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
     exact (p.toFun (Fin.last p.length)).2
 
