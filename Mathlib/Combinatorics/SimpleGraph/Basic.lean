@@ -114,6 +114,10 @@ def SimpleGraph.mk' {V : Type u} :
     funext v w
     simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
 
+-- #43099
+instance {V : Type*} (G : SimpleGraph V) : Std.Symm G.Adj :=
+  G.symm
+
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
 instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
@@ -475,8 +479,7 @@ The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `Iff.rfl`.
 -/
 -- Porting note: We need a separate definition so that dot notation works.
 def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
-  OrderEmbedding.ofMapLEIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
-    ⟨fun h a b => @h s(a, b), fun h e => Sym2.ind @h e⟩
+  .ofMapLEIff (Sym2.fromRel ·.Adj) fun _ _ ↦ Sym2.fromRel_mono_iff
 
 /-- `G.edgeSet` is the edge set for `G`.
 This is an abbreviation for `edgeSetEmbedding G` that permits dot notation. -/
@@ -613,7 +616,7 @@ theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) 
   exact G.ne_of_adj he
 
 instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) :=
-  Sym2.fromRel.decidablePred G.symm
+  inferInstanceAs <| DecidablePred (· ∈ Sym2.fromRel G.Adj)
 
 instance fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edgeSet :=
   Subtype.fintype _
