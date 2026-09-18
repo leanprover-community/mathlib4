@@ -81,7 +81,7 @@ instance : LE (PreAbstractSimplicialComplex ι) where
 instance : LT (PreAbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
-instance : IsConcreteLE (PreAbstractSimplicialComplex ι) (Finset ι) where
+instance : IsMemLE (PreAbstractSimplicialComplex ι) (Finset ι) where
   le_iff := .rfl
 
 instance : PartialOrder (PreAbstractSimplicialComplex ι) :=
@@ -205,7 +205,7 @@ instance : LE (AbstractSimplicialComplex ι) where
 instance : LT (AbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
-instance : IsConcreteLE (AbstractSimplicialComplex ι) (Finset ι) where
+instance : IsMemLE (AbstractSimplicialComplex ι) (Finset ι) where
   le_iff := .rfl
 
 instance : PartialOrder (AbstractSimplicialComplex ι) :=
