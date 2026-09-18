@@ -220,7 +220,7 @@ class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
   le_iff_mem_imp_mem {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
-export (IsMemLE) le_iff_mem_imp_mem
+export IsMemLE (le_iff_mem_imp_mem)
 
 @[deprecated (since := "2026-09-18")] alias IsConcreteLE := IsMemLE
 
