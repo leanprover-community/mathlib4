@@ -215,10 +215,8 @@ then `cyclotomic n K` comes from a unique polynomial with integer coefficients. 
 theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero K] {ζ : K}
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
-  obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine ⟨P, hP.1, fun Q hQ => ?_⟩
-  apply map_injective (Int.castRingHom K) Int.cast_injective
-  rw [hP.1, hQ]
+  rw [(map_injective (Int.castRingHom K) Int.cast_injective).existsUnique_iff_exists]
+  exact (int_coeff_of_cyclotomic' h).imp fun _ hP ↦ hP.1
 
 end Field
 

@@ -326,10 +326,12 @@ theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g
     Surjective f :=
   injective_comp_right_iff_surjective.mp h
 
+theorem Injective.existsUnique_iff_exists (hf : Injective f) {b : β} :
+    (∃! a, f a = b) ↔ ∃ a, f a = b :=
+  ⟨ExistsUnique.exists, fun ⟨a, ha⟩ ↦ ⟨a, ha, fun _ hx ↦ hf (hx.trans ha.symm)⟩⟩
+
 theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
-  ⟨fun hf b ↦
-      let ⟨a, ha⟩ := hf.surjective b
-      ⟨a, ha, fun _ ha' ↦ hf.injective (ha'.trans ha.symm)⟩,
+  ⟨fun hf b ↦ hf.injective.existsUnique_iff_exists.2 (hf.surjective b),
     fun he ↦ ⟨fun {_a a'} h ↦ (he (f a')).unique h rfl, fun b ↦ (he b).exists⟩⟩
 
 /-- Shorthand for using projection notation with `Function.bijective_iff_existsUnique`. -/
