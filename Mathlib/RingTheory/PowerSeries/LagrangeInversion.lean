@@ -33,6 +33,8 @@ characteristic zero.
 
 ## Main results
 
+* `PowerSeries.eq_zero_of_fixedPoint_of_constantCoeff_eq_zero`: the degenerate case where the
+  constant coefficient of `P` is zero.
 * `PowerSeries.lagrange_burmann_coeff`: the Lagrange–Bürmann coefficient formula over a
   commutative ring without additive torsion.
 * `PowerSeries.lagrange_inversion_coeff_pow`: the coefficient formula for powers of `Y`.
