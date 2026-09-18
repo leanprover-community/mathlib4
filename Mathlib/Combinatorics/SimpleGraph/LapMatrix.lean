@@ -334,40 +334,31 @@ theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictO
     _ ≤ toLinearMap₂' R ((⊤ : SimpleGraph V).lapMatrix R) x x := hcmp
     _ ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := htop
 
-/-- An eigenpair of the Laplacian satisfies `μ ≤ |V|`.
-
-This is the Rayleigh-quotient form of `dotProduct_mulVec_lapMatrix_le_card`.
-It is a uniform upper bound; it does not assert that `|V|` lies in the spectrum.
-
-Stated over a linearly ordered field (via Rayleigh / positivity of `x ⬝ᵥ x` for `x ≠ 0`).
-We use an explicit eigenpair (equivalently `HasEigenvalue` of `toLin'`) rather than
-`IsHermitian.eigenvalues`, to avoid importing `Analysis.Matrix.Spectrum`. -/
-theorem eigenvalue_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {μ : R} {x : V → R} (hx : x ≠ 0)
-    (h : G.lapMatrix R *ᵥ x = μ • x) :
-    μ ≤ (Fintype.card V : R) := by
-  have hquad := dotProduct_mulVec_lapMatrix_le_card (R := R) G x
-  have hμ : x ⬝ᵥ (G.lapMatrix R *ᵥ x) = μ * (x ⬝ᵥ x) := by
-    rw [h, dotProduct_smul, smul_eq_mul]
-  have hxpos : 0 < x ⬝ᵥ x := by
-    have hnn : 0 ≤ x ⬝ᵥ x := Fintype.sum_nonneg fun i => mul_self_nonneg (x i)
-    have hne : x ⬝ᵥ x ≠ 0 := mt dotProduct_self_eq_zero.mp hx
-    exact lt_of_le_of_ne hnn hne.symm
-  have : μ * (x ⬝ᵥ x) ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := by
-    rwa [← hμ]
-  exact (mul_le_mul_iff_of_pos_right hxpos).1 this
-
 /-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
 is at most `|V|`.
 
-See `eigenvalue_lapMatrix_le_card` for the Rayleigh form on an explicit eigenpair. -/
+Proof: Rayleigh quotient via `dotProduct_mulVec_lapMatrix_le_card`. This is a uniform
+upper bound; it does not assert that `|V|` lies in the spectrum.
+
+Stated via `Module.End.HasEigenvalue` of `toLin'` rather than `IsHermitian.eigenvalues`,
+to avoid importing `Analysis.Matrix.Spectrum`. -/
 theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     {μ : R}
     (hμ : Module.End.HasEigenvalue (toLin' (G.lapMatrix R)) μ) :
     μ ≤ (Fintype.card V : R) := by
   obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
-  refine eigenvalue_lapMatrix_le_card (R := R) G hx.right ?_
-  simpa [toLin'_apply] using hx.apply_eq_smul
+  have h : G.lapMatrix R *ᵥ x = μ • x := by
+    simpa [toLin'_apply] using hx.apply_eq_smul
+  have hquad := dotProduct_mulVec_lapMatrix_le_card (R := R) G x
+  have hμ' : x ⬝ᵥ (G.lapMatrix R *ᵥ x) = μ * (x ⬝ᵥ x) := by
+    rw [h, dotProduct_smul, smul_eq_mul]
+  have hxpos : 0 < x ⬝ᵥ x := by
+    have hnn : 0 ≤ x ⬝ᵥ x := Fintype.sum_nonneg fun i => mul_self_nonneg (x i)
+    have hne : x ⬝ᵥ x ≠ 0 := mt dotProduct_self_eq_zero.mp hx.right
+    exact lt_of_le_of_ne hnn hne.symm
+  have : μ * (x ⬝ᵥ x) ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := by
+    rwa [← hμ']
+  exact (mul_le_mul_iff_of_pos_right hxpos).1 this
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
