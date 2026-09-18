@@ -69,7 +69,9 @@ theorem range_extend (hs : LinearIndepOn K id s) :
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
 The specific value of this definition should be considered an implementation detail. -/
-def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
   LinearIndepOn.extend hs.linearIndepOn_id (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
@@ -248,7 +250,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
   have Vinh : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.domRestrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
@@ -320,7 +322,7 @@ instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
-  rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩
+  rcases IsConcreteLE.exists_of_lt hp with ⟨v, -, hpv⟩
   rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 

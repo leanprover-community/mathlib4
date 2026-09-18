@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.NNReal.Defs
-public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Data.FunLike.Module
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Group seminorms
@@ -48,7 +48,7 @@ norm, seminorm
 
 @[expose] public section
 
-assert_not_exists Finset
+assert_not_exists Finset SeminormedGroup SeminormedAddGroup
 
 open Set
 
@@ -104,7 +104,7 @@ structure AddGroupNorm (G : Type*) [AddGroup G] extends AddGroupSeminorm G where
   /-- If the image under the seminorm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 
-/-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
+/-- A norm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` and `f x = 0 → x = 1` for all `x`. -/
 @[to_additive]
 structure GroupNorm (G : Type*) [Group G] extends GroupSeminorm G where
@@ -177,7 +177,7 @@ section Group
 
 variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -435,11 +435,11 @@ variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ
 
 instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
-      map_zero' := if_pos rfl
+      map_zero' := ite_eq_left rfl
       add_le' := fun x y => by
         by_cases hx : x = 0
-        · rw [if_pos hx, hx, zero_add, zero_add]
-        · rw [if_neg hx]
+        · rw [ite_eq_left hx, hx, zero_add, zero_add]
+        · rw [ite_eq_right hx]
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
@@ -486,6 +486,7 @@ section AddGroup
 
 variable [AddGroup E] {p q : NonarchAddGroupSeminorm E}
 
+@[macro_inline]
 instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
@@ -621,11 +622,11 @@ variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
-      map_one' := if_pos rfl
+      map_one' := ite_eq_left rfl
       mul_le' := fun x y => by
         by_cases hx : x = 1
-        · rw [if_pos hx, hx, one_mul, zero_add]
-        · rw [if_neg hx]
+        · rw [ite_eq_left hx, hx, one_mul, zero_add]
+        · rw [ite_eq_right hx]
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
@@ -673,12 +674,12 @@ variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ
 
 instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
-      map_zero' := if_pos rfl
+      map_zero' := ite_eq_left rfl
       add_le_max' := fun x y => by
         by_cases hx : x = 0
-        · simp_rw [if_pos hx, hx, zero_add]
+        · simp_rw [ite_eq_left hx, hx, zero_add]
           exact le_max_of_le_right (le_refl _)
-        · simp_rw [if_neg hx]
+        · simp_rw [ite_eq_right hx]
           split_ifs <;> simp
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
@@ -728,7 +729,7 @@ section Group
 
 variable [Group E] {p q : GroupNorm E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
@@ -857,6 +858,7 @@ section AddGroup
 
 variable [AddGroup E] {p q : NonarchAddGroupNorm E}
 
+@[macro_inline]
 instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr

@@ -29,7 +29,7 @@ Prove the `integral` versions of the `lintegral` lemmas below
 
 public section
 
-open MeasureTheory ENNReal NNReal Set
+open MeasureTheory ENNReal Set
 open scoped ProbabilityTheory
 
 namespace ProbabilityTheory.Kernel

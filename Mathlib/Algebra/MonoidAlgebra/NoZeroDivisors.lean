@@ -75,8 +75,9 @@ theorem coeff_mul_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
     (f * g).coeff (a0 * b0) = f.coeff a0 * g.coeff b0 := by
   classical
   simp_rw [coeff_mul, sum, ← Finset.sum_product']
-  refine (Finset.sum_eq_single (a0, b0) ?_ ?_).trans (if_pos rfl) <;> simp_rw [Finset.mem_product]
-  · refine fun ab hab hne ↦ if_neg (fun he ↦ hne <| Prod.ext ?_ ?_)
+  refine (Finset.sum_eq_single (a0, b0) ?_ ?_).trans (ite_eq_left rfl) <;>
+    simp_rw [Finset.mem_product]
+  · refine fun ab hab hne ↦ ite_eq_right (fun he ↦ hne <| Prod.ext ?_ ?_)
     exacts [(h hab.1 hab.2 he).1, (h hab.1 hab.2 he).2]
   · refine fun hnotMem ↦ ite_eq_right_iff.mpr (fun _ ↦ ?_)
     rcases not_and_or.mp hnotMem with af | bg
@@ -86,7 +87,6 @@ theorem coeff_mul_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
 @[deprecated (since := "2026-06-18")]
 alias mul_apply_mul_eq_mul_of_uniqueMul := coeff_mul_mul_of_uniqueMul
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors R[A] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by

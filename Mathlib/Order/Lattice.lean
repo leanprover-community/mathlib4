@@ -10,6 +10,8 @@ public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
 
+import Mathlib.Tactic.GRewrite
+
 /-!
 # (Semi-)lattices
 
@@ -302,13 +304,23 @@ theorem sup_eq_sup_iff_left : a ⊔ b = a ⊔ c ↔ b ≤ a ⊔ c ∧ c ≤ a �
 theorem sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c :=
   ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
 
+@[to_dual]
+theorem sup_eq_sup_mono_left (h : a ⊔ b = a ⊔ c) (had : a ≤ d) : d ⊔ b = d ⊔ c := by
+  rw [sup_eq_sup_iff_left] at *
+  exact h.imp (le_trans · (sup_le_sup_right had _)) (le_trans · (sup_le_sup_right had _))
+
+@[to_dual]
+theorem sup_eq_sup_mono_right (h : a ⊔ c = b ⊔ c) (hcd : c ≤ d) : a ⊔ d = b ⊔ d := by
+  rw [sup_eq_sup_iff_right] at *
+  refine h.imp ?_ ?_ <;> intro h' <;> grw [hcd] at h' <;> assumption
+
 @[to_dual inf_lt_or_inf_lt]
 theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
   hab.symm.not_le_or_not_ge.imp left_lt_sup.2 right_lt_sup.2
 
 @[to_dual inf_le_ite]
 theorem ite_le_sup (a b : α) (P : Prop) [Decidable P] : ite P a b ≤ a ⊔ b :=
-  if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
+  if h : P then (ite_eq_left h).trans_le le_sup_left else (ite_eq_right h).trans_le le_sup_right
 
 @[to_dual (reorder := H (x y))]
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
@@ -350,6 +362,16 @@ end SemilatticeSup
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
 attribute [to_dual existing] Lattice.toSemilatticeInf
+
+/-- Auxiliary constructor for `to_dual`. -/
+@[to_dual existing mk, instance_reducible]
+def Lattice.mkDual {α : Type*} [SemilatticeInf α] (sup : α → α → α)
+    (le_sup_left : ∀ a b, a ≤ sup a b) (le_sup_right : ∀ a b, b ≤ sup a b)
+    (sup_le : ∀ a b c, a ≤ c → b ≤ c → sup a b ≤ c) : Lattice α where
+  sup
+  le_sup_left
+  le_sup_right
+  sup_le
 
 instance OrderDual.instLattice (α) [Lattice α] : Lattice αᵒᵈ where
 
@@ -559,22 +581,26 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
   max_ind (fun _ ↦ ha) (fun _ ↦ hb)
 
 @[to_dual inf_le_iff]
-theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := le_max_iff
+theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
+  grind
 
 @[to_dual inf_lt_iff]
-theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := lt_max_iff
+theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
+  grind
 
 @[to_dual lt_inf_iff]
-theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a := max_lt_iff
+theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
+  ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
+   fun h => sup_ind (p := (· < a)) b c h.1 h.2⟩
 
-attribute [deprecated max_ind (since := "2026-02-28")] sup_ind
-attribute [deprecated min_ind (since := "2026-02-28")] inf_ind
-attribute [deprecated le_max_iff (since := "2026-02-28")] le_sup_iff
-attribute [deprecated min_le_iff (since := "2026-02-28")] inf_le_iff
-attribute [deprecated lt_max_iff (since := "2026-02-28")] lt_sup_iff
-attribute [deprecated min_lt_iff (since := "2026-02-28")] inf_lt_iff
-attribute [deprecated max_lt_iff (since := "2026-02-28")] sup_lt_iff
-attribute [deprecated lt_min_iff (since := "2026-02-28")] lt_inf_iff
+attribute [deprecated max_ind +typeChanged (since := "2026-02-28")] sup_ind
+attribute [deprecated min_ind +typeChanged (since := "2026-02-28")] inf_ind
+attribute [deprecated le_max_iff +typeChanged (since := "2026-02-28")] le_sup_iff
+attribute [deprecated min_le_iff +typeChanged (since := "2026-02-28")] inf_le_iff
+attribute [deprecated lt_max_iff +typeChanged (since := "2026-02-28")] lt_sup_iff
+attribute [deprecated min_lt_iff +typeChanged (since := "2026-02-28")] inf_lt_iff
+attribute [deprecated max_lt_iff +typeChanged (since := "2026-02-28")] sup_lt_iff
+attribute [deprecated lt_min_iff +typeChanged (since := "2026-02-28")] lt_inf_iff
 
 variable (a b c d)
 

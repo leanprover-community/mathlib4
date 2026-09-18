@@ -123,7 +123,6 @@ def liftEquiv : (𝒜 →ₐᵍ[R] (ℬ · |>.restrictScalars R)) ≃ ((𝒜 · 
       map_mem hx := by
         obtain ⟨x, rfl⟩ := toBaseChange_surjective' _ _ hx
         induction x with
-        | zero => simp
         | add => simp_all [add_mem]
         | tmul r x => simpa using smul_mem _ _ <| by exact f.map_mem x.2 }
   invFun f :=

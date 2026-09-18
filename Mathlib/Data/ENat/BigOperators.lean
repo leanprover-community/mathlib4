@@ -20,7 +20,7 @@ assert_not_exists Field
 
 namespace ENat
 
-variable {a b c d : ℕ∞} {r p q : ℕ}
+variable {a : ℕ∞} {p : ℕ}
 
 section OperationsAndInfty
 

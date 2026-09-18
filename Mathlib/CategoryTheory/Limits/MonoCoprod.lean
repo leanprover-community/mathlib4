@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 # Categories where inclusions into coproducts are monomorphisms
 
 If `C` is a category, the class `MonoCoprod C` expresses that left
-inclusions `A ⟶ A ⨿ B` are monomorphisms when `HasCoproduct A B`
+inclusions `A ⟶ A ⨿ B` are monomorphisms when `HasBinaryCoproduct A B`
 holds. If so, it is shown that right inclusions are
 also monomorphisms.
 
@@ -60,7 +60,6 @@ instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : M
 
 namespace MonoCoprod
 
-set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsColimit c) :
     Mono c.inr := by
   have hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
@@ -76,7 +75,6 @@ instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : 
 instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inr : B ⟶ A ⨿ B) :=
   binaryCofan_inr _ (colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂) :
     Mono c₁.inl ↔ Mono c₂.inl := by
   suffices
@@ -93,7 +91,6 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (↾(Sum.inl : A → A ⊕ B))
@@ -148,7 +145,6 @@ lemma mono_binaryCofanSum_inr [MonoCoprod C] :
     Mono (binaryCofanSum c c₁ c₂ hc₁ hc₂).inr :=
   MonoCoprod.binaryCofan_inr _ (isColimitBinaryCofanSum c c₁ c₂ hc hc₁ hc₂)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_binaryCofanSum_inl' [MonoCoprod C] (inl : c₁.pt ⟶ c.pt)
     (hinl : ∀ (i₁ : I₁), c₁.inj i₁ ≫ inl = c.inj (Sum.inl i₁)) :
     Mono inl := by
@@ -157,7 +153,6 @@ lemma mono_binaryCofanSum_inl' [MonoCoprod C] (inl : c₁.pt ⟶ c.pt)
     exact MonoCoprod.binaryCofan_inl _ (isColimitBinaryCofanSum c c₁ c₂ hc hc₁ hc₂)
   exact Cofan.IsColimit.hom_ext hc₁ _ _ (by simpa using hinl)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_binaryCofanSum_inr' [MonoCoprod C] (inr : c₂.pt ⟶ c.pt)
     (hinr : ∀ (i₂ : I₂), c₂.inj i₂ ≫ inr = c.inj (Sum.inr i₂)) :
     Mono inr := by
@@ -199,7 +194,6 @@ lemma mono_of_injective' [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     Mono (Sigma.desc (f := X ∘ ι) (fun j => Sigma.ι X (ι j))) :=
   mono_of_injective X ι hι _ _ (colimit.isColimit _) (colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
@@ -215,7 +209,6 @@ section
 
 variable [MonoCoprod C] {I : Type*} (X : I → C)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
@@ -238,7 +231,6 @@ section Preservation
 
 variable {D : Type*} [Category* D] (F : C ⥤ D)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     [PreservesColimitsOfShape (Discrete WalkingPair) F]
     [ReflectsMonomorphisms F] : MonoCoprod C where

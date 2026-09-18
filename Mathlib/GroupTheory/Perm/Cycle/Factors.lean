@@ -21,11 +21,11 @@ Let `β` be a `Fintype` and `f : Equiv.Perm β`.
   that multiply to `f`.
 -/
 
-@[expose] public section
+public section
 
 open Equiv Function Finset
 
-variable {ι α β : Type*}
+variable {α β : Type*}
 
 namespace Equiv.Perm
 
@@ -63,7 +63,7 @@ theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α)
   induction n with
   | zero => rfl
   | succ n hn =>
-    rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
+    rw [pow_succ', mul_apply, cycleOf_apply, hn, ite_eq_left, pow_succ', mul_apply]
     exact ⟨n, rfl⟩
 
 @[simp]
@@ -123,10 +123,10 @@ theorem IsCycle.cycleOf_eq [DecidableRel f.SameCycle]
 @[simp]
 theorem cycleOf_eq_one_iff (f : Perm α) [DecidableRel f.SameCycle] : cycleOf f x = 1 ↔ f x = x := by
   simp_rw [Perm.ext_iff, cycleOf_apply, one_apply]
-  refine ⟨fun h => (if_pos (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
+  refine ⟨fun h => (ite_eq_left (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
   by_cases hy : f y = y
   · rw [hy, ite_self]
-  · exact if_neg (mt SameCycle.apply_eq_self_iff (by tauto))
+  · exact ite_eq_right (mt SameCycle.apply_eq_self_iff (by tauto))
 
 @[simp]
 theorem cycleOf_self_apply (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
@@ -146,8 +146,8 @@ theorem cycleOf_self_apply_zpow (f : Perm α) [DecidableRel f.SameCycle] (n : �
 protected theorem IsCycle.cycleOf [DecidableRel f.SameCycle] [DecidableEq α]
     (hf : IsCycle f) : cycleOf f x = if f x = x then 1 else f := by
   by_cases hx : f x = x
-  · rwa [if_pos hx, cycleOf_eq_one_iff]
-  · rwa [if_neg hx, hf.cycleOf_eq]
+  · rwa [ite_eq_left hx, cycleOf_eq_one_iff]
+  · rwa [ite_eq_right hx, hf.cycleOf_eq]
 
 theorem cycleOf_one [DecidableRel (1 : Perm α).SameCycle] (x : α) :
     cycleOf 1 x = 1 := (cycleOf_eq_one_iff 1).mpr rfl
@@ -476,21 +476,21 @@ variable [DecidableEq α] [Fintype α] (f : Perm α)
 -/
 def cycleFactorsFinset : Finset (Perm α) :=
   (truncCycleFactors f).lift
-    (fun l : { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } =>
+    (fun l : { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } ↦
       ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.2.2.1 _ h1) l.2.2.2⟩)
-    fun ⟨_, hl⟩ ⟨_, hl'⟩ =>
+    fun ⟨_, hl⟩ ⟨_, hl'⟩ ↦
     Finset.eq_of_veq <| Multiset.coe_eq_coe.mpr <|
       list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
         hl.right.right hl'.right.right
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped List in
 theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} (hn : l.Nodup) :
     σ.cycleFactorsFinset = l.toFinset ↔
       (∀ f : Perm α, f ∈ l → f.IsCycle) ∧ l.Pairwise Disjoint ∧ l.prod = σ := by
   obtain ⟨⟨l', hp', hc', hd'⟩, hl⟩ := Trunc.exists_rep σ.truncCycleFactors
   have ht : cycleFactorsFinset σ = l'.toFinset := by
-    rw [cycleFactorsFinset, ← hl, Trunc.lift_mk, Multiset.toFinset_eq, List.toFinset_coe]
+    rw [cycleFactorsFinset, ← hl]
+    exact List.toFinset_eq (nodup_of_pairwise_disjoint (fun m ↦ not_isCycle_one (hc' 1 m)) hd')
   rw [ht]
   constructor
   · intro h
@@ -506,14 +506,14 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     refine list_cycles_perm_list_cycles ?_ hc' hc hd' hd
     rw [hp, hp']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cycleFactorsFinset_eq_finset {σ : Perm α} {s : Finset (Perm α)} :
     σ.cycleFactorsFinset = s ↔
       (∀ f : Perm α, f ∈ s → f.IsCycle) ∧
         ∃ h : (s : Set (Perm α)).Pairwise Disjoint,
-          s.noncommProd id (h.mono' fun _ _ => Disjoint.commute) = σ := by
+          s.noncommProd id (h.mono' fun _ _ ↦ Disjoint.commute) = σ := by
   obtain ⟨l, hl, rfl⟩ := s.exists_list_nodup_eq
-  simp [cycleFactorsFinset_eq_list_toFinset, hl]
+  simp_rw [List.coe_toFinset, hl.pairwise_coe, noncommProd_toFinset (hl := hl)]
+  simp [cycleFactorsFinset_eq_list_toFinset hl]
 
 theorem cycleFactorsFinset_pairwise_disjoint :
     (cycleFactorsFinset f : Set (Perm α)).Pairwise Disjoint :=
@@ -625,9 +625,10 @@ theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {g : Equiv.Perm α
   · rintro ⟨c, hc, hx⟩
     exact mem_cycleFactorsFinset_support_le hc hx
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem cycleFactorsFinset_eq_empty_iff {f : Perm α} : cycleFactorsFinset f = ∅ ↔ f = 1 := by
-  simpa [cycleFactorsFinset_eq_finset] using eq_comm
+  rw [cycleFactorsFinset_eq_finset]
+  conv_lhs => enter [2, 1, h]; rw [noncommProd_empty]
+  simp [eq_comm]
 
 @[simp]
 theorem cycleFactorsFinset_one : cycleFactorsFinset (1 : Perm α) = ∅ := by

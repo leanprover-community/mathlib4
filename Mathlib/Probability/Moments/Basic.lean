@@ -475,10 +475,9 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 
 end Chernoff
 
-lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = exp (x * t) := by
-  have : IsProbabilityMeasure (μ.map X) := by rw [hX]; infer_instance
-  rw [← mgf_id_map (.of_map_ne_zero <| IsProbabilityMeasure.ne_zero _), mgf, hX, integral_dirac,
-    mul_comm, id_def]
+lemma mgf_dirac {x : ℝ} (hX : HasLaw X (.dirac x) μ) (t : ℝ) : mgf X μ t = exp (x * t) := by
+  have : IsProbabilityMeasure (μ.map X) := by rw [hX.map_eq]; infer_instance
+  rw [← mgf_id_map hX.aemeasurable, mgf, hX.map_eq, integral_dirac, mul_comm, id_def]
 
 lemma mgf_dirac' [MeasurableSingletonClass Ω] {ω : Ω} :
     mgf X (Measure.dirac ω) t = exp (t * X ω) := by

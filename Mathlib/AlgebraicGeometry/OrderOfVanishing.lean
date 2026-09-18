@@ -55,11 +55,11 @@ def ord (f : X.functionField) (z : X) : ℤ :=
   else 0
 
 lemma ord_eq_ordHom_of_coheight_eq_one {z : X} (hz : coheight z = 1) (f : X.functionField) :
-    ord f z = Multiplicative.toAdd ((X.ordHom z hz f).unzeroD 1) := dif_pos hz
+    ord f z = Multiplicative.toAdd ((X.ordHom z hz f).unzeroD 1) := dite_eq_left hz
 
 @[simp]
 lemma ord_eq_zero_of_coheight_neq_one {z : X} (hz : coheight z ≠ 1) (f : X.functionField) :
-    ord f z = 0 := dif_neg hz
+    ord f z = 0 := dite_eq_right hz
 
 @[simp]
 lemma ord_zero : ord (0 : X.functionField) = 0 := by
