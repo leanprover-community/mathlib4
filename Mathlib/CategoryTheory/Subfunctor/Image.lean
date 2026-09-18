@@ -134,6 +134,10 @@ def image : Subfunctor F' where
 lemma image_top : (⊤ : Subfunctor F).image f = range f := by aesop
 
 @[simp]
+lemma image_sup (G₁ G₂ : Subfunctor F) (f : F ⟶ F') :
+    (G₁ ⊔ G₂).image f = G₁.image f ⊔ G₂.image f := by aesop
+
+@[simp]
 lemma image_iSup {ι : Type*} (G : ι → Subfunctor F) (f : F ⟶ F') :
     (⨆ i, G i).image f = ⨆ i, (G i).image f := by aesop
 
