@@ -9,11 +9,9 @@ public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.Analysis.Matrix.Spectrum
 
 import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
@@ -27,7 +25,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
-* `eigenvalues_lapMatrix_le_card`: Every Laplacian eigenvalue is at most the number of vertices.
+* `eigenvalues_lapMatrix_le_card`: Every real Laplacian eigenvalue is at most `|V|`.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
@@ -319,30 +317,36 @@ theorem dotProduct_mulVec_lapMatrix_le_card (x : V → ℝ) :
     _ ≤ toLinearMap₂' ℝ ((⊤ : SimpleGraph V).lapMatrix ℝ) x x := hcmp
     _ ≤ (Fintype.card V : ℝ) * (x ⬝ᵥ x) := htop
 
-/-- Every eigenvalue of the Laplacian of a finite simple graph is at most the number of vertices.
+/-- A real eigenpair of the Laplacian satisfies `μ ≤ |V|`.
 
-This is the Rayleigh-quotient form of `dotProduct_mulVec_lapMatrix_le_card` on a unit eigenvector.
-It is a uniform upper bound `λ ≤ |V|`; it does not assert that `|V|` lies in the spectrum. -/
-theorem eigenvalues_lapMatrix_le_card (i : V) :
-    ((G.posSemidef_lapMatrix ℝ).isHermitian.eigenvalues i) ≤ (Fintype.card V : ℝ) := by
-  classical
-  let hA := (G.posSemidef_lapMatrix ℝ).isHermitian
-  let v := hA.eigenvectorBasis i
-  have hunit : ‖v‖ = 1 := hA.eigenvectorBasis.orthonormal.norm_eq_one i
-  have hdot : ⇑v ⬝ᵥ ⇑v = 1 := by
-    rw [dotProduct]
-    have hsq := EuclideanSpace.real_norm_sq_eq v
-    rw [hunit, one_pow] at hsq
-    have hsq' : ∑ j, (v.ofLp j) * (v.ofLp j) = ∑ j, (v.ofLp j) ^ 2 := by
-      refine sum_congr rfl fun j _ => ?_
-      ring
-    rw [hsq', ← hsq]
-  have hquad := dotProduct_mulVec_lapMatrix_le_card G (⇑v)
-  rw [hA.eigenvalues_eq i]
-  simp only [RCLike.re_to_real, star_trivial]
-  calc
-    ⇑v ⬝ᵥ (G.lapMatrix ℝ *ᵥ ⇑v) ≤ (Fintype.card V : ℝ) * (⇑v ⬝ᵥ ⇑v) := hquad
-    _ = (Fintype.card V : ℝ) := by rw [hdot, mul_one]
+This is the Rayleigh-quotient form of `dotProduct_mulVec_lapMatrix_le_card`.
+It is a uniform upper bound; it does not assert that `|V|` lies in the spectrum.
+
+We state the bound via an explicit eigenpair (equivalently `HasEigenvalue` of `toLin'`)
+rather than `IsHermitian.eigenvalues`, to avoid importing `Analysis.Matrix.Spectrum`. -/
+theorem eigenvalue_lapMatrix_le_card {μ : ℝ} {x : V → ℝ} (hx : x ≠ 0)
+    (h : G.lapMatrix ℝ *ᵥ x = μ • x) :
+    μ ≤ (Fintype.card V : ℝ) := by
+  have hquad := dotProduct_mulVec_lapMatrix_le_card G x
+  have hμ : x ⬝ᵥ (G.lapMatrix ℝ *ᵥ x) = μ * (x ⬝ᵥ x) := by
+    rw [h, dotProduct_smul, smul_eq_mul]
+  have hxpos : 0 < x ⬝ᵥ x := by
+    have hnn : 0 ≤ x ⬝ᵥ x := Fintype.sum_nonneg fun i => mul_self_nonneg (x i)
+    have hne : x ⬝ᵥ x ≠ 0 := mt dotProduct_self_eq_zero.mp hx
+    exact lt_of_le_of_ne hnn hne.symm
+  have : μ * (x ⬝ᵥ x) ≤ (Fintype.card V : ℝ) * (x ⬝ᵥ x) := by
+    rwa [← hμ]
+  exact (mul_le_mul_iff_of_pos_right hxpos).1 this
+
+/-- Every real eigenvalue of the Laplacian of a finite simple graph is at most `|V|`.
+
+See `eigenvalue_lapMatrix_le_card` for the Rayleigh form on an explicit eigenpair. -/
+theorem eigenvalues_lapMatrix_le_card {μ : ℝ}
+    (hμ : Module.End.HasEigenvalue (toLin' (G.lapMatrix ℝ)) μ) :
+    μ ≤ (Fintype.card V : ℝ) := by
+  obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
+  refine eigenvalue_lapMatrix_le_card G hx.right ?_
+  simpa [toLin'_apply] using hx.apply_eq_smul
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
