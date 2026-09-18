@@ -141,13 +141,6 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
   rw [isMultiplicative_zeta.natCast.prodPrimeFactors_add_of_squarefree h_mult hn,
     coe_zeta_mul_apply]
 
-/-- A squarefree divisor of `n` divides the product of the prime factors of `n`. -/
-theorem _root_.Nat.Squarefree.dvd_prod_primeFactors {d n : ℕ} (hn : n ≠ 0) (hd : d ∣ n)
-    (hsq : Squarefree d) : d ∣ ∏ p ∈ n.primeFactors, p := by
-  calc d = ∏ p ∈ d.primeFactors, p := (Nat.prod_primeFactors_of_squarefree hsq).symm
-    _ ∣ ∏ p ∈ n.primeFactors, p :=
-        Finset.prod_dvd_prod_of_subset _ _ _ (Nat.primeFactors_mono hd hn)
-
 theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : n ≠ 0) :
     ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
@@ -174,8 +167,12 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     refine (Finset.sum_subset (Nat.divisors_subset_of_dvd hn (Nat.prod_primeFactors_dvd n))
       fun d hd hno ↦ ?_).symm
     have hdn : d ∣ n := (Nat.mem_divisors.mp hd).1
-    have : ¬ Squarefree d := fun hsq ↦
-      hno (Nat.mem_divisors.mpr ⟨Nat.Squarefree.dvd_prod_primeFactors hn hdn hsq, hP0⟩)
+    -- a squarefree divisor of `n` divides `P`: it is the product of its own prime factors
+    have hdP : Squarefree d → d ∣ P := fun hsq ↦ by
+      rw [← Nat.prod_primeFactors_of_squarefree hsq, Nat.prod_primeFactors_dvd_iff hP0, hP,
+        Nat.primeFactors_prod_primeFactors]
+      exact Nat.primeFactors_mono hdn hn
+    have : ¬ Squarefree d := fun hsq ↦ hno (Nat.mem_divisors.mpr ⟨hdP hsq, hP0⟩)
     simp [ArithmeticFunction.moebius_eq_zero_of_not_squarefree this]
   rw [hsum, ← key hPsq, hP, Nat.primeFactors_prod_primeFactors]
 
