@@ -58,7 +58,7 @@ def cosh (z : ℂ) : ℂ :=
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
-/-- The complex hyperbolic tangent function, defined as `cosh z / sinh z` -/
+/-- The complex hyperbolic cotangent function, defined as `cosh z / sinh z` -/
 @[pp_nodot]
 def coth (z : ℂ) : ℂ :=
   cosh z / sinh z
