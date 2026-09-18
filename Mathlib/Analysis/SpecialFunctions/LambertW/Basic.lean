@@ -21,13 +21,14 @@ The boundary of the range of the Lambert W function is described by
 `{ w | w.arg + w.im = (2 * k ± 1) * π }`,
 with the special case that, when `k = ±1`, the part of the negative real axis `(-∞, -1]`
 is also part of the boundary.
-So we define the range using corrected version of
+So we define the range using a corrected version of
 `{ w | w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π) }`.
 
 ## Main definitions
 
 * `Complex.LambertW.domain k`: the domain of the `k`-th branch in the z-plane.
 * `Complex.LambertW.range k`: the range of the `k`-th branch in the w-plane.
+* `Complex.LambertW.index hw`: the unique index of the branch containing `w ≠ -1`.
 * `Complex.lambertW k`: the `k`-th branch `W_ k` of the Lambert W function.
 
 ## Main results
@@ -35,14 +36,14 @@ So we define the range using corrected version of
 * `Complex.LambertW.existsUnique_mem_range_mul_exp_eq`: every point in the domain of a branch has a
   unique preimage in its range.
 * `Complex.LambertW.bijOn_mul_exp_range_domain`:
-  `w ↦ w * exp w` is a bijection from `range k` to `domain k`.
+  `w ↦ w * cexp w` is a bijection from `range k` to `domain k`.
 * `Complex.lambertW_mul_exp_of_mem_range`:
-  `W_ k (w * exp w) = w` for `w ∈ range k`.
+  `W_ k (w * cexp w) = w` for `w ∈ range k`.
 * `Complex.lambertW_mul_exp_lambertW_of_mem_domain`:
   `W_ k z * cexp (W_ k z) = z` for `z ∈ domain k`.
-* `Complex.eq_mul_exp_iff_exists_eq_lambertW`: `z = w * exp w` if and only if `w = W_ k z` for
+* `Complex.eq_mul_exp_iff_exists_eq_lambertW`: `z = w * cexp w` if and only if `w = W_ k z` for
   some branch `k` with `z ∈ domain k`.
-* `Complex.existsUnique_eq_lambertW_of_ne_neg_one`: the branch in the previous statement is
+* `Complex.eq_index_of_mem_lambertW`: the branch index in the previous statement is
   unique whenever `w ≠ -1`.
 
 ## Notation
@@ -76,7 +77,7 @@ The seven basic cases are:
 * `w.arg + w.im ∈ Ioo ((2 * k - 1) * π) ((2 * k + 1) * π) ∧ w ≠ 0 ∧ k ≠ 0, -1` ↔
   `z ∈ Complex.slitPlane`, with `w` in the interior of range
 
-For the last two cases, to prove the existence and uniqueness of w, we solve the polar equations.
+For the last two cases, to prove the existence and uniqueness of `w`, we solve the polar equations.
 We have `w * exp w = z` ↔ `w + log w = log z + k * (2 * π) * I`.
 Let `w = ρ * exp (ϕ * I)`. Taking real and imaginary parts gives
 `ρ * exp (ρ * cos ϕ) = ‖z‖` and `ϕ + ρ * sin ϕ = z.arg + k * (2 * π)`.
@@ -95,7 +96,7 @@ the intermediate value theorem.
 
 + Define the Lambert W function over ℝ
 + Prove some identities and some special values
-+ Prove continuity, differentiability, smoothness
++ Prove continuity, differentiability, analyticity
 + Prove asymptotic expansion and series expansion
 + Prove tree counting and combinatorics
 + Prove indefinite integral formulas
@@ -122,7 +123,7 @@ theorem existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻
   exact ⟨t, ⟨⟨ht.left, by grind⟩, hteq⟩, fun y hy => exp_injective (mul_log_strictMonoOn.injOn
     (exp_le_exp.mpr hy.left.left) (exp_le_exp.mpr ht.left) (by grind [log_exp]))⟩
 
---  TODO : reffer to `Real.lambertWNegOne`
+-- TODO : refer to `Real.lambertWNegOne`
 public theorem existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
     ∃! t ∈ Iic (-1), t * rexp t = x := by
   -- `Iic (-1)` is unbounded, so first pick `S` with `t * rexp t < x` for all `t ≥ S`,
@@ -517,7 +518,7 @@ section LambertWRangeDomain
 section Definition
 
 /-- The domain of the `k`-th branch of the Lambert W function: the whole plane for the principal
-branch `k = 0`, and the punctured plane for other branch. -/
+branch `k = 0`, and the punctured plane for other branches. -/
 @[expose]
 public def domain (k : ℤ) : Set ℂ :=
   if k = 0 then univ else {0}ᶜ
@@ -638,6 +639,7 @@ theorem eq_of_mem_range_of_mem_range {i j : ℤ}
     have := toIocDiv_eq_iff two_pi_pos (a := -π) (b := w.arg + w.im) (n := j) |>.mpr
     grind
 
+/-- See also `Complex.LambertW.index`. -/
 public theorem existsUnique_mem_range_of_ne_neg_one (hw : w ≠ -1) :
     ∃! k : ℤ, w ∈ range k := by
   obtain ⟨k, hk⟩ : ∃ k, w ∈ range k := mem_iUnion.mp <| eq_univ_iff_forall.mp iUnion_range w
@@ -704,7 +706,7 @@ theorem mem_Iic_of_mem_range_neg_one_of_mul_exp_mem
   replace : w.im = 0 := im_eq_zero_of_arg_add_im_eq_neg_pi_of_mul_exp_mem (by grind) hz
   grind [arg_mem_Ioc]
 
---  The seven basic case.
+--  The seven basic cases (without the trivial one).
 
 theorem existsUnique_eq_pi_mul_exp_eq (hz : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0}) :
     ∃! w : ℂ, w.arg + w.im = π ∧ w * cexp w = z ∧ w.im > 0 := by
@@ -850,8 +852,9 @@ theorem existsUnique_mem_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) (hz : z ≠
       rw [mul_exp_eq_of_arg_add_im_eq (ne_zero_of_mem_range hk hw) h_eq, ← ofReal_neg,
         arg_ofReal_of_neg <| neg_neg_iff_pos.mpr <| Real.exp_pos _]
 
+/-- The `w` is `W_ k z`, see also `Complex.lambertW`. -/
 public theorem existsUnique_mem_range_mul_exp_eq (hz : z ∈ domain k) :
-    ∃! w : ℂ, w ∈ range k ∧ w * cexp w = z := by
+    ∃! w ∈ range k, w * cexp w = z := by
   rcases (show k = 0 ∨ k = -1 ∨ (k ≠ 0 ∧ k ≠ -1) by tauto) with rfl | rfl | ⟨hk, hk'⟩
   · exact existsUnique_mem_range_zero z
   · exact existsUnique_mem_range_neg_one (by rwa [domain_of_ne_zero (by decide)] at hz)
@@ -891,6 +894,21 @@ end LambertW
 section LambertW
 
 open LambertW
+
+/-- The index of the Lambert W branch containing `w`, i.e. the unique integer `k` s.t.
+`w` lies in `Complex.LambertW.range k`.
+
+The exceptional point `w = -1` is excluded because it lies in both `range 0` and
+`range (-1)`, so the index would not be unique there. -/
+public def LambertW.index (hw : w ≠ -1) : ℤ :=
+  existsUnique_mem_range_of_ne_neg_one hw |>.choose
+
+@[simp]
+public theorem LambertW.mem_range_index (hw : w ≠ -1) : w ∈ range (index hw) :=
+  existsUnique_mem_range_of_ne_neg_one hw |>.choose_spec.left
+
+public theorem LambertW.index_eq_iff (hw : w ≠ -1) : index hw = k ↔ w ∈ range k :=
+  existsUnique_mem_range_of_ne_neg_one hw |>.choose_eq_iff
 
 /-- The `k`-th branch `W_ k` of the standard Lambert W function, i.e. the inverse
 of `w => w * exp w` on `Complex.LambertW.range k`.
@@ -964,15 +982,31 @@ public theorem eq_mul_exp_iff_exists_eq_lambertW :
   refine ⟨exists_eq_lambertW_of_eq_mul_exp, fun ⟨k, hk, hz⟩ => ?_⟩
   rw [hk, lambertW_mul_exp_lambertW_of_mem_domain hz]
 
-/-- If `z = w * exp w` and `w ≠ -1`, there is a unique `k` s.t. `W_ k z = w`. -/
-public theorem existsUnique_eq_lambertW_of_ne_neg_one
-    (hw : z = w * cexp w) (hw' : w ≠ -1) : ∃! k : ℤ, w = W_ k z ∧ z ∈ domain k := by
-  obtain ⟨k, hk, Hk⟩ : ∃! k : ℤ, w ∈ range k := existsUnique_mem_range_of_ne_neg_one hw'
-  refine ⟨k, ⟨hw ▸ lambertW_mul_exp_of_mem_range hk |>.symm, ?_⟩,
-    fun k' hk' => Hk k' <| hk'.1 ▸ lambertW_mem_range_of_mem_domain hk'.2⟩
-  by_cases hk₀ : k = 0
-  · simp [hk₀]
-  · grind [mem_domain_of_ne_zero, ne_zero_of_mem_range, exp_ne_zero]
+/-- If `z = w * cexp w` and `hw : w ≠ -1`, then `w` is the value of the Lambert W branch
+indexed by `index hw` at `z`, and `z` lies in the domain of that branch. -/
+public theorem eq_lambertW_index_of_eq_mul_exp (hw : z = w * cexp w) (hw' : w ≠ -1) :
+    w = W_ (index hw') z ∧ z ∈ domain (index hw') := by
+  have hw'' : w ∈ range (index hw') := mem_range_index hw'
+  constructor
+  · rw [hw, lambertW_mul_exp_of_mem_range hw'']
+  · by_cases hk₀ : index hw' = 0
+    · simp [hk₀]
+    · grind [mem_domain_of_ne_zero, ne_zero_of_mem_range, exp_ne_zero]
+
+/-- If `hw : w ≠ -1`, `w = W_ k z`, and `z ∈ domain k`, then the branch index `k` equals
+`index hw`. In other words, the branch index is uniquely determined by `w`. -/
+public theorem eq_index_of_mem_lambertW (hw : w ≠ -1) (hw' : w = W_ k z) (hz : z ∈ domain k) :
+    k = index hw := by
+  apply index_eq_iff hw |>.mpr ?_ |>.symm
+  simpa only [hw'] using lambertW_mem_range_of_mem_domain hz
+
+/-- The principal branch `W₀` takes the value `-1` at the branch point `-(cexp 1)⁻¹ = -1 / e`. -/
+public theorem lambertW_zero_neg_exp_one_inv : W₀ (-(cexp 1)⁻¹) = -1 := by
+  rw [← neg_one_mul, ← exp_neg, lambertW_mul_exp_of_mem_range neg_one_mem_range_zero]
+
+/-- The branch `W₋₁` takes the value `-1` at the branch point `-(cexp 1)⁻¹ = -1 / e`. -/
+public theorem lambertW_neg_one_neg_exp_one_inv : W₋₁ (-(cexp 1)⁻¹) = -1 := by
+  rw [← neg_one_mul (cexp 1)⁻¹, ← exp_neg, lambertW_mul_exp_of_mem_range neg_one_mem_range_neg_one]
 
 end LambertW
 
