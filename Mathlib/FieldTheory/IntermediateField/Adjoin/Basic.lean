@@ -131,9 +131,7 @@ theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
 theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → IntermediateField K L) :
     ((⨆ i, S i : IntermediateField K L) : Set L) =
       ⋃ s : Finset ι, (⨆ i ∈ s, S i : IntermediateField K L) := by
-  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
-  simp_rw [← Finset.sup_eq_iSup]
-  exact fun _ _ ↦ Finset.sup_mono
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by

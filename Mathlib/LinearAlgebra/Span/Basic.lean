@@ -347,9 +347,7 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
 
 theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Submodule R M) :
     ((⨆ i, S i : Submodule R M) : Set M) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Submodule R M) := by
-  rw [iSup_eq_iSup_finset, coe_iSup_of_directed _ <| Monotone.directed_le ?_]
-  simp_rw [← Finset.sup_eq_iSup]
-  exact fun _ _ ↦ Finset.sup_mono
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed _ <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by

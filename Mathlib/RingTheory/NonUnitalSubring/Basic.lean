@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.GroupTheory.Subsemigroup.Center
 public import Mathlib.RingTheory.NonUnitalSubring.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Data.Finset.Lattice.Fold
+
 import Mathlib.Order.CompleteLattice.Finset
 
 /-!
@@ -718,9 +718,7 @@ theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
 theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalSubring R) :
     ((⨆ i, S i : NonUnitalSubring R) : Set R) =
       ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalSubring R) := by
-  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
-  simp_rw [← Finset.sup_eq_iSup]
-  exact fun _ _ ↦ Finset.sup_mono
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubring R}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :

@@ -115,9 +115,7 @@ theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
 @[to_additive]
 theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Submonoid M) :
     ((⨆ i, S i : Submonoid M) : Set M) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Submonoid M) := by
-  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
-  simp_rw [← Finset.sup_eq_iSup]
-  exact fun _ _ ↦ Finset.sup_mono
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]

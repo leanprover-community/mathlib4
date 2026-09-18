@@ -36,9 +36,7 @@ variable [NonAssocSemiring R]
 
 theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subsemiring R) :
     ((⨆ i, S i : Subsemiring R) : Set R) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subsemiring R) := by
-  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
-  simp_rw [← Finset.sup_eq_iSup]
-  exact fun _ _ ↦ Finset.sup_mono
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 end NonAssocSemiring
 
