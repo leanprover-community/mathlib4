@@ -146,7 +146,7 @@ theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
 theorem cycleGraph.mem_support_cycle {n : ℕ} (u : Fin (n + 3)) :
     u ∈ (cycleGraph.cycle n).support := by
   refine mem_support_iff_exists_getVert.mpr ⟨n + 3 - u, ?_, by simp⟩
-  simp [cycleGraph.getVert_cycle, Fin.ext_iff, Nat.sub_sub_self]
+  simp [cycleGraph.getVert_cycle, Fin.ext_iff, Nat.sub_sub_self, -Order.lt_add_one_iff]
 
 end cycle
 
