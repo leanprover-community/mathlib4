@@ -17,7 +17,7 @@ the universal continuous map from `X` into a sober (`T0Space` and `QuasiSober`) 
 
 universe u
 
-open Topology TopologicalSpace
+open Topology TopologicalSpace CategoryTheory
 
 namespace Locale.PT
 
@@ -141,12 +141,26 @@ end PT
 
 end Locale
 
+open Locale
+
 /-- If `Y` is sober, every frame homomorphism `Opens Y → Opens X` comes from a unique continuous map
 `X → Y`. -/
 noncomputable def continuousMapEquivFrameHom {X Y : Type u} [TopologicalSpace X]
     [TopologicalSpace Y] [T0Space Y] [QuasiSober Y] : C(X, Y) ≃ FrameHom (Opens Y) (Opens X) :=
-  (Homeomorph.refl X).continuousMapCongr (Locale.PT.homeomorphPtOpens Y) |>.trans <|
+  (Homeomorph.refl X).continuousMapCongr (PT.homeomorphPtOpens Y) |>.trans <|
     continuousMapPTEquivFrameHomOpens X (Opens Y)
 
 lemma continuousMapEquivFrameHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     [T0Space Y] [QuasiSober Y] (f : C(X, Y)) : continuousMapEquivFrameHom f = Opens.comap f := rfl
+
+/-- For `Y` sober, continuous maps from the sober space `PT (Opens X)` to `Y` are equivalent to
+continuous maps `X → Y`. -/
+noncomputable def sobrificationEquiv {X Y : Type u} [TopologicalSpace X]
+    [TopologicalSpace Y] [T0Space Y] [QuasiSober Y] : C(PT (Opens X), Y) ≃ C(X, Y) :=
+  ((Homeomorph.refl _).continuousMapCongr <| PT.homeomorphPtOpens Y).trans <|
+    (TopCat.Hom.equivContinuousMap ↧(PT (Opens X)) _).symm.trans <|
+    (adjunctionTopToLocalePT.homEquiv ↧(PT (Opens X)) ↧(Opens Y)).symm.trans <|
+    ((Frm.Iso.mk (orderIsoOpensPtOpens X)).op.homCongr (Iso.refl _)).trans <|
+    (adjunctionTopToLocalePT.homEquiv ↧X ↧(Opens Y)).trans <|
+    (TopCat.Hom.equivContinuousMap ↧X _).trans <|
+    ((Homeomorph.refl X).continuousMapCongr <| PT.homeomorphPtOpens Y).symm

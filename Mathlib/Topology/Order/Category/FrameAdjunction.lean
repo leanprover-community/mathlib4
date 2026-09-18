@@ -152,6 +152,14 @@ def counitAppCont (L : Type*) [CompleteLattice L] : FrameHom L (Opens <| PT L) w
   map_top' := by simp
   map_sSup' S := by ext; simp
 
+/-- On an object in the image of `Opens`, `counitAppCont` is an order isomorphism. Abstractly, this
+shows that the adjunction to follow is idempotent. -/
+def orderIsoOpensPtOpens (X : Type*) [TopologicalSpace X] : Opens X ≃o Opens (PT (Opens X)) :=
+  OrderIso.ofHomInv
+    (counitAppCont (Opens X))
+    (Opens.comap ⟨localePointOfSpacePoint X, (isInducing_localePointOfSpacePoint X).continuous⟩)
+    (by ext ⟨u, v, hv⟩ x; simp [counitAppCont, Opens.comap, ← hv]) rfl
+
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
 def adjunctionTopToLocalePT : topToLocale ⊣ pt where
   unit := { app := fun X ↦ TopCat.ofHom ⟨localePointOfSpacePoint X,
